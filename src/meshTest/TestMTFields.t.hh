@@ -19,16 +19,20 @@ namespace rtt_meshTest
 
 template<class MTFactory>
 template<class FGRP>
-void TestMTFields<MTFactory>::run(const std::string &name_in)
+void TestMTFields<MTFactory>::run()
 {
     
     // Get the mesh and field constructor from the mesh factory.
+
+    std::string name = Name(FGRP::Id());
+
+    os_m << "TestMTFields::run() running " << name << " test." << std::endl;
     
     MTFactoryProduct meshProduct = meshFactory_m.create();
     MT &mesh = meshProduct.mesh();
     FieldConstructor &fCtor = meshProduct.fieldConstructor();
 
-    FieldTester<MT, FGRP> tester(name_in, fCtor, mesh, os_m);
+    FieldTester<MT, FGRP> tester(name, fCtor, mesh, os_m);
 
     tester.run();
     

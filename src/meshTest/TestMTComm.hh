@@ -12,6 +12,8 @@
 #ifndef __meshTest_TestMTComm_hh__
 #define __meshTest_TestMTComm_hh__
 
+#include "Tester.hh"
+
 namespace rtt_meshTest
 {
  
@@ -58,7 +60,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MTFactory>
-class TestMTComm 
+class TestMTComm : private Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -71,10 +73,6 @@ class TestMTComm
     
     MTFactory &meshFactory_m;
     
-    std::ostream &os_m;
-    
-    bool passed_m;
-
   public:
 
     // CREATORS
@@ -82,8 +80,7 @@ class TestMTComm
     //! Constructor
     
     TestMTComm(MTFactory &meshFactory_in, std::ostream &os_in)
-	: meshFactory_m(meshFactory_in), os_m(os_in),
-	  passed_m(false)
+	: Tester("TestMTComm", os_in), meshFactory_m(meshFactory_in)
     {
 	/* empty */
     }
@@ -102,7 +99,7 @@ class TestMTComm
 
     //! Returns success of previously ran run() method.
     
-    bool passed() const { return passed_m; }
+    Tester::passed;
     
   private:
     

@@ -22,15 +22,15 @@ void TestMTModel<MTFactory>::run()
 {
     // Run the tests in this test class.
 
-    os_m << "Begin Running....... TestMTModel tests." << std::endl;
+    os() << "Begin Running....... TestMTModel tests." << std::endl;
 
-    passed_m = true;
+    setPassed(true);
     
     t1();
 
     t2();
 
-    os_m << "Completed Running... TestMTModel tests." << std::endl;
+    os() << "Completed Running... TestMTModel tests." << std::endl;
 }
 
 
@@ -39,7 +39,7 @@ void TestMTModel<MTFactory>::run()
 template<class MTFactory>
 void TestMTModel<MTFactory>::t1()
 {
-    os_m << "t1: beginning.\n";
+    os() << "t1: beginning.\n";
 
     typedef typename MT::size_type size_type;
     typedef typename MT::FieldConstructor FieldConstructor;
@@ -75,7 +75,7 @@ void TestMTModel<MTFactory>::t1()
     typedef typename MT::OpMinAssign OpMinAssign;
     typedef typename MT::OpMaxAssign OpMaxAssign;
 
-    os_m << "t1: end\n";
+    os() << "t1: end\n";
 }
 
 
@@ -85,7 +85,7 @@ void TestMTModel<MTFactory>::t1()
 template<class MTFactory>
 void TestMTModel<MTFactory>::t2()
 {
-    os_m << "t2: beginning.\n";
+    os() << "t2: beginning.\n";
 
     typedef typename MT::size_type size_type;
     typedef typename MT::FieldConstructor FieldConstructor;
@@ -94,10 +94,6 @@ void TestMTModel<MTFactory>::t2()
     typedef typename MT::ncsf ncsf;
     typedef typename MT::vcsf vcsf;
     typedef typename MT::fcdvsf fcdvsf;
-
-    // need a temporary passed variable for each subset of tests.
-
-    bool passed = true;
 
     {
 	// Create 3 meshes to test equivalence relations
@@ -114,67 +110,41 @@ void TestMTModel<MTFactory>::t2()
 	// Insure that the MTFactory produced "distinct" meshes
 	// for each call of create.
 
-	passed = true;
-	
-        if (mesh1 == mesh2)
-            passed = false;
-        if (mesh1 == mesh3)
-            passed = false;
-        if (mesh3 == mesh2)
-            passed = false;
+	std::string test("t2() failed testing MTFactory distinct products.");
 
-	if (!passed)
-	    os_m << "t2() failed testing MTFactory distinct products."
-		 << std::endl;
-
-	// update the object state.
-	
-	passed_m = passed && passed_m;
-	passed = true;
+        testassert(!(mesh1 == mesh2), test, __FILE__, __LINE__);
+        testassert(!(mesh1 == mesh3), test, __FILE__, __LINE__);
+        testassert(!(mesh3 == mesh2), test, __FILE__, __LINE__);
 
 	// Test equivalence relations.
 
-        if ((mesh1 != mesh2) != !(mesh1 == mesh2))
-            passed = false;
+	test = "t2() failed testing MT equivalence relations.";
 
-        if (!(mesh1 == mesh1))
-            passed = false;
-        if ((mesh1 != mesh1) != !(mesh1 == mesh1))
-            passed = false;
-
-	if (!passed)
-	    os_m << "t2() failed testing MT equivalence relations."
-		 << std::endl;
-	
-	// update the object state.
-	
-	passed_m = passed && passed_m;
-	passed = true;
+        testassert(!((mesh1 != mesh2) != !(mesh1 == mesh2)), test,
+		   __FILE__, __LINE__);
+        testassert(!(!(mesh1 == mesh1)), test, __FILE__, __LINE__);
+	testassert(!((mesh1 != mesh1) != !(mesh1 == mesh1)), test,
+		   __FILE__, __LINE__);
 	
 	// Invariants
 	// Remember... !(A => B) <=> (A && !B)
 
+	test = "t2() failed testing MT Invariants.";
+	
 	// Identity
-        if ((&mesh1 == &mesh2) && !(mesh1 == mesh2))
-            passed = false;
-	// Reflexivity
-        if (!(mesh1 == mesh1))
-            passed = false;
-	// Symmetry
-        if ((mesh1 == mesh2) && !(mesh2 == mesh1))
-            passed = false;
-	// Transitivity
-        if (((mesh1 == mesh2) && (mesh2 == mesh3)) && !(mesh1 == mesh3))
-            passed = false;
+        testassert(!((&mesh1 == &mesh2) && !(mesh1 == mesh2)), test,
+		   __FILE__, __LINE__);
 
-	if (!passed)
-	    os_m << "t2() failed testing MT Invariants."
-		 << std::endl;
-	
-	// update the object state.
-	
-	passed_m = passed && passed_m;
-	passed = true;
+	// Reflexivity
+        testassert(mesh1 == mesh1, test, __FILE__, __LINE__);
+
+	// Symmetry
+	testassert(!((mesh1 == mesh2) && !(mesh2 == mesh1)), test,
+		   __FILE__, __LINE__);
+
+	// Transitivity
+	testassert(!(((mesh1 == mesh2) && (mesh2 == mesh3)) &&
+		     !(mesh1 == mesh3)), test, __FILE__, __LINE__);
     }
 
     // Get the mesh and field constructor from the mesh factory.
@@ -189,27 +159,13 @@ void TestMTModel<MTFactory>::t2()
     size_type ncy = mesh.get_ncy();
     size_type ncz = mesh.get_ncz();
 
-    passed = true;
+    std::string test("t2() failed testing MT mesh size relations.");
     
-    if (!(ncells <= total_ncells))
-        passed = false;
-    if (total_ncells != ncx*ncy*ncz)
-        passed = false;
-    if (!(ncx <= total_ncells))
-        passed = false;
-    if (!(ncy <= total_ncells))
-        passed = false;
-    if (!(ncz <= total_ncells))
-        passed = false;
-
-    if (!passed)
-	os_m << "t2() failed testing MT mesh size relations."
-	     << std::endl;
-	
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(ncells <= total_ncells, test, __FILE__, __LINE__);
+    testassert(!(total_ncells != ncx*ncy*ncz), test, __FILE__, __LINE__);
+    testassert(ncx <= total_ncells, test, __FILE__, __LINE__);
+    testassert(ncy <= total_ncells, test, __FILE__, __LINE__);
+    testassert(ncz <= total_ncells, test, __FILE__, __LINE__);
 
     ccsf c(fCtor);
     fcdsf f(fCtor);
@@ -233,7 +189,7 @@ void TestMTModel<MTFactory>::t2()
     mesh.get_vertex_volumes(v);
     mesh.get_node_volumes(n);
 
-    os_m << "t2: end\n";
+    os() << "t2: end\n";
 }
 
 } // end namespace rtt_meshTest

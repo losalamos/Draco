@@ -71,41 +71,47 @@ class TestMTFields
     typedef typename MT::FieldConstructor FieldConstructor;
 
   public:
+    
+    enum FieldGroupID {ebstf, ecctf, efcdtf, enctf, evctf};
+
+    inline static const char *Name(int id);
+    
+  public:
 
     //! This typedef is in lieu of compiler support for template template
     //! arguments.
     
     typedef FieldGroup<typename MT::template bstf<double>,
 	typename MT::template bstf<int>, typename MT::template bstf<long>,
-	typename MT::template bstf <DoubleContainer> > BSTF;
+	typename MT::template bstf <DoubleContainer>, ebstf > BSTF;
     
     //! This typedef is in lieu of compiler support for template template
     //! arguments.
     
     typedef FieldGroup<typename MT::template cctf<double>,
 	typename MT::template cctf<int>, typename MT::template cctf<long>,
-	typename MT::template cctf<DoubleContainer> > CCTF;
+	typename MT::template cctf<DoubleContainer>, ecctf > CCTF;
     
     //! This typedef is in lieu of compiler support for template template
     //! arguments.
     
     typedef FieldGroup<typename MT::template fcdtf<double>,
 	typename MT::template fcdtf<int>, typename MT::template fcdtf<long>,
-	typename MT::template fcdtf<DoubleContainer> > FCDTF;
+	typename MT::template fcdtf<DoubleContainer>, efcdtf > FCDTF;
     
     //! This typedef is in lieu of compiler support for template template
     //! arguments.
     
     typedef FieldGroup<typename MT::template nctf<double>,
 	typename MT::template nctf<int>, typename MT::template nctf<long>,
-	typename MT::template nctf<DoubleContainer> > NCTF;
+	typename MT::template nctf<DoubleContainer>, enctf > NCTF;
     
     //! This typedef is in lieu of compiler support for template template
     //! arguments.
     
     typedef FieldGroup<typename MT::template vctf<double>,
 	typename MT::template vctf<int>, typename MT::template vctf<long>,
-	typename MT::template vctf<DoubleContainer> > VCTF;
+	typename MT::template vctf<DoubleContainer>, evctf > VCTF;
     
     // DATA
 
@@ -139,7 +145,7 @@ class TestMTFields
     //! Primary interface into this class.
     
     template<class FGRP>
-    void run(const std::string &name_in);
+    void run();
     
     // ACCESSORS
 
@@ -159,6 +165,25 @@ class TestMTFields
 
     // IMPLEMENTATION
 };
+
+template<class MTFactory>
+const char *TestMTFields<MTFactory>::Name(int id)
+{
+    switch (id)
+    {
+    case ebstf:
+	return "bstf";
+    case ecctf:
+	return "cctf";
+    case efcdtf:
+	return "fcdtf";
+    case enctf:
+	return "nctf";
+    case evctf:
+	return "vctf";
+    }
+    return "unknown type";
+}
 
 } // end namespace rtt_meshTest
 

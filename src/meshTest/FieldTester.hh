@@ -12,6 +12,9 @@
 #ifndef __meshTest_FieldTester_hh__
 #define __meshTest_FieldTester_hh__
 
+#include "Tester.hh"
+
+#include <iostream>
 #include <string>
 
 namespace rtt_meshTest
@@ -33,7 +36,7 @@ namespace rtt_meshTest
 //===========================================================================//
 
 template<class MT, class FGRP>
-class FieldTester 
+class FieldTester : private Tester
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -47,15 +50,9 @@ class FieldTester
 
     // DATA
 
-    std::string name_m;
-    
     FieldConstructor &fCtor_m;
     MT &mesh_m;
     
-    std::ostream &os_m;
-    
-    bool passed_m;
-
   public:
 
     // CREATORS
@@ -63,8 +60,8 @@ class FieldTester
     FieldTester(const std::string &name_in,
 		FieldConstructor &fCtor_in, MT &mesh_in,
 		std::ostream &os_in)
-	: name_m(name_in), fCtor_m(fCtor_in), mesh_m(mesh_in),
-	  os_m(os_in), passed_m(false)
+	: Tester(std::string("FieldTester<") + name_in + ">", os_in),
+	  fCtor_m(fCtor_in), mesh_m(mesh_in)
     {
 	/* empty */
     }
@@ -77,7 +74,7 @@ class FieldTester
 
     // ACCESSORS
 
-    bool passed() const { return passed_m; }
+    bool passed() const { return Tester::passed(); }
 
   private:
     
@@ -91,7 +88,6 @@ class FieldTester
 
     // IMPLEMENTATION
 
-    void error(bool &passed, const std::string &msg);
 
     void t1();
     void t2();

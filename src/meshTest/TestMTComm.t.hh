@@ -11,24 +11,32 @@
 
 #include "TestMTComm.hh"
 #include <iostream>
+#include <functional>
+#include <algorithm>
 
 namespace rtt_meshTest
 {
- 
+
+template<class T>
+inline std::binder2nd<std::not_equal_to<T> > notEqualTo(T val)
+{
+    return std::bind2nd(std::not_equal_to<T>(), val);
+}
+
 template<class MTFactory>
 void TestMTComm<MTFactory>::run()
 {
     // Run the tests in this test class.
 
-    os_m << "Begin Running....... TestMTComm tests." << std::endl;
+    os() << "Begin Running....... TestMTComm tests." << std::endl;
 
-    passed_m = true;
+    setPassed(true);
     
     t3();
 
     t4();
 
-    os_m << "Completed Running... TestMTComm tests." << std::endl;
+    os() << "Completed Running... TestMTComm tests." << std::endl;
 }
 
 // Test the MT scatters and gathers
@@ -36,17 +44,13 @@ void TestMTComm<MTFactory>::run()
 template<class MTFactory>
 void TestMTComm<MTFactory>::t3()
 {
-    os_m << "t3: beginning.\n";
+    os() << "t3: beginning.\n";
 
     typedef MT::ccsf ccsf;
     typedef MT::fcdsf fcdsf;
     typedef MT::ncsf ncsf;
     typedef MT::vcsf vcsf;
     typedef MT::bssf bssf;
-
-    // need a temporary passed variable for each subset of tests.
-
-    bool passed = true;
 
     // Create a field constructor with which to test the scatters and gathers.
     
@@ -62,462 +66,252 @@ void TestMTComm<MTFactory>::t3()
 
     // Cell centered to face centered scatter
 
+    bool passed;
+    std::string test("t3() failed testing MT::scatter(f, c, MT::OpAssign()).");
+    
     c = 1.0;
     f = 0.0;
     MT::scatter(f, c, MT::OpAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(f, c, MT::OpAssign())."
-	     << std::endl;
-
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
+    test = "t3() failed testing MT::scatter(f, c, MT::OpAddAssign()).";
+
     c = 1.0;
     f = 0.0;
     b = 0.0;
     MT::scatter(f, c, MT::OpAddAssign());
     MT::gather(b, f, MT::OpAssign());
     MT::gather(f, b, MT::OpAddAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 2.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(f, c, MT::OpAddAssign()) ..."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(2.0));
+    testassert(passed, test, __FILE__, __LINE__);
+
+    test = "t3() failed testing MT::scatter(f, c, MT::OpSubAssign()).";
+
     c = 1.0;
     f = 0.0;
     b = 0.0;
     MT::scatter(f, c, MT::OpSubAssign());
     MT::gather(b, f, MT::OpAssign());
     MT::gather(f, b, MT::OpAddAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != -2.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(f, c, MT::OpSubAssign()) ..."
-	     << std::endl;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(-2.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::scatter(f, c, MT::OpMultAssign()).";
+
     c = 3.0;
     f = 1.0;
     b = 0.0;
     MT::scatter(f, c, MT::OpMultAssign());
     MT::gather(b, f, MT::OpAssign());
     MT::gather(f, b, MT::OpMultAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 9.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(f, c, MT::OpMultAssign()) ..."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(9.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Face centered to cell centered scatter
+
+    test = "t3() failed testing MT::scatter(c, f, MT::OpAddAssign()).";
 
     f = 1.0;
     c = 0.0;
     MT::scatter(c, f, MT::OpAddAssign());
-    for (ccsf::const_iterator citer = c.begin(); citer != c.end();
-         ++citer)
-      if (*citer != 6.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(c, f, MT::OpAddAssign())."
-	     << std::endl;
+    passed = c.end() == std::find_if(c.begin(), c.end(), notEqualTo(6.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::scatter(c, f, MT::OpMultAssign()).";
+
     f = 3.0;
     c = 1.0;
     MT::scatter(c, f, MT::OpMultAssign());
-    for (ccsf::const_iterator citer = c.begin(); citer != c.end();
-         ++citer)
-      if (*citer != 729.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(c, f, MT::OpMultAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = c.end() == std::find_if(c.begin(), c.end(), notEqualTo(729.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Vertex centered to face centered scatter
+
+    test = "t3() failed testing MT::scatter(f, v, MT::OpAddAssign()).";
 
     v = 1.0;
     f = 0.0;
     MT::scatter(f, v, MT::OpAddAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 4.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(f, v, MT::OpAddAssign())."
-	     << std::endl;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(4.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::scatter(f, v, MT::OpMultAssign()).";
+
     v = 3.0;
     f = 1.0;
     MT::scatter(f, v, MT::OpMultAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 81.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(f, v, MT::OpMultAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(81.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Face centered to vertex centered scatter
+
+    test = "t3() failed testing MT::scatter(v, f, MT::OpAddAssign()).";
 
     f = 1.0;
     v = 0.0;
     MT::scatter(v, f, MT::OpAddAssign());
-    for (vcsf::const_iterator citer = v.begin(); citer != v.end();
-         ++citer)
-      if (*citer != 3.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(v, f, MT::OpAddAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(3.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Vertex centered to node centered scatter
+
+    test = "t3() failed testing MT::scatter(n, v, MT::OpAssign()).";
 
     v = 1.0;
     n = 0.0;
     MT::scatter(n, v, MT::OpAssign());
-    for (ncsf::const_iterator citer = n.begin(); citer != n.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(n, v, MT::OpAssign())."
-	     << std::endl;
+    passed = n.end() == std::find_if(n.begin(), n.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::scatter(n, v, MT::OpMultAssign()).";
+
     v = 1.0;
     n = 1.0;
     MT::scatter(n, v, MT::OpMultAssign());
-    for (ncsf::const_iterator citer = n.begin(); citer != n.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(n, v, MT::OpMultAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = n.end() == std::find_if(n.begin(), n.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Vertex centered to cell centered scatter
+
+    test = "t3() failed testing MT::scatter(c, v, MT::OpAddAssign()).";
 
     v = 1.0;
     c = 0.0;
     MT::scatter(c, v, MT::OpAddAssign());
-    for (ccsf::const_iterator citer = c.begin(); citer != c.end();
-         ++citer)
-      if (*citer != 8.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::scatter(c, v, MT::OpAddAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = c.end() == std::find_if(c.begin(), c.end(), notEqualTo(8.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Cell centered to face centered gather
+
+    test = "t3() failed testing MT::gather(f, c, MT::OpAssign()).";
 
     c = 1.0;
     f = 0.0;
     MT::gather(f, c, MT::OpAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::gather(f, c, MT::OpAssign())."
-	     << std::endl;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::gather(f, c, MT::OpMinAssign()).";
+
     c = 5.0;
     f = 3.0;
     MT::gather(f, c, MT::OpMinAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 3.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "(1) MT::gather(f, c, MT::OpMinAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(3.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     c = 5.0;
     f = 6.0;
     MT::gather(f, c, MT::OpMinAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 5.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "(2) MT::gather(f, c, MT::OpMinAssign())."
-	     << std::endl;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(5.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::gather(f, c, MT::OpMaxAssign()).";
+
     c = 5.0;
     f = 3.0;
     MT::gather(f, c, MT::OpMaxAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 5.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "(1) MT::gather(f, c, MT::OpMaxAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(5.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     c = 5.0;
     f = 6.0;
     MT::gather(f, c, MT::OpMaxAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 6.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "(2) MT::gather(f, c, MT::OpMaxAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(6.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Face centered to boundary specified gather
+
+    test = "t3() failed testing MT::gather(b, f, MT::OpAssign()).";
 
     f = 1.0;
     b = 0.0;
     MT::gather(b, f, MT::OpAssign());
-    for (bssf::const_iterator citer = b.begin(); citer != b.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::gather(b, f, MT::OpAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = b.end() == std::find_if(b.begin(), b.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Boundary specified to face centered gather
+
+    test = "t3() failed testing MT::gather(f, b, MT::OpAssign()).";
 
     b = 1.0;
     f = 0.0;
     MT::gather(f, b, MT::OpAssign());
     b = 0.0;
     MT::gather(b, f, MT::OpAssign());
-    for (bssf::const_iterator citer = b.begin(); citer != b.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::gather(f, b, MT::OpAssign()) ..."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = b.end() == std::find_if(b.begin(), b.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Node centered to vertex centered gather
+
+    test = "t3() failed testing MT::gather(v, n, MT::OpAssign()).";
 
     n = 1.0;
     v = 0.0;
     MT::gather(v, n, MT::OpAssign());
-    for (vcsf::const_iterator citer = v.begin(); citer != v.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::gather(v, n, MT::OpAssign())."
-	     << std::endl;
+    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
+    test = "t3() failed testing MT::gather(v, n, MT::OpAddAssign()).";
+
     n = 1.0;
     v = 0.0;
     MT::gather(v, n, MT::OpAddAssign());
-    for (vcsf::const_iterator citer = v.begin(); citer != v.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::gather(v, n, MT::OpAddAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Cell centered to vertex centered gather
+
+    test = "t3() failed testing MT::gather(v, c, MT::OpAssign()).";
 
     c = 1.0;
     v = 0.0;
     MT::gather(v, c, MT::OpAssign());
-    for (vcsf::const_iterator citer = v.begin(); citer != v.end();
-         ++citer)
-      if (*citer != 1.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::gather(v, c, MT::OpAssign())."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    passed = v.end() == std::find_if(v.begin(), v.end(), notEqualTo(1.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
     // Face swaps
 
+    test = "t3() failed testing MT::swap_faces(f, f2).";
+    
     f2 = 3.0;
     f = 2.0;
     MT::swap_faces(f, f2);
     b = 1.0;
     MT::gather(b, f, MT::OpAssign());
-    for (bssf::const_iterator citer = b.begin(); citer != b.end();
-         ++citer)
-      if (*citer != 0.0)
-        passed = false;
+
+    passed = b.end() == std::find_if(b.begin(), b.end(), notEqualTo(0.0));
+    testassert(passed, test, __FILE__, __LINE__);
+    
     b = 3.0;
     MT::gather(f, b, MT::OpAssign());
-    for (fcdsf::const_iterator citer = f.begin(); citer != f.end();
-         ++citer)
-      if (*citer != 3.0)
-        passed = false;
 
-    if (!passed)
-	os_m << "t3() failed testing "
-	     << "MT::swap_faces(f, f2)."
-	     << std::endl;
+    passed = f.end() == std::find_if(f.begin(), f.end(), notEqualTo(3.0));
+    testassert(passed, test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
-    os_m << "t3: end\n";
+    os() << "t3: end\n";
 }
 
 
@@ -527,17 +321,13 @@ void TestMTComm<MTFactory>::t3()
 template<class MTFactory>
 void TestMTComm<MTFactory>::t4()
 {
-    os_m << "t4: beginning.\n";
+    os() << "t4: beginning.\n";
 
     typedef MT::ccif ccif;
     typedef MT::fcdif fcdif;
     typedef MT::ncif ncif;
     typedef MT::vcif vcif;
     typedef MT::bsif bsif;
-
-    // need a temporary passed variable for each subset of tests.
-
-    bool passed = true;
 
     // Create a mesh and a field constructor with which to test
     // the scatters and gathers.
@@ -556,95 +346,57 @@ void TestMTComm<MTFactory>::t4()
 
     // Cell centered sum
 
+    std::string test("t4() failed testing MT::sum(c).");
+
     c = value;
     ccif::value_type csum = MT::sum(c);
-    if (csum != value*mesh.get_total_ncells())
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::sum(c)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(csum != value*mesh.get_total_ncells()), test,
+	       __FILE__, __LINE__);
     
     // Face centered sum
 
+    test = "t4() failed testing MT::sum(f).";
+    
     f = value;
     fcdif::value_type fsum = MT::sum(f);
-    if (fsum != value*6*mesh.get_total_ncells())
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::sum(f)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(fsum != value*6*mesh.get_total_ncells()), test,
+	       __FILE__, __LINE__);
     
     // Node centered sum
 
+    test = "t4() failed testing MT::sum(n).";
+    
     n = value;
     ncif::value_type nsum = MT::sum(n);
-    if (nsum !=
-        value*((mesh.get_ncx() + 1)*(mesh.get_ncy() + 1)*(mesh.get_ncz() + 1)))
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::sum(n)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(nsum !=
+		 value*((mesh.get_ncx() + 1)*(mesh.get_ncy() + 1)*
+			(mesh.get_ncz() + 1))), test, __FILE__, __LINE__);
     
     // Vertex centered sum
 
+    test = "t4() failed testing MT::sum(v).";
+    
     v = value;
     vcif::value_type vsum = MT::sum(v);
-    if (vsum != value*8*mesh.get_total_ncells())
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::sum(v)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(vsum != value*8*mesh.get_total_ncells()), test,
+	       __FILE__, __LINE__);
     
     // Boundary specified sum
 
+    test = "t4() failed testing MT::sum(b).";
+    
     b = value;
     bsif::value_type bsum = MT::sum(b);
-    if (bsum !=
-        value*2*((mesh.get_ncx()*mesh.get_ncy()) +
-             (mesh.get_ncx()*mesh.get_ncz()) +
-             (mesh.get_ncy()*mesh.get_ncz())))
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::sum(b)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(bsum !=
+		 value*2*((mesh.get_ncx()*mesh.get_ncy()) +
+			  (mesh.get_ncx()*mesh.get_ncz()) +
+			  (mesh.get_ncy()*mesh.get_ncz()))),
+	       test, __FILE__, __LINE__);
     
     // Cell centered minimum
 
+    test = "t4() failed testing MT::min(c).";
+    
     value = 1;
     for (ccif::iterator iter = c.begin(); iter != c.end(); ++iter)
     {
@@ -652,21 +404,12 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     ccif::value_type cmin = MT::min(c);
-    if (cmin != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::min(c)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(cmin != 1), test, __FILE__, __LINE__);
     
     // Face centered minimum
 
+    test = "t4() failed testing MT::min(f).";
+    
     value = 1;
     for (fcdif::iterator iter = f.begin(); iter != f.end(); ++iter)
     {
@@ -674,21 +417,12 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     fcdif::value_type fmin = MT::min(f);
-    if (fmin != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::min(f)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(fmin != 1), test, __FILE__, __LINE__);
     
     // Node centered minimum
 
+    test = "t4() failed testing MT::min(n).";
+    
     value = 1;
     for (ncif::iterator iter = n.begin(); iter != n.end(); ++iter)
     {
@@ -696,21 +430,12 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     ncif::value_type nmin = MT::min(n);
-    if (nmin != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::min(n)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(nmin != 1), test, __FILE__, __LINE__);
     
     // Vertex centered minimum
 
+    test = "t4() failed testing MT::min(v).";
+    
     value = 1;
     for (vcif::iterator iter = v.begin(); iter != v.end(); ++iter)
     {
@@ -718,21 +443,12 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     vcif::value_type vmin = MT::min(v);
-    if (vmin != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::min(v)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(vmin != 1), test, __FILE__, __LINE__);
     
     // Boundary specified minimum
 
+    test = "t4() failed testing MT::min(b).";
+    
     value = 1;
     for (bsif::iterator iter = b.begin(); iter != b.end(); ++iter)
     {
@@ -740,21 +456,12 @@ void TestMTComm<MTFactory>::t4()
         ++value;
     }
     bsif::value_type bmin = MT::min(b);
-    if (bmin != 1)
-        passed = false;
+    testassert(!(bmin != 1), test, __FILE__, __LINE__);
 
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::min(b)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
     // Cell centered maximum
 
+    test = "t4() failed testing MT::max(c).";
+    
     value = 1;
     for (ccif::iterator iter = c.begin(); iter != c.end(); ++iter)
     {
@@ -762,21 +469,12 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     ccif::value_type cmax = MT::max(c);
-    if (cmax != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::max(c)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(cmax != 1), test, __FILE__, __LINE__);
     
     // Face centered maximum
 
+    test = "t4() failed testing MT::max(f).";
+    
     value = 1;
     for (fcdif::iterator iter = f.begin(); iter != f.end(); ++iter)
     {
@@ -784,21 +482,12 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     fcdif::value_type fmax = MT::max(f);
-    if (fmax != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::max(f)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(fmax != 1), test, __FILE__, __LINE__);
     
     // Node centered maximum
 
+    test = "t4() failed testing MT::max(n).";
+    
     value = 1;
     for (ncif::iterator iter = n.begin(); iter != n.end(); ++iter)
     {
@@ -806,21 +495,12 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     ncif::value_type nmax = MT::max(n);
-    if (nmax != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::max(n)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(nmax != 1), test, __FILE__, __LINE__);
     
     // Vertex centered maximum
 
+    test = "t4() failed testing MT::max(v).";
+    
     value = 1;
     for (vcif::iterator iter = v.begin(); iter != v.end(); ++iter)
     {
@@ -828,21 +508,12 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     vcif::value_type vmax = MT::max(v);
-    if (vmax != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::max(v)."
-	     << std::endl;
-    
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
+    testassert(!(vmax != 1), test, __FILE__, __LINE__);
     
     // Boundary specified maximum
 
+    test = "t4() failed testing MT::max(b).";
+    
     value = 1;
     for (bsif::iterator iter = b.begin(); iter != b.end(); ++iter)
     {
@@ -850,20 +521,9 @@ void TestMTComm<MTFactory>::t4()
         --value;
     }
     bsif::value_type bmax = MT::max(b);
-    if (bmax != 1)
-        passed = false;
-
-    if (!passed)
-	os_m << "t4() failed testing "
-	     << "MT::max(b)."
-	     << std::endl;
+    testassert(!(bmax != 1), test, __FILE__, __LINE__);
     
-    // update the object state.
-	
-    passed_m = passed && passed_m;
-    passed = true;
-    
-    os_m << "t4: end\n";
+    os() << "t4: end\n";
 }
 
 

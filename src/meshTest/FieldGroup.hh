@@ -27,7 +27,7 @@ namespace rtt_meshTest
 // 
 //===========================================================================//
 
-template<class XD_, class XI_, class XL_, class XDC_>
+template<class XD_, class XI_, class XL_, class XDC_, int ID>
 struct FieldGroup 
 {
 
@@ -37,6 +37,8 @@ struct FieldGroup
     typedef XI_ XI;
     typedef XL_ XL;
     typedef XDC_ XDC;
+
+    static int Id() { return ID; }
 
 };
 

@@ -65,26 +65,13 @@ bool f5(const typename X::const_iterator &x,
 
 } // end namespace FieldTesters
 
-template<class MT, class FGRP>
-void FieldTester<MT,FGRP>::error(bool &passed, const std::string &msg)
-{
-    if (!passed)
-    {
-	os_m << "FieldTester<" << name_m << "> failed: " << msg << endl;
-	passed_m = false;
-    }
-
-    // reset the variable
-    passed = true;
-}
-
 // Run all of the tests
 
 template<class MT, class FGRP>
 void FieldTester<MT,FGRP>::run()
 {
-    passed_m = true;
-
+    setPassed(true);
+    
     t1();
     t2();
     t3();
@@ -98,10 +85,8 @@ void FieldTester<MT,FGRP>::run()
 template<class MT, class FGRP>
 void FieldTester<MT,FGRP>::t1()
 {
-    os_m << "t1: beginning." << endl;
+    os() << "t1: beginning." << endl;
 
-    bool passed = true;
-    
     const double value = 4.23;
 
     {
@@ -129,51 +114,24 @@ void FieldTester<MT,FGRP>::t1()
 
 	// Test the copy constructor.
 
-        passed = FieldTesters::f1(x, XD(x));
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "copy constructor");
+        testassert(FieldTesters::f1(x, XD(x)),
+		   "copy constructor: FieldTesters::f1(x, XD(x)",
+		   __FILE__, __LINE__);
 	
         XD y(x);
-        if (y != x)
-            passed = false;
-	
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "XD y(x) && y != x");
-	
-        if (y.size() != x.size())
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "XD y(x) && y.size() != x.size()");
+	testassert(!(y != x), "XD y(x); and y != x", __FILE__, __LINE__);
+	testassert(!(y.size() != x.size()),
+		   "XD y(x); and y.size() != x.size()", __FILE__, __LINE__);
 	
         XD z = x;
-        if (z != x)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "XD z = x && z != x");
+	testassert(!(z != x), "XD z = x; and z != x", __FILE__, __LINE__);
 	
 	// Test assignment.
 
         w = x;
-        if (w != x)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "w = x && w != x");
-	
-        if (w.size() != x.size())
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "w = x && w.size() != x.size()");
+	testassert(!(w != x), "w = x; and w != x", __FILE__, __LINE__);
+	testassert(!(w.size() != x.size()), "w = x; and w.size() != x.size()",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -189,33 +147,24 @@ void FieldTester<MT,FGRP>::t1()
 	// Test equivalence relations.
 
         y = x;
-        if (!(x == y))
-            passed = false;
-        if ((x != y) != !(x == y))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
+	testassert((x == y), "Test equivalence relations.",
+		   __FILE__, __LINE__);
 	
-	error(passed, "Test equivalence relations.");
+        testassert(!((x != y) != !(x == y)), "Test equivalence relations.",
+		   __FILE__, __LINE__);
 
 	// Invariants
 
         y = x;
         z = y;
         XD* yp = &y;
-        if ((yp == &y) && !(*yp == y))
-            passed = false;
-        if (y != y)
-            passed = false;
-        if ((x == y) && !(y == x))
-            passed = false;
-        if (((x == y) && (y == z)) && !(x == z))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "Test invariants.");
-
+        testassert(!((yp == &y) && !(*yp == y)),
+		   "Test invariants.", __FILE__, __LINE__);
+        testassert(!(y != y), "Test invariants.", __FILE__, __LINE__);
+	testassert(!((x == y) && !(y == x)), "Test invariants.",
+		   __FILE__, __LINE__);
+	testassert(!(((x == y) && (y == z)) && !(x == z)),
+		   "Test invariants.", __FILE__, __LINE__);
     }
 
     {
@@ -231,49 +180,40 @@ void FieldTester<MT,FGRP>::t1()
 	// Test ordering relations.
 
         y = x;
-        if (x < y)
-            passed = false;
-        if (x < y != std::lexicographical_compare(x.begin(), x.end(),
-                                                  y.begin(), y.end()))
-            passed = false;
-        if (x > y != y < x)
-            passed = false;
-        if (x <= y != !(y < x))
-            passed = false;
-        if (x >= y != !(x < y))
-            passed = false;
-
-        if (x < z)
-            passed = false;
-        if (x > z != z < x)
-            passed = false;
-        if (x <= z != !(z < x))
-            passed = false;
-        if (x >= z != !(x < z))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
+        testassert(!(x < y), "Test ordering relations.", __FILE__, __LINE__);
+        testassert(!(x < y != std::lexicographical_compare(x.begin(), x.end(),
+							   y.begin(), y.end())),
+		   "Test ordering relations.", __FILE__, __LINE__);
+        testassert(!(x > y != y < x), "Test ordering relations.",
+		   __FILE__, __LINE__);
+	testassert(!(x <= y != !(y < x)), "Test ordering relations.",
+		   __FILE__, __LINE__);
+	testassert(!(x >= y != !(x < y)), "Test ordering relations.",
+		   __FILE__, __LINE__);
 	
-	error(passed, "Test ordering relations.");
+        testassert(!(x < z), "Test ordering relations.", __FILE__, __LINE__);
+	testassert(!(x > z != z < x), "Test ordering relations.",
+		   __FILE__, __LINE__);
+	testassert(!(x <= z != !(z < x)), "Test ordering relations.",
+		   __FILE__, __LINE__);
+	testassert(!(x >= z != !(x < z)), "Test ordering relations.",
+		   __FILE__, __LINE__);
 
 	// Invariants
 
-        if (x < x)
-            passed = false;
+        testassert(!(x < x), "Test ordering invariants.", __FILE__, __LINE__);
+
         y = x;
         XD::iterator iter = x.begin();
         *iter -= 1.;
-        if (x < y != !(y < x))
-            passed = false;
+        testassert(!(x < y != !(y < x)), "Test ordering invariants.",
+		   __FILE__, __LINE__);
+
         z = y;
         iter = z.begin();
         *iter += 1.;
-        if (((x < y) && (y < z)) && !(x < z))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "Test ordering invariants.");
+        testassert(!(((x < y) && (y < z)) && !(x < z)),
+		   "Test ordering invariants.", __FILE__, __LINE__);
     }
 
     {
@@ -305,39 +245,24 @@ void FieldTester<MT,FGRP>::t1()
 
         XD::iterator iter1 = x.begin();
         XD::iterator iter2 = x.end();
-        if ((iter1 == iter2) != (x.size() == 0))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "Test begin() == end() only for zero size.");
+        testassert(!((iter1 == iter2) != (x.size() == 0)),
+		   "Test begin() == end() only for zero size.",
+		   __FILE__, __LINE__);
 
         XD::const_iterator citer1 = cx.begin();
         XD::const_iterator citer2 = cx.end();
-        if ((citer1 == citer2) != (cx.size() == 0))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "Test const begin() == end() only for zero size.");
+        testassert(!((citer1 == citer2) != (cx.size() == 0)),
+		   "Test const begin() == end() only for zero size.",
+		   __FILE__, __LINE__);
 
         XD::size_type size;
         XD::size_type max_size;
         size = x.size();
         max_size = x.max_size();
-        if (max_size < size)
-            passed = false;
+        testassert(!(max_size < size), "max_size < size.", __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "max_size < size.");
-
-        if (x.empty() != (x.size() == 0))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "x.empty() != (x.size() == 0).");
+        testassert(!(x.empty() != (x.size() == 0)),
+		   "x.empty() != (x.size() == 0).", __FILE__, __LINE__);
 
         x = y;
         v = w;
@@ -346,25 +271,18 @@ void FieldTester<MT,FGRP>::t1()
         y = w;
         w = tmp;
 
-        if (x != y || v != w)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "swap member function.");
+        testassert(!(x != y || v != w), "swap member function.",
+		   __FILE__, __LINE__);
 
         for (XD::iterator iter = x.begin(); iter != x.end(); iter++) {}
         for (XD::const_iterator iter = cx.begin(); iter != cx.end(); iter++) {}
 
-        if (!(x.size() == std::distance(x.begin(),x.end())))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "x.size() == std::distance(x.begin(),x.end()).");
+        testassert((x.size() == std::distance(x.begin(),x.end())),
+		   "x.size() == std::distance(x.begin(),x.end()).",
+		   __FILE__, __LINE__);
     }
 
-    os_m << "t1: end" << endl;
+    os() << "t1: end" << endl;
 }
 
 
@@ -376,9 +294,7 @@ void FieldTester<MT,FGRP>::t2()
 {
     const double value = 4.23;
 
-    bool passed = true;
-    
-    os_m << "t2: beginning." << endl;
+    os() << "t2: beginning." << endl;
 
     {
         typedef iterator_traits<XD::iterator>::value_type value_type;
@@ -399,39 +315,31 @@ void FieldTester<MT,FGRP>::t2()
 
 	// Test the default constructor.
 
-        passed = FieldTesters::f2<XD>(XD::iterator());
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator default constructor.");
+	testassert(FieldTesters::f2<XD>(XD::iterator()),
+		   "iterator default constructor.", __FILE__, __LINE__);
 	
         XD::iterator iter1;
 
 	// Test the copy constructor.
 
         iter1 = x.begin();
-        passed = FieldTesters::f3<XD>(iter1, XD::iterator(iter1));
-        XD::iterator iter2(iter1);
-        if (iter2 != iter1)
-            passed = false;
-        XD::iterator iter3 = iter1;
-        if (iter3 != iter1)
-            passed = false;
+        testassert(FieldTesters::f3<XD>(iter1, XD::iterator(iter1)),
+		   "iterator copy constructor.", __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator copy constructor.");
+        XD::iterator iter2(iter1);
+        testassert(!(iter2 != iter1), "iterator copy constructor.",
+		   __FILE__, __LINE__);
+
+        XD::iterator iter3 = iter1;
+	testassert(!(iter3 != iter1), "iterator copy constructor.",
+		   __FILE__, __LINE__);
 
 	// Test assignment.
 
         XD::iterator iter4;
         iter4 = iter1;
-        if (iter4 != iter1)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator assignment.");
+        testassert(!(iter4 != iter1), "iterator assignment.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -448,32 +356,25 @@ void FieldTester<MT,FGRP>::t2()
 	// Test equivalence relations.
 
         iter2 = iter1;
-        if (!(iter1 == iter2))
-            passed = false;
-        if ((iter1 != iter2) != !(iter1 == iter2))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator equivalence relations.");
+        testassert(!(!(iter1 == iter2)), "iterator equivalence relations.",
+		   __FILE__, __LINE__);
+        testassert(!((iter1 != iter2) != !(iter1 == iter2)),
+		   "iterator equivalence relations.", __FILE__, __LINE__);
 
 	// Invariants
 
         iter2 = iter1;
         iter3 = iter2;
         XD::iterator* iter2p = &iter2;
-        if ((iter2p == &iter2) && !(*iter2p == iter2))
-            passed = false;
-        if (iter2 != iter2)
-            passed = false;
-        if ((iter1 == iter2) && !(iter2 == iter1))
-            passed = false;
-        if (((iter1 == iter2) && (iter2 == iter3)) && !(iter1 == iter3))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator invariants.");
+        testassert(!((iter2p == &iter2) && !(*iter2p == iter2)),
+		   "iterator invariants.", __FILE__, __LINE__);
+        testassert(!(iter2 != iter2), "iterator invariants.",
+		   __FILE__, __LINE__);
+        testassert(!((iter1 == iter2) && !(iter2 == iter1)),
+		   "iterator invariants.", __FILE__, __LINE__);
+	testassert(!(((iter1 == iter2) && (iter2 == iter3)) &&
+		     !(iter1 == iter3)), "iterator invariants.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -488,15 +389,12 @@ void FieldTester<MT,FGRP>::t2()
 
 	// Test dereferenceability.
 
-        if (*iter != *(x.begin()))
-            passed = false;
-        *iter = value - 1.;
-        if (*iter != value - 1.)
-            passed = false;
+        testassert(!(*iter != *(x.begin())), "iterator dereferenceability.",
+		   __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator dereferenceability.");
+        *iter = value - 1.;
+        testassert(!(*iter != value - 1.), "iterator dereferenceability.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -514,12 +412,8 @@ void FieldTester<MT,FGRP>::t2()
 	// Test member access
 
         iter->data = value + 1.;
-        if ((*iter).data != value + 1.)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "Test member access via iterator.");
+        testassert(!((*iter).data != value + 1.),
+		   "Test member access via iterator.", __FILE__, __LINE__);
     }
 
     {
@@ -535,15 +429,12 @@ void FieldTester<MT,FGRP>::t2()
 
 	// Invariant
 
-        if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-            passed = false;
-        iter1++;
-        if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-            passed = false;
+        testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))),
+		   "iterator dereference invariants.", __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator dereference invariants.");
+        iter1++;
+        testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))),
+		   "iterator dereference invariants.", __FILE__, __LINE__);
     }
 
     {
@@ -571,21 +462,17 @@ void FieldTester<MT,FGRP>::t2()
         iter1 = iter2;
         iter1++;
         ++iter2;
-        if (iter1 != iter2)
-            passed = false;
+        testassert(!(iter1 != iter2), "iterator increments.",
+		   __FILE__, __LINE__);
 
         iter2 = x.begin();
         iter1 = iter2;
         value_type t = *iter2;
         ++iter2;
-        if (*iter1++ != t)
-            passed = false;
-        if (iter1 != iter2)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator increments.");
+        testassert(!(*iter1++ != t), "iterator increments.",
+		   __FILE__, __LINE__);
+        testassert(!(iter1 != iter2), "iterator increments.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -599,18 +486,15 @@ void FieldTester<MT,FGRP>::t2()
         XD::iterator iter1 = x.begin();
         XD::iterator iter2 = x.begin();
 
-        if (!(&iter1 == &++iter1))
-            passed = false;
-        iter1 = iter2;
-        if (!(++iter1 == ++iter2))
-            passed = false;
+        testassert(!(!(&iter1 == &++iter1)), "iterator pre-increments.",
+		   __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "iterator pre-increments.");
+        iter1 = iter2;
+        testassert(!(!(++iter1 == ++iter2)), "iterator pre-increments.",
+		   __FILE__, __LINE__);
     }
 
-    os_m << "t2: end" << endl;
+    os() << "t2: end" << endl;
 }
 
 
@@ -619,11 +503,9 @@ void FieldTester<MT,FGRP>::t2()
 template<class MT, class FGRP>
 void FieldTester<MT,FGRP>::t3()
 {
-    bool passed = true;
-    
     const double value = 4.23;
 
-    os_m << "t3: beginning." << endl;
+    os() << "t3: beginning." << endl;
 
     {
         typedef iterator_traits<XD::const_iterator>::value_type value_type;
@@ -646,39 +528,31 @@ void FieldTester<MT,FGRP>::t3()
 
 	// Test the default constructor.
 
-        passed = FieldTesters::f4<XD>(XD::const_iterator());
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator default constructor.");
+	testassert(FieldTesters::f4<XD>(XD::const_iterator()),
+		   "const_iterator default constructor.", __FILE__, __LINE__);
 
         XD::const_iterator iter1;
 
 	// Test the copy constructor.
 
         iter1 = cx.begin();
-        passed = FieldTesters::f5<XD>(iter1, XD::const_iterator(iter1));
-        XD::const_iterator iter2(iter1);
-        if (iter2 != iter1)
-            passed = false;
-        XD::const_iterator iter3 = iter1;
-        if (iter3 != iter1)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
+        testassert(FieldTesters::f5<XD>(iter1, XD::const_iterator(iter1)),
+		   "const_iterator copy constructor.", __FILE__, __LINE__);
 	
-	error(passed, "const_iterator copy constructor.");
+        XD::const_iterator iter2(iter1);
+        testassert(!(iter2 != iter1), "const_iterator copy constructor.",
+		   __FILE__, __LINE__);
+
+        XD::const_iterator iter3 = iter1;
+        testassert(!(iter3 != iter1), "const_iterator copy constructor.",
+		   __FILE__, __LINE__);
 
 	// Test assignment.
 
         XD::const_iterator iter4;
         iter4 = iter1;
-        if (iter4 != iter1)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator assignment.");
+        testassert(!(iter4 != iter1), "const_iterator assignment.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -696,32 +570,25 @@ void FieldTester<MT,FGRP>::t3()
 	// Test equivalence relations.
 
         iter2 = iter1;
-        if (!(iter1 == iter2))
-            passed = false;
-        if ((iter1 != iter2) != !(iter1 == iter2))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator equivalence relations.");
+        testassert(!(!(iter1 == iter2)),
+		   "const_iterator equivalence relations.", __FILE__, __LINE__);
+	testassert(!((iter1 != iter2) != !(iter1 == iter2)),
+		   "const_iterator equivalence relations.", __FILE__, __LINE__);
 
 	// Invariants
 
         iter2 = iter1;
         iter3 = iter2;
         XD::const_iterator* iter2p = &iter2;
-        if ((iter2p == &iter2) && !(*iter2p == iter2))
-            passed = false;
-        if (iter2 != iter2)
-            passed = false;
-        if ((iter1 == iter2) && !(iter2 == iter1))
-            passed = false;
-        if (((iter1 == iter2) && (iter2 == iter3)) && !(iter1 == iter3))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator invariants.");
+        testassert(!((iter2p == &iter2) && !(*iter2p == iter2)),
+		   "const_iterator invariants.", __FILE__, __LINE__);
+	testassert(!(iter2 != iter2), "const_iterator invariants.",
+		   __FILE__, __LINE__);
+	testassert(!((iter1 == iter2) && !(iter2 == iter1)),
+		   "const_iterator invariants.", __FILE__, __LINE__);
+	testassert(!(((iter1 == iter2) && (iter2 == iter3)) &&
+		     !(iter1 == iter3)), "const_iterator invariants.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -737,12 +604,8 @@ void FieldTester<MT,FGRP>::t3()
 
 	// Test dereferenceability.
 
-        if (*iter != *(cx.begin()))
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator dereferenceability.");
+        testassert(!(*iter != *(cx.begin())),
+		   "const_iterator dereferenceability.", __FILE__, __LINE__);
     }
 
     {
@@ -760,12 +623,9 @@ void FieldTester<MT,FGRP>::t3()
 
 	// Test member access
 
-        if ((*iter).data != iter->data)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "Test member access via const_iterator.");
+        testassert(!((*iter).data != iter->data),
+		   "Test member access via const_iterator.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -782,15 +642,14 @@ void FieldTester<MT,FGRP>::t3()
 
 	// Invariant
 
-        if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-            passed = false;
-        iter1++;
-        if ((iter1 == iter2) != (&(*iter1) == &(*iter2)))
-            passed = false;
+        testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))),
+		   "const_iterator dereference invariants.",
+		   __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator dereference invariants.");
+        iter1++;
+        testassert(!((iter1 == iter2) != (&(*iter1) == &(*iter2))),
+		   "const_iterator dereference invariants.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -819,21 +678,17 @@ void FieldTester<MT,FGRP>::t3()
         iter1 = iter2;
         iter1++;
         ++iter2;
-        if (iter1 != iter2)
-            passed = false;
+        testassert(!(iter1 != iter2), "const_iterator increments.",
+		   __FILE__, __LINE__);
 
         iter2 = cx.begin();
         iter1 = iter2;
         value_type t = *iter2;
         ++iter2;
-        if (*iter1++ != t)
-            passed = false;
-        if (iter1 != iter2)
-            passed = false;
-
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator increments.");
+        testassert(!(*iter1++ != t), "const_iterator increments.",
+		   __FILE__, __LINE__);
+        testassert(!(iter1 != iter2), "const_iterator increments.",
+		   __FILE__, __LINE__);
     }
 
     {
@@ -848,18 +703,15 @@ void FieldTester<MT,FGRP>::t3()
         XD::const_iterator iter1 = cx.begin();
         XD::const_iterator iter2 = cx.begin();
 
-        if (!(&iter1 == &++iter1))
-            passed = false;
-        iter1 = iter2;
-        if (!(++iter1 == ++iter2))
-            passed = false;
+        testassert(!(!(&iter1 == &++iter1)), "const_iterator pre-increments.",
+		   __FILE__, __LINE__);
 
-	// Print error if !passed and set passed_m and reset passed.
-	
-	error(passed, "const_iterator pre-increments.");
+        iter1 = iter2;
+        testassert(!(!(++iter1 == ++iter2)), "const_iterator pre-increments.",
+		   __FILE__, __LINE__);
     }
 
-    os_m << "t3: end" << endl;
+    os() << "t3: end" << endl;
 }
 
 
@@ -870,11 +722,9 @@ void FieldTester<MT,FGRP>::t3()
 template<class MT, class FGRP>
 void FieldTester<MT,FGRP>::t4()
 {
-    bool passed = true;
-    
     const double value = 4.23;
 
-    os_m << "t4: beginning." << endl;
+    os() << "t4: beginning." << endl;
 
     {
 	// The following constructor is not required by the Forward
@@ -888,15 +738,12 @@ void FieldTester<MT,FGRP>::t4()
         XD::const_iterator citer;
 
         citer = iter;
-        if (citer != x.begin())
-            passed = false;
+        testassert(!(citer != x.begin()),
+		   "conversions between mutable and const iterators.",
+		   __FILE__, __LINE__);
     }
 
-    // Print error if !passed and set passed_m and reset passed.
-	
-    error(passed, "conversions between mutable and const iterators.");
-
-    os_m << "t4: end" << endl;
+    os() << "t4: end" << endl;
 }
 
 
@@ -905,11 +752,9 @@ void FieldTester<MT,FGRP>::t4()
 template<class MT, class FGRP>
 void FieldTester<MT,FGRP>::t5()
 {
-    bool passed = true;
-    
     const double value = 4.23;
 
-    os_m << "t5: beginning." << endl;
+    os() << "t5: beginning." << endl;
 
     {
 	// The following constructor is not required by the MTField
@@ -924,21 +769,20 @@ void FieldTester<MT,FGRP>::t5()
         FieldConstructor fCtor = x.get_FieldConstructor();
 
         XD y(fCtor);
-        if (x.get_Mesh() != y.get_Mesh())
-            passed = false;
+        testassert(!(x.get_Mesh() != y.get_Mesh()),
+		   "requirements between meshes and fields.",
+		   __FILE__, __LINE__);
 
-        if (x.get_Mesh() != mesh_m)
-            passed = false;
+        testassert(!(x.get_Mesh() != mesh_m),
+		   "requirements between meshes and fields.",
+		   __FILE__, __LINE__);
 
-        if (x.size() != x.max_size())
-            passed = false;
+        testassert(!(x.size() != x.max_size()),
+		   "requirements between meshes and fields.",
+		   __FILE__, __LINE__);
     }
 
-    // Print error if !passed and set passed_m and reset passed.
-	
-    error(passed, "requirements between meshes and fields.");
-
-    os_m << "t5: end" << endl;
+    os() << "t5: end" << endl;
 }
 
 
@@ -947,9 +791,7 @@ void FieldTester<MT,FGRP>::t5()
 template<class MT, class FGRP>
 void FieldTester<MT,FGRP>::t6()
 {
-    bool passed = true;
-    
-    os_m << "t6: beginning." << endl;
+    os() << "t6: beginning." << endl;
 
     // Check the simple binary operations with assignments.
 
@@ -966,19 +808,27 @@ void FieldTester<MT,FGRP>::t6()
         a = 1.;
         a += value;
         xiter = a.begin();
-        passed &= (*xiter == 1. + value);
+        testassert((*xiter == 1. + value),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a -= value;
         xiter = a.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a *= value;
         xiter = a.begin();
-        passed &= (*xiter == value);
+        testassert((*xiter == value),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a /= value;
         xiter = a.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
 
         int i = 0;
@@ -999,79 +849,102 @@ void FieldTester<MT,FGRP>::t6()
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 6.);
+        testassert((*xiter == 6.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a -= b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a *= b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 5.);
+        testassert((*xiter == 5.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a /= b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a = b;
         xiter = a.begin();
         ++xiter;
         ++xiter;
-        passed &= (*xiter == 5.);
+        testassert((*xiter == 5.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
 
         a = b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 12.);
+        testassert((*xiter == 12.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a = b - c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == -6.);
+        testassert((*xiter == -6.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a = b * c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 27.);
+        testassert((*xiter == 27.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a = c / b;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
 
         a = 1.;
         a += b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 13.);
+        testassert((*xiter == 13.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a -= b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a *= b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 12.);
+        testassert((*xiter == 12.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a /= b + c;
         xiter = a.begin();
         ++xiter;
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.),
+		   "arithmetic with expression-enabled fields.",
+		   __FILE__, __LINE__);
     }
 
-    // Print error if !passed and set passed_m and reset passed.
-
-    error(passed, "arithmetic with expression-enabled fields.");
 
     // Check the simple unary operations with assignments.
 
@@ -1096,23 +969,27 @@ void FieldTester<MT,FGRP>::t6()
         xiter2 = b.begin();
         ++xiter1;
         ++xiter2;
-        passed &= (*xiter1 == *xiter2);
+        testassert((*xiter1 == *xiter2),
+		   "unary operations with expression-enabled fields.",
+		   __FILE__, __LINE__);
 
         a = -b;
         xiter1 = a.begin();
         xiter2 = b.begin();
         ++xiter1;
         ++xiter2;
-        passed &= (*xiter1 == -*xiter2);
+        testassert((*xiter1 == -*xiter2),
+		   "unary operations with expression-enabled fields.",
+		   __FILE__, __LINE__);
     }
 
-    // Print error if !passed and set passed_m and reset passed.
-	
-    error(passed, "unary operations with expression-enabled fields.");
 
     // Check the other binary operations with assignments.
 
     {
+	std::string test("other binary operations and assignment with ");
+	test += "expression-enabled fields.";
+
 	// The following constructor is not required by the Expression
 	// Enabled Container concept, but we need to get an object
 	// somehow.
@@ -1126,47 +1003,45 @@ void FieldTester<MT,FGRP>::t6()
 
         c = pow( a, 3. );
         xiter = c.begin();
-        passed &= (*xiter == 64.);
+        testassert((*xiter == 64.), test, __FILE__, __LINE__);
 
         c = pow(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 64.);
+        testassert((*xiter == 64.), test, __FILE__, __LINE__);
 
         a = 0.;
         b = 1.;
         c = atan2(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         a = 4.;
         b = 3.;
         c = min(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
         c = max(a,b);
         xiter = c.begin();
-        passed &= (*xiter == 4.);
+        testassert((*xiter == 4.), test, __FILE__, __LINE__);
 
         b = 7.;
         c = fmod(b,a);
         xiter = c.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
         b = 3.;
         c = pow(a,min(a,b));
         xiter = c.begin();
-        passed &= (*xiter == 64.);
+        testassert((*xiter == 64.), test, __FILE__, __LINE__);
     }
-
-    // Print error if !passed and set passed_m and reset passed.
-
-    error(passed,
-	  "other binary operations and assignment with expression-enabled fields.");
 
     // Check the other unary operations with assignments.
 
     {
+	std::string test("other unary operations and assignment with");
+	test += " expression-enabled fields.";
+
 	// The following constructor is not required by the Expression
 	// Enabled Container concept, but we need to get an object
 	// somehow.
@@ -1177,99 +1052,98 @@ void FieldTester<MT,FGRP>::t6()
 
         XD::iterator xiter;
         XI::iterator xiiter;
+#if defined(DO_LONG_TEST)
         XL::iterator xliter;
+#endif
 
         a = 0.;
 
         b = sin(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = cos(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         b = tan(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = asin(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         a = 1.;
         b = acos(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         a = 0.;
         b = atan(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = sinh(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = cosh(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         b = tanh(a);
         xiter = b.begin();
-        passed &= (*xiter == 0.);
+        testassert((*xiter == 0.), test, __FILE__, __LINE__);
 
         b = exp(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a = exp(1.);
         b = log(a);
         xiter = b.begin();
-        passed &= (fabs(*xiter - 1.) < 0.00001);
+        testassert((fabs(*xiter - 1.) < 0.00001), test, __FILE__, __LINE__);
 
         a = 10.;
         b = log10(a);
         xiter = b.begin();
-        passed &= (*xiter == 1.);
+        testassert((*xiter == 1.), test, __FILE__, __LINE__);
 
         a = 9.;
         b = sqrt(a);
         xiter = b.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
 
         a = 3.4;
         b = ceil(a);
         xiter = b.begin();
-        passed &= (*xiter == 4.);
+        testassert((*xiter == 4.), test, __FILE__, __LINE__);
 
         ai = -3;
         bi = abs(ai);
         xiiter = bi.begin();
-        passed &= (*xiiter == 3);
+        testassert((*xiiter == 3), test, __FILE__, __LINE__);
 
+#if defined(DO_LONG_TEST)
         al = -3;
         bl = labs(al);
         xliter = bl.begin();
-        passed &= (*xliter == 3);
-
+        testassert((*xliter == 3), test, __FILE__, __LINE__);
+#endif
+	
         a = -3.4;
         b = fabs(a);
         xiter = b.begin();
-        passed &= (fabs(*xiter - 3.4) < 0.00001);
+        testassert((fabs(*xiter - 3.4) < 0.00001), test, __FILE__, __LINE__);
 
         a = 3.4;
         b = floor(a);
         xiter = b.begin();
-        passed &= (*xiter == 3.);
+        testassert((*xiter == 3.), test, __FILE__, __LINE__);
     }
 
-    // Print error if !passed and set passed_m and reset passed.
-	
-    error(passed,
-	  "other unary operations and assignment with expression-enabled fields.");
-
-    os_m << "t6: end" << endl;
+    os() << "t6: end" << endl;
 }
 
 
