@@ -35,21 +35,21 @@ tmplsrcs =
 pretarg = deps
 auxtarg = 
 resolve_libs = \
-	../util/libutil_$(env).$(lib_suffix) \
-	../spdf/libspdf_$(env).$(lib_suffix) \
-	../c4/libc4_$(env).$(lib_suffix) \
-	../nml/libnml_$(env).$(lib_suffix) \
-	../ds++/libds++_$(env).$(lib_suffix)
+	-L../util -lutil_$(env) \
+	-L../spdf -lspdf_$(env) \
+	-L../c4 -lc4_$(env) \
+	-L../nml -lnml_$(env) \
+	-L../ds++ -lds++_$(env)
 
 include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
 	(cd ../ds++; $(MAKE))
-	(cd ../nml;  $(MAKE) dodeps=no)
-	(cd ../c4;   $(MAKE) dodeps=no)
-	(cd ../spdf; $(MAKE) dodeps=no)
-	(cd ../util; $(MAKE) dodeps=no)
+	(cd ../nml;  $(MAKE) $(subnj) dodeps=no)
+	(cd ../c4;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../spdf; $(MAKE) $(subnj) dodeps=no)
+	(cd ../util; $(MAKE) $(subnj) dodeps=no)
 endif
 
 ###############################################################################
@@ -81,6 +81,11 @@ include ../config/make.doc
 
 ###############################################################################
 # Go pick up the standard signature for makefiles.
+
+testclean:
+	(cd test; $(MAKE) clean)
+
+aux_clean := testclean
 
 cc_files := $(libsrcs) $(tstsrcs)
 
