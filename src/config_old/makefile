@@ -106,6 +106,14 @@ ifeq ($(need_pcg),yes)
 need_lapack	:= yes
 endif
 
+ifeq ($(need_rng),yes)
+need_sprng      := yes
+endif
+
+ifeq ($(need_imctest),yes)
+need_rng        := yes
+endif
+
 #-----------------------------------------------------------------------------#
 # Set up some tools.
 
