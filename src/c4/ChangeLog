@@ -1,3 +1,12 @@
+2002-05-08  Thomas M. Evans  <tme@lanl.gov>
+
+	* c4: Updated to version 2_0_0.  This release encompasses the
+	changes from 25-MAR-02.  C4 is now in a state where we can begin
+	to add new functionality (UPS, Gather/Scatters, etc ). This
+	release has basic testing, but could use more.  Additionally, it
+	still supports old C4 namespace backwards-compatibility.  However,
+	nothing new will be added to this namespace.
+
 2002-03-25  Thomas M. Evans  <tme@lanl.gov>
 
 	* c4: massive changes.  Removed support for nx and shmem.  Added
