@@ -135,8 +135,8 @@ AC_DEFUN(AC_NEEDS_LIBS_DRACO, [dnl
        
        has_draco_libdir="yes"
 
-       if test ${has_libdir} != "yes" ||
-	  test ${draco_in_prefix} != "true" ; then
+       if test "${has_libdir}" != "yes" ||
+	  test "${draco_in_prefix}" != "true" ; then
 	       DRACO_LIBS="${DRACO_LIBS} -L${DRACO_LIB}"
        fi
 
