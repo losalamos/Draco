@@ -51,7 +51,7 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 
       vc( this ),
 
-      xF( this ), yF( this ), zF( this )
+      xF( this ), yF( this ), zF( this ), face_norms( this )
 {
     char buf[80];
 
@@ -152,6 +152,29 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 	zF(c,4) = z - dz2; zF(c,5) = z + dz2;
     }
 
+// Initialize the unit normals
+
+    xhat(0) = 1.;
+    xhat(1) = 0.;
+    xhat(2) = 0.;
+    yhat(0) = 0.;
+    yhat(1) = 1.;
+    yhat(2) = 0.;
+    zhat(0) = 0.;
+    zhat(1) = 0.;
+    zhat(2) = 1.;
+
+// Initialize the face normals
+
+    for( int c=0; c < ncp; c++ ) {
+        face_norms(c,0) = -1.*xhat;
+        face_norms(c,1) = xhat;
+        face_norms(c,2) = -1.*yhat;
+        face_norms(c,3) = yhat;
+        face_norms(c,4) = -1.*zhat;
+        face_norms(c,5) = zhat;
+    }
+
 // Now initialize the diag offsets which are needed by clients employing
 // sparse matrices.
 
@@ -162,22 +185,6 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     diags[2] = -diags[4];
     diags[1] = -diags[5];
     diags[0] = -diags[6];
-}
-
-template <>
-void Mesh_XYZ::scatter<Mesh_XYZ::AddOp>( Mesh_XYZ::fcdsf& to,
-                                         const Mesh_XYZ::ccsf& from )
-{
-    Mesh_XYZ::gccsf gfrom( from );
-    to += gfrom;
-}
-
-template <>
-void Mesh_XYZ::scatter<Mesh_XYZ::MultOp>( Mesh_XYZ::fcdsf& to,
-                                          const Mesh_XYZ::ccsf& from )
-{
-    Mesh_XYZ::gccsf gfrom( from );
-    to *= gfrom;
 }
 
 

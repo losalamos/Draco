@@ -70,10 +70,81 @@ void Mesh_XYZ::gcctf<T>::update_guard_cells()
 //         AsyncRecv( 
 }
 
-template <class Op>
-void Mesh_XYZ::scatter( Mesh_XYZ::fcdsf& to, const Mesh_XYZ::ccsf& from )
+template <class T1, class T2, class Op>
+void Mesh_XYZ::gather
+( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::cctf<T2>& from, const Op& op )
 {
-    Op::thisIsAnError();
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+          for ( int f = 0; f < 6; ++f )
+	    op(to(i,j,k,f), from(i,j,k));
+}
+
+template <class T1, class T2, class Op>
+void Mesh_XYZ::scatter
+( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::cctf<T2>& from, const Op& op )
+{
+    Mesh_XYZ::gcctf<T2> gfrom(from);
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+	{
+          for ( int f = 0; f < 6; ++f )
+	    op(to(i,j,k,f), gfrom(i,j,k));
+          if (i != 0) op(to(i,j,k,0), gfrom(i-1,j,k));
+          if (i != to.ncx - 1) op(to(i,j,k,1), gfrom(i+1,j,k));
+          if (j != 0) op(to(i,j,k,2), gfrom(i,j-1,k));
+          if (j != to.ncy - 1) op(to(i,j,k,3), gfrom(i,j+1,k));
+          if (k != 0) op(to(i,j,k,4), gfrom(i,j,k-1));
+          if (k != to.ncz - 1) op(to(i,j,k,5), gfrom(i,j,k+1));
+        }  
+}
+
+template <class T1, class T2, class Op>
+void Mesh_XYZ::scatter
+( Mesh_XYZ::cctf<T1>& to, const Mesh_XYZ::fcdtf<T2>& from, const Op& op )
+{
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+          for ( int f = 0; f < 6; ++f )
+	    op(to(i,j,k), from(i,j,k,f));
+}
+
+template <class T1, class T2, class Op> 
+void Mesh_XYZ::scatter
+( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::vctf<T2>& from, const Op& op )
+{
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+        {
+          op(to(i,j,k,0), from(i,j,k,0));
+          op(to(i,j,k,0), from(i,j,k,2));
+          op(to(i,j,k,0), from(i,j,k,4));
+          op(to(i,j,k,0), from(i,j,k,6));
+          op(to(i,j,k,1), from(i,j,k,1));
+          op(to(i,j,k,1), from(i,j,k,3));
+          op(to(i,j,k,1), from(i,j,k,5));
+          op(to(i,j,k,1), from(i,j,k,7));
+          op(to(i,j,k,2), from(i,j,k,0));
+          op(to(i,j,k,2), from(i,j,k,1));
+          op(to(i,j,k,2), from(i,j,k,4));
+          op(to(i,j,k,2), from(i,j,k,5));
+          op(to(i,j,k,3), from(i,j,k,2));
+          op(to(i,j,k,3), from(i,j,k,3));
+          op(to(i,j,k,3), from(i,j,k,6));
+          op(to(i,j,k,3), from(i,j,k,7));
+          op(to(i,j,k,4), from(i,j,k,0));
+          op(to(i,j,k,4), from(i,j,k,1));
+          op(to(i,j,k,4), from(i,j,k,2));
+          op(to(i,j,k,4), from(i,j,k,3));
+          op(to(i,j,k,5), from(i,j,k,4));
+          op(to(i,j,k,5), from(i,j,k,5));
+          op(to(i,j,k,5), from(i,j,k,6));
+          op(to(i,j,k,5), from(i,j,k,7));
+        }  
 }
 
 
