@@ -53,13 +53,6 @@ host=`uname`
 ##---------------------------------------------------------------------------##
 ## MPI EXECUTABLE
 
-mpiexe='mpirun -np'
-
-# on COMPAQ the executable is prun -n
-if test $host = 'OSF1' ; then
-    mpiexe='prun -n'
-fi
-
 ##---------------------------------------------------------------------------##
 ## command line actions
 
@@ -89,24 +82,66 @@ done
 ##---------------------------------------------------------------------------##
 ## translate the executable line
 
-if test "$exe" = 'python'; then
-    if test "$parallel" = 'no' ; then
-	test_exec="python $executable --scalar $exe_options"
-    elif test "$parallel" = 'yes' ; then
-	test_exec="python $executable --procs $procs $exe_options"
-    fi
-elif test "$exe" = 'binary'; then
-    if test "$parallel" = 'no' ; then
-	test_exec="$executable $exe_options"
-    elif test "$parallel" = 'yes'; then
-	if test "$mpi" = 'yes'; then
-	    test_exec="$mpiexe $procs $executable $exe_options"
-	fi
-    fi
-else
-    echo "No valid executable type specified!"
-    exit 1
-fi
+case $exe in
+
+    # python executable
+    python)
+        if test "$parallel" = 'no' ; then
+
+            test_exec="python $executable --scalar $exe_options"
+
+        elif test "$parallel" = 'yes' ; then
+
+            test_exec="python $executable --procs $procs $exe_options"
+
+        fi
+    ;;
+
+    # binary
+    binary)
+        if test "$parallel" = 'no' ; then
+
+            test_exec="$executable $exe_options"
+
+        elif test "$parallel" = 'yes'; then
+
+            # different parallel implementations
+            if test "$mpi" = 'yes'; then
+
+                # we must parse on different host types here
+                case $host in
+
+                    # IBM AIX (with poe)
+                    AIX)
+                        test_exec="poe $executable $exe_options -procs $procs -rmpool 2 -retry 1"
+                    ;;
+                    
+                    # COMPAQ
+                    OSF1)
+                        test_exec="prun -n $procs $executable $exe_options"
+                    ;;
+
+                    # all other standard MPI implementations
+                    *)
+                        test_exec="mpirun -np $procs $executable $exe_options"
+                    ;;
+                esac
+
+            fi
+
+        fi
+    ;;
+
+    # unspecified
+    *)
+        echo "No valid executable type specified!"
+        exit 1
+    ;;
+
+esac
+
+echo $test_exec
+exit 1
 
 ##---------------------------------------------------------------------------##
 ## Give message about executable

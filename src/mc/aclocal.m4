@@ -2846,7 +2846,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
        # default is to have debug flag on when opt=0
        if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g3 ${gcc_opt_flags}"
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
        fi
 
    fi
@@ -3289,8 +3289,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        AC_MSG_CHECKING("for extra eospac library requirements.")
        if test -n "${vendor_eospac}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfccx86_6a"
-#	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            AC_MSG_RESULT("${extra_eospac_libs}")
        else
@@ -4161,10 +4160,10 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    # path to package directories which are sources for doxygen
    #
 
-   doxygen_input=${srcdir}
-   doxygen_examples=${srcdir}/test
+   doxygen_input=`cd ${srcdir}; pwd`
+   doxygen_examples=`cd ${srcdir}/test; pwd`
    localdir=`pwd`/autodoc
-   doxygen_output=${prefix}/html/${package}
+   doxygen_output=`cd ${prefix}/html/${package}; pwd`
 
    #
    # covert to relative paths
@@ -4192,9 +4191,8 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    fi
 
    # find the release number
-   number='null'
-   AC_MSG_CHECKING("draco release number")
-   number=`/bin/sh ../../tools/draco --version`
+   number=$1
+   AC_MSG_CHECKING("component release number")
    AC_MSG_RESULT($number)
 
    AC_SUBST(doxygen_input)
@@ -4313,7 +4311,6 @@ while test "[$]_lcl_tmp" != ''; do
      $3="../[$]$3"
   fi
 done])
-
 
 dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
 dnl =================================

@@ -70,7 +70,8 @@ print ">>> Preparing to replace %s with %s" % (old_tag, new_tag)
 # loop through directories and do replacement
 for d in rdirs:
 
-    file = d + "/Release.cc"
+    file  = d + "/Release.cc"
+    file2 = d + "/configure.ac"
 
     # open Release.cc
     lines = open(file).read()
@@ -81,9 +82,22 @@ for d in rdirs:
     if count > 0:
         new_file = open(file, 'w')
         new_file.write(match)
-        print ">>> Replaced tag in directory %s" % (d)
-    
+        print ">>> Replaced tag in directory %s/Release.cc" % (d)
 
+    # reset counter
+    count = 0
+
+    # open configure.ac
+    lines = open(file2).read()
+
+    # subexpressions
+    (match, count) = re.subn(old_tag, new_tag, lines)
+
+    if count > 0:
+        new_file = open(file2, 'w')
+        new_file.write(match)
+        print ">>> Replaced tag in directory %s/configure.ac" % (d)
+    
 ###############################################################################
 ##                            end of update_release_tags.py
 ###############################################################################
