@@ -19,3 +19,7 @@ typedef testFullP13T<UMCMP2>::MatStateFC MSFFC2;
 typedef testFullP13T<UMCMP2>::MatStateCC MSFCC2;
 
 template class P13T<MT2,MSFCC2,MSFFC2,DS2>;
+
+#include "3T/testP13T/GmvDump.t.cc"
+
+template class rtt_3T_testP13T::GmvDump<MT>;

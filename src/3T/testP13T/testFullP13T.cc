@@ -18,6 +18,7 @@
 #include "timestep/fixed_ts_advisor.hh"
 #include "timestep/ratio_ts_advisor.hh"
 #include "matprops/TempMapper.hh"
+#include "3T/testP13T/GmvDump.hh"
 
 #include <functional>
 #include <new>
@@ -39,6 +40,8 @@ using namespace XTM;
 namespace
 {
 
+ enum Faces { LEFT=0, RIGHT=1, FRONT=2, BACK=3, BOTTOM=4, TOP=5 };
+ 
  int nx;
  int ny;
  int nz;
@@ -46,39 +49,39 @@ namespace
 
  template<class FT1, class FT>
  void cpCell2Mats(FT1 &matValues, const FT &cellValue, const int nmat)
-{
-    int ncell = cellValue.size();
-    FT1::iterator mvit = matValues.begin();
-    FT::const_iterator cit = cellValue.begin();
-    for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
-    {
-	FT1::value_type tmp(nmat);
-	for (FT1::value_type::iterator tmpit = tmp.begin(); 
-	     tmpit != tmp.end(); tmpit++)
-	{
-	    *tmpit = *cit;
-	}
-	*mvit = tmp;
-    }
-}
+ {
+     int ncell = cellValue.size();
+     FT1::iterator mvit = matValues.begin();
+     FT::const_iterator cit = cellValue.begin();
+     for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
+     {
+	 FT1::value_type tmp(nmat);
+	 for (FT1::value_type::iterator tmpit = tmp.begin(); 
+	      tmpit != tmp.end(); tmpit++)
+	 {
+	     *tmpit = *cit;
+	 }
+	 *mvit = tmp;
+     }
+ }
 
  template<class FT1>
  void assign2Mats(FT1 &matValues, const int ncell, const int nmat, 
 		  const int value) 
-{
-    FT::const_iterator cit = cellValue.begin();
-    FT1::iterator mvit = matValues.begin();
-    for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
-    {
-	FT1::value_type tmp(nmat);
-	for (FT1::value_type::iterator tmpit = tmp.begin(); 
-	     tmpit != tmp.end(); tmpit++)
-	{
-	    *tmpit = value;
-	}
-	*mvit = tmp;
-    }
-}
+ {
+     FT::const_iterator cit = cellValue.begin();
+     FT1::iterator mvit = matValues.begin();
+     for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
+     {
+	 FT1::value_type tmp(nmat);
+	 for (FT1::value_type::iterator tmpit = tmp.begin(); 
+	      tmpit != tmp.end(); tmpit++)
+	 {
+	     *tmpit = value;
+	 }
+	 *mvit = tmp;
+     }
+ }
 
 
  template<class UMCMP>
@@ -88,11 +91,11 @@ namespace
 	 for (int j=0; j<ny; j++)
 	     for (int k=0; k<nz; k++)
 	     {
-		 if (i > 0 && (rhs(i,j,k,0) != -rhs(i-1,j,k,1)))
+		 if (i > 0 && (rhs(i,j,k,LEFT) != -rhs(i-1,j,k,RIGHT)))
 		     return false;
-		 if (j > 0 && (rhs(i,j,k,2) != -rhs(i,j-1,k,3)))
+		 if (j > 0 && (rhs(i,j,k,FRONT) != -rhs(i,j-1,k,BACK)))
 		     return false;
-		 if (k > 0 && (rhs(i,j,k,4) != -rhs(i,j,k-1,5)))
+		 if (k > 0 && (rhs(i,j,k,BOTTOM) != -rhs(i,j,k-1,TOP)))
 		     return false;
 	     }
      return true;
@@ -149,359 +152,173 @@ namespace
      return results;
  }
 
- template<class MT>
- class GmvDump
- {
-   private:
-     
-     struct VertId
-     {
-	 int nx;
-	 int ny;
-	 int nz;
-	 VertId(int nx_, int ny_, int nz_) : nx(nx_+1), ny(ny_+1), nz(nz_+1) { }
-	 int operator()(int i, int j, int k)
-	 {
-	     return k*nx*ny + j*nx + i + 1;
-	 }
-     };
-
-     std::ostream &os;
-     const SP<MT> &spMesh;
-
-     int nx;
-     int ny;
-     int nz;
-
-     VertId vid;
-
-     bool variablePrinted;
-
-     int cycle;
-     double time;
-     
-   public:
-     
-     GmvDump(std::ostream &os_, const SP<MT> &spMesh_,
-	     int cycle_, double time_)
-	 : os(os_), spMesh(spMesh_), nx(spMesh->get_ncx()),
-	   ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), vid(nx, ny, nz),
-	   variablePrinted(false), cycle(cycle_), time(time_)
-     {
-	 std::ios_base::fmtflags fmtflags = os.flags();
-
-	 os << std::setw(16) << std::scientific << std::setprecision(6);
-
-	 os << "gmvinput ascii" << endl;
-
-	 double dx = spMesh->get_dx();
-	 double dy = spMesh->get_dy();
-	 double dz = spMesh->get_dz();
-
-	 int nnodes = (nx+1)*(ny+1)*(nz+1);
-	 os << "nodes " << nnodes << endl;
-
-	 const int nitemsPerLine = 5;
-	 int nitems = 0;
-
-	 for (int k=0; k<nz+1; k++)
-	 {
-	     for (int j=0; j<ny+1; j++)
-	     {
-		 for (int i=0; i<nx+1; i++)
-		 {
-		     os << i*dx;
-		     if (++nitems % nitemsPerLine)
-			 os << " ";
-		     else
-			 os << endl;
-		 }
-	     }
-	 }
-	 if (nitems % nitemsPerLine)
-	     os << endl;
-
-	 nitems = 0;
-	 for (int k=0; k<nz+1; k++)
-	 {
-	     for (int j=0; j<ny+1; j++)
-	     {
-		 for (int i=0; i<nx+1; i++)
-		 {
-		     os << j*dy;
-		     if (++nitems % nitemsPerLine)
-			 os << " ";
-		     else
-			 os << endl;
-		 }
-	     }
-	 }
-	 if (nitems % nitemsPerLine)
-	     os << endl;
-
-	 nitems = 0;
-	 for (int k=0; k<nz+1; k++)
-	 {
-	     for (int j=0; j<ny+1; j++)
-	     {
-		 for (int i=0; i<nx+1; i++)
-		 {
-		     os << k*dz;
-		     if (++nitems % nitemsPerLine)
-			 os << " ";
-		     else
-			 os << endl;
-		 }
-	     }
-	 }
-	 if (nitems % nitemsPerLine)
-	     os << endl;
-
-	 os << "cells " << nx*ny*nz << endl;
-
-	 for (int k=0; k<nz; k++)
-	 {
-	     for (int j=0; j<ny; j++)
-	     {
-		 for (int i=0; i<nx; i++)
-		 {
-		     os << "hex 8" << endl;
-		     os << vid(i,   j,   k+1) << " ";
-		     os << vid(i+1, j,   k+1) << " ";
-		     os << vid(i+1, j+1, k+1) << " ";
-		     os << vid(i,   j+1, k+1) << " ";
-		     os << vid(i,   j,   k  ) << " ";
-		     os << vid(i+1, j,   k  ) << " ";
-		     os << vid(i+1, j+1, k  ) << " ";
-		     os << vid(i,   j+1, k  ) << " ";
-		     os << endl;
-		 }
-	     }
-	 }
-
-	 // restore the original flags.
-	 
-	 os.flags(fmtflags);
-     }
- 
-     ~GmvDump()
-     {
-	 if (variablePrinted)
-	     os << "endvars" << endl;
-	 os << "probtime " << time << endl;
-	 os << "cycleno " << cycle << endl;
-	 os << "endgmv" << endl;
-     }
-
-     void dump(const typename MT::ccsf &var, const string &name)
-     {
-	 std::ios_base::fmtflags fmtflags = os.flags();
-
-	 os << std::setw(16) << std::scientific << std::setprecision(6);
-	 
-	 if (!variablePrinted)
-	 {
-	     os << "variable" << endl;
-	     variablePrinted = true;
-	 }
-	 
-	 os << name << " 0" << endl;
-
-	 const int nitemsPerLine = 5;
-	 int nitems = 0;
-	 for (int k=0; k<nz; k++)
-	 {
-	     for (int j=0; j<ny; j++)
-	     {
-		 for (int i=0; i<nx; i++)
-		 {
-		     os << var(i,j,k);
-		     if (++nitems % nitemsPerLine)
-			 os << " ";
-		     else
-			 os << endl;
-		 }
-	     }
-	 }
-
-	 if (nitems % nitemsPerLine)
-	     os << endl;
-
-	 // restore the original flags.
-	 
-	 os.flags(fmtflags);
-     }
- };
-
  std::ostream &operator<<(std::ostream &os, 
 			  const Mesh_XYZ::ccsf &rhs)
-{
-    typedef Mesh_XYZ::ccsf FT;
+ {
+     typedef Mesh_XYZ::ccsf FT;
 
-    std::ios_base::fmtflags fmtflags = os.flags();
+     std::ios_base::fmtflags fmtflags = os.flags();
 
-    os << std::scientific << std::setprecision(6);
+     os << std::scientific << std::setprecision(6);
     
 #if 0
-    int iline = 0;
-    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-    {
-	os << std::setw(16) << *it << " ";
-	if (++iline % 6 == 0)
-	    os << endl;
-    }
-    if (iline % 6 != 0)
-	os << endl;
+     int iline = 0;
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+     {
+	 os << std::setw(16) << *it << " ";
+	 if (++iline % 6 == 0)
+	     os << endl;
+     }
+     if (iline % 6 != 0)
+	 os << endl;
 #else
-    os << endl;
-    int icell = 0;
-    for (int k=0; k<nz; k++)
-	for (int j=0; j<ny; j++)
-	    for (int i=0; i<nx; i++)
-	    {
-		os << std::setw(5) << icell++ << ":";
-		os << " " << std::setw(16) << rhs(i,j,k);
-		os << endl;
-	    }
+     os << endl;
+     int icell = 0;
+     for (int k=0; k<nz; k++)
+	 for (int j=0; j<ny; j++)
+	     for (int i=0; i<nx; i++)
+	     {
+		 os << std::setw(5) << icell++ << ":";
+		 os << " " << std::setw(16) << rhs(i,j,k);
+		 os << endl;
+	     }
 #endif    
 
-    // restore the original flags.
+     // restore the original flags.
     
-    os.flags(fmtflags);
+     os.flags(fmtflags);
 
-    return os;
-}
+     return os;
+ }
 
  std::ostream &operator<<(std::ostream &os, 
 			  const Mesh_XYZ::cctf<std::vector<double> > &rhs)
-{
-    typedef Mesh_XYZ::cctf<std::vector<double> > FT;
+ {
+     typedef Mesh_XYZ::cctf<std::vector<double> > FT;
 
-    std::ios_base::fmtflags fmtflags = os.flags();
+     std::ios_base::fmtflags fmtflags = os.flags();
 
-    os << std::scientific << std::setprecision(6);
+     os << std::scientific << std::setprecision(6);
     
 #if 0
-    int iline = 0;
-    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-    {
-	os << std::setw(16) << *it << " ";
-	if (++iline % 6 == 0)
-	    os << endl;
-    }
-    if (iline % 6 != 0)
-	os << endl;
+     int iline = 0;
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+     {
+	 os << std::setw(16) << *it << " ";
+	 if (++iline % 6 == 0)
+	     os << endl;
+     }
+     if (iline % 6 != 0)
+	 os << endl;
 #else
-    os << endl;
-    int icell = 0;
-    for (int k=0; k<nz; k++)
-	for (int j=0; j<ny; j++)
-	    for (int i=0; i<nx; i++)
-	    {
-		os << std::setw(5) << icell++ << ":";
-		int nmat = rhs(i,j,k).size();
-		for (int imat = 0; imat < nmat; imat++)
-		{
-		os << " " << std::setw(16) << rhs(i,j,k)[imat];
-		}
-		os << endl;
-	    }
+     os << endl;
+     int icell = 0;
+     for (int k=0; k<nz; k++)
+	 for (int j=0; j<ny; j++)
+	     for (int i=0; i<nx; i++)
+	     {
+		 os << std::setw(5) << icell++ << ":";
+		 int nmat = rhs(i,j,k).size();
+		 for (int imat = 0; imat < nmat; imat++)
+		 {
+		     os << " " << std::setw(16) << rhs(i,j,k)[imat];
+		 }
+		 os << endl;
+	     }
 #endif    
 
-    // restore the original flags.
+     // restore the original flags.
     
-    os.flags(fmtflags);
+     os.flags(fmtflags);
 
-    return os;
-}
-
-
-std::ostream
-&operator<<(std::ostream &os,
-	    const Mesh_XYZ::fcdsf &rhs)
-{
-    typedef Mesh_XYZ::fcdsf FT;
-    
-    std::ios_base::fmtflags fmtflags = os.flags();
-
-    os << std::scientific << std::setprecision(6);
-
-#if 0
-    int iline = 0;
-    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-    {
-	os << std::setw(16) << *it << " ";
-	if (++iline % 6 == 0)
-	    os << endl;
-    }
-    if (iline % 6 != 0)
-	os << endl;
-#else
-    os << endl;
-
-    int icell = 0;
-    for (int k=0; k<nz; k++)
-	for (int j=0; j<ny; j++)
-	    for (int i=0; i<nx; i++)
-	    {
-		os << std::setw(5) << icell++ << ":";
-		for (int f=0; f<6; f++)
-		    os << " " << std::setw(16) << rhs(i,j,k,f);
-		os << endl;
-	    }
-#endif
-
-    // restore the original flags.
-    
-    os.flags(fmtflags);
-
-    return os;
+     return os;
  }
 
-std::ostream
-&operator<<(std::ostream &os,
-	    const Mesh_XYZ::fcdtf<std::vector<double> > &rhs)
-{
-    typedef Mesh_XYZ::fcdtf<std::vector<double> > FT;
-    
-    std::ios_base::fmtflags fmtflags = os.flags();
 
-    os << std::scientific << std::setprecision(6);
+ std::ostream &operator<<(std::ostream &os,
+	     const Mesh_XYZ::fcdsf &rhs)
+ {
+     typedef Mesh_XYZ::fcdsf FT;
+    
+     std::ios_base::fmtflags fmtflags = os.flags();
+
+     os << std::scientific << std::setprecision(6);
 
 #if 0
-    int iline = 0;
-    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-    {
-	os << std::setw(16) << *it << " ";
-	if (++iline % 6 == 0)
-	    os << endl;
-    }
-    if (iline % 6 != 0)
-	os << endl;
+     int iline = 0;
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+     {
+	 os << std::setw(16) << *it << " ";
+	 if (++iline % 6 == 0)
+	     os << endl;
+     }
+     if (iline % 6 != 0)
+	 os << endl;
 #else
-    os << endl;
+     os << endl;
 
-    int icell = 0;
-    for (int k=0; k<nz; k++)
-	for (int j=0; j<ny; j++)
-	    for (int i=0; i<nx; i++)
-	    {
-		for (int f=0; f<6; f++)
-		{
-		    os << std::setw(5) << icell++ << ":" << f << ":";
-		    int nmat = rhs(i,j,k,f).size();
-		    for (int imat=0; imat<nmat; imat++)
-			os << " " << std::setw(16) << rhs(i,j,k,f)[imat];
-		    os << endl;
-		}
-	    }
+     int icell = 0;
+     for (int k=0; k<nz; k++)
+	 for (int j=0; j<ny; j++)
+	     for (int i=0; i<nx; i++)
+	     {
+		 os << std::setw(5) << icell++ << ":";
+		 for (int f=0; f<6; f++)
+		     os << " " << std::setw(16) << rhs(i,j,k,f);
+		 os << endl;
+	     }
 #endif
 
-    // restore the original flags.
+     // restore the original flags.
     
-    os.flags(fmtflags);
+     os.flags(fmtflags);
 
-    return os;
+     return os;
+ }
+
+ std::ostream &operator<<(std::ostream &os,
+			  const Mesh_XYZ::fcdtf<std::vector<double> > &rhs)
+ {
+     typedef Mesh_XYZ::fcdtf<std::vector<double> > FT;
+    
+     std::ios_base::fmtflags fmtflags = os.flags();
+
+     os << std::scientific << std::setprecision(6);
+
+#if 0
+     int iline = 0;
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+     {
+	 os << std::setw(16) << *it << " ";
+	 if (++iline % 6 == 0)
+	     os << endl;
+     }
+     if (iline % 6 != 0)
+	 os << endl;
+#else
+     os << endl;
+
+     int icell = 0;
+     for (int k=0; k<nz; k++)
+	 for (int j=0; j<ny; j++)
+	     for (int i=0; i<nx; i++)
+	     {
+		 for (int f=0; f<6; f++)
+		 {
+		     os << std::setw(5) << icell++ << ":" << f << ":";
+		     int nmat = rhs(i,j,k,f).size();
+		     for (int imat=0; imat<nmat; imat++)
+			 os << " " << std::setw(16) << rhs(i,j,k,f)[imat];
+		     os << endl;
+		 }
+	     }
+#endif
+
+     // restore the original flags.
+    
+     os.flags(fmtflags);
+
+     return os;
  }
 
  using rtt_matprops::MultiMatCellMatProps;
@@ -524,10 +341,10 @@ std::ostream
 	    testFullP13T<MarshakMaterialProps> &tester,
 	    const testFullP13T_DB &tdb) 
  {
-    spUMatProp = new MarshakMaterialProps(tester.getUnits(), tdb.kappa0, tdb.abar,
-					  tdb.kappaPower);
+     spUMatProp = new MarshakMaterialProps(tester.getUnits(), tdb.kappa0,
+					   tdb.abar, tdb.kappaPower);
 
-    spMatProp = new MultiMatCellMatProps<MarshakMaterialProps>(spUMatProp);
+     spMatProp = new MultiMatCellMatProps<MarshakMaterialProps>(spUMatProp);
  }
 
  using rtt_matprops::InterpedMaterialProps;
@@ -559,15 +376,39 @@ std::ostream
      spMatProp = new MultiMatCellMatProps<InterpedMaterialProps>(spUMatProp);
  }
 
-}
-
- template<class UMCMP>
- testFullP13T<UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
-				   const Diffusion_DB &diffdb_,
-				   const Mesh_DB &mdb,
-				   const pcg_DB &pcg_db_)
-     : diffdb(diffdb_), pcg_db(pcg_db_), tdb(tdb_)
+ void setTempFromFile(Mesh_XYZ::ccsf &Temp, const std::string &filename, double floor)
  {
+     std::ifstream ifs(filename.c_str());
+
+     ifs.ignore(10000, '\n');
+     ifs.ignore(10000, '\n');
+
+     for (int k=0; k<nz; k++)
+     {
+	 double r, T1, T2, T3;
+
+	 ifs >> r >> T1 >> T2 >> T3;
+	 if (ifs.eof())
+	     throw std::runtime_error("Premature EOF reading temperatures.");
+
+	 if (T1 < floor)
+	     T1 = floor;
+	 
+	 for (int i=0; i<nx; i++)
+	     for (int j=0; j<ny; j++)
+		 Temp(i, j, k) = T1;
+     }     
+ }
+ 
+} // end unnamed namespace
+
+template<class UMCMP>
+testFullP13T<UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
+				  const Diffusion_DB &diffdb_,
+				  const Mesh_DB &mdb,
+				  const pcg_DB &pcg_db_)
+    : diffdb(diffdb_), pcg_db(pcg_db_), tdb(tdb_)
+{
     spMesh = new MT(mdb);
     
     switch (tdb.units)
@@ -587,6 +428,18 @@ std::ostream
     P13TOptions options(tdb.P1TauMultiplier, tdb.IsCoupledMaterial);
 
     spTsManager = new rtt_timestep::ts_manager();
+
+    // Set up a informational advisor to
+    // contain the current time-step for reference.
+    // Activating this controller can also be used to
+    // freeze the time-step at the current value.
+
+    spTsCurrent =
+	new rtt_timestep::fixed_ts_advisor("Current Time-Step",
+					   rtt_timestep::ts_advisor::req,
+					   tdb.dt, false);
+    spTsManager->add_advisor(spTsCurrent);
+
 	
     spP13T = new P13T(options, spMesh, spTsManager);
 
@@ -597,38 +450,38 @@ std::ostream
     // gamma is the high weight when computing the weighted mean of
     // cc temperatures to construct fc temperatures.
     
-    double gamma = 0.5;
+    double gamma = tdb.faceGamma;
     spTempMapper = new rtt_matprops::TempMapper<MT>(spMesh, gamma);
 }
 
- template<class UMCMP>
+template<class UMCMP>
 testFullP13T<UMCMP>::~testFullP13T()
 {
     // empty
 }
 
- template<class UMCMP>
- void testFullP13T<UMCMP>::getMatProp()
- {
-     ::getMatProp(spUMatProp, spMatProp, *this, tdb);
- }
+template<class UMCMP>
+void testFullP13T<UMCMP>::getMatProp()
+{
+    ::getMatProp(spUMatProp, spMatProp, *this, tdb);
+}
 
- template<class UMCMP>
-testFullP13T<UMCMP>::MatStateCC testFullP13T<UMCMP>::getMatStateCC(const ccvsf &TElect,
-						     const ccvsf &TIon,
-						     const ccvsf &density,
-						     const ccvsf &VolFrac,
-						     const ccvif &matid) const
+template<class UMCMP>
+testFullP13T<UMCMP>::MatStateCC
+testFullP13T<UMCMP>::getMatStateCC(const ccvsf &TElect,
+				   const ccvsf &TIon,
+				   const ccvsf &density,
+				   const ccvsf &VolFrac,
+				   const ccvif &matid) const
 {
     return spMatProp->getMaterialState<ccsf, ccvsf, ccvif>
 	(density, TElect, TIon, VolFrac, matid);
 }
 
- template<class UMCMP>
+template<class UMCMP>
 testFullP13T<UMCMP>::MatStateFC 
 testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
 {
-
     ccsf avgTemp(spMesh);
     ccvsf matTemps(spMesh);
     msfcc.getElectronTemperature(avgTemp);
@@ -659,6 +512,19 @@ testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
     MT::gather(volFracFC, volFrac, MT::OpAssign());
     MT::gather(matidFC, matid, MT::OpAssign());
     
+    if (tdb.Te_bottom > 0.)
+    {
+	for (int i=0; i<nx; i++)
+	    for (int j=0; j<ny; j++)
+	    {
+		using std::fill;
+		fill(TElectFC(i, j, 0, BOTTOM).begin(),
+		     TElectFC(i, j, 0, BOTTOM).end(), tdb.Te_bottom);
+		fill(TIonFC(i, j, 0, BOTTOM).begin(),
+		     TIonFC(i, j, 0, BOTTOM).end(), tdb.Te_bottom);
+	    }
+    }
+
     if (tdb.verbose)
     {
 	cout << "In testFullP13T::getMatStateFC" << endl;
@@ -672,14 +538,14 @@ testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
 	volFracFC, matidFC);
 }
 
- template<class UMCMP>
+template<class UMCMP>
 void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
-			   const ccsf &TElec, const ccsf &TIon,
-			   int cycle, double time) const
+				  const ccsf &TElec, const ccsf &TIon,
+				  int dumpno, int cycle, double time) const
 {
     std::ostrstream oss;
     oss << "testFullP13T.gmvout."
-	<< std::setw(3) << std::setfill('0') << cycle
+	<< std::setw(5) << std::setfill('0') << dumpno
 	<< std::ends;
     std::ofstream ofs(oss.str());
 
@@ -698,14 +564,14 @@ void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
 	*trit++ = std::pow((*pit) / (a*c), 0.25);
     }
 
-    GmvDump<MT> gmv(ofs, spMesh, cycle, time);
+    rtt_3T_testP13T::GmvDump<MT> gmv(ofs, spMesh, cycle, time);
     gmv.dump(radState.phi, "phi");
     gmv.dump(TRad, "TRad");
     gmv.dump(TElec, "TElec");
     gmv.dump(TIon, "TIon");
 }
 	
- template<class UMCMP>
+template<class UMCMP>
 void testFullP13T<UMCMP>::run() const
 {
     ccsf TElect0_in(spMesh);
@@ -714,18 +580,22 @@ void testFullP13T<UMCMP>::run() const
     ccsf VolFrac_in(spMesh);
     ccif matid_in(spMesh);
 
-    TElect0_in = tdb.Te;
-    TIon0_in = tdb.Ti;
+    std::string TFile = static_cast<const char*>(tdb.TFile);
+
+    if (TFile != "")
+    {
+	setTempFromFile(TElect0_in, TFile, tdb.Te);
+	TIon0_in = TElect0_in;
+    }
+    else
+    {
+	TElect0_in = tdb.Te;
+	TIon0_in = tdb.Ti;
+    }
+    
     density_in = tdb.rho;
     VolFrac_in = 1.;
     matid_in = tdb.materialId;
-
-    if (tdb.Te_bottom > 0.)
-    {
-	for (int i=0; i<nx; i++)
-	    for (int j=0; j<ny; j++)
-		TElect0_in(i, j, 0) = TIon0_in(i, j, 0) = tdb.Te_bottom;
-    }
 
     ccvsf TElect0(spMesh);
     ccvsf TIon0(spMesh);
@@ -827,22 +697,23 @@ void testFullP13T<UMCMP>::run() const
     }
 }
 
- template<class UMCMP>
+template<class UMCMP>
 void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
-			    MatStateCC &matStateCC,
-			    MatStateFC &matStateFC,
-			    RadiationStateField &radState,
-			    ccsf &electEnergyDep, ccsf &ionEnergyDep,
-			    const ccsf &QRad, const ccsf &QElectron,
-			    const ccsf &QIon, const bssf &alpha,
-			    const bssf &beta, const bssf &bSrc) const
+				   MatStateCC &matStateCC,
+				   MatStateFC &matStateFC,
+				   RadiationStateField &radState,
+				   ccsf &electEnergyDep, ccsf &ionEnergyDep,
+				   const ccsf &QRad, const ccsf &QElectron,
+				   const ccsf &QIon, const bssf &alpha,
+				   const bssf &beta, const bssf &bSrc) const
 {
     // end of cycle time
     
     time += dt;
 
     // advance the timestep manager
-	
+
+    spTsCurrent->set_fixed_value(dt);
     spTsManager->set_cycle_data(dt, cycle, time);
     
     ccsf TElec(spMesh);
@@ -921,7 +792,11 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 
     Assert(isContinuous<UMCMP>(newRadState.F));
 
-    gmvDump(newRadState, TElec, TIon, cycle, time);
+    if (cycle % tdb.dumpcycles == 0)
+    {
+	static int dumpno = 0;
+	gmvDump(newRadState, TElec, TIon, dumpno++, cycle, time);
+    }
 
     ccvsf density(spMesh);
     matStateCC.getDensity(density);
@@ -944,6 +819,28 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 					     density, volfrac, matid);
     MatStateFC newMatStateFC = getMatStateFC(newMatStateCC);
 	
+#if 1
+    if (cycle % tdb.dumpcycles == 0)
+    {
+	static int dumpno = 0;
+    
+	std::ostrstream oss;
+	oss << "testFullP13T."
+	    << std::setw(5) << std::setfill('0') << dumpno++
+	    << ".dat"
+	    << std::ends;
+	std::ofstream ofs(oss.str());
+	ofs << "# testFullP13T cycle=" << cycle << " time=" << time << endl;
+	ofs << "# z \t phi(z)" << endl;
+	ccsf TElect(spMesh);
+	newMatStateCC.getElectronTemperature(TElect);
+	const double dz = spMesh->get_dz();
+	for (int m=0; m<nz; m++)
+	    ofs << dz*(m+.5) << '\t' << TElect(0,0,m)
+		<< endl;
+    }
+#endif
+
     postProcess(radState, newRadState, matStateCC, newMatStateCC,
 		electEnergyDep, ionEnergyDep, QRad, QElectron, QIon,
 		QEEM, REEM, dt);
@@ -956,19 +853,19 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     radState = newRadState;
 }
 
- template<class UMCMP>
+template<class UMCMP>
 void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 {
     for (int j=0; j<ny; j++)
     {
 	for (int k=0; k<nz; k++)
 	{
-	    alpha(0,    j, k, 0) = diffdb.alpha_left;
-	    beta (0   , j, k, 0) = diffdb.beta_left;
-	    bSrc (0   , j, k, 0) = tdb.src_left;
-	    alpha(nx-1, j, k, 1) = diffdb.alpha_right;
-	    beta (nx-1, j, k, 1) = diffdb.beta_right;
-	    bSrc (nx-1, j, k, 1) = tdb.src_right;
+	    alpha(0,    j, k, LEFT) = diffdb.alpha_left;
+	    beta (0   , j, k, LEFT) = diffdb.beta_left;
+	    bSrc (0   , j, k, LEFT) = tdb.src_left;
+	    alpha(nx-1, j, k, RIGHT) = diffdb.alpha_right;
+	    beta (nx-1, j, k, RIGHT) = diffdb.beta_right;
+	    bSrc (nx-1, j, k, RIGHT) = tdb.src_right;
 	}
     }
 
@@ -976,12 +873,12 @@ void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
     {
 	for (int k=0; k<nz; k++)
 	{
-	    alpha(i, 0   , k, 2) = diffdb.alpha_front;
-	    beta (i, 0   , k, 2) = diffdb.beta_front;
-	    bSrc (i, 0   , k, 2) = tdb.src_front;
-	    alpha(i, ny-1, k, 3) = diffdb.alpha_back;
-	    beta (i, ny-1, k, 3) = diffdb.beta_back;
-	    bSrc (i, ny-1, k, 3) = tdb.src_back;
+	    alpha(i, 0   , k, FRONT) = diffdb.alpha_front;
+	    beta (i, 0   , k, FRONT) = diffdb.beta_front;
+	    bSrc (i, 0   , k, FRONT) = tdb.src_front;
+	    alpha(i, ny-1, k, BACK) = diffdb.alpha_back;
+	    beta (i, ny-1, k, BACK) = diffdb.beta_back;
+	    bSrc (i, ny-1, k, BACK) = tdb.src_back;
 	}
     }
     
@@ -997,12 +894,12 @@ void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 	{
 	    for (int j=0; j<ny; j++)
 	    {
-		alpha(i, j, 0   , 4) = diffdb.alpha_bottom;
-		beta (i, j, 0   , 4) = diffdb.beta_bottom;
-		bSrc (i, j, 0   , 4) = phi_bottom*diffdb.alpha_bottom;
-		alpha(i, j, nz-1, 5) = diffdb.alpha_top;
-		beta (i, j, nz-1, 5) = diffdb.beta_top;
-		bSrc (i, j, nz-1, 5) = tdb.src_top;
+		alpha(i, j, 0   , BOTTOM) = diffdb.alpha_bottom;
+		beta (i, j, 0   , BOTTOM) = diffdb.beta_bottom;
+		bSrc (i, j, 0   , BOTTOM) = phi_bottom*diffdb.alpha_bottom;
+		alpha(i, j, nz-1, TOP) = diffdb.alpha_top;
+		beta (i, j, nz-1, TOP) = diffdb.beta_top;
+		bSrc (i, j, nz-1, TOP) = tdb.src_top;
 	    }
 	}
     }
@@ -1012,30 +909,30 @@ void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 	{
 	    for (int j=0; j<ny; j++)
 	    {
-		alpha(i, j, 0   , 4) = diffdb.alpha_bottom;
-		beta (i, j, 0   , 4) = diffdb.beta_bottom;
-		bSrc (i, j, 0   , 4) = tdb.src_bottom;
-		alpha(i, j, nz-1, 5) = diffdb.alpha_top;
-		beta (i, j, nz-1, 5) = diffdb.beta_top;
-		bSrc (i, j, nz-1, 5) = tdb.src_top;
+		alpha(i, j, 0   , BOTTOM) = diffdb.alpha_bottom;
+		beta (i, j, 0   , BOTTOM) = diffdb.beta_bottom;
+		bSrc (i, j, 0   , BOTTOM) = tdb.src_bottom;
+		alpha(i, j, nz-1, TOP) = diffdb.alpha_top;
+		beta (i, j, nz-1, TOP) = diffdb.beta_top;
+		bSrc (i, j, nz-1, TOP) = tdb.src_top;
 	    }
 	}
     }
 }    
 
- template<class UMCMP>
+template<class UMCMP>
 void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
-			       const RadiationStateField &newRadState,
-			       const MatStateCC &matStateCC,
-			       const MatStateCC &newMatStateCC,
-			       const ccsf &electEnergyDepCC,
-			       const ccsf &ionEnergyDepCC,
-			       const ccsf &QRad,
-			       const ccsf &QElectron,
-			       const ccsf &QIon,
-			       const ccsf &QEEM,
-			       const ccsf &REEM,
-			       double dt) const
+				      const RadiationStateField &newRadState,
+				      const MatStateCC &matStateCC,
+				      const MatStateCC &newMatStateCC,
+				      const ccsf &electEnergyDepCC,
+				      const ccsf &ionEnergyDepCC,
+				      const ccsf &QRad,
+				      const ccsf &QElectron,
+				      const ccsf &QIon,
+				      const ccsf &QEEM,
+				      const ccsf &REEM,
+				      double dt) const
 {
     std::ios_base::fmtflags oldOptions = cout.flags(std::ios_base::scientific);
     
@@ -1126,7 +1023,8 @@ void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
 	 << "\trate: " << energyDep/dt << endl;
 
     const double inhomosrc = sum<UMCMP>(QRad) * volpcell;
-    const double qsrc = inhomosrc + (sum<UMCMP>(QElectron) + sum<UMCMP>(QIon))*volpcell;
+    const double qsrc = inhomosrc + (sum<UMCMP>(QElectron) +
+				     sum<UMCMP>(QIon))*volpcell;
 
     cout << "Volume src: " << qsrc << endl;
 
@@ -1179,21 +1077,13 @@ void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
     const double relbal = balance / totsrc;
     cout << "Relative Balance: " << relbal << endl;
 
-#if 0
-    std::ofstream ofs("testFullP13T.dat");
-    for (int m=0; m<nz; m++)
-	ofs << m << '\t' << newRadState.phi(0,0,m)
-	    << '\t' << newRadState.F(0,0,m,4)
-	    << '\t' << newRadState.F(0,0,m,5)
-	    << endl;
-#endif
-
     cout << endl;
     cout.flags(oldOptions);
 }
 
- template<class UMCMP>
-double testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
+template<class UMCMP>
+double
+testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
 {
     const double dx = spMesh->get_dx();
     const double dy = spMesh->get_dy();
@@ -1214,7 +1104,7 @@ double testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) con
 		double beta_bottom = diffdb.beta_bottom;
 		double src_bottom = tdb.src_bottom;
 
-		double F_bottom = radstate.F(k,l,0,4);
+		double F_bottom = radstate.F(k,l,0,BOTTOM);
 		
 		// calculate phi along bottom face
 		double phi_bottom = (src_bottom - beta_bottom*F_bottom) /
@@ -1230,7 +1120,7 @@ double testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) con
 		double beta_top = diffdb.beta_top;
 		double src_top = tdb.src_top;
 
-		double F_top = radstate.F(k,l,nz-1,5);
+		double F_top = radstate.F(k,l,nz-1,TOP);
 		
 		// calculate phi along top face
 		double phi_top = (src_top - beta_top*F_top) / alpha_top;

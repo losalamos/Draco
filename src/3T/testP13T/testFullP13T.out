@@ -3,13 +3,14 @@
 #
 
 $P13T
-	verbose=false nsteps=20 dt=1.0e-6 dtMin=1.0e-6 dtMax=1.0e-2 
-	P1TauMultiplier=0.0 IsCoupledMaterial=true opacityFile="opac.inp" 
-	materialName="H" materialId=1 abar=1.436 kappa0=10 kappaPower=3 
-	Te=1.0e-3 Ti=1.0e-3 rho=3.0 Qr=0.000000 Qe=0.000000 Qi=0.000000 
-	Qloc=-999 src_left=0.000000 src_right=0.000000 src_front=0.000000 
-	src_back=0.000000 src_bottom=0.000000 src_top=0.000000 Te_bottom=1.0 
-	units=astro matprops=marshak 
+	verbose=false nsteps=100000 dt=1.0e-6 dtMin=1.0e-6 dtMax=1.0e-2 
+	dumpcycles=1000 P1TauMultiplier=0.0 IsCoupledMaterial=true 
+	opacityFile="opac.inp" materialName="H" materialId=1 abar=1.436 
+	kappa0=10 kappaPower=3 Te=1.0e-3 Ti=1.0e-3 rho=3.0 Qr=0.000000 
+	Qe=0.000000 Qi=0.000000 Qloc=-999 src_left=0.000000 
+	src_right=0.000000 src_front=0.000000 src_back=0.000000 
+	src_bottom=0.000000 src_top=0.000000 Te_bottom=1.0 units=astro 
+	matprops=marshak 
 $end
 
 

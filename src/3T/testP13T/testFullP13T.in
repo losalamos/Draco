@@ -1,7 +1,8 @@
 $P13T
 	verbose=false
 	units=astro
-	nsteps=20
+	nsteps=100000
+	dumpcycles=1000
 	dt=1.0e-6
 	dtMin=1.0e-6
 	dtMax=1.0e-2
@@ -12,9 +13,11 @@ $P13T
 	opacityFile="opac.inp"
 	materialName="H"
 	materialId=1
+	matprops=marshak
 	abar=1.436
 	kappa0=10
 	kappaPower=3
+	faceGamma=1.0
 	Te=1.0e-3
 	Ti=1.0e-3
 	rho=3.0

@@ -28,7 +28,8 @@
 // FORWARD REFERENCES
 
 namespace rtt_timestep {
- class ts_manager;
+    class ts_manager;
+    class fixed_ts_advisor;
 }
 
 namespace rtt_matprops {
@@ -103,6 +104,7 @@ namespace XTM {
      dsxx::SP<P13T> spP13T;
 
      dsxx::SP<rtt_timestep::ts_manager> spTsManager;
+     dsxx::SP<rtt_timestep::fixed_ts_advisor> spTsCurrent;
 
      mutable dsxx::SP<DS> spDiffSolver;
      
@@ -149,7 +151,7 @@ namespace XTM {
      MatStateFC getMatStateFC(const MatStateCC &msfcc) const;
 
      void gmvDump(const RadiationStateField &radState, const ccsf &TElec,
-		  const ccsf &TIon, int cycle, double time) const;
+		  const ccsf &TIon, int dumpno, int cycle, double time) const;
 
      void setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const;
      

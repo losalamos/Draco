@@ -14,6 +14,7 @@ int	nsteps		10	# number of timesteps to P13T.
 double	dt		.01	# timestep.  What should this be, anyway?
 double  dtMin           1.0e-4  # minimum timestep
 double  dtMax           1.0e-1  # maximum timestep
+int     dumpcycles      1
 
 double  P1TauMultiplier 1.0     # 1.0 - P1, 0.0 - Diffusion
 
@@ -27,8 +28,11 @@ double  abar            -999.9
 double  kappa0          -999.9
 int     kappaPower      -999
 
+double  faceGamma       0.5     # Averaging constant from CC to FC temps.
+
 double  Te              .05     # initial elect temperature
 double  Ti              .05     # initial ion temperature
+String  TFile           ""
 double  rho             3.0     # density
 
 double  Qr              0.0
