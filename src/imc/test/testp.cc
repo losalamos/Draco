@@ -13,14 +13,17 @@
 #include "imctest/Opacity_Builder.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Parallel_Builder.hh"
+#include "imctest/Source_Init.hh"
+#include "rng/Rnd_Control.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <cassert>
 
 using IMC::OS_Interface;
 using IMC::OS_Builder;
@@ -29,6 +32,8 @@ using IMC::Mat_State;
 using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Parallel_Builder;
+using IMC::Source_Init;
+using RNG::Rnd_Control;
 using namespace std;
 using namespace C4;
 
@@ -106,58 +111,90 @@ void Builder_diagnostic(const MT &mesh,	const Opacity<MT> &opacity)
 }
 
 int main(int argc, char *argv[])
-{
-
+{    
   // init C4 stuff
     Init(argc, argv);
     mynode  = C4::node();
     mynodes = C4::nodes();
-
-  // declare geometry and material stuff
-    SP<OS_Mesh> mesh;
-    SP< Mat_State<OS_Mesh> > mat_state;
-    SP< Opacity<OS_Mesh> > opacity;
-
-  // read input and stuff on the host-topology
-    if (!mynode)
+ 
+ // try block
+    try
     {
-	string infile = argv[1];
+      // declare geometry and material stuff
+	SP<OS_Mesh> mesh;
+	SP< Mat_State<OS_Mesh> > mat_state;
+	SP< Opacity<OS_Mesh> > opacity;
+	SP< Source_Init<OS_Mesh> > sinit;
+	SP<Rnd_Control> rcon = new Rnd_Control(9836592);
+
+      // read input and stuff on the host-topology
+	if (!mynode)
+	{
+	    string infile = argv[1];
 	
-      // run the interface parser
-	SP<OS_Interface> interface = new OS_Interface(infile);
-	interface->parser();
+	  // run the interface parser
+	    SP<OS_Interface> interface = new OS_Interface(infile);
+	    interface->parser();
 
-      // initialize the mesh builder and build mesh
-	OS_Builder os_build(interface);
-	mesh = os_build.build_Mesh();
+	  // initialize the mesh builder and build mesh
+	    OS_Builder os_build(interface);
+	    mesh = os_build.build_Mesh();
 
-      // initialize the Opacity builder and build state 
-	Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
-	mat_state = opacity_build.build_Mat();
-	opacity   = opacity_build.build_Opacity();
-    }
+	  // initialize the Opacity builder and build state 
+	    Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
+	    mat_state = opacity_build.build_Mat();
+	    opacity   = opacity_build.build_Opacity();
 
-  // make parallel builder object to do my mesh decomposition
-    Parallel_Builder<OS_Mesh> pcomm;
+	  // do the source initialization
+	    sinit = new Source_Init<OS_Mesh>(interface, mesh);
+	    sinit->initialize(mesh, opacity, mat_state, rcon, 1);
+	}
+
+      // make parallel builder object to do send/receives of objects
+	SP<Parallel_Builder<OS_Mesh> > pcomm;
     
-    if (!mynode)
+	if (!mynode)
+	{
+	  // make parallel builder object to do my mesh decomposition
+	    pcomm = new Parallel_Builder<OS_Mesh>(*mesh, *sinit);
+	    pcomm->send_Mesh(*mesh);
+	    pcomm->send_Opacity(*opacity);
+	    Builder_diagnostic(*mesh, *mat_state, *opacity);
+	    
+	  // print out salient quantities from Parallel_Builder
+	    for (int i = 0; i < nodes(); i++)
+		cout << setw(10) << i << setw(10) 
+		     << pcomm->cells_per_proc[i].size() << endl;
+	}
+	
+	if (mynode)
+	{	
+	  // make parallel builder object to receive objects
+	    pcomm = new Parallel_Builder<OS_Mesh>();
+	    mesh    = pcomm->recv_Mesh();
+	    opacity = pcomm->recv_Opacity(mesh);
+	}
+    
+	if (mesh) 
+	    Builder_diagnostic(*mesh, *opacity);
+
+    }
+    catch (const dsxx::assertion &ass)
     {
-	pcomm.send_Mesh(*mesh);
-	pcomm.send_Opacity(*opacity);
-	Builder_diagnostic(*mesh, *mat_state, *opacity);
+	cout << "Dumbass, you screwed up: " << ass.what() << endl;
+	return 1;
     }
-
-    if (mynode)
-    {	
-        mesh    = pcomm.recv_Mesh();
-	opacity = pcomm.recv_Opacity(mesh);
+    catch(...)
+    {
+	cout << "HELP ME" << endl;
+	return 1;
     }
-    
-    if (mesh) 
-	Builder_diagnostic(*mesh, *opacity);
 
   // c4 end
     Finalize();
+
+  // we ran ok
+    return 0;
 }
 
 //---------------------------------------------------------------------------//
