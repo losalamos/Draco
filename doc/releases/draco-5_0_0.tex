@@ -11,6 +11,8 @@
 \usepackage{cite}
 \usepackage{c++}
 \usepackage{tmadd,tmath}
+\usepackage{listings}
+\usepackage{color}
 
 %%---------------------------------------------------------------------------%%
 %% DEFINE SPECIFIC ENVIRONMENTS HERE
@@ -30,6 +32,17 @@
 \newcommand{\make}{\textsf{Make}}
 
 \newcommand{\tableText}[1]{{\raggedright #1}}
+
+
+\definecolor{listingBG}{rgb}{0.95,0.95,0.95}
+
+\lstset{language=csh,
+  showstringspaces=false,
+  frame=shadowbox,
+  basicstyle=\footnotesize,
+  rulesepcolor=\color{black},
+  backgroundcolor=\color{listingBG}
+}
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
@@ -281,9 +294,107 @@ point coverage for \dracor.
 \section{\draco\ Build System}
 \label{sec:dbs}
 
+The \draco\ Build System (DBS) has undergone some significant
+changes.  The most significant updates are in the automatic
+documentation system.  The auto-documentation system can now be
+seamlessly imported into client code-systems.  This is a new feature.
+A full description of the auto-documentation system is available in
+\cite{ccs-4:04-35}. 
+
+A brief list of other changes to the DBS is:
+\begin{itemize}
+\item LINUX defaults for the MPI vendor have been removed; it is now
+  necessary to add \texttt{--with-mpi-inc} and \texttt{--with-mpi-lib}
+  at compile time
+\item the DBS can now be used in ``middleware'' component libraries
+\item most scripting in the makefiles is now gone; the functionality
+  is now performed in the configure scripts
+\item general cleanup and organizational fixes
+\end{itemize}
+
 %%---------------------------------------------------------------------------%%
 
 \section{\draco\ Directory Structure}
+
+As part of project Thuban~\cite{ccs-4:04-21} we have done some
+substantial reorganization of the \draco\ directory structure.  This
+reorganization was done to make exporting the \draco\ development
+environment easier.  The new \draco\ directory structure is shown below: 
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
+  xrightmargin=2.0in]
+draco/
+    src/
+        ds++/
+        c4/
+        ...
+    doc/
+        gettingStarted/
+        releases/
+        ...
+    tools/
+    autodoc/
+    config/
+    environment/
+        elisp/
+        templates/
+        bibfiles/
+        bibtex/
+        latex/
+\end{lstlisting}
+The \texttt{environement/} directory is where all of the changes have
+been made.  Table~\ref{tab:envdir} describes these changes in detail.
+The rest of the \draco\ directory structure remains unaltered,
+although the contents of the directories may have changed.
+\begin{table}
+  \caption{
+    Descriptions of the directories in \texttt{draco/environment}.
+    The \draco\ development environment is entirely encapsulated
+    within the \texttt{environment} directory.
+  }
+  \label{tab:envdir}
+  \begin{center}
+    \begin{tabular}{lp{3in}}\hline\hline
+      \multicolumn{1}{c}{Directory} & 
+      \multicolumn{1}{c}{Description} \\ \hline
+      
+      \texttt{elisp} & \tableText{the \draco\ XEmacs macro
+        definitions; this directory formerly sat in
+        \texttt{draco/elisp}} \\ 
+      
+      \texttt{templates} & \tableText{code, build system, and
+        documentation templates; this directory formerly sat in
+        \texttt{draco/templates}} \\
+
+      \texttt{bibfiles} & \tableText{bibliography databases
+        (\texttt{.bib} files); the contents of this directory have
+        been ported from \texttt{draco/doc/bib} and other places} \\ 
+      
+      \texttt{bibtex} & \tableText{bibliography style files
+        (\texttt{.bst} files); this directory formerly sat in
+        \texttt{archive/tex} (in the CCS-4 CVS repository)} \\
+      
+      \texttt{latex} & \tableText{latex class and style files
+        (\texttt{.cls} and \texttt{.sty} files); this directory
+        formerly sat in \texttt{archive/tex} (in the CCS-4 CVS
+        repository)} \\ 
+
+      \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+The reason for this change was to make exporting the \draco\
+development environment easier.  Clients can simply import
+\texttt{environment} into their source development trees and take
+advantage of \draco's powerful XEmacs and \LaTeX\ tools. 
+
+The \draco\ Build System (DBS), encapsulated within
+\texttt{draco/config}, is separate from the \draco\ development
+environment sitting in \texttt{environment}.  This separation exists
+because \texttt{config} is required to build the code whereas
+\texttt{environment} is only required to develop the code.  Thus,
+clients who only wish to link \draco\ components do not require
+\texttt{environment}; they do need \texttt{config}.
 
 %%---------------------------------------------------------------------------%%
 
@@ -292,7 +403,7 @@ point coverage for \dracor.
 \nocite{draco-3_0_0}
 \nocite{draco-4_0_0}
 \bibliographystyle{rnote}
-\bibliography{../bib/draco}
+\bibliography{../../environment/bibfiles/draco}
  
 \closing
 \end{document}
