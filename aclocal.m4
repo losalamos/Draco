@@ -1773,17 +1773,12 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl define --with-c4
    AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi|lampi|mpich,shmem]   
+      [  --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) ])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
-   fi
-
-   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
-   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
-      with_c4='mpi'
    fi
 
    dnl
@@ -1957,14 +1952,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl specify location of stlport installation.
    AC_ARG_WITH(stlport,
       [  --with-stlport        replace default STL with stlPort (off by default)])
-
-   dnl
-   dnl DRACO STANDARD HEADERS
-   dnl
-
-   dnl defines --enable-draco-stdhdrs
-   AC_ARG_ENABLE(draco-stdhdrs,
-      [  --enable-draco-stdhdrs  use draco standard headers (off by default)])
 
    dnl Doxygen options
 

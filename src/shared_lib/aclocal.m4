@@ -1851,29 +1851,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    fi
 
-   # do draco standard headers
-
-   AC_MSG_CHECKING("for draco standard headers")
-   if test "${enable_draco_stdhdrs:=no}" != no ; then
-
-       # if draco vendor is defined then use that include path
-       if test -n "${DRACO_INC}" ; then
-	   CPPFLAGS="${CPPFLAGS} -I${DRACO_INC}/stdheaders"
-
-       # otherwise use the standard install location (includedir)
-       else
-	   CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
-
-       fi
-       AC_MSG_RESULT("CPPFLAGS modified")
-
-   else
-
-       # we don't need draco stdheaders
-       AC_MSG_RESULT("no") 
-
-   fi
-
    # STL port
 
    AC_MSG_CHECKING("for stlport")
@@ -2085,17 +2062,12 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl define --with-c4
    AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi|lampi|mpich,shmem]   
+      [  --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) ])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
-   fi
-
-   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
-   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
-      with_c4='mpi'
    fi
 
    dnl
@@ -2269,14 +2241,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl specify location of stlport installation.
    AC_ARG_WITH(stlport,
       [  --with-stlport        replace default STL with stlPort (off by default)])
-
-   dnl
-   dnl DRACO STANDARD HEADERS
-   dnl
-
-   dnl defines --enable-draco-stdhdrs
-   AC_ARG_ENABLE(draco-stdhdrs,
-      [  --enable-draco-stdhdrs  use draco standard headers (off by default)])
 
    dnl Doxygen options
 

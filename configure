@@ -831,7 +831,6 @@ Optional Features:
   --enable-debug          turn on debug (-g) option
   --enable-32-bit         do 32-bit compilation (compiler dependent)
   --enable-64-bit         do 64-bit compilation (compiler dependent)
-  --enable-draco-stdhdrs  use draco standard headers (off by default)
   --enable-latex-doc      build latex docs with doxygen (off by default)
 
 Optional Packages:
@@ -883,7 +882,7 @@ Optional Packages:
   --with-udm-lib=DIR    tell where UDM libraries are (\${UDM_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
-  --with-c4=scalar,mpi|lampi|mpich,shmem
+  --with-c4=scalar,mpi,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
   --with-cxx=gcc,sgi,kcc,compaq,guide
@@ -2897,11 +2896,6 @@ fi;
        with_c4='scalar'
    fi
 
-   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
-   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
-      with_c4='mpi'
-   fi
-
 
 
 # Check whether --with-dbc or --without-dbc was given.
@@ -3068,13 +3062,6 @@ fi;
 # Check whether --with-stlport or --without-stlport was given.
 if test "${with_stlport+set}" = set; then
   withval="$with_stlport"
-
-fi;
-
-
-      # Check whether --enable-draco-stdhdrs or --disable-draco-stdhdrs was given.
-if test "${enable_draco_stdhdrs+set}" = set; then
-  enableval="$enable_draco_stdhdrs"
 
 fi;
 
