@@ -31,7 +31,7 @@ void field_ts_advisor::set_floor(const FT &y1, double frac)
     Require(invariant_satisfied());
     Require(frac > 0.);
     double x1 = -large();
-    for (FT::const_iterator py1 = y1.begin(); py1 != y1.end(); py1++) 
+    for (typename FT::const_iterator py1 = y1.begin(); py1 != y1.end(); py1++) 
     {
 	if (*py1 > x1)
 	{
@@ -69,8 +69,8 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
 	x2 = 1.;
     }
 
-    FT::const_iterator pq_new = q_new.begin();
-    for (FT::const_iterator pq_old = q_old.begin(); 
+    typename FT::const_iterator pq_new = q_new.begin();
+    for (typename FT::const_iterator pq_old = q_old.begin(); 
 	 pq_old != q_old.end(); pq_old++,pq_new++) 
     {
 	
