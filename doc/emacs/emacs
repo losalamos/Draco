@@ -11,7 +11,7 @@
 ;;
 
 ;; Set variables that point to personal elisp stuff...
-(setq my-home-dir (concat (getenv "HOME") "/")
+(setq my-home-dir (concat (getenv "HOME") "/"))
 (setq my-elisp-dir (concat my-home-dir "lib/elisp/"))
 (setq my-templates-dir (concat my-elisp-dir "templates/"))
 (setq my-info-dir (concat my-elisp-dir "info/"))
