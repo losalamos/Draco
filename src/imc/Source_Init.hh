@@ -68,6 +68,20 @@ private:
     typename MT::CCSF_int ncen;
     int ncentot;
 
+  // number of surface source and volume source particles
+    typename MT::CCSF_int nvol;
+    typename MT::CCSF_int nss;
+    int nvoltot;
+    int nsstot;
+
+  // energy loss due to inadequate sampling of ss and vol sources
+    double eloss_vol;
+    double eloss_ss;
+
+  // energy weights for ss and vol particles
+    typename MT::CCSF_double ew_vol;
+    typename MT::CCSF_double ew_ss;
+
   // private member functions used to calc initial source information
 
   // number of source particles, census, source energies, number of volume
@@ -75,7 +89,7 @@ private:
     void calc_num_part();
     void calc_initial_census(const MT &,const Opacity<MT> &, 
 			     const Mat_State<MT> &, const Rnd_Control &);
-    void calc_source_energies();
+    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_source_numbers();
 
   // initial census service functions
@@ -87,11 +101,12 @@ private:
 
 public:
     template<class IT>
-    explicit Source_Init(SP<IT>, SP<MT>);
+    Source_Init(SP<IT>, SP<MT>);
 
   // source initialyzer function
     void initialize(const MT &, const Opacity<MT> &, const Mat_State<MT> &,
-		    const Rnd_Control &);
+		    const Rnd_Control &, int);
+};
 
 CSPACE
 

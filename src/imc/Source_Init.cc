@@ -25,21 +25,22 @@ using std::ofstream;
 // public member functions
 //---------------------------------------------------------------------------//
 // source initialyzer -- this is the main guy
+
 template<class MT>
 void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
 				 const Mat_State<MT> &state, 
-				 const Rnd_Control &rcontrol)
+				 const Rnd_Control &rcontrol, int cycle)
 {
   // calculate number of particles
     calc_num_part();
 
-  // on first pass do initial source census
+  // on first pass do initial source census, on all cycles calc source
+  // energies 
     if (cycle == 1)
 	calc_initial_census(mesh, opacity, state, rcontrol);
-
-  // calculate source energies
-    calc_source_energies();
-
+    else
+	calc_source_energies(opacity, state);
+	
   // calculate source numbers
     calc_source_numbers();
 }
@@ -84,10 +85,11 @@ void Source_Init<MT>::calc_initial_census(const MT &mesh,
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::calc_source_energies()
+void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity, 
+					   const Mat_State<MT> &state)
 {
   // calc vol emission
-    calc_evol();
+    calc_evol(opacity, state);
 
   // calc surface source
     calc_ess();
@@ -100,15 +102,39 @@ void calc_source_numbers()
 {
   // calculate numbers of different quantities necessary for the source
 
-    nsource    = npwant - ncentot;
-    esource    = evoltot + esstot;
-    part_per_e = nsource / esource;
+    int nsource       = npwant - ncentot;
+    double esource    = evoltot + esstot;
+    double part_per_e = nsource / esource;
 
-  // calculate volume source number
-    calc_nvol();
-    
-  // calculate surface source number
-    calc_nss();
+  // calculate volume source number and surface source numbers
+
+  // re-initialize totals
+    nvoltot = 0;
+    nsstot  = 0;
+    eloss_vol = 0.0;
+    eloss_ss  = 0.0;
+
+  // loop over cells to calculate number of vol and ss particles
+    for (int cell = 1; cell <= nvol.get_Mesh().num_cells(); cell++)
+    {
+      // calculate volume source info
+	nvol(cell) = static_cast<int>(evol(cell) * part_per_e + .5);
+	if (nvol(cell) > 0)
+	    ew_vol(cell) = evol(cell) / nvol(cell);
+	else
+	    ew_vol(cell) = 0.0;
+	nvoltot += nvol(cell);
+	eloss_vol += evol(cell) - nvol(cell) * ew_vol(cell);
+
+      // calculate surface source info
+	nss(cell) = static_cast<int>(ess(cell) * part_per_e + .5);
+	if (nss(cell) > 0)
+	    ew_ss(cell) = ess(cell) / nss(cell);
+	else
+	    ew_ss(cell) = 0.0;
+	nsstot += nss(cell);
+	eloss_ss += ess(cell) - nss(cell) * ew_ss(cell);
+    }	
 }
 
 //---------------------------------------------------------------------------//
@@ -174,7 +200,7 @@ void Source_Init<MT>::calc_ess()
 template<class MT>
 void Source_Init<MT>::calc_erad()
 {
-      // reset evoltot
+      // reset eradtot
     eradtot = 0.0;
 
   // calc radiation energy in each cell and accumulate total radiation energy 
