@@ -107,25 +107,35 @@ Solving for $\overline{T}$:
 This equation provides a formula for the calculation of 
 cell average temperatures. 
 
+\section{Initialization of Radiation Intensity}
+
+On the first time-step, the radiation intensity in a multi-material cell
+can be initialized to a value consistent
+with the cell average temperature calculated from equation~(\ref{eq:tbar}).
+ On subsequent time-steps the intensity
+from the previous time-step can be used as an initial intensity.
+No attempt is made to map intensities from cell-average values to
+individual materials or visa-versa.
+
 \section{Cell Average Material Properties}
 
 We calculate effective average heat capacity of a cell as an example
 material property. Again using the principal of energy conservation, 
-we wish to calculate a $\overline{c_{v}}$ such that:
+we wish to calculate a $\overline{c}_{v}$ such that:
 \begin{equation}
-\sum_{j=1}^{nmat} \overline{c_{v}}  V_{j} 
+\sum_{j=1}^{nmat} \overline{c}_{v}  V_{j} 
 (\overline{T}^{n+1}-\overline{T}^{n})   = 
 \sum_{j=1}^{nmat} c_{v,j} V_{j} (T_{j}^{n+1}-T_{j}^{n})
 \end{equation}
 Using the definition of $\overline{T}$ from equation~(\ref{eq:tbar}):
 \begin{equation}
-\sum_{j=1}^{nmat}  \overline{c_{v}} V_{j}  
+\sum_{j=1}^{nmat}  \overline{c}_{v} V_{j}  
 (\overline{T}^{n+1}-\overline{T}^{n})   = 
  \sum_{j=1}^{nmat} c_{v,j} V_{j} (\overline{T}^{n+1}-\overline{T}^{n})
 \end{equation}
-Solving for $\overline{c_{v}}$:
+Solving for $\overline{c}_{v}$:
 \begin{equation}
-\overline{c_{v}} = \frac{ \sum_{j=1}^{nmat} c_{v,j} V_{j} } 
+\overline{c}_{v} = \frac{ \sum_{j=1}^{nmat} c_{v,j} V_{j} } 
 {\sum_{j=1}^{nmat} V_{j}}
 \label{eq:cvbar}
 \end{equation}
@@ -150,57 +160,6 @@ Other material properties can be calculated in a fashion similar
 to the specific heat and the absorption opacity, i.e.,
 as a volume weighted average.
 
-\section{Material Temperatures at $t^{n+1}$}
-
-The hallmark of the temperature-equilibration method is to assume
-that all materials in a cell are at the some uniform temperature 
-$\widehat{T}^{n+1}$
-at the end of a time-cycle:
-\begin{equation}
-T_{j}^{n+1} = \widehat{T}^{n+1}
-\end{equation}
-In order to determine the value of $\widehat{T}^{n+1}$ 
-we write an energy balance equation within the computational cell:
-\begin{equation}
- \sum_{j=1}^{nmat} \overline{c_{v}} V_{j} 
-(\overline{T}^{n+1}-\overline{T}^{n}) = 
-\sum_{j=1}^{nmat} c_{v,j} V_{j} (\widehat{T}^{n+1} - T_{j}^{n})
-\end{equation}
-Rearranging terms to solve for $\widehat{T}^{n+1}$:
-\begin{equation}
-\widehat{T}^{n+1} = \frac{ \sum_{j=1}^{nmat} \overline{c_{v}} V_{j}    
-(\overline{T}^{n+1}-\overline{T}^{n}) +
-\sum_{j=1}^{nmat} c_{v,j} V_{j} T_{j}^{n} }
-{\sum_{j=1}^{nmat} c_{v,j}V_{j}}
-\end{equation}
-Substituting from equation~(\ref{eq:cvbar}) for $\overline{c_{v}}$, and
-making use of the definition of $\overline{T}$ given in 
-equation~(\ref{eq:tbar}), we find:
-\begin{equation}
-\widehat{T}^{n+1} = \overline{T}^{n+1} - \overline{T}^{n} + \overline{T}^{n}
-\end{equation}
-\begin{equation}
-\widehat{T}^{n+1} = \overline{T}^{n+1}
-\end{equation}
-Thus we find that the end-of-cycle material temperatures are simply the cell
-average end-of-cycle temperature.
-
-\section{Material Energy Deposition}
-Given individual material temperatures from the preceding section,
-calculation of individual material energy depositions is straight-forward:
-\begin{equation}
-\Delta E_{j} = c_{v,j} V_{j} (\overline{T}^{n+1}-T_{j}^{n})
-\end{equation}
-The total energy deposited in the cell can then be calculated as
-the sum of the individual material energy changes:
-\begin{equation}
-\Delta E = \sum_{j=1}^{nmat} \Delta E_{j}
-\end{equation}
-or, alternatively, in terms of cell average quantities:
-\begin{equation}
-\Delta E = \overline{c_v}\sum_{j=1}^{nmat} V_{j}
-(\overline{T}^{n+1} - \overline{T}^{n})
-\end{equation}
 
 \section{Determination of Face Temperatures}
 
@@ -238,6 +197,69 @@ energy propagated from one cell to another is affected by the choice of the
 constant $\gamma$. Lacking any information about material properties
 in the general case, we recommend a value of $\gamma = 0.5$ as a
 reasonable initial value.
+
+\section{Transport Calculation}
+
+Given cell-average data computed from the formulas in the
+preceding sections, a uni-material cell transport method can
+be invoked to advance the various cell-average unknowns 
+from t$^{n}$ to t$^{n+1}$
+in the usual manner. The formulas to be presented in the following
+sections can then be used to map the new cell-average values to
+the individual materials in multi-material cells.
+
+\section{Material Temperatures at $t^{n+1}$}
+
+The hallmark of the temperature-equilibration method is to assume
+that all materials in a cell are at the some uniform temperature 
+$\widehat{T}^{n+1}$
+at the end of a time-cycle:
+\begin{equation}
+T_{j}^{n+1} = \widehat{T}^{n+1}
+\end{equation}
+In order to determine the value of $\widehat{T}^{n+1}$ 
+we write an energy balance equation within the computational cell:
+\begin{equation}
+ \sum_{j=1}^{nmat} \overline{c}_{v} V_{j} 
+(\overline{T}^{n+1}-\overline{T}^{n}) = 
+\sum_{j=1}^{nmat} c_{v,j} V_{j} (\widehat{T}^{n+1} - T_{j}^{n})
+\end{equation}
+Rearranging terms to solve for $\widehat{T}^{n+1}$:
+\begin{equation}
+\widehat{T}^{n+1} = \frac{ \sum_{j=1}^{nmat} \overline{c}_{v} V_{j}    
+(\overline{T}^{n+1}-\overline{T}^{n}) +
+\sum_{j=1}^{nmat} c_{v,j} V_{j} T_{j}^{n} }
+{\sum_{j=1}^{nmat} c_{v,j}V_{j}}
+\end{equation}
+Substituting from equation~(\ref{eq:cvbar}) for $\overline{c}_{v}$, and
+making use of the definition of $\overline{T}$ given in 
+equation~(\ref{eq:tbar}), we find:
+\begin{equation}
+\widehat{T}^{n+1} = \overline{T}^{n+1} - \overline{T}^{n} + \overline{T}^{n}
+\end{equation}
+\begin{equation}
+\widehat{T}^{n+1} = \overline{T}^{n+1}
+\end{equation}
+Thus we find that the end-of-cycle material temperatures are simply the cell
+average end-of-cycle temperature.
+
+\section{Material Energy Deposition}
+Given individual material temperatures from the preceding section,
+calculation of individual material energy depositions is straight-forward:
+\begin{equation}
+\Delta E_{j} = c_{v,j} V_{j} (\overline{T}^{n+1}-T_{j}^{n})
+\end{equation}
+The total energy deposited in the cell can then be calculated as
+the sum of the individual material energy changes:
+\begin{equation}
+\Delta E = \sum_{j=1}^{nmat} \Delta E_{j}
+\end{equation}
+or, alternatively, in terms of cell average quantities:
+\begin{equation}
+\Delta E = \overline{c}_{v}\sum_{j=1}^{nmat} V_{j}
+(\overline{T}^{n+1} - \overline{T}^{n})
+\end{equation}
+
 
 \section{Method Characteristics}
 
