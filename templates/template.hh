@@ -7,9 +7,12 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#ifndef __<pkg>_<class>_hh__
-#define __<pkg>_<class>_hh__
+#ifndef __<spkg>_<class>_hh__
+#define __<spkg>_<class>_hh__
 
+namespace rtt_<spkg>
+{
+ 
 //===========================================================================//
 // class <class> - 
 //
@@ -22,16 +25,35 @@
 //===========================================================================//
 
 class <class> 
-{<start>
-public:
+{
+
+    // NESTED CLASSES AND TYPEDEFS
+
+    // DATA
+    
+  public:
+
+    // CREATORS
+    
     <class>();
-    <class>( const <class> & );
+    <class>(const <class> &rhs);
     ~<class>();
-    <class> &operator=( const <class> & );
+
+    // MANIPULATORS
+    
+    <class>& operator=(const <class> &rhs);
+
+    // ACCESSORS
+
+  private:
+    
+    // IMPLEMENTATION
 };
 
-#endif                          // __<pkg>_<class>_hh__
+} // end namespace rtt_<spkg>
+
+#endif                          // __<spkg>_<class>_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of <class>.hh
+//                              end of <pkg>/<class>.hh
 //---------------------------------------------------------------------------//

@@ -7,8 +7,8 @@
 // @> Version function for <pkg> library
 //---------------------------------------------------------------------------//
 
-#ifndef __<pkg>_Version_hh__
-#define __<pkg>_Version_hh__
+#ifndef __<spkg>_Version_hh__
+#define __<spkg>_Version_hh__
 
 //===========================================================================//
 // namespace version - 
@@ -21,12 +21,12 @@
 
 #include <string>
 
-namespace rtt_<pkg> 
+namespace rtt_<spkg> 
 {
     const std::string version();
 }
 
-#endif                          // __<pkg>_Version_hh__
+#endif                          // __<spkg>_Version_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of Version.hh

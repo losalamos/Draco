@@ -9,13 +9,13 @@
 
 #include "Version.hh"
 
-namespace rtt_<pkg>
+namespace rtt_<spkg>
 {
   // function definition for Version, define the local version number for
-  // this library in the form <pkg>_#.#.# in pkg_version variable
+  // this library in the form <spkg>_#.#.# in pkg_version variable
     const string version()
     {
-	string pkg_version = "<pkg>_<start>#.#.#";
+	string pkg_version = "<spkg>_<start>#.#.#";
 	return pkg_version;
     }
 }
