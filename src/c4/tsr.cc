@@ -333,6 +333,42 @@ void t6()
 }
 
 //---------------------------------------------------------------------------//
+// Test send and receive of long messages.  Longer than C4_max_buf_sz in the
+// SHMEM messaging lyaer.
+//---------------------------------------------------------------------------//
+
+void t7()
+{
+    int nels = 10000;
+    int *px = new int[ nels ];
+
+    if (mynode == 0)
+    {
+	for( int i=0; i < nels; i++ )
+	    px[i] = i;
+
+	Send( px, nels, 1 );
+    }
+
+    if (mynode == 1)
+    {
+	for( int i=0; i < nels; i++ )
+	    px[i] = 0;
+
+	Recv( px, nels, 0 );
+
+	bool sf = true;
+	for( int i=0; i < nels; i++ )
+	    if (px[i] != i) sf = false;
+
+	if (sf)
+	    cout << "\t\t >> t7 succeeded <<\n" << flush;
+	else
+	    cout << "*** t7 failed! ***\n" << flush;
+    }
+}
+
+//---------------------------------------------------------------------------//
 
 int main( int argc, char *argv[] )
 {
@@ -348,6 +384,7 @@ int main( int argc, char *argv[] )
     t5();
 //     C4_shm_dbg_1();
     t6();
+    t7();
 
     gsync();
     Finalize();
