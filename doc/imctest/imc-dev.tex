@@ -4,7 +4,8 @@
 %%---------------------------------------------------------------------------%%
 \documentclass[12pt]{article}
 \usepackage{epsfig,graphicx}
-\usepackage{cite}
+\usepackage{imc}
+\usepackage{cite,}
 \usepackage{tmath}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb}
@@ -28,10 +29,12 @@
 %% HEADER STUFF
 %%---------------------------------------------------------------------------%%
 
-\title{title}
-\author{T.M. Evans \\
+\title{\imctest Developers Manual}
+\author{T.M. Evans and T.J. Urbatsch \\
  X--TM, MS D409 \\ Los Alamos National Laboratory \\
  Los Alamos, NM 87544 \\ tme@lanl.gov}
+
+\pagestyle{headings}
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
@@ -44,16 +47,10 @@
 %% BODY
 %%---------------------------------------------------------------------------%%
 
-\begin{abstract}
-...
-\end{abstract}
+\input{abstract}
+\input{intro}
 
-\input{opacity-oo.cfg}
-
-\cdFramedFigure{opacity-int}{Opacity interface.}
-\cdFramedFigure{opacity-oo}{Opacity overloaded operators.}
-\cdFramedFigure{particle-int}{Particle interface.}
-\cdFramedFigure{particle-oo}{Particle interface.}
+\input{mt}
 
 %%---------------------------------------------------------------------------%%
 %% BIBLIOGRAPHY
