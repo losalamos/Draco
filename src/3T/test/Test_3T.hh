@@ -10,7 +10,12 @@
 #define __3T_test_Test_3T_hh__
 
 #include "Test_Prob.hh"
+#include "Run_DB.hh"
 #include "Quad_Params.hh"
+
+class ADFile;
+
+#include "linalg/pcg_DB.hh"
 
 //===========================================================================//
 // class Test_3T - Template class for accomodating various formulations
@@ -22,16 +27,33 @@
 
 template<class MT, class Problem>
 class Test_3T : public Test_Prob,
-		private Problem
+		private Run_DB,
+		private Problem,
+		private MT::Coord_Mapper
 {
+    SP<MT> spm;
 
+    Mat2<double> A;
+
+    pcg_DB pcg_db;
+
+    ADFile *adf;
+    
   public:
-    Test_3T( const SP<MT>& spm_, const Quad_Params& q );
+    typedef double NumT;
+
+    Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
+	     const Quad_Params& q, const pcg_DB& pcg_db_ );
 //     Test_3T( const Test_3T& );
 //     ~Test_3T();
 //     Test_3T& operator=( const Test_3T& );
 
     void run();
+
+    int get_ncp() const { return ncp; }
+    int get_nct() const { return nct; }
+    int get_goff() const { return goff; }
+    Mat2<double>& get_A() { return A; }
 };
 
 #endif                          // __3T_test_Test_3T_hh__
