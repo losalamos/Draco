@@ -111,6 +111,9 @@ class Rep_Source_Builder : public Source_Builder<MT,PT>
     // Calculate the initial number of census particles.
     void calc_initial_ncen(ccsf_int &);
 
+    // Recalculate the post-comb census energy-weights for full replication..
+    void recalc_census_ew_after_comb(SP_Mesh);
+
     // Calculate source numbers.
     void calc_source_numbers();
 

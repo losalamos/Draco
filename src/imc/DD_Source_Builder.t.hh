@@ -111,7 +111,7 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
 	// calculate the volume emission and surface source energies
 	calc_source_energies(*state, *opacity);
 
-	// globally sum up volume emission and surfacd source energies
+	// globally sum up volume emission and surface source energies
 	global_evoltot = evoltot;
 	C4::gsum(global_evoltot);
 	global_esstot = esstot;
@@ -129,17 +129,23 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     // comb census
     double eloss_comb = 0;
     if (census->size() > 0)
-	comb_census(rnd_control, local_ncentot, eloss_comb);
+	comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb);
 
-    // update the global values of eloss_cen and the post comb total numbers
-    // of census particles
+    // calculate global values of energy loss and numbers of particles due
+    // to combing the census
     double global_eloss_comb = eloss_comb;
     C4::gsum(global_eloss_comb);
-    global_eloss_cen += global_eloss_comb;
-    
+
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
+    // recalculate and reset the census particles' energy-weights
+    recalc_census_ew_after_comb(mesh);
+    reset_ew_in_census(local_ncentot, global_eloss_comb, global_ecentot);
+
+    // add energy loss from the comb to the global census energy loss
+    global_eloss_cen += global_eloss_comb;
+    
     // build Mesh_Operations class for source
     SP<Mesh_Operations<MT> > mesh_op
 	(new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
@@ -354,6 +360,48 @@ void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
     Check  (parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     Ensure (rtt_rng::rn_stream == global_ncentot);
 }
+
+//---------------------------------------------------------------------------//
+// RECALCULATE ENERGY-WEIGHTS OF CENSUS PARTICLES
+//---------------------------------------------------------------------------//
+/*!  
+ * \brief Recalculate the census particles' energy-weights on each
+ * processor.
+ *
+ * Because of its reproducible nature, the census comb does not conserve
+ * energy exactly.  Therefore, we use the actual, pre-combed census energy
+ * and the number of post-combed census particles in each cell to recalculate
+ * the energy-weight in each cell.  Thus, energy is conserved at the cost of
+ * some degradation in variance reduction.  In a full domain decomposition
+ * topology, the census energies and number of particles in each cell ARE the
+ * global values since no cells are replicated across processors.  (These two
+ * quantities are "Data_Distributed.")
+ * 
+ */
+template<class MT, class PT>
+void DD_Source_Builder<MT,PT>::recalc_census_ew_after_comb(SP_Mesh mesh)
+{
+    // check sizes
+    Require (local_ncen.size() == mesh->num_cells());
+
+    // initialize checks
+    int check_local_ncentot = 0;
+
+    // set the post-comb census energy-weight in each cell
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	if (local_ncen(cell) > 0)
+	    ew_cen(cell) = ecen(cell) / local_ncen(cell);
+	else
+	    ew_cen(cell) = 0.0;
+
+	check_local_ncentot += local_ncen(cell);
+    }
+    
+    // have we conserved the total number of census particles on this proc?
+    Ensure (check_local_ncentot == local_ncentot);
+}
+
 
 //---------------------------------------------------------------------------//
 // CALCULATE NUMBERS OF SOURCE PARTICLES 

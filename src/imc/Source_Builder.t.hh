@@ -26,6 +26,7 @@ using rtt_dsxx::SP;
 using std::pow;
 using std::fabs;
 using std::vector;
+using std::fill;
 using std::string;
 using std::cout;
 using std::endl;
@@ -311,7 +312,7 @@ void Source_Builder<MT,PT>::calc_initial_ecen()
 	ecen(cell) = a * ecen.get_Mesh().volume(cell) *
 	    pow(rad_temp[cell-1], 4);
 
-	// accumulate evoltot
+	// accumulate ecentot on-processor
 	ecentot += ecen(cell);
     }
 }
@@ -412,6 +413,11 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 
     // loop over all cells
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	// calculate the global index for this cell
+	int global_cell = topology->global_cell(cell);
+
+	// loop over the locally desired number of census particles 
 	for (int i = 1; i <= ncen(cell); i++)
 	{
 	    // make a new random number for delivery to Particle
@@ -427,11 +433,12 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 	    // sample frequency (not now; 1 group)
 
 	    // create Particle
-	    SP<PT> particle(new PT(r, omega, ew_cen(cell), cell, random));
+	    SP<PT> particle(new PT(r, omega, ew_cen(cell), global_cell, random));
 
 	    // write particle to census
 	    census->push(particle);
 	}
+    }
 
     // a final assertion
     Ensure (census->size() == ncentot);
@@ -450,13 +457,16 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
  * resulting from the comb.
  *
  * \param rcon rtt_dsxx::SP to a Rnd_Control object
+ * \param local_ncen mutable cell values of post-comb total number of census
+ *                   particles on this processor
  * \param local_ncentot mutable value of post-comb total number of census
- * particles on this processor
+ *                      particles on this processor
  * \param eloss_comb mutable value of the energy loss incurred through
- * combing
+ *                   combing
  */
 template<class MT, class PT>
 void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
+					ccsf_int &local_ncen,
 					int &local_ncentot,
 					double &eloss_comb)
 {
@@ -467,6 +477,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     eloss_comb = 0;
 
     // initialize number of (new, combed) census particles
+    fill(local_ncen.begin(), local_ncen.end(), 0);
     local_ncentot = 0;
 
     // in-function data required for combing
@@ -475,6 +486,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     double ecencheck    = 0.0;
     int    cencell      = 0;
     double cenew        = 0.0;
+    int    local_cell   = 0;
 
     // local accumulation of census energy from the census particles on this
     // processor 
@@ -486,27 +498,33 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     // comb census
     while (census->size())
     {
-	// read census particle and get cencell, ew
+	// read census particle
 	SP<PT> particle = census->top();
 	census->pop();
+
+	// get pertinent census particle attributes
 	cencell      = particle->get_cell();
 	cenew        = particle->get_ew();
 	Sprng random = particle->get_random();
-	Check(cencell > 0 && cencell <= ew_cen.size());
+
+	// get local cell corresponding to census particle's global cell
+	Check (cencell > 0);
+	local_cell = topology->local_cell(cencell);
+	Check (local_cell > 0 && local_cell <= ew_cen.size());
 
 	// add up census energy
 	local_ecentot += cenew;
 	
 	// comb
-	if (ew_cen(cencell) > 0)
+	if (ew_cen(local_cell) > 0)
 	{
-	    dbl_cen_part = (cenew / ew_cen(cencell)) + random.ran();
+	    dbl_cen_part = (cenew / ew_cen(local_cell)) + random.ran();
 	    numcomb = static_cast<int>(dbl_cen_part);
 
 	    // create newly combed census particles
 	    if (numcomb > 0)
 	    {
-		particle->set_ew(ew_cen(cencell));
+		particle->set_ew(ew_cen(local_cell));
 		comb_census->push(particle);
 
 		if (numcomb > 1)
@@ -514,16 +532,17 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 		    {
 			// COPY a new particle and spawn a new RN state
 		      	SP<PT> another(new PT(*particle));
-			Sprng nran     = rcon->spawn(particle->get_random());
+			Sprng nran = rcon->spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
 		    }
 		   
 		// add up newly combed census particles
-		local_ncentot += numcomb;
+		local_ncen(local_cell) += numcomb;
+		local_ncentot          += numcomb;
 	    
 		// check census energy
-		ecencheck  += numcomb * ew_cen(cencell);
+		ecencheck  += numcomb * ew_cen(local_cell);
 	    }
 	}
 	else
@@ -538,7 +557,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 	}
 
 	// add energy loss to eloss_comb
-	eloss_comb += cenew - numcomb * ew_cen(cencell);
+	eloss_comb += cenew - numcomb * ew_cen(local_cell);
     }
 
     Check(census->size() == 0);
@@ -549,7 +568,105 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 
     Ensure(census->size() == local_ncentot);
     Ensure(rtt_mc::global::soft_equiv(ecencheck+eloss_comb, local_ecentot, 
-				      1.e-6));
+				      (local_ncentot+1) * 1.0e-12));
+}
+
+//---------------------------------------------------------------------------//
+// RESET THE PARTICLE EW'S IN THE CENSUS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Go through the census particles on this processor and reset the
+ * energy-weights. 
+ *
+ * Once we have combed the census particles, we recalculate the census
+ * particle energy-weights using recalc_census_ew_after_comb, and, in this
+ * function, we go through each particle in this processor's census and reset
+ * its energy-weight, ew, according to ew_cen.  This post-comb readjustment
+ * of the energy-weights better conserves energy at the cost of increasing
+ * the variance somewhat. This readjustment is necessary because of the
+ * nature of the reproducible comb.  This function also takes the global
+ * census energy loss, global_eloss_cen, as an argument and updates it.
+ * Since the census is always local, this function applies to any topology.
+ *
+ * \param local_ncentot const value of post-comb total number of census
+ *                      particles on this processor--used as a check
+ * \param global_eloss_cen mutable value of the energy loss in the census
+ * \param global_ecentot const value of global, total value of census energy 
+ *                       used as a check
+ * 
+ */
+template<class MT, class PT>
+void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
+					       double &global_eloss_comb,
+					       const double &global_ecentot)
+{
+    // check consistency of the census size and local_ncentot
+    Require(census->size() == local_ncentot);
+
+    // calculate global ncentot inside the scope of this function
+    int global_ncentot = local_ncentot;
+    C4::gsum(global_ncentot);
+
+    // make a new census bank to hold census particle with updated ew's
+    SP_Census updated_census(new Particle_Buffer<PT>::Census());
+
+    // initialize local, global energy loss due to the ew readjustment.
+    // hopefully the global_incremental_eloss takes global_eloss_comb closer
+    // to zero!
+    double incremental_eloss        = 0.0;
+    double global_incremental_eloss = 0.0;
+    double check_ecentot            = 0.0;
+    double check_global_ecentot     = 0.0;
+
+    // update census particles' energy-weights
+    while (census->size())
+    {
+	// get particle off census list
+	SP<PT> particle = census->top();
+	census->pop();
+
+	// get census particle's cell (always global); convert to local
+	int cencell = particle->get_cell();
+	Check (cencell > 0);
+	int local_cell = topology->local_cell(cencell);
+	Check (local_cell > 0);
+	Check (local_cell <= num_cells());
+
+	// sum up the energy change due to ew readjustment
+	incremental_eloss += (particle->get_ew() - ew_cen(local_cell));
+
+	// readjust the particle's energy-weight
+	particle->set_ew(ew_cen(local_cell));
+
+	// accumulate on-processor ecentot check
+	check_ecentot += ew_cen(local_cell);
+
+	// push particle into the updated census 
+	updated_census->push(particle);
+    }
+
+    // check for appropriate sizes
+    Check (census->size() == 0);
+    Check (updated_census->size() == local_ncentot);
+
+    // reassign the census pointer
+    census = updated_census;
+
+    // sum up all processors' energy loss due to ew readjustment
+    global_incremental_eloss = incremental_eloss;
+    C4::gsum(global_incremental_eloss);
+
+    // update the global census energy loss 
+    global_eloss_comb += global_incremental_eloss;
+
+    // sum up all processors' check_ecentot and test 
+    check_global_ecentot = check_ecentot;
+    C4::gsum(check_global_ecentot);
+
+    Check(rtt_mc::global::soft_equiv(check_global_ecentot+global_eloss_comb,
+				     global_ecentot,
+				     static_cast<double>(global_ncentot+1) *
+				     1.0e-14));
 }
 
 } // end of rtt_imc

@@ -278,7 +278,10 @@ class Source_Builder
 			      const int &, const ccsf_int &);
 
     // Comb local census.
-    void comb_census(SP_Rnd_Control, int &, double &);
+    void comb_census(SP_Rnd_Control, ccsf_int &, int &, double &);
+
+    // Reset the energy-weight of each particle in the local census.
+    void reset_ew_in_census(const int &, double &, const double &);
 
   public:
     // Constructor.
