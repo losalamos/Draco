@@ -941,6 +941,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
+	mpi_libs="-lpmpich $mpi_libs -lz"
 
        # 
        # setup lapack 
@@ -1005,23 +1006,6 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 	   AC_MSG_RESULT("not needed")
        fi
 
-       #
-       # add librt to LIBS if udm is used
-       #
-       AC_MSG_CHECKING("librt requirements")
-       if test -n "${vendor_udm}"; then
-
-	   # Add rt for g++
-	   if test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lrt"
-	       AC_MSG_RESULT("-lrt added to LIBS")
-           else
-               AC_MSG_RESULT("not needed")
-	   fi
-
-       else
-           AC_MSG_RESULT("not needed")
-       fi
 
        #
        # If dlopen is specified, 1) add libdl to LIBS; 
