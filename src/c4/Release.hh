@@ -16,7 +16,7 @@
 /*!
 
  * \page c4_overview Overview of the C4 package
- * \version 1_4_0
+ * \version 1_5_0
  * \author Tom Evans, Randy Roberts, Michelle Murillo
 
  * The c4 package is a set of classes and functions that provide wrappers for
@@ -60,7 +60,9 @@
 
 namespace rtt_c4 
 {
-    const std::string release();
+
+const std::string release();
+
 }
 
 #endif                          // __c4_Release_hh__
