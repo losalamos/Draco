@@ -1,0 +1,45 @@
+puts "Running tests of DS++ Allocators component."
+
+load_lib draco.exp
+
+global ENV
+
+puts "value of ENV is $ENV"
+
+puts "Running tstAllocators_$ENV"
+
+set output [exec tstAllocators_$ENV]
+
+# Check the output of tS1
+
+if {[regexp "tS1<int>: passed" $output]} {
+    pass tS1<int>
+} else {
+    fail tS1<int>
+}
+
+# Check the output of tG1
+
+if {[regexp "tG1<int>: passed" $output]} {
+    pass tG1<int>
+} else {
+    fail tG1<int>
+}
+
+# Check the output of tG2
+
+if {[regexp "tG2<int>: passed" $output]} {
+    pass tG2<int>
+} else {
+    fail tG2<int>
+}
+
+# Check the output of tG3
+
+if {[regexp "tG3<int>: passed" $output]} {
+    pass tG3<int>
+} else {
+    fail tG3<int>
+}
+
+# All done with tests of tstAllocators_$(env)
