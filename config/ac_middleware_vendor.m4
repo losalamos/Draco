@@ -162,8 +162,8 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_MIDDLEWARE, [dnl
 
-   dnl $1 is the middleware vendor name
-   dnl $2 are the libraries (packages)
+   dnl arg 1 is the middleware vendor name
+   dnl arg 2 are the libraries (packages)
 
    if test ${has_$1_libdir:=no} != "yes" ; then
        
