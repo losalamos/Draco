@@ -232,19 +232,21 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
 
   // data necessary to build Source on host
     SP<Source<MT> > host_source;
-    vector<vector<int> > vol(2), ss(2);
-    for (int i = 0; i < 2; i++)
-    {
-	vol[i].resize(mesh->num_cells());
-	ss[i].resize(mesh->num_cells());
-    }
+    typename MT::CCSF_int volrn(mesh);
+    typename MT::CCSF_int nvol(mesh);
+    typename MT::CCSF_double ew_vol(mesh);
+    typename MT::CCVF_double t4_slope(mesh);
+    typename MT::CCSF_int ssrn(mesh);
+    typename MT::CCSF_int nss(mesh);
+    typename MT::CCSF_int fss(mesh);
+    typename MT::CCSF_double ew_ss(mesh);
 
   // send the numbers of each type of source to the other processors
     for (int i = 1; i < nodes(); i++)
     {
-	Send (sinit.get_ncentot(), i, 30);
-	Send (sinit.get_nvoltot(), i, 31);
-	Send (sinit.get_nsstot(), i, 32);
+	Send (sinit.get_ncentot(), i, 34);
+	Send (sinit.get_nvoltot(), i, 35);
+	Send (sinit.get_nsstot(), i, 36);
     }
 
   // first distribute the census
@@ -253,17 +255,11 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
 
   // next do the volume source
     if (sinit.get_nvoltot() > 0)
-	vol = dist_vol(sinit);
+	dist_vol(sinit, volrn, nvol, ew_vol, t4_slope);
 
   // finally do the surface source
     if (sinit.get_nsstot() > 0)
-	ss = dist_ss(sinit);
-
-  // now let's build the source on the host
-    typename MT::CCSF_int volrn(mesh, vol[1]);
-    typename MT::CCSF_int nvol(mesh, vol[0]);
-    typename MT::CCSF_int ssrn(mesh, ss[1]);
-    typename MT::CCSF_int nss(mesh, ss[0]);
+	dist_ss(sinit, ssrn, nss, fss, ew_ss);
 
   // get the number of volume, census, and surface sources for this processor
     int ncentot = 0;
@@ -276,7 +272,8 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, const Source_Init<MT> &sinit,
     }
 
   // make the source
-    host_source = new Source<MT>(volrn, nvol, ssrn, nss, "census.0", 
+    host_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope,
+				 ssrn, nss, fss, ew_ss, "census.0", 
 				 nvoltot, nsstot, ncentot, rcon, buffer);
 
   // return source
@@ -302,15 +299,19 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Rnd_Control> rcon,
     int global_ncentot;
     int global_nvoltot;
     int global_nsstot;
-    Recv (global_ncentot, 0, 30);
-    Recv (global_nvoltot, 0, 31);
-    Recv (global_nsstot, 0, 32);
+    Recv (global_ncentot, 0, 34);
+    Recv (global_nvoltot, 0, 35);
+    Recv (global_nsstot, 0, 36);
 
   // define the variables for Source construction
     typename MT::CCSF_int volrn(mesh);
     typename MT::CCSF_int nvol(mesh);
+    typename MT::CCSF_double ew_vol(mesh);
+    typename MT::CCVF_double t4_slope(mesh);
     typename MT::CCSF_int ssrn(mesh);
     typename MT::CCSF_int nss(mesh);
+    typename MT::CCSF_int fss(mesh);
+    typename MT::CCSF_double ew_ss(mesh);
 
   // receive the census
     if (global_ncentot)
@@ -318,11 +319,11 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Rnd_Control> rcon,
 
   // receive the volume source
     if (global_nvoltot)
-	recv_vol(volrn, nvol);
+	recv_vol(volrn, nvol, ew_vol, t4_slope);
 
   // receive the surface source
     if (global_nsstot)
-	recv_ss(ssrn, nss);
+	recv_ss(ssrn, nss, fss, ew_ss);
 
   // get the number of volume, census, and surface sources for this processor
     int ncentot = 0;
@@ -339,7 +340,8 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Rnd_Control> rcon,
     cenfile << "census." << node();
 
   // make the source
-    imc_source = new Source<MT>(volrn, nvol, ssrn, nss, cenfile.str(), 
+    imc_source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, 
+				fss, ew_ss, cenfile.str(), 
 				nvoltot, nsstot, ncentot, rcon, buffer);
 
   // return source
@@ -467,14 +469,16 @@ void Parallel_Builder<MT>::recv_census(const Particle_Buffer<PT> &buffer)
 //---------------------------------------------------------------------------//
 // distribute the volume source stuff
 	    
-template<class MT> vector<vector<int> > 
-Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
+template<class MT> 
+void Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit,
+				    typename MT::CCSF_int &volrn,
+				    typename MT::CCSF_int &numvol,
+				    typename MT::CCSF_double &ew,
+				    typename MT::CCVF_double &t4_slope)
 {
-  // return data for the host source
-    vector<vector<int> > host_vol(2);
-
   // find the number of cells on the global mesh
     int num_cells = procs_per_cell.size();
+    int dimension = numvol.get_Mesh().get_Coord().get_dim();
     Require (num_cells > 0);
 
   // make the volume source counters
@@ -506,6 +510,8 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
       // make a c-style array for passing to other nodes
 	int *nvol_send   = new int[num_cells];
 	int *stream_send = new int[num_cells];
+	double *ew_send  = new double[num_cells];
+	double *t4_send  = new double[num_cells * dimension];
 	
       // loop through cells on this processor and send stuff out
 	for (int cell = 1; cell <= num_cells; cell++)
@@ -513,8 +519,14 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 	  // determine the global cell index
 	    int global_cell = cells_per_proc[i][cell-1];
 
-	  // calculate the nvol source
+	  // calculate the nvol source, ew, and slope
 	    nvol_send[cell-1] = nvol[global_cell-1];
+	    ew_send[cell-1]   = sinit.get_ew_vol(global_cell);
+	    for (int d = 0; d < dimension; d++)
+	    {
+		int ptr               = d * num_cells;
+		t4_send[ptr + cell-1] = sinit.get_t4_slope(d+1, global_cell);
+	    } 
 
 	  // check to see if we need to add extra sources to this cell on
 	  // this processor
@@ -536,33 +548,39 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 	    Send (num_cells, i, 24);
 	    Send (nvol_send, num_cells, i, 25);
 	    Send (stream_send, num_cells, i, 26);
+	    Send (ew_send, num_cells, i, 27);
+	    Send (t4_send, num_cells * dimension, i, 28);
 	}
 	else
 	{
 	  // return the needed source stuff for the host
 	  
-	  // nvol and stream num data
-	    host_vol[0].resize(num_cells);
-	    host_vol[1].resize(num_cells);
+	  // some assertions	    
+	    Check (num_cells == numvol.get_Mesh().num_cells());
 
-	  // assign the vectors to our point array
-	    for (int n = 0; n < num_cells; n++)
+	  // assign the data
+	    for (int n = 1; n <= num_cells; n++)
 	    {
-		host_vol[0][n] = nvol_send[n];
-		host_vol[1][n] = stream_send[n];
+		volrn(n)  = stream_send[n-1];
+		numvol(n) = nvol_send[n-1];
+		ew(n)     = ew_send[n-1];
+		for (int d = 0; d < dimension; d++)
+		{
+		    int ptr          = d * num_cells;
+		    t4_slope(d+1, n) = t4_send[ptr + n-1];
+		}
 	    }
 	}
 
       // reclaim dynamic memory
 	delete [] nvol_send;
 	delete [] stream_send;
+	delete [] ew_send;
+	delete [] t4_send;
     }
 
   // final assertion
     Ensure (voltot == sinit.get_nvoltot());
-
-  // return the host volume source to the host processor
-    return host_vol;
 }
 
 //---------------------------------------------------------------------------//
@@ -570,42 +588,60 @@ Parallel_Builder<MT>::dist_vol(const Source_Init<MT> &sinit)
 
 template<class MT>
 void Parallel_Builder<MT>::recv_vol(typename MT::CCSF_int &volrn,
-				    typename MT::CCSF_int &nvol)
+				    typename MT::CCSF_int &nvol, 
+				    typename MT::CCSF_double &ew,
+				    typename MT::CCVF_double &t4)
 {
     Require (volrn.get_Mesh() == nvol.get_Mesh());
+    Require (ew.get_Mesh()    == nvol.get_Mesh());
+    Require (t4.get_Mesh()    == t4.get_Mesh());
 
   // lets get the size of the thing from the host processor
     int num_cells;
+    int dimension = volrn.get_Mesh().get_Coord().get_dim();
     Recv (num_cells, 0, 24);
     Check (num_cells == volrn.get_Mesh().num_cells());
 
   // receive the volume source data from the host processor
     int *nvol_recv   = new int[num_cells];
     int *stream_recv = new int[num_cells];
+    double *ew_recv  = new double[num_cells];
+    double *t4_recv  = new double[num_cells * dimension];
     Recv (nvol_recv, num_cells, 0, 25);
     Recv (stream_recv, num_cells, 0, 26);
+    Recv (ew_recv, num_cells, 0, 27);
+    Recv (t4_recv, num_cells * dimension, 0, 28);
 
   // assign data to the CCSFs
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	nvol(cell)  = nvol_recv[cell-1];
 	volrn(cell) = stream_recv[cell-1];
+	ew(cell)    = ew_recv[cell-1];
+	for (int d = 0; d < dimension; d++)
+	{
+	    int ptr       = d * num_cells;
+	    t4(d+1, cell) = t4_recv[ptr + cell-1];
+	}
     }
 
   // release the dynamic storage
     delete [] nvol_recv;
     delete [] stream_recv;
+    delete [] ew_recv;
+    delete [] t4_recv;
 }
 
 //---------------------------------------------------------------------------//
 // distribute the surface source stuff
 	    
-template<class MT> vector<vector<int> > 
-Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
+template<class MT>
+void Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit,
+				   typename MT::CCSF_int &ssrn,
+				   typename MT::CCSF_int &numss,
+				   typename MT::CCSF_int &fss,
+				   typename MT::CCSF_double &ew)
 {
-  // return data for the host source
-    vector<vector<int> > host_ss(2);
-
   // find the number of cells on the global mesh
     int num_cells = procs_per_cell.size();
     Require (num_cells > 0);
@@ -637,8 +673,10 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 	int num_cells = cells_per_proc[i].size();
 
       // make a c-style array for passing to other nodes
-	int *nss_send   = new int[num_cells];
+	int *nss_send    = new int[num_cells];
 	int *stream_send = new int[num_cells];
+	int *fss_send    = new int[num_cells];
+	double *ew_send  = new double[num_cells];
 	
       // loop through cells on this processor and send stuff out
 	for (int cell = 1; cell <= num_cells; cell++)
@@ -646,8 +684,10 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 	  // determine the global cell index
 	    int global_cell = cells_per_proc[i][cell-1];
 
-	  // calculate the nss source
+	  // calculate the nss source, fss, and ew
 	    nss_send[cell-1] = nss[global_cell-1];
+	    fss_send[cell-1] = sinit.get_fss(global_cell);
+	    ew_send[cell-1]  = sinit.get_ew_ss(global_cell);
 
 	  // check to see if we need to add extra sources to this cell on
 	  // this processor
@@ -666,36 +706,38 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 	if (i)
 	{
 	  // send to proc i if we are not on the host
-	    Send (num_cells, i, 27);
-	    Send (nss_send, num_cells, i, 28);
-	    Send (stream_send, num_cells, i, 29);
+	    Send (num_cells, i, 29);
+	    Send (nss_send, num_cells, i, 30);
+	    Send (stream_send, num_cells, i, 31);
+	    Send (fss_send, num_cells, i, 32);
+	    Send (ew_send, num_cells, i, 33);
 	}
 	else
 	{
 	  // return the needed source stuff for the host
 	  
-	  // nss and stream num data
-	    host_ss[0].resize(num_cells);
-	    host_ss[1].resize(num_cells);
+	  // some assertions
+	    Check (num_cells == numss.get_Mesh().num_cells());
 
 	  // assign the vectors to our point array
-	    for (int n = 0; n < num_cells; n++)
+	    for (int n = 1; n <= num_cells; n++)
 	    {
-		host_ss[0][n] = nss_send[n];
-		host_ss[1][n] = stream_send[n];
+		ssrn(n)  = stream_send[n-1];
+		numss(n) = nss_send[n-1];
+		fss(n)   = fss_send[n-1];
+		ew(n)    = ew_send[n-1];
 	    }
 	}
 
       // reclaim dynamic memory
 	delete [] nss_send;
 	delete [] stream_send;
+	delete [] fss_send;
+	delete [] ew_send;
     }
 
   // final assertion
     Ensure (sstot == sinit.get_nsstot());
-
-  // return the host surface source to the host processor
-    return host_ss;
 }
 
 //---------------------------------------------------------------------------//
@@ -703,31 +745,43 @@ Parallel_Builder<MT>::dist_ss(const Source_Init<MT> &sinit)
 
 template<class MT>
 void Parallel_Builder<MT>::recv_ss(typename MT::CCSF_int &ssrn,
-				   typename MT::CCSF_int &nss)
+				   typename MT::CCSF_int &nss,
+				   typename MT::CCSF_int &fss,
+				   typename MT::CCSF_double &ew)
 {
     Require (ssrn.get_Mesh() == nss.get_Mesh());
+    Require (ew.get_Mesh()   == nss.get_Mesh());
+    Require (fss.get_Mesh()  == nss.get_Mesh());
 
   // lets get the size of the thing from the host processor
     int num_cells;
-    Recv (num_cells, 0, 27);
+    Recv (num_cells, 0, 29);
     Check (num_cells == ssrn.get_Mesh().num_cells());
 
   // receive the surface source data from the host processor
     int *nss_recv    = new int[num_cells];
     int *stream_recv = new int[num_cells];
-    Recv (nss_recv, num_cells, 0, 28);
-    Recv (stream_recv, num_cells, 0, 29);
+    int *fss_recv    = new int[num_cells];
+    double *ew_recv  = new double[num_cells];
+    Recv (nss_recv, num_cells, 0, 30);
+    Recv (stream_recv, num_cells, 0, 31);
+    Recv (fss_recv, num_cells, 0, 32);
+    Recv (ew_recv, num_cells, 0, 33);
 
   // assign data to the CCSFs
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	nss(cell)  = nss_recv[cell-1];
 	ssrn(cell) = stream_recv[cell-1];
+	fss(cell)  = fss_recv[cell-1];
+	ew(cell)   = ew_recv[cell-1];
     }
 
   // release the dynamic storage
     delete [] nss_recv;
     delete [] stream_recv;
+    delete [] fss_recv;
+    delete [] ew_recv;
 }
 
 //---------------------------------------------------------------------------//

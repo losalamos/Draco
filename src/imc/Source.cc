@@ -35,21 +35,29 @@ using std::setw;
 template<class MT, class PT>
 Source<MT, PT>::Source(typename MT::CCSF_int &vol_rnnum_, 
 		       typename MT::CCSF_int &nvol_,
+		       typename MT::CCSF_double &ew_vol_,
+		       typename MT::CCVF_double &t4_,
 		       typename MT::CCSF_int &ss_rnnum_, 
 		       typename MT::CCSF_int &nss_, 
+		       typename MT::CCSF_int &fss_,
+		       typename MT::CCSF_double &ew_ss_,
 		       string title,
 		       int nvoltot_, int nsstot_, int ncentot_,
 		       SP<Rnd_Control> rcon_, 
 		       const Particle_Buffer<PT> &buffer_) 
-    : vol_rnnum(vol_rnnum_), nvol(nvol_), ss_rnnum(ss_rnnum_), nss(nss_),
+    : vol_rnnum(vol_rnnum_), nvol(nvol_), ew_vol(ew_vol_), t4_slope(t4_),
+      ss_rnnum(ss_rnnum_), nss(nss_), fss(fss_), ew_ss(ew_ss_),
       census(title.c_str(), ios::in), nvoltot(nvoltot_), nsstot(nsstot_),
-      ncentot(ncentot_), rcon(rcon_), buffer(buffer_), ew_vol(nvol_),
-      fss(nvol_), ew_ss(nvol_)
+      ncentot(ncentot_), rcon(rcon_), buffer(buffer_)
 {
   // some assertions
     Check (vol_rnnum.get_Mesh() == nvol.get_Mesh());
     Check (nvol.get_Mesh()      == ss_rnnum.get_Mesh());
     Check (nvol.get_Mesh()      == nss.get_Mesh());
+    Check (nvol.get_Mesh()      == ew_vol.get_Mesh());
+    Check (nvol.get_Mesh()      == t4_slope.get_Mesh());
+    Check (nvol.get_Mesh()      == fss.get_Mesh());
+    Check (nvol.get_Mesh()      == ew_ss.get_Mesh());
 
   // nsrcdone_cell is the running number of source particles completed for a
   // particular source type in a particular cell.  
@@ -224,6 +232,13 @@ SP<PT> IMC::Source<MT, PT>::get_evol(double delta_t)
 //     return census_particle;
 // }
 
+template<class MT, class PT>
+SP<PT> Source<MT, PT>::get_census(double delta_t)
+{
+    SP<PT> census_particle;
+    return census_particle;
+}
+
 //---------------------------------------------------------------------------//
 // source diagnostic functions
 //---------------------------------------------------------------------------//
@@ -245,8 +260,8 @@ void Source<MT, PT>::print(ostream &out) const
 
   // lets look at the number of particles in each cell
     out << endl << " ** Sources **" << endl;
-    out << setw(10) << " " << setw(13) << setiosflags(ios::right)
-	<< "Volume" << setw(7) << " " << setw(12) << setiosflags(ios::right)
+    out << setw(10) << " " << setw(15) << setiosflags(ios::right)
+	<< "Volume" << setw(5) << " " << setw(15) << setiosflags(ios::right)
 	<< "Surface" << endl;
     out << setw(10) << setiosflags(ios::right) << "Cell"
 	<< setw(10) << setiosflags(ios::right) << "Number"
@@ -257,6 +272,17 @@ void Source<MT, PT>::print(ostream &out) const
 	out << setw(10) << i << setw(10) << nvol(i) 
 	    << setw(10) << vol_rnnum(i)  << setw(10) << nss(i)
 	    << setw(10) << ss_rnnum(i)   << endl;
+
+  // lets look at the energy weight in each cell
+    out << endl << " ** Source Energy ** " << endl;
+    out << setw(10) << setiosflags(ios::right) << "Cell" 
+	<< setw(15) << setiosflags(ios::right) << "Volume ew" 
+	<< setw(15) << setiosflags(ios::right) << "Surface ew" << endl;
+    out.precision(3);
+    out << setiosflags(ios::fixed);
+    for (int i = 1; i <= nvol.get_Mesh().num_cells(); i++)
+	out << setw(10) << i << setw(15) << ew_vol(i) << setw(15)
+	    << ew_ss(i) << endl;
 }
 	
 CSPACE

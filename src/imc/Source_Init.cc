@@ -13,7 +13,7 @@
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <cmath>
-#include <iostream>
+#include <iomanip>
 #include <fstream>
 
 IMCSPACE
@@ -25,6 +25,10 @@ using Global::min;
 // STL components
 using std::pow;
 using std::ofstream;
+using std::ios;
+using std::setw;
+using std::setiosflags;
+using std::endl;
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -46,7 +50,7 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     rad_temp = interface->get_rad_temp();
     delta_t  = interface->get_delta_t();
     npmax    = interface->get_npmax();
-    npwant   = interface->get_npnom();
+    npnom    = interface->get_npnom();
     dnpdt    = interface->get_dnpdt();
     capacity = interface->get_capacity();
     
@@ -54,7 +58,7 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     int num_cells = mesh->num_cells();
     Check (evol_ext.size() == num_cells);
     Check (rad_temp.size() == num_cells);
-    Check (ss_pos.size() == ss_temp.size());
+    Check (ss_pos.size()   == ss_temp.size());
 
   // temporary assertions
     Check (evol.get_Mesh()   == *mesh);
@@ -85,7 +89,7 @@ void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
     Check (rcontrol);
 
   // calculate number of particles this cycle
-    npwant = min(npmax, static_cast<int>(npwant + dnpdt * delta_t));
+    npwant = min(npmax, static_cast<int>(npnom + dnpdt * delta_t));
     Check (npwant != 0);
 
   // on first pass do initial census, on all cycles calc source energies 
@@ -442,6 +446,43 @@ void Source_Init<MT>::calc_t4_slope(const MT &mesh,
 	    }
 	}
     }
+}
+
+//---------------------------------------------------------------------------//
+// diagnostic functions for Source_Init
+//---------------------------------------------------------------------------//
+// print out the Source Initialization 
+
+template<class MT>
+void Source_Init<MT>::print(ostream &out) const
+{
+    out << "*** SOURCE INITIALIZATION ***" << endl;
+    out << "-----------------------------" << endl;
+
+  // give them the particulars of the source init
+    out << setw(35) << setiosflags(ios::right) 
+	<< "Number of particles requested: " << setw(10) << npnom << endl;
+    out << setw(35) << setiosflags(ios::right)
+	<< "Total number calculated: " << setw(10) << npwant << endl;
+    out << " ** Breakdown ** " << endl;
+    out << setw(20) << "Census Particles: " << setw(10)
+	<< ncentot << endl;
+    out << setw(20) << "Volume Particles: " << setw(10)
+	<< nvoltot << endl;
+    out << setw(20) << "Surface Particles: " << setw(10)
+	<< nsstot << endl;
+
+    out << endl << " ** Source Energies ** " << endl;
+    out.precision(3);
+    out << setiosflags(ios::fixed);
+    out << setw(10) << setiosflags(ios::right) << "Cell"
+        << setw(15) << setiosflags(ios::right) << "Volume ew"
+        << setw(15) << setiosflags(ios::right) << "Surface ew" << endl;
+    for (int i = 1; i <= ew_vol.get_Mesh().num_cells(); i++)
+        out << setw(10) << i << setw(15) << ew_vol(i) << setw(15)
+            << ew_ss(i) << endl;	
+
+    out << "-----------------------------" << endl;
 }
 
 CSPACE

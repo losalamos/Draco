@@ -27,6 +27,7 @@
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <string>
+#include <iostream>
 #include <vector>
 
 IMCSPACE
@@ -37,6 +38,7 @@ using RNG::Rnd_Control;
 // STL components
 using std::string;
 using std::vector;
+using std::ostream;
 
 template<class MT>
 class Source_Init
@@ -49,6 +51,7 @@ private:
     vector<double> rad_temp;
     double delta_t;
     int npmax;
+    int npnom;
     double dnpdt;
     
   // source initialization data
@@ -129,8 +132,25 @@ public:
     int get_ncen(int cell) const { return ncen(cell); }
     int get_nvol(int cell) const { return nvol(cell); }
     int get_nss(int cell) const { return nss(cell); }
+    int get_fss(int cell) const { return fss(cell); }
     inline double get_t4_slope(int, int) const;
+    double get_ew_vol(int cell) const { return ew_vol(cell); }
+    double get_ew_ss(int cell) const { return ew_ss(cell); }
+
+  // diagnostic functions
+    void print(ostream &)const;
 };
+
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+
+template<class MT>
+inline ostream& operator<<(ostream &out, const Source_Init<MT> &object)
+{
+    object.print(out);
+    return out;
+}
 
 //---------------------------------------------------------------------------//
 // inline functions for source_init

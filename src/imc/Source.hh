@@ -46,13 +46,14 @@ public:
   // volume source particles: number and first random number stream per cell
     typename MT::CCSF_int vol_rnnum;
     typename MT::CCSF_int nvol;
-    typename MT::CCSF_int ew_vol;
+    typename MT::CCSF_double ew_vol;
+    typename MT::CCVF_double t4_slope;
 
   // surface source particles: number and first random number stream per cell
     typename MT::CCSF_int ss_rnnum;
     typename MT::CCSF_int nss;
     typename MT::CCSF_int fss;
-    typename MT::CCSF_int ew_ss;
+    typename MT::CCSF_double ew_ss;
 
   // census file
     ifstream census;
@@ -83,7 +84,9 @@ public:
 public:
   // constructor
     Source(typename MT::CCSF_int &, typename MT::CCSF_int &,
+	   typename MT::CCSF_double &, typename MT::CCVF_double &,
 	   typename MT::CCSF_int &, typename MT::CCSF_int &, 
+	   typename MT::CCSF_int &, typename MT::CCSF_double &,
 	   string, int, int, int, SP<Rnd_Control>, 
 	   const Particle_Buffer<PT> &);
 

@@ -60,13 +60,19 @@ private:
   // distribute the census, volume, and surface sources
     template<class PT>
     void dist_census(const Source_Init<MT> &, const Particle_Buffer<PT> &);
-    vector<vector<int> > dist_vol(const Source_Init<MT> &);
-    vector<vector<int> > dist_ss(const Source_Init<MT> &);
+    void dist_vol(const Source_Init<MT> &, typename MT::CCSF_int &,
+		  typename MT::CCSF_int &, typename MT::CCSF_double &,
+		  typename MT::CCVF_double &);
+    void dist_ss(const Source_Init<MT> &, typename MT::CCSF_int &,
+		 typename MT::CCSF_int &, typename MT::CCSF_int &,
+		 typename MT::CCSF_double &);
 
   // receive the census, volume, and surface sources
     template<class PT> void recv_census(const Particle_Buffer<PT> &);
-    void recv_vol(typename MT::CCSF_int &, typename MT::CCSF_int &);
-    void recv_ss(typename MT::CCSF_int &, typename MT::CCSF_int &);
+    void recv_vol(typename MT::CCSF_int &, typename MT::CCSF_int &,
+		  typename MT::CCSF_double &, typename MT::CCVF_double &);
+    void recv_ss(typename MT::CCSF_int &, typename MT::CCSF_int &,
+		 typename MT::CCSF_int &, typename MT::CCSF_double &);
 
   // functionality for Mesh passing
 
