@@ -15,6 +15,7 @@
 
 class ADFile;
 
+#include "3T/Diffusion_XYZ.hh"
 #include "linalg/pcg_DB.hh"
 
 //===========================================================================//
@@ -32,6 +33,8 @@ class Test_3T : public Test_Prob,
 		private MT::Coord_Mapper
 {
     SP<MT> spm;
+
+    SP< Diffusion_XYZ<MT> > spd;
 
     Mat2<double> A;
 

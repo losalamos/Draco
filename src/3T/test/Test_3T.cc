@@ -40,6 +40,8 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
       MT::Coord_Mapper( spm_->get_Mesh_DB() ),
       spm(spm_), pcg_db(pcg_db_)
 {
+    spd = new Diffusion_XYZ<MT>( spm );
+
     if (node == 0)
 	adf = new ADFile( "test.dat", IDX::WRITE, 500 );
     else
