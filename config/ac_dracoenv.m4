@@ -3,7 +3,7 @@ dnl ac_dracoenv.m4
 dnl puts together the DRACO environments given the arguments from 
 dnl vendors (ac_vendors.m4) and DRACO (ac_dracoarg.m4)
 dnl
-dnl Time-stamp: <99/02/23 09:13:34 rsqrd>
+dnl Time-stamp: <99/02/24 10:34:01 rsqrd>
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -87,6 +87,15 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # final compiler additions
        CXXFLAGS="${CXXFLAGS} --one_per"
+
+       # For version 3.3 of KCC the strict and thread_safe
+       # cannot be used together (in general).
+
+       if test "$with_c4" = shmem ; then
+          CXXFLAGS="${CXXFLAGS} --thread_safe"
+          STRICTFLAG=""
+          LDFLAGS="${LDFLAGS} --thread_safe --static_libKCC"
+       fi
    fi
 
    if test "$CC" = NO_KCC ; then
