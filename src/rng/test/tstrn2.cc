@@ -70,12 +70,24 @@ void t3()
     Rnd_Control rcon(493875348);
 
     Sprng r1 = rcon.get_rn();
+    Sprng r2 = rcon.get_rn();
     Sprng rs = rcon.spawn(r1);
     Sprng rt = rcon.spawn(r1);
     
     for (int i = 0; i < 5; i++)
 	cout << r1.ran() << "\t" << rs.ran() << "\t" << rt.ran() 
              << endl;
+
+    for (int i = 0; i < 463; i++)
+        Sprng rspawn = rcon.spawn(r1);
+    cout << "Spawn 1 complete" << endl;
+    for (int i = 0; i < 465; i++)
+	Sprng rspawn = rcon.spawn(r2);
+    cout << "Spawn 2 complete" << endl;
+    for (int i = 0; i < 464; i++)
+	Sprng rspawn = rcon.spawn(rs);
+    cout << "Spawn 3 complete" << endl;
+    cout << "If no warnings then TEST 3 succeeded" << endl;
 }
 
 void t4()
