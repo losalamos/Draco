@@ -11,6 +11,7 @@
 #define __imc_test_IMC_Test_hh__
 
 #include "../Interface.hh"
+#include "../Particle.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "ds++/SP.hh"
@@ -50,7 +51,8 @@ class Parser
 //===========================================================================//
 // make an interface for a 6 cell mesh
 
-class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
+class IMC_Interface : 
+    public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >
 {
   private:
     // sp to OS_Builder
@@ -119,7 +121,7 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
 // constructor
 IMC_Interface::IMC_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
 			     int capacity_) 
-    :  rtt_imc::Interface<rtt_mc::OS_Mesh>(),
+    :  rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >(),
        builder(osb),
        density(6), 
        kappa(6), 

@@ -12,7 +12,6 @@
 #ifndef __imc_Interface_hh__
 #define __imc_Interface_hh__
 
-#include "Particle.hh"
 #include "Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <vector>
@@ -45,7 +44,7 @@ namespace rtt_imc
 // 
 //===========================================================================//
 
-template<class MT, class PT = Particle<MT> >
+template<class PT>
 class Interface 
 {
   public:
