@@ -11,10 +11,18 @@ $
 
 $mesh
 	ncx=2 ncy=2 ncz=2
-#	ncx=4 ncy=4 ncz=4
-#	ncx=8 ncy=8 ncz=8
-#	ncx=16 ncy=16 ncz=16
+	ncx=4 ncy=4 ncz=4
+	ncx=8 ncy=8 ncz=8
+	ncx=16 ncy=16 ncz=16
+#	ncx=16 ncy=16 ncz=32
+#	ncx=20 ncy=20 ncz=20
 #	ncx=32 ncy=32 ncz=32
+#	ncx=64 ncy=64 ncz=64
+#	ncx=128 ncy=128 ncz=64
+$
+
+$diffusion
+#	pc_meth=0
 $
 
 $Quad_Params
@@ -30,21 +38,21 @@ $Quad_Params
 	ey0=0.0
 	ey0=1.0
 	ey1=0.0
-	ey2=0.0
+	ey2=-2.0
 
 	ez0=0.0
 	ez0=1.0
 	ez1=0.0
-	ez2=0.0
+	ez2=3.0
 
 	dx0=1.0
-	dx1=0.0
+	dx1=2.0
 
 	dy0=1.0
-	dy1=0.0
+	dy1=3.0
 
 	dz0=1.0
-	dz1=0.0
+	dz1=-4.0
 $
 
 $Trig_Params
@@ -80,6 +88,7 @@ $pcg
 	itmeth=11		# cg
 	levout=4
 	levout=0
+	levout=3
 	itsmax=1000
 	nwi=10000
 	nwf=10000000
