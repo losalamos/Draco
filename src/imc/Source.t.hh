@@ -216,7 +216,7 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
 
     // instantiate particle to return
     SP<PT> ss_particle(new PT(r, omega, ew, cell, rand, fraction, 
-			      time_left));
+			      time_left, "surface_source"));
 
     // return the ss particle;
     return ss_particle;
@@ -246,7 +246,7 @@ SP<PT> Source<MT, PT>::get_evol(double delta_t)
 
     // instantiate particle to return
     SP<PT> vol_particle(new PT(r, omega, ew, cell, rand, fraction, 
-			       time_left)); 
+			       time_left, "vol_emission")); 
 
     return vol_particle;
 }

@@ -260,32 +260,39 @@ template<class MT>
 inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 				     double distance)
 {
-    // hardwire minimum energy weight fraction
+    // hardwire minimum energy weight fraction; limit distance accordingly
     double minwt_frac = 0.01;
     double min_arg    = log(0.1 * minwt_frac);
-
     double argument = -xs.get_sigeffabs(cell) * distance;
     if (argument < min_arg) argument = min_arg;
 
+    // calculate multiplicative reduction in energy-weight; 
+    // calculate new energy weight; change in energy-weight
     double factor = exp(argument);
     double new_ew = ew * factor;
     double del_ew = ew - new_ew;
 
+    // accumulate tallies from time-rate absorption
     tally.deposit_energy( cell, del_ew );
+    tally.accumulate_momentum(cell, del_ew, omega);
     if ( xs.get_sigeffabs(cell) != 0)
 	tally.accumulate_ewpl( cell, del_ew / xs.get_sigeffabs(cell) );
 
+    // update the fraction of the particle's original weight
     fraction *= factor;
 
-    if (fraction < minwt_frac) // kill particle and deposit it energy
+    // kill particle and deposit its energy if its fraction is too low;
+    // or update particle energy-weight, time_left, and position.
+    if (fraction < minwt_frac)
     {
 	tally.deposit_energy( cell, new_ew );
 	tally.accum_n_killed();
 	tally.accum_ew_killed( new_ew );
+	tally.accumulate_momentum(cell, new_ew, omega);
 	descriptor = "killed";
 	alive = false;
     }
-    else // update particle energy-weight, time_left, and position.
+    else
     {
 	ew = new_ew;
 	time_left -= distance / rtt_mc::global::c;
@@ -310,6 +317,10 @@ inline int Particle<MT>::get_index(std::string desc)
 	return_value = 2;
     if (desc == "boundary_born")
 	return_value = 3;
+    if (desc == "vol_emission")
+	return_value = 4;
+    if (desc == "surface_source")
+	return_value = 5;
 
     // collision event descriptors
     if (desc == "scatter")
@@ -361,6 +372,10 @@ inline std::string Particle<MT>::get_descriptor(int index)
 	return_value = "census_born";
     if (index == 3)
 	return_value = "boundary_born";
+    if (index == 4)
+	return_value = "vol_emission";
+    if (index == 5)
+	return_value = "surface_source";
 
     // collision event descriptors
     if (index == 100)

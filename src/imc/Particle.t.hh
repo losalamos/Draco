@@ -69,13 +69,17 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	double dist_stream;
 	// cell face definition
         int face = 0;
+
+	// accumulate momentum deposition from volume emission particles
+	if (descriptor == "vol_emission")
+	    tally.accumulate_momentum(cell, -ew, omega);
         
-	// sample distance-to-eff_scatter
+	// sample distance-to-scatter (effective scatter or hardball)
 	d_scatter = -log(random.ran()) / 
 	    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell));
 
 	// get distance-to-boundary and cell face
-        d_boundary  = mesh.get_db(r, omega, cell, face);
+        d_boundary = mesh.get_db(r, omega, cell, face);
 
 	// distance to census (end of time step)
 	d_census = rtt_mc::global::c * time_left;
@@ -128,7 +132,14 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	    else if (descriptor == "thom_scatter")
 		tally.accum_n_thomscat();
 
+	    // accumulate momentum from before the scatter
+	    tally.accumulate_momentum(cell, ew, omega);
+
+	    // scatter the particle -- update direction cosines
 	    scatter( mesh );
+
+	    // accumulate momentum from after the scatter
+	    tally.accumulate_momentum(cell, -ew, omega);
 	}
 
 	if (descriptor == "boundary")
