@@ -203,7 +203,7 @@ void std_string_test()
 
 	packer.set_buffer(pack_string.size(), &pack_string[0]);
 
-	packer << hw.size();
+	packer << static_cast<int>(hw.size());
 
 	// pack it
 	for (string::const_iterator it = hw.begin(); it != hw.end(); it++)
@@ -290,7 +290,7 @@ void packing_functions_test()
 	p.set_buffer(sizeof(int), &packed_int[0]);
 
 	// pack the size of the vector
-	p << packed_vector.size();
+	p << static_cast<int>(packed_vector.size());
 
 	// push the vector onto the total packed
 	total_packed.insert(total_packed.end(),
@@ -302,7 +302,7 @@ void packing_functions_test()
 	p.set_buffer(sizeof(int), &packed_int[0]);
 	
 	// pack the size of the string
-	p << packed_string.size();
+	p << static_cast<int>(packed_string.size());
 
 	// push the string onto the total packed
 	total_packed.insert(total_packed.end(),

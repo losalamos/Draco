@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#include <stdlib.h>
-#include <stdarg.h>
+#include <cstdlib>
+#include <cstdarg>
 
 using namespace std;
 
@@ -21,7 +21,7 @@ void test_HeapSort()
     int i;
 
     for( i=0; i < 10; i++ )
-	v[i] = 10. * drand48();
+	v[i] = 10. * rand() / RAND_MAX;
 
     HeapSort( 10, v );
 
@@ -37,7 +37,7 @@ void test_index()
     int i;
 
     for( i=0; i < 10; i++ )
-	v[i] = static_cast<int>(10. * drand48());
+	v[i] = static_cast<int>(10. * rand() / RAND_MAX); 
 
     cout << "Starting data is:\n";
     for( i=0; i < 10; i++ )
@@ -54,7 +54,7 @@ void test_index()
     cout << "Done testing index.\n";
 }    
 
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     cout << "Sort test:\n";
 
