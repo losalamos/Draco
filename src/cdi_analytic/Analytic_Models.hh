@@ -74,7 +74,7 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
     Constant_Analytic_Opacity_Model(double sig) 
 	: sigma(sig) 
     { 
-	Require (sigma > 0.0); 
+	Require (sigma >= 0.0); 
     }
 
     //! Calculate the opacity in units of c^2/g.
