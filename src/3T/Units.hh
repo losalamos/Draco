@@ -17,6 +17,8 @@
 #include "ds++/Assert.hh"
 #include "3T/PhysicalConstants.hh"
 
+#include <cmath>
+
 BEGIN_NS_XTM
     
 //===========================================================================//
@@ -43,7 +45,7 @@ class Units
 {
     // FRIENDS
 
-    Units operator/(const Units &op1, const Units &op2);
+    friend Units operator/(const Units &op1, const Units &op2);
 
     // DATA
 
@@ -136,6 +138,11 @@ class Units
     inline double ConvertTime(double time) const;
     inline double ConvertTemperature(double temperature) const;
 
+    inline double ConvertLength(double length, int n) const;
+    inline double ConvertMass(double mass, int n) const;
+    inline double ConvertTime(double time, int n) const;
+    inline double ConvertTemperature(double temperature, int n) const;
+
     inline double ConvertVelocity(double velocity) const;
     inline double ConvertDensity(double density) const;
     inline double ConvertEnergy(double energy) const;
@@ -149,6 +156,11 @@ class Units
     inline double InvertMass(double mass) const;
     inline double InvertTime(double time) const;
     inline double InvertTemperature(double temperature) const;
+
+    inline double InvertLength(double length, int n) const;
+    inline double InvertMass(double mass, int n) const;
+    inline double InvertTime(double time, int n) const;
+    inline double InvertTemperature(double temperature, int n) const;
 
     inline double InvertVelocity(double velocity) const;
     inline double InvertDensity(double density) const;
@@ -231,6 +243,46 @@ inline double Units::ConvertTemperature(double temperature) const
 }
 
 //---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertLength(double length, int n) const
+{
+    return length * std::pow(lengthConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertMass(double mass, int n) const
+{
+    return mass * std::pow(massConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertTime(double time, int n) const
+{
+    return time * std::pow(timeConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertTemperature(double temperature, int n) const
+{
+    return temperature * std::pow(temperatureConversion, n);
+}
+
+//---------------------------------------------------------------------------//
 // Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
@@ -268,6 +320,46 @@ inline double Units::InvertTime(double time) const
 inline double Units::InvertTemperature(double temperature) const
 {
     return temperature / temperatureConversion;
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertLength(double length, int n) const
+{
+    return length / std::pow(lengthConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertMass(double mass, int n) const
+{
+    return mass / std::pow(massConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertTime(double time, int n) const
+{
+    return time / std::pow(timeConversion, n);
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertTemperature(double temperature, int n) const
+{
+    return temperature / std::pow(temperatureConversion, n);
 }
 
 //---------------------------------------------------------------------------//
