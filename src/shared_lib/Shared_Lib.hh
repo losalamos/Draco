@@ -125,8 +125,7 @@ Fp_t Shared_Lib::get_function(const std::string &name)
 {
     Require(is_open());
     
-    // This cast is so evil, one must use an old-style cast.
-    Fp_t f = Fp_t(do_dlsym(name));
+    Fp_t f = reinterpret_cast<Fp_t>(do_dlsym(name));
 
     return f;
 }
