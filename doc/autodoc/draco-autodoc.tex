@@ -28,7 +28,7 @@
 \newcommand{\dsxx}{{\normalfont\sffamily ds++}}
 \newcommand{\cfour}{{\normalfont\sffamily c4}}
 \newcommand{\rng}{{\normalfont\sffamily rng}}
-\newcommand{\timestep}{{\normalfont\sffamily rng}}
+\newcommand{\timestep}{{\normalfont\sffamily timestep}}
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
@@ -213,23 +213,23 @@ can be used to control and produce additional features in the
 documentation.  The interested reader is referred to the \doxy\ manual
 for details on these keywords.  We will briefly describe the major
 keywords that we have found to be most useful.
-\begin{description}
-\item [file] The file name.
-\item [author] The author.
-\item [date] The date.
-\item [brief] A one line description.
-\item [param] An input parameter.
-\item [return] The return value.
-\item [sa] ``See Also'' a list of related items.
-\item [example {\em filename}] Includes {\em filename} as a code
+\begin{itemize}
+\item \verb+\file+ The file name.
+\item \verb+\author+ The author.
+\item \verb+\date+ The date.
+\item \verb+\brief+ A one line description.
+\item \verb+\param+ An input parameter.
+\item \verb+\return+ The return value.
+\item \verb+\sa+ ``See Also'' a list of related items.
+\item \verb+\example+ {\em filename} Includes {\em filename} as a code
   example.
-\item [include {\em filename}] Includes {\em filename} verbatim at the
+\item \verb+\include+ {\em filename} Includes {\em filename} verbatim at the
   point of reference.
-\item [page {\em reference title}] Places the comment block in which
+\item \verb+\page+ {\em reference title} Places the comment block in which
   it appears in the documentation as a separate page with title {\em
     title}. You can refer to and create a link to the page using {\em
-    reference} as an argument to the \doxy\ ``ref'' keyword.
-\end{description}
+    reference} as an argument to the \doxy\ ``\verb+\ref+'' keyword.
+\end{itemize}
 
 %%---------------------------------------------------------------------------%%
 
@@ -358,7 +358,10 @@ that point to the \dsxx\ documentation:
      cd draco/src/c4/html
      cp ../../ds++/html/ds++.tag .
      ./installdox -l ds++.tag@../../ds++/html
+     rm ds++.tag
 \end{verbatim}
+ The \texttt{installdox} script should be run in the above manner for each
+of the tagfiles named in the configure script.
 The \texttt{installdox} script will modify all of the \texttt{.html}
 files so that the links point to the correct locations.  Remember to
 use relative paths so that the documentation is independent of the
