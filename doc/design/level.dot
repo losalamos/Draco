@@ -86,7 +86,6 @@ digraph draco_level {
     cdieos      -> {cdi dsxx};
     cdieos      -> {frame} [style=dotted];
     cdigan      -> {cdi dsxx};
-    cdigan      -> {frame} [style=dotted];
     conjgrad    -> {traits c4 dsxx};
     conjgrad    -> {frame meshtest} [style=dotted];
     quad        -> {dsxx};
@@ -103,5 +102,6 @@ digraph draco_level {
     meshservice -> {frame} [style=dotted];
 
     /* level 6 */
-    imc         -> {mc viz meshread rng c4 dsxx};
+    imc         -> {mc viz meshread cdi rng c4 dsxx};
+    imc         -> {cdianal} [style=dotted];
 }
