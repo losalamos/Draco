@@ -18,6 +18,7 @@
 
 #include "ConjGrad/ConjGrad.hh"
 #include "ConjGrad/ConjGradTraits.hh"
+#include "ConjGrad/C4Reduction.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
@@ -123,21 +124,27 @@ class SolverP1Diff
                       << options.usePreconditioner
                       << std::endl;
         }
+
+        using rtt_ConjGrad::C4Reduction;
         
         if (options.usePreconditioner)
             conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
-                     options.eps, PreCond(spMatrix), r);
+                     options.eps, PreCond(spMatrix), r, C4Reduction());
         else
             conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
-                     options.eps, r);
+                     options.eps, r, C4Reduction());
         
-	if (options.verbose)
-	    std::cout << "SolverP1Diff: " << iter << " iterations, "
-		      << "||r||: "
-		      << rtt_ConjGrad::ConjGradTraits<ccsf>::Norm()(r)
-		      << ", ||b||: "
-		      << rtt_ConjGrad::ConjGradTraits<ccsf>::Norm()(brhs)
-		      << std::endl;
+        if (options.verbose)
+        {
+            typedef rtt_ConjGrad::ConjGradTraits<ccsf>::Norm<C4Reduction> Norm;
+        
+            std::cout << "SolverP1Diff: " << iter << " iterations, "
+                      << "||r||: "
+                      << Norm(C4Reduction())(r)
+                      << ", ||b||: "
+                      << Norm(C4Reduction())(brhs)
+                      << std::endl;
+        }
     }
 
     // ACCESSORS
