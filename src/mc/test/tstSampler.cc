@@ -203,6 +203,161 @@ void test_sampling_planckian_frequency()
 }
 
 //---------------------------------------------------------------------------//
+// Test the boolean check for validity of a cdf
+//---------------------------------------------------------------------------//
+
+void test_cdf_validity()
+{
+    // STL typedef for scalar field of doubles
+    typedef std::vector<double> sf_double;
+
+    // make a cdf of zero size (that's bad)
+    sf_double my_cdf;
+
+    if (rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+
+    // now size it and make some negative values (that's bad)
+    my_cdf.resize(3);
+    my_cdf[0] =  0.0;
+    my_cdf[1] = -3.0;
+    my_cdf[2] =  6.0;
+
+    if (rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+
+    // give it a negative slope such that it's not monotonically increasing
+    // (that's bad)
+    my_cdf[1] =  9.0;
+
+    if (rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+
+    // now make it a nice cdf (that's good)
+    my_cdf[0] =  0.0;
+    my_cdf[1] =  0.5;
+    my_cdf[2] =  1.0;
+
+    if (!rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
+// Test the sampling of a cdf
+//---------------------------------------------------------------------------//
+
+void test_cdf_sampling()
+{
+    // STL typedef for scalar field of doubles
+    typedef std::vector<double> sf_double;
+
+    int sampled_bin = -1;
+	
+    // make a random number generator that always returns 0.5 
+    Ran_half ranhalf_gen;
+    
+    // make a random number generator that always returns 1.0 
+    Ran_1    ranone_gen;
+    
+    // cdf = 5/8, 5/8, 1.0  =>  pdf = 5/8, 0, 3/8
+    {
+	// make a normalized cdf and check it once
+	sf_double my_cdf(3, 0.0);
+	my_cdf[0] = 0.625;
+	my_cdf[1] = 0.625;
+	my_cdf[2] = 1.000;
+	
+	if (!rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+	
+	// "sample" the cdf with ran=1/2; it had better be the first
+	// bin--second bin has zero probability 
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranhalf_gen, my_cdf);
+
+	if (sampled_bin != 0)  ITFAILS;
+
+	// "sample" the cdf with ran=1; it had better be the last bin
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranone_gen, my_cdf);
+
+	if (sampled_bin != 2)  ITFAILS;
+
+    }
+
+    // cdf = 1/2, 1/2, 1/2  =>  pdf = 1, 0, 0
+    {
+	// make an unnormalized, flat cdf and check it once
+	sf_double my_cdf(3, 0.0);
+	my_cdf[0] = 0.5;
+	my_cdf[1] = 0.5;
+	my_cdf[2] = 0.5;
+	
+	if (!rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+	
+	// "sample" the cdf
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranone_gen, my_cdf);
+
+	// it had better be the first bin since the other bins have no prob
+	if (sampled_bin != 0)  ITFAILS;
+
+	// "sample" the cdf
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranhalf_gen, my_cdf);
+
+	// it had better be the first bin since the other bins have no prob
+	if (sampled_bin != 0)  ITFAILS;
+
+    }
+
+    // cdf = 1, 2, 3, 4  =>  pdf = 1/4, 1/4, 1/4, 1/4
+    {
+	// make an unnormalized cdf and check it once
+	sf_double my_cdf(4, 0.0);
+	my_cdf[0] = 1.0;
+	my_cdf[1] = 2.0;
+	my_cdf[2] = 3.0;
+	my_cdf[3] = 4.0;
+	
+	if (!rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+	
+	// "sample" the cdf
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranone_gen, my_cdf);
+
+	// it had better be the last bin
+	if (sampled_bin != 3)  ITFAILS;
+	
+	// "sample" the cdf
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranhalf_gen, my_cdf);
+
+	// it had better be the middle bin
+	if (sampled_bin != 1)  ITFAILS;
+    }	
+
+    // cdf = 1, 2, 3, ..., 1000  =>  pdf = 1/1000, ... 
+    {
+	// make an unnormalized cdf and check it once
+	sf_double my_cdf(1000);
+	for (int i = 0; i < 1000; i++)
+	    my_cdf[i] = i + 1;
+
+	if (!rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
+	
+	// "sample" the cdf
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranone_gen, my_cdf);
+
+	// it had better be the last bin
+	if (sampled_bin != 999)  ITFAILS;
+	
+	// "sample" the cdf
+	sampled_bin = 
+	    rtt_mc::sampler::sample_bin_from_discrete_cdf(ranhalf_gen, my_cdf);
+
+	// it had better be the bin just below the midpoint
+	if (sampled_bin != 499)  ITFAILS;
+    }	
+}
+
+//---------------------------------------------------------------------------//
 // main function for tstSampler
 //---------------------------------------------------------------------------//
 
@@ -233,6 +388,12 @@ int main(int argc, char *argv[])
 
 	// test the sampling of a Planckian frequency
 	test_sampling_planckian_frequency();
+
+	// test validity of a cumulative distribution function (cdf)
+	test_cdf_validity();
+
+	// test sampling a discrete cdf
+	test_cdf_sampling();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -23,15 +23,23 @@
 // 1) 08-11-00 : modified sample_general_linear fn to allow for, in addition
 //               to a totally positive function, a totally negative or a
 //               zero-valued function.
+// 2) 12-19-01 : added function sample_bin_from_discrete_cdf and its
+//               supporting function is_this_cdf_valid for DBC use.
 //
 //===========================================================================//
 
+#include <vector>
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_mc 
 {
 namespace sampler
 {
+
+// STL typedefs
+typedef std::vector<double> sf_double;
+
 
 //---------------------------------------------------------------------------//
 // SAMPLE_GENERAL_LINEAR
@@ -142,6 +150,7 @@ inline double sample_general_linear(Ran ran, const double a, const double b,
  * \param ran random number object
  * \param k_temperature temperature (kT)
  * \return hnu frequency in same units as k_temperature 
+ *
  */
 template<class Ran>
 inline double sample_planckian_frequency(Ran ran, const double k_temperature)
@@ -181,6 +190,115 @@ inline double sample_planckian_frequency(Ran ran, const double k_temperature)
 
     // return the frequency in the same units as the temperature
     return hnu;
+}
+
+//---------------------------------------------------------------------------//
+// IS_THIS_CDF_VALID
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Check if a discrete cdf (vector<double>) is valid.
+ *
+ * A discrete cumulative distribution function (cdf) is valid if each element
+ * is nonnegative and not less than the previous value.  These criteria stem
+ * from the criterion of probability density functions (pdf) that p(i)>0.  No
+ * check is made on whether the cdf is normalized or not, because, although
+ * it is technically required, it is oftentimes more numerically efficient to
+ * sample an unnormalized cdf.
+ *
+ * \param cdf vector<double> cumulative distribution function, assumed to be
+ * in increasing order
+ *
+ * \return bool whether discrete cdf is valid
+ *
+ * Limited to vector<double> now.  Add capability for other containers as
+ * needed.
+ *
+ */
+inline bool is_this_cdf_valid(const sf_double &cdf) 
+{
+    // make sure there is actually some data
+    if (cdf.size() <= 0) return false;
+
+    // check for negativities in the first value.
+    if (cdf[0] < 0.0) return false;
+
+    // continuing with the remaining values, check for negativities and
+    // negative slopes in the cdf
+    for (int i = 1; i < cdf.size(); i++)
+	if (cdf[i] < 0.0 || cdf[i] < cdf[i-1]) return false;
+
+    // if none of the checks fail, return true
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+// SAMPLE_BIN_FROM_DISCRETE_CDF
+//---------------------------------------------------------------------------//
+/*!  
+ * \brief Sample a bin, in [0, num_bins-1], from a discrete histogram
+ *        cumulative distribution function (cdf). 
+ *
+ * \param ran random number object that has ran() member function
+ * \param cdf vector<double> cumulative distribution function, constant in
+ *            each bin  
+ *
+ * \return sampled bin, or index, of cdf in [0, num_bins-1]
+ *
+ * Limited to vector<double> now.  Add capability for other containers as
+ * needed.
+ *
+ */
+template<class Ran>
+inline int sample_bin_from_discrete_cdf(Ran ran_gen, const sf_double &cdf) 
+{
+    using rtt_dsxx::soft_equiv;
+
+    // check that the cdf is a valid cdf
+    Check (is_this_cdf_valid(cdf));
+
+    // locally set the number of bins
+    int num_bins = cdf.size();
+
+    // get a random number and multiply it by the cdf's normalization factor
+    // if the cdf is not normalized.
+    double xi = ran_gen.ran();
+
+    if (!soft_equiv(cdf[num_bins-1], 1.0, 1.0e-12))
+	xi *= cdf[num_bins-1];
+
+    // perform a binary search for the bin, where 
+    //    bin is the running index,
+    //    bin_lo is the lower, inclusive bound, and 
+    //    bin_hi is the upper, inclusive bound.
+    // the initial value of bin is the middle bin for odd num_bins or the bin
+    // just below the midpoint for even num_bins.
+    int bin_lo = 0;
+    int bin_hi = num_bins - 1;
+    int bin    = bin_hi * 0.5;
+    
+    while (bin_lo != bin_hi)
+    {
+	Check (bin >= 0 && bin < num_bins);
+
+	// if the random variable is below this cdf value, move the upper
+	// (inclusive) bound to here.
+	if (xi <= cdf[bin])
+	    bin_hi = bin;
+
+	// if the random variable is above this cdf value, move the lower
+	// (inclusive) bound to the next bin up.
+	else
+	    bin_lo = bin + 1;
+
+	// split the difference to get the next estimate of the bin
+	bin = (bin_lo + bin_hi) * 0.5;
+    }
+
+    // make rudimentary checks on the bin and return
+    Ensure (bin == bin_lo && bin == bin_hi);
+    Ensure (bin >= 0      && bin < num_bins);
+
+    return bin;
 }
 
 } // end namespace sampler

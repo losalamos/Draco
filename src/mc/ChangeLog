@@ -1,3 +1,9 @@
+2001-12-19  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* mc: added functions sample_bin_from_discrete_cdf and
+	is_this_cdf_valid, where cdf is a discrete (histogram) cumulative
+	distribution function.
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Released mc-2_3_0.  The changes include the omega
