@@ -87,10 +87,8 @@ class P13T
 
   private:
     
-    P13TOptions options;               // Specify various solve flags and values
-    SP<MeshType> spMesh;               // Mesh
-    SP<DiffusionSolver> spDiffSolver;  // Which diffusion solver to use
-
+    P13TOptions options;            // Specify various solve flags and values
+    SP<MeshType> spMesh;            // Mesh
 
     
   public:
@@ -98,7 +96,7 @@ class P13T
     // CREATORS
 
     P13T(const P13TOptions &options_,
-	 const SP<DS> &spDiffSolver_);
+	 const SP<MeshType> &spMesh_);
     P13T(const P13T<MT,MP,DS>& );
     ~P13T();
 
@@ -106,7 +104,6 @@ class P13T
 
     P13T& operator=(const P13T& );
     void setOptions(const P13TOptions options_);
-    void setDiffSolver(const SP<DiffusionSolver> &spDiffSolver_);
 
     // ACCESSORS
 
@@ -129,31 +126,54 @@ class P13T
 				  RadiationStateField &resultsStateField) const;
 
     //------------------------------------------------------------------------//
-    // solve:
-    //     Solve for the new radiation field, the electron/ion energy
-    //     depositions, and the momentom deposition.
-    //
-    //     The P13TOptions object (P13T state variable "options")
-    //     determines whether this solve is with or without the
-    //     electron/ion conduction equations.
+    // solveElectConduction:
+    //     Solve for the energy deposition and new temperature due to  
+    //     the conduction equation split.
     //------------------------------------------------------------------------//
     
-    void solve(double dt,
-	       const CCMaterialStateField &matStateCC,
-	       const FCMaterialStateField &matStateFC,
-	       const RadiationStateField &prevStateField,
-	       const ccsf QRad,
-	       const ccsf QElectron,
-	       const ccsf QIon,
-	       const bsbf boundary,
-	       RadiationStateField &resultsStateField,
-	       ccsf &electronEnergyDeposition,
-	       ccsf &ionEnergyDeposition,
+    void solveElectConduction(double dt,
+			      const CCMaterialStateField &matStateCC,
+			      const FCMaterialStateField &matStateFC,
+			      DiffusionSolver &solver,
+			      ccsf &electronEnergyDeposition,
+			      ccsf &Tnp1Electron) const;
+
+    //------------------------------------------------------------------------//
+    // solveIonConduction:
+    //     Solve for the energy deposition and new temperature due to  
+    //     the conduction equation split.
+    //------------------------------------------------------------------------//
+    
+    void solveIonConduction(double dt,
+			    const CCMaterialStateField &matStateCC,
+			    const FCMaterialStateField &matStateFC,
+			    DiffusionSolver &solver,
+			    ccsf &ionEnergyDeposition,
+			    ccsf &Tnp1Ion) const;
+
+    //------------------------------------------------------------------------//
+    // solve3T:
+    //     Solve for the new radiation field, the electron/ion energy
+    //     depositions, and the momentom deposition.
+    //------------------------------------------------------------------------//
+    
+    void solve3T(double dt,
+		 const CCMaterialStateField &matStateCC,
+		 const FCMaterialStateField &matStateFC,
+		 const RadiationStateField &prevStateField,
+		 const ccsf QRad,
+		 const ccsf QElectron,
+		 const ccsf QIon,
+		 const bsbf boundary,
+		 DiffusionSolver &solver,
+		 RadiationStateField &resultsStateField,
+		 ccsf &electronEnergyDeposition,
+		 ccsf &ionEnergyDeposition,
 #if 0
-	       ncvf &momentumDeposition,
+		 ncvf &momentumDeposition,
 #endif
-	       ccsf &Tnp1Electron,
-	       ccsf &Tnp1Ion) const;
+		 ccsf &Tnp1Electron,
+		 ccsf &Tnp1Ion) const;
 
     // IMPLEMENTATION
 
@@ -194,6 +214,7 @@ class P13T
 			 const ccsf TElectron,
 			 const ccsf TIon,
 			 const bsbf boundary,
+			 DiffusionSolver &solver,
 			 RadiationStateField &resultsStateField) const;
     
     //------------------------------------------------------------------------//

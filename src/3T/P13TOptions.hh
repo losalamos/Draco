@@ -22,19 +22,13 @@ class P13TOptions {
 
   private:
 
-    bool electronConduction;
-    bool ionConduction;
-    bool radiation;
-
+    int dummy;
+    
   public:
 
     // CREATORS
 
-    P13TOptions(bool electronConduction_, bool ionConduction_,
-		bool radiation_=true)
-	: electronConduction(electronConduction_),
-	  ionConduction(ionConduction_),
-	  radiation(radiation_)
+    P13TOptions()
     {
 	// empty
     }
@@ -42,10 +36,6 @@ class P13TOptions {
     // MANIPULATORS
 
     // ACCESSORS
-
-    bool wantElectronConduction() const { return electronConduction; }
-    bool wantIonConduction() const { return electronConduction; }
-    bool wantRadiation() const { return radiation; }
 };
 
 #endif                          // __3T_P13TOptions_hh__

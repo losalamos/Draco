@@ -31,9 +31,8 @@ BEGIN_NS_XTM
 
 template<class MT, class MP, class DS>
 P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
-		       const SP<DS> &spDiffSolver_)
-    : options(options_), spMesh(spDiffSolver_->getMesh()),
-      spDiffSolver(spDiffSolver_)
+		       const SP<MeshType> &spMesh_)
+    : options(options_), spMesh(spMesh_)
 {
     // empty
 }
@@ -45,7 +44,7 @@ P13T<MT, MP, DS>::P13T(const P13TOptions &options_,
 
 template<class MT, class MP, class DS>
 P13T<MT, MP, DS>::P13T(const P13T<MT, MP, DS> &rhs)
-    : options(rhs.options), spMesh(rhs.spMesh), spDiffSolver(rhs.spDiffSolver)
+    : options(rhs.options), spMesh(rhs.spMesh)
 {
     // empty
 }
@@ -75,7 +74,6 @@ P13T<MT, MP, DS>& P13T<MT, MP, DS>::operator=(const P13T &rhs)
 {
     options = rhs.options;
     spMesh = rhs.spMesh;
-    spDiffSolver = rhs.spDiffSolver;
     return *this;
 }
 
@@ -91,20 +89,6 @@ void P13T<MT, MP, DS>::setOptions(const P13TOptions options_)
     options = options_;
 }
 
-//---------------------------------------------------------------------------//
-// setDiffSolver:
-//     Set the diffusion solver to be used during the solves to the new
-//     value.
-//---------------------------------------------------------------------------//
-
-template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::setDiffSolver(const SP<DiffusionSolver> &spDiffSolver_)
-{
-    spDiffSolver = spDiffSolver_;
-    spMesh = spDiffSolver_->getMesh();
-}
-
-
 // ACCESSORS
 
 //------------------------------------------------------------------------//
@@ -117,7 +101,6 @@ std::ostream &P13T<MT, MP, DS>::print(std::ostream &os) const
 {
     os << "(P13T::this: " << (void *)this
        << " spMesh: " << *spMesh
-       << " spDiffSolver: " << *spDiffSolver
        << ")";
     return os;
 }
@@ -148,32 +131,153 @@ initializeRadiationState(const CCMaterialStateField &matStateCC,
 }
 
 //---------------------------------------------------------------------------//
-// solve:
-//     Solve for the new radiation field, the electron/ion energy depositions,
-//     and the momentom deposition.
-//
-//     The P13TOptions object (P13T state variable "options")
-//     determines whether this solve is with or without the
-//     electron/ion conduction equations.
+// solveElectConduction:
+//     Solve for the energy deposition and new temperature due to  
+//     the conduction equation split.
 //---------------------------------------------------------------------------//
     
 template<class MT, class MP, class DS>
-void P13T<MT, MP, DS>::solve(double dt,
-			     const CCMaterialStateField &matStateCC,
-			     const FCMaterialStateField &matStateFC,
-			     const RadiationStateField &prevStateField,
-			     const ccsf QRad,
-			     const ccsf QElectron,
-			     const ccsf QIon,
-			     const bsbf boundary,
-			     RadiationStateField &resultsStateField,
-			     ccsf &electronEnergyDeposition,
-			     ccsf &ionEnergyDeposition,
+void
+P13T<MT, MP, DS>::solveElectConduction(double dt,
+				       const CCMaterialStateField &matStateCC,
+				       const FCMaterialStateField &matStateFC,
+				       DiffusionSolver &solver,
+				       ccsf &electronEnergyDeposition,
+				       ccsf &Tnp1Electron) const
+{
+    // Require dt > 0, etc.
+
+    Require(dt > 0.0);
+    Require(matStateCC.getUnits() == matStateFC.getUnits());
+    
+    // This is a one-group problem
+
+    int groupNo = 1;
+    int numGroups = 1;
+
+    // Let's save the temperatures at time t^n.
+    
+    ccsf TnElectron(spMesh);
+
+    matStateCC.getElectronTemperature(TnElectron);
+
+    // Calculate the conduction coefficient
+	
+    fcdsf kappaElectron(spMesh);
+    matStateFC.getElectronConductionCoeff(kappaElectron);
+    kappaElectron *= dt;
+	
+    // Calculate the removal coefficient.
+	
+    ccsf removalCoeff(spMesh);
+    matStateCC.getElectronSpecificHeat(removalCoeff);
+
+    // Calculate the source term.
+    ccsf source = removalCoeff * TnElectron;
+
+    // Do the diffusion solve for the temperature at n+1.
+	
+    solver.solve(kappaElectron, removalCoeff, source, Tnp1Electron);
+
+    // deltaTElectron for radiation will
+    // be Te^n+1 - Te^n
+
+    ccsf deltaTElectron = Tnp1Electron - TnElectron;
+
+    // Calculate electron energy deposition
+
+    ccsf Cv(spMesh);
+
+    matStateCC.getElectronSpecificHeat(Cv);
+    electronEnergyDeposition = Cv * deltaTElectron;
+}
+
+//---------------------------------------------------------------------------//
+// solveIonConduction:
+//     Solve for the energy deposition and new temperature due to  
+//     the conduction equation split.
+//---------------------------------------------------------------------------//
+    
+template<class MT, class MP, class DS>
+void
+P13T<MT, MP, DS>::solveIonConduction(double dt,
+				     const CCMaterialStateField &matStateCC,
+				     const FCMaterialStateField &matStateFC,
+				     DiffusionSolver &solver,
+				     ccsf &ionEnergyDeposition,
+				     ccsf &Tnp1Ion) const
+{
+    // Require dt > 0, etc.
+
+    Require(dt > 0.0);
+    Require(matStateCC.getUnits() == matStateFC.getUnits());
+    
+    // This is a one-group problem
+
+    int groupNo = 1;
+    int numGroups = 1;
+
+    // Let's save the temperatures at time t^n.
+    
+    ccsf TnIon(spMesh);
+
+    matStateCC.getIonTemperature(TnIon);
+
+    // Calculate the conduction coefficient
+	
+    fcdsf kappaIon(spMesh);
+    matStateFC.getIonConductionCoeff(kappaIon);
+    kappaIon *= dt;
+	
+    // Calculate the removal coefficient.
+	
+    ccsf removalCoeff(spMesh);
+    matStateCC.getIonSpecificHeat(removalCoeff);
+
+    // Calculate the source term.
+    ccsf source = removalCoeff * TnIon;
+
+    // Do the diffusion solve for the temperature at n+1.
+	
+    solver.solve(kappaIon, removalCoeff, source, Tnp1Ion);
+
+    // deltaTIon for radiation will
+    // be Ti^n+1 - Ti^n
+
+    ccsf deltaTIon = Tnp1Ion - TnIon;
+
+    // Calculate ion energy deposition
+
+    ccsf Cv(spMesh);
+
+    matStateCC.getIonSpecificHeat(Cv);
+    ionEnergyDeposition = Cv * deltaTIon;
+}
+
+//---------------------------------------------------------------------------//
+// solve3T:
+//     Solve for the new radiation field, the electron/ion energy depositions,
+//     and the momentom deposition.
+//---------------------------------------------------------------------------//
+    
+template<class MT, class MP, class DS>
+void P13T<MT, MP, DS>::solve3T(double dt,
+			       const CCMaterialStateField &matStateCC,
+			       const FCMaterialStateField &matStateFC,
+			       const RadiationStateField &prevStateField,
+			       const ccsf QRad,
+			       const ccsf QElectron,
+			       const ccsf QIon,
+			       const bsbf boundary,
+			       DiffusionSolver &solver,
+			       RadiationStateField &resultsStateField,
+			       ccsf &electronEnergyDeposition,
+			       ccsf &ionEnergyDeposition,
 #if 0
-			     ncvf &momentumDeposition,
+			       ncvf &momentumDeposition,
 #endif
-			     ccsf &Tnp1Electron,
-			     ccsf &Tnp1Ion) const
+			       ccsf &Tnp1Electron,
+			       ccsf &Tnp1Ion) const
 {
     // Require dt > 0, etc.
 
@@ -192,115 +296,29 @@ void P13T<MT, MP, DS>::solve(double dt,
     matStateCC.getElectronTemperature(TnElectron);
     matStateCC.getIonTemperature(TnIon);
 
-    // If there is conduction we will need to differentiate
-    // between the temperatures at time t^n and t^n+1/2.
+    // Calculate the new radiation state due to the radiation P1,
+    // electron and ion equations ***without*** the conduction equations.
     
-    ccsf Tnp12Electron = TnElectron;
-    ccsf Tnp12Ion = TnIon;
+    calcNewRadState(dt, groupNo, matStateCC, matStateFC, prevStateField,
+		    QRad, QElectron, QIon, TnElectron, TnIon,
+		    boundary, solver, resultsStateField);
 
-    // If they want ion conduction, we do it here.
-    
-    if (options.wantIonConduction())
-    {
-	// Calculate the conduction coefficient
-	
-	fcdsf kappaIon(spMesh);
-	matStateFC.getIonConductionCoeff(kappaIon);
-	kappaIon *= dt;
-
-	// Calculate the removal coefficient.
-	
-	ccsf removalCoeff(spMesh);
-	matStateCC.getIonSpecificHeat(removalCoeff);
-
-	// Calculate the source term.
-	ccsf source = removalCoeff * TnIon;
-
-	// Do the diffusion solve for the temperature at n+1/2.
-	
-	spDiffSolver->solve(kappaIon, removalCoeff, source,
-			    boundary, Tnp12Ion);
-    }
-
-    
-    // If they want electron conduction, we do it here.
-    
-    if (options.wantElectronConduction())
-    {
-	// Calculate the conduction coefficient
-	
-	fcdsf kappaElectron(spMesh);
-	matStateFC.getElectronConductionCoeff(kappaElectron);
-	kappaElectron *= dt;
-	
-	// Calculate the removal coefficient.
-	
-	ccsf removalCoeff(spMesh);
-	matStateCC.getElectronSpecificHeat(removalCoeff);
-
-	// Calculate the source term.
-	ccsf source = removalCoeff * TnElectron;
-
-	// Do the diffusion solve for the temperature at n+1/2.
-	
-	spDiffSolver->solve(kappaElectron, removalCoeff, source,
-			    boundary, Tnp12Electron);
-    }
-
-    // deltaTElectron for radiation will
-    // be Te^n+1 - Te^n+1/2
-
-    // deltaTIon for radiation will
-    // be Ti^n+1 - Ti^n+1/2
+    // Calculate the delta electron temperature from the new radiation
+    // state, (Te^n+1 - Te^n).
     
     ccsf deltaTElectron(spMesh);
+    calcDeltaTElectron(dt, numGroups, matStateCC, prevStateField,
+		       QElectron, QIon,
+		       TnElectron, TnIon,
+		       resultsStateField, deltaTElectron);
+    
+    // Calculate the delta ion temperature from the delta electron
+    // temperature, (Ti^n+1 - Ti^n).
+    
     ccsf deltaTIon(spMesh);
-
-    if (options.wantRadiation())
-    {
-	// Calculate the new radiation state due to the radiation P1,
-	// electron and ion equations ***without*** the conduction equations.
-    
-	calcNewRadState(dt, groupNo, matStateCC, matStateFC, prevStateField,
-			QRad, QElectron, QIon,
-			Tnp12Electron, Tnp12Ion,
-			boundary,
-			resultsStateField);
-
-	// Calculate the delta electron temperature from the new radiation
-	// state, (Te^n+1 - Te^n+1/2).
-    
-	calcDeltaTElectron(dt, numGroups, matStateCC, prevStateField,
-			   QElectron, QIon,
-			   Tnp12Electron, Tnp12Ion,
-			   resultsStateField, deltaTElectron);
-    
-	// Calculate the delta ion temperature from the delta electron
-	// temperature, (Ti^n+1 - Ti^n+1/2).
-    
-	calcDeltaTIon(dt, matStateCC, prevStateField, QIon,
-		      Tnp12Electron, Tnp12Ion,
-		      deltaTElectron, deltaTIon);
-    }
-    else
-    {
-	// The P1 equation is not being solved this time.
-	
-	deltaTElectron = 0.0;
-	deltaTIon = 0.0;
-    }
-
-    // Now include the contribution from conduction.
-    
-    if (options.wantIonConduction())
-    {
-	deltaTIon += Tnp12Ion - TnIon;
-    }
-
-    if (options.wantElectronConduction())
-    {
-	deltaTElectron += Tnp12Electron - TnElectron;
-    }
+    calcDeltaTIon(dt, matStateCC, prevStateField, QIon,
+		  TnElectron, TnIon,
+		  deltaTElectron, deltaTIon);
 
     // Calculate electron and ion energy deposition
 
@@ -318,8 +336,6 @@ void P13T<MT, MP, DS>::solve(double dt,
     
 #if 0
     // Calculate the momentum deposition.
-    // For now we just zero it out.
-
     momentumDeposition = 0.0;
 #endif
 }
@@ -346,6 +362,7 @@ calcNewRadState(double dt,
 		const ccsf TElectron,
 		const ccsf TIon,
 		const bsbf boundary,
+		DiffusionSolver &solver,
 		RadiationStateField &resultsStateField) const
 {
     // Calculate the coefficients needed by the diffusion solver.
@@ -368,7 +385,7 @@ calcNewRadState(double dt,
     // Since phi and F are aliased to the resultsStateField members,
     // this is all we have to do.
     
-    spDiffSolver->solve(D, sigmaAbsBar, QRadBar, Fprime, boundary, phi, F);
+    solver.solve(D, sigmaAbsBar, QRadBar, Fprime, boundary, phi, F);
 
     // ENSURE that F is indeed continuous, if we can!
 }
