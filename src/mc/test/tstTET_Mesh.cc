@@ -273,13 +273,23 @@ void Test_TET()
     if (*mesh_ptr_1 != *mesh_ptr_2)                   ITFAILS;
 
     vector< vector<double> > m_coords = mesh_ptr_2->get_point_coord();
-    cout << "Vertex coordinates:\n";
-    for (int v_ = 0 ; v_ < m_coords.size() ; v_++)
-    {
-        cout << m_coords[v_][0] << "      ";
-        cout << m_coords[v_][1] << "      ";
-        cout << m_coords[v_][2] << endl;
-    }
+
+    if (fabs(m_coords[0][0] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[0][1] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[0][2] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[1][0] - 1.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[1][1] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[1][2] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[2][0] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[2][1] - 1.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[2][2] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[3][0] - 1.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[3][1] - 1.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[3][2] - 0.0) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[4][0] - 0.5) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[4][1] - 0.5) > TET_epsilon)     ITFAILS;
+    if (fabs(m_coords[4][2] - 1.0) > TET_epsilon)     ITFAILS;
+
 
 }   // end Test_TET()
 
