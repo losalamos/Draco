@@ -27,12 +27,18 @@ using namespace C4;
 #include "MatVec_3T.hh"
 #include "PreCond.hh"
 
+//---------------------------------------------------------------------------//
+// Constructor.  Perform basic initialization of the test problem.
+//---------------------------------------------------------------------------//
+
 template<class MT, class Problem>
-Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
-			       const Quad_Params& q, const pcg_DB& pcg_db_ )
-    : Run_DB( rdb ), Problem(q),
+Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
+			       const Run_DB& rdb,
+			       const typename Problem::params& p,
+			       const pcg_DB& pcg_db_ )
+    : Run_DB( rdb ), Problem(p),
       MT::Coord_Mapper( spm_->get_Mesh_DB() ),
-      spm(spm_), pcg_db(pcg_db_)//"pcg" )
+      spm(spm_), pcg_db(pcg_db_)
 {
     if (node == 0)
 	adf = new ADFile( "test.dat", IDX::WRITE, 500 );
@@ -40,6 +46,11 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
 	adf = (ADFile *) 1;	// Don't /eeeeven/ ask.
 }
 
+
+//---------------------------------------------------------------------------//
+// Run the simulation.  Contains t=0 setup, timestep cycling, and error
+// analysis. 
+//---------------------------------------------------------------------------//
 
 template<class MT, class Problem>
 void Test_3T<MT, Problem>::run()
@@ -87,7 +98,6 @@ void Test_3T<MT, Problem>::run()
 	cout << buf << endl;
     }
 
-//    Mat1<double> E_analytic(ncp), rhs(ncp), r(ncp);
     MT::cell_array E_analytic(spm), rhs(spm), r(spm);
 
 // main loop.
@@ -106,40 +116,7 @@ void Test_3T<MT, Problem>::run()
 	for( int i=0; i < ncp; i++ )
 	    E_analytic(i) = E( xc(I(i)), yc(J(i)), zc(K(i)), t );
 
-	{
-	    char buf[80];
-
-	    if (node == 0) {
-	    // Dump own stuff.
-		for( int i=0; i < ncp; i++ ) {
-		    sprintf( buf, "node %d i=%d x=%lf y=%lf z=%lf E_analytic=%lf",
-			     node, i, xc(I(i)), yc(J(i)), zc(K(i)),
-			     E_analytic(i) );
-		    cout << buf << endl;
-		}
-
-	    // Now collect from the other nodes.
-
-		for( int n=1; n < nodes; n++ ) {
-		    Send( 1, n ); // Tell them to transmit.
-		    for( int i=0; i < ncp; i++ ) {
-			Recv( buf, 80, n );
-			cout << buf << endl;
-		    }
-		}
-	    }
-	    else {
-		int dummy;
-		Recv( dummy, 0 );
-
-		for( int i=0; i < ncp; i++ ) {
-		    sprintf( buf, "node %d i=%d x=%lf y=%lf z=%lf E_analytic=%lf",
-			     node, i, xc(I(i)), yc(J(i)), zc(K(i)),
-			     E_analytic(i) );
-		    Send( buf, 80, 0 );
-		}
-	    }
-	}
+	diag_out( E_analytic, "E_analytic" );
 
     // Calculate rhs(t).
 	for( int i=0; i < ncp; i++ ) {
@@ -149,20 +126,11 @@ void Test_3T<MT, Problem>::run()
 	    
 	    rhs(i) = Exyz(x,y,z)*dEtdt()
 
-// 		+ D(x,y,z)*Ey(y)*Ez(z)*d2Exdxx(x)
-// 		+ Ey(y)*Ez(z)*dExdx(x)*Dy(y)*Dz(z)*dDxdx()
-
 		- (Dy(y)*Dz(z)*Et(t)*Ey(y)*Ez(z)) *
 		( Dx(x)*d2Exdxx(x) + dExdx(x)*dDxdx() )
 
-// 		+ D(x,y,z)*Ex(x)*Ez(z)*d2Eydyy(y)
-// 		+ Ex(x)*Ez(z)*dEydy(y)*Dx(x)*Dz(z)*dDydy()
-
 		- (Dx(x)*Dz(z)*Et(t)*Ex(x)*Ez(z)) *
 		( Dy(y)*d2Eydyy(y) + dEydy(y)*dDydy() )
-
-// 		+ D(x,y,z)*Ex(x)*Ey(y)*d2Ezdzz(z)
-// 		+ Ex(x)*Ey(y)*dEzdz(z)*Dx(x)*Dy(y)*dDzdz();
 
 		- (Dx(x)*Dy(y)*Et(t)*Ex(x)*Ey(y)) *
 		( Dz(z)*d2Ezdzz(z) + dEzdz(z)*dDzdz() );
@@ -172,7 +140,6 @@ void Test_3T<MT, Problem>::run()
 
     // Begin setting up to solve the problem.  First, set r.
 	for( int i=0; i < ncp; i++ )
-	//	    r(i) = rhs(i)*dt/vc(i) + Eo(i);
 	    r(i) = rhs(i)*dt + Eo(i);
 
     // Set up coefficient matrix.
@@ -307,6 +274,52 @@ void Test_3T<MT, Problem>::run()
 
     // Prepare for next iteration
 	Eo = En;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// This routine dumps a cell array out to the tty for visual inspection.
+//---------------------------------------------------------------------------//
+
+template<class MT, class Problem>
+void Test_3T<MT, Problem>::diag_out( const typename MT::cell_array& data,
+				     const char *name ) const
+{
+    char buf[80];
+
+    Mat1<double> xc( spm->get_xc() );
+    Mat1<double> yc( spm->get_yc() );
+    Mat1<double> zc( spm->get_zc() );
+
+    if (node == 0) {
+    // Dump own stuff.
+	for( int i=0; i < ncp; i++ ) {
+	    sprintf( buf, "node %d i=%d x=%lf y=%lf z=%lf %s=%lf",
+		     node, i, xc(I(i)), yc(J(i)), zc(K(i)),
+		     name, data(i) );
+	    cout << buf << endl;
+	}
+
+    // Now collect from the other nodes.
+
+	for( int n=1; n < nodes; n++ ) {
+	    Send( 1, n ); // Tell them to transmit.
+	    for( int i=0; i < ncp; i++ ) {
+		Recv( buf, 80, n );
+		cout << buf << endl;
+	    }
+	}
+    }
+    else {
+	int dummy;
+	Recv( dummy, 0 );
+
+	for( int i=0; i < ncp; i++ ) {
+	    sprintf( buf, "node %d i=%d x=%lf y=%lf z=%lf %s=%lf",
+		     node, i, xc(I(i)), yc(J(i)), zc(K(i)),
+		     name, data(i) );
+	    Send( buf, 80, 0 );
+	}
     }
 }
 

@@ -43,12 +43,12 @@ class Test_3T : public Test_Prob,
     typedef double NumT;
 
     Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
-	     const Quad_Params& q, const pcg_DB& pcg_db_ );
-//     Test_3T( const Test_3T& );
-//     ~Test_3T();
-//     Test_3T& operator=( const Test_3T& );
+	     const typename Problem::params& p, const pcg_DB& pcg_db_ );
 
     void run();
+
+    void diag_out( const typename MT::cell_array& data,
+		   const char *name ) const;
 
     int get_ncp() const { return ncp; }
     int get_nct() const { return nct; }
