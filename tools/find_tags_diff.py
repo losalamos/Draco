@@ -1,5 +1,5 @@
 ###############################################################################
-## find_tags.py
+## find_tags_diff.py
 ## Thomas M. Evans
 ## Mon Dec 17 10:31:44 2001
 ## $Id$
@@ -11,6 +11,8 @@
 ## Usage:
 ##       1) enter package directory
 ##       2) python ../../tools/find_tags.py
+## As opposed to find_tags.py; this version also prints out the
+## differences between the affected files.
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
@@ -97,10 +99,11 @@ def get_current_tag_revision(file):
     match = re_tag.findall(tags)
 
     # initialize tag_prefix
-    this_tag   = ''
-    ctr        = 0
+    this_tag      = 'none'
+    ctr           = 0
+    this_revision = 'none'
 
-    while this_tag == '' and ctr < len(match) and len(match) > 0:
+    while this_tag == 'none' and ctr < len(match) and len(match) > 0:
 
         temp_tag = match[ctr]
         
@@ -113,8 +116,9 @@ def get_current_tag_revision(file):
         # increment counter
         ctr = ctr + 1
 
-    revs          = rel_rev.findall(tags)
-    this_revision = revs[ctr-1]
+    if (ctr > 0):
+        revs          = rel_rev.findall(tags)
+        this_revision = revs[ctr-1]
     
     return (this_tag, this_revision)
 
@@ -218,11 +222,12 @@ else:
         (f, revision_num, tag_revision)
 
         # do diff
-        diff = commands.getoutput('cvs diff -r %s %s' % (tag_revision, f))
-        print diff
+        if tag_revision != 'none':
+            diff = commands.getoutput('cvs diff -r %s %s' % (tag_revision, f))
+            print diff
                                  
 
 ###############################################################################
-##                            end of find_tags.py
+##                            end of find_tags_diff.py
 ###############################################################################
 
