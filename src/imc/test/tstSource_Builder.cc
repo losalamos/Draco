@@ -20,7 +20,9 @@
 #include "../Mat_State.hh"
 #include "../Source.hh"
 #include "../Release.hh"
-#include "../Particle.hh"
+#include "../Frequency.hh"
+#include "../Gray_Particle.hh"
+#include "../Multigroup_Particle.hh"
 #include "../Global.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
@@ -29,6 +31,7 @@
 #include "mc/Parallel_Data_Operator.hh"
 #include "mc/Math.hh"
 #include "mc/Comm_Patterns.hh"
+#include "cdi/CDI.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
@@ -51,7 +54,10 @@ using rtt_imc::Opacity;
 using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Source;
-using rtt_imc::Particle;
+using rtt_imc::Gray_Particle;
+using rtt_imc::Multigroup_Particle;
+using rtt_imc::Gray_Frequency;
+using rtt_imc::Multigroup_Frequency;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
@@ -63,15 +69,21 @@ using rtt_mc::global::soft_equiv;
 using rtt_rng::Rnd_Control;
 using rtt_dsxx::SP;
 
-typedef SP<Particle<OS_Mesh> > SP_Particle;
+typedef Gray_Frequency               Gray;
+typedef Gray_Particle<OS_Mesh>       GPT;
+typedef SP<GPT>                      SP_GPT;
+
+typedef Multigroup_Frequency         MG;
+typedef Multigroup_Particle<OS_Mesh> MGPT;
+typedef SP<MGPT>                     SP_MGPT;
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 // build source test for a full replication topology --> tests
-// Rep_Source_Builder 
+// Rep_Source_Builder --> Gray_Frequency specialization
 
-void source_replication_test()
+void gray_source_replication_test()
 {
     // build a random number controller
     SP<Rnd_Control> rcon(new Rnd_Control(347223));
@@ -83,7 +95,7 @@ void source_replication_test()
     SP<OS_Mesh> mesh = mb->build_Mesh();
 
     // build an interface to a six cell fully replicated mesh
-    SP<IMC_Flat_Interface> interface(new IMC_Flat_Interface(mb));
+    SP<IMC_Flat_Interface<GPT> > interface(new IMC_Flat_Interface<GPT>(mb));
 
     // build a Topology: we do not use the Topology builder here because the
     // topology builder is designed to work on the host processor only -->
@@ -96,15 +108,20 @@ void source_replication_test()
     patterns->calc_patterns(topology);
 
     // build a Mat_State and Opacity
-    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat_State(mesh);
-    SP<Opacity<OS_Mesh> > opacity  = ob.build_Opacity(mesh, mat);
+    Flat_Mat_State_Builder<OS_Mesh,Gray> ob(interface);
+    SP<Gray>                   frequency = ob.build_Frequency();
+    SP<Mat_State<OS_Mesh> >    mat       = ob.build_Mat_State(mesh);
+    SP<Opacity<OS_Mesh,Gray> > opacity   = ob.build_Opacity(mesh, frequency,
+							    mat);
+
+    if (!frequency->is_gray()) ITFAILS;
 
     // build a Rep_Source Builder
-    Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
+    Rep_Source_Builder<OS_Mesh,Gray,GPT> source_builder(
+	interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh,Particle<OS_Mesh> > > source = 
+    SP<Source<OS_Mesh,Gray,GPT> > source = 
 	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
 
     // get the global numbers for each species
@@ -269,11 +286,14 @@ void source_replication_test()
     // get surface sources
     for (int i = 0; i < source->get_nsstot(); i++)
     {
-	SP_Particle particle = source->get_Source_Particle(.001);
+	SP_GPT particle      = source->get_Source_Particle(.001);
 	ss_ew               += particle->get_ew();
 
 	int streamid = particle->get_random().get_num();
 	int cell     = particle->get_cell();
+
+	if (cell < 1) ITFAILS;
+	if (cell > 6) ITFAILS;
 
 	if (rn_ss[cell-1] > streamid)                      ITFAILS;
 	if (streamid >= rn_ss[cell-1] + local_nss[cell-1]) ITFAILS;
@@ -285,11 +305,14 @@ void source_replication_test()
     // get volume sources
     for (int i = 0; i < source->get_nvoltot(); i++)
     {
-	SP_Particle particle = source->get_Source_Particle(.001);
+	SP_GPT particle      = source->get_Source_Particle(.001);
 	vol_ew              += particle->get_ew();
 
 	int streamid = particle->get_random().get_num();
 	int cell     = particle->get_cell();
+
+	if (cell < 1) ITFAILS;
+	if (cell > 6) ITFAILS;
 
 	if (rn_vol[cell-1] > streamid)                       ITFAILS;
 	if (streamid >= rn_vol[cell-1] + local_nvol[cell-1]) ITFAILS;
@@ -308,11 +331,14 @@ void source_replication_test()
     // get census sources
     for (int i = 0; i < source->get_ncentot(); i++)
     {
-	SP_Particle particle = source->get_Source_Particle(.001);
+	SP_GPT particle      = source->get_Source_Particle(.001);
 	cen_ew              += particle->get_ew();
 
 	int streamid = particle->get_random().get_num();
 	int cell     = particle->get_cell();
+
+	if (cell < 1) ITFAILS;
+	if (cell > 6) ITFAILS;
 
 	if (rn_cen[cell-1] > streamid)                       ITFAILS;
 	if (streamid >= rn_cen[cell-1] + local_ncen[cell-1]) ITFAILS;
@@ -388,12 +414,382 @@ void source_replication_test()
     if (fabs(evn - 3.472368) > 1.e-4 * 3.472368) ITFAILS;
     evn = source_builder.get_evol_net(6);
     if (fabs(evn - 3.472368) > 1.e-4 * 3.472368) ITFAILS;
+
+    if (rtt_imc_test::passed)
+	PASSMSG("Rep_Source_Builder tests pass for Gray_Frequency.");
 }
 
 //---------------------------------------------------------------------------//
-// test the source builder for a fully domain-decomposed (DD) mesh.
+// build source test for a full replication topology --> tests
+// Rep_Source_Builder --> Multigroup_Frequency specialization
 
-void source_DD_test()
+void mg_source_replication_test()
+{
+    // build a random number controller
+    SP<Rnd_Control> rcon(new Rnd_Control(347223));
+    rtt_rng::rn_stream = 0;
+
+    // build a FULL mesh --> this mesh will be fully replicated on all
+    // processors in the test
+    SP<Parser> parser(new Parser("OS_Input"));
+    SP<OS_Builder> mb(new OS_Builder(parser));
+    SP<OS_Mesh> mesh = mb->build_Mesh();
+
+    // build an interface to a six cell fully replicated mesh
+    bool constant_group_opacities = true;
+    SP<IMC_Flat_Interface<MGPT> > interface(
+	new IMC_Flat_Interface<MGPT>(mb, constant_group_opacities));
+
+    // build a Topology: we do not use the Topology builder here because the
+    // topology builder is designed to work on the host processor only -->
+    // instead we will just build a Replication topology on each mesh
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+    Parallel_Data_Operator pop(topology);
+
+    // build a comm_patterns
+    SP<Comm_Patterns> patterns(new Comm_Patterns());
+    patterns->calc_patterns(topology);
+
+    // build a Mat_State and Opacity
+    Flat_Mat_State_Builder<OS_Mesh,MG> ob(interface);
+    SP<MG>                   frequency = ob.build_Frequency();
+    SP<Mat_State<OS_Mesh> >  mat       = ob.build_Mat_State(mesh);
+    SP<Opacity<OS_Mesh,MG> > opacity   = ob.build_Opacity(mesh, frequency, mat);
+
+    if (frequency->is_gray())        ITFAILS;
+    if (!frequency->is_multigroup()) ITFAILS;
+
+    // calculate Planck integrals
+    vector<double> sigma_Planck(6, 0.0);
+    vector<double> norm_Planck(6, 0.0);
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	double T = mat->get_T(i);
+
+	for (int g = 1; g <= frequency->get_num_groups(); g++)
+	{
+	    pair<double,double> bds = frequency->get_group_boundaries(g);
+	    sigma_Planck[i-1]      += opacity->get_sigma_abs(i,g) * 
+		rtt_cdi::CDI::integratePlanckSpectrum(bds.first, bds.second,
+						      T);
+	}
+	
+	norm_Planck[i-1] = rtt_cdi::CDI::integratePlanckSpectrum(0.01, 100.0, 
+								 T);
+    }
+
+    // build a Rep_Source Builder
+    Rep_Source_Builder<OS_Mesh,MG,MGPT> source_builder(
+	interface, mesh, topology);
+
+    // build the source
+    SP<Source<OS_Mesh,MG,MGPT> > source = 
+	source_builder.build_Source(mesh, mat, opacity, rcon, patterns);
+
+    // get the global numbers for each species
+    int global_nsstot  = source_builder.get_nsstot();
+    int global_ncentot = source_builder.get_ncentot();
+    int global_nvoltot = source_builder.get_nvoltot();
+
+    // check to make sure globals and locals match
+    {
+	int local_nsstot  = source->get_nsstot();
+	int local_ncentot = source->get_ncentot();
+	int local_nvoltot = source->get_nvoltot();
+	C4::gsum(local_nsstot);
+	C4::gsum(local_ncentot);
+	C4::gsum(local_nvoltot);
+
+	if (local_nsstot != global_nsstot)   ITFAILS;
+	if (local_ncentot != global_ncentot) ITFAILS;
+	if (local_nvoltot != global_nvoltot) ITFAILS;
+    }
+
+    // calculate random number arrays on each processor
+    vector<int> rn_vol(mesh->num_cells());
+    vector<int> rn_cen(mesh->num_cells());
+    vector<int> rn_ss(mesh->num_cells());
+
+    // numbers of particles per cell per species; NOTE: the census numbers
+    // are from the initial census calculation and are used to get the
+    // initial random number stream ids, these are not necessarily the final
+    // census numbers; however, because there is no combing, they are
+    // equivalent to the final census numbers
+    vector<int> global_nvol(mesh->num_cells(), 1);
+    vector<int> global_ncen(mesh->num_cells(), 153);
+    vector<int> global_nss(mesh->num_cells(), 0);
+    {
+	global_ncen[3] = 116;
+	global_ncen[4] = 116;
+	global_ncen[5] = 116;
+	global_nvol[3] = 2;
+	global_nvol[4] = 2;
+	global_nvol[5] = 2;
+	global_nss[0]  = 92;
+	global_nss[1]  = 92;
+    }
+
+    // local source numbers per processor per species
+    vector<int> local_nvol(mesh->num_cells(), 0);
+    vector<int> local_ncen(mesh->num_cells(), 0);
+    vector<int> local_nss(mesh->num_cells(), 0);
+
+    // sum of ids for surface source and volume source per cell
+    vector<int> id_sum_ss(mesh->num_cells(), 0);
+    vector<int> id_sum_vol(mesh->num_cells(), 0);
+
+    int running_rn          = 0;
+    int rn_marker           = 0;
+
+    // set the proc to get the first of the next leftover particles
+    int first_leftover_proc = 0;
+
+    // calculate census random number id
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	int even_spread  = global_ncen[cell-1] / C4::nodes();
+	int leftover     = global_ncen[cell-1] - even_spread * C4::nodes();
+	int shifted_node = (C4::node() + C4::nodes() - first_leftover_proc) % 
+	    C4::nodes();
+
+	rn_cen[cell-1] = running_rn + even_spread * shifted_node +
+	    rtt_mc::global::min(shifted_node, leftover);
+
+	running_rn += global_ncen[cell-1];
+
+	// pre-combed, pre total source iteration census numbers
+	local_ncen[cell-1] = even_spread;
+
+	if (shifted_node < leftover)
+	    local_ncen[cell-1]++;
+
+	// update the proc to get the first of the next leftover particles
+	first_leftover_proc = (first_leftover_proc + leftover) % C4::nodes();
+    }
+
+    // set random number id marker to first volume source id
+    rn_marker = running_rn;
+
+    // reset the proc to get the first of the next leftover particles
+    first_leftover_proc = 0;
+
+    // calculate volume random number id
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	int even_spread  = global_nvol[cell-1] / C4::nodes();
+	int leftover     = global_nvol[cell-1] - even_spread * C4::nodes();
+	int shifted_node = (C4::node() + C4::nodes() - first_leftover_proc) % 
+	    C4::nodes();
+
+	rn_vol[cell-1] = running_rn + even_spread * shifted_node +
+	    rtt_mc::global::min(shifted_node, leftover);
+
+	running_rn += global_nvol[cell-1];
+
+	local_nvol[cell-1] = even_spread;
+
+	if (shifted_node < leftover)
+	    local_nvol[cell-1]++;
+
+	// update the proc to get the first of the next leftover particles
+	first_leftover_proc = (first_leftover_proc + leftover) % C4::nodes();
+    }
+
+    // add up random number ids in each cell for volume source
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	for (int np = 0; np < global_nvol[cell-1]; np++)
+	    id_sum_vol[cell-1] += rn_marker + np;
+
+	rn_marker += global_nvol[cell-1];
+    }
+
+    Check (rn_marker == running_rn);
+
+    // reset the proc to get the first of the next leftover particles
+    first_leftover_proc = 0;
+
+    // calculate surface source random number id
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	int even_spread  = global_nss[cell-1] / C4::nodes();
+	int leftover     = global_nss[cell-1] - even_spread * C4::nodes();
+	int shifted_node = (C4::node() + C4::nodes() - first_leftover_proc) % 
+	    C4::nodes();
+
+	rn_ss[cell-1] = running_rn + even_spread * shifted_node +
+	    rtt_mc::global::min(shifted_node, leftover);
+
+	running_rn += global_nss[cell-1];
+
+	local_nss[cell-1] = even_spread;
+
+	if (shifted_node < leftover)
+	    local_nss[cell-1]++;
+
+	// update the proc to get the first of the next leftover particles
+	first_leftover_proc = (first_leftover_proc + leftover) % C4::nodes();
+    }
+
+    // add up random number ids in each cell for surface source
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	for (int np = 0; np < global_nss[cell-1]; np++)
+	    id_sum_ss[cell-1] += rn_marker + np;
+
+	rn_marker += global_nss[cell-1];
+    }
+
+    // get particles out of the source and add up the energy weights
+    double cen_ew = 0.0;
+    double vol_ew = 0.0;
+    double ss_ew  = 0.0;
+
+    // calculated sums of surface source and volume ids
+    vector<int> calc_vol_rn_sum(mesh->num_cells(), 0);
+    vector<int> calc_ss_rn_sum(mesh->num_cells(), 0);
+    
+    // get surface sources
+    for (int i = 0; i < source->get_nsstot(); i++)
+    {
+	SP_MGPT particle     = source->get_Source_Particle(.001);
+	ss_ew               += particle->get_ew();
+
+	int streamid = particle->get_random().get_num();
+	int cell     = particle->get_cell();
+
+	if (cell < 1) ITFAILS;
+	if (cell > 6) ITFAILS;
+
+	if (rn_ss[cell-1] > streamid)                      ITFAILS;
+	if (streamid >= rn_ss[cell-1] + local_nss[cell-1]) ITFAILS;
+
+	// add up ids
+	calc_ss_rn_sum[cell-1] += streamid;
+    }
+
+    // get volume sources
+    for (int i = 0; i < source->get_nvoltot(); i++)
+    {
+	SP_MGPT particle     = source->get_Source_Particle(.001);
+	vol_ew              += particle->get_ew();
+
+	int streamid = particle->get_random().get_num();
+	int cell     = particle->get_cell();
+
+	if (cell < 1) ITFAILS;
+	if (cell > 6) ITFAILS;
+
+	if (rn_vol[cell-1] > streamid)                       ITFAILS;
+	if (streamid >= rn_vol[cell-1] + local_nvol[cell-1]) ITFAILS;
+
+	// add up ids
+	calc_vol_rn_sum[cell-1] += streamid;
+    }
+
+    // sum up ids from each processor
+    pop.global_sum(calc_ss_rn_sum.begin(), calc_ss_rn_sum.end());
+    pop.global_sum(calc_vol_rn_sum.begin(), calc_vol_rn_sum.end());
+
+    if (calc_ss_rn_sum != id_sum_ss)   ITFAILS;
+    if (calc_vol_rn_sum != id_sum_vol) ITFAILS;
+   
+    // get census sources
+    for (int i = 0; i < source->get_ncentot(); i++)
+    {
+	SP_MGPT particle     = source->get_Source_Particle(.001);
+	cen_ew              += particle->get_ew();
+
+	int streamid = particle->get_random().get_num();
+	int cell     = particle->get_cell();
+
+	if (cell < 1) ITFAILS;
+	if (cell > 6) ITFAILS;
+
+	if (rn_cen[cell-1] > streamid)                       ITFAILS;
+	if (streamid >= rn_cen[cell-1] + local_ncen[cell-1]) ITFAILS;
+    }
+
+    // the source should be empty
+    if (*source) ITFAILS;
+
+    // sum up sampled energy weights across processors
+    C4::gsum(ss_ew);
+    C4::gsum(vol_ew);
+    C4::gsum(cen_ew);
+
+    // subtract energy losses
+    ss_ew  -= source_builder.get_eloss_ss();
+    vol_ew -= source_builder.get_eloss_vol();
+    cen_ew -= source_builder.get_eloss_cen();
+
+    // compare to totals in source_builder
+    
+    // get deterministically calculated global values of total energy from
+    // the source builder; NOTE: this is the initial census energy
+    double ref_vol = source_builder.get_evoltot();
+    double ref_ss  = source_builder.get_esstot();
+    double ref_cen = source_builder.get_initial_census_energy();
+
+    if (fabs(vol_ew - ref_vol) > 1.e-8 * ref_vol) ITFAILS;
+    if (fabs(ss_ew - ref_ss) > 1.e-8 * ref_ss)    ITFAILS;
+    if (fabs(cen_ew - ref_cen) > 1.e-8 * ref_cen) ITFAILS;
+
+    // check to hand calculations of same energies
+    double hand_vol = 12.747095;
+    double hand_ss  = 325.909753;
+    double hand_cen = 1436.471652;
+
+    if (fabs(vol_ew - hand_vol) > 1.e-4 * hand_vol) ITFAILS;
+    if (fabs(ss_ew - hand_ss) > 1.e-4 * hand_ss)    ITFAILS;
+    if (fabs(cen_ew - hand_cen) > 1.e-4 * hand_cen) ITFAILS;
+
+    // check mat_vol_src
+    double mvs;
+
+    mvs = source_builder.get_mat_vol_src(1);
+    if (fabs(mvs - 0.011460) > 1.e-4 * 0.011460) ITFAILS;
+    mvs = source_builder.get_mat_vol_src(2);
+    if (fabs(mvs - 0.011460) > 1.e-4 * 0.011460) ITFAILS;
+    mvs = source_builder.get_mat_vol_src(3);
+    if (fabs(mvs - 0.011460) > 1.e-4 * 0.011460) ITFAILS;
+
+    mvs = source_builder.get_mat_vol_src(4);
+    if (fabs(mvs - 0.026382) > 1.e-4 * 0.026382) ITFAILS;
+    mvs = source_builder.get_mat_vol_src(5);
+    if (fabs(mvs - 0.026382) > 1.e-4 * 0.026382) ITFAILS;
+    mvs = source_builder.get_mat_vol_src(6);
+    if (fabs(mvs - 0.026382) > 1.e-4 * 0.026382) ITFAILS;
+
+    mvs = source_builder.get_mat_vol_srctot();
+    if (fabs(mvs - 0.113524) > 1.e-4 * .113524) ITFAILS;
+
+    // check evol_net
+    double evn;
+
+    evn = source_builder.get_evol_net(1);
+    if (fabs(evn - 0.466850) > 1.e-4 * 0.466850) ITFAILS;
+    evn = source_builder.get_evol_net(2);
+    if (fabs(evn - 0.466850) > 1.e-4 * 0.466850) ITFAILS;
+    evn = source_builder.get_evol_net(3);
+    if (fabs(evn - 0.466850) > 1.e-4 * 0.466850) ITFAILS;
+
+    evn = source_builder.get_evol_net(4);
+    if (fabs(evn - 2.620023) > 1.e-4 * 2.620023) ITFAILS;
+    evn = source_builder.get_evol_net(5);
+    if (fabs(evn - 2.620023) > 1.e-4 * 2.620023) ITFAILS;
+    evn = source_builder.get_evol_net(6);
+    if (fabs(evn - 2.620023) > 1.e-4 * 2.620023) ITFAILS;
+
+    if (rtt_imc_test::passed)
+	PASSMSG("Rep_Source_Builder tests pass for Multigroup_Frequency.");
+}
+
+//---------------------------------------------------------------------------//
+// test the source builder for a fully domain-decomposed (DD) mesh. -->
+// Gray_Frequency specialization
+
+void gray_source_DD_test()
 {
     // the DD test mesh is only for four processors
     if (C4::nodes() != 4)
@@ -429,21 +825,25 @@ void source_DD_test()
 
     // need an interface object (not explicitly used in
     // calc_fullDD_rn_fields).
-    SP<IMC_DD_Interface> interface(new IMC_DD_Interface(mesh->num_cells())); 
+    SP<IMC_DD_Interface<GPT> > interface(new IMC_DD_Interface<GPT>(
+					     mesh->num_cells())); 
 
     // check one thing from the interface
     if (interface->get_delta_t() != 0.001) ITFAILS;
 
     // build a Mat_State and Opacity
-    Flat_Mat_State_Builder<OS_Mesh> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat   = ob.build_Mat_State(mesh);
-    SP<Opacity<OS_Mesh> > opacity = ob.build_Opacity(mesh, mat);
+    Flat_Mat_State_Builder<OS_Mesh,Gray> ob(interface);
+    SP<Gray>                   frequency = ob.build_Frequency();
+    SP<Mat_State<OS_Mesh> >    mat       = ob.build_Mat_State(mesh);
+    SP<Opacity<OS_Mesh,Gray> > opacity   = ob.build_Opacity(mesh, frequency, 
+							    mat);
 
     // build a DD_Source Builder
-    DD_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
+    DD_Source_Builder<OS_Mesh,Gray,GPT> source_builder(
+	interface, mesh, topology);
 
     // build the source
-    SP<Source<OS_Mesh, Particle<OS_Mesh> > > source = 
+    SP<Source<OS_Mesh,Gray,GPT> > source = 
 	source_builder.build_Source(mesh, mat, opacity, rcon, patterns); 
 
     // <<<<<< SET REFERENCE VARIABLES >>>>>>
@@ -630,7 +1030,7 @@ void source_DD_test()
     // get surface sources; weakly check random number stream id's
     for (int i = 0; i < source->get_nsstot(); i++)
     {
-	SP_Particle particle = source->get_Source_Particle(.001);
+	SP_GPT particle      = source->get_Source_Particle(.001);
 	calc_ss_ewtot       += particle->get_ew();
 
 	int ssrnid = particle->get_random().get_num();
@@ -645,8 +1045,8 @@ void source_DD_test()
     // get volume sources; check random number stream id's
     for (int i = 0; i < source->get_nvoltot(); i++)
     {
-	SP_Particle particle = source->get_Source_Particle(.001);
-	calc_vol_ewtot      += particle->get_ew();
+	SP_GPT particle = source->get_Source_Particle(.001);
+	calc_vol_ewtot += particle->get_ew();
 
 	int volrnid     = particle->get_random().get_num();
 	sum_vol_rn     += volrnid;
@@ -669,7 +1069,7 @@ void source_DD_test()
     // get census sources; weakly check random number stream id's
     for (int i = 0; i < source->get_ncentot(); i++)
     {
-	SP_Particle particle = source->get_Source_Particle(.001);
+	SP_GPT particle      = source->get_Source_Particle(.001);
 	calc_cen_ewtot      += particle->get_ew();
 	int lcell            = particle->get_cell();
 	int gcell            = topology->global_cell(lcell);
@@ -690,6 +1090,9 @@ void source_DD_test()
 
     // the source should be empty
     if (*source) ITFAILS;
+
+    if (rtt_imc_test::passed)
+	PASSMSG("DD_Source_Builder tests pass for Gray_Frequency.");
 }
 
 //---------------------------------------------------------------------------//
@@ -709,23 +1112,26 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    try
-    {
+//     try
+//     {
 	// >>> UNIT TESTS
 
-	// full replication source test
-	source_replication_test();
+	// full replication source test for gray and multigroup
+	gray_source_replication_test();
+	mg_source_replication_test();
 
-	// source builder test on full domain decomposition 
-	source_DD_test();
-    }
-    catch (rtt_dsxx::assertion &ass)
-    {
-	cout << "While testing tstSource_Builder, " << ass.what()
-	     << endl;
-	C4::Finalize();
-	return 1;
-    }
+	// source builder test on full domain decomposition; we only need to
+	// test gray because all of the Frequency dependencies are in the
+	// Source_Builder base class
+	gray_source_DD_test();
+//     }
+//     catch (rtt_dsxx::assertion &ass)
+//     {
+// 	cout << "While testing tstSource_Builder, " << ass.what()
+// 	     << endl;
+// 	C4::Finalize();
+// 	return 1;
+//     }
 
     {
 	C4::HTSyncSpinLock slock;

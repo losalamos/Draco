@@ -244,12 +244,12 @@ void mg_flat_mat_state_test()
     vector<double> ref_groups(4);
     ref_groups[0] = 0.01;
     ref_groups[1] = 0.1;
-    ref_groups[2] = 1.0;
-    ref_groups[3] = 10.0;
+    ref_groups[2] = 15.0;
+    ref_groups[3] = 100.0;
     {
 	vector<double> groups = frequency->get_group_boundaries();
 	if (!soft_equiv(groups.begin(), groups.end(), 
-			ref_groups.begin(), ref_groups.end()));
+			ref_groups.begin(), ref_groups.end())) ITFAILS;
     }
 
     // check the opacity
@@ -281,12 +281,12 @@ void mg_flat_mat_state_test()
 	// check integrated norm Planck
 	double int_Planck;
 
-	int_Planck = CDI::integratePlanckSpectrum(0.01, 10.0, 10.0);
+	int_Planck = CDI::integratePlanckSpectrum(0.01, 100.0, 10.0);
 	for (int c = 1; c <= 3; c++)
 	    if (!soft_equiv(opacity->get_integrated_norm_Planck(c),
 			    int_Planck)) ITFAILS;
 
-	int_Planck = CDI::integratePlanckSpectrum(0.01, 10.0, 20.0);
+	int_Planck = CDI::integratePlanckSpectrum(0.01, 100.0, 20.0);
 	for (int c = 4; c <= 6; c++)
 	    if (!soft_equiv(opacity->get_integrated_norm_Planck(c),
 			    int_Planck)) ITFAILS;
@@ -508,7 +508,7 @@ void mg_cdi_mat_state_test()
     {
 	vector<double> groups = frequency->get_group_boundaries();
 	if (!soft_equiv(groups.begin(), groups.end(), 
-			ref_groups.begin(), ref_groups.end()));
+			ref_groups.begin(), ref_groups.end())) ITFAILS;
     }
 
     // check the opacity

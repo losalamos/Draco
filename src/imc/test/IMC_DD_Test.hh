@@ -157,7 +157,7 @@ IMC_DD_Interface<PT>::IMC_DD_Interface(int capacity_)
     for (int i = 0; i < capacity; i++)
     {
 	// density
-	density[i] = C4::node() + i + 1.0;
+	density[i]                           = C4::node() + i + 1.0;
 
 	// absorption in /cm
 	mat_data->gray_absorption_opacity[i] = (2 * C4::node() + i + 1.0) *
@@ -171,7 +171,7 @@ IMC_DD_Interface<PT>::IMC_DD_Interface(int capacity_)
 	mat_data->specific_heat[i] = 3.0 * C4::node() + i + 1.0;
 
 	// temperature
-	mat_data->temperature[i]   = 3.0 * (C4::node() + i + 1.0);
+	temperature[i]             = 3.0 * (C4::node() + i + 1.0);
     }
 
     // make the Source_Builder stuff

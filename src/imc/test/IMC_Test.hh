@@ -93,7 +93,7 @@ class IMC_Flat_Interface :
 
   public:
     // constructor
-    IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>);
+    IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, bool = false);
     
     // public interface for Opacity_Builder
     SP_Data   get_flat_data_container() const { return mat_data; }
@@ -129,7 +129,8 @@ class IMC_Flat_Interface :
 // constructor
 template<class PT>
 IMC_Flat_Interface<PT>::IMC_Flat_Interface(
-    rtt_dsxx::SP<rtt_mc::OS_Builder> osb) 
+    rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
+    bool                             common_mg_opacities) 
     : builder(osb),
       mat_data(new rtt_imc::Flat_Data_Container),
       density(6), 
@@ -156,8 +157,8 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
     // make group boundaries
     mat_data->group_boundaries[0] = 0.01;
     mat_data->group_boundaries[1] = 0.1;
-    mat_data->group_boundaries[2] = 1.0;
-    mat_data->group_boundaries[3] = 10.0;
+    mat_data->group_boundaries[2] = 15.0;
+    mat_data->group_boundaries[3] = 100.0;
 
     for (int i = 0; i < 3; i++)
     {
@@ -169,24 +170,44 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
 	mat_data->gray_absorption_opacity[i]    = .1  * density[i];
 	mat_data->gray_absorption_opacity[i+3]  = .01 * density[i+3];
 
-	mat_data->mg_absorption_opacity[i][0]   = 1.0;
-	mat_data->mg_absorption_opacity[i][1]   = 0.5;
-	mat_data->mg_absorption_opacity[i][2]   = 0.1;
+	if (common_mg_opacities)
+	{
+	    mat_data->mg_absorption_opacity[i][0]   = 0.1 * density[i];
+	    mat_data->mg_absorption_opacity[i][1]   = 0.1 * density[i];
+	    mat_data->mg_absorption_opacity[i][2]   = 0.1 * density[i];
+	    
+	    mat_data->mg_absorption_opacity[i+3][0] = 0.01 * density[i+3];
+	    mat_data->mg_absorption_opacity[i+3][1] = 0.01 * density[i+3];
+	    mat_data->mg_absorption_opacity[i+3][2] = 0.01 * density[i+3];
 
-	mat_data->mg_absorption_opacity[i+3][0] = 2.0;
-	mat_data->mg_absorption_opacity[i+3][1] = 1.5;
-	mat_data->mg_absorption_opacity[i+3][2] = 1.1;
+	    mat_data->mg_scattering_opacity[i][0]   = 0.5 * density[i];
+	    mat_data->mg_scattering_opacity[i][1]   = 0.5 * density[i];
+	    mat_data->mg_scattering_opacity[i][2]   = 0.5 * density[i];
+	    mat_data->mg_scattering_opacity[i+3][0] = 0.0;
+	    mat_data->mg_scattering_opacity[i+3][1] = 0.0;
+	    mat_data->mg_scattering_opacity[i+3][2] = 0.0;
+	}
+	else
+	{
+	    mat_data->mg_absorption_opacity[i][0]   = 1.0;
+	    mat_data->mg_absorption_opacity[i][1]   = 0.5;
+	    mat_data->mg_absorption_opacity[i][2]   = 0.1;
+	    
+	    mat_data->mg_absorption_opacity[i+3][0] = 2.0;
+	    mat_data->mg_absorption_opacity[i+3][1] = 1.5;
+	    mat_data->mg_absorption_opacity[i+3][2] = 1.1;
+
+	    mat_data->mg_scattering_opacity[i][0]   = 0.0;
+	    mat_data->mg_scattering_opacity[i][1]   = 0.0;
+	    mat_data->mg_scattering_opacity[i][2]   = 0.0;
+	    mat_data->mg_scattering_opacity[i+3][0] = 0.0;
+	    mat_data->mg_scattering_opacity[i+3][1] = 0.0;
+	    mat_data->mg_scattering_opacity[i+3][2] = 0.0;
+	}
 	
 	// scattering opacity in /cm
 	mat_data->gray_scattering_opacity[i]    = 0.5 * density[i];
 	mat_data->gray_scattering_opacity[i+3]  = 0.0 * density[i+3];
-
-	mat_data->mg_scattering_opacity[i][0]   = 0.0;
-	mat_data->mg_scattering_opacity[i][1]   = 0.0;
-	mat_data->mg_scattering_opacity[i][2]   = 0.0;
-	mat_data->mg_scattering_opacity[i+3][0] = 0.0;
-	mat_data->mg_scattering_opacity[i+3][1] = 0.0;
-	mat_data->mg_scattering_opacity[i+3][2] = 0.0;
 
 	// specific heat in jks/g/keV
 	mat_data->specific_heat[i]   = .1;
