@@ -2,34 +2,31 @@
 /*!
  * \file   ds++/test/tstPacking_Utils.cc
  * \author Thomas M. Evans
- * \date   Fri Jul 20 17:22:36 2001
- * \brief  Packing Utils test.
+ * \date   Wed Nov  7 15:58:08 2001
+ * \brief  
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++_Test.hh"
+#include "ds_test.hh"
 #include "../Release.hh"
 #include "../Packing_Utils.hh"
+#include "../Assert.hh"
 
-#include <vector>
-#include <string>
 #include <iostream>
+#include <vector>
 #include <cmath>
-#include <cstdlib>
 
 using namespace std;
 
 using rtt_dsxx::Packer;
 using rtt_dsxx::Unpacker;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_dsxx_test::fail(__LINE__);
-
 //---------------------------------------------------------------------------//
- 
+// TESTS
+//---------------------------------------------------------------------------//
+
 void packing_test()
 {
     // make some data
@@ -182,7 +179,6 @@ void packing_test()
 }
 
 //---------------------------------------------------------------------------//
-// main
 
 int main(int argc, char *argv[])
 {
@@ -191,40 +187,36 @@ int main(int argc, char *argv[])
 	if (string(argv[arg]) == "--version")
 	{
 	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl; 
+		 << endl;
 	    return 0;
 	}
 
-    // tests
     try
     {
+	// >>> UNIT TESTS
 	packing_test();
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &ass)
     {
-	cout << "Test: assertion failure at line " 
-	     << ass.what() << endl;
-	return 1;
-    }
-    catch(...)
-    {
-	cout << "HELP ME" << endl;
+	cout << "While testing tstPacking_Utils, " << ass.what()
+	     << endl;
 	return 1;
     }
 
     // status of test
     cout << endl;
-    cout <<     "************************************" << endl; 
-    if (passed) 
+    cout <<     "*********************************************" << endl;
+    if (rtt_ds_test::passed) 
     {
-        cout << "**** Packing Utils Self Test: PASSED" << endl;
+        cout << "**** tstPacking_Utils Test: PASSED" 
+	     << endl;
     }
-    cout <<     "************************************" << endl;
+    cout <<     "*********************************************" << endl;
     cout << endl;
 
-    cout << "Done testing Packing_Utils." << endl;
-}
+    cout << "Done testing tstPacking_Utils." << endl;
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstPacking_Utils.cc
+//                        end of tstPacking_Utils.cc
 //---------------------------------------------------------------------------//

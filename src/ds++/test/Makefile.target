@@ -1,9 +1,10 @@
 ###############################################################################
-# draco/src/ds++/test Makefile.target
-# Randy M. Roberts
-# Time-stamp: <99/02/10 16:43:44 mcghee>
+# ds++/test Makefile.target
+# Thomas M. Evans
+# Wed Nov  7 15:54:59 2001
+# $Id$
 ###############################################################################
-# @> Target makefile for DS++ component tests
+# @> General Makefile.target for ds++/test
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
@@ -11,11 +12,21 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-${test_alltarget}: ${testdeps}
+thistestdep := libds_test${libsuffix}
+thistestlib := -L. -lds_test
+thistestlib_dep := ds_test.o 
+
+${test_alltarget}: ${thistestdep} ${testdeps}
 
 %: %.o
-	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
+
+objs += ${thistestdep}
 
 ###############################################################################
-#			 end of draco/src/ds++/test Makefile.target
+#			 end of ds++/test Makefile.target
 ###############################################################################
