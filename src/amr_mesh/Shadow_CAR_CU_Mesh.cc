@@ -69,7 +69,7 @@ extern "C"
 	// Construct a new CAR_CU_Mesh int CCSF class object.
 	SP<CAR_CU_Mesh::CCSF<int> > ccsf_i (new CAR_CU_Mesh::CCSF<int>(mesh));
 
-	// return the address of the new CAR_CU_Mesh CCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::CCSF<int> >::insert(ccsf_i);
 
     }
@@ -101,7 +101,7 @@ extern "C"
 	SP<CAR_CU_Mesh::CCSF<int> > ccsf_i 
 	                         (new CAR_CU_Mesh::CCSF<int>(mesh, data_set));
 
-	// return the address of the new CAR_CU_Mesh CCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::CCSF<int> >::insert(ccsf_i);
 
     }
@@ -134,7 +134,7 @@ extern "C"
 	SP<CAR_CU_Mesh::CCSF<double> > ccsf_d 
 	                               (new CAR_CU_Mesh::CCSF<double>(mesh));
 
-	// return the address of the new CAR_CU_Mesh CCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::CCSF<double> >::insert(ccsf_d);
 
     }
@@ -166,7 +166,7 @@ extern "C"
 	SP<CAR_CU_Mesh::CCSF<double> > ccsf_d
 	                      (new CAR_CU_Mesh::CCSF<double>(mesh, data_set));
 
-	// return the address of the new CAR_CU_Mesh CCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::CCSF<double> >::insert(ccsf_d);
 
     }
@@ -199,7 +199,7 @@ extern "C"
 	// Construct a new CAR_CU_Mesh int FCSF class object.
 	SP<CAR_CU_Mesh::FCSF<int> > fcsf_i (new CAR_CU_Mesh::FCSF<int>(mesh));
 
-	// return the address of the new CAR_CU_Mesh FCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCSF<int> >::insert(fcsf_i);
 
     }
@@ -231,7 +231,7 @@ extern "C"
 	SP<CAR_CU_Mesh::FCSF<int> > fcsf_i 
 	                         (new CAR_CU_Mesh::FCSF<int>(mesh, data_set));
 
-	// return the address of the new CAR_CU_Mesh FCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCSF<int> >::insert(fcsf_i);
 
     }
@@ -264,7 +264,7 @@ extern "C"
 	SP<CAR_CU_Mesh::FCSF<double> > fcsf_d 
 	                               (new CAR_CU_Mesh::FCSF<double>(mesh));
 
-	// return the address of the new CAR_CU_Mesh FCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCSF<double> >::insert(fcsf_d);
 
     }
@@ -296,7 +296,7 @@ extern "C"
 	SP<CAR_CU_Mesh::FCSF<double> > fcsf_d
 	                      (new CAR_CU_Mesh::FCSF<double>(mesh, data_set));
 
-	// return the address of the new CAR_CU_Mesh FCSF class object (self).
+	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCSF<double> >::insert(fcsf_d);
 
     }
@@ -316,6 +316,146 @@ extern "C"
 
 	// remove the opaque pointer to the CAR_CU_Mesh class object.
 	opaque_pointers<CAR_CU_Mesh::FCSF<double> >::erase(self);
+    }
+
+    // Construct an uninitialized CAR_CU_Mesh int FCDSF class object from a 
+    // Fortran 90 program call.
+    void construct_mesh_fcdsf_i_(long & mesh_index, long & self)
+    {
+	// Get the address of the CAR_CU_Mesh class object (mesh).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+
+	// Construct a new CAR_CU_Mesh int FCDSF class object.
+	SP<CAR_CU_Mesh::FCDSF<int> > fcdsf_i 
+	                             (new CAR_CU_Mesh::FCDSF<int>(mesh));
+
+	// return the map key for the new CAR_CU_Mesh FCDSF class object 
+	// (self).
+	self = opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::insert(fcdsf_i);
+    }
+
+    // Construct an initialized CAR_CU_Mesh int FCDSF class object from a 
+    // Fortran 90 program call.
+    void construct_mesh_fcdsf_i_data_(long & mesh_index, long & self, 
+				      long & data, long & data_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (mesh).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	// Cast the long variables to integer
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(idata_size ==  mesh->num_cells() * 2 * mesh->get_ndim(), 
+	       "Invalid data passed to construct_mesh_fcdsf_i_data_!");
+
+	vector<vector<int> > data_set(mesh->num_cells());
+
+	for (int cell = 0; cell < mesh->num_cells(); cell++)
+	{
+	    data_set[cell].resize(2 * mesh->get_ndim());
+	    for (int face = 0; face < 2 * mesh->get_ndim(); face++)
+	    {
+	        data_set[cell][face] = * data_array;
+		++data_array;
+	    }
+	}
+
+	// Construct a new CAR_CU_Mesh int FCDSF class object.
+	SP<CAR_CU_Mesh::FCDSF<int> > fcdsf_i 
+	                         (new CAR_CU_Mesh::FCDSF<int>(mesh, data_set));
+
+	// return the map key for the new CAR_CU_Mesh FCDSF class object 
+	// (self).
+	self = opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::insert(fcdsf_i);
+    }
+
+    // Destroy a CAR_CU_Mesh int FCDSF class object from a Fortran 90 program
+    // call.
+    void destruct_mesh_fcdsf_i_(long & self)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh::FCDSF<int> > fcdsf_i = 
+	    opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+
+	// destroy the CAR_CU_Mesh class object by assigning this SP to 
+        // a null SP
+	fcdsf_i = SP<CAR_CU_Mesh::FCDSF<int> >();
+	Ensure (!fcdsf_i);
+
+	// remove the opaque pointer to the CAR_CU_Mesh class object.
+	opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::erase(self);
+    }
+
+    // Construct an uninitialized CAR_CU_Mesh double FCDSF class object from
+    // a Fortran 90 program call.
+    void construct_mesh_fcdsf_d_(long & mesh_index, long & self)
+    {
+	// Get the address of the CAR_CU_Mesh class object (mesh).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	// Construct a new CAR_CU_Mesh double FCDSF class object.
+	SP<CAR_CU_Mesh::FCDSF<double> > fcdsf_d 
+	                               (new CAR_CU_Mesh::FCDSF<double>(mesh));
+
+	// return the map key for the new CAR_CU_Mesh FCDSF class object 
+	// (self).
+	self = opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::insert(fcdsf_d);
+    }
+
+    // Construct an initialized CAR_CU_Mesh double FCDSF class object from a 
+    // Fortran 90 program call.
+    void construct_mesh_fcdsf_d_data_(long & mesh_index, long & self, 
+				      double & data, long & data_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (mesh).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	// Cast the long variables to integer
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(idata_size == mesh->num_cells() * 2 * mesh->get_ndim(),
+	       "Invalid data passed to construct_mesh_fcdsf_d_data_!");
+
+	vector<vector<double> > data_set(mesh->num_cells());
+
+	for (int cell = 0; cell < mesh->num_cells(); cell++)
+	{
+	    data_set[cell].resize(2 * mesh->get_ndim());
+	    for (int face = 0; face < 2 * mesh->get_ndim(); face++)
+	    {
+	        data_set[cell][face] = * data_array;
+		++data_array;
+	    }
+	}
+
+	// Construct a new CAR_CU_Mesh double FCDSF class object.
+	SP<CAR_CU_Mesh::FCDSF<double> > fcdsf_d
+	                    (new CAR_CU_Mesh::FCDSF<double>(mesh, data_set));
+
+	// return the map key for the new CAR_CU_Mesh FCDSF class object 
+	// (self).
+	self = opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::insert(fcdsf_d);
+
+    }
+
+    // Destroy a CAR_CU_Mesh double FCDSF class object from a Fortran 90 
+    // program call.
+    void destruct_mesh_fcdsf_d_(long & self)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh::FCDSF<double> > fcdsf_d = 
+	    opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+
+	// destroy the CAR_CU_Mesh class object by assigning this SP to 
+        // a null SP
+	fcdsf_d = SP<CAR_CU_Mesh::FCDSF<double> >();
+	Ensure (!fcdsf_d);
+
+	// remove the opaque pointer to the CAR_CU_Mesh class object.
+	opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::erase(self);
     }
 
 //===========================================================================//
@@ -937,7 +1077,7 @@ extern "C"
     void get_mesh_ccsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -963,7 +1103,7 @@ extern "C"
     void get_mesh_ccsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -984,7 +1124,7 @@ extern "C"
     void set_mesh_ccsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1009,7 +1149,7 @@ extern "C"
     void set_mesh_ccsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1032,7 +1172,7 @@ extern "C"
     void get_mesh_ccsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1058,7 +1198,7 @@ extern "C"
     void get_mesh_ccsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1079,7 +1219,7 @@ extern "C"
     void set_mesh_ccsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1104,7 +1244,7 @@ extern "C"
     void set_mesh_ccsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1127,7 +1267,7 @@ extern "C"
     void get_mesh_fcsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1153,7 +1293,7 @@ extern "C"
     void get_mesh_fcsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1182,7 +1322,7 @@ extern "C"
 				    long & cell_ind, long & face_ind, 
 				    long & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1206,7 +1346,7 @@ extern "C"
     void set_mesh_fcsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1231,7 +1371,7 @@ extern "C"
     void set_mesh_fcsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1260,7 +1400,7 @@ extern "C"
 				    long & cell_ind, long & face_ind,
 			            long & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1286,7 +1426,7 @@ extern "C"
     void get_mesh_fcsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1312,7 +1452,7 @@ extern "C"
     void get_mesh_fcsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1341,7 +1481,7 @@ extern "C"
 				    long & cell_ind, long & face_ind,
 				    double & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1365,7 +1505,7 @@ extern "C"
     void set_mesh_fcsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
@@ -1390,7 +1530,7 @@ extern "C"
     void set_mesh_fcsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data, long & data_size)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1419,7 +1559,7 @@ extern "C"
 				    long & cell_ind, long & face_ind,
 				    double & data)
     {
-	// Get the address of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1435,6 +1575,338 @@ extern "C"
 	       "Invalid face number passed to  set_mesh_fcsf_d_cell_face_!");
 
 	fcsf_d(icell, iface) = data;
+
+    }
+
+//===========================================================================//
+// integer FCDSF class objects
+//===========================================================================//
+    // Return an entire C++ CAR_CU_Mesh integer FCDSF class object (self).
+    void get_mesh_fcdsf_i_(long & mesh_index, long & self, 
+			   long & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::FCDSF<int> fcdsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+	// Cast the long variables to integer
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(idata_size == mesh->num_cells() * 2 * mesh->get_ndim(), 
+	       "Invalid data passed to get_mesh_fcdsf_i_!");
+
+	for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	{
+	    for (int face = 1; face <= 2 * mesh->get_ndim(); face++)
+	    {
+	        * data_array = static_cast<long>(fcdsf_i(cell, face));
+		++data_array;
+	    }
+	}
+    }
+
+    // Return all of the face values for a cell in a C++ CAR_CU_Mesh integer
+    // FCDSF class object (self).
+    void get_mesh_fcdsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
+			        long & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<int> fcdsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  get_mesh_fcdsf_i_cell_!");
+	Insist(idata_size == 2 * mesh->get_ndim(),
+	       "Invalid data passed to get_mesh_fcdsf_i_cell_!");
+
+	vector<int> data_set = fcdsf_i(icell);
+
+	for (int iface = 1; iface <= 2 * mesh->get_ndim(); iface++)
+	{
+	    * data_array = static_cast<long>(data_set[iface]);
+	    ++data_array;
+	}
+    }
+
+    // Return a cell face value from a C++ CAR_CU_Mesh integer FCDSF class 
+    // object (self).
+    void get_mesh_fcdsf_i_cell_face_(long & mesh_ind, long & self, 
+				     long & cell_ind, long & face_ind, 
+				     long & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<int> fcdsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int iface = static_cast<int>(face_ind);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  get_mesh_fcdsf_i_cell_face_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to  get_mesh_fcdsf_i_cell_face_!");
+
+	data = static_cast<long>(fcdsf_i(icell, iface));
+
+    }
+
+    // Set an entire C++ CAR_CU_Mesh integer FCDSF class object (self) (can 
+    // also be done at initialization using the constructor).
+    void set_mesh_fcdsf_i_(long & mesh_index, long & self, 
+			   long & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::FCDSF<int> fcdsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+	// Cast the long variables to integer
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(idata_size == mesh->num_cells() * 2 * mesh->get_ndim(), 
+	       "Invalid data passed to set_mesh_fcdsf_i_!");
+
+	for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	{
+	    for (int face = 1; face <= 2 * mesh->get_ndim(); face++)
+	    {
+	        fcdsf_i(cell, face) = static_cast<int>(* data_array);
+		++data_array;
+	    }
+	}
+    }
+
+    // Set all of the face values for a cell in a C++ CAR_CU_Mesh integer FCDSF
+    // class object (self).
+    void set_mesh_fcdsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
+			        long & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<int> fcdsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  set_mesh_fcdsf_i_cell_!");
+	Insist(idata_size == 2 * mesh->get_ndim(), 
+	       "Invalid data passed to set_mesh_fcdsf_i_cell_!");
+
+	for (int iface = 1; iface <= 2 * mesh->get_ndim(); iface++)
+	{
+            fcdsf_i(icell, iface) = static_cast<int>(* data_array);
+     	    ++data_array;
+	}
+    }
+
+    // Set a cell face value for a C++ CAR_CU_Mesh integer FCDSF class object
+    // (self).
+    void set_mesh_fcdsf_i_cell_face_(long & mesh_ind, long & self, 
+				     long & cell_ind, long & face_ind,
+			             long & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<int> fcdsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int iface = static_cast<int>(face_ind);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  set_mesh_fcdsf_i_cell_face_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to  set_mesh_fcdsf_i_cell_face_!");
+
+	fcdsf_i(icell, iface) = static_cast<int>(data);
+
+    }
+
+//===========================================================================//
+// double FCDSF class objects
+//===========================================================================//
+    // Return an entire C++ CAR_CU_Mesh integer FCDSF class object (self).
+    void get_mesh_fcdsf_d_(long & mesh_index, long & self, 
+			   double & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::FCDSF<double> fcdsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+	// Cast the long variables to integer
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(idata_size ==  mesh->num_cells() * 2 * mesh->get_ndim(), 
+	       "Invalid data passed to get_mesh_fcdsf_d_!");
+
+	for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	{
+	    for (int face = 1; face <= 2 * mesh->get_ndim(); face++)
+	    {
+	        * data_array = fcdsf_d(cell, face);
+		++data_array;
+	    }
+	}
+    }
+
+    // Return all of the face values for a cell in a C++ CAR_CU_Mesh double 
+    // FCDSF class object (self).
+    void get_mesh_fcdsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
+			        double & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<double> fcdsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  get_mesh_fcdsf_d_cell_!");
+	Insist(idata_size == 2 * mesh->get_ndim(), 
+	       "Invalid data passed to get_mesh_fcdsf_d_cell_!");
+
+	vector<double> data_set = fcdsf_d(icell);
+
+	for (int iface = 1; iface <= 2 * mesh->get_ndim(); iface++)
+	{
+	    * data_array = data_set[iface];
+	    ++data_array;
+	}
+    }
+
+    // Return a cell face value for a C++ CAR_CU_Mesh integer FCDSF class
+    // object (self).
+    void get_mesh_fcdsf_d_cell_face_(long & mesh_ind, long & self, 
+				     long & cell_ind, long & face_ind,
+				     double & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<double> fcdsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int iface = static_cast<int>(face_ind);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  get_mesh_fcdsf_d_cell_face_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to  get_mesh_fcdsf_d_cell_face_!");
+
+	data = fcdsf_d(icell, iface);
+
+    }
+
+    // Set an entire C++ CAR_CU_Mesh integer FCDSF class object (self) (can 
+    // also be done at initialization using the constructor).
+    void set_mesh_fcdsf_d_(long & mesh_index, long & self, 
+			   double & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::FCDSF<double> fcdsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+	// Cast the long variables to integer
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(idata_size ==  mesh->num_cells() * 2 * mesh->get_ndim(), 
+	       "Invalid data passed to set_mesh_fcdsf_d_!");
+
+	for (int cell = 1; cell <= mesh->num_cells(); cell++)
+	{
+	    for (int face = 1; face <= 2 * mesh->get_ndim(); face++)
+	    {
+	        fcdsf_d(cell, face) = * data_array;
+		++data_array;
+	    }
+	}
+    }
+
+    // Set all of the face values for a cell in a C++ CAR_CU_Mesh double 
+    // FCDSF class object (self).
+    void set_mesh_fcdsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
+			        double & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<double> fcdsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  set_mesh_fcdsf_d_cell_!");
+	Insist(idata_size == 2 * mesh->get_ndim(), 
+	       "Invalid data passed to set_mesh_fcdsf_d_cell_!");
+
+	for (int iface = 1; iface <= 2 * mesh->get_ndim(); iface++)
+	{
+	    fcdsf_d(icell, iface) = * data_array;
+	    ++data_array;
+	}
+    }
+
+    // Set a cell face value for a C++ CAR_CU_Mesh integer FCDSF class object
+    // (self).
+    void set_mesh_fcdsf_d_cell_face_(long & mesh_ind, long & self, 
+				     long & cell_ind, long & face_ind,
+				     double & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::FCDSF<double> fcdsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::item(self);
+	// Cast the long variables to integer
+	int icell = static_cast<int>(cell_ind);
+	int iface = static_cast<int>(face_ind);
+
+	Insist(icell > 0 && icell <= mesh->num_cells(), 
+	       "Invalid cell number passed to  set_mesh_fcdsf_d_cell_face_!");
+	Insist(iface > 0 && iface <= 2 * mesh->get_ndim(), 
+	       "Invalid face number passed to  set_mesh_fcdsf_d_cell_face_!");
+
+	fcdsf_d(icell, iface) = data;
 
     }
 
