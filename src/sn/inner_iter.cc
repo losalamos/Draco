@@ -1,30 +1,38 @@
 //----------------------------------*-C++-*----------------------------------//
-// inner.cc
+// inner_iter.cc
 // Scott Turner
-// 19 February 1998
+// 17 March 1998
 //---------------------------------------------------------------------------//
 // @> Controller of inner iterations.
 //---------------------------------------------------------------------------//
 
 //
-// Inner sets up cross sections and geometry for the inner iteration sweeps.
-// It also tests for convergence, does timing and prints results
+// inner_iter sets up cross sections and geometry for the inner iteration
+// sweeps. It also tests for convergence, does timing and prints results.
 //
+
+#include "sn/inner_iter.hh"
+#include "sn/precision.hh"
+#include "sn/protos.hh"
+#include "sn/array.hh"
+#include "sn/read_input.hh"
 
 #include <math.h>
 #include <iostream.h>
 #include <stdlib.h>
 
-#include "sn/test/snpp.hh"
-#include "sn/test/protos.hh"
+  void inner_iter::do_inner_iter()
+  {
 
-void inner( int it,     int jt,    int kt,     int mm,    int nm,
-            int isct,   int isctp, int ibl,    int ibb,   int ibfr,
-            int iprint, int ifxg,  REAL dx,    REAL dy,   REAL dz,
-            REAL epsi                                              )
-{
+  // get input from the input object
 
-#include "sn/test/array.hh"
+  read_input snpp_in;
+  snpp_in.read_data();
+
+  int  it, jt, kt, mm, isct, ibl, ibb, ibfr, iprint, ifxg;
+  REAL dx, dy, dz, epsi;
+  snpp_in.get_all_data( it, jt, kt, mm, isct, ibl, ibb, ibfr, iprint, ifxg,
+                        dx, dy, dz, epsi );
 
   int its;      // convergence iteration counter
   int s1;       // used for setting up the spherical harmonics
@@ -46,6 +54,11 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
   REAL grindc;  // cpu       grind time
   REAL fsum;    // scalar flux sum over the entire mesh
   REAL err;     // max change in the flux from one iteration to the next
+
+  int nm;       // number of   flux and source angular moments
+  int isctp;
+  isctp = isct + 1;
+  nm = isctp * isctp;
 
   Array3D p(nm,mm,8);           // spherical harmonics array
   Array3D ct(jt,kt,it);         // the total cross section in each mesh cell
@@ -306,6 +319,6 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
 }
 
 //---------------------------------------------------------------------------//
-//                              end of inner.cc
+//                              end of inner_iter.cc
 //---------------------------------------------------------------------------//
 

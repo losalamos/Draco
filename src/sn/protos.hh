@@ -6,22 +6,15 @@
 // @> Function Prototypes
 //---------------------------------------------------------------------------//
 
-#ifndef __sn_test_protos_hh__
-#define __sn_test_protos_hh__
+#ifndef __sn_protos_hh__
+#define __sn_protos_hh__
 
 //===========================================================================//
 // Here are the function prototypes for sn++.
 //===========================================================================//
 
-#include "sn/test/snpp.hh"
-#include "sn/test/array.hh"
-
-// Driver for inner iteration solution
-
-extern void inner( int it,     int jt,    int kt,     int mm,    int nm,
-                   int isct,   int isctp, int ibl,    int ibb,   int ibfr,
-                   int iprint, int ifxg,  REAL dx,    REAL dy,   REAL dz,
-                   REAL epsi                                              );
+#include "sn/precision.hh"
+#include "sn/array.hh"
 
 // Solver kernel
 
@@ -38,9 +31,9 @@ extern void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
 
 extern void timer( REAL &cpu, REAL &wall );
 
-#endif                          // __sn_test_protos_hh__
+#endif                          // __sn_protos_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of sn/test/protos.hh
+//                              end of protos.hh
 //---------------------------------------------------------------------------//
 

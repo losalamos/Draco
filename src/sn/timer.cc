@@ -1,3 +1,4 @@
+//----------------------------------*-C++-*----------------------------------//
 // timer.cc
 // Scott Turner
 // 19 February 1998
@@ -12,8 +13,8 @@
 #include <sys/types.h>
 #include <time.h>
 
-#include "sn/test/snpp.hh"
-#include "sn/test/protos.hh"
+#include "sn/precision.hh"
+#include "sn/protos.hh"
 
 void timer( REAL &cpu, REAL &wall )
 {

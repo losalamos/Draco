@@ -14,7 +14,7 @@ need_sn := yes
 
 include ../../config/makefile
 
-srcs	= snpp.cc timer.cc
+srcs	= snpp.cc
 
 objs	= $(srcs:%.cc=$(env)/%.o)
 

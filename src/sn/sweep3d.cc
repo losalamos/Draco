@@ -1,3 +1,4 @@
+//----------------------------------*-C++-*----------------------------------//
 // sweep3d.cc
 // Scott Turner
 // 19 February 1998
@@ -15,8 +16,8 @@
 #include <iostream.h>
 #include <stdlib.h>
 
-#include "sn/test/snpp.hh"
-#include "sn/test/protos.hh"
+#include "sn/precision.hh"
+#include "sn/protos.hh"
 
 void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
                      int ibl,            int ibb,             int ibfr,
@@ -28,7 +29,7 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
                  Array4D &flux                                         )
 {
 
-#include "sn/test/array.hh"
+#include "sn/array.hh"
 
   int itmm;     // number of x-direction cells * number of angles
   int i_cm;     // used in octant sweep order setup
