@@ -33,12 +33,14 @@
 ;;---------------------------------------------------------------------------;;
 
 ;;
-;; load pooma, this contains most of the emacs function defs that we
+;; load draco-rtt, this contains most of the emacs function defs that we
 ;; use
 ;;
 
-;(setq want-pooma-style-by-default t)
-(load "pooma")
+(load "draco-rtt")
+
+;; we don't want the pooma indentation style by default
+;; (setq want-pooma-style-by-default t)
 
 ;;
 ;; Turn on the language modes that are defined in Config-pkg.el

@@ -6,11 +6,12 @@
 \documentclass[11pt]{nmemo}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
-\usepackage[mathcal]{euscript}
+\usepackage[mathcal]{euscript}       
 \usepackage{tabularx}
 \usepackage{tmadd,tmath}
 \usepackage{cite}
 \usepackage{c++}
+\usepackage{fancycodes}
 
 %%---------------------------------------------------------------------------%%
 %% DEFINE SPECIFIC ENVIRONMENTS HERE
@@ -78,6 +79,7 @@
   R.M. Roberts, XTM MS D409\\ 
   S.A. Turner, XTM MS D409\\ 
   T.J. Urbatsch, XTM MS D409\\ 
+  J.S. Warsa, XTM MS D409\\
   }
 
 %%---------------------------------------------------------------------------%%
@@ -89,20 +91,20 @@
 \section{Introduction}
 
 \draco~\cite{rn98046} has been built using an informal \xemacs-based
-design environment since its conception.  As part of the \draco\ 
-reorganization project~\cite{draco-build} we have sorted through the
-existing Elisp functions and macros that have defined the \draco\ 
-environment.  These files have been cleaned up and organized.  As
-such, we know have the beginnings of a formal development environment
-for \draco.
+design environment.  As part of the \draco\ reorganization
+project~\cite{draco-build} we have sorted through the existing Elisp
+functions and macros that have defined this informal \draco\ 
+environment.  These files have been cleaned up and released as
+RTT-ELISP V1.0, the \draco\ development environment.  With this
+release we have a formal development environment for \draco.
 
 Our goal is for all files in \draco\ to have the same ``look and
 feel.''  To accomplish this we employ the \xemacs\ editor with a
-defined set of modes and functions to both expedite and homogenize
+defined set of modes and functions that both expedite and homogenize
 code and document development in \draco.  Additionally, templates are
-provided in \draco\ that contain the same header information and
-format.  Thus, all source code files in \draco\ will obtain the same
-``look'' simply by using this environment.
+provided that contain header information and formats.  Thus, all
+source code files in \draco\ will obtain the same ``look'' simply by
+using this environment.
 
 The \draco\ development environment consists of a series of Elisp
 (\comp{.el}) files that need to be loaded from the user's
@@ -111,12 +113,12 @@ provides the following features:
 \begin{itemize}
 \item A set of templates providing standard headers and footers for
   \draco\ source code.
-\item A \C++ indentation style for \xemacs.
+\item A \draco\ \C++ indentation style for \xemacs.
 \item Functions to expedite editing of source code (including \LaTeX)
-   and package creation in \draco.
+  and package creation in \draco.
 \end{itemize}
 We will show how to load the \draco\ development environment and
-analyze these features in the following sections
+analyze these features in the following sections.
 
 %%---------------------------------------------------------------------------%%
 
@@ -126,7 +128,7 @@ The files that constitute the \xemacs\ \draco\ development environment
 are listed in Table~\ref{tab:elisp}.  These files can be obtained
 \begin{table}
   \caption{Files that are part of the \draco\ development environment
-    distribution.}
+    distribution, RTT-ELISP V1.0.}
   \label{tab:elisp}
   \begin{center}
     \begin{tabularx}{\linewidth}{
@@ -140,6 +142,8 @@ are listed in Table~\ref{tab:elisp}.  These files can be obtained
       Config-pkg.el & yes & does package configurations for
       environments used in (and outside) of \draco \\
       draco-hacks.el & yes & \draco-specific function definitions \\
+      draco-rtt.el & yes & loads the \draco\ environment and other
+      packages \\
       fl-keywords.el & yes & font-lock keywords used throughout the
       \draco\ package \\
       infer-cc-style.el & yes & functionality for inferring
@@ -148,12 +152,10 @@ are listed in Table~\ref{tab:elisp}.  These files can be obtained
       mode from strings in file headers \\
       nml-mode.el & yes & \comp{nml} mode definition \\
       pooma-hacks.el & yes & c-style used by the POOMA team \\
-      pooma.el & yes & loads the \draco\ environment and other
-      packages \\
       rtt-hacks.el & yes & defines the \comp{rtt-c-style} \\
       tme-hacks.el & yes & contains functions used by the \draco\
       environment \\
-      xemacs-setup.el & no & keybindings that may be useful to \draco\ 
+      xemacs-setup.el & no & key-bindings that may be useful to \draco\ 
       developers \\ 
       \hline\hline
     \end{tabularx}
@@ -161,20 +163,20 @@ are listed in Table~\ref{tab:elisp}.  These files can be obtained
 \end{table}
 through CVS export:
 \begin{verbatim}
-     $ cvs export elisp
+     $ cvs export -r rtt-elisp_v10 elisp
 \end{verbatim} % $
 Note that not all files are required by the \draco\ development
-environment.  They are included because they may be useful for general
-work in XTM.  In addition to the \comp{elisp/} directory, a
-\comp{elisp/templates} directory is generated from the CVS export.
-These templates are used by functions in \comp{tme-hacks} that are not
-part of the official \draco\ development environment.  However, these
-functions are useful when writing code and documents outside of
-\draco.
+environment.  These additional Elisp components are included because
+they may be useful for general work in XTM.  In addition to the
+\comp{elisp/} directory, a \comp{elisp/templates} directory is
+generated from the CVS export.  These templates are used by functions
+in \comp{tme-hacks} and are not part of the official \draco\ 
+development environment.  However, these templates are useful when
+writing code and documents outside of \draco.
 
 The \comp{elisp/} directory that results from CVS export should be
-placed in a suitable location.  In general, the following two
-locations are used:
+placed in a suitable location.  In general, oen of the following two
+locations are recommended:
 \begin{verbatim}
      $HOME/elisp
      $HOME/lib/elisp
@@ -204,7 +206,7 @@ Additional functionality can be added by users to suit additional
 needs outside of \draco\ by simply making their own Elisp files in
 this manner.
 
-We will use The \comp{.emacs} file in \S~\ref{.emacs} as a template
+We will use the \comp{.emacs} file in \S~\ref{.emacs} as a template
 for what follows.  The following code determines where the
 user-installed \comp{elisp/} directory is located:
 \begin{verbatim}
@@ -214,7 +216,7 @@ user-installed \comp{elisp/} directory is located:
 \end{verbatim}
 To load the packages in the \draco\ environment include the following:
 \begin{verbatim}
-     (load "pooma")
+     (load "draco-rtt")
 \end{verbatim}
 To enable language support for the following modes, we use the
 following code:
@@ -247,22 +249,40 @@ commands in the sample \comp{.emacs} file see the \xemacs\ help menu.
 
 \section{Draco Templates}
 
-A set of templates used by \draco\ sits under the
+A set of templates used by \draco\ resides in the
 \comp{draco/templates/} directory.  These templates are used by the
 functions described in \S~\ref{sec:func} to make \comp{.cc},
 \comp{.tex}, and a host of other files.  Additional templates are
-provided to help setup \draco\ packages quickly and easily.  \draco\
-functions must called under the \comp{draco/} (or \draco-like,
-ie. \comp{solon/}) directory in order to use the \draco\ templates.
-The template functions in \comp{tme-hacks} can be used for work
-outside of \draco.
+provided to help setup \draco\ packages quickly and easily.  \draco\ 
+functions must be called under the \comp{draco/} (or \draco-like, ie.
+\comp{solon/}) directory in order to use the \draco\ templates.  This
+functionality is explained in \S~\ref{sec:func}.  The template
+functions in \comp{tme-hacks} can be used for work outside of \draco.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Draco \C++ Indentation Style}
+
+We have developed a \C++ indentation style for use in \draco.  The
+style is called RTT and can be confirmed by querying the value of the
+\comp{c-indentation-style} variable.  Figure~\ref{Test} gives an
+example of the RTT indentation style.  \cdFramedFigure{Test}{Example
+  of the RTT \C++-indentation style.}  By loading \comp{draco-rtt} in
+the \comp{.emacs} file this indentation style is set automatically.
+
+We note that there still exists a small bug in the \xemacs\ 
+implementation of the \comp{namespace} keyword.  This will nominally
+occur in definitions of functions within a \comp{namespace}.  To avoid
+this error, we set the namespace indentation to zero.  Thus, the user
+will not encounter this \xemacs\ \C++-mode bug when using the RTT
+style.
 
 %%---------------------------------------------------------------------------%%
 
 \section{Draco Functions}
 \label{sec:func}
 
-This section describes to families of functions.  The first set,
+This section describes two families of functions.  The first set,
 \S~\ref{sec:dfunc}, is provided for use when developing in \draco\ 
 only.  These functions must be used under a viable \draco-like system
 directory such as \comp{draco/}, \comp{solon/}, or \comp{milagro/}.
@@ -289,6 +309,8 @@ The following is a list of functions used exclusively in \draco:
 \item[\comp{draco-cc-headin}:] Sets up a \C++ header file in \draco\ 
   that is modified during configuration (see Ref.~\cite{draco-build});
   makes a \textsl{header}\comp{.hh.in} file.
+\item[\comp{draco-c-head}:] Sets up a C header file in \draco; makes a 
+  \textsl{header}\comp{.h} file.
 \item[\comp{draco-c-headin}:] Sets up a C header file in \draco\ that
   is modified during configuration (see Ref.~\cite{draco-build});
   makes a \textsl{header}\comp{.h.in} file.
@@ -308,12 +330,20 @@ The following is a list of functions used exclusively in \draco:
   format; makes a \textsl{name}\comp{.bib} file.
 \end{description}
 
-Remember, these functions must be launched in a directory that is
-located under \comp{draco/} or a \draco-like directory.  Also, the
-user always has the option of making key-bindings for these functions.
-Key-bindings should be placed in the user's \comp{.emacs} file or in a
-file in the \comp{elisp/} directory that is loaded from \comp{.emacs}.
-See \S~\ref{sec:.emacs} for examples.
+Remember, these functions must be launched from a directory that is
+located under \comp{draco/} or a \draco-like directory.  This is
+required because the Elisp functions search up the directory-tree for
+a \textsl{dir}\comp{/templates/} directory where templates are stored.
+Thus, if a user is working in \comp{draco/src/c4/} and calls a \draco\ 
+Elisp function then the directory will be searched upwards until
+\comp{draco/templates/} is found.  Therefore, any system
+directory-tree that uses the \draco\ model will accept the \draco\ 
+Elisp functionality.
+
+The user always has the option of making key-bindings for these
+functions.  Key-bindings should be placed in the user's \comp{.emacs}
+file or in a file in the \comp{elisp/} directory that is loaded from
+\comp{.emacs}.  See \S~\ref{sec:.emacs} for examples.
 
 \subsection{General Functions}
 \label{sec:gfunc}
@@ -379,10 +409,24 @@ A good example of how to incorporate these functions into Elisp
 \section{Sample \comp{.emacs} File}
 \label{.emacs}
 
+This is a sample \comp{.emacs} file that loads the \draco\ development 
+environment.  Additionally, this file loads user-defined options that
+are stored in the \comp{.xemacs-options} and \comp{.xemacs-std}
+files.  The \comp{.xemacs-options} file is written by the \comp{Save
+  Options} command in the \xemacs\ \comp{Options} menu.  The
+\comp{.xemacs-std} file is for preferences that the user does not want 
+overwritten.  These options could easily be placed directly in the
+\comp{.emacs} file if desired.  See the \xemacs\ \comp{Info} pages for 
+more help.
+
 \input{emacs}
 
 \section{Sample User Key-Bindings and Mode-Hooks}
 \label{tme-keys}
+
+This is a sample key-bindings and \comp{mode-hooks} file.  There are
+many ways to achieve this type of functionality in \xemacs.  This file 
+is one example.  See the \xemacs\ \comp{Info} pages for more help.
 
 \input{tme-keys}
 
