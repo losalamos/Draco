@@ -1180,7 +1180,7 @@ fi
 
    
 
-subdirs="ExpEngineTraits"
+subdirs="ExpEngineTraits MatrixFactory"
 
 
 trap '' 1 2 15
@@ -1465,7 +1465,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ExpEngineTraits; do
+  for ac_config_dir in ExpEngineTraits MatrixFactory; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.

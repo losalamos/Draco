@@ -4,6 +4,6 @@ AC_CONFIG_AUX_DIR(../config)
 AC_ALL_VENDORS_SETUP
 AC_DRACO_ARGS
 
-AC_CONFIG_SUBDIRS(ExpEngineTraits)
+AC_CONFIG_SUBDIRS(ExpEngineTraits MatrixFactory)
 
 AC_OUTPUT(Makefile)
