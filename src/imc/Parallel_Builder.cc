@@ -977,7 +977,7 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
   // build mesh, we assume that this is a submesh!!!
   // SOLARIS MPICH fails at this point
     return_mesh = new MT(coord, layout, vertex, cell_pair, true);
-
+    
   // return mesh
     return return_mesh;
 }
@@ -993,9 +993,9 @@ void Parallel_Builder<MT>::send_Coord(SP<Coord_sys> coord)
   // send out the coordinate system designator
 
   // send variables
-    string cs          = coord->get_Coord();
+    string cs    = coord->get_Coord();
     const char *sendcs = cs.c_str();
-    int cs_size        = cs.size();
+    int cs_size  = cs.size() + 1;
 
   // send the Coord_sys string
     for (int np = 1; np < nodes(); np++)
@@ -1339,6 +1339,7 @@ typename MT::CCVF_d Parallel_Builder<MT>::recv_vertex()
 	    index++;
 	}
     }
+    Check (index == total_size);
 
   // delete dynamic allocated arrays
     delete [] vert;
@@ -1380,6 +1381,7 @@ void Parallel_Builder<MT>::send_cellpair(const typename MT::CCVF_i &cellpair,
 	    vertices[index] = cellpair[i][j];
 	    index++;
 	}
+    Check (index == size);
 
   // pass the size
     Send (num_cells, proc, 10);
