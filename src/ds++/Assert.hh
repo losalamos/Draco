@@ -121,8 +121,10 @@ NAMESPACE_DS_END
 
 #if DBC & 4
 #define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ );
+#define Remember(c) c;
 #else
 #define Ensure(c) 
+#define Remember(c)
 #endif
 
 //---------------------------------------------------------------------------//
