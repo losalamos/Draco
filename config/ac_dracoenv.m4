@@ -13,6 +13,9 @@ dnl usage: configure.in
 dnl puts together the DRACO compile-time environments
 dnl-------------------------------------------------------------------------dnl
 
+builtin(include, ac_f90env.m4)dnl Fortran 90 macros
+builtin(include, ac_gm4.m4)dnl GNU m4 macros
+
 AC_DEFUN(AC_DRACO_ENV, [dnl
 
    dnl
@@ -162,55 +165,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_MSG_ERROR("No valid C++ Compiler Found!")
    fi
 
-   # if F90 chosen as the language, 	
-   # test with_f90 for compiler, and call setup
+   # if with_f90 defined test with_f90 for compiler, and call setup
    # if with_f90 set to yes or not set 
    # attempt to guess compiler based on target
 
-   if test AC_LANG = F90   
+   if test "${with_f90+set}" = "set"   
    then
-       case "${with_f90:=yes}" in
-       XL)
-           AC_DRACO_XL_F90
-       ;;
-       Fujitsu)
-           AC_DRACO_FUJITSU_F90
-       ;;
-       WorkShop)
-           AC_DRACO_WORKSHOP_F90
-       ;;
-       Cray)
-           AC_DRACO_CRAY_F90
-       ;;
-       MIPS)
-           AC_DRACO_MIPS_F90
-       ;;
-       yes)				# guess compiler from target platform
-           case "${target}" in
-           rs6000-ibm-aix*)
-               AC_DRACO_XL_F90
-           ;;
-           sparc-sun-solaris2.*)
-               AC_DRACO_WORKSHOP_F90
-           ;;
-           i?86-pc-linux*)
-               AC_DRACO_FUJITSU_F90
-           ;;
-           ymp-cray-unicos*)
-               AC_DRACO_CRAY_F90
-           ;;
-           mips-sgi-irix*)
-               AC_DRACO_MIPS_F90
-           ;;
-           *)
-               AC_MSG_ERROR([Cannot guess F90 compiler, set --with-f90])
-           ;;
-           esac
-       ;;
-       *)
-           AC_MSG_ERROR([Unrecognized F90 compiler, use --help])
-       ;;
-       esac
+       AC_F90_ENV
    fi
    
    dnl check for ranlib

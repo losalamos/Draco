@@ -4,7 +4,7 @@ dnl 	Author:	Mark G. Gray
 dnl 		Los Alamos National Laboratory
 dnl 	Date:	Sun Apr  2 12:33:41 MDT 2000
 dnl 
-dnl 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
+dnl 	Copyright (c) 2000 Free Software Foundation
 dnl 
 dnl	$Id$
 dnl 
@@ -12,21 +12,18 @@ dnl ========================================================================
 
 dnl NAME
 
-dnl	AC_LANG_FORTRAN90, AC_PROG_F90, AC_PROG_GM4, AC_REQUIRE_GM4 - 
-dnl     Fortran 90 and gm4 macros for autoconf 
+dnl	AC_LANG_FORTRAN90, AC_PROG_F90, 
+dnl     Fortran 90 macros for autoconf 
 
 dnl SYNOPSIS/USAGE
 
 dnl	AC_LANG_FORTRAN90
 dnl	AC_PROG_F90
 
-dnl 	AC_PROG_GM4
-dnl 	AC_REQUIRE_GM4
-
 dnl DESCRIPTION
 
 dnl	AC_LANG_FORTRAN90 sets up the compile and link test.  Use F90, 
-dnl     F90FLAGS, LDFLAGS, and F90EXT for test programs.
+dnl     F90FLAGS, and LDFLAGS for test programs.
 
 dnl	AC_PROG_F90 determines a Fortran 90 compiler to use.  If F90
 dnl	is not already set in the environment, check for `f90', `F90',
@@ -40,12 +37,6 @@ dnl     If MODNAME and MODSUFFIX are not already set in the environment,
 dnl     test for MODNAME and MODSUFFIX.  Set the output variables `MODNAME'
 dnl     and `MODSUFFIX' to the module name and suffix conventions, 
 dnl     respectively.
-
-dnl 	AC_PROG_GM4 sets the output variable GM4 to a command that runs 
-dnl	the GNU m4 preprocessor.  Looks for gm4 and then m4, and verifies 
-dnl	the gnu version by running ${GM4} --version
-
-dnl	AC_REQUIRE_GM4 ensures that GM4 has been found
 
 dnl BUGS
 
@@ -72,7 +63,7 @@ dnl ### Selecting which language to use for testing
 dnl     See AC_LANG_C, AC_LANG_CPLUSPLUS, AC_LANG_FORTRAN77
 AC_DEFUN(AC_LANG_FORTRAN90, [dnl 
    define([AC_LANG], [FORTRAN90])dnl
-   ac_ext=${F90EXT-f90}
+   ac_ext=f90
    ac_compile='${F90-f90} -c $F90FLAGS conftest.$ac_ext 1>&AC_FD_CC'
    ac_link='${F90-f90} -o conftest${ac_exeext} $F90FLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&AC_FD_CC'
    cross_compiling=$ac_cv_prog_f90_cross
@@ -215,22 +206,6 @@ EOF
    AC_SUBST(MODSUFFIX)dnl
    AC_SUBST(MODNAME)dnl
 ])
-
-AC_DEFUN(AC_PROG_GM4, [dnl
-   AC_MSG_CHECKING(how to run the Gnu m4 preprocessor)
-   AC_CHECK_PROGS(GM4, gm4 m4, none)
-   if test "${GM4}" != none && ${GM4} --version 2>&1 | grep "GNU"
-   then
-       AC_MSG_RESULT([found])
-   else
-       AC_MSG_ERROR([not found])
-   fi
-])
-
-dnl Require finding the gnu m4 preprocessor if F90 is the current language
-AC_DEFUN(AC_REQUIRE_GM4, [dnl See AC_REQUIRE_CPP
-   ifelse(AC_LANG, F90, [AC_REQUIRE([AC_PROG_GM4])])
-]) 
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_f90.m4
