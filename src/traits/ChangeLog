@@ -1,0 +1,6 @@
+2000-01-21  Thomas M. Evans  <tme@lanl.gov>
+
+	* Release.*, Viz_Traits.hh: added Release.hh and Release.cc to
+	traits class to bring it up to speed.  Also added Viz_Traits for
+	use with the viz package.
+

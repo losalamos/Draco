@@ -14,10 +14,18 @@ AC_CONFIG_HEADER(traits/config.h:config.h.in)
 package="traits"
 
 AC_INSTALL_HEADERS
+AC_INSTALL_LIB
+
+dnl draco libraries
+AC_NEEDS_LIBS(ds++)
+
+dnl runtesting
+AC_RUNTESTS(tstViz_Traits, scalar)
 
 AC_DRACO_ENV
 
-AC_OUTPUT(Makefile:../../config/Makefile.package.in)
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+          test/Makefile:../../config/Makefile.test.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/c4 configure.in
