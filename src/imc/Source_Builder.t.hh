@@ -99,13 +99,13 @@ Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh,
     Require(mesh->num_cells() == topology->num_cells(node()));
     Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
-    // modulo the rn_stream with 2e9 so that, when we get to more than
-    // 2e9 particles (each with its own rn_stream, numbered 0 to 2e9-1), the
+    // modulo the rn_stream with 1e9 so that, when we get to more than
+    // 1e9 particles (each with its own rn_stream, numbered 0 to 1e9-1), the
     // rn_stream starts back with rn_stream=0.  The rng package is still
-    // limited to rnstream < numgen, so the 2e9 wrap-around is moot unless
-    // numgen is 2e9 or higher (int size limiting).
-    rtt_rng::rn_stream = rtt_mc::global::mod_with_2e9(rtt_rng::rn_stream);
-    
+    // limited to rnstream < numgen, so the 1e9 wrap-around is moot unless
+    // numgen is 1e9 or higher (int size limiting + spawn change).
+    rtt_rng::rn_stream = INTEGER_MODULO_1E9(rtt_rng::rn_stream);
+
     int num_cells = mesh->num_cells();
 
     // calculate the desired number of source particles
@@ -434,8 +434,8 @@ void Source_Builder<MT,PT>::write_initial_census(SP_Mesh mesh,
 	for (int i = 1; i <= ncen(cell); i++)
 	{
 	    // make a new random number for delivery to Particle
-	    int rn_str_id = rtt_mc::global::mod_with_2e9(cenrn(cell) + i-1); 
-	    Sprng random = rcon->get_rn(rn_str_id);
+	    int rn_str_id = INTEGER_MODULO_1E9(cenrn(cell) + i-1); 
+	    Sprng random  = rcon->get_rn(rn_str_id);
 	    
 	    // sample particle location
 	    vector<double> r = mesh->sample_pos(cell, random);

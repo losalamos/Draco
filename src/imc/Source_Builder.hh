@@ -118,6 +118,7 @@ namespace rtt_imc
 //                  replication it is a global value
 // 3) 24 Aug 2000 : added capability for the random number stream ID's to
 //                  wrap around 2e9.
+// 4) 31-JUL-2001 : changed mod_with_2e9 to INTEGER_MODULO_1E9 from rtt_mc
 // 
 //===========================================================================//
 

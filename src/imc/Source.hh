@@ -48,6 +48,7 @@ namespace rtt_imc
 //               wrap around 2e9 seamlessly.
 // 4) 14-DEC-00: added accessor to get the total number of source particles 
 //               contained in this source
+// 5) 31-JUL-01: used INTEGER_MODULO_1E9 from rtt_mc for random num. stream
 // 
 //===========================================================================//
 

@@ -153,9 +153,8 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
     {
 	if (nsrcdone_cell < nss(current_cell))
 	{
-	    int rn_str_id =
-		rtt_mc::global::mod_with_2e9(ss_rnnum(current_cell) +
-					     nsrcdone_cell);  
+	    int rn_str_id = INTEGER_MODULO_1E9(ss_rnnum(current_cell) +
+					       nsrcdone_cell);  
 	    rcon->set_num(rn_str_id);
 	    source_particle = get_ss(delta_t);
 	    sampled = true;
@@ -184,9 +183,8 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_Source_Particle(double delta_t)
     {
 	if (nsrcdone_cell < nvol(current_cell))
 	{
-	    int rn_str_id =
-		rtt_mc::global::mod_with_2e9(vol_rnnum(current_cell) + 
-					     nsrcdone_cell);
+	    int rn_str_id = INTEGER_MODULO_1E9(vol_rnnum(current_cell) + 
+					       nsrcdone_cell);
 	    rcon->set_num(rn_str_id);
 	    source_particle = get_evol(delta_t);
 	    sampled = true;
