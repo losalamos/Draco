@@ -65,7 +65,7 @@ namespace rtt_imc
  *
  * This class, along with rtt_imc::CDI_Mat_State_Builder, is a derived class
  * of Mat_State_Builder.  It should be used when a client already has
- * cell-centered material defined.g  
+ * cell-centered material defined.
  *
  * \sa rtt_imc::Interface, rtt_imc::Flat_Data_Interface,
  * rtt_imc::Mat_State_Builder.  See tstFlat_Mat_Data_Builder for examples of
