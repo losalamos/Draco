@@ -450,7 +450,7 @@ Parallel_Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
 	    nptryfor = 1;
 
 	part_per_e = nptryfor / global_etot;
-	for (int cell = 0; cell < num_global_cells ; cell++)
+	for (int cell = 0; cell < num_global_cells; cell++)
 	{
 	  // census
 	    if (global_ecen[cell] > 0.0  &&  census->size() > 0)
@@ -489,7 +489,7 @@ Parallel_Source_Init<MT,PT>::calc_source_numbers(const Opacity<MT> &opacity)
 	      // try our darnedest to get at least one particle
 		if (global_nss[cell] == 0) 
 		    global_nss[cell] = static_cast<int>(d_nss + 0.9999);
-		numtot +=global_nss[cell];
+		numtot += global_nss[cell];
 	    }
 	    else
 		global_nss[cell] = 0;
@@ -580,6 +580,7 @@ void Parallel_Source_Init<MT,PT>::calc_ncen_init()
 {
   // first guess at census particles per cell
   // done only on master node on zeroth cycle
+    Check (!node());
     double global_etot = global_evoltot + global_esstot + global_ecentot;
     Insist (global_etot != 0, "You must specify some source!");
 
@@ -645,7 +646,7 @@ void Parallel_Source_Init<MT,PT>::calc_ncen_init()
 
     for (int cell = 0; cell < num_global_cells; cell++)
     {
-	if (global_ecen[cell] > 0.0)
+	if (global_ncen[cell] > 0.0)
 	    global_ew_cen[cell] = global_ecen[cell] / global_ncen[cell];
 	else
 	    global_ew_cen[cell] = 0.0;
@@ -1194,6 +1195,7 @@ void Parallel_Source_Init<MT,PT>::send_census_numbers(const MT &mesh)
   // assign data on master processor
     ncentot = 0;
     int ncells_on_proc = mesh.num_cells();
+    Check (cells_on_proc[0].size() == ncells_on_proc);
     for (int nc = 1; nc <= ncells_on_proc; nc++)
     {
       // map global census data to master processor cells
@@ -1222,7 +1224,8 @@ void Parallel_Source_Init<MT,PT>::print(ostream &out) const
     out << setw(35) << setiosflags(ios::right) 
 	<< "Number of particles requested: " << setw(10) << npnom << endl;
     out << setw(35) << setiosflags(ios::right)
-	<< "Total number calculated: " << setw(10) << npwant << endl;
+	<< "Total number calculated: " << setw(10) 
+	<< global_ncentot + global_nvoltot + global_nsstot << endl;
     out << " ** Breakdown ** " << endl;
     out << setw(28) << "Census Particles (est): " << setw(10)
 	<< global_ncentot << endl;
