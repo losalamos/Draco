@@ -261,7 +261,6 @@ bool FifiParser::parseMaterial()
 
     throw ParseError(string("FifiParser::parseMaterial: ")
 		     + "stream error.");
-    return false;
 }
 
 // NonWhiteSpace: A functor to detect non-whitespace characters.
