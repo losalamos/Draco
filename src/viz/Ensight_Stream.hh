@@ -19,6 +19,13 @@
 namespace rtt_viz
 {
 
+// Foward declarations
+
+class Ensight_Stream;
+
+//! A specific "endl" manipulator for Ensight_Stream.
+Ensight_Stream& endl(Ensight_Stream &s);
+
 //===========================================================================//
 /*!
  * \class Ensight_Stream
