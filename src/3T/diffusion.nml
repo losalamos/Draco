@@ -17,28 +17,28 @@ int	pc_meth		1	# 0 = null, 1 = Jacobi
 #  Marshak:      alpha=.25   beta=.5   f_b=Fout
 
 # Face index 0
-double	alpha_left	0
-double	beta_left	1
+double	alpha_left	0.
+double	beta_left	1.
 
 # Face index 1
-double	alpha_right	0
-double	beta_right	1
+double	alpha_right	0.
+double	beta_right	1.
 
 # Face index 2
-double	alpha_front	0
-double	beta_front	1
+double	alpha_front	0.
+double	beta_front	1.
 
 # Face index 3
-double	alpha_back	0
-double	beta_back	1
+double	alpha_back	0.
+double	beta_back	1.
 
 # Face index 4
-double	alpha_bottom	0
-double	beta_bottom	1
+double	alpha_bottom	0.
+double	beta_bottom	1.
 
 # Face index 5
-double	alpha_top	0
-double	beta_top	1
+double	alpha_top	0.
+double	beta_top	1.
 
 #-----------------------------------------------------------------------------#
 #				end of diffusion.nml
