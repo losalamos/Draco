@@ -461,6 +461,13 @@ class RTT_Format_Reader
  */
     string get_cell_defs_name(int i) const { return spCellDefs->get_name(i); }
 /*!
+ * \brief Returns the specified cell definition.
+ * \param i Cell definition index number.
+ * \return The cell definition.
+ */
+    const CellDef & get_cell_defs_cell_def(int i) const 
+    { return spCellDefs->get_cell_def(i); }
+/*!
  * \brief Returns the number of nodes associated with the specified cell 
  *        definition.
  * \param i Cell definition index number.
