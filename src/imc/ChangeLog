@@ -1,3 +1,14 @@
+2001-12-18  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Released imc version 2_3_0.  This version includes the
+	following changes since 2_2_0:
+
+		- added Mat_State_Builder (see updates below)
+		- updated with hybrid Particle (M. Buksas)
+		- new testing infrastructure
+		- removed configure script
+		- moved Source_Init and Topology_Builder to milagro
+
 2001-11-20  Thomas M. Evans  <tme@lanl.gov>
 
 	* CDI_Mat_State_Builder, CDI_Data_Interface: added CDI version of
