@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/Rep_Source_Builder.t.hh
- * \author Thomas M. Evans
+ * \author Todd Urbatsch and Thomas M. Evans
  * \date   Thu Dec  9 10:31:16 1999
  * \brief  Implementation file for Rep_Source_Builder.
  */
