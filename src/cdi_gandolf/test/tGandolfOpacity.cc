@@ -14,7 +14,9 @@
 #include "../Release.hh"
 
 #include "../GandolfGrayOpacity.hh"
+#include "../GandolfGrayOpacity.t.hh"
 #include "../GandolfMultigroupOpacity.hh"
+#include "../GandolfMultigroupOpacity.t.hh"
 #include "../GandolfFile.hh"
 #include "../GandolfException.hh"
 
@@ -656,177 +658,346 @@ std::string tGandolfOpacity::runTest()
 	 vtabulatedMGOpacity ) )
 	 return "opacityAccessorPassed() failed for a vector of densities.";
 
-//      // ------------------------------------- //
-//      // Test the STL-like getOpacity accessor //
-//      // Using const iterators                 //
-//      // ------------------------------------- //
+     // -------------------------------------- //
+     // Test the STL-like getOpacity accessor  //
+     // Using const iterators for Gray objects //
+     // -------------------------------------- //
 
-//      vdensity.resize(6);
-//      vtemperature.resize(6);
+     // These accessors are only available in GandolfOpacity objects
+     // so the SP must be templated on GandolfGrayOpacity and not on
+     // cdi/GrayOpacity. 
+     
+     // Create a new smart pointer to a GandolfGrayOpacity object.
+     rtt_dsxx::SP< rtt_cdi_gandolf::GandolfGrayOpacity >
+	 spGGOp_Analytic_ra;
+     
+     // try to instantiate the Opacity object.
+     try
+	 {
+	     spGGOp_Analytic_ra = new
+		 rtt_cdi_gandolf::GandolfGrayOpacity(
+		     spGFAnalytic,
+		     matid,
+		     rtt_cdi::Rosseland,
+		     rtt_cdi::Absorption );
+	 }
+     catch ( rtt_cdi_gandolf::GandolfException gerr )
+	 {
+	     fail() << "Failed to create SP to new GandolfGrayOpacity object for "
+		    << "\n\tAl_BeCu.ipcress data (SP not templated on cdi/GrayOpacity)."
+		    << std::endl << "\t" << gerr.errorSummary();
+	     return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
+	 }
+     
+     // If we get here then the object was successfully instantiated.
+     pass() << "SP to new Opacity object created for analyticOpacities.ipcress.";
+     
+     // Setup the temperature and density parameters for this test.
+     vdensity.resize(6);
+     vtemperature.resize(6);
+     
+     // (temperature,density) tuples.
+     
+     vtemperature[0] = 0.5; // keV
+     vdensity[0] = 0.2; // g/cm^3
 
-//      // (temperature,density) tuples.
+     vtemperature[1] = 0.7; // keV
+     vdensity[1] = 0.2; // g/cm^3
 
-//      vtemperature[0] = 0.5; // keV
-//      vdensity[0] = 0.2; // g/cm^3
+     vtemperature[2] = 0.5; // keV
+     vdensity[2] = 0.4; // g/cm^3
 
-//      vtemperature[1] = 0.7; // keV
-//      vdensity[1] = 0.2; // g/cm^3
+     vtemperature[3] = 0.7; // keV
+     vdensity[3] = 0.4; // g/cm^3
 
-//      vtemperature[2] = 0.5; // keV
-//      vdensity[2] = 0.4; // g/cm^3
+     vtemperature[4] = 0.5; // keV
+     vdensity[4] = 0.6; // g/cm^3
 
-//      vtemperature[3] = 0.7; // keV
-//      vdensity[3] = 0.4; // g/cm^3
+     vtemperature[5] = 0.7; // keV
+     vdensity[5] = 0.6; // g/cm^3
 
-//      vtemperature[4] = 0.5; // keV
-//      vdensity[4] = 0.6; // g/cm^3
+     // we want to test the const_iterator version of getOpacity() so
+     // we need to create const vectors with the tuple data.
+     const std::vector<double> cvdensity = vdensity;
+     const std::vector<double> cvtemperature = vtemperature;
 
-//      vtemperature[5] = 0.7; // keV
-//      vdensity[5] = 0.6; // g/cm^3
+     int nt = cvtemperature.size();
+     int nd = cvdensity.size();
 
-//      const vector<double> cvdensity = vdensity;
-//      const vector<double> cvtemperature = vtemperature;
+     // Here is the reference solution
+     vtabulatedGrayOpacity.resize( nt ); 
+     for ( int i=0; i<nt; ++i )
+	 vtabulatedGrayOpacity[i] = 
+	     cvdensity[i] * pow ( cvtemperature[i], 4 );
 
-//      int nt = cvtemperature.size();
-//      int nd = cvdensity.size();
-//      vtabulatedGrayOpacity.resize( nt ); 
+     // Here is the solution from Gandolf
+     std::vector< double > graOp(nt);
+     spGGOp_Analytic_ra->getOpacity( cvtemperature.begin(),
+				     cvtemperature.end(), 
+				     cvdensity.begin(),
+				     cvdensity.end(), 
+				     graOp.begin() );
+     if ( match( graOp, vtabulatedGrayOpacity ) )
+	 pass() << spGGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGGOp_Analytic_ra->getDataFilename()
+		<< " (const-iterator accessor, temp x density).";
+     else
+	 {
+	     fail() << spGGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGGOp_Analytic_ra->getDataFilename()
+		    << " (non-const-iterator accessor, temp x density).";
+	     return false;
+	 }
 
-//      for ( int i=0; i<nt; ++i )
-// 	 vtabulatedGrayOpacity[i] = 
-// 	     cvdensity[i] * pow ( cvtemperature[i], 4 );
+     // ------------------------------------- //
+     // Test the STL-like getOpacity accessor //
+     // Using non-const iterator              //
+     // ------------------------------------- //
 
-//      vector<double> graOp(nt);
+     spGGOp_Analytic_ra->getOpacity( vtemperature.begin(),
+				     vtemperature.end(), 
+				     vdensity.begin(),
+				     vdensity.end(), 
+				     graOp.begin() );
+     if ( match( graOp, vtabulatedGrayOpacity ) )
+	 pass() << spGGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGGOp_Analytic_ra->getDataFilename()
+		<< " (non-const-iterator accessor, temp x density).";
+     else
+	 {
+	     fail() << spGGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGGOp_Analytic_ra->getDataFilename()
+		    << " (non-const-iterator accessor, temp x density).";
+	     return false;
+	 }
+     
+     // ------------------------------------- //
+     // Test the STL-like getOpacity accessor //
+     // const iterator (temperature only)     //
+     // ------------------------------------- //
+     
+     graOp.resize( nt );
+     vtabulatedGrayOpacity.resize( nt );
+     for ( int it=0; it<nt; ++it )
+	 vtabulatedGrayOpacity[it] = density * pow( vtemperature[it], 4 );
 
-//      spOp_Analytic_ragray->getOpacity( cvtemperature.begin(),
-// 				       cvtemperature.end(), 
-// 				       cvdensity.begin(),
-// 				       cvdensity.end(), 
-// 				       graOp.begin() );
-//      if ( match( graOp, vtabulatedGrayOpacity ) )
-// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-// 		<< " opacity computation was good for "
-// 		<< spOp_Analytic_ragray->getDataFilename()
-// 		<< " (const-iterator accessor, temp x density).";
-//      else
-// 	 {
-// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-// 		    << " opacity value is out of spec. for "
-// 		    << spOp_Analytic_ragray->getDataFilename()
-// 		    << " (non-const-iterator accessor, temp x density).";
-// 	     return false;
-// 	 }
+     spGGOp_Analytic_ra->getOpacity( cvtemperature.begin(),
+				     cvtemperature.end(), 
+				     density,
+				     graOp.begin() );
+     if ( match( graOp, vtabulatedGrayOpacity ) )
+	 pass() << spGGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGGOp_Analytic_ra->getDataFilename()
+		<< " (const iterator accessor, vtemps).";
+     else
+	 {
+	     fail() << spGGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGGOp_Analytic_ra->getDataFilename()
+		    << " (const iterator accessor, vtemps).";
+	     return false;
+	 }
 
-//      // ------------------------------------- //
-//      // Test the STL-like getOpacity accessor //
-//      // Using non-const iterator              //
-//      // ------------------------------------- //
+     // ------------------------------------- //
+     // Test the STL-like getOpacity accessor //
+     // const iterator ( density only)        //
+     // ------------------------------------- //
 
-//      spOp_Analytic_ragray->getOpacity( vtemperature.begin(),
-// 				       vtemperature.end(), 
-// 				       vdensity.begin(),
-// 				       vdensity.end(), 
-// 				       graOp.begin() );
-//      if ( match( graOp, vtabulatedGrayOpacity ) )
-// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-// 		<< " opacity computation was good for "
-// 		<< spOp_Analytic_ragray->getDataFilename()
-// 		<< " (non-const-iterator accessor, temp x density).";
-//      else
-// 	 {
-// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-// 		    << " opacity value is out of spec. for "
-// 		    << spOp_Analytic_ragray->getDataFilename()
-// 		    << " (non-const-iterator accessor, temp x density).";
-// 	     return false;
-// 	 }
-
-//      // ------------------------------------- //
-//      // Test the STL-like getOpacity accessor //
-//      // const iterator (temperature only)     //
-//      // ------------------------------------- //
-
-//      graOp.resize( nt );
-//      vtabulatedGrayOpacity.resize( nt );
-//      for ( int it=0; it<nt; ++it )
-// 	 vtabulatedGrayOpacity[it] = density * pow( vtemperature[it], 4 );
-
-//      spOp_Analytic_ragray->getOpacity( cvtemperature.begin(),
-// 				       cvtemperature.end(), 
-// 				       density,
-// 				       graOp.begin() );
-//      if ( match( graOp, vtabulatedGrayOpacity ) )
-// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-// 		<< " opacity computation was good for "
-// 		<< spOp_Analytic_ragray->getDataFilename()
-// 		<< " (const iterator accessor, vtemps).";
-//      else
-// 	 {
-// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-// 		    << " opacity value is out of spec. for "
-// 		    << spOp_Analytic_ragray->getDataFilename()
-// 		    << " (const iterator accessor, vtemps).";
-// 	     return false;
-// 	 }
-
-//      // ------------------------------------- //
-//      // Test the STL-like getOpacity accessor //
-//      // const iterator ( density only)        //
-//      // ------------------------------------- //
-
-//      graOp.resize( nd );
-//      vtabulatedGrayOpacity.resize( nd );
-//      for ( int id=0; id<nd; ++id )
-// 	 vtabulatedGrayOpacity[id] = vdensity[id] * pow( temperature, 4 );
-
-//      spOp_Analytic_ragray->getOpacity( temperature,
-// 				       cvdensity.begin(),
-// 				       cvdensity.end(), 
-// 				       graOp.begin() );
-//      if ( match( graOp, vtabulatedGrayOpacity ) )
-// 	 pass() << spOp_Analytic_ragray->getDataDescriptor()
-// 		<< " opacity computation was good for "
-// 		<< spOp_Analytic_ragray->getDataFilename()
-// 		<< " (const iterator accessor, vdensity).";
-//      else
-// 	 {
-// 	     fail() << spOp_Analytic_ragray->getDataDescriptor()
-// 		    << " opacity value is out of spec. for "
-// 		    << spOp_Analytic_ragray->getDataFilename()
-// 		    << " (const iterator accessor, vdensity).";
-// 	     return false;
-// 	 }
+     graOp.resize( nd );
+     vtabulatedGrayOpacity.resize( nd );
+     for ( int id=0; id<nd; ++id )
+	 vtabulatedGrayOpacity[id] = vdensity[id] * pow( temperature, 4 );
+     
+     spGGOp_Analytic_ra->getOpacity( temperature,
+				     cvdensity.begin(),
+				     cvdensity.end(), 
+				     graOp.begin() );
+     if ( match( graOp, vtabulatedGrayOpacity ) )
+	 pass() << spGGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGGOp_Analytic_ra->getDataFilename()
+		<< " (const iterator accessor, vdensity).";
+     else
+	 {
+	     fail() << spGGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGGOp_Analytic_ra->getDataFilename()
+		    << " (const iterator accessor, vdensity).";
+	     return false;
+	 }
 
 
+     // -------------------------------------- //
+     // Test the STL-like getOpacity accessor  //
+     // Using const iterators for MG objects   //
+     // -------------------------------------- //
+
+     // These accessors are only available in GandolfOpacity objects
+     // so the SP must be templated on GandolfMultigroupOpacity and not on
+     // cdi/MultigroupOpacity. 
+     
+     // Create a new smart pointer to a GandolfGrayOpacity object.
+     rtt_dsxx::SP< rtt_cdi_gandolf::GandolfMultigroupOpacity >
+	 spGMGOp_Analytic_ra;
+     
+     // try to instantiate the Opacity object.
+     try
+	 {
+	     spGMGOp_Analytic_ra = new
+		 rtt_cdi_gandolf::GandolfMultigroupOpacity(
+		     spGFAnalytic,
+		     matid,
+		     rtt_cdi::Rosseland,
+		     rtt_cdi::Absorption );
+	 }
+     catch ( rtt_cdi_gandolf::GandolfException gerr )
+	 {
+	     fail() << "Failed to create SP to new GandolfGrayOpacity object for \n\t"
+		    << "Al_BeCu.ipcress data (SP not templated on cdi/GrayOpacity)."
+		    << std::endl << "\t" << gerr.errorSummary();
+	     return "Unable to instantiate GandolfOpacity object.  Test sequence aborted.";
+	 }
+
+     // If we get here then the object was successfully instantiated.
+     pass() << "SP to new Opacity object created for analyticOpacities.ipcress.";
+
+     // Here is the reference solution
+     ng = spGMGOp_Analytic_ra->getNumGroupBoundaries() - 1;
+     std::vector< double > vtabulatedOpacity( ng * nt );
+     
+     for ( int i=0; i<nt; ++i )
+	 for ( int ig=0; ig<ng; ++ig )
+	     vtabulatedOpacity[ i*ng + ig ] = 
+		 cvdensity[i] * pow ( cvtemperature[i], 4 );
+
+     // Here is the solution from Gandolf
+     std::vector< double > mgOp( nt*ng );
+     spGMGOp_Analytic_ra->getOpacity( cvtemperature.begin(),
+				      cvtemperature.end(), 
+				      cvdensity.begin(),
+				      cvdensity.end(), 
+				      mgOp.begin() );
+
+     if ( match( mgOp, vtabulatedOpacity ) )
+	 pass() << spGMGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGMGOp_Analytic_ra->getDataFilename()
+		<< " (const-iterator accessor, temp x density).";
+     else
+	 {
+	     fail() << spGMGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGMGOp_Analytic_ra->getDataFilename()
+		    << " (non-const-iterator accessor, temp x density).";
+	     return false;
+	 }
+
+     // --------------------------------------- //
+     // Test the STL-like getOpacity accessor   //
+     // Using non-const iterator for MG objects //
+     // --------------------------------------- //
+
+     // clear old data
+     for ( int i=0; i<nt*ng; ++i) mgOp[i]=0.0;
+     
+     // use Gandolf to obtain new data
+     spGMGOp_Analytic_ra->getOpacity( vtemperature.begin(),
+				      vtemperature.end(), 
+				      vdensity.begin(),
+				      vdensity.end(), 
+				      mgOp.begin() );
+
+     // compare the results to the reference solution and report our
+     // findings. 
+     if ( match( mgOp, vtabulatedOpacity ) )
+	 pass() << spGMGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGMGOp_Analytic_ra->getDataFilename()
+		<< " (non-const-iterator accessor, temp x density).";
+     else
+	 {
+	     fail() << spGMGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGMGOp_Analytic_ra->getDataFilename()
+		    << " (non-const-iterator accessor, temp x density).";
+	     return false;
+	 }
+
+     // ------------------------------------------------ //
+     // Test the STL-like getOpacity accessor            //
+     // const iterator (temperature only) for MG data    //
+     // ------------------------------------------------ //
+     
+     // clear old data
+     for ( int i=0; i<nt*ng; ++i) mgOp[i]=0.0;
+
+     // Calculate the reference solution.
+     for ( int it=0; it<nt; ++it )
+	 for ( int ig=0; ig<ng; ++ig )
+	     vtabulatedOpacity[ it*ng + ig ] 
+		 = density * pow( vtemperature[it], 4 );
+
+     // Obtain new solution
+     spGMGOp_Analytic_ra->getOpacity( cvtemperature.begin(),
+				      cvtemperature.end(), 
+				      density,
+				      mgOp.begin() );
+
+     // Compare solutions and report the results.
+     if ( match( mgOp, vtabulatedOpacity ) )
+	 pass() << spGGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGGOp_Analytic_ra->getDataFilename()
+		<< " (const iterator accessor, vtemps).";
+     else
+	 {
+	     fail() << spGGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGGOp_Analytic_ra->getDataFilename()
+		    << " (const iterator accessor, vtemps).";
+	     return false;
+	 }
 
 
+     // ------------------------------------------ //
+     // Test the STL-like getOpacity accessor      //
+     // const iterator ( density only) for MG data //
+     // ------------------------------------------ //
 
+     // clear old data
+     for ( int i=0; i<nd*ng; ++i) mgOp[i]=0.0;
 
-
-
-
-
-
-
-
-
-
-
-
-//      //     fail() << "Test STL-like accessors for multigroup data!!!";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+     // Calculate the reference solution.
+     for ( int id=0; id<nd; ++id )
+	 for ( int ig=0; ig<ng; ++ig )
+	     vtabulatedOpacity[ id*ng + ig ] 
+		 = vdensity[id] * pow( temperature, 4 );
+     
+     // Obtain new solution
+     spGMGOp_Analytic_ra->getOpacity( temperature,
+				      cvdensity.begin(),
+				      cvdensity.end(), 
+				      mgOp.begin() );
+     
+     // Compare solutions and report the results.
+     if ( match( mgOp, vtabulatedOpacity ) )
+	 pass() << spGMGOp_Analytic_ra->getDataDescriptor()
+		<< " opacity computation was good for \n\t"
+		<< spGMGOp_Analytic_ra->getDataFilename()
+		<< " (const iterator accessor, vdensity).";
+     else
+	 {
+	     fail() << spGMGOp_Analytic_ra->getDataDescriptor()
+		    << " opacity value is out of spec. for \n\t"
+		    << spGMGOp_Analytic_ra->getDataFilename()
+		    << " (const iterator accessor, vdensity).";
+	     return false;
+	 }
 
 
     // ---------------------- //
@@ -869,6 +1040,10 @@ bool tGandolfOpacity::match( const double computedValue,
 
 } // end of tGandolfOpacity::match( double, double )
 
+// ------------- //
+// Match vectors //
+// ------------- //
+
 bool tGandolfOpacity::match( 
     const std::vector< double >& computedValue, 
     const std::vector< double >& referenceValue ) const
@@ -902,7 +1077,11 @@ bool tGandolfOpacity::match(
 		}
 	}
     return em;
-} // end of tGandolfOpacity::match( vector<double>, vector<double> )
+} 
+
+// ------------------------ //
+// Match vectors of vectors //
+// ------------------------ //
 
 bool tGandolfOpacity::match( 
     const std::vector< std::vector<double> >& computedValue, 
@@ -929,7 +1108,7 @@ bool tGandolfOpacity::match(
 		}
 	}
     return em;
-} // end of tGandolfOpacity::match( vector<double>, vector<double> )
+} 
 
 } // end namespace rtt_cdi_gandolf_test
 

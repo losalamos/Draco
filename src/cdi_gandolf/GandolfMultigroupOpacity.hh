@@ -216,114 +216,103 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Opacity accessor that utilizes STL-like iterators.  This 
      *     accessor expects a list of (temperature,density) tuples.
-     *     An opacity value will be returned for each tuple.  The
-     *     temperatureIterator and density iterators are required to
-     *     be the same length.  The opacity iterator should also have
-     *     this same length for gray data or this length times the
-     *     number of energy groups for multigroup data.
-     *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in GandolfOpacity_pt.cc.
+     *     A set of opacity multigroup values will be returned for
+     *     each tuple.  The temperature and density iterators are
+     *     required to be the same length.  The opacity container
+     *     should have a length equal to the number of tuples times
+     *     the number of energy groups for multigroup data set.
      * 
-     * \parameter temperatureIterator The beginning position of a STL
+     * \parameter temperatureFirst The beginning position of a STL
      *     container that holds a list of temperatures.
      *
-     * \parameter temperatureIteratorEnd The end position of a STL
+     * \parameter temperatureLast The end position of a STL
      *     container that holds a list of temperatures.
      *
-     * \parameter densityIterator The beginning position of a STL
+     * \parameter densityFirst The beginning position of a STL
      *     container that holds a list of densities.
      *
-     * \parameter densityIteratorEnd The end position of a STL
+     * \parameter densityLast The end position of a STL
      *     container that holds a list of temperatures.
      * 
-     * \parameter opacityIterator The beginning position of a STL
+     * \parameter opacityFirst The beginning position of a STL
      *     container into which opacity values corresponding to the
      *     given (temperature,density) tuple will be stored.
      *
-     * \return A list (of type OutputIterator) of opacities are
+     * \return A list (of type OpacityIterator) of opacities are
      *     returned.  These opacities correspond to the temperature
-     *     and density values provied in the two InputIterators.
+     *     and density values provied in the two InputIterators.  
      */
-//     template < class InputIterator, class OutputIterator >
-//     OutputIterator getOpacity( InputIterator temperatureIterator, 
-// 			       InputIterator temperatureIteratorEnd,
-// 			       InputIterator densityIterator, 
-// 			       InputIterator densityIteratorEnd,
-// 			       OutputIterator opacityIterator ) const;
+    template < class TemperatureIterator, class DensityIterator,
+	       class OpacityIterator >
+    OpacityIterator getOpacity( TemperatureIterator temperatureFirst,
+				TemperatureIterator temperatureLast,
+				DensityIterator densityFirst, 
+				DensityIterator densityLast,
+				OpacityIterator opacityFirst ) const;
 
     /*!
      * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of temperatures in an STL container.
-     *     An opacity value will be returned for each temperature
-     *     provided.  The opacity iterator should be the same length
-     *     as the temperatureIterator for gray data or the length of
-     *     the temperatureIterator times the number of energy groups
-     *     for multigroup data.
+     *     accessor expects a list of temperatures in an STL
+     *     container.  A set of multigroup opacity values will be
+     *     returned for each temperature provided.  The opacity
+     *     container should have a length equal to the number of
+     *     temperatures times the number of energy groups for
+     *     multigroup data set.
      *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in GandolfOpacity_pt.cc.
-     *
-     * \parameter temperatureIterator The beginning position of a STL
+     * \parameter temperatureFirst The beginning position of a STL
      *     container that holds a list of temperatures.
      *
-     * \parameter temperatureIteratorEnd The end position of a STL
+     * \parameter temperatureLast The end position of a STL
      *     container that holds a list of temperatures.
      *
      * \parameter targetDensity The single density value used when
      *     computing opacities for each given temperature.
      * 
-     * \parameter opacityIterator The beginning position of a STL
-     *     container into which opacity values (corresponding to the
-     *     provided temperature and density values) will be stored.
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which opacity values corresponding to the
+     *     given temperature values will be stored.
      *
-     * \return A list (of type OutputIterator) of opacities are
+     * \return A list (of type OpacityIterator) of opacities are
      *     returned.  These opacities correspond to the temperature
-     *     and density values provied.
+     *     provided in the STL container and the single density value.
      */
-//     template < class InputIterator, class OutputIterator >
-//     OutputIterator getOpacity( InputIterator temperatureIterator,
-// 			       InputIterator temperatureIteratorEnd,
-// 			       const double targetDensity,
-// 			       OutputIterator opacityIterator ) const;
+    template < class TemperatureIterator, class OpacityIterator >
+    OpacityIterator getOpacity( TemperatureIterator temperatureFirst,
+				TemperatureIterator temperatureLast,
+				const double targetDensity,
+				OpacityIterator opacityFirst ) const;
 
     /*!
      * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of densities in an STL container.
-     *     An opacity value will be returned for each density
-     *     provided.  The opacity iterator should be the same length
-     *     as the densityIterator for gray data or the length of the
-     *     densityIterator times the number of energy groups for
-     *     multigroup data.
-     *
-     * The InputIterator and OutputIterator classes must be
-     *     instantiated for each STL container used.  This has already
-     *     been done for a few STL containers in GandolfOpacity_pt.cc.
+     *     accessor expects a list of densities in an STL
+     *     container.  A set of multigroup opacity values will be
+     *     returned for each density provided.  The opacity
+     *     container should have a length equal to the number of
+     *     density times the number of energy groups for
+     *     multigroup data set.
      *
      * \parameter targetTemperature The single temperature value used when
      *     computing opacities for each given density.
      * 
-     * \parameter densityIterator The beginning position of a STL
+     * \parameter densityFirst The beginning position of a STL
      *     container that holds a list of densities.
      *
-     * \parameter densityIteratorEnd The end position of a STL
+     * \parameter densityLast The end position of a STL
      *     container that holds a list of densities.
      *
-     * \parameter opacityIterator The beginning position of a STL
-     *     container into which opacity values (corresponding to the
-     *     provided temperature and density values) will be stored.
+     * \parameter opacityFirst The beginning position of a STL
+     *     container into which opacity values corresponding to the
+     *     given density values will be stored.
      *
-     * \return A list (of type OutputIterator) of opacities are
-     *     returned.  These opacities correspond to the temperature
-     *     and density values provied.
+     * \return A list (of type OpacityIterator) of opacities are
+     *     returned.  These opacities correspond to the density
+     *     provided in the STL container and the single temperature value.
      */
-//     template < class InputIterator, class OutputIterator >
-//     OutputIterator getOpacity( const double targetTemperature,
-// 			       InputIterator densityIterator, 
-// 			       InputIterator densityIteratorEnd,
-// 			       OutputIterator opacityIterator ) const;
+    template < class DensityIterator, class OpacityIterator >
+    OpacityIterator getOpacity( const double targetTemperature,
+				DensityIterator densityFirst,
+				DensityIterator densityLast,
+				OpacityIterator opacityFirst ) const;
 
     /*!
      * \brief Opacity accessor that returns a single opacity (or a
