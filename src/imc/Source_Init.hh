@@ -60,7 +60,7 @@ private:
     typename MT::CCSF_int fss;
     double esstot;
 
-  // radiation energy variables
+  // radiation energy per cell, total
     typename MT::CCSF_double erad;
     double eradtot;
 
@@ -74,11 +74,12 @@ private:
     int nvoltot;
     int nsstot;
 
-  // energy loss due to inadequate sampling of ss and vol sources
+  // energy loss due to inadequate sampling of evol, ss, and initial census
     double eloss_vol;
     double eloss_ss;
+    double eloss_cen;
 
-  // energy weights for ss and vol particles
+  // energy weights for ss and vol emission source particles
     typename MT::CCSF_double ew_vol;
     typename MT::CCSF_double ew_ss;
 
@@ -86,7 +87,6 @@ private:
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
-    void calc_num_part();
     void calc_initial_census(const MT &,const Opacity<MT> &, 
 			     const Mat_State<MT> &, const Rnd_Control &);
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);

@@ -31,11 +31,10 @@ void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
 				 const Mat_State<MT> &state, 
 				 const Rnd_Control &rcontrol, int cycle)
 {
-  // calculate number of particles
-    calc_num_part();
+  // calculate number of particles this cycle
+    npwant = min(npmax, npwant + dnpdt * delta_t);
 
-  // on first pass do initial source census, on all cycles calc source
-  // energies 
+  // on first pass do initial census, on all cycles calc source energies 
     if (cycle == 1)
 	calc_initial_census(mesh, opacity, state, rcontrol);
     else
@@ -49,14 +48,6 @@ void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
 // private member functions used in Initialize
 //---------------------------------------------------------------------------//
 
-template<class MT>
-void Source_Init<MT>::calc_num_part()
-{
-  // calculate the number of particles used in the timestep
-    npwant = min(npmax, npwant + dnpdt * delta_t);
-}
-
-//---------------------------------------------------------------------------//
 
 template<class MT>
 void Source_Init<MT>::calc_initial_census(const MT &mesh,
@@ -66,11 +57,8 @@ void Source_Init<MT>::calc_initial_census(const MT &mesh,
 {
   // calculate and write the initial census source
 
-  // calc volume emission
-    calc_evol(opacity, state);
-
-  // calc surface source emission
-    calc_ess();
+  // calc volume emission and surface source energies
+    calc_source_energies(opacity, state);
     
   // calc radiation energy
     calc_erad();
@@ -88,10 +76,10 @@ template<class MT>
 void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity, 
 					   const Mat_State<MT> &state)
 {
-  // calc vol emission
+  // calc volume emission energy per cell, total
     calc_evol(opacity, state);
 
-  // calc surface source
+  // calc surface source energy per cell, total
     calc_ess();
 }
 
@@ -100,7 +88,8 @@ void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity,
 template<class MT>
 void calc_source_numbers()
 {
-  // calculate numbers of different quantities necessary for the source
+  // for ss and volume emission, calculate numbers of particles, energy
+  // weight, and energy loss due to inadequate sampling
 
     int nsource       = npwant - ncentot;
     double esource    = evoltot + esstot;
@@ -108,7 +97,7 @@ void calc_source_numbers()
 
   // calculate volume source number and surface source numbers
 
-  // re-initialize totals
+  // initialize totals each cycle
     nvoltot = 0;
     nsstot  = 0;
     eloss_vol = 0.0;
@@ -228,16 +217,23 @@ void Source_Init<MT>::calc_ncen_init()
     double part_per_e = ncenguess / eradtot;
 
   // attempt to make all census particles have the same energy weight,
-  // iterate
+  // iterate on number of initial census particles
     bool retry = true;
     while (retry)
     {
       // calculate census particles per cell
-	ncentot = 0;
+	ncentot   =   0;
+	eloss_cen = 0.0;
+	double ew;
 	for (int cell = 1; cell <= ncen.get_Mesh().num_cells(); cell++)
 	{
-	    ncen(cell) = static_cast<int>(erad(cell)*part_per_e+0.5);
+	    ncen(cell) = static_cast<int>(erad(cell) * part_per_e + 0.5);
 	    ncentot += ncen(cell);
+	    if (ncen(cell) > 0)
+		ew = erad(cell) / ncen(cell);
+	    else
+		ew = 0.0;
+	    eloss_cen += erad(cell) - ew * ncen(cell);
 	}
 
       // check to see we haven't exceeded total particles for this cycle
