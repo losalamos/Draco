@@ -25,10 +25,10 @@ namespace rtt_traits
  * \brief Traits that are used by the rtt_viz package.
  *
  * These traits provide a common way to access 2D-styles arrays/fields in the
- * viz package.  Essentially, they allow dsxx::Mat2 and vector<vector<T> >
- * types to access data using (i,j) operator overloading.  There is a general
- * field templated type class; specializations exist for vector<vector>.
- * Other specializations can be added as needed.
+ * viz package.  Essentially, they allow rtt_dsxx::Mat2 and vector<vector<T>
+ * > types to access data using (i,j) operator overloading.  There is a
+ * general field templated type class; specializations exist for
+ * vector<vector>.  Other specializations can be added as needed.
  *
  * The generalized class requires the Field Type (FT) template argument to
  * have the following services:
@@ -36,7 +36,7 @@ namespace rtt_traits
  * \arg operator()(int i, int j) where the range is [0:N-1, 0:N-1]; \arg
  * *nrows() returns the number of rows (i index); \arg ncols(int row) returns
  * *the number of columns in row (j index); \arg FT::value_type defined to
- * the type returned by the field (int, double, etc).
+ * the type returned by the field (int, double, etc).  
  */
 // revision history:
 // -----------------
