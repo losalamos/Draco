@@ -104,12 +104,24 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 
 	if (descriptor == "scatter")
 	{
+	    tally.accum_n_effscat();
 	    scatter( mesh );
 	}
 
 	if (descriptor == "boundary")
         {
+	    tally.accum_n_bndcross();
 	    alive = surface(mesh, face);
+
+	    if (descriptor == "reflection")
+		tally.accum_n_reflections();
+
+	    if (descriptor == "escape")
+	    {
+		tally.accum_n_escaped();
+		tally.accum_ew_escaped(ew);
+	    }
+
 	}
 
 	if (descriptor == "census")

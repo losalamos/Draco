@@ -45,12 +45,22 @@ private:
     typename MT::CCSF_int new_ncen;
     int new_ncen_tot;
 
+  // particle activity tallies, per cycle
+    int n_effscat;
+    int n_killed;
+    double ew_killed;
+    int n_escaped;
+    double ew_escaped;
+    int n_bndcross;
+    int n_reflections;
+
 public:
   // Tally constructor
     explicit Tally(SP<MT> mesh) 
 	: energy_dep(mesh), energy_dep_tot(0.0), eweighted_pathlen(mesh), 
 	  census_energy(mesh), new_ecen_tot(0.0), new_ncen(mesh), 
-	  new_ncen_tot(0.0){}
+	  new_ncen_tot(0.0), n_effscat(0), n_killed(0), ew_killed(0.0),
+	  n_escaped(0), ew_escaped(0.0), n_bndcross(0), n_reflections(0){}
 
   // accumulate energy deposited
     void deposit_energy(const int cell, const double energy);
@@ -76,12 +86,21 @@ public:
     inline int get_new_ncen(const int cell);
     inline int get_new_ncen_tot();
 
+  // accumulator functions for particle activity
+    inline void accum_n_effscat();
+    inline void accum_n_killed();
+    inline void accum_ew_killed(const double ew);
+    inline void accum_n_escaped();
+    inline void accum_ew_escaped(const double ew);
+    inline void accum_n_bndcross();
+    inline void accum_n_reflections();
 
   // accessors
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
 
   // diagnostics for tally
     void print(ostream &) const;
+    void cycle_print(ostream &) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -144,6 +163,29 @@ inline int Tally<MT>::get_new_ncen(const int cell)
 template<class MT>
 inline int Tally<MT>::get_new_ncen_tot(){ return new_ncen_tot; }
 
+//---------------------------------------------------------------------------//
+// inline accumulator function for particle activity
+
+template<class MT>
+inline void Tally<MT>::accum_n_effscat(){ n_effscat += 1; }
+
+template<class MT>
+inline void Tally<MT>::accum_n_killed(){ n_killed += 1; }
+
+template<class MT>
+inline void Tally<MT>::accum_ew_killed(const double ew){ ew_killed += ew; }
+
+template<class MT>
+inline void Tally<MT>::accum_n_escaped(){ n_escaped += 1; }
+
+template<class MT>
+inline void Tally<MT>::accum_ew_escaped(const double ew){ ew_escaped += ew; }
+
+template<class MT>
+inline void Tally<MT>::accum_n_bndcross(){ n_bndcross += 1; }
+
+template<class MT>
+inline void Tally<MT>::accum_n_reflections(){ n_reflections += 1; }
 CSPACE
 
 #endif                          // __imc_Tally_hh__

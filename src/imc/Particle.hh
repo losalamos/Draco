@@ -262,6 +262,8 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
     if (fraction < minwt_frac) // kill particle and deposit it energy
     {
 	tally.deposit_energy( cell, new_ew );
+	tally.accum_n_killed();
+	tally.accum_ew_killed( new_ew );
 	descriptor = "killed";
 	alive = false;
     }

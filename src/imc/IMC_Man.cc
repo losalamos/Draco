@@ -354,6 +354,9 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 		 << node()   << endl;
     }
 
+  // cout << *tally << endl;
+    tally->cycle_print(cout);
+
   // finished with this timestep
     cout << ">> Finished particle transport for cycle " << cycle
 	 << " on proc " << node() << endl;

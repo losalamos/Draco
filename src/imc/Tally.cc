@@ -69,8 +69,43 @@ void Tally<MT>::print(ostream &out) const
     out << "Total new census energy: " 
 	<< setw(15) << setiosflags(ios::scientific) << new_ecen_tot
 	<< ", new_ncen_tot: " << new_ncen_tot << endl;
+
+    out << endl;
+    out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
+	<< setw(16) << " reflections: "   << setw(10) << n_reflections
+	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
+	<< endl;
+
+    out << setw(16) << " killed: " << setw(10) << n_killed
+	<< setw(16) << " ( " << ew_killed << " ) " << endl;
+
+    out << setw(16) << " escaped: " << setw(10) << n_escaped
+	<< setw(16) << " ( " << ew_escaped << " ) " << endl;
+
 }
 
+template<class MT>
+void Tally<MT>::cycle_print(ostream &out) const
+{
+    out.precision(4);
+
+    out << endl;
+    out << setw(16) << " bnd crossings: " << setw(10) << n_bndcross 
+	<< setw(16) << " reflections: "   << setw(10) << n_reflections
+	<< setw(16) << " eff scatters: "  << setw(10) << n_effscat
+	<< endl;
+
+    out << setw(16) << " killed: " << setw(10) << n_killed
+	<< " (ew: " << setw(18) << ew_killed << " ) " << endl;
+
+    out << setw(16) << " escaped: " << setw(10) << n_escaped
+	<< " (ew: " << setw(18) << ew_escaped << " ) " << endl;
+
+    out << setw(16) << " new_ncen_tot: " << setw(10) << new_ncen_tot
+	<< " (ew: " << setw(18) << new_ecen_tot << " ) " << endl;
+
+
+}
 CSPACE
 
 //---------------------------------------------------------------------------//
