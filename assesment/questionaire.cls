@@ -18,7 +18,6 @@
 \ProcessOptions
 			  %% Package loading
 \RequirePackage{calc}
-\RequirePackage{ifthen}
 
 			       %% main
 \LoadClass{article}
@@ -34,7 +33,6 @@
 \renewcommand{\thesection}
 {
     KPA.
-%    \ifthenelse{\value{section} < 10}{0}{}
     \ifnum \value{section}<10 0\fi
     \arabic{section}
 }
@@ -51,6 +49,7 @@
 \newcounter{result}[section]
 \newcounter{NA}[section]
 \newcounter{score}
+\newcounter{total}[section]
 \newenvironment{KPAActivity}
 {
     {\bf Activity Indicators (rate your organization's capability
@@ -61,27 +60,31 @@
 {
     \end{tabular}
     \end{center}
-    \setcounter{approach}{\value{approach}/(\value{activity}-\value{NA})}
-    \setcounter{deployment}{\value{deployment}/(\value{activity}-\value{NA})}
-    \setcounter{result}{\value{result}/(\value{activity}-\value{NA})}
+    \setcounter{activity}{\value{activity}-\value{NA}}
+    \setcounter{approach}{\value{approach}/\value{activity}}
+    \setcounter{deployment}{\value{deployment}/\value{activity}}
+    \setcounter{result}{\value{result}/\value{activity}}
+    \setcounter{total}{\value{total}/\value{activity}}
+    \setcounter{total}{\value{total}/3}
+    The average score for this KPA is \arabic{total}.
 }
 
 % \Activity{Approach score}{Deployment score}{Results score}{Description}
 \newcommand{\Activity}[4]
 {
     \stepcounter{activity}
-    \ifthenelse{\equal{N}{#1}}
-    {
-	\stepcounter{NA}
-	N/A & \arabic{activity}. #4 \\ \hline
-    }{
-        \setcounter{score}{(#1+#2+#3)/3}
-        \setcounter{approach}{\value{approach}+#1}
-        \setcounter{deployment}{\value{deployment}+#2}
-        \setcounter{result}{\value{result}+#3}
-        \arabic{score} & \arabic{activity}. #4 \\ \hline
-    }
-} % step counter, print score, text
+    \ifx N#1
+        \stepcounter{NA} N/A
+    \else
+        \setcounter{score}{#1+#2+#3}
+	\setcounter{total}{\value{total}+\value{score}}
+        \setcounter{score}{\value{score}/3}
+        \setcounter{approach}{\value{approach} + #1}
+        \setcounter{deployment}{\value{deployment} + #2}
+        \setcounter{result}{\value{result} + #3}
+        \arabic{score}
+    \fi &  \arabic{activity}. #4 \\ \hline 
+} % step counter, print N/A or score, text
 
 % Key Process Area Score
 \newenvironment{KPARate}

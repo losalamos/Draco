@@ -55,28 +55,26 @@ incorporated into the software project.}
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{Requirements text: Daniel P. Freedman and Gerald
+\Approach{Daniel P. Freedman and Gerald
               M. Weinberg, {\em Exploring Requirements: Quality Before
               Design}, New York, NY: Dorset House Publishing, 1989;
-              Software guidelines: John Lakos, {\em Large Scale C++
-              Software Design}, Reading, MA: Addison-Wesley
-              Publishing, 1996; Matthew H. Austern, {\em Generic
-              Programming and the STL}, Reading, MA: Addison-Wesley
-              Publishing, 1998; Bertrand Meyer, {\em Object-Oriented
-              Software Construction}, Upper Saddle River, NJ: Prentice
-              Hall PTR, 1997ISO/IEC 14882; GNU Coding Standards (9
-              September 1996); POSIX 199309; Scott Meyers, {\em
-              Effective C++}, Reading, MA: Addison-Wesley Publishing,
-              1997; Scott Meyers, {\em More Effective C++}, Reading,
-              MA: Addison-Wesley Publishing, 1996; Software quality
-              guidelines: Analytic Test Method; LA-UR-98-5735;
-              LA-1709; LAMS-2421; LA-UR-96-1799 ; Configuration
-              management guidelines (GNU standard, Build System
-              Document)} 
+              {\em Mastering Technical Projects}, Erika Jones \&
+             Associates, Inc.;  
+             {\em Mastering Projects Workshop}, True North pgs, Inc.;
+          } 
 \Deployment{Meetings set up by team to
-              establish requirements; Memos documenting requirements}
+              establish requirements; Memos documenting requirements;
+              Software contracts in code}
 \Results{Use by management for allocations, etc.}
 \end{KPARate}
+
+\begin{KPAComment}
+This is one of the most applicable KPAs that we do not do well.  We do
+make the requirements explicit through software contracts which are
+part of the specification, implementation, and testing of the code,
+but we do poorly on formally developing the requirements, reviewing
+them, and basing our plans on them.
+\end{KPAComment}
 
 \newpage
 \section{Software Project Planning}
@@ -88,7 +86,7 @@ project proposal team.}
 \Activity{3}{3}{3}{Software project planning is initiated in the early
 stages of, and in parallel with, the overall project planning.}
 % MTP exercise, MPW.
-\Activity{3}{3}{3}{The software engineering group participates with other
+\Activity{3}{2}{1}{The software engineering group participates with other
 affected groups in the overall project planning throughout the
 project's life.}
 % MTP exercise, MPW.
@@ -98,24 +96,24 @@ according to a documented procedure.}
 \Activity{2}{2}{2}{A software life cycle with predefined stages of
 manageable size is identified or defined.}
 % Looking at several, eg. SEL
-\Activity{3}{3}{3}{The project's software development plan is developed
+\Activity{3}{3}{2}{The project's software development plan is developed
 according to a documented procedure.}
-\Activity{3}{3}{3}{The plan for the software project is documented.}
-\Activity{3}{3}{3}{Software work products that are needed to establish
+\Activity{3}{3}{2}{The plan for the software project is documented.}
+\Activity{3}{3}{2}{Software work products that are needed to establish
 and maintain control of the software project are identified.}
-\Activity{1}{1}{1}{Estimates for the size of the software work products (or
+\Activity{1}{1}{0}{Estimates for the size of the software work products (or
 changes to the size of software work products) are derived according
 to a documented procedure.}
-\Activity{1}{1}{1}{Estimates for software project's effort and costs are
+\Activity{1}{1}{0}{Estimates for software project's effort and costs are
 derived according to a documented procedure.}
-\Activity{1}{1}{1}{Estimates for the project's critical computer
+\Activity{1}{1}{0}{Estimates for the project's critical computer
 resources are derived according to a documented procedure.}
 \Activity{2}{2}{2}{The project's software schedule is derived according
 to a documented procedure.}
 \Activity{0}{0}{0}{The software risks associated with the cost,
 resource, schedule, and technical aspects of the project are
 identified, assessed, and documented.}
-\Activity{1}{1}{1}{Plans for the project's software engineering
+\Activity{1}{1}{0}{Plans for the project's software engineering
 facilities and support tools are prepared.}
 \Activity{3}{3}{3}{Software planning data are recorded.}
 % Web-site, Denise.
@@ -132,16 +130,27 @@ facilities and support tools are prepared.}
 \Results{}
 \end{KPARate}
 
+\begin{KPAComment}
+Our project team has taken the LANL traditional project management
+course (Mastering Technical Projects) and we produce the standard
+planning artifacts required by the ASCI program office.  However we
+suspect these are inappropriate for managing software research
+projects.  These plans provide poor maps for the actual software
+project and are not useful for tracking.  We have contracted through
+CIC--12 with True North pgs., Inc. to develop a project planning
+strategy suitable for our work.
+\end{KPAComment}
+
 \newpage
 \section{Software Project Tracking and Oversight}
 
 \begin{KPAActivity}
-\Activity{3}{3}{3}{A documented software development plan is used for
+\Activity{3}{2}{2}{A documented software development plan is used for
 tracking the software activities and communicating status.}
 % Project plans
-\Activity{1}{1}{1}{The project's software development plan is revised
+\Activity{1}{0}{0}{The project's software development plan is revised
 according to a documented procedure.}
-\Activity{1}{1}{1}{Software project commitments and changes to
+\Activity{1}{1}{0}{Software project commitments and changes to
 commitments made to individuals and groups external to the
 organization are reviewed with senior management according to a
 documented procedure.}
@@ -151,22 +160,22 @@ engineering group and other software-related groups.}
 \Activity{0}{0}{0}{The size of the software work products (or size of the
 changes to the software work products) are tracked, and corrective
 actions taken as necessary.}
-\Activity{3}{3}{3}{The project's software effort and costs are tracked,
+\Activity{3}{2}{2}{The project's software effort and costs are tracked,
 and corrective actions are taken as necessary.}
-\Activity{3}{3}{3}{The project's critical computer resources are tracked,
+\Activity{N}{}{}{The project's critical computer resources are tracked,
 and corrective actions are taken as necessary.}
-\Activity{3}{3}{3}{The project's software schedule is tracked, and
+\Activity{3}{1}{1}{The project's software schedule is tracked, and
 corrective actions are taken as necessary.}
-\Activity{3}{3}{3}{Software engineering technical activities are tracked,
+\Activity{3}{1}{1}{Software engineering technical activities are tracked,
 and corrective actions are taken as necessary.}
-\Activity{1}{1}{1}{The software risks associated with cost, resource,
+\Activity{2}{1}{0}{The software risks associated with cost, resource,
 schedule, and technical aspects of the project are tracked.}
-\Activity{1}{1}{1}{Actual measurement data and replanning data for the
+\Activity{1}{0}{0}{Actual measurement data and replanning data for the
 software project are recorded.}
-\Activity{2}{2}{2}{The software engineering group conducts periodic
+\Activity{2}{1}{0}{The software engineering group conducts periodic
 internal reviews to track technical progress, plans, performance, and
 issues against the software development plan.}
-\Activity{2}{2}{2}{Formal reviews to address the accomplishments and
+\Activity{2}{2}{1}{Formal reviews to address the accomplishments and
 results of the software project are conducted at selected project
 milestones according to a documented procedure.} 
 \end{KPAActivity}
@@ -176,6 +185,13 @@ milestones according to a documented procedure.}
 \Deployment{}
 \Results{}
 \end{KPARate}
+
+\begin{KPAComment}
+As indicated in the comments to KPA.02, we believe the traditional
+project management required by the ASCI program office is
+inappropriate for the type of projects we have.  We are trying to
+develop more appropriate project management and tracking processes.
+\end{KPAComment}
 
 \newpage
 \section{Software Subcontract Management}
@@ -191,31 +207,31 @@ according to a documented procedure.}
 \Activity{0}{0}{0}{The software subcontractor is selected , based on an
 evaluation of the subcontractor bidders' ability to perform the work,
 according to a documented procedure.}
-\Activity{5}{5}{5}{The contractual agreement between the prime contractor
+\Activity{5}{4}{3}{The contractual agreement between the prime contractor
 and the software subcontractor is used as the basis for managing the
 subcontract.}
 % Geoff's contract, SPRNG Contract  
-\Activity{0}{0}{0}{A documented subcontractor's software development plan is
+\Activity{N}{}{}{A documented subcontractor's software development plan is
 reviewed and approved by the prime contractor.}
-\Activity{0}{0}{0}{A documented and approved subcontractor's software
+\Activity{N}{}{}{A documented and approved subcontractor's software
 development plan is used for tracking the software activities and
 communication status.}
 \Activity{1}{1}{1}{Changes to the software subcontractor's statement of
 work, subcontract terms and conditions, and other commitments are
 resolved according to a documented procedure.}
-\Activity{3}{3}{3}{The prime contractor's management conducts periodic
+\Activity{3}{2}{2}{The prime contractor's management conducts periodic
 status/coordination reviews with the software subcontractor's
 management.}
-\Activity{5}{5}{5}{Periodic technical reviews and interchanges are held with
+\Activity{5}{3}{3}{Periodic technical reviews and interchanges are held with
 the software subcontractor.}
 % Monthly progress reports from Furnish ala MPW pg 5-20, PIP pg 6-34
 \Activity{1}{1}{1}{Formal reviews to address the subcontractor's software
 engineering accomplishments and results are conducted at selected
 milestones according to a documented procedure.}
-\Activity{0}{0}{0}{The prime contractor's software quality assurance group
+\Activity{N}{}{}{The prime contractor's software quality assurance group
 monitors the subcontractor's software quality assurance activities
 according to a documented procedure.}
-\Activity{0}{0}{0}{The prime contractor's software configuration management
+\Activity{N}{}{}{The prime contractor's software configuration management
 group monitors the subcontractor's activities for software
 configuration management according to a documented procedure.}
 \Activity{3}{3}{3}{The prime contractor conducts acceptance testing as part
@@ -232,6 +248,13 @@ subcontractor.}
 \Deployment{}
 \Results{}
 \end{KPARate}
+
+\begin{KPAComment}
+We feel it unrealistic to expect a group of our size to oversee the
+software processes of our subcontractors.  Hence questions 4, 5, 10,
+and 11 are not applicable to our team; we can envision the division SQA
+and CM groups (if they existed!) performing these functions for us.
+\end{KPAComment}
 
 \newpage
 \section{Software Quality Assurance}
@@ -276,7 +299,16 @@ and findings with the customer's SQA personnel, as appropriate.}
 \begin{KPAComment}
 Currently the SQA and SE groups for Draco are one and the same.
 We are planning to hire a dedicated SQA engineer and a dedicated
-tester, who will, with our project planner form the SQA team for X--TM.
+tester, who will, with our project planner form the SQA team for
+X--TM.
+
+We use design standards (Weinberg, Lakos, Meyer), coding standards
+(ISO/IEC 14882, Meyers, POSIX, GNU), and testing standards (Analytic
+Test Method, LA-UR-98-5735, LA-1709, LAMS-2421, LA-UR-96-1799) to
+ensure the quality of our code.  We have contracted with Weinberg \&
+Weinberg through CIC--12 to learn formal technical review techniques,
+a key missing ingredient in our SQA, project oversight, and
+verification efforts.
 \end{KPAComment}
 
 \newpage
@@ -321,6 +353,13 @@ documented procedure.}
             in tagged releases.}
 \end{KPARate}
 
+\begin{KPAComment}
+We use CVS to manage all electronic artifacts associated with the
+project.  We have an agreed upon informal release plan, and a build
+system based on the GNU coding standard for configuration on the
+platforms we use.
+\end{KPAComment}
+
 \newpage
 \section{Organization Process Focus}
 
@@ -350,6 +389,12 @@ for software process development and improvement.}
 \Results{}
 \end{KPARate}
 
+\begin{KPAComment}
+We are aware of no efforts in X--Division to provide process guidance,
+with the exception of the ASCI required project plans and CIC--12
+offered training courses.
+\end{KPAComment}
+
 \newpage
 \section{Organization Process Definition}
 
@@ -374,6 +419,12 @@ established and maintained.}
 \Deployment{}
 \Results{}
 \end{KPARate}
+
+\begin{KPAComment}
+We are aware of no efforts in X--Division to provide process standards,
+with the exception of the ASCI required project plans and CIC--12
+offered training courses.
+\end{KPAComment}
 
 \newpage
 \section{Training Program}
