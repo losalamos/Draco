@@ -275,6 +275,7 @@ class Mesh_XYZ : private XYZ_Mapper
         int size() const { return data.size(); }
 
 	friend class Mesh_XYZ;
+	friend class guarded_cell_array<T>;
     };
 
     template<class T>
