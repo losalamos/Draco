@@ -24,7 +24,7 @@ runregression ()
 
    # directories that depend on pcglib
 
-   PCG_DEPEND_DIRS="src/linalg src/P1Diffusion"
+   PCG_DEPEND_DIRS="src/linalg src/P1Diffusion src/PCGDiffusionSolver"
 
    # directories that depend on pooma
 
