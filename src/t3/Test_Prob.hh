@@ -17,6 +17,8 @@
 
 #include "linalg/pcg_DB.hh"
 
+class ADFile;
+
 //===========================================================================//
 // class Test_Prob - 
 
@@ -24,6 +26,7 @@
 //===========================================================================//
 
 class Test_Prob : private Run_DB, private C4::NodeInfo {
+  public:
 
     int nct;			// # of total cells in problem.
     int ncp;			// # of cells on this processor.
@@ -44,6 +47,7 @@ class Test_Prob : private Run_DB, private C4::NodeInfo {
 	return goffset( I(nc), J(nc), K(nc) );
     }
 
+    Mat2<double> A;
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
     double       dx, dy, dz;
@@ -52,10 +56,12 @@ class Test_Prob : private Run_DB, private C4::NodeInfo {
 
     pcg_DB       pcg_db;
 
+    ADFile *adf;
+
   public:
     Test_Prob();
 //     Test_Prob( const Test_Prob& );
-//     ~Test_Prob();
+    ~Test_Prob();
 //     Test_Prob& operator=( const Test_Prob& );
 
     void run();
