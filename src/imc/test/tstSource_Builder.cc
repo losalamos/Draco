@@ -183,45 +183,61 @@ void source_replication_test()
     vector<int> id_sum_ss(mesh->num_cells(), 0);
     vector<int> id_sum_vol(mesh->num_cells(), 0);
 
-    int running_rn  = 0;
-    int rn_marker   = 0;
+    int running_rn          = 0;
+    int rn_marker           = 0;
+
+    // set the proc to get the first of the next leftover particles
+    int first_leftover_proc = 0;
 
     // calculate census random number id
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
     {
-	int even_spread = global_ncen[cell-1] / C4::nodes();
-	int leftover    = global_ncen[cell-1] - even_spread * C4::nodes();
+	int even_spread  = global_ncen[cell-1] / C4::nodes();
+	int leftover     = global_ncen[cell-1] - even_spread * C4::nodes();
+	int shifted_node = (C4::node() + C4::nodes() - first_leftover_proc) % 
+	    C4::nodes();
 
-	rn_cen[cell-1] = running_rn + even_spread * C4::node() +
-	    rtt_mc::global::min(C4::node(), leftover);
+	rn_cen[cell-1] = running_rn + even_spread * shifted_node +
+	    rtt_mc::global::min(shifted_node, leftover);
 
 	running_rn += global_ncen[cell-1];
 
 	// pre-combed, pre total source iteration census numbers
 	local_ncen[cell-1] = even_spread;
 
-	if (C4::node() < leftover)
+	if (shifted_node < leftover)
 	    local_ncen[cell-1]++;
+
+	// update the proc to get the first of the next leftover particles
+	first_leftover_proc = (first_leftover_proc + leftover) % C4::nodes();
     }
 
     // set random number id marker to first volume source id
     rn_marker = running_rn;
 
+    // reset the proc to get the first of the next leftover particles
+    first_leftover_proc = 0;
+
     // calculate volume random number id
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
     {
-	int even_spread = global_nvol[cell-1] / C4::nodes();
-	int leftover    = global_nvol[cell-1] - even_spread * C4::nodes();
+	int even_spread  = global_nvol[cell-1] / C4::nodes();
+	int leftover     = global_nvol[cell-1] - even_spread * C4::nodes();
+	int shifted_node = (C4::node() + C4::nodes() - first_leftover_proc) % 
+	    C4::nodes();
 
-	rn_vol[cell-1] = running_rn + even_spread * C4::node() +
-	    rtt_mc::global::min(C4::node(), leftover);
+	rn_vol[cell-1] = running_rn + even_spread * shifted_node +
+	    rtt_mc::global::min(shifted_node, leftover);
 
 	running_rn += global_nvol[cell-1];
 
 	local_nvol[cell-1] = even_spread;
 
-	if (C4::node() < leftover)
+	if (shifted_node < leftover)
 	    local_nvol[cell-1]++;
+
+	// update the proc to get the first of the next leftover particles
+	first_leftover_proc = (first_leftover_proc + leftover) % C4::nodes();
     }
 
     // add up random number ids in each cell for volume source
@@ -235,21 +251,29 @@ void source_replication_test()
 
     Check (rn_marker == running_rn);
 
+    // reset the proc to get the first of the next leftover particles
+    first_leftover_proc = 0;
+
     // calculate surface source random number id
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
     {
-	int even_spread = global_nss[cell-1] / C4::nodes();
-	int leftover    = global_nss[cell-1] - even_spread * C4::nodes();
+	int even_spread  = global_nss[cell-1] / C4::nodes();
+	int leftover     = global_nss[cell-1] - even_spread * C4::nodes();
+	int shifted_node = (C4::node() + C4::nodes() - first_leftover_proc) % 
+	    C4::nodes();
 
-	rn_ss[cell-1] = running_rn + even_spread * C4::node() +
-	    rtt_mc::global::min(C4::node(), leftover);
+	rn_ss[cell-1] = running_rn + even_spread * shifted_node +
+	    rtt_mc::global::min(shifted_node, leftover);
 
 	running_rn += global_nss[cell-1];
 
 	local_nss[cell-1] = even_spread;
 
-	if (C4::node() < leftover)
+	if (shifted_node < leftover)
 	    local_nss[cell-1]++;
+
+	// update the proc to get the first of the next leftover particles
+	first_leftover_proc = (first_leftover_proc + leftover) % C4::nodes();
     }
 
     // add up random number ids in each cell for surface source
