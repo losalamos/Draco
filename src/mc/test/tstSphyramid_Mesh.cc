@@ -408,7 +408,7 @@ void simple_one_cell_Sphyramid()
 	if (neighbors[5]     != 1) ITFAILS;
     }
 
-    // make usre the mesh thinks it's not submesh
+    // make sure the mesh thinks it's not submesh
     if (!mesh->full_Mesh()) ITFAILS;
 
     // >>>> test the mesh's ability to sample positions. <<<<
@@ -421,6 +421,8 @@ void simple_one_cell_Sphyramid()
     
     // The explicit-value tests has been hand-checked in a weak sense and,
     // therefore, are more of a regression test.
+
+    // sample positions in cell
     {
 	vector<double> position_sampled;
 	
@@ -453,8 +455,24 @@ void simple_one_cell_Sphyramid()
 	if (position_sampled.size() != 3)                    ITFAILS;
 	if (!soft_equiv(position_sampled[0],  0.8785,0.001)) ITFAILS;
 	if (!soft_equiv(position_sampled[1], -0.2575,0.001)) ITFAILS;
-	if (!soft_equiv(position_sampled[2], -0.3002,0.001)) ITFAILS;
-	
+	if (!soft_equiv(position_sampled[2], -0.3002,0.001)) ITFAILS;	
+    }
+
+    // sample positions on face
+    {
+	vector<double> position_sampled;
+
+	position_sampled = mesh->sample_pos_on_face(1,2,ran_object);
+	if (position_sampled.size() != 3)                    ITFAILS;
+	if (!soft_equiv(position_sampled[0],  1.0   ,0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[1], -0.5269,0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[2], -0.0814,0.001)) ITFAILS;
+
+	position_sampled = mesh->sample_pos_on_face(1,2,ran_object);
+	if (position_sampled.size() != 3)                    ITFAILS;
+	if (!soft_equiv(position_sampled[0],  1.0   ,0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[1], -0.8467,0.001)) ITFAILS;
+	if (!soft_equiv(position_sampled[2], -0.8006,0.001)) ITFAILS;	
     }
 
 

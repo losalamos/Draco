@@ -181,7 +181,7 @@ class Sphyramid_Mesh
     inline sf_double sample_pos(int cell, rng_Sprng &random) const;
     inline sf_double sample_pos(int cell, rng_Sprng &random, sf_double slope, 
 				double center_value) const;
-    // inline sf_double sample_pos_on_face(int,int, rng_Sprng &) const;
+    inline sf_double sample_pos_on_face(int cell, int face, rng_Sprng &random) const;
     int get_bndface(std_string boundary, int cell) const;
     sf_int get_surcells(std_string boundary) const;
     bool check_defined_surcells(const std_string ss_face, 
@@ -687,7 +687,52 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
 
     return position;
 }
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Sample a position on a Sphyramid_Mesh cell face
+ * 
+ * \param cell cell number
+ * \param face face number
+ * \param random random number object
+ *
+ * \return position on face
+ */
+Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos_on_face(int cell, int face,
+							     rng_Sprng &random) const
+{
+    Require (cell >  0);
+    Require (cell <= num_cells());
+
+    Check (this->coord->get_dim() == 3);
+
+    // initialize position vector
+    sf_double position(this->coord->get_dim(), 0.0);
+
+    // high x face
+    if (face == 2)
+    {
+      double hix = get_high_x(cell);
+      double hiy = this->tan_beta*hix;
+      Check (hix >= 0.0);
       
+      position[0] = hix;
+      position[1] = -hiy+random.ran()*2.*hiy;
+      position[2] = -hiy+random.ran()*2.*hiy;
+
+      Ensure (position[1] >= -hiy);
+      Ensure (position[1] <=  hiy);
+      Ensure (position[2] >= -hiy);
+      Ensure (position[2] <=  hiy);
+    } 
+    else{
+	Insist (0, "Can only sample on hir/hix face in Sphyramid_Mesh!");
+    }
+
+    return position;
+}
+
+    
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the neighbors around a cell.
