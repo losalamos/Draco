@@ -211,9 +211,9 @@ int main( int argc, char *argv[] )
         oneBS = 0.;
         Mesh_XYZ::fcdsf oneFC( spm );
         oneFC = 1.;
-        Mesh_XYZ::strip( oneBS, oneFC, Mesh_XYZ::OpAssign() );
+        Mesh_XYZ::gather( oneBS, oneFC, Mesh_XYZ::OpAssign() );
         oneFC = 0.;
-        Mesh_XYZ::coat( oneFC, oneBS, Mesh_XYZ::OpAssign() );
+        Mesh_XYZ::gather( oneFC, oneBS, Mesh_XYZ::OpAssign() );
         //dump( oneFC, "oneFC, after" );
     }
 

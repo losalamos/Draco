@@ -259,44 +259,8 @@ void Mesh_XYZ::gather
 	    op(to(i,j,k,f), from(i,j,k));
 }
 
-template <class T>
-void Mesh_XYZ::swap
-( Mesh_XYZ::fcdtf<T>& to, const Mesh_XYZ::fcdtf<T>& from )
-{
-    Mesh_XYZ::gfcdtf<T> gfrom(from);
-    for ( int i = 0; i < to.ncx; ++i )
-      for ( int j = 0; j < to.ncy; ++j )
-        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
-	{
-          if (i != 0)
-              to(i,j,k,0) = gfrom(i-1,j,k,1);
-          else
-              to(i,j,k,0) = 0;
-          if (i != to.ncx - 1)
-              to(i,j,k,1) = gfrom(i+1,j,k,0);
-          else
-              to(i,j,k,1) = 0;
-          if (j != 0)
-              to(i,j,k,2) = gfrom(i,j-1,k,3);
-          else
-              to(i,j,k,2) = 0;
-          if (j != to.ncy - 1)
-              to(i,j,k,3) = gfrom(i,j+1,k,2);
-          else
-              to(i,j,k,3) = 0;
-          if (k != 0)
-              to(i,j,k,4) = gfrom(i,j,k-1,5);
-          else
-              to(i,j,k,4) = 0;
-          if (k != to.ncz - 1)
-              to(i,j,k,5) = gfrom(i,j,k+1,4);
-          else
-              to(i,j,k,5) = 0;
-	}
-}
-
 template <class T1, class T2, class Op>
-void Mesh_XYZ::strip
+void Mesh_XYZ::gather
 ( Mesh_XYZ::bstf<T1>& to, const Mesh_XYZ::fcdtf<T2>& from, const Op& op )
 {
     // left face
@@ -333,7 +297,7 @@ void Mesh_XYZ::strip
 }
 
 template <class T1, class T2, class Op>
-void Mesh_XYZ::coat
+void Mesh_XYZ::gather
 ( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::bstf<T2>& from, const Op& op )
 {
     // left face
@@ -367,6 +331,42 @@ void Mesh_XYZ::coat
         for ( int i = 0; i < to.ncx; ++i )
             for ( int j = 0; j < to.ncy; ++j )
                 op(to(i,j,to.ncz-1,5), from(i,j,to.ncz-1,5));
+}
+
+template <class T>
+void Mesh_XYZ::swap
+( Mesh_XYZ::fcdtf<T>& to, const Mesh_XYZ::fcdtf<T>& from )
+{
+    Mesh_XYZ::gfcdtf<T> gfrom(from);
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+	{
+          if (i != 0)
+              to(i,j,k,0) = gfrom(i-1,j,k,1);
+          else
+              to(i,j,k,0) = 0;
+          if (i != to.ncx - 1)
+              to(i,j,k,1) = gfrom(i+1,j,k,0);
+          else
+              to(i,j,k,1) = 0;
+          if (j != 0)
+              to(i,j,k,2) = gfrom(i,j-1,k,3);
+          else
+              to(i,j,k,2) = 0;
+          if (j != to.ncy - 1)
+              to(i,j,k,3) = gfrom(i,j+1,k,2);
+          else
+              to(i,j,k,3) = 0;
+          if (k != 0)
+              to(i,j,k,4) = gfrom(i,j,k-1,5);
+          else
+              to(i,j,k,4) = 0;
+          if (k != to.ncz - 1)
+              to(i,j,k,5) = gfrom(i,j,k+1,4);
+          else
+              to(i,j,k,5) = 0;
+	}
 }
 
 //---------------------------------------------------------------------------//

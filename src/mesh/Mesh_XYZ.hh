@@ -555,22 +555,24 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template <class T1, class T2, class Op>
     static void scatter( fcdtf<T1>& to, const cctf<T2>& from, const Op& op );
+
     template <class T1, class T2, class Op>
     static void scatter( cctf<T1>& to, const fcdtf<T2>& from, const Op& op );
+
     template <class T1, class T2, class Op>
     static void scatter( fcdtf<T1>& to, const vctf<T2>& from, const Op& op );
 
     template <class T1, class T2, class Op>
     static void gather( fcdtf<T1>& to, const cctf<T2>& from, const Op& op );
 
+    template <class T1, class T2, class Op>
+    static void gather( bstf<T1>& to, const fcdtf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
+    static void gather( fcdtf<T1>& to, const bstf<T2>& from, const Op& op );
+
     template <class T>
     static void swap( fcdtf<T>& to, const fcdtf<T>& from );
-
-    template <class T1, class T2, class Op>
-    static void strip( bstf<T1>& to, const fcdtf<T2>& from, const Op& op );
-
-    template <class T1, class T2, class Op>
-    static void coat( fcdtf<T1>& to, const bstf<T2>& from, const Op& op );
 
     class OpAssign {
       public:
