@@ -1,0 +1,269 @@
+%!PS-Adobe-2.0
+%%Creator: dot version uwin97 (4-15-97)
+%%For: (tme) Thomas M. Evans
+%%Title: draco_release
+%%Pages: (atend)
+%%BoundingBox: 162 345 451 448
+%%EndComments
+%%BeginProlog
+save
+/DotDict 200 dict def
+DotDict begin
+
+%%BeginResource: procset
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+	dup 1 exch div /InvScaleFactor exch def
+	dup scale
+} bind def
+
+% styles
+/solid { } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\\() show i str cvs show (,) show j str cvs show (\\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+/arrowhead {
+	/arrowwidth exch def
+	/arrowlength exch def
+	gsave
+		3 1 roll
+		translate
+			rotate
+			newpath
+			arrowlength arrowwidth 2 div moveto
+			0 0 lineto
+			arrowlength arrowwidth -2 div lineto
+		closepath fill
+		stroke
+	grestore
+} def
+
+% draw aligned label in bounding box aligned to current point
+% alignfactor tells what fraction to place on the left.
+% -.5 is centered.
+/alignedtext {			% text labelwidth fontsz alignfactor
+	/alignfactor exch def
+	/fontsz exch def
+	/width exch def
+	/text exch def
+	gsave
+		% even if node or edge is dashed, don't paint text with dashes
+		[] 0 setdash
+		currentpoint newpath moveto
+		text stringwidth pop
+		alignfactor mul fontsz -.3 mul rmoveto
+		text show
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+% /arrowlength 10 def
+% /arrowwidth 5 def
+%%EndSetup
+%%Page: 1 1
+%%PageBoundingBox: 162 345 451 448
+gsave
+161 344 290 104 boxprim clip newpath
+162 345 translate
+0 0 1 beginpage
+0.8834 set_scale
+0 0 translate 0 rotate
+0.000 0.000 0.000 graphcolor
+14.00 /Times-Roman set_font
+
+%	draco
+gsave 10 dict begin
+newpath 206 116 moveto
+126 116 lineto
+126 76 lineto
+206 76 lineto
+closepath
+stroke
+gsave 10 dict begin
+166 105 moveto (Draco) 34 14.00 -0.50 alignedtext
+166 89 moveto (draco_1.3.0) 65 14.00 -0.50 alignedtext
+end grestore
+end grestore
+
+%	dsxx
+gsave 10 dict begin
+newpath 76 40 moveto
+0 40 lineto
+0 0 lineto
+76 0 lineto
+closepath
+stroke
+gsave 10 dict begin
+38 29 moveto (ds++) 28 14.00 -0.50 alignedtext
+38 13 moveto (ds++_2.1.0) 63 14.00 -0.50 alignedtext
+end grestore
+end grestore
+
+%	draco -> dsxx
+newpath 132 76 moveto
+115 66 97 55 79 44 curveto
+stroke
+72 40 29.74 10.00 5.00 arrowhead
+
+%	cfour
+gsave 10 dict begin
+newpath 156 40 moveto
+94 40 lineto
+94 0 lineto
+156 0 lineto
+closepath
+stroke
+gsave 10 dict begin
+125 29 moveto (c4) 13 14.00 -0.50 alignedtext
+125 13 moveto (c4_1.4.1) 48 14.00 -0.50 alignedtext
+end grestore
+end grestore
+
+%	draco -> cfour
+newpath 155 76 moveto
+150 67 145 57 140 48 curveto
+stroke
+136 40 63.43 10.00 5.00 arrowhead
+
+%	xm
+gsave 10 dict begin
+newpath 240 40 moveto
+174 40 lineto
+174 0 lineto
+240 0 lineto
+closepath
+stroke
+gsave 10 dict begin
+207 29 moveto (xm) 17 14.00 -0.50 alignedtext
+207 13 moveto (xm_4.1.0) 52 14.00 -0.50 alignedtext
+end grestore
+end grestore
+
+%	draco -> xm
+newpath 177 76 moveto
+182 67 187 57 192 48 curveto
+stroke
+196 40 116.57 10.00 5.00 arrowhead
+
+%	rng
+gsave 10 dict begin
+newpath 326 40 moveto
+258 40 lineto
+258 0 lineto
+326 0 lineto
+closepath
+stroke
+gsave 10 dict begin
+292 29 moveto (rng) 18 14.00 -0.50 alignedtext
+292 13 moveto (rng_1.3.0) 53 14.00 -0.50 alignedtext
+end grestore
+end grestore
+
+%	draco -> rng
+newpath 199 76 moveto
+216 66 234 55 251 44 curveto
+stroke
+258 40 150.26 10.00 5.00 arrowhead
+endpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+end
+restore
+%%EOF
