@@ -460,7 +460,7 @@ bool FMPR::getElectronSpecificHeat(MaterialId materialId, Mat2<double> &data)
 	for (int iz=0, i=0; i<matInfo.getNumTemperatures(); i++)
 	    for (int j=0; j<matInfo.getNumDensities(); j++)
 		eelect(i, j) = 1.0e6 *
-		    OU.ConvertEnergy(OU.InvertMass(eelect_v[iz++]));
+		    OU.InvertEnergy(OU.ConvertMass(eelect_v[iz++]));
     }
 
     calcTemperatureDerivative(materialId, eelect, data);
@@ -491,7 +491,7 @@ bool FMPR::getIonSpecificHeat(MaterialId materialId, Mat2<double> &data)
 	for (int iz=0, i=0; i<matInfo.getNumTemperatures(); i++)
 	    for (int j=0; j<matInfo.getNumDensities(); j++)
 		enuc(i, j) = 1.0e6 *
-		    OU.ConvertEnergy(OU.InvertMass(enuc_v[iz++]));
+		    OU.InvertEnergy(OU.ConvertMass(enuc_v[iz++]));
     }
     
     calcTemperatureDerivative(materialId, enuc, data);
