@@ -313,6 +313,39 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl check for ranlib
    AC_PROG_RANLIB
 
+   dnl determine and define data types for word sizes
+
+   # eight byte integer types
+   if test -n "${def_eight_byte_int_type}" ; then
+       AC_DETERMINE_INT(8)
+       AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
+       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
+	   long_long_used='true'
+       fi
+   fi
+
+   # four byte integer types
+   if test -n "${def_four_byte_int_type}" ; then
+       AC_DETERMINE_INT(4)
+       AC_DEFINE_UNQUOTED(FOUR_BYTE_INT_TYPE, ${INTEGER_SIZE_TYPE})
+       if test "${INTEGER_SIZE_TYPE}" = 'long long' ; then
+	   long_long_used='true'
+       fi
+   fi
+
+   # eight byte float types
+   if test -n "${def_eight_byte_float_type}" ; then
+       AC_DETERMINE_FLOAT(8)
+       AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, ${FLOAT_SIZE_TYPE})
+   fi
+
+   # four byte float types
+   if test -n "${def_four_byte_float_type}" ; then
+       AC_DETERMINE_FLOAT(4)
+       AC_DEFINE_UNQUOTED(FOUR_BYTE_INT_TYPE, ${FLOAT_SIZE_TYPE})
+   fi
+
+
    dnl
    dnl SYSTEM-SPECIFIC SETUP
    dnl
@@ -582,8 +615,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   
 	   # if integer type is long long or vendor mpi is on then we
 	   # need to allow long long type
-	   if test "${with_mpi}" = vendor ||
-	       test "${INTEGER_SIZE_TYPE}" = 'long long'; then 
+	   if test "${with_mpi}" = vendor || test -n "${long_long_used}" ; then 
 		   AC_MSG_WARN("KCC strict option set to allow long long type")
 		   STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
 	   fi
