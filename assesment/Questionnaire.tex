@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage{ifthen}
+
+\setlength{\hoffset}{0pt}
+\setlength{\textwidth}{6.5in}
+\setlength{\oddsidemargin}{0pt}
+\setlength{\marginparsep}{0pt}
+\setlength{\marginparwidth}{0pt}
+
+\renewcommand{\thesection}
+{%
+    KPA.%
+    \ifnum \value{section}<10 0\fi%
+    \arabic{section}%
+}
+
+\newcommand{\KPAname}{}
+\newenvironment{KPABOX}[1]
+	{\renewcommand{\KPAname}{#1}
+	\begin{tabular}{|p{1.0in}|p{0.5in}|p{5.0in}|} \hline
+	 & Rating (0-10) & Evidence \\ \hline}
+	{\end{tabular}}
+\newcommand{\Approach}[2]{Approach to \KPAname & #1 & #2 \\ \hline} 
+\newcommand{\Deployment}[2]{Deployment of \KPAname & #1 & #2 \\ \hline} 
+\newcommand{\Results}[2]{Results Achieved in \KPAname & #1 & #2 \\
+	\hline}
+
+\title{Software Process Maturity Questionnaire} 
+
+\begin{document}
+\maketitle
+
+\section{Requirements Management}
+ 
+\begin{KPABOX}{Requirements Management}
+\Approach{3}{Meetings set up by team to establish requirements}
+\Deployment{3}{Memos documenting requirements}
+\Results{2}{Use by management for allocations, etc.}
+\end{KPABOX}
+
+\section{Software Project Planning}
+
+\begin{KPABOX}{Software Project Planning}
+\Approach{3}{Courses taken by several team members: 
+             {\em Planning Innovative Projects: A course to launch
+             projects and teams, customized for Los Alamos National
+             Laboratory}, Erika Jones \& Associates, Inc.; 
+             {\em Mastering Projects Workshop}, True North pgs, Inc.;
+             Devoted Project Management support}
+\Deployment{2}{Project planned as part of training course.}
+\Results{1}{}
+\end{KPABOX}
+
+\section{Software Project Tracking and Oversight}
+
+\begin{KPABOX}{Software Project Tracking and Oversight}
+\Approach{1}{}
+\Deployment{1}{}
+\Results{0}{}
+\end{KPABOX}
+
+\section{Software Subcontract Management}
+
+\begin{KPABOX}{Software Subcontract Management}
+\Approach{2}{}
+\Deployment{2}{}
+\Results{1}{}
+\end{KPABOX}
+
+\section{Software Quality Assurance}
+
+\begin{KPABOX}{Software Quality Assurance}
+\Approach{4}{SQA personnel sought by Management, Nightly regression
+             tests run (dejagnu), Falure tracking software installed
+             (GNATS) , Standard test cases established, Levelized
+             Design and Design by Contract used}
+\Deployment{4}{Tools consistenly used}
+\Results{4}{Faults caught early, Few major faults in testing}
+\end{KPABOX}
+
+\section{Software Configuration Management}
+
+\begin{KPABOX}{Software Configuration Management}
+\Approach{6}{Requirements, Plans, Documentation and code under CVS.
+             ChangeLogs used for change documentation.  All versions
+             subject to nightly regression tests, tagged
+             releases subject to Standard test cases}
+\Deployment{7}{Approach consistently used in project. Project members
+             and Management automatically informed of configuration
+             status.}
+\Results{6}{Code state and history available.  Milestones identifiable
+            in tagged releases.}
+\end{KPABOX}
+
+\section{Organization Process Focus}
+
+\begin{KPABOX}{Organization Process Focus}
+\Approach{0}{}
+\Deployment{0}{}
+\Results{0}{}
+\end{KPABOX}
+
+\section{Organization Process Definition}
+
+\begin{KPABOX}{Organization Process Definition}
+\Approach{0}{}
+\Deployment{0}{}
+\Results{0}{}
+\end{KPABOX}
+
+\section{Training Program}
+
+\section{Integrated Software Management}
+
+\section{Softwar Product Engineering}
+
+\section{Intergroup Coordination}
+
+\section{Peer Reviews}
+
+\section{Validation and Verification}
+
+\end{document}
