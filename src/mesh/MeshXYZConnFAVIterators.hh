@@ -92,7 +92,7 @@ class MeshXYZConnFAVIterator_base
 	Assert (vertexIndex < NSVertex::NUMVERTICES_PER_CELL);
 	Assert (cellIndex >= 0);
 	// number of cells = field.size() / NUMFACES_PER_CELL.
-	Assert (cellIndex < field.size() / NUMFACES_PER_CELL);
+	Assert (cellIndex < field.size() / NSVertex::NUMFACES_PER_CELL);
 	return &vertex;
     }
 

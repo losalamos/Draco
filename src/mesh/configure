@@ -862,7 +862,7 @@ EOF
        DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l${lib}"
    done
 
-	test_alltarget="$test_alltarget tcctf tfcdtf tnctf tvctf txyz tbstf tvec"
+	test_alltarget="$test_alltarget tcfav tcctf tfcdtf tnctf tvctf txyz tbstf tvec"
         
 	test_nprocs="1 3"
 
