@@ -32,9 +32,10 @@ To get access to Draco source contact
 <a href=http://sf.lanl.gov/projects/draco>page</a>.
 
 \par Components
-<ul>
-@COMPLINKS@
-</ul>
+@COMP_LINKS@
+
+\par Packages
+@PACKAGE_LINKS@
 
 */
 
