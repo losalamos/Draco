@@ -76,7 +76,8 @@ class TestHexMeshReader : public rtt_UnitTestFrame::TestApp
     bool check_nodes(const rtt_meshReaders::Hex_Mesh_Reader &mesh, 
 		     const std::string &testid);
     bool check_node_units(const rtt_meshReaders::Hex_Mesh_Reader &mesh); 
-    bool check_node_sets(const rtt_meshReaders::Hex_Mesh_Reader &mesh); 
+    bool check_node_sets(const rtt_meshReaders::Hex_Mesh_Reader &mesh, 
+			 const std::string &testid); 
     bool check_title(const rtt_meshReaders::Hex_Mesh_Reader &mesh); 
     bool check_element_nodes(const rtt_meshReaders::Hex_Mesh_Reader &mesh, 
 			     const std::string &testid);

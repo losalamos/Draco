@@ -107,7 +107,7 @@ bool TestHexMeshReader::check_mesh(
 
     bool pass_nc = check_nodes(mesh, testid);
     bool pass_cu = check_node_units(mesh);
-    bool pass_ns = check_node_sets(mesh);
+    bool pass_ns = check_node_sets(mesh, testid);
     bool pass_ti = check_title(mesh);
     bool pass_en = check_element_nodes(mesh, testid);
     bool pass_in = check_invariant(mesh);
@@ -185,15 +185,15 @@ bool TestHexMeshReader::check_node_sets(
     bool pass_ns = ndsets.size() == 1;
     if (testid == "slab")
     {
-	pass_ns = pass_ns && check_map(ndsets,"Interior",0,100);
+	pass_ns = pass_ns && check_map(ndsets,"Interior",0,101);
     }
     else if (testid == "quad")
     {
-	pass_ns = pass_ns && check_map(ndsets,"Interior",0,440);
+	pass_ns = pass_ns && check_map(ndsets,"Interior",0,441);
     }
     else if (testid == "cube")
     {
-	pass_ns = pass_ns && check_map(ndsets,"Interior",0,215);
+	pass_ns = pass_ns && check_map(ndsets,"Interior",0,216);
     }
     else
 	Insist(false,"Unrecognized test id string!");
