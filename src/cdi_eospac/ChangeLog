@@ -1,0 +1,11 @@
+2002-04-10  Kelly Thompson  <kgt@lanl.gov>
+
+	* physical_data: Eos data files (sesameu, sescu, sescu1, sescu9,
+	sesou) are now located on the CCS-4 LAN.  To use cdi_eospac you
+	will need to set the following environment variables to tell
+	EOSPAC where the data files are:
+
+	export SESPATHU=/codes/radtran/physical_data/eos
+	export SESPATHC=/codes/radtran/physical_data/eos
+
+	

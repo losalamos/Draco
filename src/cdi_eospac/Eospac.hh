@@ -64,6 +64,19 @@ namespace rtt_cdi_eospac
      * <tt>   --with-eospac-lib=${VENDORS}/eospac/IRIX64/lib64</tt><br><br>
      * - or -
      * <tt>   --with-eospac-lib=${VENDORS}/eospac/Linux/lib</tt><br><br>
+     *
+     * <b>User's environment</b>
+     *
+     * The eos data files live in specific locations on the X-Div LAN and ACL
+     * (see <a
+     * href="https://laurel.lanl.gov/PROJECTS/DATA/eos/sesameLocations.html">
+     * Sesame Distribution Locations</a>).  If you are not working on one of
+     * these LANs you must set the following two system environment variables
+     * (SESPATHU and SESPATHC) so that the EOSPAC libraries can find the data
+     * tables.  On the CCS-4 Linux LAN you can use the following values:
+     *
+     * export SESPATHU=/codes/radtran/physical_data/eos
+     * export SESPATHC=/codes/radtran/physical_data/eos
      */
 
     /*!
@@ -112,6 +125,9 @@ namespace rtt_cdi_eospac
 	 * Data Types</a> and the web page for <a 
 	 * href="http://int.lanl.gov/projects/sdm/win/materials/">EoS
 	 * material and table identifiers</a>.
+	 *
+	 * \sa <a href="https://laurel.lanl.gov/PROJECTS/DATA/eos/sesameLocations.html">
+	 * Sesame Distribution Locations</a>
 	 */
 	const SesameTables SesTabs;
 
