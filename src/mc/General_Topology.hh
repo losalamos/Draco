@@ -53,6 +53,7 @@ namespace rtt_mc
 // revision history:
 // -----------------
 // 0) original
+// 1) 24-APR-00 : added non-virtual accessors to topology data
 // 
 //===========================================================================//
 
@@ -107,6 +108,17 @@ class General_Topology : public Topology
 
     // Diagnostics.
     void print(std::ostream &) const;
+
+    // NON-VIRTUAL SERVICES
+
+    //! Access cells per processor data.
+    const vf_int& get_cells_per_proc() const { return cells_per_proc; }
+
+    //! Access processors per global cell data.
+    const vf_int& get_procs_per_cell() const { return procs_per_cell; }
+
+    //! Get boundary cell data.
+    const vf_int& get_bound_cells() const { return bound_cells; }
 };
 
 //---------------------------------------------------------------------------//
