@@ -1,3 +1,12 @@
+2003-03-10  Kelly Thompson  <kgt@lanl.gov>
+
+	* Assert.*, test/tstAssert.cc: Let rtt_dsxx::assertion derive from
+	std::runtime_error.  G. Furnish intended for the design to follow
+	this model but the C++ compilers at time did not have full support
+	for <stdexcept>.  API is unchanged but the guts of the class are
+	significantly different (i.e.: use copy and assignment operators
+	from base class, use string instead of const char *, etc.).
+
 2003-02-05  Thomas M. Evans  <tme@lanl.gov>
 
 	* Algorithms.hh, Nestmap.*, Sort.*, SortPermutation.*, String.*,

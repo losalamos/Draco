@@ -1,19 +1,28 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstAssert.cc
-// Geoffrey Furnish
-// Mon Jul 28 13:26:55 1997
+/*!
+ * \file   ds++/test/tstAssert.cc
+ * \author Thomas M. Evans
+ * \date   Wed Mar 12 12:11:22 2003
+ * \brief  Assertion tests.
+ */
 //---------------------------------------------------------------------------//
-// @> Test code for checking behavior of the assertion facility.
+// $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds_test.hh"
 #include "../Assert.hh"
-using namespace rtt_dsxx;
+#include "../Release.hh"
+#include "ds++/Assert.hh"
 
 #include <iostream>
-#include <string>
+#include <vector>
+#include <cmath>
 
-using std::cout;
-using std::endl;
+using namespace std;
+
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 // The way this test article works is that each of the DBC macros are tested
@@ -26,30 +35,111 @@ using std::endl;
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-// Check the operation of the Require() macro.
+// Make sure we can differentiate betweeen a std::runtime_error and a
+// rtt_dsxx::assertion. 
 //---------------------------------------------------------------------------//
 
 void t1()
 {
-    cout << "t1 test: ";
+    std::cout << "ta test: ";
+    try 
+    {
+	throw std::runtime_error( "hello1" );
+    } 
+    catch( rtt_dsxx::assertion &a )
+    {
+	std::cout << "failed" << std::endl;
+    }
+    catch( ... )
+    {
+	std::cout << "passed" << std::endl;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// Make sure we can catch a rtt_dsxx::assertion and extract the error
+// message. 
+//---------------------------------------------------------------------------//
+
+void t2()
+{
+    std::cout << "t2-a test: ";
+    std::string error_message;
+    try 
+    {
+	throw rtt_dsxx::assertion( "hello1", "myfile", 42 );
+    } 
+    catch( rtt_dsxx::assertion &a )
+    {
+	std::cout << "passed" << std::endl;
+	error_message = std::string( a.what() );
+    }
+    catch( ... )
+    {
+	std::cout << "failed" << std::endl;
+    }
+
+    // Make sure we can extract the error message.
+
+    std::cout << "t2-b test: ";
+    std::string const compare_value( 
+	"Assertion: hello1, failed in myfile, line 42.\n" ); 
+    if ( error_message.compare( compare_value ) == 0 )
+	std::cout << "passed" << std::endl;
+    else
+	std::cout << "failed" << std::endl;
+}
+
+//---------------------------------------------------------------------------//
+// Test throwing and catching of a literal
+//---------------------------------------------------------------------------//
+
+void t3()
+{
+    std::cout << "t3 test: ";
+    try 
+    {
+	throw "hello";
+    } 
+    catch( rtt_dsxx::assertion &a )
+    {
+	std::cout << "failed" << std::endl;
+    }
+    catch( const char* msg )
+    {
+	std::cout << "passed" << std::endl;
+    }
+    catch( ... )
+    {
+	std::cout << "failed" << std::endl;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// Check the operation of the Require() macro.
+//---------------------------------------------------------------------------//
+
+void trequire()
+{
+    std::cout << "t-Require test: ";
     try {
-	Require(0);
+	Require( 0 );
 	throw "Bogus!";
     }
-    catch( assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 #if DBC & 1
-	cout << "passed\n";
+	std::cout << "passed\n";
 #else
-	cout << "failed\n";
+	std::cout << "failed\n";
 #endif
     }
     catch(...)
     {
 #if DBC & 1
-	cout << "failed\n";
+	std::cout << "failed\n";
 #else
-	cout << "passed\n";
+	std::cout << "passed\n";
 #endif
     }
 }
@@ -58,27 +148,27 @@ void t1()
 // Check the operation of the Check() macro.
 //---------------------------------------------------------------------------//
 
-void t2()
+void tcheck()
 {
-    cout << "t2 test: ";
+    std::cout << "t-Check test: ";
     try {
-	Check(0);
-	throw "Bogus!";
+	Check( false );
+	throw std::runtime_error( std::string( "tstAssert: t2()" ) );
     }
-    catch( assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 #if DBC & 2
-	cout << "passed\n";
+	std::cout << "passed\n";
 #else
-	cout << "failed\n";
+	std::cout << "failed\n";
 #endif
     }
     catch(...)
     {
 #if DBC & 2
-	cout << "failed\n";
+	std::cout << "failed\n";
 #else
-	cout << "passed\n";
+	std::cout << "passed\n";
 #endif
     }
 }
@@ -87,27 +177,27 @@ void t2()
 // Check the operation of the Ensure() macro.
 //---------------------------------------------------------------------------//
 
-void t3()
+void tensure()
 {
-    cout << "t3 test: ";
+    std::cout << "t-Ensure test: ";
     try {
 	Ensure(0);
 	throw "Bogus!";
     }
-    catch( assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 #if DBC & 4
-	cout << "passed\n";
+	std::cout << "passed\n";
 #else
-	cout << "failed\n";
+	std::cout << "failed\n";
 #endif
     }
     catch(...)
     {
 #if DBC & 4
-	cout << "failed\n";
+	std::cout << "failed\n";
 #else
-	cout << "passed\n";
+	std::cout << "passed\n";
 #endif
     }
 }
@@ -116,27 +206,27 @@ void t3()
 // Check the operation of the Assert() macro, which works like Check().
 //---------------------------------------------------------------------------//
 
-void t4()
+void tassert()
 {
-    cout << "t4 test: ";
+    std::cout << "t-Assert test: ";
     try {
 	Assert(0);
 	throw "Bogus!";
     }
-    catch( assertion& a )
+    catch( rtt_dsxx::assertion& a )
     {
 #if DBC & 2
-	cout << "passed\n";
+	std::cout << "passed\n";
 #else
-	cout << "failed\n";
+	std::cout << "failed\n";
 #endif
     }
     catch(...)
     {
 #if DBC & 2
-	cout << "failed\n";
+	std::cout << "failed\n";
 #else
-	cout << "passed\n";
+	std::cout << "passed\n";
 #endif
     }
 }
@@ -145,46 +235,68 @@ void t4()
 // Basic test of the Insist() macro.
 //---------------------------------------------------------------------------//
 
-void t5()
+void tinsist()
 {
-    cout << "t5 test: ";
+    std::cout << "t-Insist test: ";
     try {
 	Insist( 0, "You must be kidding!" );
 	throw "Bogus!";
     }
-    catch( assertion& a ) {
-	cout << "passed\n";
+    catch( rtt_dsxx::assertion& a ) {
+	std::cout << "passed\n";
     }
     catch(...) {
-	cout << "failed\n";
+	std::cout << "failed\n";
     }
 }
 
 void version(const std::string &progname)
 {
     std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
-}
-
-int main( int argc, char *argv[] )
-{
-
-    for (int arg=1; arg < argc; arg++)
-	{
-	    if (std::string(argv[arg]) == "--version")
-		{
-		    version(argv[0]);
-		    return 0;
-		}
-	}
-
-    t1();
-    t2();
-    t3();
-    t4();
-    t5();
+    std::cout << progname << ": version " << version << std::endl;
 }
 
 //---------------------------------------------------------------------------//
-//                              end of tstAssert.cc
+
+int main(int argc, char *argv[])
+{
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
+	{
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
+		 << endl;
+	    return 0;
+	}
+    
+    // >>> UNIT TESTS
+    
+    // Test basic throw and catch functionality.
+    t1();
+    t2();
+    t3();
+
+    // Test Design-by-Constract macros.
+    trequire();
+    tcheck();
+    tensure();
+    tassert();
+    tinsist();
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_ds_test::passed) 
+    {
+        cout << "**** tstAssert Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing tstAssert." << endl;
+}   
+
+//---------------------------------------------------------------------------//
+//                        end of tstAssert.cc
 //---------------------------------------------------------------------------//

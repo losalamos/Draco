@@ -1,65 +1,68 @@
 //----------------------------------*-C++-*----------------------------------//
-// Assert.cc
-// Geoffrey Furnish
-// Fri Jul 25 08:41:38 1997
+/*!
+ * \file   ds++/Assert.cc
+ * \author Geoffrey Furnish
+ * \date   Fri Jul 25 08:41:38 1997
+ * \brief  Helper functions for the Assert facility.
+ */
 //---------------------------------------------------------------------------//
-// @> Helper functions for the Assert facility.
+// $Id$
 //---------------------------------------------------------------------------//
 
+#include <sstream>
 #include "Assert.hh"
 
-#include <string.h>
-#include <stdio.h>
-
-NAMESPACE_DS_BEG
-
-assertion::assertion( const char *cond, const char *file, int line )
+namespace rtt_dsxx
 {
-    msg = new char[ strlen(cond) + strlen(file) + 500 ];
-    sprintf( msg, "Assertion: %s, failed in %s, line %8d.",
-	     cond, file, line );
-}
 
-assertion::assertion( const char *m )
-{
-    msg = new char[ strlen(m)+1 ];
-    strcpy( msg, m );
-}
-
-assertion::assertion( const assertion& a )
-{
-    msg = new char[ strlen(a.msg)+1 ];
-    strcpy( msg, a.msg );
-}
-
-assertion& assertion::operator=( const assertion& a )
-{
-    msg = new char[ strlen(a.msg)+1 ];
-    strcpy( msg, a.msg );
-    return *this;
-}
+//===========================================================================//
+// ASSERTION CLASS MEMBERS
+//===========================================================================//
 
 //---------------------------------------------------------------------------//
-// Function to perform the task of actually throwing an assertion.
+// Build the error string (PRIVATE)
 //---------------------------------------------------------------------------//
-
-void toss_cookies( const char *cond, const char *file, int line )
+string assertion::build_message( std::string const &cond, 
+				 std::string const &file, 
+				 int         const line ) const
 {
-// cerr << ...
+    std::ostringstream myMessage;
+    myMessage << "Assertion: "
+	      << string( cond )
+	      << ", failed in "
+	      << string( file )
+	      << ", line "
+	      << line
+	      << "." << std::endl;
+    return myMessage.str();
+}
+
+//===========================================================================//
+// FREE FUNCTIONS
+//===========================================================================//
+/*!
+ * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
+ */
+void toss_cookies( std::string const cond, 
+		   std::string const file, 
+		   int         const line )
+{
     throw assertion( cond, file, line );
 }
 
 //---------------------------------------------------------------------------//
-// Function to perform the task of actually throwing an isistion.
-//---------------------------------------------------------------------------//
-
-void insist( const char *cond, const char *msg, const char *file, int line )
+/*! 
+ * \brief Throw a rtt_dsxx::assertion for Insist macros.
+ */
+void insist( std::string const cond, 
+	     std::string const msg, 
+	     std::string const file, 
+	     int         const line)
 {
-// cerr << "Insisting that ..." << endl;
     throw assertion( msg );
 }
 
-NAMESPACE_DS_END
+} // end of rtt_dsxx
 
 //---------------------------------------------------------------------------//
 //                              end of Assert.cc
