@@ -1,3 +1,8 @@
+2002-01-16  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Frequency.hh: Replaced Frequency with Gray_Frequency and
+	Multigroup_Frequency, types on which we will template.
+
 2002-01-14  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Frequency.hh:  Added the Frequency class, which holds a
