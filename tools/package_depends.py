@@ -162,28 +162,32 @@ for file in files:
 
 # >>> do test directory
 
-os.chdir(pkg_test_dir)
-
-# make a dictionary of includes
-draco_test_includes = {}
+if os.path.exists(pkg_test_dir):
+    os.chdir(pkg_test_dir)
     
-# first get a list of the filenames associated with this class
-files = get_files()
-
-# loop through the files and get their dependencies
-for file in files:
-
-    # dependency list
-    draco_depends = []
-
-    # get dependencies
-    get_dependencies(file, draco_depends)
+    # make a dictionary of includes
+    draco_test_includes = {}
     
-    # add to the dictionaries
-    draco_test_includes[file] = draco_depends
+    # first get a list of the filenames associated with this class
+    files = get_files()
     
-# write out data
-output_total(draco_includes, draco_test_includes)
+    # loop through the files and get their dependencies
+    for file in files:
+        
+        # dependency list
+        draco_depends = []
+        
+        # get dependencies
+        get_dependencies(file, draco_depends)
+        
+        # add to the dictionaries
+        draco_test_includes[file] = draco_depends
+    
+    # write out data
+    output_total(draco_includes, draco_test_includes)
+else:
+    # no test directory
+    print ">>> No test directory"
 
 ###############################################################################
 ##                            end of package_depends.py
