@@ -12,6 +12,10 @@ int	nsteps		10	# number of timesteps to run.
 
 double	dt		.01	# timestep.  What should this be, anyway?
 
+int_set	test	quad
+quad	Quad
+trig	Trig
+
 #-----------------------------------------------------------------------------#
 #				end of run.nml
 #-----------------------------------------------------------------------------#
