@@ -15,6 +15,9 @@
 #include "timestep/field_ts_advisor.hh"
 
 #include <vector>
+#include <iostream>
+using std::cerr;
+using std::endl;
 
 using std::vector;
 
@@ -41,20 +44,31 @@ void package_XXX(field_ts_advisor &telect_adv,
 		 field_ts_advisor &radi_adv, 
 		 const double dt, const int icycle)
 {
+
+// Create a set of dummy arrays to serve as control fields for
+// use in exercizing the various advisors.
+
     const double a1[] = {1., 10., 11., 3., 2., 5., 5., 6.7};
     int sizea = sizeof(a1)/sizeof(a1[0]);
     vector<double> te_old(a1,a1+sizea);
-    vector<double> te_new = 1.1*te_old;
-    vector<double> ti_old=0.7*te_old;
-    vector<double> ti_new=1.2*te_old;
-    vector<double> ri_old=2.0*te_old;
-    vector<double> ri_new=1.2*ri_old;
+    vector<double> te_new = 1.09*te_old;
+    vector<double> ti_old=0.97*te_old;
+    vector<double> ti_new=1.05*te_old;
+    vector<double> ri_old=1.10*te_old;
+    vector<double> ri_new=1.15*te_old;
+
+// Set a floor for the electron temperature controller, to
+// execcize this method. Just accelpt the default floor on the
+// other controllers.
 
     telect_adv.set_floor(te_new,0.001);
+
+// Get a new time-step from each of the advisors that
+// belong to this package.
+
     telect_adv.update_tstep(te_old, te_new, dt, icycle);
     tion_adv.update_tstep(ti_old, ti_new, dt, icycle);
     radi_adv.update_tstep(ri_old, ri_new, dt, icycle);
-
 }
 
 
