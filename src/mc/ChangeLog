@@ -1,30 +1,39 @@
 2000-05-03  H. Grady Hughes  <hgh@lanl.gov>
-    * TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
-    test/TET_test_1.hh, test/tstTET_Mesh.cc: TET_Builder, TET_Mesh,
-    and their test files now use the get_node_coord_units(),
-    get_node_sets(), get_element_sets(), and get_title() services of
-    the Mesh_Reader base class.  At the top level (TET_Mesh), the
-    get_..._sets() services will later be replaced by side- and
-    cell-specific data structures.
 
+	* Tet_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
+ 	test/TET_test_1.hh, test/tstTET_Mesh.cc: TET_Builder, TET_Mesh,
+ 	and their test files now use the get_node_coord_units(),
+ 	get_node_sets(), get_element_sets(), and get_title() services of
+ 	the Mesh_Reader base class.  At the top level (TET_Mesh), the
+ 	get_..._sets() services will later be replaced by side- and
+ 	cell-specific data structures.
+	
+2000-05-02  Thomas M. Evans  <tme@lanl.gov>
+
+	* Comm_Patterns.*: Added Comm_Patterns class that calculates
+	boundary cell communication patterns for gather/scatter type
+	operations.
+	
 2000-04-26  H. Grady Hughes  <hgh@lanl.gov>
-    * TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh, 
-    test/TET_test_1.hh, test/tstTET_Mesh.cc: Added private data
-    VF_INT sides_vertices for future needs, and made proper use
-    of get_element_nodes() and get_element_types() from the
-    Mesh_Reader base class.
 
+	* TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
+ 	test/TET_test_1.hh, test/tstTET_Mesh.cc: Added private data VF_INT
+ 	sides_vertices for future needs, and made proper use of
+ 	get_element_nodes() and get_element_types() from the Mesh_Reader
+ 	base class.
+	
 2000-04-25  H. Grady Hughes  <hgh@lanl.gov>
-    * TET_Mesh.cc, TET_Mesh.hh: Renamed in_cell() to in_open_cell()
-    and added the related function in_closed_cell().
+
+	* TET_Mesh.cc, TET_Mesh.hh: Renamed in_cell() to in_open_cell()
+ 	and added the related function in_closed_cell().
 
 2000-04-18  H. Grady Hughes  <hgh@lanl.gov>
 
-    * TET_Mesh.cc, ThreeVector.hh, test/tstTET_Mesh.cc,
-    test/TET_RTT_2.in: Changed direction of vector in lin_comb() in
-    ThreeVector.hh, correcting a bug in sample_pos() in TET_Mesh;
-    added another regression test to test/tstTET_Mesh.cc; installed
-    a new RTT-format test file for later regression testing.
+	* TET_Mesh.cc, ThreeVector.hh, test/tstTET_Mesh.cc,
+ 	test/TET_RTT_2.in: Changed direction of vector in lin_comb() in
+ 	ThreeVector.hh, correcting a bug in sample_pos() in TET_Mesh;
+ 	added another regression test to test/tstTET_Mesh.cc; installed a
+ 	new RTT-format test file for later regression testing.
 
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
@@ -38,9 +47,9 @@
 	needs a builder, updated face references, and AMR capability.
 
 2000-04-06  H. Grady Hughes  <hgh@lanl.gov>
-
-    * test/TET_RTT_1.in: Added an RTT-format test file for testing
-    interfaces for the TET_Builder class.
+	
+	* test/TET_RET_1.in: Added an RTT-format test file for testing
+ 	interfaces for the TET_Builder class.
 
 2000-04-04  H. Grady Hughes  <hgh@lanl.gov>
 

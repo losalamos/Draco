@@ -25,7 +25,7 @@ AC_NEEDS_LIBS(viz meshReaders rng c4 traits ds++)
 dnl runtesting
 AC_RUNTESTS(tstMath tstCoord tstOSMesh tstFields tstTopology \
             tstParallel_Data_Op tstTET_Mesh tstSampler \
-            tstRZWedge_Mesh,  1 2 4)
+            tstRZWedge_Mesh tstComm_Patterns,  1 2 4)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
