@@ -19,26 +19,26 @@ namespace rtt_quadrature
 // Make kronecker delta is valid for double, int, unsigned, float
 
 template 
-double QuadServices::kronecker_delta( double const test_value, 
-				      double const offset ) const;
+double kronecker_delta( double const test_value, 
+			double const offset ) ;
 template 
-int QuadServices::kronecker_delta( int const test_value, 
-				   int const offset ) const;
+int kronecker_delta( int const test_value, 
+		     int const offset ) ;
 template 
-unsigned QuadServices::kronecker_delta( unsigned const test_value, 
-					unsigned const offset ) const;
+unsigned kronecker_delta( unsigned const test_value, 
+			  unsigned const offset ) ;
 template 
-float QuadServices::kronecker_delta( float const test_value, 
-				     float const offset ) const;
+float kronecker_delta( float const test_value, 
+		       float const offset ) ;
 
 //---------------------------------------------------------------------------//
 // Make factorial valid for int, unsigned    
 
 template
-unsigned QuadServices::factorial( unsigned const k ) const;
+unsigned factorial( unsigned const k ) ;
 
 template
-int QuadServices::factorial( int const k ) const;
+int factorial( int const k ) ;
 
 } // end namespace rtt_quadrature
 
