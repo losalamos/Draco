@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file timestep/fixed_ts_advisor.hh
+ * \file   timestep/fixed_ts_advisor.hh
  * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
- * \date Thu Apr  2 14:06:18 1998
- * \brief Defines the fixed time-step advisor.
+ * \date   Thu Apr  2 14:06:18 1998
+ * \brief  Header file for the fixed time-step advisor class.
  */
+//---------------------------------------------------------------------------//
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_fixed_ts_advisor_hh__

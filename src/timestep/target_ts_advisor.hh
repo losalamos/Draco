@@ -3,8 +3,10 @@
  * \file timestep/target_ts_advisor.hh
  * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
  * \date Thu Apr  2 14:06:18 1998
- * \brief Defines the target time-step advisor.
+ * \brief Header file for the target time-step advisor class.
  */
+//---------------------------------------------------------------------------//
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_target_ts_advisor_hh__

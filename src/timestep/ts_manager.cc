@@ -5,6 +5,8 @@
 //---------------------------------------------------------------------------//
 // @> Defines a manager utility for time-step advisors.
 //---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
 
 #include "ts_manager.hh"
 
@@ -28,11 +30,9 @@ using dsxx::SP;
 namespace rtt_timestep
 {
 
-typedef ts_advisor TSA;
-
 ts_manager::ts_manager()
-    :time(0.), dt_new(TSA::small()), dt(TSA::small()), cycle(9999),  
-     controlling_advisor("Not Set")
+    :time(0.), dt_new(ts_advisor::small()), dt(ts_advisor::small()), 
+     cycle(9999), controlling_advisor("Not Set")
 {
     Ensure(invariant_satisfied());
 }
@@ -119,7 +119,8 @@ double ts_manager::compute_new_timestep()
     for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
 	 py != advisors.end(); py++) 
     {
-	if ((**py).advisor_usable(*this) && (**py).get_usage() == TSA::req)
+	if ((**py).advisor_usable(*this) && 
+            (**py).get_usage() == ts_advisor::req)
 	{
 	    i++;
 	    dt_new = (**py).get_dt_rec(*this);
@@ -142,14 +143,14 @@ double ts_manager::compute_new_timestep()
 
     list< SP<ts_advisor> >::iterator py1=advisors.end();
     list< SP<ts_advisor> >::iterator py2=advisors.end();
-    double x1 = TSA::small();
-    double x2 = TSA::large();
+    double x1 = ts_advisor::small();
+    double x2 = ts_advisor::large();
     for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
 	 py != advisors.end(); py++) 
     {   
 	if ((**py).advisor_usable(*this))
 	{
-            if ((**py).get_usage() == TSA::min)
+            if ((**py).get_usage() == ts_advisor::min)
 	    {
 		if ((**py).get_dt_rec(*this) > x1)
 		{
@@ -157,7 +158,7 @@ double ts_manager::compute_new_timestep()
 		    py1 = py;
 		}
 	    }
-	    else if ((**py).get_usage() == TSA::max)
+	    else if ((**py).get_usage() == ts_advisor::max)
 	    {
 		if ((**py).get_dt_rec(*this) <  x2)
 		{

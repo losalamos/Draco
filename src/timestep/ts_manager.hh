@@ -1,34 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file timestep/ts_manager.hh
- * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
- * \date Mon Apr  6 17:22:53 1998
- * \brief Defines a manager utility for time-step advisors.
+ * \file    timestep/ts_manager.hh
+ * \author  <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \date    Mon Apr  6 17:22:53 1998
+ * \brief   Header file for the manager utility for time-step advisors.
+ * \version $Id$
  */
-//---------------------------------------------------------------------------/
-/*!
- * \example timestep/test/main.cc
- * The following code provides an example of how to use the timestep manager
- * utility.
- * \include test_timestep.hh
- * \include test_timestep.cc
- */
-
-/*!
- * \example timestep/test/dummy_package.cc
- * The following code provides a dummy package for use with the
- * test_timestep example.
- * \include dummy_package.hh
- * \include test_timestep_pt.cc
- */
-
-/*!
- * \example timestep/test/test_timestep.out
- * The following code is a sample output from the test_timestep example.
- * It contains representative output from most of the printing and summary
- * I/O utilities.
- */
-
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
 
 #ifndef __timestep_ts_manager_hh__
 #define __timestep_ts_manager_hh__
@@ -45,8 +25,9 @@
 namespace rtt_timestep {
 
 //===========================================================================//
-//! Manages a list of time-step advisors.
 /*!
+ * \brief Manages a list of time-step advisors.
+ *
  * \sa  The ts_advisor class provides the advisors to be registerd
  *      the the ts_manager class. Also, the \ref timestep_overview 
  *      page provides useful info.

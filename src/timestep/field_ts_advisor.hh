@@ -3,8 +3,10 @@
  * \file   timestep/field_ts_advisor.hh
  * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
  * \date   Thu Apr  2 14:06:18 1998
- * \brief  Defines the field time-step advisor.
+ * \brief  Header file for the field time-step advisor class.
  */
+//---------------------------------------------------------------------------//
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_field_ts_advisor_hh__
@@ -16,8 +18,8 @@
 namespace rtt_timestep {
 
 //===========================================================================//
-//!Estimates a new timestep based on current fields.
 /*!
+ * \brief Estimates a new timestep based on current fields.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
  * The \ref timestep_overview page gives a summary of the Draco time 

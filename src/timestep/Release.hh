@@ -13,6 +13,30 @@
 #define __timestep_Release_hh__
 
 //===========================================================================//
+
+#include <string>
+
+/*!
+ * \brief RTT time step namespace.
+ *
+ * Provides namespace protection for the Draco (RTT) time step 
+ * control utilities.
+ *\sa The ts_manager and ts_advisor classes provide most of the
+ *    functionality of the namespace. The \ref timestep_overview page presents
+ *    a summary of the capabilities provided within the namespace.
+ */
+namespace rtt_timestep 
+{
+/*!
+ * \brief  Gets the release number for the timestep package. 
+ * \return release number as a string in the form "timestep-x_x_x"
+ */
+    const std::string release();
+}
+
+#endif                          // __timestep_Release_hh__
+
+
 /*!
  * \page timestep_overview Overview of the Draco Time Step Manager
  *
@@ -32,7 +56,7 @@
  * specific to the package. After collecting information from each
  * advisor, the time step manager considers all the inputs and provides
  * an overall recommendation for the size of the time step for the
- * next time cycle.  Capabilites are provided to:
+ * next time cycle.  Capabilities are provided to:
  * <ul>
  *  <li> limit the min and max timestep,
  *  <li> force the time step to a user input value,
@@ -90,27 +114,20 @@
  * and the Draco C4 communication library.
  */
 
-#include <string>
-
 /*!
- * \brief RTT time step namespace.
- *
- * Provides namspace protection for the Draco (RTT) time step 
- * control utilities.
- *\sa The ts_manager and ts_advisor classes provide most of the
- *    functionality of the namspace. The \ref timestep_overview page presents
- *    a summary of the capabilities provided within the namespace.
+ * \example timestep/test/main.cc
+ * The following code provides an example of how to use the timestep manager
+ * utility. It includes a dummy_package for use with the manager. Also
+ * included isis a sample output from the test_timestep example.
+ * It contains representative output from most of the printing and summary
+ * I/O utilities.
+ * \include timestep/test/test_timestep.hh
+ * \include timestep/test/test_timestep.cc
+ * \include timestep/test/dummy_package.hh
+ * \include timestep/test/test_timestep_pt.cc
+ * \include timestep/test/dummy_package.cc
+ * \include timestep/test/test_timestep.out
  */
-namespace rtt_timestep 
-{
-/*!
- * \brief  Gets the release number for the timestep package. 
- * \return release number as a string in the form "timestep-#_#_#"
- */
-    const std::string release();
-}
-
-#endif                          // __timestep_Release_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of timestep/Release.hh

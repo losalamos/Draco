@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file timestep/ratio_ts_advisor.hh
+ * \file   timestep/ratio_ts_advisor.hh
  * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
- * \date  Thu Apr  2 14:06:18 1998 
- * \brief Defines the ratio time-step advisor.
+ * \date   Thu Apr  2 14:06:18 1998 
+ * \brief  Header file for the ratio time-step advisor class.
  */
+//---------------------------------------------------------------------------//
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_ratio_ts_advisor_hh__
