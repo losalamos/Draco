@@ -45,35 +45,25 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
 						const FT &electronTemp_,
 						const FT &ionTemp_,
 						const FT2 &matId_)
-    : matprops(matprops_), theSize(density_.size())
+    : matprops(matprops_), theSize(density_.size()),
+      density(density_.begin(), density_.end()),
+      electronTemp(electronTemp_.begin(), electronTemp_.end()),
+      ionTemp(ionTemp_.begin(), ionTemp_.end()),
+      matId(matId_.begin(), matId_.end())
 {
     Require(density_.size() == electronTemp_.size());
     Require(density_.size() == ionTemp_.size());
     Require(density_.size() == matId_.size());
 
-    density.reserve(size());
-    electronTemp.reserve(size());
-    ionTemp.reserve(size());
-    matId.reserve(size());
     memento.reserve(size());
     
-    FT::const_iterator dit = density_.begin();
-    FT::const_iterator eTit = electronTemp_.begin();
-    FT::const_iterator iTit = ionTemp_.begin();
-    FT2::const_iterator matIdit = matId_.begin();
-
     for (int i=0; i < size(); i++)
     {
-	density[i]      = *dit++;
-	electronTemp[i] = *eTit++;
-	ionTemp[i]      = *iTit++;
-	matId[i]        = *matIdit++;
-
-	const MaterialTables &mattabs = matprops.getMaterialTables(matId[i]);
+	const MaterialTables &mattabs = matprops.getMaterialTables(getMatId(i));
 	
 	const BilinearInterpGrid &grid = mattabs.getGrid();
 
-	memento[i] = grid.getMemento(density[i], electronTemp[i]);
+	memento.push_back(grid.getMemento(getDensity(i), getElectronTemp(i)));
     }
 }
 
