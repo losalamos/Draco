@@ -43,7 +43,6 @@ namespace sampler
 // STL typedefs
 typedef std::vector<double> sf_double;
 
-
 //---------------------------------------------------------------------------//
 // SAMPLE_GENERAL_LINEAR
 //---------------------------------------------------------------------------//
@@ -191,8 +190,6 @@ inline double sample_cubic(Ran ran, const double a, const double b,
 
     return x;
 }
-
-
 //---------------------------------------------------------------------------//
 // SAMPLE_PLANCKIAN_FREQUENCY
 //---------------------------------------------------------------------------//
@@ -281,7 +278,6 @@ inline double sample_planckian_frequency(Ran ran, const double k_temperature)
     // return the frequency in the same units as the temperature
     return hnu;
 }
-
 //---------------------------------------------------------------------------//
 // IS_THIS_CDF_VALID
 //---------------------------------------------------------------------------//
@@ -320,7 +316,6 @@ inline bool is_this_cdf_valid(const sf_double &cdf)
     // if none of the checks fail, return true
     return true;
 }
-
 //---------------------------------------------------------------------------//
 // SAMPLE_BIN_FROM_DISCRETE_CDF
 //---------------------------------------------------------------------------//

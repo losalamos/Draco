@@ -15,13 +15,11 @@
 
 #include "Sphyramid_Mesh.hh"
 #include "XYZCoord_sys.hh"
-//#include "Constants.hh"
 #include "viz/Ensight_Translator.hh"
 #include "ds++/Packing_Utils.hh"
-//#include <iomanip>
 #include <typeinfo>
-#include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace rtt_mc
 {
@@ -31,27 +29,26 @@ namespace rtt_mc
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Sphyramid_Mesh constructor.
-
+ *
  * The constructor requires complete arguments of the constituent data
  * necessary to build a Sphyramid_Mesh.  It is expected that an appropriate
  * builder class will message general data through an interface to build the 
  * specific data structures needed by Sphyramid_Mesh
-
+ *
  * \param coord_ coordinate system smart pointer
-
+ *
  * \param layout_ Layout giving cell connectivity information
-
+ *
  * \param cell_x_extents_ the x coordinates of each cell in the following
  * form: [cell][low x]; [cell][hi x];
-
+ *
  * \param beta_radians_ "angle" of Sphyramid in radians (not angle of
  * spherical
- 
+ *
  * \param submesh_ [=false] boolean indicator; true if this is a submesh
  * cone)
-
+ *
 */
-
 Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_, 
 			       vf_double & cell_x_extents_, 
 			       double beta_radians_, bool submesh_)
@@ -60,8 +57,6 @@ Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_,
      cell_x_extents(cell_x_extents_),
      beta_radians(beta_radians_),
      submesh(submesh_)
-    
-
 {
     using global::pi;
 
@@ -86,7 +81,6 @@ Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_,
     // calculate and assign the on-processor total volume
     calc_total_volume();
 }
-
 //---------------------------------------------------------------------------//
 // PRIVATE IMPLEMENTATIONS
 //---------------------------------------------------------------------------//
@@ -141,8 +135,6 @@ void Sphyramid_Mesh::pack_extents(const sf_int &current_to_new,
 
     Ensure (packer.get_ptr() == data+size);
 }
-
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate wedge angle data once for use throughout calculation
@@ -169,12 +161,11 @@ void Sphyramid_Mesh::calc_angle_data()
     Ensure (this->sin_beta > 0.0);
     Ensure (this->cos_beta > 0.0);
 }
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate and set the total (on-processor) volume of the mesh.
  *
- * \return
+ *
  */
 void Sphyramid_Mesh::calc_total_volume()
 {
@@ -268,7 +259,6 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_cell_types() const
  */
 Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_point_coord() const
 {
-
     // number of vertices is always 8; always 3D
    const int num_verts_cell = 8;
    int vert_index;
@@ -421,7 +411,6 @@ double Sphyramid_Mesh::get_db(const sf_double &r, const sf_double &omega,
 	    (omega[0]*this->tan_beta-omega[2]);
     }
 
-
     // find face index and value of minimum distance
     double min_dist = huge;
     int face_index  = 0;
@@ -448,8 +437,6 @@ double Sphyramid_Mesh::get_db(const sf_double &r, const sf_double &omega,
 
     return min_dist;
 }
-
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the vertices for a given Sphyramid_Mesh cell.
@@ -506,7 +493,6 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell) const
     // return the cell vertices
     return cell_vertices;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the vertices for a given face of a Sphyramid_Mesh cell. 
@@ -623,8 +609,7 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
 	}
     }
 
-    // low z face or high z face
-    
+    // low z face or high z face    
     else if (face == 5 || face == 6)
     {
 	double z_plusminus;
@@ -675,7 +660,6 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
     // return the four vertices for the face
     return face_vertices;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief return the face number for a given cell boundary (independent of cell)
@@ -685,7 +669,6 @@ Sphyramid_Mesh::vf_double Sphyramid_Mesh::get_vertices(int cell, int face) const
  *
  * \return face number
  */
-
 int Sphyramid_Mesh::get_bndface(std_string boundary, int cell) const
 {
     //return value
@@ -716,7 +699,6 @@ int Sphyramid_Mesh::get_bndface(std_string boundary, int cell) const
  * \param boundary string boundary name
  * \return vector of cell numbers
  */
-
 Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_surcells(std::string boundary) const
 {
 
@@ -890,6 +872,7 @@ Sphyramid_Mesh::pair_sf_double Sphyramid_Mesh::sample_random_walk_sphere(
 	    track = 0.0;
 	}
     }
+
     // assign return position and normal
     pair_sf_double pos_and_norm = make_pair(r, omega);
 
@@ -897,7 +880,6 @@ Sphyramid_Mesh::pair_sf_double Sphyramid_Mesh::sample_random_walk_sphere(
     Ensure (soft_equiv(dot(pos_and_norm.second, pos_and_norm.second), 1.0));
 
     return pos_and_norm;
-
 }
 //---------------------------------------------------------------------------//
 // Mesh Packing Interface
@@ -975,7 +957,6 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new)
 	// pack extents
 	pack_extents(current_to_new_replicate, extent_data, extent_size,
 		     num_packed_cells);
-
     }
     else
     {
@@ -996,6 +977,7 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new)
 	pack_extents(current_to_new, extent_data, extent_size, 
 		     num_packed_cells);
     }
+
     Check (num_packed_cells >= 0);
     Check (num_packed_cells <= this->layout.num_cells());
     Check (extent_size == 2*num_packed_cells*sizeof(double));
@@ -1055,7 +1037,6 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new)
 
     return packed_mesh;
 }
-
 //---------------------------------------------------------------------------//
 // Overloaded == operator
 //---------------------------------------------------------------------------//
@@ -1088,16 +1069,16 @@ bool Sphyramid_Mesh::operator==(const Sphyramid_Mesh &rhs) const
 //===========================================================================//
 /*!
  * \brief Constructor.
-
+ *
  * Construct a Sphyramid_Mesh::Pack instance.  Once allocated mesh data is
  * given to Sphyramid_Mesh::Pack constructor in the form of a char*, the
  * Pack object owns it.  When the Pack object goes out of scope it will clean
  * up the memory.  In general, Pack objects are only created by calling the
  * Sphyramid_Mesh::pack() function.
-
+ *
  * \param s size of char data stream
  * \param d pointer to char data stream
-
+ *
  */
 Sphyramid_Mesh::Pack::Pack(int s, char *d)
     :data(d),
@@ -1139,7 +1120,6 @@ Sphyramid_Mesh::Pack::~Pack()
 {
     delete [] this->data;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief get number of cells in the packed mesh
@@ -1163,7 +1143,6 @@ int Sphyramid_Mesh::Pack::get_num_packed_cells() const
     
     return num_cells;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Unpack the Sphyramid_Mesh

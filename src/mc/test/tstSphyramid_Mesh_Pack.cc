@@ -122,9 +122,7 @@ void test_pack()
 	if(m4->next_cell(2,3) !=  2)  ITFAILS;
 	if(m4->next_cell(2,4) !=  2)  ITFAILS;
 	if(m4->next_cell(2,5) !=  2)  ITFAILS;
-	if(m4->next_cell(2,6) !=  2)  ITFAILS;
-
-	
+	if(m4->next_cell(2,6) !=  2)  ITFAILS;	
     }
     
     if (!m1->full_Mesh()) ITFAILS;
@@ -154,7 +152,6 @@ void test_pack()
     
     return;
 }
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])

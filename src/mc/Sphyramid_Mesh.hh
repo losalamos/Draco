@@ -21,12 +21,10 @@
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "Math.hh"
-//#include "Constants.hh"
 #include "Sampler.hh"
 #include <vector>
-//#include <iostream>
 #include <string>
-//#include <utility>
+#include <algorithm>
 
 namespace rtt_mc
 {
@@ -49,9 +47,7 @@ namespace rtt_mc
  * CCS-4:03-??(U)
  *
  * 
-
  */
-
 // revision history:
 // -----------------
 // 0) (Mon Oct  6 09:15:12 2003) Jeffery Densmore: original
@@ -60,7 +56,6 @@ namespace rtt_mc
 
 class Sphyramid_Mesh 
 {
-
   public:
     // Forward declaration of pack class
     struct Pack;
@@ -95,7 +90,6 @@ class Sphyramid_Mesh
     // is this a submesh
     bool submesh;
 
-
     // Sphyramid angle data; precalculated
     double beta_radians;
     double tan_beta;
@@ -119,7 +113,7 @@ class Sphyramid_Mesh
 
     // Private copy assignment operators (can't copy or assign a mesh).
     Sphyramid_Mesh(const Sphyramid_Mesh &);
-    Sphyramid_Mesh& operator=(const Sphyramid_Mesh &);
+    const Sphyramid_Mesh & operator=(const Sphyramid_Mesh &);
   
   public:
     // Constructor
@@ -142,7 +136,6 @@ class Sphyramid_Mesh
     // get the dimension of a cell for a given coordinate
     // (y and z-coord => dim at midpoint)
     inline double dim(const int coordinate, const int cell) const;
-
 
     // Determine if a position is in a cell
     bool in_cell(int cell, const sf_double & r) const;
@@ -200,6 +193,7 @@ class Sphyramid_Mesh
 
 
 };
+
 //---------------------------------------------------------------------------//
 // SPHYRAMID_MESH INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
@@ -220,8 +214,7 @@ double Sphyramid_Mesh::get_x_midpoint(int cell) const
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the midpoint of a cell f
-or the y-dimension
+ * \brief Calculate the midpoint of a cell for the y-dimension
  * 
  * \param cell cell number
  *
@@ -370,9 +363,6 @@ double Sphyramid_Mesh::get_random_walk_sphere_radius(const sf_double &r,
 
     return radius;
 }
-
-
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate the outward normal for the particular face of a cell.
@@ -622,7 +612,6 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     Require (soft_equiv(slope[1], 0.0));
     Require (soft_equiv(slope[2], 0.0));
 	
-
     // initialize location vector
     sf_double position(this->coord->get_dim(), 0.0);
 
@@ -729,7 +718,6 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
 
     return position;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Sample a position on a Sphyramid_Mesh cell face
@@ -775,7 +763,6 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos_on_face(
 
     return position;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Calculate the neighbors around a cell.
@@ -806,7 +793,6 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_neighbors(int cell) const
  * arrays.
  */
 //===========================================================================//
-
 struct Sphyramid_Mesh::Pack
 {
   private:
@@ -851,7 +837,6 @@ struct Sphyramid_Mesh::Pack
  * \brief cell-centered scalar fields
  */
 //===========================================================================//
-
 template<class T> class Sphyramid_Mesh::CCSF
 {
   public:
@@ -905,7 +890,6 @@ template<class T> class Sphyramid_Mesh::CCSF
 // Sphyramid_Mesh::CCSF inline functions
 //---------------------------------------------------------------------------//
 // CCSF explicit constructor
-
 template<class T>
 Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_) 
     : mesh(mesh_), data(mesh->num_cells()) 
@@ -913,10 +897,8 @@ Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_)
     Require (this->mesh);
     Ensure  (!empty());
 }
-
 //---------------------------------------------------------------------------//
 // constructor for automatic initialization
-
 template<class T>
 Sphyramid_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_, const std::vector<T> &array)
     : mesh(mesh_), data(array)
@@ -935,7 +917,7 @@ template<class T> class Sphyramid_Mesh::CCVF
 {
   public:
     // STL style typedefs.
-    // typedef T value_type
+    typedef T value_type;
     typedef T& reference;
     typedef const T& const_reference;
     typedef typename std::vector<T>::iterator iterator;
@@ -953,9 +935,6 @@ template<class T> class Sphyramid_Mesh::CCVF
     //inline explicit constructor.
     inline explicit CCVF(SP_Mesh mesh_);
 
-    // Additional constructors.
-    //inline CCVF(SP_Mesh, const std::vector< std::vector<T> > &);
-
     // Return reference to mesh.
     const Sphyramid_Mesh& get_Mesh() const { return *mesh; }
 
@@ -963,31 +942,22 @@ template<class T> class Sphyramid_Mesh::CCVF
     inline const T& operator()(int dim, int cell) const;
     inline T& operator()(int dim, int cell);
 
-    // Getting a CC vector in a cell.
-    //inline std::vector<T> operator()(int) const;
-
-    // STL style functions.
-    //iterator begin() { return data.begin(); }
-    //const_iterator begin() const { return data.begin(); }
+    // STL style functions.    
     inline iterator begin(int i);
     inline const_iterator begin(int i) const;
-
-    //iterator end() { return data.end(); }
-    //const_iterator end() const { return data.end(); }
+    
     inline iterator end(int i);
     inline const_iterator end(int i) const;
 
     size_type size() const {return data.size(); }
     bool empty() const {return data.empty(); }
-    inline size_type size(int i) const;
-    // inline bool empty(int i) const;
+    inline size_type size(int i) const;   
 };
 
 //---------------------------------------------------------------------------//
 // Sphyramid_Mesh::CCVF inline functions
 //---------------------------------------------------------------------------//
 // CCVF explicit constructor
-
 template<class T> 
 Sphyramid_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
     :mesh(mesh_), 
@@ -1004,25 +974,20 @@ Sphyramid_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
 }
 //---------------------------------------------------------------------------//
 // constant overloaded ()
-
 template<class T>
 const T& Sphyramid_Mesh::CCVF<T>::operator()(int dim, int cell) const 
 {
     return this->data[dim-1][cell-1]; 
 }
-
 //---------------------------------------------------------------------------//
 // assignment overloaded ()
-
 template<class T>
 T& Sphyramid_Mesh::CCVF<T>::operator()(int dim, int cell)
 {
     return this->data[dim-1][cell-1];
 }
-
 //---------------------------------------------------------------------------//
 // STL style functionality for CCVF fields
-
 template<class T>
 typename Sphyramid_Mesh::CCVF<T>::iterator 
 Sphyramid_Mesh::CCVF<T>::begin(int i)
@@ -1030,7 +995,6 @@ Sphyramid_Mesh::CCVF<T>::begin(int i)
     Require(i > 0 && i <= this->data.size());
     return this->data[i-1].begin();
 }
-
 template<class T>
 typename Sphyramid_Mesh::CCVF<T>::const_iterator 
 Sphyramid_Mesh::CCVF<T>::begin(int i) const
@@ -1038,7 +1002,6 @@ Sphyramid_Mesh::CCVF<T>::begin(int i) const
     Require(i > 0 && i <= this->data.size());
     return this->data[i-1].begin();
 }
-
 template<class T>
 typename Sphyramid_Mesh::CCVF<T>::iterator 
 Sphyramid_Mesh::CCVF<T>::end(int i)
@@ -1046,7 +1009,6 @@ Sphyramid_Mesh::CCVF<T>::end(int i)
     Require(i > 0 && i <= this->data.size());
     return this->data[i-1].end();
 }
-
 template<class T>
 typename Sphyramid_Mesh::CCVF<T>::const_iterator 
 Sphyramid_Mesh::CCVF<T>::end(int i) const
@@ -1054,7 +1016,6 @@ Sphyramid_Mesh::CCVF<T>::end(int i) const
     Require(i > 0 && i <= this->data.size());
     return this>data[i-1].end();
 }
-
 template<class T>
 typename Sphyramid_Mesh::CCVF<T>::size_type
 Sphyramid_Mesh::CCVF<T>::size(int i) const
@@ -1062,8 +1023,6 @@ Sphyramid_Mesh::CCVF<T>::size(int i) const
     Require(i > 0 && i <= this->data.size());
     return this->data[i-1].size();
 }
-
-
 
 }  // end namespace rtt_mc
 

@@ -89,17 +89,15 @@ void test_CCSF(SP<MT> mesh)
 	if (*iter != 2 * value++)  ITFAILS;
     }
 }
-
 //---------------------------------------------------------------------------//
 // cell-centered vector fields - basic test of functionality
-
 template<class MT>
 void test_CCVF(SP<MT> mesh)
-{
-    
-    
+{   
     typename MT::template CCVF<double> field(mesh);
     if (field.empty())             ITFAILS;
+    
+    // the OS_Mesh and Sphyramid_Mesh used have a different number of cells
     if (typeid(mesh) == typeid(SP<OS_Mesh>))
     {
 	if (field.size() != 2)     ITFAILS;
@@ -109,6 +107,7 @@ void test_CCVF(SP<MT> mesh)
 	if (field.size() != 3)     ITFAILS;
     }
     else ITFAILS;
+
     if (field.get_Mesh() != *mesh) ITFAILS;
 
     // fill up the field
@@ -136,7 +135,6 @@ void test_CCVF(SP<MT> mesh)
     if (*find_itor != 12)                ITFAILS;
     if (find_itor != field.begin(1) + 2) ITFAILS;
 }
-
 //---------------------------------------------------------------------------//
 // cell-centered scalar fields - test of STL algortihm compatibility
 
@@ -159,6 +157,8 @@ void test_CCSF_STL(SP<MT> mesh)
 
     // let's do some counting
     if (count(first, last, 5.0) != 2)  ITFAILS;
+    
+    // OS_Mesh and Sphryamid_Mesh used have a different number of cells
     if (typeid(mesh) == typeid(SP<OS_Mesh>))
     {
 	if (count(first, last, 10.0) != 4) ITFAILS;
@@ -179,10 +179,7 @@ void test_CCSF_STL(SP<MT> mesh)
     for (var = first + 3; var != last; var++)
 	if (*var != 10.0) ITFAILS;
 }
-
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     C4::Init(argc, argv);
@@ -232,12 +229,8 @@ int main(int argc, char *argv[])
 	    // run the tests
 	    test_CCSF(mesh);
 	    test_CCVF(mesh);
-	    test_CCSF_STL(mesh);
-	    
+	    test_CCSF_STL(mesh);   
 	}
-
-
-	
     }
     catch (rtt_dsxx::assertion &ass)
     {

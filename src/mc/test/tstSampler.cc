@@ -171,7 +171,6 @@ void sample_xsquared_test()
     Rnd_Control rand_control(seed);
     Sprng ran_object = rand_control.get_rn(10);
 
-
     // >>> sample from x^2 for x in [1,2] <<<
 
     // problem data
@@ -276,12 +275,12 @@ void sample_cubic_test()
 	    Check (bindex <  num_bins);
 	    bin[bindex] += 1.0;
 	}
+	
 	// normalixe the bins
 	for (int b = 0; b < num_bins; b++)
 	{
 	    bin[b] /= (bin_width*num_samples);
 	}
-
 
 	// check that bins replicate original pdf (to w/in roughly 4 sigma)
 	for (int b = 0; b < num_bins; b++)
@@ -290,7 +289,6 @@ void sample_cubic_test()
 	    double func_value = C1*x*x*x+C2*x*x+C3*x+C4;
 	    func_value/=norm;
 	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
-	    
 	}
     }
 
@@ -338,6 +336,7 @@ void sample_cubic_test()
 	    Check (bindex <  num_bins);
 	    bin[bindex] += 1.0;
 	}
+
 	// normalixe the bins
 	for (int b = 0; b < num_bins; b++)
 	{
@@ -351,7 +350,6 @@ void sample_cubic_test()
 	    double func_value = C1*x*x*x+C2*x*x+C3*x+C4;
 	    func_value/=norm;
 	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
-	   
 	}
     }
 
@@ -400,13 +398,12 @@ void sample_cubic_test()
 	    Check (bindex <  num_bins);
 	    bin[bindex] += 1.0;
 	}
+
 	// normalize the bins
 	for (int b = 0; b < num_bins; b++)
 	{
 	    bin[b] /=(bin_width*num_samples);
 	}
-
-
 
 	// check that bins replicate original pdf (to w/in roughly 4 sigma)
 	// skip the first 5 bins, this pdf has a tail...
@@ -415,16 +412,12 @@ void sample_cubic_test()
 	    x=x_low+(b+0.5)*bin_width;
 	    double func_value = C1*x*x*x+C2*x*x+C3*x+C4;
 	    func_value/=norm;
-	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;
-	    
+	    if (abs(bin[b]-func_value) > rough_eps*func_value) ITFAILS;	    
 	}
     }
 
     return;
 }
-
-
-
 //---------------------------------------------------------------------------//
 // Test the sampling a frequency from a planckian distribution at kT.
 //---------------------------------------------------------------------------//
@@ -490,7 +483,6 @@ void test_sampling_planckian_frequency()
 	if (!soft_equiv(freq_bins[b], analytic, three_sigma_eps))     ITFAILS;
     }
 }
-
 //---------------------------------------------------------------------------//
 // Test the boolean check for validity of a cdf
 //---------------------------------------------------------------------------//
@@ -526,7 +518,6 @@ void test_cdf_validity()
 
     if (!rtt_mc::sampler::is_this_cdf_valid(my_cdf))  ITFAILS;
 }
-
 //---------------------------------------------------------------------------//
 // Test the sampling of a cdf
 //---------------------------------------------------------------------------//
@@ -645,7 +636,6 @@ void test_cdf_sampling()
 	if (sampled_bin != 499)  ITFAILS;
     }	
 }
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])

@@ -30,7 +30,6 @@
 #include <cmath>
 #include <string>
 
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -661,9 +660,10 @@ void simple_one_cell_Sphyramid()
 
 	// check absolute avergages (both fabs_yavg and fabs_zavg
 	// = 3/8*tan_beta)	
-	if (!soft_equiv(fabs_yavg, 3./8.*tan_beta, 4.*est_std_of_mean))  ITFAILS;
-	if (!soft_equiv(fabs_zavg, 3./8.*tan_beta, 4.*est_std_of_mean))  ITFAILS;
-
+	if (!soft_equiv(fabs_yavg, 3./8.*tan_beta, 
+			4.*est_std_of_mean)) ITFAILS;
+	if (!soft_equiv(fabs_zavg, 3./8.*tan_beta, 
+			4.*est_std_of_mean)) ITFAILS;
 
 	// now examine distribuitions themselves
 	for (int bin = 0; bin < num_bins; bin++)
@@ -691,7 +691,8 @@ void simple_one_cell_Sphyramid()
 	for (int bin = 10; bin < num_bins-10; bin++)
 	{
 	    double yvalue = low_y_limit+(bin+0.5)*ybin_width;
-	    double fvalue = (3./4.)*(1.-yvalue*yvalue/(tan_beta*tan_beta))/tan_beta;
+	    double fvalue = (3./4.)*(1.-yvalue*yvalue/(tan_beta*tan_beta))
+		/tan_beta;
 	    if (fabs(ydist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
 	    if (fabs(zdist[bin]-fvalue) > 4.*estimated_std*fvalue) ITFAILS;
 	    
@@ -776,7 +777,6 @@ void simple_one_cell_Sphyramid()
 	}
     }
 
-
     // check the == and != operations.
     // first, build another mesh object equivalent to old mesh object.
     // these two meshes, althoug identical, should not occupy the same memory
@@ -799,7 +799,6 @@ void simple_one_cell_Sphyramid()
 	vector<double> omega(3,0.0);
 	int intersecting_face;
 	double db;
-
 
 	omega[0] = 1.0;
 	db = mesh->get_db(r, omega, 1, intersecting_face);
@@ -997,10 +996,7 @@ void simple_one_cell_Sphyramid()
     }
 
     return;
-    
 }
-
-
 //---------------------------------------------------------------------------//
 // test the Sphyramid_Mesh via the Sphyramid_Builder
 void build_a_Sphyramid()
@@ -1053,6 +1049,7 @@ void build_a_Sphyramid()
 	if (builder.get_cells_in_zone(2) != zone[1]) ITFAILS;
 
     }
+    
     //build a Sphyramid_mesh object
     SP<Sphyramid_Mesh> mesh = builder.build_Mesh();
 
@@ -1070,7 +1067,6 @@ void build_a_Sphyramid()
     }
 
     // check zone mapper
-
     {
 	vector<int> zone_field(2);
 	zone_field[0] = 1000;
@@ -1094,7 +1090,6 @@ void build_a_Sphyramid()
 	if (same_mesh  !=  mesh) ITFAILS;
 	if (*same_mesh != *mesh) ITFAILS;
     }
-
 
     // <<<< now do some checks on the mesh itself >>>>
     // (this is a different mesh than the simple_one_cell_Sphyramid_Mesh
@@ -1125,8 +1120,6 @@ void build_a_Sphyramid()
     xcoords[3] = 9./7.*r_to_x;
     xcoords[4] = 13./7.*r_to_x;
     xcoords[5] = 3.*r_to_x;
-
-
 
     // check that the x extents are correct for the 1st and last cells
     if (!soft_equiv(mesh->get_low_x(1),  xcoords[0])) ITFAILS;
@@ -1223,7 +1216,6 @@ void build_a_Sphyramid()
 	if (!soft_equiv(point_coords[7][0], xcoords[0]))           ITFAILS;
 	if (!soft_equiv(point_coords[7][1], xcoords[0]*tan_beta))  ITFAILS;
 	if (!soft_equiv(point_coords[7][2], xcoords[0]*tan_beta))  ITFAILS;
-
 
 	// last cell, low z face, counter clockwise from the lower left, 
 	// facing +z	
@@ -1602,10 +1594,7 @@ void build_a_Sphyramid()
 
     return;
 }
-
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     using C4::Init;
@@ -1627,7 +1616,6 @@ int main(int argc, char *argv[])
 	return 0;
     }
 
-
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
@@ -1642,6 +1630,7 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+	
 	// simple one-celled test problem
 	simple_one_cell_Sphyramid();
 
@@ -1657,7 +1646,6 @@ int main(int argc, char *argv[])
     }
 
     {
-
 	// status of test
 	cout << endl;
 	cout <<     "*********************************************" << endl;

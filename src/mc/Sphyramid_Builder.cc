@@ -62,7 +62,6 @@ Sphyramid_Builder::SP_Mesh Sphyramid_Builder::build_Mesh()
 
     return mesh;
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Return the cell regions for graphics dumping 
@@ -125,7 +124,6 @@ Sphyramid_Builder::vf_int Sphyramid_Builder::get_defined_surcells() const
     Require (this->mesh);
     return this->defined_surcells;
 }
-
 //---------------------------------------------------------------------------//
 // PRIVATE MESH FILE PARSING IMPLEMENTATION
 //---------------------------------------------------------------------------//
@@ -136,10 +134,8 @@ Sphyramid_Builder::vf_int Sphyramid_Builder::get_defined_surcells() const
  * 
  *
  */
-
 void Sphyramid_Builder::parser()
 {
-
     using std::pow;
     using std::fabs;
 
@@ -148,7 +144,7 @@ void Sphyramid_Builder::parser()
     std_ifstream input(file);
 
     // make sure the file exists
-   Insist (input, "You must supply a mesh input file!");
+    Insist (input, "You must supply a mesh input file!");
 
     // determine coord_sys 
     std_string keyword; 
@@ -196,6 +192,7 @@ void Sphyramid_Builder::parser()
    {
        this->regions.resize(1);
    }
+   
    // >>> calculate fine_edge array <<<
 
    // determine size of fine_edge array
@@ -257,7 +254,6 @@ void Sphyramid_Builder::parser()
 	   }
 	   this->fine_edge[ifine] = this->coarse_edge[i]+coarse_offset;
        }
-
        
        // check last fine cell in this coarse cell; it should be equal to the
        // "first fine cell width" if we use the inverse of the ratio.
@@ -279,17 +275,15 @@ void Sphyramid_Builder::parser()
    //reset the last fine edge -- equiv to the last coarse edge.
    this->fine_edge[ifine] = this->coarse_edge.back();
 }
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief parser for geometry/mesh information
  * 
- *
+ * \param in input file stream
  */
 
 void Sphyramid_Builder::parser1D(std_ifstream &in)
 {
-
     using std::fill;
     using global::soft_equiv;
 
@@ -407,6 +401,7 @@ void Sphyramid_Builder::parser1D(std_ifstream &in)
 /*! 
  * \brief  Parse source descritptions that are part of the mesh format
  * 
+ * \param in input file stream
  */
 void Sphyramid_Builder::source_parser(std_ifstream &in)
 {
@@ -505,7 +500,6 @@ void Sphyramid_Builder::source_parser(std_ifstream &in)
 	}
     }
 }
-
 //---------------------------------------------------------------------------//
 // PRIVATE MESH BUILDING IMPLEMENTATION
 //---------------------------------------------------------------------------//
@@ -518,7 +512,6 @@ void Sphyramid_Builder::source_parser(std_ifstream &in)
  * \param layout reference to Layout object
  * \return smart pointer to built mesh
  */
-
 Sphyramid_Builder::SP_Mesh
 Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, Layout &layout)
 {
@@ -568,10 +561,10 @@ Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, Layout &layout)
     // return mesh to builder
     return mesh_return;
 }
-   
 //---------------------------------------------------------------------------//
 // PRIVATE COORD_SYS BUILDER IMPLEMENTATION
 //---------------------------------------------------------------------------//
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief constructs Coord_sys object
@@ -579,7 +572,6 @@ Sphyramid_Builder::build_Sphyramid_Mesh(SP_Coord_sys coord, Layout &layout)
  *
  * \return smart pointer to new Coord_sys object
  */
-
 Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
 {
     using rtt_dsxx::SP
@@ -599,10 +591,10 @@ Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
     // return base class SP to a derived Coord_sys
     return coord;
 }
-
 //---------------------------------------------------------------------------//
 // PRIVATE LAYOUT BUILDER IMPLEMENTATION
 //---------------------------------------------------------------------------//
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Construct Layout
@@ -610,7 +602,6 @@ Sphyramid_Builder::SP_Coord_sys Sphyramid_Builder::build_Coord() const
  * \param coord  Coord_sys object
  * \return smart pointer to new layout object
  */
-
 Sphyramid_Builder::SP_Layout
 Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
 {
@@ -641,7 +632,6 @@ Sphyramid_Builder::build_Sphyramid_Layout(const Coord_sys &coord) const
 
 void Sphyramid_Builder::assign_Sphyramid_Layout(Layout &layout) const
 {
-
     // 3D map of Mesh
     int num_xcells = this->fine_edge.size()-1;
 
@@ -678,7 +668,6 @@ void Sphyramid_Builder::assign_Sphyramid_Layout(Layout &layout) const
 	layout(num_xcells,2) = num_xcells;
     }
 }
-
 //---------------------------------------------------------------------------//
 // CELL ZONING FUNCTIONS (PRIVATE IMPLEMENTATION)
 //---------------------------------------------------------------------------//
@@ -688,7 +677,6 @@ void Sphyramid_Builder::assign_Sphyramid_Layout(Layout &layout) const
  * \brief Map mesh zone indices to cells
  * 
  */
-
 void Sphyramid_Builder::zone_mapper()
 {
     // determine number of zones and accumulated fine_cell data
@@ -803,12 +791,8 @@ void Sphyramid_Builder::calc_defined_surcells()
     }
 }
 
-
 } // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
 //                 end of Sphyramid_Builder.cc
 //---------------------------------------------------------------------------//
-
-
-

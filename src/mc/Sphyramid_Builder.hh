@@ -130,7 +130,7 @@ class Sphyramid_Builder
 
     // hide copy constructor and assignment operators
     Sphyramid_Builder(const Sphyramid_Builder &);
-    Sphyramid_Builder & operator=(const Sphyramid_Builder &);
+    const Sphyramid_Builder & operator=(const Sphyramid_Builder &);
 
   public:
     //constructor
@@ -168,7 +168,6 @@ class Sphyramid_Builder
 // Templated functions for Sphyramid_Builder
 //---------------------------------------------------------------------------//
 // Constructor.
-
 template<class IT>
 Sphyramid_Builder::Sphyramid_Builder(rtt_dsxx::SP<IT> interface)
     :mesh_file(),
