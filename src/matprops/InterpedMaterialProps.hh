@@ -47,11 +47,11 @@ class InterpedMaterialProps
 
     // Forward declaration
     
-    template<class FT> class MaterialStateField;
+    template<class FT, class FT2> class MaterialStateField;
 
     // FRIENDS
 
-    template<class FT>
+    template<class FT, class FT2>
     friend class MaterialStateField;
 
   private:
@@ -108,10 +108,10 @@ class InterpedMaterialProps
     //------------------------------------------------------------------------//
 
     template<class FT, class FT2>
-    MaterialStateField<FT> getMaterialState(const FT &density_,
-					    const FT &electronTemp_,
-					    const FT &ionTemp_,
-					    const FT2 &matId_) const;
+    MaterialStateField<FT,FT2> getMaterialState(const FT &density_,
+						const FT &electronTemp_,
+						const FT &ionTemp_,
+						const FT2 &matId_) const;
 
     inline const std::string &getMaterialName(int materialId) const;
 
@@ -163,8 +163,8 @@ class InterpedMaterialProps
 
     typedef const GroupedTable &(MaterialTables::*PGroupedTable)() const;
     
-    template<class FT, class UnaryOperation>
-    void interpolate(const MaterialStateField<FT> &matState, int group,
+    template<class FT, class FT2, class UnaryOperation>
+    void interpolate(const MaterialStateField<FT,FT2> &matState, int group,
 		     PGroupedTable pTable, UnaryOperation op,
 		     FT &results) const;
 
@@ -178,8 +178,8 @@ class InterpedMaterialProps
     typedef const BilinearInterpTable
                       &(MaterialTables::*PBilinearInterpTable)() const;
     
-    template<class FT, class UnaryOperation>
-    void interpolate(const MaterialStateField<FT> &matState,
+    template<class FT, class FT2, class UnaryOperation>
+    void interpolate(const MaterialStateField<FT,FT2> &matState,
 		     PBilinearInterpTable pTable, UnaryOperation op,
 		     FT &results) const;
 };
@@ -342,7 +342,7 @@ struct InterpedMaterialProps::MaterialTables
 // class InterpedMaterialProps::MaterialStateField
 //===========================================================================//
 
-template<class FT>
+template<class FT, class FT2>
 class InterpedMaterialProps::MaterialStateField
 {
     // FRIENDS
@@ -398,7 +398,6 @@ class InterpedMaterialProps::MaterialStateField
 
   private:
 
-    template<class FT2>
     MaterialStateField(const InterpedMaterialProps &matprops_,
 		       const FT &density_, const FT &electronTemp_,
 		       const FT &ionTemp_, const FT2 &matId_);
@@ -419,7 +418,6 @@ class InterpedMaterialProps::MaterialStateField
 
     void getDensity(FT &results) const;
 
-    template<class FT2>
     void getMatId(FT2 &results) const;
 
     void getSigmaTotal(int group, FT &results) const

@@ -28,8 +28,8 @@ typedef rtt_matprops::InterpedMaterialProps IMP;
 //   and group.
 //------------------------------------------------------------------------//
 
-template<class FT, class UnaryOperation>
-void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
+template<class FT, class FT2, class UnaryOperation>
+void IMP::interpolate(const MaterialStateField<FT,FT2> &matState, int group,
 		      PGroupedTable pTable, UnaryOperation op,
 		      FT &results) const
 {
@@ -80,8 +80,8 @@ void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
 //   interpolated results from the table indicated by the method pointer.
 //---------------------------------------------------------------------------//
 
-template<class FT, class UnaryOperation>
-void IMP::interpolate(const MaterialStateField<FT> &matState,
+template<class FT, class FT2, class UnaryOperation>
+void IMP::interpolate(const MaterialStateField<FT,FT2> &matState,
 		      PBilinearInterpTable pTable, UnaryOperation op,
 		      FT &results) const
 {
@@ -123,32 +123,31 @@ void IMP::interpolate(const MaterialStateField<FT> &matState,
 //---------------------------------------------------------------------------//
 
 template<class FT, class FT2>
-IMP::MaterialStateField<FT> IMP::getMaterialState(const FT &density_,
-						  const FT &electronTemp_,
-						  const FT &ionTemp_,
-						  const FT2 &matId_) const
+IMP::MaterialStateField<FT,FT2> IMP::getMaterialState(const FT &density_,
+						      const FT &electronTemp_,
+						      const FT &ionTemp_,
+						      const FT2 &matId_) const
 {
-    return MaterialStateField<FT>(*this, density_, electronTemp_,
-				  ionTemp_, matId_);
+    return MaterialStateField<FT,FT2>(*this, density_, electronTemp_,
+				      ionTemp_, matId_);
 }
 
 //===========================================================================//
-// InterpedMaterialProps::MaterialStateField<FT> Methods
+// InterpedMaterialProps::MaterialStateField<FT,FT2> Methods
 //===========================================================================//
 
 //---------------------------------------------------------------------------//
-// InterpedMaterialProps::MaterialStateField<FT> Constructor:
-//    Create an InterpedMaterialProps::MaterialStateField<FT>
+// InterpedMaterialProps::MaterialStateField<FT,FT2> Constructor:
+//    Create an InterpedMaterialProps::MaterialStateField<FT,FT2>
 //    density, temperature, and materia id fields.
 //---------------------------------------------------------------------------//
 
-template<class FT>
-template<class FT2>
-IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
-						const FT &density_,
-						const FT &electronTemp_,
-						const FT &ionTemp_,
-						const FT2 &matId_)
+template<class FT, class FT2>
+IMP::MaterialStateField<FT,FT2>::MaterialStateField(const IMP &matprops_,
+						    const FT &density_,
+						    const FT &electronTemp_,
+						    const FT &ionTemp_,
+						    const FT2 &matId_)
     : pMatprops(&matprops_), theSize(density_.size()),
       density(density_.begin(), density_.end()),
       electronTemp(electronTemp_.begin(), electronTemp_.end()),
@@ -187,8 +186,8 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
 //    Return the temperature from the material state field.
 //---------------------------------------------------------------------------//
 
-template<class FT>
-void IMP::MaterialStateField<FT>::getElectronTemperature(FT &results) const
+template<class FT, class FT2>
+void IMP::MaterialStateField<FT,FT2>::getElectronTemperature(FT &results) const
 {
     Require(size() == results.size());
 	
@@ -203,8 +202,8 @@ void IMP::MaterialStateField<FT>::getElectronTemperature(FT &results) const
 //    Return the temperature from the material state field.
 //---------------------------------------------------------------------------//
 
-template<class FT>
-void IMP::MaterialStateField<FT>::getIonTemperature(FT &results) const
+template<class FT, class FT2>
+void IMP::MaterialStateField<FT,FT2>::getIonTemperature(FT &results) const
 {
     Require(size() == results.size());
 	
@@ -219,8 +218,8 @@ void IMP::MaterialStateField<FT>::getIonTemperature(FT &results) const
 //    Return the density from the material state field.
 //---------------------------------------------------------------------------//
 
-template<class FT>
-void IMP::MaterialStateField<FT>::getDensity(FT &results) const
+template<class FT, class FT2>
+void IMP::MaterialStateField<FT,FT2>::getDensity(FT &results) const
 {
     Require(size() == results.size());
 	
@@ -235,9 +234,8 @@ void IMP::MaterialStateField<FT>::getDensity(FT &results) const
 //    Return the density from the material state field.
 //---------------------------------------------------------------------------//
 
-template<class FT>
-template<class FT2>
-void IMP::MaterialStateField<FT>::getMatId(FT2 &results) const
+template<class FT, class FT2>
+void IMP::MaterialStateField<FT,FT2>::getMatId(FT2 &results) const
 {
     Require(size() == results.size());
 	

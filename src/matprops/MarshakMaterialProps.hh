@@ -11,9 +11,11 @@
 
 #include "units/PhysicalConstants.hh"
 #include "units/Units.hh"
+#include "traits/ContainerTraits.hh"
 #include <vector>
 #include <cmath>
 #include <limits>
+#include <algorithm>
 
 namespace rtt_matprops {
  
@@ -38,11 +40,11 @@ namespace rtt_matprops {
 
      // Forward declaration
     
-     template<class FT> class MaterialStateField;
+     template<class FT, class FT2> class MaterialStateField;
 
      // FRIENDS
 
-     template<class FT>
+     template<class FT, class FT2>
      friend class MaterialStateField;
 
      // DATA
@@ -89,13 +91,13 @@ namespace rtt_matprops {
     //------------------------------------------------------------------------//
 
     template<class FT, class FT2>
-    MaterialStateField<FT> getMaterialState(const FT &density_,
-					    const FT &electronTemp_,
-					    const FT &ionTemp_,
-					    const FT2 &matId_) const
+    MaterialStateField<FT,FT2> getMaterialState(const FT &density_,
+						const FT &electronTemp_,
+						const FT &ionTemp_,
+						const FT2 &matId_) const
      {
-	 return MaterialStateField<FT>(*this, density_, electronTemp_,
-				       ionTemp_, matId_);
+	 return MaterialStateField<FT,FT2>(*this, density_, electronTemp_,
+					   ionTemp_, matId_);
      }
      
    private:
@@ -107,7 +109,7 @@ namespace rtt_matprops {
 // class MarshakMaterialProps::MaterialStateField
 //===========================================================================//
 
-template<class FT>
+template<class FT, class FT2>
 class MarshakMaterialProps::MaterialStateField
 {
     // FRIENDS
@@ -138,7 +140,6 @@ class MarshakMaterialProps::MaterialStateField
 
   private:
 
-    template<class FT2>
     MaterialStateField(const MarshakMaterialProps &matprops_,
 		       const FT &density_, const FT &electronTemp_,
 		       const FT &ionTemp_, const FT2 &matId_)
@@ -166,7 +167,6 @@ class MarshakMaterialProps::MaterialStateField
     inline void getElectronTemperature(FT &results) const;
     inline void getIonTemperature(FT &results) const;
     inline void getDensity(FT &results) const;
-    template<class FT2>
     inline void getMatId(FT2 &results) const;
 
     inline void getSigmaAbsorption(int group, FT &results) const;
@@ -202,17 +202,23 @@ class MarshakMaterialProps::MaterialStateField
     void getElectronIonCoupling(FT &results) const
     {
 	const double gammaSI = 1.0e+20; // seconds^-1
-	results = getUnits().ConvertTime(gammaSI);
+	typedef XTM::ContainerTraits<FT> CT;
+	std::fill(CT::begin(results), CT::end(results), 
+		  getUnits().ConvertTime(gammaSI));
     }
 
     void getElectronConductionCoeff(FT &results) const
     {
-	results = 0;
+	typedef XTM::ContainerTraits<FT> CT;
+	std::fill(CT::begin(results), CT::end(results), 
+		  0);
     }
 
     void getIonConductionCoeff(FT &results) const
     {
-	results = 0;
+	typedef XTM::ContainerTraits<FT> CT;
+	std::fill(CT::begin(results), CT::end(results), 
+		  0);
     }
 
     inline void getElectronSpecificHeat(FT &results) const;
@@ -242,8 +248,8 @@ class MarshakMaterialProps::MaterialStateField
 
 #define MPMSF MarshakMaterialProps::MaterialStateField
 
-template<class FT>
-void MPMSF<FT>::getElectronTemperature(FT &results) const
+template<class FT, class FT2>
+void MPMSF<FT,FT2>::getElectronTemperature(FT &results) const
 {
     Require(size() == results.size());
 	
@@ -253,8 +259,8 @@ void MPMSF<FT>::getElectronTemperature(FT &results) const
 	*resit++ = getElectronTemp(i);
 }
 
-template<class FT>
-void MPMSF<FT>::getIonTemperature(FT &results) const
+template<class FT, class FT2>
+void MPMSF<FT,FT2>::getIonTemperature(FT &results) const
 {
     Require(size() == results.size());
 	
@@ -264,8 +270,8 @@ void MPMSF<FT>::getIonTemperature(FT &results) const
 	*resit++ = getIonTemp(i);
 }
 
-template<class FT>
-void MPMSF<FT>::getDensity(FT &results) const
+template<class FT, class FT2>
+void MPMSF<FT,FT2>::getDensity(FT &results) const
 {
     Require(size() == results.size());
 	
@@ -275,9 +281,8 @@ void MPMSF<FT>::getDensity(FT &results) const
 	*resit++ = getDensity(i);
 }
 
-template<class FT>
-template<class FT2>
-void MPMSF<FT>::getMatId(FT2 &results) const
+template<class FT, class FT2>
+void MPMSF<FT,FT2>::getMatId(FT2 &results) const
 {
     Require(size() == results.size());
 	
@@ -287,8 +292,8 @@ void MPMSF<FT>::getMatId(FT2 &results) const
 	*resit++ = getMatId(i);
 }
 
-template<class FT>
-void MPMSF<FT>::getSigmaAbsorption(int group, FT &results) const
+template<class FT, class FT2>
+void MPMSF<FT,FT2>::getSigmaAbsorption(int group, FT &results) const
 {
     Require(size() == results.size());
 	
@@ -301,8 +306,8 @@ void MPMSF<FT>::getSigmaAbsorption(int group, FT &results) const
 	*resit++ = getDensity(i)*kappa0/std::pow(getElectronTemp(i), kappaPower);
 }
     
-template<class FT>
-void MPMSF<FT>::getElectronSpecificHeat(FT &results) const
+template<class FT, class FT2>
+void MPMSF<FT,FT2>::getElectronSpecificHeat(FT &results) const
 {
     Require(size() == results.size());
 

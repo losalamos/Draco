@@ -26,6 +26,17 @@ namespace rtt_matprops
 						   const MT::ccsf &cellTempsAvg,
 						   const OpAssignV &opAssignV)
      const;
+
+ typedef MT::fcdtf<std::vector<double> > FCV1;
+ typedef MT::cctf<std::vector<double> > CCV1;
+
+ template
+ void TempMapper<MT>::tempCC2FC<FCV1,CCV1,OpAssignV>(FCV1 &faceTempsByMat,
+						     const CCV1 &cellTempsByMat,
+						     const MT::ccsf &cellTempsAvg,
+						     const OpAssignV &opAssignV)
+     const;
+
 }
 
 //---------------------------------------------------------------------------//

@@ -22,6 +22,7 @@ namespace rtt_matprops
 		     const FT1 &density_, const FT1 &electronTemp_,
 		     const FT1 &ionTemp_, const FT1 &volumeFraction_,
 		     const FT2 &matId_)
+     : pMatProps(&matprops_)
 {
     Require(density_.size() > 0);
     // Check to be sure all input has the same cell count.
@@ -88,32 +89,38 @@ namespace rtt_matprops
  template<class UMCMP>
  template<class FT, class FT1, class FT2>
  void  MultiMatCellMatProps<UMCMP>::
- MaterialStateField<FT,FT1,FT2>::mapAvgTemp(FT1 &matTemps, 
-					    const FT &avgTemp) const
+ MaterialStateField<FT,FT1,FT2>::
+ mapAvgElectronTemp(FT1 &results, const FT &avgElectronTemp) const
 {
-    cpCell2Mats(matTemps, avgTemp);
+    cpCell2Mats(results, avgElectronTemp);
+}
+
+ template<class UMCMP>
+ template<class FT, class FT1, class FT2>
+ void  MultiMatCellMatProps<UMCMP>::
+ MaterialStateField<FT,FT1,FT2>::
+ mapAvgIonTemp(FT1 &results, const FT &avgIonTemp) const
+{
+    cpCell2Mats(results, avgIonTemp);
 }
 
  template<class UMCMP>
  template<class FT, class FT1, class FT2>
  void MultiMatCellMatProps<UMCMP>::
- MaterialStateField<FT,FT1,FT2>::cpCell2Mats(FT1 &matValues,
+ MaterialStateField<FT,FT1,FT2>::cpCell2Mats(FT1 &results,
 					     const FT &cellValue) const
 {
     int ncell = volumeFraction.size();
     Require(ncell == cellValue.size());
-    Require(ncell == matValues.size());
+    Require(ncell == results.size());
     FT::const_iterator cit = cellValue.begin();
-    FT1::iterator mvit = matValues.begin();
-    for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
+    FT1::iterator resit = results.begin();
+    for (int icell = 0; icell < ncell; icell++, cit++, resit++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require ( nmat == (*mvit).size());
-	for (FT1::value_type::iterator mvitit = (*mvit).begin(); 
-	     mvitit != (*mvit).end(); mvitit++)
-	{
-	    *mvitit = *cit;
-	}
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
+	std::fill((*resit).begin(), (*resit).end(), *cit);
     }
 }
 
@@ -143,7 +150,8 @@ namespace rtt_matprops
     for (int icell = 0; icell < ncell; icell++, ntit++, volit++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*reit).size() == nmat );
+	if ( (*reit).size() != nmat ) 
+	    (*reit).resize(nmat);
 	FT1::value_type::iterator tempitit = (*tempit++).begin();
 	FT1::value_type::iterator cvitit   = (*cvit++).begin();
 	FT1::value_type::iterator reitit   = (*reit++).begin();
@@ -182,7 +190,8 @@ namespace rtt_matprops
     for (int icell = 0; icell < ncell; icell++, ntit++, volit++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*reit).size() == nmat );
+	if ( (*reit).size() != nmat ) 
+	    (*reit).resize(nmat);
 	FT1::value_type::iterator tempitit = (*tempit++).begin();
 	FT1::value_type::iterator cvitit   = (*cvit++).begin();
 	FT1::value_type::iterator reitit   = (*reit++).begin();
@@ -199,7 +208,8 @@ namespace rtt_matprops
  template <class UMCMP>
  template <class FT, class FT1, class FT2>
  void MultiMatCellMatProps<UMCMP>::
- MaterialStateField<FT,FT1,FT2>::getSigmaAbsorption(int group, FT &results) const
+ MaterialStateField<FT,FT1,FT2>::getSigmaAbsorption(const int group,
+						    FT &results) const
 {
     Require(matState.size() == results.size());
     int icell = 0;
@@ -221,7 +231,8 @@ namespace rtt_matprops
  template <class UMCMP>
  template <class FT, class FT1, class FT2>
  void MultiMatCellMatProps<UMCMP>::
- MaterialStateField<FT,FT1,FT2>::getSigmaTotal(int group, FT &results) const
+ MaterialStateField<FT,FT1,FT2>::getSigmaTotal(const int group,
+					       FT &results) const
 {
     Require(matState.size() == results.size());
     int icell = 0;
@@ -242,7 +253,8 @@ namespace rtt_matprops
  template <class UMCMP>
  template <class FT, class FT1, class FT2>
  void MultiMatCellMatProps<UMCMP>::
- MaterialStateField<FT,FT1,FT2>::getSigmaEmission(int group, FT &results) const
+ MaterialStateField<FT,FT1,FT2>::getSigmaEmission(const int group,
+						  FT &results) const
 {
     Require(matState.size() == results.size());
     int icell = 0;
@@ -449,7 +461,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::vector<value_type1> cvtmp(nmat);
 	matState[icell].getElectronSpecificHeat(cvtmp);
 	std::copy( cvtmp.begin(), cvtmp.end(), (*resit).begin() );
@@ -468,7 +481,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::vector<value_type1> cvtmp(nmat);
 	matState[icell].getIonSpecificHeat(cvtmp);
 	std::copy( cvtmp.begin(), cvtmp.end(), (*resit).begin() );
@@ -487,7 +501,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::vector<value_type1> tetmp(nmat);
 	matState[icell].getElectronTemperature(tetmp);
 	std::copy( tetmp.begin(), tetmp.end(), (*resit).begin() );
@@ -506,7 +521,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::vector<value_type1> titmp(nmat);
 	matState[icell].getIonTemperature(titmp);
 	std::copy( titmp.begin(), titmp.end(), (*resit).begin() );
@@ -525,7 +541,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::vector<value_type1> tmp(nmat);
 	matState[icell].getDensity(tmp);
 	std::copy( tmp.begin(), tmp.end(), (*resit).begin() );
@@ -544,7 +561,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::copy( volumeFraction[icell].begin(),
 		   volumeFraction[icell].end(), (*resit).begin() );
     }
@@ -562,7 +580,8 @@ namespace rtt_matprops
 	 resit != results.end(); resit++, icell++)
     {
 	int nmat = volumeFraction[icell].size();
-	Require( (*resit).size() == nmat );
+	if ( (*resit).size() != nmat ) 
+	    (*resit).resize(nmat);
 	std::vector<FT2::value_type::value_type> tmp(nmat);
 	matState[icell].getMatId(tmp);
 	std::copy( tmp.begin(), tmp.end(), (*resit).begin() );
