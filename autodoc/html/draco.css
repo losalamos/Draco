@@ -44,6 +44,27 @@ DT
    font-size: 8pt;
 }
 
+TH.draco
+{
+   font-family: Verdana, Arial, sans-serif; 
+   font-size: 10pt;
+   text-decoration: underline;
+   color: #661F08; 
+}
+
+TD.draco
+{
+   font-family: Verdana, Arial, sans-serif; 
+   background-color: #f2f2ff;
+}
+
+TD
+{
+   background: white;
+   font-family: Verdana, Arial, sans-serif; 
+   font-size: 10pt;
+}
+
 <!-- Doxygen default values -->
 
 CAPTION { font-weight: bold }
@@ -152,3 +173,19 @@ BODY
    font-size: 10pt;
 }
 
+
+.question
+{
+   font-style: italic;
+   color: #336699;
+}
+
+
+.note
+{ 
+}
+
+dt.note
+{
+   font-weight: bold;
+}
