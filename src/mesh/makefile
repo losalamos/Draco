@@ -8,6 +8,8 @@
 
 pkg := mesh
 
+need_mesh	:= yes
+
 # Go get the standard includeable makefile for Draco components.
 
 include ../config/makefile
@@ -28,11 +30,28 @@ resolve_libs = $(dep_libc4) $(dep_libnml) $(dep_libds++) #$(dep_libpooma)
 
 include ../config/make.lib
 
+# Test programs
+
+tstsrcs := $(wildcard t*.cc)
+
+tstpretarg := deps
+
+include ../config/make.tests
+
+# Testing out some dejagnu support
+
+deja:
+	(cd testsuites; $(MAKE) links)
+	runtest --tool=ds++ --srcdir=./testsuites ENV=$(env) DBC=$(DBC)
+
+# Dependencies
+
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++; $(MAKE))
-	(cd ../nml;  $(MAKE) dodeps=no)
-	(cd ../c4;   $(MAKE) dodeps=no)
+	(cd ../ds++;   $(MAKE))
+	(cd ../nml;    $(MAKE) dodeps=no)
+	(cd ../c4;     $(MAKE) dodeps=no)
+	(cd ../geom;   $(MAKE) dodeps=no)
 endif
 
 # Rules for building docs
