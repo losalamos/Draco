@@ -29,6 +29,7 @@ using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
 using IMC::Random;
+using IMC::Particle_Stack;
 using IMC::Global::operator<<;
 using namespace std;
 
@@ -93,12 +94,40 @@ void Surface_diagnostic(const MT &mesh)
 }
 
 template<class MT>
+void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
+{
+  // test particle copying and backing
+
+  // random number seed
+    long seed = -3495784;
+
+  // make and copy particle
+
+    Particle<MT> part1(mesh, seed, 1.0);
+    Particle<MT> part2(mesh, -3423, 10.0);
+    Particle<MT> part3(part2);
+
+    vector<double> r(2);
+    vector<double> o(3);
+    r[0] = 1.0;
+    r[1] = -1.0;
+    o[1] = 1.0;
+    part1.source(r,o,mesh);
+    part2.source(r,o,mesh);
+    part3 = part1;
+    Particle<MT> part4(part2);
+
+    Particle_Stack<MT>::Bank sbank;
+    sbank.push(part1);
+    cout << sbank.top();
+}
+
+template<class MT>
 void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
 {
   // transport a particle
 
-  // set diagnostics
-    
+  // set diagnostic
     ofstream output("history", ios::app);
     SP<Particle<MT>::Diagnostic> check = 
 	new Particle<MT>::Diagnostic(output, true);
@@ -163,10 +192,14 @@ main()
 
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
-    Surface_diagnostic(*mesh);
+  //     Surface_diagnostic(*mesh);
 
-//     long seed = -345632;
-//     Run_Particle(*mesh, *opacity, seed);
+  // Particle diagnostics
+  //     long seed = -345632;
+  //     Run_Particle(*mesh, *opacity, seed);
+    
+    Bank_Particle(*mesh, *opacity);
+    
 }
 
 
