@@ -3,7 +3,7 @@
 // Geoffrey M. Furnish
 // Mon Jul 13 12:56:20 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Implement class to manage a group of threads.
 //---------------------------------------------------------------------------//
 
 #include "c4/ThreadGroup.hh"
@@ -50,11 +50,11 @@ ThreadGroup<T>::~ThreadGroup()
 {
     using namespace std;
 
-    cout << "Reaping threads.\n";
-
     for( int i=0; i < nthreads; i++ )
         if (pthread_join( v[i]->tid, NULL ))
             cout << "Failed reaping " << i << endl;
+
+    delete tcb;
 }
 
 C4_NAMESPACE_END
