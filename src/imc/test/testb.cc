@@ -116,7 +116,7 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Rnd_Control &rcon)
     Particle_Buffer<Particle<MT> >::Bank bank;
 
     vector<double> r(2, 5.0), dir(3, 0.0);
-    Particle<MT> p1(r, dir, 1, 10, rcon.get_rn());
+    SP<Particle<MT> > p1 = new Particle<MT>(r, dir, 1, 10, rcon.get_rn()); 
     bank.push(p1);
 
     cout << endl << "Bank Size should be 1: ";

@@ -306,13 +306,13 @@ void comm_particle2(const MT &mesh,
 	while (bank.size() > 0)
 	{
 	  // print out the particle
-	    PT &particle = bank.top();
+	    SP<PT> particle = bank.top();
 	    cout << "** Getting particle out of bank on node " << mynode
 		 << endl;
-	    cout << particle << endl;
+	    cout << *particle << endl;
 
 	  // do a random number check
-	    rcon.set_num(particle.get_random().get_num());
+	    rcon.set_num(particle->get_random().get_num());
 	    Sprng rand = rcon.get_rn();
 	    cout << "The following should match:" << endl;
 	    cout << "---------------------------" << endl;
@@ -324,7 +324,7 @@ void comm_particle2(const MT &mesh,
 		{
 		    cout.precision(4);
 		    cout << setw(10) << rand.ran() << setw(10)
-			 << particle.get_random().ran() << endl;
+			 << particle->get_random().ran() << endl;
 		}
 	    }
 	    cout << "---------------------------" << endl << endl;
