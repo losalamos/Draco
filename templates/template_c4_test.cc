@@ -12,6 +12,7 @@
 #include "<spkg>.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include "ds++/Assert.hh"
 
 #include <iostream>
@@ -36,8 +37,9 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_<pkg>::release() 
-		 << endl;
+	    if (C4::node() == 0)
+		cout << argv[0] << ": version " << rtt_<pkg>::release() 
+		     << endl;
 	    C4::Finalize();
 	    return 0;
 	}
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	if (rtt_<spkg>::passed) 
 	{
-	    cout << "**** <class> Test: PASSED on" 
+	    cout << "**** <class> Test: PASSED on " 
 		 << C4::node() << endl;
 	}
 	cout <<     "*********************************************" << endl;
