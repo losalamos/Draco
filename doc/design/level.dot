@@ -36,7 +36,7 @@ digraph draco_level {
     units [shape=box, label="units"];
     cdi [shape=box, label="cdi"];
     quad [shape=box, label="quadrature"];
-    meshread [shape=box, label="meshReaders"];
+    meshelement [shape=box, label="mesh_element"];
     plot [shape=box, label="plot2D"];
     lapack [shape=box, label="lapack_wrap"];
     shlib [shape=box, label="shared_lib"];
@@ -48,17 +48,18 @@ digraph draco_level {
     cdieos [shape=box, label="cdi_eospac"];
     cdigan [shape=box, label="cdi_gandolf"];
     pcg [shape=box, label="pcgWrap"];
-    rttread [shape=box, label="RTT_Format_Reader"];
+    meshread [shape=box, label="meshReaders"];
     
     /* level 5 */
     meshservice [shape=box, label="meshReaders_Services"];
+    rttread     [shape=box, label="RTT_Format_Reader"];
     
     /* dependencies */
     {rank=same; level1 stdheaders vlapack vpcg vmpi veospac  vgandolf vgrace vspring};
     {rank=same; level2 dsxx};
-    {rank=same; level3 shlib plot lapack traits xm c4 rng units meshread cdi quad};
-    {rank=same; level4 rttread viz timestep cdianal cdieos cdigan pcg};
-    {rank=same; level5 meshservice};
+    {rank=same; level3 shlib plot lapack traits xm c4 rng units cdi quad meshelement};
+    {rank=same; level4 viz timestep cdianal cdieos cdigan pcg meshread};
+    {rank=same; level5 rttread meshservice};
     
     /* draco packages */
 
@@ -79,7 +80,7 @@ digraph draco_level {
     rng         -> {dsxx};
     rng         -> {vspring} [color="green"];
     cdi         -> {dsxx};
-    meshread    -> {dsxx};
+    meshelement -> {dsxx};
     quad        -> {dsxx};
     plot        -> {dsxx};
     plot        -> {vgrace}  [color="green"];
@@ -98,9 +99,10 @@ digraph draco_level {
     cdieos      -> {veospac}      [color="green"]; 
     cdigan      -> {cdi};         /* cdi     : dsxx */
     cdigan      -> {vgandolf}     [color="green"];
-    rttread     -> {meshread};    /* meshread: dsxx */
+    meshread    -> {meshelement};
 
     /* level 5 */
     meshservice -> {meshread};           /* meshread: dsxx */
     meshservice -> {rttread} [color="orange" style=dotted];
+    rttread     -> {meshread};           /* meshread: dsxx */
 }
