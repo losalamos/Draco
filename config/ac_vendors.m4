@@ -743,6 +743,62 @@ AC_DEFUN([AC_GRACE_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_SPICA_SETUP
+dnl
+dnl SPICA LIBRARY SETUP (on by default -lSpicaCSG)
+dnl SPICA is an optional vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SPICA_SETUP], [dnl
+
+   dnl define --with-spica
+   AC_ARG_WITH(spica,
+      [  --with-spica[=yes]                 spica is on by default])
+	
+   dnl define --with-spica-inc and --with-spica-lib
+   AC_WITH_DIR(spica-inc, SPICA_INC, \${SPICA_INC_DIR},
+	       [tell where SPICA includes are])
+   AC_WITH_DIR(spica-lib, SPICA_LIB, \${SPICA_LIB_DIR},
+	       [tell where SPICA libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_spica=$1
+
+   # define variable if spica is on
+   if test "${with_spica:=yes}" != no; then
+       AC_DEFINE([USE_SPICA])
+   fi
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_SPICA_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_spica}"; then
+
+       # include path
+       if test -n "${SPICA_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPICA_INC}"
+       fi
+   
+       # libraries
+       if test -n "${SPICA_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_spica, -L${SPICA_LIB} -lSpicaCSG)
+       elif test -z "${SPICA_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_spica, -lSpicaCSG)
+       fi
+
+       # add spica directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPICA_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPICA_INC}"
+
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
@@ -768,6 +824,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_SPRNG_FINALIZE
    AC_GRACE_FINALIZE
    AC_METIS_FINALIZE
+   AC_SPICA_FINALIZE
 
    AC_GSL_FINALIZE
    AC_GSLCBLAS_FINALIZE
@@ -815,6 +872,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
    AC_GRACE_SETUP(pkg)
+   AC_SPICA_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
