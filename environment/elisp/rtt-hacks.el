@@ -303,6 +303,7 @@
     ("\\(.h\\)$" . ".c")
     ("\\(.H\\)$" . ".C")
     ("\\(.hh\\)$" . ".cc")
+    ("\\(.hh\\)$" . ".i.hh")
     ("\\(.hxx\\)$" . ".cxx")
     ("\\(.hpp\\)$" . ".cpp")
     ("\\(.h\\)$" . ".cpp")
@@ -310,11 +311,16 @@
     ("\\(.c\\)$" . ".h")
     ("\\(.C\\)$" . ".H")
     ("\\(.cc\\)$" . ".hh")
+    ("\\(.i.hh\\)$" . ".hh")
     ("\\(.cxx\\)$" . ".hxx")
     ("\\(.cpp\\)$" . ".hpp")
     ("\\(.cpp\\)$" . ".h")
     )
-  "Alist of possible file pairs.")
+  "
+Alist of possible file pairs.  The file type of the current buffer
+is located within the list (first regexp).  The filename extension 
+is loaded from the 2nd part of the pair and a filename with this 
+new extension is loaded (if it exists).")
 
 ;; Locate companion files by searching through an alist, looking for a
 ;; match for the file name of the current buffer.  Once found,
@@ -324,7 +330,15 @@
 ;; current buffer's filenmae.  Iterate until success or failure.
 
 (defun rtt-find-companion-file ()
-  "Function to locate the corresponding .hh or .cc file"
+  "
+Function to locate the corresponding .hh .i.hh or .cc file.
+When a .hh file is in the current buffer and this function is run, 
+the corresponding .cc file will be loaded if it is available.
+If it is not available, the script will look for a corresponding 
+.i.hh file to load. 
+
+The mapping between file types is stored in the emacs variable
+rtt-companion-alist."
 
   (interactive)
 
@@ -342,7 +356,7 @@
 		    (message "found matching file, throwing 'found")
 		    (throw 'found t))
 		(setq companion (cdr companion))))
-	  (message "discarding car companion")
+	  (message (concat "discarding car companion=" pair-file))
 	  (setq companion (cdr companion)))))
     (if companion
 	(find-file pair-file))))
