@@ -5,3 +5,8 @@
  	Namespaces are now consistent in ds++. Also, some new functions
  	(Check_Strings) have been added.
 
+2000-04-19  Shawn Pautz  <pautz@lanl.gov>
+
+	updated to release ds++-1_3_0 (not sure when ds++-1_2_0 happened.
+	We have removed the last_stable tag and the dejagnu scripts.
+	
