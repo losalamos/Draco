@@ -8,8 +8,13 @@
 
 #include "imc/Particle_Buffer.hh"
 #include <cstdlib>
+#include <algorithm>
+#include <numeric>
 
 IMCSPACE
+
+using std::fill;
+using std::accumulate;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -384,18 +389,43 @@ Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
 template<class PT>
 bool Particle_Buffer<PT>::async_check(Comm_Buffer &buffer) const
 {
+  // tag to check what is in; we want all or nothing
+    vector<int> arrived(4);
+    fill(arrived.begin(), arrived.end(), 0);
+    int total = 0;
+    int count = 0;
+    
   // check to see if the buffers have been received
-    if (!buffer.comm_n.complete())
-	return false;
-    else if (!buffer.comm_d.complete())
-	return false;
-    else if (!buffer.comm_i.complete())
-	return false;
-    else if (!buffer.comm_c.complete())
-	return false;
+    do
+    {
+      // check comm_n
+	if (arrived[0] == 0)
+	    if (buffer.comm_n.complete())
+		arrived[0] = 1;
+	
+      // check comm_d
+	if (arrived[1] == 0)
+	    if (buffer.comm_d.complete())
+		arrived[1] = 1;
 
-  // all the buffers have been received
-    return true;
+      // check comm_i
+	if (arrived[2] == 0)
+	    if (buffer.comm_i.complete())
+		arrived[2] = 1;
+
+      // check comm_c
+	if (arrived[3] == 0)
+	    if (buffer.comm_c.complete())
+		arrived[3] = 1;
+
+      // accumulate total
+	total = accumulate(arrived.begin(), arrived.end(), 0);
+	count++;
+	
+    } while (total > 0 && total < 4);
+
+    Ensure (total == 0 || total == 4);
+    return total;
 }
 
 //---------------------------------------------------------------------------//
