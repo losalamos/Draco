@@ -482,6 +482,8 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opIter ) const
 { 
+    using std::log;
+
     // from twix:/scratch/tme/kai/KCC_BASE/include/algorithm
     
     // assert that the two input iterators have compatible sizes.
@@ -515,6 +517,8 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
     double targetDensity,
     OpacityIterator opIter ) const
 { 
+    using std::log;
+
     // loop over all the entries the temperature container and
     // calculate an opacity value for each.
     for ( ; tempIter != tempLast; ++tempIter, ++opIter )
@@ -542,6 +546,8 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opIter ) const
 { 
+    using std::log;
+
     // loop over all the entries the density container and
     // calculate an opacity value for each.
     for ( ; densIter != densLast; ++densIter, ++opIter )

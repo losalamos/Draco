@@ -45,8 +45,11 @@ class ContainerTraits
     static inline bool conformal(const T1 &a, const T2 &b)
     {
 	// return a.size() == b.size();
-	return ContainerTraits::BogusMethod(a, b);
+	return BogusMethod(a, b);
     }
+
+    // Undefined method for conformal.
+    static bool BogusMethod(const T1 &a, const T2 &b);
 };
 
 template <>

@@ -28,10 +28,6 @@ AC_DRACO_ENV
 dnl Setup config.h for EOSPAC type defines.
 case $host in
 mips-sgi-irix6.*)
-dnl [Setup up RPATH for shared libraries.] - Do I need RPATH?
-dnl    if test -n "${EOSPACK_LIB}" ; then
-dnl      VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
-dnl    fi
    AC_DEFINE(V_INT, int)
    AC_DEFINE(V_FLOAT, double)
    AC_DEFINE(V_BOOL, int)
@@ -41,6 +37,10 @@ dnl    fi
    AC_DEFINE(V_FLOAT, double)
    AC_DEFINE(V_BOOL, long)
    ;;
+alpha*-dec-osf*)
+   AC_DEFINE(V_INT, int)
+   AC_DEFINE(V_FLOAT, double)
+   AC_DEFINE(V_BOOL, int)
 esac
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \

@@ -494,6 +494,8 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opIter ) const
 { 
+    using std::log;
+
     // from twix:/scratch/tme/kai/KCC_BASE/include/algorithm
 
     // assert that the two input iterators have compatible sizes.
@@ -542,6 +544,8 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
     double targetDensity,
     OpacityIterator opIter ) const
 { 
+    using std::log;
+
     // number of groups in this multigroup set.
     const int ng = spGandolfDataTable->getNumGroupBoundaries()-1;
 	
@@ -584,6 +588,8 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opIter ) const
 { 
+    using std::log;
+
     // number of groups in this multigroup set.
     const int ng = spGandolfDataTable->getNumGroupBoundaries()-1;
 	
