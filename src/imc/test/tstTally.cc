@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 // tstTally.cc
-// Thomas M. Evans
+// Thomas M. Evans and Todd J. Urbatsch
 // Wed Apr 28 13:09:29 1999
 // $Id$
 //---------------------------------------------------------------------------//
@@ -47,10 +47,30 @@ void Tally_Test()
 
     std::vector<double> omega(2, 0.0);
 
+    // running and constant cell-number-dependent sum
+    int sum_i = 0;
+    int const_sum_i = 0;
+    for (int i = 1; i <= mesh->num_cells(); i++)
+	const_sum_i += i;
+
+    // particles to "run" per cell
+    int ppcell = 2;
+
+    // particle count (j-th particle in cell i)
+    int pcount = 0;
+	
     // add some stuff and check the tally
     for (int j = 1; j <= 2; j++)
+    {
+	sum_i = 0;
 	for (int i = 1; i <= mesh->num_cells(); i++)
 	{
+	    // increment particle count (j-th particle in cell i)
+	    pcount = (j-1)*mesh->num_cells() + i;
+
+	    // increment running cell-number-dependent sum
+            sum_i += i;
+
 	    t.deposit_energy(i, i * 10.0);
 	    t.accumulate_ewpl(i, i * 20.0);
 	    t.accumulate_cen_info(i, i * 30);
@@ -69,12 +89,46 @@ void Tally_Test()
 	    t.accumulate_momentum(i,static_cast<double>(i),omega);
 
 	    // checks
-	    if (t.get_energy_dep(i) != j * i * 10) ITFAILS;
-	    if (t.get_accum_ewpl(i) != j * i * 20) ITFAILS;
-	    if (t.get_new_ecen(i) != j * i * 30)   ITFAILS;
-	    if (t.get_new_ncen(i) != j * 1)        ITFAILS;
+	    if (t.get_energy_dep(i) != j * i * 10)     ITFAILS;
+	    if (t.get_accum_ewpl(i) != j * i * 20)     ITFAILS;
+	    if (t.get_new_ecen(i) != j * i * 30)       ITFAILS;
+	    if (t.get_new_ncen(i) != j * 1)            ITFAILS;
+
+	    if (t.get_accum_ew_killed() != ((j-1)*const_sum_i+sum_i)*2.0) ITFAILS;
+
+	    if (t.get_accum_n_effscat() != pcount)         ITFAILS;
+	    if (t.get_accum_n_thomscat() != pcount)        ITFAILS;
+	    if (t.get_accum_n_killed() != pcount)          ITFAILS;
+	    if (t.get_accum_n_escaped() != pcount)         ITFAILS;
+	    if (t.get_accum_n_bndcross() != pcount)        ITFAILS;
+	    if (t.get_accum_n_reflections() != pcount)     ITFAILS;
 
 	}
+    }
+
+    // now test accumulator with non-default (default=1) values
+    t.accum_n_effscat(5);
+    t.accum_n_thomscat(20);
+    t.accum_n_killed(10);
+    t.accum_n_escaped(2);
+    t.accum_n_bndcross(3);
+    t.accum_n_reflections(6);
+
+    if (t.get_accum_n_effscat() != pcount + 5)     ITFAILS;
+    if (t.get_accum_n_thomscat() != pcount + 20)   ITFAILS;
+    if (t.get_accum_n_killed() != pcount + 10)     ITFAILS;
+    if (t.get_accum_n_escaped() != pcount + 2)     ITFAILS;
+    if (t.get_accum_n_bndcross() != pcount + 3)    ITFAILS;
+    if (t.get_accum_n_reflections() != pcount + 6) ITFAILS;
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+	t.accumulate_cen_info(i, i*1.0, i);
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+    {
+	if (t.get_new_ecen(i) != ppcell*i*30 + i) ITFAILS;
+	if (t.get_new_ncen(i) != ppcell + i)      ITFAILS;
+    }
     
     // momentum deposition checks
     std::vector<double> mom(2, 0.0);
@@ -87,11 +141,12 @@ void Tally_Test()
     }
     
     // totals test
-    if (t.get_energy_dep_tot() != 20+40+60+80+100+120)  ITFAILS;
-    if (t.get_new_ecen_tot() != 60+120+180+240+300+360) ITFAILS;
-    if (t.get_new_ncen_tot() != 12)                     ITFAILS;
-    if (t.get_ew_escaped() != 2+4+6+8+10+12)            ITFAILS;
-    if (t.num_cells() != 6)                             ITFAILS;
+    if (t.get_energy_dep_tot() != 10.0 * sum_i*ppcell)       ITFAILS;
+    if (t.get_new_ecen_tot() != (30.0*sum_i*ppcell) + sum_i) ITFAILS;
+    if (t.get_new_ncen_tot() != pcount + sum_i)              ITFAILS;
+    if (t.get_ew_escaped() != sum_i*ppcell)                  ITFAILS;
+    if (t.num_cells() != 6)                                  ITFAILS;
+
 }
 
 //---------------------------------------------------------------------------//
