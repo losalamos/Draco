@@ -22,7 +22,7 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Surface
- * \brief An abstract base classes for surfaces
+ * \brief An abstract base class for surfaces
  *
  * Class Surface is an abstract base class which provides virtual functions
  * required for surface tracking.

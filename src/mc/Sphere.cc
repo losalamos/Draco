@@ -40,6 +40,8 @@ Sphere::Sphere(double center_, double radius_)
  * possible. This postpones the computation of a square root until, and only
  * if, it is needed.
  *
+ * \image html mc/outside_crossing.png "Typical crossing configuration from outside"
+ * 
  * The position argument is modified by subtracting the vector representing
  * the center of the sphere. Hence, it becomes the relative position of the
  * particle with respect to the sphere.
@@ -65,7 +67,7 @@ Sphere::Sphere(double center_, double radius_)
  * If the particle is outside, necessary and sufficient conditions for a
  * positive crossing distance are normal_projection>0 and normal_length_2 <
  * raidus_2
- * 
+ *
  * \param position Position of the particle
 
  * \param direction Direction of the particle

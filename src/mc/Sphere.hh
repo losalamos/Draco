@@ -23,8 +23,9 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Sphere
- * \brief Implement a sphere for surface tracking vis-a-vis the Surface
- * interface 
+ *
+ * \brief Implement a sphere for surface tracking vis-a-vis the abstract
+ * Surface interface
  *
  * Class Sphere implements the abstract interface of class Surface, making it
  * appropiate for surface tracking
@@ -53,7 +54,7 @@ class Sphere : public Surface
 
     // CREATORS
     
-    //! default constructor
+    //! constructor
     Sphere(double center, double radius);
 
     //! copy constructor
