@@ -115,7 +115,7 @@ void test_Replication()
 	if (indicator != 1) ITFAILS;
 
 	int *data = new int;
-	Recv (data, size, 0, 202);
+	Recv<int> (data, size, 0, 202);
 
 	// build new pack object
 	Rep_Topology::Pack pack(data);
@@ -208,7 +208,7 @@ void test_DD()
 	Recv (size, 0, 101);
 
 	int *data = new int[size];
-	Recv (data, size, 0, 102);
+	Recv<int> (data, size, 0, 102);
 
 	// build new pack object
 	General_Topology::Pack pack(indicator, size, data);

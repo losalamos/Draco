@@ -26,6 +26,7 @@ using std::string;
 using std::vector;
 using std::endl;
 using std::fill;
+using std::fabs;
 
 using rtt_mc::global::soft_equiv;
 

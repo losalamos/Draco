@@ -749,7 +749,7 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_point_coord() const
 
     // number of vertices per cell is always 8; always 3D
     const int num_verts_cell = 8;
-    double vert_index;
+    int vert_index;
     Check (coord->get_dim() == 3);
 
     // weakly check the validity of num_cells()

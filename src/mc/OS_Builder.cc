@@ -25,6 +25,7 @@ using std::string;
 using std::vector;
 using std::endl;
 using std::fill;
+using std::fabs;
 
 //---------------------------------------------------------------------------//
 // PUBLIC INTERFACE

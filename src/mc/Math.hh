@@ -185,8 +185,8 @@ inline int mod_with_2e9(const int value)
 {
     Require (value >= 0);
 
-    int two_billion = 2e9;
-    int mod_value = value % two_billion;
+    int two_billion = static_cast<int>(2e9);
+    int mod_value   = value % two_billion;
     
     Ensure (mod_value < two_billion);
     Ensure (mod_value >= 0);
