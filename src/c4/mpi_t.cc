@@ -111,6 +111,14 @@ void gsum( T& x )
 }
 
 template<class T>
+void gprod( T& x )
+{
+    T y = x;
+    MPI_Allreduce( &y, &x, 1, mpi_traits<T>::element_type(),
+		   MPI_PROD, MPI_COMM_WORLD );
+}
+
+template<class T>
 void gmin( T& x )
 {
     T y = x;
