@@ -56,7 +56,7 @@ host=`uname`
 mpiexe='mpirun -np'
 
 # on COMPAQ the executable is prun -n
-if $host = 'OSF1' ; then
+if test $host = 'OSF1' ; then
     mpiexe='prun -n'
 fi
 

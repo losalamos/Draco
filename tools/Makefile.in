@@ -1,3 +1,14 @@
+###############################################################################
+# draco/tools Makefile.in
+# Thomas M. Evans
+# Wed Feb  3 16:36:55 1999
+# $Id$
+###############################################################################
+# @> General Makefile.in for tools
+###############################################################################
+
+# @configure_input@
+
 top_srcdir = @top_srcdir@
 srcdir = @srcdir@
 VPATH = @srcdir@  # : this colon is a bug work around.
@@ -84,3 +95,7 @@ maintainer-clean: forced-maintainer-clean distclean
 forced-maintainer-clean:
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
+
+###############################################################################
+#			 end of draco/tools Makefile.in
+###############################################################################
