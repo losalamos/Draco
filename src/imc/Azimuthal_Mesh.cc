@@ -35,7 +35,7 @@ Azimuthal_Mesh::Azimuthal_Mesh(const vector<double>& cosines)
 
     Check(cosines.size() > 0);
 
-    std::copy(cosines.begin(), cosines.end(), back_inserter(bin_cosines));
+    std::copy(cosines.begin(), cosines.end(), std::back_inserter(bin_cosines));
     bin_cosines.push_back(1.0);
 
     Require( bin_cosines.size() == bins+1 );

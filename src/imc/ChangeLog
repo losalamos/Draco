@@ -1,3 +1,21 @@
+2003-07-25  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: tagged as part of draco-3_2_0.  This version of imc has
+	implementation for tally spheres in both Gray_Particle and
+	Multigroup_Particle.  Random_Walk is implemented in
+	Gray_Particle.  No implementation is done for multigroup yet.
+	Also, we need to greatly expand particle testing in
+	tstParticle_trans.cc.  
+
+	The tally surface is not fully implemented in Transporter yet.
+	There is only a placeholder for it in the calls to PT::transport.
+	The Extrinsic_Tally_Surface needs to be added to the Transporter
+	[and tested in tstTransporter and tstParticle_trans] before it can
+	be fully integrated with imc clients.
+
+	Multigroup random walk needs to be finished as well in
+	Mat_State_Builder and Multigroup_Particle.
+
 2003-06-04  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: tagged as part of draco-3_0_0.  This version of imc should
