@@ -10,8 +10,12 @@
 #define __P1Diffusion_test_testP1Diffusion_hh__
 
 #include "../P1Diffusion.hh"
-#include "PCGDiffusionSolver/PreCondP1Diff.hh"
-#include "PCGDiffusionSolver/SolverP1Diff.hh"
+#include "PCGDiffusionSolver/pcg_DB.hh"
+
+namespace rtt_PCGDiffusionSolver
+{
+    template<class MT> class SolverP1Diff;
+}
 
 namespace rtt_P1Diffusion_test
 {
@@ -20,6 +24,7 @@ namespace rtt_P1Diffusion_test
  class testP1Diffusion
  {
      typedef rtt_PCGDiffusionSolver::SolverP1Diff<MT> MS;
+     typedef rtt_PCGDiffusionSolver::pcg_DB pcg_DB;
      typedef MS MatrixSolver;
      typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DiffSolver;
 

@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// testP1Diffusion.t.cc
+// testP1Diffusion.t.hh
 // Randy M. Roberts
 // Thu Sep 24 16:45:25 1998
 //---------------------------------------------------------------------------//
@@ -7,9 +7,16 @@
 //---------------------------------------------------------------------------//
 
 #include "testP1Diffusion.hh"
+
+#include "PCGDiffusionSolver/SolverP1Diff.hh"
 #include "c4/SpinLock.hh"
+
 #include <fstream>
 #include <cmath>
+#include <iostream>
+#include <algorithm>
+
+#define DO_ANALYTIC 1
 
 namespace
 {
@@ -89,13 +96,19 @@ namespace rtt_P1Diffusion_test
 	       << alphaBot << " " << betaBot
 	       << " alphaTop, betaTop: "
 	       << alphaTop << " " << betaTop << std::endl;
-     
+
+#if defined(DO_ANALYTIC)
      getAnalyticParams();
+#endif
  }
 
  template<class MT>
  void testP1Diffusion<MT>::run()
  {
+     bool jacobiScale = diffdb.pc_meth == 1;
+     if (jacobiScale)
+	 Assert(pcg_db.iqside == 0);
+     
      SP<MatrixSolver> spMatrixSolver(new MatrixSolver(fCtor, pcg_db));
      SP<DiffSolver> spDiffSolver(new DiffSolver(diffdb, spMesh,
 						spMatrixSolver, fCtor));
@@ -121,10 +134,21 @@ namespace rtt_P1Diffusion_test
      ccsf phi(fCtor);
      fcdsf F(fCtor);
 
+     phi = 1.0;
      spDiffSolver->solve(phi, F, DFC, sigmaCC, QCC, Fprime, alpha, beta, f);
 
+     
      ccsf phi0(fCtor);
+
+#if defined(DO_ANALYTIC)
+     // get the Analytic solution.
+     
      getPhi(phi0);
+#else
+
+     phi0 = 1.0;
+     
+#endif
 
      double error = 0.0;
      double l2nPhi0 = 0.0;
@@ -146,12 +170,16 @@ namespace rtt_P1Diffusion_test
      {
 	 std::cout << "phi[0], F(0): " << phi[0] << " " << F(0,0,0,4)
 		   << std::endl;
+	 std::cout << "    analytic: " << phi0[0]
+		   << std::endl;
      }
 
      if (C4::node() == C4::nodes() - 1)
      {
 	 std::cout << "phi[nzp-1], F(nz-1): " << phi[nzp-1]
 		   << " " << F(0,0,nz-1,5) << std::endl;
+	 std::cout << "          anaylytic: " << phi0[nzp-1]
+		   << std::endl;
      }
 
      ccsf zc(fCtor);
@@ -174,7 +202,9 @@ namespace rtt_P1Diffusion_test
  template<class MT>
  void testP1Diffusion<MT>::getAnalyticParams()
  {
-     gamma = std::sqrt(sigma/D);
+     bool DnonZero = D > std::numeric_limits<double>::min();
+     if (DnonZero)
+	 gamma = std::sqrt(sigma/D);
 
 #if 0
      double G = 4.*J0 - 2.*D*Q/(sigma*sigma);
@@ -190,34 +220,58 @@ namespace rtt_P1Diffusion_test
      double A = (A22*G - A12*H)/ Det;
      double B = (-A21*G + A11*H)/ Det;
 #endif
+
+     if (DnonZero)
+     {
+	 const double rhsBot = fBot
+	     - alphaBot*q/sigma*(zBot*zBot + 2.0*D/sigma)
+	     - betaBot*D*2.0*q*zBot/sigma;
+
+	 const double expGammaBot = std::exp(gamma*zBot);
+	 const double ACoefBot = ( betaBot*D*gamma + alphaBot) * expGammaBot;
+	 const double BCoefBot = (-betaBot*D*gamma + alphaBot) / expGammaBot;
+
+	 const double rhsTop = fTop
+	     - alphaTop*q/sigma*(zTop*zTop + 2.0*D/sigma)
+	     + betaTop*D*2.0*q*zTop/sigma;
+
+	 const double expGammaTop = std::exp(gamma*zTop);
+	 const double ACoefTop = (-betaTop*D*gamma + alphaTop) * expGammaTop;
+	 const double BCoefTop = ( betaTop*D*gamma + alphaTop) / expGammaTop;
+
+	 double A11 = ACoefBot;
+	 double A12 = BCoefBot;
+	 double A21 = ACoefTop;
+	 double A22 = BCoefTop;
+
+	 double G = rhsBot;
+	 double H = rhsTop;
+
+	 const double Det = (A11*A22 - A12*A21);
+
+	 A = (A22*G - A12*H)/ Det;
+	 B = (-A21*G + A11*H)/ Det;
+
+	 std::cout << "gamma: " << gamma << std::endl;
+	 std::cout << "expGammaBot: " << expGammaBot
+		   << ", ACoefBot (A11): " << ACoefBot
+		   << ", BCoefBot (A12): " << BCoefBot << std::endl
+		   << ", rhsBot (G): " << rhsBot
+		   << std::endl;
      
-     const double rhsBot = fBot - alphaBot*q/sigma*(zBot*zBot + 2.0*D/sigma)
-	 - betaBot*D*2.0*q*zBot/sigma;
-
-     const double expGammaBot = std::exp(gamma*zBot);
-     const double ACoefBot = ( betaBot*D*gamma + alphaBot) * expGammaBot;
-     const double BCoefBot = (-betaBot*D*gamma + alphaBot) / expGammaBot;
-
-     const double rhsTop = fTop - alphaTop*q/sigma*(zTop*zTop + 2.0*D/sigma)
-	 + betaTop*D*2.0*q*zTop/sigma;
-
-     const double expGammaTop = std::exp(gamma*zTop);
-     const double ACoefTop = (-betaTop*D*gamma + alphaTop) * expGammaTop;
-     const double BCoefTop = ( betaTop*D*gamma + alphaTop) / expGammaTop;
-
-     double A11 = ACoefBot;
-     double A12 = BCoefBot;
-     double A21 = ACoefTop;
-     double A22 = BCoefTop;
-
-     double G = rhsBot;
-     double H = rhsTop;
-
-     const double Det = (A11*A22 - A12*A21);
-
-     A = (A22*G - A12*H)/ Det;
-     B = (-A21*G + A11*H)/ Det;
-
+	 std::cout << "expGammaTop: " << expGammaTop
+		   << ", ACoefTop (A21): " << ACoefTop
+		   << ", BCoefTop (A22): " << BCoefTop << std::endl
+		   << ", rhsTop (H): " << rhsTop
+		   << std::endl;
+     
+     }
+     else
+     {
+	 gamma = 1.0;
+	 A = 0;
+	 B = 0;
+     }
      std::cout << "A, B: " << A << " " << B << std::endl;
  }
  
@@ -286,5 +340,5 @@ namespace rtt_P1Diffusion_test
 } // end namespace
 
 //---------------------------------------------------------------------------//
-//                              end of testP1Diffusion.t.cc
+//                              end of testP1Diffusion.t.hh
 //---------------------------------------------------------------------------//

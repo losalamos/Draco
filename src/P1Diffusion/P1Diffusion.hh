@@ -15,6 +15,12 @@
 #include "diffusion/Diffusion_DB.hh"
 #include "traits/MatrixFactoryTraits.hh"
 
+// Forward reference
+namespace rtt_diffusion
+{
+template<class MT> class P1Matrix;
+}
+
 namespace rtt_P1Diffusion
 {
     
@@ -46,6 +52,7 @@ namespace rtt_P1Diffusion
      typedef typename MT::FieldConstructor FieldConstructor;
 
      typedef rtt_traits::MatrixFactoryTraits<Matrix> MatFacTraits;
+     typedef rtt_diffusion::P1Matrix<MT> P1Matrix;
      
    public:
 
@@ -66,7 +73,8 @@ namespace rtt_P1Diffusion
      dsxx::SP<P1Momentum> spmomentum;
      FieldConstructor fCtor;
      typename MatFacTraits::PreComputedState preComputedMatrixState;
-
+     bool jacobiScale;
+     
      // Cache the swapped values to avoid too much communication.
      
      mutable dsxx::SP<fcdsf> spDSwap;
@@ -159,14 +167,16 @@ namespace rtt_P1Diffusion
 			    const bssf &beta,
 			    const bssf &fb) const;
 
-     void solveMatrixEquation(ccsf &phi,
-			      const dsxx::SP<const ccsf> &spADiagonal,
-			      const dsxx::SP<const fcdsf> &spAOffDiagonal,
+     void solveMatrixEquation(ccsf &phi, P1Matrix &p1Mat,
 			      const ccsf &brhs) const;
      
      void getNewFlux(fcdsf &F, const fcdsf &DEffOverDeltaL,
 		     const fcdsf &FprimeEff,
 		     const ccsf &phi) const;
+
+     P1Matrix getP1Matrix(const fcdsf &D, const fcdsf &DEffOverDeltaL,
+			  const ccsf &sigma, const bssf &alpha,
+			  const bssf &beta) const;
 
      const fcdsf &getDSwap() const
      {

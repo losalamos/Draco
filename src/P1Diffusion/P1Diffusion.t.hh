@@ -10,6 +10,7 @@
 #include "ds++/SP.hh"
 #include "diffusion/P1Matrix.hh"
 #include "traits/MatrixFactoryTraits.hh"
+#include <limits>
 
 // Note:
 // Inside class scope MT has been typedef'ed to MeshType,
@@ -29,7 +30,7 @@ P1Diffusion<MT,MS,HV>::P1Diffusion(const rtt_diffusion::Diffusion_DB &diffdb,
 				   const FieldConstructor &fCtor_)
     : spm(spm_), spsolver(spsolver_), fCtor(fCtor_),
       preComputedMatrixState(MatFacTraits::preComputeState(fCtor_, *spm_)),
-      spmomentum(new P1Momentum(fCtor_))
+      spmomentum(new P1Momentum(fCtor_)), jacobiScale(diffdb.pc_meth == 1)
 {
     // empty
 }
@@ -50,41 +51,17 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
     //   D, Fprime, and deltaL
 
     cacheSwappedValues(D, Fprime, deltaL);
-    
-     // Calculate the effective D/delta l on the faces due to flux
-     // continuity, and the elimination of the face phi unknown.
-     // (for internal and boundary faces)
+
+    // Calculate the effective D/delta l on the faces due to flux
+    // continuity, and the elimination of the face phi unknown.
+    // (for internal and boundary faces)
     
     fcdsf DEffOverDeltaL(fCtor);
     getDEffOverDeltaL(DEffOverDeltaL, D, alpha, beta);
 
-    // Get the areas of each face.
-    
-    fcdsf areas(fCtor);
-    spm->get_face_areas(areas);
+    // Get the Matrix
 
-    // Store the off-diagonal elements of the matrix in a face-centered-
-    // discontinous scalar field.
-    
-    SP<fcdsf> spAOffDiagonal(new fcdsf(fCtor));
-    *spAOffDiagonal = -1.0 * areas * DEffOverDeltaL;
-    
-    // Get the cell volumes.
-    
-    ccsf volumes(fCtor);
-    spm->get_cell_volumes(volumes);
-
-    // Store the diagonal elements of the matrix in a cell-centered
-    // scalar field.
-    // One part of the diagonal elements include the removal (sigma)
-    // mulitplied by the cell volumes.
-    // The other part of the diagonal elements includes the negative
-    // sum over faces of the off-diagonal elements .
-
-    SP<ccsf> spADiagonal(new ccsf(fCtor));
-    
-    *spADiagonal = volumes*sigma;
-    MT::scatter(*spADiagonal, *spAOffDiagonal, MT::OpSubAssign());
+    P1Matrix p1Mat = getP1Matrix(D, DEffOverDeltaL, sigma, alpha, beta);    
 
     // Calculate the effective Fprime on the faces due to flux
     // continuity, and the elimination of the face phi unknown.
@@ -109,7 +86,18 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
 	// The rhs also consists of the negative sum over faces
 	// of the product of effective flux sources and areas.
 
+	// Get the cell volumes.
+    
+	ccsf volumes(fCtor);
+	spm->get_cell_volumes(volumes);
+
 	brhs = volumes*Q;
+
+	// Get the areas of each face.
+    
+	fcdsf areas(fCtor);
+	spm->get_face_areas(areas);
+	
 	bf = areas * FprimeEff;
 	MT::scatter(brhs, bf, MT::OpSubAssign());
     }
@@ -117,12 +105,12 @@ void P1Diffusion<MT,MS,HV>::solve(ccsf &phi, fcdsf &F,
     // We no longer need the cached values.
     
     decacheSwappedValues();
-    
+
     // Solve the "matrix*phi = b" equations,
     // where the matrix is comprised of the diagonal and off-diagonal
     // parts.
 
-    solveMatrixEquation(phi, spADiagonal, spAOffDiagonal, brhs);
+    solveMatrixEquation(phi, p1Mat, brhs);
 
     // Calculate the new flux using the new values of phi.
     
@@ -190,8 +178,11 @@ void P1Diffusion<MT,MS,HV>::getDEffOverDeltaLInternal(fcdsf &DEffOverDeltaL,
 
     const fcdsf &DSwap = getDSwap();
     const fcdsf &deltaLSwap = getDeltaLSwap();
+
+    static const typename fcdsf::value_type
+	floor = std::numeric_limits<typename fcdsf::value_type>::min();
     
-    DEffOverDeltaL = 2.0*D*DSwap / (D*deltaLSwap + DSwap*deltaL);
+    DEffOverDeltaL = 2.0*D*DSwap / max((D*deltaLSwap + DSwap*deltaL), floor);
 }
 
 template<class MT, class MS, bool HV>
@@ -209,8 +200,15 @@ void P1Diffusion<MT,MS,HV>::getDEffOverDeltaLBndry(bssf &DEffOverDeltaLBndry,
     MT::gather(DBndry, D, MT::OpAssign());
     MT::gather(deltaLBndry, deltaL, MT::OpAssign());
 
-    DEffOverDeltaLBndry = 2.0*alpha*DBndry /
-	(alpha*deltaLBndry - 2.0*beta*DBndry);
+    static const typename fcdsf::value_type
+	floor = std::numeric_limits<typename fcdsf::value_type>::min();
+
+    bssf denom(fCtor);
+    denom = alpha*deltaLBndry - 2.0*beta*DBndry;
+    for (bssf::iterator dit = denom.begin(); dit != denom.end(); ++dit)
+	*dit = std::fabs(*dit) > floor ? *dit : floor;
+
+    DEffOverDeltaLBndry = 2.0*alpha*DBndry / denom;
 }
 
 template<class MT, class MS, bool HV>
@@ -257,8 +255,11 @@ void P1Diffusion<MT,MS,HV>::getFprimeEffInternal(fcdsf &FprimeEff,
     const fcdsf &FprimeSwap = getFprimeSwap();
     const fcdsf &deltaLSwap = getDeltaLSwap();
     
+    static const typename fcdsf::value_type
+	floor = std::numeric_limits<typename fcdsf::value_type>::min();
+
     FprimeEff = (DSwap*deltaL*Fprime - D*deltaLSwap*FprimeSwap) /
-	(D*deltaLSwap + DSwap*deltaL);
+	max((D*deltaLSwap + DSwap*deltaL), floor);
 }
 
 template<class MT, class MS, bool HV>
@@ -280,28 +281,50 @@ void P1Diffusion<MT,MS,HV>::getFprimeEffBndry(bssf &FprimeEffBndry,
     MT::gather(FprimeBndry, Fprime, MT::OpAssign());
     MT::gather(deltaLBndry, deltaL, MT::OpAssign());
 
+    static const typename fcdsf::value_type
+	floor = std::numeric_limits<typename fcdsf::value_type>::min();
+
+    bssf denom(fCtor);
+    denom = alpha*deltaLBndry - 2.0*beta*DBndry;
+    for (bssf::iterator dit = denom.begin(); dit != denom.end(); ++dit)
+	*dit = std::fabs(*dit) > floor ? *dit : floor;
+
     FprimeEffBndry = (deltaLBndry*alpha*FprimeBndry - 2.0*DBndry*fb) /
-	(alpha*deltaLBndry - 2.0*beta*DBndry);
+	denom;
 }
 
 template<class MT, class MS, bool HV>
-void P1Diffusion<MT,MS,HV>::
-solveMatrixEquation(ccsf &phi, const SP<const ccsf> &spADiagonal,
-		    const SP<const fcdsf> &spAOffDiagonal,
-		    const ccsf &brhs) const
+void P1Diffusion<MT,MS,HV>::solveMatrixEquation(ccsf &phi, P1Matrix &p1Mat,
+						const ccsf &brhs) const
 {
-    // The sparse matrix can be constructed from the diagonal and
-    // off-diagonal elements.
-
-    rtt_diffusion::P1Matrix<MT> p1Mat(fCtor, spADiagonal, spAOffDiagonal);
+    ccsf D1_2(fCtor);
+    if (jacobiScale)
+    {
+	D1_2 = p1Mat.diagonal();
+	D1_2 = sqrt(fabs(D1_2));
+	
+	p1Mat.jacobiScale();
+    }
 
     // Create the solver's matrix with a matrix factor traits method.
      
     SP<Matrix> spMatrix(MatFacTraits::create(p1Mat, preComputedMatrixState));
 
-    // Solve the "matrix*phi = b" equations.
+     // Solve the "matrix*phi = b" equations.
     
-    spsolver->solve(phi, spMatrix, brhs);
+    if (jacobiScale)
+    {
+	ccsf brhsTilde(fCtor);
+	brhsTilde = brhs / D1_2;
+	
+	spsolver->solve(phi, spMatrix, brhsTilde);
+	
+	phi = phi / D1_2;
+    }
+    else
+    {
+	spsolver->solve(phi, spMatrix, brhs);
+    }
 
 }
 
@@ -361,6 +384,46 @@ P1Diffusion<MT,MS,HV>::integrateOverBoundary(const fcdsf &field) const
     // return the sum over all boundary faces.
     
     return MT::sum(result_bssf);
+}
+
+template<class MT, class MS, bool HV>
+P1Diffusion<MT,MS,HV>::P1Matrix
+P1Diffusion<MT,MS,HV>::getP1Matrix(const fcdsf &D, const fcdsf &DEffOverDeltaL,
+				   const ccsf &sigma, const bssf &alpha,
+				   const bssf &beta) const
+{
+    // Get the areas of each face.
+    
+    fcdsf areas(fCtor);
+    spm->get_face_areas(areas);
+
+    // Store the off-diagonal elements of the matrix in a face-centered-
+    // discontinous scalar field.
+    
+    fcdsf AOffDiagonal(fCtor);
+    AOffDiagonal = -1.0 * areas * DEffOverDeltaL;
+    
+    // Get the cell volumes.
+    
+    ccsf volumes(fCtor);
+    spm->get_cell_volumes(volumes);
+
+    // Store the diagonal elements of the matrix in a cell-centered
+    // scalar field.
+    // One part of the diagonal elements include the removal (sigma)
+    // mulitplied by the cell volumes.
+    // The other part of the diagonal elements includes the negative
+    // sum over faces of the off-diagonal elements .
+
+    ccsf ADiagonal(fCtor);
+    
+    ADiagonal = volumes*sigma;
+    MT::scatter(ADiagonal, AOffDiagonal, MT::OpSubAssign());
+
+    // The sparse matrix can be constructed from the diagonal and
+    // off-diagonal elements.
+
+    return P1Matrix(fCtor, ADiagonal, AOffDiagonal);
 }
 
 } // end namespace rtt_diffusion
