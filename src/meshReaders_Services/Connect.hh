@@ -56,7 +56,7 @@ class Connect
     vector_int sides_bndry;
     int nsides;
     // Cells data
-     std::vector<Element_Type> cells_types;
+    std::vector<Element_Type> cells_types;
     vector_vector_int cells_nodes;
     int ncells;
     // data needed specific to mutual faces.

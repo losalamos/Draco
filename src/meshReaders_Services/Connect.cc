@@ -38,13 +38,16 @@ void Connect::organizeData(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_reader)
     rtt_dsxx::SP<Element_Definition> element_definition;  
     for (int e = 0; e < element_types.size(); e++)
     {
-        if (elem_defs.count(element_types[e]) == 0)
+        std::map<Element_Type, rtt_dsxx::SP<Element_Definition> >::iterator
+	    elem_iter = elem_defs.find(element_types[e]);
+        if (elem_iter == elem_defs.end())
 	{
 	    element_definition = new Element_Definition(element_types[e]);
 	    elem_defs.insert(std::make_pair(element_types[e], 
 			     element_definition));
+	    elem_iter = elem_defs.find(element_types[e]);
 	}
-	if (element_definition->get_dimension() == ndim)
+	if (elem_iter->second->get_dimension() == ndim)
 	{
 	    cells_types.push_back(element_types[e]);
 	    cells_nodes.push_back(element_nodes[e]);
@@ -65,7 +68,6 @@ void Connect::organizeData(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_reader)
     nsides = sides_nodes.size();
     ncells = cells_nodes.size();
     adjCell.resize(ncells);
-    
 }
 /*!
  * \brief Generates a multimap containing the set of nodes (key) comprising 
