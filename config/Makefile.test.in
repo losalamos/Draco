@@ -273,7 +273,7 @@ endif
 
 clean:
 	-rm ${test_alltarget} ${objs} ${dependfiles}
-	-rm -f ${nml_hh} ${nml_cc}
+	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -f ${test_output_files}
 	-rm -r ${dirstoclean}
 

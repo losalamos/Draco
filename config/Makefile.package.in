@@ -263,7 +263,7 @@ maintainer-clean distclean mostlyclean clean:
 clean: forced-clean
 forced-clean:
 	-rm ${package} ${objs} lib${package}${libsuffix} ${dependfiles}
-	-rm -f ${nml_hh} ${nml_cc}
+	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -r ${dirstoclean}
 
 distclean: clean forced-distclean
