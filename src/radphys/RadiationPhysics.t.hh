@@ -17,12 +17,12 @@
 namespace rtt_radphys
 {
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getPlank:
 //   Calculate the planck function from the electron temperature.
 //   The units for input and output are specified by the units
 //   supplied to the class.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getPlanck(const Field &TElectron,
@@ -37,13 +37,13 @@ void RadiationPhysics::getPlanck(const Field &TElectron,
     planckian = sigmaR / pi * TElectron*TElectron*TElectron*TElectron;
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getPlankTemperatureDerivative:
 //   Calculate the derivative of the planck function with respect to
 //   the electron temperature.
 //   The units for input and output are specified by the units
 //   supplied to the class.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getPlanckTemperatureDerivative(const Field &TElectron,
@@ -58,14 +58,15 @@ void RadiationPhysics::getPlanckTemperatureDerivative(const Field &TElectron,
     dplanckdT = 4.0 * sigmaR / pi * TElectron*TElectron*TElectron;
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+
 // getElectIonCoupling:
 //   Calculate the Electron-Ion Coupling function from the density,
 //   electron temperature, free electrons per ion, average atomic weight.
 //   The units for input and output are specified by the units
 //   supplied to the class.
 //   Exception: abar is in amu.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getElectIonCoupling(const Field &density,
@@ -118,17 +119,17 @@ void RadiationPhysics::getElectIonCoupling(const Field &density,
     getElectIonCoulombLog(density, TElectron, z, abar, lambda_ei);
 
     electIonCoupling = eic_constant * lambda_ei *
-	((z*z*z) / (abar*abar*abar)) * density / pow(TElectron, 1.5);
+	((z*z*z) / (abar*abar*abar)) * density / std::pow(TElectron, 1.5);
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getElectIonCoulombLog:
 //   Calculate the Electron-Ion Coulomb Log (dimensionless) from the density,
 //   electron temperature, free electrons per ion, average atomic weight.
 //   The units for input and output are specified by the units
 //   supplied to the class.
 //   Exception: abar is in amu.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getElectIonCoulombLog(const Field &density,
@@ -148,6 +149,8 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
     Require(abar > 0.0);
 
     using namespace rtt_units;
+    using std::sqrt;
+    using std::log;
     
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
@@ -182,7 +185,7 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
 	bool lowTemp = T <= 10.0*z*z;
 
 	if (lowTemp)
-	    lambda = 23.0 - log(z * sqrt(n / pow(T, 3.0)));
+	    lambda = 23.0 - log(z * sqrt(n / std::pow(T, 3.0)));
 	else
 	    lambda = 24.0 - log(sqrt(n) / T);
 
@@ -194,14 +197,14 @@ void RadiationPhysics::getElectIonCoulombLog(const Field &density,
     }
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getElectronConductionCoeff:
 //   Calculate the Electron Conduction Coefficient from the density,
 //   electron temperature, free electrons per ion, average atomic weight.
 //   The units for input and output are specified by the units
 //   supplied to the class.
 //   Exception: abar is in amu.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getElectronConductionCoeff(const Field &density,
@@ -260,18 +263,17 @@ void RadiationPhysics::getElectronConductionCoeff(const Field &density,
 
     getElectronGamma0(z, gamma0);
 
-    electCondCoeff = ecc_constant * gamma0* pow(TElectron, 2.5) /
+    electCondCoeff = ecc_constant * gamma0* std::pow(TElectron, 2.5) /
 	(lambda_ee * density);
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getElectElectCoulombLog:
-//   Calculate the Electron-Electron Coulomb Log (dimensionless) from the density,
-//   electron temperature, free electrons per ion, average atomic weight.
-//   The units for input and output are specified by the units
-//   supplied to the class.
-//   Exception: abar is in amu.
-//------------------------------------------------------------------------//
+// Calculate the Electron-Electron Coulomb Log //(dimensionless) from the
+// density, electron temperature, free electrons per //ion, average atomic
+// weight.  The units for input and output are specified //by the units
+// supplied to the class.  Exception: abar is in amu.
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getElectElectCoulombLog(const Field &density,
@@ -291,6 +293,8 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
     Require(abar > 0.0);
 
     using namespace rtt_units;
+    using std::sqrt;
+    using std::log;
     
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
@@ -324,7 +328,7 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
 	bool lowTemp = T <= 10.0;
 
 	if (lowTemp)
-	    lambda = 23.0 - log(sqrt(n / pow(T, 3.0)));
+	    lambda = 23.0 - log(sqrt(n / std::pow(T, 3.0)));
 	else
 	    lambda = 24.0 - log(sqrt(n) / T);
 
@@ -336,13 +340,13 @@ void RadiationPhysics::getElectElectCoulombLog(const Field &density,
     }
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getElectronGamma0:
 //    Returns a dimensionless constant for use in
 //    calculation of electron thermal conduction
 //    coefficeint. Correlation developed by
 //    C. Cranfill, LANL.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getElectronGamma0(const Field &z, Field &gamma0) const
@@ -384,14 +388,14 @@ void RadiationPhysics::getElectronGamma0(const Field &z, Field &gamma0) const
     }
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getIonConductionCoeff:
 //   Calculate the Ion Conduction Coefficient from the density,
 //   electron temperature, free electrons per ion, average atomic weight.
 //   The units for input and output are specified by the units
 //   supplied to the class.
 //   Exception: abar is in amu.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getIonConductionCoeff(const Field &density,
@@ -411,6 +415,8 @@ void RadiationPhysics::getIonConductionCoeff(const Field &density,
     //                MIT PRESS, 1989. SECTION 4.3
 
     using rtt_traits::ContainerTraits;
+    using std::log;
+    using std::sqrt;
     Require(ContainerTraits<Field>::conformal(density, ionCondCoeff));
     Require(ContainerTraits<Field>::conformal(TElectron, ionCondCoeff));
     Require(ContainerTraits<Field>::conformal(z, ionCondCoeff));
@@ -450,18 +456,18 @@ void RadiationPhysics::getIonConductionCoeff(const Field &density,
 
     getIonGamma0(z, TElectron, TElectron, abar, gamma0);
 
-    ionCondCoeff = icc_constant * gamma0* pow(TElectron, 2.5) /
-	(lambda_ii * pow(z, 4) * sqrt(abar) * density);
+    ionCondCoeff = icc_constant * gamma0* std::pow(TElectron, 2.5) /
+	(lambda_ii * std::pow(z, 4) * sqrt(abar) * density);
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getIonIonCoulombLog:
 //   Calculate the Ion-Ion Coulomb Log (dimensionless) from the density,
 //   electron temperature, free electrons per ion, average atomic weight.
 //   The units for input and output are specified by the units
 //   supplied to the class.
 //   Exception: abar is in amu.
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getIonIonCoulombLog(const Field &density,
@@ -475,6 +481,7 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
     //    NRL Plasma Formulary, 1994.
 
     using rtt_traits::ContainerTraits;
+    using std::log;
     Require(ContainerTraits<Field>::conformal(density, lambda_ii));
     Require(ContainerTraits<Field>::conformal(TElectron, lambda_ii));
     Require(ContainerTraits<Field>::conformal(z, lambda_ii));
@@ -485,7 +492,8 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
     const double Na = PhysicalConstants::avogadro;
     const double eV2K = PhysicalConstants::eV2K;
     
-    // Convert from mass density of material to number density of ions (in CGS)
+    // Convert from mass density of material to number density of ions (in
+    // CGS)
 
     Field niCGS = (Na * 1.e-3 / abar) * units.ConvertDensity(density);
     
@@ -509,7 +517,7 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
 	
 	Require(T > 0.0);
 
-	lambda = 23.0 - log(pow(z, 3.0)*sqrt(2.0*n / pow(T, 3.0)));
+	lambda = 23.0 - log(std::pow(z, 3.0)*sqrt(2.0*n / std::pow(T, 3.0)));
 
 	lambda = (lambda < 1.0) ? 1.0 : lambda;
 
@@ -519,13 +527,14 @@ void RadiationPhysics::getIonIonCoulombLog(const Field &density,
     }
 }
 
-//------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // getIonGamma0:
 //    Returns a dimensionless constant for use in
 //    calculation of ion thermal conduction
 //    coefficeint. Correlation developed by
 //    C. Cranfill, LANL.
-//------------------------------------------------------------------------//
+// 
+//---------------------------------------------------------------------------//
 
 template<class Field>
 void RadiationPhysics::getIonGamma0(const Field &z, const Field &TElect,
