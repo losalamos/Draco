@@ -49,38 +49,38 @@ template<class MT>
 void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs, 
 			     Tally<MT> &tally, SP<Diagnostic> diagnostic)
 {
-  // transport particle through mesh using regular IMC transport
+    // transport particle through mesh using regular IMC transport
     Require (alive);
 
-  // initialize diagnostics
+    // initialize diagnostics
     if (diagnostic)
     {
 	diagnostic->header();
 	diagnostic->print(*this);
     }
   
-  // !!! BEGIN TRANSPORT LOOP !!!
+    // !!! BEGIN TRANSPORT LOOP !!!
 
-  // transport loop, ended when alive = false
+    // transport loop, ended when alive = false
     while (alive)
     {
-      // dist-to-scatter, dist-to-boundary, and dist-to-census definitions
+	// dist-to-scatter, dist-to-boundary, and dist-to-census definitions
         double d_scatter, d_boundary, d_census;
 	double dist_stream;
-      // cell face definition
+	// cell face definition
         int face = 0;
         
-      // sample distance-to-eff_scatter
+	// sample distance-to-eff_scatter
 	d_scatter = -log(random.ran()) / 
 	    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell));
 
-      // get distance-to-boundary and cell face
+	// get distance-to-boundary and cell face
         d_boundary  = mesh.get_db(r, omega, cell, face);
 
-      // distance to census (end of time step)
+	// distance to census (end of time step)
 	d_census = rtt_mc::global::c * time_left;
 
-      // detailed diagnostics
+	// detailed diagnostics
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
@@ -89,7 +89,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 		diagnostic->print_xs(xs, cell);
 	    }
 
-      // determine limiting event
+	// determine limiting event
 	if (d_scatter < d_boundary && d_scatter < d_census)
 	{
 	    descriptor = "scatter";
@@ -106,10 +106,10 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	    dist_stream = d_census;
 	}
 
-      // IMC streaming
+	// IMC streaming
 	stream_IMC(xs, tally, dist_stream);
 
-      // scatter, effective or Thomson
+	// scatter, effective or Thomson
 	if (descriptor == "scatter")
 	{
 	    if (xs.get_sigma_thomson(cell) > 0.0)
@@ -153,12 +153,12 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	    alive = false;
 	}
 
-      // do diagnostic print
+	// do diagnostic print
 	if (diagnostic)
 	    diagnostic->print(*this);
     } 
 
-  // !!! END OF TRANSPORT LOOP !!!
+    // !!! END OF TRANSPORT LOOP !!!
 }
 
 //---------------------------------------------------------------------------//
@@ -169,10 +169,10 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 template<class MT>
 bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
 {   
-  // status from collision
+    // status from collision
     bool status;
 
-  // determine absorption or collision
+    // determine absorption or collision
     if (random.ran() <= xs.get_sigma_abs(cell) / xs.get_sigma_abs(cell))
     {
 	descriptor = "absorption";
@@ -182,16 +182,16 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
     {
         status = true;
         
-      // calculate theta and phi (isotropic)
+	// calculate theta and phi (isotropic)
         double costheta, phi;
         costheta = 1 - 2 * random.ran();
         phi      = 2 * rtt_mc::global::pi * random.ran();
 
-      // get new direction cosines
+	// get new direction cosines
         mesh.get_Coord().calc_omega(costheta, phi, omega);
     }
 
-  // return outcome of the event
+    // return outcome of the event
     return status;
 }
 
@@ -201,12 +201,12 @@ bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
 template<class MT>
 void Particle<MT>::scatter(const MT &mesh)
 {   
-  // calculate theta and phi (isotropic)
+    // calculate theta and phi (isotropic)
     double costheta, phi;
     costheta = 1 - 2 * random.ran();
     phi      = 2 * rtt_mc::global::pi * random.ran();
     
-  // get new direction cosines
+    // get new direction cosines
     mesh.get_Coord().calc_omega(costheta, phi, omega);
 }
 
@@ -217,19 +217,19 @@ void Particle<MT>::scatter(const MT &mesh)
 template<class MT>
 bool Particle<MT>::surface(const MT &mesh, int face)
 {
-  // handle particles at a surface
+    // handle particles at a surface
 
-  // status from surface crossing
+    // status from surface crossing
     bool status;
 
-  // determine the next cell
+    // determine the next cell
     int next_cell = mesh.next_cell(cell, face);
 
-  // determine descriptor and outcome of this event
+    // determine descriptor and outcome of this event
 
     if (next_cell == cell)
     {
-      // reflection
+	// reflection
 	descriptor            = "reflection";
 	vector<double> normal = mesh.get_normal(cell, face);
 	double factor         = rtt_mc::global::dot(omega, normal);
@@ -239,24 +239,24 @@ bool Particle<MT>::surface(const MT &mesh, int face)
     }
     else if (next_cell == 0)
     {
-      // escape
+	// escape
 	descriptor = "escape";
 	cell       = next_cell;
     }
     else if (next_cell < 0)
     {
-      // domain boundary crossing
+	// domain boundary crossing
 	descriptor = "cross_boundary";
 	cell       = next_cell;
     }
     else 
     {
-      // continue streaming
+	// continue streaming
 	descriptor = "stream";
 	cell       = next_cell;
     }
 
-  // return outcome of the event
+    // return outcome of the event
     if (next_cell <= 0)
 	status = false;
     else 
@@ -272,30 +272,30 @@ bool Particle<MT>::surface(const MT &mesh, int face)
 template<class MT>
 void Particle<MT>::print(ostream &output) const
 {
-  // set precisions
+    // set precisions
     output.precision(3);
     output << setiosflags(ios::fixed);
     
     output << "*** PARTICLE DATA ***" << endl; 
     output << "---------------------" << endl;
     
-  // coordinates
+    // coordinates
     output << setw(20) << setiosflags(ios::right) << "Coordinates: ";
     for (int i = 0; i < r.size(); i++)
 	output << setw(12) << r[i] << " ";
     output << endl;
     
-  // direction
+    // direction
     output << setw(20) << setiosflags(ios::right) << "Direction: ";
     for (int i = 0; i < omega.size(); i++)
 	output << setw(12) << omega[i] << " ";
     output << endl;
     
-  // cell
+    // cell
     output << setw(20) << setiosflags(ios::right) << "Cell: " << setw(12) 
 	   << cell << endl;
     
-  // energy-weight, ew
+    // energy-weight, ew
     output << setw(20) << setiosflags(ios::right) << "Energy-weight: " 
            << setw(12) << ew << endl;
 }
@@ -309,7 +309,7 @@ void Particle<MT>::print(ostream &output) const
 template<class MT>
 bool Particle<MT>::operator==(const Particle<MT> &rhs) const
 {
-  // check particle data
+    // check particle data
     if (ew != rhs.ew)
 	return false;
     else if (r != rhs.r)
@@ -330,7 +330,7 @@ bool Particle<MT>::operator==(const Particle<MT> &rhs) const
     if (random.get_num() != rhs.random.get_num())
 	return false;
 
-  // if all these things check out then the particles are equal
+    // if all these things check out then the particles are equal
     return true;
 }
 
@@ -345,11 +345,11 @@ bool Particle<MT>::operator==(const Particle<MT> &rhs) const
 template<class MT>
 void Particle<MT>::Diagnostic::print(const Particle<MT> &particle)  const
 {
-  // set output precision
+    // set output precision
     output.precision(3);
     output.setf(ios::scientific, ios::floatfield);
 
-  // print particulars of the particle based on its status
+    // print particulars of the particle based on its status
     if (particle.alive == true)
 	print_alive(particle);
     else
@@ -362,38 +362,38 @@ template<class MT>
 void Particle<MT>::Diagnostic::print_alive(const Particle<MT> 
 					   &particle) const 
 {
-  // print active particle (alive = true)
+    // print active particle (alive = true)
     output << " -- Particle is alive -- " << endl;
 
-  // event
+    // event
     output << setw(20) << setiosflags(ios::right) << "Event: " 
 	   << setw(12) << particle.descriptor.c_str() << endl;
     
-  // coordinates
+    // coordinates
     output << setw(20) << setiosflags(ios::right) << "Coordinates: ";
     for (int i = 0; i < particle.r.size(); i++)
 	output << setw(12) << particle.r[i] << " ";
     output << endl;
     
-  // direction
+    // direction
     output << setw(20) << setiosflags(ios::right) << "Direction: ";
     for (int i = 0; i < particle.omega.size(); i++)
 	output << setw(12) << particle.omega[i] << " ";
     output << endl;
     
-  // cell
+    // cell
     output << setw(20) << setiosflags(ios::right) << "Cell: " << setw(12) 
 	   << particle.cell << endl;
     
-  // energy-weight, ew
+    // energy-weight, ew
     output << setw(20) << setiosflags(ios::right) << "Energy-weight: " 
            << setw(12) << particle.ew << endl;
 
-  // fraction of original weight
+    // fraction of original weight
     output << setw(20) << setiosflags(ios::right) << "Fraction: " 
            << setw(12) << particle.fraction << endl;
 
-  // time remaining in this time step
+    // time remaining in this time step
     output << setw(20) << setiosflags(ios::right) << "Time_Left: " 
            << setw(12) << particle.time_left << endl;
     
@@ -406,38 +406,38 @@ template<class MT>
 void Particle<MT>::Diagnostic::print_dead(const Particle<MT> 
 					  &particle) const
 {
-  // print dead particle (alive = false)
+    // print dead particle (alive = false)
     output << " -- Particle is dead -- " << endl;
 
-  // event
+    // event
     output << setw(20) << setiosflags(ios::right) << "Event: " 
 	   << setw(12) << particle.descriptor.c_str() << endl;
     
-  // coordinates
+    // coordinates
     output << setw(20) << setiosflags(ios::right) << " Last Coordinates: ";
     for (int i = 0; i < particle.r.size(); i++)
 	output << setw(12) << particle.r[i] << " ";
     output << endl;
     
-  // direction
+    // direction
     output << setw(20) << setiosflags(ios::right) << " Last Direction: ";
     for (int i = 0; i < particle.omega.size(); i++)
 	output << setw(12) << particle.omega[i] << " ";
     output << endl;
 
-  // cell
+    // cell
     output << setw(20) << setiosflags(ios::right) << "Last Cell: " 
 	   << setw(12) << particle.cell << endl;
     
-  // energy-weight, ew
+    // energy-weight, ew
     output << setw(20) << setiosflags(ios::right) << "Last Energy-weight: "
 	   << setw(12) << particle.ew << endl;
 
-  // fraction of original weight
+    // fraction of original weight
     output << setw(20) << setiosflags(ios::right) << "Last Fraction: " 
            << setw(12) << particle.fraction << endl;
 
-  // time remaining in this time step
+    // time remaining in this time step
     output << setw(20) << setiosflags(ios::right) << "Last Time_Left: " 
            << setw(12) << particle.time_left << endl;
 
@@ -450,7 +450,7 @@ template<class MT>
 void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd, 
 					  double d_cen, int cell) const
 {
-  // do detailed diagnostic print of particle event distances
+    // do detailed diagnostic print of particle event distances
     output << setw(20) << setiosflags(ios::right) << "Present cell: "
 	   << setw(12) << cell << endl;
     output << setw(20) << setiosflags(ios::right) << "Dist-scatter: "
@@ -465,9 +465,9 @@ void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd,
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
-					    int cell) const
+					int cell) const
 {
-  // do detailed diagnostic print of particle event cross sections
+    // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
 	   << setw(12) << xs.get_sigma_abs(cell)  << endl;
     output << setw(20) << setiosflags(ios::right) << "Eff. scatter: "
