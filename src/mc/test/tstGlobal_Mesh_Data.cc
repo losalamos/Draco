@@ -66,9 +66,6 @@ SP<Rep_Topology> build_rep_topology(int num_cells)
 
 SP<General_Topology> build_general_topology()
 {
-    // for these
-    // int nc  = 1;
-    
     vf_int cpp(rtt_c4::nodes());
     vf_int ppc;
     vf_int bc(rtt_c4::nodes());
