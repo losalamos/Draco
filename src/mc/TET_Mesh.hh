@@ -260,7 +260,7 @@ class TET_Mesh::CCSF
     SP<TET_Mesh> mesh;
 
     //! Data in scalar field  --  one object per cell.
-    vector<T> data;
+    std::vector<T> data;
 
  public:
 
@@ -268,7 +268,7 @@ class TET_Mesh::CCSF
     inline explicit CCSF(SP<TET_Mesh>);
 
     // Constructor for automatic initialization.
-    inline CCSF(SP<TET_Mesh>, const vector<T> &);
+    inline CCSF(SP<TET_Mesh>, const std::vector<T> &);
 
     //! Return reference to mesh.
     const TET_Mesh& get_Mesh() const { return *mesh; }
@@ -336,7 +336,7 @@ inline TET_Mesh::CCSF<T>::CCSF(SP<TET_Mesh> mesh_)
  * Constructor for automatic initialization.
  */
 template<class T>
-inline TET_Mesh::CCSF<T>::CCSF(SP<TET_Mesh> mesh_, const vector<T> &array)
+inline TET_Mesh::CCSF<T>::CCSF(SP<TET_Mesh> mesh_, const std::vector<T> &array)
     : mesh(mesh_), data(array)
 {
     Require (mesh);
@@ -380,7 +380,7 @@ class TET_Mesh::CCVF
     SP<TET_Mesh> mesh;
 
     //! Data in vector field  --  one object per (dimension, cell) pairing.
-    vector< vector<T> > data;
+    std::vector< std::vector<T> > data;
 
  public:
 
@@ -388,7 +388,7 @@ class TET_Mesh::CCVF
     inline explicit CCVF(SP<TET_Mesh>);
 
     // Constructor for automatic initialization.
-    inline CCVF(SP<TET_Mesh>, const vector<vector<T> > &);
+    inline CCVF(SP<TET_Mesh>, const std::vector< std::vector<T> > &);
 
     //! Return reference to mesh.
     const TET_Mesh& get_Mesh() const { return *mesh; }
@@ -409,7 +409,7 @@ class TET_Mesh::CCVF
     { return data[dim-1][cell-1]; }
 
     // Get a vector associated with a cell.
-    inline vector<T> operator()(int) const;
+    inline std::vector<T> operator()(int) const;
 
     // STL style functions.
 
@@ -481,7 +481,7 @@ inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_)
  */
 template<class T>
 inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_,
-                  const vector<vector<T> > &array)
+                  const std::vector< std::vector<T> > &array)
     : mesh(mesh_), data(array)
 {
     Ensure (data.size() == mesh->get_Coord().get_dim());
@@ -499,10 +499,10 @@ inline TET_Mesh::CCVF<T>::CCVF(SP<TET_Mesh> mesh_,
  * For TET_Mesh, the returned vector is 3-dimensional.
  */
 template<class T>
-inline vector<T> TET_Mesh::CCVF<T>::operator()(int cell) const
+inline std::vector<T> TET_Mesh::CCVF<T>::operator()(int cell) const
 {
     // declare return vector
-    vector<T> x;
+    std::vector<T> x;
 
     // loop through dimensions and make return vector for this cell
     for (int i = 0; i < data.size(); i++)
