@@ -58,26 +58,10 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh>::erase(self);
     }
 
-    // Construct an uninitialized CAR_CU_Mesh int CCSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_ccsf_i_(long & mesh_index, long & self)
-    {
-	// Get the address of the CAR_CU_Mesh class object (mesh).
-	SP<CAR_CU_Mesh> mesh = 
-	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-
-	// Construct a new CAR_CU_Mesh int CCSF class object.
-	SP<CAR_CU_Mesh::CCSF<int> > ccsf_i (new CAR_CU_Mesh::CCSF<int>(mesh));
-
-	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
-	self = opaque_pointers<CAR_CU_Mesh::CCSF<int> >::insert(ccsf_i);
-
-    }
-
-    // Construct an initialized CAR_CU_Mesh int CCSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_ccsf_i_data_(long & mesh_index, long & self, 
-				     long & data, long & data_size)
+    // Construct an CAR_CU_Mesh int CCSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_ccsf_i_(long & mesh_index, long & self, long & data, 
+				long & data_size)
     {
 	// Get the address of the CAR_CU_Mesh class object (mesh).
 	SP<CAR_CU_Mesh> mesh = 
@@ -85,21 +69,29 @@ extern "C"
 	// Cast the long variables to integer
 	int idata_size = static_cast<int>(data_size);
 	long * data_array = & data;
+	SP<CAR_CU_Mesh::CCSF<int> > ccsf_i;
 
-	Insist(idata_size == mesh->num_cells(), 
-	       "Invalid data passed to construct_mesh_ccsf_i_data_!");
-
-	vector<int> data_set(mesh->num_cells());
-
-	for (int cell = 0; cell < mesh->num_cells(); cell++)
+	if (idata_size == 0)
 	{
-	    data_set[cell] = * data_array ;
-	    ++data_array;
+	    // Construct a new CAR_CU_Mesh int CCSF class object.
+	    ccsf_i = new CAR_CU_Mesh::CCSF<int>(mesh);
 	}
+	else
+	{
+	    Insist(idata_size == mesh->num_cells(), 
+	        "Invalid data passed to construct_mesh_ccsf_i_data_!");
 
-	// Construct a new CAR_CU_Mesh int CCSF class object.
-	SP<CAR_CU_Mesh::CCSF<int> > ccsf_i 
-	                         (new CAR_CU_Mesh::CCSF<int>(mesh, data_set));
+	    vector<int> data_set(mesh->num_cells());
+
+	    for (int cell = 0; cell < mesh->num_cells(); cell++)
+	    {
+	        data_set[cell] = * data_array ;
+		++data_array;
+	    }
+
+	    // Construct a new CAR_CU_Mesh int CCSF class object.
+	    ccsf_i = new CAR_CU_Mesh::CCSF<int>(mesh, data_set);
+	}
 
 	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::CCSF<int> >::insert(ccsf_i);
@@ -123,26 +115,10 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::CCSF<int> >::erase(self);
     }
 
-    // Construct an uninitialized CAR_CU_Mesh double CCSF class object from
-    // a Fortran 90 program call.
-    void construct_mesh_ccsf_d_(long & mesh_index, long & self)
-    {
-	// Get the address of the CAR_CU_Mesh class object (mesh).
-	SP<CAR_CU_Mesh> mesh = 
-	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-	// Construct a new CAR_CU_Mesh double CCSF class object.
-	SP<CAR_CU_Mesh::CCSF<double> > ccsf_d 
-	                               (new CAR_CU_Mesh::CCSF<double>(mesh));
-
-	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
-	self = opaque_pointers<CAR_CU_Mesh::CCSF<double> >::insert(ccsf_d);
-
-    }
-
-    // Construct an initialized CAR_CU_Mesh double CCSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_ccsf_d_data_(long & mesh_index, long & self, 
-				     double & data, long & data_size)
+    // Construct an CAR_CU_Mesh double CCSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_ccsf_d_(long & mesh_index, long & self, double & data,
+				long & data_size)
     {
 	// Get the address of the CAR_CU_Mesh class object (mesh).
 	SP<CAR_CU_Mesh> mesh = 
@@ -150,21 +126,29 @@ extern "C"
 	// Cast the long variables to integer
 	int idata_size = static_cast<int>(data_size);
 	double * data_array = & data;
+        SP<CAR_CU_Mesh::CCSF<double> > ccsf_d;
 
-	Insist(idata_size == mesh->num_cells(), 
-	       "Invalid data passed to construct_mesh_ccsf_d_data_!");
-
-	vector<double> data_set(mesh->num_cells());
-
-	for (int cell = 0; cell < mesh->num_cells(); cell++)
+	if (idata_size == 0 )
 	{
-	    data_set[cell] = * data_array ;
-	    ++data_array;
+	    // Construct a new CAR_CU_Mesh double CCSF class object.
+	    ccsf_d = new CAR_CU_Mesh::CCSF<double>(mesh);
 	}
+	else
+	{
+	    Insist(idata_size == mesh->num_cells(), 
+	        "Invalid data passed to construct_mesh_ccsf_d_data_!");
 
-	// Construct a new CAR_CU_Mesh double CCSF class object.
-	SP<CAR_CU_Mesh::CCSF<double> > ccsf_d
-	                      (new CAR_CU_Mesh::CCSF<double>(mesh, data_set));
+	    vector<double> data_set(mesh->num_cells());
+
+	    for (int cell = 0; cell < mesh->num_cells(); cell++)
+	    {
+	        data_set[cell] = * data_array ;
+		++data_array;
+	    }
+
+	    // Construct a new CAR_CU_Mesh double CCSF class object.
+	    ccsf_d = new CAR_CU_Mesh::CCSF<double>(mesh, data_set);
+	}
 
 	// return the map key for the new CAR_CU_Mesh CCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::CCSF<double> >::insert(ccsf_d);
@@ -188,26 +172,10 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::CCSF<double> >::erase(self);
     }
 
-    // Construct an uninitialized CAR_CU_Mesh int FCSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_fcsf_i_(long & mesh_index, long & self)
-    {
-	// Get the address of the CAR_CU_Mesh class object (mesh).
-	SP<CAR_CU_Mesh> mesh = 
-	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-
-	// Construct a new CAR_CU_Mesh int FCSF class object.
-	SP<CAR_CU_Mesh::FCSF<int> > fcsf_i (new CAR_CU_Mesh::FCSF<int>(mesh));
-
-	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
-	self = opaque_pointers<CAR_CU_Mesh::FCSF<int> >::insert(fcsf_i);
-
-    }
-
-    // Construct an initialized CAR_CU_Mesh int FCSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_fcsf_i_data_(long & mesh_index, long & self, 
-				     long & data, long & data_size)
+    // Construct a CAR_CU_Mesh int FCSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_fcsf_i_(long & mesh_index, long & self, long & data, 
+				long & data_size)
     {
 	// Get the address of the CAR_CU_Mesh class object (mesh).
 	SP<CAR_CU_Mesh> mesh = 
@@ -215,21 +183,29 @@ extern "C"
 	// Cast the long variables to integer
 	int idata_size = static_cast<int>(data_size);
 	long * data_array = & data;
-
-	Insist(idata_size == mesh->num_face_nodes(), 
-	       "Invalid data passed to construct_mesh_fcsf_i_data_!");
-
-	vector<int> data_set(mesh->num_face_nodes());
-
-	for (int face = 0; face < mesh->num_face_nodes(); face++)
+	SP<CAR_CU_Mesh::FCSF<int> > fcsf_i;
+	
+	if (idata_size == 0 )
 	{
-	    data_set[face] = * data_array ;
-	    ++data_array;
+	    // Construct a new CAR_CU_Mesh int FCSF class object.
+	    fcsf_i = new CAR_CU_Mesh::FCSF<int>(mesh);
 	}
+	else
+	{
+	    Insist(idata_size == mesh->num_face_nodes(), 
+	        "Invalid data passed to construct_mesh_fcsf_i_data_!");
 
-	// Construct a new CAR_CU_Mesh int FCSF class object.
-	SP<CAR_CU_Mesh::FCSF<int> > fcsf_i 
-	                         (new CAR_CU_Mesh::FCSF<int>(mesh, data_set));
+	    vector<int> data_set(mesh->num_face_nodes());
+
+	    for (int face = 0; face < mesh->num_face_nodes(); face++)
+	    {
+	        data_set[face] = * data_array ;
+		++data_array;
+	    }
+
+	    // Construct a new CAR_CU_Mesh int FCSF class object.
+	    fcsf_i = new CAR_CU_Mesh::FCSF<int>(mesh, data_set);
+	}
 
 	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCSF<int> >::insert(fcsf_i);
@@ -253,26 +229,10 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCSF<int> >::erase(self);
     }
 
-    // Construct an uninitialized CAR_CU_Mesh double FCSF class object from
-    // a Fortran 90 program call.
-    void construct_mesh_fcsf_d_(long & mesh_index, long & self)
-    {
-	// Get the address of the CAR_CU_Mesh class object (mesh).
-	SP<CAR_CU_Mesh> mesh = 
-	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-	// Construct a new CAR_CU_Mesh double FCSF class object.
-	SP<CAR_CU_Mesh::FCSF<double> > fcsf_d 
-	                               (new CAR_CU_Mesh::FCSF<double>(mesh));
-
-	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
-	self = opaque_pointers<CAR_CU_Mesh::FCSF<double> >::insert(fcsf_d);
-
-    }
-
-    // Construct an initialized CAR_CU_Mesh double FCSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_fcsf_d_data_(long & mesh_index, long & self, 
-				     double & data, long & data_size)
+    // Construct a CAR_CU_Mesh double FCSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_fcsf_d_(long & mesh_index, long & self, double & data,
+				long & data_size)
     {
 	// Get the address of the CAR_CU_Mesh class object (mesh).
 	SP<CAR_CU_Mesh> mesh = 
@@ -280,21 +240,29 @@ extern "C"
 	// Cast the long variables to integer
 	int idata_size = static_cast<int>(data_size);
 	double * data_array = & data;
+	SP<CAR_CU_Mesh::FCSF<double> > fcsf_d;
 
-	Insist(idata_size == mesh->num_face_nodes(), 
-	       "Invalid data passed to construct_mesh_fcsf_d_data_!");
-
-	vector<double> data_set(mesh->num_face_nodes());
-
-	for (int face = 0; face < mesh->num_face_nodes(); face++)
+	if (idata_size == 0 )
 	{
-	    data_set[face] = * data_array ;
-	    ++data_array;
+	    // Construct a new CAR_CU_Mesh double FCSF class object.
+	    fcsf_d = new CAR_CU_Mesh::FCSF<double>(mesh);
 	}
+	else
+	{
+	    Insist(idata_size == mesh->num_face_nodes(), 
+	        "Invalid data passed to construct_mesh_fcsf_d_data_!");
 
-	// Construct a new CAR_CU_Mesh double FCSF class object.
-	SP<CAR_CU_Mesh::FCSF<double> > fcsf_d
-	                      (new CAR_CU_Mesh::FCSF<double>(mesh, data_set));
+	    vector<double> data_set(mesh->num_face_nodes());
+
+	    for (int face = 0; face < mesh->num_face_nodes(); face++)
+	    {
+	        data_set[face] = * data_array ;
+		++data_array;
+	    }
+
+	    // Construct a new CAR_CU_Mesh double FCSF class object.
+	    fcsf_d = new CAR_CU_Mesh::FCSF<double>(mesh, data_set);
+	}
 
 	// return the map key for the new CAR_CU_Mesh FCSF class object (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCSF<double> >::insert(fcsf_d);
@@ -318,27 +286,10 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCSF<double> >::erase(self);
     }
 
-    // Construct an uninitialized CAR_CU_Mesh int FCDSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_fcdsf_i_(long & mesh_index, long & self)
-    {
-	// Get the address of the CAR_CU_Mesh class object (mesh).
-	SP<CAR_CU_Mesh> mesh = 
-	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-
-	// Construct a new CAR_CU_Mesh int FCDSF class object.
-	SP<CAR_CU_Mesh::FCDSF<int> > fcdsf_i 
-	                             (new CAR_CU_Mesh::FCDSF<int>(mesh));
-
-	// return the map key for the new CAR_CU_Mesh FCDSF class object 
-	// (self).
-	self = opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::insert(fcdsf_i);
-    }
-
-    // Construct an initialized CAR_CU_Mesh int FCDSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_fcdsf_i_data_(long & mesh_index, long & self, 
-				      long & data, long & data_size)
+    // Construct a CAR_CU_Mesh int FCDSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_fcdsf_i_(long & mesh_index, long & self, long & data,
+				 long & data_size)
     {
 	// Get the address of the CAR_CU_Mesh class object (mesh).
 	SP<CAR_CU_Mesh> mesh = 
@@ -346,25 +297,33 @@ extern "C"
 	// Cast the long variables to integer
 	int idata_size = static_cast<int>(data_size);
 	long * data_array = & data;
+	SP<CAR_CU_Mesh::FCDSF<int> >  fcdsf_i;
 
-	Insist(idata_size ==  mesh->num_cells() * 2 * mesh->get_ndim(), 
-	       "Invalid data passed to construct_mesh_fcdsf_i_data_!");
-
-	vector<vector<int> > data_set(mesh->num_cells());
-
-	for (int cell = 0; cell < mesh->num_cells(); cell++)
+	if (idata_size == 0)
 	{
-	    data_set[cell].resize(2 * mesh->get_ndim());
-	    for (int face = 0; face < 2 * mesh->get_ndim(); face++)
-	    {
-	        data_set[cell][face] = * data_array;
-		++data_array;
-	    }
+	    // Construct a new CAR_CU_Mesh int FCDSF class object.
+	    fcdsf_i = new CAR_CU_Mesh::FCDSF<int>(mesh);
 	}
+	else
+	{
+	    Insist(idata_size ==  mesh->num_cells() * 2 * mesh->get_ndim(), 
+	        "Invalid data passed to construct_mesh_fcdsf_i_data_!");
 
-	// Construct a new CAR_CU_Mesh int FCDSF class object.
-	SP<CAR_CU_Mesh::FCDSF<int> > fcdsf_i 
-	                         (new CAR_CU_Mesh::FCDSF<int>(mesh, data_set));
+	    vector<vector<int> > data_set(mesh->num_cells());
+
+	    for (int cell = 0; cell < mesh->num_cells(); cell++)
+	    {
+	        data_set[cell].resize(2 * mesh->get_ndim());
+		for (int face = 0; face < 2 * mesh->get_ndim(); face++)
+		{
+		    data_set[cell][face] = * data_array;
+		    ++data_array;
+		}
+	    }
+
+	    // Construct a new CAR_CU_Mesh int FCDSF class object.
+	    fcdsf_i = new CAR_CU_Mesh::FCDSF<int>(mesh, data_set);
+	}
 
 	// return the map key for the new CAR_CU_Mesh FCDSF class object 
 	// (self).
@@ -388,26 +347,10 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::erase(self);
     }
 
-    // Construct an uninitialized CAR_CU_Mesh double FCDSF class object from
-    // a Fortran 90 program call.
-    void construct_mesh_fcdsf_d_(long & mesh_index, long & self)
-    {
-	// Get the address of the CAR_CU_Mesh class object (mesh).
-	SP<CAR_CU_Mesh> mesh = 
-	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-	// Construct a new CAR_CU_Mesh double FCDSF class object.
-	SP<CAR_CU_Mesh::FCDSF<double> > fcdsf_d 
-	                               (new CAR_CU_Mesh::FCDSF<double>(mesh));
-
-	// return the map key for the new CAR_CU_Mesh FCDSF class object 
-	// (self).
-	self = opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::insert(fcdsf_d);
-    }
-
-    // Construct an initialized CAR_CU_Mesh double FCDSF class object from a 
-    // Fortran 90 program call.
-    void construct_mesh_fcdsf_d_data_(long & mesh_index, long & self, 
-				      double & data, long & data_size)
+    // Construct a CAR_CU_Mesh double FCDSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_fcdsf_d_(long & mesh_index, long & self, double & data,
+				 long & data_size)
     {
 	// Get the address of the CAR_CU_Mesh class object (mesh).
 	SP<CAR_CU_Mesh> mesh = 
@@ -415,30 +358,37 @@ extern "C"
 	// Cast the long variables to integer
 	int idata_size = static_cast<int>(data_size);
 	double * data_array = & data;
+	SP<CAR_CU_Mesh::FCDSF<double> > fcdsf_d;
 
-	Insist(idata_size == mesh->num_cells() * 2 * mesh->get_ndim(),
-	       "Invalid data passed to construct_mesh_fcdsf_d_data_!");
-
-	vector<vector<double> > data_set(mesh->num_cells());
-
-	for (int cell = 0; cell < mesh->num_cells(); cell++)
+	if (idata_size == 0)
 	{
-	    data_set[cell].resize(2 * mesh->get_ndim());
-	    for (int face = 0; face < 2 * mesh->get_ndim(); face++)
-	    {
-	        data_set[cell][face] = * data_array;
-		++data_array;
-	    }
+	    // Construct a new CAR_CU_Mesh double FCDSF class object.
+	    fcdsf_d = new CAR_CU_Mesh::FCDSF<double>(mesh);
 	}
+	else
+	{
+	    Insist(idata_size == mesh->num_cells() * 2 * mesh->get_ndim(),
+	        "Invalid data passed to construct_mesh_fcdsf_d_data_!");
 
-	// Construct a new CAR_CU_Mesh double FCDSF class object.
-	SP<CAR_CU_Mesh::FCDSF<double> > fcdsf_d
-	                    (new CAR_CU_Mesh::FCDSF<double>(mesh, data_set));
+	    vector<vector<double> > data_set(mesh->num_cells());
+
+	    for (int cell = 0; cell < mesh->num_cells(); cell++)
+	    {
+	        data_set[cell].resize(2 * mesh->get_ndim());
+		for (int face = 0; face < 2 * mesh->get_ndim(); face++)
+		{
+		    data_set[cell][face] = * data_array;
+		    ++data_array;
+		}
+	    }
+
+	    // Construct a new CAR_CU_Mesh double FCDSF class object.
+	    fcdsf_d = new CAR_CU_Mesh::FCDSF<double>(mesh, data_set);
+	}
 
 	// return the map key for the new CAR_CU_Mesh FCDSF class object 
 	// (self).
 	self = opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::insert(fcdsf_d);
-
     }
 
     // Destroy a CAR_CU_Mesh double FCDSF class object from a Fortran 90 

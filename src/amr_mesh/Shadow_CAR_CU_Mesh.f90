@@ -454,15 +454,12 @@
                   type(integer_CCSF), intent(inout)        :: self
                   integer, optional,                                    &
                            dimension(get_num_cells(mesh))  :: data
-                  integer                                  :: data_size
+                  integer                                  :: data_size = 0
 
-                  if (.not. present(data)) then
-                      call construct_mesh_ccsf_i(mesh%this,self%this)
-                  else
-                      data_size = get_num_cells(mesh)
-                      call construct_mesh_ccsf_i_data(mesh%this,        &
-                                     self%this, data, data_size)
-                  endif
+                  if (present(data)) data_size = get_num_cells(mesh)
+
+                  call construct_mesh_ccsf_i(mesh%this, self%this,      &
+                                             data, data_size)
                   self%mesh = mesh
 
               end subroutine int_CCSF_construct
@@ -483,15 +480,11 @@
                   type(real_CCSF),   intent(inout)         :: self
                   real*8, optional,                                     &
                           dimension(get_num_cells(mesh))   :: data
-                  integer                                  :: data_size
+                  integer                                  :: data_size = 0
 
-                  if (.not. present(data)) then
-                      call construct_mesh_ccsf_d(mesh%this, self%this)
-                  else
-                      data_size = get_num_cells(mesh)
-                      call construct_mesh_ccsf_d_data(mesh%this,        &
-                                     self%this, data, data_size)
-                  endif
+                  if (present(data)) data_size = get_num_cells(mesh)
+                  call construct_mesh_ccsf_d(mesh%this, self%this,      &
+                                                 data, data_size)
                   self%mesh = mesh
 
               end subroutine real_CCSF_construct
@@ -512,15 +505,11 @@
                   type(integer_FCSF), intent(inout)            :: self
                   integer, optional,                                    &
                            dimension(get_num_face_nodes(mesh)) :: data
-                  integer                                      :: data_size
+                  integer                                      :: data_size = 0
 
-                  if (.not. present(data)) then
-                      call construct_mesh_fcsf_i(mesh%this,self%this)
-                  else
-                      data_size = get_num_face_nodes(mesh)
-                      call construct_mesh_fcsf_i_data(mesh%this,        &
-                                     self%this, data, data_size)
-                  endif
+                  if (present(data)) data_size = get_num_face_nodes(mesh)
+                  call construct_mesh_fcsf_i(mesh%this, self%this,      &
+                                             data, data_size)
                   self%mesh = mesh
 
               end subroutine int_FCSF_construct
@@ -541,18 +530,13 @@
                   type(real_FCSF),   intent(inout)            :: self
                   real*8, optional,                                     &
                           dimension(get_num_face_nodes(mesh)) :: data
-                  real*8, dimension(get_num_face_nodes(mesh)) :: ret_data
-                  integer                                     :: data_size
+                  integer                                     :: data_size = 0
                   integer                                     :: cell,face
 
-                  if (.not. present(data)) then
-                      call construct_mesh_fcsf_d(mesh%this, self%this)
-                  else
+                  if (present(data)) data_size = get_num_face_nodes(mesh)
 
-                      data_size = get_num_face_nodes(mesh)
-                      call construct_mesh_fcsf_d_data(mesh%this,        &
-                                     self%this, ret_data, data_size)
-                  endif
+                  call construct_mesh_fcsf_d(mesh%this, self%this,      &
+                                             data, data_size)
                   self%mesh = mesh
 
               end subroutine real_FCSF_construct
@@ -576,12 +560,10 @@
                                      2 * get_dimension(mesh))  :: data
                   integer, dimension(get_num_cells(mesh) *              &
                                      2 * get_dimension(mesh))  :: ret_data
-                  integer                                      :: data_size
+                  integer                                      :: data_size = 0
                   integer                                      :: cell, face
 
-                  if (.not. present(data)) then
-                      call construct_mesh_fcdsf_i(mesh%this,self%this)
-                  else
+                  if (present(data)) then
                       cell = 1
                       do while(cell .le. get_num_cells(mesh))
                           face = 1
@@ -594,9 +576,10 @@
                       end do
 
                       data_size = get_num_cells(mesh) * 2 * get_dimension(mesh)
-                      call construct_mesh_fcdsf_i_data(mesh%this,       &
-                                     self%this, ret_data, data_size)
-                  endif
+                  end if
+
+                  call construct_mesh_fcdsf_i(mesh%this, self%this,     &
+                                              ret_data, data_size)
                   self%mesh = mesh
 
               end subroutine int_FCDSF_construct
@@ -613,19 +596,17 @@
 ! can be performed by including the optional data argument. An uninitialized
 ! FCDSF is created if this argument is not specified.
               subroutine real_FCDSF_construct(mesh, self, data)
-                  type(CAR_CU_Mesh), intent(in)                 :: mesh
-                  type(real_FCDSF),   intent(inout)             :: self
+                  type(CAR_CU_Mesh), intent(in)               :: mesh
+                  type(real_FCDSF),   intent(inout)           :: self
                   real*8, intent(in), optional,                         &
                           dimension(get_num_cells(mesh),                &
-                                    2 * get_dimension(mesh))    :: data
+                                    2 * get_dimension(mesh))  :: data
                   real*8, dimension(get_num_cells(mesh) *               &
-                                    2 * get_dimension(mesh))    :: ret_data
-                  integer                                       :: data_size
-                  integer                                       :: cell, face
+                                    2 * get_dimension(mesh))  :: ret_data
+                  integer                                     :: data_size = 0
+                  integer                                     :: cell, face
 
-                  if (.not. present(data)) then
-                      call construct_mesh_fcdsf_d(mesh%this, self%this)
-                  else
+                  if (present(data)) then
                       cell = 1
                       do while(cell .le. get_num_cells(mesh))
                           face = 1
@@ -638,9 +619,10 @@
                       end do
 
                       data_size = get_num_cells(mesh) * 2 * get_dimension(mesh)
-                      call construct_mesh_fcdsf_d_data(mesh%this,       &
-                                  self%this, ret_data, data_size)
-                  endif
+                  end if
+
+                  call construct_mesh_fcdsf_d(mesh%this, self%this,     &
+                                              ret_data, data_size)
                   self%mesh = mesh
 
               end subroutine real_FCDSF_construct
@@ -1136,7 +1118,7 @@
               subroutine set_real_CCSF(self, data)
                   type(real_CCSF), intent(in)                   :: self
                   real*8, intent(in),                                   &
-                           dimension(get_num_cells(self%mesh))  :: data
+                          dimension(get_num_cells(self%mesh))   :: data
                   integer                                       :: data_size
 
                   data_size = get_num_cells(self%mesh)
