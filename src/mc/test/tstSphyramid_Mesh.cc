@@ -117,15 +117,14 @@ void simple_one_cell_Sphyramid()
     if (!soft_equiv(mesh->get_low_x(1),  0.0))  ITFAILS;
     if (!soft_equiv(mesh->get_high_x(1), 1.0))  ITFAILS;
 
-    // check that cell midpoints are correct
-    if (!soft_equiv(mesh->get_x_midpoint(1), 0.5)) ITFAILS;
-    if (!soft_equiv(mesh->get_y_midpoint(1), 0.0)) ITFAILS;
-    if (!soft_equiv(mesh->get_z_midpoint(1), 0.0)) ITFAILS;
+    // check that cell centroids are correct
+    if (!soft_equiv(mesh->get_x_centroid(1), 3./4.)) ITFAILS;
+    if (!soft_equiv(mesh->get_y_centroid(1), 0.0))   ITFAILS;
+    if (!soft_equiv(mesh->get_z_centroid(1), 0.0))   ITFAILS;
 
-    // check that the cell dimensions are correct
-    if (!soft_equiv(mesh->dim(1,1), 1.0))       ITFAILS;
-    if (!soft_equiv(mesh->dim(2,1), tan_beta))  ITFAILS;
-    if (!soft_equiv(mesh->dim(3,1), tan_beta))  ITFAILS;
+    // check that the cell half widths  are correct
+    if (!soft_equiv(mesh->high_half_width(1), 1./4.)) ITFAILS;
+    if (!soft_equiv(mesh->low_half_width(1) , 3./4.)) ITFAILS;
 
     // check that graphics cell type is correct
     {
@@ -1128,38 +1127,40 @@ void build_a_Sphyramid()
     if (!soft_equiv(mesh->get_low_x(5),  xcoords[4])) ITFAILS;
     if (!soft_equiv(mesh->get_high_x(5), xcoords[5])) ITFAILS;
 
-    // check that cell midpoints are correct for 1st and last cell
+    // check that cell centroids are correct for 1st and last cell
     {
-	double x_midpoint = 0.5*(xcoords[0]+xcoords[1]);
-	if (!soft_equiv(mesh->get_x_midpoint(1), x_midpoint)) ITFAILS;
-	if (!soft_equiv(mesh->get_y_midpoint(1), 0.0))        ITFAILS;
-	if (!soft_equiv(mesh->get_z_midpoint(1), 0.0))        ITFAILS;
-    }
-    {
-	double x_midpoint = 0.5*(xcoords[4]+xcoords[5]);
-	if (!soft_equiv(mesh->get_x_midpoint(5), x_midpoint)) ITFAILS;
-	if (!soft_equiv(mesh->get_y_midpoint(5), 0.0))        ITFAILS;
-	if (!soft_equiv(mesh->get_z_midpoint(5), 0.0))        ITFAILS;
-    }
+	double xc_first = 4.*xcoords[0]*xcoords[0]
+	    +8.*xcoords[0]*xcoords[1]+12.*xcoords[1]*xcoords[1];
+	xc_first       /= 4.*xcoords[0]*xcoords[0]
+	    +4.*xcoords[0]*xcoords[1]+4.*xcoords[1]*xcoords[1];
+	xc_first        = xc_first*(xcoords[1]-xcoords[0])/4.+xcoords[0];
+
+	if (!soft_equiv(mesh->get_x_centroid(1), xc_first))   ITFAILS;
+	if (!soft_equiv(mesh->get_y_centroid(1), 0.0))        ITFAILS;
+	if (!soft_equiv(mesh->get_z_centroid(1), 0.0))        ITFAILS;
     
-    // check that the cell dimensions are correct for 1st and last cells;
-    {
-	double x_dim = xcoords[1]-xcoords[0];
-	double y_dim = 0.5*(xcoords[0]+xcoords[1])*2.*tan_beta;
-	double z_dim = y_dim;
+	double xc_last = 4.*xcoords[4]*xcoords[4]
+	    +8.*xcoords[4]*xcoords[5]+12.*xcoords[5]*xcoords[5];
+	xc_last       /= 4.*xcoords[4]*xcoords[4]
+	    +4.*xcoords[4]*xcoords[5]+4.*xcoords[5]*xcoords[5];
+	xc_last        = xc_last*(xcoords[5]-xcoords[4])/4.+xcoords[4];
+    
+	if (!soft_equiv(mesh->get_x_centroid(5), xc_last))    ITFAILS;
+	if (!soft_equiv(mesh->get_y_centroid(5), 0.0))        ITFAILS;
+	if (!soft_equiv(mesh->get_z_centroid(5), 0.0))        ITFAILS;
+   
+	// check that the cell half widths are
+	// correct for 1st and last cells;
 
-	if (!soft_equiv(mesh->dim(1,1), x_dim)) ITFAILS;
-	if (!soft_equiv(mesh->dim(2,1), y_dim)) ITFAILS;
-	if (!soft_equiv(mesh->dim(3,1), z_dim)) ITFAILS;
-    }
-    {
-	double x_dim = xcoords[5]-xcoords[4];
-	double y_dim = 0.5*(xcoords[5]+xcoords[4])*2.*tan_beta;
-	double z_dim = y_dim;
+	if (!soft_equiv(mesh->high_half_width(1), 
+			xcoords[1]-xc_first)) ITFAILS;
+	if (!soft_equiv(mesh->low_half_width(1), 
+			xc_first-xcoords[0])) ITFAILS;
 
-	if (!soft_equiv(mesh->dim(1,5), x_dim)) ITFAILS;
-	if (!soft_equiv(mesh->dim(2,5), y_dim)) ITFAILS;
-	if (!soft_equiv(mesh->dim(3,5), z_dim)) ITFAILS;
+	if (!soft_equiv(mesh->high_half_width(5), 
+			xcoords[5]-xc_last))  ITFAILS;
+	if (!soft_equiv(mesh->low_half_width(5), 
+			xc_last-xcoords[4])) ITFAILS;
     }
 
     // check that graphics cell type is correct

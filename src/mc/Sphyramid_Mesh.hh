@@ -76,6 +76,9 @@ class Sphyramid_Mesh
     typedef std::string                        std_string;
     typedef std::pair<sf_double, sf_double>    pair_sf_double;
 
+    // Handy typedefs for Sphyramid_Mesh dependent classes
+    typedef CCSF<double>   CCSF_double;
+
   private:
     // Base class reference to a derived coordinate system class
     // (the Sphyramid_Mesh is always three-dimensional, Cartesian)
@@ -129,18 +132,20 @@ class Sphyramid_Mesh
     double get_high_x(int cell) const { return cell_x_extents[cell-1][1]; }
 
     // Get the midpoint of a cell for a given dimension
-    inline double get_x_midpoint(int cell) const;
-    inline double get_y_midpoint(int cell) const;
-    inline double get_z_midpoint(int cell) const;
+    inline double get_x_centroid(int cell) const;
+    inline double get_y_centroid(int cell) const;
+    inline double get_z_centroid(int cell) const;
 
-    // get the dimension of a cell for a given coordinate
-    // (y and z-coord => dim at midpoint)
-    inline double dim(const int coordinate, const int cell) const;
+    // get the distance between the cell centroid and cell edge
+    // (x-dimension_only)
+    inline double high_half_width(const int cell) const;
+    inline double low_half_width(const int cell) const;
 
     // Determine if a position is in a cell
     bool in_cell(int cell, const sf_double & r) const;
 
     // References to embedded objects
+    const Layout& get_Layout() const { return layout; }
     const Coord_sys & get_Coord() const { return *coord; }
     SP_Coord get_SPCoord() const { return coord; }
 
@@ -189,9 +194,6 @@ class Sphyramid_Mesh
     // Overloaded Operators.
     bool operator==(const Sphyramid_Mesh &rhs) const;
     bool operator!=(const Sphyramid_Mesh &rhs) const {return !(*this == rhs); }
-
-
-
 };
 
 //---------------------------------------------------------------------------//
@@ -200,27 +202,42 @@ class Sphyramid_Mesh
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the midpoint of a cell for the x-dimension.
+ * \brief Calculate the centroid of a cell for the x-dimension.
  * 
  * \param cell cell number.
  * \return midpoint of x-dimension
  */
-double Sphyramid_Mesh::get_x_midpoint(int cell) const
+double Sphyramid_Mesh::get_x_centroid(int cell) const
 {
     Require (cell > 0);
     Require (cell <= num_cells());
-    return 0.5*(get_low_x(cell)+get_high_x(cell));
-}
+    
+    double lox     = get_low_x(cell);
+    double hix     = get_high_x(cell);
+    double delta_x = hix-lox;
+    Check (lox     >= 0.0);
+    Check (hix     >= 0.0);
+    Check (delta_x >= 0.0);
 
+    // a Sphyramid_Mesh cell is a truncated pyramid
+    double x_center = 4.*lox*lox+8.*lox*hix+12*hix*hix;
+    x_center       /= 4.*lox*lox+4.*lox*hix+4.*hix*hix;
+    x_center        = x_center*delta_x/4.+lox;
+
+    Ensure (x_center <= hix);
+    Ensure (x_center >= lox);
+
+    return x_center;
+}
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the midpoint of a cell for the y-dimension
+ * \brief Calculate the centroid of a cell for the y-dimension
  * 
  * \param cell cell number
  *
- * \return midpoint of y-dimension
+ * \return centroid of y-dimension
  */
-double Sphyramid_Mesh::get_y_midpoint(int cell) const
+double Sphyramid_Mesh::get_y_centroid(int cell) const
 {
     Require (cell > 0); 
     Require (cell <= num_cells());
@@ -229,13 +246,13 @@ double Sphyramid_Mesh::get_y_midpoint(int cell) const
 }
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the midpoint of a cell for the z-dimension
+ * \brief Calculate the centroid of a cell for the z-dimension
  * 
  * \param cell cell number
  *
  * \return midpoint of z-dimension
  */
-double Sphyramid_Mesh::get_z_midpoint(int cell) const
+double Sphyramid_Mesh::get_z_centroid(int cell) const
 {
     Require (cell > 0);
     Require (cell <= num_cells());
@@ -244,44 +261,43 @@ double Sphyramid_Mesh::get_z_midpoint(int cell) const
 }
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Get the dimension of the cell in the requested coordinate
+ * \brief get the distance between the x-centroid and high x cell boundary
  * 
  * \param cell cell number.
- * \param coordinate coordinate
  *
- * \return the dimension (length) of the cell in the requested coordinate
+ * \return high half width
  */
-double Sphyramid_Mesh::dim(const int coordinate, const int cell) const
+double Sphyramid_Mesh::high_half_width(const int cell) const
 {
     Require (cell > 0); 
-    Require (cell <= num_cells() );
-    Require (coordinate > 0);
-    Require (coordinate <= 3);
+    Require (cell <= num_cells());
 
     // return value
-    double dimension = 0.0;
+    double width=get_high_x(cell)-get_x_centroid(cell);
 
-    // x-coordinate
-    if (coordinate == 1)
-    {
-	dimension = get_high_x(cell)-get_low_x(cell);
-    }
+    Ensure (width >= 0.0);
+    
+    return width;
+}
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief get the distance between the x-centroid and low x cell boundary
+ * 
+ * \param cell cell number.
+ *
+ * \return low half width
+ */
+double Sphyramid_Mesh::low_half_width(const int cell) const
+{
+    Require (cell > 0); 
+    Require (cell <= num_cells());
 
-    // y-coordinate
-    else if (coordinate==2)
-    {
-	dimension = 2.0 *get_x_midpoint(cell)*tan_beta;
-    }
+    // return value
+    double width = get_x_centroid(cell)-get_low_x(cell);
 
-    // z-coordinate
-    else if (coordinate==3)
-    {
-	dimension = 2.0*get_x_midpoint(cell)*tan_beta;
-    }
-    else
-	Insist (0,"Requested coordinate in Sphyramid_Mesh's dim not valid!");
-
-    return dimension;
+    Ensure (width >= 0.0);
+    
+    return width;
 }
 //---------------------------------------------------------------------------//
 /*! 
@@ -345,12 +361,16 @@ double Sphyramid_Mesh::get_random_walk_sphere_radius(const sf_double &r,
     Require (cell <= this->layout.num_cells());
     Require (in_cell(cell, r));
 
+    double hix = get_high_x(cell);
+    double lox = get_low_x(cell);
+    
+
     // calculate epsilon = 10E-6 * x-dimension
-    double eps = 1.0E-6*dim(1, cell);
+    double eps = 1.0E-6*(hix-lox);
 
     // compute distances to boundary
-    double dx_hi = get_high_x(cell)-r[0];
-    double dx_lo = r[0]-get_low_x(cell);
+    double dx_hi = hix-r[0];
+    double dx_lo = r[0]-lox;
 
     // determine min_distance
     double min_distance = min(dx_lo, dx_hi);
@@ -619,8 +639,9 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     double lox = get_low_x(cell);
     double hix = get_high_x(cell);
     double delta_x = hix-lox;
-    Check (lox >= 0.0);
-    Check (hix >= 0.0);
+    Check (lox     >= 0.0);
+    Check (hix     >= 0.0);
+    Check (delta_x >= 0.0);
 
     // calculate corresponding y (and z) cell extents
     double loy = lox*this->tan_beta;
@@ -629,10 +650,7 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
     Check (hiy >= 0.0);
 
     // calculate x-value of centroid
-    // in the future, a Sphyramid_Mesh member function may perfom this
-    double x_center = 4.*lox*lox+8.*lox*hix+12*hix*hix;
-    x_center       /= 4.*lox*lox+4.*lox*hix+4.*hix*hix;
-    x_center        = x_center*delta_x/4.+lox;
+    double x_center = get_x_centroid(cell);
     Check (x_center >= lox);
     Check (x_center <= hix);
 
