@@ -6,7 +6,6 @@
 // @> Tests the Multi-Material Cell Material Properties Class.
 //---------------------------------------------------------------------------//
 
-#include <fstream>
 #include <sstream>
 #include "testMmcMatProp.hh"
 #include <list>
@@ -95,8 +94,8 @@ void testMmcMatProp::execute_test()
 							    imat+1, abar);
 	matId[imat] = imat+1;
     }
-    std::ifstream fifis("testMmcMatProp.opac.inp");
-    FifiMatPropsReader reader(mats, rtt_units::Units(), fifis);
+    FifiMatPropsReader reader(mats, rtt_units::Units(),
+                              "testMmcMatProp.opac.inp");
     SP<InterpedMaterialProps> spumcmp(new InterpedMaterialProps(matId,reader));
 
     typedef MultiMatCellMatProps<InterpedMaterialProps> MMCMP;

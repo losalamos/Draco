@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 
@@ -145,7 +146,7 @@ class FifiParser
 
     // The input stream that we will parse.
     
-    std::istream &is_m;
+    mutable std::ifstream is_m;
 
     // The mapping of a material id to a MaterialInfo object
     // used to find the file position of the keywords within the material
@@ -166,7 +167,7 @@ class FifiParser
 
     // CREATORS
     
-    FifiParser(std::istream &is_in);
+    FifiParser(const std::string &fileName);
 
     // MANIPULATORS
     

@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 using std::vector;
-#include <fstream>
 #include <iostream>
 using std::cout;
 using std::cerr;
@@ -47,15 +46,13 @@ void testMatProp()
     rtt_units::Units units = rtt_units::Units::getAstroPhysUnits();
     // Units units;
 
-    std::ifstream ifs("testMatProp.inp");
-
     typedef FifiMatPropsReader::MaterialDefinition MatDef;
     vector<MatDef> matdefs;
     matdefs.push_back(MatDef("BeO, 3 Group", 1, 25.0));
     matdefs.push_back(MatDef("BeO, 13 Group", 2, 25.0));
     matdefs.push_back(MatDef("BeO, 3 Group", 3, 25.0));
     
-    FifiMatPropsReader reader(matdefs, units, ifs);
+    FifiMatPropsReader reader(matdefs, units, "testMatProp.inp");
 
     vector<int> matIds(matdefs.size());
     for (int i=0; i<matdefs.size(); i++)
