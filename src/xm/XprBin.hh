@@ -33,6 +33,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -70,6 +73,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -90,6 +96,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -110,6 +119,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -131,6 +143,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -152,6 +167,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -172,6 +190,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -192,6 +213,9 @@ XXX( operator+, OpAdd )
 XXX( operator-, OpSub )
 XXX( operator*, OpMul )
 XXX( operator/, OpDiv )
+XXX( pow, OpPow )
+XXX( min, OpMin )
+XXX( max, OpMax )
 
 #undef XXX
 
@@ -201,33 +225,11 @@ XXX( operator/, OpDiv )
 
 template<class P, class A, class D>
 Xpr< P, XprBinOp<P, ConstRef<P,Indexable<P,A,D> >, Val<P>, OpPow<P> >, D >
-pow( const Indexable<P,A,D>& a, P x )
-{
-    typedef XprBinOp<P, ConstRef<P,Indexable<P,A,D> >, Val<P>, OpPow<P> > ExprT;
-    return Xpr< P, ExprT, D >( ExprT( ConstRef<P,Indexable<P,A,D> >(a),
-				      Val<P>(x) ) );
-}
-
-template<class P, class A, class D>
-Xpr< P, XprBinOp<P, ConstRef<P,Indexable<P,A,D> >, Val<P>, OpPow<P> >, D >
 pow( const Indexable<P,A,D>& a, int x )
 {
     typedef XprBinOp<P, ConstRef<P,Indexable<P,A,D> >, Val<P>, OpPow<P> > ExprT;
     return Xpr< P, ExprT, D >( ExprT( ConstRef<P,Indexable<P,A,D> >(a),
 				      Val<P>( P(x) ) ) );
-}
-
-//---------------------------------------------------------------------------//
-// min.
-//---------------------------------------------------------------------------//
-
-template<class P, class A, class D>
-Xpr< P, XprBinOp<P, ConstRef<P,Indexable<P,A,D> >, Val<P>, OpMin<P> >, D >
-min( const Indexable<P,A,D>& a, P b )
-{
-    typedef XprBinOp<P, ConstRef<P,Indexable<P,A,D> >, Val<P>, OpMin<P> > ExprT;
-    return Xpr< P, ExprT, D >( ExprT( ConstRef<P,Indexable<P,A,D> >(a),
-				      Val<P>(b) ) );
 }
 
 XM_NAMESPACE_END

@@ -14,6 +14,11 @@
 
 #include <iostream.h>
 
+//using namespace xm;
+
+int sz = 5;
+bool passed = true;
+
 //---------------------------------------------------------------------------//
 // Function to print out the contents of a UserVec.
 //---------------------------------------------------------------------------//
@@ -31,52 +36,101 @@ template<class T> void dump( UserVec<T>& u )
 // }
 
 //---------------------------------------------------------------------------//
-// Check that we can index UserVec the usual way.
+// Check that we can handle UserVec the usual way.
 //---------------------------------------------------------------------------//
 
 void t1()
 {
     cout << "t1: start\n";
 
-    UserVec<float> u(5);
+    UserVec<float> u(sz), v(sz);
 
-    for( int i=0; i < 5; i++ )
+    for( int i=0; i < u.size(); i++ )
 	u[i] = 2.*i;
+    passed &= (u[1] == 2.);
 
-    dump(u);
+    u = 1.;
+    passed &= (u[0] == 1.);
+
+    v = u;
+    passed &= (v[0] == u[0]);
 
     cout << "t1: end\n";
 }
 
 //---------------------------------------------------------------------------//
-// Check a simple binary operation, with an assignment.
+// Check the simple binary operations with assignments.
 //---------------------------------------------------------------------------//
 
 void t2()
 {
     cout << "t2: start\n";
 
-    UserVec<float> u(5), v(5), w(5);
+    UserVec<float> u(sz), v(sz), w(sz);
 
     float a = 2.0;
 
-    for( int i=0; i < 5; i++ ) {
+    for( int i=0; i < v.size(); i++ ) {
 	v[i] = 2.*i;
-	w[i] = 5.-i;
+	w[i] = 10.-i;
     }
-    u = 0;
 
+    u = 1.;
     u += a;
-    u += v;
-    u += v + w;
+    passed &= (u[0] == 1. + a);
 
-//     u -= v;
-//     u *= v;
-//     u /= v;
+    u -= a;
+    passed &= (u[0] == 1.);
+
+    u *= a;
+    passed &= (u[0] == a);
+
+    u /= a;
+    passed &= (u[0] == 1.);
+
+
+    u += v;
+    passed &= (u[2] == 5.);
+
+    u -= v;
+    passed &= (u[2] == 1.);
+
+    u *= v;
+    passed &= (u[2] == 4.);
+
+    u /= v;
+    passed &= (u[2] == 1.);
+
+    u = v;
+    passed &= (u[2] == 4.);
+
 
     u = v + w;
+    passed &= (u[1] == 11.);
 
-    dump(u);
+    u = v - w;
+    passed &= (u[1] == -7.);
+
+    u = v * w;
+    passed &= (u[1] == 18.);
+
+    u = w / v;
+    passed &= (u[2] == 2.);
+
+
+    u = 1.;
+    u += v + w;
+    passed &= (u[1] == 12.);
+
+    u -= v + w;
+    passed &= (u[1] == 1.);
+
+    u *= v + w;
+    passed &= (u[1] == 11.);
+
+    u /= v + w;
+    passed &= (u[1] == 1.);
+
 
     cout << "t2: end\n";
 }
@@ -89,7 +143,7 @@ void t3()
 {
     cout << "t3: start\n";
 
-    UserVec<float> a(5), b(5), c(5), d(5), e(5), f(5);
+    UserVec<float> a(sz), b(sz), c(sz), d(sz), e(sz), f(sz);
 
     a = 4.;
     b = 2.;
@@ -97,54 +151,121 @@ void t3()
     d = 5.;
     e = 2.;
 
-// HP C is dieing on this, grrr.
-//     f = (a+b)*c/(d-e);
-    f = (a+b)*c/d;//(d-e);
+    f = (a+b)*c/(d-e);
+    passed &= (f[0] == 4.);
 
-    dump(f);
+    //dump(f);
 
     cout << "t3: end\n";
 }
 
 //---------------------------------------------------------------------------//
-// Now a ...
+// Check the simple unary operations with assignments.
 //---------------------------------------------------------------------------//
 
 void t4()
 {
     cout << "t4: start\n";
 
-    UserVec<float> a(5), b(5), c(5), d(5);
+    UserVec<float> u(sz), v(sz);
 
-    a = 4.;
-    b = 2.;
+    for( int i=0; i < v.size(); i++ ) {
+	v[i] = 2.*i;
+    }
 
-    //c = pow( a, 2.f );
+    u = +v;
+    passed &= (u[1] == v[1]);
 
-    dump(c);
-
-    c = 2.;
-    //d = pow( c, 2 );
-
-    dump(d);
-
-    //d = 1.f + pow( c, 2 );
-
-    dump(d);
+    u = -v;
+    passed &= (u[1] == -v[1]);
 
     cout << "t4: end\n";
 }
 
 //---------------------------------------------------------------------------//
-// Check incompatible participation.
+// Check the other binary operations with assignments.
 //---------------------------------------------------------------------------//
 
 void t5()
 {
     cout << "t5: start\n";
 
-    UserVec<float> a(5), b(5);
-    FooBar<float>  c(5);
+    UserVec<float> a(sz), b(sz), c(sz), d(sz);
+
+    a = 4.;
+    b = 3.;
+
+    c = pow( a, 3.f );
+    passed &= (c[0] == 64.);
+
+    c = 2.;
+    d = pow( c, 3 );
+    passed &= (d[0] == 8.);
+
+    d = 1.f + pow( c, 3 );
+    passed &= (d[0] == 9.);
+
+    c = pow(a,b);
+    passed &= (c[0] == 64.);
+
+    c = min(a,b);
+    passed &= (c[0] == 3.);
+
+    c = max(a,b);
+    passed &= (c[0] == 4.);
+
+    d = pow(a,min(a,b));
+    passed &= (d[0] == 64.);
+
+    cout << "t5: end\n";
+}
+
+//---------------------------------------------------------------------------//
+// Check the other unary operations with assignments.
+//---------------------------------------------------------------------------//
+
+void t6()
+{
+    cout << "t6: start\n";
+
+    UserVec<float> a(sz), b(sz);
+
+    a = 0.;
+
+    b = sin(a);
+    passed &= (b[0] == 0.);
+
+    b = cos(a);
+    passed &= (b[0] == 1.);
+
+    b = exp(a);
+    passed &= (b[0] == 1.);
+
+    a = exp(1.);
+    b = log(a);
+    passed &= (fabs(b[0] - 1.) < 0.00001);
+
+    a = 10.;
+    b = log10(a);
+    passed &= (b[0] == 1.);
+
+    a = 9.;
+    b = sqrt(a);
+    passed &= (b[0] == 3.);
+
+    cout << "t6: end\n";
+}
+
+//---------------------------------------------------------------------------//
+// Check incompatible participation.
+//---------------------------------------------------------------------------//
+
+void t7()
+{
+    cout << "t7: start\n";
+
+    UserVec<float> a(sz), b(sz);
+    FooBar<float>  c(sz);
 
     a = -99.;
 
@@ -153,24 +274,22 @@ void t5()
 // This statement should be illegal!
 //     a = b + c;
 
-    dump(a);
-
-    cout << "t5: end\n";
+    cout << "t7: end\n";
 }
 
 //---------------------------------------------------------------------------//
 // Check operator+= with various arguments.
 //---------------------------------------------------------------------------//
 
-void t6()
+void t8()
 {
-    cout << "t6: start\n";
+    cout << "t8: start\n";
 
-    UserVec<float> u(5), v(5), w(5);
+    UserVec<float> u(sz), v(sz), w(sz);
 
     float a = 2.0;
 
-    for( int i=0; i < 5; i++ ) {
+    for( int i=0; i < v.size(); i++ ) {
 	v[i] = 2.*i;
 	w[i] = 5.-i;
     }
@@ -209,7 +328,7 @@ void t6()
     u += v + w;
     dump(u);
 
-    cout << "t6: end\n";
+    cout << "t8: end\n";
 }
 
 //---------------------------------------------------------------------------//
@@ -224,10 +343,23 @@ int main( int argc, char *argv[] )
     t4();
     t5();
     t6();
+    t7();
+    //t8();
 
 // Print the status of the test.
 
-    cout << "PASSED" << endl;
+    cout << endl;
+    cout <<     "***********************************************" << endl;
+    if (passed) 
+    {
+        cout << "**** Expression Template Self Test: PASSED ****" << endl;
+    }
+    else
+    {
+        cout << "**** Expression Template Self Test: FAILED ****" << endl;
+    }
+    cout <<     "***********************************************" << endl;
+    cout << endl;
 
     return 0;
 }

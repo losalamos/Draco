@@ -16,30 +16,52 @@
 XM_NAMESPACE_BEG
 
 //---------------------------------------------------------------------------//
-// Provide a variety of operations taking only one argument.
-//---------------------------------------------------------------------------//
 // Unary operations on Indexable's.
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-// sin.
-//---------------------------------------------------------------------------//
-
-template<class P, class A, class D>
-Xpr< P, XprUnaryOp< P, ConstRef<P, Indexable<P,A,D> >, OpSin<P> >, D >
-sin( const Indexable<P,A,D>& a )
-{
-    typedef XprUnaryOp< P, ConstRef<P, Indexable<P,A,D> >, OpSin<P> > ExprT;
-    return Xpr< P, ExprT, D >( ExprT( a ) );
+#define XXX(op,ap) \
+template<class P, class A, class D> \
+Xpr< P, XprUnaryOp< P, ConstRef<P, Indexable<P,A,D> >, ap <P> >, D > \
+op ( const Indexable<P,A,D>& a ) \
+{ \
+    typedef XprUnaryOp< P, ConstRef<P, Indexable<P,A,D> >, ap <P> > ExprT; \
+    return Xpr< P, ExprT, D >( ExprT( a ) ); \
 }
 
-template<class P, class A, class D>
-Xpr< P, XprUnaryOp< P, Xpr<P,A,D>, OpSin<P> >, D >
-sin( const Xpr<P,A,D>& a )
-{
-    typedef XprUnaryOp< P, Xpr<P,A,D>, OpSin<P> > ExprT;
-    return Xpr< P, ExprT, D >( ExprT( a ) );
+XXX( operator+, OpUnaryAdd )
+XXX( operator-, OpUnarySub )
+XXX( sin, OpSin )
+XXX( cos, OpCos )
+XXX( exp, OpExp )
+XXX( log, OpLog )
+XXX( log10, OpLog10 )
+XXX( sqrt, OpSqrt )
+
+#undef XXX
+
+//---------------------------------------------------------------------------//
+// Unary operations on Xpr's.
+//---------------------------------------------------------------------------//
+
+#define XXX(op,ap) \
+template<class P, class A, class D> \
+Xpr< P, XprUnaryOp< P, Xpr<P,A,D>, ap <P> >, D > \
+op ( const Xpr<P,A,D>& a ) \
+{ \
+    typedef XprUnaryOp< P, Xpr<P,A,D>, ap <P> > ExprT; \
+    return Xpr< P, ExprT, D >( ExprT( a ) ); \
 }
+
+XXX( operator+, OpUnaryAdd )
+XXX( operator-, OpUnarySub )
+XXX( sin, OpSin )
+XXX( cos, OpCos )
+XXX( exp, OpExp )
+XXX( log, OpLog )
+XXX( log10, OpLog10 )
+XXX( sqrt, OpSqrt )
+
+#undef XXX
 
 XM_NAMESPACE_END
 

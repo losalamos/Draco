@@ -16,7 +16,7 @@
 #include "ds++/Assert.hh"
 
 #include "xm/xm.hh"
-// using namespace xm;
+using namespace xm;
 
 //===========================================================================//
 // class UserVec - Prototypical "user" array class
@@ -38,7 +38,6 @@ class UserVec : public xm::Indexable<T,UserVec<T> > {
     int sz;
 
     UserVec( const UserVec& );
-    UserVec& operator=( const UserVec& );
 
   public:
     UserVec( int n )
@@ -53,6 +52,12 @@ class UserVec : public xm::Indexable<T,UserVec<T> > {
     UserVec<T>& operator=( T t )
     {
 	for( int i=0; i < sz; i++ ) v[i] = t;
+	return *this;
+    }
+
+    UserVec& operator=( const UserVec& x)
+    {
+        for( int i=0; i < sz; i++ ) v[i] = x[i];
 	return *this;
     }
 
