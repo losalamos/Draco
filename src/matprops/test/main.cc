@@ -11,6 +11,8 @@
 #include "ds++/Assert.hh"
 #include <iostream>
 #include "testMmcMatProp.hh"
+#include "../Release.hh"
+
 using std::cerr;
 using std::endl;
 using std::cout;
@@ -18,8 +20,7 @@ using std::string;
 
 void version(const std::string &progname)
 {
-    std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
+    cout << progname << ": version " << rtt_matprops::release() << endl;
 }
 
 int main(int argc , char *argv[])
