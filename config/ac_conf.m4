@@ -235,6 +235,18 @@ AC_DEFUN(AC_CHECK_TOOLS, [dnl
    if test "${PYTHON_PATH}" = null ; then
        AC_MSG_ERROR("No valid Python found!")
    fi
+   
+   dnl check for and assign the path to perl
+   AC_PATH_PROG(PERL_PATH, perl, null)
+   if test "${PERL_PATH}" = null ; then
+       AC_MSG_WARN("No valid Perl found!")
+   fi
+
+   dnl check for CVS
+   AC_PATH_PROG(CVS_PATH, cvs, null)
+   if test "${CVS_PATH}" = null ; then
+       AC_MSG_WARN("No valid CVS found!")
+   fi
 
    dnl check for and assign the path to ghostview
    AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)

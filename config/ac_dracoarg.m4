@@ -196,6 +196,11 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    AC_ARG_ENABLE(draco-stdhdrs,
       [  --enable-draco-stdhdrs  use draco standard headers (off by default)])
 
+   dnl Doxygen options
+
+   AC_ARG_ENABLE(latex-doc,
+      [  --enable-latex-doc      built latex docs with doxygen (off by default)])
+
    dnl end of AC_DRACO_ARGS
 ])
 
