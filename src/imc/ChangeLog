@@ -1,3 +1,11 @@
+2002-11-15  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to imc-3_2_0.  Most changes were std compliancy
+	issues like typename's and stuff.  However, we did add one thing
+	to Source_Builder: it now checks when building the multigroup
+	frequency sampling table for evol(cell) = 0.0.  This can happen if
+	the opacity is zero in a cell.
+
 2002-08-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Updated to imc-3_1_0.  Main changes were for the
