@@ -117,6 +117,7 @@ for arg in $cmd_args; do
 	echo "            testing is complete.  The default behavior is to remove the "
 	echo "            build tree."
 	echo " "
+        exit
     ;;
     esac
 done
