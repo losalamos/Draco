@@ -4,6 +4,7 @@
  * \author Todd Urbatsch 
  * \date   Mon Feb  9 16:16:07 1998
  * \brief  RZWedge_Builder implementation file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

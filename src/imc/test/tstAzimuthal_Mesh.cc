@@ -4,6 +4,7 @@
  * \author Mike Buksas
  * \date   Mon Jun 23 13:59:30 2003
  * \brief  Unit test for the aziumthal mesh class
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

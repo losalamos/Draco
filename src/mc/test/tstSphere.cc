@@ -4,6 +4,7 @@
  * \author Mike Buksas
  * \date   Tue Jun 17 13:03:48 2003
  * \brief  Unit test for the Sphere implementation of the Surface interface
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

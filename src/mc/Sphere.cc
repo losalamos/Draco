@@ -76,7 +76,7 @@ Sphere::Sphere(double center_, double radius_)
  * For our application, we are interested in the smallest positive crossing
  * distance. For particles inside the sphere, this is always
  * \f$d_{+}=\beta+\gamma\f$. For particles outside, provided \f$ n^2<r^2\f$ and
- * \f$\beta>0\f$, this is \f$d_{-}\beta-\gamma\f$.
+ * \f$\beta>0\f$, this is \f$d_{-}=\beta-\gamma\f$.
  *
  * The computation of \f$\gamma\f$ from \f$\gamma^2\f$ is the primary cost of
  * this algorithm. Therefore, we postpone it until the possibility that there

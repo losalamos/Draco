@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 30 15:53:52 1998
  * \brief  Layout class implementation file
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

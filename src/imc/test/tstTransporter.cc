@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 14 17:15:17 2001
  * \brief  Transporter classes test.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

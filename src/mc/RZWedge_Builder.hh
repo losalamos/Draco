@@ -4,6 +4,7 @@
  * \author Todd Urbatsch (extension of Thomas M. Evans's OS_Builder)
  * \date   Mon Feb  9 16:16:07 1998
  * \brief  RZWedge_Builder class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

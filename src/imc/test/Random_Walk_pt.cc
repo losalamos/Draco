@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 14 18:50:01 2003
  * \brief  Random_Walk instantiation.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

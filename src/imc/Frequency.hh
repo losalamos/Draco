@@ -4,6 +4,7 @@
  * \author Todd J. Urbatsch
  * \date   Thu Jan 10 14:05:09 2002
  * \brief  Gray_Frequency and Multigroup_Frequency class definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

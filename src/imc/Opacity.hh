@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Feb  6 13:52:29 1998
  * \brief  Opacity class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 18 16:14:04 2000
  * \brief  Particle class instantiations.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

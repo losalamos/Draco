@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Feb 18 17:46:50 2003
  * \brief  Fleck_Factors class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
