@@ -75,6 +75,7 @@ string TestRTT_Format::runTest()
     check_virtual(mesh);
     check_header(mesh);
     check_dims(mesh);
+    check_node_flags(mesh);
 
     // Report results of test.
     if (passed())
@@ -495,6 +496,91 @@ bool TestRTT_Format::check_dims(const rtt_format::RTT_Format & mesh)
     else
 	fail(" Dims Accessors ") << "Errors in some Dims accessors." 
 				 << endl;
+
+    return all_passed;
+}
+
+bool TestRTT_Format::check_node_flags(const rtt_format::RTT_Format & mesh)
+{
+    // Exercize the node_flags accessor functions for this mesh.
+    bool all_passed = true;
+
+    // Check node flag types.
+    string node_flag_type[3] = { "node_type", "boundary", "source"};
+    bool got_node_flag_types = true;
+
+    for (int i = 0; i < 3; i++)
+        if (node_flag_type[i] != mesh.get_node_flags_flag_type(i))
+	    got_node_flag_types = false;
+    if (!got_node_flag_types)
+    {
+        fail(" NodeFlags flag_type ") << "Node Flags flag_types not obtained."
+				      << endl;
+ 	all_passed = false;
+    }
+
+    // Check node flag numbers for each of the flag types.
+    int node_flag_number[7] = {11, 21, 6, 1, 4, 101, 22};
+    int node_j = 0;
+    bool got_node_flag_numbers = true;
+
+    for (int i = 0; i < 3; i++)
+    {
+         for (int j = 0; j < mesh.get_dims_nnode_flags(i); j++) 
+	     if (node_flag_number[j + node_j] != 
+		 mesh.get_node_flags_flag_number(i, j))
+	         got_node_flag_numbers = false;
+	 node_j += mesh.get_dims_nnode_flags(i);
+    }
+    if (!got_node_flag_numbers)
+    {
+        fail(" NodeFlags flag_number ") << 
+	    "Node Flags flag_numbers not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    // Check number of flags for each node flag type.
+    int node_flag_size[3] = { 3, 2, 2};
+    bool got_node_flag_size = true;
+
+    for (int i = 0; i < 3; i++)
+        if (node_flag_size[i] != mesh.get_node_flags_flag_size(i))
+	    got_node_flag_size = false;
+    if (!got_node_flag_size)
+    {
+        fail(" NodeFlags flag_size ") << "Node Flags flag_size not obtained."
+				      << endl;
+ 	all_passed = false;
+    }
+
+    // Check node flag names for each of the flag types.
+    string node_flag_name[7] = {"interior", "dudded", "parent", 
+				"reflective", "vacuum", "no_source", 
+				"rad_source"};
+    node_j = 0;
+    bool got_node_flag_name = true;
+
+    for (int i = 0; i < 3; i++)
+    {
+         for (int j = 0; j < mesh.get_dims_nnode_flags(i); j++) 
+	     if (node_flag_name[j + node_j] != 
+		 mesh.get_node_flags_flag_name(i, j))
+	         got_node_flag_name = false;
+	 node_j += mesh.get_dims_nnode_flags(i);
+    }
+    if (!got_node_flag_name)
+    {
+        fail(" NodeFlags flag_name ") << 
+	    "Node Flags flag_name not obtained." << endl;
+ 	all_passed = false;
+    }
+
+    if (all_passed)
+        pass(" NodeFlags Accessors " ) << "Got all NodeFlags accessors." 
+				       << endl;
+    else
+	fail(" NodeFlags Accessors ") << "Errors in some NodeFlags accessors." 
+				      << endl;
 
     return all_passed;
 }
