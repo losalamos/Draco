@@ -8,6 +8,7 @@
 
 #include "ds++/Assert.hh"
 #include <iostream>
+#include "matprops/test/testMmcMatProp.hh"
 using std::cerr;
 using std::endl;
 
@@ -20,6 +21,10 @@ int main()
 
 	void testMatProp();
 	testMatProp();
+
+	testMmcMatProp xxx;
+	xxx.execute_test();
+
     }
     catch (const dsxx::assertion &ass)
     {

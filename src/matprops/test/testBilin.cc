@@ -77,7 +77,7 @@ BilinearInterpTable getTable()
 
 #else
 
-    SP<BilinearInterpGrid> spgrid(new BilinearInterpGrid(grid));
+    dsxx::SP<BilinearInterpGrid> spgrid(new BilinearInterpGrid(grid));
 
     return BilinearInterpTable(spgrid, func);
     
@@ -98,7 +98,7 @@ void testBilinDoit()
 
     // Load up the mementos
 
-    const SP<BilinearInterpGrid> grid = biLinTable.getGrid();
+    const dsxx::SP<BilinearInterpGrid> grid = biLinTable.getGrid();
 
     for (int i=0; i<sztest; i++)
 	mementos.push_back(grid->getMemento(testvals1[i], testvals2[i]));

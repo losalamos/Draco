@@ -6,7 +6,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "matprops/InterpedMaterialProps.cc"
+#include "matprops/InterpedMaterialProps.t.cc"
 #include <vector>
 using std::vector;
 
