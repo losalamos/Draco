@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="configure.ac"
-ac_subdirs_all="$ac_subdirs_all stdheaders ds++"
+ac_subdirs_all="$ac_subdirs_all ds++"
 ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi mesh_element quadrature plot2D lapack_wrap shared_lib"
 ac_subdirs_all="$ac_subdirs_all norms timestep pcgWrap viz cdi_gandolf cdi_analytic meshReaders"
 ac_subdirs_all="$ac_subdirs_all RTT_Format_Reader meshReaders_Services"
@@ -3101,7 +3101,7 @@ fi;
 
 
 
-subdirs="$subdirs stdheaders ds++"
+subdirs="$subdirs ds++"
 
 
 ##---------------------------------------------------------------------------##

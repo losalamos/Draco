@@ -1851,29 +1851,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    fi
 
-   # do draco standard headers
-
-   AC_MSG_CHECKING("for draco standard headers")
-   if test "${enable_draco_stdhdrs:=no}" != no ; then
-
-       # if draco vendor is defined then use that include path
-       if test -n "${DRACO_INC}" ; then
-	   CPPFLAGS="${CPPFLAGS} -I${DRACO_INC}/stdheaders"
-
-       # otherwise use the standard install location (includedir)
-       else
-	   CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
-
-       fi
-       AC_MSG_RESULT("CPPFLAGS modified")
-
-   else
-
-       # we don't need draco stdheaders
-       AC_MSG_RESULT("no") 
-
-   fi
-
    # STL port
 
    AC_MSG_CHECKING("for stlport")
@@ -2085,17 +2062,12 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl define --with-c4
    AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi|lampi|mpich,shmem]   
+      [  --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) ])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
        with_c4='scalar'
-   fi
-
-   # if specific vendor is listed (e.g.: lampi or mpich) reset to mpi
-   if test "${with_c4:=scalar}" = mpich || test "${with_c4:=scalar}" = lampi}; then
-      with_c4='mpi'
    fi
 
    dnl
@@ -2269,14 +2241,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl specify location of stlport installation.
    AC_ARG_WITH(stlport,
       [  --with-stlport        replace default STL with stlPort (off by default)])
-
-   dnl
-   dnl DRACO STANDARD HEADERS
-   dnl
-
-   dnl defines --enable-draco-stdhdrs
-   AC_ARG_ENABLE(draco-stdhdrs,
-      [  --enable-draco-stdhdrs  use draco standard headers (off by default)])
 
    dnl Doxygen options
 
@@ -3749,6 +3713,32 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    esac
 ])
 
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_LAHEY_ENVIRONMENT
+dnl
+dnl Some vendor setups require that the Lahey lib dir and compiler
+dnl libraries be provided on the link line.  This m4 function adds the
+dnl necessary libraries to LIBS.
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_DBS_LAHEY_ENVIRONMENT], [dnl
+#
+# setup lf95 libs:
+# add lf95 libs to LIBS if eospac or scalapack is used.
+#
+   AC_MSG_CHECKING("for extra lf95 library requirements.")
+   if test -n "${vendor_eospac}"    ||
+      test -n "${vendor_scalapack}" ||
+      test -n "${vendor_trilinos}"; then
+         lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	 extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+         LIBS="${LIBS} ${extra_lf95_libs}"
+         extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
+         RPATH="${RPATH} ${extra_lf95_rpaths}"
+         AC_MSG_RESULT("${extra_lf95_libs}")
+   else
+         AC_MSG_RESULT("none.")
+   fi
+])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_LINUX_ENVIRONMENT
@@ -3834,28 +3824,8 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       #
-       # setup lf95 libs:
-       # add lf95 libs to LIBS if eospac or scalapack is used.
-       #
-       
-       AC_MSG_CHECKING("for extra lf95 library requirements.")
-       if test -n "${vendor_eospac}"    ||
-          test -n "${vendor_scalapack}" ||
-          test -n "${vendor_trilinos}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_lf95_libs}"
-           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-           RPATH="${RPATH} ${extra_lf95_rpaths}"
-           AC_MSG_RESULT("${extra_lf95_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       #
-       # end of lf95 libs check
-       #
+       # setup lf95 libs
+       AC_DBS_LAHEY_ENVIRONMENT
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -3979,29 +3949,8 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl end of lapack setup
        dnl 
 
-       #
-       # setup lf95 libs:
-       # add lf95 libs to LIBS if eospac or scalapack is used.
-       #
-       
-       AC_MSG_CHECKING("for extra lf95 library requirements.")
-       if test -n "${vendor_eospac}"    ||
-          test -n "${vendor_scalapack}" ||
-          test -n "${vendor_trilinos}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_lf95_libs}"
-           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-           RPATH="${RPATH} ${extra_lf95_rpaths}"
-           AC_MSG_RESULT("${extra_lf95_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-
-       #
-       # end of lf95 libs check
-       #
+       # setup lf95 libs
+       AC_DBS_LAHEY_ENVIRONMENT
 
        dnl
        dnl add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -4634,28 +4583,8 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       #
-       # setup lf95 libs:
-       # add lf95 libs to LIBS if eospac or scalapack is used.
-       #
-       
-       AC_MSG_CHECKING("for extra lf95 library requirements.")
-       if test -n "${vendor_eospac}"    ||
-          test -n "${vendor_scalapack}" ||
-          test -n "${vendor_trilinos}"; then
-           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-           LIBS="${LIBS} ${extra_lf95_libs}"
-           extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-           RPATH="${RPATH} ${extra_lf95_rpaths}"
-           AC_MSG_RESULT("${extra_lf95_libs}")
-       else
-           AC_MSG_RESULT("none.")
-       fi
-
-       #
-       # end of lf95 libs check
-       #
+       # setup lf95 libs
+       AC_DBS_LAHEY_ENVIRONMENT
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
