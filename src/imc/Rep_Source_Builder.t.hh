@@ -270,17 +270,28 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 	    retry = false;
     }
 
+    // temporary variable for the old global ecen per cell
+    double old_ecen = 0.0;
+
     // calculate global energy weights and sampling contribution to
-    // energy loss
+    // energy loss.  NOTE that ecentot is not modified to be the true
+    // total; the true total is ecentot - global_eloss_cen.
     for (int cell = 1; cell <= global_ncen.size(); cell++)
     {
 	if (global_ncen(cell) > 0)
 	    ew_cen(cell) = ecen(cell) / global_ncen(cell);
 	else
 	    ew_cen(cell) = 0.0;
-	
-	// add up contributions from sampling to energy loss
-	global_eloss_cen += ecen(cell) - ew_cen(cell) * global_ncen(cell);
+
+        // save old ecen
+        old_ecen = ecen(cell);
+
+        // calculate new global ecen, which won't contain energy lost
+        // from initial sampling
+        ecen(cell) = global_ncen(cell) * ew_cen(cell);
+
+        // add up energy loss due to initial census sampling
+        global_eloss_cen += old_ecen - global_ncen(cell) * ew_cen(cell);
     }
 
     // calculate the local number of particles and local random number IDs

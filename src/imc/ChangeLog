@@ -1,3 +1,14 @@
+2000-01-19  Todd J. Urbatsch  <tmonster@lanl.gov>
+
+	* Rep_Source_Builder.t.hh: Corrected a long-time error: after
+ 	sampling the initial census, ecen(cell) should (and now does)
+ 	represent the energy of the actual particles.  (ecentot still
+ 	represents the deterministically calculated total census energy,
+ 	though.)  Thus, ecentot - global_ecen_loss = true ecentot.  This
+ 	change will need to be carried into DD_Source_Builder, etc.  The
+ 	old error was in the old Source_Init and old Parallel_Source_Init
+ 	(pre v2_0_0).
+
 2000-01-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* Source_Init.*: removed the old Source_Init.  The new Source_Init 
