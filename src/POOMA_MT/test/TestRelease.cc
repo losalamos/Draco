@@ -18,7 +18,7 @@ using std::string;
 // this library in the form POOMA_MT_test-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)POOMA_MT_test-1_0_0";
+    string pkg_release = "@(#)POOMA_MT_test-1_1_0";
     return pkg_release;
 }
 

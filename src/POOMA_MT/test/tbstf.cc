@@ -9,81 +9,30 @@
 //---------------------------------------------------------------------------//
 
 #include "meshTest/TestMTFields.hh"
-
 #include "../PoomaMesh_XYZ.hh"
 #include "PoomaMesh_XYZFactory.hh"
 
-#include "nml/Group.hh"
+#include "Tester.hh"
 
-#include "c4/global.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
-
-#include "utils.hh"
-using rtt_POOMA_MT_test::getMTFactory;
-using rtt_POOMA_MT_test::version;
-
-using rtt_POOMA_MT_test::PoomaMesh_XYZFactory;
 using rtt_meshTest::TestMTFields;
 
 int main( int argc, char *argv[] )
 {
-    C4::Init( argc, argv );
-
-    for (int arg=1; arg < argc; arg++)
+    using namespace rtt_POOMA_MT_test;
+    
+    typedef PoomaMesh_XYZFactory Factory;
+    typedef TestMTFields<Factory> Test;
+    
+    try
     {
-	if (std::string(argv[arg]) == "--version")
-	{
-	    version(argv[0]);
-	    C4::Finalize();
-	    return 0;
-	}
-    }
-    
-    bool passed = false;
-    
-    try {
-
-	PoomaMesh_XYZFactory mtFactory = getMTFactory("test.in");
-
-	{
-	    cout << "Initiating test of the MT::bstf."
-		 << endl;
-
-	    typedef TestMTFields<PoomaMesh_XYZFactory> Tester;
-	    
-	    Tester tester(mtFactory, cout);
-	    tester.run<Tester::BSTF>("bstf");
-
-	    passed = tester.passed();
-	}
+	Tester<Factory> tester("test.in", argc, argv);
+	tester.run<Test,Test::BSTF>("PoomaMesh_XYZ::bstf");
     }
     catch( dsxx::assertion& a )
     {
-	cout << "Failed assertion: " << a.what() << endl;
+	std::cout << "Failed assertion: " << a.what() << std::endl;
     }
-
-    // Print the status of the test.
-
-    cout << endl;
-    cout <<     "******************************************" << endl;
-    if (passed) 
-    {
-        cout << "**** PoomaMesh_XYZ::bstf Self Test: PASSED ****" << endl;
-    }
-    else
-    {
-        cout << "**** PoomaMesh_XYZ::bstf Self Test: FAILED ****" << endl;
-    }
-    cout <<     "******************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing PoomaMesh_XYZ::bstf.\n";
-
-    C4::Finalize();
-
+    
     return 0;
 }
 

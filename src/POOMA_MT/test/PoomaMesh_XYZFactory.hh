@@ -88,12 +88,25 @@ class PoomaMesh_XYZFactory
 	std::copy(numCells_in.begin(), numCells_in.end(), numCells_m);
 	for (int i=0; i<Dimension(); i++)
 	{
-	    Assert(cellWidth_in.size() == numCells_m[i]);
+	    Assert(cellWidth_in[i].size() == numCells_m[i]);
 	    cellWidth_m[i] = new double[numCells_m[i]];
 	    std::copy(cellWidth_in[i].begin(), cellWidth_in[i].end(),
 		      cellWidth_m[i]);
 	}
 	std::copy(decomposition_in.begin(), decomposition_in.end(),
+		  decomposition_m);
+    }
+
+    PoomaMesh_XYZFactory(const PoomaMesh_XYZFactory &rhs)
+    {
+	std::copy(rhs.numCells_m, rhs.numCells_m + Dimension(), numCells_m);
+	for (int i=0; i<Dimension(); i++)
+	{
+	    cellWidth_m[i] = new double[numCells_m[i]];
+	    std::copy(rhs.cellWidth_m[i], rhs.cellWidth_m[i] + numCells_m[i],
+		      cellWidth_m[i]);
+	}
+	std::copy(rhs.decomposition_m, rhs.decomposition_m + Dimension(),
 		  decomposition_m);
     }
 
@@ -115,8 +128,6 @@ class PoomaMesh_XYZFactory
     
     // DISSALLOWED CREATORS
     
-    PoomaMesh_XYZFactory(const PoomaMesh_XYZFactory &rhs);
-
     // DISSALLOWED MANIPULATORS
     
     PoomaMesh_XYZFactory& operator=(const PoomaMesh_XYZFactory &rhs);
