@@ -10,7 +10,7 @@
 #define __nml_Block_hh__
 
 #include <list>
-using std::list;
+// using std::list;
 
 #include "nml/Item.hh"
 #include "ds++/String.hh"
@@ -19,7 +19,7 @@ using std::list;
 
 class NML_Block {
     dsxx::String name;
-    list< NML_Item * > itmlist;
+    std::list< NML_Item * > itmlist;
 
   public:
     NML_Block( const dsxx::String& n ) : name(n) {}
@@ -31,7 +31,7 @@ class NML_Block {
     int add_callback( const dsxx::String& itmnam, NML_Callback& cb );
 
     const dsxx::String& Name() const { return name; }
-    const list<NML_Item *>& Itemlist() const { return itmlist; }
+    const std::list<NML_Item *>& Itemlist() const { return itmlist; }
 
     NML_Item *Get_item( dsxx::String itmnam );
 

@@ -16,7 +16,7 @@
 #include "ds++/Assert.hh"
 
 #include "xm/xm.hh"
-using namespace xm;
+// using namespace xm;
 
 //===========================================================================//
 // class UserVec - Prototypical "user" array class

@@ -13,6 +13,9 @@
 #include "nml/Items.hh"
 #include "nml/nmstream.hh"
 
+#include <map>
+using std::map;
+
 using dsxx::DynArray;
 using dsxx::String;
 

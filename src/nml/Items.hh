@@ -10,7 +10,7 @@
 #define __nml_Items_hh__
 
 #include <map>
-using std::map;
+// using std::map;
 
 #include "nml/Item.hh"
 #include "ds++/DynArray.hh"
@@ -89,7 +89,7 @@ class nmi_int_set : public NML_Item {
 
   protected:
     int *pv;
-    map<dsxx::String, int> m;
+    std::map<dsxx::String, int> m;
 
     nmi_int_set( int undef, int nvals, ... );
 

@@ -22,8 +22,6 @@
 #include "timestep/ts_advisor.hh"
 #include <iostream>
 
-using std::cerr;
-
 namespace rtt_timestep {
 
 class field_ts_advisor : public ts_advisor {

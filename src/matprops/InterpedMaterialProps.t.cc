@@ -15,10 +15,10 @@
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 
-#include <string>
-using std::string;
-#include <vector>
-using std::vector;
+// #include <string>
+// using std::string;
+// #include <vector>
+// using std::vector;
 
 #include <stdexcept>
 #include <strstream>

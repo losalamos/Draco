@@ -14,7 +14,7 @@
 #include "c4/NodeInfo.hh"
 
 #include "ds++/Mat.hh"
-using namespace dsxx;
+// using namespace dsxx;
 
 #include "linalg/pcg_DB.hh"
 

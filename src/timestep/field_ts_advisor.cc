@@ -43,6 +43,8 @@ field_ts_advisor::~field_ts_advisor()
 
 double field_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
+    using std::cerr;
+    
     if ( cycle_at_last_update != tsm.get_cycle() && is_active() ) 
     {
 	cerr << "Warning: ts_adivsor " << get_name() << 

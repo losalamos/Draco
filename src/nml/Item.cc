@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "nml/Item.hh"
+using std::list;
 
 #include "nml/nmstream.hh"
 

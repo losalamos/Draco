@@ -16,6 +16,9 @@
 
 #include "nml/nmstream.hh"
 
+#include <list>
+using std::list;
+
 using dsxx::String;
 
 #define MAX_ITEM_LEN 40

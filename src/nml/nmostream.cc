@@ -13,6 +13,8 @@
 #include <fstream.h>
 
 #include "nml/nmstream.hh"
+#include <list>
+using std::list;
 
 using dsxx::String;
 

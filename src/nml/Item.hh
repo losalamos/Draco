@@ -10,7 +10,7 @@
 #define __nml_Item_hh__
 
 #include <list>
-using std::list;
+// using std::list;
 
 #include "ds++/String.hh"
 
@@ -26,7 +26,7 @@ class NML_Item {
     dsxx::String name;
     dsxx::String value;		// (The current value).
     dsxx::String default_value;
-    list< NML_Callback > cblist;
+    std::list< NML_Callback > cblist;
 
     dsxx::String widget;
     int active;

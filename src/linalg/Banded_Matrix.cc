@@ -16,6 +16,9 @@ using namespace C4;
 #include <functional>
 #include <list>
 
+using dsxx::Mat1;
+using dsxx::Mat2;
+
 //---------------------------------------------------------------------------//
 // Compute and store the info which describes the messaging pattern required
 // to perform mathematically correct matrix-vector multiplies.

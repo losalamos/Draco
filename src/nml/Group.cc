@@ -9,6 +9,9 @@
 #include <map>
 using std::map;
 
+#include <list>
+using std::list;
+
 #include "nml/Group.hh"
 #include "nml/Items.hh"
 #include "nml/nmstream.hh"

@@ -16,7 +16,7 @@
 // Module support
 #include "PyX_Module.hh"
 #include <list>
-using std::list;
+// using std::list;
 
 namespace Py {
 
@@ -124,7 +124,7 @@ namespace Py {
 	    return NULL;
 	}
 
-    typedef list<getattrfunc> parentlist;
+    typedef std::list<getattrfunc> parentlist;
 
 /* Find a method in a single method list */
 
@@ -174,7 +174,7 @@ namespace Py {
     {
 	T *p;
 	getattrfunc g;
-	list<getattrfunc> parents;
+	std::list<getattrfunc> parents;
 
       public:
 	CxxType( T *_p, getattrfunc _g )

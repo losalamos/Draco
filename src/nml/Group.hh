@@ -10,10 +10,10 @@
 #define __nml_Group_hh__
 
 #include <list>
-using std::list;
+// using std::list;
 
 #include <map>
-using std::map;
+// using std::map;
 
 #include "nml/Block.hh"
 #include "ds++/String.hh"
@@ -24,8 +24,8 @@ typedef NML_Item * (*NML_Item_handler) ( int type, va_list *pap );
 
 class NML_Group {
     dsxx::String name;
-    list<NML_Block *> blklist;
-    map<dsxx::String, NML_Block *> blkmap;
+    std::list<NML_Block *> blklist;
+    std::map<dsxx::String, NML_Block *> blkmap;
 
     NML_Item_handler user_item_creator;
     NML_Item_handler user_item_modifier;
@@ -53,7 +53,7 @@ class NML_Group {
     void perform_callback( int argc, char *argv[] );
 
     dsxx::String Name() const { return name; }
-    const list<NML_Block *>& Blocklist() const { return blklist; }
+    const std::list<NML_Block *>& Blocklist() const { return blklist; }
 
     NML_Item *Get_item( dsxx::String blknam, dsxx::String itmnam );
     void Set_widget( dsxx::String blknam, dsxx::String itmnam, dsxx::String widget );
