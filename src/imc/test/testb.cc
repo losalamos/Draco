@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
-  // Surface_diagnostic(*mesh);
+    Surface_diagnostic(*mesh);
 
   //
   // tally object
