@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
-  \file   Vector_Lite.hh
-  \brief  Header for Vector_Lite.
-  \author Rob Lowrie
-  \date   2002-10-19
-*/
+ * \file   ds++/Vector_Lite.hh
+ * \brief  Header for Vector_Lite.
+ * \author Rob Lowrie
+ * \date   2002-10-19
+ * \note   Copyright © 2003 The Regents of the University of California.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -25,8 +26,8 @@ namespace rtt_dsxx
 
   \brief  Array container that is a wrapper around a standard C array.
 
-  It adds iterator and arithemtic support, along with bounds checking
-  (via Draco's DBC).
+  It adds iterator and arithemtic support, along with bounds checking (via
+  Draco's DBC).
 
   An alternative to this class is boost::array (www.boost.org).  However,
   boost::array is an aggregate type, which has advantages (can use
@@ -104,7 +105,7 @@ class Vector_Lite
 
     /// Constructor for N = 5.
     Vector_Lite(const T &u0, const T &u1, const T &u2,
-	    const T &u3, const T &u4) {
+                const T &u3, const T &u4) {
 	Require(N == 5); d_U[0] = u0; d_U[1] = u1; d_U[2] = u2;
 	d_U[3] = u3; d_U[4] = u4;
     }
@@ -135,7 +136,6 @@ class Vector_Lite
 
     /// Assignment to type T.
     Vector_Lite &operator=(const T rhs) {
-	
 	for ( size_type i = 0; i < N; i++ )
 	    d_U[i] = rhs;
 
@@ -321,8 +321,6 @@ T inner_product(const rtt_dsxx::Vector_Lite<T, N> &a,
     return std::inner_product(a.begin(), a.end(), b.begin(), 0.0);
 }
 
-} // namespace rtt_dsxx
-
 //---------------------------------------------------------------------------//
 // global opeators
 //---------------------------------------------------------------------------//
@@ -454,6 +452,8 @@ std::istream &operator>>(std::istream &os,
     
     return os;
 }
+
+} // namespace rtt_dsxx
 
 #endif // rtt_ds_Vector_Lite_hh
 
