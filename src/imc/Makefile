@@ -59,5 +59,3 @@ testm: testm.o XYCoord_sys.o XYZCoord_sys.o OS_Mesh.o Layout.o Random.o
 testm.o: testm.cc Global.hh Layout.hh XYCoord_sys.hh XYZCoord_sys.hh \
          Random.hh
 	${CC} -c testm.cc ${INCLUDE} ${OPTIONS}
-
-shit::
