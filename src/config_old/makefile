@@ -81,6 +81,7 @@ LINALG_LIB	= -L$(SRC_TOP)/linalg  -llinalg_$(env)
 GEOM_LIB	= -L$(SRC_TOP)/geom    -lgeom_$(env)
 MESH_LIB	= -L$(SRC_TOP)/mesh    -lmesh_$(env)
 3T_LIB		= -L$(SRC_TOP)/3T      -l3T_$(env)
+matprops_LIB	= -L$(SRC_TOP)/matprops -lmatprops_$(env)
 SN_LIB		= -L$(SRC_TOP)/sn      -lsn_$(env)
 IMCTEST_LIB     = -L$(SRC_TOP)/imctest -limctest_$(env)
 PYCXX_LIB	= -L$(SRC_TOP)/pycxx   -lpycxx_$(env)
@@ -213,6 +214,9 @@ endif
 ifeq ($(need_3T),yes)
 LINK_LIBS	+= $(3T_LIB)
 endif
+ifeq ($(need_matprops),yes)
+LINK_LIBS	+= $(matprops_LIB)
+endif
 ifeq ($(need_mesh),yes)
 LINK_LIBS	+= $(MESH_LIB)
 endif
@@ -281,6 +285,7 @@ dep_libgeom	= $(SRC_TOP)/geom/libgeom_$(env).$(lib_suffix)
 dep_libmesh	= $(SRC_TOP)/mesh/libmesh_$(env).$(lib_suffix)
 dep_liblinalg	= $(SRC_TOP)/linalg/liblinalg_$(env).$(lib_suffix)
 dep_lib3T	= $(SRC_TOP)/3T/lib3T_$(env).$(lib_suffix)
+dep_libmatprops	= $(SRC_TOP)/matprops/libmatprops_$(env).$(lib_suffix)
 dep_libimctest  = $(SRC_TOP)/imctest/libimctest_$(env).$(lib_suffix)
 
 #dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
