@@ -1,0 +1,381 @@
+#!/usr/local/bin/perl
+# perstalyzer                                -*-perl-*-
+# Geoffrey Furnish
+# 28 April 1994
+#
+# @> PERSTALYZER == "Persistence Analyzer"
+###############################################################################
+
+# Obtain the user's option settings.
+
+require "importenv.pl";
+require "getopts.pl";
+
+&Getopts('c:t:o:h:vgk');
+
+$class = $opt_c;
+$template = $opt_t;
+$outfile = $opt_o;
+$header = $opt_h;
+$verbose = $opt_v;
+$using_gcc = $opt_g;
+$using_kcc = $opt_k;
+
+# Check for mandatory settings, and handle defaults for unspecified things.
+
+die "Must supply -c class\n" if $class eq "";
+die "Must supply environment variable CXX\n" if $CXX eq "";
+die "Must supply environment variable CXXFLAGS\n" if $CXXFLAGS eq "";
+$template = "$class.prs" if $template eq "";
+$outfile = $class . "_prs.cc" if $outfile eq "";
+$header = $class . ".hh" if $header eq "";
+
+$varlist = "";
+
+# Tell 'em what we're doing.
+
+print "Perstalyzer\n" if $verbose;
+
+print "CXX = $CXX\n" if $verbose;
+print "CXXFLAGS = $CXXFLAGS\n" if $verbose;
+print "PRST_CXXPP = $PRST_CXXPP\n" if $verbose;
+
+# KCC --output_dependencies screws up lots of stuff here, sheesh.
+
+if ($CXX =~ /KCC/) {
+    print "Using KCC\n" if $verbose;
+    if ( $CXX =~ /(.*)--output_dependencies\s+([\._\w]+)(.*)/ ) {
+	print "KCC is using --oputput_dependencies $2\n" if $verbose;
+	$CXX = "$1 $3";
+	print "Adjusting CXX to $CXX\n" if $verbose;
+    }
+}
+
+print "class = $class\n" if $verbose;
+print "template file = $template\n" if $verbose;
+print "outfile = $outfile\n" if $verbose;
+print "header = $header\n" if $verbose;
+
+# Okay, now we have all the flags figured out, so now lets get the
+# preprocessed header file written out to disk.
+
+# Start by writing a fake file to pull in what we need to munge.
+
+unlink '__prst.cc', '__prst.i';
+
+open( TEMP, "> __prst.cc" );
+print TEMP "#include \"$header\"\n";
+close TEMP;
+
+# Because of braindead/busted cpp's on some systems, we may have to
+# allow the client to specify a different program for pre-processing
+# than he would normally use for actual compiling.
+
+if ( $CXX =~ /gcc/ || $using_gcc ) {
+    print "You're using GCC huh?\n" if $verbose;
+    if ($PRST_CXXPP eq "") {
+	print "$CXX $CXXFLAGS -P -E -C __prst.cc > __prst.i\n" if $verbose;
+	system "$CXX $CXXFLAGS -P -E -C __prst.cc > __prst.i";
+    } else {
+	print "Using PRST_CXXPP:\n" if $verbose;
+	print "$PRST_CXXPP -P -E -C __prst.cc > __prst.i\n" if $verbose;
+	system "$PRST_CXXPP -P -E -C __prst.cc > __prst.i";
+    }
+} elsif ( $CXX =~ /KCC/ || $using_kcc ) {
+    print "Using Photon C++.\n" if $verbose;
+    print "$CXX $CXXFLAGS -P -C __prst.cc > __prst.i\n" if $verbose;
+    system "$CXX $CXXFLAGS -P -C __prst.cc > __prst.i";
+} else {
+    if ($PRST_CXXPP eq "") {
+	print "$CXX $CXXFLAGS -P -C __prst.cc\n" if $verbose;
+	system "$CXX $CXXFLAGS -P -C __prst.cc";
+	if ( $CXX =~ /cxx/ ) {
+	    print "Using DEC C++.\n" if $verbose;
+	    rename( '__prst.ixx', '__prst.i' );
+	}
+    } else {
+	print "Using PRST_CXXPP:\n" if $verbose;
+	if ($HOST eq "h4p" || $HOST eq "t3d") {
+	    print "Using h4p.\n" if $verbose;
+	    print "$PRST_CXXPP -P -C __prst.cc > __prst.i\n" if $verbose;
+	    system "$PRST_CXXPP -P -C __prst.cc > __prst.i";
+	} else {
+	    print "$PRST_CXXPP -P -C __prst.cc\n" if $verbose;
+	    system "$PRST_CXXPP -P -C __prst.cc";
+	}
+    }
+}
+
+$cnt = unlink '__prst.cc';
+
+# Now start parsing through the file...
+
+open( FILE, "< __prst.i" ) || die "Can't open preprocessed file.\n";
+
+# Find beginning of class.
+
+# Skip forward declarations and comment blocks.
+
+$found_class = 0;
+while( <FILE> )  {
+    next if /class $class;/;
+    next if /\/\/ class $class/;
+    last if /class $class / && ($found_class = 1);
+    last if /struct $class / && ($found_class = 1);
+}
+
+die "No such class.\n" if $found_class == 0;
+
+# Okay, now we're to the start of the class.
+
+$in_method = 0;
+$prst_on = 1;
+
+# Okay, I made myself vomit 13 times trying to work this out.  I give
+# up.  We're going to KISS || die ":-)"; For now, user must explicitly
+# tell the Perstalyzer what to do.  You turn it on with a line like
+# "^// PRST: on"
+# You turn it off temporarily with a line like
+# "^// PRST: off"
+# And you can skip an individual item with a line like
+# " type name; // PRST: skip"
+# And you turn the whole thing off for good when it see's
+# "^};", which had better darn well be the class terminator.
+
+# I hate this.  I really do.  I would much rather have a real parser.
+# But it's next to impossible to get all cases right with something
+# like PERL, and I don't have the patience for doing a full yacc
+# grammar for C++ right now.  If it were just declarations, it
+# wouldn't be that big a deal (I think).  But you've got two kinds of
+# comments (one can span lines), and you've got inline methods with
+# potentially arbitrary amounts of actual code, all of which would
+# have to be correctly parsed.  I just don't have the time to stomach
+# that right now, so we're going to go with structured comments to
+# advise the Perstalyzer of how to behave.
+
+# AND, as an added safety feature, we're gonna shut down the minute we
+# see anything with an ( or an {, which most likely is either a method
+# decl (for '(') or an enum (for'{').  (The '{' could be a method body
+# too, but presumably :-) a '(' would've already been seen by that
+# point.)  Draconian, but if the user wants to play fancy foot work
+# with nested classes or stuff like that, he'll have to use the
+# structured comments.
+
+# Finally, we turn it all on by default once we find the class intro,
+# supposing that class data comes first...
+
+# NOTE:  This is all pretty simplistic in terms of the rules used to
+# filter out lines from consideration.  In particular, there are
+# probably tons of ways to get out of sync.  For instance, a line
+# like:
+#    void foo() { ... }   /* start of multi-line comment ...
+# is going to trick this, and havoc will ensue.  As noted above, I
+# just can't get it all done exactly correct right now.  The user will
+# have to abide by some stylistic constraints.  I don't think these
+# are hard to swallow, but let each man decide for himself...  Someday
+# maybe we can get a /real/ persistance analyzer.
+
+while( <FILE> ) {
+    chop;
+    next if /^$/;		# Throw out blank lines.
+    next if /public:/;		# Toss access controls.
+    next if /protected:/;
+    next if /private:/;
+
+# Handle the structured comments
+
+    next if /^\s*\/\/ PRST: off/ && ( ($prst_on=0), 1 );
+    next if /\/\/ PRST: skip/;
+    next if /^\/\/ PRST: on/ && ($prst_on = 1);
+    next if ! $prst_on;
+
+    last if /^};/;		# This better be the end of the class.
+
+# I have no idea what the rules are about mixing // and /* on a single
+# line, so the handling provided here is probably not 100% correct.
+
+    $comment_eol = index( $_, "//" );
+
+    $_ = substr( $_, 0, $comment_eol ) if $comment_eol > -1;
+    next if /^\s*$/;
+
+# Shut down if open paren or open brace.
+
+    next if /[\(\{]/ && ( ($prst_on = 0), 1 );
+
+# Okay, here's a line we think is really data.
+
+# What if Gomer says: "int foo, /* bar, */ baz;" ???  Grrr.
+# Or even worse, what if Gomer says:
+# int foo, /* this is a 
+#             lot of junk */ bar;                ???  AGGGGHHH !!!!!
+# Or what if he says:
+# int foo; /* this is a 
+#             lot of junk */ float bar;          ???  AGGGGHHH !!!!!
+# Or what if Gomer says:
+#    int foo; float bar;
+# Or:
+#     int foo
+#      ,
+#      bar;
+
+# Do we want to try to cope with /* ... */ style comments?
+
+# Okay, this is just unbelievably sick.  We need a grammar, but I
+# don't have time or patience to do a full CPP and C++ aware grammar
+# right now.  Grrr, I hate this.  So, we kick start by just
+# dissallowing decls which span lines or which have embedded /* */
+# things inside a decl.  We just won't handle it.
+
+    $comm = index( $_, "/*" );
+    if ( $comm > -1 ) {
+
+# Peel off what comes before the /*, and handle that.
+
+	$leader = substr( $_, 0, $comm );
+	&process( $leader ) if $leader !~ /^$/;
+
+# If this line contains */, peel off what comes after and handle that.
+
+	$_ = substr( $_, $comm );
+	$end = index( $_, "*/" );
+	if ( $end > -1 ) {
+	    $trailer = substr( $_, $end );
+	    &process( $trailer ) if $trailer !~ /^$/;
+	    next;
+	}
+
+# Otherwise, start slurping till find */, then process any trailer.
+
+	do {
+	    $_ = <FILE>;
+	} until /\*\//;
+
+	$end = index( $_, "*/" );
+	die "Confused about */\n" if $end == -1;
+
+	$trailer = substr( $_, $end );
+	&process( $trailer ) if $trailer !~ /^$/;
+	next;
+    }
+
+    &process( $_ );
+}
+
+close FILE;
+unlink '__prst.i';
+
+#print "Done processing the class declaration.\n";
+#print "The variablles which will be handled are:\n";
+#foreach $var ( split( / /, $varlist ) ) {
+#    print "   $var\n";
+#}
+
+# Okay, now handle the processing of the template function.
+
+unlink $outfile;
+
+open( TEMPLATE, "< $template" ) || die "Can't open $template for reading.\n";
+open( OUT, "> $outfile" ) || die "Can't open $outfile for writing.\n";
+
+$read_command = "";
+$dump_command = "";
+
+while( <TEMPLATE> ) {
+    if ( /\/\/ PRST: read_command (.*)/ ) {
+	$read_command = $1;
+    }
+
+    if ( /\/\/ PRST: dump_command (.*)/ ) {
+	$dump_command = $1;
+    }
+
+    if ( /\/\/ PRST: readvars/ ) {
+	foreach $var (split( / /, $varlist )) {
+	    $text = $read_command;
+	    $text =~ s/%s/$var/g;
+	    print OUT "    $text\n";
+	}
+	next;
+    }
+
+    if ( /\/\/ PRST: dumpvars/ ) {
+	foreach $var (split( / /, $varlist )) {
+	    $text = $dump_command;
+	    $text =~ s/%s/$var/g;
+	    print OUT "    $text\n";
+	}
+	next;
+    }
+
+    print OUT $_;
+}
+
+# Wrap it up.
+
+close TEMPLATE;
+close OUT;
+
+# Since $outfile is a generated file we do not want people editing it
+# by accident, thinking they are fixing a bug.  Instead, we mark it
+# unwritable, which will force them to edit the .prs file which is the
+# actual "source".
+
+chmod 0444, $outfile;
+
+print "Perstalyzer finished.\n" if $verbose;
+
+###############################################################################
+
+# Either the line has no commas, or it does.  If it does not, then the
+# last word is the only variable.
+
+# If it does, then the word before the first comma, and all following
+# words, are the variables.
+
+# Everything before the above, is the type, which we don't need.
+
+sub process {
+    local( $_ ) = @_;
+    local( $lead, $tail, $var );
+
+    print "S:$_:\n" if $verbose;
+
+    $semi = index( $_, ";" );
+    $semi > -1 || die "Can't parse :$_:\n";
+
+    $_ = substr( $_, 0, $semi );	# Chop off the trailing ;.
+
+# Okay, check for ",", handle accordingly.
+
+#          vvvvvvvv -->  Try to handle all potential chars in valid typespec.
+    if ( /[\w<>\s\*]+ (\w+)\s*,\s*(.*)/ ) {
+#	print "Containes comma, picking list.\n";
+	$lead = $1;
+	$tail = $2;
+#	print "lead = :$lead: tail = :$tail:\n";
+	if ( $lead =~ /\*+(.*)/ ) {
+	    $lead = $1;
+	}
+	$varlist .= "$lead ";
+#	print "adding $lead to varlist\n";
+	foreach $var ( split( /[ \t,*]+/, $tail ) ) {
+	    next if ( $var =~ /^$/ );
+	    $varlist .= "$var ";
+#	    print "adding $var to varlist\n";
+	}
+    } else {
+#	print "No comma, picking last item.\n";
+	split;
+	$var = $_[$#_];
+
+# Check to see if its a pointer, if so strip the * and use only the
+# actual variable name.
+
+	if ( $var =~ /\*+(.*)/ ) {
+	    $var = $1;
+	}
+	$varlist .= "$var ";
+#	print "adding $var to varlist\n";
+    }
+}
