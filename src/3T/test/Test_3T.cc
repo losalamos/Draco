@@ -28,6 +28,8 @@ using namespace C4;
 #include "3T/MatVec_3T.hh"
 #include "3T/PreCond.hh"
 
+using dsxx::SP;
+
 //---------------------------------------------------------------------------//
 // Constructor.  Perform basic initialization of the test problem.
 //---------------------------------------------------------------------------//

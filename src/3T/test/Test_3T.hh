@@ -31,10 +31,10 @@ class Test_3T : public Test_Prob,
 		private Problem,
 		private MT::Coord_Mapper
 {
-    SP<MT> spm;
+    dsxx::SP<MT> spm;
     typename MT::fcdsf Df;
 
-    SP< Diffusion_XYZ<MT> > spd;
+    dsxx::SP< Diffusion_XYZ<MT> > spd;
 
     pcg_DB pcg_db;
 
@@ -46,7 +46,7 @@ class Test_3T : public Test_Prob,
     typedef double NumT;
     typedef typename MT::ccsf cell_array_double;
 
-    Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
+    Test_3T( const dsxx::SP<MT>& spm_, const Run_DB& rdb,
              const Diffusion_DB& diffdb, const typename Problem::params& p,
              const pcg_DB& pcg_db_, int verbose_ );
     ~Test_3T();
