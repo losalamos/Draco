@@ -12,9 +12,12 @@
 
 #include <string>
 #include <vector>
+#include "meshReaders/Element_Definition.hh"
 
 namespace rtt_mc_test
 {
+
+using rtt_meshReaders::Element_Definition;
 
 bool fail(int line)
 {
@@ -126,6 +129,22 @@ class TET_test_1
         elements_nodes[7].push_back(3);
 
         return elements_nodes;
+    }
+
+    std::vector<Element_Definition::Element_Type> get_element_types()
+    {
+        std::vector<Element_Definition::Element_Type> element_types;
+
+        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TRI_3);
+        element_types.push_back(Element_Definition::TETRA_4);
+        element_types.push_back(Element_Definition::TETRA_4);
+
+        return element_types;
     }
 
     // TET_Builder no longer requires this function.

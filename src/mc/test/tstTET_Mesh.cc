@@ -93,9 +93,15 @@ void Test_ThreeVector()
         for (int x = 0; x < 12 ; x++)
             count[y][x] = 0.;
 
+    double x_cent = 0.0;
+    double y_cent = 0.0;
+
     for (int i = 0 ; i < numm ; i++)
     {
         ThreeVector R = sample_in_triangle(A,B,C,random);
+
+        x_cent += R.get_x();
+        y_cent += R.get_y();
 
         if (R.get_x() <= 100.0 || R.get_x() >= 112.0)       ITFAILS;
         if (R.get_y() <= 10.0  || R.get_y() >= 16.0)        ITFAILS;
@@ -105,6 +111,11 @@ void Test_ThreeVector()
         int yy = static_cast<int>(R.get_y() - 10.);
         count[yy][xx] += 1.;
     }
+    x_cent /= static_cast<double>(numm);
+    y_cent /= static_cast<double>(numm);
+
+    if (fabs(x_cent - 105.99714295) > MID_epsilon)  ITFAILS;
+    if (fabs(y_cent - 12.017748255) > MID_epsilon)  ITFAILS;
 
     for (int yy = 5 ; yy >= 0 ; yy--)
         for (int xx = 0; xx < 12; xx++)
@@ -192,6 +203,7 @@ void Test_ThreeVector()
 //          cout << setw(10) << count[yy][xx];
 //      cout << endl;
 //  }
+//  cout << endl << endl;
 //  End:  a way to see these results ordered on the page.
 
     // End of test sampling in a triangle.
@@ -202,6 +214,10 @@ void Test_ThreeVector()
 void Test_TET()
 {
     double TET_epsilon = 0.0000000001;
+
+    // First, test a hand-built mesh, without using an interface.
+    // This mesh is a 2-tet pyramid.
+
     SP<Coord_sys> coor(new XYZCoord_sys());
     if (!coor)                     ITFAILS;
 
@@ -241,53 +257,54 @@ void Test_TET()
     layo(1,1) = 2;
     layo(2,3) = 1;
 
-    SP<TET_Mesh> mesh_ptr_1(new TET_Mesh(coor, layo, vertex_vec, cells_ver));
+    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec, cells_ver));
 
-    if ( !mesh_ptr_1 )                                                 ITFAILS;
-    if ( !mesh_ptr_1->full_Mesh() )                                    ITFAILS;
+    if ( !mesh_ptr_H )                                                 ITFAILS;
+    if ( !mesh_ptr_H->full_Mesh() )                                    ITFAILS;
 
-    if ( mesh_ptr_1->next_cell(1,1) != 2 )                             ITFAILS;
-    if ( mesh_ptr_1->next_cell(1,2) != 0 )                             ITFAILS;
-    if ( mesh_ptr_1->next_cell(1,3) != 0 )                             ITFAILS;
-    if ( mesh_ptr_1->next_cell(1,4) != 0 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(1,1) != 2 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(1,2) != 0 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(1,3) != 0 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(1,4) != 0 )                             ITFAILS;
 
-    if ( mesh_ptr_1->next_cell(2,1) != 0 )                             ITFAILS;
-    if ( mesh_ptr_1->next_cell(2,2) != 0 )                             ITFAILS;
-    if ( mesh_ptr_1->next_cell(2,3) != 1 )                             ITFAILS;
-    if ( mesh_ptr_1->next_cell(2,4) != 0 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(2,1) != 0 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(2,2) != 0 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(2,3) != 1 )                             ITFAILS;
+    if ( mesh_ptr_H->next_cell(2,4) != 0 )                             ITFAILS;
 
-    if (fabs(1.0 - 6.0*mesh_ptr_1->volume(1)) > TET_epsilon)           ITFAILS;
-    if (fabs(1.0 - 6.0*mesh_ptr_1->volume(2)) > TET_epsilon)           ITFAILS;
+    if (fabs(1.0 - 6.0*mesh_ptr_H->volume(1)) > TET_epsilon)           ITFAILS;
+    if (fabs(1.0 - 6.0*mesh_ptr_H->volume(2)) > TET_epsilon)           ITFAILS;
 
-    if (fabs(0.707106781187-mesh_ptr_1->face_area(1,1)) > TET_epsilon) ITFAILS;
-    if (fabs(0.559016994375-mesh_ptr_1->face_area(1,2)) > TET_epsilon) ITFAILS;
-    if (fabs(0.559016994375-mesh_ptr_1->face_area(1,3)) > TET_epsilon) ITFAILS;
-    if (fabs(0.5 - mesh_ptr_1->face_area(1,4)) > TET_epsilon)          ITFAILS;
+    if (fabs(0.707106781187-mesh_ptr_H->face_area(1,1)) > TET_epsilon) ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_H->face_area(1,2)) > TET_epsilon) ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_H->face_area(1,3)) > TET_epsilon) ITFAILS;
+    if (fabs(0.5 - mesh_ptr_H->face_area(1,4)) > TET_epsilon)          ITFAILS;
 
-    if (fabs(0.559016994375-mesh_ptr_1->face_area(2,1)) > TET_epsilon) ITFAILS;
-    if (fabs(0.559016994375-mesh_ptr_1->face_area(1,2)) > TET_epsilon) ITFAILS;
-    if (fabs(0.707106781187-mesh_ptr_1->face_area(2,3)) > TET_epsilon) ITFAILS;
-    if (fabs(0.5 - mesh_ptr_1->face_area(1,4)) > TET_epsilon)          ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_H->face_area(2,1)) > TET_epsilon) ITFAILS;
+    if (fabs(0.559016994375-mesh_ptr_H->face_area(1,2)) > TET_epsilon) ITFAILS;
+    if (fabs(0.707106781187-mesh_ptr_H->face_area(2,3)) > TET_epsilon) ITFAILS;
+    if (fabs(0.5 - mesh_ptr_H->face_area(1,4)) > TET_epsilon)          ITFAILS;
 
     // Later, add some vector position and direction tests here.
 
     // Test interface ===> TET_Builder instantiation with hand-coded interface.
+    // This mesh should be the same 2-tet pyramid as in mesh_ptr_H.
 
     SP<TET_test_1> interface(new TET_test_1());
     if (!interface)                                   ITFAILS;
 
     TET_Builder builder(interface);
 
-    SP<TET_Mesh> mesh_ptr_2 = builder.build_Mesh();
-    if (!mesh_ptr_2)                                  ITFAILS;
+    SP<TET_Mesh> mesh_ptr_0 = builder.build_Mesh();
+    if (!mesh_ptr_0)                                  ITFAILS;
 
     // The pointers themselves should not be equal...
-    if (mesh_ptr_1 == mesh_ptr_2)                     ITFAILS;
+    if (mesh_ptr_H == mesh_ptr_0)                     ITFAILS;
 
     // ... but, with luck, the meshes will be equal.
-    if (*mesh_ptr_1 != *mesh_ptr_2)                   ITFAILS;
+    if (*mesh_ptr_H != *mesh_ptr_0)                   ITFAILS;
 
-    vector< vector<double> > m_coords = mesh_ptr_2->get_point_coord();
+    vector< vector<double> > m_coords = mesh_ptr_0->get_point_coord();
 
     if (fabs(m_coords[0][0] - 0.0) > TET_epsilon)     ITFAILS;
     if (fabs(m_coords[0][1] - 0.0) > TET_epsilon)     ITFAILS;
@@ -306,28 +323,29 @@ void Test_TET()
     if (fabs(m_coords[4][2] - 1.0) > TET_epsilon)     ITFAILS;
 
     // Test interface ===> TET_Builder instantiation with RTT_Format class.
+    // This mesh should also be the same 2-tet pyramid as in mesh_ptr_H.
 
     SP<RTT_Format> reader_1(new RTT_Format("TET_RTT_1"));
     if (!reader_1)                                       ITFAILS;
 
     TET_Builder read_build_1(reader_1);
 
-    SP<TET_Mesh> mesh_ptr_3 = read_build_1.build_Mesh();
-    if (!mesh_ptr_3)                                     ITFAILS;
+    SP<TET_Mesh> mesh_ptr_1 = read_build_1.build_Mesh();
+    if (!mesh_ptr_1)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
-    if (mesh_ptr_1 == mesh_ptr_3)                        ITFAILS;
-    if (mesh_ptr_2 == mesh_ptr_3)                        ITFAILS;
+    if (mesh_ptr_H == mesh_ptr_1)                        ITFAILS;
+    if (mesh_ptr_0 == mesh_ptr_1)                        ITFAILS;
 
     // ... but the meshes should be equal.
-    if (*mesh_ptr_1 != *mesh_ptr_3)                      ITFAILS;
+    if (*mesh_ptr_H != *mesh_ptr_1)                      ITFAILS;
 
     // Test sampling in a tethedron.
 
     int *idr = init_sprng(0, num, seed, 1);
     Sprng random(idr, 0);
 
-    int numm = 100000;
+    int numm = 1000000;
     double factor = 500.0/(3.0*static_cast<double>(numm));
 
     double count[10][10][10];
@@ -336,9 +354,17 @@ void Test_TET()
            for (int z = 0; z < 10 ; z++)
                count[x][y][z] = 0.;
 
+    double x_cent = 0.0;
+    double y_cent = 0.0;
+    double z_cent = 0.0;
+
     for (int i = 0 ; i < numm ; i++)
     {
-        SF_DOUBLE R = mesh_ptr_3->sample_pos(1,random);
+        SF_DOUBLE R = mesh_ptr_1->sample_pos(1,random);
+
+        x_cent += R[0];
+        y_cent += R[1];
+        z_cent += R[2];
 
         int xx = static_cast<int>(10.0*R[0]);
         int yy = static_cast<int>(10.0*R[1]);
@@ -350,6 +376,11 @@ void Test_TET()
 
         count[xx][yy][zz] += 1.;
     }
+    x_cent /= static_cast<double>(numm);
+    y_cent /= static_cast<double>(numm);
+    z_cent /= static_cast<double>(numm);
+
+cout << "Centroid: " << x_cent << ", " << y_cent << ", " << z_cent << endl;
 
     for (int xx = 0; xx < 10 ; xx++)
         for (int yy = 0; yy < 10 ; yy++)
@@ -370,12 +401,62 @@ void Test_TET()
     }
 //  End:  a way to see these results ordered on the page.
 
+    // cells outside the sampled tet should have no counts.
+
+
+
+
     // End of test sampling in a tethedron.
+
+    // Test interface ===> TET_Builder instantiation with RTT_Format class.
+    // This mesh should be the 96-tet cube from Todd Wareing.
+
+    SP<RTT_Format> reader_2(new RTT_Format("TET_RTT_2"));
+    if (!reader_2)                                       ITFAILS;
+
+    TET_Builder read_build_2(reader_2);
+
+    SP<TET_Mesh> mesh_ptr_2 = read_build_2.build_Mesh();
+    if (!mesh_ptr_2)                                     ITFAILS;
+
+    // Again, the pointers themselves should not be equal...
+    if (mesh_ptr_H == mesh_ptr_2)                        ITFAILS;
+    if (mesh_ptr_0 == mesh_ptr_2)                        ITFAILS;
+    if (mesh_ptr_1 == mesh_ptr_2)                        ITFAILS;
+
+    // ... and now the meshes should not be equal either.
+    if (*mesh_ptr_H == *mesh_ptr_2)                      ITFAILS;
+    if (*mesh_ptr_0 == *mesh_ptr_2)                      ITFAILS;
+    if (*mesh_ptr_1 == *mesh_ptr_2)                      ITFAILS;
+
+    // Test interface ===> TET_Builder instantiation with RTT_Format class.
+    // This mesh should be the one-tet case from the definition file.
+
+    SP<RTT_Format> reader_3(new RTT_Format("TET_RTT_3"));
+    if (!reader_3)                                       ITFAILS;
+
+    TET_Builder read_build_3(reader_3);
+
+    SP<TET_Mesh> mesh_ptr_3 = read_build_3.build_Mesh();
+    if (!mesh_ptr_3)                                     ITFAILS;
+
+    // Again, the pointers themselves should not be equal...
+    if (mesh_ptr_H == mesh_ptr_3)                        ITFAILS;
+    if (mesh_ptr_0 == mesh_ptr_3)                        ITFAILS;
+    if (mesh_ptr_1 == mesh_ptr_3)                        ITFAILS;
+    if (mesh_ptr_2 == mesh_ptr_3)                        ITFAILS;
+
+    // ... and the meshes should not be equal.
+    if (*mesh_ptr_H == *mesh_ptr_3)                      ITFAILS;
+    if (*mesh_ptr_0 == *mesh_ptr_3)                      ITFAILS;
+    if (*mesh_ptr_1 == *mesh_ptr_3)                      ITFAILS;
+    if (*mesh_ptr_2 == *mesh_ptr_3)                      ITFAILS;
 
 }   // end Test_TET()
 
 int main(int argc, char *argv[])
 {
+ try {
     C4::Init(argc, argv);
 
     // this is a serial test
@@ -413,6 +494,20 @@ int main(int argc, char *argv[])
     cout << "Done testing TET_Mesh." << endl;
 
     C4::Finalize();
+
+ }
+ catch (rtt_dsxx::assertion &yucch) {
+    cerr << "\a" << yucch.what() << endl;
+    return 1;
+ }
+ catch (string &s) {
+    cerr << "\aERROR:  " << s << endl;
+    return 1;
+ }
+ catch (...) {
+    cerr << "\aUnrecognized error." << endl;
+    return 1;
+ }
 
 }   // end main(int, char *[])
 
