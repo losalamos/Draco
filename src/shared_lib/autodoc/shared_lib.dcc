@@ -18,6 +18,10 @@
 The shared_lib component provides classes that manage the dynamic
 loading of shared libraries.
 
+There is a nice discussion of dynamically loaded object in the January
+2005 C/C++ Users Journal.  Send email to Kelly Thompson (kgt@lanl.gov)
+if you want to receive a copy of the article by William Nagel.
+
 <!---------------------------------------------------------------------------->
 
 */
