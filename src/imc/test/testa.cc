@@ -101,10 +101,10 @@ int main(int argc, char *argv[])
 	int db = 1000 * (9);
 	int ib = 1000 * (2);
 	int cb = 1000 * (500);
-	Check (IMC::Global::buffer_s == sb);
-	Check (IMC::Global::buffer_d == db);
-	Check (IMC::Global::buffer_i == ib);
-	Check (IMC::Global::buffer_c == cb);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_s() == sb);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_d() == db);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_i() == ib);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_c() == cb);
 
       // declare geometry and material stuff
 	SP<OS_Mesh> mesh;
@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
             pcomm->send_Mesh(*mesh);
 	    pcomm->send_Opacity(*opacity);
 	    source = pcomm->send_Source(mesh, *sinit, *buffer, rcon);
+	    cout << endl << node() << *source;
 	}
 	
   	if (mynode)
@@ -177,13 +178,9 @@ int main(int argc, char *argv[])
             buffer  = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
 
           // get the source for this node
+	    source  = pcomm->recv_Source(mesh, rcon, *buffer);
+	    cout << endl << node() << *source;
   	}
-
-      // lets look at our buffers
-	Check (IMC::Global::buffer_s == sb);
-	Check (IMC::Global::buffer_d == db);
-	Check (IMC::Global::buffer_i == ib);
-	Check (IMC::Global::buffer_c == cb);
     }
     catch (const dsxx::assertion &ass)
     {

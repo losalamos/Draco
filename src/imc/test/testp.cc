@@ -353,10 +353,12 @@ int main(int argc, char *argv[])
 	int db = 1000 * (9);
 	int ib = 1000 * (2);
 	int cb = 1000 * (500);
-	Check (IMC::Global::buffer_s == sb);
-	Check (IMC::Global::buffer_d == db);
-	Check (IMC::Global::buffer_i == ib);
-	Check (IMC::Global::buffer_c == cb);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_s() == sb);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_d() == db);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_i() == ib);
+	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_c() == cb);
+
+	Particle_Buffer<Particle<OS_Mesh> >::set_buffer_size(3);
 
       // declare geometry and material stuff
 	SP<OS_Mesh> mesh;
@@ -434,11 +436,23 @@ int main(int argc, char *argv[])
 	    comm_particle2(*mesh, *buffer, *rcon);
 	}
 
-      // lets look at our buffers
-	Check (IMC::Global::buffer_s == sb);
-	Check (IMC::Global::buffer_d == db);
-	Check (IMC::Global::buffer_i == ib);
-	Check (IMC::Global::buffer_c == cb);
+      // print out the buffers
+	HTSyncSpinLock h;
+	{
+	    cout << endl << ">> Buffer sizes" << endl;
+	    cout << "** On node " << mynode << " the buffer size was "
+		 << Particle_Buffer<Particle<OS_Mesh> >::get_buffer_s() 
+		 << endl;
+	    cout << "** Buffer_d = " 
+		 << Particle_Buffer<Particle<OS_Mesh> >::get_buffer_d() 
+		 << endl;
+	    cout << "** Buffer_i = " 
+		 << Particle_Buffer<Particle<OS_Mesh> >::get_buffer_i() 
+		 << endl;
+	    cout << "** Buffer_c = " 
+		 << Particle_Buffer<Particle<OS_Mesh> >::get_buffer_c() 
+		 << endl;
+	}
     }
     catch (const dsxx::assertion &ass)
     {
