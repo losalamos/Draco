@@ -1,100 +1,35 @@
 \begin{verbatim}
 ;;---------------------------------------------------------------------------;;
 ;; .emacs
-;; Thomas Evans
-;; Feb. 1999 
+;; Thomas Evans - Feb. 1999 
 ;; Revised by K. Thompson (Sept. 2001)
 ;;---------------------------------------------------------------------------;;
 ;; Options file for XEMACS
 ;;---------------------------------------------------------------------------;;
 
-;;---------------------------------------------------------------------------;;
-;; on message
+;; Basic setup of CCS-4 XEmacs environment.
+;;
 
-(message "Evaluating .emacs...")
-
-;;---------------------------------------------------------------------------;;
-;; set home directory and my elisp path
-
-(setq my-home-dir (concat (getenv "HOME") "/"))
+;; Set variables that point to personal elisp stuff...
+(setq my-home-dir (concat (getenv "HOME") "/")
 (setq my-elisp-dir (concat my-home-dir "lib/elisp/"))
 (setq my-templates-dir (concat my-elisp-dir "templates/"))
+(setq my-info-dir (concat my-elisp-dir "info/"))
 
-(if (file-accessible-directory-p my-elisp-dir) 
-    (setq load-path (cons my-elisp-dir load-path)))
-(if (file=accessible-directory-p (concat my-elisp-dir "info/"))
+;; Load the default CCS-4 XEmacs environment...
+(setq ccs4-elisp-dir "~/lib/elisp")
+(if (file-accessible-directory-p ccs4-elisp-dir)
+   (setq load-path (cons ccs4-elisp-dir load-path)))
+(load-library "ccs4defaults")
+
+;; Add personal elisp directory to the XEmacs load path...
+(if (file-accessible-directory-p my-elisp-dir)
+   (setq load-path (cons my-elisp-dir load-path)))
+(if (file-accessible-directory-p (concat my-elisp-dir "info/"))
     (setq my-info-dir (concat my-elisp-dir "info/"))
 
-;;---------------------------------------------------------------------------;;
-;; load the RTT, DRACO and TME stuff for CCS-4 development
-;;---------------------------------------------------------------------------;;
 
-;;
-;; Draco configuration (nil is the default for all options)
-;; We don't want the pooma indentation style by default.
-;;
-
-(setq want-pooma-style-by-default  nil 
-      want-rtt-menu                t)
-
-;;
-;; Turn on the language modes that are defined in Config-pkg.el.
-;; We may only need to configure a few of them.
-;;
-
-(setq config-pkg-verbose           nil
-      config-pkg-colorize-modeline nil
-
-      want-mppl-mode     t
-      want-tcl-mode      t
-      want-python-mode   t
-      want-nml-mode      t
-      want-makefile-mode t
-      want-cc-mode       t
-      want-auctex-pkg    t
-      want-f90-mode      t
-      want-fortran-mode  t)
-
-;;
-;; Load the Draco-rtt elisp packages:
-;;
-; 1. This will load fl-keywords, rtt-hacks, tme-hacks, and
-;    draco-hacks. (rtt-hacks will load pooma-hacks and
-;    infer-cc-style) 
-; 2. If want-rtt-menu is t then we load rtt-menu, 
-;    Config-pkg (You must have all of of the config-pkg
-;    values alredy set!) and dante-macros.
-;;
-
-(require 'draco-rtt)
-
-;;
-;; Set auto-mode-alist and autoload font-lock modes
-;;
-;  1. if want-nml-mode is t then this package will load
-;     nml-mode.el 
-;  2. if want-mppl-mode is t then this package will load
-;     mppl-mode.el 
-;;
-
-(require 'Config-pkg)
-
-;;
-;; Linux keyboard hacks from J. Furnish
-;;
-
-; (load-library "Config-key")  
-
-;;
-;; Lots of misc configuration setup
-;; key-bindings, new-XXX-file commands, mode-hooks (font-lock)
-;;
-
-(load-library "xemacs-setup")
-
-;;
 ;; SOME ADDITIONAL CUSTOMIZATIONS
-;; ===============================
 ;;
 
 ;
