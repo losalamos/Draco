@@ -1329,7 +1329,9 @@ package="quadrature"
        has_libdir="yes"
    fi
 
-   for lib in ds++
+   for lib in \
+   ds++ \
+   units
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
@@ -1338,11 +1340,17 @@ package="quadrature"
    done
 
    # Keep a list of component dependencies free of other tags or paths.
-   DEPENDENT_COMPONENTS="ds++"
+   DEPENDENT_COMPONENTS="\
+   ds++ \
+   units "
 
 
 
-	test_alltarget="$test_alltarget tQuadrature tAxialQuadrature tQuadServices"
+	test_alltarget="$test_alltarget \
+   tQuadrature \
+   tAxialQuadrature \
+   tQuadServices\
+   "
 
 	test_nprocs="scalar"
 

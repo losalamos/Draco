@@ -1,3 +1,42 @@
+2004-11-10  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Released draco-5_2_0.  This is a minor draco release.  A
+	summary of changes are:
+
+	- build systems chages: more darwin support, vendors added 
+	- timestep: improvements to field_ts_advisor
+	- quadrature: beginning of significant redesign
+	- shared_lib: added to released packages; only on when compile in
+	  shared mode
+
+	This draco release includes the following packages:
+
+		RTT_Format_Reader 
+		c4
+		cdi 
+		cdi_analytic 
+		cdi_gandolf 
+		ds++ 
+		lapack_wrap
+		meshReaders
+		meshReaders_Services
+		mesh_element
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	We are not releasing cdi_eospac in draco until the compiler issues
+	have been resolved [hopefully with the release of a C version of
+	EOSPAC].
+
 2004-06-22  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Released draco-5_1_0.  This is a minor draco release. A

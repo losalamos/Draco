@@ -4512,6 +4512,10 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    powerpc-apple-darwin*)
    ;;
 
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+   ;;
+
    # EVERYTHING ELSE -> linux?
    *)
       if test -n "${GCC_LIB_DIR}"; then
@@ -4623,7 +4627,13 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
        ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' -o"
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*ios_base*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_ostream*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_string*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cout*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cerr*' "
+       ARFLAGS="${ARFLAGS} -o"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -6441,23 +6451,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -6626,6 +6636,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
        rptrigger=rpath
+       dilem=space
 
        if test "${enable_shared}" = yes ; then
 
@@ -6633,13 +6644,17 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        fi
 
@@ -6647,14 +6662,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        done
+
 
 
        # add the intel math library for better performance when
@@ -7388,23 +7407,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -7573,6 +7592,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
        rptrigger=rpath
+       dilem=space
 
        if test "${enable_shared}" = yes ; then
 
@@ -7580,13 +7600,17 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        fi
 
@@ -7594,14 +7618,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        done
+
 
 
 
@@ -8432,23 +8460,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -8617,6 +8645,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
        rptrigger=rpath
+       dilem=colon
 
        if test "${enable_shared}" = yes ; then
 
@@ -8624,13 +8653,17 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        fi
 
@@ -8638,14 +8671,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        done
+
 
 
 
@@ -8738,13 +8775,17 @@ _ACEOF
        #
 
        #
-       # gandolf, eospac, pcg, udm require -lfor on the link line.
+       # libfor.a requirements:
+       # GANDOLF, EOSPAC, PCG, BLACS, udm require -lfor on the link line.
        #
 
-       echo "$as_me:$LINENO: checking \"libfortran requirements\"" >&5
-echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+       echo "$as_me:$LINENO: checking \"libfor.a requirements\"" >&5
+echo $ECHO_N "checking \"libfor.a requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_gandolf}" ||
+          test -n "${vendor_eospac}"  ||
+          test -n "${vendor_pcg}"     ||
+          test -n "${vendor_udm}"     ||
+          test -n "${vendor_blacs}"; then
            LIBS="${LIBS} -lfor"
            echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
@@ -8754,16 +8795,18 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
-       # end of gandolf/libfortran setup
+       # end of libfor.a requirements
        #
 
        #
-       # libpcg/libudm/libfmpi setup
+       # libpcg/libudm/libfmpi setup (libfmpi.a requirements)
        #
 
        echo "$as_me:$LINENO: checking \"libfmpi requirements\"" >&5
 echo $ECHO_N "checking \"libfmpi requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+       if test -n "${vendor_pcg}"  ||
+          test "${with_udm}" = mpi ||
+          test -n "${vendor_blacs}" ; then
            LIBS="${LIBS} -lfmpi"
            echo "$as_me:$LINENO: result: \"-lfmpi added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfmpi added to LIBS\"" >&6
@@ -9420,23 +9463,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -9605,6 +9648,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
        rptrigger=rpath
+       dilem=colon
 
        if test "${enable_shared}" = yes ; then
 
@@ -9612,13 +9656,17 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        fi
 
@@ -9626,14 +9674,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        done
+
 
 
 
@@ -10418,23 +10470,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -11302,23 +11354,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi
@@ -11487,6 +11539,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
        rptrigger=R
+       dilem=space
 
        if test "${enable_shared}" = yes ; then
 
@@ -11494,13 +11547,17 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        fi
 
@@ -11508,14 +11565,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
 	   fi
        done
+
 
 
    ;;
@@ -11524,6 +11585,11 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
    # MAC OS X/DARWIN SETUP
    # *********************
    powerpc-apple-darwin*)
+
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC.darwin'
+       fi
 
        # print out cpu message
        echo "$as_me:$LINENO: checking \"host platform cpu\"" >&5
@@ -11565,7 +11631,13 @@ _ACEOF
 echo "$as_me: g++ -ansi option set to allow long long type!" >&6;}
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
-
+  	   ibm)
+	       { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
+echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
+	       STRICTFLAG="-qlanglvl=extended"
+	       CFLAGS="${CFLAGS} -qlonglong"
+	       CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   ;;
            # catchall
            *)
                # do nothing
@@ -12386,23 +12458,23 @@ _ACEOF
        if test -n "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -L${HDF5_LIB} -lhdf5 are the directories added
+   # -L${HDF5_LIB} -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5 -lz"
    fi
 
        elif test -z "${HDF5_LIB}" ; then
 
    # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
-   # -lhdf5 are the directories added
+   # -lhdf5 -lz are the directories added
 
    if test "${vendor_hdf5}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5 -lz"
    elif test "${vendor_hdf5}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5 -lz"
    fi
 
        fi

@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -4615,6 +4615,11 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC.darwin'
+       fi
+
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
        AC_MSG_RESULT("${host_cpu}")
@@ -4636,7 +4641,12 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
-
+  	   ibm)	
+	       AC_MSG_WARN("xlC set to allow long long")
+	       STRICTFLAG="-qlanglvl=extended"
+	       CFLAGS="${CFLAGS} -qlonglong"
+	       CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   ;;
            # catchall
            *) 
                # do nothing

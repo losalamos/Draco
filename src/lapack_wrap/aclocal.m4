@@ -360,7 +360,7 @@ AC_DEFUN([AC_TRILINOS_SETUP], [dnl
 
    dnl define --with-trilinos
    AC_ARG_WITH(trilinos,
-      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default])
+      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default)])
  
    dnl define --with-trilinos-inc
    AC_WITH_DIR(trilinos-inc, TRILINOS_INC, \${TRILINOS_INC_DIR},
@@ -403,6 +403,168 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
        # add TRILINOS directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${TRILINOS_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SCALAPACK_SETUP
+dnl
+dnl SCALAPACK SETUP 
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SCALAPACK_SETUP], [dnl
+
+   dnl define --with-scalapack
+   AC_ARG_WITH(scalapack,
+      [  --with-scalapack=[scalapack] ])
+ 
+   dnl define --with-scalapack-lib
+   AC_WITH_DIR(scalapack-lib, SCALAPACK_LIB, \${SCALAPACK_LIB_DIR},
+	       [tell where SCALAPACK libraries are])
+
+   # set default value of scalapack includes and libs
+   if test "${with_scalapack:=scalapack}" = yes ; then
+       with_scalapack='scalapack'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_scalapack=$1
+
+])
+
+
+AC_DEFUN([AC_SCALAPACK_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_scalapack}" ; then
+
+       # no includes for scalapack
+
+       # library path
+       if test -n "${SCALAPACK_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_scalapack, -L${SCALAPACK_LIB} -lscalapack)
+       elif test -z "${SCALAPACK_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_scalapack, -lscalapack)
+       fi
+
+       # add SCALAPACK directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SCALAPACK_LIB}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_BLACS_SETUP
+dnl
+dnl BLACS SETUP 
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_BLACS_SETUP], [dnl
+
+   dnl define --with-blacs
+   AC_ARG_WITH(blacs,
+      [  --with-blacs=[blacs] ])
+ 
+   dnl define --with-blacs-lib
+   AC_WITH_DIR(blacs-lib, BLACS_LIB, \${BLACS_LIB_DIR},
+	       [tell where BLACS libraries are])
+
+   # set default value of blacs includes and libs
+   if test "${with_blacs:=blacs}" = yes ; then
+       with_blacs='blacs'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_blacs=$1
+
+])
+
+
+AC_DEFUN([AC_BLACS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_blacs}" ; then
+
+       # no includes for blacs
+
+       # library path
+       if test -n "${BLACS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_blacs, -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
+       elif test -z "${BLACS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_blacs, -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
+       fi
+
+       # add BLACS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
+
+   fi
+
+])
+dnl-------------------------------------------------------------------------dnl
+dnl AC_HYPRE_SETUP
+dnl
+dnl HYPRE SETUP 
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HYPRE_SETUP], [dnl
+
+   dnl define --with-hypre
+   AC_ARG_WITH(hypre,
+      [  --with-hypre=[hypre] ])
+ 
+   dnl define --with-hypre-inc
+   AC_WITH_DIR(hypre-inc, HYPRE_INC, \${HYPRE_INC_DIR},
+	       [tell where HYPRE includes are])
+
+   dnl define --with-hypre-lib
+   AC_WITH_DIR(hypre-lib, HYPRE_LIB, \${HYPRE_LIB_DIR},
+	       [tell where HYPRE libraries are])
+
+   # set default value of hypre includes and libs
+   if test "${with_hypre:=hypre}" = yes ; then
+       with_hypre='hypre'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_hypre=$1
+
+])
+
+
+AC_DEFUN([AC_HYPRE_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_hypre}" ; then
+
+       # include path
+       if test -n "${HYPRE_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+       fi
+
+       # library path
+       if test -n "${HYPRE_LIB}" ; then
+
+	   AC_VENDORLIB_SETUP(vendor_hypre, -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+
+       elif test -z "${HYPRE_LIB}" ; then
+
+	   AC_VENDORLIB_SETUP(vendor_hypre, -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+
+       fi
+
+       # add HYPRE directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HYPRE_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HYPRE_INC}"
 
    fi
 
@@ -901,9 +1063,9 @@ AC_DEFUN([AC_HDF5_FINALIZE], [dnl
 
        # library path
        if test -n "${HDF5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5)
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5 -lz)
        elif test -z "${HDF5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5)
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5 -lz)
        fi
 
        # add HDF5 directory to VENDOR_LIB_DIRS
@@ -1046,7 +1208,9 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
 
    AC_AZTEC_FINALIZE
    AC_PCG_FINALIZE
-
+   AC_HYPRE_FINALIZE
+   AC_SCALAPACK_FINALIZE
+   AC_BLACS_FINALIZE
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
@@ -1583,6 +1747,34 @@ AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_HEAD_MAKEFILE
+dnl 
+dnl Builds default makefile in the head directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HEAD_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:config/Makefile.head.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SRC_MAKEFILE
+dnl 
+dnl Builds default makefile in the src directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SRC_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:../config/Makefile.src.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl end of ac_conf.m4
 dnl-------------------------------------------------------------------------dnl
 
@@ -1635,7 +1827,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    # we use the install script provided with autoconf on all machines
    INSTALL='${config_dir}/install-sh -c'
-   INSTALL_DATA='${INSTALL} -m 444'
+   INSTALL_DATA='${INSTALL} -m 644'
 
    dnl
    dnl C4 OPERATIONS
@@ -3209,6 +3401,10 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    powerpc-apple-darwin*)
    ;;
 
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+   ;;
+
    # EVERYTHING ELSE -> linux?
    *)
       if test -n "${GCC_LIB_DIR}"; then
@@ -3247,7 +3443,13 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
        ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
-       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' -o"
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*ios_base*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_ostream*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*basic_string*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cout*' "
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*cerr*' "
+       ARFLAGS="${ARFLAGS} -o"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -3696,6 +3898,24 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
 
        #
+       # setup scalapack
+       #
+       
+       AC_MSG_CHECKING("for extra scalapack library requirements.")
+       if test -n "${vendor_scalapack}"; then
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_scalapack_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           LIBS="${LIBS} ${extra_scalapack_libs}"
+           AC_MSG_RESULT("${extra_scalapack_libs}")
+       else
+           AC_MSG_RESULT("none.")
+       fi
+
+       #
+       # end of eospac
+       #
+
+       #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
        #
        AC_MSG_CHECKING("libg2c requirements")
@@ -3773,14 +3993,14 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,space)
 
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icc; then
 	   LIBS="$LIBS -limf"
        fi
-])
+]) dnl linux
 
 
 dnl-------------------------------------------------------------------------dnl
@@ -3855,7 +4075,7 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,space)
 
 ]) dnl cygwin
 
@@ -3929,12 +4149,16 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf, eospac, pcg, udm require -lfor on the link line.
+       # libfor.a requirements:
+       # GANDOLF, EOSPAC, PCG, BLACS, udm require -lfor on the link line.
        #
 
-       AC_MSG_CHECKING("libfortran requirements")
-       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+       AC_MSG_CHECKING("libfor.a requirements")
+       if test -n "${vendor_gandolf}" || 
+          test -n "${vendor_eospac}"  ||
+          test -n "${vendor_pcg}"     || 
+          test -n "${vendor_udm}"     ||
+          test -n "${vendor_blacs}"; then
            LIBS="${LIBS} -lfor"
            AC_MSG_RESULT("-lfor added to LIBS")
        else
@@ -3942,15 +4166,17 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        fi
 
        #
-       # end of gandolf/libfortran setup
+       # end of libfor.a requirements
        #
 
        #
-       # libpcg/libudm/libfmpi setup
+       # libpcg/libudm/libfmpi setup (libfmpi.a requirements)
        #
 
        AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+       if test -n "${vendor_pcg}"  || 
+          test "${with_udm}" = mpi || 
+          test -n "${vendor_blacs}" ; then
            LIBS="${LIBS} -lfmpi"
            AC_MSG_RESULT("-lfmpi added to LIBS")
        else
@@ -3982,7 +4208,7 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,colon)
 
 ]) dnl osf
 
@@ -4193,7 +4419,7 @@ AC_DEFUN([AC_DBS_SUN_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(R)
+       AC_DBS_SETUP_RPATH(R,space)
 ]) dnl sun
 
 dnl-------------------------------------------------------------------------dnl
@@ -4375,7 +4601,7 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath)
+       AC_DBS_SETUP_RPATH(rpath,colon)
 
 ]) dnl irix
 
@@ -4388,6 +4614,11 @@ dnl ***** NOT FULLY IMPLEMENTED *****
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
+
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC.darwin'
+       fi
 
        # print out cpu message
        AC_MSG_CHECKING("host platform cpu")
@@ -4410,7 +4641,12 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
-
+  	   ibm)	
+	       AC_MSG_WARN("xlC set to allow long long")
+	       STRICTFLAG="-qlanglvl=extended"
+	       CFLAGS="${CFLAGS} -qlonglong"
+	       CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   ;;
            # catchall
            *) 
                # do nothing
@@ -4428,6 +4664,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
+	mpi_libs="-lpmpich $mpi_libs -lz"
 
        # 
        # setup lapack 
@@ -4492,23 +4729,6 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 	   AC_MSG_RESULT("not needed")
        fi
 
-       #
-       # add librt to LIBS if udm is used
-       #
-       AC_MSG_CHECKING("librt requirements")
-       if test -n "${vendor_udm}"; then
-
-	   # Add rt for g++
-	   if test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lrt"
-	       AC_MSG_RESULT("-lrt added to LIBS")
-           else
-               AC_MSG_RESULT("not needed")
-	   fi
-
-       else
-           AC_MSG_RESULT("not needed")
-       fi
 
        #
        # If dlopen is specified, 1) add libdl to LIBS; 
@@ -4616,26 +4836,38 @@ dnl AC_DBS_SETUP_RPATH
 dnl
 dnl set rpath when building shared library executables
 dnl
+dnl We support two forms for RPATH support:
+dnl 1) "-Xlinker -rpath dir1 -Xlinker -rpath dir2 ..."
+dnl 2) "-rpath dir1:dir2:..."
+dnl
+dnl Some compilers/linkers use "R" instead of "rpath".  The option
+dnl name is set from the 1st argument to this function.  The second
+dnl argument specifies the list type as desribed above.
+dnl
 dnl $1 = rpath trigger.  One of "rpath" or "R"
+dnl $2 = delimiter. One of "space" or "colon"
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 
        rptrigger=$1
-  
+       dilem=$2
+
        if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
 	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
 	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
        fi
 
@@ -4643,14 +4875,16 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
 	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+           if test "${dilem}" = "space"; then
 	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-
 	   # else we just add the rpath
-	   else
+           elif test "${dilem}" = "colon"; then
 	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
        done
+
 ]) dnl setup_rpath
 
 dnl-------------------------------------------------------------------------dnl

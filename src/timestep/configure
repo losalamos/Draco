@@ -11649,6 +11649,11 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    # *********************
    powerpc-apple-darwin*)
 
+       # dependency rules for IBM visual age compiler are complex
+       if test "${with_cxx}" = ibm; then
+	   DEPENDENCY_RULES='Makefile.dep.xlC.darwin'
+       fi
+
        # print out cpu message
        echo "$as_me:$LINENO: checking \"host platform cpu\"" >&5
 echo $ECHO_N "checking \"host platform cpu\"... $ECHO_C" >&6
@@ -11689,7 +11694,13 @@ _ACEOF
 echo "$as_me: g++ -ansi option set to allow long long type!" >&6;}
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
-
+  	   ibm)
+	       { echo "$as_me:$LINENO: WARNING: \"xlC set to allow long long\"" >&5
+echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
+	       STRICTFLAG="-qlanglvl=extended"
+	       CFLAGS="${CFLAGS} -qlonglong"
+	       CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   ;;
            # catchall
            *)
                # do nothing
