@@ -42,7 +42,7 @@ AC_DEFUN(AC_CPP_ENV, [dnl
    # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
    *ibm-aix*)
        if test -z "${with_cxx}" ; then
-	   with_cxx='ibm'
+	   with_cxx='asciwhite'
        fi
    ;;
 
@@ -121,30 +121,13 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    elif test "${with_cxx}" = asciwhite ; then 
 
-       # if we are using mpi then use newmpxlC
-       if test "${with_c4}" = mpi ; then
+       AC_CHECK_PROG(CXX, newxlC, newxlC)
+       AC_CHECK_PROG(CC, newxlc, newxlc)
 
-	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
-	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
-
-	   if test "${CXX}" = newmpxlC ; then
-	       AC_DRACO_IBM_VISUAL_AGE
-	   else
-	       AC_MSG_ERROR("Did not find ASCI White newmpxlC compiler!")
-	   fi
-
-       # otherwise use newxlC
+       if test "${CXX}" = newxlC ; then
+	   AC_DRACO_IBM_VISUAL_AGE
        else
-
-	   AC_CHECK_PROG(CXX, newxlC, newxlC)
-	   AC_CHECK_PROG(CC, newxlc, newxlc)
-
-	   if test "${CXX}" = newxlC ; then
-	       AC_DRACO_IBM_VISUAL_AGE
-	   else
-	       AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
-	   fi
-
+	   AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
        fi
 
    else
