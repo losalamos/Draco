@@ -139,14 +139,23 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
    # For a component, the doxygen input is the srcdir and the examples
    # are in the tests
-   doxygen_input="${abs_srcdir} ${abs_srcdir}/autodoc"
-   doxygen_examples=${abs_srcdir}/test
+   AC_MSG_CHECKING([doxygen input directories])
+   if test -d ${abs_srcdir}; then
+      doxygen_input="${doxygen_input} ${abs_srcdir}"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
+   if test -d ${abs_srcdir}/test; then
+      doxygen_examples=${abs_srcdir}/test
+   fi
 
    # Set the package-level html output location
    package_html=${doxygen_output_top}/html
 
    # The local dir is different from the current dir.
-   localdir=`pwd`/autodoc
+   # localdir=`pwd`/autodoc
 
    # Set the component output locations.
    doxygen_html_output="${doxygen_output_top}/html/${package}"
@@ -194,7 +203,15 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
    # For the package, the input is the current directory, plus
    # configure/doc. There are no examples
-   doxygen_input="`pwd` ${config_dir}/doc"
+   AC_MSG_CHECKING([for Doxygen input directories])
+   doxygen_input="`pwd`"
+   if test -d ${config_dir}/doc; then
+      doxygen_input="${doxygen_input} ${config_dir}/doc"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
    doxygen_examples=''
 
    # Component output locations
