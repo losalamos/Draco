@@ -1,55 +1,55 @@
 //----------------------------------*-C++-*----------------------------------//
 // snpp.cc
 // Scott Turner
-// 17 March 1998
+// 17 April 1998
 //---------------------------------------------------------------------------//
 // @> Main program for testing the structured sweeper.
 //---------------------------------------------------------------------------//
 
 // SN++ is a single node, ordered sweep, C++ version of:
 //
-// Method 3 Sweep - mesh is swept by a diagonal plane one angle at a time
-//                  with block recursion, in data parallel.
-//
-// In other words, it is a major simplification of the F90 Method 3 Parallel
-// Sweeper.
-//
+// Method 3 Sweep - F90 version of SN++ within a PE. With blocks, resulting
+//                  from spatial decompsition, being sweept by a diagonal
+//                  plane, projected onto a 2D array of PE's. Serial in angle.
 
-#include "sn/read_input.hh"
-#include "sn/inner_iter.hh"
+#include "sn/Input_edit.hh"
+#include "sn/Inner_iter.hh"
 
 #include <iostream.h>
 
 int main()
 {
 
-  // get input data from the input object
+    // set precision for output of floating point numbers
 
-  read_input snpp_in;
-  snpp_in.read_data();
+    cout.precision(13);
 
-  int  it, jt, kt, mm, isct;
-  snpp_in.get_basic_data( it, jt, kt, mm, isct );
+    // get input data from the input object
 
-  // print output header to screen
+    Input_edit data;
 
-  int isn;      // quadrature order, the N in SN
+    data.read_edit_data();
 
-  if (mm==3)
-    isn = 4;
-  else
-    isn = 6;
+    // print output header to screen
 
-  cout << "Method 3 - Ordered Single Node C++ version" << endl;
-  cout << " " << it << " x " << jt << " x " << kt << endl;
-  cout << " S" << isn << "P" << isct << endl;
+    int isn;  // quadrature order, the N in SN
 
-  // do the inner iterations
+    if ( data.mm() == 3 )
+        isn = 4;
+    else
+        isn = 6;
 
-  inner_iter inner_iter_object;
-  inner_iter_object.do_inner_iter();
+    cout << "Method 3 - Single Node C++ version" << endl;
+    cout << " " << data.it() << " x " << data.jt() << " x " << data.kt() <<endl;
+    cout << " S" << isn << "P" << data.isct() << endl;
 
-  return (0);
+    // do the inner iterations
+
+    Inner_iter inner_iter_object;
+
+    inner_iter_object.do_inner_iter( data );
+
+    return (0);
 }
 
 //---------------------------------------------------------------------------//

@@ -1,15 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
 // precision.hh
 // Scott Turner
-// 17 March 1998
+// 17 April 1998
 //---------------------------------------------------------------------------//
-// @>
+// @> Floating-point precision.
 //---------------------------------------------------------------------------//
 
 #ifndef __sn_precision_hh__
 #define __sn_precision_hh__
-
-// Floating-point precision
 
 typedef double REAL;
 

@@ -1,7 +1,7 @@
 ###############################################################################
 # draco/src/sn/makefile
 # Scott Turner - based on Geoff Furnish's makefiles
-# 19 February 1998
+# 17 April 1998
 ###############################################################################
 # @> Rules for constructing the sn support library for Draco (libsn.a).
 ###############################################################################
@@ -14,7 +14,8 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = read_input.cc inner_iter.cc sweep3d.cc
+libsrcs = Cross_section.cc Error.cc Inner_iter.cc Input_edit.cc Output_edit.cc \
+          Pre_calcs.cc Sn_constants.cc Source.cc Sweep3d.cc
 
 # Get the library built, minding our various other targets too.
 
