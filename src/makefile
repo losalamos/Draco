@@ -25,7 +25,7 @@ all:
 	(cd mesh;    $(MAKE) $(subnj))
 	(cd 3T;      $(MAKE) $(subnj))
 #	(cd timestep;$(MAKE) $(subnj))
-#	(cd matprops;$(MAKE) $(subnj))
+	(cd matprops;$(MAKE) $(subnj))
 	(cd sn;      $(MAKE) $(subnj))
 	(cd rng;     $(MAKE) $(subnj))
 	(cd imctest; $(MAKE) $(subnj))
