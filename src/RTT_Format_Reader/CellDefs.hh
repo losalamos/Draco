@@ -54,7 +54,6 @@ class CellDef
     ~CellDef() {}
 
     void readDef(ifstream & meshfile);
-    void sortData();
 /*!
  * \brief  Returns the cell definition name.
  * \return The cell definition name.
@@ -127,7 +126,6 @@ class CellDefs
     void readEndKeyword(ifstream & meshfile);
 
   public:
-    void sortData();
 /*!
  * \brief Returns the name of the specified cell definition.
  * \param i Cell definition index number.
