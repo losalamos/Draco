@@ -324,7 +324,7 @@ class Send_Particle_Buffer : public Particle_Buffer<PT>
     // Blocking receive function.
     void send_buffer(int);
 
-    // Non-blocking receive functions.
+    // Non-blocking send functions.
     void post_asend(int);
     void async_wait();
     bool async_check();

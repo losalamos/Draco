@@ -89,7 +89,6 @@ void Particle_IO<PT>::write_Particle_Buffer(std_ostream &out,
 }
 
 //---------------------------------------------------------------------------//
-// read a single particle from an output and return a Census_Buffer
 /*!
  * \brief Read all the particles from an input stream into a bank.
  *
