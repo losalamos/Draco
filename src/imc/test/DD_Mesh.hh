@@ -12,7 +12,7 @@
 #ifndef __imc_test_DD_Mesh_hh__
 #define __imc_test_DD_Mesh_hh__
 
-#include "imc/Mat_State.hh"
+#include "../Mat_State.hh"
 #include "mc/Coord_sys.hh"
 #include "mc/XYCoord_sys.hh"
 #include "mc/Layout.hh"
