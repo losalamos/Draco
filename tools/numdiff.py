@@ -24,6 +24,10 @@ Usage: numdiff [options] file1 file2
 Reports the differences between respective floating point numbers that
 are stored in the two specified files.
 
+If any differences are found, then the exit status is 1 (and DIFFER is
+printed if verbosity > 0); otherwise, the exit status is 0 (and SAME
+is printed if verbosity > 0).
+
 General options [default setting]:
 
    -f, --find=STRING
@@ -43,33 +47,32 @@ General options [default setting]:
    -s, --skip=REGEX
            if the current lines in both files satisfy the regular
            expression REGEX, then skip the comparison.  This option
-           may be specified multiple times.  If only one of files
-           satisfies the REGEX, the comparison is still done.
+           may be specified multiple times.  If only one of the files
+           satisfies the REGEX, the comparison is still performed.
                    
    -v, --verbosity=V
-           Sets the verbosity level [%d]:
-              0: Nothing is printed.
+           Sets the verbosity level to standard out [%d]:
+              0: Nothing is printed.  Only the return status is set.
               1: Only a brief summary is printed.
               2: Lines with numeric differences beyond the tolerance, or
                  lines with string differences, are printed.
 
 Tolerance options [default setting]:
 
-    These options affect whether two floating point numbers, denoted
-    f1 and f2, are considered equal.    How differences are reported
-    depends on the value of verbosity (-v).
+    These options affect whether two floating point numbers are
+    considered equal.
                    
    -t, --tolerance=TOL
-           set the absolute difference tolerance [%s].  n1 and n2
-           are considered equal if |f1 - f2| <= TOL.  Set to "None"
-           to turn off.
+           set the absolute difference tolerance [%s].  The floats
+           f1 and f2 are considered equal if |f1 - f2| <= TOL.  Set to
+           "None" to turn off.
 
    -e, --epsilon=EPSILON
            parameter for -r option [%e].
 
    -r, --relative=TOL
            set the relative difference tolerance [%s].
-           n1 and n2 are considered equal if
+           The floats f1 and f2 are considered equal if
 
                |f1 - f2| / (|f1| + |f2| + EPSILON) <= TOL.
 
@@ -81,12 +84,10 @@ Tolerance options [default setting]:
 '''
 
 _moreHelp = '''
-The two files are read line by line and numeric differences are taken
-between their respective columns of data.  Columns are delineated by
-whitespace.  A column may be non-numeric, which is compared as a
-string.  If any differences are found, then the exit status is 1 (and
-DIFFER is printed if verbosity > 0); otherwise, the exit status is 0
-(and SAME is printed if verbosity > 0).
+The two files are read line by line and numeric
+differences are taken between their respective columns of data.
+Columns are delineated by whitespace.  A column may be non-numeric, in
+which case a string comparison is done.
 
 For example, a line of data such as
 
@@ -97,12 +98,13 @@ If the same line in the other file is
 
        x = 5.3
 
-and tolerance < 0.1, then numdiff will note that column 3 has a
-difference of 0.1.  If instead the second file contains
+and tolerance (-t) < 0.1, then numdiff will note that column 3 has an
+absolute difference of 0.1 and a relative difference of 0.1 / 10.7.
+If instead the second file contains
 
        y = 5.4
 
-a difference is reported because the strings x and y differ.
+a difference is also reported because the strings x and y differ.
 
 Note that the line
 
