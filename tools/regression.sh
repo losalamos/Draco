@@ -103,7 +103,7 @@ fi
 # Set up paths to look for libraries
 
  UNAME=`uname`
- VENDORS=/n/radtran/vendors
+ VENDORS=/n/skiathos/radtran/vendors
  SPRNG_INCPATH=${VENDORS}/sprng/include
 
 case $uname in
@@ -138,8 +138,6 @@ IRIX64)
     ;;
 esac
 
-# Create a serial build
-
 # remove the toplevel target directory
 
 TARGETROOT=$hostname
@@ -150,6 +148,11 @@ for c4 in $C4
 do
    for b in $BITS
    do
+
+      echo " "
+      echo " "
+      echo " ****** Testing with C4= $c4, BITS= $b ******"
+      echo " "
 
       HAS_POOMA="false"
       HAS_PCGLIB="false"
