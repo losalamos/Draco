@@ -47,6 +47,10 @@ NML_Group::NML_Group( const String& n )
 NML_Group::~NML_Group()
 {
     NML_grplist.erase( name );
+
+    for( list<NML_Block *>::iterator i = blklist.begin();
+         i != blklist.end(); i++ )
+        delete *i;
 }
 
 // From the SunOS stdarg manpage:
