@@ -35,13 +35,8 @@ class Parallel_Builder
 {
 private:
   // topology data
-    vector<int> ncells_per_proc;
-    vector<int> nprocs_per_cell;
     vector<vector<int> > cells_per_proc;
     vector<vector<int> > procs_per_cell;
-
-  // processor capacity (in cells)
-    int proc_capacity;
 
   // calculate topology map
     void parallel_params(const Source_Init<MT> &);

@@ -9,6 +9,7 @@
 #include "imctest/Parallel_Builder.hh"
 #include "imctest/XYCoord_sys.hh"
 #include "imctest/XYZCoord_sys.hh"
+#include "imctest/Math.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include <string>
@@ -18,11 +19,12 @@
 
 IMCSPACE
 
-// C4 necessities
+// draco necessities
 using C4::node;
 using C4::nodes;
 using C4::Send;
 using C4::Recv;
+using Global::max;
 
 // std necessities
 using std::vector;
@@ -37,14 +39,8 @@ using std::fill;
 template<class MT>
 Parallel_Builder<MT>::Parallel_Builder(const MT &mesh, 
 				       const Source_Init<MT> &sinit)
-    : ncells_per_proc(nodes()), nprocs_per_cell(mesh.num_cells()),
-      cells_per_proc(nodes()), procs_per_cell(mesh.num_cells()),
-      proc_capacity(sinit.get_capacity())
+    : cells_per_proc(nodes()), procs_per_cell(mesh.num_cells())
 {
-  // initialize the one-d vectors
-    fill (ncells_per_proc.begin(), ncells_per_proc.end(), 0);
-    fill (nprocs_per_cell.begin(), nprocs_per_cell.end(), 0);
-
   // calculate the parameters for splitting the problem amongst many
   // processors 
     parallel_params(sinit);
@@ -58,16 +54,40 @@ Parallel_Builder<MT>::Parallel_Builder(const MT &mesh,
 template<class MT>
 void Parallel_Builder<MT>::parallel_params(const Source_Init<MT> &sinit)
 {
+  // make sure we have a Source_Init
+    Require (&sinit);
+
   // number of cells in the mesh
-    int num_cells = nprocs_per_cell.size();
+    int num_cells = procs_per_cell.size();
 
   // calculate the total capacity of all processors
-    int total_capacity = proc_capacity * nodes();
+    int total_capacity = sinit.get_capacity() * nodes();	
+    Check (total_capacity > num_cells);
 
   // looping over cells to calculate salient quantities
     for (int cell = 1; cell <= num_cells; cell++)
     {
-      // <<<CONTINUE HERE>>>
+      // calculate number of time a cell is replicated
+	int nsource = sinit.get_ncen(cell) + sinit.get_nvol(cell) +
+	    sinit.get_nss(cell);
+	int nsourcetot = sinit.get_ncentot() + sinit.get_nsstot() +
+	    sinit.get_nvoltot(); 
+	int replicates = max(1, nsource / nsourcetot * total_capacity);
+
+      // loop over processors that take this cell
+	int nprocs_taking = 0;
+	int proc = 0;
+	while (proc < nodes() && nprocs_taking < replicates)
+	{
+	    if (cells_per_proc[proc].size() < sinit.get_capacity())
+	    {
+		cells_per_proc[proc].push_back(cell);
+		procs_per_cell[cell-1].push_back(proc);
+		nprocs_taking++;
+	    }
+	    proc++;
+	}
+	Ensure (procs_per_cell[cell-1].size() > 0);
     }
 }
 

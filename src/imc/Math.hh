@@ -21,6 +21,7 @@
 //===========================================================================//
 
 #include "imctest/Names.hh"
+#include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -84,10 +85,7 @@ inline vector<VT> cross(vector<VT> A, vector<VT> B)
 template<class T>
 inline T min(T A, T B)
 {
-    T return_value = A;
-    if (B <= return_value)
-	return_value = B;
-    return return_value;
+    return A < B ? A : B;
 }
 
 template<class T>
@@ -127,6 +125,15 @@ inline T min(T A, T B, T C, T D, T E)
     if (E <= return_value)
 	return_value = E;
     return return_value;
+}
+
+//---------------------------------------------------------------------------//
+// return the max value
+
+template<class T>
+inline T max(T A, T B)
+{
+    return A > B ? A : B;
 }
 
 CSPACE

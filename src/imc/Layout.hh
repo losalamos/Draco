@@ -78,7 +78,7 @@ public:
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
-// overload operator declarations for Layout
+// overload operator for stream output
 
 ostream& operator<<(ostream &, const Layout &);
 
@@ -88,7 +88,7 @@ ostream& operator<<(ostream &, const Layout &);
 inline bool Layout::operator==(const Layout &rhs) const
 {
   // if the data is equal, the Layouts are equal
-    if ( face_cell == rhs.face_cell)
+    if (face_cell == rhs.face_cell)
 	return true;
     
   // if we haven't returned then the Layouts aren't equal
