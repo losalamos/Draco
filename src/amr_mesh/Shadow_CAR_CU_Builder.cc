@@ -50,7 +50,7 @@ extern "C"
     // objects are set. The CAR_CU_Mesh class contains member functions to 
     // return the addresses of the Coord and Layout class objects, if needed.
     void construct_car_cu_builder_(long & self, long & itf_ptr, 
-				   long & rttf_ptr, int verbosity, 
+				   long & rttf_ptr, int & verbosity, 
 				   long & mesh_ptr)
     {
 	bool verbose = verbosity;
@@ -73,8 +73,8 @@ extern "C"
 
 	// return the addresses of the new CAR_CU_Builder (self) and 
 	// CAR_CU_Mesh (mesh_ptr) objects.
-	self = opaque_pointers<CAR_CU_Builder>::insert(& (* builder));
-	mesh_ptr = opaque_pointers<CAR_CU_Mesh>::insert(& (* mesh));
+	self = opaque_pointers<CAR_CU_Builder>::insert(builder);
+	mesh_ptr = opaque_pointers<CAR_CU_Mesh>::insert(mesh);
 
     }
 
@@ -82,10 +82,13 @@ extern "C"
     void destruct_car_cu_builder_(long & self)
     {
 	// Get the address of the CAR_CU_Builder class object (self).
-	CAR_CU_Builder * builder = opaque_pointers<CAR_CU_Builder>::item(self);
+	SP<CAR_CU_Builder> builder = 
+	    opaque_pointers<CAR_CU_Builder>::item(self);
 
-	// destroy the CAR_CU_Builder class object.
-	delete builder;
+	// destroy the CAR_CU_Builder class object by assigning this SP to 
+        // a null SP
+	builder = SP<CAR_CU_Builder>();
+	Ensure (!builder);
 
 	// remove the opaque pointer to the CAR_CU_Interface class object.
 	opaque_pointers<CAR_CU_Builder>::erase(self);
@@ -95,7 +98,7 @@ extern "C"
 }
 
 
-} // end namespace rtt_mc
+}  // end extern "C"
 
 #endif                          // __mc_Shadow_CAR_CU_Builder_cc__
 

@@ -14,13 +14,13 @@ class opaque_pointers
     typedef T *pointer_type;
     typedef T &reference;
     
-    static opaque_pointer_type insert(T *t);
+    static opaque_pointer_type insert(SP<T>);
 	// add t to list, return opaque pointer to it
 
     static bool is_full();
 	// is there no more room?
 
-    static T *item(opaque_pointer_type i);
+    static SP<T> item(opaque_pointer_type i);
 	// convert opaque pointer to real pointer
 
     static bool has(opaque_pointer_type i);
@@ -31,7 +31,7 @@ class opaque_pointers
 
   private:
 
-    typedef std::map<opaque_pointer_type, T*> ptr_map;
+    typedef std::map<opaque_pointer_type, SP<T> > ptr_map;
 
     struct rep
     {
@@ -50,6 +50,7 @@ class opaque_pointers
     {
 	return get_rep().next_avail;
     }
+
 };
 
 // include implementation

@@ -24,16 +24,18 @@
 !===========================================================================
 
           USE CAR_CU_Interface_Class
+          USE CAR_CU_RTT_Format_Class
           USE CAR_CU_Builder_Class
 
           implicit none
           integer narg, iargc, fnlgth
           type(CAR_CU_Interface) :: interface_class
+          type(CAR_CU_RTT_Format) :: rtt_format_class
           type(CAR_CU_Builder) :: builder_class
 
 !===========================================================================
 ! Input the command line arguments - input file name followed by anything to
-!  activate the verbose switch (typically v or the word verbose)
+! activate the verbose switch (typically v or the word verbose)
 !===========================================================================
 
           narg = iargc()
@@ -60,6 +62,7 @@
 !===========================================================================
 
           call construct_Interface_Class(interface_class)
+          rtt_format_class%this = interface_class%rtt_format
 
 !===========================================================================
 ! Create a C++ CAR_CU_Builder class object. This also constructs the C++ 
@@ -69,9 +72,9 @@
 
           call construct_Builder_Class(builder_class, interface_class)
 
-! Get rid of CAR_CU_Interface and CAR_CU_Builder class objects that are no 
-! longer needed (does this also destroy the RTT_Format class, or do we need
-! another destructor?). 
+! Get rid of RTT_Format, CAR_CU_Interface, and CAR_CU_Builder class objects 
+! that are no longer needed. 
+          call destruct_RTT_Format_Class(rtt_format_class)
           call destruct_Interface_Class(interface_class)
           call destruct_Builder_Class(builder_class)
 

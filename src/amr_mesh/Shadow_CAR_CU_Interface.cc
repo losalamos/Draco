@@ -63,8 +63,8 @@ extern "C"
 
 	// return the addresses of the new CAR_CU_Interface (self) and 
 	// RTT_Format class (rttFormat) objects.
-	self = opaque_pointers<CAR_CU_Interface>::insert(& (* interface));
-	rttFormat = opaque_pointers<RTT_Format>::insert(& (* rttMesh));
+	self = opaque_pointers<CAR_CU_Interface>::insert(interface);
+	rttFormat = opaque_pointers<RTT_Format>::insert(rttMesh);
 
     }
 
@@ -72,11 +72,13 @@ extern "C"
     void destruct_car_cu_interface_(long & self)
     {
 	// Get the address of the CAR_CU_Interface class object (self).
-	CAR_CU_Interface * interface = 
+	SP<CAR_CU_Interface> interface = 
 	    opaque_pointers<CAR_CU_Interface>::item(self);
 
-	// destroy the CAR_CU_Interface class object.
-	delete interface;
+	// destroy the CAR_CU_Interface class object by assigning this SP to 
+        // a null SP
+	interface = SP<CAR_CU_Interface>();
+	Ensure (!interface);
 
 	// remove the opaque pointer to the CAR_CU_Interface class object.
 	opaque_pointers<CAR_CU_Interface>::erase(self);
@@ -86,7 +88,7 @@ extern "C"
 }
 
 
-} // end namespace rtt_mc
+} // end extern "C"
 
 #endif                          // __mc_Shadow_CAR_CU_Interface_cc__
 

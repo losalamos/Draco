@@ -10,7 +10,7 @@ opaque_pointers<T>::rep &opaque_pointers<T>::get_rep()
 }
 
 template <class T>
-opaque_pointer_type opaque_pointers<T>::insert(T *t)
+opaque_pointer_type opaque_pointers<T>::insert(SP<T> t)
 {
     // add t to list, return opaque pointer to it
 
@@ -39,7 +39,7 @@ bool opaque_pointers<T>::is_full()
 }
 
 template <class T>
-T *opaque_pointers<T>::item(opaque_pointer_type i)
+SP<T> opaque_pointers<T>::item(opaque_pointer_type i)
 {
     // convert opaque pointer to real pointer
     assert(opaque_pointers<T>::has(i)); // ENSURE
