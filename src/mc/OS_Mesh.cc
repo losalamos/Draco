@@ -14,6 +14,7 @@
 #include "XYZCoord_sys.hh"
 #include "Constants.hh"
 #include "viz/Ensight_Translator.hh"
+#include "ds++/Packing_Utils.hh"
 #include <iomanip>
 
 namespace rtt_mc 
@@ -448,42 +449,33 @@ OS_Mesh::SP_Pack OS_Mesh::pack(const sf_int &current_mesh_to_new_mesh) const
     int   size = total_ints + total_chars;
     char *data = new char[size];
 
-    // iterator for packing int data
-    const char *itor = 0;
-    int          ctr = 0;
-
     // pack up the mesh
 
+    // make and set the packer
+    rtt_dsxx::Packer packer;
+    packer.set_buffer(size, data);
+
     // pack up the number of packed cells
-    itor = reinterpret_cast<const char *>(&num_packed_cells);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << num_packed_cells;
 
     // pack up the coord indicator
-    itor = reinterpret_cast<const char *>(&coord_indicator);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << coord_indicator;
 
     // pack up the layout size
-    itor = reinterpret_cast<const char *>(&layout_size);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << layout_size;
 
     // pack up the layout
-    itor = reinterpret_cast<const char *>(packed_layout->begin());
-    for (int i = 0; i < packed_layout->get_size() * sizeof(int); i++)
-	data[ctr++] = itor[i];
+    for (const int *i = packed_layout->begin(); i != packed_layout->end(); i++)
+	packer << *i;
 
     // pack up the mesh size
-    itor = reinterpret_cast<const char *>(&mesh_data_size);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << mesh_data_size;
 
     // pack up the mesh data
     for (int i = 0; i < mesh_data_size; i++)
-	data[ctr++] = mesh_data[i];
+	packer << mesh_data[i];
 
-    Ensure (ctr == size);
+    Ensure (packer.get_ptr() == size + data);
 
     // clean up some memory
     delete [] mesh_data;
@@ -545,36 +537,30 @@ char* OS_Mesh::pack_mesh_data(int &size,
     Check (cpctr == num_cp);
 
     // collapse the vertices and cell pairs into a char array
-    const char *itor = 0;
-    int ctr          = 0;
+    rtt_dsxx::Packer packer;
+    packer.set_buffer(size, data);
 
     // first add the vertices
 
     // add the vertices size
-    itor = reinterpret_cast<const char *>(&size_v);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << size_v;
 
     // add the vertices array
-    itor = reinterpret_cast<const char *>(vtcs);
-    for (int i = 0; i < size_v; i++)
-	data[ctr++] = itor[i];
+    for (int i = 0; i < num_vtcs; i++)
+	packer << vtcs[i];
 
     // add the cell pair size
-    itor = reinterpret_cast<const char *>(&size_cp);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << size_cp;
 
     // add the cell pairs
-    itor = reinterpret_cast<const char *>(cp);
-    for (int i = 0; i < size_cp; i++)
-	data[ctr++] = itor[i];
-    
+    for (int i = 0; i < num_cp; i++)
+	packer << cp[i];
+
     // clean up memory
     delete [] vtcs;
     delete [] cp;
     
-    Ensure (ctr == size);
+    Ensure (packer.get_ptr() == data + size);
     return data;
 }
 
@@ -808,6 +794,7 @@ OS_Mesh::Pack::Pack(int s, char *d)
       size(s)
 {
     Require (size >= 4 * sizeof(int));
+    Require (data);
 }
 
 //---------------------------------------------------------------------------//
@@ -850,11 +837,13 @@ int OS_Mesh::Pack::get_num_packed_cells() const
 {
     Require (size >= 4 * sizeof(int));
 
-    int   num_cells = 0;
-    char *itor      = reinterpret_cast<char*>(&num_cells);
+    int num_cells = 0;
+    
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(size, data);
 
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[i];
+    unpacker >> num_cells;
+    Check (unpacker.get_ptr() == data + sizeof(int));
     
     Ensure (num_cells >= 0);
     return num_cells;
@@ -875,26 +864,20 @@ OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
 
     Require (size >= 4 * sizeof(int));
 
-    // counter for unpacking
-    int ctr = 0;
-
-    // iterator for unpacking
-    char *itor = 0;
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(size, data);
 
     // determine the number of packed cells
     int num_packed_cells = 0;
-    itor                 = reinterpret_cast<char *>(&num_packed_cells);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> num_packed_cells;
     Check (num_packed_cells >= 0);
 
     // >>> UNPACK THE COORD SYS
     int coord_indicator = 0;
-    itor                = reinterpret_cast<char *>(&coord_indicator);
-    SP<Coord_sys> coord;
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> coord_indicator;
 
+    SP<Coord_sys> coord;
     if (coord_indicator == 1)
 	coord = new XYCoord_sys();
     else if (coord_indicator == 2)
@@ -906,16 +889,13 @@ OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
 
     // UNPACK THE LAYOUT
     int layout_size  = 0;
-    itor             = reinterpret_cast<char *>(&layout_size);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> layout_size;
 
     // don't need to reclaim this memory because we are giving it to the
     // layout packer
     int *layout_data = new int[layout_size];
-    itor             = reinterpret_cast<char *>(layout_data);
-    for (int i = 0; i < layout_size * sizeof(int); i++)
-	itor[i] = data[ctr++];
+    for (int i = 0; i < layout_size; i++)
+	unpacker >> layout_data[i];
 
     Layout::Pack packed_layout(layout_size, layout_data);
     SP<Layout> layout = packed_layout.unpack();
@@ -925,27 +905,21 @@ OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
     
     // get the size of the mesh data
     int mesh_data_size = 0;
-    itor               = reinterpret_cast<char *>(&mesh_data_size);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> mesh_data_size;
     Check (size >= 2 * sizeof(int));
 
     // get the size of the vertices in bytes
     int vertx_size = 0;
-    itor           = reinterpret_cast<char *>(&vertx_size);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> vertx_size;
     Check (vertx_size >= 0);
     Check (vertx_size ? vertx_size % sizeof(double) == 0 : true);
     Check (vertx_size ? vertx_size % coord->get_dim() == 0 : true);
 
-    // get the vertices (we can't use iterators to a vector here because we
-    // cannot assume that they can be cast to a char *)
+    // get the vertices
     int num_v_dbl = vertx_size / sizeof(double);
     double *vertx = new double[num_v_dbl];
-    itor          = reinterpret_cast<char *>(vertx);
-    for (int i = 0; i < vertx_size; i++)
-	itor[i] = data[ctr++];
+    for (int i = 0; i < num_v_dbl; i++)
+	unpacker >> vertx[i];
     
     // make the vertex data
     int num_verts = num_v_dbl / coord->get_dim();
@@ -961,18 +935,15 @@ OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
     
     // get the size of the cell pairs in bytes
     int cp_size = 0;
-    itor        = reinterpret_cast<char *>(&cp_size);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> cp_size;
     Check (cp_size >= num_packed_cells);
     Check (cp_size ? cp_size % sizeof(int) == 0 : true);
 
     // get the cell pairs
     int num_cp_int = cp_size / sizeof(int);
     int *cp        = new int[num_cp_int];
-    itor           = reinterpret_cast<char *>(cp);
-    for (int i = 0; i < cp_size; i++)
-	itor[i] = data[ctr++];
+    for (int i = 0; i < num_cp_int; i++)
+	unpacker >> cp[i];
 
     // make the cell pair data
     int cpctr      = 0;
@@ -994,7 +965,7 @@ OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
     delete [] cp;
 
     // make sure the count is accurate
-    Ensure (ctr == size);
+    Ensure (unpacker.get_ptr() == data + size);
 
     // build the new mesh
     SP_Mesh unpacked_mesh(new OS_Mesh(coord, *layout, vertex, cell_pair,

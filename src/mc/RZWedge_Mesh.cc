@@ -16,6 +16,7 @@
 #include "XYZCoord_sys.hh"
 #include "Constants.hh"
 #include "viz/Ensight_Translator.hh"
+#include "ds++/Packing_Utils.hh"
 #include <iostream>
 #include <iomanip>
 #include <typeinfo>
@@ -1032,37 +1033,32 @@ RZWedge_Mesh::SP_Pack RZWedge_Mesh::pack(const sf_int &current_to_new) const
     int   size = total_ints + total_doubles + total_chars;
     char *data = new char[size];
 
-    // iterator for packing data
-    const char *itor = 0;
-    int          ctr = 0;
-
     // pack up the mesh
+    
+    // make a packer object
+    rtt_dsxx::Packer packer;
 
+    // set the buffer 
+    packer.set_buffer(size, data);
+    
     // pack the number of packed cells
-    itor = reinterpret_cast<const char *>(&num_packed_cells);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << num_packed_cells;
 
     // pack up the layout size
-    itor = reinterpret_cast<const char *>(&layout_size);
-    for (int i = 0; i < sizeof(int); i++)
-	data[ctr++] = itor[i];
+    packer << layout_size;
 
     // pack up the layout
-    itor = reinterpret_cast<const char *>(packed_layout->begin());
-    for (int i = 0; i < layout_size * sizeof(int); i++)
-	data[ctr++] = itor[i];
-    
+    for (const int *i = packed_layout->begin(); i != packed_layout->end(); i++)
+	packer << *i;
+
     // pack up the angle
-    itor = reinterpret_cast<const char *>(&theta_degrees);
-    for (int i = 0; i < sizeof(double); i++)
-	data[ctr++] = itor[i];
+    packer << theta_degrees;
 
     // pack up the extents
     for (int i = 0; i < extent_size; i++)
-	data[ctr++] = extent_data[i];
+	packer << extent_data[i];
 
-    Ensure (ctr == size);
+    Ensure (packer.get_ptr() == data + size);
 
     // clean up some memory
     delete [] extent_data;
@@ -1109,19 +1105,13 @@ void RZWedge_Mesh::pack_extents(const sf_int &current_new,
     }
 
     // now pack up the extents
-    double    extent = 0;
-    int          ctr = 0;
-    const char *itor = 0;
+    rtt_dsxx::Packer packer;
+    packer.set_buffer(size, data);
     for (int i = 0; i < extents.size(); i++)
 	for (int j = 0; j < extents[i].size(); j++)
-	{
-	    extent = extents[i][j];
-	    itor   = reinterpret_cast<const char*>(&extent);
-	    for (int k = 0; k < sizeof(double); k++)
-		data[ctr++] = itor[k];
-	}
+	    packer << extents[i][j];
 
-    Ensure (ctr == size);
+    Ensure (packer.get_ptr() == size + data);
 } 
 
 //===========================================================================//
@@ -1145,6 +1135,7 @@ RZWedge_Mesh::Pack::Pack(int s, char *d)
       size(s)
 {
     Require (size >= (3 * sizeof(int) + sizeof(double)));
+    Require (data);
 }
 
 //---------------------------------------------------------------------------//
@@ -1188,10 +1179,12 @@ int RZWedge_Mesh::Pack::get_num_packed_cells() const
     Require (size >= (3 * sizeof(int) + sizeof(double)));
 
     int   num_cells = 0;
-    char *itor      = reinterpret_cast<char*>(&num_cells);
 
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[i];
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(size, data);
+
+    unpacker >> num_cells;
+    Check (unpacker.get_ptr() == data + sizeof(int));
     
     Ensure (num_cells >= 0);
     return num_cells;
@@ -1212,32 +1205,27 @@ RZWedge_Mesh::SP_Mesh RZWedge_Mesh::Pack::unpack() const
 
     Require (size >= (3 * sizeof(int) + sizeof(double)));
 
-    // make counter and iterator
-    int    ctr = 0;
-    char *itor = 0;
-
     // build an XYZ coordinate system
     SP<Coord_sys> coord(new XYZCoord_sys());
 
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(size, data);
+
     // determine the number of packed cells
     int num_packed_cells = 0;
-    itor                 = reinterpret_cast<char *>(&num_packed_cells);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> num_packed_cells;
     Check (num_packed_cells >= 0);
 
     // UNPACK THE LAYOUT
     int layout_size  = 0;
-    itor             = reinterpret_cast<char *>(&layout_size);
-    for (int i = 0; i < sizeof(int); i++)
-	itor[i] = data[ctr++];
+    unpacker >> layout_size;
 
     // don't need to reclaim this memory because we are giving it to the
     // layout packer
     int *layout_data = new int[layout_size];
-    itor             = reinterpret_cast<char *>(layout_data);
-    for (int i = 0; i < layout_size * sizeof(int); i++)
-	itor[i] = data[ctr++];
+    for (int *i = layout_data; i != layout_data + layout_size; i++)
+	unpacker >> *i;
 
     AMR_Layout::Pack packed_layout(layout_size, layout_data);
     SP<AMR_Layout> layout = packed_layout.unpack();
@@ -1245,18 +1233,14 @@ RZWedge_Mesh::SP_Mesh RZWedge_Mesh::Pack::unpack() const
 
     // GET THETA (degrees)
     double theta = 0;
-    itor         = reinterpret_cast<char *>(&theta);
-    for (int i = 0; i < sizeof(double); i++)
-	itor[i] = data[ctr++]; 
+    unpacker >> theta;
     Check (theta > 0);
 
     // UNPACK THE EXTENTS
-    int   extent_size   = num_packed_cells * 4 * sizeof(double);
-    int   num_extents   = num_packed_cells * 4;
-    double *extent_data = new double[num_extents];
-    itor                = reinterpret_cast<char *>(extent_data);
-    for (int i = 0; i < extent_size; i++)
-	itor[i] = data[ctr++];
+    int       num_extents = num_packed_cells * 4;
+    sf_double extent_data(num_extents, 0.0);
+    for (int i = 0; i < num_extents; i++)
+	unpacker >> extent_data[i];
 
     // build the new cell extents
     int       cectr = 0;
@@ -1265,14 +1249,11 @@ RZWedge_Mesh::SP_Mesh RZWedge_Mesh::Pack::unpack() const
 	for (int j = 0; j < cell_extents[i].size(); j++)
 	    cell_extents[i][j] = extent_data[cectr++];
     Check (cectr++ == num_extents);
-    
-    // reclaim memory
-    delete [] extent_data;
 
-    Ensure (ctr == size); 
+    Ensure (unpacker.get_ptr() == size + data); 
     
     // build the new mesh
-    SP<RZWedge_Mesh> mesh(new RZWedge_Mesh(coord, *layout, cell_extents,          
+    SP<RZWedge_Mesh> mesh(new RZWedge_Mesh(coord, *layout, cell_extents,
 					   theta, true));
 
     Ensure (mesh->num_cells() == num_packed_cells);

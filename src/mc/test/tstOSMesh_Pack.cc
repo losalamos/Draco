@@ -277,12 +277,12 @@ int main(int argc, char *argv[])
 
     // status of test
     cout << endl;
-    cout <<     "****************************************" << endl;
+    cout <<     "***********************************" << endl;
     if (passed) 
     {
-        cout << "**** OS_Mesh Pack Self Test: PASSED on " << endl;
+        cout << "**** OS_Mesh Pack Self Test: PASSED" << endl;
     }
-    cout <<     "****************************************" << endl;
+    cout <<     "***********************************" << endl;
     cout << endl;
 
     cout << "Done testing OS_Mesh Pack on " << C4::node() << endl;
