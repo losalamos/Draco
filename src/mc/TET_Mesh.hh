@@ -104,6 +104,7 @@ class TET_Mesh
     // Public-interface typedefs.
     typedef rtt_dsxx::SP<TET_Mesh>               SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>              SP_Coord_sys;
+    typedef rtt_dsxx::SP<TET_Mesh::Pack>         SP_Pack;
     typedef std::string                          std_string;
 
     // Public-interface typedefs for fields of standard types.
@@ -395,8 +396,8 @@ class TET_Mesh
 
     // References to imbedded objects and data required for Parallel_Building.
     // More may be added later.
-    const Layout&           get_Layout() const  { return layout; }
-    const Coord_sys&        get_Coord() const   { return *coord; }
+    const Layout&     get_Layout() const  { return layout; }
+    const Coord_sys&  get_Coord() const   { return *coord; }
     SP_Coord_sys      get_SPCoord() const { return coord; }
 
     //__________________________________________//
