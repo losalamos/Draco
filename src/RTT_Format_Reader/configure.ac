@@ -17,7 +17,9 @@ dnl VENDOR SETUPS
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(meshReaders ds++)
+AC_NEEDS_LIBS(meshReaders \
+              mesh_element \
+              ds++)
 
 AC_RUNTESTS(TestRTTFormatReader TestRTTMeshReader, scalar)
 
