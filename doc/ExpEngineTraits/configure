@@ -2237,6 +2237,12 @@ EOF
    fi
 
        fi
+
+       # set rpath when building shared library executables
+       if test "${enable_shared}" = yes; then
+	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
+	   PKG_LIBS="-rpath .. ${PKG_LIBS}"
+       fi
    ;;
    sparc-sun-solaris2.*)
        # MPICH LIBRARY EXTRAS
@@ -2266,6 +2272,13 @@ EOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} ${pcg_sun_libs}"
    fi
 
+       fi
+
+       # set -R when building shared library executables
+       if test "${enable_shared}" = yes; then
+	   DRACO_LIBS="-R \${libdir} ${DRACO_LIBS}"
+	   PKG_LIBS="-R .. ${PKG_LIBS}"
+	   RANLIB=':'
        fi
    ;;
    *)
