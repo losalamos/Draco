@@ -21,11 +21,11 @@ template<class T>
 class PCG_PreCond {
 
   public:
-    PCG_PreCond();
-    ~PCG_PreCond();
+//     PCG_PreCond();
+    virtual ~PCG_PreCond() {}
 
-    virtual void  Left_PreCond( Mat1<T>& x, Mat1<T>& b );
-    virtual void Right_PreCond( Mat1<T>& x, Mat1<T>& b );
+    virtual void  Left_PreCond( Mat1<T>& x, Mat1<T>& b ) =0;
+    virtual void Right_PreCond( Mat1<T>& x, Mat1<T>& b ) =0;
 };
 
 #endif                          // __linalg_PCG_PreCond_hh__
