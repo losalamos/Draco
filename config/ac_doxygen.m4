@@ -30,16 +30,32 @@ dnl  Collect tagfiles for pacakge-to-component dependencies
 dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
 
+   # XXX Need to change COMPLINKS to generic doxygen list instead of
+   # HTML for Latex compatability. Let doxygen insert the links
+   AC_MSG_CHECKING([for documented sub-components of this package])
+   COMP_LINKS=''
    TAGFILES=''
    DOXYGEN_TAGFILES=''
-   AC_MSG_CHECKING([for documented components])
-   components=`find ${package_top_srcdir}/src . -name autodoc | sed 's/.*\/src\/\(.*\)\/.*/\1/'`
-   AC_MSG_RESULT([${components}])
-   for comp in ${components}; do
-       tagfile=${doxygen_output_top}/${comp}.tag
-       TAGFILES="${TAGFILES} ${tagfile}"
-       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${comp}\""
+   components=''
+   for item in `ls -1 ${package_top_srcdir}/src`; do
+      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
+         dirname=`basename ${item}`
+         components="${components} ${dirname}"
+         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+         tagfile=${doxygen_output_top}/${dirname}.tag
+         TAGFILES="${TAGFILES} ${tagfile}"
+         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
+      fi
    done
+   AC_MSG_RESULT(${components:-none})
+   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+
+   # XXX TO DO: Add links to dependent packages on this page.
+   PACKAGE_LINKS="<ul> </ul>"
+
+   # Unique to package-level
+   AC_SUBST(PACKAGE_LINKS)
+   AC_SUBST(COMP_LINKS)
 
 ])
 
@@ -111,19 +127,20 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
-   # For a component, the doxygen input is the srcdir and the examples
-   # are in the tests
-   doxygen_input=`cd ${srcdir}; pwd` 
-   doxygen_input="$doxygen_input $doxygen_input/autodoc"
-   doxygen_examples=${doxygen_input}/test
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
 
    # Define some package-level directories
    header_dir=${package_top_srcdir}/autodoc/html
-   autodoc_dir=${doxygen_input}/autodoc
    config_dir=${package_top_srcdir}/config
 
-   # Get the default output location
-   AC_SET_DEFAULT_OUTPUT
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}/autodoc
+
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
+   doxygen_input="${abs_srcdir} ${abs_srcdir}/autodoc"
+   doxygen_examples=${abs_srcdir}/test
 
    # Set the package-level html output location
    package_html=${doxygen_output_top}/html
@@ -135,15 +152,12 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    doxygen_html_output="${doxygen_output_top}/html/${package}"
    doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
-   # compute relative paths to package html output
+   # Relative location of the package-level html output.
    adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
 
    # Get tags for other components in this package which this
    # component depends on
    AC_AUTODOC_COMPONENT_TAGS
-
-   # XXX We will need to expand this to handle tag files in other
-   # packages too.
 
    # find the release number
    number=$1
@@ -168,45 +182,27 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
+   # Get the default output location
    AC_SET_DEFAULT_OUTPUT
 
-   # For the package, the input is the current directory, plus configure/doc
+   # Package-level directories
+   header_dir=${srcdir}/html
+   config_dir=${package_top_srcdir}/config
+
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}
+
+   # For the package, the input is the current directory, plus
+   # configure/doc. There are no examples
    doxygen_input="`pwd` ${config_dir}/doc"
    doxygen_examples=''
 
-   # Define package-level directories
-   header_dir=${srcdir}/html
-   autodoc_dir=${srcdir}
-   config_dir=${package_top_srcdir}/config
-
+   # Component output locations
    doxygen_html_output="${doxygen_output_top}/html/"
    doxygen_latex_output="${doxygen_output_top}/latex/"
 
+   # Relative location of the package-level html output.
    rel_package_html='.'
-
-   #
-   # XXX Need to change COMPLINKS to generic doxygen list instead of
-   # HTML for Latex compatability. Let doxygen insert the links
-   #
-   AC_MSG_CHECKING([for documented sub-components of this package])
-   COMP_LINKS=''
-   components=''
-   for item in `ls -1 ${package_top_srcdir}/src`; do
-      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
-         dirname=`basename ${item}`
-         components="${components} ${dirname}"
-         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
-      fi
-   done
-   AC_MSG_RESULT(${components:-none})
-   COMP_LINKS="<ul> $COMP_LINKS </ul>"
-
-   # XXX TO DO: Add links to dependent packages on this page.
-   PACKAGE_LINKS="<ul> </ul>"
-
-   # Unique to package-level
-   AC_SUBST(PACKAGE_LINKS)
-   AC_SUBST(COMP_LINKS)
 
    AC_AUTODOC_PACKAGE_TAGS
 

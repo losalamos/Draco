@@ -34,8 +34,6 @@ config_dir = ${package_top_srcdir}/config
 header_dir = @header_dir@
 autodoc_dir = @autodoc_dir@
 
-tagfiles = @TAGFILES@
-
 # Header files and supplemental files go straight to the publish
 # directory 
 header_files := $(wildcard ${header_dir}/*.png)\
