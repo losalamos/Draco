@@ -41,8 +41,6 @@ AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
        DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${comp}\""
    done
 
-   AC_SUBST(DOXYGEN_TAGFILES)
-
 ])
 
 
@@ -75,8 +73,6 @@ AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
    done
    AC_MSG_RESULT([${components}])
 
-   AC_SUBST(DOXYGEN_TAGFILES)
-
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -95,10 +91,13 @@ AC_DEFUN([AC_AUTODOC_SUBST], [dnl
    AC_SUBST(doxygen_html_output)
    AC_SUBST(doxygen_latex_output)
 
+   # Other doxygen configuration
+   AC_SUBST(DOXYGEN_TAGFILES)
+
    # For inclusion in header files and other html
    AC_SUBST(rel_package_html)
 
-   # For makefile for configuration:
+   # For makefiles for configuration:
    AC_SUBST(header_dir)
    AC_SUBST(autodoc_dir)
 
