@@ -409,8 +409,8 @@ int main(int argc, char *argv[])
             buffer  = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
 
           // send out objects
-            pcomm->send_Mesh(*mesh);
-	    pcomm->send_Opacity(*opacity);
+	    pcomm->send_Mesh(*mesh);
+	    pcomm->send_Opacity(mesh, *opacity);
 	    Builder_diagnostic(*mesh, *mat_state, *opacity);
 	}
 	

@@ -3,22 +3,13 @@
 // Thomas M. Evans
 // Tue Jun  9 18:42:16 1998
 //---------------------------------------------------------------------------//
-// @> test parallel building and mixing for IMC
+// @> test parallel building and mixing for AMR IMC
 //---------------------------------------------------------------------------//
 
-#include "imc/OS_Interface.hh"
-#include "imc/OS_Builder.hh"
+#include "imc/AMR_Interface.hh"
+#include "imc/AMR_Builder.hh"
 #include "imc/OS_Mesh.hh"
-#include "imc/Mat_State.hh"
-#include "imc/Opacity_Builder.hh"
-#include "imc/Opacity.hh"
-#include "imc/Parallel_Builder.hh"
-#include "imc/Source_Init.hh"
-#include "imc/Particle_Buffer.hh"
-#include "imc/Particle.hh"
 #include "imc/Global.hh"
-#include "imc/Source.hh"
-#include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "c4/global.hh"
@@ -32,19 +23,9 @@
 #include <cstdio>
 #include <vector>
 
-using IMC::OS_Interface;
-using IMC::OS_Builder;
+using IMC::AMR_Interface;
+using IMC::AMR_Builder;
 using IMC::OS_Mesh;
-using IMC::Mat_State;
-using IMC::Opacity_Builder;
-using IMC::Opacity;
-using IMC::Parallel_Builder;
-using IMC::Source_Init;
-using IMC::Particle_Buffer;
-using IMC::Particle;
-using IMC::Source;
-using RNG::Rnd_Control;
-using RNG::Sprng;
 using dsxx::SP;
 using namespace std;
 using namespace C4;
@@ -52,40 +33,6 @@ using namespace C4;
 // declare node
 int mynode;
 int mynodes;
-
-template<class MT>
-void topology(const MT &mesh, const Parallel_Builder<MT> &pcom)
-{
-    cout << ">> IMC Topology Diagnostic" << endl << endl;
-
-    cout << "Number of procs: " << nodes() << endl;
-
-    for (int i = 0; i < nodes(); i++)
-    {
-	cout << setw(9) << pcom.num_cells(i) 
-	     << " Cells on node " << setw(5) << i << endl;
-	cout << "-----------------------------" << endl;
-	cout << "          local        global" << endl;
-	for (int j = 1; j <= pcom.num_cells(i); j++)
-	{
-	    cout << setw(15) << j << setw(14) << pcom.master_cell(j,i)
-		 << endl;
-	}
-	cout << endl;
-    }
-
-    for (int i = 1; i <= mesh.num_cells(); i++)
-    {
-	cout << "Global Cell " << i << " on " << pcom.num_procs(i)
-	     << " procs" << endl;
-	cout << "      Proc" << "     Local" << endl;
-	for (int p = 0; p < nodes(); p++)
-	    if (pcom.imc_cell(i, p))
-		cout << setw(10) << p << setw(10) 
-		     << pcom.imc_cell(i, p) << endl;
-    }
-    cout << endl;
-}
 
 int main(int argc, char *argv[])
 {    
@@ -97,106 +44,29 @@ int main(int argc, char *argv[])
  // try block
     try
     {
-      // lets look at our buffers
-	int sb = 1000;
-	int db = 1000 * (9);
-	int ib = 1000 * (2);
-	int cb = 1000 * (500);
-	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_s() == sb);
-	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_d() == db);
-	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_i() == ib);
-	Check (Particle_Buffer<Particle<OS_Mesh> >::get_buffer_c() == cb);
-
       // declare geometry and material stuff
 	SP<OS_Mesh> mesh;
-	SP< Mat_State<OS_Mesh> > mat_state;
-	SP< Opacity<OS_Mesh> > opacity;
-	SP< Source_Init<OS_Mesh> > sinit;
-	SP<Rnd_Control> rcon = new Rnd_Control(9836592);
 
-      // read input and stuff on the host-topology
-	if (!mynode)
-	{
-	    cout << ">> Running through problem builders" << endl;
-	    string infile = argv[1];
-	
-	  // run the interface parser
-	    SP<OS_Interface> interface = new OS_Interface(infile);
-	    interface->parser();
-            cout << "** Read input file on host " << mynode << endl;
+      // let's give a mesh definition, RAGE style
+	int lay[]     = {0,0,0,2,0,0,1,0,0,0,0,0};
+	double vert[] = {0,0,0,1,0,0,1,1,0,0,1,0,0,0,1,1,0,1,1,1,1,0,1,1,
+			 1,0,0,2,0,0,2,1,0,1,1,0,1,0,1,2,0,1,2,1,1,1,1,1};
+	int b1[]      = {0};
+	int b2[]      = {0};
+	int num_cells = 2;
+	int num_b     = 0;
 
-	  // initialize the mesh builder and build mesh
-	    OS_Builder os_build(interface);
-	    mesh = os_build.build_Mesh();
-            cout << "** Built mesh on host " << mynode << endl;
+      // let's get an interface to this problem
+	cout << ">> Running through problem builders" << endl;
 
-	  // initialize the Opacity builder and build state 
-	    Opacity_Builder<OS_Mesh> opacity_build(interface);
-	    mat_state = opacity_build.build_Mat(mesh);
-	    opacity   = opacity_build.build_Opacity(mesh, mat_state);
-            cout << "** Built opacities on host " << mynode << endl;
+	AMR_Interface::Arguments arg(vert, lay, b1, b2, num_cells, num_b);
+	SP<AMR_Interface> interface = new AMR_Interface(arg);
+	cout << "** Merged with host data on node " << mynode << endl;
 
-	  // do the source initialization
-	    sinit = new Source_Init<OS_Mesh>(interface, mesh);
-	    sinit->initialize(mesh, opacity, mat_state, rcon, 1);
-            cout << "** Initialized source on host " << mynode << endl;	
-            cout << endl;
-	}
-
-      // make parallel builder object to do send/receives of objects
-	SP< Parallel_Builder<OS_Mesh> > pcomm;
-	SP< Particle_Buffer<Particle<OS_Mesh> > > buffer;
-	SP< Source<OS_Mesh> > source;
-    
-	if (!mynode)
-	{
-	  // make parallel builder object to do my mesh decomposition
- 	    pcomm = new Parallel_Builder<OS_Mesh>(*mesh, *sinit);
-
-	  // topology diagnostic
-	  // topology(*mesh, *pcomm);
-	
-          // make Particle buffer
-            buffer = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
-
-          // send out objects
-            mesh      = pcomm->send_Mesh(*mesh);
-	    opacity   = pcomm->send_Opacity(mesh, *opacity);
-	    mat_state = pcomm->send_Mat(mesh, *mat_state);
-	    source    = pcomm->send_Source(mesh, mat_state, rcon, *sinit,
-					   *buffer); 
-// 	    cout << *sinit << endl;
-// 	    cout << " ** Source on node " << mynode << endl;
-// 	    cout << endl << *source;
-// 	    cout << endl << ">> We are now at RN Stream " << RNG::rn_stream
-// 		 << endl;
-	}
-	
-  	if (mynode)
-  	{	
-  	  // make parallel builder object to receive objects
-  	    pcomm = new Parallel_Builder<OS_Mesh>();
-
-          // get mesh and opacity
-  	    mesh      = pcomm->recv_Mesh();
-  	    opacity   = pcomm->recv_Opacity(mesh);
-	    mat_state = pcomm->recv_Mat(mesh);
-
-          // make a particle buffer on this node
-            buffer  = new Particle_Buffer<Particle<OS_Mesh> >(*mesh, *rcon);
-
-          // get the source for this node
-	    source  = pcomm->recv_Source(mesh, mat_state, rcon, *buffer);
-	    cout << " ** Source on node " << mynode << endl;	    
-	  // cout << endl << *source;
-  	}
-
-	HTSyncSpinLock h;
-	{
-	    cout << *mesh      << endl;
-	    cout << *mat_state << endl;
-	    cout << *opacity   << endl;
-	}
+      // build the mesh
+	AMR_Builder amr_build(interface);
+	mesh = amr_build.build_Mesh();
+	cout << "** Built mesh on node " << mynode << endl;
     }
     catch (const dsxx::assertion &ass)
     {

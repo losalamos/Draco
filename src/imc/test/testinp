@@ -1,0 +1,41 @@
+TEST INPUT
+coord: xyz
+end-title
+
+num_xcoarse: 2
+num_ycoarse: 2
+num_zcoarse: 1
+lox_bnd: vacuum
+hix_bnd: reflect
+loy_bnd: reflect
+hiy_bnd: reflect
+loz_bnd: reflect
+hiz_bnd: reflect
+end-init
+
+xcoarse: 0 6 12
+num_xfine: 2 2
+ycoarse: -2 0 2
+num_yfine: 1 1
+zcoarse: 0 1
+num_zfine: 2
+end-mesh
+
+zonemap: 1 1 1 1
+num_materials: 1
+mat: 1 3.0 100 1.e-5 .1
+analytic_opacity: tcube
+implicitness: 1
+end-mat
+
+timestep: .01
+num_ss: 1
+sur_source: lox
+sur_temp: 1
+ss_dist: cosine
+npnom: 1000
+npmax: 10000
+dnpdt: 0
+capacity: 16
+max_cycle: 1
+end-source
