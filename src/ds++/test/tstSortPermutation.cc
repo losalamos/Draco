@@ -153,8 +153,8 @@ struct evenIsLess
 {
     bool operator()(const F &f1, const F &f2) const
     {
-	int i1 = f1.d;
-	int i2 = f2.d;
+	int i1 = static_cast<int>(f1.d);
+	int i2 = static_cast<int>(f2.d);
 	
 	return i1%2 == 0 ? (
 	    (i2%2 == 0 ? i1 < i2 : true) ) :
