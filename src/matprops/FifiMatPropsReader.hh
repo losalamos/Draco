@@ -10,7 +10,6 @@
 #define __matprops_FifiMatPropsReader_hh__
 
 #include "MaterialPropsReader.hh"
-#include "FifiParser.hh"
 
 #include "ds++/SP.hh"
 #include "ds++/Mat.hh"
@@ -20,7 +19,11 @@
 #include <map>
 #include <iosfwd>
 
-namespace rtt_matprops {    
+namespace rtt_matprops {
+
+// Forward Reference
+
+class FifiParser;
 
 //===========================================================================//
 // class FifiMatPropsReader - 
@@ -129,7 +132,7 @@ class FifiMatPropsReader : public MaterialPropsReader
     // This object actuall reads the Fifi file, and is responsible
     // for locating data associated with materials and their keywords.
 
-    FifiParser fifiParser;
+    rtt_dsxx::SP<FifiParser> spFifiParser;
     
     // This is the units converter from **most** of the units
     // used in the Fifi file to SI units.
@@ -172,6 +175,14 @@ class FifiMatPropsReader : public MaterialPropsReader
     FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
 		       const rtt_units::Units &outputUnits_,
                        const std::string &fileName);
+
+    //------------------------------------------------------------------------//
+    // ~FifiMatPropsReader -- dtor
+    //     cannot be inlined since destructing forward reference smart pointer
+    //     for FifiParser
+    //------------------------------------------------------------------------//
+    
+    ~FifiMatPropsReader();
 
     // MANIPULATORS
     
@@ -382,6 +393,9 @@ class FifiMatPropsReader : public MaterialPropsReader
     // IMPLEMENTATION
 
   private:
+
+    const FifiParser &fifiParser() const { return *spFifiParser; }
+    FifiParser &fifiParser() { return *spFifiParser; }
 
     //------------------------------------------------------------------------//
     // calcGridInfo:
