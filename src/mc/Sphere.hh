@@ -69,6 +69,9 @@ class Sphere : public Surface
 
     // ACCESSORS
 
+    double get_radius() const { return radius; } //!< Get the raidus
+    double get_center() const { return center; } //!< Get the center z coordinate
+
     double distance_to(std::vector<double> position,
 		       const std::vector<double>& direction) const;
 
@@ -84,8 +87,6 @@ class Sphere : public Surface
     double volume() const;       //!< compute and return volume of the sphere
 
   private:
-
-    // IMPLEMENTATION
 
     // DATA
 
