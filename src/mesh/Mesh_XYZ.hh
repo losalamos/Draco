@@ -78,6 +78,7 @@ class Mesh_XYZ : private XYZ_Mapper
 
   public:
 
+    template<class T> class gfcdtf;
     template<class T> class cctf;
     template<class T> class gcctf;
     template<class T> class vctf;
@@ -97,6 +98,7 @@ class Mesh_XYZ : private XYZ_Mapper
     class fcdtf : private XYZ_Mapper,
                   public xm::Indexable< T, fcdtf<T> > {
 	friend class Mesh_XYZ;
+	friend class gfcdtf<T>;
 
 	dsxx::Mat2<T> data;
 
