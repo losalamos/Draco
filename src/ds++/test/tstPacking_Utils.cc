@@ -34,6 +34,72 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
+void do_some_packing(Packer &p,
+		     const vector<double> &vd,
+		     const vector<int> &vi)
+{
+    for ( int i = 0; i < vd.size(); ++i )
+	p << vd[i];
+
+    for ( int i = 0; i < vi.size(); ++i )
+	p << vi[i];
+}
+
+void compute_buffer_size_test()
+{
+    // make data
+
+    int num_vd = 5;
+    vector<double> vd(num_vd, 2.3432);
+    vd[3] = 22.4;
+
+    int num_vi = 3;
+    vector<int> vi(num_vi, 6);
+    vi[0] = 7;
+    vi[1] = 22;
+
+    unsigned int total_size = num_vi * sizeof(int) + num_vd * sizeof(double);
+
+    Packer p;
+
+    // Compute the required buffer size.
+
+    p.compute_buffer_size_mode();
+    do_some_packing(p, vd, vi); // computes the size
+
+    if ( total_size != p.size() ) ITFAILS;
+
+    vector<char> buffer(p.size());
+
+    // Pack into buffer.
+
+    p.set_buffer(p.size(), &buffer[0]);
+    do_some_packing(p, vd, vi); // actually does the packing
+
+    // Unpack
+
+    Unpacker u;
+
+    u.set_buffer(p.size(), &buffer[0]);
+
+    for ( int i = 0; i < vd.size(); ++i )
+    {
+	double d;
+	u >> d;
+	if ( ! soft_equiv(d, vd[i]) ) ITFAILS;
+    }
+
+    for ( int i = 0; i < vi.size(); ++i )
+    {
+	int j;
+	u >> j;
+	if ( j != vi[i] ) ITFAILS;
+    }
+
+    if (rtt_ds_test::passed)
+	PASSMSG("compute_buffer_size_test() worked fine.");
+}
+
 void packing_test()
 {
     // make some data
@@ -383,6 +449,8 @@ int main(int argc, char *argv[])
 	std_string_test();
 
 	packing_functions_test();
+
+	compute_buffer_size_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

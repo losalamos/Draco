@@ -53,7 +53,9 @@ namespace rtt_dsxx
  * has meaning for the type.  Under the hood it uses std::memcpy to perform
  * the loading.  This class is easily understood by checking the examples.
 
- * No memory allocation is performed by the Packer. 
+ * No memory allocation is performed by the Packer.  However, the memory
+ * requirements may be computed by putting the Packer into
+ * compute_buffer_size_mode().
 
  * The benefit of using the Packer class is that byte copies are isolated
  * into this one section of code, thus obviating the need for
@@ -93,26 +95,34 @@ class Packer
     pointer begin_ptr;
     pointer end_ptr;
 
+    // If true, compute the stream_size required and do no packing.
+    bool size_mode;
+
   public:
     //! Constructor.
-    Packer() : stream_size(0), ptr(0), begin_ptr(0), end_ptr(0) {/*...*/}
+    Packer() : stream_size(0), ptr(0), begin_ptr(0), end_ptr(0),
+	       size_mode(false) {/*...*/}
 
-    // Set the buffer.
+    // Sets the buffer and puts the packer into pack mode.
     inline void set_buffer(unsigned int, pointer);
 
-    // Pack values into the buffer.
+    //! Put the packer into compute buffer size mode.
+    void compute_buffer_size_mode() { stream_size = 0; size_mode = true; }
+
+    // In pack mode, pack values into the buffer.  In size mode, adds
+    // the size of the type into the total buffer size required.
     template<class T> inline void pack(const T&);
 
     // >>> ACCESSORS
 
     //! Get a pointer to the current position of the data stream.
-    const_pointer get_ptr() const { return ptr; }
+    const_pointer get_ptr() const { Require(!size_mode); return ptr; }
 
     //! Get a pointer to the beginning position of the data stream.
-    const_pointer begin() const { return begin_ptr; }
+    const_pointer begin() const { Require(!size_mode); return begin_ptr; }
 
     //! Get a pointer to the ending position of the data stream.
-    const_pointer end() const { return end_ptr; }
+    const_pointer end() const { Require(!size_mode); return end_ptr; }
 
     //! Get the size of the data stream.
     unsigned int size() const { return stream_size; }
@@ -121,6 +131,8 @@ class Packer
 //---------------------------------------------------------------------------//
 /*!
  * \brief Set an allocated buffer to write data into.
+
+ * If compute_buffer_size_mode() is on, this function turns it off.
 
  * This function accepts an allocated char* buffer.  It assigns begin and end
  * pointers and a mutable position pointer that acts like an iterator.  The
@@ -136,8 +148,10 @@ class Packer
  * Note, the buffer must be allocated large enough to hold all the data that
  * the client intends to load into it.  There is no memory allocation
  * performed by the Packer class; thus, the buffer cannot be increased in
- * size if a value is written past the end of the buffer.  See the
- * Packer::pack function for more details.
+ * size if a value is written past the end of the buffer.  Optionally, the
+ * required buffer size may also be computed using the
+ * compute_buffer_size_mode().  See the Packer::pack function for more
+ * details.
 
  * \param size_in size of the buffer
  * \param buffer pointer to the char * buffer
@@ -146,6 +160,8 @@ class Packer
 void Packer::set_buffer(unsigned int size_in, pointer buffer)
 {
     Require (buffer);
+
+    size_mode = false;
     
     // set the size, begin and end pointers, and iterator
     stream_size  = size_in;
@@ -156,13 +172,26 @@ void Packer::set_buffer(unsigned int size_in, pointer buffer)
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Pack data into a buffer.
+ * \brief Depending on mode, pack data into a buffer, or compute increment
+ * to buffer size.
 
- * This function packs a piece of data (single datum) into the buffer set by
- * Packer::set_buffer.  It advances the pointer (iterator) location to the
- * next location automatically.  It uses the sizeof(T) operator to get the
- * size of the data; thus, only data where sizeof() has meaning will be
- * properly written to the buffer.
+ * This function's behavior depends on whether in compute_buffer_size_mode(),
+ * or not.
+
+ * In compute_buffer_size_mode(), the sizeof(T) operator is used to
+ * add the size of the data to the total stream size.  Once this function is
+ * called for all of the data to be packed, the size() member function may be
+ * used to retrieve the buffer size required.
+
+ * Note that using compute_buffer_size_mode() is optional.  See examples
+ * below.
+
+ * Regardless, once the user allocates the buffer, set_buffer() may then be
+ * called, which turns off compute_buffer_size_mode (if on).  A call to
+ * pack() then actually packs its argument into the buffer.  It also advances
+ * the pointer (iterator) location to the next location automatically.  It
+ * uses the sizeof(T) operator to get the size of the data; thus, only data
+ * where sizeof() has meaning will be properly written to the buffer.
 
  * Packer::pack() does bounds checking to ensure that the buffer and buffer
  * size defined by Packer::set_buffer are consistent.  This bounds-checking
@@ -170,21 +199,47 @@ void Packer::set_buffer(unsigned int size_in, pointer buffer)
  * calculations.
 
  * \param value data of type T to pack into the buffer; the data size must be
- * accessible using the sizeof() operator
+ * accessible using the sizeof() operator.
+
+ * Example using compute_buffer_size_mode():
+   \code
+   double d1 = 5.0, d2 = 10.3;         // data to be packed
+   Packer p;
+   p.compute_buffer_size_mode();
+   p << d1 << d2;                      // computes required size
+   vector<char> buffer(p.size());      // allocate buffer
+   p.set_buffer(p.size(), &buffer[0]);
+   p << d1 << d2;                      // packs d1 and d2 into buffer
+   \endcode
+   
+ * Example not using compute_buffer_size_mode():
+   \code
+   double d1 = 5.0, d2 = 10.3;
+   Packer p;
+   unsigned int bsize = 2 * sizeof(double);  // compute buffer size
+   vector<char> buffer(bsize);
+   p.set_buffer(bsize, &buffer[0]);
+   p << d1 << d2;                            // packs d1 and d2 into buffer
+   \endcode
 
  */
 template<class T>
 void Packer::pack(const T &value)
 {
-    Require (begin_ptr);
-    Insist  (ptr >= begin_ptr, "Bounds error in packer!");
-    Insist  (ptr + sizeof(T) <= end_ptr, "Bounds error in packer!");
-
-    // copy value into the buffer
-    std::memcpy(ptr, &value, sizeof(T));
-
-    // advance the iterator pointer to the next location
-    ptr += sizeof(T);
+    if ( size_mode )
+	stream_size += sizeof(T);
+    else
+    {
+	Require (begin_ptr);
+	Insist  (ptr >= begin_ptr, "Bounds error in packer!");
+	Insist  (ptr + sizeof(T) <= end_ptr, "Bounds error in packer!");
+	
+	// copy value into the buffer
+	std::memcpy(ptr, &value, sizeof(T));
+	
+	// advance the iterator pointer to the next location
+	ptr += sizeof(T);
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -195,6 +250,9 @@ void Packer::pack(const T &value)
  * (Packer p; p.set_buffer(i,b); p << data;).  It simply calls the
  * Packer::pack function.  It returns a reference to the Packer object so
  * that stream out operations can be strung together.
+
+ * This function also works when compute_buffer_size_mode() is on, in which
+ * case the total required stream size is incremented.
 
  */
 template<class T>
