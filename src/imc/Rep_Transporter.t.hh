@@ -87,7 +87,7 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
     SP_Census new_census_bank(new Particle_Buffer<PT>::Census());
 
     // particle history diagnostic
-    SP<typename PT::Diagnostic> check;
+    rtt_dsxx::SP<typename PT::Diagnostic> check;
     if (verbose)
 	check = new PT::Diagnostic(cout, true); 
 
@@ -96,7 +96,7 @@ Rep_Transporter<MT,PT>::transport(double dt, int cycle, int print_f,
     while (*source)
     {
 	// get a particle from the source
-	SP<PT> particle =
+	rtt_dsxx::SP<PT> particle =
 	    source->get_Source_Particle(dt); 
 	Check (particle->status());
 

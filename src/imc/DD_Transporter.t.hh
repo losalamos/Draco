@@ -116,7 +116,7 @@ DD_Transporter<MT,PT>::transport(double dt, int cycle_in, int print_f_in,
 	 << topology->get_parallel_scheme() << "." << endl;
 
     // particle history diagnostic
-    SP<typename PT::Diagnostic> check;
+    rtt_dsxx::SP<typename PT::Diagnostic> check;
     if (verbose)
         check = new PT::Diagnostic(cout, true); 
 
