@@ -313,9 +313,10 @@ void CAR_CU_Mesh::check_defined_surcells(const string ss_face,
         // despite its args, get_bndface actually has no cell dependence
 	int ss_face_num = get_bndface(ss_face, ss_list[ss_indx]);
 
-        // get bnd condition on ss face; had better be vacuum (0)
+        // get bnd condition on ss face; had better be  either vacuum (0) or
+	// reflection (cell number).
 	int bc = layout(ss_list[ss_indx], ss_face_num, 1);
-	Check (bc == 0);
+	Check (bc == 0 || bc == ss_list[ss_indx]);
     }
 }
 
