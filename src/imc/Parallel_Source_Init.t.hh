@@ -9,9 +9,8 @@
 #include "Parallel_Source_Init.hh"
 #include "Global.hh"
 #include "c4/global.hh"
-#include <iostream>
 #include <algorithm>
-#include <fstream>
+#include <iomanip>
 #include <cmath>
 
 namespace rtt_imc 
@@ -22,7 +21,10 @@ using C4::node;
 using C4::nodes;
 using C4::Send;
 using C4::Recv;
+using dsxx::SP;
 using rtt_mc::global::min;
+using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 
 // std components
 using std::fill;
@@ -31,7 +33,9 @@ using std::setw;
 using std::ios;
 using std::fabs;
 using std::setiosflags;
-using std::ofstream;
+using std::ostream;
+using std::string;
+using std::vector;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -271,7 +275,7 @@ void Parallel_Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 	    // ew was calculated in Parallel_Source_Init
 
 	    // create Particle
-	    SP<PT> particle = new PT(r, omega, ew_cen(cell), cell, random);
+	    SP<PT> particle(new PT(r, omega, ew_cen(cell), cell, random));
 
 	    // write particle to census
 	    census->push(particle);
@@ -309,8 +313,8 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
     eloss_cen += (ecentot - eloss_cen);
 
     // make new census bank to hold combed census particles
-    SP<Particle_Buffer<PT>::Census> comb_census = new
-	Particle_Buffer<PT>::Census();
+    SP<Particle_Buffer<PT>::Census> comb_census
+	(new Particle_Buffer<PT>::Census());
 
     while (census->size())
     {
@@ -336,7 +340,7 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
 			// COPY a new particle and spawn a new RN state
-		      	SP<PT> another = new PT(*particle);
+		      	SP<PT> another(new PT(*particle));
 			Sprng nran     = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
@@ -393,8 +397,8 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 	ecencheck  = 0.0;
 	
 	// make a temporary census to put ew-adjusted particles into
-	SP<Particle_Buffer<PT>::Census> adjusted_census = 
-	    new Particle_Buffer<PT>::Census();
+	SP<Particle_Buffer<PT>::Census> adjusted_census
+	    (new Particle_Buffer<PT>::Census());
 
 	while (comb_census->size() > 0)
 	{

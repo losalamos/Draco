@@ -40,36 +40,29 @@
 #include "ds++/SP.hh"
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace rtt_imc 
 {
-
-// draco components
-using rtt_rng::Rnd_Control;
-using dsxx::SP;
-
-// STL components
-using std::string;
-using std::vector;
 
 template<class MT, class PT = Particle<MT> >
 class Parallel_Source_Init 
 {
 private:
   // data received from MT_Interface
-    vector<double> evol_ext;
-    vector<double> rad_source;
+    std::vector<double> evol_ext;
+    std::vector<double> rad_source;
     double rad_s_tend;
-    vector<string> ss_pos;
-    vector<double> ss_temp;
-    vector<double> rad_temp;
-    vector<int> global_cell;
+    std::vector<std::string> ss_pos;
+    std::vector<double> ss_temp;
+    std::vector<double> rad_temp;
+    std::vector<int> global_cell;
     double delta_t;
     double elapsed_t;
     int npmax;
     int npnom;
     double dnpdt;
-    string ss_dist;
+    std::string ss_dist;
     int num_global_cells;
     int cycle;
     
@@ -95,7 +88,7 @@ private:
   // number of census particles per cell
     typename MT::CCSF_int ncen;
     int ncentot;
-    SP<typename Particle_Buffer<PT>::Census> census;
+    dsxx::SP<typename Particle_Buffer<PT>::Census> census;
 
   // number of surface source and volume source particles
     typename MT::CCSF_int nvol;
@@ -125,18 +118,18 @@ private:
     int capacity;
 
   // global source vectors (only on master node)
-    vector<double> global_ecen;
-    vector<double> global_evol;
-    vector<double> global_ess;
-    vector<int> global_ncen;
-    vector<int> global_nvol;
-    vector<int> global_nss;
-    vector<double> global_ew_cen;
-    vector<double> global_ew_vol;
-    vector<double> global_ew_ss;
-    vector<int> global_cenrn;
-    vector<int> global_volrn;
-    vector<int> global_ssrn;
+    std::vector<double> global_ecen;
+    std::vector<double> global_evol;
+    std::vector<double> global_ess;
+    std::vector<int> global_ncen;
+    std::vector<int> global_nvol;
+    std::vector<int> global_nss;
+    std::vector<double> global_ew_cen;
+    std::vector<double> global_ew_vol;
+    std::vector<double> global_ew_ss;
+    std::vector<int> global_cenrn;
+    std::vector<int> global_volrn;
+    std::vector<int> global_ssrn;
 
   // global source energies and losses
     double global_ecentot;
@@ -150,13 +143,13 @@ private:
     double global_eloss_ss;
 
   // cells on each processor, only used on the master processor
-    vector<vector<int> > cells_on_proc;
+    std::vector<std::vector<int> > cells_on_proc;
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_source_numbers(const Opacity<MT> &);
-    void comb_census(const MT &, Rnd_Control &);
+    void comb_census(const MT &, rtt_rng::Rnd_Control &);
 
   // initial census service functions
     void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
@@ -164,7 +157,7 @@ private:
     void calc_init_ecen();
     void sum_up_ecen(const MT &);
     void calc_ncen_init();
-    void write_initial_census(const MT &, Rnd_Control &);
+    void write_initial_census(const MT &, rtt_rng::Rnd_Control &);
 
   // calculate slope of T_electron^4 for volume emission
     void calc_t4_slope(const MT &, const Mat_State<MT> &);
@@ -178,25 +171,28 @@ private:
     void recv_census_numbers(const MT &);
 
   // typedefs
-    typedef SP<typename Particle_Buffer<PT>::Census> Census_SP;
+    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> Census_SP;
 
 public:
   // constructor for master node
-    template<class IT> Parallel_Source_Init(SP<IT>, SP<MT>);
+    template<class IT> Parallel_Source_Init(dsxx::SP<IT>, dsxx::SP<MT>);
 
   // initial census function
-    Census_SP calc_initial_census(SP<MT>, SP<Opacity<MT> >,
-				  SP<Mat_State<MT> >, SP<Rnd_Control>);
+    Census_SP calc_initial_census(dsxx::SP<MT>, dsxx::SP<Opacity<MT> >,
+				  dsxx::SP<Mat_State<MT> >, 
+				  dsxx::SP<rtt_rng::Rnd_Control>);
 
   // source initialyzer function
-    SP<Source<MT> > initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
-			       SP<Rnd_Control>, const Particle_Buffer<PT> &); 
+    dsxx::SP<Source<MT> > initialize(dsxx::SP<MT>, dsxx::SP<Opacity<MT> >,  
+				     dsxx::SP<Mat_State<MT> >, 
+				     dsxx::SP<rtt_rng::Rnd_Control>, 
+				     const Particle_Buffer<PT> &); 
 
   // accessor functions
     typename MT::CCSF_double get_evol_net() const { return evol_net; }
 
   // diagnostic functions
-    void print(ostream &) const;
+    void print(std::ostream &) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -204,8 +200,8 @@ public:
 //---------------------------------------------------------------------------//
 
 template<class MT, class PT>
-inline ostream& operator<<(ostream &out, 
-			   const Parallel_Source_Init<MT,PT> &object)
+inline std::ostream& operator<<(std::ostream &out, 
+				const Parallel_Source_Init<MT,PT> &object)
 {
     object.print(out);
     return out;
