@@ -180,9 +180,12 @@ Linux)
 
    # options common to Draco and Clients
 
+   # source shmem-lahey version of mpich for building
+   . /codes/mpi/bin/mpich.sh shmem-lahey
+
    MPI="--with-c4=mpi"
-   MPI_INC="--with-mpi-inc=/usr/local/mpich/include"
-   MPI_LIB="--with-mpi-lib=/usr/local/mpich/lib"
+   MPI_INC="--with-mpi-inc"
+   MPI_LIB="--with-mpi-lib"
    MPI="${MPI} ${MPI_INC} ${MPI_LIB}"
 
    LAPACK="--with-lapack=atlas"
