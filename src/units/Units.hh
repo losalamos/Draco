@@ -109,7 +109,15 @@ class Units
     {
 	Require(validUnits());
     }
-    
+
+    Units(const Units &rhs)
+	: lengthConversion(rhs.lengthConversion),
+	  massConversion(rhs.massConversion),
+	  timeConversion(rhs.timeConversion),
+	  temperatureConversion(rhs.temperatureConversion)
+    {
+	Require(validUnits());
+    }
 
     // MANIPULATORS
     // none
