@@ -431,8 +431,9 @@ void simple_one_cell_RZWedge()
     double xavg = 0.0;
     double yavg = 0.0;
     double zavg = 0.0;
+    double fabs_y_avg = 0.0;
     int xbin, zbin;
-    int num_particles = 100000;
+    int num_particles = 10000;
 
     slope[0] = -1.0;
     slope[1] =  0.0;
@@ -451,17 +452,26 @@ void simple_one_cell_RZWedge()
 	xavg += position_sampled[0];
 	yavg += position_sampled[1];
 	zavg += position_sampled[2];
+
+	fabs_y_avg += std::fabs(position_sampled[1]);
     }
 
     xavg = xavg/num_particles;
     yavg = yavg/num_particles;
     zavg = zavg/num_particles;
+    fabs_y_avg = fabs_y_avg/num_particles;
 
     double est_std_of_mean = 1.0/std::pow(num_particles, 0.5);
 
     if (!soft_equiv(xavg, 0.5, 4.0*est_std_of_mean))  ITFAILS;
     if (!soft_equiv(yavg, 0.0, 4.0*est_std_of_mean))  ITFAILS;
     if (!soft_equiv(zavg, 0.5, 4.0*est_std_of_mean))  ITFAILS;
+
+    // what is the average |y| given that x is uniform in (0,1)?  noting
+    // that, for any x, half the y's will lie under x/2, thus half the y's
+    // are under the line y=x/2, and the other half of the y's are between
+    // y=x/2 and y=x.  Integrating, then |y|_avg = int_0^1 (x/2) = 1/4
+    if (!soft_equiv(fabs_y_avg, 0.25, 4.0*est_std_of_mean))  ITFAILS;
     
     for (int bin = 0; bin < num_bins; bin++)
     {
@@ -522,6 +532,47 @@ void simple_one_cell_RZWedge()
     if ((coverage_z_3std < 0.99) && 
 	!soft_equiv(coverage_z_3std, 0.99, 0.1))	ITFAILS;  
 
+    // <<<<< uniform sampling in volume >>>>>>
+    // now, let's sample again, except totally uniform in volume, and just
+    // check the averages
+    xavg       = 0.0;
+    yavg       = 0.0;
+    zavg       = 0.0;
+    fabs_y_avg = 0.0;
+
+    slope[0] = 0.0;
+    slope[1] = 0.0;
+    slope[2] = 0.0;
+    
+    for (int num_p = 0; num_p < num_particles; num_p++)
+    {
+	position_sampled = mesh->sample_pos(1, ran_object, slope, 0.5);
+	
+	xavg += position_sampled[0];
+	yavg += position_sampled[1];
+	zavg += position_sampled[2];
+
+	fabs_y_avg += std::fabs(position_sampled[1]);
+    }
+
+    xavg       = xavg/num_particles;
+    yavg       = yavg/num_particles;
+    zavg       = zavg/num_particles;
+    fabs_y_avg = fabs_y_avg/num_particles;
+
+    // now for a sampling that is uniform in volume, we see that, for this
+    // one-cell problem of 90 degrees, f(x)=2x and f(|y|)=2(1-y).  Thus,
+    // x_avg   = int_0^1(xf(x))dx = int_0^1(2x^2)dx    = 2/3
+    // |y|_avg = int_0^1(yf(y))dy = int_0^1(y2(1-y))dy = 1/3
+
+    est_std_of_mean = 1.0/std::pow(num_particles, 0.5);
+
+    if (!soft_equiv(xavg, 2./3., 4.0*est_std_of_mean))  ITFAILS;
+    if (!soft_equiv(yavg,   0.0, 4.0*est_std_of_mean))  ITFAILS;
+    if (!soft_equiv(zavg,   0.5, 4.0*est_std_of_mean))  ITFAILS;
+
+    if (!soft_equiv(fabs_y_avg, 1./3., 4.0*est_std_of_mean))  ITFAILS;
+    
 
     // check the == and != operations.
     // first, build another mesh object equivalent to old mesh object.
