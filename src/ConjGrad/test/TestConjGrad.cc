@@ -13,6 +13,8 @@
 #include "TestConjGradMatVec.hh"
 
 #include "../ConjGrad.hh"
+#include "../C4Reduction.hh"
+#include "../SerialReduction.hh"
 #include "../Release.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
@@ -58,8 +60,10 @@ string TestConjGrad::version() const
 string TestConjGrad::runTest()
 {
     runTestConjGradMatVec();
-    runTestConjGrad(false);
-    runTestConjGrad(true);
+    runTestConjGrad(false, true);
+    runTestConjGrad(true, true);
+    runTestConjGrad(false, false);
+    runTestConjGrad(true, false);
     
     if (passed())
     {
@@ -116,7 +120,7 @@ void TestConjGrad::runTestConjGradMatVec()
     } // scoping of spinlock
 }
 
-void TestConjGrad::runTestConjGrad(bool jacobiPrecon)
+void TestConjGrad::runTestConjGrad(bool jacobiPrecon, bool comm)
 {
     std::ostringstream ost;
     ost << "ConjGrad-" << std::boolalpha << jacobiPrecon;
@@ -144,24 +148,55 @@ void TestConjGrad::runTestConjGrad(bool jacobiPrecon)
     const double eps = 1.e-3;
     
     using rtt_ConjGrad::conjGrad;
+    using rtt_ConjGrad::C4Reduction;
+    using rtt_ConjGrad::SerialReduction;
 
     if (jacobiPrecon)
-	conjGrad(x, niter, b, matVec, maxIters, eps,
-		 TestConjGradMatVec<double>::JacobiPrecon(matVec), resCalced);
+    {
+	if (comm)
+	    conjGrad(x, niter, b, matVec, maxIters, eps,
+		     TestConjGradMatVec<double>::JacobiPrecon(matVec),
+		     resCalced, C4Reduction());
+	else
+	    conjGrad(x, niter, b, matVec, maxIters, eps,
+		     TestConjGradMatVec<double>::JacobiPrecon(matVec),
+		     resCalced, SerialReduction());
+    }
     else
-	conjGrad(x, niter, b, matVec, maxIters, eps, resCalced);
+    {
+	if (comm)
+	    conjGrad(x, niter, b, matVec, maxIters, eps, resCalced,
+		     C4Reduction());
+	else
+	    conjGrad(x, niter, b, matVec, maxIters, eps, resCalced,
+		     SerialReduction());
+    }
 
     typedef rtt_ConjGrad::ConjGradTraits<Mat1<double> > CGTraits;
-    
+    typedef CGTraits::Norm<C4Reduction> C4Norm;
+    typedef CGTraits::Norm<SerialReduction> SerialNorm;
+
     if (niter < maxIters)
+    {
 	pass(name) << "conjGrad converged in " << niter << " iterations."
 		   << std::endl
-		   << "     norm(residual): " << CGTraits::Norm()(resCalced);
+		   << "     norm(residual): ";
+	if (comm)
+	    pass(name) << C4Norm(C4Reduction())(resCalced);
+	else
+	    pass(name) << SerialNorm(SerialReduction())(resCalced);
+    }
     else
+    {
 	fail(name) << "conjGrad failed to converged in " << niter
 		   << " iterations."
 		   << std::endl
-		   << "     norm(residual): " << CGTraits::Norm()(resCalced);
+		   << "     norm(residual): ";
+	if (comm)
+	    fail(name) << C4Norm(C4Reduction())(resCalced);
+	else
+	    fail(name) << SerialNorm(SerialReduction())(resCalced);
+    }
 
     // evaluate the results to see if it converged.
     

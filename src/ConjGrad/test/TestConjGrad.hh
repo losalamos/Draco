@@ -59,7 +59,7 @@ class TestConjGrad  : public rtt_UnitTestFrame::TestApp
     
   private:
 
-    void runTestConjGrad(bool jacobiPrecon);
+    void runTestConjGrad(bool jacobiPrecon, bool comm);
     void runTestConjGradMatVec();
     
     // IMPLEMENTATION

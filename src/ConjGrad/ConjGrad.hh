@@ -23,6 +23,18 @@ namespace rtt_ConjGrad
 /*!
  * \function ConjGrad
  *
+ * \brief A function to perform conjugate gradient calculations.
+ *
+ * There are several templated conjGrad functions of varying degrees of
+ * generality. Users should normally use one of the high level interfaces,
+ * which will make use of various default parameters and implementations. The 
+ * high level functions use a cascade of calls to lower level wrappers until
+ * the lowest level function actually implements the CG functionality in a
+ * very general manner. Because the cascade of calls passes certain
+ * user-defined objects by value (e.g. MatVec), these probably should be
+ * lightweight wrappers to the actual implementation classes in order to
+ * avoid excessive copying costs.
+ *
  */
 // revision history:
 // -----------------
@@ -64,9 +76,12 @@ void conjGrad(Field &x, int &iter, const Field &b, MatVec matVec,
     }
 }
 
-template<class Field, class MatVec, class ConvCrit, class Precon>
+// Medium level interface that uses traits for Add, Dot, etc.
+
+template<class Field, class MatVec, class ConvCrit, class Precon, class Reduce>
 inline void conjGrad(Field &x, int &iter, const Field &b, MatVec matVec,
-		     ConvCrit converged, Precon precon, Field &r)
+		     ConvCrit converged, Precon precon, Field &r,
+		     Reduce reduce)
 {
     Field z = ConjGradTraits<Field>::create(b);
     Field p = ConjGradTraits<Field>::create(b);
@@ -74,43 +89,50 @@ inline void conjGrad(Field &x, int &iter, const Field &b, MatVec matVec,
 
     conjGrad(x, iter, b, matVec, converged, precon,
 	     ConjGradTraits<Field>::ScalarMultiplies(),
-	     ConjGradTraits<Field>::Dot(),
+	     ConjGradTraits<Field>::Dot<Reduce>(reduce),
 	     ConjGradTraits<Field>::Add(),
 	     ConjGradTraits<Field>::Sub(), r, z, p, q);
 }
 
 // High level interface to conjGrad with no preconditioner
 
-template<class Field, class MatVec, class ConvCrit>
+template<class Field, class MatVec, class ConvCrit, class Reduce>
 inline void conjGrad(Field &x, int &iter, const Field &b, MatVec matVec,
-		     ConvCrit converged, Field &r)
+		     ConvCrit converged, Field &r, Reduce reduce)
 {
-    conjGrad(x, iter, b, matVec, converged, NoPrecon<Field>(), r);
+    // Calls Medium level interface that uses traits for Add, Dot, etc.
+    conjGrad(x, iter, b, matVec, converged, NoPrecon<Field>(), r, reduce);
 }
 
 // High level interface to conjGrad with default convergence criteria
 
-template<class Field, class MatVec, class Precon>
+template<class Field, class MatVec, class Precon, class Reduce>
 inline void conjGrad(Field &x, int &iter, const Field &b, MatVec matVec,
 		     int maxIters, typename Field::value_type eps,
-		     Precon precon, Field &r)
+		     Precon precon, Field &r, Reduce reduce)
 {
-    typedef ConjGradTraits<Field>::Norm Norm;
+    typedef ConjGradTraits<Field>::Norm<Reduce> Norm;
+
+    // Calls Medium level interface that uses traits for Add, Dot, etc.
     conjGrad(x, iter, b, matVec,
-	     DefaultConvCrit<Field, Norm>(Norm(), maxIters, eps), precon, r);
+	     DefaultConvCrit<Field, Norm>(Norm(reduce), maxIters, eps),
+	     precon, r, reduce);
 }
 
 // High level interface to conjGrad with no preconditioner and
 // default convergence criteria
 
-template<class Field, class MatVec>
+template<class Field, class MatVec, class Reduce>
 inline void conjGrad(Field &x, int &iter, const Field &b, MatVec matVec,
 		     int maxIters, typename Field::value_type eps,
-		     Field &r)
+		     Field &r, Reduce reduce)
 {
-    typedef ConjGradTraits<Field>::Norm Norm;
+    typedef ConjGradTraits<Field>::Norm<Reduce> Norm;
+
+    // Calls High level interface to conjGrad with no preconditioner
     conjGrad(x, iter, b, matVec,
-	     DefaultConvCrit<Field, Norm>(Norm(), maxIters, eps), r);
+	     DefaultConvCrit<Field, Norm>(Norm(reduce), maxIters, eps),
+	     r, reduce);
 }
 
 } // end namespace rtt_ConjGrad

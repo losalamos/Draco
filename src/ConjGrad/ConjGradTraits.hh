@@ -15,7 +15,6 @@
 #include "traits/ContainerTraits.hh"
 #include "ds++/Mat.hh"
 #include "ds++/Assert.hh"
-#include "c4/global.hh"
 #include <functional>
 #include <cmath>
 
@@ -99,8 +98,17 @@ class ConjGradTraits
 	}
     };
 
-    struct Dot : public std::binary_function<Field,Field,value_type>
+    template <class Reduce>
+    class Dot : public std::binary_function<Field,Field,value_type>
     {
+      private:
+
+	Reduce reducer;
+
+      public:
+
+	Dot(const Reduce reducer_in) : reducer(reducer_in) { /* empty */ }
+
 	value_type operator()(const Field &f1, const Field &f2) const
 	{
 	    Assert(ContainerTraits::conformal(f1, f2));
@@ -115,16 +123,25 @@ class ConjGradTraits
 		++it2;
 	    }
 
-	    C4::gsum(ret);
+	    ret = reducer.sum(ret);
 	    return ret;
 	}
     };
 
-    struct Norm : public std::unary_function<Field,value_type>
+    template <class Reduce>
+    class Norm : public std::unary_function<Field,value_type>
     {
+      private:
+
+	Reduce reducer;
+
+      public:
+
+	Norm(const Reduce reducer_in) : reducer(reducer_in) { /* empty */ }
+
 	value_type operator()(const Field &f) const
 	{
-	    return std::sqrt(Dot()(f,f));
+	    return std::sqrt(Dot<Reduce>(reducer)(f,f));
 	}
     };
 
@@ -196,8 +213,17 @@ class ConjGradTraits<rtt_dsxx::Mat1<T> >
 	}
     };
 
-    struct Dot : public std::binary_function<Mat,Mat,value_type>
+    template <class Reduce>
+    class Dot : public std::binary_function<Mat,Mat,value_type>
     {
+      private:
+
+	Reduce reducer;
+
+      public:
+
+	Dot(const Reduce reducer_in) : reducer(reducer_in) { /* empty */ }
+
 	value_type operator()(const Mat &f1, const Mat &f2) const
 	{
 	    f1.assert_conformality(f2);
@@ -212,16 +238,25 @@ class ConjGradTraits<rtt_dsxx::Mat1<T> >
 		++it2;
 	    }
 
-	    C4::gsum(ret);
+	    ret = reducer.sum(ret);
 	    return ret;
 	}
     };
 
-    struct Norm : public std::unary_function<Mat,value_type>
+    template <class Reduce>
+    class Norm : public std::unary_function<Mat,value_type>
     {
+      private:
+
+	Reduce reducer;
+
+      public:
+
+	Norm(const Reduce reducer_in) : reducer(reducer_in) { /* empty */ }
+
 	value_type operator()(const Mat &f) const
 	{
-	    return std::sqrt(Dot()(f,f));
+	    return std::sqrt(Dot<Reduce>(reducer)(f,f));
 	}
     };
 
