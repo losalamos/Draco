@@ -19,6 +19,8 @@
 // 0) original
 // 1)  9-16-98 : added local cell -> global cell update for census particles
 //               in step_IMC_dd
+// 2) 12-17-98 : added step_IMC_async and supporting functions.  Mutually
+//               exclusive with step_IMC_dd, for now.
 // 
 //===========================================================================//
 
