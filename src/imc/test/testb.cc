@@ -22,6 +22,8 @@ main()
 
     SP<OS_Mesh> mesh;
     vector<int> zones;
+    vector<double> temp;
+    vector<int> matzone;
 
   // scoping blocks
     {
@@ -32,7 +34,9 @@ main()
       // run the Parser
 	SP<OS_Parser> parser = new OS_Parser(infile);
 	parser->Parser();
-	zones = parser->Zone();
+	zones   = parser->Zone();
+	temp    = parser->Temperature();
+	matzone = parser->Mat_zone();
 
       // initialize the builder
 	OS_Builder build(parser);
@@ -45,14 +49,23 @@ main()
 	mesh->Print(cell);
     cout << endl;
 
-    for (int z = 1; z <= 8; z++)
+    for (int z = 1; z <= 4; z++)
     {
 	cout << "Zone : " << z << endl;
+	cout << "Mat  : " << matzone[z-1] << endl;
+	cout << "Temp : " << temp[matzone[z-1]-1] << endl;
 	for (int i = 1; i <= mesh->Num_cells(); i++)
 	    if (zones[i-1] == z)
 		cout << " " << i;
 	cout << endl;
     }
+
+    int cell;
+    cout << "Pick a cell" << endl;
+    cin >> cell;
+    cout << "Cell is in zone " << zones[cell-1] << endl;
+    cout << "Cell has temp   " << temp[matzone[zones[cell-1]-1]-1] << endl;
+    cout << "Cell has material " << matzone[zones[cell-1]-1] << endl;
 }
 
 //---------------------------------------------------------------------------//
