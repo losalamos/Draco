@@ -65,7 +65,9 @@ class assertion /* : std::runtime_error */
   public:
     assertion( const char *cond, const char *file, int line );
     assertion( const char *m );
+    assertion( const assertion& a );
     ~assertion() { delete[] msg; }
+    assertion& operator=( const assertion& a );
     const char* what() const { return msg; }
 };
 

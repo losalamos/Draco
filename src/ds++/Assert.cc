@@ -28,6 +28,19 @@ assertion::assertion( const char *m )
     strcpy( msg, m );
 }
 
+assertion::assertion( const assertion& a )
+{
+    msg = new char[ strlen(a.msg)+1 ];
+    strcpy( msg, a.msg );
+}
+
+assertion& assertion::operator=( const assertion& a )
+{
+    msg = new char[ strlen(a.msg)+1 ];
+    strcpy( msg, a.msg );
+    return *this;
+}
+
 //---------------------------------------------------------------------------//
 // Function to perform the task of actually throwing an assertion.
 //---------------------------------------------------------------------------//
