@@ -13,14 +13,7 @@
 #define __quadrature_Quadrature_hh__
 
 #include <vector>
-#include <string>
-
 #include "ds++/Assert.hh"
-// Require(cond) -- check input vals
-// Ensure(cond)  -- check output vals
-// Check(cond) or Assert(cond) -- other checks
-// Insist(cond,msg) -- Always checks, others can be turned off with compile
-//                     option.
 
 namespace rtt_quadrature
 {
@@ -98,8 +91,11 @@ class Quadrature
      *                 value is set in QuadCreator.
      */
 
-    Quadrature( int snOrder_, double norm_ )
+    Quadrature( size_t snOrder_, double norm_ )
 	: snOrder( snOrder_ ), norm( norm_ ) { }
+
+    // prevent defaults
+    Quadrature();
 
     //! Virtual destructor.
     virtual ~Quadrature() {/*...*/}
@@ -163,7 +159,7 @@ class Quadrature
      *
      * See comments for getMu().
      */
-    const vector<double>& getWt() { return wt; }
+    const vector<double>& getWt() const { return wt; }
 
     /*!
      * \brief Return the mu component of the direction Omega_m.
@@ -176,13 +172,12 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    // const double getMu ????
-    double getMu( const int m ) const
+    double getMu( const size_t m ) const
     {
 	// Angle index m must be greater than zero and less than numAngles.
-	Require( m >= 0 && m < getNumAngles() );             
+	Require( m < getNumAngles() );
 	// Die if the vector mu appears to be the wrong size.
-	Check( mu.size() >= m );       
+	Require( m < mu.size() );
 	return mu[m];
     }
 
@@ -198,12 +193,12 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getEta( const int m ) const
+    double getEta( const size_t m ) const
     {
 	// The quadrature set must have at least 2 dimensions to return eta.
 	Require( dimensionality() >= 2 );
 	// Angle index m must be greater than zero and less than numAngles.
-	Require( m >= 0 && m < getNumAngles() ); 
+	Require( m < getNumAngles() ); 
 	return eta[m];
     }
 
@@ -219,12 +214,12 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getXi( const int m ) const
+    double getXi( const size_t m ) const
     {
 	// The quadrature set must have at least 3 dimensions to return xi.
 	Require( dimensionality() >= 3 );
 	// Angle index m must be greater than zero and less than numAngles.
-	Require( m >= 0 && m < getNumAngles() ); 
+	Require( m < getNumAngles() ); 
 	return xi[m];
     }
 
@@ -239,10 +234,10 @@ class Quadrature
      * \param m The direction index must be contained in the range
      *          (0,numAngles). 
      */
-    double getWt( const int m ) const
+    double getWt( const size_t m ) const
     {
 	// Angle index m must be greater than zero and less than numAngles.
-	Require( m >= 0 && m < getNumAngles() ); 
+	Require( m < getNumAngles() ); 
 	return wt[m];
     }
 
@@ -267,16 +262,16 @@ class Quadrature
      * \param m The direction index must be contained in the range
      * (0,numAngles). 
      */
-    const vector<double> &getOmega( const int m ) const
+    const vector<double> &getOmega( const size_t m ) const
     {
-	Require ( m>=0 && m < getNumAngles() );
+	Require ( m < getNumAngles() );
 	return omega[m];
     }
 
     /*!
      * \brief Returns the number of directions in the current quadrature set.
      */
-    virtual int getNumAngles() const = 0;
+    virtual size_t getNumAngles() const = 0;
 
     /*!
      * \brief Prints a table containing all quadrature directions and weights.
@@ -297,12 +292,12 @@ class Quadrature
     /*!
      * \brief Returns an integer containing the dimensionality of the quadrature set.
      */
-    virtual int dimensionality() const = 0;
+    virtual size_t dimensionality() const = 0;
 
     /*!
      * \brief Returns an integer containing the Sn order of the quadrature set.
      */
-    virtual int getSnOrder() const = 0;
+    virtual size_t getSnOrder() const = 0;
 
     /*!
      * \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
@@ -353,7 +348,7 @@ class Quadrature
 
     // DATA
 
-    const int snOrder; // defaults to 4.
+    const size_t snOrder; // defaults to 4.
     const double norm; // 1D: defaults to 2.0.
                        // 2D: defaults to 2*pi.
                        // 3D: defaults to 4*pi.
@@ -387,7 +382,7 @@ class Q1DGaussLeg : public Quadrature
 
     // DATA
 
-    int numAngles;  // == snOrder
+    size_t numAngles;  // == snOrder
 
   public:
 
@@ -402,24 +397,21 @@ class Q1DGaussLeg : public Quadrature
      *                 weights will be equal to this value (default = 2.0).
      */
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q1DGaussLeg( int snOrder_, double norm_ );
-    // Defaulted:    Q1DGaussLeg(const Q1DGaussLeg &rhs);
-    // Defaulted:   ~Q1DGaussLeg();
+    Q1DGaussLeg( size_t snOrder_, double norm_ );
 
-    // MANIPULATORS
-    
-    // Defaulted:    Q1DGaussLeg& operator=(const Q1DGaussLeg &rhs);
+    // disable default construction
+    Q1DGaussLeg();
 
     // ACCESSORS
 
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
     
-    int getNumAngles()   const { return numAngles; }
-    void display()       const;
-    string name()        const { return "1D Gauss Legendre"; }
-    int dimensionality() const { return 1; }
-    int getSnOrder()     const { return snOrder; }
+    size_t getNumAngles()   const { return numAngles; }
+    void   display()        const;
+    string name()           const { return "1D Gauss Legendre"; }
+    size_t dimensionality() const { return 1; }
+    size_t getSnOrder()     const { return snOrder; }
 
   private:
     
@@ -449,7 +441,7 @@ class Q2DLevelSym : public Quadrature
 
     // DATA
 
-    int numAngles; // defaults to 12.
+    size_t numAngles; // defaults to 12.
 
   public:
 
@@ -464,13 +456,10 @@ class Q2DLevelSym : public Quadrature
      *                 weights will be equal to this value (default = 2*PI).
      */
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q2DLevelSym( int snOrder_, double norm_ );
-    // Defaulted:   Q2DLevelSym(const Q2DLevelSym &rhs);
-    // Defaulted:  ~Q2DLevelSym();
+    Q2DLevelSym( size_t snOrder_, double norm_ );
 
-    // MANIPULATORS
-    
-    // Defaulted:   Q2DLevelSym& operator=(const Q2DLevelSym &rhs);
+    // disable default construction
+    Q2DLevelSym();
 
     // ACCESSORS
 
@@ -478,17 +467,17 @@ class Q2DLevelSym : public Quadrature
     // parent class Quadrature.
 
     //! Returns the number of angles in the current quadrature set.
-    int getNumAngles()   const { return numAngles; }
+    size_t getNumAngles()   const { return numAngles; }
     //! Prints a short table containing the quadrature directions and weights.
     void display()       const;
     //! Returns the official name of the current quadrature set.
     string name()        const { return "2D Level Symmetric"; }
     //! Returns the number of dimensions in the current quadrature set.
-    int dimensionality() const { return 2; }
+    size_t dimensionality() const { return 2; }
     //! Returns the order of the SN set.
-    int getSnOrder()     const { return snOrder; }
+    size_t getSnOrder()     const { return snOrder; }
     //! Returns the number of eta levels in the quadrature set.
-    int getLevels()      const { return snOrder; }
+    size_t getLevels()      const { return snOrder; }
 
   private:
     
@@ -518,7 +507,7 @@ class Q3DLevelSym : public Quadrature
 
     // DATA
 
-    int numAngles; // defaults to 24.
+    size_t numAngles; // defaults to 24.
 
   public:
 
@@ -533,13 +522,10 @@ class Q3DLevelSym : public Quadrature
      *                 weights will be equal to this value (default = 4*PI).
      */
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q3DLevelSym( int snOrder_, double norm_ );
-    // Defaulted:   Q3DLevelSym(const Q3DLevelSym &rhs);
-    // Defaulted:  ~Q3DLevelSym();
+    Q3DLevelSym( size_t snOrder_, double norm_ );
 
-    // MANIPULATORS
-    
-    // Defaulted:   Q3DLevelSym& operator=(const Q3DLevelSym &rhs);
+    // disable default construction
+    Q3DLevelSym();
 
     // ACCESSORS
 
@@ -547,17 +533,17 @@ class Q3DLevelSym : public Quadrature
     // parent class Quadrature.
 
     //! Returns the number of angles in the current quadrature set.
-    int getNumAngles()   const { return numAngles; }
+    size_t getNumAngles()   const { return numAngles; }
     //! Prints a short table containing the quadrature directions and weights.
     void display()       const;
     //! Returns the official name of the current quadrature set.
     string name()        const { return "3D Level Symmetric"; }
     //! Returns the number of dimensions in the current quadrature set.
-    int dimensionality() const { return 3; }
+    size_t dimensionality() const { return 3; }
     //! Returns the order of the SN set.
-    int getSnOrder()     const { return snOrder; }
+    size_t getSnOrder()     const { return snOrder; }
     //! Returns the number of xi levels in the quadrature set.
-    int getLevels()      const { return snOrder; }
+    size_t getLevels()      const { return snOrder; }
 
   private:
     
