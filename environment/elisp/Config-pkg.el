@@ -450,6 +450,9 @@ auto-mode-alist and set up some customizations for RTT."
     ; contain any files to be checked in will not be listed in the `*cvs*'
     ; buffer. 
     (setq cvs-auto-remove-handled-directories t)
+    (require 'pcl-cvs)
+    (define-key global-map [(meta shift f5)]
+      'cvs-mode-add-change-log-entry-other-window)
     )
   )
 
@@ -459,7 +462,7 @@ auto-mode-alist and set up some customizations for RTT."
 ;; Doxymacs Mode
 ;; ========================================
 
-(defvar want-doxymacs-mode nil
+(defvar want-doxymacs-mode t
   "*Does the user want to have doxymacs-mode?")
 
 (defun draco-init-doxymacs-mode ()
@@ -470,7 +473,7 @@ auto-mode-alist and set up some customizations for RTT."
 	(message "Configuring doxymacs-mode."))
     (autoload 'doxymacs-mode "doxymacs-mode" "Interactive Shell Mode" t)
     (require 'doxymacs)
-    (setq doxymacs-doxygen-style "Qt")
+    (defvar doxymacs-doxygen-style "Qt")
     (add-hook 'c-mode-common-hook 'doxymacs-mode)
     (defun rtt-doxymacs-font-lock-hook ()
       (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
