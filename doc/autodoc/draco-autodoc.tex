@@ -140,30 +140,28 @@ John McGhee has documented the \timestep\ package.
 %%---------------------------------------------------------------------------%%
 
 \section{How to Use \doxy\ }
-
  
-\doxy\ parses any valid \C++ source code and extracts considerable information from the *.hh
+\doxy\ parses any valid \C++ source code and extracts considerable 
+information from the *.hh
 and *.cc files without any active intervention on the part of the developer.
 Thus, \doxy\ can be used on any \C++ source file
 without any modifications to the source at all. 
-However, the developer may also flag certain
-comment blocks for inclusion in the documentation, if desired.
-The only additional burden this places on the code author is to 
-remember and occasionally use a few
-special comment keywords. Both \texttt{html} (with links)
+Both \texttt{html} (with links)
 and \LaTeX\ output is automatically produced directly from the source code.
-Example code can be included verbatim. If desired, both  \texttt{html} tags and \LaTeX\
-formulas can be included directly in the source code comments.  The following
+With some additional effort, example code, specific comment blocks, \texttt{html}
+ tags and \LaTeX\
+formulas can also be extracted directly from the source
+and included in the documentation.  The following
 sub-sections provide a brief primer on \doxy. We encourage everyone to peruse
 the \doxy\ manual for more details.
 
 \subsection{Special Comment Blocks}
 \label{sec:spcom}
 
-Within the source code files, 
-\doxy\ recognizes specially flagged comment blocks as information
-that is to be included in the code documentation.
-The fundamental key that \doxy\ uses to flag source code text for
+In addition to the information extracted by default,
+the developer may also flag specific
+comment blocks for inclusion in the documentation.
+The fundamental key that \doxy\ uses to flag source code comments for
 extraction is the C-style comment character followed by an exclamation
 point. For example:
 \begin{verbatim}
@@ -201,8 +199,8 @@ keywords that we have found to be most useful.
   example.
 \item \verb+\include+ {\em filename} Includes {\em filename} verbatim at the
   point of reference.
-\item \verb+\ref+ {\em title} Makes a link or reference 
-  to the argument {\em title}.
+\item \verb+\ref+ {\em reference} Makes a link or reference 
+  to the argument {\em reference}.
 \item \verb+\page+ {\em reference title} Places the comment block in which
   it appears in the documentation as a separate page with title {\em
     title}. You can refer to and create a link to the page using {\em
@@ -274,7 +272,7 @@ build system to support \doxy\ documentation dependencies,
 builds, installs, cleans,
 etc. in a general way. For the present, 
 only build and clean targets will be supported.
-Currently\doxy\
+Currently \doxy\
 can only be executed from a SGI platform. These details may
 change in the future. 
 
@@ -306,9 +304,10 @@ remains in sync with the source code.
 
 Note that documentation is not automatically produced as part of 
 a standard \draco\ build operation from the top level \texttt{draco} 
-directory. Documentation is produce only on the direct request 
+directory. Documentation is produced only on the direct request 
 of the developer using the procedure described above. This prevents
-the production of unwanted documentation, saving time and disk space.
+the production of unwanted documentation, thus saving time and disk 
+space.
 
 
 \subsection{\doxy\ Configuration File}
@@ -368,7 +367,7 @@ the source, then the documentation produced from those comments will also
 be incorrect.
 
 As described in section \S~\ref{sec:std} below, 
-the developer will provide 
+the developer should provide 
 the appropriate package version number in the standard \doxy\ comments in the 
 package \texttt{Release.hh} file.
 Note that the date which appears in the footer of the \doxy\ 
