@@ -23,7 +23,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(c4 ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
-AC_RUNTESTS(TestElementDefinition TestHexMeshReader, scalar)
+AC_RUNTESTS(TestElementDefinition TestHexMeshReader TestRTT_Format, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
@@ -32,7 +32,8 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in   \
           test/Makefile:../../config/Makefile.test.in \
 	  test/cube.mesh:test/cube.mesh.in \
 	  test/quad.mesh:test/quad.mesh.in \
- 	  test/slab.mesh:test/slab.mesh.in)
+ 	  test/slab.mesh:test/slab.mesh.in \
+          test/rttdef.mesh:test/rttdef.mesh.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/meshReaders configure.in

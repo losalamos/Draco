@@ -1084,7 +1084,7 @@ class RTT_Format : public Mesh_Reader
   public:
 
     // Constructors
-    RTT_Format(const string & RTT_File, const bool & renumber);
+    RTT_Format(const string & RTT_File, const bool & renumber = false);
 
 /*!
  * \brief Destroys an RTT_Format class object
@@ -1819,7 +1819,7 @@ class RTT_Format : public Mesh_Reader
 
   private:
     
-    void readMesh (const string & RTT_file, const bool & renumber = false);
+    void readMesh (const string & RTT_file, const bool & renumber);
     void readKeyword(ifstream & meshfile);
     void createMembers();
     void readFlagBlocks(ifstream & meshfile);

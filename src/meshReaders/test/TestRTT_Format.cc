@@ -68,7 +68,7 @@ string TestRTT_Format::runTest()
 {
 
     // Read and test a simplistic mesh file.
-    string filename = "rttmesh1";
+    string filename = "rttdef.mesh";
     RTT_Format mesh(filename);
     pass(" Construct ") << 
 	"Read mesh without coreing in or firing an assertion." << endl;
@@ -194,7 +194,7 @@ bool TestRTT_Format::check_virtual(const rtt_format::RTT_Format & mesh)
 
     // Check title.
     string title = mesh.get_title();
-    string test_title = "RTT_mesh_file_format,version7.";
+    string test_title = "RTT_format,version7.";
     os() << "Mesh title = " << title  << endl;
 
     if (title == test_title)
