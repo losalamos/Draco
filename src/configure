@@ -1281,28 +1281,28 @@ fi
 # NOT important with the exception of mesh (mesh is need for the
 # radphys test suite)
 
-subdirs="ds++ xm fourier"
+subdirs="ds++ xm fourier stdheaders"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng"
+subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver P1Diffusion"
 
-subdirs="ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver P1Diffusion imc"
@@ -1592,7 +1592,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm fourier traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
+  for ac_config_dir in ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
                   timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver P1Diffusion imc; do

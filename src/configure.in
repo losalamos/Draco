@@ -17,7 +17,7 @@ AC_DRACO_ARGS
 # NOT important with the exception of mesh (mesh is need for the
 # radphys test suite)
 
-AC_CONFIG_SUBDIRS(ds++ xm fourier)
+AC_CONFIG_SUBDIRS(ds++ xm fourier stdheaders)
 AC_CONFIG_SUBDIRS(traits units nml c4 UnitTestFrame rng)
 AC_CONFIG_SUBDIRS(stopwatch meshTest viz meshReaders \
                   quadrature)
