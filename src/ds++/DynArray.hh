@@ -11,6 +11,10 @@
 
 #include <iosfwd>
 
+#include "config.hh"
+
+NAMESPACE_DS_BEG
+
 //===========================================================================//
 // class DynArray<T> - A dynamically growable templated array class
 
@@ -75,6 +79,8 @@ std::ostream& operator<<( std::ostream& os, const DynArray<T>& d );
 #define INSTANTIATE_DynArray(a) \
 template class DynArray<a>; \
 template std::ostream& ostream<<( std::ostream& os, const DynArray<a>& d );
+
+NAMESPACE_DS_END
 
 #endif				// __ds_DynArray_hh__
 

@@ -10,6 +10,8 @@
 
 #include "SP.hh"
 
+using dsxx::SP;
+
 // autodoc: noprint foo
 
 int nfoos = 0;

@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+NAMESPACE_DS_BEG
+
 //---------------------------------------------------------------------------//
 // Principal constructor.  Specify initial size. Base defaults to zero, and
 // growth factor defaults to 1.5, but both can be overridden if desired.
@@ -238,6 +240,8 @@ std::ostream& operator<<( std::ostream& os, const DynArray<T>& d )
 
     return os;
 }
+
+NAMESPACE_DS_END
 
 //---------------------------------------------------------------------------//
 //                              end of DynArray.cc

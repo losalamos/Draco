@@ -11,6 +11,8 @@
 
 #include "Assert.hh"
 
+NAMESPACE_DS_BEG
+
 // autodoc: noprint SPref
 
 //===========================================================================//
@@ -173,6 +175,8 @@ bool operator!=( const T *pt, const SP<T>& sp )
 {
     return pt != sp.bp();
 }
+
+NAMESPACE_DS_END
 
 #endif                          // __ds_SP_hh__
 

@@ -9,9 +9,13 @@
 #ifndef __ds_String_hh__
 #define __ds_String_hh__
 
+#include "config.hh"
+
 #include <iosfwd>
 
 #include <string.h>
+
+NAMESPACE_DS_BEG
 
 class String {
 
@@ -100,6 +104,8 @@ class String {
   friend String operator+( const char c, const String& s );
 
 };
+
+NAMESPACE_DS_END
 
 #endif				// __ds_String_hh__
 

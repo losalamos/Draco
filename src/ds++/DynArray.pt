@@ -6,6 +6,8 @@
 
 #include "DynArray.cc"
 
+using namespace dsxx;
+
 instantiate class DynArray<int>
 instantiate function int std::ostream& operator<<( std::ostream& os, const DynArray<int>& d )
 

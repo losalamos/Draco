@@ -13,6 +13,8 @@
 
 #include "ds++/Assert.hh"
 
+NAMESPACE_DS_BEG
+
 //===========================================================================//
 // class String - char * made useful
 
@@ -439,6 +441,8 @@ String operator+( const char c, const String& s )
     String ss(c);
     return ss += s;
 }
+
+NAMESPACE_DS_END
 
 //---------------------------------------------------------------------------//
 //                              end of String.cc
