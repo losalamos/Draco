@@ -82,7 +82,6 @@ class InterpedMaterialProps
     // keyed via the integer material id number.
     
     MatTabMap materials;
-    
 
     // CREATORS
     

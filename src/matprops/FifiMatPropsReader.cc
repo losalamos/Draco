@@ -68,14 +68,18 @@ typedef FifiMatPropsReader FMPR;
 //   of any of matdefs' entries will not be processed, and therefore, ignored.
 //   The "abar" field of the MaterialDefinition's are the mass in amus of
 //   the component material.
+//   The noScattering is a flag to determine whether to fold the scattering
+//   into the absorption.
 //------------------------------------------------------------------------//
 
 FMPR::FifiMatPropsReader(const vector<MaterialDefinition> &matdefs,
 			 const Units &outputUnits_,
-                         const std::string &fileName)
+                         const std::string &fileName,
+                         bool noScattering)
     : MaterialPropsReader(outputUnits_),
       spFifiParser(new FifiParser(fileName)),
-      fileUnits(Units::getAstroPhysUnits())
+      fileUnits(Units::getAstroPhysUnits()),
+      noScattering_m(noScattering)
 {
     // For fifi most of the units for the data are related
     // to Atronomical Physical Units.
@@ -370,6 +374,12 @@ bool FMPR::getEnergyLowerbounds(MaterialId materialId, int group,
 bool FMPR::getSigmaAbsorption(MaterialId materialId, int group,
 			      Mat2<double> &dataMat)
 {
+    // If we are folding scattering into absorption, then just forward
+    // the call to getSigmaTotal.
+    
+    if (noScattering_m)
+        return getSigmaTotal(materialId, group, dataMat);
+    
     const MaterialInfo &matInfo = getMaterialInfo(materialId);
 
     Require(dataMat.nx() == matInfo.getNumTemperatures());
@@ -404,6 +414,12 @@ bool FMPR::getSigmaScattering(MaterialId materialId, int group,
     Require(dataMat.nx() == matInfo.getNumTemperatures());
     Require(dataMat.ny() == matInfo.getNumDensities());
 
+    // If we are folding scattering into absorption, then just return false,
+    // which indicates zero scattering.
+    
+    if (noScattering_m)
+        return false;
+        
     if (fifiParser().hasKeyword(matInfo.matid, "rsmg0"))
     {
 	getSigma(matInfo, group, "rsmg0", dataMat);

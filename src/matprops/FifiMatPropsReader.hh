@@ -148,6 +148,10 @@ class FifiMatPropsReader : public MaterialPropsReader
     
     MatInfoMap materialInfoMap;
 
+    // This is a flag to dermine whether to fold scattering into absorption
+
+    bool noScattering_m;
+
     // DISALLOWED DEFAULT METHODS
     
   private:
@@ -170,11 +174,14 @@ class FifiMatPropsReader : public MaterialPropsReader
     //   of any of matdefs' entries will not be processed, and therefore,
     //   ignored.  The "abar" field of the MaterialDefinition's are the mass
     //   in amus of the component material.
+    //   The noScattering is a flag to determine whether to fold the scattering
+    //   into the absorption.
     //------------------------------------------------------------------------//
 
     FifiMatPropsReader(const std::vector<MaterialDefinition> &matdefs,
 		       const rtt_units::Units &outputUnits_,
-                       const std::string &fileName);
+                       const std::string &fileName,
+                       bool noScattering = false);
 
     //------------------------------------------------------------------------//
     // ~FifiMatPropsReader -- dtor
