@@ -167,14 +167,14 @@ end_cells                      ! end cell block keyword
 nodedat                        ! node data keyword
   1  0.0 0.0 0.0               ! bs data just to test interface
   2  1.0 0.0 0.0
-  3  0.0 1.0 0.0
-  4  0.0 0.0 1.0
+  3  0.0 2.0 0.0
+  4  0.0 0.0 3.0
 end_nodedat                    ! end node data keyword
 
 sidedat                        ! side data keyword
   1  0.0 0.0                   ! bs data just to test interface
   2  1.0 0.0
-  3  0.0 1.0
+  3  0.0 2.0
   4  0.0 0.0
 end_sidedat                    ! end side data keyword
 
