@@ -161,7 +161,8 @@ JAVADOC_AUTOBRIEF    = YES
 # @doxygen_src@/fourier 
 
 INPUT                 = \
- @doxygen_src@/timestep @doxygen_src@/rng 
+ @doxygen_src@/timestep @doxygen_src@/rng \
+ @doxygen_src@/meshTest
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
