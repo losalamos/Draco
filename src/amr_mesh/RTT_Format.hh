@@ -35,7 +35,7 @@ using dsxx::SP;
 /*!
  * \brief RTT format namespace.
  *
- * Provides namespace protection for the Draco (RTT) format utilities used to
+ * Provides namespace protection for the Draco RTT format utilities used to
  * parse mesh files in the \ref rtt_format_defined and connect the mesh.
  *
  *\sa The \ref rtt_format_overview page presents a summary of the capabilities
@@ -1788,9 +1788,52 @@ class RTT_Format
 /*!
  * \page rtt_format_defined RTT Format File Structure
  * The following example "mesh" documents the format of the RTT file and 
- * explains the associated nomenclature.
+ * explains the associated nomenclature. Graphically depictions of the \ref 
+ * rtt_stdcell and \ref rtt_sortcell are provided via the links.
  *
  * \include RTT_Format.defined
+ */
+
+/*!
+ * \page rtt_stdcell RTT Standard Cell Definitions
+ * The standard (i.e., default) RTT side set numbering is depicted on this 
+ * page. Note that the "right hand rule" is used to return the direction of 
+ * the outward-directed normal when the nodes are traversed in the order that
+ * is specified in the side set node ordering. The RTT standard cell 
+ * definitions do not assume any particular orientation relative to the system
+ * coordinate system.
+ *
+ * <center>
+ *   <table>
+ *     <tr>
+ *       <td align=center valign=center>
+ *         <img src="../../draco/src/amr_mesh/stdcell.jpg"> 
+ *       </td>
+ *     </tr>
+ *   </table>
+ * </center>
+ *
+ */
+
+/*!
+ * \page rtt_sortcell RTT AMR Renumbered Cell Definitions
+ * The RTT AMR renumbered side set numbering is depicted on this page. Note 
+ * that the "right hand rule" is used to return the direction of the 
+ * outward-directed normal when the nodes are traversed in the order that
+ * is specified in the side set node ordering. The cell definitions assume 
+ * the orientation relative to the system coordinate system that is indicated 
+ * in the figures.
+ *
+ * <center>
+ *   <table>
+ *     <tr>
+ *       <td align=center valign=center>
+ *         <img src="../../draco/src/amr_mesh/sortcell.jpg"> 
+ *       </td>
+ *     </tr>
+ *   </table>
+ * </center>
+ *
  */
 
 //---------------------------------------------------------------------------//
