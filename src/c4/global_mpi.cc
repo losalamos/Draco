@@ -81,33 +81,7 @@ static DynArray<long>   lbuf(10);
 static DynArray<float>  fbuf(10);
 static DynArray<double> dbuf(10);
 
-//---------------------------------------------------------------------------//
-// Sum, scalar
-
-void gsum( int& x )
-{
-    int y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
-}
-
-void gsum( long& x )
-{
-    long y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_LONG, MPI_SUM, MPI_COMM_WORLD );
-}
-
-void gsum( float& x )
-{
-    float y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
-}
-
-void gsum( double& x )
-{
-    double y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-}
-
+#if 0
 //---------------------------------------------------------------------------//
 // Sum, array
 
@@ -153,33 +127,6 @@ void gsum( double *px, int n )
 	dbuf[i] = px[i];
 
     MPI_Allreduce( &dbuf[0], px, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-}
-
-//---------------------------------------------------------------------------//
-// Min, scalar
-
-void gmin( int& x )
-{
-    int y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD );
-}
-
-void gmin( long& x )
-{
-    long y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_LONG, MPI_MIN, MPI_COMM_WORLD );
-}
-
-void gmin( float& x )
-{
-    float y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_FLOAT, MPI_MIN, MPI_COMM_WORLD );
-}
-
-void gmin( double& x )
-{
-    double y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD );
 }
 
 //---------------------------------------------------------------------------//
@@ -230,33 +177,6 @@ void gmin( double *px, int n )
 }
 
 //---------------------------------------------------------------------------//
-// Max, scalar
-
-void gmax( int& x )
-{
-    int y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD );
-}
-
-void gmax( long& x )
-{
-    long y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD );
-}
-
-void gmax( float& x )
-{
-    float y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_FLOAT, MPI_MAX, MPI_COMM_WORLD );
-}
-
-void gmax( double& x )
-{
-    double y = x;
-    MPI_Allreduce( &y, &x, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD );
-}
-
-//---------------------------------------------------------------------------//
 // Max, array
 
 void gmax( int *px, int n )
@@ -302,6 +222,7 @@ void gmax( double *px, int n )
 
     MPI_Allreduce( &dbuf[0], px, n, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD );
 }
+#endif
 
 C4_NAMESPACE_END
 
