@@ -487,15 +487,15 @@ void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields
 	    leftover = global_n_field(cell) - nodes() * local_n_field(cell);
 	    Check(leftover < nodes());
 	    
-	    // from the remainder (leftover) put one on each of the first
-	    // leftover processors
-	    if (node() < leftover)
-		local_n_field(cell)++;
-	    
 	    // set the starting random number stream ID for this cell on this
 	    // processor. Recall that there are node() processors "below" me
 	    rn_field(cell) = next_avail_rn + node() * local_n_field(cell) +
 		rtt_mc::global::min(leftover, node());	
+	    
+	    // from the remainder (leftover) put one on each of the first
+	    // leftover processors
+	    if (node() < leftover)
+		local_n_field(cell)++;
 
 	    // increment next_avail_rn number by global number of particles
 	    // in this cell
