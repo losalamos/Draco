@@ -85,9 +85,9 @@ void t1()
 // diagonals to test the identity multiplyer :-)...
 
     for( int i=0; i < l.nrp; i++ ) {
-	m(0,i) = 0;
-	m(1,i) = 1;
-	m(2,i) = 0;
+	m(i,0) = 0;
+	m(i,1) = 1;
+	m(i,2) = 0;
     }
 
     Mat1<int> x(l.nrp), b(l.nrp);

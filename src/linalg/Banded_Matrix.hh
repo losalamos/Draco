@@ -95,6 +95,8 @@ class Banded_Matrix
 
     void compute_message_routing();
 
+    Banded_Matrix& operator=( T x ) { data = x; return *this; }
+
     void initiate_sends( const T *pd );
     void complete_sends();
 
@@ -106,8 +108,8 @@ class Banded_Matrix
 
 // Routines for data access. ...
 
-    T& operator()( int row, int n ) { return data(row,n); }
-    const T& operator()( int row, int n ) const { return data(row,n); }
+    T& operator()( int row, int n ) { return data(n,row); }
+    const T& operator()( int row, int n ) const { return data(n,row); }
 
     void emit_occupancy_vectors( const Mat1<int>& ov ) const;
     void emit_receiver_structs() const;
