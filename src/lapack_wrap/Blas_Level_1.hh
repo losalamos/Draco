@@ -16,6 +16,7 @@
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <typeinfo>
+#include <vector>
 
 namespace rtt_lapack_wrap
 {
@@ -324,17 +325,17 @@ inline typename std::iterator_traits<Forward_Iterator>::value_type
 blas_nrm2(Forward_Iterator x_begin,
 	  Forward_Iterator x_end)
 {
-    Check (typeid(std::iterator_traits<Forward_Iterator>::value_type) ==
-	   typeid(double) ||
-	   typeid(std::iterator_traits<Forward_Iterator>::value_type) ==
-	   typeid(float));
+    Check (typeid(typename std::iterator_traits<Forward_Iterator>::value_type)
+	   == typeid(double) ||
+	   typeid(typename std::iterator_traits<Forward_Iterator>::value_type) 
+	   == typeid(float));
 
     // get the size of the arrays
     int N = std::distance(x_begin, x_end); 
 
     // allocate x array
     typename std::iterator_traits<Forward_Iterator>::value_type *x;
-    x = new std::iterator_traits<Forward_Iterator>::value_type[N];
+    x = new typename std::iterator_traits<Forward_Iterator>::value_type[N];
 
     // the dot product
     typename std::iterator_traits<Forward_Iterator>::value_type nrm2 = 0.0;
