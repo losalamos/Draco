@@ -28,9 +28,8 @@ namespace rtt_mc
  *
  */
 /*! 
- * \example mc/test/mc_test.cc 
+ * \example mc/test/tstSurface_Descriptor.cc
  * 
- * description of example
  */
 // revision history:
 // -----------------
@@ -42,13 +41,25 @@ struct Surface_Descriptor
 {
 
     enum Surface_Type { SPHERE = 0 };
-
     static const int kinds = 1;
     static const int sizes[1];
 
-    Surface_Type type;
+    // DATA
 
+    Surface_Type type;
     std::vector<double> data;
+
+    //! Constructor
+    Surface_Descriptor(int type, const std::vector<double>& data);
+
+    //! Unpacking constructor
+    Surface_Descriptor(const std::vector<char> &data);
+
+    //! Packing operator
+    std::vector<char> pack() const;
+
+    bool operator==(const Surface_Descriptor& rhs) const;
+    bool operator!=(const Surface_Descriptor& rhs) const;
 
 };
 
