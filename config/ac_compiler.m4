@@ -390,10 +390,11 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
 
-   # if shared then ar is gcc
+   # if shared then ar is cxx
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-shared -o'
+       ARFLAGS='-shared -nocxxstd -expect_unresolved '*3td*' '
+       ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' -o"
    else
        AR='ar'
        ARFLAGS='cr'
