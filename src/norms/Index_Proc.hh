@@ -13,10 +13,13 @@
 #ifndef rtt_norms_Index_Proc_hh
 #define rtt_norms_Index_Proc_hh
 
-#include <cstdlib>
+#include <cstddef>
+
 
 namespace rtt_norms
 {
+
+using std::size_t;
 
 //===========================================================================//
 /*!
