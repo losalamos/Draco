@@ -43,7 +43,7 @@
 exe='binary'
 mpi='no'
 shmem='no'
-procs='0'
+procs='scalar'
 next='option'
 parallel='no'
 
@@ -100,6 +100,18 @@ else
     echo "No valid executable type specified!"
     exit 1
 fi
+
+##---------------------------------------------------------------------------##
+## Give message about executable
+
+echo "****************************************"
+echo "* TEST RUN HEADER"
+echo "*"
+echo "* Name       : $executable"
+echo "* Processors : $procs"
+echo "* Type       : $exe"
+echo "****************************************"
+echo 
 
 ##---------------------------------------------------------------------------##
 ## execute the test

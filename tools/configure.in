@@ -5,7 +5,11 @@ AC_DRACO_ARGS
 AC_PROG_INSTALL
 
 installdirs='${libexecdir} ${bindir}'
-installfiles='${libexecdir}/nmlgen ${libexecdir}/launchtest ${bindir}/draco'
+
+libexec_files1='${libexecdir}/nmlgen ${libexecdir}/launchtest'
+libexec_files2='${libexecdir}/test_filter.py'
+bin_files='${bindir}/draco'
+installfiles="$libexec_files1 $libexec_files2 $bin_files"
 
 AC_SUBST(installdirs)
 AC_SUBST(installfiles)
