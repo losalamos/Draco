@@ -47,7 +47,7 @@ default: main_$(env)
 
 main_$(env) : deps $(objs) \
 	$(dep_libimctest) $(dep_libds++) $(dep_libc4)
-	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
+	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm 
 
 deps:
 ifneq ($(dodeps),no)
