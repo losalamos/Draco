@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-// Mesh_XYZ_t.cc
+// Mesh_XYZ.t.cc
 // Geoffrey M. Furnish
 // Wed May 27 11:02:08 1998
 //---------------------------------------------------------------------------//
@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
+#include "c4/C4_Req.hh"
 
 template<class T>
 void dump( const Mesh_XYZ::cell_array<T>& data, char *name )
@@ -40,9 +41,15 @@ Mesh_XYZ::guarded_cell_array<T>::operator=( const Mesh_XYZ::cell_array<T>& c )
 template<class T>
 void Mesh_XYZ::guarded_cell_array<T>::update_guard_cells()
 {
-// Not implemented yet...
+    using namespace C4;
+    C4_Req lrcv, rrcv;
+
+//     Mat2<T> lrbuf( &data(
+
+//     if (node > 0)
+//         AsyncRecv( 
 }
 
 //---------------------------------------------------------------------------//
-//                              end of Mesh_XYZ_t.cc
+//                              end of Mesh_XYZ.t.cc
 //---------------------------------------------------------------------------//
