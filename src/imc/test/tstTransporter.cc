@@ -200,7 +200,7 @@ void DD_transporter_test()
     if (topology->get_parallel_scheme() != "DD") ITFAILS;
 
     // make a Particle_Buffer
-    Rnd_Control rcon(324235);
+    Rnd_Control rcon(347223);
     SP<Particle_Buffer<PT> > buffer(new Particle_Buffer<PT>(*mesh, rcon));
 
     // build a DD transporter
