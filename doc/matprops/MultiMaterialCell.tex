@@ -119,7 +119,7 @@ individual materials or visa-versa.
 
 \section{Cell Average Material Properties}
 
-We calculate effective average heat capacity of a cell as an example
+We calculate the effective average heat capacity of a cell as an example
 material property. Again using the principal of energy conservation, 
 we wish to calculate a $\overline{c}_{v}$ such that:
 \begin{equation}
@@ -254,7 +254,7 @@ the sum of the individual material energy changes:
 \begin{equation}
 \Delta E = \sum_{j=1}^{nmat} \Delta E_{j}
 \end{equation}
-or, alternatively, in terms of cell average quantities:
+or, equivalently, in terms of cell average quantities:
 \begin{equation}
 \Delta E = \overline{c}_{v}\sum_{j=1}^{nmat} V_{j}
 (\overline{T}^{n+1} - \overline{T}^{n})
@@ -263,6 +263,12 @@ or, alternatively, in terms of cell average quantities:
 
 \section{Method Characteristics}
 
+\subsection{Strengths}
+
+This procedure is simple and computationally straight forward. It
+can be implemented as a ``pre'' and ``post'' processor. No 
+modifications to a uni-material cell transport algorithm are required.
+
 This procedure can be shown to conserve energy. No energy is gained or
 lost in the map from cell average energy deposition and temperature to
 individual material energy depositions and temperatures.
@@ -270,12 +276,17 @@ individual material energy depositions and temperatures.
 The behavior of a multiple-material cell which happens to contain
 only  one material is indistinguishable from a single material cell.
 
-This procedure  accommodates the steady-state thermal equilibrium
-solution, as all the materials in a cell are guaranteed to be at
+The steady-state thermal equilibrium solution is automatically 
+accommodated, as all the materials in a cell are guaranteed to be at
 equilibrium upon exit from every time cycle.
 
-However, the cell average temperature does not provide the ``correct''
+\subsection{Weaknesses}
+
+The cell average temperature does not provide the ``correct''
 emission source as this is based on $T^4$, not $T$.
+
+Any initial temperature difference between materials in a 
+multi-material cell is immediately lost.
 
 \nocite{MihalasMihalas}
 \bibliographystyle{plain}
