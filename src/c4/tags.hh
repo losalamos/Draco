@@ -29,6 +29,7 @@ const int C4_Any_Tag = MPI_ANY_TAG;
 const int C4_Any_Source = MPI_ANY_SOURCE;
 #endif
 
+const int C4_char_Tag = 431;
 const int C4_int_Tag = 432;
 const int C4_float_Tag = 433;
 const int C4_double_Tag = 434;
