@@ -22,7 +22,7 @@ CXXFLAGS += -DDBC=7
 # Put non template code here
 
 libsrcs = BilinearInterpTable.cc BilinearInterpGrid.cc \
-          FifiParser.cc FifiMatPropsReader.cc
+          FifiParser.cc FifiMatPropsReader.cc matprops_pt.cc
 
 # Get the library built, minding our various other targets too.
 
