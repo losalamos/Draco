@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "TestApp.hh"
-#include "PassFailStream.hh"
 
 #include "c4/global.hh"
 

@@ -54,8 +54,8 @@ class PassFailStream
 	    ost << "(" << str << ")";
 	}
 	ost << " Test: "
-		<< (stateToSet ? "PASSED" : "FAILED")
-		<< ": ****\n\t";
+	    << (stateToSet ? "PASSED" : "FAILED")
+	    << ": ****\n\t";
 
 	if (stateToSet == false)
 	    testApp.setPassed(false);

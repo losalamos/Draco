@@ -76,6 +76,7 @@ class TestApp
     virtual std::string runTest() = 0;
 
     std::list<std::string> &argList() { return argList_m; }
+    
     void addMessage(const std::string &message)
     {
 	messageList_m.push_back(message);
