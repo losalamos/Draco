@@ -26,11 +26,14 @@ AC_RUNTESTS(tstCheck_Strings \
 
 AC_DRACO_ENV
 
-dnl look for flexelint on Linux
+dnl look for flexelint, dot and ps2pdf on Linux
 AC_PATH_PROG(FLEXELINT_PATH, lin, null, /usr/local/flexelint/bin )
+AC_PATH_PROG(DOTCMD, dot, null)
+AC_PATH_PROG(PS2PDF, ps2pdf, null)
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
-                 test/Makefile:../../config/Makefile.test.in])
+                 test/Makefile:../../config/Makefile.test.in
+                 doc/Makefile:../../config/Makefile.doc.in])
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
