@@ -1,3 +1,16 @@
+2003-02-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* DD_Source_Builder, Rep_Source_Builder, Gray_Particle,
+	Multigroup_Particle: Removed Particle_Defs.h/Unset_Particle_Defs.h
+	and Source_Builder_Defs.h/Unset_Source_Builder_Defs.h.  I have
+	found that the standard does specify scoping of templated base
+	class members in the derived class (C++ Standard 14.6.2-2,3,4).
+	However, simply scoping causes a problem because gcc has trouble
+	resolving operator().  No worries, the easy work-around is too use
+	using decarations in the derived class definitions to introduce
+	the base class names into the scope of the derived class (C++
+	Standard 7.3.3-12,13,14).
+
 2002-11-15  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Updated to imc-3_2_0.  Most changes were std compliancy

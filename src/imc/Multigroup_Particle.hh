@@ -9,16 +9,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Multigroup_Particle_hh__
-#define __imc_Multigroup_Particle_hh__
+#ifndef RTT_imc_Multigroup_Particle_HH
+#define RTT_imc_Multigroup_Particle_HH
 
 #include "Particle.hh"
 #include "mc/Sampler.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
-
-// Set scoping rules.
-#include "Particle_Defs.h"
 
 namespace rtt_imc
 {
@@ -35,6 +32,8 @@ class Multigroup_Frequency;
 // revision history:
 // -----------------
 // 0) original
+// 1) 10-FEB-03 : removed #define's for Base class scoping; added real
+//                scoping
 // 
 //===========================================================================//
 
@@ -52,7 +51,7 @@ class Multigroup_Particle : public Particle<MT>
     // >>> NESTED TYPES
 
     /*!
-     * \class Gray_Particle::Diagnostic
+     * \class Multigroup_Particle::Diagnostic
      * \brief Diagnostic class for tracking particle histories.
      */
     class Diagnostic : public Particle<MT>::Diagnostic
@@ -66,11 +65,15 @@ class Multigroup_Particle : public Particle<MT>
 	void print_xs(const MG_Opacity &, int, int) const;
     };
 
-    // Diagnostic typedef
+    // Diagnostic typedef.
     typedef rtt_dsxx::SP<Diagnostic> SP_Diagnostic;
     
     // Friend declarations.
     friend class Diagnostic;
+
+  private:
+    // Typedef for base class scoping.
+    typedef Particle<MT> Base;
 
   private:
     // >>> DATA
@@ -82,8 +85,8 @@ class Multigroup_Particle : public Particle<MT>
     // >>> IMPLEMENTATION
 
     // Stream for implicit capture.
-    inline void stream_implicit_capture(const MG_Opacity &,
-					Tally<MT> &, double);
+    inline void stream_implicit_capture(const MG_Opacity &, Tally<MT> &, 
+					double);
 
     // Process a collision event.
     inline void collision_event(const MT &, Tally<MT> &, const MG_Opacity &,
@@ -154,9 +157,9 @@ Multigroup_Particle<MT>::Multigroup_Particle(const sf_double& r_,
       group_index(group_index_)
 {
     // non-default particle constructor
-    Check (r.size() < 4);
-    Check (omega.size() == 3);
-    Check (cell > 0); 
+    Check (Base::r.size() < 4);
+    Check (Base::omega.size() == 3);
+    Check (Base::cell > 0); 
     Check (group_index > 0);
 }
 
@@ -186,20 +189,20 @@ Multigroup_Particle<MT>::Multigroup_Particle(const std::vector<char> &packed)
     Check (dimension > 0 && dimension <= 3);
 
     // size the dimension and direction 
-    r.resize(dimension);
-    omega.resize(3);
+    Base::r.resize(dimension);
+    Base::omega.resize(3);
 
     // unpack the position
     for (int i = 0; i < dimension; i++)
-	u >> r[i];
+	u >> Base::r[i];
 
     // unpack the rest of the data
-    u >> omega[0] >> omega[1] >> omega[2] >> cell >> ew >> time_left
-      >> fraction >> group_index;
-    Check (time_left   >= 0.0);
-    Check (fraction    >= 0.0);
-    Check (cell        >  0);
-    Check (ew          >= 0.0);
+    u >> Base::omega[0] >> Base::omega[1] >> Base::omega[2] >> Base::cell 
+      >> Base::ew >> Base::time_left >> Base::fraction >> group_index;
+    Check (Base::time_left   >= 0.0);
+    Check (Base::fraction    >= 0.0);
+    Check (Base::cell        >  0);
+    Check (Base::ew          >= 0.0);
     Check (group_index >  0)
 
     // get the size of the RN state
@@ -215,15 +218,15 @@ Multigroup_Particle<MT>::Multigroup_Particle(const std::vector<char> &packed)
 	u >> prn[i];
 
     // rebuild the rn state
-    random = new Rnd_Type(prn);
-    Check (random->get_num() >= 0);
-    Check (random->get_id());
+    Base::random = new Rnd_Type(prn);
+    Check (Base::random->get_num() >= 0);
+    Check (Base::random->get_id());
 
     // assign the descriptor and status
-    descriptor = UNPACKED;
-    alive      = true;
+    Base::descriptor = Base::UNPACKED;
+    Base::alive      = true;
     
-    Ensure (status());
+    Ensure (Base::status());
 }
 
 //---------------------------------------------------------------------------//
@@ -234,33 +237,34 @@ Multigroup_Particle<MT>::Multigroup_Particle(const std::vector<char> &packed)
 template<class MT>
 std::vector<char> Multigroup_Particle<MT>::pack() const
 {
-    Require (omega.size() == 3);
+    Require (Base::omega.size() == 3);
 
     // make a packer
     rtt_dsxx::Packer p;
 
     // first pack the random number state
-    std::vector<char> prn = random->pack();
+    std::vector<char> prn = Base::random->pack();
 
     // determine the size of the packed particle: 1 int for cell, + 1 int for
     // size of packed RN state + 1 int for dimension of space + 1 int for
     // group index; dimension + 6 doubles; + size of RN state chars
-    int size = 4 * sizeof(int) + (r.size() + 6) * sizeof(double) + prn.size();
+    int size = 4 * sizeof(int) + (Base::r.size() + 6) * sizeof(double) +
+	prn.size();
 
     // set the packed buffer
     std::vector<char> packed(size);
     p.set_buffer(size, &packed[0]);
 
     // pack the spatial dimension
-    p << static_cast<int>(r.size());
+    p << static_cast<int>(Base::r.size());
     
     // pack the dimension
-    for (int i = 0; i < r.size(); i++)
-	p << r[i];
+    for (int i = 0; i < Base::r.size(); i++)
+	p << Base::r[i];
     
     // pack the rest of the data
-    p << omega[0] << omega[1] << omega[2] << cell << ew << time_left
-      << fraction << group_index;
+    p << Base::omega[0] << Base::omega[1] << Base::omega[2] << Base::cell 
+      << Base::ew << Base::time_left << Base::fraction << group_index;
 
     // pack the RN state
     p << static_cast<int>(prn.size());
@@ -287,49 +291,49 @@ void Multigroup_Particle<MT>::collision_event(
     Check (mesh.num_cells() == tally.num_cells());
 
     // get a random number
-    double rand_selector = random->ran();
+    double rand_selector = Base::random->ran();
     
     if (rand_selector < prob_scatter) 
     { 
 	// accumulate momentum from before the scatter
-	tally.accumulate_momentum(cell, ew, omega);
+	tally.accumulate_momentum(Base::cell, Base::ew, Base::omega);
 	
 	// Scatter
 	if (rand_selector < prob_thomson_scatter)
 	{ 
 	    // Thomson scatter
-	    descriptor = THOM_SCATTER;
+	    Base::descriptor = Base::THOM_SCATTER;
 	    tally.accum_n_thomscat();
 	
 	    // scatter the particle -- update direction cosines
-	    scatter( mesh );
+	    Base::scatter(mesh);
 	}
 	else
 	{ 
 	    // Effective scatter
-	    descriptor = EFF_SCATTER;
+	    Base::descriptor = Base::EFF_SCATTER;
 	    tally.accum_n_effscat();
 
 	    // scatter the particle -- update direction cosines
-	    effective_scatter( mesh, opacity );
+	    effective_scatter(mesh, opacity);
 	}
 	
 	// accumulate momentum from after the scatter
-	tally.accumulate_momentum(cell, -ew, omega);
+	tally.accumulate_momentum(Base::cell, -Base::ew, Base::omega);
     }
     else if (rand_selector < prob_scatter + prob_abs)
     { 
 	// Absorption
 	
 	// tally absorption data
-	tally.deposit_energy( cell, ew );
+	tally.deposit_energy(Base::cell, Base::ew);
 	tally.accum_n_killed();
-	tally.accum_ew_killed( ew );
-	tally.accumulate_momentum(cell, ew, omega);
+	tally.accum_ew_killed(Base::ew);
+	tally.accumulate_momentum(Base::cell, Base::ew, Base::omega);
 
 	// set the descriptor and particle status
-	descriptor = KILLED; 
-	alive      = false;
+	Base::descriptor = Base::KILLED; 
+	Base::alive      = false;
     }
     else
     {
@@ -354,12 +358,12 @@ void Multigroup_Particle<MT>::effective_scatter(const MT         &mesh,
     
     // sample new group index (add 1 since return value is in [0,G-1])
     group_index = sample_bin_from_discrete_cdf(
-	*random, opacity.get_emission_group_cdf(cell)) + 1;
+	*random, opacity.get_emission_group_cdf(Base::cell)) + 1;
     Check (group_index > 0);
     Check (group_index <= opacity.get_Frequency()->get_num_groups());
     
     // sample particle direction for re-emitted particle
-    omega = mesh.get_Coord().sample_dir("isotropic", *random);
+    Base::omega = mesh.get_Coord().sample_dir("isotropic", *Base::random);
 }
 
 //---------------------------------------------------------------------------//
@@ -375,18 +379,18 @@ void Multigroup_Particle<MT>::stream_implicit_capture(
     Check(distance >= 0.0);
     
     // exponential argument
-    double argument = -xs.get_sigeffabs(cell, group_index) * distance;
+    double argument = -xs.get_sigeffabs(Base::cell, group_index) * distance;
 
     // calculate multiplicative reduction in energy-weight
     double factor = std::exp(argument);
 
     // calculate new energy weight; change in energy-weight
-    double new_ew = ew * factor;
-    double del_ew = ew - new_ew;
+    double new_ew = Base::ew * factor;
+    double del_ew = Base::ew - new_ew;
 
     // tally deposited energy and momentum
-    tally.deposit_energy( cell, del_ew );
-    tally.accumulate_momentum(cell, del_ew, omega);
+    tally.deposit_energy(Base::cell, del_ew );
+    tally.accumulate_momentum(Base::cell, del_ew, Base::omega);
 
     // accumulate tallies for energy-weighted path length 
     //     ewpl == energy-weighted-path-length = 
@@ -394,42 +398,39 @@ void Multigroup_Particle<MT>::stream_implicit_capture(
     //             (1/sig)ew(1-e^(-sig*x)), 
     //             or if sig=0, 
     //             ewpl = ew*d.
-    if (xs.get_sigeffabs(cell, group_index) > 0)
+    if (xs.get_sigeffabs(Base::cell, group_index) > 0)
     {
 	// integrate exponential from 0 to distance
-	tally.accumulate_ewpl(cell, del_ew /
-			      xs.get_sigeffabs(cell, group_index) );
+	tally.accumulate_ewpl(Base::cell, del_ew /
+			      xs.get_sigeffabs(Base::cell, group_index));
     }
-    else if (xs.get_sigeffabs(cell, group_index) == 0)
+    else if (xs.get_sigeffabs(Base::cell, group_index) == 0)
     {
 	// integrate constant
-	tally.accumulate_ewpl(cell, distance * ew);
+	tally.accumulate_ewpl(Base::cell, distance * Base::ew);
     }
-    else if (xs.get_sigeffabs(cell, group_index) < 0)
+    else if (xs.get_sigeffabs(Base::cell, group_index) < 0)
     {
 	Insist (0, "Effective absorption is negative!");
     }
 
     // update the fraction of the particle's original weight
-    fraction *= factor;
-    Check (fraction > minwt_frac || 
-	   rtt_dsxx::soft_equiv(fraction, minwt_frac));
+    Base::fraction *= factor;
+    Check (Base::fraction > Base::minwt_frac || 
+	   rtt_dsxx::soft_equiv(Base::fraction, Base::minwt_frac));
 
     // update particle energy-weight
-    ew = new_ew;
+    Base::ew = new_ew;
 
-    Check(ew > 0.0);
+    Check(Base::ew > 0.0);
 
     // Physically transport the particle
-    stream( distance ); 
+    Base::stream(distance); 
 }
 
 } // end namespace rtt_imc
 
-// Unset scoping rules.
-#include "Unset_Particle_Defs.h"
-
-#endif                          // __imc_Multigroup_Particle_hh__
+#endif                          // RTT_imc_Multigroup_Particle_HH
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Multigroup_Particle.hh

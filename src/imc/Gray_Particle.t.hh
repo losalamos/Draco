@@ -11,9 +11,6 @@
 
 #include "Gray_Particle.hh"
 
-// Set scoping rules.
-#include "Particle_Defs.h"
-
 namespace rtt_imc
 {
 
@@ -81,7 +78,7 @@ void Gray_Particle<MT>::transport(
     Tally<MT>                        &tally, 
     SP_Diagnostic                     diagnostic)
 {
-    Require (alive);
+    Require (Base::alive);
 
     // initialize diagnostics
     if (diagnostic)
@@ -93,7 +90,7 @@ void Gray_Particle<MT>::transport(
     // !!! BEGIN TRANSPORT LOOP !!!
 
     // transport loop, ended when alive = false
-    while (alive)
+    while (Base::alive)
     {
 	// distance to collision, boundary, census and cutoff defnintions
         double d_collide, d_boundary, d_census, d_cutoff;
@@ -111,13 +108,13 @@ void Gray_Particle<MT>::transport(
 	double sigma_thomson_scatter, sigma_eff_scatter, sigma_eff_abs, 
 	    sigma_scatter, sigma_analog_abs, sigma_collide; 
 
-	sigma_thomson_scatter = xs.get_sigma_thomson(cell);
-	sigma_eff_scatter     = xs.get_sigeffscat(cell);
-	sigma_eff_abs         = xs.get_sigeffabs(cell);
+	sigma_thomson_scatter = xs.get_sigma_thomson(Base::cell);
+	sigma_eff_scatter     = xs.get_sigeffscat(Base::cell);
+	sigma_eff_abs         = xs.get_sigeffabs(Base::cell);
 
 	sigma_scatter         = sigma_thomson_scatter + sigma_eff_scatter;
 
-	if (use_analog_absorption())
+	if (Base::use_analog_absorption())
  	    sigma_analog_abs     = sigma_eff_abs;
 	else
 	    sigma_analog_abs     = 0.0;
@@ -127,8 +124,8 @@ void Gray_Particle<MT>::transport(
 	Check(sigma_collide>=0);
 
 	// accumulate momentum deposition from volume emission particles
-	if (descriptor == VOL_EMISSION)
-	    tally.accumulate_momentum(cell, -ew, omega);
+	if (Base::descriptor == Base::VOL_EMISSION)
+	    tally.accumulate_momentum(Base::cell, -Base::ew, Base::omega);
         
 	// sample distance-to-scatter/absorption (effective scatter or hardball)
 	if (sigma_collide == 0 ) 
@@ -141,40 +138,43 @@ void Gray_Particle<MT>::transport(
 	}
 	else 
 	{
-	    d_collide = -std::log(random->ran()) / sigma_collide;
+	    d_collide = -std::log(Base::random->ran()) / sigma_collide;
 
 	    prob_thomson_scatter = sigma_thomson_scatter / sigma_collide;
 	    prob_scatter         = sigma_scatter         / sigma_collide;
 	    prob_abs             = sigma_analog_abs      / sigma_collide;
 	}
 
-	Check(d_collide>0);
+	Check(d_collide > 0);
 
 	// get distance-to-boundary and cell face
-	d_boundary = mesh.get_db(r, omega, cell, face);  Check(d_boundary>=0);
+	d_boundary = mesh.get_db(Base::r, Base::omega, Base::cell, face);  
+	Check(d_boundary>=0);
 
 	// distance to census (end of time step)
-	d_census = rtt_mc::global::c * time_left;   Check(d_census);
+	d_census = rtt_mc::global::c * Base::time_left;   
+	Check(d_census);
 
 	// distance until cutoff weight is reached:
-	if (sigma_eff_abs == 0 || use_analog_absorption() )
+	if (sigma_eff_abs == 0 || Base::use_analog_absorption() )
 	{ 
 	    d_cutoff = rtt_mc::global::huge;
 	}
 	else
 	{
-	    d_cutoff = std::log(fraction/minwt_frac)/sigma_eff_abs;
+	    d_cutoff = std::log(Base::fraction / Base::minwt_frac) / 
+		sigma_eff_abs;
 	}
 
-	Check(d_cutoff>0);
-
+	Check(d_cutoff > 0);
 
 	// detailed diagnostics
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
-		diagnostic->print_dist(d_collide, d_boundary, d_census, cell); 
-		diagnostic->print_xs(xs, cell);
+		diagnostic->print_dist(d_collide, d_boundary, d_census, 
+				       Base::cell); 
+		diagnostic->print_xs(xs, Base:: cell);
 	    }
 
 
@@ -182,26 +182,26 @@ void Gray_Particle<MT>::transport(
 	if      (d_collide < d_boundary  &&  d_collide < d_census   &&
 		 d_collide < d_cutoff  )
 	{
-	    descriptor = COLLISION;
-	    d_stream = d_collide;
+	    Base::descriptor = Base::COLLISION;
+	    d_stream         = d_collide;
 	}	
 	else if (d_boundary < d_collide  &&  d_boundary < d_census  &&
 		 d_boundary < d_cutoff )
 	{
-	    descriptor = BOUNDARY;
-	    d_stream = d_boundary;
+	    Base::descriptor = Base::BOUNDARY;
+	    d_stream         = d_boundary;
 	}
 	else if (d_census < d_collide    &&  d_census < d_boundary  &&  
 		 d_census < d_cutoff   )
 	{
-	    descriptor = CENSUS;
-	    d_stream = d_census;
+	    Base::descriptor = Base::CENSUS;
+	    d_stream         = d_census;
 	}
 	else if (d_cutoff < d_collide    &&  d_cutoff < d_boundary  &&
 		 d_cutoff < d_census   )
 	{
-	    descriptor = CUTOFF;
-	    d_stream = d_cutoff;
+	    Base::descriptor = Base::CUTOFF;
+	    d_stream         = d_cutoff;
 	}
 	else
 	{
@@ -210,10 +210,10 @@ void Gray_Particle<MT>::transport(
 
 
 	// Stream the particle, according to its status:
-	if (use_analog_absorption())
+	if (Base::use_analog_absorption())
 	{
 	    // Light particle (analog) streaming.
-	    stream_analog_capture(tally, d_stream);          
+	    Base::stream_analog_capture(tally, d_stream);          
 	}
 	else
 	{
@@ -223,38 +223,40 @@ void Gray_Particle<MT>::transport(
 
 
 	// Adjust the time remaining till the end of the time step
-	time_left -= d_stream / rtt_mc::global::c;
+	Base::time_left -= d_stream / rtt_mc::global::c;
 
 
 	// Process collisions, boundary crossings, going to census or
 	// reaching cutoff events.
-	switch (descriptor) 
+	switch (Base::descriptor) 
 	{
 
-	case COLLISION:
+	case Base::COLLISION:
 
+	    // process the collision
 	    collision_event(mesh, tally, prob_scatter, prob_thomson_scatter, 
 			    prob_abs);
 	    break;
 
-	case CUTOFF:
+	case Base::CUTOFF:
 
-	    Check(rtt_mc::global::soft_equiv(fraction, minwt_frac));
+	    Check(rtt_mc::global::soft_equiv(Base::fraction, 
+					     Base::minwt_frac));
 
 	    // Ensure light weight from now on:
-	    fraction = minwt_frac * 0.5;  
+	    Base::fraction = Base::minwt_frac * 0.5;  
 	    break;
 
-	case BOUNDARY:
+	case Base::BOUNDARY:
 
 	    // process a boundary event
-	    boundary_event(mesh, tally, face);
+	    Base::boundary_event(mesh, tally, face);
 	    break;
 
-	case CENSUS:
+	case Base::CENSUS:
 	    
 	    // process a census event
-	    census_event(tally);
+	    Base::census_event(tally);
 	    break;
 
 	default:
@@ -262,7 +264,6 @@ void Gray_Particle<MT>::transport(
 	    // throw an assertion
 	    throw rtt_dsxx::assertion("Undefined event in Gray_Particle.");
 	}
-
     } 
 
     // !!! END OF TRANSPORT LOOP !!!
@@ -282,24 +283,24 @@ template<class MT>
 bool Gray_Particle<MT>::operator==(const Gray_Particle<MT> &rhs) const
 {
     // check particle data
-    if (ew != rhs.ew)
+    if (Base::ew != rhs.Base::ew)
 	return false;
-    else if (r != rhs.r)
+    else if (Base::r != rhs.Base::r)
 	return false;
-    else if (omega != rhs.omega)
+    else if (Base::omega != rhs.Base::omega)
 	return false;
-    else if (cell != rhs.cell)
+    else if (Base::cell != rhs.Base::cell)
 	return false;
-    else if (time_left != rhs.time_left)
+    else if (Base::time_left != rhs.Base::time_left)
 	return false;
-    else if (fraction != rhs.fraction)
+    else if (Base::fraction != rhs.Base::fraction)
 	return false;
-    else if (alive != rhs.alive)
+    else if (Base::alive != rhs.Base::alive)
 	return false;
-    else if (descriptor != rhs.descriptor)
+    else if (Base::descriptor != rhs.Base::descriptor)
 	return false;
 
-    if (random->get_num() != rhs.random->get_num())
+    if (Base::random->get_num() != rhs.Base::random->get_num())
 	return false;
 
     // if all these things check out then the particles are equal
@@ -331,20 +332,21 @@ void Gray_Particle<MT>::Diagnostic::print_xs(
     using std::setiosflags;
 
     // do detailed diagnostic print of particle event cross sections
-    output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma_abs(cell_in)  << endl;
-    output << setw(20) << setiosflags(ios::right) << "Eff. scatter: "
-	   << setw(12) << xs.get_sigeffscat(cell_in) << endl; 
-    output << setw(20) << setiosflags(ios::right) << "Eff. absorption: " 
-	   << setw(12) << xs.get_sigeffabs(cell_in)  << endl; 
-    output << setw(20) << setiosflags(ios::right) << "Thomson scatter: " 
-	   << setw(12) << xs.get_sigma_thomson(cell_in)  << endl; 
+    Base::Diagnostic::output << setw(20) << setiosflags(ios::right) 
+			     << "Opacity: " << setw(12) 
+			     << xs.get_sigma_abs(cell_in) << endl;
+    Base::Diagnostic::output << setw(20) << setiosflags(ios::right) 
+			     << "Eff. scatter: " << setw(12) 
+			     << xs.get_sigeffscat(cell_in) << endl; 
+    Base::Diagnostic::output << setw(20) << setiosflags(ios::right) 
+			     << "Eff. absorption: " << setw(12) 
+			     << xs.get_sigeffabs(cell_in) << endl; 
+    Base::Diagnostic::output << setw(20) << setiosflags(ios::right) 
+			     << "Thomson scatter: " << setw(12) 
+			     << xs.get_sigma_thomson(cell_in) << endl; 
 }
 
 } // end namespace rtt_imc
-
-// Unset scoping rules.
-#include "Unset_Particle_Defs.h"
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Gray_Particle.t.hh

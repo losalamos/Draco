@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+///----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/Source_Builder.hh
  * \author Thomas M. Evans
@@ -148,6 +148,8 @@ template<class MT> class Multigroup_Particle;
 // 6) 18-MAR-2002 : added set functions to pass ss_temperature to Source so
 //                  the frequency is properly sampled for multigroup surface
 //                  source particles.
+// 7) 13-FEB-2003 : moved some variables from protected: to private: that
+//                  were not being used in the derived classes
 //===========================================================================//
 
 template<class MT, class FT, class PT>
@@ -207,6 +209,22 @@ class Source_Builder
     //! Descriptor for each surface source.
     sf_string ss_desc;
 
+    //! Requested number of source particles.
+    int npnom;
+
+    //! Maximum number of source particles.
+    int npmax;
+
+    //! Rate of change of number of source particles per shake.
+    double dnpdt;
+
+    //! Problem cycle.
+    int cycle;
+
+    //! Timestep.
+    double delta_t;
+
+  private:
     // >>> BASE CLASS IMPLEMENTATION MEMBER FUNCTIONS
 
     // Calculate volume emission source energies.
@@ -272,26 +290,10 @@ class Source_Builder
     inline void set_ss_temperature_in_source(
 	rtt_imc::global::Type_Switch<Multigroup_Frequency>, double, int);
 
-
   protected:
     // >>> DATA USED BY ALL SOURCE BUILDERS
 
     // Interface data.
-
-    //! Requested number of source particles.
-    int npnom;
-
-    //! Maximum number of source particles.
-    int npmax;
-
-    //! Rate of change of number of source particles per shake.
-    double dnpdt;
-
-    //! Problem cycle.
-    int cycle;
-
-    //! Timestep.
-    double delta_t;
 
     //! Surface source angular distribution.
     std_string ss_dist;
@@ -360,6 +362,7 @@ class Source_Builder
     //! Frequency-dependent sampling of evol_net.
     Frequency_Sampling_Data<MT,FT> freq_samp_data;
 
+  protected:
     // >>> IMPLEMENTATION INHERITANCE
 
     // Calculate source energies for volume emission and surface source.
@@ -440,7 +443,7 @@ class Source_Builder
     //! Get energy loss in volume emission - topology dependent.
     virtual double get_eloss_vol() const = 0;
 
-    //! Get total number of volume emission particles - toplogy dependent.
+    //! Get total number of volume emission particles - topology dependent.
     virtual int get_nvoltot() const = 0;
 
     //! Get number of volume emission particles / cell - topology dependent.

@@ -9,15 +9,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Gray_Particle_hh__
-#define __imc_Gray_Particle_hh__
+#ifndef RTT_imc_Gray_Particle_HH
+#define RTT_imc_Gray_Particle_HH
 
 #include "Particle.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
-
-// Set scoping rules.
-#include "Particle_Defs.h"
 
 namespace rtt_imc
 {
@@ -34,6 +31,8 @@ class Gray_Frequency;
 // revision history:
 // -----------------
 // 0) original
+// 1) 10-FEB-03 : removed #define's for Base class scoping; added real
+//                scoping
 // 
 //===========================================================================//
 
@@ -70,6 +69,10 @@ class Gray_Particle : public Particle<MT>
     typedef rtt_dsxx::SP<Diagnostic>  SP_Diagnostic;
 
   private:
+    // Typedef for base class scoping.
+    typedef Particle<MT> Base;
+
+  private:
     // >>> IMPLEMENTATION
 
     // Stream for implicit capture.
@@ -83,7 +86,7 @@ class Gray_Particle : public Particle<MT>
   public:
     // Particle constructor.
     inline Gray_Particle(const sf_double &, const sf_double &, double, int,
-			 Rnd_Type, double = 1, double = 1, int = BORN);
+			 Rnd_Type, double = 1, double = 1, int = Base::BORN);
 
     // Unpacking constructor.
     inline Gray_Particle(const std::vector<char> &);
@@ -131,9 +134,9 @@ Gray_Particle<MT>::Gray_Particle(const sf_double& r_,
     : Particle<MT>(r_, omega_, ew_, cell_, random_, frac, tleft, desc)
 {
     // non-default particle constructor
-    Check (r.size() < 4);
-    Check (omega.size() == 3);
-    Check (cell > 0); 
+    Check (Base::r.size() < 4);
+    Check (Base::omega.size() == 3);
+    Check (Base::cell > 0); 
 }
 
 //---------------------------------------------------------------------------//
@@ -162,20 +165,21 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
     Check (dimension > 0 && dimension <= 3);
 
     // size the dimension and direction 
-    r.resize(dimension);
-    omega.resize(3);
+    Base::r.resize(dimension);
+    Base::omega.resize(3);
 
     // unpack the position
     for (int i = 0; i < dimension; i++)
-	u >> r[i];
+	u >> Base::r[i];
 
     // unpack the rest of the data
-    u >> omega[0] >> omega[1] >> omega[2] >> cell >> ew >> time_left
-      >> fraction;
-    Check (time_left >= 0.0);
-    Check (fraction  >= 0.0);
-    Check (cell      >  0);
-    Check (ew        >= 0.0);
+    u >> Base::omega[0] >> Base::omega[1] >> Base::omega[2] 
+      >> Base::cell >> Base::ew >> Base::time_left
+      >> Base::fraction;
+    Check (Base::time_left >= 0.0);
+    Check (Base::fraction  >= 0.0);
+    Check (Base::cell      >  0);
+    Check (Base::ew        >= 0.0);
 
     // get the size of the RN state
     int size_rn = 0;
@@ -190,15 +194,15 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
 	u >> prn[i];
 
     // rebuild the rn state
-    random = new Rnd_Type(prn);
-    Check (random->get_num() >= 0);
-    Check (random->get_id());
+    Base::random = new Rnd_Type(prn);
+    Check (Base::random->get_num() >= 0);
+    Check (Base::random->get_id());
 
     // assign the descriptor and status
-    descriptor = UNPACKED;
-    alive      = true;
+    Base::descriptor = UNPACKED;
+    Base::alive      = true;
     
-    Ensure (status());
+    Ensure (Base::status());
 }
 
 //---------------------------------------------------------------------------//
@@ -209,33 +213,35 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
 template<class MT>
 std::vector<char> Gray_Particle<MT>::pack() const
 {
-    Require (omega.size() == 3);
+    Require (Base::omega.size() == 3);
 
     // make a packer
     rtt_dsxx::Packer p;
 
     // first pack the random number state
-    std::vector<char> prn = random->pack();
+    std::vector<char> prn = Base::random->pack();
 
     // determine the size of the packed particle: 1 int for cell, + 1 int for
     // size of packed RN state + 1 int for dimension of space; dimension +
     // 6 doubles; + size of RN state chars
-    int size = 3 * sizeof(int) + (r.size() + 6) * sizeof(double) + prn.size();
+    int size = 3 * sizeof(int) + (Base::r.size() + 6) * sizeof(double) +
+	prn.size();
 
     // set the packed buffer
     std::vector<char> packed(size);
     p.set_buffer(size, &packed[0]);
 
     // pack the spatial dimension
-    p << static_cast<int>(r.size());
+    p << static_cast<int>(Base::r.size());
     
     // pack the dimension
-    for (int i = 0; i < r.size(); i++)
-	p << r[i];
+    for (int i = 0; i < Base::r.size(); i++)
+	p << Base::r[i];
     
     // pack the rest of the data
-    p << omega[0] << omega[1] << omega[2] << cell << ew << time_left
-      << fraction;
+    p << Base::omega[0] << Base::omega[1] << Base::omega[2]
+      << Base::cell << Base::ew << Base::time_left
+      << Base::fraction;
 
     // pack the RN state
     p << static_cast<int>(prn.size());
@@ -259,18 +265,18 @@ void Gray_Particle<MT>::stream_implicit_capture(
     Check(distance >= 0.0);
     
     // exponential argument
-    double argument = -xs.get_sigeffabs(cell) * distance;
+    double argument = -xs.get_sigeffabs(Base::cell) * distance;
 
     // calculate multiplicative reduction in energy-weight
     double factor = std::exp(argument);
 
     // calculate new energy weight; change in energy-weight
-    double new_ew = ew * factor;
-    double del_ew = ew - new_ew;
+    double new_ew = Base::ew * factor;
+    double del_ew = Base::ew - new_ew;
 
     // tally deposited energy and momentum
-    tally.deposit_energy( cell, del_ew );
-    tally.accumulate_momentum(cell, del_ew, omega);
+    tally.deposit_energy(Base::cell, del_ew);
+    tally.accumulate_momentum(Base::cell, del_ew, Base::omega);
 
     // accumulate tallies for energy-weighted path length 
     //     ewpl == energy-weighted-path-length = 
@@ -278,33 +284,34 @@ void Gray_Particle<MT>::stream_implicit_capture(
     //             (1/sig)ew(1-e^(-sig*x)), 
     //             or if sig=0, 
     //             ewpl = ew*d.
-    if (xs.get_sigeffabs(cell) > 0)
+    if (xs.get_sigeffabs(Base::cell) > 0)
     {
 	// integrate exponential from 0 to distance
-	tally.accumulate_ewpl(cell, del_ew / xs.get_sigeffabs(cell) );
+	tally.accumulate_ewpl(Base::cell, del_ew / 
+			      xs.get_sigeffabs(Base::cell));
     }
-    else if (xs.get_sigeffabs(cell) == 0)
+    else if (xs.get_sigeffabs(Base::cell) == 0)
     {
 	// integrate constant
-	tally.accumulate_ewpl(cell, distance * ew);
+	tally.accumulate_ewpl(Base::cell, distance * Base::ew);
     }
-    else if (xs.get_sigeffabs(cell) < 0)
+    else if (xs.get_sigeffabs(Base::cell) < 0)
     {
 	Insist (0, "Effective absorption is negative!");
     }
 
     // update the fraction of the particle's original weight
-    fraction *= factor;
-    Check (fraction > minwt_frac || 
-	   rtt_dsxx::soft_equiv(fraction, minwt_frac));
+    Base::fraction *= factor;
+    Check (Base::fraction > minwt_frac || 
+	   rtt_dsxx::soft_equiv(Base::fraction, Base::minwt_frac));
 
     // update particle energy-weight
-    ew = new_ew;
+    Base::ew = new_ew;
 
-    Check(ew > 0.0);
+    Check(Base::ew > 0.0);
 
     // Physically transport the particle
-    stream( distance ); 
+    Base::stream(distance); 
 }
 
 //---------------------------------------------------------------------------//
@@ -322,7 +329,7 @@ void Gray_Particle<MT>::collision_event(
     Check (mesh.num_cells() == tally.num_cells());
 
     // get a random number
-    double rand_selector = random->ran();
+    double rand_selector = Base::random->ran();
     
     if (rand_selector < prob_scatter) 
     { 
@@ -330,18 +337,18 @@ void Gray_Particle<MT>::collision_event(
 	if (rand_selector < prob_thomson_scatter)
 	{ 
 	    // Thomson scatter
-	    descriptor = THOM_SCATTER;
+	    Base::descriptor = Base::THOM_SCATTER;
 	    tally.accum_n_thomscat();
 	}
 	else
 	{ 
 	    // Effective scatter
-	    descriptor = EFF_SCATTER;
+	    Base::descriptor = Base::EFF_SCATTER;
 	    tally.accum_n_effscat();
 	}
 	
 	// accumulate momentum from before the scatter
-	tally.accumulate_momentum(cell, ew, omega);
+	tally.accumulate_momentum(Base::cell, Base::ew, Base::omega);
 	
 	// scatter the particle -- update direction cosines (we really should
 	// call effective_scatter for effective scatters because the particle
@@ -349,10 +356,10 @@ void Gray_Particle<MT>::collision_event(
 	// everything is isotropic we will wait to do this later (so as not
 	// to hose all our regression tests); it has no effect on the
 	// practical outcome of the transport
-	scatter( mesh );
+	Base::scatter(mesh);
 	
 	// accumulate momentum from after the scatter
-	tally.accumulate_momentum(cell, -ew, omega);
+	tally.accumulate_momentum(Base::cell, -Base::ew, Base::omega);
 	
     }
     else if (rand_selector < prob_scatter + prob_abs)
@@ -360,14 +367,14 @@ void Gray_Particle<MT>::collision_event(
 	// Absorption
 	
 	// tally absorption data
-	tally.deposit_energy( cell, ew );
+	tally.deposit_energy(Base::cell, Base::ew);
 	tally.accum_n_killed();
-	tally.accum_ew_killed( ew );
-	tally.accumulate_momentum(cell, ew, omega);
+	tally.accum_ew_killed(Base::ew);
+	tally.accumulate_momentum(Base::cell, Base::ew, Base::omega);
 
 	// set the descriptor and particle status
-	descriptor = KILLED; 
-	alive      = false;
+	Base::descriptor = Base::KILLED; 
+	Base::alive      = false;
     }
     else
     {
@@ -377,10 +384,7 @@ void Gray_Particle<MT>::collision_event(
 
 } // end namespace rtt_imc
 
-// Unset scoping rules.
-#include "Unset_Particle_Defs.h"
-
-#endif                          // __imc_Gray_Particle_hh__
+#endif                          // RTT_imc_Gray_Particle_HH
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Gray_Particle.hh

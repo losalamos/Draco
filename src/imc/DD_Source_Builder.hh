@@ -9,14 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_DD_Source_Builder_hh__
-#define __imc_DD_Source_Builder_hh__
+#ifndef RTT_imc_DD_Source_Builder_HH
+#define RTT_imc_DD_Source_Builder_HH
 
 #include "Source_Builder.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-// Set scoping rules.
-#include "Source_Builder_Defs.h"
 
 namespace rtt_imc
 {
@@ -46,6 +43,7 @@ namespace rtt_imc
 //                  instantiation will work; updated to work with new
 //                  Particle_Stack 
 // 5) 05-FEB-2002 : updated for multigroup
+// 6) 10-FEB-2003 : added scoping for the Source_Builder base class
 //===========================================================================//
 
 template<class MT, class FT, class PT>
@@ -69,7 +67,27 @@ class DD_Source_Builder : public Source_Builder<MT,FT,PT>
     typedef std::string                                      std_string;
     typedef typename MT::template CCSF<double>               ccsf_double;
     typedef typename MT::template CCSF<int>                  ccsf_int;
-    typedef typename MT::template CCVF<double>               ccvf_double;       
+    typedef typename MT::template CCVF<double>               ccvf_double; 
+
+  private:
+    // Typedef of base class for scoping.
+    typedef Source_Builder<MT,FT,PT> Base;  
+
+  private:
+    // Protected base class members that are used in this class.  We are
+    // placing CCSF's here because gcc has trouble with operator() when the
+    // base class scoping operator is applied.
+    using Base::ecen;
+    using Base::ew_cen;
+    using Base::evol;
+    using Base::evol_net;
+    using Base::mat_vol_src;
+    using Base::ew_vol;
+    using Base::ess;
+    using Base::ss_face_in_cell;
+    using Base::ew_ss;
+    using Base::volrn;
+    using Base::ssrn;    
 
   private:
     // Data fields unique or more properly defined for full DD topologies.
@@ -109,6 +127,9 @@ class DD_Source_Builder : public Source_Builder<MT,FT,PT>
     double global_eloss_vol;
     double global_eloss_ss;
     double global_eloss_cen; 
+
+  private:
+    // >>> IMPLEMENTATION
   
     // Calculate the local random number stream IDs
     void calc_fullDD_rn_fields(const int, ccsf_int &, int &, ccsf_int &, 
@@ -137,9 +158,9 @@ class DD_Source_Builder : public Source_Builder<MT,FT,PT>
     void calc_initial_census(SP_Mesh, SP_Mat_State, SP_Opacity,
 			     SP_Rnd_Control);
 
-    // IMPLEMENTATION OF BASE CLASS ACCESSORS
+    // >>> IMPLEMENTATION OF BASE CLASS ACCESSORS
 
-    //! Get global total intial census energy.
+    //! Get global total initial census energy.
     inline double get_initial_census_energy() const;
 
     //! Get global energy loss in volume emission.
@@ -171,7 +192,7 @@ class DD_Source_Builder : public Source_Builder<MT,FT,PT>
 template<class MT, class FT, class PT>
 double DD_Source_Builder<MT,FT,PT>::get_initial_census_energy() const
 {
-    double energy = ecentot;
+    double energy = Base::ecentot;
     C4::gsum(energy);
     return energy;
 }
@@ -203,11 +224,11 @@ DD_Source_Builder<MT,FT,PT>::DD_Source_Builder(rtt_dsxx::SP<IT> interface,
 { 
     // at the beginning of the timestep, random number stream ID should be
     // the same on every processor.
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(Base::parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     
     // Update the persistent census energy data, unless the census does not
     // exist yet, which is the case on the first IMC cycle.
-    if (census)
+    if (Base::census)
     {
 	// a check on the total census energy
 	double ecentot_check = 0.0;
@@ -235,10 +256,7 @@ DD_Source_Builder<MT,FT,PT>::DD_Source_Builder(rtt_dsxx::SP<IT> interface,
 
 } // end namespace rtt_imc
 
-// Unset scoping rules.
-#include "Unset_Source_Builder_Defs.h"
-
-#endif                          // __imc_DD_Source_Builder_hh__
+#endif                          // RTT_imc_DD_Source_Builder_HH
 
 //---------------------------------------------------------------------------//
 //                              end of imc/DD_Source_Builder.hh

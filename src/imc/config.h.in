@@ -6,13 +6,10 @@
 /* @> imc package defines                                                    */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __imc_config_h__
-#define __imc_config_h__
+#ifndef RTT_imc_config_H
+#define RTT_imc_config_H
 
-/* Platform tags for scoping rules*/
-#undef IMC_COMPAQ
-
-#endif                          /* __imc_config_h__ */
+#endif                          /* RTT_imc_config_H */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of config.h */

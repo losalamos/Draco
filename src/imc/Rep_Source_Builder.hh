@@ -9,14 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Rep_Source_Builder_hh__
-#define __imc_Rep_Source_Builder_hh__
+#ifndef RTT_imc_Rep_Source_Builder_HH
+#define RTT_imc_Rep_Source_Builder_HH
 
 #include "Source_Builder.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-// Set scoping rules.
-#include "Source_Builder_Defs.h"
 
 namespace rtt_imc
 {
@@ -47,6 +44,7 @@ namespace rtt_imc
 //                  instantiation will work; updated to work with new
 //                  Particle_Stack 
 // 5) 05-FEB-2002 : updated for multigroup
+// 6) 10-FEB-2003 : added scoping for the Source_Builder base class
 //===========================================================================//
 
 template<class MT, class FT, class PT>
@@ -71,6 +69,26 @@ class Rep_Source_Builder : public Source_Builder<MT,FT,PT>
     typedef typename MT::template CCSF<double>               ccsf_double;
     typedef typename MT::template CCSF<int>                  ccsf_int;
     typedef typename MT::template CCVF<double>               ccvf_double;
+
+  public:
+    // Typedef of base class for scoping.
+    typedef Source_Builder<MT,FT,PT> Base;
+
+  private:
+    // Protected base class members that are used in this class.  We are
+    // placing CCSF's here because gcc has trouble with operator() when the
+    // base class scoping operator is applied.
+    using Base::ecen;
+    using Base::ew_cen;
+    using Base::evol;
+    using Base::evol_net;
+    using Base::mat_vol_src;
+    using Base::ew_vol;
+    using Base::ess;
+    using Base::ss_face_in_cell;
+    using Base::ew_ss;
+    using Base::volrn;
+    using Base::ssrn;
 
   private:
     // Data fields unique or more properly defined for full Replication
@@ -105,6 +123,9 @@ class Rep_Source_Builder : public Source_Builder<MT,FT,PT>
     double global_eloss_ss;
     double global_eloss_cen;
 
+  private:
+    // >>> IMPLEMENTATION
+
     // Calculate the local random number stream IDs and number of particles.
     void calc_num_part_and_rn_fields(const ccsf_int &, const int, int &,
 				     ccsf_int &, int &, ccsf_int &);
@@ -131,10 +152,10 @@ class Rep_Source_Builder : public Source_Builder<MT,FT,PT>
     void calc_initial_census(SP_Mesh, SP_Mat_State, SP_Opacity,
 			     SP_Rnd_Control);
 
-    // IMPLEMENTATION OF BASE CLASS ACCESSORS
+    // >>> IMPLEMENTATION OF BASE CLASS ACCESSORS
     
-    //! Get global total intial census energy on processor.
-    double get_initial_census_energy() const { return ecentot; }
+    //! Get global total initial census energy on processor.
+    double get_initial_census_energy() const { return Base::ecentot; }
 
     //! Get global energy loss in volume emission on processor.
     double get_eloss_vol() const { return global_eloss_vol; }
@@ -188,11 +209,11 @@ Rep_Source_Builder<MT,FT,PT>::Rep_Source_Builder(rtt_dsxx::SP<IT> interface,
 { 
     using rtt_dsxx::soft_equiv;
 
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(Base::parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
     // if the census does not exist yet then we build it --> if the census
     // does not exist it means that this is the initial IMC cycle
-    if (census)
+    if (Base::census)
     {
 	// sweep through cells and fill in persistent data
 
@@ -208,20 +229,17 @@ Rep_Source_Builder<MT,FT,PT>::Rep_Source_Builder(rtt_dsxx::SP<IT> interface,
 	}
 	
 	// get ecentot
-	ecentot = interface->get_ecentot();
+	Base::ecentot = interface->get_ecentot();
     
 	// checks
-	Check(soft_equiv(ecentot, ecentot_check,
+	Check(soft_equiv(Base::ecentot, ecentot_check,
 			 mesh->num_cells() * 1.e-12));
     }
 }
 
 } // end namespace rtt_imc
 
-// Unset scoping rules.
-#include "Unset_Source_Builder_Defs.h"
-
-#endif                          // __imc_Rep_Source_Builder_hh__
+#endif                          // RTT_imc_Rep_Source_Builder_HH
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Rep_Source_Builder.hh

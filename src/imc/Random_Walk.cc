@@ -84,8 +84,8 @@ double Random_Walk_Sampling_Tables::get_prob_exit(double t,
     using std::lower_bound;
 
     Require (t >= 0.0);
-    Require (Ro >= 0.0);
-    Require (D >= 0.0);
+    Require (Ro > 0.0);
+    Require (D > 0.0);
 
     // calculate A
     double A = D * t / (Ro * Ro);
@@ -148,7 +148,7 @@ double Random_Walk_Sampling_Tables::get_elapsed_time(double D,
     using std::lower_bound;
 
     Require (ran >= 0.0 && ran <= 1.0);
-    Require (Ro >= 0.0);
+    Require (Ro > 0.0);
     Require (D > 0.0);
 
     // look up A from the table
@@ -160,16 +160,15 @@ double Random_Walk_Sampling_Tables::get_elapsed_time(double D,
     Check (index >= 0 && index < 41);
 
     // calculate a from table using linear interpolation
-    double value = linear_interpolate(prob_exit[index-1], prob_exit[index],
-				      a[index-1], a[index], 
-				      ran);
-    Check (value >= a[index-1] && value <= a[index]);
+    double A = linear_interpolate(prob_exit[index-1], prob_exit[index],
+				  a[index-1], a[index], ran);
+    Check (A >= a[index-1] && A <= a[index]);
 
     // calculate the elapsed time
-    value = value * Ro * Ro / D;
+    double t = A * Ro * Ro / D;
 
     // return value
-    return value;
+    return t;
 }
 
 //---------------------------------------------------------------------------//
@@ -239,8 +238,8 @@ double Random_Walk_Sampling_Tables::get_radius(double t,
     using std::lower_bound;
 
     Require (t >= 0.0);
-    Require (Ro >= 0.0); 
-    Require (D >= 0.0);
+    Require (Ro > 0.0); 
+    Require (D > 0.0);
 
     // calculate A
     double A = D * t / (Ro * Ro);
@@ -269,7 +268,7 @@ double Random_Walk_Sampling_Tables::get_radius(double t,
     else
     {
 	// do a binary search on A
-	const double *ptr = lower_bound(a_R, a_R + 34, A);
+	const double *ptr = lower_bound(a_R, a_R + 33, A);
 	
 	// calculate the index of a (index points to first value >= A)
 	a_index = ptr - a_R;

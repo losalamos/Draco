@@ -14,9 +14,6 @@
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
 
-// Set scoping rules.
-#include "Source_Builder_Defs.h"
-
 namespace rtt_imc
 {
 
@@ -24,7 +21,14 @@ namespace rtt_imc
 // SOURCE BUILDER MAIN INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Build the source in a full replication parallel topology.
+ * \brief Build the source in a full replication (Domain Replication)
+ * parallel topology.
+ *
+ * \param mesh rtt_dsxx::SP to a IMC MT
+ * \param state rtt_dsxx::SP to a rtt_imc::Mat_State
+ * \param opacity rtt_dsxx::SP to an rtt_imc::Opacity
+ * \param rnd_control rtt_dsxx::SP to a rtt_rng::Rnd_Control
+ * \param patterns null rtt_dsxx::SP for domain replication
  */
 template<class MT, class FT, class PT>
 typename Rep_Source_Builder<MT,FT,PT>::SP_Source
@@ -39,28 +43,28 @@ Rep_Source_Builder<MT,FT,PT>::build_Source(SP_Mesh          mesh,
     Require(num_cells == opacity->num_cells());
 
     // if we don't have a census object, build it
-    if (!census)
+    if (!Base::census)
 	calc_initial_census(mesh, state, opacity, rnd_control);
     else
     {
 	// calculate the volume emission and surface source energies
-	calc_source_energies(*state, *opacity);
+	Base::calc_source_energies(*state, *opacity);
 
 	// make sure global energies are the same on each processor
-	Check(parallel_data_op.check_global_equiv(evoltot));
-	Check(parallel_data_op.check_global_equiv(esstot));
-	Check(parallel_data_op.check_global_equiv(ecentot));
+	Check(Base::parallel_data_op.check_global_equiv(Base::evoltot));
+	Check(Base::parallel_data_op.check_global_equiv(Base::esstot));
+	Check(Base::parallel_data_op.check_global_equiv(Base::ecentot));
     }
 
     // calculate the number of source particles for all source particles
     calc_source_numbers();
 
     // comb census -- called even if census is empty; must update local_ncen
-    double eloss_comb = 0;
+    double    eloss_comb = 0;
     SP_Census dead_census(new Census());
-    ccsf_int max_dead_rand_id(mesh);
-    comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb,
-		dead_census, max_dead_rand_id);
+    ccsf_int  max_dead_rand_id(mesh);
+    Base::comb_census(rnd_control, local_ncen, local_ncentot, eloss_comb,
+		      dead_census, max_dead_rand_id);
 
     // calculate global values of energy loss and numbers of particles due
     // to combing the census
@@ -80,26 +84,26 @@ Rep_Source_Builder<MT,FT,PT>::build_Source(SP_Mesh          mesh,
     // particles; it doesn't contain the energy that was lost during
     // sampling; ecentot is what the total energy is supposed to be if there
     // was no sampling loss.
-    double actual_ecentot = ecentot - global_eloss_cen;
-    reset_ew_in_census(local_ncentot, global_eloss_comb, actual_ecentot); 
+    double actual_ecentot = Base::ecentot - global_eloss_cen;
+    Base::reset_ew_in_census(local_ncentot, global_eloss_comb, actual_ecentot); 
 
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
 
     // build Mesh_Operations class for source
     rtt_dsxx::SP<Mesh_Operations<MT> > mesh_op(
-	new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
+	new Mesh_Operations<MT>(mesh, state, Base::topology, patterns)); 
 
     // build the source --> the source gets a SP to the census on this
     // processor, this means that as particles are taken out of the source
     // the "master" census (in a global_state object) on processor is emptied 
     // as well
-    SP_Source source(new Source<MT,FT,PT>(volrn, local_nvol, ew_vol, ssrn,
-					  local_nss, ss_face_in_cell, ew_ss, 
-					  census, ss_dist, local_nvoltot,
-					  local_nsstot, rnd_control, state,
-					  mesh_op, topology, opacity, 
-					  freq_samp_data));
+    SP_Source source(new Source<MT,FT,PT>(
+			 Base::volrn, local_nvol, Base::ew_vol, Base::ssrn,
+			 local_nss, Base::ss_face_in_cell, Base::ew_ss, 
+			 Base::census, Base::ss_dist, local_nvoltot,
+			 local_nsstot, rnd_control, state, mesh_op, 
+			 Base::topology, opacity, Base::freq_samp_data));
 
     // return the source
     return source;
@@ -130,22 +134,22 @@ void Rep_Source_Builder<MT,FT,PT>::calc_initial_census(SP_Mesh        mesh,
 {
     using rtt_dsxx::SP;
 
-    Require(!census);
+    Require(!Base::census);
 
     // make the census
-    census = new Census();
+    Base::census = new Census();
 
     // calculate global source energies for volume emission and surface
     // source -> Data_Replicated quantities -> calc_source_energies
     // calculates local values of evoltot and esstot, which for full
     // replication, are equivalent to the global values
-    calc_source_energies(*state, *opacity);
-    Check(parallel_data_op.check_global_equiv(evoltot));
-    Check(parallel_data_op.check_global_equiv(esstot));
+    Base::calc_source_energies(*state, *opacity);
+    Check(Base::parallel_data_op.check_global_equiv(Base::evoltot));
+    Check(Base::parallel_data_op.check_global_equiv(Base::esstot));
     
     // calculate local (Data_Replicated) values of initial census energy
-    calc_initial_ecen(*opacity);
-    Check(parallel_data_op.check_global_equiv(ecentot));
+    Base::calc_initial_ecen(*opacity);
+    Check(Base::parallel_data_op.check_global_equiv(Base::ecentot));
 
     // make a local, global-mesh sized, field holding the census random
     // number IDs on each processor
@@ -159,8 +163,8 @@ void Rep_Source_Builder<MT,FT,PT>::calc_initial_census(SP_Mesh        mesh,
 
     // write out the initial census
     if (local_ncentot > 0)
-	write_initial_census(mesh, rcontrol, *frequency, *state,
-			     local_ncen, local_ncentot, cenrn);   
+	Base::write_initial_census(mesh, rcontrol, *frequency, *state,
+				   local_ncen, local_ncentot, cenrn);   
 }
 
 //===========================================================================//
@@ -187,23 +191,25 @@ template<class MT, class FT, class PT>
 void Rep_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 {
     // require that the global source energies are not zero
-    Insist ((evoltot+esstot+ecentot) != 0, "You must specify some source!");
+    Insist ((Base::evoltot + Base::esstot + Base::ecentot) != 0,
+	    "You must specify some source!");
     Require(rtt_rng::rn_stream == 0);
     Require(cenrn.size() == global_ncen.size());
 
     // estimate the number of census particles that are desired from global
     // values of the total energy of each source
-    int ncenwant = static_cast<int>((ecentot) / (evoltot + esstot + ecentot) 
-				    * npwant);
+    int ncenwant = static_cast<int>(
+	Base::ecentot / (Base::evoltot + Base::esstot + Base::ecentot) * 
+	Base::npwant);
 
     // particles per unit energy
-    double part_per_e;
+    double part_per_e = 0.0;
 
     // attempt to make all census particles have the same energy weight,
     // iterate on number of initial census particles
-    bool   retry = true;
-    int    ntry = 0;
-    int    ncenguess = ncenwant;
+    bool retry     = true;
+    int  ntry      = 0;
+    int  ncenguess = ncenwant;
 
     // calculate global number of census particles per cell
     while (retry)
@@ -219,16 +225,16 @@ void Rep_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 	    ncenguess = 1;
 
 	// update part_per_e
-	if (ecentot > 0)
-	    part_per_e = ncenguess / ecentot;
+	if (Base::ecentot > 0)
+	    part_per_e = ncenguess / Base::ecentot;
 	else
 	    part_per_e = 0.0;
 
 	// calculate global number of census particles (on each processor)
 	// based on estimate of part_per_e -> Note: this requires no
 	// processor-processor communication
-	calc_num_src_particles(part_per_e, ecen, global_ncen,
-			       global_ncentot);
+	Base::calc_num_src_particles(part_per_e, Base::ecen, global_ncen,
+				     global_ncentot);
     
 	// check to see we haven't exceeded total particles for this cycle
 	if (global_ncentot > ncenwant  &&  ntry < 10  &&  ncenguess > 1)
@@ -237,8 +243,8 @@ void Rep_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 	    retry = false;
     }
 
-    // calculate global energy weights and sampling contribution to
-    // energy loss.  NOTE that ecentot is not modified to be the actual total 
+    // calculate global energy weights and sampling contribution to energy
+    // loss.  NOTE that ecentot is not modified to be the actual total
     // represented by the census particles; ecentot is what the total is
     // supposed to be.  The actual total is ecentot - global_eloss_cen =
     // sum(ncen*ewcen).
@@ -251,7 +257,8 @@ void Rep_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 	    // add up energy loss due to unsampled census energy
 	    global_eloss_cen += ecen(cell);
 
-	    // zero out ew_cen and ecen since cell is unsampled or has no energy.
+	    // zero out ew_cen and ecen since cell is unsampled or has no
+	    // energy.
 	    ew_cen(cell) = 0.0;
 	    ecen(cell)   = 0.0;
 	}
@@ -263,7 +270,7 @@ void Rep_Source_Builder<MT,FT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 				local_ncentot, cenrn);
 
     // make checks, noting that rn_stream always starts the problem at zero
-    Check  (parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check  (Base::parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
     Ensure (rtt_rng::rn_stream == global_ncentot);
 }
 
@@ -322,8 +329,8 @@ void Rep_Source_Builder<MT,FT,PT>::recalc_census_ew_after_comb(
     // <<<< map local census numbers to global census numbers >>>>
     for (int cell = 1; cell <= mesh->num_cells(); cell++)
 	global_ncen(cell) = local_ncen(cell);
-    parallel_data_op.local_to_global(local_ncen, global_ncen,
-				     Parallel_Data_Operator::Data_Decomposed());
+    Base::parallel_data_op.local_to_global(
+	local_ncen, global_ncen, Parallel_Data_Operator::Data_Decomposed());
 
     // <<<< resurrect dead census particles, if necessary  >>>>
 
@@ -358,7 +365,7 @@ void Rep_Source_Builder<MT,FT,PT>::recalc_census_ew_after_comb(
 		if (dead_random.get_num() == max_dead_rand_id(dead_cell))
 		{
 		    e_resurrected += dead_particle->get_ew();
-		    census->push(dead_particle);
+		    Base::census->push(dead_particle);
 		    local_ncen(dead_cell)++;
 		    local_ncentot++;
 		    num_resurrected++;
@@ -375,9 +382,8 @@ void Rep_Source_Builder<MT,FT,PT>::recalc_census_ew_after_comb(
 	for (int cell = 1; cell <= mesh->num_cells(); cell++)
 	    global_ncen(cell) = local_ncen(cell);
 
-	parallel_data_op.local_to_global(
-	    local_ncen, global_ncen, 
-	    Parallel_Data_Operator::Data_Decomposed());
+	Base::parallel_data_op.local_to_global(
+	    local_ncen, global_ncen, Parallel_Data_Operator::Data_Decomposed());
 
 	// update the total
 	global_ncentot += num_resurrected;
@@ -423,24 +429,24 @@ void Rep_Source_Builder<MT,FT,PT>::recalc_census_ew_after_comb(
 template<class MT, class FT, class PT>
 void Rep_Source_Builder<MT,FT,PT>::calc_source_numbers()
 {
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(Base::parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 
     // calculate total, global source energy 
-    double total_energy = evoltot + ecentot + esstot;
+    double total_energy = Base::evoltot + Base::ecentot + Base::esstot;
     Require(total_energy > 0.0);
 
     // iterate over the problem energies to get source numbers
 
     // controllers for iteration
-    int np_try_for = npwant;
+    int np_try_for = Base::npwant;
     bool retry     = true;
     int num_try    = 0;
 
     // desired particles per unit energy
-    double part_per_e;
+    double part_per_e = 0.0;
 
     // global, total number of source particles
-    int numtot;
+    int numtot = 0;
 
     // iteration
     while (retry)
@@ -461,32 +467,33 @@ void Rep_Source_Builder<MT,FT,PT>::calc_source_numbers()
 	// estimate the number of global source particles for each source
 	// species --> calculations are done on each processor without
 	// communication 
-	calc_num_src_particles(part_per_e, evol, global_nvol,
-			       global_nvoltot); 
+	Base::calc_num_src_particles(part_per_e, Base::evol, global_nvol,
+				     global_nvoltot); 
 	
-	calc_num_src_particles(part_per_e, ess, global_nss, global_nsstot); 
+	Base::calc_num_src_particles(part_per_e, Base::ess, global_nss,
+				     global_nsstot); 
 	
-	calc_num_src_particles(part_per_e, ecen, global_ncen,
-			       global_ncentot);
+	Base::calc_num_src_particles(part_per_e, Base::ecen, global_ncen,
+				     global_ncentot);
 
 	// sum up source particles
 	numtot = global_nvoltot + global_nsstot + global_ncentot;
 	
 	// ending condition
 	if (numtot > npwant && num_try < 10 && np_try_for > 1)
-	    np_try_for -= (numtot - npwant);
+	    np_try_for -= (numtot - Base::npwant);
 	else
 	    retry = false;
     }
     
     // check global equivalence of source numbers
-    Check(parallel_data_op.check_global_equiv(global_nvoltot));
-    Check(parallel_data_op.check_global_equiv(global_nsstot));
-    Check(parallel_data_op.check_global_equiv(global_ncentot));
+    Check(Base::parallel_data_op.check_global_equiv(global_nvoltot));
+    Check(Base::parallel_data_op.check_global_equiv(global_nsstot));
+    Check(Base::parallel_data_op.check_global_equiv(global_ncentot));
     
     // calculate energy weights sampling loss constribution to energy loss
     // based on global source numbers and energies
-    for (int cell = 1; cell <= ew_cen.size(); cell++)
+    for (int cell = 1; cell <= Base::ew_cen.size(); cell++)
     {
 	// calculate energy weights of volume source particles per cell
 	if (global_nvol(cell) > 0) 
@@ -497,37 +504,35 @@ void Rep_Source_Builder<MT,FT,PT>::calc_source_numbers()
 	
 	// calculate energy weights of surface source particles per cell
 	if (global_nss(cell) > 0) 
-	    ew_ss(cell) = ess(cell) /
-		static_cast<double>(global_nss(cell));
+	    ew_ss(cell) = ess(cell) / static_cast<double>(global_nss(cell));
 	else 
 	    ew_ss(cell) = 0;
 
 	// calculate energy weights of census particles per cell
 	if (global_ncen(cell) > 0) 
-	    ew_cen(cell) = ecen(cell) /
-		static_cast<double>(global_ncen(cell));
+	    ew_cen(cell) = ecen(cell) / static_cast<double>(global_ncen(cell));
 	else 
 	    ew_cen(cell) = 0;	
 	
 	// add up sampling contribution to energy loss for volume, ss, and
 	// census.  Some global census energy loss may exist from the initial 
 	// census calculation if this is the first IMC cycle.
-	global_eloss_vol += evol(cell) - global_nvol(cell) * ew_vol(cell);
-	global_eloss_ss  += ess(cell)  - global_nss(cell)  * ew_ss(cell);
-	global_eloss_cen += ecen(cell) - global_ncen(cell) * ew_cen(cell);
+	global_eloss_vol += evol(cell) - (global_nvol(cell) * ew_vol(cell));
+	global_eloss_ss  += ess(cell)  - (global_nss(cell)  * ew_ss(cell));
+	global_eloss_cen += ecen(cell) - (global_ncen(cell) * ew_cen(cell));
     }
 
     // calculate local source numbers from the global values for each source
     // species
     calc_num_part_and_rn_fields(global_nvol, global_nvoltot,
 				rtt_rng::rn_stream, local_nvol,
-				local_nvoltot, volrn);
+				local_nvoltot, Base::volrn);
     
     calc_num_part_and_rn_fields(global_nss, global_nsstot,
 				rtt_rng::rn_stream, local_nss,
-				local_nsstot, ssrn);
+				local_nsstot, Base::ssrn);
 
-    Check(parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
+    Check(Base::parallel_data_op.check_global_equiv(rtt_rng::rn_stream));
 }
 
 //---------------------------------------------------------------------------//
@@ -646,9 +651,6 @@ void Rep_Source_Builder<MT,FT,PT>::calc_num_part_and_rn_fields(
 }
 
 } // end of rtt_imc
-
-// Unset scoping rules.
-#include "Unset_Source_Builder_Defs.h"
 
 //---------------------------------------------------------------------------//
 //                        end of imc/Rep_Source_Builder.t.hh
