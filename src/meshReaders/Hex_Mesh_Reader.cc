@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   meshReaders/Hex_Format.cc
+ * \file   meshReaders/Hex_Mesh_Reader.cc
  * \author John McGhee
  * \date   Tue Mar  7 08:38:04 2000
  * \brief  Implements a CIC-19 Hex Mesh Format mesh reader.
@@ -9,7 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Hex_Format.hh"
+#include "Hex_Mesh_Reader.hh"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -18,7 +18,7 @@
 namespace rtt_meshReaders
 {
 
-Hex_Format::Hex_Format(std::string filename)
+Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
     : meshfile_name(filename)
 {
 
@@ -116,7 +116,7 @@ Hex_Format::Hex_Format(std::string filename)
     Ensure (invariant());
 }
 
-std::vector<std::vector<int> > Hex_Format::get_element_nodes() const
+std::vector<std::vector<int> > Hex_Mesh_Reader::get_element_nodes() const
 {
     // Collate the interior, vacuum, and reflective mesh elements into
     // one vector. Note that the order is important as we will rely
@@ -136,7 +136,8 @@ std::vector<std::vector<int> > Hex_Format::get_element_nodes() const
     return result;
 }
 
-std::vector<Element_Definition::Element_Type> Hex_Format::get_element_types() const
+std::vector<Element_Definition::Element_Type> 
+Hex_Mesh_Reader::get_element_types() const
 {
     Element_Definition::Element_Type d1, d2;
     switch ( ndim )
@@ -164,7 +165,8 @@ std::vector<Element_Definition::Element_Type> Hex_Format::get_element_types() co
     return tmp;
 }
 
-std::map<std::string, std::set<int> > Hex_Format::get_element_sets() const
+std::map<std::string, std::set<int> > 
+Hex_Mesh_Reader::get_element_sets() const
 {
     // Alternatively, the private data of the class could be
     // changed so that the work done here is done in the constructor.
@@ -181,7 +183,8 @@ std::map<std::string, std::set<int> > Hex_Format::get_element_sets() const
     // be made to do it more efficiently in one loop? Note that this 
     // depends on  the elements being stored in a specific order.
     rgn_index = std::set<int>(imat_index.begin(), imat_index.end());
-    for (std::set<int>::iterator i=rgn_index.begin(); i != rgn_index.end(); i++)
+    for (std::set<int>::iterator i=rgn_index.begin(); 
+	 i != rgn_index.end(); i++)
     {
 	std::ostringstream os_chdum("");
 	os_chdum << "Interior_Region_" << *i;
@@ -234,7 +237,7 @@ std::map<std::string, std::set<int> > Hex_Format::get_element_sets() const
     return result;
 }
 
-bool Hex_Format::invariant() const
+bool Hex_Mesh_Reader::invariant() const
 {
     bool ldum =
 	(npoints > 0) && (ncells > 0) 
@@ -256,5 +259,5 @@ bool Hex_Format::invariant() const
 
 
 //---------------------------------------------------------------------------//
-//                              end of Hex_Format.cc
+//                              end of Hex_Mesh_Reader.cc
 //---------------------------------------------------------------------------//

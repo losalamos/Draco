@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   meshReaders/Hex_Format.hh
+ * \file   meshReaders/Hex_Mesh_Reader.hh
  * \author John McGhee
  * \date   Tue Mar  7 08:38:04 2000
  * \brief  Header file for CIC-19 Hex format mesh reader.
@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __meshReaders_Hex_Format_hh__
-#define __meshReaders_Hex_Format_hh__
+#ifndef __meshReaders_Hex_Mesh_Reader_hh__
+#define __meshReaders_Hex_Mesh_Reader_hh__
 
 #include <vector>
 #include <string>
@@ -21,7 +21,7 @@ namespace rtt_meshReaders
  
 //===========================================================================//
 /*!
- * \class Hex_Format
+ * \class Hex_Mesh_Reader
  *
  */
 // revision history:
@@ -30,7 +30,7 @@ namespace rtt_meshReaders
 // 
 //===========================================================================//
 
-class Hex_Format : public rtt_meshReaders::Mesh_Reader
+class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -64,14 +64,14 @@ class Hex_Format : public rtt_meshReaders::Mesh_Reader
 
     // CREATORS
     
-    Hex_Format(std::string filename);
+    Hex_Mesh_Reader(std::string filename);
 
-    // Defaulted Hex_Format(const Hex_Format &rhs);
-    // Defaulted ~Hex_Format();
+    // Defaulted Hex_Mesh_Reader(const Hex_Mesh_Reader &rhs);
+    // Defaulted ~Hex_Mesh_Reader();
 
     // MANIPULATORS
     
-    // Defaulted Hex_Format& operator=(const Hex_Format &rhs);
+    // Defaulted Hex_Mesh_Reader& operator=(const Hex_Mesh_Reader &rhs);
 
     // ACCESSORS
 
@@ -106,8 +106,8 @@ class Hex_Format : public rtt_meshReaders::Mesh_Reader
 
 } // end namespace rtt_meshReaders
 
-#endif                          // __meshReaders_Hex_Format_hh__
+#endif                 // __meshReaders_Hex_Mesh_Reader_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of meshReaders/Hex_Format.hh
+//                      end of meshReaders/Hex_Mesh_Reader.hh
 //---------------------------------------------------------------------------//

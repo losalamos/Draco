@@ -601,7 +601,7 @@ package="meshReaders"
    done
 
 
-	test_alltarget="$test_alltarget TestElementDefinition TestHexFormat"
+	test_alltarget="$test_alltarget TestElementDefinition TestHexMeshReader"
         
 	test_nprocs="scalar"
 
