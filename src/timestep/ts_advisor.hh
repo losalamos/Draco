@@ -42,11 +42,10 @@ class ts_advisor {
 
 // DATA
 
-  protected:
+  private:
 
     std::string name;                 //ID string
     usage_flag usage;                 //how to use dt_rec 
-
     bool   active;                    //on-off switch
 
 // STATIC CLASS METHODS
@@ -105,6 +104,12 @@ class ts_advisor {
 
 // ACCESSORS
 
+// Determine if the advisor is active or not
+
+    bool is_active() const
+    {
+	return active;
+    }
 
 // Update and/or produce the recommended time-step
 
@@ -138,7 +143,12 @@ class ts_advisor {
 
 // Invariant function
 
-    virtual bool invariant_satisfied() const = 0;
+    virtual bool invariant_satisfied() const
+    {
+	return name.length() != 0 &&
+	    0      <= usage &&
+	    usage  <  last_usage;
+    }
 
 // Print out advisor data
 

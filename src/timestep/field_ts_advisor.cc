@@ -43,7 +43,7 @@ double field_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
     if (cycle_at_last_update != tsm.get_cycle()) 
     {
-	cerr << "Warning: ts_adivsor " << name << 
+	cerr << "Warning: ts_adivsor " << get_name() << 
 	    " has not been updated" << endl;
 	cerr << 
 	    "         and will not be used in time-step calculations." << 
@@ -54,19 +54,19 @@ double field_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 
 bool field_ts_advisor::advisor_usable(const ts_manager &tsm) const
 {
-    return (active == true) &&
+    return (is_active()) &&
 	(cycle_at_last_update == tsm.get_cycle());
 }
 
 void field_ts_advisor::print_state() const
 {
-    std::string status = active ? "true " : "false";
+    std::string status = is_active() ? "true " : "false";
     cout << endl;
     cout << "  ** Time-Step Advisor State Listing **" << endl;
-    cout << "  Name - " << name << endl;
+    cout << "  Name - " << get_name() << endl;
     cout << "  Type           : " << "Field Advisor" << endl;
     cout << "  Active         : " << status << endl;
-    cout << "  Usage          : " << usage_flag_name(usage) << endl;
+    cout << "  Usage          : " << usage_flag_name(get_usage()) << endl;
     cout << "  Last Update    : " << "cycle " << cycle_at_last_update << endl;
     cout << "  Update Method  : " << 
 	update_method_flag_name(update_method) << endl;
@@ -78,17 +78,12 @@ void field_ts_advisor::print_state() const
 
 bool field_ts_advisor::invariant_satisfied() const
 {
-    bool ldum =
-        name.length() != 0 &&
-	0      <= usage &&
-	usage  <  last_usage  &&
+    return ts_advisor::invariant_satisfied() &&
 	0. < dt_rec &&
 	0. < floor_value  &&
 	0. < fc_value  &&
 	0 <= update_method && 
 	update_method < last_umf;
-
-    return ldum;
 }
 
 //---------------------------------------------------------------------------//

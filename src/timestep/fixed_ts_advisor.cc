@@ -40,26 +40,21 @@ double fixed_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 
 void fixed_ts_advisor::print_state() const
 {
-    std::string status = active ? "true " : "false";
+    std::string status = is_active() ? "true " : "false";
     cout << endl;
     cout << "  ** Time-Step Advisor State Listing **" << endl;
-    cout << "  Name - " << name << endl;
+    cout << "  Name - " << get_name() << endl;
     cout << "  Type           : " << "Fixed Advisor" << endl;
     cout << "  Active         : " << status << endl;
-    cout << "  Usage          : " << usage_flag_name(usage) << endl;
+    cout << "  Usage          : " << usage_flag_name(get_usage()) << endl;
     cout << "  Fixed Value    : " << fixed_value << endl;
     cout << endl;
 }
 
 bool fixed_ts_advisor::invariant_satisfied() const
 {
-    bool ldum =
-	name.length() != 0 &&
-	0      <= usage &&
-	usage  <  last_usage  &&
+    return ts_advisor::invariant_satisfied() &&
         0. < fixed_value;
-
-    return ldum;
 }
 
 //---------------------------------------------------------------------------//
