@@ -53,6 +53,10 @@ AC_DEFUN(AC_NEEDS_LIBS, [dnl
        DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
        DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
+
+   # Keep a list of component dependencies free of other tags or paths.
+   DRACO_COMPONENTS="$1"
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -218,6 +222,13 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
        AC_MSG_WARN("No valid lp or lpr found!")
    fi
    AC_SUBST(LPFLAGS)
+
+   dnl check for and assign the path for doxygen
+   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
+   if test "${DOXYGEN_PATH}" = null ; then
+       AC_MSG_WARN("No valid Doxygen found!")
+   fi
+   AC_SUBST(DOXYGEN_PATH)
 
 ])
 
@@ -405,6 +416,57 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # we don't need draco stdheaders
        AC_MSG_RESULT("no") 
 
+   fi
+
+   # STL port
+
+   AC_MSG_CHECKING("for stlport")
+   if test "${with_stlport:=no}" != no; then
+      if ! test -d "${with_stlport}/include/stlport"; then
+         AC_MSG_ERROR("Invalid directory ${with_stlport}/include/stlport")
+      fi
+      CPPFLAGS="-I${with_stlport}/include/stlport ${CPPFLAGS}"
+      CXXFLAGS="-I${with_stlport}/include/stlport ${CXXFLAGS}"
+      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
+      case $with_cxx in
+      sgi)
+         stlport_libname='mipspro'
+         stlport_xlinker=' '
+         ;;
+      gcc) dnl for everything else use gcc
+         stlport_libname='gcc'
+         stlport_xlinker="-Xlinker"
+         ;;
+      *) 
+         AC_MSG_ERROR("stlport not available with this compiler.")
+         ;;
+      esac
+      AC_MSG_CHECKING("for debug stlport mode")
+      if test "${enable_debug:-yes}" = yes; then
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname}_stldebug ${LIBS}"
+         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         AC_MSG_RESULT("yes")
+      else
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}.a"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
+         AC_MSG_RESULT("no")
+      fi
+      dnl We need to add the rpath to the LDFLAGS instead of RPATH
+      dnl because configure fails AC_CHECK_SIZEOF if sltport is not
+      dnl available.
+      AC_MSG_CHECKING("for LDFLAGS mods for stlport")
+      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
+      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS")
+
+   elif test "${with_stlport}" = yes; then
+      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
+   else
+      AC_MSG_RESULT("none")
    fi
 
    dnl add any additional flags
@@ -735,6 +797,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
        with_mips='4'
    fi
 
+   dnl 
+   dnl STLport
+   dnl
+
+   dnl specify location of stlport installation.
+   AC_ARG_WITH(stlport,
+      [  --with-stlport        replace default STL with stlPort (off by default)])
+
    dnl
    dnl DRACO STANDARD HEADERS
    dnl
@@ -1029,7 +1099,7 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
    if test "$F90FLAGS" = ""
    then
      # F90FLAGS="--f95 ${F90FREE}"
-       F90FLAGS="--f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
+       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then
@@ -1800,7 +1870,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
        # default is to have debug flag on when opt=0
        if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g ${gcc_opt_flags}"
+	   gcc_opt_flags="-g3 ${gcc_opt_flags}"
        fi
 
    fi
@@ -2243,7 +2313,8 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        AC_MSG_CHECKING("for extra eospac library requirements.")
        if test -n "${vendor_eospac}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfccx86_6a"
+#	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            AC_MSG_RESULT("${extra_eospac_libs}")
        else

@@ -22,43 +22,22 @@ dnl
 # check for and as sign the path to doxygen
 AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)   
 
-# path to package directories which are sources for doxygen
-doxygen_src=${srcdir}/../src
-
-# find sources
-AC_MSG_CHECKING("directories to doxygenize")
-
-dirs=''
-if test -d ../src ; then
-   dirs=`ls ../src`
-fi
-
-doxygen_input=''
+AC_MSG_CHECKING([for available Draco packages])
 doxygen_examples=''
-doxygen_dirs=''
-doxygen_extras=''
-
-for dir in $dirs;
-do
-   if test -d ../src/$dir ; then
-       doxygen_dirs="${dir} ${doxygen_dirs}"
-       doxygen_input="${doxygen_src}/${dir} ${doxygen_input}"
-       doxygen_examples="${doxygen_src}/${dir}/test ${doxygen_examples}"
-       if test -d $doxygen_src/$dir/autodoc ; then
-          doxygen_extras="${doxygen_src}/${dir}/autodoc ${doxygen_extras}"
-       fi
+COMPLINKS=''
+adp=''
+for item in `ls -1 ${prefix}/html`; do
+   if test -d ${prefix}/html/${item}; then
+      dirname=`basename ${item}`
+      adp="${adp} ${dirname}"
+      COMPLINKS="${COMPLINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
    fi
 done
+AC_MSG_RESULT(${adp:-none})
 
 # add config/doc to directories
-doxygen_dirs="config ${doxygen_dirs}"
-doxygen_input="${srcdir}/../config/doc ${doxygen_input}"
-
-# add autodoc to directories
-doxygen_dirs="autodoc ${doxygen_dirs}"
-doxygen_input="${srcdir} ${doxygen_input}"
-
-AC_MSG_RESULT($doxygen_dirs)
+doxygen_input=`pwd`
+doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
 
 # check if we should build latex sources
 latex_yes_no='NO'
@@ -66,7 +45,7 @@ if test "${enable_latex_doc:=no}" = yes ; then
    latex_yes_no='YES'
 fi
 
-# dotpath (for draco levelization diagram
+# dotpath (for draco levelization diagram)
 dotpath="${srcdir}/../doc/design"
 
 # find the release number
@@ -77,12 +56,12 @@ AC_MSG_RESULT($number)
 
 AC_SUBST(doxygen_input)
 AC_SUBST(doxygen_examples)
-AC_SUBST(doxygen_extras)
 AC_SUBST(latex_yes_no)
 AC_SUBST(dotpath)
 AC_SUBST(number)
+AC_SUBST(COMPLINKS)
 
-AC_CONFIG_FILES([Makefile doxygen_config header.html footer.html])
+AC_CONFIG_FILES([Makefile doxygen_config header.html footer.html mainpage.dcc])
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
