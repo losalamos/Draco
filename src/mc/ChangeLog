@@ -1,3 +1,14 @@
+2003-03-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: Updated to mc-3_3_0.  This update has lots of little stuff:
+		
+		1) removed scoping defs for Compaq [see below]; scoping is
+		   now part of the code
+		2) added some interpolators to Math.hh
+		3) Refactored OS_Mesh, Coord_sys, Layout, for readability
+		   and doxygenization
+		4) added some functionality for random walk to coord_sys
+
 2003-02-13  Thomas M. Evans  <tme@lanl.gov>
 
 	* Particle_Buffer_Defs/Unset_Particle_Buffer_Defs.h: Removed these

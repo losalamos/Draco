@@ -9,17 +9,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Release_hh__
-#define __mc_Release_hh__
+#ifndef rtt_mc_Release_hh
+#define rtt_mc_Release_hh
 
 //===========================================================================//
 /*!
  * \page mc_overview Overview of the MC package
- * \version 2_2_0
+ * \version 3_3_0
  * \author Tom Evans, Todd Urbatsch
  
  * The mc package is a set of general Monte Carlo (mc) components that can be
- * used in all X-6 Monte Carlo codes.  In particular it includes the
+ * used in all CCS-4 Monte Carlo codes.  In particular it includes the
  * following types of classes:
  
  * \arg \b Meshes: mesh types (MT) that are designed for Monte Carlo use
@@ -57,7 +57,7 @@ namespace rtt_mc
     const std::string release();
 }
 
-#endif                          // __mc_Release_hh__
+#endif                          // rtt_mc_Release_hh
 
 //---------------------------------------------------------------------------//
 //                              end of Release.hh
