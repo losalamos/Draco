@@ -1,0 +1,48 @@
+UCB
+SCB_M4S_DSA
+delta
+1.0 1.0 1.0
+8
+0.0 3.2 0.1
+0.01 5
+1 9  0.01
+2 9  0.1
+3 9  1.0
+4 9  10.0
+5 9  100.0
+*****************************************************
+*****************************************************
+FOURIER ANALYSIS INPUT DECK
+8/17/99
+John Gulick
+X-TM
+667-5790
+*****************************************************
+OPTIONS: Quoted Items are string inputs. 
+"SCB"
+"SCB_M4S_DSA/SI"
+"delta_x/wave"
+sigma_total sigma_scattering delta_x
+quad_order
+lambda_begin lambda_end lambda_step_size
+delta_x_begin #_of_delta_x
+{region_number number_of_points dx_step_size}
+*****************************************************
+method           -->Transport method type.
+accleration_type -->Accleration type.
+analysis_type    -->Analysis vs. delta_x or lambda.
+sigma_total      -->Total scattering cross section.
+sigma_scattering -->Scattering cross section.
+delta_x          -->Cell spatial thickness.
+quad_order       -->Quadrature Order
+lambda_begin     -->Begining wave (lambda).
+lambda_end       -->Ending wave (lambda).
+lambdsa_step_size-->Step size for lambda.
+delta_x_begin    -->Begining thickness.
+#_of_delta_x     -->Number of delta_x groups.
+region_number    -->Delta_x group.
+number_of_points -->Number of points within delta_x
+                    group.
+dx_step_size     -->Dx step size for delta_x group.
+*****************************************************
+*****************************************************
