@@ -165,6 +165,9 @@ class OS_Builder
     // Get the defined surcells list and positions.
     vf_int get_defined_surcells() const;
     sf_string get_ss_pos() const { return ss_pos; }
+
+    //! Return the number of cells.
+    int num_cells() const { return zone.size(); }
 };
 
 //---------------------------------------------------------------------------//
