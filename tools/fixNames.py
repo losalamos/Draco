@@ -2,7 +2,7 @@
 ## fixNames.py
 ## Thomas M. Evans
 ## Tue Feb  8 15:34:20 2000
-## Time-stamp: <00/02/08 18:48:18 tme>
+## Time-stamp: <00/02/09 08:14:51 tme>
 ###############################################################################
 ##---------------------------------------------------------------------------##
 ## fixNames
@@ -27,7 +27,7 @@ for files in dirlist:
         file_contents = open(file).read()
 
         # find substitute expressions
-        (match, mc)   = re.subn(" dsxx::", " rtt_dsxx::", file_contents)
+        (match, mc)   = re.subn("\sdsxx::", " rtt_dsxx::", file_contents)
         (match2, mc2) = re.subn(r'namespace\s+dsxx', "namespace rtt_dsxx", match)
         (match3, mc3) = re.subn("\(dsxx::", "(rtt_dsxx::", match2)
         (match4, mc4) = re.subn(",dsxx::", ",rtt_dsxx::", match3)
