@@ -65,6 +65,7 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
     sf_string ss_pos;
     sf_double ss_temp;
     vf_int surcells;
+    sf_string ss_desc;
 
   public:
     // constructor -> the default processor capacity is 6 cells
@@ -106,6 +107,7 @@ class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
     double get_dnpdt() const { return double(0); }
     int get_cycle() const { return int(1); }
     std_string get_ss_dist() const { return "cosine"; }
+    sf_string get_ss_desc() const { return ss_desc; }
     SP_Census get_census() const { return SP_Census(); }
     double get_ecen(int cell) const { return double(0); }
     double get_ecentot() const { return double(0); }
@@ -133,7 +135,8 @@ IMC_Interface::IMC_Interface(int capacity_)
        rad_temp(6),
        ss_pos(2),
        ss_temp(2),
-       surcells(2)
+       surcells(2),
+       ss_desc(2, "standard")
 {
     // make the Mesh stuff
 
