@@ -157,6 +157,11 @@ class GandolfOpacity : public rtt_cdi::Opacity
     std::vector<double> logMGOpacities;
 
     /*!
+     * \brief Have we loaded any opacity table yet?
+     */
+    bool anyTableLoaded;
+
+    /*!
      * \brief Have we loaded the gray Rosseland opacity table yet?
      */
     bool grayRosselandTableLoaded;
@@ -165,6 +170,16 @@ class GandolfOpacity : public rtt_cdi::Opacity
      * \brief Have we loaded the multigroup Rosseland opacity table yet?
      */
     bool mgRosselandTableLoaded;
+
+    /*!
+     * \brief Have we loaded the gray Plank opacity table yet?
+     */
+    bool grayPlankTableLoaded;
+
+    /*!
+     * \brief Have we loaded the multigroup Plank opacity table yet?
+     */
+    bool mgPlankTableLoaded;
 
   public:
 
@@ -251,6 +266,69 @@ class GandolfOpacity : public rtt_cdi::Opacity
      * \param targetTemperature The temperature (in keV) of the
      *                          material.
      * \param targetDensity The density (in g/cm^3) of the material.
+     * \param skey Optional parameter used to specify if the returned
+     *        value is scattering ("rsmg"), absorption ("ramg") or
+     *        total ("rtmg") opacity.  The default is total.
+     *
+     * \return A vector of opacity values for the current material at 
+     *         targetTemperature keV and targetDensity g/cm^3.  The
+     *         vector has ngroups entries.  The number of groups is
+     *         specified by the data file. 
+     */
+
+    // Currenlty this accessor modifies the GandolfOpacity object so
+    // it is not declared as const.  The opacity accessors load the
+    // data when they are first called.  After the first call to this
+    // accessor the tabulated data is retrieved from the
+    // GandolfOpacity object and not the data file.
+
+    // The default value for "skey" is set in cdi/Opacity.hh.
+    
+    std::vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const double targetDensity,
+	const std::string skey );
+ 
+    /*!
+     * \brief Returns a single opacity value for the prescribed
+     *        temperature and density.
+     *
+     * This opacity object only knows how to access the data for one 
+     * material.  The material identification is specified in the
+     * construction of the derived concrete opacity object. 
+     *
+     * Additionally, the default behavior of this function is to
+     * return a Plank opacity value.  
+     *
+     * \param targetTemperature The temperature (in keV) of the
+     *                          material. 
+     * \param targetDensity The density (in g/cm^3) of the material.
+     *
+     * \return Gray opacity value for the current material at
+     *         targetTemperature keV and targetDensity g/cm^3.
+     */
+    // Currenlty this accessor modifies the GandolfOpacity object so
+    // it is not declared as const.  The opacity accessors load the
+    // data when they are first called.  After the first call to this
+    // accessor the tabulated data is retrieved from the
+    // GandolfOpacity object and not the data file.
+    double getGrayPlank( 
+	const double targetTemperature, const double targetDensity );
+
+    /*!
+     * \brief Returns a vector of the opacity values for each energy
+     *        group for the prescribed temperature and density.
+     *
+     * The opacity object only knows how to access the data for one
+     * material.  The material identification is specified in the
+     * construction of the derived concrete opacity object. 
+     *
+     * Additionally, the default behavior of this function is to
+     * return a Plank opacity value.  
+     *
+     * \param targetTemperature The temperature (in keV) of the
+     *                          material.
+     * \param targetDensity The density (in g/cm^3) of the material.
      *
      * \return A vector of opacity values for the current material at 
      *         targetTemperature keV and targetDensity g/cm^3.  The
@@ -262,13 +340,64 @@ class GandolfOpacity : public rtt_cdi::Opacity
     // data when they are first called.  After the first call to this
     // accessor the tabulated data is retrieved from the
     // GandolfOpacity object and not the data file.
-    std::vector<double> getMGRosseland( 
+    std::vector<double> getMGPlank( 
 	const double targetTemperature, const double targetDensity );
- 
+
   private:
     
     // IMPLEMENTATION
 
+    /*!
+     * \breif Generic routine used to retrieve gray opacity data.
+     *
+     * \param skey This string identifies the model for the gray
+     *        opacity data.  Valid values are "Rosseland" or "Plank". 
+     * \param grayTableLoaded If the gray table has alredy been loaded 
+     *        then we don't need to access the data on disk.
+     * \param otherTableLoaded If we are loading a new grayTable on 
+     *        top of another table this value will be "true".  If this 
+     *        is the case, our routine verifies that the temperature
+     *        and density grids for the this table are identical to
+     *        those of the previously loaded table.
+     * \param targetTemperature The temperature (in keV) of the
+     *        material.
+     * \param targetDensity The density (in g/cm^3) of the material.
+     *
+     * \return Gray Opacity value corresponding to targetTemperature
+     *        and targetDensity using model skey.
+     */
+    double getGray( const std::string &skey,
+		    bool grayTableLoaded,
+		    const bool otherTableLoaded,
+		    const double targetTemperature,
+		    const double targetDensity );
+
+    /*!
+     * \breif Generic routine used to retrieve multigroup opacity data.
+     *
+     * \param skey This string identifies the model for the gray
+     *        opacity data.  Valid values are "Rosseland" or "Plank". 
+     * \param mgTableLoaded If the multigroup table has alredy been loaded 
+     *        then we don't need to access the data on disk.
+     * \param otherTableLoaded If we are loading a new mgTable on 
+     *        top of another table this value will be "true".  If this 
+     *        is the case, our routine verifies that the temperature
+     *        and density grids for the this table are identical to
+     *        those of the previously loaded table.
+     * \param targetTemperature The temperature (in keV) of the
+     *        material.
+     * \param targetDensity The density (in g/cm^3) of the material.
+     *
+     * \return A vector of opacity values corresponding to
+     *         targetTemperature and targetDensity using model skey.
+     *         This vector will be numGroups long.
+     */
+    std::vector<double> getMG( const std::string &skey,
+			       bool mgTableLoaded,
+			       const bool otherTableLoaded,
+			       const double targetTemperature,
+			       const double targetDensity );
+    
     // These two functions are delcared "static" because we only need
     // one copy of these functions -- not one copy per instance of
     // GandolfOpacity. 

@@ -276,35 +276,8 @@ using std::vector;
 } // end namespace rtt_cdi_gandolf
 
 
-
-// // Handle machine specific FORTRAN name linkage.
-// //---------------------------------------------------------------------------//
-
-// // Replace these with c-wrapper written by Robert (Bob) Judd.
-
-// #if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux)
-    
-// #define extc_gmatids gmatids
-// #define extc_gkeys gkeys_    
-// #define extc_gchgrids gchgrids_
-// #define extc_ggetgray ggetgray_
-// #define extc_gintgrlog gintgrlog_
-// #define extc_ggetmg ggetmg_
-// #define extc_gintmglog gintmglog_
-
-// // Add defines for gandolf_integer and gandolf_double?
-
-// #endif
-    
-
-
 // Function prototypes for Gandolf F77 subroutines.
 //---------------------------------------------------------------------------//
-
-// The Gandolf library was compiled with -i8 so we must use "long int" 
-// values.
-
-// Replace these with c-wrapper written by Robert (Bob) Judd.
 
 extern "C" {
 
@@ -316,8 +289,12 @@ extern "C" {
 // 		int &kkeys, int &nkeys, int &ier );
 
     void gkeys( const char* cfname, int &matid, 
-		char* bjkeys[],
+		const char* bjkeys[],
 		int &kkeys, int &nkeys, int &ier );
+
+//     void gkeys( const char* cfname, int &matid, 
+// 		char (*keys)[rtt_cdi_gandolf::wrapper::key_length],
+// 		int &kkeys, int &nkeys, int &ier );
 
     void gchgrids( const char *cfname, int &matid, int &nt,
 		   int &nrho, int &nhnu, 

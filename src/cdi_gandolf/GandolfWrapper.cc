@@ -124,47 +124,24 @@ using std::string;
 	    // maxKeys long.  This array will later be copied into the
 	    // vector vkeys that is returned to the calling program.
 
-	    // should this be a const char* ?
 	    char keys[maxKeys][key_length];
+	    // char (*keys)[key_length] = new char[maxKeys][key_length];
+	    // delete [] keys;
 	    
 	    // --------------------------------------------------
 	    // call the Gandolf library function
 	    // --------------------------------------------------
 	    
-	    char *bjkeys[maxKeys] = {
-			"a00aaa",
-			"b01bbb",
-			"c02ccc",
-			"d03ddd",
-			"e04eee",
-			"f05fff",
-			"g06ggg",
-			"h",
-			"i",
-			"j",
-			"k",
-			"l",
-			"m",
-			"n",
-			"o",
-			"p",
-			"q",
-			"r",
-			"s",
-			"t",
-			"u",
-			"v",
-			"w",
-			"x",
-			"y",
-	    };
+	    // This declaration doesn't guarantee that we have enough
+	    // memory for maxKeys * key_length characters.	    
+	    const char *bjkeys[maxKeys];
 
-// 	    gkeys( ccfname, matid, *keys, kkeys, nkeys, ier );
+//  	    gkeys( ccfname, matid, *keys, kkeys, nkeys, ier );
 	    gkeys( ccfname, matid, bjkeys, kkeys, nkeys, ier );
 
-	    for ( int i=0; i < maxKeys; ++i )
-		std::cout << "bjkeys[" << i << "] = " << bjkeys[i] <<
-		    std::endl;
+// 	    for ( int i=0; i < maxKeys; ++i )
+// 		std::cout << "bjkeys[" << i << "] = " << bjkeys[i] <<
+// 		    std::endl;
 
 
 	    // ----------------------------------------
