@@ -122,28 +122,28 @@ class Element_Definition
      * \brief Standard element names. 
      *
      * These names and the elements that they
-     * represent are the same as those defined in the CGNS SIDS Manual.
-     *
+     * represent are the same as those defined in the 
+     *  <a href="http://www.cgns.org/"> CGNS </a> SIDS Manual.
      */
     enum Element_Type {
-	NODE,
-	BAR_2,
-	BAR_3,
-	TRI_3,
-	TRI_6,
-	QUAD_4,
-	QUAD_8,
-	QUAD_9,
-	TETRA_4,
-	TETRA_10,
-	PYRA_5,
-	PYRA_14,
-	PENTA_6,
-	PENTA_15,
-	PENTA_18,
-	HEXA_8,
-	HEXA_20,
-	HEXA_27
+	NODE,       //!< A dimensionless point in space.
+	BAR_2,      //!< The basic one-D two-node "line" element.
+	BAR_3,      //!< Same as "BAR_2" except that a node is added in the center.
+	TRI_3,      //!< The basic two-D, three-node, "triangle" element.
+	TRI_6,      //!< Same as "TRI_3" except that  nodes are added in the middle of each edge.
+	QUAD_4,     //!< The basic two-D, four-node "quadrilateral" element.
+	QUAD_8,     //!< Same as "QUAD_4" except a node is added in the middle of each edge.
+	QUAD_9,     //!< Same as "QUAD_8" except a node is added in the center of the quad.
+	TETRA_4,    //!< The basic three-D, four-node "tetrahedral" element.
+	TETRA_10,   //!< Same as "TETRA_4" except that a node is added in the middle  of each edge.
+	PYRA_5,     //!< The basic three-D, five-node, "pyramid" element.
+	PYRA_14,    //!< Same as "PYRA_5" except that a node is added on each edge, and one at the center.
+	PENTA_6,    //!< The basic three-D, six-node "pentahedron". Also known as a "triangular-prism".
+	PENTA_15,   //!< Same as "PENTA-6" except that nodes are added in the center of each edge.
+	PENTA_18,   //!< Same as "PENTA-15" except that nodes are added in the center of each quadrilateral face.
+	HEXA_8,     //!< The basic three-D, eight-node "hexahedron".
+	HEXA_20,    //!< Same as "HEXA_8" except that a node is added in the center of each edge.
+	HEXA_27     //!< Same as "HEXA_20" except that a node is added in the center of each face, and at the center of the element.
     };
 
   private:
@@ -186,12 +186,22 @@ class Element_Definition
 
     /*!
      * \brief Returns the name of an element.
-     * \return The element name.
+     * \return Returns the element name as a string.
      */
     std::string get_name() const
     {
 	return name;
     }
+
+    /*!
+     * \brief Returns the type of an element.
+     * \return Returns the element type. 
+     */
+    Element_Type get_type() const
+    {
+	return type;
+    }
+
     /*! 
      * \brief Returns the total number of nodes in an element.
      * \return Total number of nodes in an element.
@@ -217,7 +227,7 @@ class Element_Definition
      *         dimensional element. i.e. nodes return 0, lines return 2,
      *        quads return 4, hexahedra return 6.
      */
-    int get_nsides() const
+    int get_number_of_sides() const
     {
 	return number_of_sides;
     }
@@ -232,7 +242,7 @@ class Element_Definition
      * for additional discussion on node locations.
      *
      */
-    Node_Location get_node_loc(const int node_number) const
+    Node_Location get_node_location(const int node_number) const
     {
        if (node_number >= 0 && node_number < number_of_nodes) 
 	   return node_loc[node_number];
@@ -277,7 +287,8 @@ class Element_Definition
      *        the nodes are desired. Side numbers are in the 
      *         range [0:number_of_sides)
      *
-     * \return A vector of the nodes associated with the side.
+     * \return A vector of the nodes associated with the side. Note
+     * that the node numbering is 0 based.
      *
      * "Side" in the context of this method means the
      * (n-1) dimensional element that composes a (n) dimensional

@@ -55,72 +55,66 @@ string TestElementDefinition::version() const
     return rtt_meshReaders::release();
 }
 
+/*!
+ * \brief Tests the element definitions.
+ *
+ * This class builds all the elements currently defined. Currently, the
+ * only real check is that an assertion doesn't fire. The output of
+ * the test has been verified by hand, but a comparison with "correct"
+ * results needs to be automated. (jmm, 4 Mar 00)
+ *
+ */
 string TestElementDefinition::runTest()
 {
     using rtt_meshReaders::Element_Definition;
-    std::vector<Element_Definition> elem_defs;
-    cout << endl << "Building Elements --" << endl << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::NODE));
-    cout << " Built a NODE" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
-    cout << " Built a BAR_2" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::BAR_3));
-    cout << " Built a BAR_3" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::TRI_3));
-    cout << " Built a TRI_3" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::TRI_6));
-    cout << " Built a TRI_6" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::QUAD_4));
-    cout << " Built a QUAD_4" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::QUAD_8));
-    cout << " Built a QUAD_8" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::QUAD_9));
-    cout << " Built a QUAD_9" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::TETRA_4));
-    cout << " Built a TETRA_4" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::TETRA_10));
-    cout << " Built a TETRA_10" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::PYRA_5));
-    cout << " Built a PYRA_5" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::PYRA_14));
-    cout << " Built a PYRA_14" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::PENTA_6));
-    cout << " Built a PENTA_6" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::PENTA_15));
-    cout << " Built a PENTA_15" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::PENTA_18));
-    cout << " Built a PENTA_18" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::HEXA_8));
-    cout << " Built a HEXA_8" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::HEXA_20));
-    cout << " Built a HEXA_20" << endl;
-    elem_defs.push_back(Element_Definition(Element_Definition::HEXA_27));
-    cout << " Built a HEXA_27" << endl;
 
+    std::vector<Element_Definition::Element_Type> type_list;
+    type_list.push_back(Element_Definition::NODE);
+    type_list.push_back(Element_Definition::BAR_2);
+    type_list.push_back(Element_Definition::BAR_3);
+    type_list.push_back(Element_Definition::TRI_3);
+    type_list.push_back(Element_Definition::TRI_6);
+    type_list.push_back(Element_Definition::QUAD_4);
+    type_list.push_back(Element_Definition::QUAD_8);
+    type_list.push_back(Element_Definition::QUAD_9);
+    type_list.push_back(Element_Definition::TETRA_4);
+    type_list.push_back(Element_Definition::TETRA_10);
+    type_list.push_back(Element_Definition::PYRA_5);
+    type_list.push_back(Element_Definition::PYRA_14);
+    type_list.push_back(Element_Definition::PENTA_6);
+    type_list.push_back(Element_Definition::PENTA_15);
+    type_list.push_back(Element_Definition::PENTA_18);
+    type_list.push_back(Element_Definition::HEXA_8);
+    type_list.push_back(Element_Definition::HEXA_20);
+    type_list.push_back(Element_Definition::HEXA_27);
+
+    std::vector<Element_Definition> elem_defs;
     std::vector<int> tmp;
-    cout << endl << "Detailed Element Descriptions --" << endl << endl;
-    for (int i=0; i< elem_defs.size(); i++)
+    cout << endl << "Building Elements for Test ---" << endl << endl;
+    for (int i=0; i< type_list.size(); i++)
     {
+	elem_defs.push_back( Element_Definition(type_list[i]) );
+	cout << "Element Type   : " << elem_defs[i].get_type() << endl;
 	cout << "Element Name   : " << elem_defs[i].get_name() << endl;
 	cout << "Number of Nodes: " << elem_defs[i].get_number_of_nodes() <<
 	    endl;
 	cout << "Dimension      : " << elem_defs[i].get_dimension() << endl;
-	cout << "Number of Sides: " << elem_defs[i].get_nsides() << endl;
+	cout << "Number of Sides: " << elem_defs[i].get_number_of_sides() << endl;
 	cout << "Node Locations : ";
 	for (int j=0; j<elem_defs[i].get_number_of_nodes(); j++)
-	    cout << elem_defs[i].get_node_loc(j) << " ";
+	    cout << elem_defs[i].get_node_location(j) << " ";
 	cout << endl;
 
 	cout << "Side Types     : ";
-	for (int j=0; j<elem_defs[i].get_nsides(); j++)
+	for (int j=0; j<elem_defs[i].get_number_of_sides(); j++)
 	    cout << elem_defs[i].get_side_type(j).get_name() << " ";
 	cout << endl;
 
 	cout << "Side Nodes     : " << endl;
-	for (int j=0; j<elem_defs[i].get_nsides(); j++)
+	for (int j=0; j<elem_defs[i].get_number_of_sides(); j++)
 	{
 	    tmp = elem_defs[i].get_side_nodes(j);
-	    cout << "  ";
+	    cout << "  " << "side# " << j << " -    ";
 	    for (int k=0; k<tmp.size(); k++)
 		cout << tmp[k] << " ";
 	    cout << endl;
