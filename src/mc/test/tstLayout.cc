@@ -122,7 +122,8 @@ void test_Layout()
 	pack_layout = layout.pack(list);
 
 	// check copy constructor
-	if (pack_layout->get_size() != 31) ITFAILS;
+	if (pack_layout->get_size() != 31)            ITFAILS;
+	if (pack_layout->get_num_packed_cells() != 6) ITFAILS;
 
 	Layout::Pack test_pack = *pack_layout;
 	SP<Layout> test_unpack = test_pack.unpack();
@@ -158,6 +159,8 @@ void test_Layout()
 	list[5] = -2;
 	
 	pack_layout = layout.pack(list);
+
+	if (pack_layout->get_num_packed_cells() != 4) ITFAILS;
     }
 
     // unpack and check
@@ -222,6 +225,20 @@ void test_Layout()
 	    |____|____|__|__|
 
                   0
+
+   compress to this
+
+                  0
+            ____________
+            |    |    |  
+	    |    |    |-2
+   grad = 0 | -1 | 1  |____
+	    |    |    |  | 
+	    |    |    |2 |-3
+	    |____|____|__|_
+
+                  0
+   
 */
 //---------------------------------------------------------------------------//
 
@@ -342,6 +359,115 @@ void test_AMR_Layout_2(const AMR_Layout &ref)
     layout(6,4,1) = 0;
 
     if (layout != ref) ITFAILS;
+
+    // pack the full layout
+    SP<AMR_Layout::Pack> fullpack;
+    SP<AMR_Layout>       full_unpacked;
+    {
+	vector<int> list(6);
+	for (int i = 0; i < 6; i++)
+	    list[i] = i+1;
+
+	fullpack = layout.pack(list);
+	
+	if (fullpack->get_num_packed_cells() != 6)   ITFAILS;
+	if (fullpack->get_size() != 1 + 6 + 24 + 25) ITFAILS;
+
+	// check copy constructor
+	AMR_Layout::Pack copy_pack = *fullpack;
+	SP<AMR_Layout> copy_unpack = copy_pack.unpack();
+	if (*copy_unpack != ref) ITFAILS;
+
+	// check pack accessors
+	int  size = fullpack->get_size();
+	int *data = new int[size];
+	copy(fullpack->begin(), fullpack->end(), data);
+
+	AMR_Layout::Pack acc_pack(size, data);
+	SP<AMR_Layout>   acc_unpack = acc_pack.unpack();
+	if (*acc_unpack != ref) ITFAILS;
+    }
+
+    // unpack and compare
+    full_unpacked = fullpack->unpack();
+    if (*full_unpacked != ref) ITFAILS;
+
+    // pack and unpack a compressed layout
+    SP<AMR_Layout::Pack> compress_pack;
+    SP<AMR_Layout>       compressed;
+    {
+	vector<int> list(6);
+	list[0] = -1;
+	list[1] = 1;
+	list[2] = 2;
+	list[3] = -3;
+	list[4] = -2;
+	list[5] = 0;
+
+	compress_pack = layout.pack(list);
+
+	if (compress_pack->get_num_packed_cells() != 2) ITFAILS;
+    }
+
+    // unpack and check
+    compressed = compress_pack->unpack();
+    AMR_Layout &refcom = *compressed;
+    {
+	if (refcom.num_cells() != 2) ITFAILS;
+
+	if (refcom.num_cells_across(1,1) != 1) ITFAILS;
+	if (refcom.num_cells_across(1,2) != 2) ITFAILS;
+	if (refcom.num_cells_across(1,3) != 1) ITFAILS;
+	if (refcom.num_cells_across(1,4) != 1) ITFAILS;
+	if (refcom.num_cells_across(2,1) != 1) ITFAILS;
+	if (refcom.num_cells_across(2,2) != 1) ITFAILS;
+	if (refcom.num_cells_across(2,3) != 1) ITFAILS;
+	if (refcom.num_cells_across(2,4) != 1) ITFAILS;
+
+	if (refcom(1,1,1) != -1) ITFAILS;
+	if (refcom(1,2,1) != 2)  ITFAILS;
+	if (refcom(1,2,2) != -2) ITFAILS;
+	if (refcom(1,3,1) != 0)  ITFAILS;
+	if (refcom(1,4,1) != 0)  ITFAILS;
+
+	if (refcom(2,1,1) != 1)  ITFAILS;
+	if (refcom(2,2,1) != -3) ITFAILS;
+	if (refcom(2,3,1) != 0)  ITFAILS;
+	if (refcom(2,4,1) != -2) ITFAILS;
+    }
+
+    // check that you can't compress a compressed layout
+    SP<AMR_Layout> compressed_again;
+    {
+	vector<int> list(2);
+	list[0] = 1;
+	list[1] = 2;
+
+	compress_pack = compressed->pack(list);
+    }
+    compressed_again = compress_pack->unpack();
+
+    if (*compressed_again != *compressed) ITFAILS;
+
+    // now check the assertion
+    bool caught = false;
+    {
+	vector<int> list(2);
+	list[0] = 2;
+	list[1] = 1;
+	
+	try
+	{
+	    compress_pack = compressed->pack(list);
+	}
+	catch (const rtt_dsxx::assertion &ass)
+	{
+	    cout << "Should catch this: " << ass.what() << endl;
+	    caught = true;
+	}
+    }
+
+    if (!caught) ITFAILS;
 }
 
 //---------------------------------------------------------------------------//
