@@ -4,7 +4,7 @@
 // Wed Apr 21 18:50:01 1999
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Test of OS_Mesh
+// @> Test of OS_Mesh and OS_Builder
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
@@ -12,6 +12,7 @@
 #include "../Layout.hh"
 #include "../XYCoord_sys.hh"
 #include "../XYZCoord_sys.hh"
+#include "../OS_Builder.hh"
 #include "../Release.hh"
 #include "ds++/SP.hh"
 
@@ -26,6 +27,8 @@ using rtt_mc::XYCoord_sys;
 using rtt_mc::XYZCoord_sys;
 using rtt_mc::Layout;
 using rtt_mc::OS_Mesh;
+using rtt_mc::OS_Builder;
+using rtt_mc_test::MC_Interface;
 using dsxx::SP;
 
 bool passed = true;
@@ -45,8 +48,11 @@ class Mesh_Proxy
 void Test_2D()
 {
     // build 2 identical meshes 
-    SP<OS_Mesh> m1 = rtt_mc_test::build_2DMesh();
-    SP<OS_Mesh> m2 = rtt_mc_test::build_2DMesh();
+    SP<MC_Interface> interface(new MC_Interface());
+    OS_Builder builder(interface);
+    
+    SP<OS_Mesh> m1 = builder.build_Mesh();
+    SP<OS_Mesh> m2 = builder.build_Mesh();
     OS_Mesh &m = *m1;
 
     // the SPs should not be equal, also because of SPs to the Coord_sys
