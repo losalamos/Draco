@@ -261,40 +261,48 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    LIBS='-lm'
 
    dnl
-   dnl DEJAGNU TEST SYSTEM
+   dnl DRACO TEST SYSTEM
    dnl
 
-   # If we ran AC_RUNTESTS with "serial" then mark it so here.
+   # determine whether this is a scalar or parallel test suite,
+   # the tests can be inherently scalar or they can be the result
+   # of a parallel build
 
+   test_scalar='no'
+
+   # If we ran AC_RUNTESTS with "serial" then mark it so here.
    for np in $test_nprocs; do
        if test $np = serial || test $np = scalar ; then
           test_scalar="scalar"
        fi
    done
 
-   # Double dollar signs in MAKE commands will become single dollar signs.
-   # Backslashes are needed to ensure that objdir is not
-   # evaluated until unix.exp
-   
-   for tool in $test_alltarget; do
-       if test "${with_c4:=scalar}" = scalar || \
-	 test "$with_c4" = yes || \
-         test "$test_scalar" = scalar ; then
-           test_launch='\$$objdir/'"${tool}"
-	   test_nprocs="1"
-       elif test "$with_c4" = mpi ; then
-	   test_launch='--mpi \$$NPROCS \$$objdir/'"${tool}"
-       elif test "$with_c4" = shmem ; then
-	   test_launch='--shmem \$$NPROCS \$$objdir/'"${tool}"
+   # if this is a parallel build, mark it the tests scalar
+   if test "${with_c4}" = scalar ; then
+       test_scalar="scalar"
+   fi
+
+   # define the TESTFLAGS, for parallel runs the processor will be
+   # added later in the Makefile
+
+   if test "${test_scalar}" = scalar ; then
+       test_flags="--${test_exe:=binary}"
+   elif test "${with_c4}" = mpi ; then
+       test_flags="--${test_exe:=binary} --mpi"
+   elif test "${with_c4}" = shmem ; then
+       test_flags="--${test_exe:=binary} --shmem"
+   fi
+
+   ## define the test_output_files for cleaning
+   for file in $test_alltarget; do
+       if test "${test_scalar}" = scalar ; then
+	   test_output_files="${test_output_files} ${file}-scalar.log"
+       else
+	   for np in $test_nprocs; do
+	       test_output_files="${test_output_files} ${file}-${np}.log"
+	   done
        fi
-       
-       # add the proper executable tag to test_launch
-       test_launch="--${test_exe:=binary} ${test_launch}"
-
-       test_output_files="$test_output_files $tool.sum $tool.log"
-       site_exp="$site_exp 'set ${tool}name \"${test_launch}\"'"
    done
-
 
    dnl
    dnl ENVIRONMENT SUBSTITUTIONS
@@ -326,11 +334,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(VENDOR_DEPENDS)dnl
    AC_SUBST(VENDOR_LIBS)dnl
 
-   : ${RUNTEST:=runtest}
-   : ${RUNTESTTOOLFLAG:="--tool"}
-   : ${SITE_EXP:=site.exp}
-   : ${test_nprocs:="1 2 4 7"}
-
    AC_SUBST(testcppflags)dnl
    AC_SUBST(PKG_DEPENDS)dnl
    AC_SUBST(PKG_LIBS)dnl
@@ -339,13 +342,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(VENDOR_TEST_DEPENDS)dnl
    AC_SUBST(VENDOR_TEST_LIBS)dnl
    AC_SUBST(test_alltarget)dnl
-   AC_SUBST(RUNTEST)dnl
-   AC_SUBST(RUNTESTFLAGS)dnl
-   AC_SUBST(RUNTESTTOOLFLAG)dnl
-   AC_SUBST(FLAGS_TO_PASS)dnl
+   AC_SUBST(test_flags)dnl
+   AC_SUBST(test_scalar)dnl
    AC_SUBST(test_nprocs)dnl
-   AC_SUBST(SITE_EXP)dnl
-   AC_SUBST(site_exp)dnl
    AC_SUBST(test_output_files)dnl
 
    AC_SUBST(configure_command)dnl

@@ -59,6 +59,10 @@ AC_DEFUN(AC_RUNTESTS, [dnl
 	test_alltarget="$test_alltarget $1"
         
 	test_nprocs="$2"
+
+	if test -z "${test_nprocs}" ; then
+	    AC_MSG_ERROR("No procs choosen for the tests!")
+        fi
 ])
 
 dnl-------------------------------------------------------------------------dnl
