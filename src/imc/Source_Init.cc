@@ -10,6 +10,7 @@
 #include "imctest/Constants.hh"
 #include "imctest/Math.hh"
 #include "imctest/Particle.hh"
+#include "imctest/Particle_Buffer.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <cmath>
@@ -31,8 +32,8 @@ using Global::min;
 template<class MT>
 template<class IT>
 Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
-    : npwant(0), evol(mesh), evoltot(0), ess(mesh), fss(mesh), esstot(0),
-      erad(mesh), eradtot(0), ncen(mesh), ncentot(0), nvol(mesh), nss(mesh),
+    : evol(mesh), evoltot(0), ess(mesh), fss(mesh), esstot(0), erad(mesh), 
+      eradtot(0), ncen(mesh), ncentot(0), nvol(mesh), nss(mesh),
       nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), ew_vol(mesh),
       ew_ss(mesh)
 {
@@ -43,6 +44,7 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     rad_temp = interface->get_rad_temp();
     delta_t  = interface->get_delta_t();
     npmax    = interface->get_npmax();
+    npwant   = interface->get_npnom();
     dnpdt    = interface->get_dnpdt();
     
   // do some assertions to check that all is well
@@ -81,6 +83,7 @@ void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 
   // calculate number of particles this cycle
     npwant = min(npmax, static_cast<int>(npwant + dnpdt * delta_t));
+    Check (npwant != 0);
 
   // on first pass do initial census, on all cycles calc source energies 
     if (cycle == 1)
@@ -262,7 +265,8 @@ void Source_Init<MT>::calc_ncen_init()
 {
   // first guess at census particles per cell
     Insist ((evoltot+esstot+eradtot) != 0, "You must specify some source!");
-    int ncenguess = eradtot / (evoltot + esstot + eradtot) * npwant;
+    int ncenguess = static_cast<int>(eradtot) / (evoltot + esstot + eradtot) 
+	* npwant;
 
   // particles per unit energy
     double part_per_e;
@@ -305,8 +309,9 @@ void Source_Init<MT>::calc_ncen_init()
 template<class MT>
 void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 {
-  // open census file
+  // open census file and make Particle Buffer
     ofstream cen_file("census");
+    Particle_Buffer<Particle<MT> > buffer(mesh);
 
   // loop over cells
     for (int cell = 1; cell <= mesh.num_cells(); cell++)
@@ -331,7 +336,7 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	    Particle<MT> particle(r, omega, ew, cell, random);
 	    
 	  // write particle
-	  // particle.write_to_census(cen_file);
+	    buffer.write_census(cen_file, particle);
 	}
 }
 

@@ -74,7 +74,7 @@ private:
     vector<double> ss_temp;
     vector<double> rad_temp;
     double delta_t;
-    int npmax;
+    int npmax, npnom;
     double dnpdt;
 
   // Parser member functions
@@ -121,6 +121,7 @@ public:
     vector<double> get_rad_temp() const;
     double get_delta_t() const { return delta_t; }
     int get_npmax() const { return npmax; }
+    int get_npnom() const { return npnom; }
     double get_dnpdt() const { return dnpdt; }
 };
 

@@ -488,8 +488,10 @@ void OS_Interface::zone_source_parser(ifstream &in)
 		in >> rad_temp[i];
 	if (keyword == "timestep:")
 	    in >> delta_t;
-	if (keyword == "nps:")
+	if (keyword == "npmax:")
 	    in >> npmax;
+	if (keyword == "npnom:")
+	    in >> npnom;
 	if (keyword == "dnpdt:")
 	    in >> dnpdt;
     }    

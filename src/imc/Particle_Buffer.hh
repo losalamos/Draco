@@ -61,7 +61,7 @@ public:
 	Census_Particle(vector<double> &, vector<double> &, double, double,
 			int, Sprng);
       // faux default constructor for STL
-	inline Census_Particle();
+	Census_Particle();
     };
 
   // standard buffers for particles
@@ -82,7 +82,7 @@ public:
   // io functions
     void write_census(ostream &, const PT &) const;
     void write_census(const Census &) const;
-    SP<Census_Particle> read_census();
+    SP<Census_Particle> read_census(istream &);
 };
 
 //---------------------------------------------------------------------------//
