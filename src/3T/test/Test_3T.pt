@@ -1,0 +1,4 @@
+#include "Test_3T.cc"
+#include "XYZ_Quadratic.hh"
+
+instantiate class Test_3T<XYZ_Quadratic>
