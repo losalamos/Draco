@@ -95,15 +95,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl POSIX SOURCE
    dnl
 
-   # set the POSIX source level
-   if test "${with_posix}" = yes ; then
-       AC_DEFINE(_POSIX_C_SOURCE, "199309L")
-       AC_DEFINE(_POSIX_SOURCE)
-   elif test "${with_posix:=199309L}" != no ; then
-       AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
-       AC_DEFINE(_POSIX_SOURCE)
-   fi
-   
+   dnl system dependent posix defines are performed in the
+   dnl SYSTEM-SPECIFIC SETUP section below
+
    dnl
    dnl TOOL CHECKS
    dnl
@@ -171,17 +165,35 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl check for ranlib
    AC_PROG_RANLIB
 
-   dnl setup the system-specific stuff
+   dnl
+   dnl SYSTEM-SPECIFIC SETUP
+   dnl
 
    # systems setup
    case $host in
-   Linux)
-       LD='${CXX}'
-       AR="ar"
-       ARFLAGS="cr"
-       ARLIBS=""
+   *-linux-gnu)
+       # we do not do any posix source defines unless the user
+       # specifically requests them
+       if test "${with_posix:=no}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   AC_DEFINE(_POSIX_SOURCE)
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+       fi
    ;;
    mips-sgi-irix6.*)
+       # posix source defines, by default we set poaix on 
+       if test "${with_posix:=yes}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+	   AC_DEFINE(_POSIX_SOURCE)
+       fi
+
        # RANLIB TAG ON SGI
        RANLIB=':'
 
@@ -236,6 +248,16 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
    ;;
    sparc-sun-solaris2.*)
+       # posix source defines, by default we set poaix on 
+       if test "${with_posix:=yes}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+	   AC_DEFINE(_POSIX_SOURCE)
+       fi
+
        # MPICH LIBRARY EXTRAS
        if test "${with_mpi}" = mpich ; then
 	   AC_VENDORLIB_SETUP(vendor_mpi, -lsocket -lnsl)
