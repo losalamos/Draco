@@ -12,6 +12,7 @@
 #include "../XYZCoord_sys.hh"
 #include "../Release.hh"
 #include "rng/Rnd_Control.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -76,12 +77,22 @@ void testXYZ(Coord_sys &xyz)
 }
 
 int main(int argc, char *argv[])
-{
+{  
+    C4::Init(argc, argv);
+
+    // this is a scalar test
+    if (C4::node())
+    {
+	C4::Finalize();
+	return 0;
+    }
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
 	    cout << argv[0] << ": version " << rtt_mc::release() << endl; 
+	    C4::Finalize();
 	    return 0;
 	}
 
@@ -117,6 +128,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing Coord_sys." << endl;
+
+    C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//

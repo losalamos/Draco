@@ -14,6 +14,7 @@
 #include "../XYZCoord_sys.hh"
 #include "../OS_Builder.hh"
 #include "../Release.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
@@ -228,15 +229,72 @@ void Test_2D()
 	if ((d - .462) >= .001) ITFAILS;
 	if (face != 3)          ITFAILS;
     }
+
+    // neighbors
+    {
+	vector<int> cn(4);
+
+	// cell 1
+	cn[0] = 1;
+	cn[1] = 2;
+	cn[2] = 0;
+	cn[3] = 4;
+	if (m.get_neighbors(1) != cn) ITFAILS;
+
+	// cell 2
+	cn[0] = 1; 
+	cn[1] = 3;
+	cn[2] = 0;
+	cn[3] = 5;
+	if (m.get_neighbors(2) != cn) ITFAILS;
+
+	// cell 3
+	cn[0] = 2; 
+	cn[1] = 0;
+	cn[2] = 0;
+	cn[3] = 6;
+	if (m.get_neighbors(3) != cn) ITFAILS;
+
+	// cell 4
+	cn[0] = 4; 
+	cn[1] = 5;
+	cn[2] = 1;
+	cn[3] = 0;
+	if (m.get_neighbors(4) != cn) ITFAILS;
+
+	// cell 5
+	cn[0] = 4; 
+	cn[1] = 6;
+	cn[2] = 2;
+	cn[3] = 0;
+	if (m.get_neighbors(5) != cn) ITFAILS;
+
+	// cell 6
+	cn[0] = 5; 
+	cn[1] = 0;
+	cn[2] = 3;
+	cn[3] = 0;
+	if (m.get_neighbors(6) != cn) ITFAILS;
+    }
 }
 
 int main(int argc, char *argv[])
 {
+    C4::Init(argc, argv);
+
+    // this is a serial test
+    if (C4::node())
+    {
+	C4::Finalize();
+	return 0;
+    }
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl; 
+	    cout << argv[0] << ": version " << rtt_mc::release() << endl;
+	    C4::Finalize();
 	    return 0;
 	}
 
@@ -254,6 +312,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing OS_Mesh." << endl;
+    
+    C4::Finalize();
 }   
 
 //---------------------------------------------------------------------------//

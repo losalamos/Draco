@@ -11,6 +11,7 @@
 #include "../OS_Mesh.hh"
 #include "../OS_Builder.hh"
 #include "../Release.hh"
+#include "c4/global.hh"
 #include "ds++/SP.hh"
 
 #include <iostream>
@@ -119,11 +120,21 @@ void test_CCSF_STL(SP<MT> mesh)
 
 int main(int argc, char *argv[])
 {
+    C4::Init(argc, argv);
+
+    // this is a scalar test
+    if (C4::node())
+    {
+	C4::Finalize();
+	return 0;
+    }
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_mc::release() << endl; 
+	    cout << argv[0] << ": version " << rtt_mc::release() << endl;
+	    C4::Finalize();
 	    return 0;
 	}
 
@@ -149,6 +160,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing tstFields." << endl;
+
+    C4::Finalize();
 }
 
 //---------------------------------------------------------------------------//
