@@ -5,19 +5,19 @@ dnl
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for radphys
 dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(RadiationPhysics.hh)
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(radphys/config.h:config.h.in)
 package="radphys"
-AC_MPI_SETUP(test)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(units ds++) dnl traits does not make a physical library
-AC_NEEDS_LIBS_TEST(mesh)
+AC_NEEDS_LIBS(units ds++)
 
-AC_RUNTESTS(testRadPhys, 1 2)
+AC_RUNTESTS(testRadPhys, scalar)
 
 AC_DRACO_ENV
 

@@ -5,6 +5,8 @@ dnl
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for matprops
 dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(MaterialProperties.hh)
 AC_CONFIG_AUX_DIR(../../config)
@@ -15,7 +17,7 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(mesh radphys units ds++)
 
-AC_RUNTESTS(matprops, 1)
+AC_RUNTESTS(matprops, 1 2)
 AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
