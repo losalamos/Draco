@@ -60,6 +60,7 @@ private:
     vector<string> ss_pos;
     vector<double> ss_temp;
     vector<double> rad_temp;
+    vector<int> global_cell;
     double delta_t;
     double elapsed_t;
     int npmax;
@@ -67,6 +68,7 @@ private:
     double dnpdt;
     string ss_dist;
     int num_global_cells;
+    int cycle;
     
   // source initialization data
 
@@ -108,6 +110,11 @@ private:
     typename MT::CCSF_double ew_ss;
     typename MT::CCSF_double ew_cen;
 
+  // random number streams for each source
+    typename MT::CCSF_int volrn;
+    typename MT::CCSF_int ssrn;
+    typename MT::CCSF_int cenrn;
+
   // maximum number of cells capable of fitting on a processor
     int capacity;
 
@@ -129,6 +136,9 @@ private:
     double global_ecentot;
     double global_evoltot;
     double global_esstot;
+    int    global_ncentot;
+    int    global_nvoltot;
+    int    global_nsstot;
     double global_eloss_cen;
     double global_eloss_vol;
     double global_eloss_ss;
@@ -138,25 +148,28 @@ private:
 
   // number of source particles, census, source energies, number of volume
   // and surface sources
-    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT>);
-    void calc_source_numbers(const Opacity<MT> &, const int, const double);
+    void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
+    void calc_source_numbers(const Opacity<MT> &);
     void comb_census(const MT &, Rnd_Control &);
 
   // initial census service functions
-    void calc_evol(const Opacity<MT> &, const Mat_State<MT> &, const double);
+    void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_ess();
     void calc_init_ecen();
-    void sum_up_ecen();
+    void sum_up_ecen(const MT &);
     void calc_ncen_init();
     void write_initial_census(const MT &, Rnd_Control &);
 
   // communication functions
     void send_source_energies(const MT &);
-    void recv_source_energies(const MT &, const int);
+    void recv_source_energies(const MT &);
     void send_source_numbers(const MT &);
     void recv_source_numbers(const MT &);
     void send_census_numbers(const MT &);
     void recv_census_numbers(const MT &);
+
+  // typedefs
+    typedef SP<typename Particle_Buffer<PT>::Census> Census_SP;
 
 public:
   // constructor for master node
@@ -168,9 +181,34 @@ public:
 
   // source initialyzer function
     void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
-		    SP<Rnd_Control>, int, double);
+		    SP<Rnd_Control>);
 
+  // set and get functions for census stuff
+    inline void set_census(Census_SP);
+    inline Census_SP get_census() const;
 };
+
+//---------------------------------------------------------------------------//
+// inline functions for Parallel_Source_Init
+//---------------------------------------------------------------------------//
+// set the census for updates between cycles
+
+template<class MT, class PT> inline 
+void Parallel_Source_Init<MT,PT>::set_census(Census_SP census_)
+{
+  // we must update this with a valid census
+    Require (census_);
+    census = census_;
+}
+
+//---------------------------------------------------------------------------//
+// return the census
+
+template<class MT, class PT> inline Parallel_Source_Init<MT,PT>::Census_SP 
+Parallel_Source_Init<MT,PT>::get_census() const 
+{
+    return census;
+}
 
 CSPACE
 

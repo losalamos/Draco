@@ -209,6 +209,17 @@ vector<double> AMR_Interface::get_rad_temp() const
     return radT;
 }
 
+//---------------------------------------------------------------------------//
+// return a global cell-list on the local cell map
+
+vector<int> AMR_Interface::get_global_cells() const
+{
+    vector<int> global_cell(arguments.num_cells);
+    for (int i = 0; i < arguments.num_cells; i++)
+	global_cell[i] = arguments.global_cell[i];
+    return global_cell;
+}
+
 CSPACE
 
 //---------------------------------------------------------------------------//

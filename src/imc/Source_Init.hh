@@ -139,8 +139,6 @@ public:
   // source initialyzer function
     void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
 		    SP<Rnd_Control>, int);
-    void host_init(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >,
-		   SP<Rnd_Control>, int);
 
   // accessor functions for Parallel_Builder
     int get_capacity() const { return capacity; }

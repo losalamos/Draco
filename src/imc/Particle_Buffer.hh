@@ -89,7 +89,7 @@ public:
     void pop() { c.pop_back(); }
 
   // overloaded operator () for viewing elements sequentially
-    const value_type& operator()(int i) const { return c[i]; }
+    const value_type& operator[](int i) const { return c[i]; }
 };
 
 //===========================================================================//

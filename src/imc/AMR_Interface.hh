@@ -71,6 +71,7 @@ public:
 	const int *layout;
 	const int *b_proc;
 	const int *b_cell;
+	const int *global_cell;
 	const double *dedt;
 	const double *rho;
 	const double *opacity_abs;
@@ -143,6 +144,7 @@ public:
     const vector<string>& get_ss_pos() const { return ss_pos; } 
     const vector<double>& get_ss_temp() const { return ss_temp; } 
     vector<double> get_rad_temp() const;
+    vector<int> get_global_cells() const;
     double get_delta_t() const { return arguments.delta_t; }
     double get_elapsed_t() const { return arguments.elapsed_t; }
     int get_npmax() const { return arguments.npmax; }
@@ -153,6 +155,7 @@ public:
     int get_buffer() const { return arguments.buffer; }
     int get_seed() const { return arguments.seed; }
     int get_capacity() const { return 100000; }
+    int get_cycle() const { return arguments.cycle; }
 
   // static functions to access in-between timestep variables
     static SP_Census get_census() { return host_census; }

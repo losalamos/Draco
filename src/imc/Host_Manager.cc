@@ -7,7 +7,6 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Host_Manager.hh"
-#include "imc/Parallel_Builder.hh"
 #include "ds++/Assert.hh"
 #include "c4/global.hh"
 #include <algorithm>
@@ -134,26 +133,27 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
     }
 
   // do the source initialization
-    source_init = new Source_Init<MT>(interface, mesh);
-    if (IT::get_census())
-	source_init->set_census(IT::get_census());
-    source_init->host_init(mesh, opacity, mat_state, rnd_con, cycle);
-    if (!IT::get_census())
-	IT::set_census(source_init->get_census());
+    source_init = new Parallel_Source_Init<MT>(interface, mesh);
+    if (cycle == 0)
+      // NEED TO REASSIGN CENSUS HERE
+// 	source_init->calc_initial_census(mesh, opacity, rnd_con);
+//     else
+//       // NEED TO REASSIGN CENSUS HERE
+// 	source_init->initialize(mesh, opacity, mat_state, rnd_con);
 
   // NEED TO FIX CENSUS ENERGY UPDATES, READ THROUGH CENSUS EACH CYCLE AND
   // FIX THIS UP
 
-    cout << "The number of particles is " <<
-	source_init->get_ncentot()+source_init->get_nvoltot()+
-	source_init->get_nsstot() << endl;
-    cout << "Census " << source_init->get_ncentot() << "\t" <<
-	source_init->get_ecentot() << endl;
-    cout << "Volume " << source_init->get_nvoltot() << "\t" << 
-	source_init->get_evoltot() << endl;
-    cout << "SS     " << source_init->get_nsstot() << "\t" <<
-	source_init->get_esstot() << endl;
-    cout << "The random stream is at: " << RNG::rn_stream << endl;
+//     cout << "The number of particles is " <<
+// 	source_init->get_ncentot()+source_init->get_nvoltot()+
+// 	source_init->get_nsstot() << endl;
+//     cout << "Census " << source_init->get_ncentot() << "\t" <<
+// 	source_init->get_ecentot() << endl;
+//     cout << "Volume " << source_init->get_nvoltot() << "\t" << 
+// 	source_init->get_evoltot() << endl;
+//     cout << "SS     " << source_init->get_nsstot() << "\t" <<
+// 	source_init->get_esstot() << endl;
+//     cout << "The random stream is at: " << RNG::rn_stream << endl;
 
   // return if this is an initialization cycle
     if (cycle == 0)
@@ -163,12 +163,12 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
     buffer = new Particle_Buffer<PT>(*mesh, *rnd_con);
     
   // make a parallel_builder (TEMPORARY)
-    SP<Parallel_Builder<MT> > parallel_builder =
-	new Parallel_Builder<MT>(*mesh, *source_init);
-    Check (parallel_builder->get_parallel_scheme() == "replication");
-    source = parallel_builder->send_Source(mesh, mat_state, rnd_con,
-					   *source_init, *buffer);
-    Check (IT::get_census()->size() == 0);
+//     SP<Parallel_Builder<MT> > parallel_builder =
+// 	new Parallel_Builder<MT>(*mesh, *source_init);
+//     Check (parallel_builder->get_parallel_scheme() == "replication");
+//     source = parallel_builder->send_Source(mesh, mat_state, rnd_con,
+// 					   *source_init, *buffer);
+//     Check (IT::get_census()->size() == 0);
 
   // make a tally
     tally = new Tally<MT>(mesh);

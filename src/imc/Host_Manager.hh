@@ -22,7 +22,7 @@
 
 #include "imc/Names.hh"
 #include "imc/Opacity_Builder.hh"
-#include "imc/Source_Init.hh"
+#include "imc/Parallel_Source_Init.hh"
 #include "imc/Particle_Buffer.hh"
 #include "imc/Particle.hh"
 #include "imc/Source.hh"
@@ -55,7 +55,7 @@ private:
     SP<Communicator<PT> > communicator;
    
   // initialization objects
-    SP<Source_Init<MT> > source_init;
+    SP<Parallel_Source_Init<MT> > source_init;
 
   // census objects
     SP<typename Particle_Buffer<PT>::Census> new_census_bank;

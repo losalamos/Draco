@@ -27,7 +27,6 @@
 #include <cmath>
 #include <cfloat>
 #include <iomanip>
-#include <cassert>
 
 IMCSPACE
 GLOBALSPACE
@@ -39,6 +38,7 @@ using std::ostream;
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 // overloaded operator for printing a vector templated on vector type (VT)
+
 template<class VT>
 inline ostream& operator<<(ostream &output, const vector<VT> &object)
 {
@@ -55,22 +55,25 @@ inline ostream& operator<<(ostream &output, const vector<VT> &object)
 // VECTOR FUNCTIONS
 //---------------------------------------------------------------------------//
 // do the DOT product between two vectors
+
 template<class VT>
 inline VT dot(vector<VT> A, vector<VT> B)
 {
-    assert (A.size() == B.size());
+    Check (A.size() == B.size());
     VT value = 0.0;
     for (int i = 0; i < A.size(); i++)
 	value += A[i] * B[i];
     return value;
 }
 
+//---------------------------------------------------------------------------//
 // do the CROSS product between two vectors
+
 template<class VT>
 inline vector<VT> cross(vector<VT> A, vector<VT> B)
 {
-    assert (A.size() == B.size());
-    assert (A.size() == 3);
+    Check (A.size() == B.size());
+    Check (A.size() == 3);
     vector<VT> C(3);
     C[0] = A[1] * B[2] - A[2] * B[1];
     C[1] = A[2] * B[0] - A[0] * B[2];
@@ -82,6 +85,7 @@ inline vector<VT> cross(vector<VT> A, vector<VT> B)
 // GENERAL MATH FUNCTIONS
 //---------------------------------------------------------------------------//
 // return the minimum value
+
 template<class T>
 inline T min(T A, T B)
 {
