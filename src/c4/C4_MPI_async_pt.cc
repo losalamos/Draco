@@ -15,6 +15,12 @@
 
 #include "C4_MPI.t.hh"
 
+#else
+
+#include "C4_Serial.hh"
+
+#endif
+
 namespace rtt_c4
 {
 
@@ -71,8 +77,6 @@ template void receive_async(C4_Req &, double *, int, int, int);
 template void receive_async(C4_Req &, long double *, int, int, int);
 
 } // end namespace rtt_c4
-
-#endif // C4_MPI
 
 //---------------------------------------------------------------------------//
 //                              end of C4_MPI_async_pt.cc
