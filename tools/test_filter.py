@@ -19,6 +19,7 @@
 
 import os, sys
 import re
+import string
 
 ##---------------------------------------------------------------------------##
 ## main program
@@ -33,7 +34,9 @@ if not nmatch:
     print "Big trouble, test_filter can't figure out executable name"
     sys.exit()
 
-testname = nmatch.group(2)
+## Grab the matching portion of the regular expression, strip off
+#anything after the first space.
+testname = string.split(nmatch.group(2))[0]
 
 ## number of processors
 procmatch = re.search(r'.*Processors\s*:\s*(.*)', lines[4])
@@ -41,7 +44,9 @@ if not procmatch:
     print "Big trouble, test_filter can't figure out num. procs"
     sys.exit()
 
-num_proc = procmatch.group(1)
+## Grab the matching portion of the regular expression, strip off
+#anything after the first space.
+num_proc = string.split(procmatch.group(1))[0]
 
 ## determine test logs
 testlog  = testname + "-%s.log" % (num_proc)
