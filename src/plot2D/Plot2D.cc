@@ -260,13 +260,13 @@ setAxesLabels(const std::string xLabel,
 
     GracePrintf("focus g%d", graphNum(iG));
 
+    GracePrintf("xaxis label \"%s\"", xLabel.c_str());
     if ( xLabel.size() > 0 ) {
-	GracePrintf("xaxis label \"%s\"", xLabel.c_str());
 	GracePrintf("xaxis label char size %f", charSize);
     }
 
+    GracePrintf("yaxis label \"%s\"", yLabel.c_str());
     if ( yLabel.size() > 0 ) {
-	GracePrintf("yaxis label \"%s\"", yLabel.c_str());
 	GracePrintf("yaxis label layout perp");
 	GracePrintf("yaxis label char size %f", charSize);
     }

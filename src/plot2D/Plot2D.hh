@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+#include "SetProps.hh"
+
 namespace rtt_plot2D {
 
 //===========================================================================//
@@ -84,50 +86,6 @@ namespace rtt_plot2D {
 //===========================================================================//
 class Plot2D
 {
-  public:
-
-    // TYPES
-    
-    struct LineProps
-    {
-	int type;
-	int color;
-	double width;
-
-	LineProps()
-	    : type(1)
-	    , color(1)
-	    , width(1.0) {}
-	
-    };
-
-    struct SymbolProps
-    {
-	int type;
-	int color;
-	double size;
-	double width;
-	int fillColor;
-	int fillPattern;
-
-	SymbolProps()
-	    : type(0)
-	    , color(1)
-	    , size(1.0)
-	    , width(1.0)
-	    , fillColor(1)
-	    , fillPattern(0) {}
-    };
-    
-    struct SetProps
-    {
-	SymbolProps symbol;
-	LineProps line;
-	std::string legend;
-    };
-
-  private:
-
     // DATA
 
     // number of graphs to be plotted
