@@ -26,7 +26,7 @@ using std::vector;
  * \class tCDIGandolf
  *
  * \brief A class used to test the Gandolf Opacity reader under CDI
- * classes.  It is inhierited from Randy's UnitTestFrame::TestApp.
+ * classes.  It is inherited from Randy's UnitTestFrame::TestApp.
  *
  */
 // revision history:

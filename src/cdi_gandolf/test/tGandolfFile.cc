@@ -3,7 +3,7 @@
  * \file   cdi_gandolf/test/tGandolfFile.cc
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:48:56 2000
- * \brief  
+ * \brief  Imiplementation file for tGandolfFile
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -11,6 +11,7 @@
 
 #include "tGandolfFile.hh"
 #include "../GandolfFile.hh"
+#include "../GandolfException.hh"
 #include "../Release.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
@@ -54,10 +55,6 @@ std::string tGandolfFile::runTest()
     // Gandolf data filename (IPCRESS format required)
     const std::string op_data_file = "Al_BeCu.ipcress";
     
-    // Material identifier.  This data file has two materials: Al and
-    // BeCu.  Al has the id tag "10001".
-//    const int matid=10001;
-    
     // Start the test.
 
     std::cout << std::endl 
@@ -69,7 +66,15 @@ std::string tGandolfFile::runTest()
     std::cout << "Creating a Gandolf File object" << std::endl;
     
     rtt_dsxx::SP<rtt_cdi_gandolf::GandolfFile> spGF;
-    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
+    try
+	{
+	    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
+	}
+    catch ( rtt_cdi_gandolf::gmatidsException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	}
 
     // Test the new object to verify the constructor and accessors.
 

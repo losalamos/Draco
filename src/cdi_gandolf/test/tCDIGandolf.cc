@@ -12,6 +12,7 @@
 #include "tCDIGandolf.hh"
 #include "../GandolfFile.hh"
 #include "../GandolfOpacity.hh"
+#include "../GandolfException.hh"
 #include "../Release.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
@@ -64,11 +65,16 @@ string tCDIGandolf::runTest()
     
     // Start the test.
 
-//     cout << endl << "Testing the cdi_gandolf package." << endl;
-//     cout << endl << "Create SP to a cdi_gandolf object." << endl << endl;
-
     SP<rtt_cdi_gandolf::GandolfFile> spGF;
-    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
+    try
+	{
+	    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
+	}
+    catch ( rtt_cdi_gandolf::GandolfException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	}
 
     if ( spGF )
 	pass() << "SP to new GandolfFile object created for Al_BeCu.ipcress data.";
@@ -89,12 +95,21 @@ string tCDIGandolf::runTest()
 	fail() << "spGF did not find the correct number of materials in the Al_BeCu.ipcress data file.";
 
     SP<rtt_cdi::Opacity> spOpacityABC;
-    spOpacityABC = new rtt_cdi_gandolf::GandolfOpacity( spGF, matid );
+    try 
+	{
+	    spOpacityABC 
+		= new rtt_cdi_gandolf::GandolfOpacity( spGF, matid );
+	}
+    catch ( rtt_cdi_gandolf::GandolfException gerr )
+	// Alternatively, we could use:
+	// catch ( rtt_cdi_gandolf::gkeysException gerr )
+	{
+	    fail() << "Failed to create SP to new Opacity object for Al_BeCu.ipcress data."
+		   << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	}
 
-    if ( spOpacityABC )
-	pass() << "SP to new Opacity object created for Al_BeCu.ipcress data.";
-    else
-	fail() << "Failed to create SP to new Opacity object for Al_BeCu.ipcress data.";
+    pass() << "SP to new Opacity object created for Al_BeCu.ipcress data.";
 
     //------------------
     // Gray Opacity Test
@@ -106,7 +121,18 @@ string tCDIGandolf::runTest()
 
     // Obtain a Rosseland Gray Opacity value for T=0.1 keV and density 
     // = 27.0 g/cm^3.
-    double grayRosselandOpacity = spOpacityABC->getGrayRosseland( 0.1, 27.0 );
+    double grayRosselandOpacity;
+    try 
+	{
+	    grayRosselandOpacity 
+		= spOpacityABC->getGrayRosseland( 0.1, 27.0 );
+	}
+//     catch ( rtt_cdi_gandolf::ggetgrayException gerr )
+    catch ( rtt_cdi_gandolf::GandolfException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	}
 
     // Print some info to standard out.
     // cout << endl << "grayRosselandOpacity for material Aluminum (matID=" 
@@ -171,8 +197,17 @@ string tCDIGandolf::runTest()
      
      // Interpolate the multigroup opacities for T = 0.01 keV and
      // density = 2.0 g/cm^3. 
-     vector<double> mgRosselandOpacity
- 	= spOpacityABC->getMGRosseland( 0.01, 2.0 );
+     vector<double> mgRosselandOpacity;
+     try
+	 {
+	     mgRosselandOpacity	
+		 = spOpacityABC->getMGRosseland( 0.01, 2.0 );
+	 }
+     catch ( rtt_cdi_gandolf::ggetmgException gerr )
+	 {
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	 }
 
 //     // print the results
 //     cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 
@@ -207,7 +242,14 @@ string tCDIGandolf::runTest()
      // Start the test.
 
      // SP<rtt_cdi_gandolf::GandolfFile> spGF;
-     spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
+     try 
+	 {
+	     spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file ); 
+	 }
+     catch ( rtt_cdi_gandolf::gmatidsException gerr)
+	 {
+	     fail() << std::endl << "\t" << gerr.errorSummary();
+	 }
      
      if ( spGF )
 	 pass() << "SP to new GandolfFile object created.";
@@ -224,9 +266,22 @@ string tCDIGandolf::runTest()
      else
 	 fail() << "spGF did not find the correct number of materials in the data file.";
 
-     // SP<rtt_cdi::Opacity> spOpacityABC;
-     spOpacityABC = new rtt_cdi_gandolf::GandolfOpacity( spGF, matid );
-     
+     try 
+	 {
+	     spOpacityABC 
+		 = new rtt_cdi_gandolf::GandolfOpacity( spGF, matid );
+	 }
+     catch ( rtt_cdi_gandolf::gkeysException gerr )
+	 {
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	 }
+     catch ( rtt_cdi_gandolf::gchgridsException gerr )
+	 {
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	 }
+
      if ( spOpacityABC )
 	 pass() << "SP to new Opacity object created.";
      else
@@ -245,7 +300,16 @@ string tCDIGandolf::runTest()
      // = 0.3 g/cm^3.
      double T = 1.0;   // keV
      double rho = 1.0; // g/cm^3
-     grayRosselandOpacity = spOpacityABC->getGrayRosseland( T, rho );
+     try 
+	 {
+	     grayRosselandOpacity 
+		 = spOpacityABC->getGrayRosseland( T, rho );
+	 }
+     catch ( rtt_cdi_gandolf::ggetgrayException gerr )
+	{
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	}
 
     // Print some info to standard out.
 //      cout << endl << "grayRosselandOpacity for material 1 (matID=" 
@@ -278,8 +342,16 @@ string tCDIGandolf::runTest()
     
     // Interpolate the multigroup opacities for T = 0.3 keV and
     // density = 0.7 g/cm^3. 
-    mgRosselandOpacity
- 	= spOpacityABC->getMGRosseland( T, rho );
+    try
+	{
+	    mgRosselandOpacity
+		= spOpacityABC->getMGRosseland( T, rho );
+	}
+     catch ( rtt_cdi_gandolf::ggetmgException gerr )
+	 {
+	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    return "Some tests failed.";
+	 }
 
 //     // print the results
 //     cout << endl << "Multigroup Rosseland Opacities for Aluminum (matID=" 

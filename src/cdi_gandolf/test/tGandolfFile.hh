@@ -3,7 +3,7 @@
  * \file   cdi_gandolf/test/tGandolfFile.hh
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:48:55 2000
- * \brief  
+ * \brief  Header file for tGandolfFile.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -20,6 +20,10 @@ namespace rtt_cdi_gandolf_test
 //===========================================================================//
 /*!
  * \class tGandolfFile
+ *
+ * \brief A class used to test the GandolfFile object under the
+ * cdi_gandolf package.  It is inherited from Randy's
+ * UnitTestFrame::TestApp. 
  *
  */
 // revision history:
