@@ -2,7 +2,7 @@
 # draco/doc/releases Makefile
 # Thomas M. Evans
 # Thu Feb 11 10:32:47 1999
-# Time-stamp: <03/09/04 14:00:45 tme>
+# Time-stamp: <04/04/28 12:37:08 tme>
 ###############################################################################
 # @> Makefile for Draco build document
 ###############################################################################
@@ -27,7 +27,7 @@ DVIPSFLAGS := -t letter -Ppdf
 ##---------------------------------------------------------------------------##
 ## SOURCES
 
-tex_sources = draco-3_0_0.tex draco-3_2_0.tex draco-4_0_0.tex
+tex_sources = draco-3_0_0.tex draco-3_2_0.tex draco-4_0_0.tex draco-5_0_0.tex
 dvi_sources = $(patsubst %.tex,%.dvi,$(tex_sources))
 ps_targets = $(patsubst %.dvi,%.ps,$(dvi_sources))
 pdf_targets = $(patsubst %.dvi,%.pdf,$(dvi_sources))
