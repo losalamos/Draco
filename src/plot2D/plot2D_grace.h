@@ -1,19 +1,21 @@
 /*-----------------------------------*-C-*-----------------------------------*/
-/* plot2D/config.h
- * Rob Lowrie 
- * Mon Apr 15 10:05:15 2002 */
+/* plot2D/plot2D_grace.h
+ * Thomas M. Evans 
+ * Fri Apr 19 14:57:10 2002 */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
 /*---------------------------------------------------------------------------*/
 
-#ifndef __plot2D_config_h__
-#define __plot2D_config_h__
+#ifndef __plot2D_plot2D_grace_h__
+#define __plot2D_plot2D_grace_h__
 
-/* Grace include paths */
-#undef GRACE_H
+#include <plot2D/config.h>
 
-#endif                          /* __plot2D_config_h__ */
+/* include grace headers */
+#include GRACE_H
+
+#endif                          /* __plot2D_plot2D_grace_h__ */
 
 /*---------------------------------------------------------------------------*/
-/*                              end of plot2D/config.h */
+/*                              end of plot2D/plot2D_grace.h */
 /*---------------------------------------------------------------------------*/

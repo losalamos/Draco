@@ -13,10 +13,7 @@ AC_CONFIG_HEADER(plot2D/config.h:config.h.in)
 package="plot2D"
 
 dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
-dnl AC_PCGLIB_SETUP(pkg)
+AC_GRACE_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB

@@ -16,7 +16,7 @@
 #include <cmath>
 #include <cctype>
 
-#include <grace_np.h>
+#include "plot2D_grace.h"
 
 using namespace rtt_plot2D;
 
