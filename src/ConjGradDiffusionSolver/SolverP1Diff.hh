@@ -123,6 +123,14 @@ class SolverP1Diff
 	ccsf r(fCtor);
 	using rtt_ConjGrad::conjGrad;
 
+        if (options.verbose)
+        {
+            std::boolalpha(std::cout);
+            std::cout << "SolverP1Diff: using Jacobi Preconditioner: "
+                      << options.usePreconditioner
+                      << std::endl;
+        }
+        
         if (options.usePreconditioner)
             conjGrad(phi, iter, brhs, MatVec(spMatrix), options.maxIters,
                      options.eps, PreCond(spMatrix), r);
