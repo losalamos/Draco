@@ -1221,6 +1221,52 @@ used then setting MPI include or library paths will result in
 link-time errors. Also, do not use cache (-C) when configuring on ASCI
 White.
 
+\par Note on LANL Lambda Cluster
+
+Below are some quick notes on how to build Draco on Lambda.  I think
+everything is working except plot2D.  Plot2D builds correctly and the
+tests run but are failing because of grace version inconsistencies
+between lambda and the CCS-2/4 environment.
+
+Rob - you might want to update your unit test so that only key parts
+of the output files are compared against the gold standard.  The tests
+are failing when keys like "version number" are compared.
+
+\verbatim
+1. ssh onto lambda.
+2. llogin to a worker node(s).
+3. modules loaded: 
+   a. LaheyFortran95Pro_6.1e 
+   b. autoconf_2.53
+   c. automake_1.6.2
+   d. gcc_3.0.4
+   e. mpich_1.2.5-LaheyFortran95Pro-6.1e
+   f. totalview_6.3.1_0
+4. work in Lambda's scratch space (/netscratch/<moniker>).
+5. I configured with the following command (your paths and options may vary):
+
+  /netscratch/kellyt/draco/configure --prefix=/netscratch/kellyt/draco/t \
+  --with-c4=mpi --enable-debug --enable-shared --enable-shared \
+  --with-sprng-inc=/usr/projects/draco/vendors/sprng/include \
+  --with-sprng-lib=/usr/projects/draco/vendors/sprng/Linux/lib \
+  --with-mpi-inc=/usr/local/packages/mpich-1.2.5-LaheyFortran95Pro-6.1e/include \
+  --with-mpi-lib=/usr/local/packages/mpich-1.2.5-LaheyFortran95Pro-6.1e/lib \
+  --with-grace-inc=/usr/projects/draco/vendors/grace/Linux/include \
+  --with-grace-lib=/usr/projects/draco/vendors/grace/Linux/lib \
+  --with-pcg-lib=/usr/projects/draco/vendors/pcg/Linux/lib \
+  --with-gandolf-lib=/usr/projects/atomic/gandolf/v3.6/lib/intel-linux \
+  --with-eospac-lib=/usr/projects/data/eos/eospac/default/intel-linux/lib
+
+6. gmake check
+
+\endverbatim 
+
+Using Lahey 6.2 breaks cdi_eospac.  We must continue using Lahey 6.1
+or 6.2 until X-5 releases EOSPAC v6.  gcc_3.2.1 and gcc_3.2.3 are
+broken.  File stream input processing doesn't recognize a space as a
+delimiter.  The consultants have been notified and are working on a
+fix.  Your mpich module should align with your FORTRAN module.
+
 \subsection ex_builds Example Builds
 
 \par Example 1
