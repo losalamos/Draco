@@ -22,7 +22,7 @@
 #include "mc/Surface.hh"
 #include "../Azimuthal_Mesh.hh"
 #include "../Surface_tracker.hh"
-#include "../Surface_Tally.hh"
+#include "../Surface_Sub_Tally.hh"
 #include <vector>
 
 using namespace std;
@@ -51,7 +51,7 @@ SP<Surface_tracker> build_test_surface_tracker()
 
 }
 
-Surface_Tally make_surface_tally()
+Surface_Sub_Tally make_surface_tally()
 {
 
     double c[3] = {-0.5, 0.0, 0.5};
@@ -59,7 +59,7 @@ Surface_Tally make_surface_tally()
 
     SP<Azimuthal_Mesh> mesh ( new Azimuthal_Mesh(cosines ) );
 
-    return Surface_Tally(mesh, 3);
+    return Surface_Sub_Tally(mesh, 3);
 
 }
 
@@ -118,7 +118,7 @@ void test_streaming()
     const double ew = 1.0;
     const double sigma = 1.0;  
 
-    Surface_Tally tally( make_surface_tally() );
+    Surface_Sub_Tally tally( make_surface_tally() );
     
     tracker->tally_crossings(position, direction, distance, ew, sigma, tally);
 

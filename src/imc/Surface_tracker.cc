@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Surface_tracker.hh"  
-#include "Surface_Tally.hh"
+#include "Surface_Sub_Tally.hh"
 
 #include <iostream>
 #include <cmath>
@@ -49,7 +49,7 @@ void Surface_tracker::tally_crossings(
     const vector<double>& position,
     const vector<double>& direction,
     double distance, double initial_ew, double sigma,
-    Surface_Tally& tally)
+    Surface_Sub_Tally& tally)
 {
 
     Check(position.size()  == 3);

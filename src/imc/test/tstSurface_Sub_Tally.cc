@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   imc/test/tstSurface_Tally.cc
+ * \file   imc/test/tstSurface_Sub_Tally.cc
  * \author Mike Buksas
  * \date   Mon Jun 23 15:52:59 2003
- * \brief  Unit test for Surface_Tally
+ * \brief  Unit test for Surface_Sub_Tally
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,7 +18,7 @@
 #include "imc_test.hh" 
 
 #include "ds++/Soft_Equivalence.hh"
-#include "../Surface_Tally.hh"
+#include "../Surface_Sub_Tally.hh"
 #include "../Azimuthal_Mesh.hh" 
 #include "ds++/SP.hh"
 
@@ -38,7 +38,7 @@ void test()
 
     SP<Azimuthal_Mesh> az_mesh ( new Azimuthal_Mesh(cosines) );
 
-    Surface_Tally surface_tally(az_mesh, 1);
+    Surface_Sub_Tally surface_tally(az_mesh, 1);
 
     if (surface_tally.get_number_surfaces() != 1) ITFAILS;
     if (surface_tally.get_outward_tally(1).size() != 4) ITFAILS;
@@ -49,7 +49,7 @@ void test()
     direction[1] = 0.0;
     direction[2] = std::sqrt(2.0)/2.0;
 
-    surface_tally.add_to_tally(1, direction, true, 1.0);
+    surface_tally.add_to_tally(0, direction, true, 1.0);
 
     if ( !soft_equiv( surface_tally.get_outward_tally(1)[3], 1.0 ) ) ITFAILS;
 
@@ -57,7 +57,7 @@ void test()
     direction[1] =  0.0;
     direction[2] = -0.1;
 
-    surface_tally.add_to_tally(1, direction, false, 0.5);
+    surface_tally.add_to_tally(0, direction, false, 0.5);
 
     if (!soft_equiv( surface_tally.get_inward_tally(1)[1], 0.5 ) ) ITFAILS;
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	std::cout << "While testing tstSurface_Tally, " << ass.what()
+	std::cout << "While testing tstSurface_Sub_Tally, " << ass.what()
 		  << std::endl;
 	return 1;
     }
@@ -96,16 +96,16 @@ int main(int argc, char *argv[])
     std::cout <<     "*********************************************" << std::endl;
     if (rtt_imc_test::passed) 
     {
-        std::cout << "**** tstSurface_Tally Test: PASSED" 
+        std::cout << "**** tstSurface_Sub_Tally Test: PASSED" 
 		  << std::endl;
     }
     std::cout <<     "*********************************************" << std::endl;
     std::cout << std::endl;
     
-    std::cout << "Done testing tstSurface_Tally." << std::endl;
+    std::cout << "Done testing tstSurface_Sub_Tally." << std::endl;
     return 0;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstSurface_Tally.cc
+//                        end of tstSurface_Sub_Tally.cc
 //---------------------------------------------------------------------------//

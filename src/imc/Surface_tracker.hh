@@ -23,7 +23,7 @@
 namespace rtt_imc
 {
 
-class Surface_Tally;
+class Surface_Sub_Tally;
 
 //===========================================================================//
 /*!
@@ -93,7 +93,7 @@ class Surface_tracker
 			 double distance,
 			 double initial_ew,
 			 double sigma,
-			 Surface_Tally&);
+			 Surface_Sub_Tally&);
 
     // ACCESSORS:
 
