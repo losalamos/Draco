@@ -44,7 +44,7 @@ AC_DEFUN(AC_MPI_SETUP, [dnl
 
    # determine if this package is needed for testing or for the
    # package
-   vendor_mpi=$1
+   vendor_mpi=$1 
 
    # set default value for with_mpi which is no
    if test "${with_mpi:=no}" = yes ; then 
@@ -101,7 +101,7 @@ AC_DEFUN(AC_SHMEM_SETUP, [dnl
    fi
    
    # we define SHMEM_H regardless of whether a PATH is set
-   AC_DEFINE_UNQUOTED(SHMEM_H, ${SHMEM_H})dnl
+   AC_DEFINE_UNQUOTED(SHMEM_H, ${SHMEM_H})dnl 
 
    # determine if this package is needed for testing or for the
    # package
@@ -119,48 +119,6 @@ AC_DEFUN(AC_SHMEM_SETUP, [dnl
 
    dnl shmem is only available on sgis in this build system (and in
    dnl general I think)
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_POOMA_SETUP
-dnl
-dnl POOMA implementation (off by default)
-dnl POOMA is an optional vendor
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_POOMA_SETUP, [dnl
-	
-   dnl define --enable-pooma
-   AC_ARG_ENABLE(pooma,
-      [  --enable-pooma          turn on pooma (off by default)])
-
-   dnl define --with-pooma-root
-   AC_WITH_DIR(pooma-root, POOMA_ROOT, \${POOMA_ROOT_DIR},
-	       [tell where root to the POOMA src and libraries are])
-
-   dnl define --with-pooma-arch
-   AC_ARG_WITH(pooma-arch,
-      [  --with-pooma-arch=[POOMA_ARCH]  set pooma architecture])
-
-   # determine if this package is needed for testing or for the
-   # package
-   vendor_pooma=$1
-	
-
-   if test "${enable_pooma:=no}" != no ; then
-      POOMA_ROOT="${with_pooma_root}"
-      AC_MSG_CHECKING(for pooma root directory)
-      AC_MSG_RESULT(${with_pooma_root})	
-
-      POOMA_ARCH="${with_pooma_arch}"
-      AC_MSG_CHECKING(for POOMA_ARCH)
-      AC_MSG_RESULT(${POOMA_ARCH})	
-      AC_VENDORLIB_SETUP(vendor_pooma, -L${with_pooma_root}/lib/${POOMA_ARCH} -lpooma)
-
-      CXXFLAGS="${CXXFLAGS} --restrict"
-      CPPFLAGS="${CPPFLAGS} -I${POOMA_ROOT}/src"
-   fi
-
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -215,37 +173,91 @@ AC_DEFUN(AC_SPRNG_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_PCGLIB_SETUP
+dnl AC_PCG_SETUP
 dnl
-dnl PCGLIB LIBRARY SETUP (on by default)
-dnl PCGLIB is a required vendor
+dnl PCG LIBRARY SETUP (on by default)
+dnl PCG is a required vendor
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_PCGLIB_SETUP, [dnl
+AC_DEFUN(AC_PCG_SETUP, [dnl
 
-   dnl define --enable-pcglib
-   AC_ARG_ENABLE(pcglib,        
-      [  --enable-pcglib         turn on pcglib])
+   dnl define --with-pcg
+   AC_ARG_WITH(pcg,        
+      [  --with-pcg[=lib]        determine the pcg lib name (pcg is default)])
 
-   dnl define --with-pcglib-lib
-   AC_WITH_DIR(pcglib-lib, PCGLIB_LIB, \${PCGLIB_LIB_DIR},
-	       [tell where PCGLIB libraries are])
+   dnl define --with-pcg-lib
+   AC_WITH_DIR(pcg-lib, PCG_LIB, \${PCG_LIB_DIR},
+	       [tell where PCG libraries are])
 
    # determine if this package is needed for testing or for the 
    # package
-   vendor_pcglib=$1
+   vendor_pcg=$1
+
+   # pcg is set to libpcg by default
+   if test "${with_pcg:=pcg}" = yes ; then
+       with_pcg='pcg'
+   fi
 
    # set up the libraries
-   if test "${enable_pcglib:=yes}" != no ; then
-       if test -z "${PCGLIB_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_pcglib, -lpcg_f77)
-       elif test -n "${PCGLIB_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_pcglib, -L${PCGLIB_LIB} -lpcg_f77)
+   if test "${with_pcg}" != no ; then
+       if test -z "${PCG_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_pcg, -lpcg)
+       elif test -n "${PCG_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -lpcg)
        fi
    fi
 
    dnl note that we add some system-specific libraries for this
-   dnl vendor in AC_DRACO_ENV
+   dnl vendor in AC_DRACO_ENV; also, the user must set up LAPACK for
+   dnl this to work
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_LAPACK_SETUP
+dnl
+dnl LAPACK SETUP (on by default)
+dnl LAPACK is a required vendor
+dnl
+dnl NOTE: this also sets up the BLAS
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_LAPACK_SETUP, [dnl
+
+   dnl define --with-lapack
+   AC_ARG_WITH(lapack,
+      [  --with-lapack=[vendor,atlas]
+                          determine LAPACK implementation (vendor default)])
+
+   dnl define --with-lapack-lib
+   AC_WITH_DIR(lapack-lib, LAPACK_LIB, \${LAPACK_LIB_DIR}, 
+	       [tell where LAPACK libs are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_lapack=$1
+
+   # lapack is set to vendor by default
+   if test "${with_lapack:=vendor}" = yes ; then
+       with_lapack='vendor'
+   fi
+
+   # set up the libraries: if the option is vendor than we will take
+   # care of things in dracoenv under each platform case; if the
+   # option is atlas we will setup the basic library calls
+   if test "${with_lapack}" = atlas ; then
+       
+       # if a library path has been defined use it otherwise assume
+       # the libraries are in a default location
+       if test -z "${LAPACK_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lf77blas -lcblas -latlas)
+       elif test -n "${LAPACK_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas)
+       fi
+
+   fi
+
+   dnl note that we add system specific libraries to this list in
+   dnl dracoenv
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -262,8 +274,8 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_MPI_SETUP(pkg)
    AC_SHMEM_SETUP(pkg)
    AC_SPRNG_SETUP(pkg)
-   AC_PCGLIB_SETUP(pkg)
-   dnl AC_POOMA_SETUP(pkg)
+   AC_PCG_SETUP(pkg)
+   AC_LAPACK_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl

@@ -160,6 +160,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    AC_ARG_WITH(ldflags,
       [  --with-ldflags[=flags]  add flags to \$LDFLAGS])
 
+   dnl 
+   dnl ADD TO LIBRARIES
+   dnl
+
+   dnl defines --with-libs
+   AC_ARG_WITH(libs,
+      [  --with-libs=[libs]      add libs to \$LIBS])
+
    dnl
    dnl CHOSE BIT COMPILATION ON SGI'S
    dnl

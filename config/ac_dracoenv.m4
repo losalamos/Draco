@@ -13,9 +13,6 @@ dnl usage: configure.in
 dnl puts together the DRACO compile-time environments
 dnl-------------------------------------------------------------------------dnl
 
-builtin(include, ac_f90env.m4)dnl Fortran 90 macros
-builtin(include, ac_gm4.m4)dnl GNU m4 macros
-
 AC_DEFUN(AC_DRACO_ENV, [dnl
 
    dnl 
@@ -336,6 +333,39 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # end of communication package setup
        #  
 
+       # 
+       # setup lapack 
+       #
+       
+       # we assume that the vendor option on linux is the install of
+       # redhat rpms in /usr/lib; we don't worry about atlas because
+       # that has already been defined
+
+       if test "${with_lapack}" = vendor ; then
+
+	   # if an lapack location was defined use it
+	   if test -n "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lblas)
+	   elif test -z "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lblas)
+	   fi
+
+       fi 
+
+       # 
+       # end of lapack setup
+       # 
+
+       # add libg2c to LIBS if lapack, gandolf, or pcg is used
+       AC_MSG_CHECKING("libg2c requirements")
+       if test -n "${with_lapack}" || test -n "${with_pcg}" ||
+	  test -n "${with_gandolf}"; then
+	   LIBS="${LIBS} -lg2c"
+	   AC_MSG_RESULT("-lg2c added to LIBS")
+       elif
+	   AC_MSG_RESULT("not needed")
+       fi
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 	   LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
@@ -444,10 +474,25 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # end of communication package setup
        #
 
+       #
+       # setup lapack
+       #
+
        #PCGLIB EXTRAS
-       if test "${enable_pcglib}" = yes ; then
-	   AC_VENDORLIB_SETUP(vendor_pcglib, -lcomplib.sgimath)
+       if test "${with_lapack}" = vendor ; then
+
+	   # if an lapack location was defined use it
+	   if test -n "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -lcomplib.sgimath)
+	   elif test -z "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -lcomplib.sgimath)
+	   fi
+
        fi
+
+       #
+       # end of lapack setup
+       #
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
@@ -497,10 +542,31 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
 
        # PCGLIB EXTRAS
-       if test "${enable_pcglib}" = yes ; then
+       if test "${with_pcg}" = yes ; then
 	   pcg_sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
 	   AC_VENDORLIB_SETUP(vendor_pcglib, ${pcg_sun_libs})
        fi
+
+       #
+       # setup lapack
+       #
+
+       if test "${with_lapack}" = vendor ; then
+
+	   sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
+
+	   # if an lapack location was defined use it
+	   if test -n "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${sun_libs})
+	   elif test -z "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, ${sun_libs})
+	   fi
+
+       fi
+
+       #
+       # end of lapack setup
+       #
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
@@ -513,8 +579,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    ;;
    esac
 
-   # add system specific libraries
-   LIBS='-lm'
+   # add user-defined libraries
+   LIBS="${LIBS} ${with_libs} -lm"
 
    dnl
    dnl DRACO TEST SYSTEM

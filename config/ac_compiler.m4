@@ -20,7 +20,7 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
    LD='${CXX}'
    AR='${CXX}'
    ARFLAGS='-o'
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS='${DRACO_LIBS}'
    ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
 
    # COMPILATION FLAGS
@@ -88,7 +88,8 @@ AC_DEFUN(AC_DRACO_GUIDE, [dnl
    LD='${CXX}'
    AR='${CXX}'
    ARFLAGS='--exceptions -o'
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS='${DRACO_LIBS}'
+   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
 
    # COMPILATION FLAGS
 
@@ -151,7 +152,8 @@ AC_DEFUN(AC_DRACO_CC, [dnl
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
    AR='${CXX}'
-   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+   ARLIBS='${DRACO_LIBS}'
+   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
 
    # for CC we need to add a flag to AR to determine whether we build 
    # shared or archive libraries
