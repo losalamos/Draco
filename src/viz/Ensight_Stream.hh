@@ -90,6 +90,9 @@ class Ensight_Stream
     //! Expose is_open().
     bool is_open() { return d_stream.is_open(); }
 
+    //! Expose flush()
+    void flush() { d_stream.flush(); }
+
     // The supported output stream functions.
     
     Ensight_Stream& operator<<(const int i);
