@@ -147,8 +147,9 @@
                   allocate(self%ss_cells(self%ss_size))
 
                   surface = 1
+                  allocate(self%ss_cells(self%ss_size))
                   do while (surface .le. self%ss_size)
-                      self%ss_cells = get_surf_src_size(self,surface)
+                      self%ss_cells(surface) = get_surf_src_size(self,surface)
                       surface = surface + 1
                   end do
 
@@ -241,7 +242,7 @@
               end function get_ss_temp
 
 ! Return the temperature of a given grouped surface source cell set.
-              function get_ss_temp_set(self, surface)       result (data)
+              function get_ss_temp_set(self, surface)      result (data)
                   type(CAR_CU_Interface), intent(inout) :: self
                   integer, intent(in)                   :: surface
                   real*8                                :: data

@@ -28,22 +28,21 @@
           USE CAR_CU_Opacity_Builder_Class
           USE CAR_CU_Opacity_Class
           USE CAR_CU_Mat_State_Class
+          USE Ragged_Right_Array
 
           implicit none
           integer narg, iargc, fnlgth
 
-          type(CAR_CU_Interface)       :: interface_class
-          type(CAR_CU_RTT_Format)      :: rtt_format_class
-          type(CAR_CU_Mesh_Builder)    :: mesh_builder_class
-          type(CAR_CU_Mesh)            :: mesh_class
-          type(CAR_CU_Opacity_Builder) :: opacity_builder_class
-          type(CAR_CU_Opacity)         :: opacity_class
-          type(CAR_CU_Mat_State)       :: mat_state_class
+          type(CAR_CU_Interface)           :: interface_class
+          type(CAR_CU_RTT_Format)          :: rtt_format_class
+          type(CAR_CU_Mesh_Builder)        :: mesh_builder_class
+          type(CAR_CU_Mesh)                :: mesh_class
+          type(CAR_CU_Opacity_Builder)     :: opacity_builder_class
+          type(CAR_CU_Opacity)             :: opacity_class
+          type(CAR_CU_Mat_State)           :: mat_state_class
+          type(Integer_Ragged_Right_Array) :: surf_src_cells
 
           character*3, dimension (:), allocatable :: surf_src_pos
-          ! Really need a two dimensional ragged right array Fortran 90 
-          ! derived-type object to do this right.
-          integer, dimension (:), allocatable :: surf_src_cells
 
           real*8, dimension (:), allocatable :: surf_src_temperature,   &
               volume_src, radiation_src
@@ -219,16 +218,16 @@
               surface = surface + 1
           end do
 
-          ! This where we need a Fortran 90 ragged-right array derived-type.
-          ! For now we can only retrieve one set of surface source cells at
-          ! a time in the 1D array surf_src_cells - the rest of the surface 
-          ! source cells would be deleted when the CAR_CU_interface class 
-          ! object is destroyed (and I would rather not keep it hanging
-          ! around just for this).
+          ! Using a Fortran 90 ragged-right array derived-type to represent
+          ! surf_src_cells - this allows the number of cells defining a 
+          ! a surface source to differ between individual sources.
           surface = 1
+          allocate(surf_src_cells%row(interface_class%ss_size))
           do while (surface .le. interface_class%ss_size)
-              allocate(surf_src_cells(interface_class%ss_cells(surface)))
-              surf_src_cells = get_surf_src_cells(interface_class, surface)
+              allocate(surf_src_cells%row(surface)%column(              &
+                  interface_class%ss_cells(surface)))
+              surf_src_cells%row(surface)%column =                      &
+                  get_surf_src_cells(interface_class, surface)
               surface = surface + 1
           end do
 

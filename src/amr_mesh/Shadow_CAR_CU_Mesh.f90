@@ -3096,7 +3096,7 @@
               end subroutine set_real_NCVF_node_dim
 
 !---------------------------------------------------------------------------
-!                              end of CAR_CU_Mes_Classh module
+!                              end of CAR_CU_Mesh_Class module
 !---------------------------------------------------------------------------
 
       end module CAR_CU_Mesh_Class
