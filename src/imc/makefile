@@ -26,7 +26,7 @@ include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-        (cd ../ds++; $(MAKE) $(subnj))
+	(cd ../ds++; $(MAKE))
 endif
 
 # Rules for building docs
