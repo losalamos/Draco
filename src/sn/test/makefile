@@ -21,12 +21,12 @@ objs	= $(srcs:%.cc=$(env)/%.o)
 default: sn_$(env)
 
 sn_$(env) : deps $(objs)
-	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -L.. -lsn_sgikaig -lm
+	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../../ds++;   $(MAKE) $(subnj))
-	(cd ../../sn;     $(MAKE) $(subnj) dodeps=no)
+#	(cd ../../ds++;   $(MAKE) $(subnj))
+	(cd ../../sn;     $(MAKE) $(subnj))
 endif
 
 # Go pick up the standard signature for makefiles.
