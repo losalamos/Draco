@@ -33,7 +33,6 @@ void test_enumValues()
     {
 	int    const iSenVal(3);
 	double const adSenVal[iSenVal] = { 0.0, 1.0, 100.0 };
-	int    const aiSenVal[iSenVal] = { 0, 1, 2 };
 	string const sSenVal( "NA,m,cm" );
 	string const sSenVal2( "no length unit specified,meter,centimeter");
 
@@ -80,7 +79,6 @@ void test_enumValues()
     {
 	int    const iSenVal(3);
 	double const adSenVal[iSenVal] = { 0.0, 1.0, 1000.0 };
-	int    const aiSenVal[iSenVal] = { 0, 1, 2 };
 	string const sSenVal( "NA,kg,g" );
 	string const sSenVal2( "no mass unit specified,kilogram,gram");
 
@@ -125,7 +123,6 @@ void test_enumValues()
     {
 	int    const iSenVal(6);
 	double const adSenVal[iSenVal] = { 0.0, 1.0, 1000.0, 1.0e6, 1.0e8, 1.0e9 };
-	int    const aiSenVal[iSenVal] = { 0,1,2,3,4,5 };
 	string const sSenVal( "NA,s,ms,us,sh,ns" );
 	string const sSenVal2( "no time unit specified,second,milisecond,microsecond,shake,nanosecond");
 
@@ -170,7 +167,6 @@ void test_enumValues()
     {
 	int    const iSenVal(3);
 	double const adSenVal[iSenVal] = { 0.0, 1.0, 1.1604449278e7 };
-	int    const aiSenVal[iSenVal] = { 0,1,2 };
 	string const sSenVal( "NA,K,keV" );
 
 	if( rtt_units::num_Ttype == iSenVal )
@@ -205,7 +201,6 @@ void test_enumValues()
     {
 	int    const iSenVal(2);
 	double const adSenVal[iSenVal] = { 0.0, 1.0 };
-	int    const aiSenVal[iSenVal] = { 0,1 };
 	string const sSenVal( "NA,Amp" );
 
 	if( rtt_units::num_Itype == iSenVal )
@@ -240,7 +235,6 @@ void test_enumValues()
     {
 	int    const iSenVal(3);
 	double const adSenVal[iSenVal] = { 0.0, 1.0, 57.295779512896171 };
-	int    const aiSenVal[iSenVal] = { 0,1,2 };
 	string const sSenVal( "NA,rad,deg" );
 
 	if( rtt_units::num_Atype == iSenVal )
@@ -275,7 +269,6 @@ void test_enumValues()
     {
 	int    const iSenVal(2);
 	double const adSenVal[iSenVal] = { 0.0, 1.0 };
-	int    const aiSenVal[iSenVal] = { 0,1 };
 	string const sSenVal( "NA,mol" );
 
 	if( rtt_units::num_Qtype == iSenVal )

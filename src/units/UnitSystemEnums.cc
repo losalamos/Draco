@@ -40,7 +40,6 @@ std::string setUnitLabel( size_t const pos, std::string const & labels )
     using std::string;
 
     Require( labels.length() > 0 );
-    Require( pos >= 0 );
 
     // Store the location of the first letter of each label.  Also append the
     // position for one past the end of the original string.

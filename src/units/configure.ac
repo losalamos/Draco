@@ -19,7 +19,7 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 
-AC_RUNTESTS(tstUnitSystemEnums tstFundUnit tstUnitSystemType tstUnitSystem tstPhysicalConstants, 1)
+AC_RUNTESTS(tstUnitSystemEnums tstFundUnit tstUnitSystemType tstUnitSystem tstPhysicalConstants, scalar)
 
 AC_DRACO_ENV
 

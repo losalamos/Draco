@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.2 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -2240,7 +2240,8 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        
        AC_MSG_CHECKING("for extra eospac library requirements.")
        if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+           lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            AC_MSG_RESULT("${extra_eospac_libs}")
        else

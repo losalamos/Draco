@@ -19,6 +19,65 @@
 namespace rtt_units
 {
 
+// Mathematical constants
+    
+//! pi the ratio of a circle's circumference to its diameter (dimensionless)
+static double const PI = 3.14159265358979324; 
+
+// Base physical constants in SI units:
+
+//    m - meters, kg - kilograms, s - seconds, K - kelvin
+//    W - watts, J - joules, C - coulombs, F - farads
+//    mol - mole
+    
+//! [Na] AVOGADRO'S NUMBER ("entities"/MOLE) 
+static double const AVOGADRO          = 6.022136736e23;      // entities/mol
+   
+//! [h] Planck constant ( Energy seconds )
+static double const planckSI          = 6.6260755e-34;     // J s
+
+//! [R] Gas constant
+static double const gasConstantSI     = 8.314510;          // J/mol/K
+
+//! [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
+static double const boltzmannSI = gasConstantSI / AVOGADRO ; // J K^-1
+
+//! [e] ELECTRON CHARGE (COULOMBS)
+static double const electronChargeSI  = 1.60217733e-19;    // Amp / sec
+
+
+//! EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
+//       (TEMPERATURE IN eV) * EV2K = (TEMPERATURE IN KELVIN)
+static double const EV2K              = electronChargeSI / boltzmannSI;
+
+//! [c] SPEED OF LIGHT (M/S)
+static double const cLightSI          = 2.99792458e8;        // m s^-1
+
+//! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
+static double const stefanBoltzmannSI = 5.67051e-8;       // W m^-2 K^-4
+
+//! [G] Gravitational Constant
+static double const gravitationalConstantSI = 6.67259e-11; 
+
+//! [g] Acceleration due to gravity (standard)
+static double const accelerationFromGravitySI = 9.80665;     // m/s^2
+
+//! [F] Faraday constant == Na * e
+static double const faradayConstantSI = AVOGADRO * electronChargeSI;
+
+//! [mu0] Permeability of vacuum (free space)
+static double const permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
+
+//! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
+static double const permittivityOfFreeSpaceSI = 1.0 /
+permeabilityOfVacuumSI/cLightSI/cLightSI; // Coloumb^2/J/m
+
+//! [me] ELECTRON REST MASS (KG)	 
+static double const electronMassSI    = 9.1093897e-31;        // kg
+
+//! [mp] PROTON REST MASS (KG)
+static double const protonMassSI      = 1.6726231e-27;        // kg
+
 //==============================================================================
 /*!
  * \class PhysicalConstants
@@ -137,75 +196,49 @@ class PhysicalConstants
 
   private:
 
-    // Mathematical constants
-    
-    //! pi the ratio of a circle's circumference to its diameter (dimensionless)
-    static double const PI = 3.14159265358979324; 
-
     // Base physical constants in SI units:
 
     //    m - meters, kg - kilograms, s - seconds, K - kelvin
     //    W - watts, J - joules, C - coulombs, F - farads
     //    mol - mole
     
-    //! [Na] AVOGADRO'S NUMBER ("entities"/MOLE) 
-    static double const AVOGADRO          = 6.022136736e23;      // entities/mol
-   
     //! [h] Planck constant ( Energy seconds )
-    static double const planckSI          = 6.6260755e-34;     // J s
     double const d_planck;
 
     //! [R] Gas constant
-    static double const gasConstantSI     = 8.314510;          // J/mol/K
     double const d_gasConstant;
 
     //! [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
-    static double const boltzmannSI = gasConstantSI / AVOGADRO ; // J K^-1
     double const d_boltzmann;
 
     //! [e] ELECTRON CHARGE (COULOMBS)
-    static double const electronChargeSI  = 1.60217733e-19;    // Amp / sec
     double const d_electronCharge;
     
-    //! EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
-    //       (TEMPERATURE IN eV) * EV2K = (TEMPERATURE IN KELVIN)
-    static double const EV2K              = electronChargeSI / boltzmannSI;
-
     //! [c] SPEED OF LIGHT (M/S)
-    static double const cLightSI          = 2.99792458e8;        // m s^-1
     double const d_cLight;
 
     //! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
-    static double const stefanBoltzmannSI = 5.67051e-8;       // W m^-2 K^-4
     double const d_stefanBoltzmann;
     
     //! [G] Gravitational Constant
-    static double const gravitationalConstantSI = 6.67259e-11; 
     double const d_gravitationalConstant; // SI units are N / m^2 / kg^2 
 
     //! [g] Acceleration due to gravity (standard)
-    static double const accelerationFromGravitySI = 9.80665;     // m/s^2
     double const d_accelerationFromGravity;
 
     //! [F] Faraday constant == Na * e
-    static double const faradayConstantSI = AVOGADRO * electronChargeSI;
     double const d_faradayConstant; // SI units are coloumbs/mol
 
     //! [mu0] Permeability of vacuum (free space)
-    static double const permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
     double const d_permeabilityOfVacuum;
 
     //! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
-    static double const permittivityOfFreeSpaceSI = 1.0 /
-        permeabilityOfVacuumSI/cLightSI/cLightSI; // Coloumb^2/J/m
     double const d_permittivityOfFreeSpace;
 
     //! [me] ELECTRON REST MASS (KG)	 
-    static double const electronMassSI    = 9.1093897e-31;        // kg
     double const d_electronMass;
     
     //! [mp] PROTON REST MASS (KG)
-    static double const protonMassSI      = 1.6726231e-27;        // kg
     double const d_protonMass;
     
 }; // end class PhysicalConstants
