@@ -19,7 +19,7 @@ else
 default_lib	:= lib$(pkg)_$(env).a
 endif
 
-build_lib_$(pkg): $(pretarg) $(default_lib) $(auxtarg)
+build_lib_$(pkg): $(default_lib) $(auxtarg)
 	@echo " "
 	@echo "Library for package $(pkg) has been built."
 	@echo " "
@@ -39,11 +39,11 @@ libobjs	:= $(libsrcs:%.cc=$(env)/%.o) \
 # Rule to build an archive library.
 
 ifdef lib_cmd
-lib$(pkg)_$(env).a : $(libobjs) $(resolve_libs)
+lib$(pkg)_$(env).a : $(pretarg) $(libobjs)
 	$(RM) $@
 	$(lib_cmd) $@ $(libobjs) $(resolve_libs)
 else
-lib$(pkg)_$(env).a : $(libobjs)
+lib$(pkg)_$(env).a : $(pretarg) $(libobjs)
 	-rm -f $@
 	$(ar) qc $@ $(libobjs)
 	$(ranlib) $@
@@ -51,7 +51,7 @@ endif
 
 # Rule to build a shared library.
 
-lib$(pkg)_$(env).$(shlib_suffix) : $(libobjs) $(resolve_libs)
+lib$(pkg)_$(env).$(shlib_suffix) : $(pretarg) $(libobjs)
 	$(shlib_cmd) $@ $(libobjs) $(resolve_libs)
 
 ###############################################################################
