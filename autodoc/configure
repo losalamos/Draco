@@ -270,8 +270,8 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="doxygen_config.in"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir doxygen_input doxygen_examples latex_yes_no dotpath number COMPLINKS LIBOBJS LTLIBOBJS'
+ac_unique_file="mainpage.dcc.in"
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir TAGFILES DOXYGEN_TAGFILES header_dir autodoc_dir rel_doxygen_input rel_doxygen_examples doxygen_html_output doxygen_latex_output PACKAGE_LINKS COMP_LINKS dotpath number LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -834,7 +834,7 @@ Optional Features:
   --enable-32-bit         do 32-bit compilation (compiler dependent)
   --enable-64-bit         do 64-bit compilation (compiler dependent)
   --enable-draco-stdhdrs  use draco standard headers (off by default)
-  --enable-latex-doc      built latex docs with doxygen (off by default)
+  --enable-latex-doc      build latex docs with doxygen (off by default)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -857,6 +857,7 @@ Optional Packages:
   --with-libs=libs      add libs to \$LIBS
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
   --with-stlport        replace default STL with stlPort (off by default)
+  --with-doc-output=path  build documentation in path (prefix/documentation by default)
 
 Some influential environment variables:
   CC
@@ -1579,7 +1580,21 @@ fi;
    # Check whether --enable-latex-doc or --disable-latex-doc was given.
 if test "${enable_latex_doc+set}" = set; then
   enableval="$enable_latex_doc"
+  latex_yes_no='YES'
 
+else
+  latex_yes_no='NO'
+
+fi;
+
+
+# Check whether --with-doc-output or --without-doc-output was given.
+if test "${with_doc_output+set}" = set; then
+  withval="$with_doc_output"
+  doxygen_output_top=${with_doc_output}
+
+else
+  doxygen_output_top='DEFAULT'
 fi;
 
 
@@ -9624,6 +9639,8 @@ echo "$as_me: error: 'Could not find package top source directory'" >&2;}
 
 
 
+package="Draco"
+
 
 
 # check for and as sign the path to doxygen
@@ -9668,33 +9685,197 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-echo "$as_me:$LINENO: checking for available Draco packages" >&5
-echo $ECHO_N "checking for available Draco packages... $ECHO_C" >&6
-doxygen_examples=''
-COMPLINKS=''
-adp=''
-for item in `ls -1 ${prefix}/html`; do
-   if test -d ${prefix}/html/${item}; then
-      dirname=`basename ${item}`
-      adp="${adp} ${dirname}"
-      COMPLINKS="${COMPLINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+#
+# Run the generic package-level autodoc configuration:
+#
+
+      if test ${doxygen_output_top} = DEFAULT; then
+       doxygen_output_top="${prefix}/documentation"
+
    fi
+
+
+   #
+   # For package-level documentation, the only doxygen sources are in
+   # the build tree, aka, the current directory.
+   #
+   #   doxygen_input=$builddir
+   #   doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
+
+   doxygen_input=`pwd`
+
+   localdir=`pwd`
+
+   #
+   # compute relative paths from localdir
+   #
+   for _lcl_i in \
+      localdir:doxygen_input:rel_doxygen_input \
+   ; do
+  _lcl_from=\$`echo "$_lcl_i" | sed 's,:.*$,,'`
+  _lcl_to=\$`echo "$_lcl_i" | sed 's,^[^:]*:,,' | sed 's,:[^:]*$,,'`
+  _lcl_result_var=`echo "$_lcl_i" | sed 's,^.*:,,'`
+  _lcl_receval="$_lcl_from"
+_lcl_from=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "$_lcl_receval_old" != "$_lcl_receval"; do
+       _lcl_receval_old="$_lcl_receval"
+       eval _lcl_receval="\"$_lcl_receval\""
+     done
+     echo "$_lcl_receval")`
+  _lcl_receval="$_lcl_to"
+_lcl_to=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "$_lcl_receval_old" != "$_lcl_receval"; do
+       _lcl_receval_old="$_lcl_receval"
+       eval _lcl_receval="\"$_lcl_receval\""
+     done
+     echo "$_lcl_receval")`
+  _lcl_notation="$_lcl_from$_lcl_to"
+  case ":$_lcl_from:" in
+# change empty paths to '.'
+  ::) _lcl_from='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_from=`echo "$_lcl_from" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case '/' in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_from=`echo "$_lcl_from" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_from=`echo "$_lcl_from" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  case ":$_lcl_to:" in
+# change empty paths to '.'
+  ::) _lcl_to='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_to=`echo "$_lcl_to" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case '/' in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_to=`echo "$_lcl_to" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_to=`echo "$_lcl_to" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  _lcl_common_prefix=''
+_lcl_second_prefix_match=''
+while test "$_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x$_lcl_from" : "x\($_lcl_common_prefix/*[^/]*\)"`
+  _lcl_second_prefix_match=`expr "x$_lcl_to" : "x$_lcl_first_prefix"`
+  if test "$_lcl_second_prefix_match" != 0; then
+    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
+      _lcl_common_prefix="$_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
 done
-echo "$as_me:$LINENO: result: ${adp:-none}" >&5
-echo "${ECHO_T}${adp:-none}" >&6
+_lcl_first_suffix=`expr "x$_lcl_from" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_first_rel=''
+_lcl_tmp='xxx'
+while test "$_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
+  if test "$_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="$_lcl_tmp"
+     _lcl_first_rel="../$_lcl_first_rel"
+  fi
+done
+_lcl_second_suffix=`expr "x$_lcl_to" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_result_tmp="$_lcl_first_rel$_lcl_second_suffix"
+  case ":$_lcl_result_tmp:" in
+# change empty paths to '.'
+  ::) _lcl_result_tmp='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case "$_lcl_notation" in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  eval $_lcl_result_var='$_lcl_result_tmp'
+done
 
-# add config/doc to directories
-doxygen_input=`pwd`
-doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
 
-# check if we should build latex sources
-latex_yes_no='NO'
-if test "${enable_latex_doc:=no}" = yes ; then
-   latex_yes_no='YES'
-fi
+   doxygen_html_output="${doxygen_output_top}/html/"
+   doxygen_latex_output="${doxygen_output_top}/latex/"
+
+
+   #
+   # XXX Need to change COMPLINKS to generic doxygen list instead of
+   # HTML for Latex compatability. Let doxygen insert the links
+   #
+   echo "$as_me:$LINENO: checking for documented sub-components of this package" >&5
+echo $ECHO_N "checking for documented sub-components of this package... $ECHO_C" >&6
+   COMP_LINKS=''
+   components=''
+   for item in `ls -1 ${package_top_srcdir}/src`; do
+      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
+         dirname=`basename ${item}`
+         components="${components} ${dirname}"
+         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+      fi
+   done
+   echo "$as_me:$LINENO: result: ${components:-none}" >&5
+echo "${ECHO_T}${components:-none}" >&6
+   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+
+   #
+   # XXX TO DO: Add links to dependent packages on this page.
+   #
+   PACKAGE_LINKS="<ul> </ul>"
+
+
+   # XXX Need to build a list of tags for the doxygenated
+   # components of the package.
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+
+
+
+   header_dir=${srcdir}/html
+
+
+   autodoc_dir=${srcdir}
+
+
+
+   rel_doxygen_examples=''
+
+
+
+
+
+
+
+             ac_config_files="$ac_config_files doxygen_config:../config/doxygen_config.in"
+
+             ac_config_files="$ac_config_files Makefile:../config/Makefile.autodoc.in"
+
+             ac_config_files="$ac_config_files header.html:html/header.html.in"
+
+             ac_config_files="$ac_config_files footer.html:html/footer.html.in"
+
+             ac_config_files="$ac_config_files mainpage.dcc"
+
+
+
+
+#
+# Do Draco-specific configuration:
+#
 
 # dotpath (for draco levelization diagram)
 dotpath="${srcdir}/../doc/design"
+
 
 # find the release number
 number='null'
@@ -9704,14 +9885,6 @@ number=`/bin/sh ../tools/draco --version`
 echo "$as_me:$LINENO: result: $number" >&5
 echo "${ECHO_T}$number" >&6
 
-
-
-
-
-
-
-
-                                                  ac_config_files="$ac_config_files Makefile doxygen_config header.html footer.html mainpage.dcc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -10262,10 +10435,10 @@ for ac_config_target in $ac_config_targets
 do
   case "$ac_config_target" in
   # Handling of arguments.
-  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "doxygen_config" ) CONFIG_FILES="$CONFIG_FILES doxygen_config" ;;
-  "header.html" ) CONFIG_FILES="$CONFIG_FILES header.html" ;;
-  "footer.html" ) CONFIG_FILES="$CONFIG_FILES footer.html" ;;
+  "doxygen_config" ) CONFIG_FILES="$CONFIG_FILES doxygen_config:../config/doxygen_config.in" ;;
+  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../config/Makefile.autodoc.in" ;;
+  "header.html" ) CONFIG_FILES="$CONFIG_FILES header.html:html/header.html.in" ;;
+  "footer.html" ) CONFIG_FILES="$CONFIG_FILES footer.html:html/footer.html.in" ;;
   "mainpage.dcc" ) CONFIG_FILES="$CONFIG_FILES mainpage.dcc" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
@@ -10350,6 +10523,8 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@latex_yes_no@,$latex_yes_no,;t t
+s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@build@,$build,;t t
 s,@build_cpu@,$build_cpu,;t t
 s,@build_vendor@,$build_vendor,;t t
@@ -10426,12 +10601,18 @@ s,@test_nprocs@,$test_nprocs,;t t
 s,@test_output_files@,$test_output_files,;t t
 s,@configure_command@,$configure_command,;t t
 s,@package_top_srcdir@,$package_top_srcdir,;t t
-s,@doxygen_input@,$doxygen_input,;t t
-s,@doxygen_examples@,$doxygen_examples,;t t
-s,@latex_yes_no@,$latex_yes_no,;t t
+s,@TAGFILES@,$TAGFILES,;t t
+s,@DOXYGEN_TAGFILES@,$DOXYGEN_TAGFILES,;t t
+s,@header_dir@,$header_dir,;t t
+s,@autodoc_dir@,$autodoc_dir,;t t
+s,@rel_doxygen_input@,$rel_doxygen_input,;t t
+s,@rel_doxygen_examples@,$rel_doxygen_examples,;t t
+s,@doxygen_html_output@,$doxygen_html_output,;t t
+s,@doxygen_latex_output@,$doxygen_latex_output,;t t
+s,@PACKAGE_LINKS@,$PACKAGE_LINKS,;t t
+s,@COMP_LINKS@,$COMP_LINKS,;t t
 s,@dotpath@,$dotpath,;t t
 s,@number@,$number,;t t
-s,@COMPLINKS@,$COMPLINKS,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

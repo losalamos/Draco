@@ -14,7 +14,7 @@
 dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
 dnl
-dnl Service macros used in configure.in's throughout Draco.
+dnl Service macros used in configure.ac's throughout Draco.
 dnl
 dnl Thomas M. Evans
 dnl 1999/02/04 01:56:19
@@ -37,7 +37,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_NEEDS_LIBS
 dnl
 dnl add DRACO-dependent libraries necessary for a package
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS, [dnl
@@ -55,7 +55,7 @@ AC_DEFUN(AC_NEEDS_LIBS, [dnl
    done
 
    # Keep a list of component dependencies free of other tags or paths.
-   DRACO_COMPONENTS="$1"
+   DEPENDENT_COMPONENTS="$1"
 
 ])
 
@@ -63,7 +63,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_NEEDS_LIBS_TEST
 dnl
 dnl add DRACO-dependent libraries necessary for a package test
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
@@ -81,7 +81,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_RUNTESTS
 dnl
 dnl add DRACO-package tests (default to use DejaGnu)
-dnl usage: in configure.in:
+dnl usage: in configure.ac:
 dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
 dnl where serial means run as serial test only.
 dnl If compiling with scalar c4 then nprocs are ignored.
@@ -114,7 +114,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_EXECUTABLE
 dnl
 dnl where executables will be installed
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
@@ -127,7 +127,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_LIB
 dnl
 dnl where libraries will be installed
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_LIB, [ dnl
@@ -144,7 +144,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_INSTALL_HEADERS
 dnl
 dnl where headers will be installed 
-dnl usage: configure.in
+dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
@@ -820,7 +820,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl Doxygen options
 
    AC_ARG_ENABLE(latex-doc,
-      [  --enable-latex-doc      built latex docs with doxygen (off by default)])
+      [  --enable-latex-doc      build latex docs with doxygen (off by default)],
+      [AC_SUBST(latex_yes_no,'YES')],
+      [AC_SUBST(latex_yes_no,'NO')])
+
+   AC_ARG_WITH(doc-output,
+      [  --with-doc-output=path  build documentation in path (prefix/documentation by default)],
+      [AC_SUBST(doxygen_output_top,${with_doc_output})],
+      [doxygen_output_top='DEFAULT'])
 
    dnl end of AC_DRACO_ARGS
 ])
@@ -4095,4 +4102,375 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_local.m4
 dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_doxygen.m4
+dnl
+dnl Macros to help setup doxygen autodoc directories.
+dnl
+dnl Kelly Thompson
+dnl 2004/03/30 16:41:22
+dnl 1999/02/04 01:56:19
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SET_DEFAULT_OUTPUT
+dnl-------------------------------------------------------------------------dnl
+#
+# Set the default location for doxygen output
+#
+AC_DEFUN([AC_SET_DEFAULT_OUTPUT], [dnl
+   if test ${doxygen_output_top} = DEFAULT; then
+       AC_SUBST(doxygen_output_top, "${prefix}/documentation")
+   fi
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_COMPONENT_TAGS
+dnl
+dnl   Collect tagfiles for within-package component dependencies
+dnl-------------------------------------------------------------------------dnl
+#
+# Build a list of tagfiles for other components of the same package
+# and the _relative_ locations of the autodoc directories that they
+# refer to.
+#
+# The relative path between documentation for components in the
+# same package is "../component"
+#
+# These components are specified in AC_NEEDS_LIBS, and are stored
+# in variable DEPENDENT_COMPONENTS. 
+#
+AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
+
+   components=''
+   AC_MSG_CHECKING([for Doxygen component dependencies])
+   for comp in ${DEPENDENT_COMPONENTS}; do
+       components="${components} ${comp}"
+       TAGFILES="${TAGFILES} ${doxygen_output_top}/${comp}.tag"
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${doxygen_output_top}/${comp}.tag = ../${comp}\""
+   done
+   AC_MSG_RESULT([${components}])
+
+   AC_SUBST(TAGFILES)
+   AC_SUBST(DOXYGEN_TAGFILES)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_AUTODOC
+dnl
+dnl  setup doxygen autodoc directories for COMPONENTS within a package
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_AUTODOC], [dnl
+
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   autodoc_dir=${doxygen_input}/autodoc
+
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
+   doxygen_input=`cd ${srcdir}; pwd`
+   doxygen_examples=${doxygen_input}/test
+
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
+
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
+
+   # The local dir is different from the current dir.
+   localdir=`pwd`/autodoc
+
+   # Set the component output locations.
+   doxygen_html_output="${doxygen_output_top}/html/${package}"
+   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
+
+   # compute relative paths from localdir
+   adl_COMPUTE_RELATIVE_PATHS([\
+      localdir:doxygen_examples:rel_doxygen_examples \
+      localdir:doxygen_input:rel_doxygen_input\
+      doxygen_html_output:package_html:rel_package_html\
+   ])
+
+   # add autodoc directory under the source to doxygen input
+   rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
+
+   # Get tags for other components in this package which this
+   # component depends on
+   AC_AUTODOC_COMPONENT_TAGS
+
+   # XXX We will need to expand this to handle tag files in other
+   # packages too.
+
+   # find the release number
+   number=$1
+   AC_MSG_CHECKING("component release number")
+   AC_MSG_RESULT($number)
+
+   AC_SUBST(doxygen_input)
+   AC_SUBST(doxygen_examples)
+   AC_SUBST(doxygen_output_top)
+
+   AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
+
+   AC_SUBST(rel_doxygen_examples)
+   AC_SUBST(rel_doxygen_input)
+   AC_SUBST(rel_package_html)
+
+   AC_SUBST(dotpath)
+   AC_SUBST(number)
+
+   AC_SUBST(header_dir)
+   AC_SUBST(autodoc_dir)
+
+   AC_CONFIG_FILES([autodoc/Makefile:../../config/Makefile.autodoc.in \
+                    autodoc/doxygen_config:../../config/doxygen_config.in \
+                    autodoc/header.html:../../autodoc/html/header.html.in \
+                    autodoc/footer.html:../../autodoc/html/footer.html.in ])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_PACKAGE_AUTODOC
+dnl
+dnl  setup doxygen autodoc directories for a PACKAGE
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
+
+   AC_SET_DEFAULT_OUTPUT
+
+   #
+   # For package-level documentation, the only doxygen sources are in
+   # the build tree, aka, the current directory.
+   #
+   #   doxygen_input=$builddir
+   #   doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
+
+   doxygen_input=`pwd`
+
+   localdir=`pwd`
+
+   #
+   # compute relative paths from localdir
+   #
+   adl_COMPUTE_RELATIVE_PATHS([\
+      localdir:doxygen_input:rel_doxygen_input \
+   ])
+
+
+   doxygen_html_output="${doxygen_output_top}/html/"
+   doxygen_latex_output="${doxygen_output_top}/latex/"
+
+
+   #
+   # XXX Need to change COMPLINKS to generic doxygen list instead of
+   # HTML for Latex compatability. Let doxygen insert the links
+   #
+   AC_MSG_CHECKING([for documented sub-components of this package])
+   COMP_LINKS=''
+   components=''
+   for item in `ls -1 ${package_top_srcdir}/src`; do
+      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
+         dirname=`basename ${item}`
+         components="${components} ${dirname}"
+         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+      fi
+   done
+   AC_MSG_RESULT(${components:-none})
+   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+
+   #
+   # XXX TO DO: Add links to dependent packages on this page.
+   #
+   PACKAGE_LINKS="<ul> </ul>"
+
+
+   # XXX Need to build a list of tags for the doxygenated
+   # components of the package.
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+   AC_SUBST(TAGFILES)
+   AC_SUBST(DOXYGEN_TAGFILES)
+
+   header_dir=${srcdir}/html
+   AC_SUBST(header_dir)
+
+   autodoc_dir=${srcdir}
+   AC_SUBST(autodoc_dir)
+
+   AC_SUBST(rel_doxygen_input)
+   AC_SUBST(rel_doxygen_examples, '')
+   AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
+
+   AC_SUBST(PACKAGE_LINKS)
+   AC_SUBST(COMP_LINKS)
+
+   AC_CONFIG_FILES([doxygen_config:../config/doxygen_config.in])
+   AC_CONFIG_FILES([Makefile:../config/Makefile.autodoc.in])
+   AC_CONFIG_FILES([header.html:html/header.html.in])
+   AC_CONFIG_FILES([footer.html:html/footer.html.in])
+   AC_CONFIG_FILES([mainpage.dcc])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_doxygen.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_utils.m4
+dnl
+dnl Macros to perform useful functions
+dnl
+dnl Mike Buksas
+dnl-------------------------------------------------------------------------dnl
+
+dnl Functions taken from:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
+dnl
+
+AC_DEFUN([adl_COMPUTE_RELATIVE_PATHS],
+[for _lcl_i in $1; do
+  _lcl_from=\[$]`echo "[$]_lcl_i" | sed 's,:.*$,,'`
+  _lcl_to=\[$]`echo "[$]_lcl_i" | sed 's,^[[^:]]*:,,' | sed 's,:[[^:]]*$,,'`
+  _lcl_result_var=`echo "[$]_lcl_i" | sed 's,^.*:,,'`
+  adl_RECURSIVE_EVAL([[$]_lcl_from], [_lcl_from])
+  adl_RECURSIVE_EVAL([[$]_lcl_to], [_lcl_to])
+  _lcl_notation="$_lcl_from$_lcl_to"
+  adl_NORMALIZE_PATH([_lcl_from],['/'])
+  adl_NORMALIZE_PATH([_lcl_to],['/'])
+  adl_COMPUTE_RELATIVE_PATH([_lcl_from], [_lcl_to], [_lcl_result_tmp])
+  adl_NORMALIZE_PATH([_lcl_result_tmp],["[$]_lcl_notation"])
+  eval $_lcl_result_var='[$]_lcl_result_tmp'
+done])
+
+
+dnl adl_COMPUTE_RELATIVE_PATH(FROM, TO, RESULT)
+dnl ===========================================
+dnl Compute the relative path to go from $FROM to $TO and set the value
+dnl of $RESULT to that value.  This function work on raw filenames
+dnl (for instead it will considerate /usr//local and /usr/local as
+dnl two distinct paths), you should really use adl_COMPUTE_REALTIVE_PATHS
+dnl instead to have the paths sanitized automatically.
+dnl
+dnl For instance:
+dnl    first_dir=/somewhere/on/my/disk/bin
+dnl    second_dir=/somewhere/on/another/disk/share
+dnl    adl_COMPUTE_RELATIVE_PATH(first_dir, second_dir, first_to_second)
+dnl will set $first_to_second to '../../../another/disk/share'.
+AC_DEFUN([adl_COMPUTE_RELATIVE_PATH],
+[adl_COMPUTE_COMMON_PATH([$1], [$2], [_lcl_common_prefix])
+adl_COMPUTE_BACK_PATH([$1], [_lcl_common_prefix], [_lcl_first_rel])
+adl_COMPUTE_SUFFIX_PATH([$2], [_lcl_common_prefix], [_lcl_second_suffix])
+$3="[$]_lcl_first_rel[$]_lcl_second_suffix"])
+
+dnl adl_COMPUTE_COMMON_PATH(LEFT, RIGHT, RESULT)
+dnl ============================================
+dnl Compute the common path to $LEFT and $RIGHT and set the result to $RESULT.
+dnl
+dnl For instance:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on/another/disk/share
+dnl    adl_COMPUTE_COMMON_PATH(first_path, second_path, common_path)
+dnl will set $common_path to '/somewhere/on'.
+AC_DEFUN([adl_COMPUTE_COMMON_PATH],
+[$3=''
+_lcl_second_prefix_match=''
+while test "[$]_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x[$]$1" : "x\([$]$3/*[[^/]]*\)"`
+  _lcl_second_prefix_match=`expr "x[$]$2" : "x[$]_lcl_first_prefix"`
+  if test "[$]_lcl_second_prefix_match" != 0; then
+    if test "[$]_lcl_first_prefix" != "[$]$3"; then
+      $3="[$]_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done])
+
+dnl adl_COMPUTE_SUFFIX_PATH(PATH, SUBPATH, RESULT)
+dnl ==============================================
+dnl Substrack $SUBPATH from $PATH, and set the resulting suffix
+dnl (or the empty string if $SUBPATH is not a subpath of $PATH)
+dnl to $RESULT.
+dnl
+dnl For instace:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on
+dnl    adl_COMPUTE_SUFFIX_PATH(first_path, second_path, common_path)
+dnl will set $common_path to '/my/disk/bin'.
+AC_DEFUN([adl_COMPUTE_SUFFIX_PATH],
+[$3=`expr "x[$]$1" : "x[$]$2/*\(.*\)"`])
+
+dnl adl_COMPUTE_BACK_PATH(PATH, SUBPATH, RESULT)
+dnl ============================================
+dnl Compute the relative path to go from $PATH to $SUBPATH, knowing that
+dnl $SUBPATH is a subpath of $PATH (any other words, only repeated '../'
+dnl should be needed to move from $PATH to $SUBPATH) and set the value
+dnl of $RESULT to that value.  If $SUBPATH is not a subpath of PATH,
+dnl set $RESULT to the empty string.
+dnl
+dnl For instance:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on
+dnl    adl_COMPUTE_BACK_PATH(first_path, second_path, back_path)
+dnl will set $back_path to '../../../'.
+AC_DEFUN([adl_COMPUTE_BACK_PATH],
+[adl_COMPUTE_SUFFIX_PATH([$1], [$2], [_lcl_first_suffix])
+$3=''
+_lcl_tmp='xxx'
+while test "[$]_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x[$]_lcl_first_suffix" : "x[[^/]]*/*\(.*\)"`
+  if test "[$]_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="[$]_lcl_tmp"
+     $3="../[$]$3"
+  fi
+done])
+
+dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
+dnl =================================
+dnl Interpolate the VALUE in loop until it doesn't change,
+dnl and set the result to $RESULT.
+dnl WARNING: It's easy to get an infinite loop with some unsane input.
+AC_DEFUN([adl_RECURSIVE_EVAL],
+[_lcl_receval="$1"
+$2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "[$]_lcl_receval_old" != "[$]_lcl_receval"; do
+       _lcl_receval_old="[$]_lcl_receval"
+       eval _lcl_receval="\"[$]_lcl_receval\""
+     done
+     echo "[$]_lcl_receval")`])
+
+
+
+dnl Available from the GNU Autoconf Macro Archive at:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/normpath.html
+dnl
+AC_DEFUN([adl_NORMALIZE_PATH],
+[case ":[$]$1:" in
+# change empty paths to '.'
+  ::) $1='.' ;;
+# strip trailing slashes
+  :*[[\\/]]:) $1=`echo "[$]$1" | sed 's,[[\\/]]*[$],,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case ifelse($2,,"[$]$1",$2) in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1/,g'` ;;
+esac])
+
+
+
 
