@@ -190,16 +190,16 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	// calculate coefficients needed for Fleck factor
-	dedT        = mat_state->get_dedt(cell);
-	T           = mat_state->get_T(cell);
-	volume      = mesh->volume(cell);
+	dedT   = mat_state->get_dedt(cell);
+	T      = mat_state->get_T(cell);
+	volume = mesh->volume(cell);
 
 	Check (T      >= 0.0);
 	Check (dedT   >  0.0);
 	Check (volume >  0.0);
 
 	// calculate beta (4acT^3/Cv)
-	beta        = 4.0 * a * T*T*T * volume / dedT;
+	beta = 4.0 * a * T*T*T * volume / dedT;
 	
 	// calculate Fleck factor
 	fleck->fleck(cell) = 1.0 / 
@@ -213,6 +213,21 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
     // create Opacity object
     return_opacity = new Opacity<MT,Gray_Frequency>(frequency, absorption, 
 						    scattering, fleck);
+
+    // build the Diffusion_Opacity
+    if (build_diffusion_opacity)
+    {
+	Require (flat_data->rosseland_opacity.size() == num_cells);
+
+	// get the Rosseland opacities
+	typename MT::template CCSF<double> rosseland(
+	    mesh, flat_data->rosseland_opacity);
+
+	// make the diffusion opacity
+	diff_opacity = new Diffusion_Opacity<MT>(fleck, rosseland);
+	Ensure (diff_opacity);
+	Ensure (diff_opacity->num_cells() == mesh->num_cells());
+    }
 
     Ensure (return_opacity);
     Ensure (return_opacity->num_cells() == num_cells);

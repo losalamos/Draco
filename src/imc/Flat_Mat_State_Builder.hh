@@ -18,6 +18,7 @@
 #include "Opacity.hh"
 #include "Diffusion_Opacity.hh"
 #include "Frequency.hh"
+#include "Hybrid_Diffusion.hh"
 #include "Global.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -30,23 +31,56 @@ namespace rtt_imc
 /*!
  * \class Flat_Mat_State_Builder
  *
- * This class builds instances of rtt_imc::Opacity and rtt_imc::Mat_State.
- * It receives its data from a defined interface in a "flat" form.  In other
- * words, the data fields are already defined.  It receives an Interface Type
- * (IT) in its constructor.  The IT must be a derived class of
- * rtt_imc::Interface and rtt_imc::Flat_Data_Interface.
+ * This class builds instances of rtt_imc::Opacity,
+ * rtt_imc::Diffusion_Opacity, and rtt_imc::Mat_State.  It can be templated
+ * on either Gray_Frequency or Multigroup_Frequency through the FT (Frequency
+ * Type) parameter. It receives its data from a defined interface in a "flat"
+ * form.  In other words, the data fields are already defined.  It receives
+ * an Interface Type (IT) in its constructor.  The IT must be a derived class
+ * of rtt_imc::Interface and rtt_imc::Flat_Data_Interface.
+ *
+ * For gray problems the Flat_Data_Container::gray_absorption_opacity and
+ * Flat_Data_Container::gray_scattering_opacity fields must be allocated.
+ * For multigroup problems the following fields must be allocated:
+ * - Flat_Data_Container::mg_absorption_opacity
+ * - Flat_Data_Container::mg_scattering_opacity
+ * - Flat_Data_Container::group_boundaries
+ * . 
+ * Both gray and multigroup problems require the
+ * Flat_Data_Container::specific_heat field.
+ *
+ * To build Diffusion_Opacity objects for FT = Gray_Frequency, the
+ * rtt_imc::Flat_Data_Container::rosseland_opacity field must be filled. As
+ * opposed to the rtt_imc::CDI_Mat_State_Builder, the Flat_Mat_State_Builder
+ * does not attempt to assemble Rosseland opacities from the absorption and
+ * scattering opacities.  The Rosseland opacities must come through the
+ * interface in the Flat_Data_Container.
+ *
+ * For multigroup, the Rosseland opacities are calculated by integrating over
+ * each group as follows:
+ * \f[
+ * \frac{1}{\sigma_{R}} = \frac{\int(\sigma_{a}+\sigma_{s})
+ * \frac{\partial B}{\partial T}}{\int\frac{\partial B}{\partial T}}
+ * \f]  
  *
  * This class, along with rtt_imc::CDI_Mat_State_Builder, is a derived class
  * of Mat_State_Builder.  It should be used when a client already has
- * cell-centered material defined.  
+ * cell-centered material defined.g  
  *
- * \sa rtt_imc::Interface, rtt_imc::Flat_Data_Interface.  See
- * tstMat_Data_Builder for examples of usage.
+ * \sa rtt_imc::Interface, rtt_imc::Flat_Data_Interface,
+ * rtt_imc::Mat_State_Builder.  See tstFlat_Mat_Data_Builder for examples of
+ * usage.
+ */
+/*!
+ * \example imc/test/tstFlat_Mat_State_Builder.cc
+ *
+ * Test of CDI_Mat_State_Builder derived type.
  */
 // revision history:
 // -----------------
 // 0) original
 // 1) 20-FEB-2003 : updated to use new Mat_State_Builder interface
+// 2) 13-MAR-2003 : updated to build diffusion opacities for gray problems
 // 
 //===========================================================================//
 
@@ -86,6 +120,9 @@ class Flat_Mat_State_Builder : public Mat_State_Builder<MT,FT>
 
     // Timestep in shakes.
     double       delta_t;
+
+    // Switch for building diffusion opacities.
+    bool          build_diffusion_opacity;
 
   private:
     // >>> BUILT OBJECTS
@@ -171,16 +208,34 @@ template<class MT, class FT>
 template<class IT>
 Flat_Mat_State_Builder<MT,FT>::Flat_Mat_State_Builder(
     rtt_dsxx::SP<IT> interface)
-    : Mat_State_Builder<MT,FT>()
+    : Mat_State_Builder<MT,FT>(),
+      density(interface->get_density()),
+      temperature(interface->get_temperature()),
+      implicitness(interface->get_implicitness_factor()),
+      delta_t(interface->get_delta_t()),
+      flat_data(interface->get_flat_data_container()),
+      build_diffusion_opacity(false)
 {
     Require (interface);
+    Require (flat_data);
+    
+    // set switch
+    int hybrid = interface->get_hybrid_diffusion_method();
+    switch (hybrid)
+    {
+    case Hybrid_Diffusion::TRANSPORT:
+	build_diffusion_opacity = false;
+	break;
 
-    // assign data members from the interface parser
-    density       = interface->get_density();
-    temperature   = interface->get_temperature();
-    implicitness  = interface->get_implicitness_factor();
-    delta_t       = interface->get_delta_t();
-    flat_data     = interface->get_flat_data_container();
+    case Hybrid_Diffusion::RANDOM_WALK:
+    case Hybrid_Diffusion::DDIMC:
+	build_diffusion_opacity = true;
+	break;
+
+    default:
+	throw rtt_dsxx::assertion("Invalid hybrid diffusion scheme.");
+	break;
+    }
 
     Ensure (delta_t > 0.0);
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);

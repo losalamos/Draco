@@ -15,6 +15,7 @@
 #include "../Flat_Mat_State_Builder.hh"
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
+#include "../Diffusion_Opacity.hh"
 #include "../Frequency.hh"
 #include "../Global.hh"
 #include "../Particle.hh"
@@ -38,6 +39,7 @@ using rtt_imc_test::IMC_Flat_Interface;
 using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State_Builder;
 using rtt_imc::Mat_State;
+using rtt_imc::Diffusion_Opacity;
 using rtt_imc::Opacity;
 using rtt_mc::OS_Builder;
 using rtt_mc::OS_Mesh;
@@ -171,9 +173,84 @@ void gray_flat_mat_state_test()
 	if (!soft_equiv(effabs, effabs_ref))   ITFAILS;
 	if (!soft_equiv(effsc, effsc_ref))     ITFAILS;
     }
+    
+    // we shouldn't have a diffusion opacity
+    SP<Diffusion_Opacity<MT> > diff = builder->get_Diffusion_Opacity();
+    if (diff) ITFAILS;
 
     if (rtt_imc_test::passed)
 	PASSMSG("Flat Opacity passes all tests in Gray test.");
+}
+
+//---------------------------------------------------------------------------//
+
+void gray_flat_diffusion_mat_state_test()
+{
+    // build a parser, mesh, and interface
+    SP<Parser>                  parser(new Parser("OS_Input"));
+    SP<OS_Builder>              mb(new OS_Builder(parser));
+    SP<OS_Mesh>                 mesh = mb->build_Mesh();
+    SP<IMC_Flat_Interface<PT> > interface(new IMC_Flat_Interface<PT>(mb, 0, 1));
+    
+    // pointer to a mat state builder
+    SP<Mat_State_Builder<MT,G> > builder;
+
+    // make a flat mat state builder
+    builder = new Flat_Mat_State_Builder<MT,G>(interface);
+
+    // build objects
+    builder->build_mat_classes(mesh);
+
+    // get the opacity and mat states
+    SP<G>                      frequency = builder->get_Frequency();
+    SP<Mat_State<MT> >         mat_state = builder->get_Mat_State();
+    SP<Opacity<MT,G> >         opacity   = builder->get_Opacity();
+    SP<Diffusion_Opacity<MT> > diff      = builder->get_Diffusion_Opacity();
+    if (!diff)                  ITFAILS;
+    if (diff->num_cells() != 6) ITFAILS;
+
+    for (int cell = 1; cell <= 3; cell++)
+    {
+	double sig_abs = opacity->get_sigma_abs(cell);
+	double sig_sc  = opacity->get_sigma_thomson(cell);
+	double rosref  = sig_abs + sig_sc;
+	double dedT    = mat_state->get_dedt(cell);
+
+	double fleck = diff->get_fleck(cell);
+	double ros   = diff->get_Rosseland_opacity(cell);
+
+	double fleck_ref   = 1.0 / 
+	    (1.0 + 4.0*rtt_mc::global::a*rtt_mc::global::c*1000.0*
+	     mesh->volume(cell)*0.001/dedT*0.1);
+
+	if (!soft_equiv(sig_abs, .1))      ITFAILS;
+	if (!soft_equiv(sig_sc, .5))       ITFAILS;
+	if (!soft_equiv(fleck, fleck_ref)) ITFAILS;
+	if (!soft_equiv(ros, rosref))      ITFAILS;
+    }
+
+    for (int cell = 4; cell <= 6; cell++)
+    {
+	double sig_abs = opacity->get_sigma_abs(cell);
+	double sig_sc  = opacity->get_sigma_thomson(cell);
+	double rosref  = sig_abs + sig_sc;
+	double dedT    = mat_state->get_dedt(cell);
+
+	double fleck = diff->get_fleck(cell);
+	double ros   = diff->get_Rosseland_opacity(cell);
+	
+	double fleck_ref   = 1.0 / 
+	    (1.0 + 4.0*rtt_mc::global::a*rtt_mc::global::c*8000.0*
+	     mesh->volume(cell)*0.001/dedT*0.02);
+
+	if (!soft_equiv(sig_abs, .02))     ITFAILS;
+	if (!soft_equiv(sig_sc, 0.0))      ITFAILS;
+	if (!soft_equiv(fleck, fleck_ref)) ITFAILS;
+	if (!soft_equiv(ros, rosref))      ITFAILS;
+    }
+    
+    if (rtt_imc_test::passed)
+	PASSMSG("Flat Diffusion_Opacity passes all tests in Gray test.");
 }
 
 //---------------------------------------------------------------------------//
@@ -357,7 +434,12 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+
+	// gray tests
 	gray_flat_mat_state_test();
+	gray_flat_diffusion_mat_state_test();
+
+	// mg tests
 	mg_flat_mat_state_test();
     }
     catch (rtt_dsxx::assertion &ass)

@@ -29,6 +29,7 @@ namespace rtt_imc
 // revision history:
 // -----------------
 // 0) original
+// 1) 13-MAR-2003 : added Rosseland opacity to container
 // 
 //===========================================================================//
 

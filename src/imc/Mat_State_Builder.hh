@@ -58,19 +58,13 @@ template<class MT> class Diffusion_Opacity;
  * - get_Diffusion_Opacity()
  * .
  *
- * The Mat_State must be built first because the Mat_State object is an
- * argument to build_Opacity().  The argument is required for efficiency's
- * sake; we do not want to reread specific heats, etc. from an input file to
- * build the opacities after we have already gotten them to build the
- * Mat_State.
+ * The rtt_imc::Diffusion_Opacity class is built if the
+ * rtt_imc::Interface::get_hybrid_diffusion_method function returns an
+ * appropriate method requiring diffusion opacities.  These methods are
+ * defined in the rtt_imc::Hybrid_Diffusion::Method enumeration.
  *
- * See the tstMat_State_Builder.cc for usage examples.
- */
-/*!
- * \example imc/test/tstMat_State_Builder.cc
- *
- * Test of Mat_State_Builder types and rtt_imc::Opacity,
- * rtt_imc::Diffusion_Opacity, and rtt_imc::Mat_State.
+ * \sa See the tstCDI_Mat_State_Builder.cc and tstFlat_Mat_State_Builder.cc
+ * for usage examples.
  */
 // revision history:
 // -----------------

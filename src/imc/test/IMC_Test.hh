@@ -83,6 +83,7 @@ class IMC_Flat_Interface :
     sf_double  temperature;
     double     implicitness;
     double     delta_t;
+    int        hybrid_model;
 
     // data for the source builder
     double    elapsed_t;
@@ -94,11 +95,11 @@ class IMC_Flat_Interface :
 
   public:
     // constructor
-    IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, bool = false);
+    IMC_Flat_Interface(rtt_dsxx::SP<rtt_mc::OS_Builder>, bool = false, int = 0);
 
     // general interface
     double get_delta_t() const { return delta_t; }
-    int    get_hybrid_diffusion_method() const { return 0; }
+    int    get_hybrid_diffusion_method() const { return hybrid_model; }
     
     // public interface for Opacity_Builder
     SP_Data   get_flat_data_container() const { return mat_data; }
@@ -134,7 +135,8 @@ class IMC_Flat_Interface :
 template<class PT>
 IMC_Flat_Interface<PT>::IMC_Flat_Interface(
     rtt_dsxx::SP<rtt_mc::OS_Builder> osb, 
-    bool                             common_mg_opacities) 
+    bool                             common_mg_opacities,
+    int                              hmodel) 
     : builder(osb),
       mat_data(new rtt_imc::Flat_Data_Container),
       density(6), 
@@ -146,13 +148,15 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
       rad_source(6),
       rad_temp(6),
       ss_temp(2),
-      ss_desc(2, "standard")
+      ss_desc(2, "standard"),
+      hybrid_model(hmodel)
 {   
     // make the Opacity and Mat_State stuff
     
     // size the data in the flat data container
     mat_data->gray_absorption_opacity.resize(6);
     mat_data->gray_scattering_opacity.resize(6);
+    mat_data->rosseland_opacity.resize(6);
     mat_data->mg_absorption_opacity.resize(6, sf_double(3));
     mat_data->mg_scattering_opacity.resize(6, sf_double(3));
     mat_data->specific_heat.resize(6);
@@ -216,6 +220,14 @@ IMC_Flat_Interface<PT>::IMC_Flat_Interface(
 	// specific heat in jks/g/keV
 	mat_data->specific_heat[i]   = .1;
 	mat_data->specific_heat[i+3] = .2;
+
+	// rosseland opacities
+	mat_data->rosseland_opacity[i] =
+	    mat_data->gray_absorption_opacity[i] +
+	    mat_data->gray_scattering_opacity[i];
+	mat_data->rosseland_opacity[i+3] = 
+	    mat_data->gray_absorption_opacity[i+3] +
+	    mat_data->gray_scattering_opacity[i+3];
 
 	// temperature
 	temperature[i]   = 10.0;

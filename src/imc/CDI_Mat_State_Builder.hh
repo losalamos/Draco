@@ -46,13 +46,13 @@ namespace rtt_imc
  *
  * The CDIs \b must contain data for absorption and scattering. The
  * rtt_cdi::Model types for each are specified by the interface. If
- * Diffusion_Opacity objects are required the data required depends upon the
- * frequency treatment.  For gray, if the CDIs have the Rosseland total
- * opacity set (rtt_cdi::Model == rtt_cdi::ROSSELAND and rtt_cdi::Reaction ==
- * rtt_cdi::TOTAL) then that is used.  Otherwise, the absorption and
- * scattering opacities are added together to estimate the Rosseland total
- * opacity.  However, if the absorption opacity model is rtt_cdi::PLANCK then
- * an assertion is thrown.
+ * Diffusion_Opacity objects need to be built then the data required depends
+ * upon the frequency treatment.  For gray, if the CDIs have the Rosseland
+ * total opacity set (rtt_cdi::Model == rtt_cdi::ROSSELAND and
+ * rtt_cdi::Reaction == rtt_cdi::TOTAL) then that is used.  Otherwise, the
+ * absorption and scattering opacities are added together to estimate the
+ * Rosseland total opacity.  However, if the absorption opacity model is
+ * rtt_cdi::PLANCK then an assertion is thrown.
  *
  * For multigroup, the Rosseland opacities are calculated by integrating over
  * each group as follows:
@@ -65,14 +65,20 @@ namespace rtt_imc
  * of Mat_State_Builder.  It should be used when a client is using CDI
  * (rtt_cdi) to define material data
  *
- * \sa rtt_imc::Interface, rtt_imc::CDI_Data_Interface.  See
- * imc/test/tstMat_Data_Builder.cc for examples of usage.
+ * \sa rtt_imc::Interface, rtt_imc::CDI_Data_Interface,
+ * rtt_imc::Mat_State_Builder.  See imc/test/tstCDIMat_Data_Builder.cc for
+ * examples of usage.
+ */
+/*!
+ * \example imc/test/tstCDI_Mat_State_Builder.cc
  *
+ * Test of CDI_Mat_State_Builder derived type.
  */
 // revision history:
 // -----------------
 // 0) original
 // 1) 20-FEB-2003 : updated to match new Mat_State_Builder interface
+// 2) 06-MAR-2003 : updated to build diffusion opacities for gray problems
 // 
 //===========================================================================//
 
