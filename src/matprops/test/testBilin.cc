@@ -11,8 +11,8 @@
 #define END_NS_XTM }
 #endif
 
-BEGIN_NS_XTM
-    
+using namespace XTM;
+
 using dsxx::Mat2;
 using std::cout;
 using std::cerr;
@@ -84,7 +84,7 @@ BilinearInterpTable getTable()
 #endif
 }
 
-void doit()
+void testBilinDoit()
 {
     BilinearInterpTable biLinTable = getTable();
     
@@ -137,17 +137,3 @@ void doit()
 
     showSequence("expected: ", expected, cerr);
 }
-
-int main()
-{
-    try
-    {
-	doit();
-    }
-    catch (const dsxx::assertion &ass)
-    {
-	cerr << "assert failed: " << ass.what() << endl;
-    }
-}
-
-END_NS_XTM  // namespace XTM

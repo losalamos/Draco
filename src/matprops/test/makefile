@@ -16,6 +16,7 @@ need_util	:= no
 need_pooma	:= no
 need_mesh	:= no
 need_matprops	:= yes
+need_3T		:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -27,7 +28,9 @@ CXXFLAGS += -DDBC=7
 srcs	= \
 	main.cc \
 	testBilin.cc \
-	testMatProp.cc
+	TestMatPropReader.cc \
+	testMatProp.cc \
+	testMatProp_pt.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
@@ -43,15 +46,17 @@ objs	= $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_libmatprops) $(dep_libds++)
+	$(dep_libmatprops) $(dep_lib3T) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
 deps:
 ifneq ($(dodeps),no)
 	(cd ../../matprops;   $(MAKE) $(subnj))
+	(cd ../../3T;   $(MAKE) $(subnj))
 endif
 
 $(dep_libmatprops):
+$(dep_lib3T):
 $(dep_libds++):
 
 # Go pick up the standard signature for makefiles.

@@ -2,7 +2,7 @@
 
 #include "matprops/BilinearInterpGrid.hh"
 #include "matprops/BilinearInterpTable.hh"
-#include "matprops/test/TestMatPropReader.hh"
+#include "matprops/FifiMatPropsReader.hh"
 
 #include "3T/Units.hh"
 
@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 using std::vector;
+#include <fstream>
 #include <iostream>
 using std::cerr;
 using std::endl;
@@ -23,10 +24,15 @@ typedef InterpedMaterialProps IMP;
 void testMatProp()
 {
     Units units = Units::getSIUnits();
-    
-    TestMatPropReader reader(units);
 
-    IMP matProp(reader);
+    const int matIdsC[] = {1,2,3};
+    vector<int> matIds(matIdsC, matIdsC+sizeof(matIdsC)/sizeof(int));
+
+    std::ifstream ifs("testMatProp.inp");
+    
+    FifiMatPropsReader reader(units, ifs);
+
+    IMP matProp(matIds, reader);
 
     typedef vector<double> ccsf;
 
