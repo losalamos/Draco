@@ -20,8 +20,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = Diffusion_DB.cc \
-          P13T_Mesh_XYZ_pt.cc
+libsrcs = P13T_Mesh_XYZ_pt.cc
 
 # Get the library built, minding our various other targets too.
 

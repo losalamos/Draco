@@ -11,7 +11,7 @@
 
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
-#include "3T/Diffusion_DB.hh"
+#include "diffusion/Diffusion_DB.hh"
 
 namespace rtt_P1Diffusion
 {

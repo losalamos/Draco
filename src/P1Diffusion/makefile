@@ -10,6 +10,8 @@ pkg := P1Diffusion
 
 need_ds++	:= yes
 need_linalg	:= yes
+need_mesh	:= yes
+need_diffusion  := yes
 
 # Go get the standard includeable makefile for Draco components.
 
@@ -28,7 +30,9 @@ libsrcs = MatrixP1Diff_pt.cc \
 pretarg = deps
 
 resolve_libs = -L../ds++ -lds++_$(env) \
-               -L../linalg -llinalg_$(env)
+               -L../linalg -llinalg_$(env) \
+               -L../mesh -lmesh_$(env) \
+               -L../diffusion -ldiffusion_$(env)
 
 include ../config/make.lib
 
@@ -36,6 +40,8 @@ deps:
 ifneq ($(dodeps),no)
 	(cd ../ds++;    $(MAKE) $(subnj))
 	(cd ../linalg;    $(MAKE) $(subnj))
+	(cd ../mesh;    $(MAKE) $(subnj))
+	(cd ../diffusion;    $(MAKE) $(subnj))
 endif
 
 # Rules for building docs

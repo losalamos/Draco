@@ -14,7 +14,7 @@
 #include "linalg/PCG_Ctrl.hh"
 #include "linalg/Banded_Matrix.hh"
 
-#include "3T/Diffusion_DB.hh"
+#include "diffusion/Diffusion_DB.hh"
 #include "3T/MatVec_3T.hh"
 #include "3T/PreCond.hh"
 

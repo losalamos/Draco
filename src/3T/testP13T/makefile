@@ -20,6 +20,7 @@ need_radphys	:= yes
 need_matprops	:= yes
 need_timestep	:= yes
 need_P1Diffusion := yes
+need_diffusion := yes
 
 # Go get the standard includeable makefile for Draco components.
 
