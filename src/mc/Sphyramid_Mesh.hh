@@ -812,7 +812,7 @@ struct Sphyramid_Mesh::Pack
   private:
     // data contained in the mesh
     char *data;
-    char size;
+    int size;
 
     // disallow assignment
     Pack& operator=(const Pack&);

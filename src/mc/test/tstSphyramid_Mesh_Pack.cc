@@ -42,12 +42,12 @@ void test_pack()
 
     // build the mesh
     m1 = builder.build_Mesh();
-    if(m1->num_cells() != 5) ITFAILS;
+    if (m1->num_cells() != 5) ITFAILS;
 
     // replicate the mesh
     {
-	//SP<Sphyramid_Mesh::Pack> pack = m1->pack();
-	//if (pack->get_num_packed_cells() != 5) ITFAILS;
+	SP<Sphyramid_Mesh::Pack> pack = m1->pack();
+	if (pack->get_num_packed_cells() != 5) ITFAILS;
 	//m2 = pack->unpack();
     }
 

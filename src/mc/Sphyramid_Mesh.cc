@@ -95,7 +95,7 @@ Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_,
 void Sphyramid_Mesh::pack_extents(const sf_int &current_to_new,
 				  char *data, int size, int num_packed) const
 {
-    Require (current_to_new.size()        == this->layout.num_cells());
+    Require (current_to_new.size()       == this->layout.num_cells());
     Require (this->cell_x_extents.size() == this->layout.num_cells());
     Require (data != 0);
     Require (size == 2*num_packed*sizeof(double));
@@ -131,7 +131,7 @@ void Sphyramid_Mesh::pack_extents(const sf_int &current_to_new,
 	}
     }
 
-    Ensure (packer.get_ptr() == size+data);
+    Ensure (packer.get_ptr() == data+size);
 }
 
 
@@ -919,6 +919,7 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
     // determine wheter this is exact replication or sub-packing
     sf_int current_to_new_replicate;
     bool replicate;
+    
     if (current_to_new.size() == 0)
     {
 	replicate = true;
@@ -947,13 +948,14 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
     char *extent_data = 0;
 
     // packup the layout
+   
     if (replicate)
     {
 	// packup the layout
 	packed_layout = this->layout.pack(current_to_new_replicate);
 	layout_size = packed_layout->get_size();
 	Check (layout_size >= 1);
-
+ 
 	// number of packed cells in this mesh
 	num_packed_cells = packed_layout->get_num_packed_cells();
 	Check (num_packed_cells == this->layout.num_cells());
@@ -961,6 +963,7 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
 	// calculate extent size
 	extent_size = 2*num_packed_cells*sizeof(double);
 	extent_data = new char[extent_size];
+	
 
 	// pack extents
 	pack_extents(current_to_new_replicate, extent_data, extent_size,
@@ -988,7 +991,7 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
     }
     Check (num_packed_cells >= 0);
     Check (num_packed_cells <= this->layout.num_cells());
-    Check (extent_size == 2.*num_packed_cells*sizeof(double));
+    Check (extent_size == 2*num_packed_cells*sizeof(double));
     Check (extent_data != 0);
 
     // now pack up the mesh
@@ -1005,13 +1008,13 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
     // allocate space
     int size = total_ints + total_doubles + total_chars;
     char *data = new char[size];
-
+    
     // pack up the mesh
     rtt_dsxx::Packer packer;
 
     // set the buffer
     packer.set_buffer(size, data);
-
+   
     // pack the number of packed cells
     packer << num_packed_cells;
 
@@ -1040,7 +1043,7 @@ Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
 
     // make a packed mesh
     SP_Pack packed_mesh(new Sphyramid_Mesh::Pack(size, data));
-
+    
     Ensure (packed_mesh->get_num_packed_cells() == num_packed_cells);
 
     return packed_mesh;
@@ -1129,6 +1132,7 @@ Sphyramid_Mesh::Pack::~Pack()
 {
     delete [] data;
 }
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief get number of cells in the packed mesh
@@ -1142,12 +1146,14 @@ int Sphyramid_Mesh::Pack::get_num_packed_cells() const
 
     rtt_dsxx::Unpacker unpacker;
     unpacker.set_buffer(this->size, this->data);
- 
+   
     unpacker >> num_cells;
+      
 
     Check (unpacker.get_ptr() == data + sizeof(int));
 
     Ensure (num_cells >= 0);
+    
     return num_cells;
 }
 
