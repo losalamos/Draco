@@ -50,6 +50,7 @@ namespace rtt_3T {
    private:
 
      class P1Coeffs;
+     friend class P1Coeffs;
 
    public:
 
