@@ -21,8 +21,8 @@ AC_CONFIG_SUBDIRS(ds++ xm stdheaders)
 AC_CONFIG_SUBDIRS(UnitTestFrame)
 AC_CONFIG_SUBDIRS(traits units c4 rng meshReaders)
 AC_CONFIG_SUBDIRS(stopwatch meshTest viz RTT_Format_Reader \
-                  quadrature cdi)
-AC_CONFIG_SUBDIRS(mesh radphys linalg LAMG ConjGrad diffusion \
+                  quadrature cdi linalg)
+AC_CONFIG_SUBDIRS(mesh radphys LAMG ConjGrad diffusion \
                   timestep cdi_gandolf cdi_eospac cdi_analytic mc)
 AC_CONFIG_SUBDIRS(imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver meshReaders_Services)
