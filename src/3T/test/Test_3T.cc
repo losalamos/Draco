@@ -10,15 +10,15 @@
 
 #include <iostream.h>
 
-template<class Problem>
-Test_3T<Problem>::Test_3T()
+template<class MT, class Problem>
+Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_, const Quad_Params& q )
     : Problem()
 {
 }
 
 
-template<class Problem>
-void Test_3T<Problem>::run()
+template<class MT, class Problem>
+void Test_3T<MT, Problem>::run()
 {
     cout << "Running the test problem, NOT!" << endl;
 }

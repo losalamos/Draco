@@ -10,6 +10,7 @@
 #define __3T_test_Test_3T_hh__
 
 #include "Test_Prob.hh"
+#include "Quad_Params.hh"
 
 //===========================================================================//
 // class Test_3T - Template class for accomodating various formulations
@@ -19,13 +20,13 @@
 // test problem is provided as a template parameter.
 //===========================================================================//
 
-template<class Problem>
+template<class MT, class Problem>
 class Test_3T : public Test_Prob,
 		private Problem
 {
 
   public:
-    Test_3T();
+    Test_3T( const SP<MT>& spm_, const Quad_Params& q );
 //     Test_3T( const Test_3T& );
 //     ~Test_3T();
 //     Test_3T& operator=( const Test_3T& );
