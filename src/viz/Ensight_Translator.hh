@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <cstring>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
