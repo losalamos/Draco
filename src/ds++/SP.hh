@@ -106,11 +106,6 @@ class SP
   private:
     // >>> IMPLEMENTATION
 
-    //! Require that this pointer points to a assigned memory.
-    void validate() const {
-	Insist_ptr(p, "No dumb pointer bound to this SP!"); 
-    }
-
     // Free the pointer.
     inline void free();
 
@@ -153,10 +148,10 @@ class SP
     inline SP<T>& operator=(const SP<X> &spx_in);
 
     //! Access operator.
-    T* operator->() const { validate(); return p; }
+    T* operator->() const { Require(p); return p; }
 
     //! Dereference operator.
-    T& operator*() const { validate(); return *p; }
+    T& operator*() const { Require(p); return *p; }
 
     //! Get the base-class pointer; better know what you are doing.
     T* bp() const { return p; }

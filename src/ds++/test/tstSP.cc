@@ -518,6 +518,7 @@ void fail_modes_test()
 
     // try to reference a function
     bool caught = false;
+#if DBC
     try
     {
 	spfoo->f();
@@ -561,7 +562,7 @@ void fail_modes_test()
     }
     if (!caught)
 	FAILMSG("Failed to catch illegal access exception.");
-
+#endif
     // now make a wombat and try
     spbat  = new Wombat;
     CHECK_N_OBJECTS(0, 0, 0, 1);
