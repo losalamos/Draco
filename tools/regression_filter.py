@@ -21,7 +21,7 @@ import re
 import string
 
 ##---------------------------------------------------------------------------##
-## Set hostname (Assume filter host is same as regression host.)
+## Set hostname where this filter is run
 ##---------------------------------------------------------------------------##
 
 hostname = socket.gethostname()
@@ -42,6 +42,7 @@ errors   = re.compile(r'error', re.IGNORECASE)
 
 warnings = re.compile(r'warn', re.IGNORECASE)
 
+reg_host   = re.compile(r'.*>>>\s*HOSTNAME\s*:\s*(.+)', re.IGNORECASE)
 pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
 script_tag = re.compile(r'.*>>>\s*REGRESSION\s*SCRIPT\s*:\s*(.+)', re.IGNORECASE)
 log_tag    = re.compile(r'.*>>>\s*REGRESSION\s*LOG\s*:\s*(.+)', re.IGNORECASE)
@@ -71,6 +72,7 @@ warn_line  = []
 lines = sys.stdin.readlines()
 
 # tags
+reg_host_str   = ''
 pkg_tag_str    = ''
 script_tag_str = ''
 log_tag_str    = ''
@@ -98,6 +100,10 @@ for line in lines:
     nf      = 0
 
     # search on tags
+    match = reg_host.search(line)
+    if match:
+        reg_host_str = match.group(1)
+
     match = pkg_tag.search(line)
     if match:
         pkg_tag_str = match.group(1)
@@ -177,10 +183,11 @@ for line in lines:
 
 # print out test results
 
-print "Regression output from %s package." % (pkg_tag_str)
-print "Date: %s."                          % (date_tag_str)
-print "Regression log stored in %s:%s."    % (hostname, log_tag_str)
-print "Regression run from script %s:%s."  % (hostname, script_tag_str)
+print "Regression output from %s package."   % (pkg_tag_str)
+print "Regression filter run on machine %s." % (hostname)
+print "Date: %s."                            % (date_tag_str)
+print "Regression log stored in %s:%s."      % (reg_host_str, log_tag_str)
+print "Regression run from script %s:%s."    % (reg_host_str, script_tag_str)
 print
 
 print "%41s" % ("Test Results")
