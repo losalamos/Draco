@@ -64,6 +64,7 @@ have a blue modeline.")
 (defvar want-fortran-mode    t)
 (defvar want-emacs-lisp-mode t)
 (defvar want-shell-mode      t)
+(defvar want-sgml-mode       t)
 (defvar want-autoconf-mode   t)
 (defvar want-sh-mode         t)
 (defvar want-cvs-mode        t

@@ -22,6 +22,7 @@
 ;      want-cvs-mode      t
 ;      want-doxymacs-mode t
 ;      want-autoconf-mode t
+;      want-sgml-mode     t
 ;      want-fortran-mode  t)
 ; (load-library "Config-pkg")
 
@@ -30,7 +31,12 @@
 
 (defvar config-pkg-colorize-modeline nil
   "*Does the user want us to colorize the modeline 
-based on the buffer-mode?")
+based on the buffer-mode?  When customizing these colors 
+it may be useful to run the XEmacs command 
+
+M-x list-colors-display 
+
+to obtain a list of colors known to XEmacs.")
 
 ;; ========================================
 ;; MPPL
@@ -513,6 +519,43 @@ auto-mode-alist and set up some customizations for RTT."
     (add-hook 'sh-mode-hook 'turn-on-auto-fill)))
 
 (if want-sh-mode (draco-init-sh-mode))
+
+;; ========================================
+;; SGML mode
+;; ========================================
+
+(defvar want-sgml-mode nil
+  "*Does the user want to have sgnk-mode?")
+
+(defun draco-init-sgml-mode ()
+  "Autoload sgml-mode, append the approriate suffixes to
+auto-mode-alist and set up some customizations for RTT."
+  (interactive)
+  (progn
+    (if config-pkg-verbose
+	(message "Configuring sgml-mode."))
+    (autoload 'sgml-mode "sgml-mode" "SGML Shell Editing Mode" t)
+    (add-hook 'sgml-mode-hook 'turn-on-font-lock)
+    (if config-pkg-colorize-modeline 
+	(add-hook 'sgml-mode-hook        
+		  '(lambda () 
+		     (set-face-background 'modeline 
+					  "thistle" (current-buffer))
+		     (set-face-foreground 'modeline
+					  "black"   (current-buffer)))))
+    (setq auto-mode-alist
+	  (append
+	   '(("\\.sgml$" . sh-mode)
+	     ) auto-mode-alist))
+;    (defun rtt-sgml-mode-hook ()
+;      "Hooks added to shell mode"
+;      (local-set-key [(f5)] 'tme-makefile-divider)
+;      (local-set-key [(f6)] 'tme-makefile-comment-divider))
+;    (add-hook 'sgml-mode-hook 'rtt-sgml-mode-hook)
+    (add-hook 'sgml-mode-hook 'turn-on-font-lock)
+    (add-hook 'sgml-mode-hook 'turn-on-auto-fill)))
+
+(if want-sgml-mode (draco-init-sgml-mode))
 
 ;;---------------------------------------------------------------------------;;
 ;; set up Config-pkg
