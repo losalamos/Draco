@@ -94,11 +94,11 @@ SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 	    int cell       = 1 + (i-1) + num_xcells*(j-1);
 	    int ref_vertex = 1 + (i-1) + num_xsur*(j-1);
 
-	  // pair cells to vertex indices
+	  // pair cells to vertex indices (switch to accomodate graphics dump)
 	    cell_pair[cell-1][0] = ref_vertex;
 	    cell_pair[cell-1][1] = ref_vertex + 1;
-	    cell_pair[cell-1][2] = ref_vertex + num_xsur;
-	    cell_pair[cell-1][3] = ref_vertex + 1 + num_xsur;
+	    cell_pair[cell-1][2] = ref_vertex + 1 + num_xsur;
+	    cell_pair[cell-1][3] = ref_vertex + num_xsur;
 	}
 
   // create mesh
@@ -165,8 +165,8 @@ SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 	      // pair cells to vertex indices
 		cell_pair[cell-1][0] = ref_vertex;
 		cell_pair[cell-1][1] = ref_vertex + 1;
-		cell_pair[cell-1][2] = ref_vertex + num_xsur;
-		cell_pair[cell-1][3] = ref_vertex + 1 + num_xsur;
+		cell_pair[cell-1][2] = ref_vertex + 1 + num_xsur;
+		cell_pair[cell-1][3] = ref_vertex + num_xsur;
 		cell_pair[cell-1][4] = cell_pair[cell-1][0] + num_xsur *
 		    num_ysur;
 		cell_pair[cell-1][5] = cell_pair[cell-1][1] + num_xsur *

@@ -20,7 +20,7 @@ AC_SPRNG_SETUP(pkg)
 dnl installation
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(rng c4 ds++)
+AC_NEEDS_LIBS(viz rng c4 traits ds++)
 
 dnl runtesting
 AC_RUNTESTS(tstMath tstCoord tstOSMesh tstFields tstTopology \

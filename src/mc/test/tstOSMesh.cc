@@ -16,6 +16,7 @@
 #include "../Release.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 
 #include <iostream>
 #include <vector>
@@ -35,6 +36,8 @@ using dsxx::SP;
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
 
+//---------------------------------------------------------------------------//
+
 // mesh proxy class
 class Mesh_Proxy
 {
@@ -44,6 +47,8 @@ class Mesh_Proxy
     Mesh_Proxy(SP<OS_Mesh> m) : mesh(m) {}
     const OS_Mesh& get_Mesh() const { return *mesh; }
 };
+
+//---------------------------------------------------------------------------//
 
 // 2D Mesh Tests
 void Test_2D()
@@ -150,8 +155,8 @@ void Test_2D()
 	vector<double> y(4);
 	x[0] = 0.0;
 	x[1] = 1.0;
-	x[2] = 0.0;
-	x[3] = 1.0;
+	x[2] = 1.0;
+	x[3] = 0.0;
 	y[0] = -1.0;
 	y[1] = -1.0;
 	y[2] = 1.0;
@@ -276,7 +281,45 @@ void Test_2D()
 	cn[3] = 0;
 	if (m.get_neighbors(6) != cn) ITFAILS;
     }
+
+    // cell types
+    vector<int> cell_types(m.num_cells(), 5);
+    if (cell_types != m.get_cell_types()) ITFAILS;
+
+    // point coordinates
+    {
+	vector<vector<double> > ptc(12, vector<double>(2));
+	ptc[0][0]  = -1;
+	ptc[1][0]  = 0;
+	ptc[2][0]  = 1;
+	ptc[3][0]  = 2;
+	ptc[4][0]  = -1;
+	ptc[5][0]  = 0;
+	ptc[6][0]  = 1;
+	ptc[7][0]  = 2;
+	ptc[8][0]  = -1;
+	ptc[9][0]  = 0;
+	ptc[10][0] = 1;
+	ptc[11][0] = 2;
+	
+	ptc[0][1]  = -1;
+	ptc[1][1]  = -1;
+	ptc[2][1]  = -1;
+	ptc[3][1]  = -1;
+	ptc[4][1]  = 1;
+	ptc[5][1]  = 1;
+	ptc[6][1]  = 1;
+	ptc[7][1]  = 1;
+	ptc[8][1]  = 3;
+	ptc[9][1]  = 3;
+	ptc[10][1] = 3;
+	ptc[11][1] = 3;
+	
+	if (ptc != m.get_point_coord()) ITFAILS;
+    }
 }
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -298,8 +341,17 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // 2D Mesh tests
-    Test_2D();
+    try
+    {
+	// 2D Mesh tests
+	Test_2D();
+    }
+    catch (dsxx::assertion &ass)
+    {
+	cout << "Dumbass, you screwed up: " << ass.what() << endl;
+	C4::Finalize();
+	return 1;
+    }
 
     // status of test
     cout << endl;

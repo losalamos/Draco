@@ -56,6 +56,7 @@
 //                submesh, used for determining whether a mesh is a master
 //                (global) mesh or some sort of decomposed 
 // 17) 20-DEC-99: added STL random access iterator functionality to CCVF
+// 18) 27-JAN-00: added get_cell_types for graphics data dumping
 // 
 //===========================================================================//
 
@@ -168,13 +169,7 @@ class OS_Mesh
     void print(ostream &) const;
     void print(ostream &, int) const;
 
-    // End_Verbatim 
-    // End_Doc 
-
-    // Begin_Doc os_mesh-rint.tex
-    // Begin_Verbatim 
-
-    // services required by ALL mesh types used in JAYENNE
+    // services required by ALL mesh types used in IMC-codes
 
     // references to imbedded objects and data required for Parallel_Building
     const Layout& get_Layout() const { return layout; }
@@ -182,6 +177,10 @@ class OS_Mesh
     SP<Coord_sys> get_SPCoord() const { return coord; }
     const CCVF_d& get_vertex() const { return vertex; }
     const CCVF_i& get_cell_pair() const { return cell_pair; }
+
+    // services required for Graphics dumps
+    CCSF_i get_cell_types() const;
+    CCVF_d get_point_coord() const;
 
     // required services for transport and source; 
     int next_cell(int cell, int face) const { return layout(cell, face); }
@@ -207,9 +206,6 @@ class OS_Mesh
     // overloaded operators
     bool operator==(const OS_Mesh &) const;
     bool operator!=(const OS_Mesh &rhs) const { return !(*this == rhs); }
-
-    // End_Verbatim 
-    // End_Doc 
 };
 
 //---------------------------------------------------------------------------//

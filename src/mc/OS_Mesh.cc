@@ -8,6 +8,7 @@
 
 #include "OS_Mesh.hh"
 #include "Constants.hh"
+#include "viz/Ensight_Translator.hh"
 #include <iomanip>
 
 namespace rtt_mc 
@@ -342,6 +343,48 @@ bool OS_Mesh::operator==(const OS_Mesh &rhs) const
 
     // if we haven't returned, then the two meshes must be equal
     return true;
+}
+
+//---------------------------------------------------------------------------//
+// functions required for graphics dumps
+//---------------------------------------------------------------------------//
+// return the cell type for each cell in the mesh
+
+vector<int> OS_Mesh::get_cell_types() const
+{
+    vector<int> cell_type(layout.num_cells());
+
+    if (coord->get_dim() == 2)
+	std::fill(cell_type.begin(), cell_type.end(),
+		  rtt_viz::four_node_quadrangle);
+	
+    else if (coord->get_dim() == 3)
+	std::fill(cell_type.begin(), cell_type.end(),
+		  rtt_viz::eight_node_hexahedron);
+
+    return cell_type;
+}
+
+//---------------------------------------------------------------------------//
+// get point coordinates [0:npoints-1, 0:ndim-1]
+
+vector<vector<double> > OS_Mesh::get_point_coord() const
+{
+    int npoints = vertex[0].size();
+    vector<vector<double> > return_coord(npoints);
+    for (int i = 0; i < return_coord.size(); i++)
+    {
+	return_coord[i].resize(coord->get_dim());
+	for (int j = 0; j < return_coord[i].size(); j++)
+	{
+	    Check (return_coord[i].size() == vertex.size());
+	    Check (vertex[j].size() == return_coord.size());
+
+	    return_coord[i][j] = vertex[j][i];
+	}
+    }
+
+    return return_coord;
 }
 
 //---------------------------------------------------------------------------//
