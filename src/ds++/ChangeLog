@@ -6,6 +6,9 @@
 	improved testing infrastructure using the new draco testing
 	templates (although not all tests were updated this way).
 
+	Also, configure is no longer part of the ds++ package.  It is
+	built by src/configure.
+
 2001-07-25  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: updated to release ds++-1_4_0.  This release contains the
