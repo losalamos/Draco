@@ -88,7 +88,7 @@ class TET_Mesh
     //! Typedef for vector field of doubles.
     typedef std::vector< std::vector<double> > VF_DOUBLE;
 
-    //! The TET_Mesh is inherently 3-dimensional.
+    //! The TET_Mesh is inherently 3-dimensional and its faces have 3 vertices.
     static const int THREE = 3;
 
     //! A TET_Mesh cell always has 4 faces and 4 vertices.
@@ -122,9 +122,9 @@ class TET_Mesh
      * vertex #0, and is bounded by vertices #1, #2, #3, with corresponding
      * definitions for faces #1, #2, and #3.
      *
-     * When cells_vertices[][] is constructed, it will be arranged that the
-     * vertices labeled (0, 1, 2, 3) are in the proper order for predictable
-     * inward- and outward-normal directions.
+     * Before cells_vertices[][] is constructed, it will have been arranged
+     * that the vertices labeled (0, 1, 2, 3) are in the proper order for
+     * predictable inward- and outward-normal directions.
      */
     VF_INT cells_vertices;
 

@@ -16,7 +16,7 @@ namespace rtt_mc
 
 //___________________________________________________________________________//
 /*!
- * \brief       TET_Mesh constructor.
+ * \brief                 TET_Mesh constructor.
  * \param coord_          Smart pointer to base class of derived XYZ system.
  * \param layout_         Layout of mesh.
  * \param vertex_vector_  ThreeVector vertices in a list of all vertices.
