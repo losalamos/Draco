@@ -89,9 +89,9 @@ class Timer
     // number of time intervals.
     int num_intervals;
 
-    //! \brief system time is not available when using MPI_Wtime().
-    bool system_time_available;
-    bool set_sta();
+    //! system time is not available when using MPI_Wtime().
+    bool component_times_available;
+    bool set_cta();
     
   public:
     
@@ -104,16 +104,16 @@ class Timer
     inline double system_cpu() const;
     inline double user_cpu()   const;
 
-    //! \brief Return the wall clock time in seconds, summed over all intervals.
+    //! Return the wall clock time in seconds, summed over all intervals.
     double sum_wall_clock() const { Require(! timer_on); return sum_wall; }
 
-    //! \brief Return the system cpu time in seconds, summed over all intervals.
+    //! Return the system cpu time in seconds, summed over all intervals.
     double sum_system_cpu() const { Require(! timer_on); return sum_system; }
 
-    //! \brief Return the user cpu time in seconds, summed over all intervals.
+    //! Return the user cpu time in seconds, summed over all intervals.
     double sum_user_cpu() const { Require(! timer_on); return sum_user; }
 
-    //! \brief Return the number of time intervals used in the sums.
+    //! Return the number of time intervals used in the sums.
     int intervals() const { Require(! timer_on); return num_intervals; }
 
     inline void reset();
@@ -124,7 +124,7 @@ class Timer
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 
-//! \brief Set the beginning of the time interval.
+//! Set the beginning of the time interval.
 void Timer::start()
 {
     Require(! timer_on);
@@ -134,7 +134,7 @@ void Timer::start()
 }
 
 //---------------------------------------------------------------------------//
-//! \brief Set the end of the time interval.
+//! Set the end of the time interval.
 void Timer::stop()
 {
     Require(timer_on);
@@ -147,7 +147,7 @@ void Timer::stop()
 }
 
 //---------------------------------------------------------------------------//
-//! \brief Return the wall clock time in seconds, for the last interval.
+//! Return the wall clock time in seconds, for the last interval.
 double Timer::wall_clock() const
 {
     Require(! timer_on);
@@ -155,23 +155,27 @@ double Timer::wall_clock() const
 }
 
 //---------------------------------------------------------------------------//
-//! \brief Return the system cpu time in seconds, for the last interval.
+//! Return the system cpu time in seconds, for the last interval.
 double Timer::system_cpu() const
 {
     Require(! timer_on);
-    return (tms_end.tms_stime - tms_begin.tms_stime) / clock_resolution;
+    if(component_times_available)
+	return (tms_end.tms_stime - tms_begin.tms_stime) / clock_resolution;
+    return 0;
 }
 
 //---------------------------------------------------------------------------//
-//! \brief Return the user cpu time in seconds, for the last interval.
+//! Return the user cpu time in seconds, for the last interval.
 double Timer::user_cpu() const
 {
     Require(! timer_on);
-    return (tms_end.tms_utime - tms_begin.tms_utime) / clock_resolution; 
+    if(component_times_available)
+	return (tms_end.tms_utime - tms_begin.tms_utime) / clock_resolution; 
+    return 0;
 }
 
 //---------------------------------------------------------------------------//
-//! \brief Reset the interval sums.
+//! Reset the interval sums.
 void Timer::reset()
 {
     Require(! timer_on);

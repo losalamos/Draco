@@ -20,7 +20,7 @@ namespace rtt_c4
 // Constructor
 //---------------------------------------------------------------------------//
 
-//! \brief Constructor
+//! Constructor
 Timer::Timer()
     : begin( 0.0 ),
       end(   0.0 ),
@@ -30,7 +30,7 @@ Timer::Timer()
       sum_system( 0.0 ),
       sum_user( 0.0 ),
       num_intervals( 0 ),
-      system_time_available( set_sta() )
+      component_times_available( set_cta() )
 {
     reset();
 }
@@ -39,7 +39,7 @@ Timer::Timer()
 // Memeber functions
 //---------------------------------------------------------------------------//
 
-//! \brief Print out a timing report.
+//! Print out a timing report.
 void Timer::print(std::ostream &out, int p) const
 {
     using std::setw;
@@ -48,36 +48,37 @@ void Timer::print(std::ostream &out, int p) const
     
     out.setf(ios::fixed, ios::floatfield);
     out.precision(p);
-    out << endl;
+    out << '\n';
     
     if ( num_intervals > 1 )
-	out << "LAST INTERVAL: " << endl;
+	out << "LAST INTERVAL: " << '\n';
 
-    out << setw(20) << "WALL CLOCK TIME: " << wall_clock() << endl;
-    if( system_time_available )
+    out << setw(20) << "WALL CLOCK TIME: " << wall_clock() << '\n';
+    if( component_times_available )
     {
-	out << setw(20) << "  USER CPU TIME: " << user_cpu() << endl;
-	out << setw(20) << "SYSTEM CPU TIME: " << system_cpu() << endl;
+	out << setw(20) << "  USER CPU TIME: " << user_cpu() << '\n';
+	out << setw(20) << "SYSTEM CPU TIME: " << system_cpu() << '\n';
     }
-    out << endl;
+    out << '\n';
     
     if ( num_intervals > 1 )
     {
-	out << "OVER " << num_intervals << " INTERVALS: " << endl;
-	out << setw(20) << "WALL CLOCK TIME: " << sum_wall_clock() << endl;
-	if( system_time_available )
+	out << "OVER " << num_intervals << " INTERVALS: " << '\n';
+	out << setw(20) << "WALL CLOCK TIME: " << sum_wall_clock() << '\n';
+	if( component_times_available )
 	{
-	    out << setw(20) << "  USER CPU TIME: " << sum_user_cpu() << endl;
-	    out << setw(20) << "SYSTEM CPU TIME: " << sum_system_cpu() << endl;
+	    out << setw(20) << "  USER CPU TIME: " << sum_user_cpu() << '\n';
+	    out << setw(20) << "SYSTEM CPU TIME: " << sum_system_cpu() << '\n';
 	}
-	out << endl;
+	out << '\n';
     }
+    out.flush();
 }
 
 //---------------------------------------------------------------------------//
 // Is this an MPI or Posix timer?
 //---------------------------------------------------------------------------//
-bool Timer::set_sta()
+bool Timer::set_cta()
 {
 #ifdef C4_SCALAR
     return true;
