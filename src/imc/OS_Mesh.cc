@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
-#include "imctest/Global.hh"
+#include "imctest/Constants.hh"
 #include <iostream>
 #include <iomanip>
 #include <algorithm>

@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/Coord_sys.hh"
-#include "imctest/Global.hh"
+#include "imctest/Constants.hh"
 #include "imctest/Random.hh"
 #include <iostream>
 #include <cmath>

@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/Random.hh"
-#include "imctest/Global.hh"
+#include "imctest/Math.hh"
 #include <iostream>
 #include <fstream>
 

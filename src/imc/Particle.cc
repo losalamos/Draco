@@ -7,7 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/Particle.hh"
-#include "imctest/Global.hh"
+#include "imctest/Constants.hh"
+#include "imctest/Math.hh"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
