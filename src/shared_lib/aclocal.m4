@@ -3297,11 +3297,11 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
 
-   # use implicit local template instantiation; this is the "GNU" like
-   # option that puts manually instantiated templates in the 
-   # repository with external linkage and automatic templates in 
-   # the object file with internal linkage
-   CXXFLAGS="${CXXFLAGS} -timplicit_local"
+   # use the -pt template option for the compiler:
+   # -pt Automatically instantiate templates into the repository with
+   #  external linkage. Manually instantiated templates are placed in
+   #  the output object with external linkage. This option is the default.
+   CXXFLAGS="${CXXFLAGS} -pt"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then

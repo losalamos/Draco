@@ -71,6 +71,14 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
 	   with_mpi='vendor'
        fi
    fi
+   
+   # if c4=mpi and with-mpi=no explicitly then 
+   # define them (mpi gets set to vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
+	   with_mpi='vendor'
+       fi
+   fi
 
 ]) 
 
@@ -733,6 +741,293 @@ AC_DEFUN([AC_GRACE_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_SPICA_SETUP
+dnl
+dnl SPICA LIBRARY SETUP (on by default -lSpicaCSG)
+dnl SPICA is an optional vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SPICA_SETUP], [dnl
+
+   dnl define --with-spica
+   AC_ARG_WITH(spica,
+      [  --with-spica[=yes]                 spica is on by default])
+	
+   dnl define --with-spica-inc and --with-spica-lib
+   AC_WITH_DIR(spica-inc, SPICA_INC, \${SPICA_INC_DIR},
+	       [tell where SPICA includes are])
+   AC_WITH_DIR(spica-lib, SPICA_LIB, \${SPICA_LIB_DIR},
+	       [tell where SPICA libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_spica=$1
+
+   # define variable if spica is on
+   if test "${with_spica:=yes}" != no; then
+       AC_DEFINE([USE_SPICA])
+   fi
+])
+
+
+AC_DEFUN([AC_SPICA_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_spica}"; then
+
+       # include path
+       if test -n "${SPICA_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SPICA_INC}"
+       fi
+   
+       # libraries
+       if test -n "${SPICA_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_spica, -L${SPICA_LIB} -lSpicaCSG)
+       elif test -z "${SPICA_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_spica, -lSpicaCSG)
+       fi
+
+       # add spica directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPICA_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPICA_INC}"
+
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_XERCES_SETUP
+dnl
+dnl XERCES LIBRARY SETUP
+dnl xerces is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_XERCES_SETUP], [dnl
+
+   dnl define --with-xerces
+   AC_ARG_WITH(xerces,
+      [  --with-xerces[=lib]      determine the XERCES xml lib (xerces-c is default)])
+	
+   dnl define --with-xerces-inc and --with-xerces-lib
+   AC_WITH_DIR(xerces-inc, XERCES_INC, \${XERCES_INC_DIR},
+	       [tell where XERCES includes are])
+   AC_WITH_DIR(xerces-lib, XERCES_LIB, \${XERCES_LIB_DIR},
+	       [tell where XERCES libraries are])
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_xerces=$1
+
+   # default (xerces is set to xerces-c by default)
+   if test "${with_xerces:=xerces-c}" = yes ; then
+       with_xerces='xerces-c'
+   fi
+])
+
+
+AC_DEFUN([AC_XERCES_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+   
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_xerces, -L${XERCES_LIB} -l${with_xerces})
+       elif test -z "${XERCES_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_xerces, -l${with_xerces})
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_HDF5_SETUP
+dnl
+dnl HDF5 SETUP (on by default; 'mpi' if mpi in use, else 'serial')
+dnl HDF5 is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HDF5_SETUP], [dnl
+
+   dnl define --with-hdf5
+   AC_ARG_WITH(hdf5,
+      [  --with-hdf5=[serial,mpi]      determine hdf5 implementation (default:  'mpi' if mpi in use, else 'serial')])
+ 
+   dnl define --with-hdf5-inc
+   AC_WITH_DIR(hdf5-inc, HDF5_INC, \${HDF5_INC_DIR},
+	       [tell where HDF5 includes are])
+
+   dnl define --with-hdf5-lib
+   AC_WITH_DIR(hdf5-lib, HDF5_LIB, \${HDF5_LIB_DIR},
+	       [tell where HDF5 libraries are])
+
+   # default (mpi if mpi is in use, else serial)
+   if test "${with_hdf5:=no}" = yes ; then
+       if test "${with_mpi}" != no ; then
+	   with_hdf5='mpi'
+       else
+	   with_hdf5='serial'
+       fi
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_hdf5=$1
+
+])
+
+
+AC_DEFUN([AC_HDF5_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5)
+       elif test -z "${HDF5_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5)
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_UDM_SETUP
+dnl
+dnl UDM SETUP (on by default; 'mpi' if mpi in use, else 'serial')
+dnl UDM is a required vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_UDM_SETUP], [dnl
+
+   dnl define --with-udm
+   AC_ARG_WITH(udm,
+      [  --with-udm=[serial,mpi]      determine udm implementation (default:  'mpi' if mpi in use, else 'serial')])
+ 
+   dnl define --with-udm-inc
+   AC_WITH_DIR(udm-inc, UDM_INC, \${UDM_INC_DIR},
+	       [tell where UDM includes are])
+
+   dnl define --with-udm-lib
+   AC_WITH_DIR(udm-lib, UDM_LIB, \${UDM_LIB_DIR},
+	       [tell where UDM libraries are])
+
+   # default (mpi if mpi is in use, else serial)
+   if test "${with_udm:=no}" = yes ; then
+       if test "${with_mpi}" != no ; then
+	   with_udm='mpi'
+       else
+	   with_udm='serial'
+       fi
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_udm=$1
+
+])
+
+
+AC_DEFUN([AC_UDM_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               AC_DEFINE(UDM_HAVE_PARALLEL)
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_udm, -L${UDM_LIB} -ludm)
+       elif test -z "${UDM_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_udm, -ludm)
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DLOPEN_SETUP
+dnl
+dnl This is an optional vendor.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DLOPEN_SETUP], [dnl
+
+   dnl define --enable-dlopen
+   AC_ARG_ENABLE(dlopen,
+      [  --enable-dlopen          Enable dlopen (default: on if --enable-shared, off otherwise)])
+
+   # determine if this package is needed for testing or for the
+   # package.
+   vendor_dlopen=$1 
+
+   # set default value for enable_dlopen, which is the value of enable_shared.
+   if test "${enable_shared}" = yes ; then
+       if test "${enable_dlopen:=yes}" != no ; then 
+	   enable_dlopen=yes
+       fi
+   else
+       if test "${enable_dlopen:=no}" != no ; then 
+	   enable_dlopen=yes
+       fi
+   fi
+
+   # turn off dlopen if not using shared libraries.
+   if test "${enable_shared}" != yes ; then
+       if test "${enable_dlopen}" = yes ; then
+	   AC_MSG_WARN("Must specify --enable-shared when using --enable-dlopen.")
+           AC_MSG_WARN("   dlopen disabled.")
+       fi
+       enable_dlopen=no
+   fi
+
+   if test "${enable_dlopen}" = yes ; then
+       AC_DEFINE(USE_DLOPEN)
+   fi
+]) 
+
+
+AC_DEFUN([AC_DLOPEN_FINALIZE], [dnl
+   # Libraries are platform-specific; done in ac_platforms.
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
@@ -758,11 +1053,17 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_SPRNG_FINALIZE
    AC_GRACE_FINALIZE
    AC_METIS_FINALIZE
+   AC_SPICA_FINALIZE
+   AC_XERCES_FINALIZE
+
+   AC_UDM_FINALIZE
+   AC_HDF5_FINALIZE
 
    AC_GSL_FINALIZE
    AC_GSLCBLAS_FINALIZE
 
    AC_MPI_FINALIZE
+   AC_DLOPEN_FINALIZE
 
    # print out vendor include paths
    AC_MSG_CHECKING("vendor include paths")
@@ -805,6 +1106,11 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
    AC_GRACE_SETUP(pkg)
+   AC_SPICA_SETUP(pkg)
+   AC_XERCES_SETUP(pkg)
+   AC_HDF5_SETUP(pkg)
+   AC_UDM_SETUP(pkg)
+   AC_DLOPEN_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -1342,14 +1648,6 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        AC_DEFINE(C4_MPI)
    fi
 
-   # if c4=mpi and with-mpi=no explicitly then 
-   # define them (mpi gets set to vendor by default)
-   if test "$with_c4" = mpi ; then
-       if test "$with_mpi" = no ; then
-	   with_mpi='vendor'
-       fi
-   fi
-   
    dnl
    dnl DBC SETUP
    dnl
@@ -2999,11 +3297,11 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
 
-   # use implicit local template instantiation; this is the "GNU" like
-   # option that puts manually instantiated templates in the 
-   # repository with external linkage and automatic templates in 
-   # the object file with internal linkage
-   CXXFLAGS="${CXXFLAGS} -timplicit_local"
+   # use the -pt template option for the compiler:
+   # -pt Automatically instantiate templates into the repository with
+   #  external linkage. Manually instantiated templates are placed in
+   #  the output object with external linkage. This option is the default.
+   CXXFLAGS="${CXXFLAGS} -pt"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -3409,6 +3707,38 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # add librt to LIBS if udm is used
+       #
+       AC_MSG_CHECKING("librt requirements")
+       if test -n "${vendor_udm}"; then
+	   
+	   # Add rt for g++
+	   if test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lrt"
+	       AC_MSG_RESULT("-lrt added to LIBS")
+	   fi
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # If dlopen is specified, 1) add libdl to LIBS; 
+       # 2) add -fPIC to compile flags.
+       #
+       AC_MSG_CHECKING("libdl requirements")
+       if test -n "${vendor_dlopen}" ; then
+          if test "${enable_dlopen}" = yes ; then
+	      LIBS="${LIBS} -ldl"
+	      CFLAGS="${CFLAGS} -fPIC"
+	      CXXFLAGS="${CXXFLAGS} -fPIC"
+	      AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+	  fi
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
@@ -3522,7 +3852,8 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        if test "${with_mpi}" = vendor ; then
 
 	   # define mpi libraries
-	   mpi_libs='-lmpi'
+	   # note: mpi and mpio are separate libraries on compaqs
+	   mpi_libs='-lmpi -lmpio'
        
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
@@ -3555,14 +3886,27 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # gandolf, eospac, pcg require -lfor on the link line.
+       # udm requires long long warnings to be disabled
+       #
+
+       if test -n "${vendor_udm}" ; then
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+       fi
+
+       #
+       # end of udm setup
+       #
+
+       #
+       # gandolf, eospac, pcg, udm require -lfor on the link line.
        #
 
        AC_MSG_CHECKING("libfortran requirements")
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          AC_MSG_RESULT("-lfor added to LIBS")
+          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+           LIBS="${LIBS} -lfor"
+           AC_MSG_RESULT("-lfor added to LIBS")
        else
 	   AC_MSG_RESULT("not needed")
        fi
@@ -3572,19 +3916,35 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # libpcg/libfmpi setup
+       # libpcg/libudm/libfmpi setup
        #
 
        AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfmpi"
-          AC_MSG_RESULT("-lfmpi added to LIBS")
+       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+           LIBS="${LIBS} -lfmpi"
+           AC_MSG_RESULT("-lfmpi added to LIBS")
        else
 	   AC_MSG_RESULT("not needed")
        fi
 
        #
        # end of libpcg setup
+       #
+
+       #
+       # libudm/librmscall setup
+       #
+
+       AC_MSG_CHECKING("librmscall requirements")
+       if test -n "${vendor_udm}"; then
+          LIBS="${LIBS} -lrmscall"
+          AC_MSG_RESULT("-lrmscall added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libudm setup
        #
 
        #
@@ -4125,6 +4485,42 @@ AC_DEFUN([AC_SET_DEFAULT_OUTPUT], [dnl
    fi
 ])
 
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_PACKAGE_TAGS
+dnl
+dnl  Collect tagfiles for pacakge-to-component dependencies
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
+
+   # XXX Need to change COMPLINKS to generic doxygen list instead of
+   # HTML for Latex compatability. Let doxygen insert the links
+   AC_MSG_CHECKING([for documented sub-components of this package])
+   COMP_LINKS=''
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+   components=''
+   for item in `ls -1 ${package_top_srcdir}/src`; do
+      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
+         dirname=`basename ${item}`
+         components="${components} ${dirname}"
+         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+         tagfile=${doxygen_output_top}/${dirname}.tag
+         TAGFILES="${TAGFILES} ${tagfile}"
+         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
+      fi
+   done
+   AC_MSG_RESULT(${components:-none})
+   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+
+   # XXX TO DO: Add links to dependent packages on this page.
+   PACKAGE_LINKS="<ul> </ul>"
+
+   # Unique to package-level
+   AC_SUBST(PACKAGE_LINKS)
+   AC_SUBST(COMP_LINKS)
+
+])
+
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_AUTODOC_COMPONENT_TAGS
@@ -4136,8 +4532,8 @@ dnl-------------------------------------------------------------------------dnl
 # and the _relative_ locations of the autodoc directories that they
 # refer to.
 #
-# The relative path between documentation for components in the
-# same package is "../component"
+# The relative path between component documentation in the same
+# package is "../component" 
 #
 # These components are specified in AC_NEEDS_LIBS, and are stored
 # in variable DEPENDENT_COMPONENTS. 
@@ -4145,16 +4541,43 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
 
    components=''
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
    AC_MSG_CHECKING([for Doxygen component dependencies])
    for comp in ${DEPENDENT_COMPONENTS}; do
        components="${components} ${comp}"
-       TAGFILES="${TAGFILES} ${doxygen_output_top}/${comp}.tag"
-       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${doxygen_output_top}/${comp}.tag = ../${comp}\""
+       tagfile=${doxygen_output_top}/${comp}.tag
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
    done
    AC_MSG_RESULT([${components}])
 
-   AC_SUBST(TAGFILES)
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_SUBST
+dnl 
+dnl   Do subsistutions on common AUTODOC variables
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_AUTODOC_SUBST], [dnl
+
+   # Doxygen Input
+   AC_SUBST(doxygen_input)
+   AC_SUBST(doxygen_examples)
+
+   # Doxygen Output
+   AC_SUBST(doxygen_output_top)
+   AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
+
+   # Other doxygen configuration
    AC_SUBST(DOXYGEN_TAGFILES)
+
+   # For inclusion in header files and other html
+   AC_SUBST(rel_package_html)
+
+   # For makefiles for configuration:
+   AC_SUBST(header_dir)
+   AC_SUBST(autodoc_dir)
 
 ])
 
@@ -4166,17 +4589,20 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
+
    # Define some package-level directories
    header_dir=${package_top_srcdir}/autodoc/html
-   autodoc_dir=${doxygen_input}/autodoc
+   config_dir=${package_top_srcdir}/config
+
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}/autodoc
 
    # For a component, the doxygen input is the srcdir and the examples
    # are in the tests
-   doxygen_input=`cd ${srcdir}; pwd`
-   doxygen_examples=${doxygen_input}/test
-
-   # Get the default output location
-   AC_SET_DEFAULT_OUTPUT
+   doxygen_input="${abs_srcdir} ${abs_srcdir}/autodoc"
+   doxygen_examples=${abs_srcdir}/test
 
    # Set the package-level html output location
    package_html=${doxygen_output_top}/html
@@ -4188,49 +4614,25 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    doxygen_html_output="${doxygen_output_top}/html/${package}"
    doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
-   # compute relative paths from localdir
-   adl_COMPUTE_RELATIVE_PATHS([\
-      localdir:doxygen_examples:rel_doxygen_examples \
-      localdir:doxygen_input:rel_doxygen_input\
-      doxygen_html_output:package_html:rel_package_html\
-   ])
-
-   # add autodoc directory under the source to doxygen input
-   rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
+   # Relative location of the package-level html output.
+   adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
 
    # Get tags for other components in this package which this
    # component depends on
    AC_AUTODOC_COMPONENT_TAGS
 
-   # XXX We will need to expand this to handle tag files in other
-   # packages too.
-
    # find the release number
    number=$1
    AC_MSG_CHECKING("component release number")
    AC_MSG_RESULT($number)
-
-   AC_SUBST(doxygen_input)
-   AC_SUBST(doxygen_examples)
-   AC_SUBST(doxygen_output_top)
-
-   AC_SUBST(doxygen_html_output)
-   AC_SUBST(doxygen_latex_output)
-
-   AC_SUBST(rel_doxygen_examples)
-   AC_SUBST(rel_doxygen_input)
-   AC_SUBST(rel_package_html)
-
-   AC_SUBST(dotpath)
    AC_SUBST(number)
 
-   AC_SUBST(header_dir)
-   AC_SUBST(autodoc_dir)
+   AC_AUTODOC_SUBST
 
-   AC_CONFIG_FILES([autodoc/Makefile:../../config/Makefile.autodoc.in \
-                    autodoc/doxygen_config:../../config/doxygen_config.in \
-                    autodoc/header.html:../../autodoc/html/header.html.in \
-                    autodoc/footer.html:../../autodoc/html/footer.html.in ])
+   AC_CONFIG_FILES([autodoc/Makefile:${config_dir}/Makefile.autodoc.in \
+                    autodoc/doxygen_config:${config_dir}/doxygen_config.in \
+                    autodoc/header.html:${header_dir}/header.html.in \
+                    autodoc/footer.html:${header_dir}/footer.html.in ])
 
 ])
 
@@ -4242,77 +4644,34 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
+   # Get the default output location
    AC_SET_DEFAULT_OUTPUT
 
-   #
-   # For package-level documentation, the only doxygen sources are in
-   # the build tree, aka, the current directory.
-   #
-   #   doxygen_input=$builddir
-   #   doxygen_input="${srcdir}/../config/doc ${srcdir} ${doxygen_input}"
+   # Package-level directories
+   header_dir=${srcdir}/html
+   config_dir=${package_top_srcdir}/config
 
-   doxygen_input=`pwd`
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}
 
-   localdir=`pwd`
+   # For the package, the input is the current directory, plus
+   # configure/doc. There are no examples
+   doxygen_input="`pwd` ${config_dir}/doc"
+   doxygen_examples=''
 
-   #
-   # compute relative paths from localdir
-   #
-   adl_COMPUTE_RELATIVE_PATHS([\
-      localdir:doxygen_input:rel_doxygen_input \
-   ])
-
-
+   # Component output locations
    doxygen_html_output="${doxygen_output_top}/html/"
    doxygen_latex_output="${doxygen_output_top}/latex/"
 
+   # Relative location of the package-level html output.
+   rel_package_html='.'
 
-   #
-   # XXX Need to change COMPLINKS to generic doxygen list instead of
-   # HTML for Latex compatability. Let doxygen insert the links
-   #
-   AC_MSG_CHECKING([for documented sub-components of this package])
-   COMP_LINKS=''
-   components=''
-   for item in `ls -1 ${package_top_srcdir}/src`; do
-      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
-         dirname=`basename ${item}`
-         components="${components} ${dirname}"
-         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
-      fi
-   done
-   AC_MSG_RESULT(${components:-none})
-   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+   AC_AUTODOC_PACKAGE_TAGS
 
-   #
-   # XXX TO DO: Add links to dependent packages on this page.
-   #
-   PACKAGE_LINKS="<ul> </ul>"
+   AC_AUTODOC_SUBST
 
-
-   # XXX Need to build a list of tags for the doxygenated
-   # components of the package.
-   TAGFILES=''
-   DOXYGEN_TAGFILES=''
-   AC_SUBST(TAGFILES)
-   AC_SUBST(DOXYGEN_TAGFILES)
-
-   header_dir=${srcdir}/html
-   AC_SUBST(header_dir)
-
-   autodoc_dir=${srcdir}
-   AC_SUBST(autodoc_dir)
-
-   AC_SUBST(rel_doxygen_input)
-   AC_SUBST(rel_doxygen_examples, '')
-   AC_SUBST(doxygen_html_output)
-   AC_SUBST(doxygen_latex_output)
-
-   AC_SUBST(PACKAGE_LINKS)
-   AC_SUBST(COMP_LINKS)
-
-   AC_CONFIG_FILES([doxygen_config:../config/doxygen_config.in])
-   AC_CONFIG_FILES([Makefile:../config/Makefile.autodoc.in])
+   AC_CONFIG_FILES([doxygen_config:${config_dir}/doxygen_config.in])
+   AC_CONFIG_FILES([Makefile:${config_dir}/Makefile.autodoc.in])
    AC_CONFIG_FILES([header.html:html/header.html.in])
    AC_CONFIG_FILES([footer.html:html/footer.html.in])
    AC_CONFIG_FILES([mainpage.dcc])

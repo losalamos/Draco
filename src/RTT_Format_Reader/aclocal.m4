@@ -1980,11 +1980,11 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
 
-   # use implicit local template instantiation; this is the "GNU" like
-   # option that puts manually instantiated templates in the 
-   # repository with external linkage and automatic templates in 
-   # the object file with internal linkage
-   CXXFLAGS="${CXXFLAGS} -timplicit_local"
+   # use the -pt template option for the compiler:
+   # -pt Automatically instantiate templates into the repository with
+   #  external linkage. Manually instantiated templates are placed in
+   #  the output object with external linkage. This option is the default.
+   CXXFLAGS="${CXXFLAGS} -pt"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -2401,6 +2401,22 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 	       AC_MSG_RESULT("-lrt added to LIBS")
 	   fi
 
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # If dlopen is specified, 1) add libdl to LIBS; 
+       # 2) add -fPIC to compile flags.
+       #
+       AC_MSG_CHECKING("libdl requirements")
+       if test -n "${vendor_dlopen}" ; then
+          if test "${enable_dlopen}" = yes ; then
+	      LIBS="${LIBS} -ldl"
+	      CFLAGS="${CFLAGS} -fPIC"
+	      CXXFLAGS="${CXXFLAGS} -fPIC"
+	      AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+	  fi
        else
 	   AC_MSG_RESULT("not needed")
        fi
@@ -4101,6 +4117,52 @@ AC_DEFUN([AC_UDM_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_DLOPEN_SETUP
+dnl
+dnl This is an optional vendor.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DLOPEN_SETUP], [dnl
+
+   dnl define --enable-dlopen
+   AC_ARG_ENABLE(dlopen,
+      [  --enable-dlopen          Enable dlopen (default: on if --enable-shared, off otherwise)])
+
+   # determine if this package is needed for testing or for the
+   # package.
+   vendor_dlopen=$1 
+
+   # set default value for enable_dlopen, which is the value of enable_shared.
+   if test "${enable_shared}" = yes ; then
+       if test "${enable_dlopen:=yes}" != no ; then 
+	   enable_dlopen=yes
+       fi
+   else
+       if test "${enable_dlopen:=no}" != no ; then 
+	   enable_dlopen=yes
+       fi
+   fi
+
+   # turn off dlopen if not using shared libraries.
+   if test "${enable_shared}" != yes ; then
+       if test "${enable_dlopen}" = yes ; then
+	   AC_MSG_WARN("Must specify --enable-shared when using --enable-dlopen.")
+           AC_MSG_WARN("   dlopen disabled.")
+       fi
+       enable_dlopen=no
+   fi
+
+   if test "${enable_dlopen}" = yes ; then
+       AC_DEFINE(USE_DLOPEN)
+   fi
+]) 
+
+
+AC_DEFUN([AC_DLOPEN_FINALIZE], [dnl
+   # Libraries are platform-specific; done in ac_platforms.
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
@@ -4136,6 +4198,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GSLCBLAS_FINALIZE
 
    AC_MPI_FINALIZE
+   AC_DLOPEN_FINALIZE
 
    # print out vendor include paths
    AC_MSG_CHECKING("vendor include paths")
@@ -4182,6 +4245,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_XERCES_SETUP(pkg)
    AC_HDF5_SETUP(pkg)
    AC_UDM_SETUP(pkg)
+   AC_DLOPEN_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl
