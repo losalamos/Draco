@@ -5525,7 +5525,7 @@ echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\""
        echo "$as_me:$LINENO: checking \"for extra eospac library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra eospac library requirements.\"... $ECHO_C" >&6
        if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9560/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86"
+	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            echo "$as_me:$LINENO: result: \"${extra_eospac_libs}\"" >&5
 echo "${ECHO_T}\"${extra_eospac_libs}\"" >&6
@@ -6940,7 +6940,7 @@ _ACEOF
        #
 
        if test "${with_lapack}" = vendor ; then
-	   lapack_libs='-ldxml'
+	   lapack_libs='-lcxmlp -lcxml'
        fi
 
        #

@@ -3205,7 +3205,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        
        AC_MSG_CHECKING("for extra eospac library requirements.")
        if test -n "${vendor_eospac}"; then
-	   extra_eospac_libs="-L/usr/local/lf9560/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86"
+	   extra_eospac_libs="-L/usr/local/lf9562/lib -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            AC_MSG_RESULT("${extra_eospac_libs}")
        else
@@ -3532,7 +3532,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-	   lapack_libs='-ldxml'
+	   lapack_libs='-lcxmlp -lcxml'
        fi
 
        #

@@ -463,7 +463,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        #
 
        if test "${with_lapack}" = vendor ; then
-	   lapack_libs='-ldxml'
+	   lapack_libs='-lcxmlp -lcxml'
        fi
 
        #
