@@ -15,10 +15,10 @@ namespace rtt_<spkg>
 using std::string;
 
 // function definition for Release, define the local version number for
-// this library in the form <spkg>_#.#.# in pkg_version variable
+// this library in the form <spkg>-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)<spkg>_<start>#.#.#";
+    string pkg_release = "@(#)<spkg>-<start>#_#_#";
     return pkg_release;
 }
 
