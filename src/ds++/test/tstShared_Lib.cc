@@ -102,6 +102,7 @@ void test_simple()
         if ( not caught ) ITFAILS;
     }
 
+#ifdef REQUIRE_ON
     { // check open() of an empty file name
         bool caught = false;
         try
@@ -119,6 +120,7 @@ void test_simple()
 
         if ( not caught ) ITFAILS;
     }
+#endif
 
     // Done testing
 
