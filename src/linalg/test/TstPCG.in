@@ -12,7 +12,9 @@
 #	Notes on namelist block:  pcg
 #-----------------------------------------------------------------------------#
  $pcg
-	itmeth=6
+	itmeth=1		# basic
+	itmeth=6		# gmres
+	itmeth=11		# cg
 	levout=4
 	itsmax=1000
 	nwi=10000
