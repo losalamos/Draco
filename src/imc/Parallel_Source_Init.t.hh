@@ -36,6 +36,7 @@ using std::setiosflags;
 using std::ostream;
 using std::string;
 using std::vector;
+using std::cout;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -235,6 +236,10 @@ Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh,
 	comb_census(*mesh, *rcontrol); 
     Check(ncentot == census->size());
 
+    // update the global census numbers on the master processor after the
+    // comb, remember
+    update_global_ncentot();
+
     // calculate T4_slope (until host works)
     // calc_t4_slope(*mesh, *state);
 
@@ -262,7 +267,7 @@ void Parallel_Source_Init<MT,PT>::write_initial_census(const MT &mesh,
 	for (int i = 1; i <= ncen(cell); i++)
 	{
 	    // make a new random number for delivery to Particle
-	    Sprng random = rcon.get_rn(global_cenrn[cell-1] + i - 1);
+	    Sprng random = rcon.get_rn(cenrn(cell) + i - 1);
 	    
 	    // sample particle location
 	    vector<double> r = mesh.sample_pos(cell, random);
@@ -864,10 +869,10 @@ void Parallel_Source_Init<MT,PT>::send_source_energies(const MT &mesh)
 
     // Send global_cell info and source_energies to master node
     Send (num_cells, 0, 400);
-    Send (global_cell_send, num_cells, 0, 401);
-    Send (ecen_send, num_cells, 0, 402);
-    Send (evol_send, num_cells, 0, 403);
-    Send (ess_send, num_cells, 0, 404);
+    Send <int>(global_cell_send, num_cells, 0, 401);
+    Send <double>(ecen_send, num_cells, 0, 402);
+    Send <double>(evol_send, num_cells, 0, 403);
+    Send <double>(ess_send, num_cells, 0, 404);
 
     // reclaim storage
     delete [] global_cell_send;
@@ -1011,14 +1016,14 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
 	}
 
 	// send source number info to IMC-processors
-	Send (ncen_send,   ncells_on_proc, p_send, 440);
-	Send (nvol_send,   ncells_on_proc, p_send, 441);
-	Send (nss_send,    ncells_on_proc, p_send, 442);
-	Send (ew_cen_send, ncells_on_proc, p_send, 443);
-	Send (ew_vol_send, ncells_on_proc, p_send, 444);
-	Send (ew_ss_send,  ncells_on_proc, p_send, 445);
-	Send (ssrn_send,   ncells_on_proc, p_send, 446);
-	Send (volrn_send,  ncells_on_proc, p_send, 447);
+	Send <int>(ncen_send, ncells_on_proc, p_send, 440);
+	Send <int>(nvol_send, ncells_on_proc, p_send, 441);
+	Send <int>(nss_send,  ncells_on_proc, p_send, 442);
+	Send <double>(ew_cen_send, ncells_on_proc, p_send, 443);
+	Send <double>(ew_vol_send, ncells_on_proc, p_send, 444);
+	Send <double>(ew_ss_send,  ncells_on_proc, p_send, 445);
+	Send <int>(ssrn_send,  ncells_on_proc, p_send, 446);
+	Send <int>(volrn_send, ncells_on_proc, p_send, 447);
 
 	// reclaim memory
 	delete [] ncen_send;
@@ -1200,9 +1205,9 @@ void Parallel_Source_Init<MT,PT>::send_census_numbers(const MT &mesh)
 	}
 
 	// send source number info to IMC-processors
-	Send (ncen_send,   ncells_on_proc, p_send, 440);
-	Send (ew_cen_send, ncells_on_proc, p_send, 443);
-	Send (cenrn_send,  ncells_on_proc, p_send, 447);
+	Send <int>(ncen_send,   ncells_on_proc, p_send, 460);
+	Send <double>(ew_cen_send, ncells_on_proc, p_send, 461);
+	Send <int>(cenrn_send,  ncells_on_proc, p_send, 462);
 
 	// reclaim memory
 	delete [] ncen_send;
@@ -1226,6 +1231,45 @@ void Parallel_Source_Init<MT,PT>::send_census_numbers(const MT &mesh)
 	ncentot += ncen(nc);
     }
 }
+
+//---------------------------------------------------------------------------//
+// update the global total number of census particles after combing
+
+template<class MT, class PT>
+void Parallel_Source_Init<MT,PT>::update_global_ncentot()
+{
+    // Contracts
+    Require (ncentot >= 0);
+    Require (ncentot == census->size());
+
+    // zero out global_ncentot since we are recalculating it
+    global_ncentot = 0;
+
+    // receive ncentot on master from each IMC node
+    if (!node())
+    {
+	// get the local ncentot from the IMC_nodes
+	int recv_ncentot;
+	for (int np = 1; np < nodes(); np++)
+	{
+	    recv_ncentot = 0;
+	    Recv (recv_ncentot, np, 480);
+	    global_ncentot += recv_ncentot;
+	}
+	
+	// include the master node ncentot into the global sum
+	global_ncentot += ncentot;
+	Check (global_ncentot >= ncentot);
+    }
+
+    // send out the local ncentots to the master from each IMC node
+    if (node())
+	Send (ncentot, 0, 480);
+
+    // final contracts
+    Ensure (global_ncentot >= 0);
+}
+	
 //---------------------------------------------------------------------------//
 // calculate slope of T_electron^4 using temporarily calc'd  edge t^4's.
 
@@ -1332,7 +1376,7 @@ void Parallel_Source_Init<MT,PT>::print(ostream &out) const
 	<< "Total number calculated: " << setw(10) 
 	<< global_ncentot + global_nvoltot + global_nsstot << endl;
     out << " ** Breakdown ** " << endl;
-    out << setw(28) << "Census Particles (est): " << setw(10)
+    out << setw(28) << "Census Particles: " << setw(10)
 	<< global_ncentot << endl;
     out << setw(28) << "Volume Particles: " << setw(10)
 	<< global_nvoltot << endl;

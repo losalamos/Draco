@@ -38,6 +38,7 @@
 #include "Source.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -48,8 +49,8 @@ namespace rtt_imc
 template<class MT, class PT = Particle<MT> >
 class Parallel_Source_Init 
 {
-private:
-  // data received from MT_Interface
+  private:
+    // data received from MT_Interface
     std::vector<double> evol_ext;
     std::vector<double> rad_source;
     double rad_s_tend;
@@ -66,58 +67,58 @@ private:
     int num_global_cells;
     int cycle;
     
-  // source initialization data
+    // source initialization data
 
-  // number of particles for this cycle
+    // number of particles for this cycle
     int npwant;
 
-  // volume source variables
+    // volume source variables
     typename MT::CCSF_double evol;
     typename MT::CCSF_double evol_net;
     double evoltot;
 
-  // surface source variables
+    // surface source variables
     typename MT::CCSF_double ess;
     typename MT::CCSF_int fss;
     double esstot;
 
-  // radiation energy per cell, total for census energy
+    // radiation energy per cell, total for census energy
     typename MT::CCSF_double ecen;
     double ecentot;
 
-  // number of census particles per cell
+    // number of census particles per cell
     typename MT::CCSF_int ncen;
     int ncentot;
     dsxx::SP<typename Particle_Buffer<PT>::Census> census;
 
-  // number of surface source and volume source particles
+    // number of surface source and volume source particles
     typename MT::CCSF_int nvol;
     typename MT::CCSF_int nss;
     int nvoltot;
     int nsstot;
 
-  // energy loss due to inadequate sampling of evol, ss, and initial census
+    // energy loss due to inadequate sampling of evol, ss, and initial census
     double eloss_vol;
     double eloss_ss;
     double eloss_cen;
 
-  // energy weights for census, ss, and vol emission source particles
+    // energy weights for census, ss, and vol emission source particles
     typename MT::CCSF_double ew_vol;
     typename MT::CCSF_double ew_ss;
     typename MT::CCSF_double ew_cen;
 
-  // random number streams for each source
+    // random number streams for each source
     typename MT::CCSF_int volrn;
     typename MT::CCSF_int ssrn;
     typename MT::CCSF_int cenrn;
 
-  // T^4 slope for source
+    // T^4 slope for source
     typename MT::CCVF_double t4_slope;
 
-  // maximum number of cells capable of fitting on a processor
+    // maximum number of cells capable of fitting on a processor
     int capacity;
 
-  // global source vectors (only on master node)
+    // global source vectors (only on master node)
     std::vector<double> global_ecen;
     std::vector<double> global_evol;
     std::vector<double> global_ess;
@@ -131,7 +132,7 @@ private:
     std::vector<int> global_volrn;
     std::vector<int> global_ssrn;
 
-  // global source energies and losses
+    // global source energies and losses
     double global_ecentot;
     double global_evoltot;
     double global_esstot;
@@ -142,16 +143,16 @@ private:
     double global_eloss_vol;
     double global_eloss_ss;
 
-  // cells on each processor, only used on the master processor
+    // cells on each processor, only used on the master processor
     std::vector<std::vector<int> > cells_on_proc;
 
-  // number of source particles, census, source energies, number of volume
-  // and surface sources
+    // number of source particles, census, source energies, number of volume
+    // and surface sources
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_source_numbers(const Opacity<MT> &);
     void comb_census(const MT &, rtt_rng::Rnd_Control &);
 
-  // initial census service functions
+    // initial census service functions
     void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_ess();
     void calc_init_ecen();
@@ -159,10 +160,13 @@ private:
     void calc_ncen_init();
     void write_initial_census(const MT &, rtt_rng::Rnd_Control &);
 
-  // calculate slope of T_electron^4 for volume emission
+    // update the global total number of census particles after combing
+    void update_global_ncentot();
+
+    // calculate slope of T_electron^4 for volume emission
     void calc_t4_slope(const MT &, const Mat_State<MT> &);
     
-  // communication functions
+    // communication functions
     void send_source_energies(const MT &);
     void recv_source_energies(const MT &);
     void send_source_numbers(const MT &);
@@ -170,28 +174,31 @@ private:
     void send_census_numbers(const MT &);
     void recv_census_numbers(const MT &);
 
-  // typedefs
+    // typedefs
     typedef dsxx::SP<typename Particle_Buffer<PT>::Census> Census_SP;
 
-public:
-  // constructor for master node
+  public:
+    // constructor for master node
     template<class IT> Parallel_Source_Init(dsxx::SP<IT>, dsxx::SP<MT>);
 
-  // initial census function
+    // initial census function
     Census_SP calc_initial_census(dsxx::SP<MT>, dsxx::SP<Opacity<MT> >,
 				  dsxx::SP<Mat_State<MT> >, 
 				  dsxx::SP<rtt_rng::Rnd_Control>);
 
-  // source initialyzer function
+    // source initialyzer function
     dsxx::SP<Source<MT> > initialize(dsxx::SP<MT>, dsxx::SP<Opacity<MT> >,  
 				     dsxx::SP<Mat_State<MT> >, 
 				     dsxx::SP<rtt_rng::Rnd_Control>, 
 				     const Particle_Buffer<PT> &); 
 
-  // accessor functions
+    // accessor functions
     typename MT::CCSF_double get_evol_net() const { return evol_net; }
+    inline int get_global_ncentot() const;
+    inline int get_global_nsstot() const;
+    inline int get_global_nvoltot() const;
 
-  // diagnostic functions
+    // diagnostic functions
     void print(std::ostream &) const;
 };
 
@@ -206,6 +213,42 @@ inline std::ostream& operator<<(std::ostream &out,
     object.print(out);
     return out;
 }
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+// get total (global) number of census particles
+
+template<class MT, class PT>
+int Parallel_Source_Init<MT,PT>::get_global_ncentot() const
+{
+    // only call on the Master node
+    Require (!node());
+    return global_ncentot;
+}
+
+//---------------------------------------------------------------------------//
+// get total (global) number of surface source particles
+
+template<class MT, class PT>
+int Parallel_Source_Init<MT,PT>::get_global_nsstot() const
+{
+    // only call on the Master node
+    Require (!node());
+    return global_nsstot;
+}
+
+//---------------------------------------------------------------------------//
+// get total (global) number of volume emission particles
+
+template<class MT, class PT>
+int Parallel_Source_Init<MT,PT>::get_global_nvoltot() const
+{
+    // only call on the Master node
+    Require (!node());
+    return global_nvoltot;
+}
+
 
 } // end namespace rtt_imc
 
