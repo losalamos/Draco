@@ -1,0 +1,19 @@
+//----------------------------------*-C++-*----------------------------------//
+// spdf_stream.pt
+// Geoffrey Furnish
+// 23 January 1997
+//---------------------------------------------------------------------------//
+
+#include "spdf_stream.cc"
+
+instantiate funcproto T=float
+void spdf_stream::wrp( T *v, int len, int nbits )
+
+instantiate funcproto T=double
+void spdf_stream::wrp( T *v, int len, int nbits )
+
+instantiate funcproto T=float
+void spdf_stream::rdp( T *v, int& len, int max )
+
+instantiate funcproto T=double
+void spdf_stream::rdp( T *v, int& len, int max )
