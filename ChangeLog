@@ -9,6 +9,9 @@
 	- shared_lib: added to released packages; only on when compile in
 	  shared mode
 
+	Removed get_tex script because it is no longer needed [the tex
+	stuff resides in environment].
+
 	This draco release includes the following packages:
 
 		RTT_Format_Reader 
