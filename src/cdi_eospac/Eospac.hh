@@ -221,11 +221,11 @@ namespace rtt_cdi_eospac
 	 *        a temperature and a density for this material.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The specific electron internal energy in kJ/g.
 	 */
 	double getSpecificElectronInternalEnergy(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of specific electron internal
@@ -233,23 +233,23 @@ namespace rtt_cdi_eospac
 	 *        temperatures and densities for this material.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The specific electron internal energy in kJ/g.
 	 */
 	std::vector< double > getSpecificElectronInternalEnergy(
-	    const std::vector< double >& vdensity, 
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature, 
+	    const std::vector< double >& vdensity ) const;
 	    
 	/*!
 	 * \brief Retrieve the electron based heat capacity for this
 	 *        material at the provided density and temperature.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The electron based heat capacity in kJ/g/K.
 	 */
 	double getElectronHeatCapacity(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of electron based heat capacities for
@@ -257,23 +257,23 @@ namespace rtt_cdi_eospac
 	 *        provided densities and temperatures. 
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The electron based heat capacity in kJ/g/K.
 	 */
 	std::vector< double > getElectronHeatCapacity(
-	    const std::vector< double >& density, 
-	    const std::vector< double >& temperature ) const;
+	    const std::vector< double >& vtemperature, 
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the specific ion internal energy for this
 	 *        material at the provided density and temperature.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The specific ion internal energy in kJ/g.
 	 */
 	double getSpecificIonInternalEnergy(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of specific ion internal energies for
@@ -281,23 +281,23 @@ namespace rtt_cdi_eospac
 	 *        provided densities and temperatures. 
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return A vector of specific ion internal energies in kJ/g.
 	 */
 	std::vector< double > getSpecificIonInternalEnergy(
-	    const std::vector< double >& density, 
-	    const std::vector< double >& temperature ) const;
+	    const std::vector< double >& vtemperature, 
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the ion based heat capacity for this
 	 *        material at the provided density and temperature.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The ion based heat capacity in kJ/g/K.
 	 */
 	double getIonHeatCapacity(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of ion based heat capacities for
@@ -305,23 +305,23 @@ namespace rtt_cdi_eospac
 	 *        provided densities and temperatures. 
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return A vector of ion based heat capacities in kJ/g/K.
 	 */
 	std::vector< double > getIonHeatCapacity(
-	    const std::vector< double >& density,
-	    const std::vector< double >& temperature ) const;
+	    const std::vector< double >& vtemperature,
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the number of free electrons per ion for this
 	 *        material at the provided density and temperature.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The number of free electrons per ion.
 	 */
 	double getNumFreeElectronsPerIon(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of free electrons per ion averages for
@@ -329,23 +329,23 @@ namespace rtt_cdi_eospac
 	 *        provided densities and temperatures. 
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return A vector of the number of free electrons per ion.
 	 */
 	std::vector< double > getNumFreeElectronsPerIon(
-	    const std::vector< double >& density,
-	    const std::vector< double >& temperature ) const;
+	    const std::vector< double >& vtemperature,
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the electron based thermal conductivity for this
 	 *        material at the provided density and temperature.
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return The electron based thermal conductivity in 1/s/cm.
 	 */
 	double getElectronBasedThermalConductivity(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of electron based thermal conductivities for
@@ -353,13 +353,13 @@ namespace rtt_cdi_eospac
 	 *        provided densities and temperatures. 
 	 *
 	 * \param density Density of the material in g/cm^3
-	 * \param temperature Temperature of the material in Kelvin.
+	 * \param temperature Temperature of the material in keV.
 	 * \return A vector of electron based thermal conductivities
 	 * in 1/s/cm.
 	 */
 	std::vector< double > getElectronBasedThermalConductivity(
-	    const std::vector< double >& density,
-	    const std::vector< double >& temperature ) const;
+	    const std::vector< double >& vtemperature,
+	    const std::vector< double >& vdensity ) const;
 
       private:
 	
@@ -399,8 +399,8 @@ namespace rtt_cdi_eospac
 	 *        type of data being retrieved from the EoS tables.
 	 */
 	std::vector< double > getdFdT( 
-	    const std::vector< double >& density, 
-	    const std::vector< double >& temperature, 
+	    const std::vector< double >& vdensity, 
+	    const std::vector< double >& vtemperature, 
 	    int returnType ) const;
 
 	/*!
@@ -420,6 +420,23 @@ namespace rtt_cdi_eospac
 	 * \brief Converts a double to a length one vector.
 	 */
 	std::vector< double > dbl_v1( const double dbl ) const;
+
+	/*!
+	 * \brief keV2K converts keV temperatures into degrees
+	 *        Kelvin.  libeospac.a requires input temperatures to
+	 *        use degrees Kelvin.
+	 *
+	 * Boltzmann constant k = R/N_A = 8.6174118e-5 eV/K
+	 *
+	 * keV2K = 1.1604412e+7 Kelvin/keV
+	 *
+	 * This is only used in getF() and getdFdT().
+	 */
+	static inline double keV2K( double tempKeV )
+	{
+	    const double c = 1.1604412E+7; // Kelven per keV
+	    return c*tempKeV;
+	}
     };
     
 } // end namespace rtt_cdi_eospac

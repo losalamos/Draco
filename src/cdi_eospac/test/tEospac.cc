@@ -167,6 +167,8 @@ namespace rtt_cdi_eospac_test
 	    // Test scalar access routines //
 	    // --------------------------- //
 
+	    const double K2keV = 1.0/1.1604412E+7; // keV/Kelvin
+
 	    // All of these tests request an EoS value given a single
 	    // temperature and a single density.
 
@@ -174,12 +176,13 @@ namespace rtt_cdi_eospac_test
 
 	    double density     = 1.0;  // g/cm^3
 	    double temperature = 5800; // K
+	    temperature *= K2keV;      // convert temps to keV
 
 	    double refValue = 1.052552479800656;  // kJ/g
 
 	    double specificElectronInternalEnergy =
 		spEospac->getSpecificElectronInternalEnergy(
-		    density, temperature );
+		    temperature, density );
 
 	    if ( match( specificElectronInternalEnergy, refValue ) )
 		pass() << "getSpecificElectronInternalEnergy() test passed.";
@@ -191,7 +194,7 @@ namespace rtt_cdi_eospac_test
 	    refValue = 0.0002711658224638093; // kJ/g/K
 	    
 	    double heatCapacity =
-		spEospac->getElectronHeatCapacity( density, temperature );
+		spEospac->getElectronHeatCapacity( temperature, density );
 
 	    if ( match(  heatCapacity, refValue ) )
 		pass() << "getElectronHeatCapacity() test passed.";
@@ -203,8 +206,8 @@ namespace rtt_cdi_eospac_test
 	    refValue = 5.238217222081386; // kJ/g
 
 	    double specificIonInternalEnergy = 
-		spEospac->getSpecificIonInternalEnergy( density,
-							 temperature );
+		spEospac->getSpecificIonInternalEnergy( 
+		    temperature, density );
 
 	    if ( match( specificIonInternalEnergy, refValue ) )
 		pass() << "getSpecificIonInternalEnergy() test passed.";
@@ -216,7 +219,7 @@ namespace rtt_cdi_eospac_test
 	    refValue = 0.000581583274263501; // kJ/g/K
 
 	    heatCapacity =
-		spEospac->getIonHeatCapacity( density, temperature );
+		spEospac->getIonHeatCapacity( temperature, density );
 	    
 	    if ( match( heatCapacity, refValue ) )
 		pass() << "getIonHeatCapacity() test passed.";
@@ -229,7 +232,7 @@ namespace rtt_cdi_eospac_test
 
 	    double nfree =
 		spEospac->getNumFreeElectronsPerIon( 
-		    density, temperature );
+		    temperature, density );
 	    
 	    if ( match( nfree, refValue ) )
 		pass() << "getNumFreeElectronsPerIon() test passed.";
@@ -242,7 +245,7 @@ namespace rtt_cdi_eospac_test
 
 	    double chie = 
 		spEospac->getElectronBasedThermalConductivity(
-		    density, temperature );
+		    temperature, density );
 
 	    if ( match( chie, refValue ) )
 		pass() << "getElectronBasedThermalConductivity() test passed.";
@@ -270,8 +273,8 @@ namespace rtt_cdi_eospac_test
 	    // (density, temperature) values.
 
 	    std::vector< double > vcve(2);
-	    vcve = spEospac->getElectronHeatCapacity( vdensities,
-						      vtemps );
+	    vcve = spEospac->getElectronHeatCapacity( vtemps,
+						      vdensities );
 
 	    // Since the i=0 and i=1 tuples of density and temperature 
 	    // are identical the two returned heat capacities should
@@ -288,8 +291,8 @@ namespace rtt_cdi_eospac_test
 	    // calculated above.
 
 	    heatCapacity =
-		spEospac->getElectronHeatCapacity( density,
-						   temperature );
+		spEospac->getElectronHeatCapacity( 
+		    temperature, density );
 
 	    if ( match( vcve[0], heatCapacity ) )
 		pass() << "getElectronHeatCapacity() test passed for "

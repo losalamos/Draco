@@ -81,7 +81,7 @@ namespace rtt_cdi_eospac
     // --------- //
 
     double Eospac::getSpecificElectronInternalEnergy(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    // Internal Energy has returnType == 14
 	    const int returnType = 14; 
@@ -90,8 +90,8 @@ namespace rtt_cdi_eospac
 	}
 
     std::vector< double > Eospac::getSpecificElectronInternalEnergy(
-	const std::vector< double >& vdensity, 
-	const std::vector< double >& vtemperature ) const
+	const std::vector< double >& vtemperature,
+	const std::vector< double >& vdensity ) const
 	{
 	    // Internal Energy has returnType == 14
 	    const int returnType = 14; 
@@ -99,7 +99,7 @@ namespace rtt_cdi_eospac
 	}
 
     double Eospac::getElectronHeatCapacity(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    // specific Heat capacity is dE/dT at constant pressure.
 	    // To obtain the specific electron heat capacity we load
@@ -113,8 +113,8 @@ namespace rtt_cdi_eospac
 	}
 
     std::vector< double > Eospac::getElectronHeatCapacity(
-	const std::vector< double >& vdensity, 
-	const std::vector< double >& vtemperature ) const
+	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity ) const
 	{
 	    // specific Heat capacity is dE/dT at constant pressure.
 	    // To obtain the specific electron heat capacity we load
@@ -127,7 +127,7 @@ namespace rtt_cdi_eospac
 	}
 
     double Eospac::getSpecificIonInternalEnergy(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    const int returnType = 8; // (enion)
 	    return getF( dbl_v1(density), dbl_v1(temperature),
@@ -135,15 +135,15 @@ namespace rtt_cdi_eospac
 	}
 
     std::vector< double > Eospac::getSpecificIonInternalEnergy(
-	const std::vector< double >& density, 
-	const std::vector< double >& temperature ) const
+	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity ) const
 	{
 	    const int returnType = 8; // (enion)
-	    return getF( density, temperature, returnType );
+	    return getF( vdensity, vtemperature, returnType );
 	}
 
     double Eospac::getIonHeatCapacity(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    // specific Heat capacity is dE/dT at constant pressure.
 	    // To obtain the specific electron heat capacity we load
@@ -156,8 +156,8 @@ namespace rtt_cdi_eospac
 	}
 
     std::vector< double > Eospac::getIonHeatCapacity(
-	const std::vector< double >& density, 
-	const std::vector< double >& temperature ) const
+	const std::vector< double >& vtemperature,
+	const std::vector< double >& vdensity ) const
 	{
 	    // specific Heat capacity is dE/dT at constant pressure.
 	    // To obtain the specific electron heat capacity we load
@@ -165,11 +165,11 @@ namespace rtt_cdi_eospac
 	    // first derivative w.r.t temperature.
 
 	    const int returnType = 8; // (enion)
-	    return getdFdT( density, temperature, returnType );
+	    return getdFdT( vdensity, vtemperature, returnType );
 	}
     
     double Eospac::getNumFreeElectronsPerIon(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    const int returnType = 25; // (zfree3)
 	    return getF( dbl_v1(density), dbl_v1(temperature),
@@ -177,15 +177,15 @@ namespace rtt_cdi_eospac
 	}
     
     std::vector< double > Eospac::getNumFreeElectronsPerIon(
-	const std::vector< double >& density,
-	const std::vector< double >& temperature ) const
+	const std::vector< double >& vtemperature,
+	const std::vector< double >& vdensity ) const
 	{
 	    const int returnType = 25; // (zfree3)
-	    return getF( density, temperature, returnType );
+	    return getF( vdensity, vtemperature, returnType );
 	}
     
     double Eospac::getElectronBasedThermalConductivity(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    const int returnType = 27; // (tconde)
 	    return getF( dbl_v1(density), dbl_v1(temperature),
@@ -193,11 +193,11 @@ namespace rtt_cdi_eospac
 	}
     
     std::vector< double > Eospac::getElectronBasedThermalConductivity(
-	const std::vector< double >& density, 
-	const std::vector< double >& temperature ) const
+	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity ) const
 	{
 	    const int returnType = 27; // (tconde)
-	    return getF( density, temperature, returnType );
+	    return getF( vdensity, vtemperature, returnType );
 	}
 
     // -------------- //
@@ -218,8 +218,8 @@ namespace rtt_cdi_eospac
      *        type of data being retrieved from the EoS tables.
      */
     std::vector< double > Eospac::getF( 
-	const std::vector< double >& vdensity, 
-	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity,
+	const std::vector< double >& vtemperature,
 	int returnType ) const
 	{
 	    // The density and vector parameters must be a tuple.
@@ -241,6 +241,10 @@ namespace rtt_cdi_eospac
 		    throw EospacException( outputString.str() );
 		}
 
+	    // Convert temperatures from keV to degrees Kelvin.
+	    std::vector< double > vtempsKelvin = vtemperature;
+	    for ( int i=0; i<vtemperature.size(); ++i )
+		vtempsKelvin[i] = keV2K( vtemperature[i] );
 	    
 	    // we don't need derivative values.
 	    const int derivatives = 1;
@@ -258,7 +262,7 @@ namespace rtt_cdi_eospac
 		= wrapper::es1vals( returnType, derivatives,
 				    interpolation, eosTable,
 				    eosTableLength,
-				    vdensity, vtemperature, 
+				    vdensity, vtempsKelvin, 
 				    returnVals, returnSize );
 	    
 	    if ( errorCode != 0 )
@@ -298,7 +302,7 @@ namespace rtt_cdi_eospac
      *        type of data being retrieved from the EoS tables.
      */
     std::vector< double > Eospac::getdFdT( 
-	const std::vector< double >& vdensity, 
+	const std::vector< double >& vdensity,
 	const std::vector< double >& vtemperature, 
 	int returnType ) const
 	{
@@ -330,6 +334,10 @@ namespace rtt_cdi_eospac
 				 << returnType << "\"\n";
 		    throw EospacException( outputString.str() );
 		}
+	    // Convert temperatures from keV to degrees Kelvin.
+	    std::vector< double > vtempsKelvin = vtemperature;
+	    for ( int i=0; i<vtemperature.size(); ++i )
+		vtempsKelvin[i] = keV2K( vtemperature[i] );
 	    
 	    // return EOS value plus first derivatives.
 	    const int derivatives = 2;
@@ -347,7 +355,7 @@ namespace rtt_cdi_eospac
 		= wrapper::es1vals( returnType, derivatives,
 				    interpolation, eosTable,
 				    eosTableLength,
-				    vdensity, vtemperature, 
+				    vdensity, vtempsKelvin,
 				    returnVals, returnSize );
 	    
 	    if ( errorCode != 0 )
@@ -375,7 +383,7 @@ namespace rtt_cdi_eospac
 	    // returnVal[1]/rho.  returnVal[0] is the EoS value (not a 
 	    // derivative value.
 	    for ( int i=0; i<vtemperature.size(); ++i )
-		dFdT[i] = dFdT[i]/vtemperature[i];
+		dFdT[i] = dFdT[i]/vtempsKelvin[i];
 
 	    delete [] returnVals;
 
