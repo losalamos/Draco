@@ -1,3 +1,17 @@
+2004-11-22  Rob Lowrie  <lowrie@lanl.gov>
+
+	* Added constructor RCF(int n, value_type v = value_type()).  This
+	automatically allocates the new field.  So, RCF<vector<double> >
+	v(new vector<double>(10, 6.3)) may be replaced with
+	RCF<vector<double> > v(10, 6.3);
+
+	* Added File_Streams, which contains the classes File_Input and 
+	File_Output.  These streams handle output/input to/from ascii 
+	and binary files. Moreover, File_Output is interchangeable with 
+	rtt_dsxx::Packer() and File_Input is interchangeable with 
+	rtt_dsxx::Unpacker().  By templating an I/O class on stream type,
+	the same code can be used to both pack data and save data to files.
+
 2003-03-13  Thomas M. Evans  <tme@lanl.gov>
 
 	* ds++: release 1_9_0.  Lots of changes.  Got rid of some
