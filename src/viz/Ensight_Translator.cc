@@ -246,10 +246,10 @@ void Ensight_Translator::ensight_case(const double)
 
     // write the geometry file block
     caseout << "GEOMETRY" << endl;
-    caseout << "model: 1   " << "./geo/data";
-    if ( ! static_geom ) {
-	caseout << ".****";
-    }
+    if ( static_geom )
+	caseout << "model: ./geo/data";
+    else
+	caseout << "model: 1   ./geo/data.****";
     caseout << endl << endl;
 
     // write the variable block header

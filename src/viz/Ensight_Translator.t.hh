@@ -386,7 +386,7 @@ Ensight_Translator::ensight_geom(
     geomout << "node id given" << endl;
     geomout << "element id given" << endl;
     geomout << "coordinates" << endl;
-    geomout << pt_coor.nrows() << endl;
+    geomout << setw(8) << pt_coor.nrows() << endl;
 
     // WRITE THE UNSTRUCTURED COORDINATE DATA. DATA IS ALWAYS
     // 3D, 2D DATA IS CONFINED TO A PLANE, 1D TO A LINE IN 3-SPACE
