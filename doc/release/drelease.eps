@@ -1,9 +1,9 @@
 %!PS-Adobe-2.0
-%%Creator: dot version uwin97 (4-15-97)
+%%Creator: dot version 1.4 (2-14-1999)
 %%For: (tme) Thomas M. Evans
 %%Title: draco_release
 %%Pages: (atend)
-%%BoundingBox: 162 345 451 448
+%%BoundingBox: 162 353 451 440
 %%EndComments
 %%BeginProlog
 save
@@ -47,7 +47,7 @@ DotDict begin
 		gsave
 			coordfont setfont
 			0 0 moveto
-			(\\() show i str cvs show (,) show j str cvs show (\\)) show
+			(\() show i str cvs show (,) show j str cvs show (\)) show
 		grestore
 	} if
 } bind def
@@ -55,22 +55,6 @@ DotDict begin
 /set_font {
 	findfont exch
 	scalefont setfont
-} def
-
-/arrowhead {
-	/arrowwidth exch def
-	/arrowlength exch def
-	gsave
-		3 1 roll
-		translate
-			rotate
-			newpath
-			arrowlength arrowwidth 2 div moveto
-			0 0 lineto
-			arrowlength arrowwidth -2 div lineto
-		closepath fill
-		stroke
-	grestore
 } def
 
 % draw aligned label in bounding box aligned to current point
@@ -148,116 +132,132 @@ def
 /curlayer 0 def
 
 %%EndResource
-%%EndProlog
-%%BeginSetup
 14 default-font-family set_font
+1 setmiterlimit
 % /arrowlength 10 def
 % /arrowwidth 5 def
-%%EndSetup
+%%EndProlog
 %%Page: 1 1
-%%PageBoundingBox: 162 345 451 448
+%%PageBoundingBox: 162 353 451 440
+%%PageOrientation: Portrait
 gsave
-161 344 290 104 boxprim clip newpath
-162 345 translate
+161 352 290 88 boxprim clip newpath
+162 353 translate
 0 0 1 beginpage
-0.8834 set_scale
+0.8045 set_scale
 0 0 translate 0 rotate
 0.000 0.000 0.000 graphcolor
 14.00 /Times-Roman set_font
 
 %	draco
 gsave 10 dict begin
-newpath 206 116 moveto
-126 116 lineto
-126 76 lineto
-206 76 lineto
+newpath 226 108 moveto
+142 108 lineto
+142 72 lineto
+226 72 lineto
 closepath
 stroke
 gsave 10 dict begin
-166 105 moveto (Draco) 34 14.00 -0.50 alignedtext
-166 89 moveto (draco_1.3.0) 65 14.00 -0.50 alignedtext
+184 99 moveto (Draco) 34 14.00 -0.50 alignedtext
+184 83 moveto (draco-1_3_0) 70 14.00 -0.50 alignedtext
 end grestore
 end grestore
 
 %	dsxx
 gsave 10 dict begin
-newpath 76 40 moveto
-0 40 lineto
+newpath 88 36 moveto
+0 36 lineto
 0 0 lineto
-76 0 lineto
+88 0 lineto
 closepath
 stroke
 gsave 10 dict begin
-38 29 moveto (ds++) 28 14.00 -0.50 alignedtext
-38 13 moveto (ds++_2.1.0) 63 14.00 -0.50 alignedtext
+44 27 moveto (ds++) 28 14.00 -0.50 alignedtext
+44 11 moveto (ds++-1_10_0) 74 14.00 -0.50 alignedtext
 end grestore
 end grestore
 
 %	draco -> dsxx
-newpath 132 76 moveto
-115 66 97 55 79 44 curveto
+newpath 149 72 moveto
+130 62 107 51 87 40 curveto
 stroke
-72 40 29.74 10.00 5.00 arrowhead
+newpath 87 43 moveto
+79 36 lineto
+89 38 lineto
+closepath
+gsave 0 setgray stroke grestore fill
 
 %	cfour
 gsave 10 dict begin
-newpath 156 40 moveto
-94 40 lineto
-94 0 lineto
-156 0 lineto
+newpath 172 36 moveto
+106 36 lineto
+106 0 lineto
+172 0 lineto
 closepath
 stroke
 gsave 10 dict begin
-125 29 moveto (c4) 13 14.00 -0.50 alignedtext
-125 13 moveto (c4_1.4.1) 48 14.00 -0.50 alignedtext
+139 27 moveto (c4) 13 14.00 -0.50 alignedtext
+139 11 moveto (c4-1_4_1) 52 14.00 -0.50 alignedtext
 end grestore
 end grestore
 
 %	draco -> cfour
-newpath 155 76 moveto
-150 67 145 57 140 48 curveto
+newpath 173 72 moveto
+168 64 161 53 155 44 curveto
 stroke
-136 40 63.43 10.00 5.00 arrowhead
+newpath 153 46 moveto
+150 36 lineto
+157 43 lineto
+closepath
+gsave 0 setgray stroke grestore fill
 
 %	xm
 gsave 10 dict begin
-newpath 240 40 moveto
-174 40 lineto
-174 0 lineto
-240 0 lineto
+newpath 268 36 moveto
+190 36 lineto
+190 0 lineto
+268 0 lineto
 closepath
 stroke
 gsave 10 dict begin
-207 29 moveto (xm) 17 14.00 -0.50 alignedtext
-207 13 moveto (xm_4.1.0) 52 14.00 -0.50 alignedtext
+229 27 moveto (xm) 17 14.00 -0.50 alignedtext
+229 11 moveto (xm-1_21_0) 64 14.00 -0.50 alignedtext
 end grestore
 end grestore
 
 %	draco -> xm
-newpath 177 76 moveto
-182 67 187 57 192 48 curveto
+newpath 195 72 moveto
+200 64 207 53 213 44 curveto
 stroke
-196 40 116.57 10.00 5.00 arrowhead
+newpath 211 43 moveto
+218 36 lineto
+215 46 lineto
+closepath
+gsave 0 setgray stroke grestore fill
 
 %	rng
 gsave 10 dict begin
-newpath 326 40 moveto
-258 40 lineto
-258 0 lineto
-326 0 lineto
+newpath 358 36 moveto
+286 36 lineto
+286 0 lineto
+358 0 lineto
 closepath
 stroke
 gsave 10 dict begin
-292 29 moveto (rng) 18 14.00 -0.50 alignedtext
-292 13 moveto (rng_1.3.0) 53 14.00 -0.50 alignedtext
+322 27 moveto (rng) 18 14.00 -0.50 alignedtext
+322 11 moveto (rng-1_3_0) 58 14.00 -0.50 alignedtext
 end grestore
 end grestore
 
 %	draco -> rng
-newpath 199 76 moveto
-216 66 234 55 251 44 curveto
+newpath 219 72 moveto
+237 62 260 51 280 40 curveto
 stroke
-258 40 150.26 10.00 5.00 arrowhead
+newpath 278 38 moveto
+288 36 lineto
+280 43 lineto
+closepath
+gsave 0 setgray stroke grestore fill
 endpage
 grestore
 %%PageTrailer
