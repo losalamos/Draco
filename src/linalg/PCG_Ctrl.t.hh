@@ -9,6 +9,7 @@
 #include "PCG_Ctrl.hh"
 #include "PCG_Subroutines.hh"
 #include <iostream>
+#include <sstream>
 using std::cout;
 using std::endl;
 using std::flush;
