@@ -11679,6 +11679,7 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
            ;;
        esac
 
+	mpi_libs="-lpmpich $mpi_libs -lz"
 
        #
        # setup lapack
@@ -11791,27 +11792,6 @@ echo "${ECHO_T}\"not needed\"" >&6
 echo "${ECHO_T}\"not needed\"" >&6
        fi
 
-       #
-       # add librt to LIBS if udm is used
-       #
-       echo "$as_me:$LINENO: checking \"librt requirements\"" >&5
-echo $ECHO_N "checking \"librt requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_udm}"; then
-
-	   # Add rt for g++
-	   if test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lrt"
-	       echo "$as_me:$LINENO: result: \"-lrt added to LIBS\"" >&5
-echo "${ECHO_T}\"-lrt added to LIBS\"" >&6
-           else
-               echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-	   fi
-
-       else
-           echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-       fi
 
        #
        # If dlopen is specified, 1) add libdl to LIBS;
