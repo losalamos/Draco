@@ -34,7 +34,7 @@ void gsync() {}
 
 //---------------------------------------------------------------------------//
 // Send/receives
-
+/*
 int Send( void *buf, int size, int dest, int tag, int group )
 {
     return C4_SUCCESS;
@@ -44,7 +44,7 @@ int Recv( void *buf, int size, int source, int tag, int group )
 {
     return 0;
 }
-
+*/
 C4_Req SendAsync( void *buf, int size, int dest, int tag, int group )
 {
     C4_Req r;
