@@ -15,6 +15,7 @@ need_spdf	:= no
 need_util	:= no
 need_pooma	:= no
 need_mesh	:= no
+need_units	:= yes
 need_matprops	:= yes
 need_3T		:= yes
 
