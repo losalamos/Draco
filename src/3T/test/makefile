@@ -21,8 +21,12 @@ need_3T		:= yes
 
 include ../../config/makefile
 
-#srcs	= main.cc Quad_Params.cc Test_Prob.cc Run_DB.cc
-srcs	= main.cc Trig_Params.cc Test_Prob.cc Run_DB.cc
+srcs	= \
+	main.cc \
+	Quad_Params.cc \
+	Trig_Params.cc \
+	Test_Prob.cc \
+	Run_DB.cc
 
 ifdef preinstantiate
 # Add in files which perform explicit template instantiation.
@@ -38,23 +42,23 @@ objs	= $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_libutil) $(dep_libnml) $(dep_libc4) $(dep_libds++)
+	$(dep_lib3T) $(dep_libmesh) $(dep_libgeom) $(dep_liblinalg) \
+	$(dep_libutil) $(dep_libspdf) $(dep_libnml) $(dep_libc4) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../../ds++;   $(MAKE) $(subnj))
-	(cd ../../c4;     $(MAKE) $(subnj) dodeps=no)
-	(cd ../../nml;    $(MAKE) $(subnj) dodeps=no)
+	(cd ../../3T;   $(MAKE) $(subnj))
 	(cd ../../spdf;   $(MAKE) $(subnj) dodeps=no)
 	(cd ../../util;   $(MAKE) $(subnj) dodeps=no)
-	(cd ../../linalg; $(MAKE) $(subnj) dodeps=no)
-	(cd ../../geom;   $(MAKE) $(subnj) dodeps=no)
-	(cd ../../mesh;   $(MAKE) $(subnj) dodeps=no)
-	(cd ../../3T;   $(MAKE) $(subnj) dodeps=no)
 endif
 
+$(dep_lib3T):
+$(dep_libmesh):
+$(dep_libgeom):
+$(dep_liblinalg):
 $(dep_libutil):
+$(dep_libspdf):
 $(dep_libnml):
 $(dep_libc4):
 $(dep_libds++):
