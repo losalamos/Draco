@@ -52,7 +52,7 @@ if test -z "`echo $configure_command | grep ftest-coverage`"; then
 fi
 
 #DbC 3 - must be a debug version
-if ! test -z "`echo $configure_command | grep enable-debug`"; then
+if test -z "`echo $configure_command | grep enable-debug`"; then
    echo "Must configure with the following command line option:"
    echo "   --enable-debug"
    echo "Aborting..."
