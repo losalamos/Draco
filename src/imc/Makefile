@@ -1,4 +1,13 @@
-# SETTINGS
+###############################################################################
+# imctest makefile
+# Thomas M. Evans
+###############################################################################
+# @> IMCTEST package makefile
+###############################################################################
+
+##---------------------------------------------------------------------------##
+## SETTINGS
+##---------------------------------------------------------------------------##
 
 CC = KCC
 INCLUDE = -I../ds++ 
@@ -7,7 +16,9 @@ OPTIONS = --strict -x
 COPTIONS = -M
 RM = rm -r
 
-# OBJECTS
+##---------------------------------------------------------------------------##
+## OBJECTS
+##---------------------------------------------------------------------------##
 
 objects = Layout.o OS_Builder.o OS_Mesh.o OS_Parser.o Opacity.o \
           Particle.o Random.o XYCoord_sys.o XYZCoord_sys.o \
@@ -17,7 +28,9 @@ sources = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Parser.cc Opacity.cc \
           Particle.cc Random.cc XYCoord_sys.cc XYZCoord_sys.cc \
           Opacity_Builder.cc
 
-# INCLUDE DEPENDENCIES
+##---------------------------------------------------------------------------##
+## OBJECT FILE INCLUDE DEPENDENCIES
+##---------------------------------------------------------------------------##
 
 %.cd: %.cc %.hh
 	$(CC) $< $(INCLUDE) -M > $@.t
@@ -26,21 +39,20 @@ sources = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Parser.cc Opacity.cc \
 
 include $(sources:.cc=.cd)
 
-# MAIN DRIVER PROGRAM
+##---------------------------------------------------------------------------##
+## COMPILE TARGETS FOR CLASS OBJECTS
+##---------------------------------------------------------------------------##
 
 all: $(objects)
-
-# CLASS OBJECTS
 
 %.o: %.cc
 	$(CC) -c $< $(INCLUDE) $(OPTIONS)
 
-# UTILITIES
+##---------------------------------------------------------------------------##
+## CLEAN UTILITIES
+##---------------------------------------------------------------------------##
 
-cleanall: cleanobj cleankcc cleandep cleantest
-
-cleandep:
-	$(RM) *.cd *.td
+cleanall: cleanobj cleankcc cleantest
 
 cleanobj:
 	$(RM) *.o
@@ -49,29 +61,25 @@ cleankcc:
 	$(RM) *.ii
 
 cleantest:
-	rm test*
+	$(RM) test*
 
-# TEST DRIVERS
+##---------------------------------------------------------------------------##
+## TEST DRIVERS
+##---------------------------------------------------------------------------##
 
+# find test executable drivers
 vpath test%.cc test
 
-testsources = testb.cc testm.cc
-
-testmobj = testm.o XYCoord_sys.o XYZCoord_sys.o OS_Mesh.o Layout.o\
-           Random.o
-
 testbobj = testb.o OS_Builder.o OS_Mesh.o XYCoord_sys.o XYZCoord_sys.o \
-           Layout.o Random.o OS_Parser.o
+           Layout.o Random.o OS_Parser.o Opacity_Builder.o
 
-%.td: %.cc
-	$(CC) $< $(INCLUDE) -M > $@.t
-	nawk '/.hh/ {print $2}' $@.t > $@
-	$(RM) $@.t
+testbdep = OS_Parser.hh OS_Builder.hh OS_Mesh.hh
 
-include $(testsources:.cc=.td)
-
-testm: $(testmobj)
-	$(CC) -o $@ $(testmobj) $(LIB) $(OPTIONS)
+testb.o: $(testbdep)
 
 testb: $(testbobj)
 	$(CC) -o $@ $(testbobj) $(LIB) $(OPTIONS)
+
+###############################################################################
+#			   end of imctest makefile
+###############################################################################
