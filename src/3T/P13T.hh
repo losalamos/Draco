@@ -79,20 +79,24 @@ namespace rtt_3T {
 
      typedef typename DiffusionSolver::FluxField FluxField;
      typedef typename DiffusionSolver::DiscFluxField DiscFluxField;
+#ifdef P13T_MOMENTUM_DEPOSITION
      typedef typename DiffusionSolver::MomentumField MomentumField;
      typedef typename DiffusionSolver::DiscMomentumField DiscMomentumField;
-     typedef typename DiffusionSolver::DiffCoefField DiffCoefField;
      typedef typename DiffusionSolver::DiscKineticEnergyField DiscKineticEnergyField;
+#endif
+     typedef typename DiffusionSolver::DiffCoefField DiffCoefField;
 
      // Miscellaneous shortcut field typedefs from the MT class
     
      typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
 
+#ifdef P13T_MOMENTUM_DEPOSITION
      typedef typename MeshType::ncsf ncsf;    // node-centered scalar field
      typedef typename MeshType::ncvsf ncvsf;  // node-centered vector scalar field
-
-     typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
      typedef typename MeshType::fcdvsf fcdvsf;  // face-centered discontinuous v.s.f.
+#endif
+     
+     typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
      typedef typename MeshType::bssf bssf;    // bndry-specified boundary field.
 
      // The state of the radiation field is passed in and returned
@@ -207,13 +211,17 @@ namespace rtt_3T {
 		  ccsf &REEM,
 		  ccsf &electronEnergyDeposition,
 		  ccsf &ionEnergyDeposition,
+#ifdef P13T_MOMENTUM_DEPOSITION
 		  ncvsf &momentumDeposition,
+#endif
 		  ccsf &Tnp1Electron,
 		  ccsf &Tnp1Ion,
 		  DiffusionSolver &solver,
 		  double dt,
 		  const MaterialProperties &matprops,
+#ifdef P13T_MOMENTUM_DEPOSITION
 		  const ncvsf &velocity,
+#endif
 		  const RadiationStateField &prevStateField,
 		  const ccsf &QRad,
 		  const ccsf &QElectron,
@@ -279,6 +287,9 @@ namespace rtt_3T {
 			double dt,
 			const P1Coeffs &p1coeffs,
 			const ccsf &deltaTelectron) const;
+
+#ifdef P13T_MOMENTUM_DEPOSITION
+     
      //-----------------------------------------------------------------------//
      // calcMomentumDeposition:
      //    Calculate the momentum deposition from the radiation
@@ -291,6 +302,9 @@ namespace rtt_3T {
                		         const MaterialProperties &matprops,
                                  const ncvsf &velocity,
                                  const int groupNo) const;
+#endif
+     
+#ifdef P13T_MOMENTUM_DEPOSITION
 
      //-----------------------------------------------------------------------//
      // mapCrossSections:
@@ -299,7 +313,8 @@ namespace rtt_3T {
      //-----------------------------------------------------------------------//
 
      void mapCrossSections(DiscKineticEnergyField &vcSigma,
-			   const fcdsf &fcSigma) const;     
+			   const fcdsf &fcSigma) const;
+#endif
  };
 
 } // namespace rtt_3T

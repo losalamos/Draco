@@ -330,13 +330,17 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
 		       ccsf &REEM,
 		       ccsf &electronEnergyDeposition,
 		       ccsf &ionEnergyDeposition,
+#ifdef P13T_MOMENTUM_DEPOSITION
 		       ncvsf &momentumDeposition,
+#endif
 		       ccsf &Tnp1Electron,
 		       ccsf &Tnp1Ion,
 		       DiffusionSolver &solver,
 		       double dt,
 		       const MaterialProperties &matprops,
+#ifdef P13T_MOMENTUM_DEPOSITION
 		       const ncvsf &velocity,
+#endif
 		       const RadiationStateField &prevStateField,
 		       const ccsf &QRad,
 		       const ccsf &QElectron,
@@ -366,7 +370,10 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
 
     // Construct a P1Coeffs object to get derived quantities.
     
-    P1Coeffs p1coeffs(*this, dt, groupNo, options, solver, matprops, velocity,
+    P1Coeffs p1coeffs(*this, dt, groupNo, options, solver, matprops,
+#ifdef P13T_MOMENTUM_DEPOSITION
+		      velocity,
+#endif
 		      prevStateField, QRad, QElectron, QIon, TnElectron, TnIon);
 
     QEEM = p1coeffs.QEEM();
@@ -401,11 +408,14 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
 
     Tnp1Ion = TnIon + deltaTIon;
     
+#ifdef P13T_MOMENTUM_DEPOSITION
+
     // Calculate the momentum deposition.
 
     calcMomentumDeposition(momentumDeposition, resultsStateField,
                            solver, matprops, velocity, groupNo);
-
+#endif
+    
     // Update and activate the timestep advisors.
     
     if (spTsManager)
@@ -557,6 +567,8 @@ void P13T<DS>::calcDeltaTIon(ccsf &deltaTIon,
 	/ (CvIon + dt*gamma);
 
 }
+
+#ifdef P13T_MOMENTUM_DEPOSITION
 
 //-----------------------------------------------------------------------//
 // calcMomentumDeposition:
@@ -718,6 +730,8 @@ void P13T<DS>::calcMomentumDeposition(
 #endif
 }
 
+#endif
+
 //------------------------------------------------------------------------//
 // getBhat:
 //    get the 4pi*planckian
@@ -753,6 +767,8 @@ void P13T<DS>::getdBhatdT(ccsf &dBhatdT,
     dBhatdT *= 4.0*pi;
 }
 
+#ifdef P13T_MOMENTUM_DEPOSITION
+
 //-----------------------------------------------------------------------//
 // mapCrossSections:
 //    Use the cross section mapper to create vertex centered
@@ -765,6 +781,8 @@ void P13T<DS>::mapCrossSections(DiscKineticEnergyField &vcSigma,
 {
     spCrossSectionMapper->mapCrossSections(vcSigma, fcSigma);
 }
+
+#endif
 
 } // end namespace rtt_3T
 

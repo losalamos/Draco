@@ -27,7 +27,9 @@ namespace rtt_3T {
 
    public:
      
+#ifdef P13T_MOMENTUM_DEPOSITION
      typedef typename DS::DiscKineticEnergyField DiscKineticEnergyField;
+#endif
      typedef typename DS::MeshType::fcdsf fcdsf;
 
      // CREATORS
@@ -43,8 +45,10 @@ namespace rtt_3T {
 
      // ACCESSORS
 
+#ifdef P13T_MOMENTUM_DEPOSITION
      virtual void mapCrossSections(DiscKineticEnergyField &vcSigma,
 				   const fcdsf &fcSigma) const = 0;
+#endif
  };
 
 } // end namespace rtt_3T

@@ -41,19 +41,23 @@ namespace rtt_P1Diffusion
      typedef typename MT::fcdsf fcdsf;
      typedef typename MT::ccsf ccsf;
      typedef typename MT::bssf bssf;
+#ifdef P13T_MOMENTUM_DEPOSITION
      typedef typename MT::ncvsf ncvsf;
      typedef typename MT::vcvsf vcvsf;
      typedef typename MT::vcsf vcsf;
+#endif
 
    public:
 
      typedef MT MeshType;
      typedef fcdsf FluxField;
      typedef fcdsf DiscFluxField;
+#ifdef P13T_MOMENTUM_DEPOSITION
      typedef ncvsf MomentumField;
      typedef vcvsf DiscMomentumField;
-     typedef fcdsf DiffCoefField;
      typedef vcsf DiscKineticEnergyField;
+#endif
+     typedef fcdsf DiffCoefField;
 
      // DATA
     
@@ -81,9 +85,11 @@ namespace rtt_P1Diffusion
 		const ccsf &Q, const fcdsf &Fprime, const bssf &alpha,
 		const bssf &beta, const bssf &fb) const;
 
+#ifdef P13T_MOMENTUM_DEPOSITION
      void dotProduct(DiscKineticEnergyField &KEnergy,
                      const DiscFluxField &sigmaF,
                      const DiscMomentumField &velocity) const;
+#endif
 
    private:
     

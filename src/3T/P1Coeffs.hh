@@ -56,7 +56,9 @@ namespace rtt_3T
      const DiffusionSolver &solver;
      const P13TOptions &options;
      const MaterialProperties &matprops;
+#ifdef P13T_MOMENTUM_DEPOSITION
      const ncvsf &velocity;
+#endif
      const RadiationStateField &prevStateField;
      const ccsf &QRad;
      const ccsf &QElectron;
@@ -74,7 +76,9 @@ namespace rtt_3T
 	      const P13TOptions &options_,
               const DiffusionSolver &solver_,
 	      const MaterialProperties &matprops_,
+#ifdef P13T_MOMENTUM_DEPOSITION
 	      const ncvsf &velocity_,
+#endif	      
 	      const RadiationStateField &prevStateField_,
 	      const ccsf &QRad_,
 	      const ccsf &QElectron_,

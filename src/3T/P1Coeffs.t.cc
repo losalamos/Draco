@@ -25,7 +25,9 @@ namespace rtt_3T
 			      const P13TOptions &options_,
                               const DiffusionSolver &solver_,
 			      const MaterialProperties &matprops_,
+#ifdef P13T_MOMENTUM_DEPOSITION
 			      const ncvsf &velocity_,
+#endif
 			      const RadiationStateField &prevStateField_,
 			      const ccsf &QRad_,
 			      const ccsf &QElectron_,
@@ -34,7 +36,10 @@ namespace rtt_3T
 			      const ccsf &TIon_)
      : p13T(p13T_), spMesh(p13T_.getMesh()),
        dt(dt_), groupNo(groupNo_), options(options_), solver(solver_),
-       matprops(matprops_), velocity(velocity_),
+       matprops(matprops_),
+#ifdef P13T_MOMENTUM_DEPOSITION
+       velocity(velocity_),
+#endif
        prevStateField(prevStateField_),
        QRad(QRad_), QElectron(QElectron_), QIon(QIon_),
        TElectron(TElectron_), TIon(TIon_),
@@ -103,7 +108,9 @@ namespace rtt_3T
 
      if (options.getIsCoupledMaterial())
      {
+#ifdef P13T_MOMENTUM_DEPOSITION
        	 calcVelocityCorrections();
+#endif
 	 calcStarredFieldsAndNu();
 
 	 cerr << "QElecStar: " << *QElecStar.begin() << endl;
@@ -149,6 +156,8 @@ namespace rtt_3T
      xFprime = (tauP1*prevStateField.F + xiOmegaBracket) / (sigmaTotal + tauP1);
 
  }
+
+#ifdef P13T_MOMENTUM_DEPOSITION
 
  //------------------------------------------------------------------------//
  // calcVelocityCorrections:
@@ -316,6 +325,8 @@ namespace rtt_3T
      MT::scatter( DFField3, DKEField3, MT::OpAddAssign() );
      xiOmegaBracket = (4./(3.*c))*(DFField1*n1 + DFField2*n2 + DFField3*n3);
  }
+
+#endif
 
  //------------------------------------------------------------------------//
  // calcStarredFieldsAndNu:

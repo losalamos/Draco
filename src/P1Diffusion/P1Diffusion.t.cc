@@ -124,6 +124,8 @@ namespace rtt_P1Diffusion
      getNewFlux(F, DEffOverDeltaL, FprimeEff, phi);
  }
 
+#ifdef P13T_MOMENTUM_DEPOSITION
+
  template<class MT, class MS>
  void P1Diffusion<MT,MS>::dotProduct(DiscKineticEnergyField &KEnergy,
                                      const DiscFluxField &sigmaF,
@@ -157,6 +159,8 @@ namespace rtt_P1Diffusion
                       + sigmaF(c,5)*velocity(c,7)(2);
      }
  }
+
+#endif
 
  template<class MT, class MS>
  void P1Diffusion<MT,MS>::cacheSwappedValues(const fcdsf &D,
