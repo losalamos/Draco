@@ -16,37 +16,44 @@ using std::endl;
 #include "Quadrature.hh"
 #include "QuadCreator.hh"
 
+#include "ds++/SP.hh"
+
+static const double PI = 3.1415926535899323846;
+static const double TOL = 1.0e-14;
+
 namespace rtt_quadrature
 {
 
-// QuadCreate returns a pointer to a Quadrature object.  The Quadrature
+// QuadCreate returns a smart pointer to a Quadrature object.  The Quadrature 
 // object is created according to the clients specifications.
 //
 // sn_order defaults to 4 (see QuadCreator.hh)
-// norm     defaults to 4*PI
+// norm     defaults to 4*PI, 2*PI or 2 for 3D, 2D or 1D problems,
+//          respectively -- See the constructors in Quadrature.cc
 
-Quadrature* QuadCreator::QuadCreate( QuadCreator::Qid quad_type, 
-				     int sn_order, double norm ) 
+// if norm was not specifed by the client it will be equal to zero here and
+// will be set to an appropriate default value here.
+
+rtt_dsxx::SP<Quadrature> 
+QuadCreator::QuadCreate( QuadCreator::Qid quad_type, 
+			 int sn_order, double norm ) 
 {
-
-    // verify norm > 0.0
-    // verify sn_order > 1
-    
-
     switch( quad_type ) {
     case( GaussLeg ):
-	return new Q1DGaussLeg( sn_order );
+	// if the client did not specify a value for norm then it will be
+	// zero here.  We must set it to a default value of 2.0.
+	if ( fabs(norm) <= TOL ) norm = 2.0;
+	return rtt_dsxx::SP<Quadrature> 
+	    ( new Q1DGaussLeg( sn_order, norm ));
     case( LevelSym ):
-	return new Q3DLevelSym( sn_order, norm );
-// 	cerr << endl << "QuadCreator::QuadCreate"
-// 	     << endl << "   --> quad_type = LevelSym not currently available."
-// 	     << endl << "       aborting" << endl;
-// 	return 0;
+	if ( fabs(norm) <= TOL ) norm = 4.0*PI;
+	return rtt_dsxx::SP<Quadrature>
+	    ( new Q3DLevelSym( sn_order, norm ));
     default:
 	cerr << endl << "QuadCreator::QuadCreate"
 	     << endl << "   --> No value for quad_type specfied.  Aborting."
 	     << endl;
-	return 0;
+	return rtt_dsxx::SP<Quadrature> ();
     }
 }
 

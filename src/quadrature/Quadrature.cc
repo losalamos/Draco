@@ -14,40 +14,55 @@ using std::cout;
 using std::cerr;
 using std::endl;
 #include <cmath>
+#include <iomanip>
+using std::setprecision;
+
+#include "ds++/Assert.hh"
+// Require(cond) -- check input vals
+// Ensure(cond)  -- check output vals
+// Check(cond) or Assert(cond) -- other checks
+// Insist(cond,msg) -- Always checks, others can be turned off with compile
+//                     option.
+
+
 #include "Quadrature.hh"
-//#include "QuadCreator.hh"
 
 namespace rtt_quadrature
 {
 
 static double PI  = 3.14159265358979323846;
 static double EPS = 3.0e-14;
+static double TOL = 1.0e-12;
 
-Q1DGaussLeg::Q1DGaussLeg( int n ) 
-    : numAngles( n )
+
+// 1D Gauss Legendre Quadrature
+//--------------------------------------------------------------------------------
+
+Q1DGaussLeg::Q1DGaussLeg( int n, double norm_ ) 
+    : numAngles( n ), snOrder( n ), norm (norm_)
 { 
-    int m;
-    double mu1,mu2,gamma,mu_m,mu_l,z,z1,p1,p2,p3,pp;
+    // We require the sn_order to be greater than zero.
+    Require( n > 0 );
+    // We require the normalization constant to be greater than zero.
+    Require( norm > 0.0 );
 
     // size the member data vectors
     mu.resize(n);
     wt.resize(n);
 
-    mu1   =-1.0;
-    mu2   = 1.0;
-    gamma = 0.0;
+    double mu1 = -1.0;
+    double mu2 =  1.0;
 
-    m    = (n+1)/2;
-    mu_m = 0.5 * (mu2+mu1);
-    mu_l = 0.5 * (mu2-mu1);
-
+    int m = (n+1)/2;  // number of angles in half range.
+    double mu_m = 0.5 * (mu2+mu1);
+    double mu_l = 0.5 * (mu2-mu1);
+    
     for ( int i = 1; i <= m; ++i ) {
-	z = cos( PI * ( i-0.25 ) / ( n+0.5 ));
+	double z1, pp, z = cos( PI * ( i-0.25 ) / ( n+0.5 ));
 	do {
-	    p1 = 1.0;
-	    p2 = 0.0;
+	    double p1 = 1.0, p2 = 0.0;
 	    for ( int j=1; j<=n; j++ ) {
-		p3 = p2;
+		double p3 = p2;
 		p2 = p1;
 		p1 = (( 2.0*j - 1.0 ) * z * p2 - ( j - 1.0 ) * p3 ) / j;
 	    }
@@ -61,54 +76,122 @@ Q1DGaussLeg::Q1DGaussLeg( int n )
 	wt[ i-1 ] = 2.0 * mu_l / (( 1.0 - z*z ) * pp*pp );
 	mu[ n-i ] = mu_m + mu_l * z;
 	wt[ n-i ] = wt[ i-1 ];
-	gamma += wt[i-1]*mu[i-1];
-	gamma = -gamma;
     }	
+
+    // Sanity Checks: 
+    // Verify that the 0th, 1st and 2nd moments integrate to 2, (0,0,0) and
+    // 2/3*((1,0,0),(0,1,0),(0,0,1)) respectively.
+
+    double sumwt = 0.0;
+    double gamma = 0.0;
+    double zeta  = 0.0;
+
+    for ( int i = 0; i < n; ++i ) {
+	sumwt += wt[i];
+	gamma += wt[i] * mu[i];
+	zeta  += wt[i] * mu[i] * mu[i];
+    }
+
+    // The quadrature weights should sum to 2.0
+    Ensure( fabs(iDomega()-2.0) <= TOL );
+    // The integral of mu over all angles should be zero.
+    Ensure( fabs(iOmegaDomega()) <= TOL );
+    // The integral of mu^2 should be 2/3.
+    Ensure( fabs(iOmegaOmegaDomega()-2.0/3.0) <= TOL );
+
+    // If norm != 2.0 then renormalize the weights to the required values. 
+    if ( fabs(norm-2.0) >= TOL ) {
+	double c = norm/sumwt;
+	for ( int i=0; i < numAngles; ++i )
+	    wt[i] = c * wt[i];
+    }
 }
 
-void Q1DGaussLeg::display() {
-    cout << endl << "The Quadrature directions and weights are:" << endl << endl;
-    for ( int ix = 0; ix < mu.size(); ++ix )
-	cout << "mu[" << ix << "] = " << mu[ix] << "\t"
-	     << "wt[" << ix << "] = " << wt[ix] << endl;
+void Q1DGaussLeg::display() const {
+    cout << endl << "The Quadrature directions and weights are:" 
+	 << endl << endl;
+    cout << "   m  \t    mu        \t     wt      " << endl;
+    cout << "  --- \t------------- \t-------------" << endl;
+    double sum_wt = 0.0;
+    for ( int ix = 0; ix < mu.size(); ++ix ) {
+	cout << "   "
+	     << setprecision(5)  << ix     << "\t"
+	     << setprecision(10) << mu[ix] << "\t"
+	     << setprecision(10) << wt[ix] << endl;
+	sum_wt += wt[ix];
+    }
+    cout << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;
 }
 
+double Q1DGaussLeg::getMu( const int m ) const {
+    Require( m >= 0 );        // Angle index m must be greater than zero.
+    Require( m < numAngles ); // Angle index m must be less than numAngles.
+    Check( mu.size() >= m );  // The vector mu appears to be the wrong size.
+    return mu[m];
+}
+
+double Q1DGaussLeg::getEta( const int m ) const {
+    Insist( dimensionality() >= 2,
+       "The quadrature set must have at least 2 dimensions to return eta.");
+    return eta[m];
+}
+
+double Q1DGaussLeg::getXi( const int m ) const {
+    Insist( dimensionality() >= 3,
+       "The quadrature set must have at least 3 dimensions to return xi.");
+    return xi[m];
+}
+
+vector<double> Q1DGaussLeg::getOmega( const int m ) const {
+    vector<double> omega;
+    Require( m >= 0 && m < numAngles );
+    omega.resize(3);
+    omega[0] = mu[m];
+    omega[1] = 0.0;  // no eta or xi values in 1D!
+    omega[2] = 0.0;  // no eta or xi values in 1D!
+    return omega;
+}
+
+double Q1DGaussLeg::iDomega() const {
+    double integral = 0.0;
+    for ( int i = 0; i < numAngles; ++i )
+	integral += wt[i];
+    return integral;
+}
+	    
+double Q1DGaussLeg::iOmegaDomega() const {
+    double integral = 0.0;
+    for ( int i = 0; i < numAngles; ++i )
+	integral += wt[i]*mu[i];
+    return integral;
+}	
+
+double Q1DGaussLeg::iOmegaOmegaDomega() const {
+    double integral = 0.0;
+    for ( int i = 0; i < numAngles; ++i )
+	integral += wt[i]*mu[i]*mu[i];
+    return integral;
+}
+
+
+// 3D Level Symmetric Quadrature
+//--------------------------------------------------------------------------------
 
 Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ ) 
-    : snOrder( sn_order_ ), norm( norm_ )
+    : snOrder( sn_order_ ), norm( norm_ ), numAngles (sn_order_ * (sn_order_+2))
+
 { 
+    Require ( snOrder > 0 );
+    Require ( norm > 0.0 );
+    Insist ( snOrder%2 == 0, "LS Quad must have an even SN order." );
+    Insist ( snOrder >= 2 && snOrder <= 24, "LS Quad must have a SN order between 2 and 24." );
+
     // The number of quadrature levels is equal to the requested SN order.
-    int levels = snOrder;
+    int m, levels = snOrder;
+    int octantAngles = numAngles/8;  // 8 octants in 3D.
 
-    // Verify that the user has requested a valid number of levels.
-    if( ! valid_levels( snOrder ) ) {
-	cerr << endl << "Q3DLevelSym::Q3DLevelSym"
-	     << endl << "   --> Levels requested: " << snOrder
-	     << endl << "       Number of levels must be an even integer in the"
-	     << " range (2,24)." << endl;
-	cerr << endl << "Q3DLevelSym::Q3DLevelSym"
-	     << endl << "  --> Generating Level Symetric Set with 4 Levels."
-	     << endl;
-	levels = 4;
-    }
-
-    // Verify that the user has requested a valid normalization constant
-    if( ! valid_norm( norm ) ) {
-	cerr << endl << "Q3DLevelSym::Q3DLevelSym"
-	     << endl << "   --> Norm requested: " << norm
-	     << endl << "       The normalization constant must be greater"
-	     << " than zero." << endl;
-	cerr << endl << "Q3DLevelSym::Q3DLevelSym"
-	     << endl << "  --> Generating Level Symetric Set with 4 Levels."
-	     << endl;
-	levels = 4;
-    } 
-
-    int m;
-    int numAngles = levels * (levels+2); // for 3D.
-    int octantAngles = numAngles/8;
-
+    // Establish some weighting parameters.
     int wp4[3]   = {0,0,0};
     int wp6[6]   = {0,1,0,1,1,0};
     int wp8[10]  = {0,1,1,0,1,2,1,1,1,0};
@@ -129,15 +212,18 @@ Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ )
 		    11,12,13,13,12,11,7,2,3,8,12,14,15,14,12,8,3,4,9,13,
 		    15,15,13,9,4,5,10,13,14,13,10,5,5,9,12,12,9,5,4,8,
 		    11,8,4,3,7,7,3,2,6,2,1,1,0};
-
+    
+    // Force the direction vectors to be the correct length.
     mu.resize(numAngles);
     eta.resize(numAngles);
     xi.resize(numAngles);
     wt.resize(numAngles);
 
+    // Set up some temporaries.
     vector<double> att;
     vector<double> wtt;
 
+    // Set LS values for one quadrant based on the SN order specified.
     switch ( levels ) {
     case 2: // LQn S-2 Quadrature Set.
 	att.resize(1);
@@ -442,29 +528,115 @@ Q3DLevelSym::Q3DLevelSym( int sn_order_, double norm_ )
     for(int n=0; n<=numAngles-1; ++n)
 	wt[n] = wt[n]*(norm/wsum);
     
+    // clear the temporaries.
     att.clear();
     wtt.clear();
 
+    // Verify that the quadrature meets our integration requirements.
+    Ensure( fabs(iDomega()-4.0*PI) <= TOL );
+
+    // check each component of the vector result
+    Ensure( fabs(iOmegaDomega()[0]) <= TOL );
+    Ensure( fabs(iOmegaDomega()[1]) <= TOL );
+    Ensure( fabs(iOmegaDomega()[2]) <= TOL );
+
+    // check each component of the tensor result
+    Ensure( fabs(iOmegaOmegaDomega()[0]-4.0*PI/3.0 ) <= TOL );  // mu*mu
+    Ensure( fabs(iOmegaOmegaDomega()[1]) <= TOL ); // mu*eta
+    Ensure( fabs(iOmegaOmegaDomega()[2]) <= TOL ); // mu*xi
+    Ensure( fabs(iOmegaOmegaDomega()[3]) <= TOL ); // eta*mu
+    Ensure( fabs(iOmegaOmegaDomega()[4]-4.0*PI/3.0) <= TOL ); // eta*eta
+    Ensure( fabs(iOmegaOmegaDomega()[5]) <= TOL ); // eta*xi
+    Ensure( fabs(iOmegaOmegaDomega()[6]) <= TOL ); // xi*mu
+    Ensure( fabs(iOmegaOmegaDomega()[7]) <= TOL ); // xi*eta
+    Ensure( fabs(iOmegaOmegaDomega()[8]-4.0*PI/3.0) <= TOL ); // xi*xi
 }
 
-// set levels = snOrder
-// The number of leves must be even and between 2 and 24.
-bool Q3DLevelSym::valid_levels( int levels ) {
-    return ( levels > 0 && levels <= 24 && levels%2 == 0 ? true : false );
-}	   
-    
-// The normalization constant should be > 0!
-bool Q3DLevelSym::valid_norm( double norm ) {
-    return ( norm > 0.0 ? true : false );
+double Q3DLevelSym::getMu( const int m ) const {
+    Require( m >= 0 );        // Angle index m must be greater than zero.
+    Require( m < numAngles ); // Angle index m must be less than numAngles.
+    Check( mu.size() >= m );  // The vector mu appears to be the wrong size.
+    return mu[m];
 }
 
-void Q3DLevelSym::display() {
-    cout << endl << "The Quadrature directions and weights are:" << endl << endl;
-    for ( int ix = 0; ix < mu.size(); ++ix )
-	cout << "mu[" << ix << "] = " << mu[ix] << "\t"
-	     << "wt[" << ix << "] = " << wt[ix] << endl;
+double Q3DLevelSym::getEta( const int m ) const {
+    Insist( dimensionality() >= 2,
+       "The quadrature set must have at least 2 dimensions to return eta.");
+    return eta[m];
+}
+
+double Q3DLevelSym::getXi( const int m ) const {
+    Insist( dimensionality() >= 3,
+       "The quadrature set must have at least 3 dimensions to return xi.");
+    return xi[m];
+}
+
+vector<double> Q3DLevelSym::getOmega( const int m ) const {
+    vector<double> omega;
+    Require( m >= 0 && m < numAngles );
+    omega.resize(3);
+    omega[0] = mu[m];
+    omega[1] = eta[m];
+    omega[2] = xi[m];
+    return omega;
+}
+
+void Q3DLevelSym::display() const {
+    cout << endl << "The Quadrature directions and weights are:" 
+	 << endl << endl;
+    cout << "   m  \t    mu        \t    eta       \t    xi        \t     wt      " << endl;
+    cout << "  --- \t------------- \t------------- \t------------- \t-------------" << endl;
+    double sum_wt = 0.0;
+    for ( int ix = 0; ix < mu.size(); ++ix ) {
+	cout << "   "
+	     << ix << "\t"
+	     << setprecision(10) << mu[ix]  << "\t"
+	     << setprecision(10) << eta[ix] << "\t"
+	     << setprecision(10) << xi[ix]  << "\t"
+	     << setprecision(10) << wt[ix]  << endl;
+	sum_wt += wt[ix];
+    }
+    cout << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;
 }
+
+double Q3DLevelSym::iDomega() const {
+    double integral = 0.0;
+    for ( int i = 0; i < numAngles; ++i )
+	integral += wt[i];
+    return integral;
+}
+	    
+vector<double> Q3DLevelSym::iOmegaDomega() const {
+    vector<double> integral;
+    integral.resize(3);
+    for ( int i = 0; i < 3; ++i ) integral[i] = 0.0;
+    for ( int i = 0; i < numAngles; ++i ) {
+	integral[0] += wt[i]*mu[i];
+	integral[1] += wt[i]*eta[i];
+	integral[2] += wt[i]*xi[i];
+    }
+    return integral;
+}	
+
+vector<double> Q3DLevelSym::iOmegaOmegaDomega() const {
+    vector<double> integral;
+    integral.resize(9); // The integral will be a tensor with 9 components.
+    for ( int i = 0; i < 9; ++i) integral[0] = 0.0;
+    for ( int i = 0; i < numAngles; ++i ) {
+	integral[0] += wt[i]*mu[i]*mu[i];
+	integral[1] += wt[i]*mu[i]*eta[i];
+	integral[2] += wt[i]*mu[i]*xi[i];
+	integral[3] += wt[i]*eta[i]*mu[i];
+	integral[4] += wt[i]*eta[i]*eta[i];
+	integral[5] += wt[i]*eta[i]*xi[i];
+	integral[6] += wt[i]*xi[i]*mu[i];
+	integral[7] += wt[i]*xi[i]*eta[i];
+	integral[8] += wt[i]*xi[i]*xi[i];
+    }
+    return integral;
+}
+
 
 
 } // end namespace rtt_quadrature
