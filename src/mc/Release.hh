@@ -17,16 +17,21 @@
  * \page mc_overview Overview of the MC package
  * \version 1_2_0
  * \author Tom Evans, Todd Urbatsch
- *
+ 
  * The mc package is a set of general Monte Carlo (mc) components that can be
  * used in all X-6 Monte Carlo codes.  In particular it includes the
  * following types of classes:
- *
- * \arg \b Meshes: mesh types (MT) that are designed for Monte Carlo use \arg
- * \b Topology: Topology class that is used for spatial mesh decompositions
+ 
+ * \arg \b Meshes: mesh types (MT) that are designed for Monte Carlo use
+ 
+ * \arg \b Topology: Topology class that is used for spatial mesh
+ * decompositions
+ 
  * \arg \b Particle Base: base particle classes for Monte Carlo transport
+
  * \arg \b Particle_Buffer: particle containers for storage and communication
- * across processors.  
+ * across processors.
+ 
  */
 //===========================================================================//
 /*!

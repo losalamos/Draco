@@ -226,7 +226,6 @@ int General_Topology::local_cell(int global_cell) const
     return 0;
 }
 
-
 //---------------------------------------------------------------------------//
 /*!  
  * \brief Return the local cell index given a global cell index and
