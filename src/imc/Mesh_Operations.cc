@@ -882,6 +882,37 @@ Mesh_Operations<Sphyramid_Mesh>::Mesh_Operations(SP_Mesh mesh,
 }
 
 //---------------------------------------------------------------------------//
+// SAMPLE PARTICLE POSITION WITH A TILT
+//---------------------------------------------------------------------------//
+
+Mesh_Operations<Sphyramid_Mesh>::sf_double
+Mesh_Operations<Sphyramid_Mesh>::sample_pos_tilt(int cell, 
+						 double T, 
+						 rtt_rng::Sprng &random) const
+{
+    using std::vector;
+    using std::pow;
+    
+    // set coord system and mesh
+    const Sphyramid_Mesh &mesh = this->t4_slope.get_Mesh();
+    Check (mesh.get_SPCoord()->get_Coord() == "xyz");
+
+    // return position
+    vector<double> r;
+   
+    // T4 slopes and T4 temperature
+    double T4            = pow(T,4);
+    vector<double> slope = this->t4_slope(cell);
+
+    // sample position
+    r = mesh.sample_pos(cell, random, slope, T4);
+    Check (r.size() == 3);
+
+    // return position vector
+    return r;
+}
+
+//---------------------------------------------------------------------------//
 // BUILD T4 SLOPES
 //---------------------------------------------------------------------------//
 // Build the T4 slopes in a full replication topology
@@ -972,32 +1003,32 @@ void Mesh_Operations<Sphyramid_Mesh>::build_replication_T4_slope(SP_Mat_State
 		(mesh.low_half_width(cell)+mesh.high_half_width(cell_low));
 
 	    double high_slope = (t4_high-t4)/
-		(mesh.high_half_width(cell)+mesh.low_half_width(cell_low));
+		(mesh.high_half_width(cell)+mesh.low_half_width(cell_high));
 
 	    double t4_lo_edge = t4-low_slope*mesh.low_half_width(cell);
 	    double t4_hi_edge = t4+high_slope*mesh.high_half_width(cell);
-
+	    
 	    this->t4_slope(1,cell) = (t4_hi_edge-t4_lo_edge)/
 		(mesh.low_half_width(cell)+mesh.high_half_width(cell));
-
+	   
 	    // put checks to make sure that slope is not too large
 	    t4_high = t4+this->t4_slope(1,cell)*mesh.high_half_width(cell);
 	    t4_low  = t4-this->t4_slope(1,cell)*mesh.low_half_width(cell);
-
+	    
 	    // at most one edge can be negative
 	    Check (t4_high >= 0.0 || t4_low >= 0.0);
-
+	    
 	    // if high edge is negative
 	    if (t4_high < 0.0)
 	    {
 		this->t4_slope(1,cell) = -t4/mesh.high_half_width(cell);
 	    }
-	    else if (t4_low < 0.0);
+	    else if (t4_low < 0.0)
 	    {
 		this->t4_slope(1,cell) = t4/mesh.low_half_width(cell);
-	    }
-	}
-
+	    } 
+	    
+	}	    
 	// explicity set y and z slopes to zero
 	Check (this->t4_slope.size(2) == num_cells);
 	Check (this->t4_slope.size(3) == num_cells);

@@ -220,7 +220,7 @@ class Mesh_Operations<rtt_mc::Sphyramid_Mesh>
 
   private: 
     // typedefs
-    //typedef std::vector<double>                       sf_double;
+    typedef std::vector<double>                       sf_double;
     //typedef std::vector<std::vector<double> >         vf_double;
     typedef mesh_type::CCVF<double>                   ccvf_double;
     typedef rtt_dsxx::SP<mesh_type>                   SP_Mesh;
@@ -244,11 +244,11 @@ class Mesh_Operations<rtt_mc::Sphyramid_Mesh>
 		    SP_Comm_Patterns patterns);
 
     // Sample position of tilt
-    //sf_double sample_pos_tilt(int, double, rtt_rng::Sprng &) const;    
+    sf_double sample_pos_tilt(int cell, double T, rtt_rng::Sprng &random) const;    
 
     // Get values of T4_slope for testing.  This is not part of the standard
     // interface to Mesh_Operations.
-    //const ccvf_double& get_t4_slope() const { return t4_slope; }
+    const ccvf_double& get_t4_slope() const { return t4_slope; }
 };
 
 } // end namespace rtt_imc
