@@ -39,6 +39,7 @@ using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_rng::Rnd_Control;
+using rtt_rng::Sprng;
 using rtt_dsxx::SP;
 
 typedef Particle<OS_Mesh> PT;
@@ -46,6 +47,20 @@ typedef Particle<OS_Mesh> PT;
 // passing condition
 bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
+
+//---------------------------------------------------------------------------//
+// test Rep Communicator
+
+void Rep_Comm_Check()
+{
+    // build a Rep Topology
+    SP<Topology> topology(new Rep_Topology(9));
+
+    // now build a communicator, the returned communicator should be null
+    Comm_Builder<PT> builder;
+    SP<Communicator<PT> > comm = builder.build_Communicator(topology);
+    if (comm) ITFAILS;
+}
 
 //---------------------------------------------------------------------------//
 // test DD Communicator and Build communicator
@@ -227,6 +242,78 @@ void DD_Comm()
     // make a communicator
     SP<Communicator<PT> > communicator =
 	builder.build_Communicator(topology);
+
+    if (communicator->get_send_size() != 0) ITFAILS;
+    if (communicator->get_recv_size() != 0) ITFAILS;
+
+    // post receives on all processors
+    communicator->post(*buffer);
+
+    // make some particles on processor 0 headed for processor 1 and 2
+    if (C4::node() == 0)
+    {
+	vector<double> r(2, 0.0);
+	vector<double> o(3, 0.0);
+	Sprng ran = control->get_rn();
+	SP<PT> p1(new PT(r, o, 1, 1, ran));
+	SP<PT> p2(new PT(r, o, 2, 1, ran));
+
+	// make particles cross a boundary
+	int indicator;
+	p1->set_cell(-2);
+	indicator = communicator->communicate(*buffer, p1);
+	if (indicator != -1)                    ITFAILS;
+	if (communicator->get_send_size() != 1) ITFAILS;
+
+	p2->set_cell(-1);
+	indicator = communicator->communicate(*buffer, p2);
+	if (indicator != 1)                     ITFAILS;
+	if (communicator->get_send_size() != 0) ITFAILS;
+    }
+    
+    if (C4::node() == 1)
+    {
+	Particle_Buffer<PT>::Bank bank;
+
+	int arrived = 0;
+	while (arrived != 2)
+	    arrived += communicator->arecv_post(*buffer, bank);
+	if (arrived != 2) ITFAILS;
+
+	if (bank.size() != 3)                   ITFAILS;
+	if (communicator->get_recv_size() != 0) ITFAILS;
+    }
+
+    if (C4::node() == 3)
+    {
+	buffer->set_buffer_size(1);
+
+	vector<double> r(2, 0.0);
+	vector<double> o(3, 0.0);
+	Sprng ran = control->get_rn();
+	SP<PT> p1(new PT(r, o, 1, 1, ran));
+	
+	int indicator;
+	p1->set_cell(-1);
+	indicator = communicator->communicate(*buffer, p1);
+	if (indicator != 1)                     ITFAILS;
+	if (communicator->get_send_size() != 0) ITFAILS;
+    }
+
+    // sync everything up
+    C4::gsync();
+
+    if (!communicator->arecv_status(*buffer)) ITFAILS;
+    if (communicator->asend_status(*buffer))  ITFAILS;
+    if (communicator->get_send_size())        ITFAILS;
+    if (communicator->get_recv_size())        ITFAILS;
+
+    // end communication
+    communicator->asend_end(*buffer);
+    communicator->arecv_end(*buffer);
+
+    if (communicator->arecv_status(*buffer)) ITFAILS;
+    if (communicator->asend_status(*buffer)) ITFAILS;
 }
 
 //---------------------------------------------------------------------------//
@@ -249,6 +336,9 @@ int main(int argc, char *argv[])
 
     try
     {
+	// rep test
+	Rep_Comm_Check();
+
 	// full DD test
 	DD_Comm_Check();
 	DD_Comm();

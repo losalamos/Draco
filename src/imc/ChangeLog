@@ -1,3 +1,13 @@
+2000-06-13  Thomas M. Evans  <tme@lanl.gov>
+
+	* Comm_Builder.*:  Updated the Comm_Builder class to use
+	rtt_mc::Topology to build instances of the Communicator class.
+	This class is now ready for release for a full DD supported
+	version of imc.
+
+	* test/tstCommunicator.*: Added full testing for the Communicator
+	and Comm_Builder classes.
+
 2000-06-07  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* DD_Source_Builder.*: Added derived class for building the imc

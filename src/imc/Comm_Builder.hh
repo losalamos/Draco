@@ -1,57 +1,68 @@
 //----------------------------------*-C++-*----------------------------------//
-// Comm_Builder.hh
-// Thomas M. Evans
-// Tue Jun  1 17:01:44 1999
-// $Id$
+/*!
+ * \file   imc/Comm_Builder.hh
+ * \author Thomas M. Evans
+ * \date   Tue Jun  1 17:01:44 1999
+ * \brief  Comm_Builder header file.
+ */
 //---------------------------------------------------------------------------//
-// @> Comm_Builder header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __imc_Comm_Builder_hh__
 #define __imc_Comm_Builder_hh__
+
+#include "Communicator.hh"
+#include "mc/Topology.hh"
+#include "ds++/SP.hh"
+#include <vector>
+
+namespace rtt_imc
+{
  
 //===========================================================================//
-// class Comm_Builder - 
-//
-// Purpose : Build a Communicator depending on the data given it, because
-//           communicator is templated on Particle Type (PT) so must the
-//           builder
-//
+/*!
+ * \class Comm_Builder
+
+ * \brief Build a rtt_imc::Communicator using the rtt_mc::Topology class.
+
+ * The Comm_Builder builds rtt_imc::Communicator objects using the
+ * rtt_mc::Topology class.  Because the Topology class contains all the
+ * information needed by the Communicator to determine where particles go
+ * when they cross processor boundaries, the Comm_Builder does not have to
+ * perform any communication.  Thus, the Communicator is built on each
+ * processor in parallel.
+ 
+ */
 // revision history:
 // -----------------
 // 0) original
 // 
 //===========================================================================//
 
-#include "Communicator.hh"
-#include "ds++/SP.hh"
-#include <vector>
-
-namespace rtt_imc
-{
-
 template<class PT>
 class Comm_Builder 
 {
-  private:
-    // usefull typedefs in Comm_Builder
-    typedef rtt_dsxx::SP<Communicator<PT> > SP_Comm;
-    typedef std::vector<int> intvec;
-    typedef std::vector<vector<int> > dintvec;
+  public:
+    // Usefull typedefs in Comm_Builder.
+    typedef rtt_dsxx::SP<Communicator<PT> > SP_Communicator;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>  SP_Topology;
+    typedef std::vector<int>                sf_int;
+    typedef std::vector<std::vector<int> >  vf_int;
 
-    // given a global cell and a processor, calculate a local cell
-    // NOT YET IMPLEMENTED, WE WILL PROBABLY NEED DATA FOR THIS
-    int local_cell() { return 0; }
+  private:
+    // Build a communicator in full DD topologies.
+    SP_Communicator build_DD_Comm(SP_Topology);
 
   public:
     // default constructor
     Comm_Builder() {}
 
-    // build_Communicator for full DD
-    SP_Comm build_Communicator(const intvec &, const intvec &);
+    // Deprecated build service for use with certain host codes. 
+    SP_Communicator build_Communicator(const sf_int &, const sf_int &);
 
-    // build Communicator for general DD/replication
-    SP_Comm build_Communicator();
+    // Standard build service.
+    SP_Communicator build_Communicator(SP_Topology);
 };
 
 } // end namespace rtt_imc

@@ -14,28 +14,87 @@
 namespace rtt_imc
 {
 
-using std::vector;
-
 //---------------------------------------------------------------------------//
 // Build Communicators
 //---------------------------------------------------------------------------//
-// build a communicator for full dd stuff
+/*!
+ * \brief Build a Communicator object using the rtt_mc::Topology.
 
-template<class PT> Comm_Builder<PT>::SP_Comm 
-Comm_Builder<PT>::build_Communicator(const intvec &b_node,
-				     const intvec &b_cell)
+ * This is the primary service of the Comm_Builder class.  Given a valid
+ * rtt_mc::Topology, this function returns a rtt_dsxx::SP to a Communicator.
+ * If the Topology is full replication then a Communicator is unnecessary and
+ * a null SP is returned.  For full DD and DD/replication topologies a fully
+ * defined Communicator is returned.
+
+ * \param topology smart pointer to a rtt_mc::Topology
+
+ * \return smart pointer (null if the topology is replication) to a
+ * Communicator
+
+ */
+template<class PT>
+Comm_Builder<PT>::SP_Communicator 
+Comm_Builder<PT>::build_Communicator(SP_Topology topology)
 {
+    Require (topology);
+
+    // return communicator argument
+    SP_Communicator communicator;
+
+    // do work depending on the topology
+    if (topology->get_parallel_scheme() == "replication")
+    {
+	Insist (!communicator, "Defined communicator for replication!");
+    }
+    else if (topology->get_parallel_scheme() == "DD")
+    {
+        communicator = build_DD_Comm(topology);
+	Ensure (communicator);
+    }
+    else if (topology->get_parallel_scheme() == "DD/replication")
+    {
+	Insist (0, "Don't support DD/replication yet!");
+    }
+    else 
+    {
+	Insist (0, "Invalid topology given in Comm_Builder!");
+    }
+
+    // return the communicator
+    return communicator;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Deprecated build function for when the boundary nodes and cells are
+ * known.
+
+ * This function builds a communicator when the boundary nodes and boundary
+ * cells are known as simple 1-D vectors (with one-to-one matching).  This
+ * can be used as a builder to hosts that provide this information in a flat
+ * interface.  Additionally, this function \b only works for full DD
+ * topologies.
+
+ * Clients should use the build_Communicator(SP_Topology) instead.
+
+ */
+template<class PT> Comm_Builder<PT>::SP_Communicator 
+Comm_Builder<PT>::build_Communicator(const sf_int &b_node,
+				     const sf_int &b_cell)
+{
+    using std::vector;
+
     // requirements
     Require (b_node.size() == b_cell.size());
     
     // return communicator
-    SP_Comm return_com;
+    SP_Communicator return_com;
 
     // make objects needed by the Communicator
     int num_cells = b_node.size();
-    intvec com_nodes;
-    dintvec boundary_node(num_cells);
-    dintvec boundary_cell(num_cells);
+    sf_int com_nodes;
+    vf_int boundary_node(num_cells);
+    vf_int boundary_cell(num_cells);
     vector<bool> procs(C4::nodes(), false);
 
     // now assign to boundary_data
@@ -81,13 +140,83 @@ Comm_Builder<PT>::build_Communicator(const intvec &b_node,
 }
 
 //---------------------------------------------------------------------------//
-// build a general DD/replication communicator
-
+// IMPLEMENTATION 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Build a communicator in DD topologies.
+ */
 template<class PT>
-Comm_Builder<PT>::SP_Comm Comm_Builder<PT>::build_Communicator()
+Comm_Builder<PT>::SP_Communicator 
+Comm_Builder<PT>::build_DD_Comm(SP_Topology topology)
 {
-    Insist(0, "Have not implemented this service yet!");
-    return SP_Comm();
+    using std::vector;
+
+    Require (topology->get_parallel_scheme() == "DD");
+
+    // return communicator
+    SP_Communicator communicator;
+
+    // number of boundary cells
+    int num_cells = topology->get_boundary_cells(C4::node());
+
+    // make data fields that will be required for this communicator
+
+    // list of nodes that this processor sends and receives from; because
+    // this is a full DD communicator the receive and send nodes data is
+    // identical; there is one-to-one communication
+    sf_int com_nodes;
+
+    // boundary cell and node fields, each boundary cell's real cell resides
+    // on only one processor
+    vf_int bnd_node(num_cells, vector<int>(1));
+    vf_int bnd_cell(num_cells, vector<int>(1));
+
+    // list of processors to determine if we communicate with them or not
+    vector<bool> procs(C4::nodes(), false);
+
+    // loop through boundary cells and determine what the local cell is on
+    // the send-to processor
+    int processor;
+    int local_cell;
+    int global_cell;
+    for (int bc = 1; bc <= num_cells; bc++)
+    {
+	// determine the global cell 
+	global_cell = topology->boundary_to_global(bc, C4::node());
+	
+	// determine the processor it lives on, remember each global cell
+	// only lives on one processor in full DD
+	processor = topology->get_procs(global_cell).front();
+	Check (processor >= 0 && processor < C4::nodes());
+	Check (processor != C4::node());
+
+	// determine the local cell index of the global cell on that
+	// processor
+	local_cell = topology->local_cell(global_cell, processor);
+	Check (local_cell);
+
+	// indicate that we communicate with this processor
+	procs[processor] = true;
+
+	// fill up the boundary node and cell data
+	bnd_node[bc-1][0] = processor;
+	bnd_cell[bc-1][0] = local_cell;
+    }
+
+    // loop over the nodes on the problem and see if we communicate with it-- 
+    // lets reserve some memory in the com_nodes vector for efficiency,
+    // following Lippman, we reserve only one space for performance
+    com_nodes.reserve(1);
+    for (int n = 0; n < C4::nodes(); n++)
+	if (procs[n])
+	    com_nodes.push_back(n);
+
+    // build and return communicator, remember the recv and send node data is 
+    // the same for full DD because of one-to-one communication
+    communicator = new Communicator<PT>(com_nodes, com_nodes, bnd_node, 
+					bnd_cell);
+    Ensure (communicator);
+    return communicator;
 }
 
 }  // end namespace rtt_imc
