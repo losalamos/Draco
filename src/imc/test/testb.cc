@@ -103,9 +103,9 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
 
   // make and copy particle
 
-    Particle<MT> part1(mesh, seed, 1.0);
-    Particle<MT> part2(mesh, -3423, 10.0);
-    Particle<MT> part3(part2);
+    Particle<MT, Random> part1(mesh, seed, 1.0);
+    Particle<MT, Random> part2(mesh, -3423, 10.0);
+    Particle<MT, Random> part3(part2);
 
     vector<double> r(2);
     vector<double> o(3);
@@ -115,11 +115,31 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
     part1.source(r,o,mesh);
     part2.source(r,o,mesh);
     part3 = part1;
-    Particle<MT> part4(part2);
+    Particle<MT, Random> part4(part2);
 
-    Particle_Stack<MT>::Bank sbank;
+    SP<Particle<MT, Random>::Diagnostic> check = 
+	new Particle<MT, Random>::Diagnostic(cout, true);
+
+    Particle_Stack<MT, Random>::Bank sbank;
     sbank.push(part1);
-    cout << sbank.top();
+    cout << sbank.size() << endl;
+    sbank.push(part2);
+    cout << sbank.size() << endl;
+    sbank.push(part3);
+    cout << sbank.size() << endl;
+    sbank.push(part4);
+    cout << sbank.size() << endl;
+
+    part1.transport(mesh, xs, check);
+
+    sbank.pop();
+    cout << sbank.size() << endl;
+    Particle<MT, Random> part5 = sbank.top();
+    sbank.pop();
+    cout << sbank.size() << endl;
+    cout << part5;	
+    
+    part5.transport(mesh, xs, check);
 }
 
 template<class MT>
@@ -129,11 +149,11 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
 
   // set diagnostic
     ofstream output("history", ios::app);
-    SP<Particle<MT>::Diagnostic> check = 
-	new Particle<MT>::Diagnostic(output, true);
+    SP<Particle<MT, Random>::Diagnostic> check = 
+	new Particle<MT, Random>::Diagnostic(output, true);
 
   // initialize particle
-    Particle<MT> particle(mesh, seed, 1.0);
+    Particle<MT, Random> particle(mesh, seed, 1.0);
     assert (particle.status());
 
   // origin and source
@@ -157,7 +177,7 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
     particle.source(origin, source, mesh);
 
   // transport
-    particle.transport_IMC(mesh, opacity, check);
+    particle.transport(mesh, opacity, check);
 
   // assert that particle is indeed dead
     assert (!particle.status());
@@ -192,13 +212,12 @@ main()
 
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
-  //     Surface_diagnostic(*mesh);
+  // Surface_diagnostic(*mesh);
 
   // Particle diagnostics
-  //     long seed = -345632;
-  //     Run_Particle(*mesh, *opacity, seed);
-    
-    Bank_Particle(*mesh, *opacity);
+    long seed = -345632;
+    Run_Particle(*mesh, *opacity, seed);
+  // Bank_Particle(*mesh, *opacity);
     
 }
 
