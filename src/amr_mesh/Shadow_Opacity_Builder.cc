@@ -3,7 +3,7 @@
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
 /*! 
- * \file   imc/Shadow_Opacity_Builder.cc
+ * \file   amr_mesh/Shadow_Opacity_Builder.cc
  * \author B.T. Adams
  * \date   Mon 27 Sep 10:33:26 1999
  * \brief  Provides the C++ side of the shadow object interface functions to

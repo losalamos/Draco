@@ -31,9 +31,10 @@
  *
  *\sa The CAR_CU_Mesh class and its associated interface and builder classes 
  *    provide most of the functionality of the namespace. The utilities of the
- *    RTT_Format namespace are incorporated to provide parsing capability for
- *    mesh files in the \ref rtt_format_defined. The \ref amr_overview page 
- *    presents a summary of the capabilities provided within the namespace.
+ *    rtt_format::RTT_Format namespace are incorporated to provide parsing 
+ *    capability for mesh files in the \ref rtt_format_defined. The \ref 
+ *    amr_overview page presents a summary of the capabilities provided within
+ *    this namespace.
  */
 namespace rtt_amr 
 {

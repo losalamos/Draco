@@ -1807,7 +1807,7 @@ class RTT_Format
  *   <table>
  *     <tr>
  *       <td align=center valign=center>
- *         <img src="../../draco/src/amr_mesh/stdcell.jpg"> 
+ *         <img src="../../draco/src/meshReaders/stdcell.jpg"> 
  *       </td>
  *     </tr>
  *   </table>
@@ -1828,7 +1828,7 @@ class RTT_Format
  *   <table>
  *     <tr>
  *       <td align=center valign=center>
- *         <img src="../../draco/src/amr_mesh/sortcell.jpg"> 
+ *         <img src="../../draco/src/meshReaders/sortcell.jpg"> 
  *       </td>
  *     </tr>
  *   </table>
