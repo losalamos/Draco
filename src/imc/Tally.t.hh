@@ -81,12 +81,13 @@ void Tally<MT>::accumulate_ewpl(const int cell, const double ewpl)
 
 
 template<class MT>
-void Tally<MT>::accumulate_cen_info(const int cell, const double new_ecen)
+void Tally<MT>::accumulate_cen_info(const int cell, const double new_ecen,
+				    const int num_new_ncen)
 {
     census_energy(cell) += new_ecen;
     new_ecen_tot        += new_ecen;
-    new_ncen(cell)      += 1;
-    new_ncen_tot        += 1;
+    new_ncen(cell)      += num_new_ncen;
+    new_ncen_tot        += num_new_ncen;
 }
 
 //---------------------------------------------------------------------------//

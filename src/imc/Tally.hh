@@ -26,6 +26,10 @@
 // 3) 08-31-98  Added cell volume accessor function 
 // 4) 08-31-98  Added additional constructor for evol_net storage
 // 5) 04-19-00  Added momentum deposition, accumulators, accessors.
+// 6) 12-14-00  Added accessors and modified accumulators to be defaulted 
+//              to one particle but allow multiple particles.  Enables 
+//              summing thread-private tallies to a master thread tally. 
+//              Transparently retains current usage.
 // 
 //===========================================================================//
 
@@ -90,7 +94,8 @@ class Tally
     void accumulate_ewpl(const int cell, const double ewpl);
 
     // accumulate new census energy and numbers of particles
-    void accumulate_cen_info(const int cell, const double new_ecen);
+    void accumulate_cen_info(const int cell, const double new_ecen, 
+			     const int num_new_ncen = 1);
 
     // access accumulated energy-weighted path length per cell
     inline double get_accum_ewpl(const int cell) const;
@@ -104,17 +109,24 @@ class Tally
     inline int get_new_ncen_tot() const;
 
     // accumulator functions for particle activity
-    inline void accum_n_effscat();
-    inline void accum_n_thomscat();
-    inline void accum_n_killed();
+    inline void accum_n_effscat(const int = 1);
+    inline void accum_n_thomscat(const int = 1);
+    inline void accum_n_killed(const int = 1);
     inline void accum_ew_killed(const double ew);
-    inline void accum_n_escaped();
+    inline void accum_n_escaped(const int = 1);
     inline void accum_ew_escaped(const double ew);
-    inline void accum_n_bndcross();
-    inline void accum_n_reflections();
+    inline void accum_n_bndcross(const int = 1);
+    inline void accum_n_reflections(const int = 1);
 
     // access accumulated particle activity tallies
-    double get_ew_escaped() const { return ew_escaped; }
+    inline int get_accum_n_effscat() const { return n_effscat; }
+    inline int get_accum_n_thomscat() const { return n_thomscat; }
+    inline int get_accum_n_killed() const { return n_killed; }
+    inline double get_accum_ew_killed() const { return ew_killed; }
+    inline int get_accum_n_escaped() const { return n_escaped; }
+    inline double get_ew_escaped() const { return ew_escaped; }
+    inline int get_accum_n_bndcross() const { return n_bndcross; }
+    inline int get_accum_n_reflections() const { return n_reflections; }
 
     // accessors
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
@@ -206,28 +218,28 @@ inline int Tally<MT>::get_new_ncen_tot() const
 // inline accumulator function for particle activity
 
 template<class MT>
-inline void Tally<MT>::accum_n_effscat(){ n_effscat += 1; }
+inline void Tally<MT>::accum_n_effscat(const int n){ n_effscat += n; }
 
 template<class MT>
-inline void Tally<MT>::accum_n_thomscat(){ n_thomscat += 1; }
+inline void Tally<MT>::accum_n_thomscat(const int n){ n_thomscat += n; }
 
 template<class MT>
-inline void Tally<MT>::accum_n_killed(){ n_killed += 1; }
+inline void Tally<MT>::accum_n_killed(const int n){ n_killed += n; }
 
 template<class MT>
 inline void Tally<MT>::accum_ew_killed(const double ew){ ew_killed += ew; }
 
 template<class MT>
-inline void Tally<MT>::accum_n_escaped(){ n_escaped += 1; }
+inline void Tally<MT>::accum_n_escaped(const int n){ n_escaped += n; }
 
 template<class MT>
 inline void Tally<MT>::accum_ew_escaped(const double ew){ ew_escaped += ew; }
 
 template<class MT>
-inline void Tally<MT>::accum_n_bndcross(){ n_bndcross += 1; }
+inline void Tally<MT>::accum_n_bndcross(const int n){ n_bndcross += n; }
 
 template<class MT>
-inline void Tally<MT>::accum_n_reflections(){ n_reflections += 1; }
+inline void Tally<MT>::accum_n_reflections(const int n){ n_reflections += n;}
 
 //---------------------------------------------------------------------------//
 // return the cell volume
