@@ -53,7 +53,7 @@ include ../config/make.lib
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../ds++; $(MAKE) "do=")
+	(cd ../ds++; $(MAKE) $(subnj) "do=")
 endif
 
 # Rules for building docs
