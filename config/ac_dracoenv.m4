@@ -228,6 +228,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${enable_pcglib}" = yes ; then
 	   AC_VENDORLIB_SETUP(vendor_pcglib, -lcomplib.sgimath)
        fi
+
+       # set rpath when building shared library executables
+       if test "${enable_shared}" = yes; then
+	   DRACO_LIBS="-rpath \${libdir} ${DRACO_LIBS}"
+	   PKG_LIBS="-rpath .. ${PKG_LIBS}"
+       fi
    ;;
    sparc-sun-solaris2.*)
        # MPICH LIBRARY EXTRAS
@@ -239,6 +245,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test "${enable_pcglib}" = yes ; then
 	   pcg_sun_libs='-llapack -lblas -lF77 -lM77 -lsunmath'
 	   AC_VENDORLIB_SETUP(vendor_pcglib, ${pcg_sun_libs})
+       fi
+
+       # set -R when building shared library executables
+       if test "${enable_shared}" = yes; then
+	   DRACO_LIBS="-R \${libdir} ${DRACO_LIBS}"
+	   PKG_LIBS="-R .. ${PKG_LIBS}"
+	   RANLIB=':'
        fi
    ;;
    *)
