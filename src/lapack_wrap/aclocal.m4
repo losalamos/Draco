@@ -4033,54 +4033,20 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
        mpich)
 	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
-           AC_MSG_CHECKING("for mpirun in \$PATH")
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              AC_MSG_RESULT("found ${which_mpirun}")
-           else
-              AC_MSG_ERROR("found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}")
-           fi
            ;;
-       lampi | LAMPI)
+       lampi | LAMPI | LA-MPI)
            with_mpi='LAMPI'
 	   # define mpi libs for LAMPI on linux
 	   mpi_libs='-lmpi'
-           AC_MSG_CHECKING("for mpirun in \$PATH")
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              AC_MSG_ERROR("found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}")
+           AC_MSG_CHECKING("mpirun -version")
+           mpi_version=`mpirun -version`
+           if test -n "`echo ${mpi_version} | grep -i LA-MPI`"; then
+              AC_MSG_RESULT(${mpi_version})
            else
-              AC_MSG_RESULT("found ${which_mpirun}")
+              AC_MSG_ERROR("Did not find LA-MPI version of mpirun.")
            fi
            ;;
        esac 
-
-       if test "${with_mpi}" = mpich ||
-          test "${with_mpi}" = LAMPI ; then
-
-           # if /usr/local/$with_mpi/lib exists use it by default;
-           # this is set as the default for the CCS-2/4 network;
-           # it may not be appropriate on other LINUX networks;
-           # in those cases, override with --with-mpi-lib
-           AC_MSG_CHECKING("for MPI library path")
-           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
-               MPI_LIB=/usr/local/${with_mpi}/lib
-           fi
-           AC_MSG_RESULT(${MPI_LIB})
-
-	   # set the default include location on LINUX to
-	   # /usr/local/${with_mpi}/include; this is specific to the
-	   # CCS-2/4 LINUX network; to override on other systems use
-	   # --with-mpi-inc on the configure line
-
-	   # if MPI_INC is undefined then define it
-           AC_MSG_CHECKING("for MPI include path")
-	   if test -z "${MPI_INC}" && 
-              test -d "/usr/local/${with_mpi}/include"; then
-	       MPI_INC=/usr/local/${with_mpi}/include
-	   fi
-           AC_MSG_RESULT(${MPI_INC})
-       fi
 ])
 
 

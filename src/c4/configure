@@ -5650,66 +5650,24 @@ echo "$as_me: Linux KCC strict option set to allow long long type!" >&6;}
        mpich)
 	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
-           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
-echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
-echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
-           else
-              { { echo "$as_me:$LINENO: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&5
-echo "$as_me: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&2;}
-   { (exit 1); exit 1; }; }
-           fi
            ;;
-       lampi | LAMPI)
+       lampi | LAMPI | LA-MPI)
            with_mpi='LAMPI'
 	   # define mpi libs for LAMPI on linux
 	   mpi_libs='-lmpi'
-           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
-echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              { { echo "$as_me:$LINENO: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&5
-echo "$as_me: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&2;}
-   { (exit 1); exit 1; }; }
+           echo "$as_me:$LINENO: checking \"mpirun -version\"" >&5
+echo $ECHO_N "checking \"mpirun -version\"... $ECHO_C" >&6
+           mpi_version=`mpirun -version`
+           if test -n "`echo ${mpi_version} | grep -i LA-MPI`"; then
+              echo "$as_me:$LINENO: result: ${mpi_version}" >&5
+echo "${ECHO_T}${mpi_version}" >&6
            else
-              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
-echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
+              { { echo "$as_me:$LINENO: error: \"Did not find LA-MPI version of mpirun.\"" >&5
+echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
+   { (exit 1); exit 1; }; }
            fi
            ;;
        esac
-
-       if test "${with_mpi}" = mpich ||
-          test "${with_mpi}" = LAMPI ; then
-
-           # if /usr/local/$with_mpi/lib exists use it by default;
-           # this is set as the default for the CCS-2/4 network;
-           # it may not be appropriate on other LINUX networks;
-           # in those cases, override with --with-mpi-lib
-           echo "$as_me:$LINENO: checking \"for MPI library path\"" >&5
-echo $ECHO_N "checking \"for MPI library path\"... $ECHO_C" >&6
-           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
-               MPI_LIB=/usr/local/${with_mpi}/lib
-           fi
-           echo "$as_me:$LINENO: result: ${MPI_LIB}" >&5
-echo "${ECHO_T}${MPI_LIB}" >&6
-
-	   # set the default include location on LINUX to
-	   # /usr/local/${with_mpi}/include; this is specific to the
-	   # CCS-2/4 LINUX network; to override on other systems use
-	   # --with-mpi-inc on the configure line
-
-	   # if MPI_INC is undefined then define it
-           echo "$as_me:$LINENO: checking \"for MPI include path\"" >&5
-echo $ECHO_N "checking \"for MPI include path\"... $ECHO_C" >&6
-	   if test -z "${MPI_INC}" &&
-              test -d "/usr/local/${with_mpi}/include"; then
-	       MPI_INC=/usr/local/${with_mpi}/include
-	   fi
-           echo "$as_me:$LINENO: result: ${MPI_INC}" >&5
-echo "${ECHO_T}${MPI_INC}" >&6
-       fi
 
 
        #
@@ -6417,66 +6375,24 @@ _ACEOF
        mpich)
 	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
-           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
-echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
-echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
-           else
-              { { echo "$as_me:$LINENO: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&5
-echo "$as_me: error: \"found LAMPI mpirun instead of mpich mpirun at ${which_mpirun}\"" >&2;}
-   { (exit 1); exit 1; }; }
-           fi
            ;;
-       lampi | LAMPI)
+       lampi | LAMPI | LA-MPI)
            with_mpi='LAMPI'
 	   # define mpi libs for LAMPI on linux
 	   mpi_libs='-lmpi'
-           echo "$as_me:$LINENO: checking \"for mpirun in \$PATH\"" >&5
-echo $ECHO_N "checking \"for mpirun in \$PATH\"... $ECHO_C" >&6
-           which_mpirun=`which mpirun`
-           if test -z "`which mpirun | grep -i lampi`"; then
-              { { echo "$as_me:$LINENO: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&5
-echo "$as_me: error: \"found mpich mpirun instead of LAMPI mpirun at ${which_mpirun}\"" >&2;}
-   { (exit 1); exit 1; }; }
+           echo "$as_me:$LINENO: checking \"mpirun -version\"" >&5
+echo $ECHO_N "checking \"mpirun -version\"... $ECHO_C" >&6
+           mpi_version=`mpirun -version`
+           if test -n "`echo ${mpi_version} | grep -i LA-MPI`"; then
+              echo "$as_me:$LINENO: result: ${mpi_version}" >&5
+echo "${ECHO_T}${mpi_version}" >&6
            else
-              echo "$as_me:$LINENO: result: \"found ${which_mpirun}\"" >&5
-echo "${ECHO_T}\"found ${which_mpirun}\"" >&6
+              { { echo "$as_me:$LINENO: error: \"Did not find LA-MPI version of mpirun.\"" >&5
+echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
+   { (exit 1); exit 1; }; }
            fi
            ;;
        esac
-
-       if test "${with_mpi}" = mpich ||
-          test "${with_mpi}" = LAMPI ; then
-
-           # if /usr/local/$with_mpi/lib exists use it by default;
-           # this is set as the default for the CCS-2/4 network;
-           # it may not be appropriate on other LINUX networks;
-           # in those cases, override with --with-mpi-lib
-           echo "$as_me:$LINENO: checking \"for MPI library path\"" >&5
-echo $ECHO_N "checking \"for MPI library path\"... $ECHO_C" >&6
-           if test -z "${MPI_LIB}" && test -d "/usr/local/${with_mpi}/lib"; then
-               MPI_LIB=/usr/local/${with_mpi}/lib
-           fi
-           echo "$as_me:$LINENO: result: ${MPI_LIB}" >&5
-echo "${ECHO_T}${MPI_LIB}" >&6
-
-	   # set the default include location on LINUX to
-	   # /usr/local/${with_mpi}/include; this is specific to the
-	   # CCS-2/4 LINUX network; to override on other systems use
-	   # --with-mpi-inc on the configure line
-
-	   # if MPI_INC is undefined then define it
-           echo "$as_me:$LINENO: checking \"for MPI include path\"" >&5
-echo $ECHO_N "checking \"for MPI include path\"... $ECHO_C" >&6
-	   if test -z "${MPI_INC}" &&
-              test -d "/usr/local/${with_mpi}/include"; then
-	       MPI_INC=/usr/local/${with_mpi}/include
-	   fi
-           echo "$as_me:$LINENO: result: ${MPI_INC}" >&5
-echo "${ECHO_T}${MPI_INC}" >&6
-       fi
 
 
 
