@@ -20,11 +20,20 @@
 \newcommand{\fninety}{\texttt{Fortran~90}}
 \newcommand{\cpp}{\texttt{C++}}
 \newcommand{\withfninety}{\texttt{--with-f90}}
+\newcommand{\fninetyenv}{\texttt{AC\_F90\_ENV}}
 \newcommand{\langfninety}{\texttt{AC\_LANG\_FORTRAN90}}
 \newcommand{\progfninety}{\texttt{AC\_PROG\_F90}}
 \newcommand{\requiregmfour}{\texttt{AC\_REQUIRE\_GM4}}
 \newcommand{\proggmfour}{\texttt{AC\_PROG\_GM4}}
-
+\newcommand{\fseventyseven}{\texttt{Fortran 77}}
+\newcommand{\langc}{\texttt{AC\_LANG\_C}}
+\newcommand{\langcplusplus}{\texttt{AC\_LANG\_CPLUSPLUS}}
+\newcommand{\langfseventyseven}{\texttt{AC\_LANG\_FORTRAN77}}
+\newcommand{\progcc}{\texttt{AC\_PROG\_CC}}
+\newcommand{\progcxx}{\texttt{AC\_PROG\_CXX}}
+\newcommand{\progfseventyseven}{\texttt{AC\_PROG\_F77}}
+\newcommand{\langsave}{\texttt{AC\_LANG\_SAVE}}
+\newcommand{\langrestore}{\texttt{AC\_LANG\_RESTORE}}
 \begin{document}
 
 %%---------------------------------------------------------------------------%%
@@ -47,23 +56,24 @@
 %%---------------------------------------------------------------------------%%
 
 \distribution {
-  J.E. Morel, XTM MS D409\\
-  J.M. McGhee, XTM MS D409\\
-  H.G. Hughes, XTM MS D409\\
-  T.M. Evans, XTM MS D409\\
-  M.G. Gray, XTM MS D409\\
-  S.D. Pautz, XTM MS D409\\
-  R.M. Roberts, XTM MS D409\\
-  T.J. Urbatsch, XTM MS D409\\
-  T.A. Wareing, XTM MS D409\\
-  J.S. Warsa, XTM MS D409\\
-  C.J. Gesh, XTM MS D409\\
-  W.D. Hawkins, XTM MS D409\\
-  B.T. Adams, XTM MS D409 \\
-  M.L. Alme, XTM MS D409\\
-  J.C. Gulick, XTM D409\\
-  K.G. Thompson, XCI, MS F663\\
-  R.B. Lowrie, XHM MS D413 
+  J.E. Morel, X--6 MS D409\\
+  J.M. McGhee, X--6 MS D409\\
+  H.G. Hughes, X--6 MS D409\\
+  T.M. Evans, X--6 MS D409\\
+  M.L. Murillo, X--6 MS D409\\
+  S.D. Pautz, X--6 MS D409\\
+  R.M. Roberts, X--6 MS D409\\
+  T.J. Urbatsch, X--6 MS D409\\
+  T.A. Wareing, X--6 MS D409\\
+  J.S. Warsa, X--6 MS D409\\
+  C.J. Gesh, X--6 MS D409\\
+  W.D. Hawkins, X--6 MS D409\\
+  B.T. Adams, X--6 MS D409 \\
+  M.L. Alme, X--6 MS D409\\
+  J.C. Gulick, X--6 D409\\
+  K.G. Thompson, X--6, MS D409\\
+  R.B. Lowrie, X--3 MS D413\\
+  R.B. Webster, X--11, MS F663 
   }
 
 %%---------------------------------------------------------------------------%%
@@ -76,25 +86,25 @@
 
 I have added rudimentary \fninety\ support to the Draco build
 system\cite{draco-build}.  The autoconf\cite{autoconf} macros in
-\texttt{draco/config} now support the \withfninety\ argument, which
+\texttt{draco/config} 	now support the \withfninety\ argument, which
 allows the user to specify the \fninety\ compiler to use; the
-\langfninety\ and \progfninety\ macros, which specify \fninety\ as the
-language used in compiler tests and test the selected compiler,
-respectively; and the \proggmfour\ and \requiregmfour\ macros, which
-find and require the GNU m4\cite{m4} preprocessor, respectively.
-These features provide basic functionality for configuring a \fninety\
-package.  They form the beginnings of full \fninety\ support in Draco,
-provide a template for other language support in Draco, and suggest a
-possible refactoring of the existing build macros.
+\fninetyenv\ macro, which sets \fninety\ environment variables; the
+\langfninety\ macro, which sets \fninety\ compile and link tests; and
+the \progfninety\ macro, tests the selected compiler.  These features
+provide basic functionality for configuring a \fninety\ package.  They
+form the beginnings of \fninety\ support in Draco, provide a template
+for other language support in Draco, and suggest a possible
+refactoring of the existing build macros.
 
 \section{Background}
 
 Draco was originally concieved as a collection of \cpp\ packages that
 could be used to construct transport codes.  An unexpected bonus of
-the Draco project was a robust build system, based on autoconf, that
-could be used to configure any collection of \cpp\ code for various
-platforms.  The simple, reusable build system required several
-iterations of careful planning and hard work.
+the Draco project was a build system, based on autoconf, that could be
+used to configure any collection of \cpp\ code for various platforms.
+After several iterations of careful planning and hard work, the Draco
+build system appears simple to its users and has proven robust in its
+operation.
 
 One feature missing from the build system was support for \fninety.
 Although Draco will remain primarily a \cpp\ repository, \fninety\
@@ -104,7 +114,7 @@ reused in other \cpp\ projects, a common build system that could be
 reused by other \fninety\ projects is desirable.
 
 I had written rudimentary \fninety\ support as part of the Zathras and
-Centauri projects.  This support was based on the autoconf support
+Centauri projects.  This support was based on the autoconf macros
 written for Dante by Randy Roberts.  With the advent of the new Linux
 workstations and their new Fujitsu compiler I needed to at least
 revisit my old \fninety\ autoconf macros.  This seemed to be an ideal
@@ -122,83 +132,154 @@ several necessary build system features for \fninety\ support.
 How should the Draco build system support \fninety?  Ideally the user
 should see a set of \fninety\ specific macros that work just like
 autoconf's support for other languages.  The solution should be
-backwards compatable; existing Draco configuration files
-should continue to work.  In this section I will examine how the
-autoconf works for supported languages, how the Draco build system
-works for \cpp, the problems involved with applying this approach to
-\fninety, and the resolution of these problems.
+backwards compatible; existing Draco configuration files should
+continue to work.  In this section I will examine how the autoconf
+works for supported languages, how the Draco build system works for
+\cpp, the problems involved with applying this approach to \fninety,
+and the resolution of these problems.
 
-Autoconf (version 2.13) supports \texttt{C}, \cpp, and \texttt{Fortran
-77}.  Its native support works as follows:
+Autoconf (version 2.13) supports the \texttt{C}, \cpp, and
+\fseventyseven\ programming languages.  Its native support works as
+follows:
 \begin{enumerate} 
-\item The default language is chosen for testing by the macros
-\texttt{AC\_LANG\_C}, \texttt{AC\_LANG\_CPLUSPLUS}, or
-\texttt{AC\_LANG\_FORTRAN77} 
-\item The compiler availability and viability are tested by
-the macros \texttt{AC\_PROG\_CC}, \texttt{AC\_PROG\_CXX}, or
-\texttt{AC\_PROG\_F77} 
+\item A language is chosen for testing by the macros \langc,
+\langcplusplus, or \langfseventyseven.  These macros create compile
+and link lines, which are parameterized by compiler, compiler flag,
+and load flag environment variables.
+\item The compiler availability and viability are tested by the macros
+\progcc, \progcxx, or \progfseventyseven.  These macros push the
+current language on a stack using \langsave, call the appropriate
+\texttt{AC\_LANG\_X} macro (see above), set the name of a compiler to
+use if it is not set in the environment, test the compiler using the
+compile and link lines specified on a simple test program, and restore
+the original language from stack using \langrestore.
 \end{enumerate}
-The compiler tests can be made without knowledge of the specific
-vendor because these compilers are remarkably uniform from platform to
-platform. For example, \texttt{CC -g Conftest.cc} will produce a
-working \cpp\ program on virtually every UNIX platform in existance.
+Although the user can test specific compilers by setting the
+appropriate environment variables, the compiler tests for \texttt{C},
+\cpp, and \fseventyseven\ can be made without knowledge of the
+specific vendor because these compilers are remarkably uniform across
+UNIX platforms.  For example the default \texttt{C} link test,
+\texttt{cc -g conftest.c}, will produce a working \texttt{C} program
+on virtually every UNIX platform in existance.
 
-Autoconf automatically supports multi-language configurations.  The
-configure.in file snippet:\\
+Autoconf supports multi-language configurations.  The
+\texttt{AC\_PROG\_X} macros save and restore the current language at
+the begining and end of their execution.  The \texttt{configure.in}
+file snippet:
 \begin{verbatim}
-AC_LANG_C
 AC_PROG_CC
-AC_LANG_CPLUSPLUS
 AC_PROG_CXX
-AC_LANG_FORTRAN77
 AC_PROG_F77
 \end{verbatim}
-finds, sets, and tests \texttt{C}, \cpp, and \texttt{Fortran 77}
-compilers, respectively.  Additionally, the \texttt{AC\_LANG\_SAVE}
-and \texttt{AC\_LANG\_RESTORE} push and pop the current language,
-which permits some very sophisticated multi-language configurations.
+finds, sets, and tests \texttt{C}, \cpp, and \fseventyseven\ compilers,
+respectively.
 
-The Draco build system adds an additional step: A specific \cpp\
+The Draco build system adds an additional step: a specific \cpp\
 compiler is requested by the configure argument \texttt{--with-cxx},
 and compiler specific flags are set by the macro
 \texttt{AC\_DRACO\_ENV}.  This additional step requires that autoconf
 know something about specific compilers; this database is kept in the
 file \texttt{ac\_compilers.m4}.  The disadvantage of giving autoconf
 this specific knowledge is that it must be maintained; the advantage
-is that \texttt{AC\_PROG\_CXX} can check if the user requested flags
+is that \progcxx\ can check if the user requested flags
 work, and the build system can use simpler makefile templates.
 
-Unfortunately basic autoconf language support cannot be extended to
-\fninety\ because:
+Basic autoconf language support can be extended to \fninety\ by:
 \begin{enumerate}
-\item Autoconf is designed primarily for \texttt{C} and \cpp; it was
-not designed to supporting other languages
-\item \fninety\ compilers show little consistency across platforms;
-the compiler name, flags, default file extensions, and method of
-handling modules varies greatly from product to product
-\item The assumptions autoconf makes because of item 1 and the
-inconsistency of \fninety\ compilers stated in item 2 makes the
-autoconf method of guessing compiler names, flags, etc. actually
-dangerous
+\item Modifying its \texttt{C} and \cpp\ centric macros (\langrestore,
+\texttt{AC\_TRY\_COMPILER}) to support other languages (this is
+already kludged in 2.13 for \fseventyseven)
+\item Writing a \langfninety\ macro to set \fninety\ compile and link
+lines for testing
+\item Writing a \progfninety\ macro to test the availability and
+viability of the \fninety\ compiler
+\end{enumerate}
+Unfortunately \fninety\ compilers are not very uniform across
+platforms, so any guess that \progfninety\ makes for compile and link
+lines is likely not to work across platforms.  
+
+Fortunately, the Draco additions provide a solution; set up compiler
+specific flags before testing the compiler.  Basic Draco build support
+can be extended to \fninety\ by:
+\begin{enumerate}
+\item Adding a \withfninety\ argument to select the \fninety\ compiler
+\item Writing a \texttt{AC\_WITH\_F90} macro to set \texttt{with\_f90}
+to ``yes'' if it isn't already set
+\item Writing a \fninetyenv\ macro to set \fninety\ environment
+variables
 \end{enumerate}
 
-Fortunately, the Draco additions provide a solution; in order to add
-\fninety\ support to the Draco build system: 
-\begin{enumerate}
-\item Autoconf macros must be written for \fninety\ support; some
-native autoconf macros must be rewritten to redress autoconf's
-\texttt{C}-centricness  
-\item \fninety\ compiler information must be available in a database
-to configure names, flags, extensions, and module information
-\item a better guessing heuristic must be devised
-\end{enumerate}
+The plan, then, is to add two autoconf macro files to the Draco build
+system in \texttt{draco/config}:
+\begin{description}
+\item[\texttt{ac\_f90.m4}:] \fninety\ compiler support macros
+\item[\texttt{ac\_f90env.m4}:] \fninety\ environment support macros
+\end{description}
+This solution achieves several desirable effects.  First, the
+additions to autoconf's compiler support through \texttt{ac\_f90.m4}
+are consistent with its native compiler support.  Second, the
+additions to Draco's compiler support through \texttt{ac\_f90env.m4}
+are consistent with its native environment configuation.  Third, these
+additions do not change existing Draco clients.  Finally, the user
+sees a simple configuration; the work and complexity are hidden in the
+build system macros.
 
-In the spirit of the Draco build system, \fninety\ support aims at
-simplifying the configuration for the user, at the expense of
-considerable work on the part of the build system to hide the
-underlying complexity.
+\section{\fninety\ Compiler Support}
 
-\section{New Arguments}
+The file \texttt{ac\_f90.m4} contains two macros for \fninety\
+compiler support:
+\begin{description}
+\item[\langfninety:] set the compile and link test invocation using
+\texttt{F90}, \texttt{F90FLAGS}, and \texttt{LDFLAGS}.  This macro is
+based on the \langc, \langcplusplus, and \langfseventyseven\ macros in
+\texttt{acgeneral.m4}.
+\item[\progfninety:] test the \fninety\ compiler to use.  Set the
+following environment variables:
+\begin{description}
+\item[\texttt{F90}:] name of a working \fninety\ compiler.
+\item[\texttt{MODNAME}:] vendor specific module file name.  Module
+files containing interface information are generated by the compiler
+when a file containing a module is found.  Module files may be named
+after the file containing the module, or after the module name, in
+either all caps, all lowercase, or mixed case.  Use a compile test to
+determine which is the case.   
+\item[\texttt{MODSUFFIX}:] vendor specific module extension name.
+Module files may have extension \texttt{mod}, \texttt{M}, \texttt{o}
+(i.e. be part of the object file), or something else.  Use a compile
+test to determine which is the case.
+\end{description}
+This macro is based on the \progcc, \progcxx, and \progfseventyseven\
+macros in \texttt{acspecific.m4}.
+\end{description}
+
+These macros have only been tested on a limited number of machines.
+\progfninety\ can fail due to vendor non-standard file extentions or
+incorrect free/fixed source defaults.  Output variables are correctly
+set for only a few known targets.  As with other autoconf macros, any
+file named [Cc]onftest* will be overwritten!
+
+\section{\fninety\ Environment Support}
+
+The file \texttt{ac\_f90env.m4} contains two macros for \fninety\
+environment support:
+\begin{description}
+\item[\texttt{AC\_WITH\_F90}:] set the variable \texttt{with\_f90} to
+``yes'' if it is not already set.
+\item[\fninetyenv:] set the following \fninety\ environment variables:
+\begin{description}
+\item[\texttt{F90}:] name of an executable \fninety\ compiler.
+\item[\texttt{F90FLAGS}:] vendor specific default flags for the
+\fninety\ compiler.  Changes appropriately according to the
+\texttt{--enable-debug} and \texttt{--with-opt} configure arguments.
+\item[\texttt{F90EXT}:] vendor specific extension of \fninety\ input files.
+\item[\texttt{F90FREE}:] vendor specific flag to specify free form
+source input. 
+\item[\texttt{F90FIXED}:] vendor specific flag to specify fixed form
+source input. 
+\item[\texttt{MODFLAG}:] vendor specific module include directory
+flag, typically \texttt{-I} or \texttt{-M}.
+\end{description}
+\end{description}
 
 The \fninety\ compiler can be specified by giving the \withfninety\ 
 argument to configure.  The currently supported compilers are shown in
@@ -219,73 +300,16 @@ MIPS            & f90        & IRIX    & SGI
 \end{center}
 \hrulefill
 \end{table}
-The \langfninety\ macro must be present in \texttt{configure.in} for
-the \withfninety\ argument to be processed.  If \withfninety\ is not
-given or given without any arguments, the compiler is set based on the
-target.  The compiler is verified by running \texttt{\$F90 --version}
-(or its equivalent) and checking the output for the product name.
+If \withfninety\ is given without any arguments, the compiler is set
+based on the target.  The compiler is verified by running
+\texttt{\$F90 --version} (or its equivalent) and checking the output
+for the product name.
 
-A new compiler can be added by putting a database entry for it in
-\texttt{ac\_compiler.m4}, adding it to the case statement in
-\texttt{ac\_dracoenv.m4}, and adding it to the argument option string
-in \texttt{ac\_dracoarg.m4}.  The \withfninety\ argument is based on
-the \texttt{--with-cxx} argument in \texttt{ac\_dracoarg.m4}.
-
-\section{New Macros}
-
-Four new macros have been added for \fninety\ support:
-\begin{description}
-\item[\langfninety:] set the compile and link test invocation using
-\texttt{F90} and the extension \texttt{F90EXT}.  This macro is
-required in \texttt{configure.in} for \fninety\ usage.  It is based on
-the \texttt{AC\_LANG\_C}, \texttt{AC\_LANG\_CPLUSPLUS}, and
-\texttt{AC\_LANG\_FORTRAN77} macros in \texttt{acgeneral.m4}.
-
-\item[\proggmfour:] set the output variable \texttt{GM4} to a command
-that runs the GNU m4 preprocessor.  Looks for \texttt{gm4} and then
-\texttt{m4}, and verifies the gnu version by running
-\texttt{\${GM4}~--version}.  It is based on the \texttt{AC\_PROG\_CPP}
-and \texttt{AC\_PROG\_CPPCXX} macros in \texttt{acspecific.m4}.
-
-\item[\requiregmfour:] ensure that \texttt{GM4} has been found by
-calling \proggmfour\ if it hasn't already been called.  It is based on
-the \texttt{AC\_REQUIRE\_CPP} macro in \texttt{acspecific.m4}.
-
-\item[\progfninety:] determine the \fninety\ compiler to use and the
-appropriate extensions for free format source code.  Set the
-following output variables:
-\begin{description}
-\item[\texttt{F90}:] name of a working \fninety\ compiler.
-\item[\texttt{F90FLAGS}:] vendor specific default flags for the
-\fninety\ compiler.  Changes appropriately according to the
-\texttt{--enable-debug} and \texttt{--with-opt} configure arguments.
-\item[\texttt{F90EXT}:] vendor specific extension of \fninety\ input files.
-\item[\texttt{F90FREE}:] vendor specific flag to specify free form
-source input. 
-\item[\texttt{F90FIXED}:] vendor specific flag to specify fixed form
-source input. 
-\item[\texttt{MODNAME}:] vendor specific module file name.  Module
-files containing interface information are generated by the compiler
-when a file containing a module is found.  Module files may be named
-after the file containing the module, or after the module name, in
-either all caps, all lowercase, or mixed case.  Use a compile test to
-determine which is the case.   
-\item[\texttt{MODSUFFIX}:] vendor specific module extension name.
-Module files may have extension \texttt{mod}, \texttt{M}, \texttt{o}
-(i.e. be part of the object file), or something else.  Use a compile
-test to determine which is the case.
-\item[\texttt{MODFLAG}:] vendor specific module include directory
-flag, typically \texttt{-I} or \texttt{-M}.
-\end{description}
-It is based on the \texttt{AC\_PROG\_CC}, \texttt{AC\_PROG\_CXX}, and
-\texttt{AC\_PROG\_F77} macros in \texttt{acspecific.m4}.
-\end{description}
-
-These macros have only been tested on a limited number of machines.
-\progfninety\ can fail due to vendor non-standard file extentions or
-incorrect free/fixed source defaults.  Output variables are correctly
-set for only a few known targets.  As with other autoconf macros, any
-file named [Cc]onftest* will be overwritten!
+A new compiler can be adding a database entry for it, adding it to the
+case statement in \fninetyenv, and adding it to the argument option
+string of \withfninety, all in the file \texttt{ac\_f90env.m4}. The
+\withfninety\ argument is based on the \texttt{--with-cxx} argument in
+\texttt{ac\_dracoarg.m4}.
 
 \section{Example Fortran 90 Configuration}
 
@@ -295,10 +319,9 @@ file named [Cc]onftest* will be overwritten!
 AC_INIT(acf90)                  dnl process args; verify src dir
 AC_CONFIG_AUX_DIR(../../config) dnl config.sub, config.guess, install-sh
 
-AC_LANG_FORTRAN90               dnl set language to Fortran 90
-AC_DRACO_ENV                    dnl configure Draco build environment
-AC_PROG_F90                     dnl test Fortran 90 compiler
-AC_PROG_GM4                     dnl Find and verify GNU m4
+AC_WITH_F90                     dnl ensure with_f90 set
+AC_F90_ENV                      dnl configure the Fortran 90 environment
+AC_LANG_F90                     dnl find and test Fortran 90 compiler 
 
 AC_OUTPUT(Makefile)             dnl create output files
 \end{verbatim}
@@ -312,15 +335,16 @@ a file to check to verify that it is using the proper source
 directory, and specify where to find the common scripts needed by
 configure.  
 
-These files and the aclocal files autoconf uses to create
-\texttt{configure} from \texttt{configure.in} are kept in the
-\texttt{config/} directory which is a peer of \texttt{src/}.
-Figure~\ref{fig:zathras} shows the CVS module entry for Zathras, which
-instructs \texttt{cvs checkout Zathras} to creates the directory
-\texttt{zathras}, populate it with the contents of
-\texttt{\$CVSROOT/zathras}, and rename \texttt{\$CVSROOT/draco/config}
-as \texttt{zathras/config}.  This is the standard way to import the
-Draco build system in external project directories.
+The \texttt{config.sub}, \texttt{config.guess}, \texttt{install-sh},
+and aclocal files autoconf uses to create \texttt{configure} from
+\texttt{configure.in} are kept in the \texttt{config/} directory which
+is a peer of \texttt{src/}.  Figure~\ref{fig:zathras} shows the CVS
+module entry for Zathras, which instructs \texttt{cvs checkout
+Zathras} to creates the directory \texttt{zathras}, populate it with
+the contents of \texttt{\$CVSROOT/zathras}, and rename
+\texttt{\$CVSROOT/draco/config} as \texttt{zathras/config}.  This is
+the standard way to import the Draco build system in external project
+directories.
 \begin{figure}[hbt]
 \hrulefill
 \begin{verbatim}
@@ -337,13 +361,13 @@ checkout.}\label{fig:zathras}
 \end{figure}
 
 The body of Figure~\ref{fig:configure} contains the macros for
-\fninety\ support.  \langfninety\ instructs configure to use \fninety\
-for subsequent compiler tests.  \texttt{AC\_DRACO\_ENV} processes
-configure arguments, including the selection of \fninety\ compiler
-based on either the \withfninety\ argument or the target platform and
-flags based on the \texttt{--enable-debug} and \texttt{--with-opt}
-arguments.  \progfninety\ test the compiler to make sure it can
-compile a null program, and discovers how to handles modules.
+\fninety\ support.  \texttt{AC\_WITH\_F90} ensures that \withfninety\
+is set.  \texttt{AC\_F90\_ENV} processes configure arguments,
+including the selection of \fninety\ compiler based on either the
+\withfninety\ argument or the target platform and flags based on the
+\texttt{--enable-debug} and \texttt{--with-opt} arguments.
+\progfninety\ test the compiler to make sure it can compile a null
+program, and discovers how to handles modules.
 
 The last line processes \texttt{Makefile.in} to produce a
 \texttt{Makefile} with the appropriate variable substitutions made.
@@ -388,7 +412,7 @@ resulting definitions.}\label{fig:makefile} \hrulefill
 Running autoconf on the \texttt{configure.in} file from
 Figure~\ref{fig:configure} and running the resulting
 \texttt{configure} file in a directory containing the test
-\texttt{Makefile.in} produces a {Makefile} which, when executed,
+\texttt{Makefile.in} produces a \texttt{Makefile} which, when executed,
 produces the output in Figure~\ref{fig:make}.
 \begin{figure}[phbt]
 \hrulefill
@@ -418,29 +442,46 @@ with -I.  GNU m4 was found, under the name m4.}\label{fig:make}
 
 I have written autoconf macros that provide rudimentary \fninety\
 support for the Draco build system.  For \cpp\ clients, nothing in the
-build system is affected.  For \fninety\ clients (defined by the use of
-\langfninety\ in \texttt{configure.in}) these macros find an
-appropriate \fninety\ compiler, verify its operation, and set the
-flags needed for its use as a makefile command.
+build system is affected.  For \fninety\ clients these macros set
+environment variables for \fninety, find an appropriate \fninety\
+compiler, verify its operation, and set the flags needed for its use
+as a makefile command.
 
 Much work remains.  A standard \texttt{Makefile.in}
 for \fninety\ source directories, and a tool for ordering dependencies
 within and perhaps across directories is needed before Draco truely
 supports \fninety\ builds.  
 
-The \langfninety\ and \progfninety\ macros provide templates for
-adding other language support in Draco.  In theory, with a minor
-modification to \texttt{AC\_LANG\_RESTORE}, a single
-\texttt{configure} file could select and configure for several
-languages, permitting the use of mixed language directories in Draco.
-However, this feature has not been tested; current plans are for all
-Draco components (directories) to be unilingual.
+The \texttt{AC\_WITH\_F90}, \fninetyenv, \langfninety, and
+\progfninety\ macros provide templates for adding other language
+support in Draco.  In theory a single \texttt{configure} file could
+select and configure for several languages, permitting the use of
+mixed language directories in Draco.  However, this feature has not
+been tested; current plans are for all Draco components (directories)
+to be unilingual.
 
 Future language support, including improved support for \fninety,
 could be made easier by refactoring parts of the existing build
-support for \cpp.  This could simplify build macros, make the
-build system less \cpp-centric, and improve the chance of having one
-template \texttt{Makefile.in} serve all.
+support for \cpp.  For example, \texttt{AC\_DRACO\_ENV} should be
+rewritten so that it only sets environment variables (perhaps using
+\texttt{AC\_CHECK\_PROGS} to search for compilers; the autoconf macros
+that test for compilers should be called explicitly after the
+environment variables.  With this change Draco multi-language
+\texttt{configure.in} could look like this:
+\begin{verbatim}
+AC_WITH_PYTHON                  dnl ensure with_python set
+AC_WITH_F90                     dnl ensure with_f90 set
+AC_WITH_CXX                     dnl ensure with_cxx set
+AC_WITH_CC                      dnl ensure with_cc set
+AC_DRACO_ENV                    dnl configure Draco build environment
+AC_PROG_CC                      dnl find and test C compiler
+AC_PROG_CXX                     dnl find and test C++ compiler
+AC_PROG_F90                     dnl find and test Fortran 90 compiler
+AC_PROG_PYTHON                  dnl find and test Python interpreter
+\end{verbatim}
+This could simplify build macros, make the build system less
+\cpp-centric, and increase the possibility of having one template
+\texttt{Makefile.in} serve all.
 
 \bibliographystyle{plain}
 \bibliography{../bib/draco}
