@@ -70,7 +70,7 @@ def get_dependencies(file, draco_dep):
 
         # check for include from other draco packages
         dep_match = \
-                  re.search('#include\s*\"([0-9A-Za-z+_]*)\/+([0-9A-Za-z_+]*.\w*)\s*\"',
+                  re.search('#include\s*\"([0-9A-Za-z+_]*)\/+([0-9A-Za-z_+.]*.\w*)\s*\"',
                             line)
 
         # if match store it
