@@ -6,27 +6,34 @@
 /* $Id$ */
 /*---------------------------------------------------------------------------*/
 
-
 #ifndef __stdheaders_cmath__
 #define __stdheaders_cmath__
 
 #include <math.h>
 
 namespace std {
-using ::fabs;
+
 using ::abs;
-using ::pow;
-using ::sqrt;
-using ::log10;
-using ::exp;
-using ::asin;
 using ::acos;
-using ::sin;
-using ::cos;
-using ::tan;
+using ::asin;
+using ::atan2;
 using ::atan;
-using ::log;
 using ::ceil;
+using ::cos;
+using ::cosh;
+using ::exp;
+using ::fabs;
+using ::floor;
+using ::fmod;
+using ::log10;
+using ::log;
+using ::pow;
+using ::sin;
+using ::sinh;
+using ::sqrt;
+using ::tan;
+using ::tanh;
+
 } /*namespace std*/
 
 #endif    /* __stdheaders_cmath__ */
