@@ -16,6 +16,7 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "c4/global.hh"
+#include "ds++/Assert.hh"
 
 #include <iostream>
 #include <string>
@@ -137,7 +138,7 @@ void Particle_Bank()
 }
 
 //---------------------------------------------------------------------------//
-// pass some particles using a Particle_Buffer
+// pass some particles using a Particle_Buffer, BLOCKING COMMUNICATIONS
 
 void Particle_Comm_Block()
 {
@@ -225,6 +226,135 @@ void Particle_Comm_Block()
 }
 
 //---------------------------------------------------------------------------//
+// pass some particles using a Particle_Buffer, ASYNC COMMUNICATIONS
+
+void Particle_Comm_Async()
+{
+    // make particle buffers on each node
+    PB buffer(8, 2, control.get_size());
+    PB::set_buffer_size(2);
+
+    if (PB::get_buffer_d() != 18)                     ITFAILS;
+    if (PB::get_buffer_i() != 4)                      ITFAILS;
+    if (PB::get_buffer_c() != control.get_size() * 2) ITFAILS;
+    
+    // let's make a send/recv buffer on each node
+    int send_buffers = procs - 1;
+    int recv_buffers = procs - 1;
+    PB::Comm_Vector recv_buf(recv_buffers);
+    PB::Comm_Vector send_buf(send_buffers);
+
+    // calculate the recv and send indices
+    vector<int> index(procs - 1);
+    {
+	int indie = 0;
+	for (int np = 0; np < procs; np++)
+	    if (np != proc)
+		index[indie++] = np;
+    }
+    Check (index.size() == recv_buf.size());
+    Check (index.size() == send_buf.size());
+
+    // post receives of the particles
+    for (int i = 0; i < index.size(); i++)
+    {
+	if (recv_buf[i].n_part != 0) ITFAILS;
+	buffer.post_arecv(recv_buf[i], index[i]);
+    }
+
+    // build two particles on each node
+    {
+	vector<double> r(3, proc);
+	vector<double> omega(3);
+	omega[2]         = 1.0;
+	double ew        = proc * 10;
+	double time_left = 1.0 / (proc + 1);
+	double fraction  = .5 / (proc + 1);
+	int cell         = proc + 1;
+	Sprng r1         = control.get_rn(proc);
+	Sprng r2         = control.get_rn(proc+1);
+	int cell2        = proc + 2;
+	POS p1(r, omega, ew, cell, r1, fraction, time_left);
+	POS p2(r, omega, ew, cell2, r2, fraction, time_left);
+
+	// pack the buffers
+	for (int i = 0; i < index.size(); i++)
+	{
+	    buffer.buffer_particle(send_buf[i], p1);
+	    buffer.buffer_particle(send_buf[i], p2);
+	}
+    }
+
+    // make the processors do arbitrary amounts of work before sending its 
+    // data
+    for (int i = 0; i < 10000 * i; i++); // doing nothing of consequence
+
+    // now lets send out the buffers
+    for (int i = 0; i < index.size(); i++)
+    {
+	if (send_buf[i].n_part != 2) ITFAILS;
+	buffer.asend_buffer(send_buf[i], index[i]);
+	buffer.async_wait(send_buf[i]);
+	if (send_buf[i].n_part != 0) ITFAILS;
+    }
+
+    // now lets check on our receive buffers until they are all in
+    vector<bool> proc_in(index.size(), false);
+    int all_in = 0;
+    bool in = false;
+    int iter;
+    while (!in)
+    {
+	for (int i = 0; i < index.size(); i++)
+	{
+	    if (!proc_in[i])
+		if (buffer.async_check(recv_buf[i]))
+		{
+		    proc_in[i] = true;
+		    buffer.async_wait(recv_buf[i]);
+		    if (recv_buf[i].n_part != 2) ITFAILS;
+		    all_in++;
+		}
+	}
+	if (all_in == index.size()) in = true;
+	iter++;
+    }
+
+    // now we check the particles to make sure they are correct
+    PB::Bank bank;
+    for (int i = 0; i < index.size(); i++)
+    {
+	buffer.add_to_bank(recv_buf[i], bank);
+	if (recv_buf[i].n_part != 0) ITFAILS;
+    }
+    if (bank.size() != 2 * index.size()) ITFAILS;
+
+    // get particles from the bank and do our checks
+    for (int i = index.size() - 1; i >= 0; i--)
+    {
+	// make reference particles
+	vector<double> r(3, index[i]);
+	vector<double> omega(3);
+	omega[2]         = 1.0;
+	double ew        = index[i] * 10;
+	double time_left = 1.0 / (index[i] + 1);
+	double fraction  = .5 / (index[i] + 1);
+	int cell         = index[i] + 1;
+	Sprng r1         = control.get_rn(index[i]);
+	Sprng r2         = control.get_rn(index[i]+1);
+	int cell2        = index[i] + 2;
+	POS p1(r, omega, ew, cell, r1, fraction, time_left);
+	POS p2(r, omega, ew, cell2, r2, fraction, time_left);
+
+	if (*bank.top() != p2) ITFAILS;
+	bank.pop();
+	if (*bank.top() != p1) ITFAILS;
+	bank.pop();
+    }
+    if (bank.size() != 0) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
 // main
 
 int main(int argc, char *argv[])
@@ -245,15 +375,33 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // Particle tests 
-    Particle_Basics();
-    C4::gsync();
-
-    Particle_Bank();
-    C4::gsync();
-
-    Particle_Comm_Block();
-    C4::gsync();
+    // lets do the tests and catch assertions
+    try
+    {
+	// Particle tests 
+	Particle_Basics();
+	C4::gsync();
+	
+	Particle_Bank();
+	C4::gsync();
+	
+	Particle_Comm_Block();
+	C4::gsync();
+	
+	Particle_Comm_Async();
+	C4::gsync();
+    }
+    catch (const dsxx::assertion &ass)
+    {
+	cout << "Test: assertion failure at line " 
+	     << ass.what() << endl;
+	return 1;
+    }
+    catch(...)
+    {
+	cout << "HELP ME" << endl;
+	return 1;
+    }
 
     // status of test
     cout << endl;
