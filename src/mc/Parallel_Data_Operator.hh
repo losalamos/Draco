@@ -199,13 +199,13 @@ void Parallel_Data_Operator::global_sum(T *begin, T *end)
  * mapped across processors in certain topologies.  The following list
  * describes the data combinations:
 
- * \arg \b "replication"/Data_Replicated * local_field is copied directly
- * into the global_field, it is assumed that * the local_fields are the same
- * on each processor;
+ * \arg \b "replication"/Data_Replicated local_field is copied directly into
+ * the global_field, it is assumed that the local_fields are the same on each
+ * processor;
 
  * \arg \b * "replication"/Data_Decomposed the local_field is copied into the
- * global * field on each processor, the global_fields are subsequently
- * summed across * all processors;
+ * global field on each processor, the global_fields are subsequently summed
+ * across * all processors;
 
  * \arg \b "DD"/Data_Distributed local_fields are mapped into the appropriate
  * cells on the global_field on each processor, the global_fields are then
