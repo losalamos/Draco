@@ -1151,7 +1151,7 @@ void RTT_Format::CellDef::sortData()
 
     ordered_sides.resize(nsides);
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = false;
+    bool debugging = true;
 
     for (int i = 0; i < nsides; ++i)
     {
@@ -1511,7 +1511,7 @@ void RTT_Format::Nodes::sortData()
         parents[i] =  sort_map[parents[i]];
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = false;
+    bool debugging = true;
     if (debugging)
     {
         for (int i = 0; i < dims.get_nnodes(); ++i)
@@ -1756,7 +1756,7 @@ void RTT_Format::Sides::sortData()
     }
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = false;
+    bool debugging = true;
 
     if (debugging)
     {
@@ -1923,7 +1923,7 @@ void RTT_Format::Cells::sortData()
     }
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = false;
+    bool debugging = true;
 
     if (debugging)
     {
@@ -2529,7 +2529,7 @@ void RTT_Format::Connectivity::calcAdjacentCells()
     cell_faces.resize(0);
 
     // this flag is for debugging use only (not user-selectable).
-    bool debugging = false;
+    bool debugging = true;
 
     if (debugging)
     {
