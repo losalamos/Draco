@@ -230,14 +230,15 @@ namespace rtt_quadrature
  *
  * Code Sample:
  * \code
- * \\ 
- * SP<Quadrature> spQuad = QuadCreator().quadCreate( 
- *                               QuadCreator::LevelSym, 4 );
+ * \\ Create an 3D S4 Level Symmetric Quadrature Set.
+ * SP<Quadrature> spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, 4 );
  *
- * \\ Create a QuadServices object that is attached to a specific
- * \\ quadrature set. 
+ * \\ Create a QuadServices object that is attached to this specific quadrature set. 
  * QuadServices myQS( spQuad );
  *
+ * \\ Transform from moment-space to discrete-angle space.
+ * std::vector< double > phi( 100, 0.0 );
+ * std::vector< double > psi = myQS.applyM( phi );
  * \endcode
  */
 /*! 
@@ -253,6 +254,10 @@ class QuadServices
 
     // NESTED CLASSES AND TYPEDEFS
 
+    /*!
+     * \brief The typedef specifies how the moment index \f$ n \f$ maps
+     *        to the double index \f$ (\ell,k) \f$.
+     */
     typedef std::pair< unsigned, int > lk_index;
 
     // CREATORS
@@ -283,6 +288,9 @@ class QuadServices
 
     //! \brief Return the discrete-to-moment operator.
     std::vector< double > getD() const { return Dmatrix; }
+
+    std::vector< double > applyM( std::vector< double > const & phi ) const;
+    std::vector< double > applyD( std::vector< double > const & psi ) const;
 
   private:
 

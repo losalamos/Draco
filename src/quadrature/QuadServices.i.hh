@@ -14,7 +14,6 @@
 #define quadrature_QuadServices_i_hh
 
 #include <iostream>
-
 #include "QuadServices.hh"
 
 namespace rtt_quadrature

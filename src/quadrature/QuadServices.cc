@@ -36,6 +36,7 @@ namespace rtt_quadrature
  * \brief Default constructor builds square D and M operators using Morel's
  * Galerkin-Sn heuristic. 
  * \param spQuad_ a smart pointer to a Quadrature object.
+ * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
  */
 QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
     : spQuad(     spQuad_ ), 
@@ -111,6 +112,7 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
  * \brief Constructor that allows the user to pick the (k,l) moments to use.
  * \param spQuad_     a smart pointer to a Quadrature object.
  * \param lkMoments_  vector of tuples that maps from index n to (k,l).
+ * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
  */
 QuadServices::QuadServices( 
     rtt_dsxx::SP< const Quadrature > const   spQuad_,
@@ -126,9 +128,59 @@ QuadServices::QuadServices(
 
 //---------------------------------------------------------------------------//
 /*! 
+ * \brief Apply the action of \f$ M \f$ to the moment-based solution vector
+ * \f$ \mathbf\Phi \f$.  That is, \f$ \mathbf\Psi = \mathbf{M}\mathbf\Phi \f$
+ * 
+ * \param phi Moment based solution vector, \f$ \mathbf\Phi \f$.
+ * \return The discrete angular flux, \f$ \mathbf\Psi \f$.
+ */
+std::vector< double > QuadServices::applyM( std::vector< double > const & phi ) const
+{
+    Require( phi.size() == numMoments );
+
+    size_t const numAngles( spQuad->getNumAngles() );
+    std::vector< double > psi( numAngles, 0.0 );
+
+    for( size_t m=0; m<numAngles; ++m )
+	for( size_t n=0; n<numMoments; ++n )
+	    psi[ m ] += Mmatrix[ n + m*numMoments ] * phi[n];
+    
+    return psi;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Apply the action of \f$ D \f$ to the discrete-angle based solution vector
+ * \f$ \mathbf\Psi \f$. That is, \f$ \mathbf\Phi = \mathbf{D}\mathbf\Psi \f$.
+ * 
+ * \param psi Discrete angle-based solution vector, \f$ \mathbf\Psi \f$.
+ * \return The moment-based solution vector, \f$ \mathbf\Phi \f$.
+ */
+std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) const
+{
+    size_t const numAngles( spQuad->getNumAngles() );
+    Require( psi.size() == numAngles );
+
+    std::vector< double > phi( numMoments, 0.0 );
+
+    for( size_t m=0; m<numAngles; ++m )
+	for( size_t n=0; n<numMoments; ++n )
+	    phi[ n ] += Dmatrix[ m + n*numAngles ] * psi[m];
+    
+    return phi;
+}
+
+//---------------------------------------------------------------------------//
+// PRIVATE MEMBER FUNCTIONS
+//---------------------------------------------------------------------------//
+
+
+//---------------------------------------------------------------------------//
+/*! 
  * \brief Compute the discrete-to-moment matrix. 
  *
- * D = inverse(M).  This private function is called by the constuctor.
+ * Computes \f$ \mathbf{D} \equiv \mathbf{M}^{-1} \f$.  This private function
+ * is called by the constuctor. 
  */
 std::vector< double > QuadServices::computeD() const
 {
