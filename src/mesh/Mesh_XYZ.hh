@@ -140,8 +140,14 @@ class Mesh_XYZ : private XYZ_Mapper
                   data( local_cell_index(i,j,k), 3) += x(i,j,k);
                 else
                   data( local_cell_index(i,j,k), 3) += x(i,j,k) + x(i,j+1,k);
-                data( local_cell_index(i,j,k), 4) += x(i,j,k) + x(i,j,k-1);
-                data( local_cell_index(i,j,k), 5) += x(i,j,k) + x(i,j,k+1);
+                if ( k == 0 )
+                  data( local_cell_index(i,j,k), 4) += x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 4) += x(i,j,k) + x(i,j,k-1);
+                if ( k == ncz - 1 )
+                  data( local_cell_index(i,j,k), 5) += x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 5) += x(i,j,k) + x(i,j,k+1);
               }
           return *this;
         }
@@ -168,8 +174,14 @@ class Mesh_XYZ : private XYZ_Mapper
                   data( local_cell_index(i,j,k), 3) *= x(i,j,k);
                 else
                   data( local_cell_index(i,j,k), 3) *= x(i,j,k) * x(i,j+1,k);
-                data( local_cell_index(i,j,k), 4) *= x(i,j,k) * x(i,j,k-1);
-                data( local_cell_index(i,j,k), 5) *= x(i,j,k) * x(i,j,k+1);
+                if ( k == 0 )
+                  data( local_cell_index(i,j,k), 4) *= x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 4) *= x(i,j,k) * x(i,j,k-1);
+                if ( k == ncz - 1 )
+                  data( local_cell_index(i,j,k), 5) *= x(i,j,k);
+                else
+                  data( local_cell_index(i,j,k), 5) *= x(i,j,k) * x(i,j,k+1);
               }
           return *this;
         }
@@ -286,6 +298,13 @@ class Mesh_XYZ : private XYZ_Mapper
         guarded_cell_array<T>& operator=( const cell_array<T>& c );
         void update_guard_cells();
 
+        guarded_cell_array<T>( const cell_array<T>& c )
+            : XYZ_Mapper( c.get_Mesh_DB() ),
+              data( dsxx::Bounds( 0, ncx - 1 ),
+                    dsxx::Bounds( 0, ncy - 1 ),
+                    dsxx::Bounds( zoff - 1, zoff + nczp ) )
+        { *this = c; }
+
         T  operator()( int i, int j, int k ) const { return data(i,j,k); }
         T& operator()( int i, int j, int k )       { return data(i,j,k); }
 
@@ -388,10 +407,26 @@ class Mesh_XYZ : private XYZ_Mapper
     const cell_array<double>& get_vc() const { return vc; }
 
     const int *get_diag_offsets() const { return diags; }
+
+    class AddOp {};
+    class MultOp {};
+
+    template <class Op>
+    static void scatter( fcdsf& to, const ccsf& from );
 };
 
 template<class T>
 void dump( const Mesh_XYZ::cell_array<T>& data, char *name );
+
+void dump( const Mesh_XYZ::fcdsf& data, char *name );
+
+template <>
+void Mesh_XYZ::scatter<Mesh_XYZ::AddOp>( Mesh_XYZ::fcdsf& to,
+                                         const Mesh_XYZ::ccsf& from );
+
+template <>
+void Mesh_XYZ::scatter<Mesh_XYZ::MultOp>( Mesh_XYZ::fcdsf& to,
+                                          const Mesh_XYZ::ccsf& from );
 
 #include "Mesh_XYZ.t.cc"
 

@@ -53,6 +53,26 @@ int main( int argc, char *argv[] )
     x = 1.;
     xf = x;
 
+    Mesh_XYZ::cell_array<double> oneCC( spm );
+    oneCC = 1.0;
+//    dump( oneCC, "oneCC, before" );
+    Mesh_XYZ::fcdsf twoFC( spm );
+    twoFC = 0.0;
+//    dump( twoFC, "twoFC, before" );
+    Mesh_XYZ::scatter<Mesh_XYZ::AddOp>( twoFC, oneCC );
+    dump( oneCC, "oneCC, after" );
+    dump( twoFC, "twoFC, after" );
+
+    Mesh_XYZ::cell_array<double> threeCC( spm );
+    threeCC = 3.0;
+//    dump( threeCC, "threeCC, before" );
+    Mesh_XYZ::fcdsf nineFC( spm );
+    nineFC = 1.0;
+//    dump( nineFC, "nineFC, before" );
+    Mesh_XYZ::scatter<Mesh_XYZ::MultOp>( nineFC, threeCC );
+//    dump( threeCC, "threeCC, after" );
+//    dump( nineFC, "nineFC, after" );
+
     Mesh_XYZ::guarded_cell_array<double> xgc( spm );
 
     x = 1.;

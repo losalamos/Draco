@@ -14,11 +14,13 @@ void dump( const Mesh_XYZ::cell_array<T>& data, char *name )
 {
     cout << "dumping a Mesh_XYZ::cell_array: " << name << endl;
     {
-	HTSyncSpinLock h;
+    //	HTSyncSpinLock h;
 	char buf[80];
 	for( int i=0; i < data.size(); i++ ) {
-	    sprintf( buf, "node %d, cell %d, value=%lf \n",
-		     C4::node(), i, data(i) );
+        //	    sprintf( buf, "node %d, cell %d, value=%lf \n",
+        //		     C4::node(), i, data(i) );
+	    sprintf( buf, "cell %d, value=%lf \n",
+		     i, data(i) );
 	    cout << buf;
 	}
     }
@@ -49,6 +51,13 @@ void Mesh_XYZ::guarded_cell_array<T>::update_guard_cells()
 //     if (node > 0)
 //         AsyncRecv( 
 }
+
+template <class Op>
+void Mesh_XYZ::scatter( Mesh_XYZ::fcdsf& to, const Mesh_XYZ::ccsf& from )
+{
+    Op::thisIsAnError();
+}
+
 
 //---------------------------------------------------------------------------//
 //                              end of Mesh_XYZ.t.cc
