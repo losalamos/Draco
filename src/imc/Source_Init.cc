@@ -9,6 +9,7 @@
 #include "imctest/Source_Init.hh"
 #include "imctest/Constants.hh"
 #include "imctest/Math.hh"
+#include "imctest/Particle.hh"
 #include "rng/Sprng.hh"
 #include "ds++/Assert.hh"
 #include <cmath>
@@ -324,13 +325,13 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	  // sample frequency (not now, 1 group)
 
 	  // calculate energy weight
-	    double ew = erad(cell)/ncen(cell);
+	    double ew = erad(cell) / ncen(cell);
 
 	  // create Particle
-	  // Particle<MT> particle(r, omega, ew, cell, random);
+	    Particle<MT> particle(r, omega, ew, cell, random);
 	    
 	  // write particle
-	  // cen_file << particle;
+	    particle.write_to_census(cen_file);
 	}
 }
 

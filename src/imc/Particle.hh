@@ -62,6 +62,7 @@ IMCSPACE
 using std::vector;
 using std::string;
 using std::ostream;
+using std::istream;
 using std::log;
 using std::exp;
 using std::stack;
@@ -108,8 +109,40 @@ public:
 	inline void header() const;
     };
 
+  // particle buffer class for particle persistence
+    class Particle_Buffer
+    {
+    private:
+      // particle data of type double
+	double *ddata;
+	int dsize;
+      // particle data of type int
+	int idata;
+
+    public:
+      // constructors
+	inline Particle_Buffer(const Particle<MT> &);
+	inline Particle_Buffer(int, int = 0);
+
+      // destructors
+	~Particle_Buffer() { delete [] ddata; }
+
+      // re-calculate particle attributes
+	inline vector<double> get_r() const;
+	inline vector<double> get_omega() const;
+	double get_ew() const { return ddata[0]; }
+	double get_frac() const { return ddata[1]; }
+	int get_cell() const { return idata; }
+	inline Sprng get_rn() const;
+
+      // read and write buffer
+	inline void write(ostream &) const;
+	inline bool read(istream &);
+    };
+
   // friends and such
     friend class Diagnostic;
+    friend class Particle_Buffer;
 
 private:
   // particle energy-weight
@@ -160,7 +193,7 @@ private:
 
 public:
   // Particle constructor
-    inline Particle(vector<double> &, vector<double> &, double, int, Sprng, 
+    inline Particle(vector<double>, vector<double>, double, int, Sprng, 
 		    double = 1, double = 1);
 
   // null constructor required as kluge for the STL containers which need a
@@ -175,7 +208,7 @@ public:
 
   // other services
     bool status() const { return alive; }
-    void write_to_census(ostream &) const;
+    inline void write_to_census(ostream &) const;
 
   // public diagnostic services
     void print(ostream &) const;
@@ -187,16 +220,38 @@ public:
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
+// output ascii version of Particle
 
 template<class MT>
-inline ostream& operator<<(ostream &output, Particle<MT> &object)
+inline ostream& operator<<(ostream &output, const Particle<MT> &object)
 {
     object.print(output);
     return output;
 }
 
 //---------------------------------------------------------------------------//
-// inline functions for Particle
+// dump the Particle_Buffer
+
+template<class MT>
+inline ostream& operator<<(ostream &output, const
+			   Particle<MT>::Particle_Buffer &object)
+{
+    object.write(output);
+    return output;
+}
+
+//---------------------------------------------------------------------------//
+// read the Particle_Buffer
+
+template<class MT>
+inline bool operator>>(istream &input,  Particle<MT>::Particle_Buffer &object)
+{
+  // if true we can keep on going, if false we stop
+    return object.read(input);
+}
+
+//---------------------------------------------------------------------------//
+// inline functions for Particle<MT>::Diagnostic
 //---------------------------------------------------------------------------//
 // Particle<MT>::Diagnostic inline functions
 
@@ -208,10 +263,119 @@ inline void Particle<MT>::Diagnostic::header() const
 }
 
 //---------------------------------------------------------------------------//
-// Particle<MT> inline functions
+// Particle<MT>::Particle_Buffer inline functions
+//---------------------------------------------------------------------------//
+// constructor for dumping the buffer
 
 template<class MT>
-inline Particle<MT>::Particle(vector<double> &r_, vector<double> &omega_, 
+inline Particle<MT>::Particle_Buffer::Particle_Buffer(const Particle<MT>
+						      &particle)
+{
+  // set the size of the dynamic arrays
+    dsize = particle.r.size() + 5;
+    ddata = new double[dsize];
+    
+  // assign everything
+    int index = 0;
+    ddata[index++] = particle.ew;
+    ddata[index++] = particle.fraction;
+    for (int i = 0; i < particle.omega.size(); i++)
+	ddata[index++] = particle.omega[i];
+    for (int i = 0; i < particle.r.size(); i++)
+	ddata[index++] = particle.r[i];
+    Check (index == dsize);
+    idata = particle.cell;
+}
+
+//---------------------------------------------------------------------------//
+// constructor for reading the buffer
+
+template<class MT>
+inline Particle<MT>::Particle_Buffer::Particle_Buffer(int dim, int parameter)
+{
+  // dynamically allocate the size of the double array
+    dsize = dim + 5;
+    ddata = new double[dsize];
+}
+
+//---------------------------------------------------------------------------//
+// dump the buffer to an output
+
+template<class MT>
+inline void Particle<MT>::Particle_Buffer::write(ostream &output) const
+{
+  // make sure file exists
+    Check (output);
+
+  // dump the output
+    output.write(reinterpret_cast<const char *>(ddata), dsize *
+		 sizeof(double));
+    output.write(reinterpret_cast<const char *>(&idata), sizeof(int));
+}
+
+//---------------------------------------------------------------------------//
+// get omega from the buffer
+
+template<class MT>
+inline vector<double> Particle<MT>::Particle_Buffer::get_omega() const
+{
+  // make the omega vector
+    vector<double> omega;
+
+  // assign the vector
+    for (int i = 2; i < 5; i++)
+	omega.push_back(ddata[i]);
+    
+  // return the vector
+    return omega;
+}
+
+//---------------------------------------------------------------------------//
+// get r (position) from the buffer
+
+template<class MT>
+inline vector<double> Particle<MT>::Particle_Buffer::get_r() const
+{
+  // make the r vector
+    vector<double> r;
+
+  // assign the vector
+    for (int i = 5; i < dsize; i++)
+	r.push_back(ddata[i]);
+
+  // return the vector
+    return r;
+}
+
+//---------------------------------------------------------------------------//
+// read the contents
+
+template<class MT>
+inline bool Particle<MT>::Particle_Buffer::read(istream &input)
+{
+  // make sure file exists
+    Check (input);
+    Check (dsize != 0);
+
+  // read in data
+    input.read(reinterpret_cast<char *>(ddata), dsize * sizeof(double));
+    if (input.eof())
+	return false;
+    else
+    {
+	input.read(reinterpret_cast<char *>(&idata), sizeof(int));
+	Check (!input.eof());
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+// Particle<MT> inline functions
+//---------------------------------------------------------------------------//
+// Particle<MT> constructor
+
+template<class MT>
+inline Particle<MT>::Particle(vector<double> r_, vector<double> omega_, 
 			      double ew_, int cell_, Sprng random_, 
 			      double frac, double tleft)
     : ew(ew_), r(r_), omega(omega_), cell(cell_), time_left(tleft), 
@@ -264,6 +428,19 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 	for (int i = 0; i <= r.size()-1; i++)
 	    r[i] = r[i] + distance * omega[i];
     }
+}
+
+//---------------------------------------------------------------------------//
+// write out particle data to an output
+
+template<class MT>
+inline void Particle<MT>::write_to_census(ostream &output) const
+{
+  // make a particle buffer
+    Particle_Buffer buffer(*this);
+
+  // dump particle buffer
+    buffer.write(output);
 }
 
 CSPACE

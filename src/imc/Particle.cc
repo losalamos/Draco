@@ -228,32 +228,6 @@ bool Particle<MT>::surface(const MT &mesh, int face)
 }
 
 //---------------------------------------------------------------------------//
-// Particle io
-//---------------------------------------------------------------------------//
-// write out particle data to an output
-
-template<class MT>
-void Particle<MT>::write_to_census(ostream &output) const
-{
-  // dynamic allocation of dump object
-    double dump[8] = {0.0};
-
-  // assign particle data to dump
-    int index = 0;
-    for (int i = 0; i < r.size(); i++)
-	dump[index++] = r[i];
-    for (int i = 0; i < omega.size(); i++)
-	dump[index++] = omega[i];
-    dump[index++] = ew;
-    dump[index++] = fraction;
-
-  // dump stuff to output
-    output.write(reinterpret_cast<const char *>(dump), 
-		 8 * sizeof(double));
-    output.write(reinterpret_cast<const char *>(&cell), sizeof(int));
-}
-
-//---------------------------------------------------------------------------//
 // diagnostic member functions
 //---------------------------------------------------------------------------//
 // print out a particle to some stream
