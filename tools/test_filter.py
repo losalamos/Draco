@@ -72,6 +72,10 @@ for line in lines:
     amatch = re.search(r'Assertion:', line, re.IGNORECASE)
     if amatch: assert_count = assert_count + 1
 
+    # Insist assertions
+    amatch = re.search(r'While\s+?testing', line, re.IGNORECASE)
+    if amatch: assert_count = assert_count + 1
+
     # signals; not entirely portable.
     smatch = re.search(r'signal', line, re.IGNORECASE)
     if smatch: signal_count = signal_count + 1
