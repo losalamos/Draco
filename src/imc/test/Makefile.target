@@ -1,10 +1,10 @@
 ###############################################################################
 # draco/src/imc/test Makefile.target
 # Thomas M. Evans
-# Tue Jan 12 10:41:02 1999
-# Time-stamp: <99/02/02 15:26:16 rsqrd>
+# Tue Apr 27 12:03:47 1999
+# $Id$
 ###############################################################################
-# @> Target makefile for IMC component tests
+# @> General Makefile.target for draco/src/imc/test
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
@@ -14,8 +14,11 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 ${test_alltarget}: ${testdeps}
 
-%: %.o
+%: %.o 
 	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+
+tstOpacity: tstOpacity.o tstOpacity_pt.o
+	${LD} ${LDFLAGS} -o tstOpacity tstOpacity.o tstOpacity_pt.o ${testlibs}
 
 ###############################################################################
 #			 end of draco/src/imc/test Makefile.target
