@@ -142,7 +142,21 @@ void Builder_2D()
 
 // 2D Mesh Tests
 void Mesh_2D()
-{    
+{ 
+    //    y
+    //    ^
+    //    |
+    //  3 -------
+    //    | | | |
+    //    | | | |
+    //  1 -------
+    //    | | | |
+    //    | | | |
+    // -1 --------> x
+    //   -1 0 1 2
+    //
+    // for all cells, dx = 1cm and dy = 2cm
+
     // make a builder from parser input 
     SP<Parser> parser(new Parser());
     OS_Builder builder_A(parser);
@@ -342,17 +356,20 @@ void Mesh_2D()
 	double         ref = 0.0;
 	double         d   = 0.0;
 
+	// epsilon shortening of minimum orthogonal distance
+	double eps_reduct = 1.0e-6;
+
 	// cell 1
 	r[0] = -0.6;
 	r[1] = 0.9;
-	ref  = 0.1;
+	ref  = 0.1 - eps_reduct;
 	d    = m.get_orthogonal_dist_to_bnd(r, 1);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
 
 	r[0] = -0.6;
 	r[1] = -0.2;
-	ref  = 0.4;
+	ref  = 0.4 - eps_reduct;
 	d    = m.get_orthogonal_dist_to_bnd(r, 1);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
@@ -360,7 +377,7 @@ void Mesh_2D()
 	// cell 2
 	r[0] = 0.5;
 	r[1] = -0.5;
-	ref  = 0.5;
+	ref  = 0.5 - eps_reduct;
 	d    = m.get_orthogonal_dist_to_bnd(r, 2);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;
@@ -368,7 +385,7 @@ void Mesh_2D()
 	// cell 5
 	r[0] = 0.11;
 	r[1] = 2.8;
-	ref  = 0.11;
+	ref  = 0.11 - eps_reduct;
 	d    = m.get_orthogonal_dist_to_bnd(r, 5);
 	
 	if (!soft_equiv(d, ref)) ITFAILS;

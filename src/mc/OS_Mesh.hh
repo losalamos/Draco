@@ -606,17 +606,24 @@ OS_Mesh::sf_int OS_Mesh::get_neighbors(int cell) const
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return the minimum distance to a cell boundary.
+ *
+ * The returned distance is a distance eps less than the minimum distance to
+ * boundary.  eps is defined \f$ 1.0\times 10^{-6} \cdot \Delta\f$ where
+ * \f$\Delta\f$ is the minimum cell width in each dimension.
  */
 double OS_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r, 
 					   int              cell) const
 {
-    Require (cell > 0 && cell <= layout.num_cells());
+    Require (cell > 0);
+    Require (cell <= layout.num_cells());
     Require (r.size() == coord->get_dim());
+    Require (in_cell(cell, r));
     
     // loop over dimensions and calculate the minimum distance
-    double min_distance = global::huge_int;
+    double min_distance = global::huge;
     double high         = 0.0;
     double low          = 0.0;
+    double min_cell_dim = global::huge;
     for (int d = 1; d <= coord->get_dim(); d++)
     {
 	// find high and low distances for this dimension
@@ -628,8 +635,14 @@ double OS_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r,
 	min_distance = std::min(min_distance, low);
 
 	Check (min_distance <= dim(d, cell));
+
+	// store the minimum width of the cell's dimensions.
+	min_cell_dim = std::min(min_cell_dim, dim(d, cell));
     }
-    
+
+    // reduce the distance by epsilon
+    min_distance -= 1.0e-6 * min_cell_dim;
+
     Ensure (min_distance >= 0.0);
     return min_distance;
 }
