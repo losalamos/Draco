@@ -54,6 +54,9 @@ namespace PhysicalConstants
     // ELECTRON REST MASS (KG)
     const double electronMassSI    = 9.109534e-31;        // kg
     
+    // PROTON REST MASS (KG)
+    const double protonMassSI      = 1.6726e-27;          // kg
+    
     // SPEED OF LIGHT (M/S)
     const double cLightSI          = 2.99792458e8;        // m s^-1
     
