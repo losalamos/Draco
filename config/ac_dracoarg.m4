@@ -57,11 +57,11 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl defines --with-cxx
    AC_ARG_WITH(cxx,
       [  --with-cxx[=kcc,cc,guide]                                    
-                          choose a c++ compiler (KCC is default)])
+                          choose a c++ compiler])
 
    dnl the default is KCC
-   if test "${with_cxx:=kcc}" = yes ; then
-       with_cxx='kcc'
+   if test "${with_cxx}" = yes ; then
+       with_cxx='gcc'
    fi
 
    dnl

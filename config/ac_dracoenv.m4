@@ -163,6 +163,20 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    dnl first find the system
    AC_CANONICAL_SYSTEM
 
+   dnl set up a default compiler
+   case $host in
+   mips-sgi-irix6.*)   
+       if test -z $with_cxx ; then
+	   with_cxx='cc'
+       fi
+   ;;
+   *)
+       if test -z $with_cxx ; then
+	   with_cxx='gcc'
+       fi
+   ;;
+   esac
+
    dnl determine which compiler we are using
 
    # do tests of --with-cxx, see if the compiler exists and then call
@@ -198,7 +212,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_MSG_ERROR("Did not find CC compiler!")
        fi
 
-   elif test "${with_cxx}" = gnu ; then 
+   elif test "${with_cxx}" = gcc ; then 
        AC_CHECK_PROG(CXX, g++, g++)
        AC_CHECK_PROG(CC, gcc, gcc)
 
