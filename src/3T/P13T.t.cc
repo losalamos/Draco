@@ -343,7 +343,7 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
 
     // Construct a P1Coeffs object to get derived quantities.
     
-    P1Coeffs p1coeffs(*this, dt, groupNo, options, matprops, velocity,
+    P1Coeffs p1coeffs(*this, dt, groupNo, options, solver, matprops, velocity,
 		      prevStateField, QRad, QElectron, QIon, TnElectron, TnIon);
 
     QEEM = p1coeffs.QEEM();
@@ -378,10 +378,10 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
 
     Tnp1Ion = TnIon + deltaTIon;
     
-#if 0
     // Calculate the momentum deposition.
-    momentumDeposition = 0.0;
-#endif
+
+    calcMomentumDeposition(momentumDeposition, resultsStateField,
+                           solver, matprops, groupNo);
 
     // Update and activate the timestep advisors.
     
@@ -404,7 +404,7 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
 }
 
 //---------------------------------------------------------------------------//
-// clacNewRadState:
+// calcNewRadState:
 //     calculate the new radiation state using the previous state,
 //     material properties, and sources.
 //     This solves the coupled radiation, electron, and ion equations
@@ -533,6 +533,73 @@ void P13T<DS>::calcDeltaTIon(ccsf &deltaTIon,
 		      + p1coeffs.getQIon())
 	/ (CvIon + dt*gamma);
 
+}
+
+//-----------------------------------------------------------------------//
+// calcMomentumDeposition:
+//    Calculate the momentum deposition from the radiation
+//    to the material
+//-----------------------------------------------------------------------//
+
+template<class DS>
+void P13T<DS>::calcMomentumDeposition
+(MomentumField &momentumDeposition,
+ const RadiationStateField &resultsStateField,
+ const DiffusionSolver &solver,
+ const MaterialProperties &matprops, const int groupNo) const
+{
+    // Obtain unit vectors
+    DiscMomentumField e1Field( spMesh ), e2Field( spMesh ), e3Field( spMesh );
+    DiscMomentumField::value_type e1, e2, e3;
+    e1(0) = 1.;
+    e1(1) = 0.;
+    e1(2) = 0.;
+    e2(0) = 0.;
+    e2(1) = 1.;
+    e2(2) = 0.;
+    e3(0) = 0.;
+    e3(1) = 0.;
+    e3(2) = 1.;
+    e1Field = e1;
+    e2Field = e2;
+    e3Field = e3;
+
+    // determine the vertex to node volume ratios
+
+    DiscKineticEnergyField vertex_volumes(spMesh);
+    spMesh->get_vertex_volumes(vertex_volumes);
+    ncsf node_volumes(spMesh);
+    spMesh->get_node_volumes(node_volumes);
+    DiscKineticEnergyField vc_node_volumes(spMesh);
+    MT::gather ( vc_node_volumes, node_volumes, MT::OpAssign() );
+    DiscKineticEnergyField vc_volume_ratios(spMesh);
+    vc_volume_ratios = vertex_volumes/vc_node_volumes;
+
+    // calculate momentum deposition
+
+    fcdsf sigmaTotal(spMesh);
+    matprops.getSigmaTotal(groupNo, sigmaTotal);
+    DiscFluxField sigmaF(spMesh);
+    sigmaF = sigmaTotal*resultsStateField.F;
+    DiscKineticEnergyField sigmaFe1(spMesh),
+                           sigmaFe2(spMesh),
+                           sigmaFe3(spMesh);
+    solver.dotProduct(sigmaFe1, sigmaF, e1Field);
+    solver.dotProduct(sigmaFe2, sigmaF, e2Field);
+    solver.dotProduct(sigmaFe3, sigmaF, e3Field);
+    // add in the other flux term here
+
+    sigmaFe1 *= vc_volume_ratios;
+    sigmaFe2 *= vc_volume_ratios;
+    sigmaFe3 *= vc_volume_ratios;
+#ifdef SDP
+    sigmaFe1 /= c;
+    sigmaFe2 /= c;
+    sigmaFe3 /= c;
+
+     &xiTilde = xXiTilde;
+     MT::scatter ( xiTilde, KEnergy, MT::OpAddAssign() );
+#endif
 }
 
 //------------------------------------------------------------------------//

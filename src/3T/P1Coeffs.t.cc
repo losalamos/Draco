@@ -23,6 +23,7 @@ namespace rtt_3T
 			      double dt_,
 			      int groupNo_,
 			      const P13TOptions &options_,
+                              const DiffusionSolver &solver_,
 			      const MaterialProperties &matprops_,
 			      const ncvsf &velocity_,
 			      const RadiationStateField &prevStateField_,
@@ -32,14 +33,15 @@ namespace rtt_3T
 			      const ccsf &TElectron_,
 			      const ccsf &TIon_)
      : p13T(p13T_), spMesh(p13T_.getMesh()),
-       dt(dt_), groupNo(groupNo_), options(options_),
+       dt(dt_), groupNo(groupNo_), options(options_), solver(solver_),
        matprops(matprops_), velocity(velocity_),
        prevStateField(prevStateField_),
        QRad(QRad_), QElectron(QElectron_), QIon(QIon_),
        TElectron(TElectron_), TIon(TIon_),
        xQEEM(spMesh), xREEM(spMesh), xQRadBar(spMesh),
        xQElecStar(spMesh), xCvStar(spMesh), xNu(spMesh),
-       xSigmaAbsBar(spMesh), xD(spMesh), xFprime(spMesh)
+       xSigmaAbsBar(spMesh), xD(spMesh), xFprime(spMesh),
+       xXiTilde(spMesh), xXiBracket(spMesh), xXiOmegaBracket(spMesh)
  {
      calcP1Coeffs();
  }
@@ -81,7 +83,9 @@ namespace rtt_3T
 
      ccsf sigmaAbs(spMesh);
      matprops.getSigmaAbsorption(groupNo, sigmaAbs);
-    
+     fcdsf fcSigmaAbs(spMesh);
+     matprops.getSigmaAbsorption(groupNo, fcSigmaAbs);
+
      // Allocate and calculate the diffusion constant.
 
      xD = (1.0/3.0) / (sigmaTotal + tauP1);
@@ -94,9 +98,12 @@ namespace rtt_3T
      const ccsf &QElecStar = xQElecStar;
      const ccsf &CvStar = xCvStar;
      const ccsf &nu = xNu;
+     const ccsf &xiBracket = xXiBracket;
+     const fcdsf &xiOmegaBracket = xXiOmegaBracket;
 
      if (options.getIsCoupledMaterial())
      {
+       	 calcVelocityCorrections();
 	 calcStarredFieldsAndNu();
 
 	 cerr << "QElecStar: " << *QElecStar.begin() << endl;
@@ -127,7 +134,7 @@ namespace rtt_3T
 
 	 // Calculated modified radiation source
 
-	 QRadBar = tau*prevStateField.phi + QEEM + QRad;
+	 QRadBar = tau*prevStateField.phi + xiBracket + QEEM + QRad;
      }
      else
      {
@@ -139,8 +146,70 @@ namespace rtt_3T
 
      // Calculate the "telegraph" term to the P1 equation.
 
-     xFprime = tauP1*prevStateField.F / (sigmaTotal + tauP1);
+     xFprime = (tauP1*prevStateField.F + xiOmegaBracket) / (sigmaTotal + tauP1);
 
+ }
+
+ //------------------------------------------------------------------------//
+ // calcVelocityCorrections:
+ //    Calculate the velocity correction terms.
+ //------------------------------------------------------------------------//
+
+ template<class DS>
+ void P13T<DS>::P1Coeffs::calcVelocityCorrections()
+ {
+     // Set the radiation physics to the given units.
+    
+     const RadiationPhysics radPhys(matprops.getUnits());
+
+     // obtain the speed of light
+
+     double c = radPhys.getLightSpeed();
+
+     // put the velocities into the right field type
+
+     DiscMomentumField vvelocity(spMesh);
+     MT::gather ( vvelocity, velocity, MT::OpAssign() );
+
+     // determine the vertex to cell volume ratios
+
+     ccsf cell_volumes(spMesh);
+     spMesh->get_cell_volumes(cell_volumes);
+     DiscKineticEnergyField vertex_volumes(spMesh);
+     spMesh->get_vertex_volumes(vertex_volumes);
+     DiscKineticEnergyField vc_cell_volumes(spMesh);
+     MT::gather ( vc_cell_volumes, cell_volumes, MT::OpAssign() );
+     DiscKineticEnergyField vc_volume_ratios(spMesh);
+     vc_volume_ratios = vertex_volumes/vc_cell_volumes;
+
+     // calculate xiTilde
+
+     fcdsf sigmaAbs(spMesh);
+     matprops.getSigmaAbsorption(groupNo, sigmaAbs);
+     DiscFluxField sigmaF(spMesh);
+     sigmaF = sigmaAbs*prevStateField.F;
+     DiscKineticEnergyField KEnergy(spMesh);
+     solver.dotProduct(KEnergy, sigmaF, vvelocity);
+     // add in the other flux term here
+
+     KEnergy *= vc_volume_ratios;
+     ccsf &xiTilde = xXiTilde;
+     MT::scatter ( xiTilde, KEnergy, MT::OpAddAssign() );
+     xiTilde *= (2./c);
+
+     // calculate xiBracket
+     fcdsf sigmaScatter(spMesh);
+     matprops.getSigmaScattering(groupNo, sigmaScatter);
+     sigmaF = (sigmaAbs - sigmaScatter)*prevStateField.F;
+     solver.dotProduct(KEnergy, sigmaF, vvelocity);
+     // add in the other flux term here
+
+     KEnergy *= vc_volume_ratios;
+     ccsf &xiBracket = xXiBracket;
+     MT::scatter ( xiBracket, KEnergy, MT::OpAddAssign() );
+     xiBracket /= c;
+
+     // calculate xiOmegaBracket
  }
 
  //------------------------------------------------------------------------//
@@ -217,6 +286,7 @@ namespace rtt_3T
 
      ccsf &CvStar = xCvStar;
      ccsf &QElecStar = xQElecStar;
+     const ccsf &xiTilde = xXiTilde;
 
     // CvStar is one of the results, as well as intermediate.
     
@@ -224,7 +294,8 @@ namespace rtt_3T
     
      // Calculate QElecStar (Qe*).
 
-     QElecStar = QElectron + (CvIon/dt * (TIon - TElectron) + QIon) * tmpCoeff;
+     QElecStar = QElectron + (CvIon/dt * (TIon - TElectron) + QIon) * tmpCoeff
+                 - xiTilde;
 
  }
 

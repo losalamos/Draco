@@ -72,6 +72,10 @@ namespace rtt_3T {
 
      typedef typename DiffusionSolver::FluxField FluxField;
      typedef typename DiffusionSolver::DiscFluxField DiscFluxField;
+     typedef typename DiffusionSolver::MomentumField MomentumField;
+     typedef typename DiffusionSolver::DiscMomentumField DiscMomentumField;
+     typedef typename DiffusionSolver::DiffCoefField DiffCoefField;
+     typedef typename DiffusionSolver::DiscKineticEnergyField DiscKineticEnergyField;
 
      // Miscellaneous shortcut field typedefs from the MT class
     
@@ -268,6 +272,18 @@ namespace rtt_3T {
 			double dt,
 			const P1Coeffs &p1coeffs,
 			const ccsf &deltaTelectron) const;
+     //-----------------------------------------------------------------------//
+     // calcMomentumDeposition:
+     //    Calculate the momentum deposition from the radiation
+     //    to the material
+     //-----------------------------------------------------------------------//
+
+     void calcMomentumDeposition(MomentumField &momentumDeposition,
+                                 const RadiationStateField &resultsStateField,
+                                 const DiffusionSolver &solver,
+               		         const MaterialProperties &matprops,
+                                 const int groupNo) const;
+
  };
 
 } // namespace rtt_3T

@@ -47,9 +47,13 @@ namespace rtt_3T
      ccsf xQElecStar;
      ccsf xCvStar;
      ccsf xNu;
+     ccsf xXiTilde;
+     ccsf xXiBracket;
+     fcdsf xXiOmegaBracket;
 
      double dt;
      int    groupNo;
+     const DiffusionSolver &solver;
      const P13TOptions &options;
      const MaterialProperties &matprops;
      const ncvsf &velocity;
@@ -68,6 +72,7 @@ namespace rtt_3T
 	      double dt_,
 	      int groupNo_,
 	      const P13TOptions &options_,
+              const DiffusionSolver &solver_,
 	      const MaterialProperties &matprops_,
 	      const ncvsf &velocity_,
 	      const RadiationStateField &prevStateField_,
@@ -90,6 +95,9 @@ namespace rtt_3T
      const ccsf &QElecStar() const { return xQElecStar; }
      const ccsf &CvStar() const { return xCvStar; }
      const ccsf &nu() const { return xNu; }
+     const ccsf &xiTilde() const { return xXiTilde; }
+     const ccsf &xiBracket() const { return xXiBracket; }
+     const fcdsf &xiOmegaBracket() const { return xXiOmegaBracket; }
 
      double get_dt() const { return dt; }
      const MaterialProperties &getMatprops() const { return matprops; }
@@ -110,6 +118,13 @@ namespace rtt_3T
      //-----------------------------------------------------------------------//
 
      void calcP1Coeffs();
+
+     //-----------------------------------------------------------------------//
+     // calcVelocityCorrections:
+     //    Calculate the velocity correction terms.
+     //-----------------------------------------------------------------------//
+
+     void calcVelocityCorrections();
 
      //-----------------------------------------------------------------------//
      // calcStarredFieldsAndNu:
