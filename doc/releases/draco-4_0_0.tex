@@ -157,8 +157,9 @@ The following table summarizes changes to \draco\ components since
     available for all particle types, new objects builder based on
     Factory Pattern \\
     cdi & optimizations to Planckian integrators \\
-    Draco Build System & optimization flags for \textsf{gcc} updated
-    \\
+    Draco Build System & optimization flags for \textsf{gcc} updated;
+    new template compilation option, \texttt{-timplicit\_local} used
+    for \textsf{cxx} on Compaq \\
     tools & added features to \texttt{package\_depends.py} tool \\
 
     \hline\hline 
@@ -206,6 +207,18 @@ There were major build system changes between \draco-3\_1\_0 and
 consternation to \draco\ Build System clients.  In retrospect,
 \draco-3\_2\_0 probably should have been a major release (although it
 was documented like a major release in Ref.~\citen{draco-3_2_0}).
+
+We have changed the default template instantiation option on Compaq
+\textsf{cxx}.  The default option is \texttt{-pt}; the option we are
+know using is \texttt{-timplicit\_local}.  This option closely
+resembles the \textsf{gcc} template instantiation style.  See the
+\textsf{cxx} man page for details.  In summary, the
+\texttt{implicit\_local} option puts automatically instantiated
+templates in the object files with internal linkage.  Manually
+(explicitly) instantiated templates are placed in the repository with
+external linkage.  This option can result in some code bloat; however,
+it does a better job of handling multiple shared object libraries of
+templates.
 
 %%---------------------------------------------------------------------------%%
 
