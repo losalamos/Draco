@@ -27,6 +27,8 @@ namespace rtt_cdi_analytic
 /*!
  * \class Analytic_Gray_Opacity
  *
+ * \brief Derived rtt_cdi::GrayOpacity class for analytic opacities.
+ *
  * The Analytic_Gray_Opacity class is a derived rtt_cdi::GrayOpacity class.
  * It provides analytic opacity data. The specific analytic opacity model is
  * derived from the rtt_cdi_analytic::Analytic_Opacity_Model base class.

@@ -52,7 +52,7 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
  * \brief Return a scalar opacity given a scalar temperature and density. 
  *
  * Given a scalar temperature and density, return an opacity for the reaction
- * type specified by the constructor.  The analytic opacity function is
+ * type specified by the constructor.  The analytic opacity model is
  * specified in the constructor (Analytic_Gray_Opacity()).
  *
  * \param temperature material temperature in keV
@@ -80,7 +80,7 @@ double Analytic_Gray_Opacity::getOpacity(double temperature,
  *
  * Given a field of temperatures and a scalar density, return an opacity
  * field for the reaction type specified by the constructor.  The analytic
- * opacity function is specified in the constructor
+ * opacity model is specified in the constructor
  * (Analytic_Gray_Opacity()).  The returned opacity field has the same number
  * of elements as the temperature field.
  *
@@ -124,7 +124,7 @@ Analytic_Gray_Opacity::getOpacity(const sf_double &temperature,
  *
  * Given a field of densities and a scalar temperature, return an opacity
  * field for the reaction type specified by the constructor.  The analytic
- * opacity function is specified in the constructor
+ * opacity model is specified in the constructor
  * (Analytic_Gray_Opacity()).  The returned opacity field has the same number
  * of elements as the density field.
  *

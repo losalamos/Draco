@@ -109,12 +109,17 @@ void user_defined_test()
 	std::fill(rho.begin(), rho.end(), 3.0);
     }
 
+    vector<double> opacities = grayp->getOpacity(T, rho[0]);
+    if (opacities.size() != 6) ITFAILS;
+
     for (int i = 0; i < T.size(); i++)
     {
-	double ref   = 10.0 / (T[i]*T[i]*T[i]);
-	double error = fabs(grayp->getOpacity(T[i], rho[i]) - ref);
+	double ref         = 10.0 / (T[i]*T[i]*T[i]);
+	double error       = fabs(grayp->getOpacity(T[i], rho[i]) - ref);
+	double error_field = fabs(opacities[i] - ref);  
 
-	if (error > 1.0e-12 * ref) ITFAILS; 
+	if (error > 1.0e-12 * ref)       ITFAILS; 
+	if (error_field > 1.0e-12 * ref) ITFAILS; 
     }
 }
 
@@ -132,8 +137,12 @@ void CDI_test()
     SP<Analytic_Opacity_Model> smodel
 	(new Constant_Analytic_Opacity_Model(1.0));
 
-    absorption = new Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION);
-    scattering = new Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING);
+    absorption = new const Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION);
+    scattering = new const Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING);
+
+    if (!absorption) FAILMSG("Failed to build absorption analytic opacity")
+    if (!scattering) FAILMSG("Failed to build scattering analytic opacity")
+
 
     // make a CDI for scattering and absorption
     CDI cdi;

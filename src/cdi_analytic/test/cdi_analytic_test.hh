@@ -45,8 +45,6 @@ bool fail_msg(const std::string &);
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
-// USAGE:
-// if (!condition) ITFAILS;
 
 extern bool passed;
 
@@ -68,8 +66,10 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
 
 } // end namespace rtt_cdi_analytic_test
 
-#define ITFAILS rtt_cdi_analytic_test::fail(__LINE__);
-#define FAILURE rtt_cdi_analytic_test::fail(__LINE__, __FILE__);
+#define ITFAILS    rtt_cdi_analytic_test::fail(__LINE__);
+#define FAILURE    rtt_cdi_analytic_test::fail(__LINE__, __FILE__);
+#define PASSMSG(a) rtt_cdi_analytic_test::pass_msg(a);
+#define FAILMSG(a) rtt_cdi_analytic_test::fail_msg(a);
 
 #endif                          // __cdi_analytic_test_hh__
 

@@ -24,9 +24,10 @@ namespace rtt_cdi_analytic
  * \brief Analytic_Opacity_Model base class.
  *
  * This is a base class that defines the interface given to
- * Analytic_Gray_Opacity constructors.  The user can define any derived class
- * to give to Analytic_Gray_Opacity as long as it contains the following
- * function: (declared virtual in this class).
+ * Analytic_Gray_Opacity or Analytic_MultiGroup_Opacity constructors.  The
+ * user can define any derived model class that will work with these analtyic
+ * opacity generation classes as long as it contains the following function:
+ * (declared virtual in this class).
  *
  * This class is a pure virtual base class. 
  *
@@ -41,7 +42,7 @@ class Analytic_Opacity_Model
 {
   public:
     //! Virtual destructor for proper inheritance destruction.
-    ~Analytic_Opacity_Model() {/*...*/}
+    virtual ~Analytic_Opacity_Model() {/*...*/}
 
     //! Interface for derived analytic opacity models.
     virtual double calculate_opacity(double T, double rho) const = 0;
@@ -140,6 +141,166 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 	Ensure (opacity >= 0.0);
 	return opacity;
     }
+};
+
+//===========================================================================//
+/*!
+ * \class Analytic_EoS_Model
+ * \brief Analytic_EoS_Model base class.
+ *
+ * This is a base class that defines the interface given to Analytic_EoS
+ * constructors.  The user can define any derived Analytic_EoS class to give
+ * to an analytic EoS class as long as it contains the following functions:
+ * (declared virtual in this class).
+ *
+ * \arg double calculate_electron_internal_energy(double T, double rho)
+ * \arg double calculate_electron_heat_capacity(double T, double rho)
+ * \arg double calculate_ion_internal_energy(double T, double rho)
+ * \arg double calculate_ion_heat_capacity(double T, double rho)
+ * \arg double calculate_num_free_elec_per_ion(double T, double rho)
+ * \arg double calculate_elec_thermal_conductivity(double T, double rho)
+ *
+ * The units for each output are:
+ * 
+ * \arg electron internal energy      = kJ/g
+ * \arg electron heat capacity        = kJ/g/keV
+ * \arg ion internal energy           = kJ/g
+ * \arg ion heat capacity             = kJ/g/keV
+ * \arg electron thermal conductivity = /s/cm
+ * 
+ * These units correspond to the units defined by the rtt_cdi::EoS base
+ * class. 
+ *
+ * This class is a pure virtual base class. 
+ */
+//===========================================================================//
+
+class Analytic_EoS_Model
+{
+  public:
+    //! Virtual destructor for proper inheritance destruction.
+    virtual ~Analytic_EoS_Model() {/*...*/}
+
+    //! Calculate the electron internal energy
+    virtual double calculate_electron_internal_energy(double T, double rho) 
+	const = 0;
+
+    //! Calculate the electron heat capacity.
+    virtual double calculate_electron_heat_capacity(double T, double rho) 
+	const = 0;
+
+    //! Calculate the ion internal energy.
+    virtual double calculate_ion_internal_energy(double T, double rho)
+	const = 0;
+
+    //! Calculate the ion heat capacity.
+    virtual double calculate_ion_heat_capacity(double T, double rho)
+	const = 0;
+    
+    //! Calculate the number of electrons per ion.
+    virtual double calculate_num_free_elec_per_ion(double T, double rho)
+	const = 0;
+
+    //! Calculate the electron thermal conductivity.
+    virtual double calculate_elec_thermal_conductivity(double T, double rho)
+	const = 0;
+};
+
+//---------------------------------------------------------------------------//
+/*!
+ * \class Polynomial_Specific_Heat_Analytic_EoS_Model
+ * \brief Derived Analytic_EoS_Model class that defines polymomial
+ * functions for EoS specific heat data.
+ *
+ * The electron and ion specific heats are defined:
+ * 
+ * \arg elec specific heat = a + bT^c
+ * \arg ion specific heat  = d + eT^f
+ *
+ * where the coefficients have the following units:
+ *
+ * \arg a,d = [kJ/g/keV]
+ * \arg b,e = [kJ/g/keV^(c+1,f+1)]
+ *
+ * The additional data that is required by the Analytic_EoS_Model base class
+ * is set to zero by default. The Polynomial_Specific_Heat_Analytic_EoS_Model
+ * class is intended to be used by radiation-only packages for testing and
+ * verification purposes.  More complex analytic EoS models can be easily
+ * defined if they are required; however, radiation-only packages (without
+ * Compton scatter) only require specfic heat data.
+ * 
+ */
+class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
+{
+  private:
+    // Coefficients.   
+    double a; // electron Cv constant [kJ/g/keV]
+    double b; // electron Cv temperature multiplier [kJ/g/keV^(c+1)]
+    double c; // electron Cv temperature power
+    double d; // ion Cv constant [kJ/g/keV]
+    double e; // ion Cv temperature multiplier [kJ/g/keV^(c+1)]
+    double f; // ion Cv temperature power
+
+  public:
+    /*!
+     * \brief Constructor.
+     * \param a_ electron Cv constant [kJ/g/keV]
+     * \param b_ electron Cv temperature multiplier [kJ/g/keV^(c+1)]
+     * \param c_ electron Cv temperature power
+     * \param d_ ion Cv constant [kJ/g/keV]
+     * \param e_ ion Cv temperature multiplier [kJ/g/keV^(c+1)]
+     * \param f_ ion Cv temperature power
+     */
+    Polynomial_Specific_Heat_Analytic_EoS_Model(double a_, double b_,
+						double c_, double d_, 
+						double e_, double f_)
+	: a(a_), b(b_), c(c_), d(d_), e(e_), f(f_)
+    {
+	/*...*/
+    }
+
+    //! Calculate the electron heat capacity in kJ/g/keV.
+    double calculate_electron_heat_capacity(double T, double rho) const
+    {
+	Require (T >= 0.0);
+	Require (rho >= 0.0);
+
+	double T_power = std::pow(T, c);
+	double Cv      = (a + b * T_power);
+
+	Ensure (Cv >= 0.0);
+	return Cv;
+    }
+
+    //! Calculate the ion heat capacity in kJ/g/keV.
+    double calculate_ion_heat_capacity(double T, double rho) const
+    {
+	Require (T >= 0.0);
+	Require (rho >= 0.0);
+
+	double T_power = std::pow(T, f);
+	double Cv      = (d + e * T_power);
+
+	Ensure (Cv >= 0.0);
+	return Cv;
+    }
+
+
+    //! Return 0 for the electron internal energy.
+    double calculate_electron_internal_energy(double T, double rho) const
+    { return 0.0; }
+
+    //! Return 0 for the ion internal energy.
+    double calculate_ion_internal_energy(double T, double rho) const
+    { return 0.0; }
+    
+    //! Return 0 for the number of electrons per ion.
+    double calculate_num_free_elec_per_ion(double T, double rho) const
+    { return 0.0; }
+
+    //! Return 0 for the electron thermal conductivity.
+    double calculate_elec_thermal_conductivity(double T, double rho) const
+    { return 0.0; }
 };
 
 } // end namespace rtt_cdi_analytic
