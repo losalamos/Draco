@@ -1,5 +1,5 @@
 dnl-------------------------------------------------------------------------dnl
-dnl draco/src/<pkg> configure.in
+dnl <pkg>/configure.in
 dnl <user>
 dnl <date>
 dnl $Id$
@@ -29,5 +29,5 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in)
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of draco/src/<pkg> configure.in
+dnl			 end of <pkg>/configure.in
 dnl-------------------------------------------------------------------------dnl
