@@ -95,7 +95,7 @@ class DummyOpacity : public rtt_cdi::Opacity
      *     dummyOpacity object there is no associated data file so we
      *     return an explanitory string.
      */
-    string const getDataFilename() 
+    string const getDataFilename() const
     { 
 	return "no data file associated with this class"; 
     }
@@ -107,7 +107,7 @@ class DummyOpacity : public rtt_cdi::Opacity
      * \sa Again, there is no assocated data file or data so this
      *     function will return an empty vector.
      */
-    vector<int> const getMatIDs()
+    vector<int> const getMatIDs() const
     {
 	return matIDs;
     }
