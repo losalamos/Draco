@@ -28,7 +28,6 @@ template<class MT>
 class Diffusion_XYZ : private MT::Coord_Mapper,
                       protected Diffusion_DB
 {
-
     SP<MT> spm;
 
     Banded_Matrix< double, 7 > A;
