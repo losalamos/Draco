@@ -12,7 +12,7 @@
 #ifndef __UnitTestFrame_PassFailStream_hh__
 #define __UnitTestFrame_PassFailStream_hh__
 
-#include "TestApp.hh"
+#include "TestAppBase.hh"
 #include <iosfwd>
 #include <sstream>
 
@@ -23,6 +23,7 @@ namespace rtt_UnitTestFrame
 /*!
  * \class PassFailStreamBase
  *
+ * The base class for PassFailStream's.
  */
 // revision history:
 // -----------------
@@ -57,6 +58,10 @@ class PassFailStreamBase
     
     //Defaulted: PassFailStreamBase& operator=(const PassFailStreamBase &rhs);
 
+    /*!
+     * operator to stream out a data to the pass/fail stream
+     */
+    
     template<class T>
     PassFailStreamBase &operator<<(const T& val)
     {
@@ -66,6 +71,10 @@ class PassFailStreamBase
 
     // Handle Manipulators
     
+    /*!
+     * operator to stream out a iostream manipulators to the pass/fail stream
+     */
+    
     PassFailStreamBase &operator<<(std::basic_ostream<Ch,Tr>
 				   &(*f)(std::basic_ostream<Ch,Tr> &))
     {
@@ -73,12 +82,20 @@ class PassFailStreamBase
 	return *this;
     }
 
+    /*!
+     * operator to stream out a iostream manipulators to the pass/fail stream
+     */
+    
     PassFailStreamBase &operator<<(std::ios_base &(*f)(std::ios_base &))
     {
 	f(ost());
 	return *this;
     }
 
+    /*!
+     * operator to stream out a iostream manipulators to the pass/fail stream
+     */
+    
     PassFailStreamBase &operator<<(std::basic_ios<Ch,Tr>
 				   &(*f)(std::basic_ios<Ch,Tr> &))
     {
@@ -92,12 +109,30 @@ class PassFailStreamBase
 
     // PROTECTED MANIPULATORS
 
+    /*!
+     * Protected access to the ostringstream representation.
+     * There must be some way to not expose the representation to
+     * derived classes, but I haven't devoted enough energy to
+     * find one.  Randy M. Roberts
+     */
+    
     std::ostringstream &ost() { return ost_m; }
    
   private:
     
     // IMPLEMENTATION
 };
+
+//===========================================================================//
+/*!
+ * \class PassFailStream
+ *
+ * The class that is used to queue up properly formatted pass/fail messages
+ * into a TestAppBase object.
+ * They messages then can be accessed, presumably to send to std::cerr
+ * for parsing.
+ */
+//===========================================================================//
 
 class PassFailStream : public PassFailStreamBase<char, std::char_traits<char> >
 {
@@ -106,14 +141,24 @@ class PassFailStream : public PassFailStreamBase<char, std::char_traits<char> >
 
     // DATA
 
-    TestApp &testApp;
+    TestAppBase &testApp;
     const bool stateToSet;
 
   public:
 
     // CREATORS
+
+    /*!
+     * This Ctor takes the TestAppBase object reference for which
+     * pass/fail messages will be added.
+     * The Ctor takes a string that will be added to the pass/fail
+     * message in a properly formatted manner.
+     * The Ctor takes a boolean value to determine whether this is
+     * an accumulator for passing messages, or failing messages.
+     * (true -> passing, failse -> failing)
+     */
     
-    PassFailStream(TestApp &testApp_in, const std::string &str,
+    PassFailStream(TestAppBase &testApp_in, const std::string &str,
 		   bool stateToSet_in)
 	: PassFailStreamBase<char, std::char_traits<char> >(),
 	  testApp(testApp_in), stateToSet(stateToSet_in)
@@ -133,6 +178,13 @@ class PassFailStream : public PassFailStreamBase<char, std::char_traits<char> >
 
     //Defaulted: PassFailStream(const PassFailStream &rhs);
 
+    /*!
+     * The dtor adds the accumulated messages to the testApp.
+     * With proper usage the pass/fail stream has only the lifetime
+     * of one message; therefore, after every message the testApp
+     * will be updated.
+     */
+    
     ~PassFailStream()
     {
 	testApp.addMessage(ost().str());
