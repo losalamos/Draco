@@ -180,6 +180,7 @@ void test_buffer()
 	buffer.buffer_particle(p3);
 	
 	if (buffer.get_num_particles_in_buffer() != 3) ITFAILS;
+	if (!buffer.is_full())                         ITFAILS;
 
 	// catch an illegal adding
 	bool c = false;

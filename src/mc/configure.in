@@ -32,6 +32,10 @@ AC_RUNTESTS(tstMath tstCoord tstLayout tstOSMesh tstFields \
             tstParticle_Buffer tstCommunicator             \
             tstParticle_IO, 1 2 4)
 
+dnl 8-BYTE INT TYPE
+AC_DETERMINE_INT(8)
+AC_DEFINE_UNQUOTED(EIGHT_BYTE_INT_TYPE, $INTEGER_SIZE_TYPE)
+
 dnl DRACO SETUP
 AC_DRACO_ENV
 

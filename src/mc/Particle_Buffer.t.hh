@@ -74,9 +74,14 @@ template<class PT>
 void Particle_Buffer<PT>::set_maximum_num_particles(int num)
 {
     Require (num > 0);
+    Require (size_packed_particle > 0);
 
-    long long max_bytes = static_cast<long long>(num) * size_packed_particle;
-    long long limit     = static_cast<long long>(2147483648);
+    // eight byte int type is determined by configure
+    EIGHT_BYTE_INT_TYPE max_bytes = static_cast<EIGHT_BYTE_INT_TYPE>(num) * 
+	size_packed_particle;
+
+    EIGHT_BYTE_INT_TYPE limit     = static_cast<EIGHT_BYTE_INT_TYPE>(
+	2147483648);
 
     Insist (max_bytes < limit, "Buffer size exceeds 32-bit int limit.");
 
