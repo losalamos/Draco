@@ -11,6 +11,11 @@
 # $Id$
 ###################################################################
 
+
+#
+# runtest is an sh function that will be run later in this script
+#
+
 runtest ()
 {
    # directories that depend on sprnglib
@@ -55,8 +60,12 @@ runtest ()
    # Make the test runs
 
    echo gmake -k check
-   # gmake -k check
+   gmake -k check
 }
+
+#
+# Beginning of script executable
+#
 
 hostname=`hostname`
 uname=`uname`
@@ -73,30 +82,32 @@ cd regression
 
 if [ -d draco ]; then
    echo Updating draco in `pwd`/draco
-   # cvs -q update -APd draco
+   cvs -q update -APd draco
 else
    echo Checking out draco in `pwd`/draco
    cvs -q checkout draco
 fi
 
-# Set up colon separated paths to look for libraries
+# Set up paths to look for libraries
+
+CONTRIB=/usr/local/contrib/radtran/$uname
 
 case $uname in
 SunOS)
-    PCG_LIBPATH=/home/rsqrd/lib
+    PCG_LIBPATH=${CONTRIB}/lib
     SPRNG_LIBPATH=
 
     BITS="0"
     C4="scalar mpi"
     ;;
 IRIX64)
-    PCG_LIB64PATH=/home/rsqrd/lib64
+    PCG_LIB64PATH=${CONTRIB}/lib64
     SPRNG_LIB64PATH=
 
-    PCG_LIB32PATH=/home/rsqrd/lib32
-    SPRNG_LIB32PATH=
+    PCG_LIBN32PATH=${CONTRIB}/libn32
+    SPRNG_LIBN32PATH=
 
-    BITS="64 32"
+    BITS="64 N32"
     C4="scalar mpi shmem"
     ;;
 *)
@@ -129,9 +140,9 @@ do
          CONFIGUREFLAGS="--enable-pcglib --with-pcglib-lib=$PCG_LIBPATH $CONFIGUREFLAGS"
       fi
 
-      # turn on 32 bit compilation if $b is 32
+      # turn on N32 bit compilation if $b is N32
 
-      if [ "X$b" = "X32" ] ; then
+      if [ "X$b" = "XN32" ] ; then
          CONFIGUREFLAGS="--enable-32-bit $CONFIGUREFLAGS"
       fi
 
