@@ -35,8 +35,9 @@ LAPACK_LIB	= -llapack -lblas -lf2c
 
 ifeq ($(cxx),KCC)
 
+compiler = KCC
 CC	= gcc
-CXX	= KCC --one_per
+CXX	= $(compiler) --one_per
 cmplr	= kai
 
 ifdef strict
@@ -70,8 +71,12 @@ ifeq ($(c4),no)
 comm	:=
 else
 comm	:= c4
-SYS_FLAGS = 
+LAMHCP  := KCC
+export LAMHCP
+compiler = hcp
+SYS_FLAGS = -DC4_MPI
 SYS_LIBS = -lmpi
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77
 endif
 
 lib_cmd	:= $(CXX) -o
