@@ -13,6 +13,7 @@
 #define __quadrature_QuadCreator_hh__
 
 #include "ds++/SP.hh"
+#include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
@@ -82,37 +83,10 @@ class QuadCreator
 
     // CREATORS
 
-    /*!
-     * \brief quadCreate constructs a Quadrature object.
-     *
-     * The Quad creator only requires 1 parameter -- the quadrature
-     * identifier (see QuadCreator::Qid).  The two addtional parameters can
-     * optionally be used to specify the sn_order and a normalization for the 
-     * quadrature weights.  The sn_order defaults to 4 and the default value
-     * for normalization constant varies with the dimensionality of the
-     * quadrature set (2, 2*pi or 4*pi for 1D, 2D or 3D sets).
-     *
-     * Another parameter may need to be added to this constructor to specify
-     * the number of dimensions requested.  Currently Qid directly specifies
-     * the dimensionality of the quadrature set.
-     *
-     * \param quad_type An identifier that specifies the type of quadrature
-     *                  to construct.
-     * \param sn_order  The SN order for the constructed quadrature
-     *                  set. (Default: 4)
-     * \param norm      The sum of the quadrature weights are forced to sum
-     *                  to this value. (Default: 2, 2*pi or 4*pi based on the 
-     *                  dimensionality of the quadrature set.)
-     * \return Smart pointer to a quadrature object.
-     */
-
     // I'm not sure if this needs to be virtual or not.
-    // norm and sn_order are optional variables.  sn_order always defaults to 
-    // 4 but the default value for norm is based on the dimensionality of the 
-    // quadrature set and its default value is set in the member function
-
-    virtual rtt_dsxx::SP<Quadrature> 
-          quadCreate( Qid quad_type, size_t sn_order = 4, double norm = 0.0 );
+    virtual rtt_dsxx::SP<Quadrature> quadCreate( Qid quad_type,
+						 size_t sn_order = 4,
+						 double norm = 0.0 );
 };
 
 } // end namespace rtt_quadrature

@@ -10,16 +10,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-// Revision History:
-// ------------------
-// 1.4) The member function "QuadCreate" was renamed "quadCreate".
-//      Moved "using" statements inside of namespace block.
-//      Added "using std::fabs".
-//      Explicitly create SP<Quadrature> spQuad before switch
-//         statement.
-//      Removed redundant declarations of PI and TOL.
-//      Added Insist() call when an unknown quad_type is specified.
-
 #include <iostream>
 #include <cmath>
 
@@ -35,19 +25,29 @@
 namespace rtt_quadrature
 {
 
-using std::cerr;
-using std::endl;
-using std::fabs;
-
-// quadCreate returns a smart pointer to a Quadrature object.  The Quadrature 
-// object is created according to the client's specifications.
-//
-// sn_order defaults to 4 (see QuadCreator.hh)
-// norm     defaults ot 0.0 if the user doesn't specify a value.  If
-//          norm is zero it will be set to an appropriate value before 
-//          the quadrature object is created (4*pi for a 3D set, 2*pi
-//          for a 2D set, or 2 for a 1D set).
-
+/*!
+ * \brief quadCreate constructs a Quadrature object.
+ *
+ * The Quad creator only requires 1 parameter -- the quadrature
+ * identifier (see QuadCreator::Qid).  The two addtional parameters can
+ * optionally be used to specify the sn_order and a normalization for the 
+ * quadrature weights.  The sn_order defaults to 4 and the default value
+ * for normalization constant varies with the dimensionality of the
+ * quadrature set (2, 2*pi or 4*pi for 1D, 2D or 3D sets).
+ *
+ * Another parameter may need to be added to this constructor to specify
+ * the number of dimensions requested.  Currently Qid directly specifies
+ * the dimensionality of the quadrature set.
+ *
+ * \par quad_type An identifier that specifies the type of quadrature
+ *                  to construct.
+ * \par sn_order  The SN order for the constructed quadrature
+ *                  set. (Default: 4)
+ * \par norm      The sum of the quadrature weights are forced to sum
+ *                  to this value. (Default: 2, 2*pi or 4*pi based on the 
+ *                  dimensionality of the quadrature set.)
+ * \return Smart pointer to a quadrature object.
+ */
 rtt_dsxx::SP<Quadrature> 
 QuadCreator::quadCreate( QuadCreator::Qid quad_type, 
 			 size_t sn_order, double norm ) 
