@@ -24,7 +24,7 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   with_cxx='sgi'
        fi
    ;;
-   alpha-dec-osf*)
+   alpha*-dec-osf*)
        if test -z "${with_cxx}" ; then
 	   with_cxx='compaq'
        fi

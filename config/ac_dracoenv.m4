@@ -528,7 +528,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   fi
        done
    ;;
-   alpha-dec-osf*)
+   alpha*-dec-osf*)
        # posix source defines, by default we set posix off
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
