@@ -41,6 +41,7 @@ class NML_Item {
 	: name(_name), default_value(_defval),
 	  defered_callback(0)
     {}
+    virtual ~NML_Item() {}
 
 // Since most derived types will be determining their name and
 // default_value through va_arg processing, it isn't really reasonable
