@@ -15,7 +15,7 @@ IMCSPACE
 instantiate class Particle_Buffer<Particle<OS_Mesh> >
 
 instantiate funcproto PT=Particle<OS_Mesh>, MT=OS_Mesh
-Particle_Buffer<PT>::Particle_Buffer(const MT &)
+Particle_Buffer<PT>::Particle_Buffer(const MT &, const Rnd_Control &)
 
 CSPACE
 

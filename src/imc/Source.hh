@@ -31,6 +31,10 @@
 
 IMCSPACE
 
+// draco components
+using RNG::Rnd_Control;
+
+// STL components
 using std::ifstream;
 using std::string;
 
@@ -54,6 +58,9 @@ private:
     int nsstot;
     int ncentot;
 
+  // random number controller
+    SP<Rnd_Control> rcon;
+
   // Particle Buffer
     Particle_Buffer<Particle<MT> > buffer;
 
@@ -61,15 +68,15 @@ public:
   // constructor
     Source(typename MT::CCSF_int &, typename MT::CCSF_int &,
 	   typename MT::CCSF_int &, typename MT::CCSF_int &, string, int, 
-	   int, int);
+	   int, int, SP<Rnd_Control>);
 
   // required services for Source
-    inline SP<Particle> get_Particle(); 
+    inline SP<Particle<MT> > get_Particle(); 
 
   // Particle sources
-    SP<Particle> get_census();
-    SP<Particle> get_evol();
-    SP<Particle> get_ss();
+    SP<Particle<MT> > get_census();
+    SP<Particle<MT> > get_evol();
+    SP<Particle<MT> > get_ss();
 };
 
 CSPACE

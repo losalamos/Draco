@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/Particle_Buffer.hh"
+#include <cstdlib>
 
 IMCSPACE
 
@@ -17,15 +18,21 @@ IMCSPACE
 
 template<class PT>
 template<class MT>
-Particle_Buffer<PT>::Particle_Buffer(const MT &mesh)
+Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
 {
+    
   // determine size of double info from Particles;
   // 5 = omega(3) + ew + fraction
     dsize = mesh.get_Coord().get_dim() + 5;
 
   // determine size of integer info from Particles;
-  // 3 = cell + streamnum + random_state_size
-    isize = 3;
+  // 2 = cell + streamnum
+    isize = 2;
+
+  // determine size of character (RN state) from Particles;
+  // in bytes
+    csize = rcon.get_size();
+    Check (csize <= RNG::max_buffer);
 }
 
 //---------------------------------------------------------------------------//
@@ -82,8 +89,8 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 
   // set the size of dynamic storage for the Random number state and pack it
     char *rdata;
-    idata[2] = pack_sprng(particle.random.get_id(), &rdata);
-    Check (idata[2] < RNG::max_buffer);
+    int size = pack_sprng(particle.random.get_id(), &rdata);
+    Check (size == csize);
 
   // now dump particle data to the census file
 
@@ -94,7 +101,7 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
     cenfile.write(reinterpret_cast<const char *>(ddata), dsize *
 		  sizeof(double));
     cenfile.write(reinterpret_cast<const char *>(idata), isize * sizeof(int));
-    cenfile.write(reinterpret_cast<const char *>(rdata), idata[2]);
+    cenfile.write(reinterpret_cast<const char *>(rdata), csize);
 
   // reclaim dynamic memory
     delete [] ddata;
@@ -118,7 +125,7 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
   // set pointers for dynamic memory storage
     double *ddata = new double[dsize];
     int    *idata = new int[isize];
-    char   *rdata;
+    char   *rdata = new char[csize];
 
   // read in data
     cenfile.read(reinterpret_cast<char *>(ddata), dsize * sizeof(double));
@@ -128,9 +135,8 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
 	cenfile.read(reinterpret_cast<char *>(idata), isize * sizeof(int));
 	Check (!cenfile.eof());
 
-      // get size of random number state
-	rdata = new char[idata[2]];
-	cenfile.read(reinterpret_cast<char *>(rdata), idata[2]);
+      // read in random number state
+	cenfile.read(reinterpret_cast<char *>(rdata), csize);
 	Check (!cenfile.eof());
 
       // assign data to proper structures for Census Particle
@@ -150,19 +156,49 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
 
       // make new Census_Particle
 	return_part = new Census_Particle(r, omega, ew, frac, cell, random);
-
-      // reclaim dynamic memory
-	delete [] rdata;
     }
 
   // reclaim dynamic memory
     delete [] idata;
     delete [] ddata;
+    delete [] rdata;
 
   // return Census_Particle
     return return_part;
 }
 
+//---------------------------------------------------------------------------//
+// Do an asyncronous send using C4
+
+template<class PT>
+void Particle_Buffer<PT>::send_bank(C4_Req &send, int proc, 
+				    Comm_bank &bank) const
+{
+  // find out the number of Particles
+    int num_part = bank.size();
+    Check (num_part > 0);
+
+  // define indices for data
+    int id = 0;
+    int ii = 0;
+    int ic = 0;
+
+  // loop through particles and get the goods
+    for (int i = 0; i < num_part; i++)
+    {
+      // get the double info from the particle
+	array_d[id++] = bank.top().ew;
+	array_d[id++] = bank.top().fraction;
+	array_d[id++] = bank.top().time_left;
+	for (int j = 0; j < bank.top().omega.size(); j++)
+	    array_d[id++] = bank.top().omega[j];
+	for (int j = 0; j < bank.top().r.size(); j++)
+	    array_d[id++] = bank.top().r[i];
+
+      // get the int info from the particle
+    }
+}
+    
 CSPACE
 
 //---------------------------------------------------------------------------//

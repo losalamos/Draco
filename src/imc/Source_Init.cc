@@ -311,7 +311,7 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 {
   // open census file and make Particle Buffer
     ofstream cen_file("census");
-    Particle_Buffer<Particle<MT> > buffer(mesh);
+    Particle_Buffer<Particle<MT> > buffer(mesh, rcon);
 
   // loop over cells
     for (int cell = 1; cell <= mesh.num_cells(); cell++)

@@ -12,15 +12,16 @@
 //===========================================================================//
 // class Layout - 
 //
-// Purpose : base class which describes the cell-face-cell inter-
-//           actions for IMC; Layout itself is independent of
-//           the geometry of the mesh but Mesh has to build it
-//           because Mesh can calculate the neighbor info from
-//           the geometry
+// Purpose : base class which describes the cell-face-cell interactions for 
+//           IMC; Layout itself is independent of the geometry of the mesh
+//           but Mesh has to build it because Mesh can calculate the neighbor 
+//           info from the geometry
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)  5-20-98 : added overloaded ==,!= operators for desing-by-contract
+//                purposes  
 // 
 //===========================================================================//
 
@@ -45,17 +46,17 @@ private:
   // Begin_Verbatim 
 
 public:
-  // inline default constructor, can give the total number of
-  // cells as an argument; no copy constructor or assignment
-  // operator needed because we are using vectors
+  // inline default constructor
     Layout(int num_cells = 0) : face_cell(num_cells) {}
 
-  // set size member functions, set size of whole Layout and set size for
-  // number of faces in a particular cell
+  // set size member functions
+
+  // set size of whole Layout and set size for number of faces in a
+  // particular cell
     void set_size(int num_cells) { face_cell.resize(num_cells); }
     inline void set_size(int, int);
 
-  // inline get functions
+  // get size member functions
     int num_cells() const { return face_cell.size(); }
     inline int num_faces(int) const;
 
@@ -66,6 +67,10 @@ public:
     inline int operator()(int, int) const;
     inline int& operator()(int, int);
 
+  // overloaded operators for equality
+    inline bool operator==(const Layout &) const;
+    bool operator!=(const Layout &rhs) const { return !(*this == rhs); }
+
   // End_Verbatim 
   // End_Doc 
 };
@@ -73,35 +78,54 @@ public:
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
-
 // overload operator declarations for Layout
-ostream & operator<<(ostream &, const Layout &);
+
+ostream& operator<<(ostream &, const Layout &);
+
+//---------------------------------------------------------------------------//
+// overload equality(==) operator for design-by-contract
+
+inline bool Layout::operator==(const Layout &rhs) const
+{
+  // if the data is equal, the Layouts are equal
+    if ( face_cell == rhs.face_cell)
+	return true;
+    
+  // if we haven't returned then the Layouts aren't equal
+    return false;
+}
 
 //---------------------------------------------------------------------------//
 // inline functions for Layout
 //---------------------------------------------------------------------------//
+// set the number of faces for cell cell_index
 
 inline void Layout::set_size(int cell_index, int num_faces)
 {
-  // set the number of faces for cell_index
     face_cell[cell_index-1].resize(num_faces);
 } 
 
+//---------------------------------------------------------------------------//
+// return the number of faces for cell cell_index
+
 inline int Layout::num_faces(int cell_index) const
 {
-  // return the number of faces for cell_index
     return face_cell[cell_index-1].size();
 }
 
+//---------------------------------------------------------------------------//
+// subscripting operator for data referencing
+
 inline int Layout::operator()(int cell_index, int face_index) const
 {
-  // subscripting operator for data referencing
     return face_cell[cell_index-1][face_index-1];
 }
 
+//---------------------------------------------------------------------------//
+// subscripting operator for data assignment
+
 inline int& Layout::operator()(int cell_index, int face_index)
 {
-  // subscripting operator for data assignment
     return face_cell[cell_index-1][face_index-1];
 }
 

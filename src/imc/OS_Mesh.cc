@@ -284,11 +284,25 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 //---------------------------------------------------------------------------//
 // Overloaded operators
 //---------------------------------------------------------------------------//
+// overloaded == for design-by-contract
 
-bool OS_Mesh::operator==(const OS_Mesh &mesh)
+bool OS_Mesh::operator==(const OS_Mesh &rhs) const
 {
   // check to see that we have the same coordinate systems
-  // NEED TO FINISH THIS
+    if (coord != rhs.coord)
+	return false;
+
+  // check to see that the Layouts are equal
+    if (layout != rhs.layout)
+	return false;
+
+  // check the vertices
+    if (vertex != rhs.vertex)
+	return false;
+    if (cell_pair != rhs.cell_pair)
+	return false;
+
+  // if we haven't returned, then the two meshes must be equal
     return true;
 }
 

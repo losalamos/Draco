@@ -206,6 +206,7 @@ public:
 
   // overloaded operators
     bool operator==(const OS_Mesh &) const;
+    bool operator!=(const OS_Mesh &rhs) const { return !(*this == rhs); }
 
   // End_Verbatim 
   // End_Doc 

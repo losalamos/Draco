@@ -33,13 +33,28 @@ GLOBALSPACE
 //---------------------------------------------------------------------------//
 // FUNDAMENTAL CONSTANTS
 //---------------------------------------------------------------------------//
+
 const double pi = 2.0 * std::asin(1.0);
 const double huge = DBL_MAX;
 const double epsilon = DBL_EPSILON;
 
 //---------------------------------------------------------------------------//
+// MAXIMUM BUFFER SIZES
+//---------------------------------------------------------------------------//
+
+// maximum size of Particle double stack
+const int buffer_d = 100 * (3 + 3 + 1 + 1);
+
+// maximum size of Particle int stack
+const int buffer_i = 100 * (1 + 1 + 1);
+
+// maximum size of Particle char stack
+const int buffer_c = 100 * (500);
+
+//---------------------------------------------------------------------------//
 // Physical constants
 //---------------------------------------------------------------------------//
+
 // radiation constant
 const double a = 0.01372;
 
