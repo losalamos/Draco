@@ -10,7 +10,7 @@
 #include "imc/OS_Mesh.hh"
 #include "imc/OS_Builder.hh"
 #include "imc/OS_Interface.hh"
-#include "imc/IMC_Man.hh"
+#include "imc/IMC_Manager.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include <iostream>
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     using IMC::OS_Mesh;
     using IMC::OS_Builder;
     using IMC::OS_Interface;
-    using IMC::IMC_Man;
+    using IMC::IMC_Manager;
 
   // std namespace declarations
     using std::string;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     arguments.resize(0);
     
   // make a manager
-    IMC_Man<OS_Mesh, OS_Builder, OS_Interface> manager(verbose);
+    IMC_Manager<OS_Mesh, OS_Builder, OS_Interface> manager(verbose);
 
   // execute IMC
     manager.execute_IMC(argv[input]);
