@@ -9,7 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Particle.hh"
+#include "../Gray_Particle.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/Communicator.t.hh"
 #include "mc/Particle_Buffer.t.hh"
@@ -17,7 +17,7 @@
 namespace rtt_mc
 {
 
-typedef rtt_imc::Particle<OS_Mesh> PT;
+typedef rtt_imc::Gray_Particle<OS_Mesh> PT;
 
 template class Communicator<PT>;
 template class Particle_Buffer<PT>;

@@ -111,8 +111,8 @@ void tstFreq_Ops()
     if (frequency->find_group_given_a_freq(1.0) != 3)   ITFAILS;
 
     // Test out-of-bounds.
-    if (frequency->find_group_given_a_freq(0.05) != -1) ITFAILS;
-    if (frequency->find_group_given_a_freq(100.) != -1) ITFAILS;
+    if (frequency->find_group_given_a_freq(0.05) != 0)  ITFAILS;
+    if (frequency->find_group_given_a_freq(100.) != 0)  ITFAILS;
 }
 
 //---------------------------------------------------------------------------//
