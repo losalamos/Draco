@@ -72,11 +72,23 @@ class DummyOpacity : public rtt_cdi::Opacity
      */
     vector<int> matIDs; // empty for class DummyOpacity.
     
+    /*!
+     * \breif A dummy filename.
+     *
+     * \sa Normally the Opacity object is linked to a data file and
+     *     the virtual Opacity object contains accessors to this
+     *     data.  For this class we don't actually have an associated
+     *     file but we must still replicate these base class
+     *     functions.
+     */
+    const string dummyFilename;
+    
   public:
 
     // CREATORS
     
-    // defaulted DummyOpacity( );
+    DummyOpacity( );
+
     // defaulted DummyOpacity(const DummyOpacity &rhs);
     // defaulted ~DummyOpacity();
 
@@ -95,21 +107,9 @@ class DummyOpacity : public rtt_cdi::Opacity
      *     dummyOpacity object there is no associated data file so we
      *     return an explanitory string.
      */
-    string const getDataFilename() const
+    const string& getDataFilename() const
     { 
-	return "no data file associated with this class"; 
-    }
-
-    /*!
-     * \brief This function returns a list of material identifiers
-     *        that are available in the assocated data file.
-     *
-     * \sa Again, there is no assocated data file or data so this
-     *     function will return an empty vector.
-     */
-    vector<int> const getMatIDs() const
-    {
-	return matIDs;
+	return dummyFilename;
     }
 
     /*!
@@ -126,8 +126,8 @@ class DummyOpacity : public rtt_cdi::Opacity
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    double getGray( const double targetTemperature, 
-		    const double targetDensity );
+    double getGrayRosseland( const double targetTemperature, 
+			     const double targetDensity );
     /*!
      * \breif Returns a vector of the opacity values for each energy
      *        group for the prescribed temperature and density.
@@ -144,8 +144,9 @@ class DummyOpacity : public rtt_cdi::Opacity
      *         vector for this class has length 3 and all entries are
      *         set equal to zero.
      */
-    vector<double> getMG( const double targetTemperature, 
-			  const double targetDensity );
+    vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const double targetDensity );
 
   private:
     

@@ -78,6 +78,15 @@ string tCDI::runTest()
     else
 	fail() << "Failed to create SP to CDI object.";
 	
+
+    // test the getDataFilename() function.
+    string fname = spOpacity->getDataFilename();
+    cout << "The data file is named: " << fname << endl;
+    fname.append("blah");
+    cout << "The data file is named: " << fname << endl;
+
+
+
     //----------------------------------------
     // Start the tests
     //----------------------------------------
@@ -90,9 +99,9 @@ string tCDI::runTest()
 
     // --> Try to collect gray opacity data.
 
-    double grayOpacityReference = -1.0;  // cm^2/g
+    double grayOpacityReference = temp + density/10000;  // cm^2/g
     double grayOpacity 
-        = spCDI_mat1->getGrayOpacity( temp, density);
+        = spCDI_mat1->getGrayRosselandOpacity( temp, density);
 
     if ( match( grayOpacity, grayOpacityReference ) )
 	pass() << "Access to gray opacity data succeeded.";
@@ -102,11 +111,12 @@ string tCDI::runTest()
     // --> Try to collect multigroup opacity data.
 
     // In DummyOpacity ngroups is hard coded to 3.
-    vector<double> MGOpacitiesReference(3); // = { 1.0, 2.0, 3.0 }
+    vector<double> MGOpacitiesReference(3); 
     for ( int i=0; i<3; ++i )
-	MGOpacitiesReference[i] = static_cast<double>(i+1);
+	MGOpacitiesReference[i] = (i+1)*1000.0 + temp + density/10000;
 
-    vector<double> MGOpacities = spCDI_mat1->getMGOpacity( temp, density);
+    vector<double> MGOpacities 
+	= spCDI_mat1->getMGRosselandOpacity( temp, density);
 
     if ( match( MGOpacities, MGOpacitiesReference ) )
 	pass() << "Access to multigroup opacity data succeeded.";
@@ -135,7 +145,7 @@ string tCDI::runTest()
 // Compare Reference value to computed values
 //---------------------------------------------
 bool tCDI::match( const vector<double> computedValue, 
-		  const vector<double> referenceValue )
+			 const vector<double> referenceValue )
 {
     // Start by assuming that the two quantities match exactly.
     bool em = true;

@@ -15,6 +15,18 @@ namespace rtt_dummy_opacity
 {
 
     /*!
+     * \brief Constructor for DummyOpacity object.
+     *
+     * \sa The DummyOpacity constructor initialized the value of
+     *     dummyFilename. 
+     */
+    DummyOpacity::DummyOpacity()
+	: dummyFilename ( "no data file associated with this class" )
+	{
+	    // empty
+	}
+
+    /*!
      * \breif Returns a single opacity value for the prescribed
      *        temperature and density.
      *
@@ -28,10 +40,11 @@ namespace rtt_dummy_opacity
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    double DummyOpacity::getGray( const double targetTemperature, 
-				  const double targetDensity )
+    double DummyOpacity::getGrayRosseland(
+	const double targetTemperature, 
+	const double targetDensity ) 
 	{
-	    return -1.0;
+	    return targetTemperature + targetDensity/10000;
 	}
 
     /*!
@@ -50,12 +63,14 @@ namespace rtt_dummy_opacity
      *         vector for this class has length 3 and the entries are
      *         set equal to { 1.0, 2.0, 3.0 }.
      */    
-    vector<double> DummyOpacity::getMG( const double targetTemperature, 
-					const double targetDensity ) 
+    vector<double> DummyOpacity::getMGRosseland( 
+	const double targetTemperature, 
+	const double targetDensity ) 
 	{
 	    vector<double> dummyMGOpacity(3);
 	    for (int i=0; i<3; ++i)
-		dummyMGOpacity[i] = static_cast<double>(i+1);
+		dummyMGOpacity[i] = (i+1)*1000.0 + targetTemperature + 
+		    targetDensity/10000;
 	    return dummyMGOpacity;
 	}
     

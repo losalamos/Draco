@@ -69,19 +69,23 @@ class tCDI : public rtt_UnitTestFrame::TestApp
     
     // IMPLEMENTATION
 
+    // The match function is declared static because only one copy of
+    // this function needs to exist (shared by all objects of this
+    // class). 
+
     /*!
      * \brief Returns true if the elements of the two vectors are
      *        identical to 10 decimal places.
      */
-    bool match( const vector<double> computedValue, 
-		const vector<double> refereneceValue );
+    static bool match( const vector<double> computedValue, 
+		       const vector<double> refereneceValue );
     
     /*!
      * \brief Returns true if the two values are identical to 10
      *        decimal places. 
      */
-    bool match( const double computedValue,
-		const double referenceValue );
+    static bool match( const double computedValue,
+		       const double referenceValue );
 
 };
 
