@@ -1,18 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstSprng.cc
-// Thomas M. Evans
-// Wed Apr 29 15:11:32 1998
+/*!
+ * \file   rng/test/tstSprng.cc
+ * \author Thomas M. Evans
+ * \date   Mon Dec 17 16:05:26 2001
+ * \brief  Sprng testing.
+ */
+//---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Test of SPRNG random number class
-//---------------------------------------------------------------------------//
 
-#include "RNG_Test.hh"
-#include "../Random.hh"
+#include "rng_test.hh"
 #include "../Release.hh"
+#include "../Random.hh"
+#include "ds++/Assert.hh"
 
 #include <iostream>
-#include <string>
 #include <vector>
 #include <cmath>
 
@@ -22,10 +24,10 @@ using rtt_rng::Sprng;
 // global stuff
 int seed = 493875348;
 
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_rng_test::fail(__LINE__);
+using namespace std;
 
+//---------------------------------------------------------------------------//
+// TESTS
 //---------------------------------------------------------------------------//
 
 void ran_test()
@@ -53,6 +55,9 @@ void ran_test()
     double eps = .00001;
     for (int i = 0; i < 10; i++)
 	if (fabs(ran1.ran() - ran3.ran()) > eps) ITFAILS;
+
+    if (rtt_rng_test::passed)
+	PASSMSG("Simple random number access test passes.");
 }
 
 //---------------------------------------------------------------------------//
@@ -95,6 +100,9 @@ void sprng_test()
     for (int i = 60; i < 80; i++)
 	if (fabs(ranr.ran() - ref[i]) > eps) ITFAILS;
     if (ranr.get_id() != id1) ITFAILS;
+
+    if (rtt_rng_test::passed)
+	PASSMSG("Simple Sprng object test passes.");
 }
 
 //---------------------------------------------------------------------------//
@@ -120,26 +128,38 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_rng::release() << endl; 
+	    cout << argv[0] << ": version " << rtt_rng::release() 
+		 << endl;
 	    return 0;
 	}
 
-    // tests
-    ran_test();
-    sprng_test();
+    try
+    {
+	// >>> UNIT TESTS
+	ran_test();
+	sprng_test();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstSprng, " << ass.what()
+	     << endl;
+	return 1;
+    }
 
     // status of test
     cout << endl;
-    cout <<     "*********************************" << endl;
-    if (passed) 
+    cout <<     "*********************************************" << endl;
+    if (rtt_rng_test::passed) 
     {
-        cout << "**** Sprng Self Test: PASSED ****" << endl;
+        cout << "**** tstSprng Test: PASSED" 
+	     << endl;
     }
-    cout <<     "*********************************" << endl;
+    cout <<     "*********************************************" << endl;
     cout << endl;
-    
-    cout << "Done testing Sprng." << endl;
-}
+
+    cout << "Done testing tstSprng." << endl;
+}   
+
 //---------------------------------------------------------------------------//
-//                              end of tstSprng.cc
+//                        end of tstSprng.cc
 //---------------------------------------------------------------------------//

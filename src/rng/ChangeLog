@@ -1,3 +1,8 @@
+2001-12-17  Thomas M. Evans  <tme@lanl.gov>
+
+	* rng: Updated to rng-1_5_0.  No longer needs configure scripts in
+	package.  Updated test directory infrastructure.
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* rng: Updated to rng-1_4_0.  __STDC__ now defined in config.h

@@ -1,10 +1,10 @@
 ###############################################################################
-# draco/src/rng/test Makefile.target
+# rng/test Makefile.target
 # Thomas M. Evans
-# Wed Jan 31 16:08:21 2001
+# Mon Dec 17 16:04:59 2001
 # $Id$
 ###############################################################################
-# @> General Makefile.target for draco/src/rng/test
+# @> General Makefile.target for rng/test
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
@@ -12,11 +12,21 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-${test_alltarget}: ${testdeps}
+thistestdep := librng_test${libsuffix}
+thistestlib := -L. -lrng_test
+thistestlib_dep := rng_test.o 
+
+${test_alltarget}: ${thistestdep} ${testdeps}
 
 %: %.o
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
+
+objs += ${thistestdep}
+
 ###############################################################################
-#			 end of draco/src/rng/test Makefile.target
+#			 end of rng/test Makefile.target
 ###############################################################################
