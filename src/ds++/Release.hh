@@ -16,20 +16,9 @@
 
 //===========================================================================//
 /*!
- * \mainpage Overview of the Data Structures in C++ (DS++) Package
- * \author Tom Evans, Kelly Thompson, Todd Urbatsch
- * \version 1_9_0
- *
- * This package provides data structures and other miscellaneous support
- * for the Draco system. Classes for matrices, design-by-contract, 
- * smart-pointers, and a variety of other utilities are included.
- *
- */
-//===========================================================================//
-/*!
  * \namespace rtt_dsxx
  *
- * \brief RTT "Data Structures in C++" (DS++)  namespace.
+ * \brief Namespace that contains the ds++ package classes and variables.
  *
  */
 //===========================================================================//

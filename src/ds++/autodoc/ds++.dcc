@@ -1,0 +1,42 @@
+//---------------------------------*-text-*-----------------------------------//
+// ds++.dcc
+// ds++ Overview page
+// Thomas M. Evans
+// Mon Apr 19 09:27:15 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the ds++ package
+\version draco-4_3_0
+\author Thomas M. Evans
+
+This package provides data structures and other miscellaneous support
+for the Draco system. Classes for matrices, design-by-contract,
+smart-pointers, and a variety of other utilities are included.
+
+The significant services provided in ds++ are:
+- \b SP (rtt_dsxx::SP) a smart pointer class
+- \b RCF (rtt_dsxx::RCF) a reference counted fields class (a rtt_dsxx::SP for
+fields)
+- \b Packer \b Unpacker (rtt_dsxx::Packer, rtt_dsxx::Unpacker) utilities that
+pack data types into a char *
+- \b Vector_Lite (rtt_dsxx::Vector_Lite) a tiny vector implementation
+- \b soft_equiv (rtt_dsxx::soft_equiv()) a soft equivalence function for
+floating point comparisons 
+.
+
+Additionally, a usefull Design-by-Contract implementation can be found in
+Assert.hh.
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of ds++.dcc
+//---------------------------------------------------------------------------//

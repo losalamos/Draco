@@ -9858,6 +9858,11 @@ esac
 done
 
    #
+   # add autodoc directory to doxygen input
+   #
+   rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
+
+   #
    # use relative paths for tag files also
    #
    components=''

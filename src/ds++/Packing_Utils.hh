@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __ds_Packing_Utils_hh__
-#define __ds_Packing_Utils_hh__
+#ifndef rtt_ds_Packing_Utils_hh
+#define rtt_ds_Packing_Utils_hh
 
 #include "Assert.hh"
 
@@ -40,9 +40,6 @@ namespace rtt_dsxx
  * Test the Packer and Unpacker classes.
 
  */
-// revision history:
-// -----------------
-// 0) original
 //===========================================================================//
  
 //===========================================================================//
@@ -502,7 +499,7 @@ void unpack_data(FT &field, const std::vector<char> &packed)
 
 } // end namespace rtt_dsxx
 
-#endif                          // __ds_Packing_Utils_hh__
+#endif                          // rtt_ds_Packing_Utils_hh
 
 //---------------------------------------------------------------------------//
 //                              end of ds++/Packing_Utils.hh
