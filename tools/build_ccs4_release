@@ -134,7 +134,7 @@ done
 ## if this is a Draco client (--with-draco specified) then check the
 ## draco libs to ensure that both Draco and Client use the same type
 ## of libraries (shared vs static).
-if test -n $withdraco; then
+if test -n "$withdraco"; then
    libext=`ls $dracodir/lib/lib*ds++.* | sed -e 's/.*[.]//'`
    if test -z $enable_shared && test "$libext" = "so"; then
       echo " "
@@ -194,7 +194,7 @@ Linux)
    if test -z "$withdraco"; then
       SPRNG_INC="--with-sprng-inc=/codes/radtran/vendors/sprng/include"
       SPRNG_LIB="--with-sprng-lib=/codes/radtran/vendors/sprng/$arch/lib"
-      SRPNG="${SPRNG_INC} ${SPRNG_LIB}"
+      SPRNG="${SPRNG_INC} ${SPRNG_LIB}"
 
       PCG_LIB="--with-pcg-lib=/codes/radtran/vendors/pcg/$arch/lib"
 
@@ -224,7 +224,7 @@ Linux)
 
    # Put the list together
 
-   VENDORS="$MPI $SPRNG $PCG_LIB $LAPACK $GANDOLF_LIB $EOSPAC_LIB"
+   VENDORS="$MPI $SPRNG $PCG_LIB $LAPACK $GANDOLF_LIB $EOSPAC_LIB $GRACE"
    VENDORS="$VENDORS $TRILINOS $METIS"
    ;;
 
