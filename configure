@@ -138,6 +138,9 @@ fi
 
 
 
+
+
+
 ###-------------------------------------------------------------------------###
 ### include the DRACO argument macro
 ###-------------------------------------------------------------------------###
@@ -209,9 +212,15 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-gandolf-lib[=DIR]    tell where GANDOLF libraries are (\${GANDOLF_LIB_DIR} by default)"
 ac_help="$ac_help
-  --with-eospac[=lib]    determine the eospac lib name (eospac is default)"
+  --with-eospac[=lib]     determine the eospac lib name (eospac is default)"
 ac_help="$ac_help
   --with-eospac-lib[=DIR]    tell where EOSPAC5 libraries are (\${EOSPAC5_LIB_DIR} by default)"
+ac_help="$ac_help
+  --with-grace=[lib]      determine the grace lib (grace_np is the default"
+ac_help="$ac_help
+  --with-grace-inc[=DIR]    tell where GRACE includes are (\${GRACE_INC_DIR} by default)"
+ac_help="$ac_help
+  --with-grace-lib[=DIR]    tell where GRACE libraries are (\${GRACE_LIB_DIR} by default)"
 ac_help="$ac_help
   --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) "
@@ -1422,6 +1431,152 @@ fi
    fi
 
          
+   
+      # Check whether --with-grace or --without-grace was given.
+if test "${with_grace+set}" = set; then
+  withval="$with_grace"
+  :
+fi
+
+ 
+      
+        
+   
+ # Check whether --with-grace-inc or --without-grace-inc was given.
+if test "${with_grace_inc+set}" = set; then
+  withval="$with_grace_inc"
+  if test $with_grace_inc != "no" ; then
+      if test $with_grace_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${GRACE_INC_DIR}
+         eval with_grace_inc=\${GRACE_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_grace_inc=`eval echo "$with_grace_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_grace_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-grace-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_grace_inc ; then
+         { echo "configure: error: $with_grace_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GRACE_INC="${with_grace_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define GRACE_INC ${with_grace_inc}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GRACE_INC has been set to $GRACE_INC" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+      
+        
+   
+ # Check whether --with-grace-lib or --without-grace-lib was given.
+if test "${with_grace_lib+set}" = set; then
+  withval="$with_grace_lib"
+  if test $with_grace_lib != "no" ; then
+      if test $with_grace_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${GRACE_LIB_DIR}
+         eval with_grace_lib=\${GRACE_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_grace_lib=`eval echo "$with_grace_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_grace_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-grace-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_grace_lib ; then
+         { echo "configure: error: $with_grace_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      GRACE_LIB="${with_grace_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define GRACE_LIB ${with_grace_lib}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "GRACE_LIB has been set to $GRACE_LIB" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+   # set default value of grace includes and libs
+   if test "${with_grace:=grace_np}" = yes ; then
+       with_grace='grace_np'
+   fi
+
+   # define GRACE include path
+   if test -n "${GRACE_INC}" ; then
+       # remember that GRACE_INC has the final slash
+       GRACE_H="\"${GRACE_INC}${with_grace}.h\""
+   elif test -z "${GRACE_INC}" ; then
+       GRACE_H="<${with_grace}.h>"
+   fi
+   
+   # we define GRACE_H regardless of whether a PATH is set
+   cat >> confdefs.h <<EOF
+#define GRACE_H ${GRACE_H}
+EOF
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_grace=pkg
+
+   # set up the libraries
+   if test "${with_grace}" != no ; then
+       if test -n "${GRACE_LIB}" ; then
+	   
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -L${GRACE_LIB} -l${with_grace} are the directories added 
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GRACE_LIB} -l${with_grace}"
+   fi
+
+       elif test -z "${GRACE_LIB}" ; then
+	   
+   # vendor_grace is the vendor_<> tag (equals pkg or test)
+   # -l${with_grace} are the directories added 
+
+   if test "${vendor_grace}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_grace}"
+   elif test "${vendor_grace}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_grace}"
+   fi
+
+       fi
+   fi
+
+
 
 
          
@@ -1620,7 +1775,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1624: checking for $ac_word" >&5
+echo "configure:1779: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1658,7 +1813,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1662: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1817: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
@@ -1826,6 +1981,8 @@ s%@PCG_LIB@%$PCG_LIB%g
 s%@LAPACK_LIB@%$LAPACK_LIB%g
 s%@GANDOLF_LIB@%$GANDOLF_LIB%g
 s%@EOSPAC5_LIB@%$EOSPAC5_LIB%g
+s%@GRACE_INC@%$GRACE_INC%g
+s%@GRACE_LIB@%$GRACE_LIB%g
 s%@subdirs@%$subdirs%g
 s%@AUTOCONF@%$AUTOCONF%g
 
