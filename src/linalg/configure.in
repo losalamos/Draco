@@ -13,9 +13,10 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(linalg/config.h:config.h.in)
 package="linalg"
 
-AC_PCGLIB_SETUP(pkg) dnl through linalg
+AC_PCG_SETUP(pkg) dnl through linalg
 AC_MPI_SETUP(pkg)    dnl through c4
 AC_SHMEM_SETUP(pkg)  dnl through c4
+AC_LAPACK_SETUP(pkg) 
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
