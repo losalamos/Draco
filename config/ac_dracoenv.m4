@@ -585,6 +585,25 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # end of communication packages
        #
 
+       #
+       # setup lapack
+       #
+
+       if test "${with_lapack}" = vendor ; then
+
+	   # if an lapack location was defined use it
+	   if test -n "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
+	   elif test -z "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
+	   fi
+
+       fi
+
+       #
+       # end of lapack setup
+       #
+
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
