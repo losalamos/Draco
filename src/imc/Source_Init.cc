@@ -68,18 +68,24 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
 // source initialyzer -- this is the main guy
 
 template<class MT>
-void Source_Init<MT>::initialize(const MT &mesh, const Opacity<MT> &opacity,
-				 const Mat_State<MT> &state, 
-				 Rnd_Control &rcontrol, int cycle)
+void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity, 
+				 SP<Mat_State<MT> > state, 
+				 SP<Rnd_Control> rcontrol, int cycle)
 {
+  // check to make sure objects exist
+    Check (mesh);
+    Check (opacity);
+    Check (state);
+    Check (rcontrol);
+
   // calculate number of particles this cycle
     npwant = min(npmax, static_cast<int>(npwant + dnpdt * delta_t));
 
   // on first pass do initial census, on all cycles calc source energies 
     if (cycle == 1)
-	calc_initial_census(mesh, opacity, state, rcontrol);
+	calc_initial_census(*mesh, *opacity, *state, *rcontrol);
     else
-	calc_source_energies(opacity, state);
+	calc_source_energies(*opacity, *state);
 	
   // calculate source numbers
     calc_source_numbers();
@@ -107,7 +113,7 @@ void Source_Init<MT>::calc_initial_census(const MT &mesh,
     calc_ncen_init();
 
   // write out the initial census
-    write_initial_census(mesh, rcontrol);
+    write_initial_census(mesh, rcontrol);  
 }
 
 //---------------------------------------------------------------------------//
@@ -126,14 +132,18 @@ void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity,
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void calc_source_numbers()
+void Source_Init<MT>::calc_source_numbers()
 {
   // for ss and volume emission, calculate numbers of particles, energy
   // weight, and energy loss due to inadequate sampling
 
     int nsource       = npwant - ncentot;
     double esource    = evoltot + esstot;
-    double part_per_e = nsource / esource;
+    double part_per_e;
+    if (esource > 0)
+	part_per_e = nsource / esource;
+    else 
+	part_per_e = 0.0;
 
   // calculate volume source number and surface source numbers
 
@@ -207,7 +217,7 @@ void Source_Init<MT>::calc_ess()
 	for (int sc = 0; sc < surcells.size(); sc++)
 	{      
 	  // make sure this cell doesn't already have a surface source
-	    assert (fss(surcells[sc]) == 0);
+	    Check (fss(surcells[sc]) == 0);
 
 	  // assign energy to surface source cell
 	    ess(surcells[sc]) = ss_temp[ss];
@@ -250,10 +260,15 @@ template<class MT>
 void Source_Init<MT>::calc_ncen_init()
 {
   // first guess at census particles per cell
+    Insist ((evoltot+esstot+eradtot) != 0, "You must specify some source");
     int ncenguess = eradtot / (evoltot + esstot + eradtot) * npwant;
 
   // particles per unit energy
-    double part_per_e = ncenguess / eradtot;
+    double part_per_e;
+    if (eradtot > 0)
+	part_per_e = ncenguess / eradtot;
+    else
+	part_per_e = 0.0;
 
   // attempt to make all census particles have the same energy weight,
   // iterate on number of initial census particles
@@ -303,8 +318,8 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	    vector<double> r = mesh.sample_pos("uniform", cell, random);
 
 	  // sample particle direction
-	  //  vector<double> omega = mesh.get_Coord().
-	  //sample_dir("isotropic", random);
+	    vector<double> omega = mesh.get_Coord().
+		sample_dir("isotropic", random);
 	    
 	  // sample frequency (not now, 1 group)
 

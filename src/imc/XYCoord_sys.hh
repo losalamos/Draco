@@ -56,7 +56,7 @@ public:
   // virtual functions
     virtual string get_Coord() const { string c = "xy"; return c; }
     inline virtual vector<double> sample_pos(string, vector<double>,
-					     vector<double>, Sprng &);
+					     vector<double>, Sprng &) const;
 	     
   // End_Verbatim 
   // End_Doc 
@@ -69,7 +69,7 @@ public:
 
 inline vector<double> 
 XYCoord_sys::sample_pos(string dist, vector<double> min, vector<double> max,
-			Sprng &random)
+			Sprng &random) const
 {
   // make return vector
     vector<double> r(2);

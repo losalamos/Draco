@@ -13,28 +13,38 @@
 
 IMCSPACE
 
+using Global::pi;
+using std::cos;
+using std::sin;
+using std::sqrt;
+
 //---------------------------------------------------------------------------//
 // virtual member functions
 //---------------------------------------------------------------------------//
 // set Omega directions for 3D transport
 
-void Coord_sys::set_omega(vector<double> &omega_, Sprng &random) const
+vector<double> Coord_sys::sample_dir(string dist, Sprng &random) const
 {
-    using Global::pi;
-    using std::cos;
-    using std::sin;
-    using std::sqrt;
+  // make return vector
+    vector<double> omega_(3);
 
-  // sample costheta and phi for 3D transport 
-    double costheta, sintheta, phi;
-    costheta = 1 - 2 * random.ran();
-    sintheta = sqrt(1 - costheta * costheta);
-    phi      = 2 * pi * random.ran();
+  // get direction cosines for different distributions
+    if (dist == "isotropic")
+    {
+      // sample costheta and phi for 3D transport 
+	double costheta, sintheta, phi;
+	costheta = 1 - 2 * random.ran();
+	sintheta = sqrt(1 - costheta * costheta);
+	phi      = 2 * pi * random.ran();
+	
+      // calculate 3D direction cosines
+	omega_[0] = sintheta * cos(phi);
+	omega_[1] = sintheta * sin(phi);
+	omega_[2] = costheta;
+    }
 
-  // calculate 3D direction cosines
-    omega_[0] = sintheta * cos(phi);
-    omega_[1] = sintheta * sin(phi);
-    omega_[2] = costheta;
+  // return vector
+    return omega_;
 }
 
 //---------------------------------------------------------------------------//
@@ -43,11 +53,6 @@ void Coord_sys::set_omega(vector<double> &omega_, Sprng &random) const
 void Coord_sys::calc_omega(double costheta, double phi, vector<double> 
 			   &omega_) const
 {
-    using Global::pi;
-    using std::cos;
-    using std::sin;
-    using std::sqrt;
-
   // calculate new direction cosines
     double sintheta = sqrt(1 - costheta * costheta);
     vector<double> old_dir;

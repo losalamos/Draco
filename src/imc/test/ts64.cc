@@ -14,7 +14,6 @@
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
 #include "imctest/Tally.hh"
-#include "imctest/Random.hh"
 #include "imctest/Math.hh"
 #include "ds++/SP.hh"
 #include <iostream>
@@ -29,7 +28,6 @@ using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
 using IMC::Tally;
-using IMC::Random;
 using IMC::Particle_Stack;
 using IMC::Global::operator<<;
 using namespace std;
@@ -69,7 +67,7 @@ int main(int argc, char *argv[])
     SP<OS_Mesh> mesh;
     SP< Mat_State<OS_Mesh> > mat_state;
     SP< Opacity<OS_Mesh> > opacity;
-    
+
   // scoping blocks for build-stuff
     {
 	string infile = "in2";

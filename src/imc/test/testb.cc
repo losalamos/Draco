@@ -13,14 +13,16 @@
 #include "imctest/Opacity_Builder.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
+#include "imctest/Source_Init.hh"
 #include "imctest/Tally.hh"
 #include "imctest/Math.hh"
-#include "rng/SMrng.hh"
+#include "rng/Rnd_Control.hh"
+#include "rng/Sprng.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cassert>
 
 using IMC::OS_Interface;
 using IMC::OS_Builder;
@@ -31,8 +33,10 @@ using IMC::Opacity;
 using IMC::Particle;
 using IMC::Tally;
 using IMC::Particle_Stack;
-using IMC::Global::operator<<;
-using RNG::SMrng;
+using IMC::Source_Init;
+using RNG::Sprng;
+using RNG::Rnd_Control;
+using dsxx::assertion;
 using namespace std;
 
 template<class MT>
@@ -159,7 +163,7 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity,
 
   // initialize particle
     Particle<MT, SMrng> particle(mesh, seed, 1.0);
-    assert (particle.status());
+    Check (particle.status());
 
   // origin and source
     
@@ -184,60 +188,56 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity,
   // transport
     particle.transport(mesh, opacity, tally, check);
 
-  // assert that particle is indeed dead
-    assert (!particle.status());
+  // Check that particle is indeed dead
+    Check (!particle.status());
 }
 
 int main(int argc, char *argv[])
 {
-  // declare geometry and material stuff
-    SP<OS_Mesh> mesh;
-    SP< Mat_State<OS_Mesh> > mat_state;
-    SP< Opacity<OS_Mesh> > opacity;
-
-  // scoping blocks for build-stuff
+  // try block
+    try
     {
-	string infile = argv[1];
+      // declare geometry and material stuff
+	SP<OS_Mesh> mesh;
+	SP< Mat_State<OS_Mesh> > mat_state;
+	SP< Opacity<OS_Mesh> > opacity;
+	SP< Source_Init<OS_Mesh> > sinit;
+	SP<Rnd_Control> rcon = new Rnd_Control(9836592);
 
-      // run the interface parser
-	SP<OS_Interface> interface = new OS_Interface(infile);
-	interface->parser();
+      // scoping blocks for build-stuff
+	{
+	    string infile = argv[1];
 
-      // initialize the mesh builder and build mesh
-	OS_Builder os_build(interface);
-	mesh = os_build.build_Mesh();
+	  // run the interface parser
+	    SP<OS_Interface> interface = new OS_Interface(infile);
+	    interface->parser();
 
-      // initialize the Opacity builder and build state 
-	Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
-	mat_state = opacity_build.build_Mat();
-	opacity   = opacity_build.build_Opacity();
+	  // initialize the mesh builder and build mesh
+	    OS_Builder os_build(interface);
+	    mesh = os_build.build_Mesh();
+
+	  // initialize the Opacity builder and build state 
+	    Opacity_Builder<OS_Mesh> opacity_build(interface, mesh);
+	    mat_state = opacity_build.build_Mat();
+	    opacity   = opacity_build.build_Opacity();
+
+	  // do the source initialization
+	    sinit = new Source_Init<OS_Mesh>(interface, mesh);
+	    sinit->initialize(mesh, opacity, mat_state, rcon, 1);
+	}
+
+      // mesh diagnostics
+	Builder_diagnostic(*mesh, *mat_state, *opacity);
+    }
+    catch (const assertion &ass)
+    {
+	cerr << "Dumbass, you screwed up: " << ass.what() << endl;
+	return 1;
     }
 
-  // mesh diagnostics
-    Builder_diagnostic(*mesh, *mat_state, *opacity);
-    Surface_diagnostic(*mesh);
-
-  //
-  // tally object
-  //
-
-    SP<Tally<OS_Mesh> > tally = new Tally<OS_Mesh>(mesh);
-    
-    
-  // Particle diagnostics
-    long seed = -345632;
-    Run_Particle(*mesh, *opacity, *tally, seed);
-    Bank_Particle(*mesh, *opacity, *tally);
-    
-  // for ( int i = 1; i <= mesh->num_cells(); i++)
-  // {
-  //	cout << "Cell " << i << ":  energy_dep = " <<
-  //	    tally->get_energy_dep(i) << endl;
-  // }
-  // cout << " Total energy deposited = " 
-  //      << tally->get_energy_dep_tot() << endl;
+  // return completed successfully
+    return 0;
 }
-
 
 //---------------------------------------------------------------------------//
 //                              end of testb.cc

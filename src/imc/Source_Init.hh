@@ -104,8 +104,8 @@ public:
     Source_Init(SP<IT>, SP<MT>);
 
   // source initialyzer function
-    void initialize(const MT &, const Opacity<MT> &, const Mat_State<MT> &,
-		    Rnd_Control &, int);
+    void initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
+		    SP<Rnd_Control>, int);
 };
 
 CSPACE

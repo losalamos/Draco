@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "imctest/Opacity_Builder.hh"
-#include <cassert>
+#include "ds++/Assert.hh"
 
 IMCSPACE
 
@@ -26,11 +26,11 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface, SP<MT> mesh)
     kappa       = interface->get_kappa();
     temperature = interface->get_temperature();
 
-  // check some asserts verifying size of mesh
-    assert (mesh->num_cells() == rho.get_Mesh().num_cells());
-    assert (mesh->num_cells() == temp.get_Mesh().num_cells());
-    assert (mesh->num_cells() == opacity.get_Mesh().num_cells());
-    assert (zone.size() == mesh->num_cells());
+  // check some Checks verifying size of mesh
+    Check (mesh->num_cells() == rho.get_Mesh().num_cells());
+    Check (mesh->num_cells() == temp.get_Mesh().num_cells());
+    Check (mesh->num_cells() == opacity.get_Mesh().num_cells());
+    Check (zone.size() == mesh->num_cells());
 }
 
 //---------------------------------------------------------------------------//
