@@ -114,7 +114,10 @@ class Mesh_XYZ : private XYZ_Mapper
     const Mat1<double>& get_xc() const { return xc; }
     const Mat1<double>& get_yc() const { return yc; }
     const Mat1<double>& get_zc() const { return zc; }
+
     int get_ncp() const { return ncp; }
+    int get_nct() const { return nct; }
+    int get_goff() const { return goff; }
 
     double get_dx() const { return dx; }
     double get_dy() const { return dy; }
