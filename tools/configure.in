@@ -27,6 +27,10 @@ bin_files="\${bindir}/regression_filter.py ${bin_files}"
 
 installfiles="$libexec_files $bin_files"
 
+configure_command="$[]0 $[]*"
+
+AC_SUBST(configure_command)
+
 AC_SUBST(installdirs)
 AC_SUBST(installfiles)
 

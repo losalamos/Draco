@@ -9,6 +9,7 @@
 ##---------------------------------------------------------------------------##
 
 prefix='@prefix@'
+configure='@configure_command@'
 
 ##---------------------------------------------------------------------------##
 ## functions
@@ -16,14 +17,21 @@ prefix='@prefix@'
 
 draco_usage()
 {
-   echo "Usage: draco [--help | --version | --prefix]"
+   echo "Usage: draco [--help | --version | --prefix | --configure]"
 }
 
 ##---------------------------------------------------------------------------##
 
 draco_version()
 {
-   echo draco-1_0_0
+   echo draco-2_0_0
+}
+
+##---------------------------------------------------------------------------##
+
+draco_config()
+{
+   echo $configure
 }
 
 ##---------------------------------------------------------------------------##
@@ -57,6 +65,9 @@ do
         ;;
     --prefix | -prefix)
 	draco_prefix
+	;;
+    --configure | -configure)
+	draco_config
 	;;
    *)
         draco_usage
