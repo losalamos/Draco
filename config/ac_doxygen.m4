@@ -111,16 +111,16 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
-   # Define some package-level directories
-   header_dir=${package_top_srcdir}/autodoc/html
-   autodoc_dir=${doxygen_input}/autodoc
-   config_dir=${package_top_srcdir}/config
-
    # For a component, the doxygen input is the srcdir and the examples
    # are in the tests
    doxygen_input=`cd ${srcdir}; pwd` 
    doxygen_input="$doxygen_input $doxygen_input/autodoc"
    doxygen_examples=${doxygen_input}/test
+
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   autodoc_dir=${doxygen_input}/autodoc
+   config_dir=${package_top_srcdir}/config
 
    # Get the default output location
    AC_SET_DEFAULT_OUTPUT
@@ -170,14 +170,14 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
    AC_SET_DEFAULT_OUTPUT
 
+   # For the package, the input is the current directory, plus configure/doc
+   doxygen_input="`pwd` ${config_dir}/doc"
+   doxygen_examples=''
+
    # Define package-level directories
    header_dir=${srcdir}/html
    autodoc_dir=${srcdir}
    config_dir=${package_top_srcdir}/config
-
-   # For the package, the input is the current directory, plus configure/doc
-   doxygen_input="`pwd` ${config_dir}/doc"
-   doxygen_examples=''
 
    doxygen_html_output="${doxygen_output_top}/html/"
    doxygen_latex_output="${doxygen_output_top}/latex/"
