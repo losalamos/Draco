@@ -4,7 +4,7 @@
 // 14 January 1997
 //---------------------------------------------------------------------------//
 
-#include "DynArray.cc"
+#include "DynArray.t.hh"
 
 using namespace dsxx;
 

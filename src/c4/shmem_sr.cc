@@ -677,7 +677,7 @@ void C4_Wait( pthread_t& tid )
 
 C4_NAMESPACE_END
 
-#include "ds++/DynArray.cc"
+#include "ds++/DynArray.t.hh"
 
 template class dsxx::DynArray<C4::Msg_DB *>;
 
