@@ -27,7 +27,7 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="--strict"
+       STRICTFLAG="--strict -D__KAI_STRICT"
    fi
 
    # --one_per flag

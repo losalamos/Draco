@@ -320,10 +320,11 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
 
        #
-       # setup linux strict if the compiler is KCC
+       # setup linux strict if the compiler is KCC (also turn off the
+       # warnings about long long being non-standard)
        #
        if test "${CXX}" = KCC && test -n "${STRICTFLAG}" ; then
-	   STRICTFLAG="--linux_strict"
+	   STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
        fi
 
        #
@@ -358,7 +359,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        #
        # end of communication package setup
-       #       
+       #  
 
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
@@ -454,7 +455,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   # add suppression of long long errors if the compiler is
 	   # KCC 
 	   if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
-	       STRICTFLAG='--strict --diag_suppress 450'
+	       STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
 	   fi
        fi
 
