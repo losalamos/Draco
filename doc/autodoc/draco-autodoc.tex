@@ -253,7 +253,7 @@ built locally and included in the tarball with the source code.
 
 \subsection{New Files, Scripts, Directories and Templates}
 We will create a \texttt{draco/autodoc} directory. Under this directory
-will be a \doxy\ configuration file (\texttt{draco.config)} and
+will be a \doxy\ configuration file (\texttt{doxygen\_config.in)} and
  \texttt{html} header and footer files. Also we will install 
 a \texttt{draco/autodoc/html} directory to store \doxy\ \texttt{html}
 output and a \texttt{draco/autodoc/latex}
@@ -316,7 +316,7 @@ space.
 Under normal use the \doxy\ configuration file will not require
 modification by package developers. However, if new packages or
 new directories under existing packages are added,
-the \doxy\ configuration file \texttt{draco/autodoc/config.draco}
+the \doxy\ configuration file \texttt{draco/autodoc/doxygen\_config.in}
 may require modification.
 The configuration options available to users are well
 documented in the \doxy\ manual. Some of the configuration file 
@@ -338,7 +338,7 @@ variables which may be of interest are briefly discussed below:
  \verb+\include+ keyword.
 \end{description}
 
-Developers can use the current \texttt{config.draco} as a template for
+Developers can use the current \texttt{doxygen\_config.in} as a template for
 any changes that are required. In most cases, this will consist of
 simply adding a new path or file to the INPUT, EXAMPLE\_PATH and/or 
 INCLUDE\_PATH definitions.
@@ -451,7 +451,7 @@ config options are used:
 
 \item[\ttfamily TAGFILES] A list of all tag files needed to resolve
   links in the package.  For instance, the \milagro\ package
-  \texttt{autodoc/milagro.config} file would contain the following entry:
+  \texttt{autodoc/doxygen\_config.in} file would contain the following entry:
 \begin{verbatim}
      TAGFILES = ./html/draco.tag
 \end{verbatim}
@@ -463,7 +463,7 @@ config options are used:
   a tag file in the \texttt{autodoc} subdirectory with the name 
   \texttt{<system>.tag}.
 For instance, the \milagro\ package
-  \texttt{autodoc/milagro.config} file would contain the following entry:
+  \texttt{autodoc/doxygen\_config.in} file would contain the following entry:
 \begin{verbatim}
      GENERATE_TAGFILES = ./html/milagro.tag
 \end{verbatim}
