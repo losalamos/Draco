@@ -169,47 +169,84 @@ void mark_inbox_as_clear( int source )
 
 void pull_msg_from_node( int source, void *buf, int msglen )
 {
-    if ( msglen > C4_max_buf_sz ) {
-	throw( "receive of packetized inbounds not implemented." );
-    } else {
-	memcpy( buf, pe_recv_buf[source].data, msglen );
+// Wait till there is a message coming through the inbox.
+    while( !pe_msg_waiting[source] )
+	;
+
+    char *cbuf = static_cast<char *>( buf );
+    int len = pe_recv_buf[source].length;
+    Insist( len <= msglen, "Receive buffer not big enough." );
+
+    int base=0, recvlen=0;
+
+    do {
+    // Update base from prior packet receive.
+	base += recvlen;
+
+    // Calculate length of next packet.
+	recvlen = (base + C4_max_buf_sz < len ?
+		   C4_max_buf_sz : len - base);
+
+    // Wait for data to be ready.
+	while( !pe_msg_waiting[source] )
+	    ;
+
+    // Receive the next packet's worth of data.
+	memcpy( cbuf+base, pe_recv_buf[source].data, recvlen );
+
+    // Indicate readiness to receive next packet.
 	mark_inbox_as_clear( source );
-    }
+    } 
+    while( base + recvlen < len );
+    
 }
 
 //---------------------------------------------------------------------------//
-// Orchestrate the receive side of message delivery.
+// Orchestrate the send side of message delivery.
 //---------------------------------------------------------------------------//
 
 void push_msg_to_node( int dest, void *buf, int msglen, int tag )
 {
-    if ( msglen > C4_max_buf_sz ) {
-	throw( "Packetized send not implemented." );
-    } else {
-    // put data to remote buffer, including tag and length
+// Build header and send.
 
-	struct {
-	    int length;
-	    int tag;
-	} hdr;
+    struct {
+	int length;
+	int tag;
+    } hdr;
 
-	hdr.length = msglen; hdr.tag = tag;
+    hdr.length = msglen; hdr.tag = tag;
 
-	shmem_int_put( (int *) &pe_recv_buf[C4_shm_mynode],
-		       (int *) &hdr, 2, dest );
+    shmem_int_put( (int *) &pe_recv_buf[C4_shm_mynode],
+		   (int *) &hdr, 2, dest );
 
+    int base=0, xmitlen=0;
+    char *cbuf = static_cast<char *>( buf );
+
+// Now send the messages through one packet at a time.
+    do {
+    // Update base from prior packet send.
+	base += xmitlen;
+
+    // Caclulate size of next packet.
+	xmitlen = (base + C4_max_buf_sz < msglen ?
+		   C4_max_buf_sz : msglen - base);
+
+    // Wait for dest to be ready for next packet
+	while( !pe_ready[dest] )
+	    ;
+
+    // Send the next packet's worth of data.
 	shmem_putmem( (void *) &pe_recv_buf[C4_shm_mynode].data,
-		      buf, msglen, dest );
+		      cbuf+base, xmitlen, dest );
 
     // indicate dest is not ready
-
 	pe_ready[dest] = 0;
 
     // set msg_waiting flag in dest.
-
-	shmem_int_put( /*(int *)*/ &pe_msg_waiting[C4_shm_mynode],
+	shmem_int_put( &pe_msg_waiting[C4_shm_mynode],
 		       &one, 1, dest );
     }
+    while( base + xmitlen < msglen );
 }
 
 //---------------------------------------------------------------------------//
