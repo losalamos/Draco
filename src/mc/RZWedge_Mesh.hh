@@ -62,6 +62,8 @@ namespace rtt_mc
 //               in_cell() test function to determine if a set of coordinates 
 //               is in a cell
 // 31-AUG-2000 : added get_spatial_dimension() function
+// 22-MAR-2001 : fixed checks for low (high) boundaries on slope for
+//               ::sample_pos; made them a little less restrictive
 // 
 //===========================================================================//
 
@@ -599,6 +601,7 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
 						 double center_pt ) const
 {
     using global::max;
+    using global::soft_equiv;
 
     Require (cell > 0 && cell <= num_cells());
     Check (coord->get_dim() == 3);
@@ -619,12 +622,14 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     // set low_w and high_w to zero if it is less than zero
     if (low_w < 0)
     {
-	Check (low_w > -1.e-12);
+	// for these checks, low_w (high_w) should be zero, check it
+	Check (soft_equiv(center_pt, half_delw, 1.0e-6));
 	low_w = 0.0;
     }
     if (high_w < 0)
     {
-	Check (high_w > -1.e-12);
+	// for these checks, low_w (high_w) should be zero, check it
+	Check (soft_equiv(center_pt, -half_delw, 1.0e-6));
 	high_w = 0.0;
     }
 
@@ -662,12 +667,14 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
     // set low_w and high_w to zero if it is less than zero
     if (low_w < 0)
     {
-	Check (low_w > -1.e-12);
+	// for these checks, low_w (high_w) should be zero, check it
+	Check (soft_equiv(center_pt, half_delw, 1.0e-6));
 	low_w = 0.0;
     }
     if (high_w < 0)
     {
-	Check (high_w > -1.e-12);
+	// for these checks, low_w (high_w) should be zero, check it
+	Check (soft_equiv(center_pt, -half_delw, 1.0e-6));
 	high_w = 0.0;
     }
 
