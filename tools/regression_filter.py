@@ -103,6 +103,7 @@ failures = re.compile(r'Fail.*:\s*([0-9]+)', re.IGNORECASE)
 errors   = re.compile(r'error', re.IGNORECASE)
 warnings = re.compile(r'warn[a-z:]*\s+(?!AC\_TRY\_RUN).*', re.IGNORECASE)
 package  = re.compile(r'Entering.*src/([A-Za-z+_0-9]+)/test', re.IGNORECASE)
+lahey    = re.compile(r'Encountered 0 errors, 0 warnings in file.*',re.IGNORECASE)
 
 reg_host   = re.compile(r'.*>>>\s*HOSTNAME\s*:\s*(.+)', re.IGNORECASE)
 pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
@@ -174,6 +175,11 @@ for line in lines:
     # search on checkout echo line 
     # don't want to catch checkout of files with name "error" in them.
     match = checkout.search(line)
+
+    # search on compile echo line
+    # Do not catch Lahey F95 echo: "Encountered 0 errors, 0 warnings ..."
+    match = lahey.search(line)
+
     if match:
         continue
 
