@@ -42,9 +42,7 @@ include ../config/make.tests
 
 # Testing out some dejagnu support
 
-deja:
-	(cd testsuites; $(MAKE) links)
-	runtest --tool=ds++ --srcdir=./testsuites ENV=$(env) DBC=$(DBC)
+include ../config/make.deja
 
 # And now documentation.
 
