@@ -273,11 +273,11 @@ similarly cross-cutting features.
 \section*{Critical Success Factors}
 
 For the particle-transport subproject to be considered a success, we
-must be able to recuperate some of the time spent refactoring in time
-spent adding new features. Refactoring is strictly a software
-development issue but acquires a dilemma-like character becasue it's
-goal is diffucilt to quantify and can only be attempted after the
-project is complete.
+must be able to recuperate some of the time spent refactoring
+(including planning, design and implementation) in time spent adding
+new features. Refactoring is strictly a software development issue but
+acquires a dilemma-like character becasue it's goal is diffucilt to
+quantify and can only be attempted after the project is complete.
 
 To deal with this dilemma, we can consider incorporating the addition
 of a selected feature into a broader project, thereby expanding the
@@ -285,15 +285,15 @@ scope to include one cycle of ``refactor, then implement''. The
 relative ease of the implementation phase can be used to judge the
 success of the project.
 
-\begin{table}[ht]
-  \caption{Critical Success Factor Actions.}
-    \begin{enumerate}
-    \item Resolve it now.
-    \item Factor into Plan.
-    \item Change Vision/Scope.
-    \item Other.
-    \end{enumerate}
-\end{table}
+%\begin{table}[ht]
+%  \caption{Critical Success Factor Actions.}
+%    \begin{enumerate}
+%    \item Resolve it now.
+%    \item Factor into Plan.
+%    \item Change Vision/Scope.
+%    \item Other.
+%    \end{enumerate}
+%\end{table}
 
 \begin{table}[ht]
   \begin{center}
@@ -301,11 +301,10 @@ success of the project.
     \label{tab:critical-success}
     \begin{tabular}{|p{4.5cm}|c|c|p{4.5cm}|} 
     \hline
-                       & Problem or & Strategy  &          \\
-    Factor             &  Dilemma   & (1,2,3,4) & Comments \\ 
+    Factor             &  Character   & Strategy & Comments \\ 
     \hline\hline
     Refactor must pay-off in development time.
-    & Dilemma & 3 
+    & Dilemma & Factor into Plan 
     & Consider including a feature implementation step. Keep
     refactoring and implemention stages seperate. \\ 
                                 %
@@ -340,28 +339,37 @@ especially code duplication.
     \hline
     Risk & Likelihood & Impact & Importance & Contingency \\ 
     \hline\hline
-    Refactored code is significantly slower & 4 & 9 & 36 &
-    Add an optimization refactor step when new features are
-    implemented. \\ 
-    \hline
-    Refactored code is too fragmented or ``clever'' to be understood
-    easily. 
-    & 5 & 4 & 20 &
+                                %
+    Refactored code is too fragmented or ``clever'' to be easily understood.
+    & 5 & 8 & 40 &
     Consider re-consolidation for clairty. Make sure design choices are
-    well documented. \\
-    \hline
+    well documented. 
+    \\ \hline
+                                %
+    Too difficult to seperate concerns without a complete redesign
+    & 5 & 7 & 35 & Evaluate merit of a redesign with understanding of
+    its considerable cost. \\ \hline
+                                %
+    Refactored code is significantly slower & 3 & 9 & 27 &
+    Add an optimization refactor step when new features are
+    implemented. 
+    \\ \hline
+                                %
     Too difficult to tell if refactoring is useful & 6 & 3 & 18 &
-    Add an implementation step. Refactor on aesthetic merits alone. \\
-    \hline
-    Refactor planning leads to ``paralysis by analysis'' 
-    & 3 & 5 & 15 &
+    Add an implementation step. Refactor on design sensibilities alone.
+    \\ \hline
+                                % 
+    Refactor planning leads to ``paralysis by analysis'' & 
+    3 & 5 & 15 &
     Enforce a strict deadline for stopping planning phase and
-    beginning deployment. \\
-    \hline
+    beginning development. Continue planning and design with
+    development. 
+    \\ \hline
+                                % 
     Refactor scope spreads too far & 4 & 3 & 12 &
     Evaluate additional refactoring targets on merits. Adjust or
-    enforce scope as needed. \\
-    \hline
+    enforce scope as needed. 
+    \\ \hline
     \end{tabular}
   \end{center}
 \end{table}
@@ -370,24 +378,44 @@ especially code duplication.
 \newpage
 \section*{Project Tracking}
 
-Track actual results and performance with plans.
+\subsection*{Change log:}
 
-   Did you change the vision or scope of your project? 
-   
-   How well did you identify critical success factors?  What lessons
-   have you learned?
- 
-   What risks did your project realize?  How well did you estimate the
-   likelihood and impact of the realized risks?  Did you encounter
-   unforseen risks?  What lessons have you learned?
- 
-   How well were you able to estimate delivery dates?  What lessons
-   have you learned?
+\begin{description}
+\item[2/27/04] Initial version submitted for review.
 
-   What corrective action was taken?
-   
-   How will you improve the vision and scope statements for future
-   projects?
+\item[3/5/04] Changed some values in the risk analysis as per
+  suggestions from Todd. ``Excessively Clever'' code is now the number
+  one risk.
+
+  Changed ``Critical Success Factors'' section to make the table more
+  succinct. I'm looking for a more consise way to express this
+  information than the template supports.
+  
+  Added a new risk about difficulty of seperating concerns and the
+  tempation to redeisgn instead of refactor. This is apropos to the
+  apparent diffuculty of seperating random walk into a seperate
+  component within the particle transprort algorithm.
+
+\end{description}
+
+%Track actual results and performance with plans.
+%
+%   Did you change the vision or scope of your project? 
+%   
+%   How well did you identify critical success factors?  What lessons
+%   have you learned?
+% 
+%   What risks did your project realize?  How well did you estimate the
+%   likelihood and impact of the realized risks?  Did you encounter
+%   unforseen risks?  What lessons have you learned?
+% 
+%   How well were you able to estimate delivery dates?  What lessons
+%   have you learned?
+%
+%   What corrective action was taken?
+%   
+%   How will you improve the vision and scope statements for future
+%   projects?
 
 \newpage
 \bibliography{cs,jayenne_ref}

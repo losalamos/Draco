@@ -57,7 +57,7 @@
 %%
 %%
 %%---------------------------------------------------------------------------%%
-\documentclass[11pt]{nmemo}
+\documentclass[11pt]{ResearchNote}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 \usepackage[mathcal]{euscript}
@@ -94,6 +94,8 @@
 \originator{fml}
 \typist{fml}
 \date{\today}
+\revisionnum{2}
+
 %-------NO CHANGES
 
 %%---------------------------------------------------------------------------%%
@@ -104,6 +106,7 @@
   M.W. Buksas, CCS-4, D-409 \\
   J.D. Densmore, CCS-4, D-409 \\
   T.M. Evans, CCS-4, D-409 \\
+  K.G. Thompson, CCS-4, D-409 \\
   T.J. Urbatsch, CCS-4, D-409 \\
   CCS-4 Files.
 }
@@ -116,15 +119,14 @@
 
 \section*{Vision Statement}
 
-Project Thuban \footnote{Thuban, also known as {\em Alpha Draconis},
-  is a fourth-magnitude star in the constellation Draco. It is notable
+Project Thuban\footnote{Thuban, also known as {\em Alpha Draconis}, is
+  a fourth-magnitude star in the constellation Draco. It is notable
   for being the star closest to the north pole from approximately 3000
   BC to 1900 BC, due to the procession of the Earth's axis.}  will add
-new components to Draco, transforming it into a central repository for
-the common \C++ software components, the build system, the
-documentation system, (including autodoc and LaTeX document
-templates), LaTeX extensions, papers, presentations, and bibliography
-files.
+new components to {\sf Draco}, transforming it into a central
+repository for the common \C++ software components, the build system,
+the documentation system, (including autodoc and LaTeX document
+templates), and bibliography files.
 
 We are undertaking this project to improve access to all of the
 affected components by improving and unifying their organization. For
@@ -139,10 +141,8 @@ Some observable criteria for success:
 \item Increased re-use of bibliographic information with less
   duplication.
 \item Increased re-use of contrubuted LaTeX styles and classes.
-\item Greater group-wide involvement in contributions to the common
-  document repository, LaTeX extensions and envrionment improvements.
-\item More developer and customer happiness. Birds and cute bunny
-  rabbits appear and spontaneously break into song.
+\item Greater group-wide involvement in contributions to LaTeX
+  extensions and envrionment improvements.
 \end{itemize}
 
 \section*{Scope Statement}
@@ -153,25 +153,29 @@ Some observable criteria for success:
 
 \subsection*{Product of the Project}
 
-The product of project Thuban is an enlarged and more useful Draco
-respository. Draco should be more useful for developers who actively
-participate in it's evolution and users, who are simply interested in
-it's services. To this end, we propose the following products:
+The product of project Thuban is a more useable {\sf Draco}
+respository.  {\sf Draco} should be more useful for developers who
+actively participate in it's evolution and users, who are simply
+interested in it's services.  To this end, we propose the following
+products:
 
 \begin{itemize}
-  \item A central, organized, document respoitiory within Draco in
-    which it is easy to find documents and easy to determine where new
-    documents should be added.
-  \item A central, organized, bibliography repository within Draco in
+  \item A central, organized, bibliography repository within {\sf Draco} in
     which it is easy to find references and easy to determine where
     new references should be added.
-  \item Externally visible images of the parts of Draco repository
+  \item Externally visible images of the parts of {\sf Draco} repository
     which are of interest to users. E.g. The elisp components for
     xemacs, the document templates, the bibliographies, etc.. should
-    have stable locations under {\tt /codes/radtran}. Users can be
-    directed to set environment variables (e.g. {\tt \$TEXINPUTS,
-      \$BIBINPUTS}) and other configurations (e.g. {\tt
+    have stable locations under {\tt /codes/radtran/environment}.
+    Users can be directed to set environment variables (e.g. {\tt
+      \$TEXINPUTS, \$BIBINPUTS}) and other configurations (e.g. {\tt
       .xemacs/init.el}) to these stable values.
+  \item {\bf NEW} An auto-documentation component of the build system
+    which supports seperate doxygen builds of project sub-components.
+  \item {\bf NEW} A \LaTeX\ document template library and tools which
+    support the automatic generation of both postscript and pdf
+    versions of a document without re-editing and without document
+    specific-makefiles.
 \end{itemize}
 
 \section*{Critical Success Factors}
@@ -179,8 +183,9 @@ it's services. To this end, we propose the following products:
 The goal of this project is improved organization, and from that,
 increased productivity. Either of these are diffucult to measure
 quantatively, although we can rely on a shared notion of
-``organizational esthetics'' to determine whreter the new Draco is
-better organized and more useful than the old Draco + {\tt archive}.
+``organizational esthetics'' to determine whreter the new {\sf Draco}
+is better organized and more useful than the old {\sf Draco} + {\sf
+  archive}.
 
 So, in order to succeed, this project must be based on a common vision
 of what constitutes better organization. Attaining this shared vision,
@@ -204,6 +209,8 @@ project accordingly.
 \end{table}
 
 \section*{Risk Assessment}
+
+See Table~\ref{tab:risk}.
 
 \begin{table}[ht]
   \begin{center}
@@ -231,70 +238,99 @@ project accordingly.
 Because this project is small in scope, we include the planning
 details here, rather then in a seperate document.
 
-\subsubsection*{Plan highlights}
+\subsubsection*{Implementation}
 
 \begin{itemize}
 \item Do not begin until Project CLUBIMC is completed and the current
-  Draco repositiy is stable.
+  Draco repository is stable.
 
-\item Create a documents and bibliography repository in Draco.
+\item Create an {\tt environment} repository in Draco.
+
+\item Move the {\tt draco/elisp/} to {\tt draco/environment/elisp}
+
+\item Move {\tt draco/templates/} to {\tt draco/environment/templates}
   
-\item Move items from the document directories in {\tt archive} into
-  the documents and bibliography repository in Draco. Fix dcocuments
-  broken by changing paths.
-
-\item Re-locate the contributed LaTeX classes from {\tt archive} to
-  Draco.
+\item Move the latex classes, latex style and bibliography stlye
+  classes from {\tt/archive/tex/} into {\tt/draco/environment/latex/}.
   
-\item Create externally visible copies of the repositories useful to
-  users. This way, a user has access to non-developer parts of Draco
-  without checking out the archive.
+\item Gather the bibliography files from {\tt draco/doc} and various
+  subdirectories of {\tt archive} into \newline {\tt
+    draco/environment/bibfiles/}. Consolidate document-specific
+  bibliographies into the topical bibliographies. Fix any documents
+  which break.
+  
+\item Create externally visible copies of the repositories by
+  mirroring {\tt draco/environment/} as {\tt
+    /codes/radtran/environemnt}.
+  
+\item {\bf NEW} Re-implement the autodoc part of the build system.
+  Allow sub-packages to declare their own {\tt autodoc} directories
+  for seperate generation of documentation.
 
-  This can be done with a CVS checkout, or by creating a copy of the
-  directory itself.
+\item {\bf NEW} Modify the \LaTeX\ document template classes to attain
+  postscript and pdf independence. The goal is to be able to run latex
+  or pdf latex on a document without modification.
 
+\item {\bf NEW} Incorporate {\sf latexmake} into draco. This is a tool
+  for automatically building \LaTeX\ documents. 
+  
 \end{itemize}
 
 \subsubsection*{Proposed directory structure}
 
-{\ttfamily
-\begin{tabbing}
-  \hspace*{0.5cm}\=\hspace{0.5cm}\=\hspace{0.5cm}\=\hspace{0.5cm}\=\kill
-  draco/ \\
-  \> src/ ({\rmfamily as before, minus {\tt mc} and {\tt imc}}) \\
-  \> \> ds++/ \\
-  \> \> \> doc/ {(\rmfamily package-specific documentation still with
-    package, e.g. release notes)} \\
-  \> \> c4/ \\
-  \> \> {\rmfamily etc...} \\
-  \> documents/ ({\rmfamily contents from {\tt mcdoc} and {\tt imcdoc}.)}\\
-  \> \> bibfiles/ \\
-  \> \> figures/ ({\rmfamily central location for widely used figures only)}\\
-  \> \> research\_notes/ \\
-  \> \> papers/ \\
-  \> \> presentations/ \\
-  \> \> planning/ \\
-  \> \> methods/ \\
-  \> environment/ \\
-  \> \> templates/ \\
-  \> \> elisp/ \\
-  \> \> latex/ \\
-\end{tabbing}
-}    
+\begin{center}
+  \ttfamily
+  \framebox{
+    \parbox{5in}{
+      \begin{tabbing}
+        \hspace*{0.5cm}\=\hspace{0.5cm}\=\hspace{0.5cm}\=\hspace{0.5cm}\=\kill
+        draco/ \\
+        \> doc/ ({\rmfamily draco-specific documentation)} \\
+        \> src/ \\
+        \> \> ds++/ \\
+        \> \> \> doc/ {(\rmfamily package-specific documentation
+          e.g. release notes)} \\  
+        \> \> c4/ \\
+        \> \> \> doc/ \\
+        \> \> {\rmfamily etc...} \\
+        \> environment/ \\
+        \> \> templates/ \\
+        \> \> elisp/ \\
+        \> \> latex/ \\
+        \> \> bibfiles/
+      \end{tabbing}
+    }
+  }
+\end{center}
+
 
 \subsubsection*{Notes}
 
 \begin{itemize}
+  
+\item Package-specific documentation is still bundled with the
+  package, e.g. {\tt draco/doc/} for documents about Draco as a
+  whole and {\tt draco/src/<package>/doc/} for documentation about
+  specific packages.
+  
+\item The bibliography files should be defined along topics e.g. {\em
+    imc}, {\em mc}, {\em comp-sci}, etc...
 
-\item The proposed organization within the {\tt documents\ } directory
-  is by type, rather than subject matter. My impression is that this
-  will make things easier to find, but this is debateable.
-
-\item The {\tt bibfiles} directory should contain the {\em
-    autobibliography} of everything in the other documents
-  directories. Citations of outside work can be grouped into a small
-  number of well-defined topics, e.g. {\em imc}, {\em mc}, {\em
-    comp-sci}, etc...
+\item The external copy of the environment information can be created
+  in two ways. The repositiory can be checked out at the desired
+  location, effectively making it a development location as well.
+  Alternatively, the directory can be ``installed'' to this location
+  as part of the build system. This means that other clients of draco
+  with local installations would be able to specify another location.
+  
+\item Documents within the Draco doc directories can reference the
+  bibliographies via a relative path which points to {\tt
+    draco/environment/bibfiles}. Documents elsewhere can either depend
+  on having {\tt \$BIBINPUTS} set correctly or use the absolute path
+  at \newline {\tt /codes/radtran/environment/bibfiles}. Using {\tt
+    \$BIBINPUTS} is more robust. It will be necessary for users to set
+  {\tt \$TEXIPUTS} and {\tt \$BSTINPUTS} to use the \LaTeX extensions
+  provided in \newline {\tt/codes/radtran/environment/latex/} also.
 
 \end{itemize}
   
@@ -325,6 +361,19 @@ details here, rather then in a seperate document.
 
 \begin{description}
 \item[3/25/04] Submitted initial version for review.
+  
+\item[3/35/04] Had review session with Tom. We agreed that the
+  documents themselves (as opposed to package-specific
+  ``documentation'') should be moved to Jayenne. This avoids
+  mission-creeping Draco into something bigger. 
+
+  The bibliograpy files are to be treated as part of the common
+  envrionment, and so remain behind in draco as part of the
+  {\tt environment} directory.  I've added some more detail on the
+  external environment repository and how documents should use it.
+
+\item [3/30/04] Added some new items for consideration. Upped version
+  number to 2.
 
 \end{description}
 
