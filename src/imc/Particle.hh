@@ -55,21 +55,17 @@ public:
 	    : output(output_), detail(detail_) {}
 
       // switches
-	bool Detail() const { return detail; }
+	bool detail_status() const { return detail; }
 
       // diagnostic print functions
-	void Print(const Particle<MT> &) const;
-	void Print_alive(const Particle<MT> &) const;
-	void Print_dead(const Particle<MT> &) const;
-	void Print_dist(double, double, int) const;
-	void Print_xs(const Opacity<MT> &, int) const;
+	void print(const Particle<MT> &) const;
+	void print_alive(const Particle<MT> &) const;
+	void print_dead(const Particle<MT> &) const;
+	void print_dist(double, double, int) const;
+	void print_xs(const Opacity<MT> &, int) const;
 
       // inline output formatters
-	void Header() const 
-	{ 
-	    output << "*** PARTICLE HISTORY ***" << endl; 
-	    output << "------------------------" << endl;
-	}
+	inline void header() const;
     };
 
   // friends and such
@@ -96,45 +92,79 @@ private:
   // private particle service functions
 
   // stream a distance d
-    void Stream(double distance)
-    {
-      // calculate new location
-	for (int i = 0; i <= r.size()-1; i++)
-	    r[i] = r[i] + distance * omega[i];
-    }
+    inline void stream(double);
 
   // collision, return a false if particle is absorbed
-    bool Collide(const MT &, const Opacity<MT> &);
+    bool collide(const MT &, const Opacity<MT> &);
+
   // surface crossings, return a false if particle escapes
-    bool Surface(const MT &, int);
+    bool surface(const MT &, int);
 
   // have not yet defined copy constructors or assignment operators
     Particle(const Particle<MT> &);
     Particle<MT>& operator=(const Particle<MT> &);
 
 public:
-  // default constructor
-    Particle(const MT &mesh, long seed, double ew_)
-	:ew(ew_), r(mesh.Coord().Get_dim(), 0.0), 
-	 omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), 
-	 descriptor("born"), random(seed)
-    {}
-        
-  // transport member functions
-    void Source(vector<double> &, vector<double> &, const MT &);
-    void Transport(const MT &, const Opacity<MT> &, 
+  // explicit constructor
+    inline explicit Particle(const MT &, long, double);
+
+  // transport solvers
+
+  // source is temporary until the real source object arrives 
+    void source(vector<double> &, vector<double> &, const MT &);
+
+  // IMC transport step
+    void transport_IMC(const MT &, const Opacity<MT> &, 
 		   SP<Diagnostic> = SP<Diagnostic>());
 
+  // DDMC transport step
+    void transport_DDMC(const MT &, const Opacity<MT> &);
+
   // other services
-    bool Status() const { return alive; }
+    bool status() const { return alive; }
 
   // public diagnostic services
-    void Print(ostream &) const;
+    void print(ostream &) const;
 };
 
-// overloaded functions
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
+
 template<class MT>
 ostream& operator<<(ostream &, const Particle<MT> &);
+
+//---------------------------------------------------------------------------//
+// inline functions for Particle
+//---------------------------------------------------------------------------//
+
+// Particle<MT>::Diagnostic inline functions
+
+template<class MT>
+inline void Particle<MT>::Diagnostic::header() const 
+{ 
+    output << "*** PARTICLE HISTORY ***" << endl; 
+    output << "------------------------" << endl;
+}
+
+// Particle<MT> inline functions
+
+template<class MT>
+inline Particle<MT>::Particle(const MT &mesh, long seed, double ew_)
+    :ew(ew_), r(mesh.get_Coord().get_dim(), 0.0), 
+     omega(mesh.get_Coord().get_sdim(), 0.0), cell(0), alive(true), 
+     descriptor("born"), random(seed)
+{
+  // explicit constructor, Particle must be defined with a Mesh
+}
+
+template<class MT>
+inline void Particle<MT>::stream(double distance)
+{
+  // calculate new location when Particle streams
+    for (int i = 0; i <= r.size()-1; i++)
+	r[i] = r[i] + distance * omega[i];
+}
 
 CSPACE
 

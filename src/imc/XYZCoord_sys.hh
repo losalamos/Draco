@@ -40,7 +40,7 @@ public:
     XYZCoord_sys() : Coord_sys(3) {}
 
   // virtual functions
-    virtual string Get_coord() const { string c = "xyz"; return c; }
+    virtual string get_Coord() const { string c = "xyz"; return c; }
 };
 
 CSPACE

@@ -25,7 +25,7 @@ using std::endl;
 //---------------------------------------------------------------------------//
 // public Mesh build member functions
 //---------------------------------------------------------------------------//
-SP<OS_Mesh> OS_Builder::Build_Mesh()
+SP<OS_Mesh> OS_Builder::build_Mesh()
 {
   // declare smart pointers
     SP<Coord_sys> coord;
@@ -33,26 +33,26 @@ SP<OS_Mesh> OS_Builder::Build_Mesh()
     SP<OS_Mesh> return_mesh;
 
   // get data arrays from OS_Interface needed to build OS_Mesh
-    fine_edge = interface->Fine_edge();
-    bnd_cond  = interface->Boundaries();
+    fine_edge = interface->get_fine_edge();
+    bnd_cond  = interface->get_boundaries();
     
   // build mesh-independent objects
-    coord  = Build_Coord();
-    layout = Build_Layout(*coord);
+    coord  = build_Coord();
+    layout = build_Layout(*coord);
     
   // build mesh
-    int dim = coord->Get_dim();
+    int dim = coord->get_dim();
     if (dim == 2)
-	return_mesh = Build_2DMesh(coord, *layout);
+	return_mesh = build_2DMesh(coord, *layout);
     else if (dim == 3)
-      	return_mesh = Build_3DMesh(coord, *layout);
+      	return_mesh = build_3DMesh(coord, *layout);
     return return_mesh;
 }
 
 //---------------------------------------------------------------------------//
 // private Mesh build member functions
 //---------------------------------------------------------------------------//
-SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, Layout &layout)
+SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
     int num_xsur   = fine_edge[0].size();
@@ -61,10 +61,10 @@ SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, Layout &layout)
     int num_ycells = num_ysur - 1;
     int num_cells  = num_xcells * num_ycells;
     int num_vert   = num_xsur * num_ysur;
-    int dimension  = coord->Get_dim();
+    int dimension  = coord->get_dim();
 
   // check some assertions
-    assert (layout.Num_cells() == num_cells);
+    assert (layout.num_cells() == num_cells);
 
   // initialization variables for Mesh
     OS_Mesh::CCVF_a vertex(dimension);
@@ -111,7 +111,7 @@ SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 }
 
 //---------------------------------------------------------------------------//
-SP<OS_Mesh> OS_Builder::Build_3DMesh(SP<Coord_sys> coord, Layout &layout)
+SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
     int num_xsur   = fine_edge[0].size();
@@ -122,10 +122,10 @@ SP<OS_Mesh> OS_Builder::Build_3DMesh(SP<Coord_sys> coord, Layout &layout)
     int num_zcells = num_zsur - 1;
     int num_cells  = num_xcells * num_ycells * num_zcells;
     int num_vert   = num_xsur * num_ysur * num_zsur;
-    int dimension  = coord->Get_dim();
+    int dimension  = coord->get_dim();
 
   // check some assertions
-    assert (layout.Num_cells() == num_cells);
+    assert (layout.num_cells() == num_cells);
 
   // initialization variables for Mesh
     OS_Mesh::CCVF_a vertex(dimension);
@@ -188,10 +188,10 @@ SP<OS_Mesh> OS_Builder::Build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 //---------------------------------------------------------------------------//
 // Coord_sys build member functions
 //---------------------------------------------------------------------------//
-SP<Coord_sys> OS_Builder::Build_Coord()
+SP<Coord_sys> OS_Builder::build_Coord()
 {
   // get coordinate system from OS_Interface
-    string coord_system = interface->Coordinates();
+    string coord_system = interface->get_coordinates();
 
   // build coordinate system
     SP<Coord_sys> coord;
@@ -213,31 +213,31 @@ SP<Coord_sys> OS_Builder::Build_Coord()
 //---------------------------------------------------------------------------//
 // Layout build member functions
 //---------------------------------------------------------------------------//
-SP<Layout> OS_Builder::Build_Layout(const Coord_sys &coord)
+SP<Layout> OS_Builder::build_Layout(const Coord_sys &coord)
 {
   // set size of new Layout
     int size = 1;
-    for (int d = 0; d < coord.Get_dim(); d++)
+    for (int d = 0; d < coord.get_dim(); d++)
 	size *= fine_edge[d].size() - 1;
     SP<Layout> layout = new Layout(size);
 
   // set number of faces for each cell in Layout, for OS Meshes this is two
   // times the dimension of the Mesh, ie. a 2D mesh cell has 4 faces
     for (int i = 1; i <= size; i++)
-	layout->Set_size(i, coord.Get_dim()*2);
+	layout->set_size(i, coord.get_dim()*2);
 
   // assign cells and faces to Layout
-    if (coord.Get_dim() == 2)
-	Assign2D(*layout);
-    else if (coord.Get_dim() == 3)
-	Assign3D(*layout);
+    if (coord.get_dim() == 2)
+	assign2D(*layout);
+    else if (coord.get_dim() == 3)
+	assign3D(*layout);
 
   // return built Layout
     return layout;
 }
 
 //---------------------------------------------------------------------------//
-void OS_Builder::Assign2D(Layout &layout)
+void OS_Builder::assign2D(Layout &layout)
 {
   // 2D map of Mesh
     int num_xcells = fine_edge[0].size() - 1;
@@ -245,7 +245,7 @@ void OS_Builder::Assign2D(Layout &layout)
 
   // loop over num_cells and assign cell across faces
   // 1:x(-), 2:x(+), 3:y(-), 4:y(+)
-    for (int cell = 1; cell <= layout.Num_cells(); cell++)
+    for (int cell = 1; cell <= layout.num_cells(); cell++)
     {
 	layout(cell, 1) = cell - 1;
 	layout(cell, 2) = cell + 1;
@@ -298,7 +298,7 @@ void OS_Builder::Assign2D(Layout &layout)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Builder::Assign3D(Layout &layout)
+void OS_Builder::assign3D(Layout &layout)
 {
   // 3D map of Mesh
     int num_xcells = fine_edge[0].size() - 1;
@@ -307,7 +307,7 @@ void OS_Builder::Assign3D(Layout &layout)
 
   // loop over num_cells and assign cell across faces
   // 1:x(-), 2:x(+), 3:y(-), 4:y(+), 5:z(-), 6:z(+)
-    for (int cell = 1; cell <= layout.Num_cells(); cell++)
+    for (int cell = 1; cell <= layout.num_cells(); cell++)
     {
 	layout(cell, 1) = cell - 1;
 	layout(cell, 2) = cell + 1;

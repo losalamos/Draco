@@ -20,30 +20,30 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface, SP<MT> mesh)
     : rho(mesh), temp(mesh), opacity(mesh)
 {
   // assign data members from the interface parser
-    zone        = interface->Zone();
-    mat_zone    = interface->Mat_zone();
-    density     = interface->Density();
-    kappa       = interface->Kappa();
-    temperature = interface->Temperature();
+    zone        = interface->get_zone();
+    mat_zone    = interface->get_mat_zone();
+    density     = interface->get_density();
+    kappa       = interface->get_kappa();
+    temperature = interface->get_temperature();
 
   // check some asserts verifying size of mesh
-    assert (mesh->Num_cells() == rho.Mesh().Num_cells());
-    assert (mesh->Num_cells() == temp.Mesh().Num_cells());
-    assert (mesh->Num_cells() == opacity.Mesh().Num_cells());
-    assert (zone.size() == mesh->Num_cells());
+    assert (mesh->num_cells() == rho.get_Mesh().num_cells());
+    assert (mesh->num_cells() == temp.get_Mesh().num_cells());
+    assert (mesh->num_cells() == opacity.get_Mesh().num_cells());
+    assert (zone.size() == mesh->num_cells());
 }
 
 //---------------------------------------------------------------------------//
 // build Mat_State object
 //---------------------------------------------------------------------------//
 template<class MT>
-SP< Mat_State<MT> > Opacity_Builder<MT>::Build_Mat()
+SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat()
 {
   // return Mat_State object
     SP< Mat_State<MT> > return_state;
 
   // number of cells
-    int num_cells = rho.Mesh().Num_cells();
+    int num_cells = rho.get_Mesh().num_cells();
 
   // assign density and temperature to each cell
     for (int cell = 1; cell <= num_cells; cell++)
@@ -65,13 +65,13 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::Build_Mat()
 // build Opacity object
 //---------------------------------------------------------------------------//
 template<class MT>
-SP< Opacity<MT> > Opacity_Builder<MT>::Build_Opacity()
+SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity()
 {
   // return Opacity object
     SP< Opacity<MT> > return_opacity;
 
   // number of cells
-    int num_cells = opacity.Mesh().Num_cells();
+    int num_cells = opacity.get_Mesh().num_cells();
 
   // calculate and assign opacities to each cell
     for (int cell = 1; cell <= num_cells; cell++)

@@ -70,42 +70,48 @@ private:
   // Parser member functions
 
   // OS_Mesh parser functions
-    void Parser_mesh(ifstream &);
-    void Parser2D(ifstream &);
-    void Parser3D(ifstream &);
+    void parser_Mesh(ifstream &);
+    void parser2D(ifstream &);
+    void parser3D(ifstream &);
 
   // Source member functions
-    void Parser_source(ifstream &);
+    void parser_Source(ifstream &);
 
   // Opacity parser functions
-    void Parser_opacity(ifstream &);
-    void Zone_mapper();
-    void Cell_zone(int, int);
-    void Cell_zone(int, int, int);
-    void Zone_parser(ifstream &);
+    void parser_Opacity(ifstream &);
+    void zone_mapper();
+    void cell_zone(int, int);
+    void cell_zone(int, int, int);
+    void zone_parser(ifstream &);
 public:
   // constructor
-    explicit OS_Interface(const string &infile)
-	: input_file(infile), coord_system(""), fine_cells(0), 
-	  accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
-	  zone(0), mat_zone(0), density(0), kappa(0), temperature(0)
-    {}
+    explicit inline OS_Interface(const string &infile);
 
   // public Parser member functions
-    void Parser();
+    void parser();
     
   // public copy functions for mesh
-    string Coordinates() const { return coord_system; }
-    const vector<string>& Boundaries() const { return bnd_cond; }
-    const OS_Mesh::CCVF_a& Fine_edge() const { return fine_edge; }
+    string get_coordinates() const { return coord_system; }
+    const vector<string>& get_boundaries() const { return bnd_cond; }
+    const OS_Mesh::CCVF_a& get_fine_edge() const { return fine_edge; }
     
   // public copy functions for Opacity<MT>
-    const vector<int>& Zone() const { return zone; }
-    const vector<int>& Mat_zone() const { return mat_zone; }
-    const vector<double>& Density() const { return density; }
-    const vector<double>& Kappa() const { return kappa; }
-    const vector<double>& Temperature() const { return temperature; }
+    const vector<int>& get_zone() const { return zone; }
+    const vector<int>& get_mat_zone() const { return mat_zone; }
+    const vector<double>& get_density() const { return density; }
+    const vector<double>& get_kappa() const { return kappa; }
+    const vector<double>& get_temperature() const { return temperature; }
 };
+
+//---------------------------------------------------------------------------//
+// inline functions for OS_Interface
+//---------------------------------------------------------------------------//
+
+inline OS_Interface::OS_Interface(const string &infile)
+    : input_file(infile), coord_system(""), fine_cells(0), 
+      accum_cells(0), coarse_edge(0), fine_edge(0), bnd_cond(0), 
+      zone(0), mat_zone(0), density(0), kappa(0), temperature(0)
+{}
 
 CSPACE
 

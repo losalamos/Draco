@@ -46,40 +46,57 @@ public:
   // operator needed because we are using vectors
     Layout(int num_cells = 0) : face_cell(num_cells) {}
 
-  // inline function which sets the size of the face_cell
-  // array to the number of cells in the problem 
-    void Set_size(int num_cells) { face_cell.resize(num_cells); }
-
-  // inline function to size the face vector for cell_index
-    void Set_size(int cell_index, int num_faces)
-    {
-	face_cell[cell_index-1].resize(num_faces);
-    } 
+  // set size member functions, set size of whole Layout and set size for
+  // number of faces in a particular cell
+    void set_size(int num_cells) { face_cell.resize(num_cells); }
+    inline void set_size(int, int);
 
   // inline get functions
-    int Num_cells() const { return face_cell.size(); }
-    int Num_faces(int cell_index) const
-    {
-	return face_cell[cell_index-1].size();
-    }
-    void Print(ostream &, int) const;
+    int num_cells() const { return face_cell.size(); }
+    inline int num_faces(int) const;
 
-  // overloaded operator for subscripting, not assignment,
-  // for const objects
-    int operator()(int cell_index, int face_index) const
-    {
-	return face_cell[cell_index-1][face_index-1];
-    }
+  // diagnostic functions
+    void print(ostream &, int) const;
 
-  // overloaded operator for subscriping and assignment
-    int & operator()(int cell_index, int face_index)
-    {
-	return face_cell[cell_index-1][face_index-1];
-    }
+  // overloaded subscripting operators for assignment and retrieval
+    inline int operator()(int, int) const;
+    inline int& operator()(int, int);
 };
+
+//---------------------------------------------------------------------------//
+// overloaded operators
+//---------------------------------------------------------------------------//
 
 // overload operator declarations for Layout
 ostream & operator<<(ostream &, const Layout &);
+
+//---------------------------------------------------------------------------//
+// inline functions for Layout
+//---------------------------------------------------------------------------//
+
+inline void Layout::set_size(int cell_index, int num_faces)
+{
+  // set the number of faces for cell_index
+    face_cell[cell_index-1].resize(num_faces);
+} 
+
+inline int Layout::num_faces(int cell_index) const
+{
+  // return the number of faces for cell_index
+    return face_cell[cell_index-1].size();
+}
+
+inline int Layout::operator()(int cell_index, int face_index) const
+{
+  // subscripting operator for data referencing
+    return face_cell[cell_index-1][face_index-1];
+}
+
+inline int& Layout::operator()(int cell_index, int face_index)
+{
+  // subscripting operator for data assignment
+    return face_cell[cell_index-1][face_index-1];
+}
 
 CSPACE
 

@@ -48,7 +48,7 @@ public:
     XYCoord_sys() : Coord_sys(2) {}
 
   // virtual functions
-    virtual string Get_coord() const { string c = "xy"; return c; }
+    virtual string get_Coord() const { string c = "xy"; return c; }
 };
 
 CSPACE

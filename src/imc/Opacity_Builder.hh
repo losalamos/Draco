@@ -52,10 +52,10 @@ public:
   // build state member functions
 
   // build Mat_State helper functions
-    SP< Mat_State<MT> > Build_Mat();
+    SP< Mat_State<MT> > build_Mat();
     
   // build Opacity helper functions
-    SP< Opacity<MT> > Build_Opacity();	
+    SP< Opacity<MT> > build_Opacity();	
 };
     
 CSPACE

@@ -41,28 +41,42 @@ public:
   // explicit constructor
     explicit Mat_State(const typename MT::CCSF<double> &density_, 
 		       const typename MT::CCSF<double> &temperature_)
-	: density(density_), temperature(temperature_)
-    {}
+	: density(density_), temperature(temperature_) {}
 
   // public member functions
-    double& Density(int cell) { return density(cell); }
-    double Density(int cell) const { return density(cell); }
-    double& Temperature(int cell) { return temperature(cell); }
-    double Temperature(int cell) const { return temperature(cell); }
-    int Num_cells() const
-    {
-	assert (density.Mesh().Num_cells() ==
-		temperature.Mesh().Num_cells());
-	return density.Mesh().Num_cells();
-    }
-    
+
+  // return values of material state data
+    double& get_rho(int cell) { return density(cell); }
+    double get_rho(int cell) const { return density(cell); }
+    double& get_T(int cell) { return temperature(cell); }
+    double get_T(int cell) const { return temperature(cell); }
+
+  // get the number of cells in the mesh
+    inline int num_cells() const;
+
   // diagnostic functions (for printing)
-    void Print(ostream &, int) const;
+    void print(ostream &, int) const;
 };
 
+//---------------------------------------------------------------------------//
 // overloaded operators
+//---------------------------------------------------------------------------//
+
 template<class MT>
 ostream& operator<<(ostream &, const Mat_State<MT> &);
+
+//---------------------------------------------------------------------------//
+// inline functions for Mat_State
+//---------------------------------------------------------------------------//
+
+template<class MT>
+inline int Mat_State<MT>::num_cells() const
+{
+  // return the number of cells
+    assert (density.get_Mesh().num_cells() ==
+	    temperature.get_Mesh().num_cells());
+    return density.get_Mesh().num_cells();
+}
 
 CSPACE
 

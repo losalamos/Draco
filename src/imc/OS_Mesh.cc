@@ -23,31 +23,31 @@ using std::sort;
 OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_, 
 		 CCVF_i &cell_pair_) 
     : coord(coord_), layout(layout_), vertex(vertex_),
-      cell_pair(cell_pair_), sur(coord->Get_dim()) 
+      cell_pair(cell_pair_), sur(coord->get_dim()) 
 {
   // assertions to verify size of mesh and existence of a Layout and
   // Coord_sys  
     assert (coord);
 	
   // variable initialization
-    int num_cells = Num_cells();
-    int dimension = coord->Get_dim();
+    int ncells = num_cells();
+    int dimension = coord->get_dim();
     
   // dimension assertions
     assert (dimension == vertex.size());
     assert (dimension == sur.size());
     
   // mesh size assertions
-    assert (num_cells == cell_pair.size());
+    assert (ncells == cell_pair.size());
       
   // calculate surface array
-    Calc_surface();
+    calc_surface();
 }
 
 //---------------------------------------------------------------------------//
 // private member functions
 //---------------------------------------------------------------------------//
-void OS_Mesh::Calc_surface()
+void OS_Mesh::calc_surface()
 {
   // calculate an array of the dimensional surfaces which make up the OS_Mesh
 
@@ -55,7 +55,7 @@ void OS_Mesh::Calc_surface()
     int mesh_size = 1;
 
   // loop to calculate surface array
-    for (int d = 0; d < coord->Get_dim(); d++)
+    for (int d = 0; d < coord->get_dim(); d++)
     {
       // define an array for dim which is sorted in ascending order
 	vector<double> sorted = vertex[d];
@@ -72,16 +72,16 @@ void OS_Mesh::Calc_surface()
     }
 
   // assert mesh size
-    assert (Num_cells() == mesh_size);
+    assert (num_cells() == mesh_size);
 }
 
 //---------------------------------------------------------------------------//
 // member functions
 //---------------------------------------------------------------------------//
-int OS_Mesh::Get_cell(const vector<double> &r) const
+int OS_Mesh::get_cell(const vector<double> &r) const
 {
   // used variables
-    int dim         = coord->Get_dim();
+    int dim         = coord->get_dim();
     int return_cell = 1;
     int subcells    = 1;
     
@@ -111,7 +111,7 @@ int OS_Mesh::Get_cell(const vector<double> &r) const
 }
 
 //---------------------------------------------------------------------------//
-double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
+double OS_Mesh::get_db(const vector<double> &r, const vector<double> &omega,
 		       int cell, int &face) const
 {
     using std::vector;
@@ -121,10 +121,10 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
   // calculate distance to the vec(r) boundaries
 
   // boundary distances over each coordinate direction
-    vector<double> dim_dist_boundary(coord->Get_dim(), 0.0);
+    vector<double> dim_dist_boundary(coord->get_dim(), 0.0);
     
   // loop to get the distances to boundary in each coordinate direction
-    for (int i = 0; i < coord->Get_dim(); i++)
+    for (int i = 0; i < coord->get_dim(); i++)
     {
       // define absolute dimension index
 	int d = i + 1;
@@ -133,9 +133,9 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
 	if (omega[i] == 0.0)
 	    dim_dist_boundary[i] = Global::huge;
 	else if (omega[i] > 0.0)
-	    dim_dist_boundary[i] = (Max(d, cell) - r[i]) / omega[i];
+	    dim_dist_boundary[i] = (max(d, cell) - r[i]) / omega[i];
 	else
-	    dim_dist_boundary[i] = (Min(d, cell) - r[i]) / omega[i];
+	    dim_dist_boundary[i] = (min(d, cell) - r[i]) / omega[i];
     }
 
   // calculate the distance to boundary
@@ -157,7 +157,7 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
-void OS_Mesh::Print(ostream &output, int cell) const
+void OS_Mesh::print(ostream &output, int cell) const
 {
     using std::cout;
     using std::endl;
@@ -170,26 +170,26 @@ void OS_Mesh::Print(ostream &output, int cell) const
     output << "---------------" << endl;
     output << "Dimensions "     << endl;
     output << "---------------" << endl;
-    if (coord->Get_dim() == 2)
+    if (coord->get_dim() == 2)
     {
-	output << " x  : " << Pos(1, cell) << endl;
-	output << " y  : " << Pos(2, cell) << endl;
-    	output << " dx : " << Dim(1, cell) << endl;
-	output << " dy : " << Dim(2, cell) << endl;
+	output << " x  : " << pos(1, cell) << endl;
+	output << " y  : " << pos(2, cell) << endl;
+    	output << " dx : " << dim(1, cell) << endl;
+	output << " dy : " << dim(2, cell) << endl;
     }
     else
     {
-	output << " x  : " << Pos(1, cell) << endl;
-	output << " y  : " << Pos(2, cell) << endl;
-	output << " z  : " << Pos(3, cell) << endl;
-    	output << " dx : " << Dim(1, cell) << endl;
-	output << " dy : " << Dim(2, cell) << endl;
-	output << " dz : " << Dim(3, cell) << endl;
+	output << " x  : " << pos(1, cell) << endl;
+	output << " y  : " << pos(2, cell) << endl;
+	output << " z  : " << pos(3, cell) << endl;
+    	output << " dx : " << dim(1, cell) << endl;
+	output << " dy : " << dim(2, cell) << endl;
+	output << " dz : " << dim(3, cell) << endl;
     }	
     output << "---------------" << endl;
     output << "Layout "         << endl;
     output << "---------------" << endl;
-    layout.Print(output, cell);
+    layout.print(output, cell);
     output << "+++++++++++++++" << endl;
 }
 

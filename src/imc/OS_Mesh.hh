@@ -79,10 +79,10 @@ public:
     public:
       // inline explicit constructor
 	explicit CCSF(SP<OS_Mesh> mesh_) : mesh(mesh_),
-	    data(mesh->Num_cells()) { }
+	    data(mesh->num_cells()) { }
 
       // return reference to mesh
-	const OS_Mesh& Mesh() const { return *mesh; }
+	const OS_Mesh& get_Mesh() const { return *mesh; }
 
       // subscripting
 	T operator()(int cell) const { return data[cell-1]; }
@@ -103,7 +103,7 @@ public:
 	inline explicit CCVF(SP<OS_Mesh>);
 
       // return reference to mesh
-	const OS_Mesh& Mesh() const { return *mesh; }
+	const OS_Mesh& get_Mesh() const { return *mesh; }
 
       // subscripting
 	inline T operator()(int, int) const;
@@ -125,7 +125,7 @@ private:
   // private functions
 
   // calculate a surface array from the vertices of the mesh
-    void Calc_surface();
+    void calc_surface();
 
   // private copy and assignment operators; can't copy or assign a mesh
     OS_Mesh(const OS_Mesh &);
@@ -139,39 +139,38 @@ public:
   // references to imbedded objects
 
   // return references to the Coord_sys and Layout
-    const Layout& Get_Layout() const { return layout; }
-    const Coord_sys& Coord() const { return *coord; }
+    const Layout& get_Layout() const { return layout; }
+    const Coord_sys& get_Coord() const { return *coord; }
 
   // mesh dimensionality functions
 
-    inline double Begin(int) const;
-    inline double End(int) const;
-    int Num_cells() const { return layout.Num_cells(); }
+    inline double begin(int) const;
+    inline double end(int) const;
+    int num_cells() const { return layout.num_cells(); }
 
   // cell dimensionality functions
 
   // find minimum and maximum dimension of cell
-    inline double Min(int, int) const;
-    inline double Max(int, int) const;
+    inline double min(int, int) const;
+    inline double max(int, int) const;
 
   // find centerpoint of cell, width of cell, and volume of cell
-    inline double Pos(int, int) const;
-    double Dim(int d, int cell) const { return Max(d, cell) - Min(d, cell); }
-    inline double Volume(int) const;
+    inline double pos(int, int) const;
+    double dim(int d, int cell) const { return max(d, cell) - min(d, cell); }
+    inline double volume(int) const;
 
   // diagnostic functions
 
-    void Print(ostream &, int) const;
+    void print(ostream &, int) const;
 
   // required services: find cell across face, find a cell, get
   // dist-boundary, and get the normal for a cell-face
 
-    int Next_cell(int cell, int face) const { return layout(cell, face); }
-    int Get_cell(const vector<double> &) const;
-    double Get_db(const vector<double> &, const vector<double> &, int, 
+    int next_cell(int cell, int face) const { return layout(cell, face); }
+    int get_cell(const vector<double> &) const;
+    double get_db(const vector<double> &, const vector<double> &, int, 
 		  int &) const;
-    inline vector<double> Get_normal(int, int) const;
-
+    inline vector<double> get_normal(int, int) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -183,11 +182,11 @@ public:
 // CCVF constructor
 template<class T>
 inline OS_Mesh::CCVF<T>::CCVF(SP<OS_Mesh> mesh_)
-    : mesh(mesh_), data(mesh->Coord().Get_dim())
+    : mesh(mesh_), data(mesh->get_Coord().get_dim())
 {
   // initialize data array
-    for (int i = 0; i < mesh->Coord().Get_dim(); i++)
-	data[i].resize(mesh->Num_cells());
+    for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
+	data[i].resize(mesh->num_cells());
 }
 
 template<class T>
@@ -204,19 +203,19 @@ inline T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
 
 // OS_Mesh inline functions
 
-inline double OS_Mesh::Begin(int d) const 
+inline double OS_Mesh::begin(int d) const 
 {
   // find the minimum surface for d over the whole mesh
     return *min_element(vertex[d-1].begin(), vertex[d-1].end()); 
 }
 
-inline double OS_Mesh::End(int d) const 
+inline double OS_Mesh::end(int d) const 
 {
   // find the maximum surface for d over the whole mesh
     return *max_element(vertex[d-1].begin(), vertex[d-1].end()); 
 }
 
-inline double OS_Mesh::Pos(int d, int cell) const
+inline double OS_Mesh::pos(int d, int cell) const
 {
   // find center position of cell
 
@@ -232,7 +231,7 @@ inline double OS_Mesh::Pos(int d, int cell) const
     return return_pos / static_cast<double>(cell_pair[cell-1].size());     
 }
 
-inline double OS_Mesh::Min(int d, int cell) const 
+inline double OS_Mesh::min(int d, int cell) const 
 {	
   // find minimum dimension along d of cell
 
@@ -251,7 +250,7 @@ inline double OS_Mesh::Min(int d, int cell) const
     return minimum;
 }
 
-inline double OS_Mesh::Max(int d, int cell) const
+inline double OS_Mesh::max(int d, int cell) const
 {
   // find maximum dimension of cell
 
@@ -270,26 +269,26 @@ inline double OS_Mesh::Max(int d, int cell) const
     return maximum;
 }
 
-inline double OS_Mesh::Volume(int cell) const 
+inline double OS_Mesh::volume(int cell) const 
 {
   // calculate volume of cell
 
   // loop through dimensions and get volume
     double volume = 1.0;
-    for (int d = 1; d <= coord->Get_dim(); d++)
-	volume *= Dim(d, cell);
+    for (int d = 1; d <= coord->get_dim(); d++)
+	volume *= dim(d, cell);
 
   // return volume
     return volume;
 }
 
-inline vector<double> OS_Mesh::Get_normal(int cell, int face) const
+inline vector<double> OS_Mesh::get_normal(int cell, int face) const
 {
   // OS_Meshes do not require any functionality from Coord_sys to 
   // calculate the normal, do simple return
 
   // normal always has 3 components, use Get_sdim()
-    vector<double> normal(coord->Get_sdim(), 0.0);
+    vector<double> normal(coord->get_sdim(), 0.0);
 	
   // calculate normal based on face, (-x, +x, -y, +y, -z, +z), only
   // one coordinate is non-zero

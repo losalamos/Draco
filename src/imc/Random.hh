@@ -50,29 +50,24 @@ private:
     long count;
   // original seed value
     const long seed;
+
   // don't allow assignment or copying
     Random(const Random &rhs);
     Random& operator=(const Random &rhs);
 public:
   // must give seed to Random number object
-    explicit Random(long idum_)
-	: mbig(1000000000), mseed(161803398), mz(0), fac(1.0/mbig),
-	  inext(0), inextp(0), ma(56), iff(0), idum(idum_), count(0),
-	  seed(idum_)
-    { 
-	fill(ma.begin(), ma.end(), 0); 
-    }
+    explicit inline Random(long);
 
   // get Random number function
-    double Ran();
+    double ran();
 
   // determine the number of random numbers used in this object
-    long Get_count() { return count; }
+    long get_count() { return count; }
 
   // random number diagnostics
-    long Get_seed() { return seed; }
-    void Print_values(); 
-    double Test_avg(int num);
+    long get_seed() { return seed; }
+    void print_values(); 
+    double test_avg(int num);
 };
 
 //---------------------------------------------------------------------------//
@@ -81,8 +76,21 @@ public:
 
 inline ostream& operator<<(ostream &output, Random &object)
 {
-    output << object.Ran() << std::endl;
+    output << object.ran() << std::endl;
     return output;
+}
+
+//---------------------------------------------------------------------------//
+// inline functions for Random
+//---------------------------------------------------------------------------//
+
+// constructor
+inline Random::Random(long idum_)
+    : mbig(1000000000), mseed(161803398), mz(0), fac(1.0/mbig),
+      inext(0), inextp(0), ma(56), iff(0), idum(idum_), count(0),
+      seed(idum_)
+{ 
+    fill(ma.begin(), ma.end(), 0); 
 }
 
 CSPACE

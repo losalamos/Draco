@@ -18,7 +18,7 @@ IMCSPACE
 // virtual member functions
 //---------------------------------------------------------------------------//
 // set Omega directions for 3D transport
-void Coord_sys::Set_omega(vector<double> &omega_, Random &random) const
+void Coord_sys::set_omega(vector<double> &omega_, Random &random) const
 {
     using Global::pi;
     using std::cos;
@@ -27,9 +27,9 @@ void Coord_sys::Set_omega(vector<double> &omega_, Random &random) const
 
   // sample costheta and phi for 3D transport 
     double costheta, sintheta, phi;
-    costheta = 1 - 2 * random.Ran();
+    costheta = 1 - 2 * random.ran();
     sintheta = sqrt(1 - costheta * costheta);
-    phi      = 2 * pi * random.Ran();
+    phi      = 2 * pi * random.ran();
 
   // calculate 3D direction cosines
     omega_[0] = sintheta * cos(phi);
@@ -38,7 +38,7 @@ void Coord_sys::Set_omega(vector<double> &omega_, Random &random) const
 }
 
 // calculate Omega directions for 3D transport
-void Coord_sys::Calc_omega(double costheta, double phi, vector<double> 
+void Coord_sys::calc_omega(double costheta, double phi, vector<double> 
 			      &omega_) const
 {
     using Global::pi;

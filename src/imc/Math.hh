@@ -54,7 +54,7 @@ inline ostream& operator<<(ostream &output, const vector<VT> &object)
 //---------------------------------------------------------------------------//
 // do the DOT product between two vectors
 template<class VT>
-inline VT Dot(vector<VT> A, vector<VT> B)
+inline VT dot(vector<VT> A, vector<VT> B)
 {
     assert (A.size() == B.size());
     VT value = 0.0;
@@ -65,7 +65,7 @@ inline VT Dot(vector<VT> A, vector<VT> B)
 
 // do the CROSS product between two vectors
 template<class VT>
-inline vector<VT> Cross(vector<VT> A, vector<VT> B)
+inline vector<VT> cross(vector<VT> A, vector<VT> B)
 {
     assert (A.size() == B.size());
     assert (A.size() == 3);
@@ -81,7 +81,7 @@ inline vector<VT> Cross(vector<VT> A, vector<VT> B)
 //---------------------------------------------------------------------------//
 // return the minimum value
 template<class T>
-inline T Min(T A, T B)
+inline T min(T A, T B)
 {
     T return_value = A;
     if (B <= return_value)
@@ -90,7 +90,7 @@ inline T Min(T A, T B)
 }
 
 template<class T>
-inline T Min(T A, T B, T C)
+inline T min(T A, T B, T C)
 {
     T return_value = A;
     if (B <= return_value)
@@ -101,7 +101,7 @@ inline T Min(T A, T B, T C)
 }
 
 template<class T>
-inline T Min(T A, T B, T C, T D)
+inline T min(T A, T B, T C, T D)
 {
     T return_value = A;
     if (B <= return_value)
@@ -114,7 +114,7 @@ inline T Min(T A, T B, T C, T D)
 }
 	
 template<class T>
-inline T Min(T A, T B, T C, T D, T E)
+inline T min(T A, T B, T C, T D, T E)
 {
     T return_value = A;
     if (B <= return_value)

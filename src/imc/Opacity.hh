@@ -33,23 +33,37 @@ template<class MT>
 class Opacity
 {
 private:
-  // cell-centered array opacities
+  // sigma = kappa * rho
     typename MT::CCSF<double> sigma;
+
+  // Plankian opacity
+    typename MT::CCSF<double> planck;
+
+  // fleck factors
+    typename MT::CCSF<double> fleck;
+    
 public:
   // opacity constructor
     explicit Opacity(const typename MT::CCSF<double> &sigma_) 
-	: sigma(sigma_) {}
+	: sigma(sigma_), planck(sigma_), fleck(sigma_) {}
 
   // member set and accessor functions
-    double& Sigma(int cell) { return sigma(cell); }
-    double Sigma(int cell) const { return sigma(cell); }
-    int Num_cells() const { return sigma.Mesh().Num_cells(); }
+
+    double& get_sigma(int cell) { return sigma(cell); }
+    double get_sigma(int cell) const { return sigma(cell); }
+    int num_cells() const { return sigma.get_Mesh().num_cells(); }
+
+  // operations
+    double fplanck(int cell) { return fleck(cell) * planck(cell); }
 
   // diagnostic member functions
-    void Print(ostream &, int) const;
+    void print(ostream &, int) const;
 };
 
+//---------------------------------------------------------------------------//
 // overloaded operators
+//---------------------------------------------------------------------------//
+
 template<class MT>
 ostream& operator<<(ostream &, const Opacity<MT> &);
 

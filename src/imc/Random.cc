@@ -17,7 +17,7 @@ IMCSPACE
 // public member functions
 //---------------------------------------------------------------------------//
 // random number generator which returns a random deviate between 0.0 and 1.0
-double Random::Ran()
+double Random::ran()
 {  
   // counter update
     count++;
@@ -72,7 +72,7 @@ double Random::Ran()
 // diagnostics and tests
 //---------------------------------------------------------------------------//
 // debug print
-void Random::Print_values()
+void Random::print_values()
 {
     using std::cout;
     using std::endl;
@@ -91,11 +91,11 @@ void Random::Print_values()
 
 //---------------------------------------------------------------------------//
 // random number tests
-double Random::Test_avg(int num)
+double Random::test_avg(int num)
 {
     double avgcount = 0;
     for (int i = 1; i <= num; i++)
-	avgcount += Ran();
+	avgcount += ran();
     double average = avgcount / static_cast<double>(num);
     return average;
 }

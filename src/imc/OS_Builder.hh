@@ -53,21 +53,23 @@ private:
   // member functions for building OS_Mesh
 
   // build Layout helper functions
-    SP<Layout> Build_Layout(const Coord_sys &);
-    void Assign2D(Layout &);
-    void Assign3D(Layout &);
+    SP<Layout> build_Layout(const Coord_sys &);
+    void assign2D(Layout &);
+    void assign3D(Layout &);
+
   // build Coord_sys helper functions
-    SP<Coord_sys> Build_Coord();
+    SP<Coord_sys> build_Coord();
+
   // build Mesh helper functions
-    SP<OS_Mesh> Build_2DMesh(SP<Coord_sys>, Layout &);
-    SP<OS_Mesh> Build_3DMesh(SP<Coord_sys>, Layout &);
+    SP<OS_Mesh> build_2DMesh(SP<Coord_sys>, Layout &);
+    SP<OS_Mesh> build_3DMesh(SP<Coord_sys>, Layout &);
 public:
   // constructor
     explicit OS_Builder(SP<OS_Interface> interface_) 
 	: interface(interface_), fine_edge(0), bnd_cond(0) {}
 
   // build Mesh member functions
-    SP<OS_Mesh> Build_Mesh();
+    SP<OS_Mesh> build_Mesh();
 };
 
 CSPACE

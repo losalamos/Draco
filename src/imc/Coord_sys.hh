@@ -56,14 +56,14 @@ public:
 
   // we have two dimensionalities, a "real" dimension for the geometry and a
   // "transport" dimension for MC transport which is inherently 3D
-    int Get_dim() const { return dimension; } 
-    int Get_sdim() const { return set_dimension; }
+    int get_dim() const { return dimension; } 
+    int get_sdim() const { return set_dimension; }
 
   // pure virtual functions
-    virtual string Get_coord() const = 0;
+    virtual string get_Coord() const = 0;
 
-    virtual void Set_omega(vector<double> &, Random &) const;
-    virtual void Calc_omega(double, double, vector<double> &) const;
+    virtual void set_omega(vector<double> &, Random &) const;
+    virtual void calc_omega(double, double, vector<double> &) const;
 };
 
 CSPACE

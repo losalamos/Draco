@@ -15,12 +15,17 @@
 
 IMCSPACE
 
+// STL functions used
 using std::cout;
 using std::endl;
 using std::setw;
 using std::ios;
 using std::setiosflags;
-using Global::Dot;
+using std::log;
+
+// services from IMC::Global namespace
+using Global::pi;
+using Global::dot;
 
 //===========================================================================//
 // class Particle<MT>
@@ -37,9 +42,9 @@ using Global::Dot;
 //---------------------------------------------------------------------------//
 // public transport member functions
 //---------------------------------------------------------------------------//
-// calculate source from a given point
+// calculate source from a given point (temporary)
 template<class MT>
-void Particle<MT>::Source(vector<double> &r_, vector<double> &omega_,
+void Particle<MT>::source(vector<double> &r_, vector<double> &omega_,
 			  const MT &mesh)
 {
   // initial location
@@ -50,24 +55,22 @@ void Particle<MT>::Source(vector<double> &r_, vector<double> &omega_,
   // mesh.Coord().Set_omega(omega, random);
 
   // find particle cell
-    cell = mesh.Get_cell(r);
+    cell = mesh.get_cell(r);
 }
 
-// transport particle through mesh
+//---------------------------------------------------------------------------//
+
 template<class MT>
-void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs, 
-			     SP<Diagnostic> diagnostic)
+void Particle<MT>::transport_IMC(const MT &mesh, const Opacity<MT> &xs, 
+				 SP<Diagnostic> diagnostic)
 {
-  // explicit calls from standard library namespace
-    using std::log;
-  // explicit calls from Global namespace
-    using Global::pi;
+  // transport particle through mesh using regular IMC transport
 
   // initialize diagnostics
     if (diagnostic)
     {
-	diagnostic->Header();
-	diagnostic->Print(*this);
+	diagnostic->header();
+	diagnostic->print(*this);
     }
   
   // !!! BEGIN TRANSPORT LOOP !!!
@@ -81,35 +84,35 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
         int face = 0;
         
       // sample distance-to-collision
-        d_collision = -log(random.Ran()) / xs.Sigma(cell);
+        d_collision = -log(random.ran()) / xs.get_sigma(cell);
 
       // get distance-to-boundary and cell face
-        d_boundary  = mesh.Get_db(r, omega, cell, face);
+        d_boundary  = mesh.get_db(r, omega, cell, face);
 
       // detailed diagnostics
 	if (diagnostic)
-	    if (diagnostic->Detail())
+	    if (diagnostic->detail_status())
 	    {
-		diagnostic->Print_dist(d_collision, d_boundary, cell);
-		diagnostic->Print_xs(xs, cell);
+		diagnostic->print_dist(d_collision, d_boundary, cell);
+		diagnostic->print_xs(xs, cell);
 	    }
 
       // streaming
         if (d_collision <= d_boundary)
         {
-            Stream(d_collision);
-            alive = Collide(mesh, xs);
+            stream(d_collision);
+            alive = collide(mesh, xs);
         }
 	else
         {
 	  // stream to cell boundary and find next cell
-            Stream(d_boundary);
-	    alive = Surface(mesh, face);
+            stream(d_boundary);
+	    alive = surface(mesh, face);
 	}
 
       // do diagnostic print
 	if (diagnostic)
-	    diagnostic->Print(*this);
+	    diagnostic->print(*this);
     } 
 
   // !!! END OF TRANSPORT LOOP !!!
@@ -120,13 +123,13 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
 //---------------------------------------------------------------------------//
 // calculate everything about a collision
 template<class MT>
-bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
+bool Particle<MT>::collide(const MT &mesh, const Opacity<MT> &xs)
 {   
   // status from collision
     bool status;
 
   // determine absorption or collision
-    if (random.Ran() <= xs.Sigma(cell) / xs.Sigma(cell))
+    if (random.ran() <= xs.get_sigma(cell) / xs.get_sigma(cell))
     {
 	descriptor = "absorption";
         status = false;
@@ -137,11 +140,11 @@ bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
         
       // calculate theta and phi (isotropic)
         double costheta, phi;
-        costheta = 1 - 2 * random.Ran();
-        phi      = 2 * Global::pi * random.Ran();
+        costheta = 1 - 2 * random.ran();
+        phi      = 2 * Global::pi * random.ran();
 
       // get new direction cosines
-        mesh.Coord().Calc_omega(costheta, phi, omega);
+        mesh.get_Coord().calc_omega(costheta, phi, omega);
     }
 
   // return outcome of the event
@@ -151,15 +154,15 @@ bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
 //---------------------------------------------------------------------------//
 // do surface crossings
 template<class MT>
-bool Particle<MT>::Surface(const MT &mesh, int face)
+bool Particle<MT>::surface(const MT &mesh, int face)
 {
-    using Global::Dot;
+  // handle particles at a surface
 
   // status from surface crossing
     bool status;
 
   // determine the next cell
-    int next_cell = mesh.Next_cell(cell, face);
+    int next_cell = mesh.next_cell(cell, face);
 
   // determine descriptor and outcome of this event
 
@@ -167,9 +170,9 @@ bool Particle<MT>::Surface(const MT &mesh, int face)
     {
       // reflection
 	descriptor = "reflection";
-	vector<double> normal = mesh.Get_normal(cell, face);
-	double factor = Dot(omega, normal);
-	for (int i = 0; i < mesh.Coord().Get_sdim(); i++)
+	vector<double> normal = mesh.get_normal(cell, face);
+	double factor = Global::dot(omega, normal);
+	for (int i = 0; i < mesh.get_Coord().get_sdim(); i++)
 	    omega[i] -= 2 * factor * normal[i];
 	cell = next_cell;
     }
@@ -203,7 +206,7 @@ bool Particle<MT>::Surface(const MT &mesh, int face)
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
 template<class MT>
-void Particle<MT>::Diagnostic::Print(const Particle<MT> &particle) const
+void Particle<MT>::Diagnostic::print(const Particle<MT> &particle) const
 {
   // set output precision
     output.precision(3);
@@ -211,13 +214,13 @@ void Particle<MT>::Diagnostic::Print(const Particle<MT> &particle) const
 
   // print particulars of the particle based on its status
     if (particle.alive == true)
-	Print_alive(particle);
+	print_alive(particle);
     else
-	Print_dead(particle);
+	print_dead(particle);
 }
 
 template<class MT>
-void Particle<MT>::Diagnostic::Print_alive(const Particle<MT> &particle) const 
+void Particle<MT>::Diagnostic::print_alive(const Particle<MT> &particle) const 
 {
   // print active particle (alive = true)
     output << " -- Particle is alive -- " << endl;
@@ -250,7 +253,7 @@ void Particle<MT>::Diagnostic::Print_alive(const Particle<MT> &particle) const
 }
 
 template<class MT>
-void Particle<MT>::Diagnostic::Print_dead(const Particle<MT> &particle) const
+void Particle<MT>::Diagnostic::print_dead(const Particle<MT> &particle) const
 {
   // print dead particle (alive = false)
     output << " -- Particle is dead -- " << endl;
@@ -283,7 +286,7 @@ void Particle<MT>::Diagnostic::Print_dead(const Particle<MT> &particle) const
 }
 
 template<class MT>
-void Particle<MT>::Diagnostic::Print_dist(double d_col, double d_bnd, 
+void Particle<MT>::Diagnostic::print_dist(double d_col, double d_bnd, 
 					  int cell) const
 {
   // do detailed diagnostic print of particle event distances
@@ -296,12 +299,12 @@ void Particle<MT>::Diagnostic::Print_dist(double d_col, double d_bnd,
 }
 
 template<class MT>
-void Particle<MT>::Diagnostic::Print_xs(const Opacity<MT> &xs,
+void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 					int cell) const
 {
   // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.Sigma(cell) << endl;
+	   << setw(12) << xs.get_sigma(cell) << endl;
 }
 
 CSPACE

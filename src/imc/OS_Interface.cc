@@ -19,7 +19,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public Parser member functions
 //---------------------------------------------------------------------------//
-void OS_Interface::Parser()
+void OS_Interface::parser()
 {
   // open input file, ifstream object requires C-style string
     const char *file = input_file.c_str();
@@ -29,10 +29,10 @@ void OS_Interface::Parser()
     assert (input);
 
   // call OS_Mesh Parser
-    Parser_mesh(input);
+    parser_Mesh(input);
 
   // call Opacities Parser
-    Parser_opacity(input);
+    parser_Opacity(input);
 
   // call Source Parser
 }
@@ -40,7 +40,7 @@ void OS_Interface::Parser()
 //---------------------------------------------------------------------------//
 // private Parser member functions for OS_Mesh build
 //---------------------------------------------------------------------------//
-void OS_Interface::Parser_mesh(ifstream &in)
+void OS_Interface::parser_Mesh(ifstream &in)
 {
   // OS_Mesh Parser
 
@@ -71,7 +71,7 @@ void OS_Interface::Parser_mesh(ifstream &in)
 	coarse_edge.resize(2);
 	fine_edge.resize(2);
 	bnd_cond.resize(4);
-	Parser2D(in);
+	parser2D(in);
     }
     else if (coord_system == "xyz" || coord_system == "XYZ")
     {
@@ -80,7 +80,7 @@ void OS_Interface::Parser_mesh(ifstream &in)
 	coarse_edge.resize(3);
 	fine_edge.resize(3);
 	bnd_cond.resize(6);
-	Parser3D(in);
+	parser3D(in);
     }
 
   // calculate fine_edge array
@@ -115,7 +115,7 @@ void OS_Interface::Parser_mesh(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Interface::Parser2D(ifstream &in)
+void OS_Interface::parser2D(ifstream &in)
 {
   // 2D parser
 
@@ -176,7 +176,7 @@ void OS_Interface::Parser2D(ifstream &in)
 }    
 
 //---------------------------------------------------------------------------//
-void OS_Interface::Parser3D(ifstream &in)
+void OS_Interface::parser3D(ifstream &in)
 {
   // 3D parser
 
@@ -255,7 +255,7 @@ void OS_Interface::Parser3D(ifstream &in)
 //---------------------------------------------------------------------------//
 // private Parser member functions for Opacity<MT> build
 //---------------------------------------------------------------------------//
-void OS_Interface::Parser_opacity(ifstream &in)
+void OS_Interface::parser_Opacity(ifstream &in)
 { 
   // determine size of mesh and initialize zone and zone_map arrays
     int dim       = fine_edge.size();
@@ -270,14 +270,14 @@ void OS_Interface::Parser_opacity(ifstream &in)
     mat_zone.resize(num_zones);
 
   // map fine cells to zones
-    Zone_mapper();
+    zone_mapper();
 
   // read zone map
-    Zone_parser(in);
+    zone_parser(in);
 }
 
 //---------------------------------------------------------------------------//
-void OS_Interface::Zone_parser(ifstream &in)
+void OS_Interface::zone_parser(ifstream &in)
 {
   // Opacity Parser
 
@@ -322,7 +322,7 @@ void OS_Interface::Zone_parser(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Interface::Zone_mapper()
+void OS_Interface::zone_mapper()
 {
   // dimension of mesh
     int dim = fine_edge.size();
@@ -339,16 +339,16 @@ void OS_Interface::Zone_mapper()
     if (dim == 2)
         for (int j = 1; j <= fine_cells[1].size(); j++)
             for (int i = 1; i <= fine_cells[0].size(); i++)
-                Cell_zone(i, j);
+                cell_zone(i, j);
     else if (dim == 3)
         for (int k = 1; k <= fine_cells[2].size(); k++)
             for (int j = 1; j <= fine_cells[1].size(); j++)
                 for (int i = 1; i <= fine_cells[0].size(); i++)
-                    Cell_zone(i, j, k);
+                    cell_zone(i, j, k);
 }
   
 //---------------------------------------------------------------------------//
-void OS_Interface::Cell_zone(int iz, int jz)
+void OS_Interface::cell_zone(int iz, int jz)
 {
   // match a fine-cell to a zone for 2D meshes
 
@@ -374,7 +374,7 @@ void OS_Interface::Cell_zone(int iz, int jz)
 }
 
 //---------------------------------------------------------------------------//
-void OS_Interface::Cell_zone(int iz, int jz, int kz)
+void OS_Interface::cell_zone(int iz, int jz, int kz)
 {
   // match a fine-cell to a zone for 3D meshes
 

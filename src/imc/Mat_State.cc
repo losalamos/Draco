@@ -16,7 +16,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Mat_State<MT>::Print(ostream &output, int cell) const
+void Mat_State<MT>::print(ostream &output, int cell) const
 {
   // print out material state of cell
     using std::cout;
@@ -46,8 +46,8 @@ ostream& operator<<(ostream &output, const Mat_State<MT> &object)
 	   << setw(15) << "Density" << setw(15) << "Temp" << endl;
     output << "--------------------------------------" << endl;
 
-    for (int i = 1; i <= object.Num_cells(); i++)
-	object.Print(output, i);
+    for (int i = 1; i <= object.num_cells(); i++)
+	object.print(output, i);
     return output;
 }
 
