@@ -27,6 +27,8 @@
 
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 {
+    typedef dsxx::Mat1<int>::size_type size_type;
+
     int nct;			// # of total cells in problem.
     int nxy;                    // # of cells in an x-y plane.
     int nczp;                   // # of cells in z this processor.
@@ -81,24 +83,38 @@ class Mesh_XYZ : private XYZ_Mapper
 
   public:
 
-    template<class T> class gfcdtf;
     template<class T> class cctf;
     template<class T> class gcctf;
+    template<class T> class fcdtf;
+    template<class T> class gfcdtf;
     template<class T> class nctf;
     template<class T> class vctf;
     template<class T> class gvctf;
+    template<class T> class bstf;
     template<class T, int N> class tiny_vec;
 
     typedef Mesh_DB Mesh_DB;
-    
+
+    typedef XYZ_Mapper::size_type size_type;
+    typedef dsxx::SP<Mesh_XYZ> FieldConstructor;
+
     typedef cctf<double> ccsf;
-    typedef cctf<int> ccif;
-    typedef gcctf<double> gccsf;
+    typedef fcdtf<double> fcdsf;
     typedef nctf<double> ncsf;
-    typedef nctf<tiny_vec<double, 3> > ncvsf;
     typedef vctf<double> vcsf;
-    typedef gvctf<double> gvcsf;
+    typedef bstf<double> bssf;
+    typedef cctf<int> ccif;
+    typedef fcdtf<int> fcdif;
+    typedef nctf<int> ncif;
+    typedef vctf<int> vcif;
+    typedef bstf<int> bsif;
+    typedef cctf<tiny_vec<double, 3> > ccvsf;
+    typedef fcdtf<tiny_vec<double, 3> > fcdvsf;
+    typedef nctf<tiny_vec<double, 3> > ncvsf;
     typedef vctf<tiny_vec<double, 3> > vcvsf;
+    typedef bstf<tiny_vec<double, 3> > bsvsf;
+    typedef gcctf<double> gccsf;
+    typedef gvctf<double> gvcsf;
     typedef tiny_vec<double, 3> vec3;
 
 // Face centered discontinuous field
@@ -184,10 +200,6 @@ class Mesh_XYZ : private XYZ_Mapper
         bool operator<=( const fcdtf& x ) const;
         bool operator>=( const fcdtf& x ) const;
     };
-
-    typedef fcdtf<double> fcdsf;
-    typedef fcdtf<int> fcdif;
-    typedef fcdtf<tiny_vec<double, 3> > fcdvsf;
 
 // Guarded face centered discontinuous field
 // Has a value on each face in each cell.
@@ -757,9 +769,6 @@ class Mesh_XYZ : private XYZ_Mapper
         friend class bstf<T>::const_iterator;
     };
 
-    typedef bstf<double> bssf;
-    typedef bstf<int> bsif;
-
 // Small vector class
 
     template<class T, int N>
@@ -827,14 +836,15 @@ class Mesh_XYZ : private XYZ_Mapper
     Mesh_XYZ( const Mesh_DB& mdb );
 
     bool operator==( const Mesh_XYZ& m ) const { return this == &m; }
+    bool operator!=( const Mesh_XYZ& m ) const { return !(this == &m); }
 
     const Mesh_DB& get_Mesh_DB() const { return XYZ_Mapper::get_Mesh_DB(); }
 
-    int get_ncx() const { return ncx; }
-    int get_ncy() const { return ncy; }
-    int get_ncz() const { return ncz; }
-    int get_ncells() const { return ncp; }
-    int get_total_ncells() const { return nct; }
+    size_type get_ncx() const { return ncx; }
+    size_type get_ncy() const { return ncy; }
+    size_type get_ncz() const { return ncz; }
+    size_type get_ncells() const { return ncp; }
+    size_type get_total_ncells() const { return nct; }
     int get_ncxp() const { return ncx; }
     int get_xoff() const { return 0; }
     int get_ncyp() const { return ncy; }
@@ -867,7 +877,7 @@ class Mesh_XYZ : private XYZ_Mapper
     void get_yloc(fcdsf& yloc) const { yloc = yF; }
     void get_zloc(fcdsf& zloc) const { zloc = zF; }
 
-    const fcdvsf& get_fn() const { return face_norms; }
+    void get_face_normals(fcdvsf& fn) const { fn = face_norms; }
     void get_face_areas(fcdsf& fa) const;
     void get_face_lengths(fcdsf& fl) const;
 
@@ -916,7 +926,7 @@ class Mesh_XYZ : private XYZ_Mapper
     static void gather( vctf<T1>& to, const cctf<T2>& from, const Op& op );
 
     template <class T>
-    static void swap( fcdtf<T>& to, const fcdtf<T>& from );
+    static void swap_faces( fcdtf<T>& to, const fcdtf<T>& from );
 
     template <class T>
     static T sum( const cctf<T>& from );
@@ -925,7 +935,43 @@ class Mesh_XYZ : private XYZ_Mapper
     static T sum( const fcdtf<T>& from );
 
     template <class T>
+    static T sum( const nctf<T>& from );
+
+    template <class T>
+    static T sum( const vctf<T>& from );
+
+    template <class T>
     static T sum( const bstf<T>& from );
+
+    template <class T>
+    static T min( const cctf<T>& from );
+
+    template <class T>
+    static T min( const fcdtf<T>& from );
+
+    template <class T>
+    static T min( const nctf<T>& from );
+
+    template <class T>
+    static T min( const vctf<T>& from );
+
+    template <class T>
+    static T min( const bstf<T>& from );
+
+    template <class T>
+    static T max( const cctf<T>& from );
+
+    template <class T>
+    static T max( const fcdtf<T>& from );
+
+    template <class T>
+    static T max( const nctf<T>& from );
+
+    template <class T>
+    static T max( const vctf<T>& from );
+
+    template <class T>
+    static T max( const bstf<T>& from );
 
     class OpAssign {
       public:

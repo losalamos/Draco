@@ -1155,7 +1155,7 @@ void Mesh_XYZ::gather
 }
 
 template <class T>
-void Mesh_XYZ::swap
+void Mesh_XYZ::swap_faces
 ( Mesh_XYZ::fcdtf<T>& to, const Mesh_XYZ::fcdtf<T>& from )
 {
     Mesh_XYZ::gfcdtf<T> gfrom(from);
@@ -1219,6 +1219,41 @@ T Mesh_XYZ::sum( const Mesh_XYZ::fcdtf<T>& from )
 }
 
 template <class T>
+T Mesh_XYZ::sum( const Mesh_XYZ::nctf<T>& from )
+{
+    T sum = 0;
+    int bound;
+
+    if (node = lastnode)
+        bound = 0;
+    else
+        bound = -1;
+
+    for ( int i = 0; i < to.ncx; ++i )
+      for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp + bound; ++k )
+          sum += to(i,j,k);
+
+    C4::gsum<T>(sum);
+
+    return sum;
+}
+
+template <class T>
+T Mesh_XYZ::sum( const Mesh_XYZ::vctf<T>& from )
+{
+    T sum = 0;
+
+    for (Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        sum += *iter;
+
+    C4::gsum<T>(sum);
+
+    return sum;
+}
+
+template <class T>
 T Mesh_XYZ::sum( const Mesh_XYZ::bstf<T>& from )
 {
     T sum = 0;
@@ -1230,6 +1265,146 @@ T Mesh_XYZ::sum( const Mesh_XYZ::bstf<T>& from )
     C4::gsum<T>(sum);
 
     return sum;
+}
+
+template <class T>
+T Mesh_XYZ::min( const Mesh_XYZ::cctf<T>& from )
+{
+    T minimum = 0;
+
+    for (Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        minimum = (minimum < *iter) ? minimum : *iter;
+
+    C4::gmin<T>(minimum);
+
+    return minimum;
+}
+
+template <class T>
+T Mesh_XYZ::min( const Mesh_XYZ::fcdtf<T>& from )
+{
+    T minimum = 0;
+
+    for (Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        minimum = (minimum < *iter) ? minimum : *iter;
+
+    C4::gmin<T>(minimum);
+
+    return minimum;
+}
+
+template <class T>
+T Mesh_XYZ::min( const Mesh_XYZ::nctf<T>& from )
+{
+    T minimum = 0;
+
+    for (Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        minimum = (minimum < *iter) ? minimum : *iter;
+
+    C4::gmin<T>(minimum);
+
+    return minimum;
+}
+
+template <class T>
+T Mesh_XYZ::min( const Mesh_XYZ::vctf<T>& from )
+{
+    T minimum = 0;
+
+    for (Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        minimum = (minimum < *iter) ? minimum : *iter;
+
+    C4::gmin<T>(minimum);
+
+    return minimum;
+}
+
+template <class T>
+T Mesh_XYZ::min( const Mesh_XYZ::bstf<T>& from )
+{
+    T minimum = 0;
+
+    for (Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        minimum = (minimum < *iter) ? minimum : *iter;
+
+    C4::gmin<T>(minimum);
+
+    return minimum;
+}
+
+template <class T>
+T Mesh_XYZ::max( const Mesh_XYZ::cctf<T>& from )
+{
+    T maximum = 0;
+
+    for (Mesh_XYZ::cctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        maximum = (maximum < *iter) ? maximum : *iter;
+
+    C4::gmax<T>(maximum);
+
+    return maximum;
+}
+
+template <class T>
+T Mesh_XYZ::max( const Mesh_XYZ::fcdtf<T>& from )
+{
+    T maximum = 0;
+
+    for (Mesh_XYZ::fcdtf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        maximum = (maximum < *iter) ? maximum : *iter;
+
+    C4::gmax<T>(maximum);
+
+    return maximum;
+}
+
+template <class T>
+T Mesh_XYZ::max( const Mesh_XYZ::nctf<T>& from )
+{
+    T maximum = 0;
+
+    for (Mesh_XYZ::nctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        maximum = (maximum < *iter) ? maximum : *iter;
+
+    C4::gmax<T>(maximum);
+
+    return maximum;
+}
+
+template <class T>
+T Mesh_XYZ::max( const Mesh_XYZ::vctf<T>& from )
+{
+    T maximum = 0;
+
+    for (Mesh_XYZ::vctf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        maximum = (maximum < *iter) ? maximum : *iter;
+
+    C4::gmax<T>(maximum);
+
+    return maximum;
+}
+
+template <class T>
+T Mesh_XYZ::max( const Mesh_XYZ::bstf<T>& from )
+{
+    T maximum = 0;
+
+    for (Mesh_XYZ::bstf<T>::const_iterator iter = from.begin();
+         iter != from.end(); ++iter)
+        maximum = (maximum < *iter) ? maximum : *iter;
+
+    C4::gmax<T>(maximum);
+
+    return maximum;
 }
 
 //---------------------------------------------------------------------------//
