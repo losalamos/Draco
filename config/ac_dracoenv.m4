@@ -448,6 +448,18 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   AC_DEFINE_UNQUOTED(SHMEM_H, ${SHMEM_H})
        fi
 
+       # add SGI MPT Specfic options
+       if test "${with_mpi}" = vendor ; then
+	   # define no C++ bindings
+	   AC_DEFINE(MPI_NO_CPPBIND)
+
+	   # add suppression of long long errors if the compiler is
+	   # KCC 
+	   if test "${CXX}" = KCC && test "${enable_strict}" = yes ; then
+	       STRICTFLAG='--strict --diag_suppress 450'
+	   fi
+       fi
+
        #
        # end of communication package setup
        #
