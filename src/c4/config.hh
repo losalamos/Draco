@@ -86,6 +86,16 @@
 #define SCALAR(a)
 #endif
 
+// We need support for high resolution clocks.  This seems to be very
+// platform dependent, so we use macros to parameterize the options. 
+
+#ifdef __linux
+#define C4_USE_GETTIMEOFDAY
+#endif
+
+#ifdef __sgi
+#define C4_USE_CLOCK_GETTIME
+#endif
 
 #endif                          // __c4_config_hh__
 
