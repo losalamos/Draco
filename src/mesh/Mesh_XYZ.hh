@@ -549,7 +549,7 @@ class Mesh_XYZ : private XYZ_Mapper
     const dsxx::Mat1<double>& get_zA() const { return zA; }
 
     const ccsf& get_vc() const { return vc; }
-    const ccsf& get_volumes() const { return get_vc(); }
+    void get_volumes(ccsf &vols) const { vols = get_vc(); }
 
     const int *get_diag_offsets() const { return diags; }
 
