@@ -8,33 +8,33 @@
 ;;---------------------------------------------------------------------------;;
 ;; add some new global key bindings
 
-(define-key global-map [(shift control f7)]  'kill-this-buffer)
+(define-key global-map [(shift control f7)] 'kill-this-buffer)
 (define-key global-map [(shift control f6)] 'tme-insert-document)
 (define-key global-map [(shift control f3)] 'tme-end-document)
-(define-key global-map [(shift return)] 'newline-and-indent)
+(define-key global-map [(shift return)]     'newline-and-indent)
  
 ;; add tme key bindings for templated stuff 
 ;; see local key bindings adapted for modes below
  
-(define-key global-map "\C-cpub" 'tme-new-article-file)
-(define-key global-map "\C-crep" 'tme-new-report-file)
+(define-key global-map "\C-cpub"  'tme-new-article-file)
+(define-key global-map "\C-crep"  'tme-new-report-file)
 (define-key global-map "\C-cnote" 'tme-new-note-file)
 (define-key global-map "\C-cmemo" 'tme-new-memo-file)
-(define-key global-map "\C-cman" 'tme-new-manual-file)
-(define-key global-map "\C-clet" 'tme-new-let-file)
-(define-key global-map "\C-cbib" 'tme-new-bib-file)
-(define-key global-map "\C-cf90" 'tme-new-f90-file)
-(define-key global-map "\C-cf77" 'tme-new-f77-file)
+(define-key global-map "\C-cman"  'tme-new-manual-file)
+(define-key global-map "\C-clet"  'tme-new-let-file)
+(define-key global-map "\C-cbib"  'tme-new-bib-file)
+(define-key global-map "\C-cf90"  'tme-new-f90-file)
+(define-key global-map "\C-cf77"  'tme-new-f77-file)
 (define-key global-map "\C-cmake" 'tme-new-makefile)
 (define-key global-map "\C-cconf" 'tme-new-configure)
-(define-key global-map "\C-ckcc" 'tme-dired-KCC)
-(define-key global-map "\C-cpy" 'tme-new-python-file)
-(define-key global-map "\C-cimp" 'tme-new-c-imp-file)
+(define-key global-map "\C-ckcc"  'tme-dired-KCC)
+(define-key global-map "\C-cpy"   'tme-new-python-file)
+(define-key global-map "\C-cimp"  'tme-new-c-imp-file)
 (define-key global-map "\C-ctimp" 'tme-new-ct-imp-file)
 (define-key global-map "\C-chcpp" 'tme-new-cc-head-file)
-(define-key global-map "\C-chcc" 'tme-new-c-head-file)
+(define-key global-map "\C-chcc"  'tme-new-c-head-file)
 (define-key global-map "\C-chhin" 'tme-new-cc-hin-file)
-(define-key global-map "\C-chin" 'tme-new-c-hin-file)
+(define-key global-map "\C-chin"  'tme-new-c-hin-file)
 
 ;; keys which I would like defined
 
