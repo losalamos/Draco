@@ -143,7 +143,7 @@ void testFullP13T::run() const
     ccsf QRad(spmesh);
     ccsf QElectron(spmesh);
     ccsf QIon(spmesh);
-    bsbf boundary;
+    bsbf boundary(spmesh);
     P13T<MT,MP,DS>::RadiationStateField newRadState(spmesh);
     ccsf electEnergyDep(spmesh);
     ccsf ionEnergyDep(spmesh);
