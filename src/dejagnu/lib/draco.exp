@@ -35,11 +35,13 @@ if {$C4 == "s2"}  { set Serial 0 }
 proc c4run {np args} {
     global C4
     global Serial
+    global PWD
+
+    # puts "PWD: $PWD"
 
     if {$Serial} {
 	puts "Running serial code."
-#	return [exec $args]
-        if [catch {exec $args} output] {
+        if [catch {exec $PWD/$args} output] {
 	   error "serial code faild: $output"
         } else {
            return "$output"
@@ -48,8 +50,7 @@ proc c4run {np args} {
 
     if {$C4 == "mpi"} {
 	puts "Running MPI code on $np nodes."
-#	return [exec mpirun -np $np $args]
-	if [catch {exec mpirun -np $np $args} output] {
+	if [catch {exec mpirun -np $np $PWD/$args} output] {
 	   error "mpirun failed: $output"
         } else {
            return "$output"
@@ -58,8 +59,7 @@ proc c4run {np args} {
 
     if {$C4 == "s2"} {
 	puts "Running an SGI SHMEM program."
-#	return [exec $args -npes $np]
-	if [catch {exec $args -npes $np} output] {
+	if [catch {exec $PWD/$args -npes $np} output] {
 	   if [regexp "child killed: kill signal" $output] {
 	      return "SHMEM program may have failed: $output"
            } else {
