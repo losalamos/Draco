@@ -233,8 +233,14 @@
  * \f[ P_{1,1}(\mu) = -(1-\mu^2)^{1/2}, \f]
  * \f[ P_{2,0}(\mu) = \frac{3\mu^2-1}{2}, \f]
  * \f[ P_{2,1}(\mu) = -3\mu(1-\mu^2)^{1/2}, \f]
- * \f[ P_{2,2}(\mu) = 3(1-\mu^2). \f]
-
+ * \f[ P_{2,2}(\mu) = 3(1-\mu^2), \f]
+ * \f[ P_{3,0}(\mu) = \frac{5\mu^3-3\mu}{2}, \f]
+ * \f[ P_{4,0}(\mu) = \frac{35\mu^4-30\mu^2+3}{8}, \f]
+ * \f[ P_{5,0}(\mu) = \frac{63\mu^5-70\mu^3+15\mu}{8}, \f]
+ * \f[ P_{6,0}(\mu) = \frac{231\mu^6-315\mu^4+105\mu^2-5}{16}, \f]
+ *
+ * For more information, see <a href="http://mathworld.wolfram.com/LegendrePolynomial.html">Wolfram Research's MathWorld</a>.
+ *
  * \section quad_notes Other Quadrature Notes
  * 
  * For 2D quadrature sets, \f$ \xi \f$ can be computed from the other two
