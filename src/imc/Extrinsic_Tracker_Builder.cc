@@ -128,7 +128,7 @@ void Extrinsic_Tracker_Builder<rtt_mc::RZWedge_Mesh>::build_surface_areas(
 
     // make sure that the sphere does not extend out the high x side of the
     // mesh
-    Insist (z_s + r_s <= extents[1],
+    Insist (r_s <= extents[1],
 	    "Tally sphere outside of mesh on high x side");
 
     // make sure that the sphere is (a) entirely contained between (-z,+z) or

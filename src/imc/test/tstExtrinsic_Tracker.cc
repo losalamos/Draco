@@ -57,7 +57,7 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 
     Surface_Tracking_Tester(double small, double large);
 
-    int number_of_surfaces() const { return 4; }
+    int number_of_surfaces() const { return 3; }
 
     const vector<Surface_Descriptor>& get_surface_data() const 
     { 
@@ -72,7 +72,7 @@ struct Surface_Tracking_Tester : public Surface_Tracking_Interface
 Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     : small_radius(small), large_radius(large)
 {
-    descriptor.resize(4);
+    descriptor.resize(3);
 
     descriptor[0].type = Surface_Descriptor::SPHERE;
     descriptor[0].data.resize(2);
@@ -84,15 +84,15 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     descriptor[1].data[0] = 1.0;
     descriptor[1].data[1] = small_radius;
     
+//     descriptor[2].type = Surface_Descriptor::SPHERE;
+//     descriptor[2].data.resize(2);
+//     descriptor[2].data[0] = 0.0;
+//     descriptor[2].data[1] = 50.0;
+    
     descriptor[2].type = Surface_Descriptor::SPHERE;
     descriptor[2].data.resize(2);
-    descriptor[2].data[0] = 0.0;
-    descriptor[2].data[1] = 50.0;
-    
-    descriptor[3].type = Surface_Descriptor::SPHERE;
-    descriptor[3].data.resize(2);
-    descriptor[3].data[0] = 2.0;
-    descriptor[3].data[1] = large_radius;
+    descriptor[2].data[0] = 2.0;
+    descriptor[2].data[1] = large_radius;
 
     double bin_data[5] = {-1.0, -0.5, 0.0, 0.5, 1.0};
     bin_cosines.assign(bin_data, bin_data+5);
@@ -184,24 +184,24 @@ void test_RZWedge_Mesh_tracker()
 	build_tracker_builder(*mesh, *mesh_data, tester);
 
     // Test the builder:
-    if (builder->get_global_surfaces() != 4) ITFAILS;
+    if (builder->get_global_surfaces() != 3) ITFAILS;
     if (builder->get_local_surfaces()  != 3) ITFAILS;
-    if (builder->get_cell_status(1) != true)  ITFAILS;
-    if (builder->get_cell_status(2) != true)  ITFAILS;
-    if (builder->get_cell_status(3) != true)  ITFAILS;
-    if (builder->get_cell_status(4) != true)  ITFAILS;
-    if (builder->get_cell_status(5) != false) ITFAILS;
-    if (builder->get_cell_status(6) != true)  ITFAILS;
+    if (builder->get_cell_status(1) != true) ITFAILS;
+    if (builder->get_cell_status(2) != true) ITFAILS;
+    if (builder->get_cell_status(3) != true) ITFAILS;
+    if (builder->get_cell_status(4) != true) ITFAILS;
+    if (builder->get_cell_status(5) != true) ITFAILS;
+    if (builder->get_cell_status(6) != true) ITFAILS;
 
     SP<Extrinsic_Surface_Tracker> tracker = builder->build_tracker();
 
     // Test the tracker
-    if (tracker->surface_in_cell(1) != true)  ITFAILS;
-    if (tracker->surface_in_cell(2) != true)  ITFAILS;
-    if (tracker->surface_in_cell(3) != true)  ITFAILS;
-    if (tracker->surface_in_cell(4) != true)  ITFAILS;
-    if (tracker->surface_in_cell(5) != false) ITFAILS;
-    if (tracker->surface_in_cell(6) != true)  ITFAILS;
+    if (tracker->surface_in_cell(1) != true) ITFAILS;
+    if (tracker->surface_in_cell(2) != true) ITFAILS;
+    if (tracker->surface_in_cell(3) != true) ITFAILS;
+    if (tracker->surface_in_cell(4) != true) ITFAILS;
+    if (tracker->surface_in_cell(5) != true) ITFAILS;
+    if (tracker->surface_in_cell(6) != true) ITFAILS;
 
     vector<double> position(3);
     position[0]  = x1*0.5; position[1]  = 0.0; position[2]  = 0.0;
@@ -222,7 +222,7 @@ void test_RZWedge_Mesh_tracker()
 
     if (tracker->get_inside(1) != true)  ITFAILS;
     if (tracker->get_inside(2) != false) ITFAILS;
-    if (tracker->get_inside(4) != true)  ITFAILS;
+    if (tracker->get_inside(3) != true)  ITFAILS;
 
     tracker->tally_crossings_implicit_abs(
 	position, direction, cell, distance, ew, sigma, tally);

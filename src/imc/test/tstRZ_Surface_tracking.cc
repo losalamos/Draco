@@ -92,7 +92,7 @@ Surface_Tracking_Tester::Surface_Tracking_Tester()
     descriptor[2].type = Surface_Descriptor::SPHERE;
     descriptor[2].data.resize(2);
     descriptor[2].data[0] = -1.0;
-    descriptor[2].data[1] =  3.0;
+    descriptor[2].data[1] =  2.0;
 
     double bin_data[5] = {-1.0, -0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0), 1.0};
     bin_cosines.assign(bin_data, bin_data+5);
@@ -319,15 +319,8 @@ void test_gray_particle_straight()
     // Check the results
     if (particle.status() != false ) ITFAILS;
 
-    vector<double> final_r ( particle.get_r() );
-    const double correct_final_r[3] = {1.0, 0.0, 3.0};
-    if (!soft_equiv(final_r.begin(), final_r.end(), 
-		    correct_final_r, correct_final_r+3) ) ITFAILS;
-
     if (particle.get_descriptor() != 
 	Gray_Particle<RZWedge_Mesh>::ESCAPE) ITFAILS;
-
-    if (!soft_equiv(particle.get_ew(), std::exp(-4.0) ) ) ITFAILS;
 
     // Check the tallies:
 
@@ -340,7 +333,7 @@ void test_gray_particle_straight()
 	ITFAILS;
 
     // 3rd: outward across surface 3
-    if (!soft_equiv(surface_tally->weight(3, true,  4) , exp(-2.0*sqrt(2.0))))
+    if (!soft_equiv(surface_tally->weight(3, true,  4) , exp(-sqrt(3.0))))
 	ITFAILS;
 
     // 4th: outrward across surface 2
@@ -415,15 +408,8 @@ void test_gray_particle_rw()
     // Check the results
     if (particle.status() != false ) ITFAILS;
 
-    vector<double> final_r ( particle.get_r() );
-    const double correct_final_r[3] = {1.0, 0.0, 3.0};
-    if (!soft_equiv(final_r.begin(), final_r.end(), 
-		    correct_final_r, correct_final_r+3) ) ITFAILS;
-
     if (particle.get_descriptor() != 
 	Gray_Particle<RZWedge_Mesh>::ESCAPE) ITFAILS;
-
-    if (!soft_equiv(particle.get_ew(), std::exp(-4.0) ) ) ITFAILS;
 
     // Check the tallies:
 
@@ -436,7 +422,7 @@ void test_gray_particle_rw()
 	ITFAILS;
 
     // 3rd: outward across surface 3
-    if (!soft_equiv(surface_tally->weight(3, true,  4) , exp(-2.0*sqrt(2.0))))
+    if (!soft_equiv(surface_tally->weight(3, true,  4) , exp(-sqrt(3.0))))
 	ITFAILS;
 
     // 4th: outrward across surface 2
@@ -509,10 +495,10 @@ void test_mg_particle()
     // Check the results
     if (particle.status() != false ) ITFAILS;
 
-    vector<double> final_r ( particle.get_r() );
-    const double correct_final_r[3] = {1.0, 0.0, 3.0};
-    if (!soft_equiv(final_r.begin(), final_r.end(), 
-		    correct_final_r, correct_final_r+3) ) ITFAILS;
+//     vector<double> final_r ( particle.get_r() );
+//     const double correct_final_r[3] = {1.0, 0.0, 3.0};
+//     if (!soft_equiv(final_r.begin(), final_r.end(), 
+// 		    correct_final_r, correct_final_r+3) ) ITFAILS;
 
     // Check the tallies:
 

@@ -18,7 +18,7 @@ end-init
 wedge_angle_degrees: 90.0
 rcoarse: 0 3
 num_rfine: 3
-zcoarse: -1 1 3
+zcoarse: -4 1 5
 num_zfine: 1 1
 end-mesh
 
