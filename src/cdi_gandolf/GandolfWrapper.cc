@@ -54,7 +54,7 @@ using std::string;
  //----------------------------------------//
  
  void wgmatids( const std::string &fname , vector<int> &matids, 
-		const int const_kmat, int &nmat, int &ier ) 
+		int kmat, int &nmat, int &ier ) 
      {
 	 
 	 // I could change this subroutine so that it identifies
@@ -68,9 +68,6 @@ using std::string;
 	 char cfname[maxDataFilenameLength];
 	 const char * ccfname = s2ccwp( fname, cfname,
 					maxDataFilenameLength );
-	 
-	 // Remove constness from kmat.
-	 int kmat = const_kmat; 
 	 
 	 // we don't know the value of nmat until runtime so we
 	 // must dynamically allocate a_matids.
@@ -104,7 +101,7 @@ using std::string;
     
     void wgkeys( const std::string &fname, const int &const_matid, 
 		vector<string> &vkeys,
-		const int const_kkeys, int &nkeys, int &ier)
+		int const_kkeys, int &nkeys, int &ier)
 	{
 	    // ----------------------------------------
 	    // Create simple flat data types

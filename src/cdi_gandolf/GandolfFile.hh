@@ -76,13 +76,13 @@ class GandolfFile
      *    This is the standard GandolfFile constructor.  This object
      *    is typically instantiated as a smart pointer.
      *
-     * \param _gandolfDataFilename A string that contains the name of
+     * \param gandolfDataFilename A string that contains the name of
      *     the Gandolf data file in IPCRESS format.  The f77 Gandolf
      *     vendor library expects a name with 80 characters or less.
      *     If the filename is longer than 80 characters the library
      *     will not be able to open the file.
      */
-    GandolfFile( const std::string& _gandolfDataFilename );
+    GandolfFile( const std::string& gandolfDataFilename );
 
     // (defaulted) GandolfFile(const GandolfFile &rhs);
     // (defaulted) ~GandolfFile();
@@ -122,7 +122,7 @@ class GandolfFile
      * \brief Indicate if the requested material id is available in
      *        the data file.
      */
-    bool materialFound( const int matid ) const;
+    bool materialFound( int matid ) const;
 
   private:
     

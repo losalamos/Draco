@@ -18,8 +18,8 @@ namespace rtt_cdi_gandolf
     /*!
      * \brief The standard GandolfFile constructor.
      */
-    GandolfFile::GandolfFile( const std::string& gandolfDataFilename_ )
-	: dataFilename( gandolfDataFilename_ )
+    GandolfFile::GandolfFile( const std::string& gandolfDataFilename )
+	: dataFilename( gandolfDataFilename )
 	{
 	    // Gandolf will only look at the first "maxDataFilenameLength"
 	    // characters of the data filename.  We must require that the
@@ -33,18 +33,18 @@ namespace rtt_cdi_gandolf
 	    // the materials that exist in the data file.
 	    int errorCode = 0;
 	    wrapper::wgmatids( dataFilename, matIDs, wrapper::maxMaterials,
-			      numMaterials, errorCode ); 
+			       numMaterials, errorCode ); 
 	    
 	    if ( errorCode != 0 )
 		throw gmatidsException( errorCode );
-   
+
 	}
 
     /*!
      * \brief Indicate if the requested material id is available in
      *        the data file.
      */
-    bool GandolfFile::materialFound( const int matid ) const
+    bool GandolfFile::materialFound( int matid ) const
 	{
 	    // Loop over all available materials.  If the requested
 	    // material id matches on in the list then return true.

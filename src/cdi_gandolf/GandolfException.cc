@@ -73,8 +73,8 @@ std::string GandolfException::errorSummary()
 // gkeys Exception Class //
 // --------------------- //
 
-gkeysException::gkeysException( const int _errorCode )
-    : GandolfException( "gkeys", _errorCode)
+gkeysException::gkeysException( int in_errorCode )
+    : GandolfException( "gkeys", in_errorCode)
     {
 	// empty
     }
@@ -107,8 +107,8 @@ std::string gkeysException::errorMessage()
 // gchgrids Exception Class //
 // ------------------------ //
 
-gchgridsException::gchgridsException( const int _errorCode )
-    : GandolfException( "gchgrids", _errorCode)
+gchgridsException::gchgridsException( int in_errorCode )
+    : GandolfException( "gchgrids", in_errorCode)
     {
 	// empty
     }
@@ -144,8 +144,8 @@ std::string gchgridsException::errorMessage()
 // ggetgray Exception Class //
 // ------------------------ //
 
-ggetgrayException::ggetgrayException( const int _errorCode )
-    : GandolfException( "ggetgray", _errorCode)
+ggetgrayException::ggetgrayException( int in_errorCode )
+    : GandolfException( "ggetgray", in_errorCode)
     {
 	// empty
     }
@@ -180,8 +180,8 @@ std::string ggetgrayException::errorMessage()
 // ggetmg Exception Class //
 // ---------------------- //
 
-ggetmgException::ggetmgException( const int _errorCode )
-    : GandolfException( "ggetmg", _errorCode)
+ggetmgException::ggetmgException( int in_errorCode )
+    : GandolfException( "ggetmg", in_errorCode)
     {
 	// empty
     }
@@ -214,8 +214,8 @@ std::string ggetmgException::errorMessage()
 // gmatids Exception Class //
 // ---------------------- //
 
-gmatidsException::gmatidsException( const int _errorCode )
-    : GandolfException( "gmatids", _errorCode)
+gmatidsException::gmatidsException( int in_errorCode )
+    : GandolfException( "gmatids", in_errorCode)
     {
 	// empty
     }

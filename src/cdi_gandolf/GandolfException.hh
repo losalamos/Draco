@@ -67,11 +67,11 @@ class GandolfException
     /*!
      * \brief Standard GandolfException constructor.
      *
-     * \param _gandolfFunctionName
-     * \param _errorCode
+     * \param in_gandolfFunctionName
+     * \param in_errorCode
      */    
-    GandolfException( const std::string _gandolfFunctionName, const int _errorCode )
-	: gandolfFunctionName( _gandolfFunctionName ), errorCode( _errorCode )
+    GandolfException( std::string in_gandolfFunctionName, int in_errorCode )
+	: gandolfFunctionName( in_gandolfFunctionName ), errorCode( in_errorCode )
     { 
 	// empty
     };
@@ -128,7 +128,7 @@ class gkeysException : public GandolfException
 
     // CONSTRUCTOR
 
-    gkeysException( const int _errorCode );
+    gkeysException( int in_errorCode );
     
     // ACCESSORS
 
@@ -147,7 +147,7 @@ class gchgridsException : public GandolfException
 
     // CONSTRUCTOR
 
-    gchgridsException( const int _errorCode );
+    gchgridsException( int in_errorCode );
     
     // ACCESSORS
 
@@ -166,7 +166,7 @@ class ggetgrayException : public GandolfException
 
     // CONSTRUCTOR
 
-    ggetgrayException( const int _errorCode );
+    ggetgrayException( int in_errorCode );
     
     // ACCESSORS
 
@@ -185,7 +185,7 @@ class ggetmgException : public GandolfException
 
     // CONSTRUCTOR
 
-    ggetmgException( const int _errorCode );
+    ggetmgException( int in_errorCode );
     
     // ACCESSORS
 
@@ -204,7 +204,7 @@ class gmatidsException : public GandolfException
 
     // CONSTRUCTOR
 
-    gmatidsException( const int _errorCode );
+    gmatidsException( int in_errorCode );
     
     // ACCESSORS
 
