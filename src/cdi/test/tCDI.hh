@@ -63,12 +63,6 @@ class tCDI : public rtt_UnitTestFrame::TestApp
     // IMPLEMENTATION
 };
 
-    // ==================================================
-    // ==================================================
-    // Implement a dummy MatProps Class here???
-    // ==================================================
-    // ==================================================
-
 } // end namespace rtt_cdi_test
 
 #endif                          // __cdi_tCDI_hh__

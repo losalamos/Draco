@@ -12,6 +12,7 @@
 // 1.1) Original
 
 #include "tCDI.hh"
+#include "DummyOpacity.hh"
 #include "../CDI.hh"
 #include "../Release.hh"
 
@@ -20,7 +21,7 @@
 
 #include <iostream>
 #include <vector>
-#include <fstream>
+//#include <fstream>
 
 // Unit Test Frame Stuff
 //----------------------------------------
@@ -57,54 +58,34 @@ string tCDI::version() const
 string tCDI::runTest()
 {
     
-    // Get opacities from Gandolf
-    // OpType must be one of { Gandolf, EOSPAC, Analytic }.
-    rtt_cdi::OpType op_type = rtt_cdi::Gandolf;
+    // Start the test.
+    cout << endl
+	 << "Testing the CDI package."
+	 << endl;
+	
+    cout << endl
+	 << "Create SP to a Opacity object." << endl
+	 << endl;
     
-    // Gandolf data filename (IPCRESS format required)
-    string op_data_file = "Al_BeCu.ipcress";
+    SP<rtt_cdi::Opacity> spOpacity;
+    spOpacity = new rtt_dummy_opacity::DummyOpacity();
+
+    cout << endl
+	 << "Create SP to a CDI object." << endl
+	 << endl;
     
-    std::ifstream infile( op_data_file.c_str() );
-    if ( ! infile )
-	fail() << "Could not open file for reading.";
-    else { 
-	pass() << "File found for reading.";
+    SP<CDI> spCDI_mat1;
+    spCDI_mat1 = new CDI( spOpacity );
 	
-	
-	
-	// Start the test.
-	cout << endl
-	     << "Testing the CDI package."
-	     << endl;
-	
-	cout << endl
-	     << "Create SP to a CDI object." << endl
-	     << endl;
-	
-	SP<CDI> spCDI_Al;
-	spCDI_Al = new CDI( op_type, op_data_file );
-	
-	cout << endl
-	     << "The Gandalf input file is named: \"" 
-	     << spCDI_Al->getOpacityDataFilename() << "\""
-	     << endl << endl;
-	
-	vector<int> matids = spCDI_Al->getMatIDs();
-	
-	cout << endl << "Material IDs found:" << endl;
-	for ( int i=0; i < matids.size(); ++i )
-	    cout << "   " << matids[i] << endl;
-	
-	
-    
-    
-	
-    //    double grayRosselandOpacity = spCDI_Al->getGrayOpacity( 1.0, 10.0 );
+    // do some dummy calls here to make sure things are working
+    //
+    // vector<double> opacities 
+    //    = spCDI_mat1->getGrayOpacity( double temp, 
+    //                                  double density);
 
 	pass() << "Done testing CDI.";
 
 	cout << endl << endl;
-    }
 
 
     // Print the test result.
