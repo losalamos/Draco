@@ -6,6 +6,8 @@
 // @> Global C4 functions for MPI
 //---------------------------------------------------------------------------//
 
+#include "c4/global.hh"
+
 #include "ds++/DynArray.hh"
 #include "ds++/Assert.hh"
 
