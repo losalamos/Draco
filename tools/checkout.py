@@ -7,27 +7,22 @@ Checks out a variety of projects from the sourceforge server.
 
 Usage:
 
-   checkout -r tagname [project]    or:
-   checkout project [version]
-   checkout -h or checkout --help
-   checkout -n or checkout --dry-run
-   checkout -l or checkout --list
+   checkout -r tagname [project]
+   checkout project [version]   
+   checkout [option]
 
-Where project is one of 'draco', 'clubimc', 'milagro', 'wedgehog' or
-'uncleMcFlux', or a string of characters long enough to identify the
-project uniquely.  In the first form, the project name is optional if
-it is the first word of the tag, e.g. 'wedgehog-4_3_0'. In the second
-form, the project name and tag are hyphenated to produce the tag.
+In the first form, the project name is optional if it is the first
+word of the tag, e.g. 'wedgehog-4_3_0'. In the second form, the
+project name and tag are hyphenated to produce the tag.
 
-The -h [--help] argument prints this message.
-the -n [--dry-run] argument causes the cvs command to be printed but
-not executed.
+Other options:
+-h  --help     Prints this message.
+-n  --dry-run  Causes the cvs command to be printed but not executed.
+-l  --list     Lists the available projects for checkout.
 """
 
 from Utils import disambiguate, AmbiguousKeyError
 import sys, os, getopt
-
-server = "sf.lanl.gov"
 
 projects = {'draco'      :'draco',
             'clubimc'    :'jayenne',
@@ -35,10 +30,15 @@ projects = {'draco'      :'draco',
             'wedgehog'   :'jayenne',
             'uncleMcFlux':'jayenne'}
 
+project_list = ', '.join(projects.keys())
+
+def list_packages():
+    print "Available Packages:", project_list
+
 username =  os.environ['LOGNAME']
 
 try:
-    options, extras = getopt.getopt(sys.argv[1:], 'r:hnl', \
+    options, words = getopt.getopt(sys.argv[1:], 'r:hnl', \
                                     ['help','dry-run', 'list'])
 except getopt.GetoptError:
     sys.exit('ERROR: bad option or missing argument')
@@ -51,6 +51,7 @@ options_dict = dict(options)
 
 if '-h' in options_dict or '--help' in options_dict:
     print __doc__
+    list_packages()
     sys.exit()
 
 if '-r' in options_dict:
@@ -64,13 +65,13 @@ if '-n' in options_dict or '--dry-run' in options_dict:
     dry_run = True;
 
 if '-l' in options_dict or '--list' in options_dict:
-    print "Packages that this tool can checkout: ", projects.keys()
+    list_packages()
     sys.exit()
 
-# If we don't have a package, try and get it from extras
+# If we don't have a package, try and get it from words
 if not package:
     try:
-        package = disambiguate(extras[0], projects.keys())
+        package = disambiguate(words[0], projects.keys())
     except IndexError:
         sys.exit("ERROR: No package name given.")
     except AmbiguousKeyError:
@@ -80,11 +81,11 @@ if not package:
         sys.exit("ERROR: Unrecognized package name: %s" % package)
     
 
-# If we don't have a tag yet, try and get a version number from extras
+# If we don't have a tag yet, try and get a version number from words
 # to make the tag from:
 if not tag:
     try:
-        version = extras[1]
+        version = words[1]
     except IndexError:
         print "Using head version"
     else:
