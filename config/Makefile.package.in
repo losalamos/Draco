@@ -279,6 +279,7 @@ uninstall:
 
 ${libdir}/%: %
 	${INSTALL_DATA} $< $@
+	${RANLIB} $@
 
 ${install_executable}: ${bindir}/%: bin/%
 	${INSTALL} $< $@

@@ -855,7 +855,7 @@ Optional Packages:
   --with-gslcblas=lib      determine the gslcblas lib (gslcblas is the default
   --with-gslcblas-inc=DIR    tell where GSLCBLAS includes are (\${GSLCBLAS_INC_DIR} by default)
   --with-gslcblas-lib=DIR    tell where GSLCBLAS libraries are (\${GSLCBLAS_LIB_DIR} by default)
-  --with-trilinos=lib    determine the trilinos implementation (aztecoo is default
+  --with-trilinos=lib    determine the trilinos implementation (aztecoo is default)
   --with-trilinos-inc=DIR    tell where TRILINOS includes are (\${TRILINOS_INC_DIR} by default)
   --with-trilinos-lib=DIR    tell where TRILINOS libraries are (\${TRILINOS_LIB_DIR} by default)
   --with-metis=lib    the metis implementation
