@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+#include <cmath>
+
 using std::cout;
 using std::endl;
 
@@ -72,7 +74,6 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
     Require(current_dt > 0.0);
 //    Require(FT::conformal(y1,y2));
 
-
     double x1 = 0.;
     double x2 = 0.;
     if (update_method == inf_norm) 
@@ -81,14 +82,15 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
     }
 
     FT::const_iterator py2 = y2.begin();
-    for (FT::const_iterator py1 = y1.begin(); py1 != y1.end(); py1++) 
+    for (FT::const_iterator py1 = y1.begin(); py1 != y1.end(); py1++,py2++) 
     {
 	
 	if (*py1 > floor_value && *py2 > floor_value)
 	{
-	    double delta_y = abs(*py2-*py1);
+	    double delta_y = std::abs(*py2-*py1);
 	    double y_norm  = 0.5*(*py2+*py1);
 	    double alpha = delta_y/y_norm;
+
 	    if (alpha < eps()) // Set noise to a hard zero
 	    {
 		alpha = 0.;
@@ -123,7 +125,6 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
 		throw std::runtime_error("Unrecognized update method flag");
 	    }
 	}
-	py2++;
     }
 
     if (x1 < small()) 
