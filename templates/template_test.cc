@@ -9,13 +9,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "<spkg>.hh"
-#include "../Release.hh"
-#include "ds++/Assert.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
+
+#include "ds++/Assert.hh"
+#include "../Release.hh"
+#include "<spkg>.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
