@@ -1365,24 +1365,24 @@ subdirs="ds++ xm fourier stdheaders"
 
 subdirs="ds++ xm fourier stdheaders UnitTestFrame"
 
-subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng"
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng meshReaders"
 
-subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng meshReaders stopwatch meshTest viz RTT_Format_Reader \
                   quadrature cdi"
 
-subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng meshReaders stopwatch meshTest viz RTT_Format_Reader \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader cdi_gandolf"
+                  timestep cdi_gandolf mc"
 
-subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng meshReaders stopwatch meshTest viz RTT_Format_Reader \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  timestep cdi_gandolf mc imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver meshReaders_Services"
 
-subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
+subdirs="ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng meshReaders stopwatch meshTest viz RTT_Format_Reader \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver meshReaders_Services P1Diffusion imc"
+                  timestep cdi_gandolf mc imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  ConjGradDiffusionSolver meshReaders_Services P1Diffusion"
 
 
 trap '' 1 2 15
@@ -1669,10 +1669,10 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng stopwatch meshTest viz meshReaders \
+  for ac_config_dir in ds++ xm fourier stdheaders UnitTestFrame traits units nml c4 rng meshReaders stopwatch meshTest viz RTT_Format_Reader \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
-                  ConjGradDiffusionSolver meshReaders_Services P1Diffusion imc; do
+                  timestep cdi_gandolf mc imc matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  ConjGradDiffusionSolver meshReaders_Services P1Diffusion; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
