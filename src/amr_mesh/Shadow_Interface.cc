@@ -11,9 +11,9 @@
  *         Interface class for use with Fortran 90 codes. The complimentary 
  *         Fortran 90 shadow object interface functions that reference the 
  *         functions herein are provided in amr_mesh_fort/Shadow_Interface.f90.
- *         An example code is also provide to illustrate the usage of all of
- *         the shadow object interface functions to the amr_mesh package from
- *         a Fortran 90 code.
+ *         An example code is also provide via link to illustrate the usage
+ *         of all of the shadow object interface functions to the amr_mesh 
+ *         package from a Fortran 90 code.
  *
  *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.

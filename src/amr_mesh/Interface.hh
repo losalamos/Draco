@@ -60,10 +60,12 @@ using rtt_format::RTT_Format;
  *         class object is also a required argument to the constructors for 
  *         the rtt_imc::Opacity_Builder and rtt_imc::Source_Init classes. 
  *         Finally, this class also contains the data needed to construct a
- *         rtt_imc::Mat_State class object.
+ *         rtt_imc::Mat_State class object. \ref rtt_amr_input documents and
+ *         illustrates the required user input file structure.
  *
  *\sa The \ref amr_overview presents a summary of the capabilities and the
- *    intended usage of this mesh class. A \ref rtt_amr_input is also provided.
+ *    intended usage of this mesh class.\ref rtt_amr_input documents and
+ *    illustrates the required user input file structure.
  */     
 class CAR_CU_Interface 
 {
@@ -164,7 +166,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
   public:
     // constructor
 /*!
- * \brief Constructs a CAR_CU_Mesh Interface class object.
+ * \brief Constructs a CAR_CU_Interface class object.
  * \param infile User-input file name (must contain the RTT_format mesh file 
  *               name).
  * \param verbose Switch used to turn detailed run-time reporting on/off.
@@ -173,7 +175,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
 				     const bool & verbose);
 
 /*!
- * \brief Destroys a CAR_CU_Mesh Interface class object.
+ * \brief Destroys a CAR_CU_Interface class object.
  */
     ~CAR_CU_Interface() {}
 

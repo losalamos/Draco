@@ -14,9 +14,9 @@
  *         Only the class constructor and destructor are shadowed, as all 
  *         other class functions are invoked automatically by the shadow 
  *         object interface of the CAR_CU_Builder class constructor. An 
- *         example code is also provide to illustrate the usage of all of
- *         the shadow object interface functions to the amr_mesh package from
- *         a Fortran 90 code.
+ *         example code is also provide via link to illustrate the usage of 
+ *         all of the shadow object interface functions to the amr_mesh 
+ *         package from a Fortran 90 code.
  *
  *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.

@@ -13,9 +13,9 @@
  *         herein are provided in Shadow_Mesh.f90. Note that the class
  *         constructor is not shadowed because the mesh is constructed 
  *         directly by the Shadow_Builder class object.  An example 
- *         code is also provide to illustrate the usage of all of the shadow
- *         object interface functions to the amr_mesh package from a Fortran 
- *         90 code.
+ *         code is also provide via link to illustrate the usage of all of 
+ *         the shadow object interface functions to the amr_mesh package from
+ *         a Fortran 90 code.
  *
  *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
