@@ -131,6 +131,65 @@ AC_DEFUN(AC_SPRNG_SETUP, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_AZTEC_SETUP
+dnl
+dnl AZTEC SETUP (on by default)
+dnl AZTEC is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_AZTEC_SETUP, [dnl
+
+   dnl define --with-aztec
+   AC_ARG_WITH(aztec,
+      [  --with-aztec=[lib]      determine the aztec lib (aztec is the default])
+ 
+   dnl define --with-aztec-inc
+   AC_WITH_DIR(aztec-inc, AZTEC_INC, \${AZTEC_INC_DIR},
+	       [tell where AZTEC includes are])
+
+   dnl define --with-aztec-lib
+   AC_WITH_DIR(aztec-lib, AZTEC_LIB, \${AZTEC_LIB_DIR},
+	       [tell where AZTEC libraries are])
+
+   # set default value of aztec includes and libs
+   if test "${with_aztec:=aztec}" = yes ; then
+       with_aztec='aztec'
+   fi
+
+   # define AZTEC include path
+   if test -n "${AZTEC_INC}" ; then
+       # remember that AZTEC_INC has the final slash
+       AZTEC_H="\"${AZTEC_INC}az_aztec.h\""
+       AZTEC_DEFS_H="\"${AZTEC_INC}az_aztec_defs.h\""
+   elif test -z "${AZTEC_INC}" ; then
+       AZTEC_H="<az_aztec.h>"
+       AZTEC_DEFS_H="<az_aztec_defs.h>"
+   fi
+   
+   # we define AZTEC_H regardless of whether a PATH is set
+   AC_DEFINE_UNQUOTED(AZTEC_H, ${AZTEC_H})dnl
+   AC_DEFINE_UNQUOTED(AZTEC_DEFS_H, ${AZTEC_DEFS_H})dnl
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_aztec=$1
+
+   # set up the libraries
+   if test "${with_aztec}" != no ; then
+       if test -n "${AZTEC_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_aztec, -L${AZTEC_LIB} -l${with_aztec})
+       elif test -z "${AZTEC_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_aztec, -l${with_aztec})
+       fi
+   fi
+
+   # add AZTEC directory to VENDOR_DIRS
+   VENDOR_DIRS="${AZTEC_LIB} ${VENDOR_DIRS}"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_PCG_SETUP
 dnl
 dnl PCG LIBRARY SETUP (on by default)
@@ -379,6 +438,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_MPI_SETUP(pkg)
    AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
+   AC_AZTEC_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
