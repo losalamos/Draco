@@ -13,6 +13,7 @@ optns	=
 cxx	:= KCC
 c4	:= no
 #strict	:= yes
+threads	:= yes
 
 ifndef DBC
 DBC	= 7
@@ -61,14 +62,14 @@ endif
 ifeq ($(kcc_deps),yes)
 ifneq ($(gendeps),no)
 CXX_DEPEND	= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
-#CXX	+= --output_dependencies .dkcc.$(basename $(notdir $*))_$(env)
 endif
 endif
 
-INSTANTIALYZER	+= -m edg
+INSTANTIALYZER	+= -m ansi
 
 ifeq ($(c4),no)
 #SYS_FLAGS = -DNOMPI
+SYS_LIBS = -lpthread
 comm	:=
 endif
 
@@ -80,7 +81,7 @@ LAMHCP  := KCC
 export LAMHCP
 compiler = hcp
 SYS_FLAGS = -DC4_MPI
-SYS_LIBS = -lmpi
+SYS_LIBS = -lmpi -lpthread
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77
 endif
 
@@ -88,7 +89,7 @@ ifneq ($(lam),yes)
 # Assume MPICH
 comm	:= c4m
 SYS_FLAGS = -DC4_MPI -I/home/furnish/mpich/include
-SYS_LIBS = -L/home/furnish/mpich/lib/LINUX/ch_p4 -lmpi
+SYS_LIBS = -L/home/furnish/mpich/lib/LINUX/ch_p4 -lmpi -lpthread
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77
 endif
 
