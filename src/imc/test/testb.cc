@@ -13,6 +13,7 @@
 #include "imctest/Opacity_Builder.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
+#include "imctest/Random.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <fstream>
@@ -26,6 +27,7 @@ using IMC::Mat_State;
 using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
+using IMC::Random;
 using namespace std;
 
 void Builder_diagnostic(const OS_Mesh &mesh, const Mat_State<OS_Mesh> &mat,
@@ -93,7 +95,7 @@ main()
 	new Particle<OS_Mesh>::Diagnostic(output, true);
 
   // initialize particle
-    long seed = -395723;
+    long seed = -345632;
     Particle<OS_Mesh> particle(*mesh, seed, 1.0, 10.0);
     assert (particle.Status());
 
