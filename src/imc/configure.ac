@@ -26,22 +26,23 @@ AC_NEEDS_LIBS_TEST(cdi_analytic)
 
 # testing setup
 AC_RUNTESTS(tstFrequency \
+            tstMat_State \
             tstOpacity \
             tstOpacity_Builder_Helper \
 	    tstFlat_Mat_State_Builder \
             tstCDI_Mat_State_Builder \
-            tstTally \
-            tstSource_Builder \
             tstMesh_Operations \
-	    tstParticle \
-            tstParticle_trans \
-            tstTransporter \
+            tstSource_Builder \
+            tstTally \
             tstRandom_Walk \
             tstAzimuthal_Mesh \
+            tstExtrinsic_Tracker \
             tstSurface_Sub_Tally \
             tstSurface_tracker \
             tstRZ_Surface_tracking \
-            tstExtrinsic_Tracker, 1 2 4)
+	    tstParticle \
+            tstParticle_trans \
+            tstTransporter, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV

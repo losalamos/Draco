@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Feb 19 11:23:44 2003
  * \brief  Test imc-based opacity classes.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -1572,22 +1572,23 @@ fi;
 
 # testing setup
 	test_alltarget="$test_alltarget tstFrequency \
+            tstMat_State \
             tstOpacity \
             tstOpacity_Builder_Helper \
 	    tstFlat_Mat_State_Builder \
             tstCDI_Mat_State_Builder \
-            tstTally \
-            tstSource_Builder \
             tstMesh_Operations \
-	    tstParticle \
-            tstParticle_trans \
-            tstTransporter \
+            tstSource_Builder \
+            tstTally \
             tstRandom_Walk \
             tstAzimuthal_Mesh \
+            tstExtrinsic_Tracker \
             tstSurface_Sub_Tally \
             tstSurface_tracker \
             tstRZ_Surface_tracking \
-            tstExtrinsic_Tracker"
+	    tstParticle \
+            tstParticle_trans \
+            tstTransporter"
 
 	test_nprocs="1 2 4"
 
