@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstSource_Builder.cc
+ * \file   imc/test/tstSource_Builder.cc
  * \author Thomas M. Evans
  * \date   Wed Dec  8 16:39:33 1999
  * \brief  Source_Builder test file.

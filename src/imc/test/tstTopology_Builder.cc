@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/tstTopology_Builder.cc
+ * \file   imc/test/tstTopology_Builder.cc
  * \author Thomas M. Evans
  * \date   Tue Nov 30 10:29:48 1999
  * \brief  Topology_Builder class component test.
