@@ -11,6 +11,8 @@
 
 #include "ds++/Assert.hh"
 
+C4_NAMESPACE_BEG
+
 //---------------------------------------------------------------------------//
 // Constructor.  Set up internal state and prepare for communiction.  Sync
 // with partner if requested.
@@ -105,6 +107,8 @@ void BSwap<T>::swap( const T& sd, T& rd )
     send( sd );
     recv( rd );
 }
+
+C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
 //                              end of BSwap.cc

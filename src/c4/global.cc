@@ -8,6 +8,15 @@
 
 #include "c4/global.hh"
 
+//---------------------------------------------------------------------------//
+// This section is just the compatibility wrappers.  The "real" stuff goes
+// into the C4 namespace, and is embodied in the implementation files for
+// each platform.
+
+// Uhh, maybe these will all end up being inlined...
+
+//---------------------------------------------------------------------------//
+
 #ifdef __PARAGON__
 #include "c4/global_nx.cc"
 #endif

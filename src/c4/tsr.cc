@@ -7,11 +7,12 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
+using namespace C4;
 
 #include <iostream.h>
 #include <stdio.h>
 
-int node, nodes;
+int mynode;
 
 void stall_node()
 {
@@ -24,28 +25,28 @@ void stall_node()
 
 void t1()
 {
-    C4_gsync();
+    gsync();
 
-    if (node == 0) {
+    if (mynode == 0) {
 	int x[4];
 	for( int i=0; i < 4; i++ )
 	    x[i] = i;
 
-	C4_Send( &x, 4*sizeof(int), 1, 1 );
+	Send( &x, 4*sizeof(int), 1, 1 );
     }		
 
-    C4_gsync();
+    gsync();
 
 // By this point we should have the message sitting in the inbox on node 1.
 
-    if (node == 0)
+    if (mynode == 0)
 	cout << "0 sent the message, time for 1 to receive it.\n" << flush;
 
-    C4_gsync();
+    gsync();
 
-    if (node == 1) {
+    if (mynode == 1) {
 	int x[4];
-	C4_Recv( &x, 4*sizeof(int), 0, 1 );
+	Recv( &x, 4*sizeof(int), 0, 1 );
 
 	cout << "1 got the message.\n" << flush;
 
@@ -61,7 +62,7 @@ void t1()
 
 // By this point the inbox should be empty, and the msg_queues empty.
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
@@ -70,31 +71,31 @@ void t1()
 
 void t2()
 {
-    C4_gsync();
+    gsync();
 
 // At this point, pe_ready[1] on node 0 should be 1.
 
-    if (node == 0) {
+    if (mynode == 0) {
 	cout << "t2 beginning.\n" << flush;
 
 	int x1[4] = {0,1,2,3};
 	int x2[4] = {4,5,6,7};
 
-	C4_Send( &x1, sizeof(x1), 1, 1 );
+	Send( &x1, sizeof(x1), 1, 1 );
 	cout << "msg1 sent.\n" << flush;
 
-	C4_Send( &x2, sizeof(x2), 1, 2 );
+	Send( &x2, sizeof(x2), 1, 2 );
 	cout << "msg2 sent.\n" << flush;
     }
-    if (node == 1) {
+    if (mynode == 1) {
 	stall_node();
 
 	int x1[4], x2[4];
 
-	C4_Recv( &x2, sizeof(x2), 0, 2 );
+	Recv( &x2, sizeof(x2), 0, 2 );
 	cout << "msg2 recv'd.\n" << flush;
 
-	C4_Recv( &x1, sizeof(x1), 0, 1 );
+	Recv( &x1, sizeof(x1), 0, 1 );
 	cout << "msg1 recv'd.\n" << flush;
 
     // Now validate data.
@@ -117,7 +118,7 @@ void t2()
 	    cout << "\t\t >> t2 succeeded <<\n" << flush;
     }
 
-    C4_gsync();
+    gsync();
 }
 
 //---------------------------------------------------------------------------//
@@ -126,35 +127,35 @@ void t2()
 
 void t3()
 {
-    C4_gsync();
+    gsync();
 
     int x[4];
     {
 	C4_Req r;
 
-	if (node == 0) {
+	if (mynode == 0) {
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    r = C4_SendAsync( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    r = SendAsync( (void *) &x[0], 4*sizeof(int), 1, 47 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
 
-	C4_gsync();
+	gsync();
 
-	if (node == 1) {
-	    C4_Recv( (void *) x, 4*sizeof(int), 0, 47 );
+	if (mynode == 1) {
+	    Recv( (void *) x, 4*sizeof(int), 0, 47 );
 
 	    cout << "1: msg recv'd.\n" << flush;
 	}
 
-	C4_gsync();
+	gsync();
     }
-    printf( "%d: C4_Req destroyed.\n", node );
-    C4_gsync();
+    printf( "%d: C4_Req destroyed.\n", mynode );
+    gsync();
 
-    if (node == 1) {
+    if (mynode == 1) {
 	int fail = 0;
 	for( int i=0; i < 4; i++ ) {
 	    printf( "x[%d]=%d\n", i, x[i] );
@@ -174,38 +175,38 @@ void t3()
 
 void t4()
 {
-    C4_gsync();
+    gsync();
 
     int x[4];
     {
 	C4_Req r;
 
-	if (node == 0) {
+	if (mynode == 0) {
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    C4_Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
 
-	C4_gsync();
+	gsync();
 
-	if (node == 1) {
+	if (mynode == 1) {
 	// In this case, the send will have gone straight to the inbox, so
 	// this should complete immediately.
 
-	    r = C4_RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
+	    r = RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
 
 	    cout << "1: msg recv posted.\n" << flush;
 	}
 
-	C4_gsync();
+	gsync();
     }
-    printf( "%d: C4_Req destroyed.\n", node );
-    C4_gsync();
+    printf( "%d: C4_Req destroyed.\n", mynode );
+    gsync();
 
-    if (node == 1) {
+    if (mynode == 1) {
 	int fail = 0;
 	for( int i=0; i < 4; i++ ) {
 	    printf( "x[%d]=%d\n", i, x[i] );
@@ -225,37 +226,37 @@ void t4()
 
 void t5()
 {
-    C4_gsync();
+    gsync();
 
     int x[4];
     {
 	C4_Req r;
 
-	if (node == 0) {
+	if (mynode == 0) {
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    C4_Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
-	    C4_Send( x[0], 1 );
+	    Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    Send( x[0], 1 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
 
-	if (node == 1) {
-	    C4_Recv( x[0], 0 );
+	if (mynode == 1) {
+	    Recv( x[0], 0 );
 	// This should've forced the desired message onto the msg_queue.
-	    r = C4_RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
+	    r = RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
 
 	    cout << "1: msg recv posted.\n" << flush;
 	}
 
-	C4_gsync();
+	gsync();
     }
-    printf( "%d: C4_Req destroyed.\n", node );
+    printf( "%d: C4_Req destroyed.\n", mynode );
 //     C4_shm_dbg_1();
-    C4_gsync();
+    gsync();
 
-    if (node == 1) {
+    if (mynode == 1) {
 	int fail = 0;
 	for( int i=0; i < 4; i++ ) {
 	    printf( "x[%d]=%d\n", i, x[i] );
@@ -276,26 +277,26 @@ void t5()
 
 void t6()
 {
-    C4_gsync();
+    gsync();
 
     int x[4];
     {
 	C4_Req r;
 
-	if (node == 1) {
-	    r = C4_RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
+	if (mynode == 1) {
+	    r = RecvAsync( (void *) x, 4*sizeof(int), 0, 47 );
 	    cout << "1: posted async recv\n";
 	}
 
-	C4_gsync();
+	gsync();
 
-	if (node == 0) {
+	if (mynode == 0) {
 	    stall_node();
 
 	    for( int i=0; i < 4; i++ )
 		x[i] = i;
 
-	    C4_Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
+	    Send( (void *) &x[0], 4*sizeof(int), 1, 47 );
 
 	    cout << "0: msg sent to node 1.\n" << flush;
 	}
@@ -310,10 +311,10 @@ void t6()
 
 // 	C4_gsync();
     }
-    printf( "%d: C4_Req destroyed.\n", node );
-    C4_gsync();
+    printf( "%d: C4_Req destroyed.\n", mynode );
+    gsync();
 
-    if (node == 1) {
+    if (mynode == 1) {
 	int fail = 0;
 	for( int i=0; i < 4; i++ ) {
 	    printf( "x[%d]=%d\n", i, x[i] );
@@ -332,10 +333,9 @@ void t6()
 int main( int argc, char *argv[] )
 {
 //     ios::sync_with_stdio();
-    C4_Init( argc, argv );
+    Init( argc, argv );
 
-    node = C4_node();
-    nodes = C4_nodes();
+    mynode = C4::node();
 
     t1();
     t2();
@@ -345,8 +345,8 @@ int main( int argc, char *argv[] )
 //     C4_shm_dbg_1();
     t6();
 
-    C4_gsync();
-    C4_Finalize();
+    gsync();
+    Finalize();
     return 0;
 }
 

@@ -27,6 +27,8 @@ template class BSwap<int>;
 #pragma define_template BSwap<int>
 #endif
 
+using namespace C4;
+
 //---------------------------------------------------------------------------//
 // This program demonstrates the use of the BSwap<T> class by passing an
 // integer across all the nodes, doing a little work on it each time.  This

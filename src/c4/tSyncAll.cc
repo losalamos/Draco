@@ -9,6 +9,7 @@
 #include "c4/global.hh"
 #include "c4/Sync.hh"
 #include "c4/SpinLock.hh"
+using namespace C4;
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -50,15 +51,15 @@ int main( int argc, char *argv[] )
 #define DOBLOCK(SyncType) \
     if (C4_node() == 0) \
 	cout << "Testing: " << #SyncType << "\n\n" << flush; \
-    C4_gsync(); \
-    cout << "Hello #1 from " << C4_node() << endl << flush; \
+    gsync(); \
+    cout << "Hello #1 from " << node() << endl << flush; \
     { \
 	SyncType sync; \
-	cout << "Hello #2 from " << C4_node() << endl << flush; \
+	cout << "Hello #2 from " << node() << endl << flush; \
     } \
-    cout << "Hello #3 from " << C4_node() << endl << flush; \
-    C4_gsync(); \
-    if (C4_node() == 0) \
+    cout << "Hello #3 from " << node() << endl << flush; \
+    gsync(); \
+    if (node() == 0) \
 	cout << "\nEnd of test\n\n" << flush;
 
 int do_sync_test(int sync_type)

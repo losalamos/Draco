@@ -8,6 +8,8 @@
 
 pkg := c4
 
+need_libm	:= yes
+
 # Go get the standard includeable makefile for GTS components.
 
 include ../config/makefile
@@ -70,7 +72,7 @@ testprogs_all	= $(tsrcs:%.cc=%_$(env))
 tests: libc4_$(env).$(lib_suffix) $(testprogs_all)
 
 $(testprogs_all) : t%_$(env) : $(env) $(env)/t%.o libc4_$(env).$(lib_suffix)
-	$(CXX) $(CXXFLAGS) -o $@ $(env)/t$*.o -L. -lc4_$(env) $(LINK_LIBS) -lm
+	$(CXX) $(CXXFLAGS) -o $@ $(env)/t$*.o -L. -lc4_$(env) $(LINK_LIBS)
 
 # Go pick up the standard signature for makefiles.
 

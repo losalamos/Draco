@@ -11,6 +11,8 @@
 
 #include "c4/config.hh"
 
+C4_NAMESPACE_BEG
+
 //===========================================================================//
 // class NodeInfo - Parallel configuration information
 
@@ -30,6 +32,8 @@ class NodeInfo {
 
     NodeInfo();
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_NodeInfo_hh__
 

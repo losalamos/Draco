@@ -9,6 +9,8 @@
 #include "c4/Baton.hh"
 #include "c4/BSwap.hh"
 
+C4_NAMESPACE_BEG
+
 //---------------------------------------------------------------------------//
 // Default ctor.  The type T had better have a default ctor too, or you need
 // to avoid using this method.  Anyway, this is for defered assignment.
@@ -54,6 +56,8 @@ Baton<T>::~Baton()
 	bs.send(v);
     }
 }
+
+C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
 //                              end of Baton.cc

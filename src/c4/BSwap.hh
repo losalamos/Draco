@@ -11,6 +11,8 @@
 
 #include "c4/NodeInfo.hh"
 
+C4_NAMESPACE_BEG
+
 //===========================================================================//
 // class BSwap - Exchange data buffer between two nodes
 
@@ -45,6 +47,8 @@ class BSwap : public NodeInfo {
     void swap( T& d );
     void swap( const T& sd, T& rd );
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_BSwap_hh__
 

@@ -8,6 +8,8 @@
 
 #include "c4/SpinLock.hh"
 
+C4_NAMESPACE_BEG
+
 //---------------------------------------------------------------------------//
 // Constructor.  Waits for the preceeding processor to finish before
 // continuing. 
@@ -30,6 +32,8 @@ SpinLock::~SpinLock()
     if (lock && node < lastnode)
 	C4_Send( &trash, 0, node+1, SL_Next, 0 );
 }
+
+C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
 //                              end of SpinLock.cc

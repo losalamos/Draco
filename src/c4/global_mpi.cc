@@ -12,37 +12,39 @@
 //---------------------------------------------------------------------------//
 // Miscellaneous
 
-void C4_Init( int& argc, char **& argv )
+C4_NAMESPACE_BEG
+
+void Init( int& argc, char **& argv )
 {
     MPI_Init( &argc, &argv );
 }
 
-void C4_Finalize()
+void Finalize()
 {
     MPI_Finalize();
 }
 
-int C4_node()
+int node()
 {
     int node;
     MPI_Comm_rank( MPI_COMM_WORLD, &node );
     return node;
 }
 
-int C4_nodes()
+int nodes()
 {
     int nodes;
     MPI_Comm_size( MPI_COMM_WORLD, &nodes );
     return nodes;
 }
 
-int C4_group()
+int group()
 {
     int group = 0;
     return group;
 }
 
-void C4_gsync()
+void gsync()
 {
     MPI_Barrier( MPI_COMM_WORLD );
 }
@@ -67,7 +69,7 @@ void C4_gsync()
 // Perform a normal (blocking) send.
 //---------------------------------------------------------------------------//
 
-int C4_Send( void *buf, int size, int dest, int tag, int group )
+int Send( void *buf, int size, int dest, int tag, int group )
 {
     MPI_Send( buf, size, MPI_BYTE, dest, tag, MPI_COMM_WORLD );
     return C4_SUCCESS;
@@ -77,7 +79,7 @@ int C4_Send( void *buf, int size, int dest, int tag, int group )
 // Perform a normal (blocking) receive.
 //---------------------------------------------------------------------------//
 
-int C4_Recv( void *buf, int size, int source, int tag, int group )
+int Recv( void *buf, int size, int source, int tag, int group )
 {
     MPI_Status status;
     int cnt;
@@ -90,7 +92,7 @@ int C4_Recv( void *buf, int size, int source, int tag, int group )
 // Perform a non blocking send.
 //---------------------------------------------------------------------------//
 
-C4_Req C4_SendAsync( void *buf, int size, int dest, int tag, int group )
+C4_Req SendAsync( void *buf, int size, int dest, int tag, int group )
 {
     C4_Req r;
     MPI_Isend( buf, size, MPI_BYTE, dest, tag, MPI_COMM_WORLD, &r.r );
@@ -102,7 +104,7 @@ C4_Req C4_SendAsync( void *buf, int size, int dest, int tag, int group )
 // Perform a non blocking receive.
 //---------------------------------------------------------------------------//
 
-C4_Req C4_RecvAsync( void *buf, int size, int source, int tag, int group )
+C4_Req RecvAsync( void *buf, int size, int source, int tag, int group )
 {
     C4_Req r;
     MPI_Irecv( buf, size, MPI_BYTE, source, tag, MPI_COMM_WORLD, &r.r );
@@ -114,7 +116,7 @@ C4_Req C4_RecvAsync( void *buf, int size, int source, int tag, int group )
 // Optimized form which avoids spurious object creation and copy.
 //---------------------------------------------------------------------------//
 
-void C4_SendAsync( C4_Req& r, void *buf, int size, int dest, int tag, 
+void SendAsync( C4_Req& r, void *buf, int size, int dest, int tag, 
 		   int group /*=0*/ )
 {
 // Not checking that r is not in use, which is of course a concern...
@@ -126,8 +128,8 @@ void C4_SendAsync( C4_Req& r, void *buf, int size, int dest, int tag,
 // Optimized form which avoids spurious object creation and copy.
 //---------------------------------------------------------------------------//
 
-void C4_RecvAsync( C4_Req& r, void *buf, int size, int source, int tag, 
-		   int group /*=0*/ )
+void RecvAsync( C4_Req& r, void *buf, int size, int source, int tag, 
+		int group /*=0*/ )
 {
 // Not checking that r is not in use, which is of course a concern...
     r.set();
@@ -138,7 +140,7 @@ void C4_RecvAsync( C4_Req& r, void *buf, int size, int source, int tag,
 // Send a buffer of integers.
 //---------------------------------------------------------------------------//
 
-int C4_Send( int *buf, int nels, int dest, int group /*=0*/ )
+int Send( int *buf, int nels, int dest, int group /*=0*/ )
 {
     MPI_Send( buf, nels, MPI_INT, dest, C4_int_ptr_Tag, MPI_COMM_WORLD );
     return C4_SUCCESS;
@@ -149,7 +151,7 @@ int C4_Send( int *buf, int nels, int dest, int group /*=0*/ )
 // value is how many we did receive.
 //---------------------------------------------------------------------------//
 
-int C4_Recv( int *buf, int nels, int source, int group /*=0*/ )
+int Recv( int *buf, int nels, int source, int group /*=0*/ )
 {
     int cnt;
     MPI_Status status;
@@ -163,7 +165,7 @@ int C4_Recv( int *buf, int nels, int source, int group /*=0*/ )
 // Send a buffer of floats.
 //---------------------------------------------------------------------------//
 
-int C4_Send( float *buf, int nels, int dest, int group /*=0*/ )
+int Send( float *buf, int nels, int dest, int group /*=0*/ )
 {
     MPI_Send( buf, nels, MPI_FLOAT, dest, C4_float_ptr_Tag, MPI_COMM_WORLD );
     return C4_SUCCESS;
@@ -174,7 +176,7 @@ int C4_Send( float *buf, int nels, int dest, int group /*=0*/ )
 // value is how many we did receive.
 //---------------------------------------------------------------------------//
 
-int C4_Recv( float *buf, int nels, int source, int group /*=0*/ )
+int Recv( float *buf, int nels, int source, int group /*=0*/ )
 {
     int cnt;
     MPI_Status status;
@@ -188,7 +190,7 @@ int C4_Recv( float *buf, int nels, int source, int group /*=0*/ )
 // Send a buffer of doubles.
 //---------------------------------------------------------------------------//
 
-int C4_Send( double *buf, int nels, int dest, int group /*=0*/ )
+int Send( double *buf, int nels, int dest, int group /*=0*/ )
 {
     MPI_Send( buf, nels, MPI_DOUBLE, dest, C4_double_ptr_Tag, MPI_COMM_WORLD );
     return C4_SUCCESS;
@@ -199,7 +201,7 @@ int C4_Send( double *buf, int nels, int dest, int group /*=0*/ )
 // value is how many we did receive.
 //---------------------------------------------------------------------------//
 
-int C4_Recv( double *buf, int nels, int source, int group /*=0*/ )
+int Recv( double *buf, int nels, int source, int group /*=0*/ )
 {
     int cnt;
     MPI_Status status;
@@ -244,25 +246,25 @@ static DynArray<double> dbuf(10);
 //---------------------------------------------------------------------------//
 // Sum, scalar
 
-void C4_gsum( int& x )
+void gsum( int& x )
 {
     int y = x;
     MPI_Allreduce( &y, &x, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void C4_gsum( long& x )
+void gsum( long& x )
 {
     long y = x;
     MPI_Allreduce( &y, &x, 1, MPI_LONG, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void C4_gsum( float& x )
+void gsum( float& x )
 {
     float y = x;
     MPI_Allreduce( &y, &x, 1, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void C4_gsum( double& x )
+void gsum( double& x )
 {
     double y = x;
     MPI_Allreduce( &y, &x, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
@@ -271,7 +273,7 @@ void C4_gsum( double& x )
 //---------------------------------------------------------------------------//
 // Sum, array
 
-void C4_gsum( int *px, int n )
+void gsum( int *px, int n )
 {
     Assert( n >= 0 );
 
@@ -282,7 +284,7 @@ void C4_gsum( int *px, int n )
     MPI_Allreduce( &ibuf[0], px, n, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void C4_gsum( long *px, int n )
+void gsum( long *px, int n )
 {
     Assert( n >= 0 );
 
@@ -293,7 +295,7 @@ void C4_gsum( long *px, int n )
     MPI_Allreduce( &lbuf[0], px, n, MPI_LONG, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void C4_gsum( float *px, int n )
+void gsum( float *px, int n )
 {
     Assert( n >= 0 );
 
@@ -304,7 +306,7 @@ void C4_gsum( float *px, int n )
     MPI_Allreduce( &fbuf[0], px, n, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
 }
 
-void C4_gsum( double *px, int n )
+void gsum( double *px, int n )
 {
     Assert( n >= 0 );
 
@@ -318,25 +320,25 @@ void C4_gsum( double *px, int n )
 //---------------------------------------------------------------------------//
 // Min, scalar
 
-void C4_gmin( int& x )
+void gmin( int& x )
 {
     int y = x;
     MPI_Allreduce( &y, &x, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void C4_gmin( long& x )
+void gmin( long& x )
 {
     long y = x;
     MPI_Allreduce( &y, &x, 1, MPI_LONG, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void C4_gmin( float& x )
+void gmin( float& x )
 {
     float y = x;
     MPI_Allreduce( &y, &x, 1, MPI_FLOAT, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void C4_gmin( double& x )
+void gmin( double& x )
 {
     double y = x;
     MPI_Allreduce( &y, &x, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD );
@@ -345,7 +347,7 @@ void C4_gmin( double& x )
 //---------------------------------------------------------------------------//
 // Min, array
 
-void C4_gmin( int *px, int n )
+void gmin( int *px, int n )
 {
     Assert( n >= 0 );
 
@@ -356,7 +358,7 @@ void C4_gmin( int *px, int n )
     MPI_Allreduce( &ibuf[0], px, n, MPI_INT, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void C4_gmin( long *px, int n )
+void gmin( long *px, int n )
 {
     Assert( n >= 0 );
 
@@ -367,7 +369,7 @@ void C4_gmin( long *px, int n )
     MPI_Allreduce( &lbuf[0], px, n, MPI_LONG, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void C4_gmin( float *px, int n )
+void gmin( float *px, int n )
 {
     Assert( n >= 0 );
 
@@ -378,7 +380,7 @@ void C4_gmin( float *px, int n )
     MPI_Allreduce( &fbuf[0], px, n, MPI_FLOAT, MPI_MIN, MPI_COMM_WORLD );
 }
 
-void C4_gmin( double *px, int n )
+void gmin( double *px, int n )
 {
     Assert( n >= 0 );
 
@@ -392,25 +394,25 @@ void C4_gmin( double *px, int n )
 //---------------------------------------------------------------------------//
 // Max, scalar
 
-void C4_gmax( int& x )
+void gmax( int& x )
 {
     int y = x;
     MPI_Allreduce( &y, &x, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void C4_gmax( long& x )
+void gmax( long& x )
 {
     long y = x;
     MPI_Allreduce( &y, &x, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void C4_gmax( float& x )
+void gmax( float& x )
 {
     float y = x;
     MPI_Allreduce( &y, &x, 1, MPI_FLOAT, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void C4_gmax( double& x )
+void gmax( double& x )
 {
     double y = x;
     MPI_Allreduce( &y, &x, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD );
@@ -419,7 +421,7 @@ void C4_gmax( double& x )
 //---------------------------------------------------------------------------//
 // Max, array
 
-void C4_gmax( int *px, int n )
+void gmax( int *px, int n )
 {
     Assert( n >= 0 );
 
@@ -430,7 +432,7 @@ void C4_gmax( int *px, int n )
     MPI_Allreduce( &ibuf[0], px, n, MPI_INT, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void C4_gmax( long *px, int n )
+void gmax( long *px, int n )
 {
     Assert( n >= 0 );
 
@@ -441,7 +443,7 @@ void C4_gmax( long *px, int n )
     MPI_Allreduce( &lbuf[0], px, n, MPI_LONG, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void C4_gmax( float *px, int n )
+void gmax( float *px, int n )
 {
     Assert( n >= 0 );
 
@@ -452,7 +454,7 @@ void C4_gmax( float *px, int n )
     MPI_Allreduce( &fbuf[0], px, n, MPI_FLOAT, MPI_MAX, MPI_COMM_WORLD );
 }
 
-void C4_gmax( double *px, int n )
+void gmax( double *px, int n )
 {
     Assert( n >= 0 );
 
@@ -462,6 +464,8 @@ void C4_gmax( double *px, int n )
 
     MPI_Allreduce( &dbuf[0], px, n, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD );
 }
+
+C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
 //                              end of global_mpi.cc

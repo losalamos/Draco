@@ -11,6 +11,8 @@
 
 #include "c4/NodeInfo.hh"
 
+C4_NAMESPACE_BEG
+
 //===========================================================================//
 // class Baton<T> - Spinlock which passes a value between nodes.
 
@@ -49,6 +51,8 @@ class Baton : public NodeInfo {
 
     operator T () const { return v; }
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_Baton_hh__
 

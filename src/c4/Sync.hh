@@ -11,6 +11,8 @@
 
 #include "c4/global.hh"
 
+C4_NAMESPACE_BEG
+
 //===========================================================================//
 // class HSync - Head synchronizing
 
@@ -61,6 +63,8 @@ class HTSync: public HSync, public TSync {
   public:
     HTSync( int s =1 ) : HSync(s), TSync(s) {}
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_Sync_hh__
 

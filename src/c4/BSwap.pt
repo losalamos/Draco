@@ -6,4 +6,4 @@
 
 #include "c4/BSwap.cc"
 
-instantiate class BSwap<int>
+instantiate class C4::BSwap<int>

@@ -13,6 +13,8 @@
 
 // autodoc: noprint C4_ReqRefRep
 
+C4_NAMESPACE_BEG
+
 struct C4_ReqRefRep {
     int n;
 
@@ -61,6 +63,8 @@ class C4_Req {
 
     void wait();
 };
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_C4_Req_hh__
 

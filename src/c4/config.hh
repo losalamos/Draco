@@ -9,6 +9,11 @@
 #ifndef __c4_config_hh__
 #define __c4_config_hh__
 
+// Configure some namespace support
+
+#define C4_NAMESPACE_BEG namespace C4 {
+#define C4_NAMESPACE_END }
+
 // Start by assuming we are running on a uniprocessor.
 
 #define __C4_SCALAR__

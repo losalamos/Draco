@@ -15,6 +15,8 @@
 #include "c4/NodeInfo.hh"
 #include "c4/Sync.hh"
 
+C4_NAMESPACE_BEG
+
 //===========================================================================//
 // class SpinLock - Serialize execution of a block.
 
@@ -87,10 +89,12 @@ class HTSyncSpinLock : public HSync, public TSync, public SpinLock {
 { \
     cout << flush; \
     fflush(stdout); \
-    HTSyncSpinLock h; \
+    C4::HTSyncSpinLock h; \
     a; \
     cout << flush; \
 }
+
+C4_NAMESPACE_END
 
 #endif                          // __c4_SpinLock_hh__
 

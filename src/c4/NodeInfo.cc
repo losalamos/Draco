@@ -9,18 +9,22 @@
 #include "c4/NodeInfo.hh"
 #include "c4/global.hh"
 
+C4_NAMESPACE_BEG
+
 //---------------------------------------------------------------------------//
 // Constructor.  Figure out how big the multicomputer is and who we are.
 //---------------------------------------------------------------------------//
 
 NodeInfo::NodeInfo()
 {
-    node = C4_node();
-    nodes = C4_nodes();
-    group = C4_group();
+    node = C4::node();
+    nodes = C4::nodes();
+    group = C4::group();
 
     lastnode = nodes - 1;
 }
+
+C4_NAMESPACE_END
 
 //---------------------------------------------------------------------------//
 //                              end of NodeInfo.cc
