@@ -102,7 +102,7 @@ namespace rtt_P1Diffusion
 
      void jacobiIteration(const SP<ccsf> &b, const SP<const ccsf> &x) const
      {
-	 multiply(*b, *x);
+	 jacobiIteration(*b, *x);
      }
 
      template<class FT>
@@ -111,7 +111,7 @@ namespace rtt_P1Diffusion
      template<class FT>
      void jacobiIteration(const SP<FT> &b, const SP<const FT> &x) const
      {
-	 multiply(*b, *x);
+	 jacobiIteration(*b, *x);
      }
 
    private:
