@@ -6,8 +6,8 @@
 // @> Test for Vector_Lite class
 //---------------------------------------------------------------------------//
 
+#include "ds_test.hh"
 #include "../Vector_Lite.hh"
-#include "../unit_test.hh"
 #include "../Soft_Equivalence.hh"
 
 #include <algorithm>
@@ -25,70 +25,71 @@ main(int argc, char *argv[])
 {
     const int m = 5;
 
-    // Test constructor
-
-    cout << "constructor from scalar";
+    cout << "constructor from scalar" << endl;
     Vector_Lite<double, m> x(0.0);
     UNIT_TEST(std::count(x.begin(), x.end(), 0.0) == m);
 
-    cout << "assignment to scalar";
+    cout << "assignment to scalar" << endl;
     double c1 = 3.0;
     x = c1;
-    cout << "x = " << x;
+    cout << "x = " << x << endl;
     UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
     
-    cout << "operator==";
+    cout << "operator==" << endl;
     UNIT_TEST(x == x);
 
-    // Test copy constructor
-
     {
-	cout << "copy constructor";
+	cout << "copy constructor" << endl;
 	Vector_Lite<double, m> xCopy(x);
 	UNIT_TEST(x == xCopy);
     }
 
-    cout << "operator+=";
+    cout << "operator+=" << endl;
     double dc1 = 2.3;
     c1 += dc1;
     x += dc1;
-    cout << " x = " << x;
+    cout << " x = " << x << endl;
     UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
 
-    Vector_Lite<double, m> y(2.0, 1.0, 0.3, 0.2, 62.0);
+    double y0 = 2.0;
+    double y1 = 1.0;
+    double y2 = 0.3;
+    double y3 = 0.2;
+    double y4 = 62.7;
+    Vector_Lite<double, m> y(y0, y1, y2, y3, y4);
 
     {
-	cout << "operator*=";
+	cout << "operator*=" << endl;
 	Vector_Lite<double, m> z(x);
-	Vector_Lite<double, m> ans(c1*2.0, c1*1.0, c1*0.3, c1*0.2, c1*62.0);
+	Vector_Lite<double, m> ans(c1*y0, c1*y1, c1*y2, c1*y3, c1*y4);
 	z *= y;
-	cout << " z = " << z;
+	cout << " z = " << z << endl;
 	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
 				       ans.begin(), ans.end()));
     }
 
     {
-	cout << "operator+";
+	cout << "operator+" << endl;
 	Vector_Lite<double, m> z;
-	Vector_Lite<double, m> ans(c1+2.0, c1+1.0, c1+0.3, c1+0.2, c1+62.0);
+	Vector_Lite<double, m> ans(c1+y0, c1+y1, c1+y2, c1+y3, c1+y4);
 	z = x + y;
-	cout << " z = " << z;
+	cout << " z = " << z << endl;
 	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
 				       ans.begin(), ans.end()));
     }
 
     {
-	cout << "unary-";
+	cout << "unary-" << endl;
 	Vector_Lite<double, m> z;
 	Vector_Lite<double, m> ans(-c1);
 	z = -x;
-	cout << " z = " << z;
+	cout << " z = " << z << endl;
 	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
 				       ans.begin(), ans.end()));
     }
 
     {
-	cout << "Inner product";
+	cout << "Inner product" << endl;
 	Vector_Lite<double, 2> x1(1.0, 2.0);
 	Vector_Lite<double, 2> x2(4.0, 6.0);
 	UNIT_TEST(rtt_dsxx::inner_product(x1, x2) == 16.0);
@@ -104,12 +105,10 @@ main(int argc, char *argv[])
 	UNIT_TEST(xNest(2) == x);
     }
 
-    // Test bounds checking
-
-    cout << "Negative bounds check ";
     int i = -1;
+    cout << "Negative bounds check x(" << i << ")\n";
     try {
-	cout << "x(" << i << ") = " << x(i);
+	x(i);
     }
     catch ( rtt_dsxx::assertion &a ) {
 	UNIT_TEST(1);
@@ -119,10 +118,10 @@ main(int argc, char *argv[])
       UNIT_TEST(0);
     }
 
-    cout << "Negative bounds check test, unsigned ";
     Vector_Lite<double, m>::size_type iu(i);
+    cout << "Negative bounds check test, unsigned x(" << iu << ")\n";
     try {
-	cout << "x(" << iu << ") = " << x(iu);
+	x(iu);
     }
     catch ( rtt_dsxx::assertion &a ) {
 	UNIT_TEST(1);
@@ -133,9 +132,9 @@ main(int argc, char *argv[])
     }
 
     i = x.size();
-    cout << "Positive bounds check ";
+    cout << "Positive bounds check x(" << i << ")\n";
     try {
-	cout << "x(" << i << ") = " << x(5);
+	x(i);
     }
     catch ( rtt_dsxx::assertion &a ) {
 	UNIT_TEST(1);
@@ -145,7 +144,17 @@ main(int argc, char *argv[])
       UNIT_TEST(0);
     }
     
-    cout << "Done testing Vector_Lite.\n";
+    cout << "\nVector_Lite Summary: ";
+
+    if ( rtt_ds_test::passed )
+    {
+	cout << "ALL TESTS PASSED\n";
+    }
+    else
+    {
+	cout << "FAILED\n";
+    }
+	
     
     return(0);
 }
