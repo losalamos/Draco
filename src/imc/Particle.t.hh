@@ -346,6 +346,7 @@ void Particle<MT>::Diagnostic::print_dist(double d_scat,
     using std::ios;
     using std::setw;
     using std::endl;
+    using std::setiosflags;
 
     // do detailed diagnostic print of particle event distances
     output << setw(20) << setiosflags(ios::right) << "Present cell: "
