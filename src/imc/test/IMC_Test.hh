@@ -14,10 +14,15 @@
 #include "../Flat_Data_Interface.hh"
 #include "../CDI_Data_Interface.hh"
 #include "../Particle.hh"
+#include "../Frequency.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/General_Topology.hh"
 #include "mc/RZWedge_Mesh.hh"
+#include "cdi_analytic/Analytic_Models.hh"
+#include "cdi_analytic/Analytic_Gray_Opacity.hh"
+#include "cdi_analytic/Analytic_Multigroup_Opacity.hh"
+#include "cdi_analytic/Analytic_EoS.hh"
 #include "cdi/CDI.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
@@ -49,7 +54,8 @@ class Parser
 // make a flat interface for a 6 cell mesh
 
 class IMC_Flat_Interface :
-	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >,
+	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh,
+	rtt_imc::Gray_Frequency> >,
 	public rtt_imc::Flat_Data_Interface
 {
   private:
@@ -113,19 +119,27 @@ class IMC_Flat_Interface :
 };
 
 //---------------------------------------------------------------------------//
-// make a CDI interface for a 6 cell mesh; the data specifications for each
-// cell are in Vol III pg. 1; this interface is used to test
-// CDI_Mat_State_Builder only, the source parts of the interface have no
-// meaning 
+//make a CDI interface for a 6 cell mesh; the data specifications for each
+//cell are in Vol III pg. 1; this interface is used to test
+//CDI_Mat_State_Builder only.  It contains both multigroup and gray data in
+//the CDIs. The source parts of the interface have no meaning
 
+template<class PT>
 class IMC_CDI_Interface :
-	public rtt_imc::Interface<rtt_imc::Particle<rtt_mc::OS_Mesh> >,
+	public rtt_imc::Interface<PT>,
 	public rtt_imc::CDI_Data_Interface
 {
   public:
-    typedef rtt_dsxx::SP<rtt_cdi::CDI> SP_CDI;
-    typedef std::vector<int>           sf_int;
-    typedef std::vector<SP_CDI>        sf_CDI;
+    typedef rtt_dsxx::SP<rtt_cdi::CDI>                  SP_CDI;
+    typedef std::vector<int>                            sf_int;
+    typedef std::vector<SP_CDI>                         sf_CDI;
+    typedef std::vector<double>                         sf_double;
+    typedef std::string                                 std_string;
+    typedef std::vector<std_string>                     sf_string;
+    typedef std::vector<sf_int>                         vf_int;
+    typedef typename rtt_mc::Particle_Stack<PT>::Census Census;
+    typedef rtt_dsxx::SP<Census>                        SP_Census;
+
 
   private:
     // data for the Opacity and Mat_State
@@ -173,6 +187,162 @@ class IMC_CDI_Interface :
     double get_ecen(int cell) const { return double(); }
     double get_ecentot() const { return double(); }
 };
+
+//---------------------------------------------------------------------------//
+// IMC_CDI_INTERFACE DEFINITIONS
+//---------------------------------------------------------------------------//
+
+// constructor
+template<class PT>
+IMC_CDI_Interface<PT>::IMC_CDI_Interface() 
+    : 
+      density(6),   
+      temperature(6, 3.0), 
+      implicitness(1.0), 
+      delta_t(.001),
+      cdi_map(6),
+      cdi_list(3)
+{  
+    using rtt_cdi_analytic::Analytic_Gray_Opacity;
+    using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
+    using rtt_cdi_analytic::Analytic_EoS;
+    using rtt_cdi_analytic::Analytic_Opacity_Model;
+    using rtt_cdi_analytic::Analytic_EoS_Model;
+    using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
+    using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
+    using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
+    using rtt_cdi::CDI;
+    using rtt_cdi::GrayOpacity;
+    using rtt_cdi::EoS;
+    using rtt_cdi::MultigroupOpacity;
+
+    // make material data
+    density[0] = 1.0;
+    density[1] = 2.0;
+    density[2] = 1.0;
+    density[3] = 3.0;
+    density[4] = 1.0;
+    density[5] = 2.0;
+
+    // make cdi map (see Vol III pg 1, TME)
+    cdi_map[0] = 1;
+    cdi_map[1] = 3;
+    cdi_map[2] = 1;
+    cdi_map[3] = 2;
+    cdi_map[4] = 1;
+    cdi_map[5] = 2;
+
+    // make 3 cdi materials
+    //  GRAY SPECIFICATION: 
+    //      MAT 1: sigma = 100/T^3 cm^2/g, Cv = .1e6    kJ/g/keV
+    //      MAT 2: sigma = 1.5     cm^2/g, Cv = .2e6    kJ/g/keV
+    //      MAT 3: sigma = 1+.1T   cm^2/g, Cv = .1e6T^3 kJ/g/keV
+    //  MULTIGROUP SPECIFICATION:
+    //      Groups: = .01 .1 1 10 keV (3 groups)
+    //      MAT 1: sigma = 5.0/1.5/0.5 cm^2/g
+    //      MAT 2: sigma = 4.0/1.4/0.4 cm^2/g
+    //      MAT 3: sigma = 3.0/1.3/0.3 cm^2/g
+    // Note: 1kJ = 1e-6 Jerks
+
+    // gray analytic opacity models
+    SP<Analytic_Opacity_Model> model_1(new Polynomial_Analytic_Opacity_Model
+				       (0.0, 100.0, -3.0, 0.0));
+    SP<Analytic_Opacity_Model> model_2(new Constant_Analytic_Opacity_Model
+				       (1.5));
+    SP<Analytic_Opacity_Model> model_3(new Polynomial_Analytic_Opacity_Model
+				       (1.0, 0.1, 1.0, 0.0));
+
+    SP<Analytic_Opacity_Model> model_s(new Constant_Analytic_Opacity_Model
+				       (0.0));
+
+    // multigroup analytic opacity models
+    std::vector<SP<Analytic_Opacity_Model> > mg_1(3);
+    std::vector<SP<Analytic_Opacity_Model> > mg_2(3);
+    std::vector<SP<Analytic_Opacity_Model> > mg_3(3);
+    std::vector<SP<Analytic_Opacity_Model> > mg_s(3);
+
+    mg_1[0] = new Constant_Analytic_Opacity_Model(5.0);
+    mg_1[1] = new Constant_Analytic_Opacity_Model(1.5);
+    mg_1[2] = new Constant_Analytic_Opacity_Model(0.5);
+
+    mg_2[0] = new Constant_Analytic_Opacity_Model(4.0);
+    mg_2[1] = new Constant_Analytic_Opacity_Model(1.4);
+    mg_2[2] = new Constant_Analytic_Opacity_Model(0.4);
+
+    mg_3[0] = new Constant_Analytic_Opacity_Model(3.0);
+    mg_3[1] = new Constant_Analytic_Opacity_Model(1.3);
+    mg_3[2] = new Constant_Analytic_Opacity_Model(0.3);
+
+    mg_s[0] = model_s;
+    mg_s[1] = model_s;
+    mg_s[2] = model_s;
+
+    std::vector<double> groups(4);
+    groups[0] = 0.01;
+    groups[1] = 0.1;
+    groups[2] = 1.0;
+    groups[3] = 10.0;
+
+    // analytic eos models
+    SP<Analytic_EoS_Model> aeos_1(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.1e6, 0.0, 0.0, 
+							0.0, 0.0, 0.0));
+    SP<Analytic_EoS_Model> aeos_2(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.2e6, 0.0, 0.0, 
+							0.0, 0.0, 0.0));
+    SP<Analytic_EoS_Model> aeos_3(
+	new Polynomial_Specific_Heat_Analytic_EoS_Model(0.0, 0.1e6, 3.0, 
+							0.0, 0.0, 0.0));
+
+    // make gray opacities
+    SP<const GrayOpacity> gop_1(new Analytic_Gray_Opacity(
+				    model_1, rtt_cdi::ABSORPTION));
+    SP<const GrayOpacity> gop_2(new Analytic_Gray_Opacity(
+				    model_2, rtt_cdi::ABSORPTION));
+    SP<const GrayOpacity> gop_3(new Analytic_Gray_Opacity(
+				    model_3, rtt_cdi::ABSORPTION));
+    SP<const GrayOpacity> gop_s(new Analytic_Gray_Opacity(
+				    model_s, rtt_cdi::SCATTERING));
+
+    // make multigroup opacities
+    SP<const MultigroupOpacity> mgop_1(new Analytic_Multigroup_Opacity(
+					   groups, mg_1, rtt_cdi::ABSORPTION));
+    SP<const MultigroupOpacity> mgop_2(new Analytic_Multigroup_Opacity(
+					   groups, mg_2, rtt_cdi::ABSORPTION));
+    SP<const MultigroupOpacity> mgop_3(new Analytic_Multigroup_Opacity(
+					   groups, mg_3, rtt_cdi::ABSORPTION));
+    SP<const MultigroupOpacity> mgop_s(new Analytic_Multigroup_Opacity(
+					   groups, mg_s, rtt_cdi::SCATTERING));
+
+
+    // make EoS
+    SP<const EoS> eos_1(new Analytic_EoS(aeos_1));
+    SP<const EoS> eos_2(new Analytic_EoS(aeos_2));
+    SP<const EoS> eos_3(new Analytic_EoS(aeos_3));
+
+    // Make CDIs
+    cdi_list[0] = new CDI;
+    cdi_list[1] = new CDI;
+    cdi_list[2] = new CDI;
+
+    cdi_list[0]->setGrayOpacity(gop_1);
+    cdi_list[0]->setGrayOpacity(gop_s);
+    cdi_list[0]->setMultigroupOpacity(mgop_1);
+    cdi_list[0]->setMultigroupOpacity(mgop_s);
+    cdi_list[0]->setEoS(eos_1);
+
+    cdi_list[1]->setGrayOpacity(gop_2);
+    cdi_list[1]->setGrayOpacity(gop_s);
+    cdi_list[1]->setMultigroupOpacity(mgop_2);
+    cdi_list[1]->setMultigroupOpacity(mgop_s);
+    cdi_list[1]->setEoS(eos_2);
+
+    cdi_list[2]->setGrayOpacity(gop_3);
+    cdi_list[2]->setGrayOpacity(gop_s);
+    cdi_list[2]->setMultigroupOpacity(mgop_3);
+    cdi_list[2]->setMultigroupOpacity(mgop_s);
+    cdi_list[2]->setEoS(eos_3);
+}
 
 //===========================================================================//
 // MAKE AN AMR RZWEDGE_MESH
