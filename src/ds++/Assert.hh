@@ -173,14 +173,14 @@ class assertion : public std::logic_error
 //---------------------------------------------------------------------------//
 
 // Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-void toss_cookies( std::string const cond, 
-		   std::string const file, 
+void toss_cookies( std::string const & cond, 
+		   std::string const & file, 
 		   int         const line );
 
 // Throw a rtt_dsxx::assertion for Insist.
-void insist( std::string const cond, 
-	     std::string const msg, 
-	     std::string const file, 
+void insist( std::string const & cond, 
+	     std::string const & msg, 
+	     std::string const & file, 
 	     int         const line);
 
 } // end of rtt_dsxx

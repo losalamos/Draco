@@ -22,17 +22,15 @@ namespace rtt_dsxx
 //---------------------------------------------------------------------------//
 // Build the error string (PRIVATE)
 //---------------------------------------------------------------------------//
-std::string assertion::build_message( std::string const &cond, 
-				      std::string const &file, 
+std::string assertion::build_message( std::string const & cond, 
+				      std::string const & file, 
 				      int         const line ) const
 {
-    using std::string;
-
     std::ostringstream myMessage;
     myMessage << "Assertion: "
-	      << string( cond )
+	      << cond
 	      << ", failed in "
-	      << string( file )
+	      << file
 	      << ", line "
 	      << line
 	      << "." << std::endl;
@@ -45,8 +43,8 @@ std::string assertion::build_message( std::string const &cond,
 /*!
  * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
  */
-void toss_cookies( std::string const cond, 
-		   std::string const file, 
+void toss_cookies( std::string const & cond, 
+		   std::string const & file, 
 		   int         const line )
 {
     throw assertion( cond, file, line );
@@ -56,12 +54,17 @@ void toss_cookies( std::string const cond,
 /*! 
  * \brief Throw a rtt_dsxx::assertion for Insist macros.
  */
-void insist( std::string const cond, 
-	     std::string const msg, 
-	     std::string const file, 
+void insist( std::string const & cond, 
+	     std::string const & msg, 
+	     std::string const & file, 
 	     int         const line)
 {
-    throw assertion( msg );
+    std::ostringstream myMessage;
+    myMessage <<  "Insist: " << cond << ", failed in "
+	      << file << ", line " << line << "." << std::endl
+	      << "The following message was provided:" << std::endl
+	      << "\"" << msg << "\"" << std::endl;
+    throw assertion( myMessage.str() );
 }
 
 } // end of rtt_dsxx

@@ -42,7 +42,7 @@ namespace rtt_dsxx
 template<class T>
 inline T *ds_allocate( int size, const T * /* hint */ )
 {
-    return (T *) (::operator new( size * sizeof(T) ) );
+    return (T *) (::operator new( static_cast<size_t>(size) * sizeof(T) ) );
 }
 
 template<class T>
@@ -58,7 +58,8 @@ inline void ds_deallocate( T *buf ) { ::operator delete( buf ); }
 //===========================================================================//
 
 template<class T>
-class Simple_Allocator {
+class Simple_Allocator 
+{
   public:
     typedef size_t                        size_type;
     typedef ptrdiff_t                     difference_type;
@@ -84,18 +85,22 @@ class Simple_Allocator {
 	ds_deallocate( validate( v, n ) );
     }
 
-    size_type max_size () const MSIPL_THROW
-#ifdef _CRAYT3E
+    //#ifdef _CRAYT3E
+    //size_type max_size () const MSIPL_THROW
         // Cray T3E backend sometimes incorrectly uses signed comparisons
         // instead of unsigned comparisons.  Therefore for T3E, we use
         // a max_size that is positive even if misinterpreted by backend.
-    { return sizeof(T)==1 ? size_type( size_type (-1)/2u ) :
-               ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1) :
-               size_type (size_type (-1)/sizeof (T)); }
-#else
-    { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
-       ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1):size_type(size_type(-1)/sizeof (T));}
-#endif /*_CRAYT3E*/
+    //    { return sizeof(T)==1 ? size_type( size_type (-1)/2u ) :
+    //               ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1) :
+    //               size_type (size_type (-1)/sizeof (T)); }
+    //#else
+    // { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
+    size_type max_size () const MSIPL_THROW
+    { return
+	  ( size_type(1) > size_type (size_type (-1)/sizeof (T)) )
+	  ? size_type(1):size_type(size_type(-1)/sizeof (T));
+    }
+    //#endif /*_CRAYT3E*/
 
 };
 
@@ -134,7 +139,8 @@ class Guarded_Allocator {
     // Write magic info into T[0] and T[n+1]
 	char *pb = reinterpret_cast<char *>(v);
 	char *pe = reinterpret_cast<char *>( v+n+1 );
-	for( int i=0; i < sizeof(T); i++ ) {
+	for( size_t i=0; i < sizeof(T); i++ ) 
+	{
 	    pb[i] = static_cast<char>( 0xE8 );
 	    pe[i] = static_cast<char>( 0xE9 );
 	}
@@ -215,6 +221,12 @@ class Guarded_Allocator {
 //
 // The Simple_Allocator will be used rather than the Guarded_Allocator.
 //===========================================================================//
+
+//! \bug alloc_traits is not being tested.
+//lint -e758 Ignore warning about this function not being referenced until
+//           the unit test has been beefed up.
+//lint -e526 Not sure about this warning "Simple_Allocator<<1>> not defined.
+//lint -e768 Default_Allocator not referenced
 
 template<class T>
 class alloc_traits {

@@ -50,19 +50,21 @@ struct char_in_string
     char_in_string(const std::string &s) : str2(s) { }
     bool operator() (const std::string &str1) const
     {
-	int out = str1.find_first_of(str2);
+	size_t out = str1.find_first_of(str2);
 	return out != std::string::npos;
     }
 };
 
 struct string_length_out_of_range
 {
-    int low;
-    int high;
-    string_length_out_of_range(const int l, const int h) : low(l), high(h) { }
+    size_t low;
+    size_t high;
+    string_length_out_of_range(const int l, const int h) 
+	: low(static_cast<size_t>(l)), 
+	  high(static_cast<size_t>(h)) { /* empty */ }
     bool operator() (const std::string &str1) const
     {
-	int i = str1.size();
+	size_t i = str1.size();
 	return  (i < low) || (i > high);
     }
 };
@@ -107,8 +109,9 @@ struct strings_equal
  *
  */
 template<class IT>
-std::vector<IT>  check_string_chars( IT first, IT last, 
-				     const std::string &match_chars) 
+std::vector<IT> check_string_chars( IT          const & first, 
+                                    IT          const & last, 
+	                            std::string const & match_chars ) 
 {
     std::vector<IT> result_vector;
     if (first == last) return result_vector;
@@ -153,8 +156,10 @@ std::vector<IT>  check_string_chars( IT first, IT last,
  *
  */
 template<class IT>
-std::vector<IT>  check_string_lengths( IT first, IT last, 
-				       const int low, const int high) 
+std::vector<IT> check_string_lengths( IT  const & first, 
+				      IT  const & last,
+		 	              int const   low, 
+				      int const   high ) 
 {
     std::vector<IT> result_vector;
     if (first == last) return result_vector;
@@ -194,7 +199,8 @@ std::vector<IT>  check_string_lengths( IT first, IT last,
  *
  */
 template<class IT>
-std::vector<IT>  check_strings_unique(IT first, IT last) 
+std::vector<IT> check_strings_unique( IT first, 
+				      IT const & last ) 
 {
     std::vector<IT> result_vector;
     if (first == last) return result_vector;
