@@ -12,18 +12,40 @@ DOXYGEN = @DOXYGEN_PATH@
 
 INSTALL = @INSTALL@
 
+top_srcdir = @top_srcdir@
 prefix = @prefix@
 srcdir = @srcdir@
 doxygen_extras = @doxygen_extras@
 installdirs = ${prefix}/html ${prefix}/latex
 
+# get the relative directory to the config files (relative to ${top_srcdir}).
+
+rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+	tmp="" ; \
+	while test ! -d config ; \
+	do \
+	   cd .. ; \
+	   tmp=$$tmp../ ; \
+	done ; \
+	echo $$tmp ) )config
+
+# get the config directory
+config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
+
+imagefiles := $(subst ${srcdir}/html, ${prefix}/html, $(wildcard ${srcdir}/html/*.gif) )\
+	$(subst ${srcdir}/html, ${prefix}/html, $(wildcard ${srcdir}/html/*.jpg) )\
+	$(subst ${srcdir}/html, ${prefix}/html, $(wildcard ${srcdir}/html/*.png) )
+
+supportfiles := $(subst ${srcdir}/html, ${prefix}/html, $(wildcard ${srcdir}/html/*.css))
+
 ##---------------------------------------------------------------------------##
 
+.SUFFIXES : .png .gif .jpg .css
 .PHONY : html latex install autodoc configure reconfigure
 
 autodoc: html
 
-html latex:
+html latex: install_graphics install_support
 	@if test ${DOXYGEN} = 'null'; then \
 		echo Doxygen not available; \
 	else \
@@ -46,8 +68,27 @@ html latex:
 	fi
 
 install:
- 
+
 check:
+
+##---------------------------------------------------------------------------##
+## Install support files
+
+install_graphics: ${imagefiles}
+install_support: ${supportfiles}
+
+${prefix}/html/%.png: ${srcdir}/html/%.png
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
+${prefix}/html/%.jpg: ${srcdir}/html/%.jpg
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
+${prefix}/html/%.gif: ${srcdir}/html/%.gif
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
+${prefix}/html/%.css:  ${srcdir}/html/%.css
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
 
 ##---------------------------------------------------------------------------##
 ## Build system targets and rules

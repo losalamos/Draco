@@ -1,38 +1,22 @@
 <HTML>
-
 <HEAD>
-
-<TITLE> $title </TITLE>
-<LINK HREF="doxygen.css" REL="stylesheet" TYPE="text/css" >
-<LINK HREF="draco.css" REL="stylesheet" TYPE="text/css" >
-
+   <TITLE> $title </TITLE>
+   <LINK HREF="doxygen.css" REL="stylesheet" TYPE="text/css" >
+   <LINK HREF="draco.css" REL="stylesheet" TYPE="text/css" >
 </HEAD>
-
 <BODY BGCOLOR="#FFFFFF">
 
-<center>
+<img src="dragon.jpg"   width=150 border="0" alt="Draco Logo" align="left">
+<img src="dragon-r.jpg" width=150 border="0" alt="Draco Logo" align="right"> 
 
-  <table border="10" cols=2 width=60%>
+<div class="header">
+  Draco Computational Physics System<br>
+  On-Line Documentation 
+</div>
 
-    <tr>
+<p class="menuitems">
+<a class="menuitems" href="http://www.lanl.gov/home/draco_www"> Draco Home </a> &nbsp;
+<a class="menuitems" href="./index.html"> Main Index </a>
+<hr size=4 color=#336699>
 
-      <td align=center valign=center>
-        <img src="./draco.gif" height=175 width=176 border=5 alt="Draco Logo"> 
-      </td>
-
-      <td align=center valign=center>
-       <h3> Draco Computational Physics System </h3>
-       <h3> On-Line Documentation </h3>
-      </td>
-
-    </tr>
-
-  </table>
-
-  <p>
-  <hr size=4>
-  <a href="http://www.lanl.gov/home/draco_www"> Draco Home </a> &nbsp;
-  <a href="./index.html"> Main Index </a>
-
-</center> </h4>
 

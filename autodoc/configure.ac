@@ -13,6 +13,7 @@ AC_CONFIG_AUX_DIR(../config)
 
 # draco version
 AC_DRACO_PREREQ
+AC_DRACO_ENV
 
 dnl
 dnl doxygen setup

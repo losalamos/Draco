@@ -10,7 +10,7 @@
 .menuitems
 { 
    font-family: Verdana, Arial, sans-serif; 
-   color: #336699; 
+   color: #661F08; 
    font-size: 14px; 
    text-align: center;
    font-weight: bold;
@@ -18,18 +18,18 @@
 
 .menuitems:link
 { 
-   color: #336699; 
+   color: #661F08; 
 }
 .menuitems:hover
 {
-    color: red;
+    color: blue;
 }
 
 HR 
 {
    height: 2px;
    width: 90%;
-   color: #336699; 
+   color: #661F08; 
 }
 
 DT
@@ -80,7 +80,14 @@ A:hover
    color: red;
 }
 DL.el { margin-left: -1cm }
-DIV.fragment { width: 100%; border: none; background-color: #eeeeee }
+DIV.fragment 
+{ 
+   padding-top: 12px;
+   margin-left:  30px;
+   margin-right: 30px;
+   border: none; 
+   background-color: #eeeeee 
+}
 DIV.ah { background-color: black; font-weight: bold; color: #ffffff; margin-bottom: 3px; margin-top: 3px }
 TD.md { background-color: #f2f2ff; font-weight: bold; }
 TD.mdname1 { background-color: #f2f2ff; font-weight: bold; color: #602020; }
@@ -124,18 +131,18 @@ FONT.charliteral   { color: #008080 }
 .qindex
 {
    font-family: Verdana, Arial, sans-serif; 
-   color: #336699; 
+   color: #661F08; 
    font-size: 12px; 
    text-align: center;
    font-weight: bold;
 }
 .qindex:link   
 { 
-   color: #336699;
+   color: #661F08;
 }
 .qindex:hover 
 { 
-   color: red;
+   color: blue;
 }
 
 H1
@@ -150,7 +157,7 @@ H1
 H2
 {
    font-family: Verdana, Arial, sans-serif; 
-   color: #661F08; 
+   color: #661F08;
    font-size: 18px; 
    text-align: left;
    font-weight: bold;
