@@ -77,7 +77,7 @@ class SP {
     explicit SP( T *_p ) : p(_p) { r = new SPref; }
 
     template<class X>
-    SP( X *px )
+    explicit SP( X *px )
     {
 	T *np = dynamic_cast<T *>( px );
 	if (!np) throw "Incompatible dumb pointer type.";
