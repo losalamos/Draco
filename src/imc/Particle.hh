@@ -158,8 +158,7 @@ class Particle
 		     KILLED=1000};
 
     /*!
-     * \class Particle::Diagnostic
-     * \brief Diagnostic class for tracking particle histories.
+     * \brief Base Diagnostic class for tracking particle histories.
      */
     class Diagnostic
     {

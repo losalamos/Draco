@@ -58,7 +58,8 @@ template<class MT, class FT> class Opacity;
 /*!
  * \example imc/test/tstMat_State_Builder.cc
  *
- * Test of Mat_State_Builder types.
+ * Test of Mat_State_Builder types and rtt_imc::Opacity,
+ * rtt_imc::Diffusion_Opacity, and rtt_imc::Mat_State.
  */
 // revision history:
 // -----------------

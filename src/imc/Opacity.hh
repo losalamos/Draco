@@ -13,6 +13,7 @@
 #define __imc_Opacity_hh__
 
 #include "Frequency.hh"
+#include "Fleck_Factors.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "cdi/CDI.hh"
@@ -23,38 +24,37 @@ namespace rtt_imc
 
 //===========================================================================//
 /*!
-
  * \class Opacity
-
+ *
  * \brief Opacity class for Fleck and Cumming's IMC.
-
+ *
  * The Opacity class stores the opacities necessary for one timestep of
  * transport.  It is designed to be rebuilt each timestep when the material
  * properties cause a change in the particle opacities, although this is not
  * required.  The data it provides are:
-
+ *
  * \arg absorption opacities (1/cm)
  * \arg coherent (isotropic) scattering cross sections (1/cm)
  * \arg fleck factor (dimensionless)
-
+ *
  * The Opacity class simply stores these opacities for IMC.  It is the job of
  * a builder class to actually generate the opacities that Opacity stores.
  * Thus, for gray calculations, the Planck and absorption opacities have the
  * same value.
-
+ *
  * Additionally, the Opacity class uses the stored opacities to return Fleck
  * and Cummings specific "opacity-like" quantities. These result from the
  * time-implicit differencing in the material-energy equation and the
  * time-continuous treatment of the transport equation.  These are:
-
+ *
  * \arg the effective absorption
  * \arg the effective scattering
  */
 /*!
  * \example imc/test/tstOpacity.cc
-
- * Example usage of the rtt_imc::Opacity class.
-
+ *
+ * Example usage of the rtt_imc::Opacity and rtt_imc::Diffusion_Opacity
+ * classes.
  */
 // revision history:
 // -----------------
@@ -96,6 +96,7 @@ class Opacity<MT, Gray_Frequency>
     // Useful typedefs.
     typedef typename MT::template CCSF<double>    ccsf_double;
     typedef rtt_dsxx::SP<Gray_Frequency>          SP_Frequency;
+    typedef rtt_dsxx::SP<Fleck_Factors<MT> >      SP_Fleck_Factors;
 
   private:
     // Absorption opacities in 1/cm.
@@ -105,7 +106,7 @@ class Opacity<MT, Gray_Frequency>
     ccsf_double sigma_thomson;
 
     // Fleck factor.
-    ccsf_double fleck;
+    SP_Fleck_Factors fleck;
 
     // Frequency definitions.
     SP_Frequency frequency;
@@ -113,7 +114,7 @@ class Opacity<MT, Gray_Frequency>
   public:
     // Opacity constructor.
     Opacity(SP_Frequency, const ccsf_double &, const ccsf_double &,
-	    const ccsf_double &);
+	    SP_Fleck_Factors);
 
     // >>> ACCESSORS
 
@@ -124,7 +125,7 @@ class Opacity<MT, Gray_Frequency>
     inline double get_sigma_thomson(int cell) const;
 
     //! Get the Fleck factor in a cell.
-    double get_fleck(int cell) const { return fleck(cell); }
+    double get_fleck(int cell) const { return fleck->fleck(cell); }
 
     //! Get the number of cells that these opacities are stored in.
     int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
@@ -193,7 +194,7 @@ template<class MT>
 double Opacity<MT,Gray_Frequency>::get_sigeffscat(int cell) const 
 {
     Require (cell > 0 && cell <= num_cells());
-    return (1.0 - fleck(cell)) * sigma_abs(cell);
+    return (1.0 - fleck->fleck(cell)) * sigma_abs(cell);
 }
 
 //---------------------------------------------------------------------------//
@@ -210,7 +211,7 @@ template<class MT>
 double Opacity<MT,Gray_Frequency>::get_sigeffabs(int cell) const 
 { 
     Require (cell > 0 && cell <= num_cells());
-    return fleck(cell) * sigma_abs(cell);
+    return fleck->fleck(cell) * sigma_abs(cell);
 }
 
 //===========================================================================//
@@ -229,6 +230,7 @@ class Opacity<MT, Multigroup_Frequency>
     typedef typename MT::template CCSF<sf_double> ccsf_vector;
     typedef typename MT::template CCSF<double>    ccsf_double;
     typedef rtt_dsxx::SP<Multigroup_Frequency>    SP_Frequency;
+    typedef rtt_dsxx::SP<Fleck_Factors<MT> >      SP_Fleck_Factors;
 
   private:
     // Absorption opacities in 1/cm.
@@ -238,7 +240,7 @@ class Opacity<MT, Multigroup_Frequency>
     ccsf_vector sigma_thomson;
 
     // Fleck factor.
-    ccsf_double fleck;
+    SP_Fleck_Factors fleck;
 
     // Integrated normalized Planck function per cell.
     ccsf_double integrated_norm_planck;
@@ -258,7 +260,7 @@ class Opacity<MT, Multigroup_Frequency>
   public:
     // Opacity constructor.
     Opacity(SP_Frequency, const ccsf_vector &, const ccsf_vector &, 
-	    const ccsf_double &, const ccsf_double &, const ccsf_vector &);
+	    SP_Fleck_Factors, const ccsf_double &, const ccsf_vector &);
 
     // >>> ACCESSORS
 
@@ -269,7 +271,7 @@ class Opacity<MT, Multigroup_Frequency>
     inline double get_sigma_thomson(int cell, int grp) const;
 
     //! Get the Fleck factor in a cell.
-    double get_fleck(int cell) const { return fleck(cell); }
+    double get_fleck(int cell) const { return fleck->fleck(cell); }
 
     //! Get the number of cells that these opacities are stored in.
     int num_cells() const { return sigma_abs.get_Mesh().num_cells(); }
@@ -358,7 +360,7 @@ double Opacity<MT,Multigroup_Frequency>::get_sigeffscat(int cell,
     Require (group > 0 && group <= frequency->get_num_groups());
     Check (frequency->get_num_groups() == sigma_abs(cell).size());
 
-    return (1.0 - fleck(cell)) * sigma_abs(cell)[group-1];
+    return (1.0 - fleck->fleck(cell)) * sigma_abs(cell)[group-1];
 }
 
 //---------------------------------------------------------------------------//
@@ -380,7 +382,7 @@ double Opacity<MT,Multigroup_Frequency>::get_sigeffabs(int cell, int group)
     Require (group > 0 && group <= frequency->get_num_groups());
     Check (frequency->get_num_groups() == sigma_abs(cell).size());
 
-    return fleck(cell) * sigma_abs(cell)[group-1];
+    return fleck->fleck(cell) * sigma_abs(cell)[group-1];
 }
 
 //---------------------------------------------------------------------------//

@@ -51,8 +51,7 @@ class Multigroup_Particle : public Particle<MT>
     // >>> NESTED TYPES
 
     /*!
-     * \class Multigroup_Particle::Diagnostic
-     * \brief Diagnostic class for tracking particle histories.
+     * \brief Diagnostic class for tracking multigroup particle histories.
      */
     class Diagnostic : public Particle<MT>::Diagnostic
     {

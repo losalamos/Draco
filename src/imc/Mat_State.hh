@@ -21,21 +21,19 @@ namespace rtt_imc
 
 //===========================================================================//
 /*!
-  
  * \class Mat_State
-
+ *
  * \brief Material state definition for Fleck and Cumming's IMC.
-
+ *
  * The Mat_State class holds all of the required material state data required
  * to perform a transport calculation over one timestep.  Like the
  * rtt_imc::Opacity class, it is designed to be rebuilt each timestep as the
  * material properties change.  The data provided is:
-
+ *
  * \arg density in g/cc
  * \arg temperature in keV
  * \arg differential internal energy--heat capacity--(dE/dT) in Jerks/keV
  * \arg specific heat capacity in Jerks/g/keV
-  
  */
 // revision history:
 // -----------------

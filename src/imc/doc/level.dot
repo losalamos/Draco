@@ -1,8 +1,8 @@
 digraph imc_package_level {
     /* graph attributes */
     center=1;
-    size="8,14";
     ranksep=1.25;
+    size="7.5,10";
 
     /* nodes */
     node0 [shape=box, label="Rep_Source_Builder"];
@@ -13,48 +13,52 @@ digraph imc_package_level {
     node5 [shape=box, label="Mat_State_Builder"];
     node6 [shape=box, label="Global"];
     node7 [shape=box, label="DD_Transporter"];
-    node8 [shape=box, label="Gray_Particle"];
-    node9 [shape=box, label="Opacity"];
-    node10 [shape=box, label="Mesh_Operations"];
-    node11 [shape=box, label="Flat_Data_Container"];
-    node12 [shape=box, label="Multigroup_Particle"];
-    node13 [shape=box, label="Release"];
-    node14 [shape=box, label="Source_Builder"];
-    node15 [shape=box, label="Flat_Data_Interface"];
-    node16 [shape=box, label="DD_Source_Builder"];
-    node17 [shape=box, label="Source"];
-    node18 [shape=box, label="Tally"];
-    node19 [shape=box, label="CDI_Data_Interface"];
-    node20 [shape=box, label="CDI_Mat_State_Builder"];
-    node21 [shape=box, label="Rep_Transporter"];
-    node22 [shape=box, label="Particle"];
-    node23 [shape=box, label="Mat_State"];
+    node8 [shape=box, label="Random_Walk"];
+    node9 [shape=box, label="Gray_Particle"];
+    node10 [shape=box, label="Opacity"];
+    node11 [shape=box, label="Mesh_Operations"];
+    node12 [shape=box, label="Flat_Data_Container"];
+    node13 [shape=box, label="Multigroup_Particle"];
+    node14 [shape=box, label="Release"];
+    node15 [shape=box, label="Source_Builder"];
+    node16 [shape=box, label="Flat_Data_Interface"];
+    node17 [shape=box, label="DD_Source_Builder"];
+    node18 [shape=box, label="Source"];
+    node19 [shape=box, label="Tally"];
+    node20 [shape=box, label="CDI_Data_Interface"];
+    node21 [shape=box, label="CDI_Mat_State_Builder"];
+    node22 [shape=box, label="Rep_Transporter"];
+    node23 [shape=box, label="Particle"];
+    node24 [shape=box, label="Mat_State"];
+    node25 [shape=box, label="Fleck_Factors"];
 
     /* level dependencies */
-    node0 -> { node14  node10 };
-    node1 -> { node5  node11  node6  node11  node23  node9  node4 };
+    node0 -> { node15  node11 };
+    node1 -> { node5  node12  node6  node12  node24  node10  node4  node25 };
     node2 -> {};
     node3 -> {};
     node4 -> {};
     node5 -> {};
     node6 -> {};
-    node7 -> { node2  node9  node23  node17  node18 };
-    node8 -> { node22 };
-    node9 -> { node4 };
-    node10 -> { node23 };
-    node11 -> {};
-    node12 -> { node22 };
-    node13 -> {};
-    node14 -> { node22  node6  node17  node23  node9  node8  node12  node4 };
-    node15 -> { node11 };
-    node16 -> { node14  node10 };
-    node17 -> { node10  node6  node9  node23  node8  node12 };
-    node18 -> {};
+    node7 -> { node2  node10  node24  node18  node19 };
+    node8 -> {};
+    node9 -> { node23  node8 };
+    node10 -> { node4  node25 };
+    node11 -> { node24 };
+    node12 -> {};
+    node13 -> { node23 };
+    node14 -> {};
+    node15 -> { node23  node6  node18  node24  node10  node9  node13  node4 };
+    node16 -> { node12 };
+    node17 -> { node15  node11 };
+    node18 -> { node11  node6  node10  node24  node9  node13 };
     node19 -> {};
-    node20 -> { node5  node4  node9  node23  node6 };
-    node21 -> { node2  node9  node23  node17  node18 };
-    node22 -> { node9  node18  node6  node6 };
-    node23 -> {};
+    node20 -> {};
+    node21 -> { node5  node4  node10  node24  node6  node25 };
+    node22 -> { node2  node10  node24  node18  node19 };
+    node23 -> { node10  node19  node6  node6 };
+    node24 -> {};
+    node25 -> {};
 
     /* Levels */
     l7 [shape=plaintext, label="Level 7", fontsize=18];
@@ -67,12 +71,12 @@ digraph imc_package_level {
 
     l7 -> l6 -> l5 -> l4 -> l3 -> l2 -> l1
 
-    {rank=same; l1 node2 node3 node4 node5 node6 node11 node13 node18 node19 node23};
-    {rank=same; l2 node9 node10 node15};
-    {rank=same; l3 node1 node20 node22};
-    {rank=same; l4 node8 node12};
-    {rank=same; l5 node17};
-    {rank=same; l6 node7 node14 node21};
-    {rank=same; l7 node0 node16};
+    {rank=same; l1 node2 node3 node4 node5 node6 node8 node12 node14 node19 node20 node24 node25};
+    {rank=same; l2 node10 node11 node16};
+    {rank=same; l3 node1 node21 node23};
+    {rank=same; l4 node9 node13};
+    {rank=same; l5 node18};
+    {rank=same; l6 node7 node15 node22};
+    {rank=same; l7 node0 node17};
 
 }

@@ -30,24 +30,26 @@ namespace rtt_imc
  *
  * \param sigma_thomson cell-centered field of scattering cross sections
  *
- * \param fleck cell-centered field of Fleck factors
+ * \param fleck rtt_dsxx::SP to Fleck_Factors container
  *
  */
 template<class MT>
 Opacity<MT,Gray_Frequency>::Opacity(SP_Frequency       freq,
 				    const ccsf_double &sigma_abs_,
 				    const ccsf_double &sigma_thomson_,
-				    const ccsf_double &fleck_)
+				    SP_Fleck_Factors   fleck_)
     : frequency(freq),
       sigma_abs(sigma_abs_),
       sigma_thomson(sigma_thomson_), 
       fleck(fleck_)
 {
+    Require (fleck);
+
     int num_cells = sigma_abs.get_Mesh().num_cells();
     
     Ensure (sigma_abs.size() == num_cells);
     Ensure (sigma_thomson.size() == num_cells);
-    Ensure (fleck.size() == num_cells);
+    Ensure (fleck->fleck.size() == num_cells);
     Ensure (frequency);
 }
 
@@ -108,7 +110,7 @@ template<class MT>
 Opacity<MT,Multigroup_Frequency>::Opacity(SP_Frequency freq,
 					  const ccsf_vector &sigma_abs_,
 					  const ccsf_vector &sigma_thomson_,
-					  const ccsf_double &fleck_,
+					  SP_Fleck_Factors   fleck_,
 					  const ccsf_double &int_planck,
 					  const ccsf_vector &group_cdf)
     : frequency(freq),
@@ -118,13 +120,14 @@ Opacity<MT,Multigroup_Frequency>::Opacity(SP_Frequency freq,
       integrated_norm_planck(int_planck),
       emission_group_cdf(group_cdf)
 {
+    Require (fleck);
     Check (check_group_sizes());
 
     int num_cells = sigma_abs.get_Mesh().num_cells();
     
     Ensure (sigma_abs.size() == num_cells);
     Ensure (sigma_thomson.size() == num_cells);
-    Ensure (fleck.size() == num_cells);
+    Ensure (fleck->fleck.size() == num_cells);
     Ensure (integrated_norm_planck.size() == num_cells);
     Ensure (emission_group_cdf.size() == num_cells);
     Ensure (frequency);
