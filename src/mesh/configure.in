@@ -2,9 +2,11 @@ dnl-------------------------------------------------------------------------dnl
 dnl draco/src/mesh configure.in
 dnl Randy M. Roberts
 dnl Fri Jan  8 14:46:27 1999
-dnl Time-stamp: <99/02/05 13:37:56 rsqrd>
+dnl Time-stamp: <99/02/24 15:55:27 rsqrd>
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for mesh
+dnl-------------------------------------------------------------------------dnl
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(Mesh_XYZ.hh)
@@ -19,7 +21,7 @@ AC_MPI_SETUP(pkg)
 AC_SHMEM_SETUP(pkg)
 
 AC_NEEDS_LIBS(nml c4 ds++)
-AC_RUNTESTS(tcctf tfcdtf tnctf tvctf txyz tbstf, 1 5)
+AC_RUNTESTS(tcctf tfcdtf tnctf tvctf txyz tbstf, 1 3)
 
 AC_DRACO_ENV
 

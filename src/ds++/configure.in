@@ -5,6 +5,8 @@ dnl Thu Jan  7 16:58:31 1999
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for ds++
 dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(SP.hh)
 AC_CONFIG_AUX_DIR(../../config)
@@ -15,7 +17,8 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
 AC_RUNTESTS(tstAllocators tstMat tstSP tstAssert \
-            tstMat1RA tstMat2RA tstMat3RA tstMat4RA, 1 2 4 8)
+            tstMat1RA tstMat2RA tstMat3RA tstMat4RA, scalar)
+
 AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \

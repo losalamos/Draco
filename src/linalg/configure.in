@@ -5,6 +5,8 @@ dnl
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for linalg
 dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(Banded_Matrix.hh)
 AC_CONFIG_AUX_DIR(../../config)
@@ -19,7 +21,7 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(nml c4 ds++)
 
-AC_RUNTESTS(TstPCG, 1 2 4 8)
+AC_RUNTESTS(TstPCG, 1 2 5)
 
 AC_DRACO_ENV
 

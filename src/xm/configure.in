@@ -5,6 +5,8 @@ dnl Mon Jan 11 10:07:10 MST 1999
 dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for xm
 dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
 
 AC_INIT(xm.hh)
 AC_CONFIG_AUX_DIR(../../config)
@@ -14,7 +16,7 @@ package="xm"
 AC_INSTALL_HEADERS
 AC_NEEDS_LIBS(ds++)
 
-AC_RUNTESTS(tstUV, 1 2)
+AC_RUNTESTS(tstUV, scalar)
 
 AC_DRACO_ENV
 
