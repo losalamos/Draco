@@ -163,6 +163,12 @@ class Mesh_XYZ : private XYZ_Mapper
 
 	fcdtf& operator=( T x ) { data = x; return *this; }
 
+        fcdtf& operator=( const fcdtf& f )
+	{
+            data = f.data;
+            return *this;
+	}
+
         template<class X>
         fcdtf& operator=( const xm::Xpr< T, X, fcdtf >& x )
         {
@@ -317,6 +323,12 @@ class Mesh_XYZ : private XYZ_Mapper
             return *this;
         }
 
+        cctf& operator=( const cctf& c )
+	{
+            data = c.data;
+            return *this;
+	}
+
         template<class X>
         cctf& operator=( const xm::Xpr< T, X, cctf >& x )
         {
@@ -465,6 +477,12 @@ class Mesh_XYZ : private XYZ_Mapper
             return *this;
         }
 
+        nctf& operator=( const nctf& n )
+	{
+            data = n.data;
+            return *this;
+	}
+
         template<class X>
         nctf& operator=( const xm::Xpr< T, X, nctf >& x )
         {
@@ -553,6 +571,12 @@ class Mesh_XYZ : private XYZ_Mapper
         const FieldConstructor& get_FieldConstructor() const { return spm; }
 
 	vctf& operator=( T x ) { data = x; return *this; }
+
+        vctf& operator=( const vctf& v )
+	{
+            data = v.data;
+            return *this;
+	}
 
         template<class X>
         vctf& operator=( const xm::Xpr< T, X, vctf >& x )
@@ -769,6 +793,12 @@ class Mesh_XYZ : private XYZ_Mapper
         const FieldConstructor& get_FieldConstructor() const { return spm; }
 
         bstf& operator=( T x );
+
+        bstf& operator=( const bstf& b )
+	{
+            data = b.data;
+            return *this;
+	}
 
         template<class X>
         bstf& operator=( const xm::Xpr<T, X, bstf>& x )
