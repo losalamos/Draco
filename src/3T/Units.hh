@@ -14,6 +14,9 @@
 #define END_NS_XTM }
 #endif
 
+#include "ds++/Assert.hh"
+#include "3T/PhysicalConstants.hh"
+
 BEGIN_NS_XTM
     
 //===========================================================================//
@@ -36,11 +39,11 @@ BEGIN_NS_XTM
 // 
 //===========================================================================//
 
-#include "ds++/Assert.hh"
-#include "3T/PhysicalConstants.hh"
-
 class Units
 {
+    // FRIENDS
+
+    Units operator/(const Units &op1, const Units &op2);
 
     // DATA
 
@@ -124,30 +127,32 @@ class Units
     double getTemperatureConversion() const { return temperatureConversion; }
 
     //------------------------------------------------------------------------//
-    // User2SIxxx:
+    // Convertxxx:
     //    Convert function argument from user units and return it in SI units.
     //------------------------------------------------------------------------//
 
-    inline double User2SILength(double length) const;
-    inline double User2SIMass(double mass) const;
-    inline double User2SITime(double time) const;
-    inline double User2SITemperature(double temperature) const;
+    inline double ConvertLength(double length) const;
+    inline double ConvertMass(double mass) const;
+    inline double ConvertTime(double time) const;
+    inline double ConvertTemperature(double temperature) const;
 
-    inline double User2SIVelocity(double velocity) const;
-    inline double User2SIDensity(double density) const;
+    inline double ConvertVelocity(double velocity) const;
+    inline double ConvertDensity(double density) const;
+    inline double ConvertEnergy(double energy) const;
 
     //------------------------------------------------------------------------//
-    // SI2Userxxx:
+    // Invertxxx:
     //    Convert function argument from SI and return it in user units.
     //------------------------------------------------------------------------//
 
-    inline double SI2UserLength(double length) const;
-    inline double SI2UserMass(double mass) const;
-    inline double SI2UserTime(double time) const;
-    inline double SI2UserTemperature(double temperature) const;
+    inline double InvertLength(double length) const;
+    inline double InvertMass(double mass) const;
+    inline double InvertTime(double time) const;
+    inline double InvertTemperature(double temperature) const;
 
-    inline double SI2UserVelocity(double velocity) const;
-    inline double SI2UserDensity(double density) const;
+    inline double InvertVelocity(double velocity) const;
+    inline double InvertDensity(double density) const;
+    inline double InvertEnergy(double energy) const;
 
   protected:
     
@@ -186,103 +191,147 @@ inline bool Units::validUnits() const
 }
 
 //---------------------------------------------------------------------------//
-// User2SIxxx:
+// Convertxxx:
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::User2SILength(double length) const
+inline double Units::ConvertLength(double length) const
 {
     return length * lengthConversion;
 }
 
 //---------------------------------------------------------------------------//
-// User2SIxxx:
+// Convertxxx:
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::User2SIMass(double mass) const
+inline double Units::ConvertMass(double mass) const
 {
     return mass * massConversion;
 }
 
 //---------------------------------------------------------------------------//
-// User2SIxxx:
+// Convertxxx:
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::User2SITime(double time) const
+inline double Units::ConvertTime(double time) const
 {
     return time * timeConversion;
 }
 
 //---------------------------------------------------------------------------//
-// User2SIxxx:
+// Convertxxx:
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::User2SITemperature(double temperature) const
+inline double Units::ConvertTemperature(double temperature) const
 {
     return temperature * temperatureConversion;
 }
 
 //---------------------------------------------------------------------------//
-// SI2Userxxx:
+// Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::SI2UserLength(double length) const
+inline double Units::InvertLength(double length) const
 {
     return length / lengthConversion;
 }
 
 //---------------------------------------------------------------------------//
-// SI2Userxxx:
+// Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::SI2UserMass(double mass) const
+inline double Units::InvertMass(double mass) const
 {
     return mass / massConversion;
 }
 
 //---------------------------------------------------------------------------//
-// SI2Userxxx:
+// Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::SI2UserTime(double time) const
+inline double Units::InvertTime(double time) const
 {
     return time / timeConversion;
 }
 
 //---------------------------------------------------------------------------//
-// SI2Userxxx:
+// Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::SI2UserTemperature(double temperature) const
+inline double Units::InvertTemperature(double temperature) const
 {
     return temperature / temperatureConversion;
 }
 
 //---------------------------------------------------------------------------//
-// User2SIxxx:
+// Convertxxx:
 //    Convert function argument from user units and return it in SI units.
 //---------------------------------------------------------------------------//
 
-inline double Units::User2SIVelocity(double velocity) const
+inline double Units::ConvertVelocity(double velocity) const
 {
     return velocity * lengthConversion / timeConversion;
 }
 
 //---------------------------------------------------------------------------//
-// SI2Userxxx:
+// Invertxxx:
 //    Convert function argument from SI and return it in user units.
 //---------------------------------------------------------------------------//
 
-inline double Units::SI2UserVelocity(double velocity) const
+inline double Units::InvertVelocity(double velocity) const
 {
     return velocity * timeConversion / lengthConversion;
+}
+
+//---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertDensity(double density) const
+{
+    return density * massConversion /
+	(lengthConversion*lengthConversion*lengthConversion);
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertDensity(double density) const
+{
+    return density * (lengthConversion*lengthConversion*lengthConversion) /
+	massConversion;
+}
+
+//---------------------------------------------------------------------------//
+// Convertxxx:
+//    Convert function argument from user units and return it in SI units.
+//---------------------------------------------------------------------------//
+
+inline double Units::ConvertEnergy(double energy) const
+{
+    return energy * massConversion * lengthConversion*lengthConversion /
+	(timeConversion*timeConversion);
+}
+
+//---------------------------------------------------------------------------//
+// Invertxxx:
+//    Convert function argument from SI and return it in user units.
+//---------------------------------------------------------------------------//
+
+inline double Units::InvertEnergy(double energy) const
+{
+    return energy * (timeConversion*timeConversion) /
+	(massConversion * lengthConversion*lengthConversion);	
 }
 
 END_NS_XTM  // namespace XTM
