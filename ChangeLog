@@ -49,7 +49,6 @@
 
 	We are not releaseing shared_lib in draco until this package
         passes its unit tests on QSC.
-	 
 
 2004-11-10  Thomas M. Evans  <tme@lanl.gov>
 
