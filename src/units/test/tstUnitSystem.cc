@@ -788,127 +788,291 @@ void test_valid_units()
 
     // Fail with L.
     {
-	UnitSystem myus( UnitSystemType().L( rtt_units::L_m, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.
+	try
 	{
-	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (L)." << endl;
-	    FAILMSG(msg.str());
+	    UnitSystem myus( UnitSystemType().L( rtt_units::L_m, my_cf ) ); 
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( ! myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (L)." << endl;
+		PASSMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (L)." << endl;
+		FAILMSG(msg.str());
+	    }
 	}
-	else
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (L)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for L." << endl;
+	    //  << "The message was: " << assert.what() << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
+	}
+	if( with_dbc && ! found_assert )
+	{
+	    ostringstream msg;
+	    msg << "Expected assertion was not caught with invalid cf for L." << endl;
+	    FAILMSG( msg.str() );
 	}
     }
     
     // Fail with M.
     {
-	UnitSystem myus( UnitSystemType().M( rtt_units::M_kg, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.	
+	try
 	{
-	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (M)." << endl;
-	    FAILMSG(msg.str());
+	    UnitSystem myus( UnitSystemType().M( rtt_units::M_kg, my_cf ) );
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (M)." << endl;
+		FAILMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (M)." << endl;
+		PASSMSG(msg.str());
+	    }
 	}
-	else
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (M)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for M." << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
+	}
+	if( with_dbc && ! found_assert )
+	{
+	    ostringstream msg;
+	    msg << "Expected assertion was not caught with invalid cf for M." << endl;
+	    FAILMSG( msg.str() );
 	}
     }
 
+
     // Fail with t.
     {
-	UnitSystem myus( UnitSystemType().t( rtt_units::t_s, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.
+	try
 	{
-	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (t)." << endl;
-	    FAILMSG(msg.str());
+	    UnitSystem myus( UnitSystemType().t( rtt_units::t_s, my_cf ) );
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (t)." << endl;
+		FAILMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (t)." << endl;
+		PASSMSG(msg.str());
+	    }
 	}
-	else
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (t)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for t." << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
+	}
+	if( with_dbc && ! found_assert )
+	{
+	    ostringstream msg;
+	    msg << "Expected assertion was not caught with invalid cf for t." << endl;
+	    FAILMSG( msg.str() );
 	}
     }
 
     // Fail with T
     {
-	UnitSystem myus( UnitSystemType().T( rtt_units::T_K, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.
+	try
 	{
-	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (T)." << endl;
-	    FAILMSG(msg.str());
+	    UnitSystem myus( UnitSystemType().T( rtt_units::T_K, my_cf ) );
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (T)." << endl;
+		FAILMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (T)." << endl;
+		PASSMSG(msg.str());
+	    }
 	}
-	else
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (T)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for T." << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
+	}
+	if( with_dbc && ! found_assert )
+	{
+	    ostringstream msg;
+	    msg << "Expected assertion was not caught with invalid cf for T." << endl;
+	    FAILMSG( msg.str() );
 	}
     }
 
     // Fail with I
     {
-	UnitSystem myus( UnitSystemType().I( rtt_units::I_amp, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.
+	try
 	{
-	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (I)." << endl;
-	    FAILMSG(msg.str());
+	    UnitSystem myus( UnitSystemType().I( rtt_units::I_amp, my_cf ) );
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (I)." << endl;
+		FAILMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (I)." << endl;
+		PASSMSG(msg.str());
+	    }
 	}
-	else
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (I)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for I." << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
+	}
+	if( with_dbc && ! found_assert )
+	{
+	    ostringstream msg;
+	    msg << "Expected assertion was not caught with invalid cf for I." << endl;
+	    FAILMSG( msg.str() );
 	}
     }
 
     // Fail with A
     {
-	UnitSystem myus( UnitSystemType().A( rtt_units::A_rad, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.
+	try
+	{
+	    UnitSystem myus( UnitSystemType().A( rtt_units::A_rad, my_cf ) );
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (A)." << endl;
+		FAILMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (A)." << endl;
+		PASSMSG(msg.str());
+	    }
+	}
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (A)." << endl;
-	    FAILMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for A." << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
 	}
-	else
+	if( with_dbc && ! found_assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (A)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion was not caught with invalid cf for A." << endl;
+	    FAILMSG( msg.str() );
 	}
+
     }
 
     // Fail with Q
     {
-	UnitSystem myus( UnitSystemType().Q( rtt_units::Q_mol, my_cf ) );
-	
-	if( myus.validUnits() )
+	bool with_dbc(true);
+	bool found_assert(false);
+	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// constructed.   If not, we must test the validUnits() member
+	// funtion explicitly.
+	try
 	{
-	    ostringstream msg;
-	    msg << "validUnits() is not working for myus (Q)." << endl;
-	    FAILMSG(msg.str());
+	    UnitSystem myus( UnitSystemType().Q( rtt_units::Q_mol, my_cf ) );
+	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // manually. 
+	    with_dbc=false;
+	    if( myus.validUnits() )
+	    {
+		ostringstream msg;
+		msg << "validUnits() is not working for myus (Q)." << endl;
+		FAILMSG(msg.str());
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "validUnits() is working for myus (Q)." << endl;
+		PASSMSG(msg.str());
+	    }
 	}
-	else
+	catch( rtt_dsxx::assertion & assert )
 	{
 	    ostringstream msg;
-	    msg << "validUnits() is working for myus (Q)." << endl;
-	    PASSMSG(msg.str());
+	    msg << "Expected assertion caught with invalid cf for Q." << endl;
+	    PASSMSG( msg.str() );
+	    found_assert = true;
+	}
+	if( with_dbc && ! found_assert )
+	{
+	    ostringstream msg;
+	    msg << "Expected assertion was not caught with invalid cf for Q." << endl;
+	    FAILMSG( msg.str() );
 	}
     }
 
