@@ -443,13 +443,20 @@ void test_CDI()
     {
 	FAILMSG("Oh-oh, frequency boundaries are defined after reset.");
     }
+    
+    if (rtt_cdi_test::passed)
+    {
+	PASSMSG("Fundamental CDI Operations are ok.");
+	cout << endl;
+    }
 }
 
 //---------------------------------------------------------------------------//
 
 void test_planck_integration()
 {
-    // catch our assertion
+    // we have not defined any group structure yet; thus, the Insist will
+    // always fire if an integration is requested over a non-existent group 
     bool caught = false;
     try
     {
@@ -472,7 +479,7 @@ void test_planck_integration()
 
     // Only report this as a failure if 1) the error was not caught AND 2)
     // the Require macro is available.
-    bool dbc_require( DBC && 1 );
+    bool dbc_require( DBC & 1 );
     if( dbc_require )
     {
 
@@ -674,49 +681,58 @@ void test_planck_integration()
     {
 	FAILMSG("Planck integral over all groups at T=0 is not zero: BAD!");
     }
-
+    
+    if (rtt_cdi_test::passed)
+    {
+	PASSMSG("All Planckian integral tests ok.");
+	cout << endl;
+    }
 }
 
 //---------------------------------------------------------------------------//
 
 void test_rosseland_integration()
 {
-    // catch our assertion
-    bool caught = false;
-    try
+    // Only report this as a failure if 1) the error was not caught AND 2)
+    // the Require macro is available.
+    bool dbc_require( DBC & 1 );
+    if( dbc_require )
     {
-	CDI::integrateRosselandSpectrum(0, 1.0);
-    }
-    catch(const rtt_dsxx::assertion &ass)
-    {
-	ostringstream message;
-	message << "Caught illegal Rosseland calculation exception: \n";
-	    // << "\t" << ass.what();
-	PASSMSG(message.str());
-	caught = true;
-    }
-    if (!caught)
-    {
-	FAILMSG("Did not catch an exception for calculating Rosseland integral.");
-    }
-    // catch our assertion
-    caught = false;
-    double P,R;
-    try
-    {
-	CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0,P,R);
-    }
-    catch(const rtt_dsxx::assertion &ass)
-    {
-	ostringstream message;
-	message << "Caught illegal Rosseland and Planckian calculation exception: \n";
-	//		<< "\t" << ass.what();
-	PASSMSG(message.str());
-	caught = true;
-    }
-    if (!caught)
-    {
-	FAILMSG("Did not catch an exception for calculating Rosseland and Planckian integral.");
+	bool caught = false;
+	try
+	{
+	    CDI::integrateRosselandSpectrum(0, 1.0);
+	}
+	catch(const rtt_dsxx::assertion &ass)
+	{
+	    ostringstream message;
+	    message << "Caught illegal Rosseland calculation exception: \n";
+	    PASSMSG(message.str());
+	    caught = true;
+	}
+	if (!caught)
+	{
+	    FAILMSG("Did not catch an exception for calculating Rosseland integral.");
+	}
+	// catch our assertion
+	caught = false;
+	double P,R;
+	try
+	{
+	    CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0,P,R);
+	}
+	catch(const rtt_dsxx::assertion &ass)
+	{
+	    ostringstream message;
+	    message << "Caught illegal Rosseland and Planckian "
+		    << "calculation exception: \n";
+	    PASSMSG(message.str());
+	    caught = true;
+	}
+	if (!caught)
+	{
+	    FAILMSG("Did not catch an exception for calculating Rosseland and Planckian integral.");
+	}
     }
 
     // check some planck integrals
@@ -778,7 +794,7 @@ void test_rosseland_integration()
     }
     
     double PL,ROS;
-    CDI::integrateRosselandSpectrum(0.1, 1.0,1.0,PL,ROS);
+    CDI::integrate_Rosseland_Planckian_Spectrum(0.1, 1.0,1.0,PL,ROS);
     if (soft_equiv(PL, .0345683, 1.e-5))
     {
 	ostringstream message;
@@ -861,7 +877,7 @@ void test_rosseland_integration()
     {
 	FAILMSG("Rosseland integral from hnu=0 to 100 at T=0 is not zero: BAD!");
     }
-    CDI::integrateRosselandSpectrum(0.0, 100.0, 0.0,PL,ROS);
+    CDI::integrate_Rosseland_Planckian_Spectrum(0.0, 100.0, 0.0,PL,ROS);
     if (soft_equiv(PL, 0.0))
     {
 	PASSMSG("Rosseland call for Planck integral  at T=0 is zero: good!");
@@ -879,6 +895,56 @@ void test_rosseland_integration()
 	FAILMSG("Rosseland integral  at T=0 is not zero: BAD!");
     }
 
+    // check the normalized planck integrals
+    if (CDI::getNumberFrequencyGroups() != 3) ITFAILS;
+
+    // do first group
+    CDI::integrate_Rosseland_Planckian_Spectrum(1, 1.0, PL, ROS);
+    if (!soft_equiv(PL,  0.00528686, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ROS, 0.00158258, 1.e-5)) ITFAILS;
+    
+    if (rtt_cdi_test::passed)
+    {
+	PASSMSG("Group 1 Rosseland and Planck integrals ok.");
+    }
+    else
+    {
+	FAILMSG("Group 1 Rosseland and Planck integrals failed.");
+    }
+
+    // do second group
+    CDI::integrate_Rosseland_Planckian_Spectrum(2, 1.0, PL, ROS);
+    if (!soft_equiv(PL,  0.74924, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ROS, 0.589728, 1.e-6)) ITFAILS;
+    
+    if (rtt_cdi_test::passed)
+    {
+	PASSMSG("Group 2 Rosseland and Planck integrals ok.");
+    }
+    else
+    {
+	FAILMSG("Group 2 Rosseland and Planck integrals failed.");
+    }
+
+    // do third group
+    CDI::integrate_Rosseland_Planckian_Spectrum(3, 1.0, PL, ROS);
+    if (!soft_equiv(PL,  0.245467, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ROS, 0.408688, 1.e-6)) ITFAILS;
+    
+    if (rtt_cdi_test::passed)
+    {
+	PASSMSG("Group 3 Rosseland and Planck integrals ok.");
+    }
+    else
+    {
+	FAILMSG("Group 3 Rosseland and Planck integrals failed.");
+    }
+    
+    if (rtt_cdi_test::passed)
+    {
+	PASSMSG("All Rosseland and Rosseland/Planckian integral tests ok.");
+	cout << endl;
+    }
 }
 
 //---------------------------------------------------------------------------//

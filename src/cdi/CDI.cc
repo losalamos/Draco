@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -69,8 +70,9 @@ int CDI::getNumberFrequencyGroups()
 }    
 
 //---------------------------------------------------------------------------//
-
-// nested unnamed namespace that holds data and services used by the
+// UNNAMED NAMESPACE
+//---------------------------------------------------------------------------//
+// Nested unnamed namespace that holds data and services used by the
 // Planckian integration routines.  The data in this namespace is accessible
 // by the methods in this file only (internal linkage).
 
@@ -570,6 +572,7 @@ double CDI::integratePlanckSpectrum(const double T)
 
     return integral;
 }
+
 //---------------------------------------------------------------------------//
 /*!
  *
@@ -639,8 +642,9 @@ double CDI::integratePlanckSpectrum(const double T)
  * \return integrated normalized Rosseland from x_low to x_high
  *
  */
-
-double CDI::integrateRosselandSpectrum(const double lowFreq,const double highFreq, const double T)
+double CDI::integrateRosselandSpectrum(const double lowFreq,
+				       const double highFreq, 
+				       const double T)
 {
     Require (lowFreq >= 0.0);
     Require (highFreq >= lowFreq);
@@ -662,7 +666,8 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,const double highFre
     // for x > xlim=1.e-5
     //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
     //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a the exp(-x)/exp(-x) multiply and a Taylor series expansion
+    // for x < xlim do a the exp(-x)/exp(-x) multiply and a Taylor series
+    // expansion 
     double lower_y = exp(-lower_x);
     double upper_y = exp(-upper_x);
     double add_lower , add_upper;
@@ -682,6 +687,7 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,const double highFre
 
     return ROSL;
 }
+
 //---------------------------------------------------------------------------//
 /*!
  *
@@ -760,8 +766,7 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,const double highFre
  *
 
  */
-
-double CDI::integrateRosselandSpectrum(const int groupIndex,const double T)
+double CDI::integrateRosselandSpectrum(const int groupIndex, const double T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
@@ -785,7 +790,8 @@ double CDI::integrateRosselandSpectrum(const int groupIndex,const double T)
     // for x > xlim=1.e-5
     //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
     //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a the exp(-x)/exp(-x) multiply and a Taylor series expansion
+    // for x < xlim do a the exp(-x)/exp(-x) multiply and a Taylor series
+    // expansion 
     double lower_y = exp(-lower_x);
     double upper_y = exp(-upper_x);
     double add_lower , add_upper;
@@ -809,7 +815,8 @@ double CDI::integrateRosselandSpectrum(const int groupIndex,const double T)
 //---------------------------------------------------------------------------//
 /*!
  *
- * \brief Integrate the Planckian and Rosseland spectrum over a frequency group.
+ * \brief Integrate the Planckian and Rosseland spectrum over a frequency
+ * group.
  *
  * This function integrates the normalized Rosseland that is defined:
  * \f[
@@ -872,135 +879,21 @@ double CDI::integrateRosselandSpectrum(const int groupIndex,const double T)
  
  * \param T the temperature in keV (must be greater than 0.0)
  * 
- * \return void the integrated normalized Planckian and Rosseland from x_low to x_high
- * are passed by reference in the function call
- *
- */
-
-void CDI::integrateRosselandSpectrum(const double lowFreq,const double highFreq,const double T, double& PL, double& ROSL)
-{
-    Require (lowFreq >= 0.0);
-    Require (highFreq >= lowFreq);
-    Require (T >= 0.0);
-    // return 0 if temperature is a hard zero
-    if (T == 0.0)
-    {
-        PL = 0.; ROSL =0.;
-	return ;
-    }
-
-    // determine the upper and lower x
-    double lower_x = lowFreq  / T;
-    double upper_x = highFreq / T;
-    double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
-
-    // calculate the Planckian integral 
-    double integral = integratePlanckSpectrum(lowFreq, highFreq, T);
-    
-    // Calculate the addition to the Planck integral 
-    // for x > xlim
-    //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
-    //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a exp(-x)/exp(-x) multiply
-    double lower_y = exp(-lower_x);
-    double upper_y = exp(-upper_x);
-    double add_lower , add_upper;
-    if(lower_x >= 1.e-5)
-     add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
-    else 
-     add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
-
-    if(upper_x >= 1.e-5)
-     add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
-    else 
-     add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
-    // one term taylor series for small x
-    Ensure (integral >= 0.0 && integral <= 1.0);
-    PL = integral;
-    ROSL = PL - (add_upper-add_lower);
-    
-    }
-
-//---------------------------------------------------------------------------//
-/*!
- *
- * \brief Integrate the Planckian and Rosseland spectrum over a frequency group.
- *
- * This function integrates the normalized Rosseland that is defined:
- * \f[
- *    r(x) = \frac{15}{4\pi^4} \frac{x^4 e^x}{(e^x - 1)^2}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    R(\nu, T)d\nu = \frac{4 acT^3}{4\pi}r(x)dx
- * \f]
- * where \f$R(\nu, T)\f$ is the Rosseland and is defined
- * \f[
- *    R(\nu, T) = \frac{\partial B(\nu, T)}{\partial T}
- * \f]
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Rosseland, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Rosseland function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_1}^{x_N} r(x) dx
- * \f]
- * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
- * frequency bound of the multigroup data set.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
- *
- * For the Rosseland we can relate the group interval integration to the
- * Planckian group interval integration, by equation 27 in B. Clark paper.
- * \f[
- *     \int_{x_1}^{x_N} r(x) dx = \int_{x_1}^{x_N} b(x) dx
- *     - \frac{15}{4\pi^4} \frac{x^4}{e^x - 1}
- * \f]
- * Therefore our Rosslenad group integration function can simply wrap the
- * Planckian function integratePlanckSpectrum(lowFreq, highFreq, T)
- * 
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_1}^{\nu_N} R(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{4 acT^3}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$ 4 acT^3 \f$.
- *
- * In the limit of \f$ T \rightarrow 0, r(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- 
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return void the integrated normalized Planckian and Rosseland from x_low to x_high
- * are passed by reference in the function call
- * * 
- * if  groupIndex=0  an exception is thrown.
+ * \return void the integrated normalized Planckian and Rosseland from x_low
+ * to x_high are passed by reference in the function call * if groupIndex=0
+ * an exception is thrown.
  *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
  * \param T          the temperature in keV (must be greater than 0.0)
  * \return           integrated normalized Plankian over the group specified
  *                   by groupIndex.
  *
-
+ *
  */
-
-void CDI::integrate_Rosseland_Planckian_Spectrum(const int groupIndex,const double T, double& PL, double& ROSL)
+void CDI::integrate_Rosseland_Planckian_Spectrum(const int     groupIndex,
+						 const double  T, 
+						 double       &PL, 
+						 double       &ROSL)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
@@ -1048,13 +941,13 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const int groupIndex,const doub
     Ensure (integral >= 0.0 && integral <= 1.0);
     PL = integral;
     ROSL = PL - (add_upper-add_lower);
-    
-    }
+}
 
 //---------------------------------------------------------------------------//
 /*!
  *
- * \brief Integrate the Planckian and Rosseland spectrum over a frequency group.
+ * \brief Integrate the Planckian and Rosseland spectrum over a frequency
+ * group.
  *
  * This function integrates the normalized Rosseland that is defined:
  * \f[
@@ -1117,12 +1010,15 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const int groupIndex,const doub
  
  * \param T the temperature in keV (must be greater than 0.0)
  * 
- * \return void the integrated normalized Planckian and Rosseland from x_low to x_high
- * are passed by reference in the function call
+ * \return void the integrated normalized Planckian and Rosseland from x_low
+ * to x_high are passed by reference in the function call
  *
  */
-
-void CDI::integrate_Rosseland_Planckian_Spectrum(const double lowFreq,const double highFreq,const double T, double& PL, double& ROSL)
+void CDI::integrate_Rosseland_Planckian_Spectrum(const double  lowFreq,
+						 const double  highFreq,
+						 const double  T,
+						 double       &PL, 
+						 double       &ROSL)
 {
     Require (lowFreq >= 0.0);
     Require (highFreq >= lowFreq);
@@ -1151,20 +1047,19 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const double lowFreq,const doub
     double upper_y = exp(-upper_x);
     double add_lower , add_upper;
     if(lower_x >= 1.e-5)
-     add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
+	add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
     else 
-     add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
+	add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
 
     if(upper_x >= 1.e-5)
-     add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
+	add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
     else 
-     add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
+	add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
     // one term taylor series for small x
     Ensure (integral >= 0.0 && integral <= 1.0);
     PL = integral;
     ROSL = PL - (add_upper-add_lower);
-    
-    }
+}
 
 //---------------------------------------------------------------------------//
 // SET FUNCTIONS

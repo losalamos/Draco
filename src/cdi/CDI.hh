@@ -4,13 +4,14 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:06 2000
  * \brief  CDI class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_CDI_hh__
-#define __cdi_CDI_hh__
+#ifndef rtt_cdi_CDI_hh
+#define rtt_cdi_CDI_hh
 
 #include "GrayOpacity.hh"
 #include "MultigroupOpacity.hh"
@@ -62,27 +63,43 @@ namespace rtt_cdi
  * rtt_cdi::MultigroupOpacity, EoS, rtt_cdi::Model, rtt_cdi::Reaction).
  * 
  * CDI also contains static services that allow a client to integrate the
- * (normalized) Planckian.  Three overloaded functions perform this service:
+ * (normalized) Planckian and Rosseland (\f$ \partial B/\partial T \f$)
+ * integrals.  The overloaded functions that perform these services are:
  *
- * \arg integratePlanckSpectrum(double lowFreq, double highFreq, double T)
- * \arg integratePlanckSpectrum(double freq, double T)
- * \arg integratePlanckSpectrum(int groupIndex, double T);
- * \arg integratePlanckSpectrum(double T);
+ * \arg integratePlanckSpectrum(const double lowFreq, const double highFreq,
+ * const double T)
  *
- * The first two forms can be called (CDI::integratePlanckSpectrum())
- * anytime.  They simply integrate the normalized Planckian over a frequency
- * range; the second form uses a default lower bound of 0.0.  The next two
- * forms may only be called after the multigroup frequency boundaries have
- * been set.  These boundaries are set after a call, from any CDI object, to
- * setMultigroupOpacity().  The frequency boundaries are stored statically.
- * After an initial call by any CDI object of setMultigroupOpacity(), the
- * frequency bounds are checked to make sure they do not change.  Changing
- * the boundaries throws an exception.  Thus, clients are allowed to view the
- * group structure through any multigroup data set
- * (cdi.mg()->getGroupBoundaries()) or "globally" by calling
- * CDI::getFrequencyGroupBoundaries().  The context of usage dictates which
- * type of call to make; the result is invariant.  See the test (tCDI.cc) for
- * usage examples of the CDI Plankian integration routines.
+ * \arg integratePlanckSpectrum(const double freq, const double T)
+ *
+ * \arg integrateRosselandSpectrum(const double lowf, const double hif,
+ * double T);
+ * 
+ * \arg integrate_Rosseland_Planckian_Spectrum(const double lowf, const
+ * double hif, const double T, double& PL, double& ROSL);
+ *
+ * \arg integratePlanckSpectrum(const int groupIndex, const double T);
+ *
+ * \arg integratePlanckSpectrum(const double T);
+ *
+ * \arg integrateRosselandSpectrum(const int groupIndex,  const double T);
+ * 
+ * \arg integrate_Rosseland_Planckian_Spectrum(const int groupIndex, const
+ * double T, double& PL, double& ROSL);
+ *
+ * The first four forms can be called (CDI::integratePlanckSpectrum())
+ * anytime.  They simply integrate the normalized Planckian or Rosseland over
+ * a frequency range.  The next four forms may only be called after the
+ * multigroup frequency boundaries have been set.  These boundaries are set
+ * after a call, from any CDI object, to setMultigroupOpacity().  The
+ * frequency boundaries are stored statically.  After an initial call by any
+ * CDI object of setMultigroupOpacity(), the frequency bounds are checked to
+ * make sure they do not change.  Changing the boundaries throws an
+ * exception.  Thus, clients are allowed to view the group structure through
+ * any multigroup data set (cdi.mg()->getGroupBoundaries()) or "globally" by
+ * calling CDI::getFrequencyGroupBoundaries().  The context of usage dictates
+ * which type of call to make; the result is invariant.  See the test
+ * (tCDI.cc) for usage examples of the CDI Plankian and Rosseland integration
+ * routines.
  *
  */
 /*!
@@ -320,30 +337,35 @@ class CDI
     // Integrate the normalized Planckian spectrum over all frequency groups.
     static double integratePlanckSpectrum(const double T);
     
-    // Integrate the normalized Rosseland spectrum over a frequency group with gorup index given.
-    static double integrateRosselandSpectrum(const int groupIndex, const double T);
+    // Integrate the normalized Rosseland spectrum over a frequency group
+    // with group index given.
+    static double integrateRosselandSpectrum(const int groupIndex, 
+					     const double T);
 
-    // Integrate the normalized Rosseland over a frequency range.
-    // this version wraps the CDI::integratePlanckSpectrum function
-    static double integrateRosselandSpectrum(const double lowf,const double hif, double T);
+    // Integrate the normalized Rosseland over a frequency range.  This
+    // version wraps the CDI::integratePlanckSpectrum function
+    static double integrateRosselandSpectrum(const double lowf,
+					     const double hif, double T);
 
-   // Integrate the normalized Planckian and Rosseland over a frequency range.
-   // this version wraps the CDI::integratePlanckSpectrum function
-    static void integrateRosselandSpectrum(const double lowf,const double hif,const double T, double& PL, double& ROSL);
-   // Integrate the normalized Planckian and Rosseland over a frequency range.
-   // this version wraps the CDI::integratePlanckSpectrum function
-    static void integrate_Rosseland_Planckian_Spectrum(const double lowf,const double hif,const double T, double& PL, double& ROSL);
-   // Integrate the normalized Rosseland spectrum over a frequency group with gorup index given.
-   // and also pass the normalized Planckian
-    static void integrate_Rosseland_Planckian_Spectrum(const int groupIndex,const double T, double& PL, double& ROSL);
-  private:
-	
-    // IMPLEMENTATION
+    // Integrate the normalized Planckian and Rosseland over a frequency
+    // range.  This version wraps the CDI::integratePlanckSpectrum function
+    static void integrate_Rosseland_Planckian_Spectrum(const double lowf,
+						       const double hif,
+						       const double T, 
+						       double& PL, 
+						       double& ROSL);
+
+    // Integrate the normalized Rosseland spectrum over a frequency group
+    // with group index given; also pass the normalized Planckian
+    static void integrate_Rosseland_Planckian_Spectrum(const int groupIndex,
+						       const double T,
+						       double& PL,
+						       double& ROSL);
 };
     
 } // end namespace rtt_cdi
 
-#endif // __cdi_CDI_hh__
+#endif // rtt_cdi_CDI_hh
 
 //---------------------------------------------------------------------------//
 // end of cdi/CDI.hh
