@@ -128,15 +128,15 @@ void test_constrained_distance_to()
     if ( !soft_equiv(distance, 4.0, epsilon) ) ITFAILS;
 
 
-
     is_in = false;
+#if DBC & 2
     try 
     {
 	distance = sphere->distance_to(position, direction, is_in);
 	ITFAILS;
     }
     catch (...) { }
-
+#endif
 
     position[0] = -2.0-epsilon;
     distance = sphere->distance_to(position, direction, is_in);
@@ -145,13 +145,14 @@ void test_constrained_distance_to()
 
 
     position[0] = -2.0+epsilon;
+#if DBC & 2
     try 
     {
 	distance = sphere->distance_to(position, direction, is_in);
 	ITFAILS;
     }
     catch (...) { }
-
+#endif
 }
 
 //---------------------------------------------------------------------------//
