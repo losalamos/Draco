@@ -276,7 +276,7 @@ ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi meshReaders quadratur
 ac_subdirs_all="$ac_subdirs_all timestep pcgWrap viz cdi_eospac cdi_gandolf cdi_analytic RTT_Format_Reader"
 ac_subdirs_all="$ac_subdirs_all mc meshReaders_Services"
 ac_subdirs_all="$ac_subdirs_all imc"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB subdirs LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB subdirs LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -821,6 +821,9 @@ Optional Packages:
   --with-trilinos=lib    determine the trilinos implementation (aztecoo is default
   --with-trilinos-inc=DIR    tell where TRILINOS includes are (\${TRILINOS_INC_DIR} by default)
   --with-trilinos-lib=DIR    tell where TRILINOS libraries are (\${TRILINOS_LIB_DIR} by default)
+  --with-metis=lib    the metis implementation
+  --with-metis-inc=DIR    tell where METIS includes are (\${METIS_INC_DIR} by default)
+  --with-metis-lib=DIR    tell where METIS libraries are (\${METIS_LIB_DIR} by default)
   --with-lapack=vendor,atlas
                           determine LAPACK implementation (vendor default)
   --with-lapack-lib=DIR    tell where LAPACK libs are (\${LAPACK_LIB_DIR} by default)
@@ -1993,6 +1996,112 @@ fi;
    # determine if this package is needed for testing or for the
    # package
    vendor_trilinos=pkg
+
+
+
+
+# Check whether --with-metis or --without-metis was given.
+if test "${with_metis+set}" = set; then
+  withval="$with_metis"
+
+fi;
+
+
+
+
+
+# Check whether --with-metis-inc or --without-metis-inc was given.
+if test "${with_metis_inc+set}" = set; then
+  withval="$with_metis_inc"
+  if test $with_metis_inc != "no" ; then
+      if test $with_metis_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${METIS_INC_DIR}
+         eval with_metis_inc=\${METIS_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_metis_inc=`eval echo "$with_metis_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_metis_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-metis-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_metis_inc ; then
+         { echo "configure: error: $with_metis_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      METIS_INC="${with_metis_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define METIS_INC ${with_metis_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "METIS_INC has been set to $METIS_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-metis-lib or --without-metis-lib was given.
+if test "${with_metis_lib+set}" = set; then
+  withval="$with_metis_lib"
+  if test $with_metis_lib != "no" ; then
+      if test $with_metis_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${METIS_LIB_DIR}
+         eval with_metis_lib=\${METIS_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_metis_lib=`eval echo "$with_metis_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_metis_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-metis-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_metis_lib ; then
+         { echo "configure: error: $with_metis_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      METIS_LIB="${with_metis_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define METIS_LIB ${with_metis_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "METIS_LIB has been set to $METIS_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # set default value of metis includes and libs
+   if test "${with_metis:=metis}" = yes ; then
+       with_metis='metis'
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_metis=pkg
 
 
 
@@ -3209,6 +3318,8 @@ s,@GSLCBLAS_INC@,$GSLCBLAS_INC,;t t
 s,@GSLCBLAS_LIB@,$GSLCBLAS_LIB,;t t
 s,@TRILINOS_INC@,$TRILINOS_INC,;t t
 s,@TRILINOS_LIB@,$TRILINOS_LIB,;t t
+s,@METIS_INC@,$METIS_INC,;t t
+s,@METIS_LIB@,$METIS_LIB,;t t
 s,@LAPACK_LIB@,$LAPACK_LIB,;t t
 s,@GANDOLF_LIB@,$GANDOLF_LIB,;t t
 s,@EOSPAC5_LIB@,$EOSPAC5_LIB,;t t
