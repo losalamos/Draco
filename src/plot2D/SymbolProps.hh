@@ -12,6 +12,8 @@
 #ifndef INCLUDED_plot2D_SymbolProps_hh
 #define INCLUDED_plot2D_SymbolProps_hh
 
+#include "Colormap.hh"
+
 namespace rtt_plot2D {
 
 //===========================================================================//
@@ -25,11 +27,27 @@ namespace rtt_plot2D {
 //===========================================================================//
 struct SymbolProps
 {
-    /// Symbol type
-    int type;
+    /// Shapes available
+    enum Shape {
+	SHAPE_NONE,
+	SHAPE_CIRCLE,
+	SHAPE_SQUARE,
+	SHAPE_DIAMOND,
+	SHAPE_TRIANGLEUP,
+	SHAPE_TRIANGLELEFT,
+	SHAPE_TRIANGLEDOWN,
+	SHAPE_TRIANGLERIGHT,
+	SHAPE_PLUS,
+	SHAPE_X,
+	SHAPE_STAR,
+	SHAPE_CHAR
+    };
+    
+    /// Symbol shape
+    Shape shape;
 
     /// Color of symbol border
-    int color;
+    Colormap color;
 
     /// Size of symbol
     double size;
@@ -38,18 +56,18 @@ struct SymbolProps
     double width;
 
     /// Fill color of symbol 
-    int fillColor;
+    Colormap fillColor;
 
-    /// Pattern for filling symbol
+    /// Pattern for filling symbol. 0 is none, 1 solid, ...
     int fillPattern;
 
     /// Constructor, uses Grace defaults for a set.
     SymbolProps()
-	: type(0)
-	, color(1)
+	: shape(SHAPE_NONE)
+	, color(COLOR_BLACK)
 	, size(1.0)
 	, width(1.0)
-	, fillColor(1)
+	, fillColor(COLOR_BLACK)
 	, fillPattern(0) {}
 };
 

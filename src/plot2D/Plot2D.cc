@@ -492,14 +492,14 @@ setProps(const int iG,
 
     GracePrintf("focus g%d", graphNum(iG));
 
-    GracePrintf("s%d line type %d", iSet, p.line.type);
-    if ( p.line.type > 0 ) {
+    GracePrintf("s%d line type %d", iSet, p.line.style);
+    if ( p.line.style != LineProps::STYLE_NONE ) {
 	GracePrintf("s%d line color %d", iSet, p.line.color);
 	GracePrintf("s%d line linewidth %f", iSet, p.line.width);
     }
     
-    GracePrintf("s%d symbol %d", iSet, p.symbol.type);
-    if ( p.symbol.type > 0 ) {
+    GracePrintf("s%d symbol %d", iSet, p.symbol.shape);
+    if ( p.symbol.shape != SymbolProps::SHAPE_NONE ) {
 	GracePrintf("s%d symbol size %f", iSet, p.symbol.size);
 	GracePrintf("s%d symbol color %d", iSet, p.symbol.color);
 	GracePrintf("s%d symbol linewidth %f", iSet, p.symbol.width);

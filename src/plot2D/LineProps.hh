@@ -12,6 +12,8 @@
 #ifndef INCLUDED_plot2D_LineProps_hh
 #define INCLUDED_plot2D_LineProps_hh
 
+#include "Colormap.hh"
+
 namespace rtt_plot2D {
 
 //===========================================================================//
@@ -25,19 +27,32 @@ namespace rtt_plot2D {
 //===========================================================================//
 struct LineProps
 {
-    /// Line type
-    int type;
+    /// Various line styles
+    enum Style {
+	STYLE_NONE,
+	STYLE_SOLID,
+	STYLE_DOT,
+	STYLE_DASH,
+	STYLE_LONGDASH,
+	STYLE_DASHDOT,
+	STYLE_LONGDASHDOT,
+	STYLE_DASHDOTDOT,
+	STYLE_DASHDASHDOT
+    };
+
+    /// Line style
+    Style style;
 
     /// Line color
-    int color;
+    Colormap color;
 
     /// Width of line
     double width;
 
     /// Constructor, uses Grace defaults for a set.
     LineProps()
-	: type(1)
-	, color(1)
+	: style(STYLE_SOLID)
+	, color(COLOR_BLACK)
 	, width(1.0) {}
     
 };
