@@ -400,74 +400,68 @@ class TET_Mesh
     const Coord_sys&  get_Coord() const   { return *coord; }
     SP_Coord_sys      get_SPCoord() const { return coord; }
 
-    //__________________________________________//
-    // Beginning of packing/unpacking facilities.
-
-    /*!
-     * \struct TET_Mesh::Pack
-     *
-     * \brief Structure to hold a packed tetrahedral mesh.
-     */
-    struct Pack
-    {
-     private:
-        // Disallow assignment.
-        const Pack& operator=(const Pack &);
-
-        //! TET_Mesh is inherently 3-dimensional; its faces have 3 vertices.
-        static const int THREE = 3;
-
-        //! A TET_Mesh cell always has 4 faces and 4 vertices.
-        static const int FOUR = 4;
-
-        //! Typedef for vector field of integers.
-        typedef std::vector< std::vector<int> > vf_int;
-
-        //! Typedef for a standard set of integers.
-        typedef std::set<int> SetInt;
-
-        //! Typedef for a map linking strings to sets of integers.
-        typedef std::map< std::string, SetInt > MAP_String_SetInt;
-
-     public:
-        // Double data.
-        int dsize;
-        double *ddata;
-
-        // Integer data.
-        int isize;
-        int *idata;
-
-        // Character data.
-        int csize;
-        char *cdata;
-
-        // Constructor.  Note that after construction, the Pack object
-        // owns the pointed-to data, and assumes the responsibility of
-        // deletion.
-        Pack(int, double *, int, int *, int, char *);
-
-        // Copy constructor.
-        Pack(const Pack &);
-
-        // Destructor.
-        ~Pack();
-
-        // Unpacker.  Recovers a TET_Mesh from the Pack object.
-        SP_Mesh unpack() const;
-
-        // Printer for diagnostics.
-        void print_pack(std::ostream &) const;
-
-    };  // end struct TET_Mesh::Pack
-
     //! TET_Mesh member function to return a Pack object holding a TET_Mesh.
-    Pack pack() const;
-
-    //____________________________________//
-    // End of packing/unpacking facilities.
+    SP_Pack pack() const;
 
 };  // end class TET_Mesh
+
+/*!
+ * \struct TET_Mesh::Pack
+ *
+ * \brief Structure to hold a packed tetrahedral mesh.
+ */
+struct TET_Mesh::Pack
+{
+ private:
+    // Disallow assignment.
+    const Pack& operator=(const Pack &);
+
+    //! TET_Mesh is inherently 3-dimensional; its faces have 3 vertices.
+    static const int THREE = 3;
+
+    //! A TET_Mesh cell always has 4 faces and 4 vertices.
+    static const int FOUR = 4;
+
+    //! Typedef for vector field of integers.
+    typedef std::vector< std::vector<int> > vf_int;
+
+    //! Typedef for a standard set of integers.
+    typedef std::set<int> SetInt;
+
+    //! Typedef for a map linking strings to sets of integers.
+    typedef std::map< std::string, SetInt > MAP_String_SetInt;
+
+ public:
+    // Double data.
+    int dsize;
+    double *ddata;
+
+    // Integer data.
+    int isize;
+    int *idata;
+
+    // Character data.
+    int csize;
+    char *cdata;
+
+    // Constructor.  Note that after construction, the Pack object
+    // owns the pointed-to data, and assumes the responsibility of
+    // deletion.
+    Pack(int, double *, int, int *, int, char *);
+
+    // Copy constructor.
+    Pack(const Pack &);
+
+    // Destructor.
+    ~Pack();
+
+    // Unpacker.  Recovers a TET_Mesh from the Pack object.
+    TET_Mesh::SP_Mesh unpack() const;
+
+    // Printer for diagnostics.
+    void print_pack(std::ostream &) const;
+
+};  // end struct TET_Mesh::Pack
 
 //___________________________________________________________________________//
 /*!

@@ -1141,7 +1141,7 @@ void TET_Mesh::Pack::print_pack(std::ostream &output) const
  * conventional arrays later.  This makes the counting easier, but is wasteful
  * of memory.  A later version will count first, then allocate space only once.
  */
-TET_Mesh::Pack TET_Mesh::pack() const
+TET_Mesh::SP_Pack TET_Mesh::pack() const
 {
     int LenTitle = title.length();             // length of title string
     int LenUnits = node_coord_units.length();  // length of coord_units string
@@ -1293,7 +1293,9 @@ TET_Mesh::Pack TET_Mesh::pack() const
     for (int c = 0 ; c < c_ctr ; ++c)
         c_arr[c] = c_vec[c];
 
-    return TET_Mesh::Pack(d_ctr, d_arr, i_ctr, i_arr, c_ctr, c_arr);
+    SP_Pack packed_mesh(new TET_Mesh::Pack(d_ctr, d_arr, i_ctr, i_arr,
+                                                         c_ctr, c_arr));
+    return packed_mesh;
 
 }   // end TET_Mesh::pack()
 
