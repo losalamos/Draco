@@ -19,7 +19,10 @@
 '''
 
 _usageTemplate = '''
-Usage: numdiff [options] file1 file2
+Usage:
+
+numdiff [options] file1 file2
+numdiff [options] file1 [file2 file3 ...] directory
 
 Reports the differences between respective floating point numbers that
 are stored in the two specified files.
@@ -537,13 +540,38 @@ if __name__ == '__main__':
         elif o in ('-v', '--verbosity'):
             numdiff.verbosity = int(a)
 
-    if len(args) > 2:
-        Usage("Too many arguments.")
-    elif len(args) < 2:
+    if len(args) < 2:
         Usage("Too few arguments.")
+
+    # Form the pairs of files to compare
+
+    filePairs = []
+
+    if os.path.isdir(args[-1]):
+        for f in args[:-1]:
+            f2 = args[-1] + '/' + f
+            if not os.path.isfile(f):
+                Usage("%s is not a file." % f)
+            if not os.path.isfile(f2):
+                Usage("%s is not a file." % f2)
+            filePairs.append([f, f2])
+    else:
+        if len(args) > 2:
+            Usage("Too many arguments.")
+        if not os.path.isfile(args[0]):
+            Usage("%s is not a file." % args[0])
+        if not os.path.isfile(args[1]):
+            Usage("%s is not a file." % args[1])
+        filePairs.append([args[0], args[1]])
 
     # Do the difference
 
-    (filesDiffer, stats) = numdiff.diff(args[0], args[1])
+    exitStatus = 0
 
-    sys.exit(filesDiffer)
+    for f in filePairs:
+        print "Comparing %s and %s:" % (f[0], f[1])
+        (filesDiffer, stats) = numdiff.diff(f[0], f[1])
+        if filesDiffer:
+            exitStatus = 1
+
+    sys.exit(exitStatus)
