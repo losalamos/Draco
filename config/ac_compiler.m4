@@ -207,7 +207,31 @@ AC_DEFUN(AC_DRACO_EGCS, [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
+   # LINKER AND LIBRARY (AR)
    LD='${CXX}'
+   AR='ar'
+   ARFLAGS='cr'
+#   ARLIBS='${DRACO_LIBS} ${VENDOR_LIBS}'
+#   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-ansi"
+   fi
+
+   # optimization level
+   if test "${enable_debug:=no}" = yes && \
+      test "${with_opt:=0}" != 0 ; then
+      CXXFLAGS="${CXXFLAGS} -g"
+      CFLAGS="${CFLAGS} -g"
+   fi
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -Bstatic"
+   fi
 
    AC_MSG_RESULT("EGCS compiler flags set")
 
