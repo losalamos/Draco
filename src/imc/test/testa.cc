@@ -17,6 +17,7 @@
 #include "imc/Particle_Buffer.hh"
 #include "imc/Particle.hh"
 #include "imc/Global.hh"
+#include "imc/Source.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -41,7 +42,7 @@ using IMC::Parallel_Builder;
 using IMC::Source_Init;
 using IMC::Particle_Buffer;
 using IMC::Particle;
-using IMC::Global::rn_stream;
+using IMC::Source;
 using RNG::Rnd_Control;
 using RNG::Sprng;
 using namespace std;
@@ -56,7 +57,7 @@ void topology(const MT &mesh, const Parallel_Builder<MT> &pcom)
 {
     cout << ">> IMC Topology Diagnostic" << endl << endl;
 
-    cout << "Number of procs: " << nodes << endl;
+    cout << "Number of procs: " << nodes() << endl;
 
     for (int i = 0; i < nodes(); i++)
     {
@@ -144,6 +145,7 @@ int main(int argc, char *argv[])
       // make parallel builder object to do send/receives of objects
 	SP< Parallel_Builder<OS_Mesh> > pcomm;
 	SP< Particle_Buffer<Particle<OS_Mesh> > > buffer;
+	SP< Source<OS_Mesh> > source;
     
 	if (!mynode)
 	{
@@ -159,6 +161,7 @@ int main(int argc, char *argv[])
           // send out objects
             pcomm->send_Mesh(*mesh);
 	    pcomm->send_Opacity(*opacity);
+	    source = pcomm->send_Source(mesh, *sinit, *buffer, rcon);
 	}
 	
   	if (mynode)
