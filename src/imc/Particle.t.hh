@@ -70,17 +70,27 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
     {
 	// dist-to-scatter, dist-to-boundary, and dist-to-census definitions
         double d_scatter, d_boundary, d_census;
+
+	// distance to stream
 	double dist_stream;
+
 	// cell face definition
         int face = 0;
 
 	// accumulate momentum deposition from volume emission particles
 	if (descriptor == VOL_EMISSION)
 	    tally.accumulate_momentum(cell, -ew, omega);
+
+	// total sctattering cross section 
+	double total_scat_xs = xs.get_sigeffscat(cell) + 
+	    xs.get_sigma_thomson(cell);
         
-	// sample distance-to-scatter (effective scatter or hardball)
-	d_scatter = -log(random.ran()) / 
-	    (xs.get_sigeffscat(cell) + xs.get_sigma_thomson(cell));
+	// sample distance-to-scatter (effective scatter + hardball)
+	if (total_scat_xs > 0.0)
+	    d_scatter = -log(random.ran()) / total_scat_xs;
+	else
+	    d_scatter = rtt_mc::global::huge;
+	Check (d_scatter >= 0.0);
 
 	// get distance-to-boundary and cell face
         d_boundary = mesh.get_db(r, omega, cell, face);
