@@ -11,7 +11,7 @@
 
 #include "DummyGrayOpacity.hh"
 
-namespace rtt_dummyGrayOpacity
+namespace rtt_cdi_test
 {
     
 // ------------ //
@@ -100,7 +100,7 @@ std::vector< double > DummyGrayOpacity::getOpacity(
     return grayOpacity;
 }
     
-} // end rtt_dummyGrayOpacity
+} // end rtt_cdi_test
 
 //---------------------------------------------------------------------------//
 // end of DummyGrayOpacity.cc

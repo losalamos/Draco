@@ -15,7 +15,7 @@
 #include "../GrayOpacity.hh"
 #include "../OpacityCommon.hh"
 
-namespace rtt_dummyGrayOpacity
+namespace rtt_cdi_test
 {
 
 //========================================================================
@@ -136,95 +136,6 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     std::vector< double > getOpacity( 
 	double targetTemperature,
 	const std::vector< double >& targetDensity ) const; 
-	
-    /*! 
-     * \brief Opacity accessor that returns an STL container of
-     *     opacities that correspond to the provided STL container of
-     *     temperatures and a single density.  The length of the
-     *     opacity container and the temperature container should be
-     *     equal. 
-     *
-     *     This function is not required by GrayOpacity.
-     *
-     * \param tempFirst The beginning position of a STL container
-     *     that holds a list of temperatures (keV).
-     * \param tempLast The end position of a STL container that
-     *     holds a list of temperatures (keV).
-     * \param targetDensity The density value for which an opacity 
-     *     value is being requested (g/cm^3).
-     * \param opacityFirst The beginning position of a STL
-     *     container into which opacity values corresponding to the
-     *     given temperature values will be stored (cm^2/g).
-     * \return A list (of type OpacityIterator) of opacities are
-     *     returned (cm^2/g).  These opacities correspond to the
-     *     provided list of temperatures and the fixed density.
-     */
-    template< class OpacityIterator, class TemperatureIterator >
-    OpacityIterator getOpacity( TemperatureIterator tempFirst,
-				TemperatureIterator tempLast,
-				const double targetDensity,
-				OpacityIterator opacityFirst ) const;
-    
-    /*! 
-     * \brief Opacity accessor that returns an STL container of
-     *     opacities that correspond to the provided STL container of
-     *     densities and a single temperature.  The length of the
-     *     opacity container and the density container should be
-     *     equal. 
-     *
-     *     This function is not required by GrayOpacity.
-     *
-     * \param targetTemperature The temperature value for which an
-     *     opacity value is being requested (keV).
-     * \param densFirst The beginning position of a STL container
-     *     that holds a list of densities (g/cm^3).
-     * \param densLast The end position of a STL container that
-     *     holds a list of densities (g/cm^3).
-     * \param opacityFirst The beginning position of a STL
-     *     container into which opacity values corresponding to the
-     *     given density values will be stored (cm^2/g).
-     * \return A list (of type OpacityIterator) of opacities are
-     *     returned (cm^2/g).  These opacities correspond to the
-     *     provided list of densities and the fixed temperature.
-     */
-    template< class OpacityIterator, class DensityIterator >
-    OpacityIterator getOpacity( double targetTemperature,
-				DensityIterator densFirst,
-				DensityIterator densLast,
-				OpacityIterator opacityFirst ) const;
-    
-    /*! 
-     * \brief Opacity accessor that returns an STL container of
-     *     opacities that correspond to a tuple of provided STL
-     *     containers (temperatures and densities).  The length of the
-     *     opacity container, the temperature and the the density
-     *     container should be equal. 
-     *
-     *     This function is not required by GrayOpacity.
-     *
-     * \param tempFirst The beginning position of a STL container
-     *     that holds a list of temperatures (keV).
-     * \param tempLast The end position of a STL container that
-     *     holds a list of temperatures (keV).
-     * \param densFirst The beginning position of a STL container
-     *     that holds a list of densities (g/cm^3).
-     * \param densLast The end position of a STL container that
-     *     holds a list of densities (g/cm^3).
-     * \param opacityFirst The beginning position of a STL
-     *     container into which opacity values corresponding to the
-     *     given tuple of (temperature, density) values will be stored
-     *     (cm^2/g). 
-     * \return A list (of type OpacityIterator) of opacities are
-     *     returned (cm^2/g).  These opacities correspond to the
-     *     provided tuple of (temperature, density) values.
-     */
-    template< class OpacityIterator, class TemperatureIterator,
-	      class DensityIterator >
-    OpacityIterator getOpacity( TemperatureIterator tempFirst,
-				TemperatureIterator tempLast,
-				DensityIterator densFirst,
-				DensityIterator densLast,
-				OpacityIterator opacityFirst ) const;
 
     /*!
      * \brief Data is in tables.
@@ -288,7 +199,7 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
 	
 };
     
-} // end namespace rtt_dummyGrayOpacity
+} // end namespace rtt_cdi_test
 
 #endif // __cdi_DummyGrayOpacity_hh__
 

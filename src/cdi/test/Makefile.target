@@ -1,23 +1,24 @@
 ###############################################################################
-# draco/src/cdi_gandolf/test Makefile.target
-# Kelly Thompson
+# cdi/test Makefile.target
+# Thomas M. Evans
+# Tue Oct  9 10:51:39 2001
 # $Id$
 ###############################################################################
-# @> Target makefile for MESHREADERS component tests
+# @> General Makefile.target for cdi/test
 ###############################################################################
 
 testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
-                ${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
+		${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
-                ${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
+		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-thistestdep     := libcdi_Test${libsuffix}
-thistestlib     := -L. -lcdi_Test
-thistestlib_dep := DummyGrayOpacity.o DummyMultigroupOpacity.o DummyEoS.o
+thistestdep := libcdi_test${libsuffix}
+thistestlib := -L. -lcdi_test
+thistestlib_dep := cdi_test.o DummyEoS.o DummyGrayOpacity.o
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 
-%: %.o 
+%: %.o
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
 ${thistestdep}: ${thistestlib_dep} ${testdeps}
@@ -27,5 +28,5 @@ ${thistestdep}: ${thistestlib_dep} ${testdeps}
 objs += ${thistestdep}
 
 ###############################################################################
-# end of draco/src/meshReaders/test Makefile.target
+#			 end of cdi/test Makefile.target
 ###############################################################################
