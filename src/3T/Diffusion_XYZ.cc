@@ -13,11 +13,15 @@
 //---------------------------------------------------------------------------//
 
 template<class MT>
-Diffusion_XYZ<MT>::Diffusion_XYZ( const SP<MT>& spm_ )
+Diffusion_XYZ<MT>::Diffusion_XYZ( const SP<MT>& spm_, const pcg_DB& pcg_db )
     : MT::Coord_Mapper( spm_->get_Mesh_DB() ),
       spm(spm_),
-      A( ncp, nct )
-{}
+      A( ncp, nct ),
+      pcg_ctrl( pcg_db, ncp )
+{
+    spmv = new MatVec_3T< MT, Diffusion_XYZ<MT> >( spm, this );
+    precond = new PreCond<double>();
+}
 
 //---------------------------------------------------------------------------//
 // Solve the diffusion equation.  
@@ -39,7 +43,12 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 
 // Now solve the matrix equation A.x = rhs.
 
-    x = rhs;
+//    x = rhs;
+    pcg_ctrl.pcg_fe( x, rhs, spmv, precond );
+
+    int pcgits = spmv->get_iterations();
+
+    cout << "Solved equation in " << pcgits << " iterations." << endl;
 }
 
 //---------------------------------------------------------------------------//
