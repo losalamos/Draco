@@ -100,7 +100,6 @@ template<class MT, class MP, class DS>
 std::ostream &P13T<MT, MP, DS>::print(std::ostream &os) const
 {
     os << "(P13T::this: " << (void *)this
-       << " spMesh: " << *spMesh
        << ")";
     return os;
 }
@@ -160,7 +159,7 @@ P13T<MT, MP, DS>::solveElectConduction(double dt,
 	
     fcdsf kappaElectron(spMesh);
     matStateFC.getElectronConductionCoeff(kappaElectron);
-    kappaElectron *= dt;
+    kappaElectron = kappaElectron * dt;
 	
     // Calculate the removal coefficient.
 	
@@ -168,7 +167,8 @@ P13T<MT, MP, DS>::solveElectConduction(double dt,
     matStateCC.getElectronSpecificHeat(removalCoeff);
 
     // Calculate the source term.
-    ccsf source = removalCoeff * TnElectron;
+    ccsf source(spMesh);
+    source = removalCoeff * TnElectron;
 
     // Do the diffusion solve for the temperature at n+1.
 	
@@ -177,7 +177,8 @@ P13T<MT, MP, DS>::solveElectConduction(double dt,
     // deltaTElectron for radiation will
     // be Te^n+1 - Te^n
 
-    ccsf deltaTElectron = Tnp1Electron - TnElectron;
+    ccsf deltaTElectron(spMesh);
+    deltaTElectron = Tnp1Electron - TnElectron;
 
     // Calculate electron energy deposition
 
@@ -217,7 +218,7 @@ P13T<MT, MP, DS>::solveIonConduction(double dt,
 	
     fcdsf kappaIon(spMesh);
     matStateFC.getIonConductionCoeff(kappaIon);
-    kappaIon *= dt;
+    kappaIon = kappaIon * dt;
 	
     // Calculate the removal coefficient.
 	
@@ -225,7 +226,8 @@ P13T<MT, MP, DS>::solveIonConduction(double dt,
     matStateCC.getIonSpecificHeat(removalCoeff);
 
     // Calculate the source term.
-    ccsf source = removalCoeff * TnIon;
+    ccsf source(spMesh);
+    source = removalCoeff * TnIon;
 
     // Do the diffusion solve for the temperature at n+1.
 	
@@ -234,7 +236,8 @@ P13T<MT, MP, DS>::solveIonConduction(double dt,
     // deltaTIon for radiation will
     // be Ti^n+1 - Ti^n
 
-    ccsf deltaTIon = Tnp1Ion - TnIon;
+    ccsf deltaTIon(spMesh);
+    deltaTIon = Tnp1Ion - TnIon;
 
     // Calculate ion energy deposition
 
@@ -540,7 +543,8 @@ void P13T<MT, MP, DS>::calcStarredFields(double dt,
     // tmpCoeff is a common term to two calculations.
     // Let's just do it once.
     
-    const ccsf tmpCoeff = (gamma*dt) / (CvIon + gamma*dt);
+    ccsf tmpCoeff(spMesh);
+    tmpCoeff = (gamma*dt) / (CvIon + gamma*dt);
 
     // CvStar is one of the results, as well as intermediate.
     
