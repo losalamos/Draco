@@ -23,6 +23,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <string>
+using std::string;
+
 C4_NAMESPACE_BEG
 
 static void C4_shm_init_scalar_work_arrays();
@@ -301,8 +304,39 @@ static void mark_recv_req_inactive( int source, int mid )
 
 //---------------------------------------------------------------------------//
 
-void Init( int& argc, char **& argv )
+void Init( int& iargc, char **& iargv )
 {
+    cout << "Starting C4\n";
+    int npes = 0;
+
+// Search through the arglist, looking for C4 options.
+
+    int argc = iargc;
+    char **argv = iargv;
+
+    argc--, argv++;		// Skip program name.
+
+    while( argc )
+    {
+	string opt = *argv;
+
+	if (opt == "-npes")
+	{
+	    Insist( argc > 1, "Syntax: -npes #" );
+	    npes = atoi( argv[1] );
+	    argc -= 2, argv += 2;
+	    continue;
+	}
+
+	cout << "Unrecognized option: " << *argv << endl;
+	argc--, argv++;
+    }
+
+// Now fire off the pe's.
+    start_pes( npes );
+
+    cout << "Virtual processor is alive.\n";
+
     C4_shm_mynode = _my_pe();
     C4_shm_nodes = _num_pes();
 
@@ -1181,58 +1215,115 @@ static void C4_shm_init_scalar_work_arrays()
 //---------------------------------------------------------------------------//
 // Sum, scalar
 
-static int sr_i;
+template<class T> class shm_traits {};
 
-void gsum( int& x )
+template<> class shm_traits<int>
 {
-    sr_i = x;
+  public:
+    static void sum_to_all( int& xo, int xi )
+    {
+	shmem_int_sum_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+			      sri_pWrk, sr_pSync );
+	gsync();
+    }
+    static void min_to_all( int& xo, int xi )
+    {
+	shmem_int_min_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+			      sri_pWrk, sr_pSync );
+	gsync();
+    }
+    static void max_to_all( int& xo, int xi )
+    {
+	shmem_int_max_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+			      sri_pWrk, sr_pSync );
+	gsync();
+    }
+};
 
-    shmem_int_sum_to_all( &sr_i, &sr_i, 1, 0, 0, C4_shm_nodes,
-			  sri_pWrk, sr_pSync );
-    x = sr_i;
+template<> class shm_traits<float>
+{
+  public:
+    static void sum_to_all( float& xo, float xi )
+    {
+	shmem_float_sum_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+				srf_pWrk, sr_pSync );
+	gsync();
+    }
+    static void min_to_all( float& xo, float xi )
+    {
+	shmem_float_min_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+				srf_pWrk, sr_pSync );
+	gsync();
+    }
+    static void max_to_all( float& xo, float xi )
+    {
+	shmem_float_max_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+				srf_pWrk, sr_pSync );
+	gsync();
+    }
+};
 
-    gsync();
+template<> class shm_traits<double>
+{
+  public:
+    static void sum_to_all( double& xo, double xi )
+    {
+	shmem_double_sum_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+				 srd_pWrk, sr_pSync );
+	gsync();
+    }
+    static void min_to_all( double& xo, double xi )
+    {
+	shmem_double_min_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+				 srd_pWrk, sr_pSync );
+	gsync();
+    }
+    static void max_to_all( double& xo, double xi )
+    {
+	shmem_double_max_to_all( &xo, &xi, 1, 0, 0, C4_shm_nodes,
+				 srd_pWrk, sr_pSync );
+	gsync();
+    }
+};
+
+template<class T>
+void gsum( T& x )
+{
+    static T s;
+    s = x;
+    shm_traits<T>::sum_to_all( s, s );
+    x = s;
 }
 
-void gsum( long& x )
+template<class T>
+void gmin( T& x )
 {
-    sr_i = (int) x;		// Should be valid on an Alpha.
-
-    shmem_int_sum_to_all( &sr_i, &sr_i, 1, 0, 0, C4_shm_nodes,
-			  sri_pWrk, sr_pSync );
-
-    x = sr_i;
-
-    gsync();
+    static T s;
+    s = x;
+    shm_traits<T>::min_to_all( s, s );
+    x = s;
 }
 
-static float sr_f;
-
-void gsum( float& x )
+template<class T>
+void gmax( T& x )
 {
-    sr_f = x;
-
-    shmem_float_sum_to_all( &sr_f, &sr_f, 1, 0, 0, C4_shm_nodes,
-			    srf_pWrk, sr_pSync );
-
-    x = sr_f;
-
-    gsync();
+    static T s;
+    s = x;
+    shm_traits<T>::max_to_all( s, s );
+    x = s;
 }
 
-static double sr_d;
+template void gsum( int& x );
+template void gsum( float& x );
+template void gsum( double& x );
 
-void gsum( double& x )
-{
-    sr_d = x;
+template void gmin( int& x );
+template void gmin( float& x );
+template void gmin( double& x );
 
-    shmem_double_sum_to_all( &sr_d, &sr_d, 1, 0, 0, C4_shm_nodes,
-			     srd_pWrk, sr_pSync );
-
-    x = sr_d;
-
-    gsync();
-}
+template void gmax( int& x );
+template void gmax( float& x );
+template void gmax( double& x );
 
 #ifdef max
 #undef max
@@ -1383,56 +1474,6 @@ void gsum( double *px, int n )
 }
 
 //---------------------------------------------------------------------------//
-// Min, scalar
-
-void gmin( int& x )
-{
-    sr_i = x;
-
-    shmem_int_min_to_all( &sr_i, &sr_i, 1, 0, 0, C4_shm_nodes,
-			  sri_pWrk, sr_pSync );
-    x = sr_i;
-
-    gsync();
-}
-
-void gmin( long& x )
-{
-    sr_i = (int) x;		// Should be valid on an Alpha.
-
-    shmem_int_min_to_all( &sr_i, &sr_i, 1, 0, 0, C4_shm_nodes,
-			  sri_pWrk, sr_pSync );
-
-    x = sr_i;
-
-    gsync();
-}
-
-void gmin( float& x )
-{
-    sr_f = x;
-
-    shmem_float_min_to_all( &sr_f, &sr_f, 1, 0, 0, C4_shm_nodes,
-			    srf_pWrk, sr_pSync );
-
-    x = sr_f;
-
-    gsync();
-}
-
-void gmin( double& x )
-{
-    sr_d = x;
-
-    shmem_double_min_to_all( &sr_d, &sr_d, 1, 0, 0, C4_shm_nodes,
-			     srd_pWrk, sr_pSync );
-
-    x = sr_d;
-
-    gsync();
-}
-
-//---------------------------------------------------------------------------//
 // Min, array.
 
 void gmin( int *px, int n )
@@ -1556,56 +1597,6 @@ void gmin( double *px, int n )
 // Copy data back to user buffer.
     for( i=0; i < n; i++ )
 	px[i] = ar_d[i];
-
-    gsync();
-}
-
-//---------------------------------------------------------------------------//
-// Max, scalar
-
-void gmax( int& x )
-{
-    sr_i = x;
-
-    shmem_int_max_to_all( &sr_i, &sr_i, 1, 0, 0, C4_shm_nodes,
-			  sri_pWrk, sr_pSync );
-    x = sr_i;
-
-    gsync();
-}
-
-void gmax( long& x )
-{
-    sr_i = (int) x;		// Should be valid on an Alpha.
-
-    shmem_int_max_to_all( &sr_i, &sr_i, 1, 0, 0, C4_shm_nodes,
-			  sri_pWrk, sr_pSync );
-
-    x = sr_i;
-
-    gsync();
-}
-
-void gmax( float& x )
-{
-    sr_f = x;
-
-    shmem_float_max_to_all( &sr_f, &sr_f, 1, 0, 0, C4_shm_nodes,
-			    srf_pWrk, sr_pSync );
-
-    x = sr_f;
-
-    gsync();
-}
-
-void gmax( double& x )
-{
-    sr_d = x;
-
-    shmem_double_max_to_all( &sr_d, &sr_d, 1, 0, 0, C4_shm_nodes,
-			     srd_pWrk, sr_pSync );
-
-    x = sr_d;
 
     gsync();
 }
