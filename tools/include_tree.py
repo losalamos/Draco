@@ -105,7 +105,7 @@ def get_dependencies(cc_class, file, draco_dep, pkg_dep):
 
         # check for include from this package
         pkg_match = \
-                  re.search('#include\s*\"([0-9A-Za-z+_]*).\w*\s*\"',
+                  re.search('#include\s*\"([0-9A-Za-z+_]*)\.hh\s*\"',
                             line)
 
         if pkg_match:
