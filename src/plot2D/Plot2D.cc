@@ -662,6 +662,8 @@ int
 Plot2D::
 numColumnsInFile(const std::string filename) const
 {
+    using ::isspace;
+
     std::ifstream f(filename.c_str());
 
     std::string buf;
@@ -673,7 +675,7 @@ numColumnsInFile(const std::string filename) const
     bool whitespace = true;
 
     for ( int i = 0; i < buf.size(); i++ ) {
-	if ( std::isspace(buf[i]) ) {
+	if ( isspace(buf[i]) ) {
 	    whitespace = true;
 	}
 	else {
