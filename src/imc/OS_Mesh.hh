@@ -134,7 +134,7 @@ public:
 
   // useful typedefs used when working with a mesh
     typedef vector<double> CCSF_a;
-    typedef vector< vector<double> > CCVF_a;
+    typedef vector< vector<double> > CCVF_d;
     typedef vector<int> CCSF_i;
     typedef vector< vector<int> > CCVF_i;
    
@@ -151,11 +151,11 @@ private:
   // layout of mesh
     Layout layout;
   // vertices in mesh
-    CCVF_a vertex;
+    CCVF_d vertex;
   // cell-pairings of cell to its vertices
     CCVF_i cell_pair;
   // area of surfaces on each dimension
-    CCVF_a sur;
+    CCVF_d sur;
   // indicator whether this is a submesh
     bool submesh;
 
@@ -173,7 +173,7 @@ private:
 
 public:
   // generalized constructor for all mesh types
-    OS_Mesh(SP<Coord_sys>, Layout &, CCVF_a &, CCVF_i &, bool = false); 
+    OS_Mesh(SP<Coord_sys>, Layout &, CCVF_d &, CCVF_i &, bool = false); 
 
   // member functions used by the OS_Mesh-dependent classes
 
@@ -208,7 +208,7 @@ public:
   // references to imbedded objects and data required for Parallel_Building
     const Layout& get_Layout() const { return layout; }
     const Coord_sys& get_Coord() const { return *coord; }
-    const CCVF_a& get_vertex() const { return vertex; }
+    const CCVF_d& get_vertex() const { return vertex; }
     const CCVF_i& get_cell_pair() const { return cell_pair; }
 
   // required services for transport; 
@@ -222,7 +222,7 @@ public:
     inline double face_area(int, int) const;
     vector<int> get_surcells(string) const;
     int get_bndface(string, int) const;
-    inline CCVF_a get_vertices(int, int) const;
+    inline CCVF_d get_vertices(int, int) const;
     inline vector<double> sample_pos(int, Sprng &) const;
     inline vector<double> sample_pos(int, Sprng &, vector<double>, 
 				     double) const; 
@@ -485,12 +485,12 @@ inline vector<double> OS_Mesh::get_normal_in(int cell, int face) const
 
 //---------------------------------------------------------------------------//
 
-inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
+inline OS_Mesh::CCVF_d OS_Mesh::get_vertices(int cell, int face) const
 {
   // determine the vertices along a cell-face
 
   // return vertices
-    CCVF_a ret_vert(coord->get_dim());
+    CCVF_d ret_vert(coord->get_dim());
 
   // determine axis dimension of surface (x=1, y=2, z=3)
     int axis = (face + 1)/2;

@@ -55,9 +55,9 @@ private:
   // recursive total number of fine_cells per coarse cell
     vector< vector<int> > accum_cells;
   // coarse edges
-    OS_Mesh::CCVF_a coarse_edge;
+    OS_Mesh::CCVF_d coarse_edge;
   // fine cell edges
-    OS_Mesh::CCVF_a fine_edge;
+    OS_Mesh::CCVF_d fine_edge;
   // boundary conditions
     vector<string> bnd_cond;
 
@@ -118,7 +118,7 @@ public:
   // public copy functions for mesh
     string get_coordinates() const { return coord_system; }
     const vector<string>& get_boundaries() const { return bnd_cond; }
-    const OS_Mesh::CCVF_a& get_fine_edge() const { return fine_edge; }
+    const OS_Mesh::CCVF_d& get_fine_edge() const { return fine_edge; }
     
   // public copy functions for Opacity<MT>
     const vector<int>& get_zone() const { return zone; }

@@ -46,7 +46,7 @@ private:
   // coordinate system string
     string coord_system;
   // number of fine_cells along each dimension
-    OS_Mesh::CCVF_a fine_edge;
+    OS_Mesh::CCVF_d fine_edge;
   // boundary conditions
     vector<string> bnd_cond;
   

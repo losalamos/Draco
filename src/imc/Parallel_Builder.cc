@@ -913,7 +913,7 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
     Layout layout = recv_Layout();
 
   // get vertices and cell_pair
-    typename MT::CCVF_a vertex = recv_vertex();
+    typename MT::CCVF_d vertex = recv_vertex();
     typename MT::CCVF_i cell_pair = recv_cellpair();
 
   // build mesh
@@ -1079,7 +1079,7 @@ Layout Parallel_Builder<MT>::recv_Layout()
 // pass the mesh vertices
 
 template<class MT>
-void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_a &vertex)
+void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_d &vertex)
 {
   // send the vertices to another processor
     
@@ -1126,7 +1126,7 @@ void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_a &vertex)
 // receive the vertex
 
 template<class MT>
-typename MT::CCVF_a Parallel_Builder<MT>::recv_vertex()
+typename MT::CCVF_d Parallel_Builder<MT>::recv_vertex()
 {
   // receive and rebuild the vertices
 
@@ -1140,8 +1140,8 @@ typename MT::CCVF_a Parallel_Builder<MT>::recv_vertex()
     Check (!(total_size % vertex_dim));
     int vertex_size = total_size / vertex_dim;
 
-  // make a new CCVF_a vertex array
-    typename MT::CCVF_a vertex(vertex_dim);
+  // make a new CCVF_d vertex array
+    typename MT::CCVF_d vertex(vertex_dim);
 
   // get the vertices from the host
     double *vert = new double[total_size];

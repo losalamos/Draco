@@ -65,7 +65,7 @@ SP<OS_Mesh> OS_Builder::build_2DMesh(SP<Coord_sys> coord, Layout &layout)
     assert (layout.num_cells() == num_cells);
 
   // initialization variables for Mesh
-    OS_Mesh::CCVF_a vertex(dimension);
+    OS_Mesh::CCVF_d vertex(dimension);
     OS_Mesh::CCVF_i cell_pair(num_cells);
 
   // size vertex and cell_pair arrays, 4 vertices per cell
@@ -127,7 +127,7 @@ SP<OS_Mesh> OS_Builder::build_3DMesh(SP<Coord_sys> coord, Layout &layout)
     assert (layout.num_cells() == num_cells);
 
   // initialization variables for Mesh
-    OS_Mesh::CCVF_a vertex(dimension);
+    OS_Mesh::CCVF_d vertex(dimension);
     OS_Mesh::CCVF_i cell_pair(num_cells);
 
   // size vertex and cell_pair arrays, 8 vertices per cell

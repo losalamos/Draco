@@ -43,7 +43,7 @@ using std::fill;
 
 template<class MT, class BT, class IT, class PT>
 IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
-    : delta_t(0), cycle(0), max_cycle(1), print_f(0), dump_f(1),
+    : delta_t(0), cycle(0), max_cycle(1), print_f(0), dump_f(1), rnstream(0), 
       verbose(verbose_)
 {
   // all the SPs should be null defined
@@ -100,8 +100,9 @@ void IMC_Man<MT,BT,IT,PT>::execute_IMC(char *argv)
 template<class MT, class BT, class IT, class PT>
 void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 {
-  // update the cycle
+  // update the cycle and rnstream
     cycle++;
+    rnstream = RNG::rn_stream;
 
   // run only on the host node
     if (node())
@@ -533,11 +534,27 @@ template<class MT, class BT, class IT, class PT>
 void IMC_Man<MT,BT,IT,PT>::cycle_dump() const
 {
     cout << endl;
-    cout << ">>> RESULTS FOR CYCLE " << setw(4) << cycle << " <<<" << endl;
-    cout << "==============================" << endl;
-    cout.precision(4);
+    cout << ">>> RESULTS FOR CYCLE " << setw(7) << cycle << " <<<" << endl;
+    cout << "=================================" << endl;
+    cout.precision(8);
+    cout.setf(ios::fixed, ios::floatfield);
     cout << " ** Total time : " << delta_t * cycle << endl;
+
+  // output of global state
     cout << *global_state << endl;
+    
+  // random stream data
+    cout << ">>> Random Number Streams <<<" << endl;
+    cout << "=============================" << endl;
+    cout << setw(30) << "Beginning RN stream:" << setw(15) << rnstream
+	 << endl;
+    cout << setw(30) << "Ending RN stream:" << setw(15) << RNG::rn_stream
+	 << endl;
+    
+  // ending
+    cout << endl;
+    cout << ">>> END OF CYCLE " << setw(7) << cycle << " <<<" << endl;
+    cout << "============================" << endl;
 }
 		
 CSPACE

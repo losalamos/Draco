@@ -22,7 +22,7 @@ using std::ios;
 // constructors
 //---------------------------------------------------------------------------//
 // default constructor
-OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_, 
+OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_d &vertex_, 
 		 CCVF_i &cell_pair_, bool submesh_) 
     : coord(coord_), layout(layout_), vertex(vertex_),
       cell_pair(cell_pair_), sur(coord->get_dim()), submesh(submesh_)

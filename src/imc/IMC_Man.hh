@@ -69,6 +69,7 @@ private:
     int max_cycle;
     int print_f;
     int dump_f;
+    int rnstream;
 
   // verbosity switch
     bool verbose;
