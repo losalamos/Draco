@@ -22,22 +22,17 @@
 // 
 //===========================================================================//
 
-template<class MT, class Solver>
-class MatVec_3T : public PCG_MatVec<typename Solver::NumT>,
-		  private C4::NodeInfo
+template<class Solver>
+class MatVec_3T : public PCG_MatVec<typename Solver::NumT>
 {
-    SP<MT> spm;
     Solver *solver;
-
-    Mat1<int> ncps, goffs;
 
     int its;
 
     typedef typename Solver::NumT T;
 
   public:
-    MatVec_3T( const SP<MT>& spm_, Solver *p );
-//    ~MatVec_3T();
+    MatVec_3T( Solver *p );
 
 // Get A somehow else.  Then compute b = A x.
     void MatVec( Mat1<T>& b, const Mat1<T>& x );

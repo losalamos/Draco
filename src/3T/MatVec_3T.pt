@@ -8,4 +8,4 @@
 #include "Diffusion_XYZ.hh"
 #include "mesh/Mesh_XYZ.hh"
 
-instantiate class MatVec_3T< Mesh_XYZ, Diffusion_XYZ<Mesh_XYZ> >
+instantiate class MatVec_3T< Diffusion_XYZ<Mesh_XYZ> >
