@@ -215,7 +215,7 @@ bool Sphyramid_Mesh::in_cell(int cell, const sf_double &r) const
 	 !soft_equiv(r[1], -(r[0]*this->tan_beta)))
 	||
 	(r[1] > (r[0]*this->tan_beta) &&
-	 !soft_equiv(r[1], -(r[0]*this->tan_beta))))
+	 !soft_equiv(r[1], (r[0]*this->tan_beta))))
 	return false;
 
     // check z dimension (cell is symmetric)
@@ -223,7 +223,7 @@ bool Sphyramid_Mesh::in_cell(int cell, const sf_double &r) const
 	 !soft_equiv(r[2], -(r[0]*this->tan_beta)))
 	||
 	(r[2] > (r[0]*this->tan_beta) &&
-	 !soft_equiv(r[2], -(r[0]*this->tan_beta))))
+	 !soft_equiv(r[2], (r[0]*this->tan_beta))))
 	return false;
 
     return true;
