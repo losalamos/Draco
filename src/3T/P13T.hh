@@ -81,6 +81,7 @@ namespace rtt_3T {
     
      typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
 
+     typedef typename MeshType::ncsf ncsf;    // node-centered scalar field
      typedef typename MeshType::ncvsf ncvsf;    // node-centered vector scalar field
 
      typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
