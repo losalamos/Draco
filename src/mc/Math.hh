@@ -45,11 +45,14 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
 		       const FPT precision = 1.0e-12)
 {
     using std::fabs;
+    bool passed = false;
 
-    if (fabs(value - reference) > precision * reference)
-	return false;
+    if (fabs(value - reference) <= precision * reference)
+	passed = true;
+    else
+	passed = false;
 
-    return true;
+    return passed;
 }
 
 template<>

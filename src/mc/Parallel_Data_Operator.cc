@@ -10,11 +10,13 @@
 //---------------------------------------------------------------------------//
 
 #include "Parallel_Data_Operator.hh"
+#include "Math.hh"
 #include <cmath>
 
 namespace rtt_mc
 {
 
+using rtt_mc::global::soft_equiv;
 using C4::nodes;
 using C4::node;
 using C4::Send;
@@ -128,8 +130,7 @@ bool Parallel_Data_Operator::check_global_equiv(double local_value,
 	{
 	    Send(local_value, node()-1, 600);
 	    Recv(neighbors_value, node()+1, 600);
-	    if (fabs(local_value - neighbors_value) < eps * local_value) 
-		pass = true;
+	    pass = soft_equiv(neighbors_value, local_value, eps);
 	}
 	else if (node() == nodes() - 1)
 	{
@@ -139,8 +140,7 @@ bool Parallel_Data_Operator::check_global_equiv(double local_value,
 	else if (node() == 0)
 	{
 	    Recv(neighbors_value, node()+1, 600);
-	    if (fabs(local_value - neighbors_value) < eps * local_value) 
-		pass = true;
+	    pass = soft_equiv(neighbors_value, local_value, eps);
 	}
 	else
 	{
