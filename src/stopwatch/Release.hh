@@ -1,14 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// Version.hh
+// Release.hh
 // Shawn Pautz
 // Tue Mar 23 15:37:40 1999
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Version function for stopwatch library
+// @> Release function for stopwatch library
 //---------------------------------------------------------------------------//
 
-#ifndef __stopwatch_Version_hh__
-#define __stopwatch_Version_hh__
+#ifndef __stopwatch_Release_hh__
+#define __stopwatch_Release_hh__
 
 //===========================================================================//
 // namespace version - 
@@ -23,11 +23,11 @@
 
 namespace rtt_stopwatch 
 {
-    const std::string version();
+    const std::string release();
 }
 
-#endif                          // __stopwatch_Version_hh__
+#endif                          // __stopwatch_Release_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of Version.hh
+//                              end of Release.hh
 //---------------------------------------------------------------------------//

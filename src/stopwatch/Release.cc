@@ -1,27 +1,27 @@
 //----------------------------------*-C++-*----------------------------------//
-// Version.cc
+// Release.cc
 // Shawn Pautz
 // Tue Mar 23 15:37:40 1999
 // $Id$
 //---------------------------------------------------------------------------//
-// @> Version function implementation for stopwatch library
+// @> Release function implementation for stopwatch library
 //---------------------------------------------------------------------------//
 
-#include "Version.hh"
+#include "Release.hh"
 
 namespace rtt_stopwatch
 {
     using std::string;
 
-  // function definition for Version, define the local version number for
+  // function definition for Release, define the local version number for
   // this library in the form stopwatch_#.#.# in pkg_version variable
-    const string version()
+    const string release()
     {
-	string pkg_version = "stopwatch_1.0.0";
-	return pkg_version;
+	string pkg_release = "stopwatch_1.0.0";
+	return pkg_release;
     }
-}
+}  // end of rtt_stopwatch
 
 //---------------------------------------------------------------------------//
-//                              end of Version.cc
+//                              end of Release.cc
 //---------------------------------------------------------------------------//
