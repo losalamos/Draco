@@ -681,11 +681,11 @@ class RTT_Format
 	~CellDefs() {}
 
 	void readCellDefs(ifstream & meshfile);
+        void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
 	void readDefs(ifstream & meshfile);
-        void sortData();
 	void readEndKeyword(ifstream & meshfile);
 
       public:
@@ -727,13 +727,13 @@ class RTT_Format
 	~Nodes() {}
 
 	void readNodes(ifstream & meshfile);
+	void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
 	void readData(ifstream & meshfile);
         static bool sortXYZ(const vector<double> & low_value, 
 			    const vector<double> & high_value);
-	void sortData();
 	void readEndKeyword(ifstream & meshfile);
 
 
@@ -751,14 +751,14 @@ class RTT_Format
 
         int get_node(vector<double> node_coords) const;
 
-	int get_parents(int cell_numb) const
-	{ return parents(cell_numb); }
+	int get_parents(int node_numb) const
+	{ return parents(node_numb); }
 
-	int get_flags(int cell_numb, int flag_numb) const
-	{ return flags(cell_numb,flag_numb); }
+	int get_flags(int node_numb, int flag_numb) const
+	{ return flags(node_numb,flag_numb); }
 
-        int get_map(int cell_numb) const
-	{ return sort_map[cell_numb];}
+        int get_map(int node_numb) const
+	{ return sort_map[node_numb];}
     };
 
 /*!
@@ -770,21 +770,25 @@ class RTT_Format
 	const SideFlags & sideFlags;
 	const Dims & dims;
 	const CellDefs & cellDefs;
-        const Nodes & ptrNodes;
+        const Nodes & nodesClass;
 	rtt_dsxx::Mat1<int> sideType;
 	rtt_dsxx::Mat2<int> nodes;
 	rtt_dsxx::Mat2<int> flags;
+        // This vector is a map from the input side numbers (vector index) to
+        // the sorted side number (stored value)
+        vector<int> sort_map;
 
       public:
 	Sides(const SideFlags & sideFlags_, const Dims & dims_,
-	      const CellDefs & cellDefs_, const Nodes & ptrNodes_)
+	      const CellDefs & cellDefs_, const Nodes & nodesClass_)
 	    : sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_),
-	      ptrNodes(ptrNodes_), sideType(dims.get_nsides()),
-	      nodes(dims.get_nsides(), dims.get_nnodes_side_max()),
+	      nodesClass(nodesClass_), sideType(dims.get_nsides()),
+	      nodes(dims.get_nsides(), dims.get_nnodes_side_max()),sort_map(0),
 	      flags(dims.get_nsides(), dims.get_nside_flag_types()) {}
 	~Sides() {}
 
 	void readSides(ifstream & meshfile);
+	void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
@@ -792,7 +796,6 @@ class RTT_Format
         // Note that these arguements are passed by value for internal use
         // in a sorting routine.
         static bool sortXYZ(vector<int> low_value, vector<int> high_value);
-	void sortData();
 	void readEndKeyword(ifstream & meshfile);
 
       public:
@@ -810,6 +813,9 @@ class RTT_Format
 
         int get_surface_src_flag_number() const 
 	{ return sideFlags.get_surface_src_flag_number(); }
+
+        int get_map(int side_numb) const
+	{ return sort_map[side_numb];}
     };
 
 /*!
@@ -821,26 +827,29 @@ class RTT_Format
 	const CellFlags & cellFlags;
 	const Dims & dims;
 	const CellDefs & cellDefs;
-        const Nodes & ptrNodes;
+        const Nodes & nodesClass;
 	rtt_dsxx::Mat1<int> cellType;
 	rtt_dsxx::Mat2<int> nodes;
 	rtt_dsxx::Mat2<int> flags;
+        // This vector is a map from the input cell numbers (vector index) to
+        // the sorted cell number (stored value)
+        vector<int> sort_map;
 
       public:
 	Cells(const CellFlags & cellFlags_, const Dims & dims_,
-	      const CellDefs & cellDefs_, const Nodes & ptrNodes_) 
+	      const CellDefs & cellDefs_, const Nodes & nodesClass_) 
 	    : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
-	      ptrNodes(ptrNodes_), cellType(dims.get_ncells()),
-	      nodes(dims.get_ncells(), dims.get_nnodes_max()),
+	      nodesClass(nodesClass_), cellType(dims.get_ncells()),
+	      nodes(dims.get_ncells(), dims.get_nnodes_max()), sort_map(0),
 	      flags(dims.get_ncells(), dims.get_ncell_flag_types()) {}
 	~Cells() {}
 
 	void readCells(ifstream & meshfile);
+	void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
 	void readData(ifstream & meshfile);
-	void sortData();
 	void readEndKeyword(ifstream & meshfile);
 
 
@@ -853,6 +862,9 @@ class RTT_Format
 
 	int get_flags(int cell_numb,int flag_numb) const
 	{ return flags(cell_numb,flag_numb); }
+
+        int get_map(int cell_numb) const
+	{ return sort_map[cell_numb];}
     };
 
 /*!
@@ -864,20 +876,20 @@ class RTT_Format
     {
 	const Dims & dims;
 	rtt_dsxx::Mat2<double> data;
-        const Nodes & ptrNodes;
+        const Nodes & nodesClass;
 
       public:
-	NodeData(const Dims & dims_, const Nodes & ptrNodes_) 
-	    : dims(dims_),ptrNodes(ptrNodes_),
+	NodeData(const Dims & dims_, const Nodes & nodesClass_) 
+	    : dims(dims_),nodesClass(nodesClass_),
 	      data(dims.get_nnodes(),dims.get_nnode_data()) {}
 	~NodeData() {}
 
 	void readNodeData(ifstream & meshfile);
+	void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
 	void readData(ifstream & meshfile);
-	void sortData(ifstream & meshfile);
 	void readEndKeyword(ifstream & meshfile);
 
       public:
@@ -894,20 +906,20 @@ class RTT_Format
     {
 	const Dims & dims;
 	rtt_dsxx::Mat2<double> data; 
-        const Nodes & ptrNodes;
+        const Sides & sidesClass;
 
       public:
-	SideData(const Dims & dims_, const Nodes & ptrNodes_)
-	    : dims(dims_),ptrNodes(ptrNodes_),
+	SideData(const Dims & dims_, const Sides & sidesClass_)
+	    : dims(dims_),sidesClass(sidesClass_),
 	      data(dims.get_nsides(), dims.get_nside_data()) {}
 	~SideData() {}
 
 	void readSideData(ifstream & meshfile);
+	void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
 	void readData(ifstream & meshfile);
-	void sortData(ifstream & meshfile);
 	void readEndKeyword(ifstream & meshfile);
 
       public:
@@ -924,20 +936,20 @@ class RTT_Format
     {
 	const Dims & dims;
 	rtt_dsxx::Mat2<double> data; 
-        const Nodes & ptrNodes;
+        const Cells & cellsClass;
 
       public:
-	CellData(const Dims & dims_, const Nodes & ptrNodes_)
-	    : dims(dims_),ptrNodes(ptrNodes_),
+	CellData(const Dims & dims_, const Cells & cellsClass_)
+	    : dims(dims_),cellsClass(cellsClass_),
 	      data(dims.get_ncells(), dims.get_ncell_data()) {}
 	~CellData() {}
 
 	void readCellData(ifstream & meshfile);
+	void sortData();
 
       private:
 	void readKeyword(ifstream & meshfile);
 	void readData(ifstream & meshfile);
-	void sortData(ifstream & meshfile);
 	void readEndKeyword(ifstream & meshfile);
 
       public:
@@ -1604,6 +1616,14 @@ class RTT_Format
  */
     int get_sides_flags(int side_numb,int flag_numb) const
 	{ return spSides->get_flags(side_numb, flag_numb); }
+/*!
+ * \brief Returns the new side number after sorting has been performed when
+ *        the renumber flag is set true.
+ * \param side_numb Original side number.
+ * \return New node number.
+ */
+    int get_sides_map(int side_numb) const
+        { return spSides->get_map(side_numb);}
 
     // cells access
 /*!
@@ -1633,6 +1653,14 @@ class RTT_Format
  */
     int get_cells_flags(int cell_numb,int flag_numb) const
 	{ return spCells->get_flags(cell_numb, flag_numb); }
+/*!
+ * \brief Returns the new cell number after sorting has been performed when
+ *        the renumber flag is set true.
+ * \param cell_numb Original cell number.
+ * \return New cell number.
+ */
+    int get_cells_map(int cell_numb) const
+        { return spCells->get_map(cell_numb);}
 
     // connectivity access
 /*!

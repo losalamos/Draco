@@ -141,6 +141,16 @@ void RTT_Format::readMesh(const string & RTT_File, const bool & renumber)
 	    cout << "Assertion thrown: " << as.what() << endl;
 	    Insist(false, as.what());
 	}
+	if (renumber)
+	{
+	    spCellDefs-> sortData();
+	    spNodes-> sortData();
+	    spSides-> sortData();
+	    spCells-> sortData();
+	    spNodeData-> sortData();
+	    spSideData-> sortData();
+	    spCellData-> sortData();
+	}
     }
 }
 
@@ -175,8 +185,8 @@ void RTT_Format::createMembers()
     spSides = new Sides(* spSideFlags, dims, * spCellDefs, * spNodes);
     spCells = new Cells(* spCellFlags, dims, * spCellDefs, * spNodes);
     spNodeData = new NodeData(dims, * spNodes);
-    spSideData = new SideData(dims, * spNodes);
-    spCellData = new CellData(dims, * spNodes);
+    spSideData = new SideData(dims, * spSides);
+    spCellData = new CellData(dims, * spCells);
 }
 
 /*!
@@ -1017,11 +1027,7 @@ void RTT_Format::CellDefs::readKeyword(ifstream & meshfile)
  *        instantiate the needed CellDef class objects and read and validate 
  *        the cell_defs (cell definitions) block data from the mesh file via 
  *        calls to the nested CellDef class object readDef public member 
- *        function. The CellDef class object sortData public member function
- *        is also called to redefine the cells with the nodes and sides 
- *        numbered in ascending order based upon their coordinates (x, y, and
- *        then z) if this option has been selected in the RTT_Format class 
- *        constructor.
+ *        function.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::CellDefs::readDefs(ifstream & meshfile)
@@ -1041,8 +1047,6 @@ void RTT_Format::CellDefs::readDefs(ifstream & meshfile)
 	getline(meshfile, dummyString);
 	defs(i)->readDef(meshfile);
     }
-    if (dims.get_renumber())
-        sortData();
 }
 
 /*!
@@ -1050,7 +1054,7 @@ void RTT_Format::CellDefs::readDefs(ifstream & meshfile)
  *        redefine the cells with the nodes and sides numbered in ascending 
  *        order based upon their coordinates  (x, y, and then z) when this 
  *        option is selected in the RTT_Format class constructor via calls to 
- *        the nested CellDef class sortData private member function.
+ *        the nested CellDef class sortData public member function.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::CellDefs::sortData()
@@ -1374,10 +1378,7 @@ void RTT_Format::Nodes::readKeyword(ifstream & meshfile)
 
 /*!
  * \brief RTT_Format::Nodes class private member function that is used to read
- *        and validate the nodes block data from the mesh file. The sortData 
- *        private member function is also called to renumber the nodes in 
- *        ascending order based upon their coordinates (x, y, and then z) if 
- *        this option has been selected in the RTT_Format class constructor.
+ *        and validate the nodes block data from the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::Nodes::readData(ifstream & meshfile)
@@ -1402,11 +1403,6 @@ void RTT_Format::Nodes::readData(ifstream & meshfile)
 	}
 	getline(meshfile, dummyString);
     }
-
-    // renumber the nodes to increasing x,y,z coordinate ordering if this 
-    // option was selected.
-    if (dims.get_renumber())
-        sortData();
 }
 
 /*!
@@ -1453,7 +1449,7 @@ bool RTT_Format::Nodes::sortXYZ(const vector<double> & low_val,
 }
 
 /*!
- * \brief RTT_Format::Nodes class private member function that is used to 
+ * \brief RTT_Format::Nodes class public member function that is used to 
  *        renumber the nodes in ascending order based upon their coordinates
  *        (x, y, and then z) when this option has been selected in the 
  *        RTT_Format class constructor.
@@ -1653,10 +1649,7 @@ void RTT_Format::Sides::readKeyword(ifstream & meshfile)
 
 /*!
  * \brief RTT_Format::Sides class private member function that is used to read
- *        and validate the sides block data from the mesh file. The sortData 
- *        private member function is also called to renumber the sides in 
- *        ascending order based upon their node numbers if this option has 
- *        been selected in the RTT_Format class constructor.
+ *        and validate the sides block data from the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::Sides::readData(ifstream & meshfile)
@@ -1686,10 +1679,6 @@ void RTT_Format::Sides::readData(ifstream & meshfile)
 	}
 	getline(meshfile, dummyString);
     }
-    // renumber the sides to increasing x,y,z coordinate ordering if this 
-    // option was selected.
-    if (dims.get_renumber())
-        sortData();
 }
 
 
@@ -1712,7 +1701,7 @@ bool RTT_Format::Sides::sortXYZ(vector<int> low_val, vector<int> high_val)
 }
 
 /*!
- * \brief RTT_Format::Sides class private member function that is used to 
+ * \brief RTT_Format::Sides class public member function that is used to 
  *        renumber the sides in ascending order based upon their node numbers
  *        when this option has been selected in the RTT_Format class 
  *        constructor.
@@ -1724,6 +1713,7 @@ void RTT_Format::Sides::sortData()
     vector<int> temp_sideType(dims.get_nsides());
     vector<vector<int> > temp_flags(dims.get_nsides(),
 				    dims.get_nside_flag_types());
+    sort_map.resize(dims.get_nsides());
 
     for (int i = 0; i < dims.get_nsides(); ++i)
     {
@@ -1731,7 +1721,7 @@ void RTT_Format::Sides::sortData()
 	for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
 	{
 	    // map the user-input node numbers to the sorted node numbers.
-	    nodes(i,j) = ptrNodes.get_map(nodes(i,j));
+	    nodes(i,j) = nodesClass.get_map(nodes(i,j));
 	    sort_vector[i][j] = nodes(i,j);
 	}
 
@@ -1774,6 +1764,7 @@ void RTT_Format::Sides::sortData()
 	    if (original == sort_vector[k])
 	    {
 	        mapped = true;
+		sort_map[i] = k;
 		for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
 		    nodes(i,j) = sort_vector[i][j];
 		sideType(k) = temp_sideType[i];
@@ -1794,7 +1785,7 @@ void RTT_Format::Sides::sortData()
     {
         for (int i = 0; i < dims.get_nsides(); ++i)
 	{
-	    cout << i << " " << sideType(i) << " ";
+	    cout << i << " " << sort_map[i] << " " << sideType(i) << " ";
 	    for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
 	        cout << nodes(i,j) << " ";
 	    for (int f = 0; f < dims.get_nside_flag_types(); ++f)
@@ -1853,10 +1844,7 @@ void RTT_Format::Cells::readKeyword(ifstream & meshfile)
 
 /*!
  * \brief RTT_Format::Cells class private member function that is used to read
- *        and validate the cells block data from the mesh file. The sortData 
- *        private member function is also called to renumber the cells in 
- *        ascending order based upon their node numbers if this option has 
- *        been selected in the RTT_Format class constructor.
+ *        and validate the cells block data from the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::Cells::readData(ifstream & meshfile)
@@ -1886,10 +1874,6 @@ void RTT_Format::Cells::readData(ifstream & meshfile)
 	}
 	getline(meshfile, dummyString);
     }
-    // renumber the cells to increasing x,y,z coordinate ordering if this 
-    // option was selected.
-    if (dims.get_renumber())
-        sortData();
 }
 
 /*!
@@ -1905,6 +1889,7 @@ void RTT_Format::Cells::sortData()
     vector<int> temp_cellType(dims.get_ncells());
     vector<vector<int> > temp_flags(dims.get_ncells(),
 				    dims.get_ncell_flag_types());
+    sort_map.resize(dims.get_ncells());
 
     for (int i = 0; i < dims.get_ncells(); ++i)
     {
@@ -1912,7 +1897,7 @@ void RTT_Format::Cells::sortData()
 	for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
 	{
 	    // map the user-input node numbers to the sorted node numbers.
-	    nodes(i,j) = ptrNodes.get_map(nodes(i,j));
+	    nodes(i,j) = nodesClass.get_map(nodes(i,j));
 	    sort_vector[i][j] = nodes(i,j);
 	}
 	sort(sort_vector[i].begin(),sort_vector[i].end());
@@ -1957,6 +1942,7 @@ void RTT_Format::Cells::sortData()
 	    if (original == sort_vector[k])
 	    {
 	        mapped = true;
+		sort_map[i] = k;
 		for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
 		    nodes(i,j) = sort_vector[i][j];
 		cellType(k) = temp_cellType[i];
@@ -1977,7 +1963,7 @@ void RTT_Format::Cells::sortData()
     {
         for (int i = 0; i < dims.get_ncells(); ++i)
 	{
-	    cout << i << " " << cellType(i) << " ";
+	    cout << i << " " << sort_map[i] << " " << cellType(i) << " ";
 	    for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
 	        cout << nodes(i,j) << " ";
 	    for (int f = 0; f < dims.get_ncell_flag_types(); ++f)
@@ -2009,23 +1995,14 @@ void RTT_Format::Cells::readEndKeyword(ifstream & meshfile)
 
 /*!
  * \brief RTT_Format::NodeData class public member function that is used to
- *        parse the node data block data from the mesh file. Either the 
- *        readData or the sortData private member function is called based 
- *        upon the status of the flag designating that the nodes are to be 
- *        renumbered in ascending order based upon their coordinates (x, y, 
- *        and then z).
+ *        parse the node data block data from the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::NodeData::readNodeData(ifstream & meshfile)
 {
     readKeyword(meshfile);
     if (dims.get_nnode_data() > 0)
-    {
-        if (!dims.get_renumber())
-	    readData(meshfile);
-        else
-	    sortData(meshfile);
-    }
+        readData(meshfile);
     readEndKeyword(meshfile);
 }
 
@@ -2066,25 +2043,19 @@ void RTT_Format::NodeData::readData(ifstream & meshfile)
 }
 
 /*!
- * \brief RTT_Format::NodeData class private member function that is used to 
- *        read and validate the node data block data from the mesh file and 
+ * \brief RTT_Format::NodeData class public member function that is used to 
  *        map the data into the new node numbering scheme that was invoked via
  *        the RTT_Format class constructor.
  * \param meshfile Mesh file name.
  */
-void RTT_Format::NodeData::sortData(ifstream & meshfile)
+void RTT_Format::NodeData::sortData()
 {
-    string dummyString;
-    int nodeNum;
+    rtt_dsxx::Mat2<double> orig_data = data;
 
     for (int i = 0; i < dims.get_nnodes(); ++i)
     {
-	meshfile >> nodeNum;
-	Insist(nodeNum == i+1,
-	       "Invalid mesh file: node data index out of order");
 	for (int j = 0; j < dims.get_nnode_data(); ++j)
-	    meshfile >> data(ptrNodes.get_map(i),j);
-	getline(meshfile, dummyString);
+	     data(nodesClass.get_map(i),j) = orig_data(i,j);
     }
 }
 
@@ -2105,22 +2076,14 @@ void RTT_Format::NodeData::readEndKeyword(ifstream & meshfile)
 
 /*!
  * \brief RTT_Format::SideData class public member function that is used to
- *        parse the side data block data from the mesh file. Either the 
- *        readData or the sortData private member function is called based 
- *        upon the status of the flag designating that the sides are to be 
- *        renumbered in ascending order based upon their node numbers.
+ *        parse the side data block data from the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::SideData::readSideData(ifstream & meshfile)
 {
     readKeyword(meshfile);
     if (dims.get_nside_data() > 0)
-    {
-        if (!dims.get_renumber())
-	    readData(meshfile);
-        else
-	    sortData(meshfile);
-    }
+        readData(meshfile);
     readEndKeyword(meshfile);
 }
 
@@ -2161,25 +2124,19 @@ void RTT_Format::SideData::readData(ifstream & meshfile)
 }
 
 /*!
- * \brief RTT_Format::SideData class private member function that is used to 
- *        read and validate the side data block data from the mesh file and 
+ * \brief RTT_Format::SideData class public member function that is used to 
  *        map the data into the new side numbering scheme that was invoked via
  *        the RTT_Format class constructor.
  * \param meshfile Mesh file name.
  */
-void RTT_Format::SideData::sortData(ifstream & meshfile)
+void RTT_Format::SideData::sortData()
 {
-    string dummyString;
-    int sideNum;
+    rtt_dsxx::Mat2<double> orig_data = data;
 
     for (int i = 0; i < dims.get_nsides(); ++i)
     {
-	meshfile >> sideNum;
-	Insist(sideNum == i+1,
-	       "Invalid mesh file: side data index out of order");
 	for (int j = 0; j < dims.get_nside_data(); ++j)
-	    meshfile >> data(ptrNodes.get_map(i),j);
-	getline(meshfile, dummyString);
+	    data(sidesClass.get_map(i),j) = orig_data(i,j);
     }
 }
 
@@ -2200,22 +2157,14 @@ void RTT_Format::SideData::readEndKeyword(ifstream & meshfile)
 
 /*!
  * \brief RTT_Format::CellData class public member function that is used to
- *        parse the cell data block data from the mesh file. Either the 
- *        readData or the sortData private member function is called based 
- *        upon the status of the flag designating that the cells are to be 
- *        renumbered in ascending order based upon their node numbers.
+ *        parse the cell data block data from the mesh file.
  * \param meshfile Mesh file name.
  */
 void RTT_Format::CellData::readCellData(ifstream & meshfile)
 {
     readKeyword(meshfile);
     if (dims.get_ncell_data() > 0)
-    {
-        if (!dims.get_renumber())
-	    readData(meshfile);
-        else
-	    sortData(meshfile);
-    }
+        readData(meshfile);
     readEndKeyword(meshfile);
 }
 
@@ -2256,25 +2205,19 @@ void RTT_Format::CellData::readData(ifstream & meshfile)
 }
 
 /*!
- * \brief RTT_Format::CellData class private member function that is used to 
- *        read and validate the cell data block data from the mesh file and 
+ * \brief RTT_Format::CellData class public member function that is used to 
  *        map the data into the new cell numbering scheme that was invoked via
  *        the RTT_Format class constructor.
  * \param meshfile Mesh file name.
  */
-void RTT_Format::CellData::sortData(ifstream & meshfile)
+void RTT_Format::CellData::sortData()
 {
-    string dummyString;
-    int cellNum;
+    rtt_dsxx::Mat2<double> orig_data = data;
 
     for (int i = 0; i < dims.get_ncells(); ++i)
     {
-	meshfile >> cellNum;
-	Insist(cellNum == i+1,
-	       "Invalid mesh file: cell data index out of order");
 	for (int j = 0; j < dims.get_ncell_data(); ++j)
-	    meshfile >> data(ptrNodes.get_map(i),j);
-	getline(meshfile, dummyString);
+	    data(cellsClass.get_map(i),j) = orig_data(i,j);
     }
 }
 
