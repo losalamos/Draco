@@ -82,14 +82,14 @@ namespace rtt_cdi_eospac_test
 	    // Create a SesameTables object //
 	    // ---------------------------- //
 
-
 	    // The user must create a SesameTables object that links
-	    // material ID numbers to Sesame lookup tables for each
-	    // material used.  If the user needs heat capacity values
+	    // material ID numbers to EOSPAC data types (each
+	    // SesameTables object only contains lookups for one
+	    // material).   If the user needs heat capacity values
 	    // for Al then he/she must create a SesameTables object
 	    // for Aluminum and then assign an aluminum material ID
-	    // (e.g. 3717) to table304.  See the tests below for more
-	    // details. 
+	    // (e.g. 3717) to the enelc EOSPAC data type.  See the
+	    // tests below for more details. 
 
 	    // Set the material identifier
 	    // This one is for Aluminum (03717) 
@@ -98,8 +98,12 @@ namespace rtt_cdi_eospac_test
 	    // See http://int.lanl.gov/projects/sdm/win/materials/ for 
 	    // material ID information.
 
-	    // This matID for Al has tables 101, 102, 201, 301, 304,
-	    // 305, 306 and 401.  I need table 304 to access Cve().
+	    // This matID for Al has lookup tables for prtot, entot,
+	    // tptot, tntot, pntot, eptot, prelc, enelc, tpelc, tnelc
+	    // pnelc, epelc, prcld, and encld (see SesameTables.hh for 
+	    // an explanantion of these keywords).  I need the table
+	    // that contains enion lookups so that I can query for
+	    // Cve() values.
 
 	    const int Al3717 = 3717;
 
@@ -112,29 +116,32 @@ namespace rtt_cdi_eospac_test
 
 	    rtt_cdi_eospac::SesameTables AlSt;
 
-	    // Assign matID Al3717 to Sesame Table 303 (used for Cvi)
-	    // We can also assign these tables when the Eospac object
-	    // is created (see example below).  Also assign matID
-	    // Al23714 to Sesame Table 603 (chie).
+	    // Assign matID Al3717 to enion lookups (used for Cvi) for 
+	    // AlSt.  We can also assign these tables when the Eospac
+	    // object is created (see example below). 
 
-	    AlSt.table303( Al3717 ).chie( Al23714 );
+	    // Also assign matID Al23714 for temperature-based
+	    // electron thermal conductivity (tconde).
+
+	    AlSt.enion( Al3717 ).tconde( Al23714 );
 
 	    // Verify that the assignments were made correctly.
 
-	    // Cvi (returnType=8 & table=303) should point to matID
+	    // Cvi (returnType=8=ES4enion) should point to matID
 	    // 3717.  The user should never need to access this
 	    // function.  However Eospac.cc does and we need to test
 	    // this funcitonality.
 
-	    if ( AlSt.matID( 8 ) != 3717 )
-		fail() << "AlSt.matID(8) points to the wrong matID.";
+	    if ( AlSt.matID( rtt_cdi_eospac::ES4enion ) != 3717 )
+		fail() << "AlSt.matID(ES4enion) points to the wrong matID.";
 
-	    // Chie (returnType=27 & table=303) should point to matID
+	    // The temperature-based electorn thermal conductivity
+	    // (returnType=27=ES4tconde) should point to matID
 	    // 23714.  The user should never need to access this
 	    // function.  However Eospac.cc does and we need to test
 	    // this funcitonality.
 
-	    if ( AlSt.matID( 27 ) != 23714 )
+	    if ( AlSt.matID( rtt_cdi_eospac::ES4tconde ) != 23714 )
 		fail() << "AlSt.matID(27) points to the wrong matID.";	    
 	    
 
@@ -154,8 +161,19 @@ namespace rtt_cdi_eospac_test
 	    // Simultaneously, we are assigned material IDs to more
 	    // SesameTable values.
 	    
-	    if ( spEospac = new rtt_cdi_eospac::Eospac( 
-		AlSt.Cve( Al3717 ).zfree( Al23714 ) ) )
+	    if ( 
+		spEospac = new rtt_cdi_eospac::Eospac( 
+		    AlSt.enelc( Al3717 ).zfree3( Al23714 ) ) )
+
+		// Alternatively, we can avoid carrying around the
+		// AlSt object.  We can, instead, create a temporary
+		// version that is only used here in the constructor
+		// of Eospac().		
+
+//		spEospac = new rtt_cdi_eospac::Eospac( 
+// 		rtt_cdi_eospac::SesameTables().enelc( Al3717 )
+//                  .zfree3( Al23714 ).enion( Al3717 ).tconde( Al23714 ) ) )
+
 		pass() << "SP to new Eospac object created.";
 	    else
 		{
@@ -194,7 +212,8 @@ namespace rtt_cdi_eospac_test
 	    refValue = 0.0002711658224638093; // kJ/g/K
 	    
 	    double heatCapacity =
-		spEospac->getElectronHeatCapacity( temperature, density );
+		spEospac->getElectronHeatCapacity( temperature,
+						   density );
 
 	    if ( match(  heatCapacity, refValue ) )
 		pass() << "getElectronHeatCapacity() test passed.";
@@ -272,15 +291,15 @@ namespace rtt_cdi_eospac_test
 	    // Retrieve electron based heat capacities for each set of 
 	    // (density, temperature) values.
 
-	    std::vector< double > vcve(2);
-	    vcve = spEospac->getElectronHeatCapacity( vtemps,
+	    std::vector< double > vCve(2);
+	    vCve = spEospac->getElectronHeatCapacity( vtemps,
 						      vdensities );
 
 	    // Since the i=0 and i=1 tuples of density and temperature 
 	    // are identical the two returned heat capacities should
 	    // also match.
 
-	    if ( match( vcve[0], vcve[1] ) )
+	    if ( match( vCve[0], vCve[1] ) )
 		pass() << "getElectronHeatCapacity() test passed for "
 		       << "vector state values.";
 	    else
@@ -294,12 +313,31 @@ namespace rtt_cdi_eospac_test
 		spEospac->getElectronHeatCapacity( 
 		    temperature, density );
 
-	    if ( match( vcve[0], heatCapacity ) )
+	    if ( match( vCve[0], heatCapacity ) )
 		pass() << "getElectronHeatCapacity() test passed for "
 		       << "vector state values.";
 	    else
 		fail() << "getElectronHeatCapacity() test failed for "
 		       << "vector state values.";
+
+
+	    // This feature has be removed from the public interface
+	    // of cdi_eospac:
+
+	    // The user can obtian information from EOSPAC by
+	    // specifying the data type requested along with the
+	    // (T,rho) tuple.  However, getdFdT() and getF() both
+	    // expect vector argumetns for temperature and density AND 
+	    // returns a vector of results.	    
+	    
+// 	    std::vector< double > altHeatCapacity = spEospac->getdFdT( 
+// 		vtemps, vdensities, rtt_cdi_eospac::ES4enelc );
+
+// 	    if ( match( altHeatCapacity, vCve ) )
+// 		pass() << "getdFdT() test passed for "
+// 		    "vector state values.";
+// 	    else 
+// 		fail() << "getdFdT() test failed for vector state values.";
 
 
 	    // ---------------------- //
@@ -347,6 +385,49 @@ namespace rtt_cdi_eospac_test
 	    return em;    
 	    
 	} // end of tEospac::match( double, double )
+    
+    // ------------- //
+    // Match vectors //
+    // ------------- //
+    
+    bool tEospac::match( 
+	const std::vector< double >& computedValue, 
+	const std::vector< double >& referenceValue ) const
+	{
+	    // Start by assuming that the two quantities match exactly.
+	    bool em = true;
+	    
+	    // Compare items up to 10 digits of accuracy.
+	    const double TOL = 1.0e-10;
+	    
+	    // Test each item in the list
+	    double reldiff = 0.0;
+	    for ( int i=0; i<computedValue.size(); ++i )
+		{
+// 		    std::cout.precision(10);
+// 		    std::cout << "\t" << computedValue[i]
+// 			      << "\t" << referenceValue[i] << std::endl;
+		    
+		    reldiff = fabs( ( computedValue[i] - referenceValue[i] )
+				    / referenceValue[i] );
+		    // If the comparison fails then change the value of "em"
+		    // and exit the loop.
+		    
+		    // DEBUG: must #include <iomanip>
+		    //
+		    // 	    std::cout << std::setprecision(14) << "   "
+		    // 		      << computedValue[i] << "   "
+		    // 		      << referenceValue[i] << "   "
+		    // 		      << reldiff << std::endl;
+		    
+		    if ( reldiff > TOL )
+			{
+			    em = false;
+			    break;
+			}
+		}
+	    return em;
+	} 
     
 } // end namespace rtt_cdi_eospac_test
 

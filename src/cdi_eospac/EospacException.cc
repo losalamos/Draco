@@ -13,6 +13,11 @@
 
 namespace rtt_cdi_eospac
 {
+
+    // --------------- //
+    // EospacException //
+    // --------------- //
+
     EospacException::EospacException( const std::string& in_what_arg )
 	throw() 
 	{
@@ -41,6 +46,23 @@ namespace rtt_cdi_eospac
     const char* EospacException::what() const throw()
 	{
 	    return message;
+	}
+    
+    // --------------------- //
+    // EospacUnknownDataType //
+    // --------------------- //
+
+    EospacUnknownDataType::EospacUnknownDataType( 
+	const std::string& what_arg ) throw()
+	: EospacException( what_arg )
+	{
+	    // empty
+	}
+
+    EospacUnknownDataType::~EospacUnknownDataType()
+	throw()
+	{
+	    // empty
 	}
 
 } // end namespace rtt_cdi_eospac

@@ -38,6 +38,16 @@ namespace rtt_cdi_eospac
      * the exception.
      */
 
+    // Todo:
+    // --------------------
+    // 1. Add a specific class for each type of exception that we
+    //    might want to catch (i.e. one for each integer error return
+    //    code that EOSPAC can throw.
+    // 2. Review Alan Griffiths, "Here be Dragons,"
+    //    http://www.cuj.com, March 2001. 
+    //    http://www.octopull.demon.co.uk/c++/dragons/
+    // 3. Review Sutter, "Exceptional C++"
+
     // revision history:
     // -----------------
     // 0) original
@@ -104,6 +114,14 @@ namespace rtt_cdi_eospac
 	virtual const char* what() const throw();
     };
     
+    class EospacUnknownDataType : public EospacException
+    {
+      public:
+	EospacUnknownDataType( const std::string& what_arg ) throw();
+	virtual ~EospacUnknownDataType() throw();
+    };
+
+
 } // end namespace rtt_cdi_eospac
 
 #endif // __cdi_eospac_EospacException_hh__

@@ -14,6 +14,7 @@
 
 // cdi_eospac dependencies
 #include "SesameTables.hh"
+#include <cdi_eospac/config.h>  // defines V_FLOAT - also see configure.in
 
 // Draco dependencies
 #include "cdi/EoS.hh"
@@ -72,6 +73,10 @@ namespace rtt_cdi_eospac
      * queried for EoS data such as heat capacity, free electrons per
      * ion and a few other things.
      */
+
+    // Todo:
+    // --------------------
+    // 1. Add STL like accessors.
 
     // revision history:
     // -----------------
@@ -162,15 +167,22 @@ namespace rtt_cdi_eospac
 	 * material identifier extracted from the associated
 	 * SesameTables object.
 	 */
-	mutable std::vector< int > returnTypes;
+// 	mutable std::vector< int > returnTypes;
+	mutable std::vector< ES4DataType > returnTypes;
 
 	/*!
 	 * \brief The eos tables are cached with this pointer. 
 	 *
 	 * The length and contents are set in the contructor by the
 	 * EOSPAC routine es1tabs_(). 
+	 *
+	 * EOSPAC uses different data types on different
+	 * architectures.  Most of these differences are dealt with
+	 * directly by the EospacWrapper class.  Unfortunatley, the
+	 * actual eosTable must be controlled by the host (Eospac) and 
+	 * must match the data type expected by libeospac.a.
 	 */
-	mutable double *eosTable;
+	mutable V_FLOAT *eosTable;
 
 	/*!
 	 * \brief The length (in words) of the eosTable.
@@ -383,7 +395,7 @@ namespace rtt_cdi_eospac
 	std::vector< double > getF( 
 	    const std::vector< double >& vdensity, 
 	    const std::vector< double >& vtemperature, 
-	    int returnType ) const;
+	    ES4DataType returnType ) const;
 	    
 	/*!
 	 * \brief Retrieves the EoS data associated with the returnType 
@@ -401,7 +413,7 @@ namespace rtt_cdi_eospac
 	std::vector< double > getdFdT( 
 	    const std::vector< double >& vdensity, 
 	    const std::vector< double >& vtemperature, 
-	    int returnType ) const;
+	    ES4DataType returnType ) const;
 
 	/*!
 	 * \brief This member function examines the contents of
@@ -414,7 +426,7 @@ namespace rtt_cdi_eospac
 	 * \brief Returns true if the EoS data associated with
 	 *        "returnType" has been loaded.
 	 */
-	bool typeFound( int returnType ) const;
+	bool typeFound( ES4DataType returnType ) const;
 	
 	/*!
 	 * \brief Converts a double to a length one vector.

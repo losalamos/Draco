@@ -83,9 +83,8 @@ namespace rtt_cdi_eospac
     double Eospac::getSpecificElectronInternalEnergy(
 	double temperature, double density ) const
 	{
-	    // Internal Energy has returnType == 14
-	    const int returnType = 14; 
-	    return getF( dbl_v1(density), dbl_v1(temperature),
+	    const ES4DataType returnType = ES4enelc; 
+	    return getF( dbl_v1(temperature), dbl_v1(density),
 			 returnType )[0];
 	}
 
@@ -93,9 +92,8 @@ namespace rtt_cdi_eospac
 	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const
 	{
-	    // Internal Energy has returnType == 14
-	    const int returnType = 14; 
-	    return getF( vdensity, vtemperature, returnType );
+	    const ES4DataType returnType = ES4enelc; 
+	    return getF( vtemperature, vdensity, returnType );
 	}
 
     double Eospac::getElectronHeatCapacity(
@@ -106,9 +104,8 @@ namespace rtt_cdi_eospac
 	    // the specific electron internal energy (E) and it's
 	    // first derivative w.r.t temperature.
 
-	    // Internal Energy has returnTypeIndex == 14
-	    const int returnType = 14;
- 	    return getdFdT( dbl_v1(density), dbl_v1(temperature),
+	    const ES4DataType returnType = ES4enelc;
+ 	    return getdFdT( dbl_v1(temperature), dbl_v1(density),
 			    returnType )[0];
 	}
 
@@ -121,16 +118,15 @@ namespace rtt_cdi_eospac
 	    // the specific electron internal energy (E) and it's
 	    // first derivative w.r.t temperature.
 
-	    // Internal Energy has returnTypeIndex == 14
-	    const int returnType = 14;
- 	    return getdFdT( vdensity, vtemperature, returnType );
+	    const ES4DataType returnType = ES4enelc;
+ 	    return getdFdT( vtemperature, vdensity, returnType );
 	}
 
     double Eospac::getSpecificIonInternalEnergy(
 	double temperature, double density ) const
 	{
-	    const int returnType = 8; // (enion)
-	    return getF( dbl_v1(density), dbl_v1(temperature),
+	    const ES4DataType returnType = ES4enion;
+	    return getF( dbl_v1(temperature), dbl_v1(density),
 			 returnType )[0];
 	}
 
@@ -138,8 +134,8 @@ namespace rtt_cdi_eospac
 	const std::vector< double >& vtemperature, 
 	const std::vector< double >& vdensity ) const
 	{
-	    const int returnType = 8; // (enion)
-	    return getF( vdensity, vtemperature, returnType );
+	    const ES4DataType returnType = ES4enion;
+	    return getF( vtemperature, vdensity, returnType );
 	}
 
     double Eospac::getIonHeatCapacity(
@@ -150,8 +146,8 @@ namespace rtt_cdi_eospac
 	    // the specific electron internal energy (E) and it's
 	    // first derivative w.r.t temperature.
 
-	    const int returnType = 8; // (enion)
-	    return getdFdT( dbl_v1(density), dbl_v1(temperature),
+	    const ES4DataType returnType = ES4enion; 
+	    return getdFdT( dbl_v1(temperature), dbl_v1(density), 
 			    returnType )[0];
 	}
 
@@ -164,15 +160,15 @@ namespace rtt_cdi_eospac
 	    // the specific electron internal energy (E) and it's
 	    // first derivative w.r.t temperature.
 
-	    const int returnType = 8; // (enion)
-	    return getdFdT( vdensity, vtemperature, returnType );
+	    const ES4DataType returnType = ES4enion;
+	    return getdFdT( vtemperature, vdensity, returnType );
 	}
     
     double Eospac::getNumFreeElectronsPerIon(
 	double temperature, double density ) const
 	{
-	    const int returnType = 25; // (zfree3)
-	    return getF( dbl_v1(density), dbl_v1(temperature),
+	    const ES4DataType returnType = ES4zfree3; // (zfree3)
+	    return getF( dbl_v1(temperature), dbl_v1(density), 
 			 returnType )[0];
 	}
     
@@ -180,15 +176,15 @@ namespace rtt_cdi_eospac
 	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const
 	{
-	    const int returnType = 25; // (zfree3)
-	    return getF( vdensity, vtemperature, returnType );
+	    const ES4DataType returnType = ES4zfree3; // (zfree3)
+	    return getF( vtemperature, vdensity, returnType );
 	}
     
     double Eospac::getElectronBasedThermalConductivity(
 	double temperature, double density ) const
 	{
-	    const int returnType = 27; // (tconde)
-	    return getF( dbl_v1(density), dbl_v1(temperature),
+	    const ES4DataType returnType = ES4tconde; // (tconde)
+	    return getF( dbl_v1(temperature), dbl_v1(density), 
 			 returnType )[0];
 	}
     
@@ -196,8 +192,8 @@ namespace rtt_cdi_eospac
 	const std::vector< double >& vtemperature, 
 	const std::vector< double >& vdensity ) const
 	{
-	    const int returnType = 27; // (tconde)
-	    return getF( vdensity, vtemperature, returnType );
+	    const ES4DataType returnType = ES4tconde; // (tconde)
+	    return getF( vtemperature, vdensity, returnType );
 	}
 
     // -------------- //
@@ -218,15 +214,15 @@ namespace rtt_cdi_eospac
      *        type of data being retrieved from the EoS tables.
      */
     std::vector< double > Eospac::getF( 
-	const std::vector< double >& vdensity,
 	const std::vector< double >& vtemperature,
-	int returnType ) const
+	const std::vector< double >& vdensity,
+	ES4DataType returnType ) const
 	{
 	    // The density and vector parameters must be a tuple.
 	    Require( vdensity.size() == vtemperature.size() );
 
 	    // The returnType must be in the range [1,36]
-	    Require( returnType > 0 && returnType <= 36 );
+	    // Require( returnType > 0 && returnType <= 36 );
 
 	    // Throw an exception if the required return type has not
 	    // been loaded by Eospac.
@@ -238,7 +234,7 @@ namespace rtt_cdi_eospac
 				 << "\tassociated material identifier.\n"
 				 << "\tRequested returnType = \"" 
 				 << returnType << "\"\n";
-		    throw EospacException( outputString.str() );
+		    throw EospacUnknownDataType( outputString.str() );
 		}
 
 	    // Convert temperatures from keV to degrees Kelvin.
@@ -256,7 +252,7 @@ namespace rtt_cdi_eospac
 	    // (density, temperature) tuple.
 	    const int returnSize = vdensity.size();
 
-	    double *returnVals = new double [ returnSize ]; 
+	    std::vector< double > returnVals( returnSize );
 	    
  	    int errorCode 
 		= wrapper::es1vals( returnType, derivatives,
@@ -275,17 +271,18 @@ namespace rtt_cdi_eospac
 				 << "\tThe error code returned was \""
 				 << errorCode << "\".\n"
 				 << "\tThe associated error message is:\n\t\""
-				 << wrapper::es1errmsg( errorCode ) << "\"\n";
+				 << wrapper::es1errmsg( errorCode )
+				 << "\"\n";
+
+		    // This is a fatal exception right now.  It might
+		    // be useful to throw a specific exception that is 
+		    // derived from EospacException.  The host code
+		    // could theoretically catch such an exception,
+		    // fix the problem and then continue.
 		    throw EospacException( outputString.str() );
 		}
 	    
-	    // copy the result back into a STL vector
-	    std::vector< double > F( returnSize );
-	    std::copy( returnVals, returnVals+returnSize, F.begin() );	    
-
-	    delete [] returnVals;
-
-	    return F;
+	    return returnVals;
 	}
 
     /*!
@@ -302,15 +299,15 @@ namespace rtt_cdi_eospac
      *        type of data being retrieved from the EoS tables.
      */
     std::vector< double > Eospac::getdFdT( 
-	const std::vector< double >& vdensity,
 	const std::vector< double >& vtemperature, 
-	int returnType ) const
+	const std::vector< double >& vdensity,
+	ES4DataType returnType ) const
 	{
 	    // The density and vector parameters must be a tuple.
 	    Require( vdensity.size() == vtemperature.size() );
 
 	    // The returnType must be in the range [1,36]
-	    Require( returnType > 0 && returnType <= 36 );
+	    // Require( returnType > 0 && returnType <= 36 );
 
 	    // dF/dT - assume T is the second independent variable.
 
@@ -332,8 +329,9 @@ namespace rtt_cdi_eospac
 				 << "\tassociated material identifier.\n"
 				 << "\tRequested returnType = \"" 
 				 << returnType << "\"\n";
-		    throw EospacException( outputString.str() );
+		    throw EospacUnknownDataType( outputString.str() );
 		}
+
 	    // Convert temperatures from keV to degrees Kelvin.
 	    std::vector< double > vtempsKelvin = vtemperature;
 	    for ( int i=0; i<vtemperature.size(); ++i )
@@ -349,7 +347,7 @@ namespace rtt_cdi_eospac
 	    // (density,temperature) tuple.
 	    const int returnSize = 3 * vdensity.size(); 
 
-	    double *returnVals = new double [ returnSize ];
+	    std::vector< double > returnVals( returnSize );
 
  	    int errorCode 
 		= wrapper::es1vals( returnType, derivatives,
@@ -366,16 +364,25 @@ namespace rtt_cdi_eospac
 				 << "\tThe error code returned was \""
 				 << errorCode << "\".\n"
 				 << "\tThe associated error message is:\n\t\""
-				 << wrapper::es1errmsg( errorCode ) << "\"\n";
+				 << wrapper::es1errmsg( errorCode ) 
+				 << "\"\n";
+
+		    // This is a fatal exception right now.  It might
+		    // be useful to throw a specific exception that is 
+		    // derived from EospacException.  The host code
+		    // could theoretically catch such an exception,
+		    // fix the problem and then continue.
 		    throw EospacException( outputString.str() );
 		}
 
-	    // copy the results back into a STL vector
-	    std::vector< double > dFdT( vtemperature.size() );
+ 	    // copy the results back into a STL vector
+ 	    std::vector< double > dFdT( vtemperature.size() );
 	    
 	    // dF/dT values are the last 1/3 of returnVals.
-	    std::copy( returnVals+2*vtemperature.size(),
-		       returnVals+returnSize,
+	    std::copy( 
+		// returnVals+2*vtemperature.size(),
+		returnVals.begin()+2*vtemperature.size(),
+		       returnVals.end(),
 		       dFdT.begin() );
 	    
 	    // the values in "returnVals" are actually log(vals) so
@@ -384,8 +391,6 @@ namespace rtt_cdi_eospac
 	    // derivative value.
 	    for ( int i=0; i<vtemperature.size(); ++i )
 		dFdT[i] = dFdT[i]/vtempsKelvin[i];
-
-	    delete [] returnVals;
 
 	    return dFdT;
 	}
@@ -397,37 +402,31 @@ namespace rtt_cdi_eospac
      */
     void Eospac::expandEosTable() const
 	{
-	    // loop over all possible table definitions.  If a matid
+	    // loop over all possible EOSPAC data types.  If a matid
 	    // has been assigned to a table then add this information
 	    // to the vectors returnTypes[] and matIDs[] which are
 	    // used by EOSPAC.	  
-	    
-	    // MatIDs[] and returnTypes[] are a tuple.
 
 	    for ( int i=0; i<SesTabs.getNumReturnTypes(); ++i )
-		if ( SesTabs.matID( i ) != 0 )
+		if ( SesTabs.returnTypes( i ) != ES4null )
 		    {
-			returnTypes.insert( returnTypes.begin(), i ); 
-			matIDs.insert( matIDs.begin(),
-				       SesTabs.matID( i ) );
-		    }
+			// MatIDs[] and returnTypes[] are a tuple.
 
-	    // the EOSPAC routines need arrays not vectors so we make
-	    // temporary copies of these to vectors.
-	    int *returnTypes_a = new int [ returnTypes.size() ];
-	    int *matIDs_a = new int [ matIDs.size() ];
-	    std::copy( returnTypes.begin(), returnTypes.end(),
-		       returnTypes_a );
-	    std::copy( matIDs.begin(), matIDs.end(), matIDs_a );
+			returnTypes.insert( returnTypes.begin(),
+					    SesTabs.returnTypes( i ) ); 
+			matIDs.insert( matIDs.begin(),
+				       SesTabs.matID(
+					   SesTabs.returnTypes( i ) ) );
+		    }
 
 	    // Allocate eosTable.  The length and location of eosTable 
 	    // will be modified by es1tabs() as needed.	  
-	    eosTable = new double [ eosTableLength ];
+	    eosTable = new V_FLOAT [ eosTableLength ];
 
 	    // Initialize eosTable and find it's required length
 	    int errorCode 
 		= wrapper::es1tabs( numRegions, returnTypes.size(),
-				    returnTypes_a, matIDs_a,
+				    returnTypes, matIDs,
 				    eosTableLength, &eosTable ); 
 
 	    // Check for errors
@@ -445,13 +444,18 @@ namespace rtt_cdi_eospac
 				 << errorCode << "\".\n"
 				 << "\tThe associated error message is:\n\t\""
 				 << wrapper::es1errmsg( errorCode ) << "\"\n";
+
+		    // Clean up temporaries before we throw the exception.
+		    delete [] eosTable;
+
+		    // This is a fatal exception right now.  It might
+		    // be useful to throw a specific exception that is 
+		    // derived from EospacException.  The host code
+		    // could theoretically catch such an exception,
+		    // fix the problem and then continue.
 		    throw EospacException( outputString.str() );
 		}
 	    
-	    // Clean up temporaries
-	    delete [] returnTypes_a;
-	    delete [] matIDs_a;
-
 	    // We don't delete eosTable until ~Eospac() is called.
 	}
 
@@ -459,12 +463,13 @@ namespace rtt_cdi_eospac
      * \brief Returns true if the EoS data associated with
      *        "returnType" has been loaded.
      */
-    bool Eospac::typeFound( int returnType ) const
+    bool Eospac::typeFound( ES4DataType returnType ) const
 	{
 	    // Loop over all available types.  If the requested
 	    // type id matches on in the list then return true.
 	    // If we reach the end of the list without a match return
 	    // false. 
+	    
 	    for ( int i=0; i<returnTypes.size(); ++i )
 		if ( returnType == returnTypes[i] ) return true;
 	    return false;

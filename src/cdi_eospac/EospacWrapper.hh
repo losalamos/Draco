@@ -13,6 +13,8 @@
 #define __cdi_eospac_EospacWrapper_hh__
 
 #include "EospacWrapper.hh"
+#include "SesameTables.hh"
+#include <cdi_eospac/config.h>
 
 #include <string>
 #include <vector>
@@ -55,8 +57,9 @@ namespace rtt_cdi_eospac
 	 *        returned. 
 	 */	 
 	int es1tabs( int numRegions,  int numReturnTypes, 
-		     int *returnTypes, int *matIDs, 
-		     int &eosTableLength, double **eosTable );
+		     const std::vector< ES4DataType >& returnTypes, 
+		     const std::vector< int >& matIDs, 
+		     int &eosTableLength, V_FLOAT **eosTable );
 
 	/*!
 	 * \brief Return a text error message associated that is
@@ -82,7 +85,7 @@ namespace rtt_cdi_eospac
 	 * density0 are also return values.
 	 */
 	int es1info( int &tableIndex, 
-		     double **eosTable, int &llogs, int &matID,
+		     V_FLOAT **eosTable, int &llogs, int &matID,
 		     double &atomicNumber, double &atomicMass, 
 		     double &density0 );
 
@@ -118,11 +121,12 @@ namespace rtt_cdi_eospac
 	 *        routine also returns "returnVals" and "returnSize".
 	 */
 	int es1vals( const int returnType, const int derivatives, 
-		     const int interpolation, double *eosTable, 
+		     const int interpolation, V_FLOAT *eosTable, 
 		     const int eosTableLength, 
-		     const std::vector< double > &xVals, 
-		     const std::vector< double > &yVals, 
-		     double *returnVals, const int returnSize );
+		     const std::vector< double >& xVals, 
+		     const std::vector< double >& yVals, 
+		     std::vector< double >& returnVals,
+		     const int returnSize );
 
     } // end namespace wrapper
 
@@ -149,29 +153,32 @@ namespace rtt_cdi_eospac
 // See http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/UsersDocument/ for 
 // details about EOSPAC routines.
 
+// The values for the V_XXX types are defined in configure.in. (The 
+// variables must first be declared in config.h.in).
+
 extern "C" {
 
-    void es1tabs_( int *llog1, int *iopt, int &lprnt, int &iprnt, 
-		   int &numReturnTypes, int &numRegions,    
-		   int *returnTypes, double *ucons, int *matIDs, 
-		   int &idtab, int &eosTableLength, double **eosTable,
-		   int *errorCodes ); 
+    void es1tabs_( V_BOOL *llog1, V_INT *iopt, V_BOOL &lprnt, V_INT &iprnt, 
+		   V_INT &numReturnTypes, V_INT &numRegions,    
+		   V_INT *returnTypes, V_FLOAT *ucons, V_INT *matIDs, 
+		   V_INT &idtab, V_INT &eosTableLength, V_FLOAT **eosTable,
+		   V_INT *errorCodes ); 
 
-    void kt1errmsg_( int &errorCode, const char *errorMessage, int &msgLen );
+    void kt1errmsg_( V_INT &errorCode, const char *errorMessage, V_INT &msgLen );
 
-    void es1info_( int &tableIndex, int &regionIndex, 
-		   double **eosTable, int &iname, int &llogs, 
-		   double &xcnvt, double &ycnvt, double &fcnvt, 
-		   int &matid, double &znbar, double &anbar, 
-		   double &dens0, int &ifile, int &errorCode );
+    void es1info_( V_INT &tableIndex, V_INT &regionIndex, 
+		   V_FLOAT **eosTable, V_INT &iname, V_BOOL &llogs, 
+		   V_FLOAT &xcnvt, V_FLOAT &ycnvt, V_FLOAT &fcnvt, 
+		   V_INT &matid, V_FLOAT &znbar, V_FLOAT &anbar, 
+		   V_FLOAT &dens0, V_INT &ifile, V_INT &errorCode );
 
-    void es1name_( int &tableID, const char *tableName );
+    void es1name_( V_INT &tableID, const char *tableName );
 
-    void es1vals_( int &returnType, int &derivatives, 
-		   int &interpolation, double *eosTable, 
-		   int &eosTableLength, int &numZones, 
-		   int &regionIndex, double *xVals, double *yVals,
-		   double *returnVals, int &nvalsi, int &errorCode ); 
+    void es1vals_( V_INT &returnType, V_INT &derivatives, 
+		   V_INT &interpolation, V_FLOAT *eosTable, 
+		   V_INT &eosTableLength, V_INT &numZones, 
+		   V_INT &regionIndex, V_FLOAT *xVals, V_FLOAT *yVals,
+		   V_FLOAT *returnVals, V_INT &nvalsi, V_INT &errorCode ); 
 
 } // end of extern "C" block
 

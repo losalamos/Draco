@@ -14,6 +14,8 @@
 
 #include "UnitTestFrame/TestAppNoC4.hh"
 
+#include <vector>
+
 namespace rtt_cdi_eospac_test
 {
     
@@ -68,6 +70,11 @@ namespace rtt_cdi_eospac_test
 	 */
 	bool match( const double computedValue,
 		    const double referenceValue ) const;
+
+	bool match( const std::vector< double >& computedValue, 
+		    const std::vector< double >& referenceValue )
+	    const;
+
     };
     
 } // end namespace rtt_cdi_eospac_test

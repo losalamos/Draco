@@ -83,14 +83,14 @@ namespace rtt_cdi_eospac_test
 	    // Create a SesameTables object //
 	    // ---------------------------- //
 
-
 	    // The user must create a SesameTables object that links
-	    // material ID numbers to Sesame lookup tables for each
-	    // material used.  If the user needs heat capacity values
+	    // material ID numbers to EOSPAC data types (each
+	    // SesameTables object only contains lookups for one
+	    // material).   If the user needs heat capacity values
 	    // for Al then he/she must create a SesameTables object
 	    // for Aluminum and then assign an aluminum material ID
-	    // (e.g. 3717) to table304.  See the tests below for more
-	    // details. 
+	    // (e.g. 3717) to the enelc EOSPAC data type.  See the
+	    // tests below for more details. 
 
 	    // Set the material identifier
 	    // This one is for Aluminum (03717) 
@@ -99,13 +99,20 @@ namespace rtt_cdi_eospac_test
 	    // See http://int.lanl.gov/projects/sdm/win/materials/ for 
 	    // material ID information.
 
-	    // This matID for Al has tables 101, 102, 201, 301, 304,
-	    // 305, 306 and 401.  I need table 304 to access Cve().
+	    // This matID for Al has lookup tables for prtot, entot,
+	    // tptot, tntot, pntot, eptot, prelc, enelc, tpelc, tnelc
+	    // pnelc, epelc, prcld, and encld (see SesameTables.hh for 
+	    // an explanantion of these keywords).  I need the table
+	    // that contains enion lookups so that I can query for
+	    // Cve() values.
 
 	    const int Al3717 = 3717;
 
-	    // This matId for Al has tables 101, 102, 201, 601, 602,
-	    // 603 and 604.  I need table 601 for zfree.
+	    // This matId for Al has lookup tables for zfree3, econde, 
+	    // tconde and therme (see SesameTables.hh for 
+	    // an explanantion of these keywords).  I need the table
+	    // that contains zfree3 lookups so that I can query for
+	    // zfree() values.
 
 	    const int Al23714 = 23714;
 
@@ -113,29 +120,32 @@ namespace rtt_cdi_eospac_test
 
 	    rtt_cdi_eospac::SesameTables AlSt;
 
-	    // Assign matID Al3717 to Sesame Table 303 (used for Cvi)
-	    // We can also assign these tables when the Eospac object
-	    // is created (see example below).  Also assign matID
-	    // Al23714 to Sesame Table 603 (chie).
+	    // Assign matID Al3717 to enion lookups (used for Cvi) for 
+	    // AlSt.  We can also assign these tables when the Eospac
+	    // object is created (see example below).  
 
-	    AlSt.table303( Al3717 ).chie( Al23714 );
+	    // Also assign matID Al23714 for temperature-based
+	    // electron thermal conductivity (tconde).
+
+	    AlSt.enion( Al3717 ).tconde( Al23714 );
 
 	    // Verify that the assignments were made correctly.
 
-	    // Cvi (returnType=8 & table=303) should point to matID
+	    // Cvi (returnType=8=ES4enion) should point to matID
 	    // 3717.  The user should never need to access this
 	    // function.  However Eospac.cc does and we need to test
 	    // this funcitonality.
 
-	    if ( AlSt.matID( 8 ) != 3717 )
-		fail() << "AlSt.matID(8) points to the wrong matID.";
+	    if ( AlSt.matID( rtt_cdi_eospac::ES4enion ) != 3717 )
+		fail() << "AlSt.matID(ES4enion) points to the wrong matID.";
 
-	    // Chie (returnType=27 & table=303) should point to matID
+	    // The temperature-based electorn thermal conductivity
+	    // (returnType=27=ES4tconde) should point to matID
 	    // 23714.  The user should never need to access this
 	    // function.  However Eospac.cc does and we need to test
 	    // this funcitonality.
 
-	    if ( AlSt.matID( 27 ) != 23714 )
+	    if ( AlSt.matID( rtt_cdi_eospac::ES4tconde ) != 23714 )
 		fail() << "AlSt.matID(27) points to the wrong matID.";	    
 	    
 
@@ -154,9 +164,20 @@ namespace rtt_cdi_eospac_test
 	    // Try to instantiate the new Eospac object.
 	    // Simultaneously, we are assigned material IDs to more
 	    // SesameTable values.
-	    
-	    if ( spEospac = new rtt_cdi_eospac::Eospac( 
-		AlSt.Cve( Al3717 ).zfree( Al23714 ) ) )
+
+	    if ( 
+		spEospac = new rtt_cdi_eospac::Eospac( 
+		    AlSt.enelc( Al3717 ).zfree3( Al23714 ) ) )
+
+		// Alternatively, we can avoid carrying around the
+		// AlSt object.  We can, instead, create a temporary
+		// version that is only used here in the constructor
+		// of Eospac().		
+
+//		spEospac = new rtt_cdi_eospac::Eospac( 
+// 		rtt_cdi_eospac::SesameTables().enelc( Al3717 )
+//                  .zfree3( Al23714 ).enion( Al3717 ).tconde( Al23714 ) ) )
+
 		pass() << "SP to new Eospac object created.";
 	    else
 		{
