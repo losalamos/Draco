@@ -556,11 +556,11 @@ void testFullP13T::run() const
 
     setBoundary(boundary);
     
-    cerr << "Made it before diffSolver ctor" << endl;
+    std::cerr << "Made it before diffSolver ctor" << endl;
     
     spDiffSolver = new DS(diffdb, spMesh, pcg_db);
     
-    cerr << "Made it after diffSolver ctor" << endl;
+    std::cerr << "Made it after diffSolver ctor" << endl;
 
     using dsxx::SP;
     using rtt_timestep::ts_advisor;
@@ -686,18 +686,19 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
 	     << " " << max(radState.F, opAbs) << endl;
     }
     
-    cerr << "Made it before solve3T" << endl;
+    std::cerr << "Made it before solve3T" << endl;
     
     RadiationStateField newRadState(spMesh);
     ccsf QEEM(spMesh);
     ccsf REEM(spMesh);
 	
-    spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad,
-		    QElectron, QIon,
-		    boundary, *spDiffSolver, newRadState, QEEM, REEM,
-		    electEnergyDep, ionEnergyDep, TElec, TIon);
+    spP13T->solve3T(newRadState, QEEM, REEM,
+		    electEnergyDep, ionEnergyDep, TElec, TIon,
+		    *spDiffSolver, dt, matStateCC, matStateFC, radState,
+		    QRad, QElectron, QIon,
+		    boundary);
 
-    cerr << "Made it after solve3T" << endl;
+    std::cerr << "Made it after solve3T" << endl;
 
     gmvDump(newRadState, TElec, TIon, cycle, time);
 

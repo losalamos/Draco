@@ -64,13 +64,13 @@ Diffusion_P1<MT>::Diffusion_P1( const Diffusion_DB& diffdb,
 }
 
 template<class MT>
-void Diffusion_P1<MT>::solve( const fcdsf& D,
+void Diffusion_P1<MT>::solve( ccsf& phi,
+                              fcdsf& F,
+			      const fcdsf& D,
                               const ccsf& sigmaabar,
                               const ccsf& Qbar_r,
                               const fcdsf& Fprime,
-                              const bssf& f_b,
-                              ccsf& phi,
-                              fcdsf& F )
+                              const bssf& f_b )
 {
 // Calculate Dprime.  This is a fcdsf which represents the D for the same
 // face, as seen by the cell on the other side of the face.  For cells
@@ -129,10 +129,10 @@ void Diffusion_P1<MT>::solve( const fcdsf& D,
 }
 
 template<class MT>
-void Diffusion_P1<MT>::solve( const fcdsf& D,
+void Diffusion_P1<MT>::solve( ccsf& phi,
+			      const fcdsf& D,
                               const ccsf& sigmaabar,
-                              const ccsf& Qbar_r,
-                              ccsf& phi )
+                              const ccsf& Qbar_r )
 {
 // Calculate Dprime.  This is a fcdsf which represents the D for the same
 // face, as seen by the cell on the other side of the face.  For cells

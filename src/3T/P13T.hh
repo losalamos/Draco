@@ -135,64 +135,55 @@ namespace XTM {
 
      const dsxx::SP<MeshType> getMesh() const { return spMesh; }
     
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // print:
      //     Print itself (for debug mostly)
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
      std::ostream &print(std::ostream &os) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // initializeRadiationState:
      //     Initialize the radiation field to Planckian
      //     based on material electron temperatures.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
     
      void initializeRadiationState(const CCMaterialStateField &matStateCC,
 				   RadiationStateField &resultsStateField) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // solveElectConduction:
      //     Solve for the energy deposition and new temperature due to  
      //     the conduction equation split.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
     
-     void solveElectConduction(double dt,
-			       const CCMaterialStateField &matStateCC,
-			       const FCMaterialStateField &matStateFC,
+     void solveElectConduction(ccsf &electronEnergyDeposition,
+			       ccsf &Tnp1Electron,
 			       DiffusionSolver &solver,
-			       ccsf &electronEnergyDeposition,
-			       ccsf &Tnp1Electron) const;
+			       double dt,
+			       const CCMaterialStateField &matStateCC,
+			       const FCMaterialStateField &matStateFC) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // solveIonConduction:
      //     Solve for the energy deposition and new temperature due to  
      //     the conduction equation split.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
     
-     void solveIonConduction(double dt,
-			     const CCMaterialStateField &matStateCC,
-			     const FCMaterialStateField &matStateFC,
+     void solveIonConduction(ccsf &ionEnergyDeposition,
+			     ccsf &Tnp1Ion,
 			     DiffusionSolver &solver,
-			     ccsf &ionEnergyDeposition,
-			     ccsf &Tnp1Ion) const;
+			     double dt,
+			     const CCMaterialStateField &matStateCC,
+			     const FCMaterialStateField &matStateFC) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // solve3T:
      //     Solve for the new radiation field, the electron/ion energy
      //     depositions, and the momentom deposition.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
     
-     void solve3T(double dt,
-		  const CCMaterialStateField &matStateCC,
-		  const FCMaterialStateField &matStateFC,
-		  const RadiationStateField &prevStateField,
-		  const ccsf &QRad,
-		  const ccsf &QElectron,
-		  const ccsf &QIon,
-		  const bssf &boundary,
-		  DiffusionSolver &solver,
-		  RadiationStateField &resultsStateField,
+     void solve3T(RadiationStateField &resultsStateField,
 		  ccsf &QEEM,
 		  ccsf &REEM,
 		  ccsf &electronEnergyDeposition,
@@ -201,37 +192,50 @@ namespace XTM {
 		  ncvf &momentumDeposition,
 #endif
 		  ccsf &Tnp1Electron,
-		  ccsf &Tnp1Ion) const;
+		  ccsf &Tnp1Ion,
+		  DiffusionSolver &solver,
+		  double dt,
+		  const CCMaterialStateField &matStateCC,
+		  const FCMaterialStateField &matStateFC,
+		  const RadiationStateField &prevStateField,
+		  const ccsf &QRad,
+		  const ccsf &QElectron,
+		  const ccsf &QIon,
+		  const bssf &boundary) const;
 
      // IMPLEMENTATION
 
    private:
  
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // getBhat:
      //    get the 4pi*planckian
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void getBhat(const RadiationPhysics &radPhys,
-		  const ccsf &TElectron, ccsf &Bhat) const;
+     void getBhat(ccsf &Bhat, const RadiationPhysics &radPhys,
+		  const ccsf &TElectron) const;
     
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // getdBhatdT:
      //    get the 4pi*dPlanckiandT
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void getdBhatdT(const RadiationPhysics &radPhys,
-		     const ccsf &TElectron, ccsf &dBhatdT) const;
+     void getdBhatdT(ccsf &dBhatdT, const RadiationPhysics &radPhys,
+		     const ccsf &TElectron) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // calcNewRadState:
      //     calculate the new radiation state using the previous state,
      //     material properties, and sources.
      //     This solves the coupled radiation, electron, and ion equations
      //     ***without*** the conduction equations.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
     
-     void calcNewRadState(double dt,
+     void calcNewRadState(RadiationStateField &resultsStateField,
+			  ccsf &QEEM,
+			  ccsf &REEM,
+			  DiffusionSolver &solver,
+			  double dt,
 			  int groupNo,
 			  const CCMaterialStateField &matStateCC,
 			  const FCMaterialStateField &matStateFC,
@@ -241,19 +245,21 @@ namespace XTM {
 			  const ccsf &QIon,
 			  const ccsf &TElectron,
 			  const ccsf &TIon,
-			  const bssf &boundary,
-			  DiffusionSolver &solver,
-			  ccsf &QEEM,
-			  ccsf &REEM,
-			  RadiationStateField &resultsStateField) const;
+			  const bssf &boundary) const;
     
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // calcP1Coeffs:
      //     Calculate the coefficients, e.g. diffusion and removal, and
      //     source terms for solving the P1 equation.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void calcP1Coeffs(double dt,
+     void calcP1Coeffs(fcdsf &D,
+		       DiscFluxField &Fprime,
+		       ccsf &sigmaAbsBar,
+		       ccsf &QEEM,
+		       ccsf &REEM,
+		       ccsf &QRadBar,
+		       double dt,
 		       int groupNo,
 		       const CCMaterialStateField &matStateCC,
 		       const FCMaterialStateField &matStateFC,
@@ -262,22 +268,19 @@ namespace XTM {
 		       const ccsf &QElectron,
 		       const ccsf &QIon,
 		       const ccsf &TElectron,
-		       const ccsf &TIon,
-		       fcdsf &D,
-		       DiscFluxField &Fprime,
-		       ccsf &sigmaAbsBar,
-		       ccsf &QEEM,
-		       ccsf &REEM,
-		       ccsf &QRadBar) const;
+		       const ccsf &TIon) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // calcStarredFields:
      //    Calculate Qe*, Cv*, and nu.
      //    These are needed to calculate other coefficients
      //    and delta temperatures.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void calcStarredFields(double dt,
+     void calcStarredFields(ccsf &QElecStar,
+			    ccsf &CvStar,
+			    ccsf &nu,
+			    double dt,
 			    int groupNo,
 			    const CCMaterialStateField &matStateCC,
 			    const RadiationPhysics &radPhys,
@@ -285,36 +288,34 @@ namespace XTM {
 			    const ccsf &QIon,
 			    const ccsf &TElectron,
 			    const ccsf &TIon,
-			    const ccsf &sigmaEmission,
-			    ccsf &QElecStar,
-			    ccsf &CvStar,
-			    ccsf &nu) const;
+			    const ccsf &sigmaEmission) const;
     
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // calcStarredFields:
      //    Calculate Qe*, Cv*, but not nu.
      //    These are needed to calculate other coefficients
      //    and delta temperatures.
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void calcStarredFields(double dt,
+     void calcStarredFields(ccsf &QElecStar,
+			    ccsf &CvStar,
+			    double dt,
 			    int groupNo,
 			    const CCMaterialStateField &matStateCC,
 			    const RadiationPhysics &radPhys,
 			    const ccsf &QElectron,
 			    const ccsf &QIon,
 			    const ccsf &TElectron,
-			    const ccsf &TIon,
-			    ccsf &QElecStar,
-			    ccsf &CvStar) const;
+			    const ccsf &TIon) const;
     
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // calcDeltaTElectron:
      //    Calculate the difference between T electron from timestep
      //    n+1 to timestep n+1/2
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void calcDeltaTElectron(double dt,
+     void calcDeltaTElectron(ccsf &deltaTelectron,
+			     double dt,
 			     int numGroups, 
 			     const CCMaterialStateField &matStateCC, 
 			     const RadiationStateField &prevStateField, 
@@ -322,23 +323,22 @@ namespace XTM {
 			     const ccsf &QIon,
 			     const ccsf &TElectron,
 			     const ccsf &TIon,
-			     const RadiationStateField &resultsStateField, 
-			     ccsf &deltaTelectron) const;
+			     const RadiationStateField &resultsStateField) const;
 
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
      // calcDeltaTIon:
      //    Calculate the difference between T ion from timestep
      //    n+1 to timestep n+1/2
-     //------------------------------------------------------------------------//
+     //-----------------------------------------------------------------------//
 
-     void calcDeltaTIon(double dt,
+     void calcDeltaTIon(ccsf &deltaTIon,
+			double dt,
 			const CCMaterialStateField &matStateCC, 
 			const RadiationStateField &prevStateField, 
 			const ccsf &QIon,
 			const ccsf &TElectron,
 			const ccsf &TIon,
-			const ccsf &deltaTelectron,
-			ccsf &deltaTIon) const;
+			const ccsf &deltaTelectron) const;
  };
 
  //---------------------------------------------------------------------------//

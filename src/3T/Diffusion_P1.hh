@@ -63,18 +63,18 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     Diffusion_P1( const Diffusion_DB& diffdb,
                    const dsxx::SP<MT>& spm_, const pcg_DB& pcg_db );
 
-    void solve( const fcdsf& D,
+    void solve( ccsf& phi,
+                fcdsf& F,
+		const fcdsf& D,
                 const ccsf& sigmaabar,
                 const ccsf& Qbar_r,
                 const fcdsf& Fprime,
-                const bssf& f_b,
-                ccsf& phi,
-                fcdsf& F );
+                const bssf& f_b );
 
-    void solve( const fcdsf& D,
+    void solve( ccsf& phi,
+		const fcdsf& D,
                 const ccsf& sigmaabar,
-                const ccsf& Qbar_r,
-                ccsf& phi );
+                const ccsf& Qbar_r );
 
     void calculate_opposing_face( const fcdsf& X, fcdsf& Xprime );
     void calculate_Dtwidle( const fcdsf& D, const fcdsf& Dp );
