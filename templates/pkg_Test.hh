@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

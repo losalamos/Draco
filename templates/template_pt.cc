@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  Explicit template instatiations for class <basename>.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright 2004 The Regents of the University of California.
  * 
  * <start>
  */
