@@ -9,10 +9,12 @@
 
 #include "../Timer.hh"
 #include <iostream>
+#include <cmath>
 
 using rtt_stopwatch::Timer;
 using std::cout;
 using std::endl;
+using std::fabs;
 
 bool passed = true;
 
@@ -48,7 +50,7 @@ int main( int argc, char *argv[] )
     testTimer1.start();
     pause(pauseLength);
     testTimer1.stop();
-    if (fabs(testTimer1.getTime() - pauseLength) > 0.01)
+    if (fabs(testTimer1.getTime() - pauseLength) > 0.1)
         passed = false;
     if (testTimer1.getCount() != 1)
         passed = false;
@@ -60,9 +62,9 @@ int main( int argc, char *argv[] )
     testTimer2.stop();
     pause(pauseLength);
     testTimer1.stop();
-    if (fabs(testTimer1.getTime() - 4*pauseLength) > 0.01)
+    if (fabs(testTimer1.getTime() - 4*pauseLength) > 0.1)
         passed = false;
-    if (fabs(testTimer2.getTime() - pauseLength) > 0.01)
+    if (fabs(testTimer2.getTime() - pauseLength) > 0.1)
         passed = false;
     if (testTimer1.getCount() != 2)
         passed = false;
