@@ -20,11 +20,23 @@ libsrcs = \
 	NodeInfo.cc \
         SpinLock.cc \
 	Sync.cc \
-        global_nt.cc \
 	C4_Req.cc
 
+#        global_nt.cc \
 #	DeepBSwap.cc
 #	DeepObj.cc \
+
+# Add in the platform specific files
+
+ifeq ($(c4),shmem)
+libsrcs += global_shmem.cc shm_reduce.cc
+endif
+ifeq ($(c4),mpi)
+libsrcs	+= global_mpi.cc
+endif
+ifndef c4
+libsrcs	+= global_scalar.cc
+endif
 
 # Pathetic totalview can't handle this file, grrrrr.
 #        global.cc \
