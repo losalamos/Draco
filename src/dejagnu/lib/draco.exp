@@ -1,1 +1,22 @@
+# draco.exp
+# Geoffrey Furnish
+# February 12, 1998
+#
+# @> General DejaGNU support machinery for testing Draco components.
+
 puts "loading draco.exp from lib"
+
+# Analyze the Design By Contract settings.
+
+global DBC
+global Require
+global Check
+global Ensure
+
+if {$DBC & 1} { set Require 1 } else { set Require 0 }
+if {$DBC & 2} { set Check 1 }   else { set Check 0 }
+if {$DBC & 4} { set Ensure 1 }  else { set Ensure 0 }
+
+if {$Require} { puts "Require() enabled." } else { puts "Require() disabled." }
+if {$Check} { puts "Check() enabled." } else { puts "Check() disabled." }
+if {$Ensure} { puts "Ensure() enabled." } else { puts "Ensure() disabled." }
