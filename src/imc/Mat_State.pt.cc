@@ -1,26 +1,25 @@
 //----------------------------------*-C++-*----------------------------------//
-// Opacity.pt
+// Mat_State.pt
 // Thomas M. Evans
-// Tue Mar 10 14:47:45 1998
+// Tue Mar 10 14:33:24 1998
 //---------------------------------------------------------------------------//
-// @> Instantialyzer for template class Opacity
+// @> Instantialyzer for template class Mat_State
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
-#include "Opacity.cc"
+#include "Mat_State.cc"
 #include <iostream>
 
 IMCSPACE
 
 using std::ostream;
 
-instantiate class Opacity<OS_Mesh>
+template class Mat_State<OS_Mesh>;
 
-instantiate funcproto MT=OS_Mesh
-ostream& operator<<(ostream&, const Opacity<MT> &)
+template ostream& operator<<(ostream &, const Mat_State<OS_Mesh> &);
 
 CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of Opacity.pt
+//                              end of Mat_State.pt
 //---------------------------------------------------------------------------//

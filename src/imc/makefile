@@ -12,10 +12,20 @@ pkg := imctest
 
 include ../config/makefile
 
-# Put non template code here
+# Code sources
 
-libsrcs = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Random.cc \
+# tempsrc = template code
+# nonsrc  = non template code
+# libsrcs = code to be compiled, if using instantialyzer only include
+#           nonsrc
+
+nonsrc  = Layout.cc OS_Builder.cc OS_Mesh.cc OS_Interface.cc Random.cc \
           Coord_sys.cc
+
+tempsrc = Mat_State.pt.cc Opacity_Builder.pt.cc Opacity.pt.cc \
+          Particle.pt.cc
+
+libsrcs = $(nonsrc) $(tempsrc)
 
 # Get the library built, minding our various other targets too.
 

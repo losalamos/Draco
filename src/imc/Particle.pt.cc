@@ -1,25 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
-// Opacity_Builder.pt
+// Particle.pt
 // Thomas M. Evans
-// Tue Mar 10 14:48:45 1998
+// Thu Mar 12 10:51:34 1998
 //---------------------------------------------------------------------------//
-// @> Instantialyzer for template class Opacity_Builder
+// @> Instantialyzer for template class Particle
 //---------------------------------------------------------------------------//
 
 #include "imctest/OS_Mesh.hh"
-#include "imctest/OS_Interface.hh"
-#include "ds++/SP.hh"
-#include "Opacity_Builder.cc"
+#include "Particle.cc"
 
 IMCSPACE
 
-instantiate class Opacity_Builder<OS_Mesh>
-
-instantiate funcproto MT=OS_Mesh, IT=OS_Interface
-Opacity_Builder<MT>::Opacity_Builder(SP<IT>, SP<MT>)
+template class Particle<OS_Mesh>;
 
 CSPACE
 
 //---------------------------------------------------------------------------//
-//                              end of Opacity_Builder.pt
+//                              end of Particle.pt
 //---------------------------------------------------------------------------//
