@@ -69,6 +69,73 @@ void Rep_Comm_Check()
 }
 
 //---------------------------------------------------------------------------//
+
+void DD_P1()
+{
+    if (C4::nodes() > 1) 
+	return; 
+
+    // virtual 4 cell mesh
+
+    // build a DD topology on one processor
+    SP<Topology> topology;
+    
+    vector<vector<int> > cpp(1, vector<int>(4));
+    vector<vector<int> > ppc(4, vector<int>(1));
+    vector<vector<int> > bc(1);
+
+    // fill up cpp vector
+    cpp[0][0] = 1;
+    cpp[0][1] = 2;
+    cpp[0][2] = 3;
+    cpp[0][3] = 4;
+
+    // fill up ppc vector
+    ppc[0][0] = 0;
+    ppc[1][0] = 0;
+    ppc[2][0] = 0;
+    ppc[3][0] = 0;
+
+    topology = new General_Topology(cpp, ppc, bc, "DD");
+
+    Communicator_Builder<PT> builder;
+    SP<Communicator<PT> > communicator = builder.build_Communicator(topology);
+    if (!communicator) ITFAILS;
+    
+    // tests
+    if (communicator->num_send_nodes() != 0) ITFAILS;
+    if (communicator->num_recv_nodes() != 0) ITFAILS;
+
+    if (communicator->get_send_size()) ITFAILS;
+    if (communicator->get_recv_size()) ITFAILS;
+
+    // post receives on all processors
+    communicator->post();
+    if (communicator->arecv_status())  ITFAILS;
+    if (communicator->asend_status())  ITFAILS;
+
+    // try to flush
+    communicator->flush_all();
+    if (communicator->arecv_status())  ITFAILS;
+    if (communicator->asend_status())  ITFAILS;
+
+    // try to flush
+    vector<int> flush = communicator->flush();
+    if (communicator->arecv_status())  ITFAILS;
+    if (communicator->asend_status())  ITFAILS;
+    if (!flush.empty())                ITFAILS;
+    
+    // try arecv_end and asend_end
+    communicator->asend_end();
+    communicator->arecv_end();
+    if (communicator->arecv_status())  ITFAILS;
+    if (communicator->asend_status())  ITFAILS;
+
+    if (rtt_mc_test::passed)
+	PASSMSG("DD on 1 processor ok.");
+}
+
+//---------------------------------------------------------------------------//
 // test DD Communicator and Build communicator
 
 void DD_Comm_build()
@@ -591,6 +658,9 @@ int main(int argc, char *argv[])
 
 	// rep test
 	Rep_Comm_Check();
+
+	// DD on one processor
+	DD_P1();
 
 	// full DD test
 	DD_Comm_build();

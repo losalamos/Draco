@@ -367,6 +367,10 @@ void Communicator<PT>::free()
 template<class PT>
 bool Communicator<PT>::arecv_status()
 {
+    // if there are no receive buffers then they cannot be on
+    if (recv_buffer.size() == 0)
+	return false;
+
     for (int i = 0; i < recv_buffer.size(); i++)
 	if (!recv_buffer[i].comm_status())
 	    return false;
@@ -383,6 +387,10 @@ bool Communicator<PT>::arecv_status()
 template<class PT>
 bool Communicator<PT>::asend_status()
 {
+    // if there are no send buffers then they cannot be on
+    if (send_buffer.size() == 0)
+	return false;
+    
     for (int i = 0; i < send_buffer.size(); i++)
 	if (!send_buffer[i].comm_status())
 	    return false;
