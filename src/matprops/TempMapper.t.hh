@@ -26,6 +26,15 @@ namespace rtt_matprops
  }
 
  template<class MT>
+ TempMapper<MT>::TempMapper(double power_, double gamma_,
+			    const FieldConstructor &fCtor_)
+    : power(power_), gamma(gamma_), fCtor(fCtor_)
+ {
+     Require(gamma >= 0.0 && gamma <= 1.0);
+     Require(power != 0.0);
+ }
+
+ template<class MT>
  template<class FCV, class CCV, class OpAssignV>
  void TempMapper<MT>::tempCC2FC(FCV &faceTempsByMat, const CCV &cellTempsByMat,
 				const typename MT::ccsf &cellTempsAvg,
