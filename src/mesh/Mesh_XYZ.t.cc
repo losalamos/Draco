@@ -118,6 +118,312 @@ void Mesh_XYZ::gfcdtf<T>::update_gfcdtf()
 }
 
 template<class T>
+void Mesh_XYZ::bstf<T>::next_element( int& i, int& j, int& k, int& f) const
+{
+    if (f == 0)
+    // on left face
+    {
+        if (j != ncy - 1)
+        {
+            ++j;
+        }
+        else if (k != zoff + nczp - 1)
+        {
+            j = 0;
+            ++k;
+        }
+        else
+        // go to right face
+        {
+            i = ncx - 1;
+            j = 0;
+            k = zoff;
+            f = 1;
+        }
+    }
+    else if (f == 1)
+    // on right face
+    {
+        if (j != ncy - 1)
+        {
+            ++j;
+        }
+        else if (k != zoff + nczp - 1)
+        {
+            j = 0;
+            ++k;
+        }
+        else
+        // go to front face
+        {
+            i = 0;
+            j = 0;
+            k = zoff;
+            f = 2;
+        }
+    }
+    else if (f == 2)
+    // on front face
+    {
+        if (i != ncx - 1)
+        {
+            ++i;
+        }
+        else if (k != zoff + nczp - 1)
+        {
+            i = 0;
+            ++k;
+        }
+        else
+        {
+        // go to back face
+            i = 0;
+            j = ncy - 1;
+            k = zoff;
+            f = 3;
+        }
+    }
+    else if (f == 3)
+    // on back face
+    {
+        if (i != ncx - 1)
+        {
+            ++i;
+        }
+        else if (k != zoff + nczp - 1)
+        {
+            i = 0;
+            ++k;
+        }
+        else
+        {
+            if (node == 0)
+            // go to bottom face
+            {
+                i = 0;
+                j = 0;
+                k = 0;
+                f = 4;
+            }
+            else if (node == lastnode)
+            // go to top face
+            {
+                i = 0;
+                j = 0;
+                k = ncz - 1;
+                f = 5;
+            }
+            else
+            // at end; use dummy face
+            {
+                f = -1;
+            }
+        }
+    }
+    else if (f == 4)
+    // on bottom face
+    {
+        if (i != ncx - 1)
+        {
+            ++i;
+        }
+        else if (j != ncy - 1)
+        {
+            i = 0;
+            ++j;
+        }
+        else
+        {
+            if (node == lastnode)
+            // go to top face
+            {
+                i = 0;
+                j = 0;
+                k = ncz - 1;
+                f = 5;
+            }
+            else
+            // at end; use dummy face
+            {
+                f = -1;
+            }
+        }
+    }
+    else
+    // on top face
+    {
+        if (i != ncx - 1)
+        {
+            ++i;
+        }
+        else if (j != ncy - 1)
+        {
+            i = 0;
+            ++j;
+        }
+        else
+        // at end; use dummy face
+        {
+            f = -1;
+        }
+    }
+}
+
+template<class T>
+void Mesh_XYZ::bstf<T>::get_indexes
+( int& i, int& j, int& k, int& f, const int index) const
+{
+    int locindex;
+
+    if (index < ncy*nczp)
+    // on left face
+    {
+        locindex = index;
+        f = 0;
+        k = locindex/ncy + zoff;
+        j = locindex - (k-zoff)*ncy;
+        i = 0;
+    }
+    else if (index < 2*ncy*nczp)
+    // on right face
+    {
+        locindex = index - ncy*nczp;
+        f = 1;
+        k = locindex/ncy + zoff;
+        j = locindex - (k-zoff)*ncy;
+        i = ncx - 1;
+    }
+    else if (index < (2*ncy+ncx)*nczp)
+    // on front face
+    {
+        locindex = index - 2*ncy*nczp;
+        f = 2;
+        k = locindex/ncx + zoff;
+        j = 0;
+        i = locindex - (k-zoff)*ncx;
+    }
+    else if (index < 2*(ncy+ncx)*nczp)
+    // on back face
+    {
+        locindex = index - (2*ncy+ncx)*nczp;
+        f = 3;
+        k = locindex/ncx + zoff;
+        j = ncy - 1;
+        i = locindex - (k-zoff)*ncx;
+    }
+    else if (node == 0 && index < 2*(ncy+ncx)*nczp + ncx*ncy)
+    // on bottom face
+    {
+        locindex = index - 2*(ncy+ncx)*nczp;
+        f = 4;
+        k = 0;
+        j = locindex/ncx;
+        i = locindex - j*ncx;
+    }
+    else
+    // on top face
+    {
+        locindex = index - 2*(ncy+ncx)*nczp;
+        if (node == 0)
+            locindex -= ncx*ncy;
+        f = 5;
+        k = ncz - 1;
+        j = locindex/ncx;
+        i = locindex - j*ncx;
+    }
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::iterator& Mesh_XYZ::bstf<T>::iterator::operator++()
+{
+    bfield->next_element(i,j,k,f);
+    if (f == -1)
+        *this = bfield->end();
+    else
+        p = &(*bfield)(i,j,k,f);
+
+    return *this;
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::iterator
+Mesh_XYZ::bstf<T>::iterator::operator++( int dummy )
+{
+    bfield->next_element(i,j,k,f);
+    if (f == -1)
+        *this = bfield->end();
+    else
+        p = &(*bfield)(i,j,k,f);
+
+    return *this;
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::iterator&
+Mesh_XYZ::bstf<T>::iterator::operator=( const iterator& iter )
+{
+    p = iter.p;
+    i = iter.i;
+    j = iter.j;
+    k = iter.k;
+    f = iter.f;
+    bfield = iter.bfield;
+
+    return *this;
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::const_iterator::const_iterator( const iterator& iter )
+{
+    p = iter.p;
+    i = iter.i;
+    j = iter.j;
+    k = iter.k;
+    f = iter.f;
+    bfield = iter.bfield;
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::const_iterator&
+Mesh_XYZ::bstf<T>::const_iterator::operator++()
+{
+    bfield->next_element(i,j,k,f);
+    if (f == -1)
+        *this = bfield->end();
+    else
+        p = &(*bfield)(i,j,k,f);
+
+    return *this;
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::const_iterator
+Mesh_XYZ::bstf<T>::const_iterator::operator++( int dummy )
+{
+    bfield->next_element(i,j,k,f);
+    if (f == -1)
+        *this = bfield->end();
+    else
+        p = &(*bfield)(i,j,k,f);
+
+    return *this;
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::const_iterator&
+Mesh_XYZ::bstf<T>::const_iterator::operator=( const const_iterator& iter )
+{
+    p = iter.p;
+    i = iter.i;
+    j = iter.j;
+    k = iter.k;
+    f = iter.f;
+    bfield = iter.bfield;
+
+    return *this;
+}
+
+template<class T>
 Mesh_XYZ::bstf<T>&
 Mesh_XYZ::bstf<T>::operator=( T x )
 {
@@ -174,6 +480,79 @@ const T& Mesh_XYZ::bstf<T>::operator()( int i, int j, int k, int f ) const
             || (k == 0 && f == 4) || (k == ncz - 1 && f == 5));
 
     return data(i,j,k,f);
+}
+
+template<class T>
+const T& Mesh_XYZ::bstf<T>::operator[]( int index ) const
+{
+    int i, j, k, f;
+    get_indexes(i,j,k,f,index);
+    return data(i,j,k,f);
+}
+
+template<class T>
+T& Mesh_XYZ::bstf<T>::operator[]( int index )
+{
+    int i, j, k, f;
+    get_indexes(i,j,k,f,index);
+    return data(i,j,k,f);
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::iterator Mesh_XYZ::bstf<T>::begin()
+{
+    return Mesh_XYZ::bstf<T>::iterator(&data(0,0,zoff,0),0,0,zoff,0,this);
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::iterator Mesh_XYZ::bstf<T>::end()
+{
+    int i, j, k, f;
+    T* p;
+
+    i = ncx - 1;
+    j = ncy - 1;
+    k = zoff + nczp - 1;
+    f = 5;
+    p = &data(i,j,k,f);
+    ++p;
+
+    return Mesh_XYZ::bstf<T>::iterator(p,i,j,k,f,this);
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::const_iterator Mesh_XYZ::bstf<T>::begin() const
+{
+    return Mesh_XYZ::bstf<T>::const_iterator
+                              (&data(0,0,zoff,0),0,0,zoff,0,this);
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>::const_iterator Mesh_XYZ::bstf<T>::end() const
+{
+    int i, j, k, f;
+    const T* p;
+
+    i = ncx - 1;
+    j = ncy - 1;
+    k = zoff + nczp - 1;
+    f = 5;
+    p = &data(i,j,k,f);
+    ++p;
+
+    return Mesh_XYZ::bstf<T>::const_iterator(p,i,j,k,f,this);
+}
+
+template<class T>
+int Mesh_XYZ::bstf<T>::size() const
+{
+    int tempsize = 2*(ncx+ncy)*nczp;
+    if (node == 0)
+        tempsize += ncx*ncy;
+    if (node == lastnode)
+        tempsize += ncx*ncy;
+
+    return tempsize;
 }
 
 template <class T1, class T2, class Op>

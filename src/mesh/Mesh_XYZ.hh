@@ -419,8 +419,68 @@ class Mesh_XYZ : private XYZ_Mapper
             : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m )
 	{}
 
+        void next_element( int& i, int& j, int& k, int& f) const;
+        void get_indexes
+             ( int& i, int& j, int& k, int& f, const int index) const;
+
       public:
         typedef T value_type;
+
+        class iterator;
+        class const_iterator
+	{
+          private:
+            const T* p;
+            int i, j, k, f;
+            const bstf<T>* bfield;
+
+          public:
+            const_iterator( const T* const _p, const int _i, const int _j,
+                            const int _k, const int _f,
+                            const bstf<T>* const _bfield )
+                : p( _p ), i( _i ), j( _j ), k( _k ), f( _f ),
+                  bfield( _bfield )
+            {}
+
+            const_iterator( const iterator& iter );
+
+            bool operator==( const const_iterator& iter ) const
+            { return p == iter.p; }
+            bool operator!=( const const_iterator& iter ) const
+            { return p != iter.p; }
+            const_iterator& operator++();
+            const_iterator operator++( int dummy );
+            const T& operator*() const { return *p; }
+            const T* operator->() const { return p; }
+            const_iterator& operator=( const const_iterator& iter );
+	};
+
+        class iterator
+	{
+          friend class bstf<T>::const_iterator;
+
+          private:
+            T* p;
+            int i, j, k, f;
+            bstf<T>* bfield;
+
+          public:
+            iterator( T* const _p, const int _i, const int _j, const int _k,
+                      const int _f, bstf<T>* const _bfield )
+                : p( _p ), i( _i ), j( _j ), k( _k ), f( _f ),
+                  bfield( _bfield )
+            {}
+
+            bool operator==( const iterator& iter ) const
+            { return p == iter.p; }
+            bool operator!=( const iterator& iter ) const
+            { return p != iter.p; }
+            iterator& operator++();
+            iterator operator++( int dummy );
+            T& operator*() const { return *p; }
+            T* operator->() const { return p; }
+            iterator& operator=( const iterator& iter );
+	};
 
         bstf( const dsxx::SP<Mesh_XYZ>& m )
             : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m.bp() )
@@ -442,10 +502,19 @@ class Mesh_XYZ : private XYZ_Mapper
         T& operator()( int i, int j, int k, int f );
         const T& operator()( int i, int j, int k, int f ) const;
 
-        const T& operator[]( int i ) const { return data[i]; }
-        T& operator[]( int i ) { return data[i]; }
+        const T& operator[]( int index ) const;
+        T& operator[]( int index );
 
-        int size() const { return data.size(); }
+        iterator begin();
+        iterator end();
+
+        const_iterator begin() const;
+        const_iterator end() const;
+
+        int size() const;
+
+        friend class bstf<T>::iterator;
+        friend class bstf<T>::const_iterator;
     };
 
     typedef bstf<double> bssf;

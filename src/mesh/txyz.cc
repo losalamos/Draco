@@ -108,6 +108,19 @@ int main( int argc, char *argv[] )
         yb = 2.;
         zb = xb + yb;
         Mesh_XYZ m = xb.get_Mesh();
+        for (Mesh_XYZ::bssf::iterator iter = xb.begin();
+             iter != xb.end(); ++iter)
+            *iter = 6.;
+        for (Mesh_XYZ::bssf::const_iterator iter = zb.begin();
+             iter != zb.end(); ++iter)
+	    if (*iter < 2.999 || *iter > 3.001)
+                cout << "Error in boundary treatment" << endl;
+
+        const Mesh_XYZ::bssf cxb( spm );
+        Mesh_XYZ::bssf::iterator iter = xb.begin();
+        for (Mesh_XYZ::bssf::const_iterator citer = cxb.begin();
+             citer != cxb.end(); ++citer, ++iter)
+            *iter = *citer;
       }
       catch (const dsxx::assertion &ass)
       {
