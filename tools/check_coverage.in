@@ -46,7 +46,15 @@ fi
 #DbC 2 - Must have compiled with correct options
 if test -z "`echo $configure_command | grep ftest-coverage`"; then
    echo "Must configure with the following command line option:"
-   echo "   \'--with-cxxflags=-ftest-coverage -fprofile-arcs\'"
+   echo "   --with-cxxflags=\"-ftest-coverage -fprofile-arcs\""
+   echo "Aborting..."
+   exit;
+fi
+
+#DbC 3 - must be a debug version
+if ! test -z "`echo $configure_command | grep enable-debug`"; then
+   echo "Must configure with the following command line option:"
+   echo "   --enable-debug"
    echo "Aborting..."
    exit;
 fi
@@ -75,8 +83,8 @@ for package in $packages; do
    cd $top_source_dir/src/$package
    ccfiles=`ls -1 *.cc 2>/dev/null`
    hhfiles=`ls -1 *.hh 2>/dev/null`
-   hifiles=`ls -1 *.hi 2>/dev/null`
-   files="$hhfiles $hifiles"
+   ihhfiles=`ls -1 *.i.hh 2>/dev/null`
+   files="$ihhfiles $hhfiles"
    cd $curbdir
 
    # Run the coverage tool
@@ -171,8 +179,8 @@ echo " "
    echo "about lines covered by tests.  Each line is prepended by one"
    echo "of the following:"
    echo " "
-   echo "####   Executable line not covered"
-   echo "[NNN]  Executable line covered NNN times"
-   echo "-      Non-executable line"
+   echo "   ####   Executable line not covered"
+   echo "   [NNN]  Executable line covered NNN times"
+   echo "   -      Non-executable line"
    echo " "
 
