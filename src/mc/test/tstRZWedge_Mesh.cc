@@ -16,6 +16,7 @@
 #include "../RZWedge_Mesh.hh"
 #include "../XYZCoord_sys.hh"
 #include "../AMR_Layout.hh"
+#include "../RZWedge_Builder.hh"
 #include "../Release.hh"
 #include "../Math.hh"
 #include "c4/global.hh"
@@ -32,9 +33,13 @@ using rtt_mc::XYZCoord_sys;
 using rtt_mc::AMR_Layout;
 using rtt_dsxx::SP;
 using rtt_mc::RZWedge_Mesh;
+using rtt_mc::RZWedge_Builder;
 using rtt_mc::global::soft_equiv;
+using rtt_mc::global::pi;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
+
+using std::pow;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
@@ -325,7 +330,7 @@ void simple_one_cell_RZWedge()
     if (mesh->get_bndface("hiz", 1) != 6) ITFAILS;
 
     // check that, if this were a surface source cell, it would actually be
-    // on a vacuume boundary
+    // on a vacuum boundary
     vector<int> sur_cell(1,1);
     if ( mesh->check_defined_surcells("lox",sur_cell)) ITFAILS;
     if (!mesh->check_defined_surcells("hix",sur_cell)) ITFAILS;
@@ -521,6 +526,486 @@ void simple_one_cell_RZWedge()
     if (intersecting_face != 5)         ITFAILS;
 
 }
+
+//===========================================================================//
+// Parser
+//---------------------------------------------------------------------------//
+// interface for a 6-cell RZWedge_Mesh (similar to the 6-cell OS_Mesh) 
+class Parser
+{
+  public:
+    // constructor
+    Parser() {/*...*/}
+    
+    // public copy functions for Mesh
+    std::string get_mesh_file() const { return "RZWedge_Input"; }
+};
+
+
+//---------------------------------------------------------------------------//
+// test the RZWedge_Mesh via the RZWedge_Builder
+
+void build_an_RZWedge()
+{
+    // make a builder from parsing the RZWedge input (see Parser class above)
+    SP<Parser> parser(new Parser());
+    RZWedge_Builder builder(parser);
+
+    // check some of the RZWedge_Builder properties; before build_Mesh, the
+    // coordinate system is two-dimensional.  After build_Mesh, it's 3D XYZ. 
+
+    // test cell region data (same as in OS_Mesh)
+    {
+	vector<int> regions(6,1);
+	regions[3] = 2;
+	regions[4] = 2;
+	regions[5] = 2;
+
+	if (builder.get_num_regions() != 2)   ITFAILS;
+	if (builder.get_regions() != regions) ITFAILS;
+    }
+
+    // test zone mapping (same as in OS_Mesh)
+    {
+	vector<vector<int> > zone(2, vector<int>(3));
+	zone[0][0] = 1;
+	zone[0][1] = 2;
+	zone[0][2] = 3;
+	zone[1][0] = 4;
+	zone[1][1] = 5;
+	zone[1][2] = 6;
+
+	if (builder.get_num_zones() != 2)            ITFAILS;
+	if (builder.get_cells_in_zone(1) != zone[0]) ITFAILS;
+	if (builder.get_cells_in_zone(2) != zone[1]) ITFAILS;
+    }
+
+    // build an RZWedge mesh
+    SP<RZWedge_Mesh> mesh = builder.build_Mesh();
+
+    // check defined surface source cells
+    {
+	vector<vector<int> > ss(2);
+	ss[0].resize(2);
+	ss[1].resize(2);
+	ss[0][0] = 3;
+	ss[0][1] = 6;
+	ss[1][0] = 1;
+	ss[1][1] = 2;
+
+	if (builder.get_defined_surcells() != ss) ITFAILS;
+
+	vector<string> ssp(2);
+	ssp[0] = "hir";
+	ssp[1] = "loz";
+	
+	if (builder.get_ss_pos() != ssp) ITFAILS;
+    }
+
+    // check zone mapper
+    {
+	vector<int> zone_field(2);
+	zone_field[0] = 1000;
+	zone_field[1] = 1001;
+	vector<int> cell_field = builder.zone_cell_mapper(zone_field);
+
+	if (cell_field.size() != mesh->num_cells()) ITFAILS;
+
+	if (cell_field[0] != 1000) ITFAILS;
+	if (cell_field[1] != 1000) ITFAILS;
+	if (cell_field[2] != 1000) ITFAILS;
+	if (cell_field[3] != 1001) ITFAILS;
+	if (cell_field[4] != 1001) ITFAILS;
+	if (cell_field[5] != 1001) ITFAILS;
+    }
+
+    //     <<<< now do some checks on the mesh itself >>>>>
+    // (this is a different mesh than the simple_one_cell_RZWedge)
+
+    // check that the mesh returns proper coordinate system information
+    if (mesh->get_Coord().get_dim() != 3)    ITFAILS;
+    if (mesh->get_SPCoord()->get_dim() != 3) ITFAILS;
+    if (mesh->get_Coord().get_Coord()    != std::string("xyz")) ITFAILS;
+    if (mesh->get_SPCoord()->get_Coord() != std::string("xyz")) ITFAILS;
+
+    // check that mesh returns the proper number of cells
+    if (mesh->num_cells() != 6) ITFAILS;
+
+    // calculate sqrt(pi)/2 -- it will come in handy!
+    double sqrtpi_2 = 0.5 * std::pow(pi,0.5);
+
+    // check that x- and z-extents are correct for the 1st and last cells
+    if (!soft_equiv(mesh->get_low_x(1), 0.0))       ITFAILS;
+    if (!soft_equiv(mesh->get_high_x(1), sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(mesh->get_low_z(1), -1.0))      ITFAILS;
+    if (!soft_equiv(mesh->get_high_z(1), 1.0))      ITFAILS;
+
+    if (!soft_equiv(mesh->get_low_x(6), 2.0*sqrtpi_2))  ITFAILS;
+    if (!soft_equiv(mesh->get_high_x(6), 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(mesh->get_low_z(6), 1.0))           ITFAILS;
+    if (!soft_equiv(mesh->get_high_z(6), 3.0))          ITFAILS;
+
+    // check that cell midpoints are correct for 1st and last cells
+    if (!soft_equiv(mesh->get_x_midpoint(1), 0.5*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(mesh->get_y_midpoint(1), 0.0))          ITFAILS;
+    if (!soft_equiv(mesh->get_z_midpoint(1), 0.0))          ITFAILS;
+
+    if (!soft_equiv(mesh->get_x_midpoint(6), 2.5*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(mesh->get_y_midpoint(6), 0.0))          ITFAILS;
+    if (!soft_equiv(mesh->get_z_midpoint(6), 2.0))          ITFAILS;
+
+    // check that graphics cell type is correct
+    vector<int> cell_type = mesh->get_cell_types();
+    if (cell_type.size() != 6)                               ITFAILS;
+    for (int i = 0; i < 6; i++) 
+	if (cell_type[0] != rtt_viz::eight_node_hexahedron ) ITFAILS;
+
+    // check that mesh returns the proper point coordinates (1st & last cell)
+    vector<vector<double> > point_coords = mesh->get_point_coord();
+    if (point_coords.size() != 48)       ITFAILS;
+    for (int p = 0; p < 48; p++) 
+	if (point_coords[p].size() != 3) ITFAILS;
+
+    //   first cell, low z face, clockwise from the lower left, facing +z
+    if (!soft_equiv(point_coords[0][0], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[0][1], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[0][2],-1.0))      ITFAILS;
+    if (!soft_equiv(point_coords[1][0], sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[1][1],-sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[1][2], -1.0))     ITFAILS;
+    if (!soft_equiv(point_coords[2][0], sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[2][1], sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[2][2], -1.0))     ITFAILS;
+    if (!soft_equiv(point_coords[3][0], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[3][1], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[3][2], -1.0))     ITFAILS;
+
+    //   first cell, high z face, clockwise from the lower left, facing +z 
+    if (!soft_equiv(point_coords[4][0], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[4][1], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[4][2], 1.0))      ITFAILS;
+    if (!soft_equiv(point_coords[5][0], sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[5][1],-sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[5][2], 1.0))      ITFAILS;
+    if (!soft_equiv(point_coords[6][0], sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[6][1], sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[6][2], 1.0))      ITFAILS;
+    if (!soft_equiv(point_coords[7][0], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[7][1], 0.0))      ITFAILS;
+    if (!soft_equiv(point_coords[7][2], 1.0))      ITFAILS;
+
+    //   last cell, low z face, clockwise from the lower left, facing +z
+    if (!soft_equiv(point_coords[40][0], 2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[40][1],-2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[40][2], 1.0))          ITFAILS;
+    if (!soft_equiv(point_coords[41][0], 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[41][1],-3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[41][2], 1.0))          ITFAILS;
+    if (!soft_equiv(point_coords[42][0], 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[42][1], 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[42][2], 1.0))          ITFAILS;
+    if (!soft_equiv(point_coords[43][0], 2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[43][1], 2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[43][2], 1.0))          ITFAILS;
+
+    //   last cell, high z face, clockwise from the lower left, facing +z 
+    if (!soft_equiv(point_coords[44][0], 2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[44][1],-2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[44][2], 3.0))          ITFAILS;
+    if (!soft_equiv(point_coords[45][0], 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[45][1],-3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[45][2], 3.0))          ITFAILS;
+    if (!soft_equiv(point_coords[46][0], 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[46][1], 3.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[46][2], 3.0))          ITFAILS;
+    if (!soft_equiv(point_coords[47][0], 2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[47][1], 2.0*sqrtpi_2)) ITFAILS;
+    if (!soft_equiv(point_coords[47][2], 3.0))          ITFAILS;
+
+    // check that mesh returns the correct "next cell"
+    // wedge faces (low and high y) should be reflecting
+    for (int c = 1; c <= 6; c++)
+    {
+	if (mesh->next_cell(c, 3) != c) ITFAILS;
+	if (mesh->next_cell(c, 4) != c) ITFAILS;
+    }
+
+    if (mesh->next_cell(1, 1) != 1) ITFAILS;
+    if (mesh->next_cell(1, 2) != 2) ITFAILS;
+    if (mesh->next_cell(1, 5) != 0) ITFAILS;
+    if (mesh->next_cell(1, 6) != 4) ITFAILS;
+    if (mesh->next_cell(2, 1) != 1) ITFAILS;
+    if (mesh->next_cell(2, 2) != 3) ITFAILS;
+    if (mesh->next_cell(2, 5) != 0) ITFAILS;
+    if (mesh->next_cell(2, 6) != 5) ITFAILS;
+    if (mesh->next_cell(3, 1) != 2) ITFAILS;
+    if (mesh->next_cell(3, 2) != 0) ITFAILS;
+    if (mesh->next_cell(3, 5) != 0) ITFAILS;
+    if (mesh->next_cell(3, 6) != 6) ITFAILS;
+    if (mesh->next_cell(4, 1) != 4) ITFAILS;
+    if (mesh->next_cell(4, 2) != 5) ITFAILS;
+    if (mesh->next_cell(4, 5) != 1) ITFAILS;
+    if (mesh->next_cell(4, 6) != 0) ITFAILS;
+    if (mesh->next_cell(5, 1) != 4) ITFAILS;
+    if (mesh->next_cell(5, 2) != 6) ITFAILS;
+    if (mesh->next_cell(5, 5) != 2) ITFAILS;
+    if (mesh->next_cell(5, 6) != 0) ITFAILS;
+    if (mesh->next_cell(6, 1) != 5) ITFAILS;
+    if (mesh->next_cell(6, 2) != 0) ITFAILS;
+    if (mesh->next_cell(6, 5) != 3) ITFAILS;
+    if (mesh->next_cell(6, 6) != 0) ITFAILS;
+
+    // check that mesh can locate a cell given a position
+    vector<double> position(3, 0.0);
+    position[0] = 0.5;
+    position[2] = 0.5;
+    if (mesh->get_cell(position) != 1)  ITFAILS;
+
+    position[0] = 100.0;
+    if (mesh->get_cell(position) != -1) ITFAILS;
+
+    position[0] = 1.5;
+    position[1] = 1.0;
+    position[2] = 2.0;
+    if (mesh->get_cell(position) != 5)  ITFAILS;
+
+
+    // check that the face normals are correct
+    vector<double> normal(3, 0.0);
+    double sincos_45 = 1.0/std::sqrt(2.0);
+    normal = mesh->get_normal(1,1);
+    if (!soft_equiv(normal[0],-1.0)) ITFAILS;
+    if (!soft_equiv(normal[1], 0.0)) ITFAILS;
+    if (!soft_equiv(normal[2], 0.0)) ITFAILS;
+    normal = mesh->get_normal(1,2);
+    if (!soft_equiv(normal[0], 1.0)) ITFAILS;
+    if (!soft_equiv(normal[1], 0.0)) ITFAILS;
+    if (!soft_equiv(normal[2], 0.0)) ITFAILS;
+    normal = mesh->get_normal(1,3);
+    if (!soft_equiv(normal[0], -sincos_45)) ITFAILS;
+    if (!soft_equiv(normal[1], -sincos_45)) ITFAILS;
+    if (!soft_equiv(normal[2],        0.0)) ITFAILS;
+    normal = mesh->get_normal(1,4);
+    if (!soft_equiv(normal[0], -sincos_45)) ITFAILS;
+    if (!soft_equiv(normal[1],  sincos_45)) ITFAILS;
+    if (!soft_equiv(normal[2],        0.0)) ITFAILS;
+    normal = mesh->get_normal(1,5);
+    if (!soft_equiv(normal[0], 0.0)) ITFAILS;
+    if (!soft_equiv(normal[1], 0.0)) ITFAILS;
+    if (!soft_equiv(normal[2],-1.0)) ITFAILS;
+    normal = mesh->get_normal(1,6);
+    if (!soft_equiv(normal[0], 0.0)) ITFAILS;
+    if (!soft_equiv(normal[1], 0.0)) ITFAILS;
+    if (!soft_equiv(normal[2], 1.0)) ITFAILS;
+
+    // now see that all other cells have the same normals
+    for (int c = 1; c <= 6; c++)
+	for (int f = 1; f <= 6; f++)
+	{
+	    normal = mesh->get_normal(1,f);
+	    vector<double> check = mesh->get_normal(c,f);
+	    for (int d = 0; d < 3; d++)
+		if (!soft_equiv(normal[d],check[d]))    ITFAILS;
+	}
+		    
+
+    vector<double> normal_in(3, 0.0);
+    for (int cell = 1; cell <= 6; cell++)
+	for (int face = 1; face <= 6; face++)
+	{
+	    normal = mesh->get_normal(1,face);
+	    normal_in = mesh->get_normal_in(1,face);
+	    for (int dim = 0; dim < 3; dim++)
+		if (!soft_equiv(normal[dim],-normal_in[dim])) ITFAILS;
+	}
+    
+    // does the mesh return the correct cell volume?
+    for (int cell = 1; cell <= 3; cell++)
+    {
+	if (!soft_equiv(mesh->volume(cell),  (2*cell-1)*pi*0.5)) ITFAILS;
+	if (!soft_equiv(mesh->volume(cell+3),(2*cell-1)*pi*0.5)) ITFAILS;
+    }
+
+
+    // does the mesh return the correct face areas?
+    if (!soft_equiv(mesh->face_area(1,1),0.0))             ITFAILS;
+    if (!soft_equiv(mesh->face_area(1,2),pow(4.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(1,3),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(1,4),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(1,5),pi*0.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(1,6),pi*0.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(4,1),0.0))             ITFAILS;
+    if (!soft_equiv(mesh->face_area(4,2),pow(4.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(4,3),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(4,4),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(4,5),pi*0.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(4,6),pi*0.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(2,1),pow(4.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(2,2),pow(16.0*pi,0.5)))ITFAILS;
+    if (!soft_equiv(mesh->face_area(2,3),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(2,4),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(2,5),pi*0.75))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(2,6),pi*0.75))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(5,1),pow(4.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(5,2),pow(16.0*pi,0.5)))ITFAILS;
+    if (!soft_equiv(mesh->face_area(5,3),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(5,4),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(5,5),pi*0.75))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(5,6),pi*0.75))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(3,1),pow(16.0*pi,0.5)))ITFAILS;
+    if (!soft_equiv(mesh->face_area(3,2),pow(36.0*pi,0.5)))ITFAILS;
+    if (!soft_equiv(mesh->face_area(3,3),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(3,4),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(3,5),pi*1.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(3,6),pi*1.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(6,1),pow(16.0*pi,0.5)))ITFAILS;
+    if (!soft_equiv(mesh->face_area(6,2),pow(36.0*pi,0.5)))ITFAILS;
+    if (!soft_equiv(mesh->face_area(6,3),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(6,4),pow(2.0*pi,0.5))) ITFAILS;
+    if (!soft_equiv(mesh->face_area(6,5),pi*1.25))         ITFAILS;
+    if (!soft_equiv(mesh->face_area(6,6),pi*1.25))         ITFAILS;
+
+    // check that the mesh returns correctly sized vertices.
+    vector<vector<double> > vertices;
+    for (int cell = 0; cell < 6; cell++)
+    {
+	for (int face = 0; face < 6; face++)
+	{
+	    vertices = mesh->get_vertices(cell+1,face+1);
+	    
+	    if (vertices.size() != 3)    ITFAILS;  // 3 dimensions
+	    if (vertices[0].size() != 4) ITFAILS;  // 4 nodes per face
+	    if (vertices[1].size() != 4) ITFAILS;  // 4 nodes per face
+	    if (vertices[2].size() != 4) ITFAILS;  // 4 nodes per face
+	}
+
+	vertices = mesh->get_vertices(cell+1);
+	if (vertices.size() != 3)    ITFAILS;  // 3 dimensions
+	if (vertices[0].size() != 8) ITFAILS;  // 8 nodes per cell
+	if (vertices[1].size() != 8) ITFAILS;  // 8 nodes per cell
+	if (vertices[2].size() != 8) ITFAILS;  // 8 nodes per cell
+    }
+
+    // spot check a few vertices
+    vertices = mesh->get_vertices(6,5);
+    if (!soft_equiv(vertices[0][0], pow(pi,0.5))) ITFAILS;
+    if (!soft_equiv(vertices[1][0],-pow(pi,0.5))) ITFAILS;
+    if (!soft_equiv(vertices[2][0], 1.0))         ITFAILS;
+    vertices = mesh->get_vertices(2,2);
+    if (!soft_equiv(vertices[0][2], pow(pi,0.5))) ITFAILS;
+    if (!soft_equiv(vertices[1][2], pow(pi,0.5))) ITFAILS;
+    if (!soft_equiv(vertices[2][2], 1.0))         ITFAILS;
+    
+
+    // check that the mesh returns the correct face number
+    if (mesh->get_bndface("lox", 1) != 1) ITFAILS;
+    if (mesh->get_bndface("hix", 1) != 2) ITFAILS;
+    if (mesh->get_bndface("lor", 1) != 1) ITFAILS;
+    if (mesh->get_bndface("hir", 1) != 2) ITFAILS;
+    if (mesh->get_bndface("loy", 1) != 3) ITFAILS;
+    if (mesh->get_bndface("hiy", 1) != 4) ITFAILS;
+    if (mesh->get_bndface("loz", 1) != 5) ITFAILS;
+    if (mesh->get_bndface("hiz", 1) != 6) ITFAILS;
+
+    // check that surface source cells would actually be on a vacuum boundary
+    vector<int> sur_cell;
+    sur_cell.resize(2);
+    sur_cell[0] = 3;
+    sur_cell[1] = 6;
+    if (!mesh->check_defined_surcells("hix",sur_cell)) ITFAILS;
+    if (!mesh->check_defined_surcells("hir",sur_cell)) ITFAILS;
+    sur_cell[0] = 1;
+    sur_cell[1] = 4;
+    if (mesh->check_defined_surcells("lox",sur_cell))  ITFAILS;
+    if (mesh->check_defined_surcells("lor",sur_cell))  ITFAILS;
+    sur_cell.resize(3);
+    sur_cell[0] = 1;
+    sur_cell[1] = 2;
+    sur_cell[2] = 3;
+    if (!mesh->check_defined_surcells("loz",sur_cell)) ITFAILS;
+    sur_cell[0] = 4;
+    sur_cell[1] = 5;
+    sur_cell[2] = 6;
+    if (!mesh->check_defined_surcells("hiz",sur_cell)) ITFAILS;
+    sur_cell.resize(6);
+    for (int c = 0; c < 6; c++)
+	sur_cell[c] = c+1;
+    if ( mesh->check_defined_surcells("loy",sur_cell)) ITFAILS;
+    if ( mesh->check_defined_surcells("hiy",sur_cell)) ITFAILS;
+
+    // check that the mesh returns the proper cell list 
+    vector<int> surface_cell_list;
+    surface_cell_list = mesh->get_surcells("hir");
+    if (surface_cell_list.size() != 2)             ITFAILS;
+    if (surface_cell_list[0] != 3)                 ITFAILS;
+    if (surface_cell_list[1] != 6)                 ITFAILS;
+    surface_cell_list = mesh->get_surcells("loz");
+    if (surface_cell_list.size() != 3)             ITFAILS;
+    if (surface_cell_list[0] != 1)                 ITFAILS;
+    if (surface_cell_list[1] != 2)                 ITFAILS;
+    if (surface_cell_list[2] != 3)                 ITFAILS;
+    surface_cell_list = mesh->get_surcells("hiz");
+    if (surface_cell_list.size() != 3)             ITFAILS;
+    if (surface_cell_list[0] != 4)                 ITFAILS;
+    if (surface_cell_list[1] != 5)                 ITFAILS;
+    if (surface_cell_list[2] != 6)                 ITFAILS;
+
+    // check that the neighbors are correct
+    vector<int> neighbors;
+    neighbors = mesh->get_neighbors(1);
+    if (neighbors.size() != 6) ITFAILS;
+    if (neighbors[0] != 1)     ITFAILS;
+    if (neighbors[1] != 2)     ITFAILS;
+    if (neighbors[2] != 1)     ITFAILS;
+    if (neighbors[3] != 1)     ITFAILS;
+    if (neighbors[4] != 0)     ITFAILS;
+    if (neighbors[5] != 4)     ITFAILS;
+    neighbors = mesh->get_neighbors(2);
+    if (neighbors.size() != 6) ITFAILS;
+    if (neighbors[0] != 1)     ITFAILS;
+    if (neighbors[1] != 3)     ITFAILS;
+    if (neighbors[2] != 2)     ITFAILS;
+    if (neighbors[3] != 2)     ITFAILS;
+    if (neighbors[4] != 0)     ITFAILS;
+    if (neighbors[5] != 5)     ITFAILS;
+    neighbors = mesh->get_neighbors(3);
+    if (neighbors.size() != 6) ITFAILS;
+    if (neighbors[0] != 2)     ITFAILS;
+    if (neighbors[1] != 0)     ITFAILS;
+    if (neighbors[2] != 3)     ITFAILS;
+    if (neighbors[3] != 3)     ITFAILS;
+    if (neighbors[4] != 0)     ITFAILS;
+    if (neighbors[5] != 6)     ITFAILS;
+    neighbors = mesh->get_neighbors(4);
+    if (neighbors.size() != 6) ITFAILS;
+    if (neighbors[0] != 4)     ITFAILS;
+    if (neighbors[1] != 5)     ITFAILS;
+    if (neighbors[2] != 4)     ITFAILS;
+    if (neighbors[3] != 4)     ITFAILS;
+    if (neighbors[4] != 1)     ITFAILS;
+    if (neighbors[5] != 0)     ITFAILS;
+    neighbors = mesh->get_neighbors(5);
+    if (neighbors.size() != 6) ITFAILS;
+    if (neighbors[0] != 4)     ITFAILS;
+    if (neighbors[1] != 6)     ITFAILS;
+    if (neighbors[2] != 5)     ITFAILS;
+    if (neighbors[3] != 5)     ITFAILS;
+    if (neighbors[4] != 2)     ITFAILS;
+    if (neighbors[5] != 0)     ITFAILS;
+    neighbors = mesh->get_neighbors(6);
+    if (neighbors.size() != 6) ITFAILS;
+    if (neighbors[0] != 5)     ITFAILS;
+    if (neighbors[1] != 0)     ITFAILS;
+    if (neighbors[2] != 6)     ITFAILS;
+    if (neighbors[3] != 6)     ITFAILS;
+    if (neighbors[4] != 3)     ITFAILS;
+    if (neighbors[5] != 0)     ITFAILS;
+
+    // make sure the mesh thinks it's not a submesh
+    if (!mesh->full_Mesh()) ITFAILS;
+
+}
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -547,6 +1032,9 @@ int main(int argc, char *argv[])
     {
 	// simple one-celled test problem
 	simple_one_cell_RZWedge();
+
+	// test the RZWedge_Mesh Builder
+	build_an_RZWedge();
     }
     catch (rtt_dsxx::assertion &ass)
     {
