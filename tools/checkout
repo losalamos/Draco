@@ -42,10 +42,9 @@ Examples:
 
   # Ditto, but into directory tools:
   checkout draco/tools -d tools
-
 """
 
-from Utils import disambiguate, AmbiguousKeyError
+from Utils import disambiguate, AmbiguousKeyError, padlist
 import sys, os, getopt
 
 package_archive = {'draco'      :'draco',
@@ -107,9 +106,12 @@ if '-d' in options:
 
 if not package:
     try:
-        package_and_component = words[0]
-        package = package_and_component.split('/',1)[0]
-        package = disambiguate(package, package_archive.keys())
+        package_name = words[0]
+        package_parts = package_name.split('/',1)
+        package_parts[0] = disambiguate(package_parts[0], package_archive.keys())
+        package_name = '/'.join(package_parts)
+
+        package = package_parts[0]
         archive = package_archive[package]
     except IndexError:
         sys.exit("ERROR: No package name given.")
@@ -140,7 +142,7 @@ if tag: tag = "-r %s" % tag
 if directory: directory = "-d %s" % directory;
 
 command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s co %s %s %s" % \
-          (username, archive, directory, tag, package_and_component)
+          (username, archive, directory, tag, package_name)
 
 print "Executing: %s" % command
 
