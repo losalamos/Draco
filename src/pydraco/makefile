@@ -7,24 +7,31 @@
 ###############################################################################
 
 need_python	:= yes
+need_util	:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
 include ../config/makefile
 
-srcs	= pydraco.cc
+srcs	= pydraco.cc adfilemodule.cc #cxxmodule.cc
 
 objs	= $(srcs:%.cc=$(env)/%.o)
 
-default: pydraco_$(env)
+default: deps pydraco_$(env) adfilemodule.so
 
-pydraco_$(env) : deps $(objs) \
-	$(dep_libds++)
+pydraco_$(env) : $(objs) \
+	$(dep_libds++) $(dep_libc4) $(dep_libspdf) $(dep_libutil)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS)
+
+adfilemodule.so: $(env)/adfilemodule.o
+	$(LDSHARED) -o $@ $(env)/adfilemodule.o
 
 deps:
 ifneq ($(dodeps),no)
 	(cd ../ds++; $(MAKE))
+	(cd ../c4;   $(MAKE))
+	(cd ../spdf; $(MAKE))
+	(cd ../util; $(MAKE))
 endif
 
 # Go pick up the standard signature for makefiles.
