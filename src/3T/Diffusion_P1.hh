@@ -35,17 +35,17 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     typedef typename MT::fcdsf fcdsf;
     typedef typename MT::bssf bssf;
 
-    SP<MT> spm;
+    dsxx::SP<MT> spm;
 
     Banded_Matrix< double, 7 > A;
     ccsf b;
 
     PCG_Ctrl<double> pcg_ctrl;
 
-    SP< MatVec_3T< Diffusion_P1<MT> > > spmv;
-    SP< PreCond< Diffusion_P1<MT> > > precond;
+    dsxx::SP< MatVec_3T< Diffusion_P1<MT> > > spmv;
+    dsxx::SP< PreCond< Diffusion_P1<MT> > > precond;
 
-    Mat1<double> dx, dy, dz;
+    dsxx::Mat1<double> dx, dy, dz;
     fcdsf fdeltal;
 
     fcdsf Dprime,      Dtwidle, Dhat;
@@ -61,7 +61,7 @@ class Diffusion_P1 : private MT::Coord_Mapper,
     typedef double NumT;
 
     Diffusion_P1( const Diffusion_DB& diffdb,
-                   const SP<MT>& spm_, const pcg_DB& pcg_db );
+                   const dsxx::SP<MT>& spm_, const pcg_DB& pcg_db );
 
     void solve( const fcdsf& D,
                 const ccsf& sigmaabar,

@@ -28,14 +28,14 @@ template<class MT>
 class Diffusion_XYZ : private MT::Coord_Mapper,
                       protected Diffusion_DB
 {
-    SP<MT> spm;
+    dsxx::SP<MT> spm;
 
     Banded_Matrix< double, 7 > A;
 
     PCG_Ctrl<double> pcg_ctrl;
 
-    SP< MatVec_3T< Diffusion_XYZ<MT> > > spmv;
-    SP< PreCond< Diffusion_XYZ<MT> > > precond;
+    dsxx::SP< MatVec_3T< Diffusion_XYZ<MT> > > spmv;
+    dsxx::SP< PreCond< Diffusion_XYZ<MT> > > precond;
  
     typedef typename MT::ccsf cell_array_double;
 //     typename MT::template cell_array<double> vc;
@@ -53,7 +53,7 @@ class Diffusion_XYZ : private MT::Coord_Mapper,
     typedef double NumT;
 
     Diffusion_XYZ( const Diffusion_DB& diffdb,
-                   const SP<MT>& spm_, const pcg_DB& pcg_db );
+                   const dsxx::SP<MT>& spm_, const pcg_DB& pcg_db );
 
     void solve( const typename MT::fcdsf& D,
 		cell_array_double& r,
@@ -62,9 +62,9 @@ class Diffusion_XYZ : private MT::Coord_Mapper,
 		const typename MT::fcdsf& Eb );
 
     Banded_Matrix<double,7>& get_A() { return A; }
-    SP< MatVec_3T< Diffusion_XYZ<MT> > > get_matvec() { return spmv; }
-    SP<MT> getMesh() { return spm; }
-    const SP<MT> getMesh() const { return spm; }
+    dsxx::SP< MatVec_3T< Diffusion_XYZ<MT> > > get_matvec() { return spmv; }
+    dsxx::SP<MT> getMesh() { return spm; }
+    const dsxx::SP<MT> getMesh() const { return spm; }
 };
 
 #endif                          // __3T_Diffusion_XYZ_hh__

@@ -10,9 +10,12 @@
 
 #include "c4/C4_Req.hh"
 
+using dsxx::Mat1;
+using dsxx::Mat2;
+
 template<class MT>
 Diffusion_P1<MT>::Diffusion_P1( const Diffusion_DB& diffdb,
-                                const SP<MT>& spm_, const pcg_DB& pcg_db )
+                                const dsxx::SP<MT>& spm_, const pcg_DB& pcg_db )
     : MT::Coord_Mapper( spm_->get_Mesh_DB() ),
       Diffusion_DB( diffdb ),
       spm(spm_),
