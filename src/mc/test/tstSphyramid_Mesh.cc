@@ -1091,7 +1091,8 @@ void build_a_Sphyramid()
     // check get_Mesh
     {
 	SP<Sphyramid_Mesh> same_mesh = builder.get_Mesh();
-	if (same_mesh != mesh) ITFAILS;
+	if (same_mesh  !=  mesh) ITFAILS;
+	if (*same_mesh != *mesh) ITFAILS;
     }
 
 

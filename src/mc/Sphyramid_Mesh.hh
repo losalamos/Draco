@@ -63,7 +63,7 @@ class Sphyramid_Mesh
 
   public:
     // Forward declaration of pack class
-    //    struct Pack;
+    struct Pack;
 
     // Forward declarations of cell-centered fields
     //template<class T> class CCSF;
@@ -71,9 +71,9 @@ class Sphyramid_Mesh
 
   public:
     // Typedefs used throughout Sphyramid_Mesh class.
-    // typedef rtt_dsxx::SP<Sphyramid_Mesh> SP_Mesh;
+    typedef rtt_dsxx::SP<Sphyramid_Mesh> SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>            SP_Coord;
-    // typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack>  SP_Pack;
+    typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack> SP_Pack;
     typedef rtt_rng::Sprng                     rng_Sprng;
     typedef std::vector<int>                   sf_int;
     typedef std::vector<double>                sf_double;
@@ -111,9 +111,10 @@ class Sphyramid_Mesh
     // >>>> Private implementations <<<<
 
     // Pack up the cell extents
-    // void pack_extents(const sf_int &, char *, int, int) const;
+    void pack_extents(const sf_int & current_to_new, char *data, int size, 
+		      int num_packed) const;
     
-    // Function to calculate frequently used wedge data
+    // Function to calculate frequently used Sphyramid_Mesh data
     void calc_angle_data();
 
     // Function to calculate and set the total, on-processor volume
@@ -148,8 +149,6 @@ class Sphyramid_Mesh
     // Determine if a position is in a cell
     bool in_cell(int cell, const sf_double & r) const;
 
-    // Diagnostic functions
-
     // References to embedded objects
     const Coord_sys & get_Coord() const { return *coord; }
     SP_Coord get_SPCoord() const { return coord; }
@@ -159,8 +158,7 @@ class Sphyramid_Mesh
 
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
-    vf_double get_point_coord() const;
-    // vf_int get_cell_pair() const;
+    vf_double get_point_coord() const;    
 
     // Services for transport and source
     inline int next_cell(int cell, int face) const;
@@ -194,7 +192,7 @@ class Sphyramid_Mesh
     bool full_Mesh() const { return 1;}
 
     // Pack function.
-    // SP_Pack pack(const sf_int & = sf_int()) const;
+    SP_Pack pack(const sf_int &current_to_new = sf_int()) const;
 
     // Overloaded Operators.
     bool operator==(const Sphyramid_Mesh &rhs) const;
@@ -223,7 +221,8 @@ double Sphyramid_Mesh::get_x_midpoint(int cell) const
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Calculate the midpoint of a cell for the y-dimension
+ * \brief Calculate the midpoint of a cell f
+or the y-dimension
  * 
  * \param cell cell number
  *
@@ -798,6 +797,55 @@ Sphyramid_Mesh::sf_int Sphyramid_Mesh::get_neighbors(int cell) const
 
     return neighbors;
 }
+
+//===========================================================================//
+/*!
+ * \struct Sphyramid_Mesh::Pack
+ * 
+ * \brief Pack and upack a Sphyramid_Mesh instance into raw c-style data
+ * arrays.
+ */
+//===========================================================================//
+
+struct Sphyramid_Mesh::Pack
+{
+  private:
+    // data contained in the mesh
+    char *data;
+    char size;
+
+    // disallow assignment
+    Pack& operator=(const Pack&);
+
+  public:
+    // constructor.
+    Pack(int, char*);
+
+    // copy constructor.
+    Pack(const Pack &);
+
+    // destructor
+    ~Pack();
+
+    // >>> Accessors <<<
+
+    // get pointer to beginning of char data stream.
+    //const char* begin() { return &data[0]; }
+
+    // get pointer to end of char data stream.
+    //const char* end() { return &data[size]; }
+
+    // return the number of cells in the packed mesh.
+    int get_num_packed_cells() const;
+
+    // get size of data stream.
+    //int get_size() const { return size; }
+
+    // Unpack function
+    // SP_Mesh unpack() const;
+};
+
+
 
 } // end namespace rtt_mc
 

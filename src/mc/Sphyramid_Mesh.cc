@@ -14,12 +14,12 @@
 #define rtt_mc_Sphyramid_Mesh_cc
 
 #include "Sphyramid_Mesh.hh"
-//#include "XYZCoord_sys.hh"
+#include "XYZCoord_sys.hh"
 //#include "Constants.hh"
 #include "viz/Ensight_Translator.hh"
-//#include "ds++/Packing_Utils.hh"
+#include "ds++/Packing_Utils.hh"
 //#include <iomanip>
-//#include <typeinfo>
+#include <typeinfo>
 #include <algorithm>
 #include <cmath>
 
@@ -82,6 +82,59 @@ Sphyramid_Mesh::Sphyramid_Mesh(SP_Coord coord_, Layout &layout_,
 
 //---------------------------------------------------------------------------//
 // PRIVATE IMPLEMENTATIONS
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief pack up cell extents
+ * 
+ * \param current_to_new mapping of cells to be packed
+ * \param data pointer to data stream
+ * \param size size in bytes of cell extents to be packed
+ * \param num_packed number of cells to be packed
+ *
+ */
+void Sphyramid_Mesh::pack_extents(const sf_int &current_to_new,
+				  char *data, int size, int num_packed) const
+{
+    Require (current_to_new.size()        == this->layout.num_cells());
+    Require (this->cell_x_extents.size() == this->layout.num_cells());
+    Require (data != 0);
+    Require (size == 2*num_packed*sizeof(double));
+
+    // loop through cells and create the new cell extents
+    vf_double extents(num_packed, sf_double(2));
+    for (int ncell, cell = 0; cell < this->cell_x_extents.size(); cell++)
+    {
+	// find the new cell
+	ncell = current_to_new[cell];
+
+	if (ncell > 0)
+	{
+	    Check (ncell <= num_packed);
+	    Check (extents[ncell-1].size() == this->cell_x_extents[cell].size());
+
+	    // add the extents to the new cell extents
+	    for (int i = 0; i < extents[ncell-1].size(); i++)
+	    {
+		extents[ncell-1][i] = this->cell_x_extents[cell][i];
+	    }
+	}
+    }
+
+    // now pack up the extents
+    rtt_dsxx::Packer packer;
+    packer.set_buffer(size, data);
+    for (int i = 0; i < extents.size(); i++)
+    {
+	for (int j = 0; j < extents[i].size(); j++)
+	{
+	    packer << extents[i][j];
+	}
+    }
+
+    Ensure (packer.get_ptr() == size+data);
+}
+
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Calculate wedge angle data once for use throughout calculation
@@ -836,6 +889,162 @@ Sphyramid_Mesh::pair_sf_double Sphyramid_Mesh::sample_random_walk_sphere(
     return pos_and_norm;
 
 }
+//---------------------------------------------------------------------------//
+// Mesh Packing Interface
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Pack up a mesh into a Pack struct for communication and
+ * persistence.
+ *
+ * The cell list provides the cells to pack up.  It also is a map from a full
+ * mesh to a spatially decomposed mesh.  Thus, the packed mesh will only
+ * contain cells in the cell list with the provided mappings.
+ *
+ * The packer will not produce an "exact" copy of the mesh even if the
+ * current_to_new mapping is one to one.  It will produce an equivalent copy
+ * (the internal data will be organized differently), and operator == will
+ * fail on such a comparison.  To produce an exact copy, call pack without
+ * any arguments.
+ *
+ * \param current_to_new list of cells to include in the packed mesh, set
+ * this to NULL to produce an exact copy
+ *
+ * \return packed mesh
+ */
+Sphyramid_Mesh::SP_Pack Sphyramid_Mesh::pack(const sf_int &current_to_new) const
+{
+    Require (current_to_new.size() == this->layout.num_cells() ||
+	     current_to_new.size() == 0);
+
+    // determine wheter this is exact replication or sub-packing
+    sf_int current_to_new_replicate;
+    bool replicate;
+    if (current_to_new.size() == 0)
+    {
+	replicate = true;
+	current_to_new_replicate.resize(this->layout.num_cells());
+	
+	for (int cell = 1; cell <= this->layout.num_cells(); cell++)
+	{
+	    current_to_new_replicate[cell-1] = cell;
+	}
+    }
+    else
+    {
+	replicate = false;
+    }
+    
+    // the coordinate system is always XYZ
+    Check (typeid(*(this->coord)) == typeid(XYZCoord_sys));
+
+    // packup layout data
+    Layout::SP_Pack packed_layout;
+    int layout_size;
+    int num_packed_cells;
+
+    // packed extents data
+    int   extent_size = 0;
+    char *extent_data = 0;
+
+    // packup the layout
+    if (replicate)
+    {
+	// packup the layout
+	packed_layout = this->layout.pack(current_to_new_replicate);
+	layout_size = packed_layout->get_size();
+	Check (layout_size >= 1);
+
+	// number of packed cells in this mesh
+	num_packed_cells = packed_layout->get_num_packed_cells();
+	Check (num_packed_cells == this->layout.num_cells());
+
+	// calculate extent size
+	extent_size = 2*num_packed_cells*sizeof(double);
+	extent_data = new char[extent_size];
+
+	// pack extents
+	pack_extents(current_to_new_replicate, extent_data, extent_size,
+		     num_packed_cells);
+
+    }
+    else
+    {
+	// packup the layout
+	packed_layout = this->layout.pack(current_to_new);
+	layout_size   = packed_layout->get_size();
+	Check (layout_size >= 1);
+
+	// number of packed cells in this mesh
+	num_packed_cells = packed_layout->get_num_packed_cells();
+	Check (num_packed_cells <= this->layout.num_cells());
+
+	// calculate extent size
+	extent_size = 2*num_packed_cells*sizeof(double);
+	extent_data = new char[extent_size];
+
+	// pack extents
+	pack_extents(current_to_new, extent_data, extent_size, 
+		     num_packed_cells);
+    }
+    Check (num_packed_cells >= 0);
+    Check (num_packed_cells <= this->layout.num_cells());
+    Check (extent_size == 2.*num_packed_cells*sizeof(double));
+    Check (extent_data != 0);
+
+    // now pack up the mesh
+
+    // ints (1-size of packed_layout, 1-num_packed_cells, packed layout)
+    int total_ints = (2+layout_size)*sizeof(int);
+
+    // doubles (1-beta_radians)
+    int total_doubles = 1*sizeof(double);
+
+    // chars
+    int total_chars = extent_size;
+
+    // allocate space
+    int size = total_ints + total_doubles + total_chars;
+    char *data = new char[size];
+
+    // pack up the mesh
+    rtt_dsxx::Packer packer;
+
+    // set the buffer
+    packer.set_buffer(size, data);
+
+    // pack the number of packed cells
+    packer << num_packed_cells;
+
+    // pack up the layout size
+    packer << layout_size;
+
+    // pack up the layout
+    for (const int *i = packed_layout->begin(); i != packed_layout->end(); i++)
+    {
+	packer <<  *i;
+    }
+
+    // pack up the angle
+    packer << beta_radians;
+
+    // pack up the extents
+    for (int i = 0; i < extent_size; i++)
+    {
+	packer << extent_data[i];
+    }
+
+    Ensure (packer.get_ptr() == data+size);
+
+    // clean up some memory
+    delete [] extent_data;
+
+    // make a packed mesh
+    SP_Pack packed_mesh(new Sphyramid_Mesh::Pack(size, data));
+
+    Ensure (packed_mesh->get_num_packed_cells() == num_packed_cells);
+
+    return packed_mesh;
+}
 
 //---------------------------------------------------------------------------//
 // Overloaded == operator
@@ -864,11 +1073,93 @@ bool Sphyramid_Mesh::operator==(const Sphyramid_Mesh &rhs) const
 
     return true;
 }
+//===========================================================================//
+// SPHYRAMID_MESH::PACK DEFINITIONS
+//===========================================================================//
+/*!
+ * \brief Constructor.
+
+ * Construct a Sphyramid_Mesh::Pack instance.  Once allocated mesh data is
+ * given to Sphyramid_Mesh::Pack constructor in the form of a char*, the
+ * Pack object owns it.  When the Pack object goes out of scope it will clean
+ * up the memory.  In general, Pack objects are only created by calling the
+ * Sphyramid_Mesh::pack() function.
+
+ * \param s size of char data stream
+ * \param d pointer to char data stream
+
+ */
+Sphyramid_Mesh::Pack::Pack(int s, char *d)
+    :data(d),
+     size(s)
+{
+    Require (this->size >= (3*sizeof(int)+sizeof(double)));
+    Require (this->data);
+}
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief copy constructor
+ * 
+ * do copy consruction while preserving memory.  This is not a reference
+ * counted class so data is copied from one object to the other during
+ * function calls, etc.
+ * 
+ */
+Sphyramid_Mesh::Pack::Pack(const Pack &rhs)
+    :data(new char[rhs.size]),
+     size(rhs.size)
+{
+
+    // fill up new data array
+    for (int i = 0; i < size; i++)
+    {
+	this->data[i] = rhs.data[i];
+    }
+
+}
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Destructor
+ * 
+ * Cleans up memory when the Pack object goes out of scope.  Once allocated
+ * pointers are given to the Pack object the Pack object takes control of
+ * them.
+ */
+Sphyramid_Mesh::Pack::~Pack()
+{
+    delete [] data;
+}
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief get number of cells in the packed mesh
+ * 
+ */
+int Sphyramid_Mesh::Pack::get_num_packed_cells() const
+{
+    Require (this->size >= (3 *sizeof(int)+sizeof(double)));
+
+    int num_cells = 0;
+
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(this->size, this->data);
+ 
+    unpacker >> num_cells;
+
+    Check (unpacker.get_ptr() == data + sizeof(int));
+
+    Ensure (num_cells >= 0);
+    return num_cells;
+}
+
+
+
 
 
 } // end namespace rtt_mc
 
 #endif                        // rtt_mc_Sphyramid_Mesh_cc
+
+
 
 //---------------------------------------------------------------------------//
 //                 end of Sphyramid_Mesh.cc

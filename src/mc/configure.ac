@@ -31,7 +31,8 @@ AC_RUNTESTS(tstConfig tstMath tstCoord tstLayout tstOSMesh \
             tstComm_Patterns tstOSMesh_Pack \
             tstRZWedge_Mesh_Pack tstParticle_Buffer \
             tstCommunicator tstParticle_IO tstConstants \
-            tstSphere tstSurface_Descriptor tstSphyramid_Mesh, 1 2 4)
+            tstSphere tstSurface_Descriptor \
+	    tstSphyramid_Mesh tstSphyramid_Mesh_Pack, 1 2 4)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
