@@ -43,12 +43,15 @@ class Test_3T : public Test_Prob,
     pcg_DB pcg_db;
 
     ADFile *adf;
-    
+
+    int verbose;
+
   public:
     typedef double NumT;
 
     Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
-	     const typename Problem::params& p, const pcg_DB& pcg_db_ );
+	     const typename Problem::params& p, const pcg_DB& pcg_db_,
+             int verbose_ );
     ~Test_3T();
 
     void run();
