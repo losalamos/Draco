@@ -7,6 +7,9 @@
 //---------------------------------------------------------------------------//
 
 #include "t3/Test_Prob.hh"
+#include "t3/Run_DB.hh"
+#include "t3/T3_MatVec.hh"
+#include "t3/T3_PreCond.hh"
 
 #include "nml/Group.hh"
 
@@ -16,6 +19,13 @@
 
 using namespace C4;
 
+#include "linalg/pcg_DB.hh"
+#include "linalg/PCG_MatVec.hh"
+#include "linalg/PCG_PreCond.hh"
+#include "linalg/PCG_Ctrl.hh"
+
+#include "ds++/SP.hh"
+
 #include <math.h>
 
 //---------------------------------------------------------------------------//
@@ -23,13 +33,16 @@ using namespace C4;
 //---------------------------------------------------------------------------//
 
 Test_Prob::Test_Prob()
+    : pcg_db("pcg")
 {
+// Set up namelist input.
     NML_Group g( "t3" );
 
-    setup_namelist( g );
+    Run_DB::setup_namelist( g );
+    pcg_db.setup_namelist( g );
 
-    g.readgroup( "t3.in" );
-    g.writegroup( "params.out" );
+    g. readgroup( "t3.in" );
+    g.writegroup( "t3.out" );
 
 // Now that we have the user input, we should be able to resize our data
 // arrays, etc. 
@@ -125,7 +138,6 @@ void Test_Prob::run()
     Mat2<double> A( ncp, nct );
 
 // main loop.
-
     for( int ns=1; ns <= nsteps; ns++ ) {
 
     // Calculate current time level.
@@ -170,8 +182,19 @@ void Test_Prob::run()
 	    
 	}
 
-    // Solve Ax = b
+    // Solve Ax = b.
 	En = 0;
+
+    // The best way to solve Ax = b.
+	En = E_analytic;
+
+    // A somewhat better approach for solving Ax = b.
+	SP< PCG_MatVec<double> >  matvec  = new T3_MatVec<double>();
+	SP< PCG_PreCond<double> > precond = new T3_PreCond<double>();
+
+	PCG_Ctrl<double> pcg_ctrl( pcg_db, ncp );
+
+	pcg_ctrl.pcg_fe( En, r, matvec, precond );
 
     // Compute solution quality metrics
 	double s1=0.;

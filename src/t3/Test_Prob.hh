@@ -15,6 +15,8 @@
 
 #include "ds++/Mat.hh"
 
+#include "linalg/pcg_DB.hh"
+
 //===========================================================================//
 // class Test_Prob - 
 
@@ -35,8 +37,10 @@ class Test_Prob : private Run_DB, private C4::NodeInfo {
 
     Mat1<double> xc, yc, zc;
     Mat1<double> xf, yf, zf;
-    double dx, dy, dz;
+    double       dx, dy, dz;
     Mat1<double> vc;
+
+    pcg_DB       pcg_db;
 
   public:
     Test_Prob();
