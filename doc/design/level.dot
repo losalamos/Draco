@@ -10,9 +10,8 @@ digraph draco_level {
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
     level5 [shape=plaintext, label="Level 5:", fontsize=18];
-    level6 [shape=plaintext, label="Level 6:", fontsize=18];
     
-    level6 -> level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
+    level5 -> level4 -> level3 -> level2 -> level1 [style=invis];
     
     /* packages */
     
@@ -26,39 +25,34 @@ digraph draco_level {
     c4 [shape=box, label="c4", width=2];
     rng [shape=box, label="rng"];
     units [shape=box, label="units"];
-    frame [shape=box, label="UnitTestFrame"];
     cdi [shape=box, label="cdi"];
+    quad [shape=box, label="quadrature"];
+    meshread [shape=box, label="meshReaders"];
     
     /* level 3 */
     viz [shape=box, label="viz"];
     radphys [shape=box, label="radphys"];
     timestep [shape=box, label="timestep"];
-    quad [shape=box, label="quadrature"];
-    meshread [shape=box, label="meshReaders"];
     cdianal [shape=box, label="cdi_analytic"];
     cdieos [shape=box, label="cdi_eospac"];
     cdigan [shape=box, label="cdi_gandolf"];
-    conjgrad [shape=box, label="ConjGrad"];
     pcg [shape=box, label="pcgWrap"];
     stop [shape=box, label="stopwatch"];
+    rttread [shape=box, label="RTT_Format_Reader"];
     
     /* level 4 */
-    rttread [shape=box, label="RTT_Format_Reader"];
-
-    /* level 5 */
     mc [shape=box, label="mc"];
     meshservice [shape=box, label="meshReaders_Services"];
 
-    /* level 6 */
+    /* level 5 */
     imc [shape=box, label="imc"];
     
     /* dependencies */
     {rank=same; level1 stdheaders dsxx};
-    {rank=same; level2 traits xm c4 rng units frame cdi};
-    {rank=same; level3 viz radphys timestep quad meshread cdianal cdieos cdigan conjgrad pcg stop};
-    {rank=same; level4 rttread};
-    {rank=same; level5 mc meshservice};
-    {rank=same; level6 imc};
+    {rank=same; level2 traits xm c4 rng units meshread cdi quad};
+    {rank=same; level3 rttread viz radphys timestep cdianal cdieos cdigan pcg stop};
+    {rank=same; level4 mc meshservice};
+    {rank=same; level5 imc};
     
     /* draco packages */
     
@@ -67,9 +61,10 @@ digraph draco_level {
     units       -> {dsxx};
     traits      -> {dsxx};
     c4          -> {dsxx};
-    frame       -> {dsxx};
     rng         -> {dsxx};
     cdi         -> {dsxx};
+    meshread    -> {dsxx};
+    quad        -> {dsxx};
     
     /* level 3 */
     viz         -> {traits dsxx};
@@ -78,26 +73,16 @@ digraph draco_level {
     radphys     -> {units dsxx};
     pcg         -> {c4 dsxx};
     cdianal     -> {cdi dsxx};
-    meshread    -> {dsxx};
-    meshread    -> {frame} [style=dotted];
     cdieos      -> {cdi dsxx};
     cdigan      -> {cdi dsxx};
-    conjgrad    -> {traits c4 dsxx};
-    conjgrad    -> {frame} [style=dotted];
-    quad        -> {dsxx};
-    quad        -> {c4 frame} [style=dotted];
+    rttread     -> {meshread dsxx};
 
     /* level 4 */
-    rttread     -> {meshread dsxx};
-    rttread     -> {frame} [style=dotted];
-
-    /* level 5 */
     mc          -> {viz meshread rng c4 dsxx};
     mc          -> {rttread} [style=dotted];
     meshservice -> {rttread meshread c4 dsxx};
-    meshservice -> {frame} [style=dotted];
 
-    /* level 6 */
+    /* level 5 */
     imc         -> {mc cdi rng c4 dsxx};
     imc         -> {cdianal} [style=dotted];
 }
