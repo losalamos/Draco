@@ -77,7 +77,8 @@ class Mesh_XYZ : private XYZ_Mapper
 // Face centered discontinuous scalar field
 // Has a value on each face in each cell.
     
-    class fcdsf : private XYZ_Mapper {
+    class fcdsf : private XYZ_Mapper,
+                  public xm::Indexable<double,fcdsf> {
 	friend class Mesh_XYZ;
 
 	Mat2<double> data;
@@ -88,12 +89,21 @@ class Mesh_XYZ : private XYZ_Mapper
 	{}
 
       public:
+        typedef dsxx::Mat2<double>::iterator iterator;
+        typedef dsxx::Mat2<double>::const_iterator const_iterator;
+
 	fcdsf( const SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
 	      data( m->get_ncp(), 6 )
 	{}
 
 	fcdsf& operator=( double x ) { data = x; return *this; }
+
+        template<class X>
+        fcdsf& operator=( const xm::Xpr< double, X, fcdsf >& x )
+        {
+            return assign_from( x );
+        }
 
     // i, j, k == global xyz cell indicies
     // f == face index
@@ -110,6 +120,18 @@ class Mesh_XYZ : private XYZ_Mapper
 	{
 	    return data( local_cell_index(i,j,k), f );
 	}
+
+        double operator[]( int i ) const { return data[i]; }
+        double& operator[]( int i ) { return data[i]; }
+
+        iterator begin() { return data.begin(); }
+        iterator end() { return data.end(); }
+
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
+
+        int size() const { return data.size(); }
+
     };
 
     class cell_array : public xm::Indexable<double,cell_array>

@@ -27,10 +27,15 @@ int main( int argc, char *argv[] )
     SP<Mesh_XYZ> spm = new Mesh_XYZ( mdb );
 
     Mesh_XYZ::cell_array x( spm ), y( spm ), z( spm );
+    Mesh_XYZ::fcdsf xf( spm ), yf( spm ), zf( spm );
 
     x = 1.;
 //     y = 2.;
     z = x + y;
+
+    xf = 1.;
+    yf = xf;
+    zf = xf + yf;
 
     return 0;
 }
