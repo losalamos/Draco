@@ -12,6 +12,15 @@
 #include "File_Streams.hh"
 #include <iomanip>
 
+namespace
+{
+
+// Define a string to indicate that a file was written in binary mode.
+// This string should be one that is unlikely to be used by a client.
+static const std::string BINARY_FILE_HEADER = "bInArYfIlE_CCS-4_is_a_geekdom";
+
+}
+
 namespace rtt_dsxx
 {
 
@@ -64,9 +73,14 @@ void File_Output::open(const std::string &filename,
     d_binary = binary;
 
     if ( d_binary )
+    {
 	d_stream.open(filename.c_str(), std::ios::binary);
+	d_stream << BINARY_FILE_HEADER;
+    }
     else
+    {
 	d_stream.open(filename.c_str());
+    }
 
     Ensure(d_stream);
 }
@@ -119,15 +133,12 @@ File_Output& File_Output::operator<<(const char c)
  *
  * \param filename The file name to open for reading.  If empty, open() must
  *                 be used later to open a file.
- * \param binary   If true, use binary mode for reading.
  */
 File_Input::
-File_Input(const std::string &filename,
-	   const bool binary)
+File_Input(const std::string &filename)
     : d_char_line(-1)
-    , d_binary(binary)
 {
-    if ( ! filename.empty() ) open(filename, binary);
+    if ( ! filename.empty() ) open(filename);
 }
 
 //---------------------------------------------------------------------------//
@@ -144,24 +155,41 @@ File_Input::~File_Input()
  * \brief Opens a file for reading.
  *
  * \param filename The file name to open for reading.
- * \param binary   If true, use binary mode for reading.
  */
-void File_Input::open(const std::string &filename,
-		      const bool binary)
+void File_Input::open(const std::string &filename)
 {
     Require(! filename.empty());
 
-    d_binary = binary;
+    using std::string;
+
     d_char_line = -1;
 
     if ( d_stream.is_open() ) close();
 
-    if ( d_binary )
+    // Start by opening the file in binary mode.
+
+    d_stream.open(filename.c_str(), std::ios::binary);
+    d_binary = true;
+
+    // Check if the binary header is present.
+
+    for ( string::const_iterator s = BINARY_FILE_HEADER.begin();
+	  s != BINARY_FILE_HEADER.end(); ++s )
     {
-	d_stream.open(filename.c_str(), std::ios::binary);
+	char c;
+	d_stream >> c;
+	if ( c != *s || (! d_stream.good()) )
+	{
+	    d_binary = false;
+	    break;
+	}
     }
-    else
+
+    // If the file is not binary, re-open in ascii mode.
+
+    if ( ! d_binary )
     {
+	d_stream.close();
 	d_stream.open(filename.c_str());
     }
 

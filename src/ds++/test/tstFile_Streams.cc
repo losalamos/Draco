@@ -69,7 +69,7 @@ void test_fileio(const bool binary)
 	bool bf_in;
 	bool bt_in;
 
-	File_Input f(filename, binary);
+	File_Input f(filename);
 	f >> i_in;
 
 	UNIT_TEST(i == i_in);

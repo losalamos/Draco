@@ -31,8 +31,8 @@ namespace rtt_dsxx
  * stream type, the same code can be used to both pack data and save data to
  * files.
  *
- * Users of this class can write the same code to write both ascii or binary
- * files.  For example,
+ * Users of this class can also write the same code to write both ascii or
+ * binary files.  For example,
  * \code
  *    void my_write(bool binary)
  *    {
@@ -46,9 +46,9 @@ namespace rtt_dsxx
  *  writes data to file.out as either binary or ascii, depending on the value
  *  of \a binary.  This file may be read using File_Input, as
  * \code
- *    void my_read(bool binary)
+ *    void my_read()
  *    {
- *        File_Input f("file.out", binary);
+ *        File_Input f("file.out"); // automatically determines binary or not.
  *        double x;
  *        int i;
  *        char c;
@@ -58,7 +58,7 @@ namespace rtt_dsxx
  * Using the stream syntax (operator<< and operator>>), data written with
  * File_Output will be read properly by File_Input.  To guarantee proper
  * reads, the ascii files are written in a certain format:
- * - Expect for type char, each value is placed on its own line.
+ * - Except for type char, each value is placed on its own line.
  * - Values of type char are placed on the same line, if the previous value
  *   written was type char.  This way, character strings may be written.
  *
@@ -72,7 +72,7 @@ namespace rtt_dsxx
  * (such as std::string) are not supported; they must be broken into their
  * POD attributes.
  *
- * Note that binary files are generally not cross-platform compatible.
+ * Note that binary files are generally \b not cross-platform compatible.
  *
  * \sa File_Streams.cc for detailed descriptions.
  */
@@ -127,7 +127,10 @@ class File_Output
  *
  * This class wraps std::ifstream and can read either ascii or binary
  * files.  Users of this class can write the same code to read both ascii
- * or binary files.  See File_Output for more information.
+ * or binary files.  However, binary file support requires that the file be
+ * written with the File_Output stream (this restriction is so that
+ * File_Input may use file header info to determine whether the file was
+ * written binary or ascii).  See File_Output for more information.
  *
  * \sa File_Streams.cc for detailed descriptions.
  */
@@ -155,8 +158,7 @@ class File_Input
   public:
 
     // Constructor.
-    explicit File_Input(const std::string &filename = "",
-			const bool binary = false);
+    explicit File_Input(const std::string &filename = "");
 
     // Destructor.
     ~File_Input();
@@ -164,8 +166,7 @@ class File_Input
     // Use automatic copy ctor, assignment.
 
     // Opens filename.
-    void open(const std::string &filename,
-	      const bool binary = false);
+    void open(const std::string &filename);
 
     // Closes the stream.
     void close();
