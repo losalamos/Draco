@@ -272,7 +272,7 @@ PACKAGE_BUGREPORT=
 
 ac_unique_file="README.draco"
 ac_subdirs_all="$ac_subdirs_all tools src autodoc"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -2927,6 +2927,9 @@ subdirs="$subdirs tools src autodoc"
 
 
 
+   # dependency rules
+
+
    # other compiler substitutions
 
    # install program
@@ -3614,6 +3617,7 @@ s,@LDFLAGS@,$LDFLAGS,;t t
 s,@AR@,$AR,;t t
 s,@ARFLAGS@,$ARFLAGS,;t t
 s,@CPPFLAGS@,$CPPFLAGS,;t t
+s,@DEPENDENCY_RULES@,$DEPENDENCY_RULES,;t t
 s,@STRICTFLAG@,$STRICTFLAG,;t t
 s,@PARALLEL_FLAG@,$PARALLEL_FLAG,;t t
 s,@RPATH@,$RPATH,;t t

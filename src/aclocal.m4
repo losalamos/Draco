@@ -847,6 +847,9 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 
    AC_ARG_VAR(CPPFLAGS)dnl
 
+   # dependency rules
+   AC_SUBST(DEPENDENCY_RULES)
+
    # other compiler substitutions
    AC_SUBST(STRICTFLAG)dnl
    AC_SUBST(PARALLEL_FLAG)dnl

@@ -122,6 +122,35 @@ AC_DEFUN([AC_CHECK_EIGHT_BYTE_INT_TYPE], [dnl
 	   fi
        ;;
 
+       # *** IBM MODS
+       *ibm-aix*)
+
+	   # if we are using visual age then we may need to do some
+	   # adjustment
+	   if test "${with_cxx}" = ibm || 
+	      test "${with_cxx}" = asciwhite ; then
+
+	       # long long is already on when we use vendor mpi
+	       
+	       if test "${with_mpi}" != vendor &&
+	          test "${enable_strict_ansi}"; then
+
+		   AC_MSG_RESULT("xlC set to allow long long")
+		   STRICTFLAG="-qlanglvl=extended"
+		   CFLAGS="${CFLAGS} -qlonglong"
+		   CXXFLAGS="${CXXFLAGS} -qlonglong"
+	   
+	       else
+		   AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}")
+	       fi
+
+	   else
+
+	       AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}")
+	   
+	   fi
+       ;;
+
        # *** OTHER SYSTEMS
        *)
 	   AC_MSG_RESULT("long long - no additional mods needed on $host/${CXX}")

@@ -1,3 +1,10 @@
+2003-05-07  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco/config: updated to [hopefully] work correctly on the IBM
+	platform.  I added platform-specific makefiles for dependency
+	rules.  This is necesary because the IBM xlC compiler works goofy
+	when it comes to dependencies.
+
 2003-04-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco, draco/config: committed first set of changes to make the
