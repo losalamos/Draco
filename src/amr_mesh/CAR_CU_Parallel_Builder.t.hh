@@ -7,8 +7,8 @@
 //---------------------------------------------------------------------------//
 
 #include "Parallel_Builder.hh"
-#include "mc/XYCoord_sys.hh"
-#include "mc/XYZCoord_sys.hh"
+#include "XYCoord_sys.hh"
+#include "XYZCoord_sys.hh"
 #include "Global.hh"
 #include <string>
 #include <iomanip>

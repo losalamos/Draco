@@ -36,7 +36,7 @@
 //===========================================================================//
 
 #include "mc/Coord_sys.hh"
-#include "mc/Layout.hh"
+#include "Layout.hh"
 #include "Opacity.hh"
 #include "Source_Init.hh"
 #include "Particle_Buffer.hh"
