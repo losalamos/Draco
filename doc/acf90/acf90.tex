@@ -1,0 +1,256 @@
+%  ========================================================================  %
+% 
+% 	Author:	Mark G. Gray
+% 		Los Alamos National Laboratory
+% 	Date:	Wed Apr  5 09:42:35 MDT 2000
+% 
+% 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
+% 
+%  	$Id$
+% 
+%  ========================================================================  %
+
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{c++}
+\usepackage{cite}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/X--TM, MS D409}
+\refno{X6:MGG-00-XX (U)}
+\subject{Fortran 90 Build Support in Draco}
+
+%-------NO CHANGES
+\divisionname{Applied Physics Division}
+\groupname{X--6:Transport Methods Group}
+\fromms{Mark G. Gray/X--6, MS D409}
+\phone{(505)667--5341}
+\originator{mgg}
+\typist{mgg}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {
+  J.E. Morel, XTM MS D409\\
+  J.M. McGhee, XTM MS D409\\
+  H.G. Hughes, XTM MS D409\\
+  T.M. Evans, XTM MS D409\\
+  M.G. Gray, XTM MS D409\\
+  S.D. Pautz, XTM MS D409\\
+  R.M. Roberts, XTM MS D409\\
+  T.J. Urbatsch, XTM MS D409\\
+  T.A. Wareing, XTM MS D409\\
+  J.S. Warsa, XTM MS D409\\
+  C.J. Gesh, XTM MS D409\\
+  W.D. Hawkins, XTM MS D409\\
+  B.T. Adams, XTM MS D409 \\
+  M.L. Alme, XTM MS D409\\
+  J.C. Gulick, XTM D409\\
+  K.G. Thompson, XCI, MS F663\\
+  R.B. Lowrie, XHM MS D413 
+  }
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+% I want to tell John that...
+
+I have added basic Fortran 90 compiler support to the Draco build
+system.  The autoconf macros in draco/config now support the
+--with-f90 argument with allows the user to specify the Fortran 90
+compiler to use.  Additionally, the AC\_LANG\_F90, and AC\_PROG\_F90
+macros can be used in configure.in to specify Fortran 90 as the
+language use in compiler tests and to test the selected compiler,
+respectively.  Finally, the AC\_PROG\_GM4 and AC\_REQUIRE\_GM4 macros
+can be used in configure.in to find and require the GNU m4
+preprocessor, respectively.  This argument and these macros provide
+the necessary functionality for configuring a Fortran 90 package.
+
+\section{Background}
+
+Draco was originally concieved as a collection of C++ packages that
+could be used to construct transport codes.  An unexpected bonus of
+the Draco project was a robust build system that could be used to
+configure a package of C++ code for various platforms.  Typical of
+such reuse, the build system required much careful planning and hard
+work to create, but provided a system that is easy to use.
+
+One feature missing from the build system was support for Fortran 90.
+Although Draco will remain primarily a C++ repository, Fortran 90
+interface packages, numerical packages, and vendor packages are
+planned additions.  Further, just as the build system in Draco is used
+in several C++ projects, a common build system which could
+be used by several Fortran 90 projects is desirable.   This memo
+documents the addition of several necessary build system features for
+Fortran 90 support.
+
+\newpage
+
+\section{Introduction}
+
+Configuring for Fortran 90 is a complicated business.  In the spirit
+of the Draco build system, Fortran 90 support aims at simplifying
+the configuration for the user, at the expense of considerable work on
+the part of the build system.
+
+\section{New Arguments}
+
+The Fortran 90 compiler can be specified by giving the --with-f90
+argument to configure.  The currently supported compilers are shown in
+Table~\ref{tbl:compilers}.
+
+\begin{table}[hb]
+\caption{Supported Fortran 90 compilers}\label{tbl:compilers}
+\begin{tabular}{l|l|l|l}
+Compiler & Executable & Target OS & Target Platform \\ \hline
+Fujitsu  & f90        & Linux     & ix86 \\
+XL	 & xlf90      & AUX       & RS6000 \\
+WorkShop & f90	      & Solaris	  & Sparc \\
+Cray     & f90        & UNICOS    & Y-MP \\
+MIPS     & f90        & IRIX      & SGI  
+\end{tabular}
+\end{table}
+If --with-f90 is given without any arguments, an attempt to guess the
+compiler is made by the configure script based on the target.
+
+\section{New Macros}
+
+AC\_LANG\_F90 sets up the compile and link test invocation using
+F90 and the extension F90EXT.
+
+AC\_PROG\_GM4 sets the output variable GM4 to a command that runs 
+the GNU m4 preprocessor.  Looks for gm4 and then m4, and verifies 
+the gnu version by running \${GM4} --version
+
+AC\_REQUIRE\_GM4 ensures that GM4 has been found
+
+AC\_PROG\_F90 determines the Fortran 90 compiler to use and the
+appropriate extension for free format source code.  If F90
+is not already set in the environment, check for `f90'.  Try
+the compiler with the extensions `f90', `F', `F90', and `f'.
+Set the output variable F90 to the name of the compiler found
+and F90EXT to the name of the free format source extension.
+If the output variable F90FLAGS was not already set, set it to
+`-g'.  If the output variables F90FREE and F90FIXED were not
+already set, try to guess their values from the target.  If
+the output variable MODFLAG was not already set, try to guess
+its value from the target.
+
+BUGS
+
+These macros have only been tested on a limited number of
+machines.   AC\_PROG\_F90 can fail due to vendor non-standard
+file extentions or incorrect free/fixed source defaults.
+F90FREE and F90FIXED correctly set for only a few known
+targets.  As with other autoconf macros, any file
+named [Cc]onftest* will be overwritten!
+
+\section{F90 configure.in}
+
+Figure~\ref{fig:configure} shows a sample configure.in using the
+Fortran 90 macros.  Line 1 processes command line arguments and finds
+the source file directory.  Line 2 specifies where to find
+\tt{install-sh}, \tt{config.sub}, and \tt{config.guess}.  Line 4 sets
+the language to Fortran 90, with appropriate compile and link tests.
+Line 5 sets up the draco build environment.  Line 6 tests the Fortran
+90 compiler and discovers the module naming convention.  Line 7 finds
+and verifies the GNU m4 preprocessor.  Line 9 creates the output files.
+
+\begin{figure}[hb]
+\begin{verbatim}
+AC_INIT(Makefile.in)		# 1
+AC_CONFIG_AUX_DIR(../../config) # 2
+                                # 3
+AC_LANG_F90                     # 4
+AC_DRACO_ENV                    # 5
+AC_PROG_F90                     # 6
+AC_PROG_GM4                     # 7
+                                # 8
+AC_OUTPUT(Makefile)             # 9
+\end{verbatim}
+\caption{Sample configure.in}\label{fig:configure}
+\end{figure}
+
+\begin{figure}
+\begin{verbatim}
+MODSUFFIX       =       @MODSUFFIX@
+MODNAME         =       @MODNAME@
+MODFLAG         =       @MODFLAG@
+
+F90             =       @F90@
+F90FLAGS        =       @F90FLAGS@
+F90EXT          =       @F90EXT@
+F90FREE         =       @F90FREE@
+F90FIXED        =       @F90FIXED@
+GM4             =       @GM4@
+
+SRCS            =       Makefile.in aclocal.m4 configure configure.in \
+                        install-sh config.sub config.guess
+
+all:
+        @echo "F90       = ${F90}"
+        @echo "F90FLAGS  = ${F90FLAGS}"
+        @echo "F90EXT    = ${F90EXT}"
+        @echo "F90FREE   = ${F90FREE}"
+        @echo "F90FIXED  = ${F90FIXED}"
+        @echo "MODNAME   = ${MODNAME}"
+        @echo "MODSUFFIX = ${MODSUFFIX}"
+        @echo "MODFLAG   = ${MODFLAG}"
+        @echo "GM4       = ${GM4}"
+\end{verbatim}%$
+\caption{Sample Makefile.in}\label{fig:makefile}
+\end{figure}
+
+\begin{figure}
+\begin{verbatim}
+azathoth $ make
+F90       = f90
+F90FLAGS  = -O0 -X9 -Am
+F90EXT    = f90
+F90FREE   = -Free
+F90FIXED  = -Fixed
+MODNAME   = modname
+MODSUFFIX = mod
+MODFLAG   = -I
+GM4      = m4
+\end{verbatim}%$
+\caption{Result of sample make on azathoth (a Linux
+machine)}\label{fig:make}
+\end{figure}
+\newpage
+\closing
+
+\end{document}
+
+%  ========================================================================  %
