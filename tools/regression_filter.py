@@ -37,7 +37,7 @@ class Logfile_Entry:
 
 ##---------------------------------------------------------------------------##
 
-def print_logfile_entries(logfile_entries, type):
+def print_logfile_entries(short_output, logfile_entries, type):
     '''
     Prints a list of Logfile_Entry objects.
 
@@ -56,7 +56,7 @@ def print_logfile_entries(logfile_entries, type):
     
     if n == 0:
         print separator
-    elif n > 100:
+    elif n > 100 or short_output:
         # Too many errors, so just print the corresponding line numbers.
         print
         print "Too many %s; only line numbers in logfile are listed below." % (type)
@@ -136,9 +136,16 @@ results = [0,0,0]
 error_log = []
 warn_log  = []
 
+# short form of regression output is off by default
+use_short = 0
+
 ##---------------------------------------------------------------------------##
 ## main program
 ##---------------------------------------------------------------------------##
+
+# check to see if we are using the short output form
+for i in range(1, len(sys.argv)):
+    if sys.argv[i] == 'short': use_short = 1
 
 # get the output from the regression (or log file) as stdin
 lines = sys.stdin.readlines()
@@ -331,30 +338,33 @@ print "  Total Warnings : %i" % (len(warn_log))
 print "  Total Errors   : %i" % (len(error_log))
 print
 
-print "%47s" % ("Test Results for Each Package")
-print "======================================================================="
-print "%40s %8s %11s %9s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
-print "======================================================================="
+# only print out test results if we are not using the short form
+if not use_short:
 
-for pkg in pkg_tests.keys():
+    print "%47s" % ("Test Results for Each Package")
+    print "======================================================================="
+    print "%40s %8s %11s %9s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
+    print "======================================================================="
 
-    print ">>>> " + pkg + " package <<<<"
-    print "-----------------------------------------------------------------------"
+    for pkg in pkg_tests.keys():
 
-    nc = 0
-    nr = len(pkg_tests[pkg])
-    for key in pkg_tests[pkg]:
-        nc        = nc + 1
-        results   = tests[key]
-        test_name = get_test_name(key)
-        print "%40s %8i %11i %9i" % (test_name, results[0], results[1],
-                                      results[2])
+        print ">>>> " + pkg + " package <<<<"
+        print "-----------------------------------------------------------------------"
 
-        if nc < nr:
-            print "-----------------------------------------------------------------------"
+        nc = 0
+        nr = len(pkg_tests[pkg])
+        for key in pkg_tests[pkg]:
+            nc        = nc + 1
+            results   = tests[key]
+            test_name = get_test_name(key)
+            print "%40s %8i %11i %9i" % (test_name, results[0], results[1],
+                                         results[2])
+
+            if nc < nr:
+                print "-----------------------------------------------------------------------"
         
-    print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-print
+        print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    print
 
 # print out error and warning line numbers
 
@@ -362,8 +372,8 @@ if len(error_log) or len(warn_log):
     print "Logfile %s contains the errors and" % (log_tag_str)
     print "warning messages that are summarized below."
 
-print_logfile_entries(error_log, "errors")
-print_logfile_entries(warn_log, "warnings")
+print_logfile_entries(use_short, error_log, "errors")
+print_logfile_entries(use_short, warn_log, "warnings")
 
 ###############################################################################
 ##                            end of regression_filter.py
