@@ -228,7 +228,6 @@ double wall_clock_resolution();
  * \return \c true if a message from the specified processor with the
  * specified tag is pending; \c false otherwise.
  */
-
 bool probe(int source, int tag, int &message_size);
 
 } // end namespace rtt_c4
