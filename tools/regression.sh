@@ -102,31 +102,36 @@ fi
 
 # Set up paths to look for libraries
 
-CONTRIB=/usr/local/contrib/radtran/$uname
-SPRNG_INCPATH=/scratch/tme/sprng/sprng0.5/SRC
+ UNAME=`uname`
+ VENDORS=/n/radtran/vendors
+ SPRNG_INCPATH=${VENDORS}/sprng/include
 
 case $uname in
 SunOS)
-    PCG_LIBPATH=${CONTRIB}/lib
-    SPRNG_LIBPATH=/scratch/tme/sprng/sprng0.5/solaris
+    PCG_LIBPATH_scalar=${VENDORS}/pcglib/${UNAME}/lib/serial
+    PCG_LIBPATH_mpi=${VENDORS}/pcglib/${UNAME}/lib/mpi
+    SPRNG_LIBPATH=${VENDORS}/sprng/${UNAME}
 
     BITS="0"
     C4="scalar mpi"
     ;;
 IRIX64)
-    PCG_LIB64PATH=${CONTRIB}/lib64
-    SPRNG_LIB64PATH=/scratch/tme/sprng/sprng0.5/sgi64
+    PCG_LIB64PATH_scalar=${VENDORS}/pcglib/${UNAME}/lib64/serial
+    PCG_LIB64PATH_mpi=${VENDORS}/pcglib/${UNAME}/lib64/mpi
+    SPRNG_LIB64PATH=${VENDORS}/sprng/${UNAME}/lib64
 
-    PCG_LIBN32PATH=${CONTRIB}/libn32
-    SPRNG_LIBN32PATH=/scratch/tme/sprng/sprng0.5/sgi32
+    PCG_LIBN32PATH_scalar=${VENDORS}/pcglib/${UNAME}/lib32/serial
+    PCG_LIBN32PATH_mpi=${VENDORS}/pcglib/${UNAME}/lib32/mpi
+    SPRNG_LIBN32PATH=${VENDORS}/sprng/${UNAME}/lib32
 
     BITS="64 N32"
     C4="scalar mpi"
 #    C4="scalar mpi shmem"
     ;;
 *)
-    PCG_LIBPATH=
-    SPRNG_LIBPATH=
+    PCG_LIBPATH_scalar=${VENDORS}/pcglib/${UNAME}/lib/serial
+    PCG_LIBPATH_mpi=${VENDORS}/pcglib/${UNAME}/lib/mpi
+    SPRNG_LIBPATH=${VENDORS}/sprng/${UNAME}
 
     BITS="0"
     C4="scalar"
@@ -153,9 +158,10 @@ do
       CONFIGUREFLAGS="--with-c4=$c4"
 
       if [ "X$b" = "X0" ] ; then
+         eval PCG_LIBPATH='$PCG_LIBPATH_'$c4
          TARGETDIR=$TARGETROOT/$c4/draco
       else
-         eval PCG_LIBPATH='$PCG_LIB'$b'PATH'
+         eval PCG_LIBPATH='$PCG_LIB'$b'PATH_'$c4
          eval SPRNG_LIBPATH='$SPRNG_LIB'$b'PATH'
          TARGETDIR=$TARGETROOT/${c4}_$b/draco
       fi
