@@ -65,14 +65,15 @@ void field_ts_advisor::set_floor(const FT &y1, double frac)
 
 
 template <class FT>
-void field_ts_advisor::update_tstep(const FT &y1, const FT &y2, 
+void field_ts_advisor::update_tstep(const FT &q_old, 
+				    const FT &q_new, 
 				    double current_dt,
 				    int cycle_)
 {
 
     Require(invariant_satisfied());
     Require(current_dt > 0.0);
-//    Require(FT::conformal(y1,y2));
+//    Require(FT::conformal(q_old,q_new));
 
     double x1 = 0.;
     double x2 = 0.;
@@ -81,20 +82,21 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
 	x2 = 1.;
     }
 
-    FT::const_iterator py2 = y2.begin();
-    for (FT::const_iterator py1 = y1.begin(); py1 != y1.end(); py1++,py2++) 
+    FT::const_iterator pq_new = q_new.begin();
+    for (FT::const_iterator pq_old = q_old.begin(); 
+	 pq_old != q_old.end(); pq_old++,pq_new++) 
     {
 	
-	if (*py1 > floor_value && *py2 > floor_value)
+	if (*pq_old > floor_value && *pq_new > floor_value)
 	{
-	    double delta_y = std::abs(*py2-*py1);
-	    double y_norm  = 0.5*(*py2+*py1);
-	    double alpha = delta_y/y_norm;
+	    double delta_q = std::abs(*pq_new-*pq_old);
+	    double q_norm  = *pq_old;
+	    double alpha   = delta_q/q_norm;
 
 	    if (alpha < eps()) // Set noise to a hard zero
 	    {
 		alpha = 0.;
-		delta_y = 0.;
+		delta_q = 0.;
 	    }
 	    if ( update_method == inf_norm )
 	    {
@@ -107,8 +109,8 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
 	    }
 	    else if ( update_method == q_mean )
 	    {
-		x1 = x1 + delta_y;
-		x2 = x2 + y_norm;
+		x1 = x1 + delta_q;
+		x2 = x2 + q_norm;
 	    }
 	    else if ( update_method == rc_mean )
 	    {
@@ -117,8 +119,8 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
 	    }
 	    else if ( update_method == rcq_mean )
 	    {
-		x1 = x1 + alpha*delta_y;
-		x2 = x2 + delta_y;
+		x1 = x1 + alpha*delta_q;
+		x2 = x2 + delta_q;
 	    }
 	    else
 	    {
@@ -133,7 +135,12 @@ void field_ts_advisor::update_tstep(const FT &y1, const FT &y2,
     }
     else 
     {
+
 	double fact = x2*fc_value/x1;
+
+    //jmm
+	cout << "fact, x2, fc_value, x1: " << fact << ", " << x2 << ", "
+	     << fc_value << ", " << x1 << endl;
 	if (fact < small())
 	{
 	    dt_rec = small();

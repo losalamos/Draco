@@ -26,8 +26,10 @@ class field_ts_advisor : public ts_advisor {
 // Flag to determine the method used to produce the recommended 
 // timestep. The recommended timestep will be:
 // Based on a norm of a control function "alpha", where
-// alpha = abs(del_Q/Q), where Q is a field  being monitored,
-// i.e. temperature, energy, particles, etc. The available 
+// alpha = abs(del_Q/Q_old), where Q is a field  being monitored,
+// i.e. temperature, energy, particles, etc. 
+// Alpha is computed point-wise in the field, then a vector
+// norm is applied to the point-wise values. The available 
 // norms are:
  
     enum update_method_flag {
@@ -60,10 +62,12 @@ class field_ts_advisor : public ts_advisor {
     
     ~field_ts_advisor();
 
-// Update the recommended time-step for advisors based on fields
+// Update the recommended time-step for advisors based on fields.
+// q_old is the field value at the beginning of the current time-step,
+// q_new is the field value at the end of the current time-step.
 
     template < class FT >
-    void update_tstep(const FT &y1, const FT &y2, 
+    void update_tstep(const FT &q_old, const FT &q_new, 
 		      double current_dt, 
 		      int cycle_);
 
