@@ -42,13 +42,13 @@ const double epsilon = DBL_EPSILON;
 // MAXIMUM BUFFER SIZES
 //---------------------------------------------------------------------------//
 // maximum number of Particles in a stack
-const int buffer_s = 100;
+const int buffer_s = 1000;
 
 // maximum size of Particle double stack
 const int buffer_d = buffer_s * (3 + 3 + 1 + 1 + 1);
 
 // maximum size of Particle int stack
-const int buffer_i = buffer_s * (1 + 1 + 1);
+const int buffer_i = buffer_s * (1 + 1);
 
 // maximum size of Particle char stack
 const int buffer_c = buffer_s * (500);

@@ -36,15 +36,15 @@ Particle_Buffer<PT>::Particle_Buffer(const MT &mesh, const Rnd_Control &rcon)
 }
 
 //---------------------------------------------------------------------------//
-// constructors for Particle_Buffer<PT>::Census Particle struct
+// constructors for Particle_Buffer<PT>::Census Buffer struct
 
 template<class PT>
-Particle_Buffer<PT>::Census_Particle::Census_Particle(vector<double> &r_,
-						      vector<double> &omega_,
-						      double ew_,
-						      double fraction_,
-						      int cell_,
-						      Sprng random_)
+Particle_Buffer<PT>::Census_Buffer::Census_Buffer(vector<double> &r_,
+						  vector<double> &omega_,
+						  double ew_,
+						  double fraction_,
+						  int cell_,
+						  Sprng random_)
     : r(r_), omega(omega_), ew(ew_), fraction(fraction_), cell(cell_),
       random(random_)
 {
@@ -53,11 +53,11 @@ Particle_Buffer<PT>::Census_Particle::Census_Particle(vector<double> &r_,
 }
 
 template<class PT>
-Particle_Buffer<PT>::Census_Particle::Census_Particle()
+Particle_Buffer<PT>::Census_Buffer::Census_Buffer()
     : random(0, 0)
 {
   // constructor for use with STL, this cannot be used
-    Insist (0, "You tried to default construct a Census_Particle!");
+    Insist (0, "You tried to default construct a Census_Buffer!");
 }
 
 //---------------------------------------------------------------------------//
@@ -113,14 +113,14 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 // read a single particle from an output
 
 template<class PT>
-SP<Particle_Buffer<PT>::Census_Particle> 
+SP<Particle_Buffer<PT>::Census_Buffer> 
 Particle_Buffer<PT>::read_census(istream &cenfile)
 {
   // make sure file exists
     Check (cenfile);
 
-  // cast smart pointer to Census_Particle
-    SP<Census_Particle> return_part;
+  // cast smart pointer to Census_Buffer
+    SP<Census_Buffer> return_part;
     
   // set pointers for dynamic memory storage
     double *ddata = new double[dsize];
@@ -154,8 +154,8 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
 	int *id = unpack_sprng(rdata);
 	Sprng random(id, idata[1]);
 
-      // make new Census_Particle
-	return_part = new Census_Particle(r, omega, ew, frac, cell, random);
+      // make new Census_Buffer
+	return_part = new Census_Buffer(r, omega, ew, frac, cell, random);
     }
 
   // reclaim dynamic memory
@@ -163,7 +163,7 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
     delete [] ddata;
     delete [] rdata;
 
-  // return Census_Particle
+  // return Census_Buffer
     return return_part;
 }
 
@@ -172,12 +172,12 @@ Particle_Buffer<PT>::read_census(istream &cenfile)
 
 template<class PT>
 void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc, 
-				    Comm_bank &bank) const
+				    Comm_Bank &bank) const
 {
   // find out the number of Particles
     int num_part = bank.size();
-    Check (num_part > 0 && numpart <= Global::buffer_s);
-
+    Check (num_part > 0 && num_part <= Global::buffer_s);
+    
   // define indices for data
     int id = 0;
     int ii = 0;
@@ -189,7 +189,7 @@ void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc,
     char   array_c[Global::buffer_c];
 
   // loop through particles and get the goods
-    for (int i = 0; i < num_part; i++)
+    while (bank.size())
     {
       // get the double info from the particle
 	array_d[id++] = bank.top().ew;
@@ -198,13 +198,12 @@ void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc,
 	for (int j = 0; j < bank.top().omega.size(); j++)
 	    array_d[id++] = bank.top().omega[j];
 	for (int j = 0; j < bank.top().r.size(); j++)
-	    array_d[id++] = bank.top().r[i];
+	    array_d[id++] = bank.top().r[j];
 	Check (id <= Global::buffer_d);
 
       // get the int info from the particle
 	array_i[ii++] = bank.top().cell;
 	array_i[ii++] = bank.top().random.get_num();
-	array_i[ii++] = PT::get_index(bank.top().descriptor);
 	Check (ii <= Global::buffer_i);
 
       // get the char info from the particle
@@ -221,16 +220,41 @@ void Particle_Buffer<PT>::send_bank(Comm_Buffer &buffer, int proc,
     }
 
   // send the particle buffers
-    SendAsync(buffer.comm_d, &array_d[0], Global::buffer_d, proc, 
-	      100 + node() + nodes());
-    SendAsync(buffer.comm_i, &array_i[0], Global::buffer_i, proc,
-	      101 + node() + nodes());
-    SendAsync(buffer.comm_c, &array_c[0], Global::buffer_c, proc,
-	      102 + node() + nodes());
-  // NEED TO ADD NUM_PARTICLES AND RECEIVE FUNCTIONS
-  // NEED TO FIX UP THE NODE TAG STUFF
+    SendAsync(buffer.comm_n, num_part, proc, 100);
+    SendAsync(buffer.comm_d, &array_d[0], Global::buffer_d, proc, 101);
+    SendAsync(buffer.comm_i, &array_i[0], Global::buffer_i, proc, 102);
+    SendAsync(buffer.comm_c, &array_c[0], Global::buffer_c, proc, 103);
 }
     
+//---------------------------------------------------------------------------//
+// post async recives
+
+template<class PT>
+void Particle_Buffer<PT>::recv_bank(Comm_Buffer &buffer, int proc) const
+{
+  // post c4 async receives
+    RecvAsync(buffer.comm_n, buffer.n_part, proc, 100);
+    RecvAsync(buffer.comm_d, &buffer.array_d[0], proc, 101);
+    RecvAsync(buffer.comm_i, &buffer.array_i[0], proc, 102);
+    RecvAsync(buffer.comm_c, &buffer.array_c[0], proc, 103);
+}
+
+//---------------------------------------------------------------------------//
+// use the filled buffer to create a new bank of particles
+
+template<class PT> void 
+Particle_Buffer<PT>::add_to_bank(Comm_Buffer &buffer, Comm_Bank &bank) const
+{
+  // wait on recieve buffers to make sure they are full
+    buffer.comm_n.wait();
+    buffer.comm_d.wait();
+    buffer.comm_i.wait();
+    buffer.comm_c.wait();
+
+  // make the new particle bank from the buffer
+  // ...
+}
+
 CSPACE
 
 //---------------------------------------------------------------------------//

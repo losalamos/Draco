@@ -35,6 +35,8 @@
 //                types.
 //  5)  5-12-98 : added Particle_Buffer nested class to aid in persistence of 
 //                particles
+//  6)  5-26-98 : added static functions for getting the particle descriptor
+//                and converting it to an int
 // 
 //===========================================================================//
 
@@ -168,6 +170,9 @@ public:
 
   // other services
     bool status() const { return alive; }
+    string desc() const { return descriptor; }
+    inline static int get_index(string);
+    inline static string get_descriptor(int);
 
   // public diagnostic services
     void print(ostream &) const;
@@ -259,6 +264,56 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 	for (int i = 0; i <= r.size()-1; i++)
 	    r[i] = r[i] + distance * omega[i];
     }
+}
+
+//---------------------------------------------------------------------------//
+// convert a particle event descriptor string into an int
+
+template<class MT>
+inline int Particle<MT>::get_index(string desc)
+{
+  // collision event descriptors
+    if (desc == "scatter")
+	return 100;
+    if (desc == "low_weight")
+	return 101;
+ 
+  // streaming descriptors
+    if (desc == "reflection")
+	return 200;
+    if (desc == "stream")
+	return 201;
+    if (desc == "escape")
+	return 202;
+
+  // time and census descriptors
+    if (desc == "census")
+	return 300;
+}
+
+//---------------------------------------------------------------------------//
+// convert an int into a particle event descriptor
+
+template<class MT>
+inline string Particle<MT>::get_descriptor(int index)
+{
+  // collision event descriptors
+    if (index == 100)
+	return "scatter";
+    if (index == 101)
+	return "low_weight";
+ 
+  // streaming descriptors
+    if (index == 200)
+	return "reflection";
+    if (index == 201)
+	return "stream";
+    if (index == 202)
+	return "escape";
+
+  // time and census descriptors
+    if (index == 300)
+	return "census";
 }
 
 CSPACE

@@ -17,7 +17,9 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)  5-26-98 : added temporary Particle_Stack class to account for the
+//                deficiency of the KCC 3.3 stack
 // 
 //===========================================================================//
 
@@ -50,6 +52,42 @@ using std::stack;
 using std::istream;
 using std::ostream;
 
+//===========================================================================//
+// class Particle_Stack - 
+// Temporary class to account for the KCC 3.3 parser/stack deficiency,
+// ie. the KCC 3.3 compiler expects the type to have ==, !=, <= etc defined.
+// These constraints should not be placed on the user-defined type.
+//===========================================================================//
+
+template<class PT>
+class Particle_Stack
+{
+public:
+  // typedefs
+    typedef typename list<PT>::value_type value_type;
+    typedef typename list<PT>::size_type size_type;
+
+private:
+  // container
+    list<PT> c;
+
+public:
+  // constructor
+    explicit Particle_Stack(const list<PT> &ct = list<PT>()) : c(ct) {}
+    
+  // members
+    bool empty() const { return c.empty(); }
+    size_type size() const { return c.size(); }
+    value_type& top() { return c.back(); } 
+    const value_type& top() const { return c.back(); }
+    void push(const value_type &x) { c.push_back(x); }
+    void pop() { c.pop_back(); }
+};
+
+//===========================================================================//
+// class Particle_Buffer
+//===========================================================================//
+
 template<class PT>
 class Particle_Buffer
 {
@@ -77,10 +115,11 @@ public:
     {
       // particle state buffers for receiving
 	double array_d[Global::buffer_d];
-	int array_i[Global::buffer_i];
-	char array_c[Global::buffer_c];
+	int    array_i[Global::buffer_i];
+	char   array_c[Global::buffer_c];
 
       // C4_Req communication handles
+	C4_Req comm_n;
 	C4_Req comm_d;
 	C4_Req comm_i;
 	C4_Req comm_c;
@@ -90,9 +129,9 @@ public:
     };
 
   // standard buffers for particles
-    typedef stack<PT, list<PT> > Census;
-    typedef stack<PT, list<PT> > Bank;
-    typedef stack<PT, list<PT> > Comm_bank;
+    typedef Particle_Stack<PT> Census;
+    typedef Particle_Stack<PT> Bank;
+    typedef Particle_Stack<PT> Comm_Bank;
 
 private:
   // data of type double size (number of elements)
@@ -112,9 +151,9 @@ public:
     SP<Census_Buffer> read_census(istream &);
 
   // Particle send and receives
-    void send_bank(Comm_Buffer &, int, Comm_bank &) const;
-    SP<Comm_Buffer> recv_bank(Comm_Buffer &, int) const;
-    void add_to_bank(SP<Comm_Buffer>, Comm_bank &) const;
+    void send_bank(Comm_Buffer &, int, Comm_Bank &) const;
+    void recv_bank(Comm_Buffer &, int) const;
+    void add_to_bank(Comm_Buffer &, Comm_Bank &) const;
 };
 
 //---------------------------------------------------------------------------//
