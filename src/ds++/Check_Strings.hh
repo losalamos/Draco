@@ -3,6 +3,7 @@
  * \file   ds++/Check_Strings.hh
  * \author John McGhee
  * \date   Sun Jan 30 14:57:09 2000
+ *
  * \brief  Provides some utilities to check containers of strings. 
  *
  * Functions are provided to examine a container of strings: 1) for the
@@ -10,8 +11,16 @@
  * outside of high and low limits, and 3) to determine if there are any 
  * duplicate strings in the container. Return value is a vector of 
  * iterators which point to any strings which are selected.
- * 
+ *
  */
+
+/*!
+ * \example ds++/test/tstCheck_Strings.cc
+ *
+ *          The following code provides examples of how to use the 
+ *          Check_Strings utilities.
+ */
+
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -23,7 +32,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace dsxx
+namespace rtt_dsxx
 {
  
 //===========================================================================//
@@ -35,10 +44,10 @@ namespace dsxx
 
 // Private functors for internal use by string checking utilities.
 
-struct CharInString
+struct char_in_string
 {
     std::string str2;
-    CharInString(const std::string &s) : str2(s) { }
+    char_in_string(const std::string &s) : str2(s) { }
     bool operator() (const std::string &str1) const
     {
 	int out = str1.find_first_of(str2);
@@ -93,6 +102,9 @@ struct strings_equal
  *         is 0 no strings that contained any of the matching
  *         characters were found.
  *
+ * \sa     Other string checking utilities are available in
+ *         dsxx::check_string_lengths, and dsxx::check_strings_unique.
+ *
  */
 template<class IT>
 std::vector<IT>  check_string_chars( IT first, IT last, 
@@ -101,12 +113,12 @@ std::vector<IT>  check_string_chars( IT first, IT last,
     std::vector<IT> result_vector;
     if (first == last) return result_vector;
     
-    IT out = std::find_if(first, last, CharInString(match_chars));
+    IT out = std::find_if(first, last, char_in_string(match_chars));
     while (out != last)
     {
 	result_vector.push_back(out);
 	++out;
-	out = std::find_if(out, last, CharInString(match_chars));
+	out = std::find_if(out, last, char_in_string(match_chars));
     }
     return result_vector;
 }
@@ -135,6 +147,10 @@ std::vector<IT>  check_string_chars( IT first, IT last,
  *         length less than low or greater than high.
  *         If the size of this vector is 0 no strings with 
  *         out-of-range lengths were found.
+ *
+ * \sa     Other string checking utilities are available in
+ *         dsxx::check_string_chars, and dsxx::check_strings_unique.
+ *
  */
 template<class IT>
 std::vector<IT>  check_string_lengths( IT first, IT last, 
@@ -172,6 +188,10 @@ std::vector<IT>  check_string_lengths( IT first, IT last,
  *         If the size of this vector is 0 no duplicate strings
  *         were found, that is, all the strings in the container
  *         in the range first:last-1 are unique.
+ *
+ * \sa     Other string checking utilities are available in
+ *         dsxx::check_string_chars, and dsxx::check_string_lengths.
+ *
  */
 template<class IT>
 std::vector<IT>  check_strings_unique(IT first, IT last) 
@@ -190,7 +210,7 @@ std::vector<IT>  check_strings_unique(IT first, IT last)
     return result_vector;
 }
 
-} // end namespace rtt_ds
+} // end namespace rtt_dsxx
 
 #endif                          // __ds_Check_Strings_hh__
 

@@ -21,7 +21,7 @@ using std::map;
 using std::stack;
 using std::pair;
 
-namespace rtt_ds
+namespace rtt_dsxx
 {
  
 //===========================================================================//
@@ -159,7 +159,7 @@ class NestMap
     // IMPLEMENTATION
 };
 
-} // end namespace rtt_ds
+} // end namespace rtt_dsxx
 
 #endif                          // __ds_NestMap_hh__
 

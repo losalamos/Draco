@@ -41,11 +41,14 @@ void Check_Strings_test()
 	
     std::cout << std::endl;
 
+    //---------------------------------------------------------------------------//
+
     // Test for illegal characters.
+
     std::cout << "Illegal character utility test:" << std::endl;
     std::string bad_chars = "()[]* !^#$/";
     std::vector<VS_iter> result =
-	dsxx::check_string_chars(names.begin(), names.end(), bad_chars);
+	rtt_dsxx::check_string_chars(names.begin(), names.end(), bad_chars);
     if (result.size() == 0) 
 	std::cout << "All characters OK!" << std::endl;
     else
@@ -76,12 +79,15 @@ void Check_Strings_test()
 
     std:: cout << std::endl;
 
+    //---------------------------------------------------------------------------//
+
     // Test for acceptable lengths.
+
     std::cout << "String length utility test:" << std::endl;
     int low = 1;
     int high= 4;
     std::vector<VS_iter> result2 =
-	dsxx::check_string_lengths(names.begin(), names.end(), low, high);
+	rtt_dsxx::check_string_lengths(names.begin(), names.end(), low, high);
     if (result2.size() == 0) 
 	std::cout << "All lengths OK!" << std::endl;
     else
@@ -109,10 +115,13 @@ void Check_Strings_test()
 
     std:: cout << std::endl;
 
+    //---------------------------------------------------------------------------//
+
     // Test for unique names.
+
     std::cout << "Unique strings utility test:" << std::endl;
     std::vector<VS_iter> result3 =
-	dsxx::check_strings_unique(names.begin(), names.end());
+	rtt_dsxx::check_strings_unique(names.begin(), names.end());
     if (result3.size() == 0) 
 	std::cout << "All strings unique!" << std::endl;
     else
@@ -148,7 +157,7 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (std::string(argv[arg]) == "--version")
 	{
-	    std::cout << argv[0] << ": version " << rtt_ds::release() << std::endl; 
+	    std::cout << argv[0] << ": version " << rtt_dsxx::release() << std::endl; 
 	    return 0;
 	}
 

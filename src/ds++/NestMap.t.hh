@@ -20,7 +20,7 @@ using std::map;
 using std::stack;
 using std::pair;
 
-namespace rtt_ds
+namespace rtt_dsxx
 {
  
 //===========================================================================//
@@ -173,7 +173,7 @@ template<class Key, class T>
 NestMap<Key, T>::iterator NestMap<Key, T>::current()
 { return NestMap<Key, T>::iterator(activeNodes); }
 
-} // end namespace rtt_ds
+} // end namespace rtt_dsxx
 
 #endif
 

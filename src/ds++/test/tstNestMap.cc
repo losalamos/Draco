@@ -12,7 +12,7 @@
 
 #ifdef SDP
 
-using rtt_ds::NestMap;
+using rtt_dsxx::NestMap;
 using std::cout;
 using std::endl;
 
