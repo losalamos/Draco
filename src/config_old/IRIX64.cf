@@ -64,6 +64,10 @@ ifneq ($(c4),shmem)
 STRICT	= --strict
 endif
 
+ifeq ($(c4),s2)
+STRICT	=
+endif
+
 CC	= cc
 CXX	= KCC -x -mips4 --no_implicit_include $(STRICT) -D_POSIX_SOURCE
 cmplr	= kai
@@ -81,6 +85,11 @@ endif
 ifeq ($(gamma),yes)
 CXX	= /v/furnish/kcc33g/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE --one_instantiation_per_object
 cmplr	= kcc33g
+endif
+
+ifeq ($(delta),yes)
+CXX	= /v/furnish/kcc3.3delta/KCC_BASE/bin/KCC $(STRICT) --no_implicit_include -D_POSIX_SOURCE --one_instantiation_per_object -Bstatic
+cmplr	= kcc33d
 endif
 
 LDSHARED = cc -64 -shared
@@ -110,6 +119,13 @@ ifeq ($(c4),mpi)
 comm	:= c4m
 SYS_FLAGS = -DC4_MPI
 SYS_LIBS = -lmpi
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
+endif
+
+ifeq ($(c4),s2)
+comm	:= c4s2
+SYS_FLAGS = -DC4_SHMEM
+SYS_LIBS = -lsma -lpthread
 PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
 
