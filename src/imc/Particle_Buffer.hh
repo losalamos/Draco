@@ -140,7 +140,7 @@ class Particle_Buffer
     typedef Particle_Stack<rtt_dsxx::SP<PT> > Bank;
 
     // standard buffers for Comm_Buffers
-    typedef std::vector<Comm_Buffer> Comm_Vector;
+    typedef std::vector<Comm_Buffer>    Comm_Vector;
     typedef Particle_Stack<Comm_Buffer> Comm_Bank;
 
   private:
