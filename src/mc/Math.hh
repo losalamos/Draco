@@ -56,8 +56,10 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
 
     // second chance for passing if reference is identically zero
     if (reference == 0 && !passed)
-	if (fabs(value) < precision)
-	    passed = true;
+	if (fabs(value) < precision) passed = true;
+
+    // check for both zeroes
+    if (reference == 0 && value == 0 && !passed) passed = true;
 
     return passed;
 }
