@@ -575,7 +575,7 @@ package="ds++"
    PKG_LIBS='-L.. -l${package}'
 
 
-	test_alltarget="$test_alltarget tstAllocators tstMat tstSP tstAssert \
+	test_alltarget="$test_alltarget tstAllocators tstMat tstSP tstAssert tstNestMap \
             tstMat1RA tstMat2RA tstMat3RA tstMat4RA"
         
 	test_nprocs="scalar"
