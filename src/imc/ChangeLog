@@ -1,0 +1,6 @@
+1999-10-15  Thomas M. Evans  <tme@lanl.gov>
+
+	* Parallel_Source_Init.hh, Parallel_Source_Init.t.hh,
+	Source_Init.hh, Source_Init.t.hh:  Added expanded surface source
+	capability.  Updated to imc-1_1_0.  
+
