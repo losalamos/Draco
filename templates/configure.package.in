@@ -1,0 +1,33 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/<pkg> configure.in
+dnl <user>
+dnl <date>
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for <pkg>
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT(<start>)
+AC_CONFIG_AUX_DIR(../../config)
+AC_CONFIG_HEADER(<pkg>/config.h:config.h.in)
+package="<pkg>"
+
+dnl VENDOR SETUPS
+dnl AC_MPI_SETUP(pkg)
+dnl AC_SHMEM_SETUP(pkg)
+dnl AC_SPRNG_SETUP(pkg)
+dnl AC_PCGLIB_SETUP(pkg)
+
+AC_INSTALL_HEADERS
+AC_INSTALL_LIB
+AC_NEEDS_LIBS(ds++)
+
+dnl DRACO SETUP
+AC_DRACO_ENV
+
+AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+          test/Makefile:../../config/Makefile.test.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/<pkg> configure.in
+dnl-------------------------------------------------------------------------dnl
