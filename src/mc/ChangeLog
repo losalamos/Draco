@@ -1,12 +1,12 @@
 2000-06-08  H. Grady Hughes  <hgh@lanl.gov>
-
-    * TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
-    test/TET_test_1.hh, test/tstTET_Mesh.cc: The information from the
-    interface service get_element_sets() is converted to two separate
-    maps, side_sets and cell_sets, and used to initialize data members
-    of the TET_Mesh class.  The TET_Mesh class no longer has knowledge
-    of element_sets.  Also, new diagnostic functions print_node_sets,
-    print_side_sets, and print_cell_sets are added to TET_Mesh.
+   
+	* TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
+ 	test/TET_test_1.hh, test/tstTET_Mesh.cc: The information from the
+ 	interface service get_element_sets() is converted to two separate
+ 	maps, side_sets and cell_sets, and used to initialize data members
+ 	of the TET_Mesh class.  The TET_Mesh class no longer has knowledge
+ 	of element_sets.  Also, new diagnostic functions print_node_sets,
+ 	print_side_sets, and print_cell_sets are added to TET_Mesh.
 
 2000-05-03  H. Grady Hughes  <hgh@lanl.gov>
 
