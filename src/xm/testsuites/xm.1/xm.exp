@@ -1,0 +1,21 @@
+puts "Running test of xm component."
+
+load_lib draco.exp
+
+global ENV
+
+puts "value of ENV is $ENV"
+
+puts "Running tstUV_$ENV"
+
+set output [exec ./tstUV_$ENV]
+
+# Check the output of t1
+
+if {[regexp "PASSED" $output]} {
+    pass xm
+} else {
+    fail xm
+}
+
+# All done with tests of xm package.
