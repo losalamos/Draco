@@ -250,14 +250,20 @@ check: all
 	done; \
 	exit 0
 
-# Look for Makefile.target either in the build directory, or in the
-# source directory.
+# If available, include Makefile.options from the build directory.
 
-makefile_target_path = $(wildcard Makefile.target)
-ifeq (,${makefile_target_path})
-   makefile_target_path = $(wildcard ${srcdir}/Makefile.target)
+makefile_options_path = $(wildcard Makefile.options)
+ifneq (,${makefile_options_path})
+
+   # Found a Makefile.options; include it.
+
+   include ${makefile_options_path}
+
 endif
 
+# Look for Makefile.target in the source directory.
+
+makefile_target_path = $(wildcard ${srcdir}/Makefile.target)
 ifeq (,${makefile_target_path})
 
    # Could not find Makefile.target, so assume a single executable and
