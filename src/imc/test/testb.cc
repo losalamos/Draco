@@ -13,6 +13,7 @@
 #include "imctest/Opacity_Builder.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
+#include "imctest/Tally.hh"
 #include "imctest/Random.hh"
 #include "imctest/Math.hh"
 #include "ds++/SP.hh"
@@ -28,6 +29,7 @@ using IMC::Mat_State;
 using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
+using IMC::Tally;
 using IMC::Random;
 using IMC::Particle_Stack;
 using IMC::Global::operator<<;
@@ -94,7 +96,7 @@ void Surface_diagnostic(const MT &mesh)
 }
 
 template<class MT>
-void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
+void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally)
 {
   // test particle copying and backing
 
@@ -130,7 +132,7 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
     sbank.push(part4);
     cout << sbank.size() << endl;
 
-    part1.transport(mesh, xs, check);
+    part1.transport(mesh, xs, tally, check);
 
     sbank.pop();
     cout << sbank.size() << endl;
@@ -139,11 +141,12 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs)
     cout << sbank.size() << endl;
     cout << part5;	
     
-    part5.transport(mesh, xs, check);
+    part5.transport(mesh, xs, tally, check);
 }
 
 template<class MT>
-void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
+void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, 
+                  Tally<MT> &tally, long seed)
 {
   // transport a particle
 
@@ -177,7 +180,7 @@ void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
     particle.source(origin, source, mesh);
 
   // transport
-    particle.transport(mesh, opacity, check);
+    particle.transport(mesh, opacity, tally, check);
 
   // assert that particle is indeed dead
     assert (!particle.status());
@@ -214,11 +217,26 @@ main()
     Builder_diagnostic(*mesh, *mat_state, *opacity);
   // Surface_diagnostic(*mesh);
 
+//
+// tally object
+//
+
+  //	SP<Tally<OS_Mesh> > tally = new Tally<OS_Mesh>(mesh);
+
+
   // Particle diagnostics
-  // long seed = -345632;
-  // Run_Particle(*mesh, *opacity, seed);
-    Bank_Particle(*mesh, *opacity);
-    
+      // long seed = -345632;
+      // Run_Particle(*mesh, *opacity, *tally, seed);
+      // Bank_Particle(*mesh, *opacity, *tally);
+
+      // for ( int i = 1; i <= mesh->num_cells(); i++)
+      // {
+      //	cout << "Cell " << i << ":  energy_dep = " <<
+      //	    tally->get_energy_dep(i) << endl;
+      // }
+      // cout << " Total energy deposited = " 
+      //      << tally->get_energy_dep_tot() << endl;
+
 }
 
 
