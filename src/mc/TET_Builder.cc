@@ -114,17 +114,17 @@ void TET_Builder::print_node_sets(std::ostream &output) const
     output << "NODE SETS\n" << endl;
     for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
             flag != node_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int nnode = (*flag).second.size();
-            output << "  " << nnode << " flagged node" <<
-                (nnode == 1 ? "." : "s.") << "\n";
-            if (nnode > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << endl;
-        }
+    {
+        output << (*flag).first << "\n";
+        int nnode = (*flag).second.size();
+        output << "  " << nnode << " flagged node" <<
+            (nnode == 1 ? "." : "s.") << "\n";
+        if (nnode > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "    " << *i << "\n";
+        output << endl;
+    }
 }   // end TET_Builder::print_node_sets(std::ostream &)
 
 //! Print the element_sets.
@@ -133,17 +133,17 @@ void TET_Builder::print_element_sets(std::ostream &output) const
     output << "ELEMENT SETS\n" << endl;
     for (MAP_String_SetInt::const_iterator flag = element_sets.begin() ;
             flag != element_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int nelem = (*flag).second.size();
-            output << "  " << nelem << " flagged element" <<
-                (nelem == 1 ? "." : "s.") << "\n";
-            if (nelem > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << endl;
-        }
+    {
+        output << (*flag).first << "\n";
+        int nelem = (*flag).second.size();
+        output << "  " << nelem << " flagged element" <<
+            (nelem == 1 ? "." : "s.") << "\n";
+        if (nelem > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "    " << *i << "\n";
+        output << endl;
+    }
 }   // end TET_Builder::print_element_sets(std::ostream &)
 
 //! Print the side_sets.
@@ -152,17 +152,17 @@ void TET_Builder::print_side_sets(std::ostream &output) const
     output << "SIDE SETS\n" << endl;
     for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
             flag != side_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int nside = (*flag).second.size();
-            output << "  " << nside << " flagged side" <<
-                (nside == 1 ? "." : "s.") << "\n";
-            if (nside > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << endl;
-        }
+    {
+        output << (*flag).first << "\n";
+        int nside = (*flag).second.size();
+        output << "  " << nside << " flagged side" <<
+            (nside == 1 ? "." : "s.") << "\n";
+        if (nside > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "    " << *i << "\n";
+        output << endl;
+    }
 }   // end TET_Builder::print_side_sets(std::ostream &)
 
 //! Print the cell_sets.
@@ -171,17 +171,17 @@ void TET_Builder::print_cell_sets(std::ostream &output) const
     output << "CELL SETS\n" << endl;
     for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
             flag != cell_sets.end() ; flag++)
-        {
-            output << (*flag).first << "\n";
-            int ncell = (*flag).second.size();
-            output << "  " << ncell << " flagged cell" <<
-                (ncell == 1 ? "." : "s.") << "\n";
-            if (ncell > 0)
-                for (SetInt::const_iterator i = (*flag).second.begin() ;
-                                       i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << endl;
-        }
+    {
+        output << (*flag).first << "\n";
+        int ncell = (*flag).second.size();
+        output << "  " << ncell << " flagged cell" <<
+            (ncell == 1 ? "." : "s.") << "\n";
+        if (ncell > 0)
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                                   i != (*flag).second.end(); i++)
+                output << "    " << *i << "\n";
+        output << endl;
+    }
 }   // end TET_Builder::print_cell_sets(std::ostream &)
 
 

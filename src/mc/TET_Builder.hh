@@ -229,10 +229,10 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
 
     while ( node_set_iter != node_sets.end() )
         if ((*node_set_iter).second.empty())
-            {
-                MAP_String_SetInt::iterator targ = node_set_iter++;
-                node_sets.erase(targ);
-            }
+        {
+            MAP_String_SetInt::iterator targ = node_set_iter++;
+            node_sets.erase(targ);
+        }
         else
             ++node_set_iter;
 
@@ -259,10 +259,10 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
         else if (element_types[elem] == Element_Definition::BAR_2)
             num_edges++;
         else
-            {
-                Check (element_types[elem] == Element_Definition::NODE);
-                num_points++;
-            }
+        {
+            Check (element_types[elem] == Element_Definition::NODE);
+            num_points++;
+        }
 
     Check (num_sides+num_cells+num_edges+num_points == element_types.size());
 
@@ -274,49 +274,49 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     for (int elem = 0, cell_ = 0, side_ = 0, edge_ = 0, point_ = 0 ;
              elem < element_types.size() ; elem++)
         if (element_types[elem] == Element_Definition::TRI_3)
-            {
-                sides_vertices[side_] = element_nodes[elem];
-                true_name[elem] = side_++;
-            }
+        {
+            sides_vertices[side_] = element_nodes[elem];
+            true_name[elem] = side_++;
+        }
         else if (element_types[elem] == Element_Definition::TETRA_4)
-            {
-                cells_vertices[cell_] = element_nodes[elem];
-                true_name[elem] = cell_++;
-            }
+        {
+            cells_vertices[cell_] = element_nodes[elem];
+            true_name[elem] = cell_++;
+        }
         else if (element_types[elem] == Element_Definition::BAR_2)
             true_name[elem] = edge_++;
         else
-            {
-                Check (element_types[elem] == Element_Definition::NODE);
-                true_name[elem] = point_++;
-            }
+        {
+            Check (element_types[elem] == Element_Definition::NODE);
+            true_name[elem] = point_++;
+        }
 
     // Construct side_sets and cell_sets.
     for (MAP_String_SetInt::iterator flag = element_sets.begin() ;
             flag != element_sets.end() ; flag++)
+    {
+        if ((*flag).second.empty())
+            continue;
+
+        SetInt key_side_set;
+        SetInt key_cell_set;
+        for (SetInt::iterator i = (*flag).second.begin() ;
+                              i != (*flag).second.end(); i++)
         {
-            if ((*flag).second.empty())
-                continue;
-
-            SetInt key_side_set;
-            SetInt key_cell_set;
-            for (SetInt::iterator i = (*flag).second.begin() ;
-                                  i != (*flag).second.end(); i++)
-                {
-                    if (element_types[*i] == Element_Definition::TRI_3)
-                        key_side_set.insert(true_name[*i]);
-                    else if (element_types[*i] == Element_Definition::TETRA_4)
-                        key_cell_set.insert(true_name[*i]);
-                    else
-                        Check (element_types[*i] == Element_Definition::BAR_2
-                            || element_types[*i] == Element_Definition::NODE);
-                }
-
-            if (!key_side_set.empty())
-                side_sets[(*flag).first] = key_side_set;
-            if (!key_cell_set.empty())
-                cell_sets[(*flag).first] = key_cell_set;
+            if (element_types[*i] == Element_Definition::TRI_3)
+                key_side_set.insert(true_name[*i]);
+            else if (element_types[*i] == Element_Definition::TETRA_4)
+                key_cell_set.insert(true_name[*i]);
+            else
+                Check (element_types[*i] == Element_Definition::BAR_2
+                    || element_types[*i] == Element_Definition::NODE);
         }
+
+        if (!key_side_set.empty())
+            side_sets[(*flag).first] = key_side_set;
+        if (!key_cell_set.empty())
+            cell_sets[(*flag).first] = key_cell_set;
+    }
 
     // To be properly constructed, sides_vertices[][] must contain the
     // internal numbers of the three bounding vertices of the sides.
