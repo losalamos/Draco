@@ -75,10 +75,11 @@ endif
 
 DS++_LIB	= -L$(SRC_TOP)/ds++ -lds++_$(env)
 
-SPDF_LIB	= -L$(SRC_TOP)/spdf -lspdf_$(env)
-UTIL_LIB	= -L$(SRC_TOP)/util -lutil_$(env)
-GEOM_LIB	= -L$(SRC_TOP)/geom -lgeom_$(env)
-MESH_LIB	= -L$(SRC_TOP)/mesh -lmesh_$(env)
+SPDF_LIB	= -L$(SRC_TOP)/spdf   -lspdf_$(env)
+UTIL_LIB	= -L$(SRC_TOP)/util   -lutil_$(env)
+LINALG_LIB	= -L$(SRC_TOP)/linalg -llinalg_$(env)
+GEOM_LIB	= -L$(SRC_TOP)/geom   -lgeom_$(env)
+MESH_LIB	= -L$(SRC_TOP)/mesh   -lmesh_$(env)
 
 ifeq ($(need_util),yes)
 need_spdf	:= yes
@@ -197,6 +198,9 @@ endif
 ifeq ($(need_geom),yes)
 LINK_LIBS	+= $(GEOM_LIB)
 endif
+ifeq ($(need_linalg),yes)
+LINK_LIBS	+= $(LINALG_LIB)
+endif
 ifeq ($(need_util),yes)
 LINK_LIBS	+= $(UTIL_LIB)
 endif
@@ -210,6 +214,12 @@ ifeq ($(need_c4),yes)
 LINK_LIBS	+= $(C4_LIB)
 endif
 LINK_LIBS	+= $(DS++_LIB)
+ifeq ($(need_pcg),yes)
+LINK_LIBS	+= $(PCG_LIB)
+endif
+ifeq ($(need_lapack),yes)
+LINK_LIBS	+= $(LAPACK_LIB)
+endif
 ifeq ($(need_pooma),yes)
 #LINK_LIBS	+= $(POOMA_LIB)
 LINK_LIBS	+= $(POOMA_LFLAGS) $(POOMA_LIBS)
