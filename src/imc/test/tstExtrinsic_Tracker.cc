@@ -90,8 +90,8 @@ Surface_Tracking_Tester::Surface_Tracking_Tester(double small, double large)
     descriptor[3].data[0] = 2.0;
     descriptor[3].data[1] = large_radius;
 
-    double bin_data[3] = {-0.5, 0.0, 0.5};
-    bin_cosines.assign(bin_data, bin_data+3);
+    double bin_data[5] = {-1.0, -0.5, 0.0, 0.5, 1.0};
+    bin_cosines.assign(bin_data, bin_data+5);
 }
 
 struct Surface_Tracking_Tester_Zero : public Surface_Tracking_Interface

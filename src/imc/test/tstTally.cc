@@ -57,11 +57,13 @@ class Interface : public rtt_imc::Surface_Tracking_Interface
 
   public:
    
-    Interface(int h, int s) : surfaces(s), hybrid(h), cosines(3)
+    Interface(int h, int s) : surfaces(s), hybrid(h), cosines(5)
     {
-	cosines[0] = -0.5;
-	cosines[1] = 0.0;
-	cosines[2] = 0.5;
+	cosines[0] = -1.0;
+	cosines[1] = -0.5;
+	cosines[2] =  0.0;
+	cosines[3] =  0.5;
+	cosines[4] =  1.0;
     }
 
     int get_hybrid_diffusion_method() const { return hybrid; }

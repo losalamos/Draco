@@ -119,7 +119,7 @@ class Surface_Sub_Tally
     std::vector<std::vector<int>    > count_tally;
     int mesh_size;   //!< number of bins in the azimuthal mesh
     int surfaces;    //!< number of surfaces
-    int tallies;     //!< number of tallies
+    int num_tallies;     //!< number of tallies
 
     // Implementation
 
@@ -187,7 +187,7 @@ int Surface_Sub_Tally::get_surface_index(int surface, bool is_outward) const
 
     // 0-based surface_index must be < number of tallies
     Ensure(surface_index >= 0); 
-    Ensure(surface_index < tallies);
+    Ensure(surface_index < num_tallies);
 
     return surface_index;
 }

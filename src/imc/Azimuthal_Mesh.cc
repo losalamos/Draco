@@ -30,17 +30,13 @@ namespace rtt_imc
  * \param cosines Cosines of the interior boundary angles
  */
 Azimuthal_Mesh::Azimuthal_Mesh(const vector<double>& cosines)
-    : bins(cosines.size() + 1),
-      bin_cosines(1, -1.0)
+    : num_bins(cosines.size() - 1),
+      bin_boundary_cosines(cosines)
 {
 
-    Check(cosines.size() > 0);
-
-    std::copy(cosines.begin(), cosines.end(), std::back_inserter(bin_cosines));
-    bin_cosines.push_back(1.0);
-
-    Require( bin_cosines.size() == bins+1 );
-    Ensure( check_cosines() );
+    Require( num_bins > 0);
+    Require( bin_boundary_cosines.size() == num_bins+1 );
+    Ensure ( check_cosines() );
 
 }
 
@@ -52,18 +48,13 @@ Azimuthal_Mesh::Azimuthal_Mesh(const vector<double>& cosines)
  * \param interface An object implementing Surface_Tracking_Interface
  */
 Azimuthal_Mesh::Azimuthal_Mesh(const Surface_Tracking_Interface& interface)
-    : bin_cosines(1, -1.0)
+    : bin_boundary_cosines()
 {
+    bin_boundary_cosines = interface.get_bin_cosines();
+    num_bins = bin_boundary_cosines.size() - 1;
 
-    const vector<double>& cosines ( interface.get_bin_cosines() );
-    bins = cosines.size() + 1;
-
-    Check (cosines.size() > 0);
-
-    std::copy(cosines.begin(), cosines.end(), std::back_inserter(bin_cosines));
-    bin_cosines.push_back(1.0);
-
-    Require( bin_cosines.size() == bins+1 );
+    Require( num_bins > 0);
+    Require( bin_boundary_cosines.size() == num_bins+1 );
     Ensure ( check_cosines() );
 }
 
@@ -71,9 +62,9 @@ Azimuthal_Mesh::Azimuthal_Mesh(const Surface_Tracking_Interface& interface)
 double Azimuthal_Mesh::get_lower_cosine(int bin) const
 {
 
-    Check (bin >= 1);  Check(bin <= bins);
+    Check (bin >= 1);  Check(bin <= num_bins);
 
-    return bin_cosines[bin-1];
+    return bin_boundary_cosines[bin-1];
 
 }
 
@@ -81,9 +72,9 @@ double Azimuthal_Mesh::get_lower_cosine(int bin) const
 double Azimuthal_Mesh::get_upper_cosine(int bin) const
 {
 
-    Check (bin >= 1);  Check(bin <= bins);
+    Check (bin >= 1);  Check(bin <= num_bins);
 
-    return bin_cosines[bin];
+    return bin_boundary_cosines[bin];
 
 }
 
@@ -91,11 +82,11 @@ double Azimuthal_Mesh::get_upper_cosine(int bin) const
 bool Azimuthal_Mesh::is_in_bin(const vector<double>& direction, int bin) const
 {
 
-    Check (bin >= 1); Check(bin <= bins);
+    Check (bin >= 1); Check(bin <= num_bins);
 
     return 
-	( direction[2] >= bin_cosines[bin-1] ) &&
-	( direction[2] <= bin_cosines[bin]   );
+	( direction[2] >= bin_boundary_cosines[bin-1] ) &&
+	( direction[2] <= bin_boundary_cosines[bin]   );
 
 }
 
@@ -103,7 +94,7 @@ bool Azimuthal_Mesh::is_in_bin(const vector<double>& direction, int bin) const
 int Azimuthal_Mesh::find_bin(const vector<double>& direction) const
 {
 
-    for (int bin = 1; bin <= bins; ++bin)
+    for (int bin = 1; bin <= num_bins; ++bin)
 	if ( is_in_bin(direction, bin) ) return bin;
 
     return 0;
@@ -117,13 +108,13 @@ bool Azimuthal_Mesh::check_cosines() const
     bool is_okay = true;
 
     double lower_value = -1.0;
-    double upper_value = bin_cosines[0];
+    double upper_value = bin_boundary_cosines[0];
 
     is_okay = (upper_value >= lower_value) && 
 	(upper_value < lower_value + 1.0e-7);
 
-    for (vector<double>::const_iterator i = bin_cosines.begin() + 1;
-	 i != bin_cosines.end() && is_okay;
+    for (vector<double>::const_iterator i = bin_boundary_cosines.begin() + 1;
+	 i != bin_boundary_cosines.end() && is_okay;
 	 ++i)
     {
 

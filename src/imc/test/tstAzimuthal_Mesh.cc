@@ -32,9 +32,9 @@ using namespace std;
 void test()
 {
 
-    double c[4] = {-0.5, 0.0, 0.25, 0.5};
+    double c[6] = {-1.0, -0.5, 0.0, 0.25, 0.5, 1.0};
 
-    vector<double> cosines(c, c+4);
+    vector<double> cosines(c, c+6);
 
     Azimuthal_Mesh az_mesh(cosines);
 
@@ -65,7 +65,7 @@ void test()
 
 #if DBC & 2
     try {
-	cosines[0] = -1.0;
+	cosines[0] = -0.75;
 	Azimuthal_Mesh az_mesh(cosines);
 	ITFAILS;
     }

@@ -586,8 +586,8 @@ IMC_CDI_Interface<PT>::IMC_CDI_Interface(int hybrid)
     surfaces[0].data[0] = 1.0;
     surfaces[0].data[1] = 2.0;
 
-    double bin_data[3] = {-0.5, 0.0, 0.5};
-    cosines.assign(bin_data, bin_data+3);
+    double bin_data[5] = {-1.0, -0.5, 0.0, 0.5, 1.0};
+    cosines.assign(bin_data, bin_data+5);
 }
 
 //---------------------------------------------------------------------------//

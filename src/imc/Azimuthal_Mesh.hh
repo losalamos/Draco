@@ -73,7 +73,7 @@ class Azimuthal_Mesh
     double get_lower_cosine(int bin) const; //!< Cosine of lower boundary angle
     double get_upper_cosine(int bin) const; //!< Cosine of upper boundary angle
 
-    int size() const { return bins; } //!< Get the number of azimuthal bins 
+    int size() const { return num_bins; } //!< Get the number of azimuthal bins 
 
     //! Determine whrether the given direction is in the given bin
     bool is_in_bin(const std::vector<double>& direction, int bin) const;
@@ -85,8 +85,11 @@ class Azimuthal_Mesh
 
     // DATA
     
-    int bins;  //! Number of bins
-    std::vector<double> bin_cosines;  //! Cosines of bin boundaries incl -1,1
+    //! Number of bins
+    int num_bins;  
+
+    //! Cosines of bin boundaries incl -1,1
+    std::vector<double> bin_boundary_cosines;
 
     // IMPLEMENTATION
 

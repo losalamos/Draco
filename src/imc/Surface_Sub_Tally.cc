@@ -31,7 +31,7 @@ namespace rtt_imc
  */
 Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
     : azimuthal_mesh(az_mesh),
-      tallies(2 * surfaces_),
+      num_tallies(2 * surfaces_),
       surfaces(surfaces_),
       weight_tally(2 * surfaces_),
       count_tally(2 * surfaces_),
@@ -42,7 +42,7 @@ Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
     Require(azimuthal_mesh);
 
     // Initialize the size of each individual tally.
-    for (int i = 0; i != tallies; ++i) 
+    for (int i = 0; i != num_tallies; ++i) 
     {
 	weight_tally[i].resize(mesh_size, 0.0);
 	count_tally[i].resize(mesh_size, 0);
@@ -66,15 +66,15 @@ Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh,
 {
 
     surfaces = interface.number_of_surfaces();
-    tallies = 2 * surfaces;
-    weight_tally.resize(tallies);
-    count_tally.resize(tallies);
+    num_tallies = 2 * surfaces;
+    weight_tally.resize(num_tallies);
+    count_tally.resize(num_tallies);
 
     Require(surfaces > 0)
     Require(azimuthal_mesh);
 
     // Initialize the size of each individual tally.
-    for (int i = 0; i != tallies; ++i) 
+    for (int i = 0; i != num_tallies; ++i) 
     {
 	weight_tally[i].resize(mesh_size, 0.0);
 	count_tally[i].resize(mesh_size, 0);
@@ -112,7 +112,7 @@ void Surface_Sub_Tally::add_to_tally(int surface,
     int surface_index = get_surface_index(surface, is_outward);
 
     Check ( surface_index >= 0 ); 
-    Check ( surface_index < tallies );
+    Check ( surface_index < num_tallies );
 
     // Get the bin from the mesh object
     int bin = azimuthal_mesh->find_bin(direction);

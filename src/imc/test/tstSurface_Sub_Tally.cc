@@ -33,8 +33,8 @@ using namespace std;
 void test()
 {
 
-    double c[3] = {-0.5, 0.0, 0.5};
-    vector<double> cosines(c, c+3);
+    double c[5] = {-1.0, -0.5, 0.0, 0.5, 1.0};
+    vector<double> cosines(c, c+5);
 
     SP<Azimuthal_Mesh> az_mesh ( new Azimuthal_Mesh(cosines) );
 

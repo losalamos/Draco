@@ -89,8 +89,8 @@ Surface_Tracking_Tester::Surface_Tracking_Tester()
     descriptor[2].data[0] = -1.0;
     descriptor[2].data[1] =  3.0;
 
-    double bin_data[3] = {-0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0)};
-    bin_cosines.assign(bin_data, bin_data+3);
+    double bin_data[5] = {-1.0, -0.5*sqrt(2.0), 0.0, 0.5*sqrt(2.0), 1.0};
+    bin_cosines.assign(bin_data, bin_data+5);
     
 }
 
