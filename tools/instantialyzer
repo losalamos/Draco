@@ -6,6 +6,12 @@
 # @> INSTANTIALYZER == "C++ Template Instantiation Tool"
 #
 # $Log$
+# Revision 1.2  1997/09/25 15:09:31  furnish
+# Various improvements to better support instantiation of template
+# functions in cases where the template parameter is itself a templated
+# type (ie, nested templates).  There are still failure modes, so this
+# should get some more attention at some point.
+#
 # Revision 1.1  1997/06/10 22:13:03  furnish
 # Import the instantialyzer, used for template instantiation on multiple
 # compilers via *.pt files.
@@ -198,7 +204,9 @@ sub instantiate_funcproto {
 		# are actually references to the template
 		# parameter(s).
 
-		$proto =~ s/([<,\(]\s*)$key(\s*>|\s*,|&?\s+[*&A-Za-z_])/\1$val\2/;
+# Leave this here in case newer substitution is found to suck.
+#		$proto =~ s/([<,\(]\s*)$key(\s*>|\s*,|&?\s+[*&A-Za-z_])/\1$val\2/;
+		$proto =~ s/(([<,\(]\s*)((const|typename)\s+)*)$key(\s*>|\s*,|&?\s+[*&A-Za-z_]|::)/\1$val\5/;
 
 	    } until $initial eq $proto;
 
@@ -232,10 +240,11 @@ sub emit_function_instantiation {
 
     $_ = $mode;
   Compiler: {
-      /gcc/ && do { print OUT "template $proto;\n"; last; };
-      /edg/ && do { print OUT "#pragma instantiate $proto\n"; last; };
-      /ibm/ && do { print OUT "$proto;\n"; last; };
-      /dec/ && do {
+      /ansi/ && do { print OUT "template $proto;\n"; last; };
+      /gcc/  && do { print OUT "template $proto;\n"; last; };
+      /edg/  && do { print OUT "#pragma instantiate $proto\n"; last; };
+      /ibm/  && do { print OUT "$proto;\n"; last; };
+      /dec/  && do {
 
 	  print "Doing a function instantiation for DEC CXX\n" if $verbose;
 
