@@ -8,6 +8,7 @@
 
 pkg := 3T
 
+need_units	:= yes
 need_mesh	:= yes
 need_linalg	:= yes
 
@@ -17,7 +18,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs = Units.cc
+libsrcs =
 
 # Get the library built, minding our various other targets too.
 
