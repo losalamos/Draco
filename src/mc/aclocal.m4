@@ -13,9 +13,12 @@
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_vendors.m4
-dnl macros for each vendor that is used in DRACO
 dnl
-dnl $Id$
+dnl Macros for each vendor that is used supported by the Draco build
+dnl system.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:22
 dnl-------------------------------------------------------------------------dnl
 
 
@@ -514,9 +517,11 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_local.m4
-dnl service macros used in ac_vendors.m4, ac_dracoarg.m4, and ac_dracoenv.m4
 dnl
-dnl $Id$
+dnl Macros used internally within the Draco build system.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:22
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -683,9 +688,11 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
-dnl service macros used in configure.in's throughout DRACO
 dnl
-dnl $Id$
+dnl Service macros used in configure.in's throughout Draco.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:19
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -896,17 +903,21 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoenv.m4
-dnl puts together the DRACO environments given the arguments from 
-dnl vendors (ac_vendors.m4) and DRACO (ac_dracoarg.m4)
 dnl
-dnl $Id$
+dnl Defines the Draco build system environment.  This is the main
+dnl configure function.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:21
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_ENV
 dnl
-dnl usage: configure.in
-dnl puts together the DRACO compile-time environments
+dnl Assembles the Draco build system compile-time environment.  
+dnl It processes all of the options given to configure.  It does
+dnl NOT do any compile or link testing.  That functionality is
+dnl defined in ac_dracotests.m4.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_ENV, [dnl
@@ -1163,16 +1174,19 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoarg.m4
-dnl DRACO arguments macro that defines DRACO's non-vendor arguments
 dnl
-dnl $Id$
+dnl Declarations of Draco configure options (with some default
+dnl settings). 
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:20
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_ARGS
 dnl
-dnl usage: configure.in
-dnl defines non-vendor arguments for DRACO
+dnl Declaration of Draco non-vendor configure options. This macro can 
+dnl be called to fill out configure help screens
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_ARGS, [dnl
@@ -1398,8 +1412,6 @@ dnl 	Date:	Wed Apr 19 16:39:19 MDT 2000
 dnl 
 dnl 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
 dnl 
-dnl	$Id$
-dnl 
 dnl ========================================================================
 
 dnl NAME
@@ -1420,7 +1432,8 @@ dnl     AC_F90_ENV set environment variables F90, F90FLAGS, F90EXT,
 dnl     F90FREE, F90FIXED, and MODFLAG for the compiler requested by 
 dnl     with_f90.  If no specific compiler is requested, guess a compiler 
 dnl     based on the target
-dnl ========================================================================
+dnl
+========================================================================
 
 dnl ### Ensure with_f90 set
 AC_DEFUN(AC_WITH_F90, [dnl
@@ -2090,9 +2103,11 @@ dnl ========================================================================
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_compiler.m4
-dnl sets up all of the compilers
 dnl
-dnl $Id$
+dnl Sets up all of the C++ compilers.
+dnl
+dnl Thomas M. Evans
+dnl 1999/03/05 18:16:55
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -2708,10 +2723,12 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_platforms.m4
-dnl defines platform-specfic environments
-dnl defines ASCI/CCS-4 specific platform defaults
 dnl
-dnl $Id$
+dnl Defines platform-specfic environments, including default vendor
+dnl settings for the CCS-4/ASC computer platforms.
+dnl
+dnl Thomas M. Evans
+dnl 2003/04/30 20:29:39
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -3450,14 +3467,17 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    esac
 ])
 
-
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_platforms.m4
 dnl-------------------------------------------------------------------------dnl
 dnl-------------------------------------------------------------------------dnl
-dnl ac_dracotests.m4  
-dnl functions that run compiler/link tests after the draco 
-dnl environment has been configured
+dnl ac_dracotests.m4 
+dnl  
+dnl Macros that run compiler/link tests after the draco environment
+dnl has been configured.  These macros are called after AC_DRACO_ENV.
+dnl
+dnl Thomas M. Evans
+dnl 2003/04/30 20:29:39
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl

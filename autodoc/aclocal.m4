@@ -13,9 +13,11 @@
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
-dnl service macros used in configure.in's throughout DRACO
 dnl
-dnl $Id$
+dnl Service macros used in configure.in's throughout Draco.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:19
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl

@@ -13,16 +13,19 @@
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoarg.m4
-dnl DRACO arguments macro that defines DRACO's non-vendor arguments
 dnl
-dnl $Id$
+dnl Declarations of Draco configure options (with some default
+dnl settings). 
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:20
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_ARGS
 dnl
-dnl usage: configure.in
-dnl defines non-vendor arguments for DRACO
+dnl Declaration of Draco non-vendor configure options. This macro can 
+dnl be called to fill out configure help screens
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_ARGS, [dnl
@@ -242,9 +245,11 @@ dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
-dnl service macros used in configure.in's throughout DRACO
 dnl
-dnl $Id$
+dnl Service macros used in configure.in's throughout Draco.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:19
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
