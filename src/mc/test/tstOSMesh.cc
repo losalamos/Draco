@@ -32,7 +32,7 @@ using rtt_mc::XYZCoord_sys;
 using rtt_mc::Layout;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
-using rtt_mc_test::MC_Interface;
+using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
 bool passed = true;
@@ -52,21 +52,111 @@ class Mesh_Proxy
 
 //---------------------------------------------------------------------------//
 
-// 2D Mesh Tests
-void Test_2D()
+// test the builder
+
+void Builder_2D()
 {
-    // build 2 identical meshes 
-    SP<MC_Interface> interface(new MC_Interface());
-    OS_Builder builder(interface);
-    
-    SP<OS_Mesh> m1 = builder.build_Mesh();
-    SP<OS_Mesh> m2 = builder.build_Mesh();
+    // >>> TEST THE MESH_BUILDER
+
+    // make a builder from parser input 
+    SP<Parser> parser(new Parser());
+    OS_Builder builder(parser);
+
+    // test cell region data
+    {
+	vector<int> regions(6,1);
+	regions[3] = 2;
+	regions[4] = 2;
+	regions[5] = 2;
+
+	if (builder.get_num_regions() != 2)   ITFAILS;
+	if (builder.get_regions() != regions) ITFAILS;
+    }
+
+    // test zone mapping
+    {
+	vector<vector<int> > zone(2, vector<int>(3));
+	zone[0][0] = 1;
+	zone[0][1] = 2;
+	zone[0][2] = 3;
+	zone[1][0] = 4;
+	zone[1][1] = 5;
+	zone[1][2] = 6;
+
+	if (builder.get_num_zones() != 2)            ITFAILS;
+	if (builder.get_cells_in_zone(1) != zone[0]) ITFAILS;
+	if (builder.get_cells_in_zone(2) != zone[1]) ITFAILS;
+    }
+
+    // build a mesh
+    SP<OS_Mesh> mesh = builder.build_Mesh();
+
+    // check defined surface source cells
+    {
+	vector<vector<int> > ss(2);
+	ss[0].resize(3);
+	ss[1].resize(2);
+	ss[0][0] = 1;
+	ss[0][1] = 2;
+	ss[0][2] = 3;
+	ss[1][0] = 5;
+	ss[1][1] = 6;
+	
+	if (builder.get_defined_surcells() != ss) ITFAILS;
+
+	vector<string> ssp(2);
+	ssp[0] = "loy";
+	ssp[1] = "hiy";
+	
+	if (builder.get_ss_pos() != ssp) ITFAILS;
+    }
+
+    // check zone mapper
+    {
+	vector<int> zone_field(2);
+	zone_field[0] = 1000;
+	zone_field[1] = 1001;
+	vector<int> cell_field = builder.zone_cell_mapper(zone_field);
+
+	if (cell_field.size() != mesh->num_cells()) ITFAILS;
+
+	if (cell_field[0] != 1000) ITFAILS;
+	if (cell_field[1] != 1000) ITFAILS;
+	if (cell_field[2] != 1000) ITFAILS;
+	if (cell_field[3] != 1001) ITFAILS;
+	if (cell_field[4] != 1001) ITFAILS;
+	if (cell_field[5] != 1001) ITFAILS;
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+// 2D Mesh Tests
+void Mesh_2D()
+{    
+    // make a builder from parser input 
+    SP<Parser> parser(new Parser());
+    OS_Builder builder_A(parser);
+    OS_Builder builder_B(parser);
+
+    // >>> BUILD AND TEST MESHES
+   
+    // build meshes using the builder
+    SP<OS_Mesh> m1  = builder_A.build_Mesh();
+    SP<OS_Mesh> m2  = builder_B.build_Mesh();
+    SP<OS_Mesh> m1A = builder_A.get_Mesh();
+    SP<OS_Mesh> m2B = builder_B.get_Mesh();
+
     OS_Mesh &m = *m1;
 
     // the SPs should not be equal, also because of SPs to the Coord_sys
     // inside of mesh, the meshes are not identically equal
     if (m1 == m2)   ITFAILS; 
     if (*m1 == *m2) ITFAILS;
+
+    // the m1A and m2B meshes should equal their progenitors
+    if (m1 != m1A) ITFAILS;
+    if (m2 != m2B) ITFAILS;
     
     // check equality of other mesh components
     if (m1->get_Layout() != m2->get_Layout())       ITFAILS;
@@ -346,7 +436,8 @@ int main(int argc, char *argv[])
     try
     {
 	// 2D Mesh tests
-	Test_2D();
+	Builder_2D();
+	Mesh_2D();
     }
     catch (rtt_dsxx::assertion &ass)
     {

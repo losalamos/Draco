@@ -21,8 +21,7 @@
 namespace rtt_mc_test
 {
 
-//===========================================================================//
-// FAILURE LIMIT
+//===========================================================================//// FAILURE LIMIT
 //===========================================================================//
 
 bool fail(int line)
@@ -41,51 +40,19 @@ bool fail(int line, char *file)
 #define FAILURE fail(__LINE__, __FILE__);
 
 //===========================================================================//
-// 2D Objects Interface
+// Parser
 //===========================================================================//
 // make an interface for a 6 cell mesh
 
-class MC_Interface
+class Parser
 {
-    typedef std::vector<std::vector<double> > vec_double;
-    typedef std::vector<std::string> vec_string;
-
-  private:
-    std::string coord;
-    vec_double fine_edge;
-    vec_string bnd;
-
   public:
     // constructor
-    inline MC_Interface();
+    Parser() {/*...*/}
     
     // public copy functions for Mesh
-    std::string get_coordinates() const {return coord;}
-    vec_double get_fine_edge() const {return fine_edge;} 
-    vec_string get_boundaries() const {return bnd;}
+    std::string get_mesh_file() const { return "OS_Input"; }
 };
-
-// constructor
-MC_Interface::MC_Interface()
-    : coord("xy"), fine_edge(2), bnd(4)
-{
-    // calculate the fine edges
-    fine_edge[0].resize(4);
-    fine_edge[1].resize(3);
-
-    fine_edge[0][0] = -1;
-    fine_edge[1][0] = -1;
-
-    for (int i = 1; i < fine_edge[0].size(); i++)
-	fine_edge[0][i] = fine_edge[0][i-1] + 1;
-    for (int i = 1; i < fine_edge[1].size(); i++)
-	fine_edge[1][i] = fine_edge[1][i-1] + 2;
-
-    // calculate the boundaries
-    for (int i = 1; i < 4; i++)
-	bnd[i] = "vacuum";
-    bnd[0] = "reflect";
-}
 
 //===========================================================================//
 // Topology class tests

@@ -24,14 +24,14 @@ using namespace std;
 
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
-using rtt_mc_test::MC_Interface;
+using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__);
 
 // test Field types
-// IT = interface (MC_Interface)
+// IT = interface (Parser)
 // BT = builder type (OS_Builder)
 // MT = mesh type (OS_Mesh)
 
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
     // 2D Mesh tests
 
     // build a mesh
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
 

@@ -29,7 +29,7 @@ using rtt_mc::General_Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
-using rtt_mc_test::MC_Interface;
+using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
 bool passed = true;
@@ -43,7 +43,7 @@ bool passed = true;
 void test_Replication()
 {
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
 
@@ -96,7 +96,7 @@ void test_DD()
 	return;
 
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
 

@@ -33,7 +33,7 @@ using rtt_mc::General_Topology;
 using rtt_mc::Parallel_Data_Operator;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
-using rtt_mc_test::MC_Interface;
+using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
 
 typedef OS_Mesh::CCSF<int>           ccsf_int;
@@ -49,7 +49,7 @@ bool passed = true;
 void test_MT_Fields()
 {
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
     
@@ -79,7 +79,7 @@ template<class BT, class MT>
 void test_MT_Fields()
 {
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     BT builder(interface);
     SP<MT> mesh = builder.build_Mesh();
     
@@ -113,7 +113,7 @@ template<class FT, class T>
 void test_STL_Fields()
 {
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
     
@@ -165,7 +165,7 @@ void test_equivalence(const T value, const T mod_value)
     T local_value = value;
 
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
     
@@ -262,7 +262,7 @@ void timing()
     double end;
 	
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
     
@@ -293,7 +293,7 @@ void timing()
 void test_mapping_replication()
 {
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
     
@@ -335,7 +335,7 @@ void test_mapping_DD()
 	return;
 
     // get an OS_Mesh (2D 6 cells)
-    SP<MC_Interface> interface(new MC_Interface());
+    SP<Parser> interface(new Parser());
     OS_Builder builder(interface);
     SP<OS_Mesh> mesh = builder.build_Mesh();
 
