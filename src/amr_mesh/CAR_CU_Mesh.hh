@@ -183,11 +183,12 @@ class CAR_CU_Mesh
 	vector<T> data;
 
       public:
-	// inline explicit constructor (default vector size to number of nodes)
+	// inline explicit constructor (default vector size to the number of
+        // nodes)
 	inline explicit NCSF(SP<CAR_CU_Mesh>);
 
-	// inline explicit constructor (arbitrary vector size to allow 
-        // exclusion of the face-centered or corner nodes)
+	// inline explicit constructor (semi-arbitrary vector size to allow 
+        // exclusion of the face-centered nodes)
 	inline explicit NCSF(SP<CAR_CU_Mesh>, int size_);
 
 	// additional constructors
@@ -197,8 +198,12 @@ class CAR_CU_Mesh
 	const CAR_CU_Mesh & get_Mesh() const { return * mesh; }
 
 	// subscripting
-	const T & operator()(int node) const { return data[node-1]; }
-	T & operator()(int node) { return data[node-1]; }
+        const T & operator()(int node) const { return data[node - 1];}
+        T & operator()(int node) { return data[node - 1]; }
+
+        // return the size of the NCSF (allows exclusion of the face-centered
+        // nodes)
+        int get_size() {return data.size();}
     };  
 
     template<class T>
@@ -208,16 +213,21 @@ class CAR_CU_Mesh
 
 	// SP back to CAR_CU_Mesh
 	SP<CAR_CU_Mesh> mesh;
-	// 2-D field vector, (field width size, num_nodes)
+	// 2-D field vector, (num_nodes, field width size)
 	vector< vector<T> > data;
 
       public:
-	// inline explicit constructor (default vector size to the problem 
-        // geometry dimension)
+	// inline explicit constructor (default vector size to the number of
+        // nodes by the problem geometry dimension)
 	inline explicit NCVF(SP<CAR_CU_Mesh>);
 
-	// inline explicit constructor (arbitrary vector size)
-	inline explicit NCVF(SP<CAR_CU_Mesh>, int size);
+	// inline explicit constructor (semi-arbitrary leading vector size, 
+        // default trailing vector size to the number of geometry dimensions
+	inline explicit NCVF(SP<CAR_CU_Mesh>, int size_1);
+
+	// inline explicit constructor (semi-arbitrary leading vector size 
+        // and arbitrary trailing vector size)
+	inline explicit NCVF(SP<CAR_CU_Mesh>, int size_1, int size_2);
 
 	// additional constructors
 	inline NCVF(SP<CAR_CU_Mesh>, const vector<vector<T> > &);
@@ -229,9 +239,15 @@ class CAR_CU_Mesh
 	inline const T & operator()(int, int) const;
 	inline T & operator()(int, int);
 
-	// getting a CC vector
+	// getting a NCVF vector
 	inline vector<T> operator()(int) const;
-    };  
+
+        // return the size of the NCSF leading index
+        int get_size_1() {return data.size();}
+
+        // return the size of the NCSF trailing index
+        int get_size_2() {return data[0].size();}
+    };
 
     template<class K, class T>
     class LNCVF
@@ -688,14 +704,17 @@ inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_)
 }
 
 //---------------------------------------------------------------------------//
-// NCSF explicit constructor (arbitrary vector size - allows excluding either
-// face or corner nodes if they are not needed)
+// NCSF explicit constructor (semi-arbitrary vector size - allows excluding 
+// the face-centered nodes if they are not needed for this field)
 
 template<class T>
 inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_, int size_) 
     : mesh(mesh_), data(size_) 
 {
     Require (mesh);
+
+    Ensure (data.size() == mesh->num_nodes() ||
+	    data.size() == mesh->num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
@@ -706,35 +725,62 @@ inline CAR_CU_Mesh::NCSF<T>::NCSF(SP<CAR_CU_Mesh> mesh_,
    const vector<T> & array) : mesh(mesh_), data(array)
 {
     Require (mesh);
+
+    Ensure (data.size() == mesh->num_nodes() ||
+	    data.size() == mesh->num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
 // CAR_CU_Mesh::NCVF inline functions
 //---------------------------------------------------------------------------//
-// NCVF explicit constructor (default vector size to geometry dimension)
+// NCVF explicit constructor (default vector sizes to the number of nodes by
+// the number of geometry dimensions)
 
 template<class T>
 inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_) 
-    : mesh(mesh_), data(mesh->get_Coord().get_dim())
+    : mesh(mesh_), data(mesh->num_nodes())
 {
     Require (mesh);
 
     // initialize data array
     for (int i = 0; i < size_; i++)
-	data[i].resize(mesh->num_nodes());
+	data[i].resize(mesh->get_ndim());
 }
 
 //---------------------------------------------------------------------------//
-// NCVF explicit constructor (arbitrary vector size)
+// NCVF explicit constructor (semi-arbitrary leading vector size, default 
+// trailing vector size to the number of geometry dimensions)
 template<class T>
-inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_, int size_ ) 
-    : mesh(mesh_), data(size_)
+inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_, int size_1) 
+    : mesh(mesh_), data(size_1)
 {
     Require (mesh);
 
     // initialize data array
-    for (int i = 0; i < size_; i++)
-	data[i].resize(mesh->num_nodes());
+    for (int i = 0; i < size_1; i++)
+	data[i].resize(mesh->get_ndim());
+
+    Ensure (size_1 == mesh->num_nodes() ||
+	    size_1 == mesh->num_corner_nodes())
+}
+
+//---------------------------------------------------------------------------//
+// NCVF explicit constructor (semi-arbitrary leading vector size, arbitrary
+// trailing vector size)
+template<class T>
+inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_, int size_1, 
+				  int size_2) 
+    : mesh(mesh_), data(size_1)
+{
+    Require (mesh);
+
+    Ensure (size_1 == mesh->num_nodes() ||
+	    size_1 == mesh->num_corner_nodes())
+
+    // initialize data array
+    for (int i = 0; i < size_1; i++)
+	data[i].resize(size_2);
+
 }
 
 //---------------------------------------------------------------------------//
@@ -745,26 +791,28 @@ inline CAR_CU_Mesh::NCVF<T>::NCVF(SP<CAR_CU_Mesh> mesh_,
 			      const vector<vector<T> > & array)
     : mesh(mesh_), data(array)
 {
-    for (int s = 0; s < data.size(); s++)
-	Ensure (data[s].size() == mesh->num_nodes());
+    Require (mesh);
+
+    Ensure (data.size() == mesh->num_nodes() ||
+	    data.size() == mesh->num_corner_nodes())
 }
 
 //---------------------------------------------------------------------------//
 // constant overloaded ()
 
 template<class T>
-inline const T & CAR_CU_Mesh::NCVF<T>::operator()(int dim, int node) const 
+inline const T & CAR_CU_Mesh::NCVF<T>::operator()(int node, int dim) const 
 {
-    return data[dim-1][node-1]; 
+    return data[node-1][dim-1]; 
 }
 
 //---------------------------------------------------------------------------//
 // assignment overloaded ()
 
 template<class T>
-inline T & CAR_CU_Mesh::NCVF<T>::operator()(int dim, int node)
+inline T & CAR_CU_Mesh::NCVF<T>::operator()(int node, int dim)
 {
-    return data[dim-1][node-1];
+    return data[node-1][dim-1];
 }
 
 //---------------------------------------------------------------------------//
@@ -778,7 +826,7 @@ inline vector<T> CAR_CU_Mesh::NCVF<T>::operator()(int node) const
     
     // loop through dimensions and make return vector for this node
     for (int i = 0; i < data.size(); i++)
-	x.push_back(data[i][node-1]);
+	x.push_back(data[node-1][i]);
 
     // return
     Ensure (x.size() == data.size());

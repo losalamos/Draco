@@ -32,7 +32,8 @@
                     destruct_CCSF_Class, construct_CCVF_Class,          &
                     destruct_CCVF_Class, construct_FCSF_Class,          &
                     destruct_FCSF_Class, construct_FCDSF_Class,         &
-                    destruct_FCDSF_Class
+                    destruct_FCDSF_Class, construct_NCSF_Class,         &
+                    destruct_NCSF_Class
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -73,7 +74,7 @@
 !===========================================================================
 
           public :: get_CCSF, set_CCSF, get_CCVF, set_CCVF, get_FCSF,   &
-                    set_FCSF, get_FCDSF, set_FCDSF
+                    set_FCSF, get_FCDSF, set_FCDSF, get_NCSF, set_NCSF
 
 !===========================================================================
 ! Class type definitions
@@ -125,6 +126,18 @@
               integer             :: vec_size
           end type real_CCVF
 
+          type, public :: integer_NCSF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh            
+              integer             :: vec_size
+          end type integer_NCSF
+
+          type, public :: real_NCSF
+              integer             :: this
+              type(CAR_CU_Mesh)   :: mesh
+              integer             :: vec_size
+          end type real_NCSF
+
 
 !===========================================================================
 ! Define interfaces
@@ -135,45 +148,57 @@
           end interface
 
           interface construct_CCSF_Class
-              module procedure int_CCSF_construct
+              module procedure  int_CCSF_construct
               module procedure real_CCSF_construct
           end interface
 
           interface destruct_CCSF_Class
-              module procedure int_CCSF_destruct
+              module procedure  int_CCSF_destruct
               module procedure real_CCSF_destruct
           end interface
 
           interface construct_CCVF_Class
-              module procedure int_CCVF_construct
-              module procedure int_CCVF_arb_construct
+              module procedure  int_CCVF_construct
+              module procedure  int_CCVF_arb_construct
               module procedure real_CCVF_construct
               module procedure real_CCVF_arb_construct
           end interface
 
           interface destruct_CCVF_Class
-              module procedure int_CCVF_destruct
+              module procedure  int_CCVF_destruct
               module procedure real_CCVF_destruct
           end interface
 
           interface construct_FCSF_Class
-              module procedure int_FCSF_construct
+              module procedure  int_FCSF_construct
               module procedure real_FCSF_construct
           end interface
 
           interface destruct_FCSF_Class
-              module procedure int_FCSF_destruct
+              module procedure  int_FCSF_destruct
               module procedure real_FCSF_destruct
           end interface
 
           interface construct_FCDSF_Class
-              module procedure int_FCDSF_construct
+              module procedure  int_FCDSF_construct
               module procedure real_FCDSF_construct
           end interface
 
           interface destruct_FCDSF_Class
-              module procedure int_FCDSF_destruct
+              module procedure  int_FCDSF_destruct
               module procedure real_FCDSF_destruct
+          end interface
+
+          interface construct_NCSF_Class
+              module procedure  int_NCSF_construct_all
+              module procedure  int_NCSF_construct_arb
+              module procedure real_NCSF_construct_all
+              module procedure real_NCSF_construct_arb
+          end interface
+
+          interface destruct_NCSF_Class
+              module procedure  int_NCSF_destruct
+              module procedure real_NCSF_destruct
           end interface
 
           interface get_num_dims
@@ -356,6 +381,20 @@
               module procedure set_real_FCDSF_cell_face
           end interface
 
+          interface get_NCSF
+              module procedure get_integer_NCSF_all
+              module procedure get_integer_NCSF_node
+              module procedure get_real_NCSF_all
+              module procedure get_real_NCSF_node
+          end interface
+
+          interface set_NCSF
+              module procedure set_integer_NCSF_all
+              module procedure set_integer_NCSF_node
+              module procedure set_real_NCSF_all
+              module procedure set_real_NCSF_node
+          end interface
+
           contains
 
 !===========================================================================
@@ -407,7 +446,7 @@
 
                   if (present(data)) data_size = get_num_cells(mesh)
                   call construct_mesh_ccsf_d(mesh%this, self%this,      &
-                                                 data, data_size)
+                                             data, data_size)
                   self%mesh = mesh
 
               end subroutine real_CCSF_construct
@@ -724,6 +763,106 @@
                   call destruct_mesh_fcdsf_d(self%this)
 
               end subroutine real_FCDSF_destruct
+
+! Construct a C++ CAR_CU_Mesh integer NCSF class object (self) including both
+! the corner and face-centered nodes. Initialization can be performed by 
+! including the optional data argument. An uninitialized NCSF is created if 
+! this argument is not specified.
+              subroutine int_NCSF_construct_all(mesh, self, data)
+                  type(CAR_CU_Mesh),  intent(in)           :: mesh
+                  type(integer_NCSF), intent(inout)        :: self
+                  integer, intent(in), optional,                        &
+                           dimension(get_num_nodes(mesh))  :: data
+                  integer                                  :: data_size = 0
+                  integer                                  :: vec_size
+
+                  vec_size = get_num_nodes(mesh)
+                  if (present(data)) data_size = get_num_nodes(mesh)
+
+                  call construct_mesh_ncsf_i(mesh%this, self%this,      &
+                                             data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine int_NCSF_construct_all
+
+! Construct a C++ CAR_CU_Mesh integer NCSF class object (self) including 
+! either the corner or face nodes. Initialization can be performed by 
+! including the optional data argument. An uninitialized NCSF is created if 
+! this argument is not specified.
+              subroutine int_NCSF_construct_arb(mesh, self, vec_size, data)
+                  type(CAR_CU_Mesh),  intent(in)                    :: mesh
+                  type(integer_NCSF), intent(inout)                 :: self
+                  integer, intent(in)                               :: vec_size
+                  integer, intent(in), optional,dimension(vec_size) :: data
+                  integer                                      :: data_size = 0
+
+                  if (present(data)) data_size = vec_size
+
+                  call construct_mesh_ncsf_i(mesh%this, self%this,      &
+                                             data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine int_NCSF_construct_arb
+
+
+! Destroy a C++ CAR_CU_Mesh int NCSF class object (self).
+              subroutine int_NCSF_destruct(self)
+                  type(integer_NCSF), intent(inout) :: self
+
+                  call destruct_mesh_ncsf_i(self%this)
+
+              end subroutine int_NCSF_destruct
+
+! Construct a C++ CAR_CU_Mesh real NCSF class object (self) including both
+! the corner and face-centered nodes. Initialization can be performed by 
+! including the optional data argument. An uninitialized NCSF is created if 
+! this argument is not specified.
+
+              subroutine real_NCSF_construct_all(mesh, self, data)
+                  type(CAR_CU_Mesh), intent(in)            :: mesh
+                  type(real_NCSF),   intent(inout)         :: self
+                  real*8, intent(in), optional,                         &
+                          dimension(get_num_nodes(mesh))   :: data
+                  integer                                  :: data_size = 0
+                  integer                                  :: vec_size
+
+                  vec_size = get_num_nodes(mesh)
+                  if (present(data)) data_size = get_num_nodes(mesh)
+                  call construct_mesh_ncsf_d(mesh%this, self%this,      &
+                                             data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine real_NCSF_construct_all
+
+! Construct a C++ CAR_CU_Mesh real NCSF class object (self) including either
+! the corner or face-centered nodes. Initialization can be performed by 
+! including the optional data argument. An uninitialized NCSF is created if 
+! this argument is not specified.
+              subroutine real_NCSF_construct_arb(mesh, self, vec_size, data)
+                  type(CAR_CU_Mesh), intent(in)                     :: mesh
+                  type(real_NCSF),   intent(inout)                  :: self
+                  integer, intent(in)                               :: vec_size
+                  real*8, intent(in), optional, dimension(vec_size) :: data
+                  integer                                      :: data_size = 0
+
+                  if (present(data)) data_size = vec_size
+                  call construct_mesh_ncsf_d(mesh%this, self%this,      &
+                                             data, data_size, vec_size)
+                  self%mesh = mesh
+                  self%vec_size = vec_size
+
+              end subroutine real_NCSF_construct_arb
+
+! Destroy a C++ CAR_CU_Mesh real NCSF class object (self).
+              subroutine real_NCSF_destruct(self)
+                  type(real_NCSF), intent(inout) :: self
+
+                  call destruct_mesh_ncsf_d(self%this)
+
+              end subroutine real_NCSF_destruct
 
 !===========================================================================
 ! General mesh scalar accessor functions
@@ -1846,6 +1985,108 @@
                                      self%this, cell, face, data)
 
               end subroutine set_real_FCDSF_cell_face
+
+!===========================================================================
+! integer NCSF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh integer NCSF class object (self).
+              function get_integer_NCSF_all(self)           result(data)
+                  type(integer_NCSF), intent(in)                :: self
+                  integer, dimension(self%vec_size)             :: data
+                  integer                                       :: data_size
+
+                  data_size = self%vec_size
+                  call get_mesh_ncsf_i(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end function get_integer_NCSF_all
+
+! Return a node value from a C++ CAR_CU_Mesh integer NCSF class object (self).
+              function get_integer_NCSF_node(self, node) result(data)
+                  type(integer_NCSF), intent(in)             :: self
+                  integer, intent(in)                        :: node
+                  integer                                    :: data
+
+                  call get_mesh_ncsf_i_node(self%mesh%this, self%this,  &
+                                            node, data)
+
+              end function get_integer_NCSF_node
+
+! Set an entire C++ CAR_CU_Mesh integer NCSF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_integer_NCSF_all(self, data)
+                  type(integer_NCSF), intent(in)                :: self
+                  integer, intent(in),                                  &
+                           dimension(self%vec_size)             :: data
+                  integer                                       :: data_size
+
+                  data_size = self%vec_size
+                  call set_mesh_ncsf_i(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end subroutine set_integer_NCSF_all
+
+! Set a node value for a C++ CAR_CU_Mesh integer NCSF class object (self).
+              subroutine set_integer_NCSF_node(self, node, data)
+                  type(integer_NCSF), intent(in)           :: self
+                  integer, intent(in)                      :: node
+                  integer, intent(in)                      :: data
+
+                  call set_mesh_ncsf_i_node(self%mesh%this, self%this,  &
+                                            node, data)
+
+              end subroutine set_integer_NCSF_node
+
+!===========================================================================
+! double NCSF class objects
+!===========================================================================
+! Return an entire C++ CAR_CU_Mesh double NCSF class object (self).
+              function get_real_NCSF_all(self)              result(data)
+                  type(real_NCSF), intent(in)                   :: self
+                  real*8, dimension(self%vec_size)              :: data
+                  integer                                       :: data_size
+
+                  data_size = self%vec_size
+                  call get_mesh_ncsf_d(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end function get_real_NCSF_all
+
+! Return a node value from a C++ CAR_CU_Mesh double NCSF class object (self).
+              function get_real_NCSF_node(self, node) result(data)
+                  type(real_NCSF), intent(in)             :: self
+                  integer, intent(in)                     :: node
+                  real*8                                  :: data
+
+                  call get_mesh_ncsf_d_node(self%mesh%this, self%this,  &
+                                            node, data)
+
+              end function get_real_NCSF_node
+
+! Set an entire C++ CAR_CU_Mesh double NCSF class object (self) (can also
+! be done at initialization using the constructor).
+              subroutine set_real_NCSF_all(self, data)
+                  type(real_NCSF), intent(in)                   :: self
+                  real*8, intent(in),                                   &
+                          dimension(self%vec_size)              :: data
+                  integer                                       :: data_size
+
+                  data_size = self%vec_size
+                  call set_mesh_ncsf_d(self%mesh%this, self%this, data, &
+                                       data_size)
+
+              end subroutine set_real_NCSF_all
+
+! Set a node value from a C++ CAR_CU_Mesh double NCSF class object (self).
+              subroutine set_real_NCSF_node(self, node, data)
+                  type(real_NCSF), intent(in)              :: self
+                  integer, intent(in)                      :: node
+                  real*8, intent(in)                       :: data
+
+                  call set_mesh_ncsf_d_node(self%mesh%this, self%this,  &
+                                            node, data)
+
+              end subroutine set_real_NCSF_node
 
       end module CAR_CU_Mesh_Class
 

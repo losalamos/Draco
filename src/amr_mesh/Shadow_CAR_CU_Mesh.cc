@@ -562,6 +562,154 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::erase(self);
     }
 
+    // Construct an CAR_CU_Mesh int NCSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_ncsf_i_(long & mesh_index, long & self, long & data, 
+				long & data_size, long & vec_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (mesh).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	// Cast the long variables to int
+	int idata_size = static_cast<int>(data_size);
+	int ivec_size = static_cast<int>(vec_size);
+	long * data_array = & data;
+	SP<CAR_CU_Mesh::NCSF<int> > ncsf_i;
+
+	if (idata_size == 0 && ivec_size == mesh->num_nodes())
+	{
+	    // Construct a new unitialized CAR_CU_Mesh int NCSF class object 
+	    // for all of the nodes
+	    ncsf_i = new CAR_CU_Mesh::NCSF<int>(mesh);
+	}
+	else if (idata_size == 0 && ivec_size != mesh->num_nodes())
+	{
+	    Insist(ivec_size == mesh->num_corner_nodes() ||
+		   ivec_size == mesh->num_face_nodes(), 
+	           "Invalid vector size passed to construct_mesh_ncsf_i_!");
+
+	    // Construct a new unitialized CAR_CU_Mesh int NCSF class object 
+	    // for either the corner or face-centered nodes
+	    ncsf_i = new CAR_CU_Mesh::NCSF<int>(mesh, ivec_size);
+	}
+	else
+	{
+	    Insist(ivec_size == mesh->num_nodes() ||
+		   ivec_size == mesh->num_corner_nodes() ||
+		   ivec_size == mesh->num_face_nodes(), 
+	           "Invalid vector size passed to construct_mesh_ncsf_i_!");
+
+	    Insist(idata_size == ivec_size, 
+	        "Invalid data size passed to construct_mesh_ncsf_i_!");
+
+	    vector<int> data_set(ivec_size);
+
+	    for (int node = 0; node < ivec_size; node++)
+	    {
+	        data_set[node] = static_cast<int>(* data_array) ;
+		++data_array;
+	    }
+
+	    // Construct a new CAR_CU_Mesh int NCSF class object.
+	    ncsf_i = new CAR_CU_Mesh::NCSF<int>(mesh, data_set);
+	}
+
+	// return the map key for the new CAR_CU_Mesh NCSF class object (self).
+	self = opaque_pointers<CAR_CU_Mesh::NCSF<int> >::insert(ncsf_i);
+
+    }
+
+    // Destroy a CAR_CU_Mesh int NCSF class object from a Fortran 90 program
+    // call.
+    void destruct_mesh_ncsf_i_(long & self)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh::NCSF<int> > ncsf_i = 
+	    opaque_pointers<CAR_CU_Mesh::NCSF<int> >::item(self);
+
+	// destroy the CAR_CU_Mesh class object by assigning this SP to 
+        // a null SP
+	ncsf_i = SP<CAR_CU_Mesh::NCSF<int> >();
+	Ensure (!ncsf_i);
+
+	// remove the opaque pointer to the CAR_CU_Mesh class object.
+	opaque_pointers<CAR_CU_Mesh::NCSF<int> >::erase(self);
+    }
+
+    // Construct an CAR_CU_Mesh double NCSF class object from a Fortran 90 
+    // program call. The object will be initialized if data_size > 0.
+    void construct_mesh_ncsf_d_(long & mesh_index, long & self, double & data,
+				long & data_size, long & vec_size)
+    {
+	// Get the address of the CAR_CU_Mesh class object (mesh).
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	// Cast the long variables to int
+	int idata_size = static_cast<int>(data_size);
+	int ivec_size = static_cast<int>(vec_size);
+	double * data_array = & data;
+        SP<CAR_CU_Mesh::NCSF<double> > ncsf_d;
+
+	if (idata_size == 0 && ivec_size == mesh->num_nodes())
+	{
+	    // Construct a new unitialized CAR_CU_Mesh double NCSF class 
+	    // object for all of the nodes
+	    ncsf_d = new CAR_CU_Mesh::NCSF<double>(mesh);
+	}
+	else if (idata_size == 0 && ivec_size != mesh->num_nodes())
+	{
+	    Insist(ivec_size == mesh->num_corner_nodes() ||
+		   ivec_size == mesh->num_face_nodes(), 
+	           "Invalid data size passed to construct_mesh_ncsf_d_!");
+
+	    // Construct a new unitialized CAR_CU_Mesh double NCSF class 
+	    // object for either the corner or face-centered nodes
+	    ncsf_d = new CAR_CU_Mesh::NCSF<double>(mesh, ivec_size);
+	}
+	else
+	{
+	    Insist(ivec_size == mesh->num_nodes() ||
+		   ivec_size == mesh->num_corner_nodes() ||
+		   ivec_size == mesh->num_face_nodes(), 
+	           "Invalid vector size passed to construct_mesh_ncsf_d_!");
+
+	    Insist(idata_size == ivec_size, 
+	        "Invalid data size passed to construct_mesh_ncsf_d_!");
+
+	    vector<double> data_set(ivec_size);
+
+	    for (int node = 0; node < ivec_size; node++)
+	    {
+	        data_set[node] = * data_array ;
+		++data_array;
+	    }
+
+	    // Construct a new CAR_CU_Mesh double NCSF class object.
+	    ncsf_d = new CAR_CU_Mesh::NCSF<double>(mesh, data_set);
+	}
+
+	// return the map key for the new CAR_CU_Mesh NCSF class object (self).
+	self = opaque_pointers<CAR_CU_Mesh::NCSF<double> >::insert(ncsf_d);
+
+    }
+
+    // Destroy a CAR_CU_Mesh double NCSF class object from a Fortran 90 program
+    // call.
+    void destruct_mesh_ncsf_d_(long & self)
+    {
+	// Get the address of the CAR_CU_Mesh class object (self).
+	SP<CAR_CU_Mesh::NCSF<double> > ncsf_d = 
+	    opaque_pointers<CAR_CU_Mesh::NCSF<double> >::item(self);
+
+	// destroy the CAR_CU_Mesh class object by assigning this SP to 
+        // a null SP
+	ncsf_d = SP<CAR_CU_Mesh::NCSF<double> >();
+	Ensure (!ncsf_d);
+
+	// remove the opaque pointer to the CAR_CU_Mesh class object.
+	opaque_pointers<CAR_CU_Mesh::NCSF<double> >::erase(self);
+    }
+
 //===========================================================================//
 // General mesh scalar accessor functions
 //===========================================================================//
@@ -1280,8 +1428,8 @@ extern "C"
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-	CAR_CU_Mesh::CCSF<int> ccsf_d = 
-	    * opaque_pointers<CAR_CU_Mesh::CCSF<int> >::item(self);
+	CAR_CU_Mesh::CCSF<double> ccsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::CCSF<double> >::item(self);
 	// Cast the long variables to int
 	int idata_size = static_cast<int>(data_size);
 	double * data_array = & data;
@@ -1306,8 +1454,8 @@ extern "C"
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
-	CAR_CU_Mesh::CCSF<int> ccsf_d = 
-	    * opaque_pointers<CAR_CU_Mesh::CCSF<int> >::item(self);
+	CAR_CU_Mesh::CCSF<double> ccsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::CCSF<double> >::item(self);
 	// Cast the long variables to int
 	int icell = static_cast<int>(cell_ind);
 
@@ -1327,8 +1475,8 @@ extern "C"
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
-	CAR_CU_Mesh::CCSF<int> ccsf_d = 
-	    * opaque_pointers<CAR_CU_Mesh::CCSF<int> >::item(self);
+	CAR_CU_Mesh::CCSF<double> ccsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::CCSF<double> >::item(self);
 	// Cast the long variables to int
 	int idata_size = static_cast<int>(data_size);
 	double * data_array = & data;
@@ -1352,8 +1500,8 @@ extern "C"
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
-	CAR_CU_Mesh::CCSF<int> ccsf_d = 
-	    * opaque_pointers<CAR_CU_Mesh::CCSF<int> >::item(self);
+	CAR_CU_Mesh::CCSF<double> ccsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::CCSF<double> >::item(self);
 	// Cast the long variables to int
 	int icell = static_cast<int>(cell_ind);
 
@@ -2365,6 +2513,196 @@ extern "C"
 	       "Invalid face number passed to set_mesh_fcdsf_d_cell_face_!");
 
 	fcdsf_d(icell, iface) = data;
+
+    }
+
+//===========================================================================//
+// int NCSF class objects
+//===========================================================================//
+    // Return an entire C++ CAR_CU_Mesh int NCSF class object (self).
+    void get_mesh_ncsf_i_(long & mesh_index, long & self, 
+			  long & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::NCSF<int> ncsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<int> >::item(self);
+	// Cast the long variables to int
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(idata_size == ncsf_i.get_size(), 
+               "Invalid data size passed to get_mesh_ncsf_i_!");
+
+	for (int node = 0; node < ncsf_i.get_size(); node++)
+	{
+	    * data_array = static_cast<long>(ncsf_i(node));
+	    ++data_array;
+	}
+
+    }
+
+    // Return a node value from a C++ CAR_CU_Mesh int NCSF class object
+    // (self).
+    void get_mesh_ncsf_i_node_(long & mesh_ind, long & self, long & node_ind,
+			       long & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::NCSF<int> ncsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<int> >::item(self);
+	// Cast the long variables to int
+	int inode = static_cast<int>(node_ind);
+
+	Insist(inode > 0 && inode <= ncsf_i.get_size(), 
+	       "Invalid node number passed to get_mesh_ncsf_i_node_!");
+
+	data = static_cast<long>(ncsf_i(inode));
+
+    }
+
+    // Set an entire C++ CAR_CU_Mesh int NCSF class object (self) (can 
+    // also be done at initialization using the constructor).
+    void set_mesh_ncsf_i_(long & mesh_index, long & self, 
+			  long & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::NCSF<int> ncsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<int> >::item(self);
+	// Cast the long variables to int
+	int idata_size = static_cast<int>(data_size);
+	long * data_array = & data;
+
+	Insist(idata_size == ncsf_i.get_size(), 
+	       "Invalid data size passed to set_mesh_ncsf_i_!");
+
+	for (int node = 0; node < ncsf_i.get_size(); node++)
+	{
+	    ncsf_i(node) = static_cast<int>(* data_array);
+	    ++data_array;
+	}
+    }
+
+    // Set a node value for a C++ CAR_CU_Mesh int NCSF class object
+    // (self).
+    void set_mesh_ncsf_i_node_(long & mesh_ind, long & self, long & node_ind,
+			       long & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::NCSF<int> ncsf_i = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<int> >::item(self);
+	// Cast the long variables to int
+	int inode = static_cast<int>(node_ind);
+
+	Insist(inode > 0 && inode <= ncsf_i.get_size(), 
+		   "Invalid node number passed to set_mesh_ncsf_i_node_!");
+
+	ncsf_i(inode) = static_cast<int>(data);
+
+    }
+
+//===========================================================================//
+// double NCSF class objects
+//===========================================================================//
+    // Return an entire C++ CAR_CU_Mesh double NCSF class object (self).
+    void get_mesh_ncsf_d_(long & mesh_index, long & self, 
+			  double & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::NCSF<double> ncsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<double> >::item(self);
+	// Cast the long variables to int
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(idata_size == ncsf_d.get_size(), 
+	       "Invalid data size passed to get_mesh_ncsf_d_!");
+
+	for (int node = 0; node < ncsf_d.get_size(); node++)
+	{
+	    * data_array = ncsf_d(node);
+	    ++data_array;
+	}
+
+    }
+
+    // Return a node value from a C++ CAR_CU_Mesh double NCSF class object
+    // (self).
+    void get_mesh_ncsf_d_node_(long & mesh_ind, long & self, long & node_ind,
+			       double & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::NCSF<double> ncsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<double> >::item(self);
+	// Cast the long variables to int
+	int inode = static_cast<int>(node_ind);
+
+	Insist(inode > 0 && inode <= ncsf_d.get_size(), 
+	       "Invalid node number passed to get_mesh_ncsf_d_node_!");
+
+	data = ncsf_d(inode);
+
+    }
+
+    // Set an entire C++ CAR_CU_Mesh double NCSF class object (self) (can 
+    // also be done at initialization using the constructor).
+    void set_mesh_ncsf_d_(long & mesh_index, long & self, 
+			  double & data, long & data_size)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_index);
+	CAR_CU_Mesh::NCSF<double> ncsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<double> >::item(self);
+	// Cast the long variables to int
+	int idata_size = static_cast<int>(data_size);
+	double * data_array = & data;
+
+	Insist(idata_size == ncsf_d.get_size(), 
+	       "Invalid data size passed to set_mesh_ncsf_d_!");
+
+	for (int node = 0; node < ncsf_d.get_size(); node++)
+	{
+	    ncsf_d(node) = * data_array;
+	    ++data_array;
+	}
+    }
+
+    // Set a node value for a C++ CAR_CU_Mesh double NCSF class object
+    // (self).
+    void set_mesh_ncsf_d_node_(long & mesh_ind, long & self, long & node_ind,
+			       double & data)
+    {
+	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+        // class objects.
+	SP<CAR_CU_Mesh> mesh = 
+	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
+	CAR_CU_Mesh::NCSF<double> ncsf_d = 
+	    * opaque_pointers<CAR_CU_Mesh::NCSF<double> >::item(self);
+	// Cast the long variables to int
+	int inode = static_cast<int>(node_ind);
+
+	Insist(inode > 0 && inode <= ncsf_d.get_size(), 
+		   "Invalid node number passed to set_mesh_ncsf_d_node_!");
+
+	ncsf_d(inode) = data;
 
     }
 
