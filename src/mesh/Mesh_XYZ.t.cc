@@ -76,6 +76,246 @@ void dump( const Mesh_XYZ::vctf<T>& data, char *name )
 }
 
 template<class T>
+bool Mesh_XYZ::fcdtf<T>::operator==( const Mesh_XYZ::fcdtf<T>& x ) const
+{
+    if (this == &x)
+        return true;
+
+    if ( x.size() != this->size() )
+        return false;
+
+    if (x.mesh != this->mesh)
+        return false;
+
+    if (x.data != this->data)
+        return false;
+
+    return true;
+}
+
+template<class T>
+bool Mesh_XYZ::fcdtf<T>::operator!=( const Mesh_XYZ::fcdtf<T>& x ) const
+{
+    return !(*this == x);
+}
+
+template<class T>
+bool Mesh_XYZ::fcdtf<T>::operator<( const Mesh_XYZ::fcdtf<T>& x ) const
+{
+    return this->data < x.data;
+}
+
+template<class T>
+bool Mesh_XYZ::fcdtf<T>::operator>( const Mesh_XYZ::fcdtf<T>& x ) const
+{
+    return (x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::fcdtf<T>::operator<=( const Mesh_XYZ::fcdtf<T>& x ) const
+{
+    return !(x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::fcdtf<T>::operator>=( const Mesh_XYZ::fcdtf<T>& x ) const
+{
+    return !(*this < x);
+}
+
+template<class T>
+bool Mesh_XYZ::cctf<T>::operator==( const Mesh_XYZ::cctf<T>& x ) const
+{
+    if (this == &x)
+        return true;
+
+    if ( x.size() != this->size() )
+        return false;
+
+    if (x.mesh != this->mesh)
+        return false;
+
+    if (x.data != this->data)
+        return false;
+
+    return true;
+}
+
+template<class T>
+bool Mesh_XYZ::cctf<T>::operator!=( const Mesh_XYZ::cctf<T>& x ) const
+{
+    return !(*this == x);
+}
+
+template<class T>
+bool Mesh_XYZ::cctf<T>::operator<( const Mesh_XYZ::cctf<T>& x ) const
+{
+    return this->data < x.data;
+}
+
+template<class T>
+bool Mesh_XYZ::cctf<T>::operator>( const Mesh_XYZ::cctf<T>& x ) const
+{
+    return (x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::cctf<T>::operator<=( const Mesh_XYZ::cctf<T>& x ) const
+{
+    return !(x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::cctf<T>::operator>=( const Mesh_XYZ::cctf<T>& x ) const
+{
+    return !(*this < x);
+}
+
+template<class T>
+bool Mesh_XYZ::nctf<T>::operator==( const Mesh_XYZ::nctf<T>& x ) const
+{
+    if (this == &x)
+        return true;
+
+    if ( x.size() != this->size() )
+        return false;
+
+    if (x.mesh != this->mesh)
+        return false;
+
+    if (x.data != this->data)
+        return false;
+
+    return true;
+}
+
+template<class T>
+bool Mesh_XYZ::nctf<T>::operator!=( const Mesh_XYZ::nctf<T>& x ) const
+{
+    return !(*this == x);
+}
+
+template<class T>
+bool Mesh_XYZ::nctf<T>::operator<( const Mesh_XYZ::nctf<T>& x ) const
+{
+    return this->data < x.data;
+}
+
+template<class T>
+bool Mesh_XYZ::nctf<T>::operator>( const Mesh_XYZ::nctf<T>& x ) const
+{
+    return (x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::nctf<T>::operator<=( const Mesh_XYZ::nctf<T>& x ) const
+{
+    return !(x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::nctf<T>::operator>=( const Mesh_XYZ::nctf<T>& x ) const
+{
+    return !(*this < x);
+}
+
+template<class T>
+bool Mesh_XYZ::vctf<T>::operator==( const Mesh_XYZ::vctf<T>& x ) const
+{
+    if (this == &x)
+        return true;
+
+    if ( x.size() != this->size() )
+        return false;
+
+    if (x.mesh != this->mesh)
+        return false;
+
+    if (x.data != this->data)
+        return false;
+
+    return true;
+}
+
+template<class T>
+bool Mesh_XYZ::vctf<T>::operator!=( const Mesh_XYZ::vctf<T>& x ) const
+{
+    return !(*this == x);
+}
+
+template<class T>
+bool Mesh_XYZ::vctf<T>::operator<( const Mesh_XYZ::vctf<T>& x ) const
+{
+    return this->data < x.data;
+}
+
+template<class T>
+bool Mesh_XYZ::vctf<T>::operator>( const Mesh_XYZ::vctf<T>& x ) const
+{
+    return (x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::vctf<T>::operator<=( const Mesh_XYZ::vctf<T>& x ) const
+{
+    return !(x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::vctf<T>::operator>=( const Mesh_XYZ::vctf<T>& x ) const
+{
+    return !(*this < x);
+}
+
+template<class T>
+bool Mesh_XYZ::bstf<T>::operator==( const Mesh_XYZ::bstf<T>& x ) const
+{
+    if (this == &x)
+        return true;
+
+    if ( x.size() != this->size() )
+        return false;
+
+    if (x.mesh != this->mesh)
+        return false;
+
+    if (x.data != this->data)
+        return false;
+
+    return true;
+}
+
+template<class T>
+bool Mesh_XYZ::bstf<T>::operator!=( const Mesh_XYZ::bstf<T>& x ) const
+{
+    return !(*this == x);
+}
+
+template<class T>
+bool Mesh_XYZ::bstf<T>::operator<( const Mesh_XYZ::bstf<T>& x ) const
+{
+    return this->data < x.data;
+}
+
+template<class T>
+bool Mesh_XYZ::bstf<T>::operator>( const Mesh_XYZ::bstf<T>& x ) const
+{
+    return (x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::bstf<T>::operator<=( const Mesh_XYZ::bstf<T>& x ) const
+{
+    return !(x < *this);
+}
+
+template<class T>
+bool Mesh_XYZ::bstf<T>::operator>=( const Mesh_XYZ::bstf<T>& x ) const
+{
+    return !(*this < x);
+}
+
+template<class T>
 Mesh_XYZ::gcctf<T>& 
 Mesh_XYZ::gcctf<T>::operator=( const Mesh_XYZ::cctf<T>& c )
 {
@@ -616,7 +856,7 @@ Mesh_XYZ::bstf<T>::const_iterator Mesh_XYZ::bstf<T>::end() const
 }
 
 template<class T>
-int Mesh_XYZ::bstf<T>::size() const
+Mesh_XYZ::bstf<T>::size_type Mesh_XYZ::bstf<T>::size() const
 {
     int tempsize = 2*(ncx+ncy)*nczp;
     if (node == 0)

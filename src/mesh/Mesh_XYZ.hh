@@ -23,6 +23,8 @@
 
 #include "xm/xm.hh"
 
+#include <iterator>
+
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 {
     int nct;			// # of total cells in problem.
@@ -118,13 +120,21 @@ class Mesh_XYZ : private XYZ_Mapper
 
       public:
 	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename dsxx::Mat2<T>::pointer pointer;
+        typedef typename dsxx::Mat2<T>::const_pointer const_pointer;
         typedef typename dsxx::Mat2<T>::iterator iterator;
         typedef typename dsxx::Mat2<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat2<T>::difference_type difference_type;
+        typedef typename dsxx::Mat2<T>::size_type size_type;
 
 	fcdtf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
 	      data( m->get_ncells(), 6 ), mesh( m.bp() )
 	{}
+
+        ~fcdtf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
@@ -161,7 +171,18 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator begin() const { return data.begin(); }
         const_iterator end() const { return data.end(); }
 
-        int size() const { return data.size(); }
+        size_type size() const { return data.size(); }
+        size_type max_size() const { return data.max_size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( fcdtf& x ) { data.swap(x.data); }
+
+        bool operator==( const fcdtf& x ) const;
+        bool operator!=( const fcdtf& x ) const;
+        bool operator<( const fcdtf& x ) const;
+        bool operator>( const fcdtf& x ) const;
+        bool operator<=( const fcdtf& x ) const;
+        bool operator>=( const fcdtf& x ) const;
     };
 
     typedef fcdtf<double> fcdsf;
@@ -246,12 +267,20 @@ class Mesh_XYZ : private XYZ_Mapper
 
       public:
 	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename dsxx::Mat1<T>::pointer pointer;
+        typedef typename dsxx::Mat1<T>::const_pointer const_pointer;
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat1<T>::difference_type difference_type;
+        typedef typename dsxx::Mat1<T>::size_type size_type;
 
 	cctf( const dsxx::SP<Mesh_XYZ>& m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
             data( m->get_ncells() ), mesh( m.bp() ) {}
+
+        ~cctf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
@@ -288,7 +317,18 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator begin() const { return data.begin(); }
         const_iterator end() const { return data.end(); }
 
-        int size() const { return data.size(); }
+        size_type size() const { return data.size(); }
+        size_type max_size() const { return data.max_size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( cctf& x ) { data.swap(x.data); }
+
+        bool operator==( const cctf& x ) const;
+        bool operator!=( const cctf& x ) const;
+        bool operator<( const cctf& x ) const;
+        bool operator>( const cctf& x ) const;
+        bool operator<=( const cctf& x ) const;
+        bool operator>=( const cctf& x ) const;
 
 	friend class Mesh_XYZ;
 	friend class gcctf<T>;
@@ -366,13 +406,21 @@ class Mesh_XYZ : private XYZ_Mapper
 
       public:
 	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename dsxx::Mat1<T>::pointer pointer;
+        typedef typename dsxx::Mat1<T>::const_pointer const_pointer;
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat1<T>::difference_type difference_type;
+        typedef typename dsxx::Mat1<T>::size_type size_type;
 
 	nctf( const dsxx::SP<Mesh_XYZ>& m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
             data( (m->get_ncx()+1)*(m->get_ncy()+1)*(m->get_nczp()+1) ),
             mesh( m.bp() ) {}
+
+        ~nctf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
@@ -409,7 +457,18 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator begin() const { return data.begin(); }
         const_iterator end() const { return data.end(); }
 
-        int size() const { return data.size(); }
+        size_type size() const { return data.size(); }
+        size_type max_size() const { return data.max_size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( nctf& x ) { data.swap(x.data); }
+
+        bool operator==( const nctf& x ) const;
+        bool operator!=( const nctf& x ) const;
+        bool operator<( const nctf& x ) const;
+        bool operator>( const nctf& x ) const;
+        bool operator<=( const nctf& x ) const;
+        bool operator>=( const nctf& x ) const;
 
 	friend class Mesh_XYZ;
     };
@@ -433,13 +492,21 @@ class Mesh_XYZ : private XYZ_Mapper
 
       public:
 	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename dsxx::Mat2<T>::pointer pointer;
+        typedef typename dsxx::Mat2<T>::const_pointer const_pointer;
         typedef typename dsxx::Mat2<T>::iterator iterator;
         typedef typename dsxx::Mat2<T>::const_iterator const_iterator;
+        typedef typename dsxx::Mat2<T>::difference_type difference_type;
+        typedef typename dsxx::Mat2<T>::size_type size_type;
 
 	vctf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
 	      data( m->get_ncells(), 8 ), mesh( m.bp() )
 	{}
+
+        ~vctf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
@@ -476,7 +543,18 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator begin() const { return data.begin(); }
         const_iterator end() const { return data.end(); }
 
-        int size() const { return data.size(); }
+        size_type size() const { return data.size(); }
+        size_type max_size() const { return data.max_size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( vctf& x ) { data.swap(x.data); }
+
+        bool operator==( const vctf& x ) const;
+        bool operator!=( const vctf& x ) const;
+        bool operator<( const vctf& x ) const;
+        bool operator>( const vctf& x ) const;
+        bool operator<=( const vctf& x ) const;
+        bool operator>=( const vctf& x ) const;
     };
 
 // Guarded vertex centered field
@@ -558,10 +636,19 @@ class Mesh_XYZ : private XYZ_Mapper
              ( int& i, int& j, int& k, int& f, const int index) const;
 
       public:
-        typedef T value_type;
+	typedef T value_type;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef typename fcdtf<T>::pointer pointer;
+        typedef typename fcdtf<T>::const_pointer const_pointer;
+        typedef typename fcdtf<T>::difference_type difference_type;
+        typedef typename fcdtf<T>::size_type size_type;
 
         class iterator;
-        class const_iterator
+        class const_iterator :
+          public std::iterator<std::forward_iterator_tag, value_type,
+                               difference_type, const_pointer,
+                               const_reference>
 	{
           private:
             const T* p;
@@ -578,6 +665,8 @@ class Mesh_XYZ : private XYZ_Mapper
 
             const_iterator( const iterator& iter );
 
+            const_iterator() : p(0), i(0), j(0), k(0), f(0), bfield(0) {}
+
             bool operator==( const const_iterator& iter ) const
             { return p == iter.p; }
             bool operator!=( const const_iterator& iter ) const
@@ -589,7 +678,9 @@ class Mesh_XYZ : private XYZ_Mapper
             const_iterator& operator=( const const_iterator& iter );
 	};
 
-        class iterator
+        class iterator :
+          public std::iterator<std::forward_iterator_tag, value_type,
+                               difference_type, pointer, reference>
 	{
           friend class bstf<T>::const_iterator;
 
@@ -605,6 +696,8 @@ class Mesh_XYZ : private XYZ_Mapper
                   bfield( _bfield )
             {}
 
+            iterator() : p(0), i(0), j(0), k(0), f(0), bfield(0) {}
+
             bool operator==( const iterator& iter ) const
             { return p == iter.p; }
             bool operator!=( const iterator& iter ) const
@@ -619,6 +712,8 @@ class Mesh_XYZ : private XYZ_Mapper
         bstf( const dsxx::SP<Mesh_XYZ>& m )
             : XYZ_Mapper( m->get_Mesh_DB() ), data( m ), mesh( m.bp() )
 	{}
+
+        ~bstf() {}
 
         const Mesh_XYZ& get_Mesh() const { return *mesh; }
 
@@ -645,7 +740,18 @@ class Mesh_XYZ : private XYZ_Mapper
         const_iterator begin() const;
         const_iterator end() const;
 
-        int size() const;
+        size_type size() const;
+        size_type max_size() const { return data.max_size(); }
+        bool empty() const { return data.empty(); }
+
+        void swap ( bstf& x ) { data.swap(x.data); }
+
+        bool operator==( const bstf& x ) const;
+        bool operator!=( const bstf& x ) const;
+        bool operator<( const bstf& x ) const;
+        bool operator>( const bstf& x ) const;
+        bool operator<=( const bstf& x ) const;
+        bool operator>=( const bstf& x ) const;
 
         friend class bstf<T>::iterator;
         friend class bstf<T>::const_iterator;
