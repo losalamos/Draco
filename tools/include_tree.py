@@ -5,7 +5,11 @@
 ## $Id$
 ###############################################################################
 ##---------------------------------------------------------------------------##
-## get #includes from draco
+## get #includes from draco and build a dot-file in pkg/doc directory;
+## if the doc directory does not exist it is built.
+## Usage:
+##       1) enter package directory
+##       2) python ../../tools/include_tree.py
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##

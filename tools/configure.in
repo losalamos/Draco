@@ -1,4 +1,4 @@
-AC_INIT(nmlgen)
+AC_INIT(launchtest)
 AC_CONFIG_AUX_DIR(../config)
 AC_DRACO_ARGS
 
@@ -6,7 +6,7 @@ AC_PROG_INSTALL
 
 installdirs='${libexecdir} ${bindir}'
 
-libexec_files1='${libexecdir}/nmlgen ${libexecdir}/launchtest'
+libexec_files1='${libexecdir}/launchtest'
 libexec_files2='${libexecdir}/test_filter.py'
 bin_files='${bindir}/draco'
 installfiles="$libexec_files1 $libexec_files2 $bin_files"
