@@ -124,8 +124,8 @@ esac
 # remove the toplevel target directory
 
 TARGETROOT=$hostname
-echo rm -r $TARGETROOT
-rm -r $TARGETROOT
+echo rm -rf $TARGETROOT
+rm -rf $TARGETROOT
 
 for c4 in $C4
 do
