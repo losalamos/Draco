@@ -60,7 +60,7 @@ void milstone_(int *imc_ncycle, int *local_numtop, int *global_numtop,
 	cout << "*********************************" << endl;
 	cout << ">>>        MILSTONE           <<<" << endl;
 	cout << ">>> 'An exclusive catalog for <<<" << endl;
-	cout << ">>>  discrimenating shoppers' <<<" << endl;
+	cout << ">>>  discriminating shoppers' <<<" << endl;
 	cout << ">>>                           <<<" << endl;
 	cout << ">>>       version 1.0         <<<" << endl;
 	cout << ">>>    Evans and Urbatsch     <<<" << endl;

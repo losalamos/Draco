@@ -30,6 +30,8 @@
 //  4)  10-9-98 : added submesh=true indicator to send and recv_Mesh
 //                functions; Meshes that are sent out should be designated 
 //                submeshes.
+//  5) 10-20-98 : fixed array index in recv_Communicator; changed
+//                recv_nodes[node_size + 1] to recv_nodes[node_size + i]
 // 
 //===========================================================================//
 

@@ -27,6 +27,7 @@ using std::string;
 using std::fill;
 using std::remove;
 using std::endl;
+using std::cout;
 using std::setw;
 using std::ios;
 
@@ -1843,7 +1844,7 @@ SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
     for (int i = 0; i < recv_size; i++)
 	recv_nodes[i] = nodes_recv[i];
     for (int i = 0; i < send_size; i++)
-	send_nodes[i] = nodes_recv[recv_size + 1];
+	send_nodes[i] = nodes_recv[recv_size + i];
 
   // now do the boundary_nodes and cells
     int index = 0;
@@ -1869,6 +1870,7 @@ SP<Communicator<PT> > Parallel_Builder<MT>::recv_Communicator()
   // make new communicator
     SP<Communicator<PT> > comm = new Communicator<PT>(recv_nodes, send_nodes, 
 						      b_node, b_cell);
+  // comm->print(std::cout);
     return comm;
 }
 
