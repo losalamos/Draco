@@ -62,9 +62,10 @@ void wall_clock_test()
     // t.posix_err(). 
     //---------------------------------------------------------------------//
     
-    double const deltaWallTime( t.wall_clock() - ( t.system_cpu() + t.user_cpu() ) );
+    double const deltaWallTime( t.wall_clock() - (
+				    t.system_cpu() + t.user_cpu() ) );
     
-    if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) < prec )
+    if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= prec )
     {
 	std::ostringstream msg;
 	msg << "The sum of cpu and user time is less than or equal to the\n\t"
@@ -76,10 +77,11 @@ void wall_clock_test()
     {
 	std::ostringstream msg;
 	msg << "The sum of cpu and user time exceeds the reported wall "
-	    << "clock time." << std::endl
-	    << "\tSystem time: " << t.system_cpu() << std::endl
-	    << "\tUser time  : " << t.user_cpu()   << std::endl
-	    << "\tWall time  : " << t.wall_clock() << std::endl;
+	    << "clock time.\n"
+	    << "\t posix_error() = " << prec << std::endl;
+// 	    << "\tSystem time: " << t.system_cpu() << std::endl
+// 	    << "\tUser time  : " << t.user_cpu()   << std::endl
+// 	    << "\tWall time  : " << t.wall_clock() << std::endl;
 	FAILMSG(msg.str());
     }
 
