@@ -97,7 +97,8 @@ Surface_Sub_Tally::~Surface_Sub_Tally() { /* ... */ }
  * \param ew Energy-weight of the particle at the point of crossing.
  * \return void
  */
-void Surface_Sub_Tally::add_to_tally(int surface, const vector<double>& direction,
+void Surface_Sub_Tally::add_to_tally(int surface,
+				     const vector<double>& direction,
 				     bool is_outward, double ew)
 {
 
@@ -134,8 +135,8 @@ void Surface_Sub_Tally::add_to_tally(int surface, const vector<double>& directio
  * \param surface The surface number. 1-based.
  * \return const vector<double> continaing the per-bin information.
  */
-const std::vector<double>& Surface_Sub_Tally::get_outward_weight_tally(int surface)
-    const
+const std::vector<double>& Surface_Sub_Tally::get_outward_weight_tally(
+    int surface) const
 {
     Check (surface > 0);  Check(surface <= surfaces);
 
@@ -151,8 +152,8 @@ const std::vector<double>& Surface_Sub_Tally::get_outward_weight_tally(int surfa
  * \param surface The surface number. 1-based.
  * \return const vector<double> containing the per-bin information.
  */
-const std::vector<double>& Surface_Sub_Tally::get_inward_weight_tally(int surface)
-    const
+const std::vector<double>& Surface_Sub_Tally::get_inward_weight_tally(
+    int surface) const
 {
     Check (surface > 0);  Check(surface <= surfaces);
 
