@@ -180,6 +180,8 @@ void t4()
     gsync();
 
     int x[4];
+    for( int i=0; i < 4; i++ ) x[i] = 0;
+
     {
 	C4_Req r;
 
