@@ -292,9 +292,9 @@ void RTT_Format::Header::readData(ifstream & meshfile)
     meshfile >> dummyString >> ncomments;
     Insist(dummyString == "ncomments",
 	   "Invalid mesh file: Header block missing ncomments");
-    comments.redim(ncomments);
+    comments.resize(ncomments);
     for (int i = 0; i < ncomments; ++i)
-	getline(meshfile, comments(i));
+	getline(meshfile, comments[i]);
     getline(meshfile, dummyString);            // read and discard blank line.
 }
 
@@ -441,11 +441,11 @@ void RTT_Format::Dims::readNodes(ifstream & meshfile)
 	   "Invalid mesh file: Dimension block missing nnode_flag_types");
     getline(meshfile, dummyString);
 
-    nnode_flags.redim(nnode_flag_types);
+    nnode_flags.resize(nnode_flag_types);
     meshfile >> dummyString;
     Insist(dummyString == "nnode_flags",
 	   "Invalid mesh file: Dimension block missing nnode_flags");
-    for (rtt_dsxx::Mat1<int>::iterator iter = nnode_flags.begin();
+    for (vector<int>::iterator iter = nnode_flags.begin();
 	 iter < nnode_flags.end(); ++iter)
 	meshfile >> *iter;
     getline(meshfile, dummyString);
@@ -475,11 +475,11 @@ void RTT_Format::Dims::readSides(ifstream & meshfile)
 	   "Invalid mesh file: Dimension block missing nside_types");
     getline(meshfile, dummyString);
 
-    side_types.redim(nside_types);
+    side_types.resize(nside_types);
     meshfile >> dummyString;
     Insist(dummyString == "side_types",
 	   "Invalid mesh file: Dimension block missing side_types");
-    for (rtt_dsxx::Mat1<int>::iterator iter = side_types.begin();
+    for (vector<int>::iterator iter = side_types.begin();
 	 iter < side_types.end(); ++iter)
     {
 	meshfile >> *iter;
@@ -492,11 +492,11 @@ void RTT_Format::Dims::readSides(ifstream & meshfile)
 	   "Invalid mesh file: Dimension block missing nside_flag_types");
     getline(meshfile, dummyString);
 
-    nside_flags.redim(nside_flag_types);
+    nside_flags.resize(nside_flag_types);
     meshfile >> dummyString;
     Insist(dummyString == "nside_flags",
 	   "Invalid mesh file: Dimension block missing nside_flags");
-    for (rtt_dsxx::Mat1<int>::iterator iter = nside_flags.begin();
+    for (vector<int>::iterator iter = nside_flags.begin();
 	 iter < nside_flags.end(); ++iter)
 	meshfile >> *iter;
     getline(meshfile, dummyString);
@@ -526,11 +526,11 @@ void RTT_Format::Dims::readCells(ifstream & meshfile)
 	   "Invalid mesh file: Dimension block missing ncell_types");
     getline(meshfile, dummyString);
 
-    cell_types.redim(ncell_types);
+    cell_types.resize(ncell_types);
     meshfile >> dummyString;
     Insist(dummyString == "cell_types",
 	   "Invalid mesh file: Dimension block missing cell_types");
-    for (rtt_dsxx::Mat1<int>::iterator iter = cell_types.begin();
+    for (vector<int>::iterator iter = cell_types.begin();
 	 iter < cell_types.end(); ++iter)
     {
 	meshfile >> *iter;
@@ -543,11 +543,11 @@ void RTT_Format::Dims::readCells(ifstream & meshfile)
 	   "Invalid mesh file: Dimension block missing ncell_flag_types");
     getline(meshfile, dummyString);
 
-    ncell_flags.redim(ncell_flag_types);
+    ncell_flags.resize(ncell_flag_types);
     meshfile >> dummyString;
     Insist(dummyString == "ncell_flags",
 	   "Invalid mesh file: Dimension block missing ncell_flags");
-    for (rtt_dsxx::Mat1<int>::iterator iter = ncell_flags.begin();
+    for (vector<int>::iterator iter = ncell_flags.begin();
 	 iter < ncell_flags.end(); ++iter)
 	meshfile >> *iter;
     getline(meshfile, dummyString);
@@ -621,9 +621,9 @@ void RTT_Format::NodeFlags::readFlagTypes(ifstream & meshfile)
 	    dummyString.resize(dummyString.size()-1);
 	Insist(flagTypeNum == i+1,
 	       "Invalid mesh file: node flag type out of order");
-	flagTypes(i) = new Flags(dims.get_nnode_flags(i), dummyString);
+	flagTypes[i] = new Flags(dims.get_nnode_flags(i), dummyString);
 	getline(meshfile, dummyString);
-	flagTypes(i)->readFlags(meshfile);
+	flagTypes[i]->readFlags(meshfile);
     }
 }
 
@@ -690,9 +690,9 @@ void RTT_Format::SideFlags::readFlagTypes(ifstream & meshfile)
 	    dummyString.resize(dummyString.size()-1);
 	Insist(flagTypeNum == i+1,
 	       "Invalid mesh file: side flag type out of order");
-	flagTypes(i) = new Flags(dims.get_nside_flags(i), dummyString);
+	flagTypes[i] = new Flags(dims.get_nside_flags(i), dummyString);
 	getline(meshfile, dummyString);
-	flagTypes(i)->readFlags(meshfile);
+	flagTypes[i]->readFlags(meshfile);
     }
 }
 
@@ -761,9 +761,9 @@ void RTT_Format::CellFlags::readFlagTypes(ifstream & meshfile)
 	    dummyString.resize(dummyString.size()-1);
 	Insist(flagTypeNum == i+1,
 	       "Invalid mesh file: cell flag type out of order");
-	flagTypes(i) = new Flags(dims.get_ncell_flags(i), dummyString);
+	flagTypes[i] = new Flags(dims.get_ncell_flags(i), dummyString);
 	getline(meshfile, dummyString);
-	flagTypes(i)->readFlags(meshfile);
+	flagTypes[i]->readFlags(meshfile);
     }
 }
 
@@ -795,7 +795,7 @@ void RTT_Format::Flags::readFlags(ifstream & meshfile)
 
     for (int i = 0; i < nflags; ++i)
     {
-	meshfile >> flag_nums(i) >> flag_names(i);
+	meshfile >> flag_nums[i] >> flag_names[i];
 	getline(meshfile, dummyString);
     }
 }
@@ -841,7 +841,7 @@ void RTT_Format::NodeDataIDs::readData(ifstream & meshfile)
 
     for (int i = 0; i < dims.get_nnode_data(); ++i)
     {
-	meshfile >> dataIDNum >> names(i) >> units(i);
+	meshfile >> dataIDNum >> names[i] >> units[i];
 	Insist(dataIDNum == i+1,
 	       "Invalid mesh file: node data ID out of order");
 	getline(meshfile, dummyString);
@@ -905,7 +905,7 @@ void RTT_Format::SideDataIDs::readData(ifstream & meshfile)
 
     for (int i = 0; i < dims.get_nside_data(); ++i)
     {
-	meshfile >> dataIDNum >> names(i) >> units(i);
+	meshfile >> dataIDNum >> names[i] >> units[i];
 	Insist(dataIDNum == i+1,
 	       "Invalid mesh file: side data ID out of order");
 	getline(meshfile, dummyString);
@@ -969,7 +969,7 @@ void RTT_Format::CellDataIDs::readData(ifstream & meshfile)
 
     for (int i = 0; i < dims.get_ncell_data(); ++i)
     {
-	meshfile >> dataIDNum >> names(i) >> units(i);
+	meshfile >> dataIDNum >> names[i] >> units[i];
 	Insist(dataIDNum == i+1,
 	       "Invalid mesh file: cell data ID out of order");
 	getline(meshfile, dummyString);
@@ -1043,9 +1043,9 @@ void RTT_Format::CellDefs::readDefs(ifstream & meshfile)
 	// Ignore plurals in cell definitions
 	if (dummyString[dummyString.size()-1] == 's')
 	    dummyString.resize(dummyString.size()-1);
-	defs(i) = new CellDef(*this, dummyString);
+	defs[i] = new CellDef(*this, dummyString);
 	getline(meshfile, dummyString);
-	defs(i)->readDef(meshfile);
+	defs[i]->readDef(meshfile);
     }
 }
 
@@ -1061,7 +1061,7 @@ void RTT_Format::CellDefs::sortData()
 {
     for (int i = 0; i < dims.get_ncell_defs(); ++i)
     {
-	defs(i)->sortData();
+	defs[i]->sortData();
     }
 }
 
@@ -1093,15 +1093,15 @@ void RTT_Format::CellDef::readDef(ifstream & meshfile)
     string dummyString;
 
     meshfile >> nnodes >> nsides;
-    side_types.redim(nsides);
-    sides.redim(nsides);
+    side_types.resize(nsides);
+    sides.resize(nsides);
     ordered_sides.resize(nsides);
     getline(meshfile, dummyString);
 
     for (int i = 0; i < nsides; ++i)
     {
-	meshfile >> side_types(i);
-	--side_types(i);
+	meshfile >> side_types[i];
+	--side_types[i];
     }
     if (nsides > 0)
 	getline(meshfile, dummyString);
@@ -1114,16 +1114,16 @@ void RTT_Format::CellDef::readDef(ifstream & meshfile)
     int side;
     for (int i = 0; i < nsides; ++i)
     {
-        int numb_nodes = cellDefs.get_cell_def(side_types(i)).get_nnodes();
+        int numb_nodes = cellDefs.get_cell_def(side_types[i]).get_nnodes();
         ordered_sides[i].resize(numb_nodes);
 	for (int j = 0; j < numb_nodes; ++j)
 	{
 	    meshfile >> side;
 	    --side;
-	    sides(i).insert(side);
+	    sides[i].insert(side);
 	    ordered_sides[i][j] = side;
 	}
-	if (sides(i).size() > 0)
+	if (sides[i].size() > 0)
 	    getline(meshfile, dummyString);
     }
 }
@@ -1156,14 +1156,14 @@ void RTT_Format::CellDef::sortData()
     for (int i = 0; i < nsides; ++i)
     {
 
-        int numb_nodes = cellDefs.get_cell_def(side_types(i)).get_nnodes();
-	sides(i).erase(sides(i).begin(),sides(i).end());
+        int numb_nodes = cellDefs.get_cell_def(side_types[i]).get_nnodes();
+	sides[i].erase(sides[i].begin(),sides[i].end());
         ordered_sides[i].resize(numb_nodes);
 
 	if (name == "line")
         {
 	    ordered_sides[i][0] = i;
-	    sides(i).insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][0]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1175,8 +1175,8 @@ void RTT_Format::CellDef::sortData()
 	{
 	    ordered_sides[i][0] = (i + 1)%2 + i/2;
 	    ordered_sides[i][1] = (3 - i)%3;
-	    sides(i).insert(ordered_sides[i][0]);
-	    sides(i).insert(ordered_sides[i][1]);
+	    sides[i].insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][1]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1189,8 +1189,8 @@ void RTT_Format::CellDef::sortData()
 	{
 	    ordered_sides[i][0] = (i + 1)%2 + 2 * (i/2);
 	    ordered_sides[i][1] = i%2 + (i + 1)/2;
-	    sides(i).insert(ordered_sides[i][0]);
-	    sides(i).insert(ordered_sides[i][1]);
+	    sides[i].insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][1]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1204,9 +1204,9 @@ void RTT_Format::CellDef::sortData()
 	    ordered_sides[i][0] = i/3;
 	    ordered_sides[i][1] = 1 + (3 - i)%3 + 2 * (i/3);
 	    ordered_sides[i][2] = (2 - i)%3 + 3 * (i/2);
-	    sides(i).insert(ordered_sides[i][0]);
-	    sides(i).insert(ordered_sides[i][1]);
-	    sides(i).insert(ordered_sides[i][2]);
+	    sides[i].insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][1]);
+	    sides[i].insert(ordered_sides[i][2]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1232,7 +1232,7 @@ void RTT_Format::CellDef::sortData()
 		         cellDefs.get_cell_def(j).get_name();
 		}
 	        ordered_sides[i].resize(3);
-		side_types(i) = j;
+		side_types[i] = j;
 	    }
 	    else
 	    {
@@ -1248,16 +1248,16 @@ void RTT_Format::CellDef::sortData()
 		        cellDefs.get_cell_def(j).get_name();
 		}
 	        ordered_sides[i].resize(4);
-		side_types(i) = j;
+		side_types[i] = j;
 		ordered_sides[i][3] = 2;
-	        sides(i).insert(ordered_sides[i][3]);
+	        sides[i].insert(ordered_sides[i][3]);
 	    }
 	    ordered_sides[i][0] = i/3 + i/4 ;
 	    ordered_sides[i][1] = (i + 1)%2 * (1 + i/2) + 4 * (i%2);
 	    ordered_sides[i][2] = (i + 1)%2 * (3 + i/2 - i/4) + i * (i%2);
-	    sides(i).insert(ordered_sides[i][0]);
-	    sides(i).insert(ordered_sides[i][1]);
-	    sides(i).insert(ordered_sides[i][2]);
+	    sides[i].insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][1]);
+	    sides[i].insert(ordered_sides[i][2]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1286,7 +1286,7 @@ void RTT_Format::CellDef::sortData()
 		         cellDefs.get_cell_def(j).get_name();
 		}
 	        ordered_sides[i].resize(3);
-		side_types(i) = j;
+		side_types[i] = j;
 	    }
 	    else
 	    {
@@ -1302,18 +1302,18 @@ void RTT_Format::CellDef::sortData()
 		        cellDefs.get_cell_def(j).get_name();
 		}
 	        ordered_sides[i].resize(4);
-		side_types(i) = j;
+		side_types[i] = j;
 		ordered_sides[i][3] = i%4 + i/2 - 2 * (i/3);
-	        sides(i).insert(ordered_sides[i][3]);
+	        sides[i].insert(ordered_sides[i][3]);
 	    }
 	    ordered_sides[i][0] = i/3 + 2 * (i/4) ;
 	    ordered_sides[i][1] = (i + 1)%2 * (1 + i/2 + 2 * (i/4)) + 
 	                          (i%2) * (3 + i/3);
 	    ordered_sides[i][2] = (i + 1)%2 * (2 + 3 * (i/2) - 4 * (i/4)) +
 	                          (i%2) * (4 + i/3);
-	    sides(i).insert(ordered_sides[i][0]);
-	    sides(i).insert(ordered_sides[i][1]);
-	    sides(i).insert(ordered_sides[i][2]);
+	    sides[i].insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][1]);
+	    sides[i].insert(ordered_sides[i][2]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1333,10 +1333,10 @@ void RTT_Format::CellDef::sortData()
 	    ordered_sides[i][2] = ((i+1)%2) * (3 * (1 + i/2) - 2 * (i/4)) +
 	                          (i%2) * (5 + 2 * (i/3));
 	    ordered_sides[i][3] = ((i+1)%2) * (i + 2) + (i%2) * i;
-	    sides(i).insert(ordered_sides[i][0]);
-	    sides(i).insert(ordered_sides[i][1]);
-	    sides(i).insert(ordered_sides[i][2]);
-	    sides(i).insert(ordered_sides[i][3]);
+	    sides[i].insert(ordered_sides[i][0]);
+	    sides[i].insert(ordered_sides[i][1]);
+	    sides[i].insert(ordered_sides[i][2]);
+	    sides[i].insert(ordered_sides[i][3]);
 	    if (debugging)
 	    {
 	        cout << name << endl;
@@ -1392,13 +1392,13 @@ void RTT_Format::Nodes::readData(ifstream & meshfile)
 	Insist(nodeNum == i+1,
 	       "Invalid mesh file: node index out of order");
 	for (int j = 0; j < dims.get_ndim(); ++j)
-	    meshfile >> coords(i,j);
-	meshfile >> parents(i);
-	--parents(i);
+	    meshfile >> coords[i][j];
+	meshfile >> parents[i];
+	--parents[i];
 	for (int j = 0; j < dims.get_nnode_flag_types(); ++j)
 	{
-	    meshfile >> flags(i,j);
-	    Insist(nodeFlags.allowed_flag(j, flags(i,j)),
+	    meshfile >> flags[i][j];
+	    Insist(nodeFlags.allowed_flag(j, flags[i][j]),
 		   "Invalid mesh file: illegal node flag");
 	}
 	getline(meshfile, dummyString);
@@ -1456,29 +1456,19 @@ bool RTT_Format::Nodes::sortXYZ(const vector<double> & low_val,
  */
 void RTT_Format::Nodes::sortData()
 {
-    vector<vector<double> > sort_vector(dims.get_nnodes(),dims.get_ndim());
+    vector<vector<double> > sort_vector = coords;
     vector<double> original(dims.get_ndim());
-    vector<int> temp_parents(dims.get_nnodes());
-    vector<vector<int> > temp_flags(dims.get_nnodes(),
-				    dims.get_nnode_flag_types());
+    vector<int> temp_parents = parents;
+    vector<vector<int> > temp_flags = flags;
     sort_map.resize(dims.get_nnodes());
 
-    for (int i = 0; i < dims.get_nnodes(); ++i)
-    {
-	for (int j = 0; j < dims.get_ndim(); ++j)
-	    sort_vector[i][j] = coords(i,j);
-	temp_parents[i] = parents(i);
-	for (int f = 0; f < dims.get_nnode_flag_types(); ++f)
-	    temp_flags[i][f] = flags(i,f);
-    }
     sort(sort_vector.begin(),sort_vector.end(),sortXYZ);
 
     // establish the mapping between the old and new node numbers, and assign
     // the coordinates, parents, and flags with the new numbering.
     for (int i = 0; i < dims.get_nnodes(); ++i)
     {
-	for (int d = 0; d < dims.get_ndim(); ++d)
-	    original[d] = coords(i,d);
+	original = coords[i];
         bool mapped = false;
         int low_index  = 0;
         int high_index = dims.get_nnodes() - 1;
@@ -1503,11 +1493,9 @@ void RTT_Format::Nodes::sortData()
 	    {
 	        mapped = true;
 	        sort_map[i] = k;
-		for (int d = 0; d < dims.get_ndim(); ++d)
-		    coords(i,d) = sort_vector[i][d];
-		parents(k) = temp_parents[i];
-		for (int f = 0; f < dims.get_nnode_flag_types(); ++f)
-		    flags(k,f) = temp_flags[i][f];
+		coords[i] = sort_vector[i];
+		parents[k] = temp_parents[i];
+		flags[k] = temp_flags[i];
 	    }
 	    else if (k < high_index)
 	        ++low_index;
@@ -1520,7 +1508,7 @@ void RTT_Format::Nodes::sortData()
     // in the previous loop because the node and parent numbers are not 
     // necessarily the same.
     for (int i = 0; i < dims.get_nnodes(); ++i)
-        parents(i) =  sort_map[parents(i)];
+        parents[i] =  sort_map[parents[i]];
 
     // this flag is for debugging use only (not user-selectable).
     bool debugging = false;
@@ -1528,11 +1516,11 @@ void RTT_Format::Nodes::sortData()
     {
         for (int i = 0; i < dims.get_nnodes(); ++i)
 	{
-	    cout << i << " " << sort_map[i] << " " << parents(i) << " ";
+	    cout << i << " " << sort_map[i] << " " << parents[i] << " ";
 	    for (int j = 0; j < dims.get_ndim(); ++j)
-	        cout << coords(i,j) << " ";
+	        cout << coords[i][j] << " ";
 	    for (int f = 0; f < dims.get_nnode_flag_types(); ++f)
-	        cout << flags(i,f);
+	        cout << flags[i][f];
 	    cout << endl;
 	}
     }
@@ -1662,19 +1650,19 @@ void RTT_Format::Sides::readData(ifstream & meshfile)
 	meshfile >> sideNum;
 	Insist(sideNum == i+1,
 	       "Invalid mesh file: side index out of order");
-	meshfile >> sideType(i);
-	--sideType(i);
-	Insist(dims.allowed_side_type(sideType(i)),
+	meshfile >> sideType[i];
+	--sideType[i];
+	Insist(dims.allowed_side_type(sideType[i]),
 	       "Invalid mesh file: illegal side type");
-	for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
+	for (int j = 0; j < cellDefs.get_nnodes(sideType[i]); ++j)
 	{
-	    meshfile >> nodes(i,j);
-	    --nodes(i,j);
+	    meshfile >> nodes[i][j];
+	    --nodes[i][j];
 	}
 	for (int j = 0; j < dims.get_nside_flag_types(); ++j)
 	{
-	    meshfile >> flags(i,j);
-	    Insist(sideFlags.allowed_flag(j, flags(i,j)),
+	    meshfile >> flags[i][j];
+	    Insist(sideFlags.allowed_flag(j, flags[i][j]),
 		   "Invalid mesh file: illegal side flag");
 	}
 	getline(meshfile, dummyString);
@@ -1710,25 +1698,17 @@ void RTT_Format::Sides::sortData()
 {
     vector<vector<int> > sort_vector(dims.get_nsides(),1);
     vector<int> original(1);
-    vector<int> temp_sideType(dims.get_nsides());
-    vector<vector<int> > temp_flags(dims.get_nsides(),
-				    dims.get_nside_flag_types());
+    vector<int> temp_sideType = sideType ;
+    vector<vector<int> > temp_flags = flags;
     sort_map.resize(dims.get_nsides());
 
     for (int i = 0; i < dims.get_nsides(); ++i)
     {
-        sort_vector[i].resize(cellDefs.get_nnodes(sideType(i)));
-	for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
-	{
+        sort_vector[i].resize(cellDefs.get_nnodes(sideType[i]));
+	for (int j = 0; j < cellDefs.get_nnodes(sideType[i]); ++j)
 	    // map the user-input node numbers to the sorted node numbers.
-	    nodes(i,j) = nodesClass.get_map(nodes(i,j));
-	    sort_vector[i][j] = nodes(i,j);
-	}
-
-	temp_sideType[i] = sideType(i);
-
-	for (int f = 0; f < dims.get_nside_flag_types(); ++f)
-	    temp_flags[i][f] = flags(i,f);
+	    nodes[i][j] = nodesClass.get_map(nodes[i][j]);
+	sort_vector[i] = nodes[i];
     }
     sort(sort_vector.begin(),sort_vector.end(),sortXYZ);
 
@@ -1736,10 +1716,9 @@ void RTT_Format::Sides::sortData()
     // the nodes, sidetypes, and flags with the new numbering.
     for (int i = 0; i < dims.get_nsides(); ++i)
     {
-        if (original.size() != cellDefs.get_nnodes(sideType(i)))
-	    original.resize(cellDefs.get_nnodes(sideType(i)));
-	for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
-	    original[j] = nodes(i,j);
+        if (original.size() != cellDefs.get_nnodes(sideType[i]))
+	    original.resize(cellDefs.get_nnodes(sideType[i]));
+	original = nodes[i];
 
         bool mapped = false;
         int low_index  = 0;
@@ -1765,11 +1744,9 @@ void RTT_Format::Sides::sortData()
 	    {
 	        mapped = true;
 		sort_map[i] = k;
-		for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
-		    nodes(i,j) = sort_vector[i][j];
-		sideType(k) = temp_sideType[i];
-		for (int f = 0; f < dims.get_nside_flag_types(); ++f)
-		    flags(k,f) = temp_flags[i][f];
+		nodes[i] = sort_vector[i];
+		sideType[k] = temp_sideType[i];
+		flags[k] = temp_flags[i];
 	    }
 	    else if (k < high_index)
 	        ++low_index;
@@ -1785,11 +1762,11 @@ void RTT_Format::Sides::sortData()
     {
         for (int i = 0; i < dims.get_nsides(); ++i)
 	{
-	    cout << i << " " << sort_map[i] << " " << sideType(i) << " ";
-	    for (int j = 0; j < cellDefs.get_nnodes(sideType(i)); ++j)
-	        cout << nodes(i,j) << " ";
+	    cout << i << " " << sort_map[i] << " " << sideType[i] << " ";
+	    for (int j = 0; j < cellDefs.get_nnodes(sideType[i]); ++j)
+	        cout << nodes[i][j] << " ";
 	    for (int f = 0; f < dims.get_nside_flag_types(); ++f)
-	        cout << flags(i,f);
+	        cout << flags[i][f];
 	    cout << endl;
 	}
     }
@@ -1857,19 +1834,19 @@ void RTT_Format::Cells::readData(ifstream & meshfile)
 	meshfile >> cellNum;
 	Insist(cellNum == i+1,
 	       "Invalid mesh file: cell index out of order");
-	meshfile >> cellType(i);
-	--cellType(i);
-	Insist(dims.allowed_cell_type(cellType(i)),
+	meshfile >> cellType[i];
+	--cellType[i];
+	Insist(dims.allowed_cell_type(cellType[i]),
 	       "Invalid mesh file: illegal cell type");
-	for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
+	for (int j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
 	{
-	    meshfile >> nodes(i,j);
-	    --nodes(i,j);
+	    meshfile >> nodes[i][j];
+	    --nodes[i][j];
 	}
 	for (int j = 0; j < dims.get_ncell_flag_types(); ++j)
 	{
-	    meshfile >> flags(i,j);
-	    Insist(cellFlags.allowed_flag(j, flags(i,j)),
+	    meshfile >> flags[i][j];
+	    Insist(cellFlags.allowed_flag(j, flags[i][j]),
 		   "Invalid mesh file: illegal cell flag");
 	}
 	getline(meshfile, dummyString);
@@ -1886,26 +1863,18 @@ void RTT_Format::Cells::sortData()
 {
     vector<vector<int> > sort_vector(dims.get_ncells(),1);
     vector<int> original(1);
-    vector<int> temp_cellType(dims.get_ncells());
-    vector<vector<int> > temp_flags(dims.get_ncells(),
-				    dims.get_ncell_flag_types());
+    vector<int> temp_cellType = cellType;
+    vector<vector<int> > temp_flags = flags;
     sort_map.resize(dims.get_ncells());
 
     for (int i = 0; i < dims.get_ncells(); ++i)
     {
-        sort_vector[i].resize(cellDefs.get_nnodes(cellType(i)));
-	for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
-	{
+        sort_vector[i].resize(cellDefs.get_nnodes(cellType[i]));
+	for (int j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
 	    // map the user-input node numbers to the sorted node numbers.
-	    nodes(i,j) = nodesClass.get_map(nodes(i,j));
-	    sort_vector[i][j] = nodes(i,j);
-	}
+	    nodes[i][j] = nodesClass.get_map(nodes[i][j]);
+	sort_vector[i] = nodes[i];
 	sort(sort_vector[i].begin(),sort_vector[i].end());
-
-	temp_cellType[i] = cellType(i);
-
-	for (int f = 0; f < dims.get_ncell_flag_types(); ++f)
-	    temp_flags[i][f] = flags(i,f);
     }
     sort(sort_vector.begin(),sort_vector.end());
 
@@ -1913,10 +1882,9 @@ void RTT_Format::Cells::sortData()
     // the nodes, celltypes, and flags with the new numbering.
     for (int i = 0; i < dims.get_ncells(); ++i)
     {
-        if (original.size() != cellDefs.get_nnodes(cellType(i)))
-	    original.resize(cellDefs.get_nnodes(cellType(i)));
-	for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
-	    original[j] = nodes(i,j);
+        if (original.size() != cellDefs.get_nnodes(cellType[i]))
+	    original.resize(cellDefs.get_nnodes(cellType[i]));
+	original = nodes[i];
 	sort(original.begin(),original.end());
 
         bool mapped = false;
@@ -1943,11 +1911,9 @@ void RTT_Format::Cells::sortData()
 	    {
 	        mapped = true;
 		sort_map[i] = k;
-		for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
-		    nodes(i,j) = sort_vector[i][j];
-		cellType(k) = temp_cellType[i];
-		for (int f = 0; f < dims.get_ncell_flag_types(); ++f)
-		    flags(k,f) = temp_flags[i][f];
+		nodes[i] = sort_vector[i];
+		cellType[k] = temp_cellType[i];
+		flags[k] = temp_flags[i];
 	    }
 	    else if (k < high_index)
 	        ++low_index;
@@ -1963,11 +1929,11 @@ void RTT_Format::Cells::sortData()
     {
         for (int i = 0; i < dims.get_ncells(); ++i)
 	{
-	    cout << i << " " << sort_map[i] << " " << cellType(i) << " ";
-	    for (int j = 0; j < cellDefs.get_nnodes(cellType(i)); ++j)
-	        cout << nodes(i,j) << " ";
+	    cout << i << " " << sort_map[i] << " " << cellType[i] << " ";
+	    for (int j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
+	        cout << nodes[i][j] << " ";
 	    for (int f = 0; f < dims.get_ncell_flag_types(); ++f)
-	        cout << flags(i,f);
+	        cout << flags[i][f];
 	    cout << endl;
 	}
     }
@@ -2037,7 +2003,7 @@ void RTT_Format::NodeData::readData(ifstream & meshfile)
 	Insist(nodeNum == i+1,
 	       "Invalid mesh file: node data index out of order");
 	for (int j = 0; j < dims.get_nnode_data(); ++j)
-	    meshfile >> data(i,j);
+	    meshfile >> data[i][j];
 	getline(meshfile, dummyString);
     }
 }
@@ -2050,12 +2016,12 @@ void RTT_Format::NodeData::readData(ifstream & meshfile)
  */
 void RTT_Format::NodeData::sortData()
 {
-    rtt_dsxx::Mat2<double> orig_data = data;
+    vector<vector<double> > orig_data = data;
 
     for (int i = 0; i < dims.get_nnodes(); ++i)
     {
 	for (int j = 0; j < dims.get_nnode_data(); ++j)
-	     data(nodesClass.get_map(i),j) = orig_data(i,j);
+	     data[nodesClass.get_map(i)][j] = orig_data[i][j];
     }
 }
 
@@ -2118,7 +2084,7 @@ void RTT_Format::SideData::readData(ifstream & meshfile)
 	Insist(sideNum == i+1,
 	       "Invalid mesh file: side data index out of order");
 	for (int j = 0; j < dims.get_nside_data(); ++j)
-	    meshfile >> data(i,j);
+	    meshfile >> data[i][j];
 	getline(meshfile, dummyString);
     }
 }
@@ -2131,12 +2097,12 @@ void RTT_Format::SideData::readData(ifstream & meshfile)
  */
 void RTT_Format::SideData::sortData()
 {
-    rtt_dsxx::Mat2<double> orig_data = data;
+    vector<vector<double> > orig_data = data;
 
     for (int i = 0; i < dims.get_nsides(); ++i)
     {
 	for (int j = 0; j < dims.get_nside_data(); ++j)
-	    data(sidesClass.get_map(i),j) = orig_data(i,j);
+	    data[sidesClass.get_map(i)][j] = orig_data[i][j];
     }
 }
 
@@ -2199,7 +2165,7 @@ void RTT_Format::CellData::readData(ifstream & meshfile)
 	Insist(cellNum == i+1,
 	       "Invalid mesh file: cell data index out of order");
 	for (int j = 0; j < dims.get_ncell_data(); ++j)
-	    meshfile >> data(i,j);
+	    meshfile >> data[i][j];
 	getline(meshfile, dummyString);
     }
 }
@@ -2212,12 +2178,12 @@ void RTT_Format::CellData::readData(ifstream & meshfile)
  */
 void RTT_Format::CellData::sortData()
 {
-    rtt_dsxx::Mat2<double> orig_data = data;
+    vector<vector<double> > orig_data = data;
 
     for (int i = 0; i < dims.get_ncells(); ++i)
     {
 	for (int j = 0; j < dims.get_ncell_data(); ++j)
-	    data(cellsClass.get_map(i),j) = orig_data(i,j);
+	    data[cellsClass.get_map(i)][j] = orig_data[i][j];
     }
 }
 

@@ -15,7 +15,6 @@
 #ifndef __RTT_Format_hh__
 #define __RTT_Format_hh__
 
-#include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 #include <string>
 #include <algorithm>
@@ -83,7 +82,7 @@ class RTT_Format
 	int cycle;
 	double time;
         int ncomments;
-	rtt_dsxx::Mat1<string> comments;
+	vector<string> comments;
 
       public:
 	Header() {}
@@ -104,7 +103,7 @@ class RTT_Format
 	int get_cycle() const { return cycle; }
 	double get_time() const { return time; }
 	int get_ncomments() const { return ncomments; }	
-        string get_comments(int i) const { return comments(i); }
+        string get_comments(int i) const { return comments[i]; }
 
     };
 
@@ -128,21 +127,21 @@ class RTT_Format
 
 	int nnodes;
 	int nnode_flag_types;
-	rtt_dsxx::Mat1<int> nnode_flags;
+	vector<int> nnode_flags;
 	int nnode_data;
 
 	int nsides;
 	int nside_types;
-	rtt_dsxx::Mat1<int> side_types;
+	vector<int> side_types;
 	int nside_flag_types;
-	rtt_dsxx::Mat1<int> nside_flags;
+	vector<int> nside_flags;
 	int nside_data;
 
 	int ncells;
 	int ncell_types;
-	rtt_dsxx::Mat1<int> cell_types;
+	vector<int> cell_types;
 	int ncell_flag_types;
-	rtt_dsxx::Mat1<int> ncell_flags;
+	vector<int> ncell_flags;
 	int ncell_data;
 
         // flag to indicate node, side, and cell renumbering is performed.
@@ -178,23 +177,23 @@ class RTT_Format
 	int get_ndim_topo() const { return ndim_topo; }
 	int get_nnodes() const { return nnodes; }
 	int get_nnode_flag_types() const { return nnode_flag_types; }
-	int get_nnode_flags(int i) const { return nnode_flags(i); }
+	int get_nnode_flags(int i) const { return nnode_flags[i]; }
 	int get_nnode_data() const { return nnode_data; }
 
         // side data access
 	int get_nsides() const { return nsides; }
 	int get_nside_types() const { return nside_types; }
-	int get_side_types(int i) const  { return  side_types(i); }
+	int get_side_types(int i) const  { return  side_types[i]; }
 	int get_nside_flag_types() const { return nside_flag_types; }
-	int get_nside_flags(int i) const { return nside_flags(i); }
+	int get_nside_flags(int i) const { return nside_flags[i]; }
 	int get_nside_data() const { return nside_data; }
 
         // cell data access
 	int get_ncells() const { return ncells; }
 	int get_ncell_types() const { return ncell_types; }	
-	int get_cell_types(int i)  const { return  cell_types(i); }	
+	int get_cell_types(int i)  const { return  cell_types[i]; }	
 	int get_ncell_flag_types() const { return ncell_flag_types; }
-	int get_ncell_flags(int i) const { return ncell_flags(i); }
+	int get_ncell_flags(int i) const { return ncell_flags[i]; }
 	int get_ncell_data() const { return ncell_data; }
 
         // renumbering flag
@@ -217,8 +216,8 @@ class RTT_Format
     {
 	int nflags;
 	string name;
-	rtt_dsxx::Mat1<int> flag_nums;
-	rtt_dsxx::Mat1<string> flag_names;
+	vector<int> flag_nums;
+	vector<string> flag_names;
 
       public:
 	Flags(int nflags_, const string & name_)
@@ -233,8 +232,8 @@ class RTT_Format
 	      != std::find(flag_nums.begin(), flag_nums.end(), flag); }
 
         string getFlagType() const {return name;}
-        int getFlagNumber(int flag) const {return flag_nums(flag);}
-        string getFlagName(int flag) const {return flag_names(flag);}
+        int getFlagNumber(int flag) const {return flag_nums[flag];}
+        string getFlagName(int flag) const {return flag_names[flag];}
         int getFlagSize() const {return nflags;}
     };
 
@@ -246,7 +245,7 @@ class RTT_Format
     class NodeFlags
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<rtt_dsxx::SP<Flags> > flagTypes;
+	vector<rtt_dsxx::SP<Flags> > flagTypes;
 
       public:
 	NodeFlags(const Dims & dims_)
@@ -265,35 +264,35 @@ class RTT_Format
 	{
 	    Insist(flagtype <= dims.get_nnode_flag_types() - 1,
 		   "Invalid node flag type number!");
-	    return flagTypes(flagtype)->allowed_flag(flag); 
+	    return flagTypes[flagtype]->allowed_flag(flag); 
 	}
         string get_flag_type(int flagtype) const 
 	{ 
 	    Insist(flagtype <= dims.get_nnode_flag_types() - 1,
 		   "Invalid node flag type number!");
-	    return flagTypes(flagtype)->getFlagType();
+	    return flagTypes[flagtype]->getFlagType();
 	}
         int get_flag_number(int flagtype, int flag_index) const 
 	{
 	    Insist(flagtype  <= dims.get_nnode_flag_types() - 1,
 		   "Invalid node flag type number!");
-	    Insist(flag_index  <= flagTypes(flagtype)->getFlagSize() - 1,
+	    Insist(flag_index  <= flagTypes[flagtype]->getFlagSize() - 1,
 		   "Invalid node flag number index number!");
-	    return flagTypes(flagtype)->getFlagNumber(flag_index);
+	    return flagTypes[flagtype]->getFlagNumber(flag_index);
 	}
         int get_flag_size(int flagtype) const 
 	{
 	    Insist(flagtype  <= dims.get_nnode_flag_types() - 1,
 		   "Invalid node flag type number!");
-	    return flagTypes(flagtype)->getFlagSize();
+	    return flagTypes[flagtype]->getFlagSize();
 	}
         string get_flag_name(int flagtype, int flag_index) const 
 	{
 	    Insist(flagtype  <= dims.get_nnode_flag_types() - 1,
 		   "Invalid node flag type number!");
-	    Insist(flag_index  <= flagTypes(flagtype)->getFlagSize() - 1,
+	    Insist(flag_index  <= flagTypes[flagtype]->getFlagSize() - 1,
 		   "Invalid node flag name index number!");
-	    return flagTypes(flagtype)->getFlagName(flag_index);
+	    return flagTypes[flagtype]->getFlagName(flag_index);
 	}
     };
 
@@ -305,7 +304,7 @@ class RTT_Format
     class SideFlags
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<rtt_dsxx::SP<Flags> > flagTypes;
+	vector<rtt_dsxx::SP<Flags> > flagTypes;
 
       public:
 	SideFlags(const Dims & dims_)
@@ -324,36 +323,36 @@ class RTT_Format
 	{
 	    Insist(flagtype <= dims.get_nside_flag_types() - 1,
 		   "Invalid side flag type number!");
-	    return flagTypes(flagtype)->allowed_flag(flag); 
+	    return flagTypes[flagtype]->allowed_flag(flag); 
 	}
 
         string get_flag_type(int flagtype) const 
 	{ 
 	    Insist(flagtype <= dims.get_nside_flag_types() - 1,
 		   "Invalid side flag type number!");
-	    return flagTypes(flagtype)->getFlagType();
+	    return flagTypes[flagtype]->getFlagType();
 	}
         int get_flag_number(int flagtype, int flag_index) const 
 	{
 	    Insist(flagtype  <= dims.get_nside_flag_types() - 1,
 		   "Invalid side flag type number!");
-	    Insist(flag_index  <= flagTypes(flagtype)->getFlagSize() - 1,
+	    Insist(flag_index  <= flagTypes[flagtype]->getFlagSize() - 1,
 		   "Invalid side flag number index number!");
-	    return flagTypes(flagtype)->getFlagNumber(flag_index);
+	    return flagTypes[flagtype]->getFlagNumber(flag_index);
 	}
         int get_flag_size(int flagtype) const 
 	{
 	    Insist(flagtype  <= dims.get_nside_flag_types() - 1,
 		   "Invalid side flag type number!");
-	    return flagTypes(flagtype)->getFlagSize();
+	    return flagTypes[flagtype]->getFlagSize();
 	}
         string get_flag_name(int flagtype, int flag_index) const 
 	{
 	    Insist(flagtype  <= dims.get_nside_flag_types() - 1,
 		   "Invalid side flag type number!");
-	    Insist(flag_index  <= flagTypes(flagtype)->getFlagSize() - 1,
+	    Insist(flag_index  <= flagTypes[flagtype]->getFlagSize() - 1,
 		   "Invalid side flag name index number!");
-	    return flagTypes(flagtype)->getFlagName(flag_index);
+	    return flagTypes[flagtype]->getFlagName(flag_index);
 	}
         int get_boundary_flag_number() const 
 	{
@@ -363,7 +362,7 @@ class RTT_Format
 	    int length = 0;
 	    for (int f = 0; f < dims.get_nside_flag_types(); f++)
 	    {
-	        string flag = flagTypes(f)->getFlagType();
+	        string flag = flagTypes[f]->getFlagType();
 	        if ((flag[0] == 'b' || flag[0] == 'B') &&
 		    flag.find_first_not_of(bc) == string::npos &&  
 		    flag.find_first_not_of(bc) >= length)
@@ -383,7 +382,7 @@ class RTT_Format
 	    int length = 0;
 	    for (int f = 0; f < dims.get_nside_flag_types(); f++)
 	    {
-	        string flag = flagTypes(f)->getFlagType();
+	        string flag = flagTypes[f]->getFlagType();
 	        if ((flag[0] == 's' || flag[0] == 'S') &&
 		    flag.find_first_not_of(surface) == string::npos &&  
 		    flag.find_first_not_of(surface) >= length)
@@ -404,7 +403,7 @@ class RTT_Format
     class CellFlags
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<rtt_dsxx::SP<Flags> > flagTypes;
+	vector<rtt_dsxx::SP<Flags> > flagTypes;
 
       public:
 	CellFlags(const Dims & dims_)
@@ -423,36 +422,36 @@ class RTT_Format
 	{ 
 	    Insist(flagtype <= dims.get_ncell_flag_types() - 1,
 		   "Invalid cell flag type number!");
-	    return flagTypes(flagtype)->allowed_flag(flag); 
+	    return flagTypes[flagtype]->allowed_flag(flag); 
 	}
 
         string get_flag_type(int flagtype) const 
 	{ 
 	    Insist(flagtype <= dims.get_ncell_flag_types() - 1,
 		   "Invalid cell flag type number!");
-	    return flagTypes(flagtype)->getFlagType();
+	    return flagTypes[flagtype]->getFlagType();
 	}
         int get_flag_number(int flagtype, int flag_index) const 
 	{
 	    Insist(flagtype  <= dims.get_ncell_flag_types() - 1,
 		   "Invalid cell flag type number!");
-	    Insist(flag_index  <= flagTypes(flagtype)->getFlagSize() - 1,
+	    Insist(flag_index  <= flagTypes[flagtype]->getFlagSize() - 1,
 		   "Invalid cell flag number index number!");
-	    return flagTypes(flagtype)->getFlagNumber(flag_index);
+	    return flagTypes[flagtype]->getFlagNumber(flag_index);
 	}
         int get_flag_size(int flagtype) const 
 	{
 	    Insist(flagtype  <= dims.get_ncell_flag_types() - 1,
 		   "Invalid cell flag type number!");
-	    return flagTypes(flagtype)->getFlagSize();
+	    return flagTypes[flagtype]->getFlagSize();
 	}
         string get_flag_name(int flagtype, int flag_index) const 
 	{
 	    Insist(flagtype  <= dims.get_ncell_flag_types() - 1,
 		   "Invalid cell flag type number!");
-	    Insist(flag_index  <= flagTypes(flagtype)->getFlagSize() - 1,
+	    Insist(flag_index  <= flagTypes[flagtype]->getFlagSize() - 1,
 		   "Invalid cell flag name index number!");
-	    return flagTypes(flagtype)->getFlagName(flag_index);
+	    return flagTypes[flagtype]->getFlagName(flag_index);
 	}
         int get_material_flag_number() const 
 	{
@@ -462,7 +461,7 @@ class RTT_Format
 	    int length = 0;
 	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
 	    {
-	        string flag = flagTypes(f)->getFlagType();
+	        string flag = flagTypes[f]->getFlagType();
 	        if ((flag[0] == 'm' || flag[0] == 'M') &&
 		    flag.find_first_not_of(matl) == string::npos &&  
 		    flag.find_first_not_of(matl) >= length)
@@ -482,7 +481,7 @@ class RTT_Format
 	    int length = 0;
 	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
 	    {
-	        string flag = flagTypes(f)->getFlagType();
+	        string flag = flagTypes[f]->getFlagType();
 	        if ((flag[0] == 'v' || flag[0] == 'V') &&
 		    flag.find_first_not_of(source) == string::npos &&  
 		    flag.find_first_not_of(source) >= length)
@@ -501,7 +500,7 @@ class RTT_Format
 	    int length = 0;
 	    for (int f = 0; f < dims.get_ncell_flag_types(); f++)
 	    {
-	        string flag = flagTypes(f)->getFlagType();
+	        string flag = flagTypes[f]->getFlagType();
 	        if ((flag[0] == 'r' || flag[0] == 'R') &&
 		    flag.find_first_not_of(source) == string::npos &&  
 		    flag.find_first_not_of(source) >= length)
@@ -521,8 +520,8 @@ class RTT_Format
     class NodeDataIDs
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<string> names;
-	rtt_dsxx::Mat1<string> units;
+	vector<string> names;
+	vector<string> units;
 
       public:
 	NodeDataIDs(const Dims & dims_)
@@ -542,13 +541,13 @@ class RTT_Format
 	{ 
 	    Insist(id_numb <= dims.get_nnode_data() - 1,
 		   "Invalid node data id number!");
-	    return names(id_numb);
+	    return names[id_numb];
 	}
         string get_data_id_units(int id_numb) const 
 	{ 
 	    Insist(id_numb <= dims.get_nnode_data() - 1,
 		   "Invalid node data id number!");
-	    return units(id_numb);
+	    return units[id_numb];
 	}
     };
 
@@ -560,8 +559,8 @@ class RTT_Format
     class SideDataIDs
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<string> names;
-	rtt_dsxx::Mat1<string> units;
+	vector<string> names;
+	vector<string> units;
 
       public:
 	SideDataIDs(const Dims & dims_)
@@ -581,13 +580,13 @@ class RTT_Format
 	{ 
 	    Insist(id_numb <= dims.get_nside_data() - 1,
 		   "Invalid side data id number!");
-	    return names(id_numb);
+	    return names[id_numb];
 	}
         string get_data_id_units(int id_numb) const 
 	{ 
 	    Insist(id_numb <= dims.get_nside_data() - 1,
 		   "Invalid side data id number!");
-	    return units(id_numb);
+	    return units[id_numb];
 	}
     };
 
@@ -599,8 +598,8 @@ class RTT_Format
     class CellDataIDs
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<string> names;
-	rtt_dsxx::Mat1<string> units;
+	vector<string> names;
+	vector<string> units;
 
       public:
 	CellDataIDs(const Dims & dims_)
@@ -620,13 +619,13 @@ class RTT_Format
 	{ 
 	    Insist(id_numb <= dims.get_ncell_data() - 1,
 		   "Invalid cell data id number!");
-	    return names(id_numb);
+	    return names[id_numb];
 	}
         string get_data_id_units(int id_numb) const 
 	{ 
 	    Insist(id_numb <= dims.get_ncell_data() - 1,
 		   "Invalid cell data id number!");
-	    return units(id_numb);
+	    return units[id_numb];
 	}
     };
 
@@ -643,8 +642,8 @@ class RTT_Format
 	const string name;
 	int nnodes;
 	int nsides;
-	rtt_dsxx::Mat1<int> side_types;
-	rtt_dsxx::Mat1<set<int> > sides;
+	vector<int> side_types;
+	vector<set<int> > sides;
         // Add the capability to maintain the sense of the outward normals.
         vector<vector<int> > ordered_sides;
 
@@ -659,8 +658,8 @@ class RTT_Format
         string get_name() const  { return name; }
 	int get_nnodes() const { return nnodes; }
 	int get_nsides() const { return nsides; }
-        int get_side_types(int s) const { return side_types(s); }
-	const set<int> & get_side(int s) const { return sides(s); }
+        int get_side_types(int s) const { return side_types[s]; }
+	const set<int> & get_side(int s) const { return sides[s]; }
 	const vector<int> & get_ordered_side(int s) const 
 	{ return ordered_sides[s]; }
     };
@@ -673,7 +672,7 @@ class RTT_Format
     class CellDefs
     {
 	const Dims & dims;
-	rtt_dsxx::Mat1<rtt_dsxx::SP<CellDef> > defs;
+	vector<rtt_dsxx::SP<CellDef> > defs;
 
       public:
 	CellDefs(const Dims & dims_)
@@ -689,16 +688,16 @@ class RTT_Format
 	void readEndKeyword(ifstream & meshfile);
 
       public:
-	string get_name(int i) const { return defs(i)->get_name(); }
-	const CellDef & get_cell_def(int i) const { return *(defs(i)); }
-	int get_nnodes(int i) const { return defs(i)->get_nnodes(); }
-	int get_nsides(int i) const { return defs(i)->get_nsides(); }
+	string get_name(int i) const { return defs[i]->get_name(); }
+	const CellDef & get_cell_def(int i) const { return *(defs[i]); }
+	int get_nnodes(int i) const { return defs[i]->get_nnodes(); }
+	int get_nsides(int i) const { return defs[i]->get_nsides(); }
         int get_side_types(int i, int s) const 
-	{ return defs(i)->get_side_types(s); }
+	{ return defs[i]->get_side_types(s); }
         const set<int> & get_side(int i, int s) const 
-            { return defs(i)->get_side(s); }
+            { return defs[i]->get_side(s); }
         const vector<int> & get_ordered_side(int i, int s) const 
-	    { return defs(i)->get_ordered_side(s); }
+	    { return defs[i]->get_ordered_side(s); }
 	int get_ncell_defs() const { return dims.get_ncell_defs(); }
 
     };
@@ -711,9 +710,9 @@ class RTT_Format
     {
 	const NodeFlags & nodeFlags;
 	const Dims & dims;
-	rtt_dsxx::Mat2<double> coords;
-	rtt_dsxx::Mat1<int> parents;
-	rtt_dsxx::Mat2<int> flags;
+	vector<vector<double> > coords;
+	vector<int> parents;
+	vector<vector<int> > flags;
         // This vector is a map from the input node numbers (vector index) to
         // the sorted node number (stored value)
         vector<int> sort_map;
@@ -721,9 +720,10 @@ class RTT_Format
       public:
 	Nodes(const NodeFlags & nodeFlags_, const Dims & dims_)
 	    : nodeFlags(nodeFlags_), dims(dims_),
-	      coords(dims.get_nnodes(),	dims.get_ndim()), 
+	      coords(dims.get_nnodes(),	vector<double>(dims.get_ndim())), 
 	      parents(dims.get_nnodes()),sort_map(0),
-	      flags(dims.get_nnodes(),dims.get_nnode_flag_types()) {}
+	      flags(dims.get_nnodes(),
+		    vector<int>(dims.get_nnode_flag_types())) {}
 	~Nodes() {}
 
 	void readNodes(ifstream & meshfile);
@@ -739,23 +739,18 @@ class RTT_Format
 
       public:
 	double get_coords(int node_numb, int coord_index) const
-	{ return coords(node_numb,coord_index); }
+	{ return coords[node_numb][coord_index]; }
 
 	vector<double> get_coords(int node_numb) const
-	{ 
-	    vector<double> local_coords(dims.get_ndim());
-	    for (int d = 0; d < dims.get_ndim(); d++)
-	        local_coords[d] = coords(node_numb,d);
-	    return local_coords; 
-	}
+	{ return coords[node_numb]; }
 
         int get_node(vector<double> node_coords) const;
 
 	int get_parents(int node_numb) const
-	{ return parents(node_numb); }
+	{ return parents[node_numb]; }
 
 	int get_flags(int node_numb, int flag_numb) const
-	{ return flags(node_numb,flag_numb); }
+	{ return flags[node_numb][flag_numb]; }
 
         int get_map(int node_numb) const
 	{ return sort_map[node_numb];}
@@ -771,9 +766,9 @@ class RTT_Format
 	const Dims & dims;
 	const CellDefs & cellDefs;
         const Nodes & nodesClass;
-	rtt_dsxx::Mat1<int> sideType;
-	rtt_dsxx::Mat2<int> nodes;
-	rtt_dsxx::Mat2<int> flags;
+	vector<int> sideType;
+	vector<vector<int> > nodes;
+	vector<vector<int> > flags;
         // This vector is a map from the input side numbers (vector index) to
         // the sorted side number (stored value)
         vector<int> sort_map;
@@ -783,8 +778,10 @@ class RTT_Format
 	      const CellDefs & cellDefs_, const Nodes & nodesClass_)
 	    : sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_),
 	      nodesClass(nodesClass_), sideType(dims.get_nsides()),
-	      nodes(dims.get_nsides(), dims.get_nnodes_side_max()),sort_map(0),
-	      flags(dims.get_nsides(), dims.get_nside_flag_types()) {}
+	      nodes(dims.get_nsides(), 
+		    vector<int>(dims.get_nnodes_side_max())),sort_map(0),
+	      flags(dims.get_nsides(), 
+		    vector<int>(dims.get_nside_flag_types())) {}
 	~Sides() {}
 
 	void readSides(ifstream & meshfile);
@@ -800,13 +797,13 @@ class RTT_Format
 
       public:
 	int get_type(int side_numb) const
-	{ return sideType(side_numb); }
+	{ return sideType[side_numb]; }
 
 	int get_nodes(int side_numb,int node_numb) const
-	{ return nodes(side_numb,node_numb); }
+	{ return nodes[side_numb][node_numb]; }
 
 	int get_flags(int side_numb,int flag_numb) const
-	{ return flags(side_numb,flag_numb); }
+	{ return flags[side_numb][flag_numb]; }
 
         int get_boundary_flag_number() const 
 	{ return sideFlags.get_boundary_flag_number(); }
@@ -828,9 +825,9 @@ class RTT_Format
 	const Dims & dims;
 	const CellDefs & cellDefs;
         const Nodes & nodesClass;
-	rtt_dsxx::Mat1<int> cellType;
-	rtt_dsxx::Mat2<int> nodes;
-	rtt_dsxx::Mat2<int> flags;
+	vector<int> cellType;
+	vector<vector<int> > nodes;
+	vector<vector<int> > flags;
         // This vector is a map from the input cell numbers (vector index) to
         // the sorted cell number (stored value)
         vector<int> sort_map;
@@ -840,8 +837,9 @@ class RTT_Format
 	      const CellDefs & cellDefs_, const Nodes & nodesClass_) 
 	    : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
 	      nodesClass(nodesClass_), cellType(dims.get_ncells()),
-	      nodes(dims.get_ncells(), dims.get_nnodes_max()), sort_map(0),
-	      flags(dims.get_ncells(), dims.get_ncell_flag_types()) {}
+	      nodes(dims.get_ncells(), vector<int>(dims.get_nnodes_max())), 
+	      sort_map(0), flags(dims.get_ncells(), 
+				 vector<int>(dims.get_ncell_flag_types())) {}
 	~Cells() {}
 
 	void readCells(ifstream & meshfile);
@@ -852,16 +850,15 @@ class RTT_Format
 	void readData(ifstream & meshfile);
 	void readEndKeyword(ifstream & meshfile);
 
-
       public:
 	int get_type(int cell_numb) const
-	{ return cellType(cell_numb); }
+	{ return cellType[cell_numb]; }
 
 	int get_nodes(int cell_numb,int node_numb) const
-	{ return nodes(cell_numb,node_numb); }
+	{ return nodes[cell_numb][node_numb]; }
 
 	int get_flags(int cell_numb,int flag_numb) const
-	{ return flags(cell_numb,flag_numb); }
+	{ return flags[cell_numb][flag_numb]; }
 
         int get_map(int cell_numb) const
 	{ return sort_map[cell_numb];}
@@ -875,13 +872,13 @@ class RTT_Format
     class NodeData
     {
 	const Dims & dims;
-	rtt_dsxx::Mat2<double> data;
+        vector<vector<double> > data;
         const Nodes & nodesClass;
 
       public:
 	NodeData(const Dims & dims_, const Nodes & nodesClass_) 
 	    : dims(dims_),nodesClass(nodesClass_),
-	      data(dims.get_nnodes(),dims.get_nnode_data()) {}
+	      data(dims.get_nnodes(), vector<double>(dims.get_nnode_data())) {}
 	~NodeData() {}
 
 	void readNodeData(ifstream & meshfile);
@@ -894,7 +891,7 @@ class RTT_Format
 
       public:
 	double get_data(int node_numb,int data_index) const
-	{ return data(node_numb,data_index); }
+	{ return data[node_numb][data_index]; }
     };
 
 /*!
@@ -905,13 +902,13 @@ class RTT_Format
     class SideData
     {
 	const Dims & dims;
-	rtt_dsxx::Mat2<double> data; 
+	vector<vector<double> > data; 
         const Sides & sidesClass;
 
       public:
 	SideData(const Dims & dims_, const Sides & sidesClass_)
 	    : dims(dims_),sidesClass(sidesClass_),
-	      data(dims.get_nsides(), dims.get_nside_data()) {}
+	      data(dims.get_nsides(), vector<double>(dims.get_nside_data())) {}
 	~SideData() {}
 
 	void readSideData(ifstream & meshfile);
@@ -924,7 +921,7 @@ class RTT_Format
 
       public:
 	double get_data(int side_numb,int data_index) const
-	{ return data(side_numb,data_index); }
+	{ return data[side_numb][data_index]; }
     };
 
 /*!
@@ -935,13 +932,13 @@ class RTT_Format
     class CellData
     {
 	const Dims & dims;
-	rtt_dsxx::Mat2<double> data; 
+	vector<vector<double> > data; 
         const Cells & cellsClass;
 
       public:
 	CellData(const Dims & dims_, const Cells & cellsClass_)
 	    : dims(dims_),cellsClass(cellsClass_),
-	      data(dims.get_ncells(), dims.get_ncell_data()) {}
+	      data(dims.get_ncells(), vector<double>(dims.get_ncell_data())) {}
 	~CellData() {}
 
 	void readCellData(ifstream & meshfile);
@@ -954,7 +951,7 @@ class RTT_Format
 
       public:
 	double get_data(int cell_numb,int data_index) const
-	{ return data(cell_numb,data_index); }
+	{ return data[cell_numb][data_index]; }
     };
 
 /*!
