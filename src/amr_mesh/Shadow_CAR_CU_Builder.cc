@@ -13,6 +13,7 @@
 #include "CAR_CU_Interface.hh"
 #include "RTT_Format.hh"
 #include "CAR_CU_Mesh.hh"
+#include "Shadow_Opaque_Pointers.hh"
 #include <iostream>
 
 //===========================================================================//
@@ -59,8 +60,8 @@ extern "C"
 
 	// Get the addresses of the CAR_CU_Interface (int_ptr) and RTT_Format 
         // (rttf_ptr) class objects.
-	interface = reinterpret_cast<CAR_CU_Interface * >(itf_ptr);
-	rttFormat = reinterpret_cast<RTT_Format * >(rttf_ptr);
+	interface = opaque_pointers<CAR_CU_Interface>::item(itf_ptr);
+	rttFormat = opaque_pointers<RTT_Format>::item(rttf_ptr);
 
 	// Construct a new CAR_CU_Builder class object.
 	SP<CAR_CU_Builder> builder(new CAR_CU_Builder(interface));
@@ -72,8 +73,8 @@ extern "C"
 
 	// return the addresses of the new CAR_CU_Builder (self) and 
 	// CAR_CU_Mesh (mesh_ptr) objects.
-	self = reinterpret_cast<long>(& (* builder));
-	mesh_ptr = reinterpret_cast<long>(& (* mesh));
+	self = opaque_pointers<CAR_CU_Builder>::insert(& (* builder));
+	mesh_ptr = opaque_pointers<CAR_CU_Mesh>::insert(& (* mesh));
 
     }
 
@@ -81,10 +82,13 @@ extern "C"
     void destruct_car_cu_builder_(long & self)
     {
 	// Get the address of the CAR_CU_Builder class object (self).
-	CAR_CU_Builder * builder = reinterpret_cast<CAR_CU_Builder * >(self);
+	CAR_CU_Builder * builder = opaque_pointers<CAR_CU_Builder>::item(self);
 
 	// destroy the CAR_CU_Builder class object.
 	delete builder;
+
+	// remove the opaque pointer to the CAR_CU_Interface class object.
+	opaque_pointers<CAR_CU_Builder>::erase(self);
     }
 
 

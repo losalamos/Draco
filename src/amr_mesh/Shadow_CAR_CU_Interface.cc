@@ -11,12 +11,13 @@
 
 #include "CAR_CU_Interface.hh"
 #include "RTT_Format.hh"
+#include "Shadow_Opaque_Pointers.hh"
 #include <iostream>
 
 //===========================================================================//
 // Shadow_CAR_CU_Interface - 
 //
-// Purpose : Provides flat interface functions to the Continuous Adaptive 
+// Purpose : Provides shadow interface functions to the Continuous Adaptive 
 // Refinement Cartesion Unstructured Mesh Interface Class for use with 
 // Fortran 90 codes.
 //
@@ -62,8 +63,8 @@ extern "C"
 
 	// return the addresses of the new CAR_CU_Interface (self) and 
 	// RTT_Format class (rttFormat) objects.
-	self = reinterpret_cast<long>(& (* interface));
-	rttFormat = reinterpret_cast<long>(& (* rttMesh));
+	self = opaque_pointers<CAR_CU_Interface>::insert(& (* interface));
+	rttFormat = opaque_pointers<RTT_Format>::insert(& (* rttMesh));
 
     }
 
@@ -72,10 +73,13 @@ extern "C"
     {
 	// Get the address of the CAR_CU_Interface class object (self).
 	CAR_CU_Interface * interface = 
-	    reinterpret_cast<CAR_CU_Interface * >(self);
+	    opaque_pointers<CAR_CU_Interface>::item(self);
 
 	// destroy the CAR_CU_Interface class object.
 	delete interface;
+
+	// remove the opaque pointer to the CAR_CU_Interface class object.
+	opaque_pointers<CAR_CU_Interface>::erase(self);
     }
 
 
