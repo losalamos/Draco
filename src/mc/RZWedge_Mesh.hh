@@ -58,9 +58,9 @@ namespace rtt_mc
 // 17-JUL-2000 : added get_cell_pair function for graphics dumping.
 // 24-JUL-2000 : replaced Layout with AMR_Layout
 // 11-AUG-2000 : fixed error in sample_pos() (tilt), the z position was
-//               incorrectly being waited by the z dimension; also added
+//               incorrectly being weighted by the z dimension; also added
 //               in_cell() test function to determine if a set of coordinates 
-//               are in a cell
+//               is in a cell
 // 
 //===========================================================================//
 
