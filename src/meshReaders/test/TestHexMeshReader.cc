@@ -178,11 +178,25 @@ bool TestHexMeshReader::check_node_units(
 }
 
 bool TestHexMeshReader::check_node_sets(
-    const rtt_meshReaders::Hex_Mesh_Reader &mesh)
+    const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check node sets.
     std::map<std::string, std::set<int> > ndsets = mesh.get_node_sets();
-    bool pass_ns = ndsets.size() == 0;
+    bool pass_ns = ndsets.size() == 1;
+    if (testid == "slab")
+    {
+	pass_ns = pass_ns && check_map(ndsets,"Interior",0,100);
+    }
+    else if (testid == "quad")
+    {
+	pass_ns = pass_ns && check_map(ndsets,"Interior",0,440);
+    }
+    else if (testid == "cube")
+    {
+	pass_ns = pass_ns && check_map(ndsets,"Interior",0,215);
+    }
+    else
+	Insist(false,"Unrecognized test id string!");
     if (pass_ns)
 	pass(" Node Sets ") << "Got node sets." << std::endl;
     else

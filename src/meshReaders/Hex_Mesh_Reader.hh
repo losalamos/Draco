@@ -95,7 +95,7 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     
     /*!
      * The Hex mesh format has no provision for labeling coordinate units
-     * COnsequently, this method always returns the default string:
+     * Consequently, this method always returns the default string:
      * "unknown".
      *
      */
@@ -105,7 +105,8 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     }
     /*!
      * The Hex mesh format has no provision for flagging nodes.
-     * This method therfore always returns a map with size 0.
+     * This method therefore always returns a map with one entry
+     * which contains all the nodes.
      *
      */
      std::map<std::string, std::set<int> > get_node_sets() const

@@ -114,6 +114,16 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
 	    ipar_rb[i][j] = ipar_rb[i][j]-1;
     }
 
+    // Load a default node set which contains all the nodes in the mesh.
+
+    std::set<int> stmp;
+    for (int i=0; i<npoints; ++i)
+	stmp.insert(i);
+    typedef std::map<std::string, std::set<int> > resultT;
+    node_sets.insert(resultT::value_type("Interior", stmp));
+
+    // Check the results
+
     Ensure (invariant());
 }
 /*!
