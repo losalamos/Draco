@@ -270,7 +270,7 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
 
    F90FREE='-Free'
    F90FIXED='-Fixed'
-   MODFLAG='-M'
+   MODFLAG='-I'
 
    # LINKER AND LIBRARY (AR)
 
