@@ -1,22 +1,32 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.hh
-// <user>
-// <date>
-// $Id$
+/*!
+ * \file   <pkg>/Release.hh
+ * \author <user>
+ * \date   <date>
+ * \brief  Release function for the <pkg> library
+ */
 //---------------------------------------------------------------------------//
-// @> Release function for <pkg> library
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __<spkg>_Release_hh__
 #define __<spkg>_Release_hh__
 
 //===========================================================================//
-// namespace version - 
-//
-// Purpose : Return the version of <pkg>; 
-// this can be used to get exact version information in codes that 
-// use <pkg>
-// 
+/*!
+ * \page <spkg>_overview Overview of the <spkg> package
+ * \version
+ * \author
+ * 
+ * <start>
+ */
+//===========================================================================//
+/*!
+ * \namespace rtt_<spkg>
+ *
+ * \brief Namespace that contains the <spkg> package classes and variables.
+ *
+ */
 //===========================================================================//
 
 #include <string>
@@ -29,5 +39,5 @@ namespace rtt_<spkg>
 #endif                          // __<spkg>_Release_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of <pkg>/Release.hh
+//                           end of <pkg>/Release.hh
 //---------------------------------------------------------------------------//
