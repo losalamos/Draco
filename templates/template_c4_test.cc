@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing <class>, " << ass.what() << endl;
+	cout << "While testing <class>, " << ass.what()
+	     << endl;
 	C4::Finalize();
 	return 1;
     }
@@ -61,8 +62,8 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	if (rtt_<spkg>::passed) 
 	{
-	    cout << "**** <class> Test: PASSED on" << C4::node() 
-		 << endl;
+	    cout << "**** <class> Test: PASSED on" 
+		 << C4::node() << endl;
 	}
 	cout <<     "*********************************************" << endl;
 	cout << endl;
