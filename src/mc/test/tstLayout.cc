@@ -11,6 +11,7 @@
 
 #include "MC_Test.hh"
 #include "../AMR_Layout.hh"
+#include "../Layout.hh"
 #include "../Release.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
@@ -21,13 +22,190 @@
 #include <deque>
 #include <list>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
+using rtt_mc::Layout;
 using rtt_mc::AMR_Layout;
+using rtt_dsxx::SP;
 
 bool passed = true;
 #define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
+
+//---------------------------------------------------------------------------//
+// Layout TESTS
+//---------------------------------------------------------------------------//
+// in these tests build the following mesh layout
+/*
+                  0
+            _______________
+            |    |    |   |
+	    | 4  | 5  | 6 |
+   grad = 0 |____|____|___| 0
+            |    |    |   |
+	    | 1  | 2  | 3 |
+	    |____|____|___|
+	    
+                  0
+
+   compress to this
+
+                  0
+            ____________
+            |    |    |   
+	    | 3  | 4  | -2 
+   grad = 0 |____|____|_
+            |    |    |  
+	    | 1  | 2  | -1
+	    |____|____|_
+	    
+                  0
+		  
+*/
+//---------------------------------------------------------------------------//
+
+void test_Layout()
+{
+    // build the layout
+    Layout layout(6,4);
+    if (layout.num_cells() != 6) ITFAILS;
+    {
+	layout(1,1) = 1;
+	layout(1,2) = 2;
+	layout(1,3) = 0;
+	layout(1,4) = 4;
+
+	layout(2,1) = 1;
+	layout(2,2) = 3;
+	layout(2,3) = 0;
+	layout(2,4) = 5;
+
+	layout(3,1) = 2;
+	layout(3,2) = 0;
+	layout(3,3) = 0;
+	layout(3,4) = 6;
+
+	layout(4,1) = 4;
+	layout(4,2) = 5;
+	layout(4,3) = 1;
+	layout(4,4) = 0;
+
+	layout(5,1) = 4;
+	layout(5,2) = 6;
+	layout(5,3) = 2;
+	layout(5,4) = 0;
+
+	layout(6,1) = 5;
+	layout(6,2) = 0;
+	layout(6,3) = 3;
+	layout(6,4) = 0;
+    }
+
+    // check some cells
+    if (layout(5,1) != 4) ITFAILS;
+    if (layout(1,2) != 2) ITFAILS;
+    if (layout(2,3) != 0) ITFAILS;
+    if (layout(6,4) != 0) ITFAILS;
+
+    for (int i = 1; i <= layout.num_cells(); i++)
+	if (layout.num_faces(i) != 4) ITFAILS;
+
+    // pack the full layout
+    SP<Layout> unpacked_full_layout;
+    SP<Layout::Pack> pack_layout;
+    {
+	vector<int> list(6);
+	for (int i = 0; i < 6; i++)
+	    list[i] = i+1;
+	
+	pack_layout = layout.pack(list);
+
+	// check copy constructor
+	if (pack_layout->get_size() != 31) ITFAILS;
+
+	Layout::Pack test_pack = *pack_layout;
+	SP<Layout> test_unpack = test_pack.unpack();
+
+	if (*test_unpack != layout)       ITFAILS;
+
+	// check pack accessors
+	int  size = pack_layout->get_size();
+	int *data = new int[size];
+
+	copy(pack_layout->begin(), pack_layout->end(), data);
+
+	Layout::Pack unpack(size, data);
+	SP<Layout> unpack_layout = unpack.unpack();
+
+	if (*unpack_layout != layout) ITFAILS;
+    }
+    
+    // unpack and compare
+    unpacked_full_layout = pack_layout->unpack();
+	
+    if (layout != *unpacked_full_layout) ITFAILS;
+
+    // unpack the compressed layout
+    SP<Layout> unpacked_com_layout;
+    {
+	vector<int> list(6);
+	list[0] = 1;
+	list[1] = 2;
+	list[2] = -1;
+	list[3] = 3;
+	list[4] = 4;
+	list[5] = -2;
+	
+	pack_layout = layout.pack(list);
+    }
+
+    // unpack and check
+    unpacked_com_layout = pack_layout->unpack();
+    if (layout == *unpacked_com_layout) ITFAILS;
+
+    // check the new layout
+    Layout &lay = *unpacked_com_layout;
+    if (lay.num_cells() != 4) ITFAILS;
+
+    if (lay(1,1) != 1)  ITFAILS;
+    if (lay(1,2) != 2)  ITFAILS;
+    if (lay(1,3) != 0)  ITFAILS;
+    if (lay(1,4) != 3)  ITFAILS;      
+
+    if (lay(2,1) != 1)  ITFAILS;
+    if (lay(2,2) != -1) ITFAILS;
+    if (lay(2,3) != 0)  ITFAILS;
+    if (lay(2,4) != 4)  ITFAILS;   
+
+    if (lay(3,1) != 3)  ITFAILS;
+    if (lay(3,2) != 4)  ITFAILS;
+    if (lay(3,3) != 1)  ITFAILS;
+    if (lay(3,4) != 0)  ITFAILS;  
+
+    if (lay(4,1) != 3)  ITFAILS;
+    if (lay(4,2) != -2) ITFAILS;
+    if (lay(4,3) != 2)  ITFAILS;
+    if (lay(4,4) != 0)  ITFAILS;
+
+    // pack this layout and test
+    SP<Layout> unpacked_again_com_layout;
+    {
+	vector<int> list(4);
+	list[0] = 1;
+	list[1] = 2;
+	list[2] = 3;
+	list[3] = 4;
+	
+	pack_layout = unpacked_com_layout->pack(list);
+    }
+    unpacked_again_com_layout = pack_layout->unpack();
+
+    if (*unpacked_again_com_layout != *unpacked_com_layout) ITFAILS;
+
+    // SPs should not be equal
+    if (unpacked_again_com_layout == unpacked_com_layout)   ITFAILS;
+}
 
 //---------------------------------------------------------------------------//
 // AMR_Layout TESTS
@@ -187,6 +365,10 @@ int main(int argc, char *argv[])
 
     try
     {
+	// layout tests
+	test_Layout();
+	
+	// AMR layout tests
 	AMR_Layout reference = test_AMR_Layout_1();
 	test_AMR_Layout_2(reference);
     }
