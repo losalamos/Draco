@@ -17,19 +17,26 @@ for {set np 1} {$np <= $maxprocs} {incr np} {
 
     set x "tReduce_$ENV -np $np"
 
-    set err [catch {set output [c4run $np tReduce_$ENV]}]
+    set err [catch {set output [c4run $np tReduce_$ENV]} result]
 #    puts "err=$err output=$output"
 
-    set lines [split $output \n]
+    if {$err != 0} {
 
-    foreach line $lines {
-#	puts "analyzing line: $line"
-	if {[regexp "correct" $line]} {
-	    pass "$x : $line"
-	} else {
-	    fail "$x : $line"
-	}
-    }
+	fail "$x : result=\"$result\""
+
+    } else {
+
+       set lines [split $output \n]
+
+       foreach line $lines {
+#	   puts "analyzing line: $line"
+   	   if {[regexp "correct" $line]} {
+	       pass "$x : $line"
+	   } else {
+	       fail "$x : $line"
+	   }
+       }
+   }
 }
 
 # All done with tests of tReduce_$(env)

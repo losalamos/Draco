@@ -37,11 +37,11 @@ for {set np 1} {$np <= $maxprocs} {incr np} {
 
     set x "tBSwap_$ENV -np $np"
 
-    set err [catch {set rc [runit $np tBSwap_$ENV]}]
+    set err [catch {set rc [runit $np tBSwap_$ENV]} result]
 #    puts "err=$err rc=$rc"
 
     if {$err} {
-	fail $x
+	fail "$x : result=\"$result\""
     } elseif { $rc } {
 	pass $x
     } else {
