@@ -234,7 +234,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -fhonor-std -Wnon-virtual-dtor"
+       STRICTFLAG="-ansi -Wnon-virtual-dtor"
    fi
 
    # optimization level
