@@ -49,6 +49,7 @@ NMLGEN = @NMLGEN@
 
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
+UNINSTALL = rm -f
 
 CC = @CC@
 CFLAGS = @CFLAGS@
@@ -192,7 +193,7 @@ ${installdirs}:
 install: installdirs ${installfiles}
 
 uninstall:
-	-rm ${installfiles}
+	-${UNINSTALL} ${installfiles}
 
 ${libdir}/%: %
 	${INSTALL_DATA} $< $@
