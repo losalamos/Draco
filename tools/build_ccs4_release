@@ -11,6 +11,12 @@
 ## This script should be run from 
 ## 
 ##   /codes/radtran/vendors/draco-#_#_#/draco/tools
+##
+## It will build the following directories:
+##
+##   /codes/radtran/vendors/draco-#_#_#/Linux/debug
+##   /codes/radtran/vendors/draco-#_#_#/Linux/opt
+##
 ##---------------------------------------------------------------------------##
 
 ## determine version from argument
@@ -19,6 +25,18 @@ draco_src=`cd ..; pwd`
 draco_home=`cd $draco_src/..; pwd`
 draco_debug="$draco_home/Linux/debug"
 draco_opt="$draco_home/Linux/opt"
+
+if test -d $draco_home/Linux ; then
+    echo ">>> Removing old $draco_home/Linux directory."
+    rm -rf $draco_home/Linux
+fi
+
+echo ">>> Making $draco_home/Linux."
+mkdir $draco_home/Linux
+echo ">>> Making $draco_debug."
+mkdir $draco_debug
+echo ">>> Making $draco_opt."
+mkdir $draco_opt
 
 ##---------------------------------------------------------------------------##
 
@@ -50,7 +68,7 @@ VENDORS="$VENDORS $LAPACK_LIB $GANDOLF_LIB $EOSPAC_LIB $GRACE_INC $GRACE_LIB"
 
 ## debug
 
-if ! test -d $draco_debug ; then
+if test ! -d $draco_debug ; then
     echo "No $draco_debug directory exists! Exiting"
     exit
 fi
@@ -74,7 +92,7 @@ python $draco_src/tools/regression_filter.py < log
 
 ## opt
 
-if ! test -d $draco_opt ; then
+if test ! -d $draco_opt ; then
     echo "No $draco_opt directory exists! Exiting"
     exit
 fi
