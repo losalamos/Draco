@@ -35,14 +35,15 @@ dirstoclean = @dirstoclean@
 
 configure_command = @configure_command@
 
-DRACO := ../..
-DRACOTEXINPUTS := ${DRACO}/doc/tex
+DRACO := ${srcdir}/../..
+DRACOTEXINPUTS := ${DRACO}/doc/tex:.:${srcdir}
 TEXINPUTSENVS := TEXINPUTS="${TEXINPUTS}:${DRACOTEXINPUTS}"
 
 LATEXENVS := ${TEXINPUTSENVS}
 LATEX := ${LATEXENVS} latex
 
-BIBTEXENVS := ${TEXNPUTSENVS}
+BIBINPUTSENVS := BIBINPUTS="${TEXINPUTS}:${DRACOTEXINPUTS}"
+BIBTEXENVS := ${BIBINPUTSENVS}
 BIBTEX := ${BIBTEXENVS} bibtex
 
 .PHONY : all install clean dvi postscript
@@ -73,11 +74,12 @@ expTraits.ps: expTraits.dvi
 	dvips -o expTraits.ps expTraits.dvi
 
 expTraits.dvi: expTraits.tex expTraits.bib \
-	UserVec.hh.cfg UserVecTraits.hh.cfg expTraits.cc.cfg expTraits.hh.cfg
-	${LATEX} expTraits
+  ${srcdir}/UserVec.hh.cfg ${srcdir}/UserVecTraits.hh.cfg \
+  ${srcdir}/expTraits.cc.cfg ${srcdir}/expTraits.hh.cfg
+	${LATEX}  expTraits
 	${BIBTEX} expTraits
-	${LATEX} expTraits
-	${LATEX} expTraits
+	${LATEX}  expTraits
+	${LATEX}  expTraits
 
 %.hh.cfg: %.hh
 	${CXX2LATEX} -s 10 -n $< | \
@@ -106,6 +108,6 @@ config.status: configure
 	./config.status --recheck
 
 clean:
-	-rm expTraits.o
+	-rm expTraits expTraits.o
 	-rm *.ps *.dvi *.log *.aux *.bbl *.blg *.cfg
 	-rm -r ${dirstoclean}
