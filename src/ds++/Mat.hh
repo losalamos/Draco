@@ -36,6 +36,11 @@
 #include "Allocators.hh"
 #include "Bounds.hh"
 
+#ifdef TEST_MAT
+#define private public
+#define protected public
+#endif
+
 //===========================================================================//
 // class Mat1 - A 1-d container.
 
@@ -45,8 +50,8 @@
 // provide more sophisticated allocators, and 3) provide a 1-d analog to Mat2
 // and Mat3.
 //===========================================================================//
-
-template< class T, class Allocator = alloc_traits<T>::Default_Allocator >
+#if 0
+template< class T, class Allocator = typename alloc_traits<T>::Default_Allocator >
 class Mat1 {
     int xmin, xmax;
     bool may_free_space;
@@ -58,8 +63,8 @@ class Mat1 {
     T *v;
 
   public:
-    typedef Allocator::iterator iterator;
-    typedef Allocator::const_iterator const_iterator;
+    typedef typename Allocator::iterator iterator;
+    typedef typename Allocator::const_iterator const_iterator;
 
 // Constructors
 
@@ -239,6 +244,241 @@ class Mat1 {
 // WARNING: This doesn't make a lot of sense anymore.
     bool conformal( int n ) const { return n == xmax; }
 };
+#endif
+
+template< class T,
+    class Allocator = typename alloc_traits<T>::Default_Allocator >
+class Mat1 {
+  private:
+    int xmin, xlen;
+    bool may_free_space;
+
+    int xmax() const { return xmin + xlen - 1; }
+
+    int index( int i ) const
+    {
+	Assert( i >= xmin );
+	Assert( i < xmin + xlen );
+	return i;
+    }
+
+    void detach()
+    {
+	if (may_free_space) {
+	    std::destroy( begin(), end() );
+	    alloc.release( v + index(xmin), size() );
+	}
+    }
+
+  protected:
+    Allocator alloc;
+    T *v;
+
+    T&       operator[]( int i )       { return v[ index(i) ]; }
+    const T& operator[]( int i ) const { return v[ index(i) ]; }
+
+  public:
+    typedef typename Allocator::iterator iterator;
+    typedef typename Allocator::const_iterator const_iterator;
+
+// Accessors
+
+    T&       operator()( int i )       { return v[ index(i) ]; }
+    const T& operator()( int i ) const { return v[ index(i) ]; }
+
+    iterator       begin()       { return v + index(xmin); }
+    const_iterator begin() const { return v + index(xmin); }
+
+    iterator       end()         { return v + index(xmax) + 1; }
+    const_iterator end() const   { return v + index(xmax) + 1; }
+
+    int nx() const { return xlen; }
+    int size() const { return nx(); }
+
+// Constructors
+
+    Mat1()
+	: xmin(0), xlen(0),
+	  may_free_space(false), v(0)
+    {}
+
+    Mat1( int xmax_, const T& t = T() )
+	: xmin(0), xlen(xmax_),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - index(xmin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
+
+    Mat1( T *vv, int xmax_ )
+	: xmin(0), xlen(xmax_),
+	  may_free_space(false), v(vv)
+    {}
+
+    Mat1( const Bounds& bx, const T& t = T() )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - index(xmin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
+
+    Mat1( T *vv, const Bounds& bx )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  may_free_space(true),
+	  v( vv - index(xmin) )
+    {}
+
+    Mat1( const Mat1<T>& m )
+	: xmin(m.xmin), xlen(m.xlen),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - index(xmin) )
+    {
+	std::uninitialized_copy( m.begin(), m.end(), begin() );
+    }
+
+// Destructor
+
+    ~Mat1()
+    {
+	detach();
+    }
+
+// Assignment operators
+
+    Mat1& operator=( const T& t )
+    {
+	std::fill( begin(), end(), t )
+	return *this;
+    }
+
+    Mat1& operator=( const Mat1& m )
+    {
+	if (this == &m) return *this;
+
+	if ( m.xmin != xmin || m.xlen != xlen ) {
+	    detach();
+	    xmin = m.xmin;
+	    xlen = m.xlen;
+	    v = alloc.fetch( size() ) - index(xmin);
+	    std::uninitialized_copy( m.begin(), m.end(), begin() );
+	    may_free_space = true;
+	}
+	else {
+	    if (v)
+		std::copy( m.begin(), m.end(), begin() );
+	}
+
+	return *this;
+    }
+
+// Mathematical support
+
+    template<class X> Mat1& operator+=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ += x;
+	return *this;
+    }
+    Mat1& operator+=( const Mat1<T>& m )
+    {
+	Assert( xmin == m.xmin );
+	Assert( xmax == m.xmax );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ += *j++;
+	return *this;
+    }
+
+    template<class X> Mat1& operator-=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ -= x;
+	return *this;
+    }
+    Mat1& operator-=( const Mat1<T>& m )
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ -= *j++;
+	return *this;
+    }
+
+    template<class X> Mat1& operator*=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ *= x;
+	return *this;
+    }
+    Mat1& operator*=( const Mat1<T>& m )
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ *= *j++;
+	return *this;
+    }
+
+    template<class X> Mat1& operator/=( const X& x )
+    {
+	for( iterator i = begin(); i != end(); )
+	    *i++ /= x;
+	return *this;
+    }
+    Mat1& operator/=( const Mat1<T>& m )
+    {
+	Assert( xmin == m.xmin );
+	Assert( xlen == m.xlen );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ /= *j++;
+	return *this;
+    }
+
+// Utility support
+
+    void redim( int nxmax, const T& t = T() )
+    {
+    // This one only works right if xmin == 0.
+	Assert( xmin == 0 );
+	if (v && !may_free_space) {
+	// User thinks he wants to expand the aliased region.
+	    xmax = nxmax;
+	    return;
+	}
+	detach();
+	xlen = nxmax;
+	v = alloc.fetch( size() ) - index(xmin);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
+    }
+
+    void redim( const Bounds& bx, const T& t = T() )
+    {
+	if (v && !may_free_space) {
+	// Respecify the aliased region.
+	    v += index(xmin);
+	    xmin = bx.min(); xlen = bx.len();
+	    v -= index(xmin);
+	    return;
+	}
+	detach();
+	xmin = bx.min(); xlen = bx.len();
+	v = alloc.fetch( size() ) - index(xmin);
+	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
+    }
+
+// Check to see if this Mat2<T> is of size x by y.
+
+    bool conformal( int x ) const
+    {
+	return xmin == 0 && x == xlen;
+    }
+
+// Obtain dimensions of this Mat2<T>.
+
+    void elements( int& nx_ ) const { nx_ = nx(); }
+};
 
 //===========================================================================//
 // class Mat2 - A 2-d container.
@@ -247,15 +487,37 @@ class Mat1 {
 
 template< class T, class Allocator = Simple_Allocator<T> >
 class Mat2 {
-    int xmin, xmax, ymin, ymax;
+  private:
+    int xmin, xlen, ymin, ylen;
     bool may_free_space;
 
-    void check( int i ) const { Assert( i >= 0 && i < xmax*ymax ); }
+    int xmax() const { return xmin + xlen - 1; }
+    int ymax() const { return ymin + ylen - 1; }
 
-    void check( int i, int j ) const
+// Compute the offset into the data array, of the i,j th element.
+    int index( int i, int j ) const
     {
-	Assert( i >= xmin && i < xmax );
-	Assert( j >= ymin && j < ymax );
+	Assert( i >= xmin );
+	Assert( i < xmin + xlen );
+	Assert( j >= ymin );
+	Assert( j < ymin + ylen );
+
+	return xlen * j + i;
+    }
+
+// Make sure a bare integer index is within the appropriate range.
+    void check( int i )
+    {
+	Assert( i >= index( xmin, ymin ) );
+	Assert( i <= index( xmax, ymax ) );
+    }
+
+    void detach()
+    {
+	if (may_free_space) {
+	    std::destroy( begin(), end() );
+	    alloc.release( v +index(xmin,ymin), size() );
+	}
     }
 
   protected:
@@ -266,67 +528,83 @@ class Mat2 {
     const T& operator[]( int i ) const { check(i); return v[i]; }
 
   public:
-    typedef Allocator::iterator iterator;
-    typedef Allocator::const_iterator const_iterator;
+    typedef typename Allocator::iterator iterator;
+    typedef typename Allocator::const_iterator const_iterator;
+
+// Accessors
+
+    T&       operator()( int i, int j )       { return v[ index(i,j) ]; }
+    const T& operator()( int i, int j ) const { return v[ index(i,j) ]; }
+
+    iterator       begin()       { return v + index(xmin,ymin); }
+    const_iterator begin() const { return v + index(xmin,ymin); }
+
+    iterator       end()         { return v + index(xmax(),ymax()) + 1; }
+    const_iterator end() const   { return v + index(xmax(),ymax()) + 1; }
+
+    int nx() const { return xlen; }
+    int ny() const { return ylen; }
+    int size() const { return nx() * ny(); }
 
 // Constructors
 
-// WARNING: Not set up for offset bounds yet...
-
     Mat2()
-	: xmin(0), xmax(0), ymin(0), ymax(0),
+	: xmin(0), xlen(0), ymin(0), ylen(0),
 	  may_free_space(false), v(0)
     {}
 
-    Mat2( int _xmax, int _ymax, const T& t = T() )
-	: xmin(0), xmax(_xmax),
-	  ymin(0), ymax(_ymax),
+    Mat2( int xmax_, int ymax_, const T& t = T() )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
 	  may_free_space(true),
-	  v( alloc.fetch( nx()*ny() ) )
+	  v( alloc.fetch( size() ) - index(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
-    
-    Mat2( const Mat2<T>& m )
-	: xmin(m.xmin), xmax(m.xmax),
-	  ymin(m.ymin), ymax(m.ymax),
-	  may_free_space(true),
-	  v( alloc.fetch( nx()*ny() ) )
-    {
-	std::copy( m.begin(), m.end(), v );
-    }
 
-    Mat2( T *vv, int xmx, int ymx )
-	: xmin(0), xmax(xmx),
-	  ymin(0), ymax(ymx),
+    Mat2( T *vv, int xmax_, int ymax_ )
+	: xmin(0), xlen(xmax_),
+	  ymin(0), ylen(ymax_),
 	  may_free_space(false), v(vv)
     {}
 
-//     Mat1( T *vv, int x ) : xmin(0), xmax(x), may_free_space(false), v(vv) {}
+    Mat2( const Bounds& bx, const Bounds& by, const T& t = T() )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - index(xmin,ymin) )
+    {
+	std::uninitialized_fill( begin(), end(), t );
+    }
 
-//     Mat1( const Bounds& b )
-// 	: xmin( b.min() ), xmax( b.max() + 1 ),
-// 	  may_free_space(true),
-// 	  v( alloc.fetch(xmax-xmin) - xmin )
-//     {}
+    Mat2( T *vv, const Bounds& bx, const Bounds& by )
+	: xmin( bx.min() ), xlen( bx.len() ),
+	  ymin( by.min() ), ylen( by.len() ),
+	  may_free_space(true),
+	  v( vv - index(xmin,ymin) )
+    {}
+
+    Mat2( const Mat2<T>& m )
+	: xmin(m.xmin), xlen(m.xlen),
+	  ymin(m.ymin), ylen(m.ylen),
+	  may_free_space(true),
+	  v( alloc.fetch( size() ) - index(xmin,ymin) )
+    {
+	std::uninitialized_copy( m.begin(), m.end(), begin() );
+    }
 
 // Destructor
 
     ~Mat2()
     {
-	if (may_free_space) {
-	    std::destroy( begin(), end() );
-	    alloc.release( v, nx()*ny() );
-	}
+	detach();
     }
 
 // Assignment operators
 
     Mat2& operator=( const T& t )
     {
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] = t;
-
+	std::fill( begin(), end(), t )
 	return *this;
     }
 
@@ -334,44 +612,31 @@ class Mat2 {
     {
 	if (this == &m) return *this;
 
-	if ( m.xmin != xmin || m.xmax != xmax ||
-	     m.ymin != ymin || m.ymax != ymax ) {
-	    if (may_free_space) {
-		std::destroy( begin(), end() );
-		alloc.release( v, xmax*ymax );
-	    }
+	if ( m.xmin != xmin || m.xlen != xlen ||
+	     m.ymin != ymin || m.ylen != ylen ) {
+	    detach();
 	    xmin = m.xmin;
-	    xmax = m.xmax;
+	    xlen = m.xlen;
 	    ymin = m.ymin;
-	    ymax = m.ymax;
-	    v = alloc.fetch( xmax*ymax );
+	    ylen = m.ylen;
+	    v = alloc.fetch( size() ) - index(xmin,ymin);
+	    std::uninitialized_copy( m.begin(), m.end(), begin() );
+	    may_free_space = true;
 	}
-
-	std::copy( m.begin(), m.end(), v );
+	else {
+	    if (v)
+		std::copy( m.begin(), m.end(), begin() );
+	}
 
 	return *this;
     }
-
-// Accessors
-
-    T& operator()( int i, int j ) { check(i,j); return v[xmax*j+i]; }
-    const T& operator()( int i, int j ) const { check(i,j); return v[xmax*j+i]; }
-
-    iterator begin() { return v; }
-    const_iterator begin() const { return v; }
-
-    iterator end() { return v + xmax*ymax; }
-    const_iterator end() const { return v + xmax*ymax; }
-
-    int nx() const { return xmax - xmin; }
-    int ny() const { return ymax - ymin; }
 
 // Mathematical support
 
     template<class X> Mat2& operator+=( const X& x )
     {
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] += x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ += x;
 	return *this;
     }
     Mat2& operator+=( const Mat2<T>& m )
@@ -380,59 +645,59 @@ class Mat2 {
 	Assert( xmax == m.xmax );
 	Assert( ymin == m.ymin );
 	Assert( ymax == m.ymax );
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] += m.v[i];
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ += *j++;
 	return *this;
     }
 
     template<class X> Mat2& operator-=( const X& x )
     {
-	for( int i-0; i < xmax*ymax; i++ )
-	    v[i] -= x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ -= x;
 	return *this;
     }
     Mat2& operator-=( const Mat2<T>& m )
     {
 	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
+	Assert( xlen == m.xlen );
 	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] -= m.v[i];
+	Assert( ylen == m.ylen );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ -= *j++;
 	return *this;
     }
 
     template<class X> Mat2& operator*=( const X& x )
     {
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] *= x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ *= x;
 	return *this;
     }
     Mat2& operator*=( const Mat2<T>& m )
     {
 	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
+	Assert( xlen == m.xlen );
 	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] *= m.v[i];
+	Assert( ylen == m.ylen );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ *= *j++;
 	return *this;
     }
 
     template<class X> Mat2& operator/=( const X& x )
     {
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] /= x;
+	for( iterator i = begin(); i != end(); )
+	    *i++ /= x;
 	return *this;
     }
     Mat2& operator/=( const Mat2<T>& m )
     {
 	Assert( xmin == m.xmin );
-	Assert( xmax == m.xmax );
+	Assert( xlen == m.xlen );
 	Assert( ymin == m.ymin );
-	Assert( ymax == m.ymax );
-	for( int i=0; i < xmax*ymax; i++ )
-	    v[i] /= m.v[i];
+	Assert( ylen == m.ylen );
+	for( iterator i = begin(), j = m.begin(); i != end(); )
+	    *i++ /= *j++;
 	return *this;
     }
 
@@ -440,7 +705,7 @@ class Mat2 {
 
     void redim( int nxmax, int nymax, const T& t = T() )
     {
-    // This one only works right if xmin == 0.
+    // This one only works right if xmin == 0 and ymin == 0.
 	Assert( xmin == 0 );
 	Assert( ymin == 0 );
 	if (v && !may_free_space) {
@@ -449,26 +714,42 @@ class Mat2 {
 	    ymax = nymax;
 	    return;
 	}
-	if (v) {
-	    std::destroy( begin(), end() );
-	    alloc.release( begin(), nx()*ny() );
-	}
-	xmax = nxmax;
-	ymax = nymax;
-	v = alloc.fetch( nx()*ny() );
-	may_free_space = true;
+	detach();
+	xlen = nxmax;
+	ylen = nymax;
+	v = alloc.fetch( size() ) - index(0,0);
 	std::uninitialized_fill( begin(), end(), t );
+	may_free_space = true;
     }
 
-// WARNING: This doesn't make a lot of sense anymore.
+    void redim( const Bounds& bx, const Bounds& by, const T& t = T() )
+    {
+	if (v && !may_free_space) {
+	// Respecify the aliased region.
+	    v += index(xmin,ymin);
+	    xmin = bx.min(); xlen = bx.len();
+	    ymin = by.min(); ylen = by.len();
+	    v -= index(xmin,ymin);
+	    return;
+	}
+	detach();
+	xmin = bx.min(); xlen = bx.len();
+	ymin = by.min(); ylen = by.len();
+	v = alloc.fetch( size() ) - index(xmin,ymin);
+	may_free_space = true;
+    }
 
 // Check to see if this Mat2<T> is of size x by y.
 
-    bool conformal( int x, int y ) const { return x == xmax && y == ymax; }
+    bool conformal( int x, int y ) const
+    {
+	return xmin == 0 && x == xlen &&
+	    ymin == 0 && y == ylen;
+    }
 
 // Obtain dimensions of this Mat2<T>.
 
-    void elements( int& nx, int& ny ) const { nx = xmax; ny = ymax; }
+    void elements( int& nx_, int& ny_ ) const { nx_ = nx(); ny_ = ny(); }
 };
 
 //===========================================================================//
@@ -498,8 +779,8 @@ class Mat3 {
     const T& operator[]( int i ) const { check(i); return v[i]; }
 
   public:
-    typedef Allocator::iterator iterator;
-    typedef Allocator::const_iterator const_iterator;
+    typedef typename Allocator::iterator iterator;
+    typedef typename Allocator::const_iterator const_iterator;
 
 // Constructors
 
@@ -762,6 +1043,12 @@ class Mat3 {
     }
 
 };
+
+#ifdef TEST_MAT
+#undef class
+#undef private
+#undef protected
+#endif
 
 #endif                          // __ds_Mat_hh__
 

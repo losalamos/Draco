@@ -15,6 +15,7 @@ class Bounds {
     explicit Bounds( int a_, int b_ ) : a(a_), b(b_) {}
     int min() const { return a; }
     int max() const { return b; }
+    int len() const { return b - a + 1; }
 };
 
 #endif                          // __ds_Bounds_hh__
