@@ -144,12 +144,12 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     // check for blanks in names
     for (int i = 0; i < nens_vdata; i++)
     {
-	string test = ens_vdata_names[i];
+	std_string test = ens_vdata_names[i];
 	
 	if (test.size() == 0 || test.size() > 19)
 	    Insist (0, "Variable name inappropriately sized!");
 
-	if (test.find(' ') != string::npos) 
+	if (test.find(' ') != std_string::npos) 
 	    Insist (0, "Spaces found in the vertex data name!");
 
 	for (int j = i+1; j < nens_vdata; j++)
@@ -158,12 +158,12 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     }
     for (int i = 0; i < nens_cdata; i++)
     {
-	string test = ens_cdata_names[i];
+	std_string test = ens_cdata_names[i];
 	
 	if (test.size() == 0 || test.size() > 19)
 	    Insist (0, "Variable name inappropriately sized!");
 
-	if (test.find(' ') != string::npos) 
+	if (test.find(' ') != std_string::npos) 
 	    Insist (0, "Spaces found in the cell data name!");
 
 	for (int j = i+1; j < nens_cdata; j++)
@@ -292,8 +292,8 @@ void Ensight_Translator::ensight_dump(int icycle,
     // Check sizes of all data.
     Require (iel_type.size() == ncells);
     Require (cell_rgn_index.size() == ncells);
-    Require (ens_cell_data.nrows() == ncells);
-    Require (ens_vrtx_data.nrows() == npoints);
+    Require (ens_cell_data.nrows() == ncells  || ens_cell_data.nrows() == 0);
+    Require (ens_vrtx_data.nrows() == npoints || ens_vrtx_data.nrows() == 0);
     Require (rgn_numbers.size() == nrgn);
 
     // create ensight postfix indicators
@@ -422,11 +422,13 @@ void Ensight_Translator::ensight_dump(int icycle,
 		 part_names, index_cell, ptr_index_cell);
 
     // write the vertex data
-    ensight_vrtx_data(ens_postfix, ens_vrtx_data);
+    if (ens_vrtx_data.nrows() > 0)
+	ensight_vrtx_data(ens_postfix, ens_vrtx_data);
 
     // write out the cell data
-    ensight_cell_data(ens_postfix, ens_cell_data, index_cell,
-		      ptr_index_cell, part_names); 
+    if (ens_cell_data.nrows() > 0)
+	ensight_cell_data(ens_postfix, ens_cell_data, index_cell,
+			  ptr_index_cell, part_names); 
 }
 
 //---------------------------------------------------------------------------//
@@ -450,6 +452,7 @@ Ensight_Translator::ensight_geom(const std_string &ens_postfix,
     using std::setw;
     using std::ios;
     using std::endl;
+    using std::string;
 
     Require (ipar.nrows() == index_cell.size());
 
@@ -556,6 +559,7 @@ template<class FVF> void Ensight_Translator::ensight_vrtx_data
     using std::endl;
     using std::ios;
     using std::setw;
+    using std::string;
 
     // loop over all vertex data fields and write out data for each field
     for (int nvd = 0; nvd < ens_vrtx_data.ncols(0); nvd++)
@@ -610,6 +614,7 @@ template<class FVF> void Ensight_Translator::ensight_cell_data
     using std::endl;
     using std::ios;
     using std::setw;
+    using std::string;
 
     // loop over all vertex data fields and write out data for each field
     for (int ncd = 0; ncd < ens_cell_data.ncols(0); ncd++)
