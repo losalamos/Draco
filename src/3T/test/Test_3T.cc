@@ -62,6 +62,16 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
 	}
 }
 
+//---------------------------------------------------------------------------//
+// Clean up after the run is done.
+//---------------------------------------------------------------------------//
+
+template<class MT, class Problem>
+Test_3T<MT, Problem>::~Test_3T()
+{
+    if (node == 0)
+	delete adf;
+}
 
 //---------------------------------------------------------------------------//
 // Run the simulation.  Contains t=0 setup, timestep cycling, and error

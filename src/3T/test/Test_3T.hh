@@ -49,6 +49,7 @@ class Test_3T : public Test_Prob,
 
     Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
 	     const typename Problem::params& p, const pcg_DB& pcg_db_ );
+    ~Test_3T();
 
     void run();
 
