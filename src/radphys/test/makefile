@@ -8,22 +8,12 @@
 
 SRC_TOP = ../..
 
-need_linalg     := no
-need_c4		:= no
-need_namelist	:= no
-need_spdf	:= no
-need_util	:= no
-need_pooma	:= no
-need_mesh	:= no
 need_units	:= yes
-# need_radphys	:= yes
+need_radphys	:= yes
 
 # Go get the standard includeable makefile for Draco components.
 
 include ../../config/makefile
-
-# turn on full debugging
-CXXFLAGS += -DDBC=7
 
 srcs	= \
 	testRadPhys.cc \
@@ -44,13 +34,13 @@ objs	= $(srcs:%.cc=$(env)/%.o) \
 default: main_$(env)
 
 main_$(env) : deps $(objs) \
-	$(dep_libunits) $(dep_libradphys) $(dep_libds++)
+	$(dep_libradphys) $(dep_libunits) $(dep_libds++)
 	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
 
 deps:
 ifneq ($(dodeps),no)
-	(cd ../../units;   $(MAKE) $(subnj))
-	# (cd ../../radphys;   $(MAKE) $(subnj))
+	(cd ../../units;     $(MAKE) $(subnj))
+	(cd ../../radphys;   $(MAKE) $(subnj) dodeps=no)
 endif
 
 # $(dep_libradphys):
