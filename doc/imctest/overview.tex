@@ -22,3 +22,40 @@ The underlying principle of \draco\ is the development of transport
 libraries which are parameterized on mesh-types (MT).  In \cpp\ this
 means defining class templates which may be parameterized on (nearly)
 any MT.  \imctest\ follows this organizational principle. 
+
+The classes used in \imctest\ can be divided into four major modules:
+\mle{Builder}, \mle{Interface}, \mle{Transport}, and \mle{Global}.  In
+reality, \mle{Global} is not a class module; instead, it is a
+namespace, \comp{IMC::Global}, that holds inline, non-member,
+templated, service functions.  It also contains fundamental and
+physical constants.  The classes contained in each module are
+exhibited in Table~\ref{tab:classes}.
+\begin{table}
+  \begin{center}
+    \caption{Module composition in \imctest.}
+    \label{tab:classes}
+    \begin{tabular}{llll} \hline\hline
+      \multicolumn{4}{c}{Modules} \\
+      \multicolumn{1}{c}{\mle{Interface}} & \multicolumn{1}{c}{\mle{Builder}} 
+      & \multicolumn{1}{c}{\mle{Transport}} & \multicolumn{1}{c}{\mle{Global}}
+      \\ \hline\hline
+      \comp{OS\_Interface} & \comp{OS\_Builder} & \comp{OS\_Mesh} &
+      Constants.hh \\
+      & \comp{Opacity\_Builder\tlate{MT}} & \comp{Coord\_sys} & Math.hh \\
+      & \comp{Source\_Init\tlate{MT}} & \comp{Layout} & \\
+      & \comp{Parallel\_Builder\tlate{MT}} & \comp{Source\tlate{MT}} & \\
+      & & \comp{Opacity\tlate{MT}} &\\
+      & & \comp{Mat\_State\tlate{MT}} & \\
+      & & \comp{Particle\tlate{MT}} & \\
+      & & \comp{Random} & \\
+      & & \comp{Tally\tlate{MT}} & \\ \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+The files listed in Table~\ref{tab:classes} compose the \imctest\ 
+library.  The \imctest\ library is built under \draco\.  \imctest\ 
+also provides an execution class, \comp{IMC\_run}, that utilizes the
+modules in the \imctest\ library and creates an \imctest\ stand-alone
+executable.
+
