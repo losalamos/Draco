@@ -9,12 +9,12 @@
 \newcommand{\Cvs}{\ensuremath{C_{v}^{*}}}
 \newcommand{\cvsOdt}{\ensuremath{\frac{\Cvs}{\dt}}}
 \newcommand{\Bg}{\ensuremath{\hat{B}_{g}}}
-\newcommand{\Bn}{\ensuremath{\hat{B}^{n}}}
-\newcommand{\pBndT}{\ensuremath{\frac{\partial\Bn}{\partial T}}}
-\newcommand{\Bgn}{\ensuremath{\hat{B}_{g}^{n}}}
-\newcommand{\pBgndT}{\ensuremath{\frac{\partial\Bgn}{\partial T}}}
-\newcommand{\Bkn}{\ensuremath{\hat{B}_{k}^{n}}}
-\newcommand{\pBkndT}{\ensuremath{\frac{\partial\Bkn}{\partial T}}}
+\newcommand{\Bnphlf}{\ensuremath{\hat{B}^{n+\frac{1}{2}}}}
+\newcommand{\pBnphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\Bgnphlf}{\ensuremath{\hat{B}_{g}^{n+\frac{1}{2}}}}
+\newcommand{\pBgnphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
+\newcommand{\Bknphlf}{\ensuremath{\hat{B}_{k}^{n+\frac{1}{2}}}}
+\newcommand{\pBknphlfdT}{\ensuremath{\frac{\partial\hat{B}}{\partial T}^{n+\frac{1}{2}}}}
 \newcommand{\units}[1]{\ensuremath{[\mbox{#1}]}}
 \newcommand{\bfunc}{\ensuremath{f_{b}}}
 \newcommand{\tensor}[1]{\ensuremath{\stackrel{\leftrightarrow}{#1}}}
@@ -44,46 +44,63 @@ The differential equation governing the ion temperature is
 \end{equation}
 This equation will be solved using time-splitting, into two equations,
 \begin{equation}
-        C_{vi} \partl{T_{i}}{t} = \gamma (T_{e}-T_{i}) + Q_{i}
-\label{eq:couple_Ti}
+        C_{vi} \partl{T_{i}}{t} = \del \cdot \kappa_{i} \del T_{i}
+\label{eq:conduction_Ti}
 \end{equation}
 and
 \begin{equation}
-        C_{vi} \partl{T_{i}}{t} = \del \cdot \kappa_{i} \del T_{i}
-\label{eq:conduction_Ti}
+        C_{vi} \partl{T_{i}}{t} = \gamma (T_{e}-T_{i}) + Q_{i}
+\label{eq:couple_Ti}
 \end{equation}
 that will be solved separately.
 The first of these equations will be solved along with a corresponding
 electron temperature equation, and the radiation equations.
 The second equation will be solved after these equations.
 
+\subsection{Conduction Equation}
+
+Implicitly differencing equation~(\ref{eq:conduction_Ti})
+we obtain
+\begin{equation}
+  \boxed{
+     - \del \cdot \kappa_{i} \del T_{i}^{n+\frac{1}{2}}
+     + \frac{C_{vi}}{\Delta t} T_{i}^{n+\frac{1}{2}}
+           = \frac{C_{vi}}{\Delta t} T_{i}^{n}
+  }
+\label{eq:conduction_Ti_tdiff}  
+\end{equation}
+In the above equation the time split is indicated by solving at the
+intermediate $n+\frac{1}{2}$ time from the $n$ time solution.
+
 \subsection{Coupled Electron Equation}
 
 Implicitly time-differencing equation~(\ref{eq:couple_Ti}) we obtain
 \begin{equation}
-        \cviOdt ( T_{i}^{n+1}-T_{i}^{n}) =
+        \cviOdt ( T_{i}^{n+1}-T_{i}^{n+\frac{1}{2}}) =
                  \gamma (T_{e}^{n+1}-T_{i}^{n+1}) + Q_{i}
 \end{equation}
 We will be arranging this equation to obtain the time difference of
 the ion temperature, $\Delta T_{i}^{n+1}$,
 where $\Delta T^{n+1}$ is defined for both ions and electrons by:
 \begin{equation}
-        \Delta T^{n+1} \equiv T^{n+1} - T^{n}
+   \boxed{
+        \Delta T^{n+1} \equiv T^{n+1} - T^{n+\frac{1}{2}}
+   }
 \end{equation}
 
 \begin{equation}
         T_{i}^{n+1}\left\{ \cviOdt + \gamma \right\} =
-                \cviOdt T_{i}^{n} + \gamma T_{e}^{n+1} + Q_{i}
+                \cviOdt T_{i}^{n+\frac{1}{2}} + \gamma T_{e}^{n+1} + Q_{i}
 \end{equation}
 \begin{equation}
         \Delta T_{i}^{n+1} = \frac{ \left( \cviOdt - \cviOdt - \gamma 
-                                        \right) T_{i}^{n}
+                                        \right) T_{i}^{n+\frac{1}{2}}
                          + \gamma T_{e}^{n+1} + Q_{i} }
                 {(\cviOdt + \gamma)}
 \end{equation}
 \begin{equation}
    \boxed{
-        \Delta T_{i}^{n+1} = \frac{ \gamma ( T_{e}^{n} - T_{i}^{n} )
+        \Delta T_{i}^{n+1} = \frac{ \gamma ( T_{e}^{n+\frac{1}{2}} - T_{i}^{n+\frac{1}{2}} )
                                 + \gamma \Delta T_{e}^{n+1} + Q_{i} }
                 {(\cviOdt + \gamma)}
          }
@@ -95,16 +112,16 @@ given the change in electron temperatures, $\Delta T_{e}^{n+1}$.
 We now will rearrange the equation in order that we may substitute the
 ion temperature equation into the electron temperature equation.
 \begin{eqnarray}
-        \Delta T_{i}^{n+1} &=& \frac{ \gamma ( T_{e}^{n+1} - T_{i}^{n} )
+        \Delta T_{i}^{n+1} &=& \frac{ \gamma ( T_{e}^{n+1} - T_{i}^{n+\frac{1}{2}} )
                                 + Q_{i} }{(\cviOdt + \gamma)} 
                 \\
                            &=& \frac{ \dt \gamma
-                                         ( T_{e}^{n+1} - T_{i}^{n} )
+                                         ( T_{e}^{n+1} - T_{i}^{n+\frac{1}{2}} )
                                 + \dt Q_{i} }{(C_{vi} + \dt \gamma)}
 \end{eqnarray}
 \begin{equation}
         \gamma (T_{i}^{n+1}-T_{e}^{n+1}) =
-                \gamma \left\{ \frac{\cviOdt T_{i}^{n} + \gamma T_{e}^{n+1}
+                \gamma \left\{ \frac{\cviOdt T_{i}^{n+\frac{1}{2}} + \gamma T_{e}^{n+1}
                                 + Q_{i} - (\cviOdt + \gamma) T_{e}^{n+1}}
                                 {(\cviOdt + \gamma)} \right\}
 \end{equation}
@@ -113,7 +130,7 @@ ion temperature equation into the electron temperature equation.
    \begin{split}
         \gamma (T_{i}^{n+1}-T_{e}^{n+1}) =
                 \left(\frac{\gamma\dt}{C_{vi} + \gamma \dt} \right)
-                &  \left\{\cviOdt(T_{i}^{n} - T_{e}^{n}) \right.
+                &  \left\{\cviOdt(T_{i}^{n+\frac{1}{2}} - T_{e}^{n+\frac{1}{2}}) \right.
         \\
                 & \left.
                         - \cviOdt \Delta T_{e}^{n+1}
@@ -122,21 +139,6 @@ ion temperature equation into the electron temperature equation.
    }
 \label{eq:Ti}
 \end{equation}
-
-\subsection{Conduction Equation}
-
-Implicitly differencing equation~(\ref{eq:conduction_Ti})
-we obtain
-\begin{equation}
-  \boxed{
-     - \del \cdot \kappa_{i} \del T^{n+\frac{3}{2}}_{i}
-     + \frac{C_{vi}}{\Delta t} T^{n+\frac{3}{2}}_{i}
-           = \frac{C_{vi}}{\Delta t} T^{n+1}_{i}
-  }
-\label{eq:conduction_Ti_tdiff}  
-\end{equation}
-In the above equation the time split is indicated by solving at the
-$n+\frac{3}{2}$ time from the intermediate $n+1$ time solution.
 
 \section{Electron Temperature Equation}
 
@@ -160,17 +162,17 @@ As for the ion equation we split the electron temperature into two
 equations,
 \begin{equation}
         C_{ve} \partl{T_{e}}{t} = 
+                \del \cdot \kappa_{e} \del T_{e}
+\label{eq:conduction_Te}
+\end{equation}
+and
+\begin{equation}
+        C_{ve} \partl{T_{e}}{t} = 
                 \sum_{g} \left(
                         \sigma_{g}^{a} \phi_{g} - \tilde{\xi}_{g}
                         - \sigma_{g}^{e} \Bg(T_{e}) \right)
                         + \gamma (T_{i} - T_{e}) + Q_{e}
 \label{eq:couple_Te}
-\end{equation}
-and
-\begin{equation}
-        C_{ve} \partl{T_{e}}{t} = 
-                \del \cdot \kappa_{e} \del T_{e}
-\label{eq:conduction_Te}
 \end{equation}
 that will be solved separately.
 The first of these equations will be solved along with a radiation
@@ -178,21 +180,36 @@ equations and corresponding
 ion temperature equation.
 The second equation will be solved after these equations.
 
+\subsection{Conduction Equation}
+
+Implicitly differencing equation~(\ref{eq:conduction_Te})
+we obtain
+\begin{equation}
+  \boxed{
+     - \del \cdot \kappa_{e} \del T_{e}^{n+\frac{1}{2}}
+     + \frac{C_{ve}}{\Delta t} T_{e}^{n+\frac{1}{2}}
+           = \frac{C_{ve}}{\Delta t} T_{e}^{n}
+   }
+\label{eq:conduction_Te_tdiff}  
+\end{equation}
+In the above equation the time split is indicated by solving at the
+intermediate $n+\frac{1}{2}$ time from the $n$ time solution.
+
 \subsection{Coupled Ion and Radiation Equation}
 
 We implicitly time-difference equation~(\ref{eq:couple_Te}),
 expanding the Planck function,
 $\Bg(T_{e})$ in a Taylor expansion
 \begin{equation}
-        \Bg(T_{e}^{n+1}) \approx \Bg(T_{e}^{n})
-                 + \Delta T_{e}^{n+1} \partl{\Bg}{T}(T_{e}^{n})
+        \Bg(T_{e}^{n+1}) \approx \Bg(T_{e}^{n+\frac{1}{2}})
+                 + \Delta T_{e}^{n+1} \partl{\Bg}{T}(T_{e}^{n+\frac{1}{2}})
 \end{equation}
 \begin{eqnarray}
         \cveOdt \Delta T_{e}^{n+1} &=&
                 \sum_{g} \left(
                         \sigma_{g}^{a} \phi_{g}^{n+1} - \tilde{\xi}_{g}^{n}
-                        - \sigma_{g}^{e} \Bgn
-                        - \sigma_{g}^{e} \pBgndT \Delta T_{e}^{n+1} 
+                        - \sigma_{g}^{e} \Bgnphlf
+                        - \sigma_{g}^{e} \Delta T_{e}^{n+1} \pBgnphlfdT 
                         \right) \nonumber \\
                 & & \mbox{} + \gamma (T_{i}^{n+1} - T_{e}^{n+1}) + Q_{e}
 \label{eq:Te}
@@ -217,13 +234,13 @@ By substituting from (\ref{eq:Ti}) into (\ref{eq:Te}), we get
         \cveOdt \Delta T_{e}^{n+1} =
                 \sum_{g} \left(
                         \sigma_{g}^{a} \phi_{g}^{n+1} - \tilde{\xi}_{g}^{n}
-                        - \sigma_{g}^{e} \Bgn
-                        - \sigma_{g}^{e} \pBgndT \Delta T_{e}^{n+1} 
+                        - \sigma_{g}^{e} \Bgnphlf
+                        - \sigma_{g}^{e} \Delta T_{e}^{n+1} \pBgnphlfdT 
                         \right)
         \\
                          + \left(\frac{\gamma\dt}{C_{vi} + 
                                         \gamma \dt} \right)
-                        \left\{\cviOdt(T_{i}^{n}-T_{e}^{n})
+                        \left\{\cviOdt(T_{i}^{n+\frac{1}{2}}-T_{e}^{n+\frac{1}{2}})
                                  - \cviOdt \Delta T_{e}^{n+1}
                         + Q_{i} \right\}
                         + Q_{e}
@@ -231,13 +248,13 @@ By substituting from (\ref{eq:Ti}) into (\ref{eq:Te}), we get
 \begin{multline}
         \Delta T_{e}^{n+1} \left\{ \cveOdt +
                 \frac{\gamma C_{vi}}{C_{vi} + \gamma \dt } +
-                \sum_{g} \sigma_{g}^{e} \pBgndT \right\} =
+                \sum_{g} \sigma_{g}^{e} \pBgnphlfdT \right\} =
                    \sum_{g} \left( \sigma_{g}^{a} \phi_{g}^{n+1} - 
-                        \tilde{\xi}_{g}^{n} - \sigma_{g}^{e} \Bgn \right)
+                        \tilde{\xi}_{g}^{n} - \sigma_{g}^{e} \Bgnphlf \right)
         \\
                   +  \left(\frac{\gamma\dt}{C_{vi} + 
                                         \gamma \dt} \right)
-                        \left\{\cviOdt(T_{i}^{n}-T_{e}^{n}) + Q_{i} \right\}
+                        \left\{\cviOdt(T_{i}^{n+\frac{1}{2}}-T_{e}^{n+\frac{1}{2}}) + Q_{i} \right\}
                          + Q_{e}
 \end{multline}
 
@@ -245,9 +262,9 @@ By substituting from (\ref{eq:Ti}) into (\ref{eq:Te}), we get
    \boxed{
         \Delta T_{e}^{n+1} =
                 \frac{\sum_{g} \left( \sigma_{g}^{a} \phi_{g}^{n+1} 
-                         - \sigma_{g}^{e} \Bgn \right)
+                         - \sigma_{g}^{e} \Bgnphlf \right)
                          + Q_{e}^{*}}
-                {\cvsOdt + \sum_{g} \sigma_{g}^{e} \pBgndT}
+                {\cvsOdt + \sum_{g} \sigma_{g}^{e} \pBgnphlfdT}
          }
 \label{eq:Tenp1}
 \end{equation}
@@ -256,26 +273,11 @@ where,
         \Cvs = C_{ve} + C_{vi} \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right)
 \end{equation}
 \begin{equation}
-        Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n} - T_{e}^{n}) +
+        Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n+\frac{1}{2}} - T_{e}^{n+\frac{1}{2}}) +
                                 Q_{i} \right\}
                 \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
                 \sum_{g} \tilde{\xi}_{g}^{n}
 \end{equation}
-
-\subsection{Conduction Equation}
-
-Implicitly differencing equation~(\ref{eq:conduction_Te})
-we obtain
-\begin{equation}
-  \boxed{
-     - \del \cdot \kappa_{e} \del T^{n+\frac{3}{2}}_{e}
-     + \frac{C_{ve}}{\Delta t} T^{n+\frac{3}{2}}_{e}
-           = \frac{C_{ve}}{\Delta t} T^{n+1}_{e}
-   }
-\label{eq:conduction_Te_tdiff}  
-\end{equation}
-In the above equation the time split is indicated by solving at the
-$n+\frac{3}{2}$ time from the intermediate $n+1$ time solution.
 
 \section{The Radiation Transport Equation}
 
@@ -309,7 +311,7 @@ Implicitly time-differencing this equation we obtain
   \nonumber \\
     & & \mbox{}
         + \frac{1}{4\pi} \sigma^{e}_{g} 
-                \left(\Bgn + \pBgndT \Delta T_{e}^{n+1} \right)
+                \left(\Bgnphlf + \Delta T_{e}^{n+1} \pBgnphlfdT \right)
 \label{eq:RadEq1}
 \end{eqnarray}
 We have introduced $\tau$,
@@ -327,12 +329,12 @@ Substituting (\ref{eq:Tenp1}) into (\ref{eq:RadEq1}) we get,
         + \frac{1}{4\pi} \left(
                 \sigma^{s}_{g} \phi^{n+1}_{g}
                 + \xi_{g}^{n}
-                + \sigma^{e}_{g} \Bgn \right)
+                + \sigma^{e}_{g} \Bgnphlf \right)
         \\
-        + \frac{1}{4\pi} \sigma^{e}_{g} \pBgndT
+        + \frac{1}{4\pi} \sigma^{e}_{g} \pBgnphlfdT
                 \left\{ \frac{\sum_{k} (\sigma_{k}^{a}\phi_{k}^{n+1} 
-                                        - \sigma_{k}^{e}\Bkn) + Q_{e}^{*}}
-                             {\frac{\Cvs}{\dt} + \sum_{k} \sigma_{k}^{e}\pBkndT}
+                                        - \sigma_{k}^{e}\Bknphlf) + Q_{e}^{*}}
+                             {\frac{\Cvs}{\dt} + \sum_{k} \sigma_{k}^{e}\pBknphlfdT}
                 \right\}
 \label{eq:RadEqMG}
 \end{multline}
@@ -356,16 +358,16 @@ We then sum (\ref{eq:RadEqMG}) over groups to obtain:
         &=& \tau \psi^{n}
         + \frac{1}{4\pi} \left( \sigma^{s} \phi^{n+1}
                         + \xi^{n}
-                        + \sigma^{e} \Bn \right)
+                        + \sigma^{e} \Bnphlf \right)
         \nonumber \\
         & & \mbox{}
         + \frac{1}{4\pi} \nu \left( \sigma^{a}\phi^{n+1}
-                                        - \sigma^{e}\Bn + Q_{e}^{*}\right)
+                                        - \sigma^{e}\Bnphlf + Q_{e}^{*}\right)
 \label{eq:RadEqGrey}
 \end{eqnarray}
 where
 \begin{equation}
-        \nu = \frac{\sigma^{e} \pBndT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBndT}
+        \nu = \frac{\sigma^{e} \pBnphlfdT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBnphlfdT}
 \end{equation}
 
 \subsection{Grey Diffusion Equation}
@@ -383,10 +385,10 @@ we obtain:
 \del \cdot \vec{F}^{n+1} + (\sigma^{t} + \tau) \phi^{n+1}
         &=& \sigma^{s}\phi^{n+1} + \tau \phi^{n}
         + \langle \xi^{n} \rangle
-        + \sigma^{e} \Bn 
+        + \sigma^{e} \Bnphlf 
         \nonumber \\
         & & \mbox{}
-        + \nu (\sigma^{a}\phi^{n+1} - \sigma^{e}\Bn + Q_{e}^{*})
+        + \nu (\sigma^{a}\phi^{n+1} - \sigma^{e}\Bnphlf + Q_{e}^{*})
 \end{eqnarray}
 From (\ref{eq:xi}) we can determine $\langle \xi^{n} \rangle$
 \begin{eqnarray}
@@ -407,7 +409,7 @@ Rearranging terms:
 \del \cdot \vec{F}^{n+1} + [(1 - \nu) \sigma^{a} + \tau ] \phi^{n+1}
         &=& \tau \phi^{n}
         + \langle \xi^{n} \rangle
-        + (1 - \nu) \sigma^{e} \Bn  
+        + (1 - \nu) \sigma^{e} \Bnphlf  
         \nonumber \\
         & & \mbox{}
         + \nu Q_{e}^{*}
@@ -466,7 +468,7 @@ where
   \\
         \bar{Q}_{r} =\tau \phi^{n}
                 + \langle \xi^{n} \rangle
-                + (1 - \nu) \sigma^{e} \Bn  + \nu Q_{e}^{*} 
+                + (1 - \nu) \sigma^{e} \Bnphlf  + \nu Q_{e}^{*} 
   \\
         \vec{F}' = \frac{\tau \vec{F}^{n}
                         + \langle \hat{\Omega} \xi^{n} \rangle}
@@ -478,11 +480,11 @@ and
   \\
         \hat{B}(T_{e}) = 4\pi B(T_{e})
   \\
-        \nu = \frac{\sigma^{e} \pBndT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBndT}
+        \nu = \frac{\sigma^{e} \pBnphlfdT } {\frac{\Cvs}{\dt} + \sigma^{e}\pBnphlfdT}
   \\
         \Cvs = C_{ve} + C_{vi} \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right)
   \\
-        Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n} - T_{e}^{n}) +
+        Q_{e}^{*} = Q_{e} + \left\{ \cviOdt (T_{i}^{n+\frac{1}{2}} - T_{e}^{n+\frac{1}{2}}) +
                                 Q_{i} \right\}
                 \left(\frac{\gamma\dt}{C_{vi}+\gamma\dt}\right) -
                 \tilde{\xi}^{n}
@@ -524,28 +526,23 @@ and
 \section{Solution Sequence}
 
 We begin the solution sequence with radiation intensities,
-radiation fluxes, temperatures, velocities,
+radiation fluxes, velocities,
 material properties, and timestep specified at time, $n$.
-With this information all of the quantities specified in
-equations~(\ref{eq:quant_i})~--~(\ref{eq:quant_f}) may be calculated.
+We then solve the conduction
+equations,~(\ref{eq:conduction_Ti_tdiff})~and~(\ref{eq:conduction_Te_tdiff}),
+for the ion and electron temperatures at time $n+\frac{1}{2}$.
 
-With these quantities calculated either equation~(\ref{eq:Diffusion}) is
+With the radiation intensities,
+radiation fluxes, velocities,
+material properties, and timestep specified at time, $n$,
+and the temperatures calculated at time $n+\frac{1}{2}$
+all of the quantities specified in
+equations~(\ref{eq:quant_i})~--~(\ref{eq:quant_f}) may be calculated.
+Then either equation~(\ref{eq:Diffusion}) is
 solved or equations~(\ref{eq:phi2})~and~(\ref{eq:Flux2}) are solved for
 $\phi^{n+1}$ and $\vec{F}^{n+1}$.
 In the case of solving equation~(\ref{eq:Diffusion}) we would use
 equation~(\ref{eq:Flux2}) to obtain $\vec{F}^{n+1}$.
-A crucial output from this equation is the rate of momentum density
-deposited into the material by the radiation,
-c.f.~(\ref{eq:hydromomentum}),
-\begin{equation}
-   {\frac{d\vec{p}}{dt}}^{n+1} = \frac{\sigma^{t}}{c} \vec{F}^{(0)}
-\end{equation}
-where the Lagrangian flux, $\vec{F}^{(0)}$, has been recalculated at the
-new time, $n+1$,
-\begin{equation}
-   \vec{F}^{(0)} = \vec{F}^{n+1} - \frac{4}{3} \phi^{n+1}
-                                                \frac{\vec{v}^{n}}{c}
-\end{equation}
 
 Having solved for $\phi^{n+1}$ we can substitute this
 value into equation~(\ref{eq:Tenp1}) to solve for $T_{e}^{n+1}$.
@@ -555,17 +552,35 @@ Having solved
 for $T_{e}^{n+1}$ we are able to
 solve equation~(\ref{eq:Tinp1}) for $T_{i}^{n+1}$.
 
-Then continuing the solution for the ion and electron temperatures, we solve
-equations~(\ref{eq:conduction_Ti_tdiff})~and~(\ref{eq:conduction_Te_tdiff})
-for $T_{i}^{n+\frac{3}{2}}$ and $T_{e}^{n+\frac{3}{2}}$.
-Crucial outputs from these new temperatures are the ion and electron
+Crucial outputs from these calculations are
+the new temperatures, with which the ion and electron
 energy density depositions,
 c.f.~(\ref{eq:hydrointernalenergy}),
 \begin{eqnarray}
-        \Delta E_{i}^{n+1} &=& C_{vi} ( T_{i}^{n+\frac{3}{2}} - T_{i}^{n})
+        \Delta E_{i}^{n+1} &=& C_{vi} ( T_{i}^{n+1} - T_{i}^{n})
   \\
-        \Delta E_{e}^{n+1} &=& C_{ve} ( T_{e}^{n+\frac{3}{2}} - T_{e}^{n})
+        \Delta E_{e}^{n+1} &=& C_{ve} ( T_{e}^{n+1} - T_{e}^{n})
 \end{eqnarray}
+and the rate of momentum density
+deposited into the material by the radiation,
+c.f.~(\ref{eq:hydromomentum}),
+\begin{equation}
+   {\frac{d\vec{p}}{dt}}^{n+1} = \frac{\sigma^{t}}{c} \vec{F}^{(0)}
+\end{equation}
+may be calculated.
+In the above calculation
+the Lagrangian flux, $\vec{F}^{(0)}$, has been recalculated at the
+new time, $n+1$,
+\begin{equation}
+   \vec{F}^{(0)} = \vec{F}^{n+1} - \frac{4}{3} \phi^{n+1}
+                                                \frac{\vec{v}^{n}}{c}
+\end{equation}
+
+This solution sequence ensures that the coupling of the electron and ion
+temperatures are handled last; therefore, in a highly coupled system,
+even though the conduction equations may relax the coupling of the temperatures,
+the subsequent calculation of the coupled equations reinforces this coupling.
+
 
 \appendix
 
@@ -963,7 +978,7 @@ We note that at the cell face
         {F'}^{c}_{f} \ne - {F'}^{c'}_{f'} \\
         \phi^{c}_{f} = \phi^{c'}_{f'}
 \end{gather}
-where the first expression denotes that $F'$ need not be continous across
+where the first expression denotes that $F'$ need not be continuous across
 the cell face.
 We may then obtain, after some manipulation,
 an expression for $\phi^{c}_{f}$ in terms of cell-centered
@@ -1243,7 +1258,7 @@ The momentum deposition output requires the evaluation of
 $\sigma \vec{F}^{(0)} / c$ at the mesh nodes.
 
 
-These terms all involve the lagrangian frame radiation flux,
+These terms all involve the Lagrangian frame radiation flux,
 \begin{equation}
         \vec{F}^{(0)} = \vec{F} - \frac{4}{3} \phi \frac{\vec{v}}{c}
 \end{equation}
@@ -1251,7 +1266,7 @@ We treat the centering of this variable on the cell faces, wherein the normal
 components of $\vec{F}^{(0)}$ are required.
 This leads to the following continuous face-centered field%
 \footnote{%
-   Continuous as well as discontinous
+   Continuous as well as discontinuous
    face-centered vector field normals require a $c$ superscript
    since the face normal vectors are defined to be outwardly directed from
    cell $c$.
@@ -1435,7 +1450,7 @@ therefore,
                        {\hat{e}_{i}} \hat{e}_{i}
 }
 \end{equation}
-is the node-centered momentum depostion.
+is the node-centered momentum deposition.
 
 \subsection{Discretization Scheme-Dependent
             Specification of $\mathcal{S}^{c}_{v}$}
@@ -1443,7 +1458,7 @@ is the node-centered momentum depostion.
 The general expression for $\mathcal{S}^{c}_{v}$ allows for discretization
 schemes that use face-centered vector fields, e.g.\ the Morel-Shashkov-Roberts
 method\cite{MorelShashkov}
- on non-orthogonal unstructured quadralaterals and hexahedra.
+ on non-orthogonal unstructured quadrilaterals and hexahedra.
 
 Since the discretization scheme presented in appendix~\ref{ap:spatial} deals
 with orthogonal meshes with face normals along coordinate axes we obtain
