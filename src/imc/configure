@@ -2260,7 +2260,7 @@ echo "configure:2251: checking "configuration of ${CXX}/${CC} compilers"" >&5
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi"
+       STRICTFLAG="-ansi -fhonor-std -Wnon-virtual-dtor"
    fi
 
    # optimization level
@@ -2272,6 +2272,14 @@ echo "configure:2251: checking "configuration of ${CXX}/${CC} compilers"" >&5
    fi
    CXXFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
    CFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
+
+   # add inlining if optimization is 01, 02 (it is on by default for
+   # 03)
+   if test "${with_opt}" = 1 || test "${with_opt}" = 2 ||
+      test "${with_opt}" = 3 ; then
+       CXXFLAGS="${CXXFLAGS} -finline-functions"
+       CFLAGS="${CFLAGS} -finline-functions"
+   fi
 
    # LINK FLAGS
 
@@ -2296,7 +2304,7 @@ echo "configure:2251: checking "configuration of ${CXX}/${CC} compilers"" >&5
    # do draco standard headers
 
    echo $ac_n "checking "for draco standard headers"""... $ac_c" 1>&6
-echo "configure:2300: checking "for draco standard headers"" >&5
+echo "configure:2308: checking "for draco standard headers"" >&5
    if test "${enable_draco_stdhdrs:=no}" != no ; then
       CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
       echo "$ac_t"""CPPFLAGS modified"" 1>&6
@@ -2320,7 +2328,7 @@ echo "configure:2300: checking "for draco standard headers"" >&5
    # Extract the first word of "xlf90", so it can be a program name with args.
 set dummy xlf90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2324: checking for $ac_word" >&5
+echo "configure:2332: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2388,7 +2396,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2392: checking for $ac_word" >&5
+echo "configure:2400: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2455,7 +2463,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2459: checking for $ac_word" >&5
+echo "configure:2467: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2522,7 +2530,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2526: checking for $ac_word" >&5
+echo "configure:2534: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2589,7 +2597,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2593: checking for $ac_word" >&5
+echo "configure:2601: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2656,7 +2664,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2660: checking for $ac_word" >&5
+echo "configure:2668: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2725,7 +2733,7 @@ fi
    # Extract the first word of "xlf90", so it can be a program name with args.
 set dummy xlf90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2729: checking for $ac_word" >&5
+echo "configure:2737: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2793,7 +2801,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2797: checking for $ac_word" >&5
+echo "configure:2805: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2860,7 +2868,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2864: checking for $ac_word" >&5
+echo "configure:2872: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2927,7 +2935,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2931: checking for $ac_word" >&5
+echo "configure:2939: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2994,7 +3002,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2998: checking for $ac_word" >&5
+echo "configure:3006: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -3061,7 +3069,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:3065: checking for $ac_word" >&5
+echo "configure:3073: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -3182,7 +3190,7 @@ fi
       # Extract the first word of "ranlib", so it can be a program name with args.
 set dummy ranlib; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:3186: checking for $ac_word" >&5
+echo "configure:3194: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_RANLIB'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else

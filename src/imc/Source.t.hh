@@ -329,7 +329,7 @@ rtt_dsxx::SP<PT> Source<MT, PT>::get_census(double delta_t)
     // get the census particle from the Census buffer
     SP<PT> census_particle = census->top();
     census_particle->set_time_left(delta_t);
-    census_particle->set_descriptor("from_census");
+    census_particle->set_descriptor("census_born");
 
     // remove the census particle from the bank
     census->pop();
