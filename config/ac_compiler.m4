@@ -19,16 +19,29 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    dnl set up a default compiler
    case $host in
+
+   # IRIX -> CC
    mips-sgi-irix6.*)   
        if test -z "${with_cxx}" ; then
 	   with_cxx='sgi'
        fi
    ;;
+
+   # COMPAQ -> CXX
    alpha*-dec-osf*)
        if test -z "${with_cxx}" ; then
 	   with_cxx='compaq'
        fi
    ;;
+
+   # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
+   *ibm-aix*)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='asciwhite'
+       fi
+   ;;
+
+   # EVERYTHING ELSE -> gcc
    *)
        if test -z "${with_cxx}" ; then
 	   with_cxx='gcc'
@@ -89,6 +102,44 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   AC_DRACO_INTEL_ICC
        else
 	   AC_MSG_ERROR("Did not find Intel icc compiler!")
+       fi
+
+   elif test "${with_cxx}" = ibm ; then 
+       AC_CHECK_PROG(CXX, xlC, xlC)
+       AC_CHECK_PROG(CC, xlc, xlc)
+
+       if test "${CXX}" = xlC ; then
+	   AC_DRACO_IBM_VISUAL_AGE
+       else
+	   AC_MSG_ERROR("Did not find IBM Visual Age xlC compiler!")
+       fi
+
+   elif test "${with_cxx}" = asciwhite ; then 
+
+       # if we are using mpi then use newmpxlC
+       if test "${with_c4}" = mpi ; then
+
+	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
+	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
+
+	   if test "${CXX}" = newmpxlC ; then
+	       AC_DRACO_IBM_VISUAL_AGE
+	   else
+	       AC_MSG_ERROR("Did not find ASCI White newmpxlC compiler!")
+	   fi
+
+       # otherwise use newxlC
+       else
+
+	   AC_CHECK_PROG(CXX, newxlC, newxlC)
+	   AC_CHECK_PROG(CC, newxlc, newxlc)
+
+	   if test "${CXX}" = newxlC ; then
+	       AC_DRACO_IBM_VISUAL_AGE
+	   else
+	       AC_MSG_ERROR("Did not find ASCI White newxlC compiler!")
+	   fi
+
        fi
    fi
 
@@ -397,7 +448,6 @@ AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
    # icc SPECIFIC FLAGS
-   # dirstoclean='ti_files'
 
    # LINKER AND LIBRARY
    LD='${CXX}'
@@ -427,7 +477,7 @@ AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
 
        # turn off debug by default
        if test "${enable_debug:=no}" = yes ; then
-	   icc_opt_flags="-g -O${with_opt} -Ob1"
+	   icc_opt_flags="-g -O${with_opt} -Ob1 -ip"
        else
 	   icc_opt_flags="-O${with_opt} -Ob1"
        fi
@@ -456,6 +506,106 @@ AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
    AC_MSG_RESULT("icc compiler flags set")
    
    dnl end of AC_DRACO_INTEL_ICC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl IBM VISUAL AGE COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # xlC SPECIFIC FLAGS
+
+   # LINKER AND LIBRARY
+   LD='${CXX}'
+
+   # if shared then ar is xlC
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-Wl,-bh:5 -qmkshrobj -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-qlanglvl=strict98"
+   fi
+
+   # the qinline option controls inlining, when -g is on no inlining
+   # is done, with -O# inlining is on by default
+
+   # set up compiler when optimized 
+   if test "${with_opt:=0}" != 0; then
+
+       # optflags
+       xlC_opt_flags="-qarch=auto -qtune=auto -qcache=auto"
+
+       # optimization level    
+       if test "${with_opt}" = 1; then
+	   # if asking for 1 just use opt in ibm   
+	   xlC_opt_flags="${xlC_opt_flags} -qopt"
+       else
+	   # otherwise use number
+
+	   # turn of aggressive semantic optimizations on all levels
+	   # -O2 and above
+	   xlC_opt_flags="${xlC_opt_flags} -qopt=${with_opt} -qstrict"
+       fi
+
+       # turn off debug by default
+       if test "${enable_debug:=no}" = yes ; then
+	   xlC_opt_flags="-g ${xlC_opt_flags}"
+       fi
+
+   #set up compiler when not optimized 
+   else
+
+       # optflags
+       xlC_opt_flags="-qnoopt"
+
+       # turn on debug by default
+       if test "${enable_debug:=yes}" = yes ; then
+	   xlC_opt_flags="-g ${xlC_opt_flags}"
+       fi
+
+   fi
+   
+   # set the CXX and CC flags
+
+   # set the optimizations
+   CXXFLAGS="${CXXFLAGS} ${xlC_opt_flags}"
+   CFLAGS="${CFLAGS} ${xlC_opt_flags}"
+
+   # set template stuff
+   CXXFLAGS="${CXXFLAGS} -qnotempinc"
+   
+   # allow long long types
+   CXXFLAGS="${CXXFLAGS} -qlonglong"
+   CFLAGS="${CFLAGS} -qlonglong"
+
+   # static linking option
+   if test "${enable_static_ld:=no}" = yes ; then
+       LDFLAGS="${LDFLAGS} -bstatic"
+
+   # if we are building shared libraries we need to add
+   # run-time-linking
+   else
+       LDFLAGS="${LDFLAGS} -brtl -Wl,-bh:5"
+
+   fi
+
+   AC_MSG_RESULT("${CXX} compiler flags set")
+   
+   dnl end of AC_DRACO_IBM_VISUAL_AGE
 ])
 
 dnl-------------------------------------------------------------------------dnl

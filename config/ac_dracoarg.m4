@@ -188,7 +188,11 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl defines --enable-32-bit
    AC_ARG_ENABLE(32-bit,
-      [  --enable-32-bit         do 32-bit compilation (SGI ONLY)])
+      [  --enable-32-bit         do 32-bit compilation (compiler dependent)])
+
+   dnl defines --enable-64-bit
+   AC_ARG_ENABLE(64-bit,
+      [  --enable-64-bit         do 64-bit compilation (compiler dependent)])
 
    dnl
    dnl CHOSE MIPS INSTRUCTION SET ON SGI'S

@@ -201,6 +201,10 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    # systems setup
    case $host in
+
+   # ***********
+   # LINUX SETUP
+   # ***********
    *-linux-gnu)
    
        # print out cpu message
@@ -397,8 +401,23 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	       RPATH="-rpath ${vendor_dir} ${RPATH}"
 	   fi
        done
+
+       # add the intel math library for better performance when
+       # compiling with intel
+       if test "${CXX}" = icc; then
+	   LIBS="$LIBS -limf"
+       fi
    ;;
+
+   # *********
+   # SGI SETUP
+   # *********
    mips-sgi-irix6.*)
+   
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
        # posix source defines, by default we set posix on 
        if test "${with_posix:=yes}" = yes ; then
 	   with_posix='199309L'
@@ -556,8 +575,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
-	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	   # the g++ rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++; then
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
@@ -571,8 +590,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_DIRS}; 
        do
-	   # if we are using gcc/icc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	   # if we are using gcc then add xlinker
+	   if test "${CXX}" = g++; then
 	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
@@ -581,7 +600,16 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   fi
        done
    ;;
+
+   # ******************
+   # TRU64 COMPAQ SETUP
+   # ******************
    alpha*-dec-osf*)
+   
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
        # posix source defines, by default we set posix off
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
@@ -671,8 +699,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	   # the g++ rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++; then
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
@@ -686,8 +714,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_DIRS}; 
        do
-	   # if we are using gcc/icc then add xlinker
-	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
+	   # if we are using gcc then add xlinker
+	   if test "${CXX}" = g++; then
 	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
@@ -696,7 +724,123 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   fi
        done
    ;;
+
+   # *************
+   # IBM AIX SETUP
+   # *************
+   *ibm-aix*)
+   
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
+       # posix source defines, by default we set posix off
+       if test "${with_posix:=no}" = yes ; then
+	   with_posix='199309L'
+       fi
+
+       if test "${with_posix}" != no ; then
+	   AC_DEFINE_UNQUOTED(_POSIX_C_SOURCE, $with_posix)
+	   AC_DEFINE(_POSIX_SOURCE)
+       fi
+
+       # set up 32 or 64 bit compiling on IBM
+       if test "${enable_32_bit:=no}" = yes ; then
+	   CXXFLAGS="${CXXFLAGS} -q32"
+       elif test "${enable_64_bit:=no}" = yes ; then
+	   CXXFLAGS="${CXXFLAGS} -q64"
+       fi
+
+       # set up the heap size
+       if test "${with_cxx}" = asciwhite ; then
+	   LDFLAGS="${LDFLAGS} -bmaxdata=0x80000000"
+       fi
+
+       # determine word sizes
+       AC_DETERMINE_WORD_SIZES
+
+       #
+       # setup communication packages
+       #
+       
+       # setup vendor mpi
+       if test "${with_mpi}" = vendor ; then
+
+	   # set up libraries (the headers are already set)
+	   if test -n "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpi)
+	   elif test -z "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpi)
+	   fi
+       
+       # setup mpich
+       elif test "${with_mpi}" = mpich ; then
+
+	   # set up libraries (the headers are already set)
+	   if test -n "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} -lmpich)
+	   elif test -z "${MPI_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_mpi, -lmpich)
+	   fi
+   
+       fi
+
+       #
+       # end of communication packages
+       #
+
+       #
+       # setup lapack
+       #
+
+       if test "${with_lapack}" = vendor ; then
+
+	   # if an lapack location was defined use it
+	   if test -n "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -ldxml)
+	   elif test -z "${LAPACK_LIB}" ; then
+	       AC_VENDORLIB_SETUP(vendor_lapack, -ldxml)
+	   fi
+
+       fi
+
+       #
+       # end of lapack setup
+       #
+
+       #
+       # gandolf, eospac, pcg require -lfor on the link line.
+       #
+
+       AC_MSG_CHECKING("libfortran requirements")
+       if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
+          test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfor"
+          AC_MSG_RESULT("-lfor added to LIBS")
+       fi
+
+       #
+       # end of gandolf/libfortran setup
+       #
+
+       # RPATH is derived from -L, don't need explicit setup
+
+       # do shared specific stuff
+       if test "${enable_shared}" = yes ; then
+	   # turn off ranlib
+	   RANLIB=':'
+       fi
+   ;;
+
+   # *****************
+   # SUN/SOLARIS SETUP
+   # *****************
    sparc-sun-solaris2.*)
+   
+       # print out cpu message
+       AC_MSG_CHECKING("host platform cpu")
+       AC_MSG_RESULT("${host_cpu}")
+
        # posix source defines, by default we set poaix on 
        if test "${with_posix:=yes}" = yes ; then
 	   with_posix='199309L'
@@ -781,8 +925,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   fi
        done
    ;;
+
+   # *******
+   # NOTHING
+   # *******
    *)
-       # catchall for nothing
+       AC_MSG_ERROR("Cannot figure out the platform or host!")
    ;;
    esac
 
