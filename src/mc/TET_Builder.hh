@@ -53,6 +53,7 @@ using std::endl;  // FOR DEBUGGING.
 //                 of element_sets.  New diagnostic functions print_node_sets,
 //                 print_side_sets, and print_cell_sets are added to TET_Mesh.
 //  6) 2000-12-01: New, faster connectivity builder for TET meshes.
+//  7) 2000-12-03: Another slightly faster version of the connectivity builder.
 //
 //___________________________________________________________________________//
 

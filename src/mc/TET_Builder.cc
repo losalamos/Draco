@@ -47,7 +47,6 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
                 continue;
 
             int count = 0;
-            SF_INT L_hits(FOUR, -1);
 
             for (int lv = 0 ; lv < FOUR ; ++lv)
             {
@@ -57,14 +56,25 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
                             cells_vert_parent[L_cell][lv]);
 
                 if (R_itr != cells_vert_parent[R_cell].end())
-                {
                     ++count;
-                    L_hits[lv] = R_itr - cells_vert_parent[R_cell].begin();
-                }
             }
             if (count == THREE)
             {
                 ++neighbors_found[L_cell];
+                ++neighbors_found[R_cell];
+                SF_INT L_hits(FOUR, -1);
+
+                for (int lv = 0 ; lv < FOUR ; ++lv)
+                {
+                    SF_INT::iterator R_itr = std::find(
+                                cells_vert_parent[R_cell].begin(),
+                                cells_vert_parent[R_cell].end(),
+                                cells_vert_parent[L_cell][lv]);
+    
+                    if (R_itr != cells_vert_parent[R_cell].end())
+                        L_hits[lv] = R_itr - cells_vert_parent[R_cell].begin();
+                }
+
                 SF_INT::iterator L_itr = std::find(L_hits.begin(),
                                                     L_hits.end(), -1);
                 int v = L_itr - L_hits.begin();
@@ -74,7 +84,6 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
                     if (std::find(L_hits.begin(), L_hits.end(), rv)
                                                == L_hits.end())
                     {
-                        ++neighbors_found[R_cell];
                         layout(R_cell + 1, rv + 1) = L_cell + 1;
                         break;
                     }
