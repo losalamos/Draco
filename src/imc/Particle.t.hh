@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// Particle.t.hh
-// Thomas M. Evans
-// Fri Jan 30 17:04:24 1998
+/*!
+ * \file   imc/Particle.t.hh"
+ * \author Thomas M. Evans and Todd J. Urbatsch
+ * \date   Fri Jan 30 17:04:24 1998
+ * \brief  Particle class implementation file.
+ */
 //---------------------------------------------------------------------------//
-// @> Particle class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Particle.hh"
@@ -234,7 +237,7 @@ bool Particle<MT>::surface(const MT &mesh, int face)
     bool status;
 
     // determine the next cell
-    int next_cell = mesh.next_cell(cell, face);
+    int next_cell = mesh.next_cell(cell, face, r);
 
     // determine descriptor and outcome of this event
 

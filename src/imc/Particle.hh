@@ -1,20 +1,77 @@
 //----------------------------------*-C++-*----------------------------------//
-// Particle.hh 
-// Thomas M. Evans
-// Fri Jan 30 17:04:24 1998
+/*!
+ * \file   imc/Particle.hh 
+ * \author Thomas M. Evans and Todd J. Urbatsch
+ * \date   Fri Jan 30 17:04:24 1998
+ * \brief  Particle class header file.
+ */
 //---------------------------------------------------------------------------//
-// @> Particle class header file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __imc_Particle_hh__
 #define __imc_Particle_hh__
 
+#include "Opacity.hh"
+#include "Tally.hh"
+#include "rng/Random.hh"
+#include "ds++/SP.hh"
+#include "ds++/Assert.hh"
+#include <vector>
+#include <string>
+#include <iostream>
+#include <cmath>
+
+namespace rtt_imc 
+{
+
 //===========================================================================//
-// class Particle - 
-//
-// Purpose : base class which creates and transports particles
-//           through a Mesh
-//
+/*!
+ * \class Particle
+
+ * \brief Defines IMC Fleck and Cummings particles.
+
+ * The particle class defines the attributes, behavior, and relationships for
+ * Fleck and Cummings IMC particles.  The primary particle attributes are
+ * position, direction, weight, random number object, cell index, time, and
+ * fraction.
+
+ * The particles defined by this class carry along their own random number
+ * object.  Thus, reproducible Monte Carlo calculations may be performed.
+
+ * Particle containers and buffers (for communication) are defined in
+ * rtt_imc::Particle_Buffer.
+
+ * The primary operation for IMC particles is transport().  Given a mesh,
+ * opacity, and material data, the particles are capable of transporting
+ * until some termination point.  The standard termination points are:
+
+ * \arg \b escape exiting a problem boundary
+
+ * \arg \b cross_boundary crossing a processor boundary
+
+ * \arg \b census going to census
+
+ * \arg \b killed reaching a weight cutoff
+
+ * If any of these termination points are reached the particle ceases
+ * transport.  The rtt_imc::Tally class tallies all of the event data that
+ * the particle undergoes during a transport step.
+
+ * The class also includes several accessors and modifiers for adapting a
+ * particle before or after transport.  The status of the particle can be
+ * accessed through the status() function.  Particles must have true status
+ * before they can be transported.  The reset_status() function allows a user
+ * to "turn on" a particle.
+
+ */
+/*!
+ * \example imc/test/tstParticle.cc
+
+ * Example usage of the rtt_imc::Particle and rtt_imc::Particle_Buffer
+ * classes.
+
+ */
 // revision history:
 // -----------------
 //  0) original
@@ -47,154 +104,154 @@
 //                will get the same stream for the same streamnum even if you
 //                have a different pointer pointing to the state data
 // 11)  4-29-99 : removed using declarations from namespace
+// 12) 18-AUG-00: updated surface() mesh.next_cell() to include the position
+//                vector for AMR support
 // 
 //===========================================================================//
-
-//===========================================================================//
-// struct Particle_Stack - 
-//
-// Purpose : holds stl types for buffers for Particle types
-// 
-//===========================================================================//
-
-#include "Opacity.hh"
-#include "Tally.hh"
-#include "rng/Random.hh"
-#include "ds++/SP.hh"
-#include "ds++/Assert.hh"
-#include <vector>
-#include <string>
-#include <iostream>
-#include <cmath>
-
-namespace rtt_imc 
-{
 
 template<class MT>
 class Particle
 {
   public: 
-    // nested diagnostic class
+
+    /*!
+     * \class Particle::Diagnostic
+     * \brief Diagnostic class for tracking particle histories.
+     */
     class Diagnostic
     {
       private:
-	// stream output is sent to
+	// Stream output is sent to.
 	std::ostream &output;
-	// boolean for detailed diagnostic
+
+	// Boolean for detailed diagnostic.
 	bool detail;
 
       public:
-	// constructor
+	//! Constructor.
 	Diagnostic(std::ostream &output_, bool detail_ = false) 
 	    : output(output_), detail(detail_) {}
 
-	// switches
+	//! Access detail switch (true gives more destail in printouts). 
 	bool detail_status() const { return detail; }
 
-	// diagnostic print functions
+	// Diagnostic print functions.
 	void print(const Particle<MT> &) const;
 	void print_alive(const Particle<MT> &) const;
 	void print_dead(const Particle<MT> &) const;
 	void print_dist(double, double, double, int) const;
 	void print_xs(const Opacity<MT> &, int) const;
 
-	// inline output formatters
+	//! Inline output formatters
 	inline void header() const;
     };
 
-    // friends and such
+    // Friend declarations.
     friend class Diagnostic;
     template<class PT> friend class Particle_Buffer;
 
   private:
-    // particle energy-weight
+    //>>> DATA
+    // Particle energy-weight.
     double ew;
-    // particle location
+
+    // Particle location.
     std::vector<double> r;
-    // particle direction
+
+    // Particle direction.
     std::vector<double> omega;
-    // particle cell
+
+    // Particle cell.
     int cell;
-    // time remaining in this time step
+
+    // Time remaining in this time step.
     double time_left;
-    // fraction of original energy weight
+    
+    // Fraction of original energy weight.
     double fraction;
-    // status of particle
+
+    // Status of particle.
     bool alive;
-    // event type descriptor
+    
+    // Event type descriptor.
     std::string descriptor;
 
-    // random number object
+    // Random number object.
     rtt_rng::Sprng random;
 
-    // private particle service functions
+  private:
+    //>>> IMPLEMENTATION
 
-    // stream a distance d
+    // Stream a distance d.
     inline void stream(double);  
 
-    // stream a distance d
+    // Stream a distance d.
     inline void stream_IMC(const Opacity<MT> &, Tally<MT> &, double);
 
-    // collision, return a false if particle is absorbed
+    // Collision, return a false if particle is absorbed.
     bool collide(const MT &, const Opacity<MT> &);
 
-    // effective scatter
+    // Effective scatter.
     void scatter(const MT & );
 
-    // surface crossings, return a false if particle escapes
+    // Surface crossings, return a false if particle escapes.
     bool surface(const MT &, int);
 
-    // IMC transport step
+    // IMC transport step.
     void trans_IMC(const MT &, const Opacity<MT> &);
     
-    // DDMC transport step
+    // DDMC transport step.
     void trans_DDMC(const MT &, const Opacity<MT> &);
 
   public:
-    // Particle constructor
+    // Particle constructor.
     inline Particle(std::vector<double>, std::vector<double>, double, int,
 		    rtt_rng::Sprng, double = 1, double = 1, 
 		    std::string = "born");
 
-    // null constructor required as kluge for the STL containers which need a
-    // default constructor, this calls an assert(0) so you can't use it
+    // Null constructor required as kluge for the STL containers which need a
+    // default constructor, this calls an assert(0) so you can't use it.
     Particle() { Insist (0, "You tried to default construct a Particle!"); }
 
-    // transport solvers
+    //>>> TRANSPORT INTERFACE
 
-    // IMC transport step
+    // IMC transport step.
     void transport(const MT &, const Opacity<MT> &, Tally<MT> &,
 		   rtt_dsxx::SP<Diagnostic> = rtt_dsxx::SP<Diagnostic>()); 
 
-    // other services
+    //>>> SERVICES
 
-    // particle status functions
+    //! Return the particle status.
     bool status() const { return alive; }
+    
+    //! Reset the particle status to alive (true).
     void reset_status() { alive = true; }
+    
+    //! Set the particle status to dead (false).
     void kill_particle() { alive = false; }
 
-    // accessors
+    // Accessors.
     int get_cell() const { return cell; }
     double get_ew() const { return ew; }
-    std::vector<double> get_omega() const { return omega; }
+    std::vector<double>   get_omega() const { return omega; }
     const rtt_rng::Sprng& get_random() const { return random; }
 
-    // set functions for sourcing particles
+    // Set functions for sourcing particles.
     void set_random(rtt_rng::Sprng &ran) { random = ran; }
     void set_time_left(double t) { time_left = t; }
     void set_descriptor(std::string s) { descriptor = s; }
     void set_ew(double new_ew) { ew = new_ew; }
     void set_cell(int new_cell) { cell = new_cell; }
 
-    // transport descriptors
+    // Transport descriptors.
     std::string desc() const { return descriptor; }
     inline static int get_index(std::string);
     inline static std::string get_descriptor(int);
 
-    // public diagnostic services
+    // Public diagnostic services.
     void print(std::ostream &) const;
 
-    // overloaded operators
+    // Overloaded operators.
     bool operator==(const Particle<MT> &) const;
     bool operator!=(const Particle<MT> &p) const { return !(*this == p); } 
 };
