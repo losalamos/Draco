@@ -48,7 +48,8 @@ void Banded_Matrix<T,N>::compute_message_routing()
 
     int ncells = std::count( occupancy.begin(), occupancy.end(), 1 );
 
-    SPINLOCK( cout << node() << " uses " << ncells << " cells." << endl );
+    if (verbose)
+	SPINLOCK( cout << node() << " uses " << ncells << " cells." << endl );
 
 // Now allocate the space for receiving data.
 
@@ -104,7 +105,7 @@ void Banded_Matrix<T,N>::compute_message_routing()
 	active_cells_owned_by(p)++;
     }
 
-    {
+    if (verbose) {
 	HTSyncSpinLock h;
 
 	cout << node() << " active_cells_owned_by: ";
@@ -119,7 +120,8 @@ void Banded_Matrix<T,N>::compute_message_routing()
 			     active_cells_owned_by.end(),
 			     std::bind2nd( std::greater<int>(), 0 ) );
 
-    SPINLOCK( cout << node() << " has " << senders << " senders.\n" );
+    if (verbose)
+	SPINLOCK( cout << node() << " has " << senders << " senders.\n" );
 
 // Resize some things that require one element per sender.
 
@@ -158,8 +160,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
     for( int s=0; s < senders; s++ )
 	if (sender_node(s) == node()) self_sender_id = s;
 
-    cout << node() << " set self_sender_id\n" << flush;
-
 // Okay, the above basically represents the determination of who is sending
 // us data.  Now we need the opposite, who we are sending data to, or who
 // receives data from us.
@@ -188,7 +188,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 	{
 	// Okay, the other nodes are going to tell us what they need from
 	// us.
-	    cout << p << " ready to listen." << endl;
 
 	    for( int n=0; n < nodes(); n++ )
 	    {
@@ -198,8 +197,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 		    int noc = std::count( &occupancy(start_row(p)),
 					  &occupancy(start_row(p)) + nrows(p),
 					  1 );
-
-		    cout << p << " needs to send " << noc << " to self." << endl;
 
 		    Check ( 0 <= noc && noc <= max_nrp );
 
@@ -216,11 +213,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 				global_index_buf(ndx++) = i;
 
 			Check( ndx == noc );
-
-			cout << node() << " pushing new rcvr_tag( " << n
-			     << ", " << noc << ", "
-			     << global_index_buf(0) << "  "
-			     << global_index_buf(1) << "  " << endl;
 
 			rcvr_list.push_back(
 			    new rcvr_tag( n, noc, global_index_buf.begin() )
@@ -241,8 +233,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 
 		    Check( noc >= 0 );
 
-		    cout << p << " needs to send " << noc << " to " << n << endl;
-
 		    if (noc > 0)
 		    {
 			receivers++;
@@ -257,12 +247,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 			rcvr_list.push_back(
 			    new rcvr_tag( n, noc, global_index_buf.begin() )
 			    );
-
-			for( int k=0; k < nn; k++ )
-			    cout << node() << " needs to send index "
-				 << global_index_buf(k) << " to node "
-				 << n << endl;
-
 		    }
 		}
 	    }
@@ -299,13 +283,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 
 		Check( n == noc );
 
-		cout << node() << " telling " << p << " that we need "
-		     << noc << " els with indices "
-		     << global_index_buf(0) << "  "
-		     << global_index_buf(1) << "  " << endl;
-// 		     << global_index_buf(2) << "  "
-// 		     << global_index_buf(3) << "  " << endl;
-
 	    // and send it over.
 
 		Send( global_index_buf.begin(), noc, p );
@@ -331,13 +308,8 @@ void Banded_Matrix<T,N>::compute_message_routing()
     for( std::list<rcvr_tag *>::iterator x = rcvr_list.begin();
 	 x != rcvr_list.end(); x++ )
     {
-	cout << node() << " rcvr=" << rcvr << " x: node=" << (*x)->node
-	     << " nels=" << (*x)->nels << "  "
-	     << (*x)->indexes[0] << "  "
-	     << (*x)->indexes[1] << "  "
-	     << endl;
-
     // Stuff the data for this recevier into our receiver structs.
+
 	receiver_node(rcvr) = (*x)->node;
 	receiver_nels(rcvr) = (*x)->nels;
 	for( int i=0; i < receiver_nels(rcvr); i++ )
@@ -358,8 +330,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 
     for( int r=0; r < receivers; r++ )
 	if (receiver_node(r) == node()) self_receiver_id = r;
-
-    cout << node() << " set self_receiver_id\n" << flush;
 
 // Now we need to work on setting up the start_bands, nbands, and cvindex
 // arrays. 
@@ -395,9 +365,10 @@ void Banded_Matrix<T,N>::compute_message_routing()
 
 	nbands(r) = eb - sb;
 
-	cout << node() << " row=" << nro+r
-	     << " start_band=" << start_band(r)
-	     << " nbands=" << nbands(r) << endl;
+	if (verbose)
+	    cout << node() << " row=" << nro+r
+		 << " start_band=" << start_band(r)
+		 << " nbands=" << nbands(r) << endl;
     }
 
 // Okay, we have the active bands per row calculated.  Now we should be able
@@ -410,200 +381,6 @@ void Banded_Matrix<T,N>::compute_message_routing()
 	    int c = nro + diag_offset[b] + r;
 	    cvindex(b,r) = local_index(c);
 	}
-
-// Let's print it out, just for fun.
-
-    {
-	cout << flush;
-	HTSyncSpinLock h;
-
-	cout << node() << " dumping cvindex:" << endl;
-	for( int r=0; r < nrp; r++ ) {
-	    for( int b=0; b < N; b++ )
-		cout << cvindex(b,r) << " ";
-	    cout << endl;
-	}
-    }
-
-#if 0
-// Now we need to deduce which processors we will need to send elements from
-// our column vector to, as well as the inverse--which processors will be
-// sending us data from their column vector.  
-
-// Let's start by getting the occupancy vector for each node communicated to
-// each other node.
-
-// This is a horribly inefficient way to calculate this, but we have to start 
-// somewhere...  REPLACE THIS LATER!!!
-
-    Mat2<int> ov( nrt, nodes() );
-    ov = 0;
-    {
-	Mat1<C4_Req> rreq( nodes() );
-	for( int i=0; i < nodes(); i++ ) {
-	    if (i == node()) continue;
-	    RecvAsync( rreq[i], &ov(0,i), nrt, i );
-	}
-	for( int i=0; i < nodes(); i++ ) {
-	    if (i == node()) continue;
-	    Send( &occupancy(0), nrt, i );
-	}
-    // Now copy ours into place.
-	for( int i=0; i < nrt; i++ )
-	    ov( i, node() ) = occupancy(i);
-    }
-
-    {
-	HTSyncSpinLock h;
-	
-	cout << "Ocupancy vectors for node " << node() << endl;
-
-	for( int n=0; n < nodes(); n++ ) {
-	    for( int i=0; i < nrt; i++ )
-		cout << ov(i,n) << " ";
-	    cout << endl;
-	}
-    }
-
-    gsync();
-
-// Okay, we have the occupancy vectors for all nodes now, so we should be
-// able to start calculating the required messaging patterns.
-
-// Consider our portion of the column vector.  Each of our elements could
-// have to be sent to as few as zero or as many as all of the other
-// processors. 
-
-    Mat1<bool> recipient( nodes() );
-    recipient = false;
-
-    SPINLOCK( cout << "Ready to calculate recipient list.\n" );
-
-    for( int n=0; n < nodes(); n++ )
-	for( int i=nro; i < nro+nrp; i++ )
-	    if ( ov(i,n) )
-		recipient(n) = true;
-
-    int nrecipients = std::count( recipient.begin(), recipient.end(), true );
-
-    SPINLOCK( cout << node() << " has " << nrecipients << " recipients.\n" );
-
-    {
-	HTSyncSpinLock h;
-
-	cout << node() << " : ";
-	for( int i=0; i < nodes(); i++ )
-	    cout << recipient(i) << " ";
-	cout << endl;
-	cout << flush;
-    }
-
-    Check( nrecipients <= nodes() );
-
-    gsync();
-
-// Now we know how many recipients there are, so we can allocate the send
-// buffers for them.  For simplicity sake, we will make the buffers be as big 
-// as our share of elements is.  This should only be a small waste, since we
-// are a distributed matrix anyway.
-
-    receivers = nrecipients;
-    receiver_node.redim( receivers );
-    receiver_nels.redim( receivers );
-//    receiver_ndxs = Mat2<int>( nrp, receivers );
-//    receiver_data = Mat2<T>( nrp, receivers );
-    receiver_ndxs = new int*[ receivers ];
-    receiver_data = new T*[ receivers ];
-
-    sreq.redim( receivers );
-
-    for( int n=0,		// node # of i-th receiver node.
-	     i=0;
-	 i < receivers; i++ )
-    {
-    // Figure out which is the next receiver.
-	while( !recipient(n) ) n++;
-
-    // Keep data on this node.
-	receiver_node(i) = n;
-	receiver_nels(i) = 0;
-
-	for( int j=0; j < nrows(n); j++ )
-	    if ( ov(start_row(n)+j,n) )
-		receiver_nels(i)++;
-
-	receiver_ndxs[i] = new int[ receiver_nels(i) ];
-	receiver_data[i] = new T[ receiver_nels(i) ];
-
-	int nels=0;
-	for( int j=0; j < nrows(n); j++ )
-	    if ( ov(start_row(n)+j,n) )
-		receiver_ndxs[i][nels++] = j;
-
-	Check( nels == receiver_nels(i) );
-
-    // Now point the index to the next node for consideration.
-	n++;
-    }
-
-    cout << node() << " done building receiver structs." << endl;
-#endif
-//     if (verbose) emit_receiver_structs();
-
-// Okay, now we need the inverse map.  In the above we calculated what others 
-// need to receive from us.  Now we need to calculate what others will be
-// sending us.
-
-// I guess we should start by determining which processor owns each row.
-// Then we can map our occupancy vector against this to see which processors
-// will be sending us data.
-#if 0
-    Mat1<int> owner( nrt );
-    owner = 0;
-    for( int i=0; i < nrp; i++ )
-	owner( nro+i ) = node();
-
-    C4::gsum( &owner(0), nrt );
-
-// Now we can look at our occupancy vector, and determine who will be sending
-// us data.
-
-    int nsenders = 0,
-	last_discovered_sender_node = -1;
-
-    for( int i=0; i < nrt; i++ )
-	if (occupancy(i) == 1) {
-	    if (owner(i) != last_discovered_sender_node) {
-		last_discovered_sender_node = owner(i);
-		nsenders++;
-	    }
-	}
-
-// Okay we now know how many nodes will be sending us data, so we can make
-// places to receive the data now.
-
-    senders = nsenders;
-    sender_ndxs = Mat2<int>( nrp, senders );
-    sender_data = Mat2<T>( nrp, senders );
-
-    sender_nels = 0;
-
-// Now start building up these data structures.
-
-    last_discovered_sender_node = -1;
-    int nsender = -1;
-    for( int i=0; i < nrt; i++ )
-	if (occupancy(i)) {
-	    if (owner(i) != last_discovered_sender_node) {
-		last_discovered_sender_node = owner(i);
-		nsender++;
-	    }
-	    sender_node(nsender) = owner(i);
-	    sender_ndxs( sender_nels(nsender)++, nsender ) = i;
-	}
-
-    if (verbose) emit_sender_structs();
-#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -614,7 +391,8 @@ void Banded_Matrix<T,N>::compute_message_routing()
 template<class T, int N>
 void Banded_Matrix<T,N>::initiate_sends( const T *pd )
 {
-    SPINLOCK( cout << node() << " initiating send's." << endl );
+    if (verbose)
+	SPINLOCK( cout << node() << " initiating send's." << endl );
 
     for( int r=0; r < receivers; r++ )
     {
@@ -646,7 +424,8 @@ void Banded_Matrix<T,N>::initiate_sends( const T *pd )
 template<class T, int N>
 void Banded_Matrix<T,N>::complete_sends()
 {
-    SPINLOCK( cout << node() << " completing send's." << endl );
+    if (verbose)
+	SPINLOCK( cout << node() << " completing send's." << endl );
 
     for( int r=0; r < receivers; r++ )
 	sreq[r].wait();
@@ -660,16 +439,12 @@ void Banded_Matrix<T,N>::complete_sends()
 template<class T, int N>
 void Banded_Matrix<T,N>::initiate_receives()
 {
-    SPINLOCK( cout << node() << " initiating recv's." << endl );
+    if (verbose)
+	SPINLOCK( cout << node() << " initiating recv's." << endl );
 
     for( int s=0; s < senders; s++ )
     {
 	if (sender_node(s) == node()) continue;
-
-	cout << node() << " posting recv for sender " << s
-	     << " s_node=" << sender_node(s) << endl;
-	cout << "s_head=" << sender_head(s)
-	     << " s_nels=" << sender_nels(s) << endl;
 
 	RecvAsync( rreq(s),
 		   &cvdata( sender_head(s) ), sender_nels(s),
@@ -684,23 +459,20 @@ void Banded_Matrix<T,N>::initiate_receives()
 template<class T, int N>
 void Banded_Matrix<T,N>::complete_receives()
 {
-    SPINLOCK( cout << node() << " completing recv's." << endl );
+    if (verbose)
+	SPINLOCK( cout << node() << " completing recv's." << endl );
 
     for( int s=0; s < senders; s++ )
 	if (sender_node(s) == node())
 	{
-	    cout << node() << " copying own data into place." << endl;
-
 	    Check( self_receiver_id >= 0 && self_receiver_id < receivers );
 	    Check( self_sender_id >= 0 && self_sender_id < senders );
 
 	// Copy our own data into place.
+
 	    for( int i=0; i < receiver_nels( self_receiver_id ); i++ )
 		cvdata( sender_head( self_sender_id ) + i ) =
-// 		    receiver_data[ self_receiver_id ][i];
 		    receiver_data(i,self_receiver_id);
-
-	    cout << node() << " done copying own data into place." << endl;
 	}
 	else
 	    rreq[s].wait();
@@ -714,94 +486,11 @@ template<class T, int N> template<class ColumnVector>
 void Banded_Matrix<T,N>::multiply( const ColumnVector& x,
 				   ColumnVector& b )
 {
-#if 0
-    cout << node() << " doing the matvec thing on a ColumnVector of type\n"
-	 << typeid(ColumnVector).name()
-	 << endl;
-
-    Mat1<C4_Req> rreq(senders);
-
-// Start by posting receives for the data.
-    for( int i=0; i < senders; i++ ) {
-
-    // Skip ourselves, we will just copy the data into place.
-	if (sender_node(i) == node()) continue;
-
-    // Post receives for data coming from other nodes.
-	RecvAsync( rreq(i), &sender_data(0,i), sender_nels(i),
-		   sender_node(i) );
-    }
-
-// Now send our data to wherever it's going.
-    for( int i=0; i < receivers; i++ ) {
-
-    // Don't use messaging to send data to self.
-	if (receiver_node(i) == node()) {
-	// Just copy into place.
-	    for( int j=0; j < receiver_nels(i); j++ )
-		sender_data(j,i) = x( receiver_ndxs(j,i) );
-
-	// Go on to next receiver.
-	    continue;
-	}
-
-    // Copy the data we're sending into the buffers for transmission to
-    // receivers. 
-	for( int j=0; j < receiver_nels(i); j++ )
-	    receiver_data(j,i) = x( receiver_ndxs(j,i) );
-
-	Send( &receiver_data(0,i), receiver_nels(i), receiver_node(i) );
-    }
-
-    cout << node() << " done sending data." << endl;
-
-    for( int i=0; i < senders; i++ )
-	rreq(i).wait();
-
-    cout << node() << " done receiving data." << endl;
-
-// Need a data structure which tells me for each row that I won, which
-// elements of the bands are to be multiplied agasint which elements of the
-// inbound data sent to me by the senders.
-
-    Mat1<int> nels( nrp );
-    nels = 0;
-    Mat2<int> band(N,nrp), index(N,nrp);
-    band = 0;
-    index = 0;
-    Mat1<T> xdata( &sender_data(0,0), nrp*senders );
-
-    for( int i=0; i < nrp; i++ )
-    {
-	b(i) = 0;
-
-    // Now multiply the elements against the data which has been sent to us
-    // and sum it all up.
-
-	for( int j=0; j < nels(i); j++ )
-	    b(i) += data( i, band(j,i) ) * xdata( index(j,i) );
-
-    }
-#endif
     complete_sends();		// From the previous call...
 
     initiate_receives();
     initiate_sends( x.begin() );
     complete_receives();
-
-    gsync();
-
-    if (verbose)
-    {
-	cout << flush;
-	HTSyncSpinLock h;
-
-	cout << "Node " << node() << " dumping sparse data:\n";
-	cout << "cvdata: size=" << cvdata.size() << endl;
-	for( int i=0; i < cvdata.size(); i++ )
-	    cout << cvdata(i) << " ";
-	cout << endl;
-    }
 
 // Multiply the data.
 
@@ -812,9 +501,6 @@ void Banded_Matrix<T,N>::multiply( const ColumnVector& x,
 
     // Figure out which bands we're working with.
 	int sb = start_band(r), nb = nbands(r);
-
-	cout << node() << " processing row " << r
-	     << " sb=" << sb << " nb=" << nb << endl;
 
     // Now loop over the particpating bands, and accumulate the product.
 	for( int ib = sb; ib < sb+nb; ib++ )

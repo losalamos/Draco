@@ -56,8 +56,6 @@ class Banded_Matrix
     int senders;
     Mat1<int> sender_node, sender_nels, sender_head;
     Mat1<C4::C4_Req> rreq;
-//     Mat2<int> sender_ndxs;
-//     Mat2<T>   sender_data;
 
     struct rcvr_tag {
 	int node;
@@ -78,7 +76,6 @@ class Banded_Matrix
 	  nrp( ddb.nrows_this_processor() ),
 	  nrt( ddb.nrows_total() ),
 
-// 	  data( nrp, N ),
 	  data( N, nrp ),
 
 	  start_band(nrp), nbands(nrp),
