@@ -54,12 +54,13 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const bool        binary)
     : d_static_geom(static_geom)
     , d_binary(binary)
+    , d_dump_dir(gd_wpath)
     , d_vdata_names(vdata_names)
     , d_cdata_names(cdata_names)
       
 {
     Require (d_dump_times.empty());
-    create_filenames(prefix, gd_wpath);
+    create_filenames(prefix);
     
     bool graphics_continue = false; // default behavior
     

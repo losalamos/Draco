@@ -181,6 +181,9 @@ class Ensight_Translator
     // if true, output geometry and varible data files in binary format.
     bool d_binary;
 
+    // Name of the directory where this will write files
+    std_string d_dump_dir;
+
     // Number of Ensight cell types.
     int d_num_cell_types;
 
@@ -230,8 +233,7 @@ class Ensight_Translator
     // >>> PRIVATE IMPLEMENTATION
 
     // Creates some of the file prefixes and names.
-    void create_filenames(const std_string &prefix,
-			  const std_string &gd_wpath);
+    void create_filenames(const std_string &prefix);
     
     // Write out case file.
     void write_case();

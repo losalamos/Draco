@@ -11,6 +11,10 @@
 
 #include "Ensight_Translator.hh"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 namespace rtt_viz
 {
 
@@ -164,11 +168,10 @@ close()
  * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
  */
-void Ensight_Translator::create_filenames(const std_string &prefix,
-					  const std_string &gd_wpath)
+void Ensight_Translator::create_filenames(const std_string &prefix)
 {
     // ensight directory name
-    d_prefix = gd_wpath + "/" + prefix + "_ensight";
+    d_prefix = d_dump_dir + "/" + prefix + "_ensight";
 
     // case file name
     d_case_filename = d_prefix + "/" + prefix + ".case";
@@ -245,22 +248,59 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     d_cell_type_index[13] = six_node_wedge;
     d_cell_type_index[14] = fifteen_node_wedge;
 
+
+    struct stat sbuf;
+    int stat_ret = stat(d_dump_dir.c_str(), &sbuf);
+    if(stat_ret)
+    {
+	std::ostringstream dir_error;
+	dir_error << "Error opening dump directory \"" 
+		  << d_dump_dir << "\": "
+		  << strerror(errno);
+	Insist (0,  dir_error.str().c_str());
+    }
+    
+    mkdir(d_prefix.c_str(), ENSIGHT_DIR_MODE);
+    stat_ret = stat(d_prefix.c_str(), &sbuf);
+    if(stat_ret)
+    {
+	std::ostringstream dir_error;
+	dir_error << "Unable to create EnSight directory \"" 
+		  << d_dump_dir << "\": "
+		  << strerror(errno);
+	Insist (0,  dir_error.str().c_str());
+    }
+
+    // See if the case file exists
+    stat_ret = stat(d_case_filename.c_str(), &sbuf);
+    
+    
     // build the ensight directory if this is not a continuation
     if (!graphics_continue)
     { 
-	// remove old ensight directory
-	std::ostringstream rm_ensight;
-	rm_ensight << "rm -rf " << d_prefix;
-	system(rm_ensight.str().c_str());
-
-	int err = mkdir(d_prefix.c_str(), ENSIGHT_DIR_MODE);
-	if (err == -1)
+	// We have guaranteed that our prefix directory exists at this
+	// point.  Now, wipe out files that we might have created in there...
+	if(!stat_ret)
+	{
+	    // This is probably too agressive...
+	    std::ostringstream cmd;
+	    cmd << "rm -rf " << d_prefix;
+	    system(cmd.str().c_str());
+	    mkdir(d_prefix.c_str(), ENSIGHT_DIR_MODE);
+	}
+    }
+    else
+    {
+	// We were asked for a continuation.  Complain if we don't have a
+	// case file.
+	if(stat_ret)
 	{
 	    std::ostringstream dir_error;
-	    dir_error << "Error opening ensight directory: " 
-		      << strerror(errno);
+	    dir_error << "EnSight directory \""
+		      << d_prefix << "\" doesn't contain a case file!";
 	    Insist (0,  dir_error.str().c_str());
 	}
+    
     }
        
     // Check to make sure the variable names are of acceptable length 
