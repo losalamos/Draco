@@ -76,12 +76,13 @@
 	      )
 ;	     "-----"
 	     ("Documents"
-	      ["Create a memo"               draco-memo t]
-	      ["Create a note"               draco-note t]
-	      ["Create an article"           draco-article t]
-	      ["Create a report"             draco-report t]
-	      ["Create a BiB-TeX File"       draco-bib t]
-	      ["Create a Vision/Scope Memo"  draco-viscope t]
+	      ["Create a memo"                 draco-memo t]
+	      ["Create a note"                 draco-note t]
+	      ["Create an article"             draco-article t]
+	      ["Create a report"               draco-report t]
+	      ["Create a BiB-TeX File"         draco-bib t]
+	      ["Create a Vision/Scope Memo"    draco-viscope t]
+	      ["Create a Bug Post-Mortem Memo" draco-bug-pm t]
 	      )
 ;	     "---"
 	; No longer using GNATS bug reporting stuff

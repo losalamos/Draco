@@ -1272,6 +1272,32 @@ templates directory is found then try (my-templates-directory)."
   (perform-replace "<start>" "" nil nil nil ))
 
 ;;---------------------------------------------------------------------------;;
+;; set up a "Bug Post-Mortem" memo 
+
+(defun draco-bug-pm (name)
+  "Function to spontaneously setup a new bug post-mortem memo"
+
+  (interactive "sMemo Name: ")
+
+  (setq tempdir (rtt-templates))
+  (setq nfile (concat name ".tex"))
+  (setq tfile (concat tempdir "/draco_bug_pm.tex"))
+  (if (file-exists-p nfile)
+      (error "File %s already exists." nfile))
+
+  (find-file nfile)
+  (insert-file-contents tfile)
+
+  ;; insert the goodies
+
+  (find-file nfile)
+  (perform-replace "<user>" (user-full-name) nil nil nil )
+  (goto-char (point-min))
+  (perform-replace "<papername>" name nil nil nil )
+  (goto-char (point-min))
+  (perform-replace "<start>" "" nil nil nil ))
+
+;;---------------------------------------------------------------------------;;
 ;; set up draco-hacks
 ;;---------------------------------------------------------------------------;;
 
