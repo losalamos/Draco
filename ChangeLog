@@ -1,3 +1,46 @@
+2002-08-15  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: released draco-2_1_0.  It includes the following
+	packages:
+
+		ds++-1_6_0
+		stdheaders-1_2_0
+		c4-2_1_0
+		traits-1_4_0
+		units-1_3_0
+		xm-1_3_0
+		rng-1_6_0
+		meshReaders-1_4_0
+		cdi-1_2_0
+		quadrature-1_1_0
+		stopwatch-1_2_0
+		plot2D-1_0_0
+		timestep-1_3_0
+		pcgWrap-1_1_0
+		viz-1_3_0
+		radphys-1_4_0
+		RTT_Format_Reader-1_3_0
+		cdi_gandolf-1_2_0
+		cdi_eospac-1_1_0
+		cdi_analytic-1_0_0
+		mc-3_1_0
+		meshReaders_Services-1_0_0
+		imc-3_1_0
+
+	This is a minor draco release.  Most of the packages have been
+	tested with the COMPAQ 6_5_0 compiler (all packages used by IMC
+	codes).  Some build system updates were added: principally, draco
+	can now be used as a vendor by clients using the draco build
+	system.  It also has expanded COMPAQ support.
+
+	We still have the following to work on:
+		
+		- support for the draco/doc and draco/src/<pkg>/doc
+		  builds, native format is not important, but pdfs
+		  must be able to be generated
+		- better F90 integration
+		- better documentation for draco build system
+
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: released draco-2_0_0.  The following packages no longer
