@@ -448,6 +448,22 @@ See Ref.~\cite{draco-purify} for details on using
 \textbf{Purify}~\cite{purify} with \draco.  No specific documents
 currently exist for using \textbf{Assure}~\cite{assure} with \draco.
 
+(30 March 2001) The only licensed version of \textbf{Purify} that I
+could find was on Theta.  The instrument my new \draco\ package I had
+to check out a version of \draco\ in my scratch space on t01.  I also
+had to create an n32-bit version of \draco\ because \textbf{Purify}
+only works with 32-bit code.  To create a 32-bit version of \draco\
+add the reconfigure with the option \comp{--enable-32-bit} and then
+recompile using \comp{gmake check} within your package directory.
+This will create the unit test binarys.  Be sure to load the
+appropriate modules for \textbf{KCC} and \textbf{Purify}.
+
+Next you will need to create purify versions of these unit tests.
+From your package test target directory simply run ``\comp{purify
+ <testName>}'' and a new executable with the name
+``\comp{<testName>.pure}'' will be created.  Simply run this new
+executable to instrument your code.
+
 %%----------------------------------------
 \subsection{.bashrc}
 
