@@ -14,6 +14,7 @@ IMCSPACE
 //---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
+// diagnostic for printing
 
 template<class MT>
 void Mat_State<MT>::print(ostream &output, int cell) const
@@ -30,6 +31,7 @@ void Mat_State<MT>::print(ostream &output, int cell) const
     output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
 	   << density(cell) << setw(15) << temperature(cell) << endl;
 } 
+
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//

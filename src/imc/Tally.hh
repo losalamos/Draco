@@ -48,6 +48,9 @@ public:
     inline double get_energy_dep(const int cell);
     inline double get_energy_dep_tot();
 
+  // accessors
+    int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
+
   // diagnostics for tally
     void print(ostream &)const;
 };

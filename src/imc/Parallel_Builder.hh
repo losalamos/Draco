@@ -125,8 +125,9 @@ public:
     inline int imc_cell(int mcell, int proc) const;
     inline vector<int> get_cells(int proc) const;
     inline vector<int> get_procs(int mcell) const;
+    int num_cells() const { return procs_per_cell.size(); }
     int num_cells(int proc) const { return cells_per_proc[proc].size(); }
-    int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); }
+    int num_procs(int mcell) const { return procs_per_cell[mcell-1].size(); } 
 };
 
 //---------------------------------------------------------------------------//

@@ -62,6 +62,7 @@ private:
 
   // volume source variables
     typename MT::CCSF_double evol;
+    typename MT::CCSF_double evol_net;
     double evoltot;
 
   // surface source variables
@@ -105,7 +106,7 @@ private:
     void calc_initial_census(const MT &, const Opacity<MT> &, 
 			     const Mat_State<MT> &, Rnd_Control &);
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
-    void calc_source_numbers();
+    void calc_source_numbers(const Opacity<MT> &);
 
   // initial census service functions
     void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
@@ -138,6 +139,7 @@ public:
     double get_ew_vol(int cell) const { return ew_vol(cell); }
     double get_ew_ss(int cell) const { return ew_ss(cell); }
     string get_ss_dist() const { return ss_dist; }
+    double get_evol_net(int cell) const { return evol_net(cell); }
 
   // diagnostic functions
     void print(ostream &)const;

@@ -281,11 +281,11 @@ Parallel_Builder<MT>::send_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     for (int i = 1; i < nodes(); i++)
     {
 	if (ss_dist == "none")
-	    Send (0, i, 40);
+	    Send (0, i, 41);
 	else if (ss_dist == "normal")
-	    Send (-1, i, 40);
+	    Send (-1, i, 41);
 	else if (ss_dist == "cosine")
-	    Send (1, i, 40);
+	    Send (1, i, 41);
 	else
 	    Check (0);
     }
@@ -365,7 +365,7 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
   // surface source distributions
     string ss_dist;
     int ss_int;
-    Recv (ss_int, 0, 40);
+    Recv (ss_int, 0, 41);
     if (ss_int == 0)
 	ss_dist = "none";
     else if (ss_int == -1)
@@ -1335,6 +1335,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
     SP<Mat_State<MT> > host_mat;
     typename MT::CCSF_double density(mesh);
     typename MT::CCSF_double T(mesh);
+    typename MT::CCSF_double Cv(mesh);
 
   // loop over procs and send out the Mat_States
     for (int np = 0; np < nodes(); np++)
@@ -1345,6 +1346,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
       // data for sending/receiving Mat_State
 	double *density_send = new double[num_cells];
 	double *T_send       = new double[num_cells];
+	double *Cv_send      = new double[num_cells];
 
       // loop over on-proc cells and assign the data	
 	for (int cell = 1; cell <= num_cells; cell++)
@@ -1355,6 +1357,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 	  // assign the data
 	    density_send[cell-1] = mat.get_rho(global_cell);
 	    T_send[cell-1]       = mat.get_T(global_cell);
+	    Cv_send[cell-1]      = mat.get_Cv(global_cell);
 	}
 	
       // send the Opacity data to the IMC nodes
@@ -1363,6 +1366,7 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 	    Send (num_cells, np, 37);
 	    Send (density_send, num_cells, np, 38);
 	    Send (T_send, num_cells, np, 39);
+	    Send (Cv_send, num_cells, np, 40);
 	}
 	else
 	{
@@ -1376,16 +1380,18 @@ Parallel_Builder<MT>::send_Mat(SP<MT> mesh, const Mat_State<MT> &mat)
 	    {
 		density(cell) = density_send[cell-1];
 		T(cell)       = T_send[cell-1];
+		Cv(cell)      = Cv_send[cell-1];
 	    }
 	}
 
       // delete dynamic allocation
 	delete [] density_send;
 	delete [] T_send;
+	delete [] Cv_send;
     }
 
   // make and return the Mat_State to the host
-    host_mat = new Mat_State<MT>(density, T);
+    host_mat = new Mat_State<MT>(density, T, Cv);
     Ensure (host_mat->num_cells() == mesh->num_cells());
     return host_mat;
 }
@@ -1404,6 +1410,7 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
     SP<Mat_State<MT> > imc_mat;
     typename MT::CCSF_double density(mesh);
     typename MT::CCSF_double T(mesh);
+    typename MT::CCSF_double Cv(mesh);
 
   // get the num_cells from the host
     int num_cells;
@@ -1413,22 +1420,26 @@ Parallel_Builder<MT>::recv_Mat(SP<MT> mesh)
   // now receive the Mat_State data from the host
     double *density_recv = new double[num_cells];
     double *T_recv       = new double[num_cells];
+    double *Cv_recv      = new double[num_cells];
     Recv (density_recv, num_cells, 0, 38);
     Recv (T_recv, num_cells, 0, 39);
+    Recv (Cv_recv, num_cells, 0, 40);
 
   // assign the CCSFs
     for (int cell = 1; cell <= num_cells; cell++)
     {
 	density(cell) = density_recv[cell-1];
 	T(cell)       = T_recv[cell-1];
+	Cv(cell)      = Cv_recv[cell-1];
     }
 
   // release the dynamic storage
     delete [] density_recv;
     delete [] T_recv;
+    delete [] Cv_recv;
 
   // build and return the Mat_state
-    imc_mat = new Mat_State<MT>(density, T);
+    imc_mat = new Mat_State<MT>(density, T, Cv);
     Ensure (imc_mat->num_cells() == num_cells);
     return imc_mat;
 }

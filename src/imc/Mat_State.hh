@@ -32,24 +32,17 @@ using std::ostream;
 template<class MT>
 class Mat_State
 {
-public:
-  // structure for holding the global temperatures between cycles
-    struct Shell
-    {
-	vector<double> temperature;
-	inline Shell(const Mat_State<MT> &);
-    };
 
 private:
   // data which defines the material state
     typename MT::CCSF_double density;
     typename MT::CCSF_double temperature;
+    typename MT::CCSF_double Cv;
 
 public:
-  // explicit constructor
-    Mat_State(const typename MT::CCSF_double &density_, 
-	      const typename MT::CCSF_double &temp_)
-	: density(density_), temperature(temp_) {}
+  // inline constructors
+    inline Mat_State(const typename MT::CCSF_double &, const typename
+		     MT::CCSF_double &, const typename MT::CCSF_double &);
 
   // public member functions
 
@@ -58,6 +51,8 @@ public:
     double get_rho(int cell) const { return density(cell); }
     double& get_T(int cell) { return temperature(cell); }
     double get_T(int cell) const { return temperature(cell); }
+    double& get_Cv(int cell) { return Cv(cell); }
+    double get_Cv(int cell) const { return Cv(cell); }
 
   // get the number of cells in the mesh
     inline int num_cells() const;
@@ -74,23 +69,19 @@ template<class MT>
 ostream& operator<<(ostream &, const Mat_State<MT> &);
 
 //---------------------------------------------------------------------------//
-// inline functions for Mat_State<MT>::Shell
-//---------------------------------------------------------------------------//
-
-template<class MT>
-inline Mat_State<MT>::Shell::Shell(const Mat_State<MT> &material)
-    : temperature(material.num_cells())
-{
-    Require (temperature.size() == material.num_cells());
-
-  // assign the temperatures to this vector array
-    for (int cell = 1; cell <= temperature.size(); cell++)
-	temperature[cell-1] = material.get_T(cell);
-}
-
-//---------------------------------------------------------------------------//
 // inline functions for Mat_State
 //---------------------------------------------------------------------------//
+// constructors
+
+template<class MT>
+inline Mat_State<MT>::Mat_State(const typename MT::CCSF_double &density_, 
+				const typename MT::CCSF_double &temp_,
+				const typename MT::CCSF_double &Cv_)
+    : density(density_), temperature(temp_), Cv(Cv_) 
+{}
+
+//---------------------------------------------------------------------------//
+// return the num_cells
 
 template<class MT>
 inline int Mat_State<MT>::num_cells() const

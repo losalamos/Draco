@@ -12,6 +12,7 @@
 #include "imc/OS_Interface.hh"
 #include "imc/IMC_Man.hh"
 #include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include <ctime>
 #include <iostream>
 #include <iomanip>
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
 {
   // init C4 stuff
     C4::Init(argc, argv);
-  
+
   // time indicators
     std::time_t begin;
     std::time_t end;
@@ -46,7 +47,11 @@ int main(int argc, char *argv[])
   // run a timestpe
     manager.step_IMC();
 
+  // regroup
+    manager.regroup();
+
   // ending time
+    C4::gsync();
     if (C4::node() == 0)
     {
 	end = std::time(NULL);

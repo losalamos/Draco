@@ -14,6 +14,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <iomanip>
 
 IMCSPACE
 
@@ -29,6 +30,9 @@ using std::endl;
 using std::ofstream;
 using std::ostringstream;
 using std::string;
+using std::ios;
+using std::setiosflags;
+using std::setw;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -37,7 +41,7 @@ using std::string;
 
 template<class MT, class BT, class IT, class PT>
 IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
-    : delta_t(0), cycle(1), max_cycle(0), verbose(verbose_)
+    : delta_t(0), cycle(0), max_cycle(0), verbose(verbose_)
 {
   // all the SPs should be null defined
     Check (!mesh);
@@ -48,6 +52,7 @@ IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
     Check (!buffer);
     Check (!source_init);
     Check (!global_state);
+    Check (!tally);
 }
 
 //---------------------------------------------------------------------------//
@@ -59,6 +64,9 @@ IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
 template<class MT, class BT, class IT, class PT>
 void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 {
+  // update the cycle
+    cycle++;
+
   // run only on the host node
     if (node())
 	return;
@@ -96,15 +104,19 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
   // initialize the opacity builder and build the state
     {
 	Opacity_Builder<MT>  opacity_builder(interface);
+
+      // build the mat_state
 	mat_state    = opacity_builder.build_Mat(mesh);
+
+      // update the Mat_State from our last cycle
+	if (global_state) 
+	    global_state->update_Mat(*mat_state);
+
+      // now build the opacity
 	opacity      = opacity_builder.build_Opacity(mesh, mat_state);	
 	if (verbose)
 	    cout << " ** Built Mat_State and Opacity on node " << node() 
 		 << endl; 
-
-      // build the global state if we are on the first cycle
-	if (!global_state)
-	    global_state = new Mat_State<MT>::Shell(*mat_state);
     }
 
   // do the source initialization
@@ -112,7 +124,12 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
     source_init->initialize(mesh, opacity, mat_state, rnd_con, cycle);
     if (verbose)
 	cout << " ** Did the source initialization on node " << node()
-	     << endl << endl;
+	     << endl;
+
+  // make a Global_Buffer to hold T, Cv, evol_net, etc, for all time
+    if (!global_state)
+	global_state = new Global_Buffer<MT>(*mesh, *mat_state,
+					     *source_init); 
 }
 
 //---------------------------------------------------------------------------//
@@ -133,12 +150,18 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 	Require (mat_state);
 	Require (global_state);
 	Require (source_init);
+	Require (global_state);
 
       // make the Parallel Builder and Particle Buffer on the first cycle
 	if (!parallel_builder)
 	{
 	    parallel_builder = new Parallel_Builder<MT>(*mesh, *source_init); 
 	    buffer           = new Particle_Buffer<PT>(*mesh, *rnd_con);
+
+	  // make sure the global mesh is perserved here
+	    Check (parallel_builder->num_cells() ==
+		   global_state->num_cells() && mesh->num_cells() ==
+		   parallel_builder->num_cells());  
 
 	  // send the buffer sizes, Rnd seed, and delta_t
 	    for (int i = 1; i < nodes(); i++)
@@ -162,6 +185,9 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
       // send out the Source
 	source = parallel_builder->send_Source(mesh, mat_state, rnd_con,
 					       *source_init, *buffer);
+
+      // make a tally
+	tally = new Tally<MT>(mesh);
 
       // kill objects we no longer need
 	kill(source_init);
@@ -197,9 +223,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 	mat_state = parallel_builder->recv_Mat(mesh);
 	source    = parallel_builder->recv_Source(mesh, mat_state, rnd_con, 
 						  *buffer);
-	if (verbose)
-	    cout << " ** We received the mesh, opacity, mat_state," 
-		 << " and source on node " << node() << endl;
+	tally     = new Tally<MT>(mesh);
     }
     
   // make sure each processor has the requisite objects to do transport
@@ -210,6 +234,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
     Ensure (buffer);
     Ensure (parallel_builder);
     Ensure (rnd_con);
+    Ensure (tally);
     Ensure (!source_init);
     Ensure (delta_t > 0);
 
@@ -235,10 +260,8 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
     string cen_file = cen_title.str();
     ofstream census(cen_file.c_str());
 
-  // make a tally object and diagnostic
-    Tally<MT> tally(mesh);
-    SP<typename PT::Diagnostic> check = new PT::Diagnostic(cout, true);
-    cout << *source << endl;
+  // diagnostic
+    SP<typename PT::Diagnostic> check;
 
   // get source particles and run them to completion
     while (*source)
@@ -248,7 +271,7 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 	Check (particle->status());
 
       // transport the particle
-	particle->transport(*mesh, *opacity, tally, check);
+	particle->transport(*mesh, *opacity, *tally, check);
 
       // after the particle is no longer active take appropriate action
 	Check (!particle->status());
@@ -259,17 +282,108 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
       // no other choices right now
     }
 
-    HTSyncSpinLock h;
-    {
-	cout << ">> Tally on " << node() << endl;
-	cout << tally << endl;
-    }
+  // now remove objects we no longer need
+    kill (source);
+    kill (mat_state);
+    kill (opacity);
+    kill (mesh);
 
-  // <<CONTINUE HERE>>
-  // 1) in-cycle census
-  // 2) concatening the tallies
+  // object inventory
+    Ensure (rnd_con);
+    Ensure (buffer);
+    Ensure (parallel_builder);
+    Ensure (tally);
+    Ensure (!source);
+    Ensure (!mat_state);
+    Ensure (!opacity);
+    Ensure (!source_init);
+    Ensure (!mesh);
 }
 
+//---------------------------------------------------------------------------//
+// concatentate results on the master processor and update the Global-mesh
+
+template<class MT, class BT, class IT, class PT>
+void IMC_Man<MT,BT,IT,PT>::regroup()
+{
+  // send the tallies to the master node
+    if (node())
+    {
+      // calculate the number of cells on this node
+	int num_cells = tally->num_cells();
+
+      // make allocatable arrays for tally data
+	double *tally_send = new double[num_cells];
+
+      // assign tally data to arrays
+	for (int i = 0; i < num_cells; i++)
+	    tally_send[i] = tally->get_energy_dep(i+1);
+
+      // send tally to master
+	Send (num_cells, 0, 300);
+	Send (tally_send, num_cells, 0, 301);
+
+      // release memory
+	delete [] tally_send;
+	kill (tally);
+    }
+
+  // receive the tallies on the master and update the global buffer
+    if (!node())
+    {
+      // accumulated tally data from all processors
+	vector<double> accumulate_tally(global_state->num_cells(), 0.0);
+
+      // loop through processors and get stuff
+	for (int i = 1; i < nodes(); i++)
+	{
+	    int num_cells;
+	    Recv (num_cells, i, 300);
+	    Check (num_cells == parallel_builder->num_cells(i));
+	    double *tally_recv = new double[num_cells];
+	    Recv (tally_recv, num_cells, i, 301);
+
+	  // assign data to accumulate_tally by looping over IMC cells
+	    for (int cell = 1; cell <= num_cells; cell++)
+	    {
+		int global_cell = parallel_builder->master_cell(cell, i);
+		accumulate_tally[global_cell-1] += tally_recv[cell-1];
+	    }
+
+	  // reclaim storage
+	    delete [] tally_recv;
+	}
+     
+      // add the results from the master processor
+	for (int cell = 1; cell <= tally->num_cells(); cell++)
+	{
+	    int global_cell = parallel_builder->master_cell(cell, 0);
+	    accumulate_tally[global_cell-1] += tally->get_energy_dep(cell);
+	}
+	kill (tally);
+
+      // update the global state
+	global_state->update_T(accumulate_tally);
+
+      // print out the timestep results
+	cout << ">> Results for cycle " << cycle << endl;
+	cout << "=====================================" << endl;
+	cout << "Total time : " << delta_t * cycle << endl;
+	cout << *global_state << endl;
+    }
+
+  // do our inventory
+    Ensure (!mesh);
+    Ensure (!opacity);
+    Ensure (!mat_state);
+    Ensure (!source);
+    Ensure (!tally);
+    Ensure (!source_init);
+    Ensure (parallel_builder);
+    Ensure (buffer);
+    Ensure (rnd_con);
+}
+		
 CSPACE
 
 //---------------------------------------------------------------------------//

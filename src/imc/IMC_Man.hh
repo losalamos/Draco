@@ -30,6 +30,7 @@
 #include "imc/Tally.hh"
 #include "imc/Mat_State.hh"
 #include "imc/Opacity.hh"
+#include "imc/Global_Buffer.hh"
 #include "rng/Random.hh"
 #include "ds++/SP.hh"
 
@@ -52,10 +53,11 @@ private:
     SP<Parallel_Builder<MT> > parallel_builder;
     SP<Particle_Buffer<PT> > buffer;
     SP<Source<MT> > source;
+    SP<Tally<MT> > tally;
 
   // objects used only by the host
     SP<Source_Init<MT> > source_init;
-    SP<typename Mat_State<MT>::Shell> global_state;
+    SP<Global_Buffer<MT> > global_state;
 
   // problem variables
     double delta_t;

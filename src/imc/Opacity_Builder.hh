@@ -25,8 +25,11 @@
 #include "imc/Mat_State.hh"
 #include "ds++/SP.hh"
 #include <vector>
+#include <string>
 
 IMCSPACE
+
+using std::string;
 
 template<class MT>
 class Opacity_Builder
@@ -42,6 +45,7 @@ private:
     vector<double> specific_heat;
     double implicitness;
     double delta_t;
+    string analytic_opacity;
 
   // Begin_Doc opacity_builder-int.tex
   // Begin_Verbatim 

@@ -38,10 +38,10 @@ using std::endl;
 template<class MT>
 template<class IT>
 Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
-    : evol(mesh), evoltot(0), ess(mesh), fss(mesh), esstot(0), erad(mesh), 
-      eradtot(0), ncen(mesh), ncentot(0), nvol(mesh), nss(mesh),
-      nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), ew_vol(mesh),
-      ew_ss(mesh), t4_slope(mesh)
+    : evol(mesh), evol_net(mesh), evoltot(0), ess(mesh), fss(mesh), 
+      esstot(0), erad(mesh), eradtot(0), ncen(mesh), ncentot(0), nvol(mesh),
+      nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0), 
+      ew_vol(mesh), ew_ss(mesh), t4_slope(mesh)
 {
     Require (interface);
     Require (mesh);
@@ -65,15 +65,16 @@ Source_Init<MT>::Source_Init(SP<IT> interface, SP<MT> mesh)
     Check (ss_pos.size()   == ss_temp.size());
 
   // temporary assertions
-    Check (evol.get_Mesh()   == *mesh);
-    Check (ess.get_Mesh()    == *mesh);
-    Check (fss.get_Mesh()    == *mesh);
-    Check (erad.get_Mesh()   == *mesh);
-    Check (ncen.get_Mesh()   == *mesh);
-    Check (nvol.get_Mesh()   == *mesh);
-    Check (nss.get_Mesh()    == *mesh);
-    Check (ew_vol.get_Mesh() == *mesh);
-    Check (ew_ss.get_Mesh()  == *mesh);
+    Check (evol.get_Mesh()     == *mesh);
+    Check (ess.get_Mesh()      == *mesh);
+    Check (fss.get_Mesh()      == *mesh);
+    Check (erad.get_Mesh()     == *mesh);
+    Check (ncen.get_Mesh()     == *mesh);
+    Check (nvol.get_Mesh()     == *mesh);
+    Check (nss.get_Mesh()      == *mesh);
+    Check (ew_vol.get_Mesh()   == *mesh);
+    Check (ew_ss.get_Mesh()    == *mesh);
+    Check (evol_net.get_Mesh() == *mesh);
 }
 
 //---------------------------------------------------------------------------//
@@ -103,7 +104,7 @@ void Source_Init<MT>::initialize(SP<MT> mesh, SP<Opacity<MT> > opacity,
 	calc_source_energies(*opacity, *state);
 	
   // calculate source numbers
-    calc_source_numbers();
+    calc_source_numbers(*opacity);
 
   // calculate the slopes of T_electron^4
     calc_t4_slope(*mesh, *state);
@@ -151,7 +152,7 @@ void Source_Init<MT>::calc_source_energies(const Opacity<MT> &opacity,
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Source_Init<MT>::calc_source_numbers()
+void Source_Init<MT>::calc_source_numbers(const Opacity<MT> &opacity)
 {
   // for ss and volume emission, calculate numbers of particles, energy
   // weight, and energy loss due to inadequate sampling
@@ -171,6 +172,7 @@ void Source_Init<MT>::calc_source_numbers()
     nsstot  = 0;
     eloss_vol = 0.0;
     eloss_ss  = 0.0;
+    double eloss_cell;
 
   // loop over cells to calculate number of vol and ss particles
     for (int cell = 1; cell <= nvol.get_Mesh().num_cells(); cell++)
@@ -182,7 +184,13 @@ void Source_Init<MT>::calc_source_numbers()
 	else
 	    ew_vol(cell) = 0.0;
 	nvoltot += nvol(cell);
-	eloss_vol += evol(cell) - nvol(cell) * ew_vol(cell);
+
+      // calculate energy loss due to sampling and adjust evol
+	eloss_cell = evol(cell) - nvol(cell) * ew_vol(cell);
+	eloss_vol += eloss_cell;
+	evol(cell) = nvol(cell) * ew_vol(cell);
+	evol_net(cell) = evol(cell) - (1.0 - opacity.get_fleck(cell)) * 
+	    evol_ext[cell-1] * evol.get_Mesh().volume(cell) * delta_t;
 
       // calculate surface source info
 	nss(cell) = static_cast<int>(ess(cell) * part_per_e + .5);

@@ -22,6 +22,7 @@
 //                interface between our input and the builders.
 //  2)   5-6-98 : added parser for source
 //  3)  6-16-98 : added material-necessary quantities to end-mat block
+//  4)  6-17-98 : added card for input of analytic opacities
 // 
 //===========================================================================//
 
@@ -70,6 +71,7 @@ private:
     vector<double> temperature;
     vector<double> specific_heat;
     double implicitness;
+    string analytic_opacity;
 
   // data required for Source_Init
     vector<double> evol_ext;
@@ -132,6 +134,7 @@ public:
     double get_dnpdt() const { return dnpdt; }
     int get_capacity() const { return capacity; }
     string get_ss_dist() const { return ss_dist; }
+    string get_analytic_opacity() const { return analytic_opacity; }
 };
 
 //---------------------------------------------------------------------------//
@@ -141,9 +144,10 @@ public:
 inline OS_Interface::OS_Interface(const string &infile)
     : input_file(infile), coord_system(""), fine_cells(0), accum_cells(0), 
       coarse_edge(0), fine_edge(0), bnd_cond(0), zone(0), mat_zone(0), 
-      density(0), kappa(0), temperature(0), implicitness(0),
-      specific_heat(0), evol_ext(0), ss_pos(0), ss_temp(0), rad_temp(0),  
-      delta_t(0), npmax(0), dnpdt(0), ss_dist("none"), capacity(0)
+      density(0), kappa(0), temperature(0), implicitness(0), 
+      analytic_opacity("straight"), specific_heat(0), evol_ext(0), ss_pos(0), 
+      ss_temp(0), rad_temp(0), delta_t(0), npmax(0), dnpdt(0), 
+      ss_dist("none"), capacity(0)
 {}
 
 CSPACE

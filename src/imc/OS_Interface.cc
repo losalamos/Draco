@@ -338,6 +338,8 @@ void OS_Interface::zone_opacity_parser(ifstream &in)
 	}
 	if (keyword == "implicitness:")
 	    in >> implicitness;
+	if (keyword == "analytic_opacity:")
+	    in >> analytic_opacity;
     }    
 
   // make sure we have gotten a fleck factor
