@@ -23,7 +23,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(c4 ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
-AC_RUNTESTS(TestElementDefinition TestHexMeshReader TestRTT_Format, scalar)
+AC_RUNTESTS(TestElementDefinition TestHexMeshReader TestRTT_Format, 1 3 5)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
