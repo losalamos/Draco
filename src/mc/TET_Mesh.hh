@@ -73,6 +73,12 @@ namespace rtt_mc
 //                 of element_sets.  New diagnostic functions print_node_sets,
 //                 print_side_sets, and print_cell_sets are added to TET_Mesh.
 //  8) 2000-06-19: Corrected a major bug in get_db() and get_min_db().
+//  9) 2000-07-23: Initial implementation of sample_pos() for linearly
+//                 interpolated temperature**4 given the temperatures**4 on the
+//                 vertices of the cells.  Its interface will probably need to
+//                 be changed; and it is less efficient than it might be,
+//                 because of recalculation of certain quantities that we will
+//                 probably decide to store.
 //
 //___________________________________________________________________________//
 
@@ -197,6 +203,8 @@ class TET_Mesh
 
     const ThreeVector get_inward_cross(int, int) const;
 
+    const SF_DOUBLE get_barycentric_coords(const SF_DOUBLE &, int) const;
+
  public:
 
     //! TET_Mesh constructor.
@@ -246,8 +254,7 @@ class TET_Mesh
 
     const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &) const;
 
-    const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &, SF_DOUBLE,
-                     double) const;
+    const SF_DOUBLE sample_pos(int, rtt_rng::Sprng &, const SF_DOUBLE &) const;
 
     const SF_DOUBLE sample_pos_on_face(int, int, rtt_rng::Sprng &) const;
 

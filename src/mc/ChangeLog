@@ -1,8 +1,20 @@
+<<<<<<< ChangeLog
+2000-07-23  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Mesh.cc, TET_Mesh.hh, test/tstTET_Mesh.cc: Initial
+	implementation of sample_pos() for linearly interpolated
+	temperature**4 given the temperatures**4 on the vertices of the
+	cells.  Its interface will probably need to be changed; and it is
+	less efficient than it might be, because of recalculation of
+	certain quantities that we will probably decide to store.
+
+=======
 2000-07-20  Thomas M. Evans  <tme@lanl.gov>
 
 	* AMR_Layout.hh, AMR_Layout.cc: added AMR_Layout classes for
 	1-to-N cell face boundaries
 
+>>>>>>> 1.22
 2000-06-19  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Mesh.cc, test/tstTET_Mesh.cc: Corrected a major bug in the

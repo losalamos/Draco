@@ -149,6 +149,48 @@ const ThreeVector TET_Mesh::get_inward_cross(int cell_, int face_) const
 
 //___________________________________________________________________________//
 /*!
+ * \brief          Calculate the barycentric coordinates of a point in a cell.
+ * \param position XYZ-position of the point as STL vector.
+ * \param cell_    Internal number of cell.
+ * \return         The normalized barycentric coordinates of "position".
+ *
+ * Private function.
+ *
+ * The calling function will have checked the validity of the external value of
+ * "cell" and will have adjusted to cell_ before calling this private function.
+ *
+ * If the position is not actually within cell_, a Check() will fail.
+ *
+ * The barycentric coordinates will be normalized and ordered as the vertices
+ * (and corresponding faces) are ordered - 0, 1, 2, 3.
+ */
+const TET_Mesh::SF_DOUBLE TET_Mesh::get_barycentric_coords(
+        const SF_DOUBLE &position, int cell_) const
+{
+    SF_DOUBLE b_coords(FOUR);
+    ThreeVector R(position);
+    double summ = 0.;
+
+    for (int f_ = 0 ; f_ < FOUR ; f_++)
+        {
+            ThreeVector N = get_inward_cross(cell_, f_);
+            int v_ = (f_ + 1) % FOUR;  // any vertex on the face.
+            int base = cells_vertices[cell_][v_];
+
+            b_coords[f_] = N.dot(R - vertex_vector[base]);
+            Check (b_coords[f_] > 0.);
+            summ += b_coords[f_];
+        }
+
+    for (int f_ = 0 ; f_ < FOUR ; f_++)
+        b_coords[f_] /= summ;
+
+    return b_coords;
+
+}   // end TET_Mesh::get_barycentric_coords(const SF_DOUBLE &,int)
+
+//___________________________________________________________________________//
+/*!
  * \brief          Determine whether a given position is inside a given cell.
  * \param position XYZ-position as STL vector.
  * \param cell     External number of cell.
@@ -172,6 +214,7 @@ bool TET_Mesh::in_open_cell(const SF_DOUBLE &position, int cell) const
             if ( N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ) <= 0.0 )
                 return false;
         }
+
     // If position is "inside" every face, it is inside the cell.
     return true;
 
@@ -444,11 +487,48 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell, int face) const
 }   // end TET_Mesh::get_vertices(int,int)
 
 //___________________________________________________________________________//
+//__+/*!
+//__+ * \brief        Sample position uniformly within a given cell.
+//__+ * \param cell   External number of cell.
+//__+ * \param random The random-number generator, used as random.ran()
+//__+ * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
+//__+ *
+//__+ * This version samples along the altitude of the cell first, with the
+//__+ * appropriate geometric PDF, then samples uniformly for the location in
+//__+ * a triangular base at the sampled altitude.
+//__+ */
+//__+const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
+//__+    rtt_rng::Sprng &random) const
+//__+{
+//__+    Valid(cell);
+//__+    int cell_ = cell - 1;
+//__+
+//__+    double fraction = std::pow(random.ran(),1.0/3.0);
+//__+    Check ( fraction > 0.0 && fraction < 1.0 );
+//__+
+//__+    int v0 = cells_vertices[cell_][0];
+//__+    int v1 = cells_vertices[cell_][1];
+//__+    int v2 = cells_vertices[cell_][2];
+//__+    int v3 = cells_vertices[cell_][3];
+//__+
+//__+    ThreeVector A = lin_comb(vertex_vector[v3],vertex_vector[v0],fraction);
+//__+    ThreeVector B = lin_comb(vertex_vector[v3],vertex_vector[v1],fraction);
+//__+    ThreeVector C = lin_comb(vertex_vector[v3],vertex_vector[v2],fraction);
+//__+
+//__+    return rtt_mc::sample_in_triangle(A, B, C, random).convert();
+//__+
+//__+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
+
+//___________________________________________________________________________//
 /*!
  * \brief        Sample position uniformly within a given cell.
  * \param cell   External number of cell.
  * \param random The random-number generator, used as random.ran()
  * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
+ *
+ * This version samples uniformly for a position on the triangular base first,
+ * then samples along the altitude, with the appropriate geometric PDF, for the
+ * position in the cell.
  */
 const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
     rtt_rng::Sprng &random) const
@@ -456,40 +536,99 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
     Valid(cell);
     int cell_ = cell - 1;
 
-    double fraction = std::pow(random.ran(),1.0/3.0);
-    Check ( fraction > 0.0 && fraction < 1.0 );
-
     int v0 = cells_vertices[cell_][0];
     int v1 = cells_vertices[cell_][1];
     int v2 = cells_vertices[cell_][2];
     int v3 = cells_vertices[cell_][3];
 
-    ThreeVector A = lin_comb(vertex_vector[v3],vertex_vector[v0],fraction);
-    ThreeVector B = lin_comb(vertex_vector[v3],vertex_vector[v1],fraction);
-    ThreeVector C = lin_comb(vertex_vector[v3],vertex_vector[v2],fraction);
+    ThreeVector B = sample_in_triangle(vertex_vector[v0],
+                                       vertex_vector[v1],
+                                       vertex_vector[v2],random);
 
-    return rtt_mc::sample_in_triangle(A, B, C, random).convert();
+    double fraction = std::pow(random.ran(),1.0/3.0);
+    Check ( fraction > 0.0 && fraction < 1.0 );
+
+    return rtt_mc::lin_comb(vertex_vector[v3],B,fraction).convert();
 
 }   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
 
 //___________________________________________________________________________//
+//__+/*!
+//__+ * \brief        Sample position uniformly within a given cell.
+//__+ * \param cell   External number of cell.
+//__+ * \param random The random-number generator, used as random.ran()
+//__+ * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
+//__+ *
+//__+ * This version samples a point along (v0,v1) first, then a point between
+//__+ * there and v2, then a point between there and v3, each sampling with the
+//__+ * appropriate geometric PDF.
+//__+ */
+//__+const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
+//__+    rtt_rng::Sprng &random) const
+//__+{
+//__+    Valid(cell);
+//__+    int cell_ = cell - 1;
+//__+
+//__+    int v0 = cells_vertices[cell_][0];
+//__+    int v1 = cells_vertices[cell_][1];
+//__+    int v2 = cells_vertices[cell_][2];
+//__+    int v3 = cells_vertices[cell_][3];
+//__+
+//__+    double frac1 = random.ran();
+//__+    Check ( frac1 > 0.0 && frac1 < 1.0 );
+//__+
+//__+    double frac2 = random.ran();
+//__+    Check ( frac2 > 0.0 && frac2 < 1.0 );
+//__+    frac2 = std::sqrt(frac2);
+//__+
+//__+    double frac3 = random.ran();
+//__+    Check ( frac3 > 0.0 && frac3 < 1.0 );
+//__+    frac3 = std::pow(frac3,1.0/3.0);
+//__+
+//__+    ThreeVector R01 = lin_comb(vertex_vector[v1],vertex_vector[v0],frac1);
+//__+
+//__+    ThreeVector R012 = lin_comb(vertex_vector[v2],R01,frac2);
+//__+
+//__+    return rtt_mc::lin_comb(vertex_vector[v3],R012,frac3).convert();
+//__+
+//__+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
+
+//___________________________________________________________________________//
 /*!
- * \brief           Sample position in a given cell with a tilt.
- * \param cell      External number of cell.
- * \param random    The random-number generator, used as random.ran()
- * \param slope     Specifies a tilt or slope-like function.
- * \param center_pt Reference location for tilt or slope-like function.
- * \return          Scalar_field[dim#] == sampled coordinate along dim#-axis.
+ * \brief         Sample position in a given cell with a T**4 distribution.
+ * \param cell    External number of cell.
+ * \param random  The random-number generator, used as random.ran()
+ * \param T4      Values of T**4, in the same order as the cell's vertices.
+ * \return        Scalar_field[dim#] == sampled coordinate along dim#-axis.
+ *
+ * This function assumes that the temperatures are known on the four vertices
+ * of the cell, and are adequately represented by linear interpolation in T**4.
  */
 const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
-    rtt_rng::Sprng &random, SF_DOUBLE slope, double center_pt) const
+    rtt_rng::Sprng &random, const SF_DOUBLE &T4) const
 {
-    // QUESTION: Should "slope" be "const SF_DOUBLE &slope" ?
-    // IMPLEMENTATION LATER.  For the moment, ignore the tilt.
+    Require (T4.size() == FOUR);
+    Valid(cell);
+    int cell_ = cell - 1;
+    for (int i = 0 ; i < FOUR ; i++)
+        Check (T4[i] >= 0.);
 
-    return TET_Mesh::sample_pos(cell, random);  // Uniform sampling.
+    SF_DOUBLE::const_iterator im = std::max_element(T4.begin(),T4.end());
+    double Tmax = *im;
+    Check (Tmax >= 0.);
+    double Tr;
 
-}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &,SF_DOUBLE,double)
+    SF_DOUBLE R(THREE);
+    do
+        {
+            R = sample_pos(cell, random);  // Trial uniform sampling.
+            SF_DOUBLE B = get_barycentric_coords(R, cell_);
+            Tr = B[0]*T4[0] + B[1]*T4[1] + B[2]*T4[2] + B[3]*T4[3];
+        } while (Tr <= Tmax*random.ran());
+
+    return R;
+
+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &,const SF_DOUBLE &)
 
 //___________________________________________________________________________//
 /*!
@@ -594,7 +733,7 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
 void TET_Mesh::print_node_sets(std::ostream &output) const
 {
     output << "NODE SETS\n" << std::endl;
-    for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
             flag != node_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
@@ -617,7 +756,7 @@ void TET_Mesh::print_node_sets(std::ostream &output) const
 void TET_Mesh::print_side_sets(std::ostream &output) const
 {
     output << "SIDE SETS\n" << std::endl;
-    for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
             flag != side_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
@@ -640,7 +779,7 @@ void TET_Mesh::print_side_sets(std::ostream &output) const
 void TET_Mesh::print_cell_sets(std::ostream &output) const
 {
     output << "CELL SETS\n" << std::endl;
-    for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
             flag != cell_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
@@ -709,7 +848,7 @@ double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
             ThreeVector N(get_normal(cell, face));
             int v_ = face % FOUR;  // any vertex on the face.
 
-            dist[face-1] = 
+            dist[face-1] =
                 N.dot(vertex_vector[cells_vertices[cell_][v_]] - XYZ);
         }
 

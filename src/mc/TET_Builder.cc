@@ -110,7 +110,7 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 void TET_Builder::print_node_sets(std::ostream &output) const
 {
     output << "NODE SETS\n" << endl;
-    for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
             flag != node_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
@@ -129,7 +129,7 @@ void TET_Builder::print_node_sets(std::ostream &output) const
 void TET_Builder::print_element_sets(std::ostream &output) const
 {
     output << "ELEMENT SETS\n" << endl;
-    for (MAP_String_SetInt::const_iterator flag = element_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = element_sets.begin() ;
             flag != element_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
@@ -148,7 +148,7 @@ void TET_Builder::print_element_sets(std::ostream &output) const
 void TET_Builder::print_side_sets(std::ostream &output) const
 {
     output << "SIDE SETS\n" << endl;
-    for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
             flag != side_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
@@ -167,7 +167,7 @@ void TET_Builder::print_side_sets(std::ostream &output) const
 void TET_Builder::print_cell_sets(std::ostream &output) const
 {
     output << "CELL SETS\n" << endl;
-    for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ; 
+    for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
             flag != cell_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
