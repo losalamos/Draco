@@ -59,6 +59,16 @@
 		- better F90 integration
 		- better documentation for draco build system
 
+	To figure out the parameters of a draco build, use the bin/draco
+	tool.  This script will tell the following info:
+
+		- version of draco
+		- configure options used in build
+		- installation prefix
+
+	As implied above, it gets installed inside of bin. Use draco
+	--help to query options.
+
 2001-10-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* doc/design: added draco levelization diagrams reflecting current
