@@ -1049,6 +1049,11 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
 	ssrn(nc)   = global_ssrn[gcell-1];
 	volrn(nc)  = global_volrn[gcell-1];
 
+	// zero out evol_net if there are no volume emission particles in the
+	// cell, this is correct ONLY for full DD
+	if (nvol(nc) == 0)
+	    evol_net(nc) = 0.0;
+
 	// accumulate totals on master
 	ncentot += ncen(nc);
 	nvoltot += nvol(nc);
