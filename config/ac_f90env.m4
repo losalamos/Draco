@@ -101,7 +101,7 @@ AC_DEFUN(AC_F90_ENV, [dnl
        alphaev67-dec*)
           AC_COMPILER_COMPAQ_F90
        ;;
-       *hp*)
+       *hp-hpux*)
           AC_COMPILER_HP_F90
        ;;
        *)
@@ -559,7 +559,7 @@ AC_DEFUN(AC_COMPILER_HP_F90, [dnl
    # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
    if test "$F90FLAGS" = ""
    then
-       F90FLAGS="${F90FREE}"
+       F90FLAGS="${F90FREE} +U77"
 
        if test "${enable_debug:=no}" = yes
        then
