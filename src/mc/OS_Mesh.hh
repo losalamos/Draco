@@ -14,13 +14,14 @@
 
 #include "Coord_sys.hh"
 #include "Layout.hh"
+#include "Constants.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include <iostream>
+#include <iostream> 
 #include <string>
 
 namespace rtt_mc 
@@ -34,6 +35,39 @@ namespace rtt_mc
  *
  * The OS_Mesh class is a generalized orthogonal-structured mesh class for
  * Monte Carlo applications.
+ *
+ * The OS_Mesh can be 2-D ( \e XY ) or 3-D (\e XYZ ).  There are 2 *
+ * num_dimension faces per cell.  The face indices have the following
+ * meaning in a cell:
+ * -# low \e x face
+ * -# high \e x face
+ * -# low \e y face
+ * -# high \e y face
+ * -# low \e z face
+ * -# high \e z face
+ * .
+ * The OS_Mesh is a model of the IMC mesh-type concept.  Thus, it provides
+ * the following services:
+ * - next_cell()
+ * - get_cell()
+ * - get_db()
+ * - get_min_axial_distance()
+ * - get_normal()
+ * - get_normal_in()
+ * - volume()
+ * - face_area()
+ * - get_surcells()
+ * - check_defined_surcells()
+ * - get_bndface()
+ * - get_vertices()
+ * - sample_pos()
+ * - sample_pos_on_face()
+ * - get_neighbors()
+ * .
+ * OS_Mesh also provides packing capability and two nested fields types:
+ * - CCSF
+ * - CCVF
+ * .
  */
 /*!
  * \example mc/test/tstOSMesh.cc
@@ -86,6 +120,8 @@ namespace rtt_mc
 // 19) 18-AUG-00: added new signature for next_cell function
 // 20) 31-AUG-00: added get_spatial_dimension() function
 // 21) 17-APR-01: added Pack function
+// 22) 29-JAN-03: added function to calculate the minimum distance along
+//                axial directions
 // 
 //===========================================================================//
     
@@ -119,6 +155,8 @@ class OS_Mesh
     typedef CCSF<std_string> CCSF_string;
 
   private:
+    // >>> DATA
+
     // Base class reference to a derived coord class.
     rtt_dsxx::SP<Coord_sys> coord;
 
@@ -137,7 +175,8 @@ class OS_Mesh
     // Indicator whether this is a submesh.
     bool submesh;
 
-    // >>> Private implementations.
+  private:
+    // >>> IMPLEMENTATION
 
     // Calculate a surface array from the vertices of the mesh.
     void calc_surface();
@@ -151,54 +190,26 @@ class OS_Mesh
     OS_Mesh& operator=(const OS_Mesh &);
 
   public:
-    // Generalized constructor for all mesh types.
+    // Constructor.
     OS_Mesh(SP_Coord_sys, Layout &, vf_double &, vf_int &, bool = false);
 
-    // >>> Member functions used by the OS_Mesh-dependent classes.
+    // >>> REQUIRED IMC SERVICES
 
-    // Mesh dimensionality functions.
-
-    // Give the dimension and begin and end return the beginning and ending
-    // coordinate along that dimension.
-    inline double begin(int) const;
-    inline double end(int) const;
-
-    // Return number of cells.
+    //! Return number of cells.
     int num_cells() const { return layout.num_cells(); }
-
-    // Cell dimensionality functions.
-
-    // Find minimum and maximum dimension of cell.
-    inline double min(int, int) const;
-    inline double max(int, int) const;
-
-    // Find centerpoint of cell and width of cell.
-    inline double pos(int, int) const;
-    double dim(int d, int cell) const { return max(d, cell) - min(d, cell); } 
-
-    // Diagnostic functions.
-    void print(std::ostream &) const;
-    void print(std::ostream &, int) const;
-
-    // References to imbedded objects and data required for
-    // Parallel_Building. 
-    const Layout& get_Layout() const { return layout; }
-    const Coord_sys& get_Coord() const { return *coord; }
-    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
-    const vf_double& get_vertex() const { return vertex; }
-    const vf_int& get_cell_pair() const { return cell_pair; }
-
-    // >>> Services required by ALL mesh types used in IMC-codes.
 
     // Services required for Graphics dumps.
     sf_int get_cell_types() const;
     vf_double get_point_coord() const;
 
-    // Required services for transport and source.
+    //! Return the spatial dimension of the mesh.
     int get_spatial_dimension() const { return coord->get_dim(); }
+
+    // Required services for transport and source.
     inline int next_cell(int, int, const sf_double & = sf_double()) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const; 
+    inline double get_min_axial_distance(const sf_double &, int) const;
     inline sf_double get_normal(int, int) const;
     inline sf_double get_normal_in(int, int) const;
     inline double volume(int) const;
@@ -212,19 +223,61 @@ class OS_Mesh
     inline sf_double sample_pos(int, rng_Sprng &, sf_double, double) const; 
     inline sf_double sample_pos_on_face(int, int, rng_Sprng &)	const;
     inline sf_int get_neighbors(int) const;
+
+    //! Determine if this is a full mesh or partitioned mesh.
     bool full_Mesh() const { return !submesh; }
 
     // Pack function.
     SP_Pack pack(const sf_int & = sf_int()) const;
 
-    // Overloaded operators.
+    // >>> OS_MESH DEPENDENT SERVICES
+
+    // Mesh dimensionality functions.
+
+    // Give the dimension and begin and end return the beginning and ending
+    // coordinate along that dimension.
+    inline double begin(int) const;
+    inline double end(int) const;
+
+    // Cell dimensionality functions.
+
+    // Find minimum and maximum dimension of cell.
+    inline double min(int, int) const;
+    inline double max(int, int) const;
+
+    // Find centerpoint of cell.
+    inline double pos(int, int) const;
+
+    //! Get dimensional width of cell.
+    double dim(int d, int cell) const { return max(d, cell) - min(d, cell); } 
+
+    // Diagnostic functions.
+    void print(std::ostream &) const;
+    void print(std::ostream &, int) const;
+
+    // Accessors.
+
+    //! Get the mesh layout.
+    const Layout& get_Layout() const { return layout; }
+
+    //! Get the mesh coordinate system.
+    const Coord_sys& get_Coord() const { return *coord; }
+
+    //! Get smart pointer to coordinate system.
+    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
+
+    //! Get cell vertex list.
+    const vf_double& get_vertex() const { return vertex; }
+
+    //! Get map of cell indices to cell vertex indices.
+    const vf_int& get_cell_pair() const { return cell_pair; }
+
+    // Equality operator.
     bool operator==(const OS_Mesh &) const;
+
+    //! Inequality operator.
     bool operator!=(const OS_Mesh &rhs) const { return !(*this == rhs); }
 };
-
-//===========================================================================//
-// OS_MESH INLINE FUNCTIONS
-//===========================================================================//
 
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
@@ -232,98 +285,37 @@ class OS_Mesh
 
 std::ostream& operator<<(std::ostream &output, const OS_Mesh &object);
 
-//---------------------------------------------------------------------------//
-// OS_MESH SERVICES FOR OS_MESH DEPENDENT CLASSES
-//---------------------------------------------------------------------------//
-
-double OS_Mesh::begin(int d) const 
-{
-    // find the minimum surface for d over the whole mesh
-    return *std::min_element(vertex[d-1].begin(), vertex[d-1].end()); 
-}
-
-//---------------------------------------------------------------------------//
-
-double OS_Mesh::end(int d) const 
-{
-    // find the maximum surface for d over the whole mesh
-    return *std::max_element(vertex[d-1].begin(), vertex[d-1].end()); 
-}
-
-//---------------------------------------------------------------------------//
-// find center position of cell
-
-double OS_Mesh::pos(int d, int cell) const
-{
-    // set return value
-    double return_pos = 0.0;
-	
-    // loop over all vertices and take average value to get the center
-    // point 
-    for (int i = 0; i < cell_pair[cell-1].size(); i++)
-	return_pos += vertex[d-1][cell_pair[cell-1][i]-1];
-
-    // return value
-    return return_pos / static_cast<double>(cell_pair[cell-1].size());     
-}
-
-//---------------------------------------------------------------------------//
-// find minimum dimension along d of cell
-
-double OS_Mesh::min(int d, int cell) const 
-{	
-    // loop over all vertices and find the minimum
-    double minimum = vertex[d-1][cell_pair[cell-1][0]-1];
-    for (int i = 1; i < cell_pair[cell-1].size(); i++)
-    {
-	double point = vertex[d-1][cell_pair[cell-1][i]-1];
-
-	// update the minimum value point
-	if (point < minimum)
-	    minimum = point;
-    }
-	
-    // return minimum dimension
-    return minimum;
-}
-
-//---------------------------------------------------------------------------//
-// find maximum dimension of cell
-
-double OS_Mesh::max(int d, int cell) const
-{
-    // loop over all vertices and find the maximum
-    double maximum = vertex[d-1][cell_pair[cell-1][0]-1];
-    for (int i = 1; i < cell_pair[cell-1].size(); i++)
-    {
-	double point = vertex[d-1][cell_pair[cell-1][i]-1];
-
-	// update the maximum value point
-	if (point > maximum)
-	    maximum = point;
-    }
-
-    // return maximum dimension
-    return maximum;
-}
-
-//---------------------------------------------------------------------------//
-// OS_MESH GENERALIZED MT SERVICES REQUIRED BY IMC
-//---------------------------------------------------------------------------//
-// Determine the next cell, since OS_Mesh is a zero level mesh, the next cell 
-// function will always neglect the r argument
-
+//===========================================================================//
+// OS_MESH INLINE FUNCTIONS
+//===========================================================================//
+/*!
+ * \brief Return the cell across a face.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param face face index [1,num_dimension * 2] (returned from get_db())
+ * \param r position on the face (not used in 0-level OS_Mesh)
+ */
 int OS_Mesh::next_cell(int cell, int face, const sf_double &r) const
 {
     Require (cell > 0 && cell <= layout.num_cells());
+    Require (face > 0 && face <= coord->get_dim() * 2);
     return layout(cell, face);
 }
 
 //---------------------------------------------------------------------------//
-// calculate volume of cell
-
+/*!
+ * \brief Return the volume of a cell.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ */
 double OS_Mesh::volume(int cell) const 
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+
     // loop through dimensions and get volume
     double volume = 1.0;
     for (int d = 1; d <= coord->get_dim(); d++)
@@ -334,13 +326,22 @@ double OS_Mesh::volume(int cell) const
 }
 
 //---------------------------------------------------------------------------//
-// calculate area of face on cell
-
+/*!
+ * \brief Return the face area of a cell face.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param face face index [1,num_dimension * 2]
+ */
 double OS_Mesh::face_area(int cell, int face) const 
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (face > 0 && face <= coord->get_dim() * 2);
+
     // loop through dimensions and multiply off-dimension widths
     double face_area = 1.0;
-    int dim_face_on = (face + 1) / 2;
+    int dim_face_on  = (face + 1) / 2;
     for (int d = 1; d <= coord->get_dim(); d++)
     {
 	if (d != dim_face_on)
@@ -352,9 +353,19 @@ double OS_Mesh::face_area(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
-
+/*!
+ * \brief Return the outward normal from a face.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param face face index [1,num_dimension * 2]
+ */
 OS_Mesh::sf_double OS_Mesh::get_normal(int cell, int face) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (face > 0 && face <= coord->get_dim() * 2);
+
     // OS_Meshes do not require any functionality from Coord_sys to 
     // calculate the outward normal, do simple return
 
@@ -370,9 +381,19 @@ OS_Mesh::sf_double OS_Mesh::get_normal(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
-
+/*!
+ * \brief Return the inward normal from a face.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param face face index [1,num_dimension * 2]
+ */
 OS_Mesh::sf_double OS_Mesh::get_normal_in(int cell, int face) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (face > 0 && face <= coord->get_dim() * 2);
+
     // OS_Meshes do not require any functionality from Coord_sys to 
     // calculate the inward normal, do simple return
 
@@ -388,18 +409,27 @@ OS_Mesh::sf_double OS_Mesh::get_normal_in(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
-// calculate the vertices bounding a cell face
-
+/*!
+ * \brief Return the vertices for a face.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param face face index [1,num_dimension * 2]
+ */
 OS_Mesh::vf_double OS_Mesh::get_vertices(int cell, int face) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (face > 0 && face <= coord->get_dim() * 2);
+
     // determine the vertices along a cell-face
 
     // return vertices
     vf_double ret_vert(coord->get_dim());
 
     // determine axis dimension of surface (x=1, y=2, z=3)
-    int axis = (face + 1)/2;
-    double plane;
+    int axis     = (face + 1)/2;
+    double plane = 0.0;
     if (2*axis - 1 == face)
 	plane = min(axis, cell);
     else
@@ -416,10 +446,17 @@ OS_Mesh::vf_double OS_Mesh::get_vertices(int cell, int face) const
 }
 
 //---------------------------------------------------------------------------//
-// calculate the vertices bounding a cell
-
+/*!
+ * \brief Return the vertices for a cell.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ */
 OS_Mesh::vf_double OS_Mesh::get_vertices(int cell) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+
     // determine the vertices bounding a cell
     
     // return vertices
@@ -435,10 +472,19 @@ OS_Mesh::vf_double OS_Mesh::get_vertices(int cell) const
 }
 
 //---------------------------------------------------------------------------//
-// sample the position uniformly in a cell
-
+/*!
+ * \brief Sample a postion in the cell from a uniform distribution.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param random rtt_rng::Sprng random number object
+ * 
+ */
 OS_Mesh::sf_double OS_Mesh::sample_pos(int cell, rng_Sprng &random) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+
     // assign minimums and maximums for cell dimensions
     sf_double vmin(coord->get_dim());
     sf_double vmax(coord->get_dim());
@@ -457,12 +503,23 @@ OS_Mesh::sf_double OS_Mesh::sample_pos(int cell, rng_Sprng &random) const
 }
 
 //---------------------------------------------------------------------------//
-// sample the position in a cell given a tilt (or other slope-like function)
-
-OS_Mesh::sf_double OS_Mesh::sample_pos(int cell, rng_Sprng &random,
-				       sf_double slope, 
-				       double center_pt) const
+/*!
+ * \brief Sample a position in the cell from a linear distribution.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param random rtt_rng::Sprng random number object
+ * \param slope slope of linear distribution in each dimension
+ * \param center_pt center_pt of linear distribution
+ */
+OS_Mesh::sf_double OS_Mesh::sample_pos(int        cell, 
+				       rng_Sprng &random,
+				       sf_double  slope, 
+				       double     center_pt) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+
     // assign minimums and maximums for cells dimensions
     sf_double vmin(coord->get_dim());
     sf_double vmax(coord->get_dim());
@@ -481,11 +538,22 @@ OS_Mesh::sf_double OS_Mesh::sample_pos(int cell, rng_Sprng &random,
 }
 
 //---------------------------------------------------------------------------//
-// sample a position on a face
-
-OS_Mesh::sf_double OS_Mesh::sample_pos_on_face(int cell, int face, 
+/*!
+ * \brief Sample a position on a cell face from a uniform distribution.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \param face face index [1,num_dimension * 2]
+ * \param random rtt_rng::Sprng random number object
+ */
+OS_Mesh::sf_double OS_Mesh::sample_pos_on_face(int        cell,
+					       int        face, 
 					       rng_Sprng &random) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (face > 0 && face <= coord->get_dim() * 2);
+
     // assign minimums and maximums for cell dimensions
     sf_double vmin(coord->get_dim());
     sf_double vmax(coord->get_dim());
@@ -504,24 +572,175 @@ OS_Mesh::sf_double OS_Mesh::sample_pos_on_face(int cell, int face,
 }
 
 //---------------------------------------------------------------------------//
-// return a sf_int list of a cells neighbors
-
+/*!
+ * \brief Return a list of cell neighbors.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param cell cell index [1,N]
+ * \return vector<int> of cell neighbor indices
+ */
 OS_Mesh::sf_int OS_Mesh::get_neighbors(int cell) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+
+    // make return vector
     sf_int neighbors(layout.num_faces(cell));
     
+    // populate it with cell neighbors
     for (int face = 1; face <= neighbors.size(); face++)
 	neighbors[face-1] = layout(cell, face);
 
     return neighbors;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the minimum axial distance in a cell.
+ */
+double OS_Mesh::get_min_axial_distance(const sf_double &r, 
+				       int              cell) const
+{
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (r.size() == coord->get_dim());
+    
+    // loop over dimensions and calculate the minimum distance
+    double min_distance = global::huge_int;
+    double high         = 0.0;
+    double low          = 0.0;
+    for (int d = 1; d <= coord->get_dim(); d++)
+    {
+	// find high and low distances for this dimension
+	high = max(d, cell) - r[d-1];
+	low  = r[d-1] - min(d, cell);
+	Check (high >= 0.0 && low >= 0.0);
+
+	min_distance = std::min(min_distance, high);
+	min_distance = std::min(min_distance, low);
+
+	Check (min_distance <= dim(d, cell));
+    }
+    
+    Ensure (min_distance >= 0.0);
+    return min_distance;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the minimum mesh boundary along dimension d.
+ *
+ * \param d mesh dimension (1,2,3) for (x,y,z)
+ */
+double OS_Mesh::begin(int d) const 
+{
+    Require (d > 0 && d <= coord->get_dim());
+
+    // find the minimum surface for d over the whole mesh
+    return *std::min_element(vertex[d-1].begin(), vertex[d-1].end()); 
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the maximum mesh boundary along dimension d.
+ *
+ * \param d mesh dimension (1,2,3) for (x,y,z)
+ */
+double OS_Mesh::end(int d) const 
+{
+    Require (d > 0 && d <= coord->get_dim());
+
+    // find the maximum surface for d over the whole mesh
+    return *std::max_element(vertex[d-1].begin(), vertex[d-1].end()); 
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return cell-center position for dimension d.
+ * 
+ * \param d mesh dimension (1,2,3) for (x,y,z)
+ * \param cell cell index [1,N]
+ */
+double OS_Mesh::pos(int d, int cell) const
+{
+    Require (d > 0 && d <= coord->get_dim());
+    Require (cell > 0 && cell <= layout.num_cells());
+
+    // set return value
+    double return_pos = 0.0;
+	
+    // loop over all vertices and take average value to get the center
+    // point 
+    for (int i = 0; i < cell_pair[cell-1].size(); i++)
+	return_pos += vertex[d-1][cell_pair[cell-1][i]-1];
+
+    // return value
+    return return_pos / static_cast<double>(cell_pair[cell-1].size());     
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the minimum cell boundary along dimension d in a cell.
+ * 
+ * \param d mesh dimension (1,2,3) for (x,y,z)
+ * \param cell cell index [1,N]
+ */
+double OS_Mesh::min(int d, int cell) const 
+{
+    Require (d > 0 && d <= coord->get_dim());
+    Require (cell > 0 && cell <= layout.num_cells());
+	
+    // loop over all vertices and find the minimum
+    double minimum = vertex[d-1][cell_pair[cell-1][0]-1];
+    for (int i = 1; i < cell_pair[cell-1].size(); i++)
+    {
+	double point = vertex[d-1][cell_pair[cell-1][i]-1];
+
+	// update the minimum value point
+	if (point < minimum)
+	    minimum = point;
+    }
+	
+    // return minimum dimension
+    return minimum;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the maximum cell boundary along dimension d in a cell.
+ * 
+ * \param d mesh dimension (1,2,3) for (x,y,z)
+ * \param cell cell index [1,N]
+ */
+double OS_Mesh::max(int d, int cell) const
+{
+    Require (d > 0 && d <= coord->get_dim());
+    Require (cell > 0 && cell <= layout.num_cells());
+	
+    // loop over all vertices and find the maximum
+    double maximum = vertex[d-1][cell_pair[cell-1][0]-1];
+    for (int i = 1; i < cell_pair[cell-1].size(); i++)
+    {
+	double point = vertex[d-1][cell_pair[cell-1][i]-1];
+
+	// update the maximum value point
+	if (point > maximum)
+	    maximum = point;
+    }
+
+    // return maximum dimension
+    return maximum;
+}
+
 //===========================================================================//
 /*!
  * \struct OS_Mesh::Pack
-
+ *
  * \brief Pack and unpack an OS_Mesh instance into raw c-style data arrays.
-
+ */
+/*!
+ * \example mc/test/tstOSMesh_Pack.cc
+ *
+ * Test of rtt_mc::OS_Mesh::Pack class.
  */
 //===========================================================================//
 
@@ -564,11 +783,20 @@ struct OS_Mesh::Pack
 };
 
 //===========================================================================//
-// class OS_Mesh::CCSF
-//
-// cell-centered scalar fields
-// Note: we can't build empty fields (ie. the mesh has to have at least 1
-// cell 
+/*!
+ * \class OS_Mesh::CCSF
+ *
+ * \brief Cell Centered Scalar Field for OS_Mesh.
+ *
+ * The OS_Mesh::CCSF class is a nested scalar field class for OS_Mesh.  It
+ * behaves like an STL container except that it contains a rtt_dsxx::SP back
+ * to the mesh.
+ */
+/*!
+ * \example mc/test/tstFields.cc
+ *
+ * Example usage of nested field classes in rtt_mc mesh-types.
+ */
 //===========================================================================//
 
 template<class T>
@@ -576,14 +804,14 @@ class OS_Mesh::CCSF
 {
   public:
     // STL style typedefs.
-    typedef T value_type;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef typename std::vector<T>::pointer pointer;
-    typedef typename std::vector<T>::const_pointer const_pointer;
-    typedef typename std::vector<T>::iterator iterator;
+    typedef T                                       value_type;
+    typedef T&                                      reference;
+    typedef const T&                                const_reference;
+    typedef typename std::vector<T>::pointer        pointer;
+    typedef typename std::vector<T>::const_pointer  const_pointer;
+    typedef typename std::vector<T>::iterator       iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
-    typedef typename std::vector<T>::size_type size_type;
+    typedef typename std::vector<T>::size_type      size_type;
 
   private:
     // SP back to OS_Mesh.
@@ -599,60 +827,91 @@ class OS_Mesh::CCSF
     // Additional constructors.
     inline CCSF(SP_Mesh, const std::vector<T> &);
 
-    // Return reference to mesh.
+    //! Return reference to mesh.
     const OS_Mesh& get_Mesh() const { return *mesh; }
 
-    // Subscripting.
+    // >>> ACCESSORS
 
-    // We use () to indicate absolute cell number and [] to indicate
-    // vector-style (0:n-1) indexing.
+    //! Define () for cell index over the range [1,N] (FORTRAN-style). 
     const_reference operator()(int cell) const { return data[cell-1]; }
+
+    //! Const access using () over the range [1,N].
     reference operator()(int cell) { return data[cell-1]; }
  
+    //! Define [] for cell index over the range [0,N-1] (C++-style).
     const_reference operator[](int index) const { return data[index]; }
+
+    //! Const access using () over the range [0,N-1].
     reference operator[](int index) { return data[index]; }
 
-    // STL style functions.
+    // >>> STL STYLE FUNCTIONS
+    
+    //! Return an iterator to the beginning of the field.
     iterator begin() { return data.begin(); }
+
+    //! Return a const_iterator to the beginning of the field.
     const_iterator begin() const { return data.begin(); }
     
+    //! Return an iterator to the end of the field.
     iterator end() { return data.end(); }
+    
+    //! Return a const_iterator to the end of the field.
     const_iterator end() const {return data.end();}
     
+    //! Return the size of the field (number of cells).
     size_type size() const { return data.size(); }
+
+    //! Return a boolean to see if the field is empty. 
     bool empty() const { return data.empty(); }
 }; 
 
 //---------------------------------------------------------------------------//
-// OS_Mesh::CCSF inline functions
+// OS_Mesh::CCSF INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
-// CCSF explicit constructor
-
+/*!
+ * \brief Explicit constructor.
+ */
 template<class T>
 OS_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_) 
-    : mesh(mesh_), data(mesh->num_cells()) 
+    : mesh(mesh_), 
+      data(mesh->num_cells()) 
 {
-    Require (mesh);
-    Ensure  (!empty());
+    Require (mesh);  
+    Ensure  (!empty());  
 }
 
 //---------------------------------------------------------------------------//
-// constructor for automatic initialization
-
+/*!
+ * \brief Constructor that initializes on a pre-built array of size
+ * num_cells. 
+ *
+ * The array (vector<T>) must have size equal to num_cells.
+ *
+ * \param array vector<T> of size num_cells
+ */
 template<class T>
-OS_Mesh::CCSF<T>::CCSF(SP_Mesh mesh_, 
+OS_Mesh::CCSF<T>::CCSF(SP_Mesh               mesh_, 
 		       const std::vector<T> &array)
-    : mesh(mesh_), data(array)
+    : mesh(mesh_), 
+      data(array)
 {
-    Require (mesh)
-    Ensure  (data.size() == mesh->num_cells());
-    Ensure  (!empty());
+    Require (mesh) 
+    Ensure  (data.size() == mesh->num_cells()); 
+    Ensure  (!empty()); 
 }
 
 //===========================================================================//
-// class OS_Mesh::CCVF
-//
-// cell-centered vector fields
+/*!
+ * \class OS_Mesh::CCVF
+ *
+ * \brief Cell Centered Vector Field for OS_Mesh.
+ *
+ * The OS_Mesh::CCVF class is a nested vector field class for OS_Mesh.  It
+ * behaves like an STL container except that it contains a rtt_dsxx::SP back
+ * to the mesh.  It also is multi-dimensional.  The vector stored at each
+ * cell-center has the same number of dimensions as the mesh.  The
+ * two-dimensional field is stored (dimension, cell).
+ */
 //===========================================================================//
 
 template<class T>
@@ -660,14 +919,14 @@ class OS_Mesh::CCVF
 {
   public:
     // STL style typedefs.
-    typedef T value_type;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef typename std::vector<T>::pointer pointer;
-    typedef typename std::vector<T>::const_pointer const_pointer;
-    typedef typename std::vector<T>::iterator iterator;
+    typedef T                                       value_type;
+    typedef T&                                      reference;
+    typedef const T&                                const_reference;
+    typedef typename std::vector<T>::pointer        pointer;
+    typedef typename std::vector<T>::const_pointer  const_pointer;
+    typedef typename std::vector<T>::iterator       iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
-    typedef typename std::vector<T>::size_type size_type;
+    typedef typename std::vector<T>::size_type      size_type;
     
   private:
     // SP back to OS_Mesh
@@ -677,14 +936,16 @@ class OS_Mesh::CCVF
     std::vector<std::vector<T> > data;
 
   public:
-    // Inline explicit constructor.
+    // Explicit constructor.
     inline explicit CCVF(SP_Mesh);
 
     // Additional constructors.
     inline CCVF(SP_Mesh, const std::vector<std::vector<T> > &);
 
-    // Return reference to mesh.
+    //! Return reference to mesh.
     const OS_Mesh& get_Mesh() const { return *mesh; }
+
+    // >>> ACCESSORS
 
     // Subscripting.
     inline const T& operator()(int, int) const;
@@ -693,31 +954,51 @@ class OS_Mesh::CCVF
     // Getting a CC vector in a cell.
     inline std::vector<T> operator()(int) const;
 
-    // STL style functions.
+    // >>> STL STYLE FUNCTIONS
+
+    //! Return an iterator to the beginning of the dimension field.
     iterator begin() { return data.begin(); }
+
+    //! Return a const_iterator to the beginning of the dimension field.
     const_iterator begin() const { return data.begin(); }
+
+    // Get iterators to the beginning of the cell-centered field.
     inline iterator begin(int i);
     inline const_iterator begin(int i) const;
     
+    //! Return an iterator to the end of the dimension field.
     iterator end() { return data.end(); }
+
+    //! Return a const_iterator to the end of the dimension field.
     const_iterator end() const { return data.end();}
+
+    // Get iterators to the end of the cell-centered field.
     inline iterator end(int i);
     inline const_iterator end(int i) const;
     
+    //! Return the size of the field (problem dimension).
     size_type size() const { return data.size(); }
-    bool empty() const { return data.empty(); }
+
+    // Get the size of the cell-centered field.
     inline size_type size(int i) const;
+
+    //! Return a boolean to see if the field is empty.
+    bool empty() const { return data.empty(); }
+
+    // Return a boolean to see if the cell-centered field is empty.
     inline bool empty(int i) const;
 }; 
 
 //---------------------------------------------------------------------------//
-// OS_Mesh::CCVF inline functions
+// OS_Mesh::CCVF INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
-// CCVF explicit constructor
-
+/*!
+ * \brief Explicit constructor.
+ */
 template<class T>
 OS_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
-    : mesh(mesh_), data(mesh->get_Coord().get_dim())
+    : mesh(mesh_), 
+      data(mesh->get_Coord().get_dim())
 {
     Require (mesh);
 
@@ -727,12 +1008,20 @@ OS_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
 }
 
 //---------------------------------------------------------------------------//
-// constructor for automatic initialization
-
+/*!
+ * \brief Constructor that initializes on a pre-built array of size
+ * (dimension, num_cells). 
+ *
+ * The array (vector<vector<T> >) must have size equal to (dimension,
+ * num_cells).
+ *
+ * \param array vector<vector<T> > of size (dimension, num_cells)
+ */
 template<class T>
-OS_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_, 
+OS_Mesh::CCVF<T>::CCVF(SP_Mesh                             mesh_, 
 		       const std::vector<std::vector<T> > &array)
-    : mesh(mesh_), data(array)
+    : mesh(mesh_), 
+      data(array)
 {
     // check things out
     Ensure (data.size() == mesh->get_Coord().get_dim());
@@ -741,8 +1030,12 @@ OS_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_,
 }
 
 //---------------------------------------------------------------------------//
-// constant overloaded ()
-
+/*!
+ * \brief Access elements through () operator.
+ *
+ * The operator() takes arguments (dim, cell) where dim is defined over the
+ * range [1,num_dimension] and cell is defined over the range [1,N].
+ */
 template<class T>
 const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const 
 {
@@ -750,8 +1043,14 @@ const T& OS_Mesh::CCVF<T>::operator()(int dim, int cell) const
 }
 
 //---------------------------------------------------------------------------//
-// assignment overloaded ()
-
+/*!
+ * \brief Access and modify elements through () operator.
+ *
+ * The operator() takes arguments (dim, cell) where dim is defined over the
+ * range [1,num_dimension] and cell is defined over the range [1,N].
+ *
+ * \return element at (dim, cell) as an L-value
+ */
 template<class T>
 T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
 {
@@ -759,11 +1058,17 @@ T& OS_Mesh::CCVF<T>::operator()(int dim, int cell)
 }
 
 //---------------------------------------------------------------------------//
-// vector return overload()
-
+/*!
+ * \brief Access cell-centered vector through () operator.
+ *
+ * The operator() takes arguments (cell) where cell is defined over the range
+ * [1,N].
+ */
 template<class T>
 std::vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
 {
+    Require (cell > 0 && cell <= mesh->num_cells());
+
     // declare return vector
     std::vector<T> x;
     
@@ -777,8 +1082,10 @@ std::vector<T> OS_Mesh::CCVF<T>::operator()(int cell) const
 } 
 
 //---------------------------------------------------------------------------//
-// STL style functionality for CCVF fields
-
+/*!
+ * \brief Return an iterator to the beginning of the cell-centered field for
+ * dimension i.
+ */
 template<class T>
 typename OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::begin(int i)
 {
@@ -786,6 +1093,11 @@ typename OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::begin(int i)
     return data[i-1].begin();
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return a const_iterator to the beginning of the cell-centered
+ * field for dimension i.
+ */
 template<class T>
 typename OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::begin(int i) const
 {
@@ -793,6 +1105,11 @@ typename OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::begin(int i) const
     return data[i-1].begin();
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return an iterator to the end of the cell-centered field for
+ * dimension i.
+ */
 template<class T>
 typename OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::end(int i)
 {
@@ -800,6 +1117,11 @@ typename OS_Mesh::CCVF<T>::iterator OS_Mesh::CCVF<T>::end(int i)
     return data[i-1].end();
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return a const_iterator to the end of the cell-centered field for
+ * dimension i.
+ */
 template<class T>
 typename OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::end(int i) const
 {
@@ -807,6 +1129,11 @@ typename OS_Mesh::CCVF<T>::const_iterator OS_Mesh::CCVF<T>::end(int i) const
     return data[i-1].end();
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the size of a cell-centered field (num_cells) for dimension
+ * i.
+ */
 template<class T>
 typename OS_Mesh::CCVF<T>::size_type OS_Mesh::CCVF<T>::size(int i) const
 {
@@ -814,6 +1141,10 @@ typename OS_Mesh::CCVF<T>::size_type OS_Mesh::CCVF<T>::size(int i) const
     return data[i-1].size();
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Boolean that is true if the cell-centered field is empty.
+ */
 template<class T>
 bool OS_Mesh::CCVF<T>::empty(int i) const
 {

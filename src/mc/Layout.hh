@@ -23,25 +23,30 @@ namespace rtt_mc
 //===========================================================================//
 /*!
  * \class Layout
-
+ *
  * \brief Provides cell connectivity information for 1-1 meshes.
-
+ *
  * Class that describes the cell-face-cell connectivity for 1-to-1 cell
  * meshes.  1-to-1 describes meshes whose cells each have only 1 cell
  * neighbor across a face.  Layout itself is independent of the geometry of
  * the mesh.  Thus it can be used to describe the connectivity in any
  * structured or unstructered 1-to-1 mesh.
-
+ *
  * This class is used primarily as a component class of valid mesh types.  It
  * is not a general service class.  See rtt_mc::OS_Mesh and
  * rtt_mc::OS_Builder to see how it is used in a mesh implementation.
-
+ *
  * There is no "defined" face ordering.  One can build the Layout however one
  * desires.  However, the face numbering must be consistent throughout the
  * Layout to get proper performance.
-
+ *
  * Data is built into Layout through the use of overloaded operator().
-
+ *
+ */
+/*!
+ * \example mc/test/tstLayout.cc
+ * 
+ * Test of rtt_mc::Layout and rtt_mc::AMR_Layout classes.
  */
 // revision history:
 // -----------------
@@ -122,10 +127,10 @@ std::ostream& operator<<(std::ostream &, const Layout &);
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Set the number of faces in a cell.
-
+ *
  * \param cell_index cell that faces are being set
  * \param num_faces number of faces to set for cell_index
-
+ *
  */
 void Layout::set_size(int cell_index, int num_faces)
 {
@@ -175,10 +180,10 @@ int& Layout::operator()(int cell_index, int face_index)
 //===========================================================================//
 /*!  
  * \struct Layout::Pack 
- 
+ *
  * \brief Nested class for packing layouts into raw data for writing
  * or communication.
- 
+ *
  */
 //===========================================================================//
 

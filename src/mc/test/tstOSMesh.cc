@@ -21,6 +21,7 @@
 #include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -33,6 +34,7 @@ using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
 using rtt_mc_test::Parser;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 using namespace std;
 
@@ -324,6 +326,45 @@ void Mesh_2D()
 	d        = m.get_db(r, omega, 4, face);
 	if ((d - .462) >= .001) ITFAILS;
 	if (face != 3)          ITFAILS;
+    }
+
+    // minimum orthogonal distance
+    {
+	// choose a point in a cell and check the distance
+	vector<double> r(2);
+	double         ref = 0.0;
+	double         d   = 0.0;
+
+	// cell 1
+	r[0] = -0.6;
+	r[1] = 0.9;
+	ref  = 0.1;
+	d    = m.get_min_axial_distance(r, 1);
+	
+	if (!soft_equiv(d, ref)) ITFAILS;
+
+	r[0] = -0.6;
+	r[1] = -0.2;
+	ref  = 0.4;
+	d    = m.get_min_axial_distance(r, 1);
+	
+	if (!soft_equiv(d, ref)) ITFAILS;
+
+	// cell 2
+	r[0] = 0.5;
+	r[1] = -0.5;
+	ref  = 0.5;
+	d    = m.get_min_axial_distance(r, 2);
+	
+	if (!soft_equiv(d, ref)) ITFAILS;
+	
+	// cell 5
+	r[0] = 0.11;
+	r[1] = 2.8;
+	ref  = 0.11;
+	d    = m.get_min_axial_distance(r, 5);
+	
+	if (!soft_equiv(d, ref)) ITFAILS;
     }
 
     // neighbors

@@ -12,7 +12,6 @@
 #include "OS_Mesh.hh"
 #include "XYCoord_sys.hh"
 #include "XYZCoord_sys.hh"
-#include "Constants.hh"
 #include "Math.hh"
 #include "viz/Ensight_Translator.hh"
 #include "ds++/Packing_Utils.hh"
@@ -25,15 +24,13 @@ namespace rtt_mc
 // CONSTRUCTOR
 //---------------------------------------------------------------------------//
 /*!
-
  * \brief OS_Mesh constructor.
-
+ *
  * \param coord_  coordinate system smart pointer
  * \param layout_ Layout object describing mesh layout
  * \param vertex_ list of mesh vertices
  * \param cell_pair_ list of cells paired with vertices
  * \param submesh_ boolean indicating if this is a submesh
-
  */
 OS_Mesh::OS_Mesh(SP_Coord_sys coord_, 
 		 Layout &layout_, 
@@ -64,46 +61,15 @@ OS_Mesh::OS_Mesh(SP_Coord_sys coord_,
 }
 
 //---------------------------------------------------------------------------//
-// PRIVATE IMPLEMENTATION
+// PUBLIC INTERFACE
 //---------------------------------------------------------------------------//
-// calculate an array of the dimensional surfaces which make up the OS_Mesh
-
-void OS_Mesh::calc_surface()
-{
-    using std::vector;
-    using std::sort;
-
-    // initialize mesh_size for assertion at end of function
-    int mesh_size = 1;
-
-    // loop to calculate surface array
-    for (int d = 0; d < coord->get_dim(); d++)
-    {
-	// define an array for dim which is sorted in ascending order
-	vector<double> sorted = vertex[d];
-	sort(sorted.begin(), sorted.end());
-
-	// loop over sorted array, appending new surfaces onto sur array, watch 
-	// out for possible machine error (especially when merging host codes)
-	// in the sorted[i] > sorted[i-1] comparison!!!
-	sur[d].push_back(sorted[0]);
-	for (int i = 1; i < sorted.size(); i++)
-	    if (sorted[i] > sorted[i-1])
-		sur[d].push_back(sorted[i]);
-
-	// calculate mesh_size by dimension
-	mesh_size *= (sur[d].size() - 1);
-    }
-    
-    // assert mesh size
-    Require (num_cells() == mesh_size);
-}
-
-//---------------------------------------------------------------------------//
-// PUBLIC INTERFACE FOR IMC
-//---------------------------------------------------------------------------//
-// do binary search on a cell
-
+/*!
+ * \brief Return the cell that contains a set of coordinates.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * The cell search routine is done with a binary search.
+ */
 int OS_Mesh::get_cell(const sf_double &r) const
 {
     Require (!submesh);
@@ -140,16 +106,29 @@ int OS_Mesh::get_cell(const sf_double &r) const
 }
 
 //---------------------------------------------------------------------------//
-// calculate the distance to boundary
-
-double OS_Mesh::get_db(const sf_double &r, const sf_double &omega, int cell, 
-		       int &face) const
+/*!
+ * \brief Calculate the distance to a cell boundary.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param r particle position
+ * \param omega particle direction
+ * \param cell cell index
+ * \param face reference to face index; this is returned
+ * \return the distance to boundary
+ */
+double OS_Mesh::get_db(const sf_double &r, 
+		       const sf_double &omega, 
+		       int              cell, 
+		       int             &face) const
 {
     using std::min_element;
     using std::vector;
     using global::huge;
     using global::soft_equiv;
     using global::dot;
+
+    Require (cell > 0 && cell <= layout.num_cells());
 
     // check that direction cosines are properly normalized
     Check (soft_equiv(dot(omega,omega), 1.0, 1.0e-5));
@@ -191,10 +170,15 @@ double OS_Mesh::get_db(const sf_double &r, const sf_double &omega, int cell,
 }
 
 //---------------------------------------------------------------------------//
-// return the face number for a given cell boundary
-
+/*!
+ * \brief Return the face index for a descriptive cell boundary.
+ *
+ * This function is required by the IMC_MT concept.
+ */
 int OS_Mesh::get_bndface(std_string boundary, int cell) const
 {
+    Require (cell > 0 && cell <= layout.num_cells());
+
     // return the face number for boundary on cell
 
     // return value
@@ -218,9 +202,15 @@ int OS_Mesh::get_bndface(std_string boundary, int cell) const
 }
 
 //---------------------------------------------------------------------------//
-// return a list of cells along a specified boundary
-
-OS_Mesh::sf_int OS_Mesh::get_surcells(std::string boundary) const
+/*!
+ * \brief Return a list of cells along a specified boundary.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * The pre-condition for this function is that the entire mesh exists on a
+ * processor.  It does not do communication.  
+ */
+OS_Mesh::sf_int OS_Mesh::get_surcells(std_string boundary) const
 {
     using std::vector;
 
@@ -320,11 +310,17 @@ OS_Mesh::sf_int OS_Mesh::get_surcells(std::string boundary) const
 }
 
 //---------------------------------------------------------------------------//
-// check that a user-/host-defined set of surface source cells actually
-// resides on the surface of the system (requires a vacuum bnd).
-
-bool OS_Mesh::check_defined_surcells(const std_string ss_face, 
-				     const sf_int &ss_list) const
+/*!
+ * \brief Check that a list of cells reside on the specified problem
+ * boundary with a vacuum boundary condition.
+ *
+ * This function is required by the IMC_MT concept.
+ *
+ * \param ss_face string describing a boundary (lox,hix,loy,hiy,loz,hiz)
+ * \param ss_list list of cells to check against ss_face
+ */
+bool OS_Mesh::check_defined_surcells(const std_string  ss_face, 
+				     const sf_int     &ss_list) const
 {
     // a weak check on number of surface cells
     Check (ss_list.size() <= num_cells());
@@ -345,26 +341,101 @@ bool OS_Mesh::check_defined_surcells(const std_string ss_face,
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Overloaded equality operator.
+ */
+bool OS_Mesh::operator==(const OS_Mesh &rhs) const
+{
+    // check to see that we have the same type of coordinate systems
+    if (*coord != *rhs.coord)
+	return false;
+
+    // check to see that the Layouts are equal
+    if (layout != rhs.layout)
+	return false;
+
+    // check the vertices
+    if (vertex != rhs.vertex)
+	return false;
+    if (cell_pair != rhs.cell_pair)
+	return false;
+
+    // if we haven't returned, then the two meshes must be equal
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+// INTERFACE FOR GRAPHIC DUMPS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get the cell types for each cell in the mesh.
+ */
+OS_Mesh::sf_int OS_Mesh::get_cell_types() const
+{
+    using std::vector;
+
+    vector<int> cell_type(layout.num_cells());
+
+    if (coord->get_dim() == 2)
+	std::fill(cell_type.begin(), cell_type.end(),
+		  rtt_viz::four_node_quadrangle);
+	
+    else if (coord->get_dim() == 3)
+	std::fill(cell_type.begin(), cell_type.end(),
+		  rtt_viz::eight_node_hexahedron);
+
+    return cell_type;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get the point coordinates for the mesh.
+ *
+ * The point coordinates are dimensioned [0:N_points-1, 0:N_dim-1].  In the
+ * OS_Mesh, the point coordinates are the transpose of the vertex array.
+ */
+OS_Mesh::vf_double OS_Mesh::get_point_coord() const
+{
+    using std::vector;
+
+    int npoints = vertex[0].size();
+    vector<vector<double> > return_coord(npoints);
+    for (int i = 0; i < return_coord.size(); i++)
+    {
+	return_coord[i].resize(coord->get_dim());
+	for (int j = 0; j < return_coord[i].size(); j++)
+	{
+	    Check (return_coord[i].size() == vertex.size());
+	    Check (vertex[j].size() == return_coord.size());
+
+	    return_coord[i][j] = vertex[j][i];
+	}
+    }
+
+    return return_coord;
+}
+
+//---------------------------------------------------------------------------//
 // MESH PACKING INTERFACE
 //---------------------------------------------------------------------------//
 /*!
-  
  * \brief Pack up a mesh into a Pack struct for communication and
  * persistence.
-
+ *
+ * This function is required by the IMC_MT concept.
+ *
  * The cell list provides the cells to pack up.  It also is a map from a full
  * mesh to a spatially decomposed mesh.  Thus, the packed mesh will only
  * contain cells in the cell list with the provided mappings.
-
+ *
  * The packer will not produce an "exact" copy of the mesh even if the
  * current_mesh_to_new_mesh mapping is one to one.  It will produce an
  * equivalent copy (the internal data will be organized differently), and
  * operator== will fail on such a comparison.  To produce an exact copy, call
  * pack without any arguments.
- 
+ *
  * \param current_mesh_to_new_mesh list of cells to include in the packed
  * mesh, set this to NULL to produce an exact copy
-
  */
 OS_Mesh::SP_Pack OS_Mesh::pack(const sf_int &current_mesh_to_new_mesh) const
 {
@@ -494,13 +565,12 @@ OS_Mesh::SP_Pack OS_Mesh::pack(const sf_int &current_mesh_to_new_mesh) const
 }
 
 //---------------------------------------------------------------------------//
-// MESH PACKING IMPLEMENTATION
+// PRIVATE IMPLEMENTATION
 //---------------------------------------------------------------------------//
 /*!
  * \brief Pack up mesh data and return a pointer to it.
-
+ *
  * This function packs up the vertex and cell pair data given to it.
-
  */
 char* OS_Mesh::pack_mesh_data(int &size,
 			      const vf_double &local_vertex,
@@ -645,81 +715,47 @@ void OS_Mesh::pack_compressed(const sf_int &current_new,
 }
 
 //---------------------------------------------------------------------------//
-// MEMBER FUNCTION OVERLOADED OPERATORS
-//---------------------------------------------------------------------------//
-// overloaded == for design-by-contract
-
-bool OS_Mesh::operator==(const OS_Mesh &rhs) const
-{
-    // check to see that we have the same type of coordinate systems
-    if (*coord != *rhs.coord)
-	return false;
-
-    // check to see that the Layouts are equal
-    if (layout != rhs.layout)
-	return false;
-
-    // check the vertices
-    if (vertex != rhs.vertex)
-	return false;
-    if (cell_pair != rhs.cell_pair)
-	return false;
-
-    // if we haven't returned, then the two meshes must be equal
-    return true;
-}
-
-//---------------------------------------------------------------------------//
-// INTERFACE FOR GRAPHIC DUMPS
-//---------------------------------------------------------------------------//
-// return the cell type for each cell in the mesh
-
-OS_Mesh::sf_int OS_Mesh::get_cell_types() const
+/*!
+ * \brief Calculate an array of the dimensional surfaces which make up the
+ * OS_Mesh.
+ */
+void OS_Mesh::calc_surface()
 {
     using std::vector;
+    using std::sort;
 
-    vector<int> cell_type(layout.num_cells());
+    // initialize mesh_size for assertion at end of function
+    int mesh_size = 1;
 
-    if (coord->get_dim() == 2)
-	std::fill(cell_type.begin(), cell_type.end(),
-		  rtt_viz::four_node_quadrangle);
-	
-    else if (coord->get_dim() == 3)
-	std::fill(cell_type.begin(), cell_type.end(),
-		  rtt_viz::eight_node_hexahedron);
-
-    return cell_type;
-}
-
-//---------------------------------------------------------------------------//
-// get point coordinates [0:npoints-1, 0:ndim-1]
-
-OS_Mesh::vf_double OS_Mesh::get_point_coord() const
-{
-    using std::vector;
-
-    int npoints = vertex[0].size();
-    vector<vector<double> > return_coord(npoints);
-    for (int i = 0; i < return_coord.size(); i++)
+    // loop to calculate surface array
+    for (int d = 0; d < coord->get_dim(); d++)
     {
-	return_coord[i].resize(coord->get_dim());
-	for (int j = 0; j < return_coord[i].size(); j++)
-	{
-	    Check (return_coord[i].size() == vertex.size());
-	    Check (vertex[j].size() == return_coord.size());
+	// define an array for dim which is sorted in ascending order
+	vector<double> sorted = vertex[d];
+	sort(sorted.begin(), sorted.end());
 
-	    return_coord[i][j] = vertex[j][i];
-	}
+	// loop over sorted array, appending new surfaces onto sur array, watch 
+	// out for possible machine error (especially when merging host codes)
+	// in the sorted[i] > sorted[i-1] comparison!!!
+	sur[d].push_back(sorted[0]);
+	for (int i = 1; i < sorted.size(); i++)
+	    if (sorted[i] > sorted[i-1])
+		sur[d].push_back(sorted[i]);
+
+	// calculate mesh_size by dimension
+	mesh_size *= (sur[d].size() - 1);
     }
-
-    return return_coord;
+    
+    // assert mesh size
+    Ensure (num_cells() == mesh_size);
 }
 
 //---------------------------------------------------------------------------//
 // DIAGNOSTIC FUNCTIONS (PRINTS)
 //---------------------------------------------------------------------------//
-// print out the whole mesh
-
+/*!
+ * \brief Print out the whole mesh.
+ */
 void OS_Mesh::print(std::ostream &out) const
 {
     using std::endl;
@@ -733,8 +769,9 @@ void OS_Mesh::print(std::ostream &out) const
 }
 
 //---------------------------------------------------------------------------//
-// print individual cells
-
+/*!
+ * \brief Print individual cells.
+ */
 void OS_Mesh::print(std::ostream &output, int cell) const
 {
     using std::endl;
@@ -769,31 +806,20 @@ void OS_Mesh::print(std::ostream &output, int cell) const
     output << "+++++++++++++++" << endl;
 }
 
-//---------------------------------------------------------------------------//
-// OVERLOADED OPERATORS
-//---------------------------------------------------------------------------//
-
-std::ostream& operator<<(std::ostream &output, const OS_Mesh &object)
-{
-    object.print(output);
-    return output;
-}
-
 //===========================================================================//
 // OS_MESH::PACK DEFINITIONS
 //===========================================================================//
 /*!
  * \brief Constructor.
-
+ *
  * Construct a OS_Mesh::Pack instance.  Once allocated mesh data is given to
  * the OS_Mesh::Pack constructor in the form of a char*, the Pack object owns
  * it.  When the Pack object goes out of scope it will clean up the memory.
  * In general, Pack objects are only created by calling the OS_Mesh::pack()
  * function.
-
+ *
  * \param s size of char data stream
  * \param d pointer to char data stream
-
  */
 OS_Mesh::Pack::Pack(int s, char *d)
     : data(d),
@@ -806,11 +832,10 @@ OS_Mesh::Pack::Pack(int s, char *d)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor.
-
+ *
  * Do copy construction while preserving memory.  This is not a reference
  * counted class so data is copied from one class to the other during
  * function calls and the like (wherever a copy constructor is called).
-
  */
 OS_Mesh::Pack::Pack(const Pack &rhs)
     : data(new char[rhs.size]),
@@ -824,11 +849,10 @@ OS_Mesh::Pack::Pack(const Pack &rhs)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Destructor.
-
+ *
  * Cleans up memory when the Pack object goes out of scope.  Once allocated
  * pointers are given to the Pack object the Pack object takes control of
  * them.
-
  */
 OS_Mesh::Pack::~Pack()
 {
@@ -858,11 +882,10 @@ int OS_Mesh::Pack::get_num_packed_cells() const
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpack the OS_Mesh.
-
+ *
  * Unpacks and returns a smart pointer to the new OS_Mesh.
-
+ *
  * \return smart pointer to the unpacked mesh
-
  */
 OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
 {
@@ -982,6 +1005,18 @@ OS_Mesh::SP_Mesh OS_Mesh::Pack::unpack() const
     Ensure (!unpacked_mesh->full_Mesh());
 
     return unpacked_mesh;
+}
+
+//===========================================================================//
+// FREE FUNCTIONS
+//===========================================================================//
+/*!
+ * \brief Streaming output operator for OS_Mesh.
+ */
+std::ostream& operator<<(std::ostream &output, const OS_Mesh &object)
+{
+    object.print(output);
+    return output;
 }
 
 } // end namespace rtt_mc
