@@ -14,7 +14,6 @@
 #include "mc/Layout.hh"
 #include "mc/XYCoord_sys.hh"
 #include "mc/OS_Mesh.hh"
-#include "matprops/InterpedMaterialProps.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <vector>
@@ -44,7 +43,6 @@ class IMC_Interface : public rtt_imc::Interface
     typedef std::vector<double> vd;
     typedef std::vector<std::string> vs;
     typedef std::vector<std::vector<double> > vvd;
-    typedef dsxx::SP<rtt_matprops::InterpedMaterialProps> SP_Matprop;
    
   private:
     // Mesh data
@@ -86,10 +84,6 @@ class IMC_Interface : public rtt_imc::Interface
 
     // public copy functions for Source_Init<MT>
     double get_delta_t() const { return delta_t; }
-
-    // material data for file access
-    vi get_material_id() const { return vi(); }
-    SP_Matprop get_matprops() const { return SP_Matprop(); }
 
     // source interfaces
     double get_rad_s_tend() const { return double(); }

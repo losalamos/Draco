@@ -26,7 +26,6 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "ds++/SP.hh"
-#include "matprops/InterpedMaterialProps.hh"
 #include <vector>
 #include <string>
 
@@ -39,8 +38,7 @@ class Opacity_Builder
     // typedefs
     typedef dsxx::SP<MT> SP_MT;
     typedef dsxx::SP<Mat_State<MT> > SP_Mat;
-    typedef dsxx::SP<Opacity<MT> > SP_Opacity;
-    typedef dsxx::SP<rtt_matprops::InterpedMaterialProps> SP_Matprop; 
+    typedef dsxx::SP<Opacity<MT> > SP_Opacity; 
 
   private:
 
@@ -55,10 +53,6 @@ class Opacity_Builder
     double delta_t;
     std::string analytic_opacity;
     std::string analytic_sp_heat;
-
-    // Matprops object for generating material and opacity data from a XS
-    // file
-    SP_Matprop matprops;
 
     // Begin_Doc opacity_builder-int.tex
     // Begin_Verbatim 

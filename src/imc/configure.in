@@ -19,7 +19,7 @@ AC_SPRNG_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(matprops mc radphys rng c4 units ds++)
+AC_NEEDS_LIBS(mc rng c4 ds++)
 
 # testing setup
 AC_RUNTESTS(tstOpacity tstTally tstParticle, 1 2 4)

@@ -40,11 +40,6 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface)
     delta_t          = interface->get_delta_t();
     analytic_opacity = interface->get_analytic_opacity();
     analytic_sp_heat = interface->get_analytic_sp_heat();
-    material_id      = interface->get_material_id();
-
-    // get matprops from interface; the SP only points to something if we
-    // actually read the data from a file
-    matprops = interface->get_matprops();
 
     // some crucial checks about our data
     Check (implicitness >= 0 && implicitness <= 1);

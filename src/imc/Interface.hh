@@ -55,7 +55,6 @@ class Interface
     typedef std::vector<int>    int_vec;
     typedef std::vector<std::string> string_vec;
     typedef std::vector<std::vector<int> > int_dvec;
-    typedef dsxx::SP<rtt_matprops::InterpedMaterialProps> SP_Matprop;
     
   public:
     // constructor
