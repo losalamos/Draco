@@ -18,7 +18,7 @@ using std::string;
 // this library in the form linalg-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)linalg-2_1_0";
+    string pkg_release = "@(#)linalg-2_2_0";
     return pkg_release;
 }
 
