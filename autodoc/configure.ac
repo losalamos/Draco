@@ -7,7 +7,8 @@ dnl-------------------------------------------------------------------------dnl
 dnl @> configure.in for autodoc
 dnl-------------------------------------------------------------------------dnl
 
-AC_INIT(doxygen_config.in)
+AC_INIT
+AC_CONFIG_SRCDIR([doxygen_config.in])
 AC_CONFIG_AUX_DIR(../config)
 
 dnl
@@ -72,7 +73,8 @@ AC_SUBST(latex_yes_no)
 AC_SUBST(dotpath)
 AC_SUBST(number)
 
-AC_OUTPUT(Makefile doxygen_config header.html footer.html)
+AC_CONFIG_FILES([Makefile doxygen_config header.html footer.html])
+AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/autodoc configure.in

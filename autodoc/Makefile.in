@@ -18,7 +18,7 @@ installdirs = ${prefix}/html ${prefix}/latex
 
 ##---------------------------------------------------------------------------##
 
-.PHONY : html latex install autodoc
+.PHONY : html latex install autodoc configure reconfigure
 
 autodoc: html
 
@@ -28,11 +28,28 @@ html latex:
 	else \
 		${DOXYGEN} doxygen_config; \
 		cp ${srcdir}/html/draco.gif ${prefix}/html; \
+                cp ${srcdir}/html/doxygen.png ${prefix}/html; \
+	        cp ${srcdir}/html/draco.css ${prefix}/html; \
 	fi
 
 install:
  
 check:
+
+##---------------------------------------------------------------------------##
+## Build system targets and rules
+
+configure:
+	@echo "Rebuilding ${srcdir}/aclocal.m4"
+	@cd ${srcdir} && aclocal -I ../config
+	@echo "Rebuilding ${srcdir}/configure"
+	@cd ${srcdir} && autoconf
+	@./config.status --recheck
+	@./config.status
+
+reconfigure: 
+	@./config.status --recheck
+	@./config.status
 
 ##---------------------------------------------------------------------------##
 ## clean targets
