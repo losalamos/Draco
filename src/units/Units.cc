@@ -9,7 +9,7 @@
 #include "Units.hh"
 #include <limits>
 
-namespace XTM
+namespace rtt_units
 {
 
 //------------------------------------------------------------------------//
@@ -39,7 +39,7 @@ bool operator==(const Units &op1, const Units &op2)
 		 op1.temperatureConversion == op2.temperatureConversion;
 }
 
-} // end namespace XTM
+} // end namespace rtt_units
 
 //---------------------------------------------------------------------------//
 //                              end of Units.cc

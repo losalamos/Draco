@@ -14,12 +14,8 @@
 
 #include <cmath>
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
-
-BEGIN_NS_XTM
+namespace rtt_units
+{
     
 //===========================================================================//
 // class Units - 
@@ -80,7 +76,7 @@ class Units
 	// time   - 10^-8 seconds (1 shake)
 	// temp   - keV
 
-	using XTM::PhysicalConstants::eV2K;
+	using PhysicalConstants::eV2K;
 
 	const double mPcm = 1.0e-2;
 	const double kgPg = 1.0e-3;
@@ -497,7 +493,7 @@ inline FT Units::InvertEnergy(const FT &energy) const
 		     (massConversion * lengthConversion*lengthConversion));	
 }
 
-END_NS_XTM  // namespace XTM
+}  // end namespace rtt_units
 
 #endif                          // __units_Units_hh__
 

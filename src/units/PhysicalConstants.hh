@@ -21,13 +21,10 @@
 // 
 //===========================================================================//
 
-#ifndef BEGIN_NS_XTM
-#define BEGIN_NS_XTM namespace XTM  {
-#define END_NS_XTM }
-#endif
+namespace rtt_units
+{
 
-BEGIN_NS_XTM
-    
+// Nested PhysicalConstants namespace
 namespace PhysicalConstants
 {
     // Mathematical constants
@@ -69,9 +66,9 @@ namespace PhysicalConstants
     // (TEMPERATURE IN eV) * eV2K = (TEMPERATURE IN KELVIN)
     const double eV2K              = electronChargeSI / boltzmannSI;
 
-}
+}  // end namespace PhysicalConstants
 
-END_NS_XTM  // namespace XTM
+} // end namespace rtt_units
 
 #endif                          // __units_PhysicalConstants_hh__
 
