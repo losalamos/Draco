@@ -23,7 +23,7 @@ AC_NEEDS_LIBS(c4 ds++)
 
 AC_RUNTESTS(timestep, 1 2)
 AC_DRACO_ENV
-AC_DRACO_AUTODOC
+AC_DRACO_AUTODOC(draco-4_3_0)
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])

@@ -25,7 +25,7 @@ AC_RUNTESTS(tEospac tEospacWithCDI, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
-AC_DRACO_AUTODOC
+AC_DRACO_AUTODOC(draco-4_3_0)
 
 dnl Setup config.h for EOSPAC type defines.
 case $host in
