@@ -166,10 +166,86 @@ namespace rtt_3T
 
      double c = radPhys.getLightSpeed();
 
-     // put the velocities into the right field type
+     // get cross sections
+
+     fcdsf fcSigmaAbs(spMesh);
+     matprops.getSigmaAbsorption(groupNo, fcSigmaAbs);
+     fcdsf fcSigmaScatter(spMesh);
+     matprops.getSigmaScattering(groupNo, fcSigmaScatter);
+     DiscKineticEnergyField vcSigmaTotal(spMesh);
+     DiscKineticEnergyField vcSigmaAbs(spMesh);
+     DiscKineticEnergyField vcSigmaScattering(spMesh);
+     // obtain the vertex centered cross sections here
+
+     // Obtain unit vectors
+
+     DiscMomentumField::value_type e1;
+     DiscMomentumField::value_type e2;
+     DiscMomentumField::value_type e3;
+     e1(0) = 1.;
+     e1(1) = 0.;
+     e1(2) = 0.;
+     e2(0) = 0.;
+     e2(1) = 1.;
+     e2(2) = 0.;
+     e3(0) = 0.;
+     e3(1) = 0.;
+     e3(2) = 1.;
+
+     // put the velocities and fluxes into the right field type
 
      DiscMomentumField vvelocity(spMesh);
      MT::gather ( vvelocity, velocity, MT::OpAssign() );
+     DiscKineticEnergyField phi(spMesh);
+     MT::gather ( phi, prevStateField.phi, MT::OpAssign() );
+
+     // obtain face normal components
+
+     fcdvsf face_normals( spMesh );
+     face_normals = spMesh->get_fn();
+     DiscFluxField n1( spMesh );
+     DiscFluxField n2( spMesh );
+     DiscFluxField n3( spMesh );
+     typedef typename fcdvsf::value_type vec;
+     {
+         DiscFluxField::iterator iter1 = n1.begin();
+         DiscFluxField::iterator iter2 = n2.begin();
+         DiscFluxField::iterator iter3 = n3.begin();
+         for (fcdvsf::iterator iter = face_normals.begin();
+              iter != face_normals.end(); iter++)
+         {
+             *iter1++ = vec::dot(*iter, e1);
+             *iter2++ = vec::dot(*iter, e2);
+             *iter3++ = vec::dot(*iter, e3);
+         }
+     }
+
+     // calculate dot products and components of velocity term
+
+     DiscKineticEnergyField velocity_sqrd(spMesh);
+     {
+         DiscKineticEnergyField::iterator itersq = velocity_sqrd.begin();
+         for (DiscMomentumField::iterator iter = vvelocity.begin();
+              iter != vvelocity.end(); iter++)
+         {
+             *itersq++ = vec::dot(*iter, *iter);
+         }
+     }
+     DiscKineticEnergyField velocity1(spMesh);
+     DiscKineticEnergyField velocity2(spMesh);
+     DiscKineticEnergyField velocity3(spMesh);
+     {
+         DiscKineticEnergyField::iterator iter1 = velocity1.begin();
+         DiscKineticEnergyField::iterator iter2 = velocity2.begin();
+         DiscKineticEnergyField::iterator iter3 = velocity3.begin();
+         for (DiscMomentumField::iterator iter = vvelocity.begin();
+              iter != vvelocity.end(); iter++)
+         {
+             *iter1++ = vec::dot(*iter, e1);
+             *iter2++ = vec::dot(*iter, e2);
+             *iter3++ = vec::dot(*iter, e3);
+         }
+     }
 
      // determine the vertex to cell volume ratios
 
@@ -182,34 +258,48 @@ namespace rtt_3T
      DiscKineticEnergyField vc_volume_ratios(spMesh);
      vc_volume_ratios = vertex_volumes/vc_cell_volumes;
 
+     // Make shorthand references.
+
+     ccsf &xiTilde = xXiTilde;
+     ccsf &xiBracket = xXiBracket;
+     DiscFluxField &xiOmegaBracket = xXiOmegaBracket;
+
      // calculate xiTilde
 
-     fcdsf sigmaAbs(spMesh);
-     matprops.getSigmaAbsorption(groupNo, sigmaAbs);
      DiscFluxField sigmaF(spMesh);
-     sigmaF = sigmaAbs*prevStateField.F;
-     DiscKineticEnergyField KEnergy(spMesh);
-     solver.dotProduct(KEnergy, sigmaF, vvelocity);
-     // add in the other flux term here
-
-     KEnergy *= vc_volume_ratios;
-     ccsf &xiTilde = xXiTilde;
-     MT::scatter ( xiTilde, KEnergy, MT::OpAddAssign() );
+     sigmaF = fcSigmaAbs*prevStateField.F;
+     DiscKineticEnergyField DKEField(spMesh);
+     solver.dotProduct(DKEField, sigmaF, vvelocity);
+     DKEField -= (4./(3.*c))*vcSigmaAbs*phi*velocity_sqrd;
+     DKEField *= vc_volume_ratios;
+     MT::scatter ( xiTilde, DKEField, MT::OpAddAssign() );
      xiTilde *= (2./c);
 
      // calculate xiBracket
-     fcdsf sigmaScatter(spMesh);
-     matprops.getSigmaScattering(groupNo, sigmaScatter);
-     sigmaF = (sigmaAbs - sigmaScatter)*prevStateField.F;
-     solver.dotProduct(KEnergy, sigmaF, vvelocity);
-     // add in the other flux term here
 
-     KEnergy *= vc_volume_ratios;
-     ccsf &xiBracket = xXiBracket;
-     MT::scatter ( xiBracket, KEnergy, MT::OpAddAssign() );
+     sigmaF = (fcSigmaAbs - fcSigmaScatter)*prevStateField.F;
+     solver.dotProduct(DKEField, sigmaF, vvelocity);
+     DKEField -= (4./(3.*c))*(vcSigmaAbs-vcSigmaScattering)*phi*velocity_sqrd;
+     DKEField *= vc_volume_ratios;
+     MT::scatter ( xiBracket, DKEField, MT::OpAddAssign() );
      xiBracket /= c;
 
      // calculate xiOmegaBracket
+
+     DiscKineticEnergyField DKEField1(spMesh);
+     DiscKineticEnergyField DKEField2(spMesh);
+     DiscKineticEnergyField DKEField3(spMesh);
+     // note: for orthogonal mesh Vvf/Vf = 1/4
+     DKEField1 = vcSigmaTotal*phi*velocity1/4.;
+     DKEField2 = vcSigmaTotal*phi*velocity2/4.;
+     DKEField3 = vcSigmaTotal*phi*velocity3/4.;
+     DiscFluxField DFField1(spMesh);
+     DiscFluxField DFField2(spMesh);
+     DiscFluxField DFField3(spMesh);
+     MT::scatter( DFField1, DKEField1, MT::OpAddAssign() );
+     MT::scatter( DFField2, DKEField2, MT::OpAddAssign() );
+     MT::scatter( DFField3, DKEField3, MT::OpAddAssign() );
+     xiOmegaBracket = (4./(3.*c))*(DFField1*n1 + DFField2*n2 + DFField3*n3);
  }
 
  //------------------------------------------------------------------------//

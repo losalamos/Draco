@@ -381,7 +381,7 @@ void P13T<DS>::solve3T(RadiationStateField &resultsStateField,
     // Calculate the momentum deposition.
 
     calcMomentumDeposition(momentumDeposition, resultsStateField,
-                           solver, matprops, groupNo);
+                           solver, matprops, velocity, groupNo);
 
     // Update and activate the timestep advisors.
     
@@ -542,11 +542,13 @@ void P13T<DS>::calcDeltaTIon(ccsf &deltaTIon,
 //-----------------------------------------------------------------------//
 
 template<class DS>
-void P13T<DS>::calcMomentumDeposition
-(MomentumField &momentumDeposition,
- const RadiationStateField &resultsStateField,
- const DiffusionSolver &solver,
- const MaterialProperties &matprops, const int groupNo) const
+void P13T<DS>::calcMomentumDeposition(
+    MomentumField &momentumDeposition,
+    const RadiationStateField &resultsStateField,
+    const DiffusionSolver &solver,
+    const MaterialProperties &matprops,
+    const ncvsf &velocity,
+    const int groupNo) const
 {
     // Set the radiation physics to the given units.
 
@@ -556,9 +558,21 @@ void P13T<DS>::calcMomentumDeposition
 
     double c = radPhys.getLightSpeed();
 
+    // get cross sections
+
+    fcdsf fcSigmaTotal(spMesh);
+    matprops.getSigmaTotal(groupNo, fcSigmaTotal);
+    DiscKineticEnergyField vcSigmaTotal(spMesh);
+    // obtain the vertex centered cross sections here
+
     // Obtain unit vectors
-    DiscMomentumField e1Field( spMesh ), e2Field( spMesh ), e3Field( spMesh );
-    DiscMomentumField::value_type e1, e2, e3;
+
+    DiscMomentumField e1Field( spMesh );
+    DiscMomentumField e2Field( spMesh );
+    DiscMomentumField e3Field( spMesh );
+    DiscMomentumField::value_type e1;
+    DiscMomentumField::value_type e2;
+    DiscMomentumField::value_type e3;
     e1(0) = 1.;
     e1(1) = 0.;
     e1(2) = 0.;
@@ -571,6 +585,32 @@ void P13T<DS>::calcMomentumDeposition
     e1Field = e1;
     e2Field = e2;
     e3Field = e3;
+
+    // put the velocities and fluxes into the right field type
+
+    DiscMomentumField vvelocity(spMesh);
+    MT::gather ( vvelocity, velocity, MT::OpAssign() );
+    DiscKineticEnergyField phi(spMesh);
+    MT::gather ( phi, resultsStateField.phi, MT::OpAssign() );
+
+    // calculate components of velocity term
+
+    DiscKineticEnergyField velocity1(spMesh);
+    DiscKineticEnergyField velocity2(spMesh);
+    DiscKineticEnergyField velocity3(spMesh);
+    typedef typename DiscMomentumField::value_type vec;
+    {
+        DiscKineticEnergyField::iterator iter1 = velocity1.begin();
+        DiscKineticEnergyField::iterator iter2 = velocity2.begin();
+        DiscKineticEnergyField::iterator iter3 = velocity3.begin();
+        for (DiscMomentumField::iterator iter = vvelocity.begin();
+             iter != vvelocity.end(); iter++)
+        {
+            *iter1++ = vec::dot(*iter, e1);
+            *iter2++ = vec::dot(*iter, e2);
+            *iter3++ = vec::dot(*iter, e3);
+        }
+    }
 
     // determine the vertex to node volume ratios
 
@@ -585,29 +625,29 @@ void P13T<DS>::calcMomentumDeposition
 
     // calculate momentum deposition
 
-    fcdsf sigmaTotal(spMesh);
-    matprops.getSigmaTotal(groupNo, sigmaTotal);
     DiscFluxField sigmaF(spMesh);
-    sigmaF = sigmaTotal*resultsStateField.F;
-    DiscKineticEnergyField sigmaFe1(spMesh),
-                           sigmaFe2(spMesh),
-                           sigmaFe3(spMesh);
+    sigmaF = fcSigmaTotal*resultsStateField.F;
+    DiscKineticEnergyField sigmaFe1(spMesh);
+    DiscKineticEnergyField sigmaFe2(spMesh);
+    DiscKineticEnergyField sigmaFe3(spMesh);
     solver.dotProduct(sigmaFe1, sigmaF, e1Field);
     solver.dotProduct(sigmaFe2, sigmaF, e2Field);
     solver.dotProduct(sigmaFe3, sigmaF, e3Field);
-    // add in the other flux term here
-
+    sigmaFe1 -= (4./(3.*c))*vcSigmaTotal*phi*velocity1;
+    sigmaFe2 -= (4./(3.*c))*vcSigmaTotal*phi*velocity2;
+    sigmaFe3 -= (4./(3.*c))*vcSigmaTotal*phi*velocity3;
     sigmaFe1 *= vc_volume_ratios/c;
     sigmaFe2 *= vc_volume_ratios/c;
     sigmaFe3 *= vc_volume_ratios/c;
-
-    ncsf momentum1(spMesh), momentum2(spMesh), momentum3(spMesh);
+    ncsf momentum1(spMesh);
+    ncsf momentum2(spMesh);
+    ncsf momentum3(spMesh);
     MT::scatter ( momentum1, sigmaFe1, MT::OpAddAssign() );
     MT::scatter ( momentum2, sigmaFe2, MT::OpAddAssign() );
     MT::scatter ( momentum3, sigmaFe3, MT::OpAddAssign() );
-    ncsf::iterator iter1 = momentum1.begin(),
-                   iter2 = momentum2.begin(),
-                   iter3 = momentum3.begin();
+    ncsf::iterator iter1 = momentum1.begin();
+    ncsf::iterator iter2 = momentum2.begin();
+    ncsf::iterator iter3 = momentum3.begin();
     for (MomentumField::iterator mom_iter = momentumDeposition.begin();
          mom_iter != momentumDeposition.end(); mom_iter++)
     {
