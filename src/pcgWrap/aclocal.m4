@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.2 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -3767,6 +3767,22 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        #
        # end of gandolf/libfortran setup
+       #
+
+       #
+       # libpcg/libfmpi setup
+       #
+
+       AC_MSG_CHECKING("libfmpi requirements")
+       if test -n "${vendor_pcg}"; then
+          LIBS="${LIBS} -lfmpi"
+          AC_MSG_RESULT("-lfmpi added to LIBS")
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # end of libpcg setup
        #
 
        #

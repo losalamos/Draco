@@ -14,8 +14,8 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(pcgWrap/config.h:config.h.in)
 package="pcgWrap"
 
-AC_PCG_SETUP(pkg) dnl through pcgWrap
 AC_MPI_SETUP(pkg)    dnl through c4
+AC_PCG_SETUP(pkg) dnl through pcgWrap
 AC_LAPACK_SETUP(pkg) 
 
 AC_INSTALL_HEADERS
