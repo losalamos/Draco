@@ -234,7 +234,7 @@ Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh,
 			    ew_ss, *census, ss_dist, nvoltot, nsstot,
 			    rcontrol, buffer, state);
 
-  // return combed census
+  // return source
     return source;
 }
 
@@ -320,7 +320,6 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 	    dbl_cen_part = (cenew / ew_cen(cencell)) + random.ran();
 	    numcomb = static_cast<int>(dbl_cen_part);
 
-
 	  // create newly combed census particles
 	    if (numcomb > 0)
 	    {
@@ -330,7 +329,8 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 		if (numcomb > 1)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
-			SP<PT> another = particle;
+		      // COPY a new particle and spawn a new RN state
+		      	SP<PT> another = new PT(*particle);
 			Sprng nran     = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
@@ -385,6 +385,10 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 
 	eloss_cen += ecencheck;
 	ecencheck  = 0.0;
+	
+      // make a temporary census to put ew-adjusted particles into
+	SP<Particle_Buffer<PT>::Census> adjusted_census = 
+	    new Particle_Buffer<PT>::Census();
 
 	while (comb_census->size() > 0)
 	{
@@ -392,11 +396,12 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 	    comb_census->pop();
 	    cencell = particle->get_cell();	
 	    particle->set_ew(ew_cen(cencell));
-	    census->push(particle);	  
+	    adjusted_census->push(particle);	  
 	    ecencheck += ew_cen(cencell);
 	    eloss_cen -= ew_cen(cencell);
 	}
-
+	
+	census = adjusted_census;
 	Check (census->size() == ncentot);
 	Check (comb_census->size() == 0);
     }

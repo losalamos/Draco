@@ -76,23 +76,22 @@ Host_Manager<MT,BT,IT,PT>::Host_Manager(int cycle_)
 // run an IMC cycle
 
 template<class MT, class BT, class IT, class PT>
-void Host_Manager<MT,BT,IT,PT>::execute_IMC(const typename IT::Arguments
-					    &arg)
+void Host_Manager<MT,BT,IT,PT>::execute_IMC(typename IT::Arguments &arg)
 {
   // run through an IMC timestep
   
   // initialize IMC
     initialize(arg);
-
+    
   // return if we are on cycle 0
     if (cycle == 0)
 	return;
-
+    
   // do a time-step
     step_IMC();
 
   // cleanup before shipping off
-    regroup();
+    regroup(arg);
 }
 
 //---------------------------------------------------------------------------//
@@ -109,7 +108,7 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
 
   // set problem variables for this cycle
     delta_t = interface->get_delta_t();
-    dump_f  = interface->get_printf();
+  // dump_f  = interface->get_print_f();
     rnd_con = new Rnd_Control(interface->get_seed());
     Particle_Buffer<PT>::set_buffer_size(interface->get_buffer());
 
@@ -144,20 +143,17 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
       // initialize the source
 	source = source_init->initialize(mesh, opacity, mat_state, 
 					 rnd_con, *buffer);
-
-	cout << *opacity << endl;
-	cout << *source << endl;
     
       // make a tally
-	tally = new Tally<MT>(mesh);
-
+	tally = new Tally<MT>(mesh, source_init->get_evol_net());
+	
       // make sure tally, source, and buffer are made
 	Ensure (tally);
 	Ensure (buffer);
 	Ensure (source);
 	Ensure (IT::get_census()->size() == 0);
     }
-	
+
   // reclaim what memory we can
     kill(source_init);
 
@@ -167,19 +163,27 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
     Ensure (mat_state);
     Ensure (rnd_con);
     Ensure (IT::get_census());
-    Ensure (!source_init);
+    Ensure (!source_init);    
 }
 
+//---------------------------------------------------------------------------//
+// IMC TRANSPORT
 //---------------------------------------------------------------------------//
 // do a timestep on a FULLY REPLICATED MESH
 
 template<class MT, class BT, class IT, class PT>
 void Host_Manager<MT,BT,IT,PT>::step_IMC()
 {
-  // <<<< HERE WE GO ON MONDAY >>>>
-  // <<<< MOTHERTRUCKER >>>>
+  // objects required for IMC transport
+    Require (cycle > 0);
+    Require (mesh);
+    Require (opacity);
+    Require (mat_state);
+    Require (buffer);
+    Require (source);
+    Require (tally);
 
-    cerr << ">> Doing transport for cycle " << cycle
+    cerr << ">> Doing IMC transport for cycle " << cycle
 	 << " on proc " << node() << " using full replication." << endl;
 
   // make a new census Comm_Buffer on this node
@@ -222,10 +226,10 @@ void Host_Manager<MT,BT,IT,PT>::step_IMC()
     kill (mat_state);
     kill (opacity);
     kill (mesh);
+    kill (rnd_con);
+    kill (buffer);
 
   // object inventory
-    Ensure (rnd_con);
-    Ensure (buffer);
     Ensure (tally);	
     Ensure (new_census_bank);
     Ensure (!source);
@@ -233,11 +237,37 @@ void Host_Manager<MT,BT,IT,PT>::step_IMC()
     Ensure (!opacity);
     Ensure (!source_init);
     Ensure (!mesh);
+    Ensure (!rnd_con);
+    Ensure (!buffer);
 }
 
+//---------------------------------------------------------------------------//
+// ACCUMULATE TOTALS
+//---------------------------------------------------------------------------//
+
 template<class MT, class BT, class IT, class PT>
-void Host_Manager<MT,BT,IT,PT>::regroup()
-{}
+void Host_Manager<MT,BT,IT,PT>::regroup(typename IT::Arguments &arg)
+{
+    Require (tally);
+    Require (new_census_bank);    
+
+  // set new global census
+    IT::set_census(new_census_bank);
+    kill (new_census_bank);  
+
+   // write tallies to return data
+    Check (tally->num_cells() == arg.num_cells);
+    for (int i = 1; i <= tally->num_cells(); i++)
+    {
+      	arg.e_dep[i-1]   = tally->get_energy_dep(i) - tally->get_evol_net(i); 
+	arg.rad_den[i-1] = tally->get_accum_ewpl(i) / (Global::c *
+						       tally->volume(i) *
+						       delta_t);
+    }
+
+  // we are done
+    Ensure (IT::get_census());
+}
 
 CSPACE
 

@@ -31,7 +31,8 @@ void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
 	       double *imc_mut_n, double *imc_dt, double *imc_time, 
 	       double *imc_implicitness, int *imc_np_nom, int *imc_np_max, 
 	       double *imc_dnpdt, int *imc_random_seed, 
-	       int *imc_buffer_size, int *global_cells, double *imc_t4_slope)
+	       int *imc_buffer_size, int *global_cells, double *imc_t4_slope,
+	       double *return_e_dep, double *return_rad_den)
 {
   // stl components
     using std::cout;
@@ -77,11 +78,15 @@ void rage_imc_(int *imc_ncycle, int *local_numtop, int *global_numtop,
 				 *num_b_cells, *imc_implicitness, *imc_dt,  
 				 *imc_time, *imc_dnpdt, *imc_np_nom,
 				 *imc_np_max, 0.0, *imc_random_seed,
-				 *imc_buffer_size, 0, *imc_ncycle);
+				 *imc_buffer_size, 0, *imc_ncycle,
+				 return_e_dep, return_rad_den);
 
   // make a Rage manager and run IMC
     Host_Manager<OS_Mesh, AMR_Builder, AMR_Interface> rage_mgr(*imc_ncycle);
     rage_mgr.execute_IMC(arg);
+
+  // ending message
+    cout << "IMC is done for cycle " << *imc_ncycle << endl;
  
   // ending time
     C4::gsync();
@@ -119,7 +124,9 @@ AMR_Interface::Arguments::Arguments(const double *node_coord_,
 				    double delta_t_, double elapsed_t_,
 				    double dnpdt_, int npnom_, int npmax_, 
 				    double rad_s_tend_, int seed_, 
-				    int buffer_, int print_f_, int cycle_)
+				    int buffer_, int print_f_, int cycle_,
+				    double * const e_dep_, 
+				    double * const rad_den_)
     : node_coord(node_coord_), layout(layout_), b_proc(b_proc_),
       b_cell(b_cell_), global_cell(global_cell_), dedt(dedt_), rho(rho_),
       opacity_abs(opacity_abs_), tev(tev_), rev(rev_), t4_slope(t4_slope_),
@@ -127,7 +134,7 @@ AMR_Interface::Arguments::Arguments(const double *node_coord_,
       num_b_cells(num_b_cells_), implicitness(implicitness_), 
       delta_t(delta_t_), elapsed_t(elapsed_t_), dnpdt(dnpdt_), npnom(npnom_),
       npmax(npmax_), rad_s_tend(rad_s_tend_), seed(seed_), buffer(buffer_),
-      print_f(print_f_), cycle(cycle_)
+      print_f(print_f_), cycle(cycle_), e_dep(e_dep_), rad_den(rad_den_)
 {
     Require (num_cells != 0);
     Require (num_cells <= global_num_cells);

@@ -16,6 +16,33 @@ using std::ios;
 using std::setiosflags;
 
 //---------------------------------------------------------------------------//
+// constructors
+//---------------------------------------------------------------------------//
+// standard Tally constructor
+
+template<class MT>
+Tally<MT>::Tally(SP<MT> mesh)
+    : energy_dep(mesh), energy_dep_tot(0), eweighted_pathlen(mesh),
+      census_energy(mesh), new_ecen_tot(0), new_ncen(mesh), new_ncen_tot(0),
+      evol_net(mesh), n_effscat(0), n_thomscat(0), n_killed(0), ew_killed(0), 
+      n_escaped(0), ew_escaped(0), n_bndcross(0), n_reflections(0)
+{}
+
+//---------------------------------------------------------------------------//
+// Tally constructor that assigns evol_net
+
+template<class MT>
+Tally<MT>::Tally(SP<MT> mesh, typename MT::CCSF_double evol_net_)
+    : energy_dep(mesh), energy_dep_tot(0), eweighted_pathlen(mesh),
+      census_energy(mesh), new_ecen_tot(0), new_ncen(mesh), new_ncen_tot(0),
+      evol_net(evol_net_), n_effscat(0), n_thomscat(0), n_killed(0), 
+      ew_killed(0), n_escaped(0), ew_escaped(0), n_bndcross(0), 
+      n_reflections(0)
+{
+    Ensure (*mesh == evol_net.get_Mesh());
+}
+
+//---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
 

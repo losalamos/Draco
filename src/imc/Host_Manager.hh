@@ -73,7 +73,7 @@ public:
     Host_Manager(int);
 
   // run one cycle
-    void execute_IMC(const typename IT::Arguments &);
+    void execute_IMC(typename IT::Arguments &);
 
   // initialize this problem cycle
     void initialize(const typename IT::Arguments &);
@@ -82,10 +82,7 @@ public:
     void step_IMC();
 
   // do any collections or cleanup necessary
-    void regroup();
-
-  // do the output
-    void output();
+    void regroup(typename IT::Arguments &);
 
   // print diagnostics
     void cycle_dump() const;

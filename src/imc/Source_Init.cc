@@ -591,7 +591,8 @@ void Source_Init<MT,PT>::old_comb_census(const MT &mesh, Rnd_Control &rcon)
 		if (numcomb > 1)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
-			SP<PT> another = particle;
+		      // COPY a new particle and spawn a new RN state
+			SP<PT> another = new PT(*particle);
 			Sprng nran = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);
@@ -656,7 +657,6 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 	    dbl_cen_part = (cenew / ew_cen(cencell)) + random.ran();
 	    numcomb = static_cast<int>(dbl_cen_part);
 
-
 	  // create newly combed census particles
 	    if (numcomb > 0)
 	    {
@@ -666,7 +666,8 @@ void Source_Init<MT,PT>::comb_census(const MT &mesh, Rnd_Control &rcon)
 		if (numcomb > 1)
 		    for (int nc = 1; nc <= numcomb-1; nc++)
 		    {
-			SP<PT> another = particle;
+		      // COPY a new particle and spawn a new RN state
+			SP<PT> another = new PT(*particle);
 			Sprng nran = rcon.spawn(particle->get_random());
 			another->set_random(nran);
 			comb_census->push(another);

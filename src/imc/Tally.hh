@@ -20,6 +20,8 @@
 // 1) 06-23-98  Added accumulation of new census information and 
 //              energy-weighted path length. 
 // 2) 07-28-98  Added accumulation of thomson scatters
+// 3) 08-31-98  Added cell volume accessor function 
+// 4) 08-31-98  Added additional constructor for evol_net storage
 // 
 //===========================================================================//
 
@@ -49,6 +51,8 @@ private:
     typename MT::CCSF_int new_ncen;
     int new_ncen_tot;
 
+    typename MT::CCSF_double evol_net;
+
   // particle activity tallies, per cycle
     int n_effscat;
     int n_thomscat;
@@ -61,12 +65,10 @@ private:
 
 public:
   // Tally constructor
-    explicit Tally(SP<MT> mesh) 
-	: energy_dep(mesh), energy_dep_tot(0.0), eweighted_pathlen(mesh), 
-	  census_energy(mesh), new_ecen_tot(0.0), new_ncen(mesh), 
-	  new_ncen_tot(0.0), n_effscat(0), n_thomscat(0), n_killed(0), 
-	  ew_killed(0.0), n_escaped(0), ew_escaped(0.0), n_bndcross(0), 
-	  n_reflections(0){}
+    explicit Tally(SP<MT>);
+
+  // Tally constructor that gets evol_net
+    Tally(SP<MT>, typename MT::CCSF_double);
 
   // accumulate energy deposited
     void deposit_energy(const int cell, const double energy);
@@ -74,6 +76,7 @@ public:
   // access energy deposited for a cell, total.
     inline double get_energy_dep(const int cell);
     inline double get_energy_dep_tot();
+    double get_evol_net(int cell) { return evol_net(cell); }
 
   // accumulate energy-weighted path length
     void accumulate_ewpl(const int cell, const double ewpl);
@@ -107,6 +110,7 @@ public:
 
   // accessors
     int num_cells() const { return energy_dep.get_Mesh().num_cells(); }
+    inline double volume(int) const;
 
   // diagnostics for tally
     void print(ostream &) const;
@@ -199,6 +203,17 @@ inline void Tally<MT>::accum_n_bndcross(){ n_bndcross += 1; }
 
 template<class MT>
 inline void Tally<MT>::accum_n_reflections(){ n_reflections += 1; }
+
+//---------------------------------------------------------------------------//
+// return the cell volume
+
+template<class MT>
+inline double Tally<MT>::volume(int cell) const
+{
+    Require (cell <= energy_dep.get_Mesh().num_cells());
+    return energy_dep.get_Mesh().volume(cell);
+}
+
 CSPACE
 
 #endif                          // __imc_Tally_hh__

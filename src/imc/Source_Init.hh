@@ -21,6 +21,12 @@
 //  1)  7-13-98 : Added reproducible combing of census particles.
 //  2)   8-3-98 : Temporary kluge (grrr) initializer for host code
 //                interfacing 
+//  3)   9-2-98 : Removed kluge (yeah!), fixed old_comb_census and
+//                comb_census, the error was the additional particles 
+//                (SP<PT> another) were being assigned to the original
+//                particle.  Thus, these SP's were pointing to the same 
+//                particle; the correct code is:
+//                     SP<PT> another = new PT(*particle)
 // 
 //===========================================================================//
 

@@ -187,6 +187,9 @@ public:
     SP<Source<MT> > initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
 			       SP<Rnd_Control>, const Particle_Buffer<PT> &); 
 
+  // accessor functions
+    typename MT::CCSF_double get_evol_net() const { return evol_net; }
+
   // diagnostic functions
     void print(ostream &) const;
 };

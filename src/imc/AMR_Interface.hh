@@ -40,7 +40,7 @@ extern "C"
 			  int *, double *, double *, double *, double *, 
 			  double *, double *, double *, double *, double *, 
 			  int *, int *, double *, int *, int *, int *, 
-			  double *);
+			  double *, double *, double *);
 }
 
 //---------------------------------------------------------------------------//
@@ -62,12 +62,16 @@ using dsxx::SP;
 class AMR_Interface
 {
 public:
-  // structure for passing arguments to the interface
+  // structure for passing arguments to the interface, we do not reassign
+  // memory here in copy constructors or assignment operators on purpose, our 
+  // goal is to conserve some memory as we know that the initial Arguments
+  // object made in the rage_imc function WILL NOT be destroyed during a
+  // timestep
     struct Arguments
     {
       // data determining the problem layout
 
-      // arrays
+      // arrays that we receive
 	const double *node_coord;
 	const int *layout;
 	const int *b_proc;
@@ -96,12 +100,17 @@ public:
 	const int print_f;
 	const int cycle;
 
+      // arrays that we return data to
+	double * const e_dep;
+	double * const rad_den;
+
       // constructor
 	Arguments(const double *, const int *, const int *, const int *,
 		  const int *, const double *, const double *, 
 		  const double *, const double *, const double *, 
 		  const double *, int, int, int, double, double, double, 
-		  double, int, int, double, int, int, int, int);
+		  double, int, int, double, int, int, int, int, 
+		  double * const, double * const);
     };
 
 private:
@@ -166,7 +175,7 @@ public:
 
   // static functions to access in-between timestep variables
     static SP_Census get_census() { return host_census; }
-    static void set_census(SP_Census cen) { host_census = cen; }
+    static void set_census(const SP_Census &cen) { host_census = cen; }
 };
 
 CSPACE
