@@ -9,6 +9,10 @@
 #ifndef __3T_P13T_hh__
 #define __3T_P13T_hh__
 
+#ifndef P13T_MOMENTUM_DEPOSITION
+#define P13T_MOMENTUM_DEPOSITION
+#endif
+
 #include "ds++/SP.hh"
 #include "3T/P13TOptions.hh"
 #include <iosfwd>

@@ -9,6 +9,10 @@
 #ifndef __3T_CrossSectionMapper_hh__
 #define __3T_CrossSectionMapper_hh__
 
+#ifndef P13T_MOMENTUM_DEPOSITION
+#define P13T_MOMENTUM_DEPOSITION
+#endif
+
 // DEFINING NAMESPACE
 
 namespace rtt_3T {
