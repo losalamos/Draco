@@ -607,6 +607,8 @@ void IMC_Manager<MT,BT,IT,PT>::dd_Particle_transport(SP<PT> particle,
     if (!(counter % print_f)) 
 	cerr << setw(10) << counter << " particles run on proc " 
 	     << node()   << endl;
+
+    Ensure (communicator->arecv_status(*buffer));
 }
 
 //---------------------------------------------------------------------------//
