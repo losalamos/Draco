@@ -2364,14 +2364,11 @@ bool TestRTT_Format::check_virtual(const rtt_meshReaders::RTT_Format & mesh,
 	side_nodes.resize(0);
 	// load the element types defined for RTT_Format according to the
 	// corresponding Element_Definition::Element_Type.
-	element_types.push_back(rtt_meshReaders::Element_Definition::NODE);
-	element_types.push_back(rtt_meshReaders::Element_Definition::BAR_2);
 	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
-	element_types.push_back(rtt_meshReaders::Element_Definition::QUAD_4);
-	element_types.push_back(rtt_meshReaders::Element_Definition::PYRA_5);
+	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
+	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
+	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
 	element_types.push_back(rtt_meshReaders::Element_Definition::TETRA_4);
-	element_types.push_back(rtt_meshReaders::Element_Definition::PENTA_6);
-	element_types.push_back(rtt_meshReaders::Element_Definition::HEXA_8); 
 	// load the node sets
 	flag_nodes.insert(0);
 	node_sets.insert(make_pair(string("node_type/interior"), flag_nodes));

@@ -2263,34 +2263,40 @@ vector<vector<int> > RTT_Format::get_element_nodes() const
 vector<Element_Definition::Element_Type> RTT_Format::get_element_types() const
 {
     vector<Element_Definition::Element_Type> types(get_dims_ncell_defs());
-    Element_Definition::Element_Type element_type;
+    Element_Definition::Element_Type cell_defs;
+    vector<Element_Definition::Element_Type> element_type;
 
     for (int d = 0; d < get_dims_ncell_defs(); d++)
     {
 	string cell_name = get_cell_defs_name(d);
 	
 	if (cell_name == "point")
-	    element_type = Element_Definition::NODE;
+	    cell_defs = Element_Definition::NODE;
 	else if (cell_name == "line")
-	    element_type = Element_Definition::BAR_2;
+	    cell_defs = Element_Definition::BAR_2;
 	else if (cell_name == "triangle")
-	    element_type = Element_Definition::TRI_3;
+	    cell_defs = Element_Definition::TRI_3;
 	else if (cell_name == "quad")
-	    element_type = Element_Definition::QUAD_4;
+	    cell_defs = Element_Definition::QUAD_4;
 	else if (cell_name == "tetrahedron")
-	    element_type = Element_Definition::TETRA_4;
+	    cell_defs = Element_Definition::TETRA_4;
 	else if (cell_name == "quad_pyr")
-	    element_type = Element_Definition::PYRA_5;
+	    cell_defs = Element_Definition::PYRA_5;
 	else if (cell_name == "tri_prism")
-	    element_type = Element_Definition::PENTA_6;
+	    cell_defs = Element_Definition::PENTA_6;
 	else if (cell_name == "hexahedron")
-	    element_type = Element_Definition::HEXA_8;
+	    cell_defs = Element_Definition::HEXA_8;
 	else
 	    throw std::runtime_error("Unrecognized cell definition");
 
-	types[d] = element_type;
+	types[d] = cell_defs;
     }
-    return types;
+    for (int s = 0; s < get_dims_nsides(); s++)
+        element_type.push_back(types[get_sides_type(s)]);
+    for (int c = 0; c < get_dims_ncells(); c++)
+        element_type.push_back(types[get_cells_type(c)]);
+
+    return element_type;
 }
 
 /*!
