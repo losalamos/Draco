@@ -580,7 +580,7 @@ package="ds++"
 
 	test_alltarget="$test_alltarget tstAllocators tstMat tstSP tstAssert tstNestMap \
             tstMat1RA tstMat2RA tstMat3RA tstMat4RA tstMat5RA \
-	    tstCheck_Strings"
+	    tstCheck_Strings tstSortPermutation"
         
 	test_nprocs="scalar"
 
