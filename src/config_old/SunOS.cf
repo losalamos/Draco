@@ -82,9 +82,7 @@ endif
 
 ifeq ($(need_sprng),yes)
 SYS_FLAGS += -I/home/tme/lib/sprng/SRC
-ifeq ($(sprng),lfg)
-SYS_LIBS += -L/home/tme/lib/sprng/solaris -llfg
-endif
+SYS_LIBS += -L/home/tme/lib/sprng/solaris -l$(sprng)
 endif
 
 ifdef nj
