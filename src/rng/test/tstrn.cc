@@ -24,7 +24,7 @@ main()
     id2 = init_sprng(1, num, seed, 1);
     
     Sprng ran1(id1, 0);	
-    Sprng ran2(ran1);
+    Sprng ran2(id2, 0);
 
     for (int i = 0; i < 2; i++)
 	cout << ran1.ran() << endl;
@@ -42,18 +42,7 @@ main()
     for (int i = 0; i < 5; i++)
 	cout << sprng(news[0]) << endl;
 
-    Sprng ran3(news[0], 0);
-
-    cout << endl;
-
-    spawn = spawn_sprng(ran1.get_id(), 1, &ns);
-
-    Sprng ran4(ns[0], 0);
-
-    for (int i = 0; i < 5; i++)
-	cout << ran4.ran() << endl;
-
-    cout << news[0] << " " << ns[0] << endl;
+    free_sprng(news[0]);
 }
 
 //---------------------------------------------------------------------------//
