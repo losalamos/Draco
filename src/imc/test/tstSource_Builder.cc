@@ -764,7 +764,7 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	if (rtt_imc_test::passed) 
 	{
-	    cout << "**** tstSource_Builder Test: PASSED on" 
+	    cout << "**** tstSource_Builder Test: PASSED on " 
 		 << C4::node() << endl;
 	}
 	cout <<     "*********************************************" << endl;

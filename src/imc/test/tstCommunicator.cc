@@ -359,7 +359,7 @@ int main(int argc, char *argv[])
 	cout <<     "*********************************************" << endl;
 	if (rtt_imc_test::passed) 
 	{
-	    cout << "**** tstCommunicator Test: PASSED on" 
+	    cout << "**** tstCommunicator Test: PASSED on " 
 		 << C4::node() << endl;
 	}
 	cout <<     "*********************************************" << endl;
