@@ -1,3 +1,11 @@
+1999-11-19  Thomas M. Evans  <tme@lanl.gov>
+
+	* Topology.*, test/tstTopology.cc: added a Topology class that
+ 	describes mesh decomposition.  Additionally, added a component
+	test for it.  At this juncture the test only works for full
+	replication cases.  We had to add c4 to the mc dependency list to
+	accomodate node information in Topology.
+
 1999-10-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* OS_Mesh.hh, OS_Mesh.cc: added expanded surface source

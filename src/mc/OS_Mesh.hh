@@ -50,6 +50,8 @@
 //                navigate through the class)-->we can now use the algorithms 
 //                provided by the STL to do operations on CCSF fields, also
 //                this move presupposes the use of Randy's matprops class
+// 15) 18-NOV-99: added get_neighbors member function that returns a
+//                vector<int> that contains the neighbors of a cell.
 // 
 //===========================================================================//
 
@@ -194,7 +196,8 @@ class OS_Mesh
     inline vector<double> sample_pos(int, Sprng &) const;
     inline vector<double> sample_pos(int, Sprng &, vector<double>, 
 				     double) const; 
-    inline vector<double> sample_pos_on_face(int, int, Sprng &)	const; 
+    inline vector<double> sample_pos_on_face(int, int, Sprng &)	const;
+    inline vector<int> get_neighbors(int) const;
 
     // overloaded operators
     bool operator==(const OS_Mesh &) const;
@@ -477,6 +480,19 @@ inline vector<double> OS_Mesh::sample_pos_on_face(int cell, int face,
 
     // return position vector
     return r;
+}
+
+//---------------------------------------------------------------------------//
+// return a vector<int> list of a cells neighbors
+
+inline vector<int> OS_Mesh::get_neighbors(int cell) const
+{
+    vector<int> neighbors(layout.num_faces(cell));
+    
+    for (int face = 1; face <= neighbors.size(); face++)
+	neighbors[face-1] = layout(cell, face);
+
+    return neighbors;
 }
 
 //===========================================================================//

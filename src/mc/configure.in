@@ -13,17 +13,17 @@ AC_CONFIG_HEADER(mc/config.h:config.h.in)
 package="mc"
 
 dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
+AC_MPI_SETUP(pkg)
+AC_SHMEM_SETUP(pkg)
 AC_SPRNG_SETUP(pkg)
 
 dnl installation
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(rng ds++)
+AC_NEEDS_LIBS(rng c4 ds++)
 
 dnl runtesting
-AC_RUNTESTS(tstCoord tstOSMesh tstFields, scalar)
+AC_RUNTESTS(tstCoord tstOSMesh tstFields tstTopology, 1 2)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
