@@ -41,6 +41,14 @@ int main(int argc, char *argv[])
     if (C4::node() == 0)
 	begin = C4::Wtime();
 
+  // welcome
+    std::cout << "**************************************" << std::endl;
+    std::cout << ">>> Welcome to IMCTEST version 1.0 <<<" << std::endl;
+    std::cout << ">>> T.M. Evans and T.J. Urbatsch   <<<" << std::endl;
+    std::cout << ">>> Group XTM, LANL                <<<" << std::endl;
+    std::cout << "**************************************" << std::endl;
+    std::cout << std::endl;
+
   // determine command line arguments
     vector<string> arguments(argc);
     bool verbose = false;
