@@ -1,3 +1,8 @@
+2001-07-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* rng: Updated to rng-1_4_0.  __STDC__ now defined in config.h
+	always; add Makefile.target to testing directory.
+
 2000-04-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* tstSprng.cc: fixed memory error.  Updated to rng-1_3_0.

@@ -2,13 +2,16 @@
 
 ac_help="$ac_help
 dnl
-  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS,Compaq]     choose an F90 compiler
+  --with-f90[=XL,WorkShop,Fujitsu,Absoft,Cray,MIPS,Compaq]     choose an F90 compiler
 "
 # Check whether --with-f90 or --without-f90 was given.
 if test "${with_f90+set}" = set; then
   withval="$with_f90"
   :
 fi
+
+
+
 
 
 
@@ -1041,7 +1044,7 @@ fi
 # SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
 # ./install, which can be erroneously created by make from ./install.sh.
 echo $ac_n "checking for a BSD compatible install""... $ac_c" 1>&6
-echo "configure:1045: checking for a BSD compatible install" >&5
+echo "configure:1048: checking for a BSD compatible install" >&5
 if test -z "$INSTALL"; then
 if eval "test \"`echo '$''{'ac_cv_path_install'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1153,7 +1156,7 @@ EOF
       # Extract the first word of "python", so it can be a program name with args.
 set dummy python; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1157: checking for $ac_word" >&5
+echo "configure:1160: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PYTHON_PATH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1195,7 +1198,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1199: checking for $ac_word" >&5
+echo "configure:1202: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_GHOSTVIEW'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1234,7 +1237,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1238: checking for $ac_word" >&5
+echo "configure:1241: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LATEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1274,7 +1277,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1278: checking for $ac_word" >&5
+echo "configure:1281: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_BIBTEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1314,7 +1317,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1318: checking for $ac_word" >&5
+echo "configure:1321: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_XDVI'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1354,7 +1357,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1358: checking for $ac_word" >&5
+echo "configure:1361: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_DVIPS'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1394,7 +1397,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1398: checking for $ac_word" >&5
+echo "configure:1401: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LP'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1458,7 +1461,7 @@ else { echo "configure: error: can not run $ac_config_sub" 1>&2; exit 1; }
 fi
 
 echo $ac_n "checking host system type""... $ac_c" 1>&6
-echo "configure:1462: checking host system type" >&5
+echo "configure:1465: checking host system type" >&5
 
 host_alias=$host
 case "$host_alias" in
@@ -1479,7 +1482,7 @@ host_os=`echo $host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$host" 1>&6
 
 echo $ac_n "checking target system type""... $ac_c" 1>&6
-echo "configure:1483: checking target system type" >&5
+echo "configure:1486: checking target system type" >&5
 
 target_alias=$target
 case "$target_alias" in
@@ -1497,7 +1500,7 @@ target_os=`echo $target | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$target" 1>&6
 
 echo $ac_n "checking build system type""... $ac_c" 1>&6
-echo "configure:1501: checking build system type" >&5
+echo "configure:1504: checking build system type" >&5
 
 build_alias=$build
 case "$build_alias" in
@@ -1528,7 +1531,7 @@ test "$host_alias" != "$target_alias" &&
        # Extract the first word of "KCC", so it can be a program name with args.
 set dummy KCC; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1532: checking for $ac_word" >&5
+echo "configure:1535: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1559,7 +1562,7 @@ fi
 	   CC='KCC --c'
 	   
    echo $ac_n "checking "configuration of ${CXX}/${CC} compilers"""... $ac_c" 1>&6
-echo "configure:1563: checking "configuration of ${CXX}/${CC} compilers"" >&5
+echo "configure:1566: checking "configuration of ${CXX}/${CC} compilers"" >&5
 
    # KCC SPECIFIC FLAGS
    dirstoclean='ti_files'
@@ -1627,7 +1630,7 @@ echo "configure:1563: checking "configuration of ${CXX}/${CC} compilers"" >&5
        # Extract the first word of "guidec++", so it can be a program name with args.
 set dummy guidec++; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1631: checking for $ac_word" >&5
+echo "configure:1634: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1656,7 +1659,7 @@ fi
        # Extract the first word of "guidec", so it can be a program name with args.
 set dummy guidec; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1660: checking for $ac_word" >&5
+echo "configure:1663: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1686,7 +1689,7 @@ fi
        if test "${CXX}" = guidec++ && test "${CC}" = guidec ; then 
 	   
    echo $ac_n "checking "configuration of ${CXX}/${CC} compilers"""... $ac_c" 1>&6
-echo "configure:1690: checking "configuration of ${CXX}/${CC} compilers"" >&5
+echo "configure:1693: checking "configuration of ${CXX}/${CC} compilers"" >&5
 
    # KCC SPECIFIC FLAGS
    dirstoclean='ti_files'
@@ -1753,7 +1756,7 @@ echo "configure:1690: checking "configuration of ${CXX}/${CC} compilers"" >&5
        # Extract the first word of "CC", so it can be a program name with args.
 set dummy CC; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1757: checking for $ac_word" >&5
+echo "configure:1760: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1782,7 +1785,7 @@ fi
        # Extract the first word of "cc", so it can be a program name with args.
 set dummy cc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1786: checking for $ac_word" >&5
+echo "configure:1789: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1812,7 +1815,7 @@ fi
        if test "${CXX}" = CC && test "${CC}" = cc ; then
 	   
    echo $ac_n "checking "configuration of ${CXX}/${CC} compilers"""... $ac_c" 1>&6
-echo "configure:1816: checking "configuration of ${CXX}/${CC} compilers"" >&5
+echo "configure:1819: checking "configuration of ${CXX}/${CC} compilers"" >&5
 
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
@@ -1871,7 +1874,7 @@ echo "configure:1816: checking "configuration of ${CXX}/${CC} compilers"" >&5
        # Extract the first word of "g++", so it can be a program name with args.
 set dummy g++; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1875: checking for $ac_word" >&5
+echo "configure:1878: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1900,7 +1903,7 @@ fi
        # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1904: checking for $ac_word" >&5
+echo "configure:1907: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1933,7 +1936,7 @@ fi
    # Extract the first word of "g++", so it can be a program name with args.
 set dummy g++; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1937: checking for $ac_word" >&5
+echo "configure:1940: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_GCC_BIN'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1968,7 +1971,7 @@ fi
 
 
    echo $ac_n "checking "Setting library path of GNU compiler"""... $ac_c" 1>&6
-echo "configure:1972: checking "Setting library path of GNU compiler"" >&5
+echo "configure:1975: checking "Setting library path of GNU compiler"" >&5
    if test "${GCC_BIN}" = null ; then
        GCC_LIB_DIR='/usr/lib'
    else
@@ -1980,7 +1983,7 @@ echo "configure:1972: checking "Setting library path of GNU compiler"" >&5
 
    # do compiler configuration
    echo $ac_n "checking "configuration of ${CXX}/${CC} compilers"""... $ac_c" 1>&6
-echo "configure:1984: checking "configuration of ${CXX}/${CC} compilers"" >&5
+echo "configure:1987: checking "configuration of ${CXX}/${CC} compilers"" >&5
 
    # LINKER AND LIBRARY (AR)
    LD='${CXX}'
@@ -1993,7 +1996,7 @@ echo "configure:1984: checking "configuration of ${CXX}/${CC} compilers"" >&5
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi"
+       STRICTFLAG="-ansi -fhonor-std -Wnon-virtual-dtor"
    fi
 
    # optimization level
@@ -2005,6 +2008,14 @@ echo "configure:1984: checking "configuration of ${CXX}/${CC} compilers"" >&5
    fi
    CXXFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
    CFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
+
+   # add inlining if optimization is 01, 02 (it is on by default for
+   # 03)
+   if test "${with_opt}" = 1 || test "${with_opt}" = 2 ||
+      test "${with_opt}" = 3 ; then
+       CXXFLAGS="${CXXFLAGS} -finline-functions"
+       CFLAGS="${CFLAGS} -finline-functions"
+   fi
 
    # LINK FLAGS
 
@@ -2029,7 +2040,7 @@ echo "configure:1984: checking "configuration of ${CXX}/${CC} compilers"" >&5
    # do draco standard headers
 
    echo $ac_n "checking "for draco standard headers"""... $ac_c" 1>&6
-echo "configure:2033: checking "for draco standard headers"" >&5
+echo "configure:2044: checking "for draco standard headers"" >&5
    if test "${enable_draco_stdhdrs:=no}" != no ; then
       CPPFLAGS="${CPPFLAGS} "'-I${includedir}/stdheaders'
       echo "$ac_t"""CPPFLAGS modified"" 1>&6
@@ -2053,7 +2064,7 @@ echo "configure:2033: checking "for draco standard headers"" >&5
    # Extract the first word of "xlf90", so it can be a program name with args.
 set dummy xlf90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2057: checking for $ac_word" >&5
+echo "configure:2068: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2109,7 +2120,7 @@ fi
         trapflags="${trapflags} -qsigtrap"
         F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2121,7 +2132,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2125: checking for $ac_word" >&5
+echo "configure:2136: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2176,7 +2187,70 @@ fi
    then
         F90FLAGS="-g -Haesu ${F90FLAGS}"
    else
-        F90FLAGS="-O ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+   fi
+
+   
+   ;;
+   Absoft)
+	
+   # Check for working Absoft F90 compiler
+
+   # Extract the first word of "f90", so it can be a program name with args.
+set dummy f90; ac_word=$2
+echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+echo "configure:2203: checking for $ac_word" >&5
+if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test -n "$F90"; then
+  ac_cv_prog_F90="$F90" # Let the user override the test.
+else
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+  ac_dummy="$PATH"
+  for ac_dir in $ac_dummy; do
+    test -z "$ac_dir" && ac_dir=.
+    if test -f $ac_dir/$ac_word; then
+      ac_cv_prog_F90="f90"
+      break
+    fi
+  done
+  IFS="$ac_save_ifs"
+  test -z "$ac_cv_prog_F90" && ac_cv_prog_F90="none"
+fi
+fi
+F90="$ac_cv_prog_F90"
+if test -n "$F90"; then
+  echo "$ac_t""$F90" 1>&6
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+
+   # Stupid Absoft Fortran does not have a version header
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE=''
+   F90FIXED=''
+   MODFLAG='-p'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+
+   # COMPILATION FLAGS
+
+   F90FLAGS=""
+
+   if test "${enable_debug:=no}" = yes
+   then
+        F90FLAGS="-g ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2188,7 +2262,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2192: checking for $ac_word" >&5
+echo "configure:2266: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2243,7 +2317,7 @@ fi
    then
         F90FLAGS="-g"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2255,7 +2329,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2259: checking for $ac_word" >&5
+echo "configure:2333: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2310,7 +2384,7 @@ fi
    then
         F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2322,7 +2396,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2326: checking for $ac_word" >&5
+echo "configure:2400: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2377,7 +2451,7 @@ fi
    then
         F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2389,7 +2463,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2393: checking for $ac_word" >&5
+echo "configure:2467: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2458,7 +2532,7 @@ fi
    # Extract the first word of "xlf90", so it can be a program name with args.
 set dummy xlf90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2462: checking for $ac_word" >&5
+echo "configure:2536: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2514,7 +2588,7 @@ fi
         trapflags="${trapflags} -qsigtrap"
         F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2526,7 +2600,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2530: checking for $ac_word" >&5
+echo "configure:2604: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2581,7 +2655,7 @@ fi
    then
         F90FLAGS="-g"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2593,7 +2667,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2597: checking for $ac_word" >&5
+echo "configure:2671: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2648,7 +2722,7 @@ fi
    then
         F90FLAGS="-g -Haesu ${F90FLAGS}"
    else
-        F90FLAGS="-O ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2660,7 +2734,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2664: checking for $ac_word" >&5
+echo "configure:2738: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2715,7 +2789,7 @@ fi
    then
         F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2727,7 +2801,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2731: checking for $ac_word" >&5
+echo "configure:2805: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2782,7 +2856,7 @@ fi
    then
         F90FLAGS="-g ${F90FLAGS}"
    else
-        F90FLAGS="-O${with_opt:=0} ${F90FLAGS}"
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
    fi
 
    
@@ -2794,7 +2868,7 @@ fi
    # Extract the first word of "f90", so it can be a program name with args.
 set dummy f90; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2798: checking for $ac_word" >&5
+echo "configure:2872: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_F90'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2915,7 +2989,7 @@ fi
       # Extract the first word of "ranlib", so it can be a program name with args.
 set dummy ranlib; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:2919: checking for $ac_word" >&5
+echo "configure:2993: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_RANLIB'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
