@@ -14,61 +14,61 @@ Sn_constants::Sn_constants( Input_edit &data ) : p_p(data.nm(),data.mm(),8)
 {
     // quadrature
 
-    w_p    = new REAL [data.mm()];
-    mu_p   = new REAL [data.mm()];
-    eta_p  = new REAL [data.mm()];
-    tsi_p  = new REAL [data.mm()];
-    wmu_p  = new REAL [data.mm()];
-    weta_p = new REAL [data.mm()];
-    wtsi_p = new REAL [data.mm()];
+    w_p    = Mat1<REAL>(data.mm());
+    mu_p   = Mat1<REAL>(data.mm());
+    eta_p  = Mat1<REAL>(data.mm());
+    tsi_p  = Mat1<REAL>(data.mm());
+    wmu_p  = Mat1<REAL>(data.mm());
+    weta_p = Mat1<REAL>(data.mm());
+    wtsi_p = Mat1<REAL>(data.mm());
 
     if ( data.mm() == 6 )           // S6
     {
-        mu_p[0]  = 0.23009194;
-        eta_p[0] = 0.94557676;
-        w_p[0]   = 0.16944656 / 8.0;
+        mu_p(0)  = 0.23009194;
+        eta_p(0) = 0.94557676;
+        w_p(0)   = 0.16944656 / 8.0;
 
-        mu_p[1]  = 0.68813432;
-        eta_p[1] = mu_p[1];
-        w_p[1]   = 0.16388677 / 8.0;
+        mu_p(1)  = 0.68813432;
+        eta_p(1) = mu_p(1);
+        w_p(1)   = 0.16388677 / 8.0;
 
-        mu_p[2]  = mu_p[0];
-        eta_p[2] = mu_p[1];
-        w_p[2]   = w_p[1];
+        mu_p(2)  = mu_p(0);
+        eta_p(2) = mu_p(1);
+        w_p(2)   = w_p(1);
   
-        mu_p[3]  = eta_p[0];
-        eta_p[3] = mu_p[0];
-        w_p[3]   = w_p[0];
+        mu_p(3)  = eta_p(0);
+        eta_p(3) = mu_p(0);
+        w_p(3)   = w_p(0);
   
-        mu_p[4]  = mu_p[1];
-        eta_p[4] = mu_p[0];
-        w_p[4]   = w_p[1];
+        mu_p(4)  = mu_p(1);
+        eta_p(4) = mu_p(0);
+        w_p(4)   = w_p(1);
   
-        mu_p[5]  = mu_p[0];
-        eta_p[5] = mu_p[0];
-        w_p[5]   = w_p[0];
+        mu_p(5)  = mu_p(0);
+        eta_p(5) = mu_p(0);
+        w_p(5)   = w_p(0);
     }
     else if ( data.mm() == 3 )      // S4
     {
-        mu_p[0]  = 0.30163878;
-        eta_p[0] = 0.90444905;
-        w_p[0]   = 1.0 / 3.0 / 8.0;
+        mu_p(0)  = 0.30163878;
+        eta_p(0) = 0.90444905;
+        w_p(0)   = 1.0 / 3.0 / 8.0;
 
-        mu_p[1]  = eta_p[0];
-        eta_p[1] = mu_p[0];
-        w_p[1]   = w_p[0];
+        mu_p(1)  = eta_p(0);
+        eta_p(1) = mu_p(0);
+        w_p(1)   = w_p(0);
 
-        mu_p[2]  = mu_p[0];
-        eta_p[2] = mu_p[0];
-        w_p[2]   = w_p[0];
+        mu_p(2)  = mu_p(0);
+        eta_p(2) = mu_p(0);
+        w_p(2)   = w_p(0);
     }
 
     for ( int m = 0 ; m < data.mm() ; m++ )
     {
-        tsi_p[m]  = sqrt( 1.0 - mu_p[m] * mu_p[m] - eta_p[m] * eta_p[m] );
-        wmu_p[m]  = w_p[m] * mu_p[m];
-        weta_p[m] = w_p[m] * eta_p[m];
-        wtsi_p[m] = w_p[m] * tsi_p[m];
+        tsi_p(m)  = sqrt( 1.0 - mu_p(m) * mu_p(m) - eta_p(m) * eta_p(m) );
+        wmu_p(m)  = w_p(m) * mu_p(m);
+        weta_p(m) = w_p(m) * eta_p(m);
+        wtsi_p(m) = w_p(m) * tsi_p(m);
     }
 
     // spherical harmonics
@@ -92,23 +92,12 @@ Sn_constants::Sn_constants( Input_edit &data ) : p_p(data.nm(),data.mm(),8)
 
                     for ( int m = 0 ; m < data.mm() ;  m++ )
                     {
-                        p_p(1,m,iq) = s3 * mu_p[m];
-                        p_p(2,m,iq) = s2 * eta_p[m];
-                        p_p(3,m,iq) = s1 * tsi_p[m];
+                        p_p(1,m,iq) = s3 * mu_p(m);
+                        p_p(2,m,iq) = s2 * eta_p(m);
+                        p_p(3,m,iq) = s1 * tsi_p(m);
                     }
                 }
     }
-}
-
-Sn_constants::~Sn_constants()
-{
-    delete [] w_p   ;
-    delete [] mu_p  ;
-    delete [] eta_p ;
-    delete [] tsi_p ;
-    delete [] wmu_p ;
-    delete [] weta_p;
-    delete [] wtsi_p;
 }
 
 //---------------------------------------------------------------------------//

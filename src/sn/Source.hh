@@ -10,9 +10,12 @@
 #define __sn_Source_hh__
 
 #include "sn/precision.hh"
-#include "sn/Array.hh"
 #include "sn/Cross_section.hh"
 #include "sn/Input_edit.hh"
+
+#include "ds++/Mat.hh"
+using dsxx::Mat3;
+using dsxx::Mat4;
 
 class Source
 {
@@ -27,11 +30,11 @@ class Source
         // ~Source();
 
         void build_source( Input_edit &data, Cross_section &xsec,
-                           Array4D &src_mom, Array4D &flux        );
+                           Mat4<REAL> &src_mom, Mat4<REAL> &flux  );
 
     private:
 
-        Array3D fixed_src;
+        Mat3<REAL> fixed_src;
 
 };
 

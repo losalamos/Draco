@@ -13,7 +13,7 @@
 Error::Error( Input_edit &data ) : pflux(data.jt(),data.kt(),data.it())
 {}
 
-void Error::error_init( Input_edit &data, Array4D &flux )
+void Error::error_init( Input_edit &data, Mat4<REAL> &flux )
 {
     // save the flux from the previous iteration
 
@@ -23,7 +23,7 @@ void Error::error_init( Input_edit &data, Array4D &flux )
                 pflux(j,k,i) = flux(j,k,i,0);
 }
 
-void Error::error_calc( Input_edit &data, Array4D &flux )
+void Error::error_calc( Input_edit &data, Mat4<REAL> &flux )
 {
     // store the absolute relative difference between the current and previous
     // fluxes in pflux (in other words replace pflux values with relative error)

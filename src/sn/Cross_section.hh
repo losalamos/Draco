@@ -10,8 +10,11 @@
 #define __sn_Cross_section_hh__
 
 #include "sn/precision.hh"
-#include "sn/Array.hh"
 #include "sn/Input_edit.hh"
+
+#include "ds++/Mat.hh"
+using dsxx::Mat3;
+using dsxx::Mat4;
 
 class Cross_section
 {
@@ -37,9 +40,9 @@ class Cross_section
 
     private:
 
-        Array3D ct_p;    // total cross section
-        Array4D sigs_p;  // macroscopic differential scattering
-                         //   cross section
+        Mat3<REAL> ct_p;    // total cross section
+        Mat4<REAL> sigs_p;  // macroscopic differential scattering
+                            //   cross section
 
 };
 

@@ -17,7 +17,7 @@ Source::Source( Input_edit &data ) : fixed_src(data.jt(),data.kt(),data.it())
 }
 
 void Source::build_source( Input_edit &data, Cross_section &xsec,
-                           Array4D &src_mom, Array4D &flux        )
+                           Mat4<REAL> &src_mom, Mat4<REAL> &flux  )
 {
     // add the fixed source to the isotropic scatter source
 

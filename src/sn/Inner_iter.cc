@@ -16,7 +16,7 @@ void Inner_iter::do_inner_iter( Input_edit &data )
 
     // initialize all flux moments and the iteration counter to zero
       
-    Array4D flux(data.jt(),data.kt(),data.it(),data.nm());
+    Mat4<REAL> flux(data.jt(),data.kt(),data.it(),data.nm());
 
     int its = 0;
 
@@ -35,8 +35,8 @@ void Inner_iter::do_inner_iter( Input_edit &data )
 
     Source src( data );
 
-    Array4D src_mom(data.jt(),data.kt(),data.it(),data.nm());  // source moments
-                                                               // in each cell 
+    Mat4<REAL> src_mom(data.jt(),data.kt(),data.it(),data.nm());  // src moments
+                                                                  // per cell 
     // initialize error
 
     Error converge( data ) ;
@@ -51,7 +51,7 @@ void Inner_iter::do_inner_iter( Input_edit &data )
 
     // begin iterations
 
-    REAL *const lkgs_l = new REAL [6];  // leakages from each face of the cube
+    Mat1<REAL> lkgs_l(6);  // leakages from each face of the cube
 
     while (1)
     {
@@ -68,7 +68,7 @@ void Inner_iter::do_inner_iter( Input_edit &data )
 
         // re-initialize the current flux moments to zero
 
-        flux.Array4D_reinit( 0.0 );
+        flux = 0.0;
 
         // perform an ordered sweep through the mesh.
 
@@ -104,10 +104,6 @@ void Inner_iter::do_inner_iter( Input_edit &data )
     output.print_leakages( lkgs_l );
     output.print_timing( cpu0, cpu1, wall0, wall1, data, its );
     output.print_flux_moments( data, flux );
-
-    // cleanup
-
-    delete [] lkgs_l;
 
     return;
 }

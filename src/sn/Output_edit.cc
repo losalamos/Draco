@@ -10,7 +10,7 @@
 
 #include <iostream.h>
 
-void Output_edit::print_flux_sum( Input_edit &data, Array4D &flux )
+void Output_edit::print_flux_sum( Input_edit &data, Mat4<REAL> &flux )
 {
     // sum the scalar flux over the entire mesh, then print it out
 
@@ -24,14 +24,14 @@ void Output_edit::print_flux_sum( Input_edit &data, Array4D &flux )
     cout << endl << "scalar flux sum = " << flux_sum << endl << endl;
 }
 
-void Output_edit::print_leakages( REAL *lkgs_l )
+void Output_edit::print_leakages( Mat1<REAL> &lkgs_l )
 {
-    cout << "left + right leakage = " << lkgs_l[0] << endl;
-    cout << "       right leakage = " << lkgs_l[1] << endl;
-    cout << "bottom + top leakage = " << lkgs_l[2] << endl;
-    cout << "         top leakage = " << lkgs_l[3] << endl;
-    cout << "front + back leakage = " << lkgs_l[4] << endl;
-    cout << "        back leakage = " << lkgs_l[5] << endl << endl;
+    cout << "left + right leakage = " << lkgs_l(0) << endl;
+    cout << "       right leakage = " << lkgs_l(1) << endl;
+    cout << "bottom + top leakage = " << lkgs_l(2) << endl;
+    cout << "         top leakage = " << lkgs_l(3) << endl;
+    cout << "front + back leakage = " << lkgs_l(4) << endl;
+    cout << "        back leakage = " << lkgs_l(5) << endl << endl;
 }
 
 void Output_edit::print_timing( REAL cpu0, REAL cpu1, REAL wall0,
@@ -55,7 +55,7 @@ void Output_edit::print_timing( REAL cpu0, REAL cpu1, REAL wall0,
     cout << " Wallclock  grind time: " << grindw        << endl;
 }
 
-void Output_edit::print_flux_moments( Input_edit &data, Array4D &flux )
+void Output_edit::print_flux_moments( Input_edit &data, Mat4<REAL> &flux )
 {
     if ( data.iprint() >= 1 )
     {

@@ -11,6 +11,9 @@
 
 #include "sn/precision.hh"
 
+#include "ds++/Mat.hh"
+using dsxx::Mat1;
+
 class Input_edit
 {
 
@@ -19,9 +22,8 @@ class Input_edit
         // use the default contructor
         // Input_edit();
 
-        // define a destructor which properly deletes arrays
-
-        ~Input_edit();
+        // use the default destructor
+        // ~Input_edit();
 
         void read_edit_data();
 
@@ -46,9 +48,9 @@ class Input_edit
         REAL dy()        const { return dy_p;    }
         REAL dz()        const { return dz_p;    }
         REAL epsi()      const { return epsi_p;  }
-        REAL hi( int i ) const { return hi_p[i]; }
-        REAL hj( int j ) const { return hj_p[j]; }
-        REAL hk( int k ) const { return hk_p[k]; }
+        REAL hi( int i ) const { return hi_p(i); }
+        REAL hj( int j ) const { return hj_p(j); }
+        REAL hk( int k ) const { return hk_p(k); }
 
     private:
 
@@ -74,9 +76,10 @@ class Input_edit
         REAL dz_p;     // mesh size in the z-direction
         REAL epsi_p;   // convergence precision or,
                        //   if negative, then the number of iterations to do
-        REAL *hi_p;    // commonly used differencing factor
-        REAL *hj_p;    // commonly used differencing factor
-        REAL *hk_p;    // commonly used differencing factor
+
+        Mat1<REAL> hi_p;  // commonly used differencing factor
+        Mat1<REAL> hj_p;  // commonly used differencing factor
+        Mat1<REAL> hk_p;  // commonly used differencing factor
 
 };
 

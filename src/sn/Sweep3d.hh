@@ -10,11 +10,16 @@
 #define __sn_Sweep3d_hh__
 
 #include "sn/precision.hh"
-#include "sn/Array.hh"
 #include "sn/Cross_section.hh"
 #include "sn/Input_edit.hh"
 #include "sn/Pre_calcs.hh"
 #include "sn/Sn_constants.hh"
+
+#include "ds++/Mat.hh"
+using dsxx::Mat1;
+using dsxx::Mat2;
+using dsxx::Mat3;
+using dsxx::Mat4;
 
 class Sweep3d
 {
@@ -27,45 +32,48 @@ class Sweep3d
         // use the default destructor
         // ~Sweep3d();
 
-        void do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
-                       Pre_calcs &pre,   REAL *lkgs_l,        Array4D &src_mom,
-                       Array4D &flux                                          );
+        void do_sweep( Input_edit &data,   Cross_section &xsec,
+                       Sn_constants &sn,   Pre_calcs &pre,
+                       Mat1<REAL> &lkgs_l, Mat4<REAL> &src_mom,
+                       Mat4<REAL> &flux                         );
 
         void octant_ordering( Input_edit &data );
 
-        void build_angular_source( Input_edit &data, Sn_constants &sn,
-                                   Array4D &src_mom, Array3D &phi      );
+        void build_angular_source( Input_edit &data,    Sn_constants &sn,
+                                   Mat4<REAL> &src_mom, Mat3<REAL> &phi   );
 
-        void edge_and_boundary_set( Input_edit &data, Array2D &phii,
-                                    REAL *phij,       REAL *phik,
-                                    Array2D &bsavv,   Array3D &bsavz );
+        void edge_and_boundary_set( Input_edit &data,  Mat2<REAL> &phii,
+                                    Mat1<REAL> &phij,  Mat1<REAL> &phik,
+                                    Mat2<REAL> &bsavv, Mat3<REAL> &bsavz );
 
         void balance_eqn_no_fixup( Input_edit &data, Sn_constants &sn,
-                                   Pre_calcs &pre,   Array3D &phi,
-                                   Array2D &phii,    REAL *phij,
-                                   REAL *phik                          );
+                                   Pre_calcs &pre,   Mat3<REAL> &phi,
+                                   Mat2<REAL> &phii, Mat1<REAL> &phij,
+                                   Mat1<REAL> &phik                    );
 
         void balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
                                      Pre_calcs &pre,   Cross_section &xsec,
-                                     Array3D &phi,     Array2D &phii,
-                                     REAL *phij,       REAL *phik           );
+                                     Mat3<REAL> &phi,  Mat2<REAL> &phii,
+                                     Mat1<REAL> &phij, Mat1<REAL> &phik     );
 
-        void save_boundary( Input_edit &data, Array2D &bsavv, Array3D &bsavz,
-                            REAL *phij,       REAL *phik                      );
+        void save_boundary( Input_edit &data,  Mat2<REAL> &bsavv,
+                            Mat3<REAL> &bsavz, Mat1<REAL> &phij,
+                            Mat1<REAL> &phik                      );
+                           
 
         void cell_boundary_leakage( Input_edit &data, Sn_constants &sn,
-                                    Array3D &fh_i,    Array3D &fv_i,
-                                    Array3D &fz_i,    Array2D &phii,
-                                    REAL *phij,       REAL *phik        );
+                                    Mat3<REAL> &fh_i, Mat3<REAL> &fv_i,
+                                    Mat3<REAL> &fz_i, Mat2<REAL> &phii,
+                                    Mat1<REAL> &phij, Mat1<REAL> &phik  );
 
         void sweep_reversal( Input_edit &data );
 
-        void flux_moments( Input_edit &data, Sn_constants &sn, Array4D &flux,
-                           Array3D &phi                                       );
-                              
-        void problem_boundary_leakage( Input_edit &data, REAL *lkgs_l,
-                                       Array3D &fh_i,    Array3D &fv_i,
-                                       Array3D &fz_i                    );
+        void flux_moments( Input_edit &data, Sn_constants &sn,
+                           Mat4<REAL> &flux, Mat3<REAL> &phi   );
+
+        void problem_boundary_leakage( Input_edit &data, Mat1<REAL> &lkgs_l,
+                                       Mat3<REAL> &fh_i, Mat3<REAL> &fv_i,
+                                       Mat3<REAL> &fz_i                      );
 
   private:
 

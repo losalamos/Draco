@@ -67,25 +67,18 @@ void Input_edit::read_edit_data()
 
     itmm_p = it_p * mm_p;
 
-    hi_p = new REAL [it_p];
-    hj_p = new REAL [jt_p];
-    hk_p = new REAL [kt_p];
+    hi_p = Mat1<REAL>(it_p);
+    hj_p = Mat1<REAL>(jt_p);
+    hk_p = Mat1<REAL>(kt_p);
 
     for ( int i=0 ; i < it_p ; i++ )
-        hi_p[i] = 2.0 / dx_p;
+        hi_p(i) = 2.0 / dx_p;
 
     for ( int j=0 ; j < jt_p ; j++ )
-        hj_p[j] = 2.0 / dy_p;
+        hj_p(j) = 2.0 / dy_p;
 
     for ( int k=0 ; k < kt_p ; k++ )
-        hk_p[k] = 2.0 / dz_p;
-}
-
-Input_edit::~Input_edit()
-{
-    delete [] hi_p;
-    delete [] hj_p;
-    delete [] hk_p;
+        hk_p(k) = 2.0 / dz_p;
 }
 
 //---------------------------------------------------------------------------//

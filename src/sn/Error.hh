@@ -10,8 +10,11 @@
 #define __sn_Error_hh__
 
 #include "sn/precision.hh"
-#include "sn/Array.hh"
 #include "sn/Input_edit.hh"
+
+#include "ds++/Mat.hh"
+using dsxx::Mat3;
+using dsxx::Mat4;
 
 class Error
 {
@@ -25,16 +28,16 @@ class Error
         // use the default destructor
         // ~Error();
 
-        void error_init( Input_edit &data, Array4D &flux );
-        void error_calc( Input_edit &data, Array4D &flux );
+        void error_init( Input_edit &data, Mat4<REAL> &flux );
+        void error_calc( Input_edit &data, Mat4<REAL> &flux );
         void error_print( int its );
         bool error_test( Input_edit &data, int its );
 
     private:
 
-        Array3D pflux;  // both the previous flux and the relative change in the
-                        //   flux after each iteration
-        REAL err;       // max change in the flux from one iteration to the next
+        Mat3<REAL> pflux;  // both the previous flux and the relative change in
+                           //   the flux after each iteration
+        REAL err;          // max change in flux from one iteration to the next
 
 };
 

@@ -10,10 +10,13 @@
 #define __sn_Pre_calcs_hh__
 
 #include "sn/precision.hh"
-#include "sn/Array.hh"
 #include "sn/Cross_section.hh"
 #include "sn/Input_edit.hh"
 #include "sn/Sn_constants.hh"
+
+#include "ds++/Mat.hh"
+using dsxx::Mat2;
+using dsxx::Mat4;
 
 class Pre_calcs
 {
@@ -35,11 +38,11 @@ class Pre_calcs
 
     private:
 
-        Array4D dlinv_p;  // a factor in the balance equation
-        Array4D dl_p;     // a factor in the balance equation with fixup
-        Array2D muh_p;    // a factor in the balance equation
-        Array2D etah_p;   // a factor in the balance equation
-        Array2D tsih_p;   // a factor in the balance equation
+        Mat4<REAL> dlinv_p;  // a factor in the balance equation
+        Mat4<REAL> dl_p;     // a factor in the balance equation with fixup
+        Mat2<REAL> muh_p;    // a factor in the balance equation
+        Mat2<REAL> etah_p;   // a factor in the balance equation
+        Mat2<REAL> tsih_p;   // a factor in the balance equation
 
 };
 

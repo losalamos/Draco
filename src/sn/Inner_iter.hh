@@ -10,12 +10,15 @@
 #define __sn_Inner_iter_hh__
 
 #include "sn/precision.hh"
-#include "sn/Array.hh"
 #include "sn/Error.hh"
 #include "sn/Input_edit.hh"
 #include "sn/Output_edit.hh"
 #include "sn/Source.hh"
 #include "sn/Sweep3d.hh"
+
+#include "ds++/Mat.hh"
+using dsxx::Mat1;
+using dsxx::Mat4;
 
 class Inner_iter
 {

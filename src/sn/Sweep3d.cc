@@ -8,9 +8,10 @@
 
 #include "sn/Sweep3d.hh"
 
-void Sweep3d::do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
-                        Pre_calcs &pre,   REAL *lkgs_l,        Array4D &src_mom,
-                        Array4D &flux                                          )
+void Sweep3d::do_sweep( Input_edit &data,   Cross_section &xsec,
+                        Sn_constants &sn,   Pre_calcs &pre,
+                        Mat1<REAL> &lkgs_l, Mat4<REAL> &src_mom,
+                        Mat4<REAL> &flux                         )
 {
     // This routine performs an ordered sweep. The order is as follows:
     // along j, as k is incremented, followed by incrementing i, then mu, then
@@ -18,11 +19,11 @@ void Sweep3d::do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
 
     // Initialize edge flux and boundary arrays.
 
-    Array3D fh_i(data.jt(),data.kt(),2);  // left/right leakage (horiz,  x-axis)
-    Array3D fv_i(data.kt(),data.it(),2);  // bottom/top leakage (vert ,  y-axis)
-    Array3D fz_i(data.jt(),data.it(),2);  // front/back leakage (in-out, z-axis)
-    Array2D bsavv(data.kt(),data.jbdim());    // storage of vertical boundaries
-    Array3D bsavz(data.jt(),data.kbdim(),2);  // storage of in-out   boundaries
+    Mat3<REAL> fh_i(data.jt(),data.kt(),2);  // left/right leakage (horz,x-axis)
+    Mat3<REAL> fv_i(data.kt(),data.it(),2);  // bottom/top leakage (vert,y-axis)
+    Mat3<REAL> fz_i(data.jt(),data.it(),2);  // front/back leakage (deep,z-axis)
+    Mat2<REAL> bsavv(data.kt(),data.jbdim());    // vertical boundaries storage
+    Mat3<REAL> bsavz(data.jt(),data.kbdim(),2);  // depth    boundaries storage
 
     //**************************************************************************
     // Begin the loop over quadrant pairs, where k1 is a loop over tsi, ih is a
@@ -30,12 +31,11 @@ void Sweep3d::do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
     // pair of quadrants).
     //**************************************************************************
 
-    REAL *phij = new REAL [data.kt()]; // temp angular flux, top  cell face
-    REAL *phik = new REAL [data.jt()]; // temp angular flux, back cell face
-
-    Array2D phii(data.jt(),data.kt()); // temp angular flux, left cell face
-    Array3D phi(data.jt(),data.kt(),data.it()*data.mm()*2); // cell centered
-                                                            // angular flux
+    Mat1<REAL> phij(data.kt());           // temp angular flux, top  cell face
+    Mat1<REAL> phik(data.jt());           // temp angular flux, back cell face
+    Mat2<REAL> phii(data.jt(),data.kt()); // temp angular flux, left cell face
+    Mat3<REAL> phi(data.jt(),data.kt(),data.it()*data.mm()*2); // cell centered
+                                                               // angular flux
     for ( k1=0 ; k1 < 2 ; k1++ )
     for ( ih=0 ; ih < 2 ; ih++ )
     {
@@ -121,11 +121,6 @@ void Sweep3d::do_sweep( Input_edit &data, Cross_section &xsec, Sn_constants &sn,
 
     problem_boundary_leakage( data, lkgs_l, fh_i, fv_i, fz_i );
 
-    // Cleanup
-
-    delete [] phij;
-    delete [] phik;
-
     return;
 }
 
@@ -193,8 +188,8 @@ void Sweep3d::octant_ordering( Input_edit &data )
     }
 }
 
-void Sweep3d::build_angular_source( Input_edit &data, Sn_constants &sn,
-                                    Array4D &src_mom, Array3D &phi      )
+void Sweep3d::build_angular_source( Input_edit &data,    Sn_constants &sn,
+                                    Mat4<REAL> &src_mom, Mat3<REAL> &phi   )
 {
     // Build angular source in phi. phi must first be re-initialized to zero.
 
@@ -209,7 +204,7 @@ void Sweep3d::build_angular_source( Input_edit &data, Sn_constants &sn,
     REAL c1;  // used to hold a value calculated outside of a
     REAL c2;  //   loop, for use inside the loop (efficiency)
 
-    phi.Array3D_reinit( 0.0 );
+    phi = 0.0;
 
     for ( n=0 ; n < data.nm() ; n++ )
         for ( m=0 ; m < data.mm() ; m++ )
@@ -230,9 +225,9 @@ void Sweep3d::build_angular_source( Input_edit &data, Sn_constants &sn,
         }
 }
 
-void Sweep3d::edge_and_boundary_set( Input_edit &data, Array2D &phii,
-                                     REAL *phij,       REAL *phik,
-                                     Array2D &bsavv,   Array3D &bsavz )
+void Sweep3d::edge_and_boundary_set( Input_edit &data,  Mat2<REAL> &phii,
+                                     Mat1<REAL> &phij,  Mat1<REAL> &phik,
+                                     Mat2<REAL> &bsavv, Mat3<REAL> &bsavz )
 {
     // Initialize edge fluxes, impose boundary conditions. Assumed here, that
     // right, top, and back boundaries are vacuum boundaries. If any of left,
@@ -245,41 +240,41 @@ void Sweep3d::edge_and_boundary_set( Input_edit &data, Array2D &phii,
     int k;  // loop variable for cells in the z-direction
 
     if ( ishift == -1 && isw == data.it()-1 )
-        phii.Array2D_reinit( 0.0 );
+        phii = 0.0;
     else if ( ishift == +1 && isw == 0 && data.ibl() == 0 )
-        phii.Array2D_reinit( 0.0 );
+        phii = 0.0;
 
     if ( ih == 0 )                            // corners 1,2,5,6
         for ( k=0 ; k < data.kt() ; k++ )
-            phij[k] = 0.0;
+            phij(k) = 0.0;
     else                                      // corners 3,4,7,8
     {
         if ( data.ibb() == 0 )
             for ( k=0 ; k < data.kt() ; k++ )
-                phij[k] = 0.0;
+                phij(k) = 0.0;
         else if ( data.ibb() == 1 )
             for ( k=0 ; k < data.kt() ; k++ )
-                phij[k] = bsavv(k,iop);
+                phij(k) = bsavv(k,iop);
     }
 
     if ( k1 == 0 )                            // corners 1,2,3,4
         for ( j=0 ; j < data.jt() ; j++ )
-            phik[j] = 0.0;
+            phik(j) = 0.0;
     else                                      // corners 5,6,7,8
     {
         if ( data.ibfr() == 0 )
             for ( j=0 ; j < data.jt() ; j++ )
-                phik[j] = 0.0;
+                phik(j) = 0.0;
         else if ( data.ibfr() == 1 )
             for ( j=0 ; j < data.jt() ; j++ )
-                phik[j] = bsavz(j,iop,ih);
+                phik(j) = bsavz(j,iop,ih);
     }
 }
 
 void Sweep3d::balance_eqn_no_fixup( Input_edit &data, Sn_constants &sn,
-                                    Pre_calcs &pre,   Array3D &phi,
-                                    Array2D &phii,    REAL *phij,
-                                    REAL *phik                          )
+                                    Pre_calcs &pre,   Mat3<REAL> &phi,
+                                    Mat2<REAL> &phii, Mat1<REAL> &phij,
+                                    Mat1<REAL> &phik                    )
 {
     // Balance equation with diamond difference, no flux fixup. phii, phij, phik
     // are only needed from one i-plane to the next and thus can be continuously
@@ -297,21 +292,21 @@ void Sweep3d::balance_eqn_no_fixup( Input_edit &data, Sn_constants &sn,
         {
             ql = phi(j,k,iz) +
                  phii(j,k) * pre.muh(isw,mz) +
-                 phij[k]   * pre.etah(j,mz) +
-                 phik[j]   * pre.tsih(k,mz);
+                 phij(k)   * pre.etah(j,mz) +
+                 phik(j)   * pre.tsih(k,mz);
 
             phi(j,k,iz) = ql * pre.dlinv(j,k,isw,mz);
 
             phii(j,k) = 2.0 * phi(j,k,iz) - phii(j,k);
-            phij[k]   = 2.0 * phi(j,k,iz) - phij[k];
-            phik[j]   = 2.0 * phi(j,k,iz) - phik[j];
+            phij(k)   = 2.0 * phi(j,k,iz) - phij(k);
+            phik(j)   = 2.0 * phi(j,k,iz) - phik(j);
         }
 }
 
 void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
                                       Pre_calcs &pre,   Cross_section &xsec,
-                                      Array3D &phi,     Array2D &phii,
-                                      REAL *phij,       REAL *phik           )
+                                      Mat3<REAL> &phi,  Mat2<REAL> &phii,
+                                      Mat1<REAL> &phij, Mat1<REAL> &phik     )
 {
     // Balance equation w/ diamond difference and set to zero flux fixup.
 
@@ -329,16 +324,16 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
         {
             ql = phi(j,k,iz) +
                  phii(j,k) * pre.muh(isw,mz) +
-                 phij[k]   * pre.etah(j,mz) +
-                 phik[j]   * pre.tsih(k,mz);
+                 phij(k)   * pre.etah(j,mz) +
+                 phik(j)   * pre.tsih(k,mz);
 
             dl_loc = pre.dl(j,k,isw,mz);
 
             phi(j,k,iz) = ql * pre.dlinv(j,k,isw,mz);
 
             sih = 2.0 * phi(j,k,iz) - phii(j,k);
-            siv = 2.0 * phi(j,k,iz) - phij[k];
-            sif = 2.0 * phi(j,k,iz) - phik[j];
+            siv = 2.0 * phi(j,k,iz) - phij(k);
+            sif = 2.0 * phi(j,k,iz) - phik(j);
 
             // Test for negative fluxes, if found, adjust temporary values
             // ql and dl, to account for setting the negative flux to zero.
@@ -356,19 +351,19 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
                 phi(j,k,iz) = ql / dl_loc;
 
                 sih = 0.0;
-                if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij[k];
-                if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik[j];
+                if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij(k);
+                if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik(j);
             }
 
             if ( siv < 0.0 )
             {
-                ql -= 0.5 * phij[k] * pre.etah(j,mz);
+                ql -= 0.5 * phij(k) * pre.etah(j,mz);
                 dl_loc -= pre.etah(j,mz);
 
                 phi(j,k,iz) = ql / dl_loc;
 
                 siv = 0.0;
-                if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik[j];
+                if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik(j);
                 if ( sih != 0.0 ) sih = 2.0 * phi(j,k,iz) - phii(j,k);
 
                 goto neg_flux;
@@ -376,27 +371,28 @@ void Sweep3d::balance_eqn_with_fixup( Input_edit &data, Sn_constants &sn,
 
             if ( sif < 0.0 )
             {
-                ql -= 0.5 * phik[j] * pre.tsih(k,mz);
+                ql -= 0.5 * phik(j) * pre.tsih(k,mz);
                 dl_loc -= pre.tsih(k,mz);
 
                 phi(j,k,iz) = ql / dl_loc;
 
                 sif = 0.0;
                 if ( sih != 0.0 ) sih = 2.0 * phi(j,k,iz) - phii(j,k);
-                if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij[k];
+                if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij(k);
 
                 goto neg_flux;
             }
 
             phii(j,k) = sih;
-            phij[k]   = siv;
-            phik[j]   = sif;
+            phij(k)   = siv;
+            phik(j)   = sif;
 
         }
 }
 
-void Sweep3d::save_boundary( Input_edit &data, Array2D &bsavv, Array3D &bsavz,
-                             REAL *phij,       REAL *phik                      )
+void Sweep3d::save_boundary( Input_edit &data,  Mat2<REAL> &bsavv,
+                             Mat3<REAL> &bsavz, Mat1<REAL> &phij,
+                             Mat1<REAL> &phik                      )
 {
     // Save j and k edge fluxes at reflective boundaries. The i-edge fluxes do
     // not need to be saved, they are about to be used in the sweep reversal.
@@ -406,17 +402,17 @@ void Sweep3d::save_boundary( Input_edit &data, Array2D &bsavv, Array3D &bsavz,
 
     if ( data.ibb()  == 1 && ih == 0 )
         for ( k=klow ; k != (khigh+kshift) ; k += kshift )
-            bsavv(k,iop) = phij[k];
+            bsavv(k,iop) = phij(k);
 
     if ( data.ibfr() == 1 && k1 == 0 )
         for ( j=jlow ; j != (jhigh+jshift) ; j += jshift )
-            bsavz(j,iop,ih) = phik[j];
+            bsavz(j,iop,ih) = phik(j);
 }
 
 void Sweep3d::cell_boundary_leakage( Input_edit &data, Sn_constants &sn,
-                                     Array3D &fh_i,    Array3D &fv_i,
-                                     Array3D &fz_i,    Array2D &phii,
-                                     REAL *phij,       REAL *phik        )
+                                     Mat3<REAL> &fh_i, Mat3<REAL> &fv_i,
+                                     Mat3<REAL> &fz_i, Mat2<REAL> &phii,
+                                     Mat1<REAL> &phij, Mat1<REAL> &phik  )
 {
     // Compute leakages.
 
@@ -449,7 +445,7 @@ void Sweep3d::cell_boundary_leakage( Input_edit &data, Sn_constants &sn,
         c1 = jshift * sn.weta(mz);
 
         for ( k=0 ; k < data.kt() ; k++ )
-            fv_i(k,isw,ih) += c1 * phij[k];
+            fv_i(k,isw,ih) += c1 * phij(k);
     }
 
     if ( k1 == 1 || data.ibfr() == 0 )
@@ -457,7 +453,7 @@ void Sweep3d::cell_boundary_leakage( Input_edit &data, Sn_constants &sn,
         c1 = kshift * sn.wtsi(mz);
 
         for ( j=0 ; j < data.jt() ; j++ )
-            fz_i(j,isw,k1) += c1 * phik[j];
+            fz_i(j,isw,k1) += c1 * phik(j);
     }
 }
 
@@ -485,8 +481,8 @@ void Sweep3d::sweep_reversal( Input_edit &data )
       }
 }
 
-void Sweep3d::flux_moments( Input_edit &data, Sn_constants &sn, Array4D &flux,
-                            Array3D &phi                                       )
+void Sweep3d::flux_moments( Input_edit &data, Sn_constants &sn,
+                            Mat4<REAL> &flux, Mat3<REAL> &phi   )
 {
     // Compute the flux moments.
 
@@ -527,9 +523,9 @@ void Sweep3d::flux_moments( Input_edit &data, Sn_constants &sn, Array4D &flux,
         }
 }
 
-void Sweep3d::problem_boundary_leakage( Input_edit &data, REAL *lkgs_l,
-                                        Array3D &fh_i,    Array3D &fv_i,
-                                        Array3D &fz_i                    )
+void Sweep3d::problem_boundary_leakage( Input_edit &data, Mat1<REAL> &lkgs_l,
+                                        Mat3<REAL> &fh_i, Mat3<REAL> &fv_i,
+                                        Mat3<REAL> &fz_i                      )
 {
     // Calculate leakages for the balance table.
 
@@ -537,20 +533,20 @@ void Sweep3d::problem_boundary_leakage( Input_edit &data, REAL *lkgs_l,
     int j;  // loop variable for cells in the y-direction
     int k;  // loop variable for cells in the z-direction
 
-    lkgs_l[0] = 0.0;  // left+right leakage (horizontal or x-axis)
-    lkgs_l[1] = 0.0;  // right      leakage
-    lkgs_l[2] = 0.0;  // bottom+top leakage (vertical or y-axis)
-    lkgs_l[3] = 0.0;  // top        leakage
-    lkgs_l[4] = 0.0;  // front+back leakage (in-out or z-axis)
-    lkgs_l[5] = 0.0;  // back       leakage
+    lkgs_l(0) = 0.0;  // left+right leakage (horizontal or x-axis)
+    lkgs_l(1) = 0.0;  // right      leakage
+    lkgs_l(2) = 0.0;  // bottom+top leakage (vertical or y-axis)
+    lkgs_l(3) = 0.0;  // top        leakage
+    lkgs_l(4) = 0.0;  // front+back leakage (in-out or z-axis)
+    lkgs_l(5) = 0.0;  // back       leakage
 
     for ( k=0 ; k < data.kt() ; k++ )
         for ( j=0 ; j < data.jt() ; j++ )
         {
             fh_i(j,k,0) *= 4.0 / (data.hj(j) * data.hk(k));
             fh_i(j,k,1) *= 4.0 / (data.hj(j) * data.hk(k));
-            lkgs_l[0] -= fh_i(j,k,0);
-            lkgs_l[1] += fh_i(j,k,1);
+            lkgs_l(0) -= fh_i(j,k,0);
+            lkgs_l(1) += fh_i(j,k,1);
         }
 
     for ( i=0 ; i < data.it() ; i++ )
@@ -558,8 +554,8 @@ void Sweep3d::problem_boundary_leakage( Input_edit &data, REAL *lkgs_l,
         {
             fv_i(k,i,0) *= 4.0 / (data.hi(i) * data.hk(k));
             fv_i(k,i,1) *= 4.0 / (data.hi(i) * data.hk(k));
-            lkgs_l[2] -= fv_i(k,i,0);
-            lkgs_l[3] += fv_i(k,i,1);
+            lkgs_l(2) -= fv_i(k,i,0);
+            lkgs_l(3) += fv_i(k,i,1);
         } 
 
     for ( i=0 ; i < data.it() ; i++ )
@@ -567,13 +563,13 @@ void Sweep3d::problem_boundary_leakage( Input_edit &data, REAL *lkgs_l,
         {
             fz_i(j,i,0) *= 4.0 / (data.hi(i) * data.hj(j));
             fz_i(j,i,1) *= 4.0 / (data.hi(i) * data.hj(j));
-            lkgs_l[4] -= fz_i(j,i,0);
-            lkgs_l[5] += fz_i(j,i,1);
+            lkgs_l(4) -= fz_i(j,i,0);
+            lkgs_l(5) += fz_i(j,i,1);
         }
 
-    lkgs_l[0] += lkgs_l[1];
-    lkgs_l[2] += lkgs_l[3];
-    lkgs_l[4] += lkgs_l[5];
+    lkgs_l(0) += lkgs_l(1);
+    lkgs_l(2) += lkgs_l(3);
+    lkgs_l(4) += lkgs_l(5);
 }
 
 //---------------------------------------------------------------------------//
