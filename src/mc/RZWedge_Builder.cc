@@ -1,18 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/OS_Builder.cc
- * \author Thomas M. Evans
+ * \file   mc/RZWedge_Builder.cc
+ * \author Todd Urbatsch 
  * \date   Mon Feb  9 16:16:07 1998
- * \brief  OS_Builder implementation file.
+ * \brief  RZWedge_Builder implementation file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "OS_Builder.hh"
+#include "RZWedge_Builder.hh"
 #include "XYCoord_sys.hh"
 #include "XYZCoord_sys.hh"
 #include "ds++/Assert.hh"
+#include "Math.hh"
 
 #include <algorithm>
 
@@ -26,51 +27,52 @@ using std::vector;
 using std::endl;
 using std::fill;
 
+using rtt_mc::global::soft_equiv;
+
 //---------------------------------------------------------------------------//
 // PUBLIC INTERFACE
 //---------------------------------------------------------------------------//
 /*!
- * \brief Build an OS_Mesh from data specified in the OS_Mesh format file.
+ * \brief Build an RZWedge_Mesh from data specified in the OS_Mesh format file.
  *
  * The builder takes data from the OS_Mesh input format that was parsed in
- * the constructor and builds an OS_Mesh.  The builder checks for the
+ * the constructor and builds an RZWedge_Mesh.  The builder checks for the
  * existence of the built mesh; thus, a builder can only build one mesh.  To
  * get extra copies of the mesh call the get_Mesh() accessor function.
  */
-OS_Builder::SP_Mesh OS_Builder::build_Mesh()
+RZWedge_Builder::SP_Mesh RZWedge_Builder::build_Mesh()
 {
     Require (!mesh);
-    
+    Insist (((coord_system == "rz") || (coord_system == "RZ")), 
+	    "You are using RZWedge_Builder, but coord_system is not RZ!");
+
     // declare smart pointers
     SP_Coord_sys coord;
     SP_Layout    layout;
     
-    // build mesh-independent objects
+    // build coordinate and layout objects
     coord  = build_Coord();
-    layout = build_Layout(*coord);
+    layout = build_RZWedge_Layout(*coord);
     
-    // build mesh
-    int dim = coord->get_dim();
-    if (dim == 2)
-	mesh = build_2DMesh(coord, *layout);
-    else if (dim == 3)
-	mesh = build_3DMesh(coord, *layout);
+    // build the RZWedge_Mesh
+    mesh = build_RZWedge_Mesh(coord, *layout);
     
     // calculate defined surface cells
     calc_defined_surcells();
     
     // do some checks and return completed mesh
     Ensure (mesh->full_Mesh());
-    Ensure (mesh->get_Coord().get_dim() == fine_edge.size());
+    Ensure (mesh->get_Coord().get_dim() == 3);
     Ensure (mesh->num_cells() == zone.size());
 
     return mesh;
 }
 
+
 //---------------------------------------------------------------------------//
 // Return the cell regions for graphics dumping
 
-OS_Builder::sf_int OS_Builder::get_regions() const
+RZWedge_Builder::sf_int RZWedge_Builder::get_regions() const
 {
     vector<int> return_regions(zone.size());
     vector<int>::const_iterator cell_itr;
@@ -111,7 +113,7 @@ OS_Builder::sf_int OS_Builder::get_regions() const
 /*!
  * \brief Return the list of defined surface cells.
  */
-OS_Builder::vf_int OS_Builder::get_defined_surcells() const
+RZWedge_Builder::vf_int RZWedge_Builder::get_defined_surcells() const
 {
     Require (mesh);
     return defined_surcells;
@@ -122,7 +124,7 @@ OS_Builder::vf_int OS_Builder::get_defined_surcells() const
 //---------------------------------------------------------------------------//
 // Basic Mesh parser.
 
-void OS_Builder::parser()
+void RZWedge_Builder::parser()
 {
     // first open the input file
     const char *file = mesh_file.c_str();
@@ -162,7 +164,7 @@ void OS_Builder::parser()
 	fine_edge.resize(2);
 	bnd_cond.resize(4);
 
-	// the boundary cond is always reflecting at r=0 for an RZ Mesh
+	// the boundary cond is always reflecting at r=0 for an RZWedge_Mesh
 	if (coord_system == "rz" || coord_system == "RZ")
 	    bnd_cond[0] = "reflect";
 	
@@ -180,7 +182,8 @@ void OS_Builder::parser()
 	bnd_cond.resize(6);
 
 	// parse mesh particulars
-	parser3D(input);
+	// parser3D(input);
+	Insist (0,"On input, RZWedge needs rz, RZ, xy, or XY coord_system!") 
     }
 
     // parse the source block that contains surface source information
@@ -275,7 +278,7 @@ void OS_Builder::parser()
 //---------------------------------------------------------------------------//
 // Parse a 2D mesh.
 
-void OS_Builder::parser2D(std_ifstream &in)
+void RZWedge_Builder::parser2D(std_ifstream &in)
 {
     // 2D parser
 
@@ -310,7 +313,7 @@ void OS_Builder::parser2D(std_ifstream &in)
 	{
 	    in >> bnd_cond[0];
 	    Insist (((coord_system == "rz") || (coord_system == "RZ")) ?
-		    bnd_cond[0] == "reflect" : true, "Invalid b.c. for RZ!"); 
+		    bnd_cond[0] == "reflect" : true, "Invalid b.c. for RZ!");
 	}
 	if (keyword == "hix_bnd:" || keyword == "hir_bnd:")
 	    in >> bnd_cond[1];
@@ -353,14 +356,13 @@ void OS_Builder::parser2D(std_ifstream &in)
 	{
 	    for (int i = 0; i < coarse_edge[0].size(); i++)
 		in >> coarse_edge[0][i];
-	    Insist (((coord_system == "rz") || (coord_system == "RZ")) ?
-		    coarse_edge[0][0] == 0.0 : true, 
-		    "The first radial value must be zero!"); 
+	    Insist (soft_equiv(coarse_edge[0][0],0.0),
+		    "The first radial value must be zero!");
 	}
 	if (keyword == "num_xfine:" || keyword == "num_rfine:")
 	    for (int i = 0; i < fine_cells[0].size(); i++)
 		in >> fine_cells[0][i];
-	if (keyword == "xfine_ratio:" || keyword == "rfine_ratio:")
+	if (keyword == "xfine_ratio:" || keyword == "rfine_ratio:" )
 	    for (int i = 0; i < fine_cells[0].size(); i++)
 	    {
 		in >> fine_ratio[0][i];
@@ -392,133 +394,9 @@ void OS_Builder::parser2D(std_ifstream &in)
 } 
 
 //---------------------------------------------------------------------------//
-// Parse a 3D mesh.
-
-void OS_Builder::parser3D(std_ifstream &in)
-{
-    // 3D parser
-
-    string keyword;
-    int data;
-    
-    // initialization block input
-    while (keyword != "end-init")
-    {
-	// test that we have not reached end-of-file
-	Insist (!in.eof(), "You did not specify a proper end-init!");
-
-	// do input
-	in >> keyword;
-	if (keyword == "num_xcoarse:")
-	{
-	    in >> data;
-	    fine_cells[0].resize(data);
-	    fine_ratio[0].resize(data);
-	    fill(fine_ratio[0].begin(), fine_ratio[0].end(), 1.0);
-	    coarse_edge[0].resize(data+1);  
-	}
-	if (keyword == "num_ycoarse:")
-	{
-	    in >> data;
-	    fine_cells[1].resize(data);
-	    fine_ratio[1].resize(data);
-	    fill(fine_ratio[1].begin(), fine_ratio[1].end(), 1.0);
-	    coarse_edge[1].resize(data+1);
-	}
-	if (keyword == "num_zcoarse:")
-	{
-	    in >> data;
-	    fine_cells[2].resize(data);
-	    fine_ratio[2].resize(data);
-	    fill(fine_ratio[2].begin(), fine_ratio[2].end(), 1.0);
-	    coarse_edge[2].resize(data+1);
-	}
-	if (keyword == "lox_bnd:")
-	    in >> bnd_cond[0];
-	if (keyword == "hix_bnd:")
-	    in >> bnd_cond[1];
-	if (keyword == "loy_bnd:")
-	    in >> bnd_cond[2];
-	if (keyword == "hiy_bnd:")
-	    in >> bnd_cond[3];
-	if (keyword == "loz_bnd:")
-	    in >> bnd_cond[4];
-	if (keyword == "hiz_bnd:")
-	    in >> bnd_cond[5];
-	if (keyword == "num_regions:")
-	{
-	    in >> data;
-	    regions.resize(data);
-	}
-	if (keyword == "num_zones_per_region:")
-	{
-	    Insist (regions.size() > 0, "Region size not set!");
-	    for (int i = 0; i < regions.size(); i++)
-	    {
-		in >> data;
-		regions[i].resize(data);
-	    }
-	}
-	if (keyword == "regions:")
-	{
-	    Insist (regions.size() > 0, "Region size not set!");
-	    in >> data;
-	    for (int i = 0; i < regions[data-1].size(); i++)
-		in >> regions[data-1][i];
-	}
-    }
-
-    // mesh block input
-    while (keyword != "end-mesh")
-    {
-	// test that we have not reached end-of-file
-	Insist (!in.eof(), "You did not specify a proper end-mesh!");
-     
-	// do input
-	in >> keyword;
-	if (keyword == "xcoarse:")
-	    for (int i = 0; i < coarse_edge[0].size(); i++)
-		in >> coarse_edge[0][i];
-	if (keyword == "num_xfine:")
-	    for (int i = 0; i < fine_cells[0].size(); i++)
-		in >> fine_cells[0][i];
-	if (keyword == "xfine_ratio:")
-	    for (int i = 0; i < fine_cells[0].size(); i++)
-	    {
-		in >> fine_ratio[0][i];
-		Check (fine_ratio[0][i] > 0.0);
-	    }
-	if (keyword == "ycoarse:")
-	    for (int i = 0; i < coarse_edge[1].size(); i++)
-		in >> coarse_edge[1][i];
-	if (keyword == "num_yfine:")
-	    for (int i = 0; i < fine_cells[1].size(); i++)
-		in >> fine_cells[1][i];
-	if (keyword == "yfine_ratio:")
-	    for (int i = 0; i < fine_cells[1].size(); i++)
-	    {
-		in >> fine_ratio[1][i];
-		Check (fine_ratio[1][i] > 0.0);
-	    }
-	if (keyword == "zcoarse:")
-	    for (int i = 0; i < coarse_edge[2].size(); i++)
-		in >> coarse_edge[2][i];
-	if (keyword == "num_zfine:")
-	    for (int i = 0; i < fine_cells[2].size(); i++)
-		in >> fine_cells[2][i];
-	if (keyword == "zfine_ratio:")
-	    for (int i = 0; i < fine_cells[2].size(); i++)
-	    {
-		in >> fine_ratio[2][i];
-		Check (fine_ratio[2][i] > 0.0);
-	    }
-    }
-} 
-
-//---------------------------------------------------------------------------//
 // Parse source descriptions that are part of the mesh format.
 
-void OS_Builder::source_parser(std_ifstream &in)
+void RZWedge_Builder::source_parser(std_ifstream &in)
 {
     // input keywords
     string keyword;
@@ -607,165 +485,71 @@ void OS_Builder::source_parser(std_ifstream &in)
 // PRIVATE MESH BUILDING IMPLEMENTATION
 //---------------------------------------------------------------------------//
 
-OS_Builder::SP_Mesh OS_Builder::build_2DMesh(SP_Coord_sys coord,  
-					     Layout &layout)
-{
-    // variable declarations
-    int num_xsur   = fine_edge[0].size();
-    int num_ysur   = fine_edge[1].size();
-    int num_xcells = num_xsur - 1;
-    int num_ycells = num_ysur - 1;
-    int num_cells  = num_xcells * num_ycells;
-    int num_vert   = num_xsur * num_ysur;
-    int dimension  = coord->get_dim();
-
-    // check some assertions
-    Check (layout.num_cells() == num_cells);
-
-    // initialization variables for Mesh
-    vf_double vertex(dimension);
-    vf_int cell_pair(num_cells);
-
-    // size vertex and cell_pair arrays, 4 vertices per cell
-    for (int d = 1; d <= dimension; d++)
-	vertex[d-1].resize(num_vert);
-    for (int cell = 1; cell <= num_cells; cell++)
-	cell_pair[cell-1].resize(4);
-
-    // set vertex arrays
-    for (int j = 1; j <= num_ysur; j++)
-	for (int i = 1; i <= num_xsur; i++)
-	{
-	    // calculate vertex index
-	    int index = 1 + (i-1) + num_xsur*(j-1);
-
-	    // assign vertices
-	    vertex[0][index-1] = fine_edge[0][i-1];
-	    vertex[1][index-1] = fine_edge[1][j-1];
-	}
-
-    // set cell-pairings to vertices
-    for (int j = 1; j <= num_ycells; j++)
-	for (int i = 1; i <= num_xcells; i++)
-	{
-	    // indices for cell and lower-left vertex
-	    int cell       = 1 + (i-1) + num_xcells*(j-1);
-	    int ref_vertex = 1 + (i-1) + num_xsur*(j-1);
-
-	    // pair cells to vertex indices (switch to accomodate graphics dump)
-	    cell_pair[cell-1][0] = ref_vertex;
-	    cell_pair[cell-1][1] = ref_vertex + 1;
-	    cell_pair[cell-1][2] = ref_vertex + 1 + num_xsur;
-	    cell_pair[cell-1][3] = ref_vertex + num_xsur;
-	}
-
-    // create mesh
-    SP_Mesh mesh_return(new OS_Mesh(coord, layout, vertex, cell_pair));
-
-    // return mesh to builder
-    return mesh_return;
-}
-
 //---------------------------------------------------------------------------//
 
-OS_Builder::SP_Mesh OS_Builder::build_3DMesh(SP_Coord_sys coord, 
-					     Layout &layout)
-{
+RZWedge_Builder::SP_Mesh
+RZWedge_Builder::build_RZWedge_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
+{ 
+    // consistency checks
+    Check (fine_edge.size() == 2);
+    Check (theta_degrees > 0.0);
+    Check (theta_degrees <= 90.0);
+
     // variable declarations
     int num_xsur   = fine_edge[0].size();
-    int num_ysur   = fine_edge[1].size();
-    int num_zsur   = fine_edge[2].size();
+    int num_zsur   = fine_edge[1].size();
     int num_xcells = num_xsur - 1;
-    int num_ycells = num_ysur - 1;
     int num_zcells = num_zsur - 1;
-    int num_cells  = num_xcells * num_ycells * num_zcells;
-    int num_vert   = num_xsur * num_ysur * num_zsur;
+    int num_cells  = num_xcells * num_zcells;
     int dimension  = coord->get_dim();
 
     // check some assertions
     Check (layout.num_cells() == num_cells);
+    Check (dimension == 3);
 
-    // initialization variables for Mesh
-    vf_double vertex(dimension);
-    vf_int cell_pair(num_cells);
+    // radius to x-value conversion
+    double theta_radians = rtt_mc::global::pi / 180.0 * theta_degrees;
+    double r_to_x = (std::pow(theta_radians*0.5 /
+			      std::tan(theta_radians*0.5),0.5));
 
-    // size vertex and cell_pair arrays, 8 vertices per cell
-    for (int d = 1; d <= dimension; d++)
-	vertex[d-1].resize(num_vert);
-    for (int cell = 1; cell <= num_cells; cell++)
-	cell_pair[cell-1].resize(8);
+    // create the xz cell extents vector
+    vf_double cell_xz_extents(num_cells);
 
-    // set vertex arrays
-    for (int k = 1; k <= num_zsur; k++)
-	for (int j = 1; j <= num_ysur; j++)
-	    for (int i = 1; i <= num_xsur; i++)
-	    {
-		// calculate vertex index
-		int index = 1 + (i-1) + num_xsur*(j-1) + 
-		    num_xsur*num_ysur*(k-1);
-
-		// assign vertices
-		vertex[0][index-1] = fine_edge[0][i-1];
-		vertex[1][index-1] = fine_edge[1][j-1];
-		vertex[2][index-1] = fine_edge[2][k-1];
-	    }
-
-    // set cell-pairings to vertices
-    for (int k = 1; k <= num_zcells; k++)
-	for (int j = 1; j <= num_ycells; j++)
-	    for (int i = 1; i <= num_xcells; i++)
-	    {
-		// indices to cell and lower-left vertex
-		int cell = 1 + (i-1) + num_xcells*(j-1) + 
-		    num_xcells*num_ycells*(k-1);
-		int ref_vertex = 1 + (i-1) + num_xsur*(j-1) +
-		    num_xsur*num_ysur*(k-1);
-
-		// pair cells to vertex indices
-		cell_pair[cell-1][0] = ref_vertex;
-		cell_pair[cell-1][1] = ref_vertex + 1;
-		cell_pair[cell-1][2] = ref_vertex + 1 + num_xsur;
-		cell_pair[cell-1][3] = ref_vertex + num_xsur;
-		cell_pair[cell-1][4] = cell_pair[cell-1][0] + num_xsur *
-		    num_ysur;
-		cell_pair[cell-1][5] = cell_pair[cell-1][1] + num_xsur *
-		    num_ysur;
-		cell_pair[cell-1][6] = cell_pair[cell-1][2] + num_xsur *
-		    num_ysur;
-		cell_pair[cell-1][7] = cell_pair[cell-1][3] + num_xsur *
-		    num_ysur;
-	    }
+    for (int zsur = 0; zsur < num_zcells; zsur++)
+	for (int xsur = 0; xsur < num_xcells; xsur++)
+	{
+	    int cell = xsur + zsur*num_xcells;
+	    cell_xz_extents[cell].resize(4);
+	    cell_xz_extents[cell][0] = fine_edge[0][xsur] * r_to_x;
+	    cell_xz_extents[cell][1] = fine_edge[0][xsur+1] * r_to_x;
+	    cell_xz_extents[cell][2] = fine_edge[1][zsur];
+	    cell_xz_extents[cell][3] = fine_edge[1][zsur+1];
+	}
 
     // create mesh
-    SP_Mesh mesh_return(new OS_Mesh(coord, layout, vertex, cell_pair));
+    SP_Mesh mesh_return(new RZWedge_Mesh(coord, layout, cell_xz_extents,
+					 theta_degrees)); 
 
     // return mesh to builder
     return mesh_return;
 }
+
 
 //---------------------------------------------------------------------------//
 // PRIVATE COORD_SYS BUILDER IMPLEMENTATION
 //---------------------------------------------------------------------------//
 
-OS_Builder::SP_Coord_sys OS_Builder::build_Coord()
+RZWedge_Builder::SP_Coord_sys RZWedge_Builder::build_Coord()
 {
     // build coordinate system
     SP_Coord_sys coord;
-    if (coord_system == "xy" || coord_system == "XY")
-    {
-	SP<XYCoord_sys> xycoord(new XYCoord_sys);
-	coord = xycoord;
-    }
-    else if (coord_system == "xyz" || coord_system == "XYZ")
-    {
-	SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
-	coord = xyzcoord;
-    }
-    else if (coord_system == "rz" || coord_system == "RZ")
-    {
-	SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
-	coord = xyzcoord;
-    }
+    Check (coord_system != "xy"  || coord_system != "XY" ||
+           coord_system != "xyz" || coord_system != "XYZ");
+    Check (coord_system == "rz" || coord_system == "RZ");
+
+    // the RZWedge_Mesh uses a 3D XYZ coordinate system
+    SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
+    coord = xyzcoord;
 
     // return base class SP to a derived Coord_sys
     return coord;
@@ -775,24 +559,25 @@ OS_Builder::SP_Coord_sys OS_Builder::build_Coord()
 // PRIVATE LAYOUT BUILDER IMPLEMENTATION
 //---------------------------------------------------------------------------//
 
-OS_Builder::SP_Layout OS_Builder::build_Layout(const Coord_sys &coord)
+RZWedge_Builder::SP_Layout 
+RZWedge_Builder::build_RZWedge_Layout(const Coord_sys &coord)
 {
-    // set size of new Layout
-    int size = 1;
-    for (int d = 0; d < coord.get_dim(); d++)
-	size *= fine_edge[d].size() - 1;
-    SP_Layout layout(new Layout(size));
+    // check that OS_Mesh surfaces are only 2D, even though coord is 3D.
+    Check (fine_edge.size() == 2);
 
-    // set number of faces for each cell in Layout, for OS Meshes this is two
-    // times the dimension of the Mesh, ie. a 2D mesh cell has 4 faces
+    // set size of new Layout
+    int size = (fine_edge[0].size() - 1) * (fine_edge[1].size() - 1);
+
+    // build layout object
+    SP_Layout layout(new AMR_Layout(size));
+
+    // set number of faces for each cell in Layout.  For the (OS)
+    // RZWedge_Mesh, the layout must be 3D XYZ, so there are 6 faces/cell.
     for (int i = 1; i <= size; i++)
-	layout->set_size(i, coord.get_dim()*2);
+	layout->set_size(i, 6);
 
     // assign cells and faces to Layout
-    if (coord.get_dim() == 2)
-	assign2D(*layout);
-    else if (coord.get_dim() == 3)
-	assign3D(*layout);
+    assignRZWedge_Layout(*layout);
 
     // return built Layout
     return layout;
@@ -800,167 +585,77 @@ OS_Builder::SP_Layout OS_Builder::build_Layout(const Coord_sys &coord)
 
 //---------------------------------------------------------------------------//
 
-void OS_Builder::assign2D(Layout &layout)
+void RZWedge_Builder::assignRZWedge_Layout(AMR_Layout &layout)
 {
-    // 2D map of Mesh
+    // 3D map of Mesh
     int num_xcells = fine_edge[0].size() - 1;
-    int num_ycells = fine_edge[1].size() - 1;
+    int num_zcells = fine_edge[1].size() - 1;
 
-    // loop over num_cells and assign cell across faces
-    // 1:x(-), 2:x(+), 3:y(-), 4:y(+)
+    // loop over num_cells and assign cell across faces 
+    // 1:x(-), 2:x(+), 3:y(-), 4:y(+), 5:z(-), 6:z(+)
+    // the high y and low y faces are always reflecting.
+    // the x and z bc's will be taken care of later
     for (int cell = 1; cell <= layout.num_cells(); cell++)
     {
-	layout(cell, 1) = cell - 1;
-	layout(cell, 2) = cell + 1;
-	layout(cell, 3) = cell - num_xcells;
-	layout(cell, 4) = cell + num_xcells;
+	layout(cell, 1, 1) = cell - 1;
+	layout(cell, 2, 1) = cell + 1;
+	layout(cell, 3, 1) = cell;
+	layout(cell, 4, 1) = cell;
+	layout(cell, 5, 1) = cell - num_xcells;
+	layout(cell, 6, 1) = cell + num_xcells;
     }
 
     // take care of boundary conditions
     int bcell = 0;
 
-    // low x boundary, i = 1
-    for (int j = 1; j <= num_ycells; j++)
+    // low x boundary, i = 1, at radius=0; always reflecting
+    Insist (bnd_cond[0] == "reflect", 
+	    "RZWedge_Mesh must be reflecting at the radial axis.")
+    for (int k = 1; k <= num_zcells; k++)
     {
-	bcell = 1 + num_xcells * (j - 1);
-	if (bnd_cond[0] == "vacuum")
-	    layout(bcell, 1) = 0;
-	else if (bnd_cond[0] == "reflect")
-	    layout(bcell, 1) = bcell;
+	bcell = 1 + num_xcells*(k - 1);
+	layout(bcell, 1, 1) = bcell;
     }
 
-    // high x boundary, i = num_xcells
-    for (int j = 1; j <= num_ycells; j++)
+    // high x boundary, i = num_xcells; outer radial boundary
+    for (int k = 1; k <= num_zcells; k++)
     {
-	bcell = 1 + (num_xcells - 1) + num_xcells * (j - 1);
+	bcell = 1 + (num_xcells-1) + num_xcells*(k - 1);
 	if (bnd_cond[1] == "vacuum")
-	    layout(bcell, 2) = 0;
+	    layout(bcell, 2, 1) = 0;
 	else if (bnd_cond[1] == "reflect")
-	    layout(bcell, 2) = bcell;
+	    layout(bcell, 2, 1) = bcell;
     }
-
-    // low y boundary, j = 1
+    
+    // low z boundary, k = 1
     for (int i = 1; i <= num_xcells; i++)
     {
-	bcell = 1 + (i - 1);
+	bcell = i;
 	if (bnd_cond[2] == "vacuum")
-	    layout(bcell, 3) = 0;
+	    layout(bcell, 5, 1) = 0;
 	else if (bnd_cond[2] == "reflect")
-	    layout(bcell, 3) = bcell;
+	    layout(bcell, 5, 1) = bcell;
     }
-
-    // high y boundary, j = num_ycells
+    
+    // high z boundary, k = num_zcells
     for (int i = 1; i <= num_xcells; i++)
     {
-	bcell = 1 + (i - 1) + num_xcells * (num_ycells - 1);
+	bcell = i + num_xcells*(num_zcells-1);
 	if (bnd_cond[3] == "vacuum")
-	    layout(bcell, 4) = 0;
+	    layout(bcell, 6, 1) = 0;
 	else if (bnd_cond[3] == "reflect")
-	    layout(bcell, 4) = bcell;
+	    layout(bcell, 6, 1) = bcell;
     }
 }
 
 //---------------------------------------------------------------------------//
-
-void OS_Builder::assign3D(Layout &layout)
-{
-    // 3D map of Mesh
-    int num_xcells = fine_edge[0].size() - 1;
-    int num_ycells = fine_edge[1].size() - 1;
-    int num_zcells = fine_edge[2].size() - 1;
-
-    // loop over num_cells and assign cell across faces
-    // 1:x(-), 2:x(+), 3:y(-), 4:y(+), 5:z(-), 6:z(+)
-    for (int cell = 1; cell <= layout.num_cells(); cell++)
-    {
-	layout(cell, 1) = cell - 1;
-	layout(cell, 2) = cell + 1;
-	layout(cell, 3) = cell - num_xcells;
-	layout(cell, 4) = cell + num_xcells;
-	layout(cell, 5) = cell - num_xcells * num_ycells;
-	layout(cell, 6) = cell + num_xcells * num_ycells;
-    }
-
-    // take care of boundary conditions
-    int bcell = 0;
-
-    // low x boundary, i = 1
-    for (int k = 1; k <= num_zcells; k++)
-	for (int j = 1; j <= num_ycells; j++)
-	{
-	    bcell = 1 + num_xcells * (j - 1) + num_xcells * num_ycells * 
-		(k - 1);
-	    if (bnd_cond[0] == "vacuum")
-		layout(bcell, 1) = 0;
-	    else if (bnd_cond[0] == "reflect")
-		layout(bcell, 1) = bcell;
-	}
-
-    // high x boundary, i = num_xcells
-    for (int k = 1; k <= num_zcells; k++)
-	for (int j = 1; j <= num_ycells; j++)
-	{
-	    bcell = 1 + (num_xcells - 1) + num_xcells * (j - 1) + num_xcells 
-		* num_ycells * (k - 1);
-	    if (bnd_cond[1] == "vacuum")
-		layout(bcell, 2) = 0;
-	    else if (bnd_cond[1] == "reflect")
-		layout(bcell, 2) = bcell;
-	}
-
-    // low y boundary, j = 1
-    for (int k = 1; k <= num_zcells; k++)
-	for (int i = 1; i <= num_xcells; i++)
-	{
-	    bcell = 1 + (i - 1) + num_xcells * num_ycells * (k - 1);
-	    if (bnd_cond[2] == "vacuum")
-		layout(bcell, 3) = 0;
-	    else if (bnd_cond[2] == "reflect")
-		layout(bcell, 3) = bcell;
-	}
-
-    // high y boundary, j = num_ycells
-    for (int k = 1; k <= num_zcells; k++)
-	for (int i = 1; i <= num_xcells; i++)
-	{
-	    bcell = 1 + (i - 1) + num_xcells * (num_ycells - 1) +
-		num_xcells * num_ycells * (k - 1);
-	    if (bnd_cond[3] == "vacuum")
-		layout(bcell, 4) = 0;
-	    else if (bnd_cond[3] == "reflect")
-		layout(bcell, 4) = bcell;
-	}
-
-    // low z boundary, k = 1
-    for (int j = 1; j <= num_ycells; j++)
-	for (int i = 1; i <= num_xcells; i++)
-	{
-	    bcell = 1 + (i - 1) + num_xcells * (j - 1);
-	    if (bnd_cond[4] == "vacuum")
-		layout(bcell, 5) = 0;
-	    else if (bnd_cond[4] == "reflect")
-		layout(bcell, 5) = bcell;
-	}
-
-    // high z boundary, k = num_zcells
-    for (int j = 1; j <= num_ycells; j++)
-	for (int i = 1; i <= num_xcells; i++)
-	{
-	    bcell = 1 + (i - 1) + num_xcells * (j - 1) + num_xcells * 
-		num_ycells * (num_zcells - 1);
-	    if (bnd_cond[5] == "vacuum")
-		layout(bcell, 6) = 0;
-	    else if (bnd_cond[5] == "reflect")
-		layout(bcell, 6) = bcell;
-	}
-}
 
 //---------------------------------------------------------------------------//
 // CELL ZONING FUNCTIONS (PRIVATE IMPLEMENTATION)
 //---------------------------------------------------------------------------//
 // Map mesh zone indices to cells
 
-void OS_Builder::zone_mapper()
+void RZWedge_Builder::zone_mapper()
 {
     // dimension of problem
     int dim = fine_edge.size();
@@ -990,17 +685,14 @@ void OS_Builder::zone_mapper()
         for (int j = 1; j <= fine_cells[1].size(); j++)
             for (int i = 1; i <= fine_cells[0].size(); i++)
                 cell_zoner(i, j);
-    else if (dim == 3)
-        for (int k = 1; k <= fine_cells[2].size(); k++)
-            for (int j = 1; j <= fine_cells[1].size(); j++)
-                for (int i = 1; i <= fine_cells[0].size(); i++)
-                    cell_zoner(i, j, k);
+
+    Insist (dim == 2, "RZWedge must be specified with a 2D coord_system!");
 }
   
 //---------------------------------------------------------------------------//
 // Map cells to zones in 2D mesh.
 
-void OS_Builder::cell_zoner(int iz, int jz)
+void RZWedge_Builder::cell_zoner(int iz, int jz)
 {
     // match a fine-cell to a zone for 2D meshes
 
@@ -1027,42 +719,6 @@ void OS_Builder::cell_zoner(int iz, int jz)
 }
 
 //---------------------------------------------------------------------------//
-// Map cells to zones in 3D mesh.
-
-void OS_Builder::cell_zoner(int iz, int jz, int kz)
-{
-    // match a fine-cell to a zone for 3D meshes
-
-    // descriptive variables
-    int num_xzones = coarse_edge[0].size() - 1;
-    int num_yzones = coarse_edge[1].size() - 1;
-    int zone_index = 1 + (iz-1) + num_xzones * (jz-1) + num_xzones *
-	num_yzones * (kz-1);
-    int num_xcells = fine_edge[0].size() - 1;
-    int num_ycells = fine_edge[1].size() - 1;
-
-    // loop boundaries
-    int starti = 1 + accum_cells[0][iz-1];
-    int endi   = accum_cells[0][iz-1] + fine_cells[0][iz-1];
-    int startj = 1 + accum_cells[1][jz-1];
-    int endj   = accum_cells[1][jz-1] + fine_cells[1][jz-1];
-    int startk = 1 + accum_cells[2][kz-1];
-    int endk   = accum_cells[2][kz-1] + fine_cells[2][kz-1];
-
-    // loop over zone and assign zone_index to those fine-cells residing in
-    // the zone
-    for (int k = startk; k <= endk; k++)
-	for (int j = startj; j <= endj; j++)
-	    for (int i = starti; i <= endi; i++)
-	    {
-		int cell = 1 + (i-1) + num_xcells * (j-1) + num_xcells *
-		    num_ycells * (k-1);
-		zone[cell-1] = zone_index;
-		cell_zone[zone_index-1].push_back(cell);
-	    }
-}
-
-//---------------------------------------------------------------------------//
 // CALCULATE DEFINED SURFACE CELLS
 //---------------------------------------------------------------------------//
 /*!  
@@ -1078,7 +734,7 @@ void OS_Builder::cell_zoner(int iz, int jz, int kz)
  * Surface source cell lists are only calculated for surface sources that do
  * not already have user-defined lists of cells.
  */
-void OS_Builder::calc_defined_surcells()
+void RZWedge_Builder::calc_defined_surcells()
 {
     Require (mesh);
     Require (mesh->full_Mesh());
@@ -1118,5 +774,5 @@ void OS_Builder::calc_defined_surcells()
 } // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
-//                              end of OS_Builder.cc
+//                              end of RZWedge_Builder.cc
 //---------------------------------------------------------------------------//

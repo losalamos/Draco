@@ -240,9 +240,9 @@ int RZWedge_Mesh::get_bndface(std_string boundary, int cell) const
     // return value
     int face;
 
-    if (boundary == "lox")
+    if (boundary == "lox" || boundary == "lor")
 	face = 1;
-    else if (boundary == "hix")
+    else if (boundary == "hix" || boundary == "hir")
 	face = 2;
     else if (boundary == "loy")
 	face = 3;
@@ -293,7 +293,7 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
 
 	    // ridiculous, unnecessary checks on the next cell 
 	    Check (next_cell != 0 && next_cell != start_cell);
-	    Check (next_cell > 0 && next_cell <= layout.num_cells());
+	    Check (next_cell > 0  && next_cell <= layout.num_cells());
 
 	    // check that the cell has reflecting wedge attributes
 	    Check ((layout(next_cell,3,1) == next_cell) &&
@@ -316,8 +316,8 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
 	Check (num_cells_hiz == 1 || num_cells_hiz == 2);
 
 	// keep including the next cell to the high x direction until b.c.
-	while (layout(current_cell,2,num_cells_hiz) != current_cell  &&
-	       layout(current_cell,2,1) != 0) 
+	while (layout(current_cell,6,num_cells_hiz) != current_cell  &&
+	       layout(current_cell,6,1) != 0) 
 	{
 	    // next cell to put into surface cell list
 	    int next_cell = layout(current_cell,6,num_cells_hiz);

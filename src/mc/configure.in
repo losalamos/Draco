@@ -39,7 +39,8 @@ AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/TET_RTT_1:test/TET_RTT_1.in \
           test/TET_RTT_2:test/TET_RTT_2.in \
           test/TET_RTT_3:test/TET_RTT_3.in \
-          test/TET_RTT_4:test/TET_RTT_4.in)
+          test/TET_RTT_4:test/TET_RTT_4.in \
+          test/RZWedge_Input:test/RZWedge_Input.in)
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/mc configure.in

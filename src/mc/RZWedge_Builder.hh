@@ -1,20 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/OS_Builder.hh
- * \author Thomas M. Evans
+ * \file   mc/RZWedge_Builder.hh
+ * \author Todd Urbatsch (extension of Thomas M. Evans's OS_Builder)
  * \date   Mon Feb  9 16:16:07 1998
- * \brief  OS_Builder class header file.
+ * \brief  RZWedge_Builder class header file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_OS_Builder_hh__
-#define __mc_OS_Builder_hh__
+#ifndef __mc_RZWedge_Builder_hh__
+#define __mc_RZWedge_Builder_hh__
 
 #include "Coord_sys.hh"
-#include "Layout.hh"
-#include "OS_Mesh.hh"
+#include "AMR_Layout.hh"
+#include "RZWedge_Mesh.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -27,37 +27,29 @@ namespace rtt_mc
 
 //===========================================================================//
 /*!
- * \class OS_Builder
+ * \class RZWedge_Builder
  *
- * The OS_Builder class builds an instance of rtt_mc::OS_Mesh using a simple
- * MC-defined orthogonal mesh format.  Future incantations may use more
- * advanced mesh format readers in order to build OS meshes from more
- * advanced formats.
+ * The RZWedge_Builder class builds an instance of rtt_mc::RZWedge_Mesh using 
+ * the same simple MC-defined orthogonal mesh format that OS_Mesh uses.  In
+ * fact, RZWedge_Builder is merely a copy and extension of OS_Builder.  In the
+ * future, the common parts of these two builders will be extracted.  This
+ * less-than-ideal approach is taken to expedite milagro's use of an
+ * RZWedge_Mesh.  
  * 
- * /sa The examples page (mc/test/tstOSMesh.cc) for examples how to build OS
- * meshes using OS_Builder. 
  */
 // revision history:
 // -----------------
 //  0) original
-//  1)  3-18-98 : added generalized mesh constructor which consists of 
-//                calculating vertex-based arrays and sending them to the 
-//                OS_Mesh constructor
-//  2)   4-6-99 : made OS_Builder class templated on an interface type
-//  3)  4-13-99 : moved into mc package
-//  4) 10-FEB-00: OS_Builder now reads its own mesh format file.  All it
-//                requires to do this is the name of the input file.  The
-//                input file can be the same as the regular Milagro input
-//                file
+//
 //===========================================================================//
 
-class OS_Builder
+class RZWedge_Builder
 {
   public:
     // Useful typdefs to std:: namespace members.
-    typedef rtt_dsxx::SP<OS_Mesh>             SP_Mesh;
+    typedef rtt_dsxx::SP<RZWedge_Mesh>        SP_Mesh;
     typedef rtt_dsxx::SP<Coord_sys>           SP_Coord_sys;
-    typedef rtt_dsxx::SP<Layout>              SP_Layout;
+    typedef rtt_dsxx::SP<AMR_Layout>          SP_Layout;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
     typedef std::vector<double>               sf_double;
@@ -113,7 +105,7 @@ class OS_Builder
     // Pointer to built Mesh.
     SP_Mesh mesh;
 
-    // Member functions for building OS_Mesh
+    // Member functions for building RZWedge_Mesh
 
     // Parse the mesh input file.
     void parser();
@@ -122,16 +114,14 @@ class OS_Builder
     void source_parser(std_ifstream &);
 
     // Build Layout helper functions.
-    SP_Layout build_Layout(const Coord_sys &);
-    void assign2D(Layout &);
-    void assign3D(Layout &);
+    SP_Layout build_RZWedge_Layout(const Coord_sys &);
+    void assignRZWedge_Layout(AMR_Layout &);
 
     // Build Coord_sys helper functions.
     SP_Coord_sys build_Coord();
 
     // Build Mesh helper functions.
-    SP_Mesh build_2DMesh(SP_Coord_sys, Layout &);
-    SP_Mesh build_3DMesh(SP_Coord_sys, Layout &);
+    SP_Mesh build_RZWedge_Mesh(SP_Coord_sys, AMR_Layout &);
 
     // Member functions for cell-zone mapping
     void zone_mapper();
@@ -143,7 +133,7 @@ class OS_Builder
 
   public:
     // Constructor.
-    template<class IT> explicit OS_Builder(rtt_dsxx::SP<IT>);
+    template<class IT> explicit RZWedge_Builder(rtt_dsxx::SP<IT>);
 
     // Build Mesh function.
     SP_Mesh build_Mesh();
@@ -174,12 +164,12 @@ class OS_Builder
 };
 
 //---------------------------------------------------------------------------//
-// Templated functions for OS_Builder
+// Templated functions for RZWedge_Builder
 //---------------------------------------------------------------------------//
 // Constructor.
 
 template<class IT>
-OS_Builder::OS_Builder(rtt_dsxx::SP<IT> interface)
+RZWedge_Builder::RZWedge_Builder(rtt_dsxx::SP<IT> interface)
     : mesh_file(),
       coord_system(), 
       theta_degrees(),
@@ -226,7 +216,7 @@ OS_Builder::OS_Builder(rtt_dsxx::SP<IT> interface)
  * field. 
  */
 template<class T>
-std::vector<T> OS_Builder::zone_cell_mapper(const std::vector<T> &zone_field)
+std::vector<T> RZWedge_Builder::zone_cell_mapper(const std::vector<T> &zone_field)
     const 
 {
     // we will use vector throughout this function
@@ -247,8 +237,8 @@ std::vector<T> OS_Builder::zone_cell_mapper(const std::vector<T> &zone_field)
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_OS_Builder_hh__
+#endif                          // __mc_RZWedge_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mc/OS_Builder.hh
+//                              end of mc/RZWedge_Builder.hh
 //---------------------------------------------------------------------------//
