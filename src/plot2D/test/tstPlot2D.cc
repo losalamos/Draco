@@ -26,16 +26,25 @@ using std::ofstream;
 using rtt_plot2D::Plot2D;
 using rtt_plot2D::SetProps;
 
+namespace test
+{
 void pause();
+}
+
 void tstPlot2D(const bool batch);
 int main(int argc, char *argv[]);
 
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
+namespace test
+{
+
 void pause()
 {
     cout << "Press RETURN to continue: ";
     cin.get();
+}
+
 }
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
@@ -91,7 +100,7 @@ tstPlot2D(const bool batch)
     p.setProps(0, 0, prop); // of graph 0, set 0
 
     if ( ! batch ) {
-	pause();
+	test::pause();
     }
 
     p.save("plot1.agr");
@@ -122,7 +131,7 @@ tstPlot2D(const bool batch)
     p.readBlock(blockName);
 
     if ( ! batch ) {
-	pause();
+	test::pause();
     }
 
     p.save("plot2.agr");
@@ -134,7 +143,7 @@ tstPlot2D(const bool batch)
     p.arrange(2, 2);
 
     if ( ! batch ) {
-	pause();
+	test::pause();
     }
 
     p.save("plot3.agr");
@@ -154,7 +163,7 @@ tstPlot2D(const bool batch)
     p.setTitles("Same Data, One Graph", "subtitle");
 
     if ( ! batch ) {
-	pause();
+	test::pause();
     }
 
     p.save("plot4.agr");
