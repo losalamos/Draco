@@ -127,7 +127,9 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
 	mat_state = opacity_builder.build_Mat(mesh);
 	opacity   = opacity_builder.build_Opacity(mesh, mat_state);
     }   
-
+    
+  // make a tally
+    tally = new Tally<MT>(mesh);
 
   // do the source initialization
     source_init = new Parallel_Source_Init<MT>(interface, mesh);
@@ -153,9 +155,6 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
       //     source = parallel_builder->send_Source(mesh, mat_state, rnd_con,
       // 					   *source_init, *buffer);
       //     Check (IT::get_census()->size() == 0);
-	
-      // make a tally
-	tally = new Tally<MT>(mesh);
 
       // make sure tally and buffer are made
 	Ensure (tally);
@@ -175,19 +174,67 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
 }
 
 //---------------------------------------------------------------------------//
-// do a timestep
+// do a timestep on a FULLY REPLICATED MESH
 
 template<class MT, class BT, class IT, class PT>
 void Host_Manager<MT,BT,IT,PT>::step_IMC()
 {
-    cout << "Looks like we made it!" << endl;
-//     cout << "The number of particles is " <<
-// 	source->get_ncentot()+source->get_nvoltot()+source->get_nsstot() <<
-// 	endl;
-//     cout << "Census " << source->get_ncentot() << endl;
-//     cout << "Volume " << source->get_nvoltot() << endl;
-//     cout << "SS     " << source->get_nsstot() << endl;
-//     cout << "The random stream is at: " << RNG::rn_stream << endl;
+    Require (!communicator);
+    
+    cerr << ">> Doing transport for cycle " << cycle
+	 << " on proc " << node() << " using full replication." << endl;
+
+  // make a new census Comm_Buffer on this node
+    new_census_bank = new Particle_Buffer<PT>::Census();
+
+  // diagnostic
+    SP<typename PT::Diagnostic> check = new PT::Diagnostic(cout, true);
+
+  // get source particles and run them to completion
+    int counter = 0;
+    while (*source)
+    {
+      // get a particle from the source
+	SP<PT> particle = source->get_Source_Particle(delta_t);
+	Check (particle->status());
+
+      // transport the particle
+	particle->transport(*mesh, *opacity, *tally);
+	counter++;
+
+      // after the particle is no longer active take appropriate action
+	Check (!particle->status());
+	
+      // if census write to file
+	if (particle->desc() == "census")
+	    new_census_bank->push(particle);
+
+      // message particle counter
+	if (!(counter % dump_f)) 
+	    cerr << setw(10) << counter << " particles run on proc " 
+		 << node()   << endl;
+    }
+
+  // finished with this timestep
+    cerr << ">> Finished particle transport for cycle " << cycle
+	 << " on proc " << node() << endl;
+
+  // now remove objects we no longer need
+    kill (source);
+    kill (mat_state);
+    kill (opacity);
+    kill (mesh);
+
+  // object inventory
+    Ensure (rnd_con);
+    Ensure (buffer);
+    Ensure (tally);	
+    Ensure (new_census_bank);
+    Ensure (!source);
+    Ensure (!mat_state);
+    Ensure (!opacity);
+    Ensure (!source_init);
+    Ensure (!mesh);
 }
 
 template<class MT, class BT, class IT, class PT>
