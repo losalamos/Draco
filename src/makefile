@@ -21,8 +21,8 @@ all:
 	(cd spdf;    $(MAKE) $(subnj))
 	(cd util;    $(MAKE) $(subnj))
 	(cd linalg;  $(MAKE) $(subnj))
-#	(cd geom;    $(MAKE) $(subnj))
-#	(cd mesh;    $(MAKE) $(subnj))
+	(cd geom;    $(MAKE) $(subnj))
+	(cd mesh;    $(MAKE) $(subnj))
 #	(cd draco;   $(MAKE) $(subnj))
 
 #cleanall: clean
@@ -38,8 +38,8 @@ clean:
 	(cd spdf;    $(MAKE) clean cleanonly=yes)
 	(cd util;    $(MAKE) clean cleanonly=yes)
 	(cd linalg;  $(MAKE) clean cleanonly=yes)
-#	(cd geom;    $(MAKE) clean cleanonly=yes)
-#	(cd mesh;    $(MAKE) clean cleanonly=yes)
+	(cd geom;    $(MAKE) clean cleanonly=yes)
+	(cd mesh;    $(MAKE) clean cleanonly=yes)
 #	(cd draco;   $(MAKE) clean cleanonly=yes)
 
 ###############################################################################
