@@ -7,7 +7,6 @@
 //---------------------------------------------------------------------------//
 
 #include "3T/testP13T/GmvDump.hh"
-#include "3T/testP13T/Mesh_XYZ_IO.hh"
 
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
@@ -25,7 +24,7 @@ namespace rtt_3T_testP13T
 		       int cycle_, double time_)
      : fname(fname_), spMesh(spMesh_), nx(spMesh->get_ncx()),
        ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), nzp(spMesh->get_nczp()),
-       zoff(spMesh->get_zoff()), vid(nx, ny, nz),
+       zoff(spMesh->get_zoff()),
        variablePrinted(false), cycle(cycle_), time(time_)
  {
      if (C4::node() != 0)
@@ -104,6 +103,8 @@ namespace rtt_3T_testP13T
 	 os << endl;
 
      os << "cells " << nx*ny*nz << endl;
+
+     VertId vid(nx, ny, nz);
 
      for (int k=0; k<nz; k++)
      {

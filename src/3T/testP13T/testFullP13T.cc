@@ -90,10 +90,10 @@ namespace
 
  using rtt_matprops::MultiMatCellMatProps;
 
- template<class UMCMP>
+ template<class MT, class UMCMP>
  void getMatProp(dsxx::SP<UMCMP> &spUMatProp,
 		 dsxx::SP<MultiMatCellMatProps<UMCMP> > &spMatProp,
-		 testFullP13T<UMCMP> &tester,
+		 testFullP13T<MT,UMCMP> &tester,
 		 const testFullP13T_DB &tdb)
  {
      Assert(0);
@@ -105,7 +105,7 @@ namespace
  void
  getMatProp(dsxx::SP<MarshakMaterialProps> &spUMatProp,
 	    dsxx::SP<MultiMatCellMatProps<MarshakMaterialProps> > &spMatProp,
-	    testFullP13T<MarshakMaterialProps> &tester,
+	    testFullP13T<MT,MarshakMaterialProps> &tester,
 	    const testFullP13T_DB &tdb) 
  {
      spUMatProp = new MarshakMaterialProps(tester.getUnits(), tdb.kappa0,
@@ -120,7 +120,7 @@ namespace
  void
  getMatProp(dsxx::SP<InterpedMaterialProps> &spUMatProp,
 	    dsxx::SP<MultiMatCellMatProps<InterpedMaterialProps> > &spMatProp,
-	    testFullP13T<InterpedMaterialProps> &tester,
+	    testFullP13T<MT,InterpedMaterialProps> &tester,
 	    const testFullP13T_DB &tdb)
  {
      std::ifstream ifs(tdb.opacityFile);
@@ -145,10 +145,10 @@ namespace
 
 } // end unnamed namespace
 
-template<class UMCMP>
-testFullP13T<UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
+template<class MT, class UMCMP>
+testFullP13T<MT,UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
 				  const Diffusion_DB &diffdb_,
-				  const Mesh_DB &mdb,
+				  const MT::Mesh_DB &mdb,
 				  const pcg_DB &pcg_db_)
     : diffdb(diffdb_), pcg_db(pcg_db_), tdb(tdb_)
 {
@@ -206,21 +206,21 @@ testFullP13T<UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
     spTempMapper = new rtt_matprops::TempMapper<MT>(spMesh, gamma);
 }
 
-template<class UMCMP>
-testFullP13T<UMCMP>::~testFullP13T()
+template<class MT, class UMCMP>
+testFullP13T<MT,UMCMP>::~testFullP13T()
 {
     // empty
 }
 
-template<class UMCMP>
-void testFullP13T<UMCMP>::getMatProp()
+template<class MT, class UMCMP>
+void testFullP13T<MT,UMCMP>::getMatProp()
 {
     ::getMatProp(spUMatProp, spMatProp, *this, tdb);
 }
 
-template<class UMCMP>
-testFullP13T<UMCMP>::MatStateCC
-testFullP13T<UMCMP>::getMatStateCC(const ccvsf &TElect,
+template<class MT, class UMCMP>
+testFullP13T<MT,UMCMP>::MatStateCC
+testFullP13T<MT,UMCMP>::getMatStateCC(const ccvsf &TElect,
 				   const ccvsf &TIon,
 				   const ccvsf &density,
 				   const ccvsf &VolFrac,
@@ -230,9 +230,9 @@ testFullP13T<UMCMP>::getMatStateCC(const ccvsf &TElect,
 	(density, TElect, TIon, VolFrac, matid);
 }
 
-template<class UMCMP>
-testFullP13T<UMCMP>::MatStateFC 
-testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
+template<class MT, class UMCMP>
+testFullP13T<MT,UMCMP>::MatStateFC 
+testFullP13T<MT,UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
 {
     ccsf avgTemp(spMesh);
     ccvsf matTemps(spMesh);
@@ -290,8 +290,8 @@ testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
 	volFracFC, matidFC);
 }
 
-template<class UMCMP>
-void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
+template<class MT, class UMCMP>
+void testFullP13T<MT,UMCMP>::gmvDump(const RadiationStateField &radState,
 				  const ccsf &TElec, const ccsf &TIon,
 				  int dumpno, int cycle, double time) const
 {
@@ -319,8 +319,8 @@ void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
     gmv.dump(TIon, "TIon");
 }
 	
-template<class UMCMP>
-void testFullP13T<UMCMP>::run() const
+template<class MT, class UMCMP>
+void testFullP13T<MT,UMCMP>::run() const
 {
     ccsf TElect0_in(spMesh);
     ccsf TIon0_in(spMesh);
@@ -476,8 +476,8 @@ void testFullP13T<UMCMP>::run() const
     }
 }
 
-template<class UMCMP>
-void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
+template<class MT, class UMCMP>
+void testFullP13T<MT,UMCMP>::timestep(double &time, double &dt, int &cycle,
 				   MatStateCC &matStateCC,
 				   MatStateFC &matStateFC,
 				   RadiationStateField &radState,
@@ -650,8 +650,8 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     radState = newRadState;
 }
 
-template<class UMCMP>
-void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
+template<class MT, class UMCMP>
+void testFullP13T<MT,UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 {
     using rtt_3T_testP13T::setBoundary;
     
@@ -683,8 +683,8 @@ void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 
 }    
 
-template<class UMCMP>
-void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
+template<class MT, class UMCMP>
+void testFullP13T<MT,UMCMP>::postProcess(const RadiationStateField &radState,
 				      const RadiationStateField &newRadState,
 				      const MatStateCC &matStateCC,
 				      const MatStateCC &newMatStateCC,
@@ -835,9 +835,9 @@ void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
     cout.flags(oldOptions);
 }
 
-template<class UMCMP>
+template<class MT, class UMCMP>
 double
-testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
+testFullP13T<MT,UMCMP>::calcLeakage(const RadiationStateField &radstate) const
 {
     const double dx = spMesh->get_dx();
     const double dy = spMesh->get_dy();

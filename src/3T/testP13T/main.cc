@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "3T/testP13T/testFullP13T.hh"
+#include "mesh/Mesh_XYZ.hh"
 #include "ds++/Assert.hh"
 #include "c4/global.hh"
 
@@ -18,6 +19,8 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
+typedef Mesh_XYZ MT;
+
 namespace {
 
  const std::string infile = "testFullP13T.in";
@@ -27,7 +30,7 @@ namespace {
  void runProblem(const XTM::testFullP13T_DB &tdb, const Diffusion_DB &diffdb,
 		 const Mesh_DB &mdb, const pcg_DB &pcg_db)
  {
-     XTM::testFullP13T<UMCMP> test(tdb, diffdb, mdb, pcg_db);
+     XTM::testFullP13T<MT,UMCMP> test(tdb, diffdb, mdb, pcg_db);
 
      cerr << C4::node() << " before test.run()" << endl;
 
@@ -122,11 +125,11 @@ int main(int argc, char *argv[])
 #include "3T/testP13T/testFullP13T.cc"
 
 template
-class XTM::testFullP13T<rtt_matprops::InterpedMaterialProps>;
+class XTM::testFullP13T<MT, rtt_matprops::InterpedMaterialProps>;
 
 
 template
-class XTM::testFullP13T<rtt_matprops::MarshakMaterialProps>;
+class XTM::testFullP13T<MT, rtt_matprops::MarshakMaterialProps>;
 
 //---------------------------------------------------------------------------//
 //                              end of main.cc

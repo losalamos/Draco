@@ -9,7 +9,6 @@
 #ifndef __3T_testP13T_testFullP13T_hh__
 #define __3T_testP13T_testFullP13T_hh__
 
-#include "mesh/Mesh_XYZ.hh"
 #include "testFullP13T_DB.hh"
 #include "ds++/SP.hh"
 #include "3T/P13T.hh"
@@ -55,7 +54,7 @@ namespace XTM {
  // 
  //===========================================================================//
  
- template<class UMCMP>
+ template<class MT, class UMCMP>
  class testFullP13T
  {
      
@@ -63,8 +62,6 @@ namespace XTM {
      
    public:
     
-     typedef Mesh_XYZ MT;
-
      typedef rtt_matprops::MarshakMaterialProps  MarshakMaterialProps;
      typedef rtt_matprops::InterpedMaterialProps InterpedMaterialProps;
      typedef rtt_matprops::MultiMatCellMatProps<UMCMP> MP;
@@ -78,17 +75,17 @@ namespace XTM {
      typedef MS MatrixSolver;
      typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DS;
 
-     typedef MT::ccsf  ccsf;
-     typedef MT::ccif  ccif;
-     typedef MT::fcdsf fcdsf;
-     typedef MT::fcdif fcdif;
-     typedef MT::bssf  bssf;
-     typedef MT::ncvsf ncvsf;
+     typedef typename MT::ccsf  ccsf;
+     typedef typename MT::ccif  ccif;
+     typedef typename MT::fcdsf fcdsf;
+     typedef typename MT::fcdif fcdif;
+     typedef typename MT::bssf  bssf;
+     typedef typename MT::ncvsf ncvsf;
 
-     typedef MT::cctf  < std::vector<double  > > ccvsf;
-     typedef MT::fcdtf < std::vector<double  > > fcdvsf;
-     typedef MT::cctf  < std::vector<int     > > ccvif;
-     typedef MT::fcdtf < std::vector<int     > > fcdvif;
+     typedef typename MT::cctf  < std::vector<double  > > ccvsf;
+     typedef typename MT::fcdtf < std::vector<double  > > fcdvsf;
+     typedef typename MT::cctf  < std::vector<int     > > ccvif;
+     typedef typename MT::fcdtf < std::vector<int     > > fcdvif;
      
      typedef typename MP:: template MaterialStateField<ccsf, ccvsf, ccvif> MatStateCC;
      typedef typename MP:: template MaterialStateField<fcdsf, fcdvsf, fcdvif> MatStateFC;
@@ -127,7 +124,7 @@ namespace XTM {
     
      testFullP13T(const testFullP13T_DB &tdb_,
 		  const Diffusion_DB &diffdb,
-		  const Mesh_DB &mdb,
+		  const typename MT::Mesh_DB &mdb,
 		  const pcg_DB &pgc_db_);
 
      ~testFullP13T();

@@ -60,8 +60,6 @@ namespace rtt_3T_testP13T
      int nzp;
      int zoff;
 
-     VertId vid;
-
      bool variablePrinted;
 
      int cycle;
