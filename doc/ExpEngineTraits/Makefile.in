@@ -75,7 +75,7 @@ expTraits.ps: expTraits.dvi
 expTraits.dvi: expTraits.tex expTraits.bib \
 	UserVec.hh.cfg UserVecTraits.hh.cfg expTraits.cc.cfg expTraits.hh.cfg
 	${LATEX} expTraits
-	-${BIBTEX} expTraits
+	${BIBTEX} expTraits
 	${LATEX} expTraits
 	${LATEX} expTraits
 

@@ -54,7 +54,7 @@ void doit()
     ec2 = 20.0;
     ec1[1] = std::sqrt(2.0)/2.0;
 
-    ec3 = asin(ec1) + ec2;
+    ec3 = asin(ec1) + 3.0*ec2;
 
     // *** NOTE *** NOTE *** NOTE ***
     //
@@ -80,7 +80,7 @@ int main()
 
     std::cout << std::endl;
     
-    // Call doit with UserVec<float>.
+    // Call doit with UserVec<double>.
     // This container already has expression templates, and
     // since it defines its own specialization of
     // ExpEngineTraits< UserVec<T> > that has been designed
@@ -88,8 +88,8 @@ int main()
     // and ECT::Glom is a no-op, doit will use the UserVec's own
     // expression template machinery.
     
-    std::cout << "doit< UserVec<float> > ..." << std::endl;
-    doit< UserVec<float> >();
+    std::cout << "doit< UserVec<double> > ..." << std::endl;
+    doit< UserVec<double> >();
     
     return 0;
 }
