@@ -51,7 +51,14 @@ void wall_clock_test()
     }
     else
     {
-	FAILMSG("wall_clock() value does not match expected value.");
+	std::ostringstream msg;
+	msg << "t.wall_clock() value does not match the expected value."
+	    << "\n\tend            = " << end
+	    << "\n\tbegin          = " << begin
+	    << "\n\tend-begin      = " << end - begin
+	    << "\n\tt.wall_clock() = " << t.wall_clock()
+	    << "\n\tprec           = " << prec << std::endl;
+	FAILMSG(msg.str());
     }
 
     //---------------------------------------------------------------------//
