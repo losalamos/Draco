@@ -13,16 +13,17 @@
 
 namespace rtt_cdi
 {
-    /*!
-     * \brief Default GrayOpacity() destructor.
-     *
-     * This is required to correctly release memory when any
-     * object derived from GrayOpacity is destroyed.
-     */
-    GrayOpacity::~GrayOpacity() 
-	{
-	    // empty
-	}
+
+/*!
+ * \brief Default GrayOpacity() destructor.
+ *
+ * This is required to correctly release memory when any
+ * object derived from GrayOpacity is destroyed.
+ */
+GrayOpacity::~GrayOpacity() 
+{
+    // empty
+}
 
 } // end namespace rtt_cdi
 
