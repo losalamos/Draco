@@ -61,7 +61,7 @@ int expect( int n ) {
 
 SP<foo> getafoo()
 {
-    SP<foo> p = new foo;
+    SP<foo> p(new foo);
     return p;
 }
 
@@ -69,7 +69,7 @@ SP<foo> useafoo( SP<foo> s )
 {
     s->method();
 
-    SP<foo> p = new foo;
+    SP<foo> p(new foo);
 
     p = s;
 
@@ -117,7 +117,7 @@ void x1()
 	cout << "\n Check SP<foo> s = new foo, which ops are those?" << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new foo;
+	    SP<foo> spf(new foo);
 	    expect(1);
 	}
 	expect(0);
@@ -140,9 +140,9 @@ void x1()
 	cout << "\n Check SP assign from like type." << endl;
 	expect(0);
 	{
-	    SP<foo> sp1 = new foo;
+	    SP<foo> sp1(new foo);
 	    expect(1);
-	    SP<foo> sp2 = new foo;
+	    SP<foo> sp2(new foo);
 	    expect(2);
 	    sp1 = sp2;
 	    expect(1);
@@ -156,7 +156,7 @@ void x1()
 	{
 	    SP<foo> sp1;
 	    expect(0);
-	    SP<foo> sp2 = new foo;
+	    SP<foo> sp2(new foo);
 	    expect(1);
 	    sp1 = sp2;
 	    expect(1);
@@ -168,7 +168,7 @@ void x1()
 	cout << "\n Check SP copy ctor from like type." << endl;
 	expect(0);
 	{
-	    SP<foo> sp1 = new foo;
+	    SP<foo> sp1(new foo);
 	    expect(1);
 	    SP<foo> sp2( sp1 );
 	    expect(1);
@@ -206,7 +206,7 @@ void x2()
 	cout << "\n Check X* ctor." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
+	    SP<foo> spf(new bar);
 	    expect(1);
 	}
 	expect(0);
@@ -216,7 +216,7 @@ void x2()
 	cout << "\n Check SP<X> copy ctor." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
+	    SP<foo> spf(new bar);
 	    expect(1);
 	    SP<bar> spb( spf );
 	    expect(1);
@@ -229,7 +229,7 @@ void x2()
 	expect(0);
 	{
 	    SP<foo> spf;
-	    SP<bar> spb = new bar;
+	    SP<bar> spb(new bar);
 	    expect(1);
 	    spf = spb;
 	    expect(1);
@@ -241,7 +241,7 @@ void x2()
 	cout << "\n Check downcast copy ctor." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
+	    SP<foo> spf(new bar);
 	    SP<bar> spb( spf );
 	    expect(1);
 	}
@@ -252,8 +252,8 @@ void x2()
 	cout << "\n Check downcast assingment." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
-	    SP<bar> spb = new bar;
+	    SP<foo> spf(new bar);
+	    SP<bar> spb(new bar);
 	    expect(2);
 	    spb = spf;
 	    expect(1);
@@ -270,7 +270,7 @@ void x3()
 	cout << "\n Check assign to self." << endl;
 	expect(0);
 	{
-	    SP<foo> sp1 = new foo;
+	    SP<foo> sp1(new foo);
 	    expect(1);
 	    sp1 = sp1;
 	    expect(1);
@@ -282,7 +282,7 @@ void x3()
 	cout << "\n Check assign to self, T *." << endl;
 	expect(0);
 	{
-	    SP<foo> sp1 = new foo;
+	    SP<foo> sp1(new foo);
 	    SP<foo> sp2( sp1 );
 	    expect(1);
 	    sp1 = sp2;
@@ -295,7 +295,7 @@ void x3()
 	cout << "\n Check assign to self, X * (upcast)." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
+	    SP<foo> spf(new bar);
 	    SP<bar> spb( spf );
 	    spf = spb;
 	    expect(1);
@@ -307,7 +307,7 @@ void x3()
 	cout << "\n Check assign to self, X * (downcast)." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
+	    SP<foo> spf(new bar);
 	    SP<bar> spb( spf );
 	    spb = spf;
 	    expect(1);
@@ -377,8 +377,8 @@ void x4()
 	cout << "\n Check comparison to same type." << endl;
 	expect(0);
 	{
-	    SP<foo> sp1 = new foo;
-	    SP<foo> sp2 = new foo;
+	    SP<foo> sp1(new foo);
+	    SP<foo> sp2(new foo);
 	    expect(2);
 	    if (sp1 == sp2) cout << "test: failed\n"; else cout << "test: passed\n";
 	    if (sp1 != sp2) cout << "test: passed\n"; else cout << "test: failed\n";
@@ -390,7 +390,7 @@ void x4()
 	cout << "\n Check SP comparison between compatible types." << endl;
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
+	    SP<foo> spf(new bar);
 	    SP<bar> spb = spf;
 
 	    cout << "checking same object comparison." << endl;
@@ -399,8 +399,8 @@ void x4()
 	}
 	expect(0);
 	{
-	    SP<foo> spf = new bar;
-	    SP<bar> spb = new bar;
+	    SP<foo> spf(new bar);
+	    SP<bar> spb(new bar);
 	    expect(2);
 
 	    cout << "checking different object comparison." << endl;
