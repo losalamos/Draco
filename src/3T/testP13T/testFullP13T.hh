@@ -14,7 +14,14 @@
 #include "3T/P13T.hh"
 #include "3T/Diffusion_P1.hh"
 #include "mesh/Mesh_XYZ.hh"
+
+#define MARSHAK_MATPROPS
+
+#ifdef MARSHAK_MATPROPS
+#include "matprops/MarshakMaterialProps.hh"
+#else
 #include "matprops/InterpedMaterialProps.hh"
+#endif
 
 #include <string>
 
@@ -46,16 +53,37 @@ namespace XTM {
    public:
     
      typedef Mesh_XYZ MT;
+#ifdef MARSHAK_MATPROPS
+     typedef MarshakMaterialProps MP;
+#else
      typedef InterpedMaterialProps MP;
+#endif
      typedef Diffusion_P1<MT> DS;
 
+     typedef MT::ccsf ccsf;
+     typedef MT::ccif ccif;
+     typedef MT::fcdsf fcdsf;
+     typedef MT::fcdif fcdif;
+     typedef MT::bssf bssf;
+     
+     typedef P13T<MT,MP,DS> P13T;
+
+     typedef P13T::RadiationStateField RadiationStateField;
+     
+     typedef MP::MaterialStateField<MT::ccsf> MatStateCC;
+     typedef MP::MaterialStateField<MT::fcdsf> MatStateFC;
+     
      // DATA
 
    private:
     
-     SP< P13T<MT,MP,DS> > spP13T;
+     Units units;
+     dsxx::SP<MP> spMatProp;
 
-     SP<rtt_timestep::ts_manager> spTsManager;
+     dsxx::SP<MT> spMesh;
+     dsxx::SP<P13T> spP13T;
+
+     dsxx::SP<rtt_timestep::ts_manager> spTsManager;
 
      testFullP13T_DB pdb;
      Diffusion_DB diffdb;
@@ -77,6 +105,33 @@ namespace XTM {
    private:
     
      // IMPLEMENTATION
+
+     void getMatProp();
+     
+     MatStateCC getMatStateCC(const ccsf &TElec, const ccsf &TIon,
+			      const ccsf &density, const ccif &matid) const;
+
+     MatStateFC getMatStateFC(const ccsf &TElec, const ccsf &TIon,
+			      const ccsf &density, const ccif &matid) const;
+
+     void gmvDump(const RadiationStateField &radState, const ccsf &TElec,
+		  const ccsf &TIon, int cycle, double time) const;
+
+     void postProcess(const RadiationStateField &radState,
+		      const RadiationStateField &newRadState,
+		      const MatStateCC &matStateCC,
+		      const MatStateCC &newMatStateCC,
+		      const ccsf &electEnergyDep,
+		      const ccsf &ionEnergyDep,
+		      const ccsf &QRad,
+		      const ccsf &QElectron,
+		      const ccsf &QIon,
+		      const ccsf &QEEM,
+		      const ccsf &REEM,
+		      double dt) const;
+     
+     double calcLeakage(const RadiationStateField &radstate) const;
+     
  };
 
 }  // namespace XTM

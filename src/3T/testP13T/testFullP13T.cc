@@ -14,8 +14,12 @@
 #include "radphys/RadiationPhysics.hh"
 #include "nml/Group.hh"
 #include "timestep/ts_manager.hh"
+#include "timestep/fixed_ts_advisor.hh"
+#include "timestep/ratio_ts_advisor.hh"
 
+#include <functional>
 #include <new>
+#include <strstream>
 #include <fstream>
 #include <iostream>
 using std::cout;
@@ -26,24 +30,253 @@ using std::vector;
 #include <string>
 using std::string;
 
+using dsxx::SP;
+
 using namespace XTM;
 
 namespace
 {
-    
-double sum(const testFullP13T::MT::ccsf rhs)
-{
-    typedef testFullP13T::MT::ccsf FT;
 
-    double results = 0.0;
-    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	results += *it;
-    return results;
+ int nx;
+ int ny;
+ int nz;
+
+ double sum(const testFullP13T::MT::ccsf &rhs)
+ {
+     typedef testFullP13T::MT::ccsf FT;
+
+     double results = 0.0;
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+	 results += *it;
+     return results;
+ }
+
+ template<class FT>
+     typename FT::value_type min(const FT &rhs)
+ {
+     FT::value_type results = *rhs.begin();
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+	 if (*it < results)
+	     results = *it;
+     return results;
+ }
+
+ template<class FT>
+     typename FT::value_type max(const FT &rhs)
+ {
+     FT::value_type results = *rhs.begin();
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+	 if (*it > results)
+	     results = *it;
+     return results;
+ }
+
+ template<class FT, class OP>
+     typename FT::value_type min(const FT &rhs, OP &op)
+ {
+     FT::value_type results = *rhs.begin();
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+	 if (op(*it) < results)
+	     results = *it;
+     return results;
+ }
+
+ template<class FT, class OP>
+     typename FT::value_type max(const FT &rhs, OP &op)
+ {
+     FT::value_type results = *rhs.begin();
+     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+	 if (op(*it) > results)
+	     results = *it;
+     return results;
+ }
+
+ class GmvDump
+ {
+   private:
+     
+     struct VertId
+     {
+	 int nx;
+	 int ny;
+	 int nz;
+	 VertId(int nx_, int ny_, int nz_) : nx(nx_+1), ny(ny_+1), nz(nz_+1) { }
+	 int operator()(int i, int j, int k)
+	 {
+	     return k*nx*ny + j*nx + i + 1;
+	 }
+     };
+
+     std::ostream &os;
+     const SP<testFullP13T::MT> &spMesh;
+
+     int nx;
+     int ny;
+     int nz;
+
+     VertId vid;
+
+     bool variablePrinted;
+
+     int cycle;
+     double time;
+     
+   public:
+     
+     GmvDump(std::ostream &os_, const SP<testFullP13T::MT> &spMesh_,
+	     int cycle_, double time_)
+	 : os(os_), spMesh(spMesh_), nx(spMesh->get_ncx()),
+	   ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), vid(nx, ny, nz),
+	   variablePrinted(false), cycle(cycle_), time(time_)
+     {
+	 std::ios_base::fmtflags fmtflags = os.flags();
+
+	 os << std::setw(16) << std::scientific << std::setprecision(6);
+
+	 os << "gmvinput ascii" << endl;
+
+	 double dx = spMesh->get_dx();
+	 double dy = spMesh->get_dy();
+	 double dz = spMesh->get_dz();
+
+	 int nnodes = (nx+1)*(ny+1)*(nz+1);
+	 os << "nodes " << nnodes << endl;
+
+	 const int nitemsPerLine = 5;
+	 int nitems = 0;
+
+	 for (int k=0; k<nz+1; k++)
+	 {
+	     for (int j=0; j<ny+1; j++)
+	     {
+		 for (int i=0; i<nx+1; i++)
+		 {
+		     os << i*dx;
+		     if (++nitems % nitemsPerLine)
+			 os << " ";
+		     else
+			 os << endl;
+		 }
+	     }
+	 }
+	 if (nitems % nitemsPerLine)
+	     os << endl;
+
+	 nitems = 0;
+	 for (int k=0; k<nz+1; k++)
+	 {
+	     for (int j=0; j<ny+1; j++)
+	     {
+		 for (int i=0; i<nx+1; i++)
+		 {
+		     os << j*dy;
+		     if (++nitems % nitemsPerLine)
+			 os << " ";
+		     else
+			 os << endl;
+		 }
+	     }
+	 }
+	 if (nitems % nitemsPerLine)
+	     os << endl;
+
+	 nitems = 0;
+	 for (int k=0; k<nz+1; k++)
+	 {
+	     for (int j=0; j<ny+1; j++)
+	     {
+		 for (int i=0; i<nx+1; i++)
+		 {
+		     os << k*dz;
+		     if (++nitems % nitemsPerLine)
+			 os << " ";
+		     else
+			 os << endl;
+		 }
+	     }
+	 }
+	 if (nitems % nitemsPerLine)
+	     os << endl;
+
+	 os << "cells " << nx*ny*nz << endl;
+
+	 for (int k=0; k<nz; k++)
+	 {
+	     for (int j=0; j<ny; j++)
+	     {
+		 for (int i=0; i<nx; i++)
+		 {
+		     os << "hex 8" << endl;
+		     os << vid(i,   j,   k+1) << " ";
+		     os << vid(i+1, j,   k+1) << " ";
+		     os << vid(i+1, j+1, k+1) << " ";
+		     os << vid(i,   j+1, k+1) << " ";
+		     os << vid(i,   j,   k  ) << " ";
+		     os << vid(i+1, j,   k  ) << " ";
+		     os << vid(i+1, j+1, k  ) << " ";
+		     os << vid(i,   j+1, k  ) << " ";
+		     os << endl;
+		 }
+	     }
+	 }
+
+	 // restore the original flags.
+	 
+	 os.flags(fmtflags);
+     }
+ 
+     ~GmvDump()
+     {
+	 if (variablePrinted)
+	     os << "endvars" << endl;
+	 os << "probtime " << time << endl;
+	 os << "cycleno " << cycle << endl;
+	 os << "endgmv" << endl;
+     }
+
+     void dump(const testFullP13T::MT::ccsf &var, const string &name)
+     {
+	 std::ios_base::fmtflags fmtflags = os.flags();
+
+	 os << std::setw(16) << std::scientific << std::setprecision(6);
+	 
+	 if (!variablePrinted)
+	 {
+	     os << "variable" << endl;
+	     variablePrinted = true;
+	 }
+	 
+	 os << name << " 0" << endl;
+
+	 const int nitemsPerLine = 5;
+	 int nitems = 0;
+	 for (int k=0; k<nz; k++)
+	 {
+	     for (int j=0; j<ny; j++)
+	     {
+		 for (int i=0; i<nx; i++)
+		 {
+		     os << var(i,j,k);
+		     if (++nitems % nitemsPerLine)
+			 os << " ";
+		     else
+			 os << endl;
+		 }
+	     }
+	 }
+
+	 if (nitems % nitemsPerLine)
+	     os << endl;
+
+	 // restore the original flags.
+	 
+	 os.flags(fmtflags);
+     }
+ };
+
 }
 
-}
-
-std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf rhs)
+std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf &rhs)
 {
     typedef testFullP13T::MT::ccsf FT;
 
@@ -51,6 +284,7 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf rhs)
 
     os << std::setw(16) << std::scientific << std::setprecision(6);
     
+#if 0
     int iline = 0;
     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
     {
@@ -60,6 +294,18 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf rhs)
     }
     if (iline % 6 != 0)
 	os << endl;
+#else
+    os << endl;
+    int icell = 0;
+    for (int k=0; k<nz; k++)
+	for (int j=0; j<ny; j++)
+	    for (int i=0; i<nx; i++)
+	    {
+		os << icell++ << ":";
+		os << " " << rhs(i,j,k);
+		os << endl;
+	    }
+#endif    
 
     // restore the original flags.
     
@@ -68,14 +314,15 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf rhs)
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf rhs)
+std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf &rhs)
 {
     typedef testFullP13T::MT::fcdsf FT;
     
     std::ios_base::fmtflags fmtflags = os.flags();
 
     os << std::setw(16) << std::scientific << std::setprecision(6);
-    
+
+#if 0
     int iline = 0;
     for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
     {
@@ -85,6 +332,20 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf rhs)
     }
     if (iline % 6 != 0)
 	os << endl;
+#else
+    os << endl;
+
+    int icell = 0;
+    for (int k=0; k<nz; k++)
+	for (int j=0; j<ny; j++)
+	    for (int i=0; i<nx; i++)
+	    {
+		os << icell++ << ":";
+		for (int f=0; f<6; f++)
+		    os << " " << rhs(i,j,k,f);
+		os << endl;
+	    }
+#endif
 
     // restore the original flags.
     
@@ -112,32 +373,8 @@ testFullP13T::testFullP13T(const string &infile)
     g.readgroup(infile.c_str());
     g.writegroup("testFullP13T.out");
 
-    SP<MT> spmesh = new MT(mdb);
+    spMesh = new MT(mdb);
     
-    P13TOptions options(pdb.P1TauMultiplier, pdb.IsCoupledMaterial);
-
-    spTsManager = new rtt_timestep::ts_manager();
-	
-    spP13T = new P13T<MT,MP,DS>(options, spmesh, spTsManager);
-}
-
-testFullP13T::~testFullP13T()
-{
-    // empty
-}
-
-void testFullP13T::run() const
-{
-    typedef MT::ccsf ccsf;
-    typedef MT::ccif ccif;
-    typedef MT::fcdsf fcdsf;
-    typedef MT::fcdif fcdif;
-    typedef MT::bssf bssf;
-
-    SP<MT> spmesh = spP13T->getMesh();
-
-    Units units;
-
     switch (pdb.units)
     {
     case AstroPhysical:
@@ -150,6 +387,29 @@ void testFullP13T::run() const
 	throw std::runtime_error("Unknown units specification.");
     }
 
+    getMatProp();
+
+    P13TOptions options(pdb.P1TauMultiplier, pdb.IsCoupledMaterial);
+
+    spTsManager = new rtt_timestep::ts_manager();
+	
+    spP13T = new P13T(options, spMesh, spTsManager);
+
+    nx = spMesh->get_ncx();
+    ny = spMesh->get_ncy();
+    nz = spMesh->get_ncz();
+}
+
+testFullP13T::~testFullP13T()
+{
+    // empty
+}
+
+void testFullP13T::getMatProp()
+{
+#ifdef MARSHAK_MATPROPS
+    spMatProp = new MP(units, pdb.kappa0, pdb.abar, pdb.kappaPower);
+#else
     std::ifstream ifs(pdb.opacityFile);
 
     typedef FifiMatPropsReader::MaterialDefinition MatDef;
@@ -163,95 +423,127 @@ void testFullP13T::run() const
     for (int i=0; i<matdefs.size(); i++)
 	matIds[i] = matdefs[i].matid;
     
-    MP matProp(matIds, reader);
+    spMatProp = new MP(matIds, reader);
+#endif
+}
 
-    ccsf TElect0(spmesh);
-    ccsf TIon0(spmesh);
-    ccsf density(spmesh);
-    ccif matid(spmesh);
-    // ccsf matid(spmesh);
+testFullP13T::MatStateCC testFullP13T::getMatStateCC(const ccsf &TElect,
+						     const ccsf &TIon,
+						     const ccsf &density,
+						     const ccif &matid) const
+{
+    return spMatProp->getMaterialState(density, TElect, TIon,  matid);
+}
+
+testFullP13T::MatStateFC testFullP13T::getMatStateFC(const ccsf &TElect,
+						     const ccsf &TIon,
+						     const ccsf &density,
+						     const ccif &matid) const
+{
+    fcdsf TElectFC(spMesh);
+    fcdsf TIonFC(spMesh);
+    fcdsf densityFC(spMesh);
+    fcdif matidFC(spMesh);
+
+    ccsf  oneCC(spMesh);
+    oneCC = 1.0;
+    
+    fcdsf twoFC(spMesh);
+    MT::scatter<MT::AddOp>(twoFC, oneCC);
+
+    MT::scatter<MT::AddOp>(TElectFC, TElect);
+    TElectFC /= twoFC;
+
+    MT::scatter<MT::AddOp>(TIonFC, TIon);
+    TIonFC /= twoFC;
+
+    densityFC = density;
+    matidFC = matid;
+    
+    if (pdb.verbose)
+    {
+	cout << "In testFullP13T::getMatStateFC" << endl;
+	cout << endl;
+	cout << "twoFC: " << twoFC << endl;
+	cout << "TElectFC: " << TElectFC << endl;
+	cout << "TElect: " << TElect << endl;
+	cout << endl;
+    }
+
+    return spMatProp->getMaterialState(densityFC, TElectFC, TIonFC, matidFC);
+}
+
+void testFullP13T::gmvDump(const RadiationStateField &radState,
+			   const ccsf &TElec, const ccsf &TIon,
+			   int cycle, double time) const
+{
+    std::ostrstream oss;
+    oss << "testFullP13T.gmvout."
+	<< std::setw(3) << std::setfill('0') << cycle
+	<< std::ends;
+    std::ofstream ofs(oss.str());
+
+    using PhysicalConstants::pi;
+    
+    const RadiationPhysics radphys(units);
+    const double a = radphys.getRadConstant();
+    const double c = radphys.getLightSpeed();
+    
+    ccsf TRad(spMesh);
+
+    ccsf::iterator trit = TRad.begin();
+    for (ccsf::const_iterator pit = radState.phi.begin();
+	 pit != radState.phi.end(); pit++)
+    {
+	*trit++ = std::pow((*pit) / (a*c), 0.25);
+    }
+
+    GmvDump gmv(ofs, spMesh, cycle, time);
+    gmv.dump(radState.phi, "phi");
+    gmv.dump(TRad, "TRad");
+    gmv.dump(TElec, "TElec");
+    gmv.dump(TIon, "TIon");
+}
+	
+void testFullP13T::run() const
+{
+    ccsf TElect0(spMesh);
+    ccsf TIon0(spMesh);
+    ccsf density(spMesh);
+    ccif matid(spMesh);
+    // ccsf matid(spMesh);
 
     TElect0 = pdb.Te;
     TIon0 = pdb.Ti;
     density = pdb.rho;
     matid = pdb.materialId;
 
-    MP::MaterialStateField<ccsf> matStateCC
-	= matProp.getMaterialState(density, TElect0, TIon0,  matid);
-
-    fcdsf TElectFC(spmesh);
-    fcdsf TIonFC(spmesh);
-    fcdsf densityFC(spmesh);
-    fcdif matidFC(spmesh);
-
-    ccsf  oneCC(spmesh);
-    oneCC = 1.0;
-    
-    fcdsf twoFC(spmesh);
-    MT::scatter<MT::AddOp>(twoFC, oneCC);
-
-    cout << "twoFC: " << twoFC << endl;
-    
-    MT::scatter<MT::AddOp>(TElectFC, TElect0);
-    TElectFC /= twoFC;
-    
-    cout << "TElectFC: " << TElectFC << endl;
-
-    MT::scatter<MT::AddOp>(TIonFC, TIon0);
-    TIonFC /= twoFC;
-
-    densityFC = density;
-    matidFC = matid;
-    
-    MP::MaterialStateField<fcdsf> matStateFC
-	= matProp.getMaterialState(densityFC, TElectFC, TIonFC,  matidFC);
-
-    P13T<MT,MP,DS>::RadiationStateField radState(spmesh);
+    MatStateCC matStateCC = getMatStateCC(TElect0, TIon0, density, matid);
+    MatStateFC matStateFC = getMatStateFC(TElect0, TIon0, density, matid);
+   
+    RadiationStateField radState(spMesh);
 
     spP13T->initializeRadiationState(matStateCC, radState);
 
-    ccsf TElec(spmesh);
-    ccsf TIon(spmesh);
-    ccsf CvElec(spmesh);
-    ccsf CvIon(spmesh);
-    ccsf sigAbs(spmesh);
-    ccsf alpha(spmesh);
-    ccsf kappaElec(spmesh);
-    ccsf kappaIon(spmesh);
-    
-    matStateCC.getElectronTemperature(TElec);
-    matStateCC.getIonTemperature(TIon);
-    matStateCC.getElectronSpecificHeat(CvElec);
-    matStateCC.getIonSpecificHeat(CvIon);
-    matStateCC.getSigmaAbsorption(1,sigAbs);
-    matStateCC.getElectronIonCoupling(alpha);
-    matStateCC.getElectronConductionCoeff(kappaElec);
-    matStateCC.getIonConductionCoeff(kappaIon);
+    ccsf QRad(spMesh);
+    ccsf QElectron(spMesh);
+    ccsf QIon(spMesh);
+    bssf boundary(spMesh);
+    ccsf electEnergyDep(spMesh);
+    ccsf ionEnergyDep(spMesh);
 
-    cout << "TElectron: " << TElec << endl;
-    cout << "TIon: " << TIon << endl;
-    cout << "Cv Electron: " << CvElec << endl;
-    cout << "Cv Ion: " << CvIon << endl;
-    cout << "Absorption: " << sigAbs << endl;
-    cout << "alpha: " << alpha << endl;
-    cout << "kappa Electron: " << kappaElec << endl;
-    cout << "kappa Ion: " << kappaIon << endl;
-    cout << "radState.phi: " << radState.phi
-	 << " radState.F: " << radState.F << endl;
-
-    double dt = pdb.dt;
-
-    ccsf QRad(spmesh);
-    ccsf QElectron(spmesh);
-    ccsf QIon(spmesh);
-    bssf boundary(spmesh);
-    P13T<MT,MP,DS>::RadiationStateField newRadState(spmesh);
-    ccsf electEnergyDep(spmesh);
-    ccsf ionEnergyDep(spmesh);
-    
-    QRad = pdb.Qr;
-    QElectron = pdb.Qe;
-    QIon = pdb.Qi;
+    if (pdb.Qloc < 0)
+    {
+	QRad = pdb.Qr;
+	QElectron = pdb.Qe;
+	QIon = pdb.Qi;
+    }
+    else
+    {
+	QRad(pdb.Qloc) = pdb.Qr;
+	QElectron(pdb.Qloc) = pdb.Qe;
+	QIon(pdb.Qloc) = pdb.Qi;
+    }
 
     boundary.face(0) = pdb.src_left;
     boundary.face(1) = pdb.src_right;
@@ -262,102 +554,326 @@ void testFullP13T::run() const
 
     cerr << "Made it before diffSolver ctor" << endl;
     
-    DS diffSolver(diffdb, spmesh, pcg_db);
+    DS diffSolver(diffdb, spMesh, pcg_db);
     
     cerr << "Made it after diffSolver ctor" << endl;
 
-    int cycle = 1;
+    using dsxx::SP;
+    using rtt_timestep::ts_advisor;
+    using rtt_timestep::fixed_ts_advisor;
+    using rtt_timestep::ratio_ts_advisor;
+    
+    // Set up a min timestep
+
+    SP<fixed_ts_advisor> spTsMin =
+	new fixed_ts_advisor("Minimum",
+			     ts_advisor::min, 
+			     ts_advisor::small());
+    spTsManager->add_advisor(spTsMin);
+    spTsMin->set_fixed_value(pdb.dtMin);
+
+    // Set up a max timestep
+
+    SP<fixed_ts_advisor> spTsMax =
+	new fixed_ts_advisor("Maximum",
+			     ts_advisor::max, 
+			     ts_advisor::small());
+    spTsManager->add_advisor(spTsMax);
+    spTsMax->set_fixed_value(pdb.dtMax);
+
+    // Set up a lower limit on the timestep rate of change
+
+    SP<ratio_ts_advisor> spTsLowRateChange = 
+	new ratio_ts_advisor("Rate of Change Lower Limit",
+			     ts_advisor::min, 0.8);
+    spTsManager->add_advisor(spTsLowRateChange);
+
+    // Set up an upper limit on the time-step rate of change
+
+    SP<ratio_ts_advisor>  spTsHighRateChange =
+	new ratio_ts_advisor("Rate of Change Upper Limit");
+    spTsManager->add_advisor(spTsHighRateChange);
+
+    const int ncycles = pdb.nsteps;
+    double dt = pdb.dt;
     double time = 0.0;
     
-    spTsManager->set_cycle_data(dt, cycle, time);
-    
-    cerr << "Made it before solve3T" << endl;
-    
-    spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad, QElectron, QIon,
-		    boundary, diffSolver, newRadState,
-		    electEnergyDep, ionEnergyDep, TElec, TIon);
+    for (int cycle = 1; cycle <= ncycles; cycle++)
+    {
+	// end of cycle time
+	time += dt;
 
-    cerr << "Made it after solve3T" << endl;
-
-    dt = spTsManager->compute_new_timestep();
-    spTsManager->print_summary();
+	// advance the timestep manager
+	
+	spTsManager->set_cycle_data(dt, cycle, time);
     
-    cout << "newRadState.phi: " << newRadState.phi << endl;
-    cout << "newRadState.F: " << newRadState.F << endl;
-    cout << "TElectron: " << TElec << endl;
-    cout << "TIon: " << TIon << endl;
-
-    const RadiationPhysics radPhys(matProp.getUnits());
-    double c = radPhys.getLightSpeed();
+	ccsf TElec(spMesh);
+	ccsf TIon(spMesh);
+	ccsf CvElec(spMesh);
+	ccsf CvIon(spMesh);
+	ccsf sigAbs(spMesh);
+	ccsf alpha(spMesh);
+	ccsf kappaElec(spMesh);
+	ccsf kappaIon(spMesh);
     
-    ccsf deltaRadEnergy(spmesh);
-    deltaRadEnergy = (newRadState.phi - radState.phi) / c;
+	matStateCC.getElectronTemperature(TElec);
+	matStateCC.getIonTemperature(TIon);
+	matStateCC.getElectronSpecificHeat(CvElec);
+	matStateCC.getIonSpecificHeat(CvIon);
+	matStateCC.getSigmaAbsorption(1,sigAbs);
+	matStateCC.getElectronIonCoupling(alpha);
+	matStateCC.getElectronConductionCoeff(kappaElec);
+	matStateCC.getIonConductionCoeff(kappaIon);
 
-    double dx = spmesh->get_dx();
-    double dy = spmesh->get_dy();
-    double dz = spmesh->get_dz();
-    double nx = spmesh->get_ncx();
-    double ny = spmesh->get_ncy();
-    double nz = spmesh->get_ncz();
+	if (pdb.verbose)
+	{
+	    cout << "TElectron: " << TElec << endl;
+	    cout << "TIon: " << TIon << endl;
+	    cout << "Cv Electron: " << CvElec << endl;
+	    cout << "Cv Ion: " << CvIon << endl;
+	    cout << "Absorption: " << sigAbs << endl;
+	    cout << "alpha: " << alpha << endl;
+	    cout << "kappa Electron: " << kappaElec << endl;
+	    cout << "kappa Ion: " << kappaIon << endl;
+	    cout << "radState.phi: " << radState.phi
+		 << " radState.F: " << radState.F << endl;
+	}
+	else
+	{
+	    double (*pabs)(double) = std::abs;
+	    std::pointer_to_unary_function<double,double> opAbs =
+		std::ptr_fun(pabs);
+	    
+	    cout << "TElec (min), (max): " << min(TElec, opAbs) << " " <<
+		max(TElec, opAbs) << endl;
+	    cout << "TIon (min), (max): " << min(TIon, opAbs) << " " <<
+		max(TIon, opAbs) << endl;
+	    cout << "CvElec (min), (max): " << min(CvElec, opAbs) << " " <<
+		max(CvElec, opAbs) << endl;
+	    cout << "CvIon (min), (max): " << min(CvIon, opAbs) << " " <<
+		max(CvIon, opAbs) << endl;
+	    cout << "sigAbs (min), (max): " << min(sigAbs, opAbs) << " " <<
+		max(sigAbs, opAbs) << endl;
+	    cout << "alpha (min), (max): " << min(alpha, opAbs) << " " <<
+		max(alpha, opAbs) << endl;
+	    cout << "kappaElec (min), (max): "
+		 << min(kappaElec, opAbs) << " "
+		 << max(kappaElec, opAbs) << endl;
+	    cout << "kappaIon (min), (max): " << min(kappaIon, opAbs)
+		 << " " << max(kappaIon, opAbs) << endl;
+	    cout << "radState.phi (min), (max): " << min(radState.phi, opAbs)
+		 << " " << max(radState.phi, opAbs) << endl;
+	    cout << "radState.F (min), (max): " << min(radState.F, opAbs)
+		 << " " << max(radState.F, opAbs) << endl;
+	}
+    
+	cerr << "Made it before solve3T" << endl;
+    
+	RadiationStateField newRadState(spMesh);
+	ccsf QEEM(spMesh);
+	ccsf REEM(spMesh);
+	
+	spP13T->solve3T(dt, matStateCC, matStateFC, radState, QRad,
+			QElectron, QIon,
+			boundary, diffSolver, newRadState, QEEM, REEM,
+			electEnergyDep, ionEnergyDep, TElec, TIon);
+
+	cerr << "Made it after solve3T" << endl;
+
+	gmvDump(newRadState, TElec, TIon, cycle, time);
+	
+	MatStateCC newMatStateCC = getMatStateCC(TElec, TIon, density, matid);
+	MatStateFC newMatStateFC = getMatStateFC(TElec, TIon, density, matid);
+	
+	postProcess(radState, newRadState, matStateCC, newMatStateCC,
+		    electEnergyDep, ionEnergyDep, QRad, QElectron, QIon,
+		    QEEM, REEM, dt);
+
+	dt = spTsManager->compute_new_timestep();
+	spTsManager->print_summary();
+
+	matStateCC = newMatStateCC;
+	matStateFC = newMatStateFC;
+	radState = newRadState;
+    }
+}
+
+void testFullP13T::postProcess(const RadiationStateField &radState,
+			       const RadiationStateField &newRadState,
+			       const MatStateCC &matStateCC,
+			       const MatStateCC &newMatStateCC,
+			       const ccsf &electEnergyDepCC,
+			       const ccsf &ionEnergyDepCC,
+			       const ccsf &QRad,
+			       const ccsf &QElectron,
+			       const ccsf &QIon,
+			       const ccsf &QEEM,
+			       const ccsf &REEM,
+			       double dt) const
+{
+    std::ios_base::fmtflags oldOptions = cout.flags(std::ios_base::scientific);
+    
+    ccsf TElec0(spMesh);
+    ccsf TIon0(spMesh);
+    matStateCC.getElectronTemperature(TElec0);
+    matStateCC.getIonTemperature(TIon0);
+
+    ccsf TElec(spMesh);
+    ccsf TIon(spMesh);
+    newMatStateCC.getElectronTemperature(TElec);
+    newMatStateCC.getIonTemperature(TIon);
+
+    if (pdb.verbose)
+    {
+	cout << "newRadState.phi: " << newRadState.phi << endl;
+	cout << "newRadState.F: " << newRadState.F << endl;
+	cout << "TElectron: " << TElec << endl;
+	cout << "TIon: " << TIon << endl;
+    }
+    else
+    {
+	double (*pabs)(double) = std::abs;
+	std::pointer_to_unary_function<double,double> opAbs =
+	    std::ptr_fun(pabs);
+
+	cout << "TElec0 (min), (max): " << min(TElec0, opAbs) << " " <<
+	    max(TElec0, opAbs) << endl;
+	cout << "TElec (min), (max): " << min(TElec, opAbs) << " " <<
+	    max(TElec, opAbs) << endl;
+	cout << "TIon0 (min), (max): " << min(TIon0, opAbs) << " " <<
+	    max(TIon0, opAbs) << endl;
+	cout << "TIon (min), (max): " << min(TIon, opAbs) << " " <<
+	    max(TIon, opAbs) << endl;
+	cout << "radState.phi (min), (max): "
+	     << min(radState.phi, opAbs) << " " <<
+	    max(radState.phi, opAbs) << endl;
+	cout << "newRadState.phi (min), (max): "
+	     << min(newRadState.phi, opAbs) << " "
+	     << max(newRadState.phi, opAbs) << endl;
+    }
+
+    const double dx = spMesh->get_dx();
+    const double dy = spMesh->get_dy();
+    const double dz = spMesh->get_dz();
+    const double nx = spMesh->get_ncx();
+    const double ny = spMesh->get_ncy();
+    const double nz = spMesh->get_ncz();
     
     double volpcell = dx*dy*dz;
     double volume = volpcell*nx*ny*nz;
-    
+
+    cout << endl;
     cout << "volume: " << volume << endl;
     
-    double delta;
-    ccsf temp(spmesh);
-
-    delta = sum(deltaRadEnergy)*volpcell;
-    cout << "deltaRadEnergy: " << delta
-	 << "\trate: " << delta/dt << endl;
-    double radrate = delta/dt;
-
-    delta = sum(electEnergyDep)*volpcell;
-    cout << "electEnergyDep: " << delta
-	 << "\trate: " << delta/dt << endl;
-
-    temp = (TElec - TElect0)*CvElec;
-    delta = sum(temp)*volpcell;
+    const RadiationPhysics radPhys(spMatProp->getUnits());
+    const double c = radPhys.getLightSpeed();
     
+    ccsf deltaRadEnergyCC(spMesh);
+    deltaRadEnergyCC = (newRadState.phi - radState.phi) / c;
+
+    const double deltaRadEnergy = sum(deltaRadEnergyCC)*volpcell;
+    cout << "deltaRadEnergy: " << deltaRadEnergy
+	 << "\trate: " << deltaRadEnergy/dt << endl;
+
+    const double electEnergyDep = sum(electEnergyDepCC)*volpcell;
+    cout << "electEnergyDep: " << electEnergyDep
+	 << "\trate: " << electEnergyDep/dt << endl;
+
+    ccsf CvElec(spMesh);
+    ccsf CvIon(spMesh);
+    matStateCC.getElectronSpecificHeat(CvElec);
+    matStateCC.getIonSpecificHeat(CvIon);
+    
+    // ccsf temp(spMesh);
+    // temp = (TElec - TElec0)*CvElec;
+    // delta = sum(temp)*volpcell;
     // cout << "electEnergyDep (recalc): " << delta
     //      << "\trate: " << delta/dt << endl;
 
-    delta = sum(ionEnergyDep)*volpcell;
-    cout << "  ionEnergyDep: " << delta
-	 << "\trate: " << delta/dt << endl;
+    const double ionEnergyDep = sum(ionEnergyDepCC)*volpcell;
+    cout << "  ionEnergyDep: " << ionEnergyDep
+	 << "\trate: " << ionEnergyDep/dt << endl;
 
-    delta = (sum(deltaRadEnergy) + sum(electEnergyDep) + sum(ionEnergyDep))
-           * volpcell;
-    cout << "Energy rate: " << delta/dt << endl;
+    const double energyDep = deltaRadEnergy + electEnergyDep + ionEnergyDep;
 
-    double qrate = (pdb.Qr + pdb.Qe + pdb.Qi)*volume;
+    cout << "energyDep: " << energyDep
+	 << "\trate: " << energyDep/dt << endl;
 
-    cout << "Volume src: " << qrate << endl;
+    const double inhomosrc = sum(QRad) * volpcell;
+    const double qsrc = inhomosrc + (sum(QElectron) + sum(QIon))*volpcell;
 
-    double brate;
-    brate  = (pdb.src_left + pdb.src_right) * nx*dx * ny*dy;
-    brate += (pdb.src_front + pdb.src_back) * nz*dz * nx*dx;
-    brate += (pdb.src_bottom + pdb.src_top) * ny*dy * nz*dz;
+    cout << "Volume src: " << qsrc << endl;
 
-    cout << "Boundary src: " << brate << endl;
+    double bndsrc;
+    bndsrc  = (pdb.src_left + pdb.src_right) * ny*dy * nz*dz ;
+    bndsrc += (pdb.src_front + pdb.src_back) * nz*dz * nx*dx;
+    bndsrc += (pdb.src_bottom + pdb.src_top) * nx*dx * ny*dy;
 
-    double totsrc = brate+qrate;
-    cout << "Total src: " << totsrc << endl;
+    cout << "Boundary src: " << bndsrc << endl;
 
+    const double externsrc = bndsrc + qsrc;
+    cout << "Total external src: " << externsrc << endl;
+
+    const double timedepsrc = sum(radState.phi) * volpcell / (c*dt);
+    cout << "time dep src: " << timedepsrc << endl;
+    
+    const double timedeprem = sum(newRadState.phi) * volpcell / (c*dt);
+    cout << "time dep removal: " << timedeprem << endl;
+    
+    ccsf sigAbs(spMesh);
+    matStateCC.getSigmaAbsorption(1,sigAbs);
+
+    ccsf temp(spMesh);
     temp = newRadState.phi*sigAbs;
-    double absorption = sum(temp) * volpcell;
+    const double absorption = sum(temp) * volpcell;
     cout << "absorption: " << absorption << endl;
 
-    ccsf planck(spmesh);
-    radPhys.getPlanck(TElec, planck);
-
-    temp = sigAbs*planck;
-    double emission = sum(temp) * 4.0*PhysicalConstants::pi *
-	volpcell;
+    temp = newRadState.phi*REEM;
+    const double emisrem = sum(temp) * volpcell;
+    cout << "emissive removal: " << emisrem << endl;
+    
+    const double emission = sum(QEEM) *	volpcell;
     cout << "emission: " << emission << endl;
 
-    cout << "emission-absorption: " << emission - absorption << endl;
+    // cout << "emission-absorption: " << emission - absorption << endl;
+
+    const double leakage = calcLeakage(newRadState);
+    
+    cout << "leakage (x-y): " << leakage << endl;
+
+    const double totsrc = inhomosrc + bndsrc + timedepsrc + emission;
+    cout << "total radiation sources: " << totsrc << endl;
+
+    const double totrem = leakage + absorption + emisrem + timedeprem;
+    cout << "total radiation removal: " << totrem << endl;
+    
+    const double balance = totsrc - totrem;
+    cout << "Rad only Balance: " << balance << endl;
+
+    const double relbal = balance / totsrc;
+    cout << "Relative Balance: " << relbal << endl;
+
+#if 0
+    std::ofstream ofs("testFullP13T.dat");
+    for (int m=0; m<nz; m++)
+	ofs << m << '\t' << newRadState.phi(0,0,m)
+	    << '\t' << newRadState.F(0,0,m,4)
+	    << '\t' << newRadState.F(0,0,m,5)
+	    << endl;
+#endif
+
+    cout << endl;
+    cout.flags(oldOptions);
+}
+
+double testFullP13T::calcLeakage(const RadiationStateField &radstate) const
+{
+    const double dx = spMesh->get_dx();
+    const double dy = spMesh->get_dy();
+    const double dz = spMesh->get_dz();
+    const double nx = spMesh->get_ncx();
+    const double ny = spMesh->get_ncy();
+    const double nz = spMesh->get_ncz();
 
     double leakage = 0.0;
 
@@ -367,40 +883,39 @@ void testFullP13T::run() const
 	{
 	    if (diffdb.alpha_bottom != 0)
 	    {
-		double phi_bottom =
-		    (pdb.src_bottom -
-		     diffdb.beta_bottom*newRadState.F(k,l,0,4)) /
-		    diffdb.alpha_bottom;
-		leakage += phi_bottom/4.0 + newRadState.F(k,l,0,4)/2.0;
+		double alpha_bottom = diffdb.alpha_bottom;
+		double beta_bottom = diffdb.beta_bottom;
+		double src_bottom = pdb.src_bottom;
+
+		double F_bottom = radstate.F(k,l,0,4);
+		
+		// calculate phi along bottom face
+		double phi_bottom = (src_bottom - beta_bottom*F_bottom) /
+		    alpha_bottom;
+		
+		leakage += phi_bottom/4.0 + F_bottom/2.0;
+		// leakage += alpha_bottom*phi_bottom - beta_bottom*F_bottom;
 	    }
 
 	    if (diffdb.alpha_top != 0)
 	    {
-		double phi_top = (pdb.src_top -
-				  diffdb.beta_top*newRadState.F(k,l,nz-1,5)) /
-		    diffdb.alpha_top;
-		leakage += phi_top/4.0 + newRadState.F(k,l,nz-1,5)/2.0;
+		double alpha_top = diffdb.alpha_top;
+		double beta_top = diffdb.beta_top;
+		double src_top = pdb.src_top;
+
+		double F_top = radstate.F(k,l,nz-1,5);
+		
+		// calculate phi along top face
+		double phi_top = (src_top - beta_top*F_top) / alpha_top;
+
+		leakage += phi_top/4.0 + F_top/2.0;
+		// leakage += alpha_top*phi_top - beta_top*F_top;
 	    }
 	}
     }
     leakage *= dx*dy;
 
-    cout << "leakage (x-y): " << leakage << endl;
-    
-    double balance = radrate + absorption + leakage - totsrc;
-    cout << "radrate + absorption + leakage: " <<
-	radrate + absorption + leakage << endl;
-    cout << "totsrc: " << totsrc << endl;
-    cout << "Rad only Balance: " << balance << endl;
-    double relbal = balance / radrate;
-    cout << "Relative Balance: " << relbal << endl;
-
-    std::ofstream ofs("testFullP13T.dat");
-    for (int m=0; m<nz; m++)
-	ofs << m << '\t' << newRadState.phi(0,0,m)
-	    << '\t' << newRadState.F(0,0,m,4)
-	    << '\t' << newRadState.F(0,0,m,5)
-	    << endl;
+    return leakage;
 }
 
 //---------------------------------------------------------------------------//

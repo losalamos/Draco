@@ -1,4 +1,7 @@
 #include "3T/testP13T/testFullP13T.hh"
+
+#ifndef MARSHAK_MATPROPS
+
 #include "matprops/InterpedMaterialProps.t.cc"
 
 typedef Mesh_XYZ MT;
@@ -64,3 +67,5 @@ MP::interpolate<T1, T2>(const MP::MaterialStateField<T1> &,
 
 #undef T1
 #undef T2
+
+#endif

@@ -3,11 +3,12 @@
 #
 
 $P13T
-	nsteps=1 dt=1.0e6 P1TauMultiplier=0.0 IsCoupledMaterial=false 
-	opacityFile="opac.const.inp" materialName="H" materialId=1 abar=1.0 
-	Te=1.0 Ti=1.0 rho=10.0 Qr=0.000000 Qe=0.000000 Qi=0.000000 
+	verbose=true nsteps=10 dt=1.0e-4 dtMin=1.0e-4 dtMax=1.0e-1 
+	P1TauMultiplier=0.0 IsCoupledMaterial=true opacityFile="opac.inp" 
+	materialName="H" materialId=1 abar=1.0 kappa0=10 kappaPower=3 
+	Te=1.0e-5 Ti=1.0e-5 rho=3.0 Qr=1.0 Qe=0.000000 Qi=0.000000 Qloc=50 
 	src_left=0.000000 src_right=0.000000 src_front=0.000000 
-	src_back=0.000000 src_bottom=1.0 src_top=0.000000 units=astro 
+	src_back=0.000000 src_bottom=0.000000 src_top=0.000000 units=astro 
 $end
 
 
@@ -20,8 +21,8 @@ $end
 
 
 $mesh
-	ncx=1 ncy=1 ncz=100 xmin=-.5 xmax=.5 ymin=-.5 ymax=.5 zmin=0.0 
-	zmax=1.0 dump_indicies=no dump_coords=no 
+	ncx=1 ncy=1 ncz=101 xmin=-.5 xmax=.5 ymin=-.5 ymax=.5 zmin=0.0 
+	zmax=10.0 dump_indicies=no dump_coords=no 
 $end
 
 
@@ -30,7 +31,7 @@ $pcg
 	nout=6 levout=3 itsmax=1000 malloc=0 nwi=10000 nwf=10000000 ntest=-1 
 	iqside=1 iuinit=-1 needrc=0 ns1=10 ns2=10 ickstg=-1 iuexac=0 idot=1 
 	istats=0 ctimer=0.000000 rtimer=0.000000 flopsr=0.000000 
-	zeta=1.0e-16 alpha=0.1 
+	zeta=1.0e-14 alpha=0.1 
 	
 	itmeth=11 
 	

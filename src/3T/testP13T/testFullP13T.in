@@ -1,18 +1,26 @@
 $P13T
+	verbose=true
 	units=astro
-	nsteps=1
-	dt=1.0e6
+	nsteps=10
+	dt=1.0e-4
+	dtMin=1.0e-4
+	dtMax=1.0e-1
+	P1TauMultiplier=1.0
 	P1TauMultiplier=0.0
-	IsCoupledMaterial=false
+	IsCoupledMaterial=true
 	opacityFile="opac.const.inp"
+	opacityFile="opac.inp"
 	materialName="H"
 	materialId=1
 	abar=1.0
-	Te=1.0
-	Ti=1.0
-	rho=10.0
-	src_bottom=1.0
-#	Qr = 1.0
+	kappa0=10
+	kappaPower=3
+	Te=1.0e-5
+	Ti=1.0e-5
+	rho=3.0
+#	src_bottom=1.0
+	Qr = 1.0
+	Qloc = 50
 $
 
 $diffusion
@@ -23,10 +31,10 @@ $diffusion
 $
 
 $mesh
-	ncx=1 ncy=1 ncz=100
+	ncx=1 ncy=1 ncz=101
 	xmin=-.5 xmax=.5
 	ymin=-.5 ymax=.5
-	zmin=0.0 zmax=1.0
+	zmin=0.0 zmax=10.0
 $
 
 $pcg
@@ -36,11 +44,13 @@ $pcg
 	levout=4
 	levout=0
 	levout=3
+#	levout=2
 	itsmax=1000
 	nwi=10000
 	nwf=10000000
 	ns2=10
 	zeta=1.0e-16
+	zeta=1.0e-14
 	alpha=0.1
 $
 
