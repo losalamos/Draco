@@ -78,6 +78,7 @@ namespace XTM {
      typedef MT::fcdsf fcdsf;
      typedef MT::fcdif fcdif;
      typedef MT::bssf  bssf;
+     typedef MT::ncvsf ncvsf;
 
      typedef MT::cctf  < std::vector<double  > > ccvsf;
      typedef MT::fcdtf < std::vector<double  > > fcdvsf;
@@ -139,7 +140,8 @@ namespace XTM {
 		   MatStateCC &matStateCC, MatStateFC &matStateFC,
 		   RadiationStateField &radState,
 		   ccsf &electEnergyDep, ccsf &ionEnergyDep,
-		   const ccsf &QRad, const ccsf &QElectron, const ccsf &QIon,
+		   ncvsf &momentumDeposition,
+                   const ccsf &QRad, const ccsf &QElectron, const ccsf &QIon,
 		   const bssf &alpha, const bssf &beta, const bssf &bSrc) const;
 
      void getMatProp();

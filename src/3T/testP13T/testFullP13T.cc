@@ -626,6 +626,7 @@ void testFullP13T<UMCMP>::run() const
     bssf bSrc(spMesh);
     ccsf electEnergyDep(spMesh);
     ccsf ionEnergyDep(spMesh);
+    ncvsf momentumDeposition(spMesh);
 
     if (tdb.Qloc < 0)
     {
@@ -692,7 +693,7 @@ void testFullP13T<UMCMP>::run() const
     for (int cycle = 1; cycle <= ncycles; cycle++)
     {
 	timestep(time, dt, cycle, matStateCC, matStateFC, radState,
-		 electEnergyDep, ionEnergyDep,
+		 electEnergyDep, ionEnergyDep, momentumDeposition,
 		 QRad, QElectron, QIon, alpha, beta, bSrc);
     }
 }
@@ -703,7 +704,8 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 				   MatStateFC &matStateFC,
 				   RadiationStateField &radState,
 				   ccsf &electEnergyDep, ccsf &ionEnergyDep,
-				   const ccsf &QRad, const ccsf &QElectron,
+				   ncvsf &momentumDeposition,
+                                   const ccsf &QRad, const ccsf &QElectron,
 				   const ccsf &QIon, const bssf &alpha,
 				   const bssf &beta, const bssf &bSrc) const
 {
@@ -724,6 +726,7 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     ccsf coupleEI(spMesh);
     ccsf kappaElec(spMesh);
     ccsf kappaIon(spMesh);
+    ncvsf velocity(spMesh);
     
     matStateCC.getElectronTemperature(TElec);
     matStateCC.getIonTemperature(TIon);
@@ -733,6 +736,9 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     matStateCC.getElectronIonCoupling(coupleEI);
     matStateCC.getElectronConductionCoeff(kappaElec);
     matStateCC.getIonConductionCoeff(kappaIon);
+    ncvsf::value_type onevec;
+    onevec = 1.;
+    velocity = onevec;
 
     if (tdb.verbose)
     {
@@ -783,8 +789,10 @@ void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
     ccsf REEM(spMesh);
 	
     spP13T->solve3T(newRadState, QEEM, REEM,
-		    electEnergyDep, ionEnergyDep, TElec, TIon,
-		    *spDiffSolver, dt, matStateCC, matStateFC, radState,
+		    electEnergyDep, ionEnergyDep, momentumDeposition, 
+                    TElec, TIon,
+		    *spDiffSolver, dt, matStateCC, matStateFC, velocity,
+                    radState,
 		    QRad, QElectron, QIon,
 		    alpha, beta, bSrc);
 
