@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <list>
 
 //---------------------------------------------------------------------------//
 // Compute and store the info which describes the messaging pattern required
@@ -120,13 +121,17 @@ void Banded_Matrix<T,N>::compute_message_routing()
 
     SPINLOCK( cout << node() << " has " << senders << " senders.\n" );
 
+// Resize some things that require one element per sender.
+
     sender_node.redim( senders );
     sender_nels.redim( senders );
     sender_head.redim( senders );
 
     rreq.redim( senders );
 
-// Now go through and fill these up.
+// Now walk through the senders, and record each sender's node id, the number 
+// of elements they'll be sending us, and the location in the cvdata buffer
+// where that sender's first element will go.
 
     int s=0;
     for( int p=0; p < nodes(); p++ )
@@ -134,12 +139,293 @@ void Banded_Matrix<T,N>::compute_message_routing()
 	{
 	    sender_node(s) = p;
 	    sender_nels(s) = active_cells_owned_by(p);
-	    sender_head(s) = (s == 0 ? 0 : sender_head(s-1) + sender_nels(s) );
+	    sender_head(s) = ( s == 0 ?
+			       0 :
+			       sender_head(s-1) + sender_nels(s-1) );
 	    s++;
 	}
 
     Check( s == senders );
+    Check( senders == 0 ||
+	   sender_head(senders-1) + sender_nels(senders-1) == ncells );
 
+// Now check to see if we are sending data to ourself.  If so, annotate this
+// correctly so that the send/receive code can use copies instead of
+// messaging for sending data to self.
+
+    self_sender_id = -1;
+
+    for( int s=0; s < senders; s++ )
+	if (sender_node(s) == node()) self_sender_id = s;
+
+    cout << node() << " set self_sender_id\n" << flush;
+
+// Okay, the above basically represents the determination of who is sending
+// us data.  Now we need the opposite, who we are sending data to, or who
+// receives data from us.
+
+// We're gonna need some buffer space of size nrp.  But nrp isn't always the
+// same on all nodes, so fetch the max.
+
+    int max_nrp = nrp;
+    gmax( max_nrp );
+
+    Mat1<int> global_index_buf( max_nrp );
+
+    receivers = 0;
+    int max_noc = 0;
+
+    std::list<rcvr_tag *> rcvr_list;
+
+// Now loop through all the nodes.  Each one in trun listens to the
+// requirements articulated by the others.
+
+    for( int p=0; p < nodes(); p++ )
+    {
+	gsync();
+
+	if (p == node())
+	{
+	// Okay, the other nodes are going to tell us what they need from
+	// us.
+	    cout << p << " ready to listen." << endl;
+
+	    for( int n=0; n < nodes(); n++ )
+	    {
+		if (n == node()) {
+		// Fill up struct for ourself.
+
+		    int noc = std::count( &occupancy(start_row(p)),
+					  &occupancy(start_row(p)) + nrows(p),
+					  1 );
+
+		    cout << p << " needs to send " << noc << " to self." << endl;
+
+		    Check ( 0 <= noc && noc <= max_nrp );
+
+		    if (noc > 0)
+		    {
+			receivers++;
+			max_noc = std::max( noc, max_noc );
+			
+		    // Build the list of indices we need from ourself.
+
+			int ndx = 0;
+			for( int i = nro; i < nro + nrp; i++ )
+			    if (occupancy(i))
+				global_index_buf(ndx++) = i;
+
+			Check( ndx == noc );
+
+			cout << node() << " pushing new rcvr_tag( " << n
+			     << ", " << noc << ", "
+			     << global_index_buf(0) << "  "
+			     << global_index_buf(1) << "  " << endl;
+
+			rcvr_list.push_back(
+			    new rcvr_tag( n, noc, global_index_buf.begin() )
+			    );
+		    }
+		}
+		else {
+		// Tell the next processor that we are ready to hear his
+		// requirements.  This may seem kind of dumb, but experience
+		// has shown it helps a lot to use handshaking in situations
+		// like this.
+
+		    int dummy=0;
+		    Send( dummy, n );
+
+		    int noc;
+		    Recv( noc, n );
+
+		    Check( noc >= 0 );
+
+		    cout << p << " needs to send " << noc << " to " << n << endl;
+
+		    if (noc > 0)
+		    {
+			receivers++;
+			max_noc = std::max( noc, max_noc );
+
+		    // He needs data from us,  Now he's gonna tell us which
+		    // elements exactly it is that he needs from us.
+
+			int nn = Recv( global_index_buf.begin(), noc, n );
+			Check( nn == noc );
+
+			rcvr_list.push_back(
+			    new rcvr_tag( n, noc, global_index_buf.begin() )
+			    );
+
+			for( int k=0; k < nn; k++ )
+			    cout << node() << " needs to send index "
+				 << global_index_buf(k) << " to node "
+				 << n << endl;
+
+		    }
+		}
+	    }
+	}
+	else {
+	    if (p == node()) continue; // Nothing to do here.
+
+	// Wait for processor p to say he's listening to us.  This seems
+	// dumb, but prior experience with message passing implementations
+	// indicates that we can easily swamp the inbox if we don't do a
+	// little handshaking in situations like this.
+
+	    int dummy;
+	    Recv( dummy, p );
+
+	// Tell processor p how many elements we need to get from him.
+
+	    int noc = std::count( &occupancy(start_row(p)),
+				  &occupancy(start_row(p)) + nrows(p), 1 );
+
+	    Check ( 0 <= noc && noc <= max_nrp );
+
+	    Send( noc, p );
+
+	    if (noc > 0)
+	    {
+	    // Build the list of indices we need from him ...
+
+		int n = 0;
+		for( int i = start_row(p);
+		     i < start_row(p) + nrows(p); i++ )
+		    if (occupancy(i))
+			global_index_buf(n++) = i;
+
+		Check( n == noc );
+
+		cout << node() << " telling " << p << " that we need "
+		     << noc << " els with indices "
+		     << global_index_buf(0) << "  "
+		     << global_index_buf(1) << "  " << endl;
+// 		     << global_index_buf(2) << "  "
+// 		     << global_index_buf(3) << "  " << endl;
+
+	    // and send it over.
+
+		Send( global_index_buf.begin(), noc, p );
+	    }
+	}
+    }
+
+    if (verbose)
+	SPINLOCK( cout << node() << " has " << receivers
+		  << " receivers, with max_noc=" << max_noc << endl );
+
+// Okay, by this point, rcvr_list has the prescription of what data has to
+// get shipped where.  Now we just need to build up the receiver structs
+// based on this info.
+
+    receiver_node.redim( receivers );
+    receiver_nels.redim( receivers );
+    receiver_ndxs = Mat2<int>( max_noc, receivers );
+    receiver_data = Mat2<T>( max_noc, receivers );
+    sreq.redim( receivers );
+
+    int rcvr = 0;
+    for( std::list<rcvr_tag *>::iterator x = rcvr_list.begin();
+	 x != rcvr_list.end(); x++ )
+    {
+	cout << node() << " rcvr=" << rcvr << " x: node=" << (*x)->node
+	     << " nels=" << (*x)->nels << "  "
+	     << (*x)->indexes[0] << "  "
+	     << (*x)->indexes[1] << "  "
+	     << endl;
+
+    // Stuff the data for this recevier into our receiver structs.
+	receiver_node(rcvr) = (*x)->node;
+	receiver_nels(rcvr) = (*x)->nels;
+	for( int i=0; i < receiver_nels(rcvr); i++ )
+	    receiver_ndxs(i,rcvr) = (*x)->indexes[i];
+
+	delete *x;		// We're done, wipe it away.
+
+	rcvr++;
+    }
+
+    if (verbose) emit_receiver_structs();
+
+// Finally, check to see if we are receiving data from ourself.  If so,
+// annotate this correctly so that the send/receive code can use copies
+// instead of messaging for sending data to self.
+
+    self_receiver_id = -1;
+
+    for( int r=0; r < receivers; r++ )
+	if (receiver_node(r) == node()) self_receiver_id = r;
+
+    cout << node() << " set self_receiver_id\n" << flush;
+
+// Now we need to work on setting up the start_bands, nbands, and cvindex
+// arrays. 
+
+    nbands = 0;
+
+// Loop over rows.
+
+    for( int r=0; r < nrp; r++ )
+    {
+	int sb, eb;
+
+    // Find the starting band, that is, the first diagnoal which is on
+    // processor for this row.
+
+	for( sb=0; sb < N; sb++ )
+	{
+	    int c = nro + diag_offset[sb] + r;
+	    if (0 <= c) {
+		start_band(r) = sb;
+		break;
+	    }
+	}
+
+    // Now count the bands which are on processor.
+
+	for( eb=sb; eb < N; eb++ )
+	{
+	    int c = nro + diag_offset[eb] + r;
+	    if (c >= nrt)
+		break;
+	}
+
+	nbands(r) = eb - sb;
+
+	cout << node() << " row=" << nro+r
+	     << " start_band=" << start_band(r)
+	     << " nbands=" << nbands(r) << endl;
+    }
+
+// Okay, we have the active bands per row calculated.  Now we should be able
+// to calculate the indexes into the cvdata buffer, which will be needed by
+// each row.
+
+    for( int r=0; r < nrp; r++ )
+	for( int ib=0; ib < nbands(r); ib++ ) {
+	    int b = start_band(r) + ib;
+	    int c = nro + diag_offset[b] + r;
+	    cvindex(b,r) = local_index(c);
+	}
+
+// Let's print it out, just for fun.
+
+    {
+	cout << flush;
+	HTSyncSpinLock h;
+
+	cout << node() << " dumping cvindex:" << endl;
+	for( int r=0; r < nrp; r++ ) {
+	    for( int b=0; b < N; b++ )
+		cout << cvindex(b,r) << " ";
+	    cout << endl;
+	}
+    }
+
+#if 0
 // Now we need to deduce which processors we will need to send elements from
 // our column vector to, as well as the inverse--which processors will be
 // sending us data from their column vector.  
@@ -167,11 +453,10 @@ void Banded_Matrix<T,N>::compute_message_routing()
 	    ov( i, node() ) = occupancy(i);
     }
 
-//     if (node()==0) {
     {
 	HTSyncSpinLock h;
 	
-	cout << "Ocupancy vecgtors for node " << node() << endl;
+	cout << "Ocupancy vectors for node " << node() << endl;
 
 	for( int n=0; n < nodes(); n++ ) {
 	    for( int i=0; i < nrt; i++ )
@@ -262,7 +547,7 @@ void Banded_Matrix<T,N>::compute_message_routing()
     }
 
     cout << node() << " done building receiver structs." << endl;
-
+#endif
 //     if (verbose) emit_receiver_structs();
 
 // Okay, now we need the inverse map.  In the above we calculated what others 
@@ -335,8 +620,11 @@ void Banded_Matrix<T,N>::initiate_sends( const T *pd )
     {
     // Pack data into send buffers.
 
+    // Note that receiver_ndxs has /global/ indexes, but pd is the local data 
+    // vector, so we have to convert the global indexes to local indexes.
+
 	for( int i=0; i < receiver_nels(r); i++ )
-	    receiver_data[r][i] = pd[ receiver_ndxs[r][i] ];
+	    receiver_data(i,r) = pd[ receiver_ndxs(i,r) - nro ];
 
     // But don't send message to ourselves.
 
@@ -345,7 +633,7 @@ void Banded_Matrix<T,N>::initiate_sends( const T *pd )
 
     // Post async send to other processor.
 	SendAsync( sreq[r],
-		   receiver_data[r], receiver_nels(r),
+		   &receiver_data(0,r), receiver_nels(r),
 		   receiver_node(r) );
     }
 }
@@ -362,6 +650,7 @@ void Banded_Matrix<T,N>::complete_sends()
 
     for( int r=0; r < receivers; r++ )
 	sreq[r].wait();
+
 }
 
 //---------------------------------------------------------------------------//
@@ -376,6 +665,12 @@ void Banded_Matrix<T,N>::initiate_receives()
     for( int s=0; s < senders; s++ )
     {
 	if (sender_node(s) == node()) continue;
+
+	cout << node() << " posting recv for sender " << s
+	     << " s_node=" << sender_node(s) << endl;
+	cout << "s_head=" << sender_head(s)
+	     << " s_nels=" << sender_nels(s) << endl;
+
 	RecvAsync( rreq(s),
 		   &cvdata( sender_head(s) ), sender_nels(s),
 		   sender_node(s) );
@@ -402,7 +697,8 @@ void Banded_Matrix<T,N>::complete_receives()
 	// Copy our own data into place.
 	    for( int i=0; i < receiver_nels( self_receiver_id ); i++ )
 		cvdata( sender_head( self_sender_id ) + i ) =
-		    receiver_data[ self_receiver_id ][i];
+// 		    receiver_data[ self_receiver_id ][i];
+		    receiver_data(i,self_receiver_id);
 
 	    cout << node() << " done copying own data into place." << endl;
 	}
@@ -490,8 +786,22 @@ void Banded_Matrix<T,N>::multiply( const ColumnVector& x,
     complete_sends();		// From the previous call...
 
     initiate_receives();
-    initiate_sends( b.begin() );
+    initiate_sends( x.begin() );
     complete_receives();
+
+    gsync();
+
+    if (verbose)
+    {
+	cout << flush;
+	HTSyncSpinLock h;
+
+	cout << "Node " << node() << " dumping sparse data:\n";
+	cout << "cvdata: size=" << cvdata.size() << endl;
+	for( int i=0; i < cvdata.size(); i++ )
+	    cout << cvdata(i) << " ";
+	cout << endl;
+    }
 
 // Multiply the data.
 
@@ -502,6 +812,9 @@ void Banded_Matrix<T,N>::multiply( const ColumnVector& x,
 
     // Figure out which bands we're working with.
 	int sb = start_band(r), nb = nbands(r);
+
+	cout << node() << " processing row " << r
+	     << " sb=" << sb << " nb=" << nb << endl;
 
     // Now loop over the particpating bands, and accumulate the product.
 	for( int ib = sb; ib < sb+nb; ib++ )

@@ -47,10 +47,8 @@ class Banded_Matrix
 
     int receivers;
     Mat1<int> receiver_node, receiver_nels;
-//    Mat2<int> receiver_ndxs;
-    int **receiver_ndxs;
-//     Mat2<T>   receiver_data;
-    T **receiver_data;
+    Mat2<int> receiver_ndxs;
+    Mat2<T>   receiver_data;
     Mat1<C4::C4_Req> sreq;
 
     int self_receiver_id, self_sender_id;
@@ -60,6 +58,18 @@ class Banded_Matrix
     Mat1<C4::C4_Req> rreq;
 //     Mat2<int> sender_ndxs;
 //     Mat2<T>   sender_data;
+
+    struct rcvr_tag {
+	int node;
+	int nels;
+	Mat1<int> indexes;
+
+	rcvr_tag( int node_, int nels_, int *indexes_ )
+	    : node(node_), nels(nels_), indexes(nels)
+	{
+	    std::copy( indexes_, indexes_ + nels, indexes.begin() );
+	}
+    };
 
   public:
     template<class Decomposition_DB>
