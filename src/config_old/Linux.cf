@@ -36,7 +36,7 @@ LAPACK_LIB	= -llapack -lblas -lf2c
 ifeq ($(cxx),KCC)
 
 CC	= gcc
-CXX	= KCC -x --no_implicit_include
+CXX	= KCC --one_per
 cmplr	= kai
 
 ifdef strict
@@ -75,16 +75,12 @@ SYS_LIBS = -lmpi
 endif
 
 lib_cmd	:= $(CXX) -o
-#ifdef nj
-#ifneq ($(kcc),old)
-#lib_cmd	:= $(CXX) --parallel_build $(nj) -o
-#SYS_LINK_FLAGS	:= --parallel_build $(nj)
-#else
-#lib_cmd	:= $(CXX) -o
-#endif
-#else
-#lib_cmd	:= $(CXX) -o
-#endif
+ifdef nj
+lib_cmd	:= $(CXX) --parallel_build $(nj) -o
+SYS_LINK_FLAGS	:= --parallel_build $(nj)
+else
+lib_cmd	:= $(CXX) -o
+endif
 
 ifndef opt
 opt	= g
@@ -126,6 +122,94 @@ endif
 CXX	+= $(cxx_opt)
 
 endif				# Photon C++
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+# Portland Group
+
+ifeq ($(cxx),pgi)
+
+CC	= pgcc
+CXX	= pgCC --no_implicit_include
+cmplr	= pgi
+
+MAKEDEPEND	= $(CXX) -M
+CXX_DEPEND_FLAG	= $(CXXFLAGS)
+
+preinstantiate	:= yes
+
+kcc_deps := yes
+
+CXX	+= --dependencies
+
+CXX2	= mv $*.d .dkcc.$*_$(env)
+
+INSTANTIALYZER	+= -m ansi
+FIXDEPS	+= -p
+
+ifeq ($(c4),no)
+#SYS_FLAGS = -DNOMPI
+comm	:=
+else
+comm	:= c4
+SYS_FLAGS = 
+SYS_LIBS = -lmpi
+endif
+
+lib_cmd	:= $(CXX) -o
+#ifdef nj
+#ifneq ($(kcc),old)
+#lib_cmd	:= $(CXX) --parallel_build $(nj) -o
+#SYS_LINK_FLAGS	:= --parallel_build $(nj)
+#else
+#lib_cmd	:= $(CXX) -o
+#endif
+#else
+#lib_cmd	:= $(CXX) -o
+#endif
+
+ifndef opt
+opt	= g
+endif
+
+ifeq ($(opt),g)
+optns		= g
+cxx_opt         = -g
+shared		:= no
+endif
+
+ifeq ($(opt),0)
+optns		= o0
+cxx_opt		= +K1 -O0 --inline_keyword_space_time=0.0 --inline_auto_space_time=0.0
+shared		:= no
+endif
+
+ifeq ($(opt),1)
+optns		= o1
+DBC		= 1
+#ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K1 -O1
+endif
+
+ifeq ($(opt),2)
+optns		= o2
+DBC		= 0
+#ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K2 -O2
+endif
+
+ifeq ($(opt),3)
+optns		= o3
+DBC		= 0
+#ASSERT_FLAG	= -DNOASSERT
+cxx_opt		= +K3 -O3
+endif
+
+CXX	+= $(cxx_opt)
+
+endif				# Portland Group
+#-----------------------------------------------------------------------------#
+
 
 ASSERT_FLAG = -DDBC=$(DBC)
 
