@@ -16,12 +16,15 @@
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
 #include "../Release.hh"
+#include "../Global.hh"
 #include "mc/Topology.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/Comm_Patterns.hh"
+#include "mc/RZWedge_Mesh.hh"
+#include "mc/Sampler.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
@@ -40,11 +43,14 @@ using rtt_imc::Mesh_Operations;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Opacity;
+using rtt_mc::global::soft_equiv;
+using rtt_mc::sampler::sample_general_linear;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::RZWedge_Mesh;
 using rtt_mc::Comm_Patterns;
 using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
@@ -53,6 +59,10 @@ using rtt_dsxx::SP;
 // passing condition
 bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
+
+//===========================================================================//
+// OS_MESH SPECIALIZATION
+//===========================================================================//
 
 //---------------------------------------------------------------------------//
 // Test T4 slope tilt
@@ -215,6 +225,134 @@ void T4_slope_test_DD()
     // we can assume that sample_pos_tilt is also correct
 }
 
+//===========================================================================//
+// RZWEDGE_MESH SPECIALIZATION
+//===========================================================================//
+
+void T4_slope_test_AMR()
+{
+    // make an AMR mesh
+    SP<RZWedge_Mesh> mesh = rtt_imc_test::make_RZWedge_Mesh_AMR(30.0);
+
+    // make a full replication topology
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+
+    // make a Mat_State
+    RZWedge_Mesh::CCSF<double> temps(mesh);
+    for (int i = 1; i <= 3; i++)
+	temps(i) = 1.0;
+    for (int i = 4; i <= 6; i++)
+	temps(i) = 2.0;
+    for (int i = 7; i <= 9; i++)
+	temps(i) = 3.0;
+    SP<Mat_State<RZWedge_Mesh> > mat(new Mat_State<RZWedge_Mesh>
+				     (temps, temps, temps, temps, "x"));
+
+    // make a comm_patterns
+    SP<Comm_Patterns> cp(new Comm_Patterns());
+    cp->calc_patterns(topology);
+    
+    // Make Mesh_Operations instance
+    Mesh_Operations<RZWedge_Mesh> mesh_op(mesh, mat, topology, cp);
+
+    // test values of slopes
+    RZWedge_Mesh::CCVF<double> slopes = mesh_op.get_t4_slope();
+    if (slopes.size() != 3)                  ITFAILS;
+    if (slopes.size(1) != mesh->num_cells()) ITFAILS;
+    if (slopes.size(2) != mesh->num_cells()) ITFAILS;
+    if (slopes.size(3) != mesh->num_cells()) ITFAILS;
+
+    for (int i = 1; i <= mesh->num_cells(); i++)
+	if (!soft_equiv(slopes(2, i), 0.)) ITFAILS;
+
+    // check values
+    if (!soft_equiv(slopes(1, 1), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(1, 2), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(1, 3), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(1, 4), 15.))            ITFAILS;
+    if (!soft_equiv(slopes(1, 5), 15.))            ITFAILS;
+    if (!soft_equiv(slopes(1, 6), 64.))            ITFAILS;
+    if (!soft_equiv(slopes(1, 7), 53.3333, 1e-4))  ITFAILS;
+    if (!soft_equiv(slopes(1, 8), 130.0))          ITFAILS;
+    if (!soft_equiv(slopes(1, 9), 0.))             ITFAILS;
+
+    if (!soft_equiv(slopes(3, 1), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(3, 2), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(3, 3), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(3, 4), 0.))             ITFAILS;
+    if (!soft_equiv(slopes(3, 5), 21.6667, 1e-4))  ITFAILS;
+    if (!soft_equiv(slopes(3, 6), 64.))            ITFAILS;
+    if (!soft_equiv(slopes(3, 7), 130.0))          ITFAILS;
+    if (!soft_equiv(slopes(3, 8), 43.3333, 1e-4))  ITFAILS;
+    if (!soft_equiv(slopes(3, 9), 0.))             ITFAILS;
+
+    // test sampling in cell 6
+
+    // make two identical random number objects
+    Rnd_Control rcon(39567);
+    Sprng ran1 = rcon.get_rn(10);
+    Sprng ran2 = rcon.get_rn(10);
+    if (ran1.ran() != ran2.ran()) ITFAILS;
+
+    // sample by hand
+    vector<double> ref(3);
+    {    
+	// get x-dimension cell extents
+	double lox       = 1.0;
+	double hix       = 1.5;
+	double half_delx = 0.5 * (hix - lox);
+
+	// calculate weighting function values at x-dimension cell extents
+	double half_delw = 64 * half_delx;
+	double low_w     = 16 - half_delw;
+	double high_w    = 16 + half_delw;
+
+	// calculate posititve y-values corresponding to x-dimension cell
+	// extents
+	double loy = lox * .267949;
+	double hiy = hix * .267949;
+
+	// calc extents of function (wt-fn * half_y_value) from which to
+	// sample
+	double lof = loy * low_w;
+	double hif = hiy * high_w;
+	
+	// sample x
+	ref[0] = sample_general_linear(ran1, lox, hix, lof, hif);
+
+	// calculate y-values corresponding to sampled x-value
+	double pos_y = ref[0] * .267949;
+	double neg_y = -pos_y;
+
+	// sample y uniformly
+	ref[1] = neg_y + ran1.ran() * (pos_y - neg_y);
+
+	// get z-dimension cell extents
+	double loz       = 2.0;
+	double hiz       = 2.5;
+	double half_delz = 0.5 * (hiz - loz);
+	
+	// calculate weighting function at z-dimension cell extents
+	half_delw = 64 * half_delz;
+	low_w     = 16 - half_delw;
+	high_w    = 16 + half_delw;
+
+	// calculate extents of function from which to sample
+	lof = loz * low_w;
+	hif = hiz * high_w;
+
+	// sample z
+	ref[2] = sample_general_linear(ran1, loz, hiz, lof, hif);
+    }
+    
+    // sample position using mesh_op
+    vector<double> r = mesh_op.sample_pos_tilt(6, mat->get_T(6), ran2);
+    if (r.size() != ref.size()) ITFAILS;
+    
+    for (int i = 0; i < 2; i++)
+	if (!soft_equiv(r[i], ref[i], 1e-6)) ITFAILS;
+}
+
 //---------------------------------------------------------------------------//
 // main
 
@@ -235,9 +373,12 @@ int main(int argc, char *argv[])
 
     try
     {
-	// run test on each processor
+	// run test on each processor for OS_Mesh
 	T4_slope_test();
 	T4_slope_test_DD();
+
+	// run test on each processor for RZWedge_Mesh
+	T4_slope_test_AMR();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -15,6 +15,7 @@
 #include "mc/OS_Mesh.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/General_Topology.hh"
+#include "mc/RZWedge_Mesh.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
@@ -196,6 +197,12 @@ std::vector<std::vector<int> > IMC_Interface::get_defined_surcells() const
 {
     return builder->get_defined_surcells();
 }
+
+//===========================================================================//
+// MAKE AN AMR RZWEDGE_MESH
+//===========================================================================//
+
+rtt_dsxx::SP<rtt_mc::RZWedge_Mesh> make_RZWedge_Mesh_AMR(double);
 
 //===========================================================================//
 // SEND/RECEIVE GENERAL DD TOPOLOGY

@@ -8,6 +8,7 @@
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
+#include "mc/RZWedge_Mesh.hh"
 #include "../Opacity_Builder.t.hh"
 #include "../Opacity.t.hh"
 #include "../Mat_State.t.hh"
@@ -16,6 +17,7 @@
 namespace rtt_imc
 {
 
+using rtt_mc::RZWedge_Mesh;
 using rtt_mc::OS_Mesh;
 using std::ostream;
 
@@ -27,6 +29,8 @@ template ostream& operator<<(ostream &, const Opacity<OS_Mesh> &);
 
 template class Mat_State<OS_Mesh>;
 template ostream& operator<<(ostream &, const Mat_State<OS_Mesh> &);
+
+template class Mat_State<RZWedge_Mesh>;
 
 } // end of namespace rtt_imc
 

@@ -11,9 +11,11 @@
 
 #include "Mesh_Operations.hh"
 #include "mc/Parallel_Data_Operator.hh"
+#include "mc/AMR_Layout.hh"
 #include "c4/global.hh"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 namespace rtt_imc
 {
@@ -168,7 +170,7 @@ void Mesh_Operations<OS_Mesh>::build_replication_T4_slope(SP_Mat_State state)
 		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
 		    mesh.dim(coord, cell); 
 		if (t4_high < 0.0)
-		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell);
 	    }
 
 	    // no conditions on calculating slope; just do it
@@ -192,6 +194,22 @@ void Mesh_Operations<OS_Mesh>::build_replication_T4_slope(SP_Mat_State state)
 
 		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
 		    mesh.dim(coord, cell);
+
+		// put checks to make sure that slope on high and low ends
+		// are not too large
+		t4_high = t4 + t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		t4_low  = t4 - t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		Check (t4_high >= 0.0 || t4_low >= 0.0);
+
+		// if high is less than 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell); 
+		else if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2. * t4 / mesh.dim(coord, cell);
 	    }
 	}
     }
@@ -340,7 +358,7 @@ void Mesh_Operations<OS_Mesh>::build_DD_T4_slope(SP_Mat_State state,
 		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
 		    mesh.dim(coord, cell); 
 		if (t4_high < 0.0)
-		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell);
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell);
 	    }
 
 	    // no conditions on calculating slope; just do it
@@ -359,8 +377,461 @@ void Mesh_Operations<OS_Mesh>::build_DD_T4_slope(SP_Mat_State state,
 
 		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
 		    mesh.dim(coord, cell);
+
+		// put checks to make sure that slope on high and low ends
+		// are not too large
+		t4_high = t4 + t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		t4_low  = t4 - t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		Check (t4_high >= 0.0 || t4_low >= 0.0);
+
+		// if high is less than 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell); 
+		else if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2. * t4 / mesh.dim(coord, cell);
 	    }
 	}
+    }
+}
+
+//===========================================================================//
+// RZWEDGE_MESH SPECIALIZATIONS
+//===========================================================================//
+
+using rtt_mc::RZWedge_Mesh;
+using rtt_mc::AMR_Layout;
+
+//---------------------------------------------------------------------------//
+// CONSTRUCTOR
+//---------------------------------------------------------------------------//
+
+Mesh_Operations<RZWedge_Mesh>::Mesh_Operations(SP_Mesh mesh,
+					       SP_Mat_State state,
+					       SP_Topology topology,
+					       SP_Comm_Patterns patterns)
+    : t4_slope(mesh)
+{
+    Require (mesh);
+    Require (state);
+    Require (topology);
+    Require (patterns);
+    Require (mesh->num_cells() == topology->num_cells(C4::node()));
+
+    // RZWedge_Meshes always have 3 dimensions
+    Check(t4_slope.size() == 3);
+
+    // build the T^4 data based upon the topology
+    if (topology->get_parallel_scheme() == "replication")
+    {
+	Check (!(*patterns));
+	build_replication_T4_slope(state);
+    }
+    else if (topology->get_parallel_scheme() == "DD")
+    {
+	Check (*patterns);
+	build_DD_T4_slope(state, topology, patterns);
+    }
+    else
+    {
+	Insist(0, "We don't have general support yet!");
+    }
+}
+
+//---------------------------------------------------------------------------//
+// SAMPLE PARTICLE POSITION WITH A TILT
+//---------------------------------------------------------------------------//
+
+Mesh_Operations<RZWedge_Mesh>::sf_double 
+Mesh_Operations<RZWedge_Mesh>::sample_pos_tilt(int cell, 
+					       double T, 
+					       rtt_rng::Sprng &random) const
+{    
+    using std::vector;
+
+    // set coord system and mesh
+    const RZWedge_Mesh &mesh = t4_slope.get_Mesh();
+    Check (mesh.get_SPCoord()->get_Coord() == "xyz");
+
+    // return position
+    vector<double> r;
+
+    // T4 slopes and T4 temperature
+    double T4            = std::pow(T, 4);
+    vector<double> slope = t4_slope(cell);
+
+    // for now sample uniformly
+    r = mesh.sample_pos(cell, random, slope, T4);
+    Check (r.size() == 3);
+
+    // return position vector
+    return r;
+}
+
+//---------------------------------------------------------------------------//
+// BUILD T4 SLOPES
+//---------------------------------------------------------------------------//
+// Build the T4 slopes in a full replication topology
+
+void Mesh_Operations<RZWedge_Mesh>::build_replication_T4_slope(SP_Mat_State 
+							       mat_state)
+{
+    Require(mat_state->num_cells() == t4_slope.get_Mesh().num_cells());
+
+    // set number of cells
+    int num_cells = mat_state->num_cells();
+
+    // get a reference to the mesh and layout
+    const RZWedge_Mesh &mesh = t4_slope.get_Mesh();
+    const AMR_Layout &layout = mesh.get_Layout();
+
+    // T4 values used in calculation
+    double t4_low  = 0;
+    double t4_high = 0;
+    double delta_r = 0;
+
+    // sweep through cells and build T4 slopes
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+    {
+	// calculate 4th power of cell temperature
+	double t4 = std::pow(mat_state->get_T(cell), 4);
+
+	// sweep through coordinates
+	for ( int coord = 1; coord <= 3; coord += 2 /* skip y */)
+	{
+	    Check(t4_slope.size(coord) == num_cells);
+
+	    // get coarse face indices
+	    int coarse_face_low  = 2*coord - 1;
+	    int coarse_face_high = 2*coord;
+
+	    // determine number of cells across a face
+	    int num_across_low  = layout.num_cells_across(cell,
+							  coarse_face_low);
+	    int num_across_high = layout.num_cells_across(cell,
+							  coarse_face_high);
+
+	    // get t4_high and t4_low
+	    int cell_low;
+	    int cell_high;
+	    
+	    // T4 low
+	    t4_low = 0.0;
+	    for (int i = 1; i <= num_across_low; i++)
+	    {
+		cell_low = layout(cell, coarse_face_low, i);
+		if (cell_low > 0)
+		    t4_low  += std::pow(mat_state->get_T(cell_low), 4);
+	    }
+	    t4_low = t4_low / static_cast<double>(num_across_low);
+
+	    // T4 high
+	    t4_high = 0.0;
+	    for (int i = 1; i <= num_across_high; i++)
+	    {
+		cell_high = layout(cell, coarse_face_high, i);
+		if (cell_high > 0)
+		    t4_high  += std::pow(mat_state->get_T(cell_high), 4);
+	    }
+	    t4_high = t4_high / static_cast<double>(num_across_high);
+
+	    // explicitly set cell lows and cell highs
+	    cell_low  = layout(cell, coarse_face_low, 1);
+	    cell_high = layout(cell, coarse_face_high, 1);
+
+	    // set slope to zero if either side is radiatively reflecting
+	    if (cell_low == cell || cell_high == cell)
+		t4_slope(coord, cell) = 0.0;
+
+	    // set slope to zero if both sides are radiatively vacuum
+	    else if (cell_low == 0 && cell_high == 0)
+		t4_slope(coord, cell) = 0.0;
+
+	    // if low side is vacuum, use only two t^4's
+	    else if (cell_low == 0)
+	    {
+		delta_r = 0.5 * (mesh.dim(coord, cell) + 
+				 mesh.dim(coord, cell_high));
+
+		t4_slope(coord, cell) = (t4_high - t4) / delta_r;
+
+		// make sure slope isn't too large so as to give a negative
+		// t4_low.  If so, limit slope so t4_low is zero.
+		t4_low = t4 - t4_slope(coord, cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
+		if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell); 
+	    }
+
+	    // if high side is vacuum, use only two t^4's
+	    else if (cell_high == 0)
+	    {
+		delta_r = 0.5 * (mesh.dim(coord, cell) + 
+				 mesh.dim(coord, cell_low));
+		t4_slope(coord, cell) = (t4 - t4_low) / delta_r;
+
+		// make sure slope isn't too large so as to give a negative
+		// t4_high.  If so, limit slope so t4_high is zero.
+		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell);
+	    }
+
+	    // no conditions on calculating slope; just do it
+	    else
+	    {
+		double low_slope = (t4 - t4_low) /
+		    (0.5 * (mesh.dim(coord, cell_low) +
+			    mesh.dim(coord, cell)) );
+
+		double high_slope = (t4_high - t4) /
+		    (0.5 * (mesh.dim(coord, cell) +
+			    mesh.dim(coord, cell_high)) );
+
+		double t4_lo_edge = t4 - low_slope  * 0.5 * 
+		    mesh.dim(coord, cell);
+		double t4_hi_edge = t4 + high_slope * 0.5 *
+		    mesh.dim(coord, cell);
+
+		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
+		    mesh.dim(coord, cell);
+
+		// put checks to make sure that slope on high and low ends
+		// are not too large
+		t4_high = t4 + t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		t4_low  = t4 - t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		Check (t4_high >= 0.0 || t4_low >= 0.0);
+
+		// if high is less than 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell); 
+		else if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2. * t4 / mesh.dim(coord, cell);
+	    }
+	}
+
+	// explicitly set y coordinate t4_slopes to zero
+	t4_slope(2, cell) = 0.0;
+    }
+}
+
+//---------------------------------------------------------------------------//
+// build the T4 slopes in a full DD topology
+
+void Mesh_Operations<RZWedge_Mesh>::build_DD_T4_slope(SP_Mat_State mat_state,
+						      SP_Topology topology,
+						      SP_Comm_Patterns com_pat)
+{
+    Require(mat_state->num_cells() == t4_slope.get_Mesh().num_cells());
+
+    // define the boundary cell fields that we need to perform the
+    // calculation
+    sf_double bc_temp;
+    vf_double bc_dim;
+
+    // define the number of local cells
+    int num_cells = topology->num_cells(C4::node());
+    Check (num_cells == mat_state->num_cells());
+
+    // get a reference to the mesh and layout
+    const RZWedge_Mesh &mesh = t4_slope.get_Mesh();
+    const AMR_Layout &layout = mesh.get_Layout();
+
+    // make a Parallel_Data_Operator for performing gathers on boundary cells 
+    // with local data arrays
+    rtt_mc::Parallel_Data_Operator par_op(topology);
+
+    // get the temperatures on each boundary cell
+    {
+	// local temperatures
+	sf_double local_temp(num_cells);
+	for (int cell = 1; cell <= num_cells; cell++)
+	    local_temp[cell-1] = mat_state->get_T(cell);
+
+	// fill the boundary cells with temperatures
+	par_op.gather_bnd_cell_data(com_pat, local_temp, bc_temp);
+    }
+    Check (bc_temp.size() == topology->get_boundary_cells(C4::node()));
+
+    // get the widths of each boundary cell
+    {
+	// size the bc_dim vector to the number of dimensions in this problem 
+	bc_dim.resize(3);
+
+	// loop through coordinates and fill up width data
+	for (int coord = 1; coord <= 3; coord += 2)
+	{
+	    // local widths
+	    sf_double local_dim(num_cells);
+	    for (int cell = 1; cell <= num_cells; cell++)
+		local_dim[cell-1] = mesh.dim(coord, cell);
+
+	    // fill up the boundary cells with dimension data
+	    par_op.gather_bnd_cell_data(com_pat, local_dim, bc_dim[coord-1]);
+	    Check (bc_dim[coord-1].size() ==
+		   topology->get_boundary_cells(C4::node()));
+	}
+
+	// fill y dimensions with 0 width
+	bc_dim[1].resize(topology->get_boundary_cells(C4::node()));
+	std::fill(bc_dim[1].begin(), bc_dim[1].end(), 0.0);
+    }
+    Check (bc_dim.size() == mesh.get_Coord().get_dim());
+
+    // T4 values used in calculation
+    double t4_low   = 0;
+    double t4_high  = 0;
+    double dim_low  = 0;
+    double dim_high = 0;
+    double delta_r  = 0;
+
+    // sweep through cells and build T4 slopes
+    for (int cell = 1; cell <= mesh.num_cells(); cell++)
+    {
+	// calculate 4th power of cell temperature
+	double t4 = std::pow(mat_state->get_T(cell), 4);
+
+	// sweep through coordinates
+	for ( int coord = 1; coord <= 3; coord += 2 /* skip y */)
+	{
+	    Check(t4_slope.size(coord) == num_cells);
+
+	    // get coarse face indices
+	    int coarse_face_low  = 2*coord - 1;
+	    int coarse_face_high = 2*coord;
+
+	    // determine number of cells across a face
+	    int num_across_low  = layout.num_cells_across(cell,
+							  coarse_face_low);
+	    int num_across_high = layout.num_cells_across(cell,
+							  coarse_face_high);
+
+	    // get t4_high and t4_low; dim_high and dim_low
+	    int cell_low;
+	    int cell_high;
+	    
+	    // T4 low
+	    t4_low = 0.0;
+	    for (int i = 1; i <= num_across_low; i++)
+	    {
+		cell_low = layout(cell, coarse_face_low, i);
+		if (cell_low > 0)
+		{
+		    t4_low += std::pow(mat_state->get_T(cell_low), 4);
+		    dim_low = mesh.dim(coord, cell_low);
+		}
+		else if (cell_low < 0)
+		{
+		    t4_low += std::pow(bc_temp[-cell_low - 1], 4);
+		    dim_low = bc_dim[coord-1][-cell_low - 1];
+		}
+	    }
+	    t4_low = t4_low / static_cast<double>(num_across_low);
+
+	    // T4 high
+	    t4_high = 0.0;
+	    for (int i = 1; i <= num_across_high; i++)
+	    {
+		cell_high = layout(cell, coarse_face_high, i);
+		if (cell_high > 0)
+		{
+		    t4_high += std::pow(mat_state->get_T(cell_high), 4);
+		    dim_high = mesh.dim(coord, cell_high);
+		}
+		else if (cell_high < 0)
+		{
+		    t4_high += std::pow(bc_temp[-cell_high - 1], 4);
+		    dim_high = bc_dim[coord-1][-cell_high - 1];
+		}
+	    }
+	    t4_high = t4_high / static_cast<double>(num_across_high);
+
+	    // explicitly set cell lows and cell highs
+	    cell_low  = layout(cell, coarse_face_low, 1);
+	    cell_high = layout(cell, coarse_face_high, 1);
+
+	    // set slope to zero if either side is radiatively reflecting
+	    if (cell_low == cell || cell_high == cell)
+		t4_slope(coord, cell) = 0.0;
+
+	    // set slope to zero if both sides are radiatively vacuum
+	    else if (cell_low == 0 && cell_high == 0)
+		t4_slope(coord, cell) = 0.0;
+
+	    // if low side is vacuum, use only two t^4's
+	    else if (cell_low == 0)
+	    {
+		delta_r = 0.5 * (mesh.dim(coord, cell) + dim_high);
+
+		t4_slope(coord, cell) = (t4_high - t4) / delta_r;
+
+		// make sure slope isn't too large so as to give a negative
+		// t4_low.  If so, limit slope so t4_low is zero.
+		t4_low = t4 - t4_slope(coord, cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
+		if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2.0 * t4 / mesh.dim(coord, cell); 
+	    }
+
+	    // if high side is vacuum, use only two t^4's
+	    else if (cell_high == 0)
+	    {
+		delta_r = 0.5 * (mesh.dim(coord, cell) + dim_low);
+		t4_slope(coord, cell) = (t4 - t4_low) / delta_r;
+
+		// make sure slope isn't too large so as to give a negative
+		// t4_high.  If so, limit slope so t4_high is zero.
+		t4_high = t4 + t4_slope(coord,cell) * 0.5 * 
+		    mesh.dim(coord, cell); 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell);
+	    }
+
+	    // no conditions on calculating slope; just do it
+	    else
+	    {
+		double low_slope = (t4 - t4_low) /
+		    (0.5 * (dim_low + mesh.dim(coord, cell)) );
+
+		double high_slope = (t4_high - t4) /
+		    (0.5 * (mesh.dim(coord, cell) + dim_high) );
+
+		double t4_lo_edge = t4 - low_slope  * 0.5 * 
+		    mesh.dim(coord, cell);
+		double t4_hi_edge = t4 + high_slope * 0.5 *
+		    mesh.dim(coord, cell);
+
+		t4_slope(coord, cell) = (t4_hi_edge - t4_lo_edge) / 
+		    mesh.dim(coord, cell);
+
+		// put checks to make sure that slope on high and low ends
+		// are not too large
+		t4_high = t4 + t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		t4_low  = t4 - t4_slope(coord, cell) * .5 * 
+		    mesh.dim(coord, cell);
+
+		Check (t4_high >= 0.0 || t4_low >= 0.0);
+
+		// if high is less than 
+		if (t4_high < 0.0)
+		    t4_slope(coord, cell) = -2. * t4 / mesh.dim(coord, cell); 
+		else if (t4_low < 0.0)
+		    t4_slope(coord, cell) = 2. * t4 / mesh.dim(coord, cell);
+	    }
+	}
+
+	// explicitly set y coordinate t4_slopes to zero
+	t4_slope(2, cell) = 0.0;
     }
 }
 

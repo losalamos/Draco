@@ -62,6 +62,10 @@ namespace rtt_imc
 // revision history: 
 // -----------------
 // 0) original
+// 1) 3-AUG-2000 : fixed error in T4 slope calculations, the high T^4 check 
+//                 was off by a negative sign; also, we now always adjust the 
+//                 slopes if the high face or low face < 0; added
+//                 RZWedge_Mesh specialization
 // 
 //===========================================================================//
 
@@ -94,19 +98,17 @@ class Mesh_Operations
      * \param comm_patterns rtt_dsxx::SP to a Comm_Patterns object
      */
     Mesh_Operations(SP_Mesh mesh, SP_Mat_State state, SP_Topology topology,
-		    SP_Comm_Patterns comm_patterns)
-    {/*...*/}
+		    SP_Comm_Patterns comm_patterns);
 
     /*!
      * \brief Sample position in cell with T4 tilt.
      *
-     * \param cell cell index
+     * \param c cell index
      * \param T temperature in cell
-     * \param rand rtt_rng::Sprng random number object
+     * \param r rtt_rng::Sprng random number object
      * \return vector<double> of particle position
      */ 
-    sf_double sample_pos_tilt(int cell, double T, rtt_rng::Sprng &rand) const
-    {/*...*/} 
+    sf_double sample_pos_tilt(int c, double T, rtt_rng::Sprng &r) const; 
 };
 
 //---------------------------------------------------------------------------//
@@ -175,15 +177,26 @@ class Mesh_Operations<rtt_mc::RZWedge_Mesh>
     typedef rtt_dsxx::SP<Mat_State<mesh_type> >       SP_Mat_State;
     typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>       SP_Comm_Patterns;
 
+  private:
+    // T^4 slope data
+    ccvf_double t4_slope;
+
+    // IMPLEMENTATION
+
+    // Calculate T^4 slope values in different topologies.
+    void build_replication_T4_slope(SP_Mat_State);
+    void build_DD_T4_slope(SP_Mat_State, SP_Topology, SP_Comm_Patterns);
+
   public:
     // Constructor.
-    Mesh_Operations(SP_Mesh x, SP_Mat_State y, 
-		    SP_Topology z, SP_Comm_Patterns q)
-    {}
+    Mesh_Operations(SP_Mesh, SP_Mat_State, SP_Topology, SP_Comm_Patterns);
 
     // Sample position of tilt
-    sf_double sample_pos_tilt(int x, double y, rtt_rng::Sprng &z) const
-    { return sf_double(); }
+    sf_double sample_pos_tilt(int, double, rtt_rng::Sprng &) const;    
+
+    // Get values of T4_slope for testing.  This is not part of the standard
+    // interface to Mesh_Operations.
+    const ccvf_double& get_t4_slope() const { return t4_slope; }
 };
 
 } // end namespace rtt_imc

@@ -21,7 +21,7 @@ tstTopology_Builder_dep = tstTopology_Builder.o \
                           tstTopology_Builder_pt.o 
 tstSource_Builder_dep = tstSource_Builder.o tstSource_Builder_pt.o \
                         tstOpacity_pt.o
-tstMesh_Operations_dep = tstMesh_Operations.o tstOpacity_pt.o
+tstMesh_Operations_dep = tstMesh_Operations.o tstOpacity_pt.o IMC_Test.o
 tstTransporter_dep = tstTransporter.o tstTransporter_pt.o \
                      tstParticle_pt.o tstTally_pt.o \
                      tstTopology_Builder_pt.o
