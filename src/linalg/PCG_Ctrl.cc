@@ -238,6 +238,9 @@ void PCG_Ctrl<T>::set_nwf()
 template<class T>
 void PCG_Ctrl<T>::print_params()
 {
+    using std::cout;
+    using std::endl;
+    
 // Revcom level parameters.
     cout << "----------------------------------------------" << endl;
     cout << "Revcom level parameters."                       << endl;

@@ -43,8 +43,8 @@ class pcg_DB : public persist {
 
     void setup_namelist( NML_Group& g );
 
-    void save   ( ofstream& ofs );
-    void restore( ifstream& ifs );
+    void save   ( std::ofstream& ofs );
+    void restore( std::ifstream& ifs );
 };
 
 #endif                          // __linalg_pcg_DB_hh__

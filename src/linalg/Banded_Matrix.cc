@@ -16,6 +16,10 @@ using namespace C4;
 #include <functional>
 #include <list>
 
+using std::cout;
+using std::endl;
+using std::flush;
+    
 using dsxx::Mat1;
 using dsxx::Mat2;
 
