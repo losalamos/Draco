@@ -487,7 +487,7 @@ double Sphyramid_Mesh::face_area(int cell, int face) const
     {
 	face_area  = get_high_x(cell)*get_high_x(cell);
 	face_area -= get_low_x(cell)*get_low_x(cell);
-	face_area /= this->cos_beta;
+	face_area *= this->tan_beta/this->cos_beta;
     }
 
     // return face_area;
