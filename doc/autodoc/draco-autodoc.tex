@@ -84,7 +84,7 @@
   J.S. Warsa, XTM MS D409\\
   C.J. Gesh, XTM MS D409\\
   W.D. Hawkins, XTM MS D409\\
-  R.B. Lowrie, XHM MS D413
+  R.B. Lowrie, XHM MS D413 
   }
 
 %%---------------------------------------------------------------------------%%
@@ -129,16 +129,8 @@ requirements on the code developer.
 
 
 This evaluation is based on direct experience using \doxy\ to document
-two existing \draco\ packages.  Tom has documented the rng package and
-I have documented the timestep package.  Let me emphasize that this is
-an easy and painless way to document your code. Tom and I have both
-found the process addictive, the more comments you put in, the more
-you want to put in. \doxy\ can be used on any \C++ source file without
-any modifications to the source at all. However, we would encourage
-all \draco\ developers to take the small amount of time required to
-retrofit their existing code to take advantage of the special features
-that \doxy\ offers.  Also, we recommend that all new code developed in
-\draco\ make use of \doxy\ capabilites.
+two existing \draco\ packages.  Tom Evans has documented the rng package and
+John McGhee has documented the timestep package.  
 
 %%---------------------------------------------------------------------------%%
 
@@ -162,7 +154,8 @@ file, even if the developer does not include any comments at all.
 should be copied from the \draco\ templates directory to the package
 directory.  Some customization will be required for each package,
 mainly package name and version. The config file is well commented and
-self explanatory. Once the config file is in place, log on to any SGI
+nearly self explanatory. More detail is provided in \S~\ref{sec:config}.
+Once the config file is in place, log on to any SGI
 platform and simply type:
 \begin{verbatim} 
      /scratch/tme/bin/doxygen config_filename
@@ -174,8 +167,8 @@ We note that this system is highly configurable.  For example, users
 have the option of only examining certain files for input, choice of
 output directories, and many other options.  We will provide a basic
 configuration file in \texttt{draco/config/doxygen\_config} that will
-provide the essential options needed for \draco\ developers.  More
-detail will be given on this default file in \S~\ref{sec:draco}.
+provide the essential options needed for \draco\ developers.  Again, 
+more detail on this file is provided in \S~\ref{sec:config}.
 Additionally, the configuration options available to users are well
 documented in the \doxy\ manual.
 
@@ -212,7 +205,7 @@ Inside a \doxy\ comment block, there are currently approximately 60
 special keywords that \doxy\ recognizes. If desired, these keywords
 can be used to control and produce additional features in the
 documentation.  The interested reader is referred to the \doxy\ manual
-for details on these keywords.  We will briefly describe the major
+for details on these keywords.  We will briefly describe a few of the major
 keywords that we have found to be most useful.
 \begin{itemize}
 \item \verb+\file+ The file name.
@@ -236,7 +229,7 @@ keywords that we have found to be most useful.
 
 If found within a special comment block 
 as defined in section \S~\ref{sec:spcom} above, \doxy\ 
-recoginizes a multitude of html commands. These
+recognizes a multitude of html commands. These
 commands are used directly in the html document, and are converted appropriately for
 the \LaTeX\ output. 
 For example, if the phrase: 
@@ -244,8 +237,8 @@ For example, if the phrase:
 <H1> My Header <\H1>
 \end{verbatim} appears in the special comment
 block \doxy\ will format the phrase ``My Header'' as the start of an
-unumberded section in the documentation. 
-Also, \LaTeX\ fomulas can be used inside a special
+un-numbered section in the documentation. 
+Also, \LaTeX\ formulas can be used inside a special
 comment block if they are delimited using the syntax ``\verb+\f$ ... \f$+''.
 For example, the phrase 
 \begin{verbatim}
@@ -270,7 +263,8 @@ a template for a standard \doxy\ configuration file, and standard
 header and footer files for \doxy\ html output.  The elisp command
 \texttt{draco-package}~\cite{xtm:9909} will \textit{automagically}
 install the \draco\ \doxy\ configuration file into the package
-directory. To produce documentation for any source code files in a
+directory as well as \texttt{html} header and footer files.
+To produce documentation for any source code files in a
 \draco\ package directory, simply enter the package directory and
 type:
 \begin{verbatim}
@@ -283,6 +277,7 @@ the package directory.  These directories hold the html and \LaTeX\
 source, respectively.
 
 \subsection{\doxy\ Configuration File}
+\label{sec:config}
 
 Developers are free to modify most options in the default \draco\ 
 \doxy\ configuration file.  Any developer modifications should be
@@ -341,12 +336,28 @@ the \doxy\ config file.  Useful options are \texttt{TAGFILES}
 (described in the following section), \texttt{EXAMPLE\_PATH}, and
 \texttt{EXTRACT\_ALL}.  See the \doxy\ manual and the config file for
 detailed documentation about these options.
+
+\subsection{Header and Footer files for html}
+
+Developers are free to modify the default \draco\ 
+\doxy\ \texttt{html} header and footer files. 
+Ordinarily, we recommend that  modification should be
+avoided in order to preserve a consistent ``look and feel''
+throught the \draco\ html documentation.
+Any developer modifications that are undertaken should be
+performed on the local files in the package
+directory and {\bf not} on the \texttt{draco/config/}
+template files. At the very least, it will be necessary to 
+provide the name of the person responsible for the package
+in the html footer file.
   
 \subsection{Tag Files}
 
-Tag files are used to refer to other packages. For example, the \imc\
-package uses the \dsxx\ package.  Thus, the documentation for \imc\
-should provide links to the documentation for \dsxx.  This is provided 
+Tag files are an optional feature used to refer to other packages. 
+For example, the \imc\
+package uses the \dsxx\ package.  The documentation for \imc\
+may therefore provide links to the documentation for \dsxx.  If such is 
+desired, it is  accomplished
 by the \doxy\ tagging machinery.  To use \doxy\ tags the following
 config options are used:
 \begin{description}
@@ -355,10 +366,12 @@ config options are used:
   links in the package.  For instance, the \imc\ package
   \texttt{.doxygen\_config} file would contain the following entry:
 \begin{verbatim}
-     TAGFILES = ../ds++/html/ds++.tag ../c4/html/c4.tag ../rng/html/rng.tag
+     TAGFILES = ./html/ds++.tag ./html/c4.tag ./html/rng.tag
 \end{verbatim}
   These are the tag files used by \imc\ to resolve documented
-  dependencies.
+  dependencies. They should be copied into the \imc\ \texttt{html}
+  directory from the \dsxx, \cfour,
+  and \rng\ \texttt{html} directories.
 
 \item[\ttfamily GENERATE\_TAGFILE] As stated above, each package
   generates a tag file in the \texttt{html} subdirectory with the name 
@@ -391,25 +404,40 @@ The \texttt{installdox} script will modify all of the \texttt{.html}
 files so that the links point to the correct locations.  Be sure to 
 use relative paths in the above procedure to insure that the 
 documentation is independent of the
-absolute location of the \texttt{draco} directory.  The dates of
+absolute location of the \texttt{draco} directory.  The dates of the
 copied tag files
 can be used to determine the currency of the references to other packages.
-Unfortunately, remote paths to do not seem to work in
-\texttt{installdox} at this time; thus, copying is required.
+Of course, the \texttt{.html} files must actually exist at the stated location
+for the links created by \texttt{installdox} to actually work.
+
+We emphasize that the use of tag files is optional. It is somewhat cumbersome,
+but provides a useful enhancement of the \texttt{html} output. It has no
+affect on the \LaTeX\ output. For any who find tag files confusing or
+intimidating, we recommend that you document your package without them. They
+can easily be added at a later date if desired.
 
 \subsection{Storage of \doxy\ Output}
 
 Each package developer will run \doxy\ in their respective
 directories.  \doxy\ will create html and \LaTeX\ sub-directories to
-contain the html and \LaTeX\ documentation output. \doxy\ and
-\texttt{installdox} will need to
+contain the html and \LaTeX\ documentation output. \doxy\ (and
+\texttt{installdox} if tag files are being used) will need to
 be run periodically to bring the documentation into sync with with the
-source code. The resulting output should be tagged and committed to
-CVS using the same procedures as for the source code. Also note the
-dependencies introduced by the tag files.
-When the documentation for package ``A'' changes, all the packages
-that use ``A.tag'' will have to be redocumented in insure compatibility
-with the potentially new references in tag.A.
+source code. Also the version number in the \doxy\ package config
+file will need to be periodically updated to reflect the current version number.
+The resulting output should be tagged and committed to
+CVS using the same procedures as for the source code. Note that
+\doxy\ may create gif images as part of the html generation
+process. These images should be added to the repository
+using the CVS ``-kb'' option. Also note the
+dependencies introduced by the tag files, if they are being used.
+If changes in the documentation for package ``A'' produce
+changes in ``A.tag'' then all the packages
+that use ``A.tag'' will have to be redocumented to insure compatibility
+with any new references in ``A.tag''. As a courtesy to other
+developers, it may be useful to notify packages that use your tag file
+that your tag file has changed. Changes to the tag file can be
+easily detected with CVS diff.
 
 \subsection{\draco\ WWW Site}
 
@@ -417,6 +445,28 @@ When checking out the \draco\ web site, CVS magic will be used to
 check out the appropriate html source from each package directory in
 \draco. Stubs for links to on-line documentation have already been
 installed on the web site.
+
+\subsection{Currency Considerations}
+Ideally, there should be some way to detect that documentation
+or tag files are out of date, and to automatically rebuild the
+documentation if required. We would like to have this feature in the
+\draco\ build system, but that would require that \doxy\
+be installed wherever \draco\ is to be built. We feel that this
+is to restrictive. So, for the present at least, we elect to rely
+on the diligence and dedication of the individual package developers to 
+assure that the documentation is kept up to date.
+
+\subsection{Addition of New Packages}
+If new packages are created, links to their documentation will have
+to be added to the \draco\ ``Component Documentation'' web page:
+``draco/src/documentation.html''.
+If the elisp command
+\texttt{draco-package}~\cite{xtm:9909} is used to create the new package
+directory, html and latex directories will the automatically created and 
+the \draco\ \doxy\ configuration file will be installed into the package
+directory. Also, \texttt{html} header and footer files and a \draco\
+logo gif will be installed into the html directory.
+%%---------------------------------------------------------------------------%%
 
 \section{Documentation Standards}
 
@@ -556,6 +606,20 @@ class fixed_ts_advisor : public ts_advisor {
 //---------------------------------------------------------------------------//
 
 \end{verbatim}
+
+%%---------------------------------------------------------------------------%%
+
+\section{Closing}
+
+In closing, we would like to emphasize that \doxy\ is
+an easy and painless way to document your code. We have both
+found the process addictive, the more comments you put in, the more
+you want to put in. \doxy\ can be used on any \C++ source file without
+any modifications to the source at all. However, we would encourage
+all \draco\ developers to take the small amount of time required to
+retrofit their existing code to take advantage of the special features
+that \doxy\ offers.  Also, we recommend that all new code developed in
+\draco\ make use of \doxy\ capabilites.
 
 \bibliographystyle{rnote}
 \bibliography{../bib/draco}
