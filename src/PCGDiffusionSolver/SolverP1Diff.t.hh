@@ -17,7 +17,7 @@ namespace rtt_PCGDiffusionSolver
 {
 
  template<class MT>
- SolverP1Diff<MT>::SolverP1Diff(const SP<const MT>& spMesh_,
+ SolverP1Diff<MT>::SolverP1Diff(const SP<const MT>& spMesh_, const FieldConstructor &fCtor_in,
 				const pcg_DB& pcg_db)
      : spMesh(spMesh_), pcg_ctrl(pcgMethod(pcg_db.itmeth)),
      iqside(pcg_db.iqside)

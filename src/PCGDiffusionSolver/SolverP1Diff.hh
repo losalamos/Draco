@@ -47,6 +47,7 @@ namespace rtt_PCGDiffusionSolver
    public:
      
      typedef typename MT::ccsf ccsf;
+     typedef typename MT::FieldConstructor FieldConstructor;
      typedef MatrixP1Diff<MT> Matrix;
      typedef MatVecP1Diff<Matrix> MatVec;
      typedef PreCondP1Diff<Matrix> PreCond;
@@ -69,7 +70,8 @@ namespace rtt_PCGDiffusionSolver
 
      // CREATORS
     
-     SolverP1Diff(const SP<const MT>& spMesh_, const pcg_DB& pcg_db);
+     SolverP1Diff(const SP<const MT>& spMesh, const FieldConstructor &fCtor_in,
+                  const pcg_DB& pcg_db);
 
      // MANIPULATORS
 

@@ -109,7 +109,7 @@ namespace rtt_P1Diffusion_test
      if (jacobiScale)
 	 Assert(options.iqside == 0);
 #endif
-     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(fCtor, options));
+     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(spMesh, fCtor, options));
      SP<DiffSolver> spDiffSolver(new DiffSolver(diffdb, spMesh,
 						spMatrixSolver, fCtor));
 
