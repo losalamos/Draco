@@ -180,16 +180,16 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
     nnodes = node_map.size();
 
     // input the existing node coordinate values from the RTT Format data.
-    node_coords.resize(ndim);
-    for (int d = 0 ; d < ndim; d++)
+    node_coords.resize(nnodes);
+    for (int node = 0; node < nnodes; node++)
     {
         // resize node_coords to accomodate the existing cell-corner nodes (the
         // vector could also be resized here to accomodate the face-centered 
         // nodes that will be subsequently created if FC_Nodes is called, but
         // some programs may not need this data so we don't do it here).
-        node_coords[d].resize(nnodes);
-        for (int node = 0; node < nnodes; node++)
-            node_coords[d][node] = rttMesh->get_nodes_coords(node_map[node],d);
+        node_coords[node].resize(ndim);
+        for (int d = 0 ; d < ndim; d++)
+            node_coords[node][d] = rttMesh->get_nodes_coords(d,node_map[node]);
     }
 
     // input the existing cell_nodes data (nodes that make up a cell) from the 
@@ -207,10 +207,7 @@ SP<CAR_CU_Mesh> CAR_CU_Builder::build_Mesh(const SP<RTT_Format> & rttMesh)
 	{
 	    int * new_node = lower_bound(node_map.begin(), node_map.end(),
 					 rttMesh->get_cells_nodes(cell, node));
-	    // cell_nodes numbers are referenced relative to a start at one,
-	    // while the RTT Format data is referenced relative to a start at
-	    // zero;
-	    cell_nodes[cell][node] = 1 + (new_node - node_map.begin());
+	    cell_nodes[cell][node] = new_node - node_map.begin();
 	}
     }
     // done with the node_map vector;
@@ -257,34 +254,34 @@ SP<Layout> CAR_CU_Builder::build_Layout(const SP<RTT_Format> & rttMesh)
     Layout & local_layout = * layout;
 
     // set the mesh layout from the RTT_Format data.
-    for (int cell = 1; cell <= ncells; cell++)
+    for (int cell = 0; cell < ncells; cell++)
     {
         // set size of new Layout for the required number of faces
 	local_layout.set_size(cell, nsides_max);
-        for (int side = 1; side <= nsides_max; side++)
+        for (int side = 0; side < nsides_max; side++)
 	{
 	    // determine the number of cells adjacent to this face and resize
 	    // the layout accordingly.
-	    int num_adj = rttMesh->get_adjCell_size(cell - 1, side - 1);
+	    int num_adj = rttMesh->get_adjCell_size(cell, side);
 	    local_layout.set_adj_size(cell, side, num_adj);
 
 	    // going from a coarse region to a refined region if there is more
 	    // than one cell across from this face.
 	    if (num_adj > 1)
 	    {
-	        for (int adjCell = 1; adjCell <= num_adj; adjCell++)
-		    local_layout(cell, side, adjCell) = 1 + 
-		        rttMesh->get_adjCell(cell-1, side-1, adjCell-1);
+	        for (int adjCell = 0; adjCell < num_adj; adjCell++)
+		    local_layout(cell, side, adjCell) = 
+		        rttMesh->get_adjCell(cell, side, adjCell);
 	    }
 	    else
 	    {
-	        int adjCell = rttMesh->get_adjCell(cell - 1,side - 1);
+	        int adjCell = rttMesh->get_adjCell(cell, side);
 	        // a positive number for the adjacent cell at this face 
 	        // indicates either a cell of the same generation level or 
 	        // going from a refined region to a coarse region.
 	        if (adjCell >= 0)
 		{
-	            local_layout(cell, side, 1) = adjCell + 1;
+	            local_layout(cell, side, 0) = adjCell;
 		}
 	        // a negative number indicates the flag number for a cell face
 		// on the problem outer boundary. 
@@ -298,12 +295,12 @@ SP<Layout> CAR_CU_Builder::build_Layout(const SP<RTT_Format> & rttMesh)
 	            // vacuum boundary
 	            if ((name[0] == 'v' || name[0] == 'V') && 
 	                 name.find_first_not_of("vacumVACUM") == string::npos)
-		        local_layout(cell, side, 1) = 0;
+		        local_layout(cell, side, 0) = 0;
 	            // reflection boundary
 	            else if ((name[0] == 'r' || name[0] == 'R') && 
 	                      name.find_first_not_of("reflctionREFLCTION")
 			      == string::npos)
-		        local_layout(cell, side, 1) = cell;
+		        local_layout(cell, side, 0) = cell;
 		    else
 		        Insist(0,"Illegal boundary condition found!");
 	        }
@@ -315,14 +312,14 @@ SP<Layout> CAR_CU_Builder::build_Layout(const SP<RTT_Format> & rttMesh)
     if (debugging)
     {
         int num_cells = local_layout.get_num_cells();
-	for (int cell = 1; cell <= ncells; cell++)
+	for (int cell = 0; cell < ncells; cell++)
 	{
 	    int num_faces = local_layout.get_num_cell_faces(cell);
-	    for (int side = 1; side <= num_faces; side++)
+	    for (int side = 0; side < num_faces; side++)
 	    {
 	        cout << "cell " << cell << " side " << side << " adjacent ";
 		int num_adj = local_layout.get_num_adj_cells(cell, side);
-		for (int n = 1; n <= num_adj; n++)
+		for (int n = 0; n < num_adj; n++)
 		    cout << " " << local_layout(cell, side, n);
 		cout <<  endl;
 	    }
@@ -390,7 +387,7 @@ vector<set<int> > CAR_CU_Builder::assign_Generations(CAR_CU_Mesh::ccsf_i &
         // indicated by the fact that the adjacent cell number on the 
 	// ndim - 1 face < 0), or if it is either the first or last cell.
         if (rttMesh->get_adjCell(cell_number,ndim - 1) >= 0 || 
-	    cell_number == 0 || cell_number == ncells -1)
+	    cell_number == 0 || cell_number == ncells - 1)
 	{
             for (int face = ndim - 1; face <= ndim; face++)
 	    {
@@ -861,8 +858,7 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
     }
     // resize the node_coords vector to accomodate the face-centered nodes
     // (before the value of nnodes is changed).
-    for (int d = 0 ; d < ndim; d++)
-	 node_coords[d].resize(nnodes + ndim * ncells + bndryCellFaces);
+    node_coords.resize(nnodes + ndim * ncells + bndryCellFaces);
 
     // We will assume that all of our cells have the same type, as defined
     // in the RTT Format file, so just consider cell 0 in the function call.
@@ -896,14 +892,16 @@ void CAR_CU_Builder::FC_Nodes(int nnodes, const SP<RTT_Format> & rttMesh)
 		vector<double> hi_coord = rttMesh->get_nodes_coords(hi_node);
 
 		for (int d = 0 ; d < ndim; d++)
-		    node_coords[d][nnodes] = (lo_coord[d] + hi_coord[d])/2.0;
+		    node_coords[nnodes].push_back((lo_coord[d] + hi_coord[d])
+						  /2.0);
 		// numbering for the face-centered nodes to be created will 
 		// start after all of the cell-corner nodes and correspond to 
 		// faces -z, -y, -x, x, y, z. Note that unique face nodes are 
 		// NOT assigned to each cell (saves a lot of memory).
-		cell_nodes[cell][nnodes_max + face] = ++nnodes;
+		cell_nodes[cell][nnodes_max + face] = nnodes;
 		if (face < nsides_max/2)
 		    cell_nodes[cell][nnodes_max + face + ndim] = nnodes + ndim;
+		++nnodes;
 	    }
 	}
     }

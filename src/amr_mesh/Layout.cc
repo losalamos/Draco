@@ -48,12 +48,12 @@ void Layout::print(ostream & output, int cell_index) const
     output << "-------------" << endl;
     output << setw(4) << "Face" << setw(9) << " Neighbor" << endl;
     output << "-------------" << endl;
-    for (int face_index = 1; face_index <= faces; face_index++)
+    for (int face_index = 0; face_index < faces; face_index++)
     {
         output << setw(4) << face_index;
         int adjCells = get_num_adj_cells(cell_index,face_index);
-	for (int adj = 1; adj <= adjCells; adj++)
-	    output << setw(9) << face_cell[cell_index-1][face_index-1][adj-1] 
+	for (int adj = 0; adj < adjCells; adj++)
+	    output << setw(9) << face_cell[cell_index][face_index][adj] 
 		   << endl;
     }
     output << "=============" << endl;
@@ -65,7 +65,7 @@ void Layout::print(ostream & output, int cell_index) const
 ostream & operator<<(ostream & output, const Layout & object)
 {
     int num_cells = object.get_num_cells();
-    for (int cell_index = 1; cell_index <= num_cells; cell_index++)
+    for (int cell_index = 0; cell_index < num_cells; cell_index++)
         object.print(output, cell_index);
     return output;
 }

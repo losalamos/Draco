@@ -150,18 +150,11 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
     // Source member functions
 /*!
  * \brief Private member function that controls the parsing of the source block
- *        of the user-input file.
+ *        of the user-input file and assigns the source variables..
  * \param infile An ifstream class object that is attached to the user-input 
  *               file.    
  */
     void parser_Source(ifstream & infile);
-/*!
- * \brief Private member function that parses the source block of the 
- *        user-input file and assigns the source variables.
- * \param infile An ifstream class object that is attached to the user-input
- *               file.    
- */
-    void zone_source_parser(ifstream & infile);
 
   public:
     // constructor
@@ -264,7 +257,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param cell Cell number.
  * \return Cell volumetric source.
  */
-    double get_evol_ext(int cell) const { return cell_evol[cell - 1]; }
+    double get_evol_ext(int cell) const { return cell_evol[cell]; }
 /*!
  * \brief Returns the cell-based external radiation source array.
  * \return Cell external radiation sources.
@@ -275,7 +268,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param cell Cell number.
  * \return Cell external radiation source.
  */
-    double get_rad_source(int cell) const { return cell_rsrc[cell - 1]; }
+    double get_rad_source(int cell) const { return cell_rsrc[cell]; }
 /*!
  * \brief Returns the cut-off time for the external radiation sources.
  * \return The external radiation source cut-off time.
@@ -295,7 +288,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \param surface Surface source cells set number.
  * \return Surface source cells set position.
  */
-    string get_ss_pos(int surface) const { return ss_pos[surface - 1]; }
+    string get_ss_pos(int surface) const { return ss_pos[surface]; }
     // return the positions (lox, hix, etc.) of the all of the grouped surface 
     // source cells
 /*!
@@ -312,7 +305,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \return Surface source cells set temperature.
  */
     double get_ss_temp(int surface) const 
-    { return ss_temp[surface - 1]; }
+    { return ss_temp[surface]; }
     // return the temperature of the all of the grouped surface source cells
 /*!
  * \brief Returns the temperature of all of the grouped surface source cells
@@ -328,7 +321,7 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  * \return The number of grouped surface source cells in the set.
  */
     int get_ss_cells_size(int surface) const
-    { return defined_surcells[surface - 1].size(); }
+    { return defined_surcells[surface].size(); }
     // return the defined surface source cells in a given set
 /*!
  * \brief Returns the surface source cells in the specified set.
@@ -337,9 +330,9 @@ SP<RTT_Format> parser_Mesh(ifstream & infile);
  */
     vector<int> get_defined_surcells(int surface) const
     {
-        vector<int> source_set(defined_surcells[surface - 1].size());
-	for (int cell = 0; cell < defined_surcells[surface - 1].size(); cell++)
-	    source_set[cell] = defined_surcells[surface - 1][cell];
+        vector<int> source_set(defined_surcells[surface].size());
+	for (int cell = 0; cell < defined_surcells[surface].size(); cell++)
+	    source_set[cell] = defined_surcells[surface][cell];
 
         return source_set; 
     }

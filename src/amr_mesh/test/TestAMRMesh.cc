@@ -47,6 +47,8 @@ using std::fill;
 using rtt_dsxx::SP;
 using rtt_amr::CAR_CU_Interface;
 using rtt_meshReaders::RTT_Format;
+using rtt_amr::CAR_CU_Builder;
+using rtt_amr::CAR_CU_Mesh;
 
 TestAMRMesh::TestAMRMesh(int argc, char * argv[], ostream & os_in)
     : rtt_UnitTestFrame::TestApp(argc, argv, os_in)
@@ -74,46 +76,53 @@ string TestAMRMesh::runTest()
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
     {
-	// Construct a new CAR_CU_Interface class object.
-	SP<CAR_CU_Interface> interface(new 
-			   CAR_CU_Interface(filename[mesh_number], verbose));
-	pass(" Construct ") << "Read " << filename[mesh_number]
-			    << " and created Interface class without coreing"
-			    << " in or firing an assertion." 
-			    << endl;
-
-	// Construct a new RTT_Format class object and parse the input files.
-	SP<RTT_Format> rttMesh = interface->parser();
-	pass(" Construct ") << "Read " << filename[mesh_number] << ".mesh"
-			    << " and created RTT_Format class without coreing"
-			    << " in or firing an assertion." 
-			    << endl;
-
-	bool all_passed = true;
 	// The following switch allows addition of other meshes for testing,
-	// with the "DEFINED" mesh providing an example. Only the check_dims
-	// tests is required and it will be automatically called by the other
-	// tests (with the exception of check header) if not invoked herein.
-	// The comparison data must also be provided for additional meshes
-	// within the switch structure residing in the test functions. 
+	// with the "STR1" mesh providing an example. The comparison data 
+	// must be provided for additional meshes within the switch structure 
+	// residing in the test functions. 
         switch (mesh_number)
 	{
 	// Test all nested class accessor functions for a very simplistic 
 	// mesh file (enum STR1).
 	case (0):
 	    mesh_type = STR1;
-	    all_passed = all_passed && check_interface(* interface, * rttMesh, 
-						       mesh_type);
 	    break;
 
 	default:
 	    fail("runTest") << "Invalid mesh type encountered." << endl;
-	    all_passed = false;
 	    break;
 	}
-	if (!all_passed)
-	    fail(filename[mesh_number]) << "Errors occured testing mesh " 
-					<< "number " << mesh_type << endl;
+        string file = filename[mesh_number];
+	// Construct a new CAR_CU_Interface class object.
+	SP<CAR_CU_Interface> interface(new CAR_CU_Interface(file, verbose));
+	pass(" Construct ") << "Read " << file
+			    << " and created Interface class without coreing"
+			    << " in or firing an assertion." 
+			    << endl;
+
+	// Construct a new RTT_Format class object and parse the input files.
+	SP<RTT_Format> rttMesh = interface->parser();
+	pass(" Construct ") << "Read " << file << ".mesh"
+			    << " and created RTT_Format class without coreing"
+			    << " in or firing an assertion." 
+			    << endl;
+
+	// Check the interface.
+	if (!check_interface(* interface, * rttMesh, mesh_type))
+	    fail("Interface ") << " Interface class testing errors occurred" 
+			       << " for mesh " << file << endl;
+
+	// Construct a new CAR_CU_Builder class object.
+	SP<CAR_CU_Builder> builder(new CAR_CU_Builder(interface));
+	pass(" Construct ") << "Created Builder class without coreing"
+			    << " in or firing an assertion." 
+			    << endl;
+
+	// Construct a new CAR_CU_Mesh class object and build the mesh.
+	SP<CAR_CU_Mesh> mesh = builder->build_Mesh(rttMesh);
+	pass(" Construct ") << "Created Mesh class without coreing"
+			    << " in or firing an assertion." 
+			    << endl;
     }
 
     // Report results of test.
@@ -157,28 +166,47 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     case STR1:
         coord_system = "XYZ";
 	density.resize(mesh.get_dims_ncells(), 1.0);
+	density[0]  = density[10] = density[22] = 
+	density[28] = density[30] = density[47] = 2.0;
 	kappa.resize(mesh.get_dims_ncells(), 1.0);
+	kappa[0]  = kappa[10] = kappa[22] = 
+	kappa[28] = kappa[30] = kappa[47] = 2.0;
 	kappa_thomson.resize(mesh.get_dims_ncells(), 0.5);
+	kappa_thomson[0]  = kappa_thomson[10] = 
+	kappa_thomson[22] = kappa_thomson[28] = 
+	kappa_thomson[30] = kappa_thomson[47] = 2.5;
 	specific_heat.resize(mesh.get_dims_ncells(), 0.1);
+	specific_heat[0]  = specific_heat[10] = 
+	specific_heat[22] = specific_heat[28] = 
+	specific_heat[30] = specific_heat[47] = 0.2;
 	temperature.resize(mesh.get_dims_ncells(), 1.0);
+	temperature[0]  = temperature[10] = 
+	temperature[22] = temperature[28] = 
+	temperature[30] = temperature[47] = 2.0;
 	analytic_opacity = "straight";
 	analytic_sp_heat = "straight";
 	implicit = 1.0;
 	rad_temp.resize(mesh.get_dims_ncells(), 1.5);
-	evol_ext.resize(0);
-	rad_source.resize(0);
+	rad_temp[0]  = rad_temp[10] = rad_temp[22] = 
+	rad_temp[28] = rad_temp[30] = rad_temp[47] = 2.5;
+	evol_ext.resize(mesh.get_dims_ncells(), 0.0);
+	evol_ext[4]  = evol_ext[14] = evol_ext[20] = 
+	evol_ext[37] = evol_ext[44] = evol_ext[54] = 1.0;
+	rad_source.resize(mesh.get_dims_ncells(), 0.0);
+	rad_source[0]  = rad_source[10] = rad_source[22] = 
+	rad_source[28] = rad_source[30] = rad_source[47] = 1.0;
 	rad_s_tend = 0;
 	ss_pos.resize(1,"lox");
 	ss_temp.resize(1,1.0);
 	ss_cells.resize(1);
-	ss_cells[0].push_back(1);  ss_cells[0].push_back(5);
-	ss_cells[0].push_back(9);  ss_cells[0].push_back(13);
-	ss_cells[0].push_back(17); ss_cells[0].push_back(21);
-	ss_cells[0].push_back(24); ss_cells[0].push_back(26);
-	ss_cells[0].push_back(30); ss_cells[0].push_back(34);
-	ss_cells[0].push_back(36); ss_cells[0].push_back(38);
-	ss_cells[0].push_back(42); ss_cells[0].push_back(46);
-	ss_cells[0].push_back(50); ss_cells[0].push_back(54);
+	ss_cells[0].push_back(0);  ss_cells[0].push_back(4);
+	ss_cells[0].push_back(8);  ss_cells[0].push_back(12);
+	ss_cells[0].push_back(16); ss_cells[0].push_back(20);
+	ss_cells[0].push_back(23); ss_cells[0].push_back(25);
+	ss_cells[0].push_back(29); ss_cells[0].push_back(33);
+	ss_cells[0].push_back(35); ss_cells[0].push_back(37);
+	ss_cells[0].push_back(41); ss_cells[0].push_back(45);
+	ss_cells[0].push_back(49); ss_cells[0].push_back(53);
 	delta_t = 0.01;
 	npmax = 100;
 	npnom = 100;
@@ -285,7 +313,7 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     // Check cell external volumetric source.
     bool got_evol_ext = true;
     for (int i = 0; i < evol_ext.size(); i++)
-        if (evol_ext[i] != interface.get_evol_ext(i + 1))
+        if (evol_ext[i] != interface.get_evol_ext(i))
 	    got_evol_ext = false;
     if (!got_evol_ext)
     {
@@ -303,7 +331,7 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     // Check cell external radiation source.
     bool got_rad_source = true;
     for (int i = 0; i < rad_source.size(); i++)
-        if (rad_source[i] != interface.get_rad_source(i + 1))
+        if (rad_source[i] != interface.get_rad_source(i))
 	    got_rad_source = false;
     if (!got_rad_source)
     {
@@ -328,7 +356,7 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     // Check surface source position.
     bool got_ss_pos = true;
     for (int i = 0; i < ss_pos.size(); i++)
-        if (ss_pos[i] != interface.get_ss_pos(i + 1))
+        if (ss_pos[i] != interface.get_ss_pos(i))
 	    got_ss_pos = false;
     if (!got_ss_pos)
     {
@@ -346,7 +374,7 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     // Check surface source temperature.
     bool got_ss_temp = true;
     for (int i = 0; i < ss_temp.size(); i++)
-        if (ss_temp[i] != interface.get_ss_temp(i + 1))
+        if (ss_temp[i] != interface.get_ss_temp(i))
 	    got_ss_temp = false;
     if (!got_ss_temp)
     {
@@ -357,7 +385,7 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     // Check surface source cells size.
     bool got_ss_cells_size = true;
     for (int i = 0; i < ss_cells.size(); i++)
-        if (ss_cells[i].size() != interface.get_ss_cells_size(i + 1))
+        if (ss_cells[i].size() != interface.get_ss_cells_size(i))
 	    got_ss_cells_size = false;
     if (!got_ss_cells_size)
     {
@@ -375,7 +403,7 @@ bool TestAMRMesh::check_interface(const rtt_amr::CAR_CU_Interface & interface,
     // Check surface source cells.
     bool got_ss_cells = true;
     for (int i = 0; i < ss_cells.size(); i++)
-        if (ss_cells[i] != interface.get_defined_surcells(i + 1))
+        if (ss_cells[i] != interface.get_defined_surcells(i))
 	    got_ss_cells = false;
     if (!got_ss_cells)
     {

@@ -1,4 +1,4 @@
-STR13 streaming, fully refl, straddle origin, from lox, lox vac, hix vac
+STR1 streaming, fully refl, straddle origin, from lox, lox vac, hix vac
 c 
 c  title block
 c
@@ -10,72 +10,46 @@ coord: xyz
 rtt_file: str1.mesh 
 end-title
 
-c
-c  initial zoning info block
-c
-c  number of coarse zones and boundary conditions
-c
-num_xcoarse: 1
-num_ycoarse: 1
-num_zcoarse: 1
-lox_bnd: reflect
-hix_bnd: reflect
-loy_bnd: reflect
-hiy_bnd: reflect
-loz_bnd: reflect
-hiz_bnd: reflect
-end-init
-
-c
-c  mesh info block
-c
-c  endpoints (cm) of each coarse zone (num_?coarse + 1 entries) 
-c  number of fine zones in each coarse zone (num_?coarse entries)
-xcoarse: -2 2
-num_xfine: 4
-ycoarse: -2 2
-num_yfine: 4
-zcoarse: -2 2
-num_zfine: 4
-end-mesh
 
 c
 c  material info block
 c
-c  map of material number to coarse zone; numbered row-wise, ie, x spins fastest in (x,y,z)
-c          (_num_xcoarse X _num_ycoarse X _num_zcoarse  entries)
-c  each material defined by mat_ID number, density (g/cc), kappa, kappa_scatter, 
-c                                 initial material temp, specific heat.
+c  map of material number to coarse zone;
+c  each material defined by mat_ID number, density (g/cc), kappa, 
+c       kappa_scatter, initial material temp, specific heat.
 c
 c  OPACITIES 
 c  
 c     _analytic_opacity                      description
-c     -----------------     -----------------------------------------------------------------
-c      "straight"             kappa entered as emmissivity/absorptivity [cm^2/g]
-c                                cross section = kappa * density
-c      "tcube"                kappa entered as kappa_zero [cm^2-keV^3/g]
-c                                cross section = ( kappa / (T_n)^3 ) * density , 
-c                                where T_n is T_mat at the beginning of the timestep
-c      "opacity"              kappa entered as a straight cross section [1/cm]
+c     -----------------   ---------------------------------------------------
+c      "straight"         kappa entered as emmissivity/absorptivity [cm^2/g]
+c                               cross section = kappa * density
+c      "tcube"            kappa entered as kappa_zero [cm^2-keV^3/g]
+c                               cross section = ( kappa / (T_n)^3 ) * density, 
+c                               where T_n is T_mat at the beginning of the 
+c                               timestep
+c      "opacity"          kappa entered as a straight cross section [1/cm]
 c
-c     kappa_scattering is always scattering coefficient; scat cross section = kappa_scat * density
+c       kappa_scattering is always scattering coefficient; 
+c            scattering cross section = kappa_scat * density
 c
 c  SPECIFIC HEAT
 c
 c     _analytic_sp_heat                      description
-c     -----------------      ----------------------------------------------------------------
-c      "straight"             c_v entered as c_v [jks/g/keV]; 
-c                                       dEdT = c_v * volume(cell) * dens
-c      "tcube"                c_v entered as C_v_zero [jks/cm^3/kev^4]; 
-c                                       dEdT = C_v_zero * volume(cell) * (T_n)^3
-c      "dedt"                 c_v entered as dEdT [jks/keV]; dEdT = c_v
+c     -----------------   ---------------------------------------------------
+c      "straight"         c_v entered as c_v [jks/g/keV]; 
+c                             dEdT = c_v * volume(cell) * dens
+c      "tcube"            c_v entered as C_v_zero [jks/cm^3/kev^4]; 
+c                             dEdT = C_v_zero * volume(cell) * (T_n)^3
+c      "dedt"             c_v entered as dEdT [jks/keV]; dEdT = c_v
 c
 c  _implicitness \in [0,1]; 0 => fully explicit; 1 => "fully" implicit in time
 c
-zonemap: 1 
-num_materials: 1
+zonemap: 1 2
+num_materials: 2
 c comment_matID, dens, kap_0, kap_thom, temp_init, c_v
 mat: 1 1.0 1.0 0.5 1.0 0.1
+     2 2.0 2.0 2.5 2.0 0.2
 analytic_opacity: straight
 analytic_sp_heat: straight
 implicitness: 1
@@ -86,31 +60,35 @@ c  source and computational parameters block
 c
 c  _timestep (constant) [shakes]
 c  Surface Source: number of surface sources, which face (entire face only), 
-c                  Planckian Temperature, and angular distribution (cosine => isotropic intensity)
-c  Number of particles; nominal = _npnom, maximum = _npmax, rate of change [particles/shake] = _dnpdt
-c
-c  _capacity = number of cells each processor will hold
-c             set larger than num_cells for serial and full replication
-c             must be contrived for stand-alone domain decomposition
-c  _max_cycle = maximum number of cycles to run
-c  _print_frequency: print each "print_frequency" cycle
-c  _buffer_size in particles, for in-cycle communication between processors
-c  _seed is random number seed
+c                  Planckian Temperature, and angular distribution 
+c                  (cosine => isotropic intensity)
+c  Number of particles; nominal = _npnom, maximum = _npmax, 
+c	                          rate of change [particles/shake] = _dnpdt
 c
 c  radiation input:
 c    _rad_temp is initial radiation temperature [keV] (num_zone entries)
-c    _rad_source is external radiation source [jks/cm^3/sh] (num_zone entries) that is "on" from
-c                time zero to time = _rad_s_tend shakes.
+c    _rad_source is external radiation source [jks/cm^3/sh] (num_zone entries)
+c                that is "on" from time zero to time = _rad_s_tend shakes.
 c                In serial, _rad_source is normalized to unity over volume
 c                In parallel, _rad_source is assumed normalized to a
 c                             volume integral of unity.
+c    _capacity = number of cells each processor will hold. Set larger than 
+c                num_cells for serial and full replication must be contrived 
+c                for stand-alone domain decomposition
+c    _max_cycle = maximum number of cycles to run
+c    _print_frequency: print each "print_frequency" cycle
+c    _buffer_size in particles, for in-cycle communication between processors
+c    _seed is random number seed
+c
 c
 timestep: .01
 num_ss: 1
 sur_source: lox
 sur_temp: 1.0
 ss_dist: normal
-rad_temp: 1.5
+rad_temp: 1.5 2.5
+rad_source: 1.0 0.0
+vol_source: 1.0 0.0
 npnom:   100
 npmax:   100
 dnpdt:     2

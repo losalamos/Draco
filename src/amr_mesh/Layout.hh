@@ -62,9 +62,7 @@ using std::vector;
 class Layout
 {
 private:
-  // cell-face-cell array for transport between cells, Layout adjusts the
-  // cell, face, and adjacent cell indices to (cell-1), (face-1), and
-  // (adj-1)
+  // cell-face-cell array for transport between cells.
     vector<vector<vector<int> > > face_cell;
 
   // Begin_Doc layout-int.tex
@@ -102,7 +100,7 @@ public:
  * \param  face_index Cell face number. 
  * \param  num_adj Number of adjacent cells.
  */
-    inline void set_adj_size(int cell_index, int face_index, int num_adj = 1);
+    inline void set_adj_size(int cell_index, int face_index, int num_adj = 0);
   // get size member functions
 /*!
  * \brief Returns the number of cells in the mesh.
@@ -138,19 +136,19 @@ public:
  *        adjacent cell index for the specified cell face.
  * \param cell Cell number.
  * \param face Cell face number. 
- * \param adjcell Adjacent cell index (defaults to 1).
+ * \param adjcell Adjacent cell index (defaults to 0).
  * \return Adjacent cell number.
  */
-    inline int operator()(int cell, int face, int adjcell = 1) const;
+    inline int operator()(int cell, int face, int adjcell = 0) const;
 /*!
  * \brief Overloaded operator to assign a cell number to the specified 
  *        adjacent cell index for the specified cell face.
  * \param cell Cell number.
  * \param face Cell face number. 
- * \param adjcell Adjacent cell index (defaults to 1).
+ * \param adjcell Adjacent cell index (defaults to 0).
  * \return Adjacent cell number.
  */
-    inline int & operator()(int cell, int face, int adjcell = 1);
+    inline int & operator()(int cell, int face, int adjcell = 0);
 
   // overloaded operators for equality
 /*!
@@ -203,7 +201,7 @@ inline bool Layout::operator==(const Layout & rhs) const
 
 inline void Layout::set_size(int cell_index, int num_faces)
 {
-    face_cell[cell_index-1].resize(num_faces);
+    face_cell[cell_index].resize(num_faces);
 } 
 
 //---------------------------------------------------------------------------//
@@ -211,7 +209,7 @@ inline void Layout::set_size(int cell_index, int num_faces)
 
 inline void Layout::set_adj_size(int cell_index, int face_index, int num_adj)
 {
-    face_cell[cell_index-1][face_index-1].resize(num_adj);
+    face_cell[cell_index][face_index].resize(num_adj);
 } 
 
 //---------------------------------------------------------------------------//
@@ -219,7 +217,7 @@ inline void Layout::set_adj_size(int cell_index, int face_index, int num_adj)
 
 inline int Layout::get_num_cell_faces(int cell_index) const
 {
-    return face_cell[cell_index-1].size();
+    return face_cell[cell_index].size();
 }
 
 //---------------------------------------------------------------------------//
@@ -227,7 +225,7 @@ inline int Layout::get_num_cell_faces(int cell_index) const
 
 inline int Layout::get_num_adj_cells(int cell_index, int face_index) const
 {
-    return face_cell[cell_index-1][face_index-1].size();
+    return face_cell[cell_index][face_index].size();
 }
 
 //---------------------------------------------------------------------------//
@@ -236,7 +234,7 @@ inline int Layout::get_num_adj_cells(int cell_index, int face_index) const
 inline int Layout::operator()(int cell_index, int face_index, 
 			      int adj_index) const
 {
-    return face_cell[cell_index-1][face_index-1][adj_index-1];
+    return face_cell[cell_index][face_index][adj_index];
 }
 
 //---------------------------------------------------------------------------//
@@ -245,7 +243,7 @@ inline int Layout::operator()(int cell_index, int face_index,
 inline int& Layout::operator()(int cell_index, int face_index, 
 			       int adj_index)
 {
-    return face_cell[cell_index-1][face_index-1][adj_index-1];
+    return face_cell[cell_index][face_index][adj_index];
 }
 
 } // end namespace rtt_amr

@@ -55,7 +55,7 @@ CAR_CU_Mesh::CAR_CU_Mesh(Layout & layout_, ncvf_d & node_coords_,
     int dimension = get_ndim();
     
   // dimension assertions
-    Check (dimension == node_coords.size());
+    Check (dimension == node_coords[0].size());
 
   // mesh size assertions
     Check (ncells == cell_nodes.size());
@@ -103,15 +103,15 @@ int CAR_CU_Mesh::get_cell_from_coords(const vector<double> &r) const
     // binary search of cell node coordinates - node_coords array is sorted 
     // with x varying fastest, followed by y, and then z. find the first 
     // node "below" this point in space.
-    int high_index = node_coords[0].size() - 1;
+    int high_index = node_coords.size() - 1;
     for (int i = dim; i >= 0; i--)
     {
         int low_index  = 0;
 	while ((high_index - low_index) > 1)
 	{
 	    index = (high_index + low_index) / 2;
-	    if (r[i] < node_coords[i][index] && 
-		compReal(r[i],node_coords[i][index]))
+	    if (r[i] < node_coords[index][i] && 
+		compReal(r[i],node_coords[index][i]))
 		high_index = index;
 	    else
 		low_index  = index;
@@ -126,7 +126,7 @@ int CAR_CU_Mesh::get_cell_from_coords(const vector<double> &r) const
     while ((high_index - low_index) > 1)
     {
         return_cell = (high_index + low_index) / 2;
-	if (cell_nodes[return_cell][0] - 1 < index)
+	if (cell_nodes[return_cell][0] < index)
 	    high_index = return_cell;
 	else
 	    low_index  = return_cell;
@@ -162,18 +162,15 @@ double CAR_CU_Mesh::get_dist_2_bndry(const vector<double> & r,
   // loop to get the distances to boundary in each coordinate direction
     for (int i = 0; i < get_ndim(); i++)
     {
-      // define absolute dimension index
-	int d = i + 1;
-
       // find the distances to boundary along each dimension
 	if (omega[i] == 0.0)
 	    dim_dist_boundary[i] = huge;
 	else if (omega[i] > 0.0)
 	    dim_dist_boundary[i] = 
-	        (get_cell_max_coord(d, cell) - r[i]) / omega[i];
+	        (get_cell_max_coord(i, cell) - r[i]) / omega[i];
 	else
 	    dim_dist_boundary[i] = 
-	        (get_cell_min_coord(d, cell) - r[i]) / omega[i];
+	        (get_cell_min_coord(i, cell) - r[i]) / omega[i];
     }
 
   // calculate the distance to boundary
@@ -184,9 +181,9 @@ double CAR_CU_Mesh::get_dist_2_bndry(const vector<double> & r,
   // calculate the face that the boundary is on
     int index = itor - dim_dist_boundary.begin();
     if (omega[index] < 0.0)
-	face = 3 - index;
+	face = 2 - index;
     else
-	face = 4 + index;
+	face = 3 + index;
 
   // return the distance-to-boundary
     return dist_boundary;
@@ -210,17 +207,17 @@ int CAR_CU_Mesh::get_bndface(string boundary, int cell) const
     int face;
 
     if (boundary == "loz")
-	face = 1;
+	face = 0;
     else if (boundary == "loy")
-	face = 2;
+	face = 1;
     else if (boundary == "lox")
-	face = 3;
+	face = 2;
     else if (boundary == "hix")
-	face = 4;
+	face = 3;
     else if (boundary == "hiy")
-	face = 5;
+	face = 4;
     else if (boundary == "hiz")
-	face = 6;
+	face = 5;
     else
         Insist(0, "Illegal cell boundary face!");
 
@@ -284,12 +281,12 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
     // often this routine is called.
     if (boundary[end_ind] != 'z')
     {
-	value = node_coords[dim_ind][cell_nodes[cell_ind][node_ind] - 1];
+	value = node_coords[cell_nodes[cell_ind][node_ind]][dim_ind];
 	for (int k = 0; k < get_num_cells(); k++)
 	{
-	    if (!compReal(node_coords[dim_ind][cell_nodes[k][node_ind] - 1],
+	    if (!compReal(node_coords[cell_nodes[k][node_ind]][dim_ind],
 			  value))
-		return_list.push_back(k+1);
+		return_list.push_back(k);
 	}
     }
     // only have to search the beginning (-z) and end (+z) of the last 
@@ -298,21 +295,21 @@ vector<int> CAR_CU_Mesh::get_surcells(string boundary) const
     {
         if (boundary[0] == 'l')
 	{
-	    value = node_coords[dim_ind][cell_nodes[cell_ind][node_ind] - 1];
-	    while (!compReal(node_coords[dim_ind]
-			     [cell_nodes[cell_ind][node_ind] -1], value))
+	    value = node_coords[cell_nodes[cell_ind][node_ind]][dim_ind];
+	    while (!compReal(node_coords
+			     [cell_nodes[cell_ind][node_ind]][dim_ind], value))
 	    {
-	        return_list.push_back(cell_ind+1);
+	        return_list.push_back(cell_ind);
 		++cell_ind;
 	    }
 	}
 	else
 	{
-	    value = node_coords[dim_ind][cell_nodes[cell_ind][node_ind] - 1];
-	    while (!compReal(node_coords[dim_ind]
-			     [cell_nodes[cell_ind][node_ind]-1], value))
+	    value = node_coords[cell_nodes[cell_ind][node_ind]][dim_ind];
+	    while (!compReal(node_coords
+			     [cell_nodes[cell_ind][node_ind]][dim_ind], value))
 	    {
-	        return_list.push_back(cell_ind+1);
+	        return_list.push_back(cell_ind);
 		--cell_ind;
 	    }
 	}
@@ -348,7 +345,7 @@ void CAR_CU_Mesh::check_defined_surcells(const string ss_face,
 
         // get bnd condition on ss face; had better be  either vacuum (0) or
 	// reflection (cell number).
-	int bc = layout(ss_list[ss_indx], ss_face_num, 1);
+	int bc = layout(ss_list[ss_indx], ss_face_num, 0);
 	Check (bc == 0 || bc == ss_list[ss_indx]);
     }
 }
@@ -390,7 +387,7 @@ void CAR_CU_Mesh::print(ostream & output) const
     output << ">>> MESH <<<" << endl;
     output << "============" << endl;
 
-    for (int cell = 1; cell <= get_num_cells(); cell++)
+    for (int cell = 0; cell < get_num_cells(); cell++)
 	print(output, cell);
 }
 
@@ -414,19 +411,19 @@ void CAR_CU_Mesh::print(ostream & output, int cell) const
     output << "---------------" << endl;
     if (get_ndim() == 2)
     {
-	output << " x  : " << get_cell_center_coord(1, cell) << endl;
-	output << " y  : " << get_cell_center_coord(2, cell) << endl;
-    	output << " dx : " << get_cell_width(1, cell) << endl;
-	output << " dy : " << get_cell_width(2, cell) << endl;
+	output << " x  : " << get_cell_center_coord(0, cell) << endl;
+	output << " y  : " << get_cell_center_coord(1, cell) << endl;
+    	output << " dx : " << get_cell_width(0, cell) << endl;
+	output << " dy : " << get_cell_width(1, cell) << endl;
     }
     else
     {
-	output << " x  : " << get_cell_center_coord(1, cell) << endl;
-	output << " y  : " << get_cell_center_coord(2, cell) << endl;
-	output << " z  : " << get_cell_center_coord(3, cell) << endl;
-    	output << " dx : " << get_cell_width(1, cell) << endl;
-	output << " dy : " << get_cell_width(2, cell) << endl;
-	output << " dz : " << get_cell_width(3, cell) << endl;
+	output << " x  : " << get_cell_center_coord(0, cell) << endl;
+	output << " y  : " << get_cell_center_coord(1, cell) << endl;
+	output << " z  : " << get_cell_center_coord(2, cell) << endl;
+    	output << " dx : " << get_cell_width(0, cell) << endl;
+	output << " dy : " << get_cell_width(1, cell) << endl;
+	output << " dz : " << get_cell_width(2, cell) << endl;
     }	
     output << "---------------" << endl;
     output << "Layout "         << endl;

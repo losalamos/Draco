@@ -110,39 +110,49 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     // Assign a material zone to each cell.
     zone.resize(ncells);
     int matl_flag = rttMesh->get_cell_flags_material_flag_number();
+    // Assuming here that the material zone flags are sequential!
     for (int cell_number = 0; cell_number < ncells; cell_number++)
+    {
         zone[cell_number] = rttMesh->get_cells_flags(cell_number,matl_flag);
-
+	--zone[cell_number];
+    }
     // resize the material zone and radiation temperature vectors according 
     // to the number of materials.
     mat_zone.resize(rttMesh->get_dims_ncell_flags(matl_flag));
-    rad_temp.resize(rttMesh->get_dims_ncell_flags(matl_flag));
+    rad_temp.resize(rttMesh->get_dims_ncell_flags(matl_flag), 0.0);
 
     // Assign a volume source to each cell, if present.
+    cell_evol.resize(ncells);
     int vol_src_flag = rttMesh->get_cell_flags_volume_src_flag_number();
     if (vol_src_flag >= 0)
     {
-        cell_evol.resize(ncells);
         // resize the volumetric source vector according to the number of
         // sources specified in the RTT Format file
-        evol_ext.resize(rttMesh->get_dims_ncell_flags(vol_src_flag));
-
+        evol_ext.resize(rttMesh->get_dims_ncell_flags(vol_src_flag), 0.0);
+	// Assuming here that the volume source flags are sequential!
         for (int cell = 0; cell < ncells; cell++)
+	{
 	    cell_evol[cell] = rttMesh->get_cells_flags(cell,vol_src_flag);
+	    --cell_evol[cell];
+	}
     }
     else
         fill(cell_evol.begin(), cell_evol.end(), 0.0);
 
     // Assign a radiation source to each cell, if present.
+    cell_rsrc.resize(ncells);
     int rad_src_flag = rttMesh->get_cell_flags_radiation_src_flag_number();
     if (rad_src_flag >= 0)
     {
-        cell_rsrc.resize(ncells);
         // resize the radiation source vector according to the number of
         // sources specified in the RTT Format file
-        rad_source.resize(rttMesh->get_dims_ncell_flags(rad_src_flag));
+        rad_source.resize(rttMesh->get_dims_ncell_flags(rad_src_flag), 0.0);
+	// Assuming here that the radiation source flags are sequential!
         for (int cell = 0; cell < ncells; cell++)
+	{
 	    cell_rsrc[cell] = rttMesh->get_cells_flags(cell,rad_src_flag);
+	    --cell_rsrc[cell];
+	}
     }
     else
         fill(cell_rsrc.begin(), cell_rsrc.end(), 0.0);
@@ -152,19 +162,19 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
     if (surface_src_flag >= 0)
     {
         int num_ss = rttMesh->get_dims_nside_flags(surface_src_flag);
-        int null_flag_num = 0;
+        int null_flag_num = -1;
         // Check for null surface source flag definitions so that they can be
 	// excluded from the defined_surcells and associated vectors.
-        for (int sf = 1; sf <= num_ss; sf++)
+        for (int sf = 0; sf < num_ss; sf++)
 	{
 	    string null_flag = 
-	        rttMesh->get_side_flags_flag_name(surface_src_flag,sf - 1);
+	        rttMesh->get_side_flags_flag_name(surface_src_flag,sf);
 	    if ((null_flag[0] == 'n' || null_flag[0] == 'N') && 
 		 null_flag.find_first_not_of("noulsrceNOULSRCE") == 
 		 string::npos)
-	        null_flag_num = sf;
+	        null_flag_num = sf + 1;
 	}
-	if (null_flag_num > 0)
+	if (null_flag_num >= 0)
 	    --num_ss;
 
         // resize the surface source vectors according to the number of
@@ -182,9 +192,8 @@ SP<RTT_Format> CAR_CU_Interface::parser_Mesh(ifstream &in)
 	    {
 	        if (source > null_flag_num)
 		    --source;
-		// Cell numbering starts at one while the RTT format cell 
-		// numbering starts at zero.
-	        defined_surcells[source - 1].push_back(cell + 1);
+		--source;
+	        defined_surcells[source].push_back(cell);
 	    }
 	}
     }
@@ -215,6 +224,7 @@ void CAR_CU_Interface::parser_Opacity(ifstream &in)
 	    for (int i = 0; i < mat_zone.size(); i++)
 	    {
 		in >> mat_zone[i];
+		--mat_zone[i];
 		Insist(mat_zone[i] >= 0, "Materials in zonemap <= 0!");
 	    }
 	if (keyword == "num_materials:")
@@ -240,11 +250,12 @@ void CAR_CU_Interface::parser_Opacity(ifstream &in)
 	    for (int i = 0; i < density.size(); i++)
 	    {
 		in >> data;
-		in >> density[data-1];
-		in >> kappa[data-1];
-		in >> kappa_thomson[data-1];
-		in >> temperature[data-1];
-		in >> specific_heat[data-1];
+		--data;
+		in >> density[data];
+		in >> kappa[data];
+		in >> kappa_thomson[data];
+		in >> temperature[data];
+		in >> specific_heat[data];
 	    }
 	}
 	if (keyword == "implicitness:")
@@ -261,7 +272,6 @@ void CAR_CU_Interface::parser_Opacity(ifstream &in)
     Insist(density.size() > 0, "You must specify at least 1 Mat.!");
 }
 
-
 //---------------------------------------------------------------------------//
 // private Parser member functions for Source_Init<MT> build
 //---------------------------------------------------------------------------//
@@ -269,19 +279,7 @@ void CAR_CU_Interface::parser_Opacity(ifstream &in)
 
 void CAR_CU_Interface::parser_Source(ifstream &in)
 {
-    fill(evol_ext.begin(), evol_ext.end(), 0.0);
-    fill(rad_temp.begin(), rad_temp.end(), 0.0);
-    fill(rad_source.begin(), rad_source.end(), 0.0);
 
-  // parse the source
-    zone_source_parser(in);
-}
-
-//---------------------------------------------------------------------------//
-// parse and assign the source variables
-    
-void CAR_CU_Interface::zone_source_parser(ifstream &in)
-{
   // Source Parser
 
   // input keywords
@@ -302,7 +300,7 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
 	    for (int i = 0; i < evol_ext.size(); i++)
 		in >> evol_ext[i];
 	    for (int cell = 0; cell < cell_evol.size(); cell++)
-		cell_evol[cell] = evol_ext[cell_evol[cell] - 1];
+		cell_evol[cell] = evol_ext[cell_evol[cell]];
 	}
 	if (keyword == "rad_source:")
 	{
@@ -312,7 +310,7 @@ void CAR_CU_Interface::zone_source_parser(ifstream &in)
 		if (rad_source[i] > 0.0)
 		    have_rad_source = true;
 		for (int cell = 0; cell < cell_rsrc.size(); cell++)
-		    cell_rsrc[cell] = rad_source[cell_rsrc[cell] - 1];
+		    cell_rsrc[cell] = rad_source[cell_rsrc[cell]];
 	    }
 	}
 	if (keyword == "rad_s_tend:")
@@ -393,8 +391,8 @@ vector<double> CAR_CU_Interface::get_kappa() const
     vector<double> cell_k(zone.size());
 
   // assign the values to cell_k based on the zone and material
-    for (int cell = 1; cell <= cell_k.size(); cell++)
-	cell_k[cell-1] = kappa[mat_zone[zone[cell-1]-1]-1];
+    for (int cell = 0; cell < cell_k.size(); cell++)
+	cell_k[cell] = kappa[mat_zone[zone[cell]]];
 
   // return cell_k
     return cell_k;
@@ -409,8 +407,8 @@ vector<double> CAR_CU_Interface::get_kappa_thomson() const
     vector<double> cell_kt(zone.size());
 
   // assign the values to cell_kt based on the zone and material
-    for (int cell = 1; cell <= cell_kt.size(); cell++)
-	cell_kt[cell-1] = kappa_thomson[mat_zone[zone[cell-1]-1]-1];
+    for (int cell = 0; cell < cell_kt.size(); cell++)
+	cell_kt[cell] = kappa_thomson[mat_zone[zone[cell]]];
 
   // return cell_k
     return cell_kt;
@@ -425,8 +423,8 @@ vector<double> CAR_CU_Interface::get_density() const
     vector<double> cell_den(zone.size());
 
   // assign the values to cell_den based on the zone and material
-    for (int cell = 1; cell <= cell_den.size(); cell++)
-	cell_den[cell-1] = density[mat_zone[zone[cell-1]-1]-1];
+    for (int cell = 0; cell < cell_den.size(); cell++)
+	cell_den[cell] = density[mat_zone[zone[cell]]];
 
   // return cell_den
     return cell_den;
@@ -441,8 +439,8 @@ vector<double> CAR_CU_Interface::get_temperature() const
     vector<double> cell_t(zone.size());
 
   // assign the values to cell_t based on the zone and material
-    for (int cell = 1; cell <= cell_t.size(); cell++)
-	cell_t[cell-1] = temperature[mat_zone[zone[cell-1]-1]-1];
+    for (int cell = 0; cell < cell_t.size(); cell++)
+	cell_t[cell] = temperature[mat_zone[zone[cell]]];
 
   // return cell_t
     return cell_t;
@@ -457,8 +455,8 @@ vector<double> CAR_CU_Interface::get_specific_heat() const
     vector<double> cell_cv(zone.size());
 
   // assign the values to cell_cv based on the zone and material
-    for (int cell = 1; cell <= cell_cv.size(); cell++)
-	cell_cv[cell-1] = specific_heat[mat_zone[zone[cell-1]-1]-1];
+    for (int cell = 0; cell < cell_cv.size(); cell++)
+	cell_cv[cell] = specific_heat[mat_zone[zone[cell]]];
 
   // return cell_cv
     return cell_cv;
@@ -473,8 +471,8 @@ vector<double> CAR_CU_Interface::get_rad_temp() const
     vector<double> cell_rad(zone.size());
 
   // assign the values to cell_rad based on the zone
-    for (int cell = 1; cell <= cell_rad.size(); cell++)
-	cell_rad[cell-1] = rad_temp[zone[cell-1]-1];
+    for (int cell = 0; cell < cell_rad.size(); cell++)
+	cell_rad[cell] = rad_temp[zone[cell]];
 
   // return rad_temp
     return cell_rad;
