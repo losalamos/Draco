@@ -99,13 +99,6 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	    dist_stream = d_census;
 	}
 
-//       // streaming
-//         if (d_collision <= d_boundary)
-//         {
-//             stream(d_collision);
-//             alive = collide(mesh, xs);
-//         }
-
 	stream_IMC(xs, tally, dist_stream);
 
 	if (descriptor == "scatter")
@@ -120,8 +113,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 
 	if (descriptor == "census")
 	{
-	    tally.accumulate_ecen( cell, ew );
-	  //    write_to_census( cell, r, omega);
+	    tally.accumulate_cen_info( cell, ew );
 	    alive = false;
 	}
 
@@ -129,9 +121,6 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	if (diagnostic)
 	    diagnostic->print(*this);
     } 
-
-    if (diagnostic)
-        cout << tally << endl;
 
   // !!! END OF TRANSPORT LOOP !!!
 }

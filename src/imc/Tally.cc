@@ -34,10 +34,12 @@ void Tally<MT>::accumulate_ewpl(const int cell, const double ewpl)
 
 
 template<class MT>
-void Tally<MT>::accumulate_ecen(const int cell, const double new_ecen)
+void Tally<MT>::accumulate_cen_info(const int cell, const double new_ecen)
 {
     census_energy(cell) += new_ecen;
     new_ecen_tot        += new_ecen;
+    new_ncen(cell)      += 1;
+    new_ncen_tot        += 1;
 }
 
 //---------------------------------------------------------------------------//
@@ -49,8 +51,10 @@ void Tally<MT>::print(ostream &out) const
 {
     out << setw(8) << setiosflags(ios::right) << "Cell"
 	<< setw(15) << "energy-dep" << setw(15) << "ewpl" 
-	<< setw(15) << "new_ecen" << endl;
-    out << "------------------------------------------------------" << endl;
+	<< setw(15) << "new_ecen" 
+	<< setw(15) << "new_ncen" << endl;
+    out << "------------------------------------" <<
+           "------------------------------------" << endl;
 
     out.precision(4);
     for (int i = 1; i <= energy_dep.get_Mesh().num_cells(); i++)
@@ -58,11 +62,13 @@ void Tally<MT>::print(ostream &out) const
 	    << setw(15) << setiosflags(ios::scientific) << energy_dep(i) 
 	    << setw(15) << setiosflags(ios::scientific) << eweighted_pathlen(i) 
 	    << setw(15) << setiosflags(ios::scientific) << census_energy(i) 
+	    << setw(15) << setiosflags(ios::scientific) << new_ncen(i) 
 	    << endl;
 
     out << endl;
     out << "Total new census energy: " 
-	<<  setw(15) << setiosflags(ios::scientific) << new_ecen_tot;
+	<< setw(15) << setiosflags(ios::scientific) << new_ecen_tot
+	<< ", new_ncen_tot: " << new_ncen_tot << endl;
 }
 
 CSPACE
