@@ -1,0 +1,13 @@
+//----------------------------------*-C++-*----------------------------------//
+// MatVec_3T.pt
+// Dave Nystrom
+// Thu Oct  2 14:21:13 MDT 1997
+//---------------------------------------------------------------------------//
+
+#include "MatVec_3T.cc"
+#include "Test_3T.hh"
+#include "XYZ_Quadratic.hh"
+#include "mesh/Mesh_XYZ.hh"
+
+//instantiate class MatVec_3T<float>
+instantiate class MatVec_3T< Test_3T<Mesh_XYZ, XYZ_Quadratic> >
