@@ -48,9 +48,9 @@ Shared_Lib::Shared_Lib(const std::string &file_name)
   This is implemented by opening a new handle to the shared file.
 */
 Shared_Lib::Shared_Lib(const Shared_Lib &from)
-    : d_file_name(from.d_file_name)
+    : d_handle(0)
 {
-    open(d_file_name);
+    open(from.d_file_name);
 }
 
 //---------------------------------------------------------------------------//
@@ -66,8 +66,7 @@ Shared_Lib &Shared_Lib::operator=(const Shared_Lib &rhs)
 	return *this;
     }
 
-    d_file_name = rhs.d_file_name;
-    open(d_file_name);
+    open(rhs.d_file_name);
 
     return *this;
 }
@@ -98,6 +97,7 @@ void Shared_Lib::open(const std::string &file_name)
     
     close();
     d_handle = dlopen(file_name.c_str(), RTLD_LAZY);
+    d_file_name = file_name;
 
     Insist(d_handle, dlerror());
 }
