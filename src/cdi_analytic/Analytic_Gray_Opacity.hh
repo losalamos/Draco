@@ -47,6 +47,9 @@ namespace rtt_cdi_analytic
  * reaction type.  The enumeration rtt_cdi::Reaction can have the value
  * TOTAL, ABSORPTION, or SCATTERING.
  *
+ * The default rtt_cdi::Model for an Analytic_Gray_Opacity is
+ * rtt_cdi::ANALYTIC.  However, this can be overridden in the constructor.
+ *
  * This class conforms to the interface specified by rtt_cdi::GrayOpacity and
  * can be used with rtt_cdi::CDI to get analytic opacities.
  *
@@ -81,10 +84,14 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 
     // Reaction model.
     rtt_cdi::Reaction reaction;
+
+    // CDI model.
+    rtt_cdi::Model model;
     
   public:
     // Constructor.
-    Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction);
+    Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction, 
+			  rtt_cdi::Model = rtt_cdi::ANALYTIC);
 
     // Constructor for packed Analytic_Gray_Opacities.
     explicit Analytic_Gray_Opacity(const sf_char &);
@@ -110,7 +117,7 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
     rtt_cdi::Reaction getReactionType() const { return reaction; }
 
     //! Query for model type.
-    rtt_cdi::Model getModelType() const { return rtt_cdi::ANALYTIC; }
+    rtt_cdi::Model getModelType() const { return model; }
 
     // Return the energy policy (gray).
     inline std_string getEnergyPolicyDescriptor() const;

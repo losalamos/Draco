@@ -41,12 +41,14 @@ namespace rtt_cdi_analytic
  *
  */
 Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
-    const sf_double &groups,
+    const sf_double         &groups,
     const sf_Analytic_Model &models,
-    rtt_cdi::Reaction reaction_in)
+    rtt_cdi::Reaction        reaction_in,
+    rtt_cdi::Model           model_in)
     : group_boundaries(groups),
       group_models(models),
-      reaction(reaction_in)
+      reaction(reaction_in),
+      model(model_in)
 {
     Require (reaction == rtt_cdi::TOTAL ||
 	     reaction == rtt_cdi::ABSORPTION ||
