@@ -288,6 +288,9 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
 bool OS_Mesh::operator==(const OS_Mesh &mesh)
 {
   // check to see that we have the same coordinate systems
+  // NEED TO FINISH THIS
+    return true;
+}
 
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
