@@ -32,6 +32,7 @@ testMmcMatProp::~testMmcMatProp()
 //empty
 }
 
+
 void testMmcMatProp::execute_test()
 {
 
@@ -45,27 +46,30 @@ void testMmcMatProp::execute_test()
     using std::list;
 
     int ncell  = 4;
-    typedef list<double >        FTVD;
-    typedef list<list<double > > FTVVD;
-    typedef list<list<int    > > FTVVI;
+    std::vector<int> nmat(ncell);
+
+    typedef list<double>     FTVD;
+    typedef list<FTVD>       FTVVD;
+    typedef list<list<int> > FTVVI;
 
     FTVVD volume_fraction;
     FTVVD density;
     FTVVD electron_temp;
     FTVVD ion_temp;
     FTVVI mat_id;
-
+    
+    
     for (int icell = 0; icell<ncell; icell++)
     {
-	int nmat = icell%2 + 2;
+	nmat[icell] = icell%2 + 2;
 
-	volume_fraction.push_back(list<double>());
-	density.push_back(list<double>());
-	electron_temp.push_back(list<double>());
-	ion_temp.push_back(list<double>());
+	volume_fraction.push_back(FTVD());
+	density.push_back(FTVD());
+	electron_temp.push_back(FTVD());
+	ion_temp.push_back(FTVD());
 	mat_id.push_back(list<int>());
 
-	for (int imat = 0; imat<nmat; imat++)
+	for (int imat = 0; imat<nmat[icell]; imat++)
 	{
 	    volume_fraction.back().push_back((icell+1)*(imat+1));
 	    density.back().push_back(2.125*volume_fraction.back().back());
@@ -101,36 +105,31 @@ void testMmcMatProp::execute_test()
 
 // Create the material state field
 
-    typedef FTVD   FT;
-    typedef FTVVD  FT1;
-    typedef FTVVI  FT2;
-
-    MMCMP::MaterialStateField<FT,FT1> msf =
-	mmcmp.getMaterialState<FT,FT1,FT2>(density, electron_temp,
+    MMCMP::MaterialStateField<FTVD,FTVVD> msf =
+	mmcmp.getMaterialState<FTVD,FTVVD,FTVVI>(density, electron_temp,
 			       ion_temp, volume_fraction, 
 			       mat_id);
 
-
-	
 // Print header.
 
-    std::cout << std::endl;
     std::cout << std::scientific;
-    std::cout.precision(5);
+    std::cout << std::endl;
     std::cout << " --- Begin Multi-Material Cell Tests ---" << std::endl;    
     std::cout << std::endl;
 
-// Define logical for self-test
+// Define logical for self-test.  Define pass criteria.
     
     bool passed = true;
+    bool results_OK;
     double eps = 5000.*std::numeric_limits<double>::epsilon();
+    std::cout.precision(5);
     std::cout << " Max Allowed Relative Error: " << eps 
 	      << std::endl << std::endl;
 
 // Echo Input
 
     std::cout.precision(5);
-    std::cout << " ** Input Data **" << std::endl;
+    std::cout << " ** Cell Input Data **" << std::endl;
     std::cout << " Cell Mat Mat   Volume       Density  " << 
 	"    Elec-Temp    Ion-Temp "
 	      << std::endl;
@@ -146,7 +145,6 @@ void testMmcMatProp::execute_test()
 
     for( int icell = 0; icell<ncell; icell++)
     {
-	int nmat = (*mit).size();
 
 	FTVVD::value_type::iterator vitit  = (*vit++).begin();
 	FTVVD::value_type::iterator ditit  = (*dit++).begin();
@@ -154,7 +152,7 @@ void testMmcMatProp::execute_test()
 	FTVVD::value_type::iterator tiitit = (*tiit++).begin();
 	FTVVI::value_type::iterator mitit  = (*mit++).begin();
 
-	for (int imat = 0; imat<nmat; imat++)
+	for (int imat = 0; imat<nmat[icell]; imat++)
 	{
 	    std::cout << " [" << icell << 
 		"]  [" << imat << "]  " << 
@@ -167,6 +165,16 @@ void testMmcMatProp::execute_test()
 	std::cout << std::endl;	
     }
     std::cout << std::endl;
+
+    std::cout << " ** Fifi File Data ** (No temp or dens dependence):" 
+	      << std::endl;
+    std::cout << " Mat-ID  abs      Cve      Cvi      abar  tfree" << std::endl;
+    std::cout << "       (m**2/kg) (J/kg-K) (J/kg-K)  amu " << std::endl;
+    std::cout << "  1      2.3      3.4      3.6      10.0  3.0" << std::endl;
+    std::cout << "  2      3.0      2.1      1.2      20.0  4.0" << std::endl;
+    std::cout << "  3      7.0      5.3     10.1      30.0  5.0" << std::endl;
+    std::cout << std::endl;
+
     std::cout.precision(12);
 
 // Check absorption opacity results.
@@ -175,26 +183,137 @@ void testMmcMatProp::execute_test()
 	std::cout << " ** Absorption Opacity **" << std::endl;
 	std::cout << " Cell  Opacity (1/m)      Relative Error" 
 		  << std::endl;
-	std::list<double> results(ncell);
 	std::vector<double> answer(ncell);
-	std::vector<double> relErr(ncell);
-	double relErrMax = 0.;
 	answer[0] = 1.012916666667e+01;
 	answer[1] = 5.475416666667e+01;
 	answer[2] = 3.038750000000e+01;
 	answer[3] = 1.095083333333e+02;
+	FTVD results(ncell);
 	int group = 1;
 	msf.getSigmaAbsorption(group, results);
-	FTVD::iterator resit = results.begin();
-	for( int icell = 0; icell<ncell; icell++)
-	{
-	    relErr[icell] = std::abs(*resit-answer[icell])/answer[icell];
-	    if (relErr[icell] > relErrMax) relErrMax = relErr[icell];
-	    std::cout << " [" << icell << "]   " << 
-		*resit++ << " " << relErr[icell] << std::endl;
-	}
-	std::cout << std::endl;
-	passed = passed && relErrMax <= eps;
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check total opacity results.
+
+    {
+	std::cout << " ** Total Opacity **" << std::endl;
+	std::cout << " Cell  Opacity (1/m)      Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0] = 1.012916666667e+01;
+	answer[1] = 5.475416666667e+01;
+	answer[2] = 3.038750000000e+01;
+	answer[3] = 1.095083333333e+02;
+	FTVD results(ncell);
+	int group = 1;
+	msf.getSigmaTotal(group, results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check emission opacity results.
+
+    {
+	std::cout << " ** Emission Opacity **" << std::endl;
+	std::cout << " Cell  Opacity (1/m)      Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0] = 1.012916666667e+01;
+	answer[1] = 5.475416666667e+01;
+	answer[2] = 3.038750000000e+01;
+	answer[3] = 1.095083333333e+02;
+	FTVD results(ncell);
+	int group = 1;
+	msf.getSigmaEmission(group, results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check electron-ion coupling results.
+
+    {
+	std::cout << " ** Electron-Ion Coupling **" << std::endl;
+	std::cout << " Cell  eic (J/m**3-s-K)   Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0]=   1.342676328483e+14;
+	answer[1]=   2.332007110693e+14;
+	answer[2]=   4.028028985449e+14;
+	answer[3]=   4.664014221386e+14;
+	FTVD results(ncell);
+	msf.getElectronIonCoupling(results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check electron conduction coefficient results.
+
+    {
+	std::cout << " ** Electron Conduction Coefficient **" << std::endl;
+	std::cout << " Cell  Cond-Coeff (J/m-s-K) Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0]=   1.015572778343e+05;
+	answer[1]=   3.007088846946e+05;
+	answer[2]=   3.046718335030e+05;
+	answer[3]=   6.014177693892e+05;
+	FTVD results(ncell);
+	msf.getElectronConductionCoeff(results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check ion conduction coefficient results.
+
+    {
+	std::cout << " ** Ion Conduction Coefficient **" << std::endl;
+	std::cout << " Cell  Cond-Coeff (J/m-s-K) Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0]=   5.422036503714e+00;
+	answer[1]=   7.900607352896e+00;
+	answer[2]=   1.626610951114e+01;
+	answer[3]=   1.580121470579e+01;
+	FTVD results(ncell);
+	msf.getIonConductionCoeff(results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check electron specific heat results.
+
+    {
+	std::cout << " ** Electron Specific Heat **" << std::endl;
+	std::cout << " Cell  Cve (J/m**3-K)     Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0]=   8.358510441380e+00;
+	answer[1]=   4.214664257810e+01;
+	answer[2]=   2.507553132414e+01;
+	answer[3]=   8.429328515620e+01;
+	FTVD results(ncell);
+	msf.getElectronSpecificHeat(results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
+    }
+
+// Check ion specific heat results.
+
+    {
+	std::cout << " ** Ion Specific Heat **" << std::endl;
+	std::cout << " Cell  Cvi (J/m**3-K)     Relative Error" 
+		  << std::endl;
+	std::vector<double> answer(ncell);
+	answer[0]=   5.950195393002e+00;
+	answer[1]=   7.034019568151e+01;
+	answer[2]=   1.785058617901e+01;
+	answer[3]=   1.406803913630e+02;
+	FTVD results(ncell);
+	msf.getIonSpecificHeat(results);
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
     }
 
 // Check electron temperature results.
@@ -203,25 +322,15 @@ void testMmcMatProp::execute_test()
 	std::cout << " ** Electron Temperature **" << std::endl;
 	std::cout << " Cell  Temperature (K)    Relative Error" 
 		  << std::endl;
-	std::list<double> results(ncell);
 	std::vector<double> answer(ncell);
-	std::vector<double> relErr(ncell);
-	double relErrMax = 0.;
 	answer[0] = 6.025766197348e+00;
 	answer[1] = 1.932154402511e+01;
 	answer[2] = 1.807729859204e+01;
     	answer[3] = 3.864308805021e+01;
+	FTVD results(ncell);
 	msf.getElectronTemperature(results);
-	FTVD::iterator resit = results.begin();
-	for( int icell = 0; icell<ncell; icell++)
-	{
-	    relErr[icell] = std::abs(*resit-answer[icell])/answer[icell];
-	    if (relErr[icell] > relErrMax) relErrMax = relErr[icell];
-	    std::cout << " [" << icell << "]   " << 
-		*resit++ << " " << relErr[icell] << std::endl;
-	}
-	std::cout << std::endl;
-	passed = passed && relErrMax <= eps;
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
     }
 
 // Check ion temperature results.
@@ -230,46 +339,30 @@ void testMmcMatProp::execute_test()
 	std::cout << " ** Ion Temperature **" << std::endl;
 	std::cout << " Cell  Temperature (K)    Relative Error" 
 		  << std::endl;
-	std::list<double> results(ncell);
 	std::vector<double> answer(ncell);
-	std::vector<double> relErr(ncell);
-	double relErrMax = 0.;
 	answer[0]=   5.925879248264e+00;
 	answer[1]=   2.171458879996e+01;
 	answer[2]=   1.777763774479e+01;
 	answer[3]=   4.342917759992e+01;
-
+	FTVD results(ncell);
 	msf.getIonTemperature(results);
-	FTVD::iterator resit = results.begin();
-	for( int icell = 0; icell<ncell; icell++)
-	{
-	    relErr[icell] = std::abs(*resit-answer[icell])/answer[icell];
-	    if (relErr[icell] > relErrMax) relErrMax = relErr[icell];
-	    std::cout << " [" << icell << "]   " << 
-		*resit++ << " " << relErr[icell] << std::endl;
-	}
-	std::cout << std::endl;
-        passed = passed && relErrMax <= eps;
+	CellAvgResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
     }
     
-// Check electron specific heat results
+// Check electron specific heat by material results.
 
     {
 	std::cout << " ** Electron Specific Heat By Material**" << std::endl;
 	std::cout << " Cell Mat   Cve (J/m**3-K)     Relative Error" 
 		  << std::endl;
-        std::list<std::list<double> > results(ncell);
+        FTVVD results(ncell);
         std::vector<std::vector<double> > answer(ncell);
-	std::vector<std::vector<double> > relErr(ncell);
-	double relErrMax = 0.; 
 	FTVVD::iterator resit=results.begin();
-	FTVVI::iterator mit= mat_id.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    int nmat = (*mit++).size();
-	    (*resit++).resize(nmat);
-	    answer[icell].resize(nmat);
-	    relErr[icell].resize(nmat);
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0] [0]= 7.225128263753e+00;
 	answer[0] [1]= 8.925201530194e+00;
@@ -283,48 +376,24 @@ void testMmcMatProp::execute_test()
     	answer[3] [2]= 1.351525285469e+02;
 
 	msf.getElectronSpecificHeatByMat(results);
-	resit = results.begin();
-	mit   = mat_id.begin();
-	for( int icell = 0; icell<ncell; icell++)
-	{
-	    int nmat = (*mit++).size();
-	    FTVD::iterator resitit= (*resit++).begin();
-	    for (int imat = 0; imat<nmat; imat++)
-	    {
-		relErr[icell][imat] = 
-		    std::abs(*resitit-answer[icell][imat])/
-		    answer[icell][imat];
-		if (relErr[icell][imat] > relErrMax)
-		    relErrMax = relErr[icell][imat];
-		std::cout << " [" << icell << 
-		    "]  [" << imat << "]   " << 
-		    *resitit++ << " " << relErr[icell][imat] << std::endl;
-	    }
-	    std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	passed = passed && relErrMax <= eps;
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK; 
     }
 
 
-// Check ion specific heat results
+// Check ion specific heat by material results.
 
     {
 	std::cout << " ** Ion Specific Heat By Material**" << std::endl;
 	std::cout << " Cell Mat   Cvi (J/m**3-K)     Relative Error" 
 		  << std::endl;
-        std::list<std::list<double> > results(ncell);
+        FTVVD results(ncell);
         std::vector<std::vector<double> > answer(ncell);
-	std::vector<std::vector<double> > relErr(ncell);
-	double relErrMax = 0.; 
 	FTVVD::iterator resit=results.begin();
-	FTVVI::iterator mit= mat_id.begin();
 	for (int icell = 0; icell<ncell; icell++)
 	{
-	    int nmat = (*mit++).size();
-	    (*resit++).resize(nmat);
-	    answer[icell].resize(nmat);
-	    relErr[icell].resize(nmat);
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
 	}
 	answer[0]  [0]=   7.650146580363e+00;
 	answer[0]  [1]=   5.100219799322e+00;
@@ -338,27 +407,67 @@ void testMmcMatProp::execute_test()
 	answer[3]  [2]=   2.575600011540e+02;
 
 	msf.getIonSpecificHeatByMat(results);
-	resit = results.begin();
-	mit   = mat_id.begin();
-	for( int icell = 0; icell<ncell; icell++)
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
+
+// Check electron temperature by material results.
+
+    {
+	std::cout << " ** Electron Temperature By Material**" << std::endl;
+	std::cout << " Cell Mat   Te (K)             Relative Error" 
+		  << std::endl;
+        FTVVD results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
 	{
-	    int nmat = (*mit++).size();
-	    FTVD::iterator resitit= (*resit++).begin();
-	    for (int imat = 0; imat<nmat; imat++)
-	    {
-		relErr[icell][imat] = 
-		    std::abs(*resitit-answer[icell][imat])/
-		    answer[icell][imat];
-		if (relErr[icell][imat] > relErrMax)
-		    relErrMax = relErr[icell][imat];
-		std::cout << " [" << icell << 
-		    "]  [" << imat << "]   " << 
-		    *resitit++ << " " << relErr[icell][imat] << std::endl;
-	    }
-	    std::cout << std::endl;
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
 	}
-	std::cout << std::endl;
-     	passed = passed && relErrMax <= eps;
+	answer[0]  [0]=   3.520000000000e+00;
+	answer[0]  [1]=   7.040000000000e+00;
+	answer[1]  [0]=   7.040000000000e+00;
+	answer[1]  [1]=   1.408000000000e+01;
+	answer[1]  [2]=   2.112000000000e+01;
+	answer[2]  [0]=   1.056000000000e+01;
+	answer[2]  [1]=   2.112000000000e+01;
+	answer[3]  [0]=   1.408000000000e+01;
+	answer[3]  [1]=   2.816000000000e+01;
+	answer[3]  [2]=   4.224000000000e+01;
+	msf.getElectronTempByMat(results);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
+    }
+
+// Check ion temperature by material results.
+
+    {
+	std::cout << " ** Ion Temperature By Material**" << std::endl;
+	std::cout << " Cell Mat   Ti (K)             Relative Error" 
+		  << std::endl;
+        FTVVD results(ncell);
+        std::vector<std::vector<double> > answer(ncell);
+	FTVVD::iterator resit=results.begin();
+	for (int icell = 0; icell<ncell; icell++)
+	{
+	    (*resit++).resize(nmat[icell]);
+	    answer[icell].resize(nmat[icell]);
+	}
+	answer[0]  [0]=   3.771000000000e+00;
+	answer[0]  [1]=   7.542000000000e+00;
+	answer[1]  [0]=   7.542000000000e+00;
+	answer[1]  [1]=   1.508400000000e+01;
+	answer[1]  [2]=   2.262600000000e+01;
+	answer[2]  [0]=   1.131300000000e+01;
+	answer[2]  [1]=   2.262600000000e+01;
+	answer[3]  [0]=   1.508400000000e+01;
+	answer[3]  [1]=   3.016800000000e+01;
+	answer[3]  [2]=   4.525200000000e+01;
+	msf.getIonTempByMat(results);
+	ByMatResultsOK(results, answer, eps, results_OK);
+	passed = passed && results_OK;
     }
 
 // Print the status of the test.

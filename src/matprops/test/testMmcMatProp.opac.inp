@@ -1,0 +1,61 @@
+
+* This file contains three dummy materials for use in testing
+* the Multi-Material Cell Material Properties Class.
+
+* Dummy Material One 
+material
+       1
+tgrid
+  1.0000e+00  1.1000e+01
+rgrid
+  1.0000e+00  1.1000e+01 
+hnugrid
+  1.0000e-05  1.0000e+01
+eelect
+  1.0000e+00  1.0000e+00  3.9556e+02  3.9556e+02
+enuc
+  1.0000e+00  1.0000e+00  4.1877e+02  4.1877e+02
+tfree
+  3.0000e+00  3.0000e+00  3.0000e+00  3.0000e+00
+ramg
+  2.3000e+01  2.3000e+01  2.3000e+01  2.3000e+01
+
+
+* Dummy Material Two 
+material
+       2
+tgrid
+  1.0000e+00  1.1000e+01
+rgrid
+  1.0000e+00  1.1000e+01 
+hnugrid
+  1.0000e-05  1.0000e+01
+eelect
+  1.0000e+00  1.0000e+00  2.4470e+02  2.4470e+02  
+enuc
+  1.0000e+00  1.0000e+00  1.4026e+02  1.4026e+02
+tfree
+  4.0000e+00  4.0000e+00  4.0000e+00  4.0000e+00
+ramg
+  3.0000e+01  3.0000e+01  3.0000e+01  3.0000e+01
+
+
+* Dummy Material Three 
+material
+       3
+tgrid
+  1.0000e+00  1.1000e+01
+rgrid
+  1.0000e+00  1.1000e+01 
+hnugrid
+  1.0000e-05  1.0000e+01
+eelect
+  1.0000e+00  1.0000e+00  6.1605e+02  6.1605e+02
+enuc
+  1.0000e+00  1.0000e+00  1.1731e+03  1.1731e+03
+tfree
+  5.0000e+00  5.0000e+00  5.0000e+00  5.0000e+00
+ramg
+  7.0000e+01  7.0000e+01  7.0000e+01  7.0000e+01
+
+

@@ -7,7 +7,9 @@
 //---------------------------------------------------------------------------//
 
 #include "matprops/MultiMatCellMatProps.t.cc"
+#include "matprops/test/testMmcMatProp.t.cc"
 #include <list>
+#include <vector>
 #include "matprops/InterpedMaterialProps.hh"
 
 typedef std::list<double> FTVD;
@@ -35,6 +37,14 @@ template MSF::MaterialStateField(const MMCP  &matprops_,
 				 const FTVVD &ionTemp_, 
 				 const FTVVD &volumeFraction_,
 				 const FTVVI &matId_);
+
+template void testMmcMatProp::CellAvgResultsOK<FTVD>(FTVD &results, 
+					       std::vector<double> &answer, 
+					       double eps, bool &pass);
+
+template void testMmcMatProp::ByMatResultsOK<FTVVD>(FTVVD &results, 
+					     std::vector<std::vector<double> > &answer, 
+					     double eps, bool &pass);
 
 //---------------------------------------------------------------------------//
 //                              end of testMmcMatProp_pt.cc
