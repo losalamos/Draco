@@ -10,20 +10,42 @@
 #       $Id$
 # 
 #  NAME
-#       count - collate lines of C++ code associated each header file
-#               in a directory
+#       basename_loc - count lines of C++ code associated each header file
+#                      in a directory
 #  SYNOPSIS
-#       count dir
+#       basename_loc dir
 #  DESCRIPTION
-#       Count counts the number of lines of code according to the
+#       basename_loc counts the number of lines of code according to the
 #       MicroSoft metric associated with each header file in a
 #       directory.  Each file produces a tab delimited record of the
-#       dirname, basename, and lines of code contained in the .hh and
-#       .cc files. the dirname and basename of quoted include files  
+#       dirname/basename, and lines of code contained in the .hh and
+#       .cc files.
 #
 #  ========================================================================  #
 
-find $1 -name "*.hh" -print |		 # generate list of filenames
+#Get command line arguments, if any
+if [ $# = 0 ]
+then
+  TMP="."
+elif [ $# = 1 ]
+then
+  TMP="$1"
+else
+  TMP="$1"
+  echo "Warning -- multiple command line arguments found,"
+  echo "           using first argument and ignoring others"
+  echo
+fi
+
+#Check for existence of the directory to be scanned
+if [ ! -d $TMP ];
+then
+ echo $TMP " is not a directory."
+ exit 1
+fi
+
+#Produce the listing 
+find $TMP -name "*.hh" -print |		 # generate list of filenames
 while read h				 # process each name
 do
 	d=`dirname $h`			 # get directory name
@@ -34,3 +56,5 @@ do
 	echo "$d/$b	${count}"
 done | 
 sort
+
+#  =========================== end of basename_loc ======================  #
