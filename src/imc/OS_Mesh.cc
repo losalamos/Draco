@@ -10,13 +10,47 @@
 #include "imctest/Global.hh"
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 IMCSPACE
+
+using std::sort;
 
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
 // defined inline
+
+//---------------------------------------------------------------------------//
+// private member functions
+//---------------------------------------------------------------------------//
+void OS_Mesh::Calc_surface()
+{
+  // calculate an array of the dimensional surfaces which make up the OS_Mesh
+
+  // initialize mesh_size for assertion at end of function
+    int mesh_size = 1;
+
+  // loop to calculate surface array
+    for (int d = 0; d < coord->Get_dim(); d++)
+    {
+      // define an array for dim which is sorted in ascending order
+	vector<double> sorted = vertex[d];
+	sort(sorted.begin(), sorted.end());
+
+      // loop over sorted array, appending new surfaces onto sur array
+	sur[d].push_back(sorted[0]);
+	for (int i = 1; i < sorted.size(); i++)
+	    if (sorted[i] > sorted[i-1])
+		sur[d].push_back(sorted[i]);
+
+      // calculate mesh_size by dimension
+	mesh_size *= sur[d].size() - 1;
+    }
+
+  // assert mesh size
+    assert (Num_cells() == mesh_size);
+}
 
 //---------------------------------------------------------------------------//
 // member functions
@@ -35,7 +69,7 @@ int OS_Mesh::Get_cell(const vector<double> &r) const
 	int low_index  = 0;
 	int high_index = sur[i].size() - 1;
 	int index;
-	while ( (high_index - low_index) != 1)
+	while ((high_index - low_index) != 1)
 	{
 	    index = (high_index + low_index) / 2;
 	    if (r[i] < sur[i][index])
@@ -69,14 +103,16 @@ double OS_Mesh::Get_db(const vector<double> &r, const vector<double> &omega,
   // loop to get the distances to boundary in each coordinate direction
     for (int i = 0; i < coord->Get_dim(); i++)
     {
+      // define absolute dimension index
+	int d = i + 1;
+
+      // find the distances to boundary along each dimension
 	if (omega[i] == 0.0)
 	    dim_dist_boundary[i] = Global::huge;
 	else if (omega[i] > 0.0)
-	    dim_dist_boundary[i] = ((pos[i][cell-1] + dim[i][cell-1]/2.0) - 
-				    r[i]) / omega[i];
+	    dim_dist_boundary[i] = (Max(d, cell) - r[i]) / omega[i];
 	else
-	    dim_dist_boundary[i] = ((pos[i][cell-1] - dim[i][cell-1]/2.0) -
-				    r[i]) / omega[i];
+	    dim_dist_boundary[i] = (Min(d, cell) - r[i]) / omega[i];
     }
 
   // calculate the distance to boundary
@@ -113,19 +149,19 @@ void OS_Mesh::Print(ostream &output, int cell) const
     output << "---------------" << endl;
     if (coord->Get_dim() == 2)
     {
-	output << " x  : " << pos[0][cell-1] << endl;
-	output << " y  : " << pos[1][cell-1] << endl;
-    	output << " dx : " << dim[0][cell-1] << endl;
-	output << " dy : " << dim[1][cell-1] << endl;
+	output << " x  : " << Pos(1, cell) << endl;
+	output << " y  : " << Pos(2, cell) << endl;
+    	output << " dx : " << Dim(1, cell) << endl;
+	output << " dy : " << Dim(2, cell) << endl;
     }
     else
     {
-	output << " x  : " << pos[0][cell-1] << endl;
-	output << " y  : " << pos[1][cell-1] << endl;
-	output << " z  : " << pos[2][cell-1] << endl;
-    	output << " dx : " << dim[0][cell-1] << endl;
-	output << " dy : " << dim[1][cell-1] << endl;
-	output << " dz : " << dim[2][cell-1] << endl;
+	output << " x  : " << Pos(1, cell) << endl;
+	output << " y  : " << Pos(2, cell) << endl;
+	output << " z  : " << Pos(3, cell) << endl;
+    	output << " dx : " << Dim(1, cell) << endl;
+	output << " dy : " << Dim(2, cell) << endl;
+	output << " dz : " << Dim(3, cell) << endl;
     }	
     output << "---------------" << endl;
     output << "Layout "         << endl;

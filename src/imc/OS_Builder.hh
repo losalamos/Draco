@@ -17,7 +17,10 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)  3-18-98 : added generalized mesh constructor which consists of 
+//                calculating vertex-based arrays and sending them to the 
+//                OS_Mesh constructor
 // 
 //===========================================================================//
 

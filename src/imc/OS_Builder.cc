@@ -10,8 +10,12 @@
 #include "imctest/XYCoord_sys.hh"
 #include "imctest/XYZCoord_sys.hh"
 #include <cassert>
+#include <iostream>
 
 IMCSPACE
+
+using std::cout;
+using std::endl;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -51,38 +55,58 @@ SP<OS_Mesh> OS_Builder::Build_Mesh()
 SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
-    int num_cells  = layout.Num_cells();
     int num_xsur   = fine_edge[0].size();
     int num_ysur   = fine_edge[1].size();
     int num_xcells = num_xsur - 1;
     int num_ycells = num_ysur - 1;
-    int cell       = 0;
+    int num_cells  = num_xcells * num_ycells;
+    int num_vert   = num_xsur * num_ysur;
     int dimension  = coord->Get_dim();
 
+  // check some assertions
+    assert (layout.Num_cells() == num_cells);
+
   // initialization variables for Mesh
-    OS_Mesh::CCVF_a pos(2);
-    OS_Mesh::CCVF_a dim(2);
+    OS_Mesh::CCVF_a vertex(dimension);
+    OS_Mesh::CCVF_i cell_pair(num_cells);
 
-  // size position and dimension arrays
+  // size vertex and cell_pair arrays, 4 vertices per cell
     for (int d = 1; d <= dimension; d++)
-    {
-	pos[d-1].resize(num_cells);
-	dim[d-1].resize(num_cells);
-    }
+	vertex[d-1].resize(num_vert);
+    for (int cell = 1; cell <= num_cells; cell++)
+	cell_pair[cell-1].resize(4);
 
-  // set position and dimension arrays
-    for (int i = 1; i <= num_xcells; i++)
-	for (int j = 1; j <= num_ycells; j++)
+  // set vertex arrays
+    for (int j = 1; j <= num_ysur; j++)
+	for (int i = 1; i <= num_xsur; i++)
 	{
-	    cell           = 1 + (i-1) + num_xcells * (j-1);
-	    pos[0][cell-1] = (fine_edge[0][i-1] + fine_edge[0][i]) / 2.0;
-	    pos[1][cell-1] = (fine_edge[1][j-1] + fine_edge[1][j]) / 2.0;
-	    dim[0][cell-1] = fine_edge[0][i] - fine_edge[0][i-1];
-	    dim[1][cell-1] = fine_edge[1][j] - fine_edge[1][j-1];
+	  // calculate vertex index
+	    int index = 1 + (i-1) + num_xsur*(j-1);
+
+	  // assign vertices
+	    vertex[0][index-1] = fine_edge[0][i-1];
+	    vertex[1][index-1] = fine_edge[1][j-1];
 	}
 
+  // set cell-pairings to vertices
+    for (int j = 1; j <= num_ycells; j++)
+	for (int i = 1; i <= num_xcells; i++)
+	{
+	  // indices for cell and lower-left vertex
+	    int cell       = 1 + (i-1) + num_xcells*(j-1);
+	    int ref_vertex = 1 + (i-1) + num_xsur*(j-1);
+
+	  // pair cells to vertex indices
+	    cell_pair[cell-1][0] = ref_vertex;
+	    cell_pair[cell-1][1] = ref_vertex + 1;
+	    cell_pair[cell-1][2] = ref_vertex + num_xsur;
+	    cell_pair[cell-1][3] = ref_vertex + 1 + num_xsur;
+	}
+
+  // create mesh
+    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, vertex, cell_pair);
+
   // return mesh to builder
-    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, pos, dim, fine_edge);
     return mesh_return;
 }
 
@@ -90,44 +114,74 @@ SP<OS_Mesh> OS_Builder::Build_2DMesh(SP<Coord_sys> coord, Layout &layout)
 SP<OS_Mesh> OS_Builder::Build_3DMesh(SP<Coord_sys> coord, Layout &layout)
 {
   // variable declarations
-    int num_cells  = layout.Num_cells();
     int num_xsur   = fine_edge[0].size();
     int num_ysur   = fine_edge[1].size();
     int num_zsur   = fine_edge[2].size();
     int num_xcells = num_xsur - 1;
     int num_ycells = num_ysur - 1;
     int num_zcells = num_zsur - 1;
-    int cell       = 0;
+    int num_cells  = num_xcells * num_ycells * num_zcells;
+    int num_vert   = num_xsur * num_ysur * num_zsur;
     int dimension  = coord->Get_dim();
 
+  // check some assertions
+    assert (layout.Num_cells() == num_cells);
+
   // initialization variables for Mesh
-    OS_Mesh::CCVF_a pos(3);
-    OS_Mesh::CCVF_a dim(3);
+    OS_Mesh::CCVF_a vertex(dimension);
+    OS_Mesh::CCVF_i cell_pair(num_cells);
 
-  // size position and dimension arrays
+  // size vertex and cell_pair arrays, 8 vertices per cell
     for (int d = 1; d <= dimension; d++)
-    {
-	pos[d-1].resize(num_cells);
-	dim[d-1].resize(num_cells);
-    }
+	vertex[d-1].resize(num_vert);
+    for (int cell = 1; cell <= num_cells; cell++)
+	cell_pair[cell-1].resize(8);
 
-  // set position and dimension arrays
-    for (int i = 1; i <= num_xcells; i++)
-	for (int j = 1; j <= num_ycells; j++)
-	    for (int k = 1; k <= num_zcells; k++)
+  // set vertex arrays
+    for (int k = 1; k <= num_zsur; k++)
+	for (int j = 1; j <= num_ysur; j++)
+	    for (int i = 1; i <= num_xsur; i++)
 	    {
-		cell = 1 + (i-1) + num_xcells * (j-1) + num_xcells * 
-		    num_ycells * (k-1);
-		pos[0][cell-1] = (fine_edge[0][i-1] + fine_edge[0][i]) / 2.0;
-		pos[1][cell-1] = (fine_edge[1][j-1] + fine_edge[1][j]) / 2.0;
-		pos[2][cell-1] = (fine_edge[2][k-1] + fine_edge[2][k]) / 2.0;
-		dim[0][cell-1] = fine_edge[0][i] - fine_edge[0][i-1];
-		dim[1][cell-1] = fine_edge[1][j] - fine_edge[1][j-1];
-		dim[2][cell-1] = fine_edge[2][k] - fine_edge[2][k-1];
+	      // calculate vertex index
+		int index = 1 + (i-1) + num_xsur*(j-1) + 
+		    num_xsur*num_ysur*(k-1);
+
+	      // assign vertices
+		vertex[0][index-1] = fine_edge[0][i-1];
+		vertex[1][index-1] = fine_edge[1][j-1];
+		vertex[2][index-1] = fine_edge[2][k-1];
 	    }
 
+  // set cell-pairings to vertices
+    for (int k = 1; k <= num_zcells; k++)
+	for (int j = 1; j <= num_ycells; j++)
+	    for (int i = 1; i <= num_xcells; i++)
+	    {
+	      // indices to cell and lower-left vertex
+		int cell = 1 + (i-1) + num_xcells*(j-1) + 
+		    num_xcells*num_ycells*(k-1);
+		int ref_vertex = 1 + (i-1) + num_xsur*(j-1) +
+		    num_xsur*num_ysur*(k-1);
+
+	      // pair cells to vertex indices
+		cell_pair[cell-1][0] = ref_vertex;
+		cell_pair[cell-1][1] = ref_vertex + 1;
+		cell_pair[cell-1][2] = ref_vertex + num_xsur;
+		cell_pair[cell-1][3] = ref_vertex + 1 + num_xsur;
+		cell_pair[cell-1][4] = cell_pair[cell-1][0] + num_xsur *
+		    num_ysur;
+		cell_pair[cell-1][5] = cell_pair[cell-1][1] + num_xsur *
+		    num_ysur;
+		cell_pair[cell-1][6] = cell_pair[cell-1][2] + num_xsur *
+		    num_ysur;
+		cell_pair[cell-1][7] = cell_pair[cell-1][3] + num_xsur *
+		    num_ysur;
+	    }
+
+  // create mesh
+    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, vertex, cell_pair);
+
   // return mesh to builder
-    SP<OS_Mesh> mesh_return = new OS_Mesh(coord, layout, pos, dim, fine_edge);
     return mesh_return;
 }
 
