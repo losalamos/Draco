@@ -59,7 +59,7 @@ class PCG_Ctrl
     enum Precon { QNONE, QLEFT, QRIGHT, QSPLIT };
 
     // Legal values for IUINIT in IPARMS (how initial guess is set)
-    enum Uinit { USZERO = -2, UZERO = 0, UNZERO, USRAND, UPRAND };
+    enum Uinit { USZERO = -2, UDFALT = -1, UZERO = 0, UNZERO, USRAND, UPRAND };
 
     // Logic values
     enum Logical { DFALT = -1, NO = 0, YES = 1 };

@@ -9,6 +9,9 @@
 #include "PCG_Ctrl.hh"
 #include "PCG_Subroutines.hh"
 #include <iostream>
+using std::cout;
+using std::endl;
+using std::flush;
 
 using namespace dsxx;
 
@@ -129,27 +132,29 @@ void PCG_Ctrl<T>::solve(dsxx::Mat1<T>& x,
 	}
 
 	case JAV: {
-	    //	    cout << "Preparing for MatVec." << endl << flush;
-	    Mat1<T> xmatvec(&fwork(ivqr-1), getSize());
+	    // cout << "Preparing for MatVec." << endl << flush;
+	    const Mat1<T> xmatvec(&fwork(ivqr-1), getSize());
 	    Mat1<T> bmatvec(&fwork(iva-1), getSize());
 	    pcg_matvec->MatVec(bmatvec, xmatvec);
-	    //	    cout << "Done with     MatVec." << endl << flush;
+	    // cout << "Done with     MatVec." << endl << flush;
 	    break;
 	}
 	
 	case JQLV: {
-	    //	    cout << "Preparing for Left_PreCond." << endl << flush;
+	    // cout << "Preparing for Left_PreCond." << endl << flush;
 	    Mat1<T> xprecond(&fwork(ivql-1), getSize());
-	    Mat1<T> bprecond(&fwork(iva-1), getSize());
+	    const Mat1<T> bprecond(&fwork(iva-1), getSize());
 	    pcg_precond->Left_PreCond(xprecond, bprecond);
-	    //	    cout << "Done with     Left_PreCond." << endl << flush;
+	    // cout << "Done with     Left_PreCond." << endl << flush;
 	    break;
 	}
 	
 	case JQRV: {
+	    // cout << "Preparing for Right_PreCond." << endl << flush;
 	    Mat1<T> xprecond(&fwork(ivqr-1), getSize());
-	    Mat1<T> bprecond(&fwork(ivql-1), getSize());
+	    const Mat1<T> bprecond(&fwork(ivql-1), getSize());
 	    pcg_precond->Right_PreCond(xprecond, bprecond);
+	    // cout << "Done with     Right_PreCond." << endl << flush;
 	    break;
 	}
 
@@ -313,6 +318,7 @@ void PCG_Ctrl<T>::setIparm(const Iparms parm,
 			   const int value)
 {
     switch ( parm ) {
+    case NOUT:
     case ITSMAX:
     case NS1:
     case NS2:
@@ -428,9 +434,6 @@ void PCG_Ctrl<T>::setUinit(const Uinit value)
 template<class T>
 void PCG_Ctrl<T>::printParams() const
 {
-    using std::cout;
-    using std::endl;
-    
 // Revcom level parameters.
     cout << "----------------------------------------------" << endl;
     cout << "Revcom level parameters."                       << endl;
