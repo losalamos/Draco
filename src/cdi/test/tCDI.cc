@@ -690,8 +690,8 @@ void test_rosseland_integration()
     catch(const rtt_dsxx::assertion &ass)
     {
 	ostringstream message;
-	message << "Caught illegal Rosseland calculation exception: \n"
-		<< "\t" << ass.what();
+	message << "Caught illegal Rosseland calculation exception: \n";
+	    // << "\t" << ass.what();
 	PASSMSG(message.str());
 	caught = true;
     }
@@ -709,8 +709,8 @@ void test_rosseland_integration()
     catch(const rtt_dsxx::assertion &ass)
     {
 	ostringstream message;
-	message << "Caught illegal Rosseland and Planckian calculation exception: \n"
-		<< "\t" << ass.what();
+	message << "Caught illegal Rosseland and Planckian calculation exception: \n";
+	//		<< "\t" << ass.what();
 	PASSMSG(message.str());
 	caught = true;
     }
