@@ -98,8 +98,6 @@ AC_DEFUN(AC_F90_ENV, [dnl
    AC_SUBST(MODFLAG)
 ])
 
-builtin(include, ac_f90.m4)dnl AC_LANG_FORTRAN90 and AC_PROG_F90
-
 dnl-------------------------------------------------------------------------dnl
 dnl IBM XLF90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl

@@ -209,6 +209,8 @@ AC_DEFUN(AC_DRACO_EGCS, [dnl
    dnl end of AC_DRACO_EGCS
 ])
 
+builtin(include, ac_f90.m4)dnl AC_LANG_FORTRAN90 and AC_PROG_F90
+
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_compiler.m4
 dnl-------------------------------------------------------------------------dnl
