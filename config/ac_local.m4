@@ -2,7 +2,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ac_local.m4
 dnl service macros used in ac_vendors.m4, ac_dracoarg.m4, and ac_dracoenv.m4
 dnl
-dnl Time-stamp: <99/02/05 10:02:53 rsqrd>
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -126,9 +126,9 @@ AC_DEFUN(AC_COMM_SET, [ dnl
 
    if test "${enable_shmem}" = yes ; then
        if test -n "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma"
+	   VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
        elif test -z "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -lsma"
+	   VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
        fi
    fi
 

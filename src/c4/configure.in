@@ -30,6 +30,9 @@ AC_DRACO_ENV
 
 if test "$with_c4" = shmem ; then
    STRICTFLAG=""
+   if test "$CXX" = KCC ; then
+      LDFLAGS="${LDFLAGS} --static_libKCC"
+   fi
 fi
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \

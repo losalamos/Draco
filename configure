@@ -1179,9 +1179,9 @@ EOF
 
    if test "${enable_shmem}" = yes ; then
        if test -n "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma"
+	   VENDOR_LIBS="${VENDOR_LIBS} -L${SHMEM_LIB} -lsma -lpthread"
        elif test -z "${SHMEM_LIB}" ; then
-	   VENDOR_LIBS="${VENDOR_LIBS} -lsma"
+	   VENDOR_LIBS="${VENDOR_LIBS} -lsma -lpthread"
        fi
    fi
 
@@ -1229,10 +1229,6 @@ if test "${enable_static_ld+set}" = set; then
   :
 fi
 
-
-   if test "${with_c4}" = shmem ; then
-       enable_static_ld='yes'
-   fi
 
          
       # Check whether --enable-strict-ansi or --disable-strict-ansi was given.

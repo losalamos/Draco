@@ -93,10 +93,6 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    AC_ARG_ENABLE(static-ld,
       [  --enable-static-ld      use (.a) libraries if possible])
 
-   if test "${with_c4}" = shmem ; then
-       enable_static_ld='yes'
-   fi
-
    dnl
    dnl ANSI STRICT COMPLIANCE
    dnl
