@@ -134,6 +134,10 @@ class RZWedge_Mesh
     inline double get_y_midpoint(int cell) const;
     inline double get_z_midpoint(int cell) const;
 
+    // get the dimension of a cell for a given coordinate 
+    // (y-coord => dim at midpoint)  
+    inline double dim(const int cell, const int coordinate) const;
+
     // Diagnostic functions.
     void print(std::ostream &) const;
     void print(std::ostream &, int) const;
@@ -229,6 +233,41 @@ double RZWedge_Mesh::get_z_midpoint(int cell) const
     Check ( (cell > 0) && (cell <= num_cells()) );
 
     return 0.5 * (get_low_z(cell) + get_high_z(cell));
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get the dimension of the cell in the requested coordinate.
+ *
+ * \param cell  RZWedge_Mesh cell.
+ * \param coord coord
+ *
+ * \return dim the dimension (length) of the cell in the requested coordinate
+ */
+double RZWedge_Mesh::dim(const int cell, const int coordinate) const
+{
+    Check ( (cell > 0) && (cell <= num_cells()) );
+    Check ( (coordinate > 0) && (coordinate <= 3) );
+
+    // return value
+    double dimension = 0.0;
+
+    // x-coordinate
+    if (coordinate == 1)
+	dimension = get_high_x(cell) - get_low_x(cell);
+
+    // y-coordinate
+    else if (coordinate == 2)
+	dimension = 2.0 * get_x_midpoint(cell) * tan_half_theta;
+
+    // z-coordinate
+    else if (coordinate == 3)
+	dimension = get_high_z(cell) - get_low_z(cell); 
+    
+    else 
+	Insist (0, "Requested coordinate in rzwedge_mesh's dim not valid!"); 
+    
+    return dimension;
 }
 
 //---------------------------------------------------------------------------//
