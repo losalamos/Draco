@@ -33,9 +33,11 @@ ifneq ($(dodeps),no)
 	(cd ../ds++;   $(MAKE))
 	(cd ../nml;    $(MAKE) dodeps=no)
 	(cd ../c4;     $(MAKE) dodeps=no)
+	(cd ../spdf;   $(MAKE) dodeps=no)
+	(cd ../util;   $(MAKE) dodeps=no)
+	(cd ../linalg; $(MAKE) dodeps=no)
 	(cd ../geom;   $(MAKE) dodeps=no)
 	(cd ../mesh;   $(MAKE) dodeps=no)
-	(cd ../linalg; $(MAKE) dodeps=no)
 endif
 
 # Rules for building docs
