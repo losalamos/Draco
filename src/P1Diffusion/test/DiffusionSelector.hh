@@ -69,7 +69,8 @@ struct DiffusionSelector
     template<class NML_GROUP, class TDB>
     static Options create(const NML_GROUP &g, const TDB &tdb)
     {
-	Options options(tdb.maxIterations, tdb.epsilon);
+	Options options(tdb.maxIterations, tdb.epsilon, tdb.usePreconditioner,
+                        tdb.verbose);
 	return options;
     }
     

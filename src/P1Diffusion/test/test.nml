@@ -6,4 +6,6 @@ block: test
 	double	fBot	0.0
         double  tolerance  1.e-3
         double  epsilon    1.e-5
+        bool    usePreconditioner true
+        bool    verbose true
 	int     maxIterations 1000
