@@ -201,6 +201,9 @@ LINK_LIBS	:=
 ifdef SYS_LINK_FLAGS
 LINK_LIBS	+= $(SYS_LINK_FLAGS)
 endif
+ifeq ($(need_3T),yes)
+LINK_LIBS	+= $(3T_LIB)
+endif
 ifeq ($(need_mesh),yes)
 LINK_LIBS	+= $(MESH_LIB)
 endif
