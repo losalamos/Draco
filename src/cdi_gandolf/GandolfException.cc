@@ -34,7 +34,9 @@ namespace rtt_cdi_gandolf
 
 	: gandolfFunctionName ( in_gandolfFunctionName ),
 	errorCode ( in_errorCode ),
-	std::exception ( "Gandolf Exception: " + in_what_arg )
+	std::exception ()
+// This works for KCC 3.3 on IRIX64
+// 	std::exception ( "Gandolf Exception: " + in_what_arg )
 
 	{
 	    // empty
