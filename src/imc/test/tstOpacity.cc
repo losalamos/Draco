@@ -242,7 +242,6 @@ void test_mg_opacity()
 	{
 	    double ea  = f * (0.125 + cf);
 	    double es  = (1.0-f) * (0.125 + cf);
-	    // double cdf = 0.2 + cf;
 	    
 	    if (!soft_equiv(opac.get_sigma_abs(i,g), 0.125+cf))   ITFAILS;
 	    if (!soft_equiv(opac.get_sigma_thomson(i,g), 0.1+cf)) ITFAILS;
@@ -250,7 +249,8 @@ void test_mg_opacity()
 	    if (!soft_equiv(opac.get_sigeffabs(i,g), ea))         ITFAILS;
 	}
 
-	if (!soft_equiv(opac.get_integrated_sigma_times_Planck(i), 0.2+cf)) 
+        double cdf = 0.2 + cf;
+	if (!soft_equiv(opac.get_integrated_sigma_times_Planck(i), cdf)) 
 	    ITFAILS;
 
 	if (!opac.get_Frequency()->is_multigroup())     ITFAILS;
