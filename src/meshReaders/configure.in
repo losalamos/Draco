@@ -13,14 +13,14 @@ AC_CONFIG_HEADER(meshReaders/config.h:config.h.in)
 package="meshReaders"
 
 dnl VENDOR SETUPS
-AC_MPI_SETUP(pkg)
-AC_SHMEM_SETUP(pkg)
+dnl AC_MPI_SETUP(pkg)
+dnl AC_SHMEM_SETUP(pkg)
 dnl AC_SPRNG_SETUP(pkg)
 dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(c4 ds++)
+AC_NEEDS_LIBS(ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
 AC_RUNTESTS(TestElementDefinition TestHexMeshReader, scalar)

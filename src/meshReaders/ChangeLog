@@ -1,0 +1,9 @@
+2000-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* meshReaders: released version meshReaders-1_1_0. Using
+	UnitTestFrame-1_1_0, which has a non-C4 option, we have
+	reorganized meshReaders so that it no longer depends on C4 as part 
+	of its levelization.  This is correct because meshReaders is an
+	inherently scalar package, and it should not have to depend on C4
+	just because it uses UnitTestFrame.
+

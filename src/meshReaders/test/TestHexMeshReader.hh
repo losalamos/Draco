@@ -12,7 +12,7 @@
 #ifndef __meshReaders_test_TestHexMeshReader_hh__
 #define __meshReaders_test_TestHexMeshReader_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 #include <string>
 #include <map>
 #include <set>

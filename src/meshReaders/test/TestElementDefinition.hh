@@ -12,7 +12,7 @@
 #ifndef __meshReaders_test_TestElementDefinition_hh__
 #define __meshReaders_test_TestElementDefinition_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 #include "../Element_Definition.hh"
 
 namespace rtt_meshReaders_test

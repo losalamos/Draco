@@ -13,45 +13,12 @@
 #define __meshReaders_Release_hh__
 
 //===========================================================================//
-// namespace version - 
-//
-// Purpose : Return the version of meshReaders; 
-// this can be used to get exact version information in codes that 
-// use meshReaders
-// 
-//===========================================================================//
-
-#include <string>
-
-/*!
- * \brief Namespace to contain the RTT mesh Reader utilities.
- *
- * Provides namespace protection for the Draco (RTT) mesh reader
- * utilities.
- *
- * \sa The Element_Definition class describes the mesh elements
- *     supported. The RTT_Format class provides a capability to
- *     read RTT format mesh files. The Hex_Mesh_Reader class provides
- *     a capability to read CIC-19 Hex Mesh format mesh files.
- *     The \ref rtt_meshreaders_overview page presents a summary of
- *     the capabilities provided within the namespace.
- */
-namespace rtt_meshReaders 
-{
-/*!
- * \brief  Gets the release number for the meshReaders package. 
- * \return release number as a string in the form "meshReaders-\#_\#_\#"
- */
-const std::string release();
-
-}  // end of rtt_meshReaders namespace
-
-#endif                          // __meshReaders_Release_hh__
-
 /*!
  * \page rtt_meshreaders_overview Overview of the Draco Mesh Reader Package
  *
- * \version 1_0_0
+ * \version 1_1_0
+ *
+ * \author John McGhee, Todd Adams
  *
  * <h3> Introduction </h3>
  *
@@ -114,6 +81,41 @@ const std::string release();
  * </dl>
  * 
  */
+//===========================================================================//
+/*!
+
+ * \namespace rtt_meshReaders
+
+ * \brief Namespace to contain the RTT mesh Reader utilities.
+ *
+ * Provides namespace protection for the Draco (RTT) mesh reader
+ * utilities.
+
+ * The Element_Definition class describes the mesh elements supported. The
+ * RTT_Format class provides a capability to read RTT format mesh files. The
+ * Hex_Mesh_Reader class provides a capability to read CIC-19 Hex Mesh format
+ * mesh files.
+ 
+ * \sa The \ref rtt_meshreaders_overview page presents a summary of the
+ * capabilities provided within the namespace.
+
+ */
+//===========================================================================//
+
+#include <string>
+
+namespace rtt_meshReaders 
+{
+
+/*!
+ * \brief  Gets the release number for the meshReaders package. 
+ * \return release number as a string in the form meshReaders-\#_\#_\#
+ */
+const std::string release();
+
+}  // end of rtt_meshReaders namespace
+
+#endif                          // __meshReaders_Release_hh__
 //---------------------------------------------------------------------------//
 //                              end of Release.hh
 //---------------------------------------------------------------------------//
