@@ -334,6 +334,18 @@ void simple_one_cell_RZWedge()
     if (!mesh->check_defined_surcells("loz",sur_cell)) ITFAILS;
     if (!mesh->check_defined_surcells("hiz",sur_cell)) ITFAILS;
 
+    // check that the mesh returns the proper cell list (only 1 cell in mesh)
+    vector<int> surface_cell_list;
+    surface_cell_list = mesh->get_surcells("hir");
+    if (surface_cell_list.size() != 1)             ITFAILS;
+    if (surface_cell_list[0] != 1)                 ITFAILS;
+    surface_cell_list = mesh->get_surcells("loz");
+    if (surface_cell_list.size() != 1)             ITFAILS;
+    if (surface_cell_list[0] != 1)                 ITFAILS;
+    surface_cell_list = mesh->get_surcells("hiz");
+    if (surface_cell_list.size() != 1)             ITFAILS;
+    if (surface_cell_list[0] != 1)                 ITFAILS;
+
     // check that the neighbors are correct
     vector<int> neighbors;
     neighbors = mesh->get_neighbors(1);
