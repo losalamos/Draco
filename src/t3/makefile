@@ -11,7 +11,7 @@ need_c4		:= yes
 need_namelist	:= yes
 need_spdf	:= yes
 need_util	:= yes
-#need_pooma	:= yes
+need_pooma	:= yes
 need_pcg        := yes
 need_lapack     := yes
 
@@ -54,6 +54,11 @@ $(dep_libc4):
 $(dep_libds++):
 
 # Go pick up the standard signature for makefiles.
+
+aux_clean := exe_clean
+
+exe_clean:
+	$(RM) main_$(env)
 
 cc_files := $(srcs)
 
