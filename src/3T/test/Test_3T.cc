@@ -35,12 +35,14 @@ template<class MT, class Problem>
 Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
 			       const Run_DB& rdb,
 			       const typename Problem::params& p,
-			       const pcg_DB& pcg_db_ )
+			       const pcg_DB& pcg_db_,
+                               int verbose_ )
     : Run_DB( rdb ), Problem(p),
       MT::Coord_Mapper( spm_->get_Mesh_DB() ),
       spm(spm_),
       Df( spm ),
-      pcg_db(pcg_db_)
+      pcg_db(pcg_db_),
+      verbose(verbose_)
 {
     spd = new Diffusion_XYZ<MT>( spm, pcg_db_ );
 
@@ -110,18 +112,20 @@ void Test_3T<MT, Problem>::run()
 
     Mat1<double> vc( spm->get_vc() );
 
-    for( int i=0; i < ncp; i++ ) {
-	double x = xc( I(i) );
-	double y = yc( J(i) );
-	double z = zc( K(i) );
+    cout << "verbose = " << verbose << endl;
+    if (verbose > 1)
+        for( int i=0; i < ncp; i++ ) {
+            double x = xc( I(i) );
+            double y = yc( J(i) );
+            double z = zc( K(i) );
 
-	Eo(i) = E(x,y,z,0.);
+            Eo(i) = E(x,y,z,0.);
 
-	sprintf( buf,
-		 "node %d, I(%d)=%d xc(I(%d))=%lf J(%d)=%d yc(J(%d))=%lf",
-		 node, i, I(i), i, xc(I(i)), i, J(i), i, yc(J(i)) );
-	cout << buf << endl;
-    }
+            sprintf( buf,
+                     "node %d, I(%d)=%d xc(I(%d))=%lf J(%d)=%d yc(J(%d))=%lf",
+                     node, i, I(i), i, xc(I(i)), i, J(i), i, yc(J(i)) );
+            cout << buf << endl;
+        }
 
     MT::cell_array E_analytic(spm), rhs(spm), r(spm);
     MT::fcdsf Eb(spm);
@@ -142,7 +146,7 @@ void Test_3T<MT, Problem>::run()
 	for( int i=0; i < ncp; i++ )
 	    E_analytic(i) = E( xc(I(i)), yc(J(i)), zc(K(i)), t );
 
-	diag_out( E_analytic, "E_analytic" );
+// 	diag_out( E_analytic, "E_analytic" );
 
     // Calculate rhs(t).
 	for( int i=0; i < ncp; i++ ) {
