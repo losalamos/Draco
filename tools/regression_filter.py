@@ -103,14 +103,18 @@ failures = re.compile(r'Fail.*:\s*([0-9]+)', re.IGNORECASE)
 errors   = re.compile(r'error', re.IGNORECASE)
 warnings = re.compile(r'warn[a-z:]*\s+(?!AC\_TRY\_RUN).*', re.IGNORECASE)
 package  = re.compile(r'Entering.*src/([A-Za-z+_0-9]+)/test', re.IGNORECASE)
-lahey    = re.compile(r'Encountered 0 errors, 0 warnings in file.*',re.IGNORECASE)
 
 reg_host   = re.compile(r'.*>>>\s*HOSTNAME\s*:\s*(.+)', re.IGNORECASE)
 pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
 script_tag = re.compile(r'.*>>>\s*REGRESSION\s*SCRIPT\s*:\s*(.+)', re.IGNORECASE)
 log_tag    = re.compile(r'.*>>>\s*REGRESSION\s*LOG\s*:\s*(.+)', re.IGNORECASE)
 date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
-checkout   = re.compile(r'^U')
+
+# The following expressions are ignored:
+lahey     = re.compile(r'Encountered 0 errors, 0 warnings in file.*',re.IGNORECASE)
+future    = re.compile(r'Warning:.*modification time in the future.*',re.IGNORECASE)
+clockskew = re.compile(r'warning:.*clock skew detected.*',re.IGNORECASE)
+checkout  = re.compile(r'^U')
 
 ##---------------------------------------------------------------------------##
 ## Lists, dictionaries, etc
@@ -182,6 +186,18 @@ for line in lines:
     # search on compile echo line
     # Do not catch Lahey F95 echo: "Encountered 0 errors, 0 warnings ..."
     match = lahey.search(line)
+
+    if match:
+        continue
+
+    # Do not catch warnings for "modification time in the future..."
+    match = future.search(line)
+
+    if match:
+        continue
+
+    # Do not catch warnings for "clock skew"
+    match = clockskew.search(line)
 
     if match:
         continue
