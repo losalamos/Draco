@@ -20,6 +20,7 @@ Diffusion_XYZ<MT>::Diffusion_XYZ( const SP<MT>& spm_, const pcg_DB& pcg_db )
     : MT::Coord_Mapper( spm_->get_Mesh_DB() ),
       spm(spm_),
       A( ncp, nct ),
+      AA( static_cast<MT::Coord_Mapper>(*this), spm->get_diag_offsets() ),
       pcg_ctrl( pcg_db, ncp ),
 
       vc( spm->get_vc() ),
@@ -133,9 +134,17 @@ void Diffusion_XYZ<MT>::solve( const typename MT::fcdsf& D,
 
 //     print2_Mat( A, "A" );
 
+// Grr, have to make aliases since Mesh_XYZ::cell_array is not longer
+// publicly derived from dsxx::Mat1.
+
+    Mat1<double> xx( &x[0], ncp );
+    Mat1<double> rr( &r[0], ncp );
+
+
 // Now solve the matrix equation A.x = rhs.
 
-    pcg_ctrl.pcg_fe( x, r, spmv, precond );
+//     pcg_ctrl.pcg_fe( x, r, spmv, precond );
+    pcg_ctrl.pcg_fe( xx, rr, spmv, precond );
 
     int pcgits = spmv->get_iterations();
 }

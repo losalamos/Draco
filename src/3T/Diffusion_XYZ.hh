@@ -15,6 +15,7 @@
 using dsxx::Mat2;
 
 #include "linalg/PCG_Ctrl.hh"
+#include "linalg/Banded_Matrix.cc"
 
 #include "3T/MatVec_3T.hh"
 #include "3T/PreCond.hh"
@@ -31,6 +32,7 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
     SP<MT> spm;
 
     Mat2<double> A;
+    Banded_Matrix< double, 7 > AA;
 
     PCG_Ctrl<double> pcg_ctrl;
 
