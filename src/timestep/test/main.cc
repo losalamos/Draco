@@ -6,6 +6,7 @@
 // @> A driver for the time-step manager test facility.
 //---------------------------------------------------------------------------//`
 #include "../ts_manager.hh"
+#include "../Release.hh"
 
 #include "test_timestep.hh"
 
@@ -21,8 +22,7 @@ using std::string;
 
 void version(const std::string &progname)
 {
-    std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
+    cout << progname << ": version " << rtt_timestep::release() << endl;
 }
 
 int main (int argc, char *argv[])
