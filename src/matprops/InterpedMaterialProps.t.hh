@@ -22,16 +22,16 @@ typedef rtt_matprops::InterpedMaterialProps IMP;
 
 //------------------------------------------------------------------------//
 // interpolate:
-//   Given a material state, a group number, and a pointer to a method
-//   that returns a GroupedTable, return a unary operation on the
+//   Given a material state, a group number, and a pointer to a 
+//   GroupedTable member, return a unary operation on the
 //   interpolated results from the table indicated by the method pointer
 //   and group.
 //------------------------------------------------------------------------//
 
 template<class FT, class FT2, class UnaryOperation>
 void IMP::interpolate(const MaterialStateField<FT,FT2> &matState, int group,
-		      PGroupedTable pTable, UnaryOperation op,
-		      FT &results) const
+		      const GroupedTable MaterialTables::* pTable,
+		      UnaryOperation op, FT &results) const
 {
     Require(matState.pMatprops == this);
     Require(matState.size() == results.size());
@@ -48,7 +48,7 @@ void IMP::interpolate(const MaterialStateField<FT,FT2> &matState, int group,
 	// (e.g. ionConduction tables).
 	// (The set is over all of the groups.)
 
-	const GroupedTable &groupedTable = (mattabs.*pTable)();
+	const GroupedTable &groupedTable = mattabs.*pTable;
 	
 	// groups are 1-based
 
@@ -75,15 +75,15 @@ void IMP::interpolate(const MaterialStateField<FT,FT2> &matState, int group,
 
 //---------------------------------------------------------------------------//
 // interpolate:
-//   Given a material state, and a pointer to a method
-//   that returns a BilinearInterpTable, return a unary operation on the
+//   Given a material state, and a pointer to a 
+//   BilinearInterpTable member, return a unary operation on the
 //   interpolated results from the table indicated by the method pointer.
 //---------------------------------------------------------------------------//
 
 template<class FT, class FT2, class UnaryOperation>
 void IMP::interpolate(const MaterialStateField<FT,FT2> &matState,
-		      PBilinearInterpTable pTable, UnaryOperation op,
-		      FT &results) const
+		      const BilinearInterpTable MaterialTables::* pTable,
+		      UnaryOperation op, FT &results) const
 {
     Require(matState.pMatprops == this);
     Require(matState.size() == results.size());
@@ -99,7 +99,7 @@ void IMP::interpolate(const MaterialStateField<FT,FT2> &matState,
 
 	// Get the specific material property table (e.g. ionConduction table)
 	
-	const BilinearInterpTable &table = (mattabs.*pTable)();
+	const BilinearInterpTable &table = mattabs.*pTable;
 	
 	// Do the interpolation.
 
