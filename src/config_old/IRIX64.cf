@@ -10,18 +10,18 @@ mach	= sgi
 cmplr	=
 optns	=
 
-ifeq ($(host),dixiebutte)
-mach	= o2k
-endif
-ifeq ($(host),strawberry)
-mach	= o2k
-endif
-ifeq ($(host),sugarloaf)
-mach	= o2k
-endif
-ifeq ($(host),ironside)
-mach	= o2k
-endif
+#ifeq ($(host),dixiebutte)
+#mach	= o2k
+#endif
+#ifeq ($(host),strawberry)
+#mach	= o2k
+#endif
+#ifeq ($(host),sugarloaf)
+#mach	= o2k
+#endif
+#ifeq ($(host),ironside)
+#mach	= o2k
+#endif
 
 PCG_LIB_DIR = $(HOME)/lib
 ifeq ($(host),twix)
@@ -193,7 +193,6 @@ endif
 ifeq ($(opt),2)
 optns		= o2
 #ASSERT_FLAG	= -DNOASSERT
-#ASSERT_FLAG	= -DDBC=0
 DBC		= 0
 cxx_opt		= +K2 -O2
 endif
@@ -201,7 +200,6 @@ endif
 ifeq ($(opt),3)
 optns		= o3
 #ASSERT_FLAG	= -DNOASSERT
-#ASSERT_FLAG	= -DDBC=0
 DBC		= 0
 cxx_opt		= +K3 -O3
 endif
@@ -209,35 +207,23 @@ endif
 ifeq ($(opt),3at)
 optns		= o3at
 #ASSERT_FLAG	= -DNOASSERT
-#ASSERT_FLAG	= -DDBC=0
 DBC		= 0
 cxx_opt		= +K3 -O3 -OPT:alias=typed
 endif
 
-CXX	+= $(cxx_opt)
-
-endif				# Photon C++
+endif				# KAI C++
 #-----------------------------------------------------------------------------#
 # Silicon Graphics Inc C++
 
 ifeq ($(cxx),CC)
 
 CC	= cc
-CXX	= CC -LANG:ansi-for-init-scope=ON:restrict=ON -mips4 \
-	-no_auto_include -I/v/furnish/local/stlport
+CXX	= CC -LANG:ansi-for-init-scope=ON:restrict=ON -mips4 -no_auto_include
+cmplr	= sgi
 
-ifndef arch
-arch	= n32
-endif
-
-ifeq ($(arch),n32)
+ifeq ($(bits),32)
 CXX += -n32
 cmplr	= sn32
-endif
-
-ifeq ($(arch),64)
-CXX += -64
-cmplr	= s64
 endif
 
 DEBUG_FLAG	=
@@ -247,17 +233,89 @@ CXX_DEPEND_FLAG	= $(CXXFLAGS)
 
 preinstantiate	:= yes
 
-ifndef sgi_deps
+CXX_DEPEND	= -MDupdate .d.$(basename $(notdir $*))_$(env)
 sgi_deps := yes
+
+INSTANTIALYZER	+= -m ansi
+
+ifeq ($(c4),no)
+SYS_FLAGS =
+comm	:=
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_f77_sgi_64
 endif
 
-ifeq ($(sgi_deps),yes)
-ifneq ($(gendeps),no)
-CXX	+= -MDupdate .d.$(basename $(notdir $*))_$(env)
-endif
+ifeq ($(c4),mpi)
+comm	:= c4m
+SYS_FLAGS = -DC4_MPI
+SYS_LIBS = -lmpi
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
 
-INSTANTIALYZER	+= -m edg
+ifdef nj
+lib_cmd	:= $(CXX) -J $(nj) -ar -o
+SYS_LINK_FLAGS	:= -J $(nj)
+else
+lib_cmd	:= $(CXX) -ar -o
+endif
+
+ifndef opt
+opt	= 0
+endif
+
+ifeq ($(opt),g)
+optns		= g
+cxx_opt		= -g
+endif
+
+ifeq ($(opt),0)
+optns		= g
+cxx_opt		= -g
+endif
+
+ifeq ($(opt),1)
+optns		= o1
+DBC		= 1
+cxx_opt		= -O1
+endif
+
+ifeq ($(opt),2)
+optns		= o2
+DBC		= 0
+cxx_opt		= -O2
+endif
+
+ifeq ($(opt),3)
+optns		= o3
+DBC		= 0
+cxx_opt		= -O3
+endif
+
+ifeq ($(opt),3at)
+optns		= o3at
+DBC		= 0
+cxx_opt		= -O3 -OPT:alias=typed
+endif
+
+endif				# SGI C++
+
+#-----------------------------------------------------------------------------#
+# EGCS
+
+ifeq ($(cxx),egcs)
+
+CC	= /home/furnish/jj/bin/gcc
+CXX	= /home/furnish/jj/bin/c++
+
+cmplr	= egcs
+
+DEBUG_FLAG	=
+
+MAKEDEPEND	= $(CXX) -M
+CXX_DEPEND_FLAG	= $(CXXFLAGS)
+
+preinstantiate	:= yes
+
+INSTANTIALYZER	+= -m ansi
 
 ifeq ($(c4),no)
 SYS_FLAGS = -DNOMPI
@@ -309,16 +367,10 @@ ASSERT_FLAG	= -DNOASSERT
 cxx_opt		= -O3
 endif
 
-ifeq ($(opt),3at)
-optns		= o3at
-ASSERT_FLAG	= -DNOASSERT
-cxx_opt		= -O3 -OPT:alias=typed
-endif
+endif				# EGCS
+#-----------------------------------------------------------------------------#
 
 CXX	+= $(cxx_opt)
-
-endif				# SGI C++
-#-----------------------------------------------------------------------------#
 
 ASSERT_FLAG = -DDBC=$(DBC)
 
