@@ -13,12 +13,13 @@
 // @> 
 //---------------------------------------------------------------------------//
 
-#include "Connect.hh"
-#include "ds++/Assert.hh"
 #include <utility>
 #include <iterator>
 #include <algorithm>
 #include <iostream>
+
+#include "ds++/Assert.hh"
+#include "Connect.hh"
 
 namespace rtt_meshReaders_Services
 {
@@ -299,7 +300,7 @@ void Connect::connectMutualFaces()
 	    // that define the sides, assign the negative of the boundary side 
 	    // flag as the adjacent cell. Correlate the cell face number to the
 	    // corresponding side number in Cell_Faces_to_Sides.
-	    if (globalSideNodes == globalFaceNodes)
+	    if( globalSideNodes == globalFaceNodes )
 	    {
 	        adjCell[cell][faceNum].push_back(- sides_bndry[side]);
 		++sitr;
@@ -314,18 +315,24 @@ void Connect::connectMutualFaces()
 	else
 	{
 	    // temporary work-around to ICEM bug - 16 Aug 99.
-	    const set_int & globalSideNodes = sitr->first;
-	    int side = sitr->second;
-	    if (globalSideNodes == globalFaceNodes)
+
+	    if( sitr != sideNodes.end() )
 	    {
-	        ++mmiter;
-		otherCell = mmiter->second;	        
-		std::cout << "Warning: Face shared by cells " << cell + 1 
-			  << " & " << otherCell + 1 
-			  << " also exists as boundary side " << side + 1 
-			  << std::endl;
-		++sitr;
-	        --mmiter;
+		
+		set_int const & globalSideNodes( sitr->first  );
+		int             side(            sitr->second );
+
+		if( globalSideNodes == globalFaceNodes )
+		{
+		    ++mmiter;
+		    otherCell = mmiter->second;	        
+		    std::cout << "Warning: Face shared by cells " << cell + 1 
+			      << " & " << otherCell + 1 
+			      << " also exists as boundary side " << side + 1 
+			      << std::endl;
+		    ++sitr;
+		    --mmiter;
+		}
 	    }
 	    treatSimpleFace(cell, faceNum, mmiter);
 	}

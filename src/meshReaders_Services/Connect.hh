@@ -12,14 +12,15 @@
 #ifndef __meshReaders_Services_Connect_hh__
 #define __meshReaders_Services_Connect_hh__
 
-#include "ds++/isSorted.hh"
-#include "ds++/SortPermutation.hh"
-#include "meshReaders/Mesh_Reader.hh"
-#include "ds++/SP.hh"
 #include <vector>
 #include <set>
 #include <map>
 #include <cmath>
+
+#include "ds++/isSorted.hh"
+#include "ds++/SortPermutation.hh"
+#include "ds++/SP.hh"
+#include "meshReaders/Mesh_Reader.hh"
 
 namespace rtt_meshReaders_Services
 {
