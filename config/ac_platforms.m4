@@ -211,6 +211,8 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                GCC_LIB_DIR="${GCC_HOME}/lib"
 	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
 	   fi
 
        else
@@ -222,15 +224,17 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_MSG_CHECKING("librt requirements")
        if test -n "${vendor_udm}"; then
-	   
+
 	   # Add rt for g++
 	   if test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lrt"
 	       AC_MSG_RESULT("-lrt added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
 	   fi
 
        else
-	   AC_MSG_RESULT("not needed")
+           AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -239,14 +243,24 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_MSG_CHECKING("libdl requirements")
        if test -n "${vendor_dlopen}" ; then
-          if test "${enable_dlopen}" = yes ; then
-	      LIBS="${LIBS} -ldl"
-	      CFLAGS="${CFLAGS} -fPIC"
-	      CXXFLAGS="${CXXFLAGS} -fPIC"
-	      AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
-	  fi
+           if test "${enable_dlopen}" = yes ; then
+               LIBS="${LIBS} -ldl"
+
+               # if we are using g++ add fPIC
+               if test "${CXX}" = g++ ; then
+                   CFLAGS="${CFLAGS} -fPIC"
+                   CXXFLAGS="${CXXFLAGS} -fPIC"
+                   AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+               else
+                   AC_MSG_RESULT("-ldl added to LIBS")
+               fi
+
+           else  
+               AC_MSG_RESULT("not needed")
+           fi
+
        else
-	   AC_MSG_RESULT("not needed")
+           AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -965,6 +979,8 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
                GCC_LIB_DIR="${GCC_HOME}/lib"
 	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
 	   fi
 
        else
@@ -976,15 +992,17 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        #
        AC_MSG_CHECKING("librt requirements")
        if test -n "${vendor_udm}"; then
-	   
+
 	   # Add rt for g++
 	   if test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lrt"
 	       AC_MSG_RESULT("-lrt added to LIBS")
+           else
+               AC_MSG_RESULT("not needed")
 	   fi
 
        else
-	   AC_MSG_RESULT("not needed")
+           AC_MSG_RESULT("not needed")
        fi
 
        #
@@ -993,14 +1011,24 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        #
        AC_MSG_CHECKING("libdl requirements")
        if test -n "${vendor_dlopen}" ; then
-          if test "${enable_dlopen}" = yes ; then
-	      LIBS="${LIBS} -ldl"
-	      CFLAGS="${CFLAGS} -fPIC"
-	      CXXFLAGS="${CXXFLAGS} -fPIC"
-	      AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
-	  fi
+           if test "${enable_dlopen}" = yes ; then
+               LIBS="${LIBS} -ldl"
+
+               # if we are using g++ add fPIC
+               if test "${CXX}" = g++ ; then
+                   CFLAGS="${CFLAGS} -fPIC"
+                   CXXFLAGS="${CXXFLAGS} -fPIC"
+                   AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+               else
+                   AC_MSG_RESULT("-ldl added to LIBS")
+               fi
+
+           else  
+               AC_MSG_RESULT("not needed")
+           fi
+
        else
-	   AC_MSG_RESULT("not needed")
+           AC_MSG_RESULT("not needed")
        fi
 
        #
