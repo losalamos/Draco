@@ -1,0 +1,5 @@
+1999-10-18  Thomas M. Evans  <tme@lanl.gov>
+
+	* OS_Mesh.hh, OS_Mesh.cc: added expanded surface source
+	capability.  Updated to mc-1_1_0.
+
