@@ -167,8 +167,8 @@ namespace rtt_cdi
 	void setGrayOpacity( 
 	    const rtt_dsxx::SP< const GrayOpacity >& spGrayOpacity );
 
-	void setMultigroupOpacity( 
-	    const rtt_dsxx::SP< const MultigroupOpacity >& spMultigroupOpacity );
+ 	void setMultigroupOpacity( 
+ 	    const rtt_dsxx::SP< const MultigroupOpacity >& spMultigroupOpacity );
 
 	void setEoS( const rtt_dsxx::SP< const EoS >& spEoS );
 

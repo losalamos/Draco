@@ -210,13 +210,10 @@ namespace rtt_CDI_test {
 
 	    // Test the EoS plug-in component of this CDI.
 
-	    double density = 3.0; // g/cm^3
-	    double temperature = 2300; // Kelvin
-
-	    double refCve = temperature + density/1000.0;
+	    double refCve = temp + dens/1000.0;
 	    
 	    double Cve = spCdiDumEoS->eos()->getElectronHeatCapacity(
-		density, temperature );
+		temp, dens );
 
 	    if ( match( Cve, refCve ) )
 		pass() << "CDI->eos()->getElectronHeatCapacity( dbl, dbl )\n\t"
@@ -236,7 +233,7 @@ namespace rtt_CDI_test {
 	    // Test the object
 
 	    if ( match( spCdiDum->eos()->getElectronHeatCapacity( 
-		density, temperature ),	refCve ) )
+		temp, dens ), refCve ) )
 		pass() << "The copy of spCdiDumEos named spCdiDum looks okay.";
 	    else
 		fail() << "The copy of spCdiDumEos named spCdiDum is not\n\t"

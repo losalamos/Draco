@@ -87,7 +87,7 @@ namespace rtt_dummyEoS
 	 * \return A specific electron internal energy (kJ/g).
 	 */
 	double getSpecificElectronInternalEnergy(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 	
 	/*!
 	 * \brief EoS accessor that returns a vector of specific
@@ -104,8 +104,8 @@ namespace rtt_dummyEoS
 	 * \return A vector of specific electron internal energies (kJ/g).
 	 */
 	std::vector< double > getSpecificElectronInternalEnergy(
-	    const std::vector< double >& vdensity, 
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature, 
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the electron based heat capacity for this
@@ -118,7 +118,7 @@ namespace rtt_dummyEoS
 	 * \return The electron based heat capacity in kJ/g/K.
 	 */
 	double getElectronHeatCapacity(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of electron based heat capacities for
@@ -132,8 +132,8 @@ namespace rtt_dummyEoS
 	 * \return The electron based heat capacity in kJ/g/K.
 	 */
 	std::vector< double > getElectronHeatCapacity(
-	    const std::vector< double >& vdensity, 
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature, 
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the specific ion internal energy for this
@@ -146,7 +146,7 @@ namespace rtt_dummyEoS
 	 * \return The specific ion internal energy in kJ/g.
 	 */
 	double getSpecificIonInternalEnergy(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of specific ion internal energies for
@@ -160,8 +160,8 @@ namespace rtt_dummyEoS
 	 * \return A vector of specific ion internal energies in kJ/g.
 	 */
 	std::vector< double > getSpecificIonInternalEnergy(
-	    const std::vector< double >& vdensity, 
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature, 
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the ion based heat capacity for this
@@ -174,7 +174,7 @@ namespace rtt_dummyEoS
 	 * \return The ion based heat capacity in kJ/g/K.
 	 */
 	double getIonHeatCapacity(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of ion based heat capacities for
@@ -188,8 +188,8 @@ namespace rtt_dummyEoS
 	 * \return A vector of ion based heat capacities in kJ/g/K.
 	 */
 	std::vector< double > getIonHeatCapacity(
-	    const std::vector< double >& vdensity,
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature,
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the number of free electrons per ion for this
@@ -202,7 +202,7 @@ namespace rtt_dummyEoS
 	 * \return The number of free electrons per ion.
 	 */
 	double getNumFreeElectronsPerIon(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of free electrons per ion averages for
@@ -214,8 +214,8 @@ namespace rtt_dummyEoS
 	 * \return A vector of the number of free electrons per ion.
 	 */
 	std::vector< double > getNumFreeElectronsPerIon(
-	    const std::vector< double >& vdensity,
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature,
+	    const std::vector< double >& vdensity ) const;
 
 	/*!
 	 * \brief Retrieve the electron based thermal conductivity for this
@@ -228,7 +228,7 @@ namespace rtt_dummyEoS
 	 * \return The electron based thermal conductivity in 1/s/cm.
 	 */
 	double getElectronBasedThermalConductivity(
-	    double density, double temperature ) const;
+	    double temperature, double density ) const;
 
 	/*!
 	 * \brief Retrieve a set of electron based thermal conductivities for
@@ -243,8 +243,8 @@ namespace rtt_dummyEoS
 	 * in 1/s/cm.
 	 */
 	std::vector< double > getElectronBasedThermalConductivity(
-	    const std::vector< double >& vdensity,
-	    const std::vector< double >& vtemperature ) const;
+	    const std::vector< double >& vtemperature,
+	    const std::vector< double >& vdensity ) const;
 
     }; // end of class DummyEoS
     

@@ -87,7 +87,7 @@ namespace rtt_dummy_eos_test
 		= temperature + 1000.0*density; // kJ/g
 	    
 	    double seie = spEoS->getSpecificElectronInternalEnergy( 
-		density, temperature );
+		temperature, density );
 	    
 	    if ( match ( seie, tabulatedSpecificElectronInternalEnergy ) ) 
 // 		pass() << spEoS->getDataDescriptor()
@@ -117,7 +117,7 @@ namespace rtt_dummy_eos_test
 		vRefCve[i] = vtemperature[i] + vdensity[i]/1000.0;
 	    
 	    std::vector< double > vCve = spEoS->getElectronHeatCapacity(
-		vdensity, vtemperature );
+		vtemperature, vdensity );
 	    
 	    if ( match ( vCve, vRefCve ) ) 
 // 		pass() << spEoS->getDataDescriptor()

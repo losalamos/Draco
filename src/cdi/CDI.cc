@@ -61,8 +61,7 @@ namespace rtt_cdi
 	}
 
     void CDI::setMultigroupOpacity( 
-	const rtt_dsxx::SP< const MultigroupOpacity >&
-	in_spMultigroupOpacity )
+ 	const rtt_dsxx::SP< const MultigroupOpacity >& in_spMultigroupOpacity )
 	{
 	    spMultigroupOpacity = in_spMultigroupOpacity;
 	}

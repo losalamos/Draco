@@ -59,7 +59,7 @@ namespace rtt_dummyEoS
      * \return A specific electron internal energy (kJ/g).
      */
     double DummyEoS::getSpecificElectronInternalEnergy(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    return temperature + 1000.0*density;
 	}
@@ -79,8 +79,8 @@ namespace rtt_dummyEoS
      * \return A vector of specific electron internal energies (kJ/g).
      */
     std::vector< double > DummyEoS::getSpecificElectronInternalEnergy(
-	const std::vector< double >& vdensity, 
-	const std::vector< double >& vtemperature ) const
+	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity ) const
 	{
 	    std::vector< double > seie( vdensity.size() );
 	    for ( int i=0; i<vdensity.size(); ++i )
@@ -99,7 +99,7 @@ namespace rtt_dummyEoS
      * \return The electron based heat capacity in kJ/g/K.
      */
     double DummyEoS::getElectronHeatCapacity(
-	double density, double temperature ) const 
+	double temperature, double density ) const 
 	{
 	    return temperature + density/1000.0;
 	}
@@ -116,8 +116,8 @@ namespace rtt_dummyEoS
      * \return The electron based heat capacity in kJ/g/K.
      */
     std::vector< double > DummyEoS::getElectronHeatCapacity(
-	const std::vector< double >& vdensity, 
-	const std::vector< double >& vtemperature ) const
+	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity ) const
 	{
 	    std::vector< double > ehc( vdensity.size() );
 	    for ( int i=0; i<vdensity.size(); ++i )
@@ -136,7 +136,7 @@ namespace rtt_dummyEoS
      * \return The specific ion internal energy in kJ/g.
      */
     double DummyEoS::getSpecificIonInternalEnergy(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    return getSpecificElectronInternalEnergy( density,
 						      temperature );
@@ -154,8 +154,8 @@ namespace rtt_dummyEoS
      * \return A vector of specific ion internal energies in kJ/g.
      */
     std::vector< double > DummyEoS::getSpecificIonInternalEnergy(
-	const std::vector< double >& vdensity, 
-	const std::vector< double >& vtemperature ) const 
+	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vdensity ) const 
 	{
 	    return getSpecificElectronInternalEnergy( 
 		vdensity, vtemperature );
@@ -172,7 +172,7 @@ namespace rtt_dummyEoS
      * \return The ion based heat capacity in kJ/g/K.
      */
     double DummyEoS::getIonHeatCapacity(
-	double density, double temperature ) const
+	double temperature, double density ) const
 	{
 	    return getElectronHeatCapacity( density, temperature );
 	}
@@ -189,8 +189,8 @@ namespace rtt_dummyEoS
      * \return A vector of ion based heat capacities in kJ/g/K.
      */
     std::vector< double > DummyEoS::getIonHeatCapacity(
-	const std::vector< double >& vdensity,
-	const std::vector< double >& vtemperature ) const 
+	const std::vector< double >& vtemperature,
+	const std::vector< double >& vdensity ) const 
 	{
 	    return getElectronHeatCapacity( vdensity, vtemperature );
 	}
@@ -206,7 +206,7 @@ namespace rtt_dummyEoS
      * \return The number of free electrons per ion.
      */
     double DummyEoS::getNumFreeElectronsPerIon(
-	double density, double temperature ) const 
+	double temperature, double density ) const 
 	{
 	    return temperature/100.0;
 	}
@@ -221,8 +221,8 @@ namespace rtt_dummyEoS
      * \return A vector of the number of free electrons per ion.
      */
     std::vector< double > DummyEoS::getNumFreeElectronsPerIon(
-	const std::vector< double >& vdensity,
-	const std::vector< double >& vtemperature ) const
+	const std::vector< double >& vtemperature,
+	const std::vector< double >& vdensity ) const
 	{
 	    std::vector< double > nfepi( vdensity.size() );
 	    for ( int i=0; i<vdensity.size(); ++i )
@@ -241,7 +241,7 @@ namespace rtt_dummyEoS
      * \return The electron based thermal conductivity in 1/s/cm.
      */
     double DummyEoS::getElectronBasedThermalConductivity(
-	double density, double temperature ) const 
+	double temperature, double density ) const 
 	{
 	    return 1000.0*temperature + density;
 	}
@@ -259,8 +259,8 @@ namespace rtt_dummyEoS
      * in 1/s/cm.
      */
     std::vector< double > DummyEoS::getElectronBasedThermalConductivity(
-	const std::vector< double >& vdensity,
-	const std::vector< double >& vtemperature ) const 
+	const std::vector< double >& vtemperature,
+	const std::vector< double >& vdensity ) const 
 	{
 	    std::vector< double > ebtc( vdensity.size() );
 	    for ( int i=0; i<vdensity.size(); ++i )
