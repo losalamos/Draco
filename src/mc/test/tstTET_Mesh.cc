@@ -9,13 +9,19 @@
 
 // revision history:
 // -----------------
-//  0) original   : Committed 2000-01-28
-//  1) 2000-02-07 : Added many tests of TET_Mesh functions, for a "hand-coded"
-//                  test mesh.
-//  2) 2000-02-09 : Extension to include instantiation from a generic interface
-//                  class, and tests based on a particular example of such an
-//                  interface class, contained in TET_test_1.hh.
-//  3) 2000-04-10 : Rewritten to be consistent with new meshReader classes.
+//  0)   Original: Committed 2000-01-28
+//  1) 2000-02-07: Added many tests of TET_Mesh functions, for a "hand-coded"
+//                 test mesh.
+//  2) 2000-02-09: Extension to include instantiation from a generic interface
+//                 class, and tests based on a particular example of such an
+//                 interface class, contained in TET_test_1.hh.
+//  3) 2000-04-10: Rewritten to be consistent with new meshReader classes.
+//  4) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
+//                 get_node_coord_units(), get_node_sets(), get_element_sets(),
+//                 and get_title() services of the Mesh_Reader base class.
+//                 At the top level (TET_Mesh), the get_..._sets() services
+//                 will later be replaced by side- and cell-specific data
+//                 structures.
 
 #include "../TET_Mesh.hh"
 #include "../TET_Builder.hh"
@@ -32,6 +38,8 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include <set>
+#include <map>
 
 using namespace std;
 
@@ -55,6 +63,12 @@ typedef std::vector<double> SF_DOUBLE;
 
 //! Typedef for vector field of integers.
 typedef std::vector< std::vector<int> > VF_INT;
+
+//! Typedef for a standard set of integers.
+typedef std::set<int> SetInt;
+
+//! Typedef for a map linking strings to sets of integers.
+typedef std::map< std::string, SetInt > MAP_String_SetInt;
 
 double MID_epsilon = 0.0001;
 int seed = 493875348;
@@ -221,6 +235,18 @@ void Test_TET()
     SP<Coord_sys> coor(new XYZCoord_sys());
     if (!coor)                     ITFAILS;
 
+    Layout layo;
+    layo.set_size(2);
+    layo.set_size(1,4);
+    layo.set_size(2,4);
+
+    for (int c = 1 ; c <=2 ; c++)
+        for (int f = 1 ; f <= 4 ; f++)
+            layo(c,f) = 0;
+
+    layo(1,1) = 2;
+    layo(2,3) = 1;
+
     SF_THREEVECTOR vertex_vec;
     vertex_vec.push_back(ThreeVector(0.0,0.0,0.0));
     vertex_vec.push_back(ThreeVector(1.0,0.0,0.0));
@@ -229,21 +255,77 @@ void Test_TET()
     vertex_vec.push_back(ThreeVector(0.5,0.5,1.0));
     if (vertex_vec.size() != 5)            ITFAILS;
 
-    VF_INT cells_ver(2);
+    std::string node_coord_unit("cm");
 
-    cells_ver[0].push_back(0);
-    cells_ver[0].push_back(1);
-    cells_ver[0].push_back(2);
-    cells_ver[0].push_back(4);
+    MAP_String_SetInt node_set;
 
-    cells_ver[1].push_back(2);
-    cells_ver[1].push_back(1);
-    cells_ver[1].push_back(3);
-    cells_ver[1].push_back(4);
+    SetInt s1;
+    s1.insert(1);
+    s1.insert(2);
+    node_set[std::string("node_type/dudded")] = s1;
 
-    if (cells_ver.size() != 2)      ITFAILS;
-    if (cells_ver[0].size() != 4)   ITFAILS;
-    if (cells_ver[1].size() != 4)   ITFAILS;
+    SetInt s2;
+    s2.insert(0);
+    node_set[std::string("node_type/interior")] = s2;
+
+    SetInt s3;
+    s3.insert(3);
+    s3.insert(4);
+    node_set[std::string("node_type/parent")] = s3;
+
+    SetInt s4;
+    s4.insert(0);
+    s4.insert(1);
+    node_set[std::string("radiation_boundary/reflective")] = s4;
+
+    SetInt s5;
+    s5.insert(2);
+    s5.insert(3);
+    s5.insert(4);
+    node_set[std::string("radiation_boundary/vacuum")] = s5;
+
+    SetInt s6;
+    s6.insert(0);
+    s6.insert(1);
+    s6.insert(2);
+    node_set[std::string("radiation_source/no_source")] = s6;
+
+    SetInt s7;
+    s7.insert(3);
+    s7.insert(4);
+    node_set[std::string("radiation_source/rad_source")] = s7;
+
+    MAP_String_SetInt element_set;
+
+    SetInt s8;
+    s8.insert(0);
+    s8.insert(1);
+    s8.insert(2);
+    s8.insert(3);
+    s8.insert(4);
+    s8.insert(5);
+    element_set[std::string("boundary_condition/reflective")] = s8;
+
+    SetInt s9;
+    element_set[std::string("boundary_condition/vacuum")] = s9;
+
+    SetInt s10;
+    element_set[std::string("ion_source/src_name1")] = s10;
+
+    SetInt s11;
+    s11.insert(6);
+    s11.insert(7);
+    element_set[std::string("ion_source/src_name2")] = s11;
+
+    SetInt s12;
+    s12.insert(6);
+    s12.insert(7);
+    element_set[std::string("material_region/control_rod")] = s12;
+
+    SetInt s13;
+    element_set[std::string("material_region/shield")] = s13;
+
+    std::string titl("Test 2-tet pyramid in RTT-format mesh.");
 
     VF_INT sides_ver(6);
 
@@ -271,19 +353,27 @@ void Test_TET()
     sides_ver[5].push_back(4);
     sides_ver[5].push_back(3);
 
-    Layout layo;
-    layo.set_size(2);
-    layo.set_size(1,4);
-    layo.set_size(2,4);
+    VF_INT cells_ver(2);
 
-    for (int c = 1 ; c <=2 ; c++)
-        for (int f = 1 ; f <= 4 ; f++)
-            layo(c,f) = 0;
+    cells_ver[0].push_back(0);
+    cells_ver[0].push_back(1);
+    cells_ver[0].push_back(2);
+    cells_ver[0].push_back(4);
 
-    layo(1,1) = 2;
-    layo(2,3) = 1;
+    cells_ver[1].push_back(2);
+    cells_ver[1].push_back(1);
+    cells_ver[1].push_back(3);
+    cells_ver[1].push_back(4);
 
-    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec, cells_ver, sides_ver));
+    if (cells_ver.size() != 2)      ITFAILS;
+    if (cells_ver[0].size() != 4)   ITFAILS;
+    if (cells_ver[1].size() != 4)   ITFAILS;
+
+
+cerr << "Ready for mesh_ptr_H." << endl;
+
+    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec,
+        node_coord_unit, node_set, element_set, titl, sides_ver, cells_ver));
 
     if ( !mesh_ptr_H )                                                 ITFAILS;
     if ( !mesh_ptr_H->full_Mesh() )                                    ITFAILS;
@@ -315,6 +405,8 @@ void Test_TET()
 
     // Test interface ===> TET_Builder instantiation with hand-coded interface.
     // This mesh should be the same 2-tet pyramid as in mesh_ptr_H.
+
+cerr << "Ready for mesh_ptr_0." << endl;
 
     SP<TET_test_1> interface(new TET_test_1());
     if (!interface)                                   ITFAILS;
@@ -350,6 +442,8 @@ void Test_TET()
 
     // Test interface ===> TET_Builder instantiation with RTT_Format class.
     // This mesh should also be the same 2-tet pyramid as in mesh_ptr_H.
+
+cerr << "Ready for mesh_ptr_1." << endl;
 
     SP<RTT_Format> reader_1(new RTT_Format("TET_RTT_1"));
     if (!reader_1)                                       ITFAILS;
@@ -453,6 +547,8 @@ void Test_TET()
     // Test interface ===> TET_Builder instantiation with RTT_Format class.
     // This mesh should be the 96-tet cube from Todd Wareing.
 
+cerr << "Ready for mesh_ptr_2." << endl;
+
     SP<RTT_Format> reader_2(new RTT_Format("TET_RTT_2"));
     if (!reader_2)                                       ITFAILS;
 
@@ -473,6 +569,8 @@ void Test_TET()
 
     // Test interface ===> TET_Builder instantiation with RTT_Format class.
     // This mesh should be the one-tet case from the definition file.
+
+cerr << "Ready for mesh_ptr_3." << endl;
 
     SP<RTT_Format> reader_3(new RTT_Format("TET_RTT_3"));
     if (!reader_3)                                       ITFAILS;

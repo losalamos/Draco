@@ -25,10 +25,14 @@ namespace rtt_mc
  * \param submesh_        Submesh indicator flag.
  */
 TET_Mesh::TET_Mesh(rtt_dsxx::SP<Coord_sys> coord_, Layout & layout_,
-    SF_THREEVECTOR & vertex_vector_, VF_INT & cells_vertices_,
-    VF_INT & sides_vertices_, bool submesh_)
+    SF_THREEVECTOR & vertex_vector_, std::string & node_coord_units_,
+    MAP_String_SetInt & node_sets_, MAP_String_SetInt & element_sets_,
+    std::string & title_, VF_INT & sides_vertices_, VF_INT & cells_vertices_,
+    bool submesh_)
     : coord(coord_), layout(layout_), vertex_vector(vertex_vector_),
-      cells_vertices(cells_vertices_), sides_vertices(sides_vertices_),
+      node_coord_units(node_coord_units_), node_sets(node_sets_),
+      element_sets(element_sets_), title(title_),
+      sides_vertices(sides_vertices_), cells_vertices(cells_vertices_),
       submesh(submesh_)
 {
     // For a TET_Mesh, there must be an XYZ coordinate system.
@@ -536,12 +540,11 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos_on_face(int cell, int face,
  */
 bool TET_Mesh::operator==(const TET_Mesh &rhs) const
 {
-    // Verify that we have the same coordinate systems.
-//  (After the coordinate system is installed.)
-//  if (coord != rhs.coord)
-//  return false;
-
 // QUESTION: Should we check submesh ?
+
+    // Verify that we have the same coordinate systems.
+    if (coord->get_Coord() != rhs.coord->get_Coord())
+        return false;
 
     // Verify that the Layouts are equal.
     if (layout != rhs.layout)
@@ -551,12 +554,32 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
     if (vertex_vector != rhs.vertex_vector)
         return false;
 
-    // Verify the identities of the vertices of each cell.
-    if (cells_vertices != rhs.cells_vertices)
+    // Verify the coordinate units.
+    if (node_coord_units != rhs.node_coord_units)
+        return false;
+
+// TEMPORARY: to be replaced by side- and cell-specific structures later.
+
+    // Verify the node_sets.
+    if (node_sets != rhs.node_sets)
+        return false;
+
+    // Verify the element_sets.
+    if (element_sets != rhs.element_sets)
+        return false;
+
+// End TEMPORARY.
+
+    // Verify the mesh titles.
+    if (title != rhs.title)
         return false;
 
     // Verify the identities of the vertices of each side.
     if (sides_vertices != rhs.sides_vertices)
+        return false;
+
+    // Verify the identities of the vertices of each cell.
+    if (cells_vertices != rhs.cells_vertices)
         return false;
 
     // if we haven't returned, then the two meshes must be equal

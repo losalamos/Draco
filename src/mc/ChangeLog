@@ -1,3 +1,12 @@
+2000-05-03  H. Grady Hughes  <hgh@lanl.gov>
+    * TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
+    test/TET_test_1.hh, test/tstTET_Mesh.cc: TET_Builder, TET_Mesh,
+    and their test files now use the get_node_coord_units(),
+    get_node_sets(), get_element_sets(), and get_title() services of
+    the Mesh_Reader base class.  At the top level (TET_Mesh), the
+    get_..._sets() services will later be replaced by side- and
+    cell-specific data structures.
+
 2000-04-26  H. Grady Hughes  <hgh@lanl.gov>
     * TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh, 
     test/TET_test_1.hh, test/tstTET_Mesh.cc: Added private data

@@ -89,15 +89,16 @@ rtt_dsxx::SP<TET_Mesh> TET_Builder::build_Mesh()
 
     // Create third constructor argument: vertex_vector.
     SF_THREEVECTOR vertex_vector;
-    for (int v_ = 0 ; v_ < nodes_coords.size() ; v_++)
-        vertex_vector.push_back(ThreeVector(nodes_coords[v_][0],
-                                nodes_coords[v_][1],nodes_coords[v_][2]));
+    for (int v_ = 0 ; v_ < node_coords.size() ; v_++)
+        vertex_vector.push_back(ThreeVector(node_coords[v_][0],
+                                node_coords[v_][1],node_coords[v_][2]));
 
     // Remaining constructor arguments (cells_vertices, submesh) already made.
 
     // Instantiate and return Smart Pointer to the new TET_Mesh.
     rtt_dsxx::SP<TET_Mesh> mesh_ptr(new TET_Mesh(coord, layout, vertex_vector,
-                                    cells_vertices, sides_vertices, submesh));
+        node_coord_units, node_sets, element_sets, title, sides_vertices,
+        cells_vertices, submesh));
 
     return mesh_ptr;
 

@@ -22,6 +22,8 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <set>
+#include <map>
 
 namespace rtt_mc
 {
@@ -44,20 +46,26 @@ namespace rtt_mc
  */
 // revision history:
 // -----------------
-//  0)   Original : Committed 2000-01-27.
-//  1) 2000-01-28 : Added public functions to TET_Mesh:
-//                          bool   in_cell(const SF_DOUBLE &, int);
-//                          int    get_cell(const SF_DOUBLE &);
-//                          double get_min_db(const SF_DOUBLE &, int);
-//  2) 2000-01-30 : Added subscripting, iterators, size, and empty functions
-//                  to class TET_Mesh::CCVF.
-//  3) 2000-02-12 : Added TET_Mesh member functions get_cell_types() and
-//                  get_point_coord() for Ensight support.  Also completed all
-//                  namespace issues and elimination of using declarations.
-//  4) 2000-04-25 : Renamed in_cell() to in_open_cell() and added the related
-//                  function in_closed_cell().
-//  5) 2000-04-26 : Added private data VF_INT sides_vertices, and dealt with
-//                  sides_vertices in the public constructor.
+//  0)   Original: Committed 2000-01-27.
+//  1) 2000-01-28: Added public functions to TET_Mesh:
+//                         bool   in_cell(const SF_DOUBLE &, int);
+//                         int    get_cell(const SF_DOUBLE &);
+//                         double get_min_db(const SF_DOUBLE &, int);
+//  2) 2000-01-30: Added subscripting, iterators, size, and empty functions
+//                 to class TET_Mesh::CCVF.
+//  3) 2000-02-12: Added TET_Mesh member functions get_cell_types() and
+//                 get_point_coord() for Ensight support.  Also completed all
+//                 namespace issues and elimination of using declarations.
+//  4) 2000-04-25: Renamed in_cell() to in_open_cell() and added the related
+//                 function in_closed_cell().
+//  5) 2000-04-26: Added private data VF_INT sides_vertices, and dealt with
+//                 sides_vertices in the public constructor.
+//  6) 2000-05-03: TET_Builder, TET_Mesh, and their test files now use the
+//                 get_node_coord_units(), get_node_sets(), get_element_sets(),
+//                 and get_title() services of the Mesh_Reader base class.
+//                 At the top level (TET_Mesh), the get_..._sets() services
+//                 will later be replaced by side- and cell-specific data
+//                 structures.
 //
 //___________________________________________________________________________//
 
@@ -86,6 +94,12 @@ class TET_Mesh
     //! Typedef for vector field of doubles.
     typedef std::vector< std::vector<double> > VF_DOUBLE;
 
+    //! Typedef for a standard set of integers.
+    typedef std::set<int> SetInt;
+
+    //! Typedef for a map linking strings to sets of integers.
+    typedef std::map< std::string, SetInt > MAP_String_SetInt;
+
     //! The TET_Mesh is inherently 3-dimensional and its faces have 3 vertices.
     static const int THREE = 3;
 
@@ -108,6 +122,32 @@ class TET_Mesh
      */
     SF_THREEVECTOR vertex_vector;
 
+    //! Coordinate system units (e.g. "cm").
+    std::string node_coord_units;
+
+    //! Associate sets of nodes with characteristics identified by strings.
+    MAP_String_SetInt node_sets;
+
+    //! Associate sets of elements with characteristics identified by strings.
+    MAP_String_SetInt element_sets;
+
+    //! Mesh title.
+    std::string title;
+
+    /*!
+     * sides_vertices[side#][side_vertex#] == internal numbers of the three
+     * vertices belonging to the given side, labeled side#.
+     *
+     * side# == (0, 1, 2, 3, 4, ...) for an internal list of all sides.
+     *
+     * side_vertex# == (0, 1, 2) for each triangular side.
+     *
+     * No assumptions are currently made about the relation of any given side
+     * to any particular cell face, nor about the ordering of the vertices of
+     * a side.
+     */
+    VF_INT sides_vertices;
+
     /*!
      * cells_vertices[cell#][cell_vertex#] == internal numbers of the four
      * vertices belonging to the given cell, labeled cell#.
@@ -125,20 +165,6 @@ class TET_Mesh
      * predictable inward- and outward-normal directions.
      */
     VF_INT cells_vertices;
-
-    /*!
-     * sides_vertices[side#][side_vertex#] == internal numbers of the three
-     * vertices belonging to the given side, labeled side#.
-     *
-     * side# == (0, 1, 2, 3, 4, ...) for an internal list of all sides.
-     *
-     * side_vertex# == (0, 1, 2) for each triangular side.
-     *
-     * No assumptions are currently made about the relation of any given side
-     * to any particular cell face, nor about the ordering of the vertices of
-     * a side.
-     */
-    VF_INT sides_vertices;
 
     //! Flag to indicate whether this is a submesh.
     bool submesh;
@@ -164,8 +190,9 @@ class TET_Mesh
  public:
 
     //! TET_Mesh constructor.
-    TET_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, SF_THREEVECTOR &, VF_INT &,
-        VF_INT &, bool = false);
+    TET_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, SF_THREEVECTOR &,
+        std::string &, MAP_String_SetInt &, MAP_String_SetInt &,
+        std::string &, VF_INT &, VF_INT &, bool = false);
 
     //! Forward declaration of cell-centered scalar fields.
     template<class T> class CCSF;
