@@ -59,10 +59,12 @@ class InterpedMaterialProps
     // Forward declaration
     
     struct GroupedTable;
+    friend struct GroupedTable;
 
     // Forward declaration
     
     struct MaterialTables;
+    friend struct MaterialTables;
 
     // Definine the type that contains a dictionary of material tables
     // keyed via the integer material id number.

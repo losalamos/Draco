@@ -56,6 +56,13 @@ class FifiParser
     
     typedef std::istream::pos_type pos_type;
 
+    // Forward Reference and Friendship
+
+    struct Position;
+    friend struct Position;
+    struct MaterialInfo;
+    friend struct MaterialInfo;
+    
     // A nested struct to store the linenumber and position of the
     // beginning of a line.
     
@@ -64,7 +71,7 @@ class FifiParser
 	int lineNo;
 	pos_type filePosition;
     };
-    
+
     // A mapping of a keyword, within a material, to the beginning
     // of the line containing the keyword.
     
