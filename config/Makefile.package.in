@@ -166,11 +166,9 @@ alltarget = @alltarget@
 
 # find the header files that live in both the source and target directories
 
-srcheaders := $(wildcard *.h) $(wildcard *.hh) $(wildcard *.hi) \
+srcheaders := $(wildcard *.h) $(wildcard *.hh) \
 	$(wildcard ${package}/*.h) $(wildcard ${package}/*.hh) \
-	$(wildcard ${package}/*.hi) \
-	$(wildcard ${srcdir}/*.h) $(wildcard ${srcdir}/*.hh) \
-	$(wildcard $(srcdir)/*.hi)
+	$(wildcard ${srcdir}/*.h) $(wildcard ${srcdir}/*.hh)
 dottedsrcheaders := $(wildcard .*.h) $(wildcard .*.hh) \
 	$(wildcard ${srcdir}/.*.h) $(wildcard ${srcdir}/.*.hh)
 
