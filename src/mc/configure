@@ -1005,7 +1005,7 @@ EOF
    done
 
 
-	test_alltarget="$test_alltarget tstCoord tstOSMesh tstFields tstTopology \
+	test_alltarget="$test_alltarget tstMath tstCoord tstOSMesh tstFields tstTopology \
             tstParallel_Data_Op"
         
 	test_nprocs="1 2 4"

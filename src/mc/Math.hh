@@ -37,6 +37,30 @@ using std::vector;
 using std::ostream;
 
 //---------------------------------------------------------------------------//
+// CHECK TWO FLOATING POINT NUMBERS FOR EQUALITY
+//---------------------------------------------------------------------------//
+
+template<class FPT>
+inline bool soft_equiv(const FPT &value, const FPT &reference, 
+		       const FPT precision = 1.0e-12)
+{
+    using std::fabs;
+
+    if (fabs(value - reference) > precision * reference)
+	return false;
+
+    return true;
+}
+
+template<>
+inline bool soft_equiv(const int &value, const int &reference,
+		       const int precision)
+{
+    Insist (0, "Can't do a soft compare with integers!");
+    return false;
+}
+
+//---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 // overloaded operator for printing a vector templated on vector type (VT)
