@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 	// run python diff scrips
 	system("python ./tstEnsight_Diff.py");
     }
-    catch(dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion &ass)
     {
 	cout << "Dumbass you screwed up on " << ass.what() << endl;
 	return 1;

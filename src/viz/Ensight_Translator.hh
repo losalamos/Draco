@@ -113,7 +113,7 @@ enum Ensight_Cell_Types
  * rtt_traits::Viz_Traits class to determine which 2D vector containers are
  * specialized
  *
- * The vector-field (VF) types will most commonly by dsxx::Mat2 or
+ * The vector-field (VF) types will most commonly by rtt_dsxx::Mat2 or
  * std::vector<std::vector> types.  Other types will require specialization
  * in the rtt_traits::Viz_Traits class.
  *
@@ -126,7 +126,7 @@ enum Ensight_Cell_Types
  * To launch ensight: select the "prefix".case file that resides in the
  * top-level ensight dump directory from the "file/Data (reader)" menu.  Set
  * the data file "Format" option in Ensight to "case" and hit the "(Set)
- * Geometry" button.  From there see the Ensight manual.
+ * Geometry" button.  From there see the Ensight manual.  
  */
 /*!
  * \example viz/test/tstEnsight_Translator.cc
