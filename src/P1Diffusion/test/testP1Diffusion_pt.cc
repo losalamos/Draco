@@ -7,18 +7,21 @@
 //---------------------------------------------------------------------------//
 
 #include "testP1Diffusion.hh"
+#include "../DiffusionSelector.hh"
 #include "mesh/Mesh_XYZ.hh"
 
 typedef Mesh_XYZ MT;
+typedef rtt_P1Diffusion::DiffusionSelector<MT>::SolverP1Diff Solver;
+
+#ifdef SELECTOR_PCG
 
 #include "PCGDiffusionSolver/SolverP1Diff.t.hh"
-template class rtt_PCGDiffusionSolver::SolverP1Diff<MT>;
 
-typedef rtt_PCGDiffusionSolver::SolverP1Diff<MT> Solver;
+template class rtt_PCGDiffusionSolver::SolverP1Diff<MT>;
 
 #include "../P1Diffusion.t.hh"
 #include "PCGDiffusionSolver/MatrixP1DiffTraits.hh"
-template class rtt_P1Diffusion::P1Diffusion<MT, Solver >;
+template class rtt_P1Diffusion::P1Diffusion<MT, Solver>;
 
 #include "PCGDiffusionSolver/MatVecP1Diff.t.hh"
 
@@ -34,6 +37,15 @@ class rtt_PCGDiffusionSolver::PreCondP1Diff<Solver::Matrix>;
 
 template
 class rtt_PCGDiffusionSolver::MatrixP1Diff<MT>;
+
+#endif
+
+#ifdef SELECTOR_CONJGRAD
+
+#include "../P1Diffusion.t.hh"
+template class rtt_P1Diffusion::P1Diffusion<MT, Solver>;
+
+#endif
 
 //---------------------------------------------------------------------------//
 //                              end of testP1Diffusion_pt.cc

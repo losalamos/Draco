@@ -38,6 +38,7 @@ class P1Momentum
     typedef typename MT::ccsf ccsf;
     typedef typename MT::bssf bssf;
     typedef typename MT::ncvsf ncvsf;
+    typedef typename MT::ncsf ncsf;
     typedef typename MT::vcvsf vcvsf;
     typedef typename MT::vcsf vcsf;
     typedef typename MT::FieldConstructor FieldConstructor;
@@ -49,7 +50,9 @@ class P1Momentum
     typedef fcdsf FluxField;
     typedef fcdsf DiscFluxField;
     typedef ncvsf MomentumField;
+    typedef ncsf MomentumComponentField;
     typedef vcvsf DiscMomentumField;
+    typedef vcsf DiscMomentumComponentField;
     typedef vcsf DiscKineticEnergyField;
     typedef fcdsf DiffCoefField;
 
@@ -106,8 +109,9 @@ class P1Momentum<MT, false>
     typedef typename MT::ccsf ccsf;
     typedef typename MT::bssf bssf;
     typedef Dummy ncvsf;
+    typedef typename MT::ncsf ncsf;
     typedef Dummy vcvsf;
-    typedef Dummy vcsf;
+    typedef typename MT::vcsf vcsf;
     typedef typename MT::FieldConstructor FieldConstructor;
 
   public:
@@ -117,7 +121,9 @@ class P1Momentum<MT, false>
     typedef fcdsf FluxField;
     typedef fcdsf DiscFluxField;
     typedef ncvsf MomentumField;
+    typedef ncsf MomentumComponentField;
     typedef vcvsf DiscMomentumField;
+    typedef vcsf DiscMomentumComponentField;
     typedef vcsf DiscKineticEnergyField;
     typedef fcdsf DiffCoefField;
 

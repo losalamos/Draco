@@ -8,8 +8,10 @@
 
 #include "testP1Diffusion.hh"
 
-#include "PCGDiffusionSolver/pcg_DB.hh"
+#include "../DiffusionSelector.hh"
 #include "nml/Group.hh"
+#include "nml/Item.hh"
+#include "nml/Items.hh"
 #include "ds++/SP.hh"
 #include "c4/global.hh"
 #include "mesh/Mesh_XYZ.hh"
@@ -70,28 +72,42 @@ int main(int argc, char *argv[])
     
 	rtt_mesh::Mesh_DB mdb;
 
-	using rtt_PCGDiffusionSolver::pcg_DB;
-	pcg_DB pcg_db("pcg");
-    
+	typedef rtt_P1Diffusion::DiffusionSelector<MT>::Options Options;
+	
+#ifdef SELECTOR_PCG
+	Options options("pcg");
+#endif
 	mdb.setup_namelist(g);
     
-	pcg_db.setup_namelist(g);
-
+#ifdef SELECTOR_PCG
+	options.setup_namelist(g);
+#endif
 	g.readgroup("testP1Diffusion.in");
 	g.writegroup("testP1Diffusion.out");
 
 	mdb.resize();
 	
+#ifdef SELECTOR_CONJGRAD
+	Options options(tdb.maxIterations, tdb.epsilon);
+#endif	
+
 	SP<MT> spMesh(new MT(mdb));
 	rtt_P1Diffusion_test::testP1Diffusion<MT> testP1(spMesh, spMesh,
 							 tdb.D, tdb.sigma,
 							 tdb.q, tdb.fTop,
 							 tdb.fBot,
-							 diffdb, pcg_db);
-	testP1.run();
+							 diffdb, options);
+	double error = testP1.run();
 
-	std::cout << "**** " << "testP1Diffusion"
-		  << " Test: PASSED ****" << std::endl;
+	if (error <= tdb.tolerance)
+	    std::cout << "**** " << "testP1Diffusion"
+		      << " Test: PASSED ****" << std::endl;
+	else
+	    std::cout << "**** The solver error, " << error
+		      << ", did not meet tolerance, " << tdb.tolerance << "."
+		      << " ****" << std::endl
+		      << "**** " << "testP1Diffusion"
+		      << " Test: FAILED ****" << std::endl;
  
     }
     catch( rtt_dsxx::assertion& a )

@@ -8,7 +8,6 @@
 
 #include "testP1Diffusion.hh"
 
-#include "PCGDiffusionSolver/SolverP1Diff.hh"
 #include "c4/SpinLock.hh"
 
 #include <fstream>
@@ -50,9 +49,9 @@ namespace rtt_P1Diffusion_test
 				      double fTop_, double fBot_,
 				      const rtt_diffusion::Diffusion_DB
 				      &diffdb_,
-				      const pcg_DB &pcg_db_)
+				      const Options &options_)
      : spMesh(spMesh_), fCtor(fCtor_), D(D_), sigma(sigma_), q(q_),
-       fTop(fTop_), fBot(fBot_), diffdb(diffdb_), pcg_db(pcg_db_)
+       fTop(fTop_), fBot(fBot_), diffdb(diffdb_), options(options_)
  {
      nx = spMesh->get_ncx();
      ny = spMesh->get_ncy();
@@ -103,13 +102,14 @@ namespace rtt_P1Diffusion_test
  }
 
  template<class MT>
- void testP1Diffusion<MT>::run()
+ double testP1Diffusion<MT>::run()
  {
+#ifdef SELECTOR_PCG
      bool jacobiScale = diffdb.pc_meth == 1;
      if (jacobiScale)
-	 Assert(pcg_db.iqside == 0);
-     
-     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(fCtor, pcg_db));
+	 Assert(options.iqside == 0);
+#endif
+     SP<MatrixSolver> spMatrixSolver(new MatrixSolver(fCtor, options));
      SP<DiffSolver> spDiffSolver(new DiffSolver(diffdb, spMesh,
 						spMatrixSolver, fCtor));
 
@@ -190,13 +190,18 @@ namespace rtt_P1Diffusion_test
 	 std::ofstream ofs;
 
 	 if (C4::node() == 0)
+	 {
 	     ofs.open("testP1Diffusion.dat");
+	     ofs << "# z   \t  anal  \t  calc" << std::endl;
+	 }
 	 else
 	     ofs.open("testP1Diffusion.dat", std::ios_base::app);
 
 	 for (int i=0; i<phi.size(); i++)
 	     ofs << zc[i] << "\t" << phi0[i] << "\t" << phi[i] << std::endl;
      }
+
+     return error;
  }
  
  template<class MT>

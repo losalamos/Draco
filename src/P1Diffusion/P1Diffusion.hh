@@ -64,7 +64,12 @@ namespace rtt_P1Diffusion
      typedef fcdsf DiffCoefField;
      typedef typename P1Momentum::MomentumField MomentumField;
      typedef typename P1Momentum::DiscMomentumField DiscMomentumField;
-     typedef typename P1Momentum::DiscKineticEnergyField DiscKineticEnergyField;
+     typedef typename P1Momentum::MomentumComponentField
+                                                    MomentumComponentField;
+     typedef typename P1Momentum::DiscMomentumComponentField
+                                                    DiscMomentumComponentField;
+     typedef typename P1Momentum::DiscKineticEnergyField
+                                                    DiscKineticEnergyField;
 
      // DATA
     
