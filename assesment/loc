@@ -1,3 +1,15 @@
+#  ========================================================================  #
+# 
+#       Author: Mark G. Gray
+#               Los Alamos National Laboratory
+#       Date:   Mon Jan 25 16:16:35 MST 1999
+# 
+#       Copyright (c) 1999 U. S. Department of Energy. All rights reserved.
+# 
+#       $Id$
+# 
+#  ========================================================================  #
+
 C++ source total:
 azathoth $ find draco \( -name "*.cc" -o -name "*.hh" \) -exec
 MS_metric {} \; | awk '{sum += $1} END {print sum}' 
@@ -26,3 +38,5 @@ azathoth $ find . -perm 755 -exec Python_count {} \; | awk '{sum += $1} END {pri
 Expect script source:
 azathoth $ find ~/draco -name "*.exp" -exec Python_count {} \; | awk '{sum += $1} END {print sum}'
 318
+
+#  ========================================================================  #
