@@ -98,6 +98,8 @@ C++.
 Retired Draco Package Synopsis
 ==============================
 
+stopwatch [stopwatch-retired] : Overly complicated timer package.
+
 radphys [radphys-retired]: Radiation physics models for coefficients.
 
 UnitTestFrame [UnitTestFrame-retired]: Testing framework.

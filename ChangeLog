@@ -1,3 +1,10 @@
+2003-02-05  Thomas M. Evans  <tme@lanl.gov>
+
+	* html: removed old John McGhee html info directory.
+
+	* stopwatch: retired stopwatch package (corresponded to
+	stopwatch-1_2_0). 
+
 2002-12-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: released draco-2_3_0.  This release contains the
