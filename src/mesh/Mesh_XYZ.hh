@@ -101,7 +101,7 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef dsxx::Mat2<double>::iterator iterator;
         typedef dsxx::Mat2<double>::const_iterator const_iterator;
 
-	fcdsf( const SP<Mesh_XYZ>& m )
+	fcdsf( const dsxx::SP<Mesh_XYZ>& m )
 	    : XYZ_Mapper( m->get_Mesh_DB() ),
 	      data( m->get_ncp(), 6 )
 	{}
@@ -110,12 +110,12 @@ class Mesh_XYZ : private XYZ_Mapper
 
        	fcdsf& operator=( const cell_array<double>& x )
         {
-          for ( int i = 0; i < ncx; ++i )
-            for ( int j = 0; j < ncy; ++j )
-              for ( int k = zoff; k < zoff + nczp; ++k )
-                for ( int f = 0; f < 6; ++f )
-                  data( local_cell_index(i,j,k), f) = x(i,j,k);
-          return *this;
+            for ( int i = 0; i < ncx; ++i )
+                for ( int j = 0; j < ncy; ++j )
+                    for ( int k = zoff; k < zoff + nczp; ++k )
+                        for ( int f = 0; f < 6; ++f )
+                            data( local_cell_index(i,j,k), f) = x(i,j,k);
+            return *this;
         }
 
 	fcdsf& operator+=( const guarded_cell_array<double>& x )
@@ -223,7 +223,7 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
 
-	cell_array( const SP<Mesh_XYZ>& m ) 
+	cell_array( const dsxx::SP<Mesh_XYZ>& m ) 
           : XYZ_Mapper( m->get_Mesh_DB() ),
             data( m->get_ncp() ) {}
 
@@ -276,7 +276,7 @@ class Mesh_XYZ : private XYZ_Mapper
         typedef typename dsxx::Mat3<T>::iterator iterator;
         typedef typename dsxx::Mat3<T>::const_iterator const_iterator;
 
-        guarded_cell_array( const SP<Mesh_XYZ>& m )
+        guarded_cell_array( const dsxx::SP<Mesh_XYZ>& m )
             : XYZ_Mapper( m->get_Mesh_DB() ),
               data( dsxx::Bounds( 0, ncx - 1 ),
                     dsxx::Bounds( 0, ncy - 1 ),
@@ -307,7 +307,7 @@ class Mesh_XYZ : private XYZ_Mapper
     {
         Mat2<double> f0, f1, f2, f3, f4, f5;
       public:
-        bssf( SP<Mesh_XYZ>& spm )
+        bssf( dsxx::SP<Mesh_XYZ>& spm )
             : XYZ_Mapper( spm->get_Mesh_DB() ),
               f0( ncy, ncz ), f1( ncy, ncz ),
               f2( ncx, ncz ), f3( ncx, ncz ),

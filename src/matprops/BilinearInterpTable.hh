@@ -66,7 +66,7 @@ class BilinearInterpTable
 
     // The grid axis values on which to do the interpolation.
     
-    SP<BilinearInterpGrid> grid;
+    dsxx::SP<BilinearInterpGrid> grid;
     
     // yvals is the 2-dimensional grid of tabulated y values.
 
@@ -120,7 +120,7 @@ class BilinearInterpTable
     //    table of evaluations.
     //------------------------------------------------------------------------//
 
-    BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
+    BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
 			const dsxx::Mat2<double> &yvals_);
     
     //------------------------------------------------------------------------//
@@ -130,7 +130,7 @@ class BilinearInterpTable
     //------------------------------------------------------------------------//
 
     template<class BinaryOperation>
-    inline BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
+    inline BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
 			       BinaryOperation binary_op);
     
     //=======================================================================//
@@ -169,7 +169,7 @@ class BilinearInterpTable
     //    Return a const reference to the grid.
     //------------------------------------------------------------------------//
 
-    const SP<BilinearInterpGrid> getGrid() const { return grid; }
+    const dsxx::SP<BilinearInterpGrid> getGrid() const { return grid; }
     
     //------------------------------------------------------------------------//
     // interpolate:
@@ -278,7 +278,7 @@ BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 
 template<class BinaryOperation>
 inline
-BilinearInterpTable::BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
+BilinearInterpTable::BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
 					 BinaryOperation binary_op)
     : grid(grid_), yvals(grid_->size(1),grid_->size(2)),
       isEmpty(false)

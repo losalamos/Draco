@@ -38,7 +38,7 @@ BilinearInterpTable::BilinearInterpTable(const std::vector<double> &x1vals_,
 //    table of evaluations.
 //------------------------------------------------------------------------//
 
-BilinearInterpTable::BilinearInterpTable(const SP<BilinearInterpGrid> &grid_,
+BilinearInterpTable::BilinearInterpTable(const dsxx::SP<BilinearInterpGrid> &grid_,
 					 const dsxx::Mat2<double> &yvals_)
     : grid(grid_), yvals(yvals_), isEmpty(false)
 {
