@@ -95,6 +95,19 @@ class Plot2D
 	AUTOSCALE_FIRSTREAD
     };
 
+    // Version number (used for Grace's version).
+    // Assumes format v[0].v[1].v[2]
+    struct VersionNumber {
+	static const int indices = 3;
+	int v[indices];
+
+	VersionNumber::VersionNumber() {
+	    for ( int i = 0; i < indices; i++ ) {
+		v[i] = 0;
+	    }
+	}
+    };
+
     // DATA
 
     // current autoscale mode
@@ -111,6 +124,9 @@ class Plot2D
 
     // true if in batch mode
     bool d_batch;
+
+    // grace's version number
+    VersionNumber d_graceVersion;
 
     // current number of sets in each graph.  Needed so we can
     // kill sets.
@@ -206,6 +222,9 @@ class Plot2D
   private:
 
     // IMPLEMENTATION
+
+    // Returns grace's version number
+    VersionNumber graceVersion();
 
     // Returns the Grace graph number for the given graph number.
     int graphNum(const int iEqn,

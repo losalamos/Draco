@@ -13,8 +13,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cmath>
 #include <cctype>
+#include <cstdio>
 
 #include "plot2D_grace.h"
 
@@ -30,6 +32,7 @@ using namespace rtt_plot2D;
 Plot2D::
 Plot2D()
 {
+    d_graceVersion = graceVersion();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -41,6 +44,8 @@ Plot2D(const int numGraphs,
        const std::string &paramFile,
        const bool batch)
 {
+    d_graceVersion = graceVersion();
+
     open(numGraphs, paramFile, batch);
 }
 //---------------------------------------------------------------------------//
@@ -54,6 +59,67 @@ Plot2D::
 ~Plot2D()
 {
     close();
+}
+//---------------------------------------------------------------------------//
+/*!
+  \brief Gets grace's version number.
+
+  Unfortunately, grace doesn't store the version number in the include
+  file, so 'xmgrace -version' is used.  Ugh.
+
+  Note: popen and pclose are in the global namespace, at least linux.
+  Yippeeee!
+
+  \return The version number.
+*/
+//---------------------------------------------------------------------------//
+Plot2D::VersionNumber
+Plot2D::
+graceVersion()
+{
+    // Grab the version string from a pipe.
+    
+    std::FILE *pipe = popen("xmgrace -version", "r");
+
+    Insist(pipe,
+	   "plot2D::graceVersion: Unable to get grace version!");
+
+    const int bufferSize = 20;
+    char buffer[bufferSize];
+
+    std::fgets(buffer, bufferSize, pipe); // get the blank line
+    std::fgets(buffer, bufferSize, pipe); // get the version string
+
+    pclose(pipe);
+
+    std::string s(buffer);
+
+    // Assume that the version string is of the form 'Grace-x.x.x'
+
+    Insist(s.size() > 11,
+	   "plot2D::graceVersion: Version string too small");
+
+    s = s.substr(6); // skip over 'Grace-'
+
+    VersionNumber n;
+
+    for ( int i = 0; i < 3; i++ ) {
+	std::string sn(s);
+	
+	if ( i < 2 ) {
+	    int dot = s.find(".");
+	    Insist(dot != std::string::npos,
+		   "plot2D::graceVersion: Version string wrong format.");
+	    sn = s.substr(0, dot);
+	    s = s.substr(dot + 1);
+	}
+
+	std::istringstream is(sn);
+
+	is >> n.v[i];
+    }
+
+    return n;
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -95,9 +161,22 @@ open(const int numGraphs,
     int openStatus;
 
     if ( d_batch ) {
-	openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint", NULL);
+	// Add -nosafe and -noask options for versions 5.1.8
+	// and later.
+	
+	if ( d_graceVersion.v[0] >= 5 &&
+	     d_graceVersion.v[1] >= 1 &&
+	     d_graceVersion.v[2] >= 8 ) {
+	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+				     "-nosafe", "-noask", NULL);
+	}
+	else {
+	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+				     NULL);
+	}
     }
     else {
+	// Still want "safe" for non-batch mode?
 	openStatus = GraceOpen(bufferSize);
     }
 
