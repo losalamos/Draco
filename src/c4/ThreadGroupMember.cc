@@ -3,14 +3,13 @@
 // Geoffrey M. Furnish
 // Tue Jul 14 11:21:46 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Implement class representing thread family participation.
 //---------------------------------------------------------------------------//
 
 #include "c4/ThreadGroupMember.hh"
 #include "c4/ThreadControl.hh"
 
 #include <iostream>
-using namespace std;
 
 C4_NAMESPACE_BEG
 
@@ -19,9 +18,16 @@ ThreadGroupMember::ThreadGroupMember()
     tcb = 0;
 }
 
+//---------------------------------------------------------------------------//
+// Perform a barrier across the group of threads.
+//---------------------------------------------------------------------------//
+
 void ThreadGroupMember::gsync() const
 {
+    using namespace std;
+
 // First we need to acquire the mutex.
+
     int status = pthread_mutex_lock( &tcb->mutex );
     if (status) cerr << "Couldn't lock mutex.\n";
 
@@ -51,6 +57,7 @@ void ThreadGroupMember::gsync() const
     }
 
 // Everybody wakes up with the mutex locked, so unlock it now.
+
     status = pthread_mutex_unlock( &tcb->mutex );
     if (status) cerr << "error unlocking mutex.\n";
 }
