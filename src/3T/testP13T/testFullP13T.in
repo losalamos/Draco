@@ -1,7 +1,7 @@
 $P13T
 	verbose=false
 	units=astro
-	nsteps=10000
+	nsteps=20
 	dt=1.0e-6
 	dtMin=1.0e-6
 	dtMax=1.0e-2

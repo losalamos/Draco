@@ -17,6 +17,7 @@
 #include "timestep/ts_manager.hh"
 #include "timestep/fixed_ts_advisor.hh"
 #include "timestep/ratio_ts_advisor.hh"
+#include "matprops/TempMapper.hh"
 
 #include <functional>
 #include <new>
@@ -42,7 +43,46 @@ namespace
  int ny;
  int nz;
 
- bool isContinuous(const testFullP13T::MT::fcdsf &rhs)
+
+ template<class FT1, class FT>
+ void cpCell2Mats(FT1 &matValues, const FT &cellValue, const int nmat)
+{
+    int ncell = cellValue.size();
+    FT1::iterator mvit = matValues.begin();
+    FT::const_iterator cit = cellValue.begin();
+    for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
+    {
+	FT1::value_type tmp(nmat);
+	for (FT1::value_type::iterator tmpit = tmp.begin(); 
+	     tmpit != tmp.end(); tmpit++)
+	{
+	    *tmpit = *cit;
+	}
+	*mvit = tmp;
+    }
+}
+
+ template<class FT1>
+ void assign2Mats(FT1 &matValues, const int ncell, const int nmat, 
+		  const int value) 
+{
+    FT::const_iterator cit = cellValue.begin();
+    FT1::iterator mvit = matValues.begin();
+    for (int icell = 0; icell < ncell; icell++, cit++, mvit++)
+    {
+	FT1::value_type tmp(nmat);
+	for (FT1::value_type::iterator tmpit = tmp.begin(); 
+	     tmpit != tmp.end(); tmpit++)
+	{
+	    *tmpit = value;
+	}
+	*mvit = tmp;
+    }
+}
+
+
+ template<class UMCMP>
+ bool isContinuous(const typename testFullP13T<UMCMP>::MT::fcdsf &rhs)
  {
      for (int i=0; i<nx; i++)
 	 for (int j=0; j<ny; j++)
@@ -58,9 +98,10 @@ namespace
      return true;
  }
  
- double sum(const testFullP13T::MT::ccsf &rhs)
+ template<class UMCMP>
+ double sum(const typename testFullP13T<UMCMP>::MT::ccsf &rhs)
  {
-     typedef testFullP13T::MT::ccsf FT;
+     typedef testFullP13T<UMCMP>::MT::ccsf FT;
 
      double results = 0.0;
      for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
@@ -108,6 +149,7 @@ namespace
      return results;
  }
 
+ template<class MT>
  class GmvDump
  {
    private:
@@ -125,7 +167,7 @@ namespace
      };
 
      std::ostream &os;
-     const SP<testFullP13T::MT> &spMesh;
+     const SP<MT> &spMesh;
 
      int nx;
      int ny;
@@ -140,7 +182,7 @@ namespace
      
    public:
      
-     GmvDump(std::ostream &os_, const SP<testFullP13T::MT> &spMesh_,
+     GmvDump(std::ostream &os_, const SP<MT> &spMesh_,
 	     int cycle_, double time_)
 	 : os(os_), spMesh(spMesh_), nx(spMesh->get_ncx()),
 	   ny(spMesh->get_ncy()), nz(spMesh->get_ncz()), vid(nx, ny, nz),
@@ -251,7 +293,7 @@ namespace
 	 os << "endgmv" << endl;
      }
 
-     void dump(const testFullP13T::MT::ccsf &var, const string &name)
+     void dump(const typename MT::ccsf &var, const string &name)
      {
 	 std::ios_base::fmtflags fmtflags = os.flags();
 
@@ -291,11 +333,10 @@ namespace
      }
  };
 
-}
-
-std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf &rhs)
+ std::ostream &operator<<(std::ostream &os, 
+			  const Mesh_XYZ::ccsf &rhs)
 {
-    typedef testFullP13T::MT::ccsf FT;
+    typedef Mesh_XYZ::ccsf FT;
 
     std::ios_base::fmtflags fmtflags = os.flags();
 
@@ -331,9 +372,55 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::ccsf &rhs)
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf &rhs)
+ std::ostream &operator<<(std::ostream &os, 
+			  const Mesh_XYZ::cctf<std::vector<double> > &rhs)
 {
-    typedef testFullP13T::MT::fcdsf FT;
+    typedef Mesh_XYZ::cctf<std::vector<double> > FT;
+
+    std::ios_base::fmtflags fmtflags = os.flags();
+
+    os << std::scientific << std::setprecision(6);
+    
+#if 0
+    int iline = 0;
+    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+    {
+	os << std::setw(16) << *it << " ";
+	if (++iline % 6 == 0)
+	    os << endl;
+    }
+    if (iline % 6 != 0)
+	os << endl;
+#else
+    os << endl;
+    int icell = 0;
+    for (int k=0; k<nz; k++)
+	for (int j=0; j<ny; j++)
+	    for (int i=0; i<nx; i++)
+	    {
+		os << std::setw(5) << icell++ << ":";
+		int nmat = rhs(i,j,k).size();
+		for (int imat = 0; imat < nmat; imat++)
+		{
+		os << " " << std::setw(16) << rhs(i,j,k)[imat];
+		}
+		os << endl;
+	    }
+#endif    
+
+    // restore the original flags.
+    
+    os.flags(fmtflags);
+
+    return os;
+}
+
+
+std::ostream
+&operator<<(std::ostream &os,
+	    const Mesh_XYZ::fcdsf &rhs)
+{
+    typedef Mesh_XYZ::fcdsf FT;
     
     std::ios_base::fmtflags fmtflags = os.flags();
 
@@ -369,30 +456,121 @@ std::ostream &operator<<(std::ostream &os, const testFullP13T::MT::fcdsf &rhs)
     os.flags(fmtflags);
 
     return os;
+ }
+
+std::ostream
+&operator<<(std::ostream &os,
+	    const Mesh_XYZ::fcdtf<std::vector<double> > &rhs)
+{
+    typedef Mesh_XYZ::fcdtf<std::vector<double> > FT;
+    
+    std::ios_base::fmtflags fmtflags = os.flags();
+
+    os << std::scientific << std::setprecision(6);
+
+#if 0
+    int iline = 0;
+    for (FT::const_iterator it = rhs.begin(); it != rhs.end(); it++)
+    {
+	os << std::setw(16) << *it << " ";
+	if (++iline % 6 == 0)
+	    os << endl;
+    }
+    if (iline % 6 != 0)
+	os << endl;
+#else
+    os << endl;
+
+    int icell = 0;
+    for (int k=0; k<nz; k++)
+	for (int j=0; j<ny; j++)
+	    for (int i=0; i<nx; i++)
+	    {
+		for (int f=0; f<6; f++)
+		{
+		    os << std::setw(5) << icell++ << ":" << f << ":";
+		    int nmat = rhs(i,j,k,f).size();
+		    for (int imat=0; imat<nmat; imat++)
+			os << " " << std::setw(16) << rhs(i,j,k,f)[imat];
+		    os << endl;
+		}
+	    }
+#endif
+
+    // restore the original flags.
+    
+    os.flags(fmtflags);
+
+    return os;
+ }
+
+ using rtt_matprops::MultiMatCellMatProps;
+
+ template<class UMCMP>
+ void getMatProp(dsxx::SP<UMCMP> &spUMatProp,
+		 dsxx::SP<MultiMatCellMatProps<UMCMP> > &spMatProp,
+		 testFullP13T<UMCMP> &tester,
+		 const testFullP13T_DB &tdb)
+ {
+     Assert(0);
+ }
+
+ using rtt_matprops::MarshakMaterialProps;
+
+ template<>
+ void
+ getMatProp(dsxx::SP<MarshakMaterialProps> &spUMatProp,
+	    dsxx::SP<MultiMatCellMatProps<MarshakMaterialProps> > &spMatProp,
+	    testFullP13T<MarshakMaterialProps> &tester,
+	    const testFullP13T_DB &tdb) 
+ {
+    spUMatProp = new MarshakMaterialProps(tester.getUnits(), tdb.kappa0, tdb.abar,
+					  tdb.kappaPower);
+
+    spMatProp = new MultiMatCellMatProps<MarshakMaterialProps>(spUMatProp);
+ }
+
+ using rtt_matprops::InterpedMaterialProps;
+    
+ template<>
+ void
+ getMatProp(dsxx::SP<InterpedMaterialProps> &spUMatProp,
+	    dsxx::SP<MultiMatCellMatProps<InterpedMaterialProps> > &spMatProp,
+	    testFullP13T<InterpedMaterialProps> &tester,
+	    const testFullP13T_DB &tdb)
+ {
+     std::ifstream ifs(tdb.opacityFile);
+
+     using rtt_matprops::FifiMatPropsReader;
+
+     typedef FifiMatPropsReader::MaterialDefinition MatDef;
+     vector<MatDef> matdefs;
+     matdefs.push_back(MatDef(std::string(tdb.materialName),
+			      tdb.materialId, tdb.abar));
+    
+     FifiMatPropsReader reader(matdefs, tester.getUnits(), ifs);
+
+     vector<int> matIds(matdefs.size());
+     for (int i=0; i<matdefs.size(); i++)
+	 matIds[i] = matdefs[i].matid;
+
+     spUMatProp = new InterpedMaterialProps(matIds, reader);
+
+     spMatProp = new MultiMatCellMatProps<InterpedMaterialProps>(spUMatProp);
+ }
+
 }
 
-testFullP13T::testFullP13T(const string &infile)
-    : pcg_db("pcg")
-{
-    NML_Group g("testFullP13T");
-
-    pdb.setup_namelist(g);
-    
-    diffdb.setup_namelist(g);
-
-    Mesh_DB mdb;
-    mdb.setup_namelist(g);
-    
-    pcg_db.setup_namelist(g);
-
-    cout << "Reading input from " << infile << ".\n";
-
-    g.readgroup(infile.c_str());
-    g.writegroup("testFullP13T.out");
-
+ template<class UMCMP>
+ testFullP13T<UMCMP>::testFullP13T(const testFullP13T_DB &tdb_,
+				   const Diffusion_DB &diffdb_,
+				   const Mesh_DB &mdb,
+				   const pcg_DB &pcg_db_)
+     : diffdb(diffdb_), pcg_db(pcg_db_), tdb(tdb_)
+ {
     spMesh = new MT(mdb);
     
-    switch (pdb.units)
+    switch (tdb.units)
     {
     case AstroPhysical:
 	units = Units::getAstroPhysUnits();
@@ -406,7 +584,7 @@ testFullP13T::testFullP13T(const string &infile)
 
     getMatProp();
 
-    P13TOptions options(pdb.P1TauMultiplier, pdb.IsCoupledMaterial);
+    P13TOptions options(tdb.P1TauMultiplier, tdb.IsCoupledMaterial);
 
     spTsManager = new rtt_timestep::ts_manager();
 	
@@ -423,79 +601,79 @@ testFullP13T::testFullP13T(const string &infile)
     spTempMapper = new rtt_matprops::TempMapper<MT>(spMesh, gamma);
 }
 
-testFullP13T::~testFullP13T()
+ template<class UMCMP>
+testFullP13T<UMCMP>::~testFullP13T()
 {
     // empty
 }
 
-void testFullP13T::getMatProp()
+ template<class UMCMP>
+ void testFullP13T<UMCMP>::getMatProp()
+ {
+     ::getMatProp(spUMatProp, spMatProp, *this, tdb);
+ }
+
+ template<class UMCMP>
+testFullP13T<UMCMP>::MatStateCC testFullP13T<UMCMP>::getMatStateCC(const ccvsf &TElect,
+						     const ccvsf &TIon,
+						     const ccvsf &density,
+						     const ccvsf &VolFrac,
+						     const ccvif &matid) const
 {
-    getMatProp(spMatProp);
+    return spMatProp->getMaterialState<ccsf, ccvsf, ccvif>
+	(density, TElect, TIon, VolFrac, matid);
 }
 
-void testFullP13T::getMatProp(SP<MarshakMaterialProps> &spMatProp_) const
+ template<class UMCMP>
+testFullP13T<UMCMP>::MatStateFC 
+testFullP13T<UMCMP>::getMatStateFC(const MatStateCC &msfcc) const
 {
-    spMatProp_ = new MarshakMaterialProps(units, pdb.kappa0, pdb.abar,
-					  pdb.kappaPower);
-}
 
-void testFullP13T::getMatProp(SP<InterpedMaterialProps> &spMatProp_) const
-{
-    std::ifstream ifs(pdb.opacityFile);
+    ccsf avgTemp(spMesh);
+    ccvsf matTemps(spMesh);
+    msfcc.getElectronTemperature(avgTemp);
+    msfcc.getElectronTempByMat(matTemps);
 
-    using rtt_matprops::FifiMatPropsReader;
+    fcdvsf TElectFC(spMesh);
+    spTempMapper->tempCC2FC(TElectFC, matTemps, avgTemp, MT::OpAssign());
 
-    typedef FifiMatPropsReader::MaterialDefinition MatDef;
-    vector<MatDef> matdefs;
-    matdefs.push_back(MatDef(std::string(pdb.materialName),
-			     pdb.materialId, pdb.abar));
-    
-    FifiMatPropsReader reader(matdefs, units, ifs);
+    msfcc.getIonTemperature(avgTemp);
+    msfcc.getIonTempByMat(matTemps);
 
-    vector<int> matIds(matdefs.size());
-    for (int i=0; i<matdefs.size(); i++)
-	matIds[i] = matdefs[i].matid;
-    
-    spMatProp_ = new InterpedMaterialProps(matIds, reader);
-}
+    fcdvsf TIonFC(spMesh);
+    spTempMapper->tempCC2FC(TIonFC, matTemps, avgTemp, MT::OpAssign());
 
-testFullP13T::MatStateCC testFullP13T::getMatStateCC(const ccsf &TElect,
-						     const ccsf &TIon,
-						     const ccsf &density,
-						     const ccif &matid) const
-{
-    return spMatProp->getMaterialState(density, TElect, TIon,  matid);
-}
+    ccvsf density(spMesh);
+    ccvsf volFrac(spMesh);
+    ccvif matid(spMesh);
 
-testFullP13T::MatStateFC testFullP13T::getMatStateFC(const ccsf &TElect,
-						     const ccsf &TIon,
-						     const ccsf &density,
-						     const ccif &matid) const
-{
-    fcdsf TElectFC(spMesh);
-    fcdsf TIonFC(spMesh);
-    fcdsf densityFC(spMesh);
-    fcdif matidFC(spMesh);
+    msfcc.getDensity(density);
+    msfcc.getVolumeFraction(volFrac);
+    msfcc.getMatId(matid);
 
-    spTempMapper->tempCC2FC(TElectFC, TElect, TElect, MT::OpAssign());
-    spTempMapper->tempCC2FC(TIonFC, TIon, TIon, MT::OpAssign());
+    fcdvsf densityFC(spMesh);
+    fcdvsf volFracFC(spMesh);
+    fcdvif matidFC(spMesh);
 
     MT::gather(densityFC, density, MT::OpAssign());
+    MT::gather(volFracFC, volFrac, MT::OpAssign());
     MT::gather(matidFC, matid, MT::OpAssign());
     
-    if (pdb.verbose)
+    if (tdb.verbose)
     {
 	cout << "In testFullP13T::getMatStateFC" << endl;
 	cout << endl;
 	cout << "TElectFC: " << TElectFC << endl;
-	cout << "TElect: " << TElect << endl;
 	cout << endl;
     }
 
-    return spMatProp->getMaterialState(densityFC, TElectFC, TIonFC, matidFC);
+    return spMatProp->getMaterialState<fcdsf, fcdvsf, fcdvif>(
+	densityFC, TElectFC, TIonFC,
+	volFracFC, matidFC);
 }
 
-void testFullP13T::gmvDump(const RadiationStateField &radState,
+ template<class UMCMP>
+void testFullP13T<UMCMP>::gmvDump(const RadiationStateField &radState,
 			   const ccsf &TElec, const ccsf &TIon,
 			   int cycle, double time) const
 {
@@ -520,35 +698,51 @@ void testFullP13T::gmvDump(const RadiationStateField &radState,
 	*trit++ = std::pow((*pit) / (a*c), 0.25);
     }
 
-    GmvDump gmv(ofs, spMesh, cycle, time);
+    GmvDump<MT> gmv(ofs, spMesh, cycle, time);
     gmv.dump(radState.phi, "phi");
     gmv.dump(TRad, "TRad");
     gmv.dump(TElec, "TElec");
     gmv.dump(TIon, "TIon");
 }
 	
-void testFullP13T::run() const
+ template<class UMCMP>
+void testFullP13T<UMCMP>::run() const
 {
-    ccsf TElect0(spMesh);
-    ccsf TIon0(spMesh);
-    ccsf density(spMesh);
-    ccif matid(spMesh);
-    // ccsf matid(spMesh);
+    ccsf TElect0_in(spMesh);
+    ccsf TIon0_in(spMesh);
+    ccsf density_in(spMesh);
+    ccsf VolFrac_in(spMesh);
+    ccif matid_in(spMesh);
 
-    TElect0 = pdb.Te;
-    TIon0 = pdb.Ti;
-    density = pdb.rho;
-    matid = pdb.materialId;
+    TElect0_in = tdb.Te;
+    TIon0_in = tdb.Ti;
+    density_in = tdb.rho;
+    VolFrac_in = 1.;
+    matid_in = tdb.materialId;
 
-    if (pdb.Te_bottom > 0.)
+    if (tdb.Te_bottom > 0.)
     {
 	for (int i=0; i<nx; i++)
 	    for (int j=0; j<ny; j++)
-		TElect0(i, j, 0) = TIon0(i, j, 0) = pdb.Te_bottom;
+		TElect0_in(i, j, 0) = TIon0_in(i, j, 0) = tdb.Te_bottom;
     }
 
-    MatStateCC matStateCC = getMatStateCC(TElect0, TIon0, density, matid);
-    MatStateFC matStateFC = getMatStateFC(TElect0, TIon0, density, matid);
+    ccvsf TElect0(spMesh);
+    ccvsf TIon0(spMesh);
+    ccvsf density(spMesh);
+    ccvsf VolFrac(spMesh);
+    ccvif matid(spMesh); 
+
+    int nmat_prob = 1;
+    cpCell2Mats<ccvsf,ccsf>(TElect0, TElect0_in, nmat_prob);
+    cpCell2Mats<ccvsf,ccsf>(TIon0, TIon0_in, nmat_prob);
+    cpCell2Mats<ccvsf,ccsf>(density, density_in, nmat_prob);
+    cpCell2Mats<ccvsf,ccsf>(VolFrac, VolFrac_in, nmat_prob);
+    cpCell2Mats<ccvif,ccif>(matid, matid_in, nmat_prob);
+
+    MatStateCC matStateCC = getMatStateCC(TElect0, TIon0, density, 
+					  VolFrac, matid);
+    MatStateFC matStateFC = getMatStateFC(matStateCC);
    
     RadiationStateField radState(spMesh);
 
@@ -563,17 +757,17 @@ void testFullP13T::run() const
     ccsf electEnergyDep(spMesh);
     ccsf ionEnergyDep(spMesh);
 
-    if (pdb.Qloc < 0)
+    if (tdb.Qloc < 0)
     {
-	QRad = pdb.Qr;
-	QElectron = pdb.Qe;
-	QIon = pdb.Qi;
+	QRad = tdb.Qr;
+	QElectron = tdb.Qe;
+	QIon = tdb.Qi;
     }
     else
     {
-	QRad(pdb.Qloc) = pdb.Qr;
-	QElectron(pdb.Qloc) = pdb.Qe;
-	QIon(pdb.Qloc) = pdb.Qi;
+	QRad(tdb.Qloc) = tdb.Qr;
+	QElectron(tdb.Qloc) = tdb.Qe;
+	QIon(tdb.Qloc) = tdb.Qi;
     }
 
     setBoundary(alpha, beta, bSrc);
@@ -597,7 +791,7 @@ void testFullP13T::run() const
 			     ts_advisor::min, 
 			     ts_advisor::small());
     spTsManager->add_advisor(spTsMin);
-    spTsMin->set_fixed_value(pdb.dtMin);
+    spTsMin->set_fixed_value(tdb.dtMin);
 
     // Set up a max timestep
 
@@ -606,7 +800,7 @@ void testFullP13T::run() const
 			     ts_advisor::max, 
 			     ts_advisor::small());
     spTsManager->add_advisor(spTsMax);
-    spTsMax->set_fixed_value(pdb.dtMax);
+    spTsMax->set_fixed_value(tdb.dtMax);
 
     // Set up a lower limit on the timestep rate of change
 
@@ -621,8 +815,8 @@ void testFullP13T::run() const
 	new ratio_ts_advisor("Rate of Change Upper Limit");
     spTsManager->add_advisor(spTsHighRateChange);
 
-    const int ncycles = pdb.nsteps;
-    double dt = pdb.dt;
+    const int ncycles = tdb.nsteps;
+    double dt = tdb.dt;
     double time = 0.0;
     
     for (int cycle = 1; cycle <= ncycles; cycle++)
@@ -633,7 +827,8 @@ void testFullP13T::run() const
     }
 }
 
-void testFullP13T::timestep(double &time, double &dt, int &cycle,
+ template<class UMCMP>
+void testFullP13T<UMCMP>::timestep(double &time, double &dt, int &cycle,
 			    MatStateCC &matStateCC,
 			    MatStateFC &matStateFC,
 			    RadiationStateField &radState,
@@ -668,7 +863,7 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
     matStateCC.getElectronConductionCoeff(kappaElec);
     matStateCC.getIonConductionCoeff(kappaIon);
 
-    if (pdb.verbose)
+    if (tdb.verbose)
     {
 	cout << "TElectron: " << TElec << endl;
 	cout << "TIon: " << TIon << endl;
@@ -724,18 +919,30 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
 
     std::cerr << "Made it after solve3T" << endl;
 
-    Assert(isContinuous(newRadState.F));
+    Assert(isContinuous<UMCMP>(newRadState.F));
 
     gmvDump(newRadState, TElec, TIon, cycle, time);
 
-    ccsf density(spMesh);
+    ccvsf density(spMesh);
     matStateCC.getDensity(density);
 
-    ccif matid(spMesh);
+    ccvsf volfrac(spMesh);
+    matStateCC.getVolumeFraction(volfrac);
+
+    ccvif matid(spMesh);
     matStateCC.getMatId(matid);
+
+    // Map electron and ion temperatures back to the individual materials
+    // within each cell.
     
-    MatStateCC newMatStateCC = getMatStateCC(TElec, TIon, density, matid);
-    MatStateFC newMatStateFC = getMatStateFC(TElec, TIon, density, matid);
+    ccvsf TIonByMat(spMesh);
+    ccvsf TElecByMat(spMesh);
+    matStateCC.mapAvgIonTemp(TIonByMat, TIon);
+    matStateCC.mapAvgElectronTemp(TElecByMat, TElec);
+    
+    MatStateCC newMatStateCC = getMatStateCC(TElecByMat, TIonByMat, 
+					     density, volfrac, matid);
+    MatStateFC newMatStateFC = getMatStateFC(newMatStateCC);
 	
     postProcess(radState, newRadState, matStateCC, newMatStateCC,
 		electEnergyDep, ionEnergyDep, QRad, QElectron, QIon,
@@ -749,7 +956,8 @@ void testFullP13T::timestep(double &time, double &dt, int &cycle,
     radState = newRadState;
 }
 
-void testFullP13T::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
+ template<class UMCMP>
+void testFullP13T<UMCMP>::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 {
     for (int j=0; j<ny; j++)
     {
@@ -757,10 +965,10 @@ void testFullP13T::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 	{
 	    alpha(0,    j, k, 0) = diffdb.alpha_left;
 	    beta (0   , j, k, 0) = diffdb.beta_left;
-	    bSrc (0   , j, k, 0) = pdb.src_left;
+	    bSrc (0   , j, k, 0) = tdb.src_left;
 	    alpha(nx-1, j, k, 1) = diffdb.alpha_right;
 	    beta (nx-1, j, k, 1) = diffdb.beta_right;
-	    bSrc (nx-1, j, k, 1) = pdb.src_right;
+	    bSrc (nx-1, j, k, 1) = tdb.src_right;
 	}
     }
 
@@ -770,18 +978,18 @@ void testFullP13T::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 	{
 	    alpha(i, 0   , k, 2) = diffdb.alpha_front;
 	    beta (i, 0   , k, 2) = diffdb.beta_front;
-	    bSrc (i, 0   , k, 2) = pdb.src_front;
+	    bSrc (i, 0   , k, 2) = tdb.src_front;
 	    alpha(i, ny-1, k, 3) = diffdb.alpha_back;
 	    beta (i, ny-1, k, 3) = diffdb.beta_back;
-	    bSrc (i, ny-1, k, 3) = pdb.src_back;
+	    bSrc (i, ny-1, k, 3) = tdb.src_back;
 	}
     }
     
-    if (pdb.Te_bottom > 0.0)
+    if (tdb.Te_bottom > 0.0)
     {
 	const RadiationPhysics radphys(units);
 	double phi_bottom = 0.0;
-	radphys.getPlanck(pdb.Te_bottom, phi_bottom);
+	radphys.getPlanck(tdb.Te_bottom, phi_bottom);
 
 	phi_bottom *= 4.0*PhysicalConstants::pi;
 
@@ -794,7 +1002,7 @@ void testFullP13T::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 		bSrc (i, j, 0   , 4) = phi_bottom*diffdb.alpha_bottom;
 		alpha(i, j, nz-1, 5) = diffdb.alpha_top;
 		beta (i, j, nz-1, 5) = diffdb.beta_top;
-		bSrc (i, j, nz-1, 5) = pdb.src_top;
+		bSrc (i, j, nz-1, 5) = tdb.src_top;
 	    }
 	}
     }
@@ -806,16 +1014,17 @@ void testFullP13T::setBoundary(bssf &alpha, bssf &beta, bssf &bSrc) const
 	    {
 		alpha(i, j, 0   , 4) = diffdb.alpha_bottom;
 		beta (i, j, 0   , 4) = diffdb.beta_bottom;
-		bSrc (i, j, 0   , 4) = pdb.src_bottom;
+		bSrc (i, j, 0   , 4) = tdb.src_bottom;
 		alpha(i, j, nz-1, 5) = diffdb.alpha_top;
 		beta (i, j, nz-1, 5) = diffdb.beta_top;
-		bSrc (i, j, nz-1, 5) = pdb.src_top;
+		bSrc (i, j, nz-1, 5) = tdb.src_top;
 	    }
 	}
     }
 }    
 
-void testFullP13T::postProcess(const RadiationStateField &radState,
+ template<class UMCMP>
+void testFullP13T<UMCMP>::postProcess(const RadiationStateField &radState,
 			       const RadiationStateField &newRadState,
 			       const MatStateCC &matStateCC,
 			       const MatStateCC &newMatStateCC,
@@ -840,7 +1049,7 @@ void testFullP13T::postProcess(const RadiationStateField &radState,
     newMatStateCC.getElectronTemperature(TElec);
     newMatStateCC.getIonTemperature(TIon);
 
-    if (pdb.verbose)
+    if (tdb.verbose)
     {
 	cout << "newRadState.phi: " << newRadState.phi << endl;
 	cout << "newRadState.F: " << newRadState.F << endl;
@@ -888,11 +1097,11 @@ void testFullP13T::postProcess(const RadiationStateField &radState,
     ccsf deltaRadEnergyCC(spMesh);
     deltaRadEnergyCC = (newRadState.phi - radState.phi) / c;
 
-    const double deltaRadEnergy = sum(deltaRadEnergyCC)*volpcell;
+    const double deltaRadEnergy = sum<UMCMP>(deltaRadEnergyCC)*volpcell;
     cout << "deltaRadEnergy: " << deltaRadEnergy
 	 << "\trate: " << deltaRadEnergy/dt << endl;
 
-    const double electEnergyDep = sum(electEnergyDepCC)*volpcell;
+    const double electEnergyDep = sum<UMCMP>(electEnergyDepCC)*volpcell;
     cout << "electEnergyDep: " << electEnergyDep
 	 << "\trate: " << electEnergyDep/dt << endl;
 
@@ -903,11 +1112,11 @@ void testFullP13T::postProcess(const RadiationStateField &radState,
     
     // ccsf temp(spMesh);
     // temp = (TElec - TElec0)*CvElec;
-    // delta = sum(temp)*volpcell;
+    // delta = sum<UMCMP>(temp)*volpcell;
     // cout << "electEnergyDep (recalc): " << delta
     //      << "\trate: " << delta/dt << endl;
 
-    const double ionEnergyDep = sum(ionEnergyDepCC)*volpcell;
+    const double ionEnergyDep = sum<UMCMP>(ionEnergyDepCC)*volpcell;
     cout << "  ionEnergyDep: " << ionEnergyDep
 	 << "\trate: " << ionEnergyDep/dt << endl;
 
@@ -916,25 +1125,25 @@ void testFullP13T::postProcess(const RadiationStateField &radState,
     cout << "energyDep: " << energyDep
 	 << "\trate: " << energyDep/dt << endl;
 
-    const double inhomosrc = sum(QRad) * volpcell;
-    const double qsrc = inhomosrc + (sum(QElectron) + sum(QIon))*volpcell;
+    const double inhomosrc = sum<UMCMP>(QRad) * volpcell;
+    const double qsrc = inhomosrc + (sum<UMCMP>(QElectron) + sum<UMCMP>(QIon))*volpcell;
 
     cout << "Volume src: " << qsrc << endl;
 
     double bndsrc;
-    bndsrc  = (pdb.src_left + pdb.src_right) * ny*dy * nz*dz ;
-    bndsrc += (pdb.src_front + pdb.src_back) * nz*dz * nx*dx;
-    bndsrc += (pdb.src_bottom + pdb.src_top) * nx*dx * ny*dy;
+    bndsrc  = (tdb.src_left + tdb.src_right) * ny*dy * nz*dz ;
+    bndsrc += (tdb.src_front + tdb.src_back) * nz*dz * nx*dx;
+    bndsrc += (tdb.src_bottom + tdb.src_top) * nx*dx * ny*dy;
 
     cout << "Boundary src: " << bndsrc << endl;
 
     const double externsrc = bndsrc + qsrc;
     cout << "Total external src: " << externsrc << endl;
 
-    const double timedepsrc = sum(radState.phi) * volpcell / (c*dt);
+    const double timedepsrc = sum<UMCMP>(radState.phi) * volpcell / (c*dt);
     cout << "time dep src: " << timedepsrc << endl;
     
-    const double timedeprem = sum(newRadState.phi) * volpcell / (c*dt);
+    const double timedeprem = sum<UMCMP>(newRadState.phi) * volpcell / (c*dt);
     cout << "time dep removal: " << timedeprem << endl;
     
     ccsf sigAbs(spMesh);
@@ -942,14 +1151,14 @@ void testFullP13T::postProcess(const RadiationStateField &radState,
 
     ccsf temp(spMesh);
     temp = newRadState.phi*sigAbs;
-    const double absorption = sum(temp) * volpcell;
+    const double absorption = sum<UMCMP>(temp) * volpcell;
     cout << "absorption: " << absorption << endl;
 
     temp = newRadState.phi*REEM;
-    const double emisrem = sum(temp) * volpcell;
+    const double emisrem = sum<UMCMP>(temp) * volpcell;
     cout << "emissive removal: " << emisrem << endl;
     
-    const double emission = sum(QEEM) *	volpcell;
+    const double emission = sum<UMCMP>(QEEM) *	volpcell;
     cout << "emission: " << emission << endl;
 
     // cout << "emission-absorption: " << emission - absorption << endl;
@@ -983,7 +1192,8 @@ void testFullP13T::postProcess(const RadiationStateField &radState,
     cout.flags(oldOptions);
 }
 
-double testFullP13T::calcLeakage(const RadiationStateField &radstate) const
+ template<class UMCMP>
+double testFullP13T<UMCMP>::calcLeakage(const RadiationStateField &radstate) const
 {
     const double dx = spMesh->get_dx();
     const double dy = spMesh->get_dy();
@@ -1002,7 +1212,7 @@ double testFullP13T::calcLeakage(const RadiationStateField &radstate) const
 	    {
 		double alpha_bottom = diffdb.alpha_bottom;
 		double beta_bottom = diffdb.beta_bottom;
-		double src_bottom = pdb.src_bottom;
+		double src_bottom = tdb.src_bottom;
 
 		double F_bottom = radstate.F(k,l,0,4);
 		
@@ -1018,7 +1228,7 @@ double testFullP13T::calcLeakage(const RadiationStateField &radstate) const
 	    {
 		double alpha_top = diffdb.alpha_top;
 		double beta_top = diffdb.beta_top;
-		double src_top = pdb.src_top;
+		double src_top = tdb.src_top;
 
 		double F_top = radstate.F(k,l,nz-1,5);
 		

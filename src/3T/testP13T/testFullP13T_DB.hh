@@ -22,6 +22,8 @@ BEGIN_NS_XTM
     
 enum unitsSelect { SI, AstroPhysical };
 
+enum matpropsSelect { Marshak, Interped };
+
 //===========================================================================//
 // class testFullP13T_DB - 
 //

@@ -3,7 +3,7 @@
 // Randy M. Roberts
 // Sat May 30 15:09:58 1998
 //---------------------------------------------------------------------------//
-// @> 
+// @> Test facility for the P1 3T radiation solver.
 //---------------------------------------------------------------------------//
 
 #ifndef __3T_testP13T_testFullP13T_hh__
@@ -21,6 +21,7 @@
 
 #include "matprops/MarshakMaterialProps.hh"
 #include "matprops/InterpedMaterialProps.hh"
+#include "matprops/MultiMatCellMatProps.hh"
 
 #include <string>
 
@@ -47,50 +48,55 @@ namespace XTM {
  // 0) original
  // 
  //===========================================================================//
-
+ 
+ template<class UMCMP>
  class testFullP13T
  {
-
+     
      // NESTED CLASSES AND TYPEDEFS
-
+     
    public:
     
      typedef Mesh_XYZ MT;
 
-     typedef rtt_matprops::MarshakMaterialProps MarshakMaterialProps;
+     typedef rtt_matprops::MarshakMaterialProps  MarshakMaterialProps;
      typedef rtt_matprops::InterpedMaterialProps InterpedMaterialProps;
-
-#ifdef MARSHAK_MATPROPS
-     typedef MarshakMaterialProps MP;
-#else
-     typedef InterpedMaterialProps MP;
-#endif
+     typedef rtt_matprops::MultiMatCellMatProps<UMCMP> MP;
      
+     typedef MarshakMaterialProps  MP_MRSHK;
+     typedef InterpedMaterialProps MP_INTRP;
+
      // typedef Diffusion_P1<MT> DS;
 
      typedef rtt_P1Diffusion::SolverP1Diff<MT> MS;
      typedef MS MatrixSolver;
      typedef rtt_P1Diffusion::P1Diffusion<MT, MS> DS;
 
-     typedef MT::ccsf ccsf;
-     typedef MT::ccif ccif;
+     typedef MT::ccsf  ccsf;
+     typedef MT::ccif  ccif;
      typedef MT::fcdsf fcdsf;
      typedef MT::fcdif fcdif;
-     typedef MT::bssf bssf;
-     
-     typedef P13T<MT,MP,DS> P13T;
+     typedef MT::bssf  bssf;
 
-     typedef P13T::RadiationStateField RadiationStateField;
+     typedef MT::cctf  < std::vector<double  > > ccvsf;
+     typedef MT::fcdtf < std::vector<double  > > fcdvsf;
+     typedef MT::cctf  < std::vector<int     > > ccvif;
+     typedef MT::fcdtf < std::vector<int     > > fcdvif;
      
-     typedef MP::MaterialStateField<MT::ccsf> MatStateCC;
-     typedef MP::MaterialStateField<MT::fcdsf> MatStateFC;
-     
+     typedef typename MP:: template MaterialStateField<ccsf, ccvsf, ccvif> MatStateCC;
+     typedef typename MP:: template MaterialStateField<fcdsf, fcdvsf, fcdvif> MatStateFC;
+
+     typedef P13T<MT,MatStateCC,MatStateFC,DS> P13T;
+     typedef typename P13T::RadiationStateField RadiationStateField;
+
      // DATA
 
    private:
     
      Units units;
-     dsxx::SP<MP> spMatProp;
+
+     dsxx::SP<MP>       spMatProp;
+     dsxx::SP<UMCMP>    spUMatProp;
      dsxx::SP<rtt_matprops::TempMapper<MT> > spTempMapper;
 
      dsxx::SP<MT> spMesh;
@@ -100,7 +106,7 @@ namespace XTM {
 
      mutable dsxx::SP<DS> spDiffSolver;
      
-     testFullP13T_DB pdb;
+     testFullP13T_DB tdb;
      Diffusion_DB diffdb;
      pcg_DB pcg_db;
     
@@ -108,7 +114,11 @@ namespace XTM {
 
      // CREATORS
     
-     testFullP13T(const std::string &infile);
+     testFullP13T(const testFullP13T_DB &tdb_,
+		  const Diffusion_DB &diffdb,
+		  const Mesh_DB &mdb,
+		  const pcg_DB &pgc_db_);
+
      ~testFullP13T();
 
      // MANIPULATORS
@@ -116,10 +126,12 @@ namespace XTM {
      // ACCESSORS
 
      void run() const;
+     const Units &getUnits() const { return units; }
 
    private:
     
      // IMPLEMENTATION
+
 
      void timestep(double &time, double &dt, int &cycle,
 		   MatStateCC &matStateCC, MatStateFC &matStateFC,
@@ -129,14 +141,12 @@ namespace XTM {
 		   const bssf &alpha, const bssf &beta, const bssf &bSrc) const;
 
      void getMatProp();
-     void getMatProp(dsxx::SP<MarshakMaterialProps> &spMatProp_) const;
-     void getMatProp(dsxx::SP<InterpedMaterialProps> &spMatProp_) const;
     
-     MatStateCC getMatStateCC(const ccsf &TElec, const ccsf &TIon,
-			      const ccsf &density, const ccif &matid) const;
+     MatStateCC getMatStateCC(const ccvsf &TElec, const ccvsf &TIon,
+			      const ccvsf &density, const ccvsf &VolFrac,
+			      const ccvif &matid) const;
 
-     MatStateFC getMatStateFC(const ccsf &TElec, const ccsf &TIon,
-			      const ccsf &density, const ccif &matid) const;
+     MatStateFC getMatStateFC(const MatStateCC &msfcc) const;
 
      void gmvDump(const RadiationStateField &radState, const ccsf &TElec,
 		  const ccsf &TIon, int cycle, double time) const;

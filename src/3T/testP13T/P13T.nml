@@ -21,6 +21,7 @@ bool    IsCoupledMaterial true  # flag whether radiation and material, coupled.
 
 String  opacityFile     ""
 String  materialName    ""
+
 int     materialId      -999
 double  abar            -999.9
 double  kappa0          -999.9
@@ -46,6 +47,10 @@ double Te_bottom        -1.0
 int_set units astro
 si SI
 astro AstroPhysical
+
+int_set  matprops marshak
+marshak  Marshak
+interped Interped
 
 #-----------------------------------------------------------------------------#
 #				end of P13T.nml

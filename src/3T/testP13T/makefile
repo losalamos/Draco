@@ -27,9 +27,9 @@ include ../../config/makefile
 
 srcs	= \
 	main.cc \
-	testFullP13T.cc \
 	testFullP13T_MS_pt.cc \
 	testFullP13T_MP_pt.cc \
+	testFullP13T_MMP_pt.cc \
 	testFullP13T_P13T_pt.cc \
 	testFullP13T_RadPhys_pt.cc \
 	testFullP13T_ts_pt.cc \

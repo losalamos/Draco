@@ -1,75 +1,32 @@
 #include "3T/testP13T/testFullP13T.hh"
 
-#ifndef MARSHAK_MATPROPS
-
 #include "matprops/InterpedMaterialProps.t.cc"
 
 typedef Mesh_XYZ MT;
 typedef rtt_matprops::InterpedMaterialProps MP;
 
-typedef MT::ccsf ccsf;
-typedef MT::fcdsf fcdsf;
-typedef MT::ccif ccif;
-typedef MT::fcdif fcdif;
-
-#define T1 ccsf
-#define T2 ccif
+typedef MT::ccsf TS1;
+typedef MT::ccif TI1;
 
 template
-MP::MaterialStateField<T1>
-MP::getMaterialState<T1, T2>(const T1 &, const T1 &, const T1 &,
-			     const T2 &) const;
+class MP::MaterialStateField<TS1,TI1>;
+
+typedef MT::fcdsf TS2;
+typedef MT::fcdif TI2;
 
 template
-void
-MP::MaterialStateField<T1>::getMatId(T2 &) const;
+class MP::MaterialStateField<TS2,TI2>;
 
-#undef T1
-#undef T2
-#define T1 fcdsf
-#define T2 fcdif
+#include <vector>
+typedef std::vector<double>  TS3;
+typedef std::vector<int   >  TI3;
 
 template
-MP::MaterialStateField<T1>
-MP::getMaterialState<T1, T2>(const T1 &, const T1 &, const T1 &,
-			     const T2 &) const;
-
-typedef rtt_matprops::BilinearInterpTable BIT;
-
-#undef T1
-#undef T2
-#define T1 ccsf
-#define T2 MP::MaterialStateField<ccsf>::MultByDensity
+class MP::MaterialStateField<TS3,TI3>;
 
 template
-void
-MP::interpolate<T1, T2>(const MP::MaterialStateField<T1> &, int,
-			const MP::GroupedTable &(MP::MaterialTables::*)() const,
-			T2, T1 &) const;
+MP::MaterialStateField<TS3, TI3> MP::getMaterialState(const TS3 &, 
+						      const TS3 &, 
+						      const TS3 &, 
+						      const TI3 &) const;
 
-template
-void
-MP::interpolate<T1, T2>(const MP::MaterialStateField<T1> &,
-			const BIT &(MP::MaterialTables::*)() const,
-			T2, T1 &) const;
-
-#undef T1
-#undef T2
-#define T1 fcdsf
-#define T2 MP::MaterialStateField<fcdsf>::MultByDensity
-
-template
-void
-MP::interpolate<T1, T2>(const MP::MaterialStateField<T1> &, int,
-			const MP::GroupedTable &(MP::MaterialTables::*)() const,
-			T2, T1 &) const;
-template
-void
-MP::interpolate<T1, T2>(const MP::MaterialStateField<T1> &,
-			const BIT &(MP::MaterialTables::*)() const,
-			T2, T1 &) const;
-
-#undef T1
-#undef T2
-
-#endif
