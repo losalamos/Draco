@@ -61,6 +61,8 @@ class C4_ReqRefRep {
 
     bool complete();
 
+    unsigned count();
+
     int inuse() const { return assigned; }
 
   private:
@@ -95,6 +97,8 @@ class C4_Req {
     void free()     { p->free(); }
 
     bool complete() { return p->complete(); }
+
+    unsigned count() { return p->count(); }
 
     int inuse() const { return p->inuse(); }
 

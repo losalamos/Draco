@@ -142,6 +142,21 @@ bool C4_ReqRefRep::complete()
 #endif
 }
 
+//---------------------------------------------------------------------------//
+// Return the number of items returned on the last complete operation.
+//---------------------------------------------------------------------------//
+
+unsigned C4_ReqRefRep::count()
+{
+#ifdef C4_MPI
+    int count;
+    MPI_Get_count( &s, MPI_CHAR, &count );
+    return count;
+#else
+    return 0;
+#endif
+}
+
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//

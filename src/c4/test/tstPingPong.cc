@@ -186,6 +186,12 @@ void non_blocking_ping_pong()
 	if (lr != 2000)            ITFAILS;
 	if (!soft_equiv(fr, 2.5f)) ITFAILS;
 	if (!soft_equiv(dr, 3.5))  ITFAILS;
+
+	if (crr.count() != 1) ITFAILS;
+	if (irr.count() != sizeof(int)) ITFAILS;
+	if (lrr.count() != sizeof(long)) ITFAILS;
+	if (frr.count() != sizeof(float)) ITFAILS;
+	if (drr.count() != sizeof(double)) ITFAILS;
     }
 
     // receive and send on node 1
