@@ -694,49 +694,4 @@ AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
    dnl end of AC_COMPILER_ABSOFT_F90
 ])
 
-
-dnl-------------------------------------------------------------------------dnl
-dnl ### Checks for module information
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_PROG_F90_MOD,[dnl
-   AC_MSG_CHECKING([the F90 compiler module name])
-   if test -z "$MODNAME" -a -z "$MODSUFFIX"
-   then
-       AC_LANG_SAVE
-       AC_LANG_FORTRAN90
-       rm -f conftest*
-       cat > conftest.$ac_ext <<EOF
-module conftest_foo
-end module conftest_foo
-EOF
-       if AC_TRY_EVAL(ac_compile) && test -s conftest.o 
-       then
-           rm -f conftest.$ac_ext conftest.o
-           modfile=`ls | grep -i conftest`
-           test "${modfile+set}" = set || AC_MSG_ERROR([unknown modfile: set MODSUFFIX and MODNAME in environment])
-           MODSUFFIX=`expr "$modfile" : ".*\.\(.*\)"`
-           MODNAME=`basename $modfile .$MODSUFFIX`
-           case "$MODNAME" in
-           conftest)      MODNAME=filename ;;
-           Conftest)      MODNAME=Filename ;;
-           CONFTEST)      MODNAME=FILENAME ;;
-           conftest_foo)  MODNAME=modname ;;
-           Conftest_foo)  MODNAME=Modname ;;
-           CONFTEST_FOO)  MODNAME=MODNAME ;;
-           *)             MODNAME=Filename 
-                          MODSUFFIX=o ;;
-           esac
-       else
-           echo "configure: failed program was:" >&AC_FD_CC
-           cat conftest.$ac_ext >&AC_FD_CC
-       fi
-       rm -f $modfile
-       AC_LANG_RESTORE
-   fi
-   AC_MSG_RESULT($MODNAME.$MODSUFFIX)
-   AC_SUBST(MODSUFFIX)dnl
-   AC_SUBST(MODNAME)dnl
-])
-
 dnl ========================================================================
