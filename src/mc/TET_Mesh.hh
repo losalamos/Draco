@@ -417,10 +417,10 @@ struct TET_Mesh::Pack
     const Pack& operator=(const Pack &);
 
     //! TET_Mesh is inherently 3-dimensional; its faces have 3 vertices.
-    static const int THREE = 3;
+    static const int THREE;
 
     //! A TET_Mesh cell always has 4 faces and 4 vertices.
-    static const int FOUR = 4;
+    static const int FOUR;
 
     //! Typedef for vector field of integers.
     typedef std::vector< std::vector<int> > vf_int;

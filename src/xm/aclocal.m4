@@ -2005,10 +2005,6 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
 
    # set template stuff
    CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
-   
-   # allow long long types
-   CXXFLAGS="${CXXFLAGS} -qlonglong"
-   CFLAGS="${CFLAGS} -qlonglong"
 
    # static linking option
    if test "${enable_static_ld:=no}" = yes ; then
@@ -2632,7 +2628,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        # set up the heap size
        if test "${with_cxx}" = asciwhite ; then
-	   LDFLAGS="${LDFLAGS} -bmaxdata=0x80000000"
+	   LDFLAGS="${LDFLAGS} -bmaxdata:0x80000000"
        fi
 
        # 

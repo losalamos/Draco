@@ -23,6 +23,9 @@ namespace rtt_mc
 const int TET_Mesh::THREE = 3;
 const int TET_Mesh::FOUR  = 4;
 
+const int TET_Mesh::Pack::THREE = 3;
+const int TET_Mesh::Pack::FOUR  = 4;
+
 //___________________________________________________________________________//
 /*!
  * \brief                 TET_Mesh constructor.

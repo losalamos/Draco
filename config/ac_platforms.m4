@@ -603,7 +603,7 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 
        # set up the heap size
        if test "${with_cxx}" = asciwhite ; then
-	   LDFLAGS="${LDFLAGS} -bmaxdata=0x80000000"
+	   LDFLAGS="${LDFLAGS} -bmaxdata:0x80000000"
        fi
 
        # 

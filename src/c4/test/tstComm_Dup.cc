@@ -160,7 +160,8 @@ void test_comm_dup()
 
     int nodes = rtt_c4::nodes();
 
-    rtt_c4::inherit(MPI_COMM_WORLD);
+    MPI_Comm comm_world = MPI_COMM_WORLD;
+    rtt_c4::inherit(comm_world);
 
     if (rtt_c4::nodes() != nodes) ITFAILS;
 

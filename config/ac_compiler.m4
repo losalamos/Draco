@@ -583,10 +583,6 @@ AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
 
    # set template stuff
    CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
-   
-   # allow long long types
-   CXXFLAGS="${CXXFLAGS} -qlonglong"
-   CFLAGS="${CFLAGS} -qlonglong"
 
    # static linking option
    if test "${enable_static_ld:=no}" = yes ; then
