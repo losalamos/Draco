@@ -116,7 +116,7 @@ class Topology
     //! Get a list of global cells on processor.
     virtual sf_int get_cells(int) const = 0;
 
-    //! Get a list of processors that a global cell is on.
+    //! Get a list of processors that a cell is on.
     virtual sf_int get_procs(int) const = 0;
 
     //! Diagnostic printing.
