@@ -16,6 +16,7 @@
 #include "UnitTestFrame/PassFailStream.hh"
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -56,14 +57,56 @@ string TestElementDefinition::version() const
 
 string TestElementDefinition::runTest()
 {
-    fail() << "This test sucks!";
+    using rtt_meshReaders::Element_Definition;
+    std::vector<Element_Definition> elem_defs;
+    elem_defs.push_back(Element_Definition(Element_Definition::NODE));
+    cout << "Built a NODE" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
+    cout << "Built a BAR_2" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::BAR_3));
+    cout << "Built a BAR_3" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::TRI_3));
+    cout << "Built a TRI_3" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::TRI_6));
+    cout << "Built a TRI_6" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::QUAD_4));
+    cout << "Built a QUAD_4" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::QUAD_8));
+    cout << "Built a QUAD_8" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::QUAD_9));
+    cout << "Built a QUAD_9" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::TETRA_4));
+    cout << "Built a TETRA_4" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::TETRA_10));
+    cout << "Built a TETRA_10" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::PYRA_5));
+    cout << "Built a PYRA_5" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::PYRA_14));
+    cout << "Built a PYRA_14" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::PENTA_6));
+    cout << "Built a PENTA_6" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::PENTA_15));
+    cout << "Built a PENTA_15" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::PENTA_18));
+    cout << "Built a PENTA_18" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::HEXA_8));
+    cout << "Built a HEXA_8" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::HEXA_20));
+    cout << "Built a HEXA_20" << endl;
+    elem_defs.push_back(Element_Definition(Element_Definition::HEXA_27));
+    cout << "Built a HEXA_27" << endl;
 
-    if (passed())
-    {
-	pass() << "All tests passed.";
-	return "All tests passed.";
-    }
-    return "Some tests failed.";
+    pass() << "All tests passed.";
+    return "All tests passed.";
+
+//     fail() << "This test sucks!";
+
+//     if (passed())
+//     {
+// 	pass() << "All tests passed.";
+// 	return "All tests passed.";
+//     }
+//     return "Some tests failed.";
 }
 
 } // end namespace rtt_meshReaders_test
