@@ -34,6 +34,16 @@ dnl --with-draco is not called at all) is /usr/local.  Of course, this
 dnl can be overwritten for the lib and include directories by using 
 dnl --with-draco-lib and/or --with-draco-inc (libexec is found in the
 dnl directory set by --with-draco-lib (in libexec instead of lib.
+dnl
+dnl A final option is:
+dnl
+dnl  --with-draco-src
+dnl
+dnl This is provided for convenience.  It can be used by clients to
+dnl specify where the draco source directory draco/ is located.  It
+dnl is NOT used in this function in any way.  It is only provided so
+dnl that clients can use it to determine the location of the draco
+dnl source directory in their own configure/build systems.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
@@ -47,6 +57,9 @@ AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
 
    AC_ARG_WITH(draco-lib,
       [  --with-draco-lib        give location of draco libs])
+
+   AC_ARG_WITH(draco-src,
+      [  --with-draco-src        give location (prefix) of draco source directory])
 
    # draco include and lib dirs
    DRACO_INC=''
