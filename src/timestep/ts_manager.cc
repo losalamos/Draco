@@ -236,8 +236,10 @@ void ts_manager::print_advisors() const
 
 void ts_manager::print_summary() const
 {
+    ios::fmtflags oldOptions = cout.flags();
     cout.setf(ios::scientific, ios::floatfield);
     cout.precision(4);
+    cout.setf(ios::left,ios::adjustfield);
     list < SP<ts_advisor> > temp = advisors;
     temp.sort(sptsa_less_than(*this));
     cout << endl;
@@ -249,14 +251,14 @@ void ts_manager::print_summary() const
     cout << "  Controlling Advisor  : " << controlling_advisor << endl;
     cout << endl;
     cout << "  *** Time-Step Advisor Data Table *** " << endl;
-    cout << "  Recommendation   In-Use  Name " << endl;
+    cout << "    Recommendation   In-Use  Name " << endl;
     for (list< SP<ts_advisor> >::const_iterator py = temp.begin(); 
 	 py != temp.end(); py++)
     {
 	(**py).print(*this, (**py).get_name() == controlling_advisor);
     }
     cout << endl;
-    cout.setf(0,ios::floatfield);
+    cout.flags(oldOptions);
 }
 
 void ts_manager::print_adv_states() const

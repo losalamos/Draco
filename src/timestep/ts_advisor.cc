@@ -36,7 +36,9 @@ void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
     string status = advisor_usable(tsm) ? "true " : "false";
     string space  = "   ";
     string cflag = controlling ? "  ==> " : "      ";
-    cout << cflag << get_dt_rec(tsm) << space << 
+    cout << cflag ;
+    cout.width(12);
+    cout << get_dt_rec(tsm) << space << 
 	status << space << name << endl;
 }
     
