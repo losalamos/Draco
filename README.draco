@@ -92,6 +92,9 @@ can be used as a stand alone package or as a plun-in to CDI.  To make
 the package available you must specify
 --with-eospac-lib=${path_to_libeospac.a} when configuring.
 
+lapack_wrap [draco/src/lapack_wrap]: BLAS and LAPACK functionality for
+C++.
+
 Retired Draco Package Synopsis
 ==============================
 
