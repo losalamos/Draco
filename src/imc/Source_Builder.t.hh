@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   imc/Source_Builder.t.hh
- * \author Thomas M. Evans
+ * \author Thomas M. Evans and Todd Urbatsch
  * \date   Wed Dec  8 14:35:43 1999
  * \brief  Source_Builder implementation file.
  */
@@ -101,9 +101,9 @@ Source_Builder<MT,PT>::Source_Builder(SP<IT> interface, SP_Mesh mesh,
 
     // modulo the rn_stream with 2e9 so that, when we get to more than
     // 2e9 particles (each with its own rn_stream, numbered 0 to 2e9-1), the
-    // rn_stream starts back with rn_stream=0.  If numgen in the rng package
-    // is something less than 2e9, it will fail first when asked for rnstream 
-    // >= numgen.
+    // rn_stream starts back with rn_stream=0.  The rng package is still
+    // limited to rnstream < numgen, so the 2e9 wrap-around is moot unless
+    // numgen is 2e9 or higher (int size limiting).
     rtt_rng::rn_stream = rtt_mc::global::mod_with_2e9(rtt_rng::rn_stream);
     
     int num_cells = mesh->num_cells();
@@ -340,7 +340,7 @@ void Source_Builder<MT,PT>::calc_initial_ecen()
  * This functions takes a field of source energies and the desired number of
  * particles per unit energy, and it fills in the source numbers field and
  * returns (as a mutable argument) the total number of source particles for
- * the given field type.  These calculations are preformed on the local
+ * the given field type.  These calculations are performed on the local
  * processor.  Typically, one will iterate in a derived source class on the
  * number of source particles across processor space.
  *
@@ -500,16 +500,17 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     local_ncentot = 0;
 
     // in-function data required for combing
-    double dbl_cen_part = 0.0;
-    int    numcomb      = 0;
-    double ecencheck    = 0.0;
-    int    cencell      = 0;
-    double cenew        = 0.0;
-    int    local_cell   = 0;
+    double dbl_cen_part      = 0.0;
+    int    numcomb           = 0;
+    double ecencheck         = 0.0;
+    int    cencell           = 0;
+    double cenew             = 0.0;
+    int    local_cell        = 0;
+    double local_eloss_check = 0.0;
 
     // local accumulation of census energy from the census particles on this
     // processor 
-    double local_ecentot = 0.0;
+    double local_precombed_ecentot = 0.0;
 
     // make new census bank to hold combed census particles
     SP_Census comb_census(new Particle_Buffer<PT>::Census());
@@ -534,7 +535,7 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 	    Check (local_cell > 0 && local_cell <= ew_cen.size());
 	    
 	    // add up census energy
-	    local_ecentot += cenew;
+	    local_precombed_ecentot += cenew;
 	    
 	    // comb
 	    if (ew_cen(local_cell) > 0)
@@ -562,8 +563,9 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 		    local_ncen(local_cell) += numcomb;
 		    local_ncentot          += numcomb;
 		    
-		    // check census energy
+		    // check census energy total
 		    ecencheck  += numcomb * ew_cen(local_cell);
+	    
 		}
 		// put the combed-out particle into the dead_census
 		else
@@ -572,6 +574,9 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 			max_dead_rand_id(local_cell) = random.get_num();
 		    dead_census->push(particle);
 		}
+
+		// add energy loss to eloss_comb (returned argument)
+		eloss_comb += cenew - numcomb * ew_cen(local_cell);
 	    }
 	    else
 	    {
@@ -581,11 +586,14 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
 		
 		// if ewcen == 0 and a census particle exists in this cell
 		// then the energy lost was already tabulated in the energy
-		// loss due to sampling
+		// loss due to sampling in function calc_source_numbers
+		// and/or calc_initial_ncen
 	    }
-	    
-	    // add energy loss to eloss_comb
-	    eloss_comb += cenew - numcomb * ew_cen(local_cell);
+
+	    // perform a local sum of the total, local energy loss.  This sum 
+	    // will include loss due sampling, which is accounted for outside 
+	    // this function in global_eloss_cen.
+	    local_eloss_check += cenew - numcomb * ew_cen(local_cell);
 	}
 	
 	Check(census->size() == 0);
@@ -598,7 +606,8 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
     // check consistency of census size and external count (should be the
     // same after combing); energy checks and balances.
     Ensure(census->size() == local_ncentot);
-    Ensure(rtt_mc::global::soft_equiv(ecencheck+eloss_comb, local_ecentot, 
+    Ensure(rtt_mc::global::soft_equiv(ecencheck + local_eloss_check,
+				      local_precombed_ecentot,  
 				      (local_ncentot+1) * 1.0e-12));
 }
 
@@ -616,20 +625,24 @@ void Source_Builder<MT,PT>::comb_census(SP_Rnd_Control rcon,
  * of the energy-weights better conserves energy at the cost of increasing
  * the variance somewhat. This readjustment is necessary because of the
  * nature of the reproducible comb.  This function also takes the global
- * census energy loss, global_eloss_cen, as an argument and updates it.
- * Since the census is always local, this function applies to any topology.
+ * census energy loss due to combing, global_eloss_comb, as an argument and
+ * updates it.  Since the census is always local, this function applies to
+ * any topology.
  *
- * \param local_ncentot const value of post-comb total number of census
- *                      particles on this processor--used as a check
- * \param global_eloss_cen mutable value of the energy loss in the census
- * \param global_ecentot const value of global, total value of census energy 
- *                       used as a check
- * 
+ * \param local_ncentot         const value of post-comb total number of
+ *                              census particles on this processor--used as a
+ *                              check 
+ * \param global_eloss_comb     mutable value of the energy loss in the
+ *                              census due only to combing
+ * \param global_ecentot_actual const total value of global, actual, 
+ *                              pre-combed census energy, used as a check
+ *
  */
 template<class MT, class PT>
 void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
-					       double &global_eloss_cen,
-					       const double &global_ecentot)
+					       double &global_eloss_comb,
+					       const double
+					       &global_ecentot_actual) 
 {
     // check consistency of the census size and local_ncentot
     Require(census->size() == local_ncentot);
@@ -687,15 +700,22 @@ void Source_Builder<MT,PT>::reset_ew_in_census(const int &local_ncentot,
     global_incremental_eloss = incremental_eloss;
     C4::gsum(global_incremental_eloss);
 
-    // update the global census energy loss 
-    global_eloss_cen += global_incremental_eloss;
+    // update (presumably decrease) the global census energy loss due to
+    // combing 
+    global_eloss_comb += global_incremental_eloss;
 
     // sum up all processors' check_ecentot and test 
     check_global_ecentot = check_ecentot;
     C4::gsum(check_global_ecentot);
 
-    Check(rtt_mc::global::soft_equiv(check_global_ecentot+global_eloss_cen,
-				     global_ecentot,
+    // the "reference" and "value to be compared" have been reversed in this
+    // check on equivalence.  Here, the "value to be compared"
+    // (check_global_ecentot+global_eloss_cen) can be identically zero if the
+    // census is entirely unsampled.  The soft_equiv function can rigorously
+    // treat the case when the "reference"==0; the converse is not
+    // necessarily true.  Thus, we reverse the arguments to soft_equiv.
+    Check(rtt_mc::global::soft_equiv(global_ecentot_actual,
+				     check_global_ecentot+global_eloss_comb,
 				     static_cast<double>(global_ncentot+1) *
 				     1.0e-14));
 }

@@ -134,11 +134,17 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     recalc_census_ew_after_comb(mesh, max_dead_rand_id, dead_census,
 				global_eloss_comb); 
 
+    // reset the census particles' energy-weights and update (presumably
+    // improve) the global census energy loss due to combing. actual_ecentot
+    // is the actual, total, global census energy represented by the
+    // particles; it doesn't contain the energy that was lost during
+    // sampling; ecentot is what the total energy is supposed to be if there
+    // was no sampling loss.
+    double actual_ecentot = ecentot - global_eloss_cen;
+    reset_ew_in_census(local_ncentot, global_eloss_comb, actual_ecentot); 
+
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
-
-    // reset the census particles' energy-weights
-    reset_ew_in_census(local_ncentot, global_eloss_cen, ecentot); 
 
     // build Mesh_Operations class for source
     SP<Mesh_Operations<MT> > mesh_op
@@ -165,7 +171,7 @@ Rep_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
  * This function is a pure virtual function in the Source_Builder base class.
  * We make it part of the public interface to give the option of building an
  * initial census and then exiting the source building process.  This is
- * useful in rad-hydro applications where the initial census must be build on
+ * useful in rad-hydro applications where the initial census must be built on
  * cycle 0, before a hydro step, from the initial radiation temperature.  The
  * build_Source() function checks to see if a census exists and then builds
  * it if it does not.  The census is loaded into the Source_Builder base
@@ -285,28 +291,24 @@ void Rep_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 	    retry = false;
     }
 
-    // temporary variable for the old global ecen per cell
-    double old_ecen = 0.0;
-
     // calculate global energy weights and sampling contribution to
-    // energy loss.  NOTE that ecentot is not modified to be the true
-    // total; the true total is ecentot - global_eloss_cen.
+    // energy loss.  NOTE that ecentot is not modified to be the actual total 
+    // represented by the census particles; ecentot is what the total is
+    // supposed to be.  The actual total is ecentot - global_eloss_cen =
+    // sum(ncen*ewcen).
     for (int cell = 1; cell <= global_ncen.size(); cell++)
     {
 	if (global_ncen(cell) > 0)
 	    ew_cen(cell) = ecen(cell) / global_ncen(cell);
 	else
+	{
+	    // add up energy loss due to unsampled census energy
+	    global_eloss_cen += ecen(cell);
+
+	    // zero out ew_cen and ecen since cell is unsampled or has no energy.
 	    ew_cen(cell) = 0.0;
-
-        // save old ecen
-        old_ecen = ecen(cell);
-
-        // calculate new global ecen, which won't contain energy lost
-        // from initial sampling
-        ecen(cell) = global_ncen(cell) * ew_cen(cell);
-
-        // add up energy loss due to initial census sampling
-        global_eloss_cen += old_ecen - global_ncen(cell) * ew_cen(cell);
+	    ecen(cell)   = 0.0;
+	}
     }
 
     // calculate the local number of particles and local random number IDs
@@ -559,7 +561,8 @@ void Rep_Source_Builder<MT,PT>::calc_source_numbers()
 	    ew_cen(cell) = 0;	
 	
 	// add up sampling contribution to energy loss for volume, ss, and
-	// census
+	// census.  Some global census energy loss may exist from the initial 
+	// census calculation if this is the first IMC cycle.
 	global_eloss_vol += evol(cell) - global_nvol(cell) * ew_vol(cell);
 	global_eloss_ss  += ess(cell)  - global_nss(cell)  * ew_ss(cell);
 	global_eloss_cen += ecen(cell) - global_ncen(cell) * ew_cen(cell);
@@ -593,16 +596,16 @@ void Rep_Source_Builder<MT,PT>::calc_source_numbers()
  * directly into mutable function arguments described below.
  *
  * \param global_n_field constant field of global number of source particles
- * for a particular species
- * \param global_numtot constant global total number of source particles for
- * a particular species
- * \param next_avail_rn mutable value of next available global random number
- * stream ID
- * \param local_n_field mutable field of local number of source particles for
- * a particular species on processor
- * \param local_numtot mutable value of the local total number of source
- * particles for a particular species on processor
- * \param rn_field mutable field of starting random number stream IDs
+ *                       for a particular species
+ * \param global_numtot  constant global total number of source particles for
+ *                       a particular species
+ * \param next_avail_rn  mutable value of next available global random number
+ *                       stream ID
+ * \param local_n_field  mutable field of local number of source particles for
+ *                       a particular species on processor
+ * \param local_numtot   mutable value of the local total number of source
+ *                       particles for a particular species on processor
+ * \param rn_field       mutable field of starting random number stream IDs
  */
 template<class MT, class PT> 
 void Rep_Source_Builder<MT,PT>::calc_num_part_and_rn_fields

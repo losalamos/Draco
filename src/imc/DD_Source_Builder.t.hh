@@ -151,12 +151,18 @@ DD_Source_Builder<MT,PT>::build_Source(SP_Mesh mesh,
     global_ncentot = local_ncentot;
     C4::gsum(global_ncentot);
 
+    // reset the census particles' energy-weights and update (presumably
+    // improve) the global census energy loss due to combing.  actual_ecentot
+    // is the actual, total, global census energy represented by the
+    // particles; it doesn't contain the energy that was lost during
+    // sampling; global_ecentot is what the total energy is supposed to be if
+    // there was no sampling loss.
+    double actual_ecentot = global_ecentot - global_eloss_cen;
+    reset_ew_in_census(local_ncentot, global_eloss_comb, actual_ecentot);
+
     // add energy loss from the comb to the global census energy loss
     global_eloss_cen += global_eloss_comb;
     
-    // reset the census particles' energy-weights
-    reset_ew_in_census(local_ncentot, global_eloss_cen, global_ecentot);
-
     // build Mesh_Operations class for source
     SP<Mesh_Operations<MT> > mesh_op
 	(new Mesh_Operations<MT>(mesh, state, topology, patterns)); 
@@ -331,34 +337,30 @@ void DD_Source_Builder<MT,PT>::calc_initial_ncen(ccsf_int &cenrn)
 	    retry = false;
     }
 
-    // temporary variable for old ecen per cell
-    double old_ecen = 0.0;
-
     // calculate local energy weights and sampling contribution to the energy 
-    // loss.  NOTE that ecentot is not modified to be the true total; the
-    // true total is ecentot - global_eloss_cen.
+    // loss.  NOTE that ecentot is not modified to be the actual total 
+    // represented by the census particles; ecentot is what the total is
+    // supposed to be.  The actual total is ecentot - global_eloss_cen =
+    // sum(ncen*ewcen).
     for (int cell = 1; cell <= local_ncen.size(); cell++)
     {
 	// calculate energy-weights of initial census particles in each cell 
 	if (local_ncen(cell) > 0)
 	    ew_cen(cell) = ecen(cell) / local_ncen(cell);
 	else
-	    ew_cen(cell) = 0;
+	{
+	    // add up this processor's energy loss due to initial sampling. 
+	    local_eloss_cen += ecen(cell);
 
-	// save old ecen
-	old_ecen = ecen(cell);
-
-	// calculate new ecen which accounts for the energy loss from the
-	// initial sampling.
-	ecen(cell) = local_ncen(cell) * ew_cen(cell);
-
-	// add up this processor's energy loss due to initial sampling. 
-	local_eloss_cen += old_ecen - local_ncen(cell) * ew_cen(cell);
+	    // zero out ew_cen and ecen since cell is unsampled or has no energy.
+	    ew_cen(cell) = 0.0;
+	    ecen(cell)   = 0.0;
+	}
     }
 
-    // sum up global sampling loss due to sampling.  The way we do this
-    // calculation is possible because no cell is ever replicated in full
-    // domain decomposition.
+    // sum up global census energy loss due to sampling.  This simple global
+    // summing is possible because no cell is ever replicated in full domain
+    // decomposition.
     global_eloss_cen = local_eloss_cen;
     C4::gsum(global_eloss_cen);
 
