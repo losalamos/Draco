@@ -6,7 +6,7 @@
 // @> Template instantiations for the matprops library.
 //---------------------------------------------------------------------------//
 
-#include "radphys/RadiationPhysics.cc"
+#include "radphys/RadiationPhysics.t.cc"
 
 typedef double T1;
 
