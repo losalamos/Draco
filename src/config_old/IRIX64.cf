@@ -28,7 +28,7 @@ endif
 #LAPACK_LIB	= -lcomplib.sgimath
 #endif
 
-PCG_LIB		= -L$(HOME)/lib -lpcg
+#PCG_LIB		= -L$(HOME)/lib -lpcg
 LAPACK_LIB	= -lcomplib.sgimath
 
 # Currently KCC is hosed, so CC is the only workable choice.
@@ -144,7 +144,8 @@ endif				# Photon C++
 ifeq ($(cxx),CC)
 
 CC	= cc
-CXX	= CC -LANG:ansi-for-init-scope=ON:restrict=ON -mips4
+CXX	= CC -LANG:ansi-for-init-scope=ON:restrict=ON -mips4 \
+	-no_auto_include -I/v/furnish/local/stlport
 
 ifndef arch
 arch	= n32
@@ -182,10 +183,12 @@ INSTANTIALYZER	+= -m edg
 ifeq ($(c4),no)
 SYS_FLAGS = -DNOMPI
 comm	:=
+PCG_LIB		= -L$(HOME)/lib -lpcg_f77_sgi_n32
 else
 comm	:= c4
 SYS_FLAGS = 
-#SYS_LIBS = -lmpi
+SYS_LIBS = -lmpi
+PCG_LIB		= -L$(HOME)/lib -lpcg_mpif77_sgi_n32
 endif
 
 ifdef nj
@@ -276,12 +279,12 @@ endif
 
 env	:= $(mach)$(cmplr)$(optns)$(comm)
 
-include $(SRC_TOP)/config/.pooma.$(env)
+#include $(SRC_TOP)/config/.pooma.$(env)
 
-POOMA_INC_FLAG	= $(POOMA_INCLUDES)
-POOMA_FLAGS	= $(POOMA_INCLUDES) $(POOMA_DEFINES)
-POOMA_LIB_DIR	= $(POOMA_LFLAGS)
-POOMA_LIB	= $(POOMA_LIBS)
+#POOMA_INC_FLAG	= $(POOMA_INCLUDES)
+#POOMA_FLAGS	= $(POOMA_INCLUDES) $(POOMA_DEFINES)
+#POOMA_LIB_DIR	= $(POOMA_LFLAGS)
+#POOMA_LIB	= $(POOMA_LIBS)
 
 ###############################################################################
 #                        End of gts/src/config/IRIX64.cf
