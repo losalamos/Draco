@@ -1,32 +1,22 @@
 /*----------------------------------*-C++-*----------------------------------*/
-/* cmath */
+/* cassert */
 /* Murillo Michelle L. */
 /* Mon Jul 17 11:29:26 2000 */
 /*---------------------------------------------------------------------------*/
-/* @> cmath for stdheaders package */
+/* @> cassert for stdheaders package */
 /*---------------------------------------------------------------------------*/
 
 
-#ifndef __stdheaders_cmath__
-#define __stdheaders_cmath__
+#ifndef __stdheaders_cassert__
+#define __stdheaders_cassert__
 
-#include <math.h>
+#include <assert.h>
 
 namespace std {
-using ::fabs;
-using ::abs;
-using ::pow;
-using ::sqrt;
-using ::log10;
-using ::exp;
-using ::asin;
-using ::sin;
-using ::cos;
-using ::tan;
 } /*namespace std*/
 
-#endif    /* __stdheaders_cmath__ */
+#endif    /* __stdheaders_cassert__ */
 
 /*---------------------------------------------------------------------------*/
-/*    end of cmath */
+/*    end of cassert */
 /*---------------------------------------------------------------------------*/

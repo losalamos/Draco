@@ -7,22 +7,21 @@
 /*---------------------------------------------------------------------------*/
 
 
-#ifndef __stdheaders_cmath__
-#define __stdheaders_cmath__
+#ifndef __stdheaders_cstring__
+#define __stdheaders_cstring__
 
-#include <math.h>
+#include <string.h>
 
 namespace std {
-using ::fabs;
-using ::abs;
-using ::pow;
-using ::sqrt;
-using ::log10;
-using ::exp;
-using ::asin;
-using ::sin;
-using ::cos;
-using ::tan;
+
+using ::strcpy;
+using ::strcat;
+using ::strncpy;
+using ::strcmp;
+using ::strlen;
+using ::memcpy;
+using ::strerror;
+
 } /*namespace std*/
 
 #endif    /* __stdheaders_cmath__ */
