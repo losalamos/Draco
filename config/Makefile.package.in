@@ -112,8 +112,11 @@ PYTHON = @PYTHON_PATH@
 ##---------------------------------------------------------------------------##
 ## linker and libraries
 
+RPATH          = @RPATH@
+
 LD             = @LD@
 LDFLAGS        = @LDFLAGS@
+LDFLAGS       += ${RPATH}
 
 DRACO_LIBS     = @DRACO_LIBS@
 DRACO_DEPENDS  = @DRACO_DEPENDS@

@@ -481,9 +481,9 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
-	       LDFLAGS="${RPATHA} ${RPATHB} ${RPATHC} ${LDFLAGS}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
 
        fi
@@ -663,15 +663,15 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
-	       LDFLAGS="${RPATHA} ${RPATHB} ${RPATHC} ${LDFLAGS}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
 	   else
-	       LDFLAGS="-rpath \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+	       RPATH="-rpath \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   fi
 
        fi
    ;;
    alpha-dec-osf*)
-       # posix source defines, by default we set posix on 
+       # posix source defines, by default we set posix off
        if test "${with_posix:=no}" = yes ; then
 	   with_posix='199309L'
        fi
@@ -746,7 +746,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
        # set -R when building shared library executables
        if test "${enable_shared}" = yes; then
-	   LDFLAGS="-R \${curdir}:\${curdir}/..:\${libdir} ${LDFLAGS}"
+	   RPATH="-R \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
 	   RANLIB=':'
        fi
    ;;
@@ -813,6 +813,7 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
    AC_SUBST(ARFLAGS)dnl
    AC_SUBST(STRICTFLAG)dnl
    AC_SUBST(PARALLEL_FLAG)dnl
+   AC_SUBST(RPATH)dnl
 
    # files to install
    : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}

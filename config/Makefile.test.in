@@ -114,8 +114,11 @@ PYTHON = @PYTHON_PATH@
 ##---------------------------------------------------------------------------##
 ## linker and libraries
 
+RPATH               = @RPATH@
+
 LD                  = @LD@
 LDFLAGS             = @LDFLAGS@
+LDFLAGS            += ${RPATH}
 
 PKG_LIBS            = @PKG_LIBS@
 PKG_DEPENDS         = @PKG_DEPENDS@
