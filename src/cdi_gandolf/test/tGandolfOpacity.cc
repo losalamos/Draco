@@ -154,8 +154,6 @@ std::string tGandolfOpacity::runTest()
     double density = 27.0; // g/cm^3
     double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
     
-    fail() << "TOL is set too low in match(double,double) and in match(vector,vector).";
-    
     if ( ! opacityAccessorPassed( 
 	spOp_Al_rgt, temperature, density, tabulatedGrayOpacity ) )
 	return "opacityAccessorPassed() failed.";
@@ -1031,7 +1029,7 @@ bool tGandolfOpacity::match( const double computedValue,
 
     // Compare items up to 10 digits of accuracy.
 
-    const double TOL = 1.0e-5;
+    const double TOL = 1.0e-10;
 
     // Calculate the absolute value of the relative difference between 
     // the computed and reference values.
@@ -1064,7 +1062,7 @@ bool tGandolfOpacity::match(
     bool em = true;
 
     // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-5;
+    const double TOL = 1.0e-10;
 
     // Test each item in the list
     double reldiff = 0.0;
@@ -1107,7 +1105,7 @@ bool tGandolfOpacity::match(
     bool em = true;
 
     // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-5;
+    const double TOL = 1.0e-10;
 
     // Test each item in the list
     double reldiff = 0.0;

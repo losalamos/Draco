@@ -166,11 +166,6 @@ namespace rtt_gandolf_with_cdi_test
 	    
 	    double opacity = spCDI_Analytic->gray()->getOpacity( temperature, density );
 	    
-	    fail() << "The value for TOL is too small (5 digits only!)";
-
-	    std::cout << opacity << std::endl
-		      << tabulatedGrayOpacity << std::endl;
-	    
 	    if ( match ( opacity, tabulatedGrayOpacity ) ) 
 		pass() << spCDI_Analytic->gray()->getDataDescriptor()
 		       << " getOpacity computation was good.";
@@ -302,7 +297,7 @@ namespace rtt_gandolf_with_cdi_test
 				 const double referenceValue ) const
 	{
 	    // Compare items up to 10 digits of accuracy.
-	    const double TOL = 1.0e-5;
+	    const double TOL = 1.0e-10;
 	    
 	    // Calculate the absolute value of the relative difference between 
 	    // the computed and reference values.
@@ -326,7 +321,7 @@ namespace rtt_gandolf_with_cdi_test
 		return false;
 	    
 	    // Compare items up to 10 digits of accuracy.
-	    const double TOL = 1.0e-5;
+	    const double TOL = 1.0e-10;
 	    
 	    // Test each item in the list
 	    double reldiff = 0.0;
@@ -346,7 +341,7 @@ namespace rtt_gandolf_with_cdi_test
 	const std::vector< std::vector< double > >& referenceValue ) const 
 	{
 	    // Compare items up to 10 digits of accuracy.
-	    const double TOL = 1.0e-5;
+	    const double TOL = 1.0e-10;
 	    
 	    // Test each item in the list
 	    double reldiff = 0.0;
