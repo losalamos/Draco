@@ -23,15 +23,16 @@ namespace rtt_units
  * \class UnitSystemType
  *
  * \brief Aggregates a collection of FundUnits to create a complete 
- *        UnitSystemType.
+ *        UnitSystemType.  Also provides a tool for constructing UnitSystems
+ *        on the fly.
  *
  * \sa UnitSystem
  *  
  * \example test/tstUnitSystemType.cc
  * \example tst/tstUnitSystem.cc
  *
- * // Different ways to construct a UnitSystem
- *
+ * Different ways to construct a UnitSystem
+ * \verbatim
  * using rtt_units::UnitSystemType;
  * using rtt_units::UnitSystem;
  * typedef rtt_units::UnitSystemType::
@@ -41,7 +42,7 @@ namespace rtt_units
  * UnitSystem uCGS( UnitSystemType().L( rtt_units::L_cm )
  *                                  .M( rtt_units::M_g )
  *                                  .t( rtt_units::t_s ) );
- *
+ * \endverbatim
  */
 //============================================================================//
 
@@ -52,35 +53,15 @@ class UnitSystemType
     // CONSTRUCTORS AND DESTRUCTOR
     
     //! default constructor
-    UnitSystemType()
-	: d_L( FundUnit< Ltype >( L_null, L_cf, L_labels ) ),
-	  d_M( FundUnit< Mtype >( M_null, M_cf, M_labels ) ),
-	  d_t( FundUnit< ttype >( t_null, t_cf, t_labels ) ),
-	  d_T( FundUnit< Ttype >( T_null, T_cf, T_labels ) ),
-	  d_I( FundUnit< Itype >( I_null, I_cf, I_labels ) ),
-	  d_A( FundUnit< Atype >( A_null, A_cf, A_labels ) ),
-	  d_Q( FundUnit< Qtype >( Q_null, Q_cf, Q_labels ) )
-    { /* empty */ }
+    UnitSystemType();
     
-    //! qualified constructor
-    UnitSystemType( Ltype myL, Mtype myM, ttype myt, Ttype myT, Itype myI, 
-		    Atype myA, Qtype myQ )
-	: d_L( FundUnit< Ltype >( myL, L_cf, L_labels ) ),
-	  d_M( FundUnit< Mtype >( myM, M_cf, M_labels ) ),
-	  d_t( FundUnit< ttype >( myt, t_cf, t_labels ) ),
-	  d_T( FundUnit< Ttype >( myT, T_cf, T_labels ) ),
-	  d_I( FundUnit< Itype >( myI, I_cf, I_labels ) ),
-	  d_A( FundUnit< Atype >( myA, A_cf, A_labels ) ),
-	  d_Q( FundUnit< Qtype >( myQ, Q_cf, Q_labels ) )
-    { /* empty */ }
+    //! fully qualified constructor
+    UnitSystemType( Ltype myL, Mtype myM, ttype myt, 
+		    Ttype myT, Itype myI, Atype myA, 
+		    Qtype myQ );
 
     //! Copy constructor
-    UnitSystemType( UnitSystemType const & rhs )
-	: d_L( rhs.L() ), d_M( rhs.M() ),
-	  d_t( rhs.t() ), d_T( rhs.T() ),
-	  d_I( rhs.I() ), d_A( rhs.A() ),
-	  d_Q( rhs.Q() )	    
-    { /* empty */ }
+    UnitSystemType( UnitSystemType const & rhs );
     
     // MANIPULATORS
     
@@ -100,53 +81,25 @@ class UnitSystemType
 
     UnitSystemType& L( Ltype               myType, 
 		       double      const * cf     = L_cf, 
-		       std::string const & labels = L_labels )
-    { 
-	this->d_L = FundUnit< Ltype >( myType, cf, labels ); 
-	return *this; 
-    }
+		       std::string const & labels = L_labels );
     UnitSystemType& M( Mtype myType, 
 		       double const * cf     = M_cf,
-		       std::string const & labels = M_labels ) 
-    {
-	this->d_M = FundUnit< Mtype >( myType, cf, labels );
-	return *this; 
-    }
+		       std::string const & labels = M_labels );
     UnitSystemType& t( ttype myType, 
 		       double const * cf     = t_cf,
-		       std::string const & labels = t_labels ) 
-    {
-	this->d_t = FundUnit< ttype >( myType, cf, labels ); 
-	return *this; 
-    }
+		       std::string const & labels = t_labels );
     UnitSystemType& T( Ttype myType, 
 		       double const * cf     = T_cf,
-		       std::string const & labels = T_labels ) 
-    {
-	this->d_T = FundUnit< Ttype >( myType, cf, labels );
-	return *this; 
-    }
+		       std::string const & labels = T_labels );
     UnitSystemType& I( Itype myType, 
 		       double const * cf     = I_cf,
-		       std::string const & labels = I_labels ) 
-    { 
-	this->d_I = FundUnit< Itype >( myType, cf, labels ); 
-	return *this; 
-    }
+		       std::string const & labels = I_labels );
     UnitSystemType& A( Atype myType, 
 		       double const * cf     = A_cf,
-		       std::string const & labels = A_labels ) 
-    {
-	this->d_A = FundUnit< Atype >( myType, cf, labels ); 
-	return *this; 
-    }
+		       std::string const & labels = A_labels );
     UnitSystemType& Q( Qtype myType, 
 		       double const * cf     = Q_cf,
-		       std::string const & labels = Q_labels )
-    {
-	this->d_Q = FundUnit< Qtype >( myType, cf, labels ); 
-	return *this; 
-    }
+		       std::string const & labels = Q_labels );
 
     // ACCESSORS
 
