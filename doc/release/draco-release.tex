@@ -39,7 +39,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{XTM:TME-99-??? (U)}
+\refno{XTM:TME-99--36 (U)}
 \subject{Draco Release Policy and Procedures}
 
 %-------NO CHANGES
@@ -95,14 +95,14 @@
 
 The purpose of this memo is to outline the release policy and
 procedures for \draco\ and \draco\ packages.  These procedures should
-also apply to \draco-clients including \solon\ and \milagro.  We
-require release numbers in order to maintain quality control, code
-reference, and project planning sanity in XTM code projects.  \draco\ 
-products are version-controlled by {\bf cvs} tags.  Thus, releases of
-a particular code are shipped using an appropriate \texttt{cvs export}
+also apply to \draco-clients such as \solon\ and \milagro.  We require
+release numbers in order to maintain quality control, code reference,
+and project planning sanity in XTM code projects.  \draco\ products
+are version-controlled by {\bf cvs} tags.  Thus, releases of a
+particular code are shipped using an appropriate \texttt{cvs export}
 command.
 
-This memo consists of two primary sections, \S~\ref{sec:policy} and
+This memo contains two primary sections, \S~\ref{sec:policy} and
 \ref{sec:procedures}, plus an Overview (\S~\ref{sec:overview}) and
 Summary (\S~\ref{sec:summary}).  Section~\ref{sec:policy} outlines
 \draco\ release policies.  It contains information on the following
@@ -143,7 +143,7 @@ grouping of files that shares a common purpose is a \draco\
 \texttt{draco/src/c4/} and \texttt{draco/config/}.  A \draco\ 
 component that lives under \texttt{draco/src/} is a \draco\ 
 \latin{package}.  Examples of \draco\ packages are \dsxx\ and \cfour.
-Hence, packages are also \draco\ components.  
+Hence, packages are also \draco\ components.
 
 \draco-clients are code systems that use \draco\ components.  \solon\ 
 and \milagro\ are \draco-clients.  \draco\ products refer to anything
@@ -160,8 +160,8 @@ get to the next release point.  For example, if the \dsxx\ package is
 migrating from \texttt{ds++-1\_5\_0} to \texttt{ds++-1\_6\_0} when
 \draco\ is ready for release, the \draco\ team can release a version
 of \draco\ that includes \texttt{ds++-1\_5\_0}.  If \draco\ releases
-are required to wait for all of its packages to move forward to the
-next release point then the release of \draco\ would be unnecessarily
+are required to wait for all packages to move forward to the next
+release point then the release of \draco\ might be unnecessarily
 delayed.  Separating the \draco\ and \draco\ package release numbers
 eases the pressure on \draco\ package developers who might otherwise
 delay \draco\ releases.
@@ -196,7 +196,7 @@ the \draco\ development team is small, only a small set of general
 policies are required.  Additionally, these policies may be waived in
 special circumstances by the \draco\ development team.
 
-The \draco\ release policies are the following:
+The \draco\ release policies are:
 \begin{enumerate}
 \item Each file in \draco\ will have a minimum of two common tags, a
   \draco-level tag and a \stable\ tag.  The \stable\ tag is a
@@ -252,8 +252,9 @@ We will now explain these policies in more detail.
 \label{sec:stable-tag}
 
 To implement the policies laid out above, we have developed the
-\stable\ tag.  Consider a fictional representation of \draco\ as
-illustrated in Fig.~\ref{fig:tag-strategy}.  The \stable\ tag is used
+concept of a \stable\ tag.  Consider a fictional representation of
+\draco\ as illustrated in Fig.~\ref{fig:tag-strategy}.  The \stable\ 
+tag is used
 \begin{figure}
   \centerline{\includegraphics[width=6.5in]{tag-strategy.eps}}
   \caption{{\bf cvs} tagging history for a fictional representation of 
@@ -262,11 +263,11 @@ illustrated in Fig.~\ref{fig:tag-strategy}.  The \stable\ tag is used
   \label{fig:tag-strategy}
 \end{figure}
 to point to the last viable version of each package.  By viable, we
-mean that when the \stable\ tag was assigned, the package
+mean that when the \stable\ tag was assigned the package
 \begin{enumerate}
-\item passed its regression tests,
-\item passed the regression tests of all packages that depend on the
-  component.
+\item passed its regression tests, and
+\item all packages that depend on it have passed their regression
+  tests.
 \end{enumerate}
 Thus, by checking out a \stable\ tagged version of code, one is
 nearly guaranteed that the package works the way that the code
@@ -516,8 +517,8 @@ following procedure:
   The \texttt{-A} option removes the \stable\ tag from
   \texttt{draco/config/} thus updating this directory to the head
   revision.  One can then perform regression tests with the rest of
-  \draco\ in its \stable\ condition.  Additionally, one may update the 
-  rest of \draco\ to a \stable\ state:
+  \draco\ in its \stable\ condition.  Alternatively, one may update
+  the rest of \draco\ to a \stable\ state:
 \begin{verbatim}
      cvs update -r last_stable draco
      cd draco/config
