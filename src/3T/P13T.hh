@@ -18,27 +18,25 @@
 // 
 //===========================================================================//
 
-template<class MT, class MaterialProperties, class DiffusionSolver>
-class P13T {
+template<class MT, class MP, class DS>
+class P13T
+{
 
-    // DATA
-
-  private:
-    
-    SP<MaterialProperties> spProp;     // Material Props
-    P13TOptions options;               // Specify various solve flags and values
-    SP<DiffusionSolver> spDiffSolver;  // Which diffusion solver to use
-
-
-    
     // NESTED CLASSES AND TYPEDEFS
 
   public:
 
+    // Longhand type names.
+    
+    typedef MT MeshType;
+    typedef DS DiffusionSolver;
+    typedef MP MaterialProperties;
+    
     // The diffusion solver knows the correct representation for
-    // the face-centered current field.
+    // the continuous anb discontinuous face-centered flux fields.
 
-    typedef typename DiffusionSolver::CurrentField CurrentField;
+    typedef typename DiffusionSolver::FluxField FluxField;
+    typedef typename DiffusionSolver::DiscFluxField DiscFluxField;
 
     // The MaterialProperties knows the correct representation for the
     // material state field
@@ -47,20 +45,31 @@ class P13T {
 
     // Miscellaneous shortcut field typedefs from the MT class
     
-    typedef typename MT::ccsf ccsf;       // cell-centered scalar field
-    typedef typename MT::ncvf ncvf;       // node-centered vector field
-    typedef typename MT::fcdcsf fcdsf;    // face-centered discontinuous s.f.
+    typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
+    typedef typename MeshType::ncvf ncvf;    // node-centered vector field
+    typedef typename MeshType::fcdcsf fcdsf; // face-centered discontinuous s.f.
+    typedef typename MeshType::bsbf bsbf;    // bndry-specified boundary field.
 
     // The state of the radiation field is passed in and returned
     // in this structure.
     
     struct RadiationStateField {
 	ccsf phi;
-	CurrentField F;
+	FluxField F;
     };
     
 
 
+    // DATA
+
+  private:
+    
+    P13TOptions options;               // Specify various solve flags and values
+    SP<MaterialProperties> spProp;     // Material Props
+    SP<DiffusionSolver> spDiffSolver;  // Which diffusion solver to use
+
+
+    
   public:
 
     // CREATORS
@@ -80,30 +89,80 @@ class P13T {
 
     // ACCESSORS
 
-    // Initialize the radiation field to Planckian
-    // based on material electron temperatures.
+    //------------------------------------------------------------------------//
+    // initializeRadiationState:
+    //     Initialize the radiation field to Planckian
+    //     based on material electron temperatures.
+    //------------------------------------------------------------------------//
     
     void initializeRadiationState(const MaterialStateField &matState,
 				  RadiationStateField &resultsStateField) const;
 
-    // Solve for the new radiation field, the electron/ion energy depositions,
-    // and the momentom deposition.
+    //------------------------------------------------------------------------//
+    // solve:
+    //     Solve for the new radiation field, the electron/ion energy
+    //     depositions, and the momentom deposition.
     //
-    // The P13TOptions object (P13T state variable "options")
-    // determines whether this solve is with or without the
-    // electron/ion conduction equations.
+    //     The P13TOptions object (P13T state variable "options")
+    //     determines whether this solve is with or without the
+    //     electron/ion conduction equations.
+    //------------------------------------------------------------------------//
     
     void solve(double dt,
+	       const MaterialStateField &matState,
+	       const RadiationStateField &prevStateField,
 	       const ccsf QRad,
 	       const ccsf QElectron,
 	       const ccsf QIon,
-	       // **** Boundary Source Field goes here ****
-	       const MaterialStateField &matState;
-	       const RadiationStateField &prevStateField,
+	       const bsbf boundary,
 	       RadiationStateField &resultsStateField,
 	       ccsf &electronEnergyDeposition,
 	       ccsf &ionEnergyDeposition,
 	       ncvf &momentumDeposition) const;
+
+    // IMPLEMENTATION
+
+  private:
+    
+    //------------------------------------------------------------------------//
+    // clacNewRadState:
+    //     calculate the new radiation state using the previous state,
+    //     material properties, and sources.
+    //     This solves the coupled radiation, electron, and ion equations
+    //     ***without*** the conduction equations.
+    //------------------------------------------------------------------------//
+    
+    void calcNewRadState(double dt,
+			 int groupNo,
+			 const MaterialStateField &matState,
+			 const RadiationStateField &prevStateField,
+			 const ccsf QRad,
+			 const ccsf QElectron,
+			 const ccsf QIon,
+			 const ccsf TElectron,
+			 const ccsf TIon,
+			 const bsbf boundary,
+			 RadiationStateField &resultsStateField) const;
+    
+    //------------------------------------------------------------------------//
+    // calcP1Coeffs:
+    //     Calculate the coefficients, e.g. diffusion and removal, and
+    //     source terms for solving the P1 equation.
+    //------------------------------------------------------------------------//
+
+    void calcP1Coeffs(double dt,
+		      int groupNo,
+		      const MaterialStateField &matState,
+		      const RadiationStateField &prevStateField,
+		      const ccsf QRad,
+		      const ccsf QElectron,
+		      const ccsf QIon,
+		      const ccsf TElectron,
+		      const ccsf TIon,
+		      fcdsf &D,
+		      FluxField &Fprime,
+		      ccsf &sigmaAbsBar,
+		      ccsf &QRadBar) const;
 };
 
 #endif                          // __3T_P13T_hh__

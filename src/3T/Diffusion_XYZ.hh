@@ -42,6 +42,12 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
     double dx, dy, dz;
 
   public:
+
+    // NESTED CLASSES AND TYPEDEFS
+
+    typedef typename MT::fcdsf FluxField;
+    typedef typename MT::fcdsf DiscFluxField;
+    
     typedef double NumT;
 
     Diffusion_XYZ( const SP<MT>& spm_, const pcg_DB& pcg_db );
@@ -53,6 +59,8 @@ class Diffusion_XYZ : private MT::Coord_Mapper {
 
     Mat2<double>& get_A() { return A; }
     SP< MatVec_3T< MT, Diffusion_XYZ<MT> > > get_matvec() { return spmv; }
+    SP<MT> getMesh() { return spm; }
+    const SP<MT> getMesh() const { return spm; }
 };
 
 #endif                          // __3T_Diffusion_XYZ_hh__

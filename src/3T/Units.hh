@@ -1,0 +1,186 @@
+//----------------------------------*-C++-*----------------------------------//
+// Units.hh
+// Randy M. Roberts
+// Tue Mar 17 14:52:37 1998
+//---------------------------------------------------------------------------//
+// @> 
+//---------------------------------------------------------------------------//
+
+#ifndef __3T_Units_hh__
+#define __3T_Units_hh__
+
+//===========================================================================//
+// class Units - 
+//
+// Date created : Tue Mar 17 14:52:37 1998
+// Purpose      : Provide units standardization for the 3T package.
+//                Unit conversion factors defined so that
+//                (value in user units) * xxxConversion = (value in SI units)
+//
+//                SI units are:
+//                    length - meters
+//                    mass   - kilograms
+//                    time   - seconds
+//                    temp   - Kelvin
+//
+// revision history:
+// -----------------
+// 0) original
+// 
+//===========================================================================//
+
+#include "ds++/Assert.hh"
+#include "3T/PhysicalConstants.hh"
+
+class Units
+{
+
+    // DATA
+
+    double lengthConversion;
+    double massConversion;
+    double timeConversion;
+    double temperatureConversion;
+    
+  public:
+
+    // CREATORS
+    
+    Units(double lengthConversion_, double massConversion_,
+	  double timeConversion_, double temperatureConversion_)
+	: lengthConversion(lengthConversion_),
+	  massConversion(massConversion_),
+	  timeConversion(timeConversion_),
+	  temperatureConversion(temperatureConversion_)
+    {
+	Require(validUnits());
+    }
+
+    Units()
+	: lengthConversion(1.0),
+	  massConversion(1.0),
+	  timeConversion(1.0),
+	  temperatureConversion(1.0)
+    {
+	Require(validUnits());
+    }
+    
+
+    // MANIPULATORS
+    // none
+    
+    // ACCESSORS
+
+    double getLengthConversion() const { return lengthConversion; }
+    double getMassConversion() const { return massConversion; }
+    double getTimeConversion() const { return timeConversion; }
+    double getTemperatureConversion() const { return temperatureConversion; }
+
+    inline double User2SILength(double length) const;
+    inline double User2SIMass(double mass) const;
+    inline double User2SITime(double time) const;
+    inline double User2SITemperature(double temperature) const;
+
+    inline double SI2UserLength(double length) const;
+    inline double SI2UserMass(double mass) const;
+    inline double SI2UserTime(double time) const;
+    inline double SI2UserTemperature(double temperature) const;
+
+    inline double User2SIVelocity(double velocity) const;
+    inline double SI2UserVelocity(double velocity) const;
+
+    inline double User2SIDensity(double density) const;
+    inline double SI2UserDensity(double density) const;
+
+    // CLASS METHODS
+
+    static Units getSIUnits() { return Units(); }
+    static Units getAstroPhysUnits()
+    {
+	// Convenience utility to return Astro-Physical units
+	// length - centimeters
+	// mass   - grams
+	// time   - 10^-8 seconds
+	// temp   - keV
+
+	using PhysicalConstants::eV2Kelvin;
+	
+	return Units(1.0e-2, 1.0e-3, 1.0e-8, 1.0e3*eV2Kelvin);
+    }
+    
+  protected:
+    
+    // IMPLEMENTATION
+
+    inline bool validUnits() const;
+
+    // CLASS IMPLEMENTATION
+
+    static double minConversion();
+};
+
+// INLINE DEFINITIONS
+
+inline bool Units::validUnits() const
+{
+    return lenghtConversion .ge. minConversion()
+	&& massConversion .ge. minConversion()
+	&& timeConversion .ge. minConversion()
+	&& temperatureConversion .ge. minConversion();
+}
+
+inline double Units::User2SILength(double length) const
+{
+    return length * lengthConversion;
+}
+
+inline double Units::User2SIMass(double mass) const
+{
+    return mass * massConversion;
+}
+
+inline double Units::User2SITime(double time) const
+{
+    return time * timeConversion;
+}
+
+inline double Units::User2SITemperature(double temperature) const
+{
+    return temperature * temperatureConversion;
+}
+
+inline double Units::SI2UserLength(double length) const
+{
+    return length / lengthConversion;
+}
+
+inline double Units::SI2UserMass(double mass) const
+{
+    return mass / massConversion;
+}
+
+inline double Units::SI2UserTime(double time) const
+{
+    return time / timeConversion;
+}
+
+inline double Units::SI2UserTemperature(double temperature) const
+{
+    return temperature / temperatureConversion;
+}
+
+inline double Units::User2SIVelocity(double velocity) const;
+{
+    return velocity * lengthConversion / timeConversion;
+}
+
+inline double Units::SI2UserVelocity(double velocity) const
+{
+    return velocity * timeConversion / lengthConversion;
+}
+
+#endif                          // __3T_Units_hh__
+
+//---------------------------------------------------------------------------//
+//                              end of 3T/Units.hh
+//---------------------------------------------------------------------------//
