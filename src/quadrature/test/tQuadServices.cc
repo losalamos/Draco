@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <vector>
-//#include <cmath>
+#include <cmath>
 #include <sstream>
 #include <string>
 
@@ -27,6 +27,141 @@
 
 //---------------------------------------------------------------------------//
 // TESTS
+//---------------------------------------------------------------------------//
+
+// Legendre Polynomials
+double P( int const ell, double const x )
+{
+    Require( ell >= 0 );
+    Require( ell < 7 );
+    Require( std::abs(x) <= 1.0 );
+
+    if( ell == 0 ) return 1.0;
+    if( ell == 1 ) return x;
+    if( ell == 2 ) return (3.0*x*x-1.0)/2.0;
+    if( ell == 3 ) return (5.0*x*x*x - 3.0*x )/2.0;
+    if( ell == 4 ) return (35.0*x*x*x*x - 30.0*x*x + 3)/8.0;
+    if( ell == 5 ) return (63.0*x*x*x*x*x - 70.0*x*x*x + 15.0*x)/8.0;
+
+    Ensure( ell == 6 );
+    return (231.0*x*x*x*x*x*x - 315.0*x*x*x*x +105.0*x*x - 5.0)/16.0;
+}
+
+//---------------------------------------------------------------------------//
+
+double getclk( unsigned const ell, int const k )
+{
+    using std::sqrt;
+    using std::abs;
+    using rtt_quadrature::factorial;
+    using rtt_quadrature::kronecker_delta;
+    return sqrt( (2.0 - kronecker_delta(k,0) ) 
+		 * factorial(ell-abs(k)) / (1.0*factorial(ell+abs(k)) ));
+}
+
+//---------------------------------------------------------------------------//
+void test_kdelta()
+{
+    using rtt_quadrature::kronecker_delta;
+    
+    if( kronecker_delta( 0, 0 ) == 1 )
+    {
+	PASSMSG("Found kronecker_delta(0,0) == 1, kronecker_delta is working.");
+    }
+    else
+    {
+	PASSMSG("Found kronecker_delta(0,0) != 1, kronecker_delta is not working.");
+    }
+    if( kronecker_delta( 0, 1 ) == 0 )
+    {
+	PASSMSG("Found kronecker_delta(0,1) == 0, kronecker_delta is working.");
+    }
+    else
+    {
+	PASSMSG("Found kronecker_delta(0,1) != 0, kronecker_delta is not working.");
+    }
+    if( kronecker_delta( 1, 1 ) == 1 )
+    {
+	PASSMSG("Found kronecker_delta(1,1) == 1, kronecker_delta is working.");
+    }
+    else
+    {
+	PASSMSG("Found kronecker_delta(1,1) != 1, kronecker_delta is not working.");
+    }
+    if( kronecker_delta( 1, 0 ) == 0 )
+    {
+	PASSMSG("Found kronecker_delta(1,0) == 0, kronecker_delta is working.");
+    }
+    else
+    {
+	PASSMSG("Found kronecker_delta(1,0) != 0, kronecker_delta is not working.");
+    }
+    if( kronecker_delta( -1, 0 ) == 0 )
+    {
+	PASSMSG("Found kronecker_delta(-1,0) == 0, kronecker_delta is working.");
+    }
+    else
+    {
+	PASSMSG("Found kronecker_delta(-1,0) != 0, kronecker_delta is not working.");
+    }
+    if( kronecker_delta( -1, -1 ) == 1 )
+    {
+	PASSMSG("Found kronecker_delta(-1,-1) == 1, kronecker_delta is working.");
+    }
+    else
+    {
+	PASSMSG("Found kronecker_delta(-1,-1) != 1, kronecker_delta is not working.");
+    }
+    return;
+}
+
+//---------------------------------------------------------------------------//
+void test_factorial()
+{
+    using rtt_quadrature::factorial;
+    if( factorial(0) == 1 )
+    {
+	PASSMSG("Found factorial(0) == 1, factorial is working.");
+    }
+    else
+    {
+	PASSMSG("Found factorial(0) != 1, factorial is not working.");
+    }
+    if( factorial(1) == 1 )
+    {
+	PASSMSG("Found factorial(1) == 1, factorial is working.");
+    }
+    else
+    {
+	PASSMSG("Found factorial(1) != 1, factorial is not working.");
+    }
+    if( factorial(2) == 2 )
+    {
+	PASSMSG("Found factorial(2) == 2, factorial is working.");
+    }
+    else
+    {
+	PASSMSG("Found factorial(2) != 2, factorial is not working.");
+    }
+    if( factorial(3) == 6 )
+    {
+	PASSMSG("Found factorial(3) == 6, factorial is working.");
+    }
+    else
+    {
+	PASSMSG("Found factorial(3) != 6, factorial is not working.");
+    }
+    if( factorial(-3) == 1 )
+    {
+	PASSMSG("Found factorial(-3) == 1, factorial is working.");
+    }
+    else
+    {
+	PASSMSG("Found factorial(-3) != 1, factorial is not working.");
+    }
+   return;
+}
+
 //---------------------------------------------------------------------------//
 
 void test_quad_services_with_1D_S2_quad()
@@ -50,12 +185,13 @@ void test_quad_services_with_1D_S2_quad()
     // QuadCreator QuadratureCreator;
     
     // we will only look at S2 Sets in this test.
-    const size_t sn_ord_ref( 2                   );
-    const string qname_ref ( "1D Gauss Legendre" );
-    const size_t n_ang_ref ( 2                   );
+    size_t const sn_ord_ref( 2                   );
+    string const qname_ref ( "1D Gauss Legendre" );
+    size_t const n_ang_ref ( 2                   );
     
     // Banner
-    cout << "\nTesting the "  << qname_ref << "S2 quadrature set." << endl;
+    cout << "\nTesting the "  << qname_ref << "S"
+	 << sn_ord_ref << " quadrature set." << endl << endl;
     
     // Create a quadrature set from a temporary instance of a
     // QuadratureCreator factory object.
@@ -63,12 +199,13 @@ void test_quad_services_with_1D_S2_quad()
     spQuad = QuadCreator().quadCreate( QuadCreator::GaussLeg, sn_ord_ref ); 
     
     // print the name of the quadrature set that we are testing.
-    const string qname   ( spQuad->name()         );
-    const size_t sn_order( spQuad->getSnOrder()   );
-    const size_t numAngles( spQuad->getNumAngles() );
+    string const qname   (  spQuad->name()         );
+    size_t const snOrder(   spQuad->getSnOrder()   );
+    size_t const numAngles( spQuad->getNumAngles() );
+    double const sumwt(     spQuad->getNorm() );
     
     // check basic quadrature setup.
-    if( sn_order != sn_ord_ref ) 
+    if( snOrder != sn_ord_ref ) 
     {
 	FAILMSG("Found incorrect Sn Order.");
     }
@@ -112,49 +249,28 @@ void test_quad_services_with_1D_S2_quad()
     qs.print_matrix( "Mmatrix", M, dims );
 
     //----------------------------------------
-    //           2l+1
-    // M_{n,m} = ----- * C_n * Y_n( Omega_m )
+    // For 1D Quadrature we have the following:
+    //
+    // k == 0, n == l, C_lk == 1, Omega_m == mu_m
+    //
+    //           2*n+1
+    // M_{n,m} = ----- * 1 * Y_n( mu_m )
     //           sumwt
     //
-    // k is always 0 for 1D ==> c_n == 1 for 1D
-    //
-    // M(0,0) = ( 1/2 ) * ( 1 ) * P(0,0)(mu_m)*cos(0)
-    //        = 1/2 * P(0,0) = 1/2
-    // M(0,m) = 1/2
+    // Y_n( mu_m ) = P(l=0,k=0)(mu_m)*cos(k*theta)
+    //             = P(n,mu_m)
     //----------------------------------------
 
-    { // scope for testing n=0
-	unsigned n(0);
+    std::vector< double > const mu( spQuad->getMu() );
+    double const clk(1.0);
+
+    for( size_t n=0; n<numMoments; ++n )
+    { 
+	double const c( (2.0*n+1.0)/sumwt );
+
 	for( size_t m=0; m<numAngles; ++m )
 	{
-	    if( soft_equiv( M[ n + m*numMoments ], 0.5 ) )
-	    {
-		ostringstream msg;
-		msg << "M[" << n << "," << m << "] has the expected value." << endl;
-		    PASSMSG( msg.str() );
-	    }
-	    else
-	    {		
-		ostringstream msg;
-		msg << "M[" << n << "," << m 
-		    << "] does not have the expected value." << endl
-		    << "\tFound M[" << n << "," << m << "] = " 
-		    << M[ n + m*numMoments ] << ", but was expecting 0.5" << endl; 
-		FAILMSG( msg.str() );		
-	    }
-	}
-    } // end scope for testing n=0
-
-    // When n=1 ==> (l,k) = (1,0)
-    // M(1,m) = (3/2) * (1) *P(1,0)(mu_m)*cos(0)
-    // M(1,m) = (3/2) * mu_m
-
-    { // scope for testing n=1
-	unsigned n(1);
-	std::vector< double > const mu( spQuad->getMu() );
-	for( size_t m=0; m<numAngles; ++m )
-	{
-	    if( soft_equiv( M[ n + m*numMoments ], 3*mu[m]/2 ) )
+	    if( soft_equiv( M[ n + m*numMoments ], c*clk*P(n,mu[m]) ) )
 	    {
 		ostringstream msg;
 		msg << "M[" << n << "," << m << "] has the expected value." << endl;
@@ -167,11 +283,11 @@ void test_quad_services_with_1D_S2_quad()
 		    << "] does not have the expected value." << endl
 		    << "\tFound M[" << n << "," << m << "] = " 
 		    << M[ n + m*numMoments ] << ", but was expecting " 
-		    << 3*mu[m]/2 << "." << endl; 
+		    << c*clk*P(n,mu[m]) << endl; 
 		FAILMSG( msg.str() );		
 	    }
 	}
-    } // end scope for testing n=1
+    } 
 
     //-----------------------------------//
 
@@ -207,6 +323,8 @@ void test_quad_services_with_1D_S2_quad()
     return;
 }
 
+//---------------------------------------------------------------------------//
+
 void test_quad_services_with_1D_S8_quad()
 {   
     using rtt_quadrature::QuadCreator;
@@ -233,7 +351,8 @@ void test_quad_services_with_1D_S8_quad()
     const size_t n_ang_ref ( 8                   );
     
     // Banner
-    cout << "\nTesting the "  << qname_ref << " S8 quadrature set." << endl;
+    cout << "\nTesting the "  << qname_ref << " S"
+	 << sn_ord_ref << "8 quadrature set." << endl << endl;
     
     // Create a quadrature set from a temporary instance of a
     // QuadratureCreator factory object.
@@ -241,12 +360,13 @@ void test_quad_services_with_1D_S8_quad()
     spQuad = QuadCreator().quadCreate( QuadCreator::GaussLeg, sn_ord_ref ); 
     
     // print the name of the quadrature set that we are testing.
-    const string qname   ( spQuad->name()         );
-    const size_t sn_order( spQuad->getSnOrder()   );
+    const string qname   (  spQuad->name()         );
+    const size_t snOrder(   spQuad->getSnOrder()   );
     const size_t numAngles( spQuad->getNumAngles() );
+    const double sumwt(     spQuad->getNorm() );
     
     // check basic quadrature setup.
-    if( sn_order != sn_ord_ref ) 
+    if( snOrder != sn_ord_ref ) 
     {
 	FAILMSG("Found incorrect Sn Order.");
     }
@@ -282,49 +402,36 @@ void test_quad_services_with_1D_S8_quad()
     
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
+
+    std::vector< unsigned > dims;
+    dims.push_back( numAngles );
+    dims.push_back( numMoments );
     
-    //           2l+1
-    // M_{n,m} = ----- * C_n * Y_n( Omega_m )
+    qs.print_matrix( "Mmatrix", M, dims );
+
+    //----------------------------------------
+    // For 1D Quadrature we have the following:
+    //
+    // k == 0, n == l, C_lk == 1, Omega_m == mu_m
+    //
+    //           2*n+1
+    // M_{n,m} = ----- * 1 * Y_n( mu_m )
     //           sumwt
     //
-    // k is always 0 for 1D ==> c_n == 1 for 1D
-    //
-    // M(0,0) = ( 1/2 ) * ( 1 ) * P(0,0)(mu_m)*cos(0)
-    //        = 1/2 * P(0,0) = 1/2
-    // M(0,m) = 1/2
+    // Y_n( mu_m ) = P(l=0,k=0)(mu_m)*cos(k*theta)
+    //             = P(n,mu_m)
+    //----------------------------------------
 
-    { // scope for testing n=0
-	unsigned n(0);
+    std::vector< double > const mu( spQuad->getMu() );
+    double const clk(1.0);
+
+    for( size_t n=0; n<numMoments && n<6; ++n )
+    { 
+	double const c( (2.0*n+1.0)/2.0 );
+
 	for( size_t m=0; m<numAngles; ++m )
 	{
-	    if( soft_equiv( M[ n + m*numMoments ], 0.5 ) )
-	    {
-		ostringstream msg;
-		msg << "M[" << n << "," << m << "] has the expected value." << endl;
-		    PASSMSG( msg.str() );
-	    }
-	    else
-	    {		
-		ostringstream msg;
-		msg << "M[" << n << "," << m 
-		    << "] does not have the expected value." << endl
-		    << "\tFound M[" << n << "," << m << "] = " 
-		    << M[ n + m*numMoments ] << ", but was expecting 0.5" << endl; 
-		FAILMSG( msg.str() );		
-	    }
-	}
-    } // end scope for testing n=0
-
-    // When n=1 ==> (l,k) = (1,0)
-    // M(1,m) = (3/2) * (1) *P(1,0)(mu_m)*cos(0)
-    // M(1,m) = (3/2) * mu_m
-
-    { // scope for testing n=1
-	unsigned n(1);
-	std::vector< double > const mu( spQuad->getMu() );
-	for( size_t m=0; m<numAngles; ++m )
-	{
-	    if( soft_equiv( M[ n + m*numMoments ], 3*mu[m]/2 ) )
+	    if( soft_equiv( M[ n + m*numMoments ], c*clk*P(n,mu[m]) ) )
 	    {
 		ostringstream msg;
 		msg << "M[" << n << "," << m << "] has the expected value." << endl;
@@ -337,120 +444,381 @@ void test_quad_services_with_1D_S8_quad()
 		    << "] does not have the expected value." << endl
 		    << "\tFound M[" << n << "," << m << "] = " 
 		    << M[ n + m*numMoments ] << ", but was expecting " 
-		    << 3*mu[m]/2 << "." << endl; 
+		    << c*clk*P(n,mu[m]) << endl; 
 		FAILMSG( msg.str() );		
 	    }
 	}
-    } // end scope for testing n=1
+    } 
+
+    //-----------------------------------//
+
+    vector<double> const D( qs.getD() );
+    qs.print_matrix( "Dmatrix", D, dims );
+    
+    // The first row of D should contain the quadrature weights.
+    {
+	unsigned n(0);
+	std::vector< double > const wt( spQuad->getWt() );
+	for( size_t m=0; m<numAngles; ++m )
+	{
+	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    {
+		ostringstream msg;
+		msg << "D[" << m << "," << n << "] = " 
+		    << D[ m + n*numAngles ] 
+		    << " matched the expected value." << endl;
+		PASSMSG( msg.str() );
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "D[" << m << "," << n << "] = " 
+		    << D[ m + n*numAngles ] 
+		    << " did not match the expected value of " 
+		    << wt[m] << "." << endl;
+		FAILMSG( msg.str() );
+	    }
+	}
+    }
 
     return;
 }
 
-// //---------------------------------------------------------------------------//
-// /*! 
-//  * \brief test_legendre_poly
-//  * 
-//  * Test a function that evaluates legendre polynomials.
-//  */
-// void test_legendre_poly()
-// {
-//     using rtt_dsxx::soft_equiv;
-//     using rtt_dsxx::SP;
-//     using rtt_quadrature::QuadCreator;
-//     using rtt_quadrature::Quadrature;
-//     using rtt_quadrature::QuadServices;
+//---------------------------------------------------------------------------//
 
-//     // Create a quadrature set from a temporary instance of a
-//     // QuadratureCreator factory object.
-//     SP< const Quadrature > spQuad;
-//     spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, 2 ); 
-
-//     // Create a QuadServices object so we can test its member functions.
-//     QuadServices qs( spQuad );
-
-//     // P_{0,0}(x) == 1.0
-//     double reference( 1.0 );
-//     unsigned k(0), ell(0);
-//     double value( qs.legendre_polynomial( k, ell, 1.0 ) );
-
-//     if( soft_equiv(reference,value) )
-//     {
-// 	PASSMSG("Correct computation of P00(x).");
-//     }
-//     else
-//     {
-// 	FAILMSG("Failed to compute P00(x).");
-//     }
+void test_quad_services_with_3D_S2_quad()
+{   
+    using rtt_quadrature::QuadCreator;
+    using rtt_quadrature::Quadrature;
+    using rtt_quadrature::QuadServices;
+    using rtt_dsxx::SP;
+    using rtt_dsxx::soft_equiv;
     
-//     return;
-// }
+    using std::cout;
+    using std::endl;
+    using std::string;
+    using std::vector;
+    using std::ostringstream;
 
+    //----------------------------------------
+    // Setup Quadrature set
+    
+    // create an object that is responsible for creating quadrature objects.
+    // QuadCreator QuadratureCreator;
+    
+    // we will only look at S2 Sets in this test.
+    const size_t sn_ord_ref( 4                    );
+    const string qname_ref ( "3D Level Symmetric" );
+    const size_t n_ang_ref ( 24                   );
+    
+    // Banner
+    cout << "\nTesting the "  << qname_ref << " S"
+	 << sn_ord_ref << " quadrature set." << endl << endl;
+    
+    // Create a quadrature set from a temporary instance of a
+    // QuadratureCreator factory object.
+    SP< const Quadrature > spQuad;
+    spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, sn_ord_ref ); 
+    
+    // print the name of the quadrature set that we are testing.
+    const string qname   (  spQuad->name()         );
+    const size_t snOrder(   spQuad->getSnOrder()   );
+    const size_t numAngles( spQuad->getNumAngles() );
+    const double sumwt(     spQuad->getNorm() );
+
+    // check basic quadrature setup.
+    if( snOrder != sn_ord_ref ) 
+    {
+	FAILMSG("Found incorrect Sn Order.");
+    }
+    else 
+    {
+	PASSMSG("Found correct Sn Order.");
+    }
+    if( numAngles != n_ang_ref  )
+    {
+	FAILMSG("Found incorrect number of angles.");
+    }
+    else 
+    {
+	PASSMSG("Found correct number of angles.");
+    }
+    if( qname != qname_ref  )
+    {
+	cout << qname << endl;
+	FAILMSG("Found incorrect name of quadrature set.");
+    }
+    else 
+    {
+	PASSMSG("Found correct name of quadrature set.");
+    }
+    
+    // Print a table
+    spQuad->display();
+
+    //----------------------------------------
+    // Setup QuadServices object
+    
+    QuadServices qs( spQuad );
+    
+    vector<double> const M( qs.getM() );
+    unsigned const numMoments( qs.getNumMoments() );
+
+    std::vector< unsigned > dims;
+    dims.push_back( numAngles );
+    dims.push_back( numMoments );
+    
+    qs.print_matrix( "Mmatrix", M, dims );
+
+    //----------------------------------------
+    // For 3D Quadrature we have the following:
+    //
+    // n maps to the index pair (l,k) via qs.n2kl
+    // 
+    //                       2*l+1
+    // M_{n,m} = M_{l,k,m} = ----- * c_{l,k} * Y_{l,k}( mu_m )
+    //                       sumwt
+    //
+    // Y_n( mu_m ) = P(l=0,k=0)(mu_m)*cos(k*theta)
+    //             = P(n,mu_m)
+    //----------------------------------------
+
+    std::vector< double > const mu( spQuad->getMu() );
+
+    for( size_t n=0; n<numMoments; ++n )
+    { 
+	unsigned const ell( qs.lkPair( n ).first  );
+	int      const k(   qs.lkPair( n ).second );
+	double   const c(   ( 2.0*ell+1.0 ) / sumwt );
+	
+	if( k == 0 ) 
+	{
+	    for( size_t m=0; m<numAngles; ++m )
+	    {
+		
+		if( soft_equiv( M[ n + m*numMoments ], 
+				c*getclk(ell,k)*P(ell,mu[m]) ) )
+		{
+		    ostringstream msg;
+		    msg << "M[" << n << "," << m 
+			<< "] has the expected value." << endl;
+		    PASSMSG( msg.str() );
+		}
+		else
+		{		
+		    ostringstream msg;
+		    msg << "M[" << n << "," << m 
+			<< "] does not have the expected value." << endl
+			<< "\tFound M[" << n << "," << m << "] = " 
+			<< M[ n + m*numMoments ] << ", but was expecting " 
+			<< c*getclk(ell,k)*P(ell,mu[m]) << endl; 
+		    FAILMSG( msg.str() );		
+		}
+	    }
+	}
+    } 
+
+    //-----------------------------------//
+
+    vector<double> const D( qs.getD() );
+    qs.print_matrix( "Dmatrix", D, dims );
+    
+    // The first row of D should contain the quadrature weights.
+    {
+	unsigned n(0);
+	std::vector< double > const wt( spQuad->getWt() );
+	for( size_t m=0; m<numAngles; ++m )
+	{
+	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    {
+		ostringstream msg;
+		msg << "D[" << m << "," << n << "] = " 
+		    << D[ m + n*numAngles ] 
+		    << " matched the expected value." << endl;
+		PASSMSG( msg.str() );
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "D[" << m << "," << n << "] = " 
+		    << D[ m + n*numAngles ] 
+		    << " did not match the expected value of " 
+		    << wt[m] << "." << endl;
+		FAILMSG( msg.str() );
+	    }
+	}
+    }
+
+    return;
+}
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Tests the Quadcrator and Quadtrature constructors and access
- * routines. 
- *
- * To add a quadrature to this test the following items must be changed: add
- * new enumeration to Qid[] array.  add new mu[0] value to mu0[] array.
- * verify nquads is set to the correct number of quadrature sets being
- * tested.
- */
-void quadrature_test()
-{
-     using rtt_quadrature::QuadCreator;
-     using rtt_quadrature::Quadrature;
-     using rtt_quadrature::QuadServices;
-     using rtt_dsxx::SP;
- //     using rtt_dsxx::soft_equiv;
+
+void test_quad_services_with_2D_S2_quad()
+{   
+    using rtt_quadrature::QuadCreator;
+    using rtt_quadrature::Quadrature;
+    using rtt_quadrature::QuadServices;
+    using rtt_dsxx::SP;
+    using rtt_dsxx::soft_equiv;
     
-     using std::cout;
-     using std::endl;
-     using std::string;
-     using std::vector;
+    using std::cout;
+    using std::endl;
+    using std::string;
+    using std::vector;
+    using std::ostringstream;
 
-     //----------------------------------------
-     // Setup Quadrature set
-
-     // create an object that is responsible for creating quadrature objects.
-     // QuadCreator QuadratureCreator;
+    //----------------------------------------
+    // Setup Quadrature set
     
-     // we will only look at S2 Sets in this test.
-     const size_t sn_ord_ref( 2                    );
-     const string qname_ref ( "3D Level Symmetric" );
-     const size_t n_ang_ref ( 8                    );
-
-     // Banner
-     cout << "Testing the "  << qname_ref << " quadrature set." << endl;
-
-     // Create a quadrature set from a temporary instance of a
-     // QuadratureCreator factory object.
-     SP< const Quadrature > spQuad;
-     spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, sn_ord_ref ); 
+    // create an object that is responsible for creating quadrature objects.
+    // QuadCreator QuadratureCreator;
     
-     // print the name of the quadrature set that we are testing.
-     const string qname   ( spQuad->name()         );
-     const size_t sn_order( spQuad->getSnOrder()   );
-     const size_t numAngles   ( spQuad->getNumAngles() );
+    // we will only look at S2 Sets in this test.
+    const size_t sn_ord_ref( 6                    );
+    const string qname_ref ( "2D Level Symmetric" );
+    const size_t n_ang_ref ( 24                   );
+    
+    // Banner
+    cout << "\nTesting the "  << qname_ref << " S"
+	 << sn_ord_ref << " quadrature set." << endl << endl;
+    
+    // Create a quadrature set from a temporary instance of a
+    // QuadratureCreator factory object.
+    SP< const Quadrature > spQuad;
+    spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym2D, sn_ord_ref ); 
+    
+    // print the name of the quadrature set that we are testing.
+    const string qname   (  spQuad->name()         );
+    const size_t snOrder(   spQuad->getSnOrder()   );
+    const size_t numAngles( spQuad->getNumAngles() );
+    const double sumwt(     spQuad->getNorm() );
 
-     // check basic quadrature setup.
-     if( sn_order != sn_ord_ref ) ITFAILS;
-     if( numAngles    != n_ang_ref  ) ITFAILS;
-     if( qname    != qname_ref  ) ITFAILS;
+    // check basic quadrature setup.
+    if( snOrder != sn_ord_ref ) 
+    {
+	FAILMSG("Found incorrect Sn Order.");
+    }
+    else 
+    {
+	PASSMSG("Found correct Sn Order.");
+    }
+    if( numAngles != n_ang_ref  )
+    {
+	FAILMSG("Found incorrect number of angles.");
+    }
+    else 
+    {
+	PASSMSG("Found correct number of angles.");
+    }
+    if( qname != qname_ref  )
+    {
+	cout << qname << endl;
+	FAILMSG("Found incorrect name of quadrature set.");
+    }
+    else 
+    {
+	PASSMSG("Found correct name of quadrature set.");
+    }
+    
+    // Print a table
+    spQuad->display();
 
-     // Print a table
-     spQuad->display();
+    //----------------------------------------
+    // Setup QuadServices object
+    
+    QuadServices qs( spQuad );
+    
+    vector<double> const M( qs.getM() );
+    unsigned const numMoments( qs.getNumMoments() );
 
-     //----------------------------------------
-     // Setup QuadServices object
+    std::vector< unsigned > dims;
+    dims.push_back( numAngles );
+    dims.push_back( numMoments );
+    
+    qs.print_matrix( "Mmatrix", M, dims );
 
-     QuadServices qs( spQuad );
+    //----------------------------------------
+    // For 3D Quadrature we have the following:
+    //
+    // n maps to the index pair (l,k) via qs.n2kl
+    // 
+    //                       2*l+1
+    // M_{n,m} = M_{l,k,m} = ----- * c_{l,k} * Y_{l,k}( mu_m )
+    //                       sumwt
+    //
+    // Y_n( mu_m ) = P(l=0,k=0)(mu_m)*cos(k*theta)
+    //             = P(n,mu_m)
+    //----------------------------------------
 
-     vector<double> const M( qs.getM() );
-     unsigned const numMoments( M.size()/numAngles );
+    std::vector< double > const mu( spQuad->getMu() );
 
-     return;
-} // end of quadrature_test
+    for( size_t n=0; n<numMoments; ++n )
+    { 
+	unsigned const ell( qs.lkPair( n ).first  );
+	int      const k(   qs.lkPair( n ).second );
+	double   const c(   ( 2.0*ell+1.0 ) / sumwt );
+	
+	if( k == 0 ) 
+	{
+	    for( size_t m=0; m<numAngles; ++m )
+	    {
+		
+		if( soft_equiv( M[ n + m*numMoments ], 
+				c*getclk(ell,k)*P(ell,mu[m]) ) )
+		{
+		    ostringstream msg;
+		    msg << "M[" << n << "," << m 
+			<< "] has the expected value." << endl;
+		    PASSMSG( msg.str() );
+		}
+		else
+		{		
+		    ostringstream msg;
+		    msg << "M[" << n << "," << m 
+			<< "] does not have the expected value." << endl
+			<< "\tFound M[" << n << "," << m << "] = " 
+			<< M[ n + m*numMoments ] << ", but was expecting " 
+			<< c*getclk(ell,k)*P(ell,mu[m]) << endl; 
+		    FAILMSG( msg.str() );		
+		}
+	    }
+	}
+    } 
+
+    //-----------------------------------//
+
+    vector<double> const D( qs.getD() );
+    qs.print_matrix( "Dmatrix", D, dims );
+    
+    // The first row of D should contain the quadrature weights.
+    {
+	unsigned n(0);
+	std::vector< double > const wt( spQuad->getWt() );
+	for( size_t m=0; m<numAngles; ++m )
+	{
+	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    {
+		ostringstream msg;
+		msg << "D[" << m << "," << n << "] = " 
+		    << D[ m + n*numAngles ] 
+		    << " matched the expected value." << endl;
+		PASSMSG( msg.str() );
+	    }
+	    else
+	    {
+		ostringstream msg;
+		msg << "D[" << m << "," << n << "] = " 
+		    << D[ m + n*numAngles ] 
+		    << " did not match the expected value of " 
+		    << wt[m] << "." << endl;
+		FAILMSG( msg.str() );
+	    }
+	}
+    }
+
+    return;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -472,9 +840,12 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+	test_kdelta();
+	test_factorial();
 	test_quad_services_with_1D_S2_quad();
 	test_quad_services_with_1D_S8_quad();
-	// quadrature_test();
+	test_quad_services_with_3D_S2_quad();
+	test_quad_services_with_2D_S2_quad();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -1,3 +1,34 @@
+2004-11-17  Kelly Thompson  <kgt@lanl.gov>
+
+	* test/tQuadServices.cc: Added tests for factorial and
+	kronecker_delta now that they are public accessible; Add
+	independent verification tests for computing some of the values of
+	M and D; Now test 1D, 2D and 3D quadrature sets.
+
+	* autodoc/QuadServices.dcc: Added more Associated Legendre
+	polynomial's to the existing list.
+
+	* QuadServices_pt.cc (class QuadServices): Moved 
+	kronecker_delta() and factorial() to namespace scope and out of
+	the class definition. 
+
+	* QuadServices.i.hh (class QuadServices): Moved kronecker_delta() 
+	and factorial() to namespace scope and out of the class
+	definition. 
+
+	* QuadServices.hh (class QuadServices): Moved kronecker_delta()
+	and factorial() to namespace scope and out of the class
+	definition. 
+
+	* QuadServices.hh (class QuadServices): Added an accessor function
+	to retrieve the n2lk values (the mapping between moment n and the
+	spherical harmonic index tuple (l,k)).
+
+	* QuadServices.cc (spherical_harmonic): Fixed two bugs.
+	1) For 2D quadratures, initialize xi = sqrt(1-mu^2-eta^2).
+	2) When computing the spherical harmonic value, the argument to
+  	   cos() should read k*azimuthalAngle.
+
 2002-12-11  Thomas M. Evans  <tme@lanl.gov>
 
 	* quadrature: release 1_2_0.  Std conforming updates to
