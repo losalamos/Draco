@@ -223,17 +223,35 @@ int main( int argc, char *argv[] )
 
         Mesh_XYZ::fcdsf face_areas( spm );
         spm->get_face_areas(face_areas);
+
+        Mesh_XYZ::fcdsf face_lengths( spm );
+        spm->get_face_lengths(face_lengths);
+
+        Mesh_XYZ::fcdsf face_locs( spm );
+        spm->get_xloc(face_locs);
+        spm->get_yloc(face_locs);
+        spm->get_zloc(face_locs);
     }
 
     {
+        Mesh_XYZ::ccsf cell_locs( spm );
+        spm->get_xloc(cell_locs);
+        spm->get_yloc(cell_locs);
+        spm->get_zloc(cell_locs);
+
+        Mesh_XYZ::ccsf cell_deltas( spm );
+        spm->get_dx(cell_deltas);
+        spm->get_dy(cell_deltas);
+        spm->get_dz(cell_deltas);
+
       try
       {
-        Mesh_XYZ::fcdsf face_lengths( spm );
-        spm->get_face_lengths(face_lengths);
+        Mesh_XYZ::ccsf cell_volumes( spm );
+        spm->get_cell_volumes(cell_volumes);
       }
       catch (const dsxx::assertion &ass)
       {
-        std::cerr << "Caught dsxx::assertion face_lengths: '"
+        std::cerr << "Caught dsxx::assertion cell_volumes: '"
 	          << ass.what() << "'." << endl;
       }
     }

@@ -132,19 +132,19 @@ class Mesh_XYZ : private XYZ_Mapper
     // f == face index
     // c == local cell index
 
-	T& operator()( int c, int f )       { return data(c,f); }
-	T  operator()( int c, int f ) const { return data(c,f); }
+	T&       operator()( int c, int f )       { return data(c,f); }
+	const T& operator()( int c, int f ) const { return data(c,f); }
 
 	T& operator()( int i, int j, int k, int f )
 	{
 	    return data( local_cell_index(i,j,k), f );
 	}
-	T operator()( int i, int j, int k, int f ) const 
+	const T& operator()( int i, int j, int k, int f ) const 
 	{
 	    return data( local_cell_index(i,j,k), f );
 	}
 
-        T operator[]( int i ) const { return data[i]; }
+        const T& operator[]( int i ) const { return data[i]; }
         T& operator[]( int i ) { return data[i]; }
 
         iterator begin() { return data.begin(); }
@@ -202,12 +202,12 @@ class Mesh_XYZ : private XYZ_Mapper
     // Note that the order of the indexing is different than the
     // order of the data layout.
 
-        T  operator()( int i, int j, int k, int f ) const
+        const T& operator()( int i, int j, int k, int f ) const
         { return data(f,i,j,k); }
         T& operator()( int i, int j, int k, int f )
         { return data(f,i,j,k); }
 
-        T operator[]( int i ) const { return data[i]; }
+        const T& operator[]( int i ) const { return data[i]; }
         T& operator[]( int i ) { return data[i]; }
 
         iterator begin() { return data.begin(); }
@@ -259,19 +259,19 @@ class Mesh_XYZ : private XYZ_Mapper
             return assign_from( x );
         }
 
-        T operator()( int i ) const { return data(i); }
+        const T& operator()( int i ) const { return data(i); }
         T& operator()( int i ) { return data(i); }
 
 	T& operator()( int i, int j, int k )
 	{
 	    return data( local_cell_index(i,j,k) );
 	}
-	T  operator()( int i, int j, int k ) const 
+	const T& operator()( int i, int j, int k ) const 
 	{
 	    return data( local_cell_index(i,j,k) );
 	}
 
-        T operator[]( int i ) const { return data(i); }
+        const T& operator[]( int i ) const { return data(i); }
         T& operator[]( int i ) { return data(i); }
 
         iterator begin() { return data.begin(); }
@@ -322,12 +322,14 @@ class Mesh_XYZ : private XYZ_Mapper
               mesh( c.mesh )
         { *this = c; }
 
-        T  operator()( int i, int j, int k ) const { return data(i,j,k); }
-        T& operator()( int i, int j, int k )       { return data(i,j,k); }
+        const T& operator()( int i, int j, int k ) const
+        { return data(i,j,k); }
+        T& operator()( int i, int j, int k )
+        { return data(i,j,k); }
 
     // Operators needed for glommable expression templates.
-        T  operator[]( int i ) const { return data[i]; }
-        T& operator[]( int i )       { return data[i]; }
+        const T& operator[]( int i ) const { return data[i]; }
+        T& operator[]( int i ) { return data[i]; }
 
         iterator begin() { return data.begin(); }
         iterator end()   { return data.end(); }
@@ -378,19 +380,19 @@ class Mesh_XYZ : private XYZ_Mapper
     // v == vertex index
     // c == local cell index
 
-	T& operator()( int c, int v )       { return data(c,v); }
-	T  operator()( int c, int v ) const { return data(c,v); }
+	T& operator()( int c, int v ) { return data(c,v); }
+	const T& operator()( int c, int v ) const { return data(c,v); }
 
 	T& operator()( int i, int j, int k, int v )
 	{
 	    return data( local_cell_index(i,j,k), v );
 	}
-	T operator()( int i, int j, int k, int v ) const 
+	const T& operator()( int i, int j, int k, int v ) const 
 	{
 	    return data( local_cell_index(i,j,k), v );
 	}
 
-        T operator[]( int i ) const { return data[i]; }
+        const T& operator[]( int i ) const { return data[i]; }
         T& operator[]( int i ) { return data[i]; }
 
         iterator begin() { return data.begin(); }
@@ -438,15 +440,16 @@ class Mesh_XYZ : private XYZ_Mapper
     // f == face index
 
         T& operator()( int i, int j, int k, int f );
-        T  operator()( int i, int j, int k, int f ) const;
+        const T& operator()( int i, int j, int k, int f ) const;
 
-        T operator[]( int i ) const { return data[i]; }
+        const T& operator[]( int i ) const { return data[i]; }
         T& operator[]( int i ) { return data[i]; }
 
         int size() const { return data.size(); }
     };
 
     typedef bstf<double> bssf;
+    typedef bstf<int> bsif;
 
 // Small vector class
 
@@ -479,11 +482,11 @@ class Mesh_XYZ : private XYZ_Mapper
             return assign_from( x );
         }
 
-        T& operator() ( int i )       { return data(i); }
-        T  operator() ( int i ) const { return data(i); }
+        T& operator() ( int i ) { return data(i); }
+        const T& operator() ( int i ) const { return data(i); }
 
-        T  operator[] ( int i ) const { return data[i]; }
-        T& operator[] ( int i )       { return data[i]; }
+        const T& operator[] ( int i ) const { return data[i]; }
+        T& operator[] ( int i ) { return data[i]; }
 
         iterator begin() { return data.begin(); }
         iterator end() { return data.end(); }
@@ -501,6 +504,8 @@ class Mesh_XYZ : private XYZ_Mapper
     ccsf vc;
     dsxx::Mat1<double> xA, yA, zA;
 
+    ccsf dX, dY, dZ;
+    ccsf xC, yC, zC;
     fcdsf xF, yF, zF;
     fcdvf face_norms;
     vec3 xhat, yhat, zhat;
@@ -515,9 +520,6 @@ class Mesh_XYZ : private XYZ_Mapper
     bool operator==( const Mesh_XYZ& m ) const { return this == &m; }
 
     const Mesh_DB& get_Mesh_DB() const { return XYZ_Mapper::get_Mesh_DB(); }
-    const dsxx::Mat1<double>& get_xc() const { return xc; }
-    const dsxx::Mat1<double>& get_yc() const { return yc; }
-    const dsxx::Mat1<double>& get_zc() const { return zc; }
 
     int get_ncx() const { return ncx; }
     int get_ncy() const { return ncy; }
@@ -532,24 +534,36 @@ class Mesh_XYZ : private XYZ_Mapper
     double get_dy() const { return dy; }
     double get_dz() const { return dz; }
 
+    void get_dx(ccsf& dx) const { dx = dX; }
+    void get_dy(ccsf& dy) const { dy = dY; }
+    void get_dz(ccsf& dz) const { dz = dZ; }
+
+    const dsxx::Mat1<double>& get_xc() const { return xc; }
+    const dsxx::Mat1<double>& get_yc() const { return yc; }
+    const dsxx::Mat1<double>& get_zc() const { return zc; }
+
+    void get_xloc(ccsf& xloc) const { xloc = xC; }
+    void get_yloc(ccsf& yloc) const { yloc = yC; }
+    void get_zloc(ccsf& zloc) const { zloc = zC; }
+
     const dsxx::Mat1<double>& get_xf() const { return xf; }
     const dsxx::Mat1<double>& get_yf() const { return yf; }
     const dsxx::Mat1<double>& get_zf() const { return zf; }
 
-    const fcdsf& get_xF() const { return xF; }
-    const fcdsf& get_yF() const { return yF; }
-    const fcdsf& get_zF() const { return zF; }
+    void get_xloc(fcdsf& xloc) const { xloc = xF; }
+    void get_yloc(fcdsf& yloc) const { yloc = yF; }
+    void get_zloc(fcdsf& zloc) const { zloc = zF; }
 
     const fcdvf& get_fn() const { return face_norms; }
-    void get_face_areas(fcdsf& fa);
-    void get_face_lengths(fcdsf& fl);
+    void get_face_areas(fcdsf& fa) const;
+    void get_face_lengths(fcdsf& fl) const;
 
     const dsxx::Mat1<double>& get_xA() const { return xA; }
     const dsxx::Mat1<double>& get_yA() const { return yA; }
     const dsxx::Mat1<double>& get_zA() const { return zA; }
 
     const ccsf& get_vc() const { return vc; }
-    void get_volumes(ccsf &vols) const { vols = get_vc(); }
+    void get_cell_volumes(ccsf &vols) const { vols = vc; }
 
     const int *get_diag_offsets() const { return diags; }
 

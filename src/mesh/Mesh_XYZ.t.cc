@@ -167,7 +167,7 @@ T& Mesh_XYZ::bstf<T>::operator()( int i, int j, int k, int f )
 }
 
 template<class T>
-T Mesh_XYZ::bstf<T>::operator()( int i, int j, int k, int f ) const
+const T& Mesh_XYZ::bstf<T>::operator()( int i, int j, int k, int f ) const
 {
     Assert (   (i == 0 && f == 0) || (i == ncx - 1 && f == 1)
             || (j == 0 && f == 2) || (j == ncy - 1 && f == 3)

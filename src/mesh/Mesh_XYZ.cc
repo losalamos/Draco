@@ -48,10 +48,11 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
 
 Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     : XYZ_Mapper( mdb ),
-
       vc( this ),
-
-      xF( this ), yF( this ), zF( this ), face_norms( this )
+      dX( this ), dY( this ), dZ( this ),
+      xC( this ), yC( this ), zC( this ),
+      xF( this ), yF( this ), zF( this ),
+      face_norms( this )
 {
     char buf[80];
 
@@ -120,11 +121,17 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     for( int i=0; i < ncz+1; i++ )
 	zA(i) = dx * dy;
 
-// Uhh, initialize the "new" face locations...
+// Uhh, initialize the "new" face locations, cell centers, deltas...
 
     for( int c=0; c < ncp; c++ )
     {
 	int i = I(c), j = J(c), k = K(c);
+
+    // Initialize the cell deltas.
+
+        dX(c) = dx;
+        dY(c) = dy;
+        dZ(c) = dz;
 
     // Calculate cell center.
 
@@ -132,7 +139,13 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 	double y = dy * (j + .5), dy2 = dy / 2.;
 	double z = dz * (k + .5), dz2 = dz / 2.;
 
-    // Now loop through all the faces, and initiailize face locations using
+    // Initialize the cell centers.
+
+        xC(c) = x;
+        yC(c) = y;
+        zC(c) = z;
+
+    // Now loop through all the faces, and initialize face locations using
     // deltas from cell center.
 
     // 0 == left,  1 == right       x variation
@@ -187,7 +200,7 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     diags[0] = -diags[6];
 }
 
-void Mesh_XYZ::get_face_areas(Mesh_XYZ::fcdsf& fa)
+void Mesh_XYZ::get_face_areas(Mesh_XYZ::fcdsf& fa) const
 {
     for ( int i = 0; i < fa.ncx; ++i )
       for ( int j = 0; j < fa.ncy; ++j )
@@ -202,7 +215,8 @@ void Mesh_XYZ::get_face_areas(Mesh_XYZ::fcdsf& fa)
 	}
 }
 
-void Mesh_XYZ::get_face_lengths(fcdsf& fl) {
+void Mesh_XYZ::get_face_lengths(fcdsf& fl) const
+{
     for ( int i = 0; i < fl.ncx; ++i )
       for ( int j = 0; j < fl.ncy; ++j )
         for ( int k = fl.zoff; k < fl.zoff + fl.nczp; ++k )
