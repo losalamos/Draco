@@ -33,6 +33,20 @@ namespace rtt_c4
  * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced
  * Programming in the UNIX Environment" by Stevens.
  *
+ * Usage:
+ * \code
+ * #include <iostream>
+ * #include "c4/Timer.hh"
+ * using rtt_c4::Timer;
+ *
+ * Timer t;
+ * t.start();
+ * // do stuff
+ * t.stop();
+ * std::cout << t.wall_clock() << std::endl;
+ * \endcode
+ *
+ * \example c4/test/tstTime.cc
  */
 // revision history:
 // -----------------
