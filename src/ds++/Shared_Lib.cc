@@ -11,6 +11,10 @@
 //---------------------------------------------------------------------------//
 
 #include "Shared_Lib.hh"
+
+// Only compile if we have dlopen support on this platform
+#ifndef NO_DLOPEN
+
 #include "Assert.hh"
 #include <string>
 
@@ -98,8 +102,9 @@ void Shared_Lib::open(const std::string &file_name)
     Insist(d_handle, dlerror());
 }
 
-
 } // end namespace rtt_dsxx
+
+#endif // NO_DLOPEN
 
 //---------------------------------------------------------------------------//
 //                 end of Shared_Lib.cc

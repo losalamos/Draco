@@ -12,6 +12,9 @@
 /* DBC ENVIRONMENTS */
 #undef DBC
 
+/* DLOPEN SUPPORT */
+#undef NO_DLOPEN
+
 #endif                          /* __dsxx_config_h__ */
 
 /*---------------------------------------------------------------------------*/

@@ -13,6 +13,11 @@
 #ifndef rtt_ds_Shared_Lib_hh
 #define rtt_ds_Shared_Lib_hh
 
+#include <ds++/config.h>
+
+// Only compile if we have dlopen support on this platform
+#ifndef NO_DLOPEN
+
 #include <string>
 #include "Assert.hh"
 
@@ -107,6 +112,8 @@ Fp_t Shared_Lib::get_function(const std::string &name)
 }
 
 } // end namespace rtt_dsxx
+
+#endif // NO_DLOPEN
 
 #endif // rtt_ds_Shared_Lib_hh
 

@@ -17,7 +17,7 @@
 #include <sstream>
 
 #include "../Shared_Lib.hh"
-#include "ds++/Assert.hh"
+#include "../Assert.hh"
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
 #include "ds_test.hh"
@@ -28,6 +28,16 @@ using namespace rtt_dsxx;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
+
+// Only compile if we have dlopen support on this platform
+#ifdef NO_DLOPEN
+
+void test_simple()
+{
+    PASSMSG("dlopen not configured/available for this platform.");
+}
+
+#else
 
 void test_simple()
 {
@@ -117,6 +127,8 @@ void test_simple()
         PASSMSG("test_simple() ok.");
     }
 }
+
+#endif // NO_DLOPEN
 
 //---------------------------------------------------------------------------//
 
