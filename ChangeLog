@@ -1,3 +1,44 @@
+2005-01-14  Tom Evans  <tme@lanl.gov>
+
+	* draco: Released draco-5_4_0.  This is a minor draco release.
+	Changes are:
+	
+        	- ds++: optimized Vector_Lite operator[] access
+        	- quadrature: updated indexing
+        	- shared_lib: integrated tests replaces libm.so
+        	- viz: updated Ensight implementation
+        	- stdheaders: retired
+
+	Packages included in this release:
+	
+        	RTT_Format_Reader 
+        	c4 
+        	cdi 
+        	cdi_analytic 
+        	cdi_gandolf 
+        	ds++ 
+        	lapack_wrap 
+        	meshReaders 
+        	meshReaders_Services 
+        	mesh_element 
+        	plot2D 
+        	rng 
+        	shared_lib 
+        	timestep 
+        	traits 
+        	units 
+        	viz 
+        	xm
+
+	We are not releasing cdi_eospac in draco until the compiler issues
+	have been resolved [hopefully with the release of a C version of
+	EOSPAC].
+
+	We are not releasing pcgWrap in draco until the pcgWrap component
+        in Draco is updated to only call double precision routines.  The
+        single precision routines in libpcg have been removed in recent
+        versions.
+
 2005-01-12  Kelly Thompson  <kgt@lanl.gov>
 
 	* config/ac_platforms.m4 (AC_DBS_LAHEY_ENVIRONMENT): Created a new
