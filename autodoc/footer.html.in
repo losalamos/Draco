@@ -1,13 +1,17 @@
 <p>
 <hr size=4>
-<table cols=2 width=100%>
+<table cols=3 width=100% padding=2>
   <tr>
+    <td valign="center" width="145" align="left">
+         <img src="http://int.lanl.gov/resources/images/lalogo.gif"
+	 alt="LANL logo" width="135" height="48">
+    </td>
     <td align=left>
     <small>
         <a href="http://www.ccs.lanl.gov/CCS/CCS-4/">Transport Methods Group (CCS-4)</a><br>
         <a href="http://www.ccs.lanl.gov/">Computer and Computational Sciences Division</a><br>
         <a href="http://www.lanl.gov">Los Alamos National Laboratory</a><br>
-        Los Alamos, New Mexico 87545 USA
+        <a href="http://www.losalamos.com/">Los Alamos, New Mexico 87545 USA</a>
     </small>
   </td>
   <td align=right>
@@ -17,7 +21,7 @@
      <img src="doxygen.gif" alt="doxygen" align=center border=0 
       width=59 height=26></a> <br>
       Last updated: $datetime.  <br>
-      <a href="mailto:rsqrd@lanl.gov"> <i>Comments on this page</i></a>
+      <a href="mailto:kgt@lanl.gov"> <i>Comments on this page</i></a>
     </small>
   </td>
 </tr>
