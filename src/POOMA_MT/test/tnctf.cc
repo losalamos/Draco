@@ -8,9 +8,10 @@
 // This program tests the PoomaMesh_XYZ class as a model of MT.
 //---------------------------------------------------------------------------//
 
-#include "meshTest/TestMTFields.hh"
 #include "../PoomaMesh_XYZ.hh"
 #include "PoomaMesh_XYZFactory.hh"
+
+#include "meshTest/TestMTFields.hh"
 
 #include "Tester.hh"
 
