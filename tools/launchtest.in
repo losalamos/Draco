@@ -36,6 +36,9 @@
 ## are easily added by modifying this script.  Thus, to add perl, we 
 ## simply have to add to this script and not to the ac_dracoenv.m4.
 ##---------------------------------------------------------------------------##
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libexecdir=@libexecdir@
 
 ##---------------------------------------------------------------------------##
 ## variable definitions for parsing the command line
@@ -120,6 +123,15 @@ case $exe in
                     OSF1)
                         test_exec="prun -n $procs $executable $exe_options"
                     ;;
+
+		    # Linux, lambda and non-lambda
+		    Linux)
+			if test "$LSB_SUB_HOST" = "lambda"; then
+			    test_exec="$libexecdir/mpijob -v mpirun -np $procs $executable $exe_options"
+			else
+			    test_exec="mpirun -np $procs $executable $exe_options"
+			fi
+		    ;;
 
                     # all other standard MPI implementations
                     *)

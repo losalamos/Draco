@@ -21,6 +21,7 @@ installdirs='${libexecdir} ${bindir}'
 libexec_files="\${libexecdir}/launchtest"
 libexec_files="\${libexecdir}/test_filter.py ${libexec_files}"
 libexec_files="\${libexecdir}/apptest_modules.py ${libexec_files}"
+libexec_files="\${libexecdir}/mpijob ${libexec_files}"
 
 # draco information script
 bin_files='${bindir}/draco'
@@ -49,7 +50,7 @@ AC_SUBST(installfiles)
 AC_SUBST(INSTALL)
 AC_SUBST(INSTALL_DATA)
 
-AC_CONFIG_FILES([Makefile draco check_coverage check_package_coverage])
+AC_CONFIG_FILES([Makefile launchtest draco check_coverage check_package_coverage])
 AC_OUTPUT
 
 ##---------------------------------------------------------------------------##
