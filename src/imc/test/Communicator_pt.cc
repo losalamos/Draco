@@ -2,29 +2,29 @@
 /*!
  * \file   imc/test/Communicator_pt.cc
  * \author Thomas M. Evans
- * \date   Fri Aug 18 16:18:36 2000
- * \brief  Communicator class instantiations.
+ * \date   Tue Jan  8 13:53:42 2002
+ * \brief  Communicator and Particle_Buffer instantiations.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "mc/OS_Mesh.hh"
 #include "../Particle.hh"
-#include "../Communicator.t.hh"
-#include "../Comm_Builder.t.hh"
+#include "mc/OS_Mesh.hh"
+#include "mc/Communicator.t.hh"
+#include "mc/Particle_Buffer.t.hh"
 
-namespace rtt_imc
+namespace rtt_mc
 {
 
-typedef rtt_imc::Particle<rtt_mc::OS_Mesh> PT;
+typedef rtt_imc::Particle<OS_Mesh> PT;
 
 template class Communicator<PT>;
+template class Particle_Buffer<PT>;
+template class Recv_Particle_Buffer<PT>;
+template class Send_Particle_Buffer<PT>;
 
-template class Comm_Builder<PT>;
-
-} // end namespace rtt_imc
-
+} // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
 //                              end of Communicator_pt.cc

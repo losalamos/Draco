@@ -14,7 +14,6 @@
 #include "../Transporter.hh"
 #include "../Rep_Transporter.hh"
 #include "../DD_Transporter.hh"
-#include "../Particle_Buffer.hh"
 #include "../Particle.hh"
 #include "../Release.hh"
 #include "../Mat_State.hh"
@@ -23,7 +22,8 @@
 #include "../Rep_Source_Builder.hh"
 #include "../Source.hh"
 #include "../Tally.hh"
-#include "../Communicator.hh"
+#include "mc/Particle_Buffer.hh"
+#include "mc/Communicator.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/General_Topology.hh"
 #include "mc/OS_Builder.hh"
@@ -48,15 +48,15 @@ using rtt_imc_test::Parser;
 using rtt_imc::Transporter;
 using rtt_imc::Rep_Transporter;
 using rtt_imc::DD_Transporter;
-using rtt_imc::Particle_Buffer;
 using rtt_imc::Particle;
 using rtt_imc::Flat_Mat_State_Builder;
 using rtt_imc::Mat_State;
 using rtt_imc::Opacity;
 using rtt_imc::Source;
 using rtt_imc::Rep_Source_Builder;
-using rtt_imc::Communicator;
 using rtt_imc::Tally;
+using rtt_mc::Particle_Buffer;
+using rtt_mc::Communicator;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::General_Topology;
@@ -230,11 +230,10 @@ void DD_transporter_test()
 
     // make a Particle_Buffer
     Rnd_Control rcon(347223);
-    SP<Particle_Buffer<PT> > buffer(new Particle_Buffer<PT>(*mesh, rcon));
 
     // build a DD transporter
     SP<Transporter<MT,PT> > transporter;
-    transporter = new DD_Transporter<MT,PT>(topology, buffer);
+    transporter = new DD_Transporter<MT,PT>(topology);
 
     // should be full DD transporter
     if (transporter->type() != "DD") ITFAILS;

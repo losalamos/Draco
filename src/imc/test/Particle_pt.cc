@@ -12,7 +12,6 @@
 #include "mc/OS_Mesh.hh"
 #include "rng/Rnd_Control.hh"
 #include "../Particle.t.hh"
-#include "../Particle_Buffer.t.hh"
 
 namespace rtt_imc
 {
@@ -22,10 +21,6 @@ typedef rtt_imc::Particle<MT> PT;
 typedef rtt_rng::Rnd_Control  RC;
 
 template class Particle<MT>;
-
-template class Particle_Buffer<PT>;
-
-template Particle_Buffer<PT>::Particle_Buffer(const MT &, const RC &);
 
 } // end namespace rtt_imc
 
