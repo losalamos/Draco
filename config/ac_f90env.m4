@@ -293,7 +293,7 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
 
        if test "${enable_debug:=no}" = yes
        then
-	    F90FLAGS="-g --chk a,e,s,u,x --chkglobal ${F90FLAGS}"
+	    F90FLAGS="-g --chk --trace ${F90FLAGS}"
        else
 	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
        fi
