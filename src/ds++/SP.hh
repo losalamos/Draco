@@ -63,7 +63,21 @@ struct SPref
  * smart pointer as a return value, allowing the original bare pointer to go
  * out of scope never to be seen again, is one good example of how to use
  * this.
- *
+ * 
+ * One good example of bad usage is assigning the same dumb pointer to
+ * multiple SPs.  Consider:
+ * \code
+ *     SP<Foo> f1;
+ *     SP<Foo> f2;
+ *     // ...
+ *     Foo *f = new Foo;
+ *     f1 = f;
+ *     // ...
+ *     f2 = f; // bad, now f1 and f2 assume they "own" f!
+ * \endcode
+ * Unfortunately, there is no way to check if another SP owns the dumb
+ * pointer that you give to a SP.  This is simply something that needs to be
+ * watched by the programmer.
  */
 /*!
  * \example ds++/test/tstSP.cc
