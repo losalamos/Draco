@@ -127,7 +127,7 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
     //! Constructor for packed state.
     explicit Constant_Analytic_Opacity_Model(const sf_char &packed);
 
-    //! Calculate the opacity in units of c^2/g.
+    //! Calculate the opacity in units of cm^2/g.
     double calculate_opacity(double T, double rho) const
     {
 	return sigma;
