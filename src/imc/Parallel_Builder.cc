@@ -50,6 +50,9 @@ void Parallel_Builder<MT>::send_Mesh(const MT &mesh)
 
   // let us pass the Layout
     send_Layout(mesh.get_Layout());
+
+  // let us pass the vertex
+    send_vertex(mesh.get_vertex());
 }
 
 //---------------------------------------------------------------------------//
@@ -70,15 +73,14 @@ SP<MT> Parallel_Builder<MT>::recv_Mesh()
   // get Layout
     Layout layout = recv_Layout();
 
-    for (int i = 1; i <= layout.num_cells(); i++)
-	layout.print(cout,i);
-
   // get vertices and cell_pair
-    typename MT::CCVF_a vertex(0);
+    typename MT::CCVF_a vertex = recv_vertex();
+    std::cout << node() << " " << vertex[0].size() << std::endl;
     typename MT::CCVF_i cell_pair(0);
 
   // build mesh
-    SP<OS_Mesh> mesh = new OS_Mesh(coord, layout, vertex, cell_pair);
+  // SP<OS_Mesh> mesh = new OS_Mesh(coord, layout, vertex, cell_pair);
+    SP<OS_Mesh> mesh;
 
   // return mesh
     return mesh;
@@ -102,8 +104,8 @@ void Parallel_Builder<MT>::send_Coord(const Coord_sys &coord)
   // send the Coord_sys string
     for (int np = 1; np < nodes(); np++)
     {
-	Send (cs_size, np);
-	Send (sendcs, cs_size, np);
+	Send (cs_size, np, 1);
+	Send (sendcs, cs_size, np, 2);
     }
 }
 
@@ -120,9 +122,9 @@ SP<Coord_sys> Parallel_Builder<MT>::recv_Coord()
 
   // receive the designation
     int cs_size;
-    Recv (cs_size, 0);
+    Recv (cs_size, 0, 1);
     char *reccs = new char[cs_size];
-    Recv (reccs, cs_size, 0);
+    Recv (reccs, cs_size, 0, 2);
     string cs = reccs;
     delete [] reccs;
 
@@ -175,20 +177,21 @@ void Parallel_Builder<MT>::send_Layout(const Layout &layout)
     for (int np = 1; np < nodes(); np++)
     {
       // pass the Layout cell size
-	Send (num_cells, np);
+	Send (num_cells, np, 3);
 
       // pass the Layout total size
-	Send (layout_size, np);
+	Send (layout_size, np, 4);
 
       // pass the num_faces array
-	Send (&num_faces[0], num_cells, np);
+	Send (&num_faces[0], num_cells, np, 5);
 
       // pass the face-values array
-	Send (faces, layout_size, np);
+	Send (faces, layout_size, np, 6);
     }
 
   // delete dynamically allocated faces array
     delete [] faces;
+    delete [] num_faces;
 }
 
 //---------------------------------------------------------------------------//
@@ -202,8 +205,8 @@ Layout Parallel_Builder<MT>::recv_Layout()
   // get the number of cells and size of the Layout
     int num_cells;
     int layout_size;
-    Recv (num_cells, 0);
-    Recv (layout_size, 0);
+    Recv (num_cells, 0, 3);
+    Recv (layout_size, 0, 4);
 
   // make the Layout
     Layout layout = num_cells;
@@ -211,8 +214,8 @@ Layout Parallel_Builder<MT>::recv_Layout()
   // receive the Layout data arrays
     int *num_faces = new int[num_cells];
     int *faces = new int[layout_size];
-    Recv (num_faces, num_cells, 0);
-    Recv (faces, layout_size, 0);
+    Recv (num_faces, num_cells, 0, 5);
+    Recv (faces, layout_size, 0, 6);
 
   // rebuild the Layout
     int index = 0;
@@ -226,10 +229,108 @@ Layout Parallel_Builder<MT>::recv_Layout()
 	}
     }
 
+  // get rid of dynamic arrays
+    delete [] num_faces;
+    delete [] faces;
+    
   // return the new Layout on this node
     return layout;
 }
 
+//---------------------------------------------------------------------------//
+// pass the mesh vertices
+
+template<class MT>
+void Parallel_Builder<MT>::send_vertex(const typename MT::CCVF_a &vertex)
+{
+  // send the vertices to another processor
+    
+  // get all necessary vertex dimensions
+    int vertex_dim  = vertex.size();
+    int vertex_size = vertex[0].size();
+    int total_size  = vertex_dim * vertex_size;
+
+  // push all vertices onto one array for communication
+    double *vert = new double[total_size];
+    int index = 0;
+    for (int d = 0; d < vertex_dim; d++)
+    {
+      // some assertions to check that the vertex size is constant over all
+      // dimensions 
+	Check (vertex_size == vertex[d].size());
+
+      // now load up the communication vertex array
+	for (int i = 0; i < vertex_size; i++)
+	{
+	    vert[index] = vertex[d][i];
+	    index++;
+	}
+    }
+
+  // send out the goodies
+    for (int np = 1; np < nodes(); np++)
+    {
+      // send the dimensionality of the vertex-array
+	Send (vertex_dim, np, 7);
+
+      // send the total size of the vertex-array
+	Send (total_size, np, 8);
+
+      // send the vertex array
+	Send (vert, total_size, np, 9);
+    }
+
+  // delete dynamically allocated arrays
+    delete [] vert;
+}
+	   
+//---------------------------------------------------------------------------//
+// receive the vertex
+
+template<class MT>
+typename MT::CCVF_a Parallel_Builder<MT>::recv_vertex()
+{
+  // receive and rebuild the vertices
+
+  // first get the sizes
+    int vertex_dim;
+    int total_size;
+    Recv (vertex_dim, 0, 7);
+    Recv (total_size, 0, 8);
+
+  // find the size of each dimensional vertex array
+    Check (!(total_size % vertex_dim));
+    int vertex_size = total_size / vertex_dim;
+
+  // make a new CCVF_a vertex array
+    typename MT::CCVF_a vertex(vertex_dim);
+
+  // get the vertices from the host
+    double *vert = new double[total_size];
+    Recv (vert, total_size, 0, 9);
+
+  // assign values to the new vertex object
+    int index = 0;
+    for (int d = 0; d < vertex_dim; d++)
+    {
+	vertex[d].resize(vertex_size);
+	for (int i = 0; i < vertex_size; i++)
+	{
+	    vertex[d][i] = vert[index];
+	    index++;
+	}
+    }
+
+  // delete dynamic allocated arrays
+    delete [] vert;
+
+  // return the new vertex guy
+    return vertex;
+}
+
+//---------------------------------------------------------------------------//
+// pass the cell_pair
+    
 CSPACE
 
 //---------------------------------------------------------------------------//

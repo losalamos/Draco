@@ -44,10 +44,10 @@ private:
     SP<Coord_sys> recv_Coord();
   
   // pass the vertices
-    void send_vertex(typename MT::CCVF_a &);
-    SP<typename MT::CCVF_a> recv_vertex();
-    void send_cellpair(typename MT::CCVF_i &);
-    SP<typename MT::CCVF_a> recv_cellpair();
+    void send_vertex(const typename MT::CCVF_a &);
+    typename MT::CCVF_a recv_vertex();
+    void send_cellpair(const typename MT::CCVF_i &);
+    typename MT::CCVF_a recv_cellpair();
 
 public:
   // default constructor

@@ -28,6 +28,9 @@
 //                vertices
 //  4)  3-18-98 : added generalized Mesh constructor based on cell vertices,
 //                use this in the Get_db and other member functions
+//  5)  4-14-98 : added get_vertex and get_cellpair to compliment get_Coord 
+//                and get_Layout; these functions are needed in
+//                Parallel_Builder 
 // 
 //===========================================================================//
 
