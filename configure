@@ -58,6 +58,84 @@ fi
  
 
 
+###-------------------------------------------------------------------------###
+### include the service macros used in configure.in scripts
+###-------------------------------------------------------------------------###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###-------------------------------------------------------------------------###
+### include the vendor macros
+###-------------------------------------------------------------------------###
+
+
+##---------------------------------------------------------------------------##
+## All vendor macros should take the following arguments:
+##     pkg      - this vendor is used in the package (default)
+##     test     - this vendor is used only in the package's test
+##---------------------------------------------------------------------------##
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###-------------------------------------------------------------------------###
+### include the DRACO argument macro
+###-------------------------------------------------------------------------###
+
+
+
+
+
+
+
+###-------------------------------------------------------------------------###
+### include the DRACO environment macro
+###-------------------------------------------------------------------------###
+
+
+
 
 
 
@@ -106,9 +184,14 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-sprng-lib[=DIR]    tell where SPRNG libraries are (\${SPRNG_LIB_DIR} by default)"
 ac_help="$ac_help
-  --enable-pcglib         turn on pcglib"
+  --with-pcg[=lib]        determine the pcg lib name (pcg is default)"
 ac_help="$ac_help
-  --with-pcglib-lib[=DIR]    tell where PCGLIB libraries are (\${PCGLIB_LIB_DIR} by default)"
+  --with-pcg-lib[=DIR]    tell where PCG libraries are (\${PCG_LIB_DIR} by default)"
+ac_help="$ac_help
+  --with-lapack=[vendor,atlas]
+                          determine LAPACK implementation (vendor default)"
+ac_help="$ac_help
+  --with-lapack-lib[=DIR]    tell where LAPACK libs are (\${LAPACK_LIB_DIR} by default)"
 ac_help="$ac_help
   --with-c4[=scalar,mpi,shmem]   
 		          turn on c4 (default scalar) "
@@ -143,6 +226,8 @@ ac_help="$ac_help
   --with-arflags[=flags]  add flags to \$ARFLAGS"
 ac_help="$ac_help
   --with-ldflags[=flags]  add flags to \$LDFLAGS"
+ac_help="$ac_help
+  --with-libs=[libs]      add libs to \$LIBS"
 ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help
@@ -790,7 +875,7 @@ EOF
 
    # determine if this package is needed for testing or for the
    # package
-   vendor_mpi=pkg
+   vendor_mpi=pkg 
 
    # set default value for with_mpi which is no
    if test "${with_mpi:=no}" = yes ; then 
@@ -1079,9 +1164,9 @@ EOF
    fi
 
    
-      # Check whether --enable-pcglib or --disable-pcglib was given.
-if test "${enable_pcglib+set}" = set; then
-  enableval="$enable_pcglib"
+      # Check whether --with-pcg or --without-pcg was given.
+if test "${with_pcg+set}" = set; then
+  withval="$with_pcg"
   :
 fi
 
@@ -1089,39 +1174,39 @@ fi
       
         
    
- # Check whether --with-pcglib-lib or --without-pcglib-lib was given.
-if test "${with_pcglib_lib+set}" = set; then
-  withval="$with_pcglib_lib"
-  if test $with_pcglib_lib != "no" ; then
-      if test $with_pcglib_lib = "yes" ; then
-         # following eval needed to remove possible '\' from \${PCGLIB_LIB_DIR}
-         eval with_pcglib_lib=\${PCGLIB_LIB_DIR}
+ # Check whether --with-pcg-lib or --without-pcg-lib was given.
+if test "${with_pcg_lib+set}" = set; then
+  withval="$with_pcg_lib"
+  if test $with_pcg_lib != "no" ; then
+      if test $with_pcg_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${PCG_LIB_DIR}
+         eval with_pcg_lib=\${PCG_LIB_DIR}
       fi
 
       # this command removes double slashes and any trailing slash
 
-      with_pcglib_lib=`eval echo "$with_pcglib_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
-      if test "$with_pcglib_lib:-null}" = "null" ; then
-         { echo "configure: error: --with-pcglib-lib directory is unset" 1>&2; \
+      with_pcg_lib=`eval echo "$with_pcg_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_pcg_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-pcg-lib directory is unset" 1>&2; \
            exit 1; }
       fi
-      if test ! -d $with_pcglib_lib ; then
-         { echo "configure: error: $with_pcglib_lib: invalid directory" 1>&2; \
+      if test ! -d $with_pcg_lib ; then
+         { echo "configure: error: $with_pcg_lib: invalid directory" 1>&2; \
            exit 1; }
       fi
 
       # this sets up the shell variable, with the name of the CPPtoken,
       # and that we later will do an AC_SUBST on.
-      PCGLIB_LIB="${with_pcglib_lib}/"
+      PCG_LIB="${with_pcg_lib}/"
 
       # this defines the CPP macro with the directory and single slash appended.
       cat >> confdefs.h <<EOF
-#define PCGLIB_LIB ${with_pcglib_lib}/
+#define PCG_LIB ${with_pcg_lib}/
 EOF
 
       # print a message to the users (that can be turned off with --silent)
 
-      echo "PCGLIB_LIB has been set to $PCGLIB_LIB" 1>&6
+      echo "PCG_LIB has been set to $PCG_LIB" 1>&6
 
    fi
 fi
@@ -1132,37 +1217,137 @@ fi
 
    # determine if this package is needed for testing or for the 
    # package
-   vendor_pcglib=pkg
+   vendor_pcg=pkg
 
-   # set up the libraries
-   if test "${enable_pcglib:=yes}" != no ; then
-       if test -z "${PCGLIB_LIB}" ; then
-	   
-   # vendor_pcglib is the vendor_<> tag (equals pkg or test)
-   # -lpcg_f77 are the directories added 
-
-   if test "${vendor_pcglib}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -lpcg_f77"
-   elif test "${vendor_pcglib}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lpcg_f77"
+   # pcg is set to libpcg by default
+   if test "${with_pcg:=pcg}" = yes ; then
+       with_pcg='pcg'
    fi
 
-       elif test -n "${PCGLIB_LIB}" ; then
+   # set up the libraries
+   if test "${with_pcg}" != no ; then
+       if test -z "${PCG_LIB}" ; then
 	   
-   # vendor_pcglib is the vendor_<> tag (equals pkg or test)
-   # -L${PCGLIB_LIB} -lpcg_f77 are the directories added 
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -lpcg are the directories added 
 
-   if test "${vendor_pcglib}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${PCGLIB_LIB} -lpcg_f77"
-   elif test "${vendor_pcglib}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCGLIB_LIB} -lpcg_f77"
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lpcg"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lpcg"
+   fi
+
+       elif test -n "${PCG_LIB}" ; then
+	   
+   # vendor_pcg is the vendor_<> tag (equals pkg or test)
+   # -L${PCG_LIB} -lpcg are the directories added 
+
+   if test "${vendor_pcg}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${PCG_LIB} -lpcg"
+   elif test "${vendor_pcg}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${PCG_LIB} -lpcg"
    fi
 
        fi
    fi
 
-      
+         
    
+      # Check whether --with-lapack or --without-lapack was given.
+if test "${with_lapack+set}" = set; then
+  withval="$with_lapack"
+  :
+fi
+
+
+      
+        
+   
+ # Check whether --with-lapack-lib or --without-lapack-lib was given.
+if test "${with_lapack_lib+set}" = set; then
+  withval="$with_lapack_lib"
+  if test $with_lapack_lib != "no" ; then
+      if test $with_lapack_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${LAPACK_LIB_DIR}
+         eval with_lapack_lib=\${LAPACK_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_lapack_lib=`eval echo "$with_lapack_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_lapack_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-lapack-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_lapack_lib ; then
+         { echo "configure: error: $with_lapack_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      LAPACK_LIB="${with_lapack_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >> confdefs.h <<EOF
+#define LAPACK_LIB ${with_lapack_lib}/
+EOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "LAPACK_LIB has been set to $LAPACK_LIB" 1>&6
+
+   fi
+fi
+
+
+   
+
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_lapack=pkg
+
+   # lapack is set to vendor by default
+   if test "${with_lapack:=vendor}" = yes ; then
+       with_lapack='vendor'
+   fi
+
+   # set up the libraries: if the option is vendor than we will take
+   # care of things in dracoenv under each platform case; if the
+   # option is atlas we will setup the basic library calls
+   if test "${with_lapack}" = atlas ; then
+       
+       # if a library path has been defined use it otherwise assume
+       # the libraries are in a default location
+       if test -z "${LAPACK_LIB}" ; then
+	   
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -llapack -lf77blas -lcblas -latlas are the directories added 
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -llapack -lf77blas -lcblas -latlas"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -llapack -lf77blas -lcblas -latlas"
+   fi
+
+       elif test -n "${LAPACK_LIB}" ; then
+	   
+   # vendor_lapack is the vendor_<> tag (equals pkg or test)
+   # -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas are the directories added 
+
+   if test "${vendor_lapack}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
+   elif test "${vendor_lapack}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${LAPACK_LIB} -llapack -lf77blas -lcblas -latlas"
+   fi
+
+       fi
+
+   fi
+
+      
+
 
          
       # Check whether --with-c4 or --without-c4 was given.
@@ -1311,6 +1496,14 @@ fi
 
 
          
+      # Check whether --with-libs or --without-libs was given.
+if test "${with_libs+set}" = set; then
+  withval="$with_libs"
+  :
+fi
+
+
+         
       # Check whether --enable-32-bit or --disable-32-bit was given.
 if test "${enable_32_bit+set}" = set; then
   enableval="$enable_32_bit"
@@ -1352,7 +1545,7 @@ subdirs="autodoc tools src doc"
 # Extract the first word of "autoconf", so it can be a program name with args.
 set dummy autoconf; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1356: checking for $ac_word" >&5
+echo "configure:1549: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_AUTOCONF'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1390,7 +1583,7 @@ for dir in $subdirs
    do
        if test -d ${srcdir}/${dir} ; then
 	   echo $ac_n "checking "configure in ${srcdir}/${dir}"""... $ac_c" 1>&6
-echo "configure:1394: checking "configure in ${srcdir}/${dir}"" >&5
+echo "configure:1587: checking "configure in ${srcdir}/${dir}"" >&5
 	   cd $srcdir/$dir
 	   if test -f configure ; then 
 	       echo "$ac_t"""exists"" 1>&6
@@ -1556,7 +1749,8 @@ s%@SHMEM_INC@%$SHMEM_INC%g
 s%@SHMEM_LIB@%$SHMEM_LIB%g
 s%@SPRNG_INC@%$SPRNG_INC%g
 s%@SPRNG_LIB@%$SPRNG_LIB%g
-s%@PCGLIB_LIB@%$PCGLIB_LIB%g
+s%@PCG_LIB@%$PCG_LIB%g
+s%@LAPACK_LIB@%$LAPACK_LIB%g
 s%@subdirs@%$subdirs%g
 s%@AUTOCONF@%$AUTOCONF%g
 
