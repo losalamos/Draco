@@ -22,6 +22,10 @@ spartan	:= yes
 ar	= /bin/ar
 ranlib	= /bin/true
 
+PCG_LIB_DIR	= $(HOME)/devel/lib
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg
+LAPACK_LIB	= -llapack -lblas -lf2c
+
 #-----------------------------------------------------------------------------#
 # Kuck and Associates C++
 
