@@ -583,7 +583,7 @@ package="amr_mesh"
        has_libdir="yes"
    fi
 
-   for lib in imc mc meshReaders c4 rng ds++
+   for lib in meshReaders ds++
    do
        # temporary string to keep line from getting too long
        draco_depends="\${libdir}/lib${lib}\${libsuffix}"
