@@ -366,7 +366,7 @@ $BUILD/tools to install the tools.
 After the tools are installed, MAKE will enter each $BUILD/src/\e pkg
 directory and do a compile + install.  The \e pkg subdirectories are
 entered in the appropriate order automatically (this order is actually
-specified in \c draco\src\configure.ac) to ensure that dependencies
+specified in \c draco/src/configure.ac) to ensure that dependencies
 are preserved.  The steps from a MAKE in $BUILD are as follows:
 -# enter $BUILD/tools and do a \c make \c install
 -# enter $BUILD/src
