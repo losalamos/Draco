@@ -345,7 +345,8 @@ class CDI
     // Integrate the normalized Rosseland over a frequency range.  This
     // version wraps the CDI::integratePlanckSpectrum function
     static double integrateRosselandSpectrum(const double lowf,
-					     const double hif, double T);
+					     const double hif, 
+					     const double T);
 
     // Integrate the normalized Planckian and Rosseland over a frequency
     // range.  This version wraps the CDI::integratePlanckSpectrum function
