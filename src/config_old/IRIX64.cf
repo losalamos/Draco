@@ -138,12 +138,21 @@ endif				# Photon C++
 ifeq ($(cxx),CC)
 
 CC	= cc
-CXX	= CC -64 -mips4 -LANG:ansi-for-init-scope=ON
-cmplr	= sgi
+CXX	= CC -LANG:ansi-for-init-scope=ON:restrict=ON -mips4
 
-#DEFINES = -I/home/POOMA/stlport -DPOOMA_72BETA -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_NO_RESTRICT -DPOOMA_USE_MEMBER_TEMPLATES
-#DEFINES = -I$(HOME)/v/stl2 -DPOOMA_72BETA -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_NO_RESTRICT -DPOOMA_USE_MEMBER_TEMPLATES
-DEFINES = -I$(POOMA_ROOT)/src/stlport -DPOOMA_72BETA -DPOOMA_MPI -DPOOMA_GMAKE -DPOOMA_STDSTL -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_NO_RESTRICT -Drestrict= -DPOOMA_USE_MEMBER_TEMPLATES -DPOOMA_USE_PARTIAL_SPECIALIZATION
+ifndef arch
+arch	= n32
+endif
+
+ifeq ($(arch),n32)
+CXX += -n32
+cmplr	= sn32
+endif
+
+ifeq ($(arch),64)
+CXX += -64
+cmplr	= s64
+endif
 
 DEBUG_FLAG	=
 
@@ -151,8 +160,6 @@ MAKEDEPEND	= $(CXX) -M
 CXX_DEPEND_FLAG	= $(CXXFLAGS)
 
 preinstantiate	:= yes
-
-STL_INC_FLAG = -I/home/POOMA/stlport
 
 ifndef sgi_deps
 sgi_deps := yes
@@ -172,7 +179,7 @@ comm	:=
 else
 comm	:= c4
 SYS_FLAGS = 
-SYS_LIBS = -lmpi
+#SYS_LIBS = -lmpi
 endif
 
 ifdef nj
@@ -255,12 +262,14 @@ endif				# SGI C++
 # 
 # endif
 
-POOMA_INC_FLAG	= -I$(POOMA_ROOT)/src
-POOMA_FLAGS	= $(POOMA_INC_FLAG) $(DEFINES)
-POOMA_LIB_DIR	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)
-POOMA_LIB	= -L$(POOMA_LIB_DIR) -lpooma
-
 env	:= $(mach)$(cmplr)$(optns)$(comm)
+
+include $(SRC_TOP)/config/.$(env).pooma
+
+POOMA_INC_FLAG	= $(POOMA_INCLUDES)
+POOMA_FLAGS	= $(POOMA_INCLUDES) $(POOMA_DEFINES)
+POOMA_LIB_DIR	= $(POOMA_LFLAGS)
+POOMA_LIB	= $(POOMA_LIBS)
 
 ###############################################################################
 #                        End of gts/src/config/IRIX64.cf
