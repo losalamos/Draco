@@ -297,7 +297,37 @@ void Particle<MT>::print(ostream &output) const
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
-    
+// test Particle equality, remember, this simply checks to see if the Sprng
+// random number object has the same streamnum, not ID pointer
+
+template<class MT>
+bool Particle<MT>::operator==(const Particle<MT> &rhs) const
+{
+  // check particle data
+    if (ew != rhs.ew)
+	return false;
+    else if (r != rhs.r)
+	return false;
+    else if (omega != rhs.omega)
+	return false;
+    else if (cell != rhs.cell)
+	return false;
+    else if (time_left != rhs.time_left)
+	return false;
+    else if (fraction != rhs.fraction)
+	return false;
+    else if (alive != rhs.alive)
+	return false;
+    else if (descriptor != rhs.descriptor)
+	return false;
+
+    if (random.get_num() != rhs.random.get_num())
+	return false;
+
+  // if all these things check out then the particles are equal
+    return true;
+}
+
 //===========================================================================//
 // class Particle<MT>::Diagnostic
 //===========================================================================//

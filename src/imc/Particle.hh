@@ -40,7 +40,12 @@
 //  7)   7-6-98 : added functions to return particle information to needed
 //                services 
 //  8)   7-9-98 : added set functions (ew and random) for combing
-//  9) 07-28-98 : added Thomson scattering
+//  9)  7-28-98 : added Thomson scattering
+// 10)  9-20-98 : added overloaded operator== to check equality of Particle
+//                data for testing, this only checks if the Particle's random
+//                number has the SAME streamnum, not the same ID, because you
+//                will get the same stream for the same streamnum even if you
+//                have a different pointer pointing to the state data
 // 
 //===========================================================================//
 
@@ -199,6 +204,9 @@ public:
 
   // public diagnostic services
     void print(ostream &) const;
+
+  // overloaded operators
+    bool operator==(const Particle<MT> &) const;
 
   // End_Verbatim 
   // End_Doc 
