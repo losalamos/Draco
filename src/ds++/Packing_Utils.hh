@@ -14,6 +14,8 @@
 
 #include "Assert.hh"
 
+#include <string>
+#include <vector>
 #include <cstring>
 
 namespace rtt_dsxx
@@ -371,6 +373,131 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
 
     // return the unpacker object
     return u;
+}
+
+//===========================================================================//
+// PACKING/UNPACKING SHORTCUT FUNCTIONS
+//===========================================================================//
+/*!
+ * \brief Packing function.
+ *
+ * This function uses the rtt_dsxx::Packer to pack a given field into a
+ * vector<char>.  The field type is represented by the template argument FT.
+ * The field type must have the following members defined:
+ *
+ * \arg FT::value_type type stored in the field
+ * \arg FT::const_iterator const iterator for the field
+ * \arg FT::size() returns the number of elements in the field
+ * \arg FT::begin() returns an iterator to the beginning of the field
+ * \arg FT::end() returns an iterator to the end of the field
+ * \arg FT::empty() determines if a container is empty
+ *
+ * Given these contraints, the function cannot be used to pack up a pointer
+ * array; however, this is accomplished easily enough with the Packer class
+ * alone.
+ *
+ * The data in the field is packed into a vector<char>. The vector<char>
+ * passed to the function must be empty; an assertion is thrown if it is
+ * not.  We do this for usage protection; we want the user to be aware that
+ * data in the vector<char> would be destroyed.
+ *
+ * In summary, this is a simple function that is a shortcut for using the
+ * Packer class for fields (vector<double>, list<int>, string, etc).  The
+ * complement of this function is unpack_data, which takes a packed
+ * vector<char> and writes data into the field.
+ *
+ * \sa rtt_dsxx::Packer, tstPacking_Utils.cc, and rtt_dsxx::unpack_data
+ *
+ * \param field container or string
+ * \param packed vector<char> that is empty; data will be packed into it
+ */
+template<class FT>
+void pack_data(const FT &field, std::vector<char> &packed)
+{
+    Insist (packed.empty(), "Passed a non-empty vector<char> to pack_data.");
+
+    // determine the size of the field
+    int field_size = field.size();
+
+    // determine the number of bytes in the field
+    int size = field_size * sizeof(typename FT::value_type) + sizeof(int);
+
+    // make a vector<char> large enought to hold the packed field
+    packed.resize(size);
+
+    // make an unpacker and set it
+    Packer packer;
+    packer.set_buffer(size, &packed[0]);
+
+    // pack up the number of elements in the field
+    packer << field_size;
+
+    // iterate and pack
+    for (typename FT::const_iterator itr = field.begin(); itr != field.end();
+	 itr++)
+	packer << *itr;
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpacking function.
+ *
+ * This function uses the rtt_dsxx::Unpacker to unpack a given field from a
+ * vector<char>.  The field type is represented by the template argument FT.
+ * The field type must have the following members defined:
+ *
+ * \arg FT::iterator const iterator for the field
+ * \arg FT::resize() returns the number of elements in the field
+ * \arg FT::begin() returns an iterator to the beginning of the field
+ * \arg FT::end() returns an iterator to the end of the field
+ * \arg FT::empty() determines if a container is empty
+ *
+ * Given these contraints, the function cannot be used to unpack a pointer
+ * array; however, this is accomplished easily enough with the Unpacker class
+ * alone.
+ *
+ * The data in the field is unpacked from a vector<char>. The data in the
+ * vector<char> must be packed in a manner consistent with pack_data.  The
+ * function checks for this.  Additionally, the field given to the function
+ * must be empty.
+ *
+ * In summary, this is a simple function that is a shortcut for using the
+ * Unpacker class for fields (vector<double>, list<int>, string, etc).  The
+ * complement of this function is pack_data, which packs fields into a
+ * vector<char>
+ *
+ * \sa rtt_dsxx::Unpacker, tstPacking_Utils.cc, and rtt_dsxx::pack_data
+ *
+ * \param field container or string that is empty; data will be unpacked into
+ * it
+ * \param packed vector<char> created by pack_data function (or in a manner
+ * analogous) 
+ */
+template<class FT>
+void unpack_data(FT &field, const std::vector<char> &packed)
+{
+    Insist (field.empty(), "Passed a non-empty field to unpack_data.");
+    Require (packed.size() >= sizeof(int));
+
+    // make an unpacker and set it
+    Unpacker unpacker;
+    unpacker.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the number of elements in the field
+    int field_size = 0;
+    unpacker >> field_size;
+
+    // make a field big enough to hold all the elements
+    field.resize(field_size);
+    
+    // unpack the data
+    for (typename FT::iterator itr = field.begin(); itr != field.end(); itr++)
+	unpacker >> *itr;
+
+    Insist (unpacker.get_ptr() == &packed[0] + packed.size(),
+	    "Incorrectly sized packed data given to unpack_data.");
 }
 
 } // end namespace rtt_dsxx

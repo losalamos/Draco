@@ -13,15 +13,22 @@
 #include "../Release.hh"
 #include "../Packing_Utils.hh"
 #include "../Assert.hh"
+#include "../Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <string>
+#include <sstream>
+#include <typeinfo>
 
 using namespace std;
 
 using rtt_dsxx::Packer;
 using rtt_dsxx::Unpacker;
+using rtt_dsxx::pack_data;
+using rtt_dsxx::unpack_data;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -180,6 +187,183 @@ void packing_test()
 
 //---------------------------------------------------------------------------//
 
+void std_string_test()
+{
+    vector<char> pack_string;
+
+    {
+	// make a string
+	string hw("Hello World"); 
+
+	// make a packer 
+	Packer packer;
+
+	// make a char to write the string into
+	pack_string.resize(hw.size() + 1 * sizeof(int));
+
+	packer.set_buffer(pack_string.size(), &pack_string[0]);
+
+	packer << hw.size();
+
+	// pack it
+	for (string::const_iterator it = hw.begin(); it != hw.end(); it++)
+	    packer << *it;
+	
+	if (packer.get_ptr() != &pack_string[0] + pack_string.size()) ITFAILS;
+	if (packer.get_ptr() != packer.begin()  + pack_string.size()) ITFAILS;
+    }
+
+    // now unpack it
+    Unpacker unpacker;
+    unpacker.set_buffer(pack_string.size(), &pack_string[0]);
+    
+    // unpack the size of the string
+    int size;
+    unpacker >> size;
+
+    string nhw;
+    nhw.resize(size);
+
+    // unpack the string
+    for (string::iterator it = nhw.begin(); it != nhw.end(); it++)
+	unpacker >> *it;
+
+    if (unpacker.get_ptr() != &pack_string[0] + pack_string.size()) ITFAILS;
+
+    // test the unpacked string
+    // make a string
+    string hw("Hello World"); 
+
+    if (hw == nhw)
+    {
+	ostringstream message;
+	message << "Unpacked string " << nhw << " that matches original "
+		<< "string " << hw;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message << "Failed to unpack string " << hw << " correctly. Instead "
+		<< "unpacked " << nhw;
+	FAILMSG(message.str());
+    }
+}
+
+//---------------------------------------------------------------------------//
+ 
+void packing_functions_test()
+{
+    // make a packing container
+    vector<char> total_packed;
+
+    vector<double> x_ref;
+    string         y_ref("Todd Urbatsch is an ass!");
+    
+    vector<double> x_new;
+    string         y_new;
+
+    // pack some data
+    {
+	vector<char> packed_int(sizeof(int));
+	vector<char> packed_vector;
+	vector<char> packed_string;
+
+	vector<double> x(5);
+	string         y("Todd Urbatsch is an ass!");
+
+	x_ref.resize(5);
+
+	for (int i = 0; i < 5; i++)
+	{
+	    x[i]     = 100.0 * (static_cast<double>(i) + x[i]) + 2.5;
+	    x_ref[i] = x[i];
+	}
+
+	pack_data(x, packed_vector);
+	pack_data(y, packed_string);
+
+	if (packed_vector.size() != 5 * sizeof(double) + sizeof(int)) ITFAILS;
+	if (packed_string.size() != y_ref.size() + sizeof(int))       ITFAILS;
+
+	Packer p;
+	p.set_buffer(sizeof(int), &packed_int[0]);
+
+	// pack the size of the vector
+	p << packed_vector.size();
+
+	// push the vector onto the total packed
+	total_packed.insert(total_packed.end(),
+			    packed_int.begin(), packed_int.end());
+	total_packed.insert(total_packed.end(),
+			    packed_vector.begin(), packed_vector.end());
+
+	// reset the packer
+	p.set_buffer(sizeof(int), &packed_int[0]);
+	
+	// pack the size of the string
+	p << packed_string.size();
+
+	// push the string onto the total packed
+	total_packed.insert(total_packed.end(),
+			    packed_int.begin(), packed_int.end());
+	total_packed.insert(total_packed.end(),
+			    packed_string.begin(), packed_string.end());
+
+	if (total_packed.size() != 2*packed_int.size() + packed_vector.size()
+	    + packed_string.size()) ITFAILS;
+    }
+
+    // unpack the data
+    {
+	int size;
+	Unpacker u;
+	u.set_buffer(total_packed.size(), &total_packed[0]);
+	
+	// unpack the packed vector
+	u >> size;
+	vector<char> packed_vector(size);
+
+	for (int i = 0; i < size; i++)
+	    u >> packed_vector[i];
+
+	// unpack the packed string
+	u >> size;
+	vector<char> packed_string(size);
+
+	for (int i = 0; i < size; i++)
+	    u >> packed_string[i];
+
+	if (u.get_ptr() != &total_packed[0] + total_packed.size()) ITFAILS;
+
+	unpack_data(x_new, packed_vector);
+	unpack_data(y_new, packed_string);
+    }
+
+    if (!soft_equiv(x_new.begin(), x_new.end(), x_ref.begin(), x_ref.end()))
+	ITFAILS;
+
+    if (y_new == y_ref)
+    {
+	ostringstream message;
+	message << "Correctly unpacked string " << y_new << " from "
+		<< "packed " << y_ref;
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message << "Failed to unpack string " << y_ref << " correctly. Instead "
+		<< "unpacked " << y_new;
+	FAILMSG(message.str());
+    }
+
+    if (rtt_ds_test::passed)
+	PASSMSG("pack_data and unpack_data work fine.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -195,6 +379,10 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 	packing_test();
+	
+	std_string_test();
+
+	packing_functions_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
