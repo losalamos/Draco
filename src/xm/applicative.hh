@@ -356,8 +356,7 @@ class OpLabs {
   public:
     static inline P apply( const P& x )
     {
-	using namespace std;
-	return labs(x);
+	return std::labs(x);
     }
 };
 
