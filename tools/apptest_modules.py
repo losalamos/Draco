@@ -15,13 +15,14 @@
 import os, os.path
 import string
 import sys
+import re
 
 class AppTest:
 
     ##-----------------------------------------------------------------------##
     ## Initialize Data
     def __init__( self, exec_head, num_procs, package_name,\
-                  input_deck, test_name ):
+                  input_deck ):
         # Initialize some variables.
         self.fail_msg   = []
         self.num_passed = 0
@@ -33,10 +34,10 @@ class AppTest:
         # output from the binary code
         self.outfilename  = os.path.splitext(input_deck)[0] + ".stdout"
         self.code_name    = "../bin/" + self.package_name
-        self.test_name    = test_name
+        self.test_name    = os.path.basename(sys.argv[0])
         self.border_symbol = "*"
         self.box_width  = 60
-
+        
         # check that directory containing benchmark data exists
         # and remove existing test output files and diff files.
         # ------------------------------------------------------
@@ -44,9 +45,9 @@ class AppTest:
             fail_msg.append(self.workingdir, " directory does not exist." \
                             " Test: failed.")
             self.num_failed = self.num_failed + 1
-        else:
-            os.system("rm -f %s*.log"    % self.workingdir)
-            os.system("rm -f %s*.stdout" % self.workingdir)
+#        else:
+#            os.system("rm -f %s*.log"    % self.workingdir)
+#            os.system("rm -f %s*.stdout" % self.workingdir)
 
         # Check for the existance of the binary and the input file
         if not os.path.exists( input_deck ):
@@ -96,8 +97,8 @@ class AppTest:
                                 "left", bw )
         self.print_with_border( "Processors : %s"%self.num_procs, "left", bw )
         self.print_with_border( "Type       : binary", "left", bw )
-        msg = "Command    : %s <N> %s %s" \
-              %(self.exec_head, self.code_name, self.input_deck)
+        msg = "Command    : %s %s %s %s" \
+              %(self.exec_head, self.num_procs ,self.code_name, self.input_deck)
         self.print_with_border( msg, "left", bw )
         self.print_with_border( "Location   : " + self.workingdir, "left", bw )
         self.print_padded_message("*")
@@ -206,3 +207,211 @@ class AppTest:
         # Dump stderr and stdout to file.
         self.outfile.writelines(self.output) # <scriptname>.stdout
         self.outfile.writelines(self.errors)
+
+
+##---------------------------------------------------------------------------##
+## GMV data class
+##---------------------------------------------------------------------------##
+
+class GMVFile:
+
+    ##-----------------------------------------------------------------------##
+    ## Initialize Data
+    def __init__( self, filename ):
+        # Initialize some class variables:
+        self.lookingAtVariables = 0
+
+        self.numNodes = 0
+        self.numCells = 0
+        self.xCoords = []
+        self.yCoords = []
+        self.zCoords = []
+        self.cellType = []
+        self.cellNodes = [] # a list of lists
+        self.numMaterials = 0
+        self.materialNames = []
+        self.cellMaterial = []
+        self.data = {}
+
+        # File handle
+        self.gmvfile = open( filename, 'r' )
+
+        # Parse file and fill class state
+        self.parse()
+
+##---------------------------------------------------------------------------##
+## Finish up
+
+    def finalize(self):
+        self.gmvfile.close()
+
+##---------------------------------------------------------------------------##
+## Parse procedure
+
+    def parse(self):
+
+        debug = 0
+
+        # Reset to beginning of file
+        idxLine = 0
+
+        # read first line and strip trailing newline.
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        expectedLine = "gmvinput ascii"
+        if line != expectedLine:
+            print "Did not find expected data in first line of file."
+            print "Found: \"%s\""%line
+            print "Expected: %s"%expectedLine
+            return
+
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        match = re.search( 'nodev (\d+)', line )
+        if match:
+            self.numNodes = int(match.group(1))
+        else:
+            print "Did not find keyword \"nodev\" at line %s"%idxLine
+            return
+
+        if debug:
+            print "Found %s nodes."%self.numNodes
+
+        # Read node coordinates
+        for idxNode in xrange(0,self.numNodes):
+            line = self.gmvfile.readline()[:-1]
+            idxLine += 1
+            match = re.search( '(\d[.]?\d*) (\d[.]?\d*) (\d[.]?\d*)',
+                               line )
+            if match:
+                self.xCoords.append(float(match.group(1)))
+                self.yCoords.append(float(match.group(2)))
+                self.zCoords.append(float(match.group(3)))
+
+        # Read cell information
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        match = re.search( 'cells (\d+)', line )
+        if match:
+            self.numCells = int(match.group(1))
+        else:
+            print "Did not find the keyword \"cells\" at line %s"%idxLine
+            return
+
+        if debug:
+            print "Found %s cells."%self.numCells
+
+        # Read Cell information
+        for idxCell in xrange(0,self.numCells):
+            line = self.gmvfile.readline()[:-1]
+            idxLine += 1
+            self.cellType.append(line)
+            line = self.gmvfile.readline()[:-1]
+            idxLine += 1
+            match = re.search( '(\d+) (\d+) (\d+)', line )
+            if match:
+                nodeList = []
+                nodeList.append( int( match.group(1) ) )
+                nodeList.append( int( match.group(2) ) )
+                nodeList.append( int( match.group(3) ) )
+                self.cellNodes.append( nodeList )
+
+        # Read Material Information
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        match = re.search( 'material (\d+) (\d+)', line )
+        if match:
+            self.numMaterials = int( match.group(1) )
+        else:
+            print "Did not find the keyword \"material\" at line %s"%idxLine
+            return
+
+        if debug:
+            print "Found %s material names."%self.numMaterials
+        
+        # Material name
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        self.materialNames = line.split()
+
+        # Material to cell assignment
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        self.cellMaterial = line.split()
+
+        # Read Variable values
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        match = re.search( 'variable', line )
+        if not match:
+            print "Did not find the keyword \"variable\" at line %s"%idxLine
+            return
+        
+        if debug:
+            print "Parsing variables..."
+
+        while 1:
+            line = self.gmvfile.readline()[:-1]
+            idxLine += 1
+            match = re.search( '([A-z0-9_]+)', line )
+            key = match.group(1)
+            if key == "endvars":
+                break
+            else:
+                match = re.search( '([A-z0-9_]+) (\d+)', line )
+
+            if debug:
+                print "Looking at data for variable named \"%s\""%key
+
+            # Read the data
+            line = self.gmvfile.readline()[:-1]
+            idxLine += 1
+            lenLine = len(line)
+            posLine = 0
+            valueList = []
+            for idxCell in xrange(1,self.numCells):
+                idxEnd = line.find( " ", posLine, lenLine )
+#                print "find( \" \", %s, %s ) = %s"%(posLine, lenLine, idxEnd)
+                value = line[posLine:idxEnd]
+#                print "cell = %s, line[%s:%s] = %s"%(idxCell,posLine,idxEnd,value)
+                valueList.append( float( value ) )
+                posLine = idxEnd+1
+            # append last value
+            valueList.append( float( line[ posLine:lenLine ] ) )
+
+            if debug:
+                print valueList
+
+            # append Dictionary of { keyname: [value list] }
+            self.data[ key ] = valueList
+            
+        # Look for "endgmv" tag
+        line = self.gmvfile.readline()[:-1]
+        idxLine += 1
+        if line != "endgmv":
+            print "Did not find the keyword \"endgmv\"." \
+                  + "There could  be something wrong!"
+            return
+
+##---------------------------------------------------------------------------##
+## Access routines
+
+    def numNodes(self):
+        return self.numNodes
+
+    def numCells(self):
+        return self.numCells
+
+##---------------------------------------------------------------------------##
+## Access data
+##
+## The string "key" is used to lookup data that has the same name in
+## the GMV file.
+    
+    def getValues( self, key ):
+        if not self.data.has_key( key ):
+            print "I don't know anything about data named \"%s\""%key
+            print "The available keys are %s: "%self.data.keys()
+            return
+        return self.data[ key ]
+
