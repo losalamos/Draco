@@ -51,16 +51,6 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   AC_MSG_ERROR("Did not find KCC compiler!")
        fi
 
-   elif test "${with_cxx}" = guide ; then
-       AC_CHECK_PROG(CXX, guidec++, guidec++)
-       AC_CHECK_PROG(CC, guidec, guidec)
-
-       if test "${CXX}" = guidec++ && test "${CC}" = guidec ; then 
-	   AC_DRACO_GUIDE
-       else
-	   AC_MSG_ERROR("Did not find Guide compiler!")
-       fi
-
    elif test "${with_cxx}" = sgi ; then
        AC_CHECK_PROG(CXX, CC, CC)
        AC_CHECK_PROG(CC, cc, cc)  
@@ -160,74 +150,6 @@ AC_DEFUN(AC_DRACO_KCC, [dnl
 
    AC_MSG_RESULT("KCC compiler flags set")
    
-   dnl end of AC_DRACO_KCC
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl GUIDEC++ (KCC) COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_GUIDE, [dnl
-
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # KCC SPECIFIC FLAGS
-   dirstoclean='ti_files'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-   AR='${CXX}'
-   ARFLAGS='--exceptions -o'
-   ARLIBS='${DRACO_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="--strict"
-   fi
-
-   # --one_per flag
-   if test "${enable_one_per:=yes}" = yes ; then
-       # yes there is an extra space before the flag
-       ONEPERFLAG=" --one_per"
-   fi
-
-   # optimization level
-   if test "${enable_debug:=no}" = yes && \
-      test "${with_opt:=0}" != 0 ; then
-      CXXFLAGS="${CXXFLAGS} -g"
-      CFLAGS="${CFLAGS} -g"
-   fi
-   CXXFLAGS="${CXXFLAGS} +K${with_opt:=0}"
-   CFLAGS="${CFLAGS} +K${with_opt:=0}"
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
-   fi
-
-   # final compiler additions
-   # yes there is no space before the flag
-   # also, guide turns off exceptions by default, here we turn them on
-
-   CXXFLAGS="${CXXFLAGS}${ONEPERFLAG} --exceptions"
-
-   # For version 3.3 of KCC the strict and thread_safe
-   # cannot be used together (in general).
-
-   if test "$with_c4" = shmem ; then
-       CXXFLAGS="${CXXFLAGS} --thread_safe"
-       STRICTFLAG=""
-       LDFLAGS="${LDFLAGS} --thread_safe --static_libKCC"
-   fi
-
-   # add exceptions to ldflags
-   LDFLAGS="--exceptions ${LDFLAGS}"
-
-   AC_MSG_RESULT("Guide compiler flags set")
-
    dnl end of AC_DRACO_KCC
 ])
 
@@ -419,13 +341,32 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    CPPFLAGS="${CPPFLAGS} -D__USE_STD_IOSTREAM" 
 
    # optimization level
-    
-   # defaults
-   if test "${enable_debug:=yes}" = yes ; then
-       gcc_debug_flag='-g'
+
+   # if optimization is on turn off debug flag unless asked for
+   if test "${with_opt:=0}" != 0 ; then
+
+       # if debug is on then use -g1,2,3
+       if test "${enable_debug:=no}" = yes ; then
+	   cxx_opt_flag="-g${with_opt}"
+       else
+	   cxx_opt_flag="-O${with_opt}"
+       fi
+
+   # turn off optimizations
+   else
+   
+       # we want -g unless not asked for
+       if test "${enable_debug:=yes}" = yes ; then
+	   cxx_opt_flag="-g -O0"
+       else
+	   cxx_opt_flag="-O0"
+       fi
+
    fi
-   CXXFLAGS="${CXXFLAGS} ${gcc_debug_flag} -O${with_opt:=0}"
-   CFLAGS="${CFLAGS} ${gcc_debug_flag} -O${with_opt:=0}"
+
+   # set up cxx flags
+   CXXFLAGS="${CXXFLAGS} ${cxx_opt_flag}"
+   CFLAGS="${CFLAGS} ${cxx_opt_flag}"
 
    # add ieee flag
    CXXFLAGS="${CXXFLAGS} -ieee"
@@ -480,31 +421,37 @@ AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
        STRICTFLAG="-ansi"
    fi
 
-   # --one_per flag
-   #if test "${enable_one_per:=yes}" = yes ; then
-   #    ONEPERFLAG="--one_per"
-   #fi
+   # set up compiler when optimized (enable inline keyword but not
+   # compiler-choice inlining)
+   if test "${with_opt:=0}" != 0 ; then
 
-   # optimization level
-   if test "${enable_debug:=no}" = yes && \
-      test "${with_opt:=0}" != 0 ; then
-      CXXFLAGS="${CXXFLAGS} -g"
-      CFLAGS="${CFLAGS} -g"
+       # turn off debug by default
+       if test "${enable_debug:=no}" = yes ; then
+	   icc_opt_flags="-g -O${with_opt} -Ob1"
+       else
+	   icc_opt_flags="-O${with_opt} -Ob1"
+       fi
+
+   #set up compiler when not optimized (turn off inlining with -Ob0)
+   else
+
+       # turn on debug by default
+       if test "${enable_debug:=yes}" = yes ; then
+	   icc_opt_flags="-g -O0 -Ob0"
+       else
+	   icc_opt_flags="-O0 -Ob0"
+       fi
+
    fi
-   CXXFLAGS="${CXXFLAGS} -O${with_opt:=0}"
-   CFLAGS="${CFLAGS} -O${with_opt:=0}"
+   
+   # set the cxx and c flags
+   CXXFLAGS="${CXXFLAGS} ${icc_opt_flags}"
+   CFLAGS="${CFLAGS} ${icc_opt_flags}"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
        LDFLAGS="${LDFLAGS} -static"
    fi
-
-   # Parallel build flag
-   
-   #PARALLEL_FLAG="--parallel_build \${nj}"
-
-   # final compiler additions
-   #CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
 
    AC_MSG_RESULT("icc compiler flags set")
    
