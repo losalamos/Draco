@@ -26,6 +26,7 @@
 #include "../Extrinsic_Tracker_Builder.hh"
 #include "../Azimuthal_Mesh.hh"
 #include "../Surface_Sub_Tally.hh"
+#include "../Surface_Tracking_Interface.hh"
 
 using namespace std;
 using namespace rtt_mc;
@@ -35,6 +36,58 @@ using namespace rtt_imc_test;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
+//---------------------------------------------------------------------------//
+// Test interface implemetation
+//---------------------------------------------------------------------------//
+struct Surface_Tracking_Tester : public Surface_Tracking_Interface
+{
+
+    double small_radius, large_radius;
+
+    Surface_Descriptor descriptor[4];
+
+    Surface_Tracking_Tester(double x1, double x3);
+
+    int number_of_surfaces() const { return 4; }
+    const Surface_Descriptor& get_descriptor(int surface) const;
+
+    ~Surface_Tracking_Tester() { /* ... */ }
+
+};
+
+Surface_Tracking_Tester::Surface_Tracking_Tester(double x1, double x3)
+    : small_radius(x1), large_radius(x3)
+{
+
+    descriptor[0].type = Surface_Descriptor::SPHERE;
+    descriptor[0].data.resize(2);
+    descriptor[0].data[0] = 0.0;
+    descriptor[0].data[1] = small_radius;
+    
+    descriptor[1].type = Surface_Descriptor::SPHERE;
+    descriptor[1].data.resize(2);
+    descriptor[1].data[0] = 1.0;
+    descriptor[1].data[1] = small_radius;
+    
+    descriptor[2].type = Surface_Descriptor::SPHERE;
+    descriptor[2].data.resize(2);
+    descriptor[2].data[0] = 0.0;
+    descriptor[2].data[1] = 50.0;
+    
+    descriptor[3].type = Surface_Descriptor::SPHERE;
+    descriptor[3].data.resize(2);
+    descriptor[3].data[0] = 2.0;
+    descriptor[3].data[1] = large_radius;
+
+}
+
+const Surface_Descriptor& Surface_Tracking_Tester::get_descriptor(int surface) const
+{
+    Check(surface > 0); Check(surface <= 4);
+
+    return descriptor[surface-1];
+
+}
 //---------------------------------------------------------------------------//
 // BUILDERS
 //---------------------------------------------------------------------------//
@@ -75,13 +128,10 @@ SP<Extrinsic_Tracker_Builder> build_tracker_builder(const RZWedge_Mesh& mesh)
     double x1 = mesh.get_high_x(1);
     double x3 = mesh.get_high_x(3);
 
-    SP<Extrinsic_Tracker_Builder> builder (
-	new Extrinsic_Tracker_Builder(mesh) );
+    SP<Surface_Tracking_Tester> tester ( new Surface_Tracking_Tester(x1,x3) );
 
-    builder->add_sphere(0.0, x1);    // Surface 1
-    builder->add_sphere(1.0, x1);    // Surface 2
-    builder->add_sphere(0.0, 50.0);  // Surface 3: Off the mesh
-    builder->add_sphere(2.0, x3);    // Surface 4
+    SP<Extrinsic_Tracker_Builder> builder (
+	new Extrinsic_Tracker_Builder(mesh, tester) );
 
     Ensure (builder);
 

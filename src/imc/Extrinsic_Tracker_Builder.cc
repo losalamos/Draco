@@ -16,27 +16,45 @@
 
 using rtt_mc::RZWedge_Mesh;
 using rtt_mc::Sphere;
+using rtt_mc::Surface;
+using rtt_mc::Surface_Descriptor;
 using rtt_dsxx::SP;
 using std::vector;
 
 namespace rtt_imc
 {
 
-Extrinsic_Tracker_Builder::Extrinsic_Tracker_Builder(const RZWedge_Mesh& mesh_) :
-    mesh(mesh_), 
+Extrinsic_Tracker_Builder::Extrinsic_Tracker_Builder(
+    const RZWedge_Mesh& mesh_,
+    SP<Surface_Tracking_Interface> interface) :
+    mesh(mesh_),
     number_of_cells(mesh_.num_cells()),
     global_surface_number(0),
     local_surfaces(0),
     surfaces(),
     surface_indices(),
     surface_in_cell(mesh_.num_cells())
-{
+{ 
+
+    int given_surface_number = interface->number_of_surfaces();
+
+    for (int surface = 1; surface <= given_surface_number; ++surface)
+    {
+
+	global_surface_number++;
+
+	const Surface_Descriptor& descriptor = 
+	    interface->get_descriptor(surface);
+	
+	process_surface( descriptor );
+	
+    }
+
+    Check(global_surface_number = given_surface_number);
     
-    Check ( number_of_cells > 0);
-    Check ( surface_in_cell.size() > 0);
 
 }
-
+						     
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Builds and returns the surface tracker. Stops accumulation of
@@ -63,43 +81,69 @@ SP<Extrinsic_Surface_Tracker> Extrinsic_Tracker_Builder::build_tracker()
 }
 
 
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Adds a sphere to the list of surfaces. 
- * 
- * \param z z-coordinate of the sphere
- * \param r raidus of the sphere
- */
-void Extrinsic_Tracker_Builder::add_sphere(double z, double r)
-{
-    
-    Check ( r > 0 ); 
-    
-    Insist(!tracker, "Attempt to add surfaces to existing surface tracker");
-
-    SP<Sphere> sphere ( new Sphere(z, r) );
-
-    global_surface_number++;
-
-    bool on_mesh = check_intersections(*sphere);
-
-    if (on_mesh) add_sphere_to_list(sphere);
-
-
-}
 
 
 //---------------------------------------------------------------------------//
 // Implementation:
 //---------------------------------------------------------------------------//
 
-void Extrinsic_Tracker_Builder::add_sphere_to_list(SP<Sphere> sphere)
+//---------------------------------------------------------------------------//
+// Process a new surface:
+void Extrinsic_Tracker_Builder::process_surface(
+    const Surface_Descriptor& descriptor)
 {
-    surfaces.push_back(sphere);
 
-    surface_indices.push_back(global_surface_number);
+    if (descriptor.type == Surface_Descriptor::SPHERE)
+	process_sphere(descriptor);
+    else
+	Insist(0, "Invalid surface descriptor encountered.");
 
 }
+		     
+//---------------------------------------------------------------------------//
+void Extrinsic_Tracker_Builder::add_surface_to_list(SP<Surface> surface)
+{
+    surfaces.push_back(surface);
+    surface_indices.push_back(global_surface_number);
+}
+
+//---------------------------------------------------------------------------//
+bool Extrinsic_Tracker_Builder::check_point(const Surface& surface,
+					    double x, double z)
+{
+    Check(x >= 0);
+    
+    static vector<double> point(3, 0.0);
+
+    point[0] = x;  point[1] = 0.0;  point[2] = z;
+
+    return surface.is_inside(point);
+
+}
+
+
+
+//---------------------------------------------------------------------------//
+// Sphere-specific functions:
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+void Extrinsic_Tracker_Builder::process_sphere(const Surface_Descriptor& d)
+{
+    
+    double z(d.data[0]);
+    double r(d.data[1]);
+
+    Check ( r > 0);
+    
+    SP<Sphere> sphere ( new Sphere(z, r) );
+
+    bool on_mesh = check_intersections(*sphere);
+
+    if (on_mesh) add_surface_to_list(sphere);
+
+}
+
 
 
 //---------------------------------------------------------------------------//
@@ -133,7 +177,7 @@ bool Extrinsic_Tracker_Builder::check_intersections(const Sphere& sphere)
  * \return true if the cell is intersected by the sphere
  */
 bool Extrinsic_Tracker_Builder::sphere_intersects_cell(
-    const rtt_mc::Sphere& sphere, int cell)
+    const Sphere& sphere, int cell)
 {
 
     double r_s = sphere.get_radius();
@@ -201,19 +245,6 @@ bool Extrinsic_Tracker_Builder::sphere_intersects_cell(
     return false;
 }
 
-//---------------------------------------------------------------------------//
-bool Extrinsic_Tracker_Builder::check_point(const Sphere& sphere,
-					    double x, double z)
-{
-    Check(x >= 0);
-    
-    static vector<double> point(3, 0.0);
-
-    point[0] = x;  point[1] = 0.0;  point[2] = z;
-
-    return sphere.is_inside(point);
-
-}
 
 
 } // end namespace rtt_imc

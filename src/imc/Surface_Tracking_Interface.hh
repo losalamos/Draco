@@ -1,0 +1,64 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   imc/Surface_Tracking_Interface.hh
+ * \author Mike Buksas
+ * \date   Wed Jul 30 12:26:37 2003
+ * \brief  Header file for Surface_Tracking_Interface
+ * \note   Copyright © 2003 The Regents of the University of California.
+ *
+ * Long description.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+#ifndef rtt_imc_Surface_Tracking_Interface_hh
+#define rtt_imc_Surface_Tracking_Interface_hh
+
+#include "mc/Surface_Descriptor.hh"
+
+namespace rtt_imc
+{
+
+//===========================================================================//
+/*!
+ * \class Surface_Tracking_Interface
+ * \brief
+ *
+ *
+ */
+// revision history:
+// -----------------
+// 0) (Wed Jul 30 12:26:37 2003) Mike Buksas: original
+// 
+//===========================================================================//
+
+class Surface_Tracking_Interface 
+{
+  protected:
+
+    //! protected constructor
+    Surface_Tracking_Interface() { /* No data */ }
+
+  public:
+
+    //! destructor
+    virtual ~Surface_Tracking_Interface() { /* ... */ }
+
+    // ACCESSORS
+
+    //! Get the number of surfaces
+    virtual int number_of_surfaces() const = 0;
+    
+    //! Get the surface descriptor for the given surface
+    virtual const rtt_mc::Surface_Descriptor& get_descriptor(int surface) const = 0;
+    
+};
+
+} // end namespace rtt_imc
+
+#endif // rtt_imc_Surface_Tracking_Interface_hh
+
+//---------------------------------------------------------------------------//
+//              end of imc/Surface_Tracking_Interface.hh
+//---------------------------------------------------------------------------//

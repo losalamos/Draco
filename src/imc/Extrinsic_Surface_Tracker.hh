@@ -5,8 +5,6 @@
  * \date   Mon Jul 14 16:19:43 2003
  * \brief  Header file for Extrinsic_Surface_Tracker
  * \note   Copyright © 2003 The Regents of the University of California.
- *
- * Long description.
  */
 //---------------------------------------------------------------------------//
 // $Id$

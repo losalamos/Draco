@@ -18,6 +18,7 @@
 #include "ds++/SP.hh"
 #include "mc/Surface.hh"
 #include "Extrinsic_Surface_Tracker.hh"
+#include "Surface_Tracking_Interface.hh"
 
 namespace rtt_mc { class Sphere; class RZWedge_Mesh;}
 
@@ -34,22 +35,10 @@ namespace rtt_imc
  *
  * This class is responsible for making sure that the geometry of the tally
  * surfaces and the information about mesh cells intersected by these
- * surfaces are consistent.
- *
- * The interface of this class only supports adding spheres to the list of
- * tally surfaces. Cylinders (if implemented) will require a new public
- * interface member and support for the detection of intersections with cells
- * in the mesh.
- *
- * Once the Extrinsic_Surface_Tracker is created, this class stores a smart
- * pointer to it and avoids creating it again. Adding additional surfaces is
- * not allowed after creating the surface tracker. Thus this class has two
- * states:
- *   - a) "accumulating surfaces" 
- *   - b) "provide surface tracker". 
- *
- * The class is in state a when constructed. Calling the build_tracker()
- * method moves it to state b. It is not possible to switch back to state a.
+ * surfaces are consistent. It is constructed with a smart pointer to a class
+ * which implements the abstract interface Surface_Tracking_Interface. The
+ * derived class must then provide the necessary data to the constructor
+ * through this interface.
  *
  */
 /*! 
@@ -68,25 +57,17 @@ class Extrinsic_Tracker_Builder
   public:
 
     // NESTED CLASSES AND TYPEDEFS
+    
+    typedef Surface_Tracking_Interface Interface;
 
     // CREATORS
     
     //! constructor
-    Extrinsic_Tracker_Builder(const rtt_mc::RZWedge_Mesh&);
-
-    //! copy constructor (the long doxygen description is in the .cc file)
-    Extrinsic_Tracker_Builder(const Extrinsic_Tracker_Builder &rhs);
+    Extrinsic_Tracker_Builder(const rtt_mc::RZWedge_Mesh &mesh,
+			      rtt_dsxx::SP<Surface_Tracking_Interface> interface);
 
     //! destructor
     ~Extrinsic_Tracker_Builder() { /* ... */ }
-
-    // MANIPULATORS
-    
-    //! Assignment operator for Extrinsic_Tracker_Builder
-    Extrinsic_Tracker_Builder& operator=(const Extrinsic_Tracker_Builder &rhs);
-    
-    //! Add a sphere to the list of surfaces
-    void add_sphere(double z, double r); 
 
     // ACCESSORS
 
@@ -119,10 +100,16 @@ class Extrinsic_Tracker_Builder
 
     // IMPLEMENTATION
 
+    // General
+    void process_surface(const rtt_mc::Surface_Descriptor &descriptor);
+    void add_surface_to_list(rtt_dsxx::SP<rtt_mc::Surface> surface);
+    bool check_point(const rtt_mc::Surface& surface, double x, double z);
+
+    // Sphere-centric
+    void process_sphere(const rtt_mc::Surface_Descriptor &descriptor); 
     bool sphere_intersects_cell(const rtt_mc::Sphere& sphere, int cell);
-    bool check_point(const rtt_mc::Sphere& sphere, double x, double z);
     bool check_intersections(const rtt_mc::Sphere& sphere);
-    void add_sphere_to_list(rtt_dsxx::SP<rtt_mc::Sphere> sphere);
+
 
 };
 

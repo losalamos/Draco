@@ -49,6 +49,49 @@ using namespace rtt_imc_test;
 int seed = 395731;
 
 //---------------------------------------------------------------------------//
+// Test interface implemetation
+//---------------------------------------------------------------------------//
+struct Surface_Tracking_Tester : public Surface_Tracking_Interface
+{
+
+    Surface_Descriptor descriptor[3];
+
+    Surface_Tracking_Tester();
+
+    int number_of_surfaces() const { return 3; }
+    const Surface_Descriptor& get_descriptor(int surface) const 
+    { 
+	Check(surface > 0); Check(surface <= 3);
+	return descriptor[surface-1]; 
+    }
+    
+    ~Surface_Tracking_Tester() { /* ... */ }
+
+};
+
+Surface_Tracking_Tester::Surface_Tracking_Tester()
+{
+
+    descriptor[0].type = Surface_Descriptor::SPHERE;
+    descriptor[0].data.resize(2);
+    descriptor[0].data[0] =  0.0;
+    descriptor[0].data[1] =  2.0;
+    
+    descriptor[1].type = Surface_Descriptor::SPHERE;
+    descriptor[1].data.resize(2);
+    descriptor[1].data[0] =  1.0;
+    descriptor[1].data[1] =  2.0;
+    
+    descriptor[2].type = Surface_Descriptor::SPHERE;
+    descriptor[2].data.resize(2);
+    descriptor[2].data[0] = -1.0;
+    descriptor[2].data[1] =  3.0;
+    
+}
+
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
 // BUILDERS
 //---------------------------------------------------------------------------//
 SP<RZWedge_Mesh> build_an_RZWedge()
@@ -80,31 +123,12 @@ SP<Azimuthal_Mesh> build_an_az_mesh()
 }
 
 
-SP<Surface_tracker> build_a_surface_tracker()
-{
-
-    vector<SP<Surface> > surfaces;
-
-    surfaces.push_back( SP<Sphere>( new Sphere( 0.0, 2.0) ) );
-    surfaces.push_back( SP<Sphere>( new Sphere( 1.0, 2.0) ) );
-    surfaces.push_back( SP<Sphere>( new Sphere(-1.0, 3.0) ) );
-
-    SP<Surface_tracker> tracker(new Surface_tracker(surfaces));
-
-    Ensure(tracker);
-
-    return tracker;
-
-}
-
 SP<Extrinsic_Surface_Tracker> build_extrinsic_tracker(const RZWedge_Mesh& mesh)
 {
 
-    Extrinsic_Tracker_Builder builder(mesh);
+    SP<Surface_Tracking_Tester> tester ( new Surface_Tracking_Tester() );
 
-    builder.add_sphere(0.0, 2.0);    // Surface 1
-    builder.add_sphere(1.0, 2.0);    // Surface 2
-    builder.add_sphere(-1.0, 3.0);    // Surface 3
+    Extrinsic_Tracker_Builder builder(mesh, tester);
 
     SP<Extrinsic_Surface_Tracker> tracker = builder.build_tracker();
 
