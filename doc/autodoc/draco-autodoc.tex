@@ -214,8 +214,8 @@ keywords that we have found to be most useful.
 If found within a special comment block 
 as defined in section \S~\ref{sec:spcom} above, \doxy\ 
 recognizes a multitude of \texttt{html} commands. These
-commands are used directly in the \texttt{html} document and are converted appropriately for
-the \LaTeX\ output. 
+commands are used directly in the \texttt{html} document and are converted 
+appropriately for the \LaTeX\ output. 
 For example, if the phrase: 
 \begin{verbatim}
 <H1> My Header <\H1>
@@ -270,33 +270,37 @@ documentation (See section \S~\ref{sec:www})
 \subsection{Changes to \draco\ Build System}
 
 Ultimately, we desire to make the necessary changes to the \draco\
-build system to support \doxy\ documentation builds, installs, cleans,
+build system to support \doxy\ documentation dependencies,
+builds, installs, cleans,
 etc. in a general way. For the present, 
-we will create and store a small document generation 
-script called \texttt{gendoc}. This 
-script will basically execute the following commands:
-\begin{verbatim} 
-     cd draco/autodoc
-     PATH/doxygen draco.config
-\end{verbatim}
-Currently ``PATH'' is \texttt{/scratch/tme/bin} and \doxy\
+only build and clean targets will be supported.
+Currently\doxy\
 can only be executed from a SGI platform. These details may
 change in the future. 
 
 \subsection{Building the Documentation}
 
-To produce documentation, first checkout a working copy of \draco, then
-execute the \texttt{gendoc} script.
-When the script is executed, 
-the documentation is produced and stored in the
-\texttt{html} and \LaTeX\ directories.
-The resulting \texttt{html} files can be viewed with any browser. The \LaTeX\
-directory will contain a makefile, typing gmake will produce 
+To produce documentation, checkout a working copy of \draco\ 
+and configure normally as described in  Ref~\cite{draco-build}. Then
+execute the following commands in your build directory:
+\begin{verbatim} 
+     cd draco/autodoc
+     gmake 
+\end{verbatim}
+The documentation will be produced and stored in the
+\texttt{html} and \LaTeX\ directories in the install location.
+The resulting \texttt{html} files can be viewed with any browser. The
+file \texttt{index.html} provides a default starting point. The \LaTeX\
+directory will contain a makefile. Typing gmake therein will produce 
 a \texttt{refman.dvi} file which can be viewed directly with \texttt{xdvi},
-or converted to postscript with \texttt{dvips}.
+or converted to postscript with \texttt{dvips}. At present there
+is no dependency checking for the documentation.
 If the source code is subsequently changed for some reason,
 \doxy\ should be run again, thus assuring that the documentation 
 remains in sync with the source code.
+
+Documentation will also be produced as part of a normal build
+from the top level \texttt{draco} directory. 
 
 \subsection{\doxy\ Configuration File}
 \label{sec:config}
@@ -330,6 +334,18 @@ Developers can use the current \texttt{config.draco} as a template for
 any changes that are required. In most cases, this will consist of
 simply adding a new path or file to the INPUT, EXAMPLE\_PATH and/or 
 INCLUDE\_PATH definitions.
+
+\subsection{Name Collisions}
+Since all packages in \draco\ will be documented in the same
+files, the potential exists for name collisions. Fortunately,
+since all \draco\ packages are in their own namespace, this problem
+should be minimized. Nevertheless, 
+    it is considered good practice  to preface any labels which are to be
+used with the \doxy\ \verb+\ref+ keyword with the
+    package name to prevent potential conflicts.
+Also, we recommend that any file names used
+with the \doxy\ \verb+\example+ and \verb+\include+ keywords
+should include the path to the file starting with the package name.
 
 
 \subsection{Tagging and Release Procedures}
@@ -511,14 +527,13 @@ autodocumented and are available through the usual CVS checkout procedures.
 \begin{verbatim}
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file fixed_ts_advisor.hh
- * \brief Defines the fixed time-step advisor.
- *
- * \author <a href="http://www.lanl.gov/home/mcghee">
- *  John McGhee</a>
- *
- * \date Thu Apr  2 14:06:18 1998
+ * \file   timestep/fixed_ts_advisor.hh
+ * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \date   Thu Apr  2 14:06:18 1998
+ * \brief  Header file for the fixed time-step advisor class.
  */
+//---------------------------------------------------------------------------//
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_fixed_ts_advisor_hh__
@@ -534,8 +549,8 @@ namespace rtt_timestep {
  *        into the time-step calculation.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview page gives a summary of the Draco time step control
- * utilities. 
+ * The \ref timestep_overview page gives a summary of the Draco time 
+ * step control utilities. 
  *
  * This is useful to set min and max timesteps, or to force a
  * timestep, etc. The recommendation for the new timestep is
@@ -615,7 +630,6 @@ class fixed_ts_advisor : public ts_advisor {
 //---------------------------------------------------------------------------//
 //                              end of fixed_ts_advisor.hh
 //---------------------------------------------------------------------------//
-
 \end{verbatim}
 
 %%---------------------------------------------------------------------------%%
@@ -624,8 +638,7 @@ class fixed_ts_advisor : public ts_advisor {
 
 Several improvements may be implemented in the future. 
 Ultimately, it may be desirable  to make changes to the \draco\
-build system to support \doxy\ documentation builds, installs, cleans,
-etc. in a general way. 
+build system to support \doxy\ documentation dependencies.
 Also, it may be desirable to create a ``pkgcommit'' srcipt to manage
 version numbers and automatically update the package Release.hh version
 number information. 
