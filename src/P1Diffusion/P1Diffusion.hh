@@ -1,0 +1,153 @@
+//----------------------------------*-C++-*----------------------------------//
+// P1Diffusion.hh
+// Randy M. Roberts
+// Tue Sep 15 11:08:28 1998
+//---------------------------------------------------------------------------//
+// @> 
+//---------------------------------------------------------------------------//
+
+#ifndef __P1Diffusion_P1Diffusion_hh__
+#define __P1Diffusion_P1Diffusion_hh__
+
+#include "ds++/SP.hh"
+#include "ds++/Assert.hh"
+#include "3T/Diffusion_DB.hh"
+
+namespace rtt_P1Diffusion
+{
+    
+ //===========================================================================//
+ // class P1Diffusion - 
+ //
+ // Date created :
+ // Purpose      :
+ //
+ // revision history:
+ // -----------------
+ // 0) original
+ // 
+ //===========================================================================//
+
+ template<class MT, class MS>
+ class P1Diffusion
+ {
+
+     // NESTED CLASSES AND TYPEDEFS
+
+     typedef MT Mesh;
+     typedef MS MatrixSolver;
+     typedef typename MS::Matrix Matrix;
+     typedef typename MT::fcdsf fcdsf;
+     typedef typename MT::ccsf ccsf;
+     typedef typename MT::bssf bssf;
+
+   public:
+
+     typedef fcdsf FluxField;
+     typedef fcdsf DiscFluxField;
+     
+     // DATA
+    
+     dsxx::SP<Mesh> spm;
+     dsxx::SP<MatrixSolver> spsolver;
+
+     // Cache the swapped values to avoid too much communication.
+     
+     mutable dsxx::SP<fcdsf> spDSwap;
+     mutable dsxx::SP<fcdsf> spFprimeSwap;
+     mutable dsxx::SP<fcdsf> spDeltaLSwap;
+
+   public:
+
+     // CREATORS
+    
+     P1Diffusion(const Diffusion_DB &diffdb, const dsxx::SP<Mesh>& spm_,
+		 const dsxx::SP<MatrixSolver> &spsolver_);
+
+     // MANIPULATORS
+    
+     // ACCESSORS
+
+     void solve(ccsf &phi, fcdsf &F, const fcdsf &D, const ccsf &sigma,
+		const ccsf &Q, const fcdsf &Fprime, const bssf &alpha,
+		const bssf &beta, const bssf &fb) const;
+
+   private:
+    
+     // IMPLEMENTATION
+
+     void cacheSwappedValues(const fcdsf &D,
+			     const fcdsf &Fprime,
+			     const fcdsf &deltaL) const;
+     
+     void decacheSwappedValues() const;
+     
+     void getDEffOverDeltaL(fcdsf &DEffOverDeltaL,
+			    const fcdsf &D,
+			    const bssf &alpha,
+			    const bssf &beta) const;
+
+     void getDEffOverDeltaLInternal(fcdsf &DEffOverDeltaL,
+				    const fcdsf &D,
+				    const fcdsf &deltaL) const;
+     
+     void getDEffOverDeltaLBndry(bssf &DEffOverDeltaLBndry,
+				 const fcdsf &D,
+				 const fcdsf &deltaL,
+				 const bssf &alpha,
+				 const bssf &beta) const;
+     
+     void getFprimeEff(fcdsf &FprimeEff,
+		       const fcdsf &Fprime,
+		       const fcdsf &D,
+		       const bssf &alpha,
+		       const bssf &beta,
+		       const bssf &fb) const;
+
+     void getFprimeEffInternal(fcdsf &FprimeEff,
+			       const fcdsf &Fprime,
+			       const fcdsf &D,
+			       const fcdsf &deltaL) const;
+
+     void getFprimeEffBndry(bssf &FprimeEffBndry,
+			    const fcdsf &Fprime,
+			    const fcdsf &D,
+			    const fcdsf &deltaL,
+			    const bssf &alpha,
+			    const bssf &beta,
+			    const bssf &fb) const;
+
+     void solveMatrixEquation(ccsf &phi,
+			      const dsxx::SP<const ccsf> &spADiagonal,
+			      const dsxx::SP<const fcdsf> &spAOffDiagonal,
+			      const ccsf &brhs) const;
+     
+     void getNewFlux(fcdsf &F, const fcdsf &DEffOverDeltaL,
+		     const fcdsf &FprimeEff,
+		     const ccsf &phi) const;
+
+     const fcdsf &getDSwap() const
+     {
+	 Assert(spDSwap);
+	 return *spDSwap;
+     }
+     
+     const fcdsf &getFprimeSwap() const
+     {
+	 Assert(spFprimeSwap);
+	 return *spFprimeSwap;
+     }
+     
+     const fcdsf &getDeltaLSwap() const {
+	 Assert(spDeltaLSwap);
+	 return *spDeltaLSwap;
+     }
+ };
+
+}  // namespace rtt_P1Diffusion
+
+#endif                          // __P1Diffusion_P1Diffusion_hh__
+
+//---------------------------------------------------------------------------//
+//                              end of P1Diffusion/P1Diffusion.hh
+//---------------------------------------------------------------------------//
