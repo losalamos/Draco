@@ -80,7 +80,7 @@ class SP {
     explicit SP( X *px )
     {
 	T *np = dynamic_cast<T *>( px );
-	if (!np) throw "Incompatible dumb pointer type.";
+	if (!np && px) throw "Incompatible dumb pointer type.";
 	p = np;
 	r = new SPref;
     }
@@ -92,7 +92,7 @@ class SP {
     {
 	X *px = spx.p;
 	T *np = dynamic_cast<T *>( px );
-	if (!np) throw "Incompatible smart pointer types.";
+	if (!np && px) throw "Incompatible smart pointer types.";
 	p = np;
 	r = spx.r;
 	r->refs++;
@@ -113,7 +113,7 @@ class SP {
     SP& operator=( X *px )
     {
 	T *np = dynamic_cast<T *>( px );
-	if (!np) throw "Incompatible smart pointer types.";
+	if (!np && px) throw "Incompatible smart pointer types.";
 	return *this = np;
     }
 
@@ -133,10 +133,10 @@ class SP {
     {
 	X *px = spx.p;
 	T *np = dynamic_cast<T *>( px );
-	if (!np) throw "Incompatible smart pointer types.";
-	if (p == np) {
-	// If we have the same pointer, we'd better be sharing the reference
-	// holder too!
+	if (!np && px) throw "Incompatible smart pointer types.";
+	if (p == np && p) {
+	    // If we have the same pointer, and it's not NULL,
+	    // we'd better be sharing the reference holder too!
 	    Assert( r == spx.r );
 	    return *this;	// It could happen.
 	}
