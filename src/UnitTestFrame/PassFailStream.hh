@@ -61,6 +61,8 @@ class PassFailStream
 	    testApp.setPassed(false);
     }
     
+    //Defaulted: PassFailStream(const PassFailStream &rhs);
+
     ~PassFailStream()
     {
 	testApp.addMessage(ost.str());
@@ -68,6 +70,8 @@ class PassFailStream
 
     // MANIPULATORS
     
+    //Defaulted: PassFailStream& operator=(const PassFailStream &rhs);
+
     template<class T>
     PassFailStream &operator<<(const T& val)
     {
@@ -79,11 +83,6 @@ class PassFailStream
 
   private:
     
-    // DISALLOWED METHODS
-    
-    PassFailStream(const PassFailStream &rhs);
-    PassFailStream& operator=(const PassFailStream &rhs);
-
     // IMPLEMENTATION
 };
 
