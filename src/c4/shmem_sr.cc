@@ -15,6 +15,7 @@
 #include <iostream>
 using namespace std;
 
+#include <time.h>
 #include <mpp/shmem.h>
 #include <pthread.h>
 
@@ -74,6 +75,8 @@ static Msg_Queue *msg_queue;
 
 int one = 1;
 
+static int c4verbose = 0;
+
 //---------------------------------------------------------------------------//
 
 // defined in shmem_reduce.cc
@@ -126,7 +129,8 @@ void C4_shm_init_pt2pt()
 		"Unable to initialize mutex" );
     }
 
-    cout << "pt2pt arrays are ready on node " << node() << endl;
+    if (c4verbose)
+        cout << "pt2pt arrays are ready on node " << node() << endl;
     gsync();
 }
 
@@ -284,7 +288,6 @@ static void empty_inbox_to_msg_queue( int source )
 
 void Init( int& iargc, char **& iargv )
 {
-    cout << "Starting C4\n";
     int npes = 0;
 
 // Search through the arglist, looking for C4 options.
@@ -306,14 +309,25 @@ void Init( int& iargc, char **& iargv )
 	    continue;
 	}
 
+        if (opt == "c4v")
+        {
+            c4verbose = 1;
+            argc--, argv++;
+            continue;
+        }
+
 	cout << "Unrecognized option: " << *argv << endl;
 	argc--, argv++;
     }
 
+    if (c4verbose)
+        cout << "Starting C4\n";
+
 // Now fire off the pe's.
     start_pes( npes );
 
-    cout << "Virtual processor is alive.\n";
+    if (c4verbose)
+        cout << "Virtual processor is alive.\n";
 
     C4_shm_init_scalar_work_arrays();
     C4_shm_init_pt2pt();
@@ -331,6 +345,7 @@ void Finalize()
 #ifdef _CRAYMPP
     Assert( !shmalloc_check(0) );
 #endif
+
     shfree( pe_msg_waiting );
     shfree( pe_ready );
     shfree( pe_recv_buf );
@@ -363,6 +378,34 @@ int group()
 void gsync()
 {
     shmem_barrier_all();
+}
+
+struct timespec tsclock;
+
+double Wtime()
+{
+    int clock =
+#if defined(CLOCK_SGI_CYCLE)
+        CLOCK_SGI_CYCLE;
+#else
+    CLOCK_REALTIME;
+#endif
+
+    clock_gettime( clock, &tsclock );
+    return tsclock.tv_sec + tsclock.tv_nsec*1.0e-9;
+}
+
+double Wtick() 
+{
+    int clock =
+#if defined(CLOCK_SGI_CYCLE)
+        CLOCK_SGI_CYCLE;
+#else
+    CLOCK_REALTIME;
+#endif
+
+    clock_getres( clock, &tsclock );
+    return tsclock.tv_sec + tsclock.tv_nsec*1.0e-9;
 }
 
 //---------------------------------------------------------------------------//
