@@ -1,9 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-// Sprng.cc
-// Thomas M. Evans
-// Fri Jun 26 07:41:48 1998
+/*!
+ * \file   Sprng.cc
+ * \author Thomas M. Evans
+ * \date   Fri Jun 26 07:41:48 1998
+ * \brief  \link rtt_rng::Sprng Sprng \endlink random number class 
+ *         implementation file.
+ */
 //---------------------------------------------------------------------------//
-// @> Sprng random number class implementation file
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Sprng.hh"
