@@ -430,6 +430,19 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
     return thermal_conductivity;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Pack an analytic EoS opacity.
+ *
+ * This function will pack up the Analytic_EoS into a char
+ * array (represented by a vector<char>).  The Analytic_EoS_Model derived
+ * class must have a pack function; this is enforced by the virtual
+ * Analytic_EoS_Model base class.
+ */
+Analytic_EoS::sf_char Analytic_EoS::pack() const
+{
+    return sf_char();
+}
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//

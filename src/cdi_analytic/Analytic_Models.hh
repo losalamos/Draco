@@ -14,9 +14,39 @@
 
 #include "ds++/Assert.hh"
 #include <cmath>
+#include <vector>
 
 namespace rtt_cdi_analytic
 {
+
+//===========================================================================//
+// ENUMERATIONS
+//===========================================================================//
+
+/*!
+ * \brief Enumeration describing the opacity models that are available.
+ *
+ * Only opacity models that have been registered here can be unpacked by the
+ * Analytic_Gray_Opacity and Analytic_Multigroup_Opacity classes.  The
+ * enumeration names should be the same as the derived class names.
+ */
+enum Opacity_Models
+{
+    CONSTANT_ANALYTIC_OPACITY_MODEL,
+    POLYNOMIAL_ANALYTIC_OPACITY_MODEL
+};
+
+/*!
+ * \brief Enumeration describing the eos  models that are available.
+ *
+ * Only EoS models that have been registered here can be unpacked by the
+ * Analytic_EoS classes. The enumeration names should be the same as the
+ * derived class names.
+ */
+enum EoS_Models
+{
+    POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL
+};
 
 //===========================================================================//
 /*!
@@ -27,11 +57,17 @@ namespace rtt_cdi_analytic
  * Analytic_Gray_Opacity or Analytic_MultiGroup_Opacity constructors.  The
  * user can define any derived model class that will work with these analtyic
  * opacity generation classes as long as it contains the following function:
- * (declared virtual in this class).
- *
- * This class is a pure virtual base class. 
+ * (declared pure virtual in this class).
  *
  * \arg double calculate_opacity(double T, double rho)
+ *
+ * To enable packing functionality, the class must be registered in the
+ * Opacity_Models enumeration.  Also, it must contain the following pure
+ * virtual function:
+ *
+ * \arg vector<char> pack() const;
+ *
+ * This class is a pure virtual base class. 
  *
  * The returned opacity should have units of cm^2/g.
  *
@@ -41,11 +77,18 @@ namespace rtt_cdi_analytic
 class Analytic_Opacity_Model
 {
   public:
+    // Typedefs.
+    typedef std::vector<char> sf_char;
+
+  public:
     //! Virtual destructor for proper inheritance destruction.
     virtual ~Analytic_Opacity_Model() {/*...*/}
 
     //! Interface for derived analytic opacity models.
     virtual double calculate_opacity(double T, double rho) const = 0;
+
+    //! Return a char string of packed data.
+    virtual sf_char pack() const = 0;
 };
 
 //---------------------------------------------------------------------------//
@@ -71,17 +114,23 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
 
   public:
     //! Constructor, sig has units of cm^2/g.
-    Constant_Analytic_Opacity_Model(double sig) 
+    explicit Constant_Analytic_Opacity_Model(double sig) 
 	: sigma(sig) 
     { 
 	Require (sigma >= 0.0); 
     }
+
+    //! Constructor for packed state.
+    explicit Constant_Analytic_Opacity_Model(const sf_char &packed);
 
     //! Calculate the opacity in units of c^2/g.
     double calculate_opacity(double T, double rho) const
     {
 	return sigma;
     }
+
+    //! Pack up the class for persistence.
+    sf_char pack() const;
 };
 
 //---------------------------------------------------------------------------//
@@ -127,6 +176,9 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 	/*...*/
     }
 
+    //! Constructor for packed state.
+    explicit Polynomial_Analytic_Opacity_Model(const sf_char &packed);
+
     //! Calculate the opacity in units of c^2/g
     double calculate_opacity(double T, double rho) const
     {
@@ -141,6 +193,9 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 	Ensure (opacity >= 0.0);
 	return opacity;
     }
+
+    //! Pack up the class for persistence.
+    sf_char pack() const;
 };
 
 //===========================================================================//
@@ -171,12 +226,22 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
  * These units correspond to the units defined by the rtt_cdi::EoS base
  * class. 
  *
+ * To enable packing functionality, the class must be registered in the
+ * EoS_Models enumeration.  Also, it must contain the following pure
+ * virtual function:
+ *
+ * \arg vector<char> pack() const;
+ *
  * This class is a pure virtual base class. 
  */
 //===========================================================================//
 
 class Analytic_EoS_Model
 {
+  public:
+    // Typedefs.
+    typedef std::vector<char> sf_char;
+
   public:
     //! Virtual destructor for proper inheritance destruction.
     virtual ~Analytic_EoS_Model() {/*...*/}
@@ -204,6 +269,9 @@ class Analytic_EoS_Model
     //! Calculate the electron thermal conductivity.
     virtual double calculate_elec_thermal_conductivity(double T, double rho)
 	const = 0;
+
+    //! Return a char string of packed data.
+    virtual sf_char pack() const = 0;
 };
 
 //---------------------------------------------------------------------------//
@@ -259,6 +327,9 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
 	/*...*/
     }
 
+    //! Constructor for packed state.
+    explicit Polynomial_Specific_Heat_Analytic_EoS_Model(const sf_char &);
+
     //! Calculate the electron heat capacity in kJ/g/keV.
     double calculate_electron_heat_capacity(double T, double rho) const
     {
@@ -301,6 +372,9 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     //! Return 0 for the electron thermal conductivity.
     double calculate_elec_thermal_conductivity(double T, double rho) const
     { return 0.0; }
+
+    //! Pack up the class for persistence.
+    sf_char pack() const;
 };
 
 } // end namespace rtt_cdi_analytic

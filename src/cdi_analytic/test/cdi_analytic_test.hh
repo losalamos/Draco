@@ -13,7 +13,9 @@
 #define __cdi_analytic_test_hh__
 
 #include "../Analytic_Models.hh"
+#include "ds++/Packing_Utils.hh"
 #include <iostream>
+#include <vector>
 
 namespace rtt_cdi_analytic_test
 {
@@ -61,6 +63,16 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
     double calculate_opacity(double T, double rho) const
     {
 	return a / (T * T * T);
+    }
+
+    std::vector<char> pack() const
+    {
+	rtt_dsxx::Packer packer;
+	std::vector<char> p(sizeof(double) + sizeof(int));
+	packer.set_buffer(p.size(), &p[0]);
+	int indicator = 10;
+	packer << indicator << a;
+	return p;
     }
 };
 

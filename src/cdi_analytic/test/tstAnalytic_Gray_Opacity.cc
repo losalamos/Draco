@@ -23,6 +23,7 @@
 #include <typeinfo>
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 using namespace std;
 
@@ -117,6 +118,26 @@ void user_defined_test()
 	if (error > 1.0e-12 * ref)       ITFAILS; 
 	if (error_field > 1.0e-12 * ref) ITFAILS; 
     }
+
+    // check to make sure we can't unpack an unregistered analytic model
+    vector<char> packed = anal_opacity.pack();
+
+    bool caught = false;
+    try
+    {
+	Analytic_Gray_Opacity ngray(packed);
+    }
+    catch (const rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream message;
+	message << "Caught the following assertion: " << ass.what();
+	PASSMSG(message.str());
+    }
+    if (!caught)
+    {
+	FAILMSG("Failed to catch unregistered analyic model assertion");
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -179,6 +200,55 @@ void CDI_test()
 
 //---------------------------------------------------------------------------//
 
+void packing_test()
+{
+    // test the packing
+    vector<char> packed;
+    {
+	// lets make two models
+	SP<Analytic_Opacity_Model> amodel
+	    (new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,1.0,0.0));
+	
+	Analytic_Gray_Opacity absorption(amodel, rtt_cdi::ABSORPTION);
+
+	packed = absorption.pack();
+    }
+
+    // now unpack and test
+    Analytic_Gray_Opacity ngray(packed);
+
+    // now check some data
+    vector<double> T(6);
+    vector<double> rho(6, 3.0);
+    {
+	T[0] = .993;
+	T[1] = .882;
+	T[2] = .590;
+	T[3] = .112;
+	T[4] = .051;
+	T[5] = .001;
+
+	std::fill(rho.begin(), rho.end(), 3.0);
+    }
+
+    for (int i = 0; i < T.size(); i++)
+    {
+	double ref = 100.0 / (T[i]*T[i]*T[i]);
+
+	double error = fabs(ngray.getOpacity(T[i], rho[i]) - ref);
+
+	if (error > 1.0e-12 * ref) ITFAILS; 
+    }
+    
+    if (ngray.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
+    if (ngray.getModelType() != rtt_cdi::ANALYTIC)      ITFAILS;
+
+    if (rtt_cdi_analytic_test::passed)
+	PASSMSG("Analytic_Gray_Opacity packing test passes.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -196,6 +266,8 @@ int main(int argc, char *argv[])
 	constant_test();
 	user_defined_test();
 	CDI_test();
+
+	packing_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

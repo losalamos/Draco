@@ -72,6 +72,7 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
     typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
     typedef std::vector<double>                  sf_double;
     typedef std::string                          std_string;
+    typedef std::vector<char>                    sf_char;
     
   private:
     // Analytic opacity model.
@@ -83,6 +84,9 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
   public:
     // Constructor.
     Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction);
+
+    // Constructor for packed Analytic_Gray_Opacities.
+    Analytic_Gray_Opacity(const sf_char &);
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::GrayOpacity
 
@@ -124,6 +128,9 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 
     //! Get the size of the density grid (size 0).
     int getNumDensities() const { return 0; }
+
+    // Pack the Analytic_Gray_Opacity into a character string.
+    sf_char pack() const;
 };
 
 //---------------------------------------------------------------------------//

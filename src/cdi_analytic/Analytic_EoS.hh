@@ -57,6 +57,7 @@ class Analytic_EoS : public rtt_cdi::EoS
     // Useful typedefs.
     typedef rtt_dsxx::SP<Analytic_EoS_Model> SP_Analytic_Model;
     typedef std::vector<double>              sf_double;
+    typedef std::vector<char>                sf_char;
 
   private:
     // Analytic EoS model.
@@ -97,6 +98,9 @@ class Analytic_EoS : public rtt_cdi::EoS
     double    getElectronThermalConductivity(double, double) const;
     sf_double getElectronThermalConductivity(const sf_double &, 
 					     const sf_double &) const;
+
+    // Pack the Analytic_EoS into a character string.
+    sf_char pack() const;
 };
 
 } // end namespace rtt_cdi_analytic

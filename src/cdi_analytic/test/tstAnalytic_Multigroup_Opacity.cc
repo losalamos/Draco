@@ -245,6 +245,150 @@ void test_CDI()
 
 //---------------------------------------------------------------------------//
 
+void packing_test()
+{
+    vector<char> packed;
+
+    // group structure
+    vector<double> groups(4, 0.0);
+    {
+	groups[0] = 0.05;
+	groups[1] = 0.5;
+	groups[2] = 5.0;
+	groups[3] = 50.0;
+    }
+    
+    {
+	vector<SP<Analytic_Opacity_Model> > models(3);
+
+	// make a Polynomial model for the first group
+	models[0] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+	    0.0, 100.0, -3.0, 1.0, 0.0);
+
+	// make a Polynomial model for the second group
+	models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+	    1.5, 0.0, 0.0, 1.0, 0.0);
+
+	// make a Constant model for the third group
+	models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
+
+	// make an analytic multigroup opacity object for absorption
+	SP<const MultigroupOpacity> mg
+	    (new Analytic_Multigroup_Opacity(groups, models, 
+					     rtt_cdi::ABSORPTION));
+
+	// pack it
+	packed = mg->pack();
+    }
+
+    // now unpack it
+    Analytic_Multigroup_Opacity opacity(packed);
+
+    // now check it
+
+    // check the interface to multigroup opacity
+    {
+	string desc = "Analytic Multigroup Absorption";
+
+	if (opacity.data_in_tabular_form())                   ITFAILS;
+	if (opacity.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
+	if (opacity.getModelType() != rtt_cdi::ANALYTIC)      ITFAILS;
+	if (opacity.getNumTemperatures() != 0)                ITFAILS;
+	if (opacity.getNumDensities() != 0)                   ITFAILS;
+	if (opacity.getTemperatureGrid() != vector<double>()) ITFAILS;
+	if (opacity.getDensityGrid() != vector<double>())     ITFAILS;
+	if (opacity.getNumGroups() != 3)                      ITFAILS;
+	if (opacity.getNumGroupBoundaries() != 4)             ITFAILS;
+	if (opacity.getEnergyPolicyDescriptor() != "mg")      ITFAILS;
+	if (opacity.getDataDescriptor() != desc)              ITFAILS;
+	if (opacity.getDataFilename() != string())            ITFAILS;
+    }
+
+    // check the group structure
+    vector<double> mg_groups = opacity.getGroupBoundaries();
+
+    if (soft_equiv(mg_groups.begin(), mg_groups.end(), 
+		   groups.begin(), groups.end()))
+    {
+	PASSMSG("Group boundaries for unpacked MG opacity match.");
+    }
+    else
+    {
+	FAILMSG("Group boundaries for unpacked MG do not match.");
+    }
+
+    // >>> get opacities
+    
+    // scalar density and temperature
+    vector<double> sigma = opacity.getOpacity(2.0, 3.0);
+    vector<double> ref(3, 0.0);
+    {
+	ref[0] = 100.0 / 8.0;
+	ref[1] = 1.5;
+	ref[2] = 3.0;
+    }
+    if (soft_equiv(sigma.begin(), sigma.end(), ref.begin(), ref.end()))
+    {
+	ostringstream message;
+	message << "Analytic multigroup opacities for unpacked MG opacity "
+		<< "are correct for "
+		<< "scalar temperature and scalar density.";
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message << "Analytic multigroup opacities for unpacked MG opacity "
+		<< "are NOT correct for "
+		<< "scalar temperature and scalar density.";
+	FAILMSG(message.str());
+    }
+
+    // make sure we catch an assertion showing that we cannot unpack an
+    // unregistered opacity
+    {
+	vector<SP<Analytic_Opacity_Model> > models(3);
+	
+	// make a Marshak (user-defined) model for the first group
+	models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
+	
+	// make a Polynomial model for the second group
+	models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+	    1.5, 0.0, 0.0, 1.0, 0.0);
+	
+	// make a Constant model for the third group
+	models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
+	
+	// make an analytic multigroup opacity object for absorption
+	SP<const MultigroupOpacity> mg( 
+	    new Analytic_Multigroup_Opacity(groups, models,
+					    rtt_cdi::ABSORPTION));
+
+	packed = mg->pack();
+    }
+
+    // we should catch an assertion when unpacking this because the
+    // Marshak_Model is not registered in rtt_cdi::Opacity_Models
+    bool caught = false;
+    try
+    {
+	Analytic_Multigroup_Opacity nmg(packed);
+    }
+    catch (const rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream message;
+	message << "Caught the following assertion: " << ass.what();
+	PASSMSG(message.str());
+    }
+    if (!caught)
+    {
+	FAILMSG("Failed to catch unregistered analyic model assertion");
+    }
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -262,6 +406,8 @@ int main(int argc, char *argv[])
 	multigroup_test();
 
 	test_CDI();
+
+	packing_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Multigroup_Opacity.hh"
+#include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -51,6 +52,97 @@ Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
 	     reaction == rtt_cdi::ABSORPTION ||
 	     reaction == rtt_cdi::SCATTERING);
     Require (group_boundaries.size() - 1 == group_models.size());
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpacking constructor.
+ * 
+ * This constructor rebuilds and Analytic_Multigroup_Opacity from a
+ * vector<char> that was created by a call to pack().  It can only rebuild
+ * Analytic_Model types that have been registered in the
+ * rtt_cdi_analytic::Opacity_Models enumeration.
+ */
+Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
+    const sf_char &packed)
+{
+    // the packed size must be at least 3 integers (number of groups,
+    // reaction type, analytic model indicator)
+    Require (packed.size() >= 3 * sizeof(int));
+
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+    
+    // register the unpacker
+    unpacker.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the number of group boundaries
+    int ngrp_bounds = 0;
+    unpacker >> ngrp_bounds;
+    int num_groups  = ngrp_bounds - 1;
+    
+    // make the group boundaries and model vectors
+    group_boundaries.resize(ngrp_bounds);
+    group_models.resize(num_groups);
+
+    // unpack the group boundaries
+    for (int i = 0; i < ngrp_bounds; i++)
+	unpacker >> group_boundaries[i];
+
+    // now unpack the models
+    std::vector<sf_char> models(num_groups);
+    int                  model_size = 0;
+    for (int i = 0; i < models.size(); i++)
+    {
+	// unpack the size of the analytic model
+	unpacker >> model_size;
+	Check (model_size >= sizeof(int));
+
+	models[i].resize(model_size);
+	
+	// unpack the model
+	for (int j = 0; j < models[i].size(); j++)
+	    unpacker >> models[i][j];
+    }
+
+    // unpack the reaction type
+    int reaction_int;
+    unpacker >> reaction_int;
+    Check (unpacker.get_ptr() == &packed[0] + packed.size());
+
+    // assign the reaction type
+    reaction = static_cast<rtt_cdi::Reaction>(reaction_int);
+
+    // now rebuild the analytic models
+    int indicator = 0;
+    for (int i = 0; i < models.size(); i++)
+    {
+	// reset the buffer
+	unpacker.set_buffer(models[i].size(), &models[i][0]);
+
+	// get the indicator for this model (first packed datum)
+	unpacker >> indicator;
+
+	// now determine which analytic model we need to build
+	if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
+	{
+	    group_models[i] = new Constant_Analytic_Opacity_Model(
+		models[i]);
+	}
+	else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
+	{
+	    group_models[i] = new Polynomial_Analytic_Opacity_Model(
+		models[i]);
+	}
+	else
+	{
+	    Insist (0, "Unregistered analytic opacity model!");
+	}
+
+	Ensure (group_models[i]);
+    }
+    
+    Ensure (group_boundaries.size() - 1 == group_models.size());
 }
 
 //---------------------------------------------------------------------------//
@@ -198,6 +290,70 @@ Analytic_Multigroup_Opacity::getOpacity(double temperature,
     }
 
     return opacities;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Pack an analytic multigroup opacity.
+ *
+ * This function will pack up the Analytic_Mulitgroup_Opacity into a char
+ * array (represented by a vector<char>).  The Analytic_Opacity_Model derived
+ * class must have a pack function; this is enforced by the virtual
+ * Analytic_Opacity_Model base class.
+ */
+Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
+{
+    Require (group_boundaries.size() - 1 == group_models.size())
+
+    // make a packer
+    rtt_dsxx::Packer packer;
+
+    // first pack up models
+    std::vector<sf_char> models(group_models.size());
+    int                  num_bytes_models = 0;
+
+    // loop through and pack up the models
+    for (int i = 0; i < models.size(); i++)
+    {
+	Check (group_models[i]);
+
+	models[i]         = group_models[i]->pack();
+	num_bytes_models += models[i].size();
+    }
+
+    // now add up the total size; number of groups + 1 int for number of
+    // groups, number of models + size in each model + models, 1 int for
+    // reaction type
+    int size =  (2 + models.size()) * sizeof(int) + 
+	group_boundaries.size() * sizeof(double) + num_bytes_models;
+
+    // make a char array
+    sf_char packed(size);
+
+    // set the buffer
+    packer.set_buffer(size, &packed[0]);
+
+    // pack the number of groups and group boundaries
+    packer << group_boundaries.size();
+    for (int i = 0; i < group_boundaries.size(); i++)
+	packer << group_boundaries[i];
+
+    // pack each models size and data
+    for (int i = 0; i < models.size(); i++)
+    {
+	// pack the size of this model
+	packer << models[i].size();
+	
+	// now pack the model data
+	for (int j = 0; j < models[i].size(); j++)
+	    packer << models[i][j];
+    }
+
+    // now pack the reaction type
+    packer << static_cast<int>(reaction);
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+    return packed;
 }
 
 } // end namespace rtt_cdi_analytic

@@ -85,6 +85,7 @@ namespace rtt_cdi_analytic
     typedef std::vector<double>                  sf_double;
     typedef std::vector<sf_double>               vf_double;
     typedef std::string                          std_string;
+    typedef std::vector<char>                    sf_char;
     
   private:
     // Group structure.
@@ -101,6 +102,9 @@ namespace rtt_cdi_analytic
     Analytic_Multigroup_Opacity(const sf_double &, 
 				const sf_Analytic_Model &,
 				rtt_cdi::Reaction);
+
+    // Constructor for packed Analytic_Multigroup_Opacities
+    Analytic_Multigroup_Opacity(const sf_char &);
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 
@@ -151,6 +155,9 @@ namespace rtt_cdi_analytic
 
     //! Get the number of frequency group boundaries.
     int getNumGroups() const { return group_boundaries.size() - 1; }
+
+    // Pack the Analytic_Multigroup_Opacity into a character string.
+    sf_char pack() const;
 };
 
 //---------------------------------------------------------------------------//

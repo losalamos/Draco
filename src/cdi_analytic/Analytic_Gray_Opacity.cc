@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Gray_Opacity.hh"
+#include "ds++/Packing_Utils.hh"
 #include <cmath>
 
 namespace rtt_cdi_analytic
@@ -42,6 +43,70 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
 	     reaction == rtt_cdi::ABSORPTION ||
 	     reaction == rtt_cdi::SCATTERING);
 
+    Ensure (analytic_model);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Unpacking constructor.
+ * 
+ * This constructor rebuilds and Analytic_Gray_Opacity from a vector<char>
+ * that was created by a call to pack().  It can only rebuild Analytic_Model
+ * types that have been registered in the rtt_cdi_analytic::Opacity_Models
+ * enumeration. 
+ */
+Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
+{
+    // the packed size must be at least 3 integers (size, reaction type,
+    // analytic model indicator)
+    Require (packed.size() >= 3 * sizeof(int));
+
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+
+    // set the buffer
+    unpacker.set_buffer(packed.size(), &packed[0]);
+
+    // unpack the size of the analytic model
+    int size_analytic;
+    unpacker >> size_analytic;
+    Check (size_analytic >= sizeof(int));
+
+    // unpack the packed analytic model
+    std::vector<char> packed_analytic(size_analytic);
+    for (int i = 0; i < size_analytic; i++)
+	unpacker >> packed_analytic[i];
+
+    // unpack the reaction type
+    int react_int;
+    unpacker >> react_int;
+    Check (unpacker.get_ptr() == &packed[0] + packed.size());
+
+    // assign the reaction type
+    reaction = static_cast<rtt_cdi::Reaction>(react_int);
+
+    // now reset the buffer so that we can determine the analytic model
+    // indicator
+    unpacker.set_buffer(size_analytic, &packed_analytic[0]);
+    
+    // unpack the indicator
+    int indicator;
+    unpacker >> indicator;
+
+    // now determine which analytic model we need to build
+    if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
+    {
+	analytic_model = new Constant_Analytic_Opacity_Model(packed_analytic);
+    }
+    else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
+    {
+	analytic_model = new Polynomial_Analytic_Opacity_Model(packed_analytic);
+    }
+    else
+    {
+	Insist (0, "Unregistered analytic opacity model!");
+    }
+    
     Ensure (analytic_model);
 }
 
@@ -159,6 +224,50 @@ Analytic_Gray_Opacity::getOpacity(double temperature,
     }
 
     return opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Pack an analytic gray opacity.
+ *
+ * This function will pack up the Analytic_Gray_Opacity into a char array
+ * (represented by a vector<char>).  The Analytic_Opacity_Model derived class
+ * must have a pack function; this is enforced by the virtual
+ * Analytic_Opacity_Model base class.
+ */
+Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const
+{
+    Require (analytic_model);
+
+    // make a packer
+    rtt_dsxx::Packer packer;
+
+    // first get pack up the analytic model
+    sf_char anal_model = analytic_model->pack();
+
+    // now add up the total size (in bytes): size of analytic model + 2
+    // int--one for reaction type and one for size of analytic model
+    int size = anal_model.size() + 2 * sizeof(int);
+
+    // make a char array
+    sf_char packed(size);
+
+    // set the buffer
+    packer.set_buffer(size, &packed[0]);
+
+    // pack the anal_model size
+    packer << anal_model.size();
+
+    // now pack the anal model
+    for (int i = 0; i < anal_model.size(); i++)
+	packer << anal_model[i];
+
+    // pack the reaction type
+    int react_int = reaction;
+    packer << react_int;
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+    return packed;
 }
 
 } // end namespace rtt_cdi_analytic
