@@ -1,4 +1,4 @@
-//---------------------------------*-text-*----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // build_system.dcc
 // The Draco Build System Documenation
 // This file is prepared by doxygen so that it can be part of the CCS-4
@@ -989,6 +989,16 @@ New packages are easily added to Draco through the build system.
 \section import Importing the Draco Build System
 
 The Draco Build System is designed to be imported into other codes.
+
+<!---------------------------------------------------------------------------->
+  
+\section faq Frequenty Asked Questions
+
+<ol>
+  <li><i>When should I run autoconf?</i><br>
+      During normal development you should not need to 
+      run \c autoconf. </li>
+</ol>
 
 <!---------------------------------------------------------------------------->
   
