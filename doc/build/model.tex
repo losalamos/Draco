@@ -1,11 +1,11 @@
 %%---------------------------------------------------------------------------%%
 %% model.tex
-%% Time-stamp: <99/02/11 18:49:29 tme>
+%% Time-stamp: <03/05/12 09:24:26 tme>
 %% description of the draco component library and overview of the
 %% build system
 %%---------------------------------------------------------------------------%%
 
-\chapter{The Draco Model}
+\section{Draco Build System Architecture}
 \label{chap:model}
 
 This chapter presents an overview of the \draco\ build model and
@@ -16,6 +16,11 @@ summary of GNU requirements is given in \S~\ref{sec:gnu_build_model}.
 Finally, this chapter concludes with a description of the \draco\ 
 source tree and files that are created during configuring and
 building.
+
+This section gives an overview of the DBS architecture.  As mentioned
+in \S~\ref{sec:intro}, the DBS is a GNU-based \autoconf/\make system.
+In this section we will describe the organization of files that make
+up the DBS.
 
 %%---------------------------------------------------------------------------%%
 

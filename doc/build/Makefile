@@ -2,7 +2,7 @@
 # draco/doc/build Makefile
 # Thomas M. Evans
 # Thu Feb 11 10:32:47 1999
-# Time-stamp: <99/02/11 16:17:20 tme>
+# Time-stamp: <03/05/09 17:01:01 tme>
 ###############################################################################
 # @> Makefile for Draco build document
 ###############################################################################
@@ -19,46 +19,56 @@ BIBTEX := ${BIBTEXENVS} bibtex
 
 MAKEIDX := makeindex
 
-.PHONY : all install clean dvi postscript clean-tex index bib tex
+DVIPS := dvips
+DVIPSFLAGS := -t letter -Ppdf
 
-all: postscript
+PDF := ps2pdf13
 
-install: all
+##---------------------------------------------------------------------------##
+## DEPENDENCIES
+##---------------------------------------------------------------------------##
+
+texsource := $(wildcard *.tex)
+figsource := $(wildcard *.eps)
+source    := $(texsource) $(figsource)
+
+##---------------------------------------------------------------------------##
+## RULES
+##---------------------------------------------------------------------------##
+
+.PHONY : all install clean postscript pdf real-clean
+
+all: dbs.dvi 
+
+install: 
 	@echo install not ready
 
-postscript: draco_bs.ps
+postscript: dbs.ps
 
-dvi: draco_bs.dvi
+pdf: dbs.pdf
 
-draco_bs.ps: draco_bs.dvi
-	dvips -o draco_bs.ps draco_bs.dvi
+%.dvi: %.tex $(source)
+	${LATEX}  $(patsubst %.tex, %, $<)
+	${BIBTEX} $(patsubst %.tex, %, $<)
+	${MAKEIDX}$(patsubst %.tex, %, $<)
+	${LATEX}  $(patsubst %.tex, %, $<)
+	${LATEX}  $(patsubst %.tex, %, $<)
 
-draco_bs.dvi: draco_bs.tex intro.tex model.tex compile.tex \
-	      extern.tex adding.tex extend.tex draco_bs.sty
-	${LATEX} draco_bs
-	${BIBTEX} draco_bs
-	${MAKEIDX} draco_bs
-	${LATEX} draco_bs
-	${LATEX} draco_bs
+%.ps: %.dvi
+	${DVIPS} ${DVIPSFLAGS} $<
 
-index: 
-	${MAKEIDX} draco_bs
-
-bib:
-	${BIBTEX} draco_bs
-
-tex:
-	${LATEX} draco_bs
+%.pdf: %.ps
+	${PDF} $<
 
 clean:
-	rm -f draco_bs.dvi draco_bs.ps draco_bs.log draco_bs.aux
-	rm -f draco_bs.blg draco_bs.bbl
-	rm -f draco_bs.idx draco_bs.ilg draco_bs.ind
-	rm -f draco_bs.toc draco_bs.lof draco_bs.lot
+	rm -f dbs.dvi dbs.log dbs.aux
+	rm -f dbs.blg dbs.bbl
+	rm -f dbs.idx dbs.ilg dbs.ind
+	rm -f dbs.toc dbs.lof dbs.lot
+	rm -f *~
 
-clean-tex:
-	rm -f draco_bs.log draco_bs.aux
-	rm -f draco_bs.toc draco_bs.lof draco_bs.lot
+real-clean: clean
+	rm -f dbs.ps dbs.pdf
 
 ###############################################################################
 #			 end of draco/doc/build Makefile

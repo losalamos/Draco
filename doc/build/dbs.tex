@@ -1,0 +1,131 @@
+%%---------------------------------------------------------------------------%%
+%% dbs.tex
+%% Thomas M. Evans
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{../tex/rnote}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tabularx}
+\usepackage{cite}
+\usepackage{c++}
+\usepackage{tmadd,tmath}
+\usepackage{stl}
+\usepackage{draco_bs}
+\usepackage{alltt}
+\usepackage{makeidx}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+
+\newcommand{\dsxx}{\pkg{ds\raisebox{.2ex}{\scriptsize++}}}
+\newcommand{\imc}{\pkg{imc}}
+
+\newcommand{\draco}{\sys{Draco}}
+
+\newcommand{\autoconf}{\soft{Autoconf}}
+\newcommand{\automake}{\soft{Automake}}
+\newcommand{\make}{\soft{Make}}
+
+\makeindex
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{X-6:97-??? (U)}
+\subject{The Draco Build System}
+
+%-------NO CHANGES
+\divisionname{Computer and Computational Sciences}
+\groupname{CCS--4:Transport Methods Group}
+\fromms{Thomas M. Evans/CCS-4 D409}
+\phone{(505)665--3677}
+\originator{tme}
+\typist{tme}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\begin{abstract}
+  
+  We present an updated build system for the \draco\ component
+  library.  The \draco\ Build System (DBS) \index{Draco Build System}
+  is designed to facilitate both development and usage on multiple
+  platforms.  The DBS complies with the GNU Coding Standards for
+  software packages.  It has been designed according to the following
+  list of requirements:
+  \begin{enumerate}
+  \item support for simultaneous, multiple configurations;
+  \item support for \C++ on all ASCI platforms;
+  \item automated unit and regression testing;
+  \item the ability to support multiple code projects;
+  \item support for external vendors;
+  \item support for multiple languages;
+  \item extensibility;
+  \item low-cost on developers to add new packages, code, and tests; 
+  \item compliance with the GNU coding standard \cite{gnu}.
+  \end{enumerate}
+  These requirements are largely met by the DBS.  In fact, the DBS is
+  being used as the build system for 4 CCS--4 projects.
+  
+  The build system uses four GNU development tools, \autoconf,
+  \automake, and \make. These tools are all freely available from the
+  Free Software Foundation.
+
+\end{abstract}
+
+%%---------------------------------------------------------------------------%%
+%% INCLUDES
+%%---------------------------------------------------------------------------%%
+
+\input{intro}
+\input{model}
+
+%%---------------------------------------------------------------------------%%
+%% ENDGAME
+%%---------------------------------------------------------------------------%%
+
+\bibliographystyle{rnote}
+\bibliography{../bib/draco}
+
+\printindex
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of dbs.tex
+%%---------------------------------------------------------------------------%%
