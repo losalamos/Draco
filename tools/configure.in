@@ -7,7 +7,9 @@ AC_INIT(launchtest)
 AC_CONFIG_AUX_DIR(../config)
 AC_DRACO_ARGS
 
-AC_PROG_INSTALL
+# we use the install script provided with autoconf on all machines
+INSTALL='${config_dir}/install-sh -c'
+INSTALL_DATA='${INSTALL} -m 444'
 
 installdirs='${libexecdir} ${bindir}'
 
@@ -33,6 +35,9 @@ AC_SUBST(configure_command)
 
 AC_SUBST(installdirs)
 AC_SUBST(installfiles)
+
+AC_SUBST(INSTALL)
+AC_SUBST(INSTALL_DATA)
 
 AC_OUTPUT(Makefile draco)
 

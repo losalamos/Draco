@@ -2,6 +2,8 @@ top_srcdir = @top_srcdir@
 srcdir = @srcdir@
 VPATH = @srcdir@  # : this colon is a bug work around.
 
+config_dir = $(shell cd ${srcdir}/../config; pwd)
+
 # The subdirectories to recurs into (if they exist).
 
 subdirs = @subdirs@
