@@ -37,18 +37,15 @@ main()
       // initialize the builder
 	OS_Builder build(parser);
 	mesh = build.Build_Mesh();
-
     }
 
     cout << "Coordinate System: " << mesh->Coord().Get_coord() << endl;
     cout << "Mesh Size: " << mesh->Num_cells() << endl;
-    int cell;
-    cout << "Give a cell" << endl;
-    cin >> cell;
-    mesh->Print(cell);
+    for (int cell = 1; cell <= mesh->Num_cells(); cell++)
+	mesh->Print(cell);
     cout << endl;
 
-    for (int z = 1; z <= 6; z++)
+    for (int z = 1; z <= 4; z++)
     {
 	cout << "Zone : " << z << endl;
 	for (int i = 1; i <= mesh->Num_cells(); i++)
