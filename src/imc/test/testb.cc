@@ -6,11 +6,11 @@
 // @> test driver for OS_Builder
 //---------------------------------------------------------------------------//
 
-#include "imctest/test/OS_Parser.hh"
-#include "imctest/test/OS_Builder.hh"
-#include "imctest/test/OS_Mesh.hh"
-#include "imctest/test/Opacity_Builder.hh"
-#include "imctest/test/Mat_State.cc"
+#include "imctest/OS_Parser.hh"
+#include "imctest/OS_Builder.hh"
+#include "imctest/OS_Mesh.hh"
+#include "imctest/Mat_State.hh"
+#include "imctest/Opacity_Builder.hh"
 #include "ds++/SP.hh"
 #include <iostream>
 #include <string>
@@ -32,7 +32,7 @@ main()
 	string infile;
 	cout << "Name the input file" << endl;
 	cin >> infile;
-	
+
       // run the Parser
 	SP<OS_Parser> parser = new OS_Parser(infile);
 	parser->Parser();
@@ -52,8 +52,7 @@ main()
 	mesh->Print(cell);
     cout << endl;
 
-    mat_state->Print(3);
-
+    cout << *mat_state;
 }
 
 //---------------------------------------------------------------------------//
