@@ -49,8 +49,8 @@ digraph draco_level {
     
     /* dependencies */
     {rank=same; level1 stdheaders dsxx};
-    {rank=same; level2 traits xm c4 rng units meshread cdi quad};
-    {rank=same; level3 rttread viz radphys timestep cdianal cdieos cdigan pcg stop};
+    {rank=same; level2 stop traits xm c4 rng units meshread cdi quad};
+    {rank=same; level3 rttread viz radphys timestep cdianal cdieos cdigan pcg};
     {rank=same; level4 mc meshservice};
     {rank=same; level5 imc};
     
