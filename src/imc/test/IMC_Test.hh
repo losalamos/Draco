@@ -39,75 +39,100 @@ inline bool fail(int line)
 
 class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
 {
-    typedef std::vector<int> vi;
-    typedef std::vector<double> vd;
-    typedef std::vector<std::string> vs;
-    typedef std::vector<std::vector<double> > vvd;
-   
   private:
     // Mesh data
-    std::string coord;
-    vvd         fine_edge;
-    vs          bnd;
+    std_string coord;
+    vf_double  fine_edge;
+    sf_string  bnd;
     
     // data for the Opacity and Mat_State
-    vd          density;
-    vd          kappa;
-    vd          kappa_thomson;
-    vd          temperature;
-    vd          specific_heat;
-    double      implicitness;
-    double      delta_t;
-    std::string analytic_opacity;
-    std::string analytic_sp_heat;
+    sf_double  density;
+    sf_double  kappa;
+    sf_double  kappa_thomson;
+    sf_double  temperature;
+    sf_double  specific_heat;
+    double     implicitness;
+    double     delta_t;
+    std_string analytic_opacity;
+    std_string analytic_sp_heat;
 
     // data for topology
     int capacity;
+
+    // data for the source builder
+    double elapsed_t;
+    sf_double evol_ext;
+    sf_double rad_source;
+    sf_double rad_temp;
+    sf_string ss_pos;
+    sf_double ss_temp;
+    vf_int surcells;
 
   public:
     // constructor -> the default processor capacity is 6 cells
     inline IMC_Interface(int = 6);
 
-    // public copy functions for Mesh
-    std::string get_coordinates() const {return coord;}
-    vvd get_fine_edge() const {return fine_edge;} 
-    vs get_boundaries() const {return bnd;}
+    // public interface for Mesh
+    std_string get_coordinates() const {return coord;}
+    vf_double get_fine_edge() const {return fine_edge;} 
+    sf_string get_boundaries() const {return bnd;}
     
-    // public copy functions for Opacity<MT>
-    vd get_density() const {return density;}
-    vd get_kappa() const {return kappa;}
-    vd get_kappa_thomson() const {return kappa_thomson;}
-    vd get_specific_heat() const {return specific_heat;}
-    vd get_temperature() const {return temperature;}
+    // public interface for Opacity_Builder
+    sf_double get_density() const {return density;}
+    sf_double get_kappa() const {return kappa;}
+    sf_double get_kappa_thomson() const {return kappa_thomson;}
+    sf_double get_specific_heat() const {return specific_heat;}
+    sf_double get_temperature() const {return temperature;}
     inline std::string get_analytic_opacity() const;
     inline std::string get_analytic_sp_heat() const;
-
-    // accessor function to get implicitness factor (Fleck's alpha)
     double get_implicit() const { return implicitness; }
-
-    // public copy functions for Source_Init<MT>
     double get_delta_t() const { return delta_t; }
 
-    // source interfaces
-    double get_rad_s_tend() const { return double(); }
-    vd get_rad_temp() const { return vd(6); }
-    int get_npmax() const { return int(); }
-    int get_npnom() const { return int(); }
-    double get_dnpdt() const { return double(); }
+    // public interface for Topology
     int get_capacity() const { return capacity; }
 
-    vd get_rad_source() const { return vd(6); }
-    vd get_evol_ext() const { return vd(6); }
+    // public interface for Source_Builder
+    double get_elapsed_t() const { return elapsed_t; }
+    sf_double get_evol_ext() const { return evol_ext; }
+    double get_rad_s_tend() const { return double(.1); }
+    sf_double get_rad_source() const { return rad_source; }
+    sf_double get_rad_temp() const { return rad_temp; }
+    sf_string get_ss_pos() const { return ss_pos; }
+    sf_double get_ss_temp() const { return ss_temp; }
+    vf_int get_defined_surcells() const { return surcells; }
+    int get_npnom() const { return int(1000); }
+    int get_npmax() const { return int(1000); }
+    double get_dnpdt() const { return double(0); }
+    int get_cycle() const { return int(1); }
+    std_string get_ss_dist() const { return "cosine"; }
+    SP_Census get_census() const { return SP_Census(); }
+    double get_ecen(int cell) const { return double(0); }
+    double get_ecentot() const { return double(0); }
 };
 
 // constructor
 IMC_Interface::IMC_Interface(int capacity_)
-    :  rtt_imc::Interface<rtt_mc::OS_Mesh>(), coord("xy"), fine_edge(2),
+    :  rtt_imc::Interface<rtt_mc::OS_Mesh>(), 
+       coord("xy"), 
+       fine_edge(2),
        bnd(4),
-       density(6), kappa(6), kappa_thomson(6), temperature(6),
-       specific_heat(6), implicitness(1.0), delta_t(.001),
-       analytic_opacity("straight"), analytic_sp_heat("straight"),
-       capacity(capacity_)
+       density(6), 
+       kappa(6), 
+       kappa_thomson(6), 
+       temperature(6),
+       specific_heat(6), 
+       implicitness(1.0), 
+       delta_t(.001),
+       analytic_opacity("straight"), 
+       analytic_sp_heat("straight"),
+       capacity(capacity_),
+       elapsed_t(.001),
+       evol_ext(6),
+       rad_source(6),
+       rad_temp(6),
+       ss_pos(1),
+       ss_temp(1),
+       surcells(1)
 {
     // make the Mesh stuff
 
@@ -152,6 +177,22 @@ IMC_Interface::IMC_Interface(int capacity_)
 	temperature[i]   = 10;
 	temperature[i+3] = 20;
     }
+
+    // make the Source_Builder stuff
+
+    for (int i = 0; i < 6; i++)
+    {
+	evol_ext[i]   = 100;
+	rad_source[i] = 200;
+	rad_temp[i]   = 10.0;
+    }
+
+    ss_pos[0]  = "loy";
+    ss_temp[0] = 20.0;
+    
+    surcells[0].resize(2);
+    surcells[0][0] = 1;
+    surcells[0][1] = 2;
 }
 
 

@@ -16,10 +16,12 @@
 #include "../Opacity.hh"
 #include "../Mat_State.hh"
 #include "../Topology_Builder.hh"
+#include "../Source.hh"
 #include "../Release.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
+#include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
 
@@ -35,11 +37,13 @@ using rtt_imc::Rep_Source_Builder;
 using rtt_imc::Opacity;
 using rtt_imc::Opacity_Builder;
 using rtt_imc::Mat_State;
+using rtt_imc::Source;
 using rtt_imc::Topology_Builder;
 using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_rng::Rnd_Control;
 using dsxx::SP;
 
 // passing condition
@@ -50,6 +54,9 @@ bool passed = true;
 
 void source_replication_test()
 {
+    // build a random number controller
+    SP<Rnd_Control> rcon(new Rnd_Control(347223));
+
     // build an interface to a six cell fully replicated mesh
     SP<IMC_Interface> interface(new IMC_Interface);
 
@@ -70,6 +77,23 @@ void source_replication_test()
 
     // build a Rep_Source Builder
     Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
+
+    // build the source
+    SP<Source<OS_Mesh> > source = source_builder.build_Source(mesh, mat,
+							      opacity, rcon);
+
+    cout << "evoltot        " << source_builder.get_evoltot() << endl;
+    cout << "mat_vol_srctot " << source_builder.get_mat_vol_srctot() << endl;
+    cout << "esstot         " << source_builder.get_esstot() << endl;
+    cout << "eloss_vol      " << source_builder.get_eloss_vol() << endl;
+    cout << "eloss_ss       " << source_builder.get_eloss_ss() << endl;
+    cout << "eloss_cen      " << source_builder.get_eloss_cen() << endl;
+
+    cout << "nvoltot        " << source_builder.get_nvoltot() << endl;
+    cout << "nsstot         " << source_builder.get_nsstot() << endl;
+    cout << "ncentot        " << source_builder.get_ncentot() << endl;
+
+    cout << *source << endl;
 }
 
 //---------------------------------------------------------------------------//

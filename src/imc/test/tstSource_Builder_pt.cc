@@ -15,6 +15,7 @@
 #include "ds++/SP.hh"
 #include "../Source_Builder.t.hh"
 #include "../Rep_Source_Builder.t.hh"
+#include "../Source.t.hh"
 
 namespace rtt_imc
 {
@@ -33,6 +34,9 @@ template class Rep_Source_Builder<OS_Mesh>;
 template Rep_Source_Builder<OS_Mesh>::Rep_Source_Builder(SP<IMC_Interface>,
 							 SP<OS_Mesh>,
 							 SP<Topology>);
+
+template class Source<OS_Mesh>;
+
 } // end of namespace rtt_imc
 
 //---------------------------------------------------------------------------//
