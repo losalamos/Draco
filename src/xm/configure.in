@@ -14,6 +14,7 @@ AC_CONFIG_HEADER(xm/config.h:config.h.in)
 package="xm"
 
 AC_INSTALL_HEADERS
+AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 
 AC_RUNTESTS(tstUV, scalar)
