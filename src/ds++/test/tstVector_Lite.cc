@@ -44,10 +44,28 @@ main(int argc, char *argv[])
 	UNIT_TEST(x == xCopy);
     }
 
-    cout << "operator+=" << endl;
+    cout << "operator+=, scalar" << endl;
     double dc1 = 2.3;
     c1 += dc1;
     x += dc1;
+    cout << " x = " << x << endl;
+    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+
+    cout << "operator-=, scalar" << endl;
+    c1 -= dc1;
+    x -= dc1;
+    cout << " x = " << x << endl;
+    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+
+    cout << "operator*=, scalar" << endl;
+    c1 *= dc1;
+    x *= dc1;
+    cout << " x = " << x << endl;
+    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+
+    cout << "operator/=, scalar" << endl;
+    c1 /= dc1;
+    x /= dc1;
     cout << " x = " << x << endl;
     UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
 
@@ -66,16 +84,28 @@ main(int argc, char *argv[])
 	cout << " z = " << z << endl;
 	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
 				       ans.begin(), ans.end()));
+
+	cout << "operator/=" << endl;
+	z /= y;
+	cout << " z = " << z << endl;
+	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+				       x.begin(), x.end()));
     }
 
     {
-	cout << "operator+" << endl;
-	Vector_Lite<double, m> z;
+	cout << "operator+=" << endl;
+	Vector_Lite<double, m> z(x);
 	Vector_Lite<double, m> ans(c1+y0, c1+y1, c1+y2, c1+y3, c1+y4);
-	z = x + y;
+	z += y;
 	cout << " z = " << z << endl;
 	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
 				       ans.begin(), ans.end()));
+
+	cout << "operator-=" << endl;
+	z -= y;
+	cout << " z = " << z << endl;
+	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+				       x.begin(), x.end()));
     }
 
     {
