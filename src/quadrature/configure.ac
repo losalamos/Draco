@@ -40,6 +40,7 @@ dnl
 dnl VENDOR DEPENDENCIES
 dnl 
 dnl Register vendors dependencies for this component
+AC_LAPACK_SETUP(pkg)
 AC_GSL_SETUP(pkg)
 
 dnl Append this directory to a list of header install locations.

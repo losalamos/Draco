@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Quadrature.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS GSL_INC GSL_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS LAPACK_LIB GSL_INC GSL_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -839,7 +839,10 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-gsl=lib      determine the gsl lib (gsl and gskcbkas are the defaults
+  --with-lapack=vendor,atlas
+                          determine LAPACK implementation (vendor default)
+  --with-lapack-lib=DIR    tell where LAPACK libs are (\${LAPACK_LIB_DIR} by default)
+  --with-gsl=lib      determine the gsl lib (gsl is the default
   --with-gsl-inc=DIR    tell where GSL includes are (\${GSL_INC_DIR} by default)
   --with-gsl-lib=DIR    tell where GSL libraries are (\${GSL_LIB_DIR} by default)
   --with-lib-prefix=library prefix
@@ -1313,6 +1316,72 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
 
 package="quadrature"
+
+
+
+# Check whether --with-lapack or --without-lapack was given.
+if test "${with_lapack+set}" = set; then
+  withval="$with_lapack"
+
+fi;
+
+
+
+
+
+# Check whether --with-lapack-lib or --without-lapack-lib was given.
+if test "${with_lapack_lib+set}" = set; then
+  withval="$with_lapack_lib"
+  if test $with_lapack_lib != "no" ; then
+      if test $with_lapack_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${LAPACK_LIB_DIR}
+         eval with_lapack_lib=\${LAPACK_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_lapack_lib=`eval echo "$with_lapack_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_lapack_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-lapack-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_lapack_lib ; then
+         { echo "configure: error: $with_lapack_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      LAPACK_LIB="${with_lapack_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define LAPACK_LIB ${with_lapack_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "LAPACK_LIB has been set to $LAPACK_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_lapack=pkg
+
+   # lapack is set to vendor by default
+   if test "${with_lapack:=vendor}" = yes ; then
+       with_lapack='vendor'
+   fi
+
+   # define the atlas libraries (these are system independent)
+   if test "${with_lapack}" = atlas; then
+       lapack_libs='-llapack -lf77blas -lcblas -latlas'
+   fi
 
 
 
@@ -5935,6 +6004,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -6534,91 +6645,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -6891,6 +6917,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -7490,91 +7558,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -7944,6 +7927,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -8543,91 +8568,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -8947,6 +8887,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -9546,91 +9528,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -9954,6 +9851,48 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -10553,91 +10492,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -10838,6 +10692,48 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -11437,91 +11333,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -11942,6 +11753,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_gsl}"; then
+
+       # include path
+       if test -n "${GSL_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+       fi
+
+       # library path
+       if test -n "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -L${GSL_LIB} -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl}"
+   fi
+
+       elif test -z "${GSL_LIB}" ; then
+
+   # vendor_gsl is the vendor_<> tag (equals pkg or test)
+   # -l${with_gsl} are the directories added
+
+   if test "${vendor_gsl}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl}"
+   elif test "${vendor_gsl}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl}"
+   fi
+
+       fi
+
+       # add GSL directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_aztec}" ; then
@@ -12541,91 +12394,6 @@ _ACEOF
        # add HDF5 directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
-
-   fi
-
-
-
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -L${GSL_LIB} -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSL_LIB} -l${with_gsl} -lgslcblas"
-   fi
-
-       elif test -z "${GSL_LIB}" ; then
-
-   # vendor_gsl is the vendor_<> tag (equals pkg or test)
-   # -l${with_gsl} -lgslcblas are the directories added
-
-   if test "${vendor_gsl}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gsl} -lgslcblas"
-   elif test "${vendor_gsl}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gsl} -lgslcblas"
-   fi
-
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-
-
-   # set up the libraries and include path
-   if test "${vendor_gslcblas}"; then
-
-       # include path
-       if test -n "${GSLCBLAS_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSLCBLAS_INC}"
-       fi
-
-       # library path
-       if test -n "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -L${GSLCBLAS_LIB} -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${GSLCBLAS_LIB} -l${with_gslcblas}"
-   fi
-
-       elif test -z "${GSLCBLAS_LIB}" ; then
-
-   # vendor_gslcblas is the vendor_<> tag (equals pkg or test)
-   # -l${with_gslcblas} are the directories added
-
-   if test "${vendor_gslcblas}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_gslcblas}"
-   elif test "${vendor_gslcblas}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_gslcblas}"
-   fi
-
-       fi
-
-       # add GSLCBLAS directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSLCBLAS_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSLCBLAS_INC}"
 
    fi
 
@@ -13604,6 +13372,7 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@LAPACK_LIB@,$LAPACK_LIB,;t t
 s,@GSL_INC@,$GSL_INC,;t t
 s,@GSL_LIB@,$GSL_LIB,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
