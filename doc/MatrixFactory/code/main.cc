@@ -77,7 +77,7 @@ void doit()
 
 int main()
 {
-    using JoubertMat::JoubertMat;
+    using JoubertNS::JoubertMat;
 
     // Call doit for a Joubert Matrix.
     

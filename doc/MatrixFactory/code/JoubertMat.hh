@@ -14,7 +14,7 @@
 
 #include "ds++/Assert.hh"
 
-namespace JoubertMat
+namespace JoubertNS
 {
 
 typedef double F90Real;
@@ -50,7 +50,7 @@ class JoubertMat
 
     // ~JoubertMat()
     // {
-    //    std::cerr << "In JoubertMat::~JoubertMat" << std::endl;
+    //    std::cerr << "In JoubertNS::~JoubertMat" << std::endl;
     // }
     
     std::ostream &print(std::ostream &os) const
@@ -80,7 +80,7 @@ class JoubertMat
     }
 };
 
-} // namespace JoubertMat
+} // namespace JoubertNS
 
 #endif    /* __MatrixFactory_JoubertMat_hh__ */
 

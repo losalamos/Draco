@@ -22,14 +22,14 @@
 namespace rtt_MatrixFactory
 {
 
-typedef MatrixFactoryTraits<JoubertMat::JoubertMat> MatTrait;
-typedef JoubertMat::JoubertMat JMat;
+typedef MatrixFactoryTraits<JoubertNS::JoubertMat> MatTrait;
+typedef JoubertNS::JoubertMat JoubertMat;
 
-JMat *MatTrait::create(const CRSMatrixRep &rep)
+JoubertMat *MatTrait::create(const CRSMatrixRep &rep)
 {
 #if defined(DO_IO)
     std::cerr
-	<< "In MatrixFactoryTraits<JoubertMat::JoubertMat>::"
+	<< "In MatrixFactoryTraits<JoubertNS::JoubertMat>::"
 	<< "create(const CRSMatrixRep &rep)." << std::endl;
 #endif
 	
@@ -59,8 +59,8 @@ JMat *MatTrait::create(const CRSMatrixRep &rep)
     // Create the Joubert Matrix from the data it wants.
     // The indices arrays are all in "Fortran" numbering.
     
-    return new JMat(nrow, ncol, nnz, f90RowIndices, f90ColIndices,
-		      rep.data());
+    return new JoubertMat(nrow, ncol, nnz, f90RowIndices, f90ColIndices,
+			  rep.data());
 }
 
 } // namespace rtt_MatrixFactory
