@@ -49,6 +49,7 @@ namespace rtt_imc
 //                  conserve energy after doing our reproducible comb.
 // 2) 26 Jul 2000 : modified calc_num_part_and_rn_fields to better distribute 
 //                  leftover particles (after integer math) across all procs.
+// 3) 26 Jun 2001 : relaxed check of ecentot in constructor
 //===========================================================================//
 
 template<class MT, class PT = Particle<MT> >
