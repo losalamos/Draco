@@ -124,13 +124,9 @@ IMP::InterpedMaterialProps(const vector<int> &materialIds,
 	GroupedTable sigmaEmission(energyUpperbounds, energyLowerbounds,
 				   tables);
 
-	std::cerr << "RMR: before getElectronIonCoupling." << std::endl;
-	
 	BilinearInterpTable electronIonCoupling;
 	if (reader.getElectronIonCoupling(materialId, data))
 	    electronIonCoupling = BilinearInterpTable(spGrid, data);
-	
-	std::cerr << "RMR: after getElectronIonCoupling." << std::endl;
 	
 	BilinearInterpTable electronConductionCoeff;
 	if (reader.getElectronConductionCoeff(materialId, data))
@@ -359,8 +355,6 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
     
     for (int i=0; i < size(); i++)
     {
-	std::cerr << "getMaterialTables(" << getMatId(i) << ")" << std::endl;
-
 	if (!matprops.hasMaterialTables(getMatId(i)))
 	{
 	    std::ostrstream os;

@@ -122,6 +122,17 @@ class BilinearInterpGrid
     //=======================================================================//
 
     //------------------------------------------------------------------------//
+    // getGrid:
+    //   Return the grid to the user.
+    //------------------------------------------------------------------------//
+
+    const std::vector<double> &getGrid(int i) const
+    {
+	Require(i == 1 || i==2);
+	return (i==1) ? x1vals : x2vals;
+    }
+    
+    //------------------------------------------------------------------------//
     // getMemento:
     //    Accessor to obtain the Memento from an x1, x2 interpolation.
     //    This allows the user to avoid the repeated calculation of

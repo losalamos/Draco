@@ -116,8 +116,23 @@ class InterpedMaterialProps
     MaterialStateField<FT> getMaterialState(const FT &density_,
 					    const FT &electronTemp_,
 					    const FT &ionTemp_,
-					    const FT2 &matId_) const;    
+					    const FT2 &matId_) const;
 
+    inline const std::string &getMaterialName(int materialId) const;
+
+    inline int getNumGroups(int materialId) const;
+
+    inline const std::vector<double> &getDensityGrid(int materialId) const;
+    
+    inline int getNumDensities(int materialId) const;
+
+    inline const std::vector<double> &getTemperatureGrid(int materialId) const;
+    
+    inline int getNumTemperatures(int materialId) const;
+
+    inline int getMaxScatteringPnOrder(int materialId) const;
+
+    
     // IMPLEMENTATION
 
   private:
@@ -236,6 +251,10 @@ struct InterpedMaterialProps::MaterialTables
     // DATA
 
     std::string              materialName;
+    int                      numGroups;
+    int                      numDensities;
+    int                      numTemperatures;
+    int                      maxScatteringPnOrder;
     
     SP<BilinearInterpGrid>   spGrid;
 
@@ -273,7 +292,10 @@ struct InterpedMaterialProps::MaterialTables
           electronSpecificHeat(electronSpecificHeat_),
           ionSpecificHeat(ionSpecificHeat_)
     {
-	// **empty
+	numGroups = sigmaTotal.numGroups();
+	numTemperatures = spGrid->size(1);
+	numDensities = spGrid->size(2);
+	maxScatteringPnOrder = 0;
     }
 
     // ACCESSORS
@@ -489,6 +511,52 @@ class InterpedMaterialProps::MaterialStateField
     const int &getMatId(int i) const { return matId[i]; }
 
 };
+
+// Inline definitions.
+
+inline
+const std::string &InterpedMaterialProps::getMaterialName(int materialId) const
+{
+    return getMaterialTables(materialId).materialName;
+}
+
+inline
+int InterpedMaterialProps::getNumGroups(int materialId) const
+{
+    return getMaterialTables(materialId).numGroups;
+}
+
+inline
+int InterpedMaterialProps::getNumDensities(int materialId) const
+{
+    return getMaterialTables(materialId).numDensities;
+}
+
+inline
+int InterpedMaterialProps::getNumTemperatures(int materialId) const
+{
+    return getMaterialTables(materialId).numTemperatures;
+}
+
+inline
+int InterpedMaterialProps::getMaxScatteringPnOrder(int materialId) const
+{
+    return getMaterialTables(materialId).maxScatteringPnOrder;
+}
+    
+inline
+const std::vector<double>
+&InterpedMaterialProps::getDensityGrid(int materialId) const
+{
+    return getMaterialTables(materialId).spGrid->getGrid(2);
+}
+    
+inline
+const std::vector<double>
+&InterpedMaterialProps::getTemperatureGrid(int materialId) const
+{
+    return getMaterialTables(materialId).spGrid->getGrid(1);
+}
 
 END_NS_XTM  // namespace XTM
 
