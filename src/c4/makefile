@@ -28,6 +28,9 @@ libsrcs = \
 
 # Add in the platform specific files
 
+ifeq ($(c4),s2)
+libsrcs += shmem_sr.cc shm_reduce.cc
+endif
 ifeq ($(c4),shmem)
 libsrcs += global_shmem.cc shm_reduce.cc
 endif
