@@ -61,6 +61,8 @@ class RTT_Format_Reader
     typedef std::set<int> set_int;
     typedef std::vector<int> vector_int;
     typedef std::vector<std::vector<int> > vector_vector_int;
+    typedef std::vector<std::vector<std::vector<int> > >
+        vector_vector_vector_int;
     typedef std::vector<double> vector_dbl;
     typedef std::vector<std::vector<double> > vector_vector_dbl;
     typedef std::vector<string> vector_str;
@@ -513,6 +515,30 @@ class RTT_Format_Reader
  */
     const vector_int & get_cell_defs_ordered_side(int i, int s) const 
     { return spCellDefs->get_ordered_side(i,s); }
+/*!
+ * \brief Returns the status of the flag indicating that the cell definitions
+ *        have been redefined.
+ * \return The status of the redefined flag.
+ */
+    bool get_cell_defs_redefined() const 
+    { return spCellDefs->get_redefined(); }
+/*!
+ * \brief Returns the new node map for the specified cell definition when 
+ *        redefinition has been performed.
+ * \param cell_def Cell definition index.
+ * \return New cell definition node map.
+ */
+    const vector_int & get_cell_defs_node_map(int cell_def) const 
+    { return spCellDefs->get_node_map(cell_def);}
+/*!
+ * \brief Returns the specified new node for the specified cell definition 
+ *        when redefinition has been performed.
+ * \param cell_def Cell definition index.
+ * \param node_ind Node number index.
+ * \return New node number.
+ */
+    int get_cell_defs_node_map(int cell_def, int node_ind) const 
+    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
     // nodes access
 /*!
@@ -703,13 +729,16 @@ class RTT_Format_Reader
     // IMPLEMENTATION
 
   private:
-    
-    void readMesh (const string & RTT_file);
+    void readMesh(const string & RTT_file);
     void readKeyword(ifstream & meshfile);
     void createMembers();
     void readFlagBlocks(ifstream & meshfile);
     void readDataIDs(ifstream & meshfile);
     void readEndKeyword(ifstream & meshfile);
+
+  public:
+    void reformatData(const vector_vector_int & cell_side_types_, 
+		      const vector_vector_vector_int & cell_ordered_sides_);
 };
 
 } // end namespace rtt_RTT_Format_Reader

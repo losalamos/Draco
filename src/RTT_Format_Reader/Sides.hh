@@ -56,6 +56,7 @@ class Sides
     ~Sides() {}
 
     void readSides(ifstream & meshfile);
+    void redefineSides();
 
   private:
     void readKeyword(ifstream & meshfile);

@@ -47,6 +47,8 @@ class CellDef
     std::vector<set_int > sides;
     // Add the capability to maintain the sense of the outward normals.
     vector_vector_int ordered_sides;
+    // Mapping between the old and new cell definition nodes.
+    vector_int node_map;
 
   public:
     CellDef(const CellDefs & cellDefs_, const string & name_) : name(name_), 
@@ -54,6 +56,10 @@ class CellDef
     ~CellDef() {}
 
     void readDef(ifstream & meshfile);
+    void redefineCellDef(const vector_int & new_side_types_, 
+			 const vector_vector_int & new_ordered_sides_);
+
+  public:
 /*!
  * \brief  Returns the cell definition name.
  * \return The cell definition name.
@@ -78,8 +84,7 @@ class CellDef
     int get_side_types(int s) const { return side_types[s]; }
 /*!
  * \brief Returns the side definition of the specified side index of this cell
- *        definition side definition with the returned cell-node indexes in 
- *        sorted order.
+ *        definition with the returned cell-node indexes in sorted order.
  * \param s Side index number.
  * \return The side definition (i.e., the cell-node indexes that comprise the 
  *         side).
@@ -87,15 +92,27 @@ class CellDef
     const set_int & get_side(int s) const { return sides[s]; }
 /*!
  * \brief Returns the side definition of the specified side index of this cell
- *        definition side definition with the returned cell-node indexes 
- *        ordered to preserve the right hand rule for the outward-directed 
- *        normal.
+ *        definition with the returned cell-node indexes ordered to preserve 
+ *        the right hand rule for the outward-directed normal.
  * \param s Side index number.
  * \return The side definition (i.e., the cell-node indexes that comprise the 
  *         side).
  */
     const vector_int & get_ordered_side(int s) const 
     { return ordered_sides[s]; }
+/*!
+ * \brief Returns the new nodes map when cell redefinition has been performed.
+ * \return New nodes map.
+ */
+    const vector_int & get_node_map() const { return node_map;}
+/*!
+ * \brief Returns the specified new node when cell redefinition has been 
+ *        performed.
+ * \param node_ind Node number index.
+ * \return New node number.
+ */
+    int get_node_map(int node_ind) const 
+    { return node_map[node_ind];}
 };
 
 /*!
@@ -110,15 +127,21 @@ class CellDefs
     typedef std::set<int> set_int;
     typedef std::vector<int> vector_int;
     typedef std::vector<std::vector<int> > vector_vector_int;
+    typedef std::vector<std::vector<std::vector<int> > >
+        vector_vector_vector_int;
 
     const Dims & dims;
     std::vector<rtt_dsxx::SP<CellDef> > defs;
+    bool redefined;
 
   public:
-    CellDefs(const Dims & dims_) : dims(dims_), defs(dims.get_ncell_defs()) {}
+    CellDefs(const Dims & dims_) : dims(dims_), defs(dims.get_ncell_defs()),
+        redefined(false) {}
     ~CellDefs() {}
 
     void readCellDefs(ifstream & meshfile);
+    void redefineCellDefs(const vector_vector_int & cell_side_types,
+			  const vector_vector_vector_int & cell_ordered_sides);
 
   private:
     void readKeyword(ifstream & meshfile);
@@ -189,7 +212,29 @@ class CellDefs
  * \return The number of cell definitions.
  */
     int get_ncell_defs() const { return dims.get_ncell_defs(); }
-
+/*!
+ * \brief Returns the status of the flag indicating that the cell definitions
+ *        have been redefined.
+ * \return The status of the redefined flag.
+ */
+    bool get_redefined() const { return redefined; }
+/*!
+ * \brief Returns the new node map for the specified cell definition when 
+ *        redefinition has been performed.
+ * \param cell_def Cell definition index.
+ * \return New cell definition node map.
+ */
+    const vector_int & get_node_map(int cell_def) const 
+    { return defs[cell_def]->get_node_map();}
+/*!
+ * \brief Returns the specified new node for the specified cell definition 
+ *        when redefinition has been performed.
+ * \param cell_def Cell definition index.
+ * \param node_ind Node number index.
+ * \return New node number.
+ */
+    int get_node_map(int cell_def, int node_ind) const 
+    { return defs[cell_def]->get_node_map(node_ind);}
 };
 
 } // end namespace rtt_RTT_Format_Reader

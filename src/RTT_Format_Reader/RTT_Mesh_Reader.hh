@@ -47,13 +47,18 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     // NESTED CLASSES AND TYPEDEFS
     typedef std::string string;
     typedef std::set<int> set_int;
+    typedef std::vector<int> vector_int;
     typedef std::vector<std::vector<int> > vector_vector_int;
+    typedef std::vector<std::vector<std::vector<int> > > 
+        vector_vector_vector_int;
     typedef std::vector<std::vector<double> > vector_vector_dbl;
 
     // DATA
 
   private:
      rtt_dsxx::SP<RTT_Format_Reader> rttMesh;
+     std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+         element_types;
 
   public:
 
@@ -65,7 +70,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     RTT_Mesh_Reader(const string & RTT_File)
         : rttMesh(new RTT_Format_Reader(RTT_File))
     {
-      /* empty */
+        transform2CYGNUS();
     }
 
 /*!
@@ -91,9 +96,15 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     { return rttMesh->get_dims_coor_units(); }
 
     virtual vector_vector_int get_element_nodes() const;
-
+/*!
+ * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and
+ *        TETRA_4).
+ * \return Element definitions.
+ */
     virtual std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
-        get_element_types() const;
+        get_element_types() const
+    { return element_types; }
+
 
     virtual std::map<string, set_int > get_node_sets() const;
 
@@ -107,7 +118,9 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     virtual bool invariant() const;
 
     // IMPLEMENTATION
-    // All implementation is via the constructor.
+  private:
+    
+    void transform2CYGNUS();
 };
 
 } // end namespace rtt_RTT_Format_Reader

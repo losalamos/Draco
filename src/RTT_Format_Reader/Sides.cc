@@ -86,6 +86,43 @@ void Sides::readEndKeyword(ifstream & meshfile)
 	   "Invalid mesh file: sides block missing end");
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
+/*!
+ * \brief Changes the side nodes when the cell definitions specified in the 
+ *        RTT_Format file have been transformed into an alternative cell 
+ *        definition (e.g., CYGNUS).
+ */
+void Sides::redefineSides()
+{
+    vector_int temp_nodes;
+    for (int st = 0; st < dims.get_nside_types(); st++)
+    {
+        int this_side_type = dims.get_side_types(st);
+	vector_int node_map(cellDefs.get_node_map(this_side_type));
+	Insist(node_map.size() == cellDefs.get_nnodes(this_side_type),
+	       "Error in Sides redefinition.");
+	// Check to see if the nodes need to be rearranged for this side type.
+	bool redefined = false;
+	for (int n = 0; n < node_map.size(); n ++)
+	{
+	    if (node_map[n] != n)
+	        redefined = true;
+	}
+	if (redefined)
+	{
+	    temp_nodes.resize(cellDefs.get_nnodes(this_side_type));
+	    for (int s = 0; s < dims.get_nsides(); s++)
+	    {
+	        if (sideType[s] = this_side_type)
+		{
+		    for (int n = 0; n < nodes[s].size(); n++)
+		        temp_nodes[node_map[n]] = nodes[s][n];
+		    nodes[s] = temp_nodes;
+		}
+	    }
+	}
+	node_map.resize(0);
+    }
+}
 
 } // end namespace rtt_RTT_Format_Reader
 

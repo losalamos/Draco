@@ -84,6 +84,43 @@ void Cells::readEndKeyword(ifstream & meshfile)
 	   "Invalid mesh file: cells block missing end");
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
+/*!
+ * \brief Changes the cell nodes when the cell definitions specified in the 
+ *        RTT_Format file have been transformed into an alternative cell 
+ *        definition (e.g., CYGNUS).
+ */
+void Cells::redefineCells()
+{
+    vector_int temp_nodes;
+    for (int ct = 0; ct < dims.get_ncell_types(); ct++)
+    {
+        int this_cell_type = dims.get_cell_types(ct);
+	vector_int node_map(cellDefs.get_node_map(this_cell_type));
+	Insist(node_map.size() == cellDefs.get_nnodes(this_cell_type),
+	       "Error in Cells redefinition.");
+	// Check to see if the nodes need to be rearranged for this cell type.
+	bool redefined = false;
+	for (int n = 0; n < node_map.size(); n ++)
+	{
+	    if (node_map[n] != n)
+	        redefined = true;
+	}
+	if (redefined)
+	{
+	    temp_nodes.resize(cellDefs.get_nnodes(this_cell_type));
+	    for (int c = 0; c < dims.get_ncells(); c++)
+	    {
+	        if (cellType[c] = this_cell_type)
+		{
+		    for (int n = 0; n < nodes[c].size(); n++)
+		        temp_nodes[node_map[n]] = nodes[c][n];
+		    nodes[c] = temp_nodes;
+		}
+	    }
+	}
+	node_map.resize(0);
+    }
+}
 
 } // end namespace rtt_RTT_Format_Reader
 

@@ -135,6 +135,20 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
 	   "Invalid mesh file: RTT file missing end");
     std::getline(meshfile, dummyString);
 }
+/*!
+ * \brief Transforms the RTT_Format data to an alternative format.
+ * \param cell_side_types New side types for each of the existing cell 
+ *        definitions.
+ * \param cell_ordered_sides New ordered sides for each of the existing cell 
+ *        definitions.
+ */
+void RTT_Format_Reader::reformatData(const vector_vector_int & cell_side_types,
+			   const vector_vector_vector_int & cell_ordered_sides)
+{
+    spCellDefs->redefineCellDefs(cell_side_types, cell_ordered_sides);
+    spSides->redefineSides();
+    spCells->redefineCells();
+}
 
 } // end namespace rtt_RTT_Format_Reader
 

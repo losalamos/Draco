@@ -17,41 +17,23 @@
 namespace rtt_RTT_Format_Reader
 {
 /*!
- * \brief Returns the node numbers associated with each element (i.e., sides
- *        and cells).
- * \return The node number.
+ * \brief Transforms the RTT_Format data to the CYGNUS format.
  */
-std::vector<std::vector<int> > RTT_Mesh_Reader::get_element_nodes() const
+void RTT_Mesh_Reader::transform2CYGNUS()
 {
-    vector_vector_int element_nodes(rttMesh->get_dims_nsides() + 
-				    rttMesh->get_dims_ncells());
-
-    for (int i = 0; i < rttMesh->get_dims_nsides(); i++)
-	element_nodes[i] = rttMesh->get_sides_nodes(i);
-
-    int nsides = rttMesh->get_dims_nsides();
-    for (int i = 0; i < rttMesh->get_dims_ncells(); i++)
-	element_nodes[i + nsides] = rttMesh->get_cells_nodes(i);
-
-    return element_nodes;
-}
-/*!
- * \brief Returns the element definitions (i.e., sides and cells).
- * \return Element definitions.
- */
-std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
-    RTT_Mesh_Reader::get_element_types() const
-{
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
-        types(rttMesh->get_dims_ncell_defs());
     rtt_meshReaders::Element_Definition::Element_Type cell_defs;
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
-        element_type;
+    std::vector<rtt_meshReaders::Element_Definition::Element_Type> cell_types;
+    rtt_dsxx::SP<rtt_meshReaders::Element_Definition> cell;
+    vector_int new_side_types;
+    vector_vector_int new_ordered_sides;
+    vector_vector_int cell_side_types(rttMesh->get_dims_ncell_defs());
+    vector_vector_vector_int 
+        cell_ordered_sides(rttMesh->get_dims_ncell_defs());
 
-    for (int d = 0; d < rttMesh->get_dims_ncell_defs(); d++)
+    for (int cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd ++)
     {
-	string cell_name = rttMesh->get_cell_defs_name(d);
-	
+        string cell_name = rttMesh->get_cell_defs_name(cd);
+
 	if (cell_name == "point")
 	    cell_defs = rtt_meshReaders::Element_Definition::NODE;
 	else if (cell_name == "line")
@@ -71,14 +53,47 @@ std::vector<rtt_meshReaders::Element_Definition::Element_Type>
 	else
 	    throw std::runtime_error("Unrecognized cell definition");
 
-	types[d] = cell_defs;
+	cell_types.push_back(cell_defs);
+	cell = new rtt_meshReaders::Element_Definition(cell_defs);
+	new_side_types.resize(cell->get_number_of_sides());
+	new_ordered_sides.resize(cell->get_number_of_sides());
+	for (int s = 0; s < cell->get_number_of_sides(); s++)
+	{
+	    new_side_types[s] = (std::find(cell_types.begin(), 
+					   cell_types.end(),
+					   cell->get_side_type(s).get_type())
+				 - cell_types.begin());
+	    new_ordered_sides[s] = cell->get_side_nodes(s);
+	}
+	cell_side_types[cd] = new_side_types;
+	cell_ordered_sides[cd] = new_ordered_sides;
     }
-    for (int s = 0; s < rttMesh->get_dims_nsides(); s++)
-        element_type.push_back(types[rttMesh->get_sides_type(s)]);
-    for (int c = 0; c < rttMesh->get_dims_ncells(); c++)
-        element_type.push_back(types[rttMesh->get_cells_type(c)]);
+    rttMesh->reformatData(cell_side_types, cell_ordered_sides);
 
-    return element_type;
+    // Load the element types vector.
+    for (int s = 0; s < rttMesh->get_dims_nsides(); s++)
+        element_types.push_back(cell_types[rttMesh->get_sides_type(s)]);
+    for (int c = 0; c < rttMesh->get_dims_ncells(); c++)
+        element_types.push_back(cell_types[rttMesh->get_cells_type(c)]);
+}
+/*!
+ * \brief Returns the node numbers associated with each element (i.e., sides
+ *        and cells).
+ * \return The node number.
+ */
+std::vector<std::vector<int> > RTT_Mesh_Reader::get_element_nodes() const
+{
+    vector_vector_int element_nodes(rttMesh->get_dims_nsides() + 
+				    rttMesh->get_dims_ncells());
+
+    for (int i = 0; i < rttMesh->get_dims_nsides(); i++)
+	element_nodes[i] = rttMesh->get_sides_nodes(i);
+
+    int nsides = rttMesh->get_dims_nsides();
+    for (int i = 0; i < rttMesh->get_dims_ncells(); i++)
+	element_nodes[i + nsides] = rttMesh->get_cells_nodes(i);
+
+    return element_nodes;
 }
 /*!
  * \brief Returns the nodes associated with each node_flag_type_name and

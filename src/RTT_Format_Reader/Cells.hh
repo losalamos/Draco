@@ -56,6 +56,7 @@ class Cells
     ~Cells() {}
 
     void readCells(ifstream & meshfile);
+    void redefineCells();
 
   private:
     void readKeyword(ifstream & meshfile);

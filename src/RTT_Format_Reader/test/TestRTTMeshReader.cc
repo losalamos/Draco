@@ -94,7 +94,6 @@ std::string TestRTT_Mesh_Reader::runTest()
     }
     return "Some tests failed.";
 }
-
 bool TestRTT_Mesh_Reader::check_virtual(const RTT_Mesh_Reader & mesh, 
 					const Meshes & meshtype)
 {
