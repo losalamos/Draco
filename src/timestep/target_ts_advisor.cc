@@ -19,7 +19,8 @@
 using std::cout;
 using std::endl;
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 target_ts_advisor::target_ts_advisor(
     const std::string   &name_,
@@ -71,6 +72,8 @@ bool target_ts_advisor::invariant_satisfied() const
 {
     return ts_advisor::invariant_satisfied();
 }
+
+} // end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
 //                              end of target_ts_advisor.cc

@@ -25,7 +25,8 @@ using std::cout;
 using std::ios;
 using dsxx::SP;
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 typedef ts_advisor TSA;
 
@@ -76,7 +77,6 @@ void ts_manager::remove_advisor( const SP<ts_advisor> &advisor_to_remove)
     }
     throw std::runtime_error("Unable to find requested advisor");
 }
-
 
 void ts_manager::set_cycle_data(double dt_, int cycle_, double time_)
 {
@@ -215,17 +215,24 @@ double ts_manager::compute_new_timestep()
     return dt_new;
 }
 
+// Defines a functor which determines if one timestep advisor is 
+// less than another. This is done by comparing the recommended
+// time step of each advisor.
 struct sptsa_less_than : public std::binary_function< SP<ts_advisor>,
 			 SP<ts_advisor>, bool > 
 {
+
+    // The timestep manager
     const ts_manager &tsm;
 
+    // Constructs the sptsa_less_than functor
     sptsa_less_than(const ts_manager &tsm_)
 	: tsm(tsm_)
     {
     // empty
     }
 
+    // Defines the operator () for sptsa_less_than functor
     bool operator () (const SP<ts_advisor> &sp_lhs, 
 		      const SP<ts_advisor> &sp_rhs) const
     {
@@ -301,6 +308,8 @@ bool ts_manager::invariant_satisfied() const
 	controlling_advisor.length() != 0;
     return ldum;
 }
+
+} // end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
 //                              end of ts_manager.cc

@@ -19,7 +19,8 @@
 using std::cout;
 using std::endl;
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 ratio_ts_advisor::ratio_ts_advisor(const std::string &name_,
 				   const usage_flag usage_,
@@ -66,6 +67,8 @@ bool ratio_ts_advisor::invariant_satisfied() const
     return ts_advisor::invariant_satisfied() &&
         0. < ratio_value;
 }
+
+} //end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
 //                              end of ratio_ts_advisor.cc

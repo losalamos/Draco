@@ -6,6 +6,11 @@
 // @> Defines the base class time-step advisor.
 //---------------------------------------------------------------------------//
 
+/*! 
+ * \file
+ * \brief Defines the base class time-step advisor.
+ */
+
 #ifndef __timestep_ts_advisor_hh__
 #define __timestep_ts_advisor_hh__
 
@@ -21,54 +26,69 @@ namespace rtt_timestep {
 class ts_manager; 
 
 //===========================================================================//
-// class ts_advisor - This is the base class time-step advisor.
+//! Defines the base class time-step advisor.
+/*! 
+ * \author <a href="http://www.lanl.gov/home/mcghee">
+ *  John McGhee</a>
+ *
+ * \date Thu Apr  2 14:06:18 1998
+
+ * \sa The ts_manager class provides a means to manage this advisor.
+ * The \ref overview page gives a summary of the Draco time step control
+ * utilities. 
+ *
+ */
 // 
 //===========================================================================//
-
 class ts_advisor {
 
 // NESTED CLASSES AND TYPEDEFS
 
   public:
 
-// Flag to determine how the recommended timestep is to be
-// used. The recommended value "dt_rec" is to be considered:
-
+    //! Flag to determine how the recommended timestep is to be used. 
+    /*! The recommended value "dt_rec" is to be used as indicated by 
+     *  the enumeration value selected
+     */
     enum usage_flag {
 
-	min , // a lower limit
-	max , // a upper limit
-	req , // a required value
-        last_usage  // dummy to mark end of list
+	min , //!< use as a lower limit
+	max , //!< use as a upper limit
+	req , //!< use as a required value
+        last_usage  //!< dummy to mark end of list
     };
 
 // DATA
 
   private:
 
-    std::string name;                 //ID string
-    usage_flag usage;                 //how to use dt_rec 
-    bool   active;                    //on-off switch
+    std::string name;                 //!< ID string
+    usage_flag usage;                 //!< how to use dt_rec 
+    bool   active;                    //!< on-off switch
 
 // STATIC CLASS METHODS
 
   public:
 
+    //! Returns a number close to machine precision
     static double eps() 
     {
 	return 100.*std::numeric_limits<double>::epsilon(); 
     }
 
+    //! Returns a small number
     static double small() 
     {
 	return 100.*std::numeric_limits<double>::min(); 
     }
 
+    //! Returns a large number
     static double large() 
     {
 	return 0.01*std::numeric_limits<double>::max(); 
     }
 
+    //! Returns the name of the usage flag requested
     static std::string usage_flag_name(const int i) 
     {
 	static const std::string usage_flag_names [last_usage] =
@@ -81,24 +101,28 @@ class ts_advisor {
 
 // CREATORS
 
+    //! Constucts the advisor
+    /*! \param name the name of the advisor
+     *  \param usage_ Specifies how the advisor is to be used
+     *  \param active_ turns the advisor on/off 
+     */
     ts_advisor(const std::string &name_  = std::string("Unlabeled"),
 	       const usage_flag usage_ = max,
 	       const bool active_ = true);
-    
+
+    //! Destroy the advisor
     virtual ~ts_advisor();
 
 
 
 //MANIPULATORS
 
-
-// Turn the advisor on and off
-
+    //! Turn the advisor on
     void activate()
     {
 	active = true;
     }
-
+    //! Turn the advisor off
     void deactivate()
     {
 	active = false;
@@ -106,45 +130,43 @@ class ts_advisor {
 
 // ACCESSORS
 
-// Determine if the advisor is active or not
-
+    //! Determine if the advisor is active or not
     bool is_active() const
     {
 	return active;
     }
 
-// Update and/or produce the recommended time-step
-
+    //! Update and/or produce the time-step recommended by this advisor
+    /*! \param tsm the timestep manager in which the advisor resides
+     */
     virtual double get_dt_rec(const ts_manager &tsm) const = 0;
 
-// Determine if the advisor is fit to use in
-// a time-step calculation
-
+    //! Determine if the advisor is fit to use in a time-step calculation
+    /*! \param tsm the timestep manager in which the advisor resides
+     */
     virtual bool advisor_usable(const ts_manager &tsm) const
     {
 	return (active == true);
     }
 
-// Get the usage
-
+    //! Get the usage
     usage_flag get_usage() const
     {
 	return usage;
     }
 
-// Get the name
-
+    //! Get the name
     const std::string &get_name() const
     {
 	return name;
     }
     
-// Vomit the entire state of the advisor
-
+    //! Vomit the entire internal state of the advisor to std out
     virtual void print_state() const = 0;
 
-// Invariant function
-
+    //! Invariant function
+    /*! \return True if the invariant is satisfied. 
+     */
     virtual bool invariant_satisfied() const
     {
 	return name.length() != 0 &&
@@ -152,8 +174,10 @@ class ts_advisor {
 	    usage  <  last_usage;
     }
 
-// Print out advisor data
-
+    //! Print out advisor data
+    /*! \param tsm the timestep manager in which the advisor resides
+     *  \param controlling flags the advisor as the controlling advisor 
+     */
     virtual void print(const ts_manager &tsm, 
 		       const bool controlling = false) const;
 

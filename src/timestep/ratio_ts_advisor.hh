@@ -6,72 +6,89 @@
 // @> Defines the ratio time-step advisor.
 //---------------------------------------------------------------------------//
 
+/*! 
+ * \file
+ * \brief Defines the ratio time-step advisor.
+ */
+
 #ifndef __timestep_ratio_ts_advisor_hh__
 #define __timestep_ratio_ts_advisor_hh__
-
-//===========================================================================//
-// class ratio_ts_advisor - Calculates a new timestep as a ratio of 
-//                          the current time-step
-//
-// This class provides a means to calculate a
-// new timestep as a ratio of the current time-step. This is useful to
-// limit the rate of change in the time-step from one time cycle to the 
-// next.
-// 
-//===========================================================================//
 
 #include "ts_advisor.hh"
 
 namespace rtt_timestep {
 
+//===========================================================================//
+//! Calculates a new timestep as a ratio of the current time-step
+/*!
+ * \author <a href="http://www.lanl.gov/home/mcghee">
+ *  John McGhee</a>
+ *
+ * \date Thu Apr  2 14:06:18 1998 
+ *
+ * \sa The ts_manager class provides a means to manage this advisor.
+ * The \ref overview page gives a summary of the Draco time step control
+ * utilities. 
+ *
+ * This class provides a means to calculate a
+ * new timestep as a ratio of the current time-step. This is useful to
+ * limit the rate of change in the time-step from one time cycle to the 
+ *  next. The recommendation for the new time step is computed as 
+ * current_dt*ratio. 
+ */ 
+//===========================================================================//
 class ratio_ts_advisor : public ts_advisor {
 
 
 // DATA
 
- // Value used to compute ratio advisor
-
   private:
+
+    //! Value used to compute ratio advisor
     double ratio_value; 
-
-
 
 // CREATORS
   public:
-
+    //! Constructs a ratio time step advisor
+    /*! \param name_ a unique name for the advisor
+     *  \param usage_ how the advisor is to be used
+     *  \param ratio_value_ the value of the ratio to be used
+     *  \param active_ turns the advisor on/off
+     */
     ratio_ts_advisor(const std::string &name_  = std::string("Unlabeled"),
 		     const usage_flag usage_ = max,
 		     const double ratio_value_ = 1.20,
 		     const bool active_ = true);
     
+    //! Destroys a ratio time step advisor
     ~ratio_ts_advisor();
-
-
 
 // MANIPULATORS
 
-
-// Set the ratio value
-
+    //! Set the ratio value
+    /*! \param value_ the value of the desired ratio, (value > 0.)
+     */
     void set_ratio(const double value_ = 1.2)
     { 
 	ratio_value = value_;
     }
 
-
-
 // ACCESSORS
 
-// Update the recommended time-step 
-    
+    //! Returns the recommended time-step 
+    /*! \return the time step recommended by this advisor  
+     *  \param tsm the time step manager in which the advisor resides
+     */  
     double get_dt_rec(const ts_manager &tsm) const;
 
-// Print state
-
+    //! Prints state
+    /*! \return Prints the internal state of the advisor to std out 
+     */
     void print_state() const;
-
-// Invariant function
-
+    
+    //! Invariant function
+    /*! \return True if the invariant is satisfied 
+     */
     bool invariant_satisfied() const;
 
 };

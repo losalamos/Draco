@@ -16,7 +16,8 @@ using std::string;
 using std::cout;
 using std::endl;
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 ts_advisor::ts_advisor(const string &name_,
 		       const usage_flag usage_,
@@ -45,7 +46,8 @@ void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
     cout << get_dt_rec(tsm) << space << 
 	status << space << name << endl;
 }
-    
+
+} //end of rtt_timestep namespace    
 
 //---------------------------------------------------------------------------//
 //                              end of ts_advisor.cc

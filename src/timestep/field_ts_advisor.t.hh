@@ -20,7 +20,8 @@
 
 #include <cmath>
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 template <class FT>
 void field_ts_advisor::set_floor(const FT &y1, double frac)
@@ -148,6 +149,8 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
     Ensure(invariant_satisfied());
 
 }
+
+} // end of rtt_timestep namespace
 
 
 //---------------------------------------------------------------------------//

@@ -19,7 +19,8 @@
 using std::cout;
 using std::endl;
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 field_ts_advisor::field_ts_advisor(const std::string &name_,
 				   const usage_flag usage_,
@@ -95,6 +96,8 @@ bool field_ts_advisor::invariant_satisfied() const
 	0 <= update_method && 
 	update_method < last_umf;
 }
+
+} // end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
 //                              end of field_ts_advisor.cc

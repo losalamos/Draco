@@ -17,7 +17,8 @@
 using std::cout;
 using std::endl;
 
-using namespace rtt_timestep;
+namespace rtt_timestep
+{
 
 fixed_ts_advisor::fixed_ts_advisor(const std::string &name_,
 				   const usage_flag usage_,
@@ -63,6 +64,8 @@ bool fixed_ts_advisor::invariant_satisfied() const
     return ts_advisor::invariant_satisfied() &&
         0. < fixed_value;
 }
+
+} //end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
 //                              end of fixed_ts_advisor.cc
