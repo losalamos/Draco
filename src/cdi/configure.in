@@ -46,8 +46,11 @@ mips-sgi-irix6.*)
 esac
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in \
-          test/Al_BeCu.ipcress:test/Al_BeCu.ipcress)
+          test/Makefile:../../config/Makefile.test.in)
+
+# The IPCRESS file is binary so we copy it to the target directory manually.
+echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
+cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/cdi configure.in

@@ -3841,8 +3841,7 @@ ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
 trap 'rm -fr `echo "Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in \
-          test/Al_BeCu.ipcress:test/Al_BeCu.ipcress cdi/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+          test/Makefile:../../config/Makefile.test.in cdi/config.h:config.h.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -3979,8 +3978,7 @@ EOF
 cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile:../../config/Makefile.package.in \
-          test/Makefile:../../config/Makefile.test.in \
-          test/Al_BeCu.ipcress:test/Al_BeCu.ipcress"}
+          test/Makefile:../../config/Makefile.test.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
@@ -4158,4 +4156,8 @@ chmod +x $CONFIG_STATUS
 rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
 
+
+# The IPCRESS file is binary so we copy it to the target directory manually.
+echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
+cp ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
 

@@ -28,15 +28,6 @@ using rtt_dsxx::SP;
  
 // DATA
     
- enum OpType 
- {
-     Gandolf, /*!< Obtain opacity information from an IPCRESS file
-		using the Gandolf reader. */
-     EOSPAC,  /*!< Obtain opacity information from a ???? file using 
-		the EOSPAC reader. */
-     Analytic /*!< Use analytic opacities. */
- };
-
 //===========================================================================//
 /*!
  * \class CDI
@@ -55,17 +46,15 @@ class CDI
 
     // DATA
 
-    string opacityDataFilename;
-
-    OpType opacityType; // enumerated value.
-
     SP<Opacity> spOpacity;
     
   public:
 
     // CREATORS
     
-    CDI( OpType _opacity_type, string _opacity_data_filename );
+    // constructor acts as creator?
+    CDI( SP<Opacity> _spOpacity );
+    
     //defaulted CDI(const CDI &rhs);
     ~CDI()
     {
@@ -81,7 +70,7 @@ class CDI
 
     double getGrayOpacity( const double temp, const double density );
 
-    string getOpacityDataFilename() { return opacityDataFilename; };
+    string getOpacityDataFilename() { return spOpacity->getDataFilename(); };
 
     vector<int> getMatIDs();
 

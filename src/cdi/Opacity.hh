@@ -9,7 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_Opacityhh__
+#ifndef __cdi_Opacity_hh__
 #define __cdi_Opacity_hh__
 
 #include <iostream>
@@ -51,11 +51,13 @@ class Opacity
     
     Opacity() 
     {
+	// empty
 	cout << "In Opacity::Opacity() constructor." << endl;
     }
     //defaulted Opacity(const CDI &rhs);
     virtual ~Opacity()
     {
+	// empty
 	cout << "Destroying Opacity Object." << endl << endl;
     }
 
@@ -69,65 +71,17 @@ class Opacity
 
     virtual vector<int> getMatIDs() = 0;
 
-
-
     virtual double getGray( const double temp, const double density ) = 0;       
 
-    //  protected:     // DATA
-    //    string dataFilename;
+    //  protected:     
+
+    // DATA
 
   private:
     
     // IMPLEMENTATION
 };
 
-// ---------------------------------------- //
-//             Gandolf Opacity              //
-// ---------------------------------------- //
-
- class GandolfOpacity : public Opacity
- {
-     // NESTED CLASSES AND TYPEDEFS
-     
-     // DATA
-
-     const string dataFilename;
-     vector<int> matIDs;
-
-   public:
-     
-     // CREATORS
-     
-     GandolfOpacity( string _data_filename );
-     //defaulted GandolfOpacity(const CDI &rhs);
-     ~GandolfOpacity()
-     {
-	 cout << "Destroying GandolfOpacity Object." << endl << endl;
-     };
-     
-     // MANIPULATORS
-     
-     //defaulted CDI& operator=(const CDI &rhs);
-     
-     // ACCESSORS
-     
-     string getDataFilename() { return dataFilename; };
-     vector<int> getMatIDs() 
-     { 
-	 cout << "In Opacity::getMatIDs()" << endl;
-	 return matIDs; 
-     };
-
-
-
-
-     double getGray( const double temp, const double density );
-     
-   private:
-     
-     // IMPLEMENTATION 
- };
- 
 } // end namespace rtt_cdi
 
 #endif                          // __cdi_Opacity_hh__

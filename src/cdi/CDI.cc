@@ -12,34 +12,24 @@
 #include "CDI.hh"
 
 #include "ds++/Assert.hh"
+#include "ds++/SP.hh"
 
-#include <fstream>
+//#include <fstream>
 
 namespace rtt_cdi
 {
+
 using std::string;
 using std::cout;
 using std::endl;
+using rtt_dsxx::SP;
 
 // CDI constructor
 //----------------------------------------------------------------------
-CDI::CDI( OpType _opacity_type, string _opacity_data_filename ) :
-    opacityType ( _opacity_type ), 
-    opacityDataFilename ( _opacity_data_filename )
+CDI::CDI( SP<Opacity> _spOpacity ) :
+    spOpacity( _spOpacity )
     {
 	cout << "In CDI::CDI() constructor." << endl;
-
-	// Create the appropriate opacity type.
-	// ------------------------------------------------------------
-	switch ( opacityType ) 
-	    {
-	    case Gandolf: // Use Gandolf to obtain opacity data.
-		spOpacity = new GandolfOpacity( opacityDataFilename );
-		break;
-	    default:
-		Insist( 0, "CDI: Invalid entry for opacityType." );
-		break;
-	    }
     }
 
 
@@ -59,8 +49,6 @@ CDI::CDI( OpType _opacity_type, string _opacity_data_filename ) :
 	    double grayOpacity = spOpacity->getGray( temp, density );
 	    return grayOpacity;
 	}
-	
-
 
 } // end namespace rtt_cdi
 
