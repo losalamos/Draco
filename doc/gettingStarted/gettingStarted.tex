@@ -837,6 +837,59 @@ changing any files.
 
 %%---------------------------------------------------------------------------%%
 
+\section{Adding a New Package to Draco}
+
+Adding a package to the \draco\ build system is straight forward.
+However, the following guidelines should be followed when a package is
+added.
+
+First you should verify that all of the other \draco\ components are
+up to date.  You can use the ``\comp{cvs update}'' command as described in
+the preceeding section to do this.  
+
+Now you can create a package directory beneath
+\comp{$\sim$/work/draco/src} and put your new files in this location.
+You may want to use the \draco\ extensions for \xemacs\ to create all
+of the needed files.  Start \xemacs\ from the new package directory
+and then execute the \xemacs\ command ``\comp{M-x draco-package}''.
+You will need to follow the prompts to tell \xemacs\ the name of your
+package (this script may be able to guess the correct name).  This
+script creates four new buffers (\comp{Release.hh, Release.cc,
+  config.h.in} and \comp{configure.in}).  You will need to save each
+of these buffers to your package directory.  Before saving
+\comp{Release.cc} you should change the release value to
+``\comp{-1\_0\_0}''.  Additionally, you should modify the
+\comp{AC\_NEEDS\_LIBS} line of \comp{configure.in} to include any
+other \draco\ packages that your new package will depend on.  The
+\comp{AC\_INIT} line should include the names of C++ header files of
+your new package and the \comp{AC\_NEEDS\_LIBS\_TEST} line should
+include additional dependencies required by the package's regression
+tests.  (You may want to use the \xemacs\ command ``\comp{M-x
+  draco-class}'' to create your new routines.)
+
+After these four required files are setup and you have added your new
+C++ header and source files you will need to reconfigure and remake
+\draco.  Change your current working directory to
+\comp{$\sim$/work/draco} and execute the command ``\comp{autoreconf
+  --localdir=config}'' (remember to add your package to the source
+level \comp{configure.in} file before running \textbf{autoconf}).
+Next change to the \draco\ \emph{target} directory
+\comp{$\sim$/work/sgi\_mpi0/draco} and configure \draco\ as detailed
+in section \S\ref{configure}.  Finally you can run \textbf{gmake} from
+the \emph{target} directory and test your new code.
+
+When you are satisfied that your code is working as intended you need
+to add it to the \cvs\ repository.  From the \draco\ \comp{src}
+directory execute the command ``\comp{cvs add $<$\emph{package}$>$}''.
+Next change your working directory to the new package source location
+and execute the command ``\comp{cvs add $<$\emph{file}$>$}'' for each
+\emph{file} in your package.  If you have a \emph{test} directory you
+should execute the ``\comp{cvs add}'' command for it and all of the
+associated test files.  To finalize your chages, navigate back to the
+\draco\ source directory and execute a ``\comp{cvs commit}'' command.
+
+%%---------------------------------------------------------------------------%%
+
 \section{Troubleshooting}
 
 According to Murphy's Law things never go as smoothly as they should.
