@@ -1,3 +1,44 @@
+2003-09-05  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: release draco-4_0_0. This is a major release with
+	relatively minor changes from draco-3_2_0.  See
+	draco/doc/releases/draco-4_0_0.tex for detail.  We are making this
+	a major change because of the significant build system changes
+	between draco-3_1_0 and draco-3_2_0.  In summary the changes are:
+
+		- updates to mc and imc for random walk and surface
+		  tracking
+		- small build system improvements
+		- some tool improvements
+
+	This draco release includes the following packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf
+		ds++
+		imc
+		lapack_wrap
+		mc
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		RTT_Format_Reader
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	We still have not put in default build parameters.
+
 2003-07-25  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: release draco-3_2_0.  This is a minor release that has

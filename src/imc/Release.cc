@@ -24,7 +24,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "imc(imc-3_4_0)";
+    string pkg_release = "imc(draco-4_0_0)";
     return pkg_release;
 }
 

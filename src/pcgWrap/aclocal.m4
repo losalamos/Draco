@@ -401,6 +401,66 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_METIS_SETUP
+dnl
+dnl METIS SETUP (on by default)
+dnl METIS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_METIS_SETUP], [dnl
+
+   dnl define --with-metis
+   AC_ARG_WITH(metis,
+      [  --with-metis=[lib]    the metis implementation])
+ 
+   dnl define --with-metis-inc
+   AC_WITH_DIR(metis-inc, METIS_INC, \${METIS_INC_DIR},
+	       [tell where METIS includes are])
+
+   dnl define --with-metis-lib
+   AC_WITH_DIR(metis-lib, METIS_LIB, \${METIS_LIB_DIR},
+	       [tell where METIS libraries are])
+
+   # set default value of metis includes and libs
+   if test "${with_metis:=metis}" = yes ; then
+       with_metis='metis'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_metis=$1
+
+])
+
+
+AC_DEFUN([AC_METIS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_metis, -L${METIS_LIB} -l${with_metis})
+       elif test -z "${METIS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_metis, -l${with_metis})
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_PCG_SETUP
 dnl
 dnl PCG LIBRARY SETUP (on by default)
@@ -697,6 +757,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GANDOLF_FINALIZE
    AC_SPRNG_FINALIZE
    AC_GRACE_FINALIZE
+   AC_METIS_FINALIZE
 
    AC_GSL_FINALIZE
    AC_GSLCBLAS_FINALIZE
@@ -739,6 +800,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_GSL_SETUP(pkg)
    AC_GSLCBLAS_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
+   AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
@@ -2013,7 +2075,7 @@ AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
    # Check for working compaq F90 compiler
 
    AC_CHECK_PROG(F90, f95, f95, none)
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
@@ -2678,26 +2740,39 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -Wnon-virtual-dtor"
+       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type"
    fi
 
    # optimization level
    # gcc allows -g with -O (like KCC)
-    
-   # defaults
-   if test "${enable_debug:=yes}" = yes ; then
-       gcc_debug_flag='-g'
-   fi
-   CXXFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
-   CFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
 
-   # add inlining if optimization is 01, 02 (it is on by default for
-   # 03)
-   if test "${with_opt}" = 1 || test "${with_opt}" = 2 ||
-      test "${with_opt}" = 3 ; then
-       CXXFLAGS="${CXXFLAGS} -finline-functions"
-       CFLAGS="${CFLAGS} -finline-functions"
+   # set opt level in flags
+   gcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       gcc_opt_flags="-finline-functions ${gcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
    fi
+
+   # add opt flags
+   CXXFLAGS="${gcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${gcc_opt_flags} ${CFLAGS}"
 
    # RPATH FLAGS
 
@@ -2742,9 +2817,9 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
        ARFLAGS='cr'
    fi
 
-   # with the default template flags (-pt), the contents of the
-   # cxx_repository do not seem to need adding when building
-   # shared libraries; you do have to add them for archives
+   # the contents of the cxx_repository do not seem to need adding 
+   # when building shared libraries; you do have to add them for
+   # archives 
    if test "${enable_shared}" != yes ; then
        ARLIBS='$(wildcard cxx_repository/*)'
        ARTESTLIBS='$(wildcard cxx_repository/*)'
@@ -2794,6 +2869,12 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
 
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
+
+   # use implicit local template instantiation; this is the "GNU" like
+   # option that puts manually instantiated templates in the 
+   # repository with external linkage and automatic templates in 
+   # the object file with internal linkage
+   CXXFLAGS="${CXXFLAGS} -timplicit_local"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then

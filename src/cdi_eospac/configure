@@ -2795,7 +2795,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
@@ -3744,7 +3744,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
@@ -3825,7 +3825,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Compaq"
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
    then
        :
    else
@@ -4390,26 +4390,39 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -Wnon-virtual-dtor"
+       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type"
    fi
 
    # optimization level
    # gcc allows -g with -O (like KCC)
 
-   # defaults
-   if test "${enable_debug:=yes}" = yes ; then
-       gcc_debug_flag='-g'
-   fi
-   CXXFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
-   CFLAGS="${gcc_debug_flag} -O${with_opt:=0}"
+   # set opt level in flags
+   gcc_opt_flags="-O${with_opt:=0}"
 
-   # add inlining if optimization is 01, 02 (it is on by default for
-   # 03)
-   if test "${with_opt}" = 1 || test "${with_opt}" = 2 ||
-      test "${with_opt}" = 3 ; then
-       CXXFLAGS="${CXXFLAGS} -finline-functions"
-       CFLAGS="${CFLAGS} -finline-functions"
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       gcc_opt_flags="-finline-functions ${gcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
    fi
+
+   # add opt flags
+   CXXFLAGS="${gcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${gcc_opt_flags} ${CFLAGS}"
 
    # RPATH FLAGS
 
@@ -4527,9 +4540,9 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
        ARFLAGS='cr'
    fi
 
-   # with the default template flags (-pt), the contents of the
-   # cxx_repository do not seem to need adding when building
-   # shared libraries; you do have to add them for archives
+   # the contents of the cxx_repository do not seem to need adding
+   # when building shared libraries; you do have to add them for
+   # archives
    if test "${enable_shared}" != yes ; then
        ARLIBS='$(wildcard cxx_repository/*)'
        ARTESTLIBS='$(wildcard cxx_repository/*)'
@@ -4579,6 +4592,12 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
+
+   # use implicit local template instantiation; this is the "GNU" like
+   # option that puts manually instantiated templates in the
+   # repository with external linkage and automatic templates in
+   # the object file with internal linkage
+   CXXFLAGS="${CXXFLAGS} -timplicit_local"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
@@ -5860,6 +5879,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -L${METIS_LIB} -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${METIS_LIB} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${METIS_LIB} -l${with_metis}"
+   fi
+
+       elif test -z "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_metis}"
+   fi
+
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -6545,6 +6606,48 @@ echo "${ECHO_T}\"not needed\"" >&6
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -L${METIS_LIB} -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${METIS_LIB} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${METIS_LIB} -l${with_metis}"
+   fi
+
+       elif test -z "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_metis}"
+   fi
+
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -7129,6 +7232,48 @@ echo "${ECHO_T}\"not needed\"" >&6
        # add GRACE directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -L${METIS_LIB} -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${METIS_LIB} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${METIS_LIB} -l${with_metis}"
+   fi
+
+       elif test -z "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_metis}"
+   fi
+
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
 
    fi
 
@@ -7788,6 +7933,48 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
 
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -L${METIS_LIB} -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${METIS_LIB} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${METIS_LIB} -l${with_metis}"
+   fi
+
+       elif test -z "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_metis}"
+   fi
+
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -8325,6 +8512,48 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        # add GRACE directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_metis}" ; then
+
+       # include path
+       if test -n "${METIS_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+       fi
+
+       # library path
+       if test -n "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -L${METIS_LIB} -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${METIS_LIB} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${METIS_LIB} -l${with_metis}"
+   fi
+
+       elif test -z "${METIS_LIB}" ; then
+
+   # vendor_metis is the vendor_<> tag (equals pkg or test)
+   # -l${with_metis} are the directories added
+
+   if test "${vendor_metis}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_metis}"
+   elif test "${vendor_metis}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_metis}"
+   fi
+
+       fi
+
+       # add METIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
 
    fi
 

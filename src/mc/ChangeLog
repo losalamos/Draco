@@ -1,3 +1,9 @@
+2003-09-05  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc: tagged as part of draco-4_0_0.  Full support for Random Walk
+	in RZWedge_Mesh and OS_Mesh. Surfaces have been added for surface
+	tracking. 
+
 2003-06-04  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: tagged as part of draco-3_0_0.  It has support for random
