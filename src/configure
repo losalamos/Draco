@@ -1290,16 +1290,16 @@ subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwa
 
 subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader"
+                  timestep RTT_Format_Reader cdi_gandolf"
 
 subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver"
 
 subdirs="ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver P1Diffusion imc"
 
 
@@ -1589,7 +1589,7 @@ if test "$no_recursion" != yes; then
 
   for ac_config_dir in ds++ xm fourier stdheaders traits units nml c4 UnitTestFrame rng stopwatch meshTest viz meshReaders \
                   quadrature cdi mesh POOMA_MT radphys linalg LAMG ConjGrad diffusion \
-                  timestep RTT_Format_Reader mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
+                  timestep RTT_Format_Reader cdi_gandolf mc matprops PCGDiffusionSolver LAMGDiffusionSolver \
                   ConjGradDiffusionSolver P1Diffusion imc; do
 
     # Do not complain, so a configure script can configure whichever
