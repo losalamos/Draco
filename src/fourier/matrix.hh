@@ -40,7 +40,7 @@ using namespace mtl2lapack;
 class Matrix 
 {
   public:
-    //SCB matrix constructor.
+    //Matrix constructor.
     Matrix(int mat_order);
 
     //Member functions of Matrix class.
@@ -49,6 +49,11 @@ class Matrix
 						     int quad_order, 
 						     double lambda, 
 						     double delta_x);
+    lapack_matrix<complex<double> >::type SCB_M4S_matrix(double sigma_t, 
+						         double sigma_s,
+						         int quad_order, 
+						         double lambda, 
+						         double delta_x);
 
     int             mat_order;
     double          sigma_t;
@@ -68,14 +73,14 @@ class Matrix
     complex<double> *P;
     complex<double> *H;
 
-    double get_sigma_t()             { return sigma_t;            }
-    double get_sigma_s()             { return sigma_s;            }
-    double get_delta_x()             { return delta_x;            }
-    int    get_quad_order()          { return quad_order;         }
-    double *get_mu()                 { return mu;                 }
-    double *get_weight()             { return weight;             }
-    double get_gamma()               { return gamma; }
-    double get_lambda()              { return lambda; }
+    double get_sigma_t()             { return sigma_t;    }
+    double get_sigma_s()             { return sigma_s;    }
+    double get_delta_x()             { return delta_x;    }
+    int    get_quad_order()          { return quad_order; }
+    double *get_mu()                 { return mu;         }
+    double *get_weight()             { return weight;     }
+    double get_gamma()               { return gamma;      }
+    double get_lambda()              { return lambda;     }
     
   private:
     

@@ -15,7 +15,7 @@ int main ()
 Fourier fourier;
 fourier.input();
 fourier.solve();
-//fourier.plot();
+fourier.plot();
 //fourier.print();
 }
  

@@ -11,12 +11,16 @@
 #define __fourier_Release_hh__
 
 //===========================================================================//
-// namespace version - 
-//
-// Purpose : Return the version of fourier; 
-// this can be used to get exact version information in codes that 
-// use fourier
-// 
+/*!
+ * \page overview Overview of the Fourier Analysis Package
+ *
+ * This package is used to do Fourier analysis.  The primary classes are
+ * rtt_fourier::fourier, rtt_fourier::matrix, rtt_fourier::gauss.  It uses
+ * the mtl library to do eigensolves.
+ *
+ * This is basically how its used.  Register a class that has the creates a
+ * matrix of type X.  This ....  
+*/
 //===========================================================================//
 
 #include <string>

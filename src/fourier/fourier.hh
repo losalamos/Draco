@@ -1,10 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// fourier.hh
-// John Gulick
-// Tue Aug  3 13:44:08 1999
-// $Id$
+/*! 
+ * \file fourier.hh
+ * \author John Gulick
+ * \date Tue Aug  3 13:44:08 1999
+ * \brief Fourier package header file.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef fourier_H
@@ -30,15 +32,32 @@
 
 using namespace std;
 
+//===========================================================================//
+/*! 
+ * \class Fourier
+ * \brief Fourier analysis class solver.
+ *
+ * This class does cool stuff...
+ */
+//===========================================================================//
+
+
 class Fourier
 {
   public:
     Fourier (){}
 
-void input();
-void solve();
-    //void plot();
+    //! Input member function.
+    void input();
+
+    //! Solve member function.
+    void solve();
+
+    //! Plot member function.
+    void plot();
     //void print();
+    
+  private:
 
     string method;
     string acceleration_type;
@@ -58,20 +77,18 @@ void solve();
     double *dx_step_size;
     double *mu,*weight;
     double *spec_rad;
-    double max_spec_rad;
+    double max_lam_spec_rad;
+    double max_dx_spec_rad;
     Matrix *matrix_ptr;
     double gamma;
-    int num_lambda;
-    int count;
+    int    num_lambda;
+    int    dx_count;
     double *eigen_test;
     double lambda;
     double max_spec_rad_lambda;
+    double max_spec_rad_dx;
     double *spec_rad_lam;
     double *spec_rad_dx;
-
-    
-
-  private:
 
 };
 
