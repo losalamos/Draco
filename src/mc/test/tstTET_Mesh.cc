@@ -272,6 +272,14 @@ void Test_TET()
     // ... but, with luck, the meshes will be equal.
     if (*mesh_ptr_1 != *mesh_ptr_2)                   ITFAILS;
 
+    vector< vector<double> > m_coords = mesh_ptr_2->get_point_coord();
+    cout << "Vertex coordinates:\n";
+    for (int v_ = 0 ; v_ < m_coords.size() ; v_++)
+    {
+        cout << m_coords[v_][0] << "      ";
+        cout << m_coords[v_][1] << "      ";
+        cout << m_coords[v_][2] << endl;
+    }
 
 }   // end Test_TET()
 
