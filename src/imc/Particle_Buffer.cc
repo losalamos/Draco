@@ -113,7 +113,7 @@ void Particle_Buffer<PT>::write_census(ostream &cenfile,
 // read a single particle from an output
 
 template<class PT>
-SP<Particle_Buffer<PT>::Census_Buffer> 
+SP<typename Particle_Buffer<PT>::Census_Buffer> 
 Particle_Buffer<PT>::read_census(istream &cenfile)
 {
   // make sure file exists
