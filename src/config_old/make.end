@@ -54,6 +54,9 @@ endif
 ifeq ($(bits),32)
 	$(RM) *.pure
 endif
+ifeq ($(shared),yes)
+	$(RM) so_locations
+endif
 	$(RM) lib*_$(env).* x*_$(env)
 	$(RM) $(tstprogs) $(puretstprogs)
 	$(RM) -rf ii_files

@@ -56,7 +56,9 @@ ifeq ($(cxx),KCC)
 #STRICT	= --strict
 #endif
 
-threads	:= yes
+ifneq ($(c4),no)
+threads := yes
+endif
 
 ifeq ($(c4),s2)
 strict	:= no
