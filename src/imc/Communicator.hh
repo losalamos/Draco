@@ -26,6 +26,7 @@
 #include "ds++/SP.hh"
 #include <vector>
 #include <algorithm>
+#include <ostream>
 
 IMCSPACE
 
@@ -35,6 +36,7 @@ using dsxx::SP;
 // std components
 using std::vector;
 using std::find;
+using std::ostream;
 
 template<class PT>
 class Communicator
@@ -68,8 +70,10 @@ public:
 
   // message passing (async and sync) operations
     void post(const Particle_Buffer<PT> &);
-    bool arecv(const Particle_Buffer<PT> &, Bank &);
     void flush(const Particle_Buffer<PT> &);
+    void free(const Particle_Buffer<PT> &);
+    bool arecv_post(const Particle_Buffer<PT> &, Bank &);
+    void arecv_wait(const Particle_Buffer<PT> &, Bank &);
 
   // accessor functions
     int num_send_nodes() const { return send_nodes.size(); }
@@ -83,6 +87,9 @@ public:
   // checks on state of buffers
     int get_send_size() const;
     int get_recv_size() const;
+
+  // diagnostic 
+    void print(ostream &) const;
 };
 
 //---------------------------------------------------------------------------//

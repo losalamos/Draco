@@ -7,11 +7,19 @@
 //---------------------------------------------------------------------------//
 
 #include "imc/Communicator.hh"
+#include "c4/global.hh"
+#include <iomanip>
 
 IMCSPACE
 
 // std components
 using std::fill;
+using std::endl;
+using std::ios;
+using std::setw;
+
+// draco componentes
+using C4::node;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -29,6 +37,8 @@ Communicator<PT>::Communicator(const vector<int> &r_nodes,
 {
     fill(last_node.begin(), last_node.end(), 0);
     Ensure (boundary_node.size() == boundary_cell.size());
+    Ensure (recv_buffer.size() == recv_nodes.size());
+    Ensure (send_buffer.size() == send_nodes.size());
 }
 
 //---------------------------------------------------------------------------//
@@ -43,6 +53,7 @@ int Communicator<PT>::communicate(const Particle_Buffer<PT> &buffer,
 {
   // determine the boundary cell that this particle is in
     int bcell = -particle->get_cell();
+    Check (bcell > 0);
 
   // determine the index for the destination processor and the local cell 
   // index of bcell on that processor
@@ -51,23 +62,29 @@ int Communicator<PT>::communicate(const Particle_Buffer<PT> &buffer,
     int index = last_node[bcell-1]++;
 
   // get the local node id and the local cell id and the global node id
-    int node        = boundary_node[bcell-1][index];
+
+  // convert global-to-local
+    int global_node = boundary_node[bcell-1][index];
     int cell        = boundary_cell[bcell-1][index];
-    int global_node = send_nodes[node];
+    int local_node  = global_to_local(global_node);
+    int multiplier  = -1;
 
   // fill the appropriate buffer
     particle->set_cell(cell);
-    buffer.buffer_particle(send_buffer[node], *particle);
+    buffer.buffer_particle(send_buffer[local_node], *particle);
 
   // if buffer is full send it to the destination
-    if (send_buffer[node].n_part == Particle_Buffer<PT>::get_buffer_s())
+    if (send_buffer[local_node].n_part ==
+	Particle_Buffer<PT>::get_buffer_s()) 
     {
-	buffer.asend_buffer(send_buffer[node], global_node);
-	Check (send_buffer[node].n_part == 0);
+	multiplier = 1;
+	buffer.async_wait(send_buffer[local_node]);
+	buffer.asend_buffer(send_buffer[local_node], global_node);
+	Check (send_buffer[local_node].n_part == 0);
     }
 
   // return the node this particle has been sent to
-    return global_node;
+    return global_node * multiplier;
 }
 
 //---------------------------------------------------------------------------//
@@ -91,11 +108,11 @@ void Communicator<PT>::post(const Particle_Buffer<PT> &buffer)
 
 //---------------------------------------------------------------------------//
 // check to see if any buffers have come in, if they have stuff them in the
-// bank
+// bank and post a new receive for that buffer
 
 template<class PT>
-bool Communicator<PT>::arecv(const Particle_Buffer<PT> &buffer, 
-			     typename Particle_Buffer<PT>::Bank &bank)
+bool Communicator<PT>::arecv_post(const Particle_Buffer<PT> &buffer, 
+				  typename Particle_Buffer<PT>::Bank &bank)
 {
   // tag to check if something arrives from somewhere
     int arrived = 0;
@@ -107,16 +124,42 @@ bool Communicator<PT>::arecv(const Particle_Buffer<PT> &buffer,
 	int global_node = recv_nodes[i];
 
       // check to see if anything has come in on that node
-	if (buffer.check_arecv(recv_buffer[i], global_node))
+	if (buffer.async_check(recv_buffer[i]))
 	{
+	  // receive the data
+	    buffer.async_wait(recv_buffer[i]);
 	    buffer.add_to_bank(recv_buffer[i], bank);
 	    Check (recv_buffer[i].n_part == 0);
 	    arrived++;
+
+	  // post a new receive to that buffer
+	    buffer.post_arecv(recv_buffer[i], global_node);
 	}
     }
     
   // return tag indicating if the bank has been filled
     return arrived;
+}
+
+//---------------------------------------------------------------------------//
+// wait on each buffer to receive something, stuff them in a bank, DO NOT
+// post a new receive
+
+template<class PT>
+void Communicator<PT>::arecv_wait(const Particle_Buffer<PT> &buffer, 
+				  typename Particle_Buffer<PT>::Bank &bank)
+{
+  // loop over processors that we are receiving from
+    for (int i = 0; i < recv_nodes.size(); i++)
+    {
+      // get the global receive node index
+	int global_node = recv_nodes[i];
+
+      // wait and receive the buffer
+	buffer.async_wait(recv_buffer[i]);
+	buffer.add_to_bank(recv_buffer[i], bank);
+	Check (recv_buffer[i].n_part == 0);
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -132,8 +175,24 @@ void Communicator<PT>::flush(const Particle_Buffer<PT> &buffer)
 	int global_node = send_nodes[i];
 
       // send out asynchronously
+	buffer.async_wait(send_buffer[i]);
 	buffer.asend_buffer(send_buffer[i], global_node);
 	Check (send_buffer[i].n_part == 0);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// free the receive buffers
+
+template<class PT>
+void Communicator<PT>::free(const Particle_Buffer<PT> &buffer)
+{
+  // loop through receive processors and free the buffers so that we can move 
+  // onward
+    for (int i = 0; i < recv_buffer.size(); i++)
+    {
+	Check (recv_buffer[i].n_part == 0);
+	buffer.async_free(recv_buffer[i]);
     }
 }
 
@@ -165,6 +224,53 @@ int Communicator<PT>::get_recv_size() const
     
   // return the total number of particles in the send buffers
     return number;
+}
+
+//---------------------------------------------------------------------------//
+// print diagnostic function
+//---------------------------------------------------------------------------//
+// print out the communicator
+
+template<class PT>
+void Communicator<PT>::print(ostream &out) const
+{
+    out << endl;
+    out << ">>> COMMUNICATOR <<<" << endl;
+    out << "====================" << endl;
+
+    out.setf(ios::right, ios::adjustfield);
+    out << endl;
+    out << setw(20) << "Node:" << setw(8) << node() << endl;
+    out << setw(20) << "Boundary cells:" << setw(8) << boundary_node.size()
+	<< endl;
+    out << setw(20) << "Recv buffers:" << setw(8) << recv_nodes.size()
+	<< endl;
+    out << setw(20) << "Send buffers:" << setw(8) << send_nodes.size()
+	<< endl;
+
+    out << endl;
+    out << setw(15) << "Boundary Cell" << setw(15) << "Send Node" << setw(15) 
+	<< "Global Node" << setw(15) << "Local Cell" << endl;
+    out << "------------------------------------------------------------" 
+	<< endl;
+    for (int i = 0; i < boundary_cell.size(); i++)
+	for (int j = 0; j < boundary_cell[i].size(); j++)
+	    out << setw(15) << i+1 << setw(15) << 
+		global_to_local(boundary_node[i][j]) << setw(15) << 
+		boundary_node[i][j] <<setw(15) << boundary_cell[i][j] <<
+		endl; 
+
+    out << endl;
+    out << setw(15) << "Receive Nodes" << endl;
+    out << "---------------" << endl;
+    for (int i = 0; i < recv_nodes.size(); i++)
+	out << setw(15) << recv_nodes[i] << endl;
+
+    out << endl;
+    out << setw(15) << "Send Nodes" << endl;
+    out << "---------------" << endl;
+    for (int i = 0; i < send_nodes.size(); i++)
+	out << setw(15) << send_nodes[i] << endl;
 }
 
 CSPACE
