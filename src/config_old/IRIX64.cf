@@ -232,46 +232,47 @@ CXX	+= $(cxx_opt)
 endif				# SGI C++
 #-----------------------------------------------------------------------------#
 
-# ifeq ($(need_python),yes)
-# 
-# PYTHON_BASE = /net/wotan/vobs/KULL/py
-# PYTHON_INC_DIR = $(PYTHON_BASE)/include/python1.4
-# PYTHON_CFG_DIR = $(PYTHON_BASE)/lib/python1.4/config
-# PY_INC_FLAG = -I$(PYTHON_INC_DIR) -I$(PYTHON_CFG_DIR)
-# 
-# PYTHON_FLAG += -DHAVE_CONFIG_H
-# 
-# #CXX_DEPEND_FLAG = $(CXX_INC_FLAGS) $(PYTHON_FLAG)
-# 
-# # These are the Python stock libraries.
-# 
-# PYLIBS =	$(PYTHON_CFG_DIR)/libModules.a \
-# 		$(PYTHON_CFG_DIR)/libPython.a \
-# 		$(PYTHON_CFG_DIR)/libObjects.a \
-# 		$(PYTHON_CFG_DIR)/libParser.a
-# 
-# # Now add the rest of the stuff which has to go on the end of the line
-# # when linking Python shells.
-# 
-# PYLIBS += -L$(PYTHON_BASE)/lib -ltk4.1 -ltcl7.5 -lMatrix -lBLT -lplplotdtk \
-# 		-lX11 -lm
-# 
-# # Now configure the PYTHONPATH
-# 
-# MACHDEP=
-# DESTLIB=$(PYTHON_BASE)/lib/python
-# DESTLIB=$(PYTHON_BASE)/lib/python1.4
-# TKPATH=:$(DESTLIB)/tkinter
-# PLPLOTPATH=:$(DESTLIB)/plplot
-# NUMERICPATH=:$(DESTLIB)/Numeric
-# MACHDEPPATH=:$(DESTLIB)/$(MACHDEP)
-# TESTPATH=:$(DESTLIB)/test
-# DESTPATH=:$(DESTLIB)
-# SITEPATH=
-# COREPYTHONPATH=.$(SITEPATH)$(DESTPATH)$(TESTPATH)$(MACHDEPPATH)$(STDWINPATH)$(TKPATH)$(NUMERICPATH)$(PLPLOTPATH)
-# PYTHONPATH=$(COREPYTHONPATH)
-# 
-# endif
+ifeq ($(need_python),yes)
+
+PYTHON_BASE = /users/furnish/v/py
+PYTHON_INC_DIR = $(PYTHON_BASE)/include/python1.4
+PYTHON_CFG_DIR = $(PYTHON_BASE)/lib/python1.4/config
+PY_INC_FLAG = -I$(PYTHON_INC_DIR) -I$(PYTHON_CFG_DIR)
+
+PYTHON_FLAG += -DHAVE_CONFIG_H
+
+#CXX_DEPEND_FLAG = $(CXX_INC_FLAGS) $(PYTHON_FLAG)
+
+# These are the Python stock libraries.
+
+PYLIBS =	$(PYTHON_CFG_DIR)/libModules.a \
+		$(PYTHON_CFG_DIR)/libPython.a \
+		$(PYTHON_CFG_DIR)/libObjects.a \
+		$(PYTHON_CFG_DIR)/libParser.a
+
+# Now add the rest of the stuff which has to go on the end of the line
+# when linking Python shells.
+
+#PYLIBS += -L$(PYTHON_BASE)/lib -ltk4.1 -ltcl7.5 -lMatrix -lBLT -lplplotdtk \
+#		-lX11 -lm
+PYLIBS += -L$(PYTHON_BASE)/lib -ltk8.0 -ltcl8.0 -lX11
+
+# Now configure the PYTHONPATH
+
+MACHDEP=
+DESTLIB=$(PYTHON_BASE)/lib/python
+DESTLIB=$(PYTHON_BASE)/lib/python1.4
+TKPATH=:$(DESTLIB)/tkinter
+#PLPLOTPATH=:$(DESTLIB)/plplot
+NUMERICPATH=:$(DESTLIB)/NumPy
+#MACHDEPPATH=:$(DESTLIB)/$(MACHDEP)
+TESTPATH=:$(DESTLIB)/test
+DESTPATH=:$(DESTLIB)
+SITEPATH=
+COREPYTHONPATH=.$(SITEPATH)$(DESTPATH)$(TESTPATH)$(MACHDEPPATH)$(STDWINPATH)$(TKPATH)$(NUMERICPATH)$(PLPLOTPATH)
+PYTHONPATH=$(COREPYTHONPATH):$(SRC_TOP)/pylib
+
+endif
 
 env	:= $(mach)$(cmplr)$(optns)$(comm)
 
