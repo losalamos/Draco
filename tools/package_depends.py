@@ -177,6 +177,25 @@ def output_pkg_files(draco_includes, test_includes):
                 print ">>> %s package includes in %s" % (pkg, key)
                 for f in files:
                     print "    %s" % (f)
+        
+        # pkg includes in test
+        for key in test_includes.keys():
+
+            files = []
+            
+            for dep in test_includes[key]:
+                pkg_match = re.search('([0-9A-Za-z+_]*)::.*', dep)
+
+                if pkg_match:
+                    p = pkg_match.group(1)
+
+                if p == pkg:
+                    files.append(dep)
+
+            if len(files) > 0:
+                print ">>> %s package test includes in %s" % (pkg, key)
+                for f in files:
+                    print "    %s" % (f)
             
 
 ##---------------------------------------------------------------------------##
