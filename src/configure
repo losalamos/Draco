@@ -270,12 +270,12 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="Makefile.in"
+ac_unique_file="configure.ac"
 ac_subdirs_all="$ac_subdirs_all stdheaders ds++"
 ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi mesh_element quadrature plot2D lapack_wrap shared_lib"
 ac_subdirs_all="$ac_subdirs_all timestep pcgWrap viz cdi_eospac cdi_gandolf cdi_analytic meshReaders"
 ac_subdirs_all="$ac_subdirs_all RTT_Format_Reader meshReaders_Services"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top subdirs LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -716,6 +716,46 @@ ac_env_target_alias_set=${target_alias+set}
 ac_env_target_alias_value=$target_alias
 ac_cv_env_target_alias_set=${target_alias+set}
 ac_cv_env_target_alias_value=$target_alias
+ac_env_CC_set=${CC+set}
+ac_env_CC_value=$CC
+ac_cv_env_CC_set=${CC+set}
+ac_cv_env_CC_value=$CC
+ac_env_CFLAGS_set=${CFLAGS+set}
+ac_env_CFLAGS_value=$CFLAGS
+ac_cv_env_CFLAGS_set=${CFLAGS+set}
+ac_cv_env_CFLAGS_value=$CFLAGS
+ac_env_CXX_set=${CXX+set}
+ac_env_CXX_value=$CXX
+ac_cv_env_CXX_set=${CXX+set}
+ac_cv_env_CXX_value=$CXX
+ac_env_CXXFLAGS_set=${CXXFLAGS+set}
+ac_env_CXXFLAGS_value=$CXXFLAGS
+ac_cv_env_CXXFLAGS_set=${CXXFLAGS+set}
+ac_cv_env_CXXFLAGS_value=$CXXFLAGS
+ac_env_LD_set=${LD+set}
+ac_env_LD_value=$LD
+ac_cv_env_LD_set=${LD+set}
+ac_cv_env_LD_value=$LD
+ac_env_LDFLAGS_set=${LDFLAGS+set}
+ac_env_LDFLAGS_value=$LDFLAGS
+ac_cv_env_LDFLAGS_set=${LDFLAGS+set}
+ac_cv_env_LDFLAGS_value=$LDFLAGS
+ac_env_AR_set=${AR+set}
+ac_env_AR_value=$AR
+ac_cv_env_AR_set=${AR+set}
+ac_cv_env_AR_value=$AR
+ac_env_ARFLAGS_set=${ARFLAGS+set}
+ac_env_ARFLAGS_value=$ARFLAGS
+ac_cv_env_ARFLAGS_set=${ARFLAGS+set}
+ac_cv_env_ARFLAGS_value=$ARFLAGS
+ac_env_CPPFLAGS_set=${CPPFLAGS+set}
+ac_env_CPPFLAGS_value=$CPPFLAGS
+ac_cv_env_CPPFLAGS_set=${CPPFLAGS+set}
+ac_cv_env_CPPFLAGS_value=$CPPFLAGS
+ac_env_LIBS_set=${LIBS+set}
+ac_env_LIBS_value=$LIBS
+ac_cv_env_LIBS_set=${LIBS+set}
+ac_cv_env_LIBS_value=$LIBS
 
 #
 # Report the --help message.
@@ -865,6 +905,21 @@ Optional Packages:
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
   --with-stlport        replace default STL with stlPort (off by default)
   --with-doc-output=path  build documentation in path (prefix/documentation by default)
+
+Some influential environment variables:
+  CC
+  CFLAGS
+  CXX
+  CXXFLAGS
+  LD
+  LDFLAGS
+  AR
+  ARFLAGS
+  CPPFLAGS
+  LIBS
+
+Use these variables to override the choices made by `configure' or to help
+it to find libraries and programs with nonstandard names/locations.
 
 _ACEOF
 fi
@@ -3172,11 +3227,65 @@ subdirs="$subdirs RTT_Format_Reader meshReaders_Services"
 
 
 ##---------------------------------------------------------------------------##
-## build the src/pkg configure scripts
-## (this must be done after the AC_CONFIG_SUBDIRS calls)
+## build the makefile in src/
 ##---------------------------------------------------------------------------##
 
-          ac_config_files="$ac_config_files Makefile"
+
+
+   # $srcdir is the component's source directory
+   # package_top_srcdir is the variable to store the package's main source directory in.
+
+   temp_dir=$srcdir
+   echo "$as_me:$LINENO: checking package top source directory" >&5
+echo $ECHO_N "checking package top source directory... $ECHO_C" >&6
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do
+       temp_dir="${temp_dir}/.."
+   done
+   if test -d $temp_dir; then
+       package_top_srcdir=`cd $temp_dir; pwd;`
+       echo "$as_me:$LINENO: result: $package_top_srcdir" >&5
+echo "${ECHO_T}$package_top_srcdir" >&6
+   else
+       { { echo "$as_me:$LINENO: error: 'Could not find package top source directory'" >&5
+echo "$as_me: error: 'Could not find package top source directory'" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+
+   # these variables are declared "precious", meaning that they are
+   # automatically substituted, put in the configure --help, and
+   # cached
+
+
+
+
+
+   # dependency rules
+
+
+   # other compiler substitutions
+
+   # install program
+
+   # files to install
+   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
+
+   # package libraries
+
+   # package testing libraries
+
+   # libraries
+
+   # configure options
+
+   # directories in source tree
+
+
+
+             ac_config_files="$ac_config_files Makefile:../config/Makefile.src.in"
+
+
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3727,7 +3836,7 @@ for ac_config_target in $ac_config_targets
 do
   case "$ac_config_target" in
   # Handling of arguments.
-  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../config/Makefile.src.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -3842,6 +3951,51 @@ s,@UDM_LIB@,$UDM_LIB,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
 s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@subdirs@,$subdirs,;t t
+s,@CC@,$CC,;t t
+s,@CFLAGS@,$CFLAGS,;t t
+s,@CXX@,$CXX,;t t
+s,@CXXFLAGS@,$CXXFLAGS,;t t
+s,@LD@,$LD,;t t
+s,@LDFLAGS@,$LDFLAGS,;t t
+s,@AR@,$AR,;t t
+s,@ARFLAGS@,$ARFLAGS,;t t
+s,@CPPFLAGS@,$CPPFLAGS,;t t
+s,@DEPENDENCY_RULES@,$DEPENDENCY_RULES,;t t
+s,@STRICTFLAG@,$STRICTFLAG,;t t
+s,@PARALLEL_FLAG@,$PARALLEL_FLAG,;t t
+s,@RPATH@,$RPATH,;t t
+s,@LIB_PREFIX@,$LIB_PREFIX,;t t
+s,@INSTALL@,$INSTALL,;t t
+s,@INSTALL_DATA@,$INSTALL_DATA,;t t
+s,@installfiles@,$installfiles,;t t
+s,@install_executable@,$install_executable,;t t
+s,@install_lib@,$install_lib,;t t
+s,@install_headers@,$install_headers,;t t
+s,@installdirs@,$installdirs,;t t
+s,@alltarget@,$alltarget,;t t
+s,@libsuffix@,$libsuffix,;t t
+s,@dirstoclean@,$dirstoclean,;t t
+s,@package@,$package,;t t
+s,@DRACO_DEPENDS@,$DRACO_DEPENDS,;t t
+s,@DRACO_LIBS@,$DRACO_LIBS,;t t
+s,@VENDOR_DEPENDS@,$VENDOR_DEPENDS,;t t
+s,@VENDOR_INC@,$VENDOR_INC,;t t
+s,@VENDOR_LIBS@,$VENDOR_LIBS,;t t
+s,@ARLIBS@,$ARLIBS,;t t
+s,@PKG_DEPENDS@,$PKG_DEPENDS,;t t
+s,@PKG_LIBS@,$PKG_LIBS,;t t
+s,@DRACO_TEST_DEPENDS@,$DRACO_TEST_DEPENDS,;t t
+s,@DRACO_TEST_LIBS@,$DRACO_TEST_LIBS,;t t
+s,@VENDOR_TEST_DEPENDS@,$VENDOR_TEST_DEPENDS,;t t
+s,@VENDOR_TEST_LIBS@,$VENDOR_TEST_LIBS,;t t
+s,@ARTESTLIBS@,$ARTESTLIBS,;t t
+s,@test_alltarget@,$test_alltarget,;t t
+s,@test_flags@,$test_flags,;t t
+s,@test_scalar@,$test_scalar,;t t
+s,@test_nprocs@,$test_nprocs,;t t
+s,@test_output_files@,$test_output_files,;t t
+s,@configure_command@,$configure_command,;t t
+s,@package_top_srcdir@,$package_top_srcdir,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

@@ -6,7 +6,7 @@ dnl @> configure.in for draco/src/
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT
-AC_CONFIG_SRCDIR([Makefile.in])
+AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_AUX_DIR(../config)
 
 # draco version
@@ -48,11 +48,11 @@ AC_CONFIG_SUBDIRS(timestep pcgWrap viz cdi_eospac \
 AC_CONFIG_SUBDIRS(RTT_Format_Reader meshReaders_Services)
 
 ##---------------------------------------------------------------------------##
-## build the src/pkg configure scripts
-## (this must be done after the AC_CONFIG_SUBDIRS calls)
+## build the makefile in src/
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_FILES([Makefile])
+AC_SRC_MAKEFILE
+
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl

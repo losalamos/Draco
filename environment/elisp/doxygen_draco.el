@@ -125,7 +125,7 @@ and long sections."
         (comment-end ""))
     (indent-for-comment)))
 
-
+
 ;;; internal utility functions
 
 (defun dump-arguments (arglist)

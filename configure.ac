@@ -27,11 +27,9 @@ AC_WITH_F90
 
 AC_CONFIG_SUBDIRS(tools src autodoc)
 
-# Variable that we output (this places the Env variables in the 
-# configure --help)
-AC_DBS_VAR_SUBSTITUTIONS
+# make the default head directory makefile
+AC_HEAD_MAKEFILE
 
-AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl

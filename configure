@@ -3671,8 +3671,28 @@ fi;
 subdirs="$subdirs tools src autodoc"
 
 
-# Variable that we output (this places the Env variables in the
-# configure --help)
+# make the default head directory makefile
+
+
+   # $srcdir is the component's source directory
+   # package_top_srcdir is the variable to store the package's main source directory in.
+
+   temp_dir=$srcdir
+   echo "$as_me:$LINENO: checking package top source directory" >&5
+echo $ECHO_N "checking package top source directory... $ECHO_C" >&6
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do
+       temp_dir="${temp_dir}/.."
+   done
+   if test -d $temp_dir; then
+       package_top_srcdir=`cd $temp_dir; pwd;`
+       echo "$as_me:$LINENO: result: $package_top_srcdir" >&5
+echo "${ECHO_T}$package_top_srcdir" >&6
+   else
+       { { echo "$as_me:$LINENO: error: 'Could not find package top source directory'" >&5
+echo "$as_me: error: 'Could not find package top source directory'" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
 
    # these variables are declared "precious", meaning that they are
    # automatically substituted, put in the configure --help, and
@@ -3704,8 +3724,10 @@ subdirs="$subdirs tools src autodoc"
 
 
 
+             ac_config_files="$ac_config_files Makefile:config/Makefile.head.in"
 
-          ac_config_files="$ac_config_files Makefile"
+
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4256,7 +4278,7 @@ for ac_config_target in $ac_config_targets
 do
   case "$ac_config_target" in
   # Handling of arguments.
-  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:config/Makefile.head.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

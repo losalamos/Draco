@@ -256,6 +256,34 @@ AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_HEAD_MAKEFILE
+dnl 
+dnl Builds default makefile in the head directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HEAD_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:config/Makefile.head.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SRC_MAKEFILE
+dnl 
+dnl Builds default makefile in the src directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SRC_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:../config/Makefile.src.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl end of ac_conf.m4
 dnl-------------------------------------------------------------------------dnl
 
