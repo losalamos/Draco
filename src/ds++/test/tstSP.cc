@@ -134,6 +134,53 @@ class Wombat
 };
 
 //---------------------------------------------------------------------------//
+ 
+SP<Foo> get_foo()
+{
+    SP<Foo> f(new Foo(10));
+    return f;
+}
+
+//---------------------------------------------------------------------------//
+
+SP<Bar> get_bar()
+{
+    SP<Bar> b(new Bar(20));
+    return b;
+}
+
+//---------------------------------------------------------------------------//
+
+void test_foobar(SP<Foo> f, int v)
+{
+    if (f->vf() != v) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
+
+void kill_SPBar(SP<Bar> &b)
+{
+    b = SP<Bar>();
+}
+
+//---------------------------------------------------------------------------//
+
+void temp_change_SP(SP<Foo> f)
+{
+    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+    // this is a temporary change
+    f = new Foo(100);
+
+    CHECK_N_OBJECTS(2, 1, 0, 0);
+
+    if (f->vf() != 100) ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("SP<Bar> successfully (temporarily) reassigned to SP<Foo>.");
+}
+
+//---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 // here we test the following SP members:
@@ -599,6 +646,89 @@ void fail_modes_test()
 
 //---------------------------------------------------------------------------//
 
+void equality_test()
+{
+    CHECK_0_OBJECTS;
+
+    // try some more advanced stuff
+    SP<Foo> f1;
+    SP<Foo> f2;
+
+    Foo *f  = new Foo(5);
+    Foo *ff = new Foo(5);
+
+    f1 = f;
+    f2 = f1;
+
+    if (f2 != f1) ITFAILS;
+
+    // now f and ff are equivalent, but the smart pointers won't be because
+    // they don't point to the same instance of Foo *
+    f2 = ff;
+
+    if (f2 == f1) ITFAILS;
+
+    CHECK_N_OBJECTS(2, 0, 0, 0);
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Equality tests work ok.");
+}
+
+//---------------------------------------------------------------------------//
+
+void get_test()
+{
+    CHECK_0_OBJECTS;
+
+    // get a foo and bar
+    SP<Foo> f  = get_foo();
+    SP<Foo> fb = get_bar();
+    SP<Bar> b  = get_bar();
+    
+    CHECK_N_OBJECTS(3, 2, 0, 0);
+
+    if (fb == b) ITFAILS;
+
+    if (f->f() != 11)   ITFAILS;
+    if (fb->vf() != 22) ITFAILS;
+    if (b->vf() != 22)  ITFAILS;
+
+    if (fb->f() != 21)  ITFAILS;
+    if (b->f() != 23)   ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Get/factory tests work ok.");
+}
+
+//---------------------------------------------------------------------------//
+
+void access_test()
+{
+    CHECK_0_OBJECTS;
+
+    SP<Bar> b(new Bar(10));
+    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+    test_foobar(b, 12);
+    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+    kill_SPBar(b);
+    CHECK_0_OBJECTS;
+
+    b = new Bar(12);
+    temp_change_SP(b); // this temporarily changes to a Foo
+
+    if (b->vf() != 14)                   ITFAILS;
+    if (typeid(b.bp()) != typeid(Bar *)) ITFAILS;
+
+    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Accessor/set-style tests work ok.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -623,6 +753,15 @@ int main(int argc, char *argv[])
 	cout << endl;
 	
 	fail_modes_test();
+	cout << endl;
+
+	equality_test();
+	cout << endl;
+
+	get_test();
+	cout << endl;
+
+	access_test();
 
 	CHECK_0_OBJECTS;
     }
