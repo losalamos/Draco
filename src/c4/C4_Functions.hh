@@ -187,7 +187,7 @@ void global_max(T *x, int n);
 // TIMING FUNCTIONS
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Return the wall-clock time.
+ * \brief Return the wall-clock time in seconds.
  */
 double wall_clock_time();
 

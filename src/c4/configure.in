@@ -23,7 +23,7 @@ AC_NEEDS_LIBS(ds++)
 
 dnl DRACO SETUP
 
-AC_RUNTESTS(tstReduction, 1 2 4)
+AC_RUNTESTS(tstTime tstReduction, 1 2 4)
 AC_DRACO_ENV
 
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \

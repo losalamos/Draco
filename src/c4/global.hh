@@ -97,14 +97,14 @@ inline int Recv(T *buf, int nels, int source,
 
 template<class T>
 inline int Send(T data, int destination,
-		int tag = rtt_c4::C4_traits<T>::tag, int group = 0)
+		int tag = rtt_c4::C4_Traits<T>::tag, int group = 0)
 {
     return rtt_c4::send(&data, 1, destination, tag);
 }
 
 template<class T>
 inline int Recv(T &data, int source,
-		int tag = rtt_c4::C4_traits<T>::tag, int group = 0)
+		int tag = rtt_c4::C4_Traits<T>::tag, int group = 0)
 {
     return rtt_c4::receive(&data, 1, source, tag);
 }
