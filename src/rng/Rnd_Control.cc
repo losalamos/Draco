@@ -35,6 +35,27 @@ Sprng Rnd_Control::get_rn()
 }
 
 //---------------------------------------------------------------------------//
+// get a new Random number object and reset the stream
+
+Sprng Rnd_Control::get_rn(int snum)
+{
+  // reset streamnum
+    streamnum = snum;
+
+  // declare a stream
+    int *id = init_sprng(streamnum, number, seed, parameter);
+
+  // create a new Rnd object
+    Sprng random(id, streamnum);
+
+  // advance the counter
+    streamnum++;
+
+  // return the object
+    return random;
+}
+
+//---------------------------------------------------------------------------//
 // spawn a new random number stream
 
 Sprng Rnd_Control::spawn(Sprng &random)

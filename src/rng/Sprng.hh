@@ -58,7 +58,7 @@ public:
     inline Sprng(const Sprng &);
 
   // fake constructor for STL containers
-    Sprng() : streamid(0) { Check (0); } 
+    inline Sprng();
 
   // destructor, reclaim memory from SPRNG library
     inline ~Sprng();
@@ -124,6 +124,16 @@ inline Sprng& Sprng::operator=(const Sprng &rhs)
     ++streamid->refcount;
     return *this;
 }
+
+//---------------------------------------------------------------------------//
+// default constructor for STL classes
+
+inline Sprng::Sprng() 
+    : streamid(0) 
+{ 
+  // constructor for use with STL containers, this cannot be used
+    Insist (0, "You tried to default construct a Sprng!"); 
+} 
 
 CSPACE
 
