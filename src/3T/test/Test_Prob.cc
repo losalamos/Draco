@@ -12,6 +12,8 @@
 #include "3T/test/XYZ_Quadratic.hh"
 #include "3T/test/XYZ_Trigonometric.hh"
 
+#include "3T/Diffusion_DB.hh"
+
 #include "mesh/Mesh_XYZ.hh"
 
 #include "linalg/pcg_DB.hh"
@@ -67,6 +69,9 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
     Run_DB rdb;
     rdb.setup_namelist( g );
 
+    Diffusion_DB diffdb;
+    diffdb.setup_namelist( g );
+
     Mesh_DB mdb;
     mdb.setup_namelist( g );
 
@@ -93,13 +98,13 @@ SP<Test_Prob> Test_Prob_allocator( int argc, char *argv[] )
     switch(rdb.test)
     {
     case Quad:
-	prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, rdb,
+	prob = new Test_3T< Mesh_XYZ, XYZ_Quadratic >( spm, rdb, diffdb,
 						       qpdb, pcg_db,
                                                        verbose );
 	break;
 
     case Trig:
-	prob = new Test_3T< Mesh_XYZ, XYZ_Trigonometric >( spm, rdb,
+	prob = new Test_3T< Mesh_XYZ, XYZ_Trigonometric >( spm, rdb, diffdb,
 							   tpdb, pcg_db,
                                                            verbose );
 	break;

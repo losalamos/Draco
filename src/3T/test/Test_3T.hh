@@ -11,8 +11,6 @@
 
 #include "Test_Prob.hh"
 #include "Run_DB.hh"
-//include "Quad_Params.hh"
-#include "Trig_Params.hh"
 
 class ADFile;
 
@@ -38,8 +36,6 @@ class Test_3T : public Test_Prob,
 
     SP< Diffusion_XYZ<MT> > spd;
 
-    Mat2<double> A;
-
     pcg_DB pcg_db;
 
     ADFile *adf;
@@ -48,21 +44,21 @@ class Test_3T : public Test_Prob,
 
   public:
     typedef double NumT;
+    typedef typename MT::template cell_array<double> cell_array_double;
 
     Test_3T( const SP<MT>& spm_, const Run_DB& rdb,
-	     const typename Problem::params& p, const pcg_DB& pcg_db_,
-             int verbose_ );
+             const Diffusion_DB& diffdb, const typename Problem::params& p,
+             const pcg_DB& pcg_db_, int verbose_ );
     ~Test_3T();
 
     void run();
 
-    void diag_out( const typename MT::cell_array<double>& data,
+    void diag_out( const cell_array_double& data,
 		   const char *name ) const;
 
     int get_ncp() const { return ncp; }
     int get_nct() const { return nct; }
     int get_goff() const { return goff; }
-    Mat2<double>& get_A() { return A; }
 };
 
 #endif                          // __3T_test_Test_3T_hh__

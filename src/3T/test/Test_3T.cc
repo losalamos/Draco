@@ -35,6 +35,7 @@ using namespace C4;
 template<class MT, class Problem>
 Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
 			       const Run_DB& rdb,
+                               const Diffusion_DB& diffdb,
 			       const typename Problem::params& p,
 			       const pcg_DB& pcg_db_,
                                int verbose_ )
@@ -45,7 +46,7 @@ Test_3T<MT, Problem>::Test_3T( const SP<MT>& spm_,
       pcg_db(pcg_db_),
       verbose(verbose_)
 {
-    spd = new Diffusion_XYZ<MT>( spm, pcg_db_ );
+    spd = new Diffusion_XYZ<MT>( diffdb, spm, pcg_db_ );
 
     if (node == 0)
 	adf = new ADFile( "test.dat", IDX::WRITE, 500 );
@@ -88,11 +89,9 @@ void Test_3T<MT, Problem>::run()
 
     cout << "Running the test problem," << endl;
 
-    A = Mat2<double>( ncp, nct );
-
 // Set up initial conditions of the problem.
 
-    MT::cell_array Eo(spm), En(spm);
+    cell_array_double Eo(spm), En(spm);
 
     Mat1<double> xc( spm->get_xc() );
     Mat1<double> yc( spm->get_yc() );
@@ -135,7 +134,7 @@ void Test_3T<MT, Problem>::run()
         }
     }
 
-    MT::cell_array<double> E_analytic(spm), rhs(spm), r(spm);
+    cell_array_double E_analytic(spm), rhs(spm), r(spm);
     MT::fcdsf Eb(spm);
 
     bool test_passed = true;
@@ -269,8 +268,7 @@ void Test_3T<MT, Problem>::run()
 //---------------------------------------------------------------------------//
 
 template<class MT, class Problem>
-void Test_3T<MT, Problem>::diag_out
-       ( const typename MT::cell_array<double>& data,
+void Test_3T<MT, Problem>::diag_out( const cell_array_double& data,
 				     const char *name ) const
 {
     char buf[80];
