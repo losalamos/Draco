@@ -50,6 +50,8 @@ int main( int argc, char *argv[] )
     zf = xf + yf;
     zf = xf - yf;
 
+    x = 1.;
+    xf = x;
 
     Mesh_XYZ::guarded_cell_array<double> xgc( spm );
 

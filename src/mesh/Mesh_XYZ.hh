@@ -80,6 +80,9 @@ class Mesh_XYZ : private XYZ_Mapper
 // Face centered discontinuous scalar field
 // Has a value on each face in each cell.
     
+    template<class T>
+    class cell_array;
+
     class fcdsf : private XYZ_Mapper,
                   public xm::Indexable<double,fcdsf> {
 	friend class Mesh_XYZ;
@@ -101,6 +104,16 @@ class Mesh_XYZ : private XYZ_Mapper
 	{}
 
 	fcdsf& operator=( double x ) { data = x; return *this; }
+
+       	fcdsf& operator=( const cell_array<double>& x )
+        {
+          for ( int i = 0; i < ncx; ++i )
+            for ( int j = 0; j < ncy; ++j )
+              for ( int k = 0; k < ncz; ++k )
+                for ( int f = 0; f < 6; ++f )
+                  data( local_cell_index(i,j,k), f) = x(i,j,k);
+          return *this;
+        }
 
         template<class X>
         fcdsf& operator=( const xm::Xpr< double, X, fcdsf >& x )
@@ -137,17 +150,22 @@ class Mesh_XYZ : private XYZ_Mapper
     };
 
     template<class T>
-    class cell_array : public xm::Indexable< T, cell_array<T> >
+    class cell_array : private XYZ_Mapper,
+                       public xm::Indexable< T, cell_array<T> >
     {
         Mat1<T> data;
 
-	cell_array( const Mesh_XYZ *m ) : data( m->get_ncp() ) {}
+	cell_array( const Mesh_XYZ *m ) 
+          : XYZ_Mapper( m->get_Mesh_DB() ),
+            data( m->get_ncp() ) {}
 
       public:
         typedef typename dsxx::Mat1<T>::iterator iterator;
         typedef typename dsxx::Mat1<T>::const_iterator const_iterator;
 
-	cell_array( const SP<Mesh_XYZ>& m ) : data( m->get_ncp() ) {}
+	cell_array( const SP<Mesh_XYZ>& m ) 
+          : XYZ_Mapper( m->get_Mesh_DB() ),
+            data( m->get_ncp() ) {}
 
         cell_array& operator=( T x )
         {
