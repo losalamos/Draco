@@ -28,6 +28,7 @@
  *
  * Provides namespace protection for the Draco (RTT) adaptive mesh refinement
  *  utilities.
+ *
  *\sa The CAR_CU_Mesh class and its associated interface and builder classes 
  *    provide most of the functionality of the namespace. The utilities of the
  *    RTT_Format namespace are incorporated to provide parsing capability for
@@ -59,8 +60,11 @@ namespace rtt_amr
  * provided so that Fortran 90 (F90) codes may also use this data structure.
  * The AMR mesh package has been used in conjunction with both the C++ milagro
  * (implicit monte carlo) code and the F90 zatharus/centuari (P1 Diffusion 
- * with variable eddington factor correction) code. The rtt_amr::CAR_CU_Mesh 
- * class contains several nested  mesh field member classes including:
+ * with variable eddington factor correction) code. An example code is also 
+ * provide to illustrate the usage of all of the shadow object interface 
+ * functions to the amr_mesh package from a Fortran 90 code. The 
+ * rtt_amr::CAR_CU_Mesh class also contains several nested mesh field member
+ * classes including:
  * <ul>
  *  <li> Cell-Centered Scalar Field (rtt_amr::CAR_CU_Mesh::CCSF)
  *  <li> Cell-Centered Vector Field (rtt_amr::CAR_CU_Mesh::CCVF)
@@ -74,7 +78,7 @@ namespace rtt_amr
  * <h3> Intended Usage </h3>
  * The rtt_amr::CAR_CU_Mesh class is patterned after the Draco orthogonal 
  * structured mesh (OS_Mesh) class and thus functions similarly. The intended
- * usage is  as follows:
+ * usage is as follows:
  *
  * 1) An rtt_amr::CAR_CU_Interface class object is instantiated by the main
  *    program. The interface class contains member functions to parse both the
@@ -144,6 +148,18 @@ namespace rtt_amr
  * The AMR mesh package uses the Draco ds++ services library, the C4 
  * communication library, the implicit monte carlo (imc) library, and the
  * mesh class (mc) library.
+ */
+
+/*!
+ * \example amr_mesh/alpha.f90
+ * The following code provides an illustrative example regarding the usage 
+ * of all of the shadow object interface functions to the amr_mesh package
+ * from a Fortran 90 code. The example demonstrates creating the required
+ * Interface, Builder, Mesh, Mat_State, and Opacity classes; constructing
+ * desired mesh field classes; and destroying class objects after usage.
+ * This example file also provides a basic template that can be used to 
+ * initiate an amr_mesh-based transport calculation from a Fortran 90 code.
+ * 
  */
 
 //---------------------------------------------------------------------------//

@@ -2,6 +2,25 @@
 // Shadow_CAR_CU_Mesh_Builder.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
+/*! 
+ * \file   amr_mesh/Shadow_CAR_CU_Mesh_Builder.cc
+ * \author B.T. Adams
+ * \date   Mon 27 Sep 10:33:26 1999
+ * \brief  Provides the C++ side of the shadow object interface functions to
+ *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
+ *         Builder class for use with Fortran 90 codes. The complimentary 
+ *         Fortran 90 shadow object interface functions that reference the 
+ *         functions herein are provided in Shadow_CAR_CU_Mesh_Builder.f90.
+ *         Only the class constructor and destructor are shadowed, as all 
+ *         other class functions are invoked automatically by the shadow 
+ *         object interface of the CAR_CU_Builder class constructor. An 
+ *         example code is also provide to illustrate the usage of all of
+ *         the shadow object interface functions to the amr_mesh package from
+ *         a Fortran 90 code.
+ *
+ *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
+ *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
+ */
 //---------------------------------------------------------------------------//
 // @> Shadow_CAR_CU_Mesh_Builder interface file
 //---------------------------------------------------------------------------//
@@ -47,7 +66,24 @@ extern "C"
 // Constructors and destructors
 //===========================================================================//
 //
-
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Builder class object from
+ *        a Fortran 90 program call. This also constructs the Coord_sys, 
+ *        Layout, and CAR_CU_Mesh class objects. The addresses (i.e., opaque
+ *        pointers) of both the new CAR_CU_Builder and CAR_CU_Mesh class
+ *        objects are set. The CAR_CU_Mesh class contains member functions 
+ *        to return the addresses of the Coord and Layout class objects, if
+ *        needed.
+ * \param self Opaque pointer to the new CAR_CU_Builder class object 
+ *             (returned).
+ * \param itf_ptr Opaque pointer to an existing, initialized CAR_CU_Interface
+ *                class object.
+ * \param rttf_ptr Opaque pointer to an existing, initialized RTT_Format class
+ *                 object.
+ * \param verbosity Switch used to turn detailed run-time reporting on/off.
+ * \param mesh_ptr Opaque pointer to the new CAR_CU_Mesh class object
+ *                 (returned).
+ */
     // Construct a CAR_CU_Builder class from a Fortran 90 program call.  This 
     // also constructs the Coord_sys, Layout, and CAR_CU_Mesh class objects.
     // The addresses of both the new CAR_CU_Builder and CAR_CU_Mesh class 
@@ -82,6 +118,11 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys the CAR_CU_Builder class object that
+ *        is referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the CAR_CU_Builder class object.
+ */
     // Destroy a CAR_CU_Builder class object from a Fortran 90 program call.
     void destruct_car_cu_mesh_builder_(long & self)
     {

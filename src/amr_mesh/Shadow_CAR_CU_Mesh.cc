@@ -2,6 +2,24 @@
 // Shadow_CAR_CU_Mesh.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
+/*! 
+ * \file   amr_mesh/Shadow_CAR_CU_Mesh.cc
+ * \author B.T. Adams
+ * \date   Mon 27 Sep 10:33:26 1999
+ * \brief  Provides the C++ side of the shadow object interface functions to
+ *         the Continuous Adaptive Refinement Cartesion Unstructured Mesh 
+ *         class for use with Fortran 90 codes. The complimentary Fortran 90
+ *         shadow object interface functions that reference the functions 
+ *         herein are provided in Shadow_CAR_CU_Mesh.f90. Note that the class
+ *         constructor is not shadowed because the mesh is constructed 
+ *         directly by the Shadow_CAR_CU_Builder class object.  An example 
+ *         code is also provide to illustrate the usage of all of the shadow
+ *         object interface functions to the amr_mesh package from a Fortran 
+ *         90 code.
+ *
+ *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
+ *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
+ */
 //---------------------------------------------------------------------------//
 // @> Shadow_CAR_CU_Mesh interface file
 //---------------------------------------------------------------------------//
@@ -17,10 +35,11 @@
 //===========================================================================//
 // Shadow_CAR_CU_Mesh - 
 //
-// Purpose : Provides shadow interface functions to the Continuous Adaptive 
-// Refinement Cartesion Unstructured Mesh Class for use with Fortran 90 codes.
-// Note that the class constructor is not shadowed because the mesh is
-// constructed by the Shadow_CAR_CU_Builder class object.
+// Purpose : Provides shadow object interface functions to the Continuous 
+//           Adaptive Refinement Cartesion Unstructured Mesh Class for use
+//           with Fortran 90 codes. Note that the class constructor is not 
+//           shadowed because the mesh is constructed directly by the 
+//           Shadow_CAR_CU_Builder class object.
 //
 // revision history:
 // -----------------
@@ -43,6 +62,11 @@ extern "C"
 //===========================================================================//
 // Constructors and destructors
 //===========================================================================//
+/*!
+ * \brief Shadow object that destroys the CAR_CU_Mesh class object that
+ *        is referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ */
     // Destroy a CAR_CU_Mesh class object from a Fortran 90 program call.
     void destruct_car_cu_mesh_(long & self)
     {
@@ -59,6 +83,19 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh>::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int cell-centered scalar field (CCSF) object sized to the number 
+ *        of cells in the mesh from a Fortran 90 program call. The object will
+ *        be initialized if data_size > 0.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int CCSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             int CCSF object (returned).
+ * \param data Initialization int data for the CCSF (optional)
+ * \param data_size Size of the CCSF initialization data vector (optional, but
+ *                  must equal the number of cells in the mesh if provided).
+ */
     // Construct an CAR_CU_Mesh int CCSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_ccsf_i_(long & mesh_index, long & self, long & data, 
@@ -99,6 +136,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        int cell-centered scalar field (CCSF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class
+ *             int CCSF object.
+ */
     // Destroy a CAR_CU_Mesh int CCSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ccsf_i_(long & self)
@@ -116,6 +160,19 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::CCSF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double cell-centered scalar field (CCSF) object sized to the number
+ *        of cells in the mesh from a Fortran 90 program call. The object will
+ *        be initialized if data_size > 0.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double CCSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             double CCSF object (returned).
+ * \param data Initialization double data for the CCSF (optional)
+ * \param data_size Size of the CCSF initialization data vector (optional, but
+ *                  must equal the number of cells in the mesh if provided).
+ */
     // Construct an CAR_CU_Mesh double CCSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_ccsf_d_(long & mesh_index, long & self, double & data,
@@ -156,6 +213,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class 
+ *        double cell-centered scalar field (CCSF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class CCSF
+ *             object.
+ */
     // Destroy a CAR_CU_Mesh double CCSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ccsf_d_(long & self)
@@ -173,13 +237,30 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::CCSF<double> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int cell-centered vector field (CCVF) object from a Fortran 90 
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the first array index is specified by lead_indx. The 
+ *        dimension of the second array index is fixed to be the same as the
+ *        number of cells in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int CCVF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object (returned).
+ * \param data Initialization int data for the CCVF (optional)
+ * \param data_size Size of the CCVF initialization data vector (optional,
+ *                  but must equal the number of cells in the mesh times the 
+ *                  leading index if provided).
+ * \param lead_indx Size of the CCVF initialization data vector leading index.
+ */
     // Construct an CAR_CU_Mesh int CCVF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0. The
     // dimension of the first array index is specified by lead_index and 
     // defaults to the problem geometry dimension. The dimension of the second
     // array index is fixed to be the same as the number of cells. Note that
     // this is the exact opposite of what occurs on the Fortran side, where 
-    // the array dimensions are assumed to be ncells x lead_index (and the 1D 
+    // the array dimensions are assumed to be ncells x lead_indx (and the 1D 
     // array data is passed to this routine with that assumption).
     void construct_mesh_ccvf_i_(long & mesh_index, long & self, long & data, 
 				long & data_size, long & lead_indx)
@@ -233,6 +314,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class 
+ *        int cell-centered vector field (CCVF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class int
+ *             CCVF object.
+ */
     // Destroy a CAR_CU_Mesh int CCVF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ccvf_i_(long & self)
@@ -250,6 +338,23 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::CCVF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double cell-centered vector field (CCVF) object from a Fortran 90 
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the first array index is specified by lead_indx. The 
+ *        dimension of the second array index is fixed to be the same as the
+ *        number of cells in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double CCVF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object (returned).
+ * \param data Initialization double data for the CCVF (optional)
+ * \param data_size Size of the CCVF initialization data vector (optional,
+ *                  but must equal the number of cells in the mesh times the 
+ *                  leading index if provided).
+ * \param lead_indx Size of the CCVF initialization data vector leading index.
+ */
     // Construct an CAR_CU_Mesh double CCVF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0. The
     // dimension of the first array index is specified by lead_index and 
@@ -310,6 +415,12 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        double CCVF object from a Fortran 90 program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ */
     // Destroy a CAR_CU_Mesh double CCVF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ccvf_d_(long & self)
@@ -327,6 +438,20 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::CCVF<double> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int face-centered scalar field (FCSF) object sized to the number of
+ *        unique cell faces in the mesh from a Fortran 90 program call. The 
+ *        object will be initialized if data_size > 0.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object (returned).
+ * \param data Initialization int data for the FCSF (optional)
+ * \param data_size Size of the FCSF initialization data vector (optional,
+ *                  but must equal the number of cell faces in the mesh if 
+ *                  provided).
+ */
     // Construct a CAR_CU_Mesh int FCSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_fcsf_i_(long & mesh_index, long & self, long & data, 
@@ -367,6 +492,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        int  face-centered scalar field (FCSF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class int
+ *             FCSF object.
+ */
     // Destroy a CAR_CU_Mesh int FCSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_fcsf_i_(long & self)
@@ -384,6 +516,20 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCSF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double face-centered scalar field (FCSF) object sized to the number
+ *        of unique cell faces in the mesh from a Fortran 90 program call. The 
+ *        object will be initialized if data_size > 0.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class
+ *             double FCSF object (returned).
+ * \param data Initialization double data for the FCSF (optional)
+ * \param data_size Size of the FCSF initialization data vector (optional,
+ *                  but must equal the number of cell faces in the mesh if 
+ *                  provided).
+ */
     // Construct a CAR_CU_Mesh double FCSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_fcsf_d_(long & mesh_index, long & self, double & data,
@@ -424,6 +570,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        double face-centered scalar field (FCSF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ */
     // Destroy a CAR_CU_Mesh double FCSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_fcsf_d_(long & self)
@@ -441,6 +594,21 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCSF<double> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int face-centered discontinuous scalar field (FCDSF) class object
+ *        sized to the number of discontinuous cell faces in the mesh from
+ *        a Fortran 90 program call. The object will be initialized if 
+ *        data_size > 0.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCDSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object (returned).
+ * \param data Initialization int data for the FCDSF (optional)
+ * \param data_size Size of the FCDSF initialization data vector (optional,
+ *                  but must equal the number of discontinuous cell faces in 
+ *                  the mesh if provided).
+ */
     // Construct a CAR_CU_Mesh int FCDSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_fcdsf_i_(long & mesh_index, long & self, long & data,
@@ -485,6 +653,13 @@ extern "C"
 	self = opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::insert(fcdsf_i);
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        int face-centered discontinuous scalar field (FCDSF) object from a
+ *        Fortran 90 program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class int
+ *             FCDSF object.
+ */
     // Destroy a CAR_CU_Mesh int FCDSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_fcdsf_i_(long & self)
@@ -502,6 +677,21 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCDSF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double face-centered discontinuous scalar field (FCDSF) class object
+ *        sized to the number of discontinuous cell faces in the mesh from
+ *        a Fortran 90 program call. The object will be initialized if 
+ *        data_size > 0.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCDSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class
+ *             double FCDSF object (returned).
+ * \param data Initialization double data for the FCDSF (optional)
+ * \param data_size Size of the FCDSF initialization data vector (optional,
+ *                  but must equal the number of discontinuous cell faces in 
+ *                  the mesh if provided).
+ */    
     // Construct a CAR_CU_Mesh double FCDSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_fcdsf_d_(long & mesh_index, long & self, double & data,
@@ -546,6 +736,13 @@ extern "C"
 	self = opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::insert(fcdsf_d);
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        double face-centered discontinuous scalar field (FCDSF) object from
+ *        a Fortran 90 program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ */
     // Destroy a CAR_CU_Mesh double FCDSF class object from a Fortran 90 
     // program call.
     void destruct_mesh_fcdsf_d_(long & self)
@@ -563,6 +760,23 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCDSF<double> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int face-centered vector field (FCVF) object from a Fortran 90 
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the second array index is specified by vec_size. The
+ *        dimension of the first array index is fixed to be the same as the
+ *        number of unique cell faces in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCVF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class
+ *             int FCVF object (returned).
+ * \param data Initialization int data for the FCVF (optional)
+ * \param data_size Size of the FCVF initialization data vector (optional,
+ *                  but must equal the number of cell faces in the mesh times
+ *                  the trailing index if provided).
+ * \param vec_size Size of the FCVF initialization data vector trailing index.
+ */
     // Construct a CAR_CU_Mesh int FCVF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_fcvf_i_(long & mesh_index, long & self, long & data, 
@@ -618,6 +832,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        int  face-centered vector field (FCVF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class int
+ *             FCVF object.
+ */
     // Destroy a CAR_CU_Mesh int FCVF class object from a Fortran 90 program
     // call.
     void destruct_mesh_fcvf_i_(long & self)
@@ -635,6 +856,23 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCVF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double face-centered vector field (FCVF) object from a Fortran 90 
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the second array index is specified by vec_size. The
+ *        dimension of the first array index is fixed to be the same as the
+ *        number of unique cell faces in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCVF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class
+ *             double FCVF object (returned).
+ * \param data Initialization double data for the FCVF (optional)
+ * \param data_size Size of the FCVF initialization data vector (optional,
+ *                  but must equal the number of cell faces in the mesh times
+ *                  the trailing index if provided).
+ * \param vec_size Size of the FCVF initialization data vector trailing index.
+ */
     // Construct a CAR_CU_Mesh double FCVF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_fcvf_d_(long & mesh_index, long & self, double & data,
@@ -691,6 +929,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        double face-centered vector field (FCVF) object from a Fortran 90
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ */
     // Destroy a CAR_CU_Mesh double FCVF class object from a Fortran 90 program
     // call.
     void destruct_mesh_fcvf_d_(long & self)
@@ -708,6 +953,26 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::FCVF<double> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int node-centered scalar field (NCSF) object from a Fortran 90
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the array is specified by vec_size and must equal 
+ *        either the total number of cell-corner and face-centered nodes in
+ *        the mesh or the number of cell-corner nodes in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int NCSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             int NCSF object (returned).
+ * \param data Initialization int data for the NCSF (optional)
+ * \param data_size Size of the NCSF initialization data vector (optional, but
+ *                  must equal either the total number of cell-corner and 
+ *                  face-centered nodes in the mesh or the number of 
+ *                  cell- corner nodes in the mesh if provided).
+ * \param vec_size  Size of the NCSF data vector (must equal either the total
+ *                  number of cell-corner and face-centered nodes in the mesh
+ *                  or the number of cell-corner nodes in the mesh).
+ */
     // Construct an CAR_CU_Mesh int NCSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_ncsf_i_(long & mesh_index, long & self, long & data, 
@@ -734,7 +999,7 @@ extern "C"
 	           "Invalid vector size passed to construct_mesh_ncsf_i_!");
 
 	    // Construct a new unitialized CAR_CU_Mesh int NCSF class object 
-	    // for the corner nodes.
+	    // for the cell-corner nodes.
 	    ncsf_i = new CAR_CU_Mesh::NCSF<int>(mesh, ivec_size);
 	}
 	else
@@ -763,6 +1028,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        int node-centered scalar field (NCSF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class int 
+ *             NCSF object.
+ */
     // Destroy a CAR_CU_Mesh int NCSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ncsf_i_(long & self)
@@ -780,6 +1052,26 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::NCSF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double node-centered scalar field (NCSF) object from a Fortran 90
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the array is specified by vec_size and must equal 
+ *        either the total number of cell-corner and face-centered nodes in
+ *        the mesh or the number of cell-corner nodes in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double NCSF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             double NCSF object (returned).
+ * \param data Initialization double data for the NCSF (optional)
+ * \param data_size Size of the NCSF initialization data vector (optional, but
+ *                  must equal either the total number of cell-corner and 
+ *                  face-centered nodes in the mesh or the number of 
+ *                  cell-corner nodes in the mesh if provided).
+ * \param vec_size  Size of the NCSF data vector (must equal either the total
+ *                  number of cell-corner and face-centered nodes in the mesh
+ *                  or the number of cell-corner nodes in the mesh).
+ */
     // Construct an CAR_CU_Mesh double NCSF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_ncsf_d_(long & mesh_index, long & self, double & data,
@@ -806,7 +1098,7 @@ extern "C"
 	           "Invalid data size passed to construct_mesh_ncsf_d_!");
 
 	    // Construct a new unitialized CAR_CU_Mesh double NCSF class 
-	    // object for the corner nodes
+	    // object for the cell-corner nodes
 	    ncsf_d = new CAR_CU_Mesh::NCSF<double>(mesh, ivec_size);
 	}
 	else
@@ -835,6 +1127,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        double node-centered scalar field (NCSF) class object from a Fortran
+ *        90 program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCSF object.
+ */
     // Destroy a CAR_CU_Mesh double NCSF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ncsf_d_(long & self)
@@ -852,6 +1151,29 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::NCSF<double> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        int node-centered vector field (NCVF) object from a Fortran 90 
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the second array index is specified by vec_size_2. The
+ *        dimension of the first array index is specified by vec_size_1 and
+ *        must equal either the total number of cell-corner and face-centered
+ *        nodes in the mesh or the number of cell-corner nodes in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int NCVF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object (returned).
+ * \param data Initialization int data for the NCVF (optional)
+ * \param data_size Size of the NCVF initialization data vector (optional,
+ *                  but must equal the number of cell faces in the mesh times
+ *                  the trailing index if provided).
+ * \param vec_size_1 Size of the NCVF initialization data vector leading index
+ *                   (must equal either the total number of cell-corner and 
+ *                   face-centered nodes in the mesh or the number of 
+ *                   cell-corner nodes in the mesh).
+ * \param vec_size_2 Size of the NCVF initialization data vector trailing 
+ *                   index.
+ */
     // Construct an CAR_CU_Mesh int NCVF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_ncvf_i_(long & mesh_index, long & self, long & data, 
@@ -886,9 +1208,9 @@ extern "C"
 	           "Invalid vector size passed to construct_mesh_ncvf_i_!");
 
 	        // Construct a new unitialized CAR_CU_Mesh int NCVF class 
-	        // object for the corner nodes with the size of the second 
-	        // array index defaulted to be equal to the problem geometry 
-	        // dimension.
+	        // object for the cell-corner nodes with the size of the 
+		// second array index defaulted to be equal to the problem 
+		// geometry dimension.
 	        ncvf_i = new CAR_CU_Mesh::NCVF<int>(mesh, ivec_size_1);
 	    }
 	    else
@@ -898,8 +1220,8 @@ extern "C"
 	           "Invalid vector size passed to construct_mesh_ncvf_i_!");
 
 	        // Construct a new unitialized CAR_CU_Mesh int NCVF class 
-	        // object for the corner nodes with the size of the second 
-	        // array index arbitrary.
+	        // object for the cell-corner nodes with the size of the 
+		// second array index arbitrary.
 	        ncvf_i = new CAR_CU_Mesh::NCVF<int>(mesh, ivec_size_1, 
 						    ivec_size_2);
 	    }
@@ -934,6 +1256,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        int node-centered vector field (NCVF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class int
+ *             NCVF object.
+ */
     // Destroy a CAR_CU_Mesh int NCVF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ncvf_i_(long & self)
@@ -951,6 +1280,29 @@ extern "C"
 	opaque_pointers<CAR_CU_Mesh::NCVF<int> >::erase(self);
     }
 
+/*!
+ * \brief Shadow object that constructs a CAR_CU_Mesh nested mesh field class
+ *        double node-centered vector field (NCVF) object from a Fortran 90 
+ *        program call. The object will be initialized if data_size > 0. The
+ *        dimension of the second array index is specified by vec_size_2. The
+ *        dimension of the first array index is specified by vec_size_1 and
+ *        must equal either the total number of cell-corner and face-centered
+ *        nodes in the mesh or the number of cell-corner nodes in the mesh.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double NCVF class object.
+ * \param self Opaque pointer to the new CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object (returned).
+ * \param data Initialization double data for the NCVF (optional)
+ * \param data_size Size of the NCVF initialization data vector (optional,
+ *                  but must equal the number of cell faces in the mesh times
+ *                  the trailing index if provided).
+ * \param vec_size_1 Size of the NCVF initialization data vector leading index
+ *                   (must equal either the total number of cell-corner and 
+ *                   face-centered nodes in the mesh or the number of 
+ *                   cell-corner nodes in the mesh).
+ * \param vec_size_2 Size of the NCVF initialization data vector trailing 
+ *                   index.
+ */
     // Construct an CAR_CU_Mesh double NCVF class object from a Fortran 90 
     // program call. The object will be initialized if data_size > 0.
     void construct_mesh_ncvf_d_(long & mesh_index, long & self, double & data,
@@ -985,9 +1337,9 @@ extern "C"
 	           "Invalid vector size passed to construct_mesh_ncvf_d_!");
 
 	        // Construct a new unitialized CAR_CU_Mesh int NCVF class 
-	        // object for the corner nodes with the size of the second 
-	        // array index defaulted to be equal to the problem geometry 
-	        // dimension.
+	        // object for the cell-corner nodes with the size of the 
+		// second array index defaulted to be equal to the problem
+		// geometry dimension.
 	        ncvf_d = new CAR_CU_Mesh::NCVF<double>(mesh, ivec_size_1);
 	    }
 	    else
@@ -997,8 +1349,8 @@ extern "C"
 	           "Invalid vector size passed to construct_mesh_ncvf_d_!");
 
 	        // Construct a new unitialized CAR_CU_Mesh int NCVF class 
-	        // object for the corner nodes with the size of the second 
-	        // array index arbitrary.
+	        // object for the cell-corner nodes with the size of the
+		// second array index arbitrary.
 	        ncvf_d = new CAR_CU_Mesh::NCVF<double>(mesh, ivec_size_1, 
 						       ivec_size_2);
 	    }
@@ -1033,6 +1385,13 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys a CAR_CU_Mesh nested mesh field class
+ *        double node-centered vector field (NCVF) object from a Fortran 90 
+ *        program call.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class
+ *             double NCVF object.
+ */
     // Destroy a CAR_CU_Mesh double NCVF class object from a Fortran 90 program
     // call.
     void destruct_mesh_ncvf_d_(long & self)
@@ -1053,6 +1412,13 @@ extern "C"
 //===========================================================================//
 // General mesh scalar accessor functions
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the number of spatial dimensions for 
+ *        the CAR_CU_Mesh class object that is referenced by the specified 
+ *        opaque pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param dimension The number of spatial dimensions (returned).
+ */
     // Return the dimension of the mesh (self).
     void get_mesh_dimension_(long & self, long & dimension)
     {
@@ -1063,6 +1429,12 @@ extern "C"
 	dimension = mesh->get_ndim();
     }
 
+/*!
+ * \brief Shadow object that returns the number of cells in the CAR_CU_Mesh
+ *        class object that is referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param ncells The number of cells (returned).
+ */
      // Return the number of cells (ncells) in the mesh (self).
     void get_mesh_num_cells_(long & self, long & ncells)
     {
@@ -1073,6 +1445,13 @@ extern "C"
 	ncells = mesh->num_cells();
     }
 
+/*!
+ * \brief Shadow object that returns the total number of nodes (i.e., both
+ *        cell-corner and face-centered nodes) in the CAR_CU_Mesh class 
+ *        object that is referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param nnodes The number of nodes (returned).
+ */
    // Return the total number of nodes (nnodes) in the mesh (self).
     void get_mesh_num_nodes_(long & self, long & nnodes)
     {
@@ -1083,6 +1462,13 @@ extern "C"
 	nnodes = mesh->num_nodes();
     }
 
+/*!
+ * \brief Shadow object that returns the number of cell-corner nodes in the
+ *        CAR_CU_Mesh class object that is referenced by the specified opaque
+ *        pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param ncnodes The number of cell-corner nodes (returned).
+ */
     // Return the number of cell-corner nodes (ncnodes) in the mesh (self).
     void get_mesh_num_corner_nodes_(long & self, long & ncnodes)
     {
@@ -1093,6 +1479,13 @@ extern "C"
         ncnodes = mesh->num_corner_nodes();
     }
 
+/*!
+ * \brief Shadow object that returns the number of face-centered nodes in the
+ *        CAR_CU_Mesh class object that is referenced by the specified opaque
+ *        pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param nfnodes The number of face-centered nodes (returned).
+ */
     // Return the number of face-centered nodes (nfnodes) in the mesh (self).
     void get_mesh_num_face_nodes_(long & self, long & nfnodes)
     {
@@ -1106,6 +1499,16 @@ extern "C"
 //===========================================================================//
 // Layout accessor functions
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the number of cells that are adjacent 
+ *        to the specified cell face in the CAR_CU_Mesh class object that is
+ *        referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param face The cell face number.
+ * \param num_adj The number of cells that are adjacent to the specified cell
+ *        face (returned).
+ */
     // Return the number of cells that are adjacent to this cell face in the 
     // mesh (self).
     void get_mesh_num_adj_(long & self, long & cell, long & face, 
@@ -1126,6 +1529,16 @@ extern "C"
 	num_adj = mesh->num_adj(icell, iface);
     }
 
+/*!
+ * \brief Shadow object that returns the number of the cell that is adjacent 
+ *        to the specified cell face in the CAR_CU_Mesh class object that is
+ *        referenced by the specified opaque pointer. This function is called
+ *        for cells that are adjacent to a single cell.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param face The cell face number.
+ * \param adj_cell The adjacent cell number (returned).
+ */
     // Return the cell that is adjacent to this cell face in the mesh (self).
     void get_mesh_next_cell_(long & self, long & cell, long & face, 
 			     long & adj_cell)
@@ -1145,6 +1558,18 @@ extern "C"
 	adj_cell = mesh->next_cell(icell, iface);
     }
 
+/*!
+ * \brief Shadow object that returns the number of the cell with the specified
+ *        index that is adjacent to the specified cell face in the CAR_CU_Mesh
+ *        class object that is referenced by the specified opaque pointer. 
+ *        This function is called for cells that are adjacent to multiple 
+ *        cells.
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param face The cell face number.
+ * \param index The adjacent cell index number.
+ * \param adj_cell The adjacent cell number (returned).
+ */
     // Return the nth (index) cell that is adjacent to this cell face in the
     // mesh (self). This function is called for cells that are adjacent to 
     // multiple cells.
@@ -1167,6 +1592,15 @@ extern "C"
 	adj_cell = mesh->next_cell(icell, iface, iindex);
     }
 
+/*!
+ * \brief Shadow object that returns the node number for the specified cell 
+ *        node index in the CAR_CU_Mesh class object that is referenced by
+ *        the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param node_index The cell node index number.
+ * \param node The node number (returned).
+ */
     // Return the cell node specified by the index.
     void get_mesh_cell_node_(long & self, long & cell, long & node_index, 
                              long & node)
@@ -1187,9 +1621,18 @@ extern "C"
 	node = mesh->cell_node(icell,ind);
     }
 
+/*!
+ * \brief Shadow object that returns the face-centered node number for the 
+ *        specified cell face in the CAR_CU_Mesh class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param face The cell face number.
+ * \param node The face-centered node number (returned).
+ */
     // Return the face-centered cell node specified by the face.
     void get_mesh_cell_face_cen_node_(long & self, long & cell, long & face, 
-                              long & node)
+				      long & node)
     {
 	// Get the address of the CAR_CU_Mesh class object (self).
 	SP<CAR_CU_Mesh> mesh = 
@@ -1206,8 +1649,19 @@ extern "C"
 	node = mesh->cell_node(icell,iface);
     }
 
+/*!
+ * \brief Shadow object that returns all of the nodes (i.e., both the 
+ *        cell-corner and the face-centered nodes) that make up the specified
+ *        cell in the CAR_CU_Mesh class object that is referenced by the
+ *        specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param nodes The cell nodes (returned).
+ * \param nodes_size The number of cell nodes (must be equal to the number
+ *                   of cell-corner and face-centered nodes for the cell type).
+ */
     // Return an array of the nodes that make up a cell, including both the
-    // corner nodes and the face-centered nodes.
+    // cell-corner nodes and the face-centered nodes.
     void get_mesh_cell_nodes_(long & self, long & cell, long & nodes, 
                               long & nodes_size)
     {
@@ -1234,6 +1688,16 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the face-centered nodes that make
+ *        up the specified cell in the CAR_CU_Mesh class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param nodes The cell face-centered nodes (returned).
+ * \param nodes_size The number of cell face-centered nodes (must be equal 
+ *                   to the number of face-centered nodes for the cell type).
+ */
     // Return an array of the face-centered nodes for a cell.
     void get_mesh_cell_face_cen_nodes_(long & self, long & cell, long & nodes,
 				       long & nodes_size)
@@ -1261,7 +1725,17 @@ extern "C"
 	}
     }
 
-    // Return an array of the corner nodes for a cell.
+/*!
+ * \brief Shadow object that returns all of the cell-corner nodes that make
+ *        up the specified cell in the CAR_CU_Mesh class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param nodes The cell-corner nodes (returned).
+ * \param nodes_size The number of cell-corner nodes (must be equal 
+ *                   to the number of cell-corner nodes for the cell type).
+ */
+    // Return an array of the cell-corner nodes for a cell.
     void get_mesh_cell_corner_nodes_(long & self, long & cell, long & nodes, 
 				     long & nodes_size)
     {
@@ -1288,6 +1762,17 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the face-corner nodes that make
+ *        up the specified cell face in the CAR_CU_Mesh class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param face The cell face number.
+ * \param nodes The cell face-corner nodes (returned).
+ * \param nodes_size The number of cell face-corner nodes (must be equal to
+ *                   the number of face-corner nodes for the cell face type).
+ */
     //  Return an array of the nodes that comprise a cell face.
     void get_mesh_cell_face_nodes_(long & self, long & cell, long & face,
 				   long & nodes, long & nodes_size)
@@ -1321,7 +1806,18 @@ extern "C"
 //===========================================================================//
 // Vertex accessor functions
 //===========================================================================//
-    // Return the entire node vertex array (including both the corner and 
+/*!
+ * \brief Shadow object that returns all of the node coordinates (i.e., each 
+ *        spatial direction for both the cell-corner and the face-centered 
+ *        nodes) in the CAR_CU_Mesh class object that is referenced by the
+ *        specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param vertices The node coordinates (returned).
+ * \param vertex_size The size of the node vertex return array (must be equal
+ *                    to the the number of spatial dimensions times the total 
+ *                    number of nodes).
+ */
+    // Return the entire node vertex array (including both the cell-corner and 
     // face-centered nodes).
     void get_mesh_vertices_(long & self, double & vertices, long & vertex_size)
     {
@@ -1347,7 +1843,18 @@ extern "C"
 	}
     }
 
-    // Return an array containing the vertices for all of the cell corner 
+/*!
+ * \brief Shadow object that returns all of the cell-corner node coordinates
+ *        (i.e., each spatial direction for the cell-corner nodes) in the 
+ *        CAR_CU_Mesh class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param vertices The cell-corner node coordinates (returned).
+ * \param vertex_size The size of the cell-corner node vertex return array 
+ *                    (must be equal to the the number of spatial dimensions
+ *                    times the number of cell-corner nodes).
+ */
+    // Return an array containing the vertices for all of the cell-corner 
     // nodes.
     void get_mesh_corner_node_vertices_(long & self, double & vertices, 
 					long & vertex_size)
@@ -1375,6 +1882,17 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the face-centered node coordinates
+ *        (i.e., each spatial direction for the face-centered nodes) in the 
+ *        CAR_CU_Mesh class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param vertices The face-centered node coordinates (returned).
+ * \param vertex_size The size of the face-centered node vertex return array 
+ *                    (must be equal to the the number of spatial dimensions
+ *                    times the number of face-centered nodes).
+ */
     // Return an array containing the vertices for all of the face-centered 
     // nodes.
     void get_mesh_face_cen_node_vertices_(long & self, double & vertices, 
@@ -1404,6 +1922,18 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the node coordinates (i.e., each 
+ *        spatial direction for both the cell-corner and the face-centered 
+ *        nodes) for the specified cell in the CAR_CU_Mesh class object that
+ *        is referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param vertices The cell node coordinates (returned).
+ * \param vertex_size The size of the cell node vertex return array (must be
+ *                    equal to the the number of spatial dimensions times the
+ *                    total number of cell nodes).
+ */
     // Return an array with all of a cell's vertices.
     void get_mesh_cell_vertices_(long & self, long & cell, double & vertices, 
 				 long & vertex_size)
@@ -1434,6 +1964,19 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the node coordinates (i.e., each 
+ *        spatial direction for the cell face-corner nodes) for the specified
+ *        cell face in the CAR_CU_Mesh class object that is referenced by the
+ *        specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param cell The cell face number.
+ * \param vertices The cell node coordinates (returned).
+ * \param vertex_size The size of the cell node vertex return array (must be
+ *                    equal to the the number of spatial dimensions times the
+ *                    total number of cell face-corner nodes).
+ */
     // Return an array with all of a cell face's vertices.
     void get_mesh_cell_face_vertices_(long & self, long & cell, long & face, 
 				      double & vertices, long & vertex_size)
@@ -1468,6 +2011,16 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the node coordinates (i.e., each 
+ *        spatial direction) for the specified node in the CAR_CU_Mesh class 
+ *        object that is referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param node The node number.
+ * \param vertices The node coordinates (returned).
+ * \param vertex_size The size of the node vertex return array (must be equal
+ *                    to the the number of spatial dimensions).
+ */
     // Return a single node's vertices
     void get_mesh_node_vertices_(long & self, long & node, double & vertices,
 				 long & vertex_size)
@@ -1497,6 +2050,14 @@ extern "C"
 //===========================================================================//
 // Mesh geometry scalar accessor functions
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the volume of the specified cell in 
+ *        the CAR_CU_Mesh class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param vol The cell volume (returned).
+ */
     // Return the volume of the cell in the mesh (self).
     void get_mesh_cell_volume_(long & self, long & cell, double & vol)
     {
@@ -1512,6 +2073,15 @@ extern "C"
 	vol = mesh->volume(icell);
     }
 
+/*!
+ * \brief Shadow object that returns the area of the specified cell face in 
+ *        the CAR_CU_Mesh class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param face The cell face number.
+ * \param area The cell face area (returned).
+ */
     // Return the face area of the cell in the mesh (self).
     void get_mesh_cell_face_area_(long & self, long & cell, long & face,
 				  double & area)
@@ -1531,6 +2101,14 @@ extern "C"
 	area = mesh->face_area(icell, iface);
     }
 
+/*!
+ * \brief Shadow object that returns the minimum coordinate value along the
+ *        specified direction for the CAR_CU_Mesh class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param direction Coordinate direction (x=1, y=2, z =3).
+ * \param minimum_value Minimum coordinate value (returned).
+ */
     // Return the minimum coordinate value in a given direction for the mesh
     // (self).
     void get_mesh_min_coordinates_(long & self, long & direction, 
@@ -1548,6 +2126,14 @@ extern "C"
 	minimum_value = mesh->begin(idirection);
     }
 
+/*!
+ * \brief Shadow object that returns the maximum coordinate value along the
+ *        specified direction for the CAR_CU_Mesh class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param direction Coordinate direction (x=1, y=2, z =3).
+ * \param maximum_value Maximum coordinate value (returned).
+ */
     // Return the maximum coordinate value in a given direction for the mesh
     // (self).
     void get_mesh_max_coordinates_(long & self, long & direction, 
@@ -1565,6 +2151,15 @@ extern "C"
 	maximum_value = mesh->end(idirection);
     }
 
+/*!
+ * \brief Shadow object that returns the minimum coordinate value along the
+ *        specified direction within the specified cell in the CAR_CU_Mesh
+ *        class object that is referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param direction Coordinate direction (x=1, y=2, z =3).
+ * \param minimum_value Minimum coordinate value (returned).
+ */
     // Return the minimum coordinate value in a given direction for the cell 
     // in the mesh (self).
     void get_mesh_cell_min_coord_(long & self, long & cell, long & direction, 
@@ -1585,6 +2180,15 @@ extern "C"
 	minimum_value = mesh->min(idir, icell);
     }
 
+/*!
+ * \brief Shadow object that returns the mid-point coordinate value along the
+ *        specified direction within the specified cell in the CAR_CU_Mesh
+ *        class object that is referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param direction Coordinate direction (x=1, y=2, z =3).
+ * \param midpoint_value Mid-point coordinate value (returned).
+ */
     // Return the midpoint (i.e., center point) coordinate value in a given
     // direction for a cell in the mesh (self).
     void get_mesh_cell_mid_coord_(long & self, long & cell, long & direction, 
@@ -1605,6 +2209,15 @@ extern "C"
 	midpoint_value = mesh->pos(idir, icell);
     }
 
+/*!
+ * \brief Shadow object that returns the maximum coordinate value along the
+ *        specified direction within the specified cell in the CAR_CU_Mesh
+ *        class object that is referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param direction Coordinate direction (x=1, y=2, z =3).
+ * \param maximum_value Maximum coordinate value (returned).
+ */
     // Return the maximum coordinate value in a given direction for the cell 
     // in the mesh (self).
     void get_mesh_cell_max_coord_(long & self, long & cell, long & direction, 
@@ -1625,6 +2238,15 @@ extern "C"
 	maximum_value = mesh->max(idir, icell);
     }
 
+/*!
+ * \brief Shadow object that returns the width of the specified cell along
+ *        the specified direction within the CAR_CU_Mesh class object that
+ *        is referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param direction Coordinate direction (x=1, y=2, z =3).
+ * \param width The cell width in the specified direction (returned).
+ */
     // Return the width in a given direction for the cell in the mesh (self).
     void get_mesh_cell_width_(long & self, long & cell, long & direction, 
 				  double & width)
@@ -1644,6 +2266,14 @@ extern "C"
 	width = mesh->dim(idir, icell);
     }
 
+/*!
+ * \brief Shadow object that returns the generation (i.e., refinement) level
+ *        of the specified cell within the CAR_CU_Mesh class object that is
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the CAR_CU_Mesh class object.
+ * \param cell The cell number.
+ * \param generation The cell generation level (returned).
+ */
     // Return the cell generation level in the mesh (self).
     void get_mesh_cell_generation_(long & self, long & cell, long & generation)
     {
@@ -1665,6 +2295,18 @@ extern "C"
 //===========================================================================//
 // int CCSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int cell-centered scalar field (CCSF) object that
+ *        is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCSF object.
+ * \param data CCSF int data values (returned).
+ * \param data_size Size of the CCSF returned data vector (must equal the 
+ *                  number of cells in the mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh int CCSF class object (self).
     void get_mesh_ccsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
@@ -1690,12 +2332,23 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns the specified cell value from the 
+ *        CAR_CU_Mesh nested mesh field class int cell-centered scalar field
+ *       (CCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCSF object.
+ * \param cell_ind The cell number. 
+ * \param data CCSF int cell data value (returned).
+ */
     // Return a cell value from a C++ CAR_CU_Mesh int CCSF class object
     // (self).
     void get_mesh_ccsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1711,6 +2364,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int cell-centered scalar field (CCSF) object 
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCSF object.
+ * \param data CCSF int data values (supplied).
+ * \param data_size Size of the CCSF supplied data vector (must equal the 
+ *                  number of cells in the mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh int CCSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_ccsf_i_(long & mesh_index, long & self, 
@@ -1736,12 +2402,23 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell value for the 
+ *        CAR_CU_Mesh nested mesh field class int cell-centered scalar field
+ *        (CCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCSF object.
+ * \param cell_ind The cell number. 
+ * \param data CCSF cell int data value (supplied).
+ */
     // Set a cell value for a C++ CAR_CU_Mesh int CCSF class object
     // (self).
     void set_mesh_ccsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1760,6 +2437,18 @@ extern "C"
 //===========================================================================//
 // double CCSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double cell-centered scalar field (CCSF) object 
+ *        that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCSF object.
+ * \param data CCSF double data values (returned).
+ * \param data_size Size of the CCSF returned data vector (must equal the 
+ *                  number of cells in the mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh double CCSF class object (self).
     void get_mesh_ccsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
@@ -1785,6 +2474,18 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns the specified cell value from the 
+ *        CAR_CU_Mesh nested mesh field class double cell-centered scalar 
+ *        field (CCSF) object that is referenced by the specified opaque
+ *        pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCSF object.
+ * \param cell_ind The cell number. 
+ * \param data CCSF double cell data value (returned).
+ */
     // Return a cell value from a C++ CAR_CU_Mesh double CCSF class object
     // (self).
     void get_mesh_ccsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
@@ -1806,6 +2507,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double cell-centered scalar field (CCSF) object 
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCSF object.
+ * \param data CCSF double data values (supplied).
+ * \param data_size Size of the CCSF supplied data vector (must equal the 
+ *                  number of cells in the mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh double CCSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_ccsf_d_(long & mesh_index, long & self, 
@@ -1831,12 +2545,24 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell value for the 
+ *        CAR_CU_Mesh nested mesh field class double cell-centered scalar 
+ *        field (CCSF) object that is referenced by the specified opaque
+ *        pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double CCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCSF object.
+ * \param cell_ind The cell number. 
+ * \param data CCSF double cell data value (supplied).
+ */
     // Set a cell value for a C++ CAR_CU_Mesh double CCSF class object
     // (self).
     void set_mesh_ccsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1855,6 +2581,18 @@ extern "C"
 //===========================================================================//
 // int CCVF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int cell-centered vector field (CCVF) object that
+ *        is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object.
+ * \param data CCVF int data values (returned)
+ * \param data_size Size of the CCVF returned data vector (must equal the 
+ *                  number of cells in the mesh times the leading index size).
+ */
     // Return an entire C++ CAR_CU_Mesh int CCVF class object (self) - 
     // works for both the arbitrary leading index size and the default with 
     // the size of the leading index equal to that of the problem geometry 
@@ -1885,6 +2623,20 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the leading index values for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class int
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object.
+ * \param cell_ind The cell number.
+ * \param data CCVF int cell data values (returned).
+ * \param data_size Size of the CCVF returned data vector (must equal the 
+ *                  size of the CCVF leading index).
+ */
     // Return all of the dim values for a cell in a C++ CAR_CU_Mesh integer
     // CCVF class object (self) - works for both the arbitrary leading index
     // size and the default with the size of the leading index equal to that
@@ -1915,6 +2667,19 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified leading index value for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class int 
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object.
+ * \param cell_ind The cell number.
+ * \param dim_ind The leading index number.
+ * \param data CCVF int leading index, cell data value (returned).
+ */
     // Return a cell dim value from a C++ CAR_CU_Mesh int CCVF class 
     // object (self) - works for both the arbitrary leading index size 
     // and the default with the size of the leading index equal to that
@@ -1923,7 +2688,7 @@ extern "C"
 				   long & cell_ind, long & dim_ind, 
 				   long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -1942,6 +2707,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int cell-centered vector field (CCVF) object that
+ *        is referenced by the specified opaque pointers. This can also be
+ *        done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object.
+ * \param data CCVF int data values (supplied).
+ * \param data_size Size of the CCVF supplied data vector (must equal the 
+ *                  number of cells in the mesh times the leading index size).
+ */
     // Set an entire C++ CAR_CU_Mesh int CCVF class object (self) (can 
     // also be done at initialization using the constructor) - works for 
     // both the arbitrary leading index size and the default with the size 
@@ -1972,6 +2750,20 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets all of the leading index values for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class int 
+ *        cell-centered vector field (CCVF) object that is referenced by 
+ *        the specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object.
+ * \param cell_ind The cell number.
+ * \param data CCVF int cell data values (supplied).
+ * \param data_size Size of the CCVF supplied data vector (must equal the 
+ *                  size of the CCVF leading index).
+ */
     // Set all of the dim values for a cell in a C++ CAR_CU_Mesh int CCVF
     // class object (self) - works for both the arbitrary leading index size 
     // and the default with the size of the leading index equal to that of the
@@ -1979,7 +2771,7 @@ extern "C"
     void set_mesh_ccvf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2002,6 +2794,19 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified leading index value for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class int 
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int CCVF object.
+ * \param cell_ind The cell number.
+ * \param dim_ind The leading index number.
+ * \param data CCVF leading index, cell int data value (supplied).
+ */
     // Set a cell dim value for a C++ CAR_CU_Mesh int CCVF class object
     // (self) - works for both the arbitrary leading index size and the 
     // default with the size of the leading index equal to that of the
@@ -2010,7 +2815,7 @@ extern "C"
 				   long & cell_ind, long & dim_ind, 
 				   long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2032,6 +2837,18 @@ extern "C"
 //===========================================================================//
 // double CCVF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double cell-centered vector field (CCVF) object 
+ *        that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ * \param data CCVF double data values (returned)
+ * \param data_size Size of the CCVF returned data vector (must equal the 
+ *                  number of cells in the mesh times the leading index size).
+ */
     // Return an entire C++ CAR_CU_Mesh double CCVF class object (self) - 
     // works for both the arbitrary leading index size and the default with 
     // the size of the leading index equal to that of the problem geometry 
@@ -2062,6 +2879,20 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the leading index values for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class double
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ * \param cell_ind The cell number.
+ * \param data CCVF double cell data values (returned).
+ * \param data_size Size of the CCVF returned data vector (must equal the 
+ *                  size of the CCVF leading index).
+ */
     // Return all of the dim values for a cell in a C++ CAR_CU_Mesh double 
     // CCVF class object (self) - works for both the arbitrary leading index 
     // size and the default with the size of the leading index equal to that 
@@ -2069,7 +2900,7 @@ extern "C"
     void get_mesh_ccvf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2092,6 +2923,19 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified leading index value for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class double 
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ * \param cell_ind The cell number.
+ * \param dim_ind The leading index number.
+ * \param data CCVF double leading index, cell data value (returned).
+ */
     // Return a cell dim value for a C++ CAR_CU_Mesh double CCVF class
     // object (self) - works for both the arbitrary leading index size and 
     // the default with the size of the leading index equal to that of the 
@@ -2100,7 +2944,7 @@ extern "C"
 				   long & cell_ind, long & dim_ind,
 				   double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2119,6 +2963,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double cell-centered vector field (CCVF) object
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ * \param data CCVF double data values (supplied).
+ * \param data_size Size of the CCVF supplied data vector (must equal the 
+ *                  number of cells in the mesh times the leading index size).
+ */
     // Set an entire C++ CAR_CU_Mesh double CCVF class object (self) (can 
     // also be done at initialization using the constructor) - works for 
     // both the arbitrary leading index size and the default with the size 
@@ -2149,6 +3006,20 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets all of the leading index values for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class double
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ * \param cell_ind The cell number.
+ * \param data CCVF double cell data values (supplied).
+ * \param data_size Size of the CCVF supplied data vector (must equal the 
+ *                  size of the CCVF leading index).
+ */
     // Set all of the dim values for a cell in a C++ CAR_CU_Mesh double 
     // CCVF class object (self) - works for both the arbitrary leading 
     // index size and the default with the size of the leading index equal 
@@ -2156,7 +3027,7 @@ extern "C"
     void set_mesh_ccvf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2179,6 +3050,19 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified leading index value for the
+ *        specified cell in the CAR_CU_Mesh nested mesh field class double
+ *        cell-centered vector field (CCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double CCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double CCVF object.
+ * \param cell_ind The cell number.
+ * \param dim_ind The leading index number.
+ * \param data CCVF double leading index, cell data value (supplied).
+ */
     // Set a cell dim value for a C++ CAR_CU_Mesh double CCVF class object
     // (self) - works for both the arbitrary leading index size and the 
     // default with the size of the leading index equal to that of the 
@@ -2187,7 +3071,7 @@ extern "C"
 				   long & cell_ind, long & dim_ind,
 				   double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and CCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and CCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2209,6 +3093,18 @@ extern "C"
 //===========================================================================//
 // int FCSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int face-centered scalar field (FCSF) object that
+ *        is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object.
+ * \param data FCSF int data values (returned).
+ * \param data_size Size of the FCSF returned data vector (must equal the 
+ *                  number of cell faces in the mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh int FCSF class object (self).
     void get_mesh_fcsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
@@ -2234,12 +3130,26 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns all of the face values for the specified
+ *        cell in the CAR_CU_Mesh nested mesh field class int face-centered 
+ *        scalar field (FCSF) object that is referenced by the specified 
+ *        opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCSF int data values (returned).
+ * \param data_size Size of the FCSF returned data vector (must equal the 
+ *                  number of faces per cell).
+ */
     // Return all of the face values for a cell in a C++ CAR_CU_Mesh integer
     // FCSF class object (self).
     void get_mesh_fcsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2262,13 +3172,25 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified cell face value from the 
+ *        CAR_CU_Mesh nested mesh field class int face-centered scalar field
+ *        (FCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCSF int cell face data value (returned).
+ */
     // Return a cell face value from a C++ CAR_CU_Mesh int FCSF class 
     // object (self).
     void get_mesh_fcsf_i_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind, 
 				    long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2287,6 +3209,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int face-centered scalar field (FCSF) object that
+ *        is referenced by the specified opaque pointers. This can also be 
+ *        done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object.
+ * \param data FCSF int data values (supplied).
+ * \param data_size Size of the FCSF supplied data vector (must equal the 
+ *                  number of cell faces in the mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh int FCSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_fcsf_i_(long & mesh_index, long & self, 
@@ -2312,12 +3247,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets all of the face values for the specified 
+ *        cell in the CAR_CU_Mesh nested mesh field class int face-centered
+ *        scalar field (FCSF) object that is referenced by the specified
+ *        opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCSF cell face int data values (supplied).
+ * \param data_size Size of the FCSF supplied data vector (must equal the 
+ *                  number of faces per cell).
+ */
     // Set all of the face values for a cell in a C++ CAR_CU_Mesh int FCSF
     // class object (self).
     void set_mesh_fcsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2340,13 +3289,25 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell face value in the 
+ *        CAR_CU_Mesh nested mesh field class int face-centered scalar field
+ *        (FCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCSF cell face int data value (supplied).
+ */
     // Set a cell face value for a C++ CAR_CU_Mesh int FCSF class object
     // (self).
     void set_mesh_fcsf_i_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind,
 			            long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2368,6 +3329,18 @@ extern "C"
 //===========================================================================//
 // double FCSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double face-centered scalar field (FCSF) object
+ *        that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ * \param data FCSF double data values (returned).
+ * \param data_size Size of the FCSF returned data vector (must equal the 
+ *                  number of cell faces in the mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh double FCSF class object (self).
     void get_mesh_fcsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
@@ -2393,12 +3366,26 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns all of the face values for the specified
+ *        cell in the CAR_CU_Mesh nested mesh field class double face-centered
+ *        scalar field (FCSF) object that is referenced by the specified 
+ *        opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCSF double data values (returned).
+ * \param data_size Size of the FCSF returned data vector (must equal the 
+ *                  number of faces per cell).
+ */
     // Return all of the face values for a cell in a C++ CAR_CU_Mesh double 
     // FCSF class object (self).
     void get_mesh_fcsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2421,13 +3408,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified cell face value from the 
+ *        CAR_CU_Mesh nested mesh field class double face-centered scalar
+ *        field (FCSF) object that is referenced by the specified opaque
+ *        pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCSF double cell face data value (returned).
+ */
     // Return a cell face value for a C++ CAR_CU_Mesh double FCSF class object
     // (self).
     void get_mesh_fcsf_d_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind,
 				    double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2446,6 +3446,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double face-centered scalar field (FCSF) object
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ * \param data FCSF double data values (supplied).
+ * \param data_size Size of the FCSF supplied data vector (must equal the 
+ *                  number of cell faces in the mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh double FCSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_fcsf_d_(long & mesh_index, long & self, 
@@ -2471,12 +3484,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets all of the face values for the specified 
+ *        cell in the CAR_CU_Mesh nested mesh field class double face-centered
+ *        scalar field (FCSF) object that is referenced by the specified
+ *        opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCSF cell face double data values (supplied).
+ * \param data_size Size of the FCSF supplied data vector (must equal the 
+ *                  number of faces per cell).
+ */
     // Set all of the face values for a cell in a C++ CAR_CU_Mesh double 
     // FCSF class object (self).
     void set_mesh_fcsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			       double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2499,13 +3526,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell face value in the 
+ *        CAR_CU_Mesh nested mesh field class double face-centered scalar
+ *        field (FCSF) object that is referenced by the specified opaque 
+ *        pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCSF cell face double data value (supplied).
+ */
     // Set a cell face value for a C++ CAR_CU_Mesh double FCSF class object
     // (self).
     void set_mesh_fcsf_d_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind,
 				    double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2527,6 +3567,18 @@ extern "C"
 //===========================================================================//
 // int FCDSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int face-centered discontinuous scalar field (FCDSF)
+ *        object that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object.
+ * \param data FCSF int data values (returned).
+ * \param data_size Size of the FCSF returned data vector (must equal the 
+ *                  number of discontinuous cell faces in the mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh int FCDSF class object (self).
     void get_mesh_fcdsf_i_(long & mesh_index, long & self, 
 			   long & data, long & data_size)
@@ -2554,12 +3606,26 @@ extern "C"
 	}
     }
 
-    // Return all of the face values for a cell in a C++ CAR_CU_Mesh integer
+/*!
+ * \brief Shadow object that returns all of the face values for the specified
+ *        cell in the CAR_CU_Mesh nested mesh field class int face-centered 
+ *        discontinuous scalar field (FCDSF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCDSF int data values (returned).
+ * \param data_size Size of the FCDSF returned data vector (must equal the 
+ *                  number of discontinuous faces per cell).
+ */
+     // Return all of the face values for a cell in a C++ CAR_CU_Mesh integer
     // FCDSF class object (self).
     void get_mesh_fcdsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
 			        long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2584,13 +3650,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified cell face value from the 
+ *        CAR_CU_Mesh nested mesh field class int face-centered discontinuous
+ *        scalar field (FCDSF) object that is referenced by the specified 
+ *        opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCDSF int cell face data value (returned).
+ */
     // Return a cell face value from a C++ CAR_CU_Mesh int FCDSF class 
     // object (self).
     void get_mesh_fcdsf_i_cell_face_(long & mesh_ind, long & self, 
 				     long & cell_ind, long & face_ind, 
 				     long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2609,6 +3688,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int face-centered discontinuous scalar field 
+ *        (FCDSF) object that is referenced by the specified opaque pointers.
+ *        This can also be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object.
+ * \param data FCDSF int data values (supplied).
+ * \param data_size Size of the FCDSF supplied data vector (must equal the 
+ *                  number of discontinuous cell faces in the mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh int FCDSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_fcdsf_i_(long & mesh_index, long & self, 
@@ -2637,6 +3729,20 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets all of the face values for the specified 
+ *        cell in the CAR_CU_Mesh nested mesh field class int face-centered 
+ *        discontinuous scalar field (FCDSF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCDSF cell face int data values (supplied).
+ * \param data_size Size of the FCDSF supplied data vector (must equal the 
+ *                  number of discontinuous faces per cell).
+ */
     // Set all of the face values for a cell in a C++ CAR_CU_Mesh int FCDSF
     // class object (self).
     void set_mesh_fcdsf_i_cell_(long & mesh_ind, long & self, long & cell_ind,
@@ -2665,13 +3771,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell face value in the 
+ *        CAR_CU_Mesh nested mesh field class int face-centered discontinuous
+ *        scalar field (FCDSF) object that is referenced by the specified
+ *        opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCDSF cell face int data value (supplied).
+ */
     // Set a cell face value for a C++ CAR_CU_Mesh int FCDSF class object
     // (self).
     void set_mesh_fcdsf_i_cell_face_(long & mesh_ind, long & self, 
 				     long & cell_ind, long & face_ind,
 			             long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2693,6 +3812,18 @@ extern "C"
 //===========================================================================//
 // double FCDSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double face-centered discontinuous scalar field
+ *        (FCDSF) object that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ * \param data FCSF double data values (returned).
+ * \param data_size Size of the FCSF returned data vector (must equal the 
+ *                  number of discontinuous cell faces in the mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh double FCDSF class object (self).
     void get_mesh_fcdsf_d_(long & mesh_index, long & self, 
 			   double & data, long & data_size)
@@ -2720,12 +3851,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the face values for the specified
+ *        cell in the CAR_CU_Mesh nested mesh field class double face-centered 
+ *        discontinuous scalar field (FCDSF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCDSF double data values (returned).
+ * \param data_size Size of the FCDSF returned data vector (must equal the 
+ *                  number of discontinuous faces per cell).
+ */
     // Return all of the face values for a cell in a C++ CAR_CU_Mesh double 
     // FCDSF class object (self).
     void get_mesh_fcdsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			        double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2750,13 +3895,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified cell face value from the 
+ *        CAR_CU_Mesh nested mesh field class double face-centered 
+ *        discontinuous scalar field (FCDSF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCDSF double cell face data value (returned).
+ */
     // Return a cell face value for a C++ CAR_CU_Mesh double FCDSF class
     // object (self).
     void get_mesh_fcdsf_d_cell_face_(long & mesh_ind, long & self, 
 				     long & cell_ind, long & face_ind,
 				     double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2775,6 +3933,19 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double face-centered discontinuous scalar field
+ *        (FCDSF) object that is referenced by the specified opaque pointers.
+ *        This can also be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ * \param data FCDSF double data values (supplied).
+ * \param data_size Size of the FCDSF supplied data vector (must equal the 
+ *                  number of discontinuous cell faces in the mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh double FCDSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_fcdsf_d_(long & mesh_index, long & self, 
@@ -2803,12 +3974,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets all of the face values for the specified 
+ *        cell in the CAR_CU_Mesh nested mesh field class double face-centered 
+ *        discontinuous scalar field (FCDSF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param data FCDSF cell face double data values (supplied).
+ * \param data_size Size of the FCDSF supplied data vector (must equal the 
+ *                  number of discontinuous faces per cell).
+ */
     // Set all of the face values for a cell in a C++ CAR_CU_Mesh double 
     // FCDSF class object (self).
     void set_mesh_fcdsf_d_cell_(long & mesh_ind, long & self, long & cell_ind,
 			        double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2831,13 +4016,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell face value in the 
+ *        CAR_CU_Mesh nested mesh field class double face-centered 
+ *        discontinuous scalar field (FCDSF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCDSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCDSF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCDSF cell face double data value (supplied).
+ */
     // Set a cell face value for a C++ CAR_CU_Mesh double FCDSF class object
     // (self).
     void set_mesh_fcdsf_d_cell_face_(long & mesh_ind, long & self, 
 				     long & cell_ind, long & face_ind,
 				     double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCDSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCDSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2859,6 +4057,19 @@ extern "C"
 //===========================================================================//
 // int FCVF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int face-centered vector field (FCVF) object
+ *        that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCVF object.
+ * \param data FCVF int data values (returned).
+ * \param data_size Size of the FCVF returned data vector (must equal the 
+ *                  number of unique cell faces in the mesh times the array
+ *                  trailing index size).
+ */
     // Return an entire C++ CAR_CU_Mesh int FCVF class object (self).
     void get_mesh_fcvf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
@@ -2888,13 +4099,28 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the trailing index values for the
+ *        specified cell face in the CAR_CU_Mesh nested mesh field class int 
+ *        face-centered vector field (FCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCVF int data values (returned).
+ * \param data_size Size of the FCVF returned data vector (must equal the 
+ *                  size of the trailing index).
+ */
     // Return all of the dim face values for a cell in a C++ CAR_CU_Mesh 
     // integer FCVF class object (self).
     void get_mesh_fcvf_i_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind,
 				    long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2920,13 +4146,27 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified trailing index cell face 
+ *        value from the CAR_CU_Mesh nested mesh field class int face-centered 
+ *        vector field (FCVF) object that is referenced by the specified 
+ *        opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param dim_ind The trailing index number. 
+ * \param data FCVF int cell face trailing index data value (returned).
+ */
     // Return a dim cell face value from a C++ CAR_CU_Mesh int FCVF class 
     // object (self).
     void get_mesh_fcvf_i_cell_face_dim_(long & mesh_ind, long & self, 
 					long & cell_ind, long & face_ind, 
 					long & dim_ind, long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -2948,6 +4188,20 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int face-centered vector field (FCVF) object that
+ *        is referenced by the specified opaque pointers. This can also be 
+ *        done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCVF object.
+ * \param data FCVF int data values (supplied).
+ * \param data_size Size of the FCVF supplied data vector (must equal the 
+ *                  number of unique cell faces in the mesh times the size 
+ *                  of the trailing index).
+ */
     // Set an entire C++ CAR_CU_Mesh int FCVF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_fcvf_i_(long & mesh_index, long & self, 
@@ -2980,13 +4234,28 @@ extern "C"
 	fcvf_i() = data_set;
     }
 
+/*!
+ * \brief Shadow object that sets all of the trailing index values for the 
+ *        specified cell face in the CAR_CU_Mesh nested mesh field class int
+ *        face-centered vector field (FCVF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCVF cell face int data values (supplied).
+ * \param data_size Size of the FCVF supplied data vector (must equal the 
+ *                  size of the vector trailing index).
+ */
     // Set all of the dim face values for a cell in a C++ CAR_CU_Mesh int FCVF
     // class object (self).
     void set_mesh_fcvf_i_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind, 
 				    long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3012,13 +4281,27 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell face trailing index value
+ *        in the CAR_CU_Mesh nested mesh field class int face-centered vector
+ *        field (FCVF) object that is referenced by the specified opaque
+ *        pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param dim_ind The trailing index number. 
+ * \param data FCVF cell face trailing index int data value (supplied).
+ */
     // Set a dim cell face value for a C++ CAR_CU_Mesh int FCVF class object
     // (self).
     void set_mesh_fcvf_i_cell_face_dim_(long & mesh_ind, long & self, 
 					long & cell_ind, long & face_ind,
 					long & dim_ind, long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3043,6 +4326,19 @@ extern "C"
 //===========================================================================//
 // double FCVF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double face-centered vector field (FCVF) object
+ *        that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ * \param data FCVF double data values (returned).
+ * \param data_size Size of the FCVF returned data vector (must equal the 
+ *                  number of unique cell faces in the mesh times the array
+ *                  trailing index size).
+ */
     // Return an entire C++ CAR_CU_Mesh double FCVF class object (self).
     void get_mesh_fcvf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
@@ -3073,13 +4369,28 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns all of the trailing index values for the
+ *        specified cell face in the CAR_CU_Mesh nested mesh field class 
+ *        double face-centered vector field (FCVF) object that is referenced
+ *        by the specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCVF double data values (returned).
+ * \param data_size Size of the FCVF returned data vector (must equal the 
+ *                  size of the trailing index).
+ */
     // Return all of the dim face values for a cell in a C++ CAR_CU_Mesh 
-    // doubleeger FCVF class object (self).
+    // double FCVF class object (self).
     void get_mesh_fcvf_d_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind,
 				    double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3105,13 +4416,27 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns the specified trailing index cell face 
+ *        value from the CAR_CU_Mesh nested mesh field class double 
+ *        face-centered vector field (FCVF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param dim_ind The trailing index number. 
+ * \param data FCVF double cell face trailing index data value (returned).
+ */
     // Return a dim cell face value from a C++ CAR_CU_Mesh double FCVF class 
     // object (self).
     void get_mesh_fcvf_d_cell_face_dim_(long & mesh_ind, long & self, 
 					long & cell_ind, long & face_ind, 
 					long & dim_ind,  double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3133,6 +4458,20 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double face-centered vector field (FCVF) object
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ * \param data FCVF double data values (supplied).
+ * \param data_size Size of the FCVF supplied data vector (must equal the 
+ *                  number of unique cell faces in the mesh times the size 
+ *                  of the trailing index).
+ */
     // Set an entire C++ CAR_CU_Mesh double FCVF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_fcvf_d_(long & mesh_index, long & self, 
@@ -3165,13 +4504,28 @@ extern "C"
 	fcvf_d() = data_set;
     }
 
+/*!
+ * \brief Shadow object that sets all of the trailing index values for the 
+ *        specified cell face in the CAR_CU_Mesh nested mesh field class double
+ *        face-centered vector field (FCVF) object that is referenced by the
+ *        specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param data FCVF cell face double data values (supplied).
+ * \param data_size Size of the FCVF supplied data vector (must equal the 
+ *                  size of the vector trailing index).
+ */
     // Set all of the dim face values for a cell in a C++ CAR_CU_Mesh double 
     // FCVF class object (self).
     void set_mesh_fcvf_d_cell_face_(long & mesh_ind, long & self, 
 				    long & cell_ind, long & face_ind, 
 				    double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3197,13 +4551,27 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified cell face trailing index value
+ *        in the CAR_CU_Mesh nested mesh field class double face-centered 
+ *        vector field (FCVF) object that is referenced by the specified 
+ *        opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double FCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double FCVF object.
+ * \param cell_ind The cell number. 
+ * \param face_ind The cell face number. 
+ * \param dim_ind The trailing index number. 
+ * \param data FCVF cell face trailing index double data value (supplied).
+ */
     // Set a dim cell face value for a C++ CAR_CU_Mesh double FCVF class object
     // (self).
     void set_mesh_fcvf_d_cell_face_dim_(long & mesh_ind, long & self, 
 					long & cell_ind, long & face_ind,
 					long & dim_ind,  double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and FCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and FCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3228,6 +4596,20 @@ extern "C"
 //===========================================================================//
 // int NCSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int node-centered scalar field (NCSF) object that
+ *        is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCSF object.
+ * \param data NCSF int data values (returned).
+ * \param data_size Size of the NCSF returned data vector (must equal 
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh int NCSF class object (self).
     void get_mesh_ncsf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
@@ -3253,12 +4635,23 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns the specified node value from the 
+ *        CAR_CU_Mesh nested mesh field class int node-centered scalar field
+ *       (NCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCSF object.
+ * \param node_ind The node number. 
+ * \param data NCSF int node data value (returned).
+ */
     // Return a node value from a C++ CAR_CU_Mesh int NCSF class object
     // (self).
     void get_mesh_ncsf_i_node_(long & mesh_ind, long & self, long & node_ind,
 			       long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3274,6 +4667,21 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int node-centered scalar field (NCSF) object 
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCSF object.
+ * \param data NCSF int data values (supplied).
+ * \param data_size Size of the NCSF supplied data vector (must equal 
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh int NCSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_ncsf_i_(long & mesh_index, long & self, 
@@ -3299,12 +4707,23 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified node value for the 
+ *        CAR_CU_Mesh nested mesh field class int node-centered scalar field
+ *        (NCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCSF object.
+ * \param node_ind The node number. 
+ * \param data NCSF node int data value (supplied).
+ */
     // Set a node value for a C++ CAR_CU_Mesh int NCSF class object
     // (self).
     void set_mesh_ncsf_i_node_(long & mesh_ind, long & self, long & node_ind,
 			       long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3323,6 +4742,20 @@ extern "C"
 //===========================================================================//
 // double NCSF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double node-centered scalar field (NCSF) object that
+ *        is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCSF object.
+ * \param data NCSF double data values (returned).
+ * \param data_size Size of the NCSF returned data vector (must equal
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh).
+ */
     // Return an entire C++ CAR_CU_Mesh double NCSF class object (self).
     void get_mesh_ncsf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
@@ -3348,12 +4781,23 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns the specified node value from the 
+ *        CAR_CU_Mesh nested mesh field class double node-centered scalar field
+ *       (NCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCSF object.
+ * \param node_ind The node number. 
+ * \param data NCSF double node data value (returned).
+ */
     // Return a node value from a C++ CAR_CU_Mesh double NCSF class object
     // (self).
     void get_mesh_ncsf_d_node_(long & mesh_ind, long & self, long & node_ind,
 			       double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3369,6 +4813,21 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double node-centered scalar field (NCSF) object 
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCSF object.
+ * \param data NCSF double data values (supplied).
+ * \param data_size Size of the NCSF supplied data vector (must equal 
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh).
+ */
     // Set an entire C++ CAR_CU_Mesh double NCSF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_ncsf_d_(long & mesh_index, long & self, 
@@ -3394,12 +4853,23 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified node value for the 
+ *        CAR_CU_Mesh nested mesh field class double node-centered scalar field
+ *        (NCSF) object that is referenced by the specified opaque pointers. 
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double NCSF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCSF object.
+ * \param node_ind The node number. 
+ * \param data NCSF node double data value (supplied).
+ */
     // Set a node value for a C++ CAR_CU_Mesh double NCSF class object
     // (self).
     void set_mesh_ncsf_d_node_(long & mesh_ind, long & self, long & node_ind,
 			       double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCSF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCSF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3418,6 +4888,20 @@ extern "C"
 //===========================================================================//
 // int NCVF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class int node-centered vector field (NCVF) object that
+ *        is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this int NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object.
+ * \param data NCVF int data values (returned).
+ * \param data_size Size of the NCVF returned data vector (must equal 
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh times the size of the trailing index).
+ */
     // Return an entire C++ CAR_CU_Mesh int NCVF class object (self).
     void get_mesh_ncvf_i_(long & mesh_index, long & self, 
 			  long & data, long & data_size)
@@ -3445,12 +4929,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the trailing index values for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class int
+ *        node-centered vector field (NCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object.
+ * \param node_ind The node number.
+ * \param data NCVF int node data values (returned).
+ * \param data_size Size of the NCVF returned data vector (must equal the 
+ *                  size of the NCVF trailing index).
+ */
     // Return all of the dim values for a node from a C++ CAR_CU_Mesh int NCVF
     // class object (self).
     void get_mesh_ncvf_i_node_(long & mesh_ind, long & self, long & node_ind,
 			       long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3476,13 +4974,26 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns the specified trailing index value for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class int 
+ *        node-centered vector field (NCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object.
+ * \param node_ind The node number.
+ * \param dim_ind The trailing index number.
+ * \param data NCVF int trailing index, node data value (returned).
+ */
     // Return a dim node value for a C++ CAR_CU_Mesh int NCVF class object
     // (self).
     void get_mesh_ncvf_i_node_dim_(long & mesh_ind, long & self, 
 				   long & node_ind, long & dim_ind,
 				   long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3500,6 +5011,21 @@ extern "C"
 	data = static_cast<long>(ncvf_i(inode, idim));
     }
 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class int node-centered vector field (NCVF) object that
+ *        is referenced by the specified opaque pointers. This can also be
+ *        done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that
+ *                   contains this int NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object.
+ * \param data NCVF int data values (supplied).
+ * \param data_size Size of the NCVF supplied data vector  (must equal 
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh times the size of the trailing index)..
+ */
     // Set an entire C++ CAR_CU_Mesh int NCVF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_ncvf_i_(long & mesh_index, long & self, 
@@ -3528,12 +5054,26 @@ extern "C"
 	}
     }
 
-    // Set a node value for a C++ CAR_CU_Mesh int NCVF class object
+/*!
+ * \brief Shadow object that sets all of the trailing index values for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class int 
+ *        node-centered vector field (NCVF) object that is referenced by 
+ *        the specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object.
+ * \param node_ind The node number.
+ * \param data NCVF int node data values (supplied).
+ * \param data_size Size of the NCVF supplied data vector (must equal the 
+ *                  size of the NCVF trailing index).
+ */
+    // Set all of a nodes values for a C++ CAR_CU_Mesh int NCVF class object
     // (self).
     void set_mesh_ncvf_i_node_(long & mesh_ind, long & self, long & node_ind,
 			       long & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3558,13 +5098,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that sets the specified trailing index value for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class int 
+ *        node-centered vector field (NCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this int NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             int NCVF object.
+ * \param node_ind The node number.
+ * \param dim_ind The trailing index number.
+ * \param data NCVF int trailing index, node data value (supplied).
+ */
     // Set a dim node value for a C++ CAR_CU_Mesh int NCVF class object
     // (self).
     void set_mesh_ncvf_i_node_dim_(long & mesh_ind, long & self, 
 				   long & node_ind, long & dim_ind,
 				   long & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3585,6 +5138,20 @@ extern "C"
 //===========================================================================//
 // double NCVF class objects
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the entire specified CAR_CU_Mesh nested
+ *        mesh field class double node-centered vector field (NCVF) object
+ *        that is referenced by the specified opaque pointers.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object.
+ * \param data NCVF double data values (returned).
+ * \param data_size Size of the NCVF returned data vector (must equal
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh times the size of the trailing index).
+ */
     // Return an entire C++ CAR_CU_Mesh double NCVF class object (self).
     void get_mesh_ncvf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
@@ -3612,12 +5179,26 @@ extern "C"
 	}
     }
 
+/*!
+ * \brief Shadow object that returns all of the trailing index values for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class double
+ *        node-centered vector field (NCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object.
+ * \param node_ind The node number.
+ * \param data NCVF double node data values (returned).
+ * \param data_size Size of the NCVF returned data vector (must equal the 
+ *                  size of the NCVF trailing index).
+ */
     // Return all of the dim values for a node from a C++ CAR_CU_Mesh double 
     // NCVF class object (self).
     void get_mesh_ncvf_d_node_(long & mesh_ind, long & self, long & node_ind,
 			       double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3643,13 +5224,26 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that returns the specified trailing index value for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class double 
+ *        node-centered vector field (NCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object.
+ * \param node_ind The node number.
+ * \param dim_ind The trailing index number.
+ * \param data NCVF double trailing index, node data value (returned).
+ */
     // Return a dim node value for a C++ CAR_CU_Mesh double NCVF class object
     // (self).
     void get_mesh_ncvf_d_node_dim_(long & mesh_ind, long & self, 
 				   long & node_ind, long & dim_ind,
 				   double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3667,7 +5261,22 @@ extern "C"
 	data = ncvf_d(inode, idim);
     }
 
-    // Set an entire C++ CAR_CU_Mesh int NCVF class object (self) (can 
+/*!
+ * \brief Shadow object that sets the entire specified CAR_CU_Mesh nested
+ *        mesh field class double node-centered vector field (NCVF) object
+ *        that is referenced by the specified opaque pointers. This can also
+ *        be done at initialization using the constructor.
+ * \param mesh_index Opaque pointer to the CAR_CU_Mesh class object that 
+ *                   contains this double NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object.
+ * \param data NCVF double data values (supplied).
+ * \param data_size Size of the NCVF supplied data vector(must equal
+ *                  either the number of cell-corner plus face-centered nodes 
+ *                  in the mesh or the number of cell-corner nodes in the 
+ *                  mesh times the size of the trailing index).
+ */
+    // Set an entire C++ CAR_CU_Mesh double NCVF class object (self) (can 
     // also be done at initialization using the constructor).
     void set_mesh_ncvf_d_(long & mesh_index, long & self, 
 			  double & data, long & data_size)
@@ -3695,12 +5304,26 @@ extern "C"
 	}
     }
 
-    // Set a node value for a C++ CAR_CU_Mesh int NCVF class object
+/*!
+ * \brief Shadow object that sets all of the trailing index values for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class double 
+ *        node-centered vector field (NCVF) object that is referenced by 
+ *        the specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object.
+ * \param node_ind The node number.
+ * \param data NCVF double node data values (supplied).
+ * \param data_size Size of the NCVF supplied data vector (must equal the 
+ *                  size of the NCVF trailing index).
+ */
+    // Set a node value for a C++ CAR_CU_Mesh double NCVF class object
     // (self).
     void set_mesh_ncvf_d_node_(long & mesh_ind, long & self, long & node_ind,
 			       double & data, long & data_size)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);
@@ -3725,13 +5348,26 @@ extern "C"
 	}
     }
 
-    // Set a dim node value for a C++ CAR_CU_Mesh int NCVF class object
+/*!
+ * \brief Shadow object that sets the specified trailing index value for the
+ *        specified node in the CAR_CU_Mesh nested mesh field class double 
+ *        node-centered vector field (NCVF) object that is referenced by the
+ *        specified opaque pointers.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that 
+ *                 contains this double NCVF class object.
+ * \param self Opaque pointer to the CAR_CU_Mesh nested mesh field class 
+ *             double NCVF object.
+ * \param node_ind The node number.
+ * \param dim_ind The trailing index number.
+ * \param data NCVF double trailing index, node data value (supplied).
+ */
+    // Set a dim node value for a C++ CAR_CU_Mesh double NCVF class object
     // (self).
     void set_mesh_ncvf_d_node_dim_(long & mesh_ind, long & self, 
 				   long & node_ind, long & dim_ind,
 				   double & data)
     {
-	// Get the addresses of the CAR_CU_Mesh (mesh_index) and NCVF (self) 
+	// Get the addresses of the CAR_CU_Mesh (mesh_ind) and NCVF (self) 
         // class objects.
 	SP<CAR_CU_Mesh> mesh = 
 	    opaque_pointers<CAR_CU_Mesh>::item(mesh_ind);

@@ -57,7 +57,7 @@ using dsxx::SP;
 
 /*!
  * \brief  The continuous adaptive refinement (CAR) Cartesion unstructured 
- *         (CU) Mesh Class provides adaptive mesh refinement (amr) capability
+ *         (CU) Mesh class provides adaptive mesh refinement (amr) capability
  *         for use in transport codes.
  *
  *\sa The CAR_CU_Mesh class is typically instantiated using the associated 
@@ -588,7 +588,7 @@ class CAR_CU_Mesh
 	// inline explicit constructor (default vector size to the number of
         // nodes by the problem geometry dimension)
 /*!
- * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered vector field 
  *        (NCVF) class object with the leading index sized to the number of 
  *        nodes (i.e., corner and face-centered) in the mesh and the trailing
  *        index size defaulted to the number of spatial dimensions.
@@ -599,7 +599,7 @@ class CAR_CU_Mesh
 	// inline explicit constructor (semi-arbitrary leading vector size, 
         // default trailing vector size to the number of geometry dimensions
 /*!
- * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered vector field 
  *        (NCVF) class object with the leading index semi-arbitrary (i.e., 
  *        sized to the either total number of nodes in the mesh or the number
  *        of corner nodes in the mesh) and the trailing index size defaulted
@@ -613,7 +613,7 @@ class CAR_CU_Mesh
 	// inline explicit constructor (semi-arbitrary leading vector size 
         // and arbitrary trailing vector size)
 /*!
- * \brief Constructs an uninitialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an uninitialized CAR_CU_Mesh node-centered vector field 
  *        (NCVF) class object with the leading index semi-arbitrary (i.e., 
  *        sized to the either the total number of nodes in the mesh or the 
  *        number of corner nodes in the mesh) and the trailing index size 
@@ -627,7 +627,7 @@ class CAR_CU_Mesh
 
 	// additional constructors
 /*!
- * \brief Constructs an initialized CAR_CU_Mesh node-centered scalar field 
+ * \brief Constructs an initialized CAR_CU_Mesh node-centered vector field 
  *        (NCVF) class object with the leading index semi-arbitrary (i.e., 
  *        sized to the either total number of nodes in the mesh or the number
  *        of corner nodes in the mesh) and the trailing index size arbitrary.
@@ -957,15 +957,15 @@ class CAR_CU_Mesh
     // give the dimension and begin and end return the beginning and ending
     // coordinate along that dimension
 /*!
- * \brief Returns the minimum coordinate value along a given direction for
- *        the entire mesh.
+ * \brief Returns the minimum coordinate value along the specified direction
+ *        for the entire mesh.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \return Mimimum coordinate value. 
  */
     inline double begin(int dir) const;
 /*!
- * \brief Returns the maximum coordinate value along a given direction for
- *        the entire mesh.
+ * \brief Returns the maximum coordinate value along the specified direction
+ *        for the entire mesh.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \return Maximum coordinate value. 
  */
@@ -973,16 +973,16 @@ class CAR_CU_Mesh
 
     // find minimum and maximum dimension of cell
 /*!
- * \brief Returns the minimum coordinate value along a given direction for
- *        the specified cell.
+ * \brief Returns the minimum coordinate value along the specified direction
+ *        for the specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \param cell Cell number.
  * \return Mimimum coordinate value. 
  */
     inline double min(int dir, int cell) const;
 /*!
- * \brief Returns the maximum coordinate value along a given direction for
- *        the specified cell.
+ * \brief Returns the maximum coordinate value along the specified direction
+ *        for the specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \param cell Cell number.
  * \return Maximum coordinate value. 
@@ -991,16 +991,16 @@ class CAR_CU_Mesh
 
     // find centerpoint of cell and width of cell
 /*!
- * \brief Returns the center-point coordinate value along a given direction 
- *        for the specified cell.
+ * \brief Returns the center-point coordinate value along the specified
+ *        direction for the specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \param cell Cell number.
  * \return Center-point coordinate value. 
  */
     inline double pos(int dir, int cell) const;
 /*!
- * \brief Returns the cell width along a given direction for the specified 
- *        cell.
+ * \brief Returns the cell width along the specified direction for the 
+ *        specified cell.
  * \param dir Coordinate direction (x=1, y=2, z =3).
  * \param cell Cell number.
  * \return Cell width. 

@@ -2,6 +2,24 @@
 // Shadow_CAR_CU_Mat_State.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
+/*! 
+ * \file   amr_mesh/Shadow_CAR_CU_Mat_State.cc
+ * \author B.T. Adams
+ * \date   Mon 27 Sep 10:33:26 1999
+ * \brief  Provides the C++ side of the shadow object interface functions to
+ *         the Implicit Monte Carlo (imc) Mat_State class for use with Fortran
+ *         90 codes. The complimentary Fortran 90 shadow object interface 
+ *         functions that reference the functions herein are provided in 
+ *         Shadow_CAR_CU_Mat_State.f90. Note that the class constructor is 
+ *         not shadowed herein because the Mat_State class object is 
+ *         constructed by the Opacity_Builder class object (which is shadowed).
+ *         An example code is also provide to illustrate the usage of all of
+ *         the shadow object interface functions to the amr_mesh package from
+ *         a Fortran 90 code.
+ *
+ *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
+ *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
+ */
 //---------------------------------------------------------------------------//
 // @> Shadow_CAR_CU_Mat_State interface file
 //---------------------------------------------------------------------------//
@@ -30,6 +48,18 @@
 // 
 //===========================================================================//
 
+/*!
+ * \brief RTT implicit monte carlo (imc) namespace.
+ *
+ * Provides namespace protection for the Draco (RTT) implicit monte carlo
+ *  utilities.
+ *
+ *\sa The rtt_imc namespace is documented herein only to complete the adaptive
+ *    mesh refinement (amr) doxygen documentation for the mesh class. Limited
+ *    shadow object interfacing of some imc classes was provided within the
+ *    draco/src/amr_mesh directories to add needed functionality to the mesh
+ *    class.
+ */
 namespace rtt_imc 
 {
 // draco components
@@ -47,6 +77,11 @@ extern "C"
 //===========================================================================//
 // Constructors and destructors
 //===========================================================================//
+/*!
+ * \brief Shadow object that destroys the Mat_State class object that
+ *        is referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the Mat_State class object.
+ */
     // Destroy an Mat_State class object from a Fortran 90 program call.
     void destruct_car_cu_mat_state_(long & self)
     {
@@ -66,6 +101,16 @@ extern "C"
 //===========================================================================//
 // General Mat_State scalar accessor functions
 //===========================================================================//
+/*!
+ * \brief Shadow object that returns the density in the specified cell in 
+ *        the Mat_State class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param rho The cell density (returned).
+ */
     // Return the cell density
     void get_car_cu_rho_(long & self, long & mesh_ind, long & cell, 
 			 double & rho)
@@ -86,6 +131,16 @@ extern "C"
 	rho = material->get_rho(icell);
     }
 
+/*!
+ * \brief Shadow object that sets the density in the specified cell in 
+ *        the Mat_State class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param rho The cell density (supplied).
+ */
     // Set the cell density
     void set_car_cu_rho_(long & self, long & mesh_ind, long & cell, 
 			 double & rho)
@@ -106,6 +161,16 @@ extern "C"
 	material->get_rho(icell) = rho;
     }
 
+/*!
+ * \brief Shadow object that returns the temperature in the specified cell in 
+ *        the Mat_State class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param temp The cell temperature (returned).
+ */
     // Return the cell temperature
     void get_car_cu_temp_(long & self, long & mesh_ind, long & cell, 
 			  double & temp)
@@ -126,6 +191,16 @@ extern "C"
 	temp = material->get_T(icell);
     }
 
+/*!
+ * \brief Shadow object that sets the temperature in the specified cell in 
+ *        the Mat_State class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param temp The cell temperature (supplied).
+ */
     // Set the cell temperature
     void set_car_cu_temp_(long & self, long & mesh_ind, long & cell, 
 			  double & temp)
@@ -146,6 +221,17 @@ extern "C"
 	material->get_T(icell) = temp;
     }
 
+/*!
+ * \brief Shadow object that returns the derivative of energy with respect to
+ *        time in the specified cell in the Mat_State class object that is 
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param dedt The derivative of energy with respect to time in the cell 
+ *             (returned).
+ */
     // Return the gradient of the cell energy with respect to time
     void get_car_cu_dedt_(long & self, long & mesh_ind, long & cell, 
 			  double & dedt)
@@ -166,6 +252,17 @@ extern "C"
 	dedt = material->get_dedt(icell);
     }
 
+/*!
+ * \brief Shadow object that sets the derivative of energy with respect to
+ *        time in the specified cell in the Mat_State class object that is
+ *        referenced by the specified opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param dedt The derivative of energy with respect to time in the cell 
+ *             (supplied).
+ */
     // Set the gradient of the cell energy with respect to time
     void set_car_cu_dedt_(long & self, long & mesh_ind, long & cell, 
 			  double & dedt)
@@ -186,6 +283,16 @@ extern "C"
 	material->get_dedt(icell) = dedt;
     }
 
+/*!
+ * \brief Shadow object that returns the specific heat in the specified cell
+ *        in the Mat_State class object that is referenced by the specified 
+ *        opaque pointer. 
+ * \param self Opaque pointer to the Mat_State class object.
+ * \param mesh_ind Opaque pointer to the CAR_CU_Mesh class object that is
+ *                 associated with this Mat_State class object.
+ * \param cell The cell number.
+ * \param spec_heat The cell specific heat (returned).
+ */
     // Return the cell specific heat
     void get_car_cu_spec_heat_(long & self, long & mesh_ind, long & cell, 
 			       double & spec_heat)

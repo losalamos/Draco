@@ -1762,27 +1762,28 @@ class RTT_Format
  * rtt_format_defined with the additions of some base classes and the 
  * Connectivity class:
  * <ul>
- *  <li> Header
- *  <li> Dims (dimensions)
- *  <li> Flags (base class of NodeFlags, SideFlags, and CellFlags)
- *  <li> NodeFlags
- *  <li> SideFlags
- *  <li> CellFlags
- *  <li> NodeDataIDs
- *  <li> SideDataIDs
- *  <li> CellDataIDs
- *  <li> CellDef (base class of CellDefs)
- *  <li> CellDefs (cell definitions)
- *  <li> Nodes
- *  <li> Sides
- *  <li> Cells
- *  <li> NodeData
- *  <li> SideData
- *  <li> CellData
- *  <li> Connectivity
+ *  <li> rtt_format::RTT_Format::Header
+ *  <li> rtt_format::RTT_Format::Dims (dimensions)
+ *  <li> rtt_format::RTT_Format::Flags (base class of NodeFlags, SideFlags,
+ *                               and CellFlags)
+ *  <li> rtt_format::RTT_Format::NodeFlags
+ *  <li> rtt_format::RTT_Format::SideFlags
+ *  <li> rtt_format::RTT_Format::CellFlags
+ *  <li> rtt_format::RTT_Format::NodeDataIDs
+ *  <li> rtt_format::RTT_Format::SideDataIDs
+ *  <li> rtt_format::RTT_Format::CellDataIDs
+ *  <li> rtt_format::RTT_Format::CellDef (base class of CellDefs)
+ *  <li> rtt_format::RTT_Format::CellDefs (cell definitions)
+ *  <li> rtt_format::RTT_Format::Nodes
+ *  <li> rtt_format::RTT_Format::Sides
+ *  <li> rtt_format::RTT_Format::Cells
+ *  <li> rtt_format::RTT_Format::NodeData
+ *  <li> rtt_format::RTT_Format::SideData
+ *  <li> rtt_format::RTT_Format::CellData
+ *  <li> rtt_format::RTT_Format::Connectivity
  * </ul> 
  * These contained classes provide a convenient grouping of the mesh data, and
- * the RTT_Format public memeber accessor functions reflect the name of the 
+ * the RTT_Format public member accessor functions reflect the name of the 
  * associated nested class.
  *
  */

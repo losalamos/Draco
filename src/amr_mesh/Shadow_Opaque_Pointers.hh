@@ -6,7 +6,7 @@
  * \file   amr_mesh/Shadow_Opaque_Pointers.hh
  * \author Mark Gray/B.T. Adams
  * \date   Wed 1 Sep 10:33:26 1999
- * \brief  Header file for Shadow_Opaque_Pointers library.
+ * \brief  Header file for opaque_pointers library.
  */
 //---------------------------------------------------------------------------//
 // @> 
@@ -17,11 +17,13 @@
 #include <map>
 
 /*!
- * \brief RTT shadow namespace.
+ * \brief RTT shadow object interface namespace.
  *
  * Provides namespace protection for the Draco RTT shadow object interface
- * opaque pointer utilities used to interface C++ objects with external codes
- * using other programming languages.
+ * opaque pointer utilities that are used to interface C++ objects with 
+ * external codes that use other programming languages. An example code is 
+ * also provide to illustrate the usage of all of the shadow object interface
+ * functions to the amr_mesh package from a Fortran 90 code.
  *
  *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
@@ -33,7 +35,7 @@ using dsxx::SP;
 
 /*! 
  * \brief  Defines the C++ data type that will be used to represent the opaque
- *         pointers (and will thus be exchanged with the F90 code in all 
+ *         pointers (and will thus be exchanged with the external code in all 
  *         opaque pointer references).
  */
 typedef long opaque_pointer_type;
@@ -44,8 +46,8 @@ typedef long opaque_pointer_type;
  *         objects from a Fortran 90 (or other programming language) external
  *         code. The opaque pointers that are used herein are a C++ data type
  *         (e.g., long) that can be exchanged with a F90 code in calling 
- *         arguments and are used internally as a "key" to reference the
- *         smart pointers to the C++ objects of the specified type.
+ *         arguments and are used internally as a "key" to reference smart
+ *         pointers to the C++ objects of the specified type.
  *
  *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
  *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
@@ -97,8 +99,8 @@ class opaque_pointers
 	// remove pointer referenced by opaque pointer
 /*! 
  * \brief  Removes the smart pointer to the referenced C++ object from the 
- *         opaque_pointer class object and eliminates the associated opaque
- *         pointer "key".
+ *         opaque_pointer class object container and eliminates the associated
+ *         opaque pointer "key".
  * \param i Opaque pointer number.
  */
     static void erase(opaque_pointer_type i);
@@ -125,7 +127,7 @@ class opaque_pointers
  */
 	opaque_pointer_type next_avail;
 /*! 
- * \brief  The opaque_pointers container for opaque pointers and the 
+ * \brief  The opaque_pointers container for the opaque pointers and the 
  *         associated smart pointers to the C++ objects.
  */
 	ptr_map object_pointers;

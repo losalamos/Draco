@@ -2,6 +2,26 @@
 // Shadow_CAR_CU_Opacity_Builder.cc
 // B.T. Adams (bta@lanl.gov)
 // 27 Sept 99
+/*! 
+ * \file   amr_mesh/Shadow_CAR_CU_Opacity_Builder.cc
+ * \author B.T. Adams
+ * \date   Mon 27 Sep 10:33:26 1999
+ * \brief  Provides the C++ side of the shadow object interface functions to
+ *         the Implicit Monte Carlo (imc) Opacity_Builder class for use with
+ *         Fortran 90 codes. The complimentary Fortran 90 shadow object
+ *         interface functions that reference the functions herein are
+ *         provided in Shadow_CAR_CU_Opacity_Builder.f90. Only the class 
+ *         constructor and destructor are shadowed, as the class constructor
+ *         automatically instantiates both Opacity and Mat_State class
+ *         objects and shadow object interface functions are provided for 
+ *         the data accessor functions for both of these classes.  An example
+ *         code is also provide to illustrate the usage of all of the shadow
+ *         object interface functions to the amr_mesh package from a Fortran
+ *         90 code.
+ *
+ *\sa Mark G. Gray, Randy M. Roberts, and Tom Evans, Scientific Programming,
+ *   "Shadow-Object Interface Between Fortran 95 and C++", March-April 1999.
+ */
 //---------------------------------------------------------------------------//
 // @> Shadow_Opacity_Builder interface file
 //---------------------------------------------------------------------------//
@@ -44,6 +64,22 @@ extern "C"
 //---------------------------------------------------------------------------//
 // parse input
 
+/*!
+ * \brief Shadow object that constructs an Opacity_Builder class object from
+ *        a Fortran 90 program call. This also constructs the Mat_State and
+ *        Opacity class objects. The addresses (i.e., opaque pointers) of 
+ *        the new Opacity_Builder, Mat_State, and Opacity class objects are
+ *        set.
+ * \param self Opaque pointer to the new CAR_CU_Builder class object 
+ *             (returned).
+ * \param itf_ptr Opaque pointer to an existing, initialized CAR_CU_Interface
+ *                class object.
+ * \param mesh_ptr Opaque pointer to an existing, initialized CAR_CU_Mesh 
+ *                 class object.
+ * \param verbosity Switch used to turn detailed run-time reporting on/off.
+ * \param matl_ptr Opaque pointer to the new Mat_State class object (returned).
+ * \param opac_ptr Opaque pointer to the new Opacity class object (returned).
+ */
     // Construct a Opacity_Builder class from a Fortran 90 program call.  This 
     // also constructs the Mat_State and Opacity class objects. The addresses
     // of the new Opacity_Builder, Mat_State, and Opacity class objects are 
@@ -85,6 +121,11 @@ extern "C"
 
     }
 
+/*!
+ * \brief Shadow object that destroys the Opacity_Builder class object that
+ *        is referenced by the specified opaque pointer.
+ * \param self Opaque pointer to the Opacity_Builder class object.
+ */
     // Destroy a Opacity_Builder class object from a Fortran 90 program call.
     void destruct_car_cu_opac_builder_(long & self)
     {

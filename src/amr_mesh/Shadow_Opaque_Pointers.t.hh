@@ -6,7 +6,7 @@
  * \file   amr_mesh/Shadow_Opaque_Pointers.t.hh
  * \author Mark Gray/B.T. Adams
  * \date   Wed 1 Sep 10:33:26 1999
- * \brief  Implementation file for Shadow_Opaque_Pointers library.
+ * \brief  Implementation file for opaque_pointers library.
  */
 //---------------------------------------------------------------------------//
 // @> 

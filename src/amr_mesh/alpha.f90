@@ -181,10 +181,7 @@
 ! for the transport calculations.  Most of this data is available immediately 
 ! after the CAR_CU_Interface has been executed via its constructor (with the
 ! exception of the number of cells, which is needed to retrieve the volumetric
-! and radiations sources). It is noted that the definition of the surface 
-! source cells is currently limited to a single surface, since a ragged
-! right array derived-type would be required in Fortran 90 to do this 
-! correctly.
+! and radiations sources).
 !===========================================================================
           ! Set the last CAR_CU_Interface derived-type member ncells now that
           ! we have the mesh member function to return the number of cells in
