@@ -90,6 +90,16 @@ AC_DEFUN(AC_CPP_ENV, [dnl
        else
 	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
        fi
+
+   elif test "${with_cxx}" = icc ; then 
+       AC_CHECK_PROG(CXX, icc, icc)
+
+       if test "${CXX}" = icc ; then
+	   CC='icc'
+	   AC_DRACO_INTEL_ICC
+       else
+	   AC_MSG_ERROR("Did not find Intel icc compiler!")
+       fi
    fi
 
    # set the language to CPLUSPLUS
@@ -434,6 +444,70 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    AC_MSG_RESULT("CXX Compaq compiler flags set")
    
    dnl end of AC_DRACO_COMPAQ_CXX
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl Intel icc COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # icc SPECIFIC FLAGS
+   # dirstoclean='ti_files'
+
+   # LINKER AND LIBRARY
+   LD='${CXX}'
+
+   # if shared then ar is icc
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-ansi"
+   fi
+
+   # --one_per flag
+   #if test "${enable_one_per:=yes}" = yes ; then
+   #    ONEPERFLAG="--one_per"
+   #fi
+
+   # optimization level
+   if test "${enable_debug:=no}" = yes && \
+      test "${with_opt:=0}" != 0 ; then
+      CXXFLAGS="${CXXFLAGS} -g"
+      CFLAGS="${CFLAGS} -g"
+   fi
+   CXXFLAGS="${CXXFLAGS} -O${with_opt:=0}"
+   CFLAGS="${CFLAGS} -O${with_opt:=0}"
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -static"
+   fi
+
+   # Parallel build flag
+   
+   #PARALLEL_FLAG="--parallel_build \${nj}"
+
+   # final compiler additions
+   #CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
+
+   AC_MSG_RESULT("icc compiler flags set")
+   
+   dnl end of AC_DRACO_INTEL_ICC
 ])
 
 dnl-------------------------------------------------------------------------dnl

@@ -334,12 +334,19 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
 	  test -n "${vendor_gandolf}"; then
 	   
-	   # if KCC compiler than add backend
+	   # Add g2c for various compilers
 	   if test "${CXX}" = KCC ; then
 	       LIBS="${LIBS} --backend -lg2c"
 	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
 	   elif test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
+	       AC_MSG_RESULT("-lg2c added to LIBS")
+	   elif test "${CXX}" = icc ; then
+               AC_PATH_PROG(GCC_BIN, g++, null)
+               GCC_BIN=`dirname ${GCC_BIN}`
+               GCC_HOME=`dirname ${GCC_BIN}`
+               GCC_LIB_DIR="${GCC_HOME}/lib"
+	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
 	   fi
 
@@ -348,13 +355,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
 
        # set rpath when building shared library executables
-       if test "${enable_shared}" = yes; then
+       if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
@@ -368,8 +375,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_DIRS}; 
        do
-	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
+	   # if we are using gcc/icc then add xlinker
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
@@ -536,8 +543,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # set rpath when building shared library executables
        if test "${enable_shared}" = yes; then
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
@@ -551,8 +558,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_DIRS}; 
        do
-	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
+	   # if we are using gcc/icc then add xlinker
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
@@ -650,8 +657,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++ rpath needs Xlinker in front of it
-	   if test "${CXX}" = g++; then
+	   # the g++/icc rpath needs Xlinker in front of it
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATHA="-Xlinker -rpath \${curdir}"
 	       RPATHB="-Xlinker -rpath \${curdir}/.."
 	       RPATHC="-Xlinker -rpath \${libdir}"
@@ -665,8 +672,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_DIRS}; 
        do
-	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
+	   # if we are using gcc/icc then add xlinker
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATH="-Xlinker -rpath ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
@@ -750,8 +757,8 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_DIRS}; 
        do
-	   # if we are using gcc then add xlinker
-	   if test "${CXX}" = g++; then
+	   # if we are using gcc/icc then add xlinker
+	   if test "${CXX}" = g++ || test "${CXX}" = icc; then
 	       RPATH="-Xlinker -R ${vendor_dir} ${RPATH}"
 
 	   # else we just add the rpath
