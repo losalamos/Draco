@@ -489,39 +489,6 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell, int face) const
 }   // end TET_Mesh::get_vertices(int,int)
 
 //___________________________________________________________________________//
-//__+/*!
-//__+ * \brief        Sample position uniformly within a given cell.
-//__+ * \param cell   External number of cell.
-//__+ * \param random The random-number generator, used as random.ran()
-//__+ * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
-//__+ *
-//__+ * This version samples along the altitude of the cell first, with the
-//__+ * appropriate geometric PDF, then samples uniformly for the location in
-//__+ * a triangular base at the sampled altitude.
-//__+ */
-//__+const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
-//__+    rtt_rng::Sprng &random) const
-//__+{
-//__+    Valid(cell);
-//__+    int cell_ = cell - 1;
-//__+
-//__+    double fraction = std::pow(random.ran(),1.0/3.0);
-//__+    Check ( fraction > 0.0 && fraction < 1.0 );
-//__+
-//__+    int v0 = cells_vertices[cell_][0];
-//__+    int v1 = cells_vertices[cell_][1];
-//__+    int v2 = cells_vertices[cell_][2];
-//__+    int v3 = cells_vertices[cell_][3];
-//__+
-//__+    ThreeVector A = lin_comb(vertex_vector[v3],vertex_vector[v0],fraction);
-//__+    ThreeVector B = lin_comb(vertex_vector[v3],vertex_vector[v1],fraction);
-//__+    ThreeVector C = lin_comb(vertex_vector[v3],vertex_vector[v2],fraction);
-//__+
-//__+    return rtt_mc::sample_in_triangle(A, B, C, random).convert();
-//__+
-//__+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
-
-//___________________________________________________________________________//
 /*!
  * \brief        Sample position uniformly within a given cell.
  * \param cell   External number of cell.
@@ -553,47 +520,6 @@ const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
     return rtt_mc::lin_comb(vertex_vector[v3],B,fraction).convert();
 
 }   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
-
-//___________________________________________________________________________//
-//__+/*!
-//__+ * \brief        Sample position uniformly within a given cell.
-//__+ * \param cell   External number of cell.
-//__+ * \param random The random-number generator, used as random.ran()
-//__+ * \return       Scalar_field[dim#] == sampled coordinate along dim#-axis.
-//__+ *
-//__+ * This version samples a point along (v0,v1) first, then a point between
-//__+ * there and v2, then a point between there and v3, each sampling with the
-//__+ * appropriate geometric PDF.
-//__+ */
-//__+const TET_Mesh::SF_DOUBLE TET_Mesh::sample_pos(int cell,
-//__+    rtt_rng::Sprng &random) const
-//__+{
-//__+    Valid(cell);
-//__+    int cell_ = cell - 1;
-//__+
-//__+    int v0 = cells_vertices[cell_][0];
-//__+    int v1 = cells_vertices[cell_][1];
-//__+    int v2 = cells_vertices[cell_][2];
-//__+    int v3 = cells_vertices[cell_][3];
-//__+
-//__+    double frac1 = random.ran();
-//__+    Check ( frac1 > 0.0 && frac1 < 1.0 );
-//__+
-//__+    double frac2 = random.ran();
-//__+    Check ( frac2 > 0.0 && frac2 < 1.0 );
-//__+    frac2 = std::sqrt(frac2);
-//__+
-//__+    double frac3 = random.ran();
-//__+    Check ( frac3 > 0.0 && frac3 < 1.0 );
-//__+    frac3 = std::pow(frac3,1.0/3.0);
-//__+
-//__+    ThreeVector R01 = lin_comb(vertex_vector[v1],vertex_vector[v0],frac1);
-//__+
-//__+    ThreeVector R012 = lin_comb(vertex_vector[v2],R01,frac2);
-//__+
-//__+    return rtt_mc::lin_comb(vertex_vector[v3],R012,frac3).convert();
-//__+
-//__+}   // end TET_Mesh::sample_pos(int,rtt_rng::Sprng &)
 
 //___________________________________________________________________________//
 /*!
