@@ -48,6 +48,7 @@ ifeq ($(cxx),KCC)
 
 CC	= cc
 CXX	= KCC -x --no_implicit_include
+CXX	= KCC --one_per
 cmplr	= kai
 
 DEBUG_FLAG	=
