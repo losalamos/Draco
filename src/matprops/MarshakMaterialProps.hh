@@ -215,21 +215,21 @@ class MarshakMaterialProps::MaterialStateField
     void getElectronIonCoupling(FT &results) const
     {
 	const double gammaSI = 1.0e+20; // seconds^-1
-	typedef XTM::ContainerTraits<FT> CT;
+	typedef rtt_traits::ContainerTraits<FT> CT;
 	std::fill(CT::begin(results), CT::end(results), 
 		  getUnits().ConvertTime(gammaSI));
     }
 
     void getElectronConductionCoeff(FT &results) const
     {
-	typedef XTM::ContainerTraits<FT> CT;
+	typedef rtt_traits::ContainerTraits<FT> CT;
 	std::fill(CT::begin(results), CT::end(results), 
 		  0);
     }
 
     void getIonConductionCoeff(FT &results) const
     {
-	typedef XTM::ContainerTraits<FT> CT;
+	typedef rtt_traits::ContainerTraits<FT> CT;
 	std::fill(CT::begin(results), CT::end(results), 
 		  0);
     }
