@@ -107,7 +107,9 @@ class SP
     // >>> IMPLEMENTATION
 
     //! Require that this pointer points to a assigned memory.
-    void validate() const { Insist(p, "No dumb pointer bound to this SP!"); }
+    void validate() const {
+	Insist_ptr(p, "No dumb pointer bound to this SP!"); 
+    }
 
     // Free the pointer.
     inline void free();
