@@ -12,10 +12,12 @@
 #include "cdi_analytic_test.hh"
 #include "../Release.hh"
 #include "../Analytic_Gray_Opacity.hh"
+#include "../Analytic_Multigroup_Opacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <vector>
 #include <iostream>
@@ -27,6 +29,7 @@
 
 using namespace std;
 
+using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
 using rtt_cdi_analytic::Analytic_Gray_Opacity;
 using rtt_cdi_analytic::Analytic_Opacity_Model;
 using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
@@ -34,6 +37,7 @@ using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -249,6 +253,42 @@ void packing_test()
 
 //---------------------------------------------------------------------------//
 
+void type_test()
+{
+    // make an analytic gray opacity that returns the total opacity for a
+    // constant model
+    const double constant_opacity = 5.0;
+
+    SP<Analytic_Opacity_Model> model
+	(new Constant_Analytic_Opacity_Model(constant_opacity));
+
+    SP<GrayOpacity> op(new Analytic_Gray_Opacity(model, rtt_cdi::TOTAL));
+    SP<Analytic_Gray_Opacity> opac;
+
+    if (typeid(*op) == typeid(rtt_cdi_analytic::Analytic_Gray_Opacity))
+    {
+	PASSMSG("RTTI type info is correct for SP to GrayOpacity.");
+	opac = op;
+    }
+    
+    vector<double> parm = opac->get_Analytic_Model()->get_parameters();
+
+    if (parm.size() != 1)                            ITFAILS;
+    if (!soft_equiv(constant_opacity, parm.front())) ITFAILS;
+
+    // another way to do this
+    Analytic_Multigroup_Opacity *m = 
+	dynamic_cast<Analytic_Multigroup_Opacity *>(&*op);
+    Analytic_Gray_Opacity       *o = 
+	dynamic_cast<Analytic_Gray_Opacity *>(&*op);
+
+    if (m)  ITFAILS;
+    if (!o) ITFAILS;
+    if (typeid(*o) != typeid(rtt_cdi_analytic::Analytic_Gray_Opacity)) ITFAILS;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -268,6 +308,8 @@ int main(int argc, char *argv[])
 	CDI_test();
 
 	packing_test();
+
+	type_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {

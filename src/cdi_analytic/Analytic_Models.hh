@@ -78,7 +78,8 @@ class Analytic_Opacity_Model
 {
   public:
     // Typedefs.
-    typedef std::vector<char> sf_char;
+    typedef std::vector<char>   sf_char;
+    typedef std::vector<double> sf_double;
 
   public:
     //! Virtual destructor for proper inheritance destruction.
@@ -86,6 +87,9 @@ class Analytic_Opacity_Model
 
     //! Interface for derived analytic opacity models.
     virtual double calculate_opacity(double T, double rho) const = 0;
+
+    //! Return parameters.
+    virtual sf_double get_parameters() const = 0;
 
     //! Return a char string of packed data.
     virtual sf_char pack() const = 0;
@@ -128,6 +132,9 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
     {
 	return sigma;
     }
+
+    //! Return the model parameters.
+    sf_double get_parameters() const;
 
     //! Pack up the class for persistence.
     sf_char pack() const;
@@ -194,6 +201,9 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 	return opacity;
     }
 
+    //! Return the model parameters.
+    sf_double get_parameters() const;
+
     //! Pack up the class for persistence.
     sf_char pack() const;
 };
@@ -240,7 +250,8 @@ class Analytic_EoS_Model
 {
   public:
     // Typedefs.
-    typedef std::vector<char> sf_char;
+    typedef std::vector<char>   sf_char;
+    typedef std::vector<double> sf_double;
 
   public:
     //! Virtual destructor for proper inheritance destruction.
@@ -269,6 +280,9 @@ class Analytic_EoS_Model
     //! Calculate the electron thermal conductivity.
     virtual double calculate_elec_thermal_conductivity(double T, double rho)
 	const = 0;
+
+    //! Return the model parameters.
+    virtual sf_double get_parameters() const = 0;
 
     //! Return a char string of packed data.
     virtual sf_char pack() const = 0;
@@ -372,6 +386,9 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     //! Return 0 for the electron thermal conductivity.
     double calculate_elec_thermal_conductivity(double T, double rho) const
     { return 0.0; }
+
+    //! Return the model parameters.
+    sf_double get_parameters() const;
 
     //! Pack up the class for persistence.
     sf_char pack() const;

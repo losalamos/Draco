@@ -69,10 +69,11 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
-    typedef std::vector<double>                  sf_double;
-    typedef std::string                          std_string;
-    typedef std::vector<char>                    sf_char;
+    typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
+    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_SP_Model; 
+    typedef std::vector<double>                        sf_double;
+    typedef std::string                                std_string;
+    typedef std::vector<char>                          sf_char;
     
   private:
     // Analytic opacity model.
@@ -87,6 +88,9 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 
     // Constructor for packed Analytic_Gray_Opacities.
     explicit Analytic_Gray_Opacity(const sf_char &);
+
+    // >>> ACCESSORS
+    const_SP_Model get_Analytic_Model() const { return analytic_model; }
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::GrayOpacity
 

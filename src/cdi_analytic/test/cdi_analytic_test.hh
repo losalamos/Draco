@@ -65,6 +65,11 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
 	return a / (T * T * T);
     }
 
+    std::vector<double> get_parameters() const
+    {
+	return std::vector<double>(1, a);
+    }
+
     std::vector<char> pack() const
     {
 	rtt_dsxx::Packer packer;

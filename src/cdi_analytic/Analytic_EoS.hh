@@ -55,9 +55,10 @@ class Analytic_EoS : public rtt_cdi::EoS
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_EoS_Model> SP_Analytic_Model;
-    typedef std::vector<double>              sf_double;
-    typedef std::vector<char>                sf_char;
+    typedef rtt_dsxx::SP<Analytic_EoS_Model>       SP_Analytic_Model;
+    typedef rtt_dsxx::SP<const Analytic_EoS_Model> const_SP_Model; 
+    typedef std::vector<double>                    sf_double;
+    typedef std::vector<char>                      sf_char;
 
   private:
     // Analytic EoS model.
@@ -69,6 +70,9 @@ class Analytic_EoS : public rtt_cdi::EoS
 
     // Unpacking constructor.
     explicit Analytic_EoS(const sf_char &);
+
+    // >>> ACCESSORS
+    const_SP_Model get_Analytic_Model() const { return analytic_model; }
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::EoS
 

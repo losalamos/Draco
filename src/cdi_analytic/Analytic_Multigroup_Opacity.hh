@@ -80,12 +80,13 @@ namespace rtt_cdi_analytic
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
-    typedef std::vector<SP_Analytic_Model>       sf_Analytic_Model;
-    typedef std::vector<double>                  sf_double;
-    typedef std::vector<sf_double>               vf_double;
-    typedef std::string                          std_string;
-    typedef std::vector<char>                    sf_char;
+    typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
+    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model; 
+    typedef std::vector<SP_Analytic_Model>             sf_Analytic_Model;
+    typedef std::vector<double>                        sf_double;
+    typedef std::vector<sf_double>                     vf_double;
+    typedef std::string                                std_string;
+    typedef std::vector<char>                          sf_char;
     
   private:
     // Group structure.
@@ -105,6 +106,9 @@ namespace rtt_cdi_analytic
 
     // Constructor for packed Analytic_Multigroup_Opacities
     explicit Analytic_Multigroup_Opacity(const sf_char &);
+
+    // >>> ACCESSORS
+    const_Model get_Analytic_Model(int g) const { return group_models[g-1]; }
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 

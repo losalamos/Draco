@@ -81,6 +81,15 @@ Constant_Analytic_Opacity_Model::pack() const
     return pdata;
 }
 
+//---------------------------------------------------------------------------//
+// Return the model parameters
+
+Analytic_Opacity_Model::sf_double
+Constant_Analytic_Opacity_Model::get_parameters() const
+{
+    return sf_double(1, sigma);
+}
+
 //===========================================================================//
 // POLYNOMIAL_ANALYTIC_OPACITY_MODEL DEFINITIONS
 //===========================================================================//
@@ -147,6 +156,22 @@ Polynomial_Analytic_Opacity_Model::pack() const
     Ensure (packer.get_ptr() == &pdata[0] + size);
 	
     return pdata;
+}
+
+//---------------------------------------------------------------------------//
+// Return the model parameters
+
+Analytic_Opacity_Model::sf_double
+Polynomial_Analytic_Opacity_Model::get_parameters() const
+{
+    sf_double p(5);
+    p[0] = a;
+    p[1] = b;
+    p[2] = c;
+    p[3] = d;
+    p[4] = e;
+
+    return p;
 }
 
 //===========================================================================//
@@ -216,6 +241,23 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::pack() const
     Ensure (packer.get_ptr() == &pdata[0] + size);
 	
     return pdata;
+}
+
+//---------------------------------------------------------------------------//
+// Return the model parameters
+
+Analytic_EoS_Model::sf_double
+Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const
+{
+    sf_double p(6);
+    p[0] = a;
+    p[1] = b;
+    p[2] = c;
+    p[3] = d;
+    p[4] = e;
+    p[5] = f;
+
+    return p;
 }
 
 } // end namespace rtt_cdi_analytic
