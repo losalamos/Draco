@@ -24,9 +24,28 @@ template<class T1, class T2=T1>
 class ContainerTraits
 {
   public:
+    typedef typename T1::iterator iterator;
+    typedef typename T1::const_iterator const_iterator;
+    static inline iterator begin(T1& a)
+    {
+        return a.begin();
+    }
+    static inline const_iterator begin(const T1& a)
+    {
+        return a.begin();
+    }
+    static inline iterator end(T1& a)
+    {
+        return a.end();
+    }
+    static inline const_iterator end(const T1& a)
+    {
+        return a.end();
+    }
     static inline bool conformal(const T1 &a, const T2 &b)
     {
-	return false;
+	// return a.size() == b.size();
+	return ContainerTraits::BogusMethod(a, b);
     }
 };
 
