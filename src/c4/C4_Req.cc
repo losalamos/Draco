@@ -9,6 +9,7 @@
 #include <iostream.h>
 
 #include "c4/C4_Req.hh"
+#include "ds++/Assert.hh"
 
 C4_NAMESPACE_BEG
 
@@ -114,7 +115,7 @@ void C4_Req::free()
 #endif
 #ifdef C4_MPI
     if (assigned)
-	MPI_Request_free( &r );
+	MPI_Cancel( &r );
 #endif
     clear();
 }
@@ -129,12 +130,17 @@ bool C4_Req::complete()
     throw "incomplete";
 #endif
 #ifdef C4_MPI
-    int flag;
+    int flag       = 0;
+    bool indicator = false;
     if (assigned)
         MPI_Test( &r, &flag, &s );
-    if (flag)
-        clear();   	 
-    return flag;
+    if (flag != 0)
+    {
+        clear();
+	Check ( r == MPI_REQUEST_NULL);
+	indicator = true;
+    }
+    return indicator;
 #endif
 #ifdef C4_SCALAR
     throw "Send to self machinery has not been implemented in scalar mode.";
