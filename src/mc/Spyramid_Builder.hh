@@ -1,17 +1,17 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Pyramid_Builder.hh
+ * \file   mc/Spyramid_Builder.hh
  * \author Jeffery Densmore (stolen from RZWedge_Builder.hh)
- * \date   Tue Oct  7 11:13:00 2003
- * \brief  Pyramid_Builder class header file
+ * \date   Mon Nov  10 7:39:00 2003
+ * \brief  Spyramid_Builder class header file
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_Pyramid_Builder_hh__
-#define __mc_Pyramid_Builder_hh__
+#ifndef __mc_Spyramid_Builder_hh__
+#define __mc_Spyramid_Builder_hh__
 
 #include "Coord_sys.hh"
 #include "AMR_Layout.hh"
@@ -28,19 +28,20 @@ namespace rtt_mc
 
 //===========================================================================//
 /*!
- * \class Pyramid_Builder
+ * \class Spyramid_Builder
  * \brief
  *
- * Description goes here
+ * This class builds an instance of rtt_mc::Spyramid_Mesh.  It is basically
+ * a copy of RZWedge_Builder.
  *
  */
 // revision history:
 // -----------------
-// 0) (Tue Oct  7 11:13:00 2003) Jeffery Densmore: original
+// 0) (Mon Nov  10 7:39:00 2003) Jeffery Densmore: original
 // 
 //===========================================================================//
 
-class Pyramid_Builder 
+class Spyramid_Builder 
 {
   public:
     // Useful typedefs to std:: namespace members.
@@ -102,7 +103,7 @@ class Pyramid_Builder
     // Pointer to built Mesh.
     SP_Mesh mesh;
 
-    // Member functions for building Pyramid_Mesh
+    // Member functions for building Spyramid_Mesh
 
     // Parse the mesh input file.
     void parser();
@@ -110,14 +111,14 @@ class Pyramid_Builder
     void source_parser(std_ifstream &in);
 
     // Build Layout helper functions.
-    SP_Layout build_Pyramid_Layout(const Coord_sys &coord);
-    void assignPyramid_Layout(AMR_Layout &layout);
+    SP_Layout build_Spyramid_Layout(const Coord_sys &coord) const;
+    void assignSpyramid_Layout(AMR_Layout &layout) const;
 
     // Build Coord_sys helper functions.
-    SP_Coord_sys build_Coord();
+    SP_Coord_sys build_Coord() const;
 
     // Build Mesh helper functions
-    SP_Mesh build_Pyramid_Mesh(SP_Coord_sys, AMR_Layout &);
+    SP_Mesh build_Spyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout);
 
     // Member functions for cell-zone mapping
     void zone_mapper();
@@ -126,9 +127,13 @@ class Pyramid_Builder
     // calculate defined surface cells.
     void calc_defined_surcells();
 
+    // hide copy constructor and assignment operators
+    Spyramid_Builder(const Spyramid_Builder &);
+    Spyramid_Builder & operator=(const Spyramid_Builder &);
+
   public:
     //constructor
-    template<class IT> explicit Pyramid_Builder(rtt_dsxx::SP<IT> interface);
+    template<class IT> explicit Spyramid_Builder(rtt_dsxx::SP<IT> interface);
 
     //Build Mesh function.
     SP_Mesh build_Mesh();
@@ -159,12 +164,12 @@ class Pyramid_Builder
 };
 
 //---------------------------------------------------------------------------//
-// Templated functions for Pyramid_Builder
+// Templated functions for Spyramid_Builder
 //---------------------------------------------------------------------------//
 // Constructor.
 
 template<class IT>
-Pyramid_Builder::Pyramid_Builder(rtt_dsxx::SP<IT> interface)
+Spyramid_Builder::Spyramid_Builder(rtt_dsxx::SP<IT> interface)
     :mesh_file(),
      coord_system(),
      alpha_degrees(),
@@ -173,7 +178,7 @@ Pyramid_Builder::Pyramid_Builder(rtt_dsxx::SP<IT> interface)
      accum_cells(),
      coarse_edge(),
      fine_edge(),
-     bnd_cond(2),
+     bnd_cond(2), // only 2 boundary conditions required in Spyramid mesh
      zone(),
      cell_zone(),
      regions(),
@@ -200,20 +205,21 @@ Pyramid_Builder::Pyramid_Builder(rtt_dsxx::SP<IT> interface)
  * \brief Map zone centered data fields into cell centered data fiels.
  *
  * This function takes a zone centered field of size[0:Nz-1] where Nz is the
- * number of zones in the problem, and it maps the data inot a cell centered
- * field of size [0:NC-1].  Here Nc is the number of mesh cells in the
- * problem.  The builder has intrinsically (after contstrcution) the
+ * number of zones in the problem, and it maps the data into a cell centered
+ * field of size [0:Nc-1].  Here Nc is the number of mesh cells in the
+ * problem.  The builder has intrinsically (after contstruction) the
  * cell-to-zone mappings that make this operation possible.  The field types
  * must be vectors of type T.
  * 
  * \param zone_field zone centered field to be converted into cell centered
  * field.
+ *
+ * \return cell-sized vector field
  */
 template<class T>
-std::vector<T> Pyramid_Builder::zone_cell_mapper(const std::vector<T> &zone_field)
-    const
+std::vector<T> Spyramid_Builder::zone_cell_mapper(const std::vector<T> 
+						  &zone_field) const
 {
-
     // we will use vector throughout this function
     using std::vector;
 
@@ -232,8 +238,8 @@ std::vector<T> Pyramid_Builder::zone_cell_mapper(const std::vector<T> &zone_fiel
 
 } // end namespace rtt_mc
 
-#endif // __mc_Pyramid_Builder_hh__
+#endif // __mc_Spyramid_Builder_hh__
 
 //---------------------------------------------------------------------------//
-//              end of mc/Pyramid_Builder.hh
+//              end of mc/Spyramid_Builder.hh
 //---------------------------------------------------------------------------//

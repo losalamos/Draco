@@ -31,7 +31,7 @@ AC_RUNTESTS(tstConfig tstMath tstCoord tstLayout tstOSMesh \
             tstComm_Patterns tstOSMesh_Pack \
             tstRZWedge_Mesh_Pack tstParticle_Buffer \
             tstCommunicator tstParticle_IO tstConstants \
-            tstSphere tstSurface_Descriptor tstPyramid_Mesh, 1 2 4)
+            tstSphere tstSurface_Descriptor tstSpyramid_Mesh, 1 2 4)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
@@ -51,7 +51,7 @@ AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/OS_Input:test/OS_Input.in \
 	         test/OS_Input_3D:test/OS_Input_3D.in \
                  test/RZWedge_Input:test/RZWedge_Input.in \
-                 test/Pyramid_Input:test/Pyramid_Input.in])
+                 test/Spyramid_Input:test/Spyramid_Input.in])
 
 AC_OUTPUT
 

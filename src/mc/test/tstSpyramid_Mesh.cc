@@ -1,8 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/test/tstPyramid_Mesh.cc
+ * \file   mc/test/tstSPyramid_Mesh.cc
  * \author Jeffery Densmore (again, stolen from tstRZWedge_Mesh.cc)
- * \date   Wed Oct 22 14:57:30 2003
+ * \date   Mon Nov 10 9:51:00 2003
  * \brief  
  * \note   Copyright © 2003 The Regents of the University of California.
  */
@@ -15,7 +15,7 @@
 #include "../Pyramid_Mesh.hh"
 #include "../XYZCoord_sys.hh"
 #include "../AMR_Layout.hh"
-#include "../Pyramid_Builder.hh"
+#include "../Spyramid_Builder.hh"
 #include "../Math.hh"
 #include "../Release.hh"
 #include "viz/Ensight_Translator.hh"
@@ -381,12 +381,12 @@ void simple_one_cell_Pyramid()
 
 
 //---------------------------------------------------------------------------//
-// test the Pyramid_Mesh via the Pryamid_Builder
-void build_a_Pyramid()
+// test the Spyramid_Mesh via the Spyramid_Builder
+void build_a_Spyramid()
 {
     using rtt_dsxx::SP;
     using rtt_mc_test::Parser;
-    using rtt_mc::Pyramid_Builder;
+    using rtt_mc::Spyramid_Builder;
     using rtt_mc::Pyramid_Mesh;
     using std::vector;
     using std::string;
@@ -399,9 +399,9 @@ void build_a_Pyramid()
     using std::atan;
 
     SP<Parser> parser(new Parser("Pyramid_Input"));
-    Pyramid_Builder builder(parser);
+    Spyramid_Builder builder(parser);
 
-    // check some of the Pyramid_Builder properties; before build_Mesh, the
+    // check some of the Spyramid_Builder properties; before build_Mesh, the
     // coordinate system is two-dimensional.  After build_Mesh, it's 3D XYZ
 
     // test cell region data
@@ -433,7 +433,7 @@ void build_a_Pyramid()
 	if(builder.get_cells_in_zone(2) !=zone[1]) ITFAILS;
 
     }
-    //build a Pyramid mesh
+    //build a Spyramid mesh
     SP<Pyramid_Mesh> mesh= builder.build_Mesh();
 
 
@@ -927,8 +927,8 @@ int main(int argc, char *argv[])
 	// simple one-celled test problem
 	simple_one_cell_Pyramid();
 
-	// test the Pyramid_Mesh Builder
-	build_a_Pyramid();
+	// test the Spyramid mesh Builder
+	build_a_Spyramid();
     }
     catch (assertion &ass)
     {

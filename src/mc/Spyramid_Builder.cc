@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mc/Pyramid_Builder.cc
+ * \file   mc/Spyramid_Builder.cc
  * \author Jeffery Densmore (stolen from RZWedge_builder.cc)
- * \date   Tue Oct  7 11:13:00 2003
- * \brief  Pyramid_Builder implementation file.
+ * \date   Mon Nov  10 7:46:00 2003
+ * \brief  Spyramid_Builder implementation file.
  * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Pyramid_Builder.hh"
+#include "Spyramid_Builder.hh"
 #include "XYZCoord_sys.hh"
 #include "Math.hh"
 
@@ -20,37 +20,37 @@
 namespace rtt_mc
 {
 
-
 //---------------------------------------------------------------------------//
 // PUBLIC INTERFACE
 //---------------------------------------------------------------------------//
+
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Build a Pyramid mesh from data specified in the OS_Mesh format file.
+ * \brief Build a Spyramid mesh from data specified in the OS_Mesh format file.
  * 
  * The builder takes data from the OS_Mesh input format that was parsed in
- * the constructor and builds a Pyramid mesh.  The builder checks for the
+ * the constructor and builds a Spyramid mesh.  The builder checks for the
  * existence for the built mesh; thus, a builder can only build one mesh.  To
  * get extra copies of the mesh call the get_Mesh() accessor function.
  *
  *
  */
-Pyramid_Builder::SP_Mesh Pyramid_Builder::build_Mesh()
+Spyramid_Builder::SP_Mesh Spyramid_Builder::build_Mesh()
 {
     Require(!mesh);
     Insist(((coord_system =="r") || (coord_system=="R")),
-	   "You are using Pyramid_Builder, but coord_system is not R!");
+	   "You are using Spyramid_Builder, but coord_system is not R!");
 
     // declare smart pointers
     SP_Coord_sys coord;
     SP_Layout layout;
 
     //build coordinate and layout objects
-    coord = build_Coord();
-    layout = build_Pyramid_Layout(*coord);
+    coord  = build_Coord();
+    layout = build_Spyramid_Layout(*coord);
 
-    // build the Pyramid_Mesh
-    mesh = build_Pyramid_Mesh(coord, *layout);
+    // build the Spyramid_Mesh
+    mesh = build_Spyramid_Mesh(coord, *layout);
 
     // calculate defined surface cells;
     calc_defined_surcells();
@@ -63,12 +63,15 @@ Pyramid_Builder::SP_Mesh Pyramid_Builder::build_Mesh()
     return mesh;
 }
 
-
-
 //---------------------------------------------------------------------------//
-// Return the cell regions for graphics dumping 
+/*! 
+ * \brief Return the cell regions for graphics dumping 
+ *
+ * 
+ * \return cell-sized vector with each element the corresponding region
+ */
 
-Pyramid_Builder::sf_int Pyramid_Builder::get_regions() const
+Spyramid_Builder::sf_int Spyramid_Builder::get_regions() const
 {
     using std::fill;
     using std::vector;
@@ -76,7 +79,7 @@ Pyramid_Builder::sf_int Pyramid_Builder::get_regions() const
     sf_int return_regions(zone.size());
     vector<int>::const_iterator cell_itr;
 
-    // if no user defined regions give, simply return region 1 in each cell
+    // if no user defined regions given, simply return region 1 in each cell
     if (regions.size() ==1)
     {
 	// make all regions 1
@@ -112,18 +115,24 @@ Pyramid_Builder::sf_int Pyramid_Builder::get_regions() const
  * \brief Return the list of defined surface cells.
  * 
  */
-Pyramid_Builder::vf_int Pyramid_Builder::get_defined_surcells() const
+Spyramid_Builder::vf_int Spyramid_Builder::get_defined_surcells() const
 {
     Require (mesh);
     return defined_surcells;
 }
 
-
 //---------------------------------------------------------------------------//
 // PRIVATE MESH FILE PARSING IMPLEMENTATION
 //---------------------------------------------------------------------------//
-// Basic Mesh parser.
-void Pyramid_Builder::parser()
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief parse input file
+ * 
+ *
+ */
+
+void Spyramid_Builder::parser()
 {
 
     using std::pow;
@@ -149,7 +158,7 @@ void Pyramid_Builder::parser()
 	    input >> coord_system;
     }
 
-    // check to make sure an approprate coord_sys is called
+    // check to make sure an appropriate coord_sys is called
     Insist (coord_system == "xy"  || coord_system == "XY"  || 
 	    coord_system == "rz"  || coord_system == "RZ"  ||
 	    coord_system == "XYZ" || coord_system == "xyz" ||
@@ -159,7 +168,7 @@ void Pyramid_Builder::parser()
     // call sub-parser
    if (coord_system == "r" || coord_system == "R")
    {
-       // the boundary cond is always reflecting at r=0 for a Pyramid_Mesh
+       // the boundary cond is always reflecting at r=0 for a Spyramid mesh
        bnd_cond[0] = "reflect";
 
        //parse mesh particulars
@@ -168,7 +177,7 @@ void Pyramid_Builder::parser()
    else if (coord_system == "xyz" || coord_system == "XYZ" ||
 	    coord_system == "xy" || coord_system == "XY" ||
 	    coord_system == "RZ" || coord_system == "rz")
-       Insist(0,"On input, Pyramid needs r or R coord_system!");
+       Insist(0,"On input, Spyramid needs r or R coord_system!");
 
    //parse the source block that contains surface source information
    source_parser(input);
@@ -177,7 +186,7 @@ void Pyramid_Builder::parser()
    if (regions.empty())
        regions.resize(1);
 
-   // >>> calculate fine_edge array
+   // >>> calculate fine_edge array <<<
 
    // determine size of fine_edge array
    int nfine = 0;
@@ -247,9 +256,13 @@ void Pyramid_Builder::parser()
 }
 
 //---------------------------------------------------------------------------//
-// Parse a 1D mesh.
+/*! 
+ * \brief parser for geometry/mesh information
+ * 
+ *
+ */
 
-void Pyramid_Builder::parser1D(std_ifstream &in)
+void Spyramid_Builder::parser1D(std_ifstream &in)
 {
 
     using std::fill;
@@ -282,7 +295,10 @@ void Pyramid_Builder::parser1D(std_ifstream &in)
 		   bnd_cond[0] == "reflect" : true, "Invalid B.C. for R!");
 	}
 	if (keyword == "hix_bnd:" || keyword== "hir_bnd:")
+	{
 	    in>>bnd_cond[1];
+	    Require(bnd_cond[1]=="reflect"||bnd_cond[1]=="vacuum");
+	}
 	if (keyword == "num_regions:")
 	{
 	    in >> data;
@@ -340,7 +356,7 @@ void Pyramid_Builder::parser1D(std_ifstream &in)
 		in >> fine_ratio[i];
 		Require(fine_ratio[i] > 0.0);
 	    }
-	// unfolding angle for Pyramid_Mesh
+	// unfolding angle for Spyramid_Mesh
 	if (keyword == "cone_angle_degrees:")
 	{
 	    Insist ((coord_system == "r") || (coord_system =="R"),
@@ -353,9 +369,11 @@ void Pyramid_Builder::parser1D(std_ifstream &in)
     }
 }
 //---------------------------------------------------------------------------//
-// Parse source descritptions that are part of the mesh format
-
-void Pyramid_Builder::source_parser(std_ifstream &in)
+/*! 
+ * \brief  Parse source descritptions that are part of the mesh format
+ * 
+ */
+void Spyramid_Builder::source_parser(std_ifstream &in)
 {
     using std::fill;
 
@@ -379,7 +397,7 @@ void Pyramid_Builder::source_parser(std_ifstream &in)
 	if (keyword == "num_ss:")
 	{
 	    in >> data;
-	    Insist(data==1,"Can only have one surface source!");
+	    Insist(data==1,"Can only have one surface source in R geometry!");
 
 	    // size surface source data
 	    ss_pos.resize(data);
@@ -408,7 +426,7 @@ void Pyramid_Builder::source_parser(std_ifstream &in)
 	// read in the number of defined surface cells for each position
 	if (keyword == "num_defined_surcells:")
 	{
-	    // make sure number of user/host-defined surcelss has been sized
+	    // make sure number of user/host-defined surcells has been sized
 	    Insist (num_defined_surcells.size() !=0,
 		    "Number of surface sources = 0!");
 
@@ -456,8 +474,16 @@ void Pyramid_Builder::source_parser(std_ifstream &in)
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-Pyramid_Builder::SP_Mesh
-Pyramid_Builder::build_Pyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
+/*! 
+ * \brief build mesh specifically for Spyramid_Mesh 
+ * 
+ * \param coord smart pointer to Coord_sys object
+ * \param layout reference to AMR_layout object
+ * \return smart pointer to built mesh
+ */
+
+Spyramid_Builder::SP_Mesh
+Spyramid_Builder::build_Spyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
 {
     using global::pi;
     using std::pow;
@@ -467,8 +493,8 @@ Pyramid_Builder::build_Pyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
     using std::atan;
 
     //consistency checks
-    Check(alpha_degrees>0.0);
-    Check(alpha_degrees<=45.0);
+    Require(alpha_degrees>0.0);
+    Require(alpha_degrees<=45.0);
 
     // variable declarations
     int num_xsur = fine_edge.size();
@@ -509,8 +535,15 @@ Pyramid_Builder::build_Pyramid_Mesh(SP_Coord_sys coord, AMR_Layout &layout)
 //---------------------------------------------------------------------------//
 // PRIVATE COORD_SYS BUILDER IMPLEMENTATION
 //---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief constructs Coord_sys object
+ * 
+ *
+ * \return smart pointer to new Coord_sys object
+ */
 
-Pyramid_Builder::SP_Coord_sys Pyramid_Builder::build_Coord()
+Spyramid_Builder::SP_Coord_sys Spyramid_Builder::build_Coord() const
 {
     using rtt_dsxx::SP
 
@@ -521,7 +554,7 @@ Pyramid_Builder::SP_Coord_sys Pyramid_Builder::build_Coord()
 	   coord_system !="rz"  || coord_system !="RZ");
     Check (coord_system == "r"  || coord_system =="R");
 
-    // the Pryamid_Mesh uses a 3d XYZ coordinate system
+    // the Spyramid mesh uses a 3D XYZ coordinate system
     SP<XYZCoord_sys> xyzcoord(new XYZCoord_sys);
     coord=xyzcoord;
     
@@ -532,9 +565,16 @@ Pyramid_Builder::SP_Coord_sys Pyramid_Builder::build_Coord()
 //---------------------------------------------------------------------------//
 // PRIVATE LAYOUT BUILDER IMPLEMENTATION
 //---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct AMR Layout
+ * 
+ * \param coord  Coord_sys object
+ * \return smart pointer to new layout object
+ */
 
-Pyramid_Builder::SP_Layout
-Pyramid_Builder::build_Pyramid_Layout(const Coord_sys &coord)
+Spyramid_Builder::SP_Layout
+Spyramid_Builder::build_Spyramid_Layout(const Coord_sys &coord) const
 {
     // set size of new Layout
     int size = fine_edge.size()-1;
@@ -542,21 +582,25 @@ Pyramid_Builder::build_Pyramid_Layout(const Coord_sys &coord)
     //build layout object
     SP_Layout layout(new AMR_Layout(size));
 
-    // set number of faces for each cell in Layout.  For the (OS)
-    // Pyramid_Mesh, the layout must be 3D XYZ, so there are 6 faces/cell.
+    // set number of faces for each cell in layout.  For the (OS)
+    // Spyramid mesh, the layout must be 3D XYZ, so there are 6 faces/cell.
     for(int i=1;i<=size;i++)
 	layout->set_size(i,6);
 
     // assign cells and faces to Layout;
-    assignPyramid_Layout(*layout);
+    assignSpyramid_Layout(*layout);
 
     // return built Layout
     return layout;
-}
-		   
+}		   
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct layout specifically
+ * 
+ * \param layout reference to AMR_layout object
+ */
 
-void Pyramid_Builder::assignPyramid_Layout(AMR_Layout &layout)
+void Spyramid_Builder::assignSpyramid_Layout(AMR_Layout &layout) const
 {
 
     // 3D map of Mesh
@@ -580,7 +624,7 @@ void Pyramid_Builder::assignPyramid_Layout(AMR_Layout &layout)
 
     // low x boundary (always reflecting)
     Insist(bnd_cond[0] =="reflect",
-	   "Pyramid_Mesh must be reflecting at the center!");
+	   "Spyramid Mesh must be reflecting at the center!");
     layout(1,1,1)=1;
 
     // high x boundary
@@ -595,14 +639,15 @@ void Pyramid_Builder::assignPyramid_Layout(AMR_Layout &layout)
 //---------------------------------------------------------------------------//
 // CELL ZONING FUNCTIONS (PRIVATE IMPLEMENTATION)
 //---------------------------------------------------------------------------//
-// Map mesh zone indices to cells
 
-void Pyramid_Builder::zone_mapper()
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Map mesh zone indices to cells
+ * 
+ */
+
+void Spyramid_Builder::zone_mapper()
 {
-
-    // dimension of problem
-    int dim = fine_edge.size();
-
     // determine number of zones and accumulated fine_cell data
     int num_cells =1;
     int num_zones =1;
@@ -626,9 +671,14 @@ void Pyramid_Builder::zone_mapper()
 	cell_zoner(i);
 }
 //---------------------------------------------------------------------------//
-// Map cells to zones in 1D mesh.
+/*! 
+ * \brief  Map cells to zones in 1D mesh.
+ * 
+ * \param iz zone number
+ *
+ */
 
-void Pyramid_Builder::cell_zoner(int iz)
+void Spyramid_Builder::cell_zoner(int iz)
 {
     // match a fine-cell to a zone for 1D meshes
 
@@ -653,20 +703,21 @@ void Pyramid_Builder::cell_zoner(int iz)
 //---------------------------------------------------------------------------//
 // CALCULATE DEFINED SURFACE CELLS
 //---------------------------------------------------------------------------//
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Use built global mesh to calculate a list of defined surface cells.
  *
  * This function uses the global mesh to convert a global boundary surface
  * source into a list of explicit, global cells along the boundary.  For
- * example, a "lox" boundary could be defined as a surface source.  This
- * description will be converted into alist of all global cells along the
- * low-x boundary.
+ * example, a "hix" boundary could be defined as a surface source.  This
+ * description will be converted into a list of all global cells along the
+ * hi-x boundary.
  *
  * Surface source cell lists are only calculated for surface sources that do
  * not already have user-defined lists of cells.
  */
-void Pyramid_Builder::calc_defined_surcells()
+void Spyramid_Builder::calc_defined_surcells()
 {
     Require (mesh);
     Require (mesh->full_Mesh());
@@ -706,7 +757,7 @@ void Pyramid_Builder::calc_defined_surcells()
 } // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//
-//                 end of Pyramid_Builder.cc
+//                 end of Spyramid_Builder.cc
 //---------------------------------------------------------------------------//
 
 
