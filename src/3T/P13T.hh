@@ -64,9 +64,9 @@ namespace XTM {
      // Miscellaneous shortcut field typedefs from the MT class
     
      typedef typename MeshType::ccsf ccsf;    // cell-centered scalar field
-#if 0
-     typedef typename MeshType::ncvf ncvf;    // node-centered vector field
-#endif
+
+     typedef typename MeshType::ncvsf ncvsf;    // node-centered vector scalar field
+
      typedef typename MeshType::fcdsf fcdsf;  // face-centered discontinuous s.f.
      typedef typename MeshType::bssf bssf;    // bndry-specified boundary field.
 
@@ -186,15 +186,14 @@ namespace XTM {
 		  ccsf &REEM,
 		  ccsf &electronEnergyDeposition,
 		  ccsf &ionEnergyDeposition,
-#if 0
-		  ncvf &momentumDeposition,
-#endif
+		  ncvsf &momentumDeposition,
 		  ccsf &Tnp1Electron,
 		  ccsf &Tnp1Ion,
 		  DiffusionSolver &solver,
 		  double dt,
 		  const CCMaterialStateField &matStateCC,
 		  const FCMaterialStateField &matStateFC,
+		  const ncvsf &velocity,
 		  const RadiationStateField &prevStateField,
 		  const ccsf &QRad,
 		  const ccsf &QElectron,
@@ -239,6 +238,7 @@ namespace XTM {
 			  int groupNo,
 			  const CCMaterialStateField &matStateCC,
 			  const FCMaterialStateField &matStateFC,
+		          const ncvsf &velocity,
 			  const RadiationStateField &prevStateField,
 			  const ccsf &QRad,
 			  const ccsf &QElectron,
@@ -265,6 +265,7 @@ namespace XTM {
 		       int groupNo,
 		       const CCMaterialStateField &matStateCC,
 		       const FCMaterialStateField &matStateFC,
+		       const ncvsf &velocity,
 		       const RadiationStateField &prevStateField,
 		       const ccsf &QRad,
 		       const ccsf &QElectron,

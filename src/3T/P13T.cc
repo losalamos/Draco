@@ -315,15 +315,14 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
 			       ccsf &REEM,
 			       ccsf &electronEnergyDeposition,
 			       ccsf &ionEnergyDeposition,
-#if 0
-			       ncvf &momentumDeposition,
-#endif
+			       ncvsf &momentumDeposition,
 			       ccsf &Tnp1Electron,
 			       ccsf &Tnp1Ion,
 			       DiffusionSolver &solver,
 			       double dt,
 			       const CCMaterialStateField &matStateCC,
 			       const FCMaterialStateField &matStateFC,
+		               const ncvsf &velocity,
 			       const RadiationStateField &prevStateField,
 			       const ccsf &QRad,
 			       const ccsf &QElectron,
@@ -353,7 +352,8 @@ void P13T<MT,MSFCC,MSFFC,DS>::solve3T(RadiationStateField &resultsStateField,
     // electron and ion equations ***without*** the conduction equations.
     
     calcNewRadState(resultsStateField, QEEM, REEM, solver,
-		    dt, groupNo, matStateCC, matStateFC, prevStateField,
+		    dt, groupNo, matStateCC, matStateFC, velocity, 
+                    prevStateField,
 		    QRad, QElectron, QIon, TnElectron, TnIon, alpha, beta,
 		    bSrc);
 
@@ -433,6 +433,7 @@ calcNewRadState(RadiationStateField &resultsStateField,
 		int groupNo,
 		const CCMaterialStateField &matStateCC,
 		const FCMaterialStateField &matStateFC,
+		const ncvsf &velocity,
 		const RadiationStateField &prevStateField,
 		const ccsf &QRad,
 		const ccsf &QElectron,
@@ -451,7 +452,7 @@ calcNewRadState(RadiationStateField &resultsStateField,
     ccsf QRadBar(spMesh);
     
     calcP1Coeffs(D, Fprime, sigmaAbsBar, QEEM, REEM, QRadBar,
-		 dt, groupNo, matStateCC, matStateFC, prevStateField,
+		 dt, groupNo, matStateCC, matStateFC, velocity, prevStateField,
 		 QRad, QElectron, QIon,
 		 TElectron, TIon);
 
@@ -497,6 +498,7 @@ calcP1Coeffs(fcdsf &D,
 	     int groupNo,
 	     const CCMaterialStateField &matStateCC,
 	     const FCMaterialStateField &matStateFC,
+	     const ncvsf &velocity,
 	     const RadiationStateField &prevStateField,
 	     const ccsf &QRad,
 	     const ccsf &QElectron,
