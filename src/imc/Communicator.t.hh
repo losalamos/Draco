@@ -271,6 +271,8 @@ void Communicator<PT>::free(const Particle_Buffer<PT> &buffer)
 
 //---------------------------------------------------------------------------//
 // get the status (in use or free) of async recv Comm_Buffers
+// NOTE: this only properly checks for true conditions, that is ALL of the
+// recv_buffers are active
 
 template<class PT>
 bool Communicator<PT>::arecv_status(const Particle_Buffer<PT> &buffer)
@@ -296,6 +298,8 @@ void Communicator<PT>::arecv_print_status(const Particle_Buffer<PT> &buffer)
 
 //---------------------------------------------------------------------------//
 // get the status (in use or free) of async send Comm_Buffers
+// NOTE: this only properly checks for true conditions, that is ALL of the
+// send_buffers are active
 
 template<class PT>
 bool Communicator<PT>::asend_status(const Particle_Buffer<PT> &buffer)

@@ -28,6 +28,16 @@
 //                the accumulation of energies.)
 //  1) 032699 : readded the T^4 slopes that are provided to the interface by
 //              the host code
+//  2) 060299 : fixed up Parallel_Source_Init to work with parallel MILSTONE:
+//              we (a) made Send's explicit for ISO standard disambiguity and 
+//              fixed the tags; (b) we added accessors for global source
+//              numbers; (c) we updated the number of global census particles 
+//              after combing
+//  3) 060399 : we made the comb_census function identical with Source_Init;
+//              note: the "persistent" census is now filled back up in the
+//              comb, so beware of checking to see if the census is empty
+//              after exiting Parallel_Source_Init; we manually reassign the
+//              persistant census in Host_Manager.
 // 
 //===========================================================================//
 
