@@ -60,11 +60,7 @@ bool fail_msg(const std::string &failmsg)
 
 void unit_test(const bool pass, int line, char *file)
 {
-    if ( pass )
-    {
-        std::cout << "Test: passed\n";
-    }
-    else
+    if ( ! pass )
     {
 	fail(line, file);
     }
