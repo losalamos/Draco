@@ -161,6 +161,7 @@ class Sphyramid_Mesh
     vf_double get_point_coord() const;    
 
     // Services for transport and source
+    int get_spatial_dimension() const { return 3; }
     inline int next_cell(int cell, int face) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &r, const sf_double &omega, int cell, 
@@ -842,7 +843,7 @@ struct Sphyramid_Mesh::Pack
     //int get_size() const { return size; }
 
     // Unpack function
-    // SP_Mesh unpack() const;
+     SP_Mesh unpack() const;
 };
 
 

@@ -20,7 +20,7 @@
 #include "ds++/SP.hh"
 
 #include <iostream>
-
+#include <vector>
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -31,6 +31,7 @@ void test_pack()
     using rtt_dsxx::SP;
     using rtt_mc::Sphyramid_Mesh;
     using rtt_mc::Sphyramid_Builder;
+    using std::vector;
 
     // make a builder from parsing the Sphyramid_Input file
     SP<Parser> parser(new Parser("Sphyramid_Input"));
@@ -48,9 +49,26 @@ void test_pack()
     {
 	SP<Sphyramid_Mesh::Pack> pack = m1->pack();
 	if (pack->get_num_packed_cells() != 5) ITFAILS;
-	//m2 = pack->unpack();
+	m2 = pack->unpack();
     }
 
+    if ( m1 ==  m2) ITFAILS;
+    if (*m1 != *m2) ITFAILS;
+
+    // replicate the mesh with a one-to-one pack
+    {
+	vector<int> cell_list(5);
+	for (int i = 0; i < 5; i++)
+	{
+	    cell_list[i] = i+1;
+	}
+	SP<Sphyramid_Mesh::Pack> pack = m1->pack(cell_list);
+	if (pack->get_num_packed_cells() != 5) ITFAILS;
+	m3 = pack->unpack();
+    }
+
+    if ( m1 ==  m3) ITFAILS;
+    if (*m1 != *m3) ITFAILS;
 
     return;
 }

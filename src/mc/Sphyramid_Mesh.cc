@@ -1156,6 +1156,85 @@ int Sphyramid_Mesh::Pack::get_num_packed_cells() const
     
     return num_cells;
 }
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Unpack the Sphyramid_Mesh
+ * 
+ * Unpacks and returns a smart pointer to the new Sphyramid_Mesh
+ *
+ * \return smart pointer to the unpacked mesh
+ */
+Sphyramid_Mesh::SP_Mesh Sphyramid_Mesh::Pack::unpack() const
+{
+    using rtt_dsxx::SP;
+
+    Require (this->size >= (3*sizeof(int)+sizeof(double)));
+
+    // build an XYZ coordinate system
+    SP<Coord_sys> coord(new XYZCoord_sys());
+
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(this->size, this->data);
+
+    // determine the number of packed cells
+    int num_packed_cells = 0;
+    unpacker >> num_packed_cells;
+    Check (num_packed_cells >= 0);   
+
+    // unpack layout
+    int layout_size = 0;
+    unpacker >> layout_size;
+
+    // don't need to reclaim this memory becuase we are giving it to the
+    // layout packer
+    int *layout_data = new int[layout_size];
+    for (int *i = layout_data; i != layout_data+layout_size; i++)
+    {
+	unpacker >> *i;
+    }
+
+    Layout::Pack packed_layout(layout_size, layout_data);
+    SP<Layout> layout = packed_layout.unpack();
+    Check (layout->num_cells() == num_packed_cells);
+
+    // get beta (radians)
+    double beta_radians = 0;
+    unpacker >> beta_radians;
+    Check (beta_radians > 0);
+
+    // unpack the extents
+    int num_extents = num_packed_cells*2;
+    sf_double extent_data(num_extents, 0.0);
+    for (int i = 0; i < num_extents; i++)
+    {
+	unpacker >> extent_data[i];
+    }
+
+    // build the new cell extents
+    int cectr = 0;
+    vf_double cell_extents(num_packed_cells, sf_double(2));
+    for (int i = 0; i < cell_extents.size(); i++)
+    {
+	for(int j = 0; j < cell_extents[i].size(); j++)
+	{
+	    cell_extents[i][j] = extent_data[cectr++];
+	}
+    }
+    Check (cectr++ == num_extents);
+    Check (unpacker.get_ptr() == this->size + this->data);
+
+    // build the new mesh
+    SP<Sphyramid_Mesh> mesh(new Sphyramid_Mesh(coord, *layout, cell_extents,
+					       beta_radians));
+
+    Ensure (mesh->num_cells()             == num_packed_cells);
+    Ensure (mesh->get_spatial_dimension() == coord->get_dim());
+    Ensure (mesh->full_Mesh());
+    Ensure (mesh->get_total_volume()      >  0.0);
+
+    return mesh;
+}
 
 
 
