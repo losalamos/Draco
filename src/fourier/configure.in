@@ -1,0 +1,117 @@
+dnl-------------------------------------------------------------------------dnl
+dnl draco/src/fourier configure.in
+dnl John Gulick
+dnl Tue Aug 24 13:08:50 1999
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+dnl @> configure.in for fourier
+dnl-------------------------------------------------------------------------dnl
+
+AC_INIT()
+AC_CONFIG_AUX_DIR(../../config)
+AC_CONFIG_HEADER(fourier/config.h:config.h.in)
+package="fourier"
+
+dnl VENDOR SETUPS
+dnl AC_MPI_SETUP(pkg)
+dnl AC_SHMEM_SETUP(pkg)
+dnl AC_SPRNG_SETUP(pkg)
+dnl AC_PCGLIB_SETUP(pkg)
+
+AC_INSTALL_HEADERS
+AC_INSTALL_EXECUTABLE
+dnl AC_NEEDS_LIBS(ds++)
+
+dnl-------------------------------------------------------------------------dnl
+dnl pgplot setup
+dnl-------------------------------------------------------------------------dnl
+
+dnl pgplot is needed for the package
+
+vendor_pgplot="pkg"
+
+dnl define --enable-pgplot
+AC_ARG_ENABLE(pgplot,        
+      [  --enable-pgplot         turn on pgplot])
+
+dnl define --with-pgplot-lib
+AC_WITH_DIR(pgplot-lib, PGPLOT_LIB, \${PGPLOT_LIB_DIR},
+	       [tell where PGPLOT libraries are])
+
+# determine if this package is needed for testing or for the 
+# package
+dnl vendor_pgplot=$1
+
+# set up the libraries
+if test "${enable_pgplot:=yes}" != no ; then
+    if test -z "${PGPLOT_LIB}" ; then
+      AC_VENDORLIB_SETUP(vendor_pgplot, -lcpgplot -lpgplot)
+    elif test -n "${PGPLOT_LIB}" ; then
+      AC_VENDORLIB_SETUP(vendor_pgplot, -L${PGPLOT_LIB} -lcpgplot -lpgplot -L/usr/openwin/lib -lX11)
+    fi
+fi
+
+if test -n "${PGPLOT_LIB}" ; then
+   CPPFLAGS="$CPPFLAGS -I$PGPLOT_LIB"
+fi
+
+dnl-------------------------------------------------------------------------dnl
+dnl lapack setup
+dnl-------------------------------------------------------------------------dnl
+
+dnl LAPACK is needed by the package.
+
+vendor_lapack="pkg"
+
+dnl define --enable-lapack
+AC_ARG_ENABLE(lapack,        
+      [  --enable-lapack         turn on lapack])
+
+dnl define --with-lapack-lib
+AC_WITH_DIR(lapack-lib, LAPACK_LIB, \${LAPACK_LIB_DIR},
+	       [tell where LAPACK libraries are])
+
+# determine if this package is needed for testing or for the 
+# package
+dnl vendor_lapack=$1
+
+dnl first find the host
+AC_CANONICAL_HOST
+
+case $host in
+  sparc-sun-solaris2.*)
+      lapack_support_libs="-lF77 -L/opt/SUNWspro/lib -lsunmath -lM77"
+  ;;
+  mips-sgi-irix6.*)
+      lapack_support_libs="-ftn"
+  ;;
+  *)
+esac
+ 
+# set up the libraries
+if test "${enable_lapack:=yes}" != no ; then
+    if test -z "${LAPACK_LIB}" ; then
+      AC_VENDORLIB_SETUP(vendor_lapack, -llapack -lblas ${lapack_support_libs})
+    elif test -n "${LAPACK_LIB}" ; then
+      AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} -llapack -lblas ${lapack_support_libs})
+    fi
+fi
+
+dnl define --with-mtl-inc
+AC_WITH_DIR(mtl-inc, MTL_INC, \${MTL_INC_DIR},
+	       [tell where MTL and ITL includes are])
+
+if test -n "${MTL_INC}" ; then
+   CPPFLAGS="$CPPFLAGS -I$MTL_INC"
+fi
+
+dnl DRACO SETUP
+AC_DRACO_ENV
+
+AC_OUTPUT(Makefile:../../config/Makefile.package.in)
+dnl AC_OUTPUT(Makefile:../../config/Makefile.package.in \
+dnl          test/Makefile:../../config/Makefile.test.in)
+
+dnl-------------------------------------------------------------------------dnl
+dnl			 end of draco/src/fourier configure.in
+dnl-------------------------------------------------------------------------dnl
