@@ -1,0 +1,34 @@
+puts "Running tests of DS++ Assert component."
+
+load_lib ds.exp
+
+global ENV
+
+puts "value of ENV is $ENV"
+
+puts "preparing to run tstAssert_$ENV"
+set output [exec tstAssert_$ENV]
+puts "output is :$output:"
+
+puts "Now parsing the output."
+
+# Check the output of t2
+
+#if {[regexp "^t2: a.what() = You must be kidding!" $output line]} 
+if {[regexp "^t2:.*" $output line]} {
+    puts "found line for t2 :$line:"
+    pass t2
+} else {
+    fail "t2"
+}
+
+# Check the output of t1
+
+if {[regexp "^t1:.*" $output line]} {
+    puts "found line for t1 :$line:"
+    pass t1
+} else {
+    fail "t1.execute"
+}
+
+# All done with tests of tstAssert_$(env)
