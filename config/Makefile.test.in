@@ -223,7 +223,7 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
 .PHONY : all install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean
+	forced-clean configure reconfigure
 
 all: ${test_alltarget}
 
@@ -269,27 +269,25 @@ uninstall:
 
 ##---------------------------------------------------------------------------##
 ## dependencies in the build system
-## Makefile depends on all of the M4 files in the config directory
-## and the pkg_config directory
 
+## configuration files: Makefile depends on all of the M4 files in the
+## config directory and the pkg_config directory
 configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
 	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
 
-${top_srcdir}/configure: configure.in ${configfiles}
-	cd ${top_srcdir} && autoconf --localdir=${rel_config_dir}
+configure: 
+	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
+	@cd ${top_srcdir} && aclocal -I ${rel_config_dir}
+	@echo "Rebuilding ${top_srcdir}/configure"
+	@cd ${top_srcdir} && autoconf
+	@cd ${reldir} && ./config.status --recheck
+	@cd ${reldir} && ./config.status
 
-Makefile: ${rel_config_dir}/Makefile.test.in config.status
-	(cd ${reldir} && if test -x ./config.status ; then ./config.status ; fi)
+reconfigure: 
+	@cd ${reldir} && ./config.status --recheck
+	@cd ${reldir} && ./config.status
 
-config.status: configure
-	(cd ${reldir} && if test -x ./config.status ; then \
-		./config.status --recheck ; fi)
-
-%: ${srcdir}/%.in
-	(cd ${reldir} && if test -x ./config.status ; then \
-	  CONFIG_FILES=test/$@:test/$(notdir $<) \
-	      CONFIG_HEADERS= ./config.status; fi)
-
+##---------------------------------------------------------------------------##
 # Locate the source depends automatically
 
 dependfiles := $(notdir $(ccsrc:.cc=.cc.d)) \
@@ -321,7 +319,9 @@ ${dependfiles}:
 	fi
 	@-rm -f .tmp0
 
-# Do not include the dependfiles when doing clean-like stuff.
+##---------------------------------------------------------------------------##
+## clean rules
+## Do not include the dependfiles when doing clean-like stuff.
 
 ifneq (,$(filter uninstall distclean mostlyclean clean maintainer-clean, \
 	${MAKECMDGOALS}))
