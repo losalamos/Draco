@@ -23,6 +23,7 @@
 #include <cmath>
 #include <iostream> 
 #include <string>
+#include <utility>
 
 namespace rtt_mc 
 {
@@ -147,6 +148,7 @@ class OS_Mesh
     typedef std::vector<double>               sf_double;
     typedef std::vector<std::vector<double> > vf_double;
     typedef std::string                       std_string;
+    typedef std::pair<sf_double, sf_double>   pair_sf_double;
    
     // Handy typedefs to CC fields (not formally needed in KCC3.3+).
     typedef CCSF<double>     CCSF_double;
@@ -224,8 +226,8 @@ class OS_Mesh
     inline sf_double sample_pos(int, rng_Sprng &) const;
     inline sf_double sample_pos(int, rng_Sprng &, sf_double, double) const; 
     inline sf_double sample_pos_on_face(int, int, rng_Sprng &)	const;
-    sf_double sample_pos_on_sphere(int, const sf_double &, double,
-				   rng_Sprng &) const;
+    pair_sf_double sample_pos_on_sphere(int, const sf_double &, double,
+					rng_Sprng &) const;
 
     //! Determine if this is a full mesh or partitioned mesh.
     bool full_Mesh() const { return !submesh; }

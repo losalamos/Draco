@@ -179,12 +179,15 @@ double OS_Mesh::get_db(const sf_double &r,
  * \param origin sphere origin
  * \param radius sphere radius
  * \param random random number object
- * \return coordinates on surface of sphere
+ * \return a pair of vector<double> where the first element of the pair is
+ * the position on the surface of the sphere and the second element of the
+ * pair is the normal of the sphere at that position
  */
-OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell, 
-						 const sf_double &origin,
-						 double           radius,
-						 rng_Sprng       &random) const
+OS_Mesh::pair_sf_double OS_Mesh::sample_pos_on_sphere(
+    int              cell, 
+    const sf_double &origin,
+    double           radius,
+    rng_Sprng       &random) const
 {
     Require (cell > 0);
     Require (cell <= layout.num_cells());
@@ -198,10 +201,16 @@ OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell,
     Require (origin[1] + radius <= max(2, cell));
 
     // return value
-    sf_double r_final(coord->get_dim(), 0.0);
+    pair_sf_double pos_and_norm(sf_double(coord->get_dim(), 0.0),
+				sf_double(3, 0.0));
 
-    // sample (theta, phi) uniformly
-    sf_double omega = coord->sample_isotropic_dir(random);
+    // sample (theta, phi) uniformly (which will also serve as the normal to
+    // the sphere at the point where the particle is)
+    pos_and_norm.second = coord->sample_isotropic_dir(random);
+
+    // reference to the first and second element of pair
+    sf_double &r_final     = pos_and_norm.first;
+    const sf_double &omega = pos_and_norm.second;
 
     // track to surface of sphere (unrolled for performance)
     if (coord->get_dim() == 2)
@@ -220,8 +229,8 @@ OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell,
 	r_final[2] = origin[2] + radius * omega[2];
 
 	// check to make sure final location is inside cell
-	Check (r_final[2] >= min(3, cell));
-	Check (r_final[2] <= max(3, cell));
+	Ensure (r_final[2] >= min(3, cell));
+	Ensure (r_final[2] <= max(3, cell));
     }
     
     else
@@ -230,13 +239,13 @@ OS_Mesh::sf_double OS_Mesh::sample_pos_on_sphere(int              cell,
     }
     
     // check to make sure final location is inside cell
-    Check (r_final[0] >= min(1, cell));
-    Check (r_final[0] <= max(1, cell));
-    Check (r_final[1] >= min(2, cell));
-    Check (r_final[1] <= max(2, cell));
+    Ensure (r_final[0] >= min(1, cell));
+    Ensure (r_final[0] <= max(1, cell));
+    Ensure (r_final[1] >= min(2, cell));
+    Ensure (r_final[1] <= max(2, cell));
 
     // return
-    return r_final;
+    return pos_and_norm;
 }
 
 //---------------------------------------------------------------------------//

@@ -28,6 +28,7 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
+#include <utility>
 
 using rtt_mc::XYCoord_sys;
 using rtt_mc::XYZCoord_sys;
@@ -462,7 +463,10 @@ void Mesh_2D()
 	Sprng rran = control.get_rn(10);
 	Sprng ran  = control.get_rn(10);
 
+	pair<vector<double>, vector<double> > rn;
+
 	vector<double> r;
+	vector<double> n;
 	vector<double> ref(2, 0.0);
 	vector<double> origin(2);
 	double         radius;
@@ -474,14 +478,19 @@ void Mesh_2D()
 	radius    = 0.2;
 	if (!m.in_cell(1, origin)) ITFAILS;
 
-	r = m.sample_pos_on_sphere(1, origin, radius, ran);
+	rn = m.sample_pos_on_sphere(1, origin, radius, ran);
+	r  = rn.first;
+	n  = rn.second;
 
 	// check it
 	omega = m.get_Coord().sample_isotropic_dir(rran);
 	for (int i = 0; i < 2; i++)
 	    ref[i] = origin[i] + radius * omega[i];
 
-	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end()))
+	    ITFAILS;
+	if (!soft_equiv(n.begin(), n.end(), omega.begin(), omega.end()))
+	    ITFAILS;
 
 	// check that it is in the sphere (weak)
 	if (r[0] < origin[0] - radius) ITFAILS;
@@ -630,7 +639,10 @@ void Mesh_3D()
 	Sprng rran = control.get_rn(10);
 	Sprng ran  = control.get_rn(10);
 
+	pair<vector<double>, vector<double> > rn;
+
 	vector<double> r;
+	vector<double> n;
 	vector<double> ref(3, 0.0);
 	vector<double> origin(3);
 	double         radius;
@@ -643,14 +655,34 @@ void Mesh_3D()
 	radius    = 0.2;
 	if (!mesh->in_cell(1, origin)) ITFAILS;
 
-	r = mesh->sample_pos_on_sphere(1, origin, radius, ran);
+	rn = mesh->sample_pos_on_sphere(1, origin, radius, ran);
+	r  = rn.first;
+	n  = rn.second;
 
 	// check it
 	omega = mesh->get_Coord().sample_isotropic_dir(rran);
 	for (int i = 0; i < 3; i++)
 	    ref[i] = origin[i] + radius * omega[i];
 
-	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end()))    
+	    ITFAILS;
+	if (!soft_equiv(n.begin(), n.end(), omega.begin(), omega.end()))
+	    ITFAILS;
+
+	// check normal
+	vector<double> normal = r;
+	double m = 0.0;
+	for (int i = 0; i < 3; i++)
+	{
+	    normal[i] -= origin[i];
+	    m         += normal[i] * normal[i];
+	}
+	m = sqrt(m);
+	for (int i = 0; i < 3; i++)
+	    normal[i] *= 1.0/m;
+
+	if (!soft_equiv(n.begin(), n.end(), normal.begin(), normal.end()))
+	    ITFAILS;
 
 	// check that it is in the sphere (weak)
 	if (r[0] < origin[0] - radius) ITFAILS;
@@ -682,14 +714,19 @@ void Mesh_3D()
 	radius    = 0.29;
 	if (!mesh->in_cell(5, origin)) ITFAILS;
 
-	r = mesh->sample_pos_on_sphere(5, origin, radius, ran);
+	rn = mesh->sample_pos_on_sphere(5, origin, radius, ran);
+	r  = rn.first;
+	n  = rn.second;
 
 	// check it
 	omega = mesh->get_Coord().sample_isotropic_dir(rran);
 	for (int i = 0; i < 3; i++)
 	    ref[i] = origin[i] + radius * omega[i];
 
-	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end()))   
+	    ITFAILS;
+	if (!soft_equiv(n.begin(), n.end(), omega.begin(), omega.end()))
+	    ITFAILS;
 
 	// check that it is in the sphere (weak)
 	if (r[0] < origin[0] - radius) ITFAILS;
@@ -721,14 +758,19 @@ void Mesh_3D()
 	radius    = 0.21;
 	if (!mesh->in_cell(9, origin)) ITFAILS;
 
-	r = mesh->sample_pos_on_sphere(9, origin, radius, ran);
+	rn = mesh->sample_pos_on_sphere(9, origin, radius, ran);
+	r  = rn.first;
+	n  = rn.second;
 
 	// check it
 	omega = mesh->get_Coord().sample_isotropic_dir(rran);
 	for (int i = 0; i < 3; i++)
 	    ref[i] = origin[i] + radius * omega[i];
 
-	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end())) ITFAILS;
+	if (!soft_equiv(r.begin(), r.end(), ref.begin(), ref.end()))  
+	    ITFAILS;
+	if (!soft_equiv(n.begin(), n.end(), omega.begin(), omega.end()))
+	    ITFAILS;
 
 	// check that it is in the sphere (weak)
 	if (r[0] < origin[0] - radius) ITFAILS;
@@ -763,7 +805,7 @@ void Mesh_3D()
 	bool caught = false;
 	try
 	{
-	    r = mesh->sample_pos_on_sphere(8, origin, radius, ran);
+	    rn = mesh->sample_pos_on_sphere(8, origin, radius, ran);
 	}
 	catch (const rtt_dsxx::assertion &ass)
 	{
