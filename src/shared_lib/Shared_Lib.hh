@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/Shared_Lib.hh
+ * \file   shared_lib/Shared_Lib.hh
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Header file for Shared_Lib.
@@ -10,33 +10,50 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_ds_Shared_Lib_hh
-#define rtt_ds_Shared_Lib_hh
+#ifndef rtt_shared_lib_Shared_Lib_hh
+#define rtt_shared_lib_Shared_Lib_hh
 
 #include <shared_lib/config.h>
 
-// Only compile if we have dlopen support on this platform
-#ifndef NO_DLOPEN
-
 #include <string>
 #include <ds++/Assert.hh>
-
-// use ::dlsym and ::dlerror
-#include <dlfcn.h>
 
 namespace rtt_shared_lib
 {
 
 //===========================================================================//
-/*!\class Shared_Lib
- * \brief Controls access to a shared (dynamically linked) library.
- *
- * Access to functions defined in the shared library is provided via the
- * get_function() member.
+/*!
+  \class Shared_Lib
+  \brief Controls access to a shared (dynamically linked) library.
+ 
+  Access to functions defined in the shared library is provided via the
+  get_function() member.
+
+  Under Draco, not all platforms support dynamic loading of shared libraries.
+  Consequently, in order to write cross-platform code, one must use the
+  static member function is_supported() to check whether the functionality of
+  Shared_Lib is supported.  As an example,
+  \code
+  if ( Shared_Lib::is_supported() )
+  {
+     // OK, Shared_Lib is supported.
+     Shared_Lib s;
+     s.open("/usr/lib/libm.so");
+     // ... other operations using s.
+  }
+  else
+  {
+     // Shared_Lib is unsupported!
+     Shared_Lib s;               // throws an error!!!
+     s.open("/usr/lib/libm.so"); // won't get this far.
+  }
+  \endcode
+  Note that the above code should compile on all platforms, but on
+  unsupported platforms, the "else" block will throw an error at run time.
  */
 /*! 
- * \example ds++/test/tstShared_Lib.cc 
- */
+ * \example shared_lib/test/tstShared_Lib.cc 
+*/
 //===========================================================================//
 
 class Shared_Lib 
@@ -73,14 +90,21 @@ class Shared_Lib
     std::string get_file_name() const { return d_file_name; }
 
     // Returns a function pointer from the shared library.
-    template <class Fp_t>
-    inline Fp_t get_function(const std::string &name);
+    template <class Fp_t> inline Fp_t get_function(const std::string &name);
 
     //! Returns true if library is open.
     bool is_open() const { return d_handle; }
 
+    //! Returns true if platform is supported.
+    static bool is_supported();
+
     // Opens a shared library.
     void open(const std::string &file_name);
+
+  private:
+
+    // Does the dlsym() with error checking.
+    void *do_dlsym(const std::string &name);
 };
 
 //---------------------------------------------------------------------------//
@@ -100,23 +124,17 @@ template <class Fp_t>
 Fp_t Shared_Lib::get_function(const std::string &name)
 {
     Require(is_open());
-    Require(not name.empty());
-
+    
     // This cast is so evil, one must use an old-style cast.
-    Fp_t f = Fp_t(dlsym(d_handle, name.c_str()));
-
-    char *error_msg = dlerror();
-    Insist(not error_msg, error_msg);
+    Fp_t f = Fp_t(do_dlsym(name));
 
     return f;
 }
 
 } // end namespace rtt_shared_lib
 
-#endif // NO_DLOPEN
-
-#endif // rtt_ds_Shared_Lib_hh
+#endif // rtt_shared_lib_Shared_Lib_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Shared_Lib.hh
+//              end of shared_lib/Shared_Lib.hh
 //---------------------------------------------------------------------------//

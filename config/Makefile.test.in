@@ -250,10 +250,18 @@ check: all
 	done; \
 	exit 0
 
-# If you have multiple test executables then you will have
-# to hand code the targets in ${srcdir}/Makefile.target
+# Look for Makefile.target either in the build directory, or in the
+# source directory.
 
-ifeq (,$(wildcard ${srcdir}/Makefile.target))
+makefile_target_path = $(wildcard Makefile.target)
+ifeq (,${makefile_target_path})
+   makefile_target_path = $(wildcard ${srcdir}/Makefile.target)
+endif
+
+ifeq (,${makefile_target_path})
+
+   # Could not find Makefile.target, so assume a single executable and
+   # define the appropriate rules.
 
    testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 		${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
@@ -265,7 +273,9 @@ ifeq (,$(wildcard ${srcdir}/Makefile.target))
 
 else
 
-   include ${srcdir}/Makefile.target
+   # Found a Makefile.target; include it.
+
+   include ${makefile_target_path}
 
 endif
 

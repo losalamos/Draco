@@ -272,7 +272,7 @@ PACKAGE_BUGREPORT=
 
 ac_unique_file="README.draco"
 ac_subdirs_all="$ac_subdirs_all tools src autodoc"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB latex_yes_no doxygen_output_top PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB GSLCBLAS_INC GSLCBLAS_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -873,6 +873,17 @@ Optional Packages:
   --with-spica=yes                 spica is on by default
   --with-spica-inc=DIR    tell where SPICA includes are (\${SPICA_INC_DIR} by default)
   --with-spica-lib=DIR    tell where SPICA libraries are (\${SPICA_LIB_DIR} by default)
+  --with-xerces=lib      determine the XERCES xml lib (xerces-c is default)
+  --with-xerces-inc=DIR    tell where XERCES includes are (\${XERCES_INC_DIR} by default)
+  --with-xerces-lib=DIR    tell where XERCES libraries are (\${XERCES_LIB_DIR} by default)
+  --with-hdf5=serial,mpi      determine hdf5 implementation (default:  'mpi' if mpi in use, else 'serial')
+  --with-hdf5-inc=DIR    tell where HDF5 includes are (\${HDF5_INC_DIR} by default)
+  --with-hdf5-lib=DIR    tell where HDF5 libraries are (\${HDF5_LIB_DIR} by default)
+  --with-udm=serial,mpi      determine udm implementation (default:  'mpi' if mpi in use, else 'serial')
+  --with-udm-inc=DIR    tell where UDM includes are (\${UDM_INC_DIR} by default)
+  --with-udm-lib=DIR    tell where UDM libraries are (\${UDM_LIB_DIR} by default)
+  --with-dlopen=on/off
+	                  Turn dlopen on or off (on by default).
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
   --with-c4=scalar,mpi,shmem
@@ -1458,6 +1469,14 @@ fi;
        if test -n "${MPI_INC}" ; then
 	   with_mpi='vendor'
        elif test -n "${MPI_LIB}" ; then
+	   with_mpi='vendor'
+       fi
+   fi
+
+   # if c4=mpi and with-mpi=no explicitly then
+   # define them (mpi gets set to vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
 	   with_mpi='vendor'
        fi
    fi
@@ -2567,6 +2586,365 @@ fi;
    if test "${with_spica:=yes}" != no; then
        cat >>confdefs.h <<\_ACEOF
 #define USE_SPICA 1
+_ACEOF
+
+   fi
+
+
+
+# Check whether --with-xerces or --without-xerces was given.
+if test "${with_xerces+set}" = set; then
+  withval="$with_xerces"
+
+fi;
+
+
+
+
+
+# Check whether --with-xerces-inc or --without-xerces-inc was given.
+if test "${with_xerces_inc+set}" = set; then
+  withval="$with_xerces_inc"
+  if test $with_xerces_inc != "no" ; then
+      if test $with_xerces_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${XERCES_INC_DIR}
+         eval with_xerces_inc=\${XERCES_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_xerces_inc=`eval echo "$with_xerces_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_xerces_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-xerces-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_xerces_inc ; then
+         { echo "configure: error: $with_xerces_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      XERCES_INC="${with_xerces_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define XERCES_INC ${with_xerces_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "XERCES_INC has been set to $XERCES_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+# Check whether --with-xerces-lib or --without-xerces-lib was given.
+if test "${with_xerces_lib+set}" = set; then
+  withval="$with_xerces_lib"
+  if test $with_xerces_lib != "no" ; then
+      if test $with_xerces_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${XERCES_LIB_DIR}
+         eval with_xerces_lib=\${XERCES_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_xerces_lib=`eval echo "$with_xerces_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_xerces_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-xerces-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_xerces_lib ; then
+         { echo "configure: error: $with_xerces_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      XERCES_LIB="${with_xerces_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define XERCES_LIB ${with_xerces_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "XERCES_LIB has been set to $XERCES_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_xerces=pkg
+
+   # default (xerces is set to xerces-c by default)
+   if test "${with_xerces:=xerces-c}" = yes ; then
+       with_xerces='xerces-c'
+   fi
+
+
+
+# Check whether --with-hdf5 or --without-hdf5 was given.
+if test "${with_hdf5+set}" = set; then
+  withval="$with_hdf5"
+
+fi;
+
+
+
+
+
+# Check whether --with-hdf5-inc or --without-hdf5-inc was given.
+if test "${with_hdf5_inc+set}" = set; then
+  withval="$with_hdf5_inc"
+  if test $with_hdf5_inc != "no" ; then
+      if test $with_hdf5_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${HDF5_INC_DIR}
+         eval with_hdf5_inc=\${HDF5_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_hdf5_inc=`eval echo "$with_hdf5_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_hdf5_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-hdf5-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_hdf5_inc ; then
+         { echo "configure: error: $with_hdf5_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      HDF5_INC="${with_hdf5_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define HDF5_INC ${with_hdf5_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "HDF5_INC has been set to $HDF5_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-hdf5-lib or --without-hdf5-lib was given.
+if test "${with_hdf5_lib+set}" = set; then
+  withval="$with_hdf5_lib"
+  if test $with_hdf5_lib != "no" ; then
+      if test $with_hdf5_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${HDF5_LIB_DIR}
+         eval with_hdf5_lib=\${HDF5_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_hdf5_lib=`eval echo "$with_hdf5_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_hdf5_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-hdf5-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_hdf5_lib ; then
+         { echo "configure: error: $with_hdf5_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      HDF5_LIB="${with_hdf5_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define HDF5_LIB ${with_hdf5_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "HDF5_LIB has been set to $HDF5_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # default (mpi if mpi is in use, else serial)
+   if test "${with_hdf5:=no}" = yes ; then
+       if test "${with_mpi}" != no ; then
+	   with_hdf5='mpi'
+       else
+	   with_hdf5='serial'
+       fi
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_hdf5=pkg
+
+
+
+
+# Check whether --with-udm or --without-udm was given.
+if test "${with_udm+set}" = set; then
+  withval="$with_udm"
+
+fi;
+
+
+
+
+
+# Check whether --with-udm-inc or --without-udm-inc was given.
+if test "${with_udm_inc+set}" = set; then
+  withval="$with_udm_inc"
+  if test $with_udm_inc != "no" ; then
+      if test $with_udm_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${UDM_INC_DIR}
+         eval with_udm_inc=\${UDM_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_udm_inc=`eval echo "$with_udm_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_udm_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-udm-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_udm_inc ; then
+         { echo "configure: error: $with_udm_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      UDM_INC="${with_udm_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define UDM_INC ${with_udm_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "UDM_INC has been set to $UDM_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-udm-lib or --without-udm-lib was given.
+if test "${with_udm_lib+set}" = set; then
+  withval="$with_udm_lib"
+  if test $with_udm_lib != "no" ; then
+      if test $with_udm_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${UDM_LIB_DIR}
+         eval with_udm_lib=\${UDM_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_udm_lib=`eval echo "$with_udm_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_udm_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-udm-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_udm_lib ; then
+         { echo "configure: error: $with_udm_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      UDM_LIB="${with_udm_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define UDM_LIB ${with_udm_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "UDM_LIB has been set to $UDM_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # default (mpi if mpi is in use, else serial)
+   if test "${with_udm:=no}" = yes ; then
+       if test "${with_mpi}" != no ; then
+	   with_udm='mpi'
+       else
+	   with_udm='serial'
+       fi
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_udm=pkg
+
+
+
+
+# Check whether --with-dlopen or --without-dlopen was given.
+if test "${with_dlopen+set}" = set; then
+  withval="$with_dlopen"
+
+fi;
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_dlopen=pkg
+
+   # set default value for with_dlopen, which is yes
+   if test "${with_dlopen:=yes}" != no ; then
+       with_dlopen=yes
+   fi
+
+   # turn off dlopen if not using shared libraries
+   if test "${enable_shared}" != yes ; then
+       if test "${with_dlopen}" = yes ; then
+	   { echo "$as_me:$LINENO: WARNING: \"Must specify --enable-shared when using --with-dlopen.\"" >&5
+echo "$as_me: WARNING: \"Must specify --enable-shared when using --with-dlopen.\"" >&2;}
+           { echo "$as_me:$LINENO: WARNING: \"Turning off dlopen.\"" >&5
+echo "$as_me: WARNING: \"Turning off dlopen.\"" >&2;}
+       fi
+       with_dlopen=no
+   fi
+
+   if test "${with_dlopen}" = yes ; then
+       cat >>confdefs.h <<\_ACEOF
+#define USE_DLOPEN 1
 _ACEOF
 
    fi
@@ -3980,6 +4358,12 @@ s,@GRACE_INC@,$GRACE_INC,;t t
 s,@GRACE_LIB@,$GRACE_LIB,;t t
 s,@SPICA_INC@,$SPICA_INC,;t t
 s,@SPICA_LIB@,$SPICA_LIB,;t t
+s,@XERCES_INC@,$XERCES_INC,;t t
+s,@XERCES_LIB@,$XERCES_LIB,;t t
+s,@HDF5_INC@,$HDF5_INC,;t t
+s,@HDF5_LIB@,$HDF5_LIB,;t t
+s,@UDM_INC@,$UDM_INC,;t t
+s,@UDM_LIB@,$UDM_LIB,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
 s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@PYTHON_PATH@,$PYTHON_PATH,;t t

@@ -227,6 +227,22 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # If dlopen is specified, 1) add libdl to LIBS; 
+       # 2) add -fPIC to compile flags.
+       #
+       AC_MSG_CHECKING("libdl requirements")
+       if test -n "${vendor_dlopen}" ; then
+          if test "${enable_dlopen}" = yes ; then
+	      LIBS="${LIBS} -ldl"
+	      CFLAGS="${CFLAGS} -fPIC"
+	      CXXFLAGS="${CXXFLAGS} -fPIC"
+	      AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
+	  fi
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE

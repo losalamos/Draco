@@ -11,9 +11,9 @@
 //---------------------------------------------------------------------------//
 
 #include "Shared_Lib.hh"
+#include <sstream>
 
-// Only compile if we have dlopen support on this platform
-#ifndef NO_DLOPEN
+#include "dlfcn_support.hh"
 
 namespace rtt_shared_lib
 {
@@ -29,6 +29,9 @@ Shared_Lib::Shared_Lib(const std::string &file_name)
     : d_handle(0)
     , d_file_name(file_name)
 {
+    // is_supported must be checked for all constructors.
+    Insist(is_supported(), "Shared_Lib unsupported on this platform!");
+    
     if ( not file_name.empty() )
     {
 	open(file_name);
@@ -93,12 +96,42 @@ void Shared_Lib::open(const std::string &file_name)
     d_handle = dlopen(file_name.c_str(), RTLD_LAZY);
     d_file_name = file_name;
 
-    Insist(d_handle, dlerror());
+    if ( not is_open() )
+    {
+	std::ostringstream m;
+	m << "Shared_Lib::open(): Error opening shared file " << file_name;
+	Insist(0, m.str());
+    }
+}
+
+//---------------------------------------------------------------------------//
+// PRIVATE FUNCTIONS
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+/*!
+  \brief Does the dlsym() with error checking.
+
+  The primary point of this function is to keep the dlfcn.h functions called
+  within this implementation file, while this function can be called from
+  within the header (i.e., within get_function()).
+
+  \param name The name of function to load from the library.
+*/
+void *Shared_Lib::do_dlsym(const std::string &name)
+{
+    Require(is_open());
+    Require(not name.empty());
+
+    void *f = dlsym(d_handle, name.c_str());
+
+    char *error_msg = dlerror();
+    Insist(not error_msg, error_msg);
+
+    return f;
 }
 
 } // end namespace rtt_shared_lib
-
-#endif // NO_DLOPEN
 
 //---------------------------------------------------------------------------//
 //                 end of Shared_Lib.cc

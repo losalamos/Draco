@@ -996,6 +996,53 @@ AC_DEFUN([AC_UDM_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_DLOPEN_SETUP
+dnl
+dnl This is an optional vendor.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DLOPEN_SETUP], [dnl
+
+   dnl define --enable-dlopen
+   AC_ARG_ENABLE(dlopen,
+      [  --enable-dlopen          Enable dlopen (default: on if --enable-shared, off otherwise)])
+
+   # determine if this package is needed for testing or for the
+   # package.
+   vendor_dlopen=$1 
+
+   # set default value for enable_dlopen, which is the value of enable_shared.
+   if test "${enable_shared}" = yes ; then
+       if test "${enable_dlopen:=yes}" != no ; then 
+	   enable_dlopen=yes
+       fi
+   else
+       if test "${enable_dlopen:=no}" != no ; then 
+	   enable_dlopen=yes
+       fi
+   fi
+
+   # turn off dlopen if not using shared libraries.
+   if test "${enable_shared}" != yes ; then
+       if test "${enable_dlopen}" = yes ; then
+	   AC_MSG_WARN("Must specify --enable-shared when using --enable-dlopen.")
+           AC_MSG_WARN("   dlopen disabled.")
+       fi
+       enable_dlopen=no
+   fi
+
+   if test "${enable_dlopen}" = yes ; then
+       AC_DEFINE(USE_DLOPEN)
+   fi
+]) 
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_DLOPEN_FINALIZE], [dnl
+   # Libraries are platform-specific; done in ac_platforms.
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_VENDOR_FINALIZE
 dnl
 dnl Run at the end of the environment setup to add defines required by
@@ -1031,6 +1078,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GSLCBLAS_FINALIZE
 
    AC_MPI_FINALIZE
+   AC_DLOPEN_FINALIZE
 
    # print out vendor include paths
    AC_MSG_CHECKING("vendor include paths")
@@ -1077,6 +1125,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_XERCES_SETUP(pkg)
    AC_HDF5_SETUP(pkg)
    AC_UDM_SETUP(pkg)
+   AC_DLOPEN_SETUP(pkg)
 ])
 
 dnl-------------------------------------------------------------------------dnl

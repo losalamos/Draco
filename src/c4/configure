@@ -1425,6 +1425,14 @@ fi;
        fi
    fi
 
+   # if c4=mpi and with-mpi=no explicitly then
+   # define them (mpi gets set to vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
+	   with_mpi='vendor'
+       fi
+   fi
+
 
 
     install_headers="\${installheaders}"
@@ -1776,14 +1784,6 @@ _ACEOF
 #define C4_MPI 1
 _ACEOF
 
-   fi
-
-   # if c4=mpi and with-mpi=no explicitly then
-   # define them (mpi gets set to vendor by default)
-   if test "$with_c4" = mpi ; then
-       if test "$with_mpi" = no ; then
-	   with_mpi='vendor'
-       fi
    fi
 
 
@@ -5794,6 +5794,44 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
+       # add librt to LIBS if udm is used
+       #
+       echo "$as_me:$LINENO: checking \"librt requirements\"" >&5
+echo $ECHO_N "checking \"librt requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_udm}"; then
+
+	   # Add rt for g++
+	   if test "${CXX}" = g++ ; then
+	       LIBS="${LIBS} -lrt"
+	       echo "$as_me:$LINENO: result: \"-lrt added to LIBS\"" >&5
+echo "${ECHO_T}\"-lrt added to LIBS\"" >&6
+	   fi
+
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
+       fi
+
+       #
+       # If we want dlopen, 1) add libdl to LIBS;
+       # 2) add -fPIC to compile flags.
+       #
+       echo "$as_me:$LINENO: checking \"libdl requirements\"" >&5
+echo $ECHO_N "checking \"libdl requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_dlopen}" ; then
+          if test "${with_dlopen}" = yes ; then
+	      LIBS="${LIBS} -ldl"
+	      CFLAGS="${CFLAGS} -fPIC"
+	      CXXFLAGS="${CXXFLAGS} -fPIC"
+	      echo "$as_me:$LINENO: result: \"-ldl added to LIBS -fPIC added to compile flags\"" >&5
+echo "${ECHO_T}\"-ldl added to LIBS -fPIC added to compile flags\"" >&6
+	  fi
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
+       fi
+
+       #
        # finalize vendors
        #
 
@@ -6194,6 +6232,140 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -L${XERCES_LIB} -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   fi
+
+       elif test -z "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_xerces}"
+   fi
+
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               cat >>confdefs.h <<\_ACEOF
+#define UDM_HAVE_PARALLEL 1
+_ACEOF
+
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -L${UDM_LIB} -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${UDM_LIB} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${UDM_LIB} -ludm"
+   fi
+
+       elif test -z "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ludm"
+   fi
+
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -L${HDF5_LIB} -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+   fi
+
+       elif test -z "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+   fi
+
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -6320,6 +6492,8 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+      # Libraries are platform-specific; done in ac_platforms.
 
 
    # print out vendor include paths
@@ -6886,6 +7060,140 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -L${XERCES_LIB} -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   fi
+
+       elif test -z "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_xerces}"
+   fi
+
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               cat >>confdefs.h <<\_ACEOF
+#define UDM_HAVE_PARALLEL 1
+_ACEOF
+
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -L${UDM_LIB} -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${UDM_LIB} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${UDM_LIB} -ludm"
+   fi
+
+       elif test -z "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ludm"
+   fi
+
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -L${HDF5_LIB} -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+   fi
+
+       elif test -z "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+   fi
+
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -7012,6 +7320,8 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+      # Libraries are platform-specific; done in ac_platforms.
 
 
    # print out vendor include paths
@@ -7675,6 +7985,140 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -L${XERCES_LIB} -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   fi
+
+       elif test -z "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_xerces}"
+   fi
+
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               cat >>confdefs.h <<\_ACEOF
+#define UDM_HAVE_PARALLEL 1
+_ACEOF
+
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -L${UDM_LIB} -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${UDM_LIB} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${UDM_LIB} -ludm"
+   fi
+
+       elif test -z "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ludm"
+   fi
+
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -L${HDF5_LIB} -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+   fi
+
+       elif test -z "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+   fi
+
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -7802,6 +8246,8 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
+      # Libraries are platform-specific; done in ac_platforms.
+
 
    # print out vendor include paths
    echo "$as_me:$LINENO: checking \"vendor include paths\"" >&5
@@ -7900,7 +8346,8 @@ _ACEOF
        if test "${with_mpi}" = vendor ; then
 
 	   # define mpi libraries
-	   mpi_libs='-lmpi'
+	   # note: mpi and mpio are separate libraries on compaqs
+	   mpi_libs='-lmpi -lmpio'
 
        # setup mpich
        elif test "${with_mpi}" = mpich ; then
@@ -7936,15 +8383,28 @@ _ACEOF
        #
 
        #
-       # gandolf, eospac, pcg require -lfor on the link line.
+       # udm requires long long warnings to be disabled
+       #
+
+       if test -n "${vendor_udm}" ; then
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+	   STRICTFLAG="${STRICTFLAG} -msg_disable nostdlonglong"
+       fi
+
+       #
+       # end of udm setup
+       #
+
+       #
+       # gandolf, eospac, pcg, udm require -lfor on the link line.
        #
 
        echo "$as_me:$LINENO: checking \"libfortran requirements\"" >&5
 echo $ECHO_N "checking \"libfortran requirements\"... $ECHO_C" >&6
        if test -n "${vendor_gandolf}" || test -n "${vendor_eospac}" ||
-          test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfor"
-          echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
+          test -n "${vendor_pcg}" || test -n "${vendor_udm}"; then
+           LIBS="${LIBS} -lfor"
+           echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
        else
 	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
@@ -7956,14 +8416,14 @@ echo "${ECHO_T}\"not needed\"" >&6
        #
 
        #
-       # libpcg/libfmpi setup
+       # libpcg/libudm/libfmpi setup
        #
 
        echo "$as_me:$LINENO: checking \"libfmpi requirements\"" >&5
 echo $ECHO_N "checking \"libfmpi requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_pcg}"; then
-          LIBS="${LIBS} -lfmpi"
-          echo "$as_me:$LINENO: result: \"-lfmpi added to LIBS\"" >&5
+       if test -n "${vendor_pcg}" || test "${with_udm}" = mpi; then
+           LIBS="${LIBS} -lfmpi"
+           echo "$as_me:$LINENO: result: \"-lfmpi added to LIBS\"" >&5
 echo "${ECHO_T}\"-lfmpi added to LIBS\"" >&6
        else
 	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
@@ -7972,6 +8432,25 @@ echo "${ECHO_T}\"not needed\"" >&6
 
        #
        # end of libpcg setup
+       #
+
+       #
+       # libudm/librmscall setup
+       #
+
+       echo "$as_me:$LINENO: checking \"librmscall requirements\"" >&5
+echo $ECHO_N "checking \"librmscall requirements\"... $ECHO_C" >&6
+       if test -n "${vendor_udm}"; then
+          LIBS="${LIBS} -lrmscall"
+          echo "$as_me:$LINENO: result: \"-lrmscall added to LIBS\"" >&5
+echo "${ECHO_T}\"-lrmscall added to LIBS\"" >&6
+       else
+	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
+echo "${ECHO_T}\"not needed\"" >&6
+       fi
+
+       #
+       # end of libudm setup
        #
 
        #
@@ -8375,6 +8854,140 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -L${XERCES_LIB} -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   fi
+
+       elif test -z "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_xerces}"
+   fi
+
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               cat >>confdefs.h <<\_ACEOF
+#define UDM_HAVE_PARALLEL 1
+_ACEOF
+
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -L${UDM_LIB} -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${UDM_LIB} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${UDM_LIB} -ludm"
+   fi
+
+       elif test -z "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ludm"
+   fi
+
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -L${HDF5_LIB} -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+   fi
+
+       elif test -z "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+   fi
+
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -8501,6 +9114,8 @@ echo "${ECHO_T}\"not needed\"" >&6
 
    fi
 
+
+      # Libraries are platform-specific; done in ac_platforms.
 
 
    # print out vendor include paths
@@ -9118,6 +9733,140 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
    fi
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -L${XERCES_LIB} -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   fi
+
+       elif test -z "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_xerces}"
+   fi
+
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               cat >>confdefs.h <<\_ACEOF
+#define UDM_HAVE_PARALLEL 1
+_ACEOF
+
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -L${UDM_LIB} -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${UDM_LIB} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${UDM_LIB} -ludm"
+   fi
+
+       elif test -z "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ludm"
+   fi
+
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -L${HDF5_LIB} -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+   fi
+
+       elif test -z "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+   fi
+
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -9244,6 +9993,8 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
 
    fi
 
+
+      # Libraries are platform-specific; done in ac_platforms.
 
 
    # print out vendor include paths
@@ -9747,6 +10498,140 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    fi
 
 
+   # set up the libraries and include path
+   if test -n "${vendor_xerces}"; then
+
+       # include path
+       if test -n "${XERCES_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+       fi
+
+       # libraries
+       if test -n "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -L${XERCES_LIB} -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${XERCES_LIB} -l${with_xerces}"
+   fi
+
+       elif test -z "${XERCES_LIB}" ; then
+
+   # vendor_xerces is the vendor_<> tag (equals pkg or test)
+   # -l${with_xerces} are the directories added
+
+   if test "${vendor_xerces}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_xerces}"
+   elif test "${vendor_xerces}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_xerces}"
+   fi
+
+       fi
+
+       # add xerces directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${XERCES_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${XERCES_INC}"
+
+   fi
+
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_udm}" ; then
+
+       # include path
+       if test -n "${UDM_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # set extra #define if using udm in parallel
+           if test "${with_udm}" = mpi ; then
+               cat >>confdefs.h <<\_ACEOF
+#define UDM_HAVE_PARALLEL 1
+_ACEOF
+
+           fi
+       fi
+
+       # library path
+       if test -n "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -L${UDM_LIB} -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${UDM_LIB} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${UDM_LIB} -ludm"
+   fi
+
+       elif test -z "${UDM_LIB}" ; then
+
+   # vendor_udm is the vendor_<> tag (equals pkg or test)
+   # -ludm are the directories added
+
+   if test "${vendor_udm}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -ludm"
+   elif test "${vendor_udm}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -ludm"
+   fi
+
+       fi
+
+       # add UDM directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${UDM_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${UDM_INC}"
+
+   fi
+
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_hdf5}" ; then
+
+       # include path
+       if test -n "${HDF5_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+       fi
+
+       # library path
+       if test -n "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -L${HDF5_LIB} -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${HDF5_LIB} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${HDF5_LIB} -lhdf5"
+   fi
+
+       elif test -z "${HDF5_LIB}" ; then
+
+   # vendor_hdf5 is the vendor_<> tag (equals pkg or test)
+   # -lhdf5 are the directories added
+
+   if test "${vendor_hdf5}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lhdf5"
+   elif test "${vendor_hdf5}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lhdf5"
+   fi
+
+       fi
+
+       # add HDF5 directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${HDF5_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${HDF5_INC}"
+
+   fi
+
+
+
 
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
@@ -9873,6 +10758,8 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
 
    fi
 
+
+      # Libraries are platform-specific; done in ac_platforms.
 
 
    # print out vendor include paths

@@ -14,7 +14,7 @@
 #define shared_lib_config_h
 
 /* DLOPEN SUPPORT */
-#undef NO_DLOPEN
+#undef USE_DLOPEN
 
 #endif /* shared_lib_config_h */
 

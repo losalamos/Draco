@@ -31,15 +31,47 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
-// Only compile if we have dlopen support on this platform
-#ifdef NO_DLOPEN
-
-void test_simple()
+bool test_supported()
 {
-    PASSMSG("dlopen not configured/available for this platform.");
-}
+    bool supported = Shared_Lib::is_supported();
 
-#else
+    // Make sure we can't create a Shared_Lib on unsupported platforms.
+
+    if ( not supported )
+    {
+	bool caught = false;
+	
+        try
+        {
+	    Shared_Lib s;
+        }
+        catch ( const rtt_dsxx::assertion &ass )
+        {
+            caught = true;
+            std::ostringstream m;
+            m << "Excellent! Caught assertion for unsupported platforms.";
+            PASSMSG(m.str());
+        }
+
+        if ( not caught ) ITFAILS;
+    }
+
+    // Done testing.
+
+    if ( rtt_shared_lib_test::passed )
+    {
+	if ( supported )
+	{
+	    PASSMSG("test_supported() ok, platform supported.");
+	}
+	else
+	{
+	    PASSMSG("test_supported() ok, platform unsupported.");
+	}
+    }
+
+    return supported;
+}
 
 void test_simple()
 {
@@ -132,8 +164,6 @@ void test_simple()
     }
 }
 
-#endif // NO_DLOPEN
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -152,7 +182,10 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 
-	test_simple();
+	if ( test_supported() )
+	{
+	    test_simple();
+	}
     }
     catch (std::exception &err)
     {

@@ -37,6 +37,7 @@ dnl AC_PCGLIB_SETUP(pkg)
 dnl AC_TRILINOS_SETUP(pkg)
 dnl AC_LAPACK_SETUP(pkg)
 dnl AC_PARMETIS_SETUP(pkg)
+AC_DLOPEN_SETUP(pkg)
 
 dnl This macro should be uncommented if the current package is a Draco
 dnl client (i.e.: This package exists in Capsaicin, Milagro, etc.)
@@ -88,31 +89,6 @@ dnl ----------------------------------------
 
 AC_DRACO_ENV
 AC_DRACO_AUTODOC(draco-4_3_0)
-
-dnl ---------------------------------------------------
-dnl Need libdl for dlopen, which is used by Shared_Lib.
-dnl ---------------------------------------------------
-#
-# Case through different hosts, if it is a host we haven't configured
-# yet then make the code "NULL"
-#
-case $host in
-
-   # >>> LINUX
-   *-linux-gnu)
-       LIBS="$LIBS -ldl"
-   ;;
-   
-   # >>> TRU64 COMPAQ
-   #alpha*-dec-osf*)
-       
-   #;;
-
-   # >>> All others
-   *)
-       AC_DEFINE(NO_DLOPEN)
-   ;;
-esac
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])

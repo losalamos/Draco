@@ -845,6 +845,8 @@ Optional Packages:
   --with-udm=serial,mpi      determine udm implementation (default:  'mpi' if mpi in use, else 'serial')
   --with-udm-inc=DIR    tell where UDM includes are (\${UDM_INC_DIR} by default)
   --with-udm-lib=DIR    tell where UDM libraries are (\${UDM_LIB_DIR} by default)
+  --with-dlopen=on/off
+	                  Turn dlopen on or off (on by default).
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
   --with-c4=scalar,mpi,shmem
@@ -2857,6 +2859,41 @@ fi;
    # package
    vendor_udm=pkg
 
+
+
+
+# Check whether --with-dlopen or --without-dlopen was given.
+if test "${with_dlopen+set}" = set; then
+  withval="$with_dlopen"
+
+fi;
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_dlopen=pkg
+
+   # set default value for with_dlopen, which is yes
+   if test "${with_dlopen:=yes}" != no ; then
+       with_dlopen=yes
+   fi
+
+   # turn off dlopen if not using shared libraries
+   if test "${enable_shared}" != yes ; then
+       if test "${with_dlopen}" = yes ; then
+	   { echo "$as_me:$LINENO: WARNING: \"Must specify --enable-shared when using --with-dlopen.\"" >&5
+echo "$as_me: WARNING: \"Must specify --enable-shared when using --with-dlopen.\"" >&2;}
+           { echo "$as_me:$LINENO: WARNING: \"Turning off dlopen.\"" >&5
+echo "$as_me: WARNING: \"Turning off dlopen.\"" >&2;}
+       fi
+       with_dlopen=no
+   fi
+
+   if test "${with_dlopen}" = yes ; then
+       cat >>confdefs.h <<\_ACEOF
+#define USE_DLOPEN 1
+_ACEOF
+
+   fi
 
 
 
