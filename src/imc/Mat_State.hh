@@ -59,27 +59,23 @@ class Mat_State
     // Material temperature in keV.
     ccsf_double temperature;
 
-    // Differential internal energy in Jerks/keV.
-    ccsf_double dedt;
-
     // Specific heat capacities in Jerks/g/keV.
     ccsf_double spec_heat;
 
   public:
-    // inline constructors
-    Mat_State(const ccsf_double &, const ccsf_double &, 
-	      const ccsf_double &, const ccsf_double &); 
+    // Constructor.
+    Mat_State(const ccsf_double &, const ccsf_double &, const ccsf_double &); 
     
     // >>> ACCESSORS
     
     //! Get the density in a cell in g/cc.
     double get_rho(int cell) const { return density(cell); }
     
-    //! Get the temperature in a cell.
+    //! Get the temperature in a cell in keV.
     double get_T(int cell) const { return temperature(cell); }
 
     //! Get the differential internal energy in a cell in Jerks/keV.
-    double get_dedt(int cell) const { return dedt(cell); }
+    inline double get_dedt(int cell) const;
 
     //! Get the specific heat in Jerks/g/keV.
     double get_spec_heat(int cell) const { return spec_heat(cell); }
@@ -89,16 +85,51 @@ class Mat_State
 
     // >>> DIAGNOSTICS
 
-    // Print out the material state..
+    //! Print out the material state.
     void print(std::ostream &, int) const;
 };
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS
+//---------------------------------------------------------------------------//
+// Return the dE/dT in a cell
+
+template<class MT>
+double Mat_State<MT>::get_dedt(int cell) const
+{
+    Require (cell > 0 && cell <= num_cells());
+
+    // calculate dEdT from the specific heat
+    double dEdT = spec_heat(cell) * spec_heat.get_Mesh().volume(cell) * 
+	density(cell);
+
+    Check (dEdT >= 0.0);
+    return dEdT;
+}
 
 //---------------------------------------------------------------------------//
 // overloaded operators
 //---------------------------------------------------------------------------//
 
 template<class MT>
-std::ostream& operator<<(std::ostream &, const Mat_State<MT> &);
+std::ostream& operator<<(std::ostream &output, const Mat_State<MT> &object)
+{
+  // print out opacities for all cells
+    using std::endl;
+    using std::setw;
+    using std::ios;
+    using std::setiosflags;
+    
+    output << setw(8)  << setiosflags(ios::right) << "Cell" 
+	   << setw(15) << "Density" << setw(15) << "Temp" 
+	   << setw(15) << "dEdT" << setw(15) << "Cv" << endl;
+    output << "--------------------------------------"
+	   << "------------------------------" << endl;
+
+    for (int i = 1; i <= object.num_cells(); i++)
+	object.print(output, i);
+    return output;
+}
 
 } // end namespace rtt_imc
 

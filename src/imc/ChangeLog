@@ -1,3 +1,14 @@
+2001-11-15  Thomas M. Evans  <tme@lanl.gov>
+
+	* Mat_State_Builder: Made new class hierarchy, Mat_State_Builder
+	that replaces Opacity_Builder.  Also, split up Interface into
+	three classes:
+
+		Interface-common mat builder, source builder, etc)
+		Flat_Data_Interface-flat data interface to
+			Flat_Mat_State_Builder
+		CDI_Data_Interface-uses CDI to get data
+
 2001-07-30  Thomas M. Evans  <tme@lanl.gov>
 
 	* imc: Updated to imc-2_2_0.  This includes M. Buksas' mods to

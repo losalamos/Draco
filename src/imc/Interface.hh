@@ -26,22 +26,42 @@ namespace rtt_imc
  *
  * \brief Interface base class for multi-cycle imc components.
  *
- * The interface base class defines the interface functionality required by
- * the Opacity_Builder, Topology_Builder, and Source_Builder classes.  The
- * primary use of this class is to build interfaces that can provide these
- * factories with the proper data to build Opacity, Mat_State, and Source.
- * These are all components in the rtt_imc package.  Additionally, these are
- * all components that change from timestep to timestep.  For example, a MT
- * may or may not change between cycles.  However, the Mat_State is always
- * changed.  Thus. various classes may take on the responsibility for
- * becoming interfaces.  To accomplish this, simply inherit the Interface
- * base class and the necessary public interface for Opacity_Builder,
- * Topology_Builder, and Source_Builder will be enforced at compile time.
+ * The Interface base class defines interface functionality required by the
+ * Topology_Builder, Source_Builder, Flat_Mat_State_Builder,
+ * CDI_Mat_State_Builder classes.  The primary use of this class is to build
+ * interfaces that can provide these factories with the proper data to build
+ * Opacity, Mat_State, and Source.  These are all components in the rtt_imc
+ * package. Additionally, these are all components that change from timestep
+ * to timestep.  For example, a MT may or may not change between cycles.
+ * However, the Mat_State is always changed.  Thus. various classes may take
+ * on the responsibility for becoming interfaces.  To accomplish this, simply
+ * inherit the Interface base class and the necessary public interface for
+ * Opacity_Builder, Topology_Builder, and Source_Builder will be enforced at
+ * compile time.
+ *
+ * The Mat_State_Builder derived classes: Flat_Mat_State_Builder and
+ * CDI_Mat_State_Builder, require different interfaces.  The functions that
+ * are common to both reside within rtt_imc::Interface.  The functions that
+ * are unique to Flat_Mat_State_Builder are defined in the
+ * Flat_Data_Interface virtual class.  The functions that are unique to
+ * CDI_Mat_State_Builder are defined in the CDI_Data_Interface virtual class.
+ * To make an interface class that will support the imc package using cdi,
+ * the interface must inherit (or contain the functions declarations) from
+ * rtt_imc::Interface and rtt_imc::CDI_Data_Interface.  There are no name
+ * collisions between rtt_imc::Interface and rtt_imc::Flat_Data_Interface and
+ * rtt_cdi::CDI_Data_Interface.
+ *
+ * \sa rtt_imc::Flat_Data_Interface and rtt_imc::CDI_Data_Interface.
+ *
+ * Peruse the tests tstMat_State_Builder.cc, tstSource_Builder.cc, and
+ * tstTopology_Builder.cc for examples.
  */
 // revision history:
 // -----------------
 // 0) original
 // 1) 31 Jul 2001 : Added kappa_offset (tju)
+// 2) 13 Nov 2001 : modified interface class to conform to new
+//                  Mat_State_Builder constructions.
 // 
 //===========================================================================//
 
@@ -49,7 +69,7 @@ template<class PT>
 class Interface 
 {
   public:
-    // useful typedefs
+    //! Useful typedefs for derived interfaces.
     typedef std::string                                        std_string;
     typedef std::vector<double>                                sf_double;
     typedef std::vector<std::vector<double> >                  vf_double;
@@ -59,33 +79,15 @@ class Interface
     typedef rtt_dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census; 
     
   public:
-    // constructor
+    // Constructor.
     Interface() { /* no data to construct */ }
 
-    // virtual constructor to make life happy down the inhertiance chain
+    // Virtual constructor to make life happy down the inhertiance chain.
     virtual ~Interface() { /* need a destructor for inheritance chain */ }
-
-    // >>> FUNCTIONS REQUIRED BY OPACITY_BUILDER
-
-    // Material data.
-    virtual sf_double get_density() const = 0;
-    virtual sf_double get_temperature() const = 0;
-
-    // Strings that determine how to calculate the opacity and specific
-    // heats.
-    virtual std_string get_analytic_opacity() const = 0;
-    virtual std_string get_analytic_sp_heat() const = 0;
-
-    // Opacity data.
-    virtual sf_double get_kappa() const = 0;
-    virtual sf_double get_kappa_offset() const = 0;
-    virtual sf_double get_kappa_thomson() const = 0;
-    virtual sf_double get_specific_heat() const = 0;
-
-    // Fleck implicitness factor.
-    virtual double get_implicit() const = 0;
    
-    // Timestep.
+    // >>> FUNCTIONS REQUIRED BY MULTIPLE BUILDER CLASSES
+
+    //! Get the timestep in shakes.
     virtual double get_delta_t() const = 0;
 
     // >>> FUNCTIONS REQUIRED BY TOPOLOGY BUILDER

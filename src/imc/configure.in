@@ -22,9 +22,9 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(mc viz meshReaders rng c4 traits ds++)
 
 # testing setup
-AC_RUNTESTS(tstOpacity tstTally tstParticle tstTopology_Builder \
+AC_RUNTESTS(tstTally tstParticle tstTopology_Builder \
             tstSource_Builder tstMesh_Operations tstTransporter \
-            tstCommunicator, 1 2 4)
+            tstCommunicator tstMat_State_Builder, 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV
