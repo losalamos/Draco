@@ -1,7 +1,7 @@
 %%---------------------------------------------------------------------------%%
 %% MTConcept.tex
 %% Shawn Pautz
-%% Time-stamp: <99/04/28 11:13:37 pautz>
+%% Time-stamp: <99/07/23 10:42:41 pautz>
 %%---------------------------------------------------------------------------%%
 \documentclass[11pt]{rnote}
 \usepackage[centertags]{amsmath}
@@ -34,7 +34,7 @@
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
 \refno{XTM-RN(U)99-006}
-\subject{Specification of the Solon Mesh}
+\subject{Specification of Solon Mesh Concepts}
 
 %-------NO CHANGES
 \divisionname{Applied Theoretical \& Computational Physics Div.}
@@ -67,6 +67,8 @@
   G.L. Olson, XTM MS D409\\ 
   J.M. McGhee, XTM MS D409\\ 
   H.G. Hughes, XTM MS D409\\ 
+  T. Adams, XTM MS D409\\ 
+  M. Alme, XTM MS D409\\ 
   T.M. Evans, XTM MS D409\\ 
   M.G. Gray, XTM MS D409\\ 
   M.L. Hall, XTM MS D409\\ 
@@ -146,8 +148,18 @@ concepts, it is hoped that each successive package will need to define
 and implement fewer new concepts and instead can reuse previously
 designed and tested Draco components.
 
+The rest of this document is organized as follows. In
+Section~\ref{sec:general description} we give a general description of 
+the mesh concepts that we define in detail later. In
+Section~\ref{sec:basic concepts} we define the low level concepts that 
+are used by the mesh concepts. In Section~\ref{sec:mesh concepts} we
+define more complicated concepts such as fields and the mesh concepts
+themselves.
+
+
 \section{General Description of the \concept{Solon 3D Orthogonal
     Cartesian Mesh} Concept}
+\label{sec:general description}
 
 The \concept{Solon 3D Orthogonal Cartesian Mesh} concept is defined in 
 detail in Section~\ref{sec:solon 3d orth cart mesh}, but we wish to
@@ -200,6 +212,7 @@ different performance characteristics may be used with Solon without
 requiring any code changes in Solon.
 
 \section{Basic Concepts}
+\label{sec:basic concepts}
 
 Besides the \concept{Solon 3D Orthogonal Cartesian Mesh} concept
 itself, there are several associated concepts that together are used
@@ -232,6 +245,8 @@ and has a return type of \comp{void} behaves as a \concept{Binary
   Op}. For example, a function pointer of type \comp{void (*)(double
   \&, const double \&)} is a model of \concept{Binary Op}.
 
+\bigskip
+
 \subsection{Default Constructible Binary Op}
 
 A \concept{Default Constructible Binary Op} is a \concept{Binary Op}
@@ -245,6 +260,8 @@ that has a default constructor.
 
 All of the \comp{Mesh\cu XYZ} \concept{Binary Op}'s in Draco are
 models of \concept{Default Constructible Binary Op}.
+
+\newpage
 
 \subsection{Assign Op}
 
@@ -289,6 +306,8 @@ that does assignment operations.
 The \comp{Mesh\cu XYZ::OpAssign} class in Draco is a model of
 \concept{Assign Op}.
 
+\newpage
+
 \subsection{Add Assign Op}
 
 An \concept{Add Assign Op} is a \concept{Default Constructible Binary
@@ -331,6 +350,8 @@ An \concept{Add Assign Op} is a \concept{Default Constructible Binary
 
 The \comp{Mesh\cu XYZ::OpAddAssign} class in Draco is a model of
 \concept{Add Assign Op}.
+
+\newpage
 
 \subsection{Sub Assign Op}
 
@@ -375,6 +396,8 @@ A \concept{Sub Assign Op} is a \concept{Default Constructible Binary
 The \comp{Mesh\cu XYZ::OpSubAssign} class in Draco is a model of
 \concept{Sub Assign Op}.
 
+\newpage
+
 \subsection{Mult Assign Op}
 
 A \concept{Mult Assign Op} is a \concept{Default Constructible Binary
@@ -417,6 +440,8 @@ A \concept{Mult Assign Op} is a \concept{Default Constructible Binary
 
 The \comp{Mesh\cu XYZ::OpMultAssign} class in Draco is a model of
 \concept{Mult Assign Op}.
+
+\newpage
 
 \subsection{Min Assign Op}
 
@@ -461,6 +486,8 @@ A \concept{Min Assign Op} is a \concept{Default Constructible Binary
 The \comp{Mesh\cu XYZ::OpMinAssign} class in Draco is a model of
 \concept{Min Assign Op}.
 
+\newpage
+
 \subsection{Max Assign Op}
 
 A \concept{Max Assign Op} is a \concept{Default Constructible Binary
@@ -504,6 +531,8 @@ A \concept{Max Assign Op} is a \concept{Default Constructible Binary
 The \comp{Mesh\cu XYZ::OpMaxAssign} class in Draco is a model of
 \concept{Max Assign Op}.
 
+\newpage
+
 \subsection{Scatter/Gather Tag}
 \label{sec:scatter gather tag}
 
@@ -526,6 +555,8 @@ defined, but the semantics of its underlying operation must be.
 
 All of the \comp{Mesh\cu XYZ} \concept{Binary Op}'s in Draco are
 models of \concept{Scatter/Gather Tag}.
+
+\bigskip
 
 \subsection{Assign Tag}
 
@@ -567,6 +598,8 @@ underlying operation must be.
 The \comp{Mesh\cu XYZ::OpAddAssign} class in Draco is a model of
 \concept{Add Assign Tag}.
 
+\bigskip
+
 \subsection{Sub Assign Tag}
 
 A \concept{Sub Assign Tag} is a \concept{Scatter/Gather Tag} that
@@ -586,6 +619,8 @@ underlying operation must be.
 
 The \comp{Mesh\cu XYZ::OpSubAssign} class in Draco is a model of
 \concept{Sub Assign Tag}.
+
+\newpage
 
 \subsection{Mult Assign Tag}
 
@@ -607,6 +642,8 @@ underlying operation must be.
 The \comp{Mesh\cu XYZ::OpMultAssign} class in Draco is a model of
 \concept{Mult Assign Tag}.
 
+\bigskip
+
 \subsection{Min Assign Tag}
 
 A \concept{Min Assign Tag} is a \concept{Scatter/Gather Tag} that
@@ -627,6 +664,8 @@ underlying operation must be.
 The \comp{Mesh\cu XYZ::OpMinAssign} class in Draco is a model of
 \concept{Min Assign Tag}.
 
+\newpage
+
 \subsection{Max Assign Tag}
 
 A \concept{Max Assign Tag} is a \concept{Scatter/Gather Tag} that
@@ -646,6 +685,8 @@ underlying operation must be.
 
 The \comp{Mesh\cu XYZ::OpMaxAssign} class in Draco is a model of
 \concept{Max Assign Tag}.
+
+\newpage
 
 \subsection{DoubleVec}
 
@@ -696,6 +737,8 @@ In addition to the expressions defined in \concept{Expression Enabled
 The \comp{Mesh\cu XYZ::tiny\cu vec<double>} class is a model of
 \concept{DoubleVec}.
 
+
+\newpage
 
 \section{Mesh Concepts}
 \label{sec:mesh concepts}
@@ -824,6 +867,8 @@ A \concept{Cell Centered Solon Mesh Field} is a \concept{Solon Mesh
 The \comp{Mesh\cu XYZ::cctf<>} class is a model of \concept{Cell
   Centered Solon Mesh Field}.
 
+\bigskip
+
 \subsection{Face Centered Discontinuous Solon Mesh Field}
 
 A \concept{Face Centered Discontinuous Solon Mesh Field} is a
@@ -837,6 +882,8 @@ associated mesh.
 
 The \comp{Mesh\cu XYZ::fcdtf<>} class is a model of \concept{Face
   Centered Discontinuous Solon Mesh Field}.
+
+\bigskip
 
 \subsection{Node Centered Solon Mesh Field}
 
@@ -864,6 +911,8 @@ A \concept{Vertex Centered Solon Mesh Field} is a \concept{Solon Mesh
 The \comp{Mesh\cu XYZ::vctf<>} class is a model of \concept{Vertex
   Centered Solon Mesh Field}.
 
+\bigskip
+
 \subsection{Boundary Face Solon Mesh Field}
 
 A \concept{Boundary Face Solon Mesh Field} is a \concept{Solon Mesh
@@ -878,6 +927,8 @@ associated mesh.
 The \comp{Mesh\cu XYZ::bftf<>} class is a model of \concept{Boundary
   Face Solon Mesh Field}.
 
+
+\newpage
 
 \subsection{Solon 3D Mesh}
 \label{sec:solon 3d mesh}
@@ -942,6 +993,7 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
     \concept{DoubleVec}.}
   \typeitem{Assign tag}{X::OpAssign}{A model of \concept{Assign
       Tag}.}
+\newpage
   \typeitem{Assign with addition tag}{X::OpAddAssign}{A model of
     \concept{Add Assign Tag}.}
   \typeitem{Assign with subtraction tag}{X::OpSubAssign}{A model
@@ -1050,6 +1102,7 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
      Semantics: & Each cell value in \comp{c} is assigned the value of
      the y coordinate of that cell's center. \\
      \end{tabularx}}
+\newpage
   \expritem{Z coordinates of cell centers}{a.get\cu zloc(c)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -1104,6 +1157,7 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
      Semantics: & Each face value in \comp{f} is assigned the value of
      the area of that face. \\
      \end{tabularx}}
+\newpage
   \expritem{Face lengths}{a.get\cu face\cu lengths(f)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -1159,6 +1213,7 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
      located in a cell that is adjacent to the face. The result is
      assigned back to the face in \comp{ft}. \\
      \end{tabularx}}
+\newpage
   \expritem{Face centered to cell centered scatter}
     {X::scatter(ct, ft, tag)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
@@ -1345,6 +1400,7 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
      Semantics: & The value returned is the sum of all values
      contained in \comp{ft} in all processes. \\
      \end{tabularx}}
+\newpage
   \expritem{Node centered sum}
     {X::sum(nt)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
@@ -1409,6 +1465,7 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
      Semantics: & The value returned is the minimum of all values
      contained in \comp{bt} in all processes. \\
      \end{tabularx}}
+\newpage
   \expritem{Cell centered maximum}
     {X::max(ct)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
@@ -1462,6 +1519,8 @@ A model of \concept{Solon 3D Mesh} is a class that describes a
 \subsubsection{Models}
 
 The \comp{Mesh\cu XYZ} class is a model of \concept{Solon 3D Mesh}.
+
+\newpage
 
 \subsection{Solon 3D Orthogonal Cartesian Mesh}
 \label{sec:solon 3d orth cart mesh}
@@ -1518,6 +1577,7 @@ There are no additional types beyond those defined in \concept{Solon
      Postcondition: & \comp{0 <= a.get\cu ncz() <= a.get\cu total\cu
        ncells()}. \\
      \end{tabularx}}
+\newpage
   \expritem{Total number of cells}{a.get\cu total\cu ncells()}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}

@@ -32,7 +32,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{XTM-RN(U)99-???}
+\refno{XTM-RN(U)99-021}
 \subject{Specification of the \concept{Expression Enabled Container}
   Concept}
 
@@ -67,6 +67,8 @@ J.E. Morel, XTM MS D409\\
 G.L. Olson, XTM MS D409\\ 
 J.M. McGhee, XTM MS D409\\ 
 H.G. Hughes, XTM MS D409\\ 
+T. Adams, XTM MS D409\\ 
+M. Alme, XTM MS D409\\ 
 T.M. Evans, XTM MS D409\\ 
 M.G. Gray, XTM MS D409\\ 
 M.L. Hall, XTM MS D409\\ 
@@ -110,7 +112,7 @@ the following standard \C++ coding technique:
 
 \comp{for (int i = 0; i < a.size(); ++i)}
 \break
-\comp{  a[i] = b[i] + c[i]*sin(d[i]);}
+\hspace*{0.25in}\comp{a[i] = b[i] + c[i]*sin(d[i]);}
 
 The above operation could also be implemented by means of iterators if 
 \comp{operator[]} were not defined. The problem with either of these
@@ -247,6 +249,7 @@ following expressions must be valid.
      Postcondition: & \comp{a.size() == b.size()}, unless \comp{b} is
      an object of type \comp{T}. \\
      \end{tabularx}}
+\newpage
   \expritem{Assignment with division}{a /= b}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -309,6 +312,7 @@ following expressions must be valid.
      (or \comp{c} itself if \comp{c} is an object of type
      \comp{T}). \\
      \end{tabularx}}
+\newpage
   \expritem{Subtraction}{b - c}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -360,6 +364,7 @@ following expressions must be valid.
      (or \comp{c} itself if \comp{c} is an object of type
      \comp{T}). \\
      \end{tabularx}}
+\newpage
   \expritem{Arc cosine}{acos(b)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -422,6 +427,7 @@ following expressions must be valid.
      (or \comp{c} itself if \comp{c} is an object of type
      \comp{T}). \\
      \end{tabularx}}
+\newpage
   \expritem{Cosine}{cos(b)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -482,6 +488,7 @@ following expressions must be valid.
      \comp{cosh()} applied to corresponding elements of
      \comp{b}. \\
      \end{tabularx}}
+\newpage
   \expritem{Hyperbolic sine}{sinh(b)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -542,6 +549,7 @@ following expressions must be valid.
      \comp{log()} applied to corresponding elements of
      \comp{b}. \\
      \end{tabularx}}
+\newpage
   \expritem{Base-10 logarithm}{log10(b)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -604,6 +612,7 @@ following expressions must be valid.
      \comp{ceil()} applied to corresponding elements of
      \comp{b}. \\
      \end{tabularx}}
+\newpage
   \expritem{Absolute value}{abs(b)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
@@ -664,6 +673,7 @@ following expressions must be valid.
      \comp{floor()} applied to corresponding elements of
      \comp{b}. \\
      \end{tabularx}}
+\newpage
   \expritem{Modulus}{fmod(b,c)}
     {\begin{tabularx}{\linewidth}{>{\setlength{\hsize}{.5\hsize}}X
     >{\setlength{\hsize}{1.6\hsize}}X}
