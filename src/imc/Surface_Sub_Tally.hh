@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   imc/Surface_Tally.hh
+ * \file   imc/Surface_Sub_Tally.hh
  * \author Mike Buksas
  * \date   Mon Jun 23 15:33:15 2003
  * \brief  Contains tally information for surface crossings
@@ -11,8 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_imc_Surface_Tally_hh
-#define rtt_imc_Surface_Tally_hh 
+#ifndef rtt_imc_Surface_Sub_Tally_hh
+#define rtt_imc_Surface_Sub_Tally_hh 
 
 #include "ds++/SP.hh"
 #include <vector>
@@ -24,7 +24,7 @@ class Azimuthal_Mesh;
 
 //===========================================================================//
 /*!
- * \class Surface_Tally
+ * \class Surface_Sub_Tally
  * \brief Records angular dependence and direction of particle tracings
  *
  * Long description or discussion goes here.  Information about Doxygen
@@ -33,7 +33,7 @@ class Azimuthal_Mesh;
  * Doxygen tutorial: http://www.stack.nl/~dimitri/doxygen/docblocks.html
  * Doxygen keywords: http://www.stack.nl/~dimitri/doxygen/commands.html
  *
- * \sa Surface_Tally.cc for detailed descriptions.
+ * \sa Surface_Sub_Tally.cc for detailed descriptions.
  *
  */
 /*! 
@@ -47,7 +47,7 @@ class Azimuthal_Mesh;
 // 
 //===========================================================================//
 
-class Surface_Tally 
+class Surface_Sub_Tally 
 {
   public:
 
@@ -56,18 +56,18 @@ class Surface_Tally
     // CREATORS
     
     //! default constructors
-    Surface_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh, int surfaces);
+    Surface_Sub_Tally(rtt_dsxx::SP<Azimuthal_Mesh> az_mesh, int surfaces);
 
     //! copy constructor
-    Surface_Tally(const Surface_Tally &rhs);
+    Surface_Sub_Tally(const Surface_Sub_Tally &rhs);
 
     //! destructor
-    ~Surface_Tally();
+    ~Surface_Sub_Tally();
 
     // MANIPULATORS
     
-    //! Assignment operator for Surface_Tally
-    Surface_Tally& operator=(const Surface_Tally &rhs);
+    //! Assignment operator for Surface_Sub_Tally
+    Surface_Sub_Tally& operator=(const Surface_Sub_Tally &rhs);
 
     //! Adds a crossing of given surface with given weight and direction.
     void add_to_tally(int surface, const std::vector<double>& direction, 
@@ -101,8 +101,8 @@ class Surface_Tally
 
 } // end namespace rtt_imc
 
-#endif // rtt_imc_Surface_Tally_hh
+#endif // rtt_imc_Surface_Sub_Tally_hh
 
 //---------------------------------------------------------------------------//
-//              end of imc/Surface_Tally.hh
+//              end of imc/Surface_Sub_Tally.hh
 //---------------------------------------------------------------------------//

@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   imc/Surface_Tally.cc
+ * \file   imc/Surface_Sub_Tally.cc
  * \author Mike Buksas
  * \date   Mon Jun 23 15:33:15 2003
  * \brief  Contains tally information about surface crossings
@@ -9,7 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Surface_Tally.hh"
+#include "Surface_Sub_Tally.hh"
 #include "Azimuthal_Mesh.hh"
 
 using rtt_dsxx::SP;
@@ -18,7 +18,7 @@ using std::vector;
 namespace rtt_imc
 {
 
-Surface_Tally::Surface_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
+Surface_Sub_Tally::Surface_Sub_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
     : the_mesh(az_mesh),
       mesh_size(az_mesh->size()),
       surfaces(surfaces_),
@@ -33,7 +33,7 @@ Surface_Tally::Surface_Tally(SP<Azimuthal_Mesh> az_mesh, int surfaces_)
 
 }
 
-void Surface_Tally::add_to_tally(int surface, const vector<double>& direction,
+void Surface_Sub_Tally::add_to_tally(int surface, const vector<double>& direction,
 				 bool is_outward, double ew)
 {
 
@@ -50,7 +50,7 @@ void Surface_Tally::add_to_tally(int surface, const vector<double>& direction,
 
 }
 
-const vector<double>& Surface_Tally::get_outward_tally(int surface) const
+const vector<double>& Surface_Sub_Tally::get_outward_tally(int surface) const
 {
     Check (surface > 0);  Check(surface <= surfaces);
 
@@ -59,7 +59,7 @@ const vector<double>& Surface_Tally::get_outward_tally(int surface) const
 
 }
 
-const vector<double>& Surface_Tally::get_inward_tally(int surface) const
+const vector<double>& Surface_Sub_Tally::get_inward_tally(int surface) const
 {
     Check (surface > 0);  Check(surface <= surfaces);
 
@@ -68,11 +68,11 @@ const vector<double>& Surface_Tally::get_inward_tally(int surface) const
 
 }
 
-Surface_Tally::~Surface_Tally() { /* ... */ }
+Surface_Sub_Tally::~Surface_Sub_Tally() { /* ... */ }
 
 
 } // end namespace rtt_imc
 
 //---------------------------------------------------------------------------//
-//                 end of Surface_Tally.cc
+//                 end of Surface_Sub_Tally.cc
 //---------------------------------------------------------------------------//
