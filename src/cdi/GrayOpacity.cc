@@ -1,23 +1,23 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi/Opacity.cc
+ * \file   cdi/GrayOpacity.cc
  * \author Kelly Thompson
- * \date   Thu Jun 23 13:57:07 2000
- * \brief  Opacity class implementation file.
+ * \date   Mon Jan 8 15:05:22 2001
+ * \brief  GrayOpacity class implementation file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-//#include "Opacity.hh"
+#include "GrayOpacity.hh"
 
-namespace rtt_cdi
+namespace rtt_cdi_gray_opacity
 {
     // empty
 
-} // end namespace rtt_cdi
+} // end namespace rtt_cdi_gray_opacity
 
 
 //---------------------------------------------------------------------------//
-//                              end of Opacity.cc
+//                              end of GrayOpacity.cc
 //---------------------------------------------------------------------------//
