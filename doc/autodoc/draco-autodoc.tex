@@ -1,0 +1,143 @@
+%%---------------------------------------------------------------------------%%
+%% draco-autodoc.tex
+%% John McGhee
+%% Time-stamp: <99/08/05 17:43:22 mcghee>
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+\newcommand{\draco}{{\normalfont\sffamily Draco}}
+\newcommand{\xemacs}{{\normalfont\bfseries XEmacs}}
+\newcommand{\gnats}{{\normalfont\bfseries GNATS}}
+\newcommand{\doxy}{{\normalfont\bfseries doxygen}}
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/X--TM, MS D409}
+\refno{XTM:JMM-99-??? (U)}
+\subject{\doxy\ C++ Automatic Documentation Utility}
+
+%-------NO CHANGES
+\divisionname{Applied Theoretical \& Computational Physics Div.}
+\groupname{X--TM:Transport Methods Group}
+\fromms{John M. McGhee/X--TM, MS D409}
+\phone{(505)667--9552}
+\originator{jmm}
+\typist{jmm}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {
+J.E. Morel, XTM MS D409\\ 
+J.M. McGhee, XTM MS D409\\ 
+H.G. Hughes, XTM MS D409\\ 
+T.M. Evans, XTM MS D409\\ 
+M.G. Gray, XTM MS D409\\ 
+S.D. Pautz, XTM MS D409\\ 
+R.M. Roberts, XTM MS D409\\ 
+T.J. Urbatsch, XTM MS D409\\ 
+T.A. Wareing, XTM MS D409\\ 
+J.S. Warsa, XTM MS D409\\ 
+C.J. Gesh, XTM MS D409\\ 
+R.B. Lowrie, XHM MS D413\\ 
+W.D. Hawkins, XTM MS D409}
+
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+The GNU Public License C++ automatic code documentation system \doxy\
+has been installed
+on /n/skiathos for use by the \draco\ team. This memo describes how to
+set up and use \doxy\. Also, some suggestions are made as to minimal
+documentation standards.
+
+\section{Introduction}
+
+\doxy\ is an automatic C++ code documentation system available under
+the GNU Public License. 
+ A user's manual and other information is available on-line at:
+\begin{verbatim} http://www.stack.nl/~dimitri/doxygen/ \end{verbatim}
+
+Tom Evans has evaluated several automatic documentation systems over
+the past few weeks including DOC++, PERCEPS, KDOC, and \doxy\. 
+For Draco autodoc purposes, \doxy\ is deemed to be clearly the 
+package of choice. Ease of use and installation, a plethora of features,
+good documentation (the package documented itself!), and still
+under active development with a responsive author.
+
+\section{How to use \doxy\}
+
+\subsection{Special Comment Blocks}
+\subsection{A Few Keywords}
+
+file, author, date, param, return, sa, anchor, ref
+
+
+
+\section{Draco Installation Strategy}
+  \subsection{New Templates}
+  Tom is installing new .cc and .hh templates in the draco elisp
+directory to support \doxy\ requirements. There will also be a
+template for the \doxy\ configuration file.
+  \subsection{Tag Files}
+Relative Paths are supported.
+
+  \subsection{Location of \doxy\ Output}
+
+Each package developer will run 
+  \subsection{\doxy Configuration File}
+  Each package in \draco\ will have a \doxy\ configuration file.
+  \subsection{Draco WWW Site}
+When checking out the \draco\ web site,
+CVS magic will be used to check out the appropriate html source
+from each package directory in \draco\.
+
+\section{Documentation Standards}
+
+
+
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of draco-autodoc.tex
+%%---------------------------------------------------------------------------%%
