@@ -1,3 +1,11 @@
+/*-----------------------------------*-C++-*---------------------------------*/
+/* CRSMatrixRep.cc */
+/* Randy M. Roberts */
+/* Thu May 27 16:12:42 1999 */
+/*---------------------------------------------------------------------------*/
+/* @> Minimal Compressed Row Storage Representation for MatrixFactoryTraits  */
+/*---------------------------------------------------------------------------*/
+
 #include "CRSMatrixRep.hh"
 #include "DenseMatrixRep.hh"
 #include "ds++/Assert.hh"
@@ -52,3 +60,7 @@ CRSMatrixRep::CRSMatrixRep(const DenseMatrixRep &rep)
 #endif
 
 } // namespace rtt_MatrixFactory
+
+/*---------------------------------------------------------------------------*/
+/*    end of CRSMatrixRep.cc */
+/*---------------------------------------------------------------------------*/

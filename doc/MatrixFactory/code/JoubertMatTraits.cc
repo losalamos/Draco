@@ -1,3 +1,11 @@
+/*-----------------------------------*-C++-*---------------------------------*/
+/* JoubertMatTraits.cc */
+/* Randy M. Roberts */
+/* Thu May 27 15:55:53 1999 */
+/*---------------------------------------------------------------------------*/
+/* @> */
+/*---------------------------------------------------------------------------*/
+
 #include "JoubertMatTraits.hh"
 
 #include "MatrixReps.hh"
@@ -15,9 +23,9 @@ namespace rtt_MatrixFactory
 {
 
 typedef MatrixFactoryTraits<JoubertMat::JoubertMat> MatTrait;
-typedef JoubertMat::JoubertMat Matrix;
+typedef JoubertMat::JoubertMat JMat;
 
-Matrix *MatTrait::create(const CRSMatrixRep &rep)
+JMat *MatTrait::create(const CRSMatrixRep &rep)
 {
 #if defined(DO_IO)
     std::cerr
@@ -47,10 +55,16 @@ Matrix *MatTrait::create(const CRSMatrixRep &rep)
 
     transform(rep.colIndices().begin(), rep.colIndices().end(),
 	      f90ColIndices.begin(), bind2nd(plus<int>(), 1));
+
+    // Create the Joubert Matrix from the data it wants.
+    // The indices arrays are all in "Fortran" numbering.
     
-    return new Matrix(nrow, ncol, nnz, f90RowIndices, f90ColIndices,
+    return new JMat(nrow, ncol, nnz, f90RowIndices, f90ColIndices,
 		      rep.data());
 }
 
 } // namespace rtt_MatrixFactory
 
+/*---------------------------------------------------------------------------*/
+/*    end of JoubertMatTraits.hh */
+/*---------------------------------------------------------------------------*/

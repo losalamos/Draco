@@ -1,4 +1,4 @@
-/*-----------------------------------*-C-*-----------------------------------*/
+/*-----------------------------------*-C++-*---------------------------------*/
 /* JoubertMatTraits.hh */
 /* Randy M. Roberts */
 /* Thu May 27 15:55:53 1999 */
@@ -16,13 +16,22 @@
 namespace rtt_MatrixFactory
 {
 
+// Specialize the MatrixFactoryTraits on a JoubertMat.
+
 template<>
 struct MatrixFactoryTraits<JoubertMat::JoubertMat>
 {
-    typedef JoubertMat::JoubertMat Matrix;
+    typedef JoubertMat::JoubertMat JMat;
+
+    // We have decided that any Draco-defined representation
+    // that can be converted to a CRSMatrixRep can be used with
+    // the "create" factory trait.  (This, of course, will require
+    // the possible creation of a temporary CRSMatrixRep object.)
+    // Anything that cannot be converted to a CRSMatrixRep will fail
+    // at compile time.
 
     template<class T>
-    static Matrix *create(const T &rep)
+    static JMat *create(const T &rep)
     {
 	// The magic here is contained in the
 	// "static_cast<CRSMatrixRep>(rep)" construct.
@@ -43,12 +52,14 @@ struct MatrixFactoryTraits<JoubertMat::JoubertMat>
 	// representation is converted into a CRSMatrixRep representation.
 	//
 	// The CRSMatrixRep object is given to the overloaded create
-	// utility of this traits class, whose job is to create the Matrix.
+	// utility of this traits class, whose job is to create the JMat.
 
 	return create(static_cast<CRSMatrixRep>(rep));
     }
+
+    // Overload the "create" static method when given a CRSMatrixRep.
     
-    static Matrix *create(const CRSMatrixRep &rep);
+    static JMat *create(const CRSMatrixRep &rep);
 };
 
 } // namespace rtt_MatrixFactory

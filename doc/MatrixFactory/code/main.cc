@@ -1,3 +1,11 @@
+/*-----------------------------------*-C++-*---------------------------------*/
+/* main.cc */
+/* Randy M. Roberts */
+/* Thu May 27 16:12:42 1999 */
+/*---------------------------------------------------------------------------*/
+/* @> Main program to demonstrate MatrixFactoryTraits mechanism */
+/*---------------------------------------------------------------------------*/
+
 #include "JoubertMat.hh"
 #include "JoubertMatTraits.hh"
 #include "DenseMatrixRep.hh"
@@ -8,19 +16,26 @@
 
 using namespace rtt_MatrixFactory;
 
-int main()
+// use unnamed namespace to keep from polluting the global namespace
+
+namespace
+{
+
+// The function doit is templated on an unknown Matrix type.
+// This shows the generic use of the MatrixFactoryTraits class.
+
+template<class Matrix>
+void doit()
 {
     const double matdata[] = {0.0, 1.0, 2.0, 3.0,
 			      0.0, 5.0, 0.0, 7.0,
 			      0.0, 0.0, 0.0, 11.0};
     const int matdataSize = sizeof(matdata)/sizeof(double);
 
-    using JoubertMat::JoubertMat;
-    
-    dsxx::SP<JoubertMat> spJoubertMat;
-    JoubertMat *pJoubertMat;
+    dsxx::SP<Matrix> spMatrix;
+    Matrix *pMatrix;
 
-    // Scoping braces
+    // Scoping braces to destroy denseMat after no longer needed.
     {
 
 	// Create a Dense matrix to test out the MatrixFactoryTraits
@@ -28,31 +43,49 @@ int main()
 	DenseMatrixRep denseMat(3, 4, matdata+0, matdata+matdataSize);
 	std::cerr << denseMat << std::endl;
 
-	// Use the factory traits to create a smart pointer to a Joubert matrix.
+	// Use the factory traits to create a smart pointer to an
+	// unknown matrix.
 	
-	spJoubertMat = MatrixFactoryTraits<JoubertMat>::create(denseMat);
+	spMatrix = MatrixFactoryTraits<Matrix>::create(denseMat);
 
-	// Use the factory traits to create a dumb pointer to a Joubert matrix.
+	// Use the factory traits to create a dumb pointer to an
+	// unknown matrix.
 	
-	pJoubertMat = MatrixFactoryTraits<JoubertMat>::create(denseMat);
+	pMatrix = MatrixFactoryTraits<Matrix>::create(denseMat);
     }
 
-    // Print out the Joubert matrices.
+    // Print out the unknown matrices.
     
-    std::cerr << *spJoubertMat << std::endl;
-    std::cerr << *pJoubertMat << std::endl;
+    std::cerr << *spMatrix << std::endl;
+    std::cerr << *pMatrix << std::endl;
 
-    // Delete the Joubert matrix via the dumb pointer.
+    // Delete the unknown matrix via the dumb pointer.
     
-    std::cerr << "Deleting pJoubertMat" << std::endl;
-    delete pJoubertMat;
+    std::cerr << "Deleting pMatrix" << std::endl;
+    delete pMatrix;
 
-    // Delete the Joubert matrix via the smart pointer.
+    // Delete the unknown matrix via the smart pointer.
     
-    std::cerr << "Zeroing spJoubertMat" << std::endl;
-    spJoubertMat = 0;
+    std::cerr << "Zeroing spMatrix" << std::endl;
+    spMatrix = 0;
     
     std::cerr << "All's well." << std::endl;
 
+}
+
+} // end namespace
+
+int main()
+{
+    using JoubertMat::JoubertMat;
+
+    // Call doit for a Joubert Matrix.
+    
+    doit<JoubertMat>();
+
     return 0;
 }
+
+/*---------------------------------------------------------------------------*/
+/*    end of main.cc */
+/*---------------------------------------------------------------------------*/
