@@ -1,0 +1,126 @@
+%%---------------------------------------------------------------------------%%
+%% expTraits.tex
+%% Randy M. Roberts
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+\usepackage{c++}
+\usepackage{fancycodes}
+\usepackage[dvips]{color}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+\definecolor{codecolor}{rgb}{0,0,1}
+\definecolor{comcolor}{rgb}{1,0,0}
+\newcommand{\cxxcom}{\color{comcolor}}
+\newcommand{\cxxcode}{\color{codecolor}}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{XTM-99-??? (U)}
+\subject{Template}
+
+%-------NO CHANGES
+\divisionname{Applied Theoretical \& Computational Physics Div.}
+\groupname{X-TM:Transport Methods Group}
+\fromms{Randy M. Roberts/XTM D409}
+\phone{(505)665--3677}
+\originator{rmr}
+\typist{rmr}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+% \cdFramedFigure{UserVec.hh}{UserVec.hh}
+
+The following file is \texttt{expTraits.cc}.
+This is the test code that demonstrates the use of the expression engine traits class.
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{expTraits.cc.cfg}
+\end{small}
+\end{ttfamily}
+
+The following file is \texttt{expTraits.hh}.
+This file defines the default expression engine traits class that
+should be used for ``dumb''
+random access containers.
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{expTraits.hh.cfg}
+\end{small}
+\end{ttfamily}
+
+The following file is \texttt{UserVec.hh}.
+This defines a ``smart'' container, \textcolor{codecolor}{UserVec},
+that already has expressions enabled.
+We want to use this class in expressions, just as we would use
+an  ``glommed dumb'' container, without subverting the expression
+mechanism within \textcolor{codecolor}{UserVec}.
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{UserVec.hh.cfg}
+\end{small}
+\end{ttfamily}
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{UserVecTraits.hh.cfg}
+\end{small}
+\end{ttfamily}
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of expTraits.tex
+%%---------------------------------------------------------------------------%%

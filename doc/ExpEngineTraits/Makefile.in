@@ -1,0 +1,111 @@
+###############################################################################
+# draco/doc/ Makefile
+# Randy M. Roberts
+# $Id$
+###############################################################################
+# @> Makefile for Expression Engine Traits (U)
+###############################################################################
+
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+
+# get the relative directory between the top_srcdir and the srcdir
+
+reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
+ifeq (,${reldir})
+  reldir := "."
+endif
+
+##---------------------------------------------------------------------------##
+## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
+## These are assigned using "="
+##---------------------------------------------------------------------------##
+
+VPATH = @srcdir@:@top_srcdir@:${reldir} # : this colon is a bug work around.
+
+package = @package@
+prefix = @prefix@
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+libexecdir = ${exec_prefix}/libexec
+bindir = @bindir@
+
+dirstoclean = @dirstoclean@
+
+configure_command = @configure_command@
+
+DRACO := ../..
+DRACOTEXINPUTS := ${DRACO}/doc/tex
+TEXINPUTSENVS := TEXINPUTS="${TEXINPUTS}:${DRACOTEXINPUTS}"
+
+LATEXENVS := ${TEXINPUTSENVS}
+LATEX := ${LATEXENVS} latex
+
+BIBTEXENVS := ${TEXNPUTSENVS}
+BIBTEX := ${BIBTEXENVS} bibtex
+
+.PHONY : all install clean dvi postscript
+
+CC = KCC --c
+CFLAGS =  +K3
+CPPFLAGS = 
+CPPFLAGS += -I . -I ${includedir}
+
+CXX = KCC
+STRICTFLAG = --strict
+CXXFLAGS = --keep_gen_c +K3 --one_per ${STRICTFLAG}
+
+CXX2LATEX = c++2latex
+
+all: postscript
+
+expTraits.o: expTraits.hh UserVec.hh UserVecTraits.hh
+
+expTraits: expTraits.o
+	KCC -o expTraits expTraits.o -lm
+
+postscript: expTraits.ps
+
+dvi: expTraits.dvi
+
+expTraits.ps: expTraits.dvi
+	dvips -o expTraits.ps expTraits.dvi
+
+expTraits.dvi: expTraits.tex expTraits.bib \
+	UserVec.hh.cfg UserVecTraits.hh.cfg expTraits.cc.cfg expTraits.hh.cfg
+	${LATEX} expTraits
+	-${BIBTEX} expTraits
+	${LATEX} expTraits
+	${LATEX} expTraits
+
+%.hh.cfg: %.hh
+	${CXX2LATEX} -s 10 -n $< | \
+	sed 's/\\em\>/\\cxxcom/g' | \
+	sed 's/static_cast/static\\_cast/g' > $@
+
+%.cc.cfg: %.cc
+	${CXX2LATEX} -s 10 -n $< | \
+	sed 's/\\em\>/\\cxxcom/g' | \
+	sed 's/static_cast/static\\_cast/g' > $@
+
+# Makefile depends on all of the M4 files in the config directory
+
+configfiles := aclocal.m4 ac_local.m4 ac_conf.m4 ac_vendors.m4 ac_dracoarg.m4 \
+ ac_dracoenv.m4 ac_compiler.m4
+configfiles := $(addprefix ${top_srcdir}/../../config/, ${configfiles})
+
+${top_srcdir}/configure: configure.in ${configfiles}
+	cd ${top_srcdir} && autoconf --localdir=../../config
+
+Makefile: Makefile.in config.status
+	CONFIG_FILES=Makefile:Makefile.in \
+		CONFIG_HEADERS= ./config.status
+
+config.status: configure
+	./config.status --recheck
+
+clean:
+	-rm expTraits.o
+	-rm *.ps *.dvi *.log *.aux *.bbl *.blg *.cfg
+	-rm -r ${dirstoclean}
