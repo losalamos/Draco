@@ -1,3 +1,8 @@
+2002-05-08  Thomas M. Evans  <tme@lanl.gov>
+
+	* rng: Updated to rng-1_6_0.  Some more tests added, Rnd_Control
+	recoded a little.  Added design documents in doc.
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* rng: Updated to rng-1_5_0.  No longer needs configure scripts in

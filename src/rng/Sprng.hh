@@ -230,8 +230,9 @@ std::vector<char> Sprng::pack() const
 }
 
 //---------------------------------------------------------------------------//
-// assignment operator
-
+/*!
+ * \brief Assignment operator.
+ */
 Sprng& Sprng::operator=(const Sprng &rhs)
 {
     // check to see if the values are the same
