@@ -81,8 +81,8 @@ class Sphere : public Surface
     bool is_inside(std::vector<double> position,
 		   const std::vector<double> direction) const;
 
-    double surface_area() const;
-    double volume() const;
+    double surface_area() const; //!< compute and return surface area of the sphere
+    double volume() const;       //!< compute and return volume of the sphere
 
   private:
 

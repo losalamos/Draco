@@ -30,8 +30,13 @@ Sphere::Sphere(double center_, double radius_)
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Computes the distance from a particle to the surface.
+ * \brief Computes the distance from a particle to the surface of the Sphere.
  *
+ * \param position Position of the particle.
+ * \param direction Direction of the particle.
+ * \return Distance to the surface of the sphere, or huge if the surface is
+ * not crossed.
+
  * The position and direction arguments describe a ray. This function returns
  * the positive distance along the ray where it first crosses the sphere, or
  * rtt_mc::global::huge if the ray does not cross the sphere.
@@ -42,38 +47,41 @@ Sphere::Sphere(double center_, double radius_)
  *
  * \image html mc/outside_crossing.png "Typical crossing configuration from outside"
  * 
- * The position argument is modified by subtracting the vector representing
- * the center of the sphere. Hence, it becomes the relative position of the
- * particle with respect to the sphere.
+ * The figure depicts a archetypal configuration when a particle is outside
+ * of a spherical crossing surface. The particle (at point P) has direction
+ * vector \f$\hat{\Omega}\f$ and crosses the sphere centered at C with radius
+ * r. The figure is drawn in the plane containing the particle P, the sphere
+ * center C and the direction vector \f$\hat{\Omega}\f$.
  *
- * Variable center_distance_2 is the square of the distance from particle to
- * sphere center. If center_distance_2 < radius_2 the particle is inside the
- * sphere.
+ * Let \f$\vec{x}\f$ be the position vector of the particle and \f$\vec{c}\f$
+ * be the center of the Sphere. Then define the relative particle position as
+ * \f$\vec{x}'\f$. The distances in the figure (or, when more convenient,
+ * their squares) can be computed as follows:
  *
- * Variable normal_projection is the negative dot product of the direction
- * vector and the relative position vector. If normal_projection > 0 the
- * particle is heading toward the sphere. Hence for particles outside the
- * sphere, normal_projection>0 is a necessary (but not sufficient) condition
- * for a crossing. It is also the distance along the ray to the point of
- * closest approach to the center.
+ * \f[ d^2 = \vec{x}'\cdot\vec{x}' \f]
+ * \f[ \beta = -\vec{\Omega}\cdot\vec{x}' \f]
+ * \f[ n^2 = d^2 - \beta^2 \f]
+ * \f[ \gamma^2 = r^2 - n^2 = r^2 - d^2 + \beta^2 \f]
  *
- * Variable normal_distance_2 is the square of normal_projection.
+ * The two crossing distances are \f$ d_\pm=\beta\pm\gamma\f$. 
  *
- * Variable normal_length_2 is the square of the length of the segment
- * connecting the sphere center to the point of closest approach. It is
- * computed with the Pythagorean theorem from the distance to the center and
- * the distance to the point of closest approach.
+ * We note that a necessary and sufficient condition for the line defined by
+ * \f$(P,\vec{\Omega})\f$ to cross the sphere is \f$ n^2<r^2\f$. If the
+ * particle is inside the sphere, this condition is automaticly satisfied. If
+ * the particle is outside, we must ensure that the crossing happens in the
+ * positive direction of motion. To do this we add the condition
+ * \f$\beta>0\f$.
  *
- * If the particle is outside, necessary and sufficient conditions for a
- * positive crossing distance are normal_projection>0 and normal_length_2 <
- * raidus_2
+ * For our application, we are interested in the smallest positive crossing
+ * distance. For particles inside the sphere, this is always
+ * \f$d_{+}=\beta+\gamma\f$. For particles outside, provided \f$ n^2<r^2\f$ and
+ * \f$\beta>0\f$, this is \f$d_{-}\beta-\gamma\f$.
  *
- * \param position Position of the particle
-
- * \param direction Direction of the particle
-
- * \return distance to the surface of the sphere, or huge if the surface is
- * not crossed
+ * The computation of \f$\gamma\f$ from \f$\gamma^2\f$ is the primary cost of
+ * this algorithm. Therefore, we postpone it until the possibility that there
+ * is no crossing is eliminated.
+ *
+ *
 
  */
 double Sphere::distance_to(std::vector<double> position,
@@ -115,8 +123,30 @@ double Sphere::distance_to(std::vector<double> position,
 
 }
 
-double Sphere::distance_to(vector<double> position, 
-			   const vector<double>& direction,
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Returns the offical distance from a point to the surface of the Sphere.
+ * 
+ * \param position Position of the particle
+ * \param direction Direction of the particle
+ * \param is_inside "Offical" status of the particle with respect to the Sphere.
+ * \return The "offical" distance to the surface of the sphere, or huge if
+ * the sphere is not crossed.
+ *
+ * The algorithm in this functions differs from distance_to by the use of an
+ * offical inside/outside status of the particle. This enhances the
+ * robustness of detecting surface corssings by making sure that all
+ * catching inconsistencies between the offical status and actual positions. 
+ *
+ * As an added feature, this function can be used to get both of the positive
+ * crossing distances for a particle outside of the surface. Passing false as
+ * the final argument gives the closer outside to inside crossing, while
+ * passing true gives the more distance inside to outside crossing. This is
+ * useful when detecting multiple crossings.
+ *
+ */
+double Sphere::distance_to(std::vector<double> position, 
+			   const std::vector<double>& direction,
 			   bool is_inside) const
 {
 
@@ -164,6 +194,7 @@ double Sphere::distance_to(vector<double> position,
 
 }
 
+//---------------------------------------------------------------------------//
 bool Sphere::is_inside(std::vector<double> position) const 
 {
     position[2] -= center;
@@ -174,6 +205,7 @@ bool Sphere::is_inside(std::vector<double> position) const
     
 }
 
+//---------------------------------------------------------------------------//
 bool Sphere::is_inside(std::vector<double> position,
 		       const std::vector<double> direction) const
 {
@@ -193,11 +225,13 @@ bool Sphere::is_inside(std::vector<double> position,
 
 }
 
+//---------------------------------------------------------------------------//
 double Sphere::surface_area() const
 {
     return 4.0 * global::pi * radius_2; 
 }
 
+//---------------------------------------------------------------------------//
 double Sphere::volume() const
 {
     return 4.0/3.0 * global::pi * radius_2*radius; 
