@@ -207,13 +207,17 @@ SP<PT> Source<MT, PT>::get_ss(double delta_t)
     // normal distributed surface source
     vector<double> omega = nss.get_Mesh().get_normal_in(current_cell, face); 
     
-    // cosine distribution of surface source about normal
+    // cosine distribution of surface source about normal if requested, else
+    // retain the inward normal to give a "normal" distribution
     if (ss_dist == "cosine")
     {
 	double costheta = sqrt(rand.ran());
 	double phi = 2.0 * pi * rand.ran();
 	nss.get_Mesh().get_Coord().calc_omega(costheta, phi, omega);
     }
+    else 
+	Insist(ss_dist == "normal", 
+	       "Surface source angle distrib is neither cosine nor normal!"); 
 
     // complete description of surface source particle    
     double ew = ew_ss(current_cell);
