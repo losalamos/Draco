@@ -18,6 +18,7 @@
 #include <utility>
 #include <iterator>
 #include <algorithm>
+#include <iostream>
 
 namespace rtt_meshReaders_Services
 {
@@ -25,7 +26,7 @@ namespace rtt_meshReaders_Services
  * \brief Loads internal data structures from the mesh reader data.
  * \param mesh_reader_ meshReaders class object.
  */
-void Connect::organizeData(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_reader)
+void Connect::organizeData(rtt_dsxx::SP<Mesh_Reader> mesh_reader)
 {
     nodes_coords = mesh_reader->get_node_coords();
     nnodes = nodes_coords.size();

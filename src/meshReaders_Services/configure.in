@@ -14,14 +14,11 @@ package="meshReaders_Services"
 
 dnl VENDOR SETUPS
 AC_MPI_SETUP(pkg)
-AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
-dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(RTT_Format_Reader meshReaders c4 ds++)
-AC_NEEDS_LIBS_TEST(UnitTestFrame)
+AC_NEEDS_LIBS(meshReaders ds++)
+AC_NEEDS_LIBS_TEST(RTT_Format_Reader)
 
 AC_RUNTESTS(TestmeshReadersServices, scalar)
 

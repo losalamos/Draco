@@ -1,7 +1,4 @@
 //----------------------------------*-C++-*----------------------------------//
-// Connect.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   meshReaders_Services/Connect.hh
  * \author B.T. Adams
@@ -9,7 +6,7 @@
  * \brief  Header file for meshReaders_Services/Connect class.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __meshReaders_Services_Connect_hh__
@@ -17,7 +14,8 @@
 
 #include "ds++/isSorted.hh"
 #include "ds++/SortPermutation.hh"
-#include "meshReaders/RTT_Mesh_Reader.hh"
+#include "meshReaders/Mesh_Reader.hh"
+#include "ds++/SP.hh"
 #include <vector>
 #include <set>
 #include <map>
@@ -31,18 +29,18 @@ namespace rtt_meshReaders_Services
 class Connect
 {
     // typedefs
-    typedef std::set<int> set_int;
-    typedef std::vector<int> vector_int;
-    typedef std::vector<std::vector<int> > vector_vector_int;
-    typedef std::vector<double> vector_dbl;
-    typedef std::vector<std::vector<double> > vector_vector_dbl;
-    typedef rtt_meshReaders::RTT_Mesh_Reader RTT_Mesh_Reader;
-    typedef rtt_meshReaders::Element_Definition Element_Definition;
-    typedef Element_Definition::Element_Type Element_Type;
+    typedef std::set<int>                          set_int;
+    typedef std::vector<int>                       vector_int;
+    typedef std::vector<std::vector<int> >         vector_vector_int;
+    typedef std::vector<double>                    vector_dbl;
+    typedef std::vector<std::vector<double> >      vector_vector_dbl;
+    typedef rtt_meshReaders::Mesh_Reader           Mesh_Reader;
+    typedef rtt_meshReaders::Element_Definition    Element_Definition;
+    typedef Element_Definition::Element_Type       Element_Type;
 
     // data needed for all cells.
     // Mesh reader data
-    rtt_dsxx::SP<RTT_Mesh_Reader> mesh_reader;
+    rtt_dsxx::SP<Mesh_Reader> mesh_reader;
     // Cell Definitions data
     std::map<Element_Type, rtt_dsxx::SP<Element_Definition> > elem_defs;
     std::map<std::string, std::set<int> > elem_sets;
@@ -86,7 +84,7 @@ class Connect
  *             hanging nodes exist.
  */
     template<class StrictWeakOrdering>
-    Connect(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_reader_,
+    Connect(rtt_dsxx::SP<Mesh_Reader> mesh_reader_,
 		       const std::vector<std::string> & bndry_flags_,
 		       const std::vector<int> & flag_numbs_,
 		       const StrictWeakOrdering & comp) 
@@ -102,7 +100,7 @@ class Connect
     ~Connect() {}
 
   private:
-    void organizeData(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_reader);
+    void organizeData(rtt_dsxx::SP<Mesh_Reader> mesh_reader);
     std::multimap<set_int, int> generateSideNodes();
     std::multimap<set_int, int> generateCellFaceNodes();
     void treatComplexFace(const vector_int & cell_faces);

@@ -12,78 +12,67 @@
 #ifndef __test_TestmeshReadersServices_hh__
 #define __test_TestmeshReadersServices_hh__
 
-#include "UnitTestFrame/TestApp.hh"
-#include "meshReaders/RTT_Mesh_Reader.hh"
+#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "../Connect.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
+#include <vector>
 #include <map>
 
 namespace rtt_meshReaders_Services_test
 {
-//===========================================================================//
-/*!
- * \class TestmeshReaders_Services
- *
- * \brief Tests the meshReaders_Services mesh reader class.
- */
-// revision history:
-// -----------------
-// 0) original
-// 
-//===========================================================================//
 
-class TestmeshReaders_Services : public rtt_UnitTestFrame::TestApp  
+typedef rtt_RTT_Format_Reader::RTT_Mesh_Reader RTT_Mesh_Reader;
+
+enum Meshes {DEFINED, AMR};
+
+extern std::vector<std::string>                        bndry_flags;
+extern std::vector<int>                                flag_numbs;
+extern rtt_dsxx::SP<RTT_Mesh_Reader>                   mesh;
+extern rtt_dsxx::SP<rtt_meshReaders_Services::Connect> connect;
+
+// ACCESSORS
+bool check_connect(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_, 
+		   rtt_dsxx::SP<rtt_meshReaders_Services::Connect> connect_, 
+		   const Meshes & meshtype_);
+
+
+template<class VECTYPE>
+struct compareXYZ
 {
-    // NESTED CLASSES AND TYPEDEFS
-    typedef rtt_meshReaders::RTT_Mesh_Reader RTT_Mesh_Reader;
-    typedef rtt_meshReaders_Services::Connect Connect;
-    typedef std::vector<int> vector_int;
-    typedef std::vector<std::vector<int> > vector_vector_int;
-    typedef std::vector<std::vector<std::vector<int> > > 
-        vector_vector_vector_int;
-    typedef std::vector<double> vector_dbl;
-    typedef std::vector<std::vector<double> > vector_vector_dbl;
+    bool operator()(const VECTYPE & low_val, const VECTYPE & high_val) const
+    {
+        // require agreement to six significant figures for equality. Note that
+        // Shawn's tet mesh only agrees to four significant digits.
+        const double EPSILON = 1.0e-06;
+	std::vector<double> epsilon(low_val.size());
+	bool sorted = true;
 
-    // DATA
-    
-  public:
-
-    // CREATORS
-    
-    TestmeshReaders_Services(int argc, char *argv[], std::ostream & os_in);
-    // Defaulted TestmeshReaders_Services(const TestmeshReaders_Services &rhs);
-    // Defaulted ~TestmeshReaders_Services();
-
-    // MANIPULATORS
-
-    //Defaulted TestmeshReaders_Services & operator=(const 
-    //    TestmeshReaders_Services & rhs);
-
-    // ACCESSORS
-
-    std::string name() const { return "TestmeshReaders_Services"; }
-
-    std::string version() const;
-
-  protected:
-
-    std::string runTest();
-
-  private:
-
-    // DATA
-    enum Meshes {DEFINED, AMR};
-    std::vector<std::string> bndry_flags;
-    std::vector<int> flag_numbs;
-    rtt_dsxx::SP<RTT_Mesh_Reader> mesh;
-    rtt_dsxx::SP<Connect> connect;
-
-    // ACCESSORS
-    bool check_connect(rtt_dsxx::SP<RTT_Mesh_Reader> mesh_, 
-		       rtt_dsxx::SP<Connect> connect_, 
-		       const Meshes & meshtype_);
-
-    // IMPLEMENTATION
+	Insist(low_val.size() == high_val.size(),"Improper sort arguments!");
+	int dim = low_val.size();
+	for (int d = dim - 1; d >= 0; d--)
+	{
+	    if (low_val[d] != 0 && high_val[d] != 0)
+	        epsilon[d] = EPSILON * ((std::fabs(low_val[d]) + 
+					 std::fabs(high_val[d]))/2.);
+	    else
+	        epsilon[d] = EPSILON;
+	    // this strange looking logical operator will sort x,y,(z) 
+	    // coordinates with x varying fastest, followed by y, and lastly z.
+	    if (high_val[d] < low_val[d] && 
+		std::fabs(low_val[d] - high_val[d]) > epsilon[d] && 
+		(d == dim-1 || 
+		 (d == dim-2 && 
+		  std::fabs(high_val[d+1]-low_val[d+1]) < epsilon[d+1]) ||
+		 (std::fabs(high_val[d+1]-low_val[d+1]) < epsilon[d+1]
+		  && std::fabs(high_val[d+2]-low_val[d+2])<epsilon[d+2])))
+	    {
+	        sorted = false;
+		d = -1;
+	    }
+	}
+	return sorted;
+    }
 };
 
 } // end namespace rtt_meshReaders_Services_test

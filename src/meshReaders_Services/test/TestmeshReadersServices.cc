@@ -1,96 +1,47 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   meshReaders_Services/test/TestmeshReadersServices.cc
- * \author B.T. Adams
- * \date   Tue Mar 14 09:48:00 2000
- * \brief  Header file for the meshReaders_Services class unit test.
+ * \author Thomas M. Evans
+ * \date   Wed Mar 27 14:52:05 2002
+ * \brief  Test meshReaders connectivity services.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "meshReaders_Services_test.hh"
 #include "TestmeshReadersServices.hh"
 #include "../Release.hh"
-#include "UnitTestFrame/PassFailStream.hh"
-#include <sstream>
+
 #include <iostream>
-#include <algorithm>
+#include <vector>
+#include <cmath>
+#include <sstream>
 
-namespace rtt_UnitTestFrame
-{
+using namespace std;
 
-rtt_dsxx::SP<TestApp> TestApp::create(int &argc, char *argv[],
-				      std::ostream& os_in)
-{
-    using rtt_dsxx::SP;
-    using rtt_meshReaders_Services_test::TestmeshReaders_Services;
-    
-    return SP<TestApp>(new TestmeshReaders_Services(argc, argv, os_in));
-}
+using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
+using rtt_meshReaders_Services::Connect;
 
-} // end namespace rtt_UnitTestFrame
+using rtt_meshReaders_Services_test::bndry_flags;
+using rtt_meshReaders_Services_test::flag_numbs;
+using rtt_meshReaders_Services_test::mesh;
+using rtt_meshReaders_Services_test::connect;
+using rtt_meshReaders_Services_test::compareXYZ;
 
-namespace rtt_meshReaders_Services_test
-{
+typedef vector<int> vector_int;
 
-template<class VECTYPE>
-struct compareXYZ
-{
-    bool operator()(const VECTYPE & low_val, const VECTYPE & high_val) const
-    {
-        // require agreement to six significant figures for equality. Note that
-        // Shawn's tet mesh only agrees to four significant digits.
-        const double EPSILON = 1.0e-06;
-	std::vector<double> epsilon(low_val.size());
-	bool sorted = true;
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
-	Insist(low_val.size() == high_val.size(),"Improper sort arguments!");
-	int dim = low_val.size();
-	for (int d = dim - 1; d >= 0; d--)
-	{
-	    if (low_val[d] != 0 && high_val[d] != 0)
-	        epsilon[d] = EPSILON * ((std::fabs(low_val[d]) + 
-					 std::fabs(high_val[d]))/2.);
-	    else
-	        epsilon[d] = EPSILON;
-	    // this strange looking logical operator will sort x,y,(z) 
-	    // coordinates with x varying fastest, followed by y, and lastly z.
-	    if (high_val[d] < low_val[d] && 
-		std::fabs(low_val[d] - high_val[d]) > epsilon[d] && 
-		(d == dim-1 || 
-		 (d == dim-2 && 
-		  std::fabs(high_val[d+1]-low_val[d+1]) < epsilon[d+1]) ||
-		 (std::fabs(high_val[d+1]-low_val[d+1]) < epsilon[d+1]
-		  && std::fabs(high_val[d+2]-low_val[d+2])<epsilon[d+2])))
-	    {
-	        sorted = false;
-		d = -1;
-	    }
-	}
-	return sorted;
-    }
-};
-TestmeshReaders_Services::TestmeshReaders_Services(int argc, char * argv[], 
-						   std::ostream & os_in)
-    : rtt_UnitTestFrame::TestApp(argc, argv, os_in)
-{
-    os() << "Created TestmeshReaders_Services" << std::endl;
-}
-
-std::string TestmeshReaders_Services::version() const
-{
-    return rtt_meshReaders_Services::release();
-}
-/*!
- * \brief Tests the RTT_format mesh reader.
- */
-std::string TestmeshReaders_Services::runTest()
+void runTest()
 {
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
     const int MAX_MESHES = 2;
     std::string filename[MAX_MESHES] = {"rttdef.mesh", "rttamr.mesh"};
-    Meshes mesh_type;
+    rtt_meshReaders_Services_test::Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
     {
@@ -99,20 +50,20 @@ std::string TestmeshReaders_Services::runTest()
 	bool all_passed = true;
         switch (mesh_number)
 	{
-	// Test all nested class accessor functions for a very simplistic 
-	// mesh file (enum DEFINED).
+	    // Test all nested class accessor functions for a very simplistic 
+	    // mesh file (enum DEFINED).
 	case (0):
-	    mesh_type = DEFINED;
+	    mesh_type = rtt_meshReaders_Services_test::DEFINED;
 	    bndry_flags.push_back("boundary/reflective");
 	    flag_numbs.push_back(1);
 	    bndry_flags.push_back("boundary/vacuum");
 	    flag_numbs.push_back(2);
 	    break;
 
-	// Test a fairly simple AMR mesh (enum AMR). Just read it in and
-	// verify some data. That's enough!
+	    // Test a fairly simple AMR mesh (enum AMR). Just read it in and
+	    // verify some data. That's enough!
 	case (1):
-	    mesh_type = AMR;
+	    mesh_type = rtt_meshReaders_Services_test::AMR;
 	    bndry_flags.push_back("BNDRY/VACUU"); 
 	    flag_numbs.push_back(1);
 	    bndry_flags.push_back("BNDRY/REFLE"); 
@@ -120,39 +71,66 @@ std::string TestmeshReaders_Services::runTest()
 	    break;
 
 	default:
-	    fail("runTest") << "Invalid mesh type encountered." << std::endl;
+	    FAILMSG("Invalid mesh type encountered.");
 	    all_passed = false;
 	    break;
 	}
+
         // Construct an Reader class object from the data in the 
 	// specified mesh file. 
         mesh = new RTT_Mesh_Reader(filename[mesh_number]);
-	pass(" Construct Mesh") << "Read " << filename[mesh_number] 
-				<< " without coreing in or firing an"
-				<< " assertion." << std::endl;
+	{
+	    ostringstream m;
+	    m << "Read " << filename[mesh_number] 
+	      << " without coreing in or firing an"
+	      << " assertion." << std::endl;
+	    PASSMSG(m.str());
+	}
 
 	connect = new Connect(mesh, bndry_flags, flag_numbs,
-					 compareXYZ<std::vector<double> >());
-	pass(" Connect Mesh ") << "Connected mesh without coreing in or"
-			       << " firing an assertion." << std::endl;
+			      compareXYZ<std::vector<double> >());
+	{
+	    ostringstream m;
+	    m << "Connected mesh without coreing in or"
+	      << " firing an assertion." << std::endl;
+	    PASSMSG(m.str());
+	}
 
 	all_passed = all_passed && check_connect(mesh, connect, mesh_type);
 
 	if (!all_passed)
-	    fail(filename[mesh_number]) << "Errors occured testing mesh " 
-					<< "number " << mesh_type << std::endl;
+	{
+	    ostringstream m;
+	    m << "Errors occured testing mesh " 
+	      << "number " << mesh_type << std::endl;
+	    FAILMSG(m.str());
+	}
     }
 
     // Report results of test.
-    if (passed())
+    if (rtt_meshReaders_Services_test::passed)
     {
-	return "All tests passed.";
+	PASSMSG("All tests passed.");
     }
-    return "Some tests failed.";
+    else
+    {
+	FAILMSG("Some tests failed.");
+    }
 }
-bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader> 
-					     mesh, rtt_dsxx::SP<Connect> 
-					     connect, const Meshes & meshtype)
+
+//---------------------------------------------------------------------------//
+
+namespace rtt_meshReaders_Services_test
+{
+
+std::vector<std::string>      bndry_flags;
+std::vector<int>              flag_numbs;
+rtt_dsxx::SP<RTT_Mesh_Reader> mesh;
+rtt_dsxx::SP<Connect>         connect;
+
+bool check_connect(rtt_dsxx::SP<RTT_Mesh_Reader> mesh, 
+		   rtt_dsxx::SP<Connect> connect, 
+		   const Meshes & meshtype)
 {
     // Exercise the connectivity accessor functions for this mesh.
     bool all_passed = true;
@@ -193,7 +171,7 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
 	// here correspond to the entire mesh. 
 	bndryFacesCount.resize(4); // Four faces for a tet.
 	bndryFacesCount[0] = bndryFacesCount[1] = bndryFacesCount[2] =
-	bndryFacesCount[3] = 1;
+	    bndryFacesCount[3] = 1;
 	// Side_to_Cell_Face correlates the sides data in the RTT_Format file
 	// with the equivalent cell face. The side is the key and the cell and
 	// face number form a vector that is the data value. Only the  subset
@@ -291,41 +269,40 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
 	// here correspond to the entire mesh. 
 	bndryFacesCount.resize(6); // Six faces for a Hexahedron.
 	bndryFacesCount[0] = bndryFacesCount[1] = bndryFacesCount[2] =
-	bndryFacesCount[3] = bndryFacesCount[4] = bndryFacesCount[5] = 21;
+	    bndryFacesCount[3] = bndryFacesCount[4] = bndryFacesCount[5] = 21;
 	// Side_to_Cell_Face correlates the sides data in the RTT_Format file
 	// with the equivalent cell face. The side is the key and the cell and
 	// face number form a vector that is the data value. Only the  subset
 	// of the multimap that is entered here will be checked.
 	cell_face[0] = 0; cell_face[1] = 0; 
-	    Side_to_Cell_Face.insert(std::make_pair(93,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(93,cell_face));
 	cell_face[1] = 1;
-	    Side_to_Cell_Face.insert(std::make_pair(94,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(94,cell_face));
 	cell_face[1] = 4; 
-	    Side_to_Cell_Face.insert(std::make_pair(95,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(95,cell_face));
 	cell_face[0] = 9; cell_face[1] = 0; 
-	    Side_to_Cell_Face.insert(std::make_pair(78,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(78,cell_face));
 	cell_face[0] = 19; cell_face[1] = 1; 
-	    Side_to_Cell_Face.insert(std::make_pair(58,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(58,cell_face));
 	cell_face[0] = 29; cell_face[1] = 2; 
-	    Side_to_Cell_Face.insert(std::make_pair(47,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(47,cell_face));
 	cell_face[0] = 39; cell_face[1] = 2; 
-	    Side_to_Cell_Face.insert(std::make_pair(33,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(33,cell_face));
 	cell_face[1] = 3; 
-	    Side_to_Cell_Face.insert(std::make_pair(35,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(35,cell_face));
 	cell_face[0] = 49; cell_face[1] = 5; 
-	    Side_to_Cell_Face.insert(std::make_pair(15,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(15,cell_face));
 	cell_face[0] = 56; cell_face[1] = 2; 
-	    Side_to_Cell_Face.insert(std::make_pair(0,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(0,cell_face));
 	cell_face[1] = 3;
-	    Side_to_Cell_Face.insert(std::make_pair(1,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(1,cell_face));
 	cell_face[1] = 5;
-	    Side_to_Cell_Face.insert(std::make_pair(2,cell_face));
+	Side_to_Cell_Face.insert(std::make_pair(2,cell_face));
 	
 	break;
 
     default:
-        fail("check_connect") << "Invalid mesh type encountered." 
-			      << std::endl;
+	FAILMSG("Invalid mesh type encountered.");
 	all_passed = false;
 	return all_passed;
     }
@@ -342,8 +319,7 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
     }
     if (!got_adj_cell_size)
     {
-        fail(" Connectivity ") << 
-	     "Connectivity adjacent cell size not obtained." << std::endl;
+        FAILMSG("Connectivity adjacent cell size not obtained.");
  	all_passed = false;
     }
 
@@ -360,8 +336,7 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
     }
     if (!got_adj_cell)
     {
-        fail(" Connectivity ") << "Connectivity adjacent cell not obtained." 
-			       << std::endl;
+        FAILMSG("Connectivity adjacent cell not obtained.");
  	all_passed = false;
     }
 
@@ -372,8 +347,7 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
 	    got_bndry_face_count = false;
     if (!got_bndry_face_count)
     {
-        fail(" Connectivity ") << 
-	     "Connectivity boundary face count not obtained." << std::endl;
+        FAILMSG("Connectivity boundary face count not obtained.");
  	all_passed = false;
     }
 
@@ -382,12 +356,11 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
     bool got_bndry_cells = true;
     for (std::multimap<int, int>::iterator f = bndryFaces.begin();
 	 f != bndryFaces.end(); f++)
-	    if (connect->get_bndryCells(f->first).count(f->second) == 0)
-	        got_bndry_cells = false;
+	if (connect->get_bndryCells(f->first).count(f->second) == 0)
+	    got_bndry_cells = false;
     if (!got_bndry_cells)
     {
-        fail(" Connectivity ") << "Connectivity boundary cells not obtained." 
-			       << std::endl;
+        FAILMSG("Connectivity boundary cells not obtained.");
  	all_passed = false;
     }
 
@@ -396,12 +369,11 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
     bool got_bndry_face = true;
     for (std::multimap<int, int>::iterator f = bndryFaces.begin();
 	 f != bndryFaces.end(); f++)
-	    if (!connect->check_bndryFace(f->second, f->first))
-	        got_bndry_face = false;
+	if (!connect->check_bndryFace(f->second, f->first))
+	    got_bndry_face = false;
     if (!got_bndry_face)
     {
-        fail(" Connectivity ") << "Connectivity boundary face not obtained." 
-			       << std::endl;
+        FAILMSG("Connectivity boundary face not obtained.");
  	all_passed = false;
     }
 
@@ -411,12 +383,11 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
     for (std::multimap<int, vector_int >::iterator s = 
 	     Side_to_Cell_Face.begin();
 	 s != Side_to_Cell_Face.end(); s++)
-	    if (connect->get_Cell_from_Side(s->first) != s->second[0])
-	        got_cell_from_side = false;
+	if (connect->get_Cell_from_Side(s->first) != s->second[0])
+	    got_cell_from_side = false;
     if (!got_cell_from_side)
     {
-        fail(" Connectivity ") << "Connectivity cell not obtained from side." 
-			       << std::endl;
+        FAILMSG("Connectivity cell not obtained from side.");
  	all_passed = false;
     }
 
@@ -426,27 +397,67 @@ bool TestmeshReaders_Services::check_connect(rtt_dsxx::SP<RTT_Mesh_Reader>
     for (std::multimap<int, vector_int >::iterator s = 
 	     Side_to_Cell_Face.begin();
 	 s != Side_to_Cell_Face.end(); s++)
-	    if (connect->get_Cell_Face_from_Side(s->first) != s->second[1])
-	        got_cell_face_from_side = false;
+	if (connect->get_Cell_Face_from_Side(s->first) != s->second[1])
+	    got_cell_face_from_side = false;
     if (!got_cell_face_from_side)
     {
-        fail(" Connectivity ") << 
-	     "Connectivity cell face not obtained from side." << std::endl;
+        FAILMSG("Connectivity cell face not obtained from side.");
  	all_passed = false;
     }
 
     if (all_passed)
-        pass(" Connectivity Accessors " ) << 
-	     "Got all connectivity accessors." << std::endl;
+    {
+        PASSMSG("Got all connectivity accessors.");
+    }
     else
-	fail(" Connectivity Accessors ") << 
-	     "Errors in some connectivity accessors." << std::endl;
+    {
+	FAILMSG("Errors in some connectivity accessors.");
+    }
 
     return all_passed;
 }
 
-} // end namespace rtt_meshReaders_Services_test
+} // end of rtt_meshReaders_Services_test
 
 //---------------------------------------------------------------------------//
-//                     end of test/TestmeshReadersServices.cc
+
+int main(int argc, char *argv[])
+{
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
+	{
+	    cout << argv[0] << ": version " << rtt_meshReaders_Services::release() 
+		 << endl;
+	    return 0;
+	}
+
+    try
+    {
+	// >>> UNIT TESTS
+	runTest();
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing TestmeshReadersServices, " << ass.what()
+	     << endl;
+	return 1;
+    }
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_meshReaders_Services_test::passed) 
+    {
+        cout << "**** TestmeshReadersServices Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing TestmeshReadersServices." << endl;
+}   
+
+//---------------------------------------------------------------------------//
+//                        end of TestmeshReadersServices.cc
 //---------------------------------------------------------------------------//
