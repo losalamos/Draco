@@ -158,7 +158,7 @@ JAVADOC_AUTOBRIEF    = YES
 # @doxygen_src@/rng          @doxygen_src@/stopwatch \
 # @doxygen_src@/timestep     @doxygen_src@/traits    \
 # @doxygen_src@/units        @doxygen_src@/xm        \
-# @doxygen_src@/fourier 
+# @doxygen_src@/fourier      @doxygen_src@/meshReaders
 
 INPUT                 = \
  @doxygen_src@/timestep @doxygen_src@/rng \
@@ -169,7 +169,7 @@ INPUT                 = \
 # and *.h) to filter out the source-files in the directories. If left 
 # blank all files are included.
 
-FILE_PATTERNS        = *.cc *.hh test_timestep.out
+FILE_PATTERNS        = *.cc *.hh test_timestep.out cube.mesh.in
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories
 # should be searched for input files as well. Possible values are YES and NO.
@@ -201,7 +201,7 @@ EXAMPLE_PATH         = \
  @doxygen_src@/mesh/test        @doxygen_src@/radphys/test   \
  @doxygen_src@/rng/test         @doxygen_src@/stopwatch/test \
  @doxygen_src@/timestep/test    @doxygen_src@/xm/test        \
- @doxygen_src@/fourier/test
+ @doxygen_src@/fourier/test     @doxygen_src@/meshReaders/test
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program 
