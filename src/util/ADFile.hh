@@ -41,7 +41,7 @@ class ADFile : public Indx_File<ADKey> {
   public:
     ADFile( String _fname, int _mode, int _nrecs );
 
-    Mat1<ADKey> Get_keys();
+    dsxx::Mat1<ADKey> Get_keys();
 };
 
 #endif                          // __util_ADFile_hh__

@@ -10,8 +10,13 @@
 #define __mesh_Mesh_XYZ_hh__
 
 #include "Mesh_DB.hh"
+
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
+
+using dsxx::Mat1;
+using dsxx::Mat2;
+
 #include "c4/NodeInfo.hh"
 
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo

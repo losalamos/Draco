@@ -16,6 +16,8 @@
 #include "ds++/Mat.hh"
 #include "ds++/DynArray.hh"
 
+using dsxx::Mat1;
+
 template<class T>
 class prst_read_xcpt {
   public:

@@ -8,6 +8,8 @@
 
 #include "util/ADFile.hh"
 
+using namespace dsxx;
+
 //---------------------------------------------------------------------------//
 // Constructor.  Just set up the base class, not much else.
 //---------------------------------------------------------------------------//

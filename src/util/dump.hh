@@ -17,6 +17,10 @@
 #include "ds++/String.hh"
 #include "ds++/Mat.hh"
 
+using dsxx::Mat1;
+using dsxx::Mat2;
+using dsxx::Mat3;
+
 template<class T>
 void print_Mat( const Mat1<T>& a, String name );
 
