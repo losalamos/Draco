@@ -236,7 +236,7 @@ namespace rtt_cdi_gandolf
      */
     void GandolfDataTable::setGandolfDataTableSizes() const
 	{
-	    int idum, errorCode;
+	    int idum, errorCode = 0;
 	    // A different wrapper routine must be called for
 	    // multigroup and gray data.  We choose the correct
 	    // wrapper by comparing the opacityEnergyDescriptor.
@@ -244,23 +244,23 @@ namespace rtt_cdi_gandolf
 		{
 		    // Returns: numTemperatures, numDensities,
 		    // numGroupBoundaries and numOpacities.
-		    wrapper::wgchgrids(
-			spGandolfFile->getDataFilename(),
-			matID, numTemperatures, numDensities,
-			numGroupBoundaries, idum, numOpacities,
-			errorCode );
+		    errorCode = 
+			wrapper::wgchgrids(
+			    spGandolfFile->getDataFilename(),
+			    matID, numTemperatures, numDensities,
+			    numGroupBoundaries, idum, numOpacities );
 		}
 	    else // gray
 		{
 		    // Returns: numTemperatures, numDensities,
 		    // numGroupBoundaries and numOpacities.
-		    wrapper::wgchgrids(
-			spGandolfFile->getDataFilename(),
-			matID, numTemperatures, numDensities,
-			numGroupBoundaries, numOpacities, idum, 
-			errorCode );
+		    errorCode = 
+			wrapper::wgchgrids(
+			    spGandolfFile->getDataFilename(),
+			    matID, numTemperatures, numDensities,
+			    numGroupBoundaries, numOpacities, idum );
 		}
-
+	    
 	    // if the wrapper returned an error code the we need to
 	    // throw an exception.
 	    if ( errorCode != 0 ) throw gchgridsException( errorCode );
@@ -282,7 +282,7 @@ namespace rtt_cdi_gandolf
      */
     void GandolfDataTable::loadDataTable() const
 	{
-	    int errorCode;
+	    int errorCode = 0;
 	    // A different wrapper routine must be called for
 	    // multigroup and gray data.  We choose the correct
 	    // wrapper by comparing the opacityEnergyDescriptor.
@@ -290,13 +290,14 @@ namespace rtt_cdi_gandolf
 		{
 		    // Returns: logTemperatures, logDensities,
 		    // groupBoundaries and logOpacities.
-		    wrapper::wggetmg( 
-			spGandolfFile->getDataFilename(), matID, gandolfDataTypeKey,
-			temperatures, numTemperatures, numTemperatures,
-			densities, numDensities, numDensities,
-			groupBoundaries, numGroupBoundaries, numGroupBoundaries,
-			logOpacities, numOpacities, numOpacities,
-			errorCode );
+		    errorCode = 
+			wrapper::wggetmg( 
+			    spGandolfFile->getDataFilename(), 
+			    matID, gandolfDataTypeKey,
+			    temperatures, numTemperatures,
+			    densities, numDensities,
+			    groupBoundaries, numGroupBoundaries,
+			    logOpacities, numOpacities );
 		    if ( errorCode != 0 )
 			throw ggetmgException( errorCode );
 		}
@@ -304,12 +305,13 @@ namespace rtt_cdi_gandolf
 		{
 		    // Returns: logTemperatures, logDensities and
 		    // logOpacities.
-		    wrapper::wggetgray( 
-			spGandolfFile->getDataFilename(), matID, gandolfDataTypeKey,
-			temperatures, numTemperatures, numTemperatures,
-			densities, numDensities, numDensities,
-			logOpacities, numOpacities, numOpacities,
-			errorCode );
+		    errorCode = 
+			wrapper::wggetgray( 
+			    spGandolfFile->getDataFilename(), 
+			    matID, gandolfDataTypeKey,
+			    temperatures, numTemperatures,
+			    densities, numDensities,
+			    logOpacities, numOpacities );
 		    // if the wrapper returned an error code the we need to
 		    // throw an exception.
 		    if ( errorCode != 0 )

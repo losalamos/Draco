@@ -61,16 +61,16 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 	    {
 		// Call the Gandolf interpolator.
 		// the vector opacity is returned.
-		wrapper::wgintmglog( spGandolfDataTable->getLogTemperatures(),
-				     spGandolfDataTable->getNumTemperatures(), 
-				     spGandolfDataTable->getLogDensities(), 
-				     spGandolfDataTable->getNumDensities(),
-				     spGandolfDataTable->getNumGroupBoundaries(),
-				     spGandolfDataTable->getLogOpacities(), 
-				     spGandolfDataTable->getNumOpacities(),
-				     log( *tempIter ),
-				     log( *densIter ), 
-				     mgOpacity );
+		mgOpacity = wrapper::wgintmglog( 
+		    spGandolfDataTable->getLogTemperatures(),
+		    spGandolfDataTable->getNumTemperatures(), 
+		    spGandolfDataTable->getLogDensities(), 
+		    spGandolfDataTable->getNumDensities(),
+		    spGandolfDataTable->getNumGroupBoundaries(),
+		    spGandolfDataTable->getLogOpacities(), 
+		    spGandolfDataTable->getNumOpacities(),
+		    log( *tempIter ),
+		    log( *densIter ) );
 		
 		// The opacity vector contains the solution.  Now
 		// we copy this solution into the OpacityIterator
@@ -103,16 +103,16 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 	    {
 		// Call the Gandolf interpolator.
 		// the vector opacity is returned.
-		wrapper::wgintmglog( spGandolfDataTable->getLogTemperatures(),
-				     spGandolfDataTable->getNumTemperatures(), 
-				     spGandolfDataTable->getLogDensities(), 
-				     spGandolfDataTable->getNumDensities(),
-				     spGandolfDataTable->getNumGroupBoundaries(),
-				     spGandolfDataTable->getLogOpacities(), 
-				     spGandolfDataTable->getNumOpacities(),
-				     log( *tempIter ),
-				     log( targetDensity ), 
-				     mgOpacity );
+		mgOpacity = wrapper::wgintmglog(
+		    spGandolfDataTable->getLogTemperatures(),
+		    spGandolfDataTable->getNumTemperatures(), 
+		    spGandolfDataTable->getLogDensities(), 
+		    spGandolfDataTable->getNumDensities(),
+		    spGandolfDataTable->getNumGroupBoundaries(),
+		    spGandolfDataTable->getLogOpacities(), 
+		    spGandolfDataTable->getNumOpacities(),
+		    log( *tempIter ),
+		    log( targetDensity ) );
 		
 		// The opacity vector contains the solution.  Now
 		// we copy this solution into the OpacityIterator
@@ -145,16 +145,16 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 	    {
 		// Call the Gandolf interpolator.
 		// the vector opacity is returned.
-		wrapper::wgintmglog( spGandolfDataTable->getLogTemperatures(),
-				     spGandolfDataTable->getNumTemperatures(), 
-				     spGandolfDataTable->getLogDensities(), 
-				     spGandolfDataTable->getNumDensities(),
-				     spGandolfDataTable->getNumGroupBoundaries(),
-				     spGandolfDataTable->getLogOpacities(), 
-				     spGandolfDataTable->getNumOpacities(),
-				     log( targetTemperature ),
-				     log( *densIter ), 
-				     mgOpacity );
+		mgOpacity = wrapper::wgintmglog( 
+		    spGandolfDataTable->getLogTemperatures(),
+		    spGandolfDataTable->getNumTemperatures(), 
+		    spGandolfDataTable->getLogDensities(), 
+		    spGandolfDataTable->getNumDensities(),
+		    spGandolfDataTable->getNumGroupBoundaries(),
+		    spGandolfDataTable->getLogOpacities(), 
+		    spGandolfDataTable->getNumOpacities(),
+		    log( targetTemperature ),
+		    log( *densIter ) );
 		
 		// The opacity vector contains the solution.  Now
 		// we copy this solution into the OpacityIterator

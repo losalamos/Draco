@@ -31,9 +31,10 @@ namespace rtt_cdi_gandolf
 	    // This call to Gandolf validates the datafile and if
 	    // successful returns a list of material identifiers for which 
 	    // the materials that exist in the data file.
-	    int errorCode = 0;
-	    wrapper::wgmatids( dataFilename, matIDs, wrapper::maxMaterials,
-			       numMaterials, errorCode ); 
+	    int errorCode = 
+		wrapper::wgmatids( dataFilename, matIDs, 
+				   wrapper::maxMaterials,
+				   numMaterials ); 
 	    
 	    if ( errorCode != 0 )
 		throw gmatidsException( errorCode );

@@ -59,10 +59,10 @@ namespace rtt_cdi_gandolf
 	    
 	    // Retrieve keys available for this material from the IPCRESS
 	    // file.  wgkeys() returns vKnownKeys, numKeys and errorCode.
-	    int errorCode;
-	    wrapper::wgkeys( spGandolfFile->getDataFilename(), materialID, 
-			     vKnownKeys, wrapper::maxKeys, numKeys,
-			     errorCode );
+	    int errorCode = 
+		wrapper::wgkeys( spGandolfFile->getDataFilename(),
+				 materialID, vKnownKeys,
+				 wrapper::maxKeys, numKeys );
 	    if ( errorCode !=0 ) throw gkeysException( errorCode );
 	    
 	    // Create the data table object and fill it with the table
@@ -128,18 +128,18 @@ namespace rtt_cdi_gandolf
 	{ 
 	    double opacity;
 	    // logorithmic interpolation:
-	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
-				 spGandolfDataTable->getNumTemperatures(), 
-				 spGandolfDataTable->getLogDensities(), 
-				 spGandolfDataTable->getNumDensities(),
-				 spGandolfDataTable->getLogOpacities(), 
-				 spGandolfDataTable->getNumOpacities(),
-				 log(targetTemperature),
-				 log(targetDensity), 
-				 opacity );
+	    opacity =
+		wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				     spGandolfDataTable->getNumTemperatures(), 
+				     spGandolfDataTable->getLogDensities(), 
+				     spGandolfDataTable->getNumDensities(),
+				     spGandolfDataTable->getLogOpacities(), 
+				     spGandolfDataTable->getNumOpacities(),
+				     log(targetTemperature),
+				     log(targetDensity) );
 	    return opacity;
 	}
-
+    
     /*!
      * \brief Opacity accessor that returns a vector of opacities (or a
      *     vector of vectors of opacities for the multigroup
@@ -153,15 +153,15 @@ namespace rtt_cdi_gandolf
 	    std::vector< double > opacity( targetTemperature.size() );
 	    for ( int i=0; i<targetTemperature.size(); ++i )
 		// logorithmic interpolation:
-		wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
-				     spGandolfDataTable->getNumTemperatures(), 
-				     spGandolfDataTable->getLogDensities(), 
-				     spGandolfDataTable->getNumDensities(),
-				     spGandolfDataTable->getLogOpacities(), 
-				     spGandolfDataTable->getNumOpacities(),
-				     log(targetTemperature[i]),
-				     log(targetDensity), 
-				     opacity[i] );
+		opacity[i] = 
+		    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+					 spGandolfDataTable->getNumTemperatures(), 
+					 spGandolfDataTable->getLogDensities(), 
+					 spGandolfDataTable->getNumDensities(),
+					 spGandolfDataTable->getLogOpacities(), 
+					 spGandolfDataTable->getNumOpacities(),
+					 log(targetTemperature[i]),
+					 log(targetDensity) );
 	    return opacity;
 	}
 
@@ -178,15 +178,15 @@ namespace rtt_cdi_gandolf
 	    std::vector< double > opacity( targetDensity.size() );
 	    for ( int i=0; i<targetDensity.size(); ++i )
 		// logorithmic interpolation:
-		wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
-				     spGandolfDataTable->getNumTemperatures(), 
-				     spGandolfDataTable->getLogDensities(), 
-				     spGandolfDataTable->getNumDensities(),
-				     spGandolfDataTable->getLogOpacities(), 
-				     spGandolfDataTable->getNumOpacities(),
-				     log(targetTemperature),
-				     log(targetDensity[i]), 
-				     opacity[i] );
+		opacity[i] = 
+		    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+					 spGandolfDataTable->getNumTemperatures(), 
+					 spGandolfDataTable->getLogDensities(), 
+					 spGandolfDataTable->getNumDensities(),
+					 spGandolfDataTable->getLogOpacities(), 
+					 spGandolfDataTable->getNumOpacities(),
+					 log(targetTemperature),
+					 log(targetDensity[i]) );
 	    return opacity;
 	}
     

@@ -53,15 +53,15 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
 	for ( ; tempIter != tempLast;
 	      ++tempIter, ++densIter, ++opIter )
 	    // Call the Gandolf Logorithmic Interpolator for Gray data.
-	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
-				 spGandolfDataTable->getNumTemperatures(), 
-				 spGandolfDataTable->getLogDensities(), 
-				 spGandolfDataTable->getNumDensities(),
-				 spGandolfDataTable->getLogOpacities(), 
-				 spGandolfDataTable->getNumOpacities(),
-				 log( *tempIter ),
-				 log( *densIter ), 
-				 *opIter );
+	    *opIter = 
+		wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				     spGandolfDataTable->getNumTemperatures(), 
+				     spGandolfDataTable->getLogDensities(), 
+				     spGandolfDataTable->getNumDensities(),
+				     spGandolfDataTable->getLogOpacities(), 
+				     spGandolfDataTable->getNumOpacities(),
+				     log( *tempIter ),
+				     log( *densIter ) );
 	return opIter;
     }
 
@@ -80,15 +80,15 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
 	// calculate an opacity value for each.
 	for ( ; tempIter != tempLast; ++tempIter, ++opIter )
 	    // Call the Gandolf Logorithmic Interpolator for Gray data.
-	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
-				 spGandolfDataTable->getNumTemperatures(), 
-				 spGandolfDataTable->getLogDensities(), 
-				 spGandolfDataTable->getNumDensities(),
-				 spGandolfDataTable->getLogOpacities(), 
-				 spGandolfDataTable->getNumOpacities(),
-				 log( *tempIter ),
-				 log( targetDensity ), 
-				 *opIter );
+	    *opIter = 
+		wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				     spGandolfDataTable->getNumTemperatures(), 
+				     spGandolfDataTable->getLogDensities(), 
+				     spGandolfDataTable->getNumDensities(),
+				     spGandolfDataTable->getLogOpacities(), 
+				     spGandolfDataTable->getNumOpacities(),
+				     log( *tempIter ),
+				     log( targetDensity ) );
 	return opIter;
     }
 
@@ -107,15 +107,15 @@ OpacityIterator GandolfGrayOpacity::getOpacity(
 	// calculate an opacity value for each.
 	for ( ; densIter != densLast; ++densIter, ++opIter )
 	    // Call the Gandolf Logorithmic Interpolator for Gray data.
-	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
-				 spGandolfDataTable->getNumTemperatures(), 
-				 spGandolfDataTable->getLogDensities(), 
-				 spGandolfDataTable->getNumDensities(),
-				 spGandolfDataTable->getLogOpacities(), 
-				 spGandolfDataTable->getNumOpacities(),
-				 log( targetTemperature ),
-				 log( *densIter ), 
-				 *opIter );
+	    *opIter = 
+		wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
+				     spGandolfDataTable->getNumTemperatures(), 
+				     spGandolfDataTable->getLogDensities(), 
+				     spGandolfDataTable->getNumDensities(),
+				     spGandolfDataTable->getLogOpacities(), 
+				     spGandolfDataTable->getNumOpacities(),
+				     log( targetTemperature ),
+				     log( *densIter ) );
 	return opIter;
     }
 

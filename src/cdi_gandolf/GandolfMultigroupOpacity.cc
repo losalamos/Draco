@@ -59,10 +59,10 @@ namespace rtt_cdi_gandolf
 	    
 	    // Retrieve keys available fo this material from the IPCRESS
 	    // file.  wgkeys() returns vKnownKeys, numKeys and errorCode.
-	    int errorCode;
-	    wrapper::wgkeys( spGandolfFile->getDataFilename(), materialID, 
-			     vKnownKeys, wrapper::maxKeys, numKeys,
-			     errorCode );
+	    int errorCode = 
+		wrapper::wgkeys( spGandolfFile->getDataFilename(),
+				 materialID, vKnownKeys,
+				 wrapper::maxKeys, numKeys );
 	    if ( errorCode !=0 ) throw gkeysException( errorCode );
 	    
 	    // Create the data table object and fill it with the table
@@ -136,16 +136,16 @@ namespace rtt_cdi_gandolf
 	    std::vector<double> opacity( numGroups );
 	    
 	    // logorithmic interpolation:
-	    wrapper::wgintmglog( spGandolfDataTable->getLogTemperatures(),
-				 spGandolfDataTable->getNumTemperatures(), 
-				 spGandolfDataTable->getLogDensities(), 
-				 spGandolfDataTable->getNumDensities(),
-				 spGandolfDataTable->getNumGroupBoundaries(),
-				 spGandolfDataTable->getLogOpacities(), 
-				 spGandolfDataTable->getNumOpacities(),
-				 log( targetTemperature ),
-				 log( targetDensity ), 
-				 opacity );
+	    opacity = wrapper::wgintmglog( 
+		spGandolfDataTable->getLogTemperatures(),
+		spGandolfDataTable->getNumTemperatures(), 
+		spGandolfDataTable->getLogDensities(), 
+		spGandolfDataTable->getNumDensities(),
+		spGandolfDataTable->getNumGroupBoundaries(),
+		spGandolfDataTable->getLogOpacities(), 
+		spGandolfDataTable->getNumOpacities(),
+		log( targetTemperature ),
+		log( targetDensity ) );
 	    return opacity;
 	}
     
@@ -165,16 +165,16 @@ namespace rtt_cdi_gandolf
 		{
 		    opacity[i].resize( numGroups );
 		    // logorithmic interpolation:
-		    wrapper::wgintmglog( spGandolfDataTable->getLogTemperatures(),
-					 spGandolfDataTable->getNumTemperatures(), 
-					 spGandolfDataTable->getLogDensities(), 
-					 spGandolfDataTable->getNumDensities(),
-					 spGandolfDataTable->getNumGroupBoundaries(),
-					 spGandolfDataTable->getLogOpacities(), 
-					 spGandolfDataTable->getNumOpacities(),
-					 log( targetTemperature[i] ),
-					 log( targetDensity ), 
-					 opacity[i] );
+		    opacity[i] = wrapper::wgintmglog( 
+			spGandolfDataTable->getLogTemperatures(),
+			spGandolfDataTable->getNumTemperatures(), 
+			spGandolfDataTable->getLogDensities(), 
+			spGandolfDataTable->getNumDensities(),
+			spGandolfDataTable->getNumGroupBoundaries(),
+			spGandolfDataTable->getLogOpacities(), 
+			spGandolfDataTable->getNumOpacities(),
+			log( targetTemperature[i] ),
+			log( targetDensity ) );
 		}
 	    return opacity;
 	}
@@ -195,16 +195,16 @@ namespace rtt_cdi_gandolf
 		{
 		    opacity[i].resize(numGroups);
 		    // logorithmic interpolation:
-		    wrapper::wgintmglog( spGandolfDataTable->getLogTemperatures(),
-					 spGandolfDataTable->getNumTemperatures(), 
-					 spGandolfDataTable->getLogDensities(), 
-					 spGandolfDataTable->getNumDensities(),
-					 spGandolfDataTable->getNumGroupBoundaries(),
-					 spGandolfDataTable->getLogOpacities(), 
-					 spGandolfDataTable->getNumOpacities(),
-					 log( targetTemperature ),
-					 log( targetDensity[i] ),  
-					 opacity[i] );
+		    opacity[i] = wrapper::wgintmglog( 
+			spGandolfDataTable->getLogTemperatures(),
+			spGandolfDataTable->getNumTemperatures(), 
+			spGandolfDataTable->getLogDensities(), 
+			spGandolfDataTable->getNumDensities(),
+			spGandolfDataTable->getNumGroupBoundaries(),
+			spGandolfDataTable->getLogOpacities(), 
+			spGandolfDataTable->getNumOpacities(),
+			log( targetTemperature ),
+			log( targetDensity[i] ) );
 		}
 	    return opacity;
 	}
