@@ -6,6 +6,8 @@
  * \brief  Tests for tetrahedral meshes and ThreeVectors.
  */
 //---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
 
 // revision history:
 // -----------------
@@ -428,7 +430,7 @@ mesh_ptr_H->print_mesh(cerr);
 
     // Later, add some vector position and direction tests here.
 
-    // Test interface ===> TET_Builder instantiation with hand-coded interface.
+    // Test interface ---> TET_Builder instantiation with hand-coded interface.
     // This mesh should be the same 2-tet pyramid as in mesh_ptr_H.
 
 cerr << "Ready for mesh_ptr_0." << endl;
@@ -466,7 +468,7 @@ mesh_ptr_0->print_mesh(cerr);
     if (fabs(m_coords[4][1] - 0.5) > TET_epsilon)     ITFAILS;
     if (fabs(m_coords[4][2] - 1.0) > TET_epsilon)     ITFAILS;
 
-    // Test interface ===> TET_Builder instantiation with RTT_Mesh_Reader class.
+    // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should also be the same 2-tet pyramid as in mesh_ptr_H.
 
 cerr << "Ready for mesh_ptr_1." << endl;
@@ -604,7 +606,7 @@ mesh_ptr_1->print_mesh(cerr);
 // cerr << "count[3][6][7] = " << count[3][6][7] << endl;
 // cerr << "count[4][4][8] = " << count[4][4][8] << endl;
 // cerr << "count[4][4][9] = " << count[4][4][9] << endl;
-// cerr << "================" << endl;
+// cerr << "----------------" << endl;
 
     if (fabs(count[1][6][0] - 1.01167) > MID_epsilon)     ITFAILS;
     if (fabs(count[0][8][1] - 0.238333) > MID_epsilon)    ITFAILS;
@@ -772,7 +774,7 @@ mesh_ptr_1->print_mesh(cerr);
 
     // End of test sampling in a tethedron.
 
-    // Test interface ===> TET_Builder instantiation with RTT_Mesh_Reader class.
+    // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the 96-tet cube from Todd Wareing.
 
 cerr << "Ready for mesh_ptr_2." << endl;
@@ -796,7 +798,7 @@ mesh_ptr_2->print_mesh(cerr);
     if (*mesh_ptr_0 == *mesh_ptr_2)                      ITFAILS;
     if (*mesh_ptr_1 == *mesh_ptr_2)                      ITFAILS;
 
-    // Test interface ===> TET_Builder instantiation with RTT_Mesh_Reader class.
+    // Test interface ---> TET_Builder instantiation with RTT_Mesh_Reader class.
     // This mesh should be the one-tet case from the definition file.
 
 cerr << "Ready for mesh_ptr_3." << endl;

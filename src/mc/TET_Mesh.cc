@@ -6,6 +6,8 @@
  * \brief  Tetrahedral mesh class implementation file.
  */
 //---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
 
 #include "TET_Mesh.hh"
 #include "Constants.hh"
@@ -409,7 +411,7 @@ double TET_Mesh::face_area(int cell, int face) const
  * \param cell External number of cell.
  * \return     Vector_field[dim#][vertex#] == coordinate along dim#-axis.
  *
- * dim# = 0, 1, 2 <====> for axis X, Y, Z.
+ * dim# = 0, 1, 2 <----> for axis X, Y, Z.
  *
  * vertex# = 0, 1, 2, 3.
  */
@@ -440,7 +442,7 @@ const TET_Mesh::VF_DOUBLE TET_Mesh::get_vertices(int cell) const
  * \param face External identifier for the face (1, 2, 3, or 4).
  * \return     Vector_field[dim#][vertex#] == coordinate along dim#-axis.
  *
- * dim# = 0, 1, 2 <====> for axis X, Y, Z.
+ * dim# = 0, 1, 2 <----> for axis X, Y, Z.
  *
  * vertex# = 0, 1, 2, but representing three out of four of (0, 1, 2, 3),
  * since each face has 3 vertices.  For no particular reason, these are
@@ -744,7 +746,7 @@ void TET_Mesh::print_title(std::ostream &output) const
  */
 void TET_Mesh::print_layout(std::ostream &output) const
 {
-    output << "=== LAYOUT ===\n";
+    output << "___ LAYOUT ___\n";
     output << "Cell:  Face ==> Neighbor;  Face ==> Neighbor; ...\n";
     for (int c = 0 ; c < layout.num_cells() ; c++)
         {
@@ -769,7 +771,14 @@ void TET_Mesh::print_layout(std::ostream &output) const
  */
 void TET_Mesh::print_vertex_vector(std::ostream &output) const
 {
-    output << "=== VERTEX VECTOR ===\n";
+    output << "___ VERTEX VECTOR ___\n";
+    std::ios_base::fmtflags old_state = output.flags();
+    std::streamsize old_prec = output.precision();
+
+    output << std::scientific << std::setprecision(5);
+
+    output.flags(old_state);
+    output << std::setprecision(old_prec);
 }   // end TET_Mesh::print_vertex_vector(std::ostream &)
 
 //___________________________________________________________________________//
@@ -779,8 +788,8 @@ void TET_Mesh::print_vertex_vector(std::ostream &output) const
  */
 void TET_Mesh::print_node_coord_units(std::ostream &output) const
 {
-    output << "=== Node coordinate units are " << node_coord_units <<
-              " ===" << std::endl;
+    output << "___ Node coordinate units are " << node_coord_units <<
+              " ___" << std::endl;
 }   // end TET_Mesh::print_node_coord_units(std::ostream &)
 
 //___________________________________________________________________________//
@@ -790,7 +799,7 @@ void TET_Mesh::print_node_coord_units(std::ostream &output) const
  */
 void TET_Mesh::print_node_sets(std::ostream &output) const
 {
-    output << "=== NODE SETS ===\n";
+    output << "___ NODE SETS ___\n";
     for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
             flag != node_sets.end() ; flag++)
         {
@@ -812,7 +821,7 @@ void TET_Mesh::print_node_sets(std::ostream &output) const
  */
 void TET_Mesh::print_side_sets(std::ostream &output) const
 {
-    output << "=== SIDE SETS ===\n";
+    output << "___ SIDE SETS ___\n";
     for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
             flag != side_sets.end() ; flag++)
         {
@@ -834,7 +843,7 @@ void TET_Mesh::print_side_sets(std::ostream &output) const
  */
 void TET_Mesh::print_cell_sets(std::ostream &output) const
 {
-    output << "=== CELL SETS ===\n";
+    output << "___ CELL SETS ___\n";
     for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
             flag != cell_sets.end() ; flag++)
         {
@@ -856,7 +865,7 @@ void TET_Mesh::print_cell_sets(std::ostream &output) const
  */
 void TET_Mesh::print_sides_vertices(std::ostream &output) const
 {
-    output << "=== SIDES VERTICES ===\n";
+    output << "___ SIDES VERTICES ___\n";
     for (int s = 0 ; s < sides_vertices.size() ; s++)
     {
         output << "    side " << s << ":";
@@ -873,7 +882,7 @@ void TET_Mesh::print_sides_vertices(std::ostream &output) const
  */
 void TET_Mesh::print_cells_vertices(std::ostream &output) const
 {
-    output << "=== CELLS VERTICES ===\n";
+    output << "___ CELLS VERTICES ___\n";
     for (int c = 0 ; c < cells_vertices.size() ; c++)
     {
         output << "    cell " << c << ":";
@@ -891,11 +900,11 @@ void TET_Mesh::print_cells_vertices(std::ostream &output) const
 void TET_Mesh::print_submesh(std::ostream &output) const
 {
     if (submesh)
-        output << "=== This is a submesh. ===\n" <<
-                  "==========================" << std::endl;
+        output << "___ This is a submesh. ___\n" <<
+                  "--------------------------" << std::endl;
     else
-        output << "=== This is a full mesh. ===\n" <<
-                  "============================" << std::endl;
+        output << "___ This is a full mesh. ___\n" <<
+                  "----------------------------" << std::endl;
 }   // end TET_Mesh::print_submesh(std::ostream &)
 
 //___________________________________________________________________________//
