@@ -171,10 +171,13 @@ def processSetters(options, setters, parameters):
 
 ##---------------------------------------------------------------------------##
 class AmbiguousKeyError(Exception):
-    """
-    An exception raised by Utils.disambiguate when no matching, or
-    multiple matching values are found.
-    """
+    """An exception raised by Utils.disambiguate when multiple matching
+    values are found."""
+    pass
+
+class InvalidKeyError(Exception):
+    """An exception raised by Utils.disambiguate when no matching
+    values are found."""
     pass
 
 ##---------------------------------------------------------------------------##
@@ -200,15 +203,17 @@ def disambiguate(value, targets):
     >>> disambiguate('medium', ['tall', 'grande', 'venti', 'giant']) 
     Traceback (most recent call last):
     ...
-    AmbiguousKeyError: ('medium', ['tall', 'grande', 'venti', 'giant'])
+    InvalidKeyError: ('medium', ['tall', 'grande', 'venti', 'giant'])
     """
 
     matches = complete(value,targets)
 
     if len(matches)==1:
         return matches[0]
-    else:
+    elif len(matches) > 1:
         raise AmbiguousKeyError(value, targets)
+    else:
+        raise InvalidKeyError(value, targets)
 
 def complete(value, targets):
     """
