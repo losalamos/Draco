@@ -4,19 +4,19 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_<spkg>_test_hh
-#define rtt_<spkg>_test_hh
+#ifndef <spkg>_test_hh
+#define <spkg>_test_hh
 
 #include <iostream>
 #include <string>
 
-namespace rtt_<spkg>
+namespace <namespace>
 {
 
 //===========================================================================//
@@ -25,11 +25,11 @@ namespace rtt_<spkg>
 
 // Returns true for pass
 // Returns false for fail
-// Failure functions also set rtt_<spkg>::passed to false
+// Failure functions also set <namespace>::passed to false
 
 // These can be used in any combination in a test to print output messages  
 // if no fail functions are called then the test will pass
-// (rtt_<spkg>::passed will have its default value of true)
+// (<namespace>::passed will have its default value of true)
 
 // Needless to say, these can be used in many different combinations or
 // ways.  We do not constrain draco tests except that the output must be of
@@ -51,7 +51,7 @@ void unit_test(const bool pass, int line, char *file);
 
 extern bool passed;
 
-} // end namespace rtt_<spkg>
+} // end namespace <namespace>
 
 //===========================================================================//
 // TEST MACROS
@@ -62,13 +62,13 @@ extern bool passed;
 // These are a convenience only
 //===========================================================================//
 
-#define ITFAILS    rtt_<spkg>::fail(__LINE__);
-#define FAILURE    rtt_<spkg>::fail(__LINE__, __FILE__);
-#define PASSMSG(a) rtt_<spkg>::pass_msg(a);
-#define FAILMSG(a) rtt_<spkg>::fail_msg(a);
-#define UNIT_TEST(x) rtt_<spkg>::unit_test(x, __LINE__, __FILE__)
+#define ITFAILS      <namespace>::fail(__LINE__);
+#define FAILURE      <namespace>::fail(__LINE__, __FILE__);
+#define PASSMSG(a)   <namespace>::pass_msg(a);
+#define FAILMSG(a)   <namespace>::fail_msg(a);
+#define UNIT_TEST(x) <namespace>::unit_test(x, __LINE__, __FILE__)
     
-#endif // rtt_<spkg>_test_hh
+#endif // <spkg>_test_hh
 
 //---------------------------------------------------------------------------//
 //     end of <pkg>/<spkg>.hh

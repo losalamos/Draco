@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  *
  * Long description.
  */
@@ -12,10 +12,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef rtt_<spkg>_<class>_hh
-#define rtt_<spkg>_<class>_hh
+#ifndef <spkg>_<class>_hh
+#define <spkg>_<class>_hh
 
-namespace rtt_<spkg>
+namespace <namespace>
 {
 
 //===========================================================================//
@@ -34,14 +34,10 @@ namespace rtt_<spkg>
  * \endcode
  */
 /*! 
- * \example <pkg>/test/<pkg>_test.cc 
+ * \example <pkg>/test/tst<class>.cc 
  * 
  * description of example
  */
-// revision history:
-// -----------------
-// 0) (<date>) <user>: original
-// 
 //===========================================================================//
 
 class <class> 
@@ -52,18 +48,18 @@ class <class>
 
     // CREATORS
     
-    //! default constructors
+    //! Default constructors.
     <class>();
 
-    //! copy constructor (the long doxygen description is in the .cc file)
+    //! Copy constructor (the long doxygen description is in the .cc file).
     <class>(const <class> &rhs);
 
-    //! destructor
+    //! Destructor.
     ~<class>();
 
     // MANIPULATORS
     
-    //! Assignment operator for <class>
+    //! Assignment operator for <class>.
     <class>& operator=(const <class> &rhs);
 
     // ACCESSORS
@@ -78,9 +74,9 @@ class <class>
 
 };
 
-} // end namespace rtt_<spkg>
+} // end namespace <namespace>
 
-#endif // rtt_<spkg>_<class>_hh
+#endif // <spkg>_<class>_hh
 
 //---------------------------------------------------------------------------//
 //              end of <pkg>/<class>.hh

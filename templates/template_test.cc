@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,9 +18,12 @@
 #include "../Release.hh"
 #include "<spkg>.hh"
 
+using namespace std;
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
+
 
 
 //---------------------------------------------------------------------------//
@@ -32,7 +35,7 @@ int main(int argc, char *argv[])
 	if (std::string(argv[arg]) == "--version")
 	{
 	    std::cout << argv[0] << ": version " 
-		      << rtt_<pkg>::release() 
+		      << <namespace>::release() 
 		      << std::endl;
 	    return 0;
 	}
@@ -40,7 +43,6 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	
     }
     catch (std::exception &err)
     {
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     std::cout <<     "*********************************************" 
 	      << std::endl;
-    if (rtt_<spkg>::passed) 
+    if (<namespace>_test::passed) 
     {
         std::cout << "**** <class> Test: PASSED" 
 		  << std::endl;

@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  Release function implementation for <pkg> library
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,7 +12,7 @@
 
 #include "Release.hh"
 
-namespace rtt_<spkg>
+namespace <namespace>
 {
 
 using std::string;
@@ -29,7 +29,7 @@ const string release()
     return pkg_release;
 }
 
-}  // end of rtt_<spkg>
+}  // end of <namespace>
 
 //---------------------------------------------------------------------------//
 //                             end of Release.cc

@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +12,10 @@
 
 #include "<basename>.hh"
 
-namespace rtt_<spkg>
+namespace <namespace>
 {
 
-} // end namespace rtt_<spkg>
+} // end namespace <namespace>
 
 //---------------------------------------------------------------------------//
 //                 end of <basename>.cc

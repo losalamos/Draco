@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  Explicit template instatiations for class <basename>.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  * 
  * <start>
  */
@@ -14,12 +14,12 @@
 
 #include "<basename>.hh"
 
-namespace rtt_<spkg>
+namespace <namespace>
 {
 
 // Explicit template instantiations go here.
 
-} // end namespace rtt_<spkg>
+} // end namespace <namespace>
 
 //---------------------------------------------------------------------------//
 //                 end of <basename>_pt.cc

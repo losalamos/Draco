@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +13,7 @@
 #include <iostream>
 #include "<spkg>.hh"
 
-namespace rtt_<spkg>
+namespace <namespace>
 {
 
 //===========================================================================//
@@ -76,7 +76,7 @@ void unit_test(const bool pass, int line, char *file)
 
 bool passed = true;
 
-} // end namespace rtt_<spkg>
+} // end namespace <namespace>
 
 //---------------------------------------------------------------------------//
 //               end of <spkg>.cc

@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,11 +36,11 @@ int main(int argc, char *argv[])
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
+	if (std::string(argv[arg]) == "--version")
 	{
 	    if (rtt_c4::node() == 0)
 		cout << argv[0] << ": version " 
-		     << rtt_<pkg>::release() 
+		     << <namespace>::release() 
 		     << endl;
 	    rtt_c4::finalize();
 	    return 0;
@@ -50,10 +50,19 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (std::exception &err)
     {
-	cout << "While testing <class>, " << ass.what()
-	     << endl;
+	std::cout << "ERROR: While testing <class>, " 
+		  << err.what()
+		  << std::endl;
+	rtt_c4::finalize();
+	return 1;
+    }
+    catch( ... )
+    {
+	std::cout << "ERROR: While testing <class>, " 
+		  << "An unknown exception was thrown on processor "
+                  << rtt_c4::node() << std::endl;
 	rtt_c4::finalize();
 	return 1;
     }
@@ -62,20 +71,24 @@ int main(int argc, char *argv[])
 	rtt_c4::HTSyncSpinLock slock;
 
 	// status of test
-	cout << endl;
-	cout <<     "*********************************************" << endl;
-	if (rtt_<spkg>::passed) 
+	std::cout << std::endl;
+	std::cout <<     "*********************************************" 
+                  << std::endl;
+	if (<namespace>_test::passed) 
 	{
-	    cout << "**** <class> Test: PASSED on " 
-		 << rtt_c4::node() << endl;
+	    std::cout << "**** <class> Test: PASSED on " 
+                      << rtt_c4::node() 
+                      << std::endl;
 	}
-	cout <<     "*********************************************" << endl;
-	cout << endl;
+	std::cout <<     "*********************************************" 
+                  << std::endl;
+	std::cout << std::endl;
     }
     
     rtt_c4::global_barrier();
 
-    cout << "Done testing <class> on " << rtt_c4::node() << endl;
+    std::cout << "Done testing <class> on " << rtt_c4::node() 
+              << std::endl;
     
     rtt_c4::finalize();
 }   

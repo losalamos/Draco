@@ -4,18 +4,18 @@
  * \author <user> 
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright Â© 2003 The Regents of the University of California.
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
 /*---------------------------------------------------------------------------*/
 
-#ifndef rtt_<spkg>_<class>_h
-#define rtt_<spkg>_<class>_h
+#ifndef <spkg>_<class>_h
+#define <spkg>_<class>_h
 
 
 
-#endif /* rtt_<spkg>_<class>_h */
+#endif /* <spkg>_<class>_h */
 
 /*---------------------------------------------------------------------------*/
 /*           end of <pkg>/<class>.h */
