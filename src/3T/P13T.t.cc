@@ -548,6 +548,14 @@ void P13T<DS>::calcMomentumDeposition
  const DiffusionSolver &solver,
  const MaterialProperties &matprops, const int groupNo) const
 {
+    // Set the radiation physics to the given units.
+
+    const RadiationPhysics radPhys(matprops.getUnits());
+
+    // obtain the speed of light
+
+    double c = radPhys.getLightSpeed();
+
     // Obtain unit vectors
     DiscMomentumField e1Field( spMesh ), e2Field( spMesh ), e3Field( spMesh );
     DiscMomentumField::value_type e1, e2, e3;
@@ -592,13 +600,38 @@ void P13T<DS>::calcMomentumDeposition
     sigmaFe1 *= vc_volume_ratios;
     sigmaFe2 *= vc_volume_ratios;
     sigmaFe3 *= vc_volume_ratios;
-#ifdef SDP
     sigmaFe1 /= c;
     sigmaFe2 /= c;
     sigmaFe3 /= c;
 
-     &xiTilde = xXiTilde;
-     MT::scatter ( xiTilde, KEnergy, MT::OpAddAssign() );
+    ncsf momentum1(spMesh), momentum2(spMesh), momentum3(spMesh);
+    MT::scatter ( momentum1, sigmaFe1, MT::OpAddAssign() );
+    MT::scatter ( momentum2, sigmaFe2, MT::OpAddAssign() );
+    MT::scatter ( momentum3, sigmaFe3, MT::OpAddAssign() );
+    ncsf::iterator iter1 = momentum1.begin(),
+                   iter2 = momentum2.begin(),
+                   iter3 = momentum3.begin();
+    for (MomentumField::iterator mom_iter = momentumDeposition.begin();
+         mom_iter != momentumDeposition.end(); mom_iter++)
+    {
+        (*mom_iter)(0) = *iter1++;
+        (*mom_iter)(1) = *iter2++;
+        (*mom_iter)(2) = *iter3++;
+    }
+
+#ifdef SDP
+    DiscMomentumField vc_momentum(spMesh);
+    DiscKineticEnergyField::iterator iter1 = sigmaFe1.begin(),
+                                     iter2 = sigmaFe2.begin(),
+                                     iter3 = sigmaFe3.begin();
+    for (DiscMomentumField::iterator mom_iter = vc_momentum.begin();
+         mom_iter != vc_momentum.end(); mom_iter++)
+    {
+        (*mom_iter)(0) = *iter1++;
+        (*mom_iter)(1) = *iter2++;
+        (*mom_iter)(2) = *iter3++;
+    }
+    MT::scatter ( momentumDeposition, vc_momentum, MT::OpAddAssign() );
 #endif
 }
 
