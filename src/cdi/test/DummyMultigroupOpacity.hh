@@ -405,7 +405,7 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
     int ng = numGroupBoundaries - 1;
     // loop over all temperatures in the range
     // (tempFirst,tempLast).
-    for ( ; tempIter != tempLast; ++tempIter )
+    for ( ; tempIter != templast; ++tempIter )
 	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
 	    *opacityIter = 2.0 * ( *tempIter + targetDensity/1000.0 )
 		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );

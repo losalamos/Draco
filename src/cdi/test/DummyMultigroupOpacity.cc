@@ -51,7 +51,7 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
     for ( int i=0; i<numDensities; ++i )
 	densityGrid[i] = (i+1) * 0.1;
     for ( int i=0; i<numGroupBoundaries; ++i )
-	groupBoundaries[i] = 5.0 * pow(10.0,(i-2.0));
+	groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
 } 
 
 // Constructor for entering a different group boundary structure than the
@@ -78,7 +78,7 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(
     for ( int i=0; i<numDensities; ++i )
 	densityGrid[i] = (i+1) * 0.1;
     for ( int i=0; i<numGroupBoundaries; ++i )
-	groupBoundaries[i] = 5.0 * pow(10.0,(i-2.0));
+	groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
 } 
     
 // --------- //
