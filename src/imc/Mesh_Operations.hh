@@ -14,6 +14,7 @@
 
 #include "Mat_State.hh"
 #include "mc/OS_Mesh.hh"
+#include "mc/RZWedge_Mesh.hh"
 #include "mc/Topology.hh"
 #include "mc/Comm_Patterns.hh"
 #include "rng/Random.hh"
@@ -75,10 +76,9 @@ class Mesh_Operations
   private:
     // typedefs
     typedef std::vector<double>                       sf_double;
-    typedef rtt_mc::OS_Mesh::CCVF<double>             ccvf_double;
-    typedef rtt_dsxx::SP<rtt_mc::OS_Mesh>             SP_Mesh;
+    typedef rtt_dsxx::SP<mesh_type>                   SP_Mesh;
     typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
-    typedef rtt_dsxx::SP<Mat_State<rtt_mc::OS_Mesh> > SP_Mat_State;
+    typedef rtt_dsxx::SP<Mat_State<mesh_type> >       SP_Mat_State;
     typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>       SP_Comm_Patterns;
     
   public:
@@ -152,6 +152,38 @@ class Mesh_Operations<rtt_mc::OS_Mesh>
     // Get values of T4_slope for testing.  This is not part of the standard
     // interface to Mesh_Operations.
     const ccvf_double& get_t4_slope() const { return t4_slope; }
+};
+
+//---------------------------------------------------------------------------//
+// RZWEDGE_MESH SPECIALIZATION OF MESH_OPERATIONS CLASS
+//---------------------------------------------------------------------------//
+
+template<>
+class Mesh_Operations<rtt_mc::RZWedge_Mesh>
+{
+  public:
+    // Typedef telling mesh type.
+    typedef rtt_mc::RZWedge_Mesh mesh_type;
+
+  private: 
+    // typedefs
+    typedef std::vector<double>                       sf_double;
+    typedef std::vector<std::vector<double> >         vf_double;
+    typedef mesh_type::CCVF<double>                   ccvf_double;
+    typedef rtt_dsxx::SP<mesh_type>                   SP_Mesh;
+    typedef rtt_dsxx::SP<rtt_mc::Topology>            SP_Topology;
+    typedef rtt_dsxx::SP<Mat_State<mesh_type> >       SP_Mat_State;
+    typedef rtt_dsxx::SP<rtt_mc::Comm_Patterns>       SP_Comm_Patterns;
+
+  public:
+    // Constructor.
+    Mesh_Operations(SP_Mesh x, SP_Mat_State y, 
+		    SP_Topology z, SP_Comm_Patterns q)
+    {}
+
+    // Sample position of tilt
+    sf_double sample_pos_tilt(int x, double y, rtt_rng::Sprng &z) const
+    { return sf_double(); }
 };
 
 } // end namespace rtt_imc
