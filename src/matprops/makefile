@@ -41,6 +41,8 @@ ifneq ($(dodeps),no)
 	(cd ../radphys; $(MAKE) $(subnj) dodeps=no)
 endif
 
+$(dep_libradphys):
+
 # Rules for building docs
 
 docsrcs	= $(wildcard *.hh *.cc)
