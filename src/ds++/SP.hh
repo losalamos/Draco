@@ -109,7 +109,7 @@ class SP
     //! Require that this pointer points to a assigned memory.
     void validate() const { Insist(p, "No dumb pointer bound to this SP!"); }
 
-    //! Free the pointer.
+    // Free the pointer.
     inline void free();
 
     //! All derivatives of SP are friends. 
@@ -119,34 +119,34 @@ class SP
     //! Default constructor.
     SP() : p(0), r(new SPref) { Ensure (r); Ensure (r->refs == 1); }
 
-    //! Explicit constructor for type T *.
+    // Explicit constructor for type T *.
     inline explicit SP(T *p_in);
 
-    //! Explicit constructor for type X *.
+    // Explicit constructor for type X *.
     template<class X>
     inline explicit SP(X *px_in);
 
-    //! Copy constructor for SP<T>.
+    // Copy constructor for SP<T>.
     inline SP(const SP<T> &sp_in);
 
-    //! Copy constructor for SP<X>.
+    // Copy constructor for SP<X>.
     template<class X>
     inline SP(const SP<X> &spx_in);
 
     //! Destructor, memory is released when count goes to zero.
-    inline ~SP() { free(); }
+    ~SP() { free(); }
 
-    //! Assignment operator for type T *.
+    // Assignment operator for type T *.
     inline SP<T>& operator=(T *p_in);
 
-    //! Assignment operator for type X *.
+    // Assignment operator for type X *.
     template<class X>
     inline SP<T>& operator=(X *px_in);
 
-    //! Assignment operator for type SP<T>.
+    // Assignment operator for type SP<T>.
     inline SP<T>& operator=(const SP<T> &sp_in);
 
-    //! Assignment operator for type SP<X>.
+    // Assignment operator for type SP<X>.
     template<class X>
     inline SP<T>& operator=(const SP<X> &spx_in);
 
