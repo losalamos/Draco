@@ -13,7 +13,9 @@
 #undef SPRNG_H
 
 /* USE STANDARD C INTERFACE */
-#undef __STDC__
+#ifndef __STDC__
+#define __STDC__
+#endif
 
 #endif                          /* __rng_config_h__ */
 
