@@ -4,22 +4,25 @@
  * \author Todd J. Urbatsch
  * \date   Wed Apr  5 17:32:24 2000
  * \brief  RZWedge_Mesh implementation file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_RZWedge_Mesh_cc__
-#define __mc_RZWedge_Mesh_cc__
+#ifndef rtt_mc_RZWedge_Mesh_cc
+#define rtt_mc_RZWedge_Mesh_cc
 
 #include "RZWedge_Mesh.hh"
 #include "XYZCoord_sys.hh"
 #include "Constants.hh"
+#include "Math.hh"
 #include "viz/Ensight_Translator.hh"
 #include "ds++/Packing_Utils.hh"
 #include <iostream>
 #include <iomanip>
 #include <typeinfo>
+#include <algorithm>
 
 namespace rtt_mc
 {
@@ -531,6 +534,10 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_surcells(std::string boundary) const
  * \brief Sample a position on the surface of a sphere inside a cell.
  *
  * This function is required by the IMC_MT concept.
+ *
+ * As opposed to the OS_Mesh implementation of this function, this function
+ * actually tracks a distance equal to radius.  The normal is the direction
+ * of the ray when reaching that distance.
  * 
  * \param cell cell index
  * \param origin sphere origin
@@ -546,11 +553,80 @@ RZWedge_Mesh::pair_sf_double RZWedge_Mesh::sample_pos_on_sphere(
     double           radius,
     rng_Sprng       &random) const
 {
-    pair_sf_double returnit;
+    Require (cell > 0);
+    Require (cell <= layout.num_cells());
+    Require (origin.size() == 3);
+    Require (in_cell(cell, origin));
 
-    Insist(0, "Not implemented in rz yet.");
+    // checks to make sure sphere is in cell in x and z dimensions
+    Require (origin[0] - radius >= get_low_x(cell));
+    Require (origin[0] + radius <= get_high_x(cell));
+    Require (origin[2] - radius >= get_low_z(cell));
+    Require (origin[2] + radius <= get_high_z(cell));
 
-    return returnit;
+    // get initial position and direction to track
+    sf_double r     = origin;
+    sf_double omega = coord->sample_isotropic_dir(random);
+
+    // distance we have to track
+    double track = radius;
+    
+    // track until we have gone the radial distance
+    double d_bnd     = 0.0;
+    int face         = 0;
+    double factor    = 0.0;
+    sf_double normal;
+    while (track > 0.0)
+    {
+	// determine shortest distance to boundary
+	d_bnd = get_db(r, omega, cell, face);
+	Check (face == 3 || face == 4);
+
+	// process a reflection on a y face
+	if (d_bnd < track)
+	{
+	    // stream to the face
+	    r[0] = r[0] + d_bnd * omega[0];
+	    r[1] = r[1] + d_bnd * omega[1];
+	    r[2] = r[2] + d_bnd * omega[2];
+
+	    // adjust the remaining track length
+	    track -= d_bnd;
+	    Check (track >= 0.0);
+
+	    // calculate face normal
+	    normal = get_normal(cell, face);
+	    Check (normal.size() == 3);
+	    
+	    // specularly reflect angle
+	    factor    = rtt_mc::global::dot(omega, normal);
+	    omega[0] -= 2.0 * factor * normal[0];
+	    omega[1] -= 2.0 * factor * normal[1];
+	    omega[2] -= 2.0 * factor * normal[2];
+	}
+	
+	// stream until we are finished
+	else
+	{
+	    r[0] = r[0] + track * omega[0];
+	    r[1] = r[1] + track * omega[1];
+	    r[2] = r[2] + track * omega[2];
+
+	    // we are finished tracking
+	    track = 0.0;
+	}
+    }
+
+    // assign and return position and normal, the normal is the last
+    // direction the ray had before reaching the specfied track distance 
+    pair_sf_double pos_and_norm = std::make_pair(r, omega);
+
+    // checks; we do not check that omega is properly normalized here because
+    // it is checked in the preceding and ensuing transport steps
+    Ensure (in_cell(cell, pos_and_norm.first));
+
+    // return
+    return pos_and_norm;
 }
 
 //---------------------------------------------------------------------------//
@@ -1317,7 +1393,7 @@ RZWedge_Mesh::SP_Mesh RZWedge_Mesh::Pack::unpack() const
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_RZWedge_Mesh_cc__
+#endif                          // rtt_mc_RZWedge_Mesh_cc
 
 //---------------------------------------------------------------------------//
 //                        end of mc/RZWedge_Mesh.cc

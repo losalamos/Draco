@@ -4,13 +4,14 @@
  * \author Todd J. Urbatsch
  * \date   Wed Apr  5 16:01:53 2000
  * \brief  RZWedge_Mesh header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __mc_RZWedge_Mesh_hh__
-#define __mc_RZWedge_Mesh_hh__
+#ifndef rtt_mc_RZWedge_Mesh_hh
+#define rtt_mc_RZWedge_Mesh_hh
 
 #include "Coord_sys.hh"
 #include "AMR_Layout.hh"
@@ -66,6 +67,8 @@ namespace rtt_mc
 // 22-MAR-2001 : fixed checks for low (high) boundaries on slope for
 //               ::sample_pos; made them a little less restrictive
 // 02-MAY-2001 : added packer struct and class
+// 03-JUL-2003 : added function to calculate the minimum distance along
+//               x and z directions; added sample position on sphere function
 // 
 //===========================================================================//
 
@@ -206,6 +209,7 @@ class RZWedge_Mesh
 
     //! Determine if this is a full mesh or partitioned mesh.
     bool full_Mesh() const { return !submesh; }
+
     // Pack function.
     SP_Pack pack(const sf_int & = sf_int()) const;
 
@@ -799,14 +803,38 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos_on_face(int cell, int face,
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return the minimum distance to a cell boundary.
+ *
+ * This function is relegated to Random Walk.  Because of the way that we are
+ * implementing random walk we only check the minimum distance to the \b x or
+ * \b z axis.
+ *
+ * The returned distance is a distance eps less than the minimum distance to
+ * boundary.  eps is defined \f$ 0.5\times 10^{-6} \cdot \Delta\f$ where
+ * \f$\Delta\f$ is the average cell width in the xz dimensions.
  */
 double RZWedge_Mesh::get_orthogonal_dist_to_bnd(const sf_double &r, 
 						int              cell) const
 {
-    Insist(0, "Not implemented in rz yet.");
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (r.size() == 3);
+    Require (in_cell(cell, r));
 
-    // loop over dimensions and calculate the minimum distance
-    double min_distance = global::huge_int;
+    // fraction reduction distance to keep sphere in cell
+    double eps = 0.5e-6 * (dim(1, cell) + dim(3, cell));
+
+    // compute x_hi distance
+    double dx_hi = get_high_x(cell) - r[0] - eps;
+    double dx_lo = r[0] - get_low_x(cell) - eps;
+    double dz_hi = get_high_z(cell) - r[2] - eps;
+    double dz_lo = r[2] - get_low_z(cell) - eps;
+
+    // calculate the minimum distance
+    double min_distance = dx_hi;
+    min_distance        = std::min(min_distance, dx_lo);
+    min_distance        = std::min(min_distance, dz_hi);
+    min_distance        = std::min(min_distance, dz_lo);
+
+    Ensure (min_distance >= 0.0);
     return min_distance;
 }
 
@@ -1147,7 +1175,7 @@ bool RZWedge_Mesh::CCVF<T>::empty(int i) const
 
 } // end namespace rtt_mc
 
-#endif                          // __mc_RZWedge_Mesh_hh__
+#endif                          // rtt_mc_RZWedge_Mesh_hh
 
 //---------------------------------------------------------------------------//
 //                              end of mc/RZWedge_Mesh.hh

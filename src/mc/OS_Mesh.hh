@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Feb  3 16:50:13 1998
  * \brief  OS_Mesh class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
