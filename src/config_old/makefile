@@ -89,6 +89,7 @@ SN_LIB		= -L$(SRC_TOP)/sn       -lsn_$(env)
 IMC_LIB         = -L$(SRC_TOP)/imc      -limc_$(env)
 PYCXX_LIB	= -L$(SRC_TOP)/pycxx    -lpycxx_$(env)
 RNG_LIB         = -L$(SRC_TOP)/rng      -lrng_$(env)
+P1DIFFUSION_LIB  = -L$(SRC_TOP)/P1Diffusion -lP1Diffusion_$(env)
 
 ifeq ($(need_radphys),yes)
 need_units	:= yes
@@ -232,6 +233,9 @@ endif
 ifeq ($(need_rng),yes)
 LINK_LIBS       += $(RNG_LIB)
 endif
+ifeq ($(need_P1Diffusion),yes)
+LINK_LIBS       += $(P1DIFFUSION_LIB)
+endif
 ifeq ($(need_matprops),yes)
 LINK_LIBS	+= $(MATPROPS_LIB)
 endif
@@ -321,6 +325,7 @@ dep_libradphys	= $(SRC_TOP)/radphys/libradphys_$(env).$(lib_suffix)
 dep_libmatprops	= $(SRC_TOP)/matprops/libmatprops_$(env).$(lib_suffix)
 dep_libimc      = $(SRC_TOP)/imc/libimc_$(env).$(lib_suffix)
 dep_librng      = $(SRC_TOP)/rng/librng_$(env).$(lib_suffix)
+dep_libP1Diffusion = $(SRC_TOP)/P1Diffusion/libP1Diffusion_$(env).$(lib_suffix)
 
 #dep_libpooma	= $(POOMA_LIB_DIR)/libpooma.a
 dep_libpooma	= $(POOMA_ROOT)/lib/$(POOMA_ARCH)/libpooma.a
