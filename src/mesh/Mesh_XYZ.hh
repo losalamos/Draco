@@ -653,6 +653,12 @@ class Mesh_XYZ : private XYZ_Mapper
         void operator() (T1& x, const T2& y) const { x += y; }
     };
 
+    class OpSubAssign {
+      public:
+        template <class T1, class T2>
+        void operator() (T1& x, const T2& y) const { x -= y; }
+    };
+
     class OpMultAssign {
       public:
         template <class T1, class T2>
