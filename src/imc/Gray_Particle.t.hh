@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 29 13:30:27 2002
  * \brief  Gray_Particle class implementation.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -459,6 +460,10 @@ void Gray_Particle<MT>::straight_transport(
 	    // throw an assertion
 	    throw rtt_dsxx::assertion("Undefined event in Gray_Particle.");
 	}
+
+	// initialize diagnostics
+	if (diagnostic)
+	    diagnostic->print(*this);
     } 
 
     // !!! END OF TRANSPORT LOOP !!!
@@ -729,6 +734,10 @@ void Gray_Particle<MT>::rw_transport(
 	    // throw an assertion
 	    throw rtt_dsxx::assertion("Undefined event in Gray_Particle.");
 	}
+
+	// initialize diagnostics
+	if (diagnostic)
+	    diagnostic->print(*this);
     } 
 
     // !!! END OF TRANSPORT LOOP !!!

@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 14 18:26:24 2003
  * \brief  Random_Walk class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

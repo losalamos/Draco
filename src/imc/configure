@@ -1620,10 +1620,17 @@ fi;
 
 
 # testing setup
-	test_alltarget="$test_alltarget tstFrequency tstOpacity tstFlat_Mat_State_Builder \
-            tstCDI_Mat_State_Builder tstTally tstParticle \
-            tstSource_Builder tstMesh_Operations tstTransporter \
-            tstRandom_Walk"
+	test_alltarget="$test_alltarget tstFrequency \
+            tstOpacity \
+	    tstFlat_Mat_State_Builder \
+            tstCDI_Mat_State_Builder \
+            tstTally \
+            tstSource_Builder \
+            tstMesh_Operations \
+	    tstParticle \
+            tstParticle_trans \
+            tstTransporter \
+            tstRandom_Walk "
 
 	test_nprocs="1 2 4"
 

@@ -748,7 +748,7 @@ void random_walk_test()
 
 	radius = 1.0 / 10.0;
 	d_col  = 1.0 / 102.0;
-	d_cen  = 1.0 / 11.0;
+	d_cen  = 1.0 / 103.0;
 
 	if (rw.do_a_random_walk(1, radius, d_col, d_cen)) ITFAILS;
 
@@ -829,7 +829,7 @@ void random_walk_test()
 
 	radius = 1.0 / 10.0;
 	d_col  = 1.0 / 102.0;
-	d_cen  = 1.0 / 11.0;
+	d_cen  = 1.0 / 104.0;
 
 	if (rw.do_a_random_walk(11, radius, d_col, d_cen)) ITFAILS;
 

@@ -2,10 +2,12 @@ dnl-------------------------------------------------------------------------dnl
 dnl draco/src/imc configure.in
 dnl Thomas M. Evans
 dnl Mon Jan 11 17:09:11 1999
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
-dnl @> configure.in for imc
+dnl Copyright © 2003 The Regents of the University of California.
 dnl-------------------------------------------------------------------------dnl
-dnl IMC PACKAGE CONFIGURE
+dnl configure.in for imc
+dnl-------------------------------------------------------------------------dnl
 
 AC_INIT
 AC_CONFIG_SRCDIR([Source.hh])
@@ -23,10 +25,17 @@ AC_NEEDS_LIBS(mc viz meshReaders cdi rng c4 traits ds++)
 AC_NEEDS_LIBS_TEST(cdi_analytic)
 
 # testing setup
-AC_RUNTESTS(tstFrequency tstOpacity tstFlat_Mat_State_Builder \
-            tstCDI_Mat_State_Builder tstTally tstParticle \
-            tstSource_Builder tstMesh_Operations tstTransporter \
-            tstRandom_Walk, 1 2 4)
+AC_RUNTESTS(tstFrequency \
+            tstOpacity \
+	    tstFlat_Mat_State_Builder \
+            tstCDI_Mat_State_Builder \
+            tstTally \
+            tstSource_Builder \
+            tstMesh_Operations \
+	    tstParticle \
+            tstParticle_trans \
+            tstTransporter \
+            tstRandom_Walk , 1 2 4)
 
 # DRACO SETUP
 AC_DRACO_ENV

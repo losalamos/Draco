@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 14 18:26:24 2003
  * \brief  Random_Walk member definitions.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -56,9 +57,9 @@ Random_Walk<MT>::Random_Walk(SP_Mesh              mesh_in,
  * \brief See if we should do Random Walk on this step.
  *
  * Random Walk is valid during a step if:
- * - Ro > min_optical_radius * mean-ree-path
- * - Ro > distance-to-collision
- * - Ro < distance-to-census
+ * - Ro > min_optical_radius * mean-free-path AND
+ * - Ro > distance-to-collision AND
+ * - distance-to-census > distance-to-collision
  * .
  *
  * \param cell current cell index
@@ -92,11 +93,18 @@ bool Random_Walk<MT>::do_a_random_walk(int    cell,
     rw_radius = rw_radius_in;
 
     // check to see if random walk is valid
+
+    // rw_radius must be greater than the minimum number of mfps
     if (rw_radius <= min_optical_radius * mfp)
 	return false;
+
+    // rw_radius must be greater than the distance to collision
     else if (rw_radius <= d_collision)
 	return false;
-    else if (rw_radius >= d_census)
+
+    // rw_radius is greater than dist-to-collision so rw is possible;
+    // however, if d_census is the limiting event then don't do random walk 
+    else if (d_census <= d_collision)
 	return false;
 
     // set the rw_set flag to true (random walk is on)

@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Jan 29 13:30:27 2002
  * \brief  Gray_Particle class definition.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
