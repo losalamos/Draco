@@ -4157,30 +4157,34 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
    #
-   # path to package directories which are sources for doxygen
+   # paths of package directories which are sources for doxygen
    #
 
    doxygen_input=`cd ${srcdir}; pwd`
    doxygen_examples=`cd ${srcdir}/test; pwd`
    localdir=`pwd`/autodoc
-   doxygen_output=`cd ${prefix}/html/${package}; pwd`
+
+   # XXX This will change with new destination definition.
+   doxygen_output_top="${prefix}/html"
+   doxygen_output="${doxygen_output_top}/${package}"
 
    #
-   # covert to relative paths
+   # compute relative paths from localdir
    #
 
    adl_COMPUTE_RELATIVE_PATH([localdir],[doxygen_output],[rel_doxygen_output])
    adl_COMPUTE_RELATIVE_PATH([localdir],[doxygen_examples],[rel_doxygen_examples])
    adl_COMPUTE_RELATIVE_PATH([localdir],[doxygen_input],[rel_doxygen_input])
 
+   #
    # use relative paths for tag files also
-
+   #
    components=''
    AC_MSG_CHECKING([for Doxygen component dependencies])
    for comp in ${DRACO_COMPONENTS}; do
        components="${components} ${comp}"
-       TAGFILES="${TAGFILES} ${prefix}/html/${comp}.tag"
-       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${prefix}/html/${comp}.tag = ../${comp}\""
+       TAGFILES="${TAGFILES} ${doxygen_output_top}/${comp}.tag"
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${doxygen_output_top}/${comp}.tag = ../${comp}\""
    done
    AC_MSG_RESULT([${components}])
 
@@ -4195,11 +4199,14 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    AC_MSG_CHECKING("component release number")
    AC_MSG_RESULT($number)
 
-   AC_SUBST(doxygen_input)
+   AC_SUBST(doxygen_output)
    AC_SUBST(doxygen_examples)
+   AC_SUBST(doxygen_input)
+
    AC_SUBST(rel_doxygen_output)
    AC_SUBST(rel_doxygen_examples)
    AC_SUBST(rel_doxygen_input)
+
    AC_SUBST(latex_yes_no)
    AC_SUBST(dotpath)
    AC_SUBST(number)

@@ -42,7 +42,7 @@ all: install
 install dvi: 
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
-			(cd $${dir} && ${MAKE} dependencies) || ${EXIT}; \
+			(cd $${dir} && ${MAKE} dependencies $(subnj)) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} $@ $(subnj)) || ${EXIT}; \
 		fi \
 	done
@@ -52,7 +52,7 @@ install dvi:
 check:
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
-			(cd $${dir} && ${MAKE} dependencies) || ${EXIT}; \
+			(cd $${dir} && ${MAKE} dependencies $(subnj)) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} $(subnj)) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
 			(cd $${dir} && ${MAKE} install) || ${EXIT}; \
