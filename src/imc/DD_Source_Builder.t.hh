@@ -442,7 +442,7 @@ void DD_Source_Builder<MT,FT,PT>::calc_source_numbers()
     // iterate over the problem energies to get source numbers
 
     // controllers for iteration
-    int np_try_for = npwant;
+    int np_try_for = Base::npwant;
     bool retry     = true;
     int num_try    = 0;
 
@@ -488,7 +488,7 @@ void DD_Source_Builder<MT,FT,PT>::calc_source_numbers()
 	C4::gsum(numtot);
 	
 	// ending condition
-	if (numtot > npwant && num_try < 10 && np_try_for > 1)
+	if (numtot > Base::npwant && num_try < 10 && np_try_for > 1)
 	    np_try_for -= (numtot - Base::npwant);
 	else
 	    retry = false;
@@ -611,7 +611,7 @@ void DD_Source_Builder<MT,FT,PT>::calc_fullDD_rn_fields(
     // require that source number and random number stream IDs are equally
     // sized.  require (weak check) that local and global cell numbers are OK
     int num_cells = local_n_field.size();
-    Require (rn_field.size() == topology->num_cells(C4::node()));
+    Require (rn_field.size() == Base::topology->num_cells(C4::node()));
     Require (rn_field.size() == num_cells);
     Require ((C4::nodes() > 1) ? (num_cells < global_numcells) 
 	     : (num_cells == global_numcells));

@@ -99,7 +99,7 @@ class Multigroup_Particle : public Particle<MT>
     // Particle constructor.
     inline Multigroup_Particle(const sf_double &, const sf_double &, double,
 			       int, Rnd_Type, int, double = 1, double = 1, 
-			       int = BORN);
+			       int = Base::BORN);
 
     // Unpacking constructor.
     inline Multigroup_Particle(const std::vector<char> &);
@@ -358,7 +358,7 @@ void Multigroup_Particle<MT>::effective_scatter(const MT         &mesh,
     
     // sample new group index (add 1 since return value is in [0,G-1])
     group_index = sample_bin_from_discrete_cdf(
-	*random, opacity.get_emission_group_cdf(Base::cell)) + 1;
+	*Base::random, opacity.get_emission_group_cdf(Base::cell)) + 1;
     Check (group_index > 0);
     Check (group_index <= opacity.get_Frequency()->get_num_groups());
     

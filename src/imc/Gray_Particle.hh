@@ -199,7 +199,7 @@ Gray_Particle<MT>::Gray_Particle(const std::vector<char> &packed)
     Check (Base::random->get_id());
 
     // assign the descriptor and status
-    Base::descriptor = UNPACKED;
+    Base::descriptor = Base::UNPACKED;
     Base::alive      = true;
     
     Ensure (Base::status());
@@ -302,7 +302,7 @@ void Gray_Particle<MT>::stream_implicit_capture(
 
     // update the fraction of the particle's original weight
     Base::fraction *= factor;
-    Check (Base::fraction > minwt_frac || 
+    Check (Base::fraction > Base::minwt_frac || 
 	   rtt_dsxx::soft_equiv(Base::fraction, Base::minwt_frac));
 
     // update particle energy-weight

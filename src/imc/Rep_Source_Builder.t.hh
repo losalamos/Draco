@@ -480,7 +480,7 @@ void Rep_Source_Builder<MT,FT,PT>::calc_source_numbers()
 	numtot = global_nvoltot + global_nsstot + global_ncentot;
 	
 	// ending condition
-	if (numtot > npwant && num_try < 10 && np_try_for > 1)
+	if (numtot > Base::npwant && num_try < 10 && np_try_for > 1)
 	    np_try_for -= (numtot - Base::npwant);
 	else
 	    retry = false;
