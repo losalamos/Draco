@@ -21,6 +21,60 @@ import re
 import string
 
 ##---------------------------------------------------------------------------##
+
+class Logfile_Entry:
+    '''
+    Used to store an entry in the logfile.
+
+    Attributes:
+
+    number = line number in the logfile.
+    line   = the corresponding actual line in the logfile.
+    '''
+    def __init__(self, number, line):
+        self.number = number
+        self.line = line
+
+##---------------------------------------------------------------------------##
+
+def print_logfile_entries(logfile_entries, type):
+    '''
+    Prints a list of Logfile_Entry objects.
+
+    Arguments:
+
+    logfile_entries = the list of Logfile_Entry lineError objects.
+    type            = a string describing the type of errors (used in
+                      titles).
+    '''
+    
+    n = len(logfile_entries)
+    separator = "======================================================================="
+    print
+    print separator
+    print "%d %s found." % (n, type)
+    
+    if n == 0:
+        print separator
+    elif n > 100:
+        # Too many errors, so just print the corresponding line numbers.
+        print
+        print "Too many %s; only line numbers in logfile are listed below." % (type)
+        print separator
+        for i in xrange(n):
+            print "%8s" % (logfile_entries[i].number),
+            if (i + 1) % 8 == 0 or i == (n - 1):
+                print
+    else:
+        # Print both the line number and the line in the logfile.
+        print
+        print "%8s: %s" % ("Line", "Logfile Entry")
+        print separator
+        for i in xrange(n):
+            print "%8s: %s" % (logfile_entries[i].number,
+                               logfile_entries[i].line),
+
+##---------------------------------------------------------------------------##
 ## Parse the test name
 ##---------------------------------------------------------------------------##
 
@@ -74,8 +128,8 @@ results = [0,0,0]
 
 # list of warnings
 # list of errors
-error_line = []
-warn_line  = []
+error_log = []
+warn_log  = []
 
 ##---------------------------------------------------------------------------##
 ## main program
@@ -215,7 +269,7 @@ for line in lines:
     if match:
 
         # add error line number to list
-        error_line.append(ln)
+        error_log.append(Logfile_Entry(ln, line))
 
     # search on warnings
     match = warnings.search(line)
@@ -223,12 +277,12 @@ for line in lines:
     if match:
 
         # add warning line number to list
-        warn_line.append(ln)
+        warn_log.append(Logfile_Entry(ln, line))
 
 # determine whether there were any failures, warnings, or errors
 all_passed = (total_fails is 0) and \
-             (len(warn_line) is 0) and \
-             (len(error_line) is 0)
+             (len(warn_log) is 0) and \
+             (len(error_log) is 0)
 
 # print out test results
 
@@ -248,8 +302,8 @@ else:
 
 print "  Total Passed   : %i" % (total_passes)
 print "  Total Failed   : %i" % (total_fails)
-print "  Total Warnings : %i" % (len(warn_line))
-print "  Total Errors   : %i" % (len(error_line))
+print "  Total Warnings : %i" % (len(warn_log))
+print "  Total Errors   : %i" % (len(error_log))
 print
 
 print "%47s" % ("Test Results for Each Package")
@@ -277,59 +331,15 @@ for pkg in pkg_tests.keys():
     print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print
 
-print "Lines in logfile %s with errors and warning mesages appear below." % (log_tag_str)
-print "Check %s to resolve discrepancies.\n" % (log_tag_str)
+# print out error and warning line numbers
 
-# print out error numbers (6 line numbers per line)
-num_error_prnt = len(error_line) / 8
-num_left       = len(error_line) % 8
-counter        = 0
+if len(error_log) or len(warn_log):
+    print "Logfile %s contains the errors and" % (log_tag_str)
+    print "warning messages that are summarized below."
 
-print "%45s" % ("Error Line Numbers")
-print "======================================================================="
-
-for i in xrange(num_error_prnt):
-
-    print "%8s %8s %8s %8s %8s %8s %8s %8s" % (error_line[0+counter],
-                                               error_line[1+counter],
-                                               error_line[2+counter],
-                                               error_line[3+counter],
-                                               error_line[4+counter],
-                                               error_line[5+counter],
-                                               error_line[6+counter],
-                                               error_line[7+counter])
-    counter = counter + 8
-    
-for i in xrange(num_left):
-    print "%8s" % (error_line[counter]),
-    counter = counter+1
-print
-
-# print out warn numbers (8 line numbers per line)
-num_warn_prnt = len(warn_line) / 8
-num_left      = len(warn_line) % 8
-counter       = 0
-
-print "%46s" % ("Warning Line Numbers")
-print "======================================================================="
-for i in xrange(num_warn_prnt):
-
-    print "%8s %8s %8s %8s %8s %8s %8s %8s" % (warn_line[0+counter],
-                                               warn_line[1+counter],
-                                               warn_line[2+counter],
-                                               warn_line[3+counter],
-                                               warn_line[4+counter],
-                                               warn_line[5+counter],
-                                               warn_line[6+counter],
-                                               warn_line[7+counter])
-    counter = counter + 8
-    
-for i in xrange(num_left):
-    print "%8s" % (warn_line[counter]),
-    counter = counter+1
-print
+print_logfile_entries(error_log, "errors")
+print_logfile_entries(warn_log, "warnings")
 
 ###############################################################################
 ##                            end of regression_filter.py
 ###############################################################################
-
