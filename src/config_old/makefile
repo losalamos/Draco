@@ -87,9 +87,13 @@ need_c4		:= yes
 endif
 
 ifeq ($(need_mesh),yes)
-need_geom := yes
-need_c4 := yes
-need_namelist := yes
+need_geom	:= yes
+need_c4		:= yes
+need_namelist	:= yes
+endif
+
+ifeq ($(need_linalg),yes)
+need_pcg	:= yes
 endif
 
 ifeq ($(need_pcg),yes)
