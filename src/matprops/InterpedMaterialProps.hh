@@ -389,7 +389,7 @@ class InterpedMaterialProps::MaterialStateField
 
     int theSize;
     
-    const InterpedMaterialProps  &matprops;
+    const InterpedMaterialProps *pMatprops;
 
     std::vector<Memento>         memento;
     
@@ -414,7 +414,7 @@ class InterpedMaterialProps::MaterialStateField
 
     int size() const { return theSize; }
 
-    const InterpedMaterialProps &getProps() const { return matprops; }
+    const InterpedMaterialProps &getProps() const { return *pMatprops; }
     
     const Units &getUnits() const { return getProps().getUnits(); }
 

@@ -38,7 +38,7 @@ void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
 		      PGroupedTable pTable, UnaryOperation op,
 		      FT &results) const
 {
-    Require(&matState.matprops == this);
+    Require(matState.pMatprops == this);
     Require(matState.size() == results.size());
 	
     FT::iterator resit = results.begin();
@@ -90,7 +90,7 @@ void IMP::interpolate(const MaterialStateField<FT> &matState,
 		      PBilinearInterpTable pTable, UnaryOperation op,
 		      FT &results) const
 {
-    Require(&matState.matprops == this);
+    Require(matState.pMatprops == this);
     Require(matState.size() == results.size());
 	
     FT::iterator resit = results.begin();
@@ -154,7 +154,7 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
 						const FT &electronTemp_,
 						const FT &ionTemp_,
 						const FT2 &matId_)
-    : matprops(matprops_), theSize(density_.size()),
+    : pMatprops(&matprops_), theSize(density_.size()),
       density(density_.begin(), density_.end()),
       electronTemp(electronTemp_.begin(), electronTemp_.end()),
       ionTemp(ionTemp_.begin(), ionTemp_.end()),
@@ -168,7 +168,7 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
     
     for (int i=0; i < size(); i++)
     {
-	if (!matprops.hasMaterialTables(getMatId(i)))
+	if (!pMatprops->hasMaterialTables(getMatId(i)))
 	{
 	    std::ostrstream os;
 	    os << "InterpedMaterialProps::getMaterialState: "
@@ -178,7 +178,8 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
 	    throw std::runtime_error(os.str());
 	}
 		
-	const MaterialTables &mattabs = matprops.getMaterialTables(getMatId(i));
+	const MaterialTables &mattabs =
+	    pMatprops->getMaterialTables(getMatId(i));
 	
 	const BilinearInterpGrid &grid = mattabs.getGrid();
 
