@@ -1,0 +1,152 @@
+###############################################################################
+# draco/autodoc Makefile.in
+# Thomas M. Evans
+# Wed Sep  1 16:14:07 1999
+# $Id$
+###############################################################################
+# @> General Makefile.in for draco/autodoc
+###############################################################################
+
+# doxygen executable
+DOXYGEN = @DOXYGEN_PATH@
+
+INSTALL = @INSTALL@
+
+package = @package@
+top_srcdir = @top_srcdir@
+prefix = @prefix@
+srcdir = @srcdir@
+#doxygen_extras = @doxygen_extras@
+#installdirs = ${prefix}/html ${prefix}/latex
+
+# get the relative directory to the config files (relative to ${top_srcdir}).
+
+rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+	tmp="" ; \
+	while test ! -d config ; \
+	do \
+	   cd .. ; \
+	   tmp=$$tmp../ ; \
+	done ; \
+	echo $$tmp ) )config
+
+# get the config directory
+config_dir = $(shell cd ${top_srcdir}/${rel_config_dir}; pwd)
+top_autodoc_dir = $(shell cd ${config_dir}/../autodoc; pwd)
+
+imagefiles=$(wildcard ${top_autodoc_dir}/html/*.png)\
+	$(wildcard ${top_autodoc_dir}/html/*.gif)\
+	$(wildcard ${top_autodoc_dir}/html/*.jpg)\
+	$(wildcard ${srcdir}/autodoc/*.png)\
+	$(wildcard ${srcdir}/autodoc/*.gif)\
+	$(wildcard ${srcdir}/autodoc/*.jpg)
+
+supportfiles=$(wildcard ${top_autodoc_dir}/html/*.css)\
+	$(wildcard ${top_autodoc_dir}/html/*.html)\
+	$(wildcard ${srcdir}/autodoc/*.css)\
+	$(wildcard ${srcdir}/autodoc/*.html)
+
+tagfiles = @TAGFILES@
+
+##---------------------------------------------------------------------------##
+
+.SUFFIXES : .png .gif .jpg .css .html
+.PHONY : html latex install autodoc configure reconfigure \
+	install_support install_images tagfile_target
+
+autodoc: html
+
+html latex: install_images install_support ${tagfiles}
+	@if test ${DOXYGEN} = 'null'; then \
+	   echo Doxygen not available; \
+	else \
+	   ${DOXYGEN} doxygen_config; \
+	fi
+
+install:
+
+check:
+
+##---------------------------------------------------------------------------##
+## Install support files
+
+install_images: ${imagefiles} 
+	@for file in ${imagefiles}; do \
+	   echo "Install $${file} to ${prefix}/html/${package}";\
+	   ${INSTALL} $${file} ${prefix}/html/${package}/; \
+	done
+
+install_support: ${supportfiles} 
+	@for file in ${supportfiles}; do \
+	   echo $${file};\
+	   ${INSTALL} $${file} ${prefix}/html/${package}/; \
+	done
+
+#${prefix}/html/${package}/%.gif: ${top_autodoc_dir}/html/%.gif
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.jpg: ${top_autodoc_dir}/html/%.jpg
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.png: ${top_autodoc_dir}/html/%.png
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.css: ${top_autodoc_dir}/html/%.css
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.html: ${top_autodoc_dir}/html/%.html
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+
+#${prefix}/html/${package}/%.gif: ${srcdir}/autodoc/%.gif
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.jpg: ${srcdir}/autodoc/%.jpg
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.png: ${srcdir}/autodoc/%.png
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.css:  ${srcdir}/autodoc/%.css
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+#${prefix}/html/${package}/%.html: ${srcdir}/autodoc/%.html
+#	@echo "Installing file: \"$@\""
+#	${VERBOSE} ${INSTALL} $< $@
+
+##---------------------------------------------------------------------------##
+## Build system targets and rules
+
+configure:
+	@echo "Rebuilding ${srcdir}/aclocal.m4"
+	@cd ${srcdir} && aclocal -I ../config
+	@echo "Rebuilding ${srcdir}/configure"
+	@cd ${srcdir} && autoconf
+	@./config.status --recheck
+	@./config.status
+
+reconfigure: 
+	@./config.status --recheck
+	@./config.status
+
+##---------------------------------------------------------------------------##
+## clean targets
+
+clean: forced-clean
+
+forced-clean:
+	-rm -rf ${prefix}/html/*
+	-rm -rf ${prefix}/latex/*
+
+mostlyclean: clean
+
+distclean: mostlyclean forced-distclean
+
+forced-distclean:
+	-rm -f config.status config.cache config.log
+	-rm -f header.html footer.html doxygen_config
+	-rm -f Makefile
+
+###############################################################################
+#			 end of draco/autodoc Makefile.in
+###############################################################################
