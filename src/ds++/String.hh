@@ -9,7 +9,7 @@
 #ifndef __ds_String_hh__
 #define __ds_String_hh__
 
-#include <iostream.h>
+#include <iosfwd>
 
 #include <string.h>
 
@@ -50,8 +50,8 @@ class String {
     char& operator[]( int i );
     char  operator[]( int i ) const;
 
-  friend ostream& operator<<( ostream& s, const String& x );
-  friend istream& operator>>( istream& s, String& x );
+  friend std::ostream& operator<<( std::ostream& s, const String& x );
+  friend std::istream& operator>>( std::istream& s, String& x );
 
   friend inline int operator==( const String& x, const String& y )
     { return strcmp( x.p->s, y.p->s ) == 0; }
