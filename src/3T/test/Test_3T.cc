@@ -85,7 +85,7 @@ void Test_3T<MT, Problem>::run()
 {
     char buf[ 100 ];
 
-    cout << "Running the test problem, NOT!" << endl;
+    cout << "Running the test problem," << endl;
 
     A = Mat2<double>( ncp, nct );
 
@@ -113,25 +113,32 @@ void Test_3T<MT, Problem>::run()
     Mat1<double> vc( spm->get_vc() );
 
     cout << "verbose = " << verbose << endl;
-    if (verbose > 1)
-        for( int i=0; i < ncp; i++ ) {
-            double x = xc( I(i) );
-            double y = yc( J(i) );
-            double z = zc( K(i) );
 
-            Eo(i) = E(x,y,z,0.);
+// Setup the "old" values for the first timestep.  This is just the analytic
+// solution at t=0.
 
+    for( int i=0; i < ncp; i++ ) {
+        double x = xc( I(i) );
+        double y = yc( J(i) );
+        double z = zc( K(i) );
+
+        Eo(i) = E(x,y,z,0.);
+
+        if (verbose > 1) {
             sprintf( buf,
                      "node %d, I(%d)=%d xc(I(%d))=%lf J(%d)=%d yc(J(%d))=%lf",
                      node, i, I(i), i, xc(I(i)), i, J(i), i, yc(J(i)) );
             cout << buf << endl;
         }
+    }
 
     MT::cell_array E_analytic(spm), rhs(spm), r(spm);
     MT::fcdsf Eb(spm);
 
+    bool test_passed = true;
+
 // main loop.
-    for( int ns=1; ns <= nsteps; ns++ ) {
+    for( int ns=1; ns <= nsteps && test_passed; ns++ ) {
 
     // Calculate current time level.
 	double t = dt * ns;
@@ -190,6 +197,12 @@ void Test_3T<MT, Problem>::run()
 
 	spd->solve( Df, r, dt, En, Eb );
 
+    // Compute A . E_analytic = b_analytic
+
+        Mat1<double> b_anal( ncp );
+        b_anal = 0.;
+        spd->get_matvec()->MatVec( b_anal, E_analytic );
+
     // Compute the product of A and En to see how well it compares to r.
 	double r1 = 0.;
 	int pcgits = spd->get_matvec()->get_iterations();
@@ -201,6 +214,8 @@ void Test_3T<MT, Problem>::run()
 	    double d = b[i] - r[i];
 	    r1 += d*d;
 	}
+        gsum(r1);
+        r1 = sqrt( r1 / nct );
 
     // Compute solution quality metrics
 	double s1=0.;
@@ -210,6 +225,7 @@ void Test_3T<MT, Problem>::run()
 	}
 	gsum(s1);
 	s1 = sqrt( s1 / nct );
+
 	double s2=0.;
 	for( int i=0; i < ncp; i++ ) {
 	    double d = E_analytic[i] * E_analytic[i];
@@ -217,8 +233,6 @@ void Test_3T<MT, Problem>::run()
 	}
 	gsum(s2);
 	s2 = sqrt( s2 / nct );
-// 	if (s2 > 0.)
-// 	    s1 /= s2;
 	if (node == 0) {
 	    cout << "Difference norm: s1=" << s1
 		 << " s2=" << s2 << endl;
@@ -227,11 +241,17 @@ void Test_3T<MT, Problem>::run()
 		cout << "Also, r1=" << r1 << " r1/s2 = " << r1/s2 << endl;
 	    }
 	    cout << "PCG iterations = " << pcgits << endl;
+
+            if (s2 == 0. && s1 > 0. ||
+                s2 > 0. && s1/s2 > 1.e-9 )
+                test_passed=false;            
 	}
 
     // Prepare for next iteration
 	Eo = En;
     }
+
+    cout << "\n\ntest " << (test_passed ? "passed" : "failed") << "\n\n";
 }
 
 //---------------------------------------------------------------------------//
