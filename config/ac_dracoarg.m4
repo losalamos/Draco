@@ -231,7 +231,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
    dnl Doxygen options
 
    AC_ARG_ENABLE(latex-doc,
-      [  --enable-latex-doc      built latex docs with doxygen (off by default)])
+      [  --enable-latex-doc      build latex docs with doxygen (off by default)],
+      [AC_SUBST(latex_yes_no,'YES')],
+      [AC_SUBST(latex_yes_no,'NO')])
+
+   AC_ARG_WITH(doc-output,
+      [  --with-doc-output=path  build documentation in path (prefix/documentation by default)],
+      [AC_SUBST(doxygen_output_top,${with_doc_output})],
+      [doxygen_output_top='DEFAULT'])
 
    dnl end of AC_DRACO_ARGS
 ])

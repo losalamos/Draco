@@ -12,8 +12,9 @@
 # source directories: top_srcdir is the top directory for this
 # component. srcdir is the current source directory.
 
-top_srcdir = @top_srcdir@
-srcdir     = @srcdir@
+top_srcdir = @abs_top_srcdir@
+srcdir     = @abs_srcdir@
+top_builddir = @abs_top_builddir@
 
 # pacakage top source directory
 package_top_srcdir = @package_top_srcdir@
@@ -287,12 +288,12 @@ configure:
 	@cd ${top_srcdir} && aclocal -I ${config_dir} ${pkg_config_inc}
 	@echo "Rebuilding ${top_srcdir}/configure"
 	@cd ${top_srcdir} && autoconf
-	@cd ${reldir} && ./config.status --recheck
-	@cd ${reldir} && ./config.status
+	@cd ${top_builddir} && ./config.status --recheck
+	@cd ${top_builddir} && ./config.status
 
 reconfigure: 
-	@cd ${reldir} && ./config.status --recheck
-	@cd ${reldir} && ./config.status
+	@cd ${top_builddir} && ./config.status --recheck
+	@cd ${top_builddir} && ./config.status
 
 ##---------------------------------------------------------------------------##
 # Locate the source depends automatically

@@ -1,5 +1,5 @@
 ###############################################################################
-# draco/autodoc Makefile.in
+# draco/configure/Makefile.autodoc.in
 # Thomas M. Evans
 # Wed Sep  1 16:14:07 1999
 # $Id$
@@ -10,14 +10,10 @@
 # @configure_input@
 
 # Automatic autoconf variables:
-top_srcdir = @top_srcdir@
-srcdir = @srcdir@
-
-# get the relative directory between the top_srcdir and the srcdir
-reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
-ifeq (,${reldir})
-  reldir := "."
-endif
+top_srcdir = @abs_top_srcdir@
+srcdir = @abs_srcdir@
+top_builddir = @abs_top_builddir@
+builddir = @abs_builddir@
 
 # doxygen executable
 DOXYGEN = @DOXYGEN_PATH@
@@ -25,11 +21,9 @@ DOXYGEN = @DOXYGEN_PATH@
 #installation executable
 INSTALL = @INSTALL@
 
-# package name
-package = @package@
-
 # directory for doxygen output
-doxygen_output = @doxygen_output@
+doxygen_html_output = @doxygen_html_output@
+doxygen_latex_output = @doxygen_latex_output@
 
 # pacakage top source directory
 package_top_srcdir = @package_top_srcdir@
@@ -37,81 +31,91 @@ package_top_srcdir = @package_top_srcdir@
 # Get the config directory from the package root.
 config_dir = ${package_top_srcdir}/config
 
-# get the pkg_config directory and include statement
-pkg_config_dir  = ${package_top_srcdir}/pkg_config
-pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
-                    echo "-I ${pkg_config_dir}"; fi)
-
-# Get the autodoc directory from the package root
-top_autodoc_dir = ${package_top_srcdir}/autodoc
-
-# Build lists of image files and support files in the top autodoc
-# directory and the local autodoc directory. The local directory files
-# are listed last to override earlier entries in the autodoc dir
-
-imagefiles=$(wildcard ${top_autodoc_dir}/html/*.png)\
-	$(wildcard ${top_autodoc_dir}/html/*.gif)\
-	$(wildcard ${top_autodoc_dir}/html/*.jpg)\
-	$(wildcard ${srcdir}/autodoc/*.png)\
-	$(wildcard ${srcdir}/autodoc/*.gif)\
-	$(wildcard ${srcdir}/autodoc/*.jpg)
-
-supportfiles=$(wildcard ${top_autodoc_dir}/html/*.css)\
-	$(wildcard ${top_autodoc_dir}/html/*.html)\
-	$(wildcard ${srcdir}/autodoc/*.css)\
-	$(wildcard ${srcdir}/autodoc/*.html)
+header_dir = @header_dir@
+autodoc_dir = @autodoc_dir@
 
 tagfiles = @TAGFILES@
 
+# Header files and supplemental files go straight to the publish
+# directory 
+header_files := $(wildcard ${header_dir}/*.png)\
+	$(wildcard ${header_dir}/*.gif)\
+	$(wildcard ${header_dir}/*.jpg)\
+	$(wildcard ${header_dir}/*.css)
+
+support_files := $(wildcard ${autodoc_dir}/*.png)\
+	$(wildcard ${autodoc_dir}/*.gif)\
+	$(wildcard ${autodoc_dir}/*.jpg)
+
+# We deduce the targets from the source files, because we do not have
+# dependency information for the resulting documentation.
+html_support_targets := $(subst ${autodoc_dir},	${doxygen_html_output},	${support_files}) 
+
+# If we're using pdfLaTeX, all of these image formats are supported
+# natively. Otherwise, we'll need to do some conversion. 
+# XXX This need to made conditional on do-latex.
+latex_support_targets := $(subst ${autodoc_dir},${doxygen_latex_output},${support_files})
+
 ##---------------------------------------------------------------------------##
 
-# .SUFFIXES : .png .gif .jpg .css .html
+.SUFFIXES : .png .gif .jpg .css .html
 .PHONY : html latex install autodoc configure reconfigure \
-	install_support install_images tagfile_target
+	install_header install_support 
 
-autodoc: html
-
-html latex: install_images install_support ${tagfiles}
+autodoc: install_header install_support
 	@if test ${DOXYGEN} = 'null'; then \
 	   echo Doxygen not available; \
 	else \
 	   ${DOXYGEN} doxygen_config; \
 	fi
 
-install:
+install: # do nothing on install
 
-check:
+check: # do nothing on check
 
 ##---------------------------------------------------------------------------##
 ## Install support files
 
-install_images: ${imagefiles} 
-	@for file in ${imagefiles}; do \
-	   echo "Install $${file} to ${doxygen_output}";\
-	   ${INSTALL} $${file} ${doxygen_output}/; \
+install_header: 
+	@for file in ${header_files}; do \
+	  echo "Install $${file} to ${doxygen_html_output}";\
+	  ${INSTALL} $${file} ${doxygen_html_output}/; \
 	done
 
-install_support: ${supportfiles} 
-	@for file in ${supportfiles}; do \
-	   echo "Install $${file} to ${doxygen_output}";\
-	   ${INSTALL} $${file} ${doxygen_output}/; \
-	done
+install_support: ${html_support_targets} # ${latex_support_targets}
 
+${doxygen_html_output}/%.png: ${autodoc_dir}/%.png
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
+${doxygen_html_output}/%.jpg: ${autodoc_dir}/%.jpg
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
+${doxygen_html_output}/%.gif: ${autodoc_dir}/%.gif
+	@echo "Installing file: \"$@\""
+	${VERBOSE} ${INSTALL} $< $@
+
+# XXX Need attitional copiers and/or conversion operators for
+# doxygen_latex_output 
 
 ##---------------------------------------------------------------------------##
 ## Build system targets and rules
+
+# get the pkg_config directory and include statement
+pkg_config_dir  = ${package_top_srcdir}/pkg_config
+pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
+                    echo "-I ${pkg_config_dir}"; fi)
 
 configure:
 	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
 	@cd ${top_srcdir} && aclocal -I ${config_dir} ${pkg_config_inc}
 	@echo "Rebuilding ${top_srcdir}/configure"
 	@cd ${top_srcdir} && autoconf
-	@cd ${reldir} && ./config.status --recheck
-	@cd ${reldir} && ./config.status
+	@cd ${top_builddir} && ./config.status --recheck
+	@cd ${top_builddir} && ./config.status
 
 reconfigure:
-	@cd ${reldir} && ./config.status --recheck
-	@cd ${reldir} && ./config.status
+	@cd ${top_builddir} && ./config.status --recheck
+	@cd ${top_builddir} && ./config.status
 
 ##---------------------------------------------------------------------------##
 ## clean targets
@@ -119,8 +123,7 @@ reconfigure:
 clean: forced-clean
 
 forced-clean:
-	-rm -rf ${doxygen_output}/*
-#	-rm -rf ${prefix}/latex/*
+	-rm -rf ${doxygen_html_output}/*
 
 mostlyclean: clean
 
