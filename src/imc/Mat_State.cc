@@ -24,9 +24,9 @@ void Mat_State<MT>::print(ostream &output, int cell) const
     using std::setw;
     using std::ios;
     using std::setiosflags;
-
+    
     output.precision(4);
-       
+    
     output << setw(8) << cell << setw(15) << setiosflags(ios::scientific)
 	   << density(cell) << setw(15) << temperature(cell) << endl;
 } 
