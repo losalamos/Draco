@@ -43,7 +43,7 @@ using std::fill;
 
 template<class MT, class BT, class IT, class PT>
 IMC_Man<MT,BT,IT,PT>::IMC_Man(bool verbose_)
-    : delta_t(0), cycle(0), max_cycle(1), verbose(verbose_)
+    : delta_t(0), cycle(0), max_cycle(1), print_f(0), verbose(verbose_)
 {
   // all the SPs should be null defined
 
@@ -125,8 +125,9 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
     {
 	delta_t   = interface->get_delta_t();
 	max_cycle = interface->get_max_cycle();
+	print_f   = interface->get_printf();
 	rnd_con   = new Rnd_Control(9836592);
-	Particle_Buffer<PT>::set_buffer_size(1000);
+	Particle_Buffer<PT>::set_buffer_size(100000);
     }
 
   // initialize the mesh builder and build mesh
@@ -134,7 +135,10 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 	BT mt_builder(interface);
 	mesh = mt_builder.build_Mesh();
 	if (verbose)
+	{
 	    cout << " ** Built mesh on node " << node() << endl;
+	    cout << *mesh << endl;
+	}
     }
 
   // initialize the opacity builder and build the state
@@ -151,8 +155,12 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
       // now build the opacity
 	opacity = opacity_builder.build_Opacity(mesh, mat_state);	
 	if (verbose)
+	{
 	    cout << " ** Built Mat_State and Opacity on node " << node() 
-		 << endl; 
+		 << endl;
+	    cout << *mat_state << endl;
+	    cout << *opacity << endl;
+	}
     }
 
   // prepare to do the source initialization
@@ -215,6 +223,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 		Send (buffer->get_csize(), i, 204);
 		Send (delta_t, i, 205);
 		Send (max_cycle, i, 206);
+		Send (print_f, i, 207);
 	    }
 	}
 
@@ -257,6 +266,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 	    Recv (c, 0, 204);
 	    Recv (delta_t, 0, 205);
 	    Recv (max_cycle, 0, 206);
+	    Recv (print_f, 0, 207);
 	    
 	  // now make the objects
 	    rnd_con = new Rnd_Control(seed);
@@ -298,7 +308,7 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
   // print a message indicating success
     if (verbose)
 	cout << " ** Node " << node() << " has all objects necessary" 
-	     << " for IMC transport." << endl;
+	     << " for IMC transport; initialization complete." << endl;
 }
 
 //---------------------------------------------------------------------------//
@@ -309,17 +319,17 @@ void IMC_Man<MT,BT,IT,PT>::IMC_init()
 template<class MT, class BT, class IT, class PT>
 void IMC_Man<MT,BT,IT,PT>::step_IMC()
 {
-    if (verbose)
-	cout << ">> Doing particle transport for cycle " << cycle
-	     << " on proc " << node() << endl;
+    cout << ">> Doing particle transport for cycle " << cycle
+	 << " on proc " << node() << endl;
 
   // make a new census Comm_Buffer on this node
     new_census = new Particle_Buffer<PT>::Comm_Buffer();
 
   // diagnostic
-    SP<typename PT::Diagnostic> check;
+    SP<typename PT::Diagnostic> check = new PT::Diagnostic(cout, true);
 
   // get source particles and run them to completion
+    int counter = 0;
     while (*source)
     {
       // get a particle from the source
@@ -327,7 +337,8 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 	Check (particle->status());
 
       // transport the particle
-	particle->transport(*mesh, *opacity, *tally, check);
+	particle->transport(*mesh, *opacity, *tally);
+	counter++;
 
       // after the particle is no longer active take appropriate action
 	Check (!particle->status());
@@ -336,7 +347,16 @@ void IMC_Man<MT,BT,IT,PT>::step_IMC()
 	if (particle->desc() == "census")
 	    buffer->buffer_particle(*new_census, *particle);
       // no other choices right now
+
+      // message particle counter
+	if (!(counter % print_f)) 
+	    cout << setw(10) << counter << " particles run on proc " 
+		 << node()   << endl;
     }
+
+  // finished with this timestep
+    cout << ">> Finished particle transport for cycle " << cycle
+	 << " on proc " << node() << endl;
 
   // now remove objects we no longer need
     kill (source);
@@ -487,7 +507,7 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 //---------------------------------------------------------------------------//
 // print diagnostics
 //---------------------------------------------------------------------------//
-// do a screen dump
+// do a screen dump per cycle
 
 template<class MT, class BT, class IT, class PT>
 void IMC_Man<MT,BT,IT,PT>::cycle_dump() const
@@ -495,6 +515,7 @@ void IMC_Man<MT,BT,IT,PT>::cycle_dump() const
     cout << endl;
     cout << ">>> RESULTS FOR CYCLE " << setw(4) << cycle << " <<<" << endl;
     cout << "==============================" << endl;
+    cout.precision(4);
     cout << " ** Total time : " << delta_t * cycle << endl;
     cout << *global_state << endl;
 }

@@ -28,6 +28,7 @@
 
 #include "imc/Names.hh"
 #include "imc/OS_Mesh.hh"
+#include "imc/Global.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -84,6 +85,7 @@ private:
     double dnpdt;
     string ss_dist;
     int capacity;
+    int print_f;
 
   // Parser member functions
 
@@ -137,6 +139,7 @@ public:
     string get_ss_dist() const { return ss_dist; }
     string get_analytic_opacity() const { return analytic_opacity; }
     int get_max_cycle() const { return max_cycle; }
+    int get_printf() const { return print_f; }
 };
 
 //---------------------------------------------------------------------------//
@@ -149,7 +152,7 @@ inline OS_Interface::OS_Interface(const string &infile)
       density(0), kappa(0), temperature(0), implicitness(0), 
       analytic_opacity("straight"), specific_heat(0), evol_ext(0), ss_pos(0), 
       ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), npmax(0), dnpdt(0), 
-      ss_dist("none"), capacity(0)
+      ss_dist("none"), capacity(0), print_f(Global::huge)
 {}
 
 CSPACE

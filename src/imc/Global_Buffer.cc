@@ -116,14 +116,14 @@ template<class MT, class PT>
 void Global_Buffer<MT,PT>::print(ostream &out) const
 {
     out << setw(10) << setiosflags(ios::right) << "Cell"
-	<< setw(20) << setiosflags(ios::right) << "Temperature"
+	<< setw(30) << setiosflags(ios::right) << "Temperature"
 	<< endl;
-    out << "==============================" << endl;
-    out.precision(4);
+    out << "========================================" << endl;
+    out.precision(10);
     out.setf(ios::scientific, ios::floatfield);
     for (int i = 0; i < num_cells(); i++)
     {	
-	out << setw(10) << i+1 << setw(20) << temperature[i] << endl;
+	out << setw(10) << i+1 << setw(30) << temperature[i] << endl;
     }
     out << setw(20) << setiosflags(ios::right) << "Census particles: "
 	<< setw(10) << census->size() << endl;

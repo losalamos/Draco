@@ -525,6 +525,8 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> capacity;
 	if (keyword == "max_cycle:")
 	    in >> max_cycle;
+	if (keyword == "print_frequency:")
+	    in >> print_f;
     }   
   
   // do some assertions on the source variables

@@ -12,7 +12,11 @@
 
 IMCSPACE
 
+// std components
 using std::sort;
+using std::endl;
+using std::setw;
+using std::ios;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -309,13 +313,23 @@ bool OS_Mesh::operator==(const OS_Mesh &rhs) const
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
 //---------------------------------------------------------------------------//
+// print out the whole mesh
+
+void OS_Mesh::print(ostream &out) const
+{
+    out << endl;
+    out << ">>> MESH <<<" << endl;
+    out << "============" << endl;
+
+    for (int cell = 1; cell <= num_cells(); cell++)
+	print(out, cell);
+}
+
+//---------------------------------------------------------------------------//
+// print individual cells
 
 void OS_Mesh::print(ostream &output, int cell) const
 {
-    using std::cout;
-    using std::endl;
-    using std::setw;
-
   // print out content info for 1 cell
     output << "+++++++++++++++" << endl;
     output << "---------------" << endl;

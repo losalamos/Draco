@@ -178,6 +178,7 @@ public:
     void set_time_left(double t) { time_left = t; }
     void set_descriptor(string s) { descriptor = s; }
     void reset_status() { alive = true; }
+    void kill_particle() { alive = false; }
 
   // public diagnostic services
     void print(ostream &) const;

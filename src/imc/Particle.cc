@@ -65,7 +65,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
         int face = 0;
         
       // sample distance-to-scatter
-        d_scatter = -log(random.ran()) / xs.get_sigeffscat(cell);
+	d_scatter = -log(random.ran()) / xs.get_sigeffscat(cell);
 
       // get distance-to-boundary and cell face
         d_boundary  = mesh.get_db(r, omega, cell, face);
@@ -77,7 +77,8 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	if (diagnostic)
 	    if (diagnostic->detail_status())
 	    {
-		diagnostic->print_dist(d_scatter, d_boundary, d_census, cell);
+		diagnostic->print_dist(d_scatter, d_boundary, d_census,
+				       cell); 
 		diagnostic->print_xs(xs, cell);
 	    }
 
@@ -268,12 +269,11 @@ void Particle<MT>::print(ostream &output) const
 //---------------------------------------------------------------------------//
 
 template<class MT>
-void Particle<MT>::Diagnostic::print(const Particle<MT> &particle) 
-    const
+void Particle<MT>::Diagnostic::print(const Particle<MT> &particle)  const
 {
   // set output precision
     output.precision(3);
-    output << setiosflags(ios::fixed);
+    output.setf(ios::scientific, ios::floatfield);
 
   // print particulars of the particle based on its status
     if (particle.alive == true)
@@ -286,7 +286,7 @@ void Particle<MT>::Diagnostic::print(const Particle<MT> &particle)
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_alive(const Particle<MT> 
-					       &particle) const 
+					   &particle) const 
 {
   // print active particle (alive = true)
     output << " -- Particle is alive -- " << endl;
@@ -330,7 +330,7 @@ void Particle<MT>::Diagnostic::print_alive(const Particle<MT>
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_dead(const Particle<MT> 
-					      &particle) const
+					  &particle) const
 {
   // print dead particle (alive = false)
     output << " -- Particle is dead -- " << endl;
@@ -374,7 +374,7 @@ void Particle<MT>::Diagnostic::print_dead(const Particle<MT>
 
 template<class MT>
 void Particle<MT>::Diagnostic::print_dist(double d_scat, double d_bnd, 
-					      double d_cen, int cell) const
+					  double d_cen, int cell) const
 {
   // do detailed diagnostic print of particle event distances
     output << setw(20) << setiosflags(ios::right) << "Present cell: "
@@ -395,11 +395,11 @@ void Particle<MT>::Diagnostic::print_xs(const Opacity<MT> &xs,
 {
   // do detailed diagnostic print of particle event cross sections
     output << setw(20) << setiosflags(ios::right) << "Opacity: " 
-	   << setw(12) << xs.get_sigma_abs(cell) 
-	   << "    Effective scatter: "
-	   << setw(12) << xs.get_sigeffscat(cell) 
-	   << "    Effective absorption: " 
-	   << setw(12) << xs.get_sigeffabs(cell) << endl; 
+	   << setw(12) << xs.get_sigma_abs(cell)  << endl;
+    output << setw(20) << setiosflags(ios::right) << "Eff. scatter: "
+	   << setw(12) << xs.get_sigeffscat(cell) << endl; 
+    output << setw(20) << setiosflags(ios::right) << "Eff. absorption: " 
+	   << setw(12) << xs.get_sigeffabs(cell)  << endl; 
 }
 
 CSPACE

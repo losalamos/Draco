@@ -319,8 +319,6 @@ Parallel_Builder<MT>::recv_Source(SP<MT> mesh, SP<Mat_State<MT> > mat,
     Recv (global_nvoltot, 0, 35);
     Recv (global_nsstot, 0, 36);
 
-    std::cout << "Ncentot is " << global_ncentot << " on proc " << node() << endl;
-
   // define the variables for Source construction
     typename MT::CCSF_int volrn(mesh);
     typename MT::CCSF_int nvol(mesh);
@@ -491,8 +489,6 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
   // on the host
     if (num_to_send[0] > 0)
     {
-	std::cout << "Num to send to proc " << 0 << " is " 
-		  << num_to_send[0] << endl;
 	buffer.add_to_bank(cen_buffer[0], census_bank);
 	Check (cen_buffer[0].n_part == 0);
     }
@@ -502,15 +498,12 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
     {
 	if (num_to_send[proc] > 0)
 	{
-	    std::cout << "Num to send to proc " << proc << " is " 
-		      << num_to_send[proc] << endl;
 	    buffer.send_buffer(cen_buffer[proc], proc);
 	    cen_buffer[proc].n_part = 0;
 	    num_to_send[proc] = 0;  
 	}
     }
 
-    std::cout << "Sent census to the other processors" << endl;
   // send a final message to indicate completion
     for (int proc = 1; proc < nodes(); proc++)
     {
@@ -518,7 +511,6 @@ void Parallel_Builder<MT>::dist_census(const Source_Init<MT> &sinit,
 	cen_buffer[proc].n_part = -1;
 	buffer.send_buffer(cen_buffer[proc], proc);
     }
-    std::cout << "Census should be initialized now" << endl;
 
   // the old census should now be zero
     Ensure (old_census->size() == 0);

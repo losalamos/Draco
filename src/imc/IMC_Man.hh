@@ -66,6 +66,7 @@ private:
     double delta_t;
     int cycle;
     int max_cycle;
+    int print_f;
 
   // verbosity switch
     bool verbose;
