@@ -94,7 +94,7 @@ class AppTest:
         self.print_with_border( " ", "center", bw )
         self.print_with_border( "Name       : " + self.test_name,\
                                 "left", bw )
-        self.print_with_border( "Processors : 1", "left", bw )
+        self.print_with_border( "Processors : %s"%self.num_procs, "left", bw )
         self.print_with_border( "Type       : binary", "left", bw )
         msg = "Command    : %s <N> %s %s" \
               %(self.exec_head, self.code_name, self.input_deck)
