@@ -238,6 +238,7 @@ LINK_LIBS	+= $(POOMA_LFLAGS) $(POOMA_LIBS)
 endif
 ifeq ($(need_python),yes)
 LINK_LIBS	+= $(PYLIBS)
+need_libm	:= yes
 endif
 ifdef MPI_LIB
 LINK_LIBS	+= $(MPI_LIB)
