@@ -20,7 +20,6 @@ int main ()
     try
     {
 	test_timestep tester;
-	cerr << "We are in main()." << endl;
 
 	tester.execute_test();
 
