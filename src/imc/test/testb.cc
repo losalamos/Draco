@@ -111,57 +111,25 @@ void Bank_Particle(const MT &mesh, const Opacity<MT> &xs, Tally<MT> &tally,
 
   // make and copy particle
 
-    Sprng ran1 = rcon.get_rn();
-    Sprng ran2 = rcon.get_rn();
-
-    vector<double> r1(2), r2(2);
-    vector<double> o1(3), o2(3);
-
-    r1[0] = 1.0;
-    r1[1] = -1.0;
-    r1[2] = 1.0;
-    r2 = r1;
-    r2[0] = 1.5;
-    
-    o1[0] = 1.0;
-    o2[1] = 1.0;
-
-    Particle<MT> part1(r1, o1, 10.0, mesh.get_cell(r1), ran1);
-    Particle<MT> part2(r2, o2, 1.0, mesh.get_cell(r2), ran2);
-    Particle<MT> part3(part2);
-
-    Particle<MT, SMrng> part4(part2);
-
-    SP<Particle<MT, SMrng>::Diagnostic> check = 
-	new Particle<MT, SMrng>::Diagnostic(cout, true);
-
-    Particle_Stack<Particle<MT> >::Bank sbank;
-    sbank.push(part1);
-    cout << sbank.size() << endl;
-    sbank.push(part2);
-    cout << sbank.size() << endl;
-    sbank.push(part3);
-    cout << sbank.size() << endl;
-    sbank.push(part4);
-    cout << sbank.size() << endl;
-
-    sbank.pop();
-    cout << sbank.size() << endl;
-    Particle<MT> part5 = sbank.top();
-    sbank.pop();
-    cout << sbank.size() << endl;
-    cout << part5;	
+    SP<Particle<MT>::Diagnostic> check = 
+	new Particle<MT>::Diagnostic(cout, true);
 }
 
 template<class MT>
-void write_part(const MT &mesh, Rnd_Control &rcon)
+void write_part(const MT &mesh, Rnd_Control &rcon, vector<double> &match)
 {
   // test io attributes of Particle
+    cout.precision(4);
 
+  // test random number stream
+    Sprng ran1 = rcon.get_rn();
+    for (int i = 0; i < 25; i++)
+	match[i] = ran1.ran();
+    
   // first make a particle
     vector<double> r(2, 5.0), dir(3, 0.0);
     dir[0] = 1.0;
-    Particle<MT> part1(r, dir, 10.0, 1, rcon.get_rn());
+    Particle<MT> part1(r, dir, 10.0, 1, ran1);
     dir[1] = 1.0;
     dir[0] = 0.0;
     r[1] = 3.2;
@@ -178,25 +146,66 @@ void write_part(const MT &mesh, Rnd_Control &rcon)
 }
 
 template<class MT>
-void read_part(const MT &mesh, Rnd_Control &rcon)
+void read_part(const MT &mesh, vector<double> &match)
 {
   // test io attributes of Particle
     
+    cout.precision(4);
+
   // open file and get all the particles
     ifstream infile("part.out", ios::in);
 
-    Particle<MT>::Particle_Buffer buffer(mesh.get_Coord().get_dim());
+  // read particles
 
-    while (buffer.read(infile))
+    Particle_Buffer<Particle<MT> > buffer(mesh);
+    SP<Particle_Buffer<Particle<MT> >::Census_Particle> cenpart;
+    int index = 0;
+    do
     {
-	Particle<MT> part(buffer.get_r(), buffer.get_omega(),
-			  buffer.get_ew(), buffer.get_cell(), buffer.get_rn(),
-			  buffer.get_frac());
-	cout << part << endl;
-    }
-
+	index++;
+	cenpart = buffer.read_census(infile);
+	if (cenpart)
+	{
+	    if (index == 1)
+		for (int i = 25; i < 50; i++)
+		    match[i] = cenpart->random.ran();
+	    Particle<MT> part(cenpart->r, cenpart->omega, cenpart->ew,
+			      cenpart->cell, cenpart->random,
+			      cenpart->fraction);
+	    cout << part << endl;
+	}
+    } while (cenpart);
+	
   // delete file
     std::remove("part.out");
+}
+
+void print_ran(vector<double> &control)
+{
+    cout.precision(4);
+
+    Rnd_Control rcon(3978342);
+    Sprng random = rcon.get_rn();
+
+    for (int i = 0; i < 50; i++)
+	control[i] = random.ran();
+}
+
+template<class MT>
+void Persistence_diagnostic(const MT &mesh, Rnd_Control &rcont)
+{
+    vector<double> control(50);
+    vector<double> match(50);
+
+    write_part(mesh, rcont, match);
+    read_part(mesh, match);
+    print_ran(control);
+
+    cout << "The following should match:" << endl;
+    cout.precision(4);
+    for (int i = 0; i < 50; i++)
+	cout << setw(5) << i+1 << setw(10) << control[i] 
+	     << setw(10) << match[i] << endl;
 }
 
 int main(int argc, char *argv[])
@@ -210,6 +219,7 @@ int main(int argc, char *argv[])
 	SP< Opacity<OS_Mesh> > opacity;
 	SP< Source_Init<OS_Mesh> > sinit;
 	SP<Rnd_Control> rcon = new Rnd_Control(9836592);
+	SP<Rnd_Control> rcont = new Rnd_Control(3978342);
 
       // scoping blocks for build-stuff
 	{
@@ -235,8 +245,8 @@ int main(int argc, char *argv[])
 
       // mesh diagnostics
 	Builder_diagnostic(*mesh, *mat_state, *opacity);
-	write_part(*mesh, *rcon);
-      //read_part(*mesh, *rcon);
+	Persistence_diagnostic(*mesh, *rcont);
+
     }
     catch (const assertion &ass)
     {
