@@ -2,7 +2,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl aclocal.m4
 dnl MACROS FOR DRACO CONFIGURATION
 dnl
-dnl Time-stamp: <99/02/03 16:48:05 tme>
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 ###-------------------------------------------------------------------------###
@@ -35,6 +35,17 @@ builtin(include,ac_dracoarg.m4)dnl
 ###-------------------------------------------------------------------------###
 
 builtin(include,ac_dracoenv.m4)dnl
+
+###-------------------------------------------------------------------------###
+### include any package-dependent macro definitions that are used 
+### outside of draco, by default these must be located in the
+### directory/file:
+###	       <pkg>/pkg_config/ac_pkg.m4
+### where <pkg> is the name of the package (solon, milagro, etc.),
+### we use sinclude so that the file does not have to exist
+###-------------------------------------------------------------------------###
+
+builtin(sinclude,../pkg_config/ac_pkg.m4)dnl
 
 ###-------------------------------------------------------------------------###
 ### end of aclocal.m4
