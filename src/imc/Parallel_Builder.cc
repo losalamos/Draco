@@ -425,6 +425,65 @@ typename MT::CCVF_i Parallel_Builder<MT>::recv_cellpair()
   // return the cell_pair object
     return cell_pair;
 }
+
+//---------------------------------------------------------------------------//
+// Opacity passing interface
+//---------------------------------------------------------------------------//
+// send the Opacity object
+
+template<class MT>
+void Parallel_Builder<MT>::send_Opacity(const Opacity &opacity)
+{
+  // send out the Opacities, one component at a time
+
+  // determine the number of cells
+    int num_cells = opacity.num_cells();
+
+  // assign the Opacity data
+    double *sigma  = new double[num_cells];
+    double *planck = new double[num_cells];
+    double *fleck  = new double[num_cells];
+    
+    for (int cell = 1; cell <= num_cells; cell++)
+    {
+	sigma[cell-1]  = opacity.get_sigma(cell);
+	planck[cell-1] = opacity.get_planck(cell);
+	fleck[cell-1]  = opacity.get_fleck(cell);
+    }
+
+  // send the Opacity data
+    for (int np = 1; np < nodes(); np++)
+    {
+	Send (num_cells, np, 20);
+	Send (sigma, num_cells, np, 21);
+	Send (planck, num_cells, np, 22);
+	Send (fleck, num_cells, np, 23);
+    }
+
+  // delete dynamic allocation
+    delete [] sigma;
+    delete [] planck;
+    delete [] fleck;
+}
+
+//---------------------------------------------------------------------------//
+// receive the Opacity object
+
+template<class MT>
+SP<Opacity> Parallel_Builder<MT>::recv_Opacity(SP<MT> mesh)
+{
+  // receive and rebuild the Opacity object
+
+  // check to make sure we have a valid mesh pointer
+    Check (mesh);
+
+  // receive the size of this guy
+    int num_cells;
+    Recv (num_cells, 0, 20);
+
+  // check to make sure our meshes are of proper size
+    Check (num_cells == mesh->num_cells());
+}
     
 CSPACE
 

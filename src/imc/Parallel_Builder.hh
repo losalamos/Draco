@@ -24,6 +24,7 @@
 #include "imctest/Names.hh"
 #include "imctest/Coord_sys.hh"
 #include "imctest/Layout.hh"
+#include "imctest/Opacity.hh"
 #include "ds++/SP.hh"
 
 IMCSPACE
@@ -56,6 +57,10 @@ public:
   // Mesh passing functionality
     void send_Mesh(const MT &);
     SP<MT> recv_Mesh();
+
+  // Opacity passing functionality
+    void send_Opacity(const Opacity &);
+    SP<Opacity> recv_Opacity(SP<MT>);
 };
 
 CSPACE
