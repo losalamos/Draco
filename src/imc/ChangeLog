@@ -1,3 +1,12 @@
+2002-02-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* imc: Updated to multigroup.  Added FT (Frequency Type) as a
+	template parameter.  Specialized on Gray_Frequency or
+	Mulitgroup_Frequency where needed using a partial template
+	function specialization trick (Alexandrescu, 2001).  Broke
+	Particle class into an inheritance hierarchy of
+	Multigroup_Particle and Gray_Particle.
+
 2002-01-16  Todd J. Urbatsch  <tmonster@lanl.gov>
 
 	* Frequency.hh: Replaced Frequency with Gray_Frequency and
