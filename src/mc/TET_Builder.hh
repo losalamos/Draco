@@ -88,6 +88,9 @@ class TET_Builder
     // Beginning of private data of class TET_Builder.
     // Vector indices are all internal numbers.
 
+    //! Mesh title.
+    std::string title;
+
     //! Coordinate system identifying string.
     std::string coord_system;
 
@@ -122,9 +125,6 @@ class TET_Builder
 
     //! Associate sets of cells with characteristics identified by strings.
     MAP_String_SetInt cell_sets;
-
-    //! Mesh title.
-    std::string title;
 
     /*!
      * Parent nodes for each vertex: parent[v] == external number of parent
@@ -206,6 +206,9 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     Require (interface);
 
     // Get data arrays from the interface for TET_Mesh objects.
+
+    title = interface->get_title();
+
     node_coords   = interface->get_node_coords();
 
     node_coord_units = interface->get_node_coord_units();
@@ -217,8 +220,6 @@ TET_Builder::TET_Builder(rtt_dsxx::SP<IT> interface)
     node_sets = interface->get_node_sets();
 
     element_sets = interface->get_element_sets();
-
-    title = interface->get_title();
 
     // Eliminate from node_sets those flags with no associated nodes.
 

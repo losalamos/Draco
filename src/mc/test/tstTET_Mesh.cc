@@ -263,6 +263,8 @@ void Test_TET()
     // First, test a hand-built mesh, without using an interface.
     // This mesh is a 2-tet pyramid.
 
+    std::string titl("Test 2-tet pyramid in RTT-format mesh.");
+
     SP<Coord_sys> coor(new XYZCoord_sys());
     if (!coor)                     ITFAILS;
 
@@ -335,7 +337,7 @@ void Test_TET()
     s8.insert(3);
     s8.insert(4);
     s8.insert(5);
-    side_set[std::string("boundary_condition/reflective")] = s8;
+    side_set[std::string("boundary_conditions/reflective")] = s8;
 
     MAP_String_SetInt cell_set;
 
@@ -348,8 +350,6 @@ void Test_TET()
     s12.insert(0);
     s12.insert(1);
     cell_set[std::string("material_region/control_rod")] = s12;
-
-    std::string titl("Test 2-tet pyramid in RTT-format mesh.");
 
     VF_INT sides_ver(6);
 
@@ -396,12 +396,9 @@ void Test_TET()
 
 cerr << "Ready for mesh_ptr_H." << endl;
 
-    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(coor, layo, vertex_vec,
-    node_coord_unit, node_set, side_set, cell_set, titl,
-    sides_ver, cells_ver));
-mesh_ptr_H->print_node_sets(cerr);
-mesh_ptr_H->print_side_sets(cerr);
-mesh_ptr_H->print_cell_sets(cerr);
+    SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(titl, coor, layo, vertex_vec,
+    node_coord_unit, node_set, side_set, cell_set, sides_ver, cells_ver));
+mesh_ptr_H->print_mesh(cerr);
 
     if ( !mesh_ptr_H )                                                 ITFAILS;
     if ( !mesh_ptr_H->full_Mesh() )                                    ITFAILS;
@@ -442,9 +439,7 @@ cerr << "Ready for mesh_ptr_0." << endl;
     TET_Builder builder(interface);
 
     SP<TET_Mesh> mesh_ptr_0 = builder.build_Mesh();
-mesh_ptr_0->print_node_sets(cerr);
-mesh_ptr_0->print_side_sets(cerr);
-mesh_ptr_0->print_cell_sets(cerr);
+mesh_ptr_0->print_mesh(cerr);
     if (!mesh_ptr_0)                                  ITFAILS;
 
     // The pointers themselves should not be equal...
@@ -482,9 +477,7 @@ cerr << "Ready for mesh_ptr_1." << endl;
     TET_Builder read_build_1(reader_1);
 
     SP<TET_Mesh> mesh_ptr_1 = read_build_1.build_Mesh();
-mesh_ptr_1->print_node_sets(cerr);
-mesh_ptr_1->print_side_sets(cerr);
-mesh_ptr_1->print_cell_sets(cerr);
+mesh_ptr_1->print_mesh(cerr);
     if (!mesh_ptr_1)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -790,9 +783,7 @@ cerr << "Ready for mesh_ptr_2." << endl;
     TET_Builder read_build_2(reader_2);
 
     SP<TET_Mesh> mesh_ptr_2 = read_build_2.build_Mesh();
-mesh_ptr_2->print_node_sets(cerr);
-mesh_ptr_2->print_side_sets(cerr);
-mesh_ptr_2->print_cell_sets(cerr);
+mesh_ptr_2->print_mesh(cerr);
     if (!mesh_ptr_2)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -816,9 +807,7 @@ cerr << "Ready for mesh_ptr_3." << endl;
     TET_Builder read_build_3(reader_3);
 
     SP<TET_Mesh> mesh_ptr_3 = read_build_3.build_Mesh();
-mesh_ptr_3->print_node_sets(cerr);
-mesh_ptr_3->print_side_sets(cerr);
-mesh_ptr_3->print_cell_sets(cerr);
+mesh_ptr_3->print_mesh(cerr);
     if (!mesh_ptr_3)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...
@@ -841,9 +830,7 @@ cerr << "Ready for mesh_ptr_4." << endl;
     TET_Builder read_build_4(reader_4);
 
     SP<TET_Mesh> mesh_ptr_4 = read_build_4.build_Mesh();
-mesh_ptr_4->print_node_sets(cerr);
-mesh_ptr_4->print_side_sets(cerr);
-mesh_ptr_4->print_cell_sets(cerr);
+mesh_ptr_4->print_mesh(cerr);
     if (!mesh_ptr_4)                                     ITFAILS;
 
     // Again, the pointers themselves should not be equal...

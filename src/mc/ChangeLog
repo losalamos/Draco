@@ -1,3 +1,11 @@
+2000-09-22  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Builder.cc, TET_Builder.hh, TET_Mesh.cc, TET_Mesh.hh,
+	test/TET_test_1.hh, test/tstTET_Mesh.cc: Added TET_Mesh
+	diagnostic services print_title(), print_layout(),
+	print_node_coord_units(), print_sides_vertices(),
+	print_cells_vertices(), and print_submesh().
+
 2000-07-23  H. Grady Hughes  <hgh@lanl.gov>
 
 	* TET_Mesh.cc, TET_Mesh.hh, test/tstTET_Mesh.cc: Initial

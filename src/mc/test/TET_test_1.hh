@@ -79,6 +79,11 @@ class TET_test_1
     // TET_Builder no longer requires this function.
     // std::string get_coord_system();
 
+    std::string get_title()
+    {
+        return std::string("Test 2-tet pyramid in RTT-format mesh.");
+    }
+
     std::vector< std::vector<double> > get_node_coords()
     {
         std::vector< std::vector<double> > node_coor;
@@ -169,11 +174,6 @@ class TET_test_1
         return element_types;
     }
 
-    std::string get_title()
-    {
-        return std::string("Test 2-tet pyramid in RTT-format mesh.");
-    }
-
     std::string get_node_coord_units()
     {
         return std::string("cm");
@@ -233,10 +233,10 @@ class TET_test_1
         s8.insert(3);
         s8.insert(4);
         s8.insert(5);
-        element_sets[std::string("boundary_condition/reflective")] = s8;
+        element_sets[std::string("boundary_conditions/reflective")] = s8;
 
         SetInt s9;
-        element_sets[std::string("boundary_condition/vacuum")] = s9;
+        element_sets[std::string("boundary_conditions/vacuum")] = s9;
 
         SetInt s10;
         element_sets[std::string("ion_source/src_name1")] = s10;

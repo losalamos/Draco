@@ -122,6 +122,9 @@ class TET_Mesh
     //___________________________________________//
     // Beginning of private data of class TET_Mesh.
 
+    //! Mesh title.
+    std::string title;
+
     //! Base class reference to a derived coordinate system class.
     rtt_dsxx::SP<Coord_sys> coord;
 
@@ -146,9 +149,6 @@ class TET_Mesh
 
     //! Associate sets of cells with characteristics identified by strings.
     MAP_String_SetInt cell_sets;
-
-    //! Mesh title.
-    std::string title;
 
     /*!
      * sides_vertices[side#][side_vertex#] == internal numbers of the three
@@ -208,9 +208,10 @@ class TET_Mesh
  public:
 
     //! TET_Mesh constructor.
-    TET_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, SF_THREEVECTOR &,
-        std::string &, MAP_String_SetInt &, MAP_String_SetInt &,
-        MAP_String_SetInt &, std::string &, VF_INT &, VF_INT &, bool = false);
+    TET_Mesh(std::string &, rtt_dsxx::SP<Coord_sys>, Layout &,
+        SF_THREEVECTOR &, std::string &, MAP_String_SetInt &,
+        MAP_String_SetInt &, MAP_String_SetInt &, VF_INT &, VF_INT &,
+        bool = false);
 
     //! Forward declaration of cell-centered scalar fields.
     template<class T> class CCSF;
@@ -309,6 +310,18 @@ class TET_Mesh
     //____________________//
     // Diagnostic services.
 
+    //! Print the mesh title.
+    void print_title(std::ostream &) const;
+
+    //! Print the layout.
+    void print_layout(std::ostream &) const;
+
+    //! Print the vertex_vector.
+    void print_vertex_vector(std::ostream &) const;
+
+    //! Print the node_coord_units.
+    void print_node_coord_units(std::ostream &) const;
+
     //! Print the node_sets.
     void print_node_sets(std::ostream &) const;
 
@@ -317,6 +330,18 @@ class TET_Mesh
 
     //! Print the cell_sets.
     void print_cell_sets(std::ostream &) const;
+
+    //! Print the sides_vertices.
+    void print_sides_vertices(std::ostream &) const;
+
+    //! Print the cells_vertices.
+    void print_cells_vertices(std::ostream &) const;
+
+    //! Print the submesh status.
+    void print_submesh(std::ostream &) const;
+
+    //! Print everything about the mesh.
+    void print_mesh(std::ostream &) const;
 
     //___________________________//
     // End of diagnostic services.

@@ -24,14 +24,14 @@ namespace rtt_mc
  * \param sides_vertices_ Internal identifiers of the three vertices of sides.
  * \param submesh_        Submesh indicator flag.
  */
-TET_Mesh::TET_Mesh(rtt_dsxx::SP<Coord_sys> coord_, Layout & layout_,
-    SF_THREEVECTOR & vertex_vector_, std::string & node_coord_units_,
-    MAP_String_SetInt & node_sets_, MAP_String_SetInt & side_sets_,
-    MAP_String_SetInt & cell_sets_, std::string & title_,
+TET_Mesh::TET_Mesh(std::string & title_, rtt_dsxx::SP<Coord_sys> coord_,
+    Layout & layout_, SF_THREEVECTOR & vertex_vector_,
+    std::string & node_coord_units_, MAP_String_SetInt & node_sets_,
+    MAP_String_SetInt & side_sets_, MAP_String_SetInt & cell_sets_,
     VF_INT & sides_vertices_, VF_INT & cells_vertices_, bool submesh_)
-    : coord(coord_), layout(layout_), vertex_vector(vertex_vector_),
-      node_coord_units(node_coord_units_), node_sets(node_sets_),
-      side_sets(side_sets_), cell_sets(cell_sets_), title(title_),
+    : title(title_), coord(coord_), layout(layout_),
+      vertex_vector(vertex_vector_), node_coord_units(node_coord_units_),
+      node_sets(node_sets_), side_sets(side_sets_), cell_sets(cell_sets_),
       sides_vertices(sides_vertices_), cells_vertices(cells_vertices_),
       submesh(submesh_)
 {
@@ -681,6 +681,10 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
 {
 // QUESTION: Should we check submesh ?
 
+    // Verify the mesh titles.
+    if (title != rhs.title)
+        return false;
+
     // Verify that we have the same coordinate systems.
     if (coord->get_Coord() != rhs.coord->get_Coord())
         return false;
@@ -709,10 +713,6 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
     if (cell_sets != rhs.cell_sets)
         return false;
 
-    // Verify the mesh titles.
-    if (title != rhs.title)
-        return false;
-
     // Verify the identities of the vertices of each side.
     if (sides_vertices != rhs.sides_vertices)
         return false;
@@ -727,24 +727,81 @@ bool TET_Mesh::operator==(const TET_Mesh &rhs) const
 
 //___________________________________________________________________________//
 /*!
+ * \brief        Allow output of mesh title.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_title(std::ostream &output) const
+{
+    for (int i = 0 ; i < title.size() ; i++)
+        output << "_";
+    output << "\n" << title << std::endl;
+}   // end TET_Mesh::print_title(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of layout.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_layout(std::ostream &output) const
+{
+    output << "=== LAYOUT ===\n";
+    output << "Cell:  Face ==> Neighbor;  Face ==> Neighbor; ...\n";
+    for (int c = 0 ; c < layout.num_cells() ; c++)
+        {
+            output << "    cell " << c << ":";
+            for (int f = 0 ; f < layout.num_faces(c+1) ; f++)
+            {
+                output << "  " << f << " ==> ";
+                int n = layout(c+1,f+1);
+                if (n == 0)
+                    output << "ext;";
+                else
+                    output << n-1 << ";";
+            }
+            output << std::endl;
+        }
+}   // end TET_Mesh::print_layout(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of vertex_vector.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_vertex_vector(std::ostream &output) const
+{
+    output << "=== VERTEX VECTOR ===\n";
+}   // end TET_Mesh::print_vertex_vector(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of node_coord_units.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_node_coord_units(std::ostream &output) const
+{
+    output << "=== Node coordinate units are " << node_coord_units <<
+              " ===" << std::endl;
+}   // end TET_Mesh::print_node_coord_units(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
  * \brief        Allow output of node_sets.
  * \param output The standard output stream to recieve the report.
  */
 void TET_Mesh::print_node_sets(std::ostream &output) const
 {
-    output << "NODE SETS\n" << std::endl;
+    output << "=== NODE SETS ===\n";
     for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
             flag != node_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
             int nnode = (*flag).second.size();
-            output << "  " << nnode << " flagged node" <<
+            output << "   " << nnode << " flagged node" <<
                 (nnode == 1 ? "." : "s.") << "\n";
             if (nnode > 0)
                 for (SetInt::const_iterator i = (*flag).second.begin() ;
                                        i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << std::endl;
+                    output << "      " << *i << std::endl;
         }
 }   // end TET_Mesh::print_node_sets(std::ostream &)
 
@@ -755,19 +812,18 @@ void TET_Mesh::print_node_sets(std::ostream &output) const
  */
 void TET_Mesh::print_side_sets(std::ostream &output) const
 {
-    output << "SIDE SETS\n" << std::endl;
+    output << "=== SIDE SETS ===\n";
     for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
             flag != side_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
             int nside = (*flag).second.size();
-            output << "  " << nside << " flagged side" <<
+            output << "   " << nside << " flagged side" <<
                 (nside == 1 ? "." : "s.") << "\n";
             if (nside > 0)
                 for (SetInt::const_iterator i = (*flag).second.begin() ;
                                        i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << std::endl;
+                    output << "      " << *i << std::endl;
         }
 }   // end TET_Mesh::print_side_sets(std::ostream &)
 
@@ -778,21 +834,88 @@ void TET_Mesh::print_side_sets(std::ostream &output) const
  */
 void TET_Mesh::print_cell_sets(std::ostream &output) const
 {
-    output << "CELL SETS\n" << std::endl;
+    output << "=== CELL SETS ===\n";
     for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
             flag != cell_sets.end() ; flag++)
         {
             output << (*flag).first << "\n";
             int ncell = (*flag).second.size();
-            output << "  " << ncell << " flagged cell" <<
+            output << "   " << ncell << " flagged cell" <<
                 (ncell == 1 ? "." : "s.") << "\n";
             if (ncell > 0)
                 for (SetInt::const_iterator i = (*flag).second.begin() ;
                                        i != (*flag).second.end(); i++)
-                    output << "    " << *i << "\n";
-            output << std::endl;
+                    output << "      " << *i << std::endl;
         }
 }   // end TET_Mesh::print_cell_sets(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of sides_vertices.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_sides_vertices(std::ostream &output) const
+{
+    output << "=== SIDES VERTICES ===\n";
+    for (int s = 0 ; s < sides_vertices.size() ; s++)
+    {
+        output << "    side " << s << ":";
+        for (int v = 0 ; v < sides_vertices[s].size() ; v++)
+            output << "   " << sides_vertices[s][v];
+        output << std::endl;
+    }
+}   // end TET_Mesh::print_sides_vertices(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of cells_vertices.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_cells_vertices(std::ostream &output) const
+{
+    output << "=== CELLS VERTICES ===\n";
+    for (int c = 0 ; c < cells_vertices.size() ; c++)
+    {
+        output << "    cell " << c << ":";
+        for (int v = 0 ; v < cells_vertices[c].size() ; v++)
+            output << "   " << cells_vertices[c][v];
+        output << std::endl;
+    }
+}   // end TET_Mesh::print_cells_vertices(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Allow output of submesh status.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_submesh(std::ostream &output) const
+{
+    if (submesh)
+        output << "=== This is a submesh. ===\n" <<
+                  "==========================" << std::endl;
+    else
+        output << "=== This is a full mesh. ===\n" <<
+                  "============================" << std::endl;
+}   // end TET_Mesh::print_submesh(std::ostream &)
+
+//___________________________________________________________________________//
+/*!
+ * \brief        Output everything about the mesh.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::print_mesh(std::ostream &output) const
+{
+    print_title(output);
+    print_layout(output);
+    print_vertex_vector(output);
+    print_node_coord_units(output);
+    print_node_sets(output);
+    print_side_sets(output);
+    print_cell_sets(output);
+    print_sides_vertices(output);
+    print_cells_vertices(output);
+    print_submesh(output);
+}   // end TET_Mesh::print_mesh(std::ostream &)
 
 //___________________________________________________________________________//
 /*!
