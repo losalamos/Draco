@@ -393,9 +393,9 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils -ly12m)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils)
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils -ly12m)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -ltriutils)
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
