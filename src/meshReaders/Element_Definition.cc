@@ -67,7 +67,7 @@ Element_Definition::Element_Definition(const Element_Type &type_)
 	
     default :
 	
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#1 Unrecognized Element-Type Flag");
 	
     }
     
@@ -152,7 +152,7 @@ void Element_Definition::construct_bar()
 	node_loc.push_back(EDGE);
 	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#2 Unrecognized Element-Type Flag");
     }
     elem_defs.push_back(Element_Definition(NODE));
     for (int i = 0; i < number_of_sides; i++)
@@ -194,7 +194,7 @@ void Element_Definition::construct_tri()
 	    node_loc.push_back(EDGE);
 	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#3 Unrecognized Element-Type Flag");
     } 
     for (int i = 0; i < number_of_sides; i++)
 	side_type.push_back(0);
@@ -247,10 +247,12 @@ void Element_Definition::construct_quad()
 	    number_of_nodes=9;
 	    node_loc.push_back(FACE);
 	    break;
+	default :
+	    throw std::runtime_error("#4 Unrecognized Element-Type Flag");
 	}
 	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#5 Unrecognized Element-Type Flag");
     }
     for (int i = 0; i < number_of_sides; i++)
 	side_type.push_back(0);
@@ -312,7 +314,7 @@ void Element_Definition::construct_tetra()
 	    node_loc.push_back(EDGE);
 	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#6 Unrecognized Element-Type Flag");
     }
     for (int i = 0; i < number_of_sides; i++)
 	side_type.push_back(0);
@@ -387,7 +389,7 @@ void Element_Definition::construct_pyra()
 	side_nodes[4].push_back(12);
 	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#7 Unrecognized Element-Type Flag");
     }
     side_type.push_back(0);
     for (int i = 1; i < number_of_sides; i++)
@@ -480,9 +482,12 @@ void Element_Definition::construct_penta()
 	    side_nodes[1].push_back(16);
 	    side_nodes[2].push_back(17);
 	    break;
+	default :
+	    throw std::runtime_error("#8 Unrecognized Element-Type Flag");
 	}
+	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#9 Unrecognized Element-Type Flag");
     }
     for (int i = 0; i < 3; i++)
 	side_type.push_back(0);
@@ -586,9 +591,12 @@ void Element_Definition::construct_hexa()
 	    for (int i=0; i < number_of_sides; i++)
 		side_nodes[i].push_back(i+20);
 	    break;
+	default :
+	    throw std::runtime_error("#10 Unrecognized Element-Type Flag");
 	}
+	break;
     default :
-	throw std::runtime_error("Unrecognized Element-Type Flag");
+	throw std::runtime_error("#11 Unrecognized Element-Type Flag");
     }
     for (int i = 0; i < number_of_sides; i++)
 	side_type.push_back(0);	

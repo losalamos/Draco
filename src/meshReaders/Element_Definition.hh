@@ -174,13 +174,8 @@ class Element_Definition
     // Defaulted
     // Element_Definition(const Element_Definition &rhs)
 
-    /*!
-     * \brief Destructor for the Element_Definition class.
-     */
-    ~Element_Definition();
-    //
-    // Empty
-    //
+    // Defaulted 
+    // ~Element_Definition();
 
     // MANIPULATORS
     
