@@ -32,6 +32,10 @@ void test_pack()
     using rtt_mc::Sphyramid_Mesh;
     using rtt_mc::Sphyramid_Builder;
     using std::vector;
+    using rtt_mc::global::soft_equiv;
+    using rtt_mc::global::pi;
+    using std::cout;
+    using std::endl;
 
     // make a builder from parsing the Sphyramid_Input file
     SP<Parser> parser(new Parser("Sphyramid_Input"));
@@ -40,6 +44,7 @@ void test_pack()
     SP<Sphyramid_Mesh> m1;
     SP<Sphyramid_Mesh> m2;
     SP<Sphyramid_Mesh> m3;
+    SP<Sphyramid_Mesh> m4;
 
     // build the mesh
     m1 = builder.build_Mesh();
@@ -70,6 +75,83 @@ void test_pack()
     if ( m1 ==  m3) ITFAILS;
     if (*m1 != *m3) ITFAILS;
 
+    // replicate using only first and last cell (and reverse order)
+    { 
+	vector<int> cell_list(5);    
+	cell_list[0] =  2;
+	cell_list[1] = -1;
+	cell_list[2] = -2;
+	cell_list[3] = -3;
+	cell_list[4] =  1;
+    
+	SP<Sphyramid_Mesh::Pack> pack = m1->pack(cell_list);
+	if(pack->get_num_packed_cells() != 2) ITFAILS;
+	m4 = pack->unpack();
+    }
+
+    // check compressed mesh
+    if (*m1             == *m4) ITFAILS;
+    if (m4->num_cells() != 2)   ITFAILS;
+    {
+	// spherical cone angle (alpha) is 45 degrees
+	double r_to_x   = pow((2.*(1.-cos(pi/4.)))/(tan(pi/4)*tan(pi/4)), 1./3.);
+       	
+	// the radial boundaries are 0,0.5,1,9/7,13/7,3
+	
+	// cell 2 (was cell 1)
+	if (!soft_equiv(m4->get_low_x(2) , 0.0))        ITFAILS;
+	if (!soft_equiv(m4->get_high_x(2), 0.5*r_to_x)) ITFAILS;
+
+	// cell 1 (was cell 5)
+	if (!soft_equiv(m4->get_low_x(1) , 13./7.*r_to_x)) ITFAILS;
+	if (!soft_equiv(m4->get_high_x(1), 3.0*r_to_x))    ITFAILS;
+
+	// do some next cell checks
+	
+	// cell 1
+	if(m4->next_cell(1,1) != -3)  ITFAILS;
+	if(m4->next_cell(1,2) !=  0)  ITFAILS;
+	if(m4->next_cell(1,3) !=  1)  ITFAILS;
+	if(m4->next_cell(1,4) !=  1)  ITFAILS;
+	if(m4->next_cell(1,5) !=  1)  ITFAILS;
+	if(m4->next_cell(1,6) !=  1)  ITFAILS;
+	
+	// cell 2
+	if(m4->next_cell(2,1) !=  2)  ITFAILS;
+	if(m4->next_cell(2,2) != -1)  ITFAILS;
+	if(m4->next_cell(2,3) !=  2)  ITFAILS;
+	if(m4->next_cell(2,4) !=  2)  ITFAILS;
+	if(m4->next_cell(2,5) !=  2)  ITFAILS;
+	if(m4->next_cell(2,6) !=  2)  ITFAILS;
+
+	
+    }
+    
+    if (!m1->full_Mesh()) ITFAILS;
+    if (m2->full_Mesh())  ITFAILS;
+    if (m3->full_Mesh())  ITFAILS;
+    if (m4->full_Mesh())  ITFAILS;
+
+    // try to pack again with a different mapping and we should get an 
+    // assertion
+    bool caught = false;
+    {
+	vector<int> cell_list(2);
+	cell_list[0] = 2;
+	cell_list[1] = 1;
+
+	try
+	{
+	    SP<Sphyramid_Mesh::Pack> pack = m4->pack(cell_list);
+	}
+	catch (const rtt_dsxx::assertion &ass)
+	{
+	    cout << "Should catch this: " << ass.what() << endl;
+	    caught = true;
+	}
+    }
+    if(!caught) ITFAILS;
+    
     return;
 }
 
