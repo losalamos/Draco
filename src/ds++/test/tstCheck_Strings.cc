@@ -11,7 +11,7 @@
 
 #include "../Check_Strings.hh"
 #include "../Release.hh"
-#include "ds++/Assert.hh"
+#include "../Assert.hh"
 #include <iostream>
 #include <string>
 #include <vector>
