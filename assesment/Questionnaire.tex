@@ -13,7 +13,7 @@
 
 \title{Software Process Maturity Questionnaire} 
 \pagestyle{myheadings}
-\markright{Draco 99 Software Process Maturity Questionnaire} 
+\markright{Draco 99: Software Process Maturity Questionnaire} 
 
 \begin{document}
 \maketitle
@@ -39,42 +39,42 @@ Todd Urbatsch            & (505)667-3513    & tmonster@lanl.gov \\ \hline
 \section{Requirements Management}
 
 \begin{KPAActivity}
-\Activity{3}{3}{3}{The software engineering group reviews the allocated
+\Activity{4}{3}{2}{The software engineering group reviews the allocated
 requirements before they are incorporated into the software project.}
 % We do this informally now through team meetings and hallway
 % discussions, and are scheduling classes with Gerald Weinberg to do
 % formal technical reviews.  Handbook of Walkthroughs, Inspections, 
 % and Technical Reviews; Exploring Requirements
-\Activity{3}{3}{3}{The software engineering group used the allocated
+\Activity{4}{3}{2}{The software engineering group used the allocated
 requirements as the basis for software plans, work products, and
 activities.}
 % PIP exercise, MPW course.
-\Activity{3}{3}{3}{Changes to the allocated requirements are reviewed and
+\Activity{3}{2}{2}{Changes to the allocated requirements are reviewed and
 incorporated into the software project.}
 % Revision after Geoff's departure.
 \end{KPAActivity}
 
 \begin{KPARate}
-\Approach{Meetings set up by team to establish requirements; Memos
-documenting requirements; Daniel P. Freedman and Gerald M. Weinberg, {\em
-              Exploring Requirements: Quality Before Design}, New
-              York, NY: Dorset House Publishing, 1989; Software
-guidelines: John Lakos, {\em Large Scale C++ Software Design},
-              Reading, MA: Addison-Wesley Publishing, 1996;
-              Matthew H. Austern, {\em Generic Programming and the
-              STL}, Reading, MA: Addison-Wesley Publishing, 1998;
-              Bertrand Meyer, {\em Object-Oriented Software
-              Construction}, Upper Saddle River, NJ: Prentice Hall
-	      PTR, 1997ISO/IEC 14882; GNU Coding Standards (9 September 1996); 
-	      POSIX 199309; Scott Meyers, {\em Effective C++},
-              Reading, MA: Addison-Wesley Publishing, 1997; Scott
-              Meyers, {\em More Effective C++}, Reading, MA:
-              Addison-Wesley Publishing, 1996
-; Software quality guidelines: Analytic Test Method; LA-UR-98-5735; LA-1709; LAMS-2421;
-              LA-UR-96-1799
-; Configuration management guidelines (GNU standard, Build
-System Document)}
-\Deployment{Memos documenting requirements}
+\Approach{Requirements text: Daniel P. Freedman and Gerald
+              M. Weinberg, {\em Exploring Requirements: Quality Before
+              Design}, New York, NY: Dorset House Publishing, 1989;
+              Software guidelines: John Lakos, {\em Large Scale C++
+              Software Design}, Reading, MA: Addison-Wesley
+              Publishing, 1996; Matthew H. Austern, {\em Generic
+              Programming and the STL}, Reading, MA: Addison-Wesley
+              Publishing, 1998; Bertrand Meyer, {\em Object-Oriented
+              Software Construction}, Upper Saddle River, NJ: Prentice
+              Hall PTR, 1997ISO/IEC 14882; GNU Coding Standards (9
+              September 1996); POSIX 199309; Scott Meyers, {\em
+              Effective C++}, Reading, MA: Addison-Wesley Publishing,
+              1997; Scott Meyers, {\em More Effective C++}, Reading,
+              MA: Addison-Wesley Publishing, 1996; Software quality
+              guidelines: Analytic Test Method; LA-UR-98-5735;
+              LA-1709; LAMS-2421; LA-UR-96-1799 ; Configuration
+              management guidelines (GNU standard, Build System
+              Document)} 
+\Deployment{Meetings set up by team to
+              establish requirements; Memos documenting requirements}
 \Results{Use by management for allocations, etc.}
 \end{KPARate}
 
@@ -84,7 +84,7 @@ System Document)}
 \begin{KPAActivity}
 \Activity{4}{4}{4}{The software engineering group participates on the
 project proposal team.}
-% MTP exercise, MPW.
+% MTP exercise, MPW. 
 \Activity{3}{3}{3}{Software project planning is initiated in the early
 stages of, and in parallel with, the overall project planning.}
 % MTP exercise, MPW.
@@ -183,7 +183,7 @@ milestones according to a documented procedure.}
 %	Geoff Furnish
 %	SPRNG
 %	POOMA
-%	CIC-19
+%	CIC--19
 
 \begin{KPAActivity}
 \Activity{0}{0}{0}{The work to be subcontracted is defined and planned
@@ -239,22 +239,22 @@ subcontractor.}
 \begin{KPAActivity}
 \Activity{2}{2}{2}{An SQA plan is prepared for the software project
 according to a documented procedure.}
-\Activity{5}{5}{5}{The SQA group's activities are performed in accordance
+\Activity{5}{4}{4}{The SQA group's activities are performed in accordance
 with the SQA plan.}
 % Meyer, Lakos, ATM, Test Problems 
-\Activity{5}{5}{5}{The SQA group participates in the preparation and review
+\Activity{5}{4}{4}{The SQA group participates in the preparation and review
 of the project's software development plan, standards, and
 procedures.}
 % Meyer, Lakos, ATM, Test Problems 
 \Activity{4}{4}{4}{The SQA group reviews the software engineering activities
 to verify compliance.}
-\Activity{6}{6}{6}{The SQA group audits designated software work products to
+\Activity{6}{4}{4}{The SQA group audits designated software work products to
 verify compliance.}
 % Meyer, Lakos, ATM, Test Problems 
 \Activity{6}{6}{6}{The SQA group periodically reports the results of its
 activities to the software engineering group.}
 % Meyer, Lakos, ATM, Test Problems 
-\Activity{4}{4}{4}{Deviations identified in the software activities and
+\Activity{4}{4}{3}{Deviations identified in the software activities and
 software work products are documented and handled according to a
 documented procedure.}
 \Activity{2}{2}{2}{The SQA group conducts periodic reviews of its activities
@@ -273,33 +273,39 @@ and findings with the customer's SQA personnel, as appropriate.}
 \Results{Faults caught early, Few major faults in testing}
 \end{KPARate}
 
+\begin{KPAComment}
+Currently the SQA and SE groups for Draco are one and the same.
+We are planning to hire a dedicated SQA engineer and a dedicated
+tester, who will, with our project planner form the SQA team for X--TM.
+\end{KPAComment}
+
 \newpage
 \section{Software Configuration Management}
 
 \begin{KPAActivity}
-\Activity{4}{4}{4}{A SCM plan is prepared for each software project
+\Activity{4}{4}{3}{A SCM plan is prepared for each software project
 according to a documented procedure.}
-\Activity{4}{4}{4}{A documented and approved SCM plan is used as the basis
+\Activity{4}{4}{3}{A documented and approved SCM plan is used as the basis
 for performing the SCM activities.}
 \Activity{6}{6}{6}{A configuration management library system is established
 as a repository for the software baseline.}
 % CVS
 \Activity{4}{4}{4}{The software work products to be placed under
 configuration management are identified.}
-\Activity{3}{3}{3}{Change requests and problem reports for all configuration
+\Activity{3}{2}{2}{Change requests and problem reports for all configuration
 items/units are initiated, recorded, reviewed, approved, and tracked
 according to a documented procedure.}
-\Activity{2}{2}{2}{Changes to baselines are controlled according to a
+\Activity{2}{2}{1}{Changes to baselines are controlled according to a
 documented procedure.}
-\Activity{1}{1}{1}{Products from the software baseline library are created
+\Activity{2}{1}{1}{Products from the software baseline library are created
 and their release is controlled according to a documented procedure.}
 \Activity{1}{1}{1}{The status of configuration items/units is recorded
 according to a documented procedure.}
-\Activity{5}{5}{5}{Standard reports documenting the SCM activities and the
+\Activity{5}{5}{4}{Standard reports documenting the SCM activities and the
 contents for the software baseline are developed and made available to
 affected groups and individuals.}
 % Draco Build document
-\Activity{1}{1}{1}{Software baseline audits are conducted according to a
+\Activity{2}{1}{0}{Software baseline audits are conducted according to a
 documented procedure.}
 \end{KPAActivity}
 
@@ -326,12 +332,12 @@ software process development and improvement activities.}
 \Activity{0}{0}{0}{The organization's and projects' activities for
 developing and improving their software processes are coordinated at
 the organization level.}
-\Activity{2}{2}{2}{The use of the organization's software process
+\Activity{2}{2}{0}{The use of the organization's software process
 database is coordinated at the organizational level.}
 \Activity{0}{0}{0}{New processes, methods, and tools in limited use in
 the organization are monitored, evaluated, and, where appropriate,
 transfered to the other parts of the organization.}
-\Activity{2}{2}{2}{Training for the organization's and projects' software
+\Activity{2}{2}{0}{Training for the organization's and projects' software
 processes is coordinated across the organization.}
 \Activity{0}{0}{0}{The groups involved in implementing the software
 processes are informed of the organization's and projects' activities
@@ -357,7 +363,7 @@ for use by projects are documented and maintained.}
 \Activity{0}{0}{0}{Guideline and criteria for the project's tailoring of
 the organization's standard software process are developed and
 maintained.}
-\Activity{1}{1}{1}{The organization's software process database is
+\Activity{1}{1}{0}{The organization's software process database is
 established and maintained.}
 \Activity{0}{0}{0}{A library of software process-related documentation is
 established and maintained.}
@@ -405,30 +411,30 @@ threads, and analytic test problems.
 \section{Integrated Software Management}
 
 \begin{KPAActivity}
-\Activity{1}{1}{1}{The project's defined software process is revised
+\Activity{2}{1}{1}{The project's defined software process is revised
 according to a documented procedure.}
-\Activity{1}{1}{1}{Each project's defined software process is revised
+\Activity{2}{1}{1}{Each project's defined software process is revised
 according to a documented procedure.}
-\Activity{2}{2}{2}{The project's software development plan, which describes
+\Activity{2}{1}{1}{The project's software development plan, which describes
 the use of the project's defined software process, is developed and
 revised according to a documented procedure.}
-\Activity{3}{3}{3}{The software project is managed in accordance with the
+\Activity{3}{3}{2}{The software project is managed in accordance with the
 project's defined software process.}
-\Activity{1}{1}{1}{The organization's software process database is used for
+\Activity{2}{1}{0}{The organization's software process database is used for
 software planning and estimating.}
-\Activity{1}{1}{1}{The size of the software work products (or size of changes
+\Activity{2}{1}{0}{The size of the software work products (or size of changes
 to the software work products) is managed according to a documented
 procedure.}
-\Activity{1}{1}{1}{The project's software effort and costs are managed
+\Activity{2}{1}{0}{The project's software effort and costs are managed
 according to a documented procedure.}
 \Activity{1}{1}{1}{The project's critical computer resources are managed
 according to a documented procedure.}
-\Activity{1}{1}{1}{The critical dependencies and critical paths of the
+\Activity{2}{1}{0}{The critical dependencies and critical paths of the
 project's software schedule are managed according to a documented
 procedure.}
-\Activity{1}{1}{1}{The project's software risks are identified, assessed,
+\Activity{2}{1}{0}{The project's software risks are identified, assessed,
 documented, and managed according to a documented procedure.}
-\Activity{1}{1}{1}{Reviews of the software project are periodically performed
+\Activity{2}{1}{0}{Reviews of the software project are periodically performed
 to determine the actions needed to bring the software project's
 performance and results in line with the current and projected needs
 of the business, customer, and end users, as appropriate.}
@@ -444,7 +450,7 @@ of the business, customer, and end users, as appropriate.}
 \section{Software Product Engineering}
 
 \begin{KPAActivity}
-\Activity{3}{3}{3}{Appropriate software engineering methods and tools are
+\Activity{4}{3}{3}{Appropriate software engineering methods and tools are
 integrated into the project's defined software process.}
 \Activity{2}{2}{2}{The software requirements are developed, maintained,
 documented, and verified by systematically analyzing the allocated
@@ -456,19 +462,19 @@ coding.}
 \Activity{2}{2}{2}{The software code is developed, maintained, documented,
 and verified according to the project's defined software process, to
 implement the software requirements and software design.}
-\Activity{3}{3}{3}{Software testing is performed according to the project's
+\Activity{4}{3}{3}{Software testing is performed according to the project's
 defined software process.}
 % LA-UR-98-5735
-\Activity{3}{3}{3}{System and acceptance testing of the software are planned
+\Activity{4}{3}{3}{System and acceptance testing of the software are planned
 and performed to demonstrate that the software satisfies its
 requirements.}
-\Activity{3}{3}{3}{The documentation that will be used to operate and
+\Activity{4}{3}{3}{The documentation that will be used to operate and
 maintain the software is developed and maintained according to the
 project's defined software process.}
 \Activity{0}{0}{0}{Data on defects identified in peer reviews and testing are
 collected and analyzed according to the project's defined software
 process.}
-\Activity{3}{3}{3}{Consistency is maintained across software work products,
+\Activity{4}{3}{2}{Consistency is maintained across software work products,
 including the software plans, process descriptions, allocated
 requirements, software requirements, software design, code, test
 plans, and test procedures.}
@@ -509,11 +515,11 @@ periodic technical reviews and interchanges.}
 \begin{KPARate}
 \Approach{Our management has been strongly proactive in promoting
 intergroup coordination.  We have had numerous meetings (e.g. the
-biweekly X-TM--ASCI Project meeting) and produced several memos in an
+biweekly X--TM --- ASCI Project meeting) and produced several memos in an
 attempt to coordinate our efforts with other groups.}
 \Deployment{We have been generally unable to obtain the cooperation of the
 groups we work with.}
-\Results{As a result of our inablility to obtain the cooperation of
+\Results{As a result of our inability to obtain the cooperation of
 others we have seen (at best) inconsistent results.}
 \end{KPARate}
 
@@ -530,7 +536,7 @@ recorded.}
 
 \begin{KPARate}
 \Approach{We have requested formal technical review classes from
-CIC-12.  They have arranged classes taught by Gerald Weinberg based on
+CIC--12.  They have arranged classes taught by Gerald Weinberg based on
 his book {\em Handbook of Walkthroughs, Inspections, and Technical
 Reviews: Evaluating programs, Projects, and Products}} 
 \Deployment{}
@@ -580,8 +586,8 @@ products.}
 request of DOE.  It was written by the folks at INEEL.  The official
 Capability Maturity Model does not have this KPA.}
 
-We are keenly aware of our verificiation obligations; we feel that
-X-CI is responsible for validation.  Hence KPAs 2 and 4 are not
+We are keenly aware of our verification obligations; we feel that
+X--CI is responsible for validation.  Hence Activities 2 and 4 are not
 applicable to us.
 \end{KPAComment}
 \end{document}
