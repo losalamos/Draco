@@ -149,6 +149,57 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    fi
 
+   # STL port
+
+   AC_MSG_CHECKING("for stlport")
+   if test "${with_stlport:=no}" != no; then
+      if ! test -d "${with_stlport}/include/stlport"; then
+         AC_MSG_ERROR("Invalid directory ${with_stlport}/include/stlport")
+      fi
+      CPPFLAGS="-I${with_stlport}/include/stlport ${CPPFLAGS}"
+      CXXFLAGS="-I${with_stlport}/include/stlport ${CXXFLAGS}"
+      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
+      case $with_cxx in
+      sgi)
+         stlport_libname='mipspro'
+         stlport_xlinker=' '
+         ;;
+      gcc) dnl for everything else use gcc
+         stlport_libname='gcc'
+         stlport_xlinker="-Xlinker"
+         ;;
+      *) 
+         AC_MSG_ERROR("stlport not available with this compiler.")
+         ;;
+      esac
+      AC_MSG_CHECKING("for debug stlport mode")
+      if test "${enable_debug:-yes}" = yes; then
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname}_stldebug ${LIBS}"
+         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         AC_MSG_RESULT("yes")
+      else
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}.a"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
+         AC_MSG_RESULT("no")
+      fi
+      dnl We need to add the rpath to the LDFLAGS instead of RPATH
+      dnl because configure fails AC_CHECK_SIZEOF if sltport is not
+      dnl available.
+      AC_MSG_CHECKING("for LDFLAGS mods for stlport")
+      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
+      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS")
+
+   elif test "${with_stlport}" = yes; then
+      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
+   else
+      AC_MSG_RESULT("none")
+   fi
+
    dnl add any additional flags
 
    # add user defined cppflags

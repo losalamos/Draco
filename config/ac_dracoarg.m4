@@ -212,6 +212,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
        with_mips='4'
    fi
 
+   dnl 
+   dnl STLport
+   dnl
+
+   dnl specify location of stlport installation.
+   AC_ARG_WITH(stlport,
+      [  --with-stlport        replace default STL with stlPort (off by default)])
+
    dnl
    dnl DRACO STANDARD HEADERS
    dnl
