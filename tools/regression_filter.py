@@ -16,8 +16,15 @@
 ##---------------------------------------------------------------------------##
 
 import os, sys
+import socket
 import re
 import string
+
+##---------------------------------------------------------------------------##
+## Set hostname (Assume filter host is same as regression host.)
+##---------------------------------------------------------------------------##
+
+hostname = socket.gethostname()
 
 ##---------------------------------------------------------------------------##
 ## Regular expressions
@@ -171,9 +178,9 @@ for line in lines:
 # print out test results
 
 print "Regression output from %s package." % (pkg_tag_str)
-print "Date: %s." % (date_tag_str)
-print "Regression log stored in %s." % (log_tag_str)
-print "Regression run from script %s." % (script_tag_str)
+print "Date: %s."                          % (date_tag_str)
+print "Regression log stored in %s:%s."    % (hostname, log_tag_str)
+print "Regression run from script %s:%s."  % (hostname, script_tag_str)
 print
 
 print "%41s" % ("Test Results")
