@@ -53,6 +53,7 @@ namespace rtt_mc
 
 class RZWedge_Mesh 
 {
+  public:
     // typedefs used throughout RZWedge_Mesh class
     typedef rtt_dsxx::SP<RZWedge_Mesh>        SP_Mesh;
     typedef rtt_rng::Sprng                    rng_Sprng;
@@ -64,7 +65,14 @@ class RZWedge_Mesh
 
     // forward declarations of cell-centered fields
     template<class T> class CCSF;
-    template<class T> class CCVF;
+    template<class T> class CCVF;   
+
+    // Handy typedefs to CC fields (not formally needed in KCC3.3+).
+    typedef CCSF<double>     CCSF_double;
+    typedef CCSF<int>        CCSF_int;
+    typedef CCVF<double>     CCVF_double;
+    typedef CCVF<int>        CCVF_int;
+    typedef CCSF<std_string> CCSF_string;
 
   private:
     // base class reference to a derived coordinate system class
