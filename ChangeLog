@@ -1,3 +1,64 @@
+2002-05-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: released draco-2_0_0.  The following packages no longer
+	have their own tags:
+
+		config
+		tools
+		templates
+
+	The new policy is that only packages under draco/src have their
+	own formal tags.  All other parts of draco simply carry a release
+	tag.  This release of draco contains the following tagged
+	packages:
+
+		ds++-1_6_0
+		stdheaders-1_2_0
+		c4-2_0_0
+		traits-1_4_0
+		units-1_3_0
+		xm-1_3_0
+		rng-1_6_0
+		meshReaders-1_4_0
+		cdi-1_2_0
+		quadrature-1_1_0
+		stopwatch-1_2_0
+		plot2D-1_0_0
+		timestep-1_3_0
+		pcgWrap-1_1_0
+		viz-1_3_0
+		radphys-1_4_0
+		RTT_Format_Reader-1_3_0
+		cdi_gandolf-1_2_0
+		cdi_eospac-1_1_0
+		cdi_analytic-1_0_0
+		mc-3_0_0
+		meshReaders_Services-1_0_0
+		imc-3_0_0
+
+	Pre-built versions of draco are available on
+	/radtran/vendors/draco.  This is a link that points to the latest
+	release. 
+
+	As of this release, all of draco is required to build with the g++
+	(> 3.0.1) compiler.  This is, of course, subject to discussion;
+	however, we will keep this as a general rule.  
+
+	The build system has been significantly updated:
+
+		- real support for autodoc (doxygen)
+		- cleaned up compiler and vendor support
+		- support cxx, gcc, kcc, and SGI CC compilers
+		- improved support for F90
+
+	We still have the following to work on:
+		
+		- support for the draco/doc and draco/src/<pkg>/doc
+		  builds, native format is not important, but pdfs
+		  must be able to be generated
+		- better F90 integration
+		- better documentation for draco build system
+
 2001-10-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* doc/design: added draco levelization diagrams reflecting current
