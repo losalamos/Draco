@@ -23,6 +23,11 @@ ifeq ($(host),ironside)
 mach	= o2k
 endif
 
+PCG_LIB_DIR = $(HOME)/lib
+ifeq ($(host),twix)
+PCG_LIB_DIR = /v/local/lib
+endif
+
 #ifeq ($(mach),o2k)
 #PCG_LIB	= -L$(HOME)/lib -lpcg
 #LAPACK_LIB	= -lcomplib.sgimath
@@ -48,16 +53,12 @@ ranlib	= /bin/true
 ifeq ($(cxx),KCC)
 
 CC	= cc
-CXX	= KCC -x -64 -mips4 --no_implicit_include --strict -D_POSIX_SOURCE
+CXX	= KCC -x -mips4 --no_implicit_include --strict -D_POSIX_SOURCE
 cmplr	= kai
 
 ifeq ($(kcc),old)
 CXX	= /home/POOMA/KAI64-arobison/KCC_BASE/bin/KCC -x --no_implicit_include
 cmplr	= kar
-endif
-
-ifdef strict
-CXX += --strict
 endif
 
 #DEFINES = -DPOOMA_KAI -DPOOMA_GMAKE -DPOOMA_XCPT -DPOOMA_MPI -DPOOMA_O2K64 -DPETE_BITWISE_COPY -DPOOMA_HAS_TEMPLATED_COMPLEX -DPOOMA_USE_MEMBER_TEMPLATES
@@ -84,10 +85,12 @@ INSTANTIALYZER	+= -m edg
 ifeq ($(c4),no)
 SYS_FLAGS = -DNOMPI
 comm	:=
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_f77_sgi_64
 else
 comm	:= c4
 SYS_FLAGS = 
 SYS_LIBS = -lmpi
+PCG_LIB		= -L$(PCG_LIB_DIR) -lpcg_mpif77_sgi_64
 endif
 
 ifdef nj
