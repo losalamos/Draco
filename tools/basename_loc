@@ -1,0 +1,36 @@
+#! /usr/bin/sh
+#  ========================================================================  #
+# 
+#       Author: Mark G. Gray
+#               Los Alamos National Laboratory
+#       Date:   Fri Oct  8 08:53:38 MDT 1999
+# 
+#       Copyright (c) 1999 U. S. Department of Energy. All rights reserved.
+# 
+#       $Id$
+# 
+#  NAME
+#       count - collate lines of C++ code associated each header file
+#               in a directory
+#  SYNOPSIS
+#       count dir
+#  DESCRIPTION
+#       Count counts the number of lines of code according to the
+#       MicroSoft metric associated with each header file in a
+#       directory.  Each file produces a tab delimited record of the
+#       dirname, basename, and lines of code contained in the .hh and
+#       .cc files. the dirname and basename of quoted include files  
+#
+#  ========================================================================  #
+
+find $1 -name "*.hh" -print |		 # generate list of filenames
+while read h				 # process each name
+do
+	d=`dirname $h`			 # get directory name
+	d=`basename $d`			 # get base of directory name
+	b=`basename $h .hh`		 # extract basename
+	c=`echo $h | sed "s/\.hh/\.cc/"` # construct .cc file name
+	count=`grep ";" $h $c | wc -l`	 # count lines in header,src
+	echo "$d/$b	${count}"
+done | 
+sort
