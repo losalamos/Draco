@@ -230,7 +230,13 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        #
        # setup communication packages
        #
-   
+       
+       # the default locations for mpi include/lib are:
+       #   /usr/local/mpich/include
+       #   /usr/local/mpich/lib
+       # to make life easy for CCS-2/4 users; needless to say,
+       # these can be overridden by --with-mpi-lib and --with-mpi-inc
+
        # setup for mpi support, on linux vendor and mich are one
        # and the same because there is no vendor for mpi on linux
         
@@ -244,11 +250,31 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 	   if test -n "${MPI_LIB}" ; then
 	       linux_mpi_libs="-L${MPI_LIB} -lmpich"
 	   elif test -z "${MPI_LIB}" ; then
-	       linux_mpi_libs="-lmpich"
+	       # if /usr/local/mpich/lib exists use it by default;
+	       # this is set as the default for the CCS-2/4 network;
+	       # it may not be appropriate on other LINUX networks;
+	       # in those cases, override with --with-mpi-lib
+	       if test -d /usr/local/mpich/lib ; then
+	           linux_mpi_libs="-L/usr/local/mpich/lib -lmpich"
+	       else
+		   linux_mpi_libs="-lmpich"
+	       fi
 	   fi
 
 	   # define the linux mpi libs
 	   AC_VENDORLIB_SETUP(vendor_mpi, ${linux_mpi_libs})
+
+	   # set the default include location on LINUX to
+	   # /usr/local/mpich/include; this is specific to the CCS-2/4
+	   # LINUX network; to override on other systems use
+	   # --with-mpi-inc on the configure line
+
+	   # if MPI_INC is undefined, then put in the explicit default
+	   # path if /usr/local/mpich/include exists
+	   if test -z "${MPI_INC}" && test -d "/usr/local/mpich/include" ; then
+	       MPI_H="\"/usr/local/mpich/include/mpi.h\""
+	       AC_DEFINE_UNQUOTED(MPI_H, ${MPI_H})dnl
+	   fi
 
        fi
 
