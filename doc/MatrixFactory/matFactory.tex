@@ -42,7 +42,7 @@
 \toms{Distribution}
 
 \refno{XTM-99-??? (U)}
-\subject{Matrix Factory}
+\subject{Matrix Factory Traits}
 
 %-------NO CHANGES
 \divisionname{Applied Theoretical \& Computational Physics Div.}
@@ -79,6 +79,116 @@
 
 \section{Introduction}
 
+One design requirement for the diffusion solver used by the
+Solon P1 3T package is the ability to 
+incorporate disparate linear algebra packages.
+A complication resulting from this requirement arises from each linear
+algebra package having different matrix representations.
+The diffusion solver
+must have a mechanism to generate matrices of differing representations
+using a common mechanism, the \code{MatrixFactoryTraits}
+mechanism.\cite{Austern99}\cite{Myers96}
+
+These differing matrix representations result from requirements for
+the efficient storage and manipulation of matrix, depending on the structure
+of the linear system, and the solution algorithm.
+For example, the linear system resulting
+from a one-dimensional three-point standard
+diffusion stencil may best be represented by a tri-diagonal matrix.
+The solution of this system should
+be specialized specifically for a tri-diagonal
+system.\cite{Press92}
+
+The diffusion solvers under Draco cannot know about every possible matrix
+representation for every possible linear algebra package.
+With a common mechanism to create a matrix of any desired representation
+the diffusion solver can be written independent of the linear algebra
+package.
+When a new linear algebra package is incorporated into Draco it will be part
+of the incorporation task to specialize a \code{MatrixFactoryTraits} class
+for any new matrix representations.
+The details of this class will be discussed below.
+
+\section{Overview}
+
+Draco would support its own set of matrix representations to be used during
+the generation of linear systems.
+These will probably not be the most efficient representations for matrix
+computations, but will be efficient for generating linear systems of various
+structures.
+For example, we may have a dynamic compressed row storage representation,
+which is very efficient for the insertion of new elements into a linear
+system with an unknown sparsity pattern.
+Another Draco matrix may be most efficient for representing a three-dimensional,
+nine-point structured diffusion system.
+
+The \code{MatrixFactoryTraits} mechanism would facilitate the creation
+of a matrix of unforeseen representation, specified by the linear algebra
+package, from one or more of the Draco matrix
+representations.
+
+\section{How the \code{MatrixFactoryTraits} mechanism is used.}
+
+The \code{MatrixFactoryTraits} mechanism relies on the
+\code{MatrixFactoryTraits} class specialized for the linear algebra
+package's matrix representations.
+This class provides the \code{create} static class method, which takes
+a constant reference to a Draco specified matrix representation, and creates
+a pointer to the linear algebra package's matrix.
+
+\begin{ttfamily}
+\cxxcode
+  MyDracoMatrix myDracoMatrix(...);
+\end{ttfamily}
+
+The Draco diffusion solver would generate a Draco-defined matrix that most
+efficiently represents the linear system that the diffusion solver generates.
+The diffusion solver then fills the Draco-defined matrix, or perhaps has already
+done so during the call to the matrix's constructor.
+
+\begin{ttfamily}
+\cxxcode
+  NewMatrix *matrix = 
+    MatrixFactoryTraits<NewMatrix>::create(myDracoMatrix);
+\end{ttfamily}
+
+At this point the issues of restricting matrix conversions come into
+play.
+We may have a linear system defined by the diffusion
+solver for a totally unstructured mesh, expressed by Draco's compressed row
+storage representation (CRS), and a matrix defined for a
+nine-point structured linear system.
+In this case, depending on the intent of the designer of the
+\code{MatrixFactoryTraits} specialization,
+we may not allow the creation of nine-point structured matrix
+from Draco's CRS representation, or allow the creation
+of the nine-point matrix, subject to the CRS matrix having the same
+sparsity pattern as the nine-point matrix.
+If the designer disallows the conversion, then the above line of code
+will result in a \emph{compile time} failure.
+If the designer allows the conversion, then the above line of code
+will result in a possible \emph{run time} failure, along with
+a thrown exception.
+
+The following main program demonstrates how the common
+\code{MatrixFactoryTraits} mechanism is used.
+In this case the \code{DenseMatrixRep} is a Draco-defined matrix
+representation, and the \code{JoubertMat} is a matrix defined by a
+linear algebra package.
+
+\subsection{main.cc}
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{main.cc.cfg}
+\end{small}
+\end{ttfamily}
+
+\section{How the \code{MatrixFactoryTraits} mechanism is implemented.}
+
+\subsection{MatrixFactoryTraits.hh}
+
 \begin{ttfamily}
 \begin{small}
 \cxxcode
@@ -86,10 +196,23 @@
 \end{small}
 \end{ttfamily}
 
+\section{How the \code{MatrixFactoryTraits} mechanism is specialized.}
+
+\subsection{JoubertMatTraits.hh}
+
 \begin{ttfamily}
 \begin{small}
 \cxxcode
 \input{JoubertMatTraits.hh.cfg}
+\end{small}
+\end{ttfamily}
+
+\subsection{JoubertMatTraits.cc}
+
+\begin{ttfamily}
+\begin{small}
+\cxxcode
+\input{JoubertMatTraits.cc.cfg}
 \end{small}
 \end{ttfamily}
 
