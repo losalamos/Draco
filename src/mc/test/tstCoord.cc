@@ -7,9 +7,11 @@
 // @> Test of MC Coord_sys classes 
 //---------------------------------------------------------------------------//
 
+#include "MC_Test.hh"
 #include "../Coord_sys.hh"
 #include "../XYCoord_sys.hh"
 #include "../XYZCoord_sys.hh"
+#include "../Math.hh"
 #include "../Release.hh"
 #include "rng/Rnd_Control.hh"
 #include "c4/global.hh"
@@ -23,17 +25,22 @@ using rtt_rng::Rnd_Control;
 using rtt_rng::Sprng;
 using rtt_mc::Coord_sys;
 using rtt_mc::XYCoord_sys;
-using rtt_mc::XYZCoord_sys;
+using rtt_mc::XYZCoord_sys; 
+using rtt_mc::global::soft_equiv;
 
 using rtt_dsxx::SP;
 
 using namespace std;
 
+bool passed = true;
+#define ITFAILS passed = rtt_mc_test::fail(__LINE__, __FILE__);
+
 // some necessary global stuff
 vector<double> random_nums(100, 0.0);
 int seed = 9375632;
 Rnd_Control rndc(seed);
-bool passed = true;
+
+//---------------------------------------------------------------------------//
 
 // make some random numbers for testing
 void make_ran()
@@ -46,13 +53,15 @@ void make_ran()
 	random_nums[i] = x.ran();
 }
 
+//---------------------------------------------------------------------------//
+
 // test XYCoord
 void testXY(Coord_sys &xy)
 {
     // test dimension functions
-    if (xy.get_dim() != 2)      passed = false;
-    if (xy.get_sdim() != 3)     passed = false;
-    if (xy.get_Coord() != "xy") passed = false;
+    if (xy.get_dim() != 2)      ITFAILS;
+    if (xy.get_sdim() != 3)     ITFAILS;
+    if (xy.get_Coord() != "xy") ITFAILS;
 
     // test virtual functions
     
@@ -64,17 +73,23 @@ void testXY(Coord_sys &xy)
     vector<double> control(2, 0.0);
     control[0] = 2 * random_nums[0] + -1;
     control[1] = 2 * random_nums[1] + -1;
-    if (answer != control) passed = false;
+    
+    for (int i = 0; i < answer.size(); i++)
+	if (!soft_equiv(answer[i], control[i])) ITFAILS;
 }
+
+//---------------------------------------------------------------------------//
 
 // test XYZCoord
 void testXYZ(Coord_sys &xyz)
 {
     // test dimension functions
-    if (xyz.get_dim() != 3)       passed = false;
-    if (xyz.get_sdim() != 3)      passed = false;
-    if (xyz.get_Coord() != "xyz") passed = false;
+    if (xyz.get_dim() != 3)       ITFAILS;
+    if (xyz.get_sdim() != 3)      ITFAILS;
+    if (xyz.get_Coord() != "xyz") ITFAILS;
 }
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {  
