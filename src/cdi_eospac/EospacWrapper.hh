@@ -17,7 +17,7 @@
 #include <string>
 
 // For DEBUG only
-#include <iostream>
+// #include <iostream>
 
 // EOSPAC uses the following definitions for IRIX64 64-bit:
 //
@@ -72,7 +72,7 @@ extern "C" {
 		   int &idtab, int &eosTableLength, double **eosTable,
 		   int *errorCodes ); 
 
-    void es1errmsg_( int &errorCode, const char *errorMessage );
+    void kt1errmsg_( int &errorCode, const char *errorMessage, int &msgLen );
 
     void es1info_( int &tableIndex, int &regionIndex, 
 		   double **eosTable, int &iname, int &llogs, 

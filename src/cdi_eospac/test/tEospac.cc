@@ -10,9 +10,9 @@
 //---------------------------------------------------------------------------//
 
 #include "tEospac.hh"
-//#include "tEospac.t.hh"
 
 #include "../Eospac.hh"
+#include "../SesameTables.hh"
 #include "../Release.hh"
 
 #include "UnitTestFrame/PassFailStream.hh"
@@ -72,13 +72,30 @@ namespace rtt_cdi_eospac_test {
 	    // See http://int.lanl.gov/projects/sdm/win/materials/ for 
 	    // material ID information.
 
-	    const int matID = 3717;
+	    // or see http://int.lanl.gov/projects/sdm/win/materials/
+
+	    // This matID for Al has tables 101, 102, 201, 301, 304,
+	    // 305, 306 and 401.  I need table 304 to access Cve()
+	    const int Al3717 = 3717;
+
+	    // This matId for Al has tables 101, 102, 201, 601, 602,
+	    // 603 and 604.  I need table 601 for zfree.
+	    const int Al23714 = 23714;
+
+	    // Create a SesameTables object for Aluminum
+	    rtt_cdi_eospac::SesameTables AlSt;
+
+	    // Assign matID Al3717 to Sesame Table 303 (used for Cvi)
+	    // We can also assign these tables when the Eospac object
+	    // is created (see example below):
+	    AlSt.table303( Al3717 ).chie( Al23714 );
 
 	    // Create an Eospac object
 	    
 	    rtt_dsxx::SP< rtt_cdi_eospac::Eospac > spEospac;
 	    
-	    if ( spEospac = new rtt_cdi_eospac::Eospac( matID ) )
+	    if ( spEospac = new rtt_cdi_eospac::Eospac( 
+		AlSt.Cve( Al3717 ).zfree( Al23714 ) ) )
 		pass() << "SP to new Eospac object created.";
 	    else
 		{
@@ -88,8 +105,6 @@ namespace rtt_cdi_eospac_test {
 	    
 	    // Get an Electron internal energy value;
 
-	    fail() << "change this to Cv for e-";
-
 	    double density = 1.0; // (Mg/m^3)
 	    double temperature = 5800; // K
 
@@ -98,9 +113,55 @@ namespace rtt_cdi_eospac_test {
 		    density, temperature );
 
 	    std::cout << "specificElectronInternalEnergy = " 
-		      << specificElectronInternalEnergy << std::endl;
+		      << specificElectronInternalEnergy 
+		      << " kJ/g/K" << std::endl;
 
 	    std::cout <<  std::endl <<  std::endl;
+
+	    double heatCapacity =
+		spEospac->getElectronHeatCapacity( density, temperature );
+
+	    std::cout << "Electron based Heat Capacity = " 
+		      << heatCapacity << std::endl;
+
+	    std::cout <<  std::endl <<  std::endl;
+
+	    double specificIonInternalEnergy = 
+		spEospac->getSpecificIonInternalEnergy( density,
+							 temperature );
+
+	    std::cout << "specificIonInternalEnergy = " 
+		      << specificIonInternalEnergy 
+		      << " kJ/g/K" << std::endl;
+
+
+	    heatCapacity =
+		spEospac->getIonHeatCapacity( density, temperature );
+	    
+	    std::cout << "Ion based Heat Capacity = " 
+		      << heatCapacity << std::endl;
+	    
+	    std::cout <<  std::endl <<  std::endl;
+
+	    int nfree =
+		spEospac->getNumFreeElectronsPerIon( 
+		    density, temperature );
+	    
+	    std::cout << "Num free electrons per ion = " 
+		      << nfree << std::endl;
+	    
+	    std::cout <<  std::endl <<  std::endl;
+
+
+	    double chie = 
+		spEospac->getElectronBasedThermalConductivity(
+		    density, temperature );
+	    
+	    std::cout << "Electron based Thermal Conductivity (Chi-e) = " 
+		      << chie << std::endl;
+	    
+	    std::cout <<  std::endl <<  std::endl;
+
 
 	    // ---------------------- //
 	    // Print the test result. //

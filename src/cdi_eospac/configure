@@ -78,7 +78,7 @@ ac_help=
 ac_default_prefix=/usr/local
 # Any additions from configure.in:
 ac_help="$ac_help
-  --with-eospac-lib[=DIR]    tell where EOSPAC libraries are (\${EOSPAC_LIB_DIR} by default)"
+  --with-eospac-lib[=DIR]    tell where EOSPACK libraries are (\${EOSPACK_LIB_DIR} by default)"
 ac_help="$ac_help
   --with-mpi=[vendor,mpich] 
 	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)"
@@ -666,8 +666,8 @@ if test "${with_eospac_lib+set}" = set; then
   withval="$with_eospac_lib"
   if test $with_eospac_lib != "no" ; then
       if test $with_eospac_lib = "yes" ; then
-         # following eval needed to remove possible '\' from \${EOSPAC_LIB_DIR}
-         eval with_eospac_lib=\${EOSPAC_LIB_DIR}
+         # following eval needed to remove possible '\' from \${EOSPACK_LIB_DIR}
+         eval with_eospac_lib=\${EOSPACK_LIB_DIR}
       fi
 
       # this command removes double slashes and any trailing slash
@@ -684,16 +684,16 @@ if test "${with_eospac_lib+set}" = set; then
 
       # this sets up the shell variable, with the name of the CPPtoken,
       # and that we later will do an AC_SUBST on.
-      EOSPAC_LIB="${with_eospac_lib}/"
+      EOSPACK_LIB="${with_eospac_lib}/"
 
       # this defines the CPP macro with the directory and single slash appended.
       cat >> confdefs.h <<EOF
-#define EOSPAC_LIB ${with_eospac_lib}/
+#define EOSPACK_LIB ${with_eospac_lib}/
 EOF
 
       # print a message to the users (that can be turned off with --silent)
 
-      echo "EOSPAC_LIB has been set to $EOSPAC_LIB" 1>&6
+      echo "EOSPACK_LIB has been set to $EOSPACK_LIB" 1>&6
 
    fi
 fi
@@ -702,7 +702,7 @@ fi
    
 
 
-if test -z "${EOSPAC_LIB}" ; then
+if test -z "${EOSPACK_LIB}" ; then
    
    # pkg is the vendor_<> tag (equals pkg or test)
    # -leospac are the directories added 
@@ -713,16 +713,16 @@ if test -z "${EOSPAC_LIB}" ; then
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -leospac"
    fi
 
-elif test -n "${EOSPAC_LIB}" ; then
+elif test -n "${EOSPACK_LIB}" ; then
    pkg='pkg'
    
    # pkg is the vendor_<> tag (equals pkg or test)
-   # -L${EOSPAC_LIB} -leospac are the directories added 
+   # -L${EOSPACK_LIB} -leospac are the directories added 
 
    if test "${pkg}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPAC_LIB} -leospac"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${EOSPACK_LIB} -leospac"
    elif test "${pkg}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPAC_LIB} -leospac"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${EOSPACK_LIB} -leospac"
    fi
 
 fi
@@ -4905,8 +4905,8 @@ EOF
 
 case $host in
 mips-sgi-irix6.*)
-   if test -n "${GANDOLF_LIB}" ; then
-       VENDOR_LIBS="-rpath ${GANDOLF_LIB} ${VENDOR_LIBS}"
+   if test -n "${EOSPACK_LIB}" ; then
+       VENDOR_LIBS="-rpath ${EOSPACK_LIB} ${VENDOR_LIBS}"
    fi
 ;;
 esac
@@ -5046,7 +5046,7 @@ s%@includedir@%$includedir%g
 s%@oldincludedir@%$oldincludedir%g
 s%@infodir@%$infodir%g
 s%@mandir@%$mandir%g
-s%@EOSPAC_LIB@%$EOSPAC_LIB%g
+s%@EOSPACK_LIB@%$EOSPACK_LIB%g
 s%@MPI_INC@%$MPI_INC%g
 s%@MPI_LIB@%$MPI_LIB%g
 s%@INSTALL_PROGRAM@%$INSTALL_PROGRAM%g

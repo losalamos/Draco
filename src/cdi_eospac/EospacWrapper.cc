@@ -11,6 +11,9 @@
 
 #include "EospacWrapper.hh"
 
+// for DEBUG only
+#include <iostream>
+
 namespace rtt_cdi_eospac
 {
     namespace wrapper 
@@ -20,8 +23,6 @@ namespace rtt_cdi_eospac
 			 int *returnTypes, int *matIDs, 
 			 int &eosTableLength, double **eosTable )
 		{
-		    std::cout << "In es1tabs()." << std::endl;
-
 		    // Make some assumptions
 		    int *llog1 = new int [ numRegions*numReturnTypes ];
 		    for ( int i=0; i<numRegions*numReturnTypes; ++i )
@@ -49,22 +50,17 @@ namespace rtt_cdi_eospac
 		    for ( int i=0; i<numReturnTypes*numRegions; ++i )
 			errorCodes[i] = 0;
 		    
-		    std::cout << "Calling es1tabs_()." << std::endl;
-		    
 		    // Call the fortran routine
 		    es1tabs_( llog1, iopt, lprnt, iprnt,
 			      numReturnTypes, numRegions,
 			      returnTypes, unitConversion, matIDs, idtab, 
 			      eosTableLength, eosTable, errorCodes );
 		    
-		    std::cout << "Back from es1tabs_()." << std::endl;
-		    
 		    // Check error code and return
 		    int errorCode = 0;
 		    for ( int i=0; i<numReturnTypes*numRegions; ++i)
 			if ( errorCodes[i] != 0 ) 
 			    {
-				std::cout << "errorCodes[i] = " << errorCodes[i] << std::endl;
 				errorCode = errorCodes[i];
 				break;
 			    }
@@ -81,26 +77,38 @@ namespace rtt_cdi_eospac
 	    
 	    std::string es1errmsg( int errorCode )
 		{
-		    const int len = 80;
+		    int len = 80;
 		    // use this string to init the errormessage (to avoid problems
 		    // with f90 interface).
 		    // offset by 1 so we dont' kill the trailing \0.
-		    std::string errorMessage(len-1,' ');  // init string with 80 spaces.
-		    char cErrorMessage[len];
+		    std::string errorMessage(len,'_');  // init string with 80 spaces.
+		    
+		    char *cErrorMessage = new char [len];
 		    std::copy( errorMessage.begin(), errorMessage.end(), cErrorMessage );
-		    const char *ccem = cErrorMessage;
-		    
+ 		    const char *ccem = cErrorMessage;
+		 
 		    // Retrieve the text description of errorCode
-		    es1errmsg_( errorCode, ccem );
-		    
+		    // I would like to call es1errmsg_() directly but
+		    // the C doesn't talk to the fortran correctly.
+		    // The fortran code can't figure out how long ccem 
+		    // is.  Instead I have to call an intermediary F90 
+		    // routine (that I compiled into the eospac
+		    // library).  This routine takes an additinal
+		    // argument, len, so that the fortran knows that
+		    // ccem is a character*(len) value and then calls
+		    // the EOSPAC routine es1errmsg.
+		    kt1errmsg_( errorCode, ccem, len );
+
 		    // Copy to a C++ string container.
-		    std::copy( cErrorMessage, cErrorMessage+len-1,
+		    std::copy( cErrorMessage, cErrorMessage+len,
 			       errorMessage.begin() );
 		    
 		    // Trim trailing whitespace from string.
-		    errorMessage.erase( errorMessage.find_last_of(
-			"abcdefghijklmnopqrstuvwxyz" )+1 );
-		    
+ 		    errorMessage.erase( errorMessage.find_last_of(
+ 			"abcdefghijklmnopqrstuvwxyz" )+1 );
+
+		    delete [] cErrorMessage;
+
 		    return errorMessage;
 		}
 	    
