@@ -17,15 +17,13 @@
 
 #include "ds++/SP.hh"
 
-#include "Opacity.hh"
-
 namespace rtt_cdi
 {
- 
-using std::string;
-using std::vector;
-using rtt_dsxx::SP;
- 
+
+    // forward declaration (we don't include Opacity.hh in CDI.hh -- but
+    // we do in CDI.cc).
+    class Opacity;
+
 //===========================================================================//
 /*!
  * \class CDI
@@ -77,7 +75,7 @@ class CDI
      * constructor. 
      *
      */
-    SP<Opacity> spOpacity;
+    const rtt_dsxx::SP<Opacity> spOpacity;
     
   public:
 
@@ -94,13 +92,25 @@ class CDI
      * \param _spOpaicty A smart pointer object to an opacity class.
      *                   The opacity class must be derived from the
      *                   abstract class found in the CDI package.
-     * \return CDI object.  A CDI object will be able to access the
+     * \return A CDI object.  A CDI object will be able to access the 
      *         data for a single material
+     *
+     * We may need to consider keyword arguments in the constructor to 
+     * avoid requiring a large number of constructors.  See
+     * B. Stroustrup, "The Design and Evolution of C++," Section 6.5.1.
      */
-    CDI( SP<Opacity> _spOpacity );
+    CDI( const rtt_dsxx::SP<Opacity> _spOpacity );
     
     // defaulted CDI(const CDI &rhs);
-    // defaulted ~CDI() ;
+
+    /*!
+     * \brief Destructor for CDI objects.
+     *
+     * \sa We include a destructor for the CDI class so that, if
+     *     another object inherits from CDI, the derived object
+     *     correctly destroys the CDI base class.
+     */
+    virtual ~CDI();
 
 
     // MANIPULATORS
@@ -110,10 +120,15 @@ class CDI
     // ACCESSORS
 
     /*!
-     * \breif Returns a single opacity value for the prescribed
-     *        temperature and density.
+     * \breif Returns the opacity data filename.
+     */
+    virtual std::string getOpacityDataFilename() const;
+
+    /*!
+     * \breif Returns a single gray Rosseland opacity value for the
+     *        prescribed temperature and density.
      *
-     * The opacity object that this CDI object links to only knows how 
+     * \sa The opacity object that this CDI object links to only knows how 
      * to access the data for one material.  The material
      * identification is specified in the construction of the opacity
      * object. 
@@ -125,14 +140,16 @@ class CDI
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    double getGrayOpacity( const double targetTemperature, 
-			   const double targetDensity );
+    virtual double getGrayRosselandOpacity( 
+	const double targetTemperature, 
+	const double targetDensity ) const;
 
     /*!
-     * \breif Returns a vector of the opacity values for each energy
-     *        group for the prescribed temperature and density.
+     * \breif Returns a vector of Rosseland opacity values
+     *        for each energy group for the prescribed temperature and
+     *        density. 
      *
-     * The opacity object that this CDI object links to only knows how 
+     * \sa The opacity object that this CDI object links to only knows how 
      * to access the data for one material.  The material
      * identification is specified in the construction of the opacity
      * object. 
@@ -146,24 +163,10 @@ class CDI
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    vector<double> getMGOpacity( const double targetTemperature,
-				 const double targetDensity );
-
-    /*!
-     * \breif Returns the opacity data filename.
-     */
-    string const getOpacityDataFilename() 
-    { 
-	return "hello world!";
-	//return spOpacity->getDataFilename(); 
-    }
-
-    /*!
-     * \breif Return a vector material ID's found in the opacity data
-     *        file.
-     */
-    vector<int> const getMatIDs();
-
+    virtual std::vector<double> getMGRosselandOpacity( 
+	const double targetTemperature,
+	const double targetDensity ) const ;
+    
   private:
     
     // IMPLEMENTATION

@@ -9,7 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Opacity.hh"
+//#include "Opacity.hh"
 
 namespace rtt_cdi
 {

@@ -18,9 +18,6 @@
 namespace rtt_cdi
 {
  
-using std::string;
-using std::vector;
-
 //===========================================================================//
 /*!
  * \class Opacity
@@ -53,7 +50,7 @@ class Opacity
     // CREATORS
     
     // defaulted Opacity() 
-    // defaulted Opacity(const CDI &rhs);
+    // defaulted Opacity(const Opacity &rhs);
     
     /*!
      * \brief The opacity destructor must be defined here so that we
@@ -63,28 +60,24 @@ class Opacity
      */
     virtual ~Opacity() {}
 
-    // MANIPULATORS
-    
-    // defaulted CDI& operator=(const CDI &rhs);
-
     // ACCESSORS
     
     /*!
      * \breif Returns the opacity data filename.
      */
-    virtual string const getDataFilename() const = 0;
+    virtual const std::string& getDataFilename() const = 0;
 
     /*!
      * \breif Return a vector material ID's found in the opacity data
      *        file.
      */
-    virtual vector<int> const getMatIDs() const = 0;
+//     virtual std::vector<int> getMatIDs() const = 0;
 
     /*!
-     * \breif Returns a single opacity value for the prescribed
-     *        temperature and density.
+     * \breif Returns a single gray Rosseland opacity value for the
+     *        prescribed temperature and density.
      *
-     * This opacity object only knows how to access the data for one 
+     * \sa This opacity object only knows how to access the data for one 
      * material.  The material identification is specified in the
      * construction of the derived concrete opacity object. 
      *
@@ -95,8 +88,9 @@ class Opacity
      * \return Gray opacity value for the current material at
      *         targetTemperature keV and targetDensity g/cm^3.
      */
-    virtual double getGray( const double targetTemperature, 
-			    const double targetDensity ) = 0;       
+    virtual double getGrayRosseland( 
+	const double targetTemperature, 
+	const double targetDensity ) = 0;
 
     /*!
      * \breif Returns a vector of the opacity values for each energy
@@ -115,8 +109,9 @@ class Opacity
      *         vector has ngroups entries.  The number of groups is
      *         specified by the data file. 
      */
-    virtual vector<double> getMG( const double targetTemperature, 
-				  const double targetDensity ) = 0;       
+    virtual std::vector<double> getMGRosseland( 
+	const double targetTemperature, 
+	const double targetDensity ) = 0;
 
     //  protected:     
 

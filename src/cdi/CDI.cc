@@ -14,39 +14,47 @@
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
+#include "Opacity.hh"
+
 namespace rtt_cdi
 {
 
-using rtt_dsxx::SP;
-    
 // CDI constructor:
 // Links the opacity object parameter to the CDI class.
     
-CDI::CDI( SP<Opacity> _spOpacity ) :
+CDI::CDI( const rtt_dsxx::SP<Opacity> _spOpacity ) :
     spOpacity( _spOpacity ) { }
  
- 
-// Return a list of material ids found in the current file.
-vector<int> const CDI::getMatIDs()
+CDI::~CDI()
     {
-	return spOpacity->getMatIDs();
+	// empty.
+	// Does this need to do anything right now?
     }
  
- 
-// Return the interpolated Rosseland Gray Opacity for the specified 
-// temperature and density.
-double CDI::getGrayOpacity( const double targetTemperature, 
-			    const double targetDensity )
+// Return the name of the Opacity data file.
+std::string CDI::getOpacityDataFilename() const
     {
-	return spOpacity->getGray( targetTemperature, targetDensity );
+	return spOpacity->getDataFilename();
     }
  
 // Return the interpolated Rosseland Gray Opacity for the specified 
 // temperature and density.
-vector<double> CDI::getMGOpacity( const double targetTemperature, 
-				  const double targetDensity )
+ double CDI::getGrayRosselandOpacity( 
+    const double targetTemperature, 
+    const double targetDensity ) const
     {
-	return spOpacity->getMG( targetTemperature, targetDensity );
+	return spOpacity->getGrayRosseland( targetTemperature, 
+					    targetDensity );
+    }
+ 
+// Return the interpolated Rosseland Gray Opacity for the specified 
+// temperature and density.
+std::vector<double> CDI::getMGRosselandOpacity( 
+    const double targetTemperature, 
+    const double targetDensity ) const
+    {
+	return spOpacity->getMGRosseland( targetTemperature, 
+					  targetDensity );
     }
  
 } // end namespace rtt_cdi
