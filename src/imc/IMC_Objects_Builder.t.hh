@@ -50,16 +50,6 @@ IMC_Objects_Builder<IT,MT,FT,PT>::IMC_Objects_Builder(SP_Interface iface)
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Pure virtual destructor for inheritance.
- */
-template<class IT, class MT, class FT, class PT>
-IMC_Objects_Builder<IT,MT,FT,PT>::~IMC_Objects_Builder()
-{
-    // nothing to do
-}
-
-//---------------------------------------------------------------------------//
 // IMPLEMENTATION
 //---------------------------------------------------------------------------//
 /*!

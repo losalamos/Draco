@@ -203,7 +203,7 @@ class IMC_Objects_Builder
     explicit IMC_Objects_Builder(SP_Interface);
 
     // Destructor.
-    virtual ~IMC_Objects_Builder() = 0;
+    virtual ~IMC_Objects_Builder() {/*...*/}
 
     // >>> PUBLIC INTERFACE
 
