@@ -1,3 +1,44 @@
+2004-03-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: release draco-4_3_0.  This is a minor release, as such it
+	does not have a release memo associated with it.  In summary, the
+	chages are:
+
+		- added RCF and Vector_Lite to ds++
+		- added MG surface tallies to imc particles tracking
+		- small additions to draco-stdheaders
+		- moved elisp XEmacs development environment to draco
+
+	This version of draco has been tested successfully with gcc-3.3.2.
+
+	This draco release includes the following packages:
+	
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf
+		ds++
+		imc
+		lapack_wrap
+		mc
+		meshReaders
+		meshReaders_Services
+		pcgWrap
+		plot2D
+		quadrature
+		rng
+		stdheaders
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	The forthcoming changes in draco will include moving the mc and
+	imc packages into a Jayenne project source directory.
+
 2004-01-13  Thomas M. Evans  <tme@lanl.gov>
 	
 	* draco: release draco-4_2_0.  This is a minor release, as such it
