@@ -120,6 +120,7 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 
 	if (descriptor == "census")
 	{
+	    tally.accumulate_ecen( cell, ew );
 	  //    write_to_census( cell, r, omega);
 	    alive = false;
 	}
@@ -128,6 +129,9 @@ void Particle<MT>::transport(const MT &mesh, const Opacity<MT> &xs,
 	if (diagnostic)
 	    diagnostic->print(*this);
     } 
+
+    if (diagnostic)
+        cout << tally << endl;
 
   // !!! END OF TRANSPORT LOOP !!!
 }

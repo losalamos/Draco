@@ -239,9 +239,9 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 {
   // hardwire minimum energy weight fraction
     double minwt_frac = 0.01;
+    double min_arg    = log(0.1 * minwt_frac);
 
     double argument = -xs.get_sigeffabs(cell) * distance;
-    double min_arg = log(0.1 * minwt_frac);
     if (argument < min_arg) argument = min_arg;
 
     double factor = exp(argument);
@@ -249,6 +249,8 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
     double del_ew = ew - new_ew;
 
     tally.deposit_energy( cell, del_ew );
+    if ( xs.get_sigeffabs(cell) != 0)
+	tally.accumulate_ewpl( cell, del_ew / xs.get_sigeffabs(cell) );
 
     fraction *= factor;
 
