@@ -14,6 +14,7 @@
  
 #include "MC_Test.hh"
 #include "../RZWedge_Mesh.hh"
+#include "../XYZCoord_sys.hh"
 #include "../Layout.hh"
 #include "../Release.hh"
 #include "../Math.hh"
@@ -27,6 +28,7 @@
 
 using namespace std;
 
+using rtt_mc::XYZCoord_sys;
 using rtt_mc::Layout;
 using rtt_dsxx::SP;
 using rtt_mc::RZWedge_Mesh;
@@ -43,6 +45,9 @@ void simple_one_cell_RZWedge()
 {
     // >>> one-cell problem <<<
     int ncells = 1;
+
+    // >>> build an XYZ coordinate system class <<<
+    rtt_dsxx::SP<XYZCoord_sys> coord(new XYZCoord_sys());
 
     // >>> build a layout of size ncells <<<
     Layout layout;
@@ -84,8 +89,14 @@ void simple_one_cell_RZWedge()
     bool submesh = false;
 
     // build a mesh object
-    SP<RZWedge_Mesh> mesh(new RZWedge_Mesh(layout, cell_xz_extents, 
+    SP<RZWedge_Mesh> mesh(new RZWedge_Mesh(coord, layout, cell_xz_extents, 
     					   theta_degrees, submesh));
+
+    // check that the mesh returns proper coordinate system information
+    if (mesh->get_Coord().get_dim() != 3)    ITFAILS;
+    if (mesh->get_SPCoord()->get_dim() != 3) ITFAILS;
+    if (mesh->get_Coord().get_Coord()    != std::string("xyz")) ITFAILS;
+    if (mesh->get_SPCoord()->get_Coord() != std::string("xyz")) ITFAILS;
 
     // check that mesh returns the proper number of cells
     if (mesh->num_cells() != ncells) ITFAILS;
@@ -338,7 +349,7 @@ void simple_one_cell_RZWedge()
     if (!mesh->full_Mesh()) ITFAILS;
 
     // test the mesh's ability to sample positions.  This test has been hand
-    // check in a weak sense and, therefore, is more of a regression test.
+    // checked in a weak sense and, therefore, is more of a regression test.
     int seed = 1234567;
     Rnd_Control rand_control(seed);
     Sprng ran_object = rand_control.get_rn(10);
@@ -390,8 +401,10 @@ void simple_one_cell_RZWedge()
     // check the == and != operations.
     // first, build another mesh object equivalent to old mesh object.
     // these two meshes, although identical, should not occupy the same memory
-    SP<RZWedge_Mesh> other_mesh(new RZWedge_Mesh(layout, cell_xz_extents, 
-						 theta_degrees, submesh));
+    SP<RZWedge_Mesh> other_mesh(new RZWedge_Mesh(coord, layout,
+						 cell_xz_extents,  
+						 theta_degrees, 
+						 submesh));
 
     if (mesh == other_mesh) ITFAILS;
 
@@ -400,6 +413,17 @@ void simple_one_cell_RZWedge()
 
     if (mesh_obj != other_mesh_obj)    ITFAILS;
     if (!(mesh_obj == other_mesh_obj)) ITFAILS;
+
+    // check that the "other" mesh returns proper coordinate system information
+    if (mesh->get_Coord().get_dim()    != 
+	other_mesh->get_Coord().get_dim())	ITFAILS; 
+    if (mesh->get_SPCoord()->get_dim() !=
+	other_mesh->get_SPCoord()->get_dim())   ITFAILS;
+    if (mesh->get_Coord().get_Coord()    != 
+	other_mesh->get_Coord().get_Coord())    ITFAILS;
+    if (mesh->get_SPCoord()->get_Coord() != 
+	other_mesh->get_SPCoord()->get_Coord()) ITFAILS;
+
 
     // test the mesh's distance-to-boundary function
     vector<double> r(3, 0.0);
@@ -482,7 +506,7 @@ void simple_one_cell_RZWedge()
     omega[2] = -1.0;
     db = mesh->get_db(r, omega, 1, intersecting_face);
     if (!soft_equiv(db, 0.99, 1.0e-10)) ITFAILS;
-    if (intersecting_face != 5)        ITFAILS;
+    if (intersecting_face != 5)         ITFAILS;
 
 }
 //---------------------------------------------------------------------------//
