@@ -104,6 +104,7 @@ IRIX64)
     SPRNG_LIBPATH=
 
     BITS="0"
+    C4="scalar"
     ;;
 esac
 
