@@ -48,6 +48,8 @@ void Nodes::readKeyword(ifstream & meshfile)
  */
 int Nodes::readNextInt( ifstream & meshfile )
 {
+    using std::atoi;
+    
     int retVal(0);
     string dummyString;
     bool commentLine = true;
