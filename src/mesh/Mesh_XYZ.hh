@@ -726,6 +726,10 @@ class Mesh_XYZ : private XYZ_Mapper
     int get_ncz() const { return ncz; }
     int get_ncells() const { return ncp; }
     int get_total_ncells() const { return nct; }
+    int get_ncxp() const { return ncx; }
+    int get_xoff() const { return 0; }
+    int get_ncyp() const { return ncy; }
+    int get_yoff() const { return 0; }
     int get_nczp() const { return nczp; }
     int get_zoff() const { return zoff; }
     int get_goff() const { return goff; }
