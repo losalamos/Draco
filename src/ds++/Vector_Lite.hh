@@ -72,10 +72,7 @@ class Vector_Lite
     // CREATORS
 
     // Constructor based on a scalar value.
-    inline Vector_Lite(const T &u = T());
-
-    // Copy constructor.
-    inline Vector_Lite(const Vector_Lite &rhs);
+    inline explicit Vector_Lite(const T &u = T());
 
     // Constructor for N = 2.
     inline Vector_Lite(const T &u0, const T &u1);
@@ -94,9 +91,6 @@ class Vector_Lite
     ~Vector_Lite(void) { }
 
     // MANIPULATORS
-
-    // Assignment to another Vector_Lite.
-    inline Vector_Lite &operator=(const Vector_Lite &rhs);
 
     // Assignment to a scalar.
     inline Vector_Lite &operator=(const T &rhs);
@@ -119,125 +113,35 @@ class Vector_Lite
     inline Vector_Lite &operator/=(const T &a);
     
     /// Returns true if \a i is a valid array index.
-    bool valid_index(const int i) const
+    bool valid_index(const size_type i) const
     {
-	return (i >= 0 && static_cast<size_type>(i) < N);
+	return i < N;
     }
 
-    // Overload valid_index() to avoid automatic casts to either int or
-    // unsigned versions.
-
-    /// ... overloaded version.
-    bool valid_index(const unsigned int i) const { return (i < N); }
-
-    /// ... overloaded version.
-    bool valid_index(const long int i) const { return (i >= 0 && i < N); }
-
-    /// ... overloaded version.
-    bool valid_index(const unsigned long int i) const { return (i < N); }
 
     // ACCESSORS
 
     // Indexing for int argument
 
     /// Indexing using ()
-    reference operator()(const int i)
+    reference operator()(const size_type i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
-    /// const indexing using ()
-    const_reference operator()(const int i) const
+    const_reference operator()(const size_type i) const
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
     /// Indexing using []
-    reference operator[](const int i)
+    reference operator[](const size_type i)
     {
 	Require(valid_index(i)); return d_U[i];
     }
     
     /// const indexing using []
-    const_reference operator[](const int i) const
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-
-    // Indexing for unsigned int argument
-
-    /// ... overloaded version
-    reference operator()(const unsigned int i)
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    const_reference operator()(const unsigned int i) const
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    reference operator[](const unsigned int i)
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    const_reference operator[](const unsigned int i) const
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-
-    // Indexing for long int argument
-
-    /// ... overloaded version
-    reference operator()(const long int i)
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    const_reference operator()(const long int i) const
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    reference operator[](const long int i)
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    const_reference operator[](const long int i) const
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-
-    // Indexing for unsigned long int argument
-
-    /// ... overloaded version
-    reference operator()(const unsigned long int i)
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    const_reference operator()(const unsigned long int i) const
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    reference operator[](const unsigned long int i)
-    {
-	Require(valid_index(i)); return d_U[i];
-    }
-    
-    /// ... overloaded version
-    const_reference operator[](const unsigned long int i) const
+    const_reference operator[](const size_type i) const
     {
 	Require(valid_index(i)); return d_U[i];
     }

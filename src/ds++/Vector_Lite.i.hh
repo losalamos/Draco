@@ -39,21 +39,6 @@ Vector_Lite(const T &u)
     }
 }
 
-//---------------------------------------------------------------------------//
-/*!
- * \brief Copy constructor.
- * 
- * \param rhs   Value to copy.
- */
-template <class T, size_t N>
-Vector_Lite<T, N>::
-Vector_Lite(const Vector_Lite &rhs)
-{
-    for ( size_type i = 0; i < N; i++ )
-    {
-	d_U[i] = rhs.d_U[i];
-    }
-}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -139,28 +124,6 @@ Vector_Lite(const T &u0,
     d_U[2] = u2;
     d_U[3] = u3;
     d_U[4] = u4;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Assignment to another Vector_Lite.
- */
-template <class T, size_t N>
-Vector_Lite<T, N> &
-Vector_Lite<T, N>::
-operator=(const Vector_Lite<T, N> &rhs)
-{
-    if ( this == &rhs )
-    {
-	return *this;
-    }
-	
-    for ( size_type i = 0; i < N; i++ )
-    {
-	d_U[i] = rhs.d_U[i];
-    }
-	
-    return *this;
 }
 
 //---------------------------------------------------------------------------//
