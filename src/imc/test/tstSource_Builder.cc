@@ -20,9 +20,11 @@
 #include "../Release.hh"
 #include "../Particle.hh"
 #include "../Source_Init.hh"
+#include "../Global.hh"
 #include "mc/Rep_Topology.hh"
 #include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
+#include "mc/Parallel_Data_Operator.hh"
 #include "rng/Random.hh"
 #include "c4/global.hh"
 #include "ds++/SP.hh"
@@ -48,6 +50,7 @@ using rtt_mc::Topology;
 using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
 using rtt_mc::OS_Builder;
+using rtt_mc::Parallel_Data_Operator;
 using rtt_rng::Rnd_Control;
 using dsxx::SP;
 
@@ -124,6 +127,7 @@ void source_replication_test()
     // topology builder is designed to work on the host processor only -->
     // instead we will just build a Replication topology on each mesh
     SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
+    Parallel_Data_Operator pop(topology);
 
     // build a Mat_State and Opacity
     Opacity_Builder<OS_Mesh> ob(interface);
@@ -137,16 +141,155 @@ void source_replication_test()
     SP<Source<OS_Mesh> > source = source_builder.build_Source(mesh, mat,
 							      opacity, rcon);
 
+    // get the global numbers for each species
+    int global_nsstot  = source_builder.get_nsstot();
+    int global_ncentot = source_builder.get_ncentot();
+    int global_nvoltot = source_builder.get_nvoltot();
+
+    // check to make sure globals and locals match
+    {
+	int local_nsstot  = source->get_nsstot();
+	int local_ncentot = source->get_ncentot();
+	int local_nvoltot = source->get_nvoltot();
+	C4::gsum(local_nsstot);
+	C4::gsum(local_ncentot);
+	C4::gsum(local_nvoltot);
+
+	if (local_nsstot != global_nsstot)   ITFAILS;
+	if (local_ncentot != global_ncentot) ITFAILS;
+	if (local_nvoltot != global_nvoltot) ITFAILS;
+    }
+
+    // calculate random number arrays on each processor
+    vector<int> rn_vol(mesh->num_cells());
+    vector<int> rn_cen(mesh->num_cells());
+    vector<int> rn_ss(mesh->num_cells());
+
+    // numbers of particles per cell per species; NOTE: the census numbers
+    // are from the initial census calculation and are used to get the
+    // initial random number stream ids, these are not the final census
+    // numbers
+    vector<int> global_nvol(mesh->num_cells(), 1);
+    vector<int> global_ncen(mesh->num_cells(), 137);
+    vector<int> global_nss(mesh->num_cells(), 0);
+    {
+	global_nvol[3] = 2;
+	global_nvol[4] = 2;
+	global_nvol[5] = 2;
+	global_nss[0]  = 82;
+	global_nss[1]  = 82;
+    }
+
+    // local source numbers per processor per species
+    vector<int> local_nvol(mesh->num_cells(), 0);
+    vector<int> local_ncen(mesh->num_cells(), 0);
+    vector<int> local_nss(mesh->num_cells(), 0);
+
+    // sum of ids for surface source and volume source per cell
+    vector<int> id_sum_ss(mesh->num_cells(), 0);
+    vector<int> id_sum_vol(mesh->num_cells(), 0);
+
+    int running_rn  = 0;
+    int rn_marker   = 0;
+
+    // calculate census random number id
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	int even_spread = global_ncen[cell-1] / C4::nodes();
+	int leftover    = global_ncen[cell-1] - even_spread * C4::nodes();
+
+	rn_cen[cell-1] = running_rn + even_spread * C4::node() +
+	    rtt_mc::global::min(C4::node(), leftover);
+
+	running_rn += global_ncen[cell-1];
+
+	// pre-combed, pre total source iteration census numbers
+	local_ncen[cell-1] = even_spread;
+
+	if (C4::node() < leftover)
+	    local_ncen[cell-1]++;
+    }
+
+    // set random number id marker to first volume source id
+    rn_marker = running_rn;
+
+    // calculate volume random number id
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	int even_spread = global_nvol[cell-1] / C4::nodes();
+	int leftover    = global_nvol[cell-1] - even_spread * C4::nodes();
+
+	rn_vol[cell-1] = running_rn + even_spread * C4::node() +
+	    rtt_mc::global::min(C4::node(), leftover);
+
+	running_rn += global_nvol[cell-1];
+
+	local_nvol[cell-1] = even_spread;
+
+	if (C4::node() < leftover)
+	    local_nvol[cell-1]++;
+    }
+
+    // add up random number ids in each cell for volume source
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	for (int np = 0; np < global_nvol[cell-1]; np++)
+	    id_sum_vol[cell-1] += rn_marker + np;
+
+	rn_marker += global_nvol[cell-1];
+    }
+
+    Check (rn_marker == running_rn);
+
+    // calculate surface source random number id
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	int even_spread = global_nss[cell-1] / C4::nodes();
+	int leftover    = global_nss[cell-1] - even_spread * C4::nodes();
+
+	rn_ss[cell-1] = running_rn + even_spread * C4::node() +
+	    rtt_mc::global::min(C4::node(), leftover);
+
+	running_rn += global_nss[cell-1];
+
+	local_nss[cell-1] = even_spread;
+
+	if (C4::node() < leftover)
+	    local_nss[cell-1]++;
+    }
+
+    // add up random number ids in each cell for surface source
+    for (int cell = 1; cell <= mesh->num_cells(); cell++)
+    {
+	for (int np = 0; np < global_nss[cell-1]; np++)
+	    id_sum_ss[cell-1] += rn_marker + np;
+
+	rn_marker += global_nss[cell-1];
+    }
+
     // get particles out of the source and add up the energy weights
     double cen_ew = 0.0;
     double vol_ew = 0.0;
     double ss_ew  = 0.0;
+
+    // calculated sums of surface source and volume ids
+    vector<int> calc_vol_rn_sum(mesh->num_cells(), 0);
+    vector<int> calc_ss_rn_sum(mesh->num_cells(), 0);
     
     // get surface sources
     for (int i = 0; i < source->get_nsstot(); i++)
     {
 	SP_Particle particle = source->get_Source_Particle(.001);
 	ss_ew               += particle->get_ew();
+
+	int streamid = particle->get_random().get_num();
+	int cell     = particle->get_cell();
+
+	if (rn_ss[cell-1] > streamid)                      ITFAILS;
+	if (streamid >= rn_ss[cell-1] + local_nss[cell-1]) ITFAILS;
+
+	// add up ids
+	calc_ss_rn_sum[cell-1] += streamid;
     }
 
     // get volume sources
@@ -154,13 +297,35 @@ void source_replication_test()
     {
 	SP_Particle particle = source->get_Source_Particle(.001);
 	vol_ew              += particle->get_ew();
+
+	int streamid = particle->get_random().get_num();
+	int cell     = particle->get_cell();
+
+	if (rn_vol[cell-1] > streamid)                       ITFAILS;
+	if (streamid >= rn_vol[cell-1] + local_nvol[cell-1]) ITFAILS;
+
+	// add up ids
+	calc_vol_rn_sum[cell-1] += streamid;
     }
 
+    // sum up ids from each processor
+    pop.global_sum(calc_ss_rn_sum.begin(), calc_ss_rn_sum.end());
+    pop.global_sum(calc_vol_rn_sum.begin(), calc_vol_rn_sum.end());
+
+    if (calc_ss_rn_sum != id_sum_ss)   ITFAILS;
+    if (calc_vol_rn_sum != id_sum_vol) ITFAILS;
+   
     // get census sources
     for (int i = 0; i < source->get_ncentot(); i++)
     {
 	SP_Particle particle = source->get_Source_Particle(.001);
 	cen_ew              += particle->get_ew();
+
+	int streamid = particle->get_random().get_num();
+	int cell     = particle->get_cell();
+
+	if (rn_cen[cell-1] > streamid)                       ITFAILS;
+	if (streamid >= rn_cen[cell-1] + local_ncen[cell-1]) ITFAILS;
     }
 
     // the source should be empty
