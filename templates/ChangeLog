@@ -1,3 +1,8 @@
+2001-09-21  Thomas M. Evans  <tme@lanl.gov>
+
+	* pkg_Test, template_c4_test, template_test, Makefile.test:
+	templates used to create unit tests in draco/src directories.
+
 1999-10-26  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco-note.tex, draco-memo.tex: updated templates to reflect new 
