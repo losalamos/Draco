@@ -71,7 +71,7 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
    install_executable="\${bindir}/\${package}"
    installdirs="${installdirs} \${bindir}"
-   alltarget="${alltarget} \${package}"
+   alltarget="${alltarget} bin/\${package}"
 ])
 
 dnl-------------------------------------------------------------------------dnl

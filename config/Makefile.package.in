@@ -136,13 +136,15 @@ dvi:
 packagelibs := ${DRACO_LIBS} ${VENDOR_LIBS} ${LIBS}
 
 ##---------------------------------------------------------------------------##
-## build any executables in this package
+## build any executables in this package, the default is one
+## executable per package; to add more one must add ${bindir}/${extras}
+## targets 
 
-${package}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
-	@if test ! -d "bin" ; then \
-		mkdir bin; \
-	fi
-	${LD} ${LDFLAGS} -o bin/${package} ${objs} ${packagelibs}
+bin/${package}: bin ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
+	${LD} ${LDFLAGS} -o $@ ${objs} ${packagelibs}
+
+bin:
+	mkdir $@
 
 ##---------------------------------------------------------------------------##
 ## build any libraries in this package
@@ -175,8 +177,8 @@ uninstall:
 ${libdir}/%: %
 	${INSTALL_DATA} $< $@
 
-${bindir}/%: %
-	${INSTALL} bin/$< $@
+${install_executable}: ${bindir}/%: bin/%
+	${INSTALL} $< $@
 
 ${libexecdir}/%: %
 	${INSTALL} $< $@
@@ -287,6 +289,7 @@ forced-clean:
 	-rm bin/${package} ${objs} lib${package}${libsuffix} ${dependfiles}
 	-rm -f ${nml_hh} ${nml_cc} .tmp?
 	-rm -r ${dirstoclean}
+	-rmdir bin
 
 mostlyclean: clean forced-mostlyclean
 forced-mostlyclean:
