@@ -393,7 +393,7 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
    # if shared then ar is cxx
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-shared -nocxxstd -expect_unresolved '*3td*' '
+       ARFLAGS="-shared -nocxxstd -expect_unresolved '*3td*' "
        ARFLAGS="${ARFLAGS} -expect_unresolved '*8_RWrwstd*' -o"
    else
        AR='ar'
