@@ -76,11 +76,10 @@ class Sphyramid_Mesh
     // typedef rtt_dsxx::SP<Sphyramid_Mesh::Pack>  SP_Pack;
     typedef rtt_rng::Sprng                     rng_Sprng;
     typedef std::vector<int>                   sf_int;
-    // typedef std::vector<std::vector<int>>     vf_int;
     typedef std::vector<double>                sf_double;
     typedef std::vector<std::vector<double> >  vf_double;
     typedef std::string                        std_string;
-    // typedef std::pair<sf_double, sf_double>   pair_sf_double;
+    typedef std::pair<sf_double, sf_double>    pair_sf_double;
 
     // Handy typedefs to CC fields (not formally needed in KCC3.3+).
     // typedef CCSF<double> CCSF_double;
@@ -150,11 +149,8 @@ class Sphyramid_Mesh
     bool in_cell(int cell, const sf_double & r) const;
 
     // Diagnostic functions
-    // void print(std::ostream &) const;
-    // void print(std::ostream &, int) const;
 
     // References to embedded objects
-    // const AMR_Layout& get_Layout() const {return layout; }
     const Coord_sys & get_Coord() const { return *coord; }
     SP_Coord get_SPCoord() const { return coord; }
 
@@ -167,7 +163,6 @@ class Sphyramid_Mesh
     // vf_int get_cell_pair() const;
 
     // Services for transport and source
-    // get_spatial_dimension() const {return 3;}
     inline int next_cell(int cell, int face) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &r, const sf_double &omega, int cell, 
@@ -183,14 +178,17 @@ class Sphyramid_Mesh
     inline sf_double sample_pos(int cell, rng_Sprng &random) const;
     inline sf_double sample_pos(int cell, rng_Sprng &random, sf_double slope, 
 				double center_value) const;
-    inline sf_double sample_pos_on_face(int cell, int face, rng_Sprng &random) const;
+    inline sf_double sample_pos_on_face(int cell, int face, 
+					rng_Sprng &random) const;
     int get_bndface(std_string boundary, int cell) const;
     sf_int get_surcells(std_string boundary) const;
     bool check_defined_surcells(const std_string ss_face, 
 				const sf_int &ss_list) const;
     inline sf_int get_neighbors(int cell) const;
-    //    pair_sf_double sample_random_walk_sphere(int, const sf_double &, 
-    //					     double, rng_Sprng &) const;
+    pair_sf_double sample_random_walk_sphere(int cell, 
+					     const sf_double &origin, 
+    					     double radius,
+					     rng_Sprng &random) const;
 
     //! Determine if this is a full mesh or partioned mesh (always full).
     bool full_Mesh() const { return 1;}

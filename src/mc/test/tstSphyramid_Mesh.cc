@@ -21,7 +21,6 @@
 #include "viz/Ensight_Translator.hh"
 #include "rng/Rnd_Control.hh"
 #include "c4/global.hh"
-//#include "c4/SpinLock.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -50,6 +49,7 @@ void simple_one_cell_Sphyramid()
     using rtt_rng::Rnd_Control;
     using rtt_rng::Sprng;
     using std::fabs;
+    using std::pair;
 
     // >>> setup one cell mesh <<<
 
@@ -904,13 +904,97 @@ void simple_one_cell_Sphyramid()
 
     // test sample position on sphere
     {
+	// make a random number generator
+	Rnd_Control control(seed);
+	Sprng ran     = control.get_rn(10);
+	Sprng ref_ran = control.get_rn(10);
 
+	// random walk sphere radius
+	double radius;
+
+	// starting position
+        vector<double> r(3);
+	r[0] = 0.5;
+	r[1] = 0.0;
+	r[2] = 0.0;
+
+	// new and reference position and direction
+	vector<double> r_prime(3);
+	vector<double> omega_prime(3);
+	vector<double> ref_r(3);
+	vector<double> ref_omega(3);
+
+	pair<vector<double>, vector<double> > r_and_omega;
+
+	// simulate a bunch of random walk steps
+	for (int j = 0; j < 20; j++)
+	{
+
+	    // save a reference position
+	    ref_r = r;
+
+	    // calculate the RW radius for this starting point
+	    radius = mesh->get_random_walk_sphere_radius(r, 1);
+
+	    // sample new position and direction
+	    r_and_omega = mesh->sample_random_walk_sphere(1, r, radius, ran);
+	    r_prime     = r_and_omega.first;
+	    omega_prime = r_and_omega.second;
+	    
+	    // check that new position is in cell
+	    if (!mesh->in_cell(1, r_prime)) ITFAILS;
+
+	    // calculate reference isotropic direction (equivalent to the
+	    // first random walk direction each time)
+	    ref_omega = mesh->get_Coord().sample_isotropic_dir(ref_ran);
+
+	    // if the angle are the same there were no y or z face directions
+	    if(soft_equiv(omega_prime.begin(), omega_prime.end(),
+			  ref_omega.begin(), ref_omega.end()))
+	    {
+		// check that sphere is inside cell
+		int face;
+		double db;
+		db = mesh->get_db(r, ref_omega, 1, face);
+		if (radius > db) ITFAILS;
+
+		// update position
+		ref_r[0]+=ref_omega[0]*radius;
+		ref_r[1]+=ref_omega[1]*radius;
+		ref_r[2]+=ref_omega[2]*radius;
+
+		if (!soft_equiv(r_prime.begin(), r_prime.end(),
+				ref_r.begin(), ref_r.end())) ITFAILS;
+	    }
+
+	    // else there were y or z reflections
+	    else
+	    {
+		// check that y or z face is hit first
+
+		int face;
+		double db;
+		db = mesh->get_db(r, ref_omega, 1, face);
+		if (face   < 3)   ITFAILS;
+		if (face   > 6)   ITFAILS;
+		if (radius < db ) ITFAILS;
+	    }
+
+	    // check that the net distance traveled <= radius
+	    double dist = sqrt( (r_prime[0]-r[0])*(r_prime[0]-r[0])
+				+ (r_prime[1]-r[1])*(r_prime[1]-r[1])
+				+ (r_prime[2]-r[2])*(r_prime[2]-r[2]));
+
+	    if (!soft_equiv(dist, radius))
+	    { 
+		if (dist > radius) ITFAILS;
+	    }
+
+	    // reassign postion;
+	    
+	    r = r_prime;
+	}
     }
-
-
-
-
-
 
     return;
     

@@ -317,7 +317,6 @@ double Sphyramid_Mesh::get_db(const sf_double &r, const sf_double &omega,
     Require (in_cell(cell, r));
 
     // set up 6 dists-to-bndry, initialize to huge value
-    // -- 'cause there always be six faces in dis mesh, dogg!
     sf_double distance(6,huge);
 
     // low x face (x-x_low=0)
@@ -741,6 +740,101 @@ bool Sphyramid_Mesh::check_defined_surcells(const std_string ss_face,
     }
 
     return true;
+}
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Sample a position on the surface of a sphere inside a cell
+ * 
+ * This function is used by the Random Walk procedure to move a particle to
+ * the edge of the RW sphere.  The sphere is always inside, and never on, the
+ * cell boundaries.
+ *
+ * \param cell cell index
+ * \param origin sphere origin
+ * \param radius sphere radius
+ * \param random random number object
+ * \return a pair of vector<double> where the first element is the position
+ * on the surface of the sphere, and the second element is the normal of the 
+ * sphere at that direction.
+ */
+Sphyramid_Mesh::pair_sf_double Sphyramid_Mesh::sample_random_walk_sphere(
+    int cell, const sf_double &origin, double radius, rng_Sprng &random) const
+{
+    using rtt_mc::global::dot;
+    using std::make_pair;
+    using rtt_mc::global::soft_equiv;
+    
+    Require (cell > 0);
+    Require (cell <= this->layout.num_cells());
+    Require (origin.size() == 3);
+    Require (in_cell(cell, origin));
+
+    // checks to make sure entire sphere is in cell
+    Require (origin[0]+radius < get_high_x(cell));
+    Require (origin[0]-radius > get_low_x(cell));
+
+    // get initial position and direction of track
+    sf_double     r = origin;
+    sf_double omega = this->coord->sample_isotropic_dir(random);
+
+    // distance we have to track
+    double track = radius;
+
+    // track until we have gone the radial distance
+    double d_bnd;
+    int face;
+    double factor;
+    sf_double normal;
+    while (track > 0.0)
+    {
+	// determine shortest distance to boundary
+	d_bnd = get_db(r, omega, cell, face);
+
+	// process a reflection (y or z face)
+	if (d_bnd < track)
+	{
+
+	    // make sure random walk sphere is truncated only by y or z faces
+	    Check (face == 3 || face == 4 || face == 5 || face == 6);
+
+	    // stream to the face
+	    r[0] = r[0]+d_bnd*omega[0];
+	    r[1] = r[1]+d_bnd*omega[1];
+	    r[2] = r[2]+d_bnd*omega[2];
+
+	    // adjust the remaining track_length
+	    track -= d_bnd;
+	    Check (track >= 0.0);
+
+	    // calculate face normal
+	    normal = get_normal(cell, face);
+	    Check (normal.size() == 3);
+
+	    // specularly reflect angle
+	    factor    = dot(omega, normal);
+	    omega[0] -= 2.0*factor*normal[0];
+	    omega[1] -= 2.0*factor*normal[1];
+	    omega[2] -= 2.0*factor*normal[2];
+	}
+	// stream until finished
+	else
+	{
+	    r[0] = r[0]+track*omega[0];
+	    r[1] = r[1]+track*omega[1];
+	    r[2] = r[2]+track*omega[2];
+
+	    // we are finished tracking
+	    track = 0.0;
+	}
+    }
+    // assign return position and normal
+    pair_sf_double pos_and_norm = make_pair(r, omega);
+
+    Ensure (in_cell(cell, pos_and_norm.first));
+    Ensure (soft_equiv(dot(pos_and_norm.second, pos_and_norm.second), 1.0));
+
+    return pos_and_norm;
+
 }
 
 //---------------------------------------------------------------------------//
