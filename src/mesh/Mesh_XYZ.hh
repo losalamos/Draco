@@ -25,6 +25,8 @@
 
 #include <iterator>
 
+#include "./MeshXYZConnFacesAroundVertices.hh"
+
 struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
 {
     typedef dsxx::Mat1<int>::size_type size_type;
@@ -116,6 +118,17 @@ class Mesh_XYZ : private XYZ_Mapper
     typedef gcctf<double> gccsf;
     typedef gvctf<double> gvcsf;
     typedef tiny_vec<double, 3> vec3;
+
+    // ConnFacesAroundVertices is a class that defines objects
+    // that will iterate through a face-centered field around each vertex,
+    // before going onto the next vertex's faces.
+
+    template<class FaceField>
+    class ConnFacesAroundVertices
+	: public rtt_mesh::MeshXYZConnFacesAroundVertices<FaceField>
+    {
+	friend class Mesh_XYZ;
+    };
 
 // Face centered discontinuous field
 // Has a value on each face in each cell.
