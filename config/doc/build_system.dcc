@@ -22,7 +22,7 @@
 
 Draco is a C++ radiation transport component library developed by CCS-4, Los
 Alamos National Laboratory. In addition to providing infrastructure for
-radiation transport code development, Draco serves as a "model Development
+radiation transport code developmfent, Draco serves as a "model Development
 Environment (DE)" for code development activities within CCS-4.  Most CCS-4
 code projects are based on the coding standards, idioms, style, organization,
 and architecture of Draco.  In this vein, an important service that Draco
@@ -1453,6 +1453,11 @@ used internally by the DBS
 In general, developers using the DBS (see \ref pkg) will only be
 required to use the "public" macros.  The "private" macros are
 maintained by DBS architects.
+
+
+<!---------------------------------------------------------------------------->
+
+\sa http://public.lanl.gov/lampi
   
 */
 
