@@ -66,7 +66,7 @@ string TestHexMeshReader::runTest()
     os() << std::endl << "******* CIC-19 Hex Mesh Reader Tests *******" 
 	 << std::endl;
     // Read and test a 1D mesh.
-    std::string filename = "slab.mesh.inp";
+    std::string filename = "slab.mesh";
     Hex_Mesh_Reader mesh_1D(filename);
     pass(" Construct 1D") << 
 	"Read a 1D mesh without coreing in or firing an assertion." 
@@ -74,7 +74,7 @@ string TestHexMeshReader::runTest()
     check_mesh(mesh_1D, "slab");
 
     // Read and test a 2D mesh.
-    filename = "quad.mesh.inp";
+    filename = "quad.mesh";
     Hex_Mesh_Reader mesh_2D(filename);
     pass(" Construct 2D ") << 
     	"Read a 2D mesh without coreing in or firing an assertion." 
@@ -82,7 +82,7 @@ string TestHexMeshReader::runTest()
     check_mesh(mesh_2D, "quad");
 
     // Read and test a 3D mesh.
-    filename = "cube.mesh.inp";
+    filename = "cube.mesh";
     Hex_Mesh_Reader mesh_3D(filename);
     pass(" Construct 3D ") << 
 	"Read a 3D mesh without coreing in or firing an assertion." 
