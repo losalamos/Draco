@@ -362,59 +362,13 @@ void Parallel_Source_Init<MT,PT>::comb_census(const MT &mesh,
 	}
     }
 
-    // Combing is a variance reduction technique. 
-
-    // If there is imminent loss of census energy (unsampled), we must settle 
-    // for the statistical conservation of energy (to adjust the ew's with 
-    // imminent loss would bias the energy).  Unfortunately, energy loss
-    // propagates.  If there is no imminent loss, we may adjust the ew's for 
-    // exact conservation of energy and some degradation of variance reduction.
-    // The check for imminent loss may be loosened by checking on some minimal
-    // energy loss instead any nonzero loss.
-    bool imminent_loss = false;
-    for (int cell = 1; cell <= mesh.num_cells(); cell++)
-    {
-	if (ncen(cell) == 0 && ecen(cell) > 0)
-	    imminent_loss = true;
-    }
-
     Check (census->size() == 0);
     Check (comb_census->size() == ncentot);
 
-    if (imminent_loss)
-    {
-	// assign newly combed census to census
-	census = comb_census;
-    }
-    else
-    {
-	// post-comb ew adjustment: 
-	// read from comb_census, modify ew, push to census
-	for (int cell = 1; cell <= mesh.num_cells(); cell++)
-	{
-	    if (ncen(cell) > 0)
-		ew_cen(cell) = ecen(cell) / ncen(cell);
-	    else
-		ew_cen(cell) = 0.0;
-	}
+    // assign newly combed census to census
+    census = comb_census;
 
-	eloss_cen += ecencheck;
-	ecencheck  = 0.0;
-
-	while (comb_census->size() > 0)
-	{
-	    SP<PT> particle = comb_census->top();
-	    comb_census->pop();
-	    cencell = particle->get_cell();	
-	    particle->set_ew(ew_cen(cencell));
-	    census->push(particle);	  
-	    ecencheck += ew_cen(cencell);
-	    eloss_cen -= ew_cen(cencell);
-	}
-	
-	Check (census->size() == ncentot);
-	Check (comb_census->size() == 0);
-    }
+    Check (census->size() == ncentot);
 
     Ensure (fabs(ecencheck + eloss_cen - ecentot) <= 1.0e-6 * ecentot);
 }
