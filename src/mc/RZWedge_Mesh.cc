@@ -3,7 +3,7 @@
  * \file   mc/RZWedge_Mesh.cc
  * \author Todd J. Urbatsch
  * \date   Wed Apr  5 17:32:24 2000
- * \brief  XYZ Wedge Mesh that represents an RZ Mesh.
+ * \brief  RZWedge_Mesh implementation file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,13 +36,36 @@ using global::pi;
 //---------------------------------------------------------------------------//
 // CONSTRUCTOR
 //---------------------------------------------------------------------------//
+/*!
+ * \brief RZWedge_Mesh constructor.
+
+ * The constructor requires complete arguments of the constituent data
+ * necessary to build an RZWedge_Mesh.  It is expected that an appropriate
+ * builder class will message general data through an interface to build the
+ * specific data structures needed by RZWedge_Mesh.
+
+ * \param coord_ coordinate system smart pointer
+
+ * \param layout_ AMR_Layout giving cell connectivity information
+
+ * \param cell_xz_extents_ the xz coordinates of each cell in the following
+ * form: [cell][low x]; [cell][hi x]; [cell][lo z]; [cell][hi z]
+
+ * \param theta_degrees_ angle of the wedge in degrees 
+
+ * \param submesh[=false] boolean indicator; true if this is a sub-mesh
+
+ */
 RZWedge_Mesh::RZWedge_Mesh(rtt_dsxx::SP<Coord_sys> coord_,
-			   Layout &layout_,
+			   AMR_Layout &layout_,
 			   vf_double &cell_xz_extents_,
 			   double theta_degrees_,
 			   bool submesh_)
-    : coord(coord_), layout(layout_), cell_xz_extents(cell_xz_extents_),
-      theta_degrees(theta_degrees_), submesh(submesh_)
+    : coord(coord_),
+      layout(layout_), 
+      cell_xz_extents(cell_xz_extents_),
+      theta_degrees(theta_degrees_),
+      submesh(submesh_)
 {
     // Check coordinate system class
     Require (coord);
@@ -158,6 +181,7 @@ double RZWedge_Mesh::get_db(const sf_double &r, const sf_double &omega,
     // return minimum distance to boundary 
     return min_dist;
 }
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Find cell in RZWedge_Mesh given position
@@ -252,7 +276,7 @@ bool RZWedge_Mesh::check_defined_surcells(const std_string ss_face,
         int ss_face_num = get_bndface(ss_face, ss_list[ss_indx]);
 
         // get bnd condition on ss face; had better be vacuum (0)
-        int bc = layout(ss_list[ss_indx], ss_face_num);
+        int bc = layout(ss_list[ss_indx], ss_face_num, 1);
         if (bc != 0)
             return false;
     }

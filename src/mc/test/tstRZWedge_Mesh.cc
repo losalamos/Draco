@@ -15,7 +15,7 @@
 #include "MC_Test.hh"
 #include "../RZWedge_Mesh.hh"
 #include "../XYZCoord_sys.hh"
-#include "../Layout.hh"
+#include "../AMR_Layout.hh"
 #include "../Release.hh"
 #include "../Math.hh"
 #include "c4/global.hh"
@@ -29,7 +29,7 @@
 using namespace std;
 
 using rtt_mc::XYZCoord_sys;
-using rtt_mc::Layout;
+using rtt_mc::AMR_Layout;
 using rtt_dsxx::SP;
 using rtt_mc::RZWedge_Mesh;
 using rtt_mc::global::soft_equiv;
@@ -50,7 +50,7 @@ void simple_one_cell_RZWedge()
     rtt_dsxx::SP<XYZCoord_sys> coord(new XYZCoord_sys());
 
     // >>> build a layout of size ncells <<<
-    Layout layout;
+    AMR_Layout layout;
     layout.set_size(ncells);
 
     // set number of faces per cell (6)
@@ -62,12 +62,12 @@ void simple_one_cell_RZWedge()
     // loy, hiy)
     for (int cell = 1; cell <= ncells; cell++)
     {
-	layout(cell, 1) = cell;
-	layout(cell, 2) = 0; 
-	layout(cell, 3) = cell;
-	layout(cell, 4) = cell;
-	layout(cell, 5) = 0;
-	layout(cell, 6) = 0;
+	layout(cell, 1, 1) = cell;
+	layout(cell, 2, 1) = 0; 
+	layout(cell, 3, 1) = cell;
+	layout(cell, 4, 1) = cell;
+	layout(cell, 5, 1) = 0;
+	layout(cell, 6, 1) = 0;
     }
 
     // >>> set XZ cell extents <<<

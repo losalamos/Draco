@@ -3,7 +3,7 @@
  * \file   mc/RZWedge_Mesh.hh
  * \author Todd J. Urbatsch
  * \date   Wed Apr  5 16:01:53 2000
- * \brief  An XYZ Wedge Mesh constructed from an RZ Mesh.
+ * \brief  RZWedge_Mesh header file.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +13,7 @@
 #define __mc_RZWedge_Mesh_hh__
 
 #include "Coord_sys.hh"
-#include "Layout.hh"
+#include "AMR_Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
@@ -32,23 +32,27 @@ namespace rtt_mc
  * \class RZWedge_Mesh
  *
  * \brief An XYZ Wedge mesh constructed from an RZ mesh.
- *
+
  * For Monte Carlo applications, we model an RZ mesh with a
  * three-dimensional, Cartesian wedge mesh where all cells are hexes except
  * for on the r=0 axis, where the inner face degenerates to a line.  The
  * x-direction is aligned with the r-direction.  The construction of the mesh
  * requires an RZ mesh and an unfolding angle, theta.  The radial dimensions
- * are adjusted for the particular theta in order to conserve volume.  The 
- * mesh is one cell thick in the y-direction (or "azimuthal" direction) with 
+ * are adjusted for the particular theta in order to conserve volume.  The
+ * mesh is one cell thick in the y-direction (or "azimuthal" direction) with
  * reflecting boundary conditions at the high and low y-sides (at +theta/2
  * and -theta/2).
- * 
+
+ * The RZWedge_Mesh is fully AMR compatible and it uses the AMR_Layout class
+ * internally to support this functionality.
+ 
  */
 // revision history:
 // -----------------
 // 13 Apr 2000 : committed on Thursday, April 13, 2000.
 //  5 Jul 2000 : added dependence on Coord_sys (needed in transport...)
 // 17-JUL-2000 : added get_cell_pair function for graphics dumping.
+// 24-JUL-2000 : replaced Layout with AMR_Layout
 // 
 //===========================================================================//
 
@@ -57,6 +61,7 @@ class RZWedge_Mesh
   public:
     // typedefs used throughout RZWedge_Mesh class
     typedef rtt_dsxx::SP<RZWedge_Mesh>        SP_Mesh;
+    typedef rtt_dsxx::SP<Coord_sys>           SP_Coord;
     typedef rtt_rng::Sprng                    rng_Sprng;
     typedef std::vector<int>                  sf_int;
     typedef std::vector<std::vector<int> >    vf_int;
@@ -78,10 +83,10 @@ class RZWedge_Mesh
   private:
     // base class reference to a derived coordinate system class
     // (the RZWedge_Mesh is always three-dimensional, Cartesian)
-    rtt_dsxx::SP<Coord_sys> coord;
+    SP_Coord coord;
 
     // layout (cell connectivity) of mesh
-    Layout layout;
+    AMR_Layout layout;
 
     // vector<vector> of x- and z-extents of each cell
     vf_double cell_xz_extents;
@@ -106,34 +111,33 @@ class RZWedge_Mesh
     RZWedge_Mesh& operator=(const RZWedge_Mesh &);
 
   public:
-    // constructor 
-    RZWedge_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, vf_double &, double, 
-		 bool = false); 
+    // Constructor.
+    RZWedge_Mesh(SP_Coord, AMR_Layout &, vf_double &, double, bool = false); 
 
     // >>> Member functions used by RZWedge_Mesh-dependent classes
 
-    // return the number of cells
+    //! Return the number of cells.
     int num_cells() const { return layout.num_cells(); }
 
-    // return the x- and z-dimension cell extents
+    // Return the x- and z-dimension cell extents.
     double get_low_x(int cell)  const { return cell_xz_extents[cell-1][0]; }
     double get_high_x(int cell) const { return cell_xz_extents[cell-1][1]; }
     double get_low_z(int cell)  const { return cell_xz_extents[cell-1][2]; }
     double get_high_z(int cell) const { return cell_xz_extents[cell-1][3]; }
 
-    // get the midpoint of a cell for a given dimension
+    // Get the midpoint of a cell for a given dimension.
     inline double get_x_midpoint(int cell) const;
     inline double get_y_midpoint(int cell) const;
     inline double get_z_midpoint(int cell) const;
 
-    // diagnostic functions
+    // Diagnostic functions.
     void print(std::ostream &) const;
     void print(std::ostream &, int) const;
 
-    // references to embedded objects 
-    const Layout&           get_Layout()  const { return layout; }
-    const Coord_sys&        get_Coord()   const { return *coord; }
-    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
+    // References to embedded objects.
+    const AMR_Layout& get_Layout()  const { return layout; }
+    const Coord_sys&  get_Coord()   const { return *coord; }
+    SP_Coord          get_SPCoord() const { return coord; }
 
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
@@ -141,7 +145,7 @@ class RZWedge_Mesh
     vf_int get_cell_pair() const;
 
     // Required services for transport and source.
-    int next_cell(int cell, int face) const { return layout(cell, face); } 
+    int next_cell(int cell, int face) const { return layout(cell, face, 1); }
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const;
     inline sf_double get_normal(int, int) const;
@@ -581,7 +585,7 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_neighbors(int cell) const
     sf_int neighbors(layout.num_faces(cell));
     
     for (int face = 1; face <= neighbors.size(); face++)
-	neighbors[face-1] = layout(cell, face);
+	neighbors[face-1] = layout(cell, face, 1);
 
     return neighbors;
 }
