@@ -247,7 +247,7 @@ SP<T>::SP(X *px_in)
     T *np = dynamic_cast<T *>(px_in);
 
     // check that we have made a successfull cast if px exists
-    Insist(np, "Incompatible dumb pointer conversion between X and T.");
+    Insist(np, "Incompatible dumb pointer conversion between X and SP<T>.");
 
     // assign the pointer and reference
     p = np;
@@ -365,7 +365,7 @@ SP<T>& SP<T>::operator=(X *px_in)
 
     // do a dynamic cast to ensure convertiblility between T* and X*
     T *np = dynamic_cast<T *>(px_in);
-    Insist(np, "Incompatible SP conversion between X and SP<T>.");
+    Insist(np, "Incompatible dumb pointer conversion between X and SP<T>.");
 
     // now assign this to np (using previously defined assignment operator)
     *this = np;

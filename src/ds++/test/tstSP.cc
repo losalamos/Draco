@@ -1,443 +1,652 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstSP.cc
-// Geoffrey Furnish
-// 3 December 1994
+/*!
+ * \file   ds++/test/tstSP.cc
+ * \author Thomas M. Evans
+ * \date   Wed Feb  5 17:29:59 2003
+ * \brief  SP test.
+ */
 //---------------------------------------------------------------------------//
-// @> Test program for the SP<T> class
+// $Id$
 //---------------------------------------------------------------------------//
+
+#include "ds_test.hh"
+#include "../Release.hh"
+#include "../SP.hh"
+#include "ds++/Assert.hh"
 
 #include <iostream>
-#include <string>
+#include <vector>
+#include <cmath>
+#include <typeinfo>
+#include <sstream>
 
-using std::cout;
-using std::endl;
-
-#include "../SP.hh"
+using namespace std;
 
 using rtt_dsxx::SP;
 
-// autodoc: noprint foo
+//---------------------------------------------------------------------------//
+// TEST HELPERS
+//---------------------------------------------------------------------------//
 
 int nfoos = 0;
+int nbars = 0;
+int nbazs = 0;
+int nbats = 0;
 
-class foo {
+#define CHECK_0_OBJECTS if (nfoos != 0) ITFAILS; if (nbars != 0) ITFAILS; if (nbazs != 0) ITFAILS; if (nbats != 0) ITFAILS;
 
+#define CHECK_N_OBJECTS(nf, nb, nbz, nbt) if (nfoos != nf) ITFAILS; if (nbars != nb) ITFAILS; if (nbazs != nbz) ITFAILS; if (nbats != nbt) ITFAILS;
+
+//---------------------------------------------------------------------------//
+
+class Foo
+{
+  private:
     int v;
 
-    foo( const foo& );
-    
   public:
-    foo() { v=0; nfoos++; cout << "foo constructed.\n"; }
-    foo( int i ) { v=i; nfoos++; cout << "foo constructed.\n";; }
-    virtual ~foo() { nfoos--; cout << "foo destroyed.\n"; }
-    void method() { cout << "foo::method invoked.\n"; }
-    int val() const { return v; }
-};
+    Foo() 
+	: v(0)
+    {
+	nfoos++;
+    }
 
-class bar : public foo
-{
-};
+    explicit Foo(int i)
+	: v(i)
+    {
+	nfoos++;
+    }
 
-class baz : public bar
-{
-};
+    Foo(const Foo &f)
+	: v(f.v)
+    {
+	nfoos++;
+    }
 
-class wombat {};
+    virtual ~Foo()
+    {
+	nfoos--;
+    }
+
+    virtual int vf() { return v; }
+
+    int f() { return v+1; }
+};
 
 //---------------------------------------------------------------------------//
-// Function to help us keep track of the foo pool.
+
+class Bar : public Foo
+{
+  private:
+    Bar(const Bar &);
+
+  public:
+    explicit Bar(int i) 
+	: Foo(i)
+    {
+	nbars++;
+    }
+
+    virtual ~Bar()
+    {
+	nbars--;
+    }
+
+    virtual int vf() { return Foo::f() + 1; }
+
+    int f() { return Foo::f() + 2; }
+};
+
 //---------------------------------------------------------------------------//
 
-int expect( int n ) {
-    cout << "Expecting " << n << " foo's, ";
-    if (nfoos == n) {
-	cout << "and found them. --> test: passed \n";
-	return 1;
-    } else {
-	cout << "but there are " << nfoos << ". --> test: failed \n";
-	return 0;
+class Baz : public Bar
+{
+  private:
+    Baz(const Baz &);
+
+  public:
+    explicit Baz(int i) 
+	: Bar(i)
+    {
+	nbazs++;
     }
+
+    virtual ~Baz()
+    {
+	nbazs--;
+    }
+
+    virtual int vf() { return Bar::f() + 1; }
+
+    int f() { return Bar::f() + 2; }
+};
+
+//---------------------------------------------------------------------------//
+
+class Wombat 
+{
+  private:
+    Wombat(const Wombat &);
+
+  public:
+    Wombat() { nbats++; }
+    virtual ~Wombat() { nbats--; }
+};
+
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
+// here we test the following SP members:
+//
+//    SP();
+//    SP(T *);
+//    SP(const SP<T> &);
+//    SP<T>& operator=(T *);
+//    SP<T>& operator=(const SP<T> &);
+//    T* operator->() const;
+//    bool operator==(const T *) const;
+//    bool operator!=(const T *) const;
+//    bool operator==(const SP<T> &) const;
+//    bool operator!=(const SP<T> &) const;
+// 
+// plus we test 
+//
+//    bool operator==(const T *, const SP<T> &);
+//    bool operator!=(const T *, const SP<T> &);
+//
+void type_T_test()
+{
+    CHECK_0_OBJECTS;
+
+    // test explicit constructor for type T *
+    {
+	// make a Foo, Bar, and Baz
+	SP<Foo> spfoo(new Foo(1));
+	SP<Bar> spbar(new Bar(2));
+	SP<Baz> spbaz(new Baz(3));
+	
+	// there should be 3 Foos, 2 Bars and 1 Baz
+	CHECK_N_OBJECTS(3, 2, 1, 0);
 }
 
-SP<foo> getafoo()
-{
-    SP<foo> p(new foo);
-    return p;
+    // now all should be destroyed
+    CHECK_0_OBJECTS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Explicit constructor for type T * ok.");
+
+    // test copy constructor for type T *
+    {
+	SP<Foo> rspfoo;
+	SP<Bar> rspbar;
+	SP<Baz> rspbaz;
+	{
+	    // no objects yet
+	    CHECK_0_OBJECTS;
+
+	    Foo *f  = new Foo(1);
+	    Bar *b  = new Bar(2);
+	    Baz *bz = new Baz(3);
+	    
+	    SP<Foo> spfoo(f);
+	    SP<Bar> spbar(b);
+	    SP<Baz> spbaz(bz);
+	    
+	    // there should be 3 Foos, 2 Bars and 1 Baz
+	    CHECK_N_OBJECTS(3, 2, 1, 0);
+
+	    // now assign
+	    rspfoo = spfoo;
+	    rspbar = spbar;
+	    rspbaz = spbaz;
+	    
+	    // there are no additional objects made because the SP will make
+	    // additional references
+	    CHECK_N_OBJECTS(3, 2, 1, 0);
+
+	    if (rtt_ds_test::passed)
+		PASSMSG("Assignment of SP<T> ok.");
+
+	    // now copy construct
+	    SP<Foo> ispfoo = rspfoo;
+	    SP<Bar> ispbar = rspbar;
+
+	    // still no new foos created
+	    CHECK_N_OBJECTS(3, 2, 1, 0);
+	    if (ispfoo->f() != 2) ITFAILS;
+	    if (spfoo->f()  != 2) ITFAILS;
+	    if (rspfoo->f() != 2) ITFAILS;
+
+	    if (rtt_ds_test::passed)
+		PASSMSG("Copy construct of SP<T> ok.");
+
+	    // now make a foo pointer and assign
+	    Foo *ff = new Foo(10);
+	    ispfoo  = ff;
+
+	    // still no new foos created
+	    CHECK_N_OBJECTS(4, 2, 1, 0);
+	    if (ispfoo->f() != 11) ITFAILS;
+	    if (spfoo->f()  != 2)  ITFAILS;
+	    if (rspfoo->f() != 2)  ITFAILS;
+
+	    if (rtt_ds_test::passed)
+		PASSMSG("Assignment of T* ok.");
+
+	    // now we can check equality 
+	    if (rspfoo == spfoo)
+	    {
+		PASSMSG("Equality operation ok.");
+	    }
+	    else
+	    {
+		FAILMSG("Equality operation failed.");
+	    }
+	    
+	    // now check inequality
+	    if (rspfoo != spfoo)
+	    {
+		FAILMSG("Equality operation failed.");
+	    }
+	    else
+	    {
+		PASSMSG("Equality operation ok.");
+	    }
+
+	    if (rspbar != spbar) ITFAILS;
+	    if (rspbaz != spbaz) ITFAILS;
+
+	    if (spfoo != f)      ITFAILS;
+	    if (spbar != b)      ITFAILS;
+	    if (spbaz != bz)     ITFAILS;
+
+	    if (spfoo == b)      ITFAILS; // this is ok because a Bar * can
+					  // be passed to Foo *
+
+	    if (spbar == dynamic_cast<Bar *>(f)) ITFAILS;
+
+	    if (f  != spfoo)     ITFAILS;
+	    if (b  != spbar)     ITFAILS;
+	    if (bz != spbaz)     ITFAILS;
+
+	    if (f == spfoo)
+	    {
+		PASSMSG("Overloaded equality operators ok.");
+	    }
+	    else
+	    {
+		FAILMSG("Overloaded equality operators failed.");
+	    }
+
+	    if (rtt_ds_test::passed)
+		PASSMSG("Equality/Inequality operations ok.");
+	}
+	
+	// we should still have objects left even because we still have
+	// viable SPs in scope
+	CHECK_N_OBJECTS(3, 2, 1, 0);
+    }
+
+    // now all should be destroyed
+    CHECK_0_OBJECTS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Operations on type T ok");
 }
 
-SP<foo> useafoo( SP<foo> s )
+//---------------------------------------------------------------------------//
+// here we test the following SP members:
+//
+//    SP();
+//    SP(X *);
+//    SP<const SP<X> &);
+//    SP<T>& operator=(T *);
+//    SP<T>& operator=(X *);
+//    SP<T>& operator=(const SP<X> &);
+//    T* operator->() const;
+//    T& operator*() const;
+//    T* bp() const;
+//    operator bool() const;
+//    bool operator!() const;
+// 
+void type_X_test()
 {
-    s->method();
+    CHECK_0_OBJECTS;
 
-    SP<foo> p(new foo);
+    // check explicit constructor
+    {
+	// make a foo pointer
+	SP<Foo> spfoo(new Bar(10));
+	CHECK_N_OBJECTS(1, 1, 0, 0);
 
-    p = s;
+	if (spfoo->vf() != 12) ITFAILS;
+	if (spfoo->f() != 11)  ITFAILS;
 
-    cout << "a foo should've just been destroyed.\n";
+	Foo &f = *spfoo;
+	if (f.f() != 11)  ITFAILS;
+	if (f.vf() != 12) ITFAILS;
 
-    return p;
+	Foo ff = *spfoo;
+	if (ff.vf() != 10) ITFAILS;
+
+	Bar *b = dynamic_cast<Bar *>(spfoo.bp());
+	if (b->vf() != 12) ITFAILS;
+	if (b->f() != 13)  ITFAILS;
+
+	if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
+	if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
+
+	CHECK_N_OBJECTS(2, 1, 0, 0);
+    }
+
+    CHECK_0_OBJECTS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Explicit constructor for type X * ok.");
+
+    // check SP<X> constructor and assignment
+    {
+	// make some objects
+	SP<Foo> spfoo;
+	SP<Bar> spbar;
+	SP<Foo> spfoo2;
+
+	if (spfoo)  ITFAILS;
+	if (spbar)  ITFAILS;
+	if (spfoo2) ITFAILS;
+	{
+	    spbar = new Bar(50);
+	    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+	    if (spbar->f() != 53)  ITFAILS;
+	    if (spbar->vf() != 52) ITFAILS;
+
+	    // now assign to base class SP
+	    spfoo = spbar;
+	    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+	    if (spfoo->f() != 51)  ITFAILS;
+	    if (spfoo->vf() != 52) ITFAILS;
+
+	    if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
+	    if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
+	    if (typeid(spbar.bp()) != typeid(Bar *)) ITFAILS;
+
+	    if (rtt_ds_test::passed)
+		PASSMSG("Assignment with SP<X> ok.");
+
+	    // now do copy construction
+	    SP<Foo> rspfoo(spbar);
+	    CHECK_N_OBJECTS(1, 1, 0, 0);
+
+	    if (rspfoo->f() != 51)  ITFAILS;
+	    if (rspfoo->vf() != 52) ITFAILS;
+
+	    if (typeid(rspfoo.bp()) != typeid(Foo *)) ITFAILS;
+	    if (typeid(*rspfoo.bp()) != typeid(Bar))  ITFAILS;
+	    
+	    if (rtt_ds_test::passed)
+		PASSMSG("Copy constructor with SP<X> ok.");
+
+	    // now check assignment with X *
+	    rspfoo = new Bar(12);
+	    CHECK_N_OBJECTS(2, 2, 0, 0);
+
+	    if (rspfoo->f() != 13)  ITFAILS;
+	    if (rspfoo->vf() != 14) ITFAILS;
+
+	    if (typeid(rspfoo.bp()) != typeid(Foo *)) ITFAILS;
+	    if (typeid(*rspfoo.bp()) != typeid(Bar))  ITFAILS;
+
+	    if (rtt_ds_test::passed)
+		PASSMSG("Assignment with X * ok.");
+
+	    // assign SPfoo2 to a bar
+	    spfoo2 = new Bar(20);
+	    CHECK_N_OBJECTS(3, 3, 0, 0);
+	    
+	}
+	// still have 2 object
+	CHECK_N_OBJECTS(2, 2, 0, 0);
+
+	// assign spfoo to a baz
+	spfoo2 = new Baz(45);
+	CHECK_N_OBJECTS(2, 2, 1, 0);
+
+	if (spfoo2->f() != 46)  ITFAILS;
+	if (spfoo2->vf() != 49) ITFAILS;
+
+	if (typeid(*spfoo2.bp()) != typeid(Baz)) ITFAILS;
+
+	// assign spbar to NULL
+	spbar = SP<Bar>();
+	CHECK_N_OBJECTS(2, 2, 1, 0);
+
+	// spfoo should still point to the same bar
+	if (spfoo->f() != 51)  ITFAILS;
+	if (spfoo->vf() != 52) ITFAILS;
+	
+	if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
+	if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
+	if (typeid(spbar.bp()) != typeid(Bar *)) ITFAILS;
+	
+	if (rtt_ds_test::passed)
+	    PASSMSG("Set to SP<>() releases pointer.");
+
+	// assign spfoo to NULL
+	spfoo = SP<Foo>();
+	CHECK_N_OBJECTS(1, 1, 1, 0);
+
+	if (spfoo) ITFAILS;
+	if (spbar) ITFAILS;
+
+	if (rtt_ds_test::passed)
+	    PASSMSG("Overloaded bool ok.");
+
+	if (!spfoo2) ITFAILS;
+
+	if (rtt_ds_test::passed)
+	    PASSMSG("Overloaded ! (not) ok."); 
+    }
+
+    CHECK_0_OBJECTS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Operations on type X ok");
 }
 
-void x1()
+//---------------------------------------------------------------------------//
+
+void fail_modes_test()
 {
-    cout << "\n\n test x1 -- mostly same-pointer-type ops.\n";
+    // make an object and try to reference it
+    SP<Foo>    spfoo;
+    SP<Bar>    spbar;
+    SP<Baz>    spbaz;
+    SP<Wombat> spbat;
 
-    {
-	cout << "\n Check foo ctor/dtor." << endl;
-	expect(0);
-	foo *pf = new foo;
-	expect(1);
-	delete pf;
-	expect(0);
-    }
+    if (spfoo) ITFAILS;
+    if (spfoo) ITFAILS;
+    if (spfoo) ITFAILS;
 
+    // try to reference a function
+    bool caught = false;
+    try
     {
-	cout << "\n Check SP def ctor/dtor." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-	    expect(0);
-	}
-	expect(0);
+	spfoo->f();
     }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream m;
+	m << "Good, caught the following exception, " << endl
+	  << ass.what();
+	PASSMSG(m.str());
+    }
+    if (!caught)
+	FAILMSG("Failed to catch illegal access exception.");
 
-    {
-	cout << "\n Check SP(T*) ctor/dtor." << endl;
-	expect(0);
-	{
-	    foo *pf = new foo;
-	    SP<foo> spf( pf );
-	    expect(1);
-	}
-	cout << "A foo should've just been destroyed." << endl;
-	expect(0);
-    }
+    // try assigning a derived NULL to a base; the spfoo base pointer is
+    // still a foo in the case 
+    spfoo = spbar;
+    if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
 
-    {
-	cout << "\n Check SP<foo> s = new foo, which ops are those?" << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new foo);
-	    expect(1);
-	}
-	expect(0);
-    }
+    CHECK_0_OBJECTS;
 
+    // now try assigning to a non-derived class of Foo that is NULL,
+    // unfortunately, even though this shouldn't be allowed we get away with
+    // it because wombat has some virtual functions and is NULL; however,
+    // this isn't really dangerous because spfoo still doesn't point to
+    // anything 
+    spfoo  = spbat;
+    caught = false;
+    try
     {
-	cout << "\n Check assign from T *." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-	    foo *pf = new foo;
-	    expect(1);
-	    spf = pf;
-	    expect(1);
-	}
-	expect(0);
+	spfoo->f();
     }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream m;
+	m << "Good, caught the following exception, " << endl
+	  << ass.what();
+	PASSMSG(m.str());
+    }
+    if (!caught)
+	FAILMSG("Failed to catch illegal access exception.");
+
+    // now make a wombat and try
+    spbat  = new Wombat;
+    CHECK_N_OBJECTS(0, 0, 0, 1);
+
+    caught = false;
+    try
+    {
+	spfoo = spbat;
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream m;
+	m << "Good, caught the following exception, " << endl
+	  << ass.what();
+	PASSMSG(m.str());
+    }
+    if (!caught)
+	FAILMSG("Failed to catch illegal assignment.");
+
+    // now try copy construction
+    caught = false;
+    try
+    {
+	SP<Foo> s(spbat);
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream m;
+	m << "Good, caught the following exception, " << endl
+	  << ass.what();
+	PASSMSG(m.str());
+    }
+    if (!caught)
+	FAILMSG("Failed to catch illegal assignment.");
+
+    // now try copy and assignment on X *
+    Wombat *bat = new Wombat();
+    CHECK_N_OBJECTS(0, 0, 0, 2);
+
+    caught = false;
+    try
+    {
+	spfoo = bat;
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream m;
+	m << "Good, caught the following exception, " << endl
+	  << ass.what();
+	PASSMSG(m.str());
+    }
+    if (!caught)
+	FAILMSG("Failed to catch illegal assignment.");
+
+    // now try copy construction
+    caught = false;
+    try
+    {
+	SP<Foo> s(bat);
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+	ostringstream m;
+	m << "Good, caught the following exception, " << endl
+	  << ass.what();
+	PASSMSG(m.str());
+    }
+    if (!caught)
+	FAILMSG("Failed to catch illegal assignment.");
     
-    {
-	cout << "\n Check SP assign from like type." << endl;
-	expect(0);
-	{
-	    SP<foo> sp1(new foo);
-	    expect(1);
-	    SP<foo> sp2(new foo);
-	    expect(2);
-	    sp1 = sp2;
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << " \n Check SP def ctor + copy ctor," << endl;
-	expect(0);
-	{
-	    SP<foo> sp1;
-	    expect(0);
-	    SP<foo> sp2(new foo);
-	    expect(1);
-	    sp1 = sp2;
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check SP copy ctor from like type." << endl;
-	expect(0);
-	{
-	    SP<foo> sp1(new foo);
-	    expect(1);
-	    SP<foo> sp2( sp1 );
-	    expect(1);
-	}
-	expect(0);
-    }
+    // assign wombat to a pointer to clean it up
+    spbat = bat;
+    CHECK_N_OBJECTS(0, 0, 0, 1);
     
-    {
-	cout << "\n Check getafoo." << endl;
-	expect(0);
-	{
-	    SP<foo> spf = getafoo();
-	    expect(1);
-	}
-	expect(0);
-    }
+    if (rtt_ds_test::passed)
+	PASSMSG("Failure modes work ok.");
 }
 
-void x2()
-{
-    cout << "\n\n test x2 -- test compatible-pointer-type ops.\n";
-
-    {
-	cout << "\n Check derived class ctor/dtor." << endl;
-	expect(0);
-	{
-	    bar *b = new bar;
-	    expect(1);
-	    delete b;
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check X* ctor." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check SP<X> copy ctor." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    expect(1);
-	    SP<bar> spb( spf );
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check assign from SP<X>." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-	    SP<bar> spb(new bar);
-	    expect(1);
-	    spf = spb;
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check downcast copy ctor." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    SP<bar> spb( spf );
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check downcast assingment." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    SP<bar> spb(new bar);
-	    expect(2);
-	    spb = spf;
-	    expect(1);
-	}
-	expect(0);
-    }
-}
-
-void x3()
-{
-    cout << "\n\n test x3 -- tricky copy/assign cases.\n";
-
-    {
-	cout << "\n Check assign to self." << endl;
-	expect(0);
-	{
-	    SP<foo> sp1(new foo);
-	    expect(1);
-	    sp1 = sp1;
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check assign to self, T *." << endl;
-	expect(0);
-	{
-	    SP<foo> sp1(new foo);
-	    SP<foo> sp2( sp1 );
-	    expect(1);
-	    sp1 = sp2;
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check assign to self, X * (upcast)." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    SP<bar> spb( spf );
-	    spf = spb;
-	    expect(1);
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check assign to self, X * (downcast)." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    SP<bar> spb( spf );
-	    spb = spf;
-	    expect(1);
-	}
-	expect(0);
-    }
-}
-
-void x4()
-{
-    cout << "\n\n test x4 -- comparison operators, and suchlike.\n";
-
-    {
-	cout << "\n Check operator bool." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-	    expect(0);
-	    if (spf) cout << "test: failed\n"; else cout << "test: passed\n";
-	    spf = new foo;
-	    expect(1);
-	    if (spf) cout << "test: passed\n"; else cout << "test: failed\n";
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check operator!." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-	    if (!spf) cout << "test: passed\n"; else cout << "test: failed\n";
-	    spf = new foo;
-	    if (!spf) cout << "test: failed\n"; else cout << "test: passed\n";
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check for nullness." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-// 	    if (spf == 0) cout << "test: passed\n"; else cout << "test: failed\n";
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check comparison to dumb pointer." << endl;
-	expect(0);
-	{
-	    SP<foo> spf;
-	    foo *pf = new foo;
-	    spf = pf;
-
-	    if (spf == pf) cout << "test: passed\n"; else cout << "test: failed\n";
-	    if (spf != pf) cout << "test: failed\n"; else cout << "test: passed\n";
-
-	    if (pf == spf) cout << "test: passed\n"; else cout << "test: failed\n";
-	    if (pf != spf) cout << "test: failed\n"; else cout << "test: passed\n";
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check comparison to same type." << endl;
-	expect(0);
-	{
-	    SP<foo> sp1(new foo);
-	    SP<foo> sp2(new foo);
-	    expect(2);
-	    if (sp1 == sp2) cout << "test: failed\n"; else cout << "test: passed\n";
-	    if (sp1 != sp2) cout << "test: passed\n"; else cout << "test: failed\n";
-	}
-	expect(0);
-    }
-
-    {
-	cout << "\n Check SP comparison between compatible types." << endl;
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    SP<bar> spb = spf;
-
-	    cout << "checking same object comparison." << endl;
-	    if (spf == spb) cout << "test: passed\n"; else cout << "test: failed\n";
-	    if (spf != spb) cout << "test: failed\n"; else cout << "test: passed\n";
-	}
-	expect(0);
-	{
-	    SP<foo> spf(new bar);
-	    SP<bar> spb(new bar);
-	    expect(2);
-
-	    cout << "checking different object comparison." << endl;
-	    if (spf == spb) cout << "test: failed\n"; else cout << "test: passed\n";
-	    if (spf != spb) cout << "test: passed\n"; else cout << "test: failed\n";
-	}
-	expect(0);
-    }
-}
-
-void version(const std::string &progname)
-{
-    std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
-}
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-
-    for (int arg=1; arg < argc; arg++)
+    // version tag
+    for (int arg = 1; arg < argc; arg++)
+	if (string(argv[arg]) == "--version")
 	{
-	    if (std::string(argv[arg]) == "--version")
-		{
-		    version(argv[0]);
-		    return 0;
-		}
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
+		 << endl;
+	    return 0;
 	}
 
-    cout << "\n\n\n    tstSP starting.\n";
+    try
+    {
+	// >>> UNIT TESTS
 
-    x1();
-    x2();
-    x3();
-    x4();
-    return 0;
-}
+	CHECK_0_OBJECTS;
+
+	type_T_test();
+	cout << endl;
+
+	type_X_test();
+	cout << endl;
+	
+	fail_modes_test();
+
+	CHECK_0_OBJECTS;
+    }
+    catch (rtt_dsxx::assertion &ass)
+    {
+	cout << "While testing tstSP, " << ass.what()
+	     << endl;
+	return 1;
+    }
+
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+    if (rtt_ds_test::passed) 
+    {
+        cout << "**** tstSP Test: PASSED" 
+	     << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
+
+    cout << "Done testing tstSP." << endl;
+}   
 
 //---------------------------------------------------------------------------//
-//                              end of tstSP.cc
+//                        end of tstSP.cc
 //---------------------------------------------------------------------------//
