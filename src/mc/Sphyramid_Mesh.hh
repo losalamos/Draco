@@ -180,7 +180,7 @@ class Sphyramid_Mesh
     vf_double get_vertices(int cell, int face) const;
     inline sf_double sample_pos(int cell, rng_Sprng &random) const;
     inline sf_double sample_pos(int cell, rng_Sprng &random, sf_double slope, 
-				double center_pt) const;
+				double center_value) const;
     // inline sf_double sample_pos_on_face(int,int, rng_Sprng &) const;
     int get_bndface(std_string boundary, int cell) const;
     sf_int get_surcells(std_string boundary) const;
@@ -553,16 +553,22 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell,
 //---------------------------------------------------------------------------//
 /*! 
  * \brief  sample a position in a Sphyramid_Mesh cell according to a slope
+ *
+ * This function samples a position in a Sphyramid_Mesh cell according to a
+ * weighting function (i.e. T^4).  The weighting function is assumed linear
+ * in each cell, with the slope and cell-centered value provided (the slope
+ * in the y and z direction are assumed to be zero).
  * 
  * \param cell cell number
  * \param random random number object
  * \param slope slope sampling weight function (i.e. T^4)
- * \param center_pt cell-centered value of sampling weight function
+ * \param center_value cell-centered value of sampling weight function
  * \return location in cell
  */
-Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell, rng_Sprng &random,
+Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell, 
+						     rng_Sprng &random,
 						     sf_double slope,
-						     double center_pt) const
+						     double center_value) const
 {
     using global::soft_equiv
 
@@ -581,6 +587,7 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell, rng_Sprng &random
     // get x-dimension cell extents
     double lox = get_low_x(cell);
     double hix = get_high_x(cell);
+    double delta_x = hix-lox;
     Check (lox >= 0.0);
     Check (hix >= 0.0);
 
@@ -589,6 +596,94 @@ Sphyramid_Mesh::sf_double Sphyramid_Mesh::sample_pos(int cell, rng_Sprng &random
     double hiy = hix*this->tan_beta;
     Check (loy >= 0.0);
     Check (hiy >= 0.0);
+
+    // calculate x-value of centroid
+    // in the future, a Sphyramid_Mesh member function may perfom this
+    double x_center = 4.*lox*lox+8.*lox*hix+12*hix*hix;
+    x_center       /= 4.*lox*lox+4.*lox*hix+4.*hix*hix;
+    x_center        = x_center*delta_x/4.+lox;
+    Check (x_center >= lox);
+    Check (x_center <= hix);
+
+    // calculate low and high values of the weighting function
+    double low_w  = center_value+slope[0]*(lox-x_center);
+    double high_w = center_value+slope[0]*(hix-x_center);
+
+    // check that weighting function is positive throughout the cell
+    Insist (low_w  >= 0, "Weighting function is negative!");
+    Insist (high_w >= 0, "Weighting function is negative!");
+
+    // >>> sample x position <<<
+
+    // calculate coefficients
+    double C1 = slope[0];
+    double C2 = low_w-C1*lox;
+    double C3 = 0.0;
+    double C4 = 0.0;
+
+    // calculate maximum value
+    double fmax = 0.0;
+    if (slope[0] > -low_w/(2.*lox+3.*delta_x))
+    {
+	// maximum is at hix
+	fmax=C1*pow(hix,3)+C2*pow(hix,2)+C3*hix+C4;
+    }
+    else if (lox <= 0.0 || slope[0] > -low_w/(2.*lox))
+    {
+	if (slope[0] < -2.*low_w/(lox+3.*delta_x))
+	{
+	    // local maximum
+	    double xmax = -(2./3)*C2/C1;
+	    fmax=C1*pow(xmax,3)+C2*pow(xmax,2)+C3*xmax+C4;
+	}
+	else
+	{
+	    // maximum at hix
+	    fmax=C1*pow(hix,3)+C2*pow(hix,2)+C3*hix+C4;
+	}
+    }
+    else if (slope[0] > -2.*low_w/lox)
+    {
+	if (slope[0] < -2.*low_w/(lox+3.*delta_x))
+	{
+	    // local maximum
+	    double xmax = -(2./3)*C2/C1;
+	    fmax=C1*pow(xmax,3)+C2*pow(xmax,2)+C3*xmax+C4;
+	}
+	else
+	{
+	    // maximum at hix
+	    fmax=C1*pow(hix,3)+C2*pow(hix,2)+C3*hix+C4;
+	}
+    }
+    else
+    {
+	// maximum at lox
+	fmax=C1*pow(lox,3)+C2*pow(lox,2)+C3*lox+C4;
+    }
+    Check (fmax > 0.0);
+
+    // sample x
+    position[0] = rtt_mc::sampler::sample_cubic(random, lox, hix, C1, C2, C3,
+						C3, fmax);
+
+    // sample y and z value
+    double pos_y =  position[0]*this->tan_beta;
+    double neg_y = -pos_y;
+    Check (pos_y >= loy);
+    Check (pos_y <= hiy);
+
+    position[1] = neg_y+random.ran()*(pos_y-neg_y);
+    position[2] = neg_y+random.ran()*(pos_y-neg_y);
+
+    // check that sampled position is within cell
+    Ensure (position[0] >= lox);
+    Ensure (position[0] <= hix);
+    Ensure (position[1] >=-tan_beta*position[0]);
+    Ensure (position[1] <= tan_beta*position[0]);
+    Ensure (position[2] >=-tan_beta*position[0]);
+    Ensure (position[2] <= tan_beta*position[0]);
+
 
     return position;
 }
