@@ -39,7 +39,8 @@ extern "C"
     extern void rage_imc_(int *, int *, int *, double *, int *, int *, int *, 
 			  int *, double *, double *, double *, double *, 
 			  double *, double *, double *, double *, double *, 
-			  int *, int *, double *, int *, int *, int *);
+			  int *, int *, double *, int *, int *, int *, 
+			  double *);
 }
 
 //---------------------------------------------------------------------------//
@@ -77,6 +78,7 @@ public:
 	const double *opacity_abs;
 	const double *tev;
 	const double *rev;
+	const double *t4_slope;
 	
       // variables
 	const int num_cells;
@@ -97,9 +99,9 @@ public:
       // constructor
 	Arguments(const double *, const int *, const int *, const int *,
 		  const int *, const double *, const double *, 
-		  const double *, const double *, const double *, int, int,
-		  int, double, double, double, double, int, int, double, int, 
-		  int, int, int);
+		  const double *, const double *, const double *, 
+		  const double *, int, int, int, double, double, double, 
+		  double, int, int, double, int, int, int, int);
     };
 
 private:
@@ -157,6 +159,10 @@ public:
     int get_seed() const { return arguments.seed; }
     int get_capacity() const { return 100000; }
     int get_cycle() const { return arguments.cycle; }
+
+  // T^4 slope comes from the interface here, we may need to work a more
+  // "uniform" method out for general cases and stand-alone
+    vector<vector<double> > get_t4_slope() const;
 
   // static functions to access in-between timestep variables
     static SP_Census get_census() { return host_census; }

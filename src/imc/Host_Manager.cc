@@ -126,10 +126,7 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
       // build the mat_state and opacity
 	mat_state = opacity_builder.build_Mat(mesh);
 	opacity   = opacity_builder.build_Opacity(mesh, mat_state);
-    }   
-    
-  // make a tally
-    tally = new Tally<MT>(mesh);
+    }
 
   // do the source initialization
     source_init = new Parallel_Source_Init<MT>(interface, mesh);
@@ -141,24 +138,24 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
     }
     else
     {
-      // initialize the source
-	IT::set_census(source_init->initialize
-		       (mesh, opacity, mat_state, rnd_con));
-		
       // make a communications buffer
 	buffer = new Particle_Buffer<PT>(*mesh, *rnd_con);
-	
-      // make a parallel_builder (TEMPORARY)
-      //     SP<Parallel_Builder<MT> > parallel_builder =
-      // 	new Parallel_Builder<MT>(*mesh, *source_init);
-      //     Check (parallel_builder->get_parallel_scheme() == "replication");
-      //     source = parallel_builder->send_Source(mesh, mat_state, rnd_con,
-      // 					   *source_init, *buffer);
-      //     Check (IT::get_census()->size() == 0);
 
-      // make sure tally and buffer are made
+      // initialize the source
+	source = source_init->initialize(mesh, opacity, mat_state, 
+					 rnd_con, *buffer);
+
+	cout << *opacity << endl;
+	cout << *source << endl;
+    
+      // make a tally
+	tally = new Tally<MT>(mesh);
+
+      // make sure tally, source, and buffer are made
 	Ensure (tally);
 	Ensure (buffer);
+	Ensure (source);
+	Ensure (IT::get_census()->size() == 0);
     }
 	
   // reclaim what memory we can
@@ -179,8 +176,9 @@ void Host_Manager<MT,BT,IT,PT>::initialize(const typename IT::Arguments &arg)
 template<class MT, class BT, class IT, class PT>
 void Host_Manager<MT,BT,IT,PT>::step_IMC()
 {
-    Require (!communicator);
-    
+  // <<<< HERE WE GO ON MONDAY >>>>
+  // <<<< MOTHERTRUCKER >>>>
+
     cerr << ">> Doing transport for cycle " << cycle
 	 << " on proc " << node() << " using full replication." << endl;
 

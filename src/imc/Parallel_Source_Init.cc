@@ -43,7 +43,8 @@ Parallel_Source_Init<MT,PT>::Parallel_Source_Init(SP<IT> interface,
       esstot(0), ecen(mesh), ecentot(0), ncen(mesh), ncentot(0), nvol(mesh),
       nss(mesh), nvoltot(0), nsstot(0), eloss_vol(0), eloss_ss(0),
       eloss_cen(0), ew_vol(mesh), ew_ss(mesh), ew_cen(mesh), volrn(mesh),
-      ssrn(mesh), cenrn(mesh), npwant(0)
+      ssrn(mesh), cenrn(mesh), t4_slope(mesh, interface->get_t4_slope()), 
+      npwant(0)
 {
     Require (interface);
     Require (mesh);
@@ -182,11 +183,12 @@ Parallel_Source_Init<MT,PT>::calc_initial_census(SP<MT> mesh,
 //---------------------------------------------------------------------------//
 // parallel source initializer
 
-template<class MT, class PT> SP<typename Particle_Buffer<PT>::Census>
+template<class MT, class PT> SP<Source<MT> > 
 Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh, 
 					SP<Opacity<MT> > opacity, 
 					SP<Mat_State<MT> > state, 
-					SP<Rnd_Control> rcontrol)
+					SP<Rnd_Control> rcontrol,
+					const Particle_Buffer<PT> &buffer)
 {
   // check to make sure objects exist on each processor
     Require (mesh);
@@ -224,11 +226,16 @@ Parallel_Source_Init<MT,PT>::initialize(SP<MT> mesh,
   // comb the census
     if (census->size() > 0)
 	comb_census(*mesh, *rcontrol); 
+    Check(ncentot == census->size());
 
-    Ensure (ncentot == census->size());
+  // build the source
+    SP<Source<MT> > source;
+    source = new Source<MT>(volrn, nvol, ew_vol, t4_slope, ssrn, nss, fss,
+			    ew_ss, *census, ss_dist, nvoltot, nsstot,
+			    rcontrol, buffer, state);
 
   // return combed census
-    return census;
+    return source;
 }
 
 //---------------------------------------------------------------------------//
@@ -973,7 +980,7 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
 	    nvol_send[nc]   = global_nvol[gcell-1];
 	    nss_send[nc]    = global_nss[gcell-1];
 	    ew_cen_send[nc] = global_ew_cen[gcell-1];
-	    ew_vol_send[nc] = global_ew_cen[gcell-1];
+	    ew_vol_send[nc] = global_ew_vol[gcell-1];
 	    ew_ss_send[nc]  = global_ew_ss[gcell-1];
 	    ssrn_send[nc]   = global_ssrn[gcell-1];
 	    volrn_send[nc]  = global_volrn[gcell-1];
@@ -1013,7 +1020,7 @@ void Parallel_Source_Init<MT,PT>::send_source_numbers(const MT &mesh)
 	nvol(nc)   = global_nvol[gcell-1];
 	nss(nc)    = global_nss[gcell-1];
 	ew_cen(nc) = global_ew_cen[gcell-1];
-	ew_vol(nc) = global_ew_cen[gcell-1];
+	ew_vol(nc) = global_ew_vol[gcell-1];
 	ew_ss(nc)  = global_ew_ss[gcell-1];
 	ssrn(nc)   = global_ssrn[gcell-1];
 	volrn(nc)  = global_volrn[gcell-1];

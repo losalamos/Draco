@@ -35,6 +35,7 @@
 #include "rng/Random.hh"
 #include "imc/Particle.hh"
 #include "imc/Particle_Buffer.hh"
+#include "imc/Source.hh"
 #include "ds++/SP.hh"
 #include <string>
 #include <vector>
@@ -115,6 +116,9 @@ private:
     typename MT::CCSF_int ssrn;
     typename MT::CCSF_int cenrn;
 
+  // T^4 slope for source
+    typename MT::CCVF_double t4_slope;
+
   // maximum number of cells capable of fitting on a processor
     int capacity;
 
@@ -180,8 +184,8 @@ public:
 				  SP<Mat_State<MT> >, SP<Rnd_Control>);
 
   // source initialyzer function
-    Census_SP initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
-			 SP<Rnd_Control>);
+    SP<Source<MT> > initialize(SP<MT>, SP<Opacity<MT> >, SP<Mat_State<MT> >, 
+			       SP<Rnd_Control>, const Particle_Buffer<PT> &); 
 
   // diagnostic functions
     void print(ostream &) const;
