@@ -42,13 +42,13 @@
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
 \refno{XTM-99-??? (U)}
-\subject{Template}
+\subject{Expression Engine Traits}
 
 %-------NO CHANGES
 \divisionname{Applied Theoretical \& Computational Physics Div.}
 \groupname{X-TM:Transport Methods Group}
 \fromms{Randy M. Roberts/XTM D409}
-\phone{(505)665--3677}
+\phone{(505)665--4285}
 \originator{rmr}
 \typist{rmr}
 \date{\today}
@@ -79,12 +79,14 @@
 
 \section{Introduction}
 
-In developing packages to be used with multiple host codes
+During the process of developing packages to be used with multiple host codes,
 we have discovered competing requirements.
 On the one hand we desire the host to supply containers (e.g.\ fields)
 that encapsulate the storage and communication facilities.
 On the other hand we would like services defined on those containers
 that may be unique to our packages.
+These services could include communications services, container-free hooks,
+etc.
 In order to use host-supplied containers that lack the desired services
 we would have to provide those additional services ourselves.
 
@@ -96,15 +98,15 @@ containers than anything that we would provide.
 
 The traditional way to handle such situations is through a traits class
 \cite{Austern99}\cite{Myers96}\cite{Furnish98}.
-If the services can be wrapped around a \emph{dumb} container then a traits
-class can be employed to do the wrapping.
-If the services are already provided by an \emph{enlightened} container then
+If the services can be wrapped around a \emph{dumb} container, then a traits
+class can be employed to leave the container unaffected.
+If the services are already provided by an \emph{enlightened} container, then
 a traits class that does nothing can be used to do no wrapping.
 
 \section{Expression Engine Traits}
 
 In this particular memo the desired services are that the containers
-be {\em expression enabled}, i.e.\ that they can be used in expression of the
+be {\em expression enabled}, i.e.\ that they can be used in expressions of the
 form
 \begin{equation}
   \label{eq:expression}
@@ -118,19 +120,19 @@ on containers.
 The \code{doit} function is templated on a
 \code{Container} type.
 It then creates and uses containers of this type within expressions.
-It uses the containers within expressions throug the use of
+It uses the containers within expressions through the use of
 the expression engine traits class, \code{ExpEngineTraits\tmpl{Container}}.
 
-The \code{main} function function calls
+The \code{main} function calls
 \code{doit()} with template arguments
 \code{std::vector\tmpl{double}} and \linebreak
 \code{UserVec\tmpl{double}}.
 The container \code{std::vector\tmpl{double}} does not provide expression
 services,
-while the container
-\code{UserVec\tmpl{double}} already provides expression
-services,
-yet \code{doit} treats both containers identically, through the traits
+whereas the container
+\code{UserVec\tmpl{double}} does provide expression
+services.
+In both cases \code{doit} treats the containers identically, through the traits
 class.
 
 The following file is \texttt{expTraits.cc}.
@@ -151,30 +153,30 @@ In our case we decided that the \emph{default} traits class would \emph{glom}
 our own expression template engine,
 \code{XM}, onto the container\cite{Furnish97}.
 If we wanted to use an \emph{enlightened} container with the \code{doit}
-function then we must override the default traits class with a \emph{specialized}
-traits class that would allow the enlightened behaviour of the class shine
-through.
+function, then we must override the default traits class with a \emph{specialized}
+traits class that would allow the enlightened behavior of the class to
+shine through.
 
 The default expression engine traits class contains a nested class,
 \code{ERCT}, that
 acts as an adaptor that wraps \code{XM} around a dumb random access
 container, \code{RCT}\cite{Austern99}\cite{Furnish98}.
-In a twist on the method used in \cite{Furnish98}
-the adaptor inherits from \code{RCT}, as well as
-the classes necessary to implement \code{XM}, 
-instead of containing a reference to the dumb random access container.
-This was developed in order to use nested class
+In a twist on the method used in reference \cite{Furnish98},
+the adaptor inherits from both \code{RCT}, and
+the classes necessary to implement \code{XM},
+instead of merely containing a reference to the dumb random access container.
+This twist was developed in order to use nested class
 references to the dumb random access instantiations as 
-if they were both expression enabled objects and the original objects.
+if they were both expression-enabled objects and the original objects.
 These nested class references would perform the expression activities \emph{on}
 instantiations of the dumb random access class.
 A typedef is provided for the nested class, \code{ExpEnabledContainer},
 though the nested class could have used the name instead.
-The reason for the typedef is to reveal the simularities in the traits
+The reason for the typedef is to reveal the similarities in the traits
 used for \emph{dumb} and \emph{enlightened} classes.
 
 The trait's static method, \code{Glom}, serves to convert an instance
-of the dumb random access container to a reference to the nested class.
+of the dumb random access container to a nested class reference.
 The references are then used in expressions as desired.
 
 The following file is \texttt{expTraits.hh}.
@@ -192,7 +194,7 @@ random access containers.
 \subsection{UserVec.hh}
 
 The following file is \texttt{UserVec.hh}.
-This defines a \emph{smart} container, \code{UserVec},
+This file defines a \emph{enlightened} container, \code{UserVec},
 that already has expressions enabled\cite{Furnish97}.
 
 \begin{ttfamily}
@@ -205,8 +207,9 @@ that already has expressions enabled\cite{Furnish97}.
 \subsection{UserVecTraits.hh}
 
 We want to use the \code{UserVec} class in expressions, just as we would use
-an  \emph{glommed dumb} container, without subverting the expression
-mechanism within \code{UserVec}.
+a \emph{glommed dumb} container.
+We want to do so without subverting the expression
+mechanism already within \code{UserVec}.
 To accomplish this goal we need to create a specialization of the
 \code{ExpEngineTraits} class.
 
@@ -216,7 +219,7 @@ on \code{UserVec\tmpl{T}}.
 
 This specialization of \code{ExpEngineTraits} defines the nested type,
 \code{ExpEnabledContainer}, to be merely the container itself, \code{UserVec}.
-The \code{Glom} method just returns a reference to a \code{UserVec},
+The \code{Glom} method simply returns a reference to a \code{UserVec},
 effecting a No-Op operation.
 
 \begin{ttfamily}
@@ -228,17 +231,18 @@ effecting a No-Op operation.
 
 \section{Putting it all together}
 
-When the \code{doit} function is invoked with a \emph{dumb} container, i.e.\ 
+When the \code{doit} function is invoked with a \emph{dumb} container,
+which is
 a container that has not had \code{ExpEngineTraits} specialized, then
 the default version of the \code{ExpEngineTraits} class is used to obtain
 the \code{ExpEnabledContainer} nested class and the \code{Glom} static method.
-The combination of these two entities serve to wrap the container in
+The combination of these two entities serves to wrap the container in
 an \code{XM} adaptor.
 The reference returned from \code{Glom} may be used within expressions, the
 results of which will affect the original container.
 
 When the \code{doit} function is invoked with an \emph{enlightened} container,
-i.e.\ 
+which is
 a container that has had \code{ExpEngineTraits} specialized, then
 the specialized version of the \code{ExpEngineTraits} class is used to obtain
 the \code{ExpEnabledContainer} nested class and the \code{Glom} static method.
