@@ -36,7 +36,15 @@ include ../config/make.lib
 notstlib := 1
 tstsrcs	:= $(wildcard tst*.cc)
 
+tstsrcs := $(tstsrcs:tstSort.cc=)
+
 include ../config/make.tests
+
+# Testing out some dejagnu support
+
+deja:
+	(cd testsuites; $(MAKE) links)
+	runtest --tool=ds++ --srcdir=./testsuites ENV=$(env)
 
 # And now documentation.
 
