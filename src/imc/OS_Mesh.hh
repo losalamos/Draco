@@ -31,6 +31,8 @@
 //  5)  4-14-98 : added get_vertex and get_cellpair to compliment get_Coord 
 //                and get_Layout; these functions are needed in
 //                Parallel_Builder 
+//  6)  5-14-98 : added overloaded operator== for Checks and design by
+//                contract purposes
 // 
 //===========================================================================//
 
@@ -39,11 +41,10 @@
 #include "imctest/Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <algorithm>
-#include <ostream>
 #include <cmath>
-#include <cassert>
 #include <iostream>
 #include <string>
 
@@ -202,6 +203,9 @@ public:
     int get_bndface(string, int) const;
     inline CCVF_a get_vertices(int, int) const;
     inline vector<double> sample_pos(string, int, Sprng &) const;
+
+  // overloaded operators
+    bool operator==(const OS_Mesh &) const;
 
   // End_Verbatim 
   // End_Doc 
@@ -388,7 +392,7 @@ inline OS_Mesh::CCVF_a OS_Mesh::get_vertices(int cell, int face) const
 
   // asserts
     for (int d = 0; d < coord->get_dim(); d++)
-	assert (ret_vert[0].size() == ret_vert[d].size());
+	Check (ret_vert[0].size() == ret_vert[d].size());
 
   // return vector of vertices
     return ret_vert;

@@ -8,9 +8,7 @@
 
 #include "imctest/OS_Mesh.hh"
 #include "imctest/Constants.hh"
-#include <iostream>
 #include <iomanip>
-#include <algorithm>
 
 IMCSPACE
 
@@ -27,18 +25,18 @@ OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_,
 {
   // assertions to verify size of mesh and existence of a Layout and
   // Coord_sys  
-    assert (coord);
+    Check (coord);
 	
   // variable initialization
     int ncells = num_cells();
     int dimension = coord->get_dim();
     
   // dimension assertions
-    assert (dimension == vertex.size());
-    assert (dimension == sur.size());
+    Check (dimension == vertex.size());
+    Check (dimension == sur.size());
     
   // mesh size assertions
-    assert (ncells == cell_pair.size());
+    Check (ncells == cell_pair.size());
       
   // calculate surface array
     calc_surface();
@@ -72,7 +70,7 @@ void OS_Mesh::calc_surface()
     }
 
   // assert mesh size
-    assert (num_cells() == mesh_size);
+    Check (num_cells() == mesh_size);
 }
 
 //---------------------------------------------------------------------------//
@@ -282,6 +280,14 @@ vector<int> OS_Mesh::get_surcells(string boundary) const
   // return vector
     return return_list;
 }
+
+//---------------------------------------------------------------------------//
+// Overloaded operators
+//---------------------------------------------------------------------------//
+
+bool OS_Mesh::operator==(const OS_Mesh &mesh)
+{
+  // check to see that we have the same coordinate systems
 
 //---------------------------------------------------------------------------//
 // public diagnostic member functions
