@@ -20,6 +20,9 @@ namespace Py
     typedef PyObject *(*CXXFunctionWithKeywords)
         (Object, Tuple *, Dict *);
 
+// Like Guido's PyMethodDef, but this one is for C++ functions of arbitrary
+// signature. 
+
     template<class FunctionSignature>
     struct CXXMethodDef {
         char *name;
@@ -28,16 +31,16 @@ namespace Py
 
         typedef FunctionSignature FS;
 
-//         CXXMethodDef() { assert(0); }
         CXXMethodDef( char *n, FunctionSignature m, char *d )
             : name(n), meth(m), doc(d) {}
     };
 
+// Like Guido's method object, but this one is for C++ functions with
+// arbitrary signature.
+
     template<class FunctionSignature>
     struct cxxmethodobject
-        :
-//         public PyObject
-        public PythonExtension< cxxmethodobject<FunctionSignature> >
+        : public PythonExtension< cxxmethodobject<FunctionSignature> >
     {
         CXXMethodDef<FunctionSignature> *md;
         PyObject *self;
@@ -51,8 +54,7 @@ namespace Py
 
         PyObject *invoke( PyObject *args )
         {
-//             cout << "Con't know how to invoke yet." << endl;
-//             return Nothing();
+        // Call the trampoline function.
             return (*(md->meth))( Object(self), Tuple(args) );
         }
     };
