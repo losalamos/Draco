@@ -15,7 +15,7 @@
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@
 
-# pacakage top source directory
+# package top source directory
 package_top_srcdir = @package_top_srcdir@
 
 # current directory: directory that make is actually in
