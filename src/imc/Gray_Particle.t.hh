@@ -676,6 +676,9 @@ void Gray_Particle<MT>::rw_transport(
 	    // set descriptor if particle goes to census
 	    if (to_census)
 		Base::descriptor = Base::CENSUS;
+
+	    // process the random walk absorption
+	    random_walk_event(rw_time, tally, xs);
 	}
 	else
 	{
@@ -702,8 +705,7 @@ void Gray_Particle<MT>::rw_transport(
 
 	case Base::RANDOM_WALK:
 
-	    // process the random walk absorption
-	    random_walk_event(rw_time, tally, xs);
+	    // we have already processed the event
 	    break;
 	
 	case Base::COLLISION:
@@ -817,8 +819,10 @@ void Gray_Particle<MT>::random_walk_event(
     const Opacity<MT,Gray_Frequency> &opacity)
 {
     // adjust weight of random walk particle
-    double exponent = -rtt_mc::global::c * 
-	opacity.get_sigeffscat(Base::cell) * rw_time;
+    double sigeff   = -opacity.get_sigma_abs(Base::cell) *
+	(1.0 - opacity.get_fleck(Base::cell)) * 
+	std::log(1.0 - opacity.get_fleck(Base::cell));
+    double exponent = -rtt_mc::global::c * sigeff * rw_time;
 
     // calculate weight factor
     double weight_factor = 0.0;
@@ -841,6 +845,13 @@ void Gray_Particle<MT>::random_walk_event(
     // tally random walk event
     tally.accum_n_random_walks();
 
+    // tally energy-weighted path-length
+    tally.accumulate_ewpl(Base::cell, delta_ew /
+			  opacity.get_sigeffabs(Base::cell));
+
+    // update the particle weight fraction
+    Base::fraction *= weight_factor;
+   
     // update particle energy weight
     Base::ew = new_ew;
 }
