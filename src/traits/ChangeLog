@@ -1,3 +1,18 @@
+2002-12-11  Thomas M. Evans  <tme@lanl.gov>
+
+	* traits: updated to 1_5_0.  Changed ContainterTraits so that it
+	was easier on compilers.  The conformal function in the default
+	template referenced an undefined symbol.  This was done on purpose
+	to make sure someone provided a specialization for a given type.
+	The problem is that some compilers (Compaq cxx) check templates
+	even though they are not compiled.  This IS a compiler error that
+	has been reported.  To rectify, I added the function BogusMethod
+	to the class template without defining it.  That way, cxx will
+	find a valid symbol, but it conformal is attempted to be
+	instantiated it will not find a definition for BogusMethod causing
+	a link-time error.  Not as good as a compiler time error, but ok
+	for now (until the compaq bug is fixed).
+
 2001-12-17  Thomas M. Evans  <tme@lanl.gov>
 
 	* traits: updated to version 1_4_0.  configure scripts removed and
