@@ -48,13 +48,13 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
   REAL err;     // max change in the flux from one iteration to the next
 
   Array3D p(nm,mm,8);           // spherical harmonics array
-  Array3D ct(it,jt,kt);         // the total cross section in each mesh cell
-  Array4D src(it,jt,kt,nm);     // the source in each cell for each moment
-  Array4D flux(it,jt,kt,nm);    // the scalar flux in each cell for each moment
-  Array3D pflux(it,jt,kt);      // both the previous flux and the relative
+  Array3D ct(jt,kt,it);         // the total cross section in each mesh cell
+  Array4D src(jt,kt,it,nm);     // the source in each cell for each moment
+  Array4D flux(jt,kt,it,nm);    // the scalar flux in each cell for each moment
+  Array3D pflux(jt,kt,it);      // both the previous flux and the relative
                                 //   change in the flux after each iteration
-  Array3D srcx(it,jt,kt);       // fixed source
-  Array4D sigs(it,jt,kt,isctp); // macroscopic differential scattering
+  Array3D srcx(jt,kt,it);       // fixed source
+  Array4D sigs(jt,kt,it,isctp); // macroscopic differential scattering
                                 //   cross section
 
 // allocate memory for local arrays
@@ -68,17 +68,20 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
   REAL *const weta   = new REAL [mm]; // sn constants
   REAL *const wtsi   = new REAL [mm]; // sn constants
 
+// set precision for output of floating point numbers
+
+  cout.precision(13);
+
 // initialize cross sections and source
 
+  for ( i=0 ; i < it ; i++ ) {
   for ( k=0 ; k < kt ; k++ ) {
   for ( j=0 ; j < jt ; j++ ) {
-  for ( i=0 ; i < it ; i++ ) {
-    srcx(i,j,k)     = 1.0;       // uniform fixed source
-    ct(i,j,k)       = 1.0;       // uniform total cross section
-    sigs(i,j,k,0)   = 0.5;       // scattering ratio (c) = 0.5
-    sigs(i,j,k,1)   = 0.0;       // isotropic
+    srcx(j,k,i)     = 1.0;    // uniform fixed source
+    ct(j,k,i)       = 1.0;    // uniform total cross section
+    sigs(j,k,i,0)   = 0.5;    // scattering ratio (c) = 0.5
     if (isct == 1)
-      sigs(i,j,k,1) = 3.0 * 0.2; // linear anisotropic (2l+1)mubar, l=1
+      sigs(j,k,i,1) = 0.6;    // linear anisotropic (2l+1)mubar, l=1
   } } }
 
 // define the Sn constants
@@ -170,29 +173,29 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
 
 // build the source, first add the fixed source to the isotropic scatter source
 
+    for ( i=0 ; i < it ; i++ ) {
     for ( k=0 ; k < kt ; k++ ) {
     for ( j=0 ; j < jt ; j++ ) {
-    for ( i=0 ; i < it ; i++ ) {
-      src(i,j,k,0) = srcx(i,j,k) + sigs(i,j,k,0) * flux(i,j,k,0);
+      src(j,k,i,0) = srcx(j,k,i) + sigs(j,k,i,0) * flux(j,k,i,0);
     } } }
 
 // now, compute the (linearly) anisotropic scattering components (also referred
 // to as higher source moments)
 
     for ( n=1 ; n < nm ; n++ ) {
+    for ( i=0 ; i < it ; i++ ) {
     for ( k=0 ; k < kt ; k++ ) {
     for ( j=0 ; j < jt ; j++ ) {
-    for ( i=0 ; i < it ; i++ ) {
-      src(i,j,k,n) = sigs(i,j,k,1) * flux(i,j,k,n);
+      src(j,k,i,n) = sigs(j,k,i,1) * flux(j,k,i,n);
     } } } }
 
 // save the previous scalar flux for use in the convergence test, and
 // re-initialize the current flux moments to zero
 
+    for ( i=0 ; i < it ; i++ ) {
     for ( k=0 ; k < kt ; k++ ) {
     for ( j=0 ; j < jt ; j++ ) {
-    for ( i=0 ; i < it ; i++ ) {
-      pflux(i,j,k) = flux(i,j,k,0);
+      pflux(j,k,i) = flux(j,k,i,0);
     } } }
 
     flux.Array4D_reinit(0.0);
@@ -211,27 +214,27 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
 // store the absolute relative difference between the current and previous
 // fluxes in pflux (in other words replace pflux values with relative error).
 
+    for ( i=0 ; i < it ; i++ ) {
     for ( k=0 ; k < kt ; k++ ) {
     for ( j=0 ; j < jt ; j++ ) {
-    for ( i=0 ; i < it ; i++ ) {
-      if (flux(i,j,k,0) != 0.0)
+      if (flux(j,k,i,0) != 0.0)
       {
-        pflux(i,j,k) = (flux(i,j,k,0) - pflux(i,j,k)) /
-                        flux(i,j,k,0);
-        pflux(i,j,k) = ( pflux(i,j,k) > 0.0 ) ? pflux(i,j,k) : -pflux(i,j,k);
+        pflux(j,k,i) = (flux(j,k,i,0) - pflux(j,k,i)) /
+                        flux(j,k,i,0);
+        pflux(j,k,i) = ( pflux(j,k,i) > 0.0 ) ? pflux(j,k,i) : -pflux(j,k,i);
       }
       else
-        pflux(i,j,k) = 0.0;
+        pflux(j,k,i) = 0.0;
     } } }
 
 // find the maximum relative error
 
     err = 0.0;
 
+    for ( i=0 ; i < it ; i++ ) {
     for ( k=0 ; k < kt ; k++ ) {
     for ( j=0 ; j < jt ; j++ ) {
-    for ( i=0 ; i < it ; i++ ) {
-      if ( err < pflux(i,j,k) ) err = pflux(i,j,k);
+      if ( err < pflux(j,k,i) ) err = pflux(j,k,i);
     } } }
       
 // print iteration/error information and test for convergence
@@ -253,10 +256,10 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
 
   fsum = 0.0;
 
+  for ( i=0 ; i < it ; i++ ) {
   for ( k=0 ; k < kt ; k++ ) {
   for ( j=0 ; j < jt ; j++ ) {
-  for ( i=0 ; i < it ; i++ ) {
-    fsum += flux(i,j,k,0);
+    fsum += flux(j,k,i,0);
   } } }
 
 // print out the total scalar flux and the leakages from each face
@@ -286,7 +289,7 @@ void inner( int it,     int jt,    int kt,     int mm,    int nm,
       cout << "component number " << n << endl;
       for ( j=jt-1 ; j > -1 ; j-- )            {
       for ( i=0 ; i < it ; i++ )
-        cout << " " << flux(i,j,k,n);
+        cout << " " << flux(j,k,i,n);
       cout << endl;
   } } } }
 

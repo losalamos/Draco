@@ -69,12 +69,11 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
   REAL sif;                   // temp holder for phik during set-to-zero fixup
 
   Array2D phii(jt,kt);        // temp angular flux for the left face of a cell
-  Array3D phi(it*mm*2,jt,kt); // cell centered angular flux
-  Array3D sigt(jt,kt,it);     // total macroscopic cross section, rearranged
+  Array3D phi(jt,kt,it*mm*2); // cell centered angular flux
   Array3D fh_i(jt,kt,2);      // left and right leakages (horizontal,x-axis)
   Array3D fv_i(kt,it,2);      // bottom and top leakages (vertical  ,y-axis)
   Array3D fz_i(jt,it,2);      // front and back leakages (in-out    ,z-axis)
-  Array4D dlinv(it,jt,kt,mm); // a factor in the balance equation, which is
+  Array4D dlinv(jt,kt,it,mm); // a factor in the balance equation, which is
                               //   pre-calculated outside of the loop over
                               //   quadrants, for efficiency
 
@@ -86,7 +85,6 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
   REAL *const hj   = new REAL [jt]; // 2.0 / dy (a commonly used factor)
   REAL *const hk   = new REAL [kt]; // 2.0 / dz (a commonly used factor)
 
- 
 // Set boundary array dimensions based on boundary condition.
  
   if (ibb == 1)
@@ -116,18 +114,7 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
   fv_i.Array3D_reinit(0.0);
   fz_i.Array3D_reinit(0.0);
 
-// Rearrange cross sections so that cache reuse should be more prevalent. This
-// requires storing them in (j,k,i) order because the sweeps are ordered in that
-// way, as we will describe in detail later.
-
-  for ( k=0 ; k < kt ; k++ ) {
-  for ( j=0 ; j < jt ; j++ ) {
-  for ( i=0 ; i < it ; i++ )
-    sigt(j,k,i) = ct(i,j,k);
-  } }
-
-// Pre-calculate commonly used factors outside of the loops for efficiency. As
-// we have done above for sigt, dlinv is stored in (j,k,i).
+// Pre-calculate commonly used factors outside of the loops for efficiency.
 
   itmm = it * mm;
 
@@ -142,9 +129,9 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
   for ( i=0 ; i < it ; i++ ) {
   for ( k=0 ; k < kt ; k++ ) {
   for ( j=0 ; j < jt ; j++ )
-    dlinv(j,k,i,m) = 1.0 / ( sigt(j,k,i)  +  mu[m] * hi[i]
-                                          + eta[m] * hj[j]
-                                          + tsi[m] * hk[k] );
+    dlinv(j,k,i,m) = 1.0 / ( ct(j,k,i)  +  mu[m] * hi[i]
+                                        + eta[m] * hj[j]
+                                        + tsi[m] * hk[k] );
   } } }
 
 //******************************************************************************
@@ -232,15 +219,13 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
       c1 = p(n,m,iq);
       c2 = p(n,m,iqp);
 
+      for ( i=0 ; i < it ; i++ ) {
       for ( k=0 ; k < kt ; k++ ) {
       for ( j=0 ; j < jt ; j++ ) {
+        phi(j,k,i+nk1) += src(j,k,i,n) * c1;
+        phi(j,k,i+nk2) += src(j,k,i,n) * c2;
+      } } }
 
-        for ( i=0 ; i < it ; i++ )
-          phi(i+nk1,j,k) += src(i,j,k,n) * c1;
-        for ( i=0 ; i < it ; i++ )
-          phi(i+nk2,j,k) += src(i,j,k,n) * c2;
-
-      } }
     } }
 
 //******************************************************************************
@@ -332,16 +317,16 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
           for ( k=klow ; k != (khigh+kshift) ; k += kshift ) {
           for ( j=jlow ; j != (jhigh+jshift) ; j += jshift ) {
 
-            ql = phi(iz,j,k) +
+            ql = phi(j,k,iz) +
                  mu [mz] * phii(j,k) * hi[i] +
                  eta[mz] * phij[k]   * hj[j] +
                  tsi[mz] * phik[j]   * hk[k];
 
-            phi(iz,j,k) = ql * dlinv(j,k,i,mz);
+            phi(j,k,iz) = ql * dlinv(j,k,i,mz);
 
-            phii(j,k) = 2.0 * phi(iz,j,k) - phii(j,k);
-            phij[k]   = 2.0 * phi(iz,j,k) - phij[k];
-            phik[j]   = 2.0 * phi(iz,j,k) - phik[j];
+            phii(j,k) = 2.0 * phi(j,k,iz) - phii(j,k);
+            phij[k]   = 2.0 * phi(j,k,iz) - phij[k];
+            phik[j]   = 2.0 * phi(j,k,iz) - phik[j];
 
           } }
         }
@@ -353,20 +338,20 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
           for ( k=klow ; k != (khigh+kshift) ; k += kshift ) {
           for ( j=jlow ; j != (jhigh+jshift) ; j += jshift ) {
 
-            ql = phi(iz,j,k) +
+            ql = phi(j,k,iz) +
                  mu [mz] * phii(j,k) * hi[i] +
                  eta[mz] * phij[k]   * hj[j] +
                  tsi[mz] * phik[j]   * hk[k];
-            dl = sigt(j,k,i) + 
+            dl = ct(j,k,i) + 
                  mu [mz] * hi[i] +
                  eta[mz] * hj[j] +
                  tsi[mz] * hk[k];
 
-            phi(iz,j,k) = ql * dlinv(j,k,i,mz);
+            phi(j,k,iz) = ql * dlinv(j,k,i,mz);
 
-            sih = 2.0 * phi(iz,j,k) - phii(j,k);
-            siv = 2.0 * phi(iz,j,k) - phij[k];
-            sif = 2.0 * phi(iz,j,k) - phik[j];
+            sih = 2.0 * phi(j,k,iz) - phii(j,k);
+            siv = 2.0 * phi(j,k,iz) - phij[k];
+            sif = 2.0 * phi(j,k,iz) - phik[j];
 
 // Test for negative fluxes, if found, adjust temporary value holders,
 // ql and dl, to account for setting the appropriate negative flux to
@@ -381,11 +366,11 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
               ql -= 0.5 * mu[mz] * phii(j,k) * hi[i];
               dl -= mu[mz] * hi[i];
 
-              phi(iz,j,k) = ql / dl;
+              phi(j,k,iz) = ql / dl;
 
               sih = 0.0;
-              if ( siv != 0.0 ) siv = 2.0 * phi(iz,j,k) - phij[k];
-              if ( sif != 0.0 ) sif = 2.0 * phi(iz,j,k) - phik[j];
+              if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij[k];
+              if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik[j];
             }
 
             if ( siv < 0.0 )
@@ -393,11 +378,11 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
               ql -= 0.5 * eta[mz] * phij[k] * hj[j];
               dl -= eta[mz] * hj[j];
 
-              phi(iz,j,k) = ql / dl;
+              phi(j,k,iz) = ql / dl;
 
               siv = 0.0;
-              if ( sif != 0.0 ) sif = 2.0 * phi(iz,j,k) - phik[j];
-              if ( sih != 0.0 ) sih = 2.0 * phi(iz,j,k) - phii(j,k);
+              if ( sif != 0.0 ) sif = 2.0 * phi(j,k,iz) - phik[j];
+              if ( sih != 0.0 ) sih = 2.0 * phi(j,k,iz) - phii(j,k);
 
               goto neg_flux;
             }
@@ -407,11 +392,11 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
               ql -= 0.5 * tsi[mz] * phik[j] * hk[k];
               dl -= tsi[mz] * hk[k];
 
-              phi(iz,j,k) = ql / dl;
+              phi(j,k,iz) = ql / dl;
 
               sif = 0.0;
-              if ( sih != 0.0 ) sih = 2.0 * phi(iz,j,k) - phii(j,k);
-              if ( siv != 0.0 ) siv = 2.0 * phi(iz,j,k) - phij[k];
+              if ( sih != 0.0 ) sih = 2.0 * phi(j,k,iz) - phii(j,k);
+              if ( siv != 0.0 ) siv = 2.0 * phi(j,k,iz) - phij[k];
 
               goto neg_flux;
             }
@@ -511,10 +496,10 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
       nk1 = m * it;
       nk2 = nk1 + itmm;
 
+      for ( i=0 ; i < it ; i++ ) {
       for ( k=0 ; k < kt ; k++ ) {
-      for ( j=0 ; j < jt ; j++ ) {
-      for ( i=0 ; i < it ; i++ )
-        flux(i,j,k,0) += w[m]*(phi(i+nk1,j,k) + phi(i+nk2,j,k));
+      for ( j=0 ; j < jt ; j++ )
+        flux(j,k,i,0) += w[m]*(phi(j,k,i+nk1) + phi(j,k,i+nk2));
       } }
     }
 
@@ -526,10 +511,10 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
       c1  = w[m] * p(n,m,iq);
       c2  = w[m] * p(n,m,iqp);
 
+      for ( i=0 ; i < it ; i++ ) {
       for ( k=0 ; k < kt ; k++ ) {
-      for ( j=0 ; j < jt ; j++ ) {
-      for ( i=0 ; i < it ; i++ )
-        flux(i,j,k,n) += c1*phi(i+nk1,j,k) + c2*phi(i+nk2,j,k);
+      for ( j=0 ; j < jt ; j++ )
+        flux(j,k,i,n) += c1*phi(j,k,i+nk1) + c2*phi(j,k,i+nk2);
       } }
 
     } }
@@ -559,8 +544,8 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
 
   } }
 
-  for ( k=0 ; k < kt ; k++ ) {
   for ( i=0 ; i < it ; i++ ) {
+  for ( k=0 ; k < kt ; k++ ) {
 
     fv_i(k,i,0) *= 4.0 / (hi[i] * hk[k]);
     fv_i(k,i,1) *= 4.0 / (hi[i] * hk[k]);
@@ -569,8 +554,8 @@ void sweep3d (       int it,    int jt,  int kt,     int mm,  int nm,
 
   } }
 
-  for ( j=0 ; j < jt ; j++ ) {
   for ( i=0 ; i < it ; i++ ) {
+  for ( j=0 ; j < jt ; j++ ) {
 
     fz_i(j,i,0) *= 4.0 / (hi[i] * hj[j]);
     fz_i(j,i,1) *= 4.0 / (hi[i] * hj[j]);
