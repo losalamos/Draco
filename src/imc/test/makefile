@@ -27,9 +27,9 @@ ifeq ($(tst),b)
 srcs += testb.cc
 endif
 
-# 64-bit build test
-ifeq ($(tst),64)
-srcs += ts64.cc
+# more parallelism
+ifeq ($(tst),a)
+srcs += testa.cc
 endif
 
 ifdef preinstantiate
