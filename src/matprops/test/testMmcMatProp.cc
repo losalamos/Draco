@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include <fstream>
-#include <strstream>
+#include <sstream>
 #include "matprops/test/testMmcMatProp.hh"
 #include <list>
 #include <vector>
@@ -88,7 +88,7 @@ void testMmcMatProp::execute_test()
     std::vector<FifiMatPropsReader::MaterialDefinition> mats(nmat_prob);
     for (int imat = 0; imat<nmat_prob; imat++)
     { 
-	std::ostrstream os;
+	std::ostringstream os;
 	os << "Material" << imat+1 << std::ends;
 	double abar = 10.0*(imat+1);
 	mats[imat] = FifiMatPropsReader::MaterialDefinition(os.str(),
@@ -700,7 +700,7 @@ void testMmcMatProp::execute_test()
     std::cout << " --- End Multi-Material Cell Tests ---" << std::endl;    
     std::cout << std::endl;
 
-}   
+}
 
 //
 //---------------------------------------------------------------------------//
