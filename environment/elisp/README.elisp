@@ -12,19 +12,17 @@ elisp directory to your XEmacs load path and then load the
 ccs4defaults library.
 
 In ~/.xemacs/init.el add the following elisp.  You should replace the
-path to the elisp directory with the real path on your current
-machine.  The value shown below works on the CCS-4 Linux LAN.
+path to the Draco elisp directory with the real path on your current
+machine.  The value shown below assumes that you have Draco checked
+out in your home space.  
 
-(setq ccs4-env-dir "/codes/radtran/vendors/environmnet/")
-(setq ccs4-elisp-dir (concat ccs4-env-dir "elisp/"))
-(if (file-accessible-directory-p ccs4-elisp-dir)
-    (setq load-path (cons ccs4-elisp-dir load-path)))
-(require 'ccs4defaults)
+;; Load Draco Elisp files
+(load-library "~/draco/environment/elisp/ccs4defaults.el")
 
-Active Elisp Features
-=============================
-
-
+It is recommended that you compile the .el files for better XEmacs
+performance.  Simply run the script "./compile-elisp".  If you have a
+lot of elisp commands in your ~/.xemacs directory, you may want to
+compile those files too.
 
 Retired Elisp Features
 ==============================
@@ -33,6 +31,8 @@ nml-mode
 
 Useful Keybindings
 ==============================
+
+* Get a list of current keybindings by issuing the command "C-h b".
 
 C-x C-f  Open new file or directory.  For example I type C-x C-f cap
          [tab] [enter] to open a directory listing of my capsaicin
@@ -44,24 +44,40 @@ C-x 1    Force the current buffer to occupy the entire frame
          (unsplit). 
 C-x 0    Remove the current buffer from being displayed in the current
          frame. 
-F1       Compile.  The compile command can be modified in the command
+
+f1       Compile.  The compile command can be modified in the command
          window before execution.  You can middle-click on compile
          errors to visit the source. 
+
 M-x shell Open a command window running $SHELL.
-C-h b    Show key bindings for current buffer.
 C-h k <key sequence> Provides a description of the XEmacs command
          bound to <key sequence> 
+
 C-mouse1 Popup a buffer menu.
 C-mouse2 Popup a mode menu.
+
 M-g      goto line
 C-M-g    what line
+
+f7       save and kill buffer
+C-f7     kill buffer
+S-f7     delete this window
+
 C-S-f8   find companion file (.cc <-> .hh)
+f8       previous buffer
+
 f5       Insert function documentation block
 S-C-f5   Insert class documentation block    
+C-Sh-f5  add-change-log-entry
 f6       Insert comment divider
+
+
 f9       CVS Examine
 S-f9     CVS status
 C-f9     CVS checkout
+
+f11      grep find
+C-f11    speedbar
 
 See Config-key.el for more.
   
