@@ -366,10 +366,10 @@ void Particle_Buffer<PT>::post_arecv(Comm_Buffer &buffer, int proc) const
 }
 
 //---------------------------------------------------------------------------//
-// post waits on the receives to fill up a Comm_Buffer
+// post waits on the receives and sends to fill up a Comm_Buffer
 
 template<class PT> void 
-Particle_Buffer<PT>::arecv_buffer(Comm_Buffer &buffer) const
+Particle_Buffer<PT>::async_wait(Comm_Buffer &buffer) const
 {
   // wait on recieve buffers to make sure they are full
     buffer.comm_n.wait();
@@ -379,10 +379,10 @@ Particle_Buffer<PT>::arecv_buffer(Comm_Buffer &buffer) const
 }
 
 //---------------------------------------------------------------------------//
-// check to see if our ship has come in
+// check to see if our ship has come in or gone out
 
 template<class PT>
-bool Particle_Buffer<PT>::check_arecv(Comm_Buffer &buffer, int proc) const
+bool Particle_Buffer<PT>::async_check(Comm_Buffer &buffer) const
 {
   // check to see if the buffers have been received
     if (!buffer.comm_n.complete())
@@ -396,6 +396,21 @@ bool Particle_Buffer<PT>::check_arecv(Comm_Buffer &buffer, int proc) const
 
   // all the buffers have been received
     return true;
+}
+
+//---------------------------------------------------------------------------//
+// free the Comm_Buffer
+
+template<class PT>
+void Particle_Buffer<PT>::async_free(Comm_Buffer &buffer) const
+{
+  // free the C4_Req objects from Async posts, note that these must be
+  // reassigned with a post request before they can be received or tested
+  // (async_wait() and async_check())
+    buffer.comm_n.free();
+    buffer.comm_d.free();
+    buffer.comm_i.free();
+    buffer.comm_c.free();
 }
 
 //---------------------------------------------------------------------------//

@@ -23,6 +23,8 @@
 //  2)  6-11-98 : moved the buffer sizes into Particle_Buffer as private:
 //                static variables, they can only be accessed by accessor
 //                functions from the outside
+//  3)  7-30-98 : add free_arecv function to free Comm_Buffers that are
+//                waiting on an async receive
 //
 //===========================================================================//
 
@@ -196,8 +198,9 @@ public:
   // async
     void asend_buffer(Comm_Buffer &, int) const;
     void post_arecv(Comm_Buffer &, int) const;
-    void arecv_buffer(Comm_Buffer &) const;
-    bool check_arecv(Comm_Buffer &, int) const;
+    void async_wait(Comm_Buffer &) const;
+    bool async_check(Comm_Buffer &) const;
+    void async_free(Comm_Buffer &) const;
 
   // accessor functions
     int get_dsize() const { return dsize; } 
