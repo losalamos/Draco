@@ -183,6 +183,15 @@ inline double polylog_series_minus_one_planck(double x)
 
     for (int i = 1; i <= 10; i++)
     {
+
+    // kgbudge (030827):  The original loop code, which was slower but more
+    // transparent, was:
+    //
+    // li1 += std::exp(-i * x) / i;
+    // li2 += std::exp(-i * x) / (i*i);
+    // li3 += std::exp(-i * x) / (i*i*i);
+    // li4 += std::exp(-i * x) / (i*i*i*i);
+
 	eixp *= eix;
 	double eixr = eixp;
 	li1 += (eixr /= i);

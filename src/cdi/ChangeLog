@@ -1,3 +1,8 @@
+2003-08-27  Kent Budge  <kgbudge@tresosos.lanl.gov>
+
+	* CDI.cc: Modified the polylog evaluation of the Planck integral
+	to make it considerably faster, at least on Linux platforms.
+
 2003-07-18  Thomas M. Evans  <tme@lanl.gov>
 
 	* CDI.hh, CDI.cc: committed P. Batcho's Rosseland integrator
