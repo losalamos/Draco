@@ -60,7 +60,7 @@ int main( int argc, char *argv[] )
     v.push_back( 100000 );
     v.push_back( 1000000 );
 
-    int niters = 100;
+    int niters = 25;
 
     C4::Init( argc, argv );
 
