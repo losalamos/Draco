@@ -88,9 +88,17 @@ def get_dependencies(file, draco_dep):
                   re.search('#include\s*\"([0-9A-Za-z+_]*)\/+([0-9A-Za-z_+.]*.\w*)\s*\"',
                             line)
 
+        # check for bracket stuff
+        dep_match_bracket = \
+                  re.search('#include\s*<([0-9A-Za-z+_]*)\/+([0-9A-Za-z_+.]*.\w*)\s*>',
+                            line)
+
         # if match store it
         if dep_match:
             dep = dep_match.group(1) + '::' + dep_match.group(2)
+            draco_dep.append(dep)
+        elif dep_match_bracket:
+            dep = dep_match_bracket.group(1) + '::' + dep_match_bracket.group(2)
             draco_dep.append(dep)
 
 ##---------------------------------------------------------------------------##
