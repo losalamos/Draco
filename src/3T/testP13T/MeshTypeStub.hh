@@ -10,6 +10,7 @@
 #define __3T_testP13T_MeshTypeStub_hh__
 
 #include "ds++/SP.hh"
+#include "traits/ContainerTraits.hh"
 
 #include <iostream>
 
@@ -41,11 +42,15 @@ class MeshTypeStub
     
     struct scalar
     {
+	typedef const double *const_iterator;
+	typedef double *iterator;
+	typedef double value_type;
+
 	double val;
 	SP<MeshTypeStub> spmesh;
 	
-	scalar(const SP<MeshTypeStub> &spmesh_)
-	    : spmesh(spmesh_), val(0.0)
+	scalar(const SP<MeshTypeStub> &spmesh_, double val_=0.0)
+	    : spmesh(spmesh_), val(val_)
 	{
 	    // empty
 	}
@@ -53,6 +58,23 @@ class MeshTypeStub
 	scalar &operator=(double rhs) { val = rhs; return *this;}
 
 	int size() const { return 1; }
+
+	iterator begin()
+	{
+	    return &val;
+	}
+	const_iterator begin() const
+	{
+	    return &val;
+	}
+	iterator end()
+	{
+	    return &val+1;
+	}
+	const_iterator end() const
+	{
+	    return &val+1;
+	}
     };
     
     typedef scalar ccsf;
@@ -114,6 +136,34 @@ inline std::ostream &operator<<(std::ostream &os,
 {
     return os << rop.val;
 }
+
+template <>
+class ContainerTraits<MeshTypeStub::scalar>
+{
+  public:
+    typedef const double *const_iterator;
+    typedef double *iterator;
+    static inline iterator begin(MeshTypeStub::scalar &a)
+    {
+	return a.begin();
+    }
+    static inline const_iterator begin(const MeshTypeStub::scalar &a)
+    {
+	return a.begin();
+    }
+    static inline iterator end(MeshTypeStub::scalar &a)
+    {
+	return a.end();
+    }
+    static inline const_iterator end(const MeshTypeStub::scalar &a)
+    {
+	return a.end();
+    }
+    static inline bool conformal(MeshTypeStub::scalar a, MeshTypeStub::scalar b)
+    {
+	return true;
+    }
+};
 
 END_NS_XTM  // namespace XTM
 

@@ -46,11 +46,11 @@ class testP13T
     typedef InterpedMaterialProps MP;
     typedef DiffusionSolverStub<MT> DS;
     
-    typedef P13T<MT,MP,DS> P13TStub;
+    typedef P13T<MT,MP,DS> P13T;
     
     // DATA
 
-    SP< P13T<MT,MP,DS> > spP13T;
+    SP< P13T > spP13T;
     
   public:
 

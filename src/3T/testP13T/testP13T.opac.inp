@@ -1,0 +1,23 @@
+* Test deck to mimic values from dante.inp
+
+material
+       1
+tgrid
+  1 2.0
+rgrid
+  1.e-06 1.e+06
+hnugrid
+  1.e-06 1.e+06
+eelect
+  1.0e+6 1.0e+6 2.0e+6 2.0e+6
+enuc
+  1.0e+6 1.0e+6 2.0e+6 2.0e+6
+tfree
+  1.0 1.0 1.0 1.0
+ramg
+0.028285 0.028285 0.028285 0.028285
+rsmg
+0.028285 0.028285 0.028285 0.028285
+rsmg1
+0.0141425 0.0141425 0.0141425 0.0141425
+

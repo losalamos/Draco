@@ -9,7 +9,7 @@
 #include "3T/testP13T/testP13T.hh"
 #include "ds++/Assert.hh"
 
-#include <stdexcep>
+#include <stdexcept>
 #include <iostream>
 using std::cerr;
 using std::endl;
