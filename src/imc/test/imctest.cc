@@ -13,7 +13,6 @@
 #include "imc/IMC_Man.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
-#include <time.h>
 #include <iostream>
 #include <iomanip>
 
