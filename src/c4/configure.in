@@ -26,15 +26,6 @@ dnl DRACO SETUP
 AC_RUNTESTS(tBSwap tReduce tgsync, 1 2 3 4 5 6 7 8)
 AC_DRACO_ENV
 
-# turn off the strict flag if running shmem
-
-if test "$with_c4" = shmem ; then
-   STRICTFLAG=""
-   if test "$CXX" = KCC ; then
-      LDFLAGS="${LDFLAGS} --static_libKCC"
-   fi
-fi
-
 AC_OUTPUT(Makefile:../../config/Makefile.package.in \
           test/Makefile:../../config/Makefile.test.in)
 
