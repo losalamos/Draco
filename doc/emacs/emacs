@@ -2,161 +2,150 @@
 ;;---------------------------------------------------------------------------;;
 ;; .emacs
 ;; Thomas Evans
-;; Feb. 1999
+;; Feb. 1999 
+;; Revised by K. Thompson (Sept. 2001)
 ;;---------------------------------------------------------------------------;;
 ;; Options file for XEMACS
-;;---------------------------------------------------------------------------;;
-;; Time-stamp: <99/02/22 10:02:36 tme>
 ;;---------------------------------------------------------------------------;;
 
 ;;---------------------------------------------------------------------------;;
 ;; on message
 
-(message "reading .emacs")
+(message "Evaluating .emacs...")
 
 ;;---------------------------------------------------------------------------;;
 ;; set home directory and my elisp path
 
-(setq my-home-dir (getenv "HOME"))
-(setq my-elisp-dir (concat my-home-dir "/lib/elisp"))
-(setq load-path (cons my-elisp-dir load-path))
+(setq my-home-dir (concat (getenv "HOME") "/"))
+(setq my-elisp-dir (concat my-home-dir "lib/elisp/"))
+(setq my-templates-dir (concat my-elisp-dir "templates/"))
 
-(setq my-info-dir (concat my-home-dir "/info"))
-
-;;---------------------------------------------------------------------------;;
-;; time stamp added to write file hook
-
-(add-hook 'write-file-hooks 'time-stamp t)
+(if (file-accessible-directory-p my-elisp-dir) 
+    (setq load-path (cons my-elisp-dir load-path)))
+(if (file=accessible-directory-p (concat my-elisp-dir "info/"))
+    (setq my-info-dir (concat my-elisp-dir "info/"))
 
 ;;---------------------------------------------------------------------------;;
-;; load the RTT and TME stuff for XTM development
+;; load the RTT, DRACO and TME stuff for CCS-4 development
 ;;---------------------------------------------------------------------------;;
 
 ;;
-;; load draco-rtt, this contains most of the emacs function defs that we
-;; use
+;; Draco configuration (nil is the default for all options)
+;; We don't want the pooma indentation style by default.
 ;;
 
-(load "draco-rtt")
-
-;; we don't want the pooma indentation style by default
-;; (setq want-pooma-style-by-default t)
+(setq want-pooma-style-by-default  nil 
+      want-rtt-menu                t)
 
 ;;
-;; Turn on the language modes that are defined in Config-pkg.el
+;; Turn on the language modes that are defined in Config-pkg.el.
+;; We may only need to configure a few of them.
 ;;
 
-(setq config-pkg-verbose t)
+(setq config-pkg-verbose           nil
+      config-pkg-colorize-modeline nil
 
-(setq want-mppl-mode t)
-(setq want-tcl-mode t)
-(setq want-python-mode t)
-(setq want-nml-mode t)
-(setq want-makefile-mode t)
-(setq want-cc-mode t)
-(setq want-auctex-pkg t)
-(setq want-f90-mode t)
-(setq want-fortran-mode t)
-
-(load "Config-pkg")
-
-;;
-;; Compiling using M-x compile, set gmake as the default make
-;; 
-
-(setq compile-command "gmake")
+      want-mppl-mode     t
+      want-tcl-mode      t
+      want-python-mode   t
+      want-nml-mode      t
+      want-makefile-mode t
+      want-cc-mode       t
+      want-auctex-pkg    t
+      want-f90-mode      t
+      want-fortran-mode  t)
 
 ;;
-;; Now configure various keybindings.
+;; Load the Draco-rtt elisp packages:
+;;
+; 1. This will load fl-keywords, rtt-hacks, tme-hacks, and
+;    draco-hacks. (rtt-hacks will load pooma-hacks and
+;    infer-cc-style) 
+; 2. If want-rtt-menu is t then we load rtt-menu, 
+;    Config-pkg (You must have all of of the config-pkg
+;    values alredy set!) and dante-macros.
 ;;
 
-;; load config-key.el
-(load "Config-key")
+(require 'draco-rtt)
 
-;; not sure what all this does; however, it does load the key-settings 
-;; in xemacs-setup
-(defvar is-xemacs (string-match "XEmacs" emacs-version)
-  "*Set to t if using XEmacs")
+;;
+;; Set auto-mode-alist and autoload font-lock modes
+;;
+;  1. if want-nml-mode is t then this package will load
+;     nml-mode.el 
+;  2. if want-mppl-mode is t then this package will load
+;     mppl-mode.el 
+;;
 
-(if is-xemacs
-    (load "xemacs-setup")
-  (load "fsf-setup"))
+(require 'Config-pkg)
 
-;; load tme's keys
-(load "tme-keys")
+;;
+;; Linux keyboard hacks from J. Furnish
+;;
 
-;;---------------------------------------------------------------------------;;
+; (load-library "Config-key")  
+
+;;
+;; Lots of misc configuration setup
+;; key-bindings, new-XXX-file commands, mode-hooks (font-lock)
+;;
+
+(load-library "xemacs-setup")
+
+;;
 ;; SOME ADDITIONAL CUSTOMIZATIONS
-;;---------------------------------------------------------------------------;;
-
+;; ===============================
 ;;
-;; set default mode
-;; 
+
+;
+; set default mode
+; 
 
 (setq default-major-mode 'text-mode)
 (setq make-backup-files t)
 
-;;
-;; Some stuff for using GNUS, a fantastic newsreader.
-;;
+;
+; Compile-mode
+;
+(setq compile-command "gmake")
+(add-hook 'compilation-mode-hook 
+	  '(lambda ()
+	     (setq truncate-lines nil)))
 
-(autoload 'gnus "gnus" "Read network news." t)
-(autoload 'gnus-post-news "gnuspost" "Post a new news." t)
-(setq gnus-select-method '(nntp "newshost.lanl.gov"))
+;
+; CVS stuff
+;
 
-(defvar mail-yank-prefix "> "
-  "*Prefix insert on lines of yanked message being replied to.
-nil means use indentation.")
+(setq cvs-program "/usr/bin/cvs")
+(global-set-key "\M-c" 'cvs-update)
 
-;;
-;; CVS stuff
-;;
-
-(setq cvs-program "/usr/local/gnu/bin/cvs")
-(global-set-key "\M-c" 'cvs-update)   ; run the CVS update facility.
-
-;;
-;; Minibuffer
-;;
+;
+; Minibuffer
+;
 
 (setq minibuffer-max-depth nil)
 
-;;---------------------------------------------------------------------------;;
-;; OPTIONS MENU STUFF
-;;---------------------------------------------------------------------------;;
+;
+; Uniquify
+;
+; Force emacs to present the file path in addition to the file name
+; when there is more than one buffer with the same name.
+;
 
-;; Options Menu Settings
-;; =====================
-(cond
- ((and (string-match "XEmacs" emacs-version)
-       (boundp 'emacs-major-version)
-       (or (and
-            (= emacs-major-version 19)
-            (>= emacs-minor-version 14))
-           (= emacs-major-version 20))
-       (fboundp 'load-options-file))
-  (load-options-file "/home/tme/.xemacs-options")))
-;; ============================
-;; End of Options Menu Settings
-
-;;---------------------------------------------------------------------------;;
-;; final settings, email etc
-;;---------------------------------------------------------------------------;;
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+; val is one of { forward, reverse, post-forward, post-forward-angle-brackets 
+; or nil }
 
 ;;
-;; load my "permanent" options
+;; Final settings, email etc
+;; ===========================
+;;
+
+;;
+;; load my "permanent" options from ~/.xemacs-std
 ;; 
 
-(load "/home/tme/.xemacs-std")
+(load ".xemacs-std")
 
-;;
-;; Final stuff
-;;
-
-(custom-set-variables
- '(toolbar-news-reader (quote gnus))
- '(toolbar-mail-reader (quote vm))
- '(user-mail-address "tme@lanl.gov" t)
- '(query-user-mail-address nil))
-(custom-set-faces)
 \end{verbatim}

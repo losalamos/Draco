@@ -11,7 +11,12 @@
 \usepackage{tmadd,tmath}
 \usepackage{cite}
 \usepackage{c++}
-\usepackage{fancycodes}
+\usepackage{fancycodes}  % needed to get ``LaTeX'' symbol.
+\usepackage{float} % used for C++ example code.
+\usepackage{shading}
+\usepackage{fancybox}
+%\usepackage{url}
+\usepackage[hang,small]{caption2}
 
 %%---------------------------------------------------------------------------%%
 %% DEFINE SPECIFIC ENVIRONMENTS HERE
@@ -23,9 +28,35 @@
 
 \newcommand{\comp}[1]{{\normalfont\texttt#1}}
 \newcommand{\draco}{{\normalfont\sffamily Draco}}
+\newcommand{\milagro}{{\normalfont\sffamily Milagro}}
+\newcommand{\dante}{{\normalfont\sffamily Dante}}
 \newcommand{\xemacs}{{\normalfont\bfseries XEmacs}}
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \newcolumntype{L}{>{\ttfamily}X}
+
+% how much of the page can be occupied by text when a float is on the
+% same page.
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\bottomfraction}{0.4}
+\renewcommand{\topfraction}{0.9}
+
+\floatstyle{plain}
+
+\setlength{\belowcaptionskip}{3ex plus 4pt minus 2pt}
+\setlength{\abovecaptionskip}{2ex plus 4pt minus 2pt}
+
+\newfloat{cxxSampleCode}{!ht}{lom}
+  \floatname{cxxSampleCode}{Code Example}
+
+\newenvironment{codeExample}
+{\footnotesize 
+  \VerbatimEnvironment
+  \begin{SaveVerbatim}{\mycode}}%
+  {\end{SaveVerbatim}%
+  \noindent%
+  \parashade[.950]{sharpcorners}{\gdef\outlineboxwidth{.5}%
+    \UseVerbatim{\mycode}}\normalsize}
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
@@ -38,16 +69,17 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{XTM:99--09 (U), rev. 1}
-\subject{XEmacs Development Environment for Draco}
+\refno{CCS-4--01-XX(U)}
+\subject{XEmacs Development Environment for Draco (Revision 2)}
 
 %-------NO CHANGES
-\divisionname{Applied Theoretical \& Computational Physics Div.}
-\groupname{X-TM:Transport Methods Group}
-\fromms{Thomas M. Evans/XTM D409}
-\phone{(505)665--3677}
-\originator{tme}
-\typist{tme}
+\divisionname{Computer and Computational Sciences Division}
+\groupname{CCS--4:Transport Methods Group}
+\fromms{Kelly G. Thompson/CCS--4, MS D409\\
+Tom M. Evans/CCS--4, MS D409}
+\phone{(505)665--3929}
+\originator{kgt}
+\typist{kgt}
 \date{\today}
 %-------NO CHANGES
 
@@ -67,19 +99,20 @@
 %%---------------------------------------------------------------------------%%
 
 \distribution {
-  XTM MS D409:\\ 
-  J.E. Morel, XTM MS D409\\ 
-  G.L. Olson, XTM MS D409\\ 
-  J.M. McGhee, XTM MS D409\\ 
-  H.G. Hughes, XTM MS D409\\ 
-  T.M. Evans, XTM MS D409\\ 
-  M.G. Gray, XTM MS D409\\ 
-  M.L. Hall, XTM MS D409\\ 
-  S. Pautz, XTM MS D409\\ 
-  R.M. Roberts, XTM MS D409\\ 
-  S.A. Turner, XTM MS D409\\ 
-  T.J. Urbatsch, XTM MS D409\\ 
-  J.S. Warsa, XTM MS D409\\
+  CCS-4 MS D409:\\ 
+  M. Buksas, CCS--4, MS D409\\
+  B.A. Clark, CCS--4, MS D409
+  T.M. Evans, CCS--4, MS D409\\ 
+  M.G. Gray, CCS--4, MS D409\\ 
+  H.G. Hughes, CCS--4, MS D409\\ 
+  J.M. McGhee, CCS--4, MS D409\\ 
+  J.E. Morel, CCS--4, MS D409\\ 
+  G.L. Olson, CCS--4, MS D409\\ 
+  S.D. Pautz, CCS--4, MS D409\\ 
+  K.G. Thompson, CCS--4, MS D409\\
+  S.A. Turner, CCS--4, MS D409\\ 
+  T.J. Urbatsch, CCS--4, MS D409\\ 
+  J.S. Warsa, CCS--4, MS D409\\
   }
 
 %%---------------------------------------------------------------------------%%
@@ -88,15 +121,21 @@
 
 \opening
 
+\section{Comments on Revision 2}
+This memo was originally issued by Tom Evans in Sept. of 1999 as
+internal memo XTM:99--09(U).  The Draco elisp routines have changed a
+bit since then so I am issuing an updated version of Tom's memo.
+
 \section{Introduction}
 
 \draco~\cite{rn98046} has been built using an informal \xemacs-based
 design environment.  As part of the \draco\ reorganization
 project~\cite{draco-build} we have sorted through the existing Elisp
 functions and macros that have defined this informal \draco\ 
-environment.  These files have been cleaned up and released as
-RTT-ELISP V1.1, the \draco\ development environment.  With this
-release we have a formal development environment for \draco.
+environment.  These files that define the \draco\ development
+environment, have been cleaned up and released (as of this writing the
+release tag was rtt-elisp\_v21).  With this release we have a formal
+development environment for \draco.
 
 Our goal is for all files in \draco\ to have the same ``look and
 feel.''  To accomplish this we employ the \xemacs\ editor with a
@@ -116,6 +155,8 @@ provides the following features:
 \item A \draco\ \C++ indentation style for \xemacs.
 \item Functions to expedite editing of source code (including \LaTeX)
   and package creation in \draco.
+\item Pull down \xemacs\ menu for easy access to many \draco\ specific
+  commands and programming modes.
 \end{itemize}
 We will show how to load the \draco\ development environment and
 analyze these features in the following sections.
@@ -126,9 +167,12 @@ analyze these features in the following sections.
 
 The files that constitute the \xemacs\ \draco\ development environment
 are listed in Table~\ref{tab:elisp}.  These files can be obtained
-\begin{table}
+through a CVS export~\cite{cvs}: 
+
+%
+\begin{table}[!htbp]%
   \caption{Files that are part of the \draco\ development environment
-    distribution, RTT-ELISP V1.1.}
+    distribution, rtt-elisp\_v21.}%
   \label{tab:elisp}
   \begin{center}
     \begin{tabularx}{\linewidth}{
@@ -141,6 +185,7 @@ are listed in Table~\ref{tab:elisp}.  These files can be obtained
       Config-key.el & no & describes some key-bindings \\
       Config-pkg.el & yes & does package configurations for
       environments used in (and outside) of \draco \\
+      dante-macros.el & no & Dante specific function definitions. \\
       draco-hacks.el & yes & \draco-specific function definitions \\
       draco-rtt.el & yes & loads the \draco\ environment and other
       packages \\
@@ -150,9 +195,13 @@ are listed in Table~\ref{tab:elisp}.  These files can be obtained
       \comp{c\--indentation\--styles} \\
       infer-mode.el & yes & functionality for inferring the \xemacs\
       mode from strings in file headers \\
-      nml-mode.el & yes & \comp{nml} mode definition \\
       pooma-hacks.el & yes & c-style used by the POOMA team \\
+      mppl-mode.el & no & mode definition for MPPL (a Fortran
+      preprocessor) \\
+      nml-mode.el & yes & \comp{nml} mode definition \\
       rtt-hacks.el & yes & defines the \comp{rtt-c-style} \\
+      rtt-menu.el & no & creates a pull down menu with many \draco\
+      specific functions \\
       tme-hacks.el & yes & contains functions used by the \draco\
       environment \\
       xemacs-setup.el & no & key-bindings that may be useful to \draco\ 
@@ -161,13 +210,12 @@ are listed in Table~\ref{tab:elisp}.  These files can be obtained
     \end{tabularx}
   \end{center}
 \end{table}
-through CVS export:
 \begin{verbatim}
-     $ cvs export -r rtt-elisp_v11 elisp
+     $ cvs export -r HEAD elisp
 \end{verbatim} % $
 Note that not all files are required by the \draco\ development
 environment.  These additional Elisp components are included because
-they may be useful for general work in XTM.  In addition to the
+they may be useful for general work in CCS--4.  In addition to the
 \comp{elisp/} directory, a \comp{elisp/templates} directory is
 generated from the CVS export.  These templates are used by functions
 in \comp{tme-hacks} and are not part of the official \draco\ 
@@ -175,12 +223,15 @@ development environment.  However, these templates are useful when
 writing code and documents outside of \draco.
 
 The \comp{elisp/} directory that results from CVS export should be
-placed in a suitable location.  In general, oen of the following two
+placed in a suitable location.  In general, one of the following two
 locations are recommended:
 \begin{verbatim}
      $HOME/elisp
      $HOME/lib/elisp
 \end{verbatim}
+
+(kt - Is this still true?) 
+
 Note that if the general templates (non-\draco) from \comp{tme-hacks}
 are desired then the \comp{elisp/} directory should be placed in
 \comp{\$HOME/lib/elisp}.  However, the placement of the elisp
@@ -207,43 +258,92 @@ needs outside of \draco\ by simply making their own Elisp files in
 this manner.
 
 We will use the \comp{.emacs} file in \S~\ref{.emacs} as a template
-for what follows.  The following code determines where the
-user-installed \comp{elisp/} directory is located:
-\begin{verbatim}
-     (setq my-home-dir (getenv "HOME"))
-     (setq my-elisp-dir (concat my-home-dir "/lib/elisp"))
-     (setq load-path (cons my-elisp-dir load-path))
-\end{verbatim}
-To load the packages in the \draco\ environment include the following:
-\begin{verbatim}
-     (load "draco-rtt")
-\end{verbatim}
-To enable language support for the following modes, we use the
-following code:
-\begin{verbatim}
-     (setq config-pkg-verbose t)
+for what follows.  The following code determines where the user's
+\$HOME directory is located, where the 
+user-installed \comp{elisp/} directory is located and where the
+default templates directory is located.  The last line adds the elisp
+directory to the default path that \xemacs\ uses to locate packages.
 
-     (setq want-mppl-mode t)
-     (setq want-tcl-mode t)
-     (setq want-python-mode t)
-     (setq want-nml-mode t)
-     (setq want-makefile-mode t)
-     (setq want-cc-mode t)
-     (setq want-auctex-pkg t)
-     (setq want-f90-mode t)
-     (setq want-fortran-mode t)
-
-     (load "Config-pkg")
+\begin{verbatim}
+     (setq my-home-dir (concat (getenv "HOME") "/")
+     (setq my-elisp-dir (concat my-home-dir "lib/elisp/"))
+     (setq my-templates-dir (concat my-elisp-dir "templates/"))
+     (if (file-accessible-directory-p my-elisp-dir)
+         (setq load-path (cons my-elisp-dir load-path)))
 \end{verbatim}
+
+To load the elisp packages that define the \draco\ environment the
+you will need to include
+the following pieces of code in your \comp{.emacs} file.  Before you
+load any of the actual elisp you need to define the requested
+environment.  The suggested setup below tells the \draco\ elisp
+routines to avoid pooma-style formatting, to load the RTT \xemacs\ menu
+and to load the RTT suggested language mode-hooks for each of the modes
+listed. 
+ 
+\begin{verbatim}
+     (set want-pooma-style-by-default nil
+          want-rtt-menu               t)
+
+     (setq config-pkg-verbose t
+           want-mppl-mode     t
+           want-tcl-mode      t
+           want-python-mode   t
+           want-nml-mode      t
+           want-makefile-mode t
+           want-cc-mode       t
+           want-auctex-pkg    t
+           want-f90-mode      t
+           want-python-mode   t
+           want-fortran-mode  t)
+\end{verbatim}
+
 \comp{Auctex} is a useful mode for editing \TeX\ and \LaTeX\ source
 files.  See \comp{Config-pkg.el} for descriptions of the rest of
-language modes.  Additional packages can be loaded using the Elisp
-function \comp{load}, ie. 
+language modes.  The \draco\ elisp routines are incorporated into the
+\xemacs\ environment next.
+
 \begin{verbatim}
-     (load "Config-key")
+     (require 'draco-rtt)
 \end{verbatim}
-loads the \comp{Config-key.el} file.  For additional descriptions of
-commands in the sample \comp{.emacs} file see the \xemacs\ help menu.
+
+To enable language support for the following modes, we use the
+following code:
+
+\begin{verbatim}
+     (require 'Config-pkg)
+\end{verbatim}
+
+You may also want to load some keyboard shortcuts and macros defined
+by Tom or Jeff.  The following commands will load some of
+these optional settings.
+
+\begin{verbatim}
+     (load-library ``xemacs-setup'')
+\end{verbatim}
+
+For additional descriptions of commands in the sample \comp{.emacs}
+file see the \xemacs\ help menu or the \xemacs\ web page
+(http://www.xemacs.org). 
+
+\subsection{Byte Compiling Elisp Files}
+\label{sec:byte-compile}
+
+To decrease the time required to load and configure \xemacs\ you may
+want to byte compile the Draco Elisp files.  This is an optional
+step.  There is no requirement to compile these files since emacs will
+evaluate the non-compiled elisp as needed.  Here are the steps to
+follow to byte compile your elisp routines:
+
+\begin{itemize}
+\item Open your elisp directory in an \xemacs\ window (e.g.: C-x C-f 
+$tilde$/lib/elisp).  This will open a directory listed in Dired mode.
+\item Select all of the \texttt{.el} files. (\%e el).
+\item Request \xemacs\ to compile the selected files (B y)
+\end{itemize}
+
+If you have any other custom code you may want to byte compile that
+as well.
 
 %%---------------------------------------------------------------------------%%
 
@@ -255,9 +355,10 @@ functions described in \S~\ref{sec:func} to make \comp{.cc},
 \comp{.tex}, and a host of other files.  Additional templates are
 provided to help setup \draco\ packages quickly and easily.  \draco\ 
 functions must be called under the \comp{draco/} (or \draco-like, ie.
-\comp{solon/}) directory in order to use the \draco\ templates.  This
-functionality is explained in \S~\ref{sec:func}.  The template
-functions in \comp{tme-hacks} can be used for work outside of \draco.
+\comp{milagro/} or \comp{dantev2/}) directory in order to use the
+\draco\ templates.  This functionality is explained in
+\S~\ref{sec:func}.  The template functions in \comp{tme-hacks} can be
+used for work outside of \draco.
 
 %%---------------------------------------------------------------------------%%
 
@@ -265,9 +366,11 @@ functions in \comp{tme-hacks} can be used for work outside of \draco.
 
 We have developed a \C++ indentation style for use in \draco.  The
 style is called RTT and can be confirmed by querying the value of the
-\comp{c-indentation-style} variable.  Figure~\ref{Test} gives an
-example of the RTT indentation style.  \cdFramedFigure{Test}{Example
-  of the RTT \C++-indentation style.}  By loading \comp{draco-rtt} in
+\comp{c-indentation-style} variable.  Figure~\ref{codeExample:samp1} gives an
+example of the RTT indentation style.  
+%% \cdFramedFigure{Test}{Example
+%%  of the RTT \C++-indentation style.}  
+By loading \comp{draco-rtt} in
 the \comp{.emacs} file this indentation style is set automatically.
 
 We note that there still exists a small bug in the \xemacs\ 
@@ -276,6 +379,55 @@ occur in definitions of functions within a \comp{namespace}.  To avoid
 this error, we set the namespace indentation to zero.  Thus, the user
 will not encounter this \xemacs\ \C++-mode bug when using the RTT
 style.
+
+% Contents of Test.hh
+\begin{cxxSampleCode}
+\begin{codeExample}
+//---------------------------------------------------------------------------//
+// Test of EMACS C++ Indentation Style
+//---------------------------------------------------------------------------//
+
+namespace rtt_test {
+
+class Test
+{
+  private:
+    // some data
+    int x;
+    double y;
+    
+  public:
+    // constructor
+    Test();
+    
+    // functions
+    int get_x() { return x; }
+    
+    // inline functions
+    template<class T> inline T do_something(T &);
+};
+
+// inline function
+template<class T> T Test::do_something(T &x)
+{
+    double sum;
+    for (int i = 0; i < x; i++)
+    {
+        x[i] += y;
+        sum += x[i];
+    }
+    x.push_back(sum);
+    
+    // return the array-type
+    return x;
+}
+
+} // end of namespace rtt_test
+
+\end{codeExample}
+\caption{Example of the RTT \C++-indentation style.}
+\label{codeExample:samp1}
+\end{cxxSampleCode}
 
 %%---------------------------------------------------------------------------%%
 
@@ -404,6 +556,7 @@ A good example of how to incorporate these functions into Elisp
 
 %%---------------------------------------------------------------------------%%
 
+\pagebreak
 \appendix
 
 \section{Sample \comp{.emacs} File}
@@ -421,6 +574,7 @@ more help.
 
 \input{emacs}
 
+\pagebreak
 \section{Sample User Key-Bindings and Mode-Hooks}
 \label{tme-keys}
 
@@ -430,10 +584,13 @@ is one example.  See the \xemacs\ \comp{Info} pages for more help.
 
 \input{tme-keys}
 
+%%---------------------------------------------------------------------------%%
+
+\pagebreak
 \bibliographystyle{rnote}
 \bibliography{../bib/draco}
 
-\closing
+\closing 
 \end{document}
 
 %%---------------------------------------------------------------------------%%
