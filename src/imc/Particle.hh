@@ -12,8 +12,8 @@
 //===========================================================================//
 // class Particle - 
 //
-// Purpose      : base class which creates and transports particles
-//                through a Mesh
+// Purpose : base class which creates and transports particles
+//           through a Mesh
 //
 // revision history:
 // -----------------
@@ -40,9 +40,6 @@ using std::ostream;
 template<class MT>
 class Particle
 {
-  // friends and such
-    friend class Diagnostic;
-
 public:
   // nested diagnostic class
     class Diagnostic
@@ -74,7 +71,10 @@ public:
 	    output << "------------------------" << endl;
 	}
     };
-	
+
+  // friends and such
+    friend class Diagnostic;
+
 private:
   // particle weight
     double weight;
@@ -115,13 +115,13 @@ private:
 
 public:
   // default constructor
-    explicit Particle(const MT &mesh, long seed, double weight_, 
-		      double energy_)
+    Particle(const MT &mesh, long seed, double weight_, 
+	     double energy_)
 	:weight(weight_), energy(energy_), r(mesh.Coord().Get_dim(), 0.0), 
 	 omega(mesh.Coord().Get_sdim(), 0.0), cell(0), alive(true), 
 	 descriptor("born"), random(seed)
     {}
-    
+        
   // transport member functions
     void Source(vector<double> &, vector<double> &, const MT &);
     void Transport(const MT &, const Opacity<MT> &, 

@@ -12,9 +12,8 @@
 //===========================================================================//
 // class Random - 
 //
-// Date created : 2-5-98
-// Purpose      : Random number class for use with IMC and MC applications;
-//                origin, RAN3 function, pg.283 Numerical Recipes in C
+// Purpose : Random number class for use with IMC and MC applications;
+//           origin, RAN3 function, pg.283 Numerical Recipes in C
 //
 // revision history:
 // -----------------
@@ -41,12 +40,12 @@ private:
     const long mseed;
     const int mz;
     const double fac;
-  // variables used by ran()
+  // variables used by Ran()
     int inext, inextp;
     vector<long> ma;
     int iff;
   // seed value, negative integer initializes the sequence
-    long *idum;
+    long idum;
   // counter
     long count;
   // original seed value
@@ -55,22 +54,31 @@ private:
     Random(const Random &rhs);
     Random& operator=(const Random &rhs);
 public:
-    Random(long idum_)
+  // must give seed to Random number object
+    explicit Random(long idum_)
 	: mbig(1000000000), mseed(161803398), mz(0), fac(1.0/mbig),
-	  inext(0), inextp(0), ma(56), iff(0), idum(&idum_), count(0),
+	  inext(0), inextp(0), ma(56), iff(0), idum(idum_), count(0),
 	  seed(idum_)
-    { fill(ma.begin(), ma.end(), 0); }
-    double ran();
-    long getCount() { return count; }
-    long getSeed() { return seed; }
-    void printvalues(); 
-    double testavg(int num);
+    { 
+	fill(ma.begin(), ma.end(), 0); 
+    }
+
+  // get Random number function
+    double Ran();
+
+  // determine the number of random numbers used in this object
+    long Get_count() { return count; }
+
+  // random number diagnostics
+    long Get_seed() { return seed; }
+    void Print_values(); 
+    double Test_avg(int num);
 };
 
 // overloaded operators
 inline ostream& operator<<(ostream &output, Random &object)
 {
-    output << object.ran() << std::endl;
+    output << object.Ran() << std::endl;
     return output;
 }
 

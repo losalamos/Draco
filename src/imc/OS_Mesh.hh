@@ -31,11 +31,6 @@
 // 
 //===========================================================================//
 
-// we must include the definitions to Layout and Coord_sys because
-// the OS_Mesh class allows access to member functions of the class,
-// ie. a class which HoldsA/UsesA OS_Mesh accesses Layout and Coord_sys
-// through mesh; also, because CCSF and CCVF are all inline functions,
-// it needs to know the member functions of Layout and Coord_sys
 #include "imctest/Names.hh"
 #include "imctest/Coord_sys.hh"
 #include "imctest/Layout.hh"
@@ -152,37 +147,15 @@ private:
     OS_Mesh(const OS_Mesh &);
     OS_Mesh& operator=(const OS_Mesh &);
 public:
-  // base class constructor
-    OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_, 
-	    CCVF_i &cell_pair_) 
-	: coord(coord_), layout(layout_), vertex(vertex_),
-	  cell_pair(cell_pair_), sur(coord->Get_dim()) 
-    {
-      // assertions to verify size of mesh and existence of a Layout and
-      // Coord_sys  
-	assert (coord);
-	
-      // variable initialization
-	int num_cells = Num_cells();
-	int dimension = coord->Get_dim();
-    
-      // dimension assertions
-	assert (dimension == vertex.size());
-	assert (dimension == sur.size());
-    
-      // mesh size assertions
-	assert (num_cells == cell_pair.size());
-      
-      // calculate surface array
-	Calc_surface();
-    }
+  // default constructor
+    OS_Mesh(SP<Coord_sys>, Layout &, CCVF_a &, CCVF_i &); 
 
   // member functions
 
   // references to imbedded objects
 
   // return references to the Coord_sys and Layout
-    const Layout& Layout() const { return layout; }
+    const Layout& Get_Layout() const { return layout; }
     const Coord_sys& Coord() const { return *coord; }
 
   // mesh dimensionality functions

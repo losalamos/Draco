@@ -27,9 +27,9 @@ void Coord_sys::Set_omega(vector<double> &omega_, Random &random) const
 
   // sample costheta and phi for 3D transport 
     double costheta, sintheta, phi;
-    costheta = 1 - 2 * random.ran();
+    costheta = 1 - 2 * random.Ran();
     sintheta = sqrt(1 - costheta * costheta);
-    phi      = 2 * pi * random.ran();
+    phi      = 2 * pi * random.Ran();
 
   // calculate 3D direction cosines
     omega_[0] = sintheta * cos(phi);

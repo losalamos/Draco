@@ -28,7 +28,7 @@ using Global::Dot;
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
-// default constructor defined inline
+// defined inline
 
 // need to write assignment operators and copy constructors to take care of
 // the random number
@@ -80,7 +80,7 @@ void Particle<MT>::Transport(const MT &mesh, const Opacity<MT> &xs,
         int face = 0;
         
       // sample distance-to-collision
-        d_collision = -log(random.ran()) / xs.Sigma(cell);
+        d_collision = -log(random.Ran()) / xs.Sigma(cell);
 
       // get distance-to-boundary and cell face
         d_boundary  = mesh.Get_db(r, omega, cell, face);
@@ -125,7 +125,7 @@ bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
     bool status;
 
   // determine absorption or collision
-    if (random.ran() <= xs.Sigma(cell) / xs.Sigma(cell))
+    if (random.Ran() <= xs.Sigma(cell) / xs.Sigma(cell))
     {
 	descriptor = "absorption";
         status = false;
@@ -136,8 +136,8 @@ bool Particle<MT>::Collide(const MT &mesh, const Opacity<MT> &xs)
         
       // calculate theta and phi (isotropic)
         double costheta, phi;
-        costheta = 1 - 2 * random.ran();
-        phi      = 2 * Global::pi * random.ran();
+        costheta = 1 - 2 * random.Ran();
+        phi      = 2 * Global::pi * random.Ran();
 
       // get new direction cosines
         mesh.Coord().Calc_omega(costheta, phi, omega);

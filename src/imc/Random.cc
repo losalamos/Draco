@@ -13,14 +13,11 @@
 
 IMCSPACE
 
-using std::cout;
-using std::endl;
-
 //---------------------------------------------------------------------------//
 // public member functions
 //---------------------------------------------------------------------------//
 // random number generator which returns a random deviate between 0.0 and 1.0
-double Random::ran()
+double Random::Ran()
 {  
   // counter update
     count++;
@@ -30,10 +27,10 @@ double Random::ran()
     int i,ii,k;
 
   // initialization
-    if (*idum < 0 || iff == 0)
+    if (idum < 0 || iff == 0)
     {
 	iff = 1;
-	mj = mseed - (*idum < 0 ? -*idum : *idum);
+	mj = mseed - (idum < 0 ? -idum : idum);
 	mj %= mbig;
 	ma[55] = mj;
 	mk = 1;
@@ -57,7 +54,7 @@ double Random::ran()
 	}
 	inext = 0;
 	inextp = 31;
-	*idum = 1;
+	idum = 1;
     }
 
   // starting point after initialization
@@ -68,14 +65,14 @@ double Random::ran()
     mj = ma[inext] - ma[inextp];
     if (mj < mz) mj += mbig;
     ma[inext] = mj;
-
-	cout << static_cast<double>(mj)*fac << endl;
-
     return static_cast<double>(mj) * fac;
 }
 
+//---------------------------------------------------------------------------//
+// diagnostics and tests
+//---------------------------------------------------------------------------//
 // debug print
-void Random::printvalues()
+void Random::Print_values()
 {
     using std::cout;
     using std::endl;
@@ -92,12 +89,13 @@ void Random::printvalues()
     cout << ma;
 }
 
+//---------------------------------------------------------------------------//
 // random number tests
-double Random::testavg(int num)
+double Random::Test_avg(int num)
 {
     double avgcount = 0;
     for (int i = 1; i <= num; i++)
-	avgcount += ran();
+	avgcount += Ran();
     double average = avgcount / static_cast<double>(num);
     return average;
 }

@@ -19,7 +19,30 @@ using std::sort;
 //---------------------------------------------------------------------------//
 // constructors
 //---------------------------------------------------------------------------//
-// defined inline
+// default constructor
+OS_Mesh::OS_Mesh(SP<Coord_sys> coord_, Layout &layout_, CCVF_a &vertex_, 
+		 CCVF_i &cell_pair_) 
+    : coord(coord_), layout(layout_), vertex(vertex_),
+      cell_pair(cell_pair_), sur(coord->Get_dim()) 
+{
+  // assertions to verify size of mesh and existence of a Layout and
+  // Coord_sys  
+    assert (coord);
+	
+  // variable initialization
+    int num_cells = Num_cells();
+    int dimension = coord->Get_dim();
+    
+  // dimension assertions
+    assert (dimension == vertex.size());
+    assert (dimension == sur.size());
+    
+  // mesh size assertions
+    assert (num_cells == cell_pair.size());
+      
+  // calculate surface array
+    Calc_surface();
+}
 
 //---------------------------------------------------------------------------//
 // private member functions
