@@ -925,6 +925,378 @@ double TET_Mesh::get_min_db(const SF_DOUBLE &position, int cell) const
 
 }   // end TET_Mesh::get_min_db(const SF_DOUBLE &, int)
 
+//===========================================================================//
+// Beginning of TET_Mesh::Pack member functions
+//===========================================================================//
+
+//___________________________________________________________________________//
+/*!
+ * \brief    TET_Mesh::Pack constructor.
+ * \param ds Size of data array of doubles.
+ * \param dd Pointer to data array of doubles.
+ * \param is Size of data array of integers.
+ * \param id Pointer to data array of integers.
+ * \param cs Size of data array of characters.
+ * \param cd Pointer to data array of characters.
+ *
+ * Note that after construction, the Pack object owns the pointed-to data,
+ * and assumes the responsibility of deletion.
+ */
+TET_Mesh::Pack::Pack(int ds, double *dd, int is, int *id, int cs, char *cd)
+    : dsize(ds), ddata(dd), isize(is), idata(id), csize(cs), cdata(cd)
+{
+}
+
+//---------------------------------------------------------------------------//
+//! TET_Mesh::Pack destructor.
+TET_Mesh::Pack::~Pack()
+{
+    delete [] ddata;
+    delete [] idata;
+    delete [] cdata;
+}
+
+//---------------------------------------------------------------------------//
+//! TET_Mesh::Pack copy constuctor
+
+TET_Mesh::Pack::Pack(const Pack &rhs)
+    : dsize(rhs.dsize), ddata(new double[dsize]),
+      isize(rhs.isize), idata(new int[isize]),
+      csize(rhs.csize), cdata(new char[csize])
+{
+    // copy double data
+    for (int i = 0; i < dsize; ++i)
+        ddata[i] = rhs.ddata[i];
+
+    // copy int data
+    for (int i = 0; i < isize; ++i)
+        idata[i] = rhs.idata[i];
+
+    // copy char data
+    for (int i = 0; i < csize; ++i)
+        cdata[i] = rhs.cdata[i];
+}
+
+//---------------------------------------------------------------------------//
+//! Unpacking routine: member function of struct Pack.
+rtt_dsxx::SP<TET_Mesh> TET_Mesh::Pack::unpack() const
+{
+    int LenTitle = idata[0];          // length of title string
+    int LenUnits = idata[1];          // length of coord_units string
+    int NumVerts = idata[2];          // number of vertices
+    int NumSides = idata[3];          // number of sides
+    int NumCells = idata[4];          // number of cells
+    int SubmeshFlag = idata[5];       // 1 for submesh, else 0
+    int NumNodeSets = idata[6];       // number of node sets
+    int NumSideSets = idata[7];       // number of side sets
+    int NumCellSets = idata[8];       // number of cell sets
+
+    // Counters for assigning data.
+    int d_ctr  = 0;           // for doubles.
+    int i_ctr  = 9;           // for integers (already saw 0..8).
+    int c_ctr  = 0;           // for characters.
+
+   // TET meshes are always XYZ.
+    rtt_dsxx::SP<Coord_sys> coord_(new XYZCoord_sys());
+
+    bool submesh_ = (SubmeshFlag == 1);
+
+    std::string title_;
+    for (int t = 0 ; t < LenTitle ; ++t)
+        title_ += cdata[c_ctr++];
+
+    std::string node_coord_units_;
+    for (int u = 0 ; u < LenUnits ; ++u)
+        node_coord_units_ += cdata[c_ctr++];
+
+    std::vector<ThreeVector> vertex_vector_;
+    for (int v = 0 ; v < NumVerts ; ++v)
+    {
+        double x = ddata[d_ctr++];
+        double y = ddata[d_ctr++];
+        double z = ddata[d_ctr++];
+        vertex_vector_.push_back(ThreeVector(x,y,z));
+    }
+
+    Layout layout_;
+    layout_.set_size(NumCells);
+    for (int c = 0 ; c < NumCells ; ++c)
+        layout_.set_size(c+1,FOUR);
+
+    for (int c = 0 ; c < NumCells ; ++c)
+        for (int f = 0 ; f < FOUR ; ++f)
+            layout_(c+1,f+1) = idata[i_ctr++];
+
+    VF_INT cells_vertices_(NumCells);
+    for (int c = 0 ; c < NumCells ; ++c)
+        for (int v = 0 ; v < FOUR ; ++v)
+            cells_vertices_[c].push_back(idata[i_ctr++]);
+
+    VF_INT sides_vertices_(NumSides);
+    for (int s = 0 ; s < NumSides ; ++s)
+        for (int v = 0 ; v < THREE ; ++v)
+            sides_vertices_[s].push_back(idata[i_ctr++]);
+
+    MAP_String_SetInt node_sets_;
+
+    if (NumNodeSets > 0)
+    {
+        for (int n = 0 ; n < NumNodeSets ; ++n)
+        {
+            int slen = idata[i_ctr++];
+            int mems = idata[i_ctr++];
+            std::string set_id;
+
+            for (int c = 0 ; c < slen ; ++c)
+                set_id += cdata[c_ctr++];
+
+            SetInt set_mems;
+            for (int m = 0 ; m < mems ; ++m)
+                set_mems.insert(idata[i_ctr++]);
+
+            node_sets_[set_id] = set_mems;
+        }
+    } // End if (NumNodeSets > 0)
+
+    MAP_String_SetInt side_sets_;
+
+    if (NumSideSets > 0)
+    {
+        for (int s = 0 ; s < NumSideSets ; ++s)
+        {
+            int slen = idata[i_ctr++];
+            int mems = idata[i_ctr++];
+            std::string set_id;
+
+            for (int c = 0 ; c < slen ; ++c)
+                set_id += cdata[c_ctr++];
+
+            SetInt set_mems;
+            for (int m = 0 ; m < mems ; ++m)
+                set_mems.insert(idata[i_ctr++]);
+
+            side_sets_[set_id] = set_mems;
+        }
+    } // End if (NumSideSets > 0)
+
+    MAP_String_SetInt cell_sets_;
+
+    if (NumCellSets > 0)
+    {
+        for (int c = 0 ; c < NumCellSets ; ++c)
+        {
+            int slen = idata[i_ctr++];
+            int mems = idata[i_ctr++];
+            std::string set_id;
+
+            for (int c = 0 ; c < slen ; ++c)
+                set_id += cdata[c_ctr++];
+
+            SetInt set_mems;
+            for (int m = 0 ; m < mems ; ++m)
+                set_mems.insert(idata[i_ctr++]);
+
+            cell_sets_[set_id] = set_mems;
+        }
+    } // End if (NumCellSets > 0)
+
+    rtt_dsxx::SP<TET_Mesh> mesh_ptr(new TET_Mesh(title_, coord_, layout_,
+        vertex_vector_, node_coord_units_, node_sets_, side_sets_, cell_sets_,
+        sides_vertices_, cells_vertices_, submesh_));
+
+    return mesh_ptr;
+}   // end TET_Mesh::Pack::unpack()
+
+/*!
+ * \brief        Allow output of packed meshes.
+ * \param output The standard output stream to recieve the report.
+ */
+void TET_Mesh::Pack::print_pack(std::ostream &output) const
+{
+    output << "Begin print of packed mesh.\n";
+    output << dsize << " double(s).\n";
+    for (int d = 0 ; d < dsize ; ++d)
+        output << ddata[d] << "\n";
+
+    output << isize << " integer(s).\n";
+    for (int i = 0 ; i < isize ; ++i)
+        output << idata[i] << "\n";
+
+    output << csize << " character(s).\n";
+    for (int c = 0 ; c < csize ; ++c)
+        output << cdata[c] << "\n";
+
+    output << "End print of packed mesh.\n";
+}   // end TET_Mesh::Pack::print_pack(std::ostream &)
+
+//===========================================================================//
+// End of TET_Mesh::Pack member functions
+//===========================================================================//
+
+//___________________________________________________________________________//
+/*!
+ * \brief TET_Mesh member function to return a Pack object holding a TET_Mesh.
+ *
+ * This initial version uses STL vectors to build the three arrays, allocating
+ * conventional arrays later.  This makes the counting easier, but is wasteful
+ * of memory.  A later version will count first, then allocate space only once.
+ */
+TET_Mesh::Pack TET_Mesh::pack() const
+{
+    int LenTitle = title.length();             // length of title string
+    int LenUnits = node_coord_units.length();  // length of coord_units string
+    int NumVerts = vertex_vector.size();       // number of vertices
+    int NumSides = sides_vertices.size();      // number of sides
+    int NumCells = cells_vertices.size();      // number of cells
+    int SubmeshFlag = (submesh ? 1 : 0);       // 1 for submesh, else 0
+    int NumNodeSets = node_sets.size();        // number of node sets
+    int NumSideSets = side_sets.size();        // number of side sets
+    int NumCellSets = cell_sets.size();        // number of cell sets
+
+    // Counters for assigning data.
+    int d_ctr  = 0;           // for doubles.
+    int i_ctr  = 0;           // for integers.
+    int c_ctr  = 0;           // for characters.
+
+    // Temporary containers for data.
+    std::vector<double> d_vec;       // for doubles.
+    std::vector<int> i_vec;          // for integers.
+    std::vector<char> c_vec;         // for characters.
+
+    i_vec.push_back(LenTitle); ++i_ctr;
+    i_vec.push_back(LenUnits); ++i_ctr;
+    i_vec.push_back(NumVerts); ++i_ctr;
+    i_vec.push_back(NumSides); ++i_ctr;
+    i_vec.push_back(NumCells); ++i_ctr;
+    i_vec.push_back(SubmeshFlag); ++i_ctr;
+    i_vec.push_back(NumNodeSets); ++i_ctr;
+    i_vec.push_back(NumSideSets); ++i_ctr;
+    i_vec.push_back(NumCellSets); ++i_ctr;
+
+    for (int c = 0 ; c < LenTitle ; ++c)
+    {
+        c_vec.push_back(title[c]); ++c_ctr;
+    }
+
+    for (int c = 0 ; c < LenUnits ; ++c)
+    {
+        c_vec.push_back(node_coord_units[c]); ++c_ctr;
+    }
+
+    for (int v = 0 ; v < NumVerts ; ++v)
+    {
+        d_vec.push_back(vertex_vector[v].get_x()); ++d_ctr;
+        d_vec.push_back(vertex_vector[v].get_y()); ++d_ctr;
+        d_vec.push_back(vertex_vector[v].get_z()); ++d_ctr;
+    }
+
+    for (int c = 0 ; c < layout.num_cells() ; ++c)
+        for (int f = 0 ; f < layout.num_faces(c+1) ; ++f)
+        {
+            i_vec.push_back(layout(c+1,f+1)); ++i_ctr;
+        }
+
+    for (int c = 0 ; c < NumCells ; ++c)
+        for (int v = 0 ; v < FOUR ; ++v)
+        {
+            i_vec.push_back(cells_vertices[c][v]); ++i_ctr;
+        }
+
+    for (int s = 0 ; s < NumSides ; ++s)
+        for (int v = 0 ; v < THREE ; ++v)
+        {
+            i_vec.push_back(sides_vertices[s][v]); ++i_ctr;
+        }
+
+    if (NumNodeSets > 0)
+    {
+        for (MAP_String_SetInt::const_iterator flag = node_sets.begin() ;
+                flag != node_sets.end() ; ++flag)
+        {
+            int slen = (*flag).first.length();
+            int mems = (*flag).second.size();
+
+            for (int c = 0 ; c < slen ; ++c)
+            {
+                c_vec.push_back((*flag).first[c]); ++c_ctr;
+            }
+
+            i_vec.push_back(slen); ++i_ctr;
+            i_vec.push_back(mems); ++i_ctr;
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                    i != (*flag).second.end(); ++i)
+            {
+                i_vec.push_back(*i); ++i_ctr;
+            }
+        }
+    } // End if (NumNodeSets > 0)
+
+    if (NumSideSets > 0)
+    {
+        for (MAP_String_SetInt::const_iterator flag = side_sets.begin() ;
+                flag != side_sets.end() ; ++flag)
+        {
+            int slen = (*flag).first.length();
+            int mems = (*flag).second.size();
+
+            for (int c = 0 ; c < slen ; ++c)
+            {
+                c_vec.push_back((*flag).first[c]); ++c_ctr;
+            }
+
+            i_vec.push_back(slen); ++i_ctr;
+            i_vec.push_back(mems); ++i_ctr;
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                    i != (*flag).second.end(); ++i)
+            {
+                i_vec.push_back(*i); ++i_ctr;
+            }
+        }
+    } // End if (NumSideSets > 0)
+
+    if (NumCellSets > 0)
+    {
+        for (MAP_String_SetInt::const_iterator flag = cell_sets.begin() ;
+                flag != cell_sets.end() ; ++flag)
+        {
+            int slen = (*flag).first.length();
+            int mems = (*flag).second.size();
+
+            for (int c = 0 ; c < slen ; ++c)
+            {
+                c_vec.push_back((*flag).first[c]); ++c_ctr;
+            }
+
+            i_vec.push_back(slen); ++i_ctr;
+            i_vec.push_back(mems); ++i_ctr;
+            for (SetInt::const_iterator i = (*flag).second.begin() ;
+                    i != (*flag).second.end(); ++i)
+            {
+                i_vec.push_back(*i); ++i_ctr;
+            }
+        }
+    } // End if (NumCellSets > 0)
+
+    // A terminating null is not necessary, but is harmless,
+    // and could improve client safety.
+    c_vec.push_back('\0'); ++c_ctr;
+
+    double *d_arr = new double[d_ctr];
+    for (int d = 0 ; d < d_ctr ; ++d)
+        d_arr[d] = d_vec[d];
+
+    int *i_arr = new int[i_ctr];
+    for (int i = 0 ; i < i_ctr ; ++i)
+        i_arr[i] = i_vec[i];
+
+    char *c_arr = new char[c_ctr];
+    for (int c = 0 ; c < c_ctr ; ++c)
+        c_arr[c] = c_vec[c];
+
+    return TET_Mesh::Pack(d_ctr, d_arr, i_ctr, i_arr, c_ctr, c_arr);
+
+}   // end TET_Mesh::pack()
+
 }   // end namespace rtt_mc
 
 //---------------------------------------------------------------------------//

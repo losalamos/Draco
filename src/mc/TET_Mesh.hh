@@ -13,7 +13,7 @@
 #define __mc_TET_Mesh_hh__
 
 #include "ThreeVector.hh"
-#include "Coord_sys.hh"
+#include "XYZCoord_sys.hh"
 #include "Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
@@ -324,7 +324,7 @@ class TET_Mesh
      * cell# == (0, 1, 2, 3, 4, ...) for an internal list of all cells.
      * cell_vertex# == (0, 1, 2, 3) for each tetrahedral cell.
      */
-    VF_INT get_cell_pair() const 
+    VF_INT get_cell_pair() const
     {
         VF_INT cell_pair(cells_vertices);
         for (int i = 0; i < cell_pair.size(); ++i)
@@ -386,6 +386,73 @@ class TET_Mesh
     const Layout&           get_Layout() const  { return layout; }
     const Coord_sys&        get_Coord() const   { return *coord; }
     rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
+
+    //__________________________________________//
+    // Beginning of packing/unpacking facilities.
+
+    /*!
+     * \struct TET_Mesh::Pack
+     *
+     * \brief Structure to hold a packed tetrahedral mesh.
+     */
+    struct Pack
+    {
+     private:
+        // Disallow assignment.
+        const Pack& operator=(const Pack &);
+
+        //! TET_Mesh is inherently 3-dimensional; its faces have 3 vertices.
+        static const int THREE = 3;
+
+        //! A TET_Mesh cell always has 4 faces and 4 vertices.
+        static const int FOUR = 4;
+
+        //! Typedef for vector field of integers.
+        typedef std::vector< std::vector<int> > VF_INT;
+
+        //! Typedef for a standard set of integers.
+        typedef std::set<int> SetInt;
+
+        //! Typedef for a map linking strings to sets of integers.
+        typedef std::map< std::string, SetInt > MAP_String_SetInt;
+
+     public:
+        // Double data.
+        int dsize;
+        double *ddata;
+
+        // Integer data.
+        int isize;
+        int *idata;
+
+        // Character data.
+        int csize;
+        char *cdata;
+
+        // Constructor.  Note that after construction, the Pack object
+        // owns the pointed-to data, and assumes the responsibility of
+        // deletion.
+        Pack(int, double *, int, int *, int, char *);
+
+        // Copy constructor.
+        Pack(const Pack &);
+
+        // Destructor.
+        ~Pack();
+
+        // Unpacker.  Recovers a TET_Mesh from the Pack object.
+        rtt_dsxx::SP<TET_Mesh> unpack() const;
+
+        // Printer for diagnostics.
+        void print_pack(std::ostream &) const;
+
+    };  // end struct TET_Mesh::Pack
+
+    //! TET_Mesh member function to return a Pack object holding a TET_Mesh.
+    Pack pack() const;
+
+    //____________________________________//
+    // End of packing/unpacking facilities.
 
 };  // end class TET_Mesh
 

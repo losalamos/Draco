@@ -401,6 +401,12 @@ void Test_TET()
 
     SP<TET_Mesh> mesh_ptr_H(new TET_Mesh(titl, coor, layo, vertex_vec,
         node_coord_unit, node_set, side_set, cell_set, sides_ver, cells_ver));
+
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_H = mesh_ptr_H->pack();
+    SP<TET_Mesh> mesh_ptr_H_unpacked = pack_H.unpack();
+    if (*mesh_ptr_H_unpacked != *mesh_ptr_H)                  ITFAILS;
+
     mesh_ptr_H->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
@@ -453,6 +459,11 @@ void Test_TET()
     SP<TET_Mesh> mesh_ptr_0 = ptr_builder->build_Mesh();
     delete ptr_builder;
 
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_0 = mesh_ptr_0->pack();
+    SP<TET_Mesh> mesh_ptr_0_unpacked = pack_0.unpack();
+    if (*mesh_ptr_0_unpacked != *mesh_ptr_0)                  ITFAILS;
+
     mesh_ptr_0->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
@@ -502,6 +513,11 @@ void Test_TET()
 
     SP<TET_Mesh> mesh_ptr_1 = ptr_read_build_1->build_Mesh();
     delete ptr_read_build_1;
+
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_1 = mesh_ptr_1->pack();
+    SP<TET_Mesh> mesh_ptr_1_unpacked = pack_1.unpack();
+    if (*mesh_ptr_1_unpacked != *mesh_ptr_1)                  ITFAILS;
 
     mesh_ptr_1->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
@@ -795,6 +811,11 @@ void Test_TET()
     SP<TET_Mesh> mesh_ptr_2 = ptr_read_build_2->build_Mesh();
     delete ptr_read_build_2;
 
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_2 = mesh_ptr_2->pack();
+    SP<TET_Mesh> mesh_ptr_2_unpacked = pack_2.unpack();
+    if (*mesh_ptr_2_unpacked != *mesh_ptr_2)                  ITFAILS;
+
     mesh_ptr_2->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
@@ -852,6 +873,11 @@ void Test_TET()
     SP<TET_Mesh> mesh_ptr_3 = ptr_read_build_3->build_Mesh();
     delete ptr_read_build_3;
 
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_3 = mesh_ptr_3->pack();
+    SP<TET_Mesh> mesh_ptr_3_unpacked = pack_3.unpack();
+    if (*mesh_ptr_3_unpacked != *mesh_ptr_3)                  ITFAILS;
+
     mesh_ptr_3->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
 
@@ -885,6 +911,11 @@ void Test_TET()
 
     SP<TET_Mesh> mesh_ptr_4 = ptr_read_build_4->build_Mesh();
     delete ptr_read_build_4;
+
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_4 = mesh_ptr_4->pack();
+    SP<TET_Mesh> mesh_ptr_4_unpacked = pack_4.unpack();
+    if (*mesh_ptr_4_unpacked != *mesh_ptr_4)                  ITFAILS;
 
     mesh_ptr_4->print_mesh(theOutput);
     theOutput << "BEGIN get_cell_pair\n";
@@ -920,6 +951,11 @@ void Test_TET()
     SP<TET_Mesh> mesh_ptr_5 = ptr_read_build_5->build_Mesh();
     delete ptr_read_build_5;
 
+    // Test pack and unpack functions.
+    TET_Mesh::Pack pack_5 = mesh_ptr_5->pack();
+    SP<TET_Mesh> mesh_ptr_5_unpacked = pack_5.unpack();
+    if (*mesh_ptr_5_unpacked != *mesh_ptr_5)                  ITFAILS;
+
     theOutput << "BEGIN get_cell_pair\n";
 
     VF_INT cell_pair_5 = mesh_ptr_5->get_cell_pair();
@@ -939,6 +975,11 @@ void Test_TET()
 //
 //    SP<TET_Mesh> mesh_ptr_6 = ptr_read_build_6->build_Mesh();
 //    delete ptr_read_build_6;
+//
+//    // Test pack and unpack functions.
+//    TET_Mesh::Pack pack_6 = mesh_ptr_6->pack();
+//    SP<TET_Mesh> mesh_ptr_6_unpacked = pack_6.unpack();
+//    if (*mesh_ptr_6_unpacked != *mesh_ptr_6)                  ITFAILS;
 //
 //    theOutput << "BEGIN get_cell_pair\n";
 //

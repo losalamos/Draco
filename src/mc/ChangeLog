@@ -1,3 +1,8 @@
+2001-02-15  H. Grady Hughes  <hgh@lanl.gov>
+
+	* TET_Mesh.cc, TET_Mesh.hh, test/tstTET_Mesh.cc: Completed and
+	tested pack/unpack facilities for tet meshes.
+
 2000-12-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* mc: Release of mc-2_0_0. This update includes all of our major
