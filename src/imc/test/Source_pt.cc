@@ -10,7 +10,9 @@
 //---------------------------------------------------------------------------//
 
 #include "mc/OS_Mesh.hh"
-#include "../Particle.hh"
+#include "../Gray_Particle.hh"
+#include "../Multigroup_Particle.hh"
+#include "../Frequency.hh"
 #include "../Source_Builder.t.hh"
 #include "../Rep_Source_Builder.t.hh"
 #include "../DD_Source_Builder.t.hh"
@@ -19,14 +21,22 @@
 namespace rtt_imc
 {
 
-typedef rtt_mc::OS_Mesh MT;
-typedef Particle<MT>    PT;
+typedef rtt_mc::OS_Mesh         MT;
+typedef Gray_Frequency          G;
+typedef Multigroup_Frequency    MG;
+typedef Gray_Particle<MT>       GPT;
+typedef Multigroup_Particle<MT> MGPT;
 
-template class Source_Builder<MT,PT>;
-template class Rep_Source_Builder<MT,PT>;
-template class DD_Source_Builder<MT,PT>;
+template class Source_Builder<MT,G,GPT>;
+template class Rep_Source_Builder<MT,G,GPT>;
+template class DD_Source_Builder<MT,G,GPT>;
 
-template class Source<MT,PT>;
+template class Source_Builder<MT,MG,MGPT>;
+template class Rep_Source_Builder<MT,MG,MGPT>;
+template class DD_Source_Builder<MT,MG,MGPT>;
+
+template class Source<MT,G,GPT>;
+template class Source<MT,MG,MGPT>;
 
 } // end namespace rtt_imc
 

@@ -811,6 +811,12 @@ int main(int argc, char *argv[])
 	C4::Finalize();
 	return 1;
     }
+    catch (const char *message)
+    {
+	cout << "While testing tstParticle, " << message << endl;
+	C4::Finalize();
+	return 1;
+    }
 
     {
 	C4::HTSyncSpinLock slock;
