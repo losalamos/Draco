@@ -17,6 +17,7 @@
 #include "UnitTestFrame/PassFailStream.hh"
 #include "ds++/SP.hh"
 
+#include "DummyEoS.hh"
 #include "DummyGrayOpacity.hh"
 #include "DummyMultigroupOpacity.hh"
 #include "../CDI.hh"
@@ -182,6 +183,90 @@ namespace rtt_CDI_test {
 		fail() << "CDI->mg()->getOpacity(T,rho) computation is out of spec.";
 
 
+	    // -------------------- //
+	    // Create an EoS Object //
+	    // -------------------- //
+
+	    // The smart pointer points to a generic EoS object.
+	    rtt_dsxx::SP< const rtt_cdi::EoS > spEoS;
+	    
+	    // The actual instatniate is specific (dummyEoS).
+	    if ( spEoS = new rtt_dummyEoS::DummyEoS() )
+		// If we get here then the object was successfully instantiated.
+		pass() << "Smart Pointer to new EoS object created.";
+	    else
+		{
+		    fail() << "Unable to create a Smart Pointer to new EoS object.";
+		    return "Unable to create a Smart Pointer to new EoS object.";
+		}
+
+	    // Create a CDI object linked to a EoS object.
+
+	    rtt_dsxx::SP< rtt_cdi::CDI > spCdiDumEoS;
+	    if ( spCdiDumEoS = new rtt_cdi::CDI( spEoS ) )
+		pass() << "SP to CDI object created successfully (EoS).";
+	    else
+		fail() << "Failed to create SP to CDI object (EoS).";
+
+	    // Test the EoS plug-in component of this CDI.
+
+	    double density = 3.0; // g/cm^3
+	    double temperature = 2300; // Kelvin
+
+	    double refCve = temperature + density/1000.0;
+	    
+	    double Cve = spCdiDumEoS->eos()->getElectronHeatCapacity(
+		density, temperature );
+
+	    if ( match( Cve, refCve ) )
+		pass() << "CDI->eos()->getElectronHeatCapacity( dbl, dbl )\n\t"
+		       << "returned a value that matched the reference value.";
+	    else
+		fail() << "CDI->eos()->getElectronHeatCapacity( dbl, dbl )\n\t"
+		       << "returned a value that was out of spec.";
+
+	    // ------------------------------------------------ //
+	    // Create a CDI object that has multiple components //
+	    // ------------------------------------------------ //
+
+	    // Create a CDI object by copying spCdiDumEos
+
+	    rtt_dsxx::SP< rtt_cdi::CDI > spCdiDum = spCdiDumEoS;
+
+	    // Test the object
+
+	    if ( match( spCdiDum->eos()->getElectronHeatCapacity( 
+		density, temperature ),	refCve ) )
+		pass() << "The copy of spCdiDumEos named spCdiDum looks okay.";
+	    else
+		fail() << "The copy of spCdiDumEos named spCdiDum is not\n\t"
+		       << "identical to spCdiDumEos.";
+
+	    // Now add Gray and Multigroup Opacity objects.
+
+	    spCdiDum->setGrayOpacity( spDGrO );
+	    spCdiDum->setMultigroupOpacity( spDMgO );
+
+	    if ( match( spCdiDum->gray()->getOpacity( temp, dens ), 
+			refOpacity ) )
+		pass() << "CDI->gray()->getOpacity(T,rho) computation was good\n\t"
+		       << "for the multi-physics CDI object.";
+	    else
+		fail() << "CDI->gray()->getOpacity(T,rho) computation failed\n\t"
+		       << "for the multi-physics CDI object.";
+
+
+	    if ( match( spCdiDum->mg()->getGroupBoundaries(),
+			refEnergyBoundary ) )
+		pass() << "CDI->mg()->getGroupBoundaries() computation was good\n\t"
+		       << "for the multi-physics CDI object.";
+	    else
+		fail() << "CDI->mg()->getGroupBoundaries() computation failed\n\t"
+		       << "for the multi-physics CDI object.";
+
+
+	    // Test the new multi-physics CDI object.
+	    
 	    //----------------------------------------
 	    // End of tests
 	    //----------------------------------------

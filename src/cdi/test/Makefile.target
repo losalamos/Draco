@@ -16,7 +16,7 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 #utilObjs := ${ptObjs}
 
-extraObjs := DummyGrayOpacity.o DummyMultigroupOpacity.o
+extraObjs := DummyGrayOpacity.o DummyMultigroupOpacity.o DummyEoS.o
 
 ${test_alltarget}: ${testdeps}
 

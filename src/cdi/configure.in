@@ -20,7 +20,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 AC_NEEDS_LIBS_TEST(UnitTestFrame)
 
-AC_RUNTESTS(tDummyOpacity tCDI, 1) 
+AC_RUNTESTS(tDummyOpacity tDummyEoS tCDI, 1) 
 
 dnl DRACO SETUP
 AC_DRACO_ENV
