@@ -1,5 +1,5 @@
 dnl-------------------------------------------------------------------------dnl
-dnl draco/src/cdi_eospac configure.in
+dnl draco/src/cdi_eospac configure.ac
 dnl Kelly Thompson
 dnl Fri Mar 30 10:43:31 2001
 dnl $Id$
@@ -25,6 +25,7 @@ AC_RUNTESTS(tEospac tEospacWithCDI, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
+AC_DRACO_AUTODOC
 
 dnl Setup config.h for EOSPAC type defines.
 case $host in
@@ -42,14 +43,14 @@ mips-sgi-irix6.*)
    dnl are built with 6.0.  If we are not using Lahey 6.2 provide a 
    dnl configure time error.
 
-   AC_MSG_CHECKING("for EOSPAC v5.35 compatible version of F90")
-   cdi_eospac_lf95=`which lf95`
-   if test -z `echo ${cdi_eospac_lf95} | grep lf9562`; then
-      AC_MSG_RESULT("ok. found ${cdi_eospac_lf95}")
-   else
-      AC_MSG_RESULT("Lahey 6.2 (${cdi_eospac_lf95}) is not compatible with EOSPAC v5.35")
-      AC_MSG_ERROR("EOSPAC v5.35 is incompatible with ${cdi_eospac_lf95}.  Use Lahey 6.0 or 6.1 instead.")
-   fi
+dnl   AC_MSG_CHECKING("for EOSPAC v5.35 compatible version of F90")
+dnl   cdi_eospac_lf95=`which lf95`
+dnl   if test -z `echo ${cdi_eospac_lf95} | grep lf9562`; then
+dnl      AC_MSG_RESULT("ok. found ${cdi_eospac_lf95}")
+dnl   else
+dnl      AC_MSG_RESULT("Lahey 6.2 (${cdi_eospac_lf95}) is not compatible with EOSPAC v5.35")
+dnl      AC_MSG_ERROR("EOSPAC v5.35 is incompatible with ${cdi_eospac_lf95}.  Use Lahey 6.0 or 6.1 instead.")
+dnl   fi
 
    dnl Even if we are using Lahey 6.2, cdi_eospac will work if we link
    dnl against the Lahey 6.0 libraries.

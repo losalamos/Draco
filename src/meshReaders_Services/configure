@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="Connect.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command doxygen_input doxygen_examples rel_doxygen_output rel_doxygen_examples rel_doxygen_input latex_yes_no dotpath number TAGFILES DOXYGEN_TAGFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -856,6 +856,7 @@ Optional Packages:
   --with-ldflags=flags  add flags to \$LDFLAGS
   --with-libs=libs      add libs to \$LIBS
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
+  --with-stlport        replace default STL with stlPort (off by default)
 
 Some influential environment variables:
   CC
@@ -1329,6 +1330,10 @@ package="meshReaders_Services"
        DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
 
+   # Keep a list of component dependencies free of other tags or paths.
+   DRACO_COMPONENTS="meshReaders ds++"
+
+
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in RTT_Format_Reader
    do
@@ -1600,6 +1605,14 @@ fi;
    if test "${with_mips}" = yes ; then
        with_mips='4'
    fi
+
+
+
+# Check whether --with-stlport or --without-stlport was given.
+if test "${with_stlport+set}" = set; then
+  withval="$with_stlport"
+
+fi;
 
 
       # Check whether --enable-draco-stdhdrs or --disable-draco-stdhdrs was given.
@@ -2088,6 +2101,52 @@ echo "$as_me: WARNING: \"No valid lp or lpr found!\"" >&2;}
    fi
 
 
+      # Extract the first word of "doxygen", so it can be a program name with args.
+set dummy doxygen; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_DOXYGEN_PATH+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $DOXYGEN_PATH in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_DOXYGEN_PATH="$DOXYGEN_PATH" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_DOXYGEN_PATH="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_DOXYGEN_PATH" && ac_cv_path_DOXYGEN_PATH="null"
+  ;;
+esac
+fi
+DOXYGEN_PATH=$ac_cv_path_DOXYGEN_PATH
+
+if test -n "$DOXYGEN_PATH"; then
+  echo "$as_me:$LINENO: result: $DOXYGEN_PATH" >&5
+echo "${ECHO_T}$DOXYGEN_PATH" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+   if test "${DOXYGEN_PATH}" = null ; then
+       { echo "$as_me:$LINENO: WARNING: \"No valid Doxygen found!\"" >&5
+echo "$as_me: WARNING: \"No valid Doxygen found!\"" >&2;}
+   fi
+
+
 
 
    # the default compiler is C++; we do not turn on F90 unless
@@ -2372,7 +2431,7 @@ echo "$as_me: error: not found" >&2;}
    if test "$F90FLAGS" = ""
    then
      # F90FLAGS="--f95 ${F90FREE}"
-       F90FLAGS="--f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
+       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then
@@ -3477,7 +3536,7 @@ echo "$as_me: error: not found" >&2;}
    if test "$F90FLAGS" = ""
    then
      # F90FLAGS="--f95 ${F90FREE}"
-       F90FLAGS="--f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
+       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then
@@ -4371,7 +4430,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
        # default is to have debug flag on when opt=0
        if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g ${gcc_opt_flags}"
+	   gcc_opt_flags="-g3 ${gcc_opt_flags}"
        fi
 
    fi
@@ -5175,6 +5234,71 @@ echo "${ECHO_T}\"no\"" >&6
 
    fi
 
+   # STL port
+
+   echo "$as_me:$LINENO: checking \"for stlport\"" >&5
+echo $ECHO_N "checking \"for stlport\"... $ECHO_C" >&6
+   if test "${with_stlport:=no}" != no; then
+      if ! test -d "${with_stlport}/include/stlport"; then
+         { { echo "$as_me:$LINENO: error: \"Invalid directory ${with_stlport}/include/stlport\"" >&5
+echo "$as_me: error: \"Invalid directory ${with_stlport}/include/stlport\"" >&2;}
+   { (exit 1); exit 1; }; }
+      fi
+      CPPFLAGS="-I${with_stlport}/include/stlport ${CPPFLAGS}"
+      CXXFLAGS="-I${with_stlport}/include/stlport ${CXXFLAGS}"
+      echo "$as_me:$LINENO: result: \"-I${with_stlport}/include added to CXXFLAGS.\"" >&5
+echo "${ECHO_T}\"-I${with_stlport}/include added to CXXFLAGS.\"" >&6
+      case $with_cxx in
+      sgi)
+         stlport_libname='mipspro'
+         stlport_xlinker=' '
+         ;;
+      gcc)          stlport_libname='gcc'
+         stlport_xlinker="-Xlinker"
+         ;;
+      *)
+         { { echo "$as_me:$LINENO: error: \"stlport not available with this compiler.\"" >&5
+echo "$as_me: error: \"stlport not available with this compiler.\"" >&2;}
+   { (exit 1); exit 1; }; }
+         ;;
+      esac
+      echo "$as_me:$LINENO: checking \"for debug stlport mode\"" >&5
+echo $ECHO_N "checking \"for debug stlport mode\"... $ECHO_C" >&6
+      if test "${enable_debug:-yes}" = yes; then
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a"; then
+            { { echo "$as_me:$LINENO: error: \"Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a\"" >&5
+echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a\"" >&2;}
+   { (exit 1); exit 1; }; }
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname}_stldebug ${LIBS}"
+         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         echo "$as_me:$LINENO: result: \"yes\"" >&5
+echo "${ECHO_T}\"yes\"" >&6
+      else
+         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}.a"; then
+            { { echo "$as_me:$LINENO: error: \"Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a\"" >&5
+echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a\"" >&2;}
+   { (exit 1); exit 1; }; }
+         fi
+         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
+         echo "$as_me:$LINENO: result: \"no\"" >&5
+echo "${ECHO_T}\"no\"" >&6
+      fi
+                        echo "$as_me:$LINENO: checking \"for LDFLAGS mods for stlport\"" >&5
+echo $ECHO_N "checking \"for LDFLAGS mods for stlport\"... $ECHO_C" >&6
+      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
+      echo "$as_me:$LINENO: result: \"Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS\"" >&5
+echo "${ECHO_T}\"Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS\"" >&6
+
+   elif test "${with_stlport}" = yes; then
+      { { echo "$as_me:$LINENO: error: \"Must define path to stlport when using --with-stlport=dir\"" >&5
+echo "$as_me: error: \"Must define path to stlport when using --with-stlport=dir\"" >&2;}
+   { (exit 1); exit 1; }; }
+   else
+      echo "$as_me:$LINENO: result: \"none\"" >&5
+echo "${ECHO_T}\"none\"" >&6
+   fi
+
 
    # add user defined cppflags
    if test "${with_cppflags:=no}" != no ; then
@@ -5436,7 +5560,8 @@ echo "$as_me: WARNING: \"Linux KCC strict option set to allow long long type!\""
 echo $ECHO_N "checking \"for extra eospac library requirements.\"... $ECHO_C" >&6
        if test -n "${vendor_eospac}"; then
            lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfccx86_6a"
+#	   extra_eospac_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
            LIBS="${LIBS} ${extra_eospac_libs}"
            echo "$as_me:$LINENO: result: \"${extra_eospac_libs}\"" >&5
 echo "${ECHO_T}\"${extra_eospac_libs}\"" >&6
@@ -9476,6 +9601,138 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
 
 
 
+   #
+   # path to package directories which are sources for doxygen
+   #
+
+   doxygen_input=${srcdir}
+   doxygen_examples=${srcdir}/test
+   localdir=`pwd`/autodoc
+   doxygen_output=${prefix}/html/${package}
+
+   #
+   # covert to relative paths
+   #
+
+   _lcl_common_prefix=''
+_lcl_second_prefix_match=''
+while test "$_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x$localdir" : "x\($_lcl_common_prefix/*[^/]*\)"`
+  _lcl_second_prefix_match=`expr "x$doxygen_output" : "x$_lcl_first_prefix"`
+  if test "$_lcl_second_prefix_match" != 0; then
+    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
+      _lcl_common_prefix="$_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done
+_lcl_first_suffix=`expr "x$localdir" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_first_rel=''
+_lcl_tmp='xxx'
+while test "$_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
+  if test "$_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="$_lcl_tmp"
+     _lcl_first_rel="../$_lcl_first_rel"
+  fi
+done
+_lcl_second_suffix=`expr "x$doxygen_output" : "x$_lcl_common_prefix/*\(.*\)"`
+rel_doxygen_output="$_lcl_first_rel$_lcl_second_suffix"
+   _lcl_common_prefix=''
+_lcl_second_prefix_match=''
+while test "$_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x$localdir" : "x\($_lcl_common_prefix/*[^/]*\)"`
+  _lcl_second_prefix_match=`expr "x$doxygen_examples" : "x$_lcl_first_prefix"`
+  if test "$_lcl_second_prefix_match" != 0; then
+    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
+      _lcl_common_prefix="$_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done
+_lcl_first_suffix=`expr "x$localdir" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_first_rel=''
+_lcl_tmp='xxx'
+while test "$_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
+  if test "$_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="$_lcl_tmp"
+     _lcl_first_rel="../$_lcl_first_rel"
+  fi
+done
+_lcl_second_suffix=`expr "x$doxygen_examples" : "x$_lcl_common_prefix/*\(.*\)"`
+rel_doxygen_examples="$_lcl_first_rel$_lcl_second_suffix"
+   _lcl_common_prefix=''
+_lcl_second_prefix_match=''
+while test "$_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x$localdir" : "x\($_lcl_common_prefix/*[^/]*\)"`
+  _lcl_second_prefix_match=`expr "x$doxygen_input" : "x$_lcl_first_prefix"`
+  if test "$_lcl_second_prefix_match" != 0; then
+    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
+      _lcl_common_prefix="$_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done
+_lcl_first_suffix=`expr "x$localdir" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_first_rel=''
+_lcl_tmp='xxx'
+while test "$_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
+  if test "$_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="$_lcl_tmp"
+     _lcl_first_rel="../$_lcl_first_rel"
+  fi
+done
+_lcl_second_suffix=`expr "x$doxygen_input" : "x$_lcl_common_prefix/*\(.*\)"`
+rel_doxygen_input="$_lcl_first_rel$_lcl_second_suffix"
+
+   # use relative paths for tag files also
+
+   components=''
+   echo "$as_me:$LINENO: checking for Doxygen component dependencies" >&5
+echo $ECHO_N "checking for Doxygen component dependencies... $ECHO_C" >&6
+   for comp in ${DRACO_COMPONENTS}; do
+       components="${components} ${comp}"
+       TAGFILES="${TAGFILES} ${prefix}/html/${comp}.tag"
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${prefix}/html/${comp}.tag = ../${comp}\""
+   done
+   echo "$as_me:$LINENO: result: ${components}" >&5
+echo "${ECHO_T}${components}" >&6
+
+   # check if we should build latex sources
+   latex_yes_no='NO'
+   if test "${enable_latex_doc:=no}" = yes ; then
+      latex_yes_no='YES'
+   fi
+
+   # find the release number
+   number='null'
+   echo "$as_me:$LINENO: checking \"draco release number\"" >&5
+echo $ECHO_N "checking \"draco release number\"... $ECHO_C" >&6
+   number=`/bin/sh ../../tools/draco --version`
+   echo "$as_me:$LINENO: result: $number" >&5
+echo "${ECHO_T}$number" >&6
+
+
+
+
+
+
+
+
+
+
+
+
+                       ac_config_files="$ac_config_files autodoc/Makefile:../../config/Makefile.autodoc.in autodoc/doxygen_config:../../config/doxygen_config.in"
+
+
+
+
                                         ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in test/Makefile:../../config/Makefile.test.in test/rttdef.mesh:test/rttdef.mesh.in test/rttamr.mesh:test/rttamr.mesh.in"
 
 cat >confcache <<\_ACEOF
@@ -10001,6 +10258,8 @@ for ac_config_target in $ac_config_targets
 do
   case "$ac_config_target" in
   # Handling of arguments.
+  "autodoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES autodoc/Makefile:../../config/Makefile.autodoc.in" ;;
+  "autodoc/doxygen_config" ) CONFIG_FILES="$CONFIG_FILES autodoc/doxygen_config:../../config/doxygen_config.in" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../../config/Makefile.package.in" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile:../../config/Makefile.test.in" ;;
   "test/rttdef.mesh" ) CONFIG_FILES="$CONFIG_FILES test/rttdef.mesh:test/rttdef.mesh.in" ;;
@@ -10112,6 +10371,7 @@ s,@DVIPS@,$DVIPS,;t t
 s,@DVIPSFLAGS@,$DVIPSFLAGS,;t t
 s,@LP@,$LP,;t t
 s,@LPFLAGS@,$LPFLAGS,;t t
+s,@DOXYGEN_PATH@,$DOXYGEN_PATH,;t t
 s,@F90@,$F90,;t t
 s,@F90FREE@,$F90FREE,;t t
 s,@F90FIXED@,$F90FIXED,;t t
@@ -10164,6 +10424,16 @@ s,@test_scalar@,$test_scalar,;t t
 s,@test_nprocs@,$test_nprocs,;t t
 s,@test_output_files@,$test_output_files,;t t
 s,@configure_command@,$configure_command,;t t
+s,@doxygen_input@,$doxygen_input,;t t
+s,@doxygen_examples@,$doxygen_examples,;t t
+s,@rel_doxygen_output@,$rel_doxygen_output,;t t
+s,@rel_doxygen_examples@,$rel_doxygen_examples,;t t
+s,@rel_doxygen_input@,$rel_doxygen_input,;t t
+s,@latex_yes_no@,$latex_yes_no,;t t
+s,@dotpath@,$dotpath,;t t
+s,@number@,$number,;t t
+s,@TAGFILES@,$TAGFILES,;t t
+s,@DOXYGEN_TAGFILES@,$DOXYGEN_TAGFILES,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

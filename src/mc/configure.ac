@@ -1,4 +1,4 @@
-cd tessdnl-------------------------------------------------------------------------dnl
+dnl-------------------------------------------------------------------------dnl
 dnl draco/src/mc configure.in
 dnl Thomas M. Evans
 dnl Tue Apr 13 17:58:54 1999
@@ -52,12 +52,14 @@ AC_RUNTESTS(tstConfig \
 
 dnl DRACO SETUP
 AC_DRACO_ENV
+AC_DRACO_AUTODOC
 
 dnl ASCI WHITE TEST WORK-AROUND
 AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
 
 dnl do eight byte word setup
 AC_DETERMINE_WORD_TYPES
+
 AC_CHECK_EIGHT_BYTE_INT_TYPE
 
 dnl ASCI WHITE TEST WORK-AROUND

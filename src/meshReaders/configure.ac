@@ -21,6 +21,7 @@ AC_RUNTESTS(TestElementDefinition TestHexMeshReader, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
+AC_DRACO_AUTODOC
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in   \
                  test/Makefile:../../config/Makefile.test.in \

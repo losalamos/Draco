@@ -51,6 +51,7 @@ AC_RUNTESTS(tQuadrature, scalar)
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT
 AC_DRACO_ENV
+AC_DRACO_AUTODOC
 
 dnl Create build system files in the ${prefix} directory.
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \

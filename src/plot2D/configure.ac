@@ -25,6 +25,7 @@ AC_RUNTESTS(tstPlot2D, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
+AC_DRACO_AUTODOC
 
 dnl Grace must be in the path!
 AC_PATH_PROG(XMGRACE_PATH, xmgrace, null)

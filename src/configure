@@ -851,6 +851,7 @@ Optional Packages:
   --with-ldflags=flags  add flags to \$LDFLAGS
   --with-libs=libs      add libs to \$LIBS
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
+  --with-stlport        replace default STL with stlPort (off by default)
 
 _ACEOF
 fi
@@ -2595,6 +2596,14 @@ fi;
    if test "${with_mips}" = yes ; then
        with_mips='4'
    fi
+
+
+
+# Check whether --with-stlport or --without-stlport was given.
+if test "${with_stlport+set}" = set; then
+  withval="$with_stlport"
+
+fi;
 
 
       # Check whether --enable-draco-stdhdrs or --disable-draco-stdhdrs was given.

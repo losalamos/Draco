@@ -53,6 +53,10 @@ AC_DEFUN(AC_NEEDS_LIBS, [dnl
        DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
        DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
    done
+
+   # Keep a list of component dependencies free of other tags or paths.
+   DRACO_COMPONENTS="$1"
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -218,6 +222,13 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
        AC_MSG_WARN("No valid lp or lpr found!")
    fi
    AC_SUBST(LPFLAGS)
+
+   dnl check for and assign the path for doxygen
+   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
+   if test "${DOXYGEN_PATH}" = null ; then
+       AC_MSG_WARN("No valid Doxygen found!")
+   fi
+   AC_SUBST(DOXYGEN_PATH)
 
 ])
 
@@ -1446,6 +1457,14 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
        with_mips='4'
    fi
 
+   dnl 
+   dnl STLport
+   dnl
+
+   dnl specify location of stlport installation.
+   AC_ARG_WITH(stlport,
+      [  --with-stlport        replace default STL with stlPort (off by default)])
+
    dnl
    dnl DRACO STANDARD HEADERS
    dnl
@@ -1740,7 +1759,7 @@ AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
    if test "$F90FLAGS" = ""
    then
      # F90FLAGS="--f95 ${F90FREE}"
-       F90FLAGS="--f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
+       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
 
        if test "${enable_debug:=no}" = yes
        then

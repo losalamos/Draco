@@ -28,6 +28,7 @@ AC_RUNTESTS(tstAnalytic_Gray_Opacity tstAnalytic_Multigroup_Opacity \
 
 dnl DRACO SETUP
 AC_DRACO_ENV
+AC_DRACO_AUTODOC
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])
