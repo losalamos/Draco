@@ -127,7 +127,7 @@ void IMC_Man<MT,BT,IT,PT>::host_init(char *argv)
 	max_cycle = interface->get_max_cycle();
 	print_f   = interface->get_printf();
 	rnd_con   = new Rnd_Control(9836592);
-	Particle_Buffer<PT>::set_buffer_size(100000);
+	Particle_Buffer<PT>::set_buffer_size(interface->get_buffer());
     }
 
   // initialize the mesh builder and build mesh

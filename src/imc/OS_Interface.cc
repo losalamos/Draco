@@ -527,6 +527,8 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	    in >> max_cycle;
 	if (keyword == "print_frequency:")
 	    in >> print_f;
+	if (keyword == "buffer_size:")
+	    in >> buffer;
     }   
   
   // do some assertions on the source variables
@@ -535,6 +537,7 @@ void OS_Interface::zone_source_parser(ifstream &in)
     Insist (npnom > 0, "The npnom must be > 0!");
     Insist (capacity > 0, "The capacity must be > 0!");
     Insist (max_cycle > 0, "The max_cycle must be > 0!");
+    Insist (buffer > 0, "The buffer must be > 0!");
 }
 
 //---------------------------------------------------------------------------//

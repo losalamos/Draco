@@ -86,6 +86,7 @@ private:
     string ss_dist;
     int capacity;
     int print_f;
+    int buffer;
 
   // Parser member functions
 
@@ -140,6 +141,7 @@ public:
     string get_analytic_opacity() const { return analytic_opacity; }
     int get_max_cycle() const { return max_cycle; }
     int get_printf() const { return print_f; }
+    int get_buffer() const { return buffer; }
 };
 
 //---------------------------------------------------------------------------//
@@ -152,7 +154,7 @@ inline OS_Interface::OS_Interface(const string &infile)
       density(0), kappa(0), temperature(0), implicitness(0), 
       analytic_opacity("straight"), specific_heat(0), evol_ext(0), ss_pos(0), 
       ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), npmax(0), dnpdt(0), 
-      ss_dist("none"), capacity(0), print_f(Global::huge)
+      ss_dist("none"), capacity(0), print_f(Global::huge), buffer(1000)
 {}
 
 CSPACE
