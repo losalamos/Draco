@@ -33,7 +33,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{XTM:JMM-99-??? (U)}
+\refno{XTM:JMM-99-19 (U)}
 \subject{\gnats\ Bug Tracking System}
 
 %-------NO CHANGES
@@ -88,12 +88,10 @@ system, and how to use it.
 \gnats\ is a software bug tracking system available under
 the GNU Public License. Several user references are available.
 A user's manual is available on-line at:
-\begin{verbatim}
-http://sourceware.cygnus.com/gnats/
-\end{verbatim}
+\begin{verbatim} http://sourceware.cygnus.com/gnats/ \end{verbatim}
 The \gnats\ info pages can be accessed from \xemacs\ via ``C-h i g gnats'',
-after performing the setup described below.
-The \draco\ \gnats\ Administrator is John McGhee (mcghee@lanl.gov).
+after performing the INFOPATH setup described below.
+The \draco\ \gnats\ administrator is John McGhee (mcghee@lanl.gov).
 Questions concerning \gnats\ may be directed to John.
 
 This memo is aimed at new users.
@@ -102,8 +100,8 @@ contains additional installation and administration notes.
 
 \section{Set-up for New \draco\ \gnats\ Users}
 
-The following changes should be made to setup \gnats\ on 
-local radtran machines:
+The following changes should be made to setup \gnats\ for
+machines on the radtran LAN:
 
 \subsection {Changes to the Shell Initialization File}
 
@@ -120,14 +118,15 @@ Add the following text or it's equivalent to your .bashrc file.
   export GNATS_ELISP_DIR=${GNATS_DIR}/share/emacs/lisp/$(uname)
   export GNATS_ROOT=${GNATS_DIR}/lib/gnats/gnats-db
 
-# Set your path(s) so that the radtran Gnats utilities are found
-# before the Gnats utilities that may (are) included with your XEmacs.
+# Set your path(s) so that the radtran GNATS utilities are found
+# before the GNATS utilities that may (are) included with your XEmacs.
   export PATH=${GNATS_PATH}:${PATH}
   export MANPATH=${GNATS_MANPATH}:${MANPATH}
   export INFOPATH=${GNATS_INFOPATH}:${INFOPATH}
 \end{verbatim}
+%$
 
-\subsection {Changes to the \xemacs\ Initialization File: }
+\subsection {Changes to the \xemacs\ Initialization File:}
 
 Add the following text or it's equivalent to your .emacs file.
  \begin{verbatim}
@@ -137,10 +136,9 @@ Add the following text or it's equivalent to your .emacs file.
   (setq my-home-dir  (getenv "HOME"))
   (setq my-elisp-dir (concat my-home-dir "/lib/elisp"))
   (setq load-path (cons my-elisp-dir (cons my-gnats-dir load-path )))
-  (setq my-info-dir (concat my-home-dir "/info"))
 
 ;; Load the various functions that setup the GNATS bug tracking system.
-;; This is not necessary if "draco-rtt" is loaded.
+;; Note that this is not necessary if "draco-rtt" is loaded by your .emacs
   (autoload 'edit-pr "gnats"
             "Command to edit a problem report." t)
   (autoload 'view-pr "gnats"
@@ -174,14 +172,16 @@ PR and produced a preliminary evaluation of what needs to be done
 to fix it. Feedback means the problem has been fixed and the responsible
 party is waiting on the originator to acknowledge that the fix is OK.
 Suspended means that work on the problem has been postponed.
-Closed is where PR's go to die.
+Closed is where PR's go to die. Once entered into the system, a PR
+is permanently available for perusal or editing, regardless of it's status.
 
-\gnats\ is set up to run on any SunOS or IRIX64 on the LAN.
+
+\gnats\ is set up to run on any SunOS or IRIX64 on the radtran LAN.
 The best way to interface with the system is to
-use \xemacs. See the \gnats\ manual for details.
+use \xemacs. 
  There are three major commands that you will want to use:
-M-x send-pr, M-x edit-pr, and M-x query-pr. A brief synopsis
-is provided below.
+``M-x send-pr'', ``M-x edit-pr'', and ``M-x query-pr''. A brief synopsis
+is provided below. See the \gnats\ manual for additional details.
 
 \subsection{M-x send-pr }
 Send-pr brings up a window for sending in a PR. You can actually 
@@ -206,14 +206,13 @@ only checks that often for incoming PR's.
 Keep track of the number \gnats\ assigns to
 your problem. Your PR is the only PR that has, or ever will
 have, this number as far as \gnats\ is concerned. When you communicate
-to \gnats\ about a PR, this number is required to ID the PR in question
-to \gnats\.
+to \gnats\ about a PR, this number is required to ID the PR in question.
 
 \subsection{M-x edit-pr }
 Edit-pr works just about the same way as send-pr above. Do NOT edit
 the PR number, and you should really avoid changing historical info
 like Description, How-to-Repeat, etc.. Do a C-c C-c when done to
-transmit the changes. Edit-pr invokes the ``gnats'' mode.
+transmit the changes. Edit-pr invokes the ``gnats mode''.
 Use ``C-h m'' while in the edit-pr buffer 
 to get mode help for other key bindings.
 If you change certain fields in the PR, \xemacs\ will follow
@@ -232,15 +231,16 @@ in the draco-units category, use the options:
  You can get a list of the available search options using: 
 \begin{verbatim} "query-pr --help" \end{verbatim}
 GNU regular expression syntax is supported.
-For example \begin{verbatim} --state="o|a" \end{verbatim}
+For example: \begin{verbatim} --state="o|a" \end{verbatim}
 finds PR's whose state field begins
 with "o" or "a" (open, or analyzed). For more details, see the manual.
 
 \subsection{Direct E-mail }
 If you send e-mail to bugs@skiathos.lanl.gov with
-"my-category/my-number" in the subject, the message will be appended to
-the unique \gnats\ bug report number "my-number" in category "my-category".
-For example sending e-mail to
+"my-cat/my-num" in the subject, the message will be appended to
+the unique \gnats\ bug report number "my-num" which should
+be found in the category "my-cat". 
+For example, sending e-mail to
 bugs@skiathos.lanl.gov with "Subject: draco-units/36 " will
 append the e-mail to problem report 36, which should be found in the 
 draco-units category.
@@ -249,9 +249,9 @@ you would like to be made a part of the PR record.
 
 \subsection {PR Categories}
 The current list of accepted categories is given below. This can be altered 
-at any time by your friendly \gnats\ Administrator.
+at any time by your friendly \gnats\ administrator.
 Do not submit anything to the "pending" category, that is for
-\gnats\ Administration internal use only. There is also a ``test-gnats''
+\gnats\ administration internal use only. There is also a ``gnats-test''
 category that can be used for examples and training.
 Note that each category has a "responsible" individual.  This
 individual gets a copy of the PR when it is received by \gnats\, and also
@@ -261,46 +261,46 @@ of a PR.
 
 \begin{verbatim}
 # Categories
-# category : description : responsible : others to e-mail 
+# category:description:responsible:others to e-mail 
 #######################################################################
 #
 # Draco Clients:
 #
-solon: generic solon problems : roberts : pautz
-tycho: generic tycho problems : mcghee : 
-mach: generic mach problems : lowrie : 
-milagro: generic milagro problems : evans : urbatsch
-milstone: generic milstone problems : evans : urbatsch
-kepler: generic kepler problems : evans : urbatsch
+solon:generic solon problems:roberts:pautz
+tycho:generic tycho problems:mcghee:
+mach:generic mach problems:lowrie:
+milagro:generic milagro problems:evans:urbatsch
+milstone:generic milstone problems:evans:urbatsch
+kepler:generic kepler problems:evans:urbatsch
 #
 #######################################################################
 #
 # Draco:
 #
-draco: generic draco problems : mcghee : rsqrd, evans
-draco-c4: draco C4 communications package : furnish :
-draco-ds++: draco ds++ services package : furnish :
-draco-xyz-mt: draco XYZ mesh type : pautz : 
-draco-matprops: draco material properties : roberts : 
-draco-timestep: draco time-step controller : mcghee : 
-draco-xm: draco XM expression template engine : furnish : 
-draco-units : draco units package : roberts : 
-draco-radphys: draco radiation physics utilities : roberts : 
-draco-traits: draco C++ container traits utility : roberts : 
-draco-nml: draco name-list utility : furnish : 
-draco-rng: draco random number generator utility : evans : 
-draco-imc: draco implicit Monte-Carlo utilities : evans : 
-draco-diffusion : draco diffusion package : roberts : 
-draco-elisp: Draco elisp code development environment : evans :
-draco-dejagnu: draco dejagnu testing framework : mcghee : 
-draco-build-system : draco autoconf-gmake build system : evans : roberts
-draco-test-library : draco test problem library : gray : 
-draco-linear-algebra : draco linear algebra library : roberts :
+draco:generic draco problems:mcghee:rsqrd,evans
+draco-c4:draco C4 communications package:furnish:
+draco-ds++:draco ds++ services package:furnish:
+draco-xyz-mt:draco XYZ mesh type:pautz:
+draco-matprops:draco material properties:roberts:
+draco-timestep:draco time-step controller:mcghee:
+draco-xm:draco XM expression template engine:furnish:
+draco-units:draco units package:roberts:
+draco-radphys:draco radiation physics utilities:roberts:
+draco-traits:draco C++ container traits utility:roberts:
+draco-nml:draco name-list utility:furnish:
+draco-rng:draco random number generator utility:evans:
+draco-imc:draco implicit Monte-Carlo utilities:evans:
+draco-diffusion:draco diffusion package:roberts:
+draco-elisp:Draco elisp code development environment:evans:
+draco-dejagnu:draco dejagnu testing framework:mcghee:
+draco-build-system:draco autoconf-gmake build system:evans:roberts
+draco-test-library:draco test problem library:gray:
+draco-linear-algebra:draco linear algebra library:roberts:
 \end{verbatim}
 
 \subsection{Responsible Parties}
 Listed below are the responsible parties that \gnats\ currently recognizes.
-These can be changed by the \gnats\ Administrator.
+These can be changed by the \gnats\ administrator.
 
 \begin{verbatim}
 Responsible
@@ -330,8 +330,9 @@ This bug tracking system will only work if people use it. I
 would encourage all to submit bugs and to track them. Use of the
 \gnats\ database does not have to be limited strictly to software bugs but
 can also be used to track deficiencies and requests of all
-kinds. Such might include: documentation bugs, requests for a changes in behavior,
-requests for additional features, things-to-do, and support problems or questions.
+kinds. Such might include: documentation bugs, requests for a changes 
+in behavior, requests for additional features, things-to-do, 
+and support problems or questions.
  
 \closing
 \end{document}
