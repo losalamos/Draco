@@ -18,7 +18,7 @@ using std::string;
 // this library in the form c4-#_#_# in pkg_version variable
 const string release()
 {
-    string pkg_release = "@(#)c4-1_1_0";
+    string pkg_release = "@(#)c4-1_2_0";
     return pkg_release;
 }
 

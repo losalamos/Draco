@@ -1,0 +1,6 @@
+2000-02-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* ., test: updated release to c4-1_2_0.  This updates c4 to the
+	new ds++ namespace.  We will modernize the c4 namespace at a later 
+	date when we work on c4 next.
+
