@@ -4,17 +4,9 @@
 
 ;;; $Id$
 
-;;---------------------------------------------------------------------------;;
+;;----------------------------------
 ;; Load the DRACO-RTT Elisp packages
 ;; ---------------------------------
-;;
-;; This file should be called from the user's .emacs file in the form:
-;; 
-;; (setq my-home-dir (getenv "HOME"))
-;; (setq my-elisp-dir (concat my-home-dir ".xemacs/"))
-;; (setq load-path (cons my-elisp-dir load-path))
-;; (load "draco-rtt")
-;;---------------------------------------------------------------------------;;
 
 ;;
 ;; get the Elisp files
