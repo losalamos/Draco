@@ -28,14 +28,21 @@ main()
 	
       // initialize the builder
 	OS_Builder build(infile);
-	mesh = build.buildMesh();
+	mesh = build.Build_Mesh();
     }
 
-    cout << "Coordinate System: " << mesh->Coord().getCoord() << endl;
+    cout << "Coordinate System: " << mesh->Coord().Get_coord() << endl;
     int cell;
     cout << "Give a cell" << endl;
     cin >> cell;
     mesh->Print(cell);
+    cout << endl;
+    cout << "Mesh Size: " << mesh->Num_cells() << endl;
+    cout << "Position of Cells:" << endl;
+    for (int i = 1; i <= mesh->Num_cells(); i++)
+	cout << i << " " << "(" << mesh->Pos(1,i) << "," << mesh->Pos(2,i)
+	     << ")" << endl;
+	    
 }
 
 //---------------------------------------------------------------------------//
