@@ -13,8 +13,6 @@ IMCSPACE
 
 instantiate class Particle<OS_Mesh>
 
-instantiate class Particle_Stack<Particle<OS_Mesh> >
-
 CSPACE
 
 //---------------------------------------------------------------------------//

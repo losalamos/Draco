@@ -33,6 +33,8 @@
 //                number type, updated contructor to work with new source
 //                classes, added dump and changed random number to Sprng 
 //                types.
+//  5)  5-12-98 : added Particle_Buffer nested class to aid in persistence of 
+//                particles
 // 
 //===========================================================================//
 
@@ -46,7 +48,7 @@
 #include "imctest/Names.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Tally.hh"
-#include "rng/Sprng.hh"
+#include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 #include <vector>
@@ -55,6 +57,7 @@
 #include <cmath>
 #include <stack>
 #include <list>
+#include <cstdlib>
 
 IMCSPACE
 
@@ -70,12 +73,6 @@ using std::list;
 
 // DRACO classes used in Particle
 using RNG::Sprng;
-
-template<class PT>
-struct Particle_Stack
-{
-    typedef stack<PT, list<PT> > Bank;
-};
 
 template<class MT>
 class Particle
@@ -110,30 +107,33 @@ public:
     };
 
   // particle buffer class for particle persistence
-    class Particle_Buffer
+    class Particle_Buffers
     {
     private:
       // particle data of type double
 	double *ddata;
 	int dsize;
       // particle data of type int
-	int idata;
+	int *idata;
+	int isize;
+      // random number state
+	char *rdata;
 
     public:
       // constructors
-	inline Particle_Buffer(const Particle<MT> &);
-	inline Particle_Buffer(int, int = 0);
+	inline Particle_Buffers(const Particle<MT> &);
+	inline Particle_Buffers(int);
 
       // destructors
-	~Particle_Buffer() { delete [] ddata; }
+	inline ~Particle_Buffers();
 
       // re-calculate particle attributes
 	inline vector<double> get_r() const;
 	inline vector<double> get_omega() const;
 	double get_ew() const { return ddata[0]; }
 	double get_frac() const { return ddata[1]; }
-	int get_cell() const { return idata; }
-	inline Sprng get_rn() const;
+	int get_cell() const { return idata[0]; }
+	inline Sprng get_rn();
 
       // read and write buffer
 	inline void write(ostream &) const;
@@ -142,7 +142,8 @@ public:
 
   // friends and such
     friend class Diagnostic;
-    friend class Particle_Buffer;
+    friend class Particle_Buffers;
+    template<class PT> friend class Particle_Buffer;
 
 private:
   // particle energy-weight
@@ -208,7 +209,7 @@ public:
 
   // other services
     bool status() const { return alive; }
-    inline void write_to_census(ostream &) const;
+    inline Particle_Buffers pack() const;
 
   // public diagnostic services
     void print(ostream &) const;
@@ -230,21 +231,21 @@ inline ostream& operator<<(ostream &output, const Particle<MT> &object)
 }
 
 //---------------------------------------------------------------------------//
-// dump the Particle_Buffer
+// dump the Particle_Buffers
 
 template<class MT>
 inline ostream& operator<<(ostream &output, const
-			   Particle<MT>::Particle_Buffer &object)
+			   Particle<MT>::Particle_Buffers &object)
 {
     object.write(output);
     return output;
 }
 
 //---------------------------------------------------------------------------//
-// read the Particle_Buffer
+// read the Particle_Buffers
 
 template<class MT>
-inline bool operator>>(istream &input,  Particle<MT>::Particle_Buffer &object)
+inline bool operator>>(istream &input,  Particle<MT>::Particle_Buffers &object)
 {
   // if true we can keep on going, if false we stop
     return object.read(input);
@@ -263,19 +264,19 @@ inline void Particle<MT>::Diagnostic::header() const
 }
 
 //---------------------------------------------------------------------------//
-// Particle<MT>::Particle_Buffer inline functions
+// Particle<MT>::Particle_Buffers inline functions
 //---------------------------------------------------------------------------//
 // constructor for dumping the buffer
 
 template<class MT>
-inline Particle<MT>::Particle_Buffer::Particle_Buffer(const Particle<MT>
+inline Particle<MT>::Particle_Buffers::Particle_Buffers(const Particle<MT>
 						      &particle)
 {
-  // set the size of the dynamic arrays
+  // set the size of the dynamic arrays for type double data
     dsize = particle.r.size() + 5;
     ddata = new double[dsize];
     
-  // assign everything
+  // assign all data of type double about the particle
     int index = 0;
     ddata[index++] = particle.ew;
     ddata[index++] = particle.fraction;
@@ -284,25 +285,56 @@ inline Particle<MT>::Particle_Buffer::Particle_Buffer(const Particle<MT>
     for (int i = 0; i < particle.r.size(); i++)
 	ddata[index++] = particle.r[i];
     Check (index == dsize);
-    idata = particle.cell;
+
+  // set the size of the dynamic arrays for type integer data
+    isize = 3;
+    idata = new int[isize];
+
+  // assign integer data
+    idata[0] = particle.cell;
+    idata[1] = particle.random.get_num();
+
+  // set the size of dynamic storage for the Random number state and pack it
+    idata[2] = pack_sprng(particle.random.get_id(), &rdata);
+    Check (idata[2] < RNG::max_buffer);
 }
 
 //---------------------------------------------------------------------------//
 // constructor for reading the buffer
 
 template<class MT>
-inline Particle<MT>::Particle_Buffer::Particle_Buffer(int dim, int parameter)
+inline Particle<MT>::Particle_Buffers::Particle_Buffers(int dim)
+    : rdata(0)
 {
   // dynamically allocate the size of the double array
     dsize = dim + 5;
     ddata = new double[dsize];
+
+  // dynamically allocate the size of the integer array
+    isize = 3;
+    idata = new int[isize];
 }
 
+//---------------------------------------------------------------------------//
+// destructor
+
+template<class MT>
+inline Particle<MT>::Particle_Buffers::~Particle_Buffers()
+{
+  // release dynamic storage
+    delete [] ddata;
+    delete [] idata;
+
+  // free array dynamically allocated by Sprng library
+    if (rdata)
+	std::free(rdata);
+}
+    
 //---------------------------------------------------------------------------//
 // dump the buffer to an output
 
 template<class MT>
-inline void Particle<MT>::Particle_Buffer::write(ostream &output) const
+inline void Particle<MT>::Particle_Buffers::write(ostream &output) const
 {
   // make sure file exists
     Check (output);
@@ -310,14 +342,61 @@ inline void Particle<MT>::Particle_Buffer::write(ostream &output) const
   // dump the output
     output.write(reinterpret_cast<const char *>(ddata), dsize *
 		 sizeof(double));
-    output.write(reinterpret_cast<const char *>(&idata), sizeof(int));
+    output.write(reinterpret_cast<const char *>(idata), isize * sizeof(int));
+    output.write(reinterpret_cast<const char *>(rdata), idata[2]);
+}
+
+//---------------------------------------------------------------------------//
+// read the contents
+
+template<class MT>
+inline bool Particle<MT>::Particle_Buffers::read(istream &input)
+{
+  // make sure file exists
+    Check (input);
+    Check (dsize != 0);
+    Check (isize != 0);
+
+  // read in data
+    input.read(reinterpret_cast<char *>(ddata), dsize * sizeof(double));
+    if (input.eof())
+	return false;
+    else
+    {
+      // read in integer data
+	input.read(reinterpret_cast<char *>(idata), isize * sizeof(int));
+	Check (!input.eof());
+
+      // get size of random number stream
+	if (!rdata) 
+	    rdata = static_cast<char *>(std::malloc(idata[2]));
+	input.read(reinterpret_cast<char *>(rdata), idata[2]);
+	Check (!input.eof());
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+// restate the random number guy
+
+template<class MT>
+inline Sprng Particle<MT>::Particle_Buffers::get_rn()
+{
+  // unpack the random number stream
+    int *id = unpack_sprng(rdata);
+    
+  // make new random number with the right seed
+    Sprng random(id, idata[1]);
+
+  // return the random number
+    return random;
 }
 
 //---------------------------------------------------------------------------//
 // get omega from the buffer
 
 template<class MT>
-inline vector<double> Particle<MT>::Particle_Buffer::get_omega() const
+inline vector<double> Particle<MT>::Particle_Buffers::get_omega() const
 {
   // make the omega vector
     vector<double> omega;
@@ -334,7 +413,7 @@ inline vector<double> Particle<MT>::Particle_Buffer::get_omega() const
 // get r (position) from the buffer
 
 template<class MT>
-inline vector<double> Particle<MT>::Particle_Buffer::get_r() const
+inline vector<double> Particle<MT>::Particle_Buffers::get_r() const
 {
   // make the r vector
     vector<double> r;
@@ -345,28 +424,6 @@ inline vector<double> Particle<MT>::Particle_Buffer::get_r() const
 
   // return the vector
     return r;
-}
-
-//---------------------------------------------------------------------------//
-// read the contents
-
-template<class MT>
-inline bool Particle<MT>::Particle_Buffer::read(istream &input)
-{
-  // make sure file exists
-    Check (input);
-    Check (dsize != 0);
-
-  // read in data
-    input.read(reinterpret_cast<char *>(ddata), dsize * sizeof(double));
-    if (input.eof())
-	return false;
-    else
-    {
-	input.read(reinterpret_cast<char *>(&idata), sizeof(int));
-	Check (!input.eof());
-    }
-    return true;
 }
 
 //---------------------------------------------------------------------------//
@@ -434,13 +491,13 @@ inline void Particle<MT>::stream_IMC(const Opacity<MT> &xs, Tally<MT> &tally,
 // write out particle data to an output
 
 template<class MT>
-inline void Particle<MT>::write_to_census(ostream &output) const
+inline Particle<MT>::Particle_Buffers Particle<MT>::pack() const
 {
   // make a particle buffer
-    Particle_Buffer buffer(*this);
+    Particle_Buffers buffer(*this);
 
-  // dump particle buffer
-    buffer.write(output);
+  // return buffer
+    return buffer;
 }
 
 CSPACE

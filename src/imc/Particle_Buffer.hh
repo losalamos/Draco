@@ -24,20 +24,28 @@
 #include "imctest/Names.hh"
 #include "rng/Random.hh"
 #include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <list>
 
 IMCSPACE
 
+// draco components
 using RNG::Sprng;
 
-template<class MT>
+// STL components
+using std::vector;
+using std::list;
+using std::stack;
+using std::istream;
+using std::ostream;
+
+template<class PT>
 class Particle_Buffer
 {
 public:
-  // standard buffers for particles
-    typedef stack<PT, list<PT> > census;
-    typedef stack<PT, list<PT> > bank;
-    typedef stack<PT, list<PT> > comm_bank;
-
   // abbreviated Particle data from census
     struct Census_Particle
     {
@@ -51,8 +59,15 @@ public:
 
       // constructor
 	Census_Particle(vector<double> &, vector<double> &, double, double,
-			int, Sprng)
+			int, Sprng);
+      // faux default constructor for STL
+	inline Census_Particle();
     };
+
+  // standard buffers for particles
+    typedef stack<PT, list<PT> > Census;
+    typedef stack<PT, list<PT> > Bank;
+    typedef stack<PT, list<PT> > Comm_bank;
 
 private:
   // data of type double size (number of elements)
@@ -65,9 +80,14 @@ public:
     template<class MT> explicit Particle_Buffer(const MT &);
 
   // io functions
-    inline void write_census(const PT &);
+    void write_census(ostream &, const PT &) const;
+    void write_census(const Census &) const;
     SP<Census_Particle> read_census();
 };
+
+//---------------------------------------------------------------------------//
+// INLINE FUNCTIONS FOR PARTICLE BUFFER
+//---------------------------------------------------------------------------//
 
 CSPACE
 

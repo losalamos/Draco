@@ -13,6 +13,7 @@
 #include "imctest/Opacity_Builder.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Particle.hh"
+#include "imctest/Particle_Buffer.hh"
 #include "imctest/Source_Init.hh"
 #include "imctest/Tally.hh"
 #include "imctest/Math.hh"
@@ -32,8 +33,8 @@ using IMC::Mat_State;
 using IMC::Opacity_Builder;
 using IMC::Opacity;
 using IMC::Particle;
+using IMC::Particle_Buffer;
 using IMC::Tally;
-using IMC::Particle_Stack;
 using IMC::Source_Init;
 using RNG::Sprng;
 using RNG::Rnd_Control;
@@ -171,8 +172,9 @@ void write_part(const MT &mesh, Rnd_Control &rcon)
 
   // write particles
     ofstream outfile("part.out");
-    part1.write_to_census(outfile);
-    part2.write_to_census(outfile);
+    Particle_Buffer<Particle<MT> > buffer(mesh);
+    buffer.write_census(outfile, part1);
+    buffer.write_census(outfile, part2);
 }
 
 template<class MT>
@@ -188,7 +190,7 @@ void read_part(const MT &mesh, Rnd_Control &rcon)
     while (buffer.read(infile))
     {
 	Particle<MT> part(buffer.get_r(), buffer.get_omega(),
-			  buffer.get_ew(), buffer.get_cell(), rcon.get_rn(),
+			  buffer.get_ew(), buffer.get_cell(), buffer.get_rn(),
 			  buffer.get_frac());
 	cout << part << endl;
     }
@@ -234,7 +236,7 @@ int main(int argc, char *argv[])
       // mesh diagnostics
 	Builder_diagnostic(*mesh, *mat_state, *opacity);
 	write_part(*mesh, *rcon);
-     	read_part(*mesh, *rcon);
+      //read_part(*mesh, *rcon);
     }
     catch (const assertion &ass)
     {

@@ -24,7 +24,7 @@
 #include "imctest/Names.hh"
 #include "imctest/Opacity.hh"
 #include "imctest/Mat_State.hh"
-#include "rng/Rnd_Control.hh"
+#include "rng/Random.hh"
 #include "ds++/SP.hh"
 #include <string>
 

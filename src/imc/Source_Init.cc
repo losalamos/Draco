@@ -331,7 +331,7 @@ void Source_Init<MT>::write_initial_census(const MT &mesh, Rnd_Control &rcon)
 	    Particle<MT> particle(r, omega, ew, cell, random);
 	    
 	  // write particle
-	    particle.write_to_census(cen_file);
+	  // particle.write_to_census(cen_file);
 	}
 }
 
