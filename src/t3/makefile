@@ -1,0 +1,60 @@
+###############################################################################
+# draco/src/t3/makefile
+# Geoffrey Furnish
+# 29 September 1997
+###############################################################################
+# @> Rules for building the baby solver test executable.
+###############################################################################
+
+need_c4		:= yes
+need_namelist	:= yes
+need_spdf	:= yes
+need_util	:= yes
+need_pooma	:= yes
+
+# Go get the standard includeable makefile for Draco components.
+
+include ../config/makefile
+
+srcs	= main.cc Run_DB.cc Test_Prob.cc
+
+ifdef preinstantiate
+# Add in files which perform explicit template instantiation.
+
+pt_files = $(wildcard *.pt)
+ptcc_files = $(pt_files:%.pt=.pt_%_$(env).cc)
+
+endif
+
+objs	= $(srcs:%.cc=$(env)/%.o) \
+		$(ptcc_files:.%_$(env).cc=$(env)/%.o)
+
+default: main_$(env)
+
+main_$(env) : deps $(objs) \
+	$(dep_libutil) $(dep_libnml) $(dep_libc4) $(dep_libds++)
+	$(C++) $(C++FLAGS) -o $@ $(objs) $(LINK_LIBS) -lm
+
+deps:
+ifneq ($(dodeps),no)
+	(cd ../ds++; $(MAKE) $(subnj))
+	(cd ../c4;   $(MAKE) $(subnj) dodeps=no)
+	(cd ../nml;  $(MAKE) $(subnj) dodeps=no)
+	(cd ../spdf; $(MAKE) $(subnj) dodeps=no)
+	(cd ../util; $(MAKE) $(subnj) dodeps=no)
+endif
+
+$(dep_libutil):
+$(dep_libnml):
+$(dep_libc4):
+$(dep_libds++):
+
+# Go pick up the standard signature for makefiles.
+
+cc_files := $(srcs)
+
+include ../config/make.end
+
+###############################################################################
+# 			End of draco/src/t3/makefile
+###############################################################################
