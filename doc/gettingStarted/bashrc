@@ -1,0 +1,122 @@
+\begin{verbatim}
+##---------------------------------------------------------------------------##
+## .bashrc - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+#----------------------------------------#
+# Only do this section of code once!     #
+#----------------------------------------#
+
+if [ -z $BASHRCDONE ]; then  
+
+    #----------------------------------------#
+    #              Doxygen                   #
+    #----------------------------------------#
+
+    # /scratch/tme only exists on the SGI's
+    if [ "`uname`" = IRIX64 ] ; then
+        export QTDIR=/scratch/tme/qt
+        LD_LIBRARY64_PATH=$LD_LIBRARY64_PATH:/scratch/tme/qt/lib
+    fi
+
+    #----------------------------------------#
+    #               LaTeX                    #
+    #----------------------------------------#
+
+    # Updated styles for LaTeX (from Tom Evans)
+    export TEXINPUTS=/home/tme/lib/tex/styles//:
+    export BSTINPUTS=/home/tme/lib/tex/bib//:
+
+    #----------------------------------------#
+    #              XMGR                      #
+    #----------------------------------------#
+
+    if [ "`uname`" = IRIX64 ] ; then
+        # XMGR HELP
+        export GR_HOME=/scratch/tme/xmgr
+    fi
+
+    #----------------------------------------#
+    #                  KCC                   #
+    #----------------------------------------#
+
+    target="`hostname`"
+    if [ $target = twix ]; then
+        export KAI_SERIAL=1081
+        export KAI_CODEKEY=kkkllklkkklnchllenllnebb
+        export KAI_PATH=/scratch/tme/bin
+    elif [ $target = crisps ]; then
+        export KAI_SERIAL=1423
+        export KAI_CODEKEY=mmklkjmlljmndkbnjfocgmjb
+        export KAI_PATH=/scratch/tme/bin
+    elif [ $target = bonjovi ]; then
+        export KAI_SERIAL=1081
+        export KAI_CODEKEY=kkkllklkkklnchllenllnebb
+        export KAI_PATH=/usr/local/bin
+    fi
+    
+    #----------------------------------------#
+    # GNATS - bug tracking software          #
+    #----------------------------------------#
+
+    GNATS_DIR=/n/skiathos/radtran/gnats
+    GNATS_PATH=${GNATS_DIR}/$(uname)/bin:${GNATS_DIR}/$(uname)/libexec/gnats
+    GNATS_MANPATH=${GNATS_DIR}/man
+    GNATS_INFOPATH=${GNATS_DIR}/info
+    export GNATS_ELISP_DIR=${GNATS_DIR}/share/emacs/lisp/$(uname)
+    export GNATS_ROOT=${GNATS_DIR}/lib/gnats/gnats-db
+
+    #----------------------------------------#
+    #                  CVS                   #
+    #----------------------------------------#
+
+    export CVSROOT=/n/skiathos/radtran/cvsroot
+    export CVSEDITOR=xesh
+
+    #----------------------------------------#
+    #              Python 1.5                #
+    #----------------------------------------#
+
+    # On IRIX use python from /scratch/tme/bin which is already part
+    # of the path.
+    if [ "`uname`" = SunOS ] ; then
+        PYTHON_PATH=/usr/local/src/Python-1.5.2:
+    fi
+
+    #----------------------------------------#
+    #                PATHS                   #
+    #----------------------------------------#
+
+    # SEARCH PATH
+    MYPATH=.:~/bin:~/bin/$(uname)
+    PATH=${PYTHON_PATH}${KAI_PATH}:$GNATS_PATH:$MYPATH:$PATH
+
+    # MAN PATH
+    if [ "`uname`" = IRIX64 ] ; then
+        MYMANPATH=/scratch/tme/man:
+    fi
+    MANPATH=$MYMANPATH:$GNATS_MANPATH:$MANPATH
+
+    # INFO PATH
+    INFOPATH=$GNATS_INFOPATH:$INFOPATH
+
+    # LOAD PATH
+    if [ "`uname`" = IRIX64 ] ; then
+    MYLOADPATH=/scratch/tme/lib
+    fi
+
+    #-------------------------------------------#
+    # Set BASHRCDONE so we do not do this again #
+    #-------------------------------------------#
+
+    export BASHRCDONE=true
+fi
+
+##---------------------------------------------------------------------------##
+## User code starts here (Aliases, prompts, umask, more envs, etc.)
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+## end of .bashrc
+##---------------------------------------------------------------------------##
+\end{verbatim}

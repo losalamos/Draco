@@ -1,0 +1,919 @@
+%%---------------------------------------------------------------------------%%
+%% 
+%% \file    draco/doc/gettingStarted/gettingStarted.tex
+%% \author  Kelly Thompson
+%% \date    Tue Apr 11 10:14:00 MDT 2000
+%% \brief   Getting Started with Draco - Help for new users and developers.
+%%---------------------------------------------------------------------------%%
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[11pt]{nmemo}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+%\usepackage{tabularx}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+%\usepackage{c++}
+\usepackage{fancycodes}  % needed to get ``LaTeX'' symbol.
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+\newcommand{\comp}[1]{\normalfont\normalsize\texttt{#1}}
+\newcommand{\draco}{{\normalfont\sffamily Draco}}
+\newcommand{\tycho}{{\normalfont\sffamily Tycho}}
+\newcommand{\solon}{{\normalfont\sffamily Solon}}
+\newcommand{\milagro}{{\normalfont\sffamily Milagro}}
+\newcommand{\metis}{{\normalfont\sffamily Metis}}
+\newcommand{\pcg}{{\normalfont\sffamily PCG}}
+\newcommand{\cvs}{{\normalfont\bfseries CVS}}
+\newcommand{\python}{{\normalfont\bfseries Python}}
+\newcommand{\doxygen}{{\normalfont\bfseries Doxygen}}
+\newcommand{\kcc}{{\normalfont\bfseries KCC}}
+\newcommand{\xemacs}{{\normalfont\bfseries XEmacs}}
+\newcommand{\bash}{{\normalfont\bfseries Bash}}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{X-6-RN(U)-00-???}
+\subject{Getting Started with Draco -- Help for new users and developers}
+% ?? The Draco Primer ??
+
+%-------NO CHANGES
+\divisionname{Applied Physics Division}
+\groupname{X-6:Transport Methods Group}
+\fromms{Kelly Thompson X-6 D409}
+\phone{(505) 665--3929}
+\originator{kt}
+\typist{kt}
+\date{\today}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {
+  X-6 MS D409:\\
+% Group Leader:  J.E. Morel, X-6 MS D409\\ 
+  B.T. Adams, X-6 MS D409\\
+%  R.E. Alcouffe, X-6 MS D409\\ 
+  M.L. Alme, X-6 MS D409\\
+%  D.G. Archuleta, X-6 MS D409\\ 
+%  L.H. Auer, X-6 MS D409\\ 
+%  R.S. Baker, X-6 MS D409\\ 
+%  F.W. Brinkley, Jr., X-6 MS D409\\ 
+%  J.A. Dahl, X-6 MS D409\\ 
+%  F.H. Dang, X-6 MS D409\\ 
+  T.M. Evans, X-6 MS D409\\ 
+%  S.A. Gallegos, X-6 MS D409\\ 
+%  B.D. Ganapol, X-6 MS D409\\ 
+  C.J. Gesh, X-6 MS D409\\
+  M.G. Gray, X-6 MS D409\\ 
+%  J.C. Gulick, X-6 MS D409\\ 
+%  M.L. Hall, X-6 MS D409\\ 
+  W.D. Hawkins, X-6 MS D409\\
+  H.G. Hughes, X-6 MS D409\\ 
+% M.A. Hunter, X-6 \\
+% H. Lichtenstein, X-6 MS D409\\ 
+% D.R. Marr, X-6 MS D409\\ 
+  J.M. McGhee, X-6 MS D409\\ 
+%  D. Mihalas, X-6 MS D409\\ 
+  J.E. Morel, X-6 MS D409\\ 
+  M.L. Murillo, X-6 MS D409\\ 
+%  G.L. Olson, X-6 MS D409\\ 
+  S. Pautz, X-6 MS D409\\ 
+%  A.K. Prinja, X-6\\ 
+%  E.W. Qarsen, X-6 MS D409\\ 
+  R.M. Roberts, X-6 MS D409\\ 
+  K.G. Thompson, X-6 MS D409\\
+%  S.A. Turner, X-6 MS D409\\ 
+%  W.T. Urban, X-6 MS D409\\ 
+  T.J. Urbatsch, X-6 MS D409\\ 
+  T.A. Wareing, X-6 MS D409\\
+  J.S. Warsa, X-6 MS D409\\
+}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\section{Introduction}
+
+The purpose of this document is to present a detailed explanation
+(with examples) concerning how to check out, configure and build the
+\draco~\cite{rn98046} code library.  We will also cover building some
+of \draco's clients including \milagro, \tycho\ and \solon.  In
+addition to building these libraries and clients, we will also cover
+setting up the shell environment, accessing recommended scripts and
+tools, and using 3rd party vendors (e.g. \metis\ and \pcg).  We will
+also point the reader to other \draco\ realted documents where more
+detailed information can be located.
+
+This document is designed to give the new user \latin{cookie-cutter}
+examples of checking out, configuring and compiling \draco\ and its
+clients.  For a more in depth description of the build system we refer
+the reader to Ref.~\cite{draco-build}.  
+
+%%---------------------------------------------------------------------------%%
+
+\section{Setting up the User's Environment}
+
+The \draco\ build system assumes that the user has configured his or
+her environment so that particular tools may be used.  In some cases
+\draco\ requires the use of newer versions of the standard tools found
+on the X-division LAN.  This section discusses these tools and how to
+configure your environment to make them work properly with the \draco\ 
+build system~\cite{draco-build}.  
+
+%%----------------------------------------
+\subsection{Bash}
+
+Additionally, the recommended shell is for \draco\ development is
+\bash.  All of the following examples assume that use user is running
+\bash\ as his or her primary shell.  If you are not using \bash\ the
+syntax shown in all of this documents examples may be slightly
+different.  If you would like to make \bash\ your primary shell you
+can add the following code to the end of your \comp{.login.local}
+startup script.
+
+\begin{verse}
+\texttt{\#\\*
+\# Set up Bash as my interactive shell (from .login.local)\\*
+\#
+}
+\end{verse}
+
+\begin{verse}
+\texttt{if ( "`uname`" == "IRIX64" ) then \\
+\hspace*{0.25in} set my\_shell = /usr/local/gnu/bin/bash \\
+endif \\
+if ( "`uname`" == "SunOS" ) then \\
+\hspace*{0.25in} set my\_shell = /usr/local/gnu/bin/bash \\
+endif
+}
+\end{verse}
+
+\begin{verse}
+\texttt{if ( -x \$my\_shell ) then \\
+\hspace*{0.25in}   setenv SHELL \$my\_shell \\
+\hspace*{0.25in}   if ( ! \${?DT} ) then \\
+\hspace*{0.5in}      if ( \$XDIV\_USER\_ENV != Set ) then \\
+\hspace*{0.75in}         source $\sim$/.cshrc \\
+\hspace*{0.5in}      endif \\
+\hspace*{0.5in}      exec \$my\_shell \\
+\hspace*{0.25in}   endif \\
+endif
+} 
+\end{verse}
+
+%%----------------------------------------
+\subsection{CVS}
+
+All version control in \draco\ and its clients (\tycho, \solon,
+\milagro, etc.) is controlled by \cvs.  In order to work with these
+code-packages you must have access to the \draco\ \cvs\ repository.
+For \cvs\ to work properly you must have the following environment
+variables set in your shell.  If you are running \bash, these should
+be set in your \comp{.bashrc}.  If you are running csh or tcsh then
+you should have the equivalent coding using csh syntax in your
+\comp{.cshrc.local}.
+
+\begin{verbatim}
+     #
+     # Setup CVS (.bashrc)
+     #
+
+     export CVSROOT=/n/skiathos/radtran/cvsroot
+     export CVSEDITOR=xemacs
+\end{verbatim}
+
+The \comp{CVSEDITOR} environment variable should be set to your
+prefered editor.  Most \draco\ developers use \xemacs.   \xemacs\ is
+also the recommended editor for new users because \draco\ sepcific
+functionality has been added to this editor~\cite{xtm:9909}.
+
+%%----------------------------------------
+\subsection{KCC}
+
+The \draco\ team recommends that the \kcc\ compiler~\cite{kai} be used
+for compiling the \draco\ code library.  \kcc\ requires that a
+specific license key be assigned for each machine.  X-division has
+\kcc\ licences on several machines.  The following code pieces show
+how to setup your \comp{.bashrc} file to allow you to use the \kcc\ 
+compilers on Twix (SGI), Crisps (SGI) and Bonjovi (Sun).
+
+\begin{verse}
+\texttt{target="`hostname`"\\*
+     if [ \$target = twix ]; then\\*
+\hspace*{0.25in}         export KAI\_SERIAL=1081\\*
+\hspace*{0.25in}         export KAI\_CODEKEY=kkkllklkkklnchllenllnebb\\
+\hspace*{0.25in}         export KAI\_PATH=/scratch/tme/bin\\
+    elif [ \$target = crisps ]; then\\
+\hspace*{0.25in}         export KAI\_SERIAL=1423\\
+\hspace*{0.25in}         export KAI\_CODEKEY=mmklkjmlljmndkbnjfocgmjb\\
+\hspace*{0.25in}         export KAI\_PATH=/scratch/tme/bin\\
+    elif [ \$target = bonjovi ]; then\\
+\hspace*{0.25in}         export KAI\_SERIAL=1081\\
+\hspace*{0.25in}         export KAI\_CODEKEY=kkkllklkkklnchllenllnebb\\
+\hspace*{0.25in}         export KAI\_PATH=/usr/local/bin\\
+    fi
+}
+\end{verse}
+
+If you are compiling on a machine other than one of those listed above
+you will need to assign different values for \comp{KAI\_SERIAL} and
+\comp{KAI\_CODEKEY}. 
+
+To ensure that you are actually using the version of \kcc\ specified by
+\comp{KAI\_PATH} you should prepend your \comp{PATH} with this
+location.
+\begin{verbatim}
+     PATH=$KAI_PATH:$PATH
+\end{verbatim}
+This not only ensures that you will be running the same version of
+\kcc\ as other \draco\ developers but it also ensures that you are
+running the same version of other Unix software as well.
+
+%%----------------------------------------
+\subsection{Autoconf, Install and Python}
+
+For \draco\ to be correctly configured you must use
+\textbf{autoconf}~\cite{autoconf} version 2.13 or later, \textbf{install}
+version 4.0 or later and \textbf{python} version 1.5 or later.  At the
+writing of this memo the default versions for \textbf{autoconf},
+\textbf{install} and \textbf{python} on the X-Division LAN were all older
+versions.  If you use these older versions during the configure or
+compiling stages (see sections \S\ref{configure} and \S\ref{compile})
+you may be able to get through the compiling stage but your build will
+not pass the regression tests.  
+
+%%--------------------
+\subsubsection{SGI}
+
+Tom Evans has newer versions of many system utilities in his scratch
+space (\comp{/scratch/tme/bin}).  It is recommended that this
+directory be prepended to your \$PATH when using an SGI so that you
+will be using the correct version of \textbf{autoconf},
+\textbf{install}, \textbf{python} and other system tools.  This may
+already be taken care of if you have prepended \comp{\$KAI\_PATH} as
+suggested in the preceding section.
+
+It is also recommended that you prepend your \comp{\$MANPATH},
+\comp{\$INFOPATH} and \comp{\$LD\_LIBRARY\_PATH} with the newer
+versions found at \comp{/scratch/tme}.
+
+\begin{verbatim}
+     MANPATH=/scratch/tme/man:$MANPATH
+     INFOPATH=/scratch/tme/info:$INFOPATH
+     LD_LIBRARY_PATH=/scratch/tme/lib:$LD_LIBRARY_PATH
+\end{verbatim} % $
+
+Additionally, if \comp{\$KAI\_PATH=/scratch/tme/bin} has not already
+been added to your search path then you should prepend your
+\comp{\$PATH} with Tom's \comp{bin} directory.
+
+\begin{verbatim}
+     PATH=/scratch/tme/bin:$PATH
+\end{verbatim} % $
+
+%%--------------------
+\subsubsection{Sun}
+
+The default versions of \textbf{install} (located at \comp{/usr/sbin}
+and \textbf{autoconf} (located at \comp{/usr/local/gnu/bin} work on
+the Suns.  However the default version of \textbf{python} is still
+1.4.  You will need to prepend your path with the location of
+\textbf{Python-1.5} to get things working.
+
+\begin{verbatim}
+     PATH=/usr/local/src/Python-1.5.2:${PATH}
+\end{verbatim} % $
+
+%%----------------------------------------
+\subsection{Doxygen}
+\label{doxygen}
+
+If you want to use the automatic documentation features of
+\draco~\cite{doxygen} then you will need to have both \doxygen\ and
+\LaTeX\ configured for your system.  The \doxygen\ code requires
+access to the \textbf{QT} libraries.  Additionally you will need to
+add the \textbf{QT} libraries location to the SGI \emph{library load
+  path}. (Note: \doxygen\ is only available on the SGI.)
+
+\begin{verbatim}
+     # SGI's only
+     if [ "`uname`" = IRIX64 ] ; then
+        export QTDIR=/scratch/tme/qt 
+        export LD_LIBRARY64_PATH=${LD_LIBRARY64_PATH}:/scratch/tme/qt/lib
+     fi
+\end{verbatim} % $
+
+%%----------------------------------------
+\subsection{\LaTeX}
+
+The automatic documation utility also generates \LaTeX\ formated
+documents.  In order to generate the \LaTeX\ documentation you mest
+tell \LaTeX\ where to find the \draco\ style sheets and bibliography
+files. 
+
+\begin{verbatim}
+     export TEXINPUTS=/home/tme/lib/tex/styles//: 
+     export BSTINPUTS=/home/tme/lib/tex/bib//:
+\end{verbatim} % $
+
+%%----------------------------------------
+\subsection{GNATS}
+
+John McGhee has written a technical memo on getting started with
+\textbf{GNATS} in the \draco\ environment~\cite{draco-gnats}.  This
+memo is aimed at new users and its contents are not replicated here.
+
+\subsection{Purify and Ensure}
+
+See Ref.~\cite{draco-purify} for details on using \textbf{Purify} with 
+\draco.  No \draco\ specific documents currently exist for using
+\textbf{Ensure} with \draco.
+
+\subsection{\comp{.bashrc}}
+
+Appendix~\ref{.bashrc} includes a sample listing of a \comp{.bashrc}
+file that includes all of these changes.  These changes should be
+implemented in your work environment before you attempt to checkout,
+configure or build \draco\ or any of its clients.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Directory Structure and Obtaining the Source Files}
+
+The \draco\ directory structure is discussed with some detail in
+Ref.~\cite{draco-build}.  We will not repeat that discussion here.
+What you need to know is that \draco\ and its clients will checked out 
+of the \cvs\ repository into a \emph{source} directory in your
+personal workspace.  You will also create one or more \emph{target}
+directories where configuration and compiling will take place.
+
+We suggest creating a working directory in your home directory
+(\comp{mkdir \${HOME}/work}) but you can name the directory anything
+you wish.  The examples in this document assume that the work
+directory is named \comp{\${HOME}/work}.  Please substitute your own
+directory name if you have chosen to use a different path for your
+work space.
+
+Both your source and target directories will live under this work
+directory.  We will use \cvs~\cite{cvs} to \emph{check out} a copy of
+the \draco\ sources.  
+
+%%----------------------------------------
+\subsection{\draco}
+
+To obtain a copy of the \draco\ sources execute the following
+\emph{check out} command from within your work directory.  The
+italicized text is represtative of the shell's response to your
+command.
+
+\begin{verse}
+\texttt{[$\sim$/work] \% cvs co -P draco \\
+\emph{cvs checkout: Updating draco \\
+U draco/.cvsignore \\
+      ... \\
+U draco/tools/test\_filter.py}}
+\end{verse}
+
+This will create the directory \comp{draco} under \comp{$\sim$/work}.  All
+of the \draco\ source files will be placed in this directory.  The
+\comp{-P} tag instructs \cvs\ to prune empty directories in the
+checked out version.  
+
+%%----------------------------------------
+\subsection{\tycho, \metis\ and other \draco\ clients}
+
+To obtain the source files for \tycho, \metis\ or other \draco\ 
+clients from the \cvs\ repository you must execute similar 
+\emph{check out} commands.  For \tycho\ you need to use the
+\comp{tycho\_only} tag.  If you have not already checked out the
+\draco\ sources you can use the \comp{tycho\_all} tag to obtain the
+\tycho\ sources plus the needed \draco\ sources.
+
+\begin{verse}
+\texttt{[$\sim$/work] \% cvs co -P tycho\_only}
+\end{verse}
+
+To obtain the \metis\ source we must \emph{check out} the
+\comp{univ\_minn} package since \metis\ is a part of this package.
+
+\begin{verse}
+\texttt{[$\sim$/work] \% cvs co -P univ\_minn}
+\end{verse}
+
+For each package that you check out from the \cvs\ repository a new
+source directory will be created.  If you are interested in building
+\tycho\ you will need the \draco, \tycho\ and \metis\ sources.
+
+\begin{verse}
+\texttt{[$\sim$/work] \% ls -F \\
+\emph{draco/  tycho/  univ\_minn/}}
+\end{verse}
+
+%%----------------------------------------
+\subsection{Target Directory}
+
+We now need a \emph{target} directory where object and executable
+files can be placed.  This document will show you how to build both
+parallel and scalar versions on the SGI and a scalar version of
+\draco\ on the Sun.  You should create target diretories with names
+that represent the type of build you are working on
+(e.g. \comp{sgi\_mpi0}, \comp{sgi\_scalar} and \comp{sun0}).
+
+Under each target directory you need to create directories for each of
+the packages you want to build.  For example, if we are building a
+parallel version of \tycho\ on an SGI machine we need to create a
+target directory (\comp{sgi\_mpi0}) and then create a directory for
+each code under this target location.
+
+\begin{verse}
+\texttt{[$\sim$/work] \% ls -F \\
+\emph{draco/\ \ tycho/\ \ univ\_minn/\ \ sgi\_mpi0/\ \ sun0/ }}
+\end{verse}
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0] \% ls -F \\
+\emph{draco/  tycho/  metis/}}
+\end{verse}
+
+If you are building a scalar version on the Sun you would replace
+\comp{sgi\_mpi0} with something like \comp{sun0}.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Configuring}
+\label{configure}
+
+%%----------------------------------------
+\subsection{\draco}
+
+\draco\ and its clients use \textbf{autoconf} configuration
+scripts~\cite{autoconf}.  We must configure each of these packages
+before they may be built.  Running the \comp{draco\_config} script
+from the \draco\ target directory will configure \draco.  If you omit
+the \comp{--with-c4} tag a scalar versions of the \draco\ libraries
+will be built.  The standard location for \emph{vendor} libraries is
+\comp{/n/skiathos/radtran/vendors}.  The IRIX64 version of the \pcg\ 
+libraries are in this location under \comp{pcglib/IRIX64} and we must
+specify this location on the configure line.  Below is an example of a
+configure command (with some some of the output) for configuring a
+parallel version of \draco\ on an SGI machine:
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/draco] \% ../../draco/draco\_config .. --with-c4=mpi $\backslash$\\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/IRIX64 \\
+\emph{../../draco/configure --prefix=/home/kellyt/work/sgi\_mpi0 --with-c4=mpi $\backslash$\\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/IRIX64\\
+creating cache ./config.cache\\
+\hspace{1.0in} \ldots }}
+\end{verse}
+
+To configure a scalar version of \draco\ on a Sun we would execute a
+similar command.
+
+\begin{verse}
+\texttt{[$\sim$/work/sun0/draco] \% ../../draco/draco\_config .. $\backslash$\\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/SunOS \\
+\emph{../../draco/configure --prefix=/home/kellyt/work/sun0 $\backslash$\\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/SunOS\\
+creating cache ./config.cache\\
+\hspace{1.0in} \ldots }}
+\end{verse}
+
+Once the configuration is complete the files required for building the 
+\draco\ libraries will exist in the target directory.  The Makefiles
+will know where the required system tools live, where the vendor
+libraries are installed and where the final \draco\ library files
+should be installed (\comp{$\sim$/work/\emph{target}/lib}).
+
+%%----------------------------------------
+\subsection{\tycho\ and \metis}
+
+Similar configure commands must be issued from the \metis\ and \tycho\ 
+target directories to configure these \emph{products}.  The configure
+command sequence on an SGI would look like:
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/tycho] \% ../../tycho/tycho\_config 
+.. --with-c4=mpi $\backslash$\\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/IRIX64}
+\end{verse}
+
+For the Sun architecture the \tycho\ configure command would look
+like:
+
+\begin{verse}
+\texttt{[$\sim$/work/sun0/tycho] \% ../../tycho/tycho\_config 
+.. $\backslash$\\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/SunOS}
+\end{verse}
+
+Just as for \draco\ we specify the install directory to be the root
+target directory (the double dots point us to
+\comp{$\sim$/work/\emph{target}}).  The \pcg\ libraries are in the
+same location as discussed above.  We have also specified for a
+parallel version of the \emph{code package} to be built on the SGI.
+The Sun version is configured (the \comp{--with-c4} is omitted) to be
+scalar.  We could have built a scalar version for the SGI by omitting
+the \comp{--with-c4=mpi} tag.
+
+\metis\ can be configured in a similar fashion.  The following command
+works for either the Sun or SGI architectures if \comp{\emph{target}}
+is replaced by the name of the target directory (\comp{sgi\_mpi0} or
+\comp{sun0}).
+
+\begin{verse}
+\texttt{[$\sim$/work/\emph{target}/metis] \%
+../../univ\_minn/metis/configure $\backslash$\\
+\hspace{0.5in}--prefix=\${HOME}/work/\emph{target}}
+\end{verse}
+
+We must use the \comp{--prefix} tag for the \metis\ configure so that
+it knows what directory to install itself into.  Notice that the
+\metis\ configure command does not need the double dot target location
+that \comp{tycho\_config} and \comp{draco\_config} require.  These
+\emph{code packages} may be configured in any order.  It is not
+required for \draco\ to be configured first and \metis\ last.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Compiling the Sources}
+\label{compile}
+
+After \draco\ has been configured as described in section
+\S\ref{configure} very little remains to be done exept to run
+\textbf{gmake} from the \draco\ target directory.  It is recommended
+that \draco\ be compiled before attempting to build any of its
+clients. 
+
+%----------------------------------------
+\subsection{\draco}
+
+If the configure instructions from section \S\ref{configure} are
+followed exactly a few \draco\ \emph{packages} will not have access to
+required vendor libraries and will not compile correctly.  These
+packages should be removed from the \draco\ target directory
+(\textbf{not the source directory}) before you start to compile
+\draco.
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/draco/src] \% rm -rf mc imc rng fourier POOMA\_MT}
+\end{verse}
+
+(Hopefully, this document will be updated to provide more information
+about building these \draco\ packages in the near future.  \tycho\ 
+does not require any of the packages removed from the target directory
+and will build with these parts of \draco\ missing.)
+
+We are now ready to compile \draco.  From the \draco\ target directory 
+simply run \textbf{gmake} to create the \draco\ libraries.  It will
+take several minutes to complete the building process.
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/draco] \% gmake}
+\end{verse}
+
+Once the build process has finished several new directories will exist 
+in the target directory.  The \draco\ library files will have been
+installed in \comp{$\sim$/work/sgi\_mpi0/lib}.  Addtionally you will
+find \draco\ service routines in \comp{$\sim$/work/sgi\_mpi0/libexec}
+and \comp{$\sim$/work/sgi\_mpi0/bin}.  The C++ header files from
+\draco\ will be stored under \comp{$\sim$/work/sgi\_mpi0/include}.
+
+Before the build started each \draco\ package stored its configuration
+information and \comp{Makefile} in its own directory under
+\comp{$\sim$/work/sgi\_mpi0/draco/src}.  After the build completes
+these directories will also contain dependency and object files for
+each package.
+
+None of the test files will have been compiled after a standard
+build.  See section \S\ref{regression} for details about unit tests.
+
+%%----------------------------------------
+\subsection{\metis}
+
+The configuration step in the previous section should have prepared
+the metis target directory for building of the \metis\ libraries.
+Simply execute \textbf{gmake} from the \metis\ target directory
+(e.g. \comp{$\sim$/work/sgi\_mpi0/metis}) to build them.
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/metis] \% gmake}
+\end{verse}
+
+%%----------------------------------------
+\subsection{\tycho}
+
+Since \tycho\ depends on both \draco\ and \metis\ these two packages
+should be compiled before \tycho.  Again simply run \textbf{gmake}
+from the \tycho\ target directory (e.g. \comp{$\sim$/work/sgi\_mpi0/tycho})
+to build \tycho.
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/tycho] \% gmake}
+\end{verse}
+
+Other \draco\ clients should be built in the same manner.  Remember
+that we have used the target directory \comp{sgi\_mpi0} only as an
+example.  Your actual target directory can have any name you choose.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Regression Tests}
+\label{regression}
+
+Both \draco\ and \tycho\ have a complete set of regression tests
+included with source.  If you wish to test any particular unit you can
+run the command \comp{gmake check} from that package's target
+directory.  For example, if you wanted to run the regression tests on
+the \draco\ \emph{Quadrature} package you would execute the following
+command.
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/draco/src/quadrature] \% gmake check}
+\end{verse}
+
+This will compile additional test routines, run the test routines
+and give a short report on the success or failure of the test.  A
+typical test report will look something like the following output.
+
+\begin{tabbing}
+\hspace{0.5in}\=\comp{===================================================}\\*
+\+\>\comp{========== tQuadrature Output Summary =============}\\*
+\ \\*
+\ \ \ \=\comp{- Number of Processors}\hspace{0.5in}\=\comp{:\ 1}\\
+\>\comp{- Number of Passes}\>  \comp{:\ 3}\\
+\>\comp{- Number of Failures}\>\comp{:\ 0}\\
+\>\hspace{0.95in}\comp{Unexpected}\>          \comp{:\ 0}\\
+\>\hspace{0.95in}\comp{Expected}\>            \comp{:\ 0}\\
+\ \\
+\comp{===================================================}
+
+\end{tabbing}
+
+
+If you want to test all of the \draco\ packages simply run 
+\comp{gmake check} from the \draco\ target directory
+(\comp{$\sim$/work/sgi\_mpi0/draco}).  Similarly you can run the same
+command from the \tycho\ target directory (or any other client's
+target directory) to run all of the \tycho\ (client's)
+regression tests.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Generating the Documentation}
+
+%%----------------------------------------
+\subsection{Automatic Documentation}
+
+In order to generate the HTML and \LaTeX \emph{automatic documentation} for
+\draco\ you must have \doxygen\ configured for the system you are
+working on (see section \S\ref{doxygen}).  Once you are setup to use
+\doxygen\ and the configuration step (\S\ref{configure}) has been
+completed you can generate the automatic documentation by executing the
+following command from the \draco\ target directory.
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi/draco] \% gmake autodoc}
+\end{verse}
+
+This will create two new directories under
+\comp{$\sim$/work/\emph{target}} named \comp{html} and \comp{latex}.
+Hypertext versions of all of the automatically created documents are
+created in the \comp{html} directory.  The head file is named
+\comp{index.html}.  The html documentation is created using
+Doxygen~\cite{doxygen}.  An equivalent set of documents in \LaTeX\ 
+format can be found in the \comp{latex} directory.  You can run
+\textbf{gmake} from within the \comp{latex} directory to generate
+postscript versions of the documentation.  
+
+\begin{verse}
+(kt - As of 4/18/2000 a \LaTeX\ compile error was being generated if
+\textbf{gmake} was executed from the \comp{latex} directory.)
+\end{verse}
+
+%%----------------------------------------
+\subsection{General \draco\ Related Documentation}
+
+Additional documentation (other than the \emph{automatic code
+  documentation}) is avalable for \draco.  This documentation includes
+research notes, technical memorandum and other potentially useful
+documentation.  An abreviated list of these documents in shown in
+Table \ref{tab:draco_docs}.  In addition to this list of references
+you may want to peruse the \draco\ web site located at
+\emph{http://www-xdiv.lanl.gov/XTM/radtran/draco\_www/draco}.
+
+% this web address gets split at the dash.  Using \mbox{} makes things 
+% worse because the text runs off the end of the page.
+
+\begin{table}
+  \caption{Listing of \draco\ \LaTeX\ documents available from the
+    \draco\ \cvs\ repository.  Some of documents describe the build
+    system in detail while others offer assistance in configuring the
+    developer's environment.}
+  \label{tab:draco_docs}
+  \begin{center}
+    \begin{tabular}{lc} \hline\hline
+      \multicolumn{1}{l}{Document} & \multicolumn{1}{c}{Ref.} \\ \hline
+      The \draco\ Build System               & ~\cite{draco-build} \\
+      XEmacs Development Environment for \draco & ~\cite{xtm:9909} \\
+      Doxygen C++ Automatic Documentation Utility & ~\cite{doxygen} \\
+      GNATS Bug Tracking System              & ~\cite{draco-gnats} \\
+      Using Purify in \draco\ with MPI       & ~\cite{draco-purify} \\
+      \draco\ Release Policy and Procedures  & ~\cite{xtm:9936}    \\
+      Generic Programming in the \solon\ Interface & ~\cite{ro98} \\
+      \draco\ CVS Repository                 & [not yet available?] \\
+%      Using Ensure in \draco                 & [not yet available?] \\
+%      \draco\ email list                     & [not yet available?] \\
+%      The \draco\ web site                   & http://www-xdiv.lanl.gov/XTM/radtran/draco\_www/draco\\
+      \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+These documents are automatically checked out when you check out
+\draco\ from the \cvs\ repository and are stored in the \draco\ source
+directory \comp{$\sim$/work/draco/doc}.  Howver, the \LaTeX
+\emph{style} files that these documents depend on are not checked out
+by default and must be checked out manually using the following
+command.
+
+\begin{quote}
+\texttt{[$\sim$/work] \% cvs co -P draco\_doc}
+\end{quote}
+
+To generate the actual postscript documentation may take some work.
+Some of the document directories contain Makefiles and the documents
+may be generated by using \textbf{gmake}.  In other directories you
+may have to run \LaTeX, \textbf{bibtex} and \textbf{dvi2ps} to obtain
+postscript versions of the documents.
+
+%%---------------------------------------------------------------------------%%
+\section{CVS Update}
+
+Most of the \draco\ packages are currently under active development
+and they change on a regular basis.  If you are developing or
+modifying \draco\ packages you should be receiving \cvs\ update
+notifications so that you will know when other packages have been
+updated.  (If you would like to be on the \draco\ mailing list send an
+email message to \emph{listmanager@listman.lanl.gov} with
+\emph{subscribe draco} in the body of the message.)  If your package
+depends on another \draco\ component that has been modified you will
+need to update your version of \draco\ and recompile (and possibly
+reconfigure).  To update each package to the latest revision requires
+that you execute the following commands.  (If whole packages have been
+added then you may need to reconfigure as well.)
+
+\begin{verse}
+\texttt{[$\sim$/work/draco] \% cvs -q update -Pd}
+\end{verse}
+
+\begin{verse}
+\texttt{[$\sim$/work/draco] \% autoreconf --localdir=config }
+\end{verse}
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/draco] \% ../../draco/draco\_config
+.. --with-c4=mpi $\backslash$ \\
+\hspace{0.5in}--with-pcglib-lib=/n/skiathos/radtran/vendors/pcglib/IRIX64}
+\end{verse}
+
+\begin{verse}
+\texttt{[$\sim$/work/sgi\_mpi0/draco] \% gmake}
+\end{verse}
+
+The \comp{-q} flag requests \cvs\ to present less information to the
+prompt.  The \comp{-d} flag requests \cvs\ to recursively update all
+directories under the current one.  The last two commands are
+identical to those presented in previous sections.  Obviously, you may
+need to modify these command for your particular operating system.  To
+configure a scalar version of \draco\ you will need to omit the
+\comp{--with-c4} tag.  To build a version of \draco\ for the Sun you
+will need to include the appropriate \pcg\ library and complete the
+configure and compiling steps from the appropriate \emph{target}
+directory.
+
+A similar procedure may need to be completed for \draco\ client files
+(i.e.: execute the \comp{cvs -q update -Pd} command from within a
+client's package directory).
+
+It may be useful to execute the command \comp{cvs -nq update} from
+within a package's source directory to see what files \cvs\ thinks
+have been updated.  The \comp{-n} prevents \cvs\ from actually
+changing any files.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Troubleshooting}
+
+According to Murphy's Law things never go as smoothly as they should.
+The following sections outline some of the problems that \draco\ 
+developers and users have encountered and their respective resolution.
+
+%%----------------------------------------
+\subsection{Waiting for user's lock in [path]}
+
+When checking out files from the repository, \cvs\ will occasionally
+hang with an error message that looks something like:
+\begin{verbatim}
+     cvs checkout: [11:11:00] waiting for kellyt's lock in \
+     /n/skiathos/radtran/cvsroot/draco/doc/emacs
+\end{verbatim}
+If you receive this error and it does not correct itself for several
+minutes you will need to abort the checkout procedure and remove the
+locked file manually.  Enter a \comp{ctl-Z} to interrupt the checkout
+procedure.  Then use \comp{ps} and \comp{kill} to end the \comp{cvs}
+process.  Next change to the directory specified by error (e.g.:
+\comp{/n/skiathos/radtran/cvsroot/draco/doc/emacs}).  In this
+directory you should find a directory named \comp{\#cvs.lock}.  You
+should have ownership of this directory.  Remove the directory, return
+to the work directory and restart the \cvs\ checkout procedure.  More
+information on this procedure can be found in Chapter 10 (``Multiple
+Developers'') of the \cvs\ manual~\cite{cvs}.
+
+%%----------------------------------------
+\subsection{tycho\_config complains that it cannot find
+  install-sh or install.sh in config}
+
+This error is usually caused by a corrupt checkout of \tycho.  If you
+execute the command \comp{cvs~co~-P~tycho} instead of using the tag
+\comp{tycho\_only} then the configure step will fail with this error.  
+
+To fix the problem remove the \tycho\ source directory
+(\comp{$\sim$/work/tycho}) and check out \tycho\ again using the
+correct syntax.
+
+%%----------------------------------------
+\subsection{Error running test\_filter.py during gmake check}
+
+If you get an error that resembles this:
+\begin{verbatim}
+     File "/home/kellyt/work/sgi_mpi0/libexec/test_filter.py", line 31
+         nmatch = re.search(r'.*Name\s*:\s*/*(.*/)*(.*)', lines[3])
+                                                  ^
+     SyntaxError: invalid syntax
+\end{verbatim}
+You need to be sure that \comp{/scratch/tme/bin} appears as the first
+entry in your path.  Once you have modified your path, recompile all
+of your code (not just the regression tests).
+
+%%---------------------------------------------------------------------------%%
+
+\pagebreak
+\appendix
+
+\section{Sample \comp{.bashrc} File}
+\label{.bashrc}
+
+This is a sample \comp{.bashrc} file that sets all of the environment
+variables required by \draco.  Additionally, this file leaves room for 
+user-defined options that you may want to modify for your own specific 
+needs.
+
+\small{\input{bashrc}}
+
+%%---------------------------------------------------------------------------%%
+
+\pagebreak
+\bibliographystyle{rnote}
+\bibliography{../bib/draco}
+
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of GettingStarted.tex
+%%---------------------------------------------------------------------------%%
