@@ -18,7 +18,7 @@ include ../config/makefile
 
 # Put non template code here
 
-libsrcs =
+libsrcs = Diffusion_DB.cc
 
 # Get the library built, minding our various other targets too.
 
