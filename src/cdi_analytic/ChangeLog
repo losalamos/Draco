@@ -1,0 +1,7 @@
+2001-10-05  Thomas M. Evans  <tme@lanl.gov>
+
+	* cdi_analytic: added analytic cdi package.  This package provides
+	derived classes of rtt_cdi::GrayOpacity,
+	rtt_cdi::MultiGroupOpacity, and rtt_cdi::EoS that provide analytic
+	data.
+

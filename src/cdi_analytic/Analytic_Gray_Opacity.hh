@@ -51,6 +51,14 @@ namespace rtt_cdi_analytic
  * can be used with rtt_cdi::CDI to get analytic opacities.
  *
  */
+/*!
+ *
+ * \example cdi_analytic/test/tstAnalytic_Gray_Opacity.cc
+ *
+ * Example usage of Analytic_Gray_Opacity, Analytic_Opacity_Model, and their
+ * incorporation into rtt_cdi::CDI.
+ *
+ */
 // revision history:
 // -----------------
 // 0) original
