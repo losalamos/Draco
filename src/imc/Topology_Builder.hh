@@ -14,6 +14,7 @@
 
 #include "mc/Topology.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 
@@ -91,6 +92,41 @@ class Topology_Builder
     // Builder functions.
     SP_Topology build_Topology(SP_MT);
 };
+
+//---------------------------------------------------------------------------//
+// TEMPLATE MEMBERS
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Serial Topology_Builder constructor.
+ *
+ * The Topology_Builder constructor makes a Topology_Builder object that can
+ * be used to build rtt_mc::Topology objects.  The Topology_Builder
+ * constructor sets one piece of data, the processor per cell capacity.  It
+ * gets this information from the interface object which is required to have
+ * a get_capacity() member function.  The capacity must be greater than
+ * zero. 
+ *
+ * This constructor requires calling on the Host node (node 0).  Thus, it can
+ * be thought of as the "serial" constructor for the Topology_Builder class.
+ *
+ * This function must be explicitly instantiated with the appropriate
+ * interfaces that are to be used in a given problem.
+ *
+ * \param interface Smart Pointer (rtt_dsxx::SP) to an appropriate interface
+ * class.  
+ */
+template<class MT>
+template<class IT>
+Topology_Builder<MT>::Topology_Builder(rtt_dsxx::SP<IT> interface)
+    : capacity()
+{
+    Require (C4::node() == 0);
+
+    // get the processor/cell capacity from the interface
+    capacity = interface->get_capacity();
+
+    Ensure (capacity > 0);
+}
 
 } // end namespace rtt_imc
 

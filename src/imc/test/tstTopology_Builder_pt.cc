@@ -9,21 +9,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "IMC_Test.hh"
 #include "mc/OS_Mesh.hh"
-#include "ds++/SP.hh"
 #include "../Topology_Builder.t.hh"
 
 namespace rtt_imc
 {
 
-using rtt_imc_test::IMC_Interface;
 using rtt_mc::OS_Mesh;
-using rtt_dsxx::SP;
 
 template class Topology_Builder<OS_Mesh>;
-
-template Topology_Builder<OS_Mesh>::Topology_Builder(SP<IMC_Interface>);
 
 } // end of namespace rtt_imc
 

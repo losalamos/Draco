@@ -26,6 +26,7 @@
 #include "Opacity.hh"
 #include "Mat_State.hh"
 #include "ds++/SP.hh"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <string>
 
@@ -67,6 +68,33 @@ class Opacity_Builder
     SP_Opacity build_Opacity(SP_MT, SP_Mat);
 };
     
+//---------------------------------------------------------------------------//
+// TEMPLATE MEMBERS
+//---------------------------------------------------------------------------//
+//! Contructor.
+
+template<class MT>
+template<class IT>
+Opacity_Builder<MT>::Opacity_Builder(rtt_dsxx::SP<IT> interface)
+{
+    Require (interface);
+
+    // assign data members from the interface parser
+    density          = interface->get_density();
+    kappa            = interface->get_kappa();
+    kappa_thomson    = interface->get_kappa_thomson();
+    temperature      = interface->get_temperature();
+    specific_heat    = interface->get_specific_heat();
+    implicitness     = interface->get_implicit();	
+    delta_t          = interface->get_delta_t();
+    analytic_opacity = interface->get_analytic_opacity();
+    analytic_sp_heat = interface->get_analytic_sp_heat();
+
+    // some crucial checks about our data
+    Check (implicitness >= 0 && implicitness <= 1);
+    Check (delta_t > 0);
+}
+
 } // end namespace rtt_imc
 
 #endif                          // __imc_Opacity_Builder_hh__
