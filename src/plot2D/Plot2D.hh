@@ -28,7 +28,7 @@ namespace rtt_plot2D {
 
   \brief Generates 2D line plots via the Grace plotting program.
 
-  The purpose of this interface is to allow one to generate diagonistic
+  The purpose of this interface is to allow one to generate diagnostic
   graphs from inside a running code. The interface is NOT designed to provide
   access to every available capability of Grace.  This documentation assumes
   a basic understanding of Grace.
@@ -79,14 +79,26 @@ namespace rtt_plot2D {
 
   GracePrintf("g0.s0 point %f, %f", x, y)
 
-  This is horribly inefficent and will slow Grace to a standstill unless
+  This is horribly inefficient and will slow Grace to a standstill unless
   the amount of data is small.  Ideally, Grace should be modified to
   allow something like "block data start" and "block data end" commands.
 */
 //===========================================================================//
 class Plot2D
 {
+    // TYPES
+
+    // Mode for autoscaling on reads
+    enum AutoscaleMode {
+	AUTOSCALE_ON,
+	AUTOSCALE_OFF,
+	AUTOSCALE_FIRSTREAD
+    };
+
     // DATA
+
+    // current autoscale mode
+    int d_autoscale;
 
     // number of graphs to be plotted
     int d_numGraphs;
@@ -103,6 +115,10 @@ class Plot2D
     // current number of sets in each graph.  Needed so we can
     // kill sets.
     std::vector<int> d_numSets;
+
+    // If true for a particular graph, then sets have been read into
+    // the particular graph.
+    std::vector<bool> d_setsBeenRead;
 
   public:
 
@@ -163,6 +179,15 @@ class Plot2D
 		       const int iG,
 		       const double charSize = 1.0);
 
+    // Turns on autoscale when reading sets.
+    void autoscaleOnRead();
+
+    // Turns off autoscale when reading sets.
+    void noAutoscaleOnRead();
+
+    // Turns on autoscaling for first set read into a graph.
+    void autoscaleOnFirstRead();
+
     // sets the properties for a data set
     void setProps(const int iG,
 		  const int iSet,
@@ -188,6 +213,19 @@ class Plot2D
 
     // Returns the number of columns of data in file
     int numColumnsInFile(const std::string filename) const;
+
+    // sets the current autoscaling mode for a graph
+    void setAutoscale(const int iG);
+
+    // We don't implement these because it's not clear how
+    // the grace pipe would be copied.  Moreover, these
+    // ops are not well defined conceptually.
+ 
+    /// NOT IMPLEMENTED
+    Plot2D(const Plot2D &from);
+ 
+    /// NOT IMPLEMENTED
+    Plot2D &operator=(const Plot2D &from);
 };
 
 } // namespace rtt_plot2D

@@ -62,7 +62,9 @@ Plot2D::
   \param numGraphs Number of graphs to use in the graph matrix.
 
   \param paramFile The Grace parameter file (*.par) to load.  If "",
-  no parameter file is loaded.
+  no parameter file is loaded, and autoscaling is turned on on reads.
+  If a parameter file is specificed, autoscaling is turned off on
+  reads.
 
   \param batch If true, do not open the Grace GUI window.  Plots may
   be generated and then saved with the save() function.
@@ -80,9 +82,11 @@ open(const int numGraphs,
     d_numGraphs = numGraphs;
     d_batch = batch;
     d_numSets.resize(numGraphs);
+    d_setsBeenRead.resize(numGraphs);
     
     for ( int i = 0; i < d_numGraphs; i++ ) {
 	d_numSets[i] = 0;
+	d_setsBeenRead[i] = false;
     }
 
     // Open the grace pipe
@@ -99,7 +103,11 @@ open(const int numGraphs,
 
     Insist(openStatus != -1, "Error opening grace.");
 
-    if ( ! paramFile.empty() ) {
+    if ( paramFile.empty() ) {
+	d_autoscale = AUTOSCALE_ON;
+    }
+    else {
+	d_autoscale = AUTOSCALE_OFF;
 	// Grab the param file...
 	GracePrintf("getp \"%s\"", paramFile.c_str());
     }
@@ -319,6 +327,48 @@ rawCom(const std::string command)
 }
 //---------------------------------------------------------------------------//
 /*!
+  \brief Turns on autoscale when reading data sets.
+
+  This is the default mode if a parameter file is unspecified on open().
+  See also noAutoscaleOnRead() and autoscaleOnFirstRead().
+*/
+//---------------------------------------------------------------------------//
+void
+Plot2D::
+autoscaleOnRead()
+{
+    d_autoscale = AUTOSCALE_ON;
+}
+//---------------------------------------------------------------------------//
+/*!
+  \brief Turns off autoscale when reading data sets.
+
+  This is the default mode if a parameter file is specified on open().
+  See also autoscaleOnRead() and autoscaleOnFirstRead().
+*/
+//---------------------------------------------------------------------------//
+void
+Plot2D::
+noAutoscaleOnRead()
+{
+    d_autoscale = AUTOSCALE_OFF;
+}
+//---------------------------------------------------------------------------//
+/*!
+  \brief Turns on autoscale when reading the first
+  data set into each graph, after which it is turned off.
+
+  See also autoscaleOnRead() and noAutoscaleOnRead().
+*/
+//---------------------------------------------------------------------------//
+void
+Plot2D::
+autoscaleOnFirstRead()
+{
+    d_autoscale = AUTOSCALE_FIRSTREAD;
+}
+//---------------------------------------------------------------------------//
+/*!
   \brief Reads block data from file, one set per graph.
 
   \param blockFilename The name of the block data file.
@@ -345,9 +395,11 @@ readBlock(const std::string blockFilename)
     
     for ( int iG = 0; iG < d_numGraphs; iG++ ) {
 	GracePrintf("focus g%d", graphNum(iG));
+	setAutoscale(iG);
 	GracePrintf("block xy \"1:%d\"", iG + 2);
 
 	++d_numSets[iG];
+	d_setsBeenRead[iG] = true;
     }
 
     redraw();
@@ -380,13 +432,17 @@ readBlock(const std::string blockFilename,
 
     const int nSets = numColumnsInFile(blockFilename) - 1;
 
+    GracePrintf("autoscale onread none");
     GracePrintf("read block \"%s\"", blockFilename.c_str());
     GracePrintf("focus g%d", graphNum(iG));
+    setAutoscale(iG);
     
     for ( int i = 0; i < nSets; i++ ) {
 	GracePrintf("block xy \"1:%d\"", i + 2);
 	++d_numSets[iG];
     }
+
+    d_setsBeenRead[iG] = true;
 
     redraw();
 }
@@ -550,6 +606,36 @@ numColumnsInFile(const std::string filename) const
     }
 
     return n;
+}
+//---------------------------------------------------------------------------//
+/*!
+  \brief Sets the current autoscaling mode for a graph.
+
+  \param iG Graph number.
+
+  \param a The autoscale mode.
+*/
+//---------------------------------------------------------------------------//
+void
+Plot2D::
+setAutoscale(const int iG)
+{
+    switch ( d_autoscale ) {
+    case AUTOSCALE_ON:
+	GracePrintf("autoscale onread xyaxes");
+	break;
+    case AUTOSCALE_OFF:
+	GracePrintf("autoscale onread none");
+	break;
+    case AUTOSCALE_FIRSTREAD:
+	if ( d_setsBeenRead[iG] ) {
+	    GracePrintf("autoscale onread none");
+	}
+	else {
+	    GracePrintf("autoscale onread xyaxes");
+	}
+	break;
+    }
 }
 
 //---------------------------------------------------------------------------//
