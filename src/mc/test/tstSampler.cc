@@ -10,9 +10,9 @@
 //---------------------------------------------------------------------------//
 
 #include "MC_Test.hh"
-#include "mc/Sampler.hh"
+#include "../Sampler.hh"
+#include "../Release.hh"
 #include "rng/Rnd_Control.hh"
-#include "mc/Release.hh"
 
 using namespace std;
 using rtt_rng::Rnd_Control;
