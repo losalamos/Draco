@@ -92,6 +92,7 @@
 // SHMEM
 
 #ifdef C4_SHMEM
+#include "c4/shmem.hh"
 #else
 #endif
 
