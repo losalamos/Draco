@@ -531,7 +531,7 @@ char* OS_Mesh::pack_mesh_data(int &size,
     for (int i = 0; i < local_vertex.size(); i++)
 	for (int j = 0; j < local_vertex[i].size(); j++)
 	    vtcs[vctr++] = local_vertex[i][j];
-    Check (vctr = num_vtcs);
+    Check (vctr == num_vtcs);
 
     // write out the cell pairs
     int cpctr = 0;
