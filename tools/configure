@@ -1,5 +1,96 @@
 #! /bin/sh
 
+ac_help="$ac_help
+dnl
+  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS]     choose an F90 compiler
+"
+# Check whether --with-f90 or --without-f90 was given.
+if test "${with_f90+set}" = set; then
+  withval="$with_f90"
+  :
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+###-------------------------------------------------------------------------###
+### include any package-dependent macro definitions that are used 
+### outside of draco, by default these must be located in the
+### directory/file:
+###	       <pkg>/pkg_config/ac_pkg.m4
+### where <pkg> is the name of the package (solon, milagro, etc.),
+### we use sinclude so that the file does not have to exist
+###-------------------------------------------------------------------------###
+
+
+###-------------------------------------------------------------------------###
+### end of aclocal.m4
+###-------------------------------------------------------------------------###
 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
@@ -20,9 +111,6 @@ ac_help="$ac_help
   --enable-shared         turn on shared libraries (.a default)"
 ac_help="$ac_help
   --with-cxx[=kcc,cc]     choose a c++ compiler (KCC is default)"
-ac_help="$ac_help
-  --with-f90[=XL,WorkShop,Fujitsu,Cray,MIPS]
-                                 choose an F90 compiler"
 ac_help="$ac_help
   --enable-static-ld      use (.a) libraries if possible"
 ac_help="$ac_help
@@ -615,14 +703,6 @@ fi
    fi
 
          
-      # Check whether --with-f90 or --without-f90 was given.
-if test "${with_f90+set}" = set; then
-  withval="$with_f90"
-  :
-fi
-
-
-         
       # Check whether --enable-static-ld or --disable-static-ld was given.
 if test "${enable_static_ld+set}" = set; then
   enableval="$enable_static_ld"
@@ -699,7 +779,7 @@ fi
 # SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
 # ./install, which can be erroneously created by make from ./install.sh.
 echo $ac_n "checking for a BSD compatible install""... $ac_c" 1>&6
-echo "configure:703: checking for a BSD compatible install" >&5
+echo "configure:783: checking for a BSD compatible install" >&5
 if test -z "$INSTALL"; then
 if eval "test \"`echo '$''{'ac_cv_path_install'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
