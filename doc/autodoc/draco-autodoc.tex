@@ -1,13 +1,14 @@
 %%---------------------------------------------------------------------------%%
 %% draco-autodoc.tex
 %% John McGhee
-%% Time-stamp: <99/08/06 10:49:37 mcghee>
+%% $Id$
 %%---------------------------------------------------------------------------%%
 \documentclass[11pt]{nmemo}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 \usepackage[mathcal]{euscript}
 \usepackage{tmadd,tmath}
+\usepackage{c++}
 \usepackage{cite}
 
 %%---------------------------------------------------------------------------%%
@@ -19,12 +20,20 @@
 %\ucatm{}   -->add trademark footnote about entry
 
 \newcommand{\draco}{{\normalfont\sffamily Draco}}
+\newcommand{\solon}{{\normalfont\sffamily Solon}}
 \newcommand{\xemacs}{{\normalfont\bfseries XEmacs}}
 \newcommand{\gnats}{{\normalfont\bfseries GNATS}}
 \newcommand{\doxy}{{\normalfont\bfseries Doxygen}}
+\newcommand{\imc}{{\normalfont\sffamily imc}}
+\newcommand{\dsxx}{{\normalfont\sffamily ds++}}
+\newcommand{\cfour}{{\normalfont\sffamily c4}}
+\newcommand{\rng}{{\normalfont\sffamily rng}}
+\newcommand{\timestep}{{\normalfont\sffamily rng}}
+
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
 %%---------------------------------------------------------------------------%%
+
 \begin{document}
 
 %%---------------------------------------------------------------------------%%
@@ -34,12 +43,13 @@
 \toms{Distribution}
 %\toms{Joe Sixpak/X--TM, MS D409}
 \refno{XTM:JMM-99-??? (U)}
-\subject{\doxy\ C++ Automatic Documentation Utility}
+\subject{\doxy\ \C++ Automatic Documentation Utility}
 
 %-------NO CHANGES
 \divisionname{Applied Theoretical \& Computational Physics Div.}
 \groupname{X--TM:Transport Methods Group}
-\fromms{John M. McGhee/X--TM, MS D409}
+\fromms{John M. McGhee/X--TM, MS D409\\
+  Tom M. Evans/X--TM, MS D409}
 \phone{(505)667--9552}
 \originator{jmm}
 \typist{jmm}
@@ -62,20 +72,20 @@
 %%---------------------------------------------------------------------------%%
 
 \distribution {
-J.E. Morel, XTM MS D409\\ 
-J.M. McGhee, XTM MS D409\\ 
-H.G. Hughes, XTM MS D409\\ 
-T.M. Evans, XTM MS D409\\ 
-M.G. Gray, XTM MS D409\\ 
-S.D. Pautz, XTM MS D409\\ 
-R.M. Roberts, XTM MS D409\\ 
-T.J. Urbatsch, XTM MS D409\\ 
-T.A. Wareing, XTM MS D409\\ 
-J.S. Warsa, XTM MS D409\\ 
-C.J. Gesh, XTM MS D409\\ 
-R.B. Lowrie, XHM MS D413\\ 
-W.D. Hawkins, XTM MS D409}
-
+  J.E. Morel, XTM MS D409\\
+  J.M. McGhee, XTM MS D409\\
+  H.G. Hughes, XTM MS D409\\
+  T.M. Evans, XTM MS D409\\
+  M.G. Gray, XTM MS D409\\
+  S.D. Pautz, XTM MS D409\\
+  R.M. Roberts, XTM MS D409\\
+  T.J. Urbatsch, XTM MS D409\\
+  T.A. Wareing, XTM MS D409\\
+  J.S. Warsa, XTM MS D409\\
+  C.J. Gesh, XTM MS D409\\
+  R.B. Lowrie, XHM MS D413\\
+  W.D. Hawkins, XTM MS D409
+  }
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN NOTE
@@ -83,56 +93,59 @@ W.D. Hawkins, XTM MS D409}
 
 \opening
 
-The GNU Public License C++ automatic code documentation system \doxy\
-has been installed
-for use by the \draco\ team. This memo describes how to
-set up and use \doxy .  Also, some suggestions are made as to minimal
-documentation standards.
+The GNU Public License \C++ automatic code documentation system \doxy\ 
+has been installed for use by the \draco\ team. This memo describes
+how to set up and use \doxy\ .  Also, some suggestions are made as to
+minimal documentation standards.
+
+%%---------------------------------------------------------------------------%%
 
 \section{Introduction}
 
-\doxy\ is an automatic C++ code documentation system available under
-the GNU Public License. 
- A user's manual and other information is available on-line at:
-\begin{verbatim} http://www.stack.nl/~dimitri/doxygen/ \end{verbatim}
+\doxy\ is an automatic \C++ code documentation system available under
+the GNU Public License.  A user's manual and other information is
+available on-line at:
+\begin{verbatim} 
+     http://www.stack.nl/~dimitri/doxygen/ 
+\end{verbatim}
 
-Good documentation is critical to any code development effort.
-The advantages of automatic documentation systems are many. 
-For example, the documentation  and the code are much more likely to
-be conformal, the documentation is conveniently located with the code,
-code developers are encouraged to include liberal explanations in their 
-comments, and updates and corrections are easily handled.
-\draco\ has been considering adopting such a system for some time.
+Good documentation is critical to any code development effort.  The
+advantages of automatic documentation systems are many.  For example,
+the documentation and the code are much more likely to be conformal;
+the documentation is conveniently located with the code, code
+developers are encouraged to include liberal explanations in their
+comments, and updates and corrections are easily handled.  \draco\ has
+been considering adopting such a system for some time.
 
 
-Recently, Tom Evans has evaluated several automatic documentation systems
-including DOC++, PERCEPS, KDOC, and \doxy\ . 
-For \draco\ automatic documentation purposes, \doxy\ is deemed to be clearly
-the package of choice. There are several reasons for this. Among these are
-ease of use and installation; a plethora of clever and useful features;
-good documentation (the package documented itself!);
-active development and support from a responsive author; and 
-minimal overhead requirements on the code developer.
+Recently, Tom Evans has evaluated several automatic documentation
+systems including DOC++, PERCEPS, KDOC, and \doxy\ .  For \draco\ 
+automatic documentation purposes, \doxy\ is deemed to be clearly the
+package of choice. There are several reasons for this. Among these are
+ease of use and installation, a plethora of clever and useful
+features, good documentation (the package documented itself!), active
+development and support from a responsive author, and minimal overhead
+requirements on the code developer.
 
 
 This evaluation is based on direct experience using \doxy\ to document
-two existing \draco\ packages.
-Tom has documented the rng package and I have documented the timestep
-package.
-Let me emphasize that this is an easy and painless way to document your
-code. Tom and I have both found the process addictive, the more comments
-you put in, the more you want to put in. \doxy\ can be used on any
-C++ source file without any modifications to the source at all. However,
-we would encourage all \draco\
-developers to take the small amount of time required to retrofit their
- existing code
-to take advantage of the special features that \doxy\ offers. 
-Also, we recommend that all new code developed in \draco\ make use
-of \doxy\ capabilites.
+two existing \draco\ packages.  Tom has documented the rng package and
+I have documented the timestep package.  Let me emphasize that this is
+an easy and painless way to document your code. Tom and I have both
+found the process addictive, the more comments you put in, the more
+you want to put in. \doxy\ can be used on any \C++ source file without
+any modifications to the source at all. However, we would encourage
+all \draco\ developers to take the small amount of time required to
+retrofit their existing code to take advantage of the special features
+that \doxy\ offers.  Also, we recommend that all new code developed in
+\draco\ make use of \doxy\ capabilites.
+
+%%---------------------------------------------------------------------------%%
 
 \section{How to use \doxy\ }
 
 \subsection{Overview}
+
 \doxy\ uses a few simple special comment characters to extract code
 documentation directly from the source code. The only additional burden
 on the code author is to remember and occasionally use a dozen or so
@@ -140,38 +153,49 @@ simple comments. After the source code is commented, both html (with links)
 and \LaTeX\ output is automatically produced directly from the source code.
 Example code can be included verbatim. If desired, both  html tags, and \LaTeX\
 formulas can be included directly in the source code comments. In addition,
-\doxy\ groks C++ and extracts considerable information from the *.hh
+\doxy\ groks \C++ and extracts considerable information from the *.hh
 file, even if the developer does not include any comments at all.
 
 \subsection{Usage}
-\doxy\ requires a configuration file to set certain parameters. This should
-be copied from the \draco\ templates directory to the package directory. 
-Some customization will
-be required for each package, mainly package name and version. The
-config file is well commented and self explanatory. Once the config file
-is in place, log on to any SGI platform and simply type:\begin{verbatim}
- /scratch/tme/bin/doxygen config_filename
+
+\doxy\ requires a configuration file to set certain parameters. This
+should be copied from the \draco\ templates directory to the package
+directory.  Some customization will be required for each package,
+mainly package name and version. The config file is well commented and
+self explanatory. Once the config file is in place, log on to any SGI
+platform and simply type:
+\begin{verbatim} 
+     /scratch/tme/bin/doxygen config_filename
 \end{verbatim}
 A html and \LaTeX\ directory will be produced with your documentation 
-inside.
+inside.  
+
+We note that this system is highly configurable.  For example, users
+have the option of only examining certain files for input, choice of
+output directories, and many other options.  We will provide a basic
+configuration file in \texttt{draco/config/doxygen\_config} that will
+provide the essential options needed for \draco\ developers.  More
+detail will be given on this default file in \S~\ref{sec:draco}.
+Additionally, the configuration options available to users are well
+documented in the \doxy\ manual.
 
 \subsection{Special Comment Blocks}
 
-As previously mentioned, \doxy\ can be used on any
-C++ source file without any modifications to the source at all.
-\doxy\ will extract a certain minimal amount of information directly
-from the source file. In addition to this information, the developer
-can flag certain comment blocks for inclusion in the documentation,
-if desired.
+As previously mentioned, \doxy\ can be used on any C++ source file
+without any modifications to the source at all.  \doxy\ will extract a
+certain minimal amount of information directly from the source file.
+In addition to this information, the developer can flag certain
+comment blocks for inclusion in the documentation, if desired.
+
 The fundamental key that \doxy\ uses to flag a block of comments for
 extraction is the C-style comment character followed by an exclamation
 point. For example:
 \begin{verbatim}
-/*!
- *
- * This text (without the asterisks) will appear in the documentation!
- *
- */
+     /*!
+      *
+      * This text (without the asterisks) will appear in the documentation!
+      *
+      */
 \end{verbatim}
 This is all that is required from the code developer to get everything
 in the comment block into the documentation. \doxy\ automatically associates
@@ -179,17 +203,16 @@ the special comment block with the class/member that immediately follows the
 comment block in the source. Alternatively, you can put the comment block
 anywhere in any file and mark it with a special keyword to associate it
 with the appropriate class/member. Blank lines are recognized as paragraph
-breaks. Code comments in other legal C++ comment formats are ignored.
+breaks. Code comments in other legal \C++ comment formats are ignored.
 
 \subsection{A Few Major Keywords}
 
-Inside a \doxy\ comment block, there are currently approximately 60 special
-keywords that \doxy\ recognizes. If desired, these keywords can be used to 
-control and produce addtional features in the documentation. 
-The interested reader is referred to the \doxy\
-manual for details on these keywords. 
-We will briefly describe the major keywords that we have
-found to be most useful. 
+Inside a \doxy\ comment block, there are currently approximately 60
+special keywords that \doxy\ recognizes. If desired, these keywords
+can be used to control and produce additional features in the
+documentation.  The interested reader is referred to the \doxy\ manual
+for details on these keywords.  We will briefly describe the major
+keywords that we have found to be most useful.
 \begin{description}
 \item [file] The file name.
 \item [author] The author.
@@ -198,64 +221,197 @@ found to be most useful.
 \item [param] An input parameter.
 \item [return] The return value.
 \item [sa] ``See Also'' a list of related items.
-\item [example {\em filename}] Includes {\em filename} as a code example.
-\item [include {\em filename}] Includes {\em filename} verbatim at the point of
-  reference.
-\item [page {\em reference title}] Places the comment block in which it appears in the documentation
-as a separate page with title {\em title}. You can refer to and create a link
-to the page using {\em reference} as an argument to the \doxy\ ``ref'' keyword. 
+\item [example {\em filename}] Includes {\em filename} as a code
+  example.
+\item [include {\em filename}] Includes {\em filename} verbatim at the
+  point of reference.
+\item [page {\em reference title}] Places the comment block in which
+  it appears in the documentation as a separate page with title {\em
+    title}. You can refer to and create a link to the page using {\em
+    reference} as an argument to the \doxy\ ``ref'' keyword.
 \end{description}
 
+%%---------------------------------------------------------------------------%%
 
 \section{\draco\ Installation Strategy}
-  \subsection{New Templates}
-  Tom Evans is installing new *.cc and *.hh templates in the \draco\ elisp
-directory to support \doxy\ conventions. There will also be a
-template for a standard \doxy\ configuration file, and standard header
-and footer files for \doxy\ html output.
+\label{sec:draco}
+
+\subsection{New Templates}
+
+Tom Evans is installing new *.cc and *.hh templates in the \draco\ 
+templates directory to support \doxy\ requirements. There will also be
+a template for a standard \doxy\ configuration file, and standard
+header and footer files for \doxy\ html output.  The elisp command
+\texttt{draco-package}~\cite{xtm:9909} will \textit{automagically}
+install the \draco\ \doxy\ configuration file into the package
+directory. To produce documentation for any source code files in a
+\draco\ package directory, simply enter the package directory and
+type:
+\begin{verbatim}
+     doxygen .doxygen_config
+\end{verbatim}
+where \texttt{.doxygen\_config} is the name of the \doxy\ config file
+installed by \texttt{draco-package}.  As stated previously,
+\texttt{html} and \texttt{latex} subdirectories will be created under
+the package directory.  These directories hold the html and \LaTeX\ 
+source, respectively.
+
+\subsection{\doxy\ Configuration File}
+
+Developers are free to modify most options in the default \draco\ 
+\doxy\ configuration file.  Any developer modifications should be
+performed on the \texttt{.doxygen\_config} file in the package
+directory and {\bf not} on the \texttt{draco/config/doxygen\_config}
+file.  The following configuration options {\bf must not} be
+modified\footnote{These options cannot be modified inside of \draco.
+  However, \draco\ client packages (\solon, etc.) may need to modify
+  some of them.  For example, a client package may desire a different
+  header than that provided by \draco.  In fact, client packages can
+  maintain their own config files.  These should be placed in the
+  \texttt{pkg\_config} subdirectory of the client source tree.}:
+\begin{itemize}
+  \ttfamily
+\item OUTPUT\_DIRECTORY
+\item GENERATE\_HTML
+\item HTML\_OUTPUT
+\item HTML\_HEADER
+\item HTML\_FOOTER
+\item GENERATE\_LATEX
+\item LATEX\_OUTPUT
+\end{itemize}
+\draco\ developers must use the default settings for these options to
+ensure that \doxy\ can find the necessary files and that the generated 
+documentation has a uniform ``look and feel.''
+
+Conversely, some options in the config file {\bf must be} set by the
+package developer.  The following tags must be set:
+\begin{description}
+
+\item[\ttfamily PROJECT\_NAME] This tag should be the package
+  directory name, for example \texttt{c4}, \texttt{rng}, or
+  \texttt{timestep}.  If \texttt{draco-package} is used to create the
+  config file then the package name is entered automatically.
+  
+\item[\ttfamily PROJECT\_NUMBER] This tag gives the release number of
+  the package.  It must be updated when the package is released.  See
+  Ref~\cite{xtm:9936} for details on release numbers.
+  
+\item[\ttfamily INPUT] The user must define which files should be
+  examined by \doxy\ for documentation.  Depending upon the choice of
+  usage, the developer may also need to modify the
+  \texttt{FILE\_PATTERNS}, \texttt{RECURSIVE}, \texttt{EXCLUDE}, and
+  \texttt{EXCLUDE\_PATTERNS} options.  See the \doxy\ manual for more
+  information.
+  
+\item[\ttfamily GENERATE\_TAGFILE] This should be set to
+  \ttfamily{html/<package>.tag}.  If \texttt{draco-package} is used to
+  set up the config file then this value is set automatically.
+
+\end{description}
+
+In addition to the forbidden options and required options, the user
+has the choice of setting any number of other options documented in
+the \doxy\ config file.  Useful options are \texttt{TAGFILES}
+(described in the following section), \texttt{EXAMPLE\_PATH}, and
+\texttt{EXTRACT\_ALL}.  See the \doxy\ manual and the config file for
+detailed documentation about these options.
   
 \subsection{Tag Files}
-Tag files are used to refer to other packages. Relative Paths are supported.
 
-  \subsection{Storage of \doxy\ Output}
-Each package developer will run \doxy\ in their respective directories. 
-\doxy\ will create html and \LaTeX\ sub-directories to contain the
-html and \LaTeX\ documentation output. \doxy\ will need to be
-run periodically to bring the documentation into sync with with the
+Tag files are used to refer to other packages. For example, the \imc\
+package uses the \dsxx\ package.  Thus, the documentation for \imc\
+should provide links to the documentation for \dsxx.  This is provided 
+by the \doxy\ tagging machinery.  To use \doxy\ tags the following
+config options are used:
+\begin{description}
+
+\item[\ttfamily TAGFILES] A list of all tag files needed to resolve
+  links in the package.  For instance, the \imc\ package
+  \texttt{.doxygen\_config} file would contain the following entry:
+\begin{verbatim}
+     TAGFILES = ../ds++/html/ds++.tag ../c4/html/c4.tag ../rng/html/rng.tag
+\end{verbatim}
+  These are the tag files used by \imc\ to resolve documented
+  dependencies.
+
+\item[\ttfamily GENERATE\_TAGFILE] As stated above, each package
+  generates a tag file in the \texttt{html} subdirectory with the name 
+  \texttt{<package>.tag}.
+
+\end{description}
+When \doxy\ is run with these configuration options, link information
+is generated automatically to the package dependencies.  Additionally, 
+the package creates its own tag file that can be used by its client
+packages.
+
+When the \texttt{TAGFILES} option is set, \doxy\ creates a customized
+PERL script called \texttt{installdox} in the \texttt{html}
+subdirectory.  This script is used to ``activate'' the links to real
+locations.  In order to use this script, copies of each tag file must
+exist in the \texttt{html} subdirectory.  The \texttt{installdox}
+script is then executed to modify the links to their proper locations.
+At this point an example is warranted.  Consider the \cfour\ 
+documentation set.  \cfour\ depends on \dsxx.  Thus, the following
+steps are required to activate the tags in the \cfour\ documentation
+that point to the \dsxx\ documentation:
+\begin{verbatim}
+     cd draco/src/c4/html
+     cp ../../ds++/html/ds++.tag .
+     ./installdox -l ds++.tag@../../ds++/html
+\end{verbatim}
+The \texttt{installdox} script will modify all of the \texttt{.html}
+files so that the links point to the correct locations.  Remember to
+use relative paths so that the documentation is independent of the
+absolute location of the \texttt{draco} directory.  In addition, do
+{\bf not} commit the copied tag files into the \texttt{html}
+directory.  Only make temporary copies to generate the link
+information.  Unfortunately, remote paths to do not seem to work in
+\texttt{installdox} at this time; thus, copying is required.
+
+\subsection{Storage of \doxy\ Output}
+
+Each package developer will run \doxy\ in their respective
+directories.  \doxy\ will create html and \LaTeX\ sub-directories to
+contain the html and \LaTeX\ documentation output. \doxy\ will need to
+be run periodically to bring the documentation into sync with with the
 source code. The resulting output should be tagged and committed to
 CVS using the same procedures as for the source code.
 
-  \subsection{\draco\ WWW Site}
-When checking out the \draco\ web site,
-CVS magic will be used to check out the appropriate html source
-from each package directory in \draco\. Stubs for links to on-line 
-documentation have already been installed on the web site.
+\subsection{\draco\ WWW Site}
+
+When checking out the \draco\ web site, CVS magic will be used to
+check out the appropriate html source from each package directory in
+\draco. Stubs for links to on-line documentation have already been
+installed on the web site.
 
 \section{Documentation Standards}
 
 We believe that each developer should be free to document source code
 in the style and manner most agreeable to the individual. As a result,
-only minimal documentation standards are required.
-We propose the following standards for consideration:
+only minimal documentation standards are required.  We propose the
+following standards for consideration:
 
 \begin{itemize}
-\item Each file, namespace, class,  and associated public members should have 
-a least a brief description.
-\item Each public member should have descriptions of its input parameters and
-return values.
+\item Each file, namespace, class, and associated public members
+  should have a least a brief description.
+\item Each public member should have descriptions of its input
+  parameters and return values.
 \end{itemize}
 
 We feel that these guidelines, together with the information that
-\doxy\ will automatically
-extract, will produce documentation that is adequate for our purposes. Of
-course, all developers are free and encouraged to provide more than the
-absolute minimum.
+\doxy\ will automatically extract, will produce documentation that is
+adequate for our purposes. Of course, all developers are free and
+encouraged to provide more than the absolute minimum.
+
+%%---------------------------------------------------------------------------%%
 
 \section{Example}
-Nothing is as instructive as a good example, so here is a copy of
-one of the header files from the timestep utility. Of course,
-there is more than one way to accomplish this, but this is one way.
 
+Nothing is as instructive as a good example, so here is a copy of
+one of the header files from the \timestep\ utility. Of course,
+there is more than one way to accomplish this, but this is one way.
+Additionally, both the \rng\ and \timestep\ packages have been
+autodocumented.  Feel free to use these as examples.
 
 \begin{verbatim}
 //----------------------------------*-C++-*----------------------------------//
@@ -366,6 +522,9 @@ class fixed_ts_advisor : public ts_advisor {
 //---------------------------------------------------------------------------//
 
 \end{verbatim}
+
+\bibliographystyle{rnote}
+\bibliography{../bib/draco}
 
 \closing
 \end{document}
