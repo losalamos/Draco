@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "StructuredMeshCFAVTest.hh"
+#include "compose.hh"
 
 #include <sstream>
 #include <algorithm>
@@ -468,7 +469,7 @@ void StructuredMeshCFAVTest<MTFactory>::checkSize(const VecSetInt &vecset,
     // and points to a set of ints.
 
     using std::find_if;
-    using std::compose1;
+    using rtt_meshTest::compose1;
     using std::bind2nd;
     using std::not_equal_to;
     using std::mem_fun_ref;
