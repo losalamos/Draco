@@ -107,6 +107,7 @@ package  = re.compile(r'Entering.*src/([A-Za-z+_0-9]+)/test', re.IGNORECASE)
 reg_host   = re.compile(r'.*>>>\s*HOSTNAME\s*:\s*(.+)', re.IGNORECASE)
 pkg_tag    = re.compile(r'.*>>>\s*PACKAGE\s*:\s*(.+)', re.IGNORECASE)
 script_tag = re.compile(r'.*>>>\s*REGRESSION\s*SCRIPT\s*:\s*(.+)', re.IGNORECASE)
+options_tag= re.compile(r'.*>>>\s*OPTIONAL\s*ARGS\s*:\s*(.+)', re.IGNORECASE)
 log_tag    = re.compile(r'.*>>>\s*REGRESSION\s*LOG\s*:\s*(.+)', re.IGNORECASE)
 date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
 
@@ -156,6 +157,7 @@ pkg_tag_str    = ''
 script_tag_str = ''
 log_tag_str    = ''
 date_tag_str   = ''
+options_tag_str = ''
 
 # initialize search keys
 key     = ''
@@ -221,6 +223,10 @@ for line in lines:
     match = script_tag.search(line)
     if match:
         script_tag_str = match.group(1)
+
+    match = options_tag.search(line)
+    if match:
+        options_tag_str = match.group(1)
         
     match = log_tag.search(line)
     if match:
@@ -322,9 +328,10 @@ print "Regression output from %s package."   % (pkg_tag_str)
 print "Regression filter run on machine %s." % (hostname)
 print "Date: %s."                            % (date_tag_str)
 print "Regression log stored in %s:%s."      % (reg_host_str, log_tag_str)
-print "Regression run from script %s:%s."    % (reg_host_str, script_tag_str)
+print "Regression run from script %s:%s %s." % (reg_host_str,
+                                                script_tag_str,
+                                                options_tag_str)
 print
-
 print "Test Summary for All Packages :",
 
 if all_passed:
