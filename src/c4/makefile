@@ -74,6 +74,11 @@ $(testprogs_all) : t%_$(env) : $(env) $(env)/t%.o libc4_$(env).$(lib_suffix)
 
 # Go pick up the standard signature for makefiles.
 
+aux_clean := testclean
+
+testclean:
+	$(RM) t*_$(env)
+
 cc_files	:= $(libsrcs) $(tsrcs)
 
 include ../config/make.end
