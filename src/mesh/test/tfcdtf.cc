@@ -994,12 +994,12 @@ void t6()
     // somehow.
 
         X a(spm), b(spm);
-        //XI ai(spm), bi(spm);
-        //XL al(spm), bl(spm);
+        XI ai(spm), bi(spm);
+        XL al(spm), bl(spm);
 
         X::iterator xiter;
-        //XI::iterator xiiter;
-        //XL::iterator xliter;
+        XI::iterator xiiter;
+        XL::iterator xliter;
 
         a = 0.;
 
@@ -1065,15 +1065,15 @@ void t6()
         xiter = b.begin();
         passed &= (*xiter == 4.);
 
-        //ai = -3;
-        //bi = abs(ai);
-        //xiiter = bi.begin();
-        //passed &= (*xiiter == 3);
+        ai = -3;
+        bi = abs(ai);
+        xiiter = bi.begin();
+        passed &= (*xiiter == 3);
 
-        //al = -3;
-        //bl = labs(al);
-        //xliter = bl.begin();
-        //passed &= (*xliter == 3);
+        al = -3;
+        bl = labs(al);
+        xliter = bl.begin();
+        passed &= (*xliter == 3);
 
         a = -3.4;
         b = fabs(a);
