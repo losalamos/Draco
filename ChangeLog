@@ -1,3 +1,12 @@
+2004-04-08  Thomas M. Evans  <tme@lanl.gov>
+
+	* mc, imc: Moved these packages to CLUBIMC library.  The last
+	versions in draco were mc-4_0_0 and imc-4_0_0.  These tags were
+	added just before the move.  Obviously, any history prior to these
+	versions lives in draco, not clubimc. [Side Note: mc had one
+	accidental commit to its ChangeLog after mc-4_0_0 tag.  This can
+	be ignored].
+
 2004-04-07  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Moved to SourceForge CVS control.  Formal time of move:

@@ -45,13 +45,7 @@ AC_CONFIG_SUBDIRS(timestep pcgWrap viz cdi_eospac \
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(mc meshReaders_Services)
-
-##---------------------------------------------------------------------------##
-## LEVEL 5
-##---------------------------------------------------------------------------##
-
-AC_CONFIG_SUBDIRS(imc)
+AC_CONFIG_SUBDIRS(meshReaders_Services)
 
 ##---------------------------------------------------------------------------##
 ## build the src/pkg configure scripts

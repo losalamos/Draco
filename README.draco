@@ -16,7 +16,8 @@ be extracted for use in clients.
 Draco contains two sets of components.  Active components are
 currently used and maintained.  Retired packages are no longer in use
 by any clients.  Retired packages can be recovered from cvs by using
-the tag <package>-retired.
+the tag <package>-retired or, in some cases, the last version of the
+package (for packages that have been moved elsewhere) e.g. imc-4_0_0.
 
 Draco development is performed by project teams within CCS-4 and
 CCS-2.  The following code projects use/supply code to draco:
@@ -52,14 +53,6 @@ Active Draco Package Synopsis
 rng [draco/src/rng]: A random number generator package.  It uses the
 SPRNG (http://www.ncsa.uiuc.edu/Apps/SPRNG/) random number library.
 This is essentially a wrapper to the SPRNG library.
-
-mc [draco/src/mc]: A low-level Monte Carlo support package.  This
-package contains meshes and service classes that can be used for
-linear and non-linear Monte Carlo transport.
-
-imc [draco/src/imc]: A Implicit Monte Carlo (imc) component library.
-This package contains a set of components including particles,
-sources, and tallies that can be used to build IMC codes.
 
 units [draco/src/units]: Provides units standardization for
 Draco. Contains Units class for representing arbitrary systems and
@@ -98,6 +91,15 @@ C++.
 
 Retired Draco Package Synopsis
 ==============================
+
+mc [mc-4_0_0]: A low-level Monte Carlo support package.  This package
+contains meshes and service classes that can be used for linear and
+non-linear Monte Carlo transport. Moved to CLUBIMC component library.
+
+imc [imc-4_0_0]: A Implicit Monte Carlo (imc) component library.  This
+package contains a set of components including particles, sources, and
+tallies that can be used to build IMC codes. Moved to CLUBIMC
+component library.
 
 stopwatch [stopwatch-retired] : Overly complicated timer package.
 
