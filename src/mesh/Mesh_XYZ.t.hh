@@ -391,10 +391,10 @@ void Mesh_XYZ::gcctf<T>::update_guard_cells()
         RecvAsync( rrcv, &rrbuf(0,0), ncx*ncy, node+1 );
 
     if (node > 0)
-        Send( &data(0,0,zoff), ncx*ncy, node-1 );
+        Send<T>( &data(0,0,zoff), ncx*ncy, node-1 );
 
     if (node < lastnode)
-        Send( &data(0,0,zoff+nczp-1), ncx*ncy, node+1 );
+        Send<T>( &data(0,0,zoff+nczp-1), ncx*ncy, node+1 );
 }
 
 template<class T>
@@ -428,10 +428,10 @@ void Mesh_XYZ::gfcdtf<T>::update_gfcdtf()
         RecvAsync( rrcv, &rrbuf(0,0,0), 6*ncx*ncy, node+1 );
 
     if (node > 0)
-        Send( &data(0,0,0,zoff), 6*ncx*ncy, node-1 );
+        Send<T>( &data(0,0,0,zoff), 6*ncx*ncy, node-1 );
 
     if (node < lastnode)
-        Send( &data(0,0,0,zoff+nczp-1), 6*ncx*ncy, node+1 );
+        Send<T>( &data(0,0,0,zoff+nczp-1), 6*ncx*ncy, node+1 );
 }
 
 template<class T>
@@ -465,10 +465,10 @@ void Mesh_XYZ::gvctf<T>::update_gvctf()
         RecvAsync( rrcv, &rrbuf(0,0,0), 8*ncx*ncy, node+1 );
 
     if (node > 0)
-        Send( &data(0,0,0,zoff), 8*ncx*ncy, node-1 );
+        Send<T>( &data(0,0,0,zoff), 8*ncx*ncy, node-1 );
 
     if (node < lastnode)
-        Send( &data(0,0,0,zoff+nczp-1), 8*ncx*ncy, node+1 );
+        Send<T>( &data(0,0,0,zoff+nczp-1), 8*ncx*ncy, node+1 );
 }
 
 template<class T>
