@@ -27,21 +27,31 @@
 
 #include "./MeshXYZConnFacesAroundVertices.hh"
 
-struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
+struct XYZ_Mapper : public C4::NodeInfo
 {
     typedef rtt_dsxx::Mat1<int>::size_type size_type;
+
+    typedef rtt_mesh::Mesh_DB Mesh_DB;
 
     int nct;			// # of total cells in problem.
     int nxy;                    // # of cells in an x-y plane.
     int nczp;                   // # of cells in z this processor.
     int ncp;			// # of cells on this processor.
 
+    int ncx;
+    int ncy;
+    int ncz;
+
     int zoff;                   // z index offset of this processor's cells.
     int goff;			// global offset of this processor's cells.
 
+    Mesh_DB mdb;
+
 // Methods
 
-    XYZ_Mapper( const Mesh_DB& mdb );
+    XYZ_Mapper( const Mesh_DB& mdb_in );
+
+    const Mesh_DB &get_Mesh_DB() const { return mdb; }
 
 // Convert a local cell index to its (i,j,k) indexes in whole domain.
 
@@ -60,8 +70,6 @@ struct XYZ_Mapper : public Mesh_DB, public C4::NodeInfo
     {
 	return goffset(i,j,k) - goff;
     }
-
-    const Mesh_DB& get_Mesh_DB() const{ return *this; }
 
 // Stuff needed to instantiate a Banded_Matrix
 
@@ -95,7 +103,7 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T> class bstf;
     template<class T, int N> class tiny_vec;
 
-    typedef Mesh_DB Mesh_DB;
+    typedef rtt_mesh::Mesh_DB Mesh_DB;
 
     typedef XYZ_Mapper::size_type size_type;
     typedef rtt_dsxx::SP<const Mesh_XYZ> FieldConstructor;
@@ -940,7 +948,6 @@ class Mesh_XYZ : private XYZ_Mapper
   private:
     rtt_dsxx::Mat1<double> xc, yc, zc;
     rtt_dsxx::Mat1<double> xf, yf, zf;
-    double       dx, dy, dz;
     ccsf vc;
     rtt_dsxx::Mat1<double> xA, yA, zA;
 
@@ -950,17 +957,15 @@ class Mesh_XYZ : private XYZ_Mapper
     fcdvsf face_norms;
     vec3 xhat, yhat, zhat;
 
-    int diags[7];
-
   public:
     typedef XYZ_Mapper Coord_Mapper;
 
-    Mesh_XYZ( const Mesh_DB& mdb );
+    Mesh_XYZ( const Mesh_DB& mdb_in );
 
     bool operator==( const Mesh_XYZ& m ) const { return this == &m; }
     bool operator!=( const Mesh_XYZ& m ) const { return !(this == &m); }
 
-    const Mesh_DB& get_Mesh_DB() const { return XYZ_Mapper::get_Mesh_DB(); }
+    const Mesh_DB &get_Mesh_DB() const { return mdb; }
 
     size_type get_ncx() const { return ncx; }
     size_type get_ncy() const { return ncy; }
@@ -974,10 +979,6 @@ class Mesh_XYZ : private XYZ_Mapper
     int get_nczp() const { return nczp; }
     int get_zoff() const { return zoff; }
     int get_goff() const { return goff; }
-
-    double get_dx() const { return dx; }
-    double get_dy() const { return dy; }
-    double get_dz() const { return dz; }
 
     void get_dx(ccsf& dx) const { dx = dX; }
     void get_dy(ccsf& dy) const { dy = dY; }
@@ -1003,16 +1004,14 @@ class Mesh_XYZ : private XYZ_Mapper
     void get_face_areas(fcdsf& fa) const;
     void get_face_lengths(fcdsf& fl) const;
 
-    const rtt_dsxx::Mat1<double>& get_xA() const { return xA; }
-    const rtt_dsxx::Mat1<double>& get_yA() const { return yA; }
-    const rtt_dsxx::Mat1<double>& get_zA() const { return zA; }
+    //    const rtt_dsxx::Mat1<double>& get_xA() const { return xA; }
+    //    const rtt_dsxx::Mat1<double>& get_yA() const { return yA; }
+    //    const rtt_dsxx::Mat1<double>& get_zA() const { return zA; }
 
     const ccsf& get_vc() const { return vc; }
     void get_cell_volumes(ccsf &vols) const { vols = vc; }
     void get_vertex_volumes(vcsf &vols) const;
     void get_node_volumes(ncsf &vols) const;
-
-    const int *get_diag_offsets() const { return diags; }
 
     template <class T1, class T2, class Op>
     static void scatter( fcdtf<T1>& to, const cctf<T2>& from, const Op& op );

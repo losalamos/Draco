@@ -63,7 +63,7 @@ class Tester
  	try
 	{
 	    NML_Group g( "test" );
-	    Mesh_DB mdb;
+	    rtt_mesh::Mesh_DB mdb;
 	    mdb.setup_namelist( g );
 	    g.readgroup( filename.c_str() );
 

@@ -9,12 +9,13 @@
 #include "Mesh_XYZ.hh"
 #include "c4/SpinLock.hh"
 #include "c4/Baton.hh"
+#include "Mesh_DB.hh"
 using namespace C4;
 
 #include <iostream.h>
 
-XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
-    : Mesh_DB( mdb )
+XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb_in )
+    : mdb(mdb_in), ncx(mdb.ncx), ncy(mdb.ncy), ncz(mdb.ncz)
 {
     nct = ncx * ncy * ncz;
     nxy = ncx * ncy;
@@ -46,8 +47,8 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
 }
 
 
-Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
-    : XYZ_Mapper( mdb ),
+Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb_in )
+    : XYZ_Mapper( mdb_in ),
       vc( this ),
       dX( this ), dY( this ), dZ( this ),
       xC( this ), yC( this ), zC( this ),
@@ -56,7 +57,7 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 {
     char buf[80];
 
-    if (dump_indicies)
+    if (mdb.dump_indicies)
         for( int i=0; i < ncp; i++ ) {
             sprintf( buf, "node %d, i=%d, I(%d)=%d J(%d)=%d K(%d)=%d",
                      node, i, i, I(i), i, J(i), i, K(i) );
@@ -73,22 +74,21 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     yf = rtt_dsxx::Mat1<double>( ncy+1 );
     zf = rtt_dsxx::Mat1<double>( ncz+1 );
 
-// Initialize the deltas.
-
-    dx = (xmax - xmin) / ncx;
-    dy = (ymax - ymin) / ncy;
-    dz = (zmax - zmin) / ncz;
 
 // Initialize the cell center locations.
 
-    for( int i=0; i < ncx; i++ )
-	xc(i) = xmin + (i+.5)*dx;
-    for( int i=0; i < ncy; i++ )
-	yc(i) = ymin + (i+.5)*dy;
-    for( int i=0; i < ncz; i++ )
-	zc(i) = zmin + (i+.5)*dz;
+    xc(0) = mdb.xmin;
+    yc(0) = mdb.ymin;
+    zc(0) = mdb.zmin;
 
-    if (dump_coords) {
+    for( int i=1; i < ncx; i++ )
+	xc(i) = xc(i-1) + (mdb.dx[i]+mdb.dx[i-1])/2.0;
+    for( int i=1; i < ncy; i++ )
+	yc(i) = yc(i-1) + (mdb.dy[i]+mdb.dy[i-1])/2.0;
+    for( int i=1; i < ncz; i++ )
+	zc(i) = zc(i-1) + (mdb.dz[i]+mdb.dz[i-1])/2.0;
+
+    if (mdb.dump_coords) {
         cout << "node " << node << " ncy=" << ncy << endl;
         for( int i=0; i < ncy; i++ )
             cout << "node " << node << " yc(" << i << ")=" << yc(i) << endl;
@@ -96,30 +96,30 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
 
 // Initialize the face locations.
 
-    for( int i=0; i < ncx+1; i++ )
-	xf(i) = xmin + i * dx;
-    for( int i=0; i < ncy+1; i++ )
-	yf(i) = ymin + i * dy;
-    for( int i=0; i < ncz+1; i++ )
-	zf(i) = zmin + i * dz;
 
-// Initialize the cell volumes we will be concerned with.
+    xf(0) = mdb.xmin;
+    yf(0) = mdb.ymin;
+    zf(0) = mdb.zmin;
 
-    for( int i=0; i < ncp; i++ )
-	vc(i) = dx * dy * dz;
+    for( int i=1; i < ncx+1; i++ )
+	xf(i) = xf(i-1) + mdb.dx[i-1];
+    for( int i=1; i < ncy+1; i++ )
+	yf(i) = yf(i-1) + mdb.dy[i-1];
+    for( int i=1; i < ncz+1; i++ )
+	zf(i) = zf(i-1) + mdb.dz[i-1];
 
 // Initialize the face areas.
 
-    xA = rtt_dsxx::Mat1<double>( ncx+1 );
-    yA = rtt_dsxx::Mat1<double>( ncy+1 );
-    zA = rtt_dsxx::Mat1<double>( ncz+1 );
+    //    xA = rtt_dsxx::Mat1<double>( ncx+1 );
+    //    yA = rtt_dsxx::Mat1<double>( ncy+1 );
+    //    zA = rtt_dsxx::Mat1<double>( ncz+1 );
 
-    for( int i=0; i < ncx+1; i++ )
-	xA(i) = dy * dz;
-    for( int i=0; i < ncy+1; i++ )
-	yA(i) = dx * dz;
-    for( int i=0; i < ncz+1; i++ )
-	zA(i) = dx * dy;
+    //   for( int i=0; i < ncx+1; i++ )
+    //	xA(i) = dy * dz;
+    //   for( int i=0; i < ncy+1; i++ )
+    //	yA(i) = dx * dz;
+    //    for( int i=0; i < ncz+1; i++ )
+    //	zA(i) = dx * dy;
 
 // Uhh, initialize the "new" face locations, cell centers, deltas...
 
@@ -127,17 +127,22 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     {
 	int i = I(c), j = J(c), k = K(c);
 
+	const double dx = mdb.dx[i];
+	const double dy = mdb.dy[j];
+	const double dz = mdb.dz[k];
+	const double x = xc[i];
+	const double y = yc[j];
+	const double z = zc[k];
+
     // Initialize the cell deltas.
 
         dX(c) = dx;
         dY(c) = dy;
         dZ(c) = dz;
 
-    // Calculate cell center.
+    // Intitalize the cell volumes.
 
-	double x = dx * (i + .5), dx2 = dx / 2.;
-	double y = dy * (j + .5), dy2 = dy / 2.;
-	double z = dz * (k + .5), dz2 = dz / 2.;
+	vc(c) = dX(c) * dY(c) * dZ(c);
 
     // Initialize the cell centers.
 
@@ -152,17 +157,17 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
     // 2 == front  3 == back        y variation
     // 4 == bottom 5 == top         z variation
 
-	xF(c,0) = x - dx2; xF(c,1) = x + dx2;
-	xF(c,2) = x; xF(c,3) = x;
-	xF(c,4) = x; xF(c,5) = x;
+	xF(c,0) = x - dx/2.0;   xF(c,1) = x + dx/2.0;
+	xF(c,2) = x;            xF(c,3) = x;
+	xF(c,4) = x;            xF(c,5) = x;
 
-	yF(c,0) = y; yF(c,1) = y;
-	yF(c,2) = y - dy2; yF(c,3) = y + dy2;
-	yF(c,4) = y; yF(c,5) = y;
+	yF(c,0) = y;            yF(c,1) = y;
+	yF(c,2) = y - dy/2.0;   yF(c,3) = y + dy/2.0;
+	yF(c,4) = y;            yF(c,5) = y;
 
-	zF(c,0) = z; zF(c,1) = z;
-	zF(c,2) = z; zF(c,3) = z;
-	zF(c,4) = z - dz2; zF(c,5) = z + dz2;
+	zF(c,0) = z;            zF(c,1) = z;
+	zF(c,2) = z;            zF(c,3) = z;
+	zF(c,4) = z - dz/2.0;   zF(c,5) = z + dz/2.0;
     }
 
 // Initialize the unit normals
@@ -188,46 +193,46 @@ Mesh_XYZ::Mesh_XYZ( const Mesh_DB& mdb )
         face_norms(c,5) = zhat;
     }
 
-// Now initialize the diag offsets which are needed by clients employing
-// sparse matrices.
-
-    diags[3] = 0;
-    diags[4] = 1;
-    diags[5] = ncx;
-    diags[6] = ncx*ncy;
-    diags[2] = -diags[4];
-    diags[1] = -diags[5];
-    diags[0] = -diags[6];
 }
+
+// do this like the xF, yF and zF
 
 void Mesh_XYZ::get_face_areas(Mesh_XYZ::fcdsf& fa) const
 {
-    for ( int i = 0; i < fa.ncx; ++i )
-      for ( int j = 0; j < fa.ncy; ++j )
-        for ( int k = fa.zoff; k < fa.zoff + fa.nczp; ++k )
-	{
-	    fa(i,j,k,0) = this->dy*this->dz;
-	    fa(i,j,k,1) = fa(i,j,k,0);
-	    fa(i,j,k,2) = this->dx*this->dz;
-	    fa(i,j,k,3) = fa(i,j,k,2);
-	    fa(i,j,k,4) = this->dx*this->dy;
-	    fa(i,j,k,5) = fa(i,j,k,4);
-	}
+    for( int c=0; c < ncp; c++ )
+    {
+	int i = I(c), j = J(c), k = K(c);
+
+	const double dx = mdb.dx[i];
+	const double dy = mdb.dy[j];
+	const double dz = mdb.dz[k];
+
+	fa(i,j,k,0) = dy * dz;
+	fa(i,j,k,1) = fa(i,j,k,0);
+	fa(i,j,k,2) = dx * dz;
+	fa(i,j,k,3) = fa(i,j,k,2);
+	fa(i,j,k,4) = dx * dy;
+	fa(i,j,k,5) = fa(i,j,k,4);
+    }
 }
 
 void Mesh_XYZ::get_face_lengths(fcdsf& fl) const
 {
-    for ( int i = 0; i < fl.ncx; ++i )
-      for ( int j = 0; j < fl.ncy; ++j )
-        for ( int k = fl.zoff; k < fl.zoff + fl.nczp; ++k )
-	{
-	    fl(i,j,k,0) = this->dx;
-	    fl(i,j,k,1) = fl(i,j,k,0);
-	    fl(i,j,k,2) = this->dy;
-	    fl(i,j,k,3) = fl(i,j,k,2);
-	    fl(i,j,k,4) = this->dz;
-	    fl(i,j,k,5) = fl(i,j,k,4);
-	}
+    for( int c=0; c < ncp; c++ )
+    {
+	int i = I(c), j = J(c), k = K(c);
+
+	const double dx = mdb.dx[i];
+	const double dy = mdb.dy[j];
+	const double dz = mdb.dz[k];
+
+	fl(i,j,k,0) = dx;
+	fl(i,j,k,1) = fl(i,j,k,0);
+	fl(i,j,k,2) = dy;
+	fl(i,j,k,3) = fl(i,j,k,2);
+	fl(i,j,k,4) = dz;
+	fl(i,j,k,5) = fl(i,j,k,4);
+    }
 }
 
 void Mesh_XYZ::get_vertex_volumes(vcsf& vols) const
