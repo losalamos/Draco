@@ -9,17 +9,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __xm_Release_hh__
-#define __xm_Release_hh__
+#ifndef xm_Release_hh
+#define xm_Release_hh
 
-//===========================================================================//
-/*!
- * \mainpage Overview of the xm package
- * \version
- * \author
- * 
- * 
- */
 //===========================================================================//
 /*!
  * \namespace rtt_xm
@@ -36,7 +28,7 @@ namespace rtt_xm
     const std::string release();
 }
 
-#endif                          // __xm_Release_hh__
+#endif                          // xm_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of xm/Release.hh

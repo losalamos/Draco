@@ -13,6 +13,8 @@
 #ifndef <spkg>_Release_hh
 #define <spkg>_Release_hh
 
+#include <string>
+
 //===========================================================================//
 /*!
  * \namespace <namespace>
@@ -21,8 +23,6 @@
  *
  */
 //===========================================================================//
-
-#include <string>
 
 namespace <namespace>
 {

@@ -9,24 +9,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __plot2D_Release_hh__
-#define __plot2D_Release_hh__
+#ifndef rtt_plot2D_Release_hh
+#define rtt_plot2D_Release_hh
 
-//===========================================================================//
-/*!
- * \mainpage plot2D_overview Overview of the plot2D package
- * \version 1_0_0
- * \author Rob Lowrie
- *
- * Generates 2D line plots via the Grace plotting program.
- * 
- */
 //===========================================================================//
 /*!
  * \namespace rtt_plot2D
  *
  * \brief Namespace that contains the plot2D package classes and variables.
- *
+ * 
  */
 //===========================================================================//
 
@@ -37,7 +28,7 @@ namespace rtt_plot2D
     const std::string release();
 }
 
-#endif                          // __plot2D_Release_hh__
+#endif                          // rtt_plot2D_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of plot2D/Release.hh

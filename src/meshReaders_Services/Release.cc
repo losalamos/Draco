@@ -1,7 +1,4 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.cc
-// B.T. Adams
-// Wed Jun 7 10:33:26 2000
 /*! 
  * \file   meshReaders_Services/Release.cc
  * \author B.T. Adams
@@ -20,8 +17,12 @@ namespace rtt_meshReaders_Services
 
 using std::string;
 
-// function definition for Release, define the local version number for
-// this library in the form meshReaders_Servicess-#_#_# in pkg_version variable
+/*!  
+ * \return string of the release number
+ *
+ * Function definition for Release, define the local version number for
+ * this library in the form lapack_wrap-\#_\#_\# in pkg_release variable 
+ */
 const string release()
 {
     string pkg_release = "meshReaders_Services(draco-4_3_0)";

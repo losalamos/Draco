@@ -9,20 +9,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __viz_Release_hh__
-#define __viz_Release_hh__
+#ifndef viz_Release_hh
+#define viz_Release_hh
 
-//===========================================================================//
-/*!
- * \mainpage Overview of the viz package
- * \version 1_1_0
- * \author T.M. Evans and J. McGhee
- * 
- * The viz package contains translators to visualization software.  Currently
- * supported are output translators for EnSight.
- *
- * More translators will come on line as need arises.
- */
 //===========================================================================//
 /*!
  * \namespace rtt_viz
@@ -39,7 +28,7 @@ namespace rtt_viz
     const std::string release();
 }
 
-#endif                          // __viz_Release_hh__
+#endif                          // viz_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of viz/Release.hh

@@ -14,16 +14,6 @@
 
 //===========================================================================//
 /*!
- * \mainpage Overview of the cdi_analytic package
- * \version 1_1_0
- * \author Tom Evans and Todd Urbatsch
- * 
- * The cdi_analytic package contains analytic data models that can be
- * accessed through cdi.
- * 
- */
-//===========================================================================//
-/*!
  * \namespace rtt_cdi_analytic
  *
  * \brief Namespace that contains the cdi_analytic package classes and

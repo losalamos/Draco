@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -4030,13 +4030,13 @@ AC_DEFUN(AC_FIND_TOP_SRC, [dnl
    # $2 is the variable to store the package's main source directory in.
 
    temp_dir=$1
-   echo $temp_dir
+   AC_MSG_CHECKING([package top source directory])
    while test -d $temp_dir -a ! -d $temp_dir/config ; do   
        temp_dir="${temp_dir}/.."
    done
    if test -d $temp_dir; then
        $2=`cd $temp_dir; pwd;`
-       AC_MSG_RESULT([Package top source directory: $$2])
+       AC_MSG_RESULT([$$2])
    else
        AC_MSG_ERROR('Could not find package top source directory')
    fi

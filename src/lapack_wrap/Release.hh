@@ -9,26 +9,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __lapack_wrap_Release_hh__
-#define __lapack_wrap_Release_hh__
+#ifndef rtt_lapack_wrap_Release_hh
+#define rtt_lapack_wrap_Release_hh
 
-//===========================================================================//
-/*!
- * \page lapack_wrap_overview Overview of the lapack_wrap package
- * \version 1_0_0
- * \author  Tom Evans
- * 
- * The lapack_wrap package contains a C++ functional interface to BLAS and
- * LAPACK functions. 
- *
- * BLAS functions are included in the headers Blas_Level_1.hh (level 1 BLAS),
- * Blas_Level_2.hh (level 2 BLAS), and Blas_Level_3.hh (level 3 BLAS).  To
- * include the C++ wrapped BLAS include the header <Blas.hh>.  This header
- * includes all three Blas_Level headers.
- *
- * LAPACK functionality has not been wrapped yet.
- * 
- */
 //===========================================================================//
 /*!
  * \namespace rtt_lapack_wrap
@@ -46,7 +29,7 @@ namespace rtt_lapack_wrap
     const std::string release();
 }
 
-#endif                          // __lapack_wrap_Release_hh__
+#endif                          // rtt_lapack_wrap_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of lapack_wrap/Release.hh

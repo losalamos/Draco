@@ -14,24 +14,6 @@
 
 //===========================================================================//
 /*!
- *
- * \mainpage Overview of the C4 package
- * \version 2_3_0
- * \author Tom Evans, Todd Urbatsch, Geoff Furnish
-
- * The c4 package is a set of classes and functions that provide wrappers for
- * message passing functionality. 
- *
- * The basic functions provided by C4 sit in the C4_Functions.hh header.
- * These are canonical forms of message passing functions.  c4 is set to
- * either serial or mpi (as determined by the C4_MPI or C4_SCALAR macros).
- * To use c4 include the following
- * \code
- * #include "c4/global.hh"
- * \endcode
- */
-//===========================================================================//
-/*!
  * \namespace rtt_c4
  *
  * \brief Namespace that contains c4 package classes and variables.

@@ -9,20 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __rng_Release_hh__
-#define __rng_Release_hh__
+#ifndef rtt_rng_Release_hh
+#define rtt_rng_Release_hh
 
 #include <string>
 
-//===========================================================================//
-/*!
- * \mainpage Overview of the RNG package
- * \version 1_4_0
- * \author Tom Evans, Todd Urbatsch
- *
- * The rng package is an object oriented random number generation package
- * that uses the SPRNG random number library.  
- */
 //===========================================================================//
 /*!
  * \namespace rtt_rng
@@ -43,12 +34,11 @@
 namespace rtt_rng 
 {
 
-//! Query package for the release number.
 const std::string release();
 
 } // end of rtt_rng
 
-#endif                          // __rng_Release_hh__
+#endif                          // rtt_rng_Release_hh
 
 //---------------------------------------------------------------------------//
 //                              end of rng/Release.hh

@@ -9,22 +9,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_eospac_Release_hh__
-#define __cdi_eospac_Release_hh__
+#ifndef rtt_cdi_eospac_Release_hh
+#define rtt_cdi_eospac_Release_hh
 
-//===========================================================================//
-/*!
- * \mainpage Overview of the cdi_eospac package
- * \version 1_0_1
- * \author Kelly Thompson
- * 
- * 
- */
+
 //===========================================================================//
 /*!
  * \namespace rtt_cdi_eospac
  *
- * \brief Namespace that contains the cdi_eospac package classes and variables.
+ * \brief Namespace that contains the cdi_eospac package classes and
+ * variables.
  *
  */
 //===========================================================================//
@@ -36,7 +30,7 @@ namespace rtt_cdi_eospac
     const std::string release();
 }
 
-#endif  // __cdi_eospac_Release_hh__
+#endif  // rtt_cdi_eospac_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of cdi_eospac/Release.hh

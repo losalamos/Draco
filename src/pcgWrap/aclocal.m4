@@ -910,8 +910,10 @@ dnl Find the top source directory of the package by searching upward
 dnl from the argument directory. The top source directory is defined
 dnl as the one with a 'config' sub-directory.
 dnl
-dnl Note: This function will run forever if the pacakge top source
-dnl directory is not somewhere above the argument directory.
+dnl Note: This function will eventually quit if the searched for
+dnl directory is not above the argument. It does so when $temp_dir
+dnl ceases to be a valid directory, which only seems to happen after a
+dnl LOT of ..'s are added to it.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_FIND_TOP_SRC, [dnl
@@ -920,13 +922,16 @@ AC_DEFUN(AC_FIND_TOP_SRC, [dnl
    # $2 is the variable to store the package's main source directory in.
 
    temp_dir=$1
-   echo $temp_dir
-   while test ! -d $temp_dir/config ; do   
+   AC_MSG_CHECKING([package top source directory])
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do   
        temp_dir="${temp_dir}/.."
-       echo "RUNNING: $temp_dir"
    done
-   $2=`cd $temp_dir; pwd;`
-   AC_MSG_RESULT([Package top source directory: $$2])
+   if test -d $temp_dir; then
+       $2=`cd $temp_dir; pwd;`
+       AC_MSG_RESULT([$$2])
+   else
+       AC_MSG_ERROR('Could not find package top source directory')
+   fi
 ])
 
 
@@ -4166,6 +4171,11 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
       localdir:doxygen_examples:rel_doxygen_examples \
       localdir:doxygen_input:rel_doxygen_input\
    ])
+
+   #
+   # add autodoc directory to doxygen input
+   # 
+   rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
 
    #
    # use relative paths for tag files also

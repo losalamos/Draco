@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-// Release.cc
-// Randy M. Roberts
-// Fri Aug 27 10:33:26 1999
-// $Id$
-//---------------------------------------------------------------------------//
-// @> Release function implementation for timestep library
+/*!
+ * \file   timestep/Release.cc
+ * \author Thomas M. Evans
+ * \date   Mon Apr 19 21:36:00 2004
+ * \brief  Release function implementation for timestep library
+ * \note   Copyright © 2003 The Regents of the University of California.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -14,16 +15,22 @@
 namespace rtt_timestep
 {
 
-// function definition for Release, define the local version number for
-// this library in the form timestep-#_#_# in pkg_version variable
-const std::string release()
+using std::string;
+
+/*!  
+ * \return string of the release number
+ *
+ * Function definition for Release, define the local version number for
+ * this library in the form timestep-\#_\#_\# in pkg_release variable 
+ */
+const string release()
 {
-    std::string pkg_release = "timestep(draco-4_3_0)";
+    string pkg_release = "timestep(draco-4_3_0)";
     return pkg_release;
 }
 
 }  // end of rtt_timestep
 
 //---------------------------------------------------------------------------//
-//                              end of Release.cc
+//                             end of Release.cc
 //---------------------------------------------------------------------------//

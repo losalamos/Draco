@@ -9695,14 +9695,20 @@ echo "$as_me: error: \"Cannot figure out the platform or host!\"" >&2;}
    # package_top_srcdir is the variable to store the package's main source directory in.
 
    temp_dir=$srcdir
-   echo $temp_dir
-   while test ! -d $temp_dir/config ; do
+   echo "$as_me:$LINENO: checking package top source directory" >&5
+echo $ECHO_N "checking package top source directory... $ECHO_C" >&6
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do
        temp_dir="${temp_dir}/.."
-       echo "RUNNING: $temp_dir"
    done
-   package_top_srcdir=`cd $temp_dir; pwd;`
-   echo "$as_me:$LINENO: result: Package top source directory: $package_top_srcdir" >&5
-echo "${ECHO_T}Package top source directory: $package_top_srcdir" >&6
+   if test -d $temp_dir; then
+       package_top_srcdir=`cd $temp_dir; pwd;`
+       echo "$as_me:$LINENO: result: $package_top_srcdir" >&5
+echo "${ECHO_T}$package_top_srcdir" >&6
+   else
+       { { echo "$as_me:$LINENO: error: 'Could not find package top source directory'" >&5
+echo "$as_me: error: 'Could not find package top source directory'" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
 
 
 
@@ -9852,6 +9858,11 @@ case "$_lcl_notation" in
 esac
   eval $_lcl_result_var='$_lcl_result_tmp'
 done
+
+   #
+   # add autodoc directory to doxygen input
+   #
+   rel_doxygen_input="$rel_doxygen_input $rel_doxygen_input/autodoc"
 
    #
    # use relative paths for tag files also

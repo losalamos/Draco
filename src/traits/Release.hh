@@ -9,17 +9,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __traits_Release_hh__
-#define __traits_Release_hh__
+#ifndef traits_Release_hh
+#define traits_Release_hh
 
-//===========================================================================//
-/*!
- * \mainpage Overview of the traits package
- * \version 1_0_0
- * \author Randy Roberts and T.M. Evans
- * 
- * Traits classes for use throughout draco.
- */
 //===========================================================================//
 /*!
  * \namespace rtt_traits
@@ -36,7 +28,7 @@ namespace rtt_traits
     const std::string release();
 }
 
-#endif                          // __traits_Release_hh__
+#endif                          // traits_Release_hh
 
 //---------------------------------------------------------------------------//
 //                           end of traits/Release.hh
