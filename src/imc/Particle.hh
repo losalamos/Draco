@@ -39,6 +39,7 @@
 //                and converting it to an int
 //  7)   7-6-98 : added functions to return particle information to needed
 //                services 
+//  8)   7-9-98 : added set functions (ew and random) for combing
 // 
 //===========================================================================//
 
@@ -187,6 +188,7 @@ public:
     void set_random(Sprng &ran) { random = ran; }
     void set_time_left(double t) { time_left = t; }
     void set_descriptor(string s) { descriptor = s; }
+    void set_ew(double new_ew) { ew = new_ew; }
 
   // transport descriptors
     string desc() const { return descriptor; }

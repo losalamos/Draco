@@ -73,9 +73,9 @@ private:
     typename MT::CCSF_int fss;
     double esstot;
 
-  // radiation energy per cell, total
-    typename MT::CCSF_double erad;
-    double eradtot;
+  // radiation energy per cell, total for census energy
+    typename MT::CCSF_double ecen;
+    double ecentot;
 
   // number of census particles per cell
     typename MT::CCSF_int ncen;
@@ -93,9 +93,10 @@ private:
     double eloss_ss;
     double eloss_cen;
 
-  // energy weights for ss and vol emission source particles
+  // energy weights for census, ss, and vol emission source particles
     typename MT::CCSF_double ew_vol;
     typename MT::CCSF_double ew_ss;
+    typename MT::CCSF_double ew_cen;
 
   // maximum number of cells capable of fitting on a processor
     int capacity;
@@ -110,12 +111,13 @@ private:
     void calc_initial_census(const MT &, const Opacity<MT> &, 
 			     const Mat_State<MT> &, Rnd_Control &);
     void calc_source_energies(const Opacity<MT> &, const Mat_State<MT> &);
-    void calc_source_numbers(const Opacity<MT> &);
+    void calc_source_numbers(const Opacity<MT> &, const int);
+    void comb_census(const MT &, Rnd_Control &);
 
   // initial census service functions
     void calc_evol(const Opacity<MT> &, const Mat_State<MT> &);
     void calc_ess();
-    void calc_erad();
+    void calc_ecen();
     void calc_ncen_init();
     void write_initial_census(const MT &, Rnd_Control &);
 
@@ -146,7 +148,10 @@ public:
 
   // set and get functions for census stuff
     void set_ncen(int cell, int num) { ncen(cell) = num; }
+    void set_ecen(int cell, double cen) { ecen(cell) = cen; }
     int get_ncen(int cell) const { return ncen(cell); }
+    double get_ecen(int cell) const { return ecen(cell); }
+    void set_ecentot(double cent) { ecentot = cent; }
     void set_ncentot(int num) { ncentot = num; }
     int get_ncentot() const { return ncentot; }
     inline void set_census(SP<typename Particle_Buffer<PT>::Census>);
@@ -155,7 +160,7 @@ public:
   // get functions for energy
     double get_evoltot() const { return evoltot; }
     double get_esstot() const { return esstot; } 
-    double get_eradtot() const { return eradtot; }
+    double get_ecentot() const { return ecentot; }
     double get_eloss_ss() const { return eloss_ss; }
     double get_eloss_vol() const { return eloss_vol; }
     double get_eloss_cen() const { return eloss_cen; }

@@ -15,6 +15,7 @@ using std::setiosflags;
 using std::ios;
 using std::endl;
 using std::setw;
+using std::fabs;
 
 //---------------------------------------------------------------------------//
 // constructor
@@ -26,9 +27,10 @@ Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
     : temperature(mesh.num_cells()), dedt(mesh.num_cells()), e_elec_tot(0),
       eint_initial(0), eint_begin(0), eint_end(0), e_in_probtot(0),
       e_esc_probtot(0), e_loss_probtot(0), evol_net(mesh.num_cells()),   
-      evoltot(0), evolext(0), nvoltot(0), ncen(mesh.num_cells()),
-      ncentot(0), eradtot_b(0), eradtot_e(0), esstot(0), nsstot(0), 
-      eloss_vol(0), eloss_ss(0), eloss_cen(0), e_escape(0)
+      evoltot(0), evolext(0), nvoltot(0), ncen(mesh.num_cells()), ncentot(0),  
+      ncenrun(0), eradtot_b(0), eradtot_e(0), ecen(mesh.num_cells()),
+      ecentot(0), ewpl(mesh.num_cells()), esstot(0), nsstot(0), eloss_vol(0), 
+      eloss_ss(0), eloss_cen(0), e_escape(0)
 {
     Require (mesh.num_cells() == material.num_cells());
 
@@ -42,7 +44,7 @@ Global_Tally<MT,PT>::Global_Tally(const MT &mesh, const Mat_State<MT>
 	ncentot            += ncen[cell-1];
     }
     census    = source.get_census();
-    eradtot_e = source.get_eradtot();
+    eradtot_e = source.get_ecentot();
 
   // do the initial internal energy calculation
     set_energy_begin(source);
@@ -104,8 +106,12 @@ void Global_Tally<MT,PT>::set_energy_begin(const Source_Init<MT> &source)
     eloss_ss  = source.get_eloss_ss();
     nsstot    = source.get_nsstot();
 
-  // get the number of census particles that we are running in this timestep
+  // after updating the smart pointer to the census (it may still
+  // be pointing to the pre-combed census), get the number of 
+  // census particles that we are running this timestep
+    census    = source.get_census(); 
     ncentot   = census->size();
+    ncenrun   = ncentot;
     eradtot_b = eradtot_e;
     eloss_cen = source.get_eloss_cen();
 
@@ -118,21 +124,34 @@ void Global_Tally<MT,PT>::set_energy_begin(const Source_Init<MT> &source)
 
 template<class MT, class PT>
 void Global_Tally<MT,PT>::set_energy_end(const vector<int> &ncen_,
-					 double ecen, double eesc)
+					 const vector<double> &ecen_, 
+					 const vector<double> &ewpl_,
+					 double ecent, double eesc)
 {
     Require (ncen_.size() == ncen.size());
+    Require (ecen_.size() == ecen.size());
+    Require (ecen.size()  == ncen.size());
     
-  // get new nunbers of census particles per cell
+  // get new numbers and energy of census particles per cell
     int ncentot = 0;
+    ecentot = 0.0;
     for (int i = 0; i < ncen.size(); i++)
     {
-	ncen[i] = ncen_[i];
+	ncen[i]  = ncen_[i];
 	ncentot += ncen[i];
+      	ecen[i]  = ecen_[i];
+	ecentot += ecen[i];
     }
     Check (ncentot == census->size());
+    Check (fabs(ecentot - ecent) < 1.0e-6 * ecent);
+
+  // get the energy-weighted path length for cycle-average 
+  // radiation temperature and energy
+    for (int i = 0; i < ewpl.size(); i++)
+	ewpl[i] = ewpl_[i];
 
   // update the ecentot energy
-    eradtot_e = ecen;
+    eradtot_e = ecent;
 
   // update the energy loss in this timestep
     e_escape = eesc;
@@ -179,8 +198,12 @@ void Global_Tally<MT,PT>::update_Source_Init(Source_Init<MT> &source) const
 
   // update the census part of Source_Init
     for (int cell = 1; cell <= num_cells(); cell++)
+    {
 	source.set_ncen(cell, ncen[cell-1]);
+	source.set_ecen(cell, ecen[cell-1]);
+    }
     source.set_ncentot(census->size());
+    source.set_ecentot(ecentot);
     source.set_census(census);
 }
 
@@ -218,13 +241,19 @@ void Global_Tally<MT,PT>::print(ostream &out) const
     out << "=================================" << endl;
     out.setf(ios::right, ios::adjustfield);
     out << setw(30) << "Cycle energy check:" << setw(15) << calc_de_cyc()
-	<< " (" << setw(15) << calc_frac_cyc() << ")" << endl;
+	<< " (frac:" << setw(15) << calc_frac_cyc() << ")" << endl;
     out << setw(30) << "Accumulated energy check:" << setw(15) <<
-	calc_de_tot() << " (" << setw(15) << calc_frac_tot() << ")" << endl;
-    out << setw(30) << "Total energy loss:" << setw(15) << eloss_vol +
-	eloss_ss + eloss_cen << endl;
-    out << setw(30) << "Escaping energy:" << setw(15) << e_escape << endl;
-    out << setw(30) << "Census energy:" << setw(15) << eradtot_e << endl;
+	calc_de_tot() << " (frac:" << setw(15) << calc_frac_tot() << ")" 
+	<< endl;
+    out << setw(30) << "Cycle energy loss:" << setw(15) 
+	<< eloss_vol + eloss_ss + eloss_cen << " (frac:" << setw(15) 
+	<< (eloss_vol +	eloss_ss + eloss_cen) / eint_begin << ")" << endl;
+    out << setw(30) << "Accumulated energy loss:" << setw(15) 
+	<< e_loss_probtot << " (frac:" << setw(15) 
+ 	<< e_loss_probtot / eint_initial << ")" << endl;
+    out << setw(30) << "Escaping energy this cycle:" << setw(15) << e_escape 
+	<< endl;
+    out << setw(30) << "Energy to census :" << setw(15) << eradtot_e << endl;
     out << setw(30) << "Number to census:" << setw(15) << census->size() 
 	<< endl;
     out << setw(30) << "Initial Internal Energy:" << setw(15) << eint_begin 
@@ -241,7 +270,7 @@ void Global_Tally<MT,PT>::print(ostream &out) const
     out << " -------------------------------------------" << endl;
     out << setw(35) << "Census:" << setw(15) 
 	<< "Volume" << setw(15) << "Surface" << endl;
-    out << setw(20) << "Number:" << setw(15) << ncentot << setw(15)
+    out << setw(20) << "Number:" << setw(15) << ncenrun << setw(15)
 	<< nvoltot  << setw(15) << nsstot << endl;
     out << setw(20) << "Total energy:" << setw(15) << eradtot_b << setw(15)
 	<< evoltot  << setw(15) << esstot << endl;

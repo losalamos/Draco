@@ -71,10 +71,16 @@ private:
     SP<typename Particle_Buffer<PT>::Census> census;
     vector<int> ncen;
     int ncentot;
+    int ncenrun;
 
   // radiation energies (census)
     double eradtot_b;
     double eradtot_e;
+    vector<double> ecen;
+    double ecentot;
+
+  // radiation energies (energy weighted path length over cycle)
+    vector<double> ewpl;
 
   // surface source energies and source
     double esstot;
@@ -105,7 +111,8 @@ public:
     void set_T(const vector<double> &);
     void set_cen(const vector<int> &);
     void set_energy_begin(const Source_Init<MT> &);
-    void set_energy_end(const vector<int> &, double, double);
+    void set_energy_end(const vector<int> &, const vector<double> &, 
+			const vector<double> &, double, double);
 
   // accessors
     double get_T(int cell) const { return temperature[cell-1]; }

@@ -35,6 +35,7 @@ using std::ios;
 using std::setiosflags;
 using std::setw;
 using std::fill;
+using std::fabs;
 
 //---------------------------------------------------------------------------//
 // constructors
@@ -390,22 +391,32 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
   // send the tallies to the master node
     if (node())
     {
+	cout << "On node " << node() << endl;
+
       // calculate the number of cells on this node
 	int num_cells = tally->num_cells();
 
       // make allocatable arrays for tally data
 	double *edep_send = new double[num_cells];
-	int *ncen_send    = new int[num_cells];
+	int    *ncen_send = new int[num_cells];
+	double *ecen_send = new double[num_cells];
+	double *ewpl_send = new double[num_cells];
 
       // assign tally data to arrays
-	int ncentot = 0;
+	int    ncentot = 0;
+	double ecentot = 0.0;
 	for (int i = 0; i < num_cells; i++)
 	{
 	    edep_send[i] = tally->get_energy_dep(i+1);
 	    ncen_send[i] = tally->get_new_ncen(i+1);
 	    ncentot     += ncen_send[i];
+	    ecen_send[i] = tally->get_new_ecen(i+1);
+	    ecentot     += ecen_send[i];
+	    ewpl_send[i] = tally->get_accum_ewpl(i+1);
 	}
 	Check (ncentot == tally->get_new_ncen_tot());
+	Check (fabs(ecentot - tally->get_new_ecen_tot()) 
+	       < 1.0e-6 * tally->get_new_ecen_tot());
 
       // send tally to master
 	Send (num_cells, 0, 300);
@@ -413,6 +424,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	Send (ncen_send, num_cells, 0, 302);
 	Send (tally->get_new_ecen_tot(), 0, 303);
 	Send (tally->get_ew_escaped(), 0, 304);
+	Send (ecen_send, num_cells, 0, 305);
+	Send (ewpl_send, num_cells, 0, 306);
 
       // send back the Census buffers created on the processor
 	buffer->send_buffer(*new_census, 0);
@@ -420,6 +433,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
       // release memory
 	delete [] edep_send;
 	delete [] ncen_send;
+	delete [] ecen_send;
+	delete [] ewpl_send;
 	kill (tally);
 	kill (new_census);
     }
@@ -431,6 +446,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	vector<double> accumulate_edep(global_state->num_cells(), 0.0);
 	vector<int> accumulate_ncen(global_state->num_cells());
 	fill (accumulate_ncen.begin(), accumulate_ncen.end(), 0);
+	vector<double> accumulate_ecen(global_state->num_cells(), 0.0);
+	vector<double> accumulate_ewpl(global_state->num_cells(), 0.0);
 	double e_escape_tot = 0.0;
 	double ecentot = 0.0;
 
@@ -439,7 +456,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	Check (census->size() == 0);
 
       // loop through processors and get stuff
-	int ncentot = 0;
+	int    ncentot   = 0;
+	double ecencheck = 0.0;
 	for (int i = 1; i < nodes(); i++)
 	{
 	    int num_cells;
@@ -455,6 +473,10 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	    ecentot += ecen_proc;
 	    Recv (e_escape_proc, i, 304);
 	    e_escape_tot += e_escape_proc;
+	    double *ecen_recv = new double[num_cells];
+	    double *ewpl_recv = new double[num_cells];
+	    Recv (ecen_recv, num_cells, i, 305);
+	    Recv (ewpl_recv, num_cells, i, 306);
 
 	  // assign data to accumulate_tally by looping over IMC cells
 	    for (int cell = 1; cell <= num_cells; cell++)
@@ -462,11 +484,16 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 		int global_cell = parallel_builder->master_cell(cell, i);
 		accumulate_edep[global_cell-1] += edep_recv[cell-1];
 		accumulate_ncen[global_cell-1] += ncen_recv[cell-1];
+		accumulate_ecen[global_cell-1] += ecen_recv[cell-1];
+		ecencheck += ecen_recv[cell-1];
+		accumulate_ewpl[global_cell-1] += ewpl_recv[cell-1];
 	    }
 
 	  // reclaim storage
 	    delete [] edep_recv;
 	    delete [] ncen_recv;
+	    delete [] ecen_recv;
+	    delete [] ewpl_recv;
 	    
 	  // receive the census particles from the remote processors
 	    SP<Particle_Buffer<PT>::Comm_Buffer> temp_buffer = 
@@ -478,16 +505,32 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 	}
      
       // add the results from the master processor
-	int ncenmaster = 0;
+	int    ncenmaster = 0;
+	double ecenmaster = 0.0;
 	for (int cell = 1; cell <= tally->num_cells(); cell++)
 	{
 	    int global_cell = parallel_builder->master_cell(cell, 0);
 	    accumulate_edep[global_cell-1] += tally->get_energy_dep(cell);
 	    accumulate_ncen[global_cell-1] += tally->get_new_ncen(cell);
 	    ncenmaster += tally->get_new_ncen(cell);
+	    accumulate_ecen[global_cell-1] += tally->get_new_ecen(cell);
+	    ecenmaster += tally->get_new_ecen(cell);
+	    cout << "Master: ecen( " << cell << " ) = " 
+		 << tally->get_new_ecen(cell) << " accumulate_ecen = "
+		 << accumulate_ecen[global_cell-1] << endl;
+	    ecencheck += tally->get_new_ecen(cell);
+	    accumulate_ewpl[global_cell-1] += tally->get_accum_ewpl(cell);
 	}
 	Check (ncenmaster == tally->get_new_ncen_tot());
 	ecentot      += tally->get_new_ecen_tot();
+      // check total census energy on master node
+	Check (fabs(ecenmaster - tally->get_new_ecen_tot()) 
+	       < 1.0e-6 * tally->get_new_ecen_tot());
+	cout << "ecentot = " << ecentot << ", ecencheck = " << ecencheck 
+	     << " tot-check = " << ecentot - ecencheck << endl;
+      // Check problem total census energy
+	Check (fabs(ecencheck - ecentot) < 1.0e-6 * ecentot);
+
 	e_escape_tot += tally->get_ew_escaped();
 
       // write the master processor census buffer to the census container
@@ -497,7 +540,8 @@ void IMC_Man<MT,BT,IT,PT>::regroup()
 
       // update the global state
 	global_state->set_T(accumulate_edep);
-	global_state->set_energy_end(accumulate_ncen, ecentot, e_escape_tot); 
+	global_state->set_energy_end(accumulate_ncen, accumulate_ecen,
+				     accumulate_ewpl, ecentot, e_escape_tot); 
 
       // dump this timestep to the screen
 	if (!(cycle % dump_f))
@@ -544,7 +588,7 @@ void IMC_Man<MT,BT,IT,PT>::cycle_dump() const
     cout << "=============================" << endl;
     cout << setw(30) << "Beginning RN stream:" << setw(15) << rnstream
 	 << endl;
-    cout << setw(30) << "Ending RN stream:" << setw(15) << RNG::rn_stream
+    cout << setw(30) << "Ending RN stream:" << setw(15) << RNG::rn_stream - 1
 	 << endl;
     
   // ending
