@@ -18,6 +18,8 @@ namespace rtt_viz
 /*!
  * \brief Constructor for Ensight_Translator.
  *
+ * \anchor Ensight_Translator_Constructor
+ *
  * The constructor automatically knows the number of Ensight cell types (15),
  * and it sets data dependent upon this variable appropriately.
  *
@@ -31,7 +33,7 @@ namespace rtt_viz
  * given to the ensight_dump function.  This feature is intended for use with
  * restarts. Details on the dump_times_in parameter are given below.
  *
- * \param prefix_in std_string giving the name of the problem
+ * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
  * \param ens_vdata_names_in string field containing vertex data names
  * \param ens_cdata_names_in string field containing cell data names
@@ -46,23 +48,16 @@ namespace rtt_viz
  * \sa \ref Ensight_Translator_strings "Ensight_Translator class" for
  * details about restrictions on names (strings).  */
 template<class SSF>
-Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
+Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const std_string &gd_wpath,
 				       const SSF &ens_vdata_names_in,
 				       const SSF &ens_cdata_names_in,
 				       const sf_double &dump_times_in)
-    : num_ensight_cell_types(15),
-      ensight_cell_names(num_ensight_cell_types),
-      vrtx_cnt(num_ensight_cell_types),
-      cell_type_index(num_ensight_cell_types),
-      dump_times(dump_times_in),
-      prefix(prefix_in),
-      ens_vdata_names(ens_vdata_names_in.size()),
-      ens_cdata_names(ens_cdata_names_in.size()),
-      vdata_dirs(ens_vdata_names.size()),
-      cdata_dirs(ens_cdata_names.size())
+    : ens_vdata_names(ens_vdata_names_in),
+      ens_cdata_names(ens_cdata_names_in),
+      dump_times(dump_times_in)
 {
-    using std::strerror;
+    createFilenames(prefix, gd_wpath);
 
     // Determine whether this is an original graphics startup or a
     // continuation; if this is a continuation we will not rebuild the
@@ -71,185 +66,94 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix_in,
     if (!dump_times.empty())
 	graphics_continue = true;
 
-    // Assign values to ensight_cell_names. These are
-    // the official "Ensight" names that must be used in 
-    // the Ensight file.
-    ensight_cell_names[0]  = "point";
-    ensight_cell_names[1]  = "bar2";
-    ensight_cell_names[2]  = "bar3";
-    ensight_cell_names[3]  = "tria3";
-    ensight_cell_names[4]  = "tria6";
-    ensight_cell_names[5]  = "quad4";
-    ensight_cell_names[6]  = "quad8";
-    ensight_cell_names[7]  = "tetra4";
-    ensight_cell_names[8]  = "tetra10";
-    ensight_cell_names[9]  = "pyramid5";
-    ensight_cell_names[10] = "pyramid13";
-    ensight_cell_names[11] = "hexa8";
-    ensight_cell_names[12] = "hexa20";
-    ensight_cell_names[13] = "penta6";
-    ensight_cell_names[14] = "penta15";
+    initialize(graphics_continue);
+}
+//---------------------------------------------------------------------------//
+// CONSTRUCTOR, ALTERNATIVE
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Alternative constructor for Ensight_Translator.
+ *
+ * This constructor differs from
+ * \ref Ensight_Translator_Constructor "the constructor above" in that
+ * instead of specifying \a dump_times,  the parameter \a overwrite is
+ * specified.
+ *
+ * \param prefix std_string giving the name of the problem
+ * \param gd_wpath directory where dumps are stored
+ * \param ens_vdata_names_in string field containing vertex data names
+ * \param ens_cdata_names_in string field containing cell data names
+ * \param overwrite bool that controls whether an existing ensight
+ * directory is to be appended to or overwritten.  If true, overwrites the
+ * existing ensight directory.  If false, and the ensight directory exists,
+ * the case file is appended to.  In either case, if the ensight directory
+ * does not exist it is created.
+ *
+ * In the future, we might also want to parse the data names.
+ * Ideally \a overwrite would default to false, but
+ * then this conflicts with the other constructor.
+ */
+template<class SSF>
+Ensight_Translator::Ensight_Translator(const std_string &prefix,
+				       const std_string &gd_wpath,
+				       const SSF &ens_vdata_names_in,
+				       const SSF &ens_cdata_names_in,
+				       const bool overwrite)
+    : ens_vdata_names(ens_vdata_names_in),
+      ens_cdata_names(ens_cdata_names_in)
+{
+    createFilenames(prefix, gd_wpath);
+    
+    bool graphics_continue = false; // default behavior
+    
+    if ( ! overwrite ) {
+	// then try to parse the case file
 
-    // Assign values to vrtx_count, the number of vertices 
-    // in a cell.
-    vrtx_cnt[0]  = 1;
-    vrtx_cnt[1]  = 2;
-    vrtx_cnt[2]  = 3;
-    vrtx_cnt[3]  = 3;
-    vrtx_cnt[4]  = 6;
-    vrtx_cnt[5]  = 4;
-    vrtx_cnt[6]  = 8;
-    vrtx_cnt[7]  = 4;
-    vrtx_cnt[8]  = 10;
-    vrtx_cnt[9]  = 5;
-    vrtx_cnt[10] = 13;
-    vrtx_cnt[11] = 8;
-    vrtx_cnt[12] = 20;
-    vrtx_cnt[13] = 6;
-    vrtx_cnt[14] = 15;
+	std::ifstream casefile(case_filename.c_str());
 
-    // Assign values to cell_type_index. The user will
-    // use these to identify cell types.
-    cell_type_index[0]  = point;
-    cell_type_index[1]  = two_node_bar;
-    cell_type_index[2]  = three_node_bar;
-    cell_type_index[3]  = three_node_triangle;
-    cell_type_index[4]  = six_node_triangle;
-    cell_type_index[5]  = four_node_quadrangle;
-    cell_type_index[6]  = eight_node_quadrangle;
-    cell_type_index[7]  = four_node_tetrahedron;
-    cell_type_index[8]  = ten_node_tetrahedron;
-    cell_type_index[9]  = five_node_pyramid;
-    cell_type_index[10] = thirteen_node_pyramid;
-    cell_type_index[11] = eight_node_hexahedron;
-    cell_type_index[12] = twenty_node_hexahedron;
-    cell_type_index[13] = six_node_wedge;
-    cell_type_index[14] = fifteen_node_wedge;
+	if ( casefile ) {
+	    // then case file exists, so parse the dump times
+	    string key("number of steps:");
+	    string line;
+	    int num_steps = 0;
 
-    // calculate file prefixes and mkdir
-   
-    // create the ensight directory name (ens_prefix)
-    ens_prefix = gd_wpath + "/" + prefix + "_ensight";
+	    for (;;) {
+		std::getline(casefile, line);
+		Insist(casefile.good(),
+		       "Error getting number of steps from case file!");
+		if ( line.find(key) == 0 ) {
+		    std::istringstream ss(line.substr(key.size()));
+		    ss >> num_steps;
+		    //std::cout << "FOUND " << num_steps
+		    //      << " STEPS " << std::endl;
+		    break;
+		}
+	    }
 
-    // build the ensight directory if this is not a continuation
-    if (!graphics_continue)
-    { 
-	// remove old ensight directory
-	std::ostringstream rm_ensight;
-	rm_ensight << "rm -rf " << ens_prefix;
-	system(rm_ensight.str().c_str());
+	    // read next three lines and discard
+	    std::getline(casefile, line);
+	    std::getline(casefile, line);
+	    std::getline(casefile, line);
+	    Insist(casefile.good(), "Error reading case file!");
 
-	int err = mkdir(ens_prefix.c_str(), ENSIGHT_DIR_MODE);
-	if (err == -1)
-	{
-	    std::ostringstream dir_error;
-	    dir_error << "Error opening ensight directory: " 
-		      << strerror(errno);
-	    Insist (0,  dir_error.str().c_str());
+	    // read the dump_times
+
+	    dump_times.resize(num_steps);
+	    
+	    for ( int i = 0; i < num_steps; i++ ) {
+		casefile >> dump_times[i];
+		Insist(casefile.good(),
+		       "Error reading dump_times from case file!");
+		//std::cout << "   STEP " << i
+		//	  << " TIME " << dump_times[i] << std::endl;
+	    }
+	    
+	    casefile.close();
+	    graphics_continue = true;
 	}
     }
 
-    // fill cell centered and vertex data names from input fields
-    int nens_vdata = ens_vdata_names.size();
-    int nens_cdata = ens_cdata_names.size();
-    for (int i = 0; i < ens_vdata_names_in.size(); i++)
-	ens_vdata_names[i] = ens_vdata_names_in[i];
-    for (int i = 0; i < ens_cdata_names_in.size(); i++)
-	ens_cdata_names[i] = ens_cdata_names_in[i];
-       
-    // Check to make sure the variable names are of acceptable length 
-    // and contain no forbidden characters. Ensight prohibits the
-    // characters "( ) [ ] + - @ ! # * ^ $ / space", and requires
-    // the names be 19 characters or less. Moreover, since these
-    // names will be used to label output and to create directories,
-    // the names should also be unique.
-
-    typedef std::vector<sf_string::iterator> SFS_iter_vec;
-    // Create a name list for testing.
-    sf_string name_tmp(nens_vdata+nens_cdata);
-    for (int i=0; i < nens_vdata; i++ )
-	name_tmp[i] = ens_vdata_names[i];
-    for (int i=0; i < nens_cdata; i++ )
-	name_tmp[i+nens_vdata] = ens_cdata_names[i];
-    // Check for name lengths out of limits
-    {
-	int low = 1;
-	int high= 19;
-	SFS_iter_vec result =
-	    rtt_dsxx::check_string_lengths(name_tmp.begin(), 
-					   name_tmp.end(), low, high);
-	if (result.size() != 0) 
-	{
-	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (int i=0; i<result.size(); i++)
-		std::cerr << "Size of name is not in allowable range: \"" 
-			  << *result[i] << "\"" << std::endl;
-	    std::cerr << "Name lengths must be greater than " << low 
-		      << " and less than " << high << "." << std::endl;
-	    Insist (0, "Ensight variable name length out of limits!");
-	}
-    }
-    // Check for bad characters.
-    {
-	std::string bad_chars = "()[]+-@!#*^$/ ";
-	SFS_iter_vec result =
-	    rtt_dsxx::check_string_chars(name_tmp.begin(), 
-					 name_tmp.end(), bad_chars);
-	if (result.size() != 0) 
-	{
-	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (int i=0; i<result.size(); i++) 
-	        std::cerr << "Found disallowed character(s) in name: \"" 
-	                  << *result[i] << "\"" << std::endl;
-	    std::cerr << "The following characters are forbidden:" << 
-		std::endl << " \"" << bad_chars << "\"," << 
-		" as well as any white-space characters." << std::endl;
-	    Insist (0, "Found illegal character in ensight variable names!");
-	}
-    }
-    // Check for non-unique names
-    {
-	SFS_iter_vec result =
-	    rtt_dsxx::check_strings_unique(name_tmp.begin(), name_tmp.end());
-	if (result.size() != 0) 
-	{
-	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (int i=0; i<result.size(); i++)
-		std::cerr << "Duplicate name found: \"" 
-			  << *result[i] << "\"" << std::endl;
-	    std::cerr << "All variable names must be unique!" << std::endl;
-	    Insist (0, "Duplicate ensight variable names found!");
-	}
-    }
-
-    // calculate case file filename
-    case_filename = ens_prefix + "/" + prefix + ".case";
-
-    // calculate and make the geometry directory if this is not a
-    // continuation
-    geo_dir = ens_prefix + "/geo";
-    if (!graphics_continue)
-	mkdir(geo_dir.c_str(), ENSIGHT_DIR_MODE);
-
-    // make data directory names and directories
-    Check (ens_vdata_names.size() == vdata_dirs.size());
-    Check (ens_cdata_names.size() == cdata_dirs.size());
-    for (int i = 0; i < ens_vdata_names.size(); i++)
-    {
-	vdata_dirs[i] = ens_prefix + "/" + ens_vdata_names[i];
-	
-	// if this is not a continuation make the directory
-	if (!graphics_continue)
-	    mkdir(vdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
-    }
-    for (int i = 0; i < ens_cdata_names.size(); i++)
-    {
-	cdata_dirs[i] = ens_prefix + "/" + ens_cdata_names[i];
-
-	// if this is not a continuation make the directory
-	if (!graphics_continue)
-	    mkdir(cdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
-    }   
+    initialize(graphics_continue);
 }
 
 //---------------------------------------------------------------------------//

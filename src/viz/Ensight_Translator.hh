@@ -172,7 +172,6 @@ class Ensight_Translator
     sf_double dump_times;
 
     // Ensight file prefixes.
-    std_string prefix;
     std_string ens_prefix;
 
     // Names of vertex data.
@@ -196,6 +195,10 @@ class Ensight_Translator
   private:
     // >>> PRIVATE IMPLEMENTATION
 
+    // Creates some of the file prefixes and names.
+    void createFilenames(const std_string &prefix,
+			 const std_string &gd_wpath);
+    
     // Write out case file.
     void ensight_case(const double);
 
@@ -219,13 +222,24 @@ class Ensight_Translator
 			   const sf_int &,
 			   const sf_int &, const sf_string &);
 
+    // Initializer used by constructors
+    void initialize(const bool graphics_continue);
+
+
   public:
     // Constructor.
     template<class SSF>
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
 		       const SSF &ens_vdata_names, 
 		       const SSF &ens_cdata_names, 
-		       const sf_double & = sf_double()); 
+		       const sf_double & = sf_double());
+    
+    // Alternative constructor (parses dump_times)
+    template<class SSF>
+    Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
+		       const SSF &ens_vdata_names, 
+		       const SSF &ens_cdata_names, 
+		       const bool overwrite); 
 
     // Do an Ensight_Dump.
     template<class ISF, class IVF, class SSF, class FVF>
