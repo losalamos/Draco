@@ -25,6 +25,10 @@
 
 #include <vector>
 
+// for debuging only.
+#include <iomanip>
+#include <iostream>
+
 // Unit Test Frame Stuff
 //----------------------------------------
 namespace rtt_UnitTestFrame {
@@ -149,6 +153,8 @@ std::string tGandolfOpacity::runTest()
     double temperature = 0.1; // keV
     double density = 27.0; // g/cm^3
     double tabulatedGrayOpacity = 4271.7041147070677; // cm^2/g
+    
+    fail() << "TOL is set too low in match(double,double) and in match(vector,vector).";
     
     if ( ! opacityAccessorPassed( 
 	spOp_Al_rgt, temperature, density, tabulatedGrayOpacity ) )
@@ -1024,10 +1030,16 @@ bool tGandolfOpacity::match( const double computedValue,
     bool em = true;
 
     // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-10;
+
+    const double TOL = 1.0e-5;
 
     // Calculate the absolute value of the relative difference between 
     // the computed and reference values.
+
+    std::cout.precision(10);
+    std::cout << "\t" << computedValue
+	      << "\t" << referenceValue << std::endl;
+
     double reldiff = fabs( ( computedValue - referenceValue )
 			   / referenceValue );
     
@@ -1052,12 +1064,16 @@ bool tGandolfOpacity::match(
     bool em = true;
 
     // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-10;
+    const double TOL = 1.0e-5;
 
     // Test each item in the list
     double reldiff = 0.0;
     for ( int i=0; i<computedValue.size(); ++i )
 	{
+	    std::cout.precision(10);
+	    std::cout << "\t" << computedValue[i]
+		      << "\t" << referenceValue[i] << std::endl;
+		
 	    reldiff = fabs( ( computedValue[i] - referenceValue[i] )
 			    / referenceValue[i] );
 	    // If the comparison fails then change the value of "em"
@@ -1091,7 +1107,7 @@ bool tGandolfOpacity::match(
     bool em = true;
 
     // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-10;
+    const double TOL = 1.0e-5;
 
     // Test each item in the list
     double reldiff = 0.0;
@@ -1099,6 +1115,11 @@ bool tGandolfOpacity::match(
 	{
 	    for ( int j=0; j<computedValue[i].size(); ++j )
 		{
+
+		    std::cout.precision(10);
+		    std::cout << "\t" << computedValue[i][j]
+			      << "\t" << referenceValue[i][j] << std::endl;
+
 		    reldiff = fabs( ( computedValue[i][j] - referenceValue[i][j] )
 				    / referenceValue[i][j] );
 	    // If the comparison fails then change the value of "em"
