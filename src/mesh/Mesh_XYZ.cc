@@ -32,7 +32,7 @@ XYZ_Mapper::XYZ_Mapper( const Mesh_DB& mdb )
     {
         Baton<int> s(zoff);
         zoff = s;
-        s += ncz;
+        s += nczp;
     }
 
 // Calculate the starting global cell index for this processor's data.

@@ -64,10 +64,20 @@ void Mesh_XYZ::gcctf<T>::update_guard_cells()
     using namespace C4;
     C4_Req lrcv, rrcv;
 
-//     Mat2<T> lrbuf( &data(
+    dsxx::Mat2<T> lrbuf( &data(0,0,zoff-1), ncx, ncy );
+    dsxx::Mat2<T> rrbuf( &data(0,0,zoff+nczp), ncx, ncy );
 
-//     if (node > 0)
-//         AsyncRecv( 
+    if (node > 0)
+        RecvAsync( lrcv, &lrbuf(0,0), ncx*ncy, node-1 );
+
+    if (node < lastnode)
+        RecvAsync( rrcv, &rrbuf(0,0), ncx*ncy, node+1 );
+
+    if (node > 0)
+        Send( &data(0,0,zoff), ncx*ncy, node-1 );
+
+    if (node < lastnode)
+        Send( &data(0,0,zoff+nczp-1), ncx*ncy, node+1 );
 }
 
 template<class T>
@@ -78,7 +88,7 @@ Mesh_XYZ::gfcdtf<T>::operator=( const Mesh_XYZ::fcdtf<T>& c )
         for( int j=0; j < ncy; j++ )
             for( int i=0; i < ncx; i++ )
                 for ( int f=0; f < 6; f++ )
-                    data(i,j,k,f) = c(i,j,k,f);
+                    data(f,i,j,k) = c(i,j,k,f);
 
     update_gfcdtf();
     
@@ -91,10 +101,20 @@ void Mesh_XYZ::gfcdtf<T>::update_gfcdtf()
     using namespace C4;
     C4_Req lrcv, rrcv;
 
-//     Mat2<T> lrbuf( &data(
+    dsxx::Mat3<T> lrbuf( &data(0,0,0,zoff-1), 6, ncx, ncy );
+    dsxx::Mat3<T> rrbuf( &data(0,0,0,zoff+nczp), 6, ncx, ncy );
 
-//     if (node > 0)
-//         AsyncRecv( 
+    if (node > 0)
+        RecvAsync( lrcv, &lrbuf(0,0,0), 6*ncx*ncy, node-1 );
+
+    if (node < lastnode)
+        RecvAsync( rrcv, &rrbuf(0,0,0), 6*ncx*ncy, node+1 );
+
+    if (node > 0)
+        Send( &data(0,0,0,zoff), 6*ncx*ncy, node-1 );
+
+    if (node < lastnode)
+        Send( &data(0,0,0,zoff+nczp-1), 6*ncx*ncy, node+1 );
 }
 
 template <class T1, class T2, class Op>
@@ -107,14 +127,14 @@ void Mesh_XYZ::scatter
         for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
 	{
           for ( int f = 0; f < 6; ++f )
-	    op(to(i,j,k,f), gfrom(i,j,k));
+	     op(to(i,j,k,f), gfrom(i,j,k));
           if (i != 0) op(to(i,j,k,0), gfrom(i-1,j,k));
           if (i != to.ncx - 1) op(to(i,j,k,1), gfrom(i+1,j,k));
           if (j != 0) op(to(i,j,k,2), gfrom(i,j-1,k));
           if (j != to.ncy - 1) op(to(i,j,k,3), gfrom(i,j+1,k));
           if (k != 0) op(to(i,j,k,4), gfrom(i,j,k-1));
           if (k != to.ncz - 1) op(to(i,j,k,5), gfrom(i,j,k+1));
-        }  
+        }
 }
 
 template <class T1, class T2, class Op>

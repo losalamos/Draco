@@ -32,7 +32,6 @@ int main( int argc, char *argv[] )
 
     cout << "t2: passed" << endl;
 
-
     Mesh_XYZ::ccsf x( spm ), y( spm ), z( spm );
     x = 1.;
     y = 2.;
@@ -149,8 +148,18 @@ int main( int argc, char *argv[] )
 
     Mesh_XYZ::fcdsf face_areas( spm );
     spm->get_face_areas(face_areas);
+  try
+  {
     Mesh_XYZ::fcdsf face_lengths( spm );
     spm->get_face_lengths(face_lengths);
+  }
+  catch (const dsxx::assertion &ass)
+  {
+    std::cerr << "Caught dsxx::assertion face_lengths: '"
+	      << ass.what() << "'." << endl;
+  }
+
+    cout << "Finalizing" << endl;
 
     C4::Finalize();
 
