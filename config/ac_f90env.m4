@@ -54,6 +54,12 @@ AC_DEFUN(AC_F90_ENV, [dnl
    Fujitsu)
        AC_COMPILER_FUJITSU_F90
    ;;
+   Lahey)
+       AC_COMPILER_LAHEY_F90
+   ;;
+   Portland)
+       AC_COMPILER_PORTLAND_F90
+   ;;
    Absoft)
 	AC_COMPILER_ABSOFT_F90
    ;;
@@ -179,6 +185,7 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
    AR='ar'
    ARFLAGS=
    ARLIBS=
+   F90STATIC='-static-flib'
 
    # COMPILATION FLAGS
 
@@ -192,6 +199,94 @@ AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
    fi
 
    dnl end of AC_COMPILER_FUJITSU_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl LAHEY F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
+
+   # Check for working Lahey F90 compiler
+
+   AC_CHECK_PROG(F90, lf95, lf95, none)
+   if test "${F90}" = lf95 && ${F90} --version 2>&1 | grep "Lahey"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE='-Free'
+   F90FIXED='-Fixed'
+   MODFLAG='-M'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-static-flib'
+
+   # COMPILATION FLAGS
+
+   F90FLAGS="--f95 ${F90FREE}"
+
+   if test "${enable_debug:=no}" = yes
+   then
+        F90FLAGS="-g --chk(aesux) --chkglobal ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_COMPILER_LAHEY_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl PORTLAND F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
+
+   # Check for working Portland Group F90 compiler
+
+   AC_CHECK_PROG(F90, pgf90, pgf90, none)
+   if test "${F90}" = pgf90 && ${F90} --V 2>&1 | grep "Portland"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE='-Mfreeform'
+   F90FIXED='-Mnofreeform'
+   MODFLAG='-module'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC=
+
+   # COMPILATION FLAGS
+
+   F90FLAGS="${F90FREE}"
+
+   if test "${enable_debug:=no}" = yes
+   then
+        F90FLAGS="-g -Mbounds -Mchkptr ${F90FLAGS}"
+   else
+        F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+   fi
+
+   dnl end of AC_COMPILER_PORTLAND_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl
