@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #include "TestConjGradDiffusionSolver.hh"
-#include "ConjGradTraits.hh"
 
 #include "../SolverP1Diff.hh"
 #include "../Release.hh"
