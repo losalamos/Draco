@@ -19,7 +19,8 @@ tstTally_dep = tstTally.o tstTally_pt.o
 tstParticle_dep = tstParticle.o tstParticle_pt.o tstTally_pt.o
 tstTopology_Builder_dep = tstTopology_Builder.o \
                           tstTopology_Builder_pt.o 
-tstSource_Builder_dep = tstSource_Builder.o tstSource_Builder_pt.o 
+tstSource_Builder_dep = tstSource_Builder.o tstSource_Builder_pt.o \
+                        tstOpacity_pt.o
 
 tstOpacity: ${tstOpacity_dep}
 	${LD} ${LDFLAGS} -o $@ ${tstOpacity_dep} ${testlibs}

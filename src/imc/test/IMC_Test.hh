@@ -37,7 +37,7 @@ inline bool fail(int line)
 //===========================================================================//
 // make an interface for a 6 cell mesh
 
-class IMC_Interface : public rtt_imc::Interface
+class IMC_Interface : public rtt_imc::Interface<rtt_mc::OS_Mesh>
 {
     typedef std::vector<int> vi;
     typedef std::vector<double> vd;
@@ -90,16 +90,20 @@ class IMC_Interface : public rtt_imc::Interface
 
     // source interfaces
     double get_rad_s_tend() const { return double(); }
-    vd get_rad_temp() const { return vd(); }
+    vd get_rad_temp() const { return vd(6); }
     int get_npmax() const { return int(); }
     int get_npnom() const { return int(); }
     double get_dnpdt() const { return double(); }
     int get_capacity() const { return capacity; }
+
+    vd get_rad_source() const { return vd(6); }
+    vd get_evol_ext() const { return vd(6); }
 };
 
 // constructor
 IMC_Interface::IMC_Interface(int capacity_)
-    :  rtt_imc::Interface(), coord("xy"), fine_edge(2), bnd(4),
+    :  rtt_imc::Interface<rtt_mc::OS_Mesh>(), coord("xy"), fine_edge(2),
+       bnd(4),
        density(6), kappa(6), kappa_thomson(6), temperature(6),
        specific_heat(6), implicitness(1.0), delta_t(.001),
        analytic_opacity("straight"), analytic_sp_heat("straight"),

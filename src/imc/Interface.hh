@@ -12,6 +12,8 @@
 #ifndef __imc_Interface_hh__
 #define __imc_Interface_hh__
 
+#include "Particle.hh"
+#include "Particle_Buffer.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
@@ -46,6 +48,7 @@ namespace rtt_imc
 // 
 //===========================================================================//
 
+template<class MT, class PT = Particle<MT> >
 class Interface 
 {
   public:
@@ -55,6 +58,7 @@ class Interface
     typedef std::vector<int>    int_vec;
     typedef std::vector<std::string> string_vec;
     typedef std::vector<std::vector<int> > int_dvec;
+    typedef dsxx::SP<typename Particle_Buffer<PT>::Census> SP_Census;
     
   public:
     // constructor
@@ -103,6 +107,7 @@ class Interface
     virtual double get_elapsed_t() const { return double(0); }
     virtual int get_capacity() const { return int(0); }
     virtual int_dvec get_defined_surcells() const { return int_dvec(0); }
+    virtual SP_Census get_census() const { return SP_Census(); }
 };
 
 } // end namespace rtt_imc

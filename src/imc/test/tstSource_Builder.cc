@@ -12,9 +12,16 @@
 #include "IMC_Test.hh"
 #include "../Source_Builder.hh"
 #include "../Rep_Source_Builder.hh"
+#include "../Opacity_Builder.hh"
+#include "../Opacity.hh"
+#include "../Mat_State.hh"
+#include "../Topology_Builder.hh"
 #include "../Release.hh"
+#include "mc/Rep_Topology.hh"
+#include "mc/OS_Builder.hh"
 #include "mc/OS_Mesh.hh"
 #include "c4/global.hh"
+#include "ds++/SP.hh"
 
 #include <vector>
 #include <string>
@@ -25,127 +32,44 @@ using namespace std;
 using rtt_imc_test::IMC_Interface;
 using rtt_imc::Source_Builder;
 using rtt_imc::Rep_Source_Builder;
+using rtt_imc::Opacity;
+using rtt_imc::Opacity_Builder;
+using rtt_imc::Mat_State;
+using rtt_imc::Topology_Builder;
+using rtt_mc::Topology;
+using rtt_mc::Rep_Topology;
 using rtt_mc::OS_Mesh;
+using rtt_mc::OS_Builder;
+using dsxx::SP;
 
 // passing condition
 bool passed = true;
 #define ITFAILS passed = rtt_imc_test::fail(__LINE__);
 
 //---------------------------------------------------------------------------//
-// testing global check equivalences
 
-template<class T>
-void test_equivalence(const T value, const T mod_value)
+void source_replication_test()
 {
-    // set a local_value
-    T local_value = value;
+    // build an interface to a six cell fully replicated mesh
+    SP<IMC_Interface> interface(new IMC_Interface);
 
-    // make a source builder
-    Rep_Source_Builder<OS_Mesh> rsb;
-    Source_Builder<OS_Mesh> &sb = rsb;
+    // build a FULL mesh --> this mesh will be fully replicated on all
+    // processors in the test
+    OS_Builder mb(interface);
+    SP<OS_Mesh> mesh = mb.build_Mesh();
 
-    // check if more than 1 node
-    if (C4::nodes() > 1)
-    {
-	// at this point all processors should have the same value
-	if (!sb.check_global_equiv(local_value)) ITFAILS;
-	
+    // build a Topology: we do not use the Topology builder here because the
+    // topology builder is designed to work on the host processor only -->
+    // instead we will just build a Replication topology on each mesh
+    SP<Topology> topology(new Rep_Topology(mesh->num_cells()));
 
-	// now change the first processor's value
-	if (C4::node() == 0)
-	    local_value = mod_value;
+    // build a Mat_State and Opacity
+    Opacity_Builder<OS_Mesh> ob(interface);
+    SP<Mat_State<OS_Mesh> > mat    = ob.build_Mat(mesh);
+    SP<Opacity<OS_Mesh> > opacity  = ob.build_Opacity(mesh, mat);
 
-	if (C4::node() > 0)
-	{
-	    if (!sb.check_global_equiv(local_value)) ITFAILS;
-	}
-	else
-	{
-	    if (sb.check_global_equiv(local_value)) ITFAILS;
-	}
-
-	// reset all to the same value
-	local_value = value;
-	if (!sb.check_global_equiv(local_value)) ITFAILS;
-	
-	// now change the last processor's value
-	if (C4::node() == C4::nodes() - 1)
-	    local_value = mod_value;
-
-	if (C4::node() == C4::nodes() - 2)
-	{
-	    if (sb.check_global_equiv(local_value)) ITFAILS;
-	}
-	else
-	{
-	    if (!sb.check_global_equiv(local_value)) ITFAILS;
-	}
-    }
-	 
-    // reset all to the same value
-    local_value = value;
-    if (!sb.check_global_equiv(local_value)) ITFAILS;
-
-    // check if more than 2 nodes
-    if (C4::nodes() > 2)
-    {
-	// now change a middle value
-	if (C4::node() == C4::nodes()/2)
-	    local_value = mod_value;
-	
-	if (C4::node() == C4::nodes()/2 - 1)
-	{
-	    if (sb.check_global_equiv(local_value)) ITFAILS;
-	}
-	else if (C4::node() == C4::nodes()/2)
-	{
-	    if (sb.check_global_equiv(local_value)) ITFAILS; 
-	}
-	else
-	{
-	    if (!sb.check_global_equiv(local_value)) ITFAILS;
-	}
-    }
-	 
-    // reset all to the same value
-    local_value = value;
-    if (!sb.check_global_equiv(local_value)) ITFAILS;
-
-    // check if 1 node (serial)
-    if (C4::nodes() == 1)
-    {
-	// do a serial problem test-->this is trivial but we want to check it
-	// anyway
-	local_value = mod_value;
-	if (!sb.check_global_equiv(local_value)) ITFAILS;
-    }
-}
-
-// simple timing test
-void timing()
-{
-    // set a value
-    int value = 10;
-
-    double begin;
-    double end;
-	
-    // make a source builder
-    Rep_Source_Builder<OS_Mesh> rsb;
-    Source_Builder<OS_Mesh> &sb = rsb;
-
-    if (C4::node() == 0)
-	begin = C4::Wtime();
-
-    for (int i = 0; i < 10; i++)
-	sb.check_global_equiv(value);
-
-    if (C4::node() == 0)
-	end = C4::Wtime();
-
-    if (C4::node() == 0)
-	cout << "Ran for " << end-begin << " seconds on " << C4::nodes()
-	     << endl;
+    // build a Rep_Source Builder
+    Rep_Source_Builder<OS_Mesh> source_builder(interface, mesh, topology);
 }
 
 //---------------------------------------------------------------------------//
@@ -166,10 +90,8 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
-    // test global equivalences
-    test_equivalence(10, 11);           // int
-    test_equivalence(10.0001, 11.0001); // double
-    test_equivalence(10.0001, 10.0002); // double
+    // full replication source test
+    source_replication_test();
 
     // status of test
     cout << endl;
