@@ -88,6 +88,10 @@ pkg_key = ''
 np  = 0
 nf  = 0
 
+# intialize total passes and fails
+total_passes = 0
+total_fails = 0
+
 # line number
 ln  = 0
 
@@ -172,6 +176,7 @@ for line in lines:
         results    = tests[key]
         results[1] = results[1] + np
         tests[key] = results
+        total_passes = total_passes + np
 
     # search on failures
     match = failures.search(line)
@@ -185,6 +190,7 @@ for line in lines:
         results    = tests[key]
         results[2] = results[2] + nf
         tests[key] = results
+        total_fails = total_fails + nf
 
     # search on errors
     match = errors.search(line)
@@ -202,6 +208,12 @@ for line in lines:
         # add warning line number to list
         warn_line.append(ln)
 
+
+# determine whether there were any failures, warnings, or errors
+all_passed = (total_fails is 0) and \
+             (len(warn_line) is 0) and \
+             (len(error_line) is 0)
+
 # print out test results
 
 print "Regression output from %s package."   % (pkg_tag_str)
@@ -211,7 +223,20 @@ print "Regression log stored in %s:%s."      % (reg_host_str, log_tag_str)
 print "Regression run from script %s:%s."    % (reg_host_str, script_tag_str)
 print
 
-print "%41s" % ("Test Results")
+print "Test Summary for All Packages :",
+
+if all_passed:
+    print "PASSED"
+else:
+    print "FAILED"
+
+print "  Total Passed   : %i" % (total_passes)
+print "  Total Failed   : %i" % (total_fails)
+print "  Total Warnings : %i" % (len(warn_line))
+print "  Total Errors   : %i" % (len(error_line))
+print
+
+print "%47s" % ("Test Results for Each Package")
 print "======================================================================="
 print "%40s %8s %11s %9s" % ("Package | Test","Num Run", "Num Passed", "Num Fail")
 print "======================================================================="
