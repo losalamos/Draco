@@ -492,7 +492,7 @@ AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
 
    # COMPILATION FLAGS
 
-   F90FLAGS="${F90FREE}"
+   F90FLAGS="${F90FREE} -OPT:Olimit=0"
 
    if test "${enable_debug:=no}" = yes
    then
