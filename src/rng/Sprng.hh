@@ -82,10 +82,13 @@ public:
 //---------------------------------------------------------------------------//
 // inline members for Sprng
 //---------------------------------------------------------------------------//
+// constructor
 
-// constructors
 inline Sprng::Sprng(int *idval, int number)
     : streamid(new SprngValue(idval)), streamnum(number) {}
+
+//---------------------------------------------------------------------------//
+// copy constructor
 
 inline Sprng::Sprng(const Sprng &rhs)
     : streamid(rhs.streamid), streamnum(rhs.streamnum)
@@ -93,14 +96,18 @@ inline Sprng::Sprng(const Sprng &rhs)
     ++streamid->refcount;
 }
 
+//---------------------------------------------------------------------------//
 // destructor
+
 inline Sprng::~Sprng()
 {
     if (--streamid->refcount == 0)
 	delete streamid;
 }
 
+//---------------------------------------------------------------------------//
 // assignment operator
+
 inline Sprng& Sprng::operator=(const Sprng &rhs)
 {
   // check to see if the values are the same

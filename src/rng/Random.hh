@@ -33,18 +33,6 @@ RNGSPACE
 
 const int max_buffer = MAX_PACKED_LENGTH;
 
-//---------------------------------------------------------------------------//
-// SPRNG functions set in this namespace
-//---------------------------------------------------------------------------//
-
-using ::pack_sprng;
-using ::unpack_sprng;
-using ::init_sprng;
-using ::sprng;
-using ::print_sprng;
-using ::spawn_sprng;
-using ::free_sprng;
-
 CSPACE
 
 #endif                          // __rng_Random_hh__
