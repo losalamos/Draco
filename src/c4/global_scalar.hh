@@ -67,6 +67,14 @@ void RecvAsync( C4_Req& r, T *buf, int nels, int source,
     Require( !r.inuse() );
 }
 
+template<class T> void gsum( T& x ) {}
+template<class T> void gmin( T& x ) {}
+template<class T> void gmax( T& x ) {}
+
+template<class T> void gsum( T *px, int n ) {}
+template<class T> void gmin( T *px, int n ) {}
+template<class T> void gmax( T *px, int n ) {}
+
 C4_NAMESPACE_END
 
 #endif                          // __c4_global_scalar_hh__
