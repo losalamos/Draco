@@ -1,0 +1,4 @@
+block: test
+	double tolerance  1.e-4
+        double epsilon    1.e-5
+	int    maxIterations 1000
