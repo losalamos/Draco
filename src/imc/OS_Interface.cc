@@ -452,8 +452,10 @@ void OS_Interface::parser_Source(ifstream &in)
     int num_zones = mat_zone.size();
     evol_ext.resize(num_zones);
     rad_temp.resize(num_zones);
+    rad_source.resize(num_zones);
     fill(evol_ext.begin(), evol_ext.end(), 0.0);
     fill(rad_temp.begin(), rad_temp.end(), 0.0);
+    fill(rad_source.begin(), rad_source.end(), 0.0);
 
   // parse the source
     zone_source_parser(in);
@@ -469,6 +471,7 @@ void OS_Interface::zone_source_parser(ifstream &in)
   // input keywords
     string keyword;
     int    data;
+    bool   have_rad_source = false;
 
   // determine zone map
     while (keyword != "end-source")
@@ -481,6 +484,17 @@ void OS_Interface::zone_source_parser(ifstream &in)
 	if (keyword == "vol_source:")
 	    for (int i = 0; i < evol_ext.size(); i++)
 		in >> evol_ext[i];
+	if (keyword == "rad_source:")
+	{
+	    for (int i = 0; i < rad_source.size(); i++)
+	    {
+		in >> rad_source[i];
+		if (rad_source[i] > 0.0)
+		    have_rad_source = true;
+	    }
+	}
+	if (keyword == "rad_s_tend:")
+	    in >> rad_s_tend;
 	if (keyword == "num_ss:")
 	{
 	    in >> data;
@@ -540,6 +554,10 @@ void OS_Interface::zone_source_parser(ifstream &in)
     Insist (capacity > 0, "The capacity must be > 0!");
     Insist (max_cycle > 0, "The max_cycle must be > 0!");
     Insist (buffer > 0, "The buffer must be > 0!");
+    if (have_rad_source)
+	Insist (rad_s_tend > 0, "You have a radiation source of zero time!");
+    if (rad_s_tend > 0)
+	Insist (have_rad_source, "Duration defined for no radiation source!");
 }
 
 //---------------------------------------------------------------------------//
@@ -556,6 +574,21 @@ vector<double> OS_Interface::get_evol_ext() const
 
   // return cell_evol
     return cell_evol;
+}
+//---------------------------------------------------------------------------//
+// map radiation source to cell based arrays
+
+vector<double> OS_Interface::get_rad_source() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_rsrc(zone.size());
+
+  // assign cell values of rad source based on zonal values
+    for (int cell = 1; cell <= cell_rsrc.size(); cell++)
+	cell_rsrc[cell-1] = rad_source[zone[cell-1]-1];
+
+  // return cell_evol
+    return cell_rsrc;
 }
 
 //---------------------------------------------------------------------------//

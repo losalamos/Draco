@@ -50,6 +50,8 @@ class Source_Init
 private:
   // data received from MT_Interface
     vector<double> evol_ext;
+    vector<double> rad_source;
+    double rad_s_tend;
     vector<string> ss_pos;
     vector<double> ss_temp;
     vector<double> rad_temp;

@@ -24,6 +24,7 @@
 //  3)  6-16-98 : added material-necessary quantities to end-mat block
 //  4)  6-17-98 : added card for input of analytic opacities
 //  5)   7-1-98 : added input for RN seed and print frequency
+//  6)  7-15-98 : added zonal radiation source from t=0 to rad_s_tend
 // 
 //===========================================================================//
 
@@ -77,6 +78,8 @@ private:
 
   // data required for Source_Init
     vector<double> evol_ext;
+    vector<double> rad_source;
+    double rad_s_tend;
     vector<string> ss_pos;
     vector<double> ss_temp;
     vector<double> rad_temp;
@@ -131,6 +134,8 @@ public:
 
   // public copy functions for Source_Init<MT>
     vector<double> get_evol_ext() const;
+    vector<double> get_rad_source() const;
+    double get_rad_s_tend() const { return rad_s_tend; }
     const vector<string>& get_ss_pos() const { return ss_pos; }
     const vector<double>& get_ss_temp() const { return ss_temp; }
     vector<double> get_rad_temp() const;
@@ -155,9 +160,10 @@ inline OS_Interface::OS_Interface(const string &infile)
     : input_file(infile), coord_system(""), fine_cells(0), accum_cells(0), 
       coarse_edge(0), fine_edge(0), bnd_cond(0), zone(0), mat_zone(0), 
       density(0), kappa(0), temperature(0), implicitness(0), 
-      analytic_opacity("straight"), specific_heat(0), evol_ext(0), ss_pos(0), 
-      ss_temp(0), rad_temp(0), delta_t(0), max_cycle(0), npmax(0), dnpdt(0), 
-      ss_dist("none"), capacity(0), print_f(1), buffer(1000),  seed(9836592) 
+      analytic_opacity("straight"), specific_heat(0), evol_ext(0),
+      rad_source(0), rad_s_tend(0), ss_pos(0), ss_temp(0), rad_temp(0), 
+      delta_t(0), max_cycle(0), npmax(0), dnpdt(0), ss_dist("none"), 
+      capacity(0), print_f(1), buffer(1000), seed(9836592) 
 {}
 
 CSPACE
