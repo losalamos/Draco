@@ -73,8 +73,18 @@ int main( int argc, char *argv[] )
     xf = 1.;
     xgf = xf;
 
-    Mesh_XYZ::bssf b1( spm );
-    b1.face(0) = 0.;
+  try
+  {
+    Mesh_XYZ::bssf b1( spm ), b2( spm );
+    b1 = 1.;
+    b2 = 2.;
+    b1 = b2;
+  }
+  catch (const dsxx::assertion &ass)
+  {
+    std::cerr << "Caught dsxx::assertion bssf: '"
+	      << ass.what() << "'." << endl;
+  }
 
     Mesh_XYZ::ccsf oneCC( spm );
     oneCC = 1.0;
@@ -142,6 +152,13 @@ int main( int argc, char *argv[] )
     oneFC = 1.;
     Mesh_XYZ::swap( swapFC, oneFC );
     //dump( swapFC, "swapFC, after" );
+
+    Mesh_XYZ::bssf oneBS( spm );
+    oneFC = 1.;
+    Mesh_XYZ::strip( oneBS, oneFC, Mesh_XYZ::OpAssign() );
+    oneFC = 0.;
+    Mesh_XYZ::coat( oneFC, oneBS, Mesh_XYZ::OpAssign() );
+    //dump( oneFC, "oneFC, after" );
 
     Mesh_XYZ::fcdvf face_normals( spm );
     face_normals = spm->get_fn();

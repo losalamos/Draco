@@ -8,6 +8,7 @@
 
 #include "c4/global.hh"
 #include "c4/C4_Req.hh"
+#include "ds++/Assert.hh"
 
 template<class T>
 void dump( const Mesh_XYZ::cctf<T>& data, char *name )
@@ -41,7 +42,6 @@ void dump( const Mesh_XYZ::fcdtf<T>& data, char *name )
             }
 	}
     }
-
 }
 
 template<class T>
@@ -115,6 +115,65 @@ void Mesh_XYZ::gfcdtf<T>::update_gfcdtf()
 
     if (node < lastnode)
         Send( &data(0,0,0,zoff+nczp-1), 6*ncx*ncy, node+1 );
+}
+
+template<class T>
+Mesh_XYZ::bstf<T>&
+Mesh_XYZ::bstf<T>::operator=( T x )
+{
+    // left face
+    for ( int j = 0; j < ncy; ++j )
+        for ( int k = zoff; k < zoff + nczp; ++k )
+            data(0,j,k,0) = x;
+
+    // right face
+    for ( int j = 0; j < ncy; ++j )
+        for ( int k = zoff; k < zoff + nczp; ++k )
+            data(ncx-1,j,k,1) = x;
+
+    // front face
+    for ( int i = 0; i < ncx; ++i )
+        for ( int k = zoff; k < zoff + nczp; ++k )
+            data(i,0,k,2) = x;
+
+    // back face
+    for ( int i = 0; i < ncx; ++i )
+        for ( int k = zoff; k < zoff + nczp; ++k )
+            data(i,ncy-1,k,3) = x;
+
+    // bottom face
+    if (node == 0)
+        for ( int i = 0; i < ncx; ++i )
+            for ( int j = 0; j < ncy; ++j )
+                data(i,j,0,4) = x;
+
+    // top face
+    if (node == lastnode)
+        for ( int i = 0; i < ncx; ++i )
+            for ( int j = 0; j < ncy; ++j )
+                data(i,j,ncz-1,5) = x;
+
+    return *this;
+}
+
+template<class T>
+T& Mesh_XYZ::bstf<T>::operator()( int i, int j, int k, int f )
+{
+    Assert (   (i == 0 && f == 0) || (i == ncx - 1 && f == 1)
+            || (j == 0 && f == 2) || (j == ncy - 1 && f == 3)
+            || (k == 0 && f == 4) || (k == ncz - 1 && f == 5));
+
+    return data(i,j,k,f);
+}
+
+template<class T>
+T Mesh_XYZ::bstf<T>::operator()( int i, int j, int k, int f ) const
+{
+    Assert (   (i == 0 && f == 0) || (i == ncx - 1 && f == 1)
+            || (j == 0 && f == 2) || (j == ncy - 1 && f == 3)
+            || (k == 0 && f == 4) || (k == ncz - 1 && f == 5));
+
+    return data(i,j,k,f);
 }
 
 template <class T1, class T2, class Op>
@@ -218,6 +277,79 @@ void Mesh_XYZ::swap
 	}
 }
 
+template <class T1, class T2, class Op>
+void Mesh_XYZ::strip
+( Mesh_XYZ::bstf<T1>& to, const Mesh_XYZ::fcdtf<T2>& from, const Op& op )
+{
+    // left face
+    for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(0,j,k,0), from(0,j,k,0));
+
+    // right face
+    for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(to.ncx-1,j,k,1), from(to.ncx-1,j,k,1));
+
+    // front face
+    for ( int i = 0; i < to.ncx; ++i )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(i,0,k,2), from(i,0,k,2));
+
+    // back face
+    for ( int i = 0; i < to.ncx; ++i )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(i,to.ncy-1,k,3), from(i,to.ncy-1,k,3));
+
+    // bottom face
+    if (to.node == 0)
+        for ( int i = 0; i < to.ncx; ++i )
+            for ( int j = 0; j < to.ncy; ++j )
+                op(to(i,j,0,4), from(i,j,0,4));
+
+    // top face
+    if (to.node == to.lastnode)
+        for ( int i = 0; i < to.ncx; ++i )
+            for ( int j = 0; j < to.ncy; ++j )
+                op(to(i,j,to.ncz-1,5), from(i,j,to.ncz-1,5));
+}
+
+template <class T1, class T2, class Op>
+void Mesh_XYZ::coat
+( Mesh_XYZ::fcdtf<T1>& to, const Mesh_XYZ::bstf<T2>& from, const Op& op )
+{
+    // left face
+    for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(0,j,k,0), from(0,j,k,0));
+
+    // right face
+    for ( int j = 0; j < to.ncy; ++j )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(to.ncx-1,j,k,1), from(to.ncx-1,j,k,1));
+
+    // front face
+    for ( int i = 0; i < to.ncx; ++i )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(i,0,k,2), from(i,0,k,2));
+
+    // back face
+    for ( int i = 0; i < to.ncx; ++i )
+        for ( int k = to.zoff; k < to.zoff + to.nczp; ++k )
+            op(to(i,to.ncy-1,k,3), from(i,to.ncy-1,k,3));
+
+    // bottom face
+    if (to.node == 0)
+        for ( int i = 0; i < to.ncx; ++i )
+            for ( int j = 0; j < to.ncy; ++j )
+                op(to(i,j,0,4), from(i,j,0,4));
+
+    // top face
+    if (to.node == to.lastnode)
+        for ( int i = 0; i < to.ncx; ++i )
+            for ( int j = 0; j < to.ncy; ++j )
+                op(to(i,j,to.ncz-1,5), from(i,j,to.ncz-1,5));
+}
 
 //---------------------------------------------------------------------------//
 //                              end of Mesh_XYZ.t.cc

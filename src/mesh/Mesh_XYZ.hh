@@ -485,39 +485,37 @@ class Mesh_XYZ : private XYZ_Mapper
 // Boundary specified field
 // Has a value on each boundary cell face.
 
-    template<class T>
-    class bstf : private XYZ_Mapper
-    {
-        dsxx::Mat2<T> f0, f1, f2, f3, f4, f5;
+    template <class T>
+    class bstf : private XYZ_Mapper,
+                 public xm::Indexable<T, bstf<T> > {
+        friend class Mesh_XYZ;
+
+        fcdtf<T> data;
+
+        bstf ( const Mesh_XYZ *m )
+            : XYZ_Mapper( m->get_Mesh_DB() ), data( m )
+	{}
+
       public:
-        bstf( const dsxx::SP<Mesh_XYZ>& spm )
-            : XYZ_Mapper( spm->get_Mesh_DB() ),
-              f0( ncy, ncz ), f1( ncy, ncz ),
-              f2( ncx, ncz ), f3( ncx, ncz ),
-              f4( ncx, ncy ), f5( ncx, ncy )
-        {}
+        typedef T value_type;
 
-        dsxx::Mat2<T>& face( int f )
-        {
-            if (f == 0) return f0;
-            if (f == 1) return f1;
-            if (f == 2) return f2;
-            if (f == 3) return f3;
-            if (f == 4) return f4;
-            if (f == 5) return f5;
-            throw "f out of range!";
-        }
+        bstf( const dsxx::SP<Mesh_XYZ>& m )
+            : XYZ_Mapper( m->get_Mesh_DB() ), data( m )
+	{}
 
-        const dsxx::Mat2<T>& face( int f ) const
-        {
-            if (f == 0) return f0;
-            if (f == 1) return f1;
-            if (f == 2) return f2;
-            if (f == 3) return f3;
-            if (f == 4) return f4;
-            if (f == 5) return f5;
-            throw "f out of range!";
-        }
+        bstf& operator=( T x );
+
+        template<class X>
+        bstf& operator=( const xm::Xpr<T, X, bstf>& x )
+	{
+            return assign_from( x );
+	}
+
+    // i, j, k == global xyz cell indicies
+    // f == face index
+
+        T& operator()( int i, int j, int k, int f );
+        T  operator()( int i, int j, int k, int f ) const;
     };
 
     typedef bstf<double> bssf;
@@ -636,6 +634,18 @@ class Mesh_XYZ : private XYZ_Mapper
 
     template <class T>
     static void swap( fcdtf<T>& to, const fcdtf<T>& from );
+
+    template <class T1, class T2, class Op>
+    static void strip( bstf<T1>& to, const fcdtf<T2>& from, const Op& op );
+
+    template <class T1, class T2, class Op>
+    static void coat( fcdtf<T1>& to, const bstf<T2>& from, const Op& op );
+
+    class OpAssign {
+      public:
+        template <class T1, class T2>
+        void operator() (T1& x, const T2& y) const { x = y; }
+    };
 
     class OpAddAssign {
       public:
