@@ -177,6 +177,9 @@ class RZWedge_Mesh
     const Coord_sys&  get_Coord()   const { return *coord; }
     SP_Coord          get_SPCoord() const { return coord; }
 
+    //! Get the wedge angle in radians.
+    double get_theta_radians() const { return theta_radians; }
+
     // Access total, on-processor RZWedge volume
     inline double get_total_volume() const;
 
