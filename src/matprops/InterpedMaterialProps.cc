@@ -14,6 +14,8 @@
 
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+
+#include <string>
 #include <vector>
 using std::vector;
 
@@ -25,6 +27,16 @@ using std::vector;
 BEGIN_NS_XTM
 
 typedef InterpedMaterialProps IMP;
+
+//===========================================================================//
+// InterpedMaterialProps Methods
+//===========================================================================//
+
+//---------------------------------------------------------------------------//
+// InterpedMaterialProps Constructor:
+//    Create an InterpedMaterialProps from a units object and a concrete
+//    object derived from MaterialPropsReader.
+//---------------------------------------------------------------------------//
 
 IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
     : units(units_)
@@ -106,28 +118,139 @@ IMP::InterpedMaterialProps(Units units_, const MaterialPropsReader &reader)
 	reader.getIonSpecificHeat(materialId, data);
 	BilinearInterpTable ionSpecificHeat(spGrid, data);
 
-	typedef MatTabMap::value_type ValuePair;
+	typedef MatTabMap::value_type MapPair;
 
 	std::pair<MatTabMap::iterator, bool> retval;
 
 	retval =
-	    materials.insert(ValuePair(materialId,
-				       MaterialTables(materialName,
-						      spGrid,
-						      sigmaTotal,
-						      sigmaAbsorption,
-						      sigmaEmission,
-						      electronIonCoupling,
-						      electronConductionCoeff,
-						      ionConductionCoeff,
-						      electronSpecificHeat,
-						      ionSpecificHeat)));
+	    materials.insert(MapPair(materialId,
+				     MaterialTables(materialName,
+						    spGrid,
+						    sigmaTotal,
+						    sigmaAbsorption,
+						    sigmaEmission,
+						    electronIonCoupling,
+						    electronConductionCoeff,
+						    ionConductionCoeff,
+						    electronSpecificHeat,
+						    ionSpecificHeat)));
 	// Make sure the insertion succeeded.
 	
 	Assert(retval.second);
 	
     }  // Loop over materials
 }
+
+//---------------------------------------------------------------------------//
+// getMaterialTables:
+//   Return the material tables specified by the material id.
+//---------------------------------------------------------------------------//
+
+const IMP::MaterialTables &IMP::getMaterialTables(int matId) const
+{
+    MatTabMap::const_iterator matit = materials.find(matId);
+
+    // Make sure the material exists.
+	
+    Assert(matit != materials.end());
+
+    return (*matit).second;
+}
+
+//---------------------------------------------------------------------------//
+// getMaterialTables:
+//   Return the material tables specified by the material id.
+//---------------------------------------------------------------------------//
+
+IMP::MaterialTables &IMP::getMaterialTables(int matId)
+{
+    MatTabMap::iterator matit = materials.find(matId);
+
+    // Make sure the material exists.
+	
+    Assert(matit != materials.end());
+
+    return (*matit).second;
+}
+
+//---------------------------------------------------------------------------//
+// interpolate:
+//   Given a material state, a group number, and a pointer to a method
+//   that returns a GroupedTable, return the interpolated results from
+//   the table indicated by the method pointer and group.
+//---------------------------------------------------------------------------//
+
+template<class FT>
+void IMP::interpolate(const MaterialStateField<FT> &matState, int group,
+		      PGroupedTable pTable, FT &results) const
+{
+    Require(&matState.matprops == this);
+    Require(matState.size() == results.size());
+	
+    FT::iterator resit = results.begin();
+    
+    for (int i=0; i < matState.size(); i++)
+    {
+	// Get the material tables for this location's particular material.
+	
+	const MaterialTables &mattabs = getMaterialTables(matState.getMatId(i));
+
+	// Get the set of specific material property tables
+	// (e.g. ionConduction tables).
+	// (The set is over all of the groups.)
+
+	const GroupedTable &groupedTable = (mattabs.*pTable)();
+	
+	// groups are 1-based
+
+	Require(group >= 1 && group <= groupedTable.numGroups());
+
+	// Get the specific table for this group number.
+	
+	const BilinearInterpTable &table = groupedTable.getTable(group);
+
+	// Do the interpolation.
+	
+	table.interpolate(matState.getMemento(i), *resit++);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// interpolate:
+//   Given a material state, and a pointer to a method
+//   that returns a BilinearInterpTable, return the interpolated results
+//   from the table indicated by the method pointer.
+//---------------------------------------------------------------------------//
+
+template<class FT>
+void IMP::interpolate(const MaterialStateField<FT> &matState,
+		      PBilinearInterpTable pTable, FT &results) const
+{
+    Require(&matState.matprops == this);
+    Require(matState.size() == results.size());
+	
+    FT::iterator resit = results.begin();
+    
+    for (int i=0; i < matState.size(); i++)
+    {
+	// Get the material tables for this location's particular material.
+	
+	const MaterialTables &mattabs
+	    = getMaterialTables(matState.getMatId(i));
+
+	// Get the specific material property table (e.g. ionConduction table)
+	
+	const BilinearInterpTable &table = (mattabs.*pTable)();
+	
+	table.interpolate(matState.getMemento(i), *resit++);
+    }
+}
+
+//---------------------------------------------------------------------------//
+// getMaterialState:
+//    Return a material state field from density, temperature, and materia id
+//    fields.
+//---------------------------------------------------------------------------//
 
 template<class FT, class FT2>
 IMP::MaterialStateField<FT> IMP::getMaterialState(const FT &density_,
@@ -138,6 +261,16 @@ IMP::MaterialStateField<FT> IMP::getMaterialState(const FT &density_,
     return MaterialStateField<FT>(*this, density_, electronTemp_,
 				  ionTemp_, matId_);
 }
+
+//===========================================================================//
+// InterpedMaterialProps::MaterialStateField<FT> Methods
+//===========================================================================//
+
+//---------------------------------------------------------------------------//
+// InterpedMaterialProps::MaterialStateField<FT> Constructor:
+//    Create an InterpedMaterialProps::MaterialStateField<FT>
+//    density, temperature, and materia id fields.
+//---------------------------------------------------------------------------//
 
 template<class FT>
 template<class FT2>
@@ -169,116 +302,51 @@ IMP::MaterialStateField<FT>::MaterialStateField(const IMP &matprops_,
 }
 
 //---------------------------------------------------------------------------//
-// getValuesFromMatTable
+// getElectronTemperature:
+//    Return the temperature from the material state field.
 //---------------------------------------------------------------------------//
 
 template<class FT>
-void IMP::getValuesFromMatTable(const MaterialStateField<FT> &matState,
-				int group, PGroupedTable pTable,
-				FT &results) const
+void IMP::MaterialStateField<FT>::getElectronTemperature(FT &results) const
 {
-    Require(&matState.matprops == this);
-    Require(matState.size() == results.size());
+    Require(size() == results.size());
 	
     FT::iterator resit = results.begin();
     
-    for (int i=0; i < matState.size(); i++)
-    {
-	const MaterialTables &mattabs = getMaterialTables(matState.getMatId(i));
-
-	const GroupedTable &groupTable = (mattabs.*pTable)();
-	
-	// groups are 1-based
-
-	Require(group >= 1 && group <= groupTable.numGroups());
-
-	const BilinearInterpTable &table = groupTable.getTable(group);
-
-	table.interpolate(matState.getMemento(i), *resit++);
-    }
+    for (int i=0; i < size(); i++)
+	*resit++ = getElectronTemp(i);
 }
 
 //---------------------------------------------------------------------------//
-// getValuesFromMatTable
+// getIonTemperature:
+//    Return the temperature from the material state field.
 //---------------------------------------------------------------------------//
 
 template<class FT>
-void IMP::getValuesFromMatTable(const MaterialStateField<FT> &matState,
-				PBilinearInterpTable pTable, FT &results) const
+void IMP::MaterialStateField<FT>::getIonTemperature(FT &results) const
 {
-    Require(&matState.matprops == this);
-    Require(matState.size() == results.size());
+    Require(size() == results.size());
 	
     FT::iterator resit = results.begin();
     
-    for (int i=0; i < matState.size(); i++)
-    {
-	const MaterialTables &mattabs
-	    = getMaterialTables(matState.getMatId(i));
-	const BilinearInterpTable &table = (mattabs.*pTable)();
-	
-	table.interpolate(matState.getMemento(i), *resit++);
-    }
+    for (int i=0; i < size(); i++)
+	*resit++ = getIonTemp(i);
 }
+
+//---------------------------------------------------------------------------//
+// getDensity:
+//    Return the density from the material state field.
+//---------------------------------------------------------------------------//
 
 template<class FT>
-void IMP::getElectronTemperature(const MaterialStateField<FT> &matState,
-				 FT &results) const
+void IMP::MaterialStateField<FT>::getDensity(FT &results) const
 {
-    Require(&matState.matprops == this);
-    Require(matState.size() == results.size());
+    Require(size() == results.size());
 	
     FT::iterator resit = results.begin();
     
-    for (int i=0; i < matState.size(); i++)
-	*resit++ = matState.getElectronTemp(i);
-}
-
-template<class FT>
-void IMP::getIonTemperature(const MaterialStateField<FT> &matState,
-			    FT &results) const
-{
-    Require(&matState.matprops == this);
-    Require(matState.size() == results.size());
-	
-    FT::iterator resit = results.begin();
-    
-    for (int i=0; i < matState.size(); i++)
-	*resit++ = matState.getIonTemp(i);
-}
-
-template<class FT>
-void IMP::getDensity(const MaterialStateField<FT> &matState, FT &results) const
-{
-    Require(&matState.matprops == this);
-    Require(matState.size() == results.size());
-	
-    FT::iterator resit = results.begin();
-    
-    for (int i=0; i < matState.size(); i++)
-	*resit++ = matState.getDensity(i);
-}
-
-const IMP::MaterialTables &IMP::getMaterialTables(int matId) const
-{
-    MatTabMap::const_iterator matit = materials.find(matId);
-
-    // Make sure the material exists.
-	
-    Assert(matit != materials.end());
-
-    return (*matit).second;
-}
-
-IMP::MaterialTables &IMP::getMaterialTables(int matId)
-{
-    MatTabMap::iterator matit = materials.find(matId);
-
-    // Make sure the material exists.
-	
-    Assert(matit != materials.end());
-
-    return (*matit).second;
+    for (int i=0; i < size(); i++)
+	*resit++ = getDensity(i);
 }
 
 END_NS_XTM  // namespace XTM
