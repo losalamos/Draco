@@ -392,9 +392,9 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
        ARFLAGS='cr'
    fi
 
-   # with the default template flags (-pt), the contents of the
-   # cxx_repository do not seem to need adding when building
-   # shared libraries; you do have to add them for archives
+   # the contents of the cxx_repository do not seem to need adding 
+   # when building shared libraries; you do have to add them for
+   # archives 
    if test "${enable_shared}" != yes ; then
        ARLIBS='$(wildcard cxx_repository/*)'
        ARTESTLIBS='$(wildcard cxx_repository/*)'
@@ -444,6 +444,12 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
 
    # turn off implicit inclusion
    CXXFLAGS="${CXXFLAGS} -noimplicit_include"
+
+   # use implicit local template instantiation; this is the "GNU" like
+   # option that puts manually instantiated templates in the 
+   # repository with external linkage and automatic templates in 
+   # the object file with internal linkage
+   CXXFLAGS="${CXXFLAGS} -timplicit_local"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
