@@ -113,17 +113,32 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-shared         turn on shared libraries (.a default)"
 ac_help="$ac_help
-  --with-cxx[=kcc,cc]     choose a c++ compiler (KCC is default)"
+  --with-cxx[=kcc,cc,guide]                                    
+                          choose a c++ compiler (KCC is default)"
 ac_help="$ac_help
   --enable-static-ld      use (.a) libraries if possible"
 ac_help="$ac_help
   --disable-strict-ansi   turn off strict ansi compliance"
+ac_help="$ac_help
+  --disable-one-per       turn off --one_per flag"
 ac_help="$ac_help
   --with-opt[=0,1,2,3]    set optimization level (0 by default)"
 ac_help="$ac_help
   --enable-debug          turn on debug (-g) option"
 ac_help="$ac_help
   --with-posix[=num]      give posix source (system-dependent defaults)"
+ac_help="$ac_help
+  --with-cppflags[=flags] add flags to \$CPPFLAGS"
+ac_help="$ac_help
+  --with-cxxflags[=flags] add flags to \$CXXFLAGS"
+ac_help="$ac_help
+  --with-cflags[=flags]   add flags to \$CFLAGS"
+ac_help="$ac_help
+  --with-f90flags[=flags] add flags to \$F90FLAGS"
+ac_help="$ac_help
+  --with-arflags[=flags]  add flags to \$ARFLAGS"
+ac_help="$ac_help
+  --with-ldflags[=flags]  add flags to \$LDFLAGS"
 ac_help="$ac_help
   --enable-32-bit         do 32-bit compilation (SGI ONLY)"
 ac_help="$ac_help
@@ -724,6 +739,14 @@ fi
 
 
          
+      # Check whether --enable-one-per or --disable-one-per was given.
+if test "${enable_one_per+set}" = set; then
+  enableval="$enable_one_per"
+  :
+fi
+
+
+         
       # Check whether --with-opt or --without-opt was given.
 if test "${with_opt+set}" = set; then
   withval="$with_opt"
@@ -750,6 +773,54 @@ if test "${with_posix+set}" = set; then
 fi
 
 
+            
+      # Check whether --with-cppflags or --without-cppflags was given.
+if test "${with_cppflags+set}" = set; then
+  withval="$with_cppflags"
+  :
+fi
+
+
+            
+      # Check whether --with-cxxflags or --without-cxxflags was given.
+if test "${with_cxxflags+set}" = set; then
+  withval="$with_cxxflags"
+  :
+fi
+
+
+            
+      # Check whether --with-cflags or --without-cflags was given.
+if test "${with_cflags+set}" = set; then
+  withval="$with_cflags"
+  :
+fi
+
+
+            
+      # Check whether --with-f90flags or --without-f90flags was given.
+if test "${with_f90flags+set}" = set; then
+  withval="$with_f90flags"
+  :
+fi
+
+
+            
+      # Check whether --with-arflags or --without-arflags was given.
+if test "${with_arflags+set}" = set; then
+  withval="$with_arflags"
+  :
+fi
+
+
+            
+      # Check whether --with-ldflags or --without-ldflags was given.
+if test "${with_ldflags+set}" = set; then
+  withval="$with_ldflags"
+  :
+fi
+
+
          
       # Check whether --enable-32-bit or --disable-32-bit was given.
 if test "${enable_32_bit+set}" = set; then
@@ -770,6 +841,7 @@ fi
        with_mips='4'
    fi
 
+         
       # Check whether --enable-draco-stdhdrs or --disable-draco-stdhdrs was given.
 if test "${enable_draco_stdhdrs+set}" = set; then
   enableval="$enable_draco_stdhdrs"
@@ -791,7 +863,7 @@ fi
 # SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
 # ./install, which can be erroneously created by make from ./install.sh.
 echo $ac_n "checking for a BSD compatible install""... $ac_c" 1>&6
-echo "configure:795: checking for a BSD compatible install" >&5
+echo "configure:867: checking for a BSD compatible install" >&5
 if test -z "$INSTALL"; then
 if eval "test \"`echo '$''{'ac_cv_path_install'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
