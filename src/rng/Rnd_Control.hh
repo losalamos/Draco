@@ -49,10 +49,11 @@ public:
     SP<Sprng> get_rn();
 
   // spawn a new random number stream
-    SP<Sprng> spawn();
+    SP<Sprng> spawn(Sprng &);
 
   // query for the number of random streams
     int get_num() const { return streamnum; }
+    int total() const { return streamnum + 1; }
 };
 
 CSPACE

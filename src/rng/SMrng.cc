@@ -17,7 +17,7 @@ RNGSPACE
 // public member functions
 //---------------------------------------------------------------------------//
 // random number generator which returns a random deviate between 0.0 and 1.0
-double Random::ran()
+double SMrng::ran()
 {  
   // counter update
     count++;
@@ -72,7 +72,7 @@ double Random::ran()
 // diagnostics and tests
 //---------------------------------------------------------------------------//
 // debug print
-void Random::print_values()
+void SMrng::print_values()
 {
     using std::cout;
     using std::endl;
@@ -91,7 +91,7 @@ void Random::print_values()
 
 //---------------------------------------------------------------------------//
 // random number tests
-double Random::test_avg(int num)
+double SMrng::test_avg(int num)
 {
     double avgcount = 0;
     for (int i = 1; i <= num; i++)

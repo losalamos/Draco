@@ -6,14 +6,14 @@
 // @> SMrng class header
 //---------------------------------------------------------------------------//
 
-#ifndef __rng_Random_hh__
-#define __rng_Random_hh__
+#ifndef __rng_SMrng_hh__
+#define __rng_SMrng_hh__
 
 //===========================================================================//
 // class SMrng - 
 //
 // Purpose : Random number class for use with IMC and MC applications;
-//           origin, RAN3 function, pg.283 Numerical Recipes in C,
+//           origin, RAN3 function, pg.283 Numerical Recipes in C;
 //           subtractive method by Knuth
 //
 // revision history:
@@ -37,7 +37,7 @@ using std::vector;
 using std::fill;
 using std::ostream;
 
-class Random
+class SMrng
 {
 private:
   // generator const variables
@@ -58,10 +58,10 @@ private:
 
 public:
   // must give seed to Random number object
-    inline Random(long);
+    inline SMrng(long);
  
   // overloaded assignment operators
-    inline const Random& operator=(const Random &rhs);
+    inline const SMrng& operator=(const SMrng &rhs);
 
   // get Random number function
     double ran();
@@ -80,7 +80,7 @@ public:
 //---------------------------------------------------------------------------//
 
 // overloaded stream operator
-inline ostream& operator<<(ostream &output, Random &object)
+inline ostream& operator<<(ostream &output, SMrng &object)
 {
     output << object.ran();
     return output;
@@ -88,7 +88,7 @@ inline ostream& operator<<(ostream &output, Random &object)
 
 //---------------------------------------------------------------------------//
 
-inline const Random& Random::operator=(const Random &rhs)
+inline const SMrng& SMrng::operator=(const SMrng &rhs)
 {
   // overloaded assignment operator
     inext  = rhs.inext;
@@ -102,11 +102,11 @@ inline const Random& Random::operator=(const Random &rhs)
 }
 
 //---------------------------------------------------------------------------//
-// inline functions for Random
+// inline functions for SMrng
 //---------------------------------------------------------------------------//
 
 // constructor
-inline Random::Random(long idum_)
+inline SMrng::SMrng(long idum_)
     : mbig(1000000000), mseed(161803398), mz(0), fac(1.0/mbig),
       inext(0), inextp(0), ma(56), iff(0), idum(idum_), count(0),
       seed(idum_)
@@ -117,7 +117,7 @@ inline Random::Random(long idum_)
 
 CSPACE
 
-#endif                          // __rng_Random_hh__
+#endif                          // __rng_SMrng_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of rng/SMrng.hh

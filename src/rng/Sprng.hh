@@ -21,6 +21,7 @@
 //===========================================================================//
 
 #include "rng/Names.hh"
+#include "ds++/Assert.hh"
 #include "sprng.h"
 
 RNGSPACE
@@ -34,6 +35,8 @@ private:
 public:
   // constructor
     Sprng(int *id, int snum) : streamid(id), streamnum(snum) {}
+  // fake constructor for STL containers
+    Sprng() { Check (0); } 
 
   // destructor, reclaim memory from SPRNG library
     ~Sprng() { free_sprng(streamid); }
