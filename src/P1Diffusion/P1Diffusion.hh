@@ -51,6 +51,7 @@ namespace rtt_P1Diffusion
    public:
 
      typedef MT MeshType;
+     typedef ccsf  IntensityField;
      typedef fcdsf FluxField;
      typedef fcdsf DiscFluxField;
 #ifdef P13T_MOMENTUM_DEPOSITION
@@ -100,6 +101,10 @@ namespace rtt_P1Diffusion
                      const DiscFluxField &sigmaF,
                      const DiscMomentumField &velocity) const;
 #endif
+
+     typename ccsf::value_type integrateOverVolume(const ccsf &field) const;
+
+     typename fcdsf::value_type integrateOverBoundary(const fcdsf &field) const;
 
    private:
     

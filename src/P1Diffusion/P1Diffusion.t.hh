@@ -8,6 +8,8 @@
 
 #include "P1Diffusion.hh"
 #include "ds++/SP.hh"
+#include "P1Matrix.hh"
+#include "traits/MatrixFactoryTraits.hh"
 
 // Note:
 // Inside class scope MT has been typedef'ed to MeshType,
@@ -413,8 +415,12 @@ namespace rtt_P1Diffusion
  {
      // The sparse matrix can be constructed from the diagonal and
      // off-diagonal elements.
-    
-     SP<Matrix> spMatrix(new Matrix(fCtor, spADiagonal, spAOffDiagonal));
+
+     P1Matrix<MT> p1Mat(fCtor, spADiagonal, spAOffDiagonal);
+
+     typedef rtt_traits::MatrixFactoryTraits<Matrix> MatFacTraits;
+     
+     SP<Matrix> spMatrix(MatFacTraits::create(p1Mat));
 
      // Solve the "matrix*phi = b" equations.
     
@@ -442,6 +448,43 @@ namespace rtt_P1Diffusion
     
      F = FprimeEff - DEffOverDeltaL*(phiFCSwap - phiFC);
  }
+
+template<class MT, class MS>
+typename P1Diffusion<MT,MS>::ccsf::value_type
+P1Diffusion<MT,MS>::integrateOverVolume(const ccsf &field) const
+{
+    // Get the cell volumes.
+    
+    ccsf result_field(fCtor);
+    spm->get_cell_volumes(result_field);
+
+    result_field *= field;
+
+    // return sum over all cells.
+    
+    return MT::sum(result_field);
+}
+
+template<class MT, class MS>
+typename P1Diffusion<MT,MS>::fcdsf::value_type
+P1Diffusion<MT,MS>::integrateOverBoundary(const fcdsf &field) const
+{
+    // Get the cell volumes.
+    
+    fcdsf result_fcdsf(fCtor);
+    spm->get_face_areas(result_fcdsf);
+
+    result_fcdsf *= field;
+
+    // strip out the boundary of area*field into a boundary field
+    
+    bssf result_bssf(fCtor);
+    MT::gather(result_bssf, result_fcdsf, MT::OpAssign());
+
+    // return the sum over all boundary faces.
+    
+    return MT::sum(result_bssf);
+}
 
 } // end namespace rtt_diffusion
 
