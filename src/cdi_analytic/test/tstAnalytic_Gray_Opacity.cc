@@ -60,6 +60,7 @@ void constant_test()
     if (grayp->getEnergyPolicyDescriptor() != "gray")        ITFAILS;
     if (grayp->getDataDescriptor() != "Analytic Gray Total") ITFAILS;
     if (grayp->getReactionType() != rtt_cdi::TOTAL)          ITFAILS;
+    if (grayp->getModelType() != rtt_cdi::ANALYTIC)          ITFAILS;
     if (typeid(grayp) != typeid(GrayOpacity *))              ITFAILS;
     if (typeid(*grayp) != typeid(Analytic_Gray_Opacity))     ITFAILS;
 
@@ -133,10 +134,10 @@ void CDI_test()
     absorption = new Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION);
     scattering = new Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING);
 
-    // make a CDI for scattering and absorption (should you be able to add
-    // multiple opacities to a CDI)
-    CDI scat_CDI(scattering);
-    CDI abs_CDI(absorption);
+    // make a CDI for scattering and absorption
+    CDI cdi;
+    cdi.setGrayOpacity(scattering);
+    cdi.setGrayOpacity(absorption);
 
     // now check some data
     vector<double> T(6);
@@ -154,12 +155,20 @@ void CDI_test()
 
     for (int i = 0; i < T.size(); i++)
     {
-	double ref   = 100.0 / (T[i]*T[i]*T[i]);
-	double error = fabs(abs_CDI.gray()->getOpacity(T[i], rho[i]) - ref);
+	double ref = 100.0 / (T[i]*T[i]*T[i]);
+	rtt_cdi::Model model   = rtt_cdi::ANALYTIC;
+	rtt_cdi::Reaction abs  = rtt_cdi::ABSORPTION;
+	rtt_cdi::Reaction scat = rtt_cdi::SCATTERING; 
+
+	double error = fabs(cdi.gray(model,abs)->getOpacity(T[i], rho[i])
+			    - ref);
 
 	if (error > 1.0e-12 * ref) ITFAILS; 
+
+	error = fabs(cdi.gray(model, scat)->getOpacity(T[i], rho[i]) - 1.0);
+
+	if (error > 1.0e-12)       ITFAILS;
     }
-    
 }
 
 //---------------------------------------------------------------------------//

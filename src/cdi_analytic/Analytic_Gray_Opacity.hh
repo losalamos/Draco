@@ -91,6 +91,9 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
     //! Query to get the reaction type.
     rtt_cdi::Reaction getReactionType() const { return reaction; }
 
+    //! Query for model type.
+    rtt_cdi::Model getModelType() const { return rtt_cdi::ANALYTIC; }
+
     // Return the energy policy (gray).
     inline std_string getEnergyPolicyDescriptor() const;
 
