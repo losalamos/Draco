@@ -12,7 +12,7 @@
 #ifndef __cdi_gandolf_tGandolfFile_hh__
 #define __cdi_gandolf_tGandolfFile_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 
 namespace rtt_cdi_gandolf_test
 {

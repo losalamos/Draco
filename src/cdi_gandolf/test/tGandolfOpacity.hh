@@ -12,7 +12,7 @@
 #ifndef __cdi_gandolf_tGandolfOpacity_hh__
 #define __cdi_gandolf_tGandolfOpacity_hh__
 
-#include "UnitTestFrame/TestApp.hh"
+#include "UnitTestFrame/TestAppNoC4.hh"
 #include "ds++/SP.hh"
 
 #include <vector>

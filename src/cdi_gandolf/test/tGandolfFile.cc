@@ -70,13 +70,31 @@ std::string tGandolfFile::runTest()
 	{
 	    spGF = new rtt_cdi_gandolf::GandolfFile( op_data_file );
 	}
-    catch ( rtt_cdi_gandolf::gmatidsException gerr )
+    catch ( rtt_cdi_gandolf::gmatidsException GandError )
 	{
-	    fail() << std::endl << "\t" << gerr.errorSummary();
+	    fail() << std::endl << "\t" << GandError.errorSummary();
 	    return "Some tests failed.";
 	}
 
     // Test the new object to verify the constructor and accessors.
+
+    std::vector<int> matIDs = spGF->getMatIDs();
+    if ( matIDs[0] == 10001 && matIDs[1] == 10002 )
+	pass () << "Found two materials in IPCRESS file with expected IDs.";
+    else
+	fail () << "Did not find materials with expected IDs in IPCRESS file.";
+
+    if ( spGF->materialFound( 10001 ) )
+	pass () << "Looks like material 10001 is in the data file.";
+    else
+	fail() << "Can't find material 10001 in the data file.";
+    
+    if ( spGF->materialFound( 5500 ) ) // should fail
+	fail() << "Material 5500 shouldn't exist in the data file." 
+	       << "\n\tLooks like we have a problem.";
+    else
+	pass() << "Access function correctly identified material 5500"
+	       << "\n\tas being absent from IPCRESS file.";
 
     if ( spGF->getDataFilename() == op_data_file )
 	pass() << "Data filename set and retrieved correctly.";
@@ -90,6 +108,7 @@ std::string tGandolfFile::runTest()
     
     std::cout << std::endl 
 	      << "Materials found in the data file:" << std::endl;
+
     for ( int i=0; i<spGF->getNumMaterials(); ++i )
 	std::cout << "  Material " << i << " has the identification number " 
 		  << spGF->getMatIDs()[i] << std::endl;
