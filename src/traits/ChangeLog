@@ -1,3 +1,8 @@
+2000-02-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* ., test: released version 1_2_0 of the traits package.  This
+	change updates to the rtt_dsxx namespace.
+
 2000-01-31  Thomas M. Evans  <tme@lanl.gov>
 
 	* .: released version 1_0_0 of the traits package.  Note that this 
