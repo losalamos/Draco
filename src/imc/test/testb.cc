@@ -60,6 +60,39 @@ void Builder_diagnostic(const MT &mesh, const Mat_State<MT> &mat,
 }
 
 template<class MT>
+void Surface_diagnostic(const MT &mesh)
+{
+  // input
+    string bnd;
+    int cell;
+    int face;
+
+    cout << "Enter bnd: ";
+    cin >> bnd;
+    cout << "Enter cell: ";
+    cin >> cell;
+    cout << "Enter face: ";
+    cin >> face;
+	
+  // check the cells along bnd
+    vector<int> surfaces = mesh.get_surcells(bnd);
+    cout << surfaces << endl;
+
+  // check the surface face index on bnd in cell
+    cout << mesh.get_bndface(bnd, cell) << endl << endl;
+
+  // get the vertices on a cell-face
+    typename MT::CCVF_a vertex = mesh.get_vertices(cell, face);
+    for (int i = 0; i < vertex[0].size(); i++)
+    {
+	cout << "(" << vertex[0][i];
+	for (int d = 1; d < vertex.size(); d++)
+	    cout << "," << vertex[d][i];
+	cout << ")" << endl;
+    }
+}
+
+template<class MT>
 void Run_Particle(const MT &mesh, const Opacity<MT> &opacity, long seed)
 {
   // transport a particle
@@ -130,21 +163,7 @@ main()
 
   // mesh diagnostics
     Builder_diagnostic(*mesh, *mat_state, *opacity);
-
-    vector<int> surfaces = mesh->get_surcells("lox");
-    cout << surfaces << endl;
-    surfaces = mesh->get_surcells("hix");
-    cout << surfaces << endl;  
-    surfaces = mesh->get_surcells("loy");
-    cout << surfaces << endl;
-    surfaces = mesh->get_surcells("hiy");
-    cout << surfaces << endl;
-    surfaces = mesh->get_surcells("loz");
-    cout << surfaces << endl;  
-    surfaces = mesh->get_surcells("hiz");
-    cout << surfaces << endl;
-
-    cout << mesh->get_bndface("hiz", 9);
+    Surface_diagnostic(*mesh);
 
 //     long seed = -345632;
 //     Run_Particle(*mesh, *opacity, seed);
