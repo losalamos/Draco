@@ -16,7 +16,10 @@
 //
 // revision history:
 // -----------------
-// 0) original
+//  0) original
+//  1)  7-28-98 : converted density, kappa, temperature, and specific_heat to 
+//                cell-based arrays in the Interface, ie. we no longer need
+//                zone or mat_zone
 // 
 //===========================================================================//
 
@@ -41,8 +44,6 @@ class Opacity_Builder
 private:
 
   // data received from XX_Interface
-    vector<int> zone;
-    vector<int> mat_zone;
     vector<double> density;
     vector<double> kappa;
     vector<double> temperature;

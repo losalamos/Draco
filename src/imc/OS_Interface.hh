@@ -26,6 +26,9 @@
 //  5)   7-1-98 : added input for RN seed and print frequency
 //  6)  7-15-98 : added zonal radiation source from t=0 to rad_s_tend
 //  7)  7-17-98 : added analytic specific heat ala Su and Olson
+//  8)  7-28-98 : changed get_temperature(), get_kappa(), get_specific_heat,
+//                and get_density() so that they return cell-sized arrays,
+//                now there is no need for get_zone() and get_mat_zone()
 // 
 //===========================================================================//
 
@@ -39,6 +42,7 @@
 
 IMCSPACE
 
+// stl components
 using std::string;
 using std::vector;
 using std::ifstream;
@@ -126,13 +130,11 @@ public:
     const OS_Mesh::CCVF_d& get_fine_edge() const { return fine_edge; }
     
   // public copy functions for Opacity<MT>
-    const vector<int>& get_zone() const { return zone; }
-    const vector<int>& get_mat_zone() const { return mat_zone; }
-    const vector<double>& get_density() const { return density; }
-    const vector<double>& get_kappa() const { return kappa; }
-    const vector<double>& get_temperature() const { return temperature; }
+    vector<double> get_density() const;
+    vector<double> get_kappa() const;
+    vector<double> get_specific_heat() const;
+    vector<double> get_temperature() const;
     double get_implicit() const { return implicitness; }
-    const vector<double>& get_specific_heat() const { return specific_heat; }
 
   // public copy functions for Source_Init<MT>
     vector<double> get_evol_ext() const;

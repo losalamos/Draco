@@ -27,13 +27,11 @@ Opacity_Builder<MT>::Opacity_Builder(SP<IT> interface)
     Require (interface);
 
   // assign data members from the interface parser
-    zone             = interface->get_zone();
-    mat_zone         = interface->get_mat_zone();
     density          = interface->get_density();
     kappa            = interface->get_kappa();
     temperature      = interface->get_temperature();
-    implicitness     = interface->get_implicit();	
     specific_heat    = interface->get_specific_heat();
+    implicitness     = interface->get_implicit();	
     delta_t          = interface->get_delta_t();
     analytic_opacity = interface->get_analytic_opacity();
     analytic_sp_heat = interface->get_analytic_sp_heat();
@@ -51,6 +49,9 @@ template<class MT>
 SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
 {
     Require (mesh);
+    Require (mesh->num_cells() == density.size());
+    Require (mesh->num_cells() == temperature.size());
+    Require (mesh->num_cells() == specific_heat.size());
 
   // return Mat_State object
     SP< Mat_State<MT> > return_state;
@@ -67,9 +68,9 @@ SP< Mat_State<MT> > Opacity_Builder<MT>::build_Mat(SP<MT> mesh)
   // assign density and temperature to each cell
     for (int cell = 1; cell <= num_cells; cell++)
     {
-	double den    = density[mat_zone[zone[cell-1]-1]-1];
-	double T      = temperature[mat_zone[zone[cell-1]-1]-1];
-	double heat   = specific_heat[mat_zone[zone[cell-1]-1]-1];
+	double den    = density[cell-1];
+	double T      = temperature[cell-1];
+	double heat   = specific_heat[cell-1];
 	rho(cell)     = den;
 	temp(cell)    = T;
 	sp_heat(cell) = heat;
@@ -100,6 +101,7 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     Require (mesh);
     Require (mat);
     Require (mat->num_cells() == mesh->num_cells());
+    Require (mesh->num_cells() == kappa.size());
 
   // return Opacity object
     SP< Opacity<MT> > return_opacity;
@@ -115,14 +117,14 @@ SP< Opacity<MT> > Opacity_Builder<MT>::build_Opacity(SP<MT> mesh,
     for (int cell = 1; cell <= num_cells; cell++)
     {
       // get updated temperature from mat_state
-	double T     = mat->get_T(cell);
+	double T = mat->get_T(cell);
 
       // calculate real absorption opacities
 	double k;
 	if (analytic_opacity == "straight")
-	    k = kappa[mat_zone[zone[cell-1]-1]-1];
+	    k = kappa[cell-1];
 	else if (analytic_opacity == "tcube")
-	    k = kappa[mat_zone[zone[cell-1]-1]-1] / (T*T*T);
+	    k = kappa[cell-1] / (T*T*T);
 	else
 	    Check (0);
 	double den      = mat->get_rho(cell);

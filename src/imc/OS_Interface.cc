@@ -564,6 +564,72 @@ void OS_Interface::zone_source_parser(ifstream &in)
 }
 
 //---------------------------------------------------------------------------//
+// Zone - to - cell mapping accessor functions
+//---------------------------------------------------------------------------//
+// map kappa to cell based arrays
+
+vector<double> OS_Interface::get_kappa() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_k(zone.size());
+
+  // assign the values to cell_k based on the zone and material
+    for (int cell = 1; cell <= cell_k.size(); cell++)
+	cell_k[cell-1] = kappa[mat_zone[zone[cell-1]-1]-1];
+
+  // return cell_k
+    return cell_k;
+}
+
+//---------------------------------------------------------------------------//
+// map density to cell based arrays
+
+vector<double> OS_Interface::get_density() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_den(zone.size());
+
+  // assign the values to cell_den based on the zone and material
+    for (int cell = 1; cell <= cell_den.size(); cell++)
+	cell_den[cell-1] = density[mat_zone[zone[cell-1]-1]-1];
+
+  // return cell_den
+    return cell_den;
+}
+
+//---------------------------------------------------------------------------//
+// map temperature to cell based arrays
+
+vector<double> OS_Interface::get_temperature() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_t(zone.size());
+
+  // assign the values to cell_t based on the zone and material
+    for (int cell = 1; cell <= cell_t.size(); cell++)
+	cell_t[cell-1] = temperature[mat_zone[zone[cell-1]-1]-1];
+
+  // return cell_t
+    return cell_t;
+}
+
+//---------------------------------------------------------------------------//
+// map specific heat to cell based arrays
+
+vector<double> OS_Interface::get_specific_heat() const
+{
+  // make a return vector of the proper size
+    vector<double> cell_cv(zone.size());
+
+  // assign the values to cell_cv based on the zone and material
+    for (int cell = 1; cell <= cell_cv.size(); cell++)
+	cell_cv[cell-1] = specific_heat[mat_zone[zone[cell-1]-1]-1];
+
+  // return cell_cv
+    return cell_cv;
+}
+
+//---------------------------------------------------------------------------//
 // map volume source to cell based arrays
 
 vector<double> OS_Interface::get_evol_ext() const
