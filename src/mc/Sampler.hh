@@ -273,7 +273,7 @@ inline int sample_bin_from_discrete_cdf(Ran ran_gen, const sf_double &cdf)
     // just below the midpoint for even num_bins.
     int bin_lo = 0;
     int bin_hi = num_bins - 1;
-    int bin    = bin_hi * 0.5;
+    int bin    = static_cast<int>(bin_hi * 0.5);
     
     while (bin_lo != bin_hi)
     {
@@ -290,7 +290,7 @@ inline int sample_bin_from_discrete_cdf(Ran ran_gen, const sf_double &cdf)
 	    bin_lo = bin + 1;
 
 	// split the difference to get the next estimate of the bin
-	bin = (bin_lo + bin_hi) * 0.5;
+	bin = static_cast<int>((bin_lo + bin_hi) * 0.5);
     }
 
     // make rudimentary checks on the bin and return

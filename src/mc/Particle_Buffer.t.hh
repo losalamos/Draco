@@ -81,7 +81,7 @@ void Particle_Buffer<PT>::set_maximum_num_particles(int num)
 	size_packed_particle;
 
     EIGHT_BYTE_INT_TYPE limit     = static_cast<EIGHT_BYTE_INT_TYPE>(
-	2147483648);
+	2147483648U);
 
     Insist (max_bytes < limit, "Buffer size exceeds 32-bit int limit.");
 
