@@ -187,9 +187,16 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
        fi
 
        # MIPS INSTRUCTIONS ON SGI
-       CXXFLAGS="-mips${with_mips:=4} --backend -r10000 ${CXXFLAGS}"
-       CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
-       LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
+       # this is different depending upon the compiler
+       if test "${with_cxx}" = kcc ; then
+	   CXXFLAGS="-mips${with_mips:=4} --backend -r10000 ${CXXFLAGS}"
+	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
+	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
+       elif test "${with_cxx}" = cc ; then
+	   CXXFLAGS="-mips${with_mips:=4} -r10000 ${CXXFLAGS}"
+	   CFLAGS="-mips${with_mips:=4} -r10000 ${CFLAGS}"
+	   LDFLAGS="-mips${with_mips:=4} ${LDFLAGS}"
+       fi
 
        # MPT (Message Passing Toolkit) for SGI vendor
        # implementation of MPI and SHMEM
