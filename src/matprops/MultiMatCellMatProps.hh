@@ -21,7 +21,10 @@ namespace rtt_matprops {
 // This class provides a means to deal with computational cells which 
 // contain more than one material. This is most often seen in Eulerian codes.
 // The method used is a simplistic one modeled on a
-// "Temperature-Equilibration" principle.
+// "Temperature-Equilibration" principle. This class is templated on a
+// Uni-Material-Cell Mat-Props (UMCMP) class. Each cell has a 
+// UMCMP::materialStateField that is nmats long, where nmats is the number
+// of materials in the cell.
 
 
 // 
@@ -85,8 +88,29 @@ class MultiMatCellMatProps {
 
 //------------------------------------------------------------------------//
 // getMaterialState:
-//    Return a material state field from density, temperature,
-//    and materia id fields.
+//    Returns a material state field from density, temperature,
+//    volume, and material id fields. The inputs arguments are
+//    expected to be "containers of containers". e.g. density_ is
+//    a container of size ncells, with each element itself being a
+//    container of size nmat. nmat may be different for each cell.
+//
+//    density_  - material density (mass/length**3). Should be based on 
+//    the volume of the individual material within the cell, not 
+//    the total cell volume.
+//
+//    electronTemp_ - Electron temperatures (temperature).
+//
+//    ionTemp_ - Ion temperatures (temperature).
+//
+//    volumeFraction - Volume (length**3) or volume fraction (dimensionless)
+//    of each material in the cell. Sum of volumeFraction within a cell 
+//    will be normalized to one.
+//
+//    matID_ - Material ID flags.
+//
+//    FT is the class for output by the various methods which return
+//    a single quantity on a cell, e.g. a cell average result.
+//
 //------------------------------------------------------------------------//
 
     template<class FT, class FT1, class FT2>

@@ -14,7 +14,10 @@
 //===========================================================================//
 // class testMmcMatProp - Tests the Multi-Material Cell Material Properties.
 
-// 
+// Note that this test code only verifies the proper operation of 
+// the Multi-Material Cell class. It does no checking of the imbeded
+// Uni-Material Cell mat props class.
+
 //===========================================================================//
 
 class testMmcMatProp {
