@@ -329,7 +329,7 @@ ifneq (,$(filter uninstall dvi distclean mostlyclean clean \
 	${MAKECMDGOALS}))
 #empty
 else
-include ${dependfiles}
+-include ${dependfiles}
 endif
 
 maintainer-clean distclean mostlyclean clean:

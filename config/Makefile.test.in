@@ -318,7 +318,7 @@ ifneq (,$(filter uninstall distclean mostlyclean clean \
 	${MAKECMDGOALS}))
 #empty
 else
-include ${dependfiles}
+-include ${dependfiles}
 endif
 
 clean:
