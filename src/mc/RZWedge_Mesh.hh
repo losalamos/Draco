@@ -12,6 +12,7 @@
 #ifndef __mc_RZWedge_Mesh_hh__
 #define __mc_RZWedge_Mesh_hh__
 
+#include "Coord_sys.hh"
 #include "Layout.hh"
 #include "rng/Sprng.hh"
 #include "ds++/SP.hh"
@@ -45,7 +46,8 @@ namespace rtt_mc
  */
 // revision history:
 // -----------------
-// 0) original : committed on Thursday, April 13, 2000.
+// 13 Apr 2000 : committed on Thursday, April 13, 2000.
+//  5 Jul 2000 : added dependence on Coord_sys (needed in transport...)
 // 
 //===========================================================================//
 
@@ -65,8 +67,9 @@ class RZWedge_Mesh
     template<class T> class CCVF;
 
   private:
-    // the RZWedge_Mesh is always three-dimensional, Cartesian
-    const int num_coord_dimensions;
+    // base class reference to a derived coordinate system class
+    // (the RZWedge_Mesh is always three-dimensional, Cartesian)
+    rtt_dsxx::SP<Coord_sys> coord;
 
     // layout (cell connectivity) of mesh
     Layout layout;
@@ -95,7 +98,8 @@ class RZWedge_Mesh
 
   public:
     // constructor 
-    RZWedge_Mesh(Layout &, vf_double &, double, bool = false); 
+    RZWedge_Mesh(rtt_dsxx::SP<Coord_sys>, Layout &, vf_double &, double, 
+		 bool = false); 
 
     // >>> Member functions used by RZWedge_Mesh-dependent classes
 
@@ -117,8 +121,10 @@ class RZWedge_Mesh
     void print(std::ostream &) const;
     void print(std::ostream &, int) const;
 
-    // references to embedded objects -- in case we use parallel_builder
-    const Layout& get_Layout() const { return layout; }
+    // references to embedded objects 
+    const Layout&           get_Layout()  const { return layout; }
+    const Coord_sys&        get_Coord()   const { return *coord; }
+    rtt_dsxx::SP<Coord_sys> get_SPCoord() const { return coord; }
 
     // Services required for graphics dumps.
     sf_int get_cell_types() const;
@@ -172,6 +178,8 @@ std::ostream& operator<<(std::ostream &output, const RZWedge_Mesh &object);
  */
 double RZWedge_Mesh::get_x_midpoint(int cell) const
 {
+    Check ( (cell > 0) && (cell <= num_cells()) );
+
     return 0.5 * (get_low_x(cell) + get_high_x(cell));
 }
 //---------------------------------------------------------------------------//
@@ -182,7 +190,12 @@ double RZWedge_Mesh::get_x_midpoint(int cell) const
  *
  * \return midpoint of y-dimension
  */
-double RZWedge_Mesh::get_y_midpoint(int cell) const{ return 0.0; }
+double RZWedge_Mesh::get_y_midpoint(int cell) const
+{ 
+    Check ( (cell > 0) && (cell <= num_cells()) );
+
+    return 0.0; 
+}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -194,6 +207,8 @@ double RZWedge_Mesh::get_y_midpoint(int cell) const{ return 0.0; }
  */
 double RZWedge_Mesh::get_z_midpoint(int cell) const
 {
+    Check ( (cell > 0) && (cell <= num_cells()) );
+
     return 0.5 * (get_low_z(cell) + get_high_z(cell));
 }
 
@@ -212,10 +227,10 @@ double RZWedge_Mesh::get_z_midpoint(int cell) const
  */
 RZWedge_Mesh::sf_double RZWedge_Mesh::get_normal(int cell, int face) const
 {
-    Check (num_coord_dimensions == 3);
+    Check (coord->get_dim() == 3);
     Check ((face >= 1) && (face <= 6));
 
-    sf_double normal(num_coord_dimensions, 0.0);
+    sf_double normal(coord->get_dim(), 0.0);
 
     // low x face
     if (face == 1)
@@ -261,18 +276,18 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::get_normal(int cell, int face) const
  */
 RZWedge_Mesh::sf_double RZWedge_Mesh::get_normal_in(int cell, int face) const
 {
-    Check (num_coord_dimensions == 3);
+    Check (coord->get_dim() == 3);
     Check ((face >= 1) && (face <= 6));
 
     // initialize inward normal
-    sf_double normal_in(num_coord_dimensions, 0.0);
+    sf_double normal_in(coord->get_dim(), 0.0);
 
     // get outward normal first
     sf_double normal = get_normal(cell, face);
-    Check (normal.size() == num_coord_dimensions);
+    Check (normal.size() == coord->get_dim());
 
     // reverse direction
-    for (int dir = 0; dir < num_coord_dimensions; dir++)
+    for (int dir = 0; dir < coord->get_dim(); dir++)
 	normal_in[dir] = -normal[dir];
 
     // return inward normal
@@ -361,10 +376,10 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
 						 rng_Sprng &random) const
 {
     Require (cell > 0 && cell <= num_cells());
-    Check (num_coord_dimensions == 3);
+    Check (coord->get_dim() == 3);
 
     // initialize location vector
-    sf_double position(num_coord_dimensions, 0.0);
+    sf_double position(coord->get_dim(), 0.0);
 
     // get x-dimension cell extents
     double lox =  get_low_x(cell);
@@ -421,10 +436,10 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos(int cell,
 						 double center_pt ) const
 {
     Require (cell > 0 && cell <= num_cells());
-    Check (num_coord_dimensions == 3);
+    Check (coord->get_dim() == 3);
 
     // initialize location vector
-    sf_double position(num_coord_dimensions, 0.0);
+    sf_double position(coord->get_dim(), 0.0);
 
     // get x-dimension cell extents
     double lox       = get_low_x(cell);
@@ -502,10 +517,10 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos_on_face(int cell, int face,
 {
     Require (cell > 0 && cell <= num_cells());
     Require (face > 0 && face <= 6);
-    Check (num_coord_dimensions == 3);
+    Check (coord->get_dim() == 3);
 
     // initialize position vector
-    sf_double position(num_coord_dimensions, 0.0);
+    sf_double position(coord->get_dim(), 0.0);
 
     // high x face
     if (face == 2)
@@ -562,7 +577,7 @@ RZWedge_Mesh::sf_int RZWedge_Mesh::get_neighbors(int cell) const
 }
 
 //===========================================================================//
-// class RZWedge_Mesh::CCSF (copied from class OS_Mesh::CCSF; axed coord-dep)
+// class RZWedge_Mesh::CCSF (copied from class OS_Mesh::CCSF)
 //
 // cell-centered scalar fields
 // Note: we can't build empty fields (ie. the mesh has to have at least 1
@@ -714,13 +729,13 @@ class RZWedge_Mesh::CCVF
 
 template<class T>
 RZWedge_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_)
-    : mesh(mesh_), data(num_coord_dimensions)
+    : mesh(mesh_), data(mesh->get_Coord().get_dim())
 {
     Require (mesh);
-    Check (num_coord_dimensions == 3);
+    Check   (mesh->get_Coord().get_dim() == 3);
 
     // initialize data array
-    for (int i = 0; i < num_coord_dimensions; i++)
+    for (int i = 0; i < mesh->get_Coord().get_dim(); i++)
 	data[i].resize(mesh->num_cells());
 }
 
@@ -733,10 +748,10 @@ RZWedge_Mesh::CCVF<T>::CCVF(SP_Mesh mesh_,
     : mesh(mesh_), data(array)
 {
     // check things out
-    Ensure (data.size() == num_coord_dimensions);
-    Ensure (num_coord_dimensions == 3);
+    Ensure (data.size() == mesh->get_Coord().get_dim());
+    Ensure (mesh->get_Coord().get_dim() == 3);
 
-    for (int dim = 0; dim < num_coord_dimensions; dim++)
+    for (int dim = 0; dim < mesh->get_Coord().get_dim(); dim++)
 	Ensure (data[dim].size() == mesh->num_cells());
 }
 

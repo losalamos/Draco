@@ -36,14 +36,19 @@ using global::pi;
 //---------------------------------------------------------------------------//
 // CONSTRUCTOR
 //---------------------------------------------------------------------------//
-RZWedge_Mesh::RZWedge_Mesh(Layout &layout_,
+RZWedge_Mesh::RZWedge_Mesh(rtt_dsxx::SP<Coord_sys> coord_,
+			   Layout &layout_,
 			   vf_double &cell_xz_extents_,
 			   double theta_degrees_,
 			   bool submesh_)
-    : layout(layout_), cell_xz_extents(cell_xz_extents_),
-      theta_degrees(theta_degrees_), submesh(submesh_), 
-      num_coord_dimensions(3)
+    : coord(coord_), layout(layout_), cell_xz_extents(cell_xz_extents_),
+      theta_degrees(theta_degrees_), submesh(submesh_)
 {
+    // Check coordinate system class
+    Require (coord);
+    Require (coord->get_dim() == 3);
+    Require (coord->get_Coord() == std::string("xyz"));
+
     // make sure that the unfolding angle is positive and not obtuse
     Require ((theta_degrees > 0.0) && (theta_degrees <= 90.0));
 
@@ -271,7 +276,7 @@ bool RZWedge_Mesh::check_defined_surcells(const std_string ss_face,
 RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell) const
 {
     Require (cell > 0 && cell <= num_cells());
-    Require (num_coord_dimensions == 3);
+    Require (coord->get_dim() == 3);
 
     const int num_verts_face = 4;
     const int num_verts_cell = 8;
@@ -284,18 +289,18 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell) const
     // get the vertices for the high z face of the cell
     vf_double hiz_face_vertices = get_vertices(cell, hiz_face);
     
-    Require (cell_vertices.size() == num_coord_dimensions);
+    Require (cell_vertices.size() == coord->get_dim());
     Require (cell_vertices[0].size() == num_verts_face);
     Require (cell_vertices[1].size() == num_verts_face);
     Require (cell_vertices[2].size() == num_verts_face);
 
-    Require (hiz_face_vertices.size() == num_coord_dimensions);
+    Require (hiz_face_vertices.size() == coord->get_dim());
     Require (hiz_face_vertices[0].size() == num_verts_face);
     Require (hiz_face_vertices[1].size() == num_verts_face);
     Require (hiz_face_vertices[2].size() == num_verts_face);
 
     // add the hiz face vertices to loz face vertices
-    for (int v = 0; v < num_coord_dimensions; v++)
+    for (int v = 0; v < coord->get_dim(); v++)
 	cell_vertices[v].insert(cell_vertices[v].end(),
 				hiz_face_vertices[v].begin(),
 				hiz_face_vertices[v].end()); 
@@ -327,10 +332,10 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell, int face) const
 {
     Require (face > 0 && face <= 6);
     Require (cell > 0 && cell <= layout.num_cells());
-    Require (num_coord_dimensions == 3);
+    Require (coord->get_dim() == 3);
 
-    vf_double face_vertices(num_coord_dimensions);
-    sf_double single_vert(num_coord_dimensions, 0.0);
+    vf_double face_vertices(coord->get_dim());
+    sf_double single_vert(coord->get_dim(), 0.0);
     
     double lox     = get_low_x(cell);
     double hix     = get_high_x(cell);
@@ -356,19 +361,19 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell, int face) const
 
 	single_vert[1] = -y_variable;
 	single_vert[2] = loz;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[1] = y_variable;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[2] = hiz;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[1] = -y_variable;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
     }
 
@@ -384,25 +389,25 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell, int face) const
 	single_vert[0] = lox;
 	single_vert[1] = y_plusminus * small_y;
 	single_vert[2] = loz;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[0] = hix;
 	single_vert[1] = y_plusminus * large_y;
 	single_vert[2] = loz;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[0] = hix;
 	single_vert[1] = y_plusminus * large_y;
 	single_vert[2] = hiz;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[0] = lox;
 	single_vert[1] = y_plusminus * small_y;
 	single_vert[2] = hiz;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
     }
 
@@ -416,27 +421,27 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_vertices(int cell, int face) const
 
 	single_vert[0] = lox;
 	single_vert[1] = -small_y;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 	    
 	single_vert[0] = hix;
 	single_vert[1] = -large_y;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[0] = hix;
 	single_vert[1] = large_y;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
 
 	single_vert[0] = lox;
 	single_vert[1] = small_y;
-	for (int i = 0; i < num_coord_dimensions; i++)
+	for (int i = 0; i < coord->get_dim(); i++)
 	    face_vertices[i].push_back(single_vert[i]);
     }
 
     // check that there are 3 dimensions and 4 vertices
-    Ensure (face_vertices.size() == num_coord_dimensions);
+    Ensure (face_vertices.size() == coord->get_dim());
     Ensure (face_vertices[0].size() == 4);
     Ensure (face_vertices[1].size() == 4);
     Ensure (face_vertices[2].size() == 4);
@@ -477,7 +482,7 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_point_coord() const
     // number of vertices per cell is always 8; always 3D
     const int num_verts_cell = 8;
     double vert_index;
-    Check (num_coord_dimensions == 3);
+    Check (coord->get_dim() == 3);
 
     // weakly check the validity of num_cells()
     Check (num_cells() > 0);
@@ -493,7 +498,7 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_point_coord() const
 	    RZWedge_Mesh::get_vertices(cell); 
 
 	// check validity of cell vertices vector
-	Check (cell_verts.size() == num_coord_dimensions);
+	Check (cell_verts.size() == coord->get_dim());
 	
 	// loop over all 8 nodes for this cell
 	for (int node = 0; node < num_verts_cell; node++)
@@ -502,10 +507,10 @@ RZWedge_Mesh::vf_double RZWedge_Mesh::get_point_coord() const
 	    vert_index = (cell-1)*num_verts_cell + node;
 
 	    // resize each vertice's return_coord to num dimensions
-	    return_coord[vert_index].resize(num_coord_dimensions);
+	    return_coord[vert_index].resize(coord->get_dim());
 
 	    // re-assign point coordinates to return vector
-	    for (int dim = 0; dim < num_coord_dimensions; dim++)
+	    for (int dim = 0; dim < coord->get_dim(); dim++)
 	    {
 		Check (cell_verts[dim].size() == num_verts_cell);
 		return_coord[vert_index][dim] = cell_verts[dim][node];
