@@ -1,3 +1,7 @@
+2000-04-18  Thomas M. Evans  <tme@lanl.gov>
+
+	* tstSprng.cc: fixed memory error.  Updated to rng-1_3_0.
+
 2000-02-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* ., test: updated to release rng-1_2_0.  This accomodates the
