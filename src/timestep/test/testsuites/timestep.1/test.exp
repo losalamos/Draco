@@ -8,7 +8,7 @@ puts "value of ENV is $ENV"
 
 puts "Running main_$ENV"
 
-set output [exec main_$ENV]
+set output [exec ./main_$ENV]
 
 # Check the output of t1
 
