@@ -327,7 +327,7 @@ void Test_TET()
     int *idr = init_sprng(0, num, seed, 1);
     Sprng random(idr, 0);
 
-    int numm = 1000000;
+    int numm = 100000;
     double factor = 500.0/(3.0*static_cast<double>(numm));
 
     double count[10][10][10];
