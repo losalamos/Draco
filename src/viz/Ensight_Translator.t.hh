@@ -525,6 +525,9 @@ write_vrtx_data(const int                          part_num,
 		const rtt_traits::Viz_Traits<FVF> &vrtx_data,
 		const sf_int                      &vertices)
 {
+    if (vrtx_data.nrows() == 0)
+        return;
+
     int nvertices = vertices.size();
     int ndata     = vrtx_data.ncols(0);
 
@@ -558,7 +561,10 @@ write_cell_data(const int                          part_num,
 		const rtt_traits::Viz_Traits<FVF> &cell_data,
 		const sf2_int                     &cells_of_type)
 {
-    int ndata     = cell_data.ncols(0);
+    if (cell_data.nrows() == 0)
+        return;
+
+    int ndata = cell_data.ncols(0);
 
     std::string err = "Cell data files not open."
 	"  Must call open() before write_part().";

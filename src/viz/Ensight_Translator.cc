@@ -105,7 +105,7 @@ open(const int        icycle,
 
     // >>> Open the vertex data files.
 
-    d_vertex_out.resize(d_cdata_names.size());
+    d_vertex_out.resize(d_vdata_names.size());
     
     // loop over all vertex data fields and write out data for each field
     for (int nvd = 0; nvd < d_vdata_names.size(); nvd++)
