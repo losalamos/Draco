@@ -10,6 +10,8 @@
 #include "../NestMap.t.hh"
 #include <iostream>
 
+#ifdef SDP
+
 using rtt_ds::NestMap;
 using std::cout;
 using std::endl;
@@ -24,8 +26,13 @@ void version(const std::string &progname)
     cout << progname << ": version " << version << endl;
 }
 
+#endif
+
 int main( int argc, char *argv[] )
 {
+
+#ifdef SDP
+
     for (int arg=1; arg < argc; arg++)
     {
 	if (std::string(argv[arg]) == "--version")
@@ -84,6 +91,8 @@ int main( int argc, char *argv[] )
     cout << endl;
 
     cout << "Done testing NestMap class.\n";
+
+#endif
 
     return 0;
 }

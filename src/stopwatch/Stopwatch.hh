@@ -7,6 +7,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
+#ifdef SDP
+
 #ifndef __stopwatch_Stopwatch_hh__
 #define __stopwatch_Stopwatch_hh__
 
@@ -72,6 +74,8 @@ class Stopwatch
 } // end namespace rtt_stopwatch
 
 #endif                          // __stopwatch_Stopwatch_hh__
+
+#endif
 
 //---------------------------------------------------------------------------//
 //                              end of stopwatch/Stopwatch.hh

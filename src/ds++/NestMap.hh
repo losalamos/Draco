@@ -7,6 +7,8 @@
 // @> 
 //---------------------------------------------------------------------------//
 
+#ifdef SDP
+
 #ifndef __ds_NestMap_hh__
 #define __ds_NestMap_hh__
 
@@ -160,6 +162,8 @@ class NestMap
 } // end namespace rtt_ds
 
 #endif                          // __ds_NestMap_hh__
+
+#endif
 
 //---------------------------------------------------------------------------//
 //                              end of NestMap.hh

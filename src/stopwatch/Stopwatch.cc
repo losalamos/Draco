@@ -9,6 +9,8 @@
 
 #include "Stopwatch.hh"
 
+#ifdef SDP
+
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -37,6 +39,8 @@ void Stopwatch::stop(const string& key)
 }
     
 } // end namespace rtt_stopwatch
+
+#endif
 
 //---------------------------------------------------------------------------//
 //                              end of Stopwatch.cc

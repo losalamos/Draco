@@ -9,6 +9,8 @@
 
 #include "NestMap.hh"
 
+#ifdef SDP
+
 #include <cstddef>
 #include <map>
 #include <stack>
@@ -172,6 +174,8 @@ NestMap<Key, T>::iterator NestMap<Key, T>::current()
 { return NestMap<Key, T>::iterator(activeNodes); }
 
 } // end namespace rtt_ds
+
+#endif
 
 //---------------------------------------------------------------------------//
 //                              end of NestMap.t.hh
