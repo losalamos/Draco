@@ -21,8 +21,11 @@ namespace rtt_quadrature
 using std::vector;
 using std::string;
 
+//! The numerical constant PI.
 const double PI = 3.14159265358979323846;
-const double TOL = 1.0e-12;
+
+//! Tol specifies how accurately we compare two double values.
+const double TOL = 1.0e-13;
 
 //===========================================================================//
 /*!
@@ -34,12 +37,19 @@ const double TOL = 1.0e-12;
  * discretization scheme.  It creates a set of quadrature directions
  * (abscissas) and weights associated with a particular quadrature scheme
  * specified by the calling routine.
- * 
+ *
+ */
+
+/*! 
  * \example quadrature/test/tQuadrature.cc
  * 
  * Example of Quadrature usage and testing algorithm.  This test code
  * generates several different quadrature sets and demonstrates access to the 
  * member data and functions.
+ *
+ * A QuadCreator object must be instatiated.  This object is
+ * responsible for returning a Smart Pointer to the new Quadrature
+ * object. 
  *
  */
 // revision history:
@@ -414,14 +424,17 @@ class Q3DLevelSym : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
 
+    //! Returns the number of angles in the current quadrature set.
     int getNumAngles()   const { return numAngles; }
+    //! Prints a short table containing the quadrature directions and weights.
     void display()       const;
+    //! Returns the official name of the current quadrature set.
     string name()        const { return "3D Level Symmetric"; }
+    //! Returns the number of dimensions in the current quadrature set.
     int dimensionality() const { return 3; }
+    //! Returns the order of the SN set.
     int getSnOrder()     const { return snOrder; }
-    /*!
-     * \brief Returns the number of xi levels in the quadrature set.
-     */
+    //! Returns the number of xi levels in the quadrature set.
     int getLevels()      const { return snOrder; }
 
   private:

@@ -28,7 +28,9 @@ namespace rtt_quadrature
  * The generation of Quadrature objects can be implemented as a
  * "Parameterized Factory Method" (Booch).  This class acts as the virtual
  * creator for all quadrature objects.
- *
+ */
+
+/*!
  * \example quadrature/test/tQuadrature.cc
  *
  * Example of Quadrature usage.  In this example the client must spcify the
@@ -71,9 +73,12 @@ class QuadCreator
      * Qid contains a list of identifiers that may be used to specify
      * the construction of a particular type of quadrature set (see
      * QuadCreate).  This list will grow as more types of quadrature are
-     * added to this package.
+     * added to this package. 
      */
-    enum Qid { GaussLeg, LevelSym };
+    enum Qid { 
+	GaussLeg, /*!< 1D Gauss Legendre (arbitrary order). */
+	LevelSym  /*!< 3D Level Symmetric (even order between 2 and 24, inclusive). */
+    };
 
     // CREATORS
 

@@ -15,10 +15,17 @@
 //===========================================================================//
 /*!
  * \page quadrature_overview Overview of the quadrature package
- * \version
- * \author
+ * \version 1_0_0
+ * \author  Kelly Thompson
  * 
- * 
+ * The quadrature package provides services related to the angular
+ * transport discretization.  This package provides many different
+ * quadrature sets (Level Symmetric, Gauss Legendre, etc.) for
+ * problems of varying dimension.
+ *
+ * This package also performs other related services including
+ * integrating angularly dependent variables over the quadrature set
+ * range (psi2phi).
  */
 //===========================================================================//
 /*!
@@ -33,6 +40,7 @@
 
 namespace rtt_quadrature 
 {
+    //! Query package for the release number.
     const std::string release();
 }
 

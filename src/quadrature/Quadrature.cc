@@ -38,8 +38,6 @@ using std::cerr;
 using std::endl;
 using std::setprecision;
 
-const double EPS = 3.0e-14;
-
 // BASE CLASS QUADRATURE MEMBER FUNCTION DEFINITIONS
 
 // The member functions included in the base class can be called for all
@@ -210,7 +208,7 @@ Q1DGaussLeg::Q1DGaussLeg( int n, double norm_ )
 	    pp = n * ( z*p1 - p2 ) / ( z * z - 1.0 );
 	    z1 = z;
 	    z = z1-p1/pp;
-	} while ( fabs( z-z1 ) > EPS );
+	} while ( fabs( z-z1 ) > TOL );
 
 	// fill the vectors
 	mu[ i-1 ] = mu_m - mu_l * z;
