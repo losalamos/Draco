@@ -55,6 +55,13 @@ int main( int argc, char *argv[] )
 
     Mesh_XYZ::guarded_cell_array<double> xgc( spm );
 
+    x = 1.;
+    xgc = x;
+    xf = 0.;
+    xf += xgc;
+    xf = 1.;
+    xf *= xgc;
+
     C4::Finalize();
 
     return 0;

@@ -83,6 +83,9 @@ class Mesh_XYZ : private XYZ_Mapper
     template<class T>
     class cell_array;
 
+    template<class T>
+    class guarded_cell_array;
+
     class fcdsf : private XYZ_Mapper,
                   public xm::Indexable<double,fcdsf> {
 	friend class Mesh_XYZ;
@@ -109,9 +112,41 @@ class Mesh_XYZ : private XYZ_Mapper
         {
           for ( int i = 0; i < ncx; ++i )
             for ( int j = 0; j < ncy; ++j )
-              for ( int k = 0; k < ncz; ++k )
+              for ( int k = zoff; k < zoff + nczp; ++k )
                 for ( int f = 0; f < 6; ++f )
                   data( local_cell_index(i,j,k), f) = x(i,j,k);
+          return *this;
+        }
+
+	fcdsf& operator+=( const guarded_cell_array<double>& x )
+        {
+          for ( int i = 0; i < ncx; ++i )
+            for ( int j = 0; j < ncy; ++j )
+              for ( int k = zoff; k < zoff + nczp; ++k )
+	      {
+                data( local_cell_index(i,j,k), 0) += x(i,j,k) + x(i-1,j,k);
+                data( local_cell_index(i,j,k), 1) += x(i,j,k) + x(i+1,j,k);
+                data( local_cell_index(i,j,k), 2) += x(i,j,k) + x(i,j-1,k);
+                data( local_cell_index(i,j,k), 3) += x(i,j,k) + x(i,j+1,k);
+                data( local_cell_index(i,j,k), 4) += x(i,j,k) + x(i,j,k-1);
+                data( local_cell_index(i,j,k), 5) += x(i,j,k) + x(i,j,k+1);
+              }
+          return *this;
+        }
+
+	fcdsf& operator*=( const guarded_cell_array<double>& x )
+        {
+          for ( int i = 0; i < ncx; ++i )
+            for ( int j = 0; j < ncy; ++j )
+              for ( int k = zoff; k < zoff + nczp; ++k )
+	      {
+                data( local_cell_index(i,j,k), 0) *= x(i,j,k) * x(i-1,j,k);
+                data( local_cell_index(i,j,k), 1) *= x(i,j,k) * x(i+1,j,k);
+                data( local_cell_index(i,j,k), 2) *= x(i,j,k) * x(i,j-1,k);
+                data( local_cell_index(i,j,k), 3) *= x(i,j,k) * x(i,j+1,k);
+                data( local_cell_index(i,j,k), 4) *= x(i,j,k) * x(i,j,k-1);
+                data( local_cell_index(i,j,k), 5) *= x(i,j,k) * x(i,j,k+1);
+              }
           return *this;
         }
 
