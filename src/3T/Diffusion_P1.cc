@@ -435,6 +435,7 @@ void Diffusion_P1<MT>::calculate_Fhat_on_boundaries( const fcdsf& D,
                                                      const fcdsf& Fprime,
                                                      const bssf& f_b )
 {
+#ifdef RMR
     const Mat2<double>& f_b_left   = f_b.face(0);
     const Mat2<double>& f_b_right  = f_b.face(1);
     const Mat2<double>& f_b_front  = f_b.face(2);
@@ -511,6 +512,7 @@ void Diffusion_P1<MT>::calculate_Fhat_on_boundaries( const fcdsf& D,
                       2.*D(c,5)*f_b_top(i,j)/dz(ncz-1) ) /
                     ( alpha_top - 2.*beta_top*D(c,5)/dz(ncz-1) );
             }
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -636,6 +638,7 @@ void Diffusion_P1<MT>::calculate_new_F( const fcdsf& D, const fcdsf& Fprime,
                                         const bssf& f_b, const ccsf& phi,
 					fcdsf& F )
 {
+#ifdef RMR
     F = 0.;                     // should be unnecessary...
 
     {
@@ -724,6 +727,7 @@ void Diffusion_P1<MT>::calculate_new_F( const fcdsf& D, const fcdsf& Fprime,
                                   alpha_top * phi(c) ) / dz(ncz-1) ) /
                     ( alpha_top - 2.* beta_top * D(c,5)/dz(ncz-1) );
             }
+#endif
 }
 
 //---------------------------------------------------------------------------//
