@@ -25,6 +25,7 @@ digraph draco_level {
     veospac    [shape=hexagon, color=green, label="EOSPAC"];
     vgrace     [shape=hexagon, color=green, label="XMGRACE"];
     vspring    [shape=hexagon, color=green, label="SPRING"];
+    vdlopen    [shape=hexagon, color=green, label="dlopen"];
         
     /* level 2 */
     dsxx [shape=box, label="ds++", width=6];
@@ -58,7 +59,7 @@ digraph draco_level {
     meshservice [shape=box, label="meshReaders_Services"];
     
     /* dependencies */
-    {rank=same; level1 stdheaders vlapack vpcg vmpi veospac  vgandolf vgrace vspring};
+    {rank=same; level1 stdheaders vlapack vpcg vmpi veospac  vgandolf vgrace vspring vdlopen};
     {rank=same; level2 dsxx};
     {rank=same; level3 shlib plot lapack traits xm c4 rng units cdi quad meshelement};
     {rank=same; level4 viz timestep cdianal cdieos cdigan pcg meshread};
@@ -91,6 +92,7 @@ digraph draco_level {
     lapack      -> {dsxx};
     lapack      -> {vlapack} [color="green"];
     shlib       -> {dsxx};
+    shlib       -> {vdlopen} [color="green"];
     
     /* level 4 */
     viz         -> {traits};      /* traits: dsxx */
