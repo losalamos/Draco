@@ -160,7 +160,7 @@ class RZWedge_Mesh
     vf_int get_cell_pair() const;
 
     // Required services for transport and source.
-    int next_cell(int cell, int face) const { return layout(cell, face, 1); }
+    inline int next_cell(int, int, const sf_double & = sf_double(3)) const;
     int get_cell(const sf_double &) const;
     double get_db(const sf_double &, const sf_double &, int, int &) const;
     inline sf_double get_normal(int, int) const;
@@ -181,7 +181,6 @@ class RZWedge_Mesh
     // Overloaded operators.
     bool operator==(const RZWedge_Mesh &) const;
     bool operator!=(const RZWedge_Mesh &rhs) const { return !(*this == rhs); }
-
 };
 
 //---------------------------------------------------------------------------//
@@ -280,6 +279,103 @@ double RZWedge_Mesh::dim(const int coordinate, const int cell) const
 //---------------------------------------------------------------------------//
 // RZWEDGE_MESH GENERALIZED MT SERVICES REQUIRED BY IMC
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Calculate the cell across a coarse face.
+
+ * The next_cell function returns the cell across a face.  If only one cell
+ * is across the face the position vector r is ignored.  If there are more
+ * than one cells across a coarse face then the position vector is used to
+ * determine which cell sits across from the position.
+
+ * \param cell current cell index
+ * \param coarse_face coarse face cell index
+ * \param r position on the face
+
+ */
+int RZWedge_Mesh::next_cell(int cell, int coarse_face, const sf_double &r)
+    const
+{
+    using rtt_mc::global::soft_equiv;
+
+    Require (cell > 0 && cell <= layout.num_cells());
+    Require (coarse_face > 0 && coarse_face <= 6);
+    Require (r.size() == 3);
+
+    // declare return cell
+    int cell_across;
+
+    // if there is only one cell across a face, don't check the position,
+    // just return the cell
+    if (layout.num_cells_across(cell, coarse_face) == 1)
+    {
+	cell_across = layout(cell, coarse_face, 1);
+
+	Check (coarse_face == 3 || coarse_face == 4 ? cell_across == cell :
+	       cell_across == layout(cell, coarse_face, 1));
+    }
+
+    // calculate the cell across the face using the position
+    else if (layout.num_cells_across(cell, coarse_face) == 2)
+    {
+	// do a low and high x faces
+	if (coarse_face == 1 || coarse_face == 2)
+	{
+	    // check to make sure that the particle is on the face
+	    Check (soft_equiv(r[0], cell_xz_extents[cell-1][coarse_face-1], 
+			      1.e-6));
+	    
+	    // if the z position is greater than the midpoint than we move
+	    // into the cell 2, else we move into cell 1
+	    if (r[2] > get_z_midpoint(cell))
+		cell_across = layout(cell, coarse_face, 2);
+	    else
+		cell_across = layout(cell, coarse_face, 1);
+
+	    Check (r[2] > get_low_z(cell) || 
+		   soft_equiv(r[2], get_low_z(cell), 1.e-6)); 
+	    Check (r[2] < get_high_z(cell) ||
+		   soft_equiv(r[2], get_high_z(cell), 1.e-6));
+	}
+	
+	// do low and high z faces
+	else if (coarse_face == 5 || coarse_face == 6)
+	{
+	    // check to make sure that the particle is on the face
+	    Check (soft_equiv(r[2], cell_xz_extents[cell-1][coarse_face-3], 
+			      1.e-6));
+
+	    // if the x position is greater than the midpoint than we move in 
+	    // cell index 2, else we move into cell index 1
+	    if (r[0] > get_x_midpoint(cell))
+		cell_across = layout(cell, coarse_face, 2);
+	    else
+		cell_across = layout(cell, coarse_face, 1);
+
+	    Check (r[0] > get_low_x(cell) ||
+		   soft_equiv(r[0], get_low_x(cell), 1.e-6));
+	    Check (r[0] < get_high_x(cell) ||
+		   soft_equiv(r[0], get_high_x(cell), 1.e-6));
+	}
+
+	// check the coarse faces, y shouldn't be here
+	else
+	{
+	    Insist (0, "Layout has two cells across a y-face!");
+	}
+    }
+
+    // there is a problem, RZWedge_Meshes can only have at most 2 cells
+    // across a face
+    else
+    {
+	Insist (0, "Something is wrong with the layout!");
+    }
+
+    Ensure (cell_across == layout(cell, coarse_face, 1) ||
+	    cell_across == layout(cell, coarse_face, 2));
+    
+    return cell_across;
+}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -651,15 +747,26 @@ RZWedge_Mesh::sf_double RZWedge_Mesh::sample_pos_on_face(int cell, int face,
     return position;
 }
 //---------------------------------------------------------------------------//
-// return a sf_int list of a cells neighbors
+/*!
+ * \brief Calculate the neighbors around a cell.
 
+ * \param cell cell index
+ * \return vector containing list of neighboring cells
+ */
 RZWedge_Mesh::sf_int RZWedge_Mesh::get_neighbors(int cell) const
 {
-    sf_int neighbors(layout.num_faces(cell));
-    
-    for (int face = 1; face <= neighbors.size(); face++)
-	neighbors[face-1] = layout(cell, face, 1);
+    Require (layout.num_faces(cell) == 6);
 
+    sf_int neighbors;
+    
+    for (int face = 1; face <= layout.num_faces(cell); face++)
+    {
+	// loop over number of cells across the coarse face and add the cells 
+	// across to the neighbor list
+	for (int i = 1; i <= layout.num_cells_across(cell, face); i++) 
+	    neighbors.push_back(layout(cell, face, i));
+    }
+    Check (neighbors.size() >= 6 && neighbors.size() <= 10);
     return neighbors;
 }
 

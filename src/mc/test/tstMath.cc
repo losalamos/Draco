@@ -12,6 +12,7 @@
 #include "MC_Test.hh"
 #include "../Math.hh"
 #include "../Release.hh"
+#include "c4/global.hh"
 
 #include <iostream>
 #include <vector>

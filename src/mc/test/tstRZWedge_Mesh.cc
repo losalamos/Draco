@@ -29,6 +29,8 @@
 
 using namespace std;
 
+using rtt_mc_test::Parser_RZ;
+using rtt_mc_test::make_RZWedge_Mesh_AMR;
 using rtt_mc::XYZCoord_sys;
 using rtt_mc::AMR_Layout;
 using rtt_dsxx::SP;
@@ -686,28 +688,13 @@ void simple_one_cell_RZWedge()
 
 }
 
-//===========================================================================//
-// Parser
-//---------------------------------------------------------------------------//
-// interface for a 6-cell RZWedge_Mesh (similar to the 6-cell OS_Mesh) 
-class Parser
-{
-  public:
-    // constructor
-    Parser() {/*...*/}
-    
-    // public copy functions for Mesh
-    std::string get_mesh_file() const { return "RZWedge_Input"; }
-};
-
-
 //---------------------------------------------------------------------------//
 // test the RZWedge_Mesh via the RZWedge_Builder
 
 void build_an_RZWedge()
 {
-    // make a builder from parsing the RZWedge input (see Parser class above)
-    SP<Parser> parser(new Parser());
+    // make a builder from parsing the RZWedge input
+    SP<Parser_RZ> parser(new Parser_RZ());
     RZWedge_Builder builder(parser);
 
     // check some of the RZWedge_Builder properties; before build_Mesh, the
@@ -1175,6 +1162,263 @@ void build_an_RZWedge()
 }
 
 //---------------------------------------------------------------------------//
+// Test AMR features of the RZWedge_Mesh
+
+void test_AMR()
+{
+    // make a RZWedge_AMR mesh
+    SP<RZWedge_Mesh> mesh = make_RZWedge_Mesh_AMR(10);
+    if (mesh->num_cells() != 12) ITFAILS;
+
+    // check neighbors function
+    vector<int> nbors;
+
+    // cell 1
+    {
+	nbors.resize(7);
+	nbors[0] = 1;
+	nbors[1] = 7;
+	nbors[2] = 1;
+	nbors[3] = 1;
+	nbors[4] = 1;
+	nbors[5] = 2;
+	nbors[6] = 4;
+
+	if (mesh->get_neighbors(1) != nbors) ITFAILS;
+    }
+
+    // cell 3
+    {
+	nbors.resize(6);
+	nbors[0] = 3;
+	nbors[1] = 5;
+	nbors[2] = 3;
+	nbors[3] = 3;
+	nbors[4] = 2;
+	nbors[5] = 6;
+
+	if (mesh->get_neighbors(3) != nbors) ITFAILS;
+    }
+
+    // cell 6
+    {
+	nbors.resize(8);
+	nbors[0] = 6;
+	nbors[1] = 9;
+	nbors[2] = 10;
+	nbors[3] = 6;
+	nbors[4] = 6;
+	nbors[5] = 3;
+	nbors[6] = 5;
+	nbors[7] = 0;
+
+	if (mesh->get_neighbors(6) != nbors) ITFAILS;
+    }
+
+    // cell 7
+    {
+	nbors.resize(6);
+	nbors[0] = 1;
+	nbors[1] = 0;
+	nbors[2] = 7;
+	nbors[3] = 7;
+	nbors[4] = 7;
+	nbors[5] = 8;
+
+	if (mesh->get_neighbors(7) != nbors) ITFAILS;
+    }
+
+    // cell 8
+    {
+	nbors.resize(8);
+	nbors[0] = 4;
+	nbors[1] = 5;
+	nbors[2] = 0;
+	nbors[3] = 8;
+	nbors[4] = 8;
+	nbors[5] = 7;
+	nbors[6] = 9;
+	nbors[7] = 11;
+
+	if (mesh->get_neighbors(8) != nbors) ITFAILS;
+    }
+
+    // cell 11
+    {
+	nbors.resize(6);
+	nbors[0] = 9;
+	nbors[1] = 0;
+	nbors[2] = 11;
+	nbors[3] = 11;
+	nbors[4] = 8;
+	nbors[5] = 12;
+
+	if (mesh->get_neighbors(11) != nbors) ITFAILS;
+    }
+
+    // check next_cell function
+    
+    // position vector (function calls without r checked above)
+    vector<double> r(3);
+
+    // cell 1
+    {
+	if (mesh->next_cell(1, 1, r) != 1) ITFAILS;
+	if (mesh->next_cell(1, 2, r) != 7) ITFAILS;
+	if (mesh->next_cell(1, 3, r) != 1) ITFAILS;
+	if (mesh->next_cell(1, 4, r) != 1) ITFAILS;
+	if (mesh->next_cell(1, 5, r) != 1) ITFAILS;
+
+	r[0] = 0.501;
+	r[2] = 1.0;
+	if (mesh->next_cell(1, 6, r) != 4) ITFAILS;
+
+	r[0] = 0.499;
+	if (mesh->next_cell(1, 6, r) != 2) ITFAILS;
+
+	r[0] = 0.500;
+	if (mesh->next_cell(1, 6, r) != 2) ITFAILS;
+
+	r[0] = 1.0000001;  // valid to 6 digits 
+	if (mesh->next_cell(1, 6, r) != 4) ITFAILS;
+	
+	r[0] = -0.0000001; // valid to 6 digits
+	if (mesh->next_cell(1, 6, r) != 2) ITFAILS;
+    }
+
+    // cell 3
+    {
+	// only 1 cell across faces; r is not used
+	if (mesh->next_cell(3, 1, r) != 3) ITFAILS;
+	if (mesh->next_cell(3, 2, r) != 5) ITFAILS;
+	if (mesh->next_cell(3, 3, r) != 3) ITFAILS;
+	if (mesh->next_cell(3, 4, r) != 3) ITFAILS;
+	if (mesh->next_cell(3, 5, r) != 2) ITFAILS;
+	if (mesh->next_cell(3, 6, r) != 6) ITFAILS;
+    }
+
+    // cell 6
+    {
+	if (mesh->next_cell(6, 1, r) != 6)  ITFAILS;
+
+	r[0] = 1.0000001; // must be on surface within 1.e-6
+	r[2] = 2.499;
+	if (mesh->next_cell(6, 2, r) != 9)  ITFAILS;
+
+	r[2] = 2.501;
+	if (mesh->next_cell(6, 2, r) != 10) ITFAILS;
+
+	r[2] = 2.500;
+	if (mesh->next_cell(6, 2, r) != 9)  ITFAILS;
+
+	r[2] = 3.000001;
+	if (mesh->next_cell(6, 2, r) != 10) ITFAILS;
+
+	if (mesh->next_cell(6, 3, r) != 6)  ITFAILS;
+	if (mesh->next_cell(6, 4, r) != 6)  ITFAILS;
+
+	r[0] = 0.499;
+	r[2] = 2.0 - .0000001;
+	if (mesh->next_cell(6, 5, r) != 3)  ITFAILS;
+	
+	r[0] = -0.0000001;
+	if (mesh->next_cell(6, 5, r) != 3)  ITFAILS;
+	
+	r[0] = .50001;
+	if (mesh->next_cell(6, 5, r) != 5)  ITFAILS;
+
+	r[0] = .5000;
+	if (mesh->next_cell(6, 5, r) != 3)  ITFAILS;
+	
+	if (mesh->next_cell(6, 6, r) != 0)  ITFAILS;
+    }
+
+    // cell 8
+    {
+	r[0] = 1.0 - 0.0000001; // must be on surface within 1.e-6
+	r[2] = 1.499;
+	if (mesh->next_cell(8, 1, r) != 4)  ITFAILS;
+
+	r[2] = 1.501;
+	if (mesh->next_cell(8, 1, r) != 5)  ITFAILS;
+
+	r[2] = 2.0000001;
+	if (mesh->next_cell(8, 1, r) != 5)  ITFAILS;
+
+	if (mesh->next_cell(8, 2, r) != 0)  ITFAILS;
+	if (mesh->next_cell(8, 3, r) != 8)  ITFAILS;
+	if (mesh->next_cell(8, 4, r) != 8)  ITFAILS;
+	if (mesh->next_cell(8, 5, r) != 7)  ITFAILS;
+
+	r[0] = 1.499;
+	r[2] = 2.0000001;
+	if (mesh->next_cell(8, 6, r) != 9)  ITFAILS;
+	
+	r[0] = 1.0 - 0.0000001;
+	if (mesh->next_cell(8, 6, r) != 9)  ITFAILS;
+	
+	r[0] = 1.50001;
+	if (mesh->next_cell(8, 6, r) != 11) ITFAILS;
+
+	r[0] = 1.5000;
+	if (mesh->next_cell(8, 6, r) != 9)  ITFAILS;
+    }
+
+    // check surface cell functions
+    vector<int> sc;
+
+    // high r
+    {
+	sc.resize(4);
+	sc[0] = 7;
+	sc[1] = 8;
+	sc[2] = 11;
+	sc[3] = 12;
+
+	if (mesh->get_surcells("hix") != sc) ITFAILS;
+    }
+
+    // low z
+    {
+	sc.resize(2);
+	sc[0] = 1;
+	sc[1] = 7;
+
+	if (mesh->get_surcells("loz") != sc) ITFAILS;
+    }
+
+    // high z
+    {
+	sc.resize(3);
+	sc[0] = 6;
+	sc[1] = 10;
+	sc[2] = 12;
+
+	if (mesh->get_surcells("hiz") != sc) ITFAILS;
+    }
+
+    // check in cell function
+    
+    // cell 5
+    {
+	r[0] = .5 - 1.e-13;
+	r[1] = 0.0;
+	r[2] = 1.5;
+
+	if (!mesh->in_cell(5, r)) ITFAILS;
+    }
+
+    // cell 8
+    {
+	r[0] = 2.0;
+	r[1] = 0.0;
+	r[2] = 2.0 + 1.e-13;
+	
+	if (!mesh->in_cell(8, r)) ITFAILS;
+    }
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -1203,6 +1447,9 @@ int main(int argc, char *argv[])
 
 	// test the RZWedge_Mesh Builder
 	build_an_RZWedge();
+
+	// test AMR features of the mesh
+	test_AMR();
     }
     catch (rtt_dsxx::assertion &ass)
     {

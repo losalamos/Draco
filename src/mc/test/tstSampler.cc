@@ -13,6 +13,7 @@
 #include "../Sampler.hh"
 #include "../Release.hh"
 #include "rng/Rnd_Control.hh"
+#include "c4/global.hh"
 
 using namespace std;
 using rtt_rng::Rnd_Control;

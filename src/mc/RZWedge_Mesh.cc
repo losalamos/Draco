@@ -123,24 +123,35 @@ void RZWedge_Mesh::calc_wedge_angle_data(const double theta_degrees)
  */
 bool RZWedge_Mesh::in_cell(int cell, const sf_double &r) const
 {
+    using rtt_mc::global::soft_equiv;
+
     Require (r.size() == 3);
     Require (cell > 0 && cell <= layout.num_cells());
 
     // first check x dimension
-    if (r[0] < cell_xz_extents[cell-1][0] || 
-	r[0] > cell_xz_extents[cell-1][1])
+    if ((r[0] < cell_xz_extents[cell-1][0] &&
+	 !soft_equiv(r[0], cell_xz_extents[cell-1][0]))
+	|| 
+	(r[0] > cell_xz_extents[cell-1][1] &&
+	 !soft_equiv(r[0], cell_xz_extents[cell-1][1])))
 	return false;
 
     // check z dimension
-    if (r[2] < cell_xz_extents[cell-1][2] ||
-	r[2] > cell_xz_extents[cell-1][3])
+    if ((r[2] < cell_xz_extents[cell-1][2] && 
+	 !soft_equiv(r[2], cell_xz_extents[cell-1][2]))
+	||
+	(r[2] > cell_xz_extents[cell-1][3] &&
+	 !soft_equiv(r[2], cell_xz_extents[cell-1][3])))
 	return false;
 
     // check y dimension (x cannot be negative)
-    if (r[1] < -(r[0] * tan_half_theta) ||
-	r[1] > (r[0] * tan_half_theta))
+    if ((r[1] < -(r[0] * tan_half_theta) &&
+	 !soft_equiv(r[1], -(r[0] * tan_half_theta)))
+	||
+	(r[1] > (r[0] * tan_half_theta) &&
+	 !soft_equiv(r[1], (r[0] * tan_half_theta))))
 	return false;
-
+    
     return true;
 }
 
@@ -164,7 +175,7 @@ double RZWedge_Mesh::get_db(const sf_double &r, const sf_double &omega,
 
     Require (r.size() == 3);
     Require (omega.size() == 3);
-    Require (global::soft_equiv(dot(omega,omega), 1.0, 1.0e-8));
+    Require (global::soft_equiv(dot(omega,omega), 1.0, 1.0e-6));
 
     // set up 6 dists-to-bndry, initialize to huge value
     // -- always 6 faces in an RZWedge mesh cell. 

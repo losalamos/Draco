@@ -12,10 +12,19 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-${test_alltarget}: ${testdeps}
+thistestdep := libMC_Test${libsuffix}
+thistestlib := -L. -lMC_Test
+thistestlib_dep := MC_Test.o DD_Mesh.o
+
+${test_alltarget}: ${thistestdep} ${testdeps}
 
 %: %.o
-	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${LD} ${LDFLAGS} -o $@ ${thistestlib_dep} ${testlibs}
+
+objs += ${thistestdep}
 
 ###############################################################################
 #			 end of draco/src/mc/test Makefile.target

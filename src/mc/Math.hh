@@ -48,7 +48,7 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
     using std::fabs;
     bool passed = false;
 
-    if (fabs(value - reference) <= precision * fabs(reference))
+    if (fabs(value - reference) < precision * fabs(reference))
 	passed = true;
     else
 	passed = false;
