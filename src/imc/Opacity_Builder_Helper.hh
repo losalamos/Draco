@@ -41,6 +41,11 @@ namespace rtt_imc
  * Mat_State_Builder base class because it is easier to specialize on FT
  * (Frequency Type) with a helper class.
  */
+/*!
+ * \example imc/test/tstOpacity_Builder_Helper.cc
+ *
+ * Test of Opacity_Builder_Helper class.
+ */
 // revision history:
 // -----------------
 // 0) (Fri Aug  8 16:18:04 2003) Thomas M. Evans: original

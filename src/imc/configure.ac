@@ -27,6 +27,7 @@ AC_NEEDS_LIBS_TEST(cdi_analytic)
 # testing setup
 AC_RUNTESTS(tstFrequency \
             tstOpacity \
+            tstOpacity_Builder_Helper \
 	    tstFlat_Mat_State_Builder \
             tstCDI_Mat_State_Builder \
             tstTally \

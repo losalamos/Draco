@@ -10,8 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Frequency_hh__
-#define __imc_Frequency_hh__
+#ifndef rtt_imc_Frequency_hh
+#define rtt_imc_Frequency_hh
 
 #include "ds++/Assert.hh"
 #include <vector>
@@ -195,7 +195,7 @@ class Gray_Frequency
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Frequency_hh__
+#endif                          // rtt_imc_Frequency_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Frequency.hh

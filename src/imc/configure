@@ -1573,6 +1573,7 @@ fi;
 # testing setup
 	test_alltarget="$test_alltarget tstFrequency \
             tstOpacity \
+            tstOpacity_Builder_Helper \
 	    tstFlat_Mat_State_Builder \
             tstCDI_Mat_State_Builder \
             tstTally \

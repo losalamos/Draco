@@ -3,14 +3,15 @@
  * \file   imc/Mat_State.hh
  * \author Thomas M. Evans
  * \date   Mon Mar  9 16:06:28 1998
- * \brief  Mat_State class header file
+ * \brief  Mat_State class header file.
+ * \note   Copyright © 2003 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __imc_Mat_State_hh__
-#define __imc_Mat_State_hh__
+#ifndef rtt_imc_Mat_State_hh
+#define rtt_imc_Mat_State_hh
 
 #include "ds++/Assert.hh"
 #include <iostream>
@@ -39,7 +40,6 @@ namespace rtt_imc
 // -----------------
 // original
 // 20-MAR-2001 : cleaned up source code files with documentation
-// 
 // 
 //===========================================================================//
 
@@ -132,7 +132,7 @@ std::ostream& operator<<(std::ostream &output, const Mat_State<MT> &object)
 
 } // end namespace rtt_imc
 
-#endif                          // __imc_Mat_State_hh__
+#endif                          // rtt_imc_Mat_State_hh
 
 //---------------------------------------------------------------------------//
 //                              end of imc/Mat_State.hh
