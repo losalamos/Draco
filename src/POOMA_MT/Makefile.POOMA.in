@@ -1,6 +1,13 @@
+###############################################################################
+# src/POOMA_MT/Makefile.POOMA.in
+# Randy M. Roberts
+# $Id$
+###############################################################################
+# @> General Makefile.POOMA.in for POOMA_MT package
+###############################################################################
+
+# Configuration dependent variables.
+
 POOMA_ROOT	=	@POOMA_ROOT@
 POOMA_ARCH	=	@POOMA_ARCH@
 
-RESTRICTFLAGS	=	--restrict
-# CPPFLAGS += ${RESTRICTFLAGS} -I${POOMA_ROOT}/src -I${POOMA_ROOT}/src/stlport
-CPPFLAGS += ${RESTRICTFLAGS} -I${POOMA_ROOT}/src

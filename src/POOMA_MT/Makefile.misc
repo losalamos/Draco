@@ -1,3 +1,11 @@
+###############################################################################
+# src/POOMA_MT/Makefile.misc
+# Randy M. Roberts
+# $Id$
+###############################################################################
+# @> POOMA_MT specific makefile modifications.
+###############################################################################
+
 ##---------------------------------------------------------------------------##
 ## clean rules
 ## Do not include the dependfiles when doing clean-like stuff.
@@ -9,11 +17,13 @@ ifneq (,$(filter uninstall dvi distclean mostlyclean clean maintainer-clean, \
 
 else
 
+# include configuration dependent variables, e.g. POOMA_ROOT and POOMA_ARCH
+
 include Makefile.POOMA
 
-Makefile: POOMA_MT/PoomaDefines.h
-
 endif
+
+VERSIONFILE = ${POOMA_ROOT}/lib/${POOMA_ARCH}/PoomaVersions.h
 
 Makefile.POOMA: ${top_srcdir}/Makefile.POOMA.in
 	CONFIG_FILES=Makefile.POOMA:Makefile.POOMA.in \
@@ -21,8 +31,9 @@ Makefile.POOMA: ${top_srcdir}/Makefile.POOMA.in
 
 ${dependfiles}: POOMA_MT/PoomaDefines.h POOMA_MT/config.h
 
-POOMA_MT/PoomaDefines.h: ${POOMA_ROOT}/lib/${POOMA_ARCH}/PoomaVersions.h
-	${top_srcdir}/stripPoomaDefines.sh ${POOMA_ROOT} ${POOMA_ARCH} >./tmp0
+POOMA_MT/PoomaDefines.h: ${VERSIONFILE} ${top_srcdir}/stripPoomaDefines.sh
+	${top_srcdir}/stripPoomaDefines.sh ${POOMA_ROOT} ${POOMA_ARCH} >./tmp0 \
+              || exit $$?
 	@if cmp -s ./tmp0 $@ ;\
 	then \
 	   echo "PoomaDefines.h unchanged" ;\
@@ -32,6 +43,8 @@ POOMA_MT/PoomaDefines.h: ${POOMA_ROOT}/lib/${POOMA_ARCH}/PoomaVersions.h
 	   cp ./tmp0 $@ ;\
 	fi
 	rm ./tmp0
+
+${VERSIONFILE}:
 
 clean: forced-MakfilePoomaClean
 mostlyclean: clean forced-MakfilePoomaMostlyClean

@@ -10,6 +10,8 @@
 #ifndef __POOMA_MT_config_h__
 #define __POOMA_MT_config_h__
 
+#undef POOMA_MT_POOMA_INCLUDE
+
 #include "./PoomaDefines.h"
 
 #endif                          /* __POOMA_MT_config_h__ */

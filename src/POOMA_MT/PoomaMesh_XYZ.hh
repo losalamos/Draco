@@ -17,17 +17,8 @@
 #include <POOMA_MT/config.h>
 
 // POOMA headers
-#include "Index/Index.h"
-#include "Index/NDIndex.h"
-#include "AppTypes/Vektor.h"
-#include "FieldLayout/CenteredFieldLayout.h"
-#include "Meshes/UniformCartesian.h"
-#include "Meshes/Cartesian.h"
-#include "Meshes/Centering.h"
-#include "Field/Field.h"
-#include "Field/LField.h"
-#include "Field/Assign.h"
-#include "Field/GuardCellSizes.h"
+
+#include "PoomaIncludes.hh"
 
 // XTM headers
 #include "VektorHelper.hh"
