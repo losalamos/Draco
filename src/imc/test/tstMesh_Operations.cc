@@ -89,7 +89,9 @@ void T4_slope_test()
 
     // build a Mat_State and Opacity
     Flat_Mat_State_Builder<OS_Mesh,Gray> ob(interface);
-    SP<Mat_State<OS_Mesh> > mat = ob.build_Mat_State(mesh);
+    ob.build_mat_classes(mesh);
+
+    SP<Mat_State<OS_Mesh> > mat = ob.get_Mat_State();
 
     // Build a Comm_Patterns
     SP<Comm_Patterns> comm_patterns(new Comm_Patterns());

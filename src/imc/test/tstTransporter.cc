@@ -129,9 +129,11 @@ void rep_transporter_run_test()
 
     // build the Mat_State
     Flat_Mat_State_Builder<MT,FT> ob(interface);
-    SP<FT>              frequency = ob.build_Frequency();
-    SP<Mat_State<MT> >  mat       = ob.build_Mat_State(mesh);
-    SP<Opacity<MT,FT> > opacity   = ob.build_Opacity(mesh, frequency, mat);
+    ob.build_mat_classes(mesh);
+
+    SP<FT>              frequency = ob.get_Frequency();
+    SP<Mat_State<MT> >  mat       = ob.get_Mat_State();
+    SP<Opacity<MT,FT> > opacity   = ob.get_Opacity();
 
     // build a Rep_Source Builder
     Rep_Source_Builder<MT,FT,PT> source_builder(interface, mesh, topology);

@@ -13,6 +13,10 @@
 #define __imc_CDI_Mat_State_Builder_hh__
 
 #include "Mat_State_Builder.hh"
+#include "Frequency.hh"
+#include "Opacity.hh"
+#include "Mat_State.hh"
+#include "Diffusion_Opacity.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -20,20 +24,18 @@
 
 namespace rtt_imc
 {
- 
-// Forward declarations.
-class Gray_Frequency;
-class Multigroup_Frequency;
 
 //===========================================================================//
 /*!
  * \class CDI_Mat_State_Builder
  *
- * This class builds instances of rtt_imc::Opacity and rtt_imc::Mat_State.
- * It receives data necessary to build CDI objects--from the rtt_cdi
- * package--that read data from files or build analytic data.  It receives an
- * Interface Type (IT) in its constructor.  The IT must be a derived class of
- * rtt_imc::Interface and rtt_imc::CDI_Data_Interface.
+ * This class builds instances of rtt_imc::Gray_Frequency,
+ * rtt_imc::Multigroup_Frequency, rtt_imc::Opacity,
+ * rtt_imc::Diffusion_Opacity, and rtt_imc::Mat_State.  It receives data
+ * necessary to build CDI objects--from the rtt_cdi package--that read data
+ * from files or build analytic data.  It receives an Interface Type (IT) in
+ * its constructor.  The IT must be a derived class of rtt_imc::Interface and
+ * rtt_imc::CDI_Data_Interface.
  *
  * This builder uses the rtt_cdi package to build cell-centered material and
  * opacity data.  As such, it requires material IDs, model descriptions, and
@@ -46,7 +48,7 @@ class Multigroup_Frequency;
  * (rtt_cdi) to define material data
  *
  * \sa rtt_imc::Interface, rtt_imc::CDI_Data_Interface.  See
- * tstMat_Data_Builder for examples of usage.
+ * imc/test/tstMat_Data_Builder.cc for examples of usage.
  *
  */
 // revision history:
@@ -80,6 +82,7 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
     typedef rtt_dsxx::SP<Mat_State<MT> >              SP_Mat_State;
     typedef rtt_dsxx::SP<Opacity<MT,Gray_Frequency> > SP_Opacity;
     typedef rtt_dsxx::SP<Gray_Frequency>              SP_Frequency;
+    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >      SP_Diff_Opacity;
     typedef rtt_dsxx::SP<rtt_cdi::CDI>                SP_CDI;
     typedef std::vector<SP_CDI>                       sf_CDI;
     typedef std::vector<double>                       sf_double;
@@ -88,10 +91,12 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
     typedef std::vector<rtt_cdi::Model>               sf_Opacity_Model;
 
   private:
-    // Material CDI objects.UNNAMED 
+    // >>> DATA
+
+    // Material CDI objects.
     sf_CDI    material_cdi;
     
-    // Map of material_cdi to cells
+    // Map of material_cdi to cells.
     sf_int    cdi_cell_map;
 
     // Cell-centered densities in g/cc.
@@ -107,7 +112,25 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
     double    delta_t;
 
   private:
+    // >>> BUILT OBJECTS
+    
+    // Built frequency.
+    SP_Frequency gray;
+
+    // Built Mat_State.
+    SP_Mat_State mat_state;
+
+    // Built Opacity.
+    SP_Opacity opacity;
+    
+    // Built Diffusion_Opacity.
+    SP_Diff_Opacity diff_opacity;
+
+  private:
     // >>> IMPLEMENTATION FUNCTIONS
+
+    // Build the Opacity.
+    void build_Opacity(SP_Mesh);
 
     // Determine the models and reactions for gray data.
     void determine_gray_models(sf_Opacity_Model &, sf_Opacity_Model &);
@@ -119,14 +142,20 @@ class CDI_Mat_State_Builder<MT,Gray_Frequency>
 
     // >>> PUBLIC INTERFACE
 
-    // Build the Frequency.
-    SP_Frequency build_Frequency();
+    // Build frequency, material state, and opacity.
+    void build_mat_classes(SP_Mesh);
 
-    // Build the Mat_State.
-    SP_Mat_State build_Mat_State(SP_Mesh);
+    //! Get the frequency.
+    SP_Frequency get_Frequency() const { return gray; }
+    
+    //! Get the mat state.
+    SP_Mat_State get_Mat_State() const { return mat_state; }
 
-    // Build the Opacity.
-    SP_Opacity build_Opacity(SP_Mesh, SP_Frequency, SP_Mat_State);
+    //! Get the opacity
+    SP_Opacity get_Opacity() const { return opacity; }
+
+    //! Get the diffusion opacity.
+    SP_Diff_Opacity get_Diffusion_Opacity() const { return diff_opacity; }
 };
 
 //---------------------------------------------------------------------------//
@@ -167,6 +196,7 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::CDI_Mat_State_Builder(
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);
     Ensure (density.size() == temperature.size());
     Ensure (density.size() == cdi_cell_map.size());
+    Ensure (material_cdi.size() > 0);
 }
 
 //===========================================================================//
@@ -187,6 +217,7 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
     typedef rtt_dsxx::SP<Mat_State<MT> >                    SP_Mat_State;
     typedef rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> > SP_Opacity;
     typedef rtt_dsxx::SP<Multigroup_Frequency>              SP_Frequency;
+    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >            SP_Diff_Opacity;
     typedef rtt_dsxx::SP<rtt_cdi::CDI>                      SP_CDI;
     typedef std::vector<SP_CDI>                             sf_CDI;
     typedef std::vector<double>                             sf_double;
@@ -214,14 +245,31 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
     double    delta_t;
 
   private:
-    // >>> IMPLEMENTATION FUNCTIONS
+    // >>> BUILT OBJECTS
+    
+    // Built frequency.
+    SP_Frequency mg;
+
+    // Built Mat_State.
+    SP_Mat_State mat_state;
+
+    // Built Opacity.
+    SP_Opacity opacity;
+    
+    // Built Diffusion_Opacity.
+    SP_Diff_Opacity diff_opacity;
+
+  private:
+    // >>> IMPLEMENTATION FUNCTIONS;
+
+    // Build the Opacity.
+    void build_Opacity(SP_Mesh);
 
     // Determine the models and reactions for multigroup data.
     void determine_mg_models(sf_Opacity_Model &, sf_Opacity_Model &);
 
     // Build the opacities.
-    void build_opacities(SP_Mat_State,
-			 typename MT::template CCSF<sf_double> &,
+    void build_opacities(typename MT::template CCSF<sf_double> &,
 			 typename MT::template CCSF<sf_double> &);
 
   public:
@@ -231,14 +279,20 @@ class CDI_Mat_State_Builder<MT, Multigroup_Frequency>
 
     // >>> PUBLIC INTERFACE
 
-    // Build the Frequency.
-    SP_Frequency build_Frequency();
+    // Build frequency, material state, and opacity.
+    void build_mat_classes(SP_Mesh);
 
-    // Build the Mat_State.
-    SP_Mat_State build_Mat_State(SP_Mesh);
+    //! Get the frequency.
+    SP_Frequency get_Frequency() const { return mg; }
+    
+    //! Get the mat state.
+    SP_Mat_State get_Mat_State() const { return mat_state; }
 
-    // Build the Opacity.
-    SP_Opacity build_Opacity(SP_Mesh, SP_Frequency, SP_Mat_State);
+    //! Get the opacity
+    SP_Opacity get_Opacity() const { return opacity; }
+
+    //! Get the diffusion opacity.
+    SP_Diff_Opacity get_Diffusion_Opacity() const { return diff_opacity; }
 };
 
 //---------------------------------------------------------------------------//
@@ -279,6 +333,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::CDI_Mat_State_Builder(
     Ensure (implicitness >= 0.0 && implicitness <= 1.0);
     Ensure (density.size() == temperature.size());
     Ensure (density.size() == cdi_cell_map.size());
+    Require (material_cdi.size() > 0);
 }
 
 } // end namespace rtt_imc

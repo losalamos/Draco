@@ -14,6 +14,10 @@
 
 #include "Mat_State_Builder.hh"
 #include "Flat_Data_Container.hh"
+#include "Mat_State.hh"
+#include "Opacity.hh"
+#include "Diffusion_Opacity.hh"
+#include "Frequency.hh"
 #include "Global.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -21,11 +25,6 @@
 
 namespace rtt_imc
 {
- 
-// Forward declarations.
-class Flat_Data_Container;
-class Gray_Frequency;
-class Multigroup_Frequency;
  
 //===========================================================================//
 /*!
@@ -51,8 +50,7 @@ class Multigroup_Frequency;
 //===========================================================================//
 
 template<class MT, class FT>
-class Flat_Mat_State_Builder
-    : public Mat_State_Builder<MT,FT>
+class Flat_Mat_State_Builder : public Mat_State_Builder<MT,FT>
 {
   public:
     // Useful typedefs.
@@ -60,6 +58,7 @@ class Flat_Mat_State_Builder
     typedef rtt_dsxx::SP<Mat_State<MT> >                       SP_Mat_State;
     typedef rtt_dsxx::SP<FT>                                   SP_Frequency;
     typedef rtt_dsxx::SP<Opacity<MT,FT> >                      SP_Opacity;
+    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> >               SP_Diff_Opacity;
     typedef std::vector<double>                                sf_double;
     typedef std::vector<sf_double>                             vf_double;
     typedef rtt_imc::global::Type_Switch<Gray_Frequency>       Switch_Gray;
@@ -88,6 +87,27 @@ class Flat_Mat_State_Builder
     double       delta_t;
 
   private:
+    // >>> BUILT OBJECTS
+    
+    // Built frequency.
+    SP_Frequency frequency;
+
+    // Built Mat_State.
+    SP_Mat_State mat_state;
+
+    // Built Opacity.
+    SP_Opacity opacity;
+    
+    // Built Diffusion_Opacity.
+    SP_Diff_Opacity diff_opacity;
+
+  private:
+    // >>> IMPLEMENTATION
+
+    // Build the Mat_State.
+    void build_Mat_State(SP_Mesh);
+
+  private:
     // >>> PARTIAL SPECIALIZATIONS ON FREQUENCY TYPE
 
     // Build a Gray_Frequency.
@@ -100,11 +120,11 @@ class Flat_Mat_State_Builder
 
     // Build an Opacity<MT,Gray_Frequency>
     template<class Stop_Explicit_Instantiation>
-    SP_Gray_Opacity build_opacity(Switch_Gray, SP_Mesh, SP_Gray, SP_Mat_State);
+    SP_Gray_Opacity build_opacity(Switch_Gray, SP_Mesh);
 
     // Build an Opacity<MT,Multigroup_Frequency>
     template<class Stop_Explicit_Instantiation>
-    SP_MG_Opacity build_opacity(Switch_MG, SP_Mesh, SP_MG, SP_Mat_State);
+    SP_MG_Opacity build_opacity(Switch_MG, SP_Mesh);
 
   public:
     // Constructor.
@@ -113,14 +133,20 @@ class Flat_Mat_State_Builder
 
     // >>> PUBLIC INTERFACE
 
-    // Build the frequency.
-    SP_Frequency build_Frequency();
+    // Build frequency, material state, and opacity.
+    void build_mat_classes(SP_Mesh);
 
-    // Build the Mat_State.
-    SP_Mat_State build_Mat_State(SP_Mesh);
+    //! Get the frequency.
+    SP_Frequency get_Frequency() const { return frequency; }
+    
+    //! Get the mat state.
+    SP_Mat_State get_Mat_State() const { return mat_state; }
 
-    // Build the Opacity.
-    SP_Opacity build_Opacity(SP_Mesh, SP_Frequency, SP_Mat_State);
+    //! Get the opacity
+    SP_Opacity get_Opacity() const { return opacity; }
+
+    //! Get the diffusion opacity.
+    SP_Diff_Opacity get_Diffusion_Opacity() const { return diff_opacity; }
 };
 
 //---------------------------------------------------------------------------//

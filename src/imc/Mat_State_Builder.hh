@@ -20,6 +20,7 @@ namespace rtt_imc
 // Forward declarations
 template<class MT> class Mat_State;
 template<class MT, class FT> class Opacity;
+template<class MT> class Diffusion_Opacity;
 
 //===========================================================================//
 /*!
@@ -40,12 +41,22 @@ template<class MT, class FT> class Opacity;
  *
  * The class is templated on mesh type.
  *
- * The Mat_State_Builder provides a simple interface to build two objects:
+ * The Mat_State_Builder provides a simple interface to build the following
+ * objects: 
  *
- * \arg \b build_Mat_State() builds a Mat_State object
- * \arg \b build_Frequency() builds a Frequency object
- * \arg \b build_Opacity() builds an Opacity object
- * \arg \b build_Frequency_Operations() builds a Frequency_Operations object
+ * \arg \b rtt_imc::Gray_Frequency gray frequency group layout
+ * \arg \b rtt_imc::Multigroup_Frequency multigroup frequency group layout
+ * \arg \b rtt_imc::Mat_State material state data
+ * \arg \b rtt_imc::Opacity opacities used by transport
+ * \arg \b rtt_imc::Diffusion_Opacity opacities used by diffusion
+ *
+ * The objects are built by a call to \p build_mat_classes(). The built
+ * objects can be retrieved from the builder by calling
+ * - get_Frequency()
+ * - get_Mat_State()
+ * - get_Opacity()
+ * - get_Diffusion_Opacity()
+ * .
  *
  * The Mat_State must be built first because the Mat_State object is an
  * argument to build_Opacity().  The argument is required for efficiency's
@@ -64,6 +75,7 @@ template<class MT, class FT> class Opacity;
 // revision history:
 // -----------------
 // 0) original
+// 1) 20-FEB-2003 : updated public interface
 // 
 //===========================================================================//
 
@@ -72,10 +84,11 @@ class Mat_State_Builder
 {
   public:
     // Useful typedefs.
-    typedef rtt_dsxx::SP<MT>               SP_Mesh;
-    typedef rtt_dsxx::SP<Mat_State<MT> >   SP_Mat_State;
-    typedef rtt_dsxx::SP<Opacity<MT,FT> >  SP_Opacity;
-    typedef rtt_dsxx::SP<FT>               SP_Frequency;
+    typedef rtt_dsxx::SP<MT>                     SP_Mesh;
+    typedef rtt_dsxx::SP<Mat_State<MT> >         SP_Mat_State;
+    typedef rtt_dsxx::SP<Opacity<MT,FT> >        SP_Opacity;
+    typedef rtt_dsxx::SP<Diffusion_Opacity<MT> > SP_Diffusion_Opacity;
+    typedef rtt_dsxx::SP<FT>                     SP_Frequency;
     
   public:
     //! Constructor.
@@ -84,16 +97,22 @@ class Mat_State_Builder
     //! Virtual destructor.
     virtual ~Mat_State_Builder() {/* need a destructor for inheritance */}
 
-    // >>> PUBLIC INTERFACE
+    // >>> BUILD INTERFACE
 
-    //! Build a frequency definition.
-    virtual SP_Frequency build_Frequency() = 0;
+    //! Build frequency, material state, and opacity.
+    virtual void build_mat_classes(SP_Mesh) = 0;
 
-    //! Build a material state.
-    virtual SP_Mat_State build_Mat_State(SP_Mesh) = 0;
+    //! Get the frequency.
+    virtual SP_Frequency get_Frequency() const = 0;
+    
+    //! Get the mat state.
+    virtual SP_Mat_State get_Mat_State() const = 0;
 
-    //! Build an opacity.
-    virtual SP_Opacity build_Opacity(SP_Mesh, SP_Frequency, SP_Mat_State) = 0;
+    //! Get the opacity
+    virtual SP_Opacity get_Opacity() const = 0;
+
+    //! Get the diffusion opacity.
+    virtual SP_Diffusion_Opacity get_Diffusion_Opacity() const = 0;
 };
 
 } // end namespace rtt_imc

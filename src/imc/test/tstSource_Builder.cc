@@ -109,10 +109,11 @@ void gray_source_replication_test()
 
     // build a Mat_State and Opacity
     Flat_Mat_State_Builder<OS_Mesh,Gray> ob(interface);
-    SP<Gray>                   frequency = ob.build_Frequency();
-    SP<Mat_State<OS_Mesh> >    mat       = ob.build_Mat_State(mesh);
-    SP<Opacity<OS_Mesh,Gray> > opacity   = ob.build_Opacity(mesh, frequency,
-							    mat);
+    ob.build_mat_classes(mesh);
+
+    SP<Gray>                   frequency = ob.get_Frequency();
+    SP<Mat_State<OS_Mesh> >    mat       = ob.get_Mat_State();
+    SP<Opacity<OS_Mesh,Gray> > opacity   = ob.get_Opacity();
 
     if (!frequency->is_gray()) ITFAILS;
 
@@ -472,9 +473,11 @@ void mg_source_replication_test()
 
     // build a Mat_State and Opacity
     Flat_Mat_State_Builder<OS_Mesh,MG> ob(interface);
-    SP<MG>                   frequency = ob.build_Frequency();
-    SP<Mat_State<OS_Mesh> >  mat       = ob.build_Mat_State(mesh);
-    SP<Opacity<OS_Mesh,MG> > opacity   = ob.build_Opacity(mesh, frequency, mat);
+    ob.build_mat_classes(mesh);
+
+    SP<MG>                   frequency = ob.get_Frequency();
+    SP<Mat_State<OS_Mesh> >  mat       = ob.get_Mat_State();
+    SP<Opacity<OS_Mesh,MG> > opacity   = ob.get_Opacity();
 
     if (frequency->is_gray())             ITFAILS;
     if (!frequency->is_multigroup())      ITFAILS;
@@ -865,10 +868,11 @@ void gray_source_DD_test()
 
     // build a Mat_State and Opacity
     Flat_Mat_State_Builder<OS_Mesh,Gray> ob(interface);
-    SP<Gray>                   frequency = ob.build_Frequency();
-    SP<Mat_State<OS_Mesh> >    mat       = ob.build_Mat_State(mesh);
-    SP<Opacity<OS_Mesh,Gray> > opacity   = ob.build_Opacity(mesh, frequency, 
-							    mat);
+    ob.build_mat_classes(mesh);
+
+    SP<Gray>                   frequency = ob.get_Frequency();
+    SP<Mat_State<OS_Mesh> >    mat       = ob.get_Mat_State();
+    SP<Opacity<OS_Mesh,Gray> > opacity   = ob.get_Opacity();
 
     // build a DD_Source Builder
     DD_Source_Builder<OS_Mesh,Gray,GPT> source_builder(

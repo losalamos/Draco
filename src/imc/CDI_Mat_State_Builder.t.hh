@@ -13,9 +13,6 @@
 #define __imc_CDI_Mat_State_Builder_t_hh__
 
 #include "CDI_Mat_State_Builder.hh"
-#include "Frequency.hh"
-#include "Opacity.hh"
-#include "Mat_State.hh"
 #include "Global.hh"
 #include "Fleck_Factors.hh"
 
@@ -32,8 +29,6 @@ namespace rtt_imc
  * build Mat_State objects.  We use this class because specializations are
  * not required to build the Mat_State; thus, each class specialization of
  * Mat_State_Builder can use the same implementation.
- *
- * The CDI_Mat_State_Builder class
  */
 //===========================================================================//
 
@@ -117,57 +112,52 @@ CDI_Mat_State_Builder_Helper<MT>::build_Mat_State(
 // PUBLIC INTERFACE FOR MAT_STATE_BUILDER
 //---------------------------------------------------------------------------//
 /*!
- * \brief Build a rtt_imc::Gray_Frequency object.
+ * \brief Build material state classes.
+ *
+ * This specialization builds material state data for gray problems.  The
+ * classes that are built are:
+ * - rtt_imc::Gray_Frequency
+ * - rtt_imc::Mat_State
+ * - rtt_imc::Opacity (gray specialization)
+ * - rtt_imc::Diffusion_Opacity
+ * .
+ * \param mesh rtt_dsxx::SP to the mesh
  */
 template<class MT>
-typename CDI_Mat_State_Builder<MT,Gray_Frequency>::SP_Frequency
-CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Frequency()
-{
-    Require (material_cdi.size() > 0);
-
-    // return Frequency type
-    SP_Frequency frequency(new Gray_Frequency);
-
-    Ensure (frequency);
-    Ensure (material_cdi[0]->isGrayOpacitySet(
-		rtt_cdi::PLANCK, rtt_cdi::ABSORPTION) ||
-	    material_cdi[0]->isGrayOpacitySet(
-		rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION) ||
-	    material_cdi[0]->isGrayOpacitySet(
-		rtt_cdi::ANALYTIC, rtt_cdi::ABSORPTION));
-
-    return frequency;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Build a rtt_imc::Mat_State object for CDI_Mat_State_Builder<MT,
- * Gray_Frequency> specialization.
- *
- * The Mat_State that is returned by this function is defined on the mesh
- * that is input to the function.
- *
- * \param  mesh rtt_dsxx::SP to a mesh
- * \return SP to a Mat_State object
- */
-template<class MT>
-typename CDI_Mat_State_Builder<MT,Gray_Frequency>::SP_Mat_State
-CDI_Mat_State_Builder<MT, Gray_Frequency>::build_Mat_State(
-    SP_Mesh mesh)
+void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_mat_classes(SP_Mesh mesh)
 {
     Require (mesh);
     Require (mesh->num_cells() == density.size());
 
-    // make return Mat_State object
-    SP_Mat_State return_state = CDI_Mat_State_Builder_Helper<MT>::
-	build_Mat_State(mesh, material_cdi, cdi_cell_map, density,
-			temperature);
+    Require (!gray);
+    Require (!mat_state);
+    Require (!opacity);
+    Require (!diff_opacity);
 
-    Ensure (return_state);
-    Ensure (return_state->num_cells() == mesh->num_cells());
-    return return_state;
+    // build the frequency
+    {
+	gray = new Gray_Frequency;
+    }
+    Ensure (gray);
+
+    // build the mat_state
+    {
+	mat_state = CDI_Mat_State_Builder_Helper<MT>::build_Mat_State(
+	    mesh, material_cdi, cdi_cell_map, density, temperature);
+    }
+    Ensure (mat_state);
+    Ensure (mat_state->num_cells() == mesh->num_cells());
+
+    // build the opacity
+    {
+	build_Opacity(mesh);
+    }
+    Ensure (opacity);
+    Ensure (opacity->num_cells() == mesh->num_cells());
 }
 
+//---------------------------------------------------------------------------//
+// PRIVATE IMPLEMENTATION FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Build a gray rtt_imc::Opacity<MT, Gray_Frequency> object.
@@ -190,11 +180,7 @@ CDI_Mat_State_Builder<MT, Gray_Frequency>::build_Mat_State(
  * \return SP to an Opacity object
  */
 template<class MT>
-typename CDI_Mat_State_Builder<MT,Gray_Frequency>::SP_Opacity
-CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(
-    SP_Mesh      mesh,
-    SP_Frequency freq,
-    SP_Mat_State mat_state)
+void CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(SP_Mesh mesh)
 {
     using rtt_mc::global::a;
     using rtt_mc::global::c;
@@ -202,12 +188,9 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(
 
     Require (mesh);
     Require (mat_state);
-    Require (freq);
+    Require (gray);
     Require (mesh->num_cells() == mat_state->num_cells());
     Require (mesh->num_cells() == density.size());
-
-    // return opacity
-    SP_Opacity return_opacity;
     
     // number of cells
     int num_cells = mesh->num_cells();
@@ -282,16 +265,13 @@ CDI_Mat_State_Builder<MT,Gray_Frequency>::build_Opacity(
     }
 
     // build the return opacity
-    return_opacity = new Opacity<MT, Gray_Frequency>(
-	freq, absorption, scattering, fleck);
+    opacity = new Opacity<MT, Gray_Frequency>(gray, absorption, scattering, 
+					      fleck);
 
-    Ensure (return_opacity);
-    Ensure (return_opacity->num_cells() == mesh->num_cells());
-    return return_opacity;
+    Ensure (opacity);
+    Ensure (opacity->num_cells() == mesh->num_cells());
 }
 
-//---------------------------------------------------------------------------//
-// PRIVATE IMPLEMENTATION FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Detemine the models used for gray opacities.
@@ -326,7 +306,7 @@ void CDI_Mat_State_Builder<MT, Gray_Frequency>::determine_gray_models(
 	if (cdi->isGrayOpacitySet(rtt_cdi::ANALYTIC, abs))
 	{
 	    // use Analytic values for the absorption and Planck opacities
-	    model_abs[i]    = rtt_cdi::ANALYTIC;
+	    model_abs[i] = rtt_cdi::ANALYTIC;
 
 	    // make sure the other absorption models are not set
 	    Insist (!cdi->isGrayOpacitySet(rtt_cdi::ROSSELAND, abs) &&
@@ -336,7 +316,7 @@ void CDI_Mat_State_Builder<MT, Gray_Frequency>::determine_gray_models(
 	else if (cdi->isGrayOpacitySet(rtt_cdi::ROSSELAND, abs))
 	{
 	    // the absorption opacity is Rosseland
-	    model_abs[i]    = rtt_cdi::ROSSELAND;
+	    model_abs[i] = rtt_cdi::ROSSELAND;
 
 	    // make sure the other absorption models are not set
 	    Insist (!cdi->isGrayOpacitySet(rtt_cdi::PLANCK, abs),
@@ -345,7 +325,7 @@ void CDI_Mat_State_Builder<MT, Gray_Frequency>::determine_gray_models(
 	else if (cdi->isGrayOpacitySet(rtt_cdi::PLANCK, abs))
 	{
 	    // the absorption opacity is Planck;
-	    model_abs[i]    = rtt_cdi::PLANCK;
+	    model_abs[i] = rtt_cdi::PLANCK;
 	}
 	else
 	{
@@ -390,61 +370,57 @@ void CDI_Mat_State_Builder<MT, Gray_Frequency>::determine_gray_models(
 // PUBLIC INTERFACE FOR MAT_STATE_BUILDER
 //---------------------------------------------------------------------------//
 /*!
- * \brief Build a rtt_imc::Multigroup_Frequency object.
+ * \brief Build material state classes.
+ *
+ * This specialization builds material state data for multigroup problems.
+ * The classes that are built are:
+ * - rtt_imc::Multigroup_Frequency
+ * - rtt_imc::Mat_State
+ * - rtt_imc::Opacity (gray specialization)
+ * - rtt_imc::Diffusion_Opacity
+ * .
+ * \param mesh rtt_dsxx::SP to the mesh
  */
 template<class MT>
-typename CDI_Mat_State_Builder<MT,Multigroup_Frequency>::SP_Frequency
-CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Frequency()
-{
-    Require (material_cdi.size() > 0);
-    Require (material_cdi[0]->isMultigroupOpacitySet(
-		 rtt_cdi::PLANCK, rtt_cdi::ABSORPTION) ||
-	     material_cdi[0]->isMultigroupOpacitySet(
-		 rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION) ||
-	     material_cdi[0]->isMultigroupOpacitySet(
-		 rtt_cdi::ANALYTIC, rtt_cdi::ABSORPTION));
-
-    // get the group structure from cdi, ALL multigroup data must have the
-    // same group structure, this is enforced by CDI
-    sf_double group_bnds = rtt_cdi::CDI::getFrequencyGroupBoundaries();
-
-    // return Frequency type
-    SP_Frequency frequency(new Multigroup_Frequency(group_bnds));
-
-    Ensure (frequency);
-    Ensure (frequency->get_num_groups() > 0);
-    return frequency;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Build a rtt_imc::Mat_State object for CDI_Mat_State_Builder<MT,
- * Multigroup_Frequency> specialization.
- *
- * The Mat_State that is returned by this function is defined on the mesh
- * that is input to the function.
- *
- * \param  mesh rtt_dsxx::SP to a mesh
- * \return SP to a Mat_State object
- */
-template<class MT>
-typename CDI_Mat_State_Builder<MT,Multigroup_Frequency>::SP_Mat_State
-CDI_Mat_State_Builder<MT, Multigroup_Frequency>::build_Mat_State(
+void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_mat_classes(
     SP_Mesh mesh)
 {
     Require (mesh);
     Require (mesh->num_cells() == density.size());
 
-    // make return Mat_State object
-    SP_Mat_State return_state = CDI_Mat_State_Builder_Helper<MT>::
-	build_Mat_State(mesh, material_cdi, cdi_cell_map, density,
-			temperature);
+    Require (!mg);
+    Require (!mat_state);
+    Require (!opacity);
+    Require (!diff_opacity);
 
-    Ensure (return_state);
-    Ensure (return_state->num_cells() == mesh->num_cells());
-    return return_state;
+    // build the frequency
+    {
+	// get the group structure from cdi, ALL multigroup data must have
+	// the same group structure, this is enforced by CDI
+	sf_double group_bnds = rtt_cdi::CDI::getFrequencyGroupBoundaries();
+	mg                   = new Multigroup_Frequency(group_bnds);
+    }
+    Ensure (mg);
+    Ensure (mg->get_num_groups() > 0);
+
+    // build the mat_state
+    {
+	mat_state = CDI_Mat_State_Builder_Helper<MT>::build_Mat_State(
+	    mesh, material_cdi, cdi_cell_map, density, temperature);
+    }
+    Ensure (mat_state);
+    Ensure (mat_state->num_cells() == mesh->num_cells());
+
+    // build the opacity
+    {
+	build_Opacity(mesh);
+    }
+    Ensure (opacity);
+    Ensure (opacity->num_cells() == mesh->num_cells());
 }
 
+//---------------------------------------------------------------------------//
+// PRIVATE IMPLEMENTATION FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  *
@@ -469,11 +445,8 @@ CDI_Mat_State_Builder<MT, Multigroup_Frequency>::build_Mat_State(
  * \return SP to an Opacity object
  */
 template<class MT>
-typename CDI_Mat_State_Builder<MT,Multigroup_Frequency>::SP_Opacity
-CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
-    SP_Mesh      mesh,
-    SP_Frequency freq,
-    SP_Mat_State mat_state)
+void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
+    SP_Mesh      mesh)
 {
     using rtt_mc::global::a;
     using rtt_mc::global::c;
@@ -483,17 +456,17 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 
     Require (mesh);
     Require (mat_state);
-    Require (freq);
+    Require (mg);
     Require (mesh->num_cells() == mat_state->num_cells());
     Require (mesh->num_cells() == density.size());
-    Require (CDI::getNumberFrequencyGroups() == freq->get_num_groups());
+    Require (CDI::getNumberFrequencyGroups() == mg->get_num_groups());
 
     // return opacity
     SP_Opacity return_opacity;
     
     // number of cells and groups
     int num_cells  = mesh->num_cells();
-    int num_groups = freq->get_num_groups();
+    int num_groups = mg->get_num_groups();
  
     // make cell-centered, scalar fields for opacities
     typename MT::template CCSF<sf_double> absorption(mesh);
@@ -507,7 +480,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 
     // get the multigroup absorption and scattering opacities in /cm,
     // integrate the Planckian
-    build_opacities(mat_state, absorption, scattering);
+    build_opacities(absorption, scattering);
 
     // variables needed to calculate the fleck factor and integrated Planck
     // functions 
@@ -565,7 +538,7 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
 	    // group boundary.
 	    Check (soft_equiv(emission_group_cdf(cell).back(), 0.0));
 	    Check (3.0 * mat_state->get_T(cell) 
-		   <= freq->get_group_boundaries(1).first); 
+		   <= mg->get_group_boundaries(1).first); 
 
 	    // set the ill-defined integrated Planck opacity to zero
 	    planck = 0.0;
@@ -582,17 +555,14 @@ CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_Opacity(
     }
 
     // build the return opacity
-    return_opacity = new Opacity<MT, Multigroup_Frequency>(
-	freq, absorption, scattering, fleck, integrated_norm_planck, 
+    opacity = new Opacity<MT, Multigroup_Frequency>(
+	mg, absorption, scattering, fleck, integrated_norm_planck, 
 	emission_group_cdf);
 
-    Ensure (return_opacity);
-    Ensure (return_opacity->num_cells() == mesh->num_cells());
-    return return_opacity;
+    Ensure (opacity);
+    Ensure (opacity->num_cells() == mesh->num_cells());
 }
 
-//---------------------------------------------------------------------------//
-// PRIVATE IMPLEMENTATION FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Determine the models used for multigroup opacities.
@@ -690,10 +660,11 @@ void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::determine_mg_models(
  */
 template<class MT>
 void CDI_Mat_State_Builder<MT,Multigroup_Frequency>::build_opacities(
-    SP_Mat_State                           mat_state,
     typename MT::template CCSF<sf_double> &absorption,
     typename MT::template CCSF<sf_double> &scattering)
 {
+    Require (mat_state);
+
     // get the number of cells
     int num_cells  = absorption.get_Mesh().num_cells();
     int num_groups = rtt_cdi::CDI::getNumberFrequencyGroups();

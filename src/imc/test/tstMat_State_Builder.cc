@@ -76,14 +76,17 @@ void gray_flat_mat_state_test()
     if (typeid(builder.bp()) != typeid(Mat_State_Builder<MT,G> *)) ITFAILS;
     if (typeid(*builder) == typeid(Flat_Mat_State_Builder<MT,MG>)) ITFAILS;
 
+    // build objects
+    builder->build_mat_classes(mesh);
+
     // build the frequency
-    SP<G> frequency = builder->build_Frequency();
+    SP<G> frequency = builder->get_Frequency();
     
     // brief check
     if (!frequency->is_gray()) ITFAILS;
 
     // make a Mat_State
-    SP<Mat_State<MT> > mat_state = builder->build_Mat_State(mesh);
+    SP<Mat_State<MT> > mat_state = builder->get_Mat_State();
 
     // check the mat_state
     if (mat_state->num_cells() != 6) ITFAILS;
@@ -119,8 +122,7 @@ void gray_flat_mat_state_test()
 	PASSMSG("Flat Mat_State passes all tests in Gray test.");
 
     // make an Opacity
-    SP<Opacity<MT,G> > opacity = builder->build_Opacity(mesh, frequency,
-							mat_state);
+    SP<Opacity<MT,G> > opacity = builder->get_Opacity();
 
     // check the opacity
     if (opacity->num_cells() != 6) ITFAILS;
@@ -198,14 +200,17 @@ void mg_flat_mat_state_test()
     if (typeid(builder.bp()) != typeid(Mat_State_Builder<MT,MG> *)) ITFAILS;
     if (typeid(*builder) == typeid(Flat_Mat_State_Builder<MT,G>))   ITFAILS;
 
+    // build objects
+    builder->build_mat_classes(mesh);
+
     // build the frequency
-    SP<MG> frequency = builder->build_Frequency();
+    SP<MG> frequency = builder->get_Frequency();
     
     // brief check
     if (!frequency->is_multigroup()) ITFAILS;
 
     // make a Mat_State
-    SP<Mat_State<MT> > mat_state = builder->build_Mat_State(mesh);
+    SP<Mat_State<MT> > mat_state = builder->get_Mat_State();
 
     // check the mat state
     {
@@ -237,8 +242,7 @@ void mg_flat_mat_state_test()
 	PASSMSG("Flat Mat_State passes all tests in MG test.");
 
     // make an Opacity
-    SP<Opacity<MT,MG> > opacity = builder->build_Opacity(mesh, frequency,
-							 mat_state);
+    SP<Opacity<MT,MG> > opacity = builder->get_Opacity();
 
     // check the groups
     vector<double> ref_groups(4);
@@ -357,14 +361,17 @@ void gray_cdi_mat_state_test()
     if (typeid(builder.bp()) != typeid(Mat_State_Builder<MT,G> *)) ITFAILS;
     if (typeid(*builder) == typeid(CDI_Mat_State_Builder<MT,MG>))  ITFAILS;
 
-    // build the frequency
-    SP<G> frequency = builder->build_Frequency();
+    // build mat classes
+    builder->build_mat_classes(mesh);
+
+    // get the frequency
+    SP<G> frequency = builder->get_Frequency();
     
     // brief check
     if (!frequency->is_gray()) ITFAILS;
 
-    // make a Mat_State
-    SP<Mat_State<MT> > mat_state = builder->build_Mat_State(mesh);
+    // get the Mat_State
+    SP<Mat_State<MT> > mat_state = builder->get_Mat_State();
 
     // check the mat state
     {
@@ -391,9 +398,8 @@ void gray_cdi_mat_state_test()
     if (rtt_imc_test::passed)
 	PASSMSG("CDI Mat_State passes all tests in Gray test.");
 
-    // make an Opacity
-    SP<Opacity<MT,G> > opacity = builder->build_Opacity(mesh, frequency,
-							mat_state);
+    // get Opacity
+    SP<Opacity<MT,G> > opacity = builder->get_Opacity();
 
     // check the opacities
     {
@@ -461,14 +467,17 @@ void mg_cdi_mat_state_test()
     if (typeid(builder.bp()) != typeid(Mat_State_Builder<MT,MG> *)) ITFAILS;
     if (typeid(*builder) == typeid(CDI_Mat_State_Builder<MT,G>))    ITFAILS;
 
+    // build mat classes
+    builder->build_mat_classes(mesh);
+
     // build the frequency
-    SP<MG> frequency = builder->build_Frequency();
+    SP<MG> frequency = builder->get_Frequency();
     
     // brief check
     if (!frequency->is_multigroup()) ITFAILS;
 
     // make a Mat_State
-    SP<Mat_State<MT> > mat_state = builder->build_Mat_State(mesh);
+    SP<Mat_State<MT> > mat_state = builder->get_Mat_State();
 
     // check the mat state
     {
@@ -496,8 +505,7 @@ void mg_cdi_mat_state_test()
 	PASSMSG("CDI Mat_State passes all tests in MG test.");
 
     // make an Opacity
-    SP<Opacity<MT,MG> > opacity = builder->build_Opacity(mesh, frequency,
-							 mat_state);
+    SP<Opacity<MT,MG> > opacity = builder->get_Opacity();
 
     // check the groups
     vector<double> ref_groups(4);

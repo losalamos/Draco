@@ -13,10 +13,6 @@
 #define __imc_Flat_Mat_State_Builder_t_hh__
 
 #include "Flat_Mat_State_Builder.hh"
-#include "Flat_Data_Container.hh"
-#include "Mat_State.hh"
-#include "Opacity.hh"
-#include "Frequency.hh"
 #include "Fleck_Factors.hh"
 #include "cdi/CDI.hh"
 #include <utility>
@@ -28,28 +24,54 @@ namespace rtt_imc
 // PUBLIC INTERFACE FOR MAT_STATE_BUILDER
 //---------------------------------------------------------------------------//
 /*!
- * \brief Build a frequency type object.
+ * \brief Build material state classes.
  *
- * \return SP to a frequency type.
+ * The classes that are built are:
+ * - Frequency Type (FT) (either rtt_imc::Gray_Frequency or
+ *   rtt_imc::Multigroup_Frequency) 
+ * - rtt_imc::Mat_State
+ * - rtt_imc::Opacity (gray and multigroup specializations)
+ * - rtt_imc::Diffusion_Opacity
+ * .
+ * \param mesh rtt_dsxx::SP to the mesh
  */
 template<class MT, class FT>
-typename Flat_Mat_State_Builder<MT,FT>::SP_Frequency
-Flat_Mat_State_Builder<MT,FT>::build_Frequency()
+void Flat_Mat_State_Builder<MT,FT>::build_mat_classes(SP_Mesh mesh)
 {
     using rtt_imc::global::Type_Switch;
 
-    Check (flat_data);
+    Require (mesh);
+    Require (mesh->num_cells() == density.size());
+    Require (flat_data);
 
-    // return frequency
-    SP_Frequency frequency;
+    Require (!frequency);
+    Require (!mat_state);
+    Require (!opacity);
+    Require (!diff_opacity);
 
     // build the frequency, specialize on the frequency type
-    frequency = build_frequency<Dummy_Type>(Type_Switch<FT>());
-
+    {
+	frequency = build_frequency<Dummy_Type>(Type_Switch<FT>());
+    }
     Ensure (frequency);
-    return frequency;
+
+    // build the mat_state
+    {
+	build_Mat_State(mesh);
+    }
+    Ensure (mat_state);
+    Ensure (mat_state->num_cells() == mesh->num_cells());
+
+    // build the opacity
+    {
+	opacity = build_opacity<Dummy_Type>(Type_Switch<FT>(), mesh);
+    }
+    Ensure (opacity);
+    Ensure (opacity->num_cells() == mesh->num_cells());
 }
 
+//---------------------------------------------------------------------------//
+// PRIVATE IMPLEMENTATION
 //---------------------------------------------------------------------------//
 /*!
  * \brief Build a rtt_imc::Mat_State object.
@@ -61,15 +83,11 @@ Flat_Mat_State_Builder<MT,FT>::build_Frequency()
  * \return SP to a Mat_State object
  */
 template<class MT, class FT>
-typename Flat_Mat_State_Builder<MT,FT>::SP_Mat_State
-Flat_Mat_State_Builder<MT,FT>::build_Mat_State(SP_Mesh mesh)
+void Flat_Mat_State_Builder<MT,FT>::build_Mat_State(SP_Mesh mesh)
 {
     Require (mesh);
     Require (mesh->num_cells() == density.size());
     Check   (mesh->num_cells() == flat_data->specific_heat.size());
-
-    // make return Mat_State object
-    SP_Mat_State return_state;
 
     // make cell-centered, scalar-fields for Mat_State
     typename MT::template CCSF<double> rho(mesh, density);
@@ -77,50 +95,10 @@ Flat_Mat_State_Builder<MT,FT>::build_Mat_State(SP_Mesh mesh)
     typename MT::template CCSF<double> sp_heat(mesh, flat_data->specific_heat);
     
     // create Mat_State object
-    return_state = new Mat_State<MT>(rho, temp, sp_heat);
+    mat_state = new Mat_State<MT>(rho, temp, sp_heat);
 
-    Ensure (return_state);
-    Ensure (return_state->num_cells() == mesh->num_cells());
-
-    // return Mat_State SP
-    return return_state;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Build a rtt_imc::Opacity object.
- *
- * The Opacity that is returned by this function is defined on the mesh that
- * is input to the function.
- *
- * \param  mesh rtt_dsxx::SP to a mesh
- * \param  mat_state SP to a Mat_State
- * \return SP to an Opacity object
- */
-template<class MT, class FT>
-typename Flat_Mat_State_Builder<MT,FT>::SP_Opacity
-Flat_Mat_State_Builder<MT,FT>::build_Opacity(SP_Mesh      mesh,
-					     SP_Frequency frequency,
-					     SP_Mat_State mat_state)
-{
-    using rtt_imc::global::Type_Switch;
-
-    Require (mesh);
-    Require (mat_state);
-    Require (frequency);
-
-    // return opacity
-    SP_Opacity opacity;
-
-    // build the opacity depending on the frequency type
-    opacity = build_opacity<Dummy_Type>(Type_Switch<FT>(), 
-					mesh, frequency, mat_state);
-
-    Ensure (opacity);
-    Ensure (opacity->num_cells() == mesh->num_cells());
-
-    // return the opacity
-    return opacity;
+    Ensure (mat_state);
+    Ensure (mat_state->num_cells() == mesh->num_cells());
 }
 
 //---------------------------------------------------------------------------//
@@ -174,14 +152,15 @@ Flat_Mat_State_Builder<MT,FT>::build_frequency(Switch_MG)
 template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
 rtt_dsxx::SP<Opacity<MT,Gray_Frequency> >
-Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
-					     SP_Mesh      mesh,
-					     SP_Gray      gray,
-					     SP_Mat_State mat_state)
+Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray, SP_Mesh mesh)
 {
     using rtt_mc::global::c;
     using rtt_mc::global::a;
     using rtt_dsxx::SP;
+
+    Require (frequency);
+    Require (mat_state);
+    Require (mesh);
 
     Check (mesh->num_cells() == flat_data->gray_absorption_opacity.size());
     Check (mesh->num_cells() == flat_data->gray_scattering_opacity.size());
@@ -232,7 +211,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
     }
     
     // create Opacity object
-    return_opacity = new Opacity<MT,Gray_Frequency>(gray, absorption, 
+    return_opacity = new Opacity<MT,Gray_Frequency>(frequency, absorption, 
 						    scattering, fleck);
 
     Ensure (return_opacity);
@@ -248,10 +227,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_Gray,
 template<class MT, class FT>
 template<class Stop_Explicit_Instantiation>
 rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> >
-Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
-					     SP_Mesh      mesh,
-					     SP_MG        mg,
-					     SP_Mat_State mat_state)
+Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG, SP_Mesh mesh)
 {
     using rtt_mc::global::a;
     using rtt_mc::global::c;
@@ -260,17 +236,19 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
     using rtt_dsxx::soft_equiv;
     using rtt_dsxx::SP;
 
-    Check (mesh);
+    Require (frequency);
+    Require (mat_state);
+    Require (mesh);
+
     Check (mesh->num_cells() == flat_data->mg_absorption_opacity.size());
     Check (mesh->num_cells() == flat_data->mg_scattering_opacity.size());
-    Check (mg);
 
     // return opacity
     rtt_dsxx::SP<Opacity<MT,Multigroup_Frequency> > return_opacity;
     
     // number of cells and groups
     int num_cells  = mesh->num_cells();
-    int num_groups = mg->get_num_groups();
+    int num_groups = frequency->get_num_groups();
     Check (num_groups > 0);
 
     // make cell-centered, scalar fields for opacities
@@ -325,7 +303,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 	    Check (scattering(cell)[g-1] >= 0.0);
 
 	    // get the group boundaries
-	    pair<double,double> bounds = mg->get_group_boundaries(g);
+	    pair<double,double> bounds = frequency->get_group_boundaries(g);
 
 	    // integrate the normalized Planckian over the group
 	    b_g = CDI::integratePlanckSpectrum(bounds.first, bounds.second,
@@ -340,8 +318,8 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 
 	// integrate the unnormalized Planckian
 	integrated_norm_planck(cell) = CDI::integratePlanckSpectrum(
-	    mg->get_group_boundaries().front(),
-	    mg->get_group_boundaries().back(), mat_state->get_T(cell));
+	    frequency->get_group_boundaries().front(),
+	    frequency->get_group_boundaries().back(), mat_state->get_T(cell));
 	Check (integrated_norm_planck(cell) >= 0.0);
 
 	// calculate the Planckian opacity
@@ -355,7 +333,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 	    // group boundary.
 	    Check (soft_equiv(emission_group_cdf(cell).back(), 0.0));
 	    Check (3.0 * mat_state->get_T(cell) 
-		   <= mg->get_group_boundaries(1).first); 
+		   <= frequency->get_group_boundaries(1).first); 
 
 	    // set the ill-defined integrated Planck opacity to zero
 	    planck = 0.0;
@@ -373,7 +351,7 @@ Flat_Mat_State_Builder<MT,FT>::build_opacity(Switch_MG,
 
     // build the return opacity
     return_opacity = new Opacity<MT, Multigroup_Frequency>(
-	mg, absorption, scattering, fleck, integrated_norm_planck, 
+	frequency, absorption, scattering, fleck, integrated_norm_planck, 
 	emission_group_cdf);
 
     Ensure (return_opacity);
