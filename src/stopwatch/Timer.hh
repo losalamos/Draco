@@ -68,9 +68,9 @@ class Timer
     
     // ACCESSORS
 
-    double getTime() { return time; }
-    state getState() { return timerState; }
-    int getCount() { return count; }
+    double getTime() const { return time; }
+    state getState() const { return timerState; }
+    int getCount() const { return count; }
     static inline double resolution() { return 10.0/CLOCKS_PER_SEC; }
 
   private:
