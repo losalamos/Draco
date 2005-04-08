@@ -287,9 +287,9 @@ class Element_Definition
      * (n-1) dimensional element that composes a n dimensional
      * element.
      */
-    Element_Definition get_side_type( int const side_number ) const
+    Element_Definition get_side_type( unsigned const side_number ) const
     {
-	if ( side_number < 0 || side_number >= side_type.size() )
+	if ( side_number >= side_type.size() )
 	    Insist(false,"Side index out of range!");
 	return elem_defs[side_type[side_number] ];
     }
@@ -334,9 +334,9 @@ class Element_Definition
      * Note that there is no valid side number for a "NODE" element.
      *
      */
-    std::vector<int> get_side_nodes( int const side_number ) const
+    std::vector<int> get_side_nodes( unsigned const side_number ) const
     {
-	if (side_number < 0 || side_number >= side_nodes.size() )
+	if ( side_number >= side_nodes.size() )
 	    Insist(false,"Side index out of range!");
 	return side_nodes[side_number];
     }

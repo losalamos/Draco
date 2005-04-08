@@ -248,14 +248,14 @@ void Connect::connectHangingNodes(const StrictWeakOrdering & comp)
     if (rtt_dsxx::isSorted(nodes_coords.begin(), nodes_coords.end(), 
 			   comp))
     {
-        for (int n = 0; n < nodes_coords.size(); n++)
+        for (unsigned n = 0; n < nodes_coords.size(); n++)
 	    nodes_map[n] = n;
     }
     else
     {
         rtt_dsxx::SortPermutation nodeSorter(nodes_coords.begin(), 
 					     nodes_coords.end(), comp);
-	for (int n = 0; n < nodes_coords.size(); n++)
+	for (unsigned n = 0; n < nodes_coords.size(); n++)
 	    nodes_map[nodeSorter.inv(n)] = n;
     }
 
@@ -276,12 +276,12 @@ void Connect::connectHangingNodes(const StrictWeakOrdering & comp)
 	// calculate the coordinates of the face center point.
 	vector_int & faceNodes = cmplxCells.find(cell_faces)->second;
 	std::vector<double> center(nodes_coords[0].size());
-	for (int n = 0; n < faceNodes.size(); n++)
+	for (unsigned n = 0; n < faceNodes.size(); n++)
 	{
 	    for (int d = 0; d < nodes_coords[0].size(); d++)
 	        center[d] += nodes_coords[faceNodes[n]][d];
 	}
-	for (int d = 0; d < nodes_coords[0].size(); d++)
+	for (unsigned d = 0; d < nodes_coords[0].size(); d++)
 	    center[d] /= static_cast<double>(faceNodes.size());
 
 	// find a node with these coordinates, and set up a corresponding 
