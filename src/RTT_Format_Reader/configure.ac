@@ -14,11 +14,13 @@ AC_CONFIG_HEADER(RTT_Format_Reader/config.h:config.h.in)
 package="RTT_Format_Reader"
 
 dnl VENDOR SETUPS
+AC_MPI_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(meshReaders \
               mesh_element \
+              c4 \
               ds++)
 
 AC_RUNTESTS(TestRTTFormatReader TestRTTMeshReader, scalar)

@@ -78,9 +78,11 @@ void Connect::organizeData(rtt_dsxx::SP<Mesh_Reader> mesh_reader)
  *        all of the sides.
  * \return The sideNodes multimap.
  */
-std::multimap<std::set<int>, int> Connect::generateSideNodes()
+
+//std::multimap<std::set<int>, int> Connect::generateSideNodes()
+void Connect::generateSideNodes()
 {
-    std::multimap<std::set<int>, int> sideNodes;
+    //    std::multimap<std::set<int>, int> sideNodes;
     for (int s = 0; s < nsides; ++s)
     {
         // Decide the side type to determine the number of nodes used in the 
@@ -94,16 +96,21 @@ std::multimap<std::set<int>, int> Connect::generateSideNodes()
 
 	sideNodes.insert(std::make_pair(face, s));
     }
-    return sideNodes;
+    //    return sideNodes;
 }
 /*!
  * \brief Generates a multimap containing the set of nodes (key) comprising 
  *        all of the cell faces.
  * \return The cellFaceNodes multimap.
  */
-std::multimap<std::set<int>, int> Connect::generateCellFaceNodes()
+
+//std::multimap<std::set<int>, int> Connect::generateCellFaceNodes()
+void Connect::generateCellFaceNodes()
 {
-    std::multimap<std::set<int>, int> cellFaceNodes;
+    std::pair<std::set<int>, int> p;
+
+    //    std::multimap<std::set<int>, int> cellFaceNodes;
+
     for (int c = 0; c < ncells; ++c)
     {
         // We have to decide the cell type to determine the number of
@@ -117,10 +124,14 @@ std::multimap<std::set<int>, int> Connect::generateCellFaceNodes()
 	        elem_defs.find(cells_types[c])->second->get_side_nodes(s);
 	    for (int n = 0; n < faceNodes.size(); n++)
 	         face.insert(cells_nodes[c][faceNodes[n]]);
-	    cellFaceNodes.insert(std::make_pair(face, c));
+
+            p = std::make_pair(face, c);
+
+	    cellFaceNodes.insert(p);
 	}
     }
-    return cellFaceNodes;
+
+    //    return cellFaceNodes;
 }
 /*!
  * \brief Generates data needed to treat the connectivity for complex cell 
@@ -226,15 +237,19 @@ void Connect::treatSimpleFace(const int & cell, const int & faceNum,
 void Connect::connectMutualFaces()
 {
     vector_int cell_faces(2);
+
     // create a multimap of the node sets that define the sides so that 
     // the nodes are in ascending order.
-    sideNodes = generateSideNodes();
+    //    sideNodes = generateSideNodes();
+    generateSideNodes();
+
     // create an iterator for the sides multimap.
     std::multimap<set_int, int>::iterator sitr = sideNodes.begin();
 
     // create a multimap of the node sets that define the cell faces so that 
     // the nodes are in ascending order.
-    cellFaceNodes = generateCellFaceNodes();
+    //cellFaceNodes = generateCellFaceNodes();
+    generateCellFaceNodes();
 
     // loop over all of the cell faces. Iteration index is also incremented
     // once within the loop.
@@ -360,6 +375,21 @@ void Connect::printAdjacentCells() const
 	    std::cout << std::endl;
 	}
     }
+}
+/*!
+ * \brief Gets the total number of elements in vector<vector<vector<int> > > adjCell
+ */
+int Connect::getAdjacentCellsSize() const
+{
+    int count(0);
+    for (int c = 0; c < ncells; ++c)
+    {
+        int cell_nsides = elem_defs.find(cells_types[c])->second->
+	    get_number_of_sides();
+        for (int f = 0; f < cell_nsides; f++)
+	    count += adjCell[c][f].size(); 
+    }
+    return count;
 }
 /*!
  * \brief Returns the cells that have boundary faces (i.e., faces that are 

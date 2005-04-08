@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="RTT_Format_Reader.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -838,6 +838,10 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-mpi=vendor,mpich,lampi
+	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)
+  --with-mpi-inc=DIR    tell where MPI includes are (\${MPI_INC_DIR} by default)
+  --with-mpi-lib=DIR    tell where MPI libs are (\${MPI_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
   --with-c4=scalar,mpi,shmem
@@ -1307,6 +1311,129 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 package="RTT_Format_Reader"
 
 
+
+# Check whether --with-mpi or --without-mpi was given.
+if test "${with_mpi+set}" = set; then
+  withval="$with_mpi"
+
+fi;
+
+
+
+
+
+# Check whether --with-mpi-inc or --without-mpi-inc was given.
+if test "${with_mpi_inc+set}" = set; then
+  withval="$with_mpi_inc"
+  if test $with_mpi_inc != "no" ; then
+      if test $with_mpi_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${MPI_INC_DIR}
+         eval with_mpi_inc=\${MPI_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_mpi_inc=`eval echo "$with_mpi_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_mpi_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-mpi-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_mpi_inc ; then
+         { echo "configure: error: $with_mpi_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      MPI_INC="${with_mpi_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define MPI_INC ${with_mpi_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "MPI_INC has been set to $MPI_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+# Check whether --with-mpi-lib or --without-mpi-lib was given.
+if test "${with_mpi_lib+set}" = set; then
+  withval="$with_mpi_lib"
+  if test $with_mpi_lib != "no" ; then
+      if test $with_mpi_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${MPI_LIB_DIR}
+         eval with_mpi_lib=\${MPI_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_mpi_lib=`eval echo "$with_mpi_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_mpi_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-mpi-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_mpi_lib ; then
+         { echo "configure: error: $with_mpi_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      MPI_LIB="${with_mpi_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define MPI_LIB ${with_mpi_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "MPI_LIB has been set to $MPI_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_mpi=pkg
+
+   # set default value for with_mpi which is no
+   if test "${with_mpi:=no}" = yes ; then
+       with_mpi='vendor'
+   fi
+
+   # if the user sets MPI_INC and MPI_LIB directories then turn on
+   # with_mpi and set it to vendor if with_mpi=no to begin with
+   if test "${with_mpi}" = no ; then
+       if test -n "${MPI_INC}" ; then
+	   with_mpi='vendor'
+       elif test -n "${MPI_LIB}" ; then
+	   with_mpi='vendor'
+       fi
+   fi
+
+   # if c4=mpi and with-mpi=no explicitly then
+   # define them (mpi gets set to vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
+	   with_mpi='vendor'
+       fi
+   fi
+
+
+
     install_headers="\${installheaders}"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
 
@@ -1325,6 +1452,7 @@ package="RTT_Format_Reader"
 
    for lib in meshReaders \
               mesh_element \
+              c4 \
               ds++
    do
        # temporary string to keep line from getting too long
@@ -1336,6 +1464,7 @@ package="RTT_Format_Reader"
    # Keep a list of component dependencies free of other tags or paths.
    DEPENDENT_COMPONENTS="meshReaders \
               mesh_element \
+              c4 \
               ds++"
 
 
@@ -13156,6 +13285,8 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@MPI_INC@,$MPI_INC,;t t
+s,@MPI_LIB@,$MPI_LIB,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
 s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@build@,$build,;t t

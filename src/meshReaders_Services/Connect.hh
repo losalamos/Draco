@@ -70,6 +70,7 @@ class Connect
 
     // data derived from the calculation.
     std::vector<std::vector<std::vector<int> > > adjCell;
+
     std::multimap<int, int> bndryFaces;
     std::multimap<int, vector_int > Side_to_Cell_Face;
 
@@ -102,8 +103,10 @@ class Connect
 
   private:
     void organizeData(rtt_dsxx::SP<Mesh_Reader> mesh_reader);
-    std::multimap<set_int, int> generateSideNodes();
-    std::multimap<set_int, int> generateCellFaceNodes();
+
+    void generateSideNodes();
+    void generateCellFaceNodes();
+
     void treatComplexFace(const vector_int & cell_faces);
     void treatSimpleFace(const int & cell, const int & faceNum,
 			 std::multimap<set_int, int>::iterator & mmiter);
@@ -117,13 +120,15 @@ class Connect
   public:
     void printAdjacentCells() const;
 
+    int getAdjacentCellsSize() const;
+
     int get_adjCell_size(int cell, int face) const
     { return adjCell[cell][face].size(); }
 /*!
  * \brief Returns the adjacent cell array.
  * \return The adjacent cell number array.
  */
-    std::vector<std::vector<std::vector<int> > > get_adjCell() const
+    std::vector<std::vector<std::vector<int> > > & get_adjCell() 
     { return adjCell; }
 /*!
  * \brief Returns the number of the cell adjacent to the specified cell, face,
