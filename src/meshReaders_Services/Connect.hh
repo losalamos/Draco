@@ -283,7 +283,7 @@ void Connect::connectHangingNodes(const StrictWeakOrdering & comp)
 	std::vector<double> center(nodes_coords[0].size());
 	for (unsigned n = 0; n < faceNodes.size(); n++)
 	{
-	    for (int d = 0; d < nodes_coords[0].size(); d++)
+	    for (unsigned d = 0; d < nodes_coords[0].size(); d++)
 	        center[d] += nodes_coords[faceNodes[n]][d];
 	}
 	for (unsigned d = 0; d < nodes_coords[0].size(); d++)
