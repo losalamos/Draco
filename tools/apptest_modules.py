@@ -17,6 +17,7 @@ import string
 import sys
 import re
 import math
+import glob
 
 class AppTest:
 
@@ -51,6 +52,16 @@ class AppTest:
             print "the following variable information:"
             print "\t sys.platform = %s"%arch
             return            
+
+        # Kill all (in any gmv files in the current working
+        # directory).
+
+        gmvFiles = glob.glob("*.gmv")
+        cwd = os.getcwd()
+        for thisFile in gmvFiles:
+            fileWithPath=cwd+"/"+thisFile
+            #print fileWithPath
+            os.remove(fileWithPath)
         
         # check that directory containing benchmark data exists
         # and remove existing test output files and diff files.
@@ -239,6 +250,19 @@ class AppTest:
         # If we get here, then everything matches!
         return 1
 
+    def soft_equiv_list( self, listValue, listReference, precision ):
+
+        # Fail if the length of the lists are not equal.
+        if len(listValue) != len(listReference):
+            return 0
+
+        # Loop through the lists, checking each value.
+        for i in xrange(0,len(listValue)):
+            if not self.soft_equiv( listValue[i], listReference[i], precision ):
+                return 0
+
+        # If we get here, then everything matches!
+        return 1
     ##------------------------------------------------------------##
     ## Soft Equivalence of 2 items
     ##------------------------------------------------------------##
@@ -250,6 +274,13 @@ class AppTest:
         else:
             return 0
 
+    def soft_equiv( self, value, reference, precision ):
+        if ( math.fabs( value - reference ) < precision *
+             math.fabs(reference) ):
+            return 1
+        else:
+            return 0
+        
 ##---------------------------------------------------------------------------##
 ## GMV data class
 ##---------------------------------------------------------------------------##
@@ -410,21 +441,24 @@ class GMVFile:
             lenLine = len(line)
             posLine = 0
             valueList = []
-            for idxCell in xrange(1,self.numCells):
-                idxEnd = line.find( " ", posLine, lenLine )
-#                print "find( \" \", %s, %s ) = %s"%(posLine, lenLine, idxEnd)
-                value = line[posLine:idxEnd]
-#                print "cell = %s, line[%s:%s] = %s"%(idxCell,posLine,idxEnd,value)
-                valueList.append( float( value ) )
-                posLine = idxEnd+1
-            # append last value
-            valueList.append( float( line[ posLine:lenLine ] ) )
 
-            if debug:
-                print valueList
+            if key == "RAD_ENERGY_DENSITY" or key == "ELECTRON_TEMPERATURE":
 
-            # append Dictionary of { keyname: [value list] }
-            self.data[ key ] = valueList
+                for idxCell in xrange(1,self.numCells):
+                    idxEnd = line.find( " ", posLine, lenLine )
+                    # print "find( \" \", %s, %s ) = %s"%(posLine, lenLine, idxEnd)
+                    value = line[posLine:idxEnd]
+                    # print "cell = %s, line[%s:%s] = %s"%(idxCell,posLine,idxEnd,value)
+                    valueList.append( float( value ) )
+                    posLine = idxEnd+1
+                # append last value
+                valueList.append( float( line[ posLine:lenLine ] ) )
+
+                if debug:
+                    print valueList
+
+                # append Dictionary of { keyname: [value list] }
+                self.data[ key ] = valueList
             
         # Look for "endgmv" tag
         line = self.gmvfile.readline()[:-1]
