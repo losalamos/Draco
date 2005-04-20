@@ -1,3 +1,14 @@
+2005-04-20  Kelly Thompson  <kgt@lanl.gov>
+
+	* test/tCDI.cc: Adding tests to improve code coverage. 
+	  - Call the member function integrateRosselandSpectrum(igroup, T)
+	    and compare the result to the result of
+ 	    integrateRosselandSpectrum(low,high,T).
+	  - Provide material name for the cdi constructor.  Call member
+	    function getMatID() and compare result to initializer
+	    argument. 
+	  - Call release() and print the version info to stdout.
+
 2003-08-27  Kent Budge  <kgbudge@tresosos.lanl.gov>
 
 	* CDI.cc: Modified the polylog evaluation of the Planck integral

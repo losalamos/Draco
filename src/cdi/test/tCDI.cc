@@ -171,6 +171,37 @@ void check_CDI(const CDI &cdi)
 		<< "returned a value that was out of spec.";
 	FAILMSG(message.str());
     }
+
+    // Print the material ID string
+    
+    
+    // Test Rosseland integration with MG opacities.
+    {
+	// integrate on the interval [0.5, 5.0] keV for T=1.0 keV.
+	double int_total1 = cdi.integrateRosselandSpectrum(0.5,5.0, 1.0);
+	// group 1 has the same energy range.
+	double int_total2 = cdi.integrateRosselandSpectrum(2, 1.0);
+	if (soft_equiv(int_total1, int_total2 , 1.0e-7))
+	{
+	    ostringstream message;
+	    message.precision(10);
+	    message << "Calculated a total normalized Rosseland integral of "
+		    << setw(12) << setiosflags(ios::fixed) << int_total2;
+	    PASSMSG(message.str());
+	}
+	else
+	{
+	    ostringstream message;
+	    message.precision(10);
+	    message << "Calculated a total normalized Rosseland integral of "
+		    << setw(12) << setiosflags(ios::fixed) << int_total2 
+		    << " instead of " << setw(12) << setiosflags(ios::fixed)
+		    << int_total1 << "." << endl;
+	    FAILMSG(message.str());
+	}
+    }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -202,7 +233,8 @@ void test_CDI()
     eos              = new DummyEoS();
     
     // make a CDI, it should be empty
-    CDI cdi;
+    std::string const matName("dummyMaterial");
+    CDI cdi( matName );
     for (int i = 0; i < rtt_cdi::constants::num_Models; i++)
 	for (int j = 0; j < rtt_cdi::constants::num_Reactions; j++)
 	{
@@ -215,6 +247,15 @@ void test_CDI()
 	    if (cdi.isMultigroupOpacitySet(m,r)) ITFAILS;
 	}
     if (cdi.isEoSSet()) ITFAILS;
+
+    if( cdi.getMatID() == matName )
+    {
+	PASSMSG("Good, the material identifier was set and fetched correctly.");
+    }
+    else
+    {
+	FAILMSG("Oh-ho, the material identifier was not set and fetched correctly.");
+    }
 
     // there should be no energy group boundaries set yet
     if (CDI::getFrequencyGroupBoundaries().empty())
@@ -939,12 +980,22 @@ void test_rosseland_integration()
     {
 	FAILMSG("Group 3 Rosseland and Planck integrals failed.");
     }
-    
+
     if (rtt_cdi_test::passed)
     {
 	PASSMSG("All Rosseland and Rosseland/Planckian integral tests ok.");
 	cout << endl;
     }
+}
+
+//---------------------------------------------------------------------------//
+
+void printPkgVer()
+{
+    std::cout << "This is Draco package CDI.\n"
+	      << "Version: " <<  rtt_cdi::release()
+	      << std::endl << std::endl;
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -963,6 +1014,8 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+	printPkgVer();
+	
 	test_CDI();
 
 	test_planck_integration();
