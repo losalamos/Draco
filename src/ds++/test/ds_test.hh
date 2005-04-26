@@ -61,10 +61,10 @@ extern bool passed;
 // These are a convenience only
 //===========================================================================//
 
-#define ITFAILS    rtt_ds_test::fail(__LINE__);
-#define FAILURE    rtt_ds_test::fail(__LINE__, __FILE__);
-#define PASSMSG(a) rtt_ds_test::pass_msg(a);
-#define FAILMSG(a) rtt_ds_test::fail_msg(a);
+#define ITFAILS    rtt_ds_test::fail(__LINE__)
+#define FAILURE    rtt_ds_test::fail(__LINE__, __FILE__)
+#define PASSMSG(a) rtt_ds_test::pass_msg(a)
+#define FAILMSG(a) rtt_ds_test::fail_msg(a)
 #define UNIT_TEST(x) rtt_ds_test::unit_test(x, __LINE__, __FILE__)
 
 #endif                          // __ds_test_hh__
