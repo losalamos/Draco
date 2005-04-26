@@ -33,6 +33,7 @@ AC_RUNTESTS(tstCheck_Strings \
             tstMat4RA \
             tstMat5RA \
             tstFile_Streams \
+	    tstDBC_Array \
             tstArray \
             , scalar)
 

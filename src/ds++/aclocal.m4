@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.6 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -516,8 +516,6 @@ dnl
 dnl Defines the Draco build system environment.  This is the main
 dnl configure function.
 dnl
-dnl-------------------------------------------------------------------------dnl
-dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
