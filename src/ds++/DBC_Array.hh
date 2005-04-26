@@ -153,14 +153,39 @@ template<class T> class DBC_Array
 	return d_ptr + d_size; 
     }
     
+    //! Returns a reference to the first element
+    reference front() 
+    {
+	Require(d_size);
+	return *(d_ptr);
+    }
+
+    //! Returns a const reference to the first element
+    const_reference front() const
+    {
+	Require(d_size);
+	return *(d_ptr);
+    }
+
+    //! Returns a reference to the last element
+    reference back() 
+    {
+	Require(d_size);
+	return *(d_ptr + d_size - 1);
+    }
+
+    //! Returns a const reference to the last element
+    const_reference back() const
+    {
+	Require(d_size);
+	return *(d_ptr + d_size - 1);
+    }
+
     //! Element-wise equality
     bool operator==(const DBC_Array<T>& rhs) const;
 
-    //! Element-wise inequality
-    bool operator!=(const DBC_Array<T>& rhs) const  
-    { 
-	return !(*this == rhs); 
-    }
+    //! Element-wise less-than
+    bool operator<(const DBC_Array<T>& rhs) const;
 
   private:
     //! Pointer to the real data
@@ -182,6 +207,42 @@ template<class T> class DBC_Array
 //! Convenience output function
 template<class T> std::ostream&
 operator<<(std::ostream& os, const DBC_Array<T>& rhs);
+
+
+//---------------------------------------------------------------------------//
+// FREE COMPARISON FUNCTIONS
+//---------------------------------------------------------------------------//
+
+//! Element-wise lhs != rhs
+template<class T> inline bool
+operator!=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
+{
+    return !(lhs == rhs);
+}
+
+
+//! Element-wise lhs > rhs
+template<class T> inline bool
+operator>(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
+{
+    return rhs < lhs;
+}
+
+
+//! Element-wise lhs <= rhs
+template<class T> inline bool
+operator<=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
+{
+    return !(rhs < lhs);
+}
+
+
+//! Element-wise lhs >= rhs
+template<class T> inline bool
+operator>=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
+{
+    return !(lhs < rhs);
+}
 
 
 //---------------------------------------------------------------------------//
@@ -269,10 +330,10 @@ DBC_Array<T>::common_resize(const size_type n,
 		Insist_ptr(d_ptr, "allocation failure");
 	    }
 
-	    if(init)
-		std::fill_n(d_ptr, n, value);
 	} 
     }
+    if(init)
+	std::fill_n(d_ptr, n, value);
 }
 
 
@@ -342,15 +403,6 @@ DBC_Array<T>::swap(DBC_Array<T>& rhs)
 }
 
 //---------------------------------------------------------------------------//
-template<class T> bool
-DBC_Array<T>::operator==(DBC_Array<T> const & rhs) const 
-{
-    if(rhs.d_size != d_size) return false;
-    if(!d_size) return true;
-    return std::equal(d_ptr, d_ptr+d_size, rhs.d_ptr);
-}
-
-//---------------------------------------------------------------------------//
 template<class T> void 
 DBC_Array<T>::clear() 
 {
@@ -363,6 +415,31 @@ DBC_Array<T>::clear()
     }
     Ensure(d_ptr == 0);
 }
+
+//---------------------------------------------------------------------------//
+// COMPARISON FUNCTIONS
+//---------------------------------------------------------------------------//
+
+
+//---------------------------------------------------------------------------//
+template<class T> bool
+DBC_Array<T>::operator==(DBC_Array<T> const & rhs) const 
+{
+    if(rhs.d_size != d_size) return false;
+    if(!d_size) return true;
+    return std::equal(begin(), end(), rhs.d_ptr);
+}
+
+
+//---------------------------------------------------------------------------//
+template<class T> bool
+DBC_Array<T>::operator<(DBC_Array<T> const & rhs) const 
+{
+    return std::lexicographical_compare(begin(), end(),
+					rhs.begin(), rhs.end());
+}
+
+
 
 //---------------------------------------------------------------------------//
 // FREE FUNCTIONS

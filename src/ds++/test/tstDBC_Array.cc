@@ -332,6 +332,34 @@ void test_copies()
 
 
 //---------------------------------------------------------------------------//
+void test_assign()
+{
+    AInt master;
+    std::vector<int> cmp;
+
+    cmp.assign(5,3);
+    master.assign(5, 3);
+    test_sized_array(master, 5, cmp);
+
+    // Make sure that data gets changed, even if the size stays the same
+    cmp.assign(5,6);
+    master.assign(5,6);
+    test_sized_array(master, 5, cmp);
+
+    // Check that assigning to a new size works
+    cmp.assign(8,6);
+    master.assign(8,6);
+    test_sized_array(master, 8, cmp);
+
+    if (rtt_ds_test::passed)
+	PASSMSG("assign works.");
+    else
+	PASSMSG("assign FAILED.");
+
+}
+
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
     for (int arg = 1; arg < argc; arg++)
@@ -351,6 +379,7 @@ int main(int argc, char *argv[])
 	test_copy_to_filled();
 	test_swap();
 	test_copies();
+	test_assign();
     }
     catch (rtt_dsxx::assertion &ass)
     {
