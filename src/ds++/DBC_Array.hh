@@ -11,7 +11,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include "ds++/Assert.hh"
+#include "Assert.hh"
 
 namespace rtt_dsxx
 {
