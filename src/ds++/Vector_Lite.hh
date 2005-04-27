@@ -95,8 +95,9 @@ class Vector_Lite
     // Assignment to a scalar.
     inline Vector_Lite &operator=(const T &rhs);
 
-    // Comparison to another Vector_Lite.
+    // Comparisons to another Vector_Lite.
     inline bool operator==(const Vector_Lite &a) const;
+    inline bool operator<(const Vector_Lite &a) const;
 
     // Basic arithmetic operations, vector right-hand side
 

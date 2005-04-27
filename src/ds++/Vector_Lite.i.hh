@@ -161,6 +161,64 @@ operator==(const Vector_Lite<T, N> &a) const
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Comparison to another Vector_Lite.
+ */
+template <class T, size_t N>
+bool
+Vector_Lite<T, N>::
+operator<(const Vector_Lite<T, N> &a) const
+{
+    for ( size_type i = 0; i < N; i++ )
+    {
+	if ( ! ( d_U[i] <  a.d_U[i] ) ) return false;
+    }
+    
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+
+//! Element-wise not-equals
+template<class T, size_t N> inline bool 
+operator!=(Vector_Lite<T,N> const & lhs, 
+	   Vector_Lite<T,N> const & rhs)
+{
+    return !(lhs == rhs);
+}
+
+//---------------------------------------------------------------------------//
+
+//! Element-wise greater than
+template<class T, size_t N> inline bool 
+operator>(Vector_Lite<T,N> const & lhs, 
+	  Vector_Lite<T,N> const & rhs)
+{
+    return rhs < lhs;
+}
+
+//---------------------------------------------------------------------------//
+
+//! Element-wise less-than-or-equal
+template<class T, size_t N> inline bool 
+operator<=(Vector_Lite<T,N> const & lhs, 
+	   Vector_Lite<T,N> const & rhs)
+{
+    return !(lhs > rhs);
+}
+
+//---------------------------------------------------------------------------//
+
+//! Element-wise greater-than-or-equal
+template<class T, size_t N> inline bool 
+operator>=(Vector_Lite<T,N> const & lhs, 
+	   Vector_Lite<T,N> const & rhs)
+{
+    return !(rhs > lhs);
+}
+
+
+//---------------------------------------------------------------------------//
 // basic arithmetic member functions, vector right-hand side
 //---------------------------------------------------------------------------//
 
