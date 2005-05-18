@@ -21,6 +21,19 @@ import glob
 
 class AppTest:
 
+    ## member functions:
+    ## __init__( self, num_procs, package_name, input_deck )
+    ## passmsg(self,msg)
+    ## failmsg(self,msg)
+    ## header(self)
+    ## footer(self)
+    ## finalize(self)
+    ## print_padded_message(self,msg)
+    ## print_with_border(self,msg,just,bw)
+    ## welcome(self)
+    ## soft_equiv_list( self, listValue, listReference )
+    ## soft_equiv( self, value, reference, OPT precision )
+
     ##-----------------------------------------------------------------------##
     ## Initialize Data
     def __init__( self, num_procs, package_name, input_deck ):
@@ -280,7 +293,25 @@ class AppTest:
             return 1
         else:
             return 0
-        
+
+##------------------------------------------------------------##
+## Design-by-Contract Assertions
+##------------------------------------------------------------##
+def DBC( bool, msg, type ):
+    if bool != 1:
+        print "\nFATAL ERROR: %s condition not met. "%type
+        print "User message: \"%s\"\n"%msg
+        sys.exit(1)
+                
+def Require( bool, msg):
+    DBC(bool,msg,"REQUIRE")
+def Ensure( bool, msg):
+    DBC(bool,msg,"ENSURE")
+def Check( bool, msg):
+    DBC(bool,msg,"CHECK")
+def Insist( bool, msg):
+    DBC(bool,msg,"INSIST")
+
 ##---------------------------------------------------------------------------##
 ## GMV data class
 ##---------------------------------------------------------------------------##
