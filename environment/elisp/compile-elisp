@@ -16,16 +16,16 @@
 #   ./compile-elisp <file.el>
 
 setpath=${TMPDIR-/tmp}/elc.$$
-echo "(setq load-path (cons nil load-path))" > $setpath
-echo "(if (file-accessible-directory-p" >> $setpath
-echo "  \"/codes/radtran/vendors/doxymacs-1.5.0/lisp\")" >> $setpath
-echo "  (setq load-path (cons " >> $setpath
-echo "    \"/codes/radtran/vendors/doxymacs-1.5.0/lisp\" load-path)))" >> $setpath
+echo "(setq load-path (cons \".\" load-path))" > $setpath
+#echo "(if (file-accessible-directory-p" >> $setpath
+#echo "  \"/codes/radtran/vendors/doxymacs-1.5.0/lisp\")" >> $setpath
+#echo "  (setq load-path (cons " >> $setpath
+#echo "    \"/codes/radtran/vendors/doxymacs-1.5.0/lisp\" load-path)))" >> $setpath
 if test -n "$1"; then
    xemacs -batch -l $setpath -f batch-byte-compile "$@"
 else
    xemacs -batch -l $setpath -f batch-byte-compile *.el
 fi
-cat $setpath
+#cat $setpath
 rm -f $setpath
 

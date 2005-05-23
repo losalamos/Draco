@@ -1,5 +1,5 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> ELISP RELEASE elisp-2_3_0       
+>>> ELISP RELEASE elisp-3_0_0       
 >>> CCS-4 Transport Methods Group      
 >>> Copyright University of California 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -12,17 +12,26 @@ elisp directory to your XEmacs load path and then load the
 ccs4defaults library.
 
 In ~/.xemacs/init.el add the following elisp.  You should replace the
-path to the Draco elisp directory with the real path on your current
-machine.  The value shown below assumes that you have Draco checked
-out in your home space.  
+path to the Draco environment (~/draco/environment) directory with the
+real path on your current machine.  The value shown below assumes that
+you have Draco checked out in your home space.  The directories should
+be listed in the order you want them searched for Draco elisp code.
+If you prefer to use the latest/greatest elisp code (instead of stable
+versions intalled at /codes/radtran) you should switch the order of
+the first two entries.
 
 ;; Load Draco Elisp files
-(load-library "~/draco/environment/elisp/ccs4defaults.el")
 
-It is recommended that you compile the .el files for better XEmacs
-performance.  Simply run the script "./compile-elisp".  If you have a
-lot of elisp commands in your ~/.xemacs directory, you may want to
-compile those files too.
+(setq draco-env-dirs (list
+	"/codes/radtran/vendors/environment/"
+	"~/draco/environment"
+	"~/.xemacs" ))
+(load-library "~/draco/environment/elisp/draco-setup")
+
+It is recommended that you compile the .el files located at
+draco/environment/elisp for better XEmacs performance.  Simply run the
+script "./compile-elisp".  If you have a lot of elisp commands in your
+~/.xemacs directory, you may want to compile those files too.
 
 Retired Elisp Features
 ==============================
