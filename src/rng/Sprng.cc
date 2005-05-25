@@ -3,8 +3,8 @@
  * \file   rng/Sprng.cc
  * \author Thomas M. Evans
  * \date   Fri Jun 26 07:41:48 1998
- * \brief  \link rtt_rng::Sprng Sprng \endlink random number class 
- *         implementation file.
+ * \brief  Sprng random number class implementation file.
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -98,7 +98,6 @@ std::vector<char> Sprng::pack() const
     return packed;
 }
 
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator.
@@ -138,7 +137,6 @@ bool Sprng::avg_test(int n, double eps) const
     return true;
 }
 
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Return the size of the packed character stream.
@@ -155,10 +153,7 @@ int Sprng::get_size() const
     Check (prng);
 
     return Sprng::packed_size;
-    
 }
-
-
 
 } // end namespace rtt_rng
 

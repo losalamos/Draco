@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Apr 29 13:57:25 1998
  * \brief  Sprng random number class header file.
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __rng_Sprng_hh__
-#define __rng_Sprng_hh__
+#ifndef rtt_rng_Sprng_hh
+#define rtt_rng_Sprng_hh
 
 #include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
@@ -63,16 +64,6 @@ namespace rtt_rng
  * preferred way of creating Sprng objects is to use the Rnd_Control class
  * that "hides" SPRNG library details from the user.  
  */
-//
-// revision history:
-// -----------------
-//  0) original
-//  1)  4-30-98 : added reference counting to take care of memory in case the 
-//                object is copied and deleted
-//  2)  6-26-98 : added average tester 
-//  3)  1-SEP-99: added doxygen comments
-//  4) 20-DEC-01: added packing functions
-// 
 //===========================================================================//
 
 class Sprng 
@@ -155,7 +146,6 @@ Sprng::Sprng(const Sprng &rhs)
     ++streamid->refcount;
 }
 
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Destructor
@@ -166,11 +156,9 @@ Sprng::~Sprng()
 	delete streamid;
 }
 
-
-
 } // end namespace rtt_rng
 
-#endif                          // __rng_Sprng_hh__
+#endif                          // rtt_rng_Sprng_hh
 
 //---------------------------------------------------------------------------//
 //                              end of rng/Sprng.hh
