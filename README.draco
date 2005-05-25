@@ -92,6 +92,9 @@ C++.
 Retired Draco Package Synopsis
 ==============================
 
+meshReaders_Services [meshReaders_Services-retired] : A post-process mesh
+package that built connectivity from mesh data read by meshReaders.
+
 stdheaders [stdheaders-retired] : Standard headers for compilers that
 didn't support std:: namespace.
 

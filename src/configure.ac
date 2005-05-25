@@ -53,7 +53,7 @@ dnl
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(RTT_Format_Reader meshReaders_Services)
+AC_CONFIG_SUBDIRS(RTT_Format_Reader)
 
 ##---------------------------------------------------------------------------##
 ## build the makefile in src/
