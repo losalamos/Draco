@@ -453,22 +453,39 @@ class GMVFile:
         if debug:
             print "Parsing variables..."
 
+        useExistingLine=0
         while 1:
-            line = self.gmvfile.readline()[:-1]
-            idxLine += 1
+            if not useExistingLine:
+                line = self.gmvfile.readline()[:-1]
+                idxLine += 1
+                useExistingLine = 0
             match = re.search( '([A-z0-9_]+)', line )
             key = match.group(1)
+
+            if debug:
+                print "Looking at data for variable named \"%s\""%key
+
             if key == "endvars":
                 break
             else:
                 match = re.search( '([A-z0-9_]+) (\d+)', line )
 
-            if debug:
-                print "Looking at data for variable named \"%s\""%key
-
             # Read the data
             line = self.gmvfile.readline()[:-1]
             idxLine += 1
+
+            # If no data associated with previous data field, then
+            # this line might be the keyword "endvars"
+            match = re.search( '([A-z0-9_]+)', line )
+            nextWord = match.group(1)
+            if nextWord == "endvars":
+                break
+            match = re.search( '([0-9]+)', line)
+            if not match:
+                print "WARNING --> while parsing GMV file: no data associated with key = %s"%key
+                useExistingLine=1
+                continue
+
             lenLine = len(line)
             posLine = 0
             valueList = []
