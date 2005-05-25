@@ -32,7 +32,7 @@
 ## USAGE:
 ##
 ##    cd tools
-##    ./build_draco_client_releases [--with-draco=PATH]
+##    ./build_ccs4_releases [--with-draco=PATH]
 ##
 ## When building Draco you should not include the --with-draco
 ## argument.  When building a Draco client specify the installation
@@ -45,7 +45,7 @@
 ##    mkdir capsaicin-3_7_2; cd capsaicin-3_7_2
 ##    cvs -d sf:/cvsroot/capsaicin co -P -r capsaicin-3_7_2 capsaicin
 ##    cd capsaicin/tools
-##    ./build_draco_client_release --with-draco=/codes/radtran/vendors/draco-2_4_0/Linux/opt >& ../build.log
+##    ./build_ccs4_release --with-draco=/codes/radtran/vendors/draco-2_4_0/Linux/opt >& ../build.log
 ##
 ##---------------------------------------------------------------------------##
 
@@ -159,8 +159,16 @@ pkg_debug="$pkg_home/$arch/debug"
 pkg_opt="$pkg_home/$arch/opt"
 
 if test -d $pkg_home/$arch ; then
+    echo ">>> Ready to remove existing directory $pkg_home/$arch."
+    echo -n ">>> Are you sure [y]? "
+    read answer
+    if test ${answer:-y} = y; then
     echo ">>> Removing old $pkg_home/$arch directory."
-    rm -rf $pkg_home/$arch
+       rm -rf $pkg_home/$arch
+    else
+       echo" >>> Did not remove directory. Script aborted."
+       exit
+    fi
 fi
 
 echo ">>> Making $pkg_home/$arch."
@@ -191,6 +199,8 @@ Linux)
    LAPACK="--with-lapack=atlas"
    LAPACK_LIB="--with-lapack-lib=/codes/radtran/vendors/atlas/$arch/lib"
    LAPACK="${LAPACK} ${LAPACK_LIB}"
+
+   GSL="--with-gsl-inc=/codes/radtran/vendors/gsl/$arch/include --with-gsl-lib=/codes/radtran/vendors/gsl/$arch/lib"
 
    # options for Draco only
 
@@ -228,7 +238,7 @@ Linux)
    # Put the list together
 
    VENDORS="$MPI $SPRNG $PCG_LIB $LAPACK $GANDOLF_LIB $EOSPAC_LIB $GRACE"
-   VENDORS="$VENDORS $TRILINOS $METIS"
+   VENDORS="$VENDORS $TRILINOS $METIS $GSL"
    ;;
 
 IRIX64)
