@@ -10,15 +10,17 @@
 ## Function is_attrib:
 ##---------------------------------------------------------------------------##
 def is_attrib(value):
-    """Matches only valid XML attribute specifiers: XXX='YYY'
+    """is_attrib(value)
+    
+    Returns true for valid XML attribute specifiers: XXX='YYY'
 
     >>> is_attrib("tag='value'")
     1
 
-    >>> is_attrib('tag="The value is moot!"')
+    >>> is_attrib('tag="value"')
     1
 
-    >>> is_attrib("tag!='value'")
+    >>> is_attrib("tag,'value'")
     0
 
     The tag is limited to characters [A-Za-z] while the value can
@@ -32,19 +34,35 @@ def is_attrib(value):
     return bool(r.match(value))
 
 
+##---------------------------------------------------------------------------##
+## Function parse_attrib:
+##---------------------------------------------------------------------------##
 def parse_attrib(value):
-    """ Extract the key and value in an XML attribute specifier.
+    """parse_attrib(value)
+
+    Returns as a pair the key and value in an XML attribute specifier.
+
+    >>> parse_attrib("tag='value'")
+    ('tag', 'value')
+
+    >>> parse_attrib('tag="value"')
+    ('tag', 'value')
+
+    >>> parse_attrib("tag,value")
+    Traceback (most recent call last):
+    ...
+    ValueError: 'tag,value' is not a valid XML attribute.
 
     """
     import re
 
-    if not is_attrib(value):
-        raise ValueError, "%s is not a valid XML attribute" % value
-
     r = re.compile(r'(?P<tag>[A-Za-z]+)=([\'|\"])(?P<value>.*)\2$')
 
     match = r.match(value)
-    return match.group('tag', 'value')
+    if not match:
+        raise ValueError, "'%s' is not a valid XML attribute." % value
+    else:
+        return match.group('tag', 'value')
 
 
 ##---------------------------------------------------------------------------##
@@ -72,43 +90,72 @@ def padlist(l, length):
 def ScanTo(fileHandle, regexString):
 
     """
-    Reads lines in the file pointed to by fileHandle until one matching
-    regexString is found. Returns the matching position object and
-    leaves the fileHandle in the state after reading that line, if a
-    matching line is found. If no matching line is found, the fileHandle
-    is left pointing at the line where it was called and the return
-    argument is None.
+    ScanTo(fileHandle, regexString)
+
+    Reads lines in the file pointed to by fileHandle until one
+    matching regexString is found. If a match is found, returns the
+    match object and leaves the fileHandle at pointing to the next
+    line. If no matching line is found, the fileHandle is left
+    pointing at the line where it was called and the return argument
+    is None.
     
-    The value of the line can be obtained from the returned position
-    object as the .string member.
+    In this example, we scan this file to find the beginning of this
+    function, then scan for the import command and retrieve the module
+    name. We then fail at another scan and verify that the filehandle
+    is in the right place.
+
+    This test must be run from the directory containing Utils.py
+
+    >>> file = open('Utils.py')
+    >>> match = ScanTo(file, '^[ ]*def[ ]+ScanTo')
+    >>> match.string.strip()
+    'def ScanTo(fileHandle, regexString):'
+
+    >>> match = ScanTo(file, '^[ ]*import[ ]+(.*)')
+    >>> match.group(1)
+    're'
+
+    >>> match = ScanTo(file, "^Can\'t match this.$")
+    >>> print match
+    None
+    >>> file.readline().strip()
+    'regex = re.compile(regexString)'
+
     """
 
     import re
-
     regex = re.compile(regexString)
 
-    # Store the original location for restoration:
-    filePosition = fileHandle.tell()
+    original_position = fileHandle.tell()
+    
+    match = None
+    while not match:
+        line = fileHandle.readline()
+        match = regex.search(line)
+        if not line: break
 
-    line = fileHandle.readline()
-    while line:
-        position = re.search(regexString, line)
-        if position:
-            break
-        else:
-            line = fileHandle.readline()
+    if not match: fileHandle.seek(original_position)
 
-    # If the line is empty, we reached the end of the file without
-    # finding the pattern. Before exiting, restore fileHandle to
-    # original position in file:
-
-    if line=='': fileHandle.seek(filePosition)
-
-    return position
+    return match
 
 
 ##---------------------------------------------------------------------------##
-def openFileOrString(source):                  
+def openFileOrString(source):
+    """openFileOrString(source)
+
+    A unified open function which will open a specified file, if it
+    exists, or, failing that, treat the argument as a string and open
+    it for reading.
+
+    >>> file = openFileOrString('Utils.py')
+    >>> file.readline().strip()
+    '#!/usr/bin/env python'
+
+    >>> file = openFileOrString('This is a test.')
+    >>> file.readline().strip()
+    'This is a test.'
+
+    """
 
     # try to open with native open function (if source is pathname)
     try:                                  
@@ -170,12 +217,16 @@ def processSetters(options, setters, parameters):
             if option == setter: parameters[param] = arg
 
 ##---------------------------------------------------------------------------##
-class AmbiguousKeyError(Exception):
+class KeyError(Exception):
+    "An exception class for all disambuguation errors."
+    pass
+
+class AmbiguousKeyError(KeyError):
     """An exception raised by Utils.disambiguate when multiple matching
     values are found."""
     pass
 
-class InvalidKeyError(Exception):
+class InvalidKeyError(KeyError):
     """An exception raised by Utils.disambiguate when no matching
     values are found."""
     pass
@@ -187,8 +238,9 @@ def disambiguate(value, targets):
     Return a single string from the list argument 'targets' which
     begins with the characters in the string 'value'.
 
-    If no string, or more than one string in targets contains the
-    string, raise an "AmbiguousKeyError" exception.
+    If more than one string in targets contains the string, raise an
+    "AmbiguousKeyError" exception. If no strings match, raise
+    "InvalidKeyError".
 
     >>> disambiguate('gr', ['tall', 'grande', 'venti', 'giant'])
     'grande'
@@ -215,16 +267,52 @@ def disambiguate(value, targets):
     else:
         raise InvalidKeyError(value, targets)
 
+##---------------------------------------------------------------------------##
 def complete(value, targets):
     """
     Return a list of strings from targets which begin with the
     characters in value
-
-   >>> complete('g', ['tall', 'grande', 'venti', 'giant'])
-   ['grande', 'giant']
+    
+    >>> complete('g', ['tall', 'grande', 'venti', 'giant'])
+    ['grande', 'giant']
+    
+    >>> complete('s', ['tall', 'grande', 'venti', 'giant'])
+    []
     """
 
     return [target for target in targets if target.find(value)==0]
+
+##---------------------------------------------------------------------------##
+def unique_append(a_list, an_item):
+
+    """Append an_item to a_list only if it does not yet appear
+
+    >>> unique_append([1,2,3],4)
+    [1, 2, 3, 4]
+
+    >>> unique_append([1,2,3,4],4)
+    [1, 2, 3, 4]
+    """
+    if an_item not in a_list: a_list.append(an_item)
+
+    return a_list
+
+##---------------------------------------------------------------------------##
+def unique_extend(a_list, b_list):
+
+    """Extend a_list with items in b_list if they do not already
+    appear.
+
+    >>> unique_extend([1,2,3], [3,4,5])
+    [1, 2, 3, 4, 5]
+
+    """
+
+    for an_item in b_list:
+        if an_item not in a_list: a_list.append(an_item)
+
+    return a_list
+
 
 ##---------------------------------------------------------------------------##
 def _test():
