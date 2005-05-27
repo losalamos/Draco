@@ -549,9 +549,9 @@ draco-companion-file-alist."
 "Insert a M4 comment block."
   (interactive)
   (beginning-of-line)
-  (insert "dnl-------------------------------------------------------------------------dnl\n")
+  (insert "dnl ------------------------------------------------------------------------- dnl\n")
   (insert "dnl \n")
-  (insert "dnl-------------------------------------------------------------------------dnl\n\n")
+  (insert "dnl ------------------------------------------------------------------------- dnl\n\n")
   (previous-line 3)
   (end-of-line)
 )
@@ -560,7 +560,8 @@ draco-companion-file-alist."
 "Insert a M4 divider."
   (interactive)
   (beginning-of-line)
-  (insert "dnl-------------------------------------------------------------------------dnl\n")
+  (insert
+   "dnl ------------------------------------------------------------------------- dnl\n")
   (end-of-line)
 )
 

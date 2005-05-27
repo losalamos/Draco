@@ -356,6 +356,8 @@ auto-mode-alist.
 	(draco-mode-update-menu (draco-menu-insert-comments-tex))
 	(turn-on-bib-cite)
 	(turn-on-reftex)
+	(turn-on-auto-fill)
+	(turn-on-draco-mode)
 	)
       (add-hook 'TeX-mode-hook  'draco-latex-mode-hook)
       (add-hook 'bibtex-mode-hook 'draco-latex-mode-hook)))
