@@ -1,0 +1,121 @@
+#!/usr/bin/env python
+##---------------------------------------------------------------------------##
+## Depends
+##
+## Michael W. Buksas
+##
+## $Id$
+##---------------------------------------------------------------------------##
+
+"""Depends
+
+Usage: depends [-d dir]
+       depends [-d dir] [list of component names]
+
+Depends searches for component dependencies in C/C++ files in the
+current directory, or the direcotory specified by -d and, if it
+exists, a test sub-directory.
+
+Without arguments, 'depends' will list all of the component
+directories that files in the current directory depend on. It then
+lists all components that the testing sub-directory depends on
+which the main directory does not.
+
+If any arguments are present, 'depends' will intrepret them as a
+list of components. A list of all files which depend on a file in
+one of these components is printed, along with the file they
+depend on.
+
+"""
+
+##---------------------------------------------------------------------------##
+def output_components(directory, test_directory = None):
+
+    """Determines all of the components that the contents of
+    'directory' depend on. If a testing sub-dir exists, determines
+    which additional components it depends on.
+
+    """
+
+    deps = Packages.scan_directory(directory)
+    comps = Packages.find_components(deps)
+
+
+    print "Referenced components:"
+    for comp in comps: print "  %s" % comp
+    print
+
+    
+    if test_directory:
+        print "Test only components:"
+        deps = Packages.scan_directory(test_directory)
+        comps = Packages.find_components(deps, comps)
+
+        for comp in comps: print "  %s" % comp
+        print
+
+##---------------------------------------------------------------------------##
+def output_component_files(directory, component_list):
+
+    """ Print a list of files that depend on any component in the list
+    'component_list' and which files in that component that they
+    depend on.
+
+    """
+
+    print "Selected dependencies in %s:" % directory
+
+    deps = Packages.scan_directory(directory)
+
+    for (file, include_dict) in deps.items():
+        for (component, dep_files) in include_dict.items():
+            if component in component_list:
+                for dep_file in dep_files:
+                    print "%35s -> %s::%s" % (file, component, dep_file)
+    
+
+##---------------------------------------------------------------------------##
+## MAIN PROGRAM
+##---------------------------------------------------------------------------##
+
+if __name__=='__main__':
+
+    import Packages, os, os.path, sys, getopt
+
+    try:
+        options, component_names = getopt.getopt(sys.argv[1:], 'd:h', ['help'])
+    except getopt.GetoptError:
+        sys.exit('ERROR: bad option or missing argument')
+
+    options_dict = dict(options)
+
+    # Default values:
+    comp_dir = os.getcwd()
+
+    if '-h' in options_dict or '--help' in options_dict:
+        print __doc__
+        sys.exit()
+
+    if '-d' in options_dict:
+        comp_dir = os.path.abspath(options_dict['-d'])
+        if not os.path.exists(comp_dir):
+            sys.exit("ERROR: Directory %s does not exist." % comp_dir);
+        
+
+    # Look for a component test dir:
+    comp_test_dir = comp_dir + '/test'
+    if not os.path.exists(comp_test_dir): comp_test_dir = ''
+
+    # Announcement
+    print "Working in package directory  : %s" % (comp_dir)
+    print "Package name is               : %s\n" % (os.path.basename(comp_dir))
+    
+    if component_names:
+        # List explicit file dependencies
+        output_component_files(comp_dir,      component_names)
+        output_component_files(comp_test_dir, component_names)
+    else:
+        # Output the component-only data:
+        output_components(comp_dir, comp_test_dir)
+
+        

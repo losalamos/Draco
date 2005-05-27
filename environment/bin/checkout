@@ -50,6 +50,7 @@ import sys, os, getopt
 
 package_archive = {'draco'      :'draco',
                    'tools'      :'jayenne',
+                   'imcdoc'     :'jayenne',
                    'clubimc'    :'jayenne',
                    'milagro'    :'jayenne',
                    'wedgehog'   :'jayenne',
@@ -100,8 +101,10 @@ if '-l' in options or '--list' in options:
 if '-e' in options:
     command = 'export'
 
-# If we don't have a package, try and get it from the remaining
-# arguments:
+
+# If we don't have a package, try and get it from the first
+# argument. If this argument contains '/' treat the first part before
+# '/' as the package name and the rest as a component
 
 if not package:
     try:
@@ -111,7 +114,7 @@ if not package:
         package_name = '/'.join(package_parts)
 
         package = package_parts[0]
-        archive = package_archive[package]
+
     except IndexError:
         sys.exit("ERROR: No package name given.")
     except AmbiguousKeyError:
@@ -119,15 +122,19 @@ if not package:
     except InvalidKeyError:
         sys.exit("ERROR: Unrecognized package name.")
 
-# Disambuguation of pacakge name should prevent this:
-if not package in package_archive.keys():
+
+# Look up the archive name, catch (unlikely at this point) invalid
+# package names. 
+try:
+    archive = package_archive[package]
+except KeyError:
     sys.exit("ERROR: Unrecognized package name: %s" % package)
     
 
+
 # If we don't have a tag yet, look for a version number in the second
-# argument position. If we find one, make a tag from it. Otherwize,
-# leave the tag field empty. This will cause cvs to default to the
-# head version.
+# argument. If we find one, make a tag from it. Otherwize, leave the
+# tag field empty. This will cause cvs to default to the head version.
 
 if not tag:
     try:
