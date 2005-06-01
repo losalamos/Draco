@@ -35,13 +35,15 @@ namespace rtt_dsxx
 template<class T> class DBC_Array
 {
   public:
-    typedef T         value_type;
-    typedef T &       reference;
-    typedef T const & const_reference;
-    typedef T*        iterator;
-    typedef T const * const_iterator;
-    typedef size_t    size_type;
-    typedef ptrdiff_t difference_type;
+    typedef T                 value_type;
+    typedef T &               reference;
+    typedef T const &         const_reference;
+    typedef T*                iterator;
+    typedef T const *         const_iterator;
+    typedef size_t            size_type;
+    typedef ptrdiff_t         difference_type;
+    typedef value_type*       pointer;
+    typedef value_type const* const_pointer;
   public:
     //! Create an empty array
     DBC_Array()  
