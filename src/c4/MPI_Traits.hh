@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_MPI_Traits_hh__
-#define __c4_MPI_Traits_hh__
+#ifndef c4_MPI_Traits_hh
+#define c4_MPI_Traits_hh
 
 #include "c4_mpi.h"
 
@@ -30,10 +30,6 @@ namespace rtt_c4
  * an MPI_Datatype.
  *
  */
-// revision history:
-// -----------------
-// 0) original
-// 
 //===========================================================================//
 
 template<class T>
@@ -113,7 +109,7 @@ struct MPI_Traits<long double>
 
 } // end namespace rtt_c4
 
-#endif                          // __c4_MPI_Traits_hh__
+#endif                          // c4_MPI_Traits_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/MPI_Traits.hh

@@ -139,6 +139,16 @@ bool probe(int  source,
     return true;
 }
 
+//---------------------------------------------------------------------------//
+// ABORT
+//---------------------------------------------------------------------------//
+
+int abort(int error)
+{
+    int rerror = MPI_Abort(communicator, error);
+    return rerror;
+}
+
 } // end namespace rtt_c4
 
 #endif // C4_MPI

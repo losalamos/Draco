@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_C4_MPI_t_hh__
-#define __c4_C4_MPI_t_hh__
+#ifndef c4_C4_MPI_t_hh
+#define c4_C4_MPI_t_hh
 
 #include <c4/config.h>
 
@@ -269,7 +269,7 @@ void global_max(T *x, int n)
 
 #endif // C4_MPI
 
-#endif                         // __c4_C4_MPI_t_hh__
+#endif                         // c4_C4_MPI_t_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/C4_MPI.t.hh

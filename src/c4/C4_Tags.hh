@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_C4_Tags_hh__
-#define __c4_C4_Tags_hh__
+#ifndef c4_C4_Tags_hh
+#define c4_C4_Tags_hh
 
 namespace rtt_c4
 {
@@ -23,7 +23,7 @@ const int C4_SUCCESS = 0;
 
 } // end namespace rtt_c4
 
-#endif                          // __c4_C4_Tags_hh__
+#endif                          // c4_C4_Tags_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/C4_Tags.hh

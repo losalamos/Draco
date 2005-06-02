@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_C4_MPI_hh__
-#define __c4_C4_MPI_hh__
+#ifndef c4_C4_MPI_hh
+#define c4_C4_MPI_hh
 
 #include <c4/config.h>
 
@@ -44,7 +44,7 @@ void inherit(const Comm &comm)
 
 #endif // C4_MPI
 
-#endif                          // __c4_C4_MPI_hh__
+#endif                          // c4_C4_MPI_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/C4_MPI.hh

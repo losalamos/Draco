@@ -12,8 +12,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_C4_Functions_hh__
-#define __c4_C4_Functions_hh__
+#ifndef c4_C4_Functions_hh
+#define c4_C4_Functions_hh
 
 #include <unistd.h>
 #include <sys/times.h>  // defines the struct tms.
@@ -230,9 +230,19 @@ double wall_clock_resolution();
  */
 bool probe(int source, int tag, int &message_size);
 
+//---------------------------------------------------------------------------//
+// ABORT
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Abort across all processors.
+ *
+ * \param error suggested return error, defaults to 1
+ */
+int abort(int error = 1);
+
 } // end namespace rtt_c4
 
-#endif                          // __c4_C4_Functions_hh__
+#endif                          // c4_C4_Functions_hh
 
 //---------------------------------------------------------------------------//
 //                              end of c4/C4_Functions.hh

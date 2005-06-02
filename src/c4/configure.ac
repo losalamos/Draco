@@ -23,7 +23,13 @@ AC_NEEDS_LIBS(ds++)
 
 dnl DRACO SETUP
 
-AC_RUNTESTS(tstTime tstReduction tstPingPong tstComm_Dup tstBroadcast, 1 2 4)
+AC_RUNTESTS(tstTime \
+            tstReduction \
+            tstPingPong \
+            tstComm_Dup \
+            tstBroadcast \
+            tstAbort \
+            , 1 2 4)
 AC_DRACO_ENV
 AC_DRACO_AUTODOC(draco-5_5_0)
 
