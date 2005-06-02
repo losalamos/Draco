@@ -79,7 +79,7 @@ namespace rtt_cdi_gandolf {
 	/*!
 	 * \brief Maximum number of data keys per material.
 	 */
-	const int maxKeys = 25;
+	const int maxKeys = 26;
 	
 	//====================================================================
 	/*! 
