@@ -185,7 +185,7 @@ void test_non_pod()
 
 
 //---------------------------------------------------------------------------//
-void test_copy_to_empty()
+void test_assign_to_empty()
 {
     std::set<int> cont;		// use this for non-sequential memory
     std::vector<int> exp_val;
@@ -197,7 +197,7 @@ void test_copy_to_empty()
     }
     AInt inserted;
 
-    inserted.copy(cont.begin(), cont.end());
+    inserted.assign(cont.begin(), cont.end());
 
     test_sized_array(inserted, 10, exp_val);
     if (rtt_ds_test::passed)
@@ -208,7 +208,7 @@ void test_copy_to_empty()
 
 
 //---------------------------------------------------------------------------//
-void test_copy_to_filled()
+void test_assign_to_filled()
 {
     std::set<int> cont;		// use this for non-sequential memory
     std::vector<int> exp_val;
@@ -221,12 +221,12 @@ void test_copy_to_filled()
 
     // Different sizes
     AInt inserted(2);
-    inserted.copy(cont.begin(), cont.end());
+    inserted.assign(cont.begin(), cont.end());
     test_sized_array(inserted, 10, exp_val);
 
     AInt ss(10);
     AInt::iterator orig_start = ss.begin();
-    ss.copy(cont.begin(), cont.end());
+    ss.assign(cont.begin(), cont.end());
     if(orig_start != ss.begin()) ITFAILS; // shouldn't change memory
     test_sized_array(ss, 10, exp_val);
 
@@ -247,7 +247,7 @@ void test_swap()
 	exp_val_a[i] = i*3+i/2;
     }
     AInt c_a;
-    c_a.copy(exp_val_a.begin(), exp_val_a.end());
+    c_a.assign(exp_val_a.begin(), exp_val_a.end());
 
     const std::vector<int> exp_val_b(4);
     AInt c_b(4,0);
@@ -300,7 +300,7 @@ void test_copies()
     }
 
     AInt master;
-    master.copy(exp_val.begin(), exp_val.end());
+    master.assign(exp_val.begin(), exp_val.end());
 
     AInt ctor_copy(master);
     AInt empty_copy; empty_copy = master;
@@ -360,6 +360,26 @@ void test_assign()
 
 
 //---------------------------------------------------------------------------//
+void more_iterator_init_tests()
+{
+    AInt master(7, 8);
+    std::vector<int> cmp(7, 8);
+
+    test_sized_array(master, 7, cmp);
+
+    AInt slave(master.begin(), master.end());
+
+    test_sized_array(slave, 7, cmp);
+
+    if (rtt_ds_test::passed)
+	PASSMSG("iterator_init works.");
+    else
+	PASSMSG("iterator_init FAILED.");
+
+}
+
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
     for (int arg = 1; arg < argc; arg++)
@@ -375,11 +395,12 @@ int main(int argc, char *argv[])
 	test_default_ctor();
 	test_non_pod();
 	test_size_5();
-	test_copy_to_empty();
-	test_copy_to_filled();
+	test_assign_to_empty();
+	test_assign_to_filled();
 	test_swap();
 	test_copies();
 	test_assign();
+	more_iterator_init_tests();
     }
     catch (rtt_dsxx::assertion &ass)
     {

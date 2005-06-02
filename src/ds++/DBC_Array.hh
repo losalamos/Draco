@@ -10,13 +10,171 @@
 #define DBC_Array_hh
 
 #include <algorithm>
-#include <iostream>
 #include <cstdio>
+#include <iostream>
+#include <limits>
 #include "Assert.hh"
 
 namespace rtt_dsxx
 {
+/*!
+  Support classes and functions for DBC_Array.  This is necessary to
+  implement the iterator-range constructor and assign member functions.
+*/
+namespace DBCA_Support
+{
 
+
+//---------------------------------------------------------------------------//
+/*!  
+  All DBC_Array constructors use this function to do an initial memory
+  allocation of an array of type \c T of length \p n.  If \p init is \c true,
+  then the data is copied into the newly allocated memory, otherwise the
+  memory is initialized according to the rules in section 5.3.4.15 of the
+  standard.
+
+  \note\b Note: should you be tempted to replace new/delete[] with malloc/free,
+  you had better know what you are doing with placement new and/or
+  uninitialized_fill.  malloc/free works fine with PODs, but it doesn't
+  construct any non-trivial classes!  When I wrote this, the performance of
+  the two styles was pretty much equivalent anyway. 
+*/
+template<class T> void 
+common_construct(T*& d_ptr, 
+		 size_t& d_size,
+		 const size_t n, 
+		 const bool init, 
+		 T const& value = T())
+{
+    d_size = n;
+    
+    if(d_size) 
+    {
+	d_ptr = new T[n];
+
+	if(!d_ptr)
+	{
+	    std::perror("DBC_Array<T>::common_construct()");
+	    Insist_ptr(d_ptr, "allocation failure");
+	}
+	
+	if(init)
+	    std::fill_n(d_ptr, n, value);
+    } 
+    else
+    {
+	d_ptr = 0;
+    }
+}
+
+
+//---------------------------------------------------------------------------//
+/*!  
+  Any DBC_Array function that changes the size of the array uses this
+  function to do so, creating a new array of type \c T of length \p n.  If \p
+  init is \c true, then the data is copied into the newly allocated memory,
+  otherwise the data is initialized according to the rules in section
+  5.3.4.15 of the standard.
+
+  This differs from the constructor in that it deletes existing memory if a
+  different size is requested.  Note that there is no concept of capacity
+  vs. size, as in a std::vector. 
+
+  \sa common_construct   
+*/
+template<class T> void 
+common_resize(T*& d_ptr, 
+	      size_t& d_size,
+	      const size_t n, 
+	      const bool init, 
+	      T const& value = T())
+{
+    if(d_size != n)
+    {
+	if(d_ptr) 
+	{
+	    delete[] d_ptr; 
+	    d_ptr = 0;
+	}
+	d_size = n;
+	if(d_size)
+	{
+	    d_ptr = new T[n];
+		    
+	    if(!d_ptr)
+	    {
+		std::perror("DBC_Array<T>::common_resize()");
+		Insist_ptr(d_ptr, "allocation failure");
+	    }
+
+	} 
+    }
+    if(init)
+	std::fill_n(d_ptr, n, value);
+}
+
+
+//---------------------------------------------------------------------------//
+//! Implement the iterator-range constructor
+template<class T, class IV, bool> struct initialize_dispatcher
+{
+    inline static void 
+    do_it(T*& d_ptr, size_t& d_size, IV first, IV last)
+    {
+	common_construct<T>(d_ptr, d_size, std::distance(first, last), false);
+	if(d_size)
+	{
+	    std::copy(first, last, d_ptr);
+	}
+    }
+};
+
+
+//---------------------------------------------------------------------------//
+//! Implement the size,value constructor masquerading as iterator-range
+template<class T, class IV> struct initialize_dispatcher<T,IV,true>
+{
+    inline static void 
+    do_it(T*& d_ptr, size_t& d_size, IV n, IV val)
+    {
+	common_construct<T>(d_ptr, d_size, n, true, val);
+    }
+};
+
+
+//---------------------------------------------------------------------------//
+//! Implement the iterator-range assign()
+template<class T, class IV, bool> struct assign_dispatcher
+{
+    inline static void
+    do_it(T*& d_ptr, size_t& d_size, IV first, IV last)
+    {
+	common_resize<T>(d_ptr, d_size, std::distance(first, last), false);
+	if(d_size)
+	{
+	    std::copy(first, last, d_ptr);
+	}
+    }
+};
+
+
+//---------------------------------------------------------------------------//
+//! Implement the size,value assign() masquerading as iterator-range
+template<class T, class IV> struct assign_dispatcher<T,IV,true>
+{
+    inline static void
+    do_it(T*& d_ptr, size_t& d_size, IV n, IV val)
+    {
+	common_resize<T>(d_ptr, d_size, n, true, val);
+    }
+};
+
+//---------------------------------------------------------------------------//
+} // End of namespace rtt_dsxx::DBCA_Support 
+//---------------------------------------------------------------------------//
+
+
+//---------------------------------------------------------------------------//
 //! Another "almost" replacement for std::vector
 /*! 
   Why another replacement for std::vector?  I just want something simple.  No
@@ -58,15 +216,29 @@ template<class T> class DBC_Array
     */
     explicit DBC_Array(const size_type n)
     {
-	common_construct(n, false);
+	DBCA_Support::common_construct<T>(d_ptr, d_size, n, false);
     }
 
     //! Create an array of size \p n initialized to \p value.
     DBC_Array(const size_type n, const value_type& value)
     {
-	common_construct(n, true, value);
+	DBCA_Support::common_construct<T>(d_ptr, d_size, n, true, value);
     }
 
+    //! Create an array from the iterators [first, last)
+    template<class InputIterator>
+    DBC_Array(InputIterator first, InputIterator last)
+    {
+	// This dispatcher mechanism is used to differentiate between
+	// InputIterator being an integral type or not.  If it is, it cannot
+	// be an iterator, and so, should generate an array of length "first"
+	// and initialized to value "last".
+	using namespace DBCA_Support;
+	initialize_dispatcher<T,InputIterator,
+	    std::numeric_limits<InputIterator>::is_integer>::
+	    do_it(d_ptr, d_size, first, last);
+    }
+    
     //! (Deep) Copy constructor
     DBC_Array(const DBC_Array<T>& rhs);
 
@@ -79,11 +251,7 @@ template<class T> class DBC_Array
     //! (deep) copy
     DBC_Array<T>& operator=(const DBC_Array<T>& rhs);
 
-    //! Copy from an iterator range
-    template<class InputIterator> void copy(InputIterator first, 
-					    InputIterator last);
 
-    //! Make the array of size \p n, uninitialized (TRASHES CONTENTS!)
     /*! 
       This has the same initialization behavior as DBC_Array(size_t), but,
       beyond that, there are \b no guarantees about the contents of the new
@@ -91,13 +259,27 @@ template<class T> class DBC_Array
     */
     void resize(const size_type n)
     {
-	common_resize(n, false);
+	DBCA_Support::common_resize<T>(d_ptr, d_size, n, false);
     }
 
     //! Make the array of size \p n, initialized to \p value
     void assign(const size_type n, const_reference value)
     {
-	common_resize(n, true, value);
+	DBCA_Support::common_resize<T>(d_ptr, d_size, n, true, value);
+    }
+
+    //! Change the array to be the same as the iterator range [first,last)
+    template<class InputIterator>
+    void assign(InputIterator first, InputIterator last)
+    {
+	// This dispatcher mechanism is used to differentiate between
+	// InputIterator being an integral type or not.  If it is, it cannot
+	// be an iterator, and so, should generate an array of length "first"
+	// and initialized to value "last".
+	using namespace DBCA_Support;
+	assign_dispatcher<T,InputIterator,
+	    std::numeric_limits<InputIterator>::is_integer>::
+	    do_it(d_ptr, d_size, first, last);
     }
 
     //! Swap the contents of two arrays
@@ -127,6 +309,14 @@ template<class T> class DBC_Array
 
     //! Returns a const reference to the i'th element
     const_reference operator[](const size_t i) const 
+    {
+	Require(i < d_size);
+	return d_ptr[i];
+    }
+
+
+    //! Returns a COPY of the i'th element
+    value_type operator()(const size_t i) const
     {
 	Require(i < d_size);
 	return d_ptr[i];
@@ -196,17 +386,9 @@ template<class T> class DBC_Array
     //! Number of T allocated.
     size_type d_size;
 
-  private:
-    //! Code common to all constructors
-    void common_construct(const size_t n, const bool init,
-			  const_reference value = T());
-
-    //! Code common to all resize-like operations
-    void common_resize(const size_t n, const bool init,
-		       const_reference value = T());
 };
 
-
+//---------------------------------------------------------------------------//
 //! Convenience output function
 template<class T> std::ostream&
 operator<<(std::ostream& os, const DBC_Array<T>& rhs);
@@ -216,6 +398,7 @@ operator<<(std::ostream& os, const DBC_Array<T>& rhs);
 // FREE COMPARISON FUNCTIONS
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
 //! Element-wise lhs != rhs
 template<class T> inline bool
 operator!=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
@@ -224,6 +407,7 @@ operator!=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
 }
 
 
+//---------------------------------------------------------------------------//
 //! Element-wise lhs > rhs
 template<class T> inline bool
 operator>(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
@@ -232,6 +416,7 @@ operator>(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
 }
 
 
+//---------------------------------------------------------------------------//
 //! Element-wise lhs <= rhs
 template<class T> inline bool
 operator<=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
@@ -240,6 +425,7 @@ operator<=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
 }
 
 
+//---------------------------------------------------------------------------//
 //! Element-wise lhs >= rhs
 template<class T> inline bool
 operator>=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
@@ -249,112 +435,20 @@ operator>=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
 
 
 //---------------------------------------------------------------------------//
-// PRIVATE FUNCTIONS
-//---------------------------------------------------------------------------//
-
-
-//---------------------------------------------------------------------------//
-/*!
-  All constructors use this function to do an initial memory allocation of an
-  array of type \c T of length \p n.  If \p init is \c true, then the data is
-  copied into the newly allocated memory, otherwise the memory is initialized
-  according to the rules in section 5.3.4.15 of the standard.
-
-  \note\b Note: should you be tempted to replace new/delete[] with malloc/free,
-  you had better know what you are doing with placement new and/or
-  uninitialized_fill.  malloc/free works fine with PODs, but it doesn't
-  construct any non-trivial classes!  When I wrote this, the performance of
-  the two styles was pretty much equivalent anyway. 
-*/
-template<class T> void
-DBC_Array<T>::common_construct(const size_t n, 
-			       const bool init, 
-			       const_reference value)
-{
-    d_size = n;
-    
-    if(d_size) 
-    {
-	d_ptr = new T[n];
-
-	if(!d_ptr)
-	{
-	    std::perror("DBC_Array<T>::common_construct()");
-	    Insist_ptr(d_ptr, "allocation failure");
-	}
-	
-	if(init)
-	    std::fill_n(d_ptr, n, value);
-    } 
-    else
-    {
-	d_ptr = 0;
-    }
-}
-
-
-//---------------------------------------------------------------------------//
-/*!  
-  Any function that changes the size of the array uses this function to do
-  so, creating a new array of type \c T of length \p n.  If \p init is \c
-  true, then the data is copied into the newly allocated memory, otherwise
-  the data is initialized according to the rules in section 5.3.4.15 of the
-  standard.
-
-  This differs from the constructor in that it deletes existing memory if a
-  different size is requested.  Note that there is no concept of capacity
-  vs. size, as in a std::vector. 
-
-  \sa DBC_Array<T>::common_construct   
-*/
-template<class T> void
-DBC_Array<T>::common_resize(const size_type n, 
-			    const bool init,
-			    const_reference value)
-{
-    if(d_size != n)
-    {
-	if(d_ptr) 
-	{
-	    // You could just call clear() here, but there is no point in
-	    // zeroing out d_size just to set it again at the end of this
-	    // block. 
-	    delete[] d_ptr; 
-	    d_ptr = 0;
-	}
-	d_size = n;
-	if(d_size)
-	{
-	    d_ptr = new T[n];
-		    
-	    if(!d_ptr)
-	    {
-		std::perror("DBC_Array<T>::common_resize()");
-		Insist_ptr(d_ptr, "allocation failure");
-	    }
-
-	} 
-    }
-    if(init)
-	std::fill_n(d_ptr, n, value);
-}
-
-
-//---------------------------------------------------------------------------//
 // CONSTRUCTORS
 //---------------------------------------------------------------------------//
-
 
 //---------------------------------------------------------------------------//
 template<class T> 
 DBC_Array<T>::DBC_Array(const DBC_Array<T>& rhs) 
 {
-    common_construct(rhs.d_size, false);
+    DBCA_Support::common_construct<T>(d_ptr, d_size, rhs.d_size, false);
     if(d_size)
     {
 	std::copy(rhs.begin(), rhs.end(), d_ptr);
     }
 }
+
 
 //---------------------------------------------------------------------------//
 // OTHER PUBLIC MEMBER FUNCTIONS
@@ -371,26 +465,10 @@ DBC_Array<T>::operator=(const DBC_Array<T>& rhs)
 {
     if(&rhs != this) 
     {
-	common_resize(rhs.d_size, false);
+	DBCA_Support::common_resize<T>(d_ptr, d_size, rhs.d_size, false);
 	std::copy(rhs.begin(), rhs.end(), d_ptr);
     }
     return *this;
-}
-
-//---------------------------------------------------------------------------//
-/*!
-  In std::vector, this is called assign().  However, they go through all
-  sorts of shenanigans to differentiate between two iterators and the (size,
-  value) form of assign.  I'm too lazy to do that.  This is also the reason
-  that we don't have an iterator-range version of the constructor.
-*/
-template<class T> template<class InputIterator> void
-DBC_Array<T>::copy(InputIterator first, 
-		   InputIterator last) 
-{
-    const size_t n = std::distance(first, last);
-    common_resize(n, false);
-    std::copy(first, last, d_ptr);
 }
 
 
