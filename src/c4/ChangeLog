@@ -1,3 +1,7 @@
+2005-06-02  Thomas M. Evans  <tme@lanl.gov>
+
+	* C4_Functions.hh, C4_MPI.cc: Added abort() function.
+
 2005-02-18  Kelly Thompson  <kgt@lanl.gov>
 
 	* C4_MPI.cc (initialize): During initialize() make a call to

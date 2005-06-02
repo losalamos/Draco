@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:16 2002
  * \brief  C4 MPI function declarations.
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$

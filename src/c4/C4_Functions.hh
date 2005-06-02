@@ -21,6 +21,18 @@
 
 namespace rtt_c4
 {
+
+//---------------------------------------------------------------------------//
+/*!
+ * C4 unit tests.
+ *
+ * \example c4/test/tstAbort.cc
+ * \example c4/test/tstBroadcast.cc
+ * \example c4/test/tstComm_Dup.cc
+ * \example c4/test/tstPingPong.cc
+ * \example c4/test/tstReduction.cc
+ */
+//---------------------------------------------------------------------------//
  
 // Forward declarations.
 class C4_Req;

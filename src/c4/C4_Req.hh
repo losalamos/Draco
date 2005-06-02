@@ -1,13 +1,17 @@
 //----------------------------------*-C++-*----------------------------------//
-// C4_Req.hh
-// Geoffrey Furnish
-// Wed Feb  1 12:58:32 1995
+/*!
+ * \file   c4/C4_Req.hh
+ * \author Thomas M. Evans, Geoffrey Furnish
+ * \date   Thu Jun  2 09:54:02 2005
+ * \brief  C4_Req class definition.
+ * \note   Copyright 2004 The Regents of the University of California.
+ */
 //---------------------------------------------------------------------------//
-// @> A class for managing non blocking message requests.
+// $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __c4_C4_Req_hh__
-#define __c4_C4_Req_hh__
+#ifndef c4_C4_Req_hh
+#define c4_C4_Req_hh
 
 // C4 package configure
 #include <c4/config.h>
@@ -18,16 +22,21 @@
 
 namespace rtt_c4
 {
-
 //===========================================================================//
-// class C4_ReqRefRep - Handle for non blocking message requests
-
-// This class provides an encapsulator for the message id's (NX) or requests
-// (MPI) which are produced by non blocking calls.  This class automatically
-// waits for the message to complete when the containing object goes out of
-// scope, thus plugging one of the easiest types of programming errors with
-// non blocking messaging.  Reference counting is used so that these may be
-// passed by value without accidentally triggering a program stall.
+/*!
+ * \class C4_ReqRefRep
+ * \brief Handle for non-blocking message requests.
+ *
+ * This class provides an encapsulator for the message requests (MPI) which
+ * are produced by non blocking calls.  This class automatically waits for the
+ * message to complete when the containing object goes out of scope, thus
+ * plugging one of the easiest types of programming errors with non blocking
+ * messaging.  Reference counting is used so that these may be passed by value
+ * without accidentally triggering a program stall.
+ *
+ * This is a "work" class. The user interface for requests is provided by
+ * rtt_c4::C4_Req.
+ */
 //===========================================================================//
 
 class C4_ReqRefRep {
@@ -36,7 +45,7 @@ class C4_ReqRefRep {
     
     int n;
     int assigned;
-
+    
 #ifdef C4_MPI
     MPI_Status  s;
     MPI_Request r;
@@ -72,18 +81,25 @@ class C4_ReqRefRep {
 };
 
 //===========================================================================//
-// class C4_Req - Envelope for non blocking message requests
-
-// This class provides an encapsulator for the message id's (NX) or requests
-// (MPI) which are produced by non blocking calls.  This class automatically
-// waits for the message to complete when the containing object goes out of
-// scope, thus plugging one of the easiest types of programming errors with
-// non blocking messaging.  Reference counting is used so that these may be
-// passed by value without accidentally triggering a program stall.
+/*!
+ * \class C4_Req
+ * \brief Non-blocking communication request class.
+ *
+ * This class provides an encapsulator for the message requests (MPI) which
+ * are produced by non blocking calls.  This class automatically waits for the
+ * message to complete when the containing object goes out of scope, thus
+ * plugging one of the easiest types of programming errors with non blocking
+ * messaging.  Reference counting is used so that these may be passed by value
+ * without accidentally triggering a program stall.
+ *
+ * This class provides an interface for non-blocking request handles that
+ * should be used by users.  
+ */
 //===========================================================================//
 
 class C4_Req {
-    
+
+    //! Request handle.
     C4_ReqRefRep *p;
 
   public:
@@ -122,21 +138,23 @@ class C4_Req {
 #ifdef C4_MPI
     template<class T>
     friend C4_Req send_async(const T *buf, int nels, int dest, int tag);
+    
     template<class T>
     friend C4_Req receive_async(T *buf, int nels, int source, int tag);
+
     template<class T>
-    friend void send_async(C4_Req& r, const T *buf, int nels, int dest,
+    friend void send_async(C4_Req &r, const T *buf, int nels, int dest,
 			   int tag);
     template<class T>
-    friend void receive_async(C4_Req& r, T *buf, int nels, int source, 
+    friend void receive_async(C4_Req &r, T *buf, int nels, int source, 
 			      int tag);
 #endif
 };
 
 } // end namespace rtt_c4
 
-#endif                          // __c4_C4_Req_hh__
+#endif // c4_C4_Req_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/C4_Req.hh
+//              end of c4/C4_Req.hh
 //---------------------------------------------------------------------------//
