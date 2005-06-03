@@ -46,8 +46,11 @@ int main(int argc, char *argv[])
 {
     rtt_c4::initialize(argc, argv);
 
+    bool runtest = false;
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
+    {
 	if (std::string(argv[arg]) == "--version")
 	{
 	    if (rtt_c4::node() == 0)
@@ -57,6 +60,11 @@ int main(int argc, char *argv[])
 	    rtt_c4::finalize();
 	    return 0;
 	}
+        else if (std::string(argv[arg]) == "--runtest")
+        {
+            runtest = true;
+        }
+    }
 
     {
 	rtt_c4::HTSyncSpinLock slock;
@@ -79,8 +87,10 @@ int main(int argc, char *argv[])
     rtt_c4::global_barrier();
 
     // run test here so we get a pass message; this should simply abort the
-    // program at this point
-    abort_test();
+    // program at this point;  only run the test if --runtest is given so we
+    // don't hose the automated testing
+    if (runtest)
+        abort_test();
 
     std::cout << "Done testing tstAbort on " << rtt_c4::node() 
               << std::endl;
