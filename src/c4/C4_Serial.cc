@@ -16,6 +16,7 @@
 #include "C4_Serial.hh"
 #include <unistd.h>
 #include <sys/times.h>
+#include <cstdlib>
 
 namespace rtt_c4
 {
@@ -94,6 +95,17 @@ bool probe(int  /* source */,
 	   int &/* message_size */)
 {    
     return false;
+}
+
+//---------------------------------------------------------------------------//
+// ABORT
+//---------------------------------------------------------------------------//
+
+int abort(int error)
+{
+    // call system exit
+    std::abort();
+    return error;
 }
 
 } // end namespace rtt_c4
