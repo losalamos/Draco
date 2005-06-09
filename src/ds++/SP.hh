@@ -141,7 +141,7 @@ class SP
     inline SP<T>& operator=(X *px_in);
 
     // Assignment operator for type SP<T>.
-    inline SP<T>& operator=(const SP<T> &sp_in);
+    inline SP<T>& operator=(const SP<T> sp_in);
 
     // Assignment operator for type SP<X>.
     template<class X>
@@ -392,7 +392,7 @@ SP<T>& SP<T>::operator=(X *px_in)
  * \param sp_in smart pointer of type SP<T>
  */
 template<class T>
-SP<T>& SP<T>::operator=(const SP<T> &sp_in)
+SP<T>& SP<T>::operator=(const SP<T> sp_in)
 {
     Require (sp_in.r);
 

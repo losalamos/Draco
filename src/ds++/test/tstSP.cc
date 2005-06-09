@@ -39,6 +39,11 @@ int nbats = 0;
 
 //---------------------------------------------------------------------------//
 
+struct List
+{
+    SP<List> next;
+};
+
 class Foo
 {
   private:
@@ -732,6 +737,21 @@ void access_test()
 
 //---------------------------------------------------------------------------//
 
+void list_test()
+{
+    // This test was borrowed from Boost's shared_ptr_test.cpp
+    
+    SP<List> p(new List);
+    p->next = SP<List>(new List);
+    p = p->next;
+    if ( p->next ) ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("Linked-list test works ok.");
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -765,6 +785,8 @@ int main(int argc, char *argv[])
 	cout << endl;
 
 	access_test();
+
+	list_test();
 
 	CHECK_0_OBJECTS;
     }
