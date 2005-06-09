@@ -44,6 +44,17 @@ struct List
     SP<List> next;
 };
 
+struct ListD;
+
+struct ListWithDerived
+{
+    SP<ListD> next;
+};
+
+struct ListD : public ListWithDerived
+{
+};
+
 class Foo
 {
   private:
@@ -739,13 +750,24 @@ void access_test()
 
 void list_test()
 {
-    // This test was borrowed from Boost's shared_ptr_test.cpp
-    
-    SP<List> p(new List);
-    p->next = SP<List>(new List);
-    p = p->next;
-    if ( p->next ) ITFAILS;
+    {
+	// This test was borrowed from Boost's shared_ptr_test.cpp
+	
+	SP<List> p(new List);
+	p->next = SP<List>(new List);
+	p = p->next;
+	if ( p->next ) ITFAILS;
+    }
 
+    {
+	// Test of a derived class.
+	
+	SP<ListWithDerived> p(new ListWithDerived);
+	p->next = SP<ListD>(new ListD);
+	p = p->next;
+	if ( p->next ) ITFAILS;
+    }
+	
     if (rtt_ds_test::passed)
 	PASSMSG("Linked-list test works ok.");
 }

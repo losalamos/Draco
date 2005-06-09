@@ -145,7 +145,7 @@ class SP
 
     // Assignment operator for type SP<X>.
     template<class X>
-    inline SP<T>& operator=(const SP<X> &spx_in);
+    inline SP<T>& operator=(const SP<X> spx_in);
 
     //! Access operator.
     T* operator->() const { Require(p); return p; }
@@ -424,7 +424,7 @@ SP<T>& SP<T>::operator=(const SP<T> sp_in)
  */
 template<class T>
 template<class X>
-SP<T>& SP<T>::operator=(const SP<X> &spx_in)
+SP<T>& SP<T>::operator=(const SP<X> spx_in)
 {
     Require (spx_in.r);
 
