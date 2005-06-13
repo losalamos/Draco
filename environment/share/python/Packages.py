@@ -34,9 +34,11 @@ def get_dependencies(file):
     """
 
     Create a dictionary of dependencies by parsing
-    'file'. Viewed as a function, the resulting signature is:
+    'file'. Viewed as a functions, the resulting signature is:
 
-       d: pacakge -> [list of included files]
+       get_dependencies:: file -> d, where:
+
+       d:: package -> [list of included files]
 
     The included files appear in #include directives as either:
 

@@ -7,8 +7,6 @@
 
 
 ##---------------------------------------------------------------------------##
-## Function is_attrib:
-##---------------------------------------------------------------------------##
 def is_attrib(value):
     """is_attrib(value)
     
@@ -34,8 +32,6 @@ def is_attrib(value):
     return bool(r.match(value))
 
 
-##---------------------------------------------------------------------------##
-## Function parse_attrib:
 ##---------------------------------------------------------------------------##
 def parse_attrib(value):
     """parse_attrib(value)
@@ -66,8 +62,6 @@ def parse_attrib(value):
 
 
 ##---------------------------------------------------------------------------##
-## Function padList
-##---------------------------------------------------------------------------##
 def padlist(l, length):
     """ Pads a list on the right with values of None until it reaches
     the given length
@@ -84,9 +78,6 @@ def padlist(l, length):
     return ll
 
 #----------------------------------------------------------------------
-# Function ScanTo
-#----------------------------------------------------------------------
-
 def ScanTo(fileHandle, regexString):
 
     """
