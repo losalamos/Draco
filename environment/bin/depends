@@ -113,7 +113,8 @@ if __name__=='__main__':
     if component_names:
         # List explicit file dependencies
         output_component_files(comp_dir,      component_names)
-        output_component_files(comp_test_dir, component_names)
+        if comp_test_dir:
+            output_component_files(comp_test_dir, component_names)
     else:
         # Output the component-only data:
         output_components(comp_dir, comp_test_dir)
