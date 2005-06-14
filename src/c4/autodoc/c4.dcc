@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the c4 package
-\version draco-5_5_0
+\version draco-5_6_0
 \author Thomas M. Evans, Todd Urbatsch, Geoff Furnish
 
 The basic functions provided by C4 sit in the C4_Functions.hh header.
