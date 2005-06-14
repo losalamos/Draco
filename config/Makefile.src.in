@@ -70,7 +70,7 @@ check:
 	        (cd $${dir} && ${MAKE} dependencies $(subnj)) || ${EXIT}; \
 		(cd $${dir} && ${MAKE} installdirs) || ${EXIT}; \
 		(cd $${dir} && ${MAKE} $(subnj)) || ${EXIT}; \
-		(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
+		(cd $${dir} && ${MAKE} $@ $(subnj)) || ${EXIT}; \
 		(cd $${dir} && ${MAKE} install) || ${EXIT}; \
 	    fi; \
 	done
