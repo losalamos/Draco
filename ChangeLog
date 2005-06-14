@@ -1,3 +1,48 @@
+2005-06-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Released draco-5_6_0.  This is a minor draco release. 
+	A summary of changes are:
+
+	- RTT_Format_Reader: Code reordering to eliminate compiler warnings.
+	- c4: Added abort() function. Added some additional doxygen
+	  comments.
+	- cdi: Optimized Planckian integrator.
+	- cdi_analytic: Added ; to DBC statements.
+	- cdi_gandolf: Updated maxKeys from 25 to 26 to work with newest
+	  TOPS.
+	- ds++: Added insist_ptr option to DBC.  Added DBC_Array class.
+	  Added comparison operator to Vector_Lite.  Optimizations and
+	  operator= fixes to SP.
+	- config: Made check target parallel.
+	- environment: Updated elisp environment to define a draco-mode.
+	  Significant cleanup of old environment.
+
+	This draco release includes the following packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	Retired meshReaders_Services. We are not releasing cdi_eospac and
+	pcgWrap at the current time although these packages are part of
+	the head version of draco.
+
 2005-02-25  Kelly Thompson <kgt@lanl.gov>
 
 	* draco: Released draco-5_5_0.  This is a minor draco release.
