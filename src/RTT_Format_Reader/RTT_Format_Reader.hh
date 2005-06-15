@@ -517,8 +517,8 @@ class RTT_Format_Reader
  * \param cell_def Cell definition index.
  * \return New cell definition node map.
  */
-    const vector_int & get_cell_defs_node_map(int cell_def) const 
-    { return spCellDefs->get_node_map(cell_def);}
+     const vector_int & get_cell_defs_node_map(int cell_def) const 
+     { return spCellDefs->get_node_map(cell_def);}
 /*!
  * \brief Returns the specified new node for the specified cell definition 
  *        when redefinition has been performed.
@@ -526,8 +526,8 @@ class RTT_Format_Reader
  * \param node_ind Node number index.
  * \return New node number.
  */
-    int get_cell_defs_node_map(int cell_def, int node_ind) const 
-    { return spCellDefs->get_node_map(cell_def, node_ind);}
+//    int get_cell_defs_node_map(int cell_def, int node_ind) const 
+//    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
     // nodes access
 /*!

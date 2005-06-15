@@ -17,6 +17,7 @@
 #include "../Release.hh"
 #include "ds++/Assert.hh"
 
+#include "../CellDefs.hh"
 #include "RTT_Format_Reader_test.hh"
 #include "TestRTTFormatReader.hh"
 
@@ -988,6 +989,11 @@ bool check_cell_data_ids(const RTT_Format_Reader & mesh,
     return all_passed;
 }
 
+
+//---------------------------------------------------------------------------//
+//!\brief Test reading of the cell defs block from an RTT file
+//---------------------------------------------------------------------------//
+
 bool check_cell_defs(const RTT_Format_Reader & mesh, const Meshes & meshtype)
 {
     // Return if the Dims data is corrupt.        
@@ -1190,6 +1196,64 @@ bool check_cell_defs(const RTT_Format_Reader & mesh, const Meshes & meshtype)
  	all_passed = false;
     }
 
+    // Check cell definition access
+    {
+	rtt_RTT_Format_Reader::CellDef const myCellDef(
+	    mesh.get_cell_defs_cell_def(0) );
+	if( myCellDef.get_name()   == std::string("point") &&
+	    myCellDef.get_nnodes() == 1 &&
+	    myCellDef.get_nsides() == 0 )
+	{
+	    PASSMSG("mesh.get_cell_defs_cell_def() works.");
+	}
+	else
+	{
+	    FAILMSG("mesh.get_cell_defs_cell_def() failed.");
+	}
+    }
+
+    // Check get_cell_defs_node_map(int)
+    {
+	std::vector<int> const myNodes = mesh.get_cell_defs_node_map(0);
+	size_t mySize = myNodes.size();
+	std::cout << "mySize = " << mySize << std::endl;
+	if( mySize == 0 )
+	{
+	    PASSMSG("get_cell_defs_node_map(int) returned an empty vector.");
+	}
+	else
+	{
+	    PASSMSG("get_cell_defs_node_map(int) did not return an empty vector.");
+	    std::cout << "myNodes = { ";
+	    if( mySize > 0 )
+	    {
+		for( size_t i=0; i< myNodes.size()-1; ++i )
+		    std::cout << myNodes[i] << ", ";
+		std::cout << myNodes[myNodes.size()-1];
+	    }
+	    std::cout << " }." << std::endl;
+	}
+    }
+    
+    // Check get_cell_defs_node_map(int,int)
+//      {
+//  	int myNode = mesh.get_cell_defs_node_map(0,0);
+//  	std::cout << "myNode = " << myNode << std::endl;
+//      }
+    
+    // Check get_cell_defs_redefined()
+    {
+	bool myBool = mesh.get_cell_defs_redefined();
+	if( myBool)
+	{
+	    FAILMSG("Unexpected value for get_cell_defs_redefined(): Cells are redefined.");
+	}
+	else
+	{
+	    PASSMSG("Expected value for get_cell_defs_redefined(): Cells are not redefined.");
+	}
+    }
+    
     // Check cell definition number of nodes.
     bool got_cell_defs_nnodes = true;
     for (int i = 0; i < mesh.get_dims_ncell_defs(); i++)
@@ -1266,6 +1330,10 @@ bool check_cell_defs(const RTT_Format_Reader & mesh, const Meshes & meshtype)
 
     return all_passed;
 }
+
+//---------------------------------------------------------------------------//
+// 
+//---------------------------------------------------------------------------//
 
 bool check_nodes(const RTT_Format_Reader & mesh, const Meshes & meshtype)
 {

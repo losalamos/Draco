@@ -101,8 +101,8 @@ class Sides
  * \param desired_flag_type Flag type.
  * \return The side flag type index.
  */
-    int get_flag_type_index(string & desired_flag_type) const 
-    { return sideFlags.get_flag_type_index(desired_flag_type); }
+    // int get_flag_type_index(string & desired_flag_type) const 
+    // { return sideFlags.get_flag_type_index(desired_flag_type); }
 };
 
 } // end namespace rtt_RTT_Format_Reader

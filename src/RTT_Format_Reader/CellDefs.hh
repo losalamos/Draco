@@ -25,20 +25,27 @@
 
 namespace rtt_RTT_Format_Reader
 {
+// forward declaration.
 class CellDefs;
+
+//---------------------------------------------------------------------------//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the 
  *        cell definition block of the mesh file.
  */
+//---------------------------------------------------------------------------//
 class CellDef
 {
-    // typedefs
+    /* TYPEDEFS */
+    
     typedef std::ifstream ifstream;
     typedef std::string string;
     typedef std::set<int> set_int;
     typedef std::vector<int> vector_int;
     typedef std::vector<std::vector<int> > vector_vector_int;
 
+    /* DATA */
+    
     const CellDefs & cellDefs;
     const string name;
     int nnodes;
@@ -99,21 +106,31 @@ class CellDef
  */
     const vector_int & get_ordered_side(int s) const 
     { return ordered_sides[s]; }
-/*!
- * \brief Returns the new nodes map when cell redefinition has been performed.
- * \return New nodes map.
- */
+
+    //---------------------------------------------------------------------------//
+
+    /*!
+     * \brief Returns the new nodes map when cell redefinition has been
+     *        performed. 
+     * \return New nodes map.
+     */
     const vector_int & get_node_map() const { return node_map;}
-/*!
- * \brief Returns the specified new node when cell redefinition has been 
- *        performed.
- * \param node_ind Node number index.
- * \return New node number.
- */
-    int get_node_map(int node_ind) const 
-    { return node_map[node_ind];}
+
+//     //---------------------------------------------------------------------------//
+//     /*!
+//      * \brief Returns the specified new node when cell redefinition has been  
+//      *        performed.
+//      * \param node_ind Node number index.
+//      * \return New node number.
+//      */
+//     int get_node_map( int node_ind ) const 
+//     {
+// 	Require( node_map.size() > node_ind );
+// 	return node_map[node_ind];
+//     }
 };
 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the 
  *        cell definition block of the mesh file.
@@ -211,7 +228,7 @@ class CellDefs
  * \brief Returns the number of unique cell type definitions.
  * \return The number of cell definitions.
  */
-    int get_ncell_defs() const { return dims.get_ncell_defs(); }
+    //    int get_ncell_defs() const { return dims.get_ncell_defs(); }
 /*!
  * \brief Returns the status of the flag indicating that the cell definitions
  *        have been redefined.
@@ -233,8 +250,8 @@ class CellDefs
  * \param node_ind Node number index.
  * \return New node number.
  */
-    int get_node_map(int cell_def, int node_ind) const 
-    { return defs[cell_def]->get_node_map(node_ind);}
+//     int get_node_map(int cell_def, int node_ind) const 
+//     { return defs[cell_def]->get_node_map(node_ind);}
 };
 
 } // end namespace rtt_RTT_Format_Reader

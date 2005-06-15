@@ -298,6 +298,18 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 
 //---------------------------------------------------------------------------//
 
+void reportVersion()
+{
+    using std::cout;
+    using std::endl;
+    cout << "\nThis is RTT_Format_Reader\n" 
+	 << "Version "<< rtt_RTT_Format_Reader::release()
+	 << "\n==================================================\n" << endl;
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     // version tag
@@ -312,6 +324,7 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
+	reportVersion();
 	runTest();
     }
     catch (rtt_dsxx::assertion &ass)
