@@ -352,7 +352,7 @@ auto-mode-alist.
 	"DRACO hooks added to LaTeX and BibTex modes."
 	(local-set-key [(f5)] 'draco-latex-divider)
 	(local-set-key [(f6)] 'draco-latex-comment-divider)
-	(local-set-key "\C-c\C-c" 'comment-region)
+	(local-set-key "\C-c %" 'comment-region)
 	(draco-mode-update-menu (draco-menu-insert-comments-tex))
 	(turn-on-bib-cite)
 	(turn-on-reftex)

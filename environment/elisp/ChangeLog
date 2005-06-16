@@ -1,3 +1,17 @@
+2005-06-16  Kelly Thompson  <kgt@lanl.gov>
+
+	* (draco-setup-auctex-mode): Remove keybinding for \C-c \C-c
+	because it hides other useful LaTeX key bindings.  Instead, use
+	\C-c % to comment a selected region.
+
+2005-05-27  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco-mode.el: Improve highlighting of m4 divider by adding a
+	space between dnl and the first dash.
+	
+	* draco-config-modes.el (draco-setup-auctex-mode): Turn on
+	draco-mode and auto-fill by default when bibtex-mode starts.  
+
 2005-05-23  Kelly Thompson <kgt@lanl.gov>
 
 	* all_files: Major rewrite of all Draco elisp scripts.  See README
