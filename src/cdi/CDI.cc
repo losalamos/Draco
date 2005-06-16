@@ -349,24 +349,26 @@ double CDI::integratePlanckSpectrum(const double lowFreq,
 	return 0.0;
 
     // determine the upper and lower x
-    const double lower_x = lowFreq  / T;
-    const double upper_x = highFreq / T;
+    const double T_inv = 1.0 / T;
+    const double lower_x = lowFreq  * T_inv;
+    const double upper_x = highFreq * T_inv;
 
     // initialize the return integral value
     double integral = 0.0;
 
     // determine the upper and lower bounds calculated by the 
     // polylogarithmic approximations minus one
-    const double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
-    const double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
 
     // if both reduced frequencies are above the Planckian peak, 2.82144,
     // bypass the Taylor series approximation and use only the
     // polylogarithmic approximations minus one.
     const double x_at_planck_peak = 2.822;
 
-    if (lower_x >= x_at_planck_peak)
+    if (!(lower_x < x_at_planck_peak))
     {
+	const double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
+	const double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
+
 	integral = upper_poly_m1 - lower_poly_m1;
     }
 
@@ -377,30 +379,43 @@ double CDI::integratePlanckSpectrum(const double lowFreq,
     // means that we do not have to explicitly calculate the intersection.
     else
     {
+
+	const double upper_poly = 
+	    polylog_series_minus_one_planck(upper_x) + 1.0;
+
 	const double lower_taylor = taylor_series_planck(lower_x);
 	const double upper_taylor = taylor_series_planck(upper_x);
-	const double lower_poly   = lower_poly_m1 + 1.0;
-	const double upper_poly   = upper_poly_m1 + 1.0;
+
 
 	// both limits are below the intersection, so use Taylor for both
 	if ( upper_taylor < upper_poly )
 	{
+	    Remember(
+	    const double lower_poly =
+		polylog_series_minus_one_planck(lower_x) + 1.0;
+	    )
 	    Check ( lower_taylor < lower_poly );
 	    integral = upper_taylor - lower_taylor;
 	}
 
 	// the limits straddle the intersection, use both Taylor and polylog
-	else if ( lower_taylor < lower_poly )
-	{
-	    Check ( upper_taylor >= upper_poly );
-	    integral = upper_poly - lower_taylor;
-	}
-
-	// both limits are above the intersection, so use polylog-1 for both
 	else 
 	{
-	    Check ( lower_taylor >= lower_poly );
-	    integral = upper_poly_m1 - lower_poly_m1;
+	    const double lower_poly =
+		polylog_series_minus_one_planck(lower_x) + 1.0;
+
+	    if ( lower_taylor < lower_poly )
+	    {
+		Check ( upper_taylor >= upper_poly );
+		integral = upper_poly - lower_taylor;
+	    }
+
+	    // both limits are above the intersection, so use polylog-1 for both
+	    else 
+	    {
+		Check ( lower_taylor >= lower_poly );
+		integral = upper_poly - lower_poly;
+	    }
 	}
     }
 
