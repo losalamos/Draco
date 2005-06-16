@@ -92,22 +92,27 @@ const double coeff_17 =    1.0 / 1270312243200.0;
 const double coeff_19 = -3.617 / 202741834014720.0;
 const double coeff_21 = 43.867 / 107290978560589824.0;
 
-const double pi       =    2.0 * std::asin(1.0);
-const double coeff    =   15.0 / (pi*pi*pi*pi);
+const double coeff      =   0.1539897338202651; // 15/pi^4
+
 
 // return the 21-term Taylor series expansion for the normalized Planck
 // integral given x
 inline double taylor_series_planck(double x)
 {
-    using std::numeric_limits;
-    using std::log;
 
     Require( x >= 0.0 );
 
+    const double xsqrd  = x * x;
+
+
     // Check for potential overflow errors:
 
+    Remember(
     if( x > 1.0 )
     {
+	using std::numeric_limits;
+	using std::log;
+
 	// This Taylor series expansion takes x to the 21st power.  We need
 	// to ensure that x is small enough so that x^21 is less than the
 	// largest double that can be represented on the current machine.
@@ -126,10 +131,10 @@ inline double taylor_series_planck(double x)
 	
 	Require( 22.0*log(x) < log(maxDouble) );
     }
-
+    )
     // calculate the 21-term Taylor series expansion for x
-    double xsqrd  = x * x;
-    double xpower = x * x * x;
+
+    double xpower = xsqrd * x;
     double taylor = 0.0;
     {
 	taylor += coeff_3  * xpower;
@@ -161,64 +166,90 @@ inline double taylor_series_planck(double x)
     return taylor;
 }
 
+
+// ---------------------------------------------------------------------------
+
 // return the 10-term Polylogarithmic expansion (minus one) for the Planck
 // integral given x
-inline double polylog_series_minus_one_planck(double x)
+double 
+polylog_series_minus_one_planck(const double x)
 {
     Require (x >= 0.0);
 
+    const double eix = std::exp(-x);
     double xsqrd = x * x;
 
-    // calculate the 10-term Polylogirithmic expansion (minus one) for x
-    double poly = 0.0;
+    static const double i_plus_two_inv[9] = 
+	{
+	    0.5000000000000000, // 1/2
+	    0.3333333333333333, // 1/3
+	    0.2500000000000000, // 1/4
+	    0.2000000000000000, // 1/5
+	    0.1666666666666667, // 1/6
+	    0.1428571428571429, // 1/7
+	    0.1250000000000000, // 1/8
+	    0.1111111111111111, // 1/9
+	    0.1000000000000000  // 1/10
+	};
+    double const * curr_inv = i_plus_two_inv;
     
-    // calculate the polylogarithmic terms for x bound
-    double li1 = 0.0;
-    double li2 = 0.0; 
-    double li3 = 0.0;
-    double li4 = 0.0;
+    // initialize to what would have been the calculation of the i=1 term.
+    // This saves a number of "mul by one" ops.
+    double eixp = eix;
+    double li1 = eix;
+    double li2 = eix; 
+    double li3 = eix;
+    double li4 = eix;
 
-    double eix = std::exp(-x);
-    double eixp = 1;
-
-    for (int i = 1; i < 11; i+=2)
+    // calculate terms 2..10.  This loop has been unrolled by a factor of 3
+    for(int i = 2; i < 11; i += 3)
     {
+	register const double ip0_inv = *curr_inv++;
+	eixp *= eix;
+	double eixr_ip0 = eixp * ip0_inv;
 
-    // kgbudge (030827):  The original loop code, which was slower but more
-    // transparent, was:
-    //
-    // li1 += std::exp(-i * x) / i;
-    // li2 += std::exp(-i * x) / (i*i);
-    // li3 += std::exp(-i * x) / (i*i*i);
-    // li4 += std::exp(-i * x) / (i*i*i*i);
+	register const double ip1_inv = *curr_inv++;
+	eixp *= eix;
+	double eixr_ip1 = eixp * ip1_inv;
 
-	const double i_inv   = 1.0 / i;
-	const double ip1_inv = 1.0 / (i+1);
+	register const double ip2_inv = *curr_inv++;
+	eixp *= eix;
+	double eixr_ip2 = eixp * ip2_inv;
+
 	
-	eixp *= eix;
-	double eixr = eixp;
+	const double r10 = eixr_ip0;
+	const double r11 = eixr_ip1;
+	const double r12 = eixr_ip2;
 
-	eixp *= eix;
-	double eixrp1 = eixp;
+	const double r20 = (eixr_ip0 *= ip0_inv);
+	const double r21 = (eixr_ip1 *= ip1_inv);
+	const double r22 = (eixr_ip2 *= ip2_inv);
 
+	li1 += r10 + r11 + r12;
 
-	li1 += (eixr *= i_inv);
-	li2 += (eixr *= i_inv);
-	li3 += (eixr *= i_inv);
-	li4 += (eixr *= i_inv);
+	const double r30 = (eixr_ip0 *= ip0_inv);
+	const double r31 = (eixr_ip1 *= ip1_inv);
+	const double r32 = (eixr_ip2 *= ip2_inv);
 
-	li1 += (eixrp1 *= ip1_inv);
-	li2 += (eixrp1 *= ip1_inv);
-	li3 += (eixrp1 *= ip1_inv);
-	li4 += (eixrp1 *= ip1_inv);
+	li2 += r20 + r21 + r22;
 
+	const double r40 = (eixr_ip0 *= ip0_inv);
+	const double r41 = (eixr_ip1 *= ip1_inv);
+	const double r42 = (eixr_ip2 *= ip2_inv);
+
+	li3 += r30 + r31 + r32;
+	li4 += r40 + r41 + r42;
     }
 
+
+
+    register const double xcubed = xsqrd*x;
+    xsqrd *= 3.0;			// <<<<<<< LOOK: now 3x^2!!!!!!!!
+
     // calculate the lower polylogarithmic integral
-    poly = -1.0 * coeff * (xsqrd * x * li1   +
-			   3.0 * xsqrd * li2 + 
-			   6.0 * x * li3     +
-			   6.0 * li4 );
+    const double poly = -coeff * (xcubed * li1 +
+				  xsqrd  * li2 + // really, xsqrd*3
+				  6.0 * (x * li3 + li4));
     
     Ensure (poly <= 0.0);
     return poly;
