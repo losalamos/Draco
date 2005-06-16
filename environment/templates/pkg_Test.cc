@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   <pkg>/<spkg>.cc
+ * \file   <tpkg>/<spkg>_test.cc
  * \author <user>
  * \date   <date>
  * \brief  <start>
@@ -11,9 +11,9 @@
 //---------------------------------------------------------------------------//
 
 #include <iostream>
-#include "<spkg>.hh"
+#include "<spkg>_test.hh"
 
-namespace <namespace>
+namespace <namespace>_test
 {
 
 //===========================================================================//
@@ -72,8 +72,8 @@ void unit_test(const bool pass, int line, char *file)
 
 bool passed = true;
 
-} // end namespace <namespace>
+} // end namespace <namespace>_test
 
 //---------------------------------------------------------------------------//
-//               end of <spkg>.cc
+//               end of <spkg>_test.cc
 //---------------------------------------------------------------------------//

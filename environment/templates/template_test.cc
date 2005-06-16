@@ -16,7 +16,7 @@
 
 #include "ds++/Assert.hh"
 #include "../Release.hh"
-#include "<spkg>.hh"
+#include "<spkg>_test.hh"
 
 using namespace std;
 

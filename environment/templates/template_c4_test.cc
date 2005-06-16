@@ -18,7 +18,7 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "../Release.hh"
-#include "<spkg>.hh"
+#include "<spkg>_test.hh"
 
 using namespace std;
 
