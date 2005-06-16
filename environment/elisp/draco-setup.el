@@ -239,6 +239,13 @@ dired-mode?"
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
+(defcustom draco-want-compilation-mode t
+  "*Does the user want to have the Draco minor mode enabled for
+compilation-mode?" 
+:group 'draco-mode
+:type '(radio	(const :tag "Yes" t)
+		(const :tag "No"  nil)))
+
 (defcustom draco-want-global-keys t
   "*Does the user want to have the Draco global key mappings?"
 :group 'draco-mode
@@ -327,6 +334,7 @@ dired-mode?"
 (if draco-want-text-mode       (draco-setup-text-mode))
 (if draco-want-sgml-mode       (draco-setup-sgml-mode))
 (if draco-want-dired-mode      (draco-setup-dired-mode))
+(if draco-want-compilation-mode (draco-setup-compilation-mode))
 (if draco-want-global-keys     (require 'draco-global-keys))
 
 ;(kill-buffer "*Compile-Log-Show*")

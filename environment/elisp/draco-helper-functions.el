@@ -88,8 +88,9 @@ The default value of ndirs == 1."
   
   (if (string= draco-package-name "test")
       (progn
-	(setq draco-package-name (draco-get-local-dir-name 2))
-	(setq draco-guess-query-text "Package test path: ")))
+	(setq draco-package-name (substring (draco-get-local-dir-name
+					     2) 0 -5))
+	(setq draco-guess-query-text "Package name: ")))
 
   (if (string= draco-package-name "autodoc")
       (progn
@@ -107,7 +108,7 @@ The default value of ndirs == 1."
   (setq safe-name 
 	(mapconcat (function (lambda (x)
 			       (cond
-				((eq x ?\+) "")
+				((eq x ?\+) "x")
 				((eq x ?/) "_")
 				(t (format "%c" x)))))
 		   name "" ))
@@ -192,7 +193,7 @@ Example usage is exhibited by functions defined in draco-new-files.el.
     (goto-char (point-min))
     (perform-replace "<spkg>"      draco-safe-package-name nil nil nil )
     (goto-char (point-min))
-    (perform-replace "<tpkg>"      (concat draco-safe-package-name "/test") nil nil nil )
+    (perform-replace "<tpkg>"      (concat draco-package-name "/test") nil nil nil )
     (goto-char (point-min))
     (perform-replace "<namespace>" draco-namespace nil nil nil )
     (goto-char (point-min))

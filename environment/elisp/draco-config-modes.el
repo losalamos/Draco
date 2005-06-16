@@ -16,6 +16,21 @@
 (require (quote draco-mode))
 
 ;; ========================================
+;; Compilation-mode
+;; ========================================
+
+(defun draco-setup-compilation-mode ()
+  "Autoload compilation-mode and add mode local keybindings to the compilation-mode-hook."
+  (interactive)
+  (progn
+    (autoload 'compilation-mode "compilation-mode" nil t)
+    (defun draco-compilation-mode-hook ()
+      "draco-mode hooks added to MPPL mode."
+      (turn-on-draco-mode)
+      (turn-on-auto-fill))
+    (add-hook 'compilation-mode-hook 'draco-compilation-mode-hook)))
+
+;; ========================================
 ;; MPPL
 ;; ========================================
 
@@ -219,37 +234,79 @@ auto-mode-alist.
 	      ["Insert Doxygen grouping comment" doxymacs-insert-grouping-comment t ]
 	      ["Insert C divider" draco-c-comment-divider t]
 	      ["Insert C comment block"   draco-c-divider t]
-))
-      
-      (defconst draco-c-style
-	`(
-;    (c-tab-always-indent . t)
-;    (c-comment-only-line-offset    . 0)
-	  (c-basic-offset	 . 4) ; offset of 2
-	  (c-offsets-alist     . ((access-label      . -2 )
-				  (comment-intro     . 0)
-				  (inline-open       . 0)
-				  (innamespace       . 0)
-				  (substatement-open . 0)))
-;    (c-hanging-braces-alist        . ((substatement-open after)
-;                                      (brace-list-open)))
-;    (c-offsets-alist               . ((arglist-close     . c-lineup-arglist)
-;                                      (substatement-open . 0)
-;                                      (block-open        . 0) ; don't add space before {
-;                                      (knr-argdecl-intro . -)))
-;    (c-hanging-colons-alist        . ((member-init-intro before)
-;                                      (inher-intro)
-;                                      (case-label after)
-;                                      (label after)
-;                                      (access-label after)))
-;    (c-cleanup-list                . (scope-operator
-;                                      empty-defun-braces
-;                                      defun-close-semi))
-;    (c-echo-syntactic-information-p . t)
-	  ))
-      (defun draco-add-style ()
-	(c-add-style "draco" draco-c-style t))
-      (draco-add-style)
+	      ))
+
+            ;; Borrowed from
+            ;; http://www.esperi.demon.co.uk/nix/xemacs/personal/init-prog-modes.html
+
+            ;; Also see help for XEmacs variable c-offsets-alist 
+            ;; \C-h v c-offset-alist
+      (defun draco-setup-c-mode ()
+	"Setup C, C++ mode for Draco Developers.
+
+This is run in the C-mode-common-hook to set up indentation and other
+parameters on creation of buffers managed by cc-mode.el for Nix's personal coding style."
+	(c-add-style 
+	 "draco" '
+	 (
+          ; Tab indent == 4 spaces
+	  (c-basic-offset . 4)       
+          ; K&R? Blugh. Not usin' *that*.
+	  (c-recognize-knr-p . nil)
+          ; Do nil for lone comments
+	  (c-comment-only-line-offset . (0 . 0)) 
+          ; We don't use *-prefixed comments
+  	  ;(c-block-comment-prefix . "") 
+          ; Even with no code before them
+	  (c-indent-comments-syntactically-p . t) 
+          ; Make function calls look nice
+	  (c-cleanup-list . (space-before-funcall compact-empty-funcall)) 
+          ; Snap #s to the first column
+	  (c-electric-pound-behavior . 'alignleft) 
+          ; Regexp to find the starting brace of a block
+	  (defun-prompt-regexp . " ") 
+	  (c-offsets-alist . (
+			      (access-label . -2 )
+			      (block-close . 0)
+			      (block-open  . 0)
+			      (case-label  . +)
+			      (class-close . 0)
+			      (class-open  . 0)
+			      (defun-close . 0)
+			      (defun-open  . 0)
+			      (do-while-closure  . 0)
+			      (else-clause       . 0)
+			      (extern-lang-close . +)
+			      (extern-lang-open  . +)
+			      (inline-close      . 0)
+			      (inline-open       . 0)
+			      (innamespace       . 0)
+			      (statement-case-intro . +)
+			      (statement-cont    . c-lineup-math)
+			      (substatement-open . 0)
+			      )))))
+;      (defun draco-clean-up-common-hook ()
+;	"Clean up the common hook.
+
+;Removes the other style setup functions from the hook, so that they
+;only get run once, rather than repeatedly."
+;	(remove-hook 'c-mode-common-hook 'draco-setup-c-mode)
+;	(remove-hook 'c-mode-common-hook 'draco-clean-up-common-hook))
+
+;      (defun draco-setup-this-c-mode-buffer ()
+;	"Set up this buffer for C mode.
+;Things (like auto-hungry-state setting and style setting) that should not
+;be removed from the `c-mode-common-hook' after the first call by
+;`draco-clean-up-c-common-hook', but which should rather take effect
+;separately for each buffer."
+;	(if (gawd-personal-code-p)
+;	    (progn
+;	      (c-make-styles-buffer-local t) ; Don't let this interfere with user styles
+;	      (c-toggle-hungry-state 1)
+;	      (c-set-style "draco"))))
+
+
+
       (if draco-colorize-modeline 
 	  (add-hook 'c++-mode-hook        
 		    '(lambda () 
@@ -272,9 +329,8 @@ auto-mode-alist.
 - Sets fill-column to 78
 - Sets f5/f6 as hot keys to insert dividers.
 - Turns on auto-fill"
-	(draco-add-style)
-	(c-set-style "draco" nil)
-	;(c-add-style "draco" draco-c-style t)
+	(draco-setup-c-mode)
+	(c-set-style "draco")
 	(local-set-key "\C-m" 'newline-and-indent)
 	(set-fill-column 78)
 	(local-set-key [(f5)] 'draco-cc-divider)
@@ -289,7 +345,7 @@ auto-mode-alist.
 	(turn-on-font-lock)
 	(turn-on-auto-fill))
       (add-hook 'c-mode-common-hook 'draco-c-mode-hook)
-      (add-hook 'c-mode-common-hook 'draco-add-style)
+;      (add-hook 'c-mode-common-hook 'draco-add-style)
       (add-hook 'c-mode-common-hook 'turn-on-draco-mode)
       (add-hook 'font-lock-mode-hook
 		'(lambda ()
