@@ -95,6 +95,12 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  */
     virtual string get_node_coord_units() const
     { return rttMesh->get_dims_coor_units(); }
+/*!
+ * \brief Returns the topological dimenstion (1, 2 or 3).
+ * \return Topological dimension.
+ */
+    virtual int get_dims_ndim() const
+    { return rttMesh->get_dims_ndim(); }
 
     virtual vector_vector_int get_element_nodes() const;
 /*!
