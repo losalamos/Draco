@@ -1336,6 +1336,7 @@ package="ds++"
             tstFile_Streams \
 	    tstDBC_Array \
             tstArray \
+	    tstSafe_Divide \
             "
 
 	test_nprocs="scalar"

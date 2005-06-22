@@ -35,6 +35,7 @@ AC_RUNTESTS(tstCheck_Strings \
             tstFile_Streams \
 	    tstDBC_Array \
             tstArray \
+	    tstSafe_Divide \
             , scalar)
 
 AC_DRACO_ENV
