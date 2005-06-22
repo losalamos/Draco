@@ -30,13 +30,20 @@ inline FT safe_pos_divide (const FT& numerator, const FT& denominator)
      *
      * The arguments are assumed to be positive
      *
-     * This function requires an extra multiply to compute a limit on the
-     * numerator, Note that limit*denominator may overflow on some
-     * archetectures for denominatior > 1. 
+     * Compared to straight division, this function requires an actra function
+     * call to get the max value, and  extra multiply and comparison (via
+     * std::max) to compute a limit on the numerator. The comparison prevents
+     * numeric overflow limit * denominator, which would generate a
+     * floating-point exception and really hose the performance.
+     *
+     * The result is only slightly more operations than a straight divide and
+     * more readable than including if-blocks around all problematic divisions.
+     *
      */
 
     FT limit = std::numeric_limits<FT>::max();
-    FT result = (numerator < limit * denominator) ? numerator / denominator : limit;
+    FT numerator_bound = limit * std::min (1.0, denominator);
+    FT result = (numerator < numerator_bound) ? numerator / denominator : limit;
 
     return result;
 }
