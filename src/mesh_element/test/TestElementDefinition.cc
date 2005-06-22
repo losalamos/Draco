@@ -56,11 +56,17 @@ void runTest()
     {
 	elem_defs.push_back( Element_Definition(type_list[i]) );
 	cout << elem_defs[i];
+	if( ! elem_defs[i].invariant_satisfied() )
+	{
+	    ostringstream msg;
+	    msg << "invariant_satisfied() failed for element i="
+		<< i << ", whose type is = " << elem_defs[i].get_name()
+		<< cout;
+	    FAILMSG(msg.str());
+	}
     }
-    cout << endl;
-
-    cout << "Checking Elements ---" << endl << endl;
-
+    cout << "\nChecking Elements ---\n" << endl;
+    
     rtt_mesh_element_test::test_node(elem_defs[0]);
     rtt_mesh_element_test::test_bar_2(elem_defs[1]);
     rtt_mesh_element_test::test_bar_3(elem_defs[2]);
@@ -79,7 +85,7 @@ void runTest()
     rtt_mesh_element_test::test_hexa_8(elem_defs[15]);
     rtt_mesh_element_test::test_hexa_20(elem_defs[16]);
     rtt_mesh_element_test::test_hexa_27(elem_defs[17]);
-
+    
     if (rtt_mesh_element_test::passed)
     {
 	PASSMSG("All tests passed.");
@@ -94,7 +100,7 @@ void runTest()
 
 namespace rtt_mesh_element_test
 {
-
+    
 bool test_node(const rtt_mesh_element::Element_Definition elem_def)
 {
     // Test the NODE element.
@@ -982,13 +988,10 @@ bool test_hexa_27(
 int main(int argc, char *argv[])
 {
     // version tag
+    cout << argv[0] << ": version " << rtt_mesh_element::release() 
+	 << endl;
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_mesh_element::release() 
-		 << endl;
-	    return 0;
-	}
+	if (string(argv[arg]) == "--version") return 0;
 
     try
     {
