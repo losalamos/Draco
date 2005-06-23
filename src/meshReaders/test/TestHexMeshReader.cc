@@ -512,36 +512,31 @@ bool check_map(const std::map<std::string, std::set<int> >
 
 int main(int argc, char *argv[])
 {
+    using  rtt_meshReaders::release;
+    
     // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_meshReaders::release() 
-		 << endl;
-	    return 0;
-	}
+    cout << argv[0] << ": version " << release() << endl;
+
+    for( int arg = 1; arg < argc; arg++ )
+	if (string(argv[arg]) == "--version") return 0;
 
     try
     {
 	// >>> UNIT TESTS
 	runTest();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &assert )
     {
-	cout << "While testing TestHexMeshReader, " << ass.what()
-	     << endl;
+	cout << "While testing TestHexMeshReader, "
+	     << assert.what() << endl;
 	return 1;
     }
 
     // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_meshReaders_test::passed) 
-    {
-        cout << "**** TestHexMeshReader Test: PASSED" 
-	     << endl;
-    }
-    cout <<     "*********************************************" << endl;
+    cout <<   "\n*********************************************\n";
+    if( rtt_meshReaders_test::passed )
+        cout << "**** TestHexMeshReader Test: PASSED\n";
+    cout <<     "*********************************************\n";
     cout << endl;
 
     cout << "Done testing TestHexMeshReader." << endl;
