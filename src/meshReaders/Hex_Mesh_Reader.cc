@@ -18,7 +18,7 @@
 namespace rtt_meshReaders
 {
 
-Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
+Hex_Mesh_Reader::Hex_Mesh_Reader( std::string filename )
     : meshfile_name(filename)
 {
 
@@ -359,5 +359,5 @@ bool Hex_Mesh_Reader::check_dims() const
 
 
 //---------------------------------------------------------------------------//
-//                              end of Hex_Mesh_Reader.cc
+//                          end of Hex_Mesh_Reader.cc
 //---------------------------------------------------------------------------//

@@ -75,7 +75,7 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 
     // CREATORS
     
-    Hex_Mesh_Reader(std::string filename);
+    explicit Hex_Mesh_Reader( std::string filename );
 
     // Defaulted Hex_Mesh_Reader(const Hex_Mesh_Reader &rhs);
     // Defaulted ~Hex_Mesh_Reader();
