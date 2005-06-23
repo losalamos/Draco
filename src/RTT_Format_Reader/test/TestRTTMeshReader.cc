@@ -91,8 +91,11 @@ namespace rtt_RTT_Mesh_Reader_test
 
 bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 {
+    // Save and reset at end of function
+    bool unit_test_status( rtt_RTT_Format_Reader_test::passed );
+    rtt_RTT_Format_Reader_test::passed = true;
+    
     // Exercise the virtual accessor functions for this mesh.
-    bool all_passed = true;
     std::vector<std::vector<double> > node_coords;
     std::string node_coord_units;
     std::vector<std::vector<int> > element_nodes;
@@ -226,72 +229,66 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 
     default:
 	FAILMSG("Invalid mesh type encountered.");
-	all_passed = false;
-	return all_passed;
+	return false;
     }
     // Check node coords
     if (node_coords != mesh.get_node_coords())
     {
 	FAILMSG("Node coordinates not obtained.");
-	all_passed = false;
     }
     // Check coordinate units.
     if (node_coord_units != mesh.get_node_coord_units())
     {
 	FAILMSG("Coordinate units not obtained.");
- 	all_passed = false;
     }
     if (element_nodes != mesh.get_element_nodes())
     {
 	FAILMSG("Element nodes not obtained.");
- 	all_passed = false;
     }
     // Check Element Types.
     if (element_types != mesh.get_element_types())
     {
 	FAILMSG("Element Types not obtained.");
- 	all_passed = false;
     }
     // Check Unique Element Types.
     if (unique_element_types != mesh.get_unique_element_types())
     {
 	FAILMSG("Unique Element Types not obtained.");
- 	all_passed = false;
     }
     // Check node sets.
     if (node_sets != mesh.get_node_sets())
     {
 	FAILMSG("Node sets not obtained.");
- 	all_passed = false;
     }
     // Check Element sets.
     if (element_sets != mesh.get_element_sets())
     {
 	FAILMSG("Element sets not obtained.");
- 	all_passed = false;
     }
     // Check title.
     if (title != mesh.get_title())
     {
 	FAILMSG("Title not obtained.");
- 	all_passed = false;
     }
     // Check invariant.
     if (!mesh.invariant())
     {
 	FAILMSG("Invariant not satisfied.");
- 	all_passed = false;
     }
-    if (all_passed)
+    if( rtt_RTT_Format_Reader_test::passed )
     {
         PASSMSG("Got all virtual accessors.");
+	rtt_RTT_Format_Reader_test::passed = unit_test_status;
+	return true;
     }
     else
     {
 	FAILMSG("Errors in some virtual accessors.");
+	rtt_RTT_Format_Reader_test::passed = unit_test_status;
+	return false;
     }
 
-    return all_passed;
+    return false;        // should never get here!
 }
 
 } // end of rtt_RTT_Format_Reader_test
