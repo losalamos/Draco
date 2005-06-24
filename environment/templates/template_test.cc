@@ -32,44 +32,44 @@ int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
-	{
-	    std::cout << argv[0] << ": version " 
-		      << <namespace>::release() 
-		      << std::endl;
-	    return 0;
-	}
+        if (std::string(argv[arg]) == "--version")
+        {
+            std::cout << argv[0] << ": version " 
+                      << <namespace>::release() 
+                      << std::endl;
+            return 0;
+        }
 
     try
     {
-	// >>> UNIT TESTS
+        // >>> UNIT TESTS
     }
     catch (std::exception &err)
     {
-	std::cout << "ERROR: While testing <class>, " 
-		  << err.what()
-		  << std::endl;
-	return 1;
+        std::cout << "ERROR: While testing <class>, " 
+                  << err.what()
+                  << std::endl;
+        return 1;
     }
     catch( ... )
     {
-	std::cout << "ERROR: While testing <class>, " 
-		  << "An unknown exception was thrown."
-		  << std::endl;
-	return 1;
+        std::cout << "ERROR: While testing <class>, " 
+                  << "An unknown exception was thrown."
+                  << std::endl;
+        return 1;
     }
 
     // status of test
     std::cout << std::endl;
     std::cout <<     "*********************************************" 
-	      << std::endl;
+              << std::endl;
     if (<namespace>_test::passed) 
     {
         std::cout << "**** <class> Test: PASSED" 
-		  << std::endl;
+                  << std::endl;
     }
     std::cout <<     "*********************************************" 
-	      << std::endl;
+              << std::endl;
     std::cout << std::endl;
     
     std::cout << "Done testing <class>." << std::endl;

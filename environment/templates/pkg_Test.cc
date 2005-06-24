@@ -32,7 +32,7 @@ bool fail(int line)
 bool fail(int line, char *file)
 {
     std::cout << "Test: failed on line " << line << " in " << file
-	      << std::endl;
+              << std::endl;
     passed = false;
     return false;
 }
@@ -62,7 +62,7 @@ void unit_test(const bool pass, int line, char *file)
 {
     if ( ! pass )
     {
-	fail(line, file);
+        fail(line, file);
     }
 }
 
