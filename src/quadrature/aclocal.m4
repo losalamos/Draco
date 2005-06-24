@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -3263,7 +3263,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
        GCC_HOME=`dirname ${GCC_BIN}`
 
        # Ensure that libraries exist at this location.  If we can't
-       # libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # find libstdc++.a at this location we leave GCC_LIB_DIR set to
        # null and issue a warning.
 
        if test -r ${GCC_HOME}/lib/libstdc++.a; then
@@ -3738,23 +3738,130 @@ dnl libraries be provided on the link line.  This m4 function adds the
 dnl necessary libraries to LIBS.
 dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DBS_LAHEY_ENVIRONMENT], [dnl
-#
-# setup lf95 libs:
-# add lf95 libs to LIBS if eospac or scalapack is used.
-#
+
    AC_MSG_CHECKING("for extra lf95 library requirements.")
    if test -n "${vendor_eospac}"    ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
-         lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	 extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-         LIBS="${LIBS} ${extra_lf95_libs}"
-         extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-         RPATH="${RPATH} ${extra_lf95_rpaths}"
-         AC_MSG_RESULT("${extra_lf95_libs}")
+         f90_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	 extra_f90_libs="-L${f90_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+         LIBS="${LIBS} ${extra_f90_libs}"
+         extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+         RPATH="${RPATH} ${extra_f90_rpaths}"
+         AC_MSG_RESULT("${extra_f90_libs}")
    else
          AC_MSG_RESULT("none.")
    fi
+
+   dnl Optimize flag   
+   AC_MSG_CHECKING("for F90FLAGS")
+   if test "${with_opt:=0}" != 0 ; then
+      F90FLAGS="${F90FLAGS} -O${with_opt}"
+   else 
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+   dnl C preprocessor flag
+   F90FLAGS="${F90FLAGS} -Cpp"
+   AC_MSG_RESULT(${F90FLAGS})
+
+   dnl scalar or mpi ?
+   AC_MSG_CHECKING("for F90MPIFLAGS")
+   if test ${with_mpi:=no} = "no"; then
+      F90MPIFLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      if test "${with_mpi}" = mpich; then
+         F90MPIFLAGS="-lfmpich"
+      else dnl LAMPI support
+         F90MPIFLAGS="-lmpi"
+      fi
+   fi
+   AC_MSG_RESULT(${F90MPIFLAGS})
+   
+   dnl Add C++ options to F90 link line
+   AC_MSG_CHECKING("for F90CXXFLAGS")
+   CXXLIBDIR=${GCC_LIB_DIR}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   AC_MSG_RESULT(${F90CXXFLAGS})
+
+   AC_MSG_CHECKING("for F90VENDOR_LIBS")
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   AC_MSG_RESULT("${F90VENDOR_LIBS}")
+])
+
+dnl ------------------------------------------------------------------------ dnl
+dnl AC_DBS_PGF90_ENVIRONMENT
+dnl
+dnl Some vendor setups require that the Portland Group F90 lib dir and
+dnl compiler libraries be provided on the link line.  This m4 function
+dnl adds the necessary libraries to LIBS.
+dnl ------------------------------------------------------------------------ dnl
+AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
+
+   AC_MSG_CHECKING("for extra pgf90 library requirements.")
+   if test -n "${vendor_eospac}"    ||
+      test -n "${vendor_scalapack}" ||
+      test -n "${vendor_trilinos}"; then
+         f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
+         if test -r ${f90_lib_loc}/libpgc.a; then
+	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgc -lpgftnrtl"
+            extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
+            extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+         else
+	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgftnrtl"
+            extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
+            f90_lib_loc2=`which pgf90 | sed -e 's/bin\/pgf90/lib-linux86-g232/'`
+            if test -r ${f90_lib_loc2}/libpgc.a; then
+               extra_f90_libs="${extra_f90_libs} -L${f90_lib_loc2} -lpgc"
+               extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+               extra_f90_rpaths="${extra_f90_rpaths} -Xlinker -rpath ${f90_lib_locs}"
+            fi
+         fi
+         LIBS="${LIBS} ${extra_f90_libs}"
+         RPATH="${RPATH} ${extra_f90_rpaths}"
+         AC_MSG_RESULT("${extra_f90_libs}")
+   else
+         AC_MSG_RESULT("none.")
+   fi
+
+   dnl Optimize flag   
+   AC_MSG_CHECKING("for F90FLAGS")
+   if test "${with_opt:=0}" != 0 ; then
+      if test ${with_opt} -gt 2; then
+         F90FLAGS="${F90FLAGS} -O2"
+      else
+         F90FLAGS="${F90FLAGS} -O${with_opt}"
+      fi
+   else 
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+   dnl C preprocessor flag
+   F90FLAGS="${F90FLAGS} -Mpreprocess"
+   AC_MSG_RESULT(${F90FLAGS})
+
+   dnl scalar or mpi ?
+   AC_MSG_CHECKING("for F90MPIFLAGS")
+   if test ${with_mpi:=no} = "no"; then
+      F90FLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      if test "${with_mpi}" = mpich; then
+         F90MPIFLAGS="-lfmpich"
+      else dnl LAMPI support
+         F90MPIFLAGS="-lmpi"
+      fi
+   fi
+   AC_MSG_RESULT(${F90MPIFLAGS})
+
+   dnl Add C++ options to F90 link line
+   AC_MSG_CHECKING("for F90CXXFLAGS")
+   CXXLIBDIR=${GCC_LIB_DIR}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   AC_MSG_RESULT(${F90CXXFLAGS})
+
+   AC_MSG_CHECKING("for F90VENDOR_LIBS")
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   AC_MSG_RESULT("${F90VENDOR_LIBS}")
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -3841,8 +3948,16 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       # setup lf95 libs
-       AC_DBS_LAHEY_ENVIRONMENT
+       # setup F90 libs, rpath, etc.
+       AC_CHECK_PROGS(F90, pgf90 lf95)
+       case ${F90} in
+       lf95)
+          AC_DBS_LAHEY_ENVIRONMENT
+          ;;
+       pgf90)
+          AC_DBS_PGF90_ENVIRONMENT
+          ;;
+       esac
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used

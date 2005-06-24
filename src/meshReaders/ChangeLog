@@ -1,3 +1,9 @@
+2005-06-23  Kelly Thompson  <kgt@lanl.gov>
+
+	* Hex_Mesh_Reader.hh: Modified constructor to make it explicit. We
+	  don't want std::strings being converted intto Hex_Mesh_Readers
+	  implicitly.  
+
 2002-05-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* meshReaders: updated to version 1_4_0. This release is primarily

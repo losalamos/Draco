@@ -4491,7 +4491,7 @@ echo $ECHO_N "checking \"Setting library path of GNU compiler\"... $ECHO_C" >&6
        GCC_HOME=`dirname ${GCC_BIN}`
 
        # Ensure that libraries exist at this location.  If we can't
-       # libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # find libstdc++.a at this location we leave GCC_LIB_DIR set to
        # null and issue a warning.
 
        if test -r ${GCC_HOME}/lib/libstdc++.a; then
@@ -5690,28 +5690,181 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
        # end of lapack setup
        #
 
-       # setup lf95 libs
-       #
-# setup lf95 libs:
-# add lf95 libs to LIBS if eospac or scalapack is used.
-#
+       # setup F90 libs, rpath, etc.
+       for ac_prog in pgf90 lf95
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_F90+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$F90"; then
+  ac_cv_prog_F90="$F90" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_F90="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+F90=$ac_cv_prog_F90
+if test -n "$F90"; then
+  echo "$as_me:$LINENO: result: $F90" >&5
+echo "${ECHO_T}$F90" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$F90" && break
+done
+
+       case ${F90} in
+       lf95)
+
    echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
-         lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	 extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-         LIBS="${LIBS} ${extra_lf95_libs}"
-         extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-         RPATH="${RPATH} ${extra_lf95_rpaths}"
-         echo "$as_me:$LINENO: result: \"${extra_lf95_libs}\"" >&5
-echo "${ECHO_T}\"${extra_lf95_libs}\"" >&6
+         f90_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	 extra_f90_libs="-L${f90_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+         LIBS="${LIBS} ${extra_f90_libs}"
+         extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+         RPATH="${RPATH} ${extra_f90_rpaths}"
+         echo "$as_me:$LINENO: result: \"${extra_f90_libs}\"" >&5
+echo "${ECHO_T}\"${extra_f90_libs}\"" >&6
    else
          echo "$as_me:$LINENO: result: \"none.\"" >&5
 echo "${ECHO_T}\"none.\"" >&6
    fi
 
+      echo "$as_me:$LINENO: checking \"for F90FLAGS\"" >&5
+echo $ECHO_N "checking \"for F90FLAGS\"... $ECHO_C" >&6
+   if test "${with_opt:=0}" != 0 ; then
+      F90FLAGS="${F90FLAGS} -O${with_opt}"
+   else
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+      F90FLAGS="${F90FLAGS} -Cpp"
+   echo "$as_me:$LINENO: result: ${F90FLAGS}" >&5
+echo "${ECHO_T}${F90FLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90MPIFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90MPIFLAGS\"... $ECHO_C" >&6
+   if test ${with_mpi:=no} = "no"; then
+      F90MPIFLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      if test "${with_mpi}" = mpich; then
+         F90MPIFLAGS="-lfmpich"
+      else          F90MPIFLAGS="-lmpi"
+      fi
+   fi
+   echo "$as_me:$LINENO: result: ${F90MPIFLAGS}" >&5
+echo "${ECHO_T}${F90MPIFLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
+   CXXLIBDIR=${GCC_LIB_DIR}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
+echo "${ECHO_T}${F90CXXFLAGS}" >&6
+
+   echo "$as_me:$LINENO: checking \"for F90VENDOR_LIBS\"" >&5
+echo $ECHO_N "checking \"for F90VENDOR_LIBS\"... $ECHO_C" >&6
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   echo "$as_me:$LINENO: result: \"${F90VENDOR_LIBS}\"" >&5
+echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
+
+          ;;
+       pgf90)
+
+   echo "$as_me:$LINENO: checking \"for extra pgf90 library requirements.\"" >&5
+echo $ECHO_N "checking \"for extra pgf90 library requirements.\"... $ECHO_C" >&6
+   if test -n "${vendor_eospac}"    ||
+      test -n "${vendor_scalapack}" ||
+      test -n "${vendor_trilinos}"; then
+         f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
+         if test -r ${f90_lib_loc}/libpgc.a; then
+	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgc -lpgftnrtl"
+            extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
+            extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+         else
+	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgftnrtl"
+            extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
+            f90_lib_loc2=`which pgf90 | sed -e 's/bin\/pgf90/lib-linux86-g232/'`
+            if test -r ${f90_lib_loc2}/libpgc.a; then
+               extra_f90_libs="${extra_f90_libs} -L${f90_lib_loc2} -lpgc"
+               extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+               extra_f90_rpaths="${extra_f90_rpaths} -Xlinker -rpath ${f90_lib_locs}"
+            fi
+         fi
+         LIBS="${LIBS} ${extra_f90_libs}"
+         RPATH="${RPATH} ${extra_f90_rpaths}"
+         echo "$as_me:$LINENO: result: \"${extra_f90_libs}\"" >&5
+echo "${ECHO_T}\"${extra_f90_libs}\"" >&6
+   else
+         echo "$as_me:$LINENO: result: \"none.\"" >&5
+echo "${ECHO_T}\"none.\"" >&6
+   fi
+
+      echo "$as_me:$LINENO: checking \"for F90FLAGS\"" >&5
+echo $ECHO_N "checking \"for F90FLAGS\"... $ECHO_C" >&6
+   if test "${with_opt:=0}" != 0 ; then
+      if test ${with_opt} -gt 2; then
+         F90FLAGS="${F90FLAGS} -O2"
+      else
+         F90FLAGS="${F90FLAGS} -O${with_opt}"
+      fi
+   else
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+      F90FLAGS="${F90FLAGS} -Mpreprocess"
+   echo "$as_me:$LINENO: result: ${F90FLAGS}" >&5
+echo "${ECHO_T}${F90FLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90MPIFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90MPIFLAGS\"... $ECHO_C" >&6
+   if test ${with_mpi:=no} = "no"; then
+      F90FLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      if test "${with_mpi}" = mpich; then
+         F90MPIFLAGS="-lfmpich"
+      else          F90MPIFLAGS="-lmpi"
+      fi
+   fi
+   echo "$as_me:$LINENO: result: ${F90MPIFLAGS}" >&5
+echo "${ECHO_T}${F90MPIFLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
+   CXXLIBDIR=${GCC_LIB_DIR}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
+echo "${ECHO_T}${F90CXXFLAGS}" >&6
+
+   echo "$as_me:$LINENO: checking \"for F90VENDOR_LIBS\"" >&5
+echo $ECHO_N "checking \"for F90VENDOR_LIBS\"... $ECHO_C" >&6
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   echo "$as_me:$LINENO: result: \"${F90VENDOR_LIBS}\"" >&5
+echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
+
+          ;;
+       esac
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -6728,26 +6881,61 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
 
 
        # setup lf95 libs
-       #
-# setup lf95 libs:
-# add lf95 libs to LIBS if eospac or scalapack is used.
-#
+
    echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
-         lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	 extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-         LIBS="${LIBS} ${extra_lf95_libs}"
-         extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-         RPATH="${RPATH} ${extra_lf95_rpaths}"
-         echo "$as_me:$LINENO: result: \"${extra_lf95_libs}\"" >&5
-echo "${ECHO_T}\"${extra_lf95_libs}\"" >&6
+         f90_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	 extra_f90_libs="-L${f90_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+         LIBS="${LIBS} ${extra_f90_libs}"
+         extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+         RPATH="${RPATH} ${extra_f90_rpaths}"
+         echo "$as_me:$LINENO: result: \"${extra_f90_libs}\"" >&5
+echo "${ECHO_T}\"${extra_f90_libs}\"" >&6
    else
          echo "$as_me:$LINENO: result: \"none.\"" >&5
 echo "${ECHO_T}\"none.\"" >&6
    fi
+
+      echo "$as_me:$LINENO: checking \"for F90FLAGS\"" >&5
+echo $ECHO_N "checking \"for F90FLAGS\"... $ECHO_C" >&6
+   if test "${with_opt:=0}" != 0 ; then
+      F90FLAGS="${F90FLAGS} -O${with_opt}"
+   else
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+      F90FLAGS="${F90FLAGS} -Cpp"
+   echo "$as_me:$LINENO: result: ${F90FLAGS}" >&5
+echo "${ECHO_T}${F90FLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90MPIFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90MPIFLAGS\"... $ECHO_C" >&6
+   if test ${with_mpi:=no} = "no"; then
+      F90MPIFLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      if test "${with_mpi}" = mpich; then
+         F90MPIFLAGS="-lfmpich"
+      else          F90MPIFLAGS="-lmpi"
+      fi
+   fi
+   echo "$as_me:$LINENO: result: ${F90MPIFLAGS}" >&5
+echo "${ECHO_T}${F90MPIFLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
+   CXXLIBDIR=${GCC_LIB_DIR}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
+echo "${ECHO_T}${F90CXXFLAGS}" >&6
+
+   echo "$as_me:$LINENO: checking \"for F90VENDOR_LIBS\"" >&5
+echo $ECHO_N "checking \"for F90VENDOR_LIBS\"... $ECHO_C" >&6
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   echo "$as_me:$LINENO: result: \"${F90VENDOR_LIBS}\"" >&5
+echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
 
 
                             echo "$as_me:$LINENO: checking \"libg2c requirements\"" >&5
@@ -11476,26 +11664,61 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
        #
 
        # setup lf95 libs
-       #
-# setup lf95 libs:
-# add lf95 libs to LIBS if eospac or scalapack is used.
-#
+
    echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
-         lahey_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
-	 extra_lf95_libs="-L${lahey_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
-         LIBS="${LIBS} ${extra_lf95_libs}"
-         extra_lf95_rpaths="-Xlinker -rpath ${lahey_lib_loc}"
-         RPATH="${RPATH} ${extra_lf95_rpaths}"
-         echo "$as_me:$LINENO: result: \"${extra_lf95_libs}\"" >&5
-echo "${ECHO_T}\"${extra_lf95_libs}\"" >&6
+         f90_lib_loc=`which lf95 | sed -e 's/bin\/lf95/lib/'`
+	 extra_f90_libs="-L${f90_lib_loc} -lfj9i6 -lfj9e6 -lfj9f6 -lfst -lfccx86_6a"
+         LIBS="${LIBS} ${extra_f90_libs}"
+         extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+         RPATH="${RPATH} ${extra_f90_rpaths}"
+         echo "$as_me:$LINENO: result: \"${extra_f90_libs}\"" >&5
+echo "${ECHO_T}\"${extra_f90_libs}\"" >&6
    else
          echo "$as_me:$LINENO: result: \"none.\"" >&5
 echo "${ECHO_T}\"none.\"" >&6
    fi
+
+      echo "$as_me:$LINENO: checking \"for F90FLAGS\"" >&5
+echo $ECHO_N "checking \"for F90FLAGS\"... $ECHO_C" >&6
+   if test "${with_opt:=0}" != 0 ; then
+      F90FLAGS="${F90FLAGS} -O${with_opt}"
+   else
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+      F90FLAGS="${F90FLAGS} -Cpp"
+   echo "$as_me:$LINENO: result: ${F90FLAGS}" >&5
+echo "${ECHO_T}${F90FLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90MPIFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90MPIFLAGS\"... $ECHO_C" >&6
+   if test ${with_mpi:=no} = "no"; then
+      F90MPIFLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      if test "${with_mpi}" = mpich; then
+         F90MPIFLAGS="-lfmpich"
+      else          F90MPIFLAGS="-lmpi"
+      fi
+   fi
+   echo "$as_me:$LINENO: result: ${F90MPIFLAGS}" >&5
+echo "${ECHO_T}${F90MPIFLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
+   CXXLIBDIR=${GCC_LIB_DIR}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
+echo "${ECHO_T}${F90CXXFLAGS}" >&6
+
+   echo "$as_me:$LINENO: checking \"for F90VENDOR_LIBS\"" >&5
+echo $ECHO_N "checking \"for F90VENDOR_LIBS\"... $ECHO_C" >&6
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   echo "$as_me:$LINENO: result: \"${F90VENDOR_LIBS}\"" >&5
+echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
 
 
        #

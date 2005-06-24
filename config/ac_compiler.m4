@@ -291,7 +291,7 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
        GCC_HOME=`dirname ${GCC_BIN}`
 
        # Ensure that libraries exist at this location.  If we can't
-       # libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # find libstdc++.a at this location we leave GCC_LIB_DIR set to
        # null and issue a warning.
 
        if test -r ${GCC_HOME}/lib/libstdc++.a; then

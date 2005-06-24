@@ -217,9 +217,9 @@ bool RTT_Mesh_Reader::invariant() const
                  (rttMesh->get_dims_nside_types() > 0) &&
                  (rttMesh->get_dims_ncell_types() > 0) &&
                  (rttMesh->get_dims_ncell_defs() >= 
-		     rttMesh->get_dims_nside_types()) &&
+		  rttMesh->get_dims_nside_types()) &&
 		 (rttMesh->get_dims_ncell_defs() >= 
-		     rttMesh->get_dims_ncell_types());
+		  rttMesh->get_dims_ncell_types());
     return test;
 }
 
