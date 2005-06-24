@@ -1,3 +1,8 @@
+2005-06-24  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco-setup.el (defaults): Set indent-tabs-mode to nil so that
+	  tabs are converted to spaces automatically.
+
 2005-06-16  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco-config-modes.el (draco-setup-compilation-mode): Add

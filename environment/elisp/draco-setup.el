@@ -304,6 +304,13 @@ compilation-mode?"
 (require 'draco-new-files)
 
 ;; ========================================
+;; Setup some defaults
+;; ========================================
+
+;; Convert tabs to spaces when appropriate (c++-mode, etc.)
+(set-default indent-tabs-mode nil)
+
+;; ========================================
 ;; Setup mode specific stuff
 ;; ========================================
 
