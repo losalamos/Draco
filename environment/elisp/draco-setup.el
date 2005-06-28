@@ -308,7 +308,7 @@ compilation-mode?"
 ;; ========================================
 
 ;; Convert tabs to spaces when appropriate (c++-mode, etc.)
-(set-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 
 ;; ========================================
 ;; Setup mode specific stuff
