@@ -71,6 +71,14 @@ template<class T> class Thin_Ptr
 	return *this;
     }
 
+    //! Assignment operator for type T *.
+    Thin_Ptr<T>& operator=(T *p_in) 
+    {
+	d_ptr = p_in;
+	return *this;
+    }
+
+
     //! Sets the pointer to \c NULL
     void release_data() { d_ptr = 0; }
 
