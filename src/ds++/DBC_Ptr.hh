@@ -51,7 +51,7 @@
 // ==========================================================================
 
 #include "Safe_Ptr.hh"
-#define DBC_Ptr rtt_dsxx::Safe_Ptr
+#define DBC_Ptr Safe_Ptr
 
 #else
 
@@ -62,7 +62,7 @@
 
 
 #include "Thin_Ptr.hh"
-#define DBC_Ptr rtt_dsxx::Thin_Ptr
+#define DBC_Ptr Thin_Ptr
 
 #endif
 
