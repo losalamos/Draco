@@ -78,6 +78,15 @@ struct SPref
  * Unfortunately, there is no way to check if another SP owns the dumb
  * pointer that you give to a SP.  This is simply something that needs to be
  * watched by the programmer.
+ * 
+ * \note
+ * Having an std::vector or other array-based container of SPs can have
+ * non-obvious implications for object lifetime. Since operations like
+ * pop_back() or clear() do not call the destructor of the SP, SP's that are
+ * in the "slop" between the vector size and the capacity are still holding
+ * references.  It is only once those slots are re-assigned, or the whole
+ * vector is deleted, or a resize operation leads to a reallocation, that
+ * those SPs are killed.
  */
 /*!
  * \example ds++/test/tstSP.cc
