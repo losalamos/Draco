@@ -271,7 +271,7 @@ def complete(value, targets):
     []
     """
 
-    return [target for target in targets if target.find(value)==0]
+    return [target for target in targets if target.startswith(value)]
 
 ##---------------------------------------------------------------------------##
 def unique_append(a_list, an_item):

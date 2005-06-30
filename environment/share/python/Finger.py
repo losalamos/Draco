@@ -16,8 +16,7 @@ def finger_ldap(keyword):
     >>> print finger_ldap("buksas")[0].split()[1:3]
     ['Buksas', 'Michael']
     """
-
-    command = "finger %s@lanl.gov" % keyword
+    command = "finger %s@lanl.gov" % keyword.strip()
     stream = os.popen(command)
 
     output = stream.readlines()
@@ -65,6 +64,7 @@ class person:
 
         """
 
+        # Set all key attributes to None for default values
         for key in person.keys:
             setattr(self, key, None)
 
@@ -74,8 +74,11 @@ class person:
         if match:
             self.__dict__.update(match.groupdict())
         else:
-            sys.stderr.write("Could not parse record: %s" % finger_data)
+            sys.stderr.write("Could not parse record: %s" %
+                             finger_data)
 
+
+    #---------------------------------------------------------------------------##
     def disp(self, out = sys.stdout):
         out.write("%s %s %s %s " % (self.znum,  self.lname,
                                     self.fname, self.minit))
@@ -86,6 +89,8 @@ class person:
                                      self.phone, self.email))
                   
 
+
+    #---------------------------------------------------------------------------##
     def pretty_print(self, out = sys.stdout):
         out.write("       Name:  %s %s %s\n" % (self.fname,
                                                 self.minit,
@@ -108,7 +113,7 @@ def finger(word):
     given word
 
     >>> me = finger("Buksas")[0]
-    >>> me['lname']
+    >>> me.lname
     'Buksas'
 
     """
