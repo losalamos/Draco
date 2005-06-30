@@ -19,7 +19,7 @@
 #include <sstream>
 
 using namespace std;
-
+using rtt_dsxx::DBC_Ptr;
 
 struct Base_Class
 {
@@ -98,6 +98,41 @@ void test_over_deleted()
 	PASSMSG("test_over_deleted");
     else
 	FAILMSG("test_over_deleted FAILED!");
+}
+
+//---------------------------------------------------------------------------//
+
+
+DBC_Ptr<int> gen_func()
+{
+    DBC_Ptr<int> retval;
+    retval = new int;
+    *retval = static_cast<int>(std::random());
+    return retval;
+}
+
+// Make sure that, when a DBC_Ptr is created and returned from another
+// function, the reference counts get adjusted when the variable in the other
+// function (retval) goes out of scope.
+void test_function_return()
+{
+    bool caught = false;
+    try
+    {
+	DBC_Ptr<int> foo = gen_func();
+	foo.delete_data();
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+    }
+
+    if(caught) ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("test_function_return");
+    else
+	FAILMSG("test_function_return FAILED!");
 }
 
 
@@ -194,6 +229,7 @@ main(int argc, char *argv[])
 	test_undeleted();
 	test_over_deleted();
 	test_dangling();
+	test_function_return();
 	test_polymorph();
     }
     catch (rtt_dsxx::assertion &ass)
