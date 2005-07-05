@@ -13,7 +13,8 @@
 #define rtt_dsxx_Safe_Ptr_hh
 
 #include "Assert.hh"
-
+#include <typeinfo>
+#include <iostream>
 
 namespace rtt_dsxx
 {
@@ -57,7 +58,15 @@ struct Safe_Ptr_Ref
 #define DBC_Check(COND) \
     if (!(COND)) { \
 	d_bad_state = true; \
-	rtt_dsxx::toss_cookies( #COND, __FILE__, __LINE__ ); \
+	rtt_dsxx::toss_cookies_ptr( #COND, __FILE__, __LINE__ ); \
+    } 
+
+#define DBC_Check_Eq(VAR, VAL)			\
+    if (VAR != VAL) { \
+	std::cout << "Expecting " #VAR " == " << VAL << ", got " \
+		  << VAR << " at File " << __FILE__ << ":" << __LINE__ << std::endl; \
+	d_bad_state = true; \
+	rtt_dsxx::toss_cookies_ptr( #VAR "==" #VAL, __FILE__, __LINE__ );	\
     } 
 
 
@@ -66,6 +75,8 @@ struct Safe_Ptr_Ref
 
   Except for strange situations, you should use the \c DBC_Ptr macro in
   DBC_Ptr.hh instead of using this class explicitly.
+
+  void pointers are not reference counted!
 
   \sa DBC_Ptr.hh
  */
@@ -77,13 +88,9 @@ class Safe_Ptr
     /*! The pointer is initialized to \c NULL. */
     Safe_Ptr() 
 	: d_p(0)
-	, d_r(new Safe_Ptr_Ref)
+	, d_r(0)
 	, d_bad_state(false) 
     { 
-	DBC_Check(d_r); 
-	DBC_Check(d_r->refs == 1); 
-	d_r->deleted = true;	// Okay to let ref. count drop to zero
-				// without deleting this.
     }
 
     // Explicit constructor for type T *.
@@ -130,6 +137,8 @@ class Safe_Ptr
     //! Dereference operator.
     T& operator*() const 
     { DBC_Check(d_p); DBC_Check(!d_r->deleted); return *d_p; }
+
+    size_t ref_count() const { return (d_r?d_r->refs:0); }
 
     //! Boolean conversion operator.
     operator bool() const 
@@ -226,8 +235,12 @@ Safe_Ptr<T>::Safe_Ptr(T *p_in)
     , d_bad_state(false)
     
 {
-    DBC_Check(d_r);
-    DBC_Check(d_r->refs == 1);
+    if(d_p) 
+    {
+	d_r = new Safe_Ptr_Ref;
+	DBC_Check(d_r);
+	DBC_Check_Eq(d_r->refs, 1);
+    }
 }
 
 
@@ -277,7 +290,7 @@ Safe_Ptr<T>::Safe_Ptr(X *px_in)
 
     DBC_Check(d_p);
     DBC_Check(d_r);
-    DBC_Check(d_r->refs == 1);
+    DBC_Check_Eq(d_r->refs, 1);
 }
 
 
@@ -293,10 +306,9 @@ Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<T> &sp_in)
     , d_r(sp_in.d_r)
     , d_bad_state(false)
 {
-    DBC_Check(d_r);
-
     // advance the reference to T
-    ++d_r->refs;
+    if(d_r)
+	++d_r->refs;
 }
 
 
@@ -328,7 +340,8 @@ Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<X> &spx_in)
     d_r = spx_in.d_r;
     
     // advance the reference to T
-    ++d_r->refs;
+    if(d_r)
+	++d_r->refs;
 }
 
 //---------------------------------------------------------------------------//
@@ -362,9 +375,16 @@ Safe_Ptr<T>& Safe_Ptr<T>::operator=(T *p_in)
     
     // now make add p_in to this pointer and make a new reference to it
     d_p = p_in;
-    d_r = new Safe_Ptr_Ref;
 
-    DBC_Check(d_r->refs == 1);
+    if(d_p)
+    {
+	d_r = new Safe_Ptr_Ref;
+	DBC_Check_Eq(d_r->refs,1);
+    }
+    else
+    {
+	d_r = 0;
+    }
     return *this;
 }
 
@@ -398,7 +418,7 @@ Safe_Ptr<T>& Safe_Ptr<T>::operator=(X *px_in)
     // now assign this to np (using previously defined assignment operator)
     *this = np;
     
-    DBC_Check(d_r->refs == 1);
+    DBC_Check_Eq(d_r->refs,1);
     return *this;
 }
 
@@ -428,7 +448,8 @@ Safe_Ptr<T>& Safe_Ptr<T>::operator=(const Safe_Ptr<T> sp_in)
     d_r = sp_in.d_r;
 
     // add the reference count and return
-    ++d_r->refs;
+    if(d_r)
+	++d_r->refs;
     return *this;
 }
 
@@ -477,7 +498,8 @@ Safe_Ptr<T>& Safe_Ptr<T>::operator=(const Safe_Ptr<X> spx_in)
     d_r = spx_in.d_r;
 
     // advance the counter and return
-    ++d_r->refs;
+    if(d_r)
+	++d_r->refs;
     return *this;
 }
 
@@ -485,11 +507,46 @@ Safe_Ptr<T>& Safe_Ptr<T>::operator=(const Safe_Ptr<X> spx_in)
 template<class T> void
 Safe_Ptr<T>::delete_data()
 {
-    DBC_Check(d_r);
-    DBC_Check(d_r->refs == 1);
-    DBC_Check(d_r->deleted == false);
-    d_r->deleted = true;
-    delete d_p;  d_p = 0;
+    if(d_r)
+    {
+	// Check for dangling pointers.  If delete_data() gets called during
+	// the unwind from a memory leak exception thrown in decrement_rc,
+	// d_r->refs could be zero.  d_bad_state should be set if this is
+	// true, so just skip the delete.
+
+	if(d_bad_state) return; 
+
+	if(d_r->refs > 1)
+	{
+	    d_bad_state = true;
+	    std::cout << "***DBC_Ptr error: dangling pointer\n\tSafe_Ptr<"
+		      << typeid(T).name() << "> at addr " << this 
+		      << "\n\tdeleted data at addr "
+		      << d_p << " still referenced by " <<  d_r->refs - 1 
+		      << " other Safe_Ptrs" << std::endl;
+	    rtt_dsxx::toss_cookies_ptr("dangling pointer", __FILE__, __LINE__);
+	}
+
+	DBC_Check_Eq(d_r->refs,1);
+
+
+	// Check for double deletes. 
+	if(d_r->deleted)
+	{
+	    d_bad_state = true;
+	    std::cout << "***DBC_Ptr error: double delete\n\tSafe_Ptr<"
+		      << typeid(T).name() << "> at addr " << this 
+		      << "\n\tcalled delete_data on previous deleted addr "
+		      << d_p << std::endl;
+	    rtt_dsxx::toss_cookies_ptr("double delete", __FILE__, __LINE__);
+	}
+	d_r->deleted = true;
+	delete d_p;
+    } else {
+	// If there isn't a reference counter, there shouldn't be data.
+	DBC_Check(!d_p);       
+    }
+
 }
 
 
@@ -510,10 +567,19 @@ void Safe_Ptr<T>::decrement_rc()
     {
 	DBC_Check(d_r->refs > 0);
 
-	// if the count goes to zero then we free the data
+	// if the count goes to zero then we free the reference.
 	if (--d_r->refs == 0)
 	{
-	    DBC_Check(d_r->deleted);
+	    if(!d_r->deleted)
+	    {
+		d_bad_state = true;
+		std::cout << "***DBC_Ptr error: memory leak\n\tSafe_Ptr<"
+			  << typeid(T).name() << "> at addr " << this 
+			  << "\n\treleased last handle "
+		    "to undeleted data at addr "
+			  << d_p << std::endl;
+		rtt_dsxx::toss_cookies_ptr("memory leak", __FILE__, __LINE__);
+	    }
 	    delete d_r; d_r = 0;
 	}
     }
