@@ -73,11 +73,11 @@ class Sprng
     struct SprngValue
     {
 	// counter and id to Sprng library
-	int refcount;
 	int *id;
+	int refcount;
 
 	// constructor
-	SprngValue(int *idnum) : refcount(1), id(idnum) {}
+	SprngValue(int *idnum) :  id(idnum), refcount(1) {}
 
 	// destructor
 	~SprngValue() { free_sprng(id); }
@@ -88,13 +88,13 @@ class Sprng
 
     // Number of this particular stream.
     int streamnum;
-    int *sid;
 
     // Size of the packed state
     static int packed_size;
 
   public:
     // Constructors
+    inline Sprng() : streamid(0) {}
     inline Sprng(int *, int);
     inline Sprng(const Sprng &);
     Sprng(const std::vector<char> &);
@@ -111,11 +111,11 @@ class Sprng
     // >>> Services provided by Sprng class.
 
     // Get Random number.
-    double ran() const { return sprng(sid); }
+    double ran() const { Require(streamid); return sprng(streamid->id); }
 
     // Return the ID and number.
-    int* get_id() const { return sid; }
-    int get_num() const { return streamnum; }
+    int* get_id() const { Require(streamid); return streamid->id; }
+    int get_num() const { Require(streamid); return streamnum; }
 
     // Return the packed size
     int get_size() const;
@@ -124,7 +124,7 @@ class Sprng
     bool avg_test(int, double = .001) const;
 
     // Do a diagnostic.
-    void print() const { print_sprng(sid); }
+    void print() const { Require(streamid); print_sprng(streamid->id); }
 };
 
 //---------------------------------------------------------------------------//
@@ -134,16 +134,17 @@ class Sprng
  * \brief Constructor.
  */
 Sprng::Sprng(int *idval, int number)
-    : streamid(new SprngValue(idval)), streamnum(number), sid(streamid->id) {}
+    : streamid(new SprngValue(idval)), streamnum(number) {}
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor.
  */
 Sprng::Sprng(const Sprng &rhs)
-    : streamid(rhs.streamid), streamnum(rhs.streamnum), sid(streamid->id) 
+    : streamid(rhs.streamid), streamnum(rhs.streamnum)
 {
-    ++streamid->refcount;
+    if(streamid)
+        ++streamid->refcount;
 }
 
 //---------------------------------------------------------------------------//
@@ -152,7 +153,7 @@ Sprng::Sprng(const Sprng &rhs)
  */
 Sprng::~Sprng()
 {
-    if (--streamid->refcount == 0)
+    if (streamid && --streamid->refcount == 0)
 	delete streamid;
 }
 

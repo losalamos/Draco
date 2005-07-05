@@ -27,7 +27,7 @@ int Sprng::packed_size = 0;
  * \brief Unpacking constructor.
  */
 Sprng::Sprng(const std::vector<char> &packed)
-    : streamid(0), streamnum(0), sid(0)
+    : streamid(0), streamnum(0)
 {
     Require (packed.size() >= 2 * sizeof(int));
 
@@ -53,7 +53,6 @@ Sprng::Sprng(const std::vector<char> &packed)
 
     // now make a new streamid
     streamid = new SprngValue(rnid);
-    sid = streamid->id;
 
     // reclaim memory
     delete [] prng;
@@ -75,7 +74,7 @@ std::vector<char> Sprng::pack() const
 
     // first pack the random number object and determine the size
     char *prng   = 0;
-    int rng_size = pack_sprng(sid, &prng);
+    int rng_size = pack_sprng(streamid->id, &prng);
     int size     = rng_size + 2 * sizeof(int);
     Check (prng);
 
@@ -104,19 +103,20 @@ std::vector<char> Sprng::pack() const
  */
 Sprng& Sprng::operator=(const Sprng &rhs)
 {
+    Require(rhs.streamid);
+
     // check to see if the values are the same
     if (streamid == rhs.streamid && streamnum == rhs.streamnum)
 	return *this;
 
     // destroy this' value if it was the last random number in a particular
     // stream 
-    if (--streamid->refcount == 0)
+    if (streamid && --streamid->refcount == 0)
 	delete streamid;
 
     // do assignment
     streamid  = rhs.streamid;
     streamnum = rhs.streamnum; 
-    sid = streamid->id;
     ++streamid->refcount;
     return *this;
 }
@@ -128,6 +128,7 @@ Sprng& Sprng::operator=(const Sprng &rhs)
 
 bool Sprng::avg_test(int n, double eps) const
 {
+    Require(streamid);
     double avg = 0.0;
     for (int i = 1; i <= n; i++)
 	avg += ran();
@@ -145,6 +146,7 @@ bool Sprng::avg_test(int n, double eps) const
  */
 int Sprng::get_size() const
 {
+    Require(streamid);
     if (Sprng::packed_size > 0) return Sprng::packed_size;
     
     char *prng   = 0;
