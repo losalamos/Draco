@@ -34,11 +34,6 @@ set_default_values $*
 parse_options $*
 
 ##---------------------------------------------------------------------------##
-## Echo environment
-
-${REGDIR}/regression/echo_env
-
-##---------------------------------------------------------------------------##
 ## make regression directories
 
 # REGDIR      : the regression top-level directory
@@ -54,11 +49,42 @@ code_mpi="${REGDIR}/mpi"
 code_mpi_dbg="${REGDIR}/mpi_dbg"
 code_scalar="${REGDIR}/scalar"
 code_opt="${REGDIR}/opt"
-code_cov="${REGDIR}/cov"
+code_cov_mpi="${REGDIR}/cov_mpi"
+code_cov_scalar="${REGDIR}/cov_scalar"
 code_apptest="${REGDIR}/apptest"
 code_lampi_dbg="${REGDIR}/lampi_dbg"
+docs="${REGDIR}/docs"
 
-target_list="${code_mpi} ${code_scalar} ${code_opt}"
+if test ${withcoverage:-no} = yes; then
+   echo ">>> Proceeding with code coverage regression run."
+   target_list="${code_cov_mpi} ${code_cov_scalar}"
+   if test -x /usr/local/bullseye/bin/cov01; then
+      export PATH=${PATH}:/usr/local/bullseye/bin
+      export COVFILE="${REGDIR}/test.cov"
+      if test -f ${COVFILE}; then
+         echo "Removing ${COVFILE}."
+         rm ${COVFILE}
+      fi
+      export COVCLASSCFG="${REGDIR}/regression/covclass.cfg"
+      export COVDIRCFG="${REGDIR}/regression/covclass.cfg"
+      export COVFNCFG="${REGDIR}/regression/covclass.cfg"
+      export COVSRCCFG="${REGDIR}/regression/covclass.cfg"
+      cov01 --on
+   else
+      echo " "
+      echo ">>>  Cannot find Bullseye bin directory.  Aborting."
+      echo " "
+      exit 1
+   fi
+else
+   target_list="${code_mpi} ${code_scalar} ${code_opt}"
+fi
+
+##---------------------------------------------------------------------------##
+## Echo environment
+
+${REGDIR}/regression/echo_env
+
 
 ##---------------------------------------------------------------------------##
 ## set up SourceForge cvs
@@ -96,10 +122,11 @@ ${echoonly} ${cvs} -q $cvsroot checkout -P ${code}
 ## Set up vendors
 ## VENDOR_LIB_DIR and VENDOR_INC_DIR are set in .bashrc.
 
+MPI_SETUP="--with-mpi-inc --with-mpi-lib"
+
 VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
---with-grace-lib --with-gandolf-lib --with-eospac-lib \
---with-mpi-inc --with-mpi-lib --with-pcg-lib --with-lapack=atlas \
---with-lapack-lib --with-gsl-inc --with-gsl-lib"
+--with-grace-lib --with-gandolf-lib --with-eospac-lib --with-pcg-lib \
+--with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
 
 ##---------------------------------------------------------------------------##
 ## LOOP THROUGH AND DO BUILD AND CHECKS
@@ -119,12 +146,14 @@ for target in ${target_list}; do
 
 	    OPTIONS='--with-c4=mpi'
 	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+            MAKE_OPTIONS="check"
 	;;
 
 	# setup serial build options
 	${code_scalar})
-	    OPTIONS=''
+	    OPTIONS='--with-c4=scalar'
 	    VENDOR_OPTIONS="${VENDOR_SETUP}"
+            MAKE_OPTIONS="check"
 	;;
 
 	# setup of parallel optimized options
@@ -136,6 +165,7 @@ for target in ${target_list}; do
 
 	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
 	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+            MAKE_OPTIONS="check"
 	;;
 
         # LAMPI version
@@ -150,7 +180,30 @@ for target in ${target_list}; do
             OPTIONS='--enable-shared --with-c4=mpi --with-dbc=7 --enable-debug'
             STLPORT_SETUP="--with-stlport=/codes/radtran/vendors/stlport/Linux"
             VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP} ${STLPORT_SETUP}"
+            MAKE_OPTIONS="check"
         ;;
+
+	# setup code coverage options: use shared libs, no dbc.
+	${code_cov_mpi})
+           echo ">>> source /codes/mpi/bin/mpich.sh p4-lahey"
+           source /codes/mpi/bin/mpich.sh p4-lahey
+           source /codes/mpi/bin/changevendors.sh -v
+           #setup_using_env_vars
+           VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+           OPTIONS='--with-c4=mpi --enable-debug --with-dbc=0 --enable-shared'
+           MAKE_OPTIONS="check CC=/usr/local/bullseye/bin/gcc CXX=/usr/local/bullseye/bin/g++"
+	;;
+
+	# setup code coverage options: 
+	${code_cov_scalar})
+           echo ">>> source /codes/mpi/bin/mpich.sh scalar"
+           source /codes/mpi/bin/mpich.sh scalar
+           source /codes/mpi/bin/changevendors.sh -v
+           #setup_using_env_vars
+           VENDOR_OPTIONS="${VENDOR_SETUP}"
+           OPTIONS='--with-c4=scalar --enable-debug --with-dbc=0'
+           MAKE_OPTIONS="check CC=/usr/local/bullseye/bin/gcc CXX=/usr/local/bullseye/bin/g++"
+	;;
 
 	# catchall
 	*)
@@ -161,6 +214,14 @@ for target in ${target_list}; do
 	;;
 
     esac
+
+    # ensure that mpi was setup.  if not, nothing will work.
+    if test ${MPI_TAG:-none} = none; then
+       echo " "
+       echo ">>>>> FATAL ERROR: MPI_TAG not set."
+       echo " "
+       exit 1
+    fi
 
     # remove the old target directory if it exists
     if [ -d $target ]; then
@@ -175,7 +236,7 @@ for target in ${target_list}; do
 
     # do configure and make inside of target directory
     echo ">>> Running configure in $target/draco"
-    cd $target/draco
+    pushd $target/draco
 
     echo "$code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS"
     ${echoonly} $code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS
@@ -183,7 +244,57 @@ for target in ${target_list}; do
     # do gmake check
     echo ">>> Doing gmake check in $target/draco"
     
-    echo "gmake -k check nj=2"
-    ${echoonly} gmake -k check nj=2
+    echo "gmake -k ${MAKE_OPTIONS} nj=2"
+    ${echoonly} gmake -k ${MAKE_OPTIONS} nj=2
     
+    popd
+
 done
+
+##---------------------------------------------------------------------------##
+## If this is a coverage analysis create a report!
+
+if test ${withcoverage:-no} = yes; then
+
+   pushd draco/src
+   echo "pushd: `pwd`"
+
+   echo " "
+   echo ">>> Generating coverage reports..."
+   # coverage per directory
+   covdir -mq -w256
+   echo " "
+   # coverage per file
+   covsrc -mq -w256
+   echo " "
+   # coverage per class
+   if test ${covclass:-true} = true; then
+     covclass -mq -w256
+   else
+     echo ">>> omitting coverage per class report."
+   fi
+   echo " "
+   # coverage per function
+   if test ${covfun:-true} = true; then
+      covfn -mq -w384
+   else
+      echo ">>> omitting coverage per function report."
+   fi
+   echo " "
+   # detailed coverage report
+   if test ${covdetail:-true} = true; then
+      covbr -w256
+   else
+      echo ">>> omitting detailed coverage report."
+   fi
+   echo " "
+   echo ">>> Done with coverage reports..."
+
+   cov01 --off
+
+   popd 
+   echo "popd: back to `pwd`"
+fi
+
+##---------------------------------------------------------------------------##
+## End of script
