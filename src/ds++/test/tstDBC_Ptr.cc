@@ -15,6 +15,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 #include <typeinfo>
 #include <sstream>
 
@@ -30,6 +31,13 @@ struct Base_Class
 struct Derived_Class : public Base_Class
 {
     int b;
+};
+
+struct Owner
+{
+    Owner() : ptr(new int) {}
+    ~Owner() { ptr.delete_data(); }
+    DBC_Ptr<int> ptr;
 };
 
 //---------------------------------------------------------------------------//
@@ -61,7 +69,7 @@ void test_undeleted()
     bool caught = false;
     try
     {
-	DBC_Ptr<int> foo(new int);
+	DBC_Ptr<Base_Class> foo(new Base_Class);
     }
     catch(rtt_dsxx::assertion &ass)
     {
@@ -83,7 +91,7 @@ void test_over_deleted()
     bool caught = false;
     try
     {
-	DBC_Ptr<int> foo(new int);
+	DBC_Ptr<Base_Class> foo(new Base_Class);
 	foo.delete_data();
 	foo.delete_data();
     }
@@ -107,7 +115,7 @@ DBC_Ptr<int> gen_func()
 {
     DBC_Ptr<int> retval;
     retval = new int;
-    *retval = static_cast<int>(std::random());
+    *retval = static_cast<int>(std::rand());
     return retval;
 }
 
@@ -138,6 +146,42 @@ void test_function_return()
 
 //---------------------------------------------------------------------------//
 
+
+void update_func(DBC_Ptr<int>& foo)
+{
+    *foo = 3;
+}
+
+// Make sure that you can pass a DBC_Ptr by reference
+void test_pass_by_ref()
+{
+    bool caught = false;
+    try
+    {
+	DBC_Ptr<int> foo(new int);
+	update_func(foo);
+	Check(*foo == 3);
+	foo.delete_data();
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+    }
+
+    if(caught) ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("test_pass_by_ref");
+    else
+	FAILMSG("test_pass_by_ref FAILED!");
+}
+
+
+//---------------------------------------------------------------------------//
+
+// Ensure that the reference counting system catches a dangling reference
+// (deleting through one pointer while another pointer still points at the
+// object).
 void test_dangling()
 {
     bool caught = false;
@@ -146,7 +190,6 @@ void test_dangling()
 	DBC_Ptr<int> foo(new int);
 	DBC_Ptr<int> bar(foo);
 	foo.delete_data();
-	std::cout << "Exit try" << std::endl;
     }
     catch(rtt_dsxx::assertion &ass)
     {
@@ -163,6 +206,73 @@ void test_dangling()
 	PASSMSG("test_dangling");
     else
 	FAILMSG("test_dangling FAILED!");
+}
+
+
+//---------------------------------------------------------------------------//
+
+
+void test_nested()
+{
+    bool caught = false;
+    try
+    {
+	Owner o;
+	o.ptr.release_data();
+
+	// o.ptr.delete_data() gets called here by ~Owner
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+    }
+    catch(...)
+    {
+	std::cout << "WTF, mate?" << std::endl;
+    }
+
+    if(!caught) ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("test_nested");
+    else
+	FAILMSG("test_nested FAILED!");
+}
+
+//---------------------------------------------------------------------------//
+
+
+void test_void()
+{
+    bool caught = false;
+    try
+    {
+	DBC_Ptr<int> foo;
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+    }
+
+    if(caught) ITFAILS;
+
+    caught = false;
+    try
+    {
+	DBC_Ptr<int> foo;
+	DBC_Ptr<int> bar = foo;
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+	caught = true;
+    }
+
+    if(caught) ITFAILS;
+
+    if (rtt_ds_test::passed)
+	PASSMSG("test_void");
+    else
+	FAILMSG("test_void FAILED!");
 }
 
 //---------------------------------------------------------------------------//
@@ -230,7 +340,10 @@ main(int argc, char *argv[])
 	test_over_deleted();
 	test_dangling();
 	test_function_return();
+	test_pass_by_ref();
 	test_polymorph();
+	test_void();
+	test_nested();
     }
     catch (rtt_dsxx::assertion &ass)
     {
