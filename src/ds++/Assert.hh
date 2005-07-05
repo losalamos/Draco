@@ -177,6 +177,10 @@ void toss_cookies( std::string const & cond,
 		   std::string const & file, 
 		   int         const line );
 
+void toss_cookies_ptr(char const * const cond,
+		      char const * const file, 
+		      int         const line );
+
 // Throw a rtt_dsxx::assertion for Insist.
 void insist( std::string const & cond, 
 	     std::string const & msg, 

@@ -50,6 +50,16 @@ void toss_cookies( std::string const & cond,
     throw assertion( cond, file, line );
 }
 
+
+void 
+toss_cookies_ptr(char const * const cond, 
+		 char const * const file, 
+		 int  const line )
+{
+    throw assertion( cond, file, line );
+}
+
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Throw a rtt_dsxx::assertion for Insist macros.
