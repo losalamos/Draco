@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -2574,6 +2574,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
    AC_MSG_CHECKING("for extra pgf90 library requirements.")
    if test -n "${vendor_eospac}"    ||
+      test    "${with_lapack}" = "atlas" ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
          f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
@@ -2631,6 +2632,78 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
    AC_MSG_CHECKING("for F90CXXFLAGS")
    CXXLIBDIR=${GCC_LIB_DIR}
    F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   AC_MSG_RESULT(${F90CXXFLAGS})
+
+   AC_MSG_CHECKING("for F90VENDOR_LIBS")
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   AC_MSG_RESULT("${F90VENDOR_LIBS}")
+])
+
+dnl ------------------------------------------------------------------------ dnl
+dnl AC_DBS_COMPAQ_F90_ENVIRONMENT
+dnl
+dnl Some vendor setups require that the Portland Group F90 lib dir and
+dnl compiler libraries be provided on the link line.  This m4 function
+dnl adds the necessary libraries to LIBS.
+dnl ------------------------------------------------------------------------ dnl
+AC_DEFUN([AC_DBS_COMPAQ_F90_ENVIRONMENT], [dnl
+
+   f90_lib_loc=`which f90 | sed -e 's/bin\/f90/lib/'`
+   cxx_lib_loc=`which cxx | sed -e 's/bin\/cxx/lib/'`
+
+   AC_MSG_CHECKING("for extra f90 library requirements.")
+   if test -n "${vendor_eospac}"    ||
+      test -n "${vendor_gandolf}"   || 
+      test -n "${vendor_pcg}"       || 
+      test -n "${vendor_udm}"       ||
+      test -n "${vendor_blacs}"; then
+
+      extra_f90_libs="-L${f90_lib_loc} -lfor"
+      extra_f90_rpaths="-rpath ${f90_lib_loc}"
+
+      LIBS="${LIBS} ${extra_f90_libs}"
+      RPATH="${RPATH} ${extra_f90_rpaths}"
+      AC_MSG_RESULT("${extra_f90_libs}")
+
+   else
+         AC_MSG_RESULT("none.")
+   fi
+
+   dnl Optimize flag   
+   AC_MSG_CHECKING("for F90FLAGS")
+   if test "${with_opt:=0}" != 0 ; then
+      if test ${with_opt} -gt 2; then
+         F90FLAGS="${F90FLAGS} -O2"
+      else
+         F90FLAGS="${F90FLAGS} -O${with_opt}"
+      fi
+   else 
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+   dnl C preprocessor flag
+   F90FLAGS="${F90FLAGS} -cpp"
+   AC_MSG_RESULT(${F90FLAGS})
+
+   dnl scalar or mpi ?
+   AC_MSG_CHECKING("for F90MPIFLAGS")
+   if test ${with_mpi:=no} = "no"; then
+      F90FLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      F90MPIFLAGS="${F90FLAGS} -lfmpi"
+   fi
+   AC_MSG_RESULT(${F90MPIFLAGS})
+
+   if test -n "${vendor_pcg}"  || 
+      test "${with_udm}" = mpi || 
+      test -n "${vendor_blacs}" ; then
+      LIBS="${LIBS} ${F90MPIFLAGS}"
+   fi
+
+   dnl Add C++ options to F90 link line
+   AC_MSG_CHECKING("for F90CXXFLAGS")
+   CXXLIBDIR=${cxx_lib_loc}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lcxxstdma -lcxxma"
    AC_MSG_RESULT(${F90CXXFLAGS})
 
    AC_MSG_CHECKING("for F90VENDOR_LIBS")
@@ -2932,8 +3005,12 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        # setup lapack
        #
 
+       AC_MSG_CHECKING("for lapack libraries")
        if test "${with_lapack}" = vendor ; then
 	   lapack_libs='-lcxmlp -lcxml'
+           AC_MSG_RESULT("${lapack_libs}")
+       else
+           AC_MSG_RESULT("none.")
        fi
 
        #
@@ -2954,43 +3031,15 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
-       # libfor.a requirements:
-       # GANDOLF, EOSPAC, PCG, BLACS, udm require -lfor on the link line.
+       # FORTRAN configuration for Compaq f90
+       # setup F90, libs, rpath, etc.
        #
-
-       AC_MSG_CHECKING("libfor.a requirements")
-       if test -n "${vendor_gandolf}" || 
-          test -n "${vendor_eospac}"  ||
-          test -n "${vendor_pcg}"     || 
-          test -n "${vendor_udm}"     ||
-          test -n "${vendor_blacs}"; then
-           LIBS="${LIBS} -lfor"
-           AC_MSG_RESULT("-lfor added to LIBS")
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of libfor.a requirements
-       #
-
-       #
-       # libpcg/libudm/libfmpi setup (libfmpi.a requirements)
-       #
-
-       AC_MSG_CHECKING("libfmpi requirements")
-       if test -n "${vendor_pcg}"  || 
-          test "${with_udm}" = mpi || 
-          test -n "${vendor_blacs}" ; then
-           LIBS="${LIBS} -lfmpi"
-           AC_MSG_RESULT("-lfmpi added to LIBS")
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
-       # end of libpcg setup
-       #
+       AC_CHECK_PROGS(F90, f90)
+       case ${F90} in
+       f90)
+          AC_DBS_COMPAQ_F90_ENVIRONMENT
+          ;;
+       esac
 
        #
        # libudm/librmscall setup

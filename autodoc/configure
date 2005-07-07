@@ -5624,6 +5624,7 @@ echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
    echo "$as_me:$LINENO: checking \"for extra pgf90 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra pgf90 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
+      test    "${with_lapack}" = "atlas" ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
          f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
@@ -8665,8 +8666,15 @@ _ACEOF
        # setup lapack
        #
 
+       echo "$as_me:$LINENO: checking \"for lapack libraries\"" >&5
+echo $ECHO_N "checking \"for lapack libraries\"... $ECHO_C" >&6
        if test "${with_lapack}" = vendor ; then
 	   lapack_libs='-lcxmlp -lcxml'
+           echo "$as_me:$LINENO: result: \"${lapack_libs}\"" >&5
+echo "${ECHO_T}\"${lapack_libs}\"" >&6
+       else
+           echo "$as_me:$LINENO: result: \"none.\"" >&5
+echo "${ECHO_T}\"none.\"" >&6
        fi
 
        #
@@ -8687,49 +8695,123 @@ _ACEOF
        #
 
        #
-       # libfor.a requirements:
-       # GANDOLF, EOSPAC, PCG, BLACS, udm require -lfor on the link line.
+       # FORTRAN configuration for Compaq f90
+       # setup F90, libs, rpath, etc.
        #
+       for ac_prog in f90
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_F90+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$F90"; then
+  ac_cv_prog_F90="$F90" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_F90="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
 
-       echo "$as_me:$LINENO: checking \"libfor.a requirements\"" >&5
-echo $ECHO_N "checking \"libfor.a requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_gandolf}" ||
-          test -n "${vendor_eospac}"  ||
-          test -n "${vendor_pcg}"     ||
-          test -n "${vendor_udm}"     ||
-          test -n "${vendor_blacs}"; then
-           LIBS="${LIBS} -lfor"
-           echo "$as_me:$LINENO: result: \"-lfor added to LIBS\"" >&5
-echo "${ECHO_T}\"-lfor added to LIBS\"" >&6
-       else
-	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-       fi
+fi
+fi
+F90=$ac_cv_prog_F90
+if test -n "$F90"; then
+  echo "$as_me:$LINENO: result: $F90" >&5
+echo "${ECHO_T}$F90" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
 
-       #
-       # end of libfor.a requirements
-       #
+  test -n "$F90" && break
+done
 
-       #
-       # libpcg/libudm/libfmpi setup (libfmpi.a requirements)
-       #
+       case ${F90} in
+       f90)
 
-       echo "$as_me:$LINENO: checking \"libfmpi requirements\"" >&5
-echo $ECHO_N "checking \"libfmpi requirements\"... $ECHO_C" >&6
-       if test -n "${vendor_pcg}"  ||
-          test "${with_udm}" = mpi ||
-          test -n "${vendor_blacs}" ; then
-           LIBS="${LIBS} -lfmpi"
-           echo "$as_me:$LINENO: result: \"-lfmpi added to LIBS\"" >&5
-echo "${ECHO_T}\"-lfmpi added to LIBS\"" >&6
-       else
-	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
-echo "${ECHO_T}\"not needed\"" >&6
-       fi
+   f90_lib_loc=`which f90 | sed -e 's/bin\/f90/lib/'`
+   cxx_lib_loc=`which cxx | sed -e 's/bin\/cxx/lib/'`
 
-       #
-       # end of libpcg setup
-       #
+   echo "$as_me:$LINENO: checking \"for extra f90 library requirements.\"" >&5
+echo $ECHO_N "checking \"for extra f90 library requirements.\"... $ECHO_C" >&6
+   if test -n "${vendor_eospac}"    ||
+      test -n "${vendor_gandolf}"   ||
+      test -n "${vendor_pcg}"       ||
+      test -n "${vendor_udm}"       ||
+      test -n "${vendor_blacs}"; then
+
+      extra_f90_libs="-L${f90_lib_loc} -lfor"
+      extra_f90_rpaths="-rpath ${f90_lib_loc}"
+
+      LIBS="${LIBS} ${extra_f90_libs}"
+      RPATH="${RPATH} ${extra_f90_rpaths}"
+      echo "$as_me:$LINENO: result: \"${extra_f90_libs}\"" >&5
+echo "${ECHO_T}\"${extra_f90_libs}\"" >&6
+
+   else
+         echo "$as_me:$LINENO: result: \"none.\"" >&5
+echo "${ECHO_T}\"none.\"" >&6
+   fi
+
+      echo "$as_me:$LINENO: checking \"for F90FLAGS\"" >&5
+echo $ECHO_N "checking \"for F90FLAGS\"... $ECHO_C" >&6
+   if test "${with_opt:=0}" != 0 ; then
+      if test ${with_opt} -gt 2; then
+         F90FLAGS="${F90FLAGS} -O2"
+      else
+         F90FLAGS="${F90FLAGS} -O${with_opt}"
+      fi
+   else
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+      F90FLAGS="${F90FLAGS} -cpp"
+   echo "$as_me:$LINENO: result: ${F90FLAGS}" >&5
+echo "${ECHO_T}${F90FLAGS}" >&6
+
+      echo "$as_me:$LINENO: checking \"for F90MPIFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90MPIFLAGS\"... $ECHO_C" >&6
+   if test ${with_mpi:=no} = "no"; then
+      F90FLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+      F90MPIFLAGS="${F90FLAGS} -lfmpi"
+   fi
+   echo "$as_me:$LINENO: result: ${F90MPIFLAGS}" >&5
+echo "${ECHO_T}${F90MPIFLAGS}" >&6
+
+   if test -n "${vendor_pcg}"  ||
+      test "${with_udm}" = mpi ||
+      test -n "${vendor_blacs}" ; then
+      LIBS="${LIBS} ${F90MPIFLAGS}"
+   fi
+
+      echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
+echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
+   CXXLIBDIR=${cxx_lib_loc}
+   F90CXXFLAGS="-L${CXXLIBDIR} -lcxxstdma -lcxxma"
+   echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
+echo "${ECHO_T}${F90CXXFLAGS}" >&6
+
+   echo "$as_me:$LINENO: checking \"for F90VENDOR_LIBS\"" >&5
+echo $ECHO_N "checking \"for F90VENDOR_LIBS\"... $ECHO_C" >&6
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   echo "$as_me:$LINENO: result: \"${F90VENDOR_LIBS}\"" >&5
+echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
+
+          ;;
+       esac
 
        #
        # libudm/librmscall setup
