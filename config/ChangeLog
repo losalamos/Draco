@@ -1,0 +1,13 @@
+2005-07-06  Kelly Thompson  <kgt@lanl.gov>
+
+	* ac_platforms (AC_DBS_COMPAQ_F90_ENVIRONMENT):  For OSF1,
+	  encapsulate FORTRAN related compiler flags and variables into a
+	  M4 function -- similar to what has already been done for Linux.
+	  Also, define some new configure variables for F90 related setup
+	  (F90FLAGS, F90MPIFLAGS, F90CXXFLAGS, F90VENDOR_LIBS).  These are
+	  currently used by Capsaicin. 
+
+	  
+	  
+	  
+
