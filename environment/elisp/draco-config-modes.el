@@ -388,21 +388,13 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 		      ("\\.sty$" . tex-mode)            
 		      ) auto-mode-alist))
 
-      (setq reftex-enable-partial-scans t
-	    reftex-save-parse-info t
+      (setq reftex-enable-partial-scans           t
+	    reftex-save-parse-info                t
 	    reftex-use-multiple-selection-buffers t
-	    reftex-plug-into-AUCTeX t)
+	    reftex-plug-into-AUCTeX               t)
 
-      (setq reftex-texpath-environment-variables 
-	    '((concat 
-	       "/codes/radtran/vendors/environment/latex/" ":"
-	       my-home-dir "draco/environment/latex/" ":"
-	       my-home-dir "capsaicin/doc/latex/")))
-      (setq reftex-bibpath-environment-variables
-	    '((concat 
-	       "/codes/radtran/vendors/environment/bibfiles/" ":"
-	       my-home-dir "draco/environment/bibfiles/" ":"
-	       my-home-dir "capsaicin/doc/bib/")))
+      (setq reftex-texpath-environment-variables 'draco-texpath)
+      (setq reftex-bibpath-environment-variables 'draco-bibpath)
 
       (defun draco-latex-mode-hook ()
 	"DRACO hooks added to LaTeX and BibTex modes."

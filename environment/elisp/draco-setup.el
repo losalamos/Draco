@@ -45,15 +45,18 @@
 
 ;; Customizable values (paths, basic setup options, etc.)
 
-(defcustom my-home-dir (concat (getenv "HOME") "/") "Location of
-$HOME." :group 'draco-mode :type 'string)
+(defcustom my-home-dir (concat (getenv "HOME") "/") 
+"Location of $HOME." 
+:group 'draco-mode 
+:type 'string)
 
 (defcustom draco-env-dirs nil "\nList of directories that will be
 prepended to the load-path if they exist.  The directories <dir>/elisp
 will also be examined and prepended to the the load-path if they
 exist.  \nAdd to this list by using the following command in personal
 elisp files: \n\t(setq draco-env-dirs (cons \"/path/to/extra/dir/\"))"
-:group 'draco-mode :type 'list)
+:group 'draco-mode 
+:type 'list)
 
 (if (not draco-env-dirs)
     (setq draco-env-dirs
@@ -106,9 +109,32 @@ M-x list-colors-display
 
 to obtain a list of colors known to XEmacs."
 :group 'draco-mode
-:type'(radio	(const :tag "Yes" t)
+:type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
+(defcustom draco-bibpath
+  "/codes/radtran/vendors/environment/bibfiles//"
+  "String containing a list of directories, each separated by a colon.
+Each directory entry should end with a double slash.  Each directory
+will be searched for bibfiles associated with \bibliography(file)
+command at the end of a LaTeX document.  This path is used by
+reftex-mode.;
+
+Consider prepending your local directories." 
+  :group 'draco-mode
+  :type 'string)
+
+(defcustom draco-texpath
+  "/codes/radtran/vendors/environment/latex//:/codes/radtran/vendors/environment/bibtex//"
+  "String containing a list of directories, each separated by a colon.
+Each directory entry should end with a double slash.  Each directory
+will be searched for LaTeX files (.sty, .bst, .cls, .tex, eps, etc.)
+This path is used by reftex-mode.;
+
+Consider prepending your local directories." 
+  :group 'draco-mode
+  :type 'string)
+  
 ;; ========================================
 ;; Use Draco configuration for these modes
 ;; ========================================

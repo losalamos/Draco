@@ -24,6 +24,10 @@
 (define-key global-map [(control button2)]  'function-menu)
 (define-key global-map [(control button3)]  'popup-mode-menu)
 
+;; Comments
+(define-key global-map [(f2)]               'comment-region)
+;(define-key global-map [(shift f2)]         '(comment-region)
+
 ;; Buffer management
 (define-key global-map [(f7)]               'draco-save-and-kill-current-buffer)
 (define-key global-map [(shift f7)]         'delete-window)
@@ -31,19 +35,19 @@
 (define-key global-map [(f8)]               'draco-toggle-previous-buffer)
 (define-key global-map [(control f8)]       'draco-find-companion-file)
 
-;; Mouse wheel for Lambda
+;; Mouse wheel for Lambda, Flash and QSC
 (if (getenv "HOST")
     (setq machine-name (getenv "HOST"))
 (setq machine-name "none"))
 
 (if (string-match "lambda" machine-name)
     (progn
-      (define-key global-map [(button4)] '(lambda () 
-					    (interactive)
-					    (scroll-down 5)))
-      (define-key global-map [(button5)] '(lambda () 
-					    (interactive)
-					    (scroll-up 5)))
-      ))
+      (define-key global-map [(button4)] 
+        '(lambda () (interactive) (scroll-down 5)))
+      (define-key global-map [(button5)] 
+        '(lambda () (interactive) (scroll-up 5)))))
+
+(if (or (string-match "ffe1" machine-name)
+	(string-match "qscfe1" machine-name)) (mwheel-install))
 
 (provide 'draco-global-keys)

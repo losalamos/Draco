@@ -1,3 +1,20 @@
+2005-07-07  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco-config-modes.el (draco-setup-auctex-mode): Fix code for
+	  reftex-mode that wasn't working correctly by setting
+	  (setq reftex-texpath-environment-variables 'draco-texpath)	
+          (setq reftex-bibpath-environment-variables 'draco-bibpath).
+
+	* draco-setup.el (draco-bibpath) (drco-texpath): Add these two new
+	  variables that can be customized by the user.  These variables
+	  are used by reftex-mode.
+
+	* draco-global-keys.el (Comments): Bind the key "F2" to the
+	  command comment-region.
+
+	* draco-global-keys.el (MouseWheel): Enable mouse wheel for XEmacs
+	  on ffe1 and qscfe1.
+
 2005-06-24  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco-setup.el (defaults): Set indent-tabs-mode to nil so that
