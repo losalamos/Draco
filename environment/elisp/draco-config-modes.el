@@ -252,19 +252,19 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
           ; Tab indent == 4 spaces
 	  (c-basic-offset . 4)       
           ; K&R? Blugh. Not usin' *that*.
-	  (c-recognize-knr-p . nil)
+	  ;(c-recognize-knr-p . nil)
           ; Do nil for lone comments
-	  (c-comment-only-line-offset . (0 . 0)) 
+	  ;(c-comment-only-line-offset . (0 . 0)) 
           ; We don't use *-prefixed comments
   	  ;(c-block-comment-prefix . "") 
           ; Even with no code before them
-	  (c-indent-comments-syntactically-p . t) 
+	  ;(c-indent-comments-syntactically-p . t) 
           ; Make function calls look nice
-	  (c-cleanup-list . (space-before-funcall compact-empty-funcall)) 
+	  ;(c-cleanup-list . (space-before-funcall compact-empty-funcall)) 
           ; Snap #s to the first column
 	  (c-electric-pound-behavior . 'alignleft) 
           ; Regexp to find the starting brace of a block
-	  (defun-prompt-regexp . " ") 
+	  ;(defun-prompt-regexp . " ") 
 	  (c-offsets-alist . (
 			      (access-label . -2 )
 			      (block-close . 0)
