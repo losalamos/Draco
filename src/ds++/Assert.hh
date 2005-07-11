@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/Assert.hh
- * \author Geoffrey Furnish, Kelly Thompson
+ * \author Geoffrey Furnish, Tom Evans, Kelly Thompson
  * \date   6 December 1993
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
