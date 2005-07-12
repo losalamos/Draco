@@ -5,6 +5,13 @@
 # Contains misc. useful functions
 #======================================================================
 
+##---------------------------------------------------------------------------##
+class Bunch:
+    """Build an object with attributes from a keyword list"""
+
+    def __init__(self, **kwds): self.__dict__.update(kwds)
+
+
 
 ##---------------------------------------------------------------------------##
 def is_attrib(value):
@@ -303,6 +310,51 @@ def unique_extend(a_list, b_list):
         if an_item not in a_list: a_list.append(an_item)
 
     return a_list
+
+
+
+##---------------------------------------------------------------------------##
+def listFiles(root, patterns='*', recurse=1, relative_paths=0, return_folders=0):
+    """ From the Python Cookbook version 1 section 4.18 by Robin
+    Parmar and Alex Martelli
+
+    Modified by Mike Buksas to add relative_paths option.
+    """
+
+    import os.path, fnmatch
+ 
+    # Expand patterns from semicolon-separated string to list
+    pattern_list = patterns.split(';')
+
+    arg = Bunch(root=root, recurse=recurse, pattern_list=pattern_list,
+                return_folders=return_folders, results=[])
+ 
+    def visit(arg, dirname, files):
+        
+        # Append to arg.results all relevant files (and perhaps folders)
+        for name in files:
+
+            fullname = os.path.normpath(os.path.join(dirname, name))
+
+            if relative_paths:
+                display_name = name
+            else:
+                display_name = fullname
+
+            if arg.return_folders or os.path.isfile(fullname):
+                for pattern in arg.pattern_list:
+                    if fnmatch.fnmatch(name, pattern):
+                        arg.results.append(display_name)
+                        break
+
+        # Block recursion if recursion was disallowed
+        if not arg.recurse: files[:]=[]
+ 
+    os.path.walk(root, visit, arg)
+ 
+    return arg.results
+
+
 
 
 ##---------------------------------------------------------------------------##
