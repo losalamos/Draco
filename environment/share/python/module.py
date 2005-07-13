@@ -15,7 +15,6 @@ def ver_file(s): return (s.find('version')     > -1)
 module_paths    = filter(mod_file , modulepath)
 module_versions = filter(ver_file , modulepath)
 
-
 def module_command(command):
 
     """Pass the given command to '/usr/bin/modulecmd python' and
@@ -44,17 +43,49 @@ def loaded_modules():
     """Get the list of modules currently loaded."""
 
     return os.environ['LOADEDMODULES'].split(':')
+
+
+def add_module(module):
+    """Add the module with the provided name"""
+
+    if not module in avail_modules():
+        raise "Module %s does not exist." % module
+    if not module in loaded_modules():
+        module_command("add %s" % module)
+
+    assert(module in loaded_modules())
+
+def remove_module(module):
+
+    if not module in avail_modules():
+        raise "Module %s does not exist." % module
+    if module in loaded_modules():
+        module_command("remove %s" % module)
+
+    assert (module not in loaded_modules())
+
+
+def list():
+
+    print "Currently Loaded modules:"
+    i = 0
+    for module in loaded_modules():
+        i += 1
+        print " %s) %s" % (i, module)
+
+def avail():
+
+    print "Available modules:"
+    for module in avail_modules():
+        print " %s" % module
     
 
 if __name__=='__main__':
 
-    # Try adding tool. Remove it first to make sure we added it.
-    module_command('remove tools/idl-6.1')
-    module_command('list')
-    module_command('add tools/idl-6.1')
-
-    print loaded_modules()
-
-    print avail_modules()
-
+    # Try adding idl. Remove it first to make sure we added it.
+    remove_module('tools/idl-6.1')
+    list()
+    add_module('tools/idl-6.1')
+    list()
+    avail()
 

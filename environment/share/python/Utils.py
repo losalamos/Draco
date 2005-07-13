@@ -6,7 +6,7 @@
 #======================================================================
 
 ##---------------------------------------------------------------------------##
-class Bunch:
+class Bunch(object):
     """An object created with attributes from a keyword list"""
 
     def __init__(self, **kwds): self.__dict__.update(kwds)
