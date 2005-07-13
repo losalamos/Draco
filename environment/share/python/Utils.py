@@ -6,37 +6,8 @@
 #======================================================================
 
 ##---------------------------------------------------------------------------##
-def listdir(dir, recurse = 0):
-
-    """Get relative names of files in 'dir' up to the specified
-    recursion depth. Use a negative recurse argment for arbitrary
-    depth.  """
-
-    import os
-
-    names = [os.path.join(dir, name) for name in os.listdir(dir)]
-
-    files = map(os.path.basename, filter(os.path.isfile, names))
-    dirs  = filter(os.path.isdir,  names)
-
-    if not recurse == 0:
-        for subdir in dirs:
-
-            subdir_name = os.path.basename(subdir)
-
-            sub_files = listdir(subdir, recurse-1)
-            sub_files = [os.path.join(subdir_name, name) for name in
-                         sub_files]
-            files.extend(sub_files)
-
-    return files
-
-
-
-
-##---------------------------------------------------------------------------##
 class Bunch:
-    """Build an object with attributes from a keyword list"""
+    """An object created with attributes from a keyword list"""
 
     def __init__(self, **kwds): self.__dict__.update(kwds)
 
@@ -339,6 +310,35 @@ def unique_extend(a_list, b_list):
         if an_item not in a_list: a_list.append(an_item)
 
     return a_list
+
+
+
+##---------------------------------------------------------------------------##
+def listdir(dir, recurse = 0):
+
+    """Get relative names of files in 'dir' up to the specified
+    recursion depth. Use a negative recurse argment for arbitrary
+    depth.  """
+
+    import os
+
+    names = [os.path.join(dir, name) for name in os.listdir(dir)]
+
+    files = map(os.path.basename, filter(os.path.isfile, names))
+    dirs  = filter(os.path.isdir,  names)
+
+    if not recurse == 0:
+        for subdir in dirs:
+
+            subdir_name = os.path.basename(subdir)
+
+            sub_files = listdir(subdir, recurse-1)
+            sub_files = [os.path.join(subdir_name, name) for name in
+                         sub_files]
+            files.extend(sub_files)
+
+    return files
+
 
 
 
