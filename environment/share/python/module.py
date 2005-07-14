@@ -6,7 +6,7 @@
 
 import os, Utils
 
-modulepath = os.environ['MODULEPATH'].split(':')
+modulepath   = os.environ['MODULEPATH'].split(':')
 module_home  = os.environ['MODULESHOME']
 
 def mod_file(s): return (s.find('modulefiles') > -1)
@@ -40,7 +40,7 @@ def avail_modules():
 
     
 def loaded_modules():
-    """Get the list of modules currently loaded."""
+    """Get the list of currently loaded modules."""
 
     return os.environ['LOADEDMODULES'].split(':')
 

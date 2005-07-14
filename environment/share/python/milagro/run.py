@@ -42,11 +42,11 @@ def file_output(input_name, output_name, executable, procs=1):
 # Function: capture_output
 #----------------------------------------------------------------------
 
-def capture_output(input_name, executable, procs=1):
+def capture_output(input_name, executable, args, procs = 2):
 
     """Takes an input filename, a milagro executable and a number of
-    processors as arguments. The number of processors defaults to
-    one. Returns the standard output and standard error as a list of
+    processors. The number of processors defaults to
+    two. Returns the standard output and standard error as a list of
     lines. """
 
     exec_line = "%s -i %s" % (executable, input_name)
