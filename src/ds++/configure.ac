@@ -26,10 +26,11 @@ AC_RUNTESTS(tstCheck_Strings \
             tstAllocators \
             tstSortPermutation \
             tstVector_Lite \
+            tstBounds \
             tstMat \
             tstMat1RA \
             tstMat2RA \
-            tstMat3RA \ 
+            tstMat3RA \
             tstMat4RA \
             tstMat5RA \
             tstFile_Streams \

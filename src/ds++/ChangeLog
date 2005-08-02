@@ -1,3 +1,13 @@
+2005-08-02  Kelly Thompson  <kgt@lanl.gov>
+
+	* tstBounds.cc: Added new unit test to for the Bounds class.
+
+	* tstMat.cc: Added many new tests to improve function point
+	  coverage of Mat classes.
+
+	* Mat.hh: Commented out member functions of Mat3, Mat4 and Mat5
+	  that did not have unit tests associated with them.
+
 2004-11-22  Rob Lowrie  <lowrie@lanl.gov>
 
 	* Added constructor RCF(int n, value_type v = value_type()).  This

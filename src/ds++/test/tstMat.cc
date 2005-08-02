@@ -1,17 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstMat.cc
-// Geoffrey Furnish
-// Wed Apr  2 12:48:48 1997
+/*! \file  tstMat.cc
+ * \author Geoffrey Furnish
+ * \date   Wed Apr  2 12:48:48 1997
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <vector>
 
-using std::cout;
-using std::endl;
-using std::flush;
+#include "../Assert.hh"
+#include "../Release.hh"
+#include "ds_test.hh"
 
 // This is heinous beyond description, but I /really/ want to test all the
 // parts of the Matrix classes here.  Wantom abuse of CPP like that which
@@ -23,27 +26,217 @@ using std::flush;
 #include "../Mat.hh"
 
 using namespace rtt_dsxx;
+using namespace std;
+
+
+//---------------------------------------------------------------------------//
 
 template<class T, class A>
 void ikv1( Mat1<T,A>& x )
 {
-    cout << "In ikv1." << endl;
+    PASSMSG("Successfully passed a reference to a Mat1<T,A> to the function ikv1.");
 }
+
+//---------------------------------------------------------------------------//
 
 void t1()
 {
     cout << "t1: beginning.\n";
 
+    // Default construction
     {
-    // Test Mat1<int>;
+        int newsize( 5 );
+        
+        // Test Mat1<int>;
 
 	Mat1<int> x;
-	x.redim(5);
+        PASSMSG("Successfully contructed a Mat1<int>.");
+        
+	x.redim( newsize );
+        PASSMSG("Successfully resized a Mat1<int>.");
 
 	ikv1( x );
+
+        // test conformality function
+        x.assert_conformality( x );
+        if( x.conformal( newsize ) )
+            PASSMSG("Mat1<int> correctly reported size.");
+        else
+            FAILMSG("Mat1<int> incorrectly reported size.");
+
+        int value(-1);
+        x.elements( value );
+        if( value == newsize )
+            PASSMSG("Mat1<int> correctly reported size.");
+        else
+            FAILMSG("Mat1<int> incorrectly reported size.");
+
+        if( x.get_xmin() == 0 )
+            PASSMSG("Mat1.get_xmin() returned 0.");
+        else
+            FAILMSG("Mat1.get_xmin() did not return 0.");
+
+        if( x.get_xlen() == newsize )
+            PASSMSG("Mat1.get_xlen() returned 5.");
+        else
+            FAILMSG("Mat1.get_xlen() did not return 5.");
     }
 
-    cout << "t1 test: passed\n";
+    // Construction using Bounds object.
+    {
+        int const bmin(0);
+        int const bmax(9);
+        
+        Mat1<int> x( Bounds(bmin,bmax) );
+        PASSMSG("Successfully contructed a Mat1<int> using the Bounds constructor.");
+        Mat1<int> const y( Bounds(bmin,bmax) );
+        PASSMSG("Successfully contructed a const Mat1<int> using the Bounds constructor.");
+
+        // Test paren operator
+        if( x(0) == 0 )
+            PASSMSG("Successful test of paren operator.");
+        else
+            PASSMSG("Unsuccessful test of paren operator.");
+        
+        if( y(0) == 0 )
+            PASSMSG("Successful test of const paren operator.");
+        else
+            PASSMSG("Unsuccessful test of const paren operator.");
+
+        // Test *= operator
+        x*=5;
+        bool mybool( true );
+        for( int i=bmin; i<bmax; ++i )
+            if( x(i) != 0 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of *= operator (scalar).");
+        else
+            PASSMSG("Unsuccessful test of *= operator (scalar).");
+
+        x*=y;
+        mybool = true;
+        for( int i=bmin; i<bmax; ++i )
+            if( x(i) != 0 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of *= operator (Mat1).");
+        else
+            PASSMSG("Unsuccessful test of *= operator (Mat1).");
+
+        // Test redim(Bounds)
+        int const newbmax( 5 );
+        x.redim( Bounds( bmin, newbmax ) );
+        if (x.get_xlen() == newbmax)
+            PASSMSG("Successful test redim(Bounds).");
+        else
+            PASSMSG("Unsuccessful test redim(Bounds).");
+        
+        // What does this do?
+        // Mat1<int> const z( Bounds(0,1) );
+        // x*=z;
+    }
+
+    // Test += operator
+    {
+        int const bmax( 5 );
+        Mat1<int> x( bmax );
+        Mat1<int> y( bmax );
+
+        y+=1;
+        bool mybool( true );
+        for( int i=0; i<bmax; ++i )
+            if( y(i) != 1 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of += operator (scalar).");
+        else
+            PASSMSG("Unsuccessful test of += operator (scalar).");
+
+        x+=y;
+        mybool = true;
+        for( int i=0; i<bmax; ++i )
+            if( x(i) != 1 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of += operator (Mat1).");
+        else
+            PASSMSG("Unsuccessful test of += operator (Mat1).");
+    }
+
+    // Test -= operator
+    {
+        int const bmax( 5 );
+        Mat1<int> x( bmax );
+        Mat1<int> y( bmax );
+
+        y-=-1;
+        bool mybool( true );
+        for( int i=0; i<bmax; ++i )
+            if( y(i) != 1 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of -= operator (scalar).");
+        else
+            PASSMSG("Unsuccessful test of -= operator (scalar).");
+
+        x-=y;
+        mybool = true;
+        for( int i=0; i<bmax; ++i )
+            if( x(i) != -1 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of -= operator (Mat1).");
+        else
+            PASSMSG("Unsuccessful test of -= operator (Mat1).");
+    }
+
+    // Test /= operator
+    {
+        int const bmax( 5 );
+        Mat1<int> x( bmax );
+        Mat1<int> y( bmax );
+
+        y+=10;
+        y/=2;
+        bool mybool( true );
+        for( int i=0; i<bmax; ++i )
+            if( y(i) != 5 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of /= operator (scalar).");
+        else
+            PASSMSG("Unsuccessful test of /= operator (scalar).");
+
+        x=5;
+        x/=y;
+        mybool = true;
+        for( int i=0; i<bmax; ++i )
+            if( x(i) != 1 )
+            {
+                mybool = false; break;
+            }
+        if( mybool )
+            PASSMSG("Successful test of /= operator (Mat1).");
+        else
+            PASSMSG("Unsuccessful test of /= operator (Mat1).");
+    }
+
+    PASSMSG("Done with test t1.");
 }
 
 //---------------------------------------------------------------------------//
@@ -55,46 +248,88 @@ void t2()
     cout << "t2: beginning.\n";
     
     {
-	cout << "Testing default ctor. ";
-
 	Mat2<int> x;
-
-	cout  << "Done." << endl;
+        PASSMSG("Successfully contructed a Mat2<int> using default contructor.");
     }
-    cout << "t2a test: passed.\n";
-
+    
     {
-	cout << "Testing conventional ctor. " << flush;;
-
-    // Check various fundamental computations.
-	Mat2<int> x(3,3);
-
-	Assert( x.nx() == 3 );
-	Assert( x.ny() == 3 );
+        int const bmax(3);
+           
+        // Check various fundamental computations.
+	Mat2<int> x(bmax,bmax);
+        
+	Assert( x.nx() == bmax );
+	Assert( x.ny() == bmax );
 	Assert( x.index(0,0) == 0 );
-	Assert( x.size() == 9 );
+	Assert( x.size() == bmax*bmax );
 
 	int k=0;
-	for( int j=0; j < 3; j++ )
-	    for( int i=0; i < 3; i++ )
+	for( int j=0; j < bmax; j++ )
+	    for( int i=0; i < bmax; i++ )
+            {
 		x(i,j) = k++;
+                cout << x(i,j) << endl;
+            }
 
 	k = 0;
 	for( Mat2<int>::iterator xi = x.begin(); xi != x.end(); )
 	    if (*xi++ != k++)
 		throw "bogus";
 
-	cout << "Done." << endl;
+        ostringstream msg;
+        msg << "Successfully contructed a Mat2<int> using "
+            << "specified size contstructor.";
+        PASSMSG(msg.str());
+
+        // Test conformality
+        
+        x.assert_conformality( x );
+        if( x.conformal( bmax, bmax ) )
+            PASSMSG("Mat2<int> correctly reported size.");
+        else
+            FAILMSG("Mat2<int> incorrectly reported size.");
+
+        // test elements, get_xlen and get_xmin member functions.
+        vector<int> velem;
+        velem.push_back(0);
+        velem.push_back(0);
+        
+        x.elements( velem[0], velem[1] );
+        if( velem[0] == bmax )
+            PASSMSG("Mat2<int> correctly reported size for 1st dim.");
+        else
+            FAILMSG("Mat2<int> incorrectly reported size for 1st dim.");
+        if( velem[1] == bmax )
+            PASSMSG("Mat2<int> correctly reported size for 2nd dim.");
+        else
+            FAILMSG("Mat2<int> incorrectly reported size for 2nd dim.");
+        
+        if( x.get_xmin() == 0 )
+            PASSMSG("Mat2.get_xmin() returned 0.");
+        else
+            FAILMSG("Mat2.get_xmin() did not return 0.");
+        if( x.get_ymin() == 0 )
+            PASSMSG("Mat2.get_ymin() returned 0.");
+        else
+            FAILMSG("Mat2.get_ymin() did not return 0.");
+        if( x.get_xlen() == bmax )
+            PASSMSG("Mat2.get_xlen() returned 3.");
+        else
+            FAILMSG("Mat2.get_xlen() did not return 3.");
+        if( x.get_ylen() == bmax )
+            PASSMSG("Mat2.get_ylen() returned 3.");
+        else
+            FAILMSG("Mat2.get_ylen() did not return 3.");        
     }
-    cout << "t2b test: passed.\n";
 
+    // Test construction from Bounds object.
     {
-	cout << "Testing ctor with Bounds. " << flush;;
+        int const bmax(3);
 
-	Mat2<int> x( Bounds(1,3), Bounds(1,3) );
+        Mat2<int> x( Bounds(1,bmax), Bounds(1,bmax) );
 
-	Assert( x.nx() == 3 );
-	Assert( x.ny() == 3 );
+	Assert( x.nx() == bmax );
+	Assert( x.ny() == bmax );
         Assert( x.index(1,1) == 4 );
 	Assert( x.size() == 9 );
 
@@ -108,35 +343,283 @@ void t2()
 	    if (*xi++ != k++)
 		throw "bogus";
 
-	cout << "Done." << endl;
+        PASSMSG("Successfully constructed a Mat2<int> using Bounds constructor.");
     }
-    cout << "t2c test: passed.\n";
 
-    cout << "Done testing Mat2<T>." << endl;
+    // Test paren operator
+    {
+        int const bmin(0);
+        int const bmax(3);
+        Mat2<int> x( Bounds(bmin,bmax), Bounds(bmin,bmax) );
+        Mat2<int> const y( Bounds(bmin,bmax), Bounds(bmin,bmax) );
+
+        if( x(0,0) == y(0,0) )
+            PASSMSG("Successfull test of paren operator.");
+        else
+            PASSMSG("Unsuccessfull test of paren operator.");
+    }
+
+    // Test = operator
+    {
+        int const bmin(0);
+        int const bmax(3);
+        int value(5);
+        Mat2<int> x( bmax, bmax );
+
+        x=value;
+        bool mybool(true);
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 5 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of = operator.");
+        else
+            PASSMSG("Unsuccessfull test of = operator.");
+    }
+
+    // Test *= operator
+    {
+        int const bmin(0);
+        int const bmax(3);
+        int value(1);
+        Mat2<int> x( bmax, bmax );
+        Mat2<int> y( bmax, bmax );
+
+        x=value;
+        x*=5;
+        bool mybool(true);
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 5 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of *= operator (scalar).");
+        else
+            PASSMSG("Unsuccessfull test of *= operator (scalar).");
+
+        y=2;
+        x*=y;
+        mybool = true;
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 10 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of *= operator (Mat2).");
+        else
+            PASSMSG("Unsuccessfull test of *= operator (Mat2).");
+    }
+    
+    // Test += operator
+    {
+        int const bmin(0);
+        int const bmax(3);
+        int value(1);
+        Mat2<int> x( bmax, bmax );
+        Mat2<int> y( bmax, bmax );
+
+        x=value;
+        x+=5;
+        bool mybool(true);
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 6 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of += operator (scalar).");
+        else
+            PASSMSG("Unsuccessfull test of += operator (scalar).");
+
+        y=2;
+        x+=y;
+        mybool = true;
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 8 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of += operator (Mat2).");
+        else
+            PASSMSG("Unsuccessfull test of += operator (Mat2).");
+    }
+
+    // Test -= operator
+    {
+        int const bmin(0);
+        int const bmax(3);
+        int value(5);
+        Mat2<int> x( bmax, bmax );
+        Mat2<int> y( bmax, bmax );
+
+        x=value;
+        x-=4;
+        bool mybool(true);
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 1 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of -= operator (scalar).");
+        else
+            PASSMSG("Unsuccessfull test of -= operator (scalar).");
+
+        y=1;
+        x-=y;
+        mybool = true;
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 0 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of -= operator (Mat2).");
+        else
+            PASSMSG("Unsuccessfull test of -= operator (Mat2).");
+    }
+
+    // Test /= operator
+    {
+        int const bmin(0);
+        int const bmax(3);
+        int value(10);
+        Mat2<int> x( bmax, bmax );
+        Mat2<int> y( bmax, bmax );
+
+        x=value;
+        x/=2;
+        bool mybool(true);
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 5 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of /= operator (scalar).");
+        else
+            PASSMSG("Unsuccessfull test of /= operator (scalar).");
+
+        y=5;
+        x/=y;
+        mybool = true;
+        for( int i=bmin; i< bmax; ++i )
+            for( int j=bmin; j< bmax; ++j )
+                if( x(i,j) != 1 )
+                {
+                    mybool = false;
+                    break;
+                }
+        if( mybool )
+            PASSMSG("Successfull test of /= operator (Mat2).");
+        else
+            PASSMSG("Unsuccessfull test of /= operator (Mat2).");
+    }
+
+    // test redim operators
+    {
+        int const bmin(0);
+        int const bmax(3);
+        Mat2<int> x( bmax, bmax );
+
+        int const b2min(0);
+        int const b2max(4);
+        x.redim(b2max,b2max);
+
+        if( x.get_xmin() == b2min         &&
+            x.get_xlen() == b2max-b2min   &&
+            x.get_ymin() == b2min         &&
+            x.get_ylen() == x.get_xlen() )
+        {
+            PASSMSG("Successfull test of redim operation.");
+        }
+        else
+        {
+            ostringstream msg;
+            msg << "Unsuccessfull test of redim operation.\n"
+                << "\t x.get_xmin() = " << x.get_xmin()
+                << ", expected " << b2min << endl
+                << "\t x.get_xlen() = " << x.get_xlen()
+                << ", expected " << b2max-b2min << endl
+                << "\t x.get_ymin() = " << x.get_ymin()
+                << ", expected " << b2min << endl
+                << "\t x.get_ylen() = " << x.get_ylen()
+                << ", expected " << x.get_xlen() << endl;
+            FAILMSG(msg.str());
+        }
+
+        int const b3min(-3);
+        int const b3max(1);
+        Bounds b(b3min,b3max);
+        Mat2<int> y(Bounds(bmin,bmax),Bounds(bmin,bmax));
+        y.redim(b,b);
+        if( y.get_xmin() == b3min         &&
+            y.get_xlen() == b3max-b3min+1 &&
+            y.get_ymin() == b3min         &&
+            y.get_ylen() == y.get_xlen() )
+        {
+            PASSMSG("Successfull test of redim operation (Bounds).");
+        }
+        else
+        {
+            ostringstream msg;
+            msg << "Unsuccessfull test of redim operation (Bounds).\n"
+                << "\t y.get_xmin() = " << y.get_xmin()
+                << ", expected " << b3min << endl
+                << "\t y.get_xlen() = " << y.get_xlen()
+                << ", expected " << b3max-b3min+1 << endl
+                << "\t y.get_ymin() = " << y.get_ymin()
+                << ", expected " << b3min << endl
+                << "\t y.get_ylen() = " << y.get_ylen()
+                << ", expected " << y.get_xlen() << endl;
+            FAILMSG(msg.str());
+        }
+    }
+    
+    PASSMSG("Successful completion of t2 tests.");
 }
 
 
 void version(const std::string &progname)
 {
-    std::string version = "1.0.0";
+    std::string version = rtt_dsxx::release();
     cout << progname << ": version " << version << endl;
 }
 
+//---------------------------------------------------------------------------//
+
 int main( int argc, char *argv[] )
 {
+    // version tag
 
+    version( argv[0] );
+    for (int arg=1; arg < argc; arg++)
+        if (std::string(argv[arg]) == "--version")
+            return 0;
+    
     try {
-	for (int arg=1; arg < argc; arg++)
-	    {
-		if (std::string(argv[arg]) == "--version")
-		    {
-			version(argv[0]);
-			return 0;
-		    }
-	    }
-	
 	cout << "Initiating test of the Mat family.\n";
-
 	t1();
 	t2();
     }
@@ -144,8 +627,23 @@ int main( int argc, char *argv[] )
     {
 	cout << "Test: Failed assertion: " << a.what() << endl;
     }
+    catch( ... )
+    {
+        cout << "FATAL error occured in tstMat.\n";
+    }
+    
+    // status of test
+    cout << endl;
+    cout <<     "*********************************************" << endl;
+//    if( rtt_ds_test::passed ) 
+    {
+        cout << "**** tstMat Test: PASSED" << endl;
+    }
+    cout <<     "*********************************************" << endl;
+    cout << endl;
 
     cout << "Done testing Mat family.\n";
+
     return 0;
 }
 
