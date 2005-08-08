@@ -180,7 +180,16 @@ def print_coverage_report( coverage_dir_report, log_tag_str ) :
     print "\nFunction, Class and Source code coverage reports can be " \
 	  + "found in the logfile: %s\n\n"%log_tag_str
 
-    
+##---------------------------------------------------------------------------##
+## Print a Lines-of-Code Analysis Report
+##---------------------------------------------------------------------------##
+
+def print_loc_report( loc_report, log_tag_str ) :
+
+    print "Lines-of-Code Report for All Packages:\n"
+
+    for line in loc_report:
+	print "%s"%line,
 
 ################################################################################
 ################################################################################
@@ -221,6 +230,10 @@ elapsed_time_tag      = re.compile(r'.*>>>\s*Elapsed Time\s*:\s*(\d\d[:]\d\d[:]\
 coverage_tag          = re.compile( r'^>>>.*Coverage Analysis' )
 coverage_begin_report = re.compile( r'^>>>\s*Generating coverage reports' )
 coverage_end_report   = re.compile( r'.*Source.*Function Coverage' )
+# Lines of code statistics
+loc_tag          = re.compile(r'^>>>\s*Lines-of-code',re.IGNORECASE)
+loc_begin_report = re.compile(r'^Date.*',re.IGNORECASE)
+loc_end_report   = re.compile(r'^Done.*',re.IGNORECASE)
 
 # The following expressions are ignored:
 lahey     = re.compile(r'Encountered 0 errors, 0 warnings in file.*',re.IGNORECASE)
@@ -255,6 +268,11 @@ use_short = 0
 coverage_analysis = 0 # 0 for :no", 1 for "yes"
 coverage_dir_report = []
 coverage_recording_report = 0
+
+# Lines of code analysis
+loc_analysis = 0
+loc_report = []
+loc_recording_report = 0
 
 ##---------------------------------------------------------------------------##
 ## main program
@@ -393,6 +411,36 @@ for line in lines:
     # End Coverage Report
     # ----------------------------------------
 
+    # ----------------------------------------
+    # Lines-of-Code Report:
+    # ----------------------------------------
+
+    match = loc_tag.search(line)
+    if match:
+	loc_analysis = 1 # yes, we are doing coverage analysis.
+
+    if loc_analysis:
+
+	# Start recording the output when we see this tag.
+	match = loc_begin_report.search(line)
+	if match:
+	    loc_recording_report = 1
+	    continue
+
+	# Stop recording the output when we see this tag.
+	match = loc_end_report.search(line)
+	if match:
+	    loc_recording_report = 0
+	    continue
+
+	# Record the coverage report into the variable "coverage_dir_report".
+	if loc_recording_report:
+	    loc_report.append( line )
+
+    # ----------------------------------------
+    # End LoC Report
+    # ----------------------------------------
+
     # search on package
     match = package.search(line)
 
@@ -512,7 +560,9 @@ print "Run time: %s (HH:MM:SS)\n" % (elapsed_time_str)
 
 if coverage_analysis:
     print_coverage_report( coverage_dir_report, log_tag_str)
-else:
+if loc_analysis:
+    print_loc_report( loc_report, log_tag_str)
+if not coverage_analysis and not loc_analysis:
     print_error_summary( all_passed, total_passes, total_fails, warn_log,
 			 error_log, use_short, pkg_tests )
 
