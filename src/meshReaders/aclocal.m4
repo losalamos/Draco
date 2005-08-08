@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -566,12 +566,10 @@ AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
          LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
          AC_MSG_RESULT("no")
       fi
-      dnl We need to add the rpath to the LDFLAGS instead of RPATH
-      dnl because configure fails AC_CHECK_SIZEOF if sltport is not
-      dnl available.
-      AC_MSG_CHECKING("for LDFLAGS mods for stlport")
-      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
-      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS")
+
+      AC_MSG_CHECKING("for RPATH mods for stlport")
+      RPATH="${stlport_xlinker} -rpath ${with_stlport}/lib ${RPATH}"
+      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to RPATH")
 
    elif test "${with_stlport}" = yes; then
       AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")

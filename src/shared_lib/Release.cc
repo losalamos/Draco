@@ -25,7 +25,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "shared_lib(draco-5_6_0)";
+    string pkg_release = "shared_lib(draco-5_7_0)";
     return pkg_release;
 }
 

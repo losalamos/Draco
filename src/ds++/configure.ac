@@ -41,7 +41,7 @@ AC_RUNTESTS(tstCheck_Strings \
             , scalar)
 
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-5_6_0)
+AC_DRACO_AUTODOC(draco-5_7_0)
 
 dnl -------------------------------------------
 dnl look for flexelint, dot and ps2pdf on Linux

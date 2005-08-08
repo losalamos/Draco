@@ -1,7 +1,132 @@
+2005-08-08  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco: Released draco-5_7_0.  This is a minor Draco release that
+	  containes build system updates required for the release of
+	  Capsaicin-2_5_0.  A summary of changes are:	
+	
+	- Build system: 
+	  . Added support for vendors that require PGI F90 libraries
+	    instead of lahey F90 libraries. 
+	- Elisp: 
+	  . Fixes for bibtex and auctex modes.
+	  . Removed keybinding \C-c\C-c for auctex mode.
+	  . Rework the way the elisp code picks package and namespace
+	    names when creating new files from templates.
+	  . Fix some problems with C and C++ indentation.
+	  . By default change all tabs to spaces in C/C++ mode.
+	  . Attempt to enable wheel support for XEmacs on Flash and QSC. 
+	  . Assign the "f2" key to comment-region.
+	  . Additions to reftex-mode.
+	- RTT_Format_Reader:
+	  . Beefed up some of the unit tests.
+	- cdi:
+	  . Efficiency improvements.
+	- ds++:
+	  . Added overloaded form of toss_cookies_ptr(char const* const,
+	    char const* const, int const)
+	  . Added new unit test, tstBounds.
+	  . Added many new tests to tstMat.hh
+	  . Commented out much of the code in Mat.hh -- code that was not
+	    being unit tested.
+	  . Added ds++/DBC_Ptr.hh
+	  . Added ds++/Safe_Divide.hh
+	  . Added ds++/Safe_Ptr.hh
+	  . Added ds++/Thin_Ptr.hh
+	- MeshReaders:
+	  . Force one argument constructor to be explicit to prevent
+	    automatic convertion of std:string to
+	    rtt_meshReaders::Hex_Mesh_Reader.
+	- Tools:
+	  . Updated count_loc.sh to support automated weekly reporting of
+	    line counts.
+	- Environment:
+	  . Added /share/python/module.py
+	  . Added /share/python/milagro/__init__.py
+	  . Added /share/python/milagro/data.py
+	  . Added /share/python/milagro/input.py
+	  . Added /share/python/milagro/run.py
+	  
+	This draco release includes the following packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
+	time although these packages are part of the head revision of
+	Draco. 
+
+	Code Statistics:
+
+          Counting lines of source code -- 
+          Directory:  /home/kellyt/draco
+          Date     :  Mon Aug 8 17:14:39 MDT 2005
+
+                           Total C++ source:   23239
+             C++ source in test directories:   14045
+                C++ contract specifications:     767
+                               C++ comments:   24378
+                       Total f90/f95 source:       0
+                           f90/f95 comments:       0
+                        LaTeX Documentation:   13056
+                                html source:       0
+             Executable shell script source:    3033
+                     Executable Perl source:     201
+                              Python source:    2698
+                              Expect source:       0
+                               Elisp source:    3288
+
+	Code Coverage:
+
+          Directory               Function Coverage           C/D Coverage
+          ------------------  ---------------------  ---------------------
+          RTT_Format_Reader/*    316 /   316 = 100%     396 /   568 =  69%
+          c4/                     82 /   135 =  60%      18 /    40 =  45%
+          cdi/                    29 /    29 = 100%      43 /    58 =  74%
+          cdi_analytic/           66 /    76 =  86%      66 /    82 =  80%
+          cdi_gandolf/            63 /   101 =  62%      93 /   172 =  54%
+          ds++/                  441 /   531 =  83%     348 /   530 =  65%
+          lapack_wrap/            11 /    17 =  64%       0 /     0       
+          meshReaders/            14 /    14 = 100%     127 /   172 =  73%
+          mesh_element/           21 /    21 = 100%     150 /   204 =  73%
+          norms/                  19 /    24 =  79%      20 /    34 =  58%
+          pcgWrap/                16 /    31 =  51%      24 /    55 =  43%
+          plot2D/                 20 /    28 =  71%      50 /    84 =  59%
+          quadrature/             66 /    66 = 100%     151 /   194 =  77%
+          rng/                    21 /    26 =  80%      19 /    30 =  63%
+          shared_lib/             12 /    18 =  66%       7 /    10 =  70%
+          timestep/               49 /    62 =  79%      84 /   176 =  47%
+          traits/                 12 /    17 =  70%       0 /     0       
+          units/                  83 /    83 = 100%      58 /    58 = 100%
+          viz/                    23 /    26 =  88%     140 /   190 =  73%
+          xm/                     89 /   169 =  52%      29 /    32 =  90%
+          ------------------  ---------------------  ---------------------
+          Total                 1335 /  1790 =  74%    1807 /  2689 =  67%
+
+	* Coverage numbers for RTT_Format_Reader from capsaicin log report
+	  2005-08-07. 
+
+
 2005-06-14  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Released draco-5_6_0.  This is a minor draco release. 
-	A summary of changes are:
+	  A summary of changes are:
 
 	- RTT_Format_Reader: Code reordering to eliminate compiler warnings.
 	- c4: Added abort() function. Added some additional doxygen
@@ -43,6 +168,27 @@
 	pcgWrap at the current time although these packages are part of
 	the head version of draco.
 
+	Code Statistics:
+
+          Counting lines of source code -- 
+          Directory:  /home/kellyt/draco-5_6_0
+          Date     :  Mon Aug 8 17:26:56 MDT 2005
+          
+                           Total C++ source:   22945
+             C++ source in test directories:   13694
+                C++ contract specifications:     832
+                               C++ comments:   23907
+                       Total f90/f95 source:       0
+                           f90/f95 comments:       0
+                        LaTeX Documentation:   13056
+                                html source:       0
+             Executable shell script source:    3044
+                     Executable Perl source:     201
+                              Python source:    2401
+                              Expect source:       0
+                               Elisp source:    3239
+
+	
 2005-02-25  Kelly Thompson <kgt@lanl.gov>
 
 	* draco: Released draco-5_5_0.  This is a minor draco release.

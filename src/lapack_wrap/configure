@@ -5376,11 +5376,12 @@ echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlport_${stlport_
          echo "$as_me:$LINENO: result: \"no\"" >&5
 echo "${ECHO_T}\"no\"" >&6
       fi
-                        echo "$as_me:$LINENO: checking \"for LDFLAGS mods for stlport\"" >&5
-echo $ECHO_N "checking \"for LDFLAGS mods for stlport\"... $ECHO_C" >&6
-      LDFLAGS="${stlport_xlinker} -rpath ${with_stlport}/lib ${LDFLAGS}"
-      echo "$as_me:$LINENO: result: \"Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS\"" >&5
-echo "${ECHO_T}\"Added ${stlport_xlinker} -rpath ${with_stlport}/lib to LDFLAGS\"" >&6
+
+      echo "$as_me:$LINENO: checking \"for RPATH mods for stlport\"" >&5
+echo $ECHO_N "checking \"for RPATH mods for stlport\"... $ECHO_C" >&6
+      RPATH="${stlport_xlinker} -rpath ${with_stlport}/lib ${RPATH}"
+      echo "$as_me:$LINENO: result: \"Added ${stlport_xlinker} -rpath ${with_stlport}/lib to RPATH\"" >&5
+echo "${ECHO_T}\"Added ${stlport_xlinker} -rpath ${with_stlport}/lib to RPATH\"" >&6
 
    elif test "${with_stlport}" = yes; then
       { { echo "$as_me:$LINENO: error: \"Must define path to stlport when using --with-stlport=dir\"" >&5
@@ -12918,7 +12919,7 @@ echo "${ECHO_T}${components}" >&6
 
 
    # find the release number
-   number=draco-5_6_0
+   number=draco-5_7_0
    echo "$as_me:$LINENO: checking \"component release number\"" >&5
 echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: $number" >&5
