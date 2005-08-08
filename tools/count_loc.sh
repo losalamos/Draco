@@ -136,107 +136,107 @@ cd $CODE_DIR
 #------------------------- C++ Source Code ------------------------------
 
 #Scan for C++ source code
-echo "Total C++ source: "
+echo -n "                 Total C++ source: "
 find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
        -exec cat {} \; |  cpp_loc 
-echo
+#echo
 
 #------------------------ C++ Test Code ----------------------------------
 
 #Scan for C++ test code
-echo "C++ source in test directories: "
+echo -n "   C++ source in test directories: "
 for i in `find . -name test -type d -print`
 do
   find ${i} -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
             -exec cat {} \; 
 done | cpp_loc
-echo
+#echo
 
 #Scan for C++ Design-by-Contract specifications
-echo "C++ contract specifications:"
+echo -n "      C++ contract specifications: "
 for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
           -print` 
 do
   awk '$1 ~ /[aA]ssert|[rR]equire|[eE]nsure|[cC]heck|[iI]nsist/ {print}' ${i}
 done | cpp_loc
-echo
+#echo
 
 #------------------------ C++ Documentation ----------------------------
 
 #Scan for C++ comments (finds both C and C++ style comments)
-echo "C++ comments:"
+echo -n "                     C++ comments: "
 for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
           -print`
 do 
   awk '$1~/\/\// {print} /\/\*/, /\*\// {print}' ${i}
 done | wc -l
-echo
+#echo
 
 #------------------------- f90/f95 Source Code ------------------------------
 
 #Scan for f90/f95 source code
-echo "Total f90/f95 source: "
+echo -n "             Total f90/f95 source: "
 find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' \) ! -name '#*' \
        -exec cat {} \; |  f90_loc 
-echo
+#echo
 
 #------------------------ f90/f95 Documentation ----------------------------
 
 #Scan for f90/f95 comments 
-echo "f90/f95 comments:"
+echo -n "                 f90/f95 comments: "
 for i in `find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' \) \
           ! -name '#*' -print`
 do 
   awk '$1 ~ /!/ {print}' ${i}
 done | wc -l
-echo
+#echo
 
 
 #------------------------ Other Documentation ----------------------------
 
 #Scan for LaTeX source code
-echo 'LaTeX Documentation:'
+echo -n '              LaTeX Documentation: '
 find . -name "*.tex" ! -name '#*' -type f -exec cat {} \; |  latex_loc
-echo
+#echo
 
 #Scan for html source
-echo 'html source: '
+echo -n '                      html source: '
 find . -type f \( -name '*.html' -o -name '*.htm' -o -name '*.shml'  \) \
        ! -name '#*' -exec cat {} \; |  html_loc
-echo
+#echo
 
 #------------------------ Scripts ----------------------------------------
 
 #Scan for executable shell script source code. 
 #(such as sh, bash, csh, etc.)
-echo Executable shell script source:
+echo -n "   Executable shell script source: "
 files=`find . -type f -perm -100  ! -name 'configure' \
       ! -name '*~' ! -name '#*' -print`
 script_loc `list_shell_scripts $files` /dev/null
-echo
+#echo
 
 #Scan for Perl source code. 
-echo Executable Perl source:
+echo -n "           Executable Perl source: "
 files=`find . -type f -perm -100  ! -name '*~' ! -name '#*' -print`
 script_loc `list_perl_scripts $files` /dev/null
-echo
+#echo
 
 #Scan for Python source code
-echo "Python source:"
+echo -n "                    Python source: "
 find . -name '*.py' ! -name '#*' -type f -exec cat {} \; | script_loc
-echo
+#echo
 
 #Scan for Expect source code
-echo "Expect source:"
+echo -n "                    Expect source: "
 find . -name '*.exp' ! -name '#*' -type f -exec cat {} \; | script_loc
-echo
+#echo
 
 #------------------------ Templates --------------------------------------
 
 #Scan for Elisp source code
-echo "Elisp source:"
+echo -n "                     Elisp source: "
 find . -name '*.el' ! -name '#*' -type f  -exec cat {} \; | elisp_loc
-echo
+#echo
 
 
 #################### end of count_loc.sh ######################################
