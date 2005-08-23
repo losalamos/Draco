@@ -1,0 +1,7 @@
+2005-07-06  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco_viscope (CriticalSuccessFactors): Changed table into a
+	  threeparttable to allow for footnotes.
+
+	
+
