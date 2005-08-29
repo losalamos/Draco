@@ -127,9 +127,19 @@ Fp_t Shared_Lib::get_function(const std::string &name)
 {
     Require(is_open());
     
-    // ISSUE: If we switch this to a reinterpret_cast, gcc complains about a
-    // cast between pointer-to-function and pointer-to-object.
-    Fp_t f = (Fp_t)(do_dlsym(name));
+    // HACK WARNING: 5.2.10/6-7 implies that we cannot cast a
+    // pointer-to-object (in this case, the void* from dlsym) to a
+    // pointer-to-function.  On the other hand, 5.2.10/5 states that we can
+    // cast any pointer to an integer large enough to hold it, and that we can
+    // cast integers back to pointers.  We'll use size_t as the integer, but
+    // this is non-portable.  In the end, I suspect that platforms that use
+    // different sizes for pointer-to-function and pointer-to-object don't
+    // support dlopen, anyway - lowrie
+
+    Insist(sizeof(Fp_t)==sizeof(size_t), "Pointer-size incompatibility");
+    Insist(sizeof(void*)==sizeof(size_t), "Pointer-size incompatibility");
+
+    Fp_t f = reinterpret_cast<Fp_t>(reinterpret_cast<size_t>(do_dlsym(name)));
 
     return f;
 }
