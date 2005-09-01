@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include "RefArray.hh"
+#include "Assert.hh"
 
 namespace rtt_dsxx
 {
