@@ -88,7 +88,6 @@ to anything else will generate errors."
 		(const :tag "C++" "C++"))
   :group 'draco-mode)
 
-
 ;;============================================================
 ;; End of customizable variables
 ;;============================================================
@@ -161,14 +160,16 @@ to anything else will generate errors."
 ; Some bindings to drop Brief style bookmarks.
 ; Shift Fx sets bookmakr x, Control Fx returns to bookmark x.
 
-(define-key draco-mode-map [(meta f1)]     [(control x) r (space) a])
-(define-key draco-mode-map [(control f1)]  [(control x) r j a])
-(define-key draco-mode-map [(meta f2)]     [(control x) r (space) b])
-(define-key draco-mode-map [(control f2)]  [(control x) r j b])
-(define-key draco-mode-map [(meta f3)]     [(control x) r (space) c])
-(define-key draco-mode-map [(control f3)]  [(control x) r j c])
-(define-key draco-mode-map [(meta f4)]     [(control x) r (space) d])
-(define-key draco-mode-map [(control f4)]  [(control x) r j d])
+;(define-key draco-mode-map [(meta f1)]     [(control x) r (space) a])
+;(define-key draco-mode-map [(control f1)]  [(control x) r j a])
+;(define-key draco-mode-map [(meta f2)]     [(control x) r (space) b])
+;(define-key draco-mode-map [(control f2)]  [(control x) r j b])
+;(define-key draco-mode-map [(meta f3)]     [(control x) r (space) c])
+;(define-key draco-mode-map [(control f3)]  [(control x) r j c])
+;(define-key draco-mode-map [(meta f4)]     [(control x) r (space) d])
+;(define-key draco-mode-map [(control f4)]  [(control x) r j d])
+
+(define-key draco-mode-map [(control f2)] 'font-lock-fontify-buffer)
 
 ;;============================================================
 ;; autoload

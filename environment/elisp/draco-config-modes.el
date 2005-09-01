@@ -393,8 +393,8 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	    reftex-use-multiple-selection-buffers t
 	    reftex-plug-into-AUCTeX               t)
 
-      (setq reftex-texpath-environment-variables 'draco-texpath)
-      (setq reftex-bibpath-environment-variables 'draco-bibpath)
+      (setq reftex-texpath-environment-variables draco-texpath)
+      (setq reftex-bibpath-environment-variables draco-bibpath)
 
       (defun draco-latex-mode-hook ()
 	"DRACO hooks added to LaTeX and BibTex modes."

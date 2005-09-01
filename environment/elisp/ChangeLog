@@ -1,3 +1,32 @@
+2005-09-01  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco-config-modes.el (draco-setup-auctex-mode):  Fix code for
+	  reftex-mode that wasn't working correctly by setting
+	  (setq reftex-texpath-environment-variables draco-texpath)	
+          (setq reftex-bibpath-environment-variables draco-bibpath).
+
+	* draco-mode.el (bookmarks): Comment out definition of bookmark
+	  key-bindings. 
+
+	* draco-setup.el (draco-bibpath): Define custom variable
+	  draco-bibpath.  This variable contains a list of strings.  The
+	  strings can be the names of environment variables are actual
+	  paths.  The default value is set to
+
+	'("/codes/radtran/vendors/draco-5_7_0/draco/environment/bibfiles:/codes/radtran/vendors/capsaicin-2_5_0/source/doc/bib") 
+
+	  Define custom variable draco-texpath.  This variable contains a
+	  list of strings.  The strings can be the names of environment
+	  variables are actual paths.  The default value is set to
+ 
+	'("/codes/radtran/vendors/draco-5_7_0/draco/environment/latex:/codes/radtran/vendors/draco-5_7_0/draco/environment/bibtex")
+	
+	  Both of these values can be customized by the user by selecting
+	  "Options" -> "Advanced" -> "Group" -> "draco."  When done press
+	  the buttons "set" and then "save."
+
+	* draco-global-keys.el (F5): Bind F5 to 'font-lock-fontify-buffer.
+	
 2005-07-07  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco-config-modes.el (draco-setup-auctex-mode): Fix code for

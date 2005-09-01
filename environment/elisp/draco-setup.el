@@ -113,7 +113,7 @@ to obtain a list of colors known to XEmacs."
 		(const :tag "No"  nil)))
 
 (defcustom draco-bibpath
-  "/codes/radtran/vendors/environment/bibfiles//"
+  '("/codes/radtran/vendors/draco-5_7_0/draco/environment/bibfiles:/codes/radtran/vendors/capsaicin-2_5_0/source/doc/bib")
   "String containing a list of directories, each separated by a colon.
 Each directory entry should end with a double slash.  Each directory
 will be searched for bibfiles associated with \bibliography(file)
@@ -122,10 +122,10 @@ reftex-mode.;
 
 Consider prepending your local directories." 
   :group 'draco-mode
-  :type 'string)
+  :type 'list)
 
 (defcustom draco-texpath
-  "/codes/radtran/vendors/environment/latex//:/codes/radtran/vendors/environment/bibtex//"
+  '("/codes/radtran/vendors/draco-5_7_0/draco/environment/latex:/codes/radtran/vendors/draco-5_7_0/draco/environment/bibtex")
   "String containing a list of directories, each separated by a colon.
 Each directory entry should end with a double slash.  Each directory
 will be searched for LaTeX files (.sty, .bst, .cls, .tex, eps, etc.)
@@ -133,8 +133,8 @@ This path is used by reftex-mode.;
 
 Consider prepending your local directories." 
   :group 'draco-mode
-  :type 'string)
-  
+  :type 'list)
+
 ;; ========================================
 ;; Use Draco configuration for these modes
 ;; ========================================

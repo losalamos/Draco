@@ -26,7 +26,9 @@
 
 ;; Comments
 (define-key global-map [(f2)]               'comment-region)
-;(define-key global-map [(shift f2)]         '(comment-region)
+
+; Refresh
+(define-key global-map [(f5)]               'font-lock-fontify-buffer)
 
 ;; Buffer management
 (define-key global-map [(f7)]               'draco-save-and-kill-current-buffer)
@@ -47,7 +49,9 @@
       (define-key global-map [(button5)] 
         '(lambda () (interactive) (scroll-up 5)))))
 
-(if (or (string-match "ffe1" machine-name)
-	(string-match "qscfe1" machine-name)) (mwheel-install))
+;(if (or (string-match "ffe1" machine-name)
+;	(string-match "qscfe1" machine-name)) (mwheel-install))
+
+(mwheel-install)
 
 (provide 'draco-global-keys)
