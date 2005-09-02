@@ -102,36 +102,45 @@ class Milagro_Data:
     timing_line  = ' \*\* We ran for[ ]+(\S+) seconds'
         
 
-    def __init__(self, input):
+    def __init__(self, input, scan_cycles = True):
+        self.scan_cycles = scan_cycles
+        self.input       = input
+
         self.execution_time = 0
         self.cycles = []
 
-        self.__extract_data(input)
+        self.__extract_data()
 
 
-    def __extract_data(self, input):
-
-        file = Utils.openFileOrString(input)
+    def __extract_cycle_data(self, file):
 
         # Read first cycle
         cycle_data = Cycle_Data(file)
 
         while cycle_data.found_cycle is True:
 
-            # Add the cycle data to the dictionary with the cycle
-            # number as a key
+            # Add the cycle data to the list
             self.cycles.append(cycle_data)
 
             # Get the next cycle
             cycle_data = Cycle_Data(file)
+
+
+
+    def __extract_data(self):
+
+        file = Utils.openFileOrString(self.input)
+
+        if self.scan_cycles:
+            self.__extract_cycle_data(file)
 
         # Scan for the timing data
         time_position = Utils.ScanTo(file, self.timing_line)
 
         if time_position:
             self.execution_time = float(time_position.group(1))
-##        else:
-##            raise RunTimeError, "Could not find timing data"
+        else:
+            raise RunTimeError, "Could not find timing data"
         
 
 
@@ -153,14 +162,12 @@ class Milagro_Data:
 ## import_data
 ##---------------------------------------------------------------------------##
 
-def import_file(filename):
+def import_file(filename, scan_cycles = True):
 
     """Create and return a Milagro_Data object based on the given
     file"""
 
-    open(filename,'r')
-    
-    return Milagro_Data(filename)
+    return Milagro_Data(filename, scan_cycles)
 
 
 ##---------------------------------------------------------------------------##
