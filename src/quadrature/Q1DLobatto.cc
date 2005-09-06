@@ -52,6 +52,8 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
 
     // We require the sn_order to be greater than zero.
     Require( numGaussPoints > 0 );
+    // And that it is even
+    Require( numGaussPoints%2 == 0 );
     // We require the normalization constant to be greater than zero.
     Require( norm > 0.0 );
 
