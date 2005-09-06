@@ -14,9 +14,9 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-thistestdep := lib<spkg>${libsuffix}
-thistestlib := -L. -l<spkg>
-thistestlib_dep := <spkg>.o <start>
+thistestdep := lib<spkg>_test${libsuffix}
+thistestlib := -L. -l<spkg>_test
+thistestlib_dep := <spkg>_test.o <start>
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 
