@@ -17,6 +17,7 @@
 #include "units/PhysicalConstants.hh"
 
 #include "Q1DGaussLeg.hh"
+#include "Q1DLobatto.hh"
 #include "Q1Axial.hh"
 #include "Q2DLevelSym.hh"
 #include "Q3DLevelSym.hh"
@@ -64,7 +65,14 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
 	    spQuad = new Q1DGaussLeg( sn_order, norm );
 	    break;
-	    
+
+	case Lobatto:
+	    // if the client did not specify a value for norm then it will be
+	    // zero here.  We must set it to a default value of 2.0.
+	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
+	    spQuad = new Q1DLobatto( sn_order, norm );
+	    break;
+	    	    
 	case Axial1D:
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
 	    spQuad = new Q1Axial( sn_order, norm );

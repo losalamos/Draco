@@ -76,6 +76,7 @@ class QuadCreator
      */
     enum Qid { 
 	GaussLeg,    /*!< 1D Gauss Legendre (arbitrary order). */
+	Lobatto,     /*!< 1D Lobatto (arbitrary order). */
 	LevelSym2D,  /*!< 2D Level Symmetric (even order between 2 and 24, inclusive). */
 	LevelSym,    /*!< 3D Level Symmetric (even order between 2 and 24, inclusive). */
 	Axial1D      /*!< 1D Axial used for filter sweeps */

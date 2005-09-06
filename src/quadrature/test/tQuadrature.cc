@@ -60,7 +60,7 @@ void quadrature_test()
     const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
-    const int nquads = 3;
+    const int nquads = 4;
 
     // Declare an enumeration object that specifies the Quadrature set to be
     // tested.
@@ -74,11 +74,12 @@ void quadrature_test()
     // 2   LevelSym   3D Level Symmetric
 
     QuadCreator::Qid qid[nquads] = { QuadCreator::GaussLeg,
+                                     QuadCreator::Lobatto,
 				     QuadCreator::LevelSym2D,
 				     QuadCreator::LevelSym };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = { 0.8611363116,
+    double mu0[nquads] = { 0.8611363116, 1.0,
 			  -0.350021174581541, -0.350021174581541 };
     
     SP< const Quadrature > spQuad;
