@@ -7,11 +7,55 @@
 
 ##---------------------------------------------------------------------------##
 class Bunch(object):
-    """An object created with attributes from a keyword list"""
+    """An object created with attributes from a dictionary and/or a
+    keyword list
 
-    def __init__(self, dict = None, **kwds):
-        if dict: self.__dict__.update(dict)
+    >>> d = {'key': 'value'}
+    >>> b = Bunch(d, second_key='another_value')
+    >>> b.key
+    'value'
+    >>> b.second_key
+    'another_value'
+
+    """
+
+    def __init__(self, dict = {}, **kwds):
+        self.__dict__.update(dict)
         self.__dict__.update(kwds)
+
+
+
+class Parameters(object):
+    """A specialized kind of Bunch which keeps a list of expected
+    parameters and can print their values.
+
+    >>> params = ['key', 'second_key']
+    >>> d = {'key': 'value'}
+    >>> b = Parameters(params, d, second_key='another_value')
+    >>> print b
+             key: value
+      second_key: another_value
+
+    Ideally, this class would be derived from Bunch, but I was not
+    able to figure out how to pass the key-word arguments to the base
+    class constructor.
+
+    """
+
+    def __init__(self, params, dict = {}, **kwds):
+        self.params = params
+        self.__dict__.update(dict)
+        self.__dict__.update(kwds)
+
+    def __str__(self):
+        s = ''
+        display_width = max(map(len, self.params)) + 2
+
+        for param in self.params:
+            s += "%*s: %s" % (display_width, param, getattr(self, param))
+            s += '\n'
+
+        return s[:-1]
 
 
 ##---------------------------------------------------------------------------##
@@ -167,54 +211,78 @@ def openFileOrString(source):
     return StringIO.StringIO(str(source))  
 
 ##---------------------------------------------------------------------------##
-def processSetters(options, setters, parameters):
+def process_setter_options(options, option_param_map, defaults):
 
     """
-    processSetters(options, setters, parameters)
+    process_setter_options
 
-    "Setters" are command line arguments whose purpose is to provide a
-    value for a parameter, i.e. "-x <argument>" means set a
-    certain parameter to <argumemt>.
+    Processes command-line option pairs: ('-option', 'value'), by storing
+    the values as data members of an object.
 
-    This function processes a list of options in the form provided by
-    getopt. (A list of '(option, value)' tuples). It maps command line
-    options to parameters via a dictionary and stores the resulting
-    parameter values in another dictionary.
+    Argument options is a list of the command-line options pairs taken
+    from the command line like, e.g.:
 
-    The argument 'options' contains the list of options from
-    getopt.getopt. This consists of a list of tuples where each tuple
-    is a pair '(option, value)'.
+    >>> options = [('-x', 'x_value'), ('-a', 'a_value')]
 
-    Argument 'setters' is the dictionary that maps command line options to
-    the parameters that they effect, e.g. {'-x':'x_param'}
+    Argument setter_map is a dictionary which maps command-line
+    options to the parameters that they set. e.g:
 
-    Parameters is the dictionary into which the results of processing
-    the command line arguments is written. e.g.
-    {'x_param':'value_of_x'} Entries in this argument that are not given
-    new values will remain. This is a good mechanism for default
-    values.
+    >>> option_param_map = {'-x': 'x_param', '-y': 'y_param', '-z': 'z_param'}
+
+    Argument defaults is a dictionary which maps parameters to default
+    values. Parameters without default values default to None
+
+    >>> defaults = {'x_param': 'x_default', 'y_param': 'y_default'}
+
+    The return value is a 'bunch' containing the variables as members
+    with the assigned values and a list of the unrecognized options. e.g:
+
+    >>> (params, extras) = process_setter_options(options, option_param_map, defaults)
+
+    >>> print params.x_param
+    x_value
+
+    >>> print params.y_param
+    y_default
+
+    >>> print params.z_param
+    None
+
+    >>> extras
+    [('-a', 'a_value')]
+
+    """
+
+    # Extract the list of expected parameters:
+    parameters = option_param_map.values()
+
+    # Add a default of None for all parameters not already in defaults
+    for parameter in parameters:
+        defaults.setdefault(parameter, None)
+
+    # A list of options we did not recognize:
+    unknowns = []
+        
+    # Loop over the (option, value) pairs in options. Lookup the
+    # corresponding parameters from option_param_map. Modify parameter
+    # values in place in the default dictionary.
+
+    for option, value in options:
+        parameter = option_param_map.get(option)
+        if parameter:
+            defaults[parameter] = value
+        else:
+            unknowns.append((option, value))
+        
+            
+
+    # Convert the default dictionary into a Parameters object. Return it and the
+    # unknown arguments.
+
+    return Parameters(parameters, defaults), unknowns
+
+
     
-
-    Examples:
-
-    Map '-x' to x_param and provide it with value: 'x_value':
-    >>> params = {}
-    >>> processSetters([('-x','x_value')], {'-x':'x_param'}, params)
-    >>> print params
-    {'x_param': 'x_value'}
-
-
-    Override the default value for 'x_param': 'x_default'
-    >>> params = {'x_param':'x_default'}
-    >>> processSetters([('-x','x_value')], {'-x':'x_param'}, params)
-    >>> print params
-    {'x_param': 'x_value'}
-    """
-
-    for option, arg in options:
-        for setter, param in setters.items():
-            if option == setter: parameters[param] = arg
-
 ##---------------------------------------------------------------------------##
 class KeyError(Exception):
     "An exception class for all disambuguation errors."
@@ -383,6 +451,48 @@ def listFiles(root, patterns='*', recurse=1, relative_paths=0, return_folders=0)
     os.path.walk(root, visit, arg)
  
     return arg.results
+
+class Data:
+    """ Accumulate and report statistics on data.
+
+    >>> d = Data()
+    >>> d.add(10)
+    >>> d.add(20)
+    >>> d.add(30)
+    >>> d.trials
+    3
+    >>> d.average()
+    20.0
+    >>> d.deviation()
+    10.0
+    """
+    
+    def __init__(self):
+        self.values = []
+        self.value  = 0.0
+        self.trials = 0
+
+    def add(self, value):
+        self.values.append(value)
+        self.value  += value
+        self.trials += 1
+
+    def average(self):
+        return self.value / self.trials
+
+    def deviation(self):
+
+        if self.trials < 2: return 0.0
+
+        average = self.average()
+
+        import math
+
+        deviations = map(lambda x: (x-average)**2, self.values)
+        summation  = reduce(lambda x,y: x+y, deviations)
+
+        return math.sqrt(summation / ( self.trials - 1))
+
 
 
 
