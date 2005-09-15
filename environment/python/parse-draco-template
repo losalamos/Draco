@@ -51,7 +51,8 @@ parser.add_option("-a", "--author", dest="author",
 ################################################################################
 # Get information from environment
 ################################################################################
-namecmd = "finger bergen | head -n 1 | sed 's,^.*[\:] ,,g'"
+user = os.getenv('USER')
+namecmd = "finger %(user)s | head -n 1 | sed 's,^.*[\:] ,,g'" % {'user' : user}
 (status, user) = commands.getstatusoutput(namecmd)
 cwd = os.getcwd()
 p = re.compile('^.*[\/]')
