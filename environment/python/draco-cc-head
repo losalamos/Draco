@@ -1,0 +1,62 @@
+#! /usr/bin/env python
+
+################################################################################
+# Imported modules
+################################################################################
+import os
+import sys
+import re
+import commands
+import datetime
+
+cwd = os.getcwd()
+subdir = re.sub('^.*[\/]', '', cwd)
+
+################################################################################
+# request name
+################################################################################
+output = raw_input('C++ Header Name: ')
+classname = output
+if(re.match('\.hh', output) == None):
+	hhfile = output + '.hh'
+	ihhfile = output + '.i.hh'
+
+print hhfile
+print ihhfile
+print classname
+
+################################################################################
+# request package path
+################################################################################
+default = subdir
+pkgpath = raw_input('Package path [%(default)s]: ' %
+	{'default' : default})
+if pkgpath in (''): pkgpath = default
+
+print pkgpath
+
+################################################################################
+# request namespace
+################################################################################
+default = 'rtt_' + pkgpath
+namespace = raw_input('Namespace for this package [%(default)s]: ' %
+	{'default' : default})
+if namespace in (''): namespace = default
+
+print namespace
+
+################################################################################
+# classname.hh file
+################################################################################
+os.system('parse-draco-template -n %(ns)s -p %(pkg)s -t %(pkg)s \
+	-s %(pkg)s -c %(class)s template.hh %(hhfile)s' %
+	{'ns' : namespace, 'pkg' : pkgpath, 'hhfile' : hhfile,
+	'class' : classname})
+
+################################################################################
+# classname.i.hh file
+################################################################################
+os.system('parse-draco-template -n %(ns)s -p %(pkg)s -t %(pkg)s \
+	-s %(pkg)s -c %(class)s template.i.hh %(ihhfile)s' %
+	{'ns' : namespace, 'pkg' : pkgpath, 'ihhfile' : ihhfile,
+	'class' : classname})
