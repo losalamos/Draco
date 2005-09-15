@@ -288,7 +288,7 @@ double Planck2Rosseland(const double freq)
 
     static const double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
 
-    double e_freq = exp(-freq);
+    double e_freq = std::exp(-freq);
     double freq_3 = freq*freq*freq;
     
     double factor;
@@ -311,6 +311,7 @@ double Planck2Rosseland(const double freq)
  * These are the most basic of the Planckian and Rosseland integration
  * functions. They are publically accessible, but also used in the
  * implementation of integration functions with friendlier interfaces.
+ */
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
