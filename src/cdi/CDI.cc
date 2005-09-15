@@ -23,23 +23,39 @@ namespace rtt_cdi
 // CONSTRUCTORS AND DESTRUCTORS
 //---------------------------------------------------------------------------//
 
+/*!
+ * \brief Construct a CDI object.
+ *
+ * Builds a CDI object.  The opacity and eos objects that this holds must
+ * be loaded using the set functions.  There is no easy way to guarantee
+ * that all of the set objects point to the same material.  CDI does do
+ * checking that only one of each Model:Reaction pair of opacity objects
+ * are assigned; however, the user can "fake" CDI with different
+ * materials if he/she is malicious enough.  
+ *
+ * CDI does allow a string material ID indicator.  It is up to the client
+ * to ascribe meaning to the indicator.
+ *
+ * \param id string material id descriptor, this is defaulted to null
+ */
 CDI::CDI(const std_string &id)
     : matID(id),
-      grayOpacities(constants::num_Models, 
-		    SF_GrayOpacity(constants::num_Reactions)),
-      multigroupOpacities(constants::num_Models,
-			  SF_MultigroupOpacity(constants::num_Reactions))
+      grayOpacities(
+          constants::num_Models, 
+          SF_GrayOpacity(constants::num_Reactions)),
+      multigroupOpacities(
+          constants::num_Models,
+          SF_MultigroupOpacity(constants::num_Reactions))
 {
+
     Ensure (grayOpacities.size() == constants::num_Models);
     Ensure (multigroupOpacities.size() == constants::num_Models);
+
 }
 
 //---------------------------------------------------------------------------//
     
-CDI::~CDI() 
-{
-    // empty
-}
+CDI::~CDI() { /* empty */ }
 
 
 //---------------------------------------------------------------------------//
@@ -52,13 +68,27 @@ std::vector<double> CDI::frequencyGroupBoundaries = std::vector<double>();
 // STATIC FUNCTIONS
 //---------------------------------------------------------------------------//
 
+/*!
+ * \brief Return the frequency group boundaries.
+ *
+ * Every multigroup opacity object held by any CDI object contains the
+ * same frequency group boundaries.  This static function allows CDI
+ * users to access the group boundaries without referencing a particular
+ * material. 
+ *
+ * Note, the group boundaries are not set until a multigroup opacity
+ * object is set for the first time (in any CDI object) with the
+ * setMultigroupOpacity function.
+ */
 std::vector<double> CDI::getFrequencyGroupBoundaries()
 {
     return frequencyGroupBoundaries;
 }
 
 //---------------------------------------------------------------------------//
-
+/*!
+ * \brief Return the number of frequency groups.
+ */
 int CDI::getNumberFrequencyGroups()
 {
     int ng = 0;
@@ -79,24 +109,47 @@ int CDI::getNumberFrequencyGroups()
 namespace
 {
 
-// constants used in the Taylor series expansion of the Planckian.
-const double coeff_3  =    1.0 / 3.0;
-const double coeff_4  =   -1.0 / 8.0;
-const double coeff_5  =    1.0 / 60.0;
-const double coeff_7  =   -1.0 / 5040.0;
-const double coeff_9  =    1.0 / 272160.0;
-const double coeff_11 =   -1.0 / 13305600.0;
-const double coeff_13 =    1.0 / 622702080.0;
-const double coeff_15 =  -6.91 / 196151155200.0;
-const double coeff_17 =    1.0 / 1270312243200.0;
-const double coeff_19 = -3.617 / 202741834014720.0;
-const double coeff_21 = 43.867 / 107290978560589824.0;
+// Constants used in the Taylor series expansion of the Planckian:
+static const double coeff_3  =    1.0 / 3.0;
+static const double coeff_4  =   -1.0 / 8.0;
+static const double coeff_5  =    1.0 / 60.0;
+static const double coeff_7  =   -1.0 / 5040.0;
+static const double coeff_9  =    1.0 / 272160.0;
+static const double coeff_11 =   -1.0 / 13305600.0;
+static const double coeff_13 =    1.0 / 622702080.0;
+static const double coeff_15 =  -6.91 / 196151155200.0;
+static const double coeff_17 =    1.0 / 1270312243200.0;
+static const double coeff_19 = -3.617 / 202741834014720.0;
+static const double coeff_21 = 43.867 / 107290978560589824.0;
 
-const double coeff      =   0.1539897338202651; // 15/pi^4
+static const double coeff    =   0.1539897338202651; // 15/pi^4
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Computes the normalized Planck integral via a 21 term Taylor
+ * expansion. 
+ *
+ * The taylor expansion of the planckian integral looks as follows:
+ *
+ * I(x) = c0(c3x^3 + c4x^4 + c5x^5 + c7x^7 + c9x^9 + c11x^11 + c13x^13 +
+ *           c15x^15 + c17x^17 + c19x^19 + c21x^21)
+ *
+ * If done naively, this requires 136 multiplications. If you accumulate
+ * the powers of x as you go, it can be done with 24 multiplications.
+ *
+ * If you express the polynomaial as follows:
+ * 
+ * I(x) = c0*x^3(c3 + x(c4 + x(c5 + x^2(c7 + x^2(c9 + x^2(c11 + x^2(c13 +
+ *               x^2(c15 + x^2(c17 + x^2(c19 + x^2c21))))))))))
+ *
+ * the evaluation can be done with 13 multiplications. Furthermore, we do
+ * not need to worry about overflow on large powers of x, since the largest
+ * power we compute is x^3
+ *
+ * \param  The point at which the Planck integral is evaluated.
+ * \return The integral value.
+ */
 
-// return the 21-term Taylor series expansion for the normalized Planck
-// integral given x
 inline double taylor_series_planck(double x)
 {
 
@@ -104,75 +157,48 @@ inline double taylor_series_planck(double x)
 
     const double xsqrd  = x * x;
 
+    double taylor ( coeff_21 * xsqrd );
 
-    // Check for potential overflow errors:
+    taylor += coeff_19;
+    taylor *= xsqrd;
 
-    Remember(
-    if( x > 1.0 )
-    {
-	using std::numeric_limits;
-	using std::log;
+    taylor += coeff_17;
+    taylor *= xsqrd;
 
-	// This Taylor series expansion takes x to the 21st power.  We need
-	// to ensure that x is small enough so that x^21 is less than the
-	// largest double that can be represented on the current machine.
+    taylor += coeff_15;
+    taylor *= xsqrd;
 
-	// The maximum double for the current machine is
-	double const maxDouble( numeric_limits<double>::max() );
+    taylor += coeff_13;
+    taylor *= xsqrd;
 
-	// To be conservative, assume that we are looking for x^22 so that we
-	// will now require that x^22 < maxDouble.  However, if x is too big
-	// this comparison will also result in an overflow.  If we take the
-	// log of both sides, we will have:
-	//
-	// Require( log( x^22 ) < log(maxDouble) );
-	//
-	// This can be simplified to avoid the overflow as follows:
-	
-	Require( 22.0*log(x) < log(maxDouble) );
-    }
-    )
-    // calculate the 21-term Taylor series expansion for x
+    taylor += coeff_11;
+    taylor *= xsqrd;
 
-    double xpower = xsqrd * x;
-    double taylor = 0.0;
-    {
-	taylor += coeff_3  * xpower;
-	xpower *= x;
-	taylor += coeff_4  * xpower;
-	xpower *= x;
-	taylor += coeff_5  * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_7  * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_9  * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_11 * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_13 * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_15 * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_17 * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_19 * xpower;
-	xpower *= xsqrd;
-	taylor += coeff_21 * xpower;
-	
-	taylor *= coeff;
-    }
+    taylor += coeff_9;
+    taylor *= xsqrd;
 
+    taylor += coeff_7;
+    taylor *= xsqrd;
+
+    taylor += coeff_5;
+    taylor *= x;
+
+    taylor += coeff_4;
+    taylor *= x;
+
+    taylor += coeff_3;
+    taylor *= x * xsqrd * coeff;
+    
     Ensure (taylor >= 0.0);
+
     return taylor;
 }
 
 
 // ---------------------------------------------------------------------------
-
 // return the 10-term Polylogarithmic expansion (minus one) for the Planck
 // integral given x
-double 
-polylog_series_minus_one_planck(const double x)
+double polylog_series_minus_one_planck(const double x)
 {
     Require (x >= 0.0);
 
@@ -196,10 +222,10 @@ polylog_series_minus_one_planck(const double x)
     // initialize to what would have been the calculation of the i=1 term.
     // This saves a number of "mul by one" ops.
     double eixp = eix;
-    double li1 = eix;
-    double li2 = eix; 
-    double li3 = eix;
-    double li4 = eix;
+    double li1  = eix;
+    double li2  = eix; 
+    double li3  = eix;
+    double li4  = eix;
 
     // calculate terms 2..10.  This loop has been unrolled by a factor of 3
     for(int i = 2; i < 11; i += 3)
@@ -255,82 +281,145 @@ polylog_series_minus_one_planck(const double x)
     return poly;
 }
 
+
+
+double Planck2Rosseland(const double freq)
+{
+
+    static const double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
+
+    double e_freq = exp(-freq);
+    double freq_3 = freq*freq*freq;
+    
+    double factor;
+
+    if (freq > 1.0e-5)
+        factor = NORM_FACTOR * e_freq * (freq_3*freq) / (1 - e_freq);
+    else
+        factor = NORM_FACTOR * freq_3 / (1 - 0.5*freq);
+
+    return factor;
+
+}
+
 } // end of unnamed namespace
+
+
+//---------------------------------------------------------------------------//
+// Core Integrators
+/*
+ * These are the most basic of the Planckian and Rosseland integration
+ * functions. They are publically accessible, but also used in the
+ * implementation of integration functions with friendlier interfaces.
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
+ *
+ * \param freq frequency upper integration limit in keV
+ *
+ * \param T the temperature in keV (must be greater than 0.0)
+ * 
+ * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
+ *
+ *
+ */
+double CDI::integratePlanckSpectrum(const double freq, 
+                                    const double T) 
+
+{
+    Require (freq >= 0);
+    Require (T    >= 0.0);
+
+    // Return 0 if temperature is a hard zero
+    if (T == 0.0) return 0.0;
+
+    const double scaled = freq / T;
+    const double poly   = polylog_series_minus_one_planck(scaled) + 1.0;
+    const double taylor = taylor_series_planck(scaled);
+
+    double integral = std::min(taylor, poly);
+
+    Ensure ( integral >= 0.0 );
+    Ensure ( integral <= 1.0 );
+
+    return integral;
+}
+
+
+//---------------------------------------------------------------------------//
+/* \brief
+ *
+ */
+double CDI::integrateRosselandSpectrum(const double freq,
+                                       const double T)
+{
+
+    Require (freq >= 0.0);
+    Require (T    >= 0.0);
+
+    double planck, rosseland;
+
+    integratePlanckRosselandSpectrum(freq, T, planck, rosseland);
+
+    return rosseland;
+
+}
+
+
+//---------------------------------------------------------------------------//
+/* \brief
+ *
+ */
+void CDI::integratePlanckRosselandSpectrum(const double freq,
+                                           const double T,
+                                           double& planck,
+                                           double& rosseland)
+{
+
+    Require (freq >= 0.0);
+    Require (T    >= 0.0);
+
+    // Return 0 if temperature is a hard zero.
+    if (T == 0.0)
+    {
+        planck    = 0;
+        rosseland = 0;
+	return;
+    }
+
+    // Calculate the Planckian integral 
+    planck = integratePlanckSpectrum(freq, T);
+    
+    Ensure (planck >= 0.0);
+    Ensure (planck <= 1.0);
+
+    double scaled        = freq / T;
+    double add_rosseland = Planck2Rosseland(scaled);
+
+    rosseland = planck - add_rosseland;
+
+}
+
+
+
+//---------------------------------------------------------------------------//
+// Planckian Spectrum Integrators
+//
+/* These are versions of the integrators that work over specific energy ranges
+ * or groups in the stored group structure.
+ */
+//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 /*!
  *
  * \brief Integrate the Planckian spectrum over a frequency range.
  *
- * This function integrates the normalized Plankian that is defined:
- *
- * \f[
- *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
- * \f]
- *
- * where 
- * 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- *
- * and 
- *
- * \f[ 
- *    B(\nu,T)d\nu = \frac{acT^4}{4\pi} b(x)dx
- * \f]
- * 
- * where \f$B(\nu,T)\f$ is the Plankian and is defined
- *
- * \f[
- *    B(\nu,T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{h\nu/kt} - 1}
- * \f]
- *
- * The normalized Plankian, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Planck function may integrate to something less than one.
- *
- * This function performs the following integration:
- *\f[
- *      \int_{x_low}^{x_high} b(x) dx
- *\f]
- * where \f$x_low\f$ is calculated from the input low frequency bound and
- * \f$x_high\f$ is calculated from the input high frequency bound.  This
- * integration uses the method of B. Clark (JCP (70)/2, 1987).  We use a
- * 10-term Polylogarithmic expansion for the normalized Planckian, except in
- * the low-x limit, where we use a 21-term Taylor series expansion.
- *
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_low}^{\nu_high} B(\nu,T) d\nu 
- * \f]
- * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_low}^{\nu_high} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$acT^4\f$.
- *
- * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- *
- * The integral is calculated using a polylogarithmic series approximation,
- * except for low frequencies, where the Taylor series approximation is more
- * accurate.  Each of the Taylor and polylogarithmic approximation has a
- * positive trucation error, so they intersect above the correct solution;
- * therefore, we always use the smaller one for a continuous concatenated
- * function.  When both frequency bounds reside above the Planckian peak
- * (above 2.822 T), we skip the Taylor series calculations and use the
- * polylogarithmic series minus one (the minus one is for roundoff control).
- *
- *
  * \param lowFreq lower frequency bound in keV
- *
  * \param highFreq higher frequency bound in keV
- *
  * \param T the temperature in keV (must be greater than 0.0)
  * 
  * \return integrated normalized Plankian from x_low to x_high
@@ -345,79 +434,12 @@ double CDI::integratePlanckSpectrum(const double lowFreq,
     Require (T        >= 0.0);
 
     // return 0 if temperature is a hard zero
-    if (T == 0.0)
-	return 0.0;
+    if (T == 0.0) return 0.0;
 
-    // determine the upper and lower x
-    const double T_inv = 1.0 / T;
-    const double lower_x = lowFreq  * T_inv;
-    const double upper_x = highFreq * T_inv;
-
-    // initialize the return integral value
-    double integral = 0.0;
-
-    // determine the upper and lower bounds calculated by the 
-    // polylogarithmic approximations minus one
-
-    // if both reduced frequencies are above the Planckian peak, 2.82144,
-    // bypass the Taylor series approximation and use only the
-    // polylogarithmic approximations minus one.
-    const double x_at_planck_peak = 2.822;
-
-    if (!(lower_x < x_at_planck_peak))
-    {
-	const double lower_poly_m1 = polylog_series_minus_one_planck(lower_x);
-	const double upper_poly_m1 = polylog_series_minus_one_planck(upper_x);
-
-	integral = upper_poly_m1 - lower_poly_m1;
-    }
-
-    // otherwise, calculate the taylor and polylogarithmic approximations for
-    // the upper and lower bounds and use the appropriate ones.  Both have
-    // positive truncation errors, and they intersect above the true
-    // function, therefore we always use the minimum.  Using the minimum
-    // means that we do not have to explicitly calculate the intersection.
-    else
-    {
-
-	const double upper_poly = 
-	    polylog_series_minus_one_planck(upper_x) + 1.0;
-
-	const double lower_taylor = taylor_series_planck(lower_x);
-	const double upper_taylor = taylor_series_planck(upper_x);
-
-
-	// both limits are below the intersection, so use Taylor for both
-	if ( upper_taylor < upper_poly )
-	{
-	    Remember(
-	    const double lower_poly =
-		polylog_series_minus_one_planck(lower_x) + 1.0;
-	    )
-	    Check ( lower_taylor < lower_poly );
-	    integral = upper_taylor - lower_taylor;
-	}
-
-	// the limits straddle the intersection, use both Taylor and polylog
-	else 
-	{
-	    const double lower_poly =
-		polylog_series_minus_one_planck(lower_x) + 1.0;
-
-	    if ( lower_taylor < lower_poly )
-	    {
-		Check ( upper_taylor >= upper_poly );
-		integral = upper_poly - lower_taylor;
-	    }
-
-	    // both limits are above the intersection, so use polylog-1 for both
-	    else 
-	    {
-		Check ( lower_taylor >= lower_poly );
-		integral = upper_poly - lower_poly;
-	    }
-	}
-    }
+    double integral =
+        integratePlanckSpectrum(highFreq,T) -
+        integratePlanckSpectrum(lowFreq,T);
+    
 
     Ensure ( integral >= 0.0 );
     Ensure ( integral <= 1.0 );
@@ -428,206 +450,40 @@ double CDI::integratePlanckSpectrum(const double lowFreq,
 //---------------------------------------------------------------------------//
 /*!
  *
- * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
- * (\frac{h\nu}{kT}) \f$.
- *
- * This function integrates the normalized Plankian that is defined:
- *\f[
- *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
- *\f]
- * where 
- *\f[
- * x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    B(\nu,T)d\nu = \frac{acT^4}{4\pi} b(x)dx
- * \f]
- * where \f$B(\nu,T)\f$ is the Plankian and is defined
- *\f[
- *    B(\nu,T) = \frac{2hnu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- *\f]
- * This function performs the following integration:
- *\f[
- *      \int_{0}^{x} b(x) dx
- *\f]
- * using the method of B. Clark (JCP (70)/2, 1987).  We use a 10-term
- * Polylogarithmic expansion for the normalized Planckian, except in the
- * low-x limit, where we use a 21-term Taylor series expansion.
- *
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- *\f[
- *     \int_{0}^{\nu} B(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following: 
- *\f[
- *     \int_{4\pi} \int_{0}^{\nu} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$acT^4\f$.
- *
- * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0 \f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- *
- * \param frequency frequency upper integration limit in keV
- *
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
- *
- */
-double CDI::integratePlanckSpectrum(const double frequency, const double T)
-{
-    Require (T >= 0.0);
-    Require (frequency >= 0.0);
-
-    // calculate the integral
-    double integral = integratePlanckSpectrum(0.0, frequency, T);
-      
-    Ensure (integral >= 0.0 && integral <= 1.0);
-
-    return integral;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- *
  * \brief Integrate the Planckian spectrum over a frequency group.
  *
- * This function integrates the normalized Plankian that is defined:
- * \f[
- *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    B(\nu, T)d\nu = \frac{acT^4}{4\pi}b(x)dx
- * \f]
- * where \f$B(\nu, T)\f$ is the Plankian and is defined
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Plankian, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Planck function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_{g-1}}^{x_g} b(x) dx
- * \f]
- * using the method of B. Clark (JCP (70)/2, 1987).  We use a 10-term
- * Polylogarithmic expansion for the normalized Planckian, except in the
- * low-x limit, where we use a 21-term Taylor series expansion.
- *
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_{g-1}}^{\nu_g} B(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *     \int_{4\pi} \int_{\nu_{g-1}}^{\nu_g} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$acT^4\f$.
- *
- * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- *
- * If no groups are defined then an exception is thrown.
- *
- * \param groupIndex index of the frequency group to integrate [1,num_groups]
- * \param T          the temperature in keV (must be greater than 0.0)
- * \return           integrated normalized Plankian over the group specified
+ * \param groupIndex Index of the frequency group to integrate [1,num_groups].
+ * \param T          The temperature in keV (must be greater than 0.0).
+ * \return           Integrated normalized Plankian over the group specified
  *                   by groupIndex.
  *
  */
 double CDI::integratePlanckSpectrum(const int groupIndex, const double T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
-    Require (T >= 0.0);
-    Require (groupIndex > 0 && 
-	     groupIndex <= frequencyGroupBoundaries.size() - 1);
 
-    // first determine the group boundaries for groupIndex
+    Require (T >= 0.0);
+    Require (groupIndex > 0);
+    Require (groupIndex <= frequencyGroupBoundaries.size() - 1);
+
+    // Determine the group boundaries for groupIndex
     double lower_bound = frequencyGroupBoundaries[groupIndex-1];
     double upper_bound = frequencyGroupBoundaries[groupIndex];
     Check (upper_bound > lower_bound);
 
-    // calculate the integral over the frequency group
     double integral = integratePlanckSpectrum(lower_bound, upper_bound, T);
 	  
-    Ensure (integral >= 0.0 && integral <= 1.0);
+    Ensure (integral >= 0.0);
+    Ensure (integral <= 1.0);
 
     return integral;
 }
 
 //---------------------------------------------------------------------------//
 /*!
- *
  * \brief Integrate the Planckian spectrum over all frequency groups.
- *
- * This function integrates the normalized Plankian that is defined:
- * \f[
- *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    B(\nu, T)d\nu = \frac{acT^4}{4\pi}b(x)dx
- * \f]
- * where \f$B(\nu, T)\f$ is the Plankian and is defined
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Plankian, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Planck function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_1}^{x_N} b(x) dx
- * \f]
- * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
- * frequency bound of the multigroup data set.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
- *
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$ acT^4 \f$.
- *
- * In the limit of \f$ T \rightarrow 0, b(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- *
- * If no groups are defined then an exception is thrown.
- *
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return integrated normalized Plankian over all frequency groups
- *
+ * \param T The temperature in keV (must be greater than 0.0).
+ * \return Integrated normalized Plankian over all frequency groups.
  */
 double CDI::integratePlanckSpectrum(const double T)
 {
@@ -647,69 +503,48 @@ double CDI::integratePlanckSpectrum(const double T)
     return integral;
 }
 
+
+//---------------------------------------------------------------------------//
+// Rosseland Spectrum Integrators
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Integrate the Planckian and Rosseland spectrum over a frequency
+ * range.
+ * \param T the temperature in keV (must be greater than 0.0)
+ * \return void the integrated normalized Planckian and Rosseland from x_low
+ * to x_high are passed by reference in the function call
+ *
+ */
+void CDI::integrate_Rosseland_Planckian_Spectrum(const double  lowFreq,
+						 const double  highFreq,
+						 const double  T,
+						 double       &planck, 
+						 double       &rosseland)
+{
+    Require (lowFreq >= 0.0);
+    Require (highFreq >= lowFreq);
+    Require (T >= 0.0);
+
+    double planck_high, rosseland_high;
+    double planck_low,  rosseland_low;
+
+    integratePlanckRosselandSpectrum(lowFreq,  T, planck_low,  rosseland_low);
+    integratePlanckRosselandSpectrum(highFreq, T, planck_high, rosseland_high);
+
+    planck    = planck_high    - planck_low;
+    rosseland = rosseland_high - rosseland_low;
+
+}
+    
+
+
 //---------------------------------------------------------------------------//
 /*!
  *
- * \brief Integrate the Rosseland spectrum over a frequency group.
+ * \brief Integrate the Rosseland spectrum over a frequency range.
  *
- * This function integrates the normalized Rosseland that is defined:
- * \f[
- *    r(x) = \frac{15}{4\pi^4} \frac{x^4 e^x}{(e^x - 1)^2}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    R(\nu, T)d\nu = \frac{4 acT^3}{4\pi}r(x)dx
- * \f]
- * where \f$R(\nu, T)\f$ is the Rosseland and is defined
- * \f[
- *    R(\nu, T) = \frac{\partial B(\nu, T)}{\partial T}
- * \f]
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Rosseland, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Rosseland function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_1}^{x_N} r(x) dx
- * \f]
- * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
- * frequency bound of the multigroup data set.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
- *
- * For the Rosseland we can relate the group interval integration to the
- * Planckian group interval integration, by equation 27 in B. Clark paper.
- * \f[
- *     \int_{x_1}^{x_N} r(x) dx = \int_{x_1}^{x_N} b(x) dx
- *     - \frac{15}{4\pi^4} \frac{x^4}{e^x - 1}
- * \f]
- * Therefore our Rosslenad group integration function can simply wrap the
- * Planckian function integratePlanckSpectrum(lowFreq, highFreq, T)
- * 
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_1}^{\nu_N} R(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{4 acT^3}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$ 4 acT^3 \f$.
- *
- * In the limit of \f$ T \rightarrow 0, r(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
  
  * \param T the temperature in keV (must be greater than 0.0)
  * 
@@ -720,49 +555,17 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
 				       const double highFreq, 
 				       const double T)
 {
-    using std::exp;
-    using std::pow;
 
-    Require (lowFreq >= 0.0);
+    Require (lowFreq  >= 0.0);
     Require (highFreq >= lowFreq);
     Require (T >= 0.0);
-    
-    // return 0 if temperature is a hard zero
-    if (T == 0.0)
-	return 0.0;
 
-    // determine the upper and lower x
-    double lower_x = lowFreq  / T;
-    double upper_x = highFreq / T;
-    double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
+    double planck, rosseland;
 
-    // calculate the Planckian integral 
-    double integral = integratePlanckSpectrum(lowFreq, highFreq, T);
-    
-    // Calculate the addition to the Planck integral 
-    // for x > xlim=1.e-5
-    //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
-    //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a the exp(-x)/exp(-x) multiply and a Taylor series
-    // expansion 
-    double lower_y = exp(-lower_x);
-    double upper_y = exp(-upper_x);
-    double add_lower , add_upper;
-    if(lower_x >= 1.e-5)
-     add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
-    else 
-     add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
+    integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck, rosseland); 
 
-    if(upper_x >= 1.e-5)
-     add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
-    else 
-     add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
-    // one term taylor series for small x
-    Ensure (integral >= 0.0 && integral <= 1.0);
-    double PL = integral;
-    double ROSL = PL - (add_upper-add_lower);
+    return rosseland;
 
-    return ROSL;
 }
 
 //---------------------------------------------------------------------------//
@@ -770,126 +573,28 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
  *
  * \brief Integrate the Rosseland spectrum over a frequency group.
  *
- * This function integrates the normalized Rosseland that is defined:
- * \f[
- *    r(x) = \frac{15}{4\pi^4} \frac{x^4 e^x}{(e^x - 1)^2}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    R(\nu, T)d\nu = \frac{4 acT^3}{4\pi}r(x)dx
- * \f]
- * where \f$R(\nu, T)\f$ is the Rosseland and is defined
- * \f[
- *    R(\nu, T) = \frac{\partial B(\nu, T)}{\partial T}
- * \f]
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Rosseland, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Rosseland function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_1}^{x_N} r(x) dx
- * \f]
- * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
- * frequency bound of the multigroup data set.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
- *
- * For the Rosseland we can relate the group interval integration to the
- * Planckian group interval integration, by equation 27 in B. Clark paper.
- * \f[
- *     \int_{x_1}^{x_N} r(x) dx = \int_{x_1}^{x_N} b(x) dx
- *     - \frac{15}{4\pi^4} \frac{x^4}{e^x - 1}
- * \f]
- * Therefore our Rosslenad group integration function can simply wrap the
- * Planckian function integratePlanckSpectrum(lowFreq, highFreq, T)
- * 
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_1}^{\nu_N} R(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{4 acT^3}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$ 4 acT^3 \f$.
- *
- * In the limit of \f$ T \rightarrow 0, r(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- 
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return integrated normalized Rosseland from x_low to x_high
- *
- *  
- * If groupindex =0  then an exception is thrown.
- *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
  * \param T          the temperature in keV (must be greater than 0.0)
  * \return           integrated normalized Plankian over the group specified
  *                   by groupIndex.
  *
-
  */
 double CDI::integrateRosselandSpectrum(const int groupIndex, const double T)
 {
-    using std::exp;
-    using std::pow;
-
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
     Require (groupIndex > 0 && 
 	     groupIndex <= frequencyGroupBoundaries.size() - 1);
 
     // first determine the group boundaries for groupIndex
-    double lowFreq = frequencyGroupBoundaries[groupIndex-1];
+    double lowFreq  = frequencyGroupBoundaries[groupIndex-1];
     double highFreq = frequencyGroupBoundaries[groupIndex];
     Check (highFreq  > lowFreq);
 
-    // determine the upper and lower x
-    double lower_x = lowFreq  / T;
-    double upper_x = highFreq / T;
-    double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
+    double rosseland = integrateRosselandSpectrum(lowFreq, highFreq, T);
 
-    // calculate the Planckian integral 
-    double integral = integratePlanckSpectrum(lowFreq, highFreq, T);
-    
-    // Calculate the addition to the Planck integral 
-    // for x > xlim=1.e-5
-    //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
-    //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a the exp(-x)/exp(-x) multiply and a Taylor series
-    // expansion 
-    double lower_y = exp(-lower_x);
-    double upper_y = exp(-upper_x);
-    double add_lower , add_upper;
-    if(lower_x >= 1.e-5)
-     add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
-    else 
-     add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
+    return rosseland;
 
-    if(upper_x >= 1.e-5)
-     add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
-    else 
-     add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
-    // one term taylor series for small x
-    Ensure (integral >= 0.0 && integral <= 1.0);
-    double PL = integral;
-    double ROSL = PL - (add_upper-add_lower);
-
-    return ROSL;
 }
 
 //---------------------------------------------------------------------------//
@@ -898,254 +603,38 @@ double CDI::integrateRosselandSpectrum(const int groupIndex, const double T)
  * \brief Integrate the Planckian and Rosseland spectrum over a frequency
  * group.
  *
- * This function integrates the normalized Rosseland that is defined:
- * \f[
- *    r(x) = \frac{15}{4\pi^4} \frac{x^4 e^x}{(e^x - 1)^2}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    R(\nu, T)d\nu = \frac{4 acT^3}{4\pi}r(x)dx
- * \f]
- * where \f$R(\nu, T)\f$ is the Rosseland and is defined
- * \f[
- *    R(\nu, T) = \frac{\partial B(\nu, T)}{\partial T}
- * \f]
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Rosseland, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Rosseland function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_1}^{x_N} r(x) dx
- * \f]
- * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
- * frequency bound of the multigroup data set.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
- *
- * For the Rosseland we can relate the group interval integration to the
- * Planckian group interval integration, by equation 27 in B. Clark paper.
- * \f[
- *     \int_{x_1}^{x_N} r(x) dx = \int_{x_1}^{x_N} b(x) dx
- *     - \frac{15}{4\pi^4} \frac{x^4}{e^x - 1}
- * \f]
- * Therefore our Rosslenad group integration function can simply wrap the
- * Planckian function integratePlanckSpectrum(lowFreq, highFreq, T)
- * 
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_1}^{\nu_N} R(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{4 acT^3}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$ 4 acT^3 \f$.
- *
- * In the limit of \f$ T \rightarrow 0, r(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- 
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return void the integrated normalized Planckian and Rosseland from x_low
- * to x_high are passed by reference in the function call * if groupIndex=0
- * an exception is thrown.
- *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
- * \param T          the temperature in keV (must be greater than 0.0)
- * \return           integrated normalized Plankian over the group specified
- *                   by groupIndex.
+ * \param T          The temperature in keV (must be greater than 0.0)
+ * \param PL         Reference argument for the Planckian integral
+ * \param ROSL       Reference argument for the Rosseland integral
  *
+ * \return The integrated normalized Planckian and Rosseland over the
+ * requested frequency group. These are returned as references in argument PL
+ * and ROSL
  *
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(const int     groupIndex,
 						 const double  T, 
-						 double       &PL, 
-						 double       &ROSL)
+						 double       &planck, 
+						 double       &rosseland)
 {
-    using std::exp;
-    using std::pow;
-
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
-    Require (T >= 0.0);
-    Require (groupIndex > 0 && 
-	     groupIndex <= frequencyGroupBoundaries.size() - 1);
 
-    // first determine the group boundaries for groupIndex
-    double lowFreq = frequencyGroupBoundaries[groupIndex-1];
+    Require (T >= 0.0);
+    Require (groupIndex > 0);
+    Require (groupIndex <= frequencyGroupBoundaries.size() - 1);
+
+    // Determine the group boundaries
+    double lowFreq  = frequencyGroupBoundaries[groupIndex-1];
     double highFreq = frequencyGroupBoundaries[groupIndex];
     Check (highFreq  > lowFreq);
+
+    // Call the general frequency version
+    integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck, rosseland);
  
-    // return 0 if temperature is a hard zero
-    if (T == 0.0)
-    {
-        PL = 0.; ROSL =0.;
-	return ;
-    }
-
-    // determine the upper and lower x
-    double lower_x = lowFreq  / T;
-    double upper_x = highFreq / T;
-    double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
-
-    // calculate the Planckian integral 
-    double integral = integratePlanckSpectrum(lowFreq, highFreq, T);
-    
-    // Calculate the addition to the Planck integral 
-    // for x > xlim
-    //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
-    //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a exp(-x)/exp(-x) multiply
-    double lower_y = exp(-lower_x);
-    double upper_y = exp(-upper_x);
-    double add_lower , add_upper;
-    if(lower_x >= 1.e-5)
-     add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
-    else 
-     add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
-
-    if(upper_x >= 1.e-5)
-     add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
-    else 
-     add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
-    // one term taylor series for small x
-    Ensure (integral >= 0.0 && integral <= 1.0);
-    PL = integral;
-    ROSL = PL - (add_upper-add_lower);
 }
 
-//---------------------------------------------------------------------------//
-/*!
- *
- * \brief Integrate the Planckian and Rosseland spectrum over a frequency
- * group.
- *
- * This function integrates the normalized Rosseland that is defined:
- * \f[
- *    r(x) = \frac{15}{4\pi^4} \frac{x^4 e^x}{(e^x - 1)^2}
- * \f]
- * where 
- * \f[
- *    x = \frac{h\nu}{kT}
- * \f]
- * and 
- * \f[
- *    R(\nu, T)d\nu = \frac{4 acT^3}{4\pi}r(x)dx
- * \f]
- * where \f$R(\nu, T)\f$ is the Rosseland and is defined
- * \f[
- *    R(\nu, T) = \frac{\partial B(\nu, T)}{\partial T}
- * \f]
- * \f[
- *    B(\nu, T) = \frac{2h\nu^3}{c^2} \frac{1}{e^{\frac{h\nu}{kT}} - 1}
- * \f]
- * The normalized Rosseland, integrated from 0 to \f$\infty\f$, equals
- * one. However, depending upon the maximum and minimum group boundaries, the
- * normalized Rosseland function may integrate to something less than one.
- *
- * This function performs the following integration:
- * \f[
- *      \int_{x_1}^{x_N} r(x) dx
- * \f]
- * where \f$x_1\f$ is the low frequency bound and \f$x_N\f$ is the high
- * frequency bound of the multigroup data set.  This integration uses the
- * method of B. Clark (JCP (70)/2, 1987).  We use a 10-term Polylogarithmic
- * expansion for the normalized Planckian, except in the low-x limit, where
- * we use a 21-term Taylor series expansion.
- *
- * For the Rosseland we can relate the group interval integration to the
- * Planckian group interval integration, by equation 27 in B. Clark paper.
- * \f[
- *     \int_{x_1}^{x_N} r(x) dx = \int_{x_1}^{x_N} b(x) dx
- *     - \frac{15}{4\pi^4} \frac{x^4}{e^x - 1}
- * \f]
- * Therefore our Rosslenad group integration function can simply wrap the
- * Planckian function integratePlanckSpectrum(lowFreq, highFreq, T)
- * 
- * The user is responsible for applying the appropriate constants to the
- * result of this integration.  For example, to make the result of this
- * integration equivalent to
- * \f[
- *      \int_{\nu_1}^{\nu_N} R(\nu,T) d\nu
- * \f]
- * then you must multiply by a factor of \f$\frac{4 acT^3}{4\pi}\f$ where a is
- * the radiation constant.  If you want to evaluate expressions like the
- * following:
- *\f[
- *      \int_{4\pi} \int_{\nu_1}^{\nu_N} B(\nu,T) d\nu d\Omega
- *\f]
- * then you must multiply by \f$ 4 acT^3 \f$.
- *
- * In the limit of \f$ T \rightarrow 0, r(T) \rightarrow 0\f$, therefore we
- * return a hard zero for a temperature equal to a hard zero.
- 
- * \param T the temperature in keV (must be greater than 0.0)
- * 
- * \return void the integrated normalized Planckian and Rosseland from x_low
- * to x_high are passed by reference in the function call
- *
- */
-void CDI::integrate_Rosseland_Planckian_Spectrum(const double  lowFreq,
-						 const double  highFreq,
-						 const double  T,
-						 double       &PL, 
-						 double       &ROSL)
-{
-    using std::exp;
-    using std::pow;
 
-    Require (lowFreq >= 0.0);
-    Require (highFreq >= lowFreq);
-    Require (T >= 0.0);
-    // return 0 if temperature is a hard zero
-    if (T == 0.0)
-    {
-        PL = 0.; ROSL =0.;
-	return ;
-    }
-
-    // determine the upper and lower x
-    double lower_x = lowFreq  / T;
-    double upper_x = highFreq / T;
-    double NORM_FACTOR = 0.25*coeff; //  15./(4.*PI4);
-
-    // calculate the Planckian integral 
-    double integral = integratePlanckSpectrum(lowFreq, highFreq, T);
-    
-    // Calculate the addition to the Planck integral 
-    // for x > xlim
-    //  double add_lower = NORM_FACTOR*pow(lower_x,4)/(exp(lower_x)-1.);
-    //  double add_upper = NORM_FACTOR*pow(upper_x,4)/(exp(upper_x)-1.);
-    // for x < xlim do a exp(-x)/exp(-x) multiply
-    double lower_y = exp(-lower_x);
-    double upper_y = exp(-upper_x);
-    double add_lower , add_upper;
-    if(lower_x >= 1.e-5)
-	add_lower = NORM_FACTOR*lower_y*pow(lower_x,4)/(1.-lower_y);
-    else 
-	add_lower = NORM_FACTOR*pow(lower_x,3)*(1.- 0.5*lower_x); // T.S. + H.O.T.
-
-    if(upper_x >= 1.e-5)
-	add_upper = NORM_FACTOR*upper_y*pow(upper_x,4)/(1.-upper_y);
-    else 
-	add_upper = NORM_FACTOR*pow(upper_x,3)*(1.- 0.5*upper_x); // T.S.+ H.O.T.
-    // one term taylor series for small x
-    Ensure (integral >= 0.0 && integral <= 1.0);
-    PL = integral;
-    ROSL = PL - (add_upper-add_lower);
-}
 
 //---------------------------------------------------------------------------//
 // SET FUNCTIONS
@@ -1258,9 +747,20 @@ void CDI::setEoS( const SP_EoS &in_spEoS )
 // GET FUNCTIONS
 //---------------------------------------------------------------------------//
 
-// Provide CDI with access to the full interfaces defined by GrayOpacity.hh
-// and MultigroupOpacity.hh
-    
+/*!
+ * \brief This fuction returns a GrayOpacity object.
+ *
+ * This provides the CDI with the full functionality of the interface
+ * defined in GrayOpacity.hh.  For example, the host code could make the
+ * following call: <tt> double newOp = spCDI1->gray()->getOpacity(
+ * 55.3, 27.4 ); </tt>
+ *
+ * The appropriate gray opacity is returned for the given model and
+ * reaction type.
+ *
+ * \param m rtt_cdi::Model specifying the desired physics model
+ * \param r rtt_cdi::Reaction specifying the desired reaction type
+ */
 CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model    m, 
 			      rtt_cdi::Reaction r) const 
 { 
@@ -1268,6 +768,21 @@ CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model    m,
     return grayOpacities[m][r]; 
 }
     
+/*!
+ * \brief This fuction returns the MultigroupOpacity object.
+ *
+ * This provides the CDI with the full functionality of the interface
+ * defined in MultigroupOpacity.hh.  For example, the host code could
+ * make the following call:<br> <tt> int numGroups =
+ * spCDI1->mg()->getNumGroupBoundaries(); </tt>
+ *
+ * The appropriate multigroup opacity is returned for the given reaction
+ * type.
+ *
+ * \param m rtt_cdi::Model specifying the desired physics model
+ * \param r rtt_cdi::Reaction specifying the desired reaction type.
+ *
+ */
 CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model    m,
 				  rtt_cdi::Reaction r) const 
 {
@@ -1277,9 +792,15 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model    m,
 
 //---------------------------------------------------------------------------//
 
-// Provide CDI with access to the full interfaces defined by
-// EoS.hh
-    
+/*!
+ * \brief This fuction returns the EoS object.
+ *
+ * This provides the CDI with the full functionality of the interface
+ * defined in EoS.hh.  For example, the host code could make the
+ * following call:<br> <tt> double Cve =
+ * spCDI1->eos()->getElectronHeatCapacity( * density, temperature );
+ * </tt>
+ */
 CDI::SP_EoS CDI::eos() const 
 { 
     Insist (spEoS, "Undefined EoS!");
@@ -1290,6 +811,19 @@ CDI::SP_EoS CDI::eos() const
 // RESET THE CDI OBJECT
 //---------------------------------------------------------------------------//
 
+/*!
+ * \brief Reset the CDI object.
+ *
+ * This function "clears" all data objects (GrayOpacity,
+ * MultigroupOpacity, EoS) held by CDI.  After clearing, new objects can
+ * be set using the set functions.  
+ *
+ * As stated in the set functions documentation, you are not allowed to
+ * overwrite a data object with the same attributes as one that already
+ * has been set.  The only way to "reset" these objects is to call
+ * CDI::reset().  Note that CDI::reset() resets \b ALL of the objects
+ * stored by CDI (including group boundaries).
+ */
 void CDI::reset()
 {
     Check (grayOpacities.size() == constants::num_Models);
@@ -1328,17 +862,26 @@ void CDI::reset()
 // BOOLEAN QUERY FUNCTIONS
 //---------------------------------------------------------------------------//
 
+/*!
+ * \brief Query to see if a gray opacity is set.
+ */
 bool CDI::isGrayOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
 {
     return static_cast<bool>(grayOpacities[m][r]);
 }
 
 
+/*!
+ * \brief Query to see if a multigroup opacity is set.
+ */
 bool CDI::isMultigroupOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
 {
     return static_cast<bool>(multigroupOpacities[m][r]);
 }
 
+/*!
+ * \brief Query to see if an eos is set.
+ */
 bool CDI::isEoSSet() const
 {
     return static_cast<bool>(spEoS);
