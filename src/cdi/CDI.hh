@@ -332,6 +332,8 @@ class CDI
     //! Register an EOS (rtt_cdi::Eos) with CDI.
     void setEoS(const SP_EoS &in_spEoS);
 
+    //! Clear all data objects
+    void reset();
 
 
     // GETTERS
@@ -344,8 +346,7 @@ class CDI
     //! Return material ID string.
     const std_string& getMatID() const { return matID; }
 
-    void reset();
-    bool isGrayOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
+    bool isGrayOpacitySet      (rtt_cdi::Model, rtt_cdi::Reaction) const;
     bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
     bool isEoSSet() const;
 
@@ -370,18 +371,20 @@ class CDI
     //! Integrate the normalized Planckian and Rosseland from 0 to x (hnu/kT)
     static void integratePlanckRosselandSpectrum(const double frequency,
                                                  const double T,
-                                                 double& PL,
-                                                 double& ROSL);
+                                                 double& placnk,
+                                                 double& rosseland);
 
 
 
 
     //! Integrate the normalized Planckian over a frequency range.
-    static double integratePlanckSpectrum(const double lowf, const double hif, 
+    static double integratePlanckSpectrum(const double lowf,
+                                          const double hif, 
 					  const double T); 
     
     //! Integrate the normalized Planckian spectrum over a frequency group.
-    static double integratePlanckSpectrum(const int groupIndex, const double T);
+    static double integratePlanckSpectrum(const int groupIndex,
+                                          const double T);
 
     //! Integrate the normalized Planckian spectrum over all frequency groups.
     static double integratePlanckSpectrum(const double T);
@@ -395,20 +398,26 @@ class CDI
 					     const double hif, 
 					     const double T);
 
-    //! Integrate the normalized Planckian and Rosseland over a frequency
-    //! range.
+    //! Integrate the Planckian and Rosseland over a frequency range.
     static void integrate_Rosseland_Planckian_Spectrum(const double lowf,
 						       const double hif,
 						       const double T, 
-						       double& PL, 
-						       double& ROSL);
+						       double& planck, 
+						       double& rosseland);
 
-    // Integrate the normalized Rosseland spectrum over a frequency group
-    // with group index given; also pass the normalized Planckian
+    //! Integrate the Planckian and Rosseland over a frequency group.
     static void integrate_Rosseland_Planckian_Spectrum(const int groupIndex,
 						       const double T,
-						       double& PL,
-						       double& ROSL);
+						       double& planck,
+						       double& rosseland);
+
+
+    //! Integrate the Planckian and Rosseland over all frequency groups
+    static void integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& bounds,
+                                                       const double T,
+                                                       std::vector<double>& planck,
+                                                       std::vector<double>& rosseland);
+
 };
 
 

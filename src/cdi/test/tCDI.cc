@@ -741,7 +741,7 @@ void test_rosseland_integration()
     }
 
     // check some planck integrals
-    double int_total = CDI::integrateRosselandSpectrum(0.,100.0, 1.0);
+    double int_total = CDI::integrateRosselandSpectrum(0, 100.0, 1.0);
     if (soft_equiv(int_total, 1.0, 1.0e-7))
     {
 	ostringstream message;
@@ -799,7 +799,7 @@ void test_rosseland_integration()
     }
     
     double PL,ROS;
-    CDI::integrate_Rosseland_Planckian_Spectrum(0.1, 1.0,1.0,PL,ROS);
+    CDI::integrate_Rosseland_Planckian_Spectrum(0.1, 1.0, 1.0, PL, ROS);
     if (soft_equiv(PL, .0345683, 1.e-5))
     {
 	ostringstream message;
@@ -919,7 +919,7 @@ void test_rosseland_integration()
 
     // Second group
     CDI::integrate_Rosseland_Planckian_Spectrum(2, 1.0, PL, ROS);
-    if (!soft_equiv(PL,  0.7492399297, 1.e-6))  ITFAILS;
+    if (!soft_equiv(PL,  0.7492399297, 1.e-6)) ITFAILS;
     if (!soft_equiv(ROS, 0.5897280880, 1.e-6)) ITFAILS;
     
     if (rtt_cdi_test::passed)
@@ -945,11 +945,47 @@ void test_rosseland_integration()
 	FAILMSG("Group 3 Rosseland and Planck integrals failed.");
     }
 
+
+
+    // All groups:
+    std::vector<double> group_bounds ( CDI::getFrequencyGroupBoundaries() );
+    if (group_bounds.size() != 4) ITFAILS;
+
+    std::vector<double> planck;
+    std::vector<double> rosseland;
+
+    CDI::integrate_Rosseland_Planckian_Spectrum(group_bounds, 1.0, planck, rosseland);
+
+    for (int group_index = 1; group_index <= 3; ++group_index)
+    {
+
+        CDI::integrate_Rosseland_Planckian_Spectrum(group_index, 1.0, PL, ROS);
+
+        if (!soft_equiv(planck   [group_index-1], PL )) ITFAILS;
+        if (!soft_equiv(rosseland[group_index-1], ROS)) ITFAILS;
+
+    }
+
+    if (rtt_cdi_test::passed)
+    {
+        PASSMSG("Group-wize and Full spectrum Planckian and Rosseland integrals match.");
+    }
+    else
+    {
+        FAILMSG("Group-wize and Full spectrum Planckian and Rosseland integrals do not match.");
+    }
+    
+
+        
+    
+
     if (rtt_cdi_test::passed)
     {
 	PASSMSG("All Rosseland and Rosseland/Planckian integral tests ok.");
 	cout << endl;
     }
+
+    
 }
 
 //---------------------------------------------------------------------------//

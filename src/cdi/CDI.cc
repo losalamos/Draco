@@ -637,6 +637,66 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const int     groupIndex,
 
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Integrate the Planckian and Rosseland Specrum over an entire a set
+ * of frequency groups, returning a vector of the integrals
+ *
+ * \param bounds The vector of group boundaries. Size n+1
+ * \param T The temperature
+ * \param planck Return argument containing the Planckian integrals. Size n
+ * \param rosseland Return argumant containing the Rosseland integrals. Size n
+ * \return void
+ */
+void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& bounds,
+                                                 const double T,
+                                                 std::vector<double>& planck,
+                                                 std::vector<double>& rosseland)
+{
+
+    int groups = bounds.size() - 1;
+    Check(groups >= 1);
+
+    planck.resize(groups);
+    rosseland.resize(groups);
+
+    double last_frequency, frequency;
+    double last_planck,    planck_value;
+    double last_rosseland, rosseland_value;
+    
+    // Initialize the loop:
+    frequency = bounds[0];
+    integratePlanckRosselandSpectrum(
+        frequency, T,
+        planck_value, rosseland_value); 
+
+
+    for (int group = 0; group < groups; ++group)
+    {
+
+        // Shift the data down:
+        last_frequency  = frequency;
+        last_planck     = planck_value;
+        last_rosseland  = rosseland_value;
+
+        // New values:
+        frequency = bounds[group + 1];
+        Check (frequency  > last_frequency);
+
+        integratePlanckRosselandSpectrum(
+            frequency, T,
+            planck_value, rosseland_value);
+
+        // Record the differences
+        planck   [group] = planck_value    - last_planck;
+        rosseland[group] = rosseland_value - last_rosseland;
+
+    }
+
+    
+}
+
+
+//---------------------------------------------------------------------------//
 // SET FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
