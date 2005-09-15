@@ -516,42 +516,6 @@ void test_planck_integration()
 	FAILMSG("Did not catch an exception for calculating Planck integral.");
     }
 
-    // catch overflow exception.
-
-    // Only report this as a failure if 1) the error was not caught AND 2)
-    // the Require macro is available.
-    bool dbc_require( DBC & 1 );
-    if( dbc_require )
-    {
-
-	caught = false;
-	try
-	{
-	    // The frequency is large so that x^22 > max_double and the
-	    // integration routine will fail.
-	    CDI::integratePlanckSpectrum( 1.1e14, 1.0 );
-	}
-	catch( rtt_dsxx::assertion const & ass )
-	{
-	    ostringstream message;
-	    message << "Caught illegal Planck calculation exception: \n";
-	    //      << "\t" << ass.what();
-	    // ass.what should be "Assertion: 22.0*log(x) < log(maxDouble),
-	    // failed in ../../../src/cdi/CDI.cc".  The word "failed" in the
-	    // message confuses the python reporting script so we don't print
-	    // it. 
-	    PASSMSG(message.str());
-	    caught = true;
-	}
-	if ( ! caught )
-	{
-	    FAILMSG("Did not catch an exception for calculating Planck integral (overflow).");
-	}
-    }
-    else // no error to catch
-    {
-	PASSMSG("No error to catch if Require() is not available.");
-    }
 
     // check some planck integrals
     double int_total = CDI::integratePlanckSpectrum(100.0, 1.0);
@@ -939,11 +903,11 @@ void test_rosseland_integration()
     // check the normalized planck integrals
     if (CDI::getNumberFrequencyGroups() != 3) ITFAILS;
 
-    // do first group
+    // First group
     CDI::integrate_Rosseland_Planckian_Spectrum(1, 1.0, PL, ROS);
-    if (!soft_equiv(PL,  0.00528686, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ROS, 0.00158258, 1.e-5)) ITFAILS;
-    
+    if (!soft_equiv(PL,  0.005286862763740451, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ROS, 0.00158258277444842, 1.e-5)) ITFAILS;
+
     if (rtt_cdi_test::passed)
     {
 	PASSMSG("Group 1 Rosseland and Planck integrals ok.");
@@ -953,10 +917,10 @@ void test_rosseland_integration()
 	FAILMSG("Group 1 Rosseland and Planck integrals failed.");
     }
 
-    // do second group
+    // Second group
     CDI::integrate_Rosseland_Planckian_Spectrum(2, 1.0, PL, ROS);
-    if (!soft_equiv(PL,  0.74924, 1.e-6))  ITFAILS;
-    if (!soft_equiv(ROS, 0.589728, 1.e-6)) ITFAILS;
+    if (!soft_equiv(PL,  0.7492399297, 1.e-6))  ITFAILS;
+    if (!soft_equiv(ROS, 0.5897280880, 1.e-6)) ITFAILS;
     
     if (rtt_cdi_test::passed)
     {
@@ -967,10 +931,10 @@ void test_rosseland_integration()
 	FAILMSG("Group 2 Rosseland and Planck integrals failed.");
     }
 
-    // do third group
+    // Third group
     CDI::integrate_Rosseland_Planckian_Spectrum(3, 1.0, PL, ROS);
-    if (!soft_equiv(PL,  0.245467, 1.e-6)) ITFAILS;
-    if (!soft_equiv(ROS, 0.408688, 1.e-6)) ITFAILS;
+    if (!soft_equiv(PL,  0.2454669108, 1.e-6)) ITFAILS;
+    if (!soft_equiv(ROS, 0.4086877254, 1.e-6)) ITFAILS;
     
     if (rtt_cdi_test::passed)
     {
