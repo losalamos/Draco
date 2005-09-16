@@ -411,6 +411,11 @@ class CDI
 						       double& planck,
 						       double& rosseland);
 
+    //! Integrate the Planckian over all frequency groups
+    static void integrate_Planckian_Spectrum(const std::vector<double>& bounds,
+                                             const double T,
+                                             std::vector<double>& planck);
+
 
     //! Integrate the Planckian and Rosseland over all frequency groups
     static void integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& bounds,
