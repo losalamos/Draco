@@ -157,7 +157,7 @@ namespace rtt_cdi
  *\f]
  * then you must multiply by \f$acT^4\f$.
  *
- * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0, therefore we
+ * In the limit of \f$T \rightarrow 0, b(T) \rightarrow 0\f$, therefore we
  * return a hard zero for a temperature equal to a hard zero.
  *
  * The integral is calculated using a polylogarithmic series approximation,
