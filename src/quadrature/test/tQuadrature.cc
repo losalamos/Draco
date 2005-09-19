@@ -60,7 +60,7 @@ void quadrature_test()
     const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
-    const int nquads = 4;
+    const int nquads = 5;
 
     // Declare an enumeration object that specifies the Quadrature set to be
     // tested.
@@ -75,11 +75,12 @@ void quadrature_test()
 
     QuadCreator::Qid qid[nquads] = { QuadCreator::GaussLeg,
                                      QuadCreator::Lobatto,
+                                     QuadCreator::DoubleGauss,
 				     QuadCreator::LevelSym2D,
 				     QuadCreator::LevelSym };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = { 0.8611363116, 1.0,
+    double mu0[nquads] = { 0.8611363116, 1.0, 0.7886751346,
 			  -0.350021174581541, -0.350021174581541 };
     
     SP< const Quadrature > spQuad;
@@ -102,7 +103,7 @@ void quadrature_test()
 	    // print the name of the quadrature set that we are testing.
 	    string qname = spQuad->name();
 	    cout << "\nTesting the "  << qname
-		 << "Quadrature set." << endl;
+		 << " quadrature set." << endl;
 	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
 	    cout << "   Number of Angles = " << spQuad->getNumAngles() << endl;
 

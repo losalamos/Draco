@@ -1,19 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   Q1DLobatto.hh
+ * \file   quadrature/Q1DDoubleGauss.hh
  * \author James Warsa
- * \date   Fri Sep  2 10:30:02 2005
- * \brief  1D Lobatto Quadrature
+ * \date   Fri Sep 16 15:45:26 2005
+ * \brief  1D Double-Gauss Quadrature
  * \note   Copyright 2004 The Regents of the University of California.
- *
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef quadrature_Q1DLobatto_hh
-#define quadrature_Q1DLobatto_hh
+#ifndef quadrature_Q1DDoubleGauss_hh
+#define quadrature_Q1DDoubleGauss_hh
 
+#include "QuadCreator.hh"
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
@@ -21,7 +21,7 @@ namespace rtt_quadrature
 
 //===========================================================================//
 /*!
- * \class Q1DLobatto
+ * \class Q1DDoubleGauss
  * \brief A class to encapsulate a 1D Lobatto Quadrature set.
  *
  * The client only needs to call QuadCreator::QuadCreate with the requested
@@ -32,20 +32,21 @@ namespace rtt_quadrature
  *
  * \sa Q1Lobatto.cc for detailed descriptions.
  *
- * \example quadrature/test/tstQ1DLobatto.cc 
+ * \example quadrature/test/tstQ1DDoubleGauss.cc 
  *
  */
 //===========================================================================//
 
-class Q1DLobatto : public Quadrature
+class Q1DDoubleGauss : public Quadrature
 {
   public:
 
     // CREATORS
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q1DLobatto( size_t snOrder_, double norm_ );
-    Q1DLobatto(); // disable default construction
+
+    Q1DDoubleGauss( size_t snOrder_, double norm_ );
+    Q1DDoubleGauss(); // disable default construction
 
     // ACCESSORS
 
@@ -54,7 +55,7 @@ class Q1DLobatto : public Quadrature
     
     size_t getNumAngles()   const { return numAngles; }
     void   display()        const;
-    string name()           const { return "1D Lobatto"; }
+    string name()           const { return "1D Double-Gauss"; }
     size_t dimensionality() const { return 1; }
     size_t getSnOrder()     const { return snOrder; }
 
@@ -66,8 +67,8 @@ class Q1DLobatto : public Quadrature
 
 } // end namespace rtt_quadrature
 
-#endif // quadrature_Q1DLobatto_hh
+#endif // quadrature_Q1DDoubleGauss_hh
 
 //---------------------------------------------------------------------------//
-//              end of /Q1DLobatto.hh
+//              end of quadrature/Q1DDoubleGauss.hh
 //---------------------------------------------------------------------------//
