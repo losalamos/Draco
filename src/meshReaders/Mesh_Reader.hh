@@ -146,8 +146,7 @@ class Mesh_Reader
      * key to the map provides a unique and hopefully descriptive name
      * for each element sub-set.
      */
-    virtual std::map<std::string, std::set<int> > get_element_sets() const =
-    0;
+    virtual std::map<std::string, std::set<int> > get_element_sets() const = 0;
 
     /*!
      * \brief Returns the title of the mesh.
@@ -161,6 +160,8 @@ class Mesh_Reader
      */
     virtual bool invariant() const = 0;
 
+    virtual int get_dims_ndim() const = 0;
+                                                                            
   private:
     
     // IMPLEMENTATION
