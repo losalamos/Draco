@@ -39,7 +39,7 @@ if [ ! -d ${REGDIR} ] ; then
 fi
 
 # add to the PATH so that the script can find: gcc-3.4.2, xmgrace, ghostview.
-export PATH=/usr/local/gcc/bin:/codes/mpi/bin:/usr/local/grace/bin:/usr/local/bin:${PATH}
+export PATH=.:/usr/local/gcc/bin:/codes/mpi/bin:/usr/local/grace/bin:/usr/local/bin:${PATH}
 # add to LD_LIBRARY_PATH so that the script can find the g++ libraries.
 export LD_LIBRARY_PATH=/usr/local/gcc/lib:${LD_LIBRARY_PATH}
 

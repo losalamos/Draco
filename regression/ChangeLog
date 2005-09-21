@@ -1,18 +1,9 @@
-2005-07-05  Kelly Thompson  <kgt@lanl.gov>
+2005-09-21  Kelly Thompson  <kgt@lanl.gov>
 
-	* draco_regression (make_regression_directories): Changed the way
-	  the script works when the coverage option is turned on.  The
-	  script will run the unit test suite for scalar and mpi mode
-	  before coverage statistics are compiled. Also, configure user
-	  environment so that the coverage tool works correctly.  This
-	  last option required that a variable MAKE_OPTIONS be defined for
-	  each type of regression target.  Added postprocessing script for
-	  generating the coverage reports.
+	* draco_regression (end): Added scripting to include "lines of
+	  code statistics" to weekly regression email.
 
-	* covclass.cfg: Added this coverage configuration file.  It is
-	  used to tell Bullseye what sources should be omitted from the
-	  coverage analsysis {source found in test directories, headers
-	  from the install location and 3rd party headers are omitted}.
+	* covclass.cfg: Removed entries for meshReader_Services.
 
 2005-01-19  Kelly Thompson  <kgt@lanl.gov>
 

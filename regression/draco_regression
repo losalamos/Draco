@@ -294,6 +294,19 @@ if test ${withcoverage:-no} = yes; then
 
    popd 
    echo "popd: back to `pwd`"
+
+   # Lines of code statistics:
+
+   pushd draco
+   echo "pushd: `pwd`"
+
+   echo " "
+   echo ">>> Lines-of-code statistics..."
+   tools/count_loc.sh
+
+   echo " "
+   popd &> /dev/null
+   echo "popd: back to `pwd`"
 fi
 
 ##---------------------------------------------------------------------------##
