@@ -302,12 +302,14 @@ double Planck2Rosseland(const double freq)
 } // end of unnamed namespace
 
 
+
+
 //---------------------------------------------------------------------------//
 // Core Integrators
 /*
  * These are the most basic of the Planckian and Rosseland integration
- * functions. They are publically accessible, but also used in the
- * implementation of integration functions with friendlier interfaces.
+ * functions. They are used in the implementation of integration functions
+ * with friendlier interfaces.
  */
 //---------------------------------------------------------------------------//
 
@@ -324,8 +326,8 @@ double Planck2Rosseland(const double freq)
  *
  *
  */
-double CDI::integratePlanckSpectrum(const double freq, 
-                                    const double T) 
+double CDI::integrate_planck(const double freq, 
+                             const double T) 
 
 {
     Require (freq >= 0);
@@ -348,33 +350,19 @@ double CDI::integratePlanckSpectrum(const double freq,
 
 
 //---------------------------------------------------------------------------//
-/* \brief
+/* \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
  *
+ * \param freq frequency upper integration limit in keV
+ * \param T the temperature in keV (must be greater than 0.0)
+ * \param planck Variable to return the Planck integral
+ * \param rosseland Variable to return the Rosseland integral
+ * 
  */
-double CDI::integrateRosselandSpectrum(const double freq,
-                                       const double T)
-{
-
-    Require (freq >= 0.0);
-    Require (T    >= 0.0);
-
-    double planck, rosseland;
-
-    integratePlanckRosselandSpectrum(freq, T, planck, rosseland);
-
-    return rosseland;
-
-}
-
-
-//---------------------------------------------------------------------------//
-/* \brief
- *
- */
-void CDI::integratePlanckRosselandSpectrum(const double freq,
-                                           const double T,
-                                           double& planck,
-                                           double& rosseland)
+void CDI::integrate_planck_rosseland(const double freq,
+                                     const double T,
+                                     double& planck,
+                                     double& rosseland)
 {
 
     Require (freq >= 0.0);
@@ -389,15 +377,15 @@ void CDI::integratePlanckRosselandSpectrum(const double freq,
     }
 
     // Calculate the Planckian integral 
-    planck = integratePlanckSpectrum(freq, T);
+    planck = integrate_planck(freq, T);
     
     Ensure (planck >= 0.0);
     Ensure (planck <= 1.0);
 
-    double scaled        = freq / T;
-    double add_rosseland = Planck2Rosseland(scaled);
+    double scaled         = freq / T;
+    double diff_rosseland = Planck2Rosseland(scaled);
 
-    rosseland = planck - add_rosseland;
+    rosseland = planck - diff_rosseland;
 
     Ensure (rosseland >= 0.0);
     Ensure (rosseland <= 1.0);
@@ -405,6 +393,33 @@ void CDI::integratePlanckRosselandSpectrum(const double freq,
     return;
 
 }
+
+
+//---------------------------------------------------------------------------//
+/* \brief Integrate the normalized Rosseland spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
+ *
+ * \param freq frequency upper integration limit in keV
+ * \param T the temperature in keV (must be greater than 0.0)
+ * \return integrated normalized Rosseland from 0 to x \f$(\frac{h\nu}{kT})\f$
+ */
+double CDI::integrate_rosseland(const double freq,
+                                const double T)
+{
+
+    Require (freq >= 0.0);
+    Require (T    >= 0.0);
+
+    double planck, rosseland;
+
+    integrate_planck_rosseland(freq, T, planck, rosseland);
+
+    return rosseland;
+
+}
+
+
+
 
 
 
@@ -418,7 +433,6 @@ void CDI::integratePlanckRosselandSpectrum(const double freq,
 
 //---------------------------------------------------------------------------//
 /*!
- *
  * \brief Integrate the Planckian spectrum over a frequency range.
  *
  * \param lowFreq lower frequency bound in keV
@@ -440,8 +454,7 @@ double CDI::integratePlanckSpectrum(const double lowFreq,
     if (T == 0.0) return 0.0;
 
     double integral =
-        integratePlanckSpectrum(highFreq,T) -
-        integratePlanckSpectrum(lowFreq,T);
+        integrate_planck(highFreq,T) - integrate_planck(lowFreq,T);
     
 
     Ensure ( integral >= 0.0 );
@@ -533,8 +546,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const double  lowFreq,
     double planck_high, rosseland_high;
     double planck_low,  rosseland_low;
 
-    integratePlanckRosselandSpectrum(lowFreq,  T, planck_low,  rosseland_low);
-    integratePlanckRosselandSpectrum(highFreq, T, planck_high, rosseland_high);
+    integrate_planck_rosseland(lowFreq,  T, planck_low,  rosseland_low);
+    integrate_planck_rosseland(highFreq, T, planck_high, rosseland_high);
 
     planck    = planck_high    - planck_low;
     rosseland = rosseland_high - rosseland_low;
@@ -667,7 +680,7 @@ void CDI::integrate_Planckian_Spectrum(const std::vector<double>& bounds,
     
     // Initialize the loop:
     frequency = bounds[0];
-    planck_value = integratePlanckSpectrum(frequency, T);
+    planck_value = integrate_planck(frequency, T);
 
     for (int group = 0; group < groups; ++group)
     {
@@ -678,7 +691,7 @@ void CDI::integrate_Planckian_Spectrum(const std::vector<double>& bounds,
         // New values:
         frequency = bounds[group+1];
         Check (frequency > last_frequency);
-        planck_value = integratePlanckSpectrum(frequency, T);
+        planck_value = integrate_planck(frequency, T);
 
         // Record the definite integral between frequencies.
         planck[group] = planck_value - last_planck;
@@ -721,9 +734,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
     
     // Initialize the loop:
     frequency = bounds[0];
-    integratePlanckRosselandSpectrum(
-        frequency, T,
-        planck_value, rosseland_value); 
+    integrate_planck_rosseland(frequency, T, planck_value, rosseland_value); 
 
 
     for (int group = 0; group < groups; ++group)
@@ -737,8 +748,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
         // New values:
         frequency = bounds[group+1];
         Check (frequency > last_frequency);
-        integratePlanckRosselandSpectrum(
-            frequency, T, planck_value, rosseland_value);
+        integrate_planck_rosseland(frequency, T, planck_value, rosseland_value);
 
         // Record the definite integral between frequencies.
         planck   [group] = planck_value    - last_planck;

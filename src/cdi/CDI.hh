@@ -23,7 +23,10 @@
 
 namespace rtt_cdi
 {
-    
+
+
+
+
 //===========================================================================//
 /*!
  * \class CDI
@@ -308,6 +311,27 @@ class CDI
     std_string matID;
 
 
+    // IMPLELEMENTATION
+    // ================
+
+
+    //! Integrate the normalized Planckian from 0 to x (hnu/kT).
+    inline static double integrate_planck(
+        const double frequency, 
+        const double T); 
+
+    //! Integrate the normalized Rosseland from 0 to x (hnu/kT).
+    inline static double integrate_rosseland(
+        const double frequency,
+        const double T);
+
+    //! Integrate the normalized Planckian and Rosseland from 0 to x (hnu/kT)
+    inline static void integrate_planck_rosseland(
+        const double frequency,
+        const double T,
+        double& placnk,
+        double& rosseland);
+
 
     
   public:
@@ -350,78 +374,92 @@ class CDI
     bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
     bool isEoSSet() const;
 
+    //! Copies the vector of the stored frequency group boundary vector
     static std::vector<double> getFrequencyGroupBoundaries();
 
+    //! Returns the number of frequency groups in the stored frequency vector.
     static int getNumberFrequencyGroups();
 
 
 
 
     // INTEGRATORS:
-    // -----------
-
-    //! Integrate the normalized Planckian from 0 to x (hnu/kT).
-    static double integratePlanckSpectrum(const double frequency, 
-					  const double T); 
-
-    //! Integrate the normalized Rosseland from 0 to x (hnu/kT).
-    static double integrateRosselandSpectrum(const double frequency,
-                                             const double T);
-
-    //! Integrate the normalized Planckian and Rosseland from 0 to x (hnu/kT)
-    static void integratePlanckRosselandSpectrum(const double frequency,
-                                                 const double T,
-                                                 double& placnk,
-                                                 double& rosseland);
+    // ===========
 
 
-
+    // Over a frequency range:
+    // -----------------------
 
     //! Integrate the normalized Planckian over a frequency range.
-    static double integratePlanckSpectrum(const double lowf,
-                                          const double hif, 
-					  const double T); 
+    static double integratePlanckSpectrum(
+        const double lowf,
+        const double hif, 
+        const double T); 
     
-    //! Integrate the normalized Planckian spectrum over a frequency group.
-    static double integratePlanckSpectrum(const int groupIndex,
-                                          const double T);
+    //! Integrate the normalized Rosseland over a frequency range.  
+    static double integrateRosselandSpectrum(
+        const double lowf,
+        const double hif, 
+        const double T);
 
+    //! Integrate the Planckian and Rosseland over a frequency range.
+    static void integrate_Rosseland_Planckian_Spectrum(
+        const double lowf,
+        const double hif,
+        const double T, 
+        double& planck, 
+        double& rosseland);
+    
+
+
+    // Over a specific group:
+    // ---------------------
+
+    //! Integrate the normalized Planckian spectrum over a frequency group.
+    static double integratePlanckSpectrum(
+        const int groupIndex,
+        const double T);
+
+    //! Integrate the normalized Rosseland spectrum over a frequency group
+    static double integrateRosselandSpectrum(
+        const int groupIndex, 
+        const double T);
+
+    //! Integrate the Planckian and Rosseland over a frequency group.
+    static void integrate_Rosseland_Planckian_Spectrum(
+        const int groupIndex,
+        const double T,
+        double& planck,
+        double& rosseland);
+
+
+
+    
+    // Over the entire group spectrum:
+    // ------------------------------
+    
     //! Integrate the normalized Planckian spectrum over all frequency groups.
     static double integratePlanckSpectrum(const double T);
     
-    //! Integrate the normalized Rosseland spectrum over a frequency group
-    static double integrateRosselandSpectrum(const int groupIndex, 
-					     const double T);
 
-    //! Integrate the normalized Rosseland over a frequency range.  
-    static double integrateRosselandSpectrum(const double lowf,
-					     const double hif, 
-					     const double T);
 
-    //! Integrate the Planckian and Rosseland over a frequency range.
-    static void integrate_Rosseland_Planckian_Spectrum(const double lowf,
-						       const double hif,
-						       const double T, 
-						       double& planck, 
-						       double& rosseland);
-
-    //! Integrate the Planckian and Rosseland over a frequency group.
-    static void integrate_Rosseland_Planckian_Spectrum(const int groupIndex,
-						       const double T,
-						       double& planck,
-						       double& rosseland);
-
+    
+    // Over a provided vector of frequency bounds at once:
+    // --------------------------------------------------
+    
     //! Integrate the Planckian over all frequency groups
-    static void integrate_Planckian_Spectrum(const std::vector<double>& bounds,
-                                             const double T,
-                                             std::vector<double>& planck);
+    static void integrate_Planckian_Spectrum(
+        const std::vector<double>& bounds,
+        const double T,
+        std::vector<double>& planck);
 
 
     //! Integrate the Planckian and Rosseland over all frequency groups
-    static void integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& bounds,
-                                                       const double T,
-                                                       std::vector<double>& planck,
-                                                       std::vector<double>& rosseland);
+    static void integrate_Rosseland_Planckian_Spectrum(
+        const std::vector<double>& bounds,
+        const double T,
+        std::vector<double>& planck,
+        std::vector<double>& rosseland);
 
 };
 
@@ -429,7 +467,6 @@ class CDI
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
-
 
     
 } // end namespace rtt_cdi

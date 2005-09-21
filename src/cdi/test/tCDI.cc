@@ -173,12 +173,11 @@ void check_CDI(const CDI &cdi)
     }
 
     // Print the material ID string
-    
-    
+
     // Test Rosseland integration with MG opacities.
     {
 	// integrate on the interval [0.5, 5.0] keV for T=1.0 keV.
-	double int_total1 = cdi.integrateRosselandSpectrum(0.5,5.0, 1.0);
+	double int_total1 = cdi.integrateRosselandSpectrum(0.5, 5.0, 1.0);
 	// group 1 has the same energy range.
 	double int_total2 = cdi.integrateRosselandSpectrum(2, 1.0);
 	if (soft_equiv(int_total1, int_total2 , 1.0e-7))
@@ -496,7 +495,7 @@ void test_CDI()
 
 void test_planck_integration()
 {
-    // we have not defined any group structure yet; thus, the Insist will
+    // We have not defined any group structure yet; thus, the Insist will
     // always fire if an integration is requested over a non-existent group 
     bool caught = false;
     try
@@ -518,7 +517,7 @@ void test_planck_integration()
 
 
     // check some planck integrals
-    double int_total = CDI::integratePlanckSpectrum(100.0, 1.0);
+    double int_total = CDI::integratePlanckSpectrum(0.0, 100.0, 1.0);
     if (soft_equiv(int_total, 1.0, 3.5e-10))
     {
 	ostringstream message;
@@ -537,7 +536,7 @@ void test_planck_integration()
 	FAILMSG(message.str());
     }
 
-    double int_1 = CDI::integratePlanckSpectrum(5.0, 10.0);
+    double int_1 = CDI::integratePlanckSpectrum(0.0, 5.0, 10.0);
     if (soft_equiv(int_1, .00529316, 1.0e-6))
     {
 	ostringstream message;
@@ -556,7 +555,7 @@ void test_planck_integration()
 	FAILMSG(message.str());
     }
 
-    double int_2 = CDI::integratePlanckSpectrum(.50, 10.0);
+    double int_2 = CDI::integratePlanckSpectrum(0.0, .50, 10.0);
     if (soft_equiv(int_2, 6.29674e-6, 1.0e-6))
     {
 	ostringstream message;
@@ -575,26 +574,25 @@ void test_planck_integration()
 	FAILMSG(message.str());
     }
 
-    double int_0 = CDI::integratePlanckSpectrum(0.0, 10.0);
+    double int_0 = CDI::integratePlanckSpectrum(0.0, 0.0, 10.0);
     if (!soft_equiv(int_0, 0.0, 1.e-6)) ITFAILS;
 
-    double int_range = CDI::integratePlanckSpectrum(.1, 1.0, 1.0);
+    double int_range = CDI::integratePlanckSpectrum(0.1, 1.0, 1.0);
     if (!soft_equiv(int_range, 0.0345683, 3.e-5)) ITFAILS;
 
-    // catch an illegal group assertion
+    // Catch an illegal group assertion.
     CDI cdi;
     SP<const MultigroupOpacity> mg(
 	new DummyMultigroupOpacity(rtt_cdi::SCATTERING, rtt_cdi::THOMSON)); 
     cdi.setMultigroupOpacity(mg);
 
-    // check the normalized planck integrals
+    // Check the normalized planck integrals.
     if (CDI::getNumberFrequencyGroups() != 3) ITFAILS;
 
     double g1_integral = CDI::integratePlanckSpectrum(1, 1.0);
     double g2_integral = CDI::integratePlanckSpectrum(2, 1.0);
     double g3_integral = CDI::integratePlanckSpectrum(3, 1.0);
-
-    double g_total     = CDI::integratePlanckSpectrum(1.0);
+    double g_total     = CDI::integratePlanckSpectrum(   1.0);
 
     if (soft_equiv(g1_integral, 0.00528686, 1.e-6))
     {
@@ -632,7 +630,7 @@ void test_planck_integration()
 	FAILMSG("Total integral over groups fails tolerance.");
     }
 
-    // test that a zero temperature returns a zero
+    // Test that a zero temperature returns a zero.
     if (soft_equiv(CDI::integratePlanckSpectrum(0.0, 100.0, 0.0), 0.0))
     {
 	PASSMSG("Planck integral from hnu=0 to 100 at T=0 is zero: good!");
@@ -640,15 +638,6 @@ void test_planck_integration()
     else
     {
 	FAILMSG("Planck integral from hnu=0 to 100 at T=0 is not zero: BAD!");
-    }
-
-    if (soft_equiv(CDI::integratePlanckSpectrum(100.0, 0.0), 0.0))
-    {
-	PASSMSG("Planck integral to hnu=100 at T=0 is zero: good!");
-    }
-    else
-    {
-	FAILMSG("Planck integral to hnu=100 at T=0 is not zero: BAD!");
     }
 
     if (soft_equiv(CDI::integratePlanckSpectrum(1, 0.0), 0.0))
@@ -692,12 +681,44 @@ void test_planck_integration()
 	PASSMSG("All Planckian integral tests ok.");
 	cout << endl;
     }
+
+
+    // Compare the integration over all groups to the individual groups:
+    
+    std::vector<double> group_bounds ( CDI::getFrequencyGroupBoundaries() );
+    if (group_bounds.size() != 4) ITFAILS;
+
+    std::vector<double> planck;
+
+    CDI::integrate_Planckian_Spectrum(group_bounds, 1.0, planck);
+
+    for (int group_index = 1; group_index <= 3; ++group_index)
+    {
+
+        double planck_g = CDI::integratePlanckSpectrum(group_index, 1.0);
+
+        if (!soft_equiv( planck[group_index-1], planck_g) ) ITFAILS;
+
+    }
+
+    if (rtt_cdi_test::passed)
+    {
+        PASSMSG("Group-wize and Full spectrum Planckian and Rosseland integrals match.");
+    }
+    else
+    {
+        FAILMSG("Group-wize and Full spectrum Planckian and Rosseland integrals do not match.");
+    }
+    
+
+
 }
 
 //---------------------------------------------------------------------------//
 
 void test_rosseland_integration()
 {
+
     // Only report this as a failure if 1) the error was not caught AND 2)
     // the Require macro is available.
     bool dbc_require( DBC & 1 );
@@ -724,7 +745,7 @@ void test_rosseland_integration()
 	double P,R;
 	try
 	{
-	    CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0,P,R);
+	    CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0, P,R);
 	}
 	catch(const rtt_dsxx::assertion &ass)
 	{
@@ -760,12 +781,12 @@ void test_rosseland_integration()
 	FAILMSG(message.str());
     }
 
-    double int_1 = CDI::integratePlanckSpectrum(0.1, 1.0,1.0);
+    double int_1 = CDI::integratePlanckSpectrum(0.1, 1.0, 1.0);
     if (soft_equiv(int_1, .0345683, 1.0e-5))
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a  normalized Planck integral of "
+	message << "Calculated a normalized Planck integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_1;
 	PASSMSG(message.str());
     }
@@ -773,13 +794,13 @@ void test_rosseland_integration()
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a  normalized Planck integral of "
+	message << "Calculated a normalized Planck integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_1 
 		<< " instead of .0345683";
 	FAILMSG(message.str());
     }
 
-    double int_2 = CDI::integrateRosselandSpectrum(.1, 1.0,1.0);
+    double int_2 = CDI::integrateRosselandSpectrum(0.1, 1.0, 1.0);
     if (soft_equiv(int_2, 0.01220025, 1.0e-5))
     {
 	ostringstream message;
@@ -792,7 +813,7 @@ void test_rosseland_integration()
     {
 	ostringstream message;
 	message.precision(10);
-	message << "Calculated a  normalized Rosseland integral of "
+	message << "Calculated a normalized Rosseland integral of "
 		<< setw(12) << setiosflags(ios::fixed) << int_2
 		<< " instead of 0.01220025";
 	FAILMSG(message.str());
@@ -836,7 +857,7 @@ void test_rosseland_integration()
 	FAILMSG(message.str());
     }
 
-    CDI::integrate_Rosseland_Planckian_Spectrum(0.1, 1.0,1.0,PL,ROS);
+    CDI::integrate_Rosseland_Planckian_Spectrum(0.1, 1.0, 1.0,PL,ROS);
     if (soft_equiv(PL, .0345683, 1.e-5))
     {
 	ostringstream message;
@@ -873,7 +894,7 @@ void test_rosseland_integration()
 	FAILMSG(message.str());
     }
 
-    // test that a zero temperature returns a zero
+    // Test that a zero temperature returns a zero
     if (soft_equiv(CDI::integrateRosselandSpectrum(0.0, 100.0, 0.0), 0.0))
     {
 	PASSMSG("Rosseland integral from hnu=0 to 100 at T=0 is zero: good!");
@@ -882,7 +903,7 @@ void test_rosseland_integration()
     {
 	FAILMSG("Rosseland integral from hnu=0 to 100 at T=0 is not zero: BAD!");
     }
-    CDI::integrate_Rosseland_Planckian_Spectrum(0.0, 100.0, 0.0,PL,ROS);
+    CDI::integrate_Rosseland_Planckian_Spectrum(0.0, 100.0, 0.0, PL, ROS);
     if (soft_equiv(PL, 0.0))
     {
 	PASSMSG("Rosseland call for Planck integral  at T=0 is zero: good!");
@@ -930,6 +951,8 @@ void test_rosseland_integration()
     {
 	FAILMSG("Group 2 Rosseland and Planck integrals failed.");
     }
+
+
 
     // Third group
     CDI::integrate_Rosseland_Planckian_Spectrum(3, 1.0, PL, ROS);
