@@ -89,6 +89,7 @@ class QuadCreator
     virtual rtt_dsxx::SP<Quadrature> quadCreate( Qid quad_type,
 						 size_t sn_order = 4,
 						 double norm = 0.0 );
+
 };
 
 } // end namespace rtt_quadrature

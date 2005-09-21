@@ -67,11 +67,13 @@ void quadrature_test()
 
     // Quadrature sets to be tested:
     //
-    // #   Qid        Description
-    // -   --------   ------------
-    // 0   GaussLeg   1D Gauss Legendre
-    // 1   LevelSym2D 2D Level Symmetric
-    // 2   LevelSym   3D Level Symmetric
+    // #   Qid         Description
+    // -   --------    ------------------
+    // 0   GaussLeg    1D Gauss Legendre
+    // 1   Lobatto     1D Labotto
+    // 2   DoubleGauss 1D DoubleGauss
+    // 3   LevelSym2D  2D Level Symmetric
+    // 4   LevelSym    3D Level Symmetric
 
     QuadCreator::Qid qid[nquads] = { QuadCreator::GaussLeg,
                                      QuadCreator::Lobatto,
@@ -103,9 +105,11 @@ void quadrature_test()
 	    // print the name of the quadrature set that we are testing.
 	    string qname = spQuad->name();
 	    cout << "\nTesting the "  << qname
-		 << " quadrature set." << endl;
-	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
-	    cout << "   Number of Angles = " << spQuad->getNumAngles() << endl;
+		 << " quadrature set." << endl
+                 << "   Sn Order         = " << spQuad->getSnOrder() << endl
+                 << "   Number of Angles = " << spQuad->getNumAngles() << endl
+                 << "   Dimensionality   = " << spQuad->dimensionality()
+                 << endl << endl; 
 
 	    // Extra tests for improving coverage analysis
 	    if( qid[ix] == QuadCreator::GaussLeg)
@@ -166,6 +170,20 @@ void quadrature_test()
 		}
 		
 	    }
+            else if( qid[ix] == QuadCreator::Lobatto )
+            {
+                int const expected_dim(1);
+                cout << expected_dim << endl;
+                cout <<  spQuad->dimensionality() << endl;
+                if( spQuad->dimensionality() == expected_dim )
+                {
+                    PASSMSG("Dimensionality of Lobatto quadrature set is 1.");
+                }
+                else
+                {
+                    FAILMSG("Dimensionality of Lobatto quadrature set is incorrect.");
+                }
+            }
 
 	    // If the object was constructed sucessfully then we continue
 	    // with the tests.
