@@ -161,7 +161,7 @@ class Mesh_Reader
     virtual bool invariant() const = 0;
 
     virtual int get_dims_ndim() const = 0;
-                                                                            
+
   private:
     
     // IMPLEMENTATION
