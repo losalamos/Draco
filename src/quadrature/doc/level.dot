@@ -5,49 +5,41 @@ digraph quadrature_package_level {
     size="8,14";
     ranksep=1.25;
 
-    /* non-package nodes */
-    node0 [shape=house, label="rtt_ds++" color="blue"];
-    node1 [shape=house, label="rtt_units" color="blue"];
-    node2 [shape=house, label="rtt_gsl" color="blue"];
-
-    /* nodes */
-    node3 [shape=box, label="Q1DGaussLeg"];
-    node4 [shape=box, label="QuadServices.i"];
-    node5 [shape=box, label="Quadrature"];
-    node6 [shape=box, label="Release"];
-    node7 [shape=box, label="QuadCreator"];
-    node8 [shape=box, label="QuadServices"];
-    node9 [shape=box, label="Q3DLevelSym"];
-    node10 [shape=box, label="Q1Axial"];
-    node11 [shape=box, label="Q2DLevelSym"];
+    /* package nodes */
+    Q1Axial [shape=box, color=black, label="Q1Axial"];
+    Q1DGaussLeg [shape=box, color=black, label="Q1DGaussLeg"];
+    Q2DLevelSym [shape=box, color=black, label="Q2DLevelSym"];
+    Q3DLevelSym [shape=box, color=black, label="Q3DLevelSym"];
+    QuadServices [shape=box, color=black, label="QuadServices"];
+    Release [shape=box, color=black, label="Release"];
+    Quadrature [shape=box, color=black, label="Quadrature"];
+    QuadCreator [shape=box, color=black, label="QuadCreator"];
+    Q1DLobatto [shape=box, color=black, label="Q1DLobatto"];
+    Q1DDoubleGauss [shape=box, color=black, label="Q1DDoubleGauss"];
 
     /* level dependencies */
-    node0 -> {};
-    node1 -> {};
-    node2 -> {};
-    node3 -> { node5  node5  node0  node1 };
-    node4 -> {};
-    node5 -> { node0 };
-    node6 -> {};
-    node7 -> { node3  node10  node11  node9  node5  node0  node1  node0 };
-    node8 -> { node5  node2  node2  node2  node0  node0  node1  node0 };
-    node9 -> { node5  node0  node1 };
-    node10 -> { node5  node5  node1 };
-    node11 -> { node9  node5  node0 };
+    Q1Axial -> { Quadrature };
+    Q1DGaussLeg -> { Quadrature };
+    Q2DLevelSym -> { Q3DLevelSym };
+    Q3DLevelSym -> { Quadrature };
+    QuadServices -> { Quadrature };
+    Release -> { };
+    Quadrature -> { };
+    QuadCreator -> { Q1DLobatto Q1DDoubleGauss Q1Axial Q2DLevelSym };
+    Q1DLobatto -> { Quadrature };
+    Q1DDoubleGauss -> { Q1DGaussLeg };
 
     /* Levels */
-    l5 [shape=plaintext, label="Level 5", fontsize=18];
-    l4 [shape=plaintext, label="Level 4", fontsize=18];
-    l3 [shape=plaintext, label="Level 3", fontsize=18];
-    l2 [shape=plaintext, label="Level 2", fontsize=18];
     l1 [shape=plaintext, label="Level 1", fontsize=18];
+    l2 [shape=plaintext, label="Level 2", fontsize=18];
+    l3 [shape=plaintext, label="Level 3", fontsize=18];
+    l4 [shape=plaintext, label="Level 4", fontsize=18];
 
-    l5 -> l4 -> l3 -> l2 -> l1
+    l4 -> l3 -> l2 -> l1;
 
-    {rank=same; l1 node0 node1 node2};
-    {rank=same; l2 node4 node5 node6};
-    {rank=same; l3 node3 node8 node9 node10};
-    {rank=same; l4 node11};
-    {rank=same; l5 node7};
+    {rank=same; l1 Quadrature Release };
+    {rank=same; l2 Q1DGaussLeg QuadServices Q3DLevelSym Q1Axial Q1DLobatto };
+    {rank=same; l3 Q1DDoubleGauss Q2DLevelSym};
+    {rank=same; l4 QuadCreator};
 
 }

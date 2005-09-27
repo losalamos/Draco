@@ -13,7 +13,6 @@
 #ifndef quadrature_Q1DDoubleGauss_hh
 #define quadrature_Q1DDoubleGauss_hh
 
-#include "QuadCreator.hh"
 #include "Quadrature.hh"
 
 namespace rtt_quadrature

@@ -1,3 +1,12 @@
+2005-09-27  Kelly Thompson  <kgt@lanl.gov>
+
+	* Q1DDoubleGauss: Replaced header file include directive for
+	  QuadServices with an implementation file include directive for
+	  Q1DGaussLeg.hh.  In the implementation file, replaced use of
+	  factory class QuadCreator to create temporary GaussLeg
+	  quadrature objects with direct construction.  This modification
+	  removes a within package cyclic dependency.
+
 2004-11-17  Kelly Thompson  <kgt@lanl.gov>
 
 	* test/tQuadServices.cc: Added tests for factorial and

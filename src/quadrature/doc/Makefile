@@ -18,7 +18,9 @@ $(FILE).dvi: $(SOURCES)
 level.dot: ../*.hh ../*.cc
 	(cd ..;python ../../tools/include_tree.py)
 
-level.ps: level.dot
+ps: level.ps package.ps
+
+%.ps: %.dot
 	dot -Tps -o $@ $<
 
 clean:

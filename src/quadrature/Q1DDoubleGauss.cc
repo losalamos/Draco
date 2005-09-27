@@ -18,6 +18,7 @@
 #include "units/PhysicalConstants.hh"
 
 #include "Quadrature.hh"
+#include "Q1DGaussLeg.hh"
 #include "Q1DDoubleGauss.hh"
 
 namespace rtt_quadrature
@@ -64,15 +65,9 @@ Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ )
     {
         // 2-point double Gauss is just Gauss
 
-        QuadCreator QCreator;
-        rtt_dsxx::SP<Quadrature> 
-            spQuad(QCreator.quadCreate(QuadCreator::GaussLeg, (size_t) n, 2.0));
-
-        for (unsigned m=0; m<n; ++m)
-        {
-            mu[m] = spQuad->getMu(m);
-            wt[m] = spQuad->getWt(m);
-        }
+        Q1DGaussLeg const quad( n, Quadrature::norm );
+        mu = quad.getMu();
+        wt = quad.getWt();
     }
     else
     {
@@ -80,16 +75,14 @@ Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ )
 
         Check( n2%2 == 0 );
 
-        QuadCreator QCreator;
-        rtt_dsxx::SP<Quadrature> 
-            spQuad(QCreator.quadCreate(QuadCreator::GaussLeg, (size_t) n2, 2.0));
-
+        Q1DGaussLeg const quad( n2, Quadrature::norm );
+        
         // map the quadrature onto the two half-ranges
         
         for (unsigned m=0; m<n2; ++m)
         {
-            double const muH(spQuad->getMu(m));
-            double const wtH(spQuad->getWt(m));
+            double const muH(quad.getMu(m));
+            double const wtH(quad.getWt(m));
             
             // Map onto [-1,0] then skew-symmetrize (ensuring ascending order on [-1, 1])
             
