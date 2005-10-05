@@ -16,8 +16,6 @@
 namespace <namespace>
 {
 
-<start>
-
 } // end namespace <namespace>
 
 #endif // <spkg>_<class>_i_hh
