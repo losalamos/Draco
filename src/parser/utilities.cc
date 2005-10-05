@@ -231,12 +231,16 @@ void Parse_Vector(Token_Stream &tokens, double x[])
  * 
  * \param tokens
  * Token_Stream from which to parse.
+ * \param pos
+ * Position in Token_Stream at which to parse.  This lookahead capability is
+ * needed by Parse_Unit to see if a hyphen '-' is part of a unit expression.
+ *
  * \return \c true if we are at the start of a unit term; \c false otherwise
  */
 
-bool At_Unit_Term(Token_Stream &tokens)
+bool At_Unit_Term(Token_Stream &tokens, unsigned position = 0)
 {
-    Token const token = tokens.Lookahead();
+    Token const token = tokens.Lookahead(position);
     if (token.Type()==KEYWORD)
     {
 	string const u = token.Text();
@@ -587,7 +591,7 @@ Unit Parse_Unit(Token_Stream &tokens)
 	Token const token = tokens.Lookahead();
 	if (token.Type()==OTHER)
 	{
-	    if (token.Text()=="-")
+	    if (token.Text()=="-" && At_Unit_Term(tokens, 1))
 	    {
 		tokens.Shift();
 		Result = Result * Parse_Unit_Term(tokens);

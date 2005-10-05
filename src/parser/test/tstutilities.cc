@@ -356,6 +356,17 @@ void tstutilities()
     {
 	PASSMSG("temperature successfully parsed");
     }
+
+    // Try reading sequence of quantities with signs
+    T = Parse_Quantity(tokens, J, "energy");
+    if (tokens.Error_Count()!=old_error_count)
+    {
+	FAILMSG("second negative quantity NOT successfully parsed");
+    }
+    else
+    {
+	PASSMSG("second negative quantity successfully parsed");
+    }
 }
 
 //---------------------------------------------------------------------------//

@@ -36,11 +36,12 @@ kg-m^2-s^-2-lx^0
 K
 sr
 
-kg-stone
+kg/stone
 
 300.0 cm
 2.3 g-cm^2/s^2
 2.0 g
 
 273.16 K
-0.001 keV
+0.001 keV -0.02 keV
+
