@@ -1,3 +1,7 @@
+2005-09-14  Thomas M. Evans  <tme@lanl.gov>
+
+	* sprng: Fixed memory leak in Sprng::get_size() function.
+
 2002-05-08  Thomas M. Evans  <tme@lanl.gov>
 
 	* rng: Updated to rng-1_6_0.  Some more tests added, Rnd_Control

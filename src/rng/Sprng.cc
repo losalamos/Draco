@@ -151,8 +151,10 @@ int Sprng::get_size() const
     
     char *prng   = 0;
     int rng_size = pack_sprng(streamid->id, &prng);
-    packed_size = rng_size + 2 * sizeof(int);
-    Check (prng);
+    packed_size  = rng_size + 2 * sizeof(int);
+
+    // clear memory
+    std::free(prng);
 
     return Sprng::packed_size;
 }

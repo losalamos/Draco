@@ -23,10 +23,6 @@
 #include <vector>
 #include <cstdlib>
 
-namespace rtt_rng {
-class Rnd_Control;
-}
-
 namespace rtt_rng 
 {
 
