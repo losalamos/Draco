@@ -29,8 +29,8 @@
 #include <algorithm>
 #include <cstring>
 #include <errno.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
