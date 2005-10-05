@@ -17,7 +17,6 @@
 #include <cmath>
 #include <cctype>
 #include <cstdio>
-#include <stdio.h>
 
 #include "plot2D_grace.h"
 

@@ -9,7 +9,7 @@
 #ifndef __c4_SpinLock_hh__
 #define __c4_SpinLock_hh__
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "NodeInfo.hh"
 #include "Sync.hh"
