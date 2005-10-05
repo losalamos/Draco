@@ -1,0 +1,4 @@
+#! /bin/sh
+
+./tstConsole_Token_Stream < console_test.inp
+

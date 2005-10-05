@@ -1,0 +1,344 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   parser/Unit.hh
+ * \author Kent Budge
+ * \date   Mon Feb 24 07:13:42 2003
+ * \brief  Definition the Unit struct
+ * \note   Copyright © 2003 The Regents of the University of California.
+ *
+ * revision history:
+ * 0) original
+ * 1) kgbudge (03/08/10): 
+ *    Solo inspection of documentation, assertions, and tests. 
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+#ifndef __parser_Unit_hh__
+#define __parser_Unit_hh__
+
+#include <cmath>
+
+namespace rtt_parser
+{
+ 
+//===========================================================================//
+/*!
+ * \class Unit
+ * \brief Define units and conversions to SI
+ *
+ * Unit is a POD struct describing a physical unit.  It gives 
+ * the dimensions of the unit in terms of the nine fundamental SI
+ * units as well as the conversion factor to SI. The dimensions are
+ * specified as real numbers because there are some physical quantities
+ * whose unit description requires noninteger powers of the basic units.
+ *
+ * Several examples follow the struct definition.
+ *
+ */
+// revision history:
+// -----------------
+// 0) original
+// 
+//===========================================================================//
+
+struct Unit 
+{
+    // ----------------------------------------
+    // DATA
+    // ----------------------------------------
+
+    double m;            //!< Length dimension
+    double kg;           //!< Mass dimension
+    double s;            //!< Time dimension
+    double A;            //!< Current dimension
+    double K;            //!< Temperature dimension
+    double mol;          //!< Quantity dimension
+    double cd;           //!< Luminous intensity dimension
+    double rad;          //!< Plane angle dimension
+    double sr;           //!< Solid angle dimension
+
+    double conv;         //!< Conversion factor
+};
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute product of two units
+ * 
+ * \param a First factor
+ * \param b Second factor
+ * \return Product of the two factors
+ */
+
+inline Unit operator*(Unit const &a, Unit const &b)
+{
+    Unit Result;
+
+    Result.m   = a.m   + b.m;
+    Result.kg  = a.kg  + b.kg;
+    Result.s   = a.s   + b.s;
+    Result.A   = a.A   + b.A;
+    Result.K   = a.K   + b.K;
+    Result.mol = a.mol + b.mol;
+    Result.cd  = a.cd  + b.cd;
+    Result.rad = a.rad + b.rad;
+    Result.sr  = a.sr  + b.sr;
+
+    Result.conv = a.conv*b.conv;
+
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute product of unit and scalar
+ * 
+ * \param a Scalar factor
+ * \param b Unit factor
+ * \return Product of the two factors
+ */
+
+inline Unit operator*(double const a, Unit const &b)
+{
+    Unit Result = b;
+
+    Result.conv = a * b.conv;
+
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute product of unit and scalar
+ * 
+ * \param b Unit factor
+ * \param a Scalar factor
+ * \return Product of the two factors
+ */
+
+inline Unit operator*(Unit const &b, double const a)
+{
+    return operator*(a, b);
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute ratio of two units
+ * 
+ * \param a Numerator
+ * \param b Denominator
+ * \return Ratio of the two factors
+ */
+
+inline Unit operator/(Unit const &a, Unit const &b)
+{
+    Unit Result;
+
+    Result.m   = a.m   - b.m;
+    Result.kg  = a.kg  - b.kg;
+    Result.s   = a.s   - b.s;
+    Result.A   = a.A   - b.A;
+    Result.K   = a.K   - b.K;
+    Result.mol = a.mol - b.mol;
+    Result.cd  = a.cd  - b.cd;
+    Result.rad = a.rad - b.rad;
+    Result.sr  = a.sr  - b.sr;
+
+    Result.conv = a.conv/b.conv;
+
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute reciprocal of a unit (times a scalar)
+ * 
+ * \param a Scalar numerator
+ * \param b Unit denominator
+ * \return Reciprocal of the unit times the scalar
+ */
+
+inline Unit operator/(double const a, Unit const &b)
+{
+    Unit Result;
+
+    Result.m   = -b.m;
+    Result.kg  = -b.kg;
+    Result.s   = -b.s;
+    Result.A   = -b.A;
+    Result.K   = -b.K;
+    Result.mol = -b.mol;
+    Result.cd  = -b.cd;
+    Result.rad = -b.rad;
+    Result.sr  = -b.sr;
+
+    Result.conv = a/b.conv;
+
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute unit divided by a scalar.
+ * 
+ * \param b Unit numerator
+ * \param a Scalar denominator
+ * \return unit divided by the scalar
+ */
+
+inline Unit operator/(Unit const &b, double const a)
+{
+    return b * (1/a);
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute unit raised to the power of a scalar.
+ * 
+ * \param b Unit base
+ * \param a Scalar power
+ * \return unit raised to power of the scalar
+ */
+
+inline Unit pow(Unit const &b, double const a)
+{
+    Unit result = b;
+    result.m *= a;
+    result.kg *= a;
+    result.s *= a;
+    result.A *= a;
+    result.K *= a;
+    result.mol *= a;
+    result.cd *= a;
+    result.rad *= a;
+    result.sr *= a;
+    result.conv = std::pow(b.conv, a);
+
+    return result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Test two units for equality
+ *
+ * Compare two Units for precise equality, in both dimensions and
+ * conversion factor.  To test only the dimensions, ignoring the
+ * conversion factor, use the \c is_compatible function.
+ * 
+ * \param a First factor
+ * \param b Second factor
+ * \return \c true if the units are identical; \c false otherwise
+ */
+
+inline bool operator==(Unit const &a, Unit const &b)
+{
+    return a.m ==  b.m  &&  a.kg == b.kg  &&  a.s == b.s  &&  a.A == b.A  &&
+	a.K == b.K  &&  a.mol == b.mol  &&  a.cd == b.cd  &&  
+	a.rad == b.rad  &&  a.sr == b.sr  &&  a.conv == b.conv;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Test two units for inequality
+ *
+ * Compare two Units for inequality.
+ * 
+ * \param a First factor
+ * \param b Second factor
+ * \return \c !(a==b)
+ */
+
+inline bool operator!=(Unit const &a, Unit const &b)
+{
+    return !(a==b);
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Test two units for compatibility
+ *
+ * Compare two Units for equality in dimensions only.  Ignore the conversion
+ * factor.  For exact test of equality, use the \c operator== function.
+ * 
+ * \param a First factor
+ * \param b Second factor
+ * \return \c true if the units are compatible; \c false otherwise
+ */
+
+inline bool is_compatible(Unit const &a, Unit const &b)
+{
+    return a.m ==  b.m  &&  a.kg == b.kg  &&  a.s == b.s  &&  a.A == b.A  &&
+	a.K == b.K  &&  a.mol == b.mol  &&  a.cd == b.cd  &&  
+	a.rad == b.rad  &&  a.sr == b.sr;
+}
+
+//---------------------------------------------------------------------------//
+//! Write out the unit in text form.
+
+std::ostream &operator<<(std::ostream &, const Unit &);
+
+
+// Some useful examples
+
+// No units
+
+//! dimensionless quantity (pure number)
+Unit const dimensionless = { 0, 0, 0, 0, 0, 0, 0, 0, 0,  1}; 
+
+// Fundamental SI units
+
+Unit const m   = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  1}; //!< meter 
+Unit const kg  = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  1}; //!< kilogram
+Unit const s   = { 0, 0, 1, 0, 0, 0, 0, 0, 0,  1}; //!< second
+Unit const A   = { 0, 0, 0, 1, 0, 0, 0, 0, 0,  1}; //!< ampere
+Unit const K   = { 0, 0, 0, 0, 1, 0, 0, 0, 0,  1}; //!< Kelvin
+Unit const mol = { 0, 0, 0, 0, 0, 1, 0, 0, 0,  1}; //!< mole
+Unit const cd  = { 0, 0, 0, 0, 0, 0, 1, 0, 0,  1}; //!< candela
+Unit const rad = { 0, 0, 0, 0, 0, 0, 0, 1, 0,  1}; //!< radian 
+Unit const sr  = { 0, 0, 0, 0, 0, 0, 0, 0, 1,  1}; //!< steradian
+
+// Derived SI units
+
+Unit const C  = A*s;               //!< coulomb (SI charge unit)
+Unit const Hz = 1/s;               //!< hertz   (SI frequency unit)
+Unit const N  = m*kg/(s*s);        //!< newton  (SI force unit)
+Unit const J  = N*m;               //!< joule   (SI energy unit)
+Unit const Pa = N/(m*m);           //!< pascal  (SI pressure unit)
+Unit const W  = J/s;               //!< watt    (SI power unit)
+Unit const V  = W/A;               //!< volt    (SI electric potential unit)
+Unit const F  = C/V;               //!< farad   (SI capacitance unit)
+Unit const ohm = V/A;              //!< ohm     (SI resistance unit)
+Unit const S  = A/V;               //!< siemens (SI conductance unit)
+Unit const Wb = V*s;               //!< weber   (SI magnetic flux unit)
+Unit const T  = Wb/(m*m);          //!< tesla   (SI magnetic flux density unit)
+Unit const H  = Wb/A;              //!< henry   (SI inductance unit)
+Unit const lm = cd*sr;             //!< lumen   (SI luminous flux unit)
+Unit const lx = lm/(m*m);          //!< lux     (SI illuminance unit)
+
+// CGS units
+
+Unit const cm   = 1.0e-2*m;           //!< centimeter (cgs length unit)
+Unit const g    = 1.0e-3*kg;          //!< gram       (cgs mass unit)
+
+Unit const dyne = cm*g/(s*s);         //!< dyne       (cgs force unit)
+Unit const erg  = dyne*cm;            //!< erg        (cgs energy unit)
+
+// English units
+
+Unit const inch  = 0.0254*m;              //!< inch (English length unit)
+Unit const foot  = 12*inch;               //!< foot (English length unit)
+Unit const lbm   = 0.45359237*kg;         //!< pound mass (English mass unit)
+Unit const pound = 4.448221615*N;         //!< pound force (English force unit)
+
+// Miscellaneous units popular in X-Division
+
+Unit const keV = erg*1.602176462e-9;      //!< Thousands of electron volts
+
+} // end namespace rtt_parser
+
+#endif // __parser_Unit_hh__
+
+//---------------------------------------------------------------------------//
+//              end of parser/Unit.hh
+//---------------------------------------------------------------------------//

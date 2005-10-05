@@ -1,3 +1,10 @@
+2005-10-05  Kelly Thompson  <kgt@lanl.gov>
+
+	* parser: I moved the parser package from Capsaicin to Draco.  The
+	  motivation for this change is based on the generic nature of the
+	  parser, the relative stability of this code and it's possible
+	  use by other development teams.
+
 2005-08-08  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco: Released draco-5_7_0.  This is a minor Draco release that
