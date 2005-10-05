@@ -21,10 +21,6 @@ if(re.match('\.hh', output) == None):
 	hhfile = output + '.hh'
 	ihhfile = output + '.i.hh'
 
-print hhfile
-print ihhfile
-print classname
-
 ################################################################################
 # request package path
 ################################################################################
