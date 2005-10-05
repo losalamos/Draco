@@ -16,17 +16,20 @@
 namespace <namespace>
 {
 
-<class>::<class>()
+template<typename T>
+<class><T>::<class>()
 {
-} // <class>::<class>
+} // <class><T>::<class>
 
-<class>::<class>(const <class> &rhs)
+template<typename T>
+<class><T>::<class>(const <class><T> &rhs)
 {
-} // <class>::<class>
+} // <class><T>::<class>
 
-<class>::~<class>()
+template<typename T>
+<class><T>::~<class>()
 {
-} // <class>::~<class>
+} // <class><T>::~<class>
 
 } // end namespace <namespace>
 
