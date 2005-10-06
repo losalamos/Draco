@@ -1,3 +1,103 @@
+2005-10-06  Jae Chang <jhchang@lanl.gov>
+
+	* draco: Released draco-5_8_0.  This is a minor Draco release that
+	  containes build system updates required for the release of
+	  Capsaicin-2_6_0.  A summary of changes are:
+
+	- Build system: 
+	  . Added paser package
+
+	-cdi:
+	 . Added a function to CDI which will return Planckian and
+	   Rosseland integrals for all groups in a group structure.
+	 . Added a new full-spectrum integrator which just integrates the
+	   planckian over all of the groups in the group structure.
+
+	-ds++:
+	 . Declared some previously undeclared virtual function.
+
+	-parser:
+	 . New package added to draco.
+
+	-quadrature:
+	 . Added quadrature/Q1DDoubleGauss.cc
+	 . Added quadrature/Q1DDoubleGauss.hh
+	 . Added quadrature/Q1DLobatto.cc (1D Lobatto quadrature)
+	 . Added quadrature/Q1DLobatto.hh
+         . Added quadrature/doc/package.dot
+
+	-rng:
+	 . Fixed memory leak in Sprng::get_size() function.
+	 
+	-shared_lib:
+	 . Included an elegant hack to prevent g++ 4.0 from complaining
+	   about an unavoidable cast from pointer-to-object to
+	   pointer-to-function
+
+	-tools:
+	 . update_release_tags.py now checks on existing of configure.ac
+	   or Release.cc in a directory before doing tag updates.
+	
+	-Elisp:
+	 . Fix code for reftex- mode.
+	 . Defined custom variables draco-bibpath and draco-textpath.
+
+	-Environment:
+	 . Added /python/draco-cc-head
+	 . Added /python/draco-class
+	 . Added /python/draco-package
+	 . Added /python/parse-draco-template
+	 . Added /templates/templatet.hh
+	 . Added /templates/templatet.i.hh
+
+	This draco release includes the following packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
+	time although these packages are part of the head revision of
+	Draco. 
+
+	Code Statistics:
+	
+	  Counting lines of source code -- 
+	  Directory:  /home/jhchang/release/draco
+	  Date     :  Thu Oct 6 12:35:20 MDT 2005
+
+        	           Total C++ source:   25297
+ 	     C++ source in test directories:   14979
+      	        C++ contract specifications:     918
+                  	       C++ comments:   26895
+             	       Total f90/f95 source:       0
+                 	   f90/f95 comments:       0
+              	        LaTeX Documentation:   13048
+                      	        html source:       0
+   	     Executable shell script source:    3033
+               	     Executable Perl source:     201
+                    	      Python source:    2770
+                    	      Expect source:       0
+                     	       Elisp source:    3281
+	
+
 2005-10-05  Kelly Thompson  <kgt@lanl.gov>
 
 	* parser: I moved the parser package from Capsaicin to Draco.  The
