@@ -270,8 +270,8 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="mainpage.dcc.in"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir PACKAGE_LINKS COMP_LINKS doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir dotpath number LIBOBJS LTLIBOBJS'
+ac_unique_file="Release.hh"
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -838,6 +838,10 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-mpi=vendor,mpich,lampi
+	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)
+  --with-mpi-inc=DIR    tell where MPI includes are (\${MPI_INC_DIR} by default)
+  --with-mpi-lib=DIR    tell where MPI libs are (\${MPI_LIB_DIR} by default)
   --with-lib-prefix=library prefix
                           give prefix to libraries (default rtt_)
   --with-c4=scalar,mpi,shmem
@@ -1277,8 +1281,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
+
 ac_aux_dir=
-for ac_dir in ../config $srcdir/../config; do
+for ac_dir in ../../config $srcdir/../../config; do
   if test -f $ac_dir/install-sh; then
     ac_aux_dir=$ac_dir
     ac_install_sh="$ac_aux_dir/install-sh -c"
@@ -1294,18 +1300,201 @@ for ac_dir in ../config $srcdir/../config; do
   fi
 done
 if test -z "$ac_aux_dir"; then
-  { { echo "$as_me:$LINENO: error: cannot find install-sh or install.sh in ../config $srcdir/../config" >&5
-echo "$as_me: error: cannot find install-sh or install.sh in ../config $srcdir/../config" >&2;}
+  { { echo "$as_me:$LINENO: error: cannot find install-sh or install.sh in ../../config $srcdir/../../config" >&5
+echo "$as_me: error: cannot find install-sh or install.sh in ../../config $srcdir/../../config" >&2;}
    { (exit 1); exit 1; }; }
 fi
 ac_config_guess="$SHELL $ac_aux_dir/config.guess"
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"
 ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
+          ac_config_headers="$ac_config_headers fpe_trap/config.h:config.h.in"
 
-# draco version
+package="fpe_trap"
+
 
    # we need at least autoconf 2.53 to work correctly
+
+
+
+
+
+
+
+
+# Check whether --with-mpi or --without-mpi was given.
+if test "${with_mpi+set}" = set; then
+  withval="$with_mpi"
+
+fi;
+
+
+
+
+
+# Check whether --with-mpi-inc or --without-mpi-inc was given.
+if test "${with_mpi_inc+set}" = set; then
+  withval="$with_mpi_inc"
+  if test $with_mpi_inc != "no" ; then
+      if test $with_mpi_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${MPI_INC_DIR}
+         eval with_mpi_inc=\${MPI_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_mpi_inc=`eval echo "$with_mpi_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_mpi_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-mpi-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_mpi_inc ; then
+         { echo "configure: error: $with_mpi_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      MPI_INC="${with_mpi_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define MPI_INC ${with_mpi_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "MPI_INC has been set to $MPI_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+# Check whether --with-mpi-lib or --without-mpi-lib was given.
+if test "${with_mpi_lib+set}" = set; then
+  withval="$with_mpi_lib"
+  if test $with_mpi_lib != "no" ; then
+      if test $with_mpi_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${MPI_LIB_DIR}
+         eval with_mpi_lib=\${MPI_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_mpi_lib=`eval echo "$with_mpi_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_mpi_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-mpi-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_mpi_lib ; then
+         { echo "configure: error: $with_mpi_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      MPI_LIB="${with_mpi_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define MPI_LIB ${with_mpi_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "MPI_LIB has been set to $MPI_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_mpi=pkg
+
+   # set default value for with_mpi which is no
+   if test "${with_mpi:=no}" = yes ; then
+       with_mpi='vendor'
+   fi
+
+   # if the user sets MPI_INC and MPI_LIB directories then turn on
+   # with_mpi and set it to vendor if with_mpi=no to begin with
+   if test "${with_mpi}" = no ; then
+       if test -n "${MPI_INC}" ; then
+	   with_mpi='vendor'
+       elif test -n "${MPI_LIB}" ; then
+	   with_mpi='vendor'
+       fi
+   fi
+
+   # if c4=mpi and with-mpi=no explicitly then
+   # define them (mpi gets set to vendor by default)
+   if test "$with_c4" = mpi ; then
+       if test "$with_mpi" = no ; then
+	   with_mpi='vendor'
+       fi
+   fi
+
+
+
+
+
+
+    install_headers="\${installheaders}"
+   installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
+
+    install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
+   installdirs="${installdirs} \${libdir}"
+   alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
+
+   # test will need to link this library
+   PKG_DEPENDS='../lib${LIB_PREFIX}${package}${libsuffix}'
+   PKG_LIBS='-L.. -l${LIB_PREFIX}${package}'
+
+
+
+
+   if test ${has_libdir:=no} != "yes" ; then
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
+       has_libdir="yes"
+   fi
+
+   for lib in c4 ds++
+   do
+       # temporary string to keep line from getting too long
+       draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
+       DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
+       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
+   done
+
+   # Keep a list of component dependencies free of other tags or paths.
+   DEPENDENT_COMPONENTS="c4 ds++"
+
+
+
+
+
+
+
+   test_exe="python"
+
+
+	test_alltarget="$test_alltarget test_fpe_trap.py"
+
+	test_nprocs="scalar"
+
+	if test -z "${test_nprocs}" ; then
+	    { { echo "$as_me:$LINENO: error: \"No procs choosen for the tests!\"" >&5
+echo "$as_me: error: \"No procs choosen for the tests!\"" >&2;}
+   { (exit 1); exit 1; }; }
+        fi
 
 
 
@@ -12631,55 +12820,6 @@ echo "$as_me: error: 'Could not find package top source directory'" >&2;}
 
 
 
-package="Draco"
-
-
-
-# check for and as sign the path to doxygen
-# Extract the first word of "doxygen", so it can be a program name with args.
-set dummy doxygen; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_DOXYGEN_PATH+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  case $DOXYGEN_PATH in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_DOXYGEN_PATH="$DOXYGEN_PATH" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_DOXYGEN_PATH="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  test -z "$ac_cv_path_DOXYGEN_PATH" && ac_cv_path_DOXYGEN_PATH="null"
-  ;;
-esac
-fi
-DOXYGEN_PATH=$ac_cv_path_DOXYGEN_PATH
-
-if test -n "$DOXYGEN_PATH"; then
-  echo "$as_me:$LINENO: result: $DOXYGEN_PATH" >&5
-echo "${ECHO_T}$DOXYGEN_PATH" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-
-#
-# Run the generic package-level autodoc configuration:
-#
 
    # Get the default output location
       if test ${doxygen_output_top} = DEFAULT; then
@@ -12688,65 +12828,157 @@ fi
    fi
 
 
-   # Package-level directories
-   header_dir=${srcdir}/html
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
    config_dir=${package_top_srcdir}/config
 
    abs_srcdir=`cd ${srcdir}; pwd`
-   autodoc_dir=${abs_srcdir}
+   autodoc_dir=${abs_srcdir}/autodoc
 
-   # For the package, the input is the current directory, plus
-   # configure/doc. There are no examples
-   echo "$as_me:$LINENO: checking for Doxygen input directories" >&5
-echo $ECHO_N "checking for Doxygen input directories... $ECHO_C" >&6
-   doxygen_input="`pwd`"
-   if test -d ${config_dir}/doc; then
-      doxygen_input="${doxygen_input} ${config_dir}/doc"
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
+   echo "$as_me:$LINENO: checking doxygen input directories" >&5
+echo $ECHO_N "checking doxygen input directories... $ECHO_C" >&6
+   if test -d ${abs_srcdir}; then
+      doxygen_input="${doxygen_input} ${abs_srcdir}"
    fi
    if test -d ${autodoc_dir}; then
       doxygen_input="${doxygen_input} ${autodoc_dir}"
    fi
    echo "$as_me:$LINENO: result: ${doxygen_input}" >&5
 echo "${ECHO_T}${doxygen_input}" >&6
-   doxygen_examples=''
+   if test -d ${abs_srcdir}/test; then
+      doxygen_examples=${abs_srcdir}/test
+   fi
 
-   # Component output locations
-   doxygen_html_output="${doxygen_output_top}/html/"
-   doxygen_latex_output="${doxygen_output_top}/latex/"
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
+
+   # The local dir is different from the current dir.
+   # localdir=`pwd`/autodoc
+
+   # Set the component output locations.
+   doxygen_html_output="${doxygen_output_top}/html/${package}"
+   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
    # Relative location of the package-level html output.
-   rel_package_html='.'
+   for _lcl_i in doxygen_html_output:package_html:rel_package_html; do
+  _lcl_from=\$`echo "$_lcl_i" | sed 's,:.*$,,'`
+  _lcl_to=\$`echo "$_lcl_i" | sed 's,^[^:]*:,,' | sed 's,:[^:]*$,,'`
+  _lcl_result_var=`echo "$_lcl_i" | sed 's,^.*:,,'`
+  _lcl_receval="$_lcl_from"
+_lcl_from=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "$_lcl_receval_old" != "$_lcl_receval"; do
+       _lcl_receval_old="$_lcl_receval"
+       eval _lcl_receval="\"$_lcl_receval\""
+     done
+     echo "$_lcl_receval")`
+  _lcl_receval="$_lcl_to"
+_lcl_to=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "$_lcl_receval_old" != "$_lcl_receval"; do
+       _lcl_receval_old="$_lcl_receval"
+       eval _lcl_receval="\"$_lcl_receval\""
+     done
+     echo "$_lcl_receval")`
+  _lcl_notation="$_lcl_from$_lcl_to"
+  case ":$_lcl_from:" in
+# change empty paths to '.'
+  ::) _lcl_from='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_from=`echo "$_lcl_from" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case '/' in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_from=`echo "$_lcl_from" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_from=`echo "$_lcl_from" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  case ":$_lcl_to:" in
+# change empty paths to '.'
+  ::) _lcl_to='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_to=`echo "$_lcl_to" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case '/' in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_to=`echo "$_lcl_to" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_to=`echo "$_lcl_to" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  _lcl_common_prefix=''
+_lcl_second_prefix_match=''
+while test "$_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x$_lcl_from" : "x\($_lcl_common_prefix/*[^/]*\)"`
+  _lcl_second_prefix_match=`expr "x$_lcl_to" : "x$_lcl_first_prefix"`
+  if test "$_lcl_second_prefix_match" != 0; then
+    if test "$_lcl_first_prefix" != "$_lcl_common_prefix"; then
+      _lcl_common_prefix="$_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done
+_lcl_first_suffix=`expr "x$_lcl_from" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_first_rel=''
+_lcl_tmp='xxx'
+while test "$_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x$_lcl_first_suffix" : "x[^/]*/*\(.*\)"`
+  if test "$_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="$_lcl_tmp"
+     _lcl_first_rel="../$_lcl_first_rel"
+  fi
+done
+_lcl_second_suffix=`expr "x$_lcl_to" : "x$_lcl_common_prefix/*\(.*\)"`
+_lcl_result_tmp="$_lcl_first_rel$_lcl_second_suffix"
+  case ":$_lcl_result_tmp:" in
+# change empty paths to '.'
+  ::) _lcl_result_tmp='.' ;;
+# strip trailing slashes
+  :*[\\/]:) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,[\\/]*$,,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case "$_lcl_notation" in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,\(.\)[\\/][\\/]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) _lcl_result_tmp=`echo "$_lcl_result_tmp" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+esac
+  eval $_lcl_result_var='$_lcl_result_tmp'
+done
 
+   # Get tags for other components in this package which this
+   # component depends on
 
-   # XXX Need to change COMPLINKS to generic doxygen list instead of
-   # HTML for Latex compatability. Let doxygen insert the links
-   echo "$as_me:$LINENO: checking for documented sub-components of this package" >&5
-echo $ECHO_N "checking for documented sub-components of this package... $ECHO_C" >&6
-   COMP_LINKS=''
+   components=''
    TAGFILES=''
    DOXYGEN_TAGFILES=''
-   components=''
-   for item in `ls -1 ${package_top_srcdir}/src`; do
-      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
-         dirname=`basename ${item}`
-         components="${components} ${dirname}"
-         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
-         tagfile=${doxygen_output_top}/${dirname}.tag
-         TAGFILES="${TAGFILES} ${tagfile}"
-         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
-      fi
+   echo "$as_me:$LINENO: checking for Doxygen component dependencies" >&5
+echo $ECHO_N "checking for Doxygen component dependencies... $ECHO_C" >&6
+   for comp in ${DEPENDENT_COMPONENTS}; do
+       components="${components} ${comp}"
+       tagfile=${doxygen_output_top}/${comp}.tag
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
    done
-   echo "$as_me:$LINENO: result: ${components:-none}" >&5
-echo "${ECHO_T}${components:-none}" >&6
-   COMP_LINKS="<ul> $COMP_LINKS </ul>"
-
-   # XXX TO DO: Add links to dependent packages on this page.
-   PACKAGE_LINKS="<ul> </ul>"
-
-   # Unique to package-level
+   echo "$as_me:$LINENO: result: ${components}" >&5
+echo "${ECHO_T}${components}" >&6
 
 
 
+   # find the release number
+   number=
+   echo "$as_me:$LINENO: checking \"component release number\"" >&5
+echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
+   echo "$as_me:$LINENO: result: $number" >&5
+echo "${ECHO_T}$number" >&6
 
 
 
@@ -12771,34 +13003,39 @@ echo "${ECHO_T}${components:-none}" >&6
 
 
 
-             ac_config_files="$ac_config_files doxygen_config:${config_dir}/doxygen_config.in"
-
-             ac_config_files="$ac_config_files Makefile:${config_dir}/Makefile.autodoc.in"
-
-             ac_config_files="$ac_config_files header.html:html/header.html.in"
-
-             ac_config_files="$ac_config_files footer.html:html/footer.html.in"
-
-             ac_config_files="$ac_config_files mainpage.dcc"
+                                           ac_config_files="$ac_config_files autodoc/Makefile:${config_dir}/Makefile.autodoc.in autodoc/doxygen_config:${config_dir}/doxygen_config.in autodoc/header.html:${header_dir}/header.html.in autodoc/footer.html:${header_dir}/footer.html.in"
 
 
 
 
-#
-# Do Draco-specific configuration:
-#
 
-# dotpath (for draco levelization diagram)
-dotpath="${srcdir}/../doc/design"
+                    ac_config_files="$ac_config_files Makefile:../../config/Makefile.package.in test/Makefile:../../config/Makefile.test.in"
 
 
-# find the release number
-number='null'
-echo "$as_me:$LINENO: checking \"draco release number\"" >&5
-echo $ECHO_N "checking \"draco release number\"... $ECHO_C" >&6
-number=`/bin/sh ../tools/draco --version`
-echo "$as_me:$LINENO: result: $number" >&5
-echo "${ECHO_T}$number" >&6
+
+as_ac_File=`echo "ac_cv_file_$srcdir/test/Makefile.options.in" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $srcdir/test/Makefile.options.in" >&5
+echo $ECHO_N "checking for $srcdir/test/Makefile.options.in... $ECHO_C" >&6
+if eval "test \"\${$as_ac_File+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  test "$cross_compiling" = yes &&
+  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+   { (exit 1); exit 1; }; }
+if test -r "$srcdir/test/Makefile.options.in"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+if test `eval echo '${'$as_ac_File'}'` = yes; then
+  \
+                        ac_config_files="$ac_config_files test/Makefile.options:test/Makefile.options.in"
+
+fi
 
 
 cat >confcache <<\_ACEOF
@@ -12875,38 +13112,7 @@ s/^[^=]*=[ 	]*$//;
 }'
 fi
 
-# Transform confdefs.h into DEFS.
-# Protect against shell expansion while executing Makefile rules.
-# Protect against Makefile macro expansion.
-#
-# If the first sed substitution is executed (which looks for macros that
-# take arguments), then we branch to the quote section.  Otherwise,
-# look for a macro that doesn't take arguments.
-cat >confdef2opt.sed <<\_ACEOF
-t clear
-: clear
-s,^[ 	]*#[ 	]*define[ 	][ 	]*\([^ 	(][^ 	(]*([^)]*)\)[ 	]*\(.*\),-D\1=\2,g
-t quote
-s,^[ 	]*#[ 	]*define[ 	][ 	]*\([^ 	][^ 	]*\)[ 	]*\(.*\),-D\1=\2,g
-t quote
-d
-: quote
-s,[ 	`~#$^&*(){}\\|;'"<>?],\\&,g
-s,\[,\\&,g
-s,\],\\&,g
-s,\$,$$,g
-p
-_ACEOF
-# We use echo to avoid assuming a particular line-breaking character.
-# The extra dot is to prevent the shell from consuming trailing
-# line-breaks from the sub-command output.  A line-break within
-# single-quotes doesn't work because, if this script is created in a
-# platform that uses two characters for line-breaks (e.g., DOS), tr
-# would break.
-ac_LF_and_DOT=`echo; echo .`
-DEFS=`sed -n -f confdef2opt.sed confdefs.h | tr "$ac_LF_and_DOT" ' .'`
-rm -f confdef2opt.sed
-
+DEFS=-DHAVE_CONFIG_H
 
 ac_libobjs=
 ac_ltlibobjs=
@@ -13238,9 +13444,14 @@ Usage: $0 [OPTIONS] [FILE]...
       --recheck    update $as_me by reconfiguring in the same conditions
   --file=FILE[:TEMPLATE]
                    instantiate the configuration file FILE
+  --header=FILE[:TEMPLATE]
+                   instantiate the configuration header FILE
 
 Configuration files:
 $config_files
+
+Configuration headers:
+$config_headers
 
 Report bugs to <bug-autoconf@gnu.org>."
 _ACEOF
@@ -13350,11 +13561,14 @@ for ac_config_target in $ac_config_targets
 do
   case "$ac_config_target" in
   # Handling of arguments.
-  "doxygen_config" ) CONFIG_FILES="$CONFIG_FILES doxygen_config:${config_dir}/doxygen_config.in" ;;
-  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:${config_dir}/Makefile.autodoc.in" ;;
-  "header.html" ) CONFIG_FILES="$CONFIG_FILES header.html:html/header.html.in" ;;
-  "footer.html" ) CONFIG_FILES="$CONFIG_FILES footer.html:html/footer.html.in" ;;
-  "mainpage.dcc" ) CONFIG_FILES="$CONFIG_FILES mainpage.dcc" ;;
+  "autodoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES autodoc/Makefile:${config_dir}/Makefile.autodoc.in" ;;
+  "autodoc/doxygen_config" ) CONFIG_FILES="$CONFIG_FILES autodoc/doxygen_config:${config_dir}/doxygen_config.in" ;;
+  "autodoc/header.html" ) CONFIG_FILES="$CONFIG_FILES autodoc/header.html:${header_dir}/header.html.in" ;;
+  "autodoc/footer.html" ) CONFIG_FILES="$CONFIG_FILES autodoc/footer.html:${header_dir}/footer.html.in" ;;
+  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile:../../config/Makefile.package.in" ;;
+  "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile:../../config/Makefile.test.in" ;;
+  "test/Makefile.options" ) CONFIG_FILES="$CONFIG_FILES test/Makefile.options:test/Makefile.options.in" ;;
+  "fpe_trap/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS fpe_trap/config.h:config.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -13367,6 +13581,7 @@ done
 # bizarre bug on SunOS 4.1.3.
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
+  test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
 fi
 
 # Have a temporary directory for convenience.  Make it in the build tree
@@ -13438,6 +13653,8 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@MPI_INC@,$MPI_INC,;t t
+s,@MPI_LIB@,$MPI_LIB,;t t
 s,@latex_yes_no@,$latex_yes_no,;t t
 s,@doxygen_output_top@,$doxygen_output_top,;t t
 s,@build@,$build,;t t
@@ -13516,8 +13733,7 @@ s,@test_nprocs@,$test_nprocs,;t t
 s,@test_output_files@,$test_output_files,;t t
 s,@configure_command@,$configure_command,;t t
 s,@package_top_srcdir@,$package_top_srcdir,;t t
-s,@PACKAGE_LINKS@,$PACKAGE_LINKS,;t t
-s,@COMP_LINKS@,$COMP_LINKS,;t t
+s,@number@,$number,;t t
 s,@doxygen_input@,$doxygen_input,;t t
 s,@doxygen_examples@,$doxygen_examples,;t t
 s,@doxygen_html_output@,$doxygen_html_output,;t t
@@ -13526,8 +13742,6 @@ s,@DOXYGEN_TAGFILES@,$DOXYGEN_TAGFILES,;t t
 s,@rel_package_html@,$rel_package_html,;t t
 s,@header_dir@,$header_dir,;t t
 s,@autodoc_dir@,$autodoc_dir,;t t
-s,@dotpath@,$dotpath,;t t
-s,@number@,$number,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
@@ -13728,6 +13942,228 @@ s,@abs_top_builddir@,$ac_abs_top_builddir,;t t
     rm -f $tmp/out
   fi
 
+done
+_ACEOF
+cat >>$CONFIG_STATUS <<\_ACEOF
+
+#
+# CONFIG_HEADER section.
+#
+
+# These sed commands are passed to sed as "A NAME B NAME C VALUE D", where
+# NAME is the cpp macro being defined and VALUE is the value it is being given.
+#
+# ac_d sets the value in "#define NAME VALUE" lines.
+ac_dA='s,^\([ 	]*\)#\([ 	]*define[ 	][ 	]*\)'
+ac_dB='[ 	].*$,\1#\2'
+ac_dC=' '
+ac_dD=',;t'
+# ac_u turns "#undef NAME" without trailing blanks into "#define NAME VALUE".
+ac_uA='s,^\([ 	]*\)#\([ 	]*\)undef\([ 	][ 	]*\)'
+ac_uB='$,\1#\2define\3'
+ac_uC=' '
+ac_uD=',;t'
+
+for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
+  # Support "outfile[:infile[:infile...]]", defaulting infile="outfile.in".
+  case $ac_file in
+  - | *:- | *:-:* ) # input from stdin
+        cat >$tmp/stdin
+        ac_file_in=`echo "$ac_file" | sed 's,[^:]*:,,'`
+        ac_file=`echo "$ac_file" | sed 's,:.*,,'` ;;
+  *:* ) ac_file_in=`echo "$ac_file" | sed 's,[^:]*:,,'`
+        ac_file=`echo "$ac_file" | sed 's,:.*,,'` ;;
+  * )   ac_file_in=$ac_file.in ;;
+  esac
+
+  test x"$ac_file" != x- && { echo "$as_me:$LINENO: creating $ac_file" >&5
+echo "$as_me: creating $ac_file" >&6;}
+
+  # First look for the input files in the build tree, otherwise in the
+  # src tree.
+  ac_file_inputs=`IFS=:
+    for f in $ac_file_in; do
+      case $f in
+      -) echo $tmp/stdin ;;
+      [\\/$]*)
+         # Absolute (can't be DOS-style, as IFS=:)
+         test -f "$f" || { { echo "$as_me:$LINENO: error: cannot find input file: $f" >&5
+echo "$as_me: error: cannot find input file: $f" >&2;}
+   { (exit 1); exit 1; }; }
+         echo $f;;
+      *) # Relative
+         if test -f "$f"; then
+           # Build tree
+           echo $f
+         elif test -f "$srcdir/$f"; then
+           # Source tree
+           echo $srcdir/$f
+         else
+           # /dev/null tree
+           { { echo "$as_me:$LINENO: error: cannot find input file: $f" >&5
+echo "$as_me: error: cannot find input file: $f" >&2;}
+   { (exit 1); exit 1; }; }
+         fi;;
+      esac
+    done` || { (exit 1); exit 1; }
+  # Remove the trailing spaces.
+  sed 's/[ 	]*$//' $ac_file_inputs >$tmp/in
+
+_ACEOF
+
+# Transform confdefs.h into two sed scripts, `conftest.defines' and
+# `conftest.undefs', that substitutes the proper values into
+# config.h.in to produce config.h.  The first handles `#define'
+# templates, and the second `#undef' templates.
+# And first: Protect against being on the right side of a sed subst in
+# config.status.  Protect against being in an unquoted here document
+# in config.status.
+rm -f conftest.defines conftest.undefs
+# Using a here document instead of a string reduces the quoting nightmare.
+# Putting comments in sed scripts is not portable.
+#
+# `end' is used to avoid that the second main sed command (meant for
+# 0-ary CPP macros) applies to n-ary macro definitions.
+# See the Autoconf documentation for `clear'.
+cat >confdef2sed.sed <<\_ACEOF
+s/[\\&,]/\\&/g
+s,[\\$`],\\&,g
+t clear
+: clear
+s,^[ 	]*#[ 	]*define[ 	][ 	]*\([^ 	(][^ 	(]*\)\(([^)]*)\)[ 	]*\(.*\)$,${ac_dA}\1${ac_dB}\1\2${ac_dC}\3${ac_dD},gp
+t end
+s,^[ 	]*#[ 	]*define[ 	][ 	]*\([^ 	][^ 	]*\)[ 	]*\(.*\)$,${ac_dA}\1${ac_dB}\1${ac_dC}\2${ac_dD},gp
+: end
+_ACEOF
+# If some macros were called several times there might be several times
+# the same #defines, which is useless.  Nevertheless, we may not want to
+# sort them, since we want the *last* AC-DEFINE to be honored.
+uniq confdefs.h | sed -n -f confdef2sed.sed >conftest.defines
+sed 's/ac_d/ac_u/g' conftest.defines >conftest.undefs
+rm -f confdef2sed.sed
+
+# This sed command replaces #undef with comments.  This is necessary, for
+# example, in the case of _POSIX_SOURCE, which is predefined and required
+# on some systems where configure will not decide to define it.
+cat >>conftest.undefs <<\_ACEOF
+s,^[ 	]*#[ 	]*undef[ 	][ 	]*[a-zA-Z_][a-zA-Z_0-9]*,/* & */,
+_ACEOF
+
+# Break up conftest.defines because some shells have a limit on the size
+# of here documents, and old seds have small limits too (100 cmds).
+echo '  # Handle all the #define templates only if necessary.' >>$CONFIG_STATUS
+echo '  if grep "^[ 	]*#[ 	]*define" $tmp/in >/dev/null; then' >>$CONFIG_STATUS
+echo '  # If there are no defines, we may have an empty if/fi' >>$CONFIG_STATUS
+echo '  :' >>$CONFIG_STATUS
+rm -f conftest.tail
+while grep . conftest.defines >/dev/null
+do
+  # Write a limited-size here document to $tmp/defines.sed.
+  echo '  cat >$tmp/defines.sed <<CEOF' >>$CONFIG_STATUS
+  # Speed up: don't consider the non `#define' lines.
+  echo '/^[ 	]*#[ 	]*define/!b' >>$CONFIG_STATUS
+  # Work around the forget-to-reset-the-flag bug.
+  echo 't clr' >>$CONFIG_STATUS
+  echo ': clr' >>$CONFIG_STATUS
+  sed ${ac_max_here_lines}q conftest.defines >>$CONFIG_STATUS
+  echo 'CEOF
+  sed -f $tmp/defines.sed $tmp/in >$tmp/out
+  rm -f $tmp/in
+  mv $tmp/out $tmp/in
+' >>$CONFIG_STATUS
+  sed 1,${ac_max_here_lines}d conftest.defines >conftest.tail
+  rm -f conftest.defines
+  mv conftest.tail conftest.defines
+done
+rm -f conftest.defines
+echo '  fi # grep' >>$CONFIG_STATUS
+echo >>$CONFIG_STATUS
+
+# Break up conftest.undefs because some shells have a limit on the size
+# of here documents, and old seds have small limits too (100 cmds).
+echo '  # Handle all the #undef templates' >>$CONFIG_STATUS
+rm -f conftest.tail
+while grep . conftest.undefs >/dev/null
+do
+  # Write a limited-size here document to $tmp/undefs.sed.
+  echo '  cat >$tmp/undefs.sed <<CEOF' >>$CONFIG_STATUS
+  # Speed up: don't consider the non `#undef'
+  echo '/^[ 	]*#[ 	]*undef/!b' >>$CONFIG_STATUS
+  # Work around the forget-to-reset-the-flag bug.
+  echo 't clr' >>$CONFIG_STATUS
+  echo ': clr' >>$CONFIG_STATUS
+  sed ${ac_max_here_lines}q conftest.undefs >>$CONFIG_STATUS
+  echo 'CEOF
+  sed -f $tmp/undefs.sed $tmp/in >$tmp/out
+  rm -f $tmp/in
+  mv $tmp/out $tmp/in
+' >>$CONFIG_STATUS
+  sed 1,${ac_max_here_lines}d conftest.undefs >conftest.tail
+  rm -f conftest.undefs
+  mv conftest.tail conftest.undefs
+done
+rm -f conftest.undefs
+
+cat >>$CONFIG_STATUS <<\_ACEOF
+  # Let's still pretend it is `configure' which instantiates (i.e., don't
+  # use $as_me), people would be surprised to read:
+  #    /* config.h.  Generated by config.status.  */
+  if test x"$ac_file" = x-; then
+    echo "/* Generated by configure.  */" >$tmp/config.h
+  else
+    echo "/* $ac_file.  Generated by configure.  */" >$tmp/config.h
+  fi
+  cat $tmp/in >>$tmp/config.h
+  rm -f $tmp/in
+  if test x"$ac_file" != x-; then
+    if diff $ac_file $tmp/config.h >/dev/null 2>&1; then
+      { echo "$as_me:$LINENO: $ac_file is unchanged" >&5
+echo "$as_me: $ac_file is unchanged" >&6;}
+    else
+      ac_dir=`(dirname "$ac_file") 2>/dev/null ||
+$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+         X"$ac_file" : 'X\(//\)[^/]' \| \
+         X"$ac_file" : 'X\(//\)$' \| \
+         X"$ac_file" : 'X\(/\)' \| \
+         .     : '\(.\)' 2>/dev/null ||
+echo X"$ac_file" |
+    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{ s//\1/; q; }
+  	  /^X\(\/\/\)[^/].*/{ s//\1/; q; }
+  	  /^X\(\/\/\)$/{ s//\1/; q; }
+  	  /^X\(\/\).*/{ s//\1/; q; }
+  	  s/.*/./; q'`
+      { if $as_mkdir_p; then
+    mkdir -p "$ac_dir"
+  else
+    as_dir="$ac_dir"
+    as_dirs=
+    while test ! -d "$as_dir"; do
+      as_dirs="$as_dir $as_dirs"
+      as_dir=`(dirname "$as_dir") 2>/dev/null ||
+$as_expr X"$as_dir" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+         X"$as_dir" : 'X\(//\)[^/]' \| \
+         X"$as_dir" : 'X\(//\)$' \| \
+         X"$as_dir" : 'X\(/\)' \| \
+         .     : '\(.\)' 2>/dev/null ||
+echo X"$as_dir" |
+    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{ s//\1/; q; }
+  	  /^X\(\/\/\)[^/].*/{ s//\1/; q; }
+  	  /^X\(\/\/\)$/{ s//\1/; q; }
+  	  /^X\(\/\).*/{ s//\1/; q; }
+  	  s/.*/./; q'`
+    done
+    test ! -n "$as_dirs" || mkdir $as_dirs
+  fi || { { echo "$as_me:$LINENO: error: cannot create directory \"$ac_dir\"" >&5
+echo "$as_me: error: cannot create directory \"$ac_dir\"" >&2;}
+   { (exit 1); exit 1; }; }; }
+
+      rm -f $ac_file
+      mv $tmp/config.h $ac_file
+    fi
+  else
+    cat $tmp/config.h
+    rm -f $tmp/config.h
+  fi
 done
 _ACEOF
 

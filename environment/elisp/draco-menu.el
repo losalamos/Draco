@@ -118,7 +118,7 @@
   :type 'list)
 
 ;; use my toolbar as default toolbar
-(set-specifier default-toolbar draco-toolbar-spec)
+(interactive (set-specifier default-toolbar draco-toolbar-spec))
 
 ;;---------------------------------------------------------------------------;;
 ;; XEmacs frame title

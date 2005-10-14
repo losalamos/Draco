@@ -404,7 +404,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 	   elif test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icc ; then
+	   elif test "${CXX}" = icpc ; then
                AC_PATH_PROG(GCC_BIN, g++, null)
                GCC_BIN=`dirname ${GCC_BIN}`
                GCC_HOME=`dirname ${GCC_BIN}`
@@ -464,6 +464,11 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_LINUX_X86)
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
@@ -472,7 +477,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
        # add the intel math library for better performance when
        # compiling with intel
-       if test "${CXX}" = icc; then
+       if test "${CXX}" = icpc; then
 	   LIBS="$LIBS -limf"
        fi
 ]) dnl linux
@@ -1138,7 +1143,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 	   elif test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icc ; then
+	   elif test "${CXX}" = icpc ; then
                AC_PATH_PROG(GCC_BIN, g++, null)
                GCC_BIN=`dirname ${GCC_BIN}`
                GCC_HOME=`dirname ${GCC_BIN}`
@@ -1179,6 +1184,11 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        else
            AC_MSG_RESULT("not needed")
        fi
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_DARWIN_PPC)
 
        #
        # finalize vendors
@@ -1282,7 +1292,7 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."

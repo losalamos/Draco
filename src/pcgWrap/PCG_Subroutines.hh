@@ -108,7 +108,7 @@ void xcgr  ( int& ijob,
 
 // Handle machine specific Fortran name linkage.
 
-#if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux) || defined(__alpha) 
+#if defined(sun) || defined(__sun) || defined(__sgi) || defined(__linux) || defined(__alpha) || defined(__GNUC__)
 
 #define sdfalt sdfalt_
 #define ddfalt ddfalt_

@@ -76,7 +76,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl defines --with-cxx
    AC_ARG_WITH(cxx,
-      [  --with-cxx[=gcc,sgi,kcc,compaq,guide]                                    
+      [  --with-cxx[=gcc,icpc,sgi,kcc,compaq,guide]                                    
                           choose a c++ compiler (defaults are machine dependent)])
 
    dnl the default is gcc

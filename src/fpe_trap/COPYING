@@ -1,0 +1,46 @@
+
+The code in darwin_ppc.cc, linux_x86.cc is based subtantially on
+Algae, which is distributed under the license described below.
+
+
+			     Copying Algae
+
+
+Copyright (C) 1994-2001  K. Scott Hunziker.
+Copyright (C) 1990-1994  The Boeing Company.
+
+Algae is free software.  You may redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+Algae is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Algae; see the file LICENSE.  If not, write to the Free
+Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+The copyright to major portions of Algae belongs to The Boeing
+Company.  The following permission notice and warranty disclaimer
+pertain to those portions of the code:
+
+   Permission to use, copy, modify, and distribute this software
+   and its documentation for any purpose is hereby granted,
+   provided that the above copyright notice appears in all copies,
+   that both the copyright notice and this permission notice and
+   warranty disclaimer appear in supporting documentation, and that
+   the names of Boeing or any of its entities not be used in
+   advertising or publicity pertaining to distribution of the
+   software without specific, written, prior permission.
+
+   BOEING DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+   INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS,
+   AND NONINFRINGEMENT.  IN NO EVENT SHALL BOEING BE LIABLE FOR ANY
+   SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY
+   DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA, OR PROFITS,
+   WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE, OR OTHER TORTIOUS
+   ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+   PERFORMANCE OF THIS SOFTWARE.

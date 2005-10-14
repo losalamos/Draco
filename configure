@@ -885,7 +885,7 @@ Optional Packages:
   --with-c4=scalar,mpi,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
-  --with-cxx=gcc,sgi,kcc,compaq,guide
+  --with-cxx=gcc,icpc,sgi,kcc,compaq,guide
                           choose a c++ compiler (defaults are machine dependent)
   --with-opt=0,1,2,3    set optimization level (0 by default)
   --with-posix=num      give posix source (system-dependent defaults)

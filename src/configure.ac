@@ -39,7 +39,7 @@ AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi mesh_element quadrature \
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS(norms timestep pcgWrap viz parser \
-                  cdi_gandolf cdi_analytic meshReaders)
+                  cdi_gandolf cdi_analytic meshReaders fpe_trap)
 dnl
 dnl Kelly Thompson 12 January 2005
 dnl Removed cdi_eospac from list of packages to build and test because

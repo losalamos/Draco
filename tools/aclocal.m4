@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -86,7 +86,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl defines --with-cxx
    AC_ARG_WITH(cxx,
-      [  --with-cxx[=gcc,sgi,kcc,compaq,guide]                                    
+      [  --with-cxx[=gcc,icpc,sgi,kcc,compaq,guide]                                    
                           choose a c++ compiler (defaults are machine dependent)])
 
    dnl the default is gcc
