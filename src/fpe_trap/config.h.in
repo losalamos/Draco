@@ -15,12 +15,15 @@
 
 // At most, only one of these should be defined in config/ac_platforms.m4
 
+#undef FPETRAP_OSF_ALPHA
 #undef FPETRAP_DARWIN_PPC
 #undef FPETRAP_LINUX_X86
 
 // Using values above, determine if fpe_trap is supported
 
-#if defined(FPETRAP_DARWIN_PPC) || defined(FPETRAP_LINUX_X86)
+#if defined(FPETRAP_OSF_ALPHA) ||\
+    defined(FPETRAP_DARWIN_PPC) ||\
+    defined(FPETRAP_LINUX_X86)
 #define FPETRAP_SUPPORTED
 #else
 #define FPETRAP_UNSUPPORTED

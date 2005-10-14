@@ -4287,6 +4287,11 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
 
        #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_OSF_ALPHA)
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE

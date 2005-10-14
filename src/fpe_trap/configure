@@ -9031,6 +9031,14 @@ echo "${ECHO_T}\"not needed\"" >&6
        #
 
        #
+       # Set up fpe_trap for this platform.
+       #
+       cat >>confdefs.h <<\_ACEOF
+#define FPETRAP_OSF_ALPHA 1
+_ACEOF
+
+
+       #
        # finalize vendors
        #
 

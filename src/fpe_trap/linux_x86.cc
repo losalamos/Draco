@@ -26,13 +26,7 @@
 #include <ds++/Assert.hh>
 #include <c4/global.hh>
 
-#include <stdio.h>
-#include <math.h>
-#include <errno.h>
-#include <setjmp.h>
 #include <signal.h>
-
-#include <assert.h>
 #include <fenv.h>
 
 // Local functions

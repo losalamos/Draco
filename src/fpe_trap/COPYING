@@ -1,6 +1,7 @@
 
-The code in darwin_ppc.cc, linux_x86.cc is based subtantially on
-Algae, which is distributed under the license described below.
+The code in darwin_ppc.cc, linux_x86.cc, and osf_alpha.cc is based
+subtantially on Algae, which is distributed under the license
+described below.
 
 
 			     Copying Algae
