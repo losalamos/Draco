@@ -114,6 +114,7 @@ File_Token_Stream::File_Token_Stream(string file_name,
 void File_Token_Stream::open(string file_name)
 {
     infile.close();
+    infile.clear();
     infile.open(file_name.c_str());
     filename = file_name;
     
