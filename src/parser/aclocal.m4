@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -2113,7 +2113,7 @@ AC_DEFUN(AC_DRACO_ARGS, [dnl
 
    dnl defines --with-cxx
    AC_ARG_WITH(cxx,
-      [  --with-cxx[=gcc,sgi,kcc,compaq,guide]                                    
+      [  --with-cxx[=gcc,icpc,sgi,kcc,compaq,guide]                                    
                           choose a c++ compiler (defaults are machine dependent)])
 
    dnl the default is gcc
@@ -3069,14 +3069,14 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
        fi
 
-   elif test "${with_cxx}" = icc ; then 
-       AC_CHECK_PROG(CXX, icc, icc)
+   elif test "${with_cxx}" = icpc ; then 
+       AC_CHECK_PROG(CXX, icpc, icpc)
 
-       if test "${CXX}" = icc ; then
-	   CC='icc'
-	   AC_DRACO_INTEL_ICC
+       if test "${CXX}" = icpc ; then
+	   CC='icpc'
+	   AC_DRACO_INTEL_ICPC
        else
-	   AC_MSG_ERROR("Did not find Intel icc compiler!")
+	   AC_MSG_ERROR("Did not find Intel icpc compiler!")
        fi
 
    elif test "${with_cxx}" = ibm ; then 
@@ -3462,19 +3462,19 @@ AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl Intel icc COMPILER SETUP
+dnl Intel icpc COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
+AC_DEFUN(AC_DRACO_INTEL_ICPC, [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
-   # icc SPECIFIC FLAGS
+   # icpc SPECIFIC FLAGS
 
    # LINKER AND LIBRARY
    LD='${CXX}'
 
-   # if shared then ar is icc
+   # if shared then ar is icpc
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
        ARFLAGS='-shared -o'
@@ -3499,9 +3499,9 @@ AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
 
        # turn off debug by default
        if test "${enable_debug:=no}" = yes ; then
-	   icc_opt_flags="-g -O${with_opt} -Ob1 -ip"
+	   icpc_opt_flags="-g -O${with_opt} -Ob1 -ip"
        else
-	   icc_opt_flags="-O${with_opt} -Ob1"
+	   icpc_opt_flags="-O${with_opt} -Ob1"
        fi
 
    #set up compiler when not optimized (turn off inlining with -Ob0)
@@ -3509,25 +3509,25 @@ AC_DEFUN(AC_DRACO_INTEL_ICC, [dnl
 
        # turn on debug by default
        if test "${enable_debug:=yes}" = yes ; then
-	   icc_opt_flags="-g -O0 -Ob0"
+	   icpc_opt_flags="-g -O0 -Ob0"
        else
-	   icc_opt_flags="-O0 -Ob0"
+	   icpc_opt_flags="-O0 -Ob0"
        fi
 
    fi
    
    # set the cxx and c flags
-   CXXFLAGS="${CXXFLAGS} ${icc_opt_flags}"
-   CFLAGS="${CFLAGS} ${icc_opt_flags}"
+   CXXFLAGS="${CXXFLAGS} ${icpc_opt_flags}"
+   CFLAGS="${CFLAGS} ${icpc_opt_flags}"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
        LDFLAGS="${LDFLAGS} -static"
    fi
 
-   AC_MSG_RESULT("icc compiler flags set")
+   AC_MSG_RESULT("icpc compiler flags set")
    
-   dnl end of AC_DRACO_INTEL_ICC
+   dnl end of AC_DRACO_INTEL_ICPC
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -4045,7 +4045,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 	   elif test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icc ; then
+	   elif test "${CXX}" = icpc ; then
                AC_PATH_PROG(GCC_BIN, g++, null)
                GCC_BIN=`dirname ${GCC_BIN}`
                GCC_HOME=`dirname ${GCC_BIN}`
@@ -4105,6 +4105,11 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_LINUX_X86)
+
+       #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
@@ -4113,7 +4118,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
        # add the intel math library for better performance when
        # compiling with intel
-       if test "${CXX}" = icc; then
+       if test "${CXX}" = icpc; then
 	   LIBS="$LIBS -limf"
        fi
 ]) dnl linux
@@ -4280,6 +4285,11 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        # end of libudm setup
        #
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_OSF_ALPHA)
 
        #
        # finalize vendors
@@ -4779,7 +4789,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 	   elif test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icc ; then
+	   elif test "${CXX}" = icpc ; then
                AC_PATH_PROG(GCC_BIN, g++, null)
                GCC_BIN=`dirname ${GCC_BIN}`
                GCC_HOME=`dirname ${GCC_BIN}`
@@ -4820,6 +4830,11 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        else
            AC_MSG_RESULT("not needed")
        fi
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_DARWIN_PPC)
 
        #
        # finalize vendors
@@ -4923,7 +4938,7 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."

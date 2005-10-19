@@ -107,6 +107,8 @@ File_Token_Stream::File_Token_Stream(string file_name,
  * 
  * \param file_name
  * Name of the file to which to attach the token stream.
+ *
+ * \throw rtt_dsxx::assertion If the input stream cannot be opened.
  */
 
 void File_Token_Stream::open(string file_name)
@@ -114,6 +116,16 @@ void File_Token_Stream::open(string file_name)
     infile.close();
     infile.open(file_name.c_str());
     filename = file_name;
+    
+    if( ! infile )
+    {
+	std::ostringstream errmsg;
+	errmsg << "Cannot open File_Token_Stream.\n"
+	       << "The file specified could not be found.\n"
+	       << "The file requested was: \"" << file_name 
+	       << "\"" << std::endl;
+	throw rtt_dsxx::assertion( errmsg.str().c_str() );
+    }
 
     Rewind();
 
