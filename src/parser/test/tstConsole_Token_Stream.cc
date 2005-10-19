@@ -158,7 +158,10 @@ void tstConsole_Token_Stream()
 	if (token.Type()!=END) ITFAILS;
 
 	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="-1.563e+3") ITFAILS;
+	if (token.Type()!=OTHER || token.Text()!="-") ITFAILS;
+
+	token = tokens.Shift();
+	if (token.Type()!=REAL || token.Text()!="1.563e+3") ITFAILS;
 
 	token = tokens.Shift();
 	if (token.Type()!=REAL || token.Text()!="1.563e+3") ITFAILS;
