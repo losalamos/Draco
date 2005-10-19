@@ -20,7 +20,7 @@ def extract_field(file_name, field):
     # Build a regex object
     regexField     = re.compile(field + ':[\s]+(.+)')
     regexFirstChar = re.compile('^[ ]*(\w)')
-    returnString = None
+    returnString   = None
 
     # Read the lines of the file and look for a match
     file_in = open(file_name, 'r')
