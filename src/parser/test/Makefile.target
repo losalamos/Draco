@@ -31,12 +31,6 @@ objs += ${thistestdep}
 
 all: tstConsole_Token_Stream
 
-check: generate
-
-generate: tstConsole_Token_Stream
-	chmod 750 $(test_alltarget)
-
-
 ###############################################################################
 #			 end of parser/test Makefile.target
 ###############################################################################

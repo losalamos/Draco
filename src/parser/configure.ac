@@ -40,6 +40,7 @@ AC_RUNTESTS(tstToken \
 	    tstParallel_File_Token_Stream \
             tstString_Token_Stream \
             tstutilities \
+            driver4tstConsole_Token_Stream \
             , 1 2)
 
 dnl
