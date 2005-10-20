@@ -231,7 +231,7 @@ operator!=(const T *pt, const Safe_Ptr<T> &sp)
 template<class T>
 Safe_Ptr<T>::Safe_Ptr(T *p_in)
     : d_p(p_in)
-    , d_r(new Safe_Ptr_Ref)
+    , d_r(0)
     , d_bad_state(false)
     
 {

@@ -55,6 +55,31 @@ template<class T> class Thin_Ptr
     template<class X> explicit Thin_Ptr(X * const ptr) : d_ptr(ptr) {}
 
 
+    //! Assignment operator for type T *.
+    Thin_Ptr<T>& operator=(T *p_in) 
+    {
+	d_ptr = p_in;
+	return *this;
+    }
+
+    
+    //! Assignment from another class
+    /*! 
+      This is to allow things like 
+      \code
+      Thin_Ptr<Base_Class> bc;
+      Thin_Ptr<Derived_Class> dc(new Derived_Class);
+      bc = dc;
+      \endcode
+      The comments in the first non-trivial ctor also hold.
+    */
+    Thin_Ptr<T>& operator=(Thin_Ptr<T>& ptr) 
+    {
+	d_ptr = ptr.d_ptr;
+	return *this;
+    }
+
+    
     //! Assignment from another class
     /*! 
       This is to allow things like 
@@ -70,14 +95,6 @@ template<class T> class Thin_Ptr
 	d_ptr = dynamic_cast<T*>(ptr.d_ptr);
 	return *this;
     }
-
-    //! Assignment operator for type T *.
-    Thin_Ptr<T>& operator=(T *p_in) 
-    {
-	d_ptr = p_in;
-	return *this;
-    }
-
 
     //! Sets the pointer to \c NULL
     void release_data() { d_ptr = 0; }

@@ -48,7 +48,29 @@ void test_basic()
     try
     {
 	DBC_Ptr<double> foo(new double);
-	foo.delete_data();
+        if ( ! foo ) ITFAILS;
+        
+	{ // copy ctor
+            DBC_Ptr<double> bar(foo);
+            if ( foo != bar ) ITFAILS;
+            bar.release_data();
+            if ( bar ) ITFAILS;
+            if ( ! foo ) ITFAILS;
+        }
+
+	{ // assignment
+            DBC_Ptr<double> bar;
+            bar = foo;
+            if ( ! foo ) ITFAILS;
+            if ( foo != bar ) ITFAILS;
+            bar.release_data();
+            if ( bar ) ITFAILS;
+            if ( ! foo ) ITFAILS;
+        }
+        
+        foo.delete_data(); // does *NOT* set pointer to NULL
+        foo = 0; // set pointer to NULL
+        if ( foo ) ITFAILS;
     }
     catch(rtt_dsxx::assertion &ass)
     {
@@ -67,13 +89,17 @@ void test_basic()
 void test_undeleted()
 {
     bool caught = false;
+    Base_Class *memory_cleanup;
+    
     try
     {
 	DBC_Ptr<Base_Class> foo(new Base_Class);
+        memory_cleanup = &(*foo);
     }
     catch(rtt_dsxx::assertion &ass)
     {
 	caught = true;
+        delete memory_cleanup;
     }
 
     if(!caught) ITFAILS;
@@ -185,15 +211,19 @@ void test_pass_by_ref()
 void test_dangling()
 {
     bool caught = false;
+    int *memory_cleanup;
+
     try
     {
 	DBC_Ptr<int> foo(new int);
 	DBC_Ptr<int> bar(foo);
+        memory_cleanup = &(*foo);
 	foo.delete_data();
     }
     catch(rtt_dsxx::assertion &ass)
     {
 	caught = true;
+        delete memory_cleanup;
     }
     catch(...)
     {
@@ -215,9 +245,12 @@ void test_dangling()
 void test_nested()
 {
     bool caught = false;
+    int *memory_cleanup;
+    
     try
     {
 	Owner o;
+        memory_cleanup = &(*o.ptr);
 	o.ptr.release_data();
 
 	// o.ptr.delete_data() gets called here by ~Owner
@@ -225,6 +258,7 @@ void test_nested()
     catch(rtt_dsxx::assertion &ass)
     {
 	caught = true;
+        delete memory_cleanup;
     }
     catch(...)
     {
@@ -358,7 +392,8 @@ main(int argc, char *argv[])
 	return 10;
     }
 #else
-    std::cout << "\n\nNo tests without DBC" << std::endl;
+    // Tests without DBC.
+    test_basic();
 #endif
 
     // status of test
