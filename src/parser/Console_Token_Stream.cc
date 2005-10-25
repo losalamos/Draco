@@ -193,7 +193,8 @@ void Console_Token_Stream::Rewind()
     cin.seekg(0);
 
     Text_Token_Stream::Rewind();
-    
+
+    Ensure(cin.rdstate() == 0);
     Ensure(check_class_invariants());
     Ensure(location() == "input");
     Ensure(Error_Count()==0);

@@ -847,7 +847,7 @@ Optional Packages:
   --with-c4=scalar,mpi,shmem
 		          turn on c4 (default scalar)
   --with-dbc=level      set Design-by-Contract
-  --with-cxx=gcc,sgi,kcc,compaq,guide
+  --with-cxx=gcc,icpc,sgi,kcc,compaq,guide
                           choose a c++ compiler (defaults are machine dependent)
   --with-opt=0,1,2,3    set optimization level (0 by default)
   --with-posix=num      give posix source (system-dependent defaults)
@@ -4782,9 +4782,9 @@ echo "$as_me: error: \"Did not find Compaq cxx compiler!\"" >&2;}
    { (exit 1); exit 1; }; }
        fi
 
-   elif test "${with_cxx}" = icc ; then
-       # Extract the first word of "icc", so it can be a program name with args.
-set dummy icc; ac_word=$2
+   elif test "${with_cxx}" = icpc ; then
+       # Extract the first word of "icpc", so it can be a program name with args.
+set dummy icpc; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_prog_CXX+set}" = set; then
@@ -4800,7 +4800,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CXX="icc"
+    ac_cv_prog_CXX="icpc"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4819,18 +4819,18 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-       if test "${CXX}" = icc ; then
-	   CC='icc'
+       if test "${CXX}" = icpc ; then
+	   CC='icpc'
 
    echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
 echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
 
-   # icc SPECIFIC FLAGS
+   # icpc SPECIFIC FLAGS
 
    # LINKER AND LIBRARY
    LD='${CXX}'
 
-   # if shared then ar is icc
+   # if shared then ar is icpc
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
        ARFLAGS='-shared -o'
@@ -4855,9 +4855,9 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
        # turn off debug by default
        if test "${enable_debug:=no}" = yes ; then
-	   icc_opt_flags="-g -O${with_opt} -Ob1 -ip"
+	   icpc_opt_flags="-g -O${with_opt} -Ob1 -ip"
        else
-	   icc_opt_flags="-O${with_opt} -Ob1"
+	   icpc_opt_flags="-O${with_opt} -Ob1"
        fi
 
    #set up compiler when not optimized (turn off inlining with -Ob0)
@@ -4865,29 +4865,29 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
 
        # turn on debug by default
        if test "${enable_debug:=yes}" = yes ; then
-	   icc_opt_flags="-g -O0 -Ob0"
+	   icpc_opt_flags="-g -O0 -Ob0"
        else
-	   icc_opt_flags="-O0 -Ob0"
+	   icpc_opt_flags="-O0 -Ob0"
        fi
 
    fi
 
    # set the cxx and c flags
-   CXXFLAGS="${CXXFLAGS} ${icc_opt_flags}"
-   CFLAGS="${CFLAGS} ${icc_opt_flags}"
+   CXXFLAGS="${CXXFLAGS} ${icpc_opt_flags}"
+   CFLAGS="${CFLAGS} ${icpc_opt_flags}"
 
    # static linking option
    if test "${enable_static_ld}" = yes ; then
        LDFLAGS="${LDFLAGS} -static"
    fi
 
-   echo "$as_me:$LINENO: result: \"icc compiler flags set\"" >&5
-echo "${ECHO_T}\"icc compiler flags set\"" >&6
+   echo "$as_me:$LINENO: result: \"icpc compiler flags set\"" >&5
+echo "${ECHO_T}\"icpc compiler flags set\"" >&6
 
 
        else
-	   { { echo "$as_me:$LINENO: error: \"Did not find Intel icc compiler!\"" >&5
-echo "$as_me: error: \"Did not find Intel icc compiler!\"" >&2;}
+	   { { echo "$as_me:$LINENO: error: \"Did not find Intel icpc compiler!\"" >&5
+echo "$as_me: error: \"Did not find Intel icpc compiler!\"" >&2;}
    { (exit 1); exit 1; }; }
        fi
 
@@ -5896,7 +5896,7 @@ echo "${ECHO_T}\"--backend -lg2c added to LIBS\"" >&6
 	       LIBS="${LIBS} -lg2c"
 	       echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
 echo "${ECHO_T}\"-lg2c added to LIBS\"" >&6
-	   elif test "${CXX}" = icc ; then
+	   elif test "${CXX}" = icpc ; then
                # Extract the first word of "g++", so it can be a program name with args.
 set dummy g++; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -6005,6 +6005,14 @@ echo "${ECHO_T}\"not needed\"" >&6
            echo "$as_me:$LINENO: result: \"not needed\"" >&5
 echo "${ECHO_T}\"not needed\"" >&6
        fi
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       cat >>confdefs.h <<\_ACEOF
+#define FPETRAP_LINUX_X86 1
+_ACEOF
+
 
        #
        # finalize vendors
@@ -6780,7 +6788,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
@@ -6815,7 +6823,7 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
 
        # add the intel math library for better performance when
        # compiling with intel
-       if test "${CXX}" = icc; then
+       if test "${CXX}" = icpc; then
 	   LIBS="$LIBS -limf"
        fi
 
@@ -7737,7 +7745,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
@@ -8747,7 +8755,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
@@ -9013,6 +9021,14 @@ echo "${ECHO_T}\"not needed\"" >&6
        #
        # end of libudm setup
        #
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       cat >>confdefs.h <<\_ACEOF
+#define FPETRAP_OSF_ALPHA 1
+_ACEOF
+
 
        #
        # finalize vendors
@@ -9788,7 +9804,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
@@ -11593,7 +11609,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icc rpath needs Xlinker in front of it
+	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
 	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
 	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
@@ -11831,7 +11847,7 @@ echo "${ECHO_T}\"--backend -lg2c added to LIBS\"" >&6
 	       LIBS="${LIBS} -lg2c"
 	       echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
 echo "${ECHO_T}\"-lg2c added to LIBS\"" >&6
-	   elif test "${CXX}" = icc ; then
+	   elif test "${CXX}" = icpc ; then
                # Extract the first word of "g++", so it can be a program name with args.
 set dummy g++; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -11919,6 +11935,14 @@ echo "${ECHO_T}\"not needed\"" >&6
            echo "$as_me:$LINENO: result: \"not needed\"" >&5
 echo "${ECHO_T}\"not needed\"" >&6
        fi
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       cat >>confdefs.h <<\_ACEOF
+#define FPETRAP_DARWIN_PPC 1
+_ACEOF
+
 
        #
        # finalize vendors
@@ -14145,11 +14169,4 @@ if test "$no_create" != yes; then
 fi
 
 
-cp ${srcdir}/test/parser_test.inp.in      test/parser_test.inp
-cp ${srcdir}/test/scanner_test.inp.in     test/scanner_test.inp
-cp ${srcdir}/test/recovery.inp.in         test/recovery.inp
-cp ${srcdir}/test/scanner_recovery.inp.in test/scanner_recovery.inp
-cp ${srcdir}/test/utilities.inp.in        test/utilities.inp
-cp ${srcdir}/test/tt_test.in              test/tt_test
-cp ${srcdir}/test/console_test.inp.in     test/console_test.inp
 

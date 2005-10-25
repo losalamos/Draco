@@ -1,3 +1,23 @@
+2005-10-25  Kelly Thompson  <kgt@lanl.gov>
+
+	* Console_Token_Stream.cc (Rewind): Add an additional DbC check on
+	  the value of cin.rdstate() to ensure a clean exit.
+
+	* configure.ac (Dependencies): This package now depends on units.
+
+	* Rename files <file>.inp.in to <file>.inp.  Update configure.ac
+	  and Makefile.target so that the make command copies input files
+	  to the test directory instead of configure.
+
+	* driver4tstConsole_Token_Stream.cc (runtest): Execute
+	  tstConsole_Token_Stream in scalar mode.  It does not make sense
+	  to execute this test in parallel and it fails on some
+	  architecture/mpi combinations.  Remove all inclusion of c4 or
+	  mpi directives and functions.
+
+	* tstConsole_Token_Stream.cc: Make executable scalar -- removing
+	  all references to c4 or mpi.
+
 2005-10-05  Kelly Thompson  <kgt@lanl.gov>
 
 	* Move the parser package from Capsaicin to Draco.

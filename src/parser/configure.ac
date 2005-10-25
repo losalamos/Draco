@@ -28,7 +28,7 @@ AC_INSTALL_LIB
 dnl 
 dnl Dependencies
 dnl
-AC_NEEDS_LIBS( c4 \
+AC_NEEDS_LIBS( c4 units \
                ds++ )
 
 dnl
@@ -56,17 +56,6 @@ AC_CONFIG_FILES(Makefile:../../config/Makefile.package.in \
                 test/Makefile:../../config/Makefile.test.in)
 
 AC_OUTPUT
-
-dnl
-dnl use cp instead of autoconf to make exact copy of files:
-dnl
-cp ${srcdir}/test/parser_test.inp.in      test/parser_test.inp
-cp ${srcdir}/test/scanner_test.inp.in     test/scanner_test.inp 
-cp ${srcdir}/test/recovery.inp.in         test/recovery.inp 
-cp ${srcdir}/test/scanner_recovery.inp.in test/scanner_recovery.inp 
-cp ${srcdir}/test/utilities.inp.in        test/utilities.inp 
-cp ${srcdir}/test/tt_test.in              test/tt_test 
-cp ${srcdir}/test/console_test.inp.in     test/console_test.inp 
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/parser configure.ac

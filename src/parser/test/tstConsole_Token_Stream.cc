@@ -12,9 +12,6 @@
 
 #include <sstream>
 
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-
 #include "parser_test.hh"
 #include "../Release.hh"
 #include "../Console_Token_Stream.hh"
@@ -242,13 +239,14 @@ void tstConsole_Token_Stream()
 	token = tokens.Shift();
 	if (token.Type()!=KEYWORD || token.Text()!="BLUE") ITFAILS;
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
+    // This test only makes sense for a scalar run (not a parallel run)
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
@@ -262,7 +260,7 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	if (rtt_c4::nodes() == 1) tstConsole_Token_Stream();
+        tstConsole_Token_Stream();
     }
     catch (rtt_dsxx::assertion &ass)
     {
@@ -282,9 +280,8 @@ int main(int argc, char *argv[])
     cout <<     "*********************************************" << endl;
     cout << endl;
 
-    rtt_c4::global_barrier();
     cout << "Done testing tstConsole_Token_Stream." << endl;
-    rtt_c4::finalize();
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

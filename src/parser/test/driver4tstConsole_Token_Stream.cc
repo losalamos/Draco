@@ -47,28 +47,7 @@ void runtest()
     
     std::ostringstream unixCommand;
     
-    // Determine system type:
-    
-    const bool isLinux( system("test `uname` = Linux") == 0 );
-    const bool isOSF1( system("test `uname` = OSF1") == 0 );
-    
-    // On Linux use mpirun. On OSF1 use prun.
-    
-    if( isLinux )
-    {
-        std::cout << "\nSystem type is Linux" << std::endl;
-        unixCommand << "mpirun -np ";
-    }
-    else if( isOSF1 )
-    {
-        std::cout << "\nSystem type is OSF1" << std::endl;
-        unixCommand << "prun -n ";
-    }
-    
-    // relative path to the executable
-    
-    unixCommand << rtt_c4::nodes()
-                << " ./tstConsole_Token_Stream < console_test.inp ";
+    unixCommand << " ./tstConsole_Token_Stream < console_test.inp ";
     
     // return code from the system command
     int errorLevel(-1);
@@ -81,15 +60,13 @@ void runtest()
     if( errorLevel == 0 )
     {
         msg << "Successful execution of tstConsole_Token_Stream:"
-            << "\n\t Number of processors: " << rtt_c4::nodes()
-            << "\n\t Input deck          : console_test.inp\n";
+            << "\n\t Standard input from: console_test.inp\n";
         PASSMSG( msg.str() );
     }
     else
     {
         msg << "Unsuccessful execution of tstConsole_Token_Stream:"
-            << "\n\t Number of processors: " << rtt_c4::nodes()
-            << "\n\t Input deck          : console_test.inp\n";
+            << "\n\t Standard input from: console_test.inp\n";
         FAILMSG( msg.str() );   
     }
     
@@ -103,6 +80,7 @@ void runtest()
 
 int main(int argc, char *argv[])
 {
+    
     rtt_c4::initialize(argc, argv);
 
     // version tag
@@ -111,7 +89,7 @@ int main(int argc, char *argv[])
 
     // Optional exit
     for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
+        if (string(argv[arg]) == "--version")
         {
             rtt_c4::finalize();
             return 0;
@@ -119,20 +97,20 @@ int main(int argc, char *argv[])
 
     try
     {
-        runtest();
+        if( rtt_c4::nodes() == 1 ) runtest();
     }
-    catch (std::exception &err)
+    catch (exception &err)
     {
-        std::cout << "ERROR: While testing driver4tstConsole_Token_Stream.cc, " 
-                  << err.what() << std::endl;
+        cout << "ERROR: While testing driver4tstConsole_Token_Stream.cc, " 
+                  << err.what() << endl;
         rtt_c4::finalize();
         return 1;
     }
     catch( ... )
     {
-        std::cout << "ERROR: While testing driver4tstConsole_Token_Stream.cc, " 
+        cout << "ERROR: While testing driver4tstConsole_Token_Stream.cc, " 
                   << "An unknown exception was thrown on processor "
-                  << rtt_c4::node() << std::endl;
+                  << rtt_c4::node() << endl;
         rtt_c4::finalize();
         return 1;
     }
@@ -141,24 +119,23 @@ int main(int argc, char *argv[])
         rtt_c4::HTSyncSpinLock slock;
 
         // status of test
-        std::cout << std::endl;
-        std::cout <<     "*********************************************" 
-                  << std::endl;
+        cout << endl;
+        cout <<     "*********************************************" 
+                  << endl;
         if (rtt_parser_test::passed) 
         {
-            std::cout << "**** driver4tstConsole_Token_Stream.cc Test: PASSED on " 
-                      << rtt_c4::node() 
-                      << std::endl;
+            cout << "**** driver4tstConsole_Token_Stream.cc Test: PASSED on " 
+                      << rtt_c4::node() << endl;
         }
-        std::cout <<     "*********************************************" 
-                  << std::endl;
-        std::cout << std::endl;
+        cout <<     "*********************************************" 
+                  << endl;
+        cout << endl;
     }
     
     rtt_c4::global_barrier();
 
-    std::cout << "Done testing driver4tstConsole_Token_Stream.cc on " << rtt_c4::node() 
-              << std::endl;
+    cout << "Done testing driver4tstConsole_Token_Stream.cc on " << rtt_c4::node() 
+              << endl;
     
     rtt_c4::finalize();
 
