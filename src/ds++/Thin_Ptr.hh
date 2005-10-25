@@ -63,16 +63,7 @@ template<class T> class Thin_Ptr
     }
 
     
-    //! Assignment from another class
-    /*! 
-      This is to allow things like 
-      \code
-      Thin_Ptr<Base_Class> bc;
-      Thin_Ptr<Derived_Class> dc(new Derived_Class);
-      bc = dc;
-      \endcode
-      The comments in the first non-trivial ctor also hold.
-    */
+    //! Natural assignment operator
     Thin_Ptr<T>& operator=(Thin_Ptr<T>& ptr) 
     {
 	d_ptr = ptr.d_ptr;
