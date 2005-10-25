@@ -246,6 +246,8 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
 
+   AC_CHECK_PROG(F90, lf95, lf95, none)
+
    # F90FREE, F90FIXED AND MODFLAG
 
    F90FREE='--nfix'
