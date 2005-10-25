@@ -86,6 +86,24 @@ void test_basic()
 
 //---------------------------------------------------------------------------//
 
+
+DBC_Ptr<Derived_Class> make_derived()
+{
+    DBC_Ptr<Derived_Class> dc;
+    dc = new Derived_Class;
+    return dc;
+}
+
+void test_retval_compiles()
+{
+    DBC_Ptr<Derived_Class> result;
+    result = make_derived();
+    result.delete_data();
+    PASSMSG("test_retval_compiles");
+}
+
+//---------------------------------------------------------------------------//
+
 void test_undeleted()
 {
     bool caught = false;
@@ -370,6 +388,7 @@ main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
 	test_basic();
+        test_retval_compiles();
 	test_undeleted();
 	test_over_deleted();
 	test_dangling();
@@ -394,6 +413,7 @@ main(int argc, char *argv[])
 #else
     // Tests without DBC.
     test_basic();
+    test_retval_compiles();
 #endif
 
     // status of test
