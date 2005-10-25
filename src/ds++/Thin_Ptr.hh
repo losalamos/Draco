@@ -56,20 +56,22 @@ template<class T> class Thin_Ptr
 
 
     //! Assignment operator for type T *.
-    Thin_Ptr<T>& operator=(T *p_in) 
+    Thin_Ptr<T>& operator=(T * const p_in) 
     {
 	d_ptr = p_in;
 	return *this;
     }
 
-    
     //! Natural assignment operator
-    Thin_Ptr<T>& operator=(Thin_Ptr<T>& ptr) 
+    /*!
+      This was added because you can't dynamic cast PODs, as is done in the
+      member template version of op=
+    */
+    Thin_Ptr<T>& operator=(Thin_Ptr<T> const & ptr) 
     {
 	d_ptr = ptr.d_ptr;
 	return *this;
     }
-
     
     //! Assignment from another class
     /*! 
@@ -81,7 +83,7 @@ template<class T> class Thin_Ptr
       \endcode
       The comments in the first non-trivial ctor also hold.
     */
-    template<class X> Thin_Ptr<T>& operator=(Thin_Ptr<X>& ptr) 
+    template<class X> Thin_Ptr<T>& operator=(Thin_Ptr<X> const & ptr) 
     {
 	d_ptr = dynamic_cast<T*>(ptr.d_ptr);
 	return *this;
