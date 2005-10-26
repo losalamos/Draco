@@ -34,11 +34,11 @@ def execute(executable, input_name, procs, output_name = None):
     the milagro output is captured as a string and returned.
     
     """
-    
+
     if not os.path.isfile(input_name):
         raise RuntimeError, "Input file %s not found" % input_name
 
-    # XXX Need to check for executability here also.
+    # TODO: Check for execuatble status here.
     if not os.path.isfile(executable):
         raise RuntimeError, "Execuatble file %s not found" % executable
 

@@ -24,7 +24,7 @@ def AccumulateFunc(a, b, func):
     for i in range(len(b)):
         a[i] += func(b[i])
     
-def ScaleArray(a,beta):
+def Scale(a,beta):
     "Multiple the elements of the first argument by the scalar second argument"
     for i in range(len(a)):
         a[i] *= beta

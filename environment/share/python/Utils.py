@@ -62,7 +62,7 @@ class Parameters(object):
 def is_attrib(value):
     """is_attrib(value)
     
-    Returns true for valid XML attribute specifiers: XXX='YYY'
+    Returns true for valid XML attribute specifiers
 
     >>> is_attrib("tag='value'")
     1
