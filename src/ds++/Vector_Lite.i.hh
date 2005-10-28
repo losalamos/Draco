@@ -128,6 +128,22 @@ Vector_Lite(const T &u0,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Constructor for any N from pointer.
+ * 
+ * \param uP c-style pointer to array of size N.
+ *
+ */
+template <class T, size_t N>
+Vector_Lite<T, N>::
+Vector_Lite(const T* u_p)
+{
+    for (size_t i=0; i<N; i++) {
+	d_U[i] = u_p[i];
+    }
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Assignment to a scalar.
  */
 template <class T, size_t N>

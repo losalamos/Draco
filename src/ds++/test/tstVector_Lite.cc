@@ -29,6 +29,27 @@ main(int argc, char *argv[])
     Vector_Lite<double, m> x(0.0);
     UNIT_TEST(std::count(x.begin(), x.end(), 0.0) == m);
 
+    {
+	cout << "constructor from C array" << endl;
+	double v1[5];
+	for (size_t i=0; i<5; i++) {v1[i] = 1.*i;}
+	Vector_Lite<double, 5> v2(v1);
+	for (size_t i=0; i<5; i++) {
+	    UNIT_TEST(v1[i] == v2[i]);
+	}
+    }
+
+    {
+	cout << "constructor from pointer" << endl;
+	double *v1 = new double[5];
+	for (size_t i=0; i<5; i++) {v1[i] = 1.*i;}
+	Vector_Lite<double, 5> v2(v1);
+	for (size_t i=0; i<5; i++) {
+	    UNIT_TEST(v1[i] == v2[i]);
+	}
+	delete [] v1;
+    }
+
     cout << "assignment to scalar" << endl;
     double c1 = 3.0;
     x = c1;
