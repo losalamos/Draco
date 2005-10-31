@@ -128,17 +128,17 @@ Vector_Lite(const T &u0,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Constructor for any N from pointer.
+ * \brief Fill in from C array.
  * 
- * \param uP c-style pointer to array of size N.
+ * \param u c-style pointer to array of size N.
  *
  */
 template <class T, size_t N>
-Vector_Lite<T, N>::
-Vector_Lite(const T* u_p)
+void Vector_Lite<T, N>::
+fill(const T u[N])
 {
     for (size_t i=0; i<N; i++) {
-	d_U[i] = u_p[i];
+	d_U[i] = u[i];
     }
 }
 

@@ -87,8 +87,8 @@ class Vector_Lite
     inline Vector_Lite(const T &u0, const T &u1, const T &u2,
 		       const T &u3, const T &u4);
 
-    // Constructor for any N from pointer.
-    inline Vector_Lite(const T* u_p);
+    // Fill in from C array.
+    inline void fill(const T u[N]);
 
     /// Destructor.
     ~Vector_Lite(void) { }
