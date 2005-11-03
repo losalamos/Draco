@@ -9,6 +9,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <iostream>
+#include <vector>
+#include <sstream>
+
 #include "c4_test.hh"
 #include "../C4_Traits.hh"
 #include "../Release.hh"
@@ -16,10 +20,6 @@
 #include "../SpinLock.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-#include <iostream>
-#include <vector>
-#include <sstream>
 
 using namespace std;
 
@@ -56,16 +56,18 @@ void blocking_ping_pong()
 	d = 2.5;
 	
 	// send out data
+        // Test both active and depricated forms of the send command. 
 	send(&c, 1, 1);
-	send(&i, 1, 1);
-	send(&l, 1, 1);
+        C4::Send(&i, 1, 1);  // This form is deprecated.
+        send(&l, 1, 1);
 	send(&f, 1, 1);
 	send(&d, 1, 1);
 
 	// receive back
+        // Test both active and depricated forms of the receive command.
 	receive(&c, 1, 1);
-	receive(&i, 1, 1);
-	receive(&l, 1, 1);
+        C4::Recv(&i, 1, 1); // This form is deprecated.
+        receive(&l, 1, 1);
 	receive(&f, 1, 1);
 	receive(&d, 1, 1);
 
@@ -146,10 +148,12 @@ void non_blocking_ping_pong()
     if (rtt_c4::node() == 0)
     {
 	// post receives
+        // Test two forms of the receive_async command plus one deprecated
+        // form (namespace C4::)
 	receive_async(crr, &cr, 1, 1);
-	receive_async(irr, &ir, 1, 1);
-	receive_async(lrr, &lr, 1, 1);
-	receive_async(frr, &fr, 1, 1);
+        irr = receive_async(&ir, 1, 1);
+        C4::RecvAsync(lrr, &lr, 1, 1);
+        frr = C4::RecvAsync(&fr, 1, 1);
 	receive_async(drr, &dr, 1, 1);
 
 	// give values to the send data
@@ -160,10 +164,12 @@ void non_blocking_ping_pong()
 	d = 2.5;
 	
 	// send out data
+        // Test two forms of the send_async command plus one deprecated
+        // form (namespace C4::)
 	send_async(crs, &c, 1, 1);
-	send_async(irs, &i, 1, 1);
-	send_async(lrs, &l, 1, 1);
-	send_async(frs, &f, 1, 1);
+        irs = send_async( &i, 1, 1);
+        C4::SendAsync(lrs, &l, 1, 1);
+        frs = C4::SendAsync(&f,1,1);
 	send_async(drs, &d, 1, 1);
 
 	// wait for sends to be finished
@@ -198,8 +204,9 @@ void non_blocking_ping_pong()
     if (rtt_c4::node() == 1)
     {
 	// post receives
+        // Test both function that provide equivalent functionality.
 	receive_async(crr, &cr, 1, 0);
-	receive_async(irr, &ir, 1, 0);
+	irr = receive_async( &ir, 1, 0);
 	receive_async(lrr, &lr, 1, 0);
 	receive_async(frr, &fr, 1, 0);
 	receive_async(drr, &dr, 1, 0);
@@ -236,8 +243,10 @@ void non_blocking_ping_pong()
 	d = 3.5;
 
 	// send them back
+        // Test both function that provide equivalent functionality.
+
 	send_async(crs, &c, 1, 0);
-	send_async(irs, &i, 1, 0);
+	irs = send_async( &i, 1, 0);
 	send_async(lrs, &l, 1, 0);
 	send_async(frs, &f, 1, 0);
 	send_async(drs, &d, 1, 0);
@@ -272,6 +281,35 @@ void non_blocking_ping_pong()
 	PASSMSG(m.str());
     }
 }
+
+//---------------------------------------------------------------------------//
+// Test the C4_Req.free() function.
+// After a asynchronous receive command is given, it can be terminated by
+// using the free() command.
+//---------------------------------------------------------------------------//
+
+void tstC4_Req_free()
+{
+    if (rtt_c4::nodes() != 2) return;
+
+    char   cr = 0;
+
+    // receive requests
+    C4_Req crr;
+
+    // assign on node 0
+    if (rtt_c4::node() == 0)
+    {
+	// post receives
+	receive_async(crr, &cr, 1, 1);
+
+        // void the receive request.
+        crr.free();
+    }
+    
+    return;
+}
+
 //---------------------------------------------------------------------------//
 
 void probe_ping_pong()
@@ -359,6 +397,8 @@ int main(int argc, char *argv[])
 	non_blocking_ping_pong();
 
 	probe_ping_pong();
+
+        tstC4_Req_free();
     }
     catch (rtt_dsxx::assertion &ass)
     {
