@@ -152,6 +152,16 @@ void receive_async(C4_Req& request, T *buffer, int size, int source,
 template<class T>
 int broadcast(T *buffer, int size, int root);
 
+
+/*---------------------------------------------------------------------------*/
+/*! 
+ * \brief Send data from processor 0 to all other processors.
+ */
+template<class ForwardIterator, class OutputIterator>
+void broadcast(ForwardIterator first,
+	       ForwardIterator last,
+	       OutputIterator result);
+
 //---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//

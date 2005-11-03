@@ -41,6 +41,52 @@ void inherit(const Comm &comm)
     Check (result == MPI_SUCCESS);
 }
 
+//---------------------------------------------//
+/*!
+ * Broadcast the range [first, last) from proc 0 
+ * into [result, ...) on all other processors.
+ */
+template<class ForwardIterator, class OutputIterator>
+void broadcast(ForwardIterator first,
+	       ForwardIterator last,
+	       OutputIterator  result)
+{
+    typedef typename std::iterator_traits<ForwardIterator>::value_type
+	value_type;
+    typedef typename std::iterator_traits<ForwardIterator>::difference_type 
+	diff_type;
+
+    // Proc 0 does not copy any data into the result iterator.
+    
+    if( rtt_c4::node() == 0)
+    {
+	diff_type size = std::distance(first, last);
+
+	value_type *buf = new value_type[size];
+	std::copy(first, last, buf);
+
+	for (int i=1; i<rtt_c4::nodes(); ++i)
+	{
+            rtt_c4::send(&size, 1, i);
+            rtt_c4::send(buf, size, i);
+	}
+	delete [] buf;
+    }
+    else
+    {
+	diff_type size;
+
+        rtt_c4::receive(&size, 1, 0);
+	value_type *buf = new value_type[size];
+        rtt_c4::receive(buf,size,0);
+
+	std::copy(buf, buf+size, result);
+
+	delete [] buf;
+    }
+}
+
+
 } // end namespace rtt_c4
 
 #endif // C4_MPI
