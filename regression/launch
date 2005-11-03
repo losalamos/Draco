@@ -64,6 +64,9 @@ fi
 
 REGDIR="${REGHOME}/${PACKAGE}"
 
+# change directory slashes to underscores
+PACKAGE=`echo $PACKAGE | sed 's/\//\_/'`
+
 # check the regression directory
 
 if [ ! -d ${REGDIR} ]; then
@@ -163,7 +166,7 @@ mailto="mailx -s ${LOG} "
 case ${PACKAGE} in
 draco) 
    mailto="${mailto} draco-regression@sf.lanl.gov" ;;
-clubimc | wedgehog | milagro | unclemcflux)
+jayenne_clubimc | jayenne_wedgehog | jayenne_milagro | jayenne_unclemcflux)
    mailto="${mailto} jayenne-regression@sf.lanl.gov" ;;
 capsaicin)
    mailto="${mailto} capsaicin-unit-tests@sf.lanl.gov" ;;
