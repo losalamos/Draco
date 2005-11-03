@@ -47,6 +47,12 @@ class TSync {
     ~TSync();
 };
 
+
+// kt - Defninition of HTSync commented out.
+// ------------------------------------------
+// I couldn't find where this class was used.  It looks like HTSpinLock simply
+// includes both TSync and HSync instead of using HTSync.
+
 //===========================================================================//
 // class HTSync - Head & tail synchronizing
 
@@ -54,14 +60,14 @@ class TSync {
 // sync in the ctor/dtor.
 //===========================================================================//
 
-class HTSync: public HSync, public TSync {
+// class HTSync: public HSync, public TSync {
 
-    HTSync( const HTSync& );
-    HTSync& operator=( const HTSync& );
+//     HTSync( const HTSync& );
+//     HTSync& operator=( const HTSync& );
 
-  public:
-    HTSync( int s =1 ) : HSync(s), TSync(s) {}
-};
+//   public:
+//     HTSync( int s =1 ) : HSync(s), TSync(s) {}
+// };
 
 } // end of rtt_c4
 
