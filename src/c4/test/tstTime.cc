@@ -27,14 +27,66 @@
 
 void wall_clock_test()
 {
+    using std::endl;
+    using std::cout;
+
     using rtt_dsxx::soft_equiv; 
     using rtt_c4::wall_clock_time;
     using rtt_c4::wall_clock_resolution;
     using rtt_c4::Timer;
+
+    double const wcr( rtt_c4::wall_clock_resolution() );
+    double const wcrDeprecated( C4::Wtick() );
+    if( wcr > 0.0 && wcr <= 100.0)
+    {
+        std::ostringstream msg;
+        msg << "The timer has a wall clock resoution of "
+            << wcr << " ticks." << endl;
+        PASSMSG(msg.str());
+    }
+    else
+    {
+        std::ostringstream msg;
+        msg << "The timer does not appear to have a reasonable resolution."
+            << " rtt_c4::wall_clock_resolution() = " << wcr << " ticks."
+            << endl;
+        FAILMSG(msg.str());
+    }
+    double tolerance(1.0e-14);
+    if( rtt_dsxx::soft_equiv( wcr, wcrDeprecated, tolerance ) )
+    {
+        std::ostringstream msg;
+        msg << "Wtick() and wall_clock_resolution() returned equivalent "
+            << "values (tolerance = " << tolerance << ")." << endl;
+        PASSMSG(msg.str());
+    }
+    else
+    {
+        std::ostringstream msg;
+        msg << "The function wall_clock_resolution() returned a value of "
+            << wcr << " ticks, but the equivalent deprecated function "
+            << "Wtick() returned a value of " << wcrDeprecated
+            << " ticks.  These values are not equivalent as they should be."
+            << endl;
+        FAILMSG(msg.str());
+    }
     
     Timer t;
 
+    double const prec( 1.5*t.posix_err() );
+    
     double begin = rtt_c4::wall_clock_time();
+    double const beginDeprecated = C4::Wtime();
+
+    if( beginDeprecated >= begin &&
+        rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
+    {
+        PASSMSG("Wtime() and wall_clock_time() returned equivalent values.");
+    }
+    else
+    {
+        FAILMSG("Wtime() and wall_clock_time() failed to return equivalent values.");
+    }
     t.start();
     
     for( int i = 0; i < 200000000; i++ )
@@ -44,7 +96,6 @@ void wall_clock_test()
     double end = rtt_c4::wall_clock_time();
     t.stop();
 
-    double const prec( 1.5*t.posix_err() );
     double const error( t.wall_clock() - (end-begin) );
     if( std::fabs(error) <= prec )
     {
@@ -58,7 +109,7 @@ void wall_clock_test()
 	    << "\n\tbegin          = " << begin
 	    << "\n\tend-begin      = " << end - begin
 	    << "\n\tt.wall_clock() = " << t.wall_clock()
-	    << "\n\tprec           = " << prec << std::endl;
+	    << "\n\tprec           = " << prec << endl;
 	FAILMSG(msg.str());
     }
 
@@ -78,7 +129,7 @@ void wall_clock_test()
 	std::ostringstream msg;
 	msg << "The sum of cpu and user time is less than or equal to the\n\t"
 	    << "reported wall clock time (within error bars = " << prec
-	    << " secs.)." << std::endl;
+	    << " secs.)." << endl;
 	PASSMSG(msg.str());
     }
     else
@@ -91,7 +142,7 @@ void wall_clock_test()
  	    << "\n\tSystem time   = " << t.system_cpu() << " sec."
  	    << "\n\tUser time     = " << t.user_cpu()   << " sec."
  	    << "\n\tWall time     = " << t.wall_clock() << " sec."
-	    << std::endl;
+	    << endl;
 	FAILMSG(msg.str());
     }
 
@@ -99,15 +150,18 @@ void wall_clock_test()
     // Demonstrate print functions:
     //------------------------------------------------------//
 
-    t.print( std::cout, 6 );
+    cout << "\nDemonstration of the print() member function via the\n"
+         << "\toperator<<(ostream&,Timer&) overloaded operator.\n"
+         << endl;
 
+    cout << "Timer = " << t << endl;
         
     //------------------------------------------------------//
     // Do a second timing:
     //------------------------------------------------------//
 
-    std::cout << "\nCreate a Timer Report after two timing cycles:\n"
-	      << std::endl;
+    cout << "\nCreate a Timer Report after two timing cycles:\n"
+         << endl;
     
     t.start();
     for( int i = 0; i < 200000000; i++ )
@@ -115,7 +169,17 @@ void wall_clock_test()
     }
     t.stop();
 
-    t.print( std::cout, 6 );
+    t.print( cout, 6 );
+
+    //------------------------------------------------------//
+    // Check the number of intervals
+    //------------------------------------------------------//
+
+    int const expectedNumberOfIntervals(2);
+    if( t.intervals() == expectedNumberOfIntervals )
+        PASSMSG("Found the expected number of intervals.")
+    else
+        FAILMSG("Did not find the expected number of intervals.")
     
     return;
 }
@@ -131,12 +195,13 @@ int main( int argc, char *argv[] )
     rtt_c4::initialize( argc, argv );
 
     // version tag
+    if( rtt_c4::node() == 0 )
+        cout << argv[0] << ": version " << rtt_c4::release() 
+             << endl;
+
     for( int arg = 1; arg < argc; arg++ )
 	if( string( argv[arg] ) == "--version" )
 	{
-	    if( rtt_c4::node() == 0 )
-		cout << argv[0] << ": version " << rtt_c4::release() 
-		     << endl;
 	    rtt_c4::finalize();
 	    return 0;
 	}
@@ -164,6 +229,8 @@ int main( int argc, char *argv[] )
 	cout <<   "\n*********************************************\n";
 	if( rtt_c4_test::passed )
 	    cout << "**** tstTime Test: PASSED on " << rtt_c4::node() << endl;
+        else
+            cout << "**** tstTime Test: FAILED on " << rtt_c4::node() << endl;
 	cout <<     "*********************************************\n" << endl;
     }
 
