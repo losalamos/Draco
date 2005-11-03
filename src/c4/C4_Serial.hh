@@ -54,7 +54,7 @@ int receive(T   *buffer,
 	    int  source, 
 	    int  tag)
 {
-    return 0;
+    return C4_SUCCESS;
 }
 
 //---------------------------------------------------------------------------//
@@ -119,6 +119,15 @@ int broadcast(T *buffer,
 	      int      root)
 {
     return C4_SUCCESS;
+}
+
+template<class ForwardIterator, class OutputIterator>
+void broadcast(ForwardIterator first,
+	       ForwardIterator last,
+	       OutputIterator  result)
+{
+    // No communication needed for Serial use.    
+    return;
 }
 
 //---------------------------------------------------------------------------//

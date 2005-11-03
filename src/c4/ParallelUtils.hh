@@ -224,49 +224,6 @@ inline void collate(InputIterator first, InputIterator last,
 	    std::iterator_traits<OutputIterator>::iterator_category());
 }
 
-/*!
- * Broadcast the range [first, last) from proc 0 
- * into [result, ...) on all other processors.
- */
-
-template<class ForwardIterator, class OutputIterator>
-void broadcast(ForwardIterator first,
-	       ForwardIterator last,
-	       OutputIterator result)
-{
-    typedef typename std::iterator_traits<ForwardIterator>::value_type
-	value_type;
-    typedef typename std::iterator_traits<ForwardIterator>::difference_type 
-	diff_type;
-
-    // Proc 0 does not copy any data into the result iterator.
-    
-    if (C4::node() == 0)
-    {
-	diff_type size = std::distance(first, last);
-
-	value_type *buf = new value_type[size];
-	std::copy(first, last, buf);
-
-	for (int i=1; i<C4::nodes(); ++i)
-	{
-	    C4::Send<diff_type>(size, i);
-	    C4::Send<value_type>(buf, size, i);
-	}
-	delete [] buf;
-    }
-    else
-    {
-	diff_type size;
-
-	C4::Recv<diff_type>(size, 0);
-	value_type *buf = new value_type[size];
-	C4::Recv<value_type>(buf, size, 0);
-
-	std::copy(buf, buf+size, result);
-
-	delete [] buf;
-    }
 }
 
 } // end namespace C4
