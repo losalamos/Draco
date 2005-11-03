@@ -35,12 +35,16 @@ using rtt_dsxx::soft_equiv;
 
 void test_simple()
 {
+    using std::vector;
+    
     char   c = 0;
     int    i = 0;
     long   l = 0;
     float  f = 0;
     double d = 0;
-	
+    vector<double> vref(10,3.1415);
+    vector<double> v(10,0.0);
+    
     // assign on node 0
     if (rtt_c4::node() == 0)
     {
@@ -49,6 +53,7 @@ void test_simple()
 	l = 1000;
 	f = 1.5;
 	d = 2.5;
+        v = vref;
     }
     
     // send out data, using node 0 as root
@@ -57,6 +62,7 @@ void test_simple()
     broadcast(&l, 1, 0);
     broadcast(&f, 1, 0);
     broadcast(&d, 1, 0);
+    broadcast(v.begin(),v.end(),v.begin());
 
     // check values
     if (c != 'A')             ITFAILS;
@@ -64,7 +70,8 @@ void test_simple()
     if (l != 1000)            ITFAILS;
     if (!soft_equiv(f, 1.5f)) ITFAILS;
     if (!soft_equiv(d, 2.5))  ITFAILS;
-
+    if (!soft_equiv(v.begin(),v.end(),vref.begin(),vref.end()))  ITFAILS;
+    
     rtt_c4::global_barrier();
 
     if (rtt_c4_test::passed)
