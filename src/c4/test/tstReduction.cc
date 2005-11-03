@@ -44,6 +44,11 @@ void elemental_reduction()
 
     if (xint != int_answer) ITFAILS;
 
+    // Test with deprecated form of global_sum
+    xint = rtt_c4::node() + 1;
+    C4::gsum(xint);
+    if (xint != int_answer) ITFAILS;
+
     // test longs
     long xlong = rtt_c4::node() + 1000;
     global_sum(xlong);
@@ -74,10 +79,20 @@ void elemental_reduction()
 
     if (xlong != long_answer) ITFAILS;
 
+    // Test with deprecated form of global_prod
+    xlong = rtt_c4::node() + 1;
+    C4::gprod(xlong);
+    if (xlong != long_answer) ITFAILS;
+    
     // test min
     xdbl = 0.5 + rtt_c4::node();
     global_min(xdbl);
     
+    if (!soft_equiv(xdbl, 0.5)) ITFAILS;
+
+    // Test with deprecated form of global_min
+    xdbl = rtt_c4::node() + 0.5;
+    C4::gmin(xdbl);
     if (!soft_equiv(xdbl, 0.5)) ITFAILS;
 
     // test max
@@ -86,6 +101,11 @@ void elemental_reduction()
 
     if (!soft_equiv(xdbl, rtt_c4::nodes() - 0.3)) ITFAILS;
 
+    // Test with deprecated form of global_max
+    xdbl = 0.7 + rtt_c4::node();
+    C4::gmax(xdbl);
+    if (!soft_equiv(xdbl, rtt_c4::nodes() - 0.3)) ITFAILS;
+    
     if (rtt_c4_test::passed)
 	PASSMSG("Elemental reductions ok.");
 }
@@ -116,21 +136,46 @@ void array_reduction()
 
     vector<double> c;
 
-    c = x;
-    global_sum(&c[0], 100);
-    if (!soft_equiv(c.begin(), c.end(), sum.begin(), sum.end())) ITFAILS;
+    {
+        c = x;
+        global_sum(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), sum.begin(), sum.end())) ITFAILS;
+        
+        c = x;
+        global_prod(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), prod.begin(), prod.end())) ITFAILS;
+        
+        c = x;
+        global_min(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), min.begin(), min.end())) ITFAILS;
+        
+        c = x;
+        global_max(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), max.begin(), max.end())) ITFAILS;
+        
+    }
 
-    c = x;
-    global_prod(&c[0], 100);
-    if (!soft_equiv(c.begin(), c.end(), prod.begin(), prod.end())) ITFAILS;
+    // Test using deprecated forms of global_sum, global_min, global_max and
+    // global_prod.
 
-    c = x;
-    global_min(&c[0], 100);
-    if (!soft_equiv(c.begin(), c.end(), min.begin(), min.end())) ITFAILS;
-
-    c = x;
-    global_max(&c[0], 100);
-    if (!soft_equiv(c.begin(), c.end(), max.begin(), max.end())) ITFAILS;
+    {
+        c = x;
+        C4::gsum(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), sum.begin(), sum.end())) ITFAILS;
+        
+        c = x;
+        C4::gprod(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), prod.begin(), prod.end())) ITFAILS;
+        
+        c = x;
+        C4::gmin(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), min.begin(), min.end())) ITFAILS;
+        
+        c = x;
+        C4::gmax(&c[0], 100);
+        if (!soft_equiv(c.begin(), c.end(), max.begin(), max.end())) ITFAILS;
+        
+    }
     
     if (rtt_c4_test::passed)
 	PASSMSG("Array reductions ok.");
