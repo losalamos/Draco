@@ -109,6 +109,12 @@ class C4_Req {
     ~C4_Req();
     C4_Req& operator=( const C4_Req& req );
 
+    //! \brief Equivalence operator
+    bool operator==(const C4_Req& right ) {
+        return (p == right.p); }
+    bool operator!=(const C4_Req& right ) {
+        return (p != right.p ); }
+
     void wait()     { p->wait(); }
     void free()     { p->free(); }
 
@@ -121,12 +127,15 @@ class C4_Req {
   private:
 
     void set()      { p->set(); }
-    void clear()    { p->clear(); }
 
     // Private access to the C4_ReqRefRep internals.
     
 #ifdef C4_MPI
-    MPI_Status  &s() { return p->s; }
+// Commented out by KT on 2005 Nov 1    
+// It does not appear that this member function serves any purpose.  It is not
+// used by C4_Req or friend class C4_ReqReqRef and it is private.
+// else can use it.
+//    MPI_Status  &s() { return p->s; }
     MPI_Request &r() { return p->r; }
 #endif
 
