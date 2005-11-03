@@ -18,7 +18,7 @@ export AZTEC_LIB_DIR=/codes/radtran/vendors/aztec/`uname`/lib/mpi
 export LAPACK_LIB_DIR=/codes/radtran/vendors/atlas/`uname`/lib
 
 # Spring
-export SPRNG_INC_DIR=/codes/radtran/vendors/sprng/`uname`/include
+export SPRNG_INC_DIR=/codes/radtran/vendors/sprng/include
 export SPRNG_LIB_DIR=/codes/radtran/vendors/sprng/`uname`/lib
 
 # Trilinos
