@@ -95,19 +95,26 @@ inline int Recv(T *buf, int nels, int source,
     return rtt_c4::receive(buf, nels, source, tag);
 }
 
-template<class T>
-inline int Send(T data, int destination,
-		int tag = rtt_c4::C4_Traits<T>::tag, int group = 0)
-{
-    return rtt_c4::send(&data, 1, destination, tag);
-}
+// When using either of these functions, you may need to specify the template
+// type explicitly.  For example:
+//
+//     int myInt(rtt_c4::node()+10);
+//     if( rtt_c4::node() == 0 )  C4::Send<int>(myInt,1);
+//     if( rtt_c4::node() == 1 )  C4::Recv<int>(myInt,0);
 
-template<class T>
-inline int Recv(T &data, int source,
-		int tag = rtt_c4::C4_Traits<T>::tag, int group = 0)
-{
-    return rtt_c4::receive(&data, 1, source, tag);
-}
+// template<class T>
+// inline int Send(T data, int destination,
+// 		int tag = rtt_c4::C4_Traits<T>::tag, int group = 0)
+// {
+//     return rtt_c4::send(&data, 1, destination, tag);
+// }
+
+// template<class T>
+// inline int Recv(T &data, int source,
+// 		int tag = rtt_c4::C4_Traits<T>::tag, int group = 0)
+// {
+//     return rtt_c4::receive(&data, 1, source, tag);
+// }
 
 template<class T>
 inline void SendAsync(C4_Req& r, const T *buf, int nels, int dest,
