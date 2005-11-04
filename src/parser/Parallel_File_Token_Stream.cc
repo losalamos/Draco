@@ -20,7 +20,6 @@
 #include <sstream>
 #include <vector>
 #include "c4/global.hh"
-#include "c4/ParallelUtils.hh"
 #include "Parallel_File_Token_Stream.hh"
 
 namespace rtt_parser 
@@ -180,7 +179,7 @@ string Parallel_File_Token_Stream::location() const
 
 void Parallel_File_Token_Stream::fill_character_buffer()
 {
-    using C4::broadcast;
+    using rtt_c4::broadcast;
     
     vector<char> comm_buffer(numeric_limits<signed char>::max()+1);
     unsigned i = 1;    // first character is status character
@@ -216,7 +215,7 @@ void Parallel_File_Token_Stream::fill_character_buffer()
     vector<char>::iterator first=comm_buffer.begin();
     vector<char>::iterator last=first+i;
 
-    C4::broadcast(first, last, first);
+    rtt_c4::broadcast(first, last, first);
 
     if (comm_buffer[0]=='\0')
     {
