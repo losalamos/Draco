@@ -14,6 +14,7 @@
 #define c4_C4_MPI_hh
 
 #include <c4/config.h>
+#include <algorithm>
 
 #ifdef C4_MPI
 
