@@ -20,7 +20,6 @@
 #include <sstream>
 #include <vector>
 #include "c4/global.hh"
-#include "c4/ParallelUtils.hh"
 #include "String_Token_Stream.hh"
 
 namespace rtt_parser 
