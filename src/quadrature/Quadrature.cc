@@ -164,6 +164,22 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     return integral;
 }
 
+void Quadrature::renormalize(const double new_norm)
+{
+    Require(new_norm > 0);
+    Require(norm > 0);
+
+    double const c=new_norm/norm;
+    
+    for ( size_t i = 0; i < getNumAngles(); ++i )
+    {
+        wt[i] = c * wt[i];
+    }
+
+    // re-set normalization value
+    norm = new_norm;
+}
+
 } // end namespace rtt_quadrature
 
 

@@ -297,14 +297,17 @@ class Quadrature
     //! \brief Integrates the tensor (Omega Omega) over the unit sphere. 
     vector<double> iOmegaOmegaDomega() const;
 
+    //! \brief Re-normalize quadrature 
+    void renormalize(const double new_norm);
+
   protected:
 
     // DATA
 
     const size_t snOrder; // defaults to 4.
-    const double norm; // 1D: defaults to 2.0.
-                       // 2D: defaults to 2*pi.
-                       // 3D: defaults to 4*pi.
+    double norm; // 1D: defaults to 2.0.
+                 // 2D: defaults to 2*pi.
+                 // 3D: defaults to 4*pi.
 
     // Quadrature directions and weights.
     vector<double> mu;
