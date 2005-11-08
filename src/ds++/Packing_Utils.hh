@@ -231,8 +231,8 @@ void Packer::pack(const T &value)
     else
     {
 	Require (begin_ptr);
-	Insist  (ptr >= begin_ptr, "Bounds error in packer!");
-	Insist  (ptr + sizeof(T) <= end_ptr, "Bounds error in packer!");
+ 	Ensure (ptr >= begin_ptr);
+ 	Ensure (ptr + sizeof(T) <= end_ptr);
 	
 	// copy value into the buffer
 	std::memcpy(ptr, &value, sizeof(T));
@@ -400,8 +400,8 @@ template<class T>
 void Unpacker::unpack(T &value)
 {
     Require (begin_ptr);
-    Insist  (ptr >= begin_ptr, "Bounds error in unpacker!");
-    Insist  (ptr + sizeof(T) <= end_ptr, "Bounds error in unpacker!");
+    Ensure  (ptr >= begin_ptr);
+    Ensure  (ptr + sizeof(T) <= end_ptr);
 
     // copy data into the value reference
     std::memcpy(&value, ptr, sizeof(T));
@@ -469,7 +469,7 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
 template<class FT>
 void pack_data(const FT &field, std::vector<char> &packed)
 {
-    Insist (packed.empty(), "Passed a non-empty vector<char> to pack_data.");
+    Require (packed.empty());
 
     // determine the size of the field
     int field_size = field.size();
@@ -533,7 +533,7 @@ void pack_data(const FT &field, std::vector<char> &packed)
 template<class FT>
 void unpack_data(FT &field, const std::vector<char> &packed)
 {
-    Insist (field.empty(), "Passed a non-empty field to unpack_data.");
+    Require (field.empty());
     Require (packed.size() >= sizeof(int));
 
     // make an unpacker and set it
@@ -551,8 +551,7 @@ void unpack_data(FT &field, const std::vector<char> &packed)
     for (typename FT::iterator itr = field.begin(); itr != field.end(); itr++)
 	unpacker >> *itr;
 
-    Insist (unpacker.get_ptr() == &packed[0] + packed.size(),
-	    "Incorrectly sized packed data given to unpack_data.");
+    Require (unpacker.get_ptr() == &packed[0] + packed.size());
 }
 
 } // end namespace rtt_dsxx
