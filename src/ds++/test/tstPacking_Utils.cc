@@ -129,6 +129,7 @@ void packing_test()
 	if (p.get_ptr() != b1+s1) ITFAILS;
 
 	// try catching a failure
+#if DBC
 	bool caught = false;
 	try
 	{
@@ -140,7 +141,7 @@ void packing_test()
 	    caught = true;
 	}
 	if (!caught) ITFAILS;
-
+#endif
 	p.set_buffer(s2, b2);
 	p << iz << z;
 	
@@ -166,6 +167,7 @@ void packing_test()
 
 	if (u.get_ptr() != s1+b1) ITFAILS;
 
+#if DBC
 	// try catching a failure
 	bool caught = false;
 	try
@@ -178,6 +180,7 @@ void packing_test()
 	    caught = true;
 	}
 	if (!caught) ITFAILS;
+#endif 
 
 	u.set_buffer(s2, b2);
 	u >> i >> d;
