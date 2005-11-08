@@ -10,9 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Sprng.hh"
 #include <cmath>
 #include <iostream>
+#include <cstdlib>
+#include "ds++/Packing_Utils.hh"
+#include "Sprng.hh"
 
 namespace rtt_rng 
 {

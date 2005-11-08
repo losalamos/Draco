@@ -5,32 +5,24 @@
  * \date   Tue May 12 09:00:52 1998
  * \brief  General header file for including the Rnd_Control, Sprng, and
  *         SPRNG library headers.
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __rng_Random_hh__
-#define __rng_Random_hh__
-
-//===========================================================================//
-//
-// revision history:
-// -----------------
-// 0)  original
-// 1)  1-SEP-99 : added doxygen comments
-// 
-//===========================================================================//
+#ifndef rtt_rng_Random_hh
+#define rtt_rng_Random_hh
 
 // get configurations for the RNG package
 #include <rng/config.h>
 
+// Header file that includes the SPRNG library.
+#include "rng_sprng.h"
+
 // Loads the primary rng package files
 #include "Rnd_Control.hh"
 #include "Sprng.hh"
-
-// Header file that includes the SPRNG library.
-#include "rng_sprng.h"
 
 namespace rtt_rng 
 {
@@ -51,7 +43,7 @@ extern int rn_stream;
 
 } // end namespace rtt_rng
 
-#endif                          // __rng_Random_hh__
+#endif                          // rtt_rng_Random_hh
 
 //---------------------------------------------------------------------------//
 //                              end of rng/Random.hh

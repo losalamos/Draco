@@ -4,14 +4,19 @@
  * \author Thomas M. Evans
  * \date   Wed Apr 29 16:08:58 1998
  * \brief  Rnd_Control header file.
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __rng_Rnd_Control_hh__
-#define __rng_Rnd_Control_hh__
+#ifndef rtt_rng_Rnd_Control_hh
+#define rtt_rng_Rnd_Control_hh
 
+// header file for SPRNG package
+#include "rng_sprng.h"
+
+#include "ds++/Assert.hh"
 #include "Sprng.hh"
 
 namespace rtt_rng 
@@ -46,15 +51,6 @@ namespace rtt_rng
  * \sa <a href="http://www.ncsa.uiuc.edu/Apps/SPRNG/">SPRNG (Scalable
  * Parallel Random Number Generator Library)</a>, Sprng, Random.hh, rtt_rng 
  */
-//
-// revision history:
-// -----------------
-//  0) original
-//  1)  5-21-98 : added get_size() function that determines the size of the
-//                stored random number state
-//  2)  1-SEP-99: added doxygen comments
-//  3) 09-JAN-02: cleaned up size calculation in constructor to match the 
-//                Sprng object packing functionality.
 //===========================================================================//
 
 class Rnd_Control 
@@ -81,7 +77,7 @@ class Rnd_Control
 
   public:
     // Constructor.
-    Rnd_Control(int, int = 1000000000, int = 0, int = 1);
+    Rnd_Control(int s, int n = 1000000000, int sn = 0, int p = 1);
 
     // Create Sprng objects.
     Sprng get_rn();
@@ -131,7 +127,7 @@ Sprng Rnd_Control::make_random_number_generator() const
 
 } // end namespace rtt_rng
 
-#endif                          // __rng_Rnd_Control_hh__
+#endif                          // rtt_rng_Rnd_Control_hh
 
 //---------------------------------------------------------------------------//
 //                              end of rng/Rnd_Control.hh

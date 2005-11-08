@@ -13,15 +13,11 @@
 #ifndef rtt_rng_Sprng_hh
 #define rtt_rng_Sprng_hh
 
+#include <vector>
 #include "ds++/Assert.hh"
-#include "ds++/Packing_Utils.hh"
 
 // Header file that includes the SPRNG library
-#include <rng/config.h>
 #include "rng_sprng.h"
-
-#include <vector>
-#include <cstdlib>
 
 namespace rtt_rng 
 {

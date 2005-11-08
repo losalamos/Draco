@@ -9,14 +9,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Rnd_Control.hh"
-#include "ds++/Assert.hh"
 #include <cstdlib>
 #include <vector>
-
-// header file for SPRNG package
-#include <rng/config.h>
-#include "rng_sprng.h"
+#include "Rnd_Control.hh"
 
 namespace rtt_rng 
 {
