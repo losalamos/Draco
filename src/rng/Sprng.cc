@@ -99,6 +99,38 @@ std::vector<char> Sprng::pack() const
     return packed;
 }
 
+
+void Sprng::pack(std::vector<char>& packed, std::vector<int>& tmpbuf) const
+{
+    Require (streamid);
+    
+    const int rng_size = get_pack_size(streamid->id);
+    tmpbuf.resize(rng_size);
+
+    // first pack the random number object and determine the size
+    pack_sprng2(streamid->id, &tmpbuf[0]);
+
+    char const * const tmpbuf_char = (char*)&tmpbuf[0];
+    const int size     = rng_size + 2 * sizeof(int);
+
+    // now set the buffer
+    packed.resize(size);
+    // make a packer
+    rtt_dsxx::Packer p;
+    p.set_buffer(size, &packed[0]);
+
+    // pack the stream number and rng size
+    p << streamnum << rng_size;
+
+    // pack the stream state
+    for (int i = 0; i < rng_size; i++)
+	p << tmpbuf_char[i];
+
+
+    Ensure (p.get_ptr() == &packed[0] + size);
+}
+
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator.

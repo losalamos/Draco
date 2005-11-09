@@ -99,7 +99,9 @@ class Sprng
 
     // Pack Sprng state.
     std::vector<char> pack() const;
+    void pack(std::vector<char>& packed, std::vector<int>& tmpbuf) const;
    
+
     // >>> Services provided by Sprng class.
 
     // Get Random number.
