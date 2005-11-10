@@ -114,19 +114,23 @@ def parse_attrib(value):
 
 
 ##---------------------------------------------------------------------------##
-def padlist(l, length):
-    """ Pads a list on the right with values of None until it reaches
-    the given length
+def padlist(l, length, value=None):
+
+    """ Pads a list on the right with 'value' (default None) until it
+    reaches the given length
 
     >>> padlist([1,2,3], 5)
     [1, 2, 3, None, None]
+    
+    >>> padlist([1,2,3], 5, 0)
+    [1, 2, 3, 0, 0]
     
     >>> padlist([1,2,3,4,5], 3)
     [1, 2, 3, 4, 5]
     """
 
     ll = l[:]
-    ll.extend([None]*(length-len(l)))
+    ll.extend([value]*(length-len(l)))
     return ll
 
 #----------------------------------------------------------------------
