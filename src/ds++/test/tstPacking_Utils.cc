@@ -137,7 +137,7 @@ void packing_test()
 	}
 	catch (const rtt_dsxx::assertion &a)
 	{
-	    cout << "Should catch this: " << a.what() << endl;
+	    cout << "Good, caught the exception" << endl;
 	    caught = true;
 	}
 	if (!caught) ITFAILS;
@@ -176,7 +176,7 @@ void packing_test()
 	}
 	catch (const rtt_dsxx::assertion &a)
 	{
-	    cout << "Should catch this: " << a.what() << endl;
+	    cout << "Good, caught the exception" << endl;
 	    caught = true;
 	}
 	if (!caught) ITFAILS;
