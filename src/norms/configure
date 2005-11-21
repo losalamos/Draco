@@ -2505,8 +2505,6 @@ echo "$as_me: error: not found" >&2;}
    ;;
    Lahey)
 
-   # Check for working Lahey F90 compiler
-
    # Extract the first word of "lf95", so it can be a program name with args.
 set dummy lf95; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -2543,14 +2541,6 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = lf95 && ${F90} --version 2>&1 | grep "Lahey"
-   then
-       :
-   else
-       { { echo "$as_me:$LINENO: error: not found" >&5
-echo "$as_me: error: not found" >&2;}
-   { (exit 1); exit 1; }; }
-   fi
 
    # F90FREE, F90FIXED AND MODFLAG
 
@@ -3610,8 +3600,6 @@ echo "$as_me: error: not found" >&2;}
        ;;
        i?86-pc-linux*)
 
-   # Check for working Lahey F90 compiler
-
    # Extract the first word of "lf95", so it can be a program name with args.
 set dummy lf95; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -3648,14 +3636,6 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   if test "${F90}" = lf95 && ${F90} --version 2>&1 | grep "Lahey"
-   then
-       :
-   else
-       { { echo "$as_me:$LINENO: error: not found" >&5
-echo "$as_me: error: not found" >&2;}
-   { (exit 1); exit 1; }; }
-   fi
 
    # F90FREE, F90FIXED AND MODFLAG
 
@@ -9026,6 +9006,14 @@ echo "${ECHO_T}\"not needed\"" >&6
        #
        # end of libudm setup
        #
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       cat >>confdefs.h <<\_ACEOF
+#define FPETRAP_OSF_ALPHA 1
+_ACEOF
+
 
        #
        # finalize vendors

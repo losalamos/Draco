@@ -1296,16 +1296,8 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
 
-   # Check for working Lahey F90 compiler
-
    AC_CHECK_PROG(F90, lf95, lf95, none)
-   if test "${F90}" = lf95 && ${F90} --version 2>&1 | grep "Lahey"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
+
    # F90FREE, F90FIXED AND MODFLAG
 
    F90FREE='--nfix'
@@ -3059,6 +3051,11 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        # end of libudm setup
        #
+
+       #
+       # Set up fpe_trap for this platform.
+       #
+       AC_DEFINE(FPETRAP_OSF_ALPHA)
 
        #
        # finalize vendors

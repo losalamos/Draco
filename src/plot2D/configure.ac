@@ -25,7 +25,7 @@ AC_RUNTESTS(tstPlot2D, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-5_6_0)
+AC_DRACO_AUTODOC(draco-5_9_0)
 
 dnl We need to add -nopure_cname to CXXFLAGS on the compaq because 
 dnl popen is defined in stdio.h but the strict ansi option will
