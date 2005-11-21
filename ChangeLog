@@ -1,3 +1,79 @@
+2005-11-21  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Released draco-5_9_0.  This is a minor Draco release.  A
+	summary of changes is:
+
+	ds++
+	   - Fixed memory leak in DBC_Ptr classes (Safe_Ptr) and updated
+	     testing.  Fixed an assignment error in Thin_Ptr.
+	   - Added fill member function to Vector_Lite.
+
+	c4
+	   - Added broadcast() function that uses iterators.
+	   - Removed C4::send() and C4::recv() deprecated functions from
+	     the old C4 namespace.	
+	   - Updated unit tests.
+
+	parser 
+	   - Added additional DBC checking.
+	   - Better parallel/serial integration.
+	   - Integration with units package.
+	   - Added unit tests.
+
+	plot2D 
+	   - Updated file.h include to <cfile>
+
+	quadrature
+	   - Added renormalize() function.
+
+	rng
+	   - Cleaned up #include's.
+	   - Fixed-up some comments.
+
+	fpe_trap
+	   - Added package.
+
+	config
+	   - Updated settings for INTEL icpc compiler.
+	   - Added configure options for fpe_trap package.
+
+	environment
+	   - New python tools added.
+	   - Updated draco-new-files.el to add .t.hh when draco-class is
+	     called.
+	
+	Packages that are included:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+		fpe_trap
+
+	Package that are NOT included: 
+
+		cdi_eospac
+		pcgWrap	
+
+	This release was required by jayenne (clubimc-3_0_0 and
+	wedgehog-5_0_0). 
+
 2005-10-06  Jae Chang <jhchang@lanl.gov>
 
 	* draco: Released draco-5_8_0.  This is a minor Draco release that
