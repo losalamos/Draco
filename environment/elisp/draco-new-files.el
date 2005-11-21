@@ -216,6 +216,10 @@ These files are based on templates in the draco/templates directory."
   (draco-create-buffer-from-template
    (concat draco-class-name ".i.hh")
    (concat draco-templates-dir "/template.i.hh"))
+
+  (draco-create-buffer-from-template
+   (concat draco-class-name ".t.hh")
+   (concat draco-templates-dir "/template.t.hh"))
 ))
 
 ;;---------------------------------------------------------------------------;;
