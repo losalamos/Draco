@@ -30,6 +30,9 @@
   \note 
     - do \em NOT point to arrays with these classes! The delete semantics
       are only for scalars.
+    - these classes assume that the objects being pointed to were allocated
+      with operator new().  If you point to something allocated with malloc
+      or a stack object, you are going to be in a world of hurt.
     - these classes do \em NOT have automatic garabage collection!  You
       must call the \c delete_data() member functions to release memory.
     - like SP.hh, it is not hard to fool these classes... don't mix DBC_Ptr
