@@ -454,8 +454,9 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            if test "${enable_dlopen}" = yes ; then
                LIBS="${LIBS} -ldl"
 
-               # if we are using g++ or pgi add fPIC
-               if test "${CXX}" = g++ || test "${CXX}" = pgCC; then
+               # if we are using g++ add fPIC (pgCC already has fPIC
+               # when building shared libraries
+               if test "${CXX}" = g++; then
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")

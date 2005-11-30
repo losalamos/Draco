@@ -3021,17 +3021,7 @@ AC_DEFUN(AC_CPP_ENV, [dnl
    # do tests of --with-cxx, see if the compiler exists and then call
    # the proper setup function
    
-   if test "${with_cxx}" = kcc ; then
-       AC_CHECK_PROG(CXX, KCC, KCC)
-
-       if test "${CXX}" = KCC ; then
-	   CC='KCC --c'
-	   AC_DRACO_KCC
-       else
-	   AC_MSG_ERROR("Did not find KCC compiler!")
-       fi
-
-   elif test "${with_cxx}" = sgi ; then
+   if test "${with_cxx}" = sgi ; then
        AC_CHECK_PROG(CXX, CC, CC)
        AC_CHECK_PROG(CC, cc, cc)  
 
@@ -3071,6 +3061,24 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   AC_MSG_ERROR("Did not find Intel icpc compiler!")
        fi
 
+   elif test "${with_cxx}" = pgi ; then
+       # only allow PGI on LINUX
+       case $host in
+       *-linux-gnu)
+           AC_CHECK_PROG(CXX, pgCC, pgCC)
+
+           if test "${CXX}" = pgCC ; then 
+               CC='pgcc'
+               AC_DRACO_PGCC
+           else
+               AC_MSG_ERROR("Did not find PGI C++ compiler!")
+           fi
+       ;;
+       *)
+           AC_MSG_ERROR("PGI only available on LINUX.")
+       ;;
+       esac        
+
    elif test "${with_cxx}" = ibm ; then 
        AC_CHECK_PROG(CXX, xlC, xlC)
        AC_CHECK_PROG(CC, xlc, xlc)
@@ -3082,7 +3090,6 @@ AC_DEFUN(AC_CPP_ENV, [dnl
        fi
 
    elif test "${with_cxx}" = asciwhite ; then 
-
        # asci white uses different executables depending upon
        # the mpi setup; so we check to see if mpi is on 
        # and set the executable appropriately 
@@ -3111,65 +3118,9 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    fi
 
-   # set the language to CPLUSPLUS
-   AC_LANG_CPLUSPLUS
+   # set the language to C++
+   AC_LANG(C++)
 
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl KCC COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_KCC, [dnl
-
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # KCC SPECIFIC FLAGS
-   dirstoclean='ti_files'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-   AR='${CXX}'
-   ARFLAGS='-o'
-   ARLIBS='${DRACO_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="--strict -D__KAI_STRICT"
-   fi
-
-   # --one_per flag
-   if test "${enable_one_per:=yes}" = yes ; then
-       ONEPERFLAG="--one_per"
-   fi
-
-   # optimization level
-   if test "${enable_debug:=no}" = yes && \
-      test "${with_opt:=0}" != 0 ; then
-      CXXFLAGS="${CXXFLAGS} -g"
-      CFLAGS="${CFLAGS} -g"
-   fi
-   CXXFLAGS="${CXXFLAGS} +K${with_opt:=0}"
-   CFLAGS="${CFLAGS} +K${with_opt:=0}"
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
-   fi
-
-   # Parallel build flag
-   
-   PARALLEL_FLAG="--parallel_build \${nj}"
-
-   # final compiler additions
-   CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
-
-   AC_MSG_RESULT("KCC compiler flags set")
-   
-   dnl end of AC_DRACO_KCC
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -3352,6 +3303,98 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    AC_MSG_RESULT("GNU g++ compiler flags set")
 
    dnl end of AC_DRACO_GNU_GCC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl PGI COMPILER SETUP
+dnl 
+dnl Note that this implementation of PGI uses options that are only
+dnl valid for LINUX
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_PGCC, [dnl
+
+   # do compiler configuration
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is pgCC
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+
+       # must use position-independent code
+       CXXFLAGS="${CXXFLAGS} -fPIC"
+       CFLAGS="${CFLAGS} -fPIC"
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-Xa -A --no_using_std"
+
+       # suppress long long errors in the platform-dependent options
+       # section 
+
+       # suppress missing return statement warning (we get this in
+       # nearly every STL inclusion through PGICC)
+       STRICTFLAG="--diag_suppress 940 ${STRICTFLAG}"
+   fi
+
+   # optimization level
+   # pgCC allows -g with -O
+
+   # set opt level in flags
+   pgcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       pgcc_opt_flags="${pgcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   fi
+
+   # add opt flags
+   CXXFLAGS="${pgcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${pgcc_opt_flags} ${CFLAGS}"
+   
+   # add ieee flag
+   CXXFLAGS="${CXXFLAGS} -Kieee"
+   CFLAGS="${CFLAGS} -Kieee"
+
+   # instantiate only functions that are used in the compilation
+   CXXFLAGS="${CXXFLAGS} -t"
+
+   # set unnormalized values to zero
+   CXXFLAGS="${CXXFLAGS} -Mdaz"
+   CFLAGS="${CFLAGS} -Mdaz"
+
+   AC_MSG_RESULT("PGI pgCC compiler flags set")
+
+   dnl end of AC_DRACO_PGCC
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -3729,6 +3772,10 @@ dnl necessary libraries to LIBS.
 dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DBS_LAHEY_ENVIRONMENT], [dnl
 
+   if test "${CXX}" != g++; then
+       AC_MSG_ERROR("LAHEY must be configured with g++ on LINUX.")
+   fi
+
    AC_MSG_CHECKING("for extra lf95 library requirements.")
    if test -n "${vendor_eospac}"    ||
       test -n "${vendor_scalapack}" ||
@@ -3788,16 +3835,28 @@ dnl adds the necessary libraries to LIBS.
 dnl ------------------------------------------------------------------------ dnl
 AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
+   # set the proper RPATH command depending on the C++ compiler
+   case ${CXX} in 
+       g++ | icpc)
+           rpath='-Xlinker -rpath '
+           ;;
+       pgCC)
+           rpath='-R'
+           ;;
+       *)
+           AC_MSG_ERROR("Improper compiler set in LINUX.")
+   esac
+
    AC_MSG_CHECKING("for extra pgf90 library requirements.")
    if test -n "${vendor_eospac}"    ||
-      test    "${with_lapack}" = "atlas" ||
+      (test -n "${vendor_lapack}" && test "${with_lapack}" = "atlas") ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
          f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
          if test -r ${f90_lib_loc}/libpgc.a; then
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgc -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
-            extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+            extra_f90_rpaths="$rpath${f90_lib_loc}"
          else
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
@@ -3805,7 +3864,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
             if test -r ${f90_lib_loc2}/libpgc.a; then
                extra_f90_libs="${extra_f90_libs} -L${f90_lib_loc2} -lpgc"
                extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
-               extra_f90_rpaths="${extra_f90_rpaths} -Xlinker -rpath ${f90_lib_locs}"
+               extra_f90_rpaths="${extra_f90_rpaths} $rpath${f90_lib_locs}"
             fi
          fi
          LIBS="${LIBS} ${extra_f90_libs}"
@@ -3958,13 +4017,10 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
 
-           # KCC
-           KCC)
-
-               # setup linux strict if the compiler is KCC (also turn
-               # off the warnings about long long being non-standard)
-               AC_MSG_NOTICE([Linux KCC strict option set to allow long long type!])
-               STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+           # PGI
+           pgCC)
+               AC_MSG_NOTICE([pgCC supressing error 450 for long long!])
+               STRICTFLAG="--diag_suppress 450 ${STRICTFLAG}"  
            ;;
 
            # catchall
@@ -3979,16 +4035,6 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # 
        # end of LONG LONG setup
        #
-
-       #
-       # add thread safety if we are using KCC on linux
-       #
-       if test "${CXX}" = KCC ; then
-	   CFLAGS="--thread_safe ${CFLAGS}"
-	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
-	   ARFLAGS="--thread_safe ${ARFLAGS}"
-	   LDFLAGS="--thread_safe ${LDFLAGS}"
-       fi
 
        #
        # Setup communications packages
@@ -4029,24 +4075,29 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        if test -n "${vendor_lapack}" || 
           test -n "${vendor_pcg}"    ||
 	  test -n "${vendor_gandolf}"; then
-	   
+
 	   # Add g2c for various compilers
-	   if test "${CXX}" = KCC ; then
-	       LIBS="${LIBS} --backend -lg2c"
-	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
-	   elif test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icpc ; then
-               AC_PATH_PROG(GCC_BIN, g++, null)
-               GCC_BIN=`dirname ${GCC_BIN}`
-               GCC_HOME=`dirname ${GCC_BIN}`
-               GCC_LIB_DIR="${GCC_HOME}/lib"
-	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-           else
-               AC_MSG_RESULT("not needed")
-	   fi
+           case "${CXX}" in
+
+               g++)
+                   LIBS="${LIBS} -lg2c"
+                   AC_MSG_RESULT("-lg2c added to LIBS")
+                   ;;
+
+               icpc | pgCC)
+                   AC_PATH_PROG(GCC_BIN, g++, null)
+                   GCC_BIN=`dirname ${GCC_BIN}`
+                   GCC_HOME=`dirname ${GCC_BIN}`
+                   GCC_LIB_DIR="${GCC_HOME}/lib"
+                   LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
+                   AC_MSG_RESULT("-lg2c added to LIBS")
+                   ;;
+
+               *)
+                   AC_MSG_RESULT("not needed")
+                   ;;
+
+           esac
 
        else
 	   AC_MSG_RESULT("not needed")
@@ -4079,8 +4130,9 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            if test "${enable_dlopen}" = yes ; then
                LIBS="${LIBS} -ldl"
 
-               # if we are using g++ add fPIC
-               if test "${CXX}" = g++ ; then
+               # if we are using g++ add fPIC (pgCC already has fPIC
+               # when building shared libraries
+               if test "${CXX}" = g++; then
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
@@ -4097,16 +4149,29 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
-       # Set up fpe_trap for this platform.
+       # Set up fpe_trap for this platform if gcc is on.
        #
-       AC_DEFINE(FPETRAP_LINUX_X86)
+       if test "${CXX}" = g++; then
+           AC_DEFINE(FPETRAP_LINUX_X86)
+       fi
 
        #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,space)
+       # handle rpaths
+       case ${CXX} in
+           pgCC)
+               AC_DBS_SETUP_RPATH(-R, nospace)
+               ;;
+           g++ | icpc)
+               AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+               ;;
+           *)
+               AC_MSG_ERROR("Unrecognized compiler on LINUX")
+               ;;
+       esac
 
        # add the intel math library for better performance when
        # compiling with intel
@@ -4174,7 +4239,7 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,space)
+       AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
 
 ]) dnl cygwin
 
@@ -4288,7 +4353,7 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,colon)
+       AC_DBS_SETUP_RPATH(-rpath, colon)
 
 ]) dnl osf
 
@@ -4499,7 +4564,7 @@ AC_DEFUN([AC_DBS_SUN_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(R,space)
+       AC_DBS_SETUP_RPATH(-R, space)
 ]) dnl sun
 
 dnl-------------------------------------------------------------------------dnl
@@ -4616,21 +4681,6 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
 
        #
-       # adjust strict flag for KCC
-       #
-
-       if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
-	   
-	   # if integer type is long long or vendor mpi is on then we
-	   # need to allow long long type
-	   if test "${with_mpi}" = vendor; then 
-		   AC_MSG_WARN("KCC strict option set to allow long long type")
-		   STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
-	   fi
-
-       fi
-
-       #
        # setup lapack
        #
 
@@ -4681,7 +4731,7 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,colon)
+       AC_DBS_SETUP_RPATH(-rpath, colon)
 
 ]) dnl irix
 
@@ -4775,10 +4825,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 	  test -n "${vendor_gandolf}"; then
 	   
 	   # Add g2c for various compilers
-	   if test "${CXX}" = KCC ; then
-	       LIBS="${LIBS} --backend -lg2c"
-	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
-	   elif test "${CXX}" = g++ ; then
+	   if test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
 	   elif test "${CXX}" = icpc ; then
@@ -4909,7 +4956,7 @@ dnl
 dnl set rpath when building shared library executables
 dnl
 dnl We support two forms for RPATH support:
-dnl 1) "-Xlinker -rpath dir1 -Xlinker -rpath dir2 ..."
+dnl 1) "-rpath dir1 -Xlinker -rpath dir2 ..."
 dnl 2) "-rpath dir1:dir2:..."
 dnl
 dnl Some compilers/linkers use "R" instead of "rpath".  The option
@@ -4917,7 +4964,12 @@ dnl name is set from the 1st argument to this function.  The second
 dnl argument specifies the list type as desribed above.
 dnl
 dnl $1 = rpath trigger.  One of "rpath" or "R"
-dnl $2 = delimiter. One of "space" or "colon"
+dnl $2 = delimiter. One of "space", "nospace", or "colon"
+dnl
+dnl Some compilers require a pass-to-linker argument (ie. -Xlinker in
+dnl g++).  These should be added to the rpath trigger argument, ie.
+dnl
+dnl AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
@@ -4930,14 +4982,18 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
@@ -4946,12 +5002,12 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi

@@ -4115,103 +4115,7 @@ echo "$as_me: error: Unrecognized F90 compiler, use --help" >&2;}
    # do tests of --with-cxx, see if the compiler exists and then call
    # the proper setup function
 
-   if test "${with_cxx}" = kcc ; then
-       # Extract the first word of "KCC", so it can be a program name with args.
-set dummy KCC; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_CXX+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CXX"; then
-  ac_cv_prog_CXX="$CXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CXX="KCC"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-CXX=$ac_cv_prog_CXX
-if test -n "$CXX"; then
-  echo "$as_me:$LINENO: result: $CXX" >&5
-echo "${ECHO_T}$CXX" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-
-       if test "${CXX}" = KCC ; then
-	   CC='KCC --c'
-
-   echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
-echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
-
-   # KCC SPECIFIC FLAGS
-   dirstoclean='ti_files'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-   AR='${CXX}'
-   ARFLAGS='-o'
-   ARLIBS='${DRACO_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="--strict -D__KAI_STRICT"
-   fi
-
-   # --one_per flag
-   if test "${enable_one_per:=yes}" = yes ; then
-       ONEPERFLAG="--one_per"
-   fi
-
-   # optimization level
-   if test "${enable_debug:=no}" = yes && \
-      test "${with_opt:=0}" != 0 ; then
-      CXXFLAGS="${CXXFLAGS} -g"
-      CFLAGS="${CFLAGS} -g"
-   fi
-   CXXFLAGS="${CXXFLAGS} +K${with_opt:=0}"
-   CFLAGS="${CFLAGS} +K${with_opt:=0}"
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
-   fi
-
-   # Parallel build flag
-
-   PARALLEL_FLAG="--parallel_build \${nj}"
-
-   # final compiler additions
-   CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
-
-   echo "$as_me:$LINENO: result: \"KCC compiler flags set\"" >&5
-echo "${ECHO_T}\"KCC compiler flags set\"" >&6
-
-
-       else
-	   { { echo "$as_me:$LINENO: error: \"Did not find KCC compiler!\"" >&5
-echo "$as_me: error: \"Did not find KCC compiler!\"" >&2;}
-   { (exit 1); exit 1; }; }
-       fi
-
-   elif test "${with_cxx}" = sgi ; then
+   if test "${with_cxx}" = sgi ; then
        # Extract the first word of "CC", so it can be a program name with args.
 set dummy CC; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -4864,6 +4768,145 @@ echo "$as_me: error: \"Did not find Intel icpc compiler!\"" >&2;}
    { (exit 1); exit 1; }; }
        fi
 
+   elif test "${with_cxx}" = pgi ; then
+       # only allow PGI on LINUX
+       case $host in
+       *-linux-gnu)
+           # Extract the first word of "pgCC", so it can be a program name with args.
+set dummy pgCC; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CXX+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CXX"; then
+  ac_cv_prog_CXX="$CXX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CXX="pgCC"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CXX=$ac_cv_prog_CXX
+if test -n "$CXX"; then
+  echo "$as_me:$LINENO: result: $CXX" >&5
+echo "${ECHO_T}$CXX" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+           if test "${CXX}" = pgCC ; then
+               CC='pgcc'
+
+   # do compiler configuration
+   echo "$as_me:$LINENO: checking \"configuration of ${CXX}/${CC} compilers\"" >&5
+echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >&6
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is pgCC
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+
+       # must use position-independent code
+       CXXFLAGS="${CXXFLAGS} -fPIC"
+       CFLAGS="${CFLAGS} -fPIC"
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-Xa -A --no_using_std"
+
+       # suppress long long errors in the platform-dependent options
+       # section
+
+       # suppress missing return statement warning (we get this in
+       # nearly every STL inclusion through PGICC)
+       STRICTFLAG="--diag_suppress 940 ${STRICTFLAG}"
+   fi
+
+   # optimization level
+   # pgCC allows -g with -O
+
+   # set opt level in flags
+   pgcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       pgcc_opt_flags="${pgcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   fi
+
+   # add opt flags
+   CXXFLAGS="${pgcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${pgcc_opt_flags} ${CFLAGS}"
+
+   # add ieee flag
+   CXXFLAGS="${CXXFLAGS} -Kieee"
+   CFLAGS="${CFLAGS} -Kieee"
+
+   # instantiate only functions that are used in the compilation
+   CXXFLAGS="${CXXFLAGS} -t"
+
+   # set unnormalized values to zero
+   CXXFLAGS="${CXXFLAGS} -Mdaz"
+   CFLAGS="${CFLAGS} -Mdaz"
+
+   echo "$as_me:$LINENO: result: \"PGI pgCC compiler flags set\"" >&5
+echo "${ECHO_T}\"PGI pgCC compiler flags set\"" >&6
+
+
+           else
+               { { echo "$as_me:$LINENO: error: \"Did not find PGI C++ compiler!\"" >&5
+echo "$as_me: error: \"Did not find PGI C++ compiler!\"" >&2;}
+   { (exit 1); exit 1; }; }
+           fi
+       ;;
+       *)
+           { { echo "$as_me:$LINENO: error: \"PGI only available on LINUX.\"" >&5
+echo "$as_me: error: \"PGI only available on LINUX.\"" >&2;}
+   { (exit 1); exit 1; }; }
+       ;;
+       esac
+
    elif test "${with_cxx}" = ibm ; then
        # Extract the first word of "xlC", so it can be a program name with args.
 set dummy xlC; ac_word=$2
@@ -5047,7 +5090,6 @@ echo "$as_me: error: \"Did not find IBM Visual Age xlC compiler!\"" >&2;}
        fi
 
    elif test "${with_cxx}" = asciwhite ; then
-
        # asci white uses different executables depending upon
        # the mpi setup; so we check to see if mpi is on
        # and set the executable appropriately
@@ -5318,7 +5360,7 @@ echo "$as_me: error: \"invalid compiler specification ${with_cxx}\"" >&2;}
 
    fi
 
-   # set the language to CPLUSPLUS
+   # set the language to C++
    ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5587,14 +5629,11 @@ echo "$as_me: g++ -ansi option set to allow long long type!" >&6;}
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
 
-           # KCC
-           KCC)
-
-               # setup linux strict if the compiler is KCC (also turn
-               # off the warnings about long long being non-standard)
-               { echo "$as_me:$LINENO: Linux KCC strict option set to allow long long type!" >&5
-echo "$as_me: Linux KCC strict option set to allow long long type!" >&6;}
-               STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+           # PGI
+           pgCC)
+               { echo "$as_me:$LINENO: pgCC supressing error 450 for long long!" >&5
+echo "$as_me: pgCC supressing error 450 for long long!" >&6;}
+               STRICTFLAG="--diag_suppress 450 ${STRICTFLAG}"
            ;;
 
            # catchall
@@ -5609,16 +5648,6 @@ echo "$as_me: Linux KCC strict option set to allow long long type!" >&6;}
        #
        # end of LONG LONG setup
        #
-
-       #
-       # add thread safety if we are using KCC on linux
-       #
-       if test "${CXX}" = KCC ; then
-	   CFLAGS="--thread_safe ${CFLAGS}"
-	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
-	   ARFLAGS="--thread_safe ${ARFLAGS}"
-	   LDFLAGS="--thread_safe ${LDFLAGS}"
-       fi
 
        #
        # Setup communications packages
@@ -5718,6 +5747,12 @@ done
        case ${F90} in
        lf95)
 
+   if test "${CXX}" != g++; then
+       { { echo "$as_me:$LINENO: error: \"LAHEY must be configured with g++ on LINUX.\"" >&5
+echo "$as_me: error: \"LAHEY must be configured with g++ on LINUX.\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
    echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
@@ -5776,17 +5811,31 @@ echo "${ECHO_T}\"${F90VENDOR_LIBS}\"" >&6
           ;;
        pgf90)
 
+   # set the proper RPATH command depending on the C++ compiler
+   case ${CXX} in
+       g++ | icpc)
+           rpath='-Xlinker -rpath '
+           ;;
+       pgCC)
+           rpath='-R'
+           ;;
+       *)
+           { { echo "$as_me:$LINENO: error: \"Improper compiler set in LINUX.\"" >&5
+echo "$as_me: error: \"Improper compiler set in LINUX.\"" >&2;}
+   { (exit 1); exit 1; }; }
+   esac
+
    echo "$as_me:$LINENO: checking \"for extra pgf90 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra pgf90 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
-      test    "${with_lapack}" = "atlas" ||
+      (test -n "${vendor_lapack}" && test "${with_lapack}" = "atlas") ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
          f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
          if test -r ${f90_lib_loc}/libpgc.a; then
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgc -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
-            extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+            extra_f90_rpaths="$rpath${f90_lib_loc}"
          else
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
@@ -5794,7 +5843,7 @@ echo $ECHO_N "checking \"for extra pgf90 library requirements.\"... $ECHO_C" >&6
             if test -r ${f90_lib_loc2}/libpgc.a; then
                extra_f90_libs="${extra_f90_libs} -L${f90_lib_loc2} -lpgc"
                extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
-               extra_f90_rpaths="${extra_f90_rpaths} -Xlinker -rpath ${f90_lib_locs}"
+               extra_f90_rpaths="${extra_f90_rpaths} $rpath${f90_lib_locs}"
             fi
          fi
          LIBS="${LIBS} ${extra_f90_libs}"
@@ -5861,16 +5910,16 @@ echo $ECHO_N "checking \"libg2c requirements\"... $ECHO_C" >&6
 	  test -n "${vendor_gandolf}"; then
 
 	   # Add g2c for various compilers
-	   if test "${CXX}" = KCC ; then
-	       LIBS="${LIBS} --backend -lg2c"
-	       echo "$as_me:$LINENO: result: \"--backend -lg2c added to LIBS\"" >&5
-echo "${ECHO_T}\"--backend -lg2c added to LIBS\"" >&6
-	   elif test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lg2c"
-	       echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
+           case "${CXX}" in
+
+               g++)
+                   LIBS="${LIBS} -lg2c"
+                   echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
 echo "${ECHO_T}\"-lg2c added to LIBS\"" >&6
-	   elif test "${CXX}" = icpc ; then
-               # Extract the first word of "g++", so it can be a program name with args.
+                   ;;
+
+               icpc | pgCC)
+                   # Extract the first word of "g++", so it can be a program name with args.
 set dummy g++; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -5910,16 +5959,20 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-               GCC_BIN=`dirname ${GCC_BIN}`
-               GCC_HOME=`dirname ${GCC_BIN}`
-               GCC_LIB_DIR="${GCC_HOME}/lib"
-	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
-	       echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
+                   GCC_BIN=`dirname ${GCC_BIN}`
+                   GCC_HOME=`dirname ${GCC_BIN}`
+                   GCC_LIB_DIR="${GCC_HOME}/lib"
+                   LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
+                   echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
 echo "${ECHO_T}\"-lg2c added to LIBS\"" >&6
-           else
-               echo "$as_me:$LINENO: result: \"not needed\"" >&5
+                   ;;
+
+               *)
+                   echo "$as_me:$LINENO: result: \"not needed\"" >&5
 echo "${ECHO_T}\"not needed\"" >&6
-	   fi
+                   ;;
+
+           esac
 
        else
 	   echo "$as_me:$LINENO: result: \"not needed\"" >&5
@@ -5958,8 +6011,9 @@ echo $ECHO_N "checking \"libdl requirements\"... $ECHO_C" >&6
            if test "${enable_dlopen}" = yes ; then
                LIBS="${LIBS} -ldl"
 
-               # if we are using g++ add fPIC
-               if test "${CXX}" = g++ ; then
+               # if we are using g++ add fPIC (pgCC already has fPIC
+               # when building shared libraries
+               if test "${CXX}" = g++; then
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    echo "$as_me:$LINENO: result: \"-ldl added to LIBS -fPIC added to compile flags\"" >&5
@@ -5980,12 +6034,14 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        #
-       # Set up fpe_trap for this platform.
+       # Set up fpe_trap for this platform if gcc is on.
        #
-       cat >>confdefs.h <<\_ACEOF
+       if test "${CXX}" = g++; then
+           cat >>confdefs.h <<\_ACEOF
 #define FPETRAP_LINUX_X86 1
 _ACEOF
 
+       fi
 
        #
        # finalize vendors
@@ -6752,23 +6808,30 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
+       # handle rpaths
+       case ${CXX} in
+           pgCC)
 
-       rptrigger=rpath
-       dilem=space
+       rptrigger=-R
+       dilem=nospace
 
        if test "${enable_shared}" = yes ; then
 
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -6779,12 +6842,12 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -6793,6 +6856,60 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        done
 
 
+               ;;
+           g++ | icpc)
+
+       rptrigger='-Xlinker -rpath'
+       dilem=space
+
+       if test "${enable_shared}" = yes ; then
+
+	   # turn off ranlib
+	   RANLIB=':'
+
+           if test "${dilem}" = "space"; then
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "colon"; then
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
+	   fi
+       fi
+
+       # add vendors to rpath
+       for vendor_dir in ${VENDOR_LIB_DIRS};
+       do
+           if test "${dilem}" = "space"; then
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "colon"; then
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           else
+               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
+   { (exit 1); exit 1; }; }
+	   fi
+       done
+
+
+               ;;
+           *)
+               { { echo "$as_me:$LINENO: error: \"Unrecognized compiler on LINUX\"" >&5
+echo "$as_me: error: \"Unrecognized compiler on LINUX\"" >&2;}
+   { (exit 1); exit 1; }; }
+               ;;
+       esac
 
        # add the intel math library for better performance when
        # compiling with intel
@@ -6874,6 +6991,12 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
 
 
        # setup lf95 libs
+
+   if test "${CXX}" != g++; then
+       { { echo "$as_me:$LINENO: error: \"LAHEY must be configured with g++ on LINUX.\"" >&5
+echo "$as_me: error: \"LAHEY must be configured with g++ on LINUX.\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
 
    echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
@@ -7710,7 +7833,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       rptrigger=rpath
+       rptrigger='-Xlinker -rpath'
        dilem=space
 
        if test "${enable_shared}" = yes ; then
@@ -7718,14 +7841,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -7736,12 +7863,12 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -7885,22 +8012,6 @@ _ACEOF
        #
        # end of communication package setup
        #
-
-       #
-       # adjust strict flag for KCC
-       #
-
-       if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
-
-	   # if integer type is long long or vendor mpi is on then we
-	   # need to allow long long type
-	   if test "${with_mpi}" = vendor; then
-		   { echo "$as_me:$LINENO: WARNING: \"KCC strict option set to allow long long type\"" >&5
-echo "$as_me: WARNING: \"KCC strict option set to allow long long type\"" >&2;}
-		   STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
-	   fi
-
-       fi
 
        #
        # setup lapack
@@ -8720,7 +8831,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       rptrigger=rpath
+       rptrigger=-rpath
        dilem=colon
 
        if test "${enable_shared}" = yes ; then
@@ -8728,14 +8839,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -8746,12 +8861,12 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -9769,7 +9884,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       rptrigger=rpath
+       rptrigger=-rpath
        dilem=colon
 
        if test "${enable_shared}" = yes ; then
@@ -9777,14 +9892,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -9795,12 +9914,12 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -11574,7 +11693,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
 
-       rptrigger=R
+       rptrigger=-R
        dilem=space
 
        if test "${enable_shared}" = yes ; then
@@ -11582,14 +11701,18 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -11600,12 +11723,12 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS};
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
@@ -11747,6 +11870,12 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
 
        # setup lf95 libs
 
+   if test "${CXX}" != g++; then
+       { { echo "$as_me:$LINENO: error: \"LAHEY must be configured with g++ on LINUX.\"" >&5
+echo "$as_me: error: \"LAHEY must be configured with g++ on LINUX.\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
    echo "$as_me:$LINENO: checking \"for extra lf95 library requirements.\"" >&5
 echo $ECHO_N "checking \"for extra lf95 library requirements.\"... $ECHO_C" >&6
    if test -n "${vendor_eospac}"    ||
@@ -11812,11 +11941,7 @@ echo $ECHO_N "checking \"libg2c requirements\"... $ECHO_C" >&6
 	  test -n "${vendor_gandolf}"; then
 
 	   # Add g2c for various compilers
-	   if test "${CXX}" = KCC ; then
-	       LIBS="${LIBS} --backend -lg2c"
-	       echo "$as_me:$LINENO: result: \"--backend -lg2c added to LIBS\"" >&5
-echo "${ECHO_T}\"--backend -lg2c added to LIBS\"" >&6
-	   elif test "${CXX}" = g++ ; then
+	   if test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       echo "$as_me:$LINENO: result: \"-lg2c added to LIBS\"" >&5
 echo "${ECHO_T}\"-lg2c added to LIBS\"" >&6
@@ -12947,7 +13072,7 @@ echo "${ECHO_T}${components}" >&6
 
 
    # find the release number
-   number=draco-5_8_0
+   number=draco-5_9_0
    echo "$as_me:$LINENO: checking \"component release number\"" >&5
 echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: $number" >&5
