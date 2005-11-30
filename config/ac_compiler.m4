@@ -59,17 +59,7 @@ AC_DEFUN(AC_CPP_ENV, [dnl
    # do tests of --with-cxx, see if the compiler exists and then call
    # the proper setup function
    
-   if test "${with_cxx}" = kcc ; then
-       AC_CHECK_PROG(CXX, KCC, KCC)
-
-       if test "${CXX}" = KCC ; then
-	   CC='KCC --c'
-	   AC_DRACO_KCC
-       else
-	   AC_MSG_ERROR("Did not find KCC compiler!")
-       fi
-
-   elif test "${with_cxx}" = sgi ; then
+   if test "${with_cxx}" = sgi ; then
        AC_CHECK_PROG(CXX, CC, CC)
        AC_CHECK_PROG(CC, cc, cc)  
 
@@ -109,6 +99,24 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 	   AC_MSG_ERROR("Did not find Intel icpc compiler!")
        fi
 
+   elif test "${with_cxx}" = pgi ; then
+       # only allow PGI on LINUX
+       case $host in
+       *-linux-gnu)
+           AC_CHECK_PROG(CXX, pgCC, pgCC)
+
+           if test "${CXX}" = pgCC ; then 
+               CC='pgcc'
+               AC_DRACO_PGCC
+           else
+               AC_MSG_ERROR("Did not find PGI C++ compiler!")
+           fi
+       ;;
+       *)
+           AC_MSG_ERROR("PGI only available on LINUX.")
+       ;;
+       esac        
+
    elif test "${with_cxx}" = ibm ; then 
        AC_CHECK_PROG(CXX, xlC, xlC)
        AC_CHECK_PROG(CC, xlc, xlc)
@@ -120,7 +128,6 @@ AC_DEFUN(AC_CPP_ENV, [dnl
        fi
 
    elif test "${with_cxx}" = asciwhite ; then 
-
        # asci white uses different executables depending upon
        # the mpi setup; so we check to see if mpi is on 
        # and set the executable appropriately 
@@ -149,65 +156,9 @@ AC_DEFUN(AC_CPP_ENV, [dnl
 
    fi
 
-   # set the language to CPLUSPLUS
-   AC_LANG_CPLUSPLUS
+   # set the language to C++
+   AC_LANG(C++)
 
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl KCC COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_KCC, [dnl
-
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # KCC SPECIFIC FLAGS
-   dirstoclean='ti_files'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-   AR='${CXX}'
-   ARFLAGS='-o'
-   ARLIBS='${DRACO_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="--strict -D__KAI_STRICT"
-   fi
-
-   # --one_per flag
-   if test "${enable_one_per:=yes}" = yes ; then
-       ONEPERFLAG="--one_per"
-   fi
-
-   # optimization level
-   if test "${enable_debug:=no}" = yes && \
-      test "${with_opt:=0}" != 0 ; then
-      CXXFLAGS="${CXXFLAGS} -g"
-      CFLAGS="${CFLAGS} -g"
-   fi
-   CXXFLAGS="${CXXFLAGS} +K${with_opt:=0}"
-   CFLAGS="${CFLAGS} +K${with_opt:=0}"
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} --static_libKCC -Bstatic"
-   fi
-
-   # Parallel build flag
-   
-   PARALLEL_FLAG="--parallel_build \${nj}"
-
-   # final compiler additions
-   CXXFLAGS="${CXXFLAGS} ${ONEPERFLAG}"
-
-   AC_MSG_RESULT("KCC compiler flags set")
-   
-   dnl end of AC_DRACO_KCC
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -390,6 +341,94 @@ AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
    AC_MSG_RESULT("GNU g++ compiler flags set")
 
    dnl end of AC_DRACO_GNU_GCC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl PGI COMPILER SETUP
+dnl 
+dnl Note that this implementation of PGI uses options that are only
+dnl valid for LINUX
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_DRACO_PGCC, [dnl
+
+   # do compiler configuration
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is pgCC
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-Xa -A --no_using_std"
+
+       # suppress long long errors
+       STRICTFLAG="--diag_suppress 450 ${STRICTFLAG}"
+
+       # suppress missing return statement warning (we get this in
+       # nearly every STL inclusion through PGICC)
+       STRICTFLAG="--diag_suppress 940 ${STRICTFLAG}"
+   fi
+
+   # optimization level
+   # pgCC allows -g with -O
+
+   # set opt level in flags
+   pgcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       pgcc_opt_flags="${pgcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   fi
+
+   # add opt flags
+   CXXFLAGS="${pgcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${pgcc_opt_flags} ${CFLAGS}"
+   
+   # add ieee flag
+   CXXFLAGS="${CXXFLAGS} -Kieee"
+   CFLAGS="${CFLAGS} -Kieee"
+
+   # instantiate only functions that are used in the compilation
+   CXXFLAGS="${CXXFLAGS} -t"
+
+   # set unnormalized values to zero
+   CXXFLAGS="${CXXFLAGS} -Mdaz"
+   CFLAGS="${CFLAGS} -Mdaz"
+
+   AC_MSG_RESULT("PGI pgCC compiler flags set")
+
+   dnl end of AC_DRACO_PGCC
 ])
 
 dnl-------------------------------------------------------------------------dnl

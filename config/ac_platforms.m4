@@ -446,8 +446,8 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            if test "${enable_dlopen}" = yes ; then
                LIBS="${LIBS} -ldl"
 
-               # if we are using g++ add fPIC
-               if test "${CXX}" = g++ ; then
+               # if we are using g++ or pgi add fPIC
+               if test "${CXX}" = g++ || test "${CXX}" = pgCC; then
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
@@ -464,16 +464,29 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
-       # Set up fpe_trap for this platform.
+       # Set up fpe_trap for this platform if gcc is on.
        #
-       AC_DEFINE(FPETRAP_LINUX_X86)
+       if test "${CXX}" = g++; then
+           AC_DEFINE(FPETRAP_LINUX_X86)
+       fi
 
        #
        # finalize vendors
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,space)
+       # handle rpaths
+       case ${CXX} in
+           pgCC)
+               AC_DBS_SETUP_RPATH(-R, nospace)
+               ;;
+           g++ | icpc)
+               AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+               ;;
+           *)
+               AC_MSG_ERROR("Unrecognized compiler on LINUX")
+               ;;
+       esac
 
        # add the intel math library for better performance when
        # compiling with intel
@@ -541,7 +554,7 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
        dnl
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,space)
+       AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
 
 ]) dnl cygwin
 
@@ -655,7 +668,7 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,colon)
+       AC_DBS_SETUP_RPATH(-rpath, colon)
 
 ]) dnl osf
 
@@ -866,7 +879,7 @@ AC_DEFUN([AC_DBS_SUN_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(R,space)
+       AC_DBS_SETUP_RPATH(-R, space)
 ]) dnl sun
 
 dnl-------------------------------------------------------------------------dnl
@@ -1048,7 +1061,7 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
        AC_VENDOR_FINALIZE
 
-       AC_DBS_SETUP_RPATH(rpath,colon)
+       AC_DBS_SETUP_RPATH(-rpath, colon)
 
 ]) dnl irix
 
@@ -1276,7 +1289,7 @@ dnl
 dnl set rpath when building shared library executables
 dnl
 dnl We support two forms for RPATH support:
-dnl 1) "-Xlinker -rpath dir1 -Xlinker -rpath dir2 ..."
+dnl 1) "-rpath dir1 -Xlinker -rpath dir2 ..."
 dnl 2) "-rpath dir1:dir2:..."
 dnl
 dnl Some compilers/linkers use "R" instead of "rpath".  The option
@@ -1284,7 +1297,12 @@ dnl name is set from the 1st argument to this function.  The second
 dnl argument specifies the list type as desribed above.
 dnl
 dnl $1 = rpath trigger.  One of "rpath" or "R"
-dnl $2 = delimiter. One of "space" or "colon"
+dnl $2 = delimiter. One of "space", "nospace", or "colon"
+dnl
+dnl Some compilers require a pass-to-linker argument (ie. -Xlinker in
+dnl g++).  These should be added to the rpath trigger argument, ie.
+dnl
+dnl AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
@@ -1297,14 +1315,18 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 	   # turn off ranlib
 	   RANLIB=':'
 
-	   # the g++/icpc rpath needs Xlinker in front of it
            if test "${dilem}" = "space"; then
-	       RPATHA="-Xlinker -${rptrigger} \${curdir}"
-	       RPATHB="-Xlinker -${rptrigger} \${curdir}/.."
-	       RPATHC="-Xlinker -${rptrigger} \${libdir}"
+	       RPATHA="${rptrigger} \${curdir}"
+	       RPATHB="${rptrigger} \${curdir}/.."
+	       RPATHC="${rptrigger} \${libdir}"
+	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATHA="${rptrigger}\${curdir}"
+	       RPATHB="${rptrigger}\${curdir}/.."
+	       RPATHC="${rptrigger}\${libdir}"
 	       RPATH="${RPATHA} ${RPATHB} ${RPATHC} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
+	       RPATH="${rptrigger} \${curdir}:\${curdir}/..:\${libdir} ${RPATH}"
            else
                AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
@@ -1313,12 +1335,12 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS}; 
        do
-	   # if we are using gcc then add xlinker
            if test "${dilem}" = "space"; then
-	       RPATH="-Xlinker -${rptrigger} ${vendor_dir} ${RPATH}"
-	   # else we just add the rpath
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+           elif test "${dilem}" = "nospace"; then
+	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
            elif test "${dilem}" = "colon"; then
-	       RPATH="-${rptrigger} ${vendor_dir} ${RPATH}"
+	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
            else
                AC_MSG_ERROR("Cannot determine what rpath format to use!")
 	   fi
