@@ -96,6 +96,10 @@ dnl necessary libraries to LIBS.
 dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DBS_LAHEY_ENVIRONMENT], [dnl
 
+   if test "${CXX}" != g++; then
+       AC_MSG_ERROR("LAHEY must be configured with g++ on LINUX.")
+   fi
+
    AC_MSG_CHECKING("for extra lf95 library requirements.")
    if test -n "${vendor_eospac}"    ||
       test -n "${vendor_scalapack}" ||
@@ -155,16 +159,28 @@ dnl adds the necessary libraries to LIBS.
 dnl ------------------------------------------------------------------------ dnl
 AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
+   # set the proper RPATH command depending on the C++ compiler
+   case ${CXX} in 
+       g++ | icpc)
+           rpath='-Xlinker -rpath '
+           ;;
+       pgCC)
+           rpath='-R'
+           ;;
+       *)
+           AC_MSG_ERROR("Improper compiler set in LINUX.")
+   esac
+
    AC_MSG_CHECKING("for extra pgf90 library requirements.")
    if test -n "${vendor_eospac}"    ||
-      test    "${with_lapack}" = "atlas" ||
+      (test -n "${vendor_lapack}" && test "${with_lapack}" = "atlas") ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
          f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
          if test -r ${f90_lib_loc}/libpgc.a; then
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgc -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
-            extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
+            extra_f90_rpaths="$rpath${f90_lib_loc}"
          else
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
@@ -172,7 +188,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
             if test -r ${f90_lib_loc2}/libpgc.a; then
                extra_f90_libs="${extra_f90_libs} -L${f90_lib_loc2} -lpgc"
                extra_f90_rpaths="-Xlinker -rpath ${f90_lib_loc}"
-               extra_f90_rpaths="${extra_f90_rpaths} -Xlinker -rpath ${f90_lib_locs}"
+               extra_f90_rpaths="${extra_f90_rpaths} $rpath${f90_lib_locs}"
             fi
          fi
          LIBS="${LIBS} ${extra_f90_libs}"
@@ -325,13 +341,10 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
            ;;
 
-           # KCC
-           KCC)
-
-               # setup linux strict if the compiler is KCC (also turn
-               # off the warnings about long long being non-standard)
-               AC_MSG_NOTICE([Linux KCC strict option set to allow long long type!])
-               STRICTFLAG="--linux_strict -D__KAI_STRICT --diag_suppress 450"
+           # PGI
+           pgCC)
+               AC_MSG_NOTICE([pgCC supressing error 450 for long long!])
+               STRICTFLAG="--diag_suppress 450 ${STRICTFLAG}"  
            ;;
 
            # catchall
@@ -346,16 +359,6 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # 
        # end of LONG LONG setup
        #
-
-       #
-       # add thread safety if we are using KCC on linux
-       #
-       if test "${CXX}" = KCC ; then
-	   CFLAGS="--thread_safe ${CFLAGS}"
-	   CXXFLAGS="--thread_safe ${CXXFLAGS}"
-	   ARFLAGS="--thread_safe ${ARFLAGS}"
-	   LDFLAGS="--thread_safe ${LDFLAGS}"
-       fi
 
        #
        # Setup communications packages
@@ -396,24 +399,29 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        if test -n "${vendor_lapack}" || 
           test -n "${vendor_pcg}"    ||
 	  test -n "${vendor_gandolf}"; then
-	   
+
 	   # Add g2c for various compilers
-	   if test "${CXX}" = KCC ; then
-	       LIBS="${LIBS} --backend -lg2c"
-	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
-	   elif test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icpc ; then
-               AC_PATH_PROG(GCC_BIN, g++, null)
-               GCC_BIN=`dirname ${GCC_BIN}`
-               GCC_HOME=`dirname ${GCC_BIN}`
-               GCC_LIB_DIR="${GCC_HOME}/lib"
-	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-           else
-               AC_MSG_RESULT("not needed")
-	   fi
+           case "${CXX}" in
+
+               g++)
+                   LIBS="${LIBS} -lg2c"
+                   AC_MSG_RESULT("-lg2c added to LIBS")
+                   ;;
+
+               icpc | pgCC)
+                   AC_PATH_PROG(GCC_BIN, g++, null)
+                   GCC_BIN=`dirname ${GCC_BIN}`
+                   GCC_HOME=`dirname ${GCC_BIN}`
+                   GCC_LIB_DIR="${GCC_HOME}/lib"
+                   LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
+                   AC_MSG_RESULT("-lg2c added to LIBS")
+                   ;;
+
+               *)
+                   AC_MSG_RESULT("not needed")
+                   ;;
+
+           esac
 
        else
 	   AC_MSG_RESULT("not needed")
@@ -996,21 +1004,6 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
        #
 
        #
-       # adjust strict flag for KCC
-       #
-
-       if test "${CXX}" = KCC && test "${enable_strict_ansi}" = yes ; then
-	   
-	   # if integer type is long long or vendor mpi is on then we
-	   # need to allow long long type
-	   if test "${with_mpi}" = vendor; then 
-		   AC_MSG_WARN("KCC strict option set to allow long long type")
-		   STRICTFLAG="${STRICTFLAG} --diag_suppress 450"
-	   fi
-
-       fi
-
-       #
        # setup lapack
        #
 
@@ -1155,10 +1148,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
 	  test -n "${vendor_gandolf}"; then
 	   
 	   # Add g2c for various compilers
-	   if test "${CXX}" = KCC ; then
-	       LIBS="${LIBS} --backend -lg2c"
-	       AC_MSG_RESULT("--backend -lg2c added to LIBS")
-	   elif test "${CXX}" = g++ ; then
+	   if test "${CXX}" = g++ ; then
 	       LIBS="${LIBS} -lg2c"
 	       AC_MSG_RESULT("-lg2c added to LIBS")
 	   elif test "${CXX}" = icpc ; then

@@ -376,8 +376,8 @@ AC_DEFUN(AC_DRACO_PGCC, [dnl
    if test "${enable_strict_ansi:=yes}" = yes ; then
        STRICTFLAG="-Xa -A --no_using_std"
 
-       # suppress long long errors
-       STRICTFLAG="--diag_suppress 450 ${STRICTFLAG}"
+       # suppress long long errors in the platform-dependent options
+       # section 
 
        # suppress missing return statement warning (we get this in
        # nearly every STL inclusion through PGICC)
