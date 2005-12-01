@@ -21,6 +21,7 @@
 
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
+#include "../Q1DGaussLeg.hh"
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
 #include "../Release.hh"
@@ -57,7 +58,8 @@ void quadrature_test()
     QuadCreator QuadratureCreator;
     
     // we will only look at S4 Sets in this test.
-    const int sn_order = 4;
+    // const int sn_order = 4;
+    const int sn_order = 16;
 
     // total number of quadrature sets to be tested.
     const int nquads = 5;
@@ -86,7 +88,10 @@ void quadrature_test()
 			  -0.350021174581541, -0.350021174581541 };
     
     SP< const Quadrature > spQuad;
+    spQuad = QuadratureCreator.quadCreate( QuadCreator::GaussLeg, 16 );
+    spQuad->display();
 
+    return;
     // loop over quadrature types to be tested.
 
     for ( int ix = 0; ix < nquads; ++ix ) {
@@ -173,8 +178,8 @@ void quadrature_test()
             else if( qid[ix] == QuadCreator::Lobatto )
             {
                 int const expected_dim(1);
-                cout << expected_dim << endl;
-                cout <<  spQuad->dimensionality() << endl;
+//                 cout << expected_dim << endl;
+//                 cout <<  spQuad->dimensionality() << endl;
                 if( spQuad->dimensionality() == expected_dim )
                 {
                     PASSMSG("Dimensionality of Lobatto quadrature set is 1.");

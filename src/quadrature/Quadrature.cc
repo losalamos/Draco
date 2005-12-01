@@ -9,47 +9,14 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-// Revision History
-// -----------------
-// 1.5) Moved "using" statements inside of namespace block.
-//      Moved declaration of EPS inside of namespace block.
-//      Fixed ensure statements to take into account the possible
-//         normalization of the quadrature weights.
-//      General code cleanup.
+#include <cmath>
 
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
 
-// BASE CLASS QUADRATURE MEMBER FUNCTION DEFINITIONS
-
-// The member functions included in the base class can be called for all
-// quadrature sets.
-//------------------------------------------------------------------------------
-
-// Functions that return quadrature directions and weights.
-
-// vector<double> Quadrature::getOmega( const int m ) const {
-//     vector<double> omega(3);
-//     Require( m >= 0 && m < getNumAngles() );
-//     omega[0] = mu[m];
-//     if ( dimensionality() >= 2 )
-// 	omega[1] = eta[m];
-//     else
-// 	omega[1] = 0.0;  // no eta or xi values in 1D!
-//     if ( dimensionality() >= 3 )
-// 	omega[2] = xi[m];
-//     else
-// 	omega[2] = 0.0;  // no eta or xi values in 1D!
-//     return omega;
-// }
-
-// Functions that test the validity of the quadrature set.
-
 //---------------------------------------------------------------------------//
-
-
 /*!
  * \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
  */
@@ -61,7 +28,6 @@ double Quadrature::iDomega() const {
 }
 
 //---------------------------------------------------------------------------//
-
 /*!
  * \brief Integrates the vector Omega over the unit sphere. 
  *
@@ -102,7 +68,6 @@ vector<double> Quadrature::iOmegaDomega() const {
 }
 
 //---------------------------------------------------------------------------//
-
 /*!
  * \brief Integrates the tensor (Omega Omega) over the unit sphere. 
  *
@@ -164,6 +129,7 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     return integral;
 }
 
+//---------------------------------------------------------------------------//
 void Quadrature::renormalize(const double new_norm)
 {
     Require(new_norm > 0);

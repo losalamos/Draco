@@ -12,10 +12,9 @@
 
 #include <iostream>
 #include <iomanip>
-#include <cmath>
+#include <numeric>
 
 #include "ds++/Soft_Equivalence.hh"
-#include "units/PhysicalConstants.hh"
 
 #include "Quadrature.hh"
 #include "Q1DGaussLeg.hh"
@@ -52,83 +51,12 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
     // We require the normalization constant to be greater than zero.
     Require( norm > 0.0 );
 
-    // size the member data vectors
-    mu.resize(numGaussPoints);
-    wt.resize(numGaussPoints);
-
-    double mu1 = -1.0;  // minimum value for mu
-    double mu2 =  1.0;  // maximum value for mu
-
-    // number of Gauss points in the half range.
-    // The roots are symmetric in the interval.  We only need to search for
-    // half of them.
-    unsigned const numHrGaussPoints( (numGaussPoints+1)/2 );
-
-    double mu_m = 0.5 * (mu2+mu1);
-    double mu_l = 0.5 * (mu2-mu1);
-    double z1,pp;
-
-    // Loop over the desired roots.
-    for ( size_t iroot=0; iroot<numHrGaussPoints; )
-    {
-	++iroot;
-
-	// Approximate the i-th root.
-	double z( std::cos( rtt_units::PI * ( iroot-0.25 ) 
-		       / ( numGaussPoints+0.5 )) );
-
-	do // Use Newton's method to refine the value for the i-th root.  
-	{
-	    double p1( 1.0 );
-	    double p2( 0.0 );
-	    double p3;
-
-	    // This loop represents the recurrence relation needed to obtain
-	    // the Legendre polynomial evaluated at z.
-	    for( unsigned j=0; j<numGaussPoints; )
-	    {
-		++j;
-		p3 = p2;
-		p2 = p1;
-		p1 = (( 2.0*j-1.0) * z * p2 - (j-1) * p3 ) / j;
-	    }
-	    
-	    // p1 is now the desired Legendre polynomial evaluated at z. We
-	    // next compute pp, its derivative, by a standard relation
-	    // involving also p2, the polynomial of one lower order.
-	    pp = numGaussPoints * (z*p1-p2)/(z*z-1.0);
-	    z1 = z;
-	    
-	    // Newton's Method
-	    z = z1 - p1/pp;   
-
-	} while( ! soft_equiv(z,z1, 1.0e-15) );
-
-	// Roots wil be between -1 and 1.0 and symmetric about the origin. 
-	mu[ iroot-1 ]              = -z;       
-	mu[ numGaussPoints-iroot ] = z;       
-
-	// Compute the associated weight and its symmetric counterpart.
-        wt[ iroot-1 ]              = 2.0/((1.0-z*z)*pp*pp); 
-        wt[ numGaussPoints-iroot ] = wt[iroot-1];
+    double const mu1(-1); // range of direction
+    double const mu2(1);
+    calculateGaussPointsAndWeights( mu1, mu2, mu, wt, numGaussPoints );
     
-    }	
-
-    // Sanity Checks: 
-
-    // Verify that the 0th, 1st and 2nd moments integrate to 2, (0,0,0) and 
-    // 2/3*((1,0,0),(0,1,0),(0,0,1)) respectively.
-
-    double sumwt = 0.0;
-    //    double gamma = 0.0;
-    //    double zeta  = 0.0;
-
-    for ( size_t i = 0; i < numGaussPoints; ++i )
-    {
-	sumwt += wt[i];
-	//	gamma += wt[i] * mu[i];
-	//	zeta  += wt[i] * mu[i] * mu[i];
-    }
+    double sumwt( std::accumulate( wt.begin(), wt.end(), // range
+                                   0.0 ) );              // init value.
 
     // The quadrature weights should sum to 2.0
     Ensure( soft_equiv(iDomega(),2.0) );
@@ -154,6 +82,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
 	omega[i][0] = mu[i];
     }
 
+    return;
 } // end of Q1DGaussLeg() constructor.
 
 //---------------------------------------------------------------------------//
