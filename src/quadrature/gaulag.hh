@@ -19,9 +19,8 @@
 
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
-//#include "gammln.hh"
 
-namespace rtt_utils
+namespace rtt_quadrature
 {
 //---------------------------------------------------------------------------//
 /*! 
@@ -105,10 +104,10 @@ void gaulag(FieldVector &x,
     }
 }
 
-} // end namespace rtt_utils
+} // end namespace rtt_quadrature
 
-#endif // utils_gaulag_hh
+#endif // rtt_quadrature_gaulag_hh
 
 //---------------------------------------------------------------------------//
-//              end of utils/gaulag.hh
+//              end of quadrature/gaulag.hh
 //---------------------------------------------------------------------------//
