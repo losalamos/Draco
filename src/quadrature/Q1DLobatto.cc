@@ -13,9 +13,9 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <numeric>
+#include <limits>
 
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_blas.h>
 #include <gsl/gsl_sf_legendre.h>
 
 #include "ds++/Soft_Equivalence.hh"
@@ -49,6 +49,9 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
       numAngles( numGaussPoints )
 {
     using rtt_dsxx::soft_equiv;
+    using rtt_units::PI;
+    using std::cos;
+    using std::numeric_limits;
 
     // We require the sn_order to be greater than zero.
     Require( numGaussPoints > 0 );
@@ -57,21 +60,22 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
     // We require the normalization constant to be greater than zero.
     Require( norm > 0.0 );
 
+    double const tolerance( 100*std::numeric_limits< double >::epsilon() );
+
     // size the member data vectors
-    mu.resize(numGaussPoints);
-    wt.resize(numGaussPoints);
+    unsigned const N( numGaussPoints );
+    mu.resize( N );
+    wt.resize( N );
 
-    double mu1 = -1.0;  // minimum value for mu
-    double mu2 =  1.0;  // maximum value for mu
+    double const mu1( -1.0 );  // minimum value for mu
+    double const mu2(  1.0 );  // maximum value for mu
 
-    // number of Gauss points in the half range.
+    // Number of Gauss points in the half range.
     // The roots are symmetric in the interval.  We only need to search for
     // half of them.
     unsigned const numHrGaussPoints( (numGaussPoints+1)/2 );
-    unsigned const N(numGaussPoints);
 
-    double z1;
-    
+    // midpoint and length of half-range.
     double mu_m = 0.5 * (mu2+mu1);
     double mu_l = 0.5 * (mu2-mu1);
 
@@ -79,24 +83,27 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
     mu[N-1] = mu2;
 
     // Loop over the desired roots.
-    for ( size_t iroot=0; iroot<numHrGaussPoints-1; )
+    for ( size_t iroot=0; iroot<numHrGaussPoints-2; ++iroot)
     {
-	++iroot;
-        
 	// Approximate the i-th root.
-
-	double z( std::cos( rtt_units::PI * ( iroot-0.25 ) 
-                            / ( (numGaussPoints-2)+0.5 )) );
+	double z( cos( PI * ( iroot+0.25 ) / ( (N-2)+0.5 )) );
+        double z1;
 
 	do // Use Newton's method to refine the value for the i-th root.  
 	{
+            // P_{N-1}(z)
             double const pnm1 ( gsl_sf_legendre_Pl(N-1, z) );
+            // P_{N}(z)
             double const pn   ( gsl_sf_legendre_Pl(N  , z) );
+            // P_{N+1}(z)
             double const pnp1 ( gsl_sf_legendre_Pl(N+1, z) );
 
+            // dP/dz _{N-1}(z)
             double const   pp( (N)   * (z*pnm1 - pn) / (1.0 - z*z) );
+            // dP/dz _{N}(z)
             double const  pp1( (N+1) * (z*pn - pnp1) / (1.0 - z*z) );
 
+            // d2P/dz2 _{N}(z)
             double const  pdp( ( (N) * (z*pp + pnm1 - pp1) + 2*z*pp ) / (1.0 - z*z) );
 
 	    // update 
@@ -104,7 +111,7 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
 	    z1 = z;
 	    z = z1 - pp/pdp;   
 
-	} while( ! soft_equiv(z,z1, 1.0e-15) );
+ 	} while( ! soft_equiv(z,z1, tolerance) );
 
 	// Roots wil be between -1 and 1.0 and symmetric about the origin. 
 	mu[ iroot ]             = -z;       
