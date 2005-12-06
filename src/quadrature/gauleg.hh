@@ -15,6 +15,8 @@
 
 #include <limits>
 
+#include <gsl/gsl_sf_legendre.h>
+
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 
@@ -100,28 +102,20 @@ void gauleg( double const x1, // expect FieldVector::value_type to be promoted t
         
 	do // Use Newton's method to refine the value for the i-th root.  
 	{
-	    Field p1( 1 );
-	    Field p2( 0 );
+	    // Evaluate the Legendre polynomials evaluated at z.
+            Field p1 = gsl_sf_legendre_Pl(n,z);
+            Field p2 = gsl_sf_legendre_Pl(n-1,z);
 
-	    // This loop represents the recurrence relation needed to obtain
-	    // the Legendre polynomial evaluated at z.
-	    for( unsigned j=0; j<n; ++j )
-	    {
-		Field const p3 = p2;
-		p2 = p1;
-		p1 = (( 2*j+1) * z * p2 - j*p3 ) / (j+1);
-	    }
-	    
 	    // p1 is now the desired Legendre polynomial evaluated at z. We
 	    // next compute pp, its derivative, by a standard relation
 	    // involving also p2, the polynomial of one lower order.
 	    pp = n * (z*p1-p2)/(z*z-1.0);
-	    z1 = z;
 	    
-	    // Newton's Method
-	    z = z1 - p1/pp;
+	    // Update via Newton's Method
+	    z1 = z;
+	    z  = z1 - p1/pp;
 
-	} while( ! soft_equiv(z,z1, tolerance ) );
+	} while( ! soft_equiv( z,z1, tolerance ) );
 
 	// Roots will be between -1 and 1.0 and symmetric about the origin. 
         int const idxSymPart( n - iroot - 1 );

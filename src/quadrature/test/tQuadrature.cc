@@ -58,8 +58,7 @@ void quadrature_test()
     QuadCreator QuadratureCreator;
     
     // we will only look at S4 Sets in this test.
-    // const int sn_order = 4;
-    const int sn_order = 16;
+    const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
     const int nquads = 5;
@@ -88,10 +87,7 @@ void quadrature_test()
 			  -0.350021174581541, -0.350021174581541 };
     
     SP< const Quadrature > spQuad;
-    spQuad = QuadratureCreator.quadCreate( QuadCreator::GaussLeg, 16 );
-    spQuad->display();
 
-    return;
     // loop over quadrature types to be tested.
 
     for ( int ix = 0; ix < nquads; ++ix ) {
