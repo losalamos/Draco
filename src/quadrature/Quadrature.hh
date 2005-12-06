@@ -300,18 +300,6 @@ class Quadrature
     //! \brief Re-normalize quadrature 
     void renormalize(const double new_norm);
 
-    //! Compute Gaussian wieghts and points.
-    //! \bug This function should probably live in rtt_units or equivalent.
-    //! \bug Is there a 3rd party tool that computes these.  I could not find
-    //! it in GSL.
-    template< typename FieldVector >
-    static void calculateGaussPointsAndWeights(
-        double const mu1,
-        double const mu2,
-        FieldVector & mu,
-        FieldVector & wt,
-        unsigned const numGaussPoints );
-    
   protected:
 
     // DATA
@@ -330,8 +318,6 @@ class Quadrature
 };
 
 } // end namespace rtt_quadrature
-
-#include "Quadrature.i.hh"
 
 #endif // __quadrature_Quadrature_hh__
 

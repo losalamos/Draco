@@ -18,6 +18,7 @@
 
 #include "Quadrature.hh"
 #include "Q1DGaussLeg.hh"
+#include "gauleg.hh"
 
 namespace rtt_quadrature
 {
@@ -53,7 +54,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
 
     double const mu1(-1); // range of direction
     double const mu2(1);
-    calculateGaussPointsAndWeights( mu1, mu2, mu, wt, numGaussPoints );
+    gauleg( mu1, mu2, mu, wt, numGaussPoints );
     
     double sumwt( std::accumulate( wt.begin(), wt.end(), // range
                                    0.0 ) );              // init value.
