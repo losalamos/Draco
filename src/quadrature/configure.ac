@@ -56,6 +56,8 @@ AC_NEEDS_LIBS(\
 
 dnl tests
 AC_RUNTESTS(\
+   tstgauleg \
+   tstgaulag \
    tQuadrature \
    tAxialQuadrature \
    tQuadServices\

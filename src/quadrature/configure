@@ -1533,6 +1533,8 @@ fi;
 
 
 	test_alltarget="$test_alltarget \
+   tstgauleg \
+   tstgaulag \
    tQuadrature \
    tAxialQuadrature \
    tQuadServices\
