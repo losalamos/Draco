@@ -13,12 +13,13 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <numeric>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 
 #include "Quadrature.hh"
-#include "Q1DGaussLeg.hh"
+#include "gauleg.hh"
 #include "Q1DDoubleGauss.hh"
 
 namespace rtt_quadrature
@@ -65,9 +66,10 @@ Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ )
     {
         // 2-point double Gauss is just Gauss
 
-        Q1DGaussLeg const quad( n, Quadrature::norm );
-        mu = quad.getMu();
-        wt = quad.getWt();
+        double const mu1(-1); // range of direction
+        double const mu2(1);
+        gauleg( mu1, mu2, mu, wt, numGaussPoints );
+        
     }
     else
     {
@@ -75,30 +77,33 @@ Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ )
 
         Check( n2%2 == 0 );
 
-        Q1DGaussLeg const quad( n2, Quadrature::norm );
+        double const mu1(-1); // range of direction
+        double const mu2(1);
+        std::vector< double > muH;
+        std::vector< double > wtH;
+        gauleg( mu1, mu2, muH, wtH, n2 );
         
         // map the quadrature onto the two half-ranges
         
         for (unsigned m=0; m<n2; ++m)
         {
-            double const muH(quad.getMu(m));
-            double const wtH(quad.getWt(m));
+            // Map onto [-1,0] then skew-symmetrize
+            // (ensuring ascending order on [-1, 1])
             
-            // Map onto [-1,0] then skew-symmetrize (ensuring ascending order on [-1, 1])
-            
-            mu[m] = 0.5*(muH - 1.0);
-            wt[m] = 0.5*wtH;
+            mu[m] = 0.5*(muH[m] - 1.0);
+            wt[m] = 0.5*wtH[m];
             
             mu[n-m-1] = -mu[m];
             wt[n-m-1] =  wt[m];
         }
     }
-        
-    // Sanity Checks: none at present
 
-    double sumwt = 0.0;
-    for ( size_t i = 0; i < numGaussPoints; ++i )
-	sumwt += wt[i];
+    // Compute and store the sum of the weights
+    
+    double sumwt( std::accumulate( wt.begin(), wt.end(), // range
+                                   0.0 ) );              // init value.
+
+    // Sanity Checks: none at present
 
     if( soft_equiv(norm,2.0) ) 
     {
