@@ -28,6 +28,27 @@ using std::set;
 
 //-------------------------------------------------------------------------//
 /*!
+ * \brief Construct an uninitialized File_Token_Stream
+ * 
+ * Construct a File_Token_Stream that is not yet associated with a file. Use
+ * the default Text_Token_Stream user-defined whitespace characters.
+ *
+ * This function exists primarily to support construction of arrays of
+ * File_Token_Streams.  An example of where this might be useful is in serial
+ * code that combines output files produced by each processor in a parallel
+ * run. 
+ *
+ * \post <code>location() =="<uninitialized>"</code>
+ */
+
+File_Token_Stream::File_Token_Stream()
+{
+    Ensure(check_class_invariants());
+    Ensure(location() == "<uninitialized>");
+}
+
+//-------------------------------------------------------------------------//
+/*!
  * \brief Construct a File_Token_Stream from a file.
  * 
  * Construct a File_Token_Stream that derives its text from the
@@ -96,6 +117,16 @@ File_Token_Stream::File_Token_Stream(string file_name,
     filename(file_name),
     infile(file_name.c_str())
 {
+    if( ! infile )
+    {
+	std::ostringstream errmsg;
+	errmsg << "Cannot construct File_Token_Stream.\n"
+	       << "The file specified could not be found.\n"
+	       << "The file requested was: \"" << file_name 
+	       << "\"" << std::endl;
+	throw rtt_dsxx::assertion( errmsg.str().c_str() );
+    }
+
     Ensure(check_class_invariants());
     Ensure(location() == file_name + ", line 1");
     Ensure(Whitespace() == ws);
@@ -150,7 +181,14 @@ string File_Token_Stream::location() const
     Require(check_class_invariants());
 
     std::ostringstream Result;
-    Result << filename << ", line " << Line();
+    if (filename != "")
+    {
+        Result << filename << ", line " << Line();
+    }
+    else
+    {
+        Result << "<uninitialized>";
+    }
     return Result.str();
 }
   

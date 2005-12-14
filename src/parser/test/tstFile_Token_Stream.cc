@@ -308,7 +308,8 @@ void tstFile_Token_Stream()
 //---------------------------------------------------------------------------//
 
     {
-	File_Token_Stream tokens("scanner_recovery.inp");
+	File_Token_Stream tokens;
+        tokens.open("scanner_recovery.inp");
 	// bool exception = false;
 	try
 	{

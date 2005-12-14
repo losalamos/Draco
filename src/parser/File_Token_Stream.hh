@@ -39,6 +39,7 @@ namespace rtt_parser
 class File_Token_Stream : public Text_Token_Stream
 {
   public:
+    File_Token_Stream();
     File_Token_Stream(std::string filename);
     File_Token_Stream(std::string filename, std::set<char> const &whitespace);
 
