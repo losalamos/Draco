@@ -97,7 +97,7 @@ digraph draco_level {
     vpcg        -> {vlapack}      [color="green"];
     
     /* level 3 */
-    quad        -> {dsxx};
+    quad        -> {units};
     quad        -> {vgsl}         [color="green"];
     viz         -> {traits};      /* traits: dsxx */
     timestep    -> {c4};          /* c4      : dsxx */
