@@ -320,7 +320,7 @@ class GMVFile:
 
     ##-----------------------------------------------------------------------##
     ## Initialize Data
-    def __init__( self, filename ):
+    def __init__( self, filename, gmvVars ):
         # Initialize some class variables:
         self.lookingAtVariables = 0
 
@@ -335,7 +335,8 @@ class GMVFile:
         self.materialNames = []
         self.cellMaterial = []
         self.data = {}
-
+        self.gmvVars = gmvVars
+        
         # File handle
         self.gmvfile = open( filename, 'r' )
 
@@ -359,14 +360,14 @@ class GMVFile:
         idxLine = 0
 
         # read first line and strip trailing newline.
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         expectedLine = "gmvinput ascii"
         if line != expectedLine:
             print "Did not find expected data in first line of file."
             print "Found: \"%s\""%line
             print "Expected: %s"%expectedLine
-            return
+            sys.exit(1)
 
         line = self.gmvfile.readline()[:-1]
         idxLine += 1
@@ -382,17 +383,34 @@ class GMVFile:
 
         # Read node coordinates
         for idxNode in xrange(0,self.numNodes):
-            line = self.gmvfile.readline()[:-1]
+            line = self.gmvfile.readline().strip()
+#            line = self.gmvfile.readline()[:-1]
             idxLine += 1
-            match = re.search( '(\d[.]?\d*) (\d[.]?\d*) (\d[.]?\d*)',
-                               line )
+            # \d = match any single decimal digit 0-9
+            # [.]? match the decimal point zero or one time.
+            # \d* match any decimal zero or more times.
+            # [e]?[-]? optionally match exponent form "e-"
+            # \d* match any decimal zero or more times (exponent value)
+            match = re.search( '([-]?\d+[.]?\d*) ([-]?\d+[.]?\d*[e]?[-]?\d*) ([-]?\d+[.]?\d*[e]?[-]?\d*)', line )
+            #            match = re.search( '([-]?\d[.]?\d*) ([-]?\d[.]?\d*[e]?[-]?\d*) ([-]?\d[.]?\d*)', line )
+            
             if match:
                 self.xCoords.append(float(match.group(1)))
                 self.yCoords.append(float(match.group(2)))
                 self.zCoords.append(float(match.group(3)))
+#                print "good line: %s"%(line)
+#                print match.group(1), match.group(2), match.group(3)
+            else:
+                print "bad line : %s"%(line)
+
+         # Check
+        if len(self.xCoords) != self.numNodes:
+            print "Error len(xCoords) != numNodes)"
+            print "Found len(xCoords = %s, numNodes = %s"%(len(self.xCoords),self.numNodes)
+            sys.exit(2)
 
         # Read cell information
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         match = re.search( 'cells (\d+)', line )
         if match:
@@ -406,21 +424,41 @@ class GMVFile:
 
         # Read Cell information
         for idxCell in xrange(0,self.numCells):
-            line = self.gmvfile.readline()[:-1]
+            celltype = self.gmvfile.readline().strip()
             idxLine += 1
-            self.cellType.append(line)
-            line = self.gmvfile.readline()[:-1]
+            self.cellType.append(celltype)
+            # extract number of nodes for each cell.
+            match = re.search( '.*(\d+)',celltype)
+            if not match:
+                print "Error: unable to determine number of nodes for cell type = %s"%celltype
+                sys.exit(1)
+            nodesPerCell = int(match.group(1))
+
+            # Read the node number associated with this cell.
+            line = self.gmvfile.readline().strip()
             idxLine += 1
-            match = re.search( '(\d+) (\d+) (\d+)', line )
-            if match:
-                nodeList = []
-                nodeList.append( int( match.group(1) ) )
-                nodeList.append( int( match.group(2) ) )
-                nodeList.append( int( match.group(3) ) )
-                self.cellNodes.append( nodeList )
+            if nodesPerCell == 3:
+                match = re.search( '(\d+) (\d+) (\d+)', line )
+            elif nodesPerCell == 4:
+                match = re.search( '(\d+) (\d+) (\d+) (\d+)', line )
+            else:
+                print "\nError: For cell type \"%s,\" there are %s nodes per cell."%(celltype,nodesPerCell)
+                print "but no one has taught me to parse these cell types.\n"
+                sys.exit(1)
+
+            if not match:
+                print "\nError: For cell type \"%s,\" we were looking for %s node numbers."%(celltype,nodesPerCell)
+                print "but we found \"%s\""%line
+                sys.exit(1)
+
+            # Save the N nodes associated with this cell
+            nodeList = []
+            for nodeIndex in xrange(1,nodesPerCell+1):
+                nodeList.append( int( match.group( nodeIndex ) ) )
+            self.cellNodes.append( nodeList )
 
         # Read Material Information
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         match = re.search( 'material (\d+) (\d+)', line )
         if match:
@@ -433,17 +471,17 @@ class GMVFile:
             print "Found %s material names."%self.numMaterials
         
         # Material name
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         self.materialNames = line.split()
 
         # Material to cell assignment
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         self.cellMaterial = line.split()
 
         # Read Variable values
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         match = re.search( 'variable', line )
         if not match:
@@ -456,7 +494,7 @@ class GMVFile:
         useExistingLine=0
         while 1:
             if not useExistingLine:
-                line = self.gmvfile.readline()[:-1]
+                line = self.gmvfile.readline().strip()
                 idxLine += 1
                 useExistingLine = 0
             match = re.search( '([A-z0-9_]+)', line )
@@ -469,9 +507,13 @@ class GMVFile:
                 break
             else:
                 match = re.search( '([A-z0-9_]+) (\d+)', line )
-
-            # Read the data
-            line = self.gmvfile.readline()[:-1]
+                if not match:
+                    print "WARNING --> while parsing GMV file:"
+                    print "            no data associated with key = %s"%key
+                    continue
+                
+            # Read the next line (should be data)
+            line = self.gmvfile.readline().strip()
             idxLine += 1
 
             # If no data associated with previous data field, then
@@ -480,17 +522,13 @@ class GMVFile:
             nextWord = match.group(1)
             if nextWord == "endvars":
                 break
-            match = re.search( '([0-9]+)', line)
-            if not match:
-                print "WARNING --> while parsing GMV file: no data associated with key = %s"%key
-                useExistingLine=1
-                continue
 
             lenLine = len(line)
             posLine = 0
             valueList = []
 
-            if key == "RAD_ENERGY_DENSITY" or key == "ELECTRON_TEMPERATURE":
+#            if key == "RAD_ENERGY_DENSITY" or key == "ELECTRON_TEMPERATURE":
+            if len(self.gmvVars) == 0 or key in self.gmvVars:
 
                 for idxCell in xrange(1,self.numCells):
                     idxEnd = line.find( " ", posLine, lenLine )
@@ -509,7 +547,7 @@ class GMVFile:
                 self.data[ key ] = valueList
             
         # Look for "endgmv" tag
-        line = self.gmvfile.readline()[:-1]
+        line = self.gmvfile.readline().strip()
         idxLine += 1
         if line != "endgmv":
             print "Did not find the keyword \"endgmv\"." \
@@ -532,9 +570,10 @@ class GMVFile:
 ## the GMV file.
     
     def getValues( self, key ):
+        nothing = []
         if not self.data.has_key( key ):
-            print "I don't know anything about data named \"%s\""%key
-            print "The available keys are %s: "%self.data.keys()
-            return
+            print "Warning: I don't know anything about data named \"%s\""%key
+            print "   The available keys are %s: "%self.data.keys()
+            return nothing
         return self.data[ key ]
 
