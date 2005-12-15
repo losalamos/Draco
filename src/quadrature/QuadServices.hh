@@ -21,12 +21,6 @@
 namespace rtt_quadrature
 {
 
-//! \bug move to ds++
-template< typename T > T kronecker_delta( T const, T const );
-
-//! \bug move to ds++
-template< typename T > T factorial( T const );
-
 class QuadServices 
 {
   public:

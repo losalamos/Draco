@@ -129,37 +129,6 @@ void gauleg( double const x1, // expect FieldVector::value_type to be promoted t
         w[ iroot ]      = 2*mu_l / ((1-z*z)*pp*pp); 
         w[ idxSymPart ] = w[ iroot ];
     }	
-    
-// Kent's original code:
-    
-//     unsigned const m = (n+1)/2;
-//     double const xm = 0.5*(x2+x1);
-//     double const xl = 0.5*(x2-x1);
-//     for (unsigned i=0; i<m; ++i)
-//     {
-//         double z = cos(PI*(i+0.75)/(n+0.5));
-//         double z1, pp;
-//         do
-//         {
-//             double p1 = 1.0;
-//             double p2 = 0.0;
-//             for (unsigned j=0; j<n; ++j)
-//             {
-//                 double const p3 = p2;
-//                 p2 = p1;
-//                 p1 = ((2.0*j+1.0)*z*p2-j*p3)/(j+1);
-//             }
-//             pp = n*(z*p1-p2)/(z*z-1.0);
-//             z1 = z;
-//             z = z1-p1/pp;
-//         }
-//         while (fabs(z-z1)>100*numeric_limits<double>::epsilon());
-//         x[i] = xm-xl*z;
-//         x[n-1-i] = xm+xl*z;
-//         w[i] = 2.0*xl/((1.0-z*z)*pp*pp);
-//         w[n-1-i] = w[i];
-//     }
-
     return;
 }
 
