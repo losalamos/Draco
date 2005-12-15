@@ -540,6 +540,11 @@ auto-mode-alist."
 		 (if (eq major-mode 'change-log-mode)
 		     (change-log-font-lock))))
 ;    (add-hook 'change-log-mode-hook 'turn-on-draco-mode)
+; See http://www.emacswiki.org/cgi-bin/wiki?OutlineMode
+    (add-hook 'change-log-mode-hook
+              '(lambda ()
+                 (set (make-local-variable 'outline-regexp) 
+                      "[[:digit:]]+")))
     (add-hook 'change-log-mode-hook 'turn-on-auto-fill)))
   
 ;; ========================================
