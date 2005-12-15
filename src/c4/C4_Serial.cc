@@ -112,6 +112,13 @@ int abort(int error)
     return error;
 }
 
+//---------------------------------------------------------------------------//
+
+bool isScalar()
+{
+    return true;
+}
+
 } // end namespace rtt_c4
 
 #endif // C4_SCALAR

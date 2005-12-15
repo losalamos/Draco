@@ -1,3 +1,10 @@
+2005-12-15  Kelly Thompson  <kgt@lanl.gov>
+
+	* C4_Functions.hh (rtt_c4): Added a new function, isScalar() to
+	  the rtt_c4 namespace.  This function returns true if MPI is
+	  unavailable.  This modification should have no effect on
+	  existing use of c4.
+
 2005-11-03  Kelly Thompson  <kgt@lanl.gov>
 
 	* tstC4_Req.cc: This new unit test checks the copy constructor for

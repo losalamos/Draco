@@ -262,6 +262,14 @@ bool probe(int source, int tag, int &message_size);
  */
 int abort(int error = 1);
 
+//---------------------------------------------------------------------------//
+// isScalar
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Is C4 executing in scalar-only mode?
+ */
+bool isScalar();
+
 } // end namespace rtt_c4
 
 #endif                          // c4_C4_Functions_hh

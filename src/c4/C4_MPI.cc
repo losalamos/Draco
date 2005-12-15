@@ -27,6 +27,7 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 
 MPI_Comm communicator = MPI_COMM_WORLD;
+bool initialized(false);
 
 //---------------------------------------------------------------------------//
 // SETUP FUNCTIONS
@@ -35,7 +36,8 @@ MPI_Comm communicator = MPI_COMM_WORLD;
 void initialize(int &argc, char **&argv)
 {
     int result = MPI_Init(&argc, &argv);
-    Check (result == MPI_SUCCESS);
+    initialized = (result == MPI_SUCCESS);
+    Check( initialized );
 
     // Resync clocks for Darwin mpich
     double foo( MPI_Wtick() );
@@ -151,6 +153,13 @@ int abort(int error)
 
     int rerror = MPI_Abort(communicator, error);
     return rerror;
+}
+
+//---------------------------------------------------------------------------//
+
+bool isScalar()
+{
+    return ! initialized;
 }
 
 } // end namespace rtt_c4

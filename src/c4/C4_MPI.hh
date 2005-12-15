@@ -30,6 +30,7 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 
 extern MPI_Comm communicator;
+extern bool initialized;
 
 //---------------------------------------------------------------------------//
 // SETUP FUNCTIONS
@@ -86,7 +87,6 @@ void broadcast(ForwardIterator first,
 	delete [] buf;
     }
 }
-
 
 } // end namespace rtt_c4
 

@@ -192,7 +192,7 @@ void global_max(T *x, int n)
 
 #endif // C4_SCALAR
 
-#endif                          // __c4_C4_Serial_hh__
+#endif  // __c4_C4_Serial_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of c4/C4_Serial.hh
