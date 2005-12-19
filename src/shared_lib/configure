@@ -4810,7 +4810,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} -Kieee"
 
    # instantiate only functions that are used in the compilation
-   CXXFLAGS="${CXXFLAGS} -t"
+   CXXFLAGS="${CXXFLAGS} -t=used --no_implicit_include"
 
    # set unnormalized values to zero
    CXXFLAGS="${CXXFLAGS} -Mdaz"
@@ -5990,23 +5990,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi
@@ -7014,23 +7014,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi
@@ -8012,23 +8012,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi
@@ -9065,23 +9065,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi
@@ -10033,23 +10033,23 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi
@@ -10874,23 +10874,23 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi
@@ -11989,23 +11989,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -ltriutils are the directories added
+   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
    fi
 
        fi

@@ -4747,7 +4747,7 @@ echo $ECHO_N "checking \"configuration of ${CXX}/${CC} compilers\"... $ECHO_C" >
    CFLAGS="${CFLAGS} -Kieee"
 
    # instantiate only functions that are used in the compilation
-   CXXFLAGS="${CXXFLAGS} -t"
+   CXXFLAGS="${CXXFLAGS} -t=used --no_implicit_include"
 
    # set unnormalized values to zero
    CXXFLAGS="${CXXFLAGS} -Mdaz"
