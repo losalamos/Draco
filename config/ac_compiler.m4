@@ -424,7 +424,7 @@ AC_DEFUN(AC_DRACO_PGCC, [dnl
    CFLAGS="${CFLAGS} -Kieee"
 
    # instantiate only functions that are used in the compilation
-   CXXFLAGS="${CXXFLAGS} -t --no_implicit_include"
+   CXXFLAGS="${CXXFLAGS} -t=used --no_implicit_include"
 
    # set unnormalized values to zero
    CXXFLAGS="${CXXFLAGS} -Mdaz"
