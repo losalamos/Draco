@@ -36,9 +36,19 @@ void tstScalar()
 // Skip the tests if code not configured with the option --with-c4=scalar.
     
 #ifndef C4_SCALAR
+    if( rtt_c4::isScalar() )
+        FAILMSG("Incorrectly identified process as scalar.")
+    else
+        PASSMSG("Correctly identified process as parallel.")
     return;
 #endif
 
+    // Check the isScalar function.
+    if( rtt_c4::isScalar() )
+        PASSMSG("Correctly identified process as scalar.")
+    else
+        FAILMSG("Incorrectly identified process as parallel.")
+    
 // For --with-c4=scalar, probe(int,int,int) always returns false.
 
     int int3(99);
@@ -103,7 +113,8 @@ void tstScalar()
     {
         FAILMSG("For --with-c4=scalar, unsuccessful test of send_async(const T*,int,int,int) and receive_async( C4_Req&,T*,int,int,int).");
     }
-    
+
+
     return;
 }
 
@@ -113,6 +124,7 @@ int main(int argc, char *argv[])
 {
     using std::cout;
     using std::endl;
+    std::string unitTestName( "tstScalar" );
 
     rtt_c4::initialize(argc, argv);
 
@@ -123,13 +135,14 @@ int main(int argc, char *argv[])
     }
     catch (std::exception &err)
     {
-        cout << "ERROR: While testing tstScalar.cc, " << err.what() << endl;
+        cout << "ERROR: While testing " << unitTestName << ", "
+             << err.what() << endl;
         rtt_c4::finalize();
         return 1;
     }
     catch( ... )
     {
-        cout << "ERROR: While testing tstScalar.cc, " 
+        cout << "ERROR: While testing " << unitTestName << ", " 
              << "An unknown exception was thrown on processor "
              << rtt_c4::node() << endl;
         rtt_c4::finalize();
@@ -142,13 +155,15 @@ int main(int argc, char *argv[])
         // status of test
         cout << "\n*********************************************\n";
         if (rtt_c4_test::passed) 
-            cout << "**** tstScalar.cc Test: PASSED on " << rtt_c4::node();
+            cout << "**** " << unitTestName
+                 << " Test: PASSED on " << rtt_c4::node();
         cout << "\n*********************************************\n"
              << endl;
     }
     
     rtt_c4::global_barrier();
-    cout << "Done testing tstScalar.cc on " << rtt_c4::node() << endl;
+    cout << "Done testing " << unitTestName << " on "
+         << rtt_c4::node() << endl; 
     rtt_c4::finalize();
     return 0;
 }   
