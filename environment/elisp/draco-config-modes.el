@@ -486,6 +486,7 @@ auto-mode-alist."
 	  (append
 	   '(("\\.for$"  . fortran-mode)
 	     ("\\.f$"    . fortran-mode) 
+	     ("\\.g$"    . fortran-mode) 
 	     ("\\.id$"   . fortran-mode)
 	     ("\\.fh$"   . fortran-mode)
 	     ) auto-mode-alist))

@@ -1,3 +1,8 @@
+2005-12-15  Kelly Thompson  <kgt@lanl.gov>
+
+	* draco-config-modes.el (draco-setup-change-log-mode): By default,
+	  provide outline-mode from within change-log-mode.
+
 2005-09-01  Kelly Thompson  <kgt@lanl.gov>
 
 	* draco-config-modes.el (draco-setup-auctex-mode):  Fix code for
