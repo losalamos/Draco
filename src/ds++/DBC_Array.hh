@@ -33,6 +33,15 @@ namespace DBCA_Support
   memory is initialized according to the rules in section 5.3.4.15 of the
   standard.
 
+  This works differently than the allocator for a std::vector when T is
+  non-POD.  Here, an array is default-initialized by array new, then a value
+  is copied into each location (if init == true) using operator=().  In
+  std::vector, each location is initialized using placement new and T(value).
+  In a vector where no initialization value is given, the T() ctor is called
+  once to create a temporary, then N calls to the T(T&) copy ctor are made,
+  then one call to ~T() to kill the temporary.  This differs in that N calls
+  are made to T() by array new, then N calls are made to op=(T&) by fill_n.
+
   \note\b Note: should you be tempted to replace new/delete[] with malloc/free,
   you had better know what you are doing with placement new and/or
   uninitialized_fill.  malloc/free works fine with PODs, but it doesn't
@@ -183,6 +192,7 @@ template<class T, class IV> struct assign_dispatcher<T,IV,true>
   std::vector: 
 
   - No default initialization by default (got that? ;-)
+  - Different ctor behavior (see the comments above).
   - Not much dynamic length stuff (e.g. no reserve, push_back, pop_back, etc..)
   - \c clear() lets go of the memory!
   - Fast ;-)
