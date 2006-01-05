@@ -12,6 +12,7 @@
 // @> 
 //---------------------------------------------------------------------------//
 
+#include <sstream>
 #include "RTT_Format_Reader.hh"
 #include "ds++/Assert.hh"
 
@@ -29,6 +30,7 @@ RTT_Format_Reader::RTT_Format_Reader(const string & RTT_File)
  * \brief Parses the mesh file data via calls to the member data class objects
  *        public "read" member functions.
  * \param RTT_File Mesh file name.
+ * \throw invalid_argument If the file cannot be opened
  */
 void RTT_Format_Reader::readMesh(const string & RTT_File)
 {
@@ -36,7 +38,9 @@ void RTT_Format_Reader::readMesh(const string & RTT_File)
     ifstream meshfile(file, std::ios::in);
     if (!meshfile)
     {
-        std::cout << "File could not be opened\n";
+        std::ostringstream buffer;
+        buffer << "File " << RTT_File << " could not be opened\n";
+        throw std::invalid_argument(buffer.str());
     }
 
     try
