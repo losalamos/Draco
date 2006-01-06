@@ -4,7 +4,7 @@
 ## <date>
 ## $Id$
 ###############################################################################
-## Copyright 2004 The Regents of the University of California.
+## Copyright 2006 The Regents of the University of California.
 ###############################################################################
 
 <start>
