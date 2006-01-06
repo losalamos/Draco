@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -532,44 +532,35 @@ AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
 
    AC_MSG_CHECKING("for stlport")
    if test "${with_stlport:=no}" != no; then
-      if ! test -d "${with_stlport}/include/stlport"; then
-         AC_MSG_ERROR("Invalid directory ${with_stlport}/include/stlport")
+      if ! test -d "${with_stlport}/include"; then
+         AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
       fi
-      CPPFLAGS="-I${with_stlport}/include/stlport ${CPPFLAGS}"
-      CXXFLAGS="-I${with_stlport}/include/stlport ${CXXFLAGS}"
+      CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
+      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
       AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
-      case $with_cxx in
-      sgi)
-         stlport_libname='mipspro'
-         stlport_xlinker=' '
-         ;;
-      gcc) dnl for everything else use gcc
-         stlport_libname='gcc'
-         stlport_xlinker="-Xlinker"
-         ;;
-      *) 
-         AC_MSG_ERROR("stlport not available with this compiler.")
-         ;;
-      esac
+
+      dnl Include different libraries for debug vs opt mode.
+      dnl Also define _STLP_DEBUG if --enable-debug is set. 
       AC_MSG_CHECKING("for debug stlport mode")
       if test "${enable_debug:-yes}" = yes; then
-         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}_stldebug.a")
+         if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
          fi
-         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname}_stldebug ${LIBS}"
+         LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
          CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
          AC_MSG_RESULT("yes")
-      else
-         if ! test -r "${with_stlport}/lib/libstlport_${stlport_libname}.a"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_${stlport_libname}.a")
+      else 
+         dnl Use optimized STLport libraries.
+         if ! test -r "${with_stlport}/lib/libstlport.so"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
          fi
-         LIBS="-L${with_stlport}/lib -lstlport_${stlport_libname} ${LIBS}"
+         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
          AC_MSG_RESULT("no")
       fi
 
       AC_MSG_CHECKING("for RPATH mods for stlport")
-      RPATH="${stlport_xlinker} -rpath ${with_stlport}/lib ${RPATH}"
-      AC_MSG_RESULT("Added ${stlport_xlinker} -rpath ${with_stlport}/lib to RPATH")
+      RPATH="-Xlinker -rpath ${with_stlport}/lib ${RPATH}"
+      AC_MSG_RESULT("Added -Xlinker -rpath ${with_stlport}/lib to RPATH")
 
    elif test "${with_stlport}" = yes; then
       AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
