@@ -1,3 +1,9 @@
+2006-01-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Moved repository from SourceForge to CCS-2/4 LAN.
+	Located in /codes/radtran/cvsroot.  Moved regression under draco
+	head directory.
+
 2005-11-21  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Released draco-5_9_0.  This is a minor Draco release.  A
