@@ -1,32 +1,63 @@
 ###############################################################################
-# draco/config Makefile.doc.in
-# Randy M. Roberts
-# Wed Nov  1 09:31:34 MST 2000
+#
+# \file    capsaicin/doc/milestones Makefile
+# \author  Kelly G. Thompson
+# \date    Tue Sept 19 10:33:22 2003
+# \brief   Makefile for the Capsaicin milestone reports
+#
+###############################################################################
 # $Id$
 ###############################################################################
-# @> General Makefile.in for draco package documents.
-###############################################################################
 
+# @configure_input@
+
+#Automatic autoconf variables
 top_srcdir = @top_srcdir@
 srcdir = @srcdir@
+top_builddir = @abs_top_builddir@
+builddir = @abs_builddir@
 
-# get the relative directory between the top_srcdir and the srcdir
+# package top source directory
+package_top_srcdir = @package_top_srcdir@
 
-reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
-ifeq (,${reldir})
-  reldir := "."
+VPATH = @srcdir@  # : this colon is a bug work around.
+
+# The subdirectories to recurse into (if they exist).
+subdirs := `ls -1`
+
+# If the make flags include a -k then do not exit on errors.
+
+ifneq (,$(findstring k,${MAKEFLAGS}))
+  EXIT = :
+else
+  EXIT = exit
 endif
-# get the relative directory to the config files (relative to ${top_srcdir}).
 
-rel_config_dir := $(shell ( cd ${top_srcdir} ; \
-	tmp="" ; \
-	while test ! -d config ; \
-	do \
-	   cd .. ; \
-	   tmp=$$tmp../ ; \
-	done ; \
-	echo $$tmp ) )config
+# install location:
+doc_pdf_output := @doxygen_output_top@/pdf
+config_dir = ${package_top_srcdir}/config
 
+## get the pkg_config directory and include statement
+#pkg_config_dir  = ${package_top_srcdir}/pkg_config
+#pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
+#                    echo "-I ${pkg_config_dir}"; fi)
+
+## get the relative directory between the top_srcdir and the srcdir
+
+#reldir := $(shell echo "${srcdir}" | sed s%${top_srcdir}%% | sed 's%/[^/]*%../%g')
+#ifeq (,${reldir})
+#  reldir := "."
+#endif
+## get the relative directory to the config files (relative to ${top_srcdir}).
+
+#rel_config_dir := $(shell ( cd ${top_srcdir} ; \
+#	tmp="" ; \
+#	while test ! -d config ; \
+#	do \
+#	   cd .. ; \
+#	   tmp=$$tmp../ ; \
+#	done ; \
+#	echo $$tmp ) )config
 
 ##---------------------------------------------------------------------------##
 ## VARIABLES THAT ARE ASSIGNED BY AUTOCONF
@@ -109,24 +140,12 @@ configure_command = @configure_command@
 ## these are assigned using ":="
 ##---------------------------------------------------------------------------##
 
-# Add the src directory and the DRACO/doc/tex directory to the TEXINPUTS
-# environment variable for every invocation of a LaTeX-like command.
-
-DRACOTEXINPUTS := ${top_srcdir}/../../doc/tex
-TEXINPUTSENV := TEXINPUTS="${srcdir}:${DRACOTEXINPUTS}:${TEXINPUTS}"
-LATEXCMD  := ${TEXINPUTSENV} ${LATEX}
-BIBTEXCMD := ${TEXINPUTSENV} ${BIBTEX}
-DVIPSCMD  := ${TEXINPUTSENV} ${DVIPS}
-XDVICMD   := ${TEXINPUTSENV} ${XDVI}
-
 # if the source developer wants to over override what sources and objects
 # are to be made then create a Makefile.srcs file that lives in the source
 # directory that defines the variables:
 # "texsrc" "texdvi" "texps" "texlog"
 
 ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
-
-#   texsrc  := ${srcdir}/${package}.tex
   texsrc  := $(wildcard ${srcdir}/*.tex)
   texdvi  := $(notdir $(patsubst %.tex,%.dvi,${texsrc}))
   texps   := $(notdir $(patsubst %.tex,%.ps,${texsrc}))
@@ -137,53 +156,111 @@ ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
 
   allps   := ${texps} ${dotps}
   allpdf  := $(notdir $(patsubst %.ps,%.pdf,${allps}))
-
 else
-
   include ${srcdir}/Makefile.srcs
-
 endif
+
+# Add the src directory and the DRACO/doc/tex directory to the TEXINPUTS
+# environment variable for every invocation of a LaTeX-like command.
+
+DRACOENV := ${package_top_srcdir}/environment
+DRACOTEXINPUTS := ${DRACOENV}/latex:
+DRACOBSTINPUTS := ${DRACOENV}/bibtex:
+AUXTEXINPUTS   := @AUXTEXINPUTS@
+#CAPTEXINPUTS := ${srcdir}:${package_top_srcdir}/doc/latex:/codes/radtran/vendors/environment/latex
+LATEXENVS := TEXINPUTS="${AUXTEXINPUTS}${DRACOTEXINPUTS}:${TEXINPUTS}:."
+#LATEXENVS  := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
+BIBTEXENVS := BSTINPUTS="${DRACOBSTINPUTS}:${DRACOTEXINPUTS}:${BSTINPUTS}:."
+MAKEIDXENVS:= INDEXSTYLE="../latex"
+
+SRCBIBFILES := $(wildcard ${package_top_srcdir}/doc/bib/*.bib)
+BIBFILES    := $(addprefix ${builddir}/,$(notdir $(patsubst ${package_top_srcdir}/doc/bib/%,%,${SRCBIBFILES})))
+
+# Applications:
+LATEXCMD  := ${LATEXENVS} ${LATEX}
+BIBTEXCMD := ${BIBTEXENVS} ${BIBTEX}
+DVIPSCMD  := ${LATEXENVS} ${DVIPS} -Ppdf
+MAKEIDX   := ${MAKEIDXENVS} makeindex
+XDVICMD   := ${TEXINPUTSENV} ${XDVI}
 
 ##---------------------------------------------------------------------------##
 ## TARGETS
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install installdirs clean distclean forced-distclean \
-	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean reconfigure view doc xdvi print
+.PHONY : all postscript index bib tex pdf \
+	installdirs install uninstall configfiles configure \
+	reconfigure clean clean-tex distclean mostlyclean \
+	maintainer-clean forced-maintainer-clean
 
-all: ${allps}
+all: postscript
 
-doc: ${texps}
+postscript: ${allps}
+	@echo "done creating postscript files: ${allps}"
 
-xdvi: ${texdvi}
-	${XDVICMD} ${XDVIFLAGS} $^
+pdf: ${allpdf}
+	@echo "done creating PDF files: ${allpdf}"
 
-view: ${texps}
-	${GHOSTVIEW} $^
-
-print: ${texps}
-	${LP} ${LPFLAGS} $^
-
-${texps}: ${texdvi}
+#xdvi: ${texdvi}
+#	${XDVICMD} ${XDVIFLAGS} $^
+#view: ${texps}
+#	${GHOSTVIEW} $^
+#print: ${texps}
+#	${LP} ${LPFLAGS} $^
+#dvi: ${dvifiles}
+#${texps}: ${texdvi}
 
 %.ps: %.dvi
-	${DVIPSCMD} ${DVIPSFLAGS} -o $@ $<
-
-${texdvi}: ${texsrc}
-
-${dotps}: ${dotsrc}
-
-%.dvi: ${srcdir}/%.tex
-	${LATEXCMD} ${LATEXFLAGS} $<
-	-${BIBTEXCMD} ${BIBTEXFLAGS} $(basename $@)
-	${LATEXCMD} ${LATEXFLAGS} $<
-	${LATEXCMD} ${LATEXFLAGS} $<
+	@echo ${DVIPSCMD} -o $@ $<
+	${DVIPSCMD} -o $@ $<
+	@if test -f ${srcdir}/$*_laur_cover.ps; then\
+	   echo "Prepending $*_laur_cover.ps to postscript.";\
+	   echo "cat $@ ${srcdir}/$*_laur_cover.ps > tmp.ps";\
+	   cat ${srcdir}/$*_laur_cover.ps $@ > tmp.ps;\
+	   mv tmp.ps $@;\
+	fi
 
 %.ps: ${srcdir}/%.dot
 	@${DOTCMD} -Tps -o $@ $<
 
-pdf: ${allpdf}
+# $@ = target
+# $< = dependency
+# $* = % with no dot ext
+
+%.dvi: %.tex ${BIBFILES}
+	${LATEXCMD} $<
+	@if test "`grep citation $*.aux`" != "" ||\
+            test "`grep newlabel $*.aux`" != ""; then \
+	   ${BIBTEXCMD} $*       ;\
+	   ${LATEXCMD} $<        ;\
+	   ${LATEXCMD} $<        ;\
+	fi
+	if test -f $ $*.idx; then\
+	   ${MAKEIDX} -s ${package_top_srcdir}/environment/latex/draco_index.ist $*;\
+	   ${LATEXCMD} $<      ;\
+	fi
+
+#	${LATEXCMD} ${LATEXFLAGS} $<
+#	-${BIBTEXCMD} ${BIBTEXFLAGS} $(basename $@)
+#	${LATEXCMD} ${LATEXFLAGS} $<
+#	${LATEXCMD} ${LATEXFLAGS} $<
+
+%.txt: %.pdf
+	pdftotext $<
+
+${builddir}/%.bib: ${package_top_srcdir}/doc/bib/%.bib
+	cp $< $@
+
+${doc_pdf_output}:
+	@${INSTALL} -d $@
+
+index: 
+	${MAKEIDX} ${latexsrc}
+
+bib: %.tex ${BIBFILES}
+	${BIBTEXCMD} ${latexsrc}
+
+tex: %.tex
+	${LATEXCMD} ${latexsrc}
 
 %.pdf: %.ps
 	${PS2PDF} $<
@@ -195,9 +272,21 @@ ${installdirs}:
 
 # nothing to install in doc
 
-install:
+install: ${allpdf} ${doc_pdf_output}
+	@echo " "
+	@for file in `ls -1 *.pdf`; do \
+	  echo "Install $${file} to ${doc_pdf_output}/";\
+	  ${INSTALL_DATA} $${file} ${doc_pdf_output}/; \
+	done
+	@echo " "
 
 uninstall:
+	@echo " "
+	@for file in `ls -1 *.pdf`; do \
+	  echo "Removing $${file} from ${doc_pdf_output}/";\
+	  ${UNINSTALL} ${doc_pdf_output}/$${file} /; \
+	done
+	@echo " "
 
 ##---------------------------------------------------------------------------##
 ## dependencies in the build system
@@ -207,7 +296,7 @@ uninstall:
 configfiles := $(wildcard ${top_srcdir}/${rel_config_dir}/*.m4) \
 	$(wildcard ${top_srcdir}/${rel_config_dir}/../pkg_config/*.m4)
 
-configure: 
+configure:
 	@echo "Rebuilding ${top_srcdir}/aclocal.m4"
 	@cd ${top_srcdir} && aclocal -I ${rel_config_dir} ${pkg_config_inc}
 	@echo "Rebuilding ${top_srcdir}/configure"
@@ -223,13 +312,19 @@ reconfigure:
 ## clean rules
 
 clean:
-	-rm -f .tmp?
-	-rm -f *.aux ${texlog} ${texdvi} ${texps} *.bbl *.blg
-	-rm -r ${dirstoclean}
+	rm -f *.dvi *.ps *.log *.aux *.blg *.bbl *.idx *.ilg *.ind
+	rm -f *.toc *.lof *.lot *.bib *.bbl *.blg
+	rm -f *.ps *.pdf
+	rm -f *.flc *~ *.tmp? ${texlog} ${texdvi} ${texps}
+	rm -f ${dirstoclean}
+
+clean-tex:
+	rm -f *.log *.aux *.pdf 
+	rm -f *.toc *.lof *.lot
 
 distclean: mostlyclean
-	-rm config.status config.cache config.log config.h stamp-h Makefile
-	-rm -f site.exp
+	-rm config.status config.cache config.log config.h stamp-h
+	-rm -f Makefile site.exp autom4te.cache
 
 mostlyclean: clean
 	-rm *.o *.d
@@ -246,7 +341,6 @@ forced-maintainer-clean:
 
 -include ${srcdir}/Makefile.misc
 
-
 ###############################################################################
-#			 end of draco/config Makefile.doc.in
+# end of capsaicin/doc/vision_and_scope/Makefile
 ###############################################################################
