@@ -1179,14 +1179,14 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # call finalize functions for each vendor, the order is important
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
-   AC_TRILINOS_FINALIZE
-   AC_GSL_FINALIZE
+   AC_TRILINOS_FINALIZE dnl Depends on: LAPACK, MPI
+   AC_GSL_FINALIZE      dnl Depends on: LAPACK
 
    AC_AZTEC_FINALIZE
-   AC_PCG_FINALIZE
+   AC_PCG_FINALIZE      dnl Depends on: LAPACK
    AC_HYPRE_FINALIZE
-   AC_SCALAPACK_FINALIZE
-   AC_BLACS_FINALIZE
+   AC_SCALAPACK_FINALIZE dnl Depends on: BLACS, MPI
+   AC_BLACS_FINALIZE     dnl Depends on: MPI
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
