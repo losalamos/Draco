@@ -199,6 +199,20 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
    fi
    AC_SUBST(XDVIFLAGS)
 
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
+   if test "${PS2PDF}" = null ; then
+       AC_MSG_WARN("No valid ps2pdf found!")
+   fi
+   dnl AC_SUBST(PS2PDFFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(DOTCMD, dot, null)
+   if test "${DOTCMD}" = null ; then
+       AC_MSG_WARN("No valid dot found!")
+   fi
+   dnl AC_SUBST(DOTCMDFLAGS)
+
    dnl check for and assign the path to dvips
    AC_CHECK_PROGS(DVIPS, dvips, null)
    if test "${DVIPS}" = null ; then
