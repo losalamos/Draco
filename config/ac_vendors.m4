@@ -237,7 +237,7 @@ dnl GSL is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_GSL_SETUP, [dnl
+AC_DEFUN([AC_GSL_SETUP], [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
@@ -1228,7 +1228,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl allows one to include all vendor macros by calling this macro.
 dnl designed for draco/configure.in and draco/src/configure.in
 
-AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
+AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
 
    dnl include all macros for easy use in top-level configure.in's
    AC_MPI_SETUP(pkg)

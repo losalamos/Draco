@@ -53,7 +53,7 @@ dnl that clients can use it to determine the location of the draco
 dnl source directory in their own configure/build systems.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_VENDOR_SETUP, [dnl
+AC_DEFUN([AC_DRACO_VENDOR_SETUP], [dnl
 
    dnl define --with-draco 
    AC_ARG_WITH(draco,
@@ -151,7 +151,7 @@ dnl this MACRO must be called after AC_NEEDS_LIBS
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_DRACO, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_DRACO], [dnl
    if test ${has_draco_libdir:=no} != "yes" ; then
        
        has_draco_libdir="yes"
@@ -180,7 +180,7 @@ dnl this MACRO must be called after AC_NEEDS_LIBS_TEST
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_TEST_DRACO, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_TEST_DRACO], [dnl
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L${DRACO_LIB}"
 
    for lib in $1

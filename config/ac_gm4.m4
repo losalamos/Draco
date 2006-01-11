@@ -31,7 +31,7 @@ dnl  ========================================================================
 ## $Id$
 ##---------------------------------------------------------------------------##
 
-AC_DEFUN(AC_PROG_GM4, [dnl
+AC_DEFUN([AC_PROG_GM4], [dnl
    AC_MSG_CHECKING(how to run the Gnu m4 preprocessor)
    AC_CHECK_PROGS(GM4, gm4 m4, none)
    if test "${GM4}" != none && ${GM4} --version 2>&1 | grep "GNU"
@@ -43,7 +43,7 @@ AC_DEFUN(AC_PROG_GM4, [dnl
 ])
 
 dnl Require finding the gnu m4 preprocessor if F90 is the current language
-AC_DEFUN(AC_REQUIRE_GM4, [dnl See AC_REQUIRE_CPP
+AC_DEFUN([AC_REQUIRE_GM4], [dnl See AC_REQUIRE_CPP
    ifelse(AC_LANG, F90, [AC_REQUIRE([AC_PROG_GM4])])
 ]) 
 

@@ -20,7 +20,7 @@ dnl                DefaultValue
 dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_WITH_DIR, [dnl
+AC_DEFUN([AC_WITH_DIR], [dnl
 
  dnl
  dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
@@ -80,7 +80,7 @@ dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
 dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
+AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
 
    # $1 is the vendor_<> tag (equals pkg or test)
    # $2 are the directories added 
@@ -105,7 +105,7 @@ dnl ceases to be a valid directory, which only seems to happen after a
 dnl LOT of ..'s are added to it.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_FIND_TOP_SRC, [dnl
+AC_DEFUN([AC_FIND_TOP_SRC], [dnl
    
    # $1 is the component's source directory
    # $2 is the variable to store the package's main source directory in.

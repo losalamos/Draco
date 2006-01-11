@@ -64,7 +64,7 @@ dnl draco.  Middleware vendors should not have their own libexecdir,
 dnl but instead, they should only add includes and libraries.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_MIDDLEWARE_VENDOR_SETUP, [dnl
+AC_DEFUN([AC_MIDDLEWARE_VENDOR_SETUP], [dnl
    
    dnl middleware vendor_name in $1
 
@@ -160,7 +160,7 @@ dnl this MACRO must be called after AC_NEEDS_LIBS
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_MIDDLEWARE, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_MIDDLEWARE], [dnl
 
    dnl arg 1 is the middleware vendor name
    dnl arg 2 are the libraries (packages)
@@ -194,7 +194,7 @@ dnl AC_NEEDS_LIBS_MIDDLEWARE
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_TEST_MIDDLEWARE, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_TEST_MIDDLEWARE], [dnl
 
    dnl $1 is the middleware vendor name
    dnl $2 are the libraries (packages)

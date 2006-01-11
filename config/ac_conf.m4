@@ -30,7 +30,7 @@ dnl add DRACO-dependent libraries necessary for a package
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS, [dnl
+AC_DEFUN([AC_NEEDS_LIBS], [dnl
    if test ${has_libdir:=no} != "yes" ; then
        DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
@@ -56,7 +56,7 @@ dnl add DRACO-dependent libraries necessary for a package test
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in $1
    do
@@ -77,7 +77,7 @@ dnl where serial means run as serial test only.
 dnl If compiling with scalar c4 then nprocs are ignored.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_RUNTESTS, [dnl
+AC_DEFUN([AC_RUNTESTS], [dnl
 	test_alltarget="$test_alltarget $1"
         
 	test_nprocs="$2"
@@ -96,7 +96,7 @@ dnl the default is an executable binary
 dnl options are PYTHON
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_TESTEXE, [dnl
+AC_DEFUN([AC_TESTEXE], [dnl
    test_exe="$1"
 ])
 
@@ -107,7 +107,7 @@ dnl where executables will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
+AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
    install_executable="\${bindir}/\${package}"
    installdirs="${installdirs} \${bindir}"
    alltarget="${alltarget} bin/\${package}"
@@ -120,7 +120,7 @@ dnl where libraries will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_LIB, [ dnl
+AC_DEFUN([AC_INSTALL_LIB], [ dnl
    install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
    installdirs="${installdirs} \${libdir}"
    alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
@@ -137,7 +137,7 @@ dnl where headers will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
+AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
    install_headers="\${installheaders}"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
 ])

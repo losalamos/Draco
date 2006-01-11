@@ -51,7 +51,7 @@ dnl	named [Cc]onftest* will be overwritten!
 
 dnl ### Selecting which language to use for testing
 dnl     See AC_LANG_C, AC_LANG_CPLUSPLUS, AC_LANG_FORTRAN77
-AC_DEFUN(AC_LANG_FORTRAN90, [dnl 
+AC_DEFUN([AC_LANG_FORTRAN90], [dnl 
    define([AC_LANG], [FORTRAN90])dnl
    ac_ext=f90
    ac_compile='${F90-f90} -c $F90FLAGS conftest.$ac_ext 1>&AC_FD_CC'
@@ -62,7 +62,7 @@ AC_DEFUN(AC_LANG_FORTRAN90, [dnl
 
 dnl ### Checks for module information
 
-AC_DEFUN(AC_PROG_F90_MOD,[dnl
+AC_DEFUN([AC_PROG_F90_MOD],[dnl
    AC_MSG_CHECKING([the F90 compiler module name])
    if test -z "$MODNAME" -a -z "$MODSUFFIX"
    then

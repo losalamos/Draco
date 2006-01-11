@@ -18,7 +18,7 @@ dnl Declaration of Draco non-vendor configure options. This macro can
 dnl be called to fill out configure help screens
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_ARGS, [dnl
+AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl
    dnl Library prefix

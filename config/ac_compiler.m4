@@ -17,7 +17,7 @@ dnl AC_WITH_F90 should be called in configure.in (before
 dnl AC_DRACO_ENV)
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_CPP_ENV, [dnl
+AC_DEFUN([AC_CPP_ENV], [dnl
 
    # make sure that the host is defined
    AC_REQUIRE([AC_CANONICAL_HOST])
@@ -165,7 +165,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl SGI CC COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_SGI_CC, [dnl
+AC_DEFUN([AC_DRACO_SGI_CC], [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
@@ -229,7 +229,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl GNU COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
+AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
 
    # finding path of gcc compiler
    AC_PATH_PROG(GCC_BIN, g++, null)
@@ -350,7 +350,7 @@ dnl Note that this implementation of PGI uses options that are only
 dnl valid for LINUX
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_PGCC, [dnl
+AC_DEFUN([AC_DRACO_PGCC], [dnl
 
    # do compiler configuration
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
@@ -439,7 +439,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl COMPAQ CXX COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
+AC_DEFUN([AC_DRACO_COMPAQ_CXX], [dnl
 
    dnl 6-FEB-02 NEED TO ADD MODS !!!!!!
 
@@ -538,7 +538,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl Intel icpc COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_INTEL_ICPC, [dnl
+AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
@@ -607,7 +607,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IBM VISUAL AGE COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
+AC_DEFUN([AC_DRACO_IBM_VISUAL_AGE], [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 

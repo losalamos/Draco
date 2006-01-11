@@ -21,7 +21,7 @@ dnl use the STL libraries included with STLPort instead of the
 dnl compiler's native STL defintions.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
+AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
 
    AC_MSG_CHECKING("for stlport")
    if test "${with_stlport:=no}" != no; then
@@ -73,7 +73,7 @@ dnl NOT do any compile or link testing.  That functionality is
 dnl defined in ac_dracotests.m4.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_ENV, [dnl
+AC_DEFUN([AC_DRACO_ENV], [dnl
 
    dnl
    dnl CONFIGURE ARGUMENTS

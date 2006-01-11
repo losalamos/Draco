@@ -33,7 +33,7 @@ dnl
 ##---------------------------------------------------------------------------##
 
 dnl ### Ensure with_f90 set
-AC_DEFUN(AC_WITH_F90, [dnl
+AC_DEFUN([AC_WITH_F90], [dnl
    : ${with_f90:=yes}
     
    dnl turn off C++ compiler
@@ -49,7 +49,7 @@ dnl
 dnl CHOOSE A F90 COMPILER
 dnl
 
-AC_DEFUN(AC_F90_ENV, [dnl
+AC_DEFUN([AC_F90_ENV], [dnl
    AC_REQUIRE([AC_CANONICAL_HOST])
 
    case "${with_f90:=yes}" in
@@ -140,7 +140,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IBM XLF95 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_XL_F90, [dnl
+AC_DEFUN([AC_COMPILER_XL_F90], [dnl
 
    # Check for working XL F90 compiler
 
@@ -198,7 +198,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl FUJITSU F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
+AC_DEFUN([AC_COMPILER_FUJITSU_F90], [dnl
 
    # Check for working Fujitsu F90 compiler
 
@@ -244,7 +244,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl LAHEY F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
+AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
 
    AC_CHECK_PROG(F90, lf95, lf95, none)
 
@@ -285,7 +285,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl PORTLAND F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
+AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
 
    # Check for working Portland Group F90 compiler
 
@@ -331,7 +331,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl COMPAQ F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
+AC_DEFUN([AC_COMPILER_COMPAQ_F90], [dnl
 
    # Check for working compaq F90 compiler
 
@@ -380,7 +380,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl SUN WORKSHOP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_WORKSHOP_F90, [dnl
+AC_DEFUN([AC_COMPILER_WORKSHOP_F90], [dnl
 
    # Check for working WorkShop F90 compiler
 
@@ -426,7 +426,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl CRAY_F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_CRAY_F90, [dnl
+AC_DEFUN([AC_COMPILER_CRAY_F90], [dnl
 
    # Check for working Cray F90 compiler
 
@@ -471,7 +471,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IRIX MIPS F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
+AC_DEFUN([AC_COMPILER_MIPS_F90], [dnl
 
    # Look for working MIPS compiler
 
@@ -519,7 +519,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl HP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_HP_F90, [dnl
+AC_DEFUN([AC_COMPILER_HP_F90], [dnl
 
    # CHECK FOR WORKING HP F90 COMPILER
    AC_CHECK_PROG(F90, f90, f90, none)
@@ -562,7 +562,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl INTEL F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_INTEL_F90, [dnl
+AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
 
    # CHECK FOR WORKING INTEL F90 COMPILER
    AC_CHECK_PROG(F90, ifc, ifc, none)
@@ -606,7 +606,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl NAG F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_NAG_F90, [dnl
+AC_DEFUN([AC_COMPILER_NAG_F90], [dnl
 
    # CHECK FOR WORKING NAG F90 COMPILER
    AC_CHECK_PROG(F90, f95, f95, none)
@@ -652,7 +652,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ABSOFT F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
+AC_DEFUN([AC_COMPILER_ABSOFT_F90], [dnl
 
    # CHECK FOR WORKING ABSOFT F90 COMPILER
    AC_CHECK_PROG(F90, f95, f95, none)
