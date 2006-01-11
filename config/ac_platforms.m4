@@ -1324,17 +1324,20 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               AC_MSG_ERROR("Cannot determine what rpath format to use!")
-	   fi
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+           dnl Only append to RPATH if vendor has shared object libs.
+           so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  AC_MSG_ERROR("Cannot determine what rpath format to use!")
+   	      fi
+           fi 
        done
 
 ]) dnl setup_rpath
