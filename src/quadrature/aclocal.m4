@@ -1162,14 +1162,14 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # call finalize functions for each vendor, the order is important
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
-   AC_TRILINOS_FINALIZE
-   AC_GSL_FINALIZE
+   AC_TRILINOS_FINALIZE dnl Depends on: LAPACK, MPI
+   AC_GSL_FINALIZE      dnl Depends on: LAPACK
 
    AC_AZTEC_FINALIZE
-   AC_PCG_FINALIZE
+   AC_PCG_FINALIZE      dnl Depends on: LAPACK
    AC_HYPRE_FINALIZE
-   AC_SCALAPACK_FINALIZE
-   AC_BLACS_FINALIZE
+   AC_SCALAPACK_FINALIZE dnl Depends on: BLACS, MPI
+   AC_BLACS_FINALIZE     dnl Depends on: MPI
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
@@ -1644,6 +1644,20 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
        AC_MSG_WARN("No valid xdvi found!")
    fi
    AC_SUBST(XDVIFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
+   if test "${PS2PDF}" = null ; then
+       AC_MSG_WARN("No valid ps2pdf found!")
+   fi
+   dnl AC_SUBST(PS2PDFFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(DOTCMD, dot, null)
+   if test "${DOTCMD}" = null ; then
+       AC_MSG_WARN("No valid dot found!")
+   fi
+   dnl AC_SUBST(DOTCMDFLAGS)
 
    dnl check for and assign the path to dvips
    AC_CHECK_PROGS(DVIPS, dvips, null)
@@ -4991,17 +5005,20 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               AC_MSG_ERROR("Cannot determine what rpath format to use!")
-	   fi
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+           dnl Only append to RPATH if vendor has shared object libs.
+           so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  AC_MSG_ERROR("Cannot determine what rpath format to use!")
+   	      fi
+           fi 
        done
 
 ]) dnl setup_rpath

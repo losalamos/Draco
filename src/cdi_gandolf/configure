@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="GandolfGrayOpacity.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS GANDOLF_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS GANDOLF_LIB latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS PS2PDF DOTCMD DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -2061,6 +2061,98 @@ test -n "$XDVI" || XDVI="null"
 echo "$as_me: WARNING: \"No valid xdvi found!\"" >&2;}
    fi
 
+
+      for ac_prog in ps2pdf
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_PS2PDF+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$PS2PDF"; then
+  ac_cv_prog_PS2PDF="$PS2PDF" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PS2PDF="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+PS2PDF=$ac_cv_prog_PS2PDF
+if test -n "$PS2PDF"; then
+  echo "$as_me:$LINENO: result: $PS2PDF" >&5
+echo "${ECHO_T}$PS2PDF" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$PS2PDF" && break
+done
+test -n "$PS2PDF" || PS2PDF="null"
+
+   if test "${PS2PDF}" = null ; then
+       { echo "$as_me:$LINENO: WARNING: \"No valid ps2pdf found!\"" >&5
+echo "$as_me: WARNING: \"No valid ps2pdf found!\"" >&2;}
+   fi
+
+      for ac_prog in dot
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_DOTCMD+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$DOTCMD"; then
+  ac_cv_prog_DOTCMD="$DOTCMD" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_DOTCMD="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+DOTCMD=$ac_cv_prog_DOTCMD
+if test -n "$DOTCMD"; then
+  echo "$as_me:$LINENO: result: $DOTCMD" >&5
+echo "${ECHO_T}$DOTCMD" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$DOTCMD" && break
+done
+test -n "$DOTCMD" || DOTCMD="null"
+
+   if test "${DOTCMD}" = null ; then
+       { echo "$as_me:$LINENO: WARNING: \"No valid dot found!\"" >&5
+echo "$as_me: WARNING: \"No valid dot found!\"" >&2;}
+   fi
 
       for ac_prog in dvips
 do
@@ -6007,7 +6099,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -6047,7 +6138,6 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -6125,7 +6215,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -6210,7 +6299,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -6245,7 +6333,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -6755,19 +6842,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -6802,19 +6891,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -7031,7 +7122,6 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -7071,7 +7161,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -7149,7 +7238,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -7234,7 +7322,6 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -7269,7 +7356,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -7776,19 +7862,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -8029,7 +8117,6 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -8069,7 +8156,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -8147,7 +8233,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -8232,7 +8317,6 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -8267,7 +8351,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -8774,19 +8857,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -9082,7 +9167,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -9122,7 +9206,6 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -9200,7 +9283,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -9285,7 +9367,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -9320,7 +9401,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -9827,19 +9907,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -10050,7 +10132,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -10090,7 +10171,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -10168,7 +10248,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -10253,7 +10332,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -10288,7 +10366,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -10891,7 +10968,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -10931,7 +11007,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -11009,7 +11084,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -11094,7 +11168,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -11129,7 +11202,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -11636,19 +11708,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -12006,7 +12080,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_gsl}"; then
 
@@ -12046,7 +12119,6 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
-
 
 
 
@@ -12124,7 +12196,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -12209,7 +12280,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -12244,7 +12314,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -13659,6 +13728,8 @@ s,@BIBTEX@,$BIBTEX,;t t
 s,@BIBTEXFLAGS@,$BIBTEXFLAGS,;t t
 s,@XDVI@,$XDVI,;t t
 s,@XDVIFLAGS@,$XDVIFLAGS,;t t
+s,@PS2PDF@,$PS2PDF,;t t
+s,@DOTCMD@,$DOTCMD,;t t
 s,@DVIPS@,$DVIPS,;t t
 s,@DVIPSFLAGS@,$DVIPSFLAGS,;t t
 s,@LP@,$LP,;t t
