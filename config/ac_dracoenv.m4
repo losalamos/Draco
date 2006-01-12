@@ -29,8 +29,9 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
          AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
       fi
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
-      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
+      CXXFLAGS="-pthread ${CXXFLAGS}"
+dnl      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
+      AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS.])
 
       dnl Include different libraries for debug vs opt mode.
       dnl Also define _STLP_DEBUG if --enable-debug is set. 
@@ -40,15 +41,16 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
             AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
          fi
          LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         AC_MSG_RESULT("yes")
+         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
+dnl         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS.])
       else 
          dnl Use optimized STLport libraries.
          if ! test -r "${with_stlport}/lib/libstlport.so"; then
             AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
          fi
          LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         AC_MSG_RESULT("no")
+         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
       fi
 
       AC_MSG_CHECKING("for RPATH mods for stlport")
@@ -171,8 +173,12 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
 
    fi
 
-   # STL port checks and setup
-
+   dnl
+   dnl STL port checks and setup
+   dnl
+   dnl If --with-stlport is on the configure line, we must prepend
+   dnl CXXFLAGS and CPPFLAGS with -I<path_to_stlport>.
+   dnl
    AC_DBS_STLPORT_ENV
 
    dnl add any additional flags
