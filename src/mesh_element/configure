@@ -5348,8 +5348,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
    fi
 
-   # STL port checks and setup
-
 
    echo "$as_me:$LINENO: checking \"for stlport\"" >&5
 echo $ECHO_N "checking \"for stlport\"... $ECHO_C" >&6
@@ -5360,9 +5358,9 @@ echo "$as_me: error: \"Invalid directory ${with_stlport}/include\"" >&2;}
    { (exit 1); exit 1; }; }
       fi
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
-      echo "$as_me:$LINENO: result: \"-I${with_stlport}/include added to CXXFLAGS.\"" >&5
-echo "${ECHO_T}\"-I${with_stlport}/include added to CXXFLAGS.\"" >&6
+      CXXFLAGS="-pthread ${CXXFLAGS}"
+      echo "$as_me:$LINENO: result: -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&5
+echo "${ECHO_T}-I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&6
 
                   echo "$as_me:$LINENO: checking \"for debug stlport mode\"" >&5
 echo $ECHO_N "checking \"for debug stlport mode\"... $ECHO_C" >&6
@@ -5373,9 +5371,9 @@ echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlportstlg.so\"" 
    { (exit 1); exit 1; }; }
          fi
          LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         echo "$as_me:$LINENO: result: \"yes\"" >&5
-echo "${ECHO_T}\"yes\"" >&6
+         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
+         echo "$as_me:$LINENO: result: Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS." >&5
+echo "${ECHO_T}Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS." >&6
       else
                   if ! test -r "${with_stlport}/lib/libstlport.so"; then
             { { echo "$as_me:$LINENO: error: \"Invalid library ${with_stlport}/lib/libstlport.so\"" >&5
@@ -5383,8 +5381,8 @@ echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlport.so\"" >&2;
    { (exit 1); exit 1; }; }
          fi
          LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         echo "$as_me:$LINENO: result: \"no\"" >&5
-echo "${ECHO_T}\"no\"" >&6
+         echo "$as_me:$LINENO: result: No. -L${with_stlport}/lib -lstlport added to LIBS." >&5
+echo "${ECHO_T}No. -L${with_stlport}/lib -lstlport added to LIBS." >&6
       fi
 
       echo "$as_me:$LINENO: checking \"for RPATH mods for stlport\"" >&5
