@@ -5355,8 +5355,8 @@ echo "$as_me: error: \"Invalid directory ${with_stlport}/include\"" >&2;}
       fi
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
       CXXFLAGS="-pthread ${CXXFLAGS}"
-      echo "$as_me:$LINENO: result: -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&5
-echo "${ECHO_T}-I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&6
+      echo "$as_me:$LINENO: result: Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&5
+echo "${ECHO_T}Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&6
 
                   echo "$as_me:$LINENO: checking \"for debug stlport mode\"" >&5
 echo $ECHO_N "checking \"for debug stlport mode\"... $ECHO_C" >&6
@@ -6009,6 +6009,7 @@ _ACEOF
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -6022,23 +6023,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -6089,6 +6090,48 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 
@@ -7032,6 +7075,7 @@ echo "${ECHO_T}\"not needed\"" >&6
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -7045,23 +7089,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -7112,6 +7156,48 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 
@@ -8027,6 +8113,7 @@ echo "${ECHO_T}\"not needed\"" >&6
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -8040,23 +8127,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -8107,6 +8194,48 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 
@@ -9077,6 +9206,7 @@ _ACEOF
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -9090,23 +9220,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -9157,6 +9287,48 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 
@@ -10042,6 +10214,7 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -10055,23 +10228,23 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -10122,6 +10295,48 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 
@@ -10878,6 +11093,7 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -10891,23 +11107,23 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -10958,6 +11174,48 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 
@@ -11990,6 +12248,7 @@ _ACEOF
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -12003,23 +12262,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -12070,6 +12329,48 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
 
    fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
 
 
 

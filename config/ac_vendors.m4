@@ -299,6 +299,67 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_SUPERLUDIST_SETUP
+dnl
+dnl SUPERLUDIST SETUP (on by default)
+dnl SUPERLUDIST is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_SUPERLUDIST_SETUP, [dnl
+
+   dnl define --with-superludist
+   AC_ARG_WITH(superludist,
+      [  --with-superludist=[superludist] 
+                       determine SUPERLUDIST lib (superludist is default)])
+ 
+   dnl define --with-superludist-inc
+   AC_WITH_DIR(superludist-inc, SUPERLUDIST_INC, \${SUPERLUDIST_INC_DIR},
+	       [tell where SUPERLUDIST includes are])
+
+   dnl define --with-superludist-lib
+   AC_WITH_DIR(superludist-lib, SUPERLUDIST_LIB, \${SUPERLUDIST_LIB_DIR},
+	       [tell where SUPERLUDIST libraries are])
+
+   # set default value of superludist includes and libs
+   if test "${with_superludist:=superludist}" = yes ; then
+       with_superludist='superludist'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_superludist=$1
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_SUPERLUDIST_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       if test -n "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperludist)
+       elif test -z "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperludist)
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_TRILINOS_SETUP
 dnl
 dnl TRILINOS SETUP (on by default)
@@ -346,9 +407,9 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
@@ -1179,8 +1240,10 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # call finalize functions for each vendor, the order is important
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
+
    AC_TRILINOS_FINALIZE dnl Depends on: LAPACK, MPI
    AC_GSL_FINALIZE      dnl Depends on: LAPACK
+   AC_SUPERLUDIST_FINALIZE
 
    AC_AZTEC_FINALIZE
    AC_PCG_FINALIZE      dnl Depends on: LAPACK
@@ -1236,6 +1299,7 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
    AC_GSL_SETUP(pkg)
+   AC_SUPERLUDIST_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
    AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
