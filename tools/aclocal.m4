@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -28,7 +28,7 @@ dnl Declaration of Draco non-vendor configure options. This macro can
 dnl be called to fill out configure help screens
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_ARGS, [dnl
+AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl
    dnl Library prefix
@@ -279,7 +279,7 @@ dnl add DRACO-dependent libraries necessary for a package
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS, [dnl
+AC_DEFUN([AC_NEEDS_LIBS], [dnl
    if test ${has_libdir:=no} != "yes" ; then
        DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
@@ -305,7 +305,7 @@ dnl add DRACO-dependent libraries necessary for a package test
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in $1
    do
@@ -326,7 +326,7 @@ dnl where serial means run as serial test only.
 dnl If compiling with scalar c4 then nprocs are ignored.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_RUNTESTS, [dnl
+AC_DEFUN([AC_RUNTESTS], [dnl
 	test_alltarget="$test_alltarget $1"
         
 	test_nprocs="$2"
@@ -345,7 +345,7 @@ dnl the default is an executable binary
 dnl options are PYTHON
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_TESTEXE, [dnl
+AC_DEFUN([AC_TESTEXE], [dnl
    test_exe="$1"
 ])
 
@@ -356,7 +356,7 @@ dnl where executables will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
+AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
    install_executable="\${bindir}/\${package}"
    installdirs="${installdirs} \${bindir}"
    alltarget="${alltarget} bin/\${package}"
@@ -369,7 +369,7 @@ dnl where libraries will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_LIB, [ dnl
+AC_DEFUN([AC_INSTALL_LIB], [ dnl
    install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
    installdirs="${installdirs} \${libdir}"
    alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
@@ -386,7 +386,7 @@ dnl where headers will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
+AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
    install_headers="\${installheaders}"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
 ])
@@ -570,7 +570,7 @@ dnl                DefaultValue
 dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_WITH_DIR, [dnl
+AC_DEFUN([AC_WITH_DIR], [dnl
 
  dnl
  dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
@@ -630,7 +630,7 @@ dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
 dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
+AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
 
    # $1 is the vendor_<> tag (equals pkg or test)
    # $2 are the directories added 
@@ -655,7 +655,7 @@ dnl ceases to be a valid directory, which only seems to happen after a
 dnl LOT of ..'s are added to it.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_FIND_TOP_SRC, [dnl
+AC_DEFUN([AC_FIND_TOP_SRC], [dnl
    
    # $1 is the component's source directory
    # $2 is the variable to store the package's main source directory in.
