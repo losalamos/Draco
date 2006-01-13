@@ -96,7 +96,7 @@ cvs=`which cvs`
 # set cvs environment
 export CVS_RSH="${REGDIR}/regression/draco_ssh"
 
-cvsroot="-z9 -d sf.lanl.gov:/cvsroot/${code}"
+cvsroot="-d /codes/radtran/cvsroot"
 
 ##---------------------------------------------------------------------------##
 ## Checkout draco
@@ -187,7 +187,8 @@ for target in ${target_list}; do
 	${code_cov_mpi})
            echo ">>> source /codes/mpi/bin/mpich.sh p4-lahey"
            source /codes/mpi/bin/mpich.sh p4-lahey
-           source /codes/mpi/bin/changevendors.sh -v
+           echo ">>> source /home/regress/capsaicin/scripts/changevendors.sh -v"
+           source /home/regress/capsaicin/scripts/changevendors.sh -v
            #setup_using_env_vars
            VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
            OPTIONS='--with-c4=mpi --enable-debug --with-dbc=0 --enable-shared'
@@ -198,7 +199,8 @@ for target in ${target_list}; do
 	${code_cov_scalar})
            echo ">>> source /codes/mpi/bin/mpich.sh scalar"
            source /codes/mpi/bin/mpich.sh scalar
-           source /codes/mpi/bin/changevendors.sh -v
+           echo ">>> source /home/regress/capsaicin/scripts/changevendors.sh -v"
+           source /home/regress/capsaicin/scripts/changevendors.sh -v
            #setup_using_env_vars
            VENDOR_OPTIONS="${VENDOR_SETUP}"
            OPTIONS='--with-c4=scalar --enable-debug --with-dbc=0'
