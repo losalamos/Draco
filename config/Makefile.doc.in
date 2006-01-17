@@ -156,6 +156,10 @@ ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
 
   allps   := ${texps} ${dotps}
   allpdf  := $(notdir $(patsubst %.ps,%.pdf,${allps}))
+
+  pdfsrc  := $(wildcard ${srcdir}/*.pdf)
+  pptsrc  := $(wildcard ${srcdir}/*.ppt)
+  direct_copies := ${pdfsrc} ${pptsrc}
 else
   include ${srcdir}/Makefile.srcs
 endif
@@ -164,12 +168,10 @@ endif
 # environment variable for every invocation of a LaTeX-like command.
 
 DRACOENV := ${package_top_srcdir}/environment
-DRACOTEXINPUTS := ${DRACOENV}/latex:
-DRACOBSTINPUTS := ${DRACOENV}/bibtex:
+DRACOTEXINPUTS := ${srcdir}:${DRACOENV}/latex:
+DRACOBSTINPUTS := ${srcdir}:${DRACOENV}/bibtex:
 AUXTEXINPUTS   := @AUXTEXINPUTS@
-#CAPTEXINPUTS := ${srcdir}:${package_top_srcdir}/doc/latex:/codes/radtran/vendors/environment/latex
 LATEXENVS := TEXINPUTS="${AUXTEXINPUTS}${DRACOTEXINPUTS}:${TEXINPUTS}:."
-#LATEXENVS  := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
 BIBTEXENVS := BSTINPUTS="${DRACOBSTINPUTS}:${DRACOTEXINPUTS}:${BSTINPUTS}:."
 MAKEIDXENVS:= INDEXSTYLE="../latex"
 
@@ -272,9 +274,13 @@ ${installdirs}:
 
 # nothing to install in doc
 
-install: ${allpdf} ${doc_pdf_output}
+install: ${allpdf} ${doc_pdf_output} 
 	@echo " "
 	@for file in `ls -1 *.pdf`; do \
+	  echo "Install $${file} to ${doc_pdf_output}/";\
+	  ${INSTALL_DATA} $${file} ${doc_pdf_output}/; \
+	done
+	@for file in ${direct_copies}; do \
 	  echo "Install $${file} to ${doc_pdf_output}/";\
 	  ${INSTALL_DATA} $${file} ${doc_pdf_output}/; \
 	done
