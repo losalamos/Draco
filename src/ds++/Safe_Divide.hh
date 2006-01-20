@@ -3,10 +3,9 @@
  * \file   ds++/Save_Divide.hh
  * \author Mike Buksas
  * \date   Tue Jun 21 15:35:05 2005
- * \brief  
+ * \brief  Provide protected division functions.
  * \note   Copyright 2004 The Regents of the University of California.
  *
- * Long description.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -21,29 +20,40 @@
 namespace rtt_dsxx
 {
 
+//---------------------------------------------------------------------------//
+/**
+ * \brief Provide a non-overflowing division routine
+ * \arg dividend The number *being divided*
+ * \arg divisor  the number *by which* the dividend is being divided
+ * \return The quotient.
+ *
+ * Implement division  which maxes out at std::numerics_limits<FT>::max() when
+ * the demoninator is too small.
+ *
+ * The arguments are assumed to be positive
+ *
+ * The argument names are as follows: quotient = dividend / divisor. The
+ * function is written so that a/b can be replaced with safe_pos_divide(a,b)
+ * with the arguments in the same order.
+ *
+ * Compared to straight division, this function requires an extra multiply and
+ * comparison (via std::max) to compute a limit on the dividend. The limit
+ * value must also be determined, but this is only done once for each data
+ * type. The comparison prevents numeric overflow limit * divisor, which would
+ * generate a floating-point exception and really hose the performance.
+ *
+ * The result is only slightly more operations than a straight divide and more
+ * readable than including if-blocks around all problematic divisions.
+ * 
+ */
 template <typename FT>
-inline FT safe_pos_divide (const FT& numerator, const FT& denominator)
+inline FT safe_pos_divide (const FT& dividend, const FT& divisor)
 {
 
-    /* Implement division which maxes out at std::numerics_limits<FT>::max()
-     * when the demoninator is too small.
-     *
-     * The arguments are assumed to be positive
-     *
-     * Compared to straight division, this function requires an actra function
-     * call to get the max value, and  extra multiply and comparison (via
-     * std::max) to compute a limit on the numerator. The comparison prevents
-     * numeric overflow limit * denominator, which would generate a
-     * floating-point exception and really hose the performance.
-     *
-     * The result is only slightly more operations than a straight divide and
-     * more readable than including if-blocks around all problematic divisions.
-     *
-     */
 
-    FT limit = std::numeric_limits<FT>::max();
-    FT numerator_bound = limit * std::min (1.0, denominator);
-    FT result = (numerator < numerator_bound) ? numerator / denominator : limit;
+    static FT limit = std::numeric_limits<FT>::max();
+    const  FT dividend_bound = limit * std::min (1.0, divisor);
+    const  FT result = (dividend < dividend_bound) ? dividend / divisor : limit;
 
     return result;
 }
