@@ -28,7 +28,7 @@ namespace rtt_dsxx
  * \return The quotient.
  *
  * Implement division  which maxes out at std::numerics_limits<FT>::max() when
- * the demoninator is too small.
+ * the divisor is too small.
  *
  * The arguments are assumed to be positive
  *
@@ -37,10 +37,8 @@ namespace rtt_dsxx
  * with the arguments in the same order.
  *
  * Compared to straight division, this function requires an extra multiply and
- * comparison (via std::max) to compute a limit on the dividend. The limit
- * value must also be determined, but this is only done once for each data
- * type. The comparison prevents numeric overflow limit * divisor, which would
- * generate a floating-point exception and really hose the performance.
+ * two comparisona The limit value for the data type must also be determined,
+ * but this is only done once for each data type. 
  *
  * The result is only slightly more operations than a straight divide and more
  * readable than including if-blocks around all problematic divisions.
