@@ -255,6 +255,7 @@ AC_DEFUN([AC_DBS_COMPAQ_F90_ENVIRONMENT], [dnl
       test -n "${vendor_gandolf}"   || 
       test -n "${vendor_pcg}"       || 
       test -n "${vendor_udm}"       ||
+      test -n "${vendor_superludist}" ||
       test -n "${vendor_blacs}"; then
 
       extra_f90_libs="-L${f90_lib_loc} -lfor"
