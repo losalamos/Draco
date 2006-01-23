@@ -14,7 +14,7 @@
 #include <vector>
 #include <cmath>
 
-#include "ds++/Assert.hh"
+#include "../Assert.hh"
 #include "../Release.hh"
 #include "ds_test.hh"
 
