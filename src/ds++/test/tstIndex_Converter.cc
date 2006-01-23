@@ -30,6 +30,9 @@ using namespace rtt_dsxx;
 void test_index_converter()
 {
 
+
+    std::vector<int> result(3);
+
     unsigned dimensions[] = {3,4,5};
 
     Index_Converter<3,1> box_one_based(dimensions);
@@ -41,7 +44,13 @@ void test_index_converter()
     if (box_one_based(indices) != 1) ITFAILS;
 
     indices[0] = 2; indices[1] = 3; indices[2] = 4;
-    if (box_one_based(indices) != (2-1) + 3*(3-1) + 12*(4-1) + 1) ITFAILS;
+    int one_index = (2-1) + 3*(3-1) + 12*(4-1) + 1;
+    if (box_one_based(indices) != one_index) ITFAILS;
+
+
+    result = box_one_based(one_index);
+    if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+
 
 
     Index_Converter<3,0> box_zero_based(dimensions);
@@ -55,6 +64,12 @@ void test_index_converter()
     indices[1] = dimensions[1] - 1;
     indices[2] = dimensions[2] - 1;
     if (box_zero_based(indices) != 59) ITFAILS;
+
+
+    result = box_zero_based(59);
+    if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+
+
 
 }
 

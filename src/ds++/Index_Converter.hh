@@ -173,7 +173,39 @@ int Index_Converter<D,OFFSET>::operator()(IT indices) const
     return one_index_value;
     
 }
+
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Convert a 1-index to an N-index
+ *
+ * \arg index The 1-index value
+ * 
+ */
+template <unsigned D, int OFFSET>
+std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
+{
+
+    Check(index_in_range(index));
+
+    std::vector<int> indices(D);
+
+    index -= OFFSET;
+
+    for (int dimension = D; dimension > 0; --dimension)
+    {
+
+        indices[dimension-1] = index / sub_sizes[dimension-1] + OFFSET;
+
+        index = index % sub_sizes[dimension-1];
+
+    }
+
+    return indices;
     
+}
+
+
 //---------------------------------------------------------------------------//
 // IMPLEMENTATION ROUTINES
 //---------------------------------------------------------------------------//
