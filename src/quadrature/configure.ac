@@ -52,7 +52,7 @@ AC_INSTALL_LIB
 dnl A space delimited list of packages that this package depends on.
 AC_NEEDS_LIBS(\
    ds++ \
-   units )
+   special_functions units )
 
 dnl tests
 AC_RUNTESTS(\

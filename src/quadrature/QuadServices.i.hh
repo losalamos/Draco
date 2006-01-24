@@ -20,46 +20,6 @@ namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief kronecker_delta
- * 
- * Return 1 if test_value == offset, otherwise return 0;
- * 
- * \param test_value
- * \param offset
- * \return 1 if test_value == offset, otherwise return 0;
- *
- * \bug move to ds++
- */
-template< typename T >
-T kronecker_delta( T const test_value, T const offset ) 
-{ 
-    return (test_value==offset) ? 1 : 0; 
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief factorial
- * 
- * This is a recursive function that computes k!
- *
- * \param k 
- * \return k!
- *
- * \bug move to ds++
- */
-template< typename T >
-T factorial( T const k ) 
-{
-    if( k <= 1 ) 
-	return 1;
-    else 
-	return  k * factorial(k-1);
-}
-
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-/*! 
  * \brief Pretty print vector<T> as 2D matrix.
  * \param matrix_name A string that will be printed as an identifier for this
  *        matrix.

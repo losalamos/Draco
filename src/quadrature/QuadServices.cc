@@ -22,6 +22,8 @@
 // Draco software
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "special_functions/Factorial.hh"
+#include "special_functions/KroneckerDelta.hh"
 #include "units/PhysicalConstants.hh"
 
 #include "QuadServices.hh"
@@ -322,6 +324,9 @@ double QuadServices::compute_azimuthalAngle( double const mu,
  */
 double QuadServices::compute_clk( unsigned const ell, int const k ) const
 {
+    using rtt_sf::factorial;
+    using rtt_sf::kronecker_delta;
+    
     return std::sqrt( ( 2 - kronecker_delta(k,0) ) 
 		      * factorial( ell - std::abs(k) )
 		      / ( 1.0 * factorial( ell + std::abs(k) ) ) );

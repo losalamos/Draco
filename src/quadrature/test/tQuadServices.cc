@@ -18,6 +18,8 @@
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "special_functions/Factorial.hh"
+#include "special_functions/KroneckerDelta.hh"
 
 #include "quadrature_test.hh"
 #include "../Quadrature.hh"
@@ -53,113 +55,10 @@ double getclk( unsigned const ell, int const k )
 {
     using std::sqrt;
     using std::abs;
-    using rtt_quadrature::factorial;
-    using rtt_quadrature::kronecker_delta;
+    using rtt_sf::factorial;
+    using rtt_sf::kronecker_delta;
     return sqrt( (2.0 - kronecker_delta(k,0) ) 
 		 * factorial(ell-abs(k)) / (1.0*factorial(ell+abs(k)) ));
-}
-
-//---------------------------------------------------------------------------//
-void test_kdelta()
-{
-    using rtt_quadrature::kronecker_delta;
-    
-    if( kronecker_delta( 0, 0 ) == 1 )
-    {
-	PASSMSG("Found kronecker_delta(0,0) == 1, kronecker_delta is working.");
-    }
-    else
-    {
-	PASSMSG("Found kronecker_delta(0,0) != 1, kronecker_delta is not working.");
-    }
-    if( kronecker_delta( 0, 1 ) == 0 )
-    {
-	PASSMSG("Found kronecker_delta(0,1) == 0, kronecker_delta is working.");
-    }
-    else
-    {
-	PASSMSG("Found kronecker_delta(0,1) != 0, kronecker_delta is not working.");
-    }
-    if( kronecker_delta( 1, 1 ) == 1 )
-    {
-	PASSMSG("Found kronecker_delta(1,1) == 1, kronecker_delta is working.");
-    }
-    else
-    {
-	PASSMSG("Found kronecker_delta(1,1) != 1, kronecker_delta is not working.");
-    }
-    if( kronecker_delta( 1, 0 ) == 0 )
-    {
-	PASSMSG("Found kronecker_delta(1,0) == 0, kronecker_delta is working.");
-    }
-    else
-    {
-	PASSMSG("Found kronecker_delta(1,0) != 0, kronecker_delta is not working.");
-    }
-    if( kronecker_delta( -1, 0 ) == 0 )
-    {
-	PASSMSG("Found kronecker_delta(-1,0) == 0, kronecker_delta is working.");
-    }
-    else
-    {
-	PASSMSG("Found kronecker_delta(-1,0) != 0, kronecker_delta is not working.");
-    }
-    if( kronecker_delta( -1, -1 ) == 1 )
-    {
-	PASSMSG("Found kronecker_delta(-1,-1) == 1, kronecker_delta is working.");
-    }
-    else
-    {
-	PASSMSG("Found kronecker_delta(-1,-1) != 1, kronecker_delta is not working.");
-    }
-    return;
-}
-
-//---------------------------------------------------------------------------//
-void test_factorial()
-{
-    using rtt_quadrature::factorial;
-    if( factorial(0) == 1 )
-    {
-	PASSMSG("Found factorial(0) == 1, factorial is working.");
-    }
-    else
-    {
-	PASSMSG("Found factorial(0) != 1, factorial is not working.");
-    }
-    if( factorial(1) == 1 )
-    {
-	PASSMSG("Found factorial(1) == 1, factorial is working.");
-    }
-    else
-    {
-	PASSMSG("Found factorial(1) != 1, factorial is not working.");
-    }
-    if( factorial(2) == 2 )
-    {
-	PASSMSG("Found factorial(2) == 2, factorial is working.");
-    }
-    else
-    {
-	PASSMSG("Found factorial(2) != 2, factorial is not working.");
-    }
-    if( factorial(3) == 6 )
-    {
-	PASSMSG("Found factorial(3) == 6, factorial is working.");
-    }
-    else
-    {
-	PASSMSG("Found factorial(3) != 6, factorial is not working.");
-    }
-    if( factorial(-3) == 1 )
-    {
-	PASSMSG("Found factorial(-3) == 1, factorial is working.");
-    }
-    else
-    {
-	PASSMSG("Found factorial(-3) != 1, factorial is not working.");
-    }
-   return;
 }
 
 //---------------------------------------------------------------------------//
@@ -990,8 +889,6 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-	test_kdelta();
-	test_factorial();
 	test_quad_services_with_1D_S2_quad();
 	test_quad_services_with_1D_S8_quad();
 	test_quad_services_with_3D_S2_quad();
