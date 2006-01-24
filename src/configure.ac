@@ -25,21 +25,21 @@ AC_DRACO_ARGS
 ## LEVEL 1
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(ds++)
+AC_CONFIG_SUBDIRS( ds++ )
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 2
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(xm rng c4 units traits cdi mesh_element quadrature \
-                  plot2D lapack_wrap shared_lib)
+AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
+                   plot2D lapack_wrap shared_lib special_functions )
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(norms timestep pcgWrap viz parser \
-                  cdi_gandolf cdi_analytic meshReaders fpe_trap)
+AC_CONFIG_SUBDIRS( norms timestep pcgWrap viz parser quadrature \
+                   cdi_gandolf cdi_analytic meshReaders fpe_trap )
 dnl
 dnl Kelly Thompson 12 January 2005
 dnl Removed cdi_eospac from list of packages to build and test because
@@ -53,7 +53,7 @@ dnl
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS(RTT_Format_Reader)
+AC_CONFIG_SUBDIRS( RTT_Format_Reader )
 
 ##---------------------------------------------------------------------------##
 ## build the makefile in src/

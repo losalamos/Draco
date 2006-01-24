@@ -1,0 +1,41 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   sf/KroneckerDelta_pt.cc
+ * \author Kelly Thompson
+ * \date   Mon Nov 8 11:17:12 2004
+ * \brief  Provide explicit instantiations of templatized KroneckerDelta function. 
+ * \note   Copyright 2006 The Regents of the University of California.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+#include "KroneckerDelta.i.hh"
+
+namespace rtt_sf
+{
+
+//---------------------------------------------------------------------------//
+// Make kronecker delta valid only for double, int, unsigned, and float.
+
+template 
+double kronecker_delta( double const test_value, 
+			double const offset ) ;
+template 
+int kronecker_delta( int const test_value, 
+		     int const offset ) ;
+template 
+long kronecker_delta( long const test_value, 
+		      long const offset ) ;
+template 
+unsigned kronecker_delta( unsigned const test_value, 
+			  unsigned const offset ) ;
+template 
+float kronecker_delta( float const test_value, 
+		       float const offset ) ;
+
+} // end namespace rtt_sf
+
+//---------------------------------------------------------------------------//
+//              end of sf/KroneckerDelta_pt.cc
+//---------------------------------------------------------------------------//

@@ -1,0 +1,51 @@
+//---------------------------------*-text-*-----------------------------------//
+// sf.dcc
+// Draco Special Functions Overview page
+// Kelly Thompson
+// Mon Apr 19 21:19:57 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\mainpage Overview of the sf package
+\version draco-5_9_0
+\author Kelly Thompson
+
+\section abstract Abstract
+
+The sf package provides generali mathematical functions that are not
+readily available from a 3rd party library like GSL or Trilinos.  Some
+of the function provided in this package partially duplicate GSL
+functions, but may be a generalized template form.
+
+<!---------------------------------------------------------------------------->
+
+\section background Background
+
+Nothing yet.
+
+<!---------------------------------------------------------------------------->
+
+\subsection factorial Factorial
+
+
+<!---------------------------------------------------------------------------->
+
+\section Delta Kroneker Delta
+
+
+<!---------------------------------------------------------------------------->
+
+\section reference References
+
+None yet.
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of sf.dcc
+//---------------------------------------------------------------------------//

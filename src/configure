@@ -272,10 +272,10 @@ PACKAGE_BUGREPORT=
 
 ac_unique_file="configure.ac"
 ac_subdirs_all="$ac_subdirs_all ds++"
-ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi mesh_element quadrature plot2D lapack_wrap shared_lib"
-ac_subdirs_all="$ac_subdirs_all norms timestep pcgWrap viz parser cdi_gandolf cdi_analytic meshReaders fpe_trap"
+ac_subdirs_all="$ac_subdirs_all xm rng c4 units traits cdi mesh_element plot2D lapack_wrap shared_lib special_functions"
+ac_subdirs_all="$ac_subdirs_all norms timestep pcgWrap viz parser quadrature cdi_gandolf cdi_analytic meshReaders fpe_trap"
 ac_subdirs_all="$ac_subdirs_all RTT_Format_Reader"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MPI_INC MPI_LIB SPRNG_INC SPRNG_LIB PCG_LIB AZTEC_INC AZTEC_LIB GSL_INC GSL_LIB SUPERLUDIST_INC SUPERLUDIST_LIB TRILINOS_INC TRILINOS_LIB METIS_INC METIS_LIB LAPACK_LIB GANDOLF_LIB EOSPAC5_LIB GRACE_INC GRACE_LIB SPICA_INC SPICA_LIB XERCES_INC XERCES_LIB HDF5_INC HDF5_LIB UDM_INC UDM_LIB latex_yes_no doxygen_output_top subdirs CC CFLAGS CXX CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -855,6 +855,10 @@ Optional Packages:
                        determine GSL lib (gsl is default)
   --with-gsl-inc=DIR    tell where GSL includes are (\${GSL_INC_DIR} by default)
   --with-gsl-lib=DIR    tell where GSL libraries are (\${GSL_LIB_DIR} by default)
+  --with-superludist=superludist
+                       determine SUPERLUDIST lib (superludist is default)
+  --with-superludist-inc=DIR    tell where SUPERLUDIST includes are (\${SUPERLUDIST_INC_DIR} by default)
+  --with-superludist-lib=DIR    tell where SUPERLUDIST libraries are (\${SUPERLUDIST_LIB_DIR} by default)
   --with-trilinos=lib    determine the trilinos implementation (aztecoo is default)
   --with-trilinos-inc=DIR    tell where TRILINOS includes are (\${TRILINOS_INC_DIR} by default)
   --with-trilinos-lib=DIR    tell where TRILINOS libraries are (\${TRILINOS_LIB_DIR} by default)
@@ -1866,6 +1870,111 @@ fi;
    # determine if this package is needed for testing or for the
    # package
    vendor_gsl=pkg
+
+
+
+# Check whether --with-superludist or --without-superludist was given.
+if test "${with_superludist+set}" = set; then
+  withval="$with_superludist"
+
+fi;
+
+
+
+
+
+# Check whether --with-superludist-inc or --without-superludist-inc was given.
+if test "${with_superludist_inc+set}" = set; then
+  withval="$with_superludist_inc"
+  if test $with_superludist_inc != "no" ; then
+      if test $with_superludist_inc = "yes" ; then
+         # following eval needed to remove possible '\' from \${SUPERLUDIST_INC_DIR}
+         eval with_superludist_inc=\${SUPERLUDIST_INC_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_superludist_inc=`eval echo "$with_superludist_inc" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_superludist_inc:-null}" = "null" ; then
+         { echo "configure: error: --with-superludist-inc directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_superludist_inc ; then
+         { echo "configure: error: $with_superludist_inc: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      SUPERLUDIST_INC="${with_superludist_inc}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define SUPERLUDIST_INC ${with_superludist_inc}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "SUPERLUDIST_INC has been set to $SUPERLUDIST_INC" 1>&6
+
+   fi
+fi;
+
+
+
+
+
+
+
+
+# Check whether --with-superludist-lib or --without-superludist-lib was given.
+if test "${with_superludist_lib+set}" = set; then
+  withval="$with_superludist_lib"
+  if test $with_superludist_lib != "no" ; then
+      if test $with_superludist_lib = "yes" ; then
+         # following eval needed to remove possible '\' from \${SUPERLUDIST_LIB_DIR}
+         eval with_superludist_lib=\${SUPERLUDIST_LIB_DIR}
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      with_superludist_lib=`eval echo "$with_superludist_lib" | sed 's%//*%/%g' | sed 's%/$%%'`
+      if test "$with_superludist_lib:-null}" = "null" ; then
+         { echo "configure: error: --with-superludist-lib directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $with_superludist_lib ; then
+         { echo "configure: error: $with_superludist_lib: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      SUPERLUDIST_LIB="${with_superludist_lib}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      cat >>confdefs.h <<_ACEOF
+#define SUPERLUDIST_LIB ${with_superludist_lib}/
+_ACEOF
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "SUPERLUDIST_LIB has been set to $SUPERLUDIST_LIB" 1>&6
+
+   fi
+fi;
+
+
+
+
+   # set default value of superludist includes and libs
+   if test "${with_superludist:=superludist}" = yes ; then
+      with_superludist='superludist'
+   fi
+
+   # determine if this package is needed for testing or for the
+   # package
+   vendor_superludist=pkg
 
 
 
@@ -3101,7 +3210,7 @@ fi;
 
 
 
-subdirs="$subdirs ds++"
+subdirs="$subdirs ds++ "
 
 
 ##---------------------------------------------------------------------------##
@@ -3110,8 +3219,8 @@ subdirs="$subdirs ds++"
 
 
 
-subdirs="$subdirs xm rng c4 units traits cdi mesh_element quadrature \
-                  plot2D lapack_wrap shared_lib"
+subdirs="$subdirs xm rng c4 units traits cdi mesh_element \
+                   plot2D lapack_wrap shared_lib special_functions "
 
 
 ##---------------------------------------------------------------------------##
@@ -3120,8 +3229,8 @@ subdirs="$subdirs xm rng c4 units traits cdi mesh_element quadrature \
 
 
 
-subdirs="$subdirs norms timestep pcgWrap viz parser \
-                  cdi_gandolf cdi_analytic meshReaders fpe_trap"
+subdirs="$subdirs norms timestep pcgWrap viz parser quadrature \
+                   cdi_gandolf cdi_analytic meshReaders fpe_trap "
 
 
 ##---------------------------------------------------------------------------##
@@ -3130,7 +3239,7 @@ subdirs="$subdirs norms timestep pcgWrap viz parser \
 
 
 
-subdirs="$subdirs RTT_Format_Reader"
+subdirs="$subdirs RTT_Format_Reader "
 
 
 ##---------------------------------------------------------------------------##
@@ -3836,6 +3945,8 @@ s,@AZTEC_INC@,$AZTEC_INC,;t t
 s,@AZTEC_LIB@,$AZTEC_LIB,;t t
 s,@GSL_INC@,$GSL_INC,;t t
 s,@GSL_LIB@,$GSL_LIB,;t t
+s,@SUPERLUDIST_INC@,$SUPERLUDIST_INC,;t t
+s,@SUPERLUDIST_LIB@,$SUPERLUDIST_LIB,;t t
 s,@TRILINOS_INC@,$TRILINOS_INC,;t t
 s,@TRILINOS_LIB@,$TRILINOS_LIB,;t t
 s,@METIS_INC@,$METIS_INC,;t t
