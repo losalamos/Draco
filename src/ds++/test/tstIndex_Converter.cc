@@ -70,6 +70,11 @@ void test_index_converter()
     if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
 
+    Index_Converter<3,0> copy(box_zero_based);
+
+    if (copy != box_zero_based) ITFAILS;
+
+
 
 }
 
