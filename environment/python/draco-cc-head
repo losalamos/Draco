@@ -26,6 +26,17 @@ templated = raw_input('Templated Class? [Y/n] ' %
    {'default' : default})
 if templated in (''): templated = default
 
+if default in ('y'):
+    default = 'typename'
+    typename = raw_input('Type [TYPENAME/class] ' %
+        {'default' : default})
+    if typename in (''): typename = default
+
+    default = 'T'
+    parameter = raw_input('Parameter [T] ' %
+        {'default' : default})
+    if parameter in (''): parameter = default
+
 ################################################################################
 # request package path
 ################################################################################
@@ -47,9 +58,10 @@ if namespace in (''): namespace = default
 ################################################################################
 if templated in ('y'):
    os.system('parse-draco-template -n %(ns)s -p %(pkg)s -t %(pkg)s \
-      -s %(pkg)s -c %(class)s templatet.hh %(hhfile)s' %
+      -s %(pkg)s -c %(class)s -l %(tn)s -f %(pm)s \
+      templatet.hh %(hhfile)s' %
       {'ns' : namespace, 'pkg' : pkgpath, 'hhfile' : hhfile,
-      'class' : classname})
+      'class' : classname, 'tn' : typename, 'pm' : parameter})
 else:
    os.system('parse-draco-template -n %(ns)s -p %(pkg)s -t %(pkg)s \
       -s %(pkg)s -c %(class)s template.hh %(hhfile)s' %
@@ -61,9 +73,10 @@ else:
 ################################################################################
 if templated in ('y'):
    os.system('parse-draco-template -n %(ns)s -p %(pkg)s -t %(pkg)s \
-      -s %(pkg)s -c %(class)s templatet.i.hh %(ihhfile)s' %
+      -s %(pkg)s -c %(class)s -l %(tn)s -f %(param)s \
+      templatet.i.hh %(ihhfile)s' %
       {'ns' : namespace, 'pkg' : pkgpath, 'ihhfile' : ihhfile,
-      'class' : classname})
+      'class' : classname, 'tn' : typename, 'param' : parameter})
 else:
    os.system('parse-draco-template -n %(ns)s -p %(pkg)s -t %(pkg)s \
       -s %(pkg)s -c %(class)s template.i.hh %(ihhfile)s' %

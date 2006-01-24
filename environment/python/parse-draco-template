@@ -48,6 +48,14 @@ parser.add_option("-n", "--namespace", dest="namespace",
 parser.add_option("-a", "--author", dest="author",
 	help="Author", metavar="AUTHOR")
 
+# parameter type
+parser.add_option("-l", "--templatelabel", dest="tlabel",
+    help="Template label, i.e., typename or class", metavar="TLABEL")
+
+# parameter type
+parser.add_option("-f", "--templateparam", dest="tparam",
+    help="Template parameter", metavar="TPARAM")
+
 ################################################################################
 # Get information from environment
 ################################################################################
@@ -67,6 +75,8 @@ parser.set_defaults(tpkg=p.sub('', cwd))
 parser.set_defaults(spkg=p.sub('', cwd))
 parser.set_defaults(start='Need to set brief')
 parser.set_defaults(author=user)
+parser.set_defaults(tlabel='typename')
+parser.set_defaults(tparam='T')
 
 ################################################################################
 # Read options
@@ -111,7 +121,10 @@ sub_pairs = [[re.compile('<user>'), user],
 	[re.compile('<start>'), options.start],
 	[re.compile('<class>'), options.classname],
 	[re.compile('<basename>'), options.classname],
-	[re.compile('<namespace>'), options.namespace]]
+	[re.compile('<namespace>'), options.namespace],
+	[re.compile('<paramtype>'), options.tlabel],
+	[re.compile('<parameter>'), options.tparam],
+    ]
 
 line = 1
 while line:

@@ -6,7 +6,7 @@
 ################################################################################
 
 The scripts in this directory are intended as alternatives to the draco
-elisp functionality available through xemacs for people that use another
+elisp functionality available through xemacs for people who use another
 editor.  To use these scripts, you need to set the environment variable
 DRACO_ENV to the "environment" subdiretory of your draco project, e.g.,
 if you have checked out draco to "~/project/draco", you should set:
