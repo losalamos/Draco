@@ -33,10 +33,6 @@ namespace rtt_dsxx
  * 
  * \sa Index_Converter.cc for detailed descriptions.
  *
- * Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
  */
 /*! 
  * \example ds++/test/tstIndex_Converter.cc 
@@ -49,11 +45,14 @@ class Index_Converter
 {
   public:
 
+    //! Default constructor
+    Index_Converter() {/* ... */}
+
     //! Construct with just a pointer to the sizes
-    Index_Converter(unsigned* dimensions);
+    Index_Converter(const unsigned* dimensions);
 
     //! Construct a with all dimensions equal
-    Index_Converter(unsigned dimension);
+    Index_Converter(const unsigned dimension);
 
     //! Destructor.
     ~Index_Converter() {/* ... */}
@@ -66,6 +65,8 @@ class Index_Converter
 
     bool operator!=(const Index_Converter &rhs) const { return !(*this==rhs);}
 
+    //! Re-assignment operator
+    void resize(const unsigned* dimensions);
 
     // ACCESSORS
 
@@ -112,9 +113,19 @@ class Index_Converter
  * 
  */
 template <unsigned D, int OFFSET>
-Index_Converter<D,OFFSET>::Index_Converter(unsigned* dimensions_)
+Index_Converter<D,OFFSET>::Index_Converter(const unsigned* dimensions_)
 {
+    resize(dimensions_);
+}
 
+//---------------------------------------------------------------------------//
+/**
+ * \brief Resize the index converter object with new dimensions.
+ * 
+ */
+template <unsigned D, int OFFSET>
+void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
+{
     std::copy(dimensions_, dimensions_+D, dimensions);
 
     array_size = std::accumulate<unsigned*>(
@@ -129,7 +140,6 @@ Index_Converter<D,OFFSET>::Index_Converter(unsigned* dimensions_)
     Ensure(sizes_okay());
 }
 
-
 //---------------------------------------------------------------------------//
 /**
  * \brief Comparison routine
@@ -143,7 +153,7 @@ inline bool Index_Converter<D,OFFSET>::operator==(const Index_Converter &rhs) co
 
     if (array_size != rhs.array_size) return false;
 
-    return std::equal(dimensions, dimensions+D, rhs.dimension);
+    return std::equal(dimensions, dimensions+D, rhs.dimensions);
 
 }
 
