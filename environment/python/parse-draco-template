@@ -123,7 +123,7 @@ sub_pairs = [[re.compile('<user>'), user],
 	[re.compile('<basename>'), options.classname],
 	[re.compile('<namespace>'), options.namespace],
 	[re.compile('<paramtype>'), options.tlabel],
-	[re.compile('<parameter>'), options.tparam],
+	[re.compile('<parameter>'), options.tparam]
     ]
 
 line = 1
