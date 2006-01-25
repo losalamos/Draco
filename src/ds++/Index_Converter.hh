@@ -198,7 +198,7 @@ std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
 
     Check(index_in_range(index));
 
-    std::vector<int> indices(D);
+    static int indices[D];
 
     index -= OFFSET;
 
@@ -211,7 +211,10 @@ std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
 
     }
 
-    return indices;
+    // Constructing result in return statement to take advantage of return
+    // value optimization. For complete elimination of temporaries, use the
+    // result to initialize a variable, instead of assigning it.
+    return std::vector<int>(indices, indices+D);
     
 }
 
