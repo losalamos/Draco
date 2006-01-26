@@ -71,14 +71,18 @@ class Index_Converter
     // ACCESSORS
 
     //! Convert N-index to 1-index
-    template <typename IT>
-    int operator()(IT indices) const;
+    template <typename IT> int operator()(IT indices) const;
 
     //! Convert 1-index to N-index
     std::vector<int> operator()(int index) const;
 
+    //! Convert 1-index to N-index and store in provided iterator.
+    template <typename IT> void operator()(int index, IT begin) const;
+
     int get_size() const { return array_size; }
     int get_size(int dim) const;
+
+    int get_next_index(int index, int direction) const;
 
 
   private:
@@ -133,10 +137,10 @@ void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
 
     sub_sizes[0] = 1;
     
-    std::partial_sum<unsigned*>(
+    unsigned* end = std::partial_sum<unsigned*>(
         dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>());
 
-
+    Ensure(end == sub_sizes +D);
     Ensure(sizes_okay());
 }
 
@@ -190,6 +194,12 @@ int Index_Converter<D,OFFSET>::operator()(IT indices) const
  * \brief Convert a 1-index to an N-index
  *
  * \arg index The 1-index value
+ *
+ * This function dispatches to the write-in-place version of the function and
+ * stores the result in a local int[] array. It then constructs the return
+ * vector in the return statement in order to allow the compiler to perform
+ * return value optimization (RVO). This can potentially eliminate the
+ * creation of a temporary return object.
  * 
  */
 template <unsigned D, int OFFSET>
@@ -200,24 +210,61 @@ std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
 
     static int indices[D];
 
-    index -= OFFSET;
+    operator()(index, indices);
 
-    for (int dimension = D; dimension > 0; --dimension)
-    {
-
-        indices[dimension-1] = index / sub_sizes[dimension-1] + OFFSET;
-
-        index = index % sub_sizes[dimension-1];
-
-    }
-
-    // Constructing result in return statement to take advantage of return
-    // value optimization. For complete elimination of temporaries, use the
-    // result to initialize a variable, instead of assigning it.
+    // Construct in return statement for RVO.
     return std::vector<int>(indices, indices+D);
     
 }
 
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Convert a 1-index to an N-index. Store in provided pointer
+ *
+ * \arg index The index
+ * \arg iterator The iterator pointing to the place to store the results.
+ * 
+ */
+template <unsigned D, int OFFSET>
+template <typename IT>
+void Index_Converter<D,OFFSET>::operator()(int index, IT iter) const
+{
+
+    Check(index_in_range(index));
+
+    IT point(iter+D);
+
+    index -= OFFSET;
+
+    for (int dimension = D-1; dimension >= 0; --dimension)
+    {
+        *(--point) = index / sub_sizes[dimension] + OFFSET;
+        index %= sub_sizes[dimension];
+    }
+
+    Ensure (point == iter);
+
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Return the next index in a given direction. Return -1 if this
+ * direction is outside the range of indices
+ *
+ * \arg index   The index in question
+ * \arg direction The direction, 1-based numbered (negative,positive) by
+ * dimension.
+ *
+ */
+template <unsigned D, int OFFSET>
+int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
+{
+
+    int indices[D];
+
+    return 0;
+}
 
 //---------------------------------------------------------------------------//
 // IMPLEMENTATION ROUTINES
@@ -226,14 +273,16 @@ std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
 //---------------------------------------------------------------------------//
 /**
  * \brief Internal routine to make sure all of the dimensions are positive.
+ *
+ * Since the dimensions are stored as unsigned integers, we need only check
+ * for zeros.
  * 
  */
 template <unsigned D, int OFFSET>
 inline bool Index_Converter<D,OFFSET>::sizes_okay() const
 {
     
-    return (std::find_if(dimensions, dimensions+D,
-                         std::bind2nd(std::less_equal<int>(), 0)) == dimensions+D);
+    return (std::find(dimensions, dimensions+D, 0) == dimensions+D);
 
 }
 
@@ -266,7 +315,7 @@ bool Index_Converter<D,OFFSET>::indices_in_range(IT indices) const
  * 
  */
 template <unsigned D, int OFFSET>
-bool Index_Converter<D,OFFSET>::index_in_range(int index) const
+inline bool Index_Converter<D,OFFSET>::index_in_range(int index) const
 {
 
     return (index >= OFFSET) && (index < array_size + OFFSET);

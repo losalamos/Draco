@@ -66,7 +66,7 @@ void test_index_converter()
     if (box_zero_based(indices) != 59) ITFAILS;
 
 
-    result = box_zero_based(59);
+    box_zero_based(59, result.begin());
     if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
 
