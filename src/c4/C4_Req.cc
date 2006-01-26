@@ -147,7 +147,10 @@ void C4_ReqRefRep::free()
 {
 #ifdef C4_MPI
     if (assigned)
+    {
 	MPI_Cancel( &r );
+        MPI_Request_free( &r );
+    }
 #endif
     clear();
 }
