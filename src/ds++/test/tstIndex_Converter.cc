@@ -69,9 +69,8 @@ void test_index_converter()
         box_zero(59, result.begin());
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
-        if (box_zero.get_next_index(0, 2)  !=  1) ITFAILS;
-        if (box_zero.get_next_index(0, 1)  != -1) ITFAILS;
-        
+        // Cell 30 has coordinates (0,3,2):
+
         if (box_zero.get_next_index(30, 1) != -1) ITFAILS;
         if (box_zero.get_next_index(30, 2) != 31) ITFAILS;
 
@@ -81,12 +80,8 @@ void test_index_converter()
         if (box_zero.get_next_index(30, 5) != 18) ITFAILS;
         if (box_zero.get_next_index(30, 6) != 42) ITFAILS;
         
-
-
-
         Index_Converter<3,0> copy(box_zero);
         if (copy != box_zero) ITFAILS;
-
 
     }
 

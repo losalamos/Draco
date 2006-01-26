@@ -52,7 +52,7 @@ class Index_Converter
     Index_Converter(const unsigned dimension);
 
     //! Destructor.
-    ~Index_Converter() {/* ... */}
+    virtual ~Index_Converter() {/* ... */}
 
     //! Assignment operator for Index_Converter.
     Index_Converter& operator=(const Index_Converter &rhs);
@@ -301,16 +301,19 @@ template <unsigned D, int OFFSET>
 void Index_Converter<D,OFFSET>::compute_sizes()
 {
 
-     array_size = std::accumulate<unsigned*>(
-        dimensions, dimensions+D, 1, std::multiplies<unsigned>());
+    Require(sizes_okay());
+
+    array_size = std::accumulate<unsigned*>(
+        dimensions, dimensions+D, 1, std::multiplies<unsigned>()
+        );
 
     sub_sizes[0] = 1;
     
     unsigned* end = std::partial_sum<unsigned*>(
-        dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>());
+        dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>()
+        );
 
-    Ensure(end == sub_sizes +D);
-    Ensure(sizes_okay());
+    Ensure(end == sub_sizes+D);
 
 }
 
