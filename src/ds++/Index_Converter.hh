@@ -29,15 +29,12 @@ namespace rtt_dsxx
  * \brief Utiltity class for converting one dimension indicies to and from
  * N-dimensional ones.
  *
- * 
- * 
  * \sa Index_Converter.cc for detailed descriptions.
  *
  */
 /*! 
  * \example ds++/test/tstIndex_Converter.cc 
  * 
- * description of example
  */
 //===========================================================================//
 template<unsigned D, int OFFSET>
@@ -80,7 +77,7 @@ class Index_Converter
     template <typename IT> void operator()(int index, IT begin) const;
 
     int get_size() const { return array_size; }
-    int get_size(int dim) const;
+    int get_size(int d) const { Check(dimension_okay(d)); return dimensions[d]; }
 
     int get_next_index(int index, int direction) const;
 
@@ -98,11 +95,11 @@ class Index_Converter
 
     // IMPLEMENTATION
     
+    template <typename IT> bool indices_in_range(IT indices) const;
     bool sizes_okay() const;
-
-    template <typename IT>
-    bool indices_in_range(IT indices) const;
     bool index_in_range(int index) const;
+    bool dimension_okay(int d) const { return (d >= 0) && (d < D); }
+    void compute_sizes();
 
     
 };
@@ -122,6 +119,23 @@ Index_Converter<D,OFFSET>::Index_Converter(const unsigned* dimensions_)
     resize(dimensions_);
 }
 
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Construct from a single size
+ * \arg dimension  The size of all dimensions of the Index_Converter
+ * 
+ */
+template <unsigned D, int OFFSET>
+Index_Converter<D,OFFSET>::Index_Converter(unsigned dimension)
+{
+
+    for (unsigned* it = dimensions; it != dimensions+D; ++it) *it = dimension;
+
+    compute_sizes();
+
+}
+
 //---------------------------------------------------------------------------//
 /**
  * \brief Resize the index converter object with new dimensions.
@@ -132,16 +146,8 @@ void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
 {
     std::copy(dimensions_, dimensions_+D, dimensions);
 
-    array_size = std::accumulate<unsigned*>(
-        dimensions, dimensions+D, 1, std::multiplies<unsigned>());
+    compute_sizes();
 
-    sub_sizes[0] = 1;
-    
-    unsigned* end = std::partial_sum<unsigned*>(
-        dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>());
-
-    Ensure(end == sub_sizes +D);
-    Ensure(sizes_okay());
 }
 
 //---------------------------------------------------------------------------//
@@ -261,14 +267,53 @@ template <unsigned D, int OFFSET>
 int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 {
 
+    --direction;
+
+    unsigned direction_axis = direction / 2;
+    int      direction_sign = 2*(direction % 2) - 1;
+
     int indices[D];
 
-    return 0;
+    operator()(index, indices);
+
+    indices[direction_axis] += direction_sign;
+
+    if (indices[direction_axis] < OFFSET ||
+        indices[direction_axis] > dimensions[direction_axis]+OFFSET)
+        return -1;
+
+    return operator()(indices);
+
 }
 
 //---------------------------------------------------------------------------//
 // IMPLEMENTATION ROUTINES
 //---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Assign the internal data members.
+ *
+ * Used once the dimensions array has been filled.
+ * 
+ */
+template <unsigned D, int OFFSET>
+void Index_Converter<D,OFFSET>::compute_sizes()
+{
+
+     array_size = std::accumulate<unsigned*>(
+        dimensions, dimensions+D, 1, std::multiplies<unsigned>());
+
+    sub_sizes[0] = 1;
+    
+    unsigned* end = std::partial_sum<unsigned*>(
+        dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>());
+
+    Ensure(end == sub_sizes +D);
+    Ensure(sizes_okay());
+
+}
+
 
 //---------------------------------------------------------------------------//
 /**

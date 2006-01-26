@@ -35,46 +35,67 @@ void test_index_converter()
 
     unsigned dimensions[] = {3,4,5};
 
-    Index_Converter<3,1> box_one_based(dimensions);
+    {
+        Index_Converter<3,1> box_one(dimensions);
 
-    if (box_one_based.get_size()  != 60);
-    if (box_one_based(dimensions) != 60) ITFAILS;
+        if (box_one.get_size()  != 60);
+        if (box_one(dimensions) != 60) ITFAILS;
 
-    int indices[] = {1,1,1};
-    if (box_one_based(indices) != 1) ITFAILS;
+        int indices[] = {1,1,1};
+        if (box_one(indices) != 1) ITFAILS;
 
-    indices[0] = 2; indices[1] = 3; indices[2] = 4;
-    int one_index = (2-1) + 3*(3-1) + 12*(4-1) + 1;
-    if (box_one_based(indices) != one_index) ITFAILS;
-
-
-    result = box_one_based(one_index);
-    if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+        indices[0] = 2; indices[1] = 3; indices[2] = 4;
+        int one_index = (2-1) + 3*(3-1) + 12*(4-1) + 1;
+        if (box_one(indices) != one_index) ITFAILS;
 
 
+        result = box_one(one_index);
+        if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+    }
 
-    Index_Converter<3,0> box_zero_based(dimensions);
+    {
+        Index_Converter<3,0> box_zero(dimensions);
 
-    if (box_zero_based.get_size() != 60) ITFAILS;
+        if (box_zero.get_size() != 60) ITFAILS;
 
-    indices[0] = 0; indices[1] = 0; indices[2] = 0;
-    if (box_zero_based(indices) != 0) ITFAILS;
+        int indices[] = {0, 0, 0};
+        if (box_zero(indices) != 0) ITFAILS;
 
-    indices[0] = dimensions[0] - 1;
-    indices[1] = dimensions[1] - 1;
-    indices[2] = dimensions[2] - 1;
-    if (box_zero_based(indices) != 59) ITFAILS;
+        indices[0] = dimensions[0] - 1;
+        indices[1] = dimensions[1] - 1;
+        indices[2] = dimensions[2] - 1;
+        if (box_zero(indices) != 59) ITFAILS;
+
+        box_zero(59, result.begin());
+        if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+
+        if (box_zero.get_next_index(0, 2)  !=  1) ITFAILS;
+        if (box_zero.get_next_index(0, 1)  != -1) ITFAILS;
+        
+        if (box_zero.get_next_index(30, 1) != -1) ITFAILS;
+        if (box_zero.get_next_index(30, 2) != 31) ITFAILS;
+
+        if (box_zero.get_next_index(30, 3) != 27) ITFAILS;
+        if (box_zero.get_next_index(30, 4) != 33) ITFAILS;
+
+        if (box_zero.get_next_index(30, 5) != 18) ITFAILS;
+        if (box_zero.get_next_index(30, 6) != 42) ITFAILS;
+        
 
 
-    box_zero_based(59, result.begin());
-    if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+
+        Index_Converter<3,0> copy(box_zero);
+        if (copy != box_zero) ITFAILS;
 
 
-    Index_Converter<3,0> copy(box_zero_based);
-
-    if (copy != box_zero_based) ITFAILS;
+    }
 
 
+    {
+        Index_Converter<5,1> big_box(10);
+        if (big_box.get_size(3) != 10)     ITFAILS;
+        if (big_box.get_size()  != 100000) ITFAILS;
+    }
 
 }
 
