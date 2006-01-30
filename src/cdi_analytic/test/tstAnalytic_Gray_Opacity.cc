@@ -84,6 +84,8 @@ void constant_test()
     
     if (opacity_T != ref)   ITFAILS;
     if (opacity_rho != ref) ITFAILS;
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -200,6 +202,26 @@ void CDI_test()
 
 	if (error > 1.0e-12)       ITFAILS;
     }
+
+    // Test the get_parameters() member function
+    {
+        std::vector<double> params( amodel->get_parameters() );
+        
+        std::vector<double> expectedValue(4,0.0);
+        expectedValue[1] = 100.0;
+        expectedValue[2] = -3.0;
+
+        double const tol(1.0e-12);
+        
+        if( params.size() != expectedValue.size() ) ITFAILS;
+        
+        if( soft_equiv( params.begin(), params.end(),
+                        expectedValue.begin(), expectedValue.end(), tol ) )
+        { PASSMSG("get_parameters() returned the analytic expression coefficients.");}
+        else
+        { FAILMSG("get_parameters() did not return the analytic expression coefficients.");}
+    }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -249,6 +271,8 @@ void packing_test()
 
     if (rtt_cdi_analytic_test::passed)
 	PASSMSG("Analytic_Gray_Opacity packing test passes.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -288,6 +312,80 @@ void type_test()
 }
 
 //---------------------------------------------------------------------------//
+void default_behavior_tests()
+{
+    // make an analytic gray opacity that returns the total opacity for a
+    // constant model
+    const double constant_opacity = 5.0;
+
+    SP<Analytic_Opacity_Model> model(
+	new Constant_Analytic_Opacity_Model( constant_opacity ));
+
+    Analytic_Gray_Opacity opac( model, rtt_cdi::TOTAL );
+
+    // There is no data file associated with this analytic opacity model.
+    // This function should return an empty string.
+    {
+        std::string datafilename = opac.getDataFilename();
+        std::string expectedValue;
+
+        if( datafilename.length()  == 0 &&
+            expectedValue.length() == 0 )
+        { PASSMSG("getDataFilename() returned an empty string."); }
+        else
+        { FAILMSG("getDataFilename() did not return an empty string."); }
+    }
+
+    // There is no density grid associated with this analytic opacity model.
+    // This function should return an empty vector<double>.
+    {
+        vector<double> densityGrid = opac.getDensityGrid();
+        vector<double> expectedValue;
+
+        if( densityGrid == expectedValue )
+        { PASSMSG("getDensityGrid() returned an empty string."); }
+        else
+        { FAILMSG("getDensityGrid() did not return an empty string."); }
+    }
+
+    // There is no density grid associated with this analytic opacity model.
+    // This function should return an empty vector<double>.
+    {
+        vector<double> densityGrid = opac.getDensityGrid();
+        vector<double> expectedValue;
+
+        if( opac.getNumDensities() == 0 )
+        { PASSMSG("getNumDensities() returned 0."); }
+        else
+        { FAILMSG("getNumDensities() did not return 0."); }
+
+        if( densityGrid == expectedValue )
+        { PASSMSG("getDensityGrid() returned an empty vector."); }
+        else
+        { FAILMSG("getDensityGrid() did not return an empty vector."); }
+    }
+
+    // There is no temperature grid associated with this analytic opacity model.
+    // This function should return an empty vector<double>.
+    {
+        vector<double> temperatureGrid = opac.getTemperatureGrid();
+        vector<double> expectedValue;
+
+        if( opac.getNumTemperatures() == 0 )
+        { PASSMSG("getNumTemperatures() returned 0."); }
+        else
+        { FAILMSG("getNumTemperatures() did not return 0."); }
+
+        if( temperatureGrid == expectedValue )
+        { PASSMSG("getTemperatureGrid() returned an empty vector."); }
+        else
+        { FAILMSG("getTemperatureGrid() did not return an empty vector."); }
+    }
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -310,6 +408,8 @@ int main(int argc, char *argv[])
 	packing_test();
 
 	type_test();
+
+        default_behavior_tests();
     }
     catch (rtt_dsxx::assertion &ass)
     {
@@ -317,7 +417,7 @@ int main(int argc, char *argv[])
 	     << endl;
 	return 1;
     }
-
+    
     // status of test
     cout << endl;
     cout <<     "*********************************************" << endl;
@@ -330,6 +430,8 @@ int main(int argc, char *argv[])
     cout << endl;
 
     cout << "Done testing tstAnalytic_Gray_Opacity." << endl;
+
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

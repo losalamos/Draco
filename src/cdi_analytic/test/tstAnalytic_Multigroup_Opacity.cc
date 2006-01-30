@@ -166,6 +166,20 @@ void multigroup_test()
 	    FAILMSG(message.str());
 	}
     }
+    
+    // Test the get_Analytic_Model() member function.
+    {
+        SP<Analytic_Opacity_Model const> my_mg_opacity_model
+            = opacity.get_Analytic_Model(1);
+        SP<Analytic_Opacity_Model const> expected_model( models[0] );
+        
+        if( expected_model == my_mg_opacity_model )
+            PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.")
+        else
+            FAILMSG("get_Analytic_Model() did not return the expected MG Opacity model.")
+    }
+
+    return;
 }
 
 //---------------------------------------------------------------------------//

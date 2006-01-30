@@ -43,6 +43,8 @@ void analytic_eos_test()
     typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
     // make an analytic model (polynomial specific heats)
+    // elec specific heat = a + bT^c
+    // ion specific heat  = d + eT^f
     SP<Polynomial_Model> model(new Polynomial_Model(0.0,1.0,3.0,
 						    0.2,0.0,0.0));
 
@@ -127,6 +129,40 @@ void analytic_eos_test()
 	    if (etc[i] != 0.0) ITFAILS;
 	}
     }
+
+    // Test the get_Analytic_Model() member function.
+    {
+        SP<Polynomial_Model const> myEoS_model
+            = analytic.get_Analytic_Model();
+        SP<Polynomial_Model const> expected_model( model );
+        
+        if( expected_model == myEoS_model )
+            PASSMSG("get_Analytic_Model() returned the expected EoS model.")
+        else
+            FAILMSG("get_Analytic_Model() did not return the expected EoS model.")
+    }
+
+    // Test the get_parameters() members function
+    {
+        std::vector<double> params( model->get_parameters() );
+        
+        std::vector<double> expectedValue(6,0.0);
+        expectedValue[1] = 1.0;
+        expectedValue[2] = 3.0;
+        expectedValue[3] = 0.2;
+
+        double const tol(1.0e-12);
+        
+        if( params.size() != expectedValue.size() ) ITFAILS;
+        
+        if( soft_equiv( params.begin(), params.end(),
+                        expectedValue.begin(), expectedValue.end(), tol ) )
+        { PASSMSG("get_parameters() returned the analytic expression coefficients.");}
+        else
+        { FAILMSG("get_parameters() did not return the analytic expression coefficients.");}
+    }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -263,6 +299,8 @@ void CDI_test()
 	    if (etc[i] != 0.0) ITFAILS;
 	}
     }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -316,6 +354,8 @@ void packing_test()
 
     if (rtt_cdi_analytic_test::passed)
 	PASSMSG("Analytic EoS packing/unpacking test successfull.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -323,13 +363,10 @@ void packing_test()
 int main(int argc, char *argv[])
 {
     // version tag
+    cout << argv[0] << ": version " << rtt_cdi_analytic::release() << endl;
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_cdi_analytic::release() 
-		 << endl;
 	    return 0;
-	}
 
     try
     {

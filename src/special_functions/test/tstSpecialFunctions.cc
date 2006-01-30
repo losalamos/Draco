@@ -180,12 +180,10 @@ int main(int argc, char *argv[])
     using std::string;
     
     // version tag
+    cout << argv[0] << ": version " << rtt_sf::release() << endl;
     for (int arg = 1; arg < argc; arg++)
         if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_sf::release() << endl;
             return 0;
-        }
 
     try
     {
