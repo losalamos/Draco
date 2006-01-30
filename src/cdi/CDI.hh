@@ -320,11 +320,6 @@ class CDI
         const double frequency, 
         const double T); 
 
-    //! Integrate the normalized Rosseland from 0 to x (hnu/kT).
-    inline static double integrate_rosseland(
-        const double frequency,
-        const double T);
-
     //! Integrate the normalized Planckian and Rosseland from 0 to x (hnu/kT)
     inline static void integrate_planck_rosseland(
         const double frequency,

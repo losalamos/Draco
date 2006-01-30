@@ -394,35 +394,6 @@ void CDI::integrate_planck_rosseland(const double freq,
 
 }
 
-
-//---------------------------------------------------------------------------//
-/* \brief Integrate the normalized Rosseland spectrum from 0 to \f$ x
- * (\frac{h\nu}{kT}) \f$.
- *
- * \param freq frequency upper integration limit in keV
- * \param T the temperature in keV (must be greater than 0.0)
- * \return integrated normalized Rosseland from 0 to x \f$(\frac{h\nu}{kT})\f$
- */
-double CDI::integrate_rosseland(const double freq,
-                                const double T)
-{
-
-    Require (freq >= 0.0);
-    Require (T    >= 0.0);
-
-    double planck, rosseland;
-
-    integrate_planck_rosseland(freq, T, planck, rosseland);
-
-    return rosseland;
-
-}
-
-
-
-
-
-
 //---------------------------------------------------------------------------//
 // Planckian Spectrum Integrators
 //
