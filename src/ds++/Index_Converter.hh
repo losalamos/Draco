@@ -156,7 +156,7 @@ void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
  * \arg dimension The new size
  */
 template <unsigned D, int OFFSET>
-void Index_Converter<D,OFFSET>::resize(unsigned dimension_)
+void Index_Converter<D,OFFSET>::resize(unsigned dimension)
 {
     for (unsigned* it = dimensions; it != dimensions+D; ++it) *it = dimension;
 
