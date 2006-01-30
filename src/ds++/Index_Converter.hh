@@ -65,6 +65,9 @@ class Index_Converter
     //! Re-assignment operator
     void resize(const unsigned* dimensions);
 
+    //! Uniform size re-assignment operator(
+    void resize(unsigned size);
+
     // ACCESSORS
 
     //! Convert N-index to 1-index
@@ -114,9 +117,9 @@ class Index_Converter
  * 
  */
 template <unsigned D, int OFFSET>
-Index_Converter<D,OFFSET>::Index_Converter(const unsigned* dimensions_)
+Index_Converter<D,OFFSET>::Index_Converter(const unsigned* dimensions)
 {
-    resize(dimensions_);
+    resize(dimensions);
 }
 
 
@@ -129,11 +132,7 @@ Index_Converter<D,OFFSET>::Index_Converter(const unsigned* dimensions_)
 template <unsigned D, int OFFSET>
 Index_Converter<D,OFFSET>::Index_Converter(unsigned dimension)
 {
-
-    for (unsigned* it = dimensions; it != dimensions+D; ++it) *it = dimension;
-
-    compute_sizes();
-
+    resize(dimension);
 }
 
 //---------------------------------------------------------------------------//
@@ -148,6 +147,20 @@ void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
 
     compute_sizes();
 
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Resize the index converter with a uniform size
+ *
+ * \arg dimension The new size
+ */
+template <unsigned D, int OFFSET>
+void Index_Converter<D,OFFSET>::resize(unsigned dimension_)
+{
+    for (unsigned* it = dimensions; it != dimensions+D; ++it) *it = dimension;
+
+    compute_sizes();
 }
 
 //---------------------------------------------------------------------------//
@@ -229,7 +242,8 @@ std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
  * \brief Convert a 1-index to an N-index. Store in provided pointer
  *
  * \arg index The index
- * \arg iterator The iterator pointing to the place to store the results.
+ * \arg iterator The iterator pointing to the place to store the results. Must
+ * be a reversible iterator, e.g. implement '--'
  * 
  */
 template <unsigned D, int OFFSET>
