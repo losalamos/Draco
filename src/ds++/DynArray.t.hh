@@ -89,6 +89,7 @@ DynArray<T>& DynArray<T>::operator=( const DynArray<T>& da )
 
     defval = da.defval;
     base = da.base;
+    growthfactor = da.growthfactor;
     sz = da.sz;
     lowref = da.lowref;
     hiref = da.hiref;
@@ -169,7 +170,7 @@ T& DynArray<T>::operator[]( int n )
 // Probably best to leave it in a bit longer so we can make sure there aren't
 // any expansion logic bugs...
 
-    Assert( n >= base && n < base + sz );
+    Ensure( n >= base && n < base + sz );
 
     if ( n < lowref ) lowref = n;
     if ( n > hiref )  hiref = n;
@@ -187,7 +188,7 @@ T& DynArray<T>::operator[]( int n )
 template<class T>
 T DynArray<T>::operator[]( int n ) const
 {
-    Assert( n >= base && n < base + sz );
+    Require( n >= base && n < base + sz );
 
     return v[n];
 }

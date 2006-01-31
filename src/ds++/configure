@@ -1340,6 +1340,7 @@ package="ds++"
             tstArray \
 	    tstSafe_Divide \
             tstIndex_Converter \
+            tstDynArray \
             "
 
 	test_nprocs="scalar"

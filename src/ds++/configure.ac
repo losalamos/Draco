@@ -39,6 +39,7 @@ AC_RUNTESTS(tstCheck_Strings \
             tstArray \
 	    tstSafe_Divide \
             tstIndex_Converter \
+            tstDynArray \
             , scalar)
 
 AC_DRACO_ENV
