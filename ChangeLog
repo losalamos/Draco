@@ -1,3 +1,90 @@
+2006-01-31 Jae Chang <jhchang@lanl.gov>
+
+	* draco: Released draco-5_10_0.  This is a minor Draco release
+	required for the release of Capsaicin-2_7_0.  A summary of changes
+	are:
+
+	-config
+	 . Added support for Superlu_dist(parallel) and Superlu(scalar)
+
+	-RTT_Format_Reader:
+	 . Improved error reporting.
+
+	-C4:
+	 . Added isScalar(). This function returns true if MPI is
+	   unavailable.
+	 . Fixed memory leak in C4_Req::free() by adding a
+	   MPI_Request_free afterthe MPI_Cancel call.
+
+	-ds++:
+	 . Added a utiltity class: Index_Converter which maps  
+	   multiple dimensio indices to and from a single dimensional 
+	   version. 
+	 . Improved the documentation and variable names in
+	   pos_save_divide.
+
+	-parser:
+	 . Fixed inconsistency in constructors for File_Token_Stream.
+	 . Added a default constructor for File_Token_Stream.
+
+	-quadrature:
+	 . Extracted computation of Gauss-Legendre abscissas and weights
+	   into new function.
+	 
+	-special_functions:
+	 . A new package containing math functions, e.g. factorial
+	   and Kronecker delta.
+
+	This draco release includes the following packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		fpe_trap
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		quadrature
+		rng
+		shared_lib
+		special_functions
+		timestep
+		traits
+		units
+		viz
+		xm
+
+	We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
+	time although these packages are part of the head revision of
+	Draco. 
+
+	Code Statistics:
+
+	Counting lines of source code -- 
+	Directory:  /home/jhchang/release/draco
+	Date     :  Tue Jan 31 08:09:07 MST 2006
+	                 Total C++ source:   25978
+	   C++ source in test directories:   15457
+	      C++ contract specifications:     934
+	                     C++ comments:   27890
+	             Total f90/f95 source:       0
+	                 f90/f95 comments:       0
+	              LaTeX Documentation:   13047
+	                      html source:       0
+	   Executable shell script source:    3012
+	           Executable Perl source:       0
+	                    Python source:    3118
+	                    Expect source:       0
+	                     Elisp source:    3289
+
+
+
+
 2006-01-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Moved repository from SourceForge to CCS-2/4 LAN.

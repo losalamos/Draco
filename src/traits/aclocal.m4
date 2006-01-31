@@ -40,7 +40,7 @@ dnl add DRACO-dependent libraries necessary for a package
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS, [dnl
+AC_DEFUN([AC_NEEDS_LIBS], [dnl
    if test ${has_libdir:=no} != "yes" ; then
        DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
@@ -66,7 +66,7 @@ dnl add DRACO-dependent libraries necessary for a package test
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in $1
    do
@@ -87,7 +87,7 @@ dnl where serial means run as serial test only.
 dnl If compiling with scalar c4 then nprocs are ignored.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_RUNTESTS, [dnl
+AC_DEFUN([AC_RUNTESTS], [dnl
 	test_alltarget="$test_alltarget $1"
         
 	test_nprocs="$2"
@@ -106,7 +106,7 @@ dnl the default is an executable binary
 dnl options are PYTHON
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_TESTEXE, [dnl
+AC_DEFUN([AC_TESTEXE], [dnl
    test_exe="$1"
 ])
 
@@ -117,7 +117,7 @@ dnl where executables will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
+AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
    install_executable="\${bindir}/\${package}"
    installdirs="${installdirs} \${bindir}"
    alltarget="${alltarget} bin/\${package}"
@@ -130,7 +130,7 @@ dnl where libraries will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_LIB, [ dnl
+AC_DEFUN([AC_INSTALL_LIB], [ dnl
    install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
    installdirs="${installdirs} \${libdir}"
    alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
@@ -147,7 +147,7 @@ dnl where headers will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
+AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
    install_headers="\${installheaders}"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
 ])
@@ -331,7 +331,7 @@ dnl                DefaultValue
 dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_WITH_DIR, [dnl
+AC_DEFUN([AC_WITH_DIR], [dnl
 
  dnl
  dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
@@ -391,7 +391,7 @@ dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
 dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
+AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
 
    # $1 is the vendor_<> tag (equals pkg or test)
    # $2 are the directories added 
@@ -416,7 +416,7 @@ dnl ceases to be a valid directory, which only seems to happen after a
 dnl LOT of ..'s are added to it.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_FIND_TOP_SRC, [dnl
+AC_DEFUN([AC_FIND_TOP_SRC], [dnl
    
    # $1 is the component's source directory
    # $2 is the variable to store the package's main source directory in.
@@ -542,7 +542,7 @@ dnl use the STL libraries included with STLPort instead of the
 dnl compiler's native STL defintions.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
+AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
 
    AC_MSG_CHECKING("for stlport")
    if test "${with_stlport:=no}" != no; then
@@ -550,8 +550,9 @@ AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
          AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
       fi
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
-      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
+      CXXFLAGS="-pthread ${CXXFLAGS}"
+dnl      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
+      AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS.])
 
       dnl Include different libraries for debug vs opt mode.
       dnl Also define _STLP_DEBUG if --enable-debug is set. 
@@ -561,15 +562,16 @@ AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
             AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
          fi
          LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         AC_MSG_RESULT("yes")
+         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
+dnl         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS.])
       else 
          dnl Use optimized STLport libraries.
          if ! test -r "${with_stlport}/lib/libstlport.so"; then
             AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
          fi
          LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         AC_MSG_RESULT("no")
+         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
       fi
 
       AC_MSG_CHECKING("for RPATH mods for stlport")
@@ -594,7 +596,7 @@ dnl NOT do any compile or link testing.  That functionality is
 dnl defined in ac_dracotests.m4.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_ENV, [dnl
+AC_DEFUN([AC_DRACO_ENV], [dnl
 
    dnl
    dnl CONFIGURE ARGUMENTS
@@ -692,8 +694,12 @@ AC_DEFUN(AC_DRACO_ENV, [dnl
 
    fi
 
-   # STL port checks and setup
-
+   dnl
+   dnl STL port checks and setup
+   dnl
+   dnl If --with-stlport is on the configure line, we must prepend
+   dnl CXXFLAGS and CPPFLAGS with -I<path_to_stlport>.
+   dnl
    AC_DBS_STLPORT_ENV
 
    dnl add any additional flags
@@ -834,7 +840,7 @@ dnl Declaration of Draco non-vendor configure options. This macro can
 dnl be called to fill out configure help screens
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_ARGS, [dnl
+AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl
    dnl Library prefix
@@ -1088,7 +1094,7 @@ dnl
 ========================================================================
 
 dnl ### Ensure with_f90 set
-AC_DEFUN(AC_WITH_F90, [dnl
+AC_DEFUN([AC_WITH_F90], [dnl
    : ${with_f90:=yes}
     
    dnl turn off C++ compiler
@@ -1104,7 +1110,7 @@ dnl
 dnl CHOOSE A F90 COMPILER
 dnl
 
-AC_DEFUN(AC_F90_ENV, [dnl
+AC_DEFUN([AC_F90_ENV], [dnl
    AC_REQUIRE([AC_CANONICAL_HOST])
 
    case "${with_f90:=yes}" in
@@ -1195,7 +1201,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IBM XLF95 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_XL_F90, [dnl
+AC_DEFUN([AC_COMPILER_XL_F90], [dnl
 
    # Check for working XL F90 compiler
 
@@ -1253,7 +1259,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl FUJITSU F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
+AC_DEFUN([AC_COMPILER_FUJITSU_F90], [dnl
 
    # Check for working Fujitsu F90 compiler
 
@@ -1299,7 +1305,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl LAHEY F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
+AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
 
    AC_CHECK_PROG(F90, lf95, lf95, none)
 
@@ -1340,7 +1346,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl PORTLAND F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
+AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
 
    # Check for working Portland Group F90 compiler
 
@@ -1386,7 +1392,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl COMPAQ F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
+AC_DEFUN([AC_COMPILER_COMPAQ_F90], [dnl
 
    # Check for working compaq F90 compiler
 
@@ -1435,7 +1441,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl SUN WORKSHOP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_WORKSHOP_F90, [dnl
+AC_DEFUN([AC_COMPILER_WORKSHOP_F90], [dnl
 
    # Check for working WorkShop F90 compiler
 
@@ -1481,7 +1487,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl CRAY_F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_CRAY_F90, [dnl
+AC_DEFUN([AC_COMPILER_CRAY_F90], [dnl
 
    # Check for working Cray F90 compiler
 
@@ -1526,7 +1532,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IRIX MIPS F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
+AC_DEFUN([AC_COMPILER_MIPS_F90], [dnl
 
    # Look for working MIPS compiler
 
@@ -1574,7 +1580,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl HP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_HP_F90, [dnl
+AC_DEFUN([AC_COMPILER_HP_F90], [dnl
 
    # CHECK FOR WORKING HP F90 COMPILER
    AC_CHECK_PROG(F90, f90, f90, none)
@@ -1617,7 +1623,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl INTEL F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_INTEL_F90, [dnl
+AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
 
    # CHECK FOR WORKING INTEL F90 COMPILER
    AC_CHECK_PROG(F90, ifc, ifc, none)
@@ -1661,7 +1667,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl NAG F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_NAG_F90, [dnl
+AC_DEFUN([AC_COMPILER_NAG_F90], [dnl
 
    # CHECK FOR WORKING NAG F90 COMPILER
    AC_CHECK_PROG(F90, f95, f95, none)
@@ -1707,7 +1713,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ABSOFT F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
+AC_DEFUN([AC_COMPILER_ABSOFT_F90], [dnl
 
    # CHECK FOR WORKING ABSOFT F90 COMPILER
    AC_CHECK_PROG(F90, f95, f95, none)
@@ -1758,7 +1764,7 @@ dnl AC_WITH_F90 should be called in configure.in (before
 dnl AC_DRACO_ENV)
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_CPP_ENV, [dnl
+AC_DEFUN([AC_CPP_ENV], [dnl
 
    # make sure that the host is defined
    AC_REQUIRE([AC_CANONICAL_HOST])
@@ -1906,7 +1912,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl SGI CC COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_SGI_CC, [dnl
+AC_DEFUN([AC_DRACO_SGI_CC], [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
@@ -1970,7 +1976,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl GNU COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
+AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
 
    # finding path of gcc compiler
    AC_PATH_PROG(GCC_BIN, g++, null)
@@ -2091,7 +2097,7 @@ dnl Note that this implementation of PGI uses options that are only
 dnl valid for LINUX
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_PGCC, [dnl
+AC_DEFUN([AC_DRACO_PGCC], [dnl
 
    # do compiler configuration
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
@@ -2180,7 +2186,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl COMPAQ CXX COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
+AC_DEFUN([AC_DRACO_COMPAQ_CXX], [dnl
 
    dnl 6-FEB-02 NEED TO ADD MODS !!!!!!
 
@@ -2279,7 +2285,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl Intel icpc COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_INTEL_ICPC, [dnl
+AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
@@ -2348,7 +2354,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IBM VISUAL AGE COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
+AC_DEFUN([AC_DRACO_IBM_VISUAL_AGE], [dnl
 
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
@@ -2710,6 +2716,7 @@ AC_DEFUN([AC_DBS_COMPAQ_F90_ENVIRONMENT], [dnl
       test -n "${vendor_gandolf}"   || 
       test -n "${vendor_pcg}"       || 
       test -n "${vendor_udm}"       ||
+      test -n "${vendor_superludist}" ||
       test -n "${vendor_blacs}"; then
 
       extra_f90_libs="-L${f90_lib_loc} -lfor"
@@ -4026,7 +4033,7 @@ dnl GSL is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_GSL_SETUP, [dnl
+AC_DEFUN([AC_GSL_SETUP], [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
@@ -4087,6 +4094,75 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_SUPERLUDIST_SETUP
+dnl
+dnl SUPERLUDIST SETUP (on by default)
+dnl SUPERLUDIST is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN(AC_SUPERLUDIST_SETUP, [dnl
+
+   dnl define --with-superludist
+   AC_ARG_WITH(superludist,
+      [  --with-superludist=[superludist] 
+                       determine SUPERLUDIST lib (superludist is default)])
+
+   dnl define --with-superludist-inc
+   AC_WITH_DIR(superludist-inc, SUPERLUDIST_INC, \${SUPERLUDIST_INC_DIR},
+	       [tell where SUPERLUDIST includes are])
+
+   dnl define --with-superludist-lib
+   AC_WITH_DIR(superludist-lib, SUPERLUDIST_LIB, \${SUPERLUDIST_LIB_DIR},
+	       [tell where SUPERLUDIST libraries are])
+
+   # set default value of superludist includes and libs
+   if test "${with_superludist:=superludist}" = yes ; then
+      with_superludist='superludist'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_superludist=$1
+])
+
+
+AC_DEFUN([AC_SUPERLUDIST_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperlu)
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperlu)
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperludist)
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperludist)
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_TRILINOS_SETUP
 dnl
 dnl TRILINOS SETUP (on by default)
@@ -4133,9 +4209,9 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
@@ -4952,8 +5028,10 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # call finalize functions for each vendor, the order is important
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
+
    AC_TRILINOS_FINALIZE dnl Depends on: LAPACK, MPI
    AC_GSL_FINALIZE      dnl Depends on: LAPACK
+   AC_SUPERLUDIST_FINALIZE
 
    AC_AZTEC_FINALIZE
    AC_PCG_FINALIZE      dnl Depends on: LAPACK
@@ -5001,7 +5079,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl allows one to include all vendor macros by calling this macro.
 dnl designed for draco/configure.in and draco/src/configure.in
 
-AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
+AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
 
    dnl include all macros for easy use in top-level configure.in's
    AC_MPI_SETUP(pkg)
@@ -5009,6 +5087,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
    AC_GSL_SETUP(pkg)
+   AC_SUPERLUDIST_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
    AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)

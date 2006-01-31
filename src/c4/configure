@@ -6221,7 +6221,33 @@ _ACEOF
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -6232,7 +6258,7 @@ _ACEOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -6243,6 +6269,7 @@ _ACEOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -7287,7 +7314,33 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -7298,7 +7351,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -7309,6 +7362,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -8325,7 +8379,33 @@ echo "${ECHO_T}\"not needed\"" >&6
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -8336,7 +8416,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -8347,6 +8427,7 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -9227,6 +9308,7 @@ echo $ECHO_N "checking \"for extra f90 library requirements.\"... $ECHO_C" >&6
       test -n "${vendor_gandolf}"   ||
       test -n "${vendor_pcg}"       ||
       test -n "${vendor_udm}"       ||
+      test -n "${vendor_superludist}" ||
       test -n "${vendor_blacs}"; then
 
       extra_f90_libs="-L${f90_lib_loc} -lfor"
@@ -9418,7 +9500,33 @@ _ACEOF
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -9429,7 +9537,7 @@ _ACEOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -9440,6 +9548,7 @@ _ACEOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -10426,7 +10535,33 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -10437,7 +10572,7 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -10448,6 +10583,7 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -11305,7 +11441,33 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -11316,7 +11478,7 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -11327,6 +11489,7 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -12460,7 +12623,33 @@ _ACEOF
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
@@ -12471,7 +12660,7 @@ _ACEOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
    fi
 
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 
    # vendor_superludist is the vendor_<> tag (equals pkg or test)
    # -lsuperludist are the directories added
@@ -12482,6 +12671,7 @@ _ACEOF
        VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
    fi
 
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -13427,7 +13617,7 @@ echo "${ECHO_T}${components}" >&6
 
 
    # find the release number
-   number=draco-5_9_0
+   number=draco-5_10_0
    echo "$as_me:$LINENO: checking \"component release number\"" >&5
 echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: $number" >&5

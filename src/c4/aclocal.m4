@@ -310,7 +310,7 @@ AC_DEFUN(AC_SUPERLUDIST_SETUP, [dnl
    AC_ARG_WITH(superludist,
       [  --with-superludist=[superludist] 
                        determine SUPERLUDIST lib (superludist is default)])
- 
+
    dnl define --with-superludist-inc
    AC_WITH_DIR(superludist-inc, SUPERLUDIST_INC, \${SUPERLUDIST_INC_DIR},
 	       [tell where SUPERLUDIST includes are])
@@ -321,7 +321,7 @@ AC_DEFUN(AC_SUPERLUDIST_SETUP, [dnl
 
    # set default value of superludist includes and libs
    if test "${with_superludist:=superludist}" = yes ; then
-       with_superludist='superludist'
+      with_superludist='superludist'
    fi
 
    # determine if this package is needed for testing or for the 
@@ -342,10 +342,19 @@ AC_DEFUN([AC_SUPERLUDIST_FINALIZE], [dnl
        fi
 
        # library path
-       if test -n "${SUPERLUDIST_LIB}" ; then
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperlu)
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperlu)
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperludist)
-       elif test -z "${SUPERLUDIST_LIB}" ; then
+         elif test -z "${SUPERLUDIST_LIB}" ; then
 	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperludist)
+         fi
        fi
 
        # add SUPERLUDIST directory to VENDOR_LIB_DIRS
@@ -4005,6 +4014,7 @@ AC_DEFUN([AC_DBS_COMPAQ_F90_ENVIRONMENT], [dnl
       test -n "${vendor_gandolf}"   || 
       test -n "${vendor_pcg}"       || 
       test -n "${vendor_udm}"       ||
+      test -n "${vendor_superludist}" ||
       test -n "${vendor_blacs}"; then
 
       extra_f90_libs="-L${f90_lib_loc} -lfor"
