@@ -94,6 +94,7 @@ bool check_mesh(
     bool pass_cu = check_node_units(mesh);
     bool pass_ns = check_node_sets(mesh, testid);
     bool pass_ti = check_title(mesh);
+    bool pass_gdn = check_get_dims_ndim(mesh, testid);
     bool pass_en = check_element_nodes(mesh, testid);
     bool pass_in = check_invariant(mesh);
     bool pass_es = check_element_sets(mesh, testid);
@@ -231,6 +232,37 @@ bool check_title(
 	FAILMSG(message.str());
     }
     return pass_ti;
+}
+
+bool check_get_dims_ndim(
+    rtt_meshReaders::Hex_Mesh_Reader const & mesh,
+    std::string const & testid )
+{
+    // Check dimensionality.
+    int expectedDim(0);
+    if( testid == "slab" ) expectedDim = 1;
+    if( testid == "quad" ) expectedDim = 2;
+    if( testid == "cube" ) expectedDim = 3;
+
+    bool pass_gdn(true);
+    
+    if( pass_gdn = mesh.get_dims_ndim() == expectedDim )
+    {
+	ostringstream message;
+	message << "For " << testid << " mesh, mesh.get_dims_ndim() reported "
+                << expectedDim << ".";
+	PASSMSG(message.str());
+    }
+    else
+    {
+	ostringstream message;
+	message << "For " << testid
+                << " mesh, mesh.get_dims_ndim() incorrectly reported "
+                << expectedDim << ".";
+	FAILMSG(message.str());
+    }
+    
+    return pass_gdn;
 }
 
 bool check_element_nodes(
