@@ -29,30 +29,54 @@ using rtt_dsxx::soft_equiv;
 
 void test_soft_equiv_scalar()
 {
-    double x = 0.9876543212345678;
-    double y = 0.9876543212345678;
+    // ensure that we can not use integer tolerance.
+    {
+        int x = 31415;
+        int y = 31416;
+        int tol = 1l;
 
-    if (!soft_equiv(x, y, 1.e-16)) ITFAILS;
-    if (!soft_equiv(x, y))         ITFAILS;
-
-    double z = 0.9876543212345679;
-
-    if (soft_equiv(x, z, 1.e-16)) ITFAILS;
-
-    double a = 0.987654321234;
+        try
+        {
+            bool result = soft_equiv(x,y,tol);
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & a )
+        {
+            PASSMSG("Successfully prevented use of soft_equiv(int,int,int).");
+        }
+        catch( ... )
+        {
+            FAILMSG("We should never get here.");
+        }
+    }
     
-    if (!soft_equiv(x, a)) ITFAILS;
+    // test with doubles
+    {
+        double x = 0.9876543212345678;
+        double y = 0.9876543212345678;
+        
+        if (!soft_equiv(x, y, 1.e-16)) ITFAILS;
+        if (!soft_equiv(x, y))         ITFAILS;
+        
+        double z = 0.9876543212345679;
+        
+        if (soft_equiv(x, z, 1.e-16)) ITFAILS;
+        
+        double a = 0.987654321234;
+        
+        if (!soft_equiv(x, a)) ITFAILS;
+        
+        a = 0.987654321233;
+        
+        if (soft_equiv(x, a)) ITFAILS;      
 
-    a = 0.987654321233;
-
-    if (soft_equiv(x, a)) ITFAILS;      
-
-    // checks for the new "reference=zero" coding 4aug00
-    double zero = 0.0;
-    if ( soft_equiv( 1.0e-10, zero)) ITFAILS;
-    if ( soft_equiv(-1.0e-10, zero)) ITFAILS;
-    if (!soft_equiv(-1.0e-35, zero)) ITFAILS;
-    if (!soft_equiv( 1.0e-35, zero)) ITFAILS;
+        // checks for the new "reference=zero" coding 4aug00
+        double zero = 0.0;
+        if ( soft_equiv( 1.0e-10, zero)) ITFAILS;
+        if ( soft_equiv(-1.0e-10, zero)) ITFAILS;
+        if (!soft_equiv(-1.0e-35, zero)) ITFAILS;
+        if (!soft_equiv( 1.0e-35, zero)) ITFAILS;
+    }
 }
 
 //---------------------------------------------------------------------------//

@@ -54,6 +54,7 @@ static void t1()
     {
 	std::cout << "passed" << std::endl;
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -88,6 +89,7 @@ static void t2()
 	std::cout << "passed" << std::endl;
     else
 	std::cout << "failed" << std::endl;
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -121,7 +123,57 @@ static void t3()
     {
 	std::cout << "failed" << std::endl;
     }
+    return;
 }
+
+//---------------------------------------------------------------------------//
+// Check the toss_cookies function.
+// This function builds an error message and throws an exception.
+//---------------------------------------------------------------------------//
+static void ttoss_cookies()
+{
+    {
+        std::cout << "ttoss_cookies test: ";
+        try
+        {
+            std::string const msg("testing toss_cookies()");
+            std::string const file("DummyFile.ext");
+            int const line( 55 );
+            rtt_dsxx::toss_cookies( msg, file, line );
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & a )
+        {
+            std::cout << "passed" << std::endl;
+        }
+        catch( ... )
+        {
+            std::cout << "failed" << std::endl;
+        }
+    }
+    {
+        std::cout << "ttoss_cookies_ptr test: ";
+        try
+        {
+            char const * const msg("testing toss_cookies_ptr()");
+            char const * const file("DummyFile.ext");
+            int const line( 56 );
+            rtt_dsxx::toss_cookies_ptr( msg, file, line );
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & a )
+        {
+            std::cout << "passed" << std::endl;
+        }
+        catch( ... )
+        {
+            std::cout << "failed" << std::endl;
+        } 
+    }
+    return;
+}
+
+
 
 //---------------------------------------------------------------------------//
 // Check the operation of the Require() macro.
@@ -166,6 +218,7 @@ static void trequire()
 	std::cout << "passed" << std::endl;
 #endif
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -211,6 +264,7 @@ static void tcheck()
 	std::cout << "passed\n";
 #endif
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -256,6 +310,7 @@ static void tensure()
 	std::cout << "passed\n";
 #endif
     }
+    return;
 }
 
 static void tremember()
@@ -278,7 +333,7 @@ static void tremember()
     else
 	std::cout << "passed" << std::endl;
 #endif
-}
+    return;}
 
 //---------------------------------------------------------------------------//
 // Check the operation of the Assert() macro, which works like Check().
@@ -322,7 +377,7 @@ static void tassert()
 	std::cout << "passed\n";
 #endif
     }
-}
+    return;}
 
 //---------------------------------------------------------------------------//
 // Basic test of the Insist() macro.
@@ -332,36 +387,71 @@ static void tinsist()
 {
     //lint -e506  Do not warn about constant value boolean in the Insist
     //            test. 
-
-    std::cout << "t-Insist test: ";
-    std::string insist_message( "You must be kidding!" );
-    try {
-	Insist( 0, insist_message );
-	throw "Bogus!";
-    }
-    catch( rtt_dsxx::assertion const & a ) 
     {
-	std::cout << "passed" << std::endl;
-
-	std::cout << "t-Insist message value test: ";
-	{
-	    bool passed( true );
-	    std::string msg( a.what() );
-	    std::string expected_value( "You must be kidding!" );
-	    string::size_type idx( msg.find( expected_value ) );
-	    if( idx == string::npos ) passed=false;
-	    idx = msg.find( insist_message );
-	    if( idx == string::npos ) passed=false;
-	    if( passed )
-		cout << "passed" << std::endl;
-	    else
-		cout << "failed" << std::endl;
-	}
+        std::cout << "t-Insist test: ";
+        std::string insist_message( "You must be kidding!" );
+        try {
+            Insist( 0, insist_message );
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & a ) 
+        {
+            std::cout << "passed" << std::endl;
+            
+            std::cout << "t-Insist message value test: ";
+            {
+                bool passed( true );
+                std::string msg( a.what() );
+                std::string expected_value( "You must be kidding!" );
+                string::size_type idx( msg.find( expected_value ) );
+                if( idx == string::npos ) passed=false;
+                idx = msg.find( insist_message );
+                if( idx == string::npos ) passed=false;
+                if( passed )
+                    cout << "passed" << std::endl;
+                else
+                    cout << "failed" << std::endl;
+            }
+        }
+        catch(...) 
+        {
+            std::cout << "failed" << std::endl;
+        }
     }
-    catch(...) 
+    
     {
-	std::cout << "failed" << std::endl;
+        std::cout << "t-Insist ptr test: ";
+        char const * const insist_message( "You must be kidding!" );
+        try {
+            Insist_ptr( 0, insist_message );
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & a ) 
+        {
+            std::cout << "passed" << std::endl;
+            
+            std::cout << "t-Insist ptr message value test: ";
+            {
+                bool passed( true );
+                std::string msg( a.what() );
+                std::string expected_value( "You must be kidding!" );
+                string::size_type idx( msg.find( expected_value ) );
+                if( idx == string::npos ) passed=false;
+                idx = msg.find( insist_message );
+                if( idx == string::npos ) passed=false;
+                if( passed )
+                    cout << "passed" << std::endl;
+                else
+                    cout << "failed" << std::endl;
+            }
+        }
+        catch(...) 
+        {
+            std::cout << "failed" << std::endl;
+        }
     }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -372,16 +462,16 @@ static void tinsist_ptr()
 {
     //lint -e506  Do not warn about constant value boolean in the Insist
     //            test. 
-
+    
     std::cout << "t-Insist test: ";
     try {
 	Insist( 0, "You must be kidding!" );
 	throw "Bogus!";
     }
     catch( rtt_dsxx::assertion const & a ) 
-   {
+    {
 	std::cout << "passed" << std::endl;
-
+        
 	std::cout << "t-Insist_ptr message value test: ";
 	{
 	    bool passed( true );
@@ -399,7 +489,9 @@ static void tinsist_ptr()
     {
 	std::cout << "failed" << std::endl;
     }
+    return;
 }
+
 
 //---------------------------------------------------------------------------//
 
@@ -424,6 +516,9 @@ int main( int argc, const char *argv[] )
     t2();
     t3();
 
+    // Test mechanics of Assert funtions.
+    ttoss_cookies();
+    
     // Test Design-by-Constract macros.
     trequire();
     tcheck();
@@ -434,17 +529,11 @@ int main( int argc, const char *argv[] )
     tinsist_ptr();
 
     // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
+    cout <<     "\n*********************************************\n";
     if (rtt_ds_test::passed) 
-    {
-        cout << "**** tstAssert Test: PASSED" 
-	     << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstAssert." << endl;
+        cout << "**** tstAssert Test: PASSED\n";
+    cout <<     "*********************************************\n\n"
+         << "Done testing tstAssert." << endl;
     return 0;
 }   
 
