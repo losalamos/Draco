@@ -19,9 +19,14 @@ namespace rtt_dsxx
 // ASSERTION CLASS MEMBERS
 //===========================================================================//
 
-//---------------------------------------------------------------------------//
-// Build the error string (PRIVATE)
-//---------------------------------------------------------------------------//
+/*! 
+ * Build the error string (private member function).
+ * \param cond Condition (test) that failed.
+ * \param file The name of the file where the assertion was tested.
+ * \param line The line number in the file where the assertion was tested.
+ * \retval myMessage A string that contains the failed condition, the file and
+ * the line number of the error.
+ */
 std::string assertion::build_message( std::string const & cond, 
 				      std::string const & file, 
 				      int         const line ) const
@@ -42,6 +47,9 @@ std::string assertion::build_message( std::string const & cond,
 //===========================================================================//
 /*!
  * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
+ * \return Throws an assertion.
+ * \note We do not provide unit tests for functions whose purpose is to throw
+ * or exit.
  */
 void toss_cookies( std::string const & cond, 
 		   std::string const & file, 
@@ -50,7 +58,12 @@ void toss_cookies( std::string const & cond,
     throw assertion( cond, file, line );
 }
 
-
+/*!
+ * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
+ * \return Throws an assertion.
+ * \note We do not provide unit tests for functions whose purpose is to throw
+ * or exit.
+ */
 void 
 toss_cookies_ptr(char const * const cond, 
 		 char const * const file, 
@@ -80,6 +93,7 @@ void insist( std::string const & cond,
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Throw a rtt_dsxx::assertion for Insist_ptr macros.
+ *
  * Having a (non-inlined) version that takes pointers prevents the compiler
  * from having to construct std::strings from the pointers each time.  This
  * is particularly important for things like rtt_dsxx::SP::operator->, that

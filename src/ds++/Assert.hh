@@ -151,18 +151,12 @@ class assertion : public std::logic_error
 	: std::logic_error( build_message( cond, file, line ) )
     { /* empty */ }
 
-    /*!
-     * \brief Destructor for ds++/assertion class.
-     *
-     * We do not allow the destructor to throw!
-     */
+    /*! \brief Destructor for ds++/assertion class.
+     * We do not allow the destructor to throw! */
     virtual ~assertion() throw() { /* empty */ }
 
   private:
-    /*!
-     * \brief Helper function to build error message that includes source
-     * file name and line number.
-     */
+    //! Helper function to build error message that includes source file name and line number.
     std::string build_message( std::string const & cond, 
 			       std::string const & file, 
 			       int         const   line ) const;
@@ -172,7 +166,7 @@ class assertion : public std::logic_error
 // FREE NAMESPACE FUNCTIONS
 //---------------------------------------------------------------------------//
 
-// Throw a rtt_dsxx::assertion for Require, Check, Ensure.
+//! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
 void toss_cookies( std::string const & cond, 
 		   std::string const & file, 
 		   int         const line );
@@ -181,13 +175,13 @@ void toss_cookies_ptr(char const * const cond,
 		      char const * const file, 
 		      int         const line );
 
-// Throw a rtt_dsxx::assertion for Insist.
+//! Throw a rtt_dsxx::assertion for Insist.
 void insist( std::string const & cond, 
 	     std::string const & msg, 
 	     std::string const & file, 
 	     int         const line);
 
-// Pointer version of insist
+//! Pointer version of insist
 void insist_ptr(char const * const cond, 
 		char const * const msg, 
 		char const * const file, 
