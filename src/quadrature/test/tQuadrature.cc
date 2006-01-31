@@ -18,6 +18,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "units/PhysicalConstants.hh"
 
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
@@ -290,6 +291,17 @@ void Q3DLevelSym_tests()
 	FAILMSG( msg.str() );
     }
 
+    // Test renormalize member function
+    {
+        // must create a non-const quadrature
+        Q3DLevelSym myQuad( sn_order, assigned_sumwt );
+        double const wt1a( myQuad.getWt(1) );
+        double const fourpi( 4.0*rtt_units::PI );
+        myQuad.renormalize( fourpi );
+        if( myQuad.getNorm() != fourpi )      ITFAILS;
+        if( myQuad.getWt(1)  != fourpi*wt1a ) ITFAILS;
+    }
+    
     return;
 } // end of Q3DLevelSym_tests()
 
