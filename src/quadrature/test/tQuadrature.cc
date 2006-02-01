@@ -255,7 +255,7 @@ void Q3DLevelSym_tests()
     using rtt_quadrature::Q3DLevelSym;
     using std::ostringstream;
     using std::endl;
-
+    
     int    const sn_order( 4 );
     double const assigned_sumwt( 1.0 );
     Q3DLevelSym const quad( sn_order, assigned_sumwt );
@@ -298,8 +298,9 @@ void Q3DLevelSym_tests()
         double const wt1a( myQuad.getWt(1) );
         double const fourpi( 4.0*rtt_units::PI );
         myQuad.renormalize( fourpi );
-        if( myQuad.getNorm() != fourpi )      ITFAILS;
-        if( myQuad.getWt(1)  != fourpi*wt1a ) ITFAILS;
+
+        if( ! soft_equiv( myQuad.getNorm(), fourpi     ) ) ITFAILS;
+        if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) ) ITFAILS;
     }
     
     return;
