@@ -43,7 +43,7 @@ class Index_Converter
   public:
 
     //! Default constructor
-    Index_Converter() {/* ... */}
+    Index_Converter() { /* ... */ }
 
     //! Construct with just a pointer to the sizes
     Index_Converter(const unsigned* dimensions);
@@ -65,7 +65,7 @@ class Index_Converter
     //! Re-assignment operator
     void resize(const unsigned* dimensions);
 
-    //! Uniform size re-assignment operator(
+    //! Uniform size re-assignment operator
     void resize(unsigned size);
 
     // ACCESSORS
@@ -84,6 +84,8 @@ class Index_Converter
 
     int get_next_index(int index, int direction) const;
 
+    bool index_in_range(int index) const;
+    bool direction_okay(int face) const;
 
   private:
 
@@ -100,7 +102,6 @@ class Index_Converter
     
     template <typename IT> bool indices_in_range(IT indices) const;
     bool sizes_okay() const;
-    bool index_in_range(int index) const;
     bool dimension_okay(int d) const { return (d >= 0) && (d < D); }
     void compute_sizes();
 
@@ -281,6 +282,9 @@ template <unsigned D, int OFFSET>
 int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 {
 
+    Check(index_in_range(index));
+    Check(direction_okay(direction));
+
     --direction;
 
     unsigned direction_axis = direction / 2;
@@ -293,7 +297,7 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
     indices[direction_axis] += direction_sign;
 
     if (indices[direction_axis] < OFFSET ||
-        indices[direction_axis] > dimensions[direction_axis]+OFFSET)
+        indices[direction_axis] >= dimensions[direction_axis]+OFFSET)
         return -1;
 
     return operator()(indices);
@@ -382,6 +386,20 @@ inline bool Index_Converter<D,OFFSET>::index_in_range(int index) const
 
     return (index >= OFFSET) && (index < array_size + OFFSET);
 
+}
+
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Make sure the direction index is valid
+ *
+ * \arg direction The direcition index.
+ * 
+ */
+template <unsigned D, int OFFSET>
+inline bool Index_Converter<D,OFFSET>::direction_okay(int direction) const
+{
+    return (direction >= 1) && (direction <= 2*D);
 }
 
 } // end namespace rtt_dsxx
