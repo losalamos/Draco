@@ -37,23 +37,6 @@ void test_index_converter()
     {
         Index_Converter<3,1> box(dimensions);
 
-
-        if (box.get_size()     != 60) ITFAILS;
-        if (box.min_of_index() !=  1) ITFAILS;
-        if (box.max_of_index() != 60) ITFAILS;
-
-        if (box.get_size(0)     != 3) ITFAILS;
-        if (box.min_of_index(0) != 1) ITFAILS;
-        if (box.max_of_index(0) != 3) ITFAILS;
-
-        if (box.get_size(1)     != 4) ITFAILS;
-        if (box.min_of_index(1) != 1) ITFAILS;
-        if (box.max_of_index(1) != 4) ITFAILS;
-
-        if (box.get_size(2)     != 5) ITFAILS;
-        if (box.min_of_index(2) != 1) ITFAILS;
-        if (box.max_of_index(2) != 5) ITFAILS;
-
         if (box.get_index(dimensions) != 60) ITFAILS;
 
         int indices[] = {1,1,1};

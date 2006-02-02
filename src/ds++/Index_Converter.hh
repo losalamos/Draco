@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include "Index_Set.hh"
+
 namespace rtt_dsxx
 {
 
@@ -36,18 +38,20 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 template<unsigned D, int OFFSET>
-class Index_Converter 
+class Index_Converter : public Index_Set<D,OFFSET>
 {
   public:
+
+    typedef Index_Set<D,OFFSET> Base;
 
     //! Default constructor
     Index_Converter() { /* ... */ }
 
     //! Construct with just a pointer to the sizes
-    Index_Converter(const unsigned* dimensions);
+    Index_Converter(const unsigned* dimensions) { set_size(dimensions); }
 
     //! Construct a with all dimensions equal
-    Index_Converter(const unsigned dimension);
+    Index_Converter(const unsigned dimension)   { set_size(dimension); }
 
     //! Destructor.
     virtual ~Index_Converter() {/* ... */}
@@ -55,16 +59,12 @@ class Index_Converter
     //! Assignment operator for Index_Converter.
     Index_Converter& operator=(const Index_Converter &rhs);
 
-    //! Comparison operator
-    bool operator==(const Index_Converter &rhs) const;
-
-    bool operator!=(const Index_Converter &rhs) const { return !(*this==rhs);}
-
     //! Re-assignment operator
-    void resize(const unsigned* dimensions);
+    void set_size(const unsigned* dimensions);
 
     //! Uniform size re-assignment operator
-    void resize(unsigned size);
+    void set_size(unsigned size);
+
 
     // ACCESSORS
 
@@ -77,40 +77,20 @@ class Index_Converter
     //! Convert 1-index to N-index and store in provided iterator.
     template <typename IT> void get_indices(int index, IT begin) const;
 
-    int get_size() const { return array_size; }
-    int get_size(int d) const { Check(dimension_okay(d)); return dimensions[d]; }
-
+    // Get the next index from a 1-index and direction
     int get_next_index(int index, int direction) const;
 
-    bool index_in_range(int index) const;
-    bool index_in_range(int index, unsigned dimension) const;
-    int min_of_index() const { return OFFSET; }
-    int max_of_index() const { return OFFSET + array_size - 1; }
-    int min_of_index(unsigned d) const { Check(dimension_okay(d)); return OFFSET; }
-    int max_of_index(unsigned d) const {
-        Check(dimension_okay(d)); return OFFSET+dimensions[d]-1;
-    }
-            
-    
-    bool direction_okay(int face) const;
 
   private:
 
     // DATA
 
-    unsigned array_size;
-
-    unsigned dimensions[D]; //!< Sizes of each dimension
-    unsigned sub_sizes [D]; //!< Sizes of sub-grids of increasing dimension.
-
-
+    //! Sizes of sub-grids of increasing dimension.
+    unsigned sub_sizes[D];
 
     // IMPLEMENTATION
     
-    template <typename IT> bool indices_in_range(IT indices) const;
-    bool sizes_okay() const;
-    bool dimension_okay(int d) const { return (d >= 0) && (d < D); }
-    void compute_sizes();
+    void compute_sub_sizes();
 
     
 };
@@ -121,40 +101,14 @@ class Index_Converter
 
 //---------------------------------------------------------------------------//
 /**
- * \brief Construct from a pointer to unsigned values for the dimensions.
- * 
- */
-template <unsigned D, int OFFSET>
-Index_Converter<D,OFFSET>::Index_Converter(const unsigned* dimensions)
-{
-    resize(dimensions);
-}
-
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Construct from a single size
- * \arg dimension  The size of all dimensions of the Index_Converter
- * 
- */
-template <unsigned D, int OFFSET>
-Index_Converter<D,OFFSET>::Index_Converter(unsigned dimension)
-{
-    resize(dimension);
-}
-
-//---------------------------------------------------------------------------//
-/**
  * \brief Resize the index converter object with new dimensions.
  * 
  */
 template <unsigned D, int OFFSET>
-void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
+inline void Index_Converter<D,OFFSET>::set_size(const unsigned* dimensions)
 {
-    std::copy(dimensions_, dimensions_+D, dimensions);
-
-    compute_sizes();
-
+    Base::set_size(dimensions);
+    compute_sub_sizes();
 }
 
 //---------------------------------------------------------------------------//
@@ -164,29 +118,16 @@ void Index_Converter<D,OFFSET>::resize(const unsigned* dimensions_)
  * \arg dimension The new size
  */
 template <unsigned D, int OFFSET>
-void Index_Converter<D,OFFSET>::resize(unsigned dimension)
+inline void Index_Converter<D,OFFSET>::set_size(unsigned dimension)
 {
-    for (unsigned* it = dimensions; it != dimensions+D; ++it) *it = dimension;
-
-    compute_sizes();
+    Base::set_size(dimension);
+    compute_sub_sizes();
 }
 
-//---------------------------------------------------------------------------//
-/**
- * \brief Comparison routine
- *
- * \arg The Index_Converter object to compare to.
- * 
- */
-template <unsigned D, int OFFSET>
-inline bool Index_Converter<D,OFFSET>::operator==(const Index_Converter &rhs) const
-{
 
-    if (array_size != rhs.array_size) return false;
 
-    return std::equal(dimensions, dimensions+D, rhs.dimensions);
 
-}
+
 
 //---------------------------------------------------------------------------//
 /**
@@ -198,7 +139,7 @@ template <typename IT>
 int Index_Converter<D,OFFSET>::get_index(IT indices) const
 {
 
-    Check(indices_in_range(indices));
+    Check(Base::indices_in_range(indices));
 
     int one_index_value = 0;
     int dimension = 0;
@@ -209,38 +150,9 @@ int Index_Converter<D,OFFSET>::get_index(IT indices) const
                            
     one_index_value += OFFSET;
 
-    Ensure(index_in_range(one_index_value));
+    Ensure(Base::index_in_range(one_index_value));
 
     return one_index_value;
-    
-}
-
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Convert a 1-index to an N-index
- *
- * \arg index The 1-index value
- *
- * This function dispatches to the write-in-place version of the function and
- * stores the result in a local int[] array. It then constructs the return
- * vector in the return statement in order to allow the compiler to perform
- * return value optimization (RVO). This can potentially eliminate the
- * creation of a temporary return object.
- * 
- */
-template <unsigned D, int OFFSET>
-std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
-{
-
-    Check(index_in_range(index));
-
-    static int indices[D];
-
-    get_indices(index, indices);
-
-    // Construct in return statement for RVO.
-    return std::vector<int>(indices, indices+D);
     
 }
 
@@ -259,7 +171,7 @@ template <typename IT>
 void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 {
 
-    Check(index_in_range(index));
+    Check(Base::index_in_range(index));
 
     IT point(iter+D);
 
@@ -277,6 +189,35 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 
 //---------------------------------------------------------------------------//
 /**
+ * \brief Convert a 1-index to an N-index
+ *
+ * \arg index The 1-index value
+ *
+ * This function dispatches to the write-in-place version of the function and
+ * stores the result in a local int[] array. It then constructs the return
+ * vector in the return statement in order to allow the compiler to perform
+ * return value optimization (RVO). This can potentially eliminate the
+ * creation of a temporary return object.
+ * 
+ */
+template <unsigned D, int OFFSET>
+std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
+{
+
+    Check(Base::index_in_range(index));
+
+    static int indices[D];
+
+    get_indices(index, indices);
+
+    // Construct in return statement for RVO.
+    return std::vector<int>(indices, indices+D);
+    
+}
+
+
+//---------------------------------------------------------------------------//
+/**
  * \brief Return the next index in a given direction. Return -1 if this
  * direction is outside the range of indices
  *
@@ -289,8 +230,8 @@ template <unsigned D, int OFFSET>
 int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 {
 
-    Check(index_in_range(index));
-    Check(direction_okay(direction));
+    Check(Base::index_in_range(index));
+    Check(Base::direction_okay(direction));
 
     --direction;
 
@@ -303,13 +244,16 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 
     indices[direction_axis] += direction_sign;
 
-    if (indices[direction_axis] < OFFSET ||
-        indices[direction_axis] >= dimensions[direction_axis]+OFFSET)
-        return -1;
+    if (!Base::index_in_range(indices[direction_axis], direction_axis)) return -1;
 
     return get_index(indices);
 
 }
+
+
+
+
+
 
 //---------------------------------------------------------------------------//
 // IMPLEMENTATION ROUTINES
@@ -323,18 +267,16 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
  * 
  */
 template <unsigned D, int OFFSET>
-void Index_Converter<D,OFFSET>::compute_sizes()
+void Index_Converter<D,OFFSET>::compute_sub_sizes()
 {
 
-    Require(sizes_okay());
-
-    array_size = std::accumulate<unsigned*>(
-        dimensions, dimensions+D, 1, std::multiplies<unsigned>()
-        );
+    Require(Base::sizes_okay());
 
     sub_sizes[0] = 1;
+
+    static unsigned const * const dimensions = Base::get_dimensions();
     
-    unsigned* end = std::partial_sum<unsigned*>(
+    unsigned* end = std::partial_sum(
         dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>()
         );
 
@@ -342,72 +284,6 @@ void Index_Converter<D,OFFSET>::compute_sizes()
 
 }
 
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Internal routine to make sure all of the dimensions are positive.
- *
- * Since the dimensions are stored as unsigned integers, we need only check
- * for zeros.
- * 
- */
-template <unsigned D, int OFFSET>
-inline bool Index_Converter<D,OFFSET>::sizes_okay() const
-{
-    
-    return (std::find(dimensions, dimensions+D, 0) == dimensions+D);
-
-}
-
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Make sure the indices are with the range for each dimension
- *
- * \arg iterator An itertator to a range of indices.
- * 
- */
-template <unsigned D, int OFFSET>
-template <typename IT>
-bool Index_Converter<D,OFFSET>::indices_in_range(IT indices) const
-{
-
-    int dimension = 0;
-    for (IT index = indices; index != indices + D; ++index, ++dimension)
-        if (*index < OFFSET || *index >= dimensions[dimension]+OFFSET) return false;
-
-    return true;
-}
-
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Make sure the 1-index is in range
- *
- * \arg index The value of the 1-index
- * 
- */
-template <unsigned D, int OFFSET>
-inline bool Index_Converter<D,OFFSET>::index_in_range(int index) const
-{
-
-    return (index >= OFFSET) && (index < array_size + OFFSET);
-
-}
-
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Make sure the direction index is valid
- *
- * \arg direction The direcition index.
- * 
- */
-template <unsigned D, int OFFSET>
-inline bool Index_Converter<D,OFFSET>::direction_okay(int direction) const
-{
-    return (direction >= 1) && (direction <= 2*D);
-}
 
 } // end namespace rtt_dsxx
 
