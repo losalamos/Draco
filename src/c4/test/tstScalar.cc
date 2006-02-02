@@ -11,8 +11,6 @@
 //---------------------------------------------------------------------------//
 
 #include <iostream>
-//#include <vector>
-//#include <cmath>
 
 #include "ds++/Assert.hh"
 #include "../global.hh"
@@ -36,12 +34,13 @@ void tstScalar()
 // Skip the tests if code not configured with the option --with-c4=scalar.
     
 #ifndef C4_SCALAR
+
     if( rtt_c4::isScalar() )
         FAILMSG("Incorrectly identified process as scalar.")
     else
         PASSMSG("Correctly identified process as parallel.")
-    return;
-#endif
+
+#else
 
     // Check the isScalar function.
     if( rtt_c4::isScalar() )
@@ -114,6 +113,7 @@ void tstScalar()
         FAILMSG("For --with-c4=scalar, unsuccessful test of send_async(const T*,int,int,int) and receive_async( C4_Req&,T*,int,int,int).");
     }
 
+#endif
 
     return;
 }
