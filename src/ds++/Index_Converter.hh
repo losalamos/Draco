@@ -3,10 +3,8 @@
  * \file   ds++/Index_Converter.hh
  * \author Mike Buksas
  * \date   Fri Jan 20 14:51:51 2006
- * \brief  
+ * \brief  Decleration and Definition of Index_Converter
  * \note   Copyright 2006 The Regents of the University of California.
- *
- * Long description.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -71,13 +69,13 @@ class Index_Converter
     // ACCESSORS
 
     //! Convert N-index to 1-index
-    template <typename IT> int operator()(IT indices) const;
+    template <typename IT> int get_index(IT indices) const;
 
     //! Convert 1-index to N-index
-    std::vector<int> operator()(int index) const;
+    std::vector<int> get_indices(int index) const;
 
     //! Convert 1-index to N-index and store in provided iterator.
-    template <typename IT> void operator()(int index, IT begin) const;
+    template <typename IT> void get_indices(int index, IT begin) const;
 
     int get_size() const { return array_size; }
     int get_size(int d) const { Check(dimension_okay(d)); return dimensions[d]; }
@@ -85,6 +83,15 @@ class Index_Converter
     int get_next_index(int index, int direction) const;
 
     bool index_in_range(int index) const;
+    bool index_in_range(int index, unsigned dimension) const;
+    int min_of_index() const { return OFFSET; }
+    int max_of_index() const { return OFFSET + array_size - 1; }
+    int min_of_index(unsigned d) const { Check(dimension_okay(d)); return OFFSET; }
+    int max_of_index(unsigned d) const {
+        Check(dimension_okay(d)); return OFFSET+dimensions[d]-1;
+    }
+            
+    
     bool direction_okay(int face) const;
 
   private:
@@ -188,7 +195,7 @@ inline bool Index_Converter<D,OFFSET>::operator==(const Index_Converter &rhs) co
  */
 template <unsigned D, int OFFSET>
 template <typename IT>
-int Index_Converter<D,OFFSET>::operator()(IT indices) const
+int Index_Converter<D,OFFSET>::get_index(IT indices) const
 {
 
     Check(indices_in_range(indices));
@@ -223,14 +230,14 @@ int Index_Converter<D,OFFSET>::operator()(IT indices) const
  * 
  */
 template <unsigned D, int OFFSET>
-std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
+std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
 {
 
     Check(index_in_range(index));
 
     static int indices[D];
 
-    operator()(index, indices);
+    get_indices(index, indices);
 
     // Construct in return statement for RVO.
     return std::vector<int>(indices, indices+D);
@@ -249,7 +256,7 @@ std::vector<int> Index_Converter<D,OFFSET>::operator()(int index) const
  */
 template <unsigned D, int OFFSET>
 template <typename IT>
-void Index_Converter<D,OFFSET>::operator()(int index, IT iter) const
+void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 {
 
     Check(index_in_range(index));
@@ -292,7 +299,7 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 
     int indices[D];
 
-    operator()(index, indices);
+    get_indices(index, indices);
 
     indices[direction_axis] += direction_sign;
 
@@ -300,7 +307,7 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
         indices[direction_axis] >= dimensions[direction_axis]+OFFSET)
         return -1;
 
-    return operator()(indices);
+    return get_index(indices);
 
 }
 

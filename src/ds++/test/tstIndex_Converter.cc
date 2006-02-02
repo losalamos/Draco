@@ -30,58 +30,73 @@ using namespace rtt_dsxx;
 void test_index_converter()
 {
 
-
     std::vector<int> result(3);
 
     unsigned dimensions[] = {3,4,5};
 
     {
-        Index_Converter<3,1> box_one(dimensions);
+        Index_Converter<3,1> box(dimensions);
 
-        if (box_one.get_size()  != 60);
-        if (box_one(dimensions) != 60) ITFAILS;
+
+        if (box.get_size()     != 60) ITFAILS;
+        if (box.min_of_index() !=  1) ITFAILS;
+        if (box.max_of_index() != 60) ITFAILS;
+
+        if (box.get_size(0)     != 3) ITFAILS;
+        if (box.min_of_index(0) != 1) ITFAILS;
+        if (box.max_of_index(0) != 3) ITFAILS;
+
+        if (box.get_size(1)     != 4) ITFAILS;
+        if (box.min_of_index(1) != 1) ITFAILS;
+        if (box.max_of_index(1) != 4) ITFAILS;
+
+        if (box.get_size(2)     != 5) ITFAILS;
+        if (box.min_of_index(2) != 1) ITFAILS;
+        if (box.max_of_index(2) != 5) ITFAILS;
+
+        if (box.get_index(dimensions) != 60) ITFAILS;
 
         int indices[] = {1,1,1};
-        if (box_one(indices) != 1) ITFAILS;
+        if (box.get_index(indices) != 1) ITFAILS;
 
         indices[0] = 2; indices[1] = 3; indices[2] = 4;
         int one_index = (2-1) + 3*(3-1) + 12*(4-1) + 1;
-        if (box_one(indices) != one_index) ITFAILS;
+        if (box.get_index(indices) != one_index) ITFAILS;
 
 
-        result = box_one(one_index);
+        result = box.get_indices(one_index);
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
     }
 
     {
-        Index_Converter<3,0> box_zero(dimensions);
+        Index_Converter<3,0> box(dimensions);
 
-        if (box_zero.get_size() != 60) ITFAILS;
+        if (box.get_size() != 60) ITFAILS;
 
         int indices[] = {0, 0, 0};
-        if (box_zero(indices) != 0) ITFAILS;
+        if (box.get_index(indices) != 0) ITFAILS;
 
         indices[0] = dimensions[0] - 1;
         indices[1] = dimensions[1] - 1;
         indices[2] = dimensions[2] - 1;
-        if (box_zero(indices) != 59) ITFAILS;
+        if (box.get_index(indices) != 59) ITFAILS;
 
-        box_zero(59, result.begin());
+        box.get_indices(59, result.begin());
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
         // Cell 30 has coordinates (0,3,2):
 
-        if (box_zero.get_next_index(30, 1) != -1) ITFAILS;
-        if (box_zero.get_next_index(30, 2) != 31) ITFAILS;
+        if (box.get_next_index(30, 1) != -1) ITFAILS;
+        if (box.get_next_index(30, 2) != 31) ITFAILS;
 
-        if (box_zero.get_next_index(30, 3) != 27) ITFAILS;
-        if (box_zero.get_next_index(30, 4) != 33) ITFAILS;
+        if (box.get_next_index(30, 3) != 27) ITFAILS;
+        if (box.get_next_index(30, 4) != 33) ITFAILS;
 
-        if (box_zero.get_next_index(30, 5) != 18) ITFAILS;
-        if (box_zero.get_next_index(30, 6) != 42) ITFAILS;
+        if (box.get_next_index(30, 5) != 18) ITFAILS;
+        if (box.get_next_index(30, 6) != 42) ITFAILS;
         
-        Index_Converter<3,0> copy(box_zero);
-        if (copy != box_zero) ITFAILS;
+        Index_Converter<3,0> copy(box);
+        if (copy != box) ITFAILS;
 
     }
 
