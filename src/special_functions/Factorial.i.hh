@@ -13,6 +13,7 @@
 #ifndef sf_factorial_i_hh
 #define sf_factorial_i_hh
 
+#include "ds++/Assert.hh"
 #include "Factorial.hh"
 
 namespace rtt_sf
@@ -40,22 +41,27 @@ T factorial( T const k )
         // are too big to be held by type long.
         // , 6227020800, 87178291200
     };
-    static unsigned const N(sizeof(tabularValue));
-    
+    static unsigned const N(13);
+
     if( k <= 1 ) 
 	return 1;
     if( k < N )
         return tabularValue[k];
-    // otherwise
+    else
+    {
+        Check(k>=N);
 
     // recursive algorithm:
     // return  k * factorial(k-1);
 
     // direct algorithm
-    T Result( tabularValue[N-1] );
-    for( unsigned i=N; i<=k; i++)
-        Result *= i;
-    return Result;
+    
+        T Result( tabularValue[N-1] );
+        for( unsigned i=N; i<=k; i++)
+            Result *= i;
+        Ensure(Result>tabularValue[N-1]);
+        return Result;
+    }
 }
 
 } // end namespace rtt_sf
