@@ -48,6 +48,11 @@ void test_index_converter()
 
         result = box.get_indices(one_index);
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
+
+        if (box.get_single_index(one_index, 0) != indices[0]) ITFAILS;
+        if (box.get_single_index(one_index, 1) != indices[1]) ITFAILS;
+        if (box.get_single_index(one_index, 2) != indices[2]) ITFAILS;
+
     }
 
     {
@@ -64,16 +69,23 @@ void test_index_converter()
         box.get_indices(59, result.begin());
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
-        // Cell 30 has coordinates (0,3,2):
+        result = box.get_indices(30);
 
-        if (box.get_next_index(30, 1) != -1) ITFAILS;
-        if (box.get_next_index(30, 2) != 31) ITFAILS;
+        // Cell 30 has coordinates (0,2,2):
+        indices[0] = 0; indices[1] = 2; indices[2] = 2;
+        if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
-        if (box.get_next_index(30, 3) != 27) ITFAILS;
-        if (box.get_next_index(30, 4) != 33) ITFAILS;
+        int index = box.get_index(indices);
+        if (index != 30 ) ITFAILS;   
 
-        if (box.get_next_index(30, 5) != 18) ITFAILS;
-        if (box.get_next_index(30, 6) != 42) ITFAILS;
+        if (box.get_next_index(index, 1) != -1) ITFAILS;
+        if (box.get_next_index(index, 2) != 31) ITFAILS;
+
+        if (box.get_next_index(index, 3) != 27) ITFAILS;
+        if (box.get_next_index(index, 4) != 33) ITFAILS;
+
+        if (box.get_next_index(index, 5) != 18) ITFAILS;
+        if (box.get_next_index(index, 6) != 42) ITFAILS;
         
         Index_Converter<3,0> copy(box);
         if (copy != box) ITFAILS;

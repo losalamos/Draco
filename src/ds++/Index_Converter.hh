@@ -165,8 +165,7 @@ int Index_Converter<D,OFFSET>::get_index(IT indices) const
  * \brief Convert a 1-index to an N-index. Store in provided pointer
  *
  * \arg index The index
- * \arg iterator The iterator pointing to the place to store the results. Must
- * be a reversible iterator, e.g. implement '--'
+ * \arg iterator The iterator pointing to the place to store the results. 
  * 
  */
 template <unsigned D, int OFFSET>
@@ -176,43 +175,16 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 
     Check(Base::index_in_range(index));
 
-    IT point(iter+D);
-
     index -= OFFSET;
 
-    for (int dimension = D-1; dimension >= 0; --dimension)
+    for (int d = 0; d <= D-1; ++d)
     {
-        *(--point) = index / sub_sizes[dimension] + OFFSET;
-        index %= sub_sizes[dimension];
+        const int dim_size = Base::get_size(d);
+        *(iter++) = index % dim_size + OFFSET;
+        index /= dim_size;
     }
 
-    Ensure (point == iter);
-
-}
-
-//---------------------------------------------------------------------------//
-/**
- * \brief Extract a single N-index from a 1-index
- *
- * \arg index The 1-index
- * \arg dimension The desired index dimension
- * 
- */
-template <unsigned D, int OFFSET>
-int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) const
-{
-
-    Check(Base::index_in_range(index));
-    Check(Base::dimension_okay(index));
-
-    index -= OFFSET;
-
-    if (dimension == 0)   return index % sub_sizes[1]   + OFFSET;
-    if (dimension == D-1) return index / sub_sizes[D-1] + OFFSET;
-
-    
-
-        
+    Ensure (index == 0);
 
 }
 
@@ -244,6 +216,28 @@ std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
     
 }
 
+//---------------------------------------------------------------------------//
+/**
+ * \brief Extract a single N-index from a 1-index
+ *
+ * \arg index The 1-index
+ * \arg dimension The desired index dimension
+ * 
+ */
+template <unsigned D, int OFFSET>
+int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) const
+{
+
+    Check(Base::index_in_range(index));
+    Check(Base::dimension_okay(dimension));
+
+    index -= OFFSET;
+    index /= sub_sizes[dimension];
+
+    return index % Base::get_size(dimension) + OFFSET;
+
+}
+
 
 
 
@@ -266,19 +260,17 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 
     --direction;
 
-    unsigned direction_axis = direction / 2;
-    int      direction_sign = 2*(direction % 2) - 1;
+    unsigned dimension = direction / 2;
+    int      sign      = 2*(direction % 2) - 1;
 
-    int indices[D];
 
-    get_indices(index, indices);
+    const int sub_index = get_single_index(index, dimension) + sign;
 
-    indices[direction_axis] += direction_sign;
+    if (!Base::index_in_range(sub_index, dimension)) return -1;
 
-    if (!Base::index_in_range(indices[direction_axis], direction_axis)) return -1;
+    const int new_index = index + sign*sub_sizes[dimension];
 
-    return get_index(indices);
-
+    return new_index;
 }
 
 
