@@ -98,10 +98,12 @@ class Index_Set
 
   protected:
 
+    // Make sure the index sizes are all positive when creating or resizing:
     bool sizes_okay() const {
         return (std::find(dimensions, dimensions+D, 0) == dimensions+D);
     }
 
+    // Allow derived classes const access to the dimensions.
     unsigned const * const get_dimensions() const { return dimensions; }
 
 };
@@ -204,12 +206,11 @@ inline bool Index_Set<D,OFFSET>::index_in_range(int index, unsigned dimension) c
 // IMPLEMENTAION
 //---------------------------------------------------------------------------//
 template <unsigned D, int OFFSET>
-void Index_Set<D,OFFSET>::compute_size()
+inline void Index_Set<D,OFFSET>::compute_size()
 {
 
     array_size =
         std::accumulate<unsigned*>(dimensions, dimensions+D, 1, std::multiplies<unsigned>());
-
 
     Ensure(array_size > 0);
 

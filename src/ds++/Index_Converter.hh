@@ -77,6 +77,9 @@ class Index_Converter : public Index_Set<D,OFFSET>
     //! Convert 1-index to N-index and store in provided iterator.
     template <typename IT> void get_indices(int index, IT begin) const;
 
+    //! Extract a single N-index from the 1-index
+    int get_single_index(int index, unsigned dimension) const;
+
     // Get the next index from a 1-index and direction
     int get_next_index(int index, int direction) const;
 
@@ -189,6 +192,32 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 
 //---------------------------------------------------------------------------//
 /**
+ * \brief Extract a single N-index from a 1-index
+ *
+ * \arg index The 1-index
+ * \arg dimension The desired index dimension
+ * 
+ */
+template <unsigned D, int OFFSET>
+int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) const
+{
+
+    Check(Base::index_in_range(index));
+    Check(Base::dimension_okay(index));
+
+    index -= OFFSET;
+
+    if (dimension == 0)   return index % sub_sizes[1]   + OFFSET;
+    if (dimension == D-1) return index / sub_sizes[D-1] + OFFSET;
+
+    
+
+        
+
+}
+
+//---------------------------------------------------------------------------//
+/**
  * \brief Convert a 1-index to an N-index
  *
  * \arg index The 1-index value
@@ -214,6 +243,8 @@ std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
     return std::vector<int>(indices, indices+D);
     
 }
+
+
 
 
 //---------------------------------------------------------------------------//

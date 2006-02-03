@@ -95,8 +95,25 @@ void test_index_set()
     box.set_size(dimensions);
 
     if (box.get_size() != 100) ITFAILS;
+
+
+    // Copy and comparison tests:
+    // -------------------------
+
+    // Make a copy
+    Index_Set<3,1> box2(box);
+
+    // Test for equality and not-inequality
+    if (box2 != box)    ITFAILS;
+    if (!(box2 == box)) ITFAILS;
+
+    // Resize the copy:
+    box2.set_size(3);
         
-        
+    // Test for inequality and not-equality
+    if (box2 == box)    ITFAILS;
+    if (!(box2 != box)) ITFAILS;
+    
         
     
 

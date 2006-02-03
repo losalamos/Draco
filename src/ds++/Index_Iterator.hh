@@ -16,7 +16,7 @@
 #define dsxx_Index_Iterator_hh
 
 #include "Assert.hh"
-#include "Index_Converter.hh"
+#include "Index_Set.hh"
 
 namespace rtt_dsxx
 {
@@ -45,7 +45,7 @@ class Index_Iterator
     // CREATORS
     
     //! Default constructors.
-    Index_Iterator(const Index_Converter<D,OFFSET>& index_converter);
+    Index_Iterator(const Index_Set<D,OFFSET>& index_set);
 
     //! Destructor.
     ~Index_Iterator() { /* ... */ }
@@ -78,7 +78,7 @@ class Index_Iterator
 
     // DATA
 
-    const Index_Converter<D,OFFSET>& index_converter;
+    const Index_Set<D,OFFSET>& index_set;
 
     int indices[D];
     int index;
@@ -97,12 +97,12 @@ class Index_Iterator
 
 //---------------------------------------------------------------------------//
 /**
- * \brief Construct from an Index_Converter object
+ * \brief Construct from an Index_Set object
  * 
  */
 template <unsigned D, int OFFSET>
-Index_Iterator<D,OFFSET>::Index_Iterator(const Index_Converter<D,OFFSET>& converter)
-    : index_converter(converter),
+Index_Iterator<D,OFFSET>::Index_Iterator(const Index_Set<D,OFFSET>& converter)
+    : index_set(converter),
       in_range(true),
       index(OFFSET)
 {
@@ -129,22 +129,21 @@ void Index_Iterator<D,OFFSET>::increment()
 
     for (int d = 0; d < D-1; ++d)
     {
-        if (indices[d] > index_converter.max_of_index(d))
+        if (indices[d] > index_set.max_of_index(d))
         {
             ++indices[d+1];
-            indices[d] = index_converter.min_of_index(d);
+            indices[d] = index_set.min_of_index(d);
         }
         else
             break;
     }
 
-    if (indices[D-1] > index_converter.max_of_index(D-1))
+    if (indices[D-1] > index_set.max_of_index(D-1))
     {
-        indices[D-1] = index_converter.min_of_index(D-1);
+        indices[D-1] = index_set.min_of_index(D-1);
         in_range = false;
     }
 
-    Ensure (!in_range || (index_converter.get_index(indices) == index));
     
 }
 
@@ -164,9 +163,9 @@ void Index_Iterator<D,OFFSET>::decrement()
 
     for (int d = 0; d < D-1; ++d)
     {
-        if (indices[d] < index_converter.min_of_index(d))
+        if (indices[d] < index_set.min_of_index(d))
         {
-            indices[d] = index_converter.max_of_index(d);
+            indices[d] = index_set.max_of_index(d);
             --indices[d+1];
         }
         else
@@ -174,13 +173,12 @@ void Index_Iterator<D,OFFSET>::decrement()
     
     }
 
-    if (indices[D-1] < index_converter.min_of_index(D-1))
+    if (indices[D-1] < index_set.min_of_index(D-1))
     {
-        indices[D-1] = index_converter.max_of_index(D-1);
+        indices[D-1] = index_set.max_of_index(D-1);
         in_range = false;
     }
 
-    Ensure ( !in_range || (index_converter.get_index(indices) == index));
 
 }
 

@@ -46,15 +46,12 @@ void test_index_converter()
         int one_index = (2-1) + 3*(3-1) + 12*(4-1) + 1;
         if (box.get_index(indices) != one_index) ITFAILS;
 
-
         result = box.get_indices(one_index);
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
     }
 
     {
         Index_Converter<3,0> box(dimensions);
-
-        if (box.get_size() != 60) ITFAILS;
 
         int indices[] = {0, 0, 0};
         if (box.get_index(indices) != 0) ITFAILS;
