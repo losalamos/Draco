@@ -19,6 +19,7 @@
 #include <numeric>
 
 #include "Index_Set.hh"
+#include "Index_Iterator.hh"
 
 namespace rtt_dsxx
 {
@@ -43,6 +44,8 @@ class Index_Converter : public Index_Set<D,OFFSET>
   public:
 
     typedef Index_Set<D,OFFSET> Base;
+
+    typedef Index_Iterator<D,OFFSET> Iterator;
 
     //! Default constructor
     Index_Converter() { /* ... */ }
@@ -82,6 +85,9 @@ class Index_Converter : public Index_Set<D,OFFSET>
 
     // Get the next index from a 1-index and direction
     int get_next_index(int index, int direction) const;
+
+    // Create an iterator over the index set
+    Iterator iterator() const { return Iterator(*this); }
 
 
   private:

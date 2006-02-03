@@ -46,7 +46,7 @@ class Index_Set
     Index_Set() { /* ... */ }
 
     //! Construct with pointer to sizes
-    Index_Set(const unsigned* dimensions) { set_size(dimensions); }
+    Index_Set(unsigned const * const dimensions) { set_size(dimensions); }
 
     //! Construct with all dimensions equal
     Index_Set(const unsigned dimension) { set_size(dimension); }
@@ -64,10 +64,10 @@ class Index_Set
     bool operator!=(const Index_Set &rhs) const { return !(*this==rhs); }
 
     //! Re-assignment operator
-    void set_size(unsigned const* dimensions);
+    void set_size(unsigned const* const dimensions);
 
     //! Uniform size re-assignment operator
-    void set_size(unsigned size);
+    void set_size(const unsigned size);
 
     bool index_in_range(int index) const {
         return (index >= OFFSET) && (index < array_size + OFFSET);
@@ -76,18 +76,18 @@ class Index_Set
 
     template <typename IT> bool indices_in_range(IT indices) const;
 
-    int get_size()      const { return array_size; }
-    int min_of_index()  const { return OFFSET; }
-    int max_of_index()  const { return OFFSET + array_size - 1; }
+    int get_size()     const { return array_size; }
+    int min_of_index() const { return OFFSET; }
+    int max_of_index() const { return OFFSET + array_size - 1; }
 
-    int get_size(int d) const { Check(dimension_okay(d)); return dimensions[d]; }
-    int min_of_index(unsigned d) const { Check(dimension_okay(d)); return OFFSET; }
-    int max_of_index(unsigned d) const {
+    int get_size(const int d) const { Check(dimension_okay(d)); return dimensions[d]; }
+    int min_of_index(const unsigned d) const { Check(dimension_okay(d)); return OFFSET; }
+    int max_of_index(const unsigned d) const {
         Check(dimension_okay(d)); return OFFSET+dimensions[d]-1;
     }
             
-    static bool direction_okay(int d) { return (d >  0) && (d <= 2*D); }
-    static bool dimension_okay(int d) { return (d >= 0) && (d <  D);   }
+    static bool direction_okay(const int d) { return (d >  0) && (d <= 2*D); }
+    static bool dimension_okay(const int d) { return (d >= 0) && (d <  D);   }
 
   private:
 
@@ -116,7 +116,7 @@ class Index_Set
  * 
  */
 template <unsigned D, int OFFSET>
-void Index_Set<D,OFFSET>::set_size(unsigned const* dimensions_)
+void Index_Set<D,OFFSET>::set_size(unsigned const* const dimensions_)
 {
 
     std::copy(dimensions_, dimensions_+D, dimensions);
@@ -136,7 +136,7 @@ void Index_Set<D,OFFSET>::set_size(unsigned const* dimensions_)
  * 
  */
 template <unsigned D, int OFFSET>
-void Index_Set<D,OFFSET>::set_size(unsigned dimension)
+void Index_Set<D,OFFSET>::set_size(const unsigned dimension)
 {
 
     for (unsigned* dim = dimensions; dim < dimensions + D; ++dim)

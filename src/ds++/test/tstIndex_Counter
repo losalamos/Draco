@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/test/tstIndex_Iterator.cc
+ * \file   ds++/test/tstIndex_Counter.cc
  * \author Mike Buksas
  * \date   Wed Feb  1 08:58:48 2006
- * \brief  Unit test for Index_Iterator
+ * \brief  Unit test for Index_Counter
  * \note   Copyright 2006 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
@@ -19,7 +19,7 @@
 #include "ds_test.hh"
 
 #include "../Index_Converter.hh"
-#include "../Index_Iterator.hh"
+#include "../Index_Counter.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -28,7 +28,7 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_index_iterator()
+void test_index_counter()
 {
     
     unsigned dimensions[] = {3,4,5};
@@ -36,7 +36,7 @@ void test_index_iterator()
 
     Index_Converter<3,1> box(dimensions);
 
-    Index_Iterator<3,1> it(box);
+    Index_Converter<3,1>::Counter it = box.counter();
 
     if (it.get_index()  != 1) ITFAILS;
     if (it.get_index(0) != 1) ITFAILS;
@@ -66,7 +66,7 @@ void test_looping()
     Index_Converter<3,1> box(dimensions);
 
     int index = 1;
-    for (Index_Iterator<3,1> it(box); it.is_in_range(); ++it)
+    for (Index_Counter<3,1> it(box); it.is_in_range(); ++it)
     {
         const int it_index = it.get_index();
         
@@ -101,20 +101,20 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
-        test_index_iterator();
+        test_index_counter();
 
         test_looping();
     }
     catch (std::exception &err)
     {
-        std::cout << "ERROR: While testing tstIndex_Iterator, " 
+        std::cout << "ERROR: While testing tstIndex_Counter, " 
                   << err.what()
                   << std::endl;
         return 1;
     }
     catch( ... )
     {
-        std::cout << "ERROR: While testing tstIndex_Iterator, " 
+        std::cout << "ERROR: While testing tstIndex_Counter, " 
 		  << "An unknown exception was thrown"
                   << std::endl;
         return 1;
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
               << std::endl;
     if (rtt_ds_test::passed) 
     {
-        std::cout << "**** tstIndex_Iterator Test: PASSED"
+        std::cout << "**** tstIndex_Counter Test: PASSED"
                   << std::endl;
     }
     std::cout <<     "*********************************************" 
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     
 
-    std::cout << "Done testing tstIndex_Iterator"
+    std::cout << "Done testing tstIndex_Counter"
               << std::endl;
     
 
@@ -142,5 +142,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstIndex_Iterator.cc
+//                        end of tstIndex_Counter.cc
 //---------------------------------------------------------------------------//

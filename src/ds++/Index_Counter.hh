@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/Index_Iterator.hh
+ * \file   ds++/Index_Counter.hh
  * \author Mike Buksas
  * \date   Tue Jan 31 16:45:39 2006
  * \brief  
@@ -12,8 +12,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef dsxx_Index_Iterator_hh
-#define dsxx_Index_Iterator_hh
+#ifndef dsxx_Index_Counter_hh
+#define dsxx_Index_Counter_hh
 
 #include "Assert.hh"
 #include "Index_Set.hh"
@@ -23,20 +23,20 @@ namespace rtt_dsxx
 
 //===========================================================================//
 /*!
- * \class Index_Iterator
+ * \class Index_Counter
  * \brief Facilitates iterating over a multi-dimensional range of indices.
  *
  *
- * \sa Index_Iterator.cc for detailed descriptions.
+ * \sa Index_Counter.cc for detailed descriptions.
  *
  */
 /*! 
- * \example ds++/test/tstIndex_Iterator.cc 
+ * \example ds++/test/tstIndex_Counter.cc 
  * 
  */
 //===========================================================================//
 template <unsigned D, int OFFSET>
-class Index_Iterator 
+class Index_Counter 
 {
   public:
 
@@ -45,20 +45,20 @@ class Index_Iterator
     // CREATORS
     
     //! Default constructors.
-    Index_Iterator(const Index_Set<D,OFFSET>& index_set);
+    Index_Counter(const Index_Set<D,OFFSET>& index_set);
 
     //! Destructor.
-    ~Index_Iterator() { /* ... */ }
+    ~Index_Counter() { /* ... */ }
 
     // MANIPULATORS
     
-    //! Assignment operator for Index_Iterator.
-    Index_Iterator& operator=(const Index_Iterator &rhs);
+    //! Assignment operator for Index_Counter.
+    Index_Counter& operator=(const Index_Counter &rhs);
 
     // ACCESSORS
 
-    Index_Iterator& operator++() { increment(); return *this; }
-    Index_Iterator& operator--() { decrement(); return *this; }
+    Index_Counter& operator++() { increment(); return *this; }
+    Index_Counter& operator--() { decrement(); return *this; }
 
     // Accessors for the 1-index
     int get_index() const { return index; }
@@ -67,7 +67,7 @@ class Index_Iterator
     // Accessors for the N-indices
     int get_index(unsigned d) const { Check(dimension_okay(d)); return indices[d]; }
 
-    std::vector<int> get_indices() const { return std::vector<int>(indices,indices+D);}
+    std::vector<int> get_indices() const { return std::vector<int>(indices,indices+D); }
 
     template <typename IT>
     void get_indices(IT out) const { std::copy(indices, indices+D, out); }
@@ -101,7 +101,7 @@ class Index_Iterator
  * 
  */
 template <unsigned D, int OFFSET>
-Index_Iterator<D,OFFSET>::Index_Iterator(const Index_Set<D,OFFSET>& converter)
+Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& converter)
     : index_set(converter),
       in_range(true),
       index(OFFSET)
@@ -119,7 +119,7 @@ Index_Iterator<D,OFFSET>::Index_Iterator(const Index_Set<D,OFFSET>& converter)
  * 
  */
 template <unsigned D, int OFFSET>
-void Index_Iterator<D,OFFSET>::increment()
+void Index_Counter<D,OFFSET>::increment()
 {
 
     Require(in_range);
@@ -153,7 +153,7 @@ void Index_Iterator<D,OFFSET>::increment()
  * 
  */
 template <unsigned D, int OFFSET>
-void Index_Iterator<D,OFFSET>::decrement()
+void Index_Counter<D,OFFSET>::decrement()
 {
 
     Require(in_range);
@@ -185,8 +185,8 @@ void Index_Iterator<D,OFFSET>::decrement()
 
 } // end namespace rtt_dsxx
 
-#endif // dsxx_Index_Iterator_hh
+#endif // dsxx_Index_Counter_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Index_Iterator.hh
+//              end of ds++/Index_Counter.hh
 //---------------------------------------------------------------------------//
