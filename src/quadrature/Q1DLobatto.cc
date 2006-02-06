@@ -75,10 +75,6 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
     // half of them.
     unsigned const numHrGaussPoints( (numGaussPoints+1)/2 );
 
-    // midpoint and length of half-range.
-    double mu_m = 0.5 * (mu2+mu1);
-    double mu_l = 0.5 * (mu2-mu1);
-
     mu[0]   = mu1;
     mu[N-1] = mu2;
 
