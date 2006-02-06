@@ -37,9 +37,8 @@ using rtt_dsxx::SP;
  * routines. 
  *
  * To add a quadrature to this test the following items must be changed: add
- * new enumeration to Qid[] array.  add new mu[0] value to mu0[] array.
- * verify nquads is set to the correct number of quadrature sets being
- * tested.
+ * new enumeration to Qid[] array.  Verify nquads is set to the correct number
+ * of quadrature sets being tested.
  */
 void quadrature_test()
 {
@@ -47,16 +46,11 @@ void quadrature_test()
     using std::endl;
     using std::cout;
 
-    // double precesion values will be tested for correctness against this
-    // tolerance. 
-    const double TOL = 1.0e-10; 
-
     // create an object that is responsible for creating quadrature objects.
     QuadCreator QuadratureCreator;
     
     // we will only look at S2 in this test.
     const int sn_order = 2;
-    
 
     // total number of quadrature sets to be tested.
     const int nquads = 1;
@@ -69,13 +63,9 @@ void quadrature_test()
     // #   Qid        Description
     // -   --------   ------------
     // 0   Axial1D    1D Axial
- 
 
     QuadCreator::Qid qid[nquads] = { QuadCreator::Axial1D };
 
-    // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = { 2.0 };
-    
     SP< const Quadrature > spQuad;
 
     // loop over quadrature types to be tested.
