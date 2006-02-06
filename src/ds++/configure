@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="SP.hh"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir FLEXELINT_PATH DOTCMD PS2PDF LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS latex_yes_no doxygen_output_top build build_cpu build_vendor build_os host host_cpu host_vendor host_os PYTHON_PATH PERL_PATH CVS_PATH GHOSTVIEW LATEX LATEXFLAGS BIBTEX BIBTEXFLAGS XDVI XDVIFLAGS PS2PDF DOTCMD DVIPS DVIPSFLAGS LP LPFLAGS DOXYGEN_PATH F90 F90FREE F90FIXED F90FLAGS MODFLAG CXX CC GCC_BIN RANLIB ac_ct_RANLIB CFLAGS CXXFLAGS LD LDFLAGS AR ARFLAGS CPPFLAGS DEPENDENCY_RULES STRICTFLAG PARALLEL_FLAG RPATH LIB_PREFIX INSTALL INSTALL_DATA installfiles install_executable install_lib install_headers installdirs alltarget libsuffix dirstoclean package DRACO_DEPENDS DRACO_LIBS VENDOR_DEPENDS VENDOR_INC VENDOR_LIBS ARLIBS PKG_DEPENDS PKG_LIBS DRACO_TEST_DEPENDS DRACO_TEST_LIBS VENDOR_TEST_DEPENDS VENDOR_TEST_LIBS ARTESTLIBS test_alltarget test_flags test_scalar test_nprocs test_output_files configure_command package_top_srcdir number doxygen_input doxygen_examples doxygen_html_output doxygen_latex_output DOXYGEN_TAGFILES rel_package_html header_dir autodoc_dir FLEXELINT_PATH LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1341,7 +1341,6 @@ package="ds++"
 	    tstSafe_Divide \
             tstIndex_Set \
             tstIndex_Converter \
-            tstIndex_Iterator \
             tstDynArray \
             "
 
@@ -2004,6 +2003,98 @@ test -n "$XDVI" || XDVI="null"
 echo "$as_me: WARNING: \"No valid xdvi found!\"" >&2;}
    fi
 
+
+      for ac_prog in ps2pdf
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_PS2PDF+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$PS2PDF"; then
+  ac_cv_prog_PS2PDF="$PS2PDF" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PS2PDF="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+PS2PDF=$ac_cv_prog_PS2PDF
+if test -n "$PS2PDF"; then
+  echo "$as_me:$LINENO: result: $PS2PDF" >&5
+echo "${ECHO_T}$PS2PDF" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$PS2PDF" && break
+done
+test -n "$PS2PDF" || PS2PDF="null"
+
+   if test "${PS2PDF}" = null ; then
+       { echo "$as_me:$LINENO: WARNING: \"No valid ps2pdf found!\"" >&5
+echo "$as_me: WARNING: \"No valid ps2pdf found!\"" >&2;}
+   fi
+
+      for ac_prog in dot
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_DOTCMD+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$DOTCMD"; then
+  ac_cv_prog_DOTCMD="$DOTCMD" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_DOTCMD="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+DOTCMD=$ac_cv_prog_DOTCMD
+if test -n "$DOTCMD"; then
+  echo "$as_me:$LINENO: result: $DOTCMD" >&5
+echo "${ECHO_T}$DOTCMD" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$DOTCMD" && break
+done
+test -n "$DOTCMD" || DOTCMD="null"
+
+   if test "${DOTCMD}" = null ; then
+       { echo "$as_me:$LINENO: WARNING: \"No valid dot found!\"" >&5
+echo "$as_me: WARNING: \"No valid dot found!\"" >&2;}
+   fi
 
       for ac_prog in dvips
 do
@@ -5242,8 +5333,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
    fi
 
-   # STL port checks and setup
-
 
    echo "$as_me:$LINENO: checking \"for stlport\"" >&5
 echo $ECHO_N "checking \"for stlport\"... $ECHO_C" >&6
@@ -5254,9 +5343,9 @@ echo "$as_me: error: \"Invalid directory ${with_stlport}/include\"" >&2;}
    { (exit 1); exit 1; }; }
       fi
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
-      echo "$as_me:$LINENO: result: \"-I${with_stlport}/include added to CXXFLAGS.\"" >&5
-echo "${ECHO_T}\"-I${with_stlport}/include added to CXXFLAGS.\"" >&6
+      CXXFLAGS="-pthread ${CXXFLAGS}"
+      echo "$as_me:$LINENO: result: Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&5
+echo "${ECHO_T}Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS." >&6
 
                   echo "$as_me:$LINENO: checking \"for debug stlport mode\"" >&5
 echo $ECHO_N "checking \"for debug stlport mode\"... $ECHO_C" >&6
@@ -5267,9 +5356,9 @@ echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlportstlg.so\"" 
    { (exit 1); exit 1; }; }
          fi
          LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         echo "$as_me:$LINENO: result: \"yes\"" >&5
-echo "${ECHO_T}\"yes\"" >&6
+         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
+         echo "$as_me:$LINENO: result: Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS." >&5
+echo "${ECHO_T}Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS." >&6
       else
                   if ! test -r "${with_stlport}/lib/libstlport.so"; then
             { { echo "$as_me:$LINENO: error: \"Invalid library ${with_stlport}/lib/libstlport.so\"" >&5
@@ -5277,8 +5366,8 @@ echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlport.so\"" >&2;
    { (exit 1); exit 1; }; }
          fi
          LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         echo "$as_me:$LINENO: result: \"no\"" >&5
-echo "${ECHO_T}\"no\"" >&6
+         echo "$as_me:$LINENO: result: No. -L${with_stlport}/lib -lstlport added to LIBS." >&5
+echo "${ECHO_T}No. -L${with_stlport}/lib -lstlport added to LIBS." >&6
       fi
 
       echo "$as_me:$LINENO: checking \"for RPATH mods for stlport\"" >&5
@@ -5744,8 +5833,14 @@ echo "${ECHO_T}${F90MPIFLAGS}" >&6
 
       echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
 echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
-   CXXLIBDIR=${GCC_LIB_DIR}
-   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   if test ${with_cxx} = "pgi"; then
+      CXXLIBDIR=`which pgCC | sed -e 's/\/bin\/pgCC//'`
+      CXXLIBDIR="${CXXLIBDIR}/lib"
+      F90CXXFLAGS="-L${CXXLIBDIR} -lC -lstd"
+   else
+      CXXLIBDIR=${GCC_LIB_DIR}
+      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   fi
    echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
 echo "${ECHO_T}${F90CXXFLAGS}" >&6
 
@@ -5909,6 +6004,7 @@ _ACEOF
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -5922,23 +6018,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -5948,7 +6044,6 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -5988,6 +6083,74 @@ _ACEOF
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -6068,7 +6231,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -6153,7 +6315,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -6188,7 +6349,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -6698,19 +6858,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -6745,19 +6907,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -6933,6 +7097,7 @@ echo "${ECHO_T}\"not needed\"" >&6
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -6946,23 +7111,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -6972,7 +7137,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -7012,6 +7176,74 @@ echo "${ECHO_T}\"not needed\"" >&6
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -7092,7 +7324,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -7177,7 +7408,6 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -7212,7 +7442,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -7719,19 +7948,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -7931,6 +8162,7 @@ echo "${ECHO_T}\"not needed\"" >&6
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -7944,23 +8176,23 @@ echo "${ECHO_T}\"not needed\"" >&6
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -7970,7 +8202,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -8010,6 +8241,74 @@ echo "${ECHO_T}\"not needed\"" >&6
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -8090,7 +8389,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -8175,7 +8473,6 @@ echo "${ECHO_T}\"not needed\"" >&6
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -8210,7 +8507,6 @@ echo "${ECHO_T}\"not needed\"" >&6
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -8717,19 +9013,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -8886,6 +9184,7 @@ echo $ECHO_N "checking \"for extra f90 library requirements.\"... $ECHO_C" >&6
       test -n "${vendor_gandolf}"   ||
       test -n "${vendor_pcg}"       ||
       test -n "${vendor_udm}"       ||
+      test -n "${vendor_superludist}" ||
       test -n "${vendor_blacs}"; then
 
       extra_f90_libs="-L${f90_lib_loc} -lfor"
@@ -8984,6 +9283,7 @@ _ACEOF
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -8997,23 +9297,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -9023,7 +9323,6 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -9063,6 +9362,74 @@ _ACEOF
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -9143,7 +9510,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -9228,7 +9594,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -9263,7 +9628,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -9770,19 +10134,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -9952,6 +10318,7 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -9965,23 +10332,23 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -9991,7 +10358,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -10031,6 +10397,74 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -10111,7 +10545,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -10196,7 +10629,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -10231,7 +10663,6 @@ echo "$as_me: WARNING: \"xlC set to allow long long\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -10793,6 +11224,7 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -10806,23 +11238,23 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -10832,7 +11264,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -10872,6 +11303,74 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -10952,7 +11451,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -11037,7 +11535,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -11072,7 +11569,6 @@ echo "$as_me: error: \"We do not support vendor mpi on the SUN yet!\"" >&2;}
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -11579,19 +12075,21 @@ echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS};
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+                      so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  { { echo "$as_me:$LINENO: error: \"Cannot determine what rpath format to use!\"" >&5
 echo "$as_me: error: \"Cannot determine what rpath format to use!\"" >&2;}
    { (exit 1); exit 1; }; }
-	   fi
+   	      fi
+           fi
        done
 
 
@@ -11908,6 +12406,7 @@ _ACEOF
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
+
    # set up the libraries and include path
    if test -n "${vendor_trilinos}" ; then
 
@@ -11921,23 +12420,23 @@ _ACEOF
        if test -n "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        elif test -z "${TRILINOS_LIB}" ; then
 
    # vendor_trilinos is the vendor_<> tag (equals pkg or test)
-   # -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils are the directories added
+   # -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils are the directories added
 
    if test "${vendor_trilinos}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_LIBS="${VENDOR_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    elif test "${vendor_trilinos}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils"
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils"
    fi
 
        fi
@@ -11947,7 +12446,6 @@ _ACEOF
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${TRILINOS_INC}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -11987,6 +12485,74 @@ _ACEOF
        # add GSL directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
+
+   fi
+
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperlu"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperlu are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperlu"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperlu"
+   fi
+
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -L${SUPERLUDIST_LIB} -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -L${SUPERLUDIST_LIB} -lsuperludist"
+   fi
+
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+
+   # vendor_superludist is the vendor_<> tag (equals pkg or test)
+   # -lsuperludist are the directories added
+
+   if test "${vendor_superludist}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} -lsuperludist"
+   elif test "${vendor_superludist}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} -lsuperludist"
+   fi
+
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
 
    fi
 
@@ -12067,7 +12633,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
 
    fi
-
 
 
    # set up the libraries and include path
@@ -12152,7 +12717,6 @@ _ACEOF
    fi
 
 
-
    # set up the libraries and include path
    if test -n "${vendor_blacs}" ; then
 
@@ -12187,7 +12751,6 @@ _ACEOF
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${BLACS_LIB}"
 
    fi
-
 
 
    # set up lapack libraries
@@ -13722,6 +14285,8 @@ s,@BIBTEX@,$BIBTEX,;t t
 s,@BIBTEXFLAGS@,$BIBTEXFLAGS,;t t
 s,@XDVI@,$XDVI,;t t
 s,@XDVIFLAGS@,$XDVIFLAGS,;t t
+s,@PS2PDF@,$PS2PDF,;t t
+s,@DOTCMD@,$DOTCMD,;t t
 s,@DVIPS@,$DVIPS,;t t
 s,@DVIPSFLAGS@,$DVIPSFLAGS,;t t
 s,@LP@,$LP,;t t
@@ -13790,8 +14355,6 @@ s,@rel_package_html@,$rel_package_html,;t t
 s,@header_dir@,$header_dir,;t t
 s,@autodoc_dir@,$autodoc_dir,;t t
 s,@FLEXELINT_PATH@,$FLEXELINT_PATH,;t t
-s,@DOTCMD@,$DOTCMD,;t t
-s,@PS2PDF@,$PS2PDF,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

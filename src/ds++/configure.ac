@@ -40,7 +40,6 @@ AC_RUNTESTS(tstCheck_Strings \
 	    tstSafe_Divide \
             tstIndex_Set \
             tstIndex_Converter \
-            tstIndex_Iterator \
             tstDynArray \
             , scalar)
 
