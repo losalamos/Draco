@@ -8,6 +8,9 @@
 	 . Better testing and implementation of Index_Converter,
 	   Index_Counter, and Index_set classes.
 
+	- config
+	 . Added some FORTRAN support for PGI.
+
 	Released Packages in draco-5_11_0:
 		 
 	  RTT_Format_Reader
