@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -3988,8 +3988,14 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
    dnl Add C++ options to F90 link line
    AC_MSG_CHECKING("for F90CXXFLAGS")
-   CXXLIBDIR=${GCC_LIB_DIR}
-   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   if test ${with_cxx} = "pgi"; then
+      CXXLIBDIR=`which pgCC | sed -e 's/\/bin\/pgCC//'`
+      CXXLIBDIR="${CXXLIBDIR}/lib"
+      F90CXXFLAGS="-L${CXXLIBDIR} -lC -lstd"
+   else
+      CXXLIBDIR=${GCC_LIB_DIR}
+      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   fi   
    AC_MSG_RESULT(${F90CXXFLAGS})
 
    AC_MSG_CHECKING("for F90VENDOR_LIBS")

@@ -1,3 +1,46 @@
+2006-02-09  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Release draco-5_11_0.  This is a minor Draco release.  A
+	summary of changes is:
+	
+	- ds++
+	 . Better documentation and testing of Assert class.			
+	 . Better testing and implementation of Index_Converter,
+	   Index_Counter, and Index_set classes.
+
+	Released Packages in draco-5_11_0:
+		 
+	  RTT_Format_Reader
+	  c4
+	  cdi
+	  cdi_analytic
+	  cdi_gandolf
+	  ds++
+	  fpe_trap
+	  lapack_wrap
+	  meshReaders
+  	  mesh_element
+	  norms
+	  parser
+	  plot2D
+	  quadrature
+	  rng
+	  shared_lib
+	  timestep
+	  traits
+	  units
+	  viz
+	  xm
+	  special_functions
+
+	Unreleased packages:
+
+	  pcgWrap
+	  cdi_eospac
+
+	This release was required by jayenne (clubimc-3_1_0 and
+	wedgehog-5_1_0). 
+
 2006-01-31 Jae Chang <jhchang@lanl.gov>
 
 	* draco: Released draco-5_10_0.  This is a minor Draco release

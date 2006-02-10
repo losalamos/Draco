@@ -5889,8 +5889,14 @@ echo "${ECHO_T}${F90MPIFLAGS}" >&6
 
       echo "$as_me:$LINENO: checking \"for F90CXXFLAGS\"" >&5
 echo $ECHO_N "checking \"for F90CXXFLAGS\"... $ECHO_C" >&6
-   CXXLIBDIR=${GCC_LIB_DIR}
-   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   if test ${with_cxx} = "pgi"; then
+      CXXLIBDIR=`which pgCC | sed -e 's/\/bin\/pgCC//'`
+      CXXLIBDIR="${CXXLIBDIR}/lib"
+      F90CXXFLAGS="-L${CXXLIBDIR} -lC -lstd"
+   else
+      CXXLIBDIR=${GCC_LIB_DIR}
+      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   fi
    echo "$as_me:$LINENO: result: ${F90CXXFLAGS}" >&5
 echo "${ECHO_T}${F90CXXFLAGS}" >&6
 
@@ -13543,7 +13549,7 @@ echo "${ECHO_T}${components}" >&6
 
 
    # find the release number
-   number=draco-5_10_0
+   number=draco-5_11_0
    echo "$as_me:$LINENO: checking \"component release number\"" >&5
 echo $ECHO_N "checking \"component release number\"... $ECHO_C" >&6
    echo "$as_me:$LINENO: result: $number" >&5
