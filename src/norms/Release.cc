@@ -25,7 +25,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "norms(draco-5_10_0)";
+    string pkg_release = "norms(draco-5_11_0)";
     return pkg_release;
 }
 

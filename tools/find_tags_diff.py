@@ -62,7 +62,7 @@ if len(tag_name) == 0:
 ## Regular expressions
 ##---------------------------------------------------------------------------##
 
-re_tag      = re.compile(r'[a-zA-Z0-9].+\-[0-9]\_[0-9]\_[0-9]', re.IGNORECASE)
+re_tag      = re.compile(r'[a-zA-Z0-9].+\-[0-9]+\_[0-9]+\_[0-9]+', re.IGNORECASE)
 re_tag_pkg  = re.compile(r'(.+)\-.+', re.IGNORECASE)
 re_files    = re.compile(r'\nT\s+(.*)', re.IGNORECASE)
 re_tag_file = re.compile(r'string\s+pkg\_release\s+\=\s*\"(.*)\"', re.IGNORECASE)
