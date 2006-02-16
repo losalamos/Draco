@@ -168,7 +168,7 @@ endif
 # environment variable for every invocation of a LaTeX-like command.
 
 DRACOENV := ${package_top_srcdir}/environment
-DRACOTEXINPUTS := ${srcdir}:${DRACOENV}/latex:
+DRACOTEXINPUTS := ${srcdir}:${DRACOENV}/latex:/usr/projects/draco/environment/latex:
 DRACOBSTINPUTS := ${srcdir}:${DRACOENV}/bibtex:
 AUXTEXINPUTS   := @AUXTEXINPUTS@
 LATEXENVS := TEXINPUTS="${AUXTEXINPUTS}${DRACOTEXINPUTS}:${TEXINPUTS}:."
