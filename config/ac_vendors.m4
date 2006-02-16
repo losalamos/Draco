@@ -306,7 +306,7 @@ dnl SUPERLUDIST is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_SUPERLUDIST_SETUP, [dnl
+AC_DEFUN([AC_SUPERLUDIST_SETUP], [dnl
 
    dnl define --with-superludist
    AC_ARG_WITH(superludist,
