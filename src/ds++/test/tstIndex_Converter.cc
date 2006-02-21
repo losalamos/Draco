@@ -37,6 +37,8 @@ void test_index_converter()
     {
         Index_Converter<3,1> box(dimensions);
 
+        if (box.limit_of_index(0,true) != 3) ITFAILS;
+
         if (box.get_index(dimensions) != 60) ITFAILS;
 
         int indices[] = {1,1,1};
@@ -119,6 +121,7 @@ int main(int argc, char *argv[])
     {
         // >>> UNIT TESTS
         test_index_converter();
+
     }
     catch (std::exception &err)
     {

@@ -60,7 +60,7 @@ class Index_Converter : public Index_Set<D,OFFSET>
     virtual ~Index_Converter() {/* ... */}
 
     //! Assignment operator for Index_Converter.
-    Index_Converter& operator=(const Index_Converter &rhs);
+//    Index_Converter& operator=(const Index_Converter &rhs);
 
     //! Re-assignment operator
     void set_size(const unsigned* dimensions);
@@ -68,6 +68,8 @@ class Index_Converter : public Index_Set<D,OFFSET>
     //! Uniform size re-assignment operator
     void set_size(unsigned size);
 
+    //! Re-implement base function.
+    int limit_of_index(unsigned d, bool pos) const { return Base::limit_of_index(d,pos); }
 
     // ACCESSORS
 
@@ -86,8 +88,12 @@ class Index_Converter : public Index_Set<D,OFFSET>
     // Get the next index from a 1-index and direction
     int get_next_index(int index, int direction) const;
 
+    // Get the next index from an Index_Counter and direction
+    int get_next_index(const Counter& counter, int direction) const;
+
     // Create an iterator over the index set
     Counter counter() const { return Counter(*this); }
+
 
 
   private:
@@ -132,10 +138,6 @@ inline void Index_Converter<D,OFFSET>::set_size(unsigned dimension)
     Base::set_size(dimension);
     compute_sub_sizes();
 }
-
-
-
-
 
 
 //---------------------------------------------------------------------------//
@@ -269,18 +271,43 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
     unsigned dimension = direction / 2;
     int      sign      = 2*(direction % 2) - 1;
 
-
     const int sub_index = get_single_index(index, dimension) + sign;
 
     if (!Base::index_in_range(sub_index, dimension)) return -1;
 
-    const int new_index = index + sign*sub_sizes[dimension];
-
-    return new_index;
+    return index + sign*sub_sizes[dimension];
 }
 
 
+//---------------------------------------------------------------------------//
+/**
+ * \brief Return rhe next index in a given direction. Return -1 if this
+ * direction if outside the range of indices.
+ *
+ * \arg counter An Index_Counter pointing to the desired space in the indices.
+ * \arg direction. The direction, 1-based numbered (negative, positive) by
+ * dimension.
+ * 
+ */
+template <unsigned D, int OFFSET>
+int Index_Converter<D,OFFSET>::get_next_index(
+    const typename Index_Converter<D,OFFSET>::Counter& counter,
+    int direction) const
+{
 
+    --direction;
+
+    unsigned dimension = direction / 2;
+    int      sign      = 2*(direction % 2) - 1;
+    
+    const int index     = counter.get_index();
+    const int sub_index = counter.get_index(dimension) + sign;
+    
+    if (!Base::index_in_range(sub_index, dimension)) return -1;
+
+    return index + sign*sub_sizes[dimension];
+
+}
 
 
 

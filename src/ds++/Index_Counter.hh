@@ -21,6 +21,8 @@
 namespace rtt_dsxx
 {
 
+template <unsigned D, int OFFSET> class Index_Converter;
+
 //===========================================================================//
 /*!
  * \class Index_Counter
@@ -39,6 +41,8 @@ template <unsigned D, int OFFSET>
 class Index_Counter 
 {
   public:
+
+    friend class Index_Converter<D,OFFSET>;
 
     // NESTED CLASSES AND TYPEDEFS
 
@@ -62,7 +66,7 @@ class Index_Counter
 
     // Accessors for the 1-index
     int get_index() const { return index; }
-    operator int()  const { return index; }
+//    operator int()  const { return index; }
 
     // Accessors for the N-indices
     int get_index(unsigned d) const { Check(dimension_okay(d)); return indices[d]; }
@@ -83,7 +87,6 @@ class Index_Counter
     int indices[D];
     int index;
     bool in_range;
-    
 
     // IMPLEMENTATION
 
@@ -91,6 +94,10 @@ class Index_Counter
     void decrement();
 
     bool dimension_okay(int d) const { return (d >= 0) && (d < D); }
+
+    // Private constructor for use by Index_Converter
+    Index_Counter(const Index_Set<D,OFFSET>& base,
+                  const int index, int const * const indices);
 
 
 };
@@ -182,6 +189,25 @@ void Index_Counter<D,OFFSET>::decrement()
 
 }
 
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Explicit constructor for use by Index_Converter
+ * 
+ */
+template <unsigned D, int OFFSET>
+Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& set,
+                                       const int index_,
+                                       int const * const indices_)
+    : index_set(set),
+      index(index_)
+{
+
+    Check(index_set.indices_in_range(indices_));
+
+    std::copy(indices_, indices_+D, indices);
+
+}
 
 } // end namespace rtt_dsxx
 

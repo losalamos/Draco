@@ -16,6 +16,8 @@
 #include <functional>
 #include <numeric>
 
+#include "Assert.hh"
+
 namespace rtt_dsxx
 {
 
@@ -54,9 +56,6 @@ class Index_Set
     //! Destructor
     virtual ~Index_Set() { /* ... */ }
     
-    //! Assignment operator for Index_Set.
-    Index_Set& operator=(const Index_Set &rhs);
-
     //! Comparison operator
     bool operator==(const Index_Set &rhs) const;
 
@@ -79,11 +78,17 @@ class Index_Set
     int get_size()     const { return array_size; }
     int min_of_index() const { return OFFSET; }
     int max_of_index() const { return OFFSET + array_size - 1; }
+    int limit_of_index(const bool positive) const {
+        return positive ? max_of_index() : min_of_index();
+    }
 
     int get_size(const int d) const { Check(dimension_okay(d)); return dimensions[d]; }
     int min_of_index(const unsigned d) const { Check(dimension_okay(d)); return OFFSET; }
     int max_of_index(const unsigned d) const {
         Check(dimension_okay(d)); return OFFSET+dimensions[d]-1;
+    }
+     int limit_of_index(const unsigned d, const bool positive) const {
+         return positive ? max_of_index(d) : min_of_index(d);
     }
             
     static bool direction_okay(const int d) { return (d >  0) && (d <= 2*D); }
@@ -107,6 +112,7 @@ class Index_Set
     unsigned const * const get_dimensions() const { return dimensions; }
 
 };
+
 
 //---------------------------------------------------------------------------//
 /**
