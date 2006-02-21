@@ -68,6 +68,8 @@ void tstString_Token_Stream()
 	{
 	    PASSMSG("Dummy error counted properly");
 	}
+
+        if( ! tokens.check_class_invariants() ) ITFAILS;
     }
 
     {
@@ -327,6 +329,8 @@ void tstString_Token_Stream()
 	    else ITFAILS;
 	}
     }
+
+    return;
 }
 
 //---------------------------------------------------------------------------//

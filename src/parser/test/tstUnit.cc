@@ -88,6 +88,26 @@ void unit_test()
     {
 	FAILMSG("unit inch does NOT have expected dimensions");
     }
+
+    // Test divisor
+    {
+        Unit five_cm = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0.05};
+        Unit one_cm  = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0.01};
+        if( five_cm/5.0 == one_cm )
+        {
+            PASSMSG("Units: Division by a constant works.");
+        }
+        else
+        {
+            ostringstream buffer;
+            buffer << "Units: Division by a constant fails.\n\t"
+                   << "five_cm/5.0 = " << five_cm/5.0 << "\n\t"
+                   << "one_cm = " << one_cm << "\n\t"
+                   << "test five_cm/5.0 == one_cm ?" << std::endl;
+            FAILMSG( buffer.str() );
+        }
+    }
+    
 }
 
 //---------------------------------------------------------------------------//
@@ -102,6 +122,7 @@ int main(int argc, char *argv[])
 	{
 	    cout << argv[0] << ": version " << rtt_parser::release() 
 		 << endl;
+            rtt_c4::finalize();
 	    return 0;
 	}
 
@@ -114,23 +135,20 @@ int main(int argc, char *argv[])
     {
 	cout << "While testing tstUnit, " << ass.what()
 	     << endl;
+        rtt_c4::finalize();
 	return 1;
     }
 
     // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_parser_test::passed) 
-    {
-        cout << "**** tstUnit Test: PASSED" 
-	     << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
+    cout <<     "\n*********************************************\n";
+    if( rtt_parser_test::passed )
+        cout << "**** tstUnit Test: PASSED\n";
+    cout <<     "*********************************************\n" << endl;
 
     rtt_c4::global_barrier();
     cout << "Done testing tstUnit." << endl;
     rtt_c4::finalize();
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

@@ -246,6 +246,9 @@ void tstParallel_File_Token_Stream()
 	token = tokens.Lookahead();
 	token = tokens.Shift();
 	if (token.Type()!=KEYWORD || token.Text()!="BLUE") ITFAILS;
+
+        // Check invariance even when --with-dbc=0.
+        if( ! tokens.check_class_invariants() ) ITFAILS;
     }
 
     {

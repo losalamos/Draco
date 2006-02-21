@@ -69,6 +69,8 @@ void token_test()
     {
 	FAILMSG("like token equality test did NOT return true");
     }
+
+    return;
 }
 
 //---------------------------------------------------------------------------//

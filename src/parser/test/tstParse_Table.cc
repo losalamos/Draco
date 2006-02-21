@@ -119,6 +119,14 @@ void tstParse_Table()
     if (!color_set[1]) ITFAILS;
     if (token_stream.Error_Count()!=3) ITFAILS;
 
+    // Test the Get_Flags() function, even if this test is built with the flag
+    // --with-dbc=0.
+    if( table.Get_Flags() != 3 ) ITFAILS;
+    
+    // Test the check_class_invariants() function, even if this test is built
+    // with the flag --with-dbc=0.
+    if( ! table.check_class_invariants() ) ITFAILS;
+    
     Parse_Table table_2(raw_table, raw_table_size);
 
     if (table_2.size()!=raw_table_size) ITFAILS;
@@ -201,6 +209,8 @@ void tstParse_Table()
 
 	if (token_stream.Error_Count() != 5) ITFAILS;
     }
+
+    return;
 }
 
 //---------------------------------------------------------------------------//

@@ -19,6 +19,7 @@
 #define __parser_Unit_hh__
 
 #include <cmath>
+#include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_parser
 {
@@ -233,9 +234,17 @@ inline Unit pow(Unit const &b, double const a)
 
 inline bool operator==(Unit const &a, Unit const &b)
 {
-    return a.m ==  b.m  &&  a.kg == b.kg  &&  a.s == b.s  &&  a.A == b.A  &&
-	a.K == b.K  &&  a.mol == b.mol  &&  a.cd == b.cd  &&  
-	a.rad == b.rad  &&  a.sr == b.sr  &&  a.conv == b.conv;
+    using rtt_dsxx::soft_equiv;
+    return soft_equiv(a.m, b.m)  &&
+        soft_equiv(a.kg,b.kg)    &&
+        soft_equiv(a.s,b.s)      &&
+        soft_equiv(a.A,b.A)      &&
+	soft_equiv(a.K,b.K)      &&
+        soft_equiv(a.mol,b.mol)  &&
+        soft_equiv(a.cd,b.cd)    &&  
+	soft_equiv(a.rad,b.rad)  &&
+        soft_equiv(a.sr,b.sr)    &&
+        soft_equiv(a.conv,b.conv);
 }
 
 //---------------------------------------------------------------------------//
