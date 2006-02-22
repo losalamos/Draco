@@ -93,7 +93,8 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     vector<double> integral( ndims*ndims );
     // initialize the solution to zero.
     for ( size_t i = 0; i < ndims*ndims; ++i) 
-	integral[0] = 0.0;
+	integral[i] = 0.0;
+
     // We are careful to only compute the terms of the tensor solution that
     // are available for the current dimensionality of the quadrature set.
     switch (ndims) {

@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# aclocal.m4 generated automatically by aclocal 1.6.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1856,20 +1856,20 @@ dnl      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
       dnl Also define _STLP_DEBUG if --enable-debug is set. 
       AC_MSG_CHECKING("for debug stlport mode")
       if test "${enable_debug:-yes}" = yes; then
-         if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
+         if ! test -r "${with_stlport}/lib/libstlport_gcc_stldebug.so"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_gcc_stldebug.so")
          fi
-         LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
+         LIBS="-L${with_stlport}/lib -lstlport_gcc_stldebug ${LIBS}"
          CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
 dnl         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS.])
+         AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlport_gcc_stldebug added to LIBS.])
       else 
          dnl Use optimized STLport libraries.
-         if ! test -r "${with_stlport}/lib/libstlport.so"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
+         if ! test -r "${with_stlport}/lib/libstlport_gcc.so"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport_gcc.so")
          fi
          LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
+         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport_gcc added to LIBS.])
       fi
 
       AC_MSG_CHECKING("for RPATH mods for stlport")
