@@ -253,6 +253,19 @@ double wall_clock_resolution();
 bool probe(int source, int tag, int &message_size);
 
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Wait until a message (of unknown size) is pending.
+ * 
+ * \param source
+ * Processor from which a message of unknown size is expected.
+ * \param tag
+ * Tag for pending message.
+ * \param message_size
+ * On return, size of the pending message in bytes.
+ */
+void blocking_probe(int source, int tag, int &message_size);
+
+//---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
 /*!

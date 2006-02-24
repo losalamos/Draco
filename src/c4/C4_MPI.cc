@@ -141,6 +141,17 @@ bool probe(int  source,
     return true;
 }
 
+void blocking_probe(int  source, 
+                    int  tag,
+                    int &message_size)
+{
+    Require(source>=0 && source<nodes());
+
+    MPI_Status status;
+    MPI_Probe(source, tag, communicator, &status);
+    MPI_Get_count(&status, MPI_CHAR, &message_size);
+}
+
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
