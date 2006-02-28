@@ -229,7 +229,8 @@ date_tag   = re.compile(r'.*>>>\s*DATE\s*:\s*(.+)', re.IGNORECASE)
 elapsed_time_tag      = re.compile(r'.*>>>\s*Elapsed Time\s*:\s*(\d\d[:]\d\d[:]\d\d)',re.IGNORECASE)
 coverage_tag          = re.compile( r'^>>>.*Coverage Analysis' )
 coverage_begin_report = re.compile( r'^>>>\s*Generating coverage reports' )
-coverage_end_report   = re.compile( r'.*Source.*Function Coverage' )
+coverage_end_report1   = re.compile( r'.*Source.*Function Coverage' )
+coverage_end_report2   = re.compile( r'^>>>\sDone with coverage.*' )
 # Lines of code statistics
 loc_tag          = re.compile(r'^>>>\s*Lines-of-code',re.IGNORECASE)
 loc_begin_report = re.compile(r'^Date.*',re.IGNORECASE)
@@ -398,8 +399,9 @@ for line in lines:
 	    continue
 
 	# Stop recording the output when we see this tag.
-	match = coverage_end_report.search(line)
-	if match:
+	match1 = coverage_end_report1.search(line)
+	match2 = coverage_end_report2.search(line)
+	if match1 or match2:
 	    coverage_recording_report = 0
 	    continue
 
