@@ -480,6 +480,15 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
+       # PTHREAD FLAG: Add -pthread to CXXFLAGS if we are using either
+       # Trilinos or STLPort
+       #
+       if test "${with_trilinos:-no}" != no || 
+          test "${with_stlport:-no}" != no; then
+          CXXFLAGS="${CXXFLAGS} -pthread"
+       fi
+
+       #
        # Set up fpe_trap for this platform if gcc is on.
        #
        if test "${CXX}" = g++; then

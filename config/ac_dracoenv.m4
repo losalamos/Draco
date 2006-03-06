@@ -29,9 +29,7 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
          AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
       fi
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      CXXFLAGS="-pthread ${CXXFLAGS}"
-dnl      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
-      AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS. -pthreads added to CXXFLAGS.])
+      AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS.])
 
       dnl Include different libraries for debug vs opt mode.
       dnl Also define _STLP_DEBUG if --enable-debug is set. 
