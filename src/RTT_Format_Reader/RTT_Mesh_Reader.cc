@@ -37,8 +37,12 @@ void RTT_Mesh_Reader::transform2CGNS()
 	    cell_defs = rtt_meshReaders::Element_Definition::NODE;
 	else if (cell_name == "line")
 	    cell_defs = rtt_meshReaders::Element_Definition::BAR_2;
+	else if (cell_name == "line_qdr")
+	    cell_defs = rtt_meshReaders::Element_Definition::BAR_3;
 	else if (cell_name == "triangle")
 	    cell_defs = rtt_meshReaders::Element_Definition::TRI_3;
+	else if (cell_name == "triangle_qdr")
+	    cell_defs = rtt_meshReaders::Element_Definition::TRI_6;
 	else if (cell_name == "quad")
 	    cell_defs = rtt_meshReaders::Element_Definition::QUAD_4;
 	else if (cell_name == "tetrahedron")

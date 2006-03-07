@@ -177,6 +177,33 @@ void CellDef::redefineCellDef(const vector_int & new_side_types,
         node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
         node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
     }
+    else if (name == "line_qdr")
+    {
+        node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
+        node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
+        // kgb (060307): I'm guessing BTA never thought about how to map
+        // internal nodes, so it's not clear how to proceed here.  My best
+        // guess is we find the node not in each map.
+        unsigned old_node;
+        for (old_node=0; old_node<3; ++old_node)
+        {
+            if (ordered_sides[0][0]!=old_node &&
+                ordered_sides[1][0]!=old_node)
+            {
+                break;
+            }
+        }
+        unsigned new_node;
+        for (new_node=0; new_node<3; ++new_node)
+        {
+            if (new_ordered_sides[0][0]!=new_node &&
+                new_ordered_sides[1][0]!=new_node)
+            {
+                break;
+            }
+        }
+        node_map[old_node] = new_node;
+    }
     else if (name == "triangle" || name == "quad")
     {
         // Arbitrarily assign the first node in the old and the new cell 
@@ -210,6 +237,44 @@ void CellDef::redefineCellDef(const vector_int & new_side_types,
 	    }
 	    old_node = ordered_sides[old_side][1];
 	    node_map[old_node] = new_node;
+	}
+    }
+    else if (name == "triangle_qdr")
+    {
+        // Arbitrarily assign the first node in the old and the new cell 
+        // definitions to be the same. This assumption is necessary because
+        // the cell definitions do not assume a specific orientation relative
+        // to any coordinate system. The transformed cell may be rotated 
+        // about it's outward normal relative to the input cell definition.
+        node_map[0] = 0;
+	// The right hand rule has to apply, so only the ordering of the
+        // nodes (edges) can change for a two-dimensional cell.
+	int old_node = 0;
+	int new_node = 0;
+        for (int n = 0; n < nnodes - nsides; n++)
+	{
+	    // Find the new side that starts with this node.
+	    int new_side = 0;
+	    while (new_ordered_sides[new_side][0] != new_node)
+	    {
+	        ++new_side;
+		Insist(new_side < nsides, 
+		       "Edge error for new two dimensional cell definition.");
+	    }
+	    new_node = new_ordered_sides[new_side][1];
+	    // Find the old side that starts with this node.
+	    int old_side = 0;
+	    while (ordered_sides[old_side][0] != old_node)
+	    {
+	        ++old_side;
+		Insist(old_side < nsides, 
+		       "Edge error for old two dimensional cell definition.");
+	    }
+	    old_node = ordered_sides[old_side][1];
+	    node_map[old_node] = new_node;
+            int new_mid_node = new_ordered_sides[new_side][2];
+            int old_mid_node = ordered_sides[old_side][2];
+            node_map[old_mid_node] = new_mid_node;
 	}
     }
     else if (name == "tetrahedron")
