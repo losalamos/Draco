@@ -367,6 +367,17 @@ void tstutilities()
     {
 	PASSMSG("second negative quantity successfully parsed");
     }
+
+    // Try reading a manifest string.
+    string parsed_string = Parse_Manifest_String(tokens);
+    if (parsed_string!="manifest string")
+    {
+	FAILMSG("manifest string NOT successfully parsed");
+    }
+    else
+    {
+	PASSMSG("manifest string successfully parsed");
+    }
 }
 
 //---------------------------------------------------------------------------//

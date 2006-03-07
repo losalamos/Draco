@@ -697,6 +697,30 @@ double Parse_Temperature(Token_Stream &tokens)
     }
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * Parses a STRING token and strips the delimiting quotation marks.
+ *
+ * \param tokens
+ * Token_Stream from which to parse.
+ * \return The stripped string.
+ */
+
+std::string Parse_Manifest_String(Token_Stream &tokens)
+{
+    Token const token = tokens.Shift();
+    if (token.Type() != STRING)
+    {
+	tokens.Report_Syntax_Error("expected a string, but saw " + 
+				   token.Text());
+    }
+    string Result = token.Text();
+    string::size_type const length = Result.size();
+    Check(length>1);
+    Result = Result.substr(1, length-2);
+    return Result;
+}
+
 } // rtt_parser
 //---------------------------------------------------------------------------//
 //                          end of utilities.cc

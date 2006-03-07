@@ -47,6 +47,9 @@ double Parse_Quantity(Token_Stream &tokens,
 
 double Parse_Temperature(Token_Stream &);
 
+//! Parse a quote-delimited string, stripping the quotes.
+std::string Parse_Manifest_String(Token_Stream &tokens);
+
 } // rtt_parser
 //---------------------------------------------------------------------------//
 //                          end of utilities.hh
