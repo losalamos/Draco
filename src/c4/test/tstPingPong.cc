@@ -31,6 +31,7 @@ using rtt_c4::send_async;
 using rtt_c4::receive_async;
 using rtt_dsxx::soft_equiv;
 using rtt_c4::probe;
+using rtt_c4::blocking_probe;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -341,9 +342,9 @@ void probe_ping_pong()
     if (rtt_c4::node() == 1)
     {
 	// test the probe function
+        int message_size;
 	for (;;)
 	{
-	    int message_size;
 	    if (probe(0, C4_Traits<int*>::tag, message_size))
 	    {
 		if (message_size==sizeof(int))
@@ -357,6 +358,17 @@ void probe_ping_pong()
 		break;
 	    }
 	}
+
+        // test the blocking probe function
+        blocking_probe(0, C4_Traits<int*>::tag, message_size);
+        if (message_size==sizeof(int))
+        {
+            PASSMSG("Blocking probe returned correct size");
+        }
+        else
+        {
+            FAILMSG("Blocking probe returned WRONG size");
+        }
 
 	// post receives
 	receive_async(irr, &ir, 1, 0);
