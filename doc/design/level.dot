@@ -84,7 +84,7 @@ digraph draco_level {
     traits      -> {dsxx};
     c4          -> {dsxx};
     c4          -> {vmpi}         [color="green"];
-    sf          -> {dsxx}         [color="orange" style=dotted];
+    sf          -> {dsxx};       /*  [ color="orange" style=dotted]; */
     rng         -> {dsxx};
     rng         -> {vspring}      [color="green"];
     cdi         -> {dsxx};
@@ -112,7 +112,7 @@ digraph draco_level {
     cdigan      -> {cdi};         /* cdi     : dsxx */
     cdigan      -> {vgandolf}     [color="green"];
     meshread    -> {meshelement};
-    parser      -> {c4}; /* dsxx */
+    parser      -> {c4 units}; /* dsxx */
     norms       -> {c4}; /* dsxx */
 
     /* level 4 */
