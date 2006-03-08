@@ -1,3 +1,62 @@
+2006-03-08  Kelly Thompson  <kgt@lanl.gov>
+
+	* test/tstRCF.cc (test_simple_construction_copy): I added some
+	  additional tests to improve unit test coverage of member
+	  functions.  In particular I added a scoping block to test some
+	  of the const forms of RCF's member functions including the copy
+	  ctor, empty(), size(), other ctors, assigned(), begin(), end(),
+	  the range ctor and the ctor from ptr to field.
+
+	* test/tstRCF.cc (main): I removed std:: scoping in main() because
+	  we already include the entire std namespace.  I also added a
+	  catch block for ...
+
+	* test/tstDBC_Array.cc (test_sized_array): Added a more elaborate
+	  fail message to replace the line:
+	
+	    if(sv[i] != Exp_Value[i]) ITFAILS;
+
+	  I changed the logic in this function so that it returns after
+	  the first failure.  This change appears to be consistent with
+	  the function design but Paul may want to take a 2nd look at my
+	  changes. 
+
+	* test/tstDBC_Array.cc (test_resize):  This new function provides
+	  unit tests for the resize memeber function.
+
+	* test/tstDBC_Array.cc (test_comparison):  This new function
+	  provides unit tests for comparison operators like !=, >=, <=, >
+	  and <<.  It also calls the member functions front() and back()
+	  -- Paul may want to strengthen these tests as I was not 100%
+	  confident of their intended use.
+
+	* test/tstAllocators.cc (tS1): Improving unit test coverage. Added
+	  tests for these member functions:
+	
+	    Simple_Allocator<T>::max_size()
+	    Guarded_Allocator<T>::guard_elements_ok( T*, int )
+	    Guarded_Allocator<T>::max_size()
+
+	* SortPermutation.hh (SortPermutation): Eliminated default ctor as
+	  it was not used or tested.  Also, the default ctor left the
+	  object in an undefined state.  It is better practice to
+	  instantiate objects that are ready for use. 
+	
+	* SortPermutation.hh (isPermutationSorted): This function is only
+	  used within the context of an Ensure statement.  As such, I have
+	  enclosed its declaration/definition in a #ifdef REMEMBER_ON
+	  block so that it is only defined in the context where it is
+	  used. 
+
+	* Mat.hh (Mat2::Mat2()): Commented out an alternate constructor
+	  for Mat2 as it was not tested and did not appear to be in use:  
+
+ 	  Mat2( T *vv, const Bounds& bx, const Bounds& by )
+	     : xmin( bx.min() ), xlen( bx.len() ),
+	       ymin( by.min() ), ylen( by.len() ),
+	       may_free_space(false),
+	       v( vv - offset(xmin,ymin) )  { /* empty */ }
+	
 2005-08-02  Kelly Thompson  <kgt@lanl.gov>
 
 	* tstBounds.cc: Added new unit test to for the Bounds class.
