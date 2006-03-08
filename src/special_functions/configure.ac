@@ -50,7 +50,7 @@ dnl Append this directory to a list of library install locations.
 AC_INSTALL_LIB
 
 dnl A space delimited list of packages that this package depends on.
-AC_NEEDS_LIBS_TEST( ds++ )
+AC_NEEDS_LIBS( ds++ )
 
 dnl tests
 AC_RUNTESTS(\
