@@ -47,6 +47,10 @@ void tS1( T dummy )
         T *p = Simple_Allocator<T>::fetch( 5 );
         Simple_Allocator<T>::release( p, 5 );
 	pass( "tS1", dummy );
+
+        Simple_Allocator<T> mySa;
+        cout << "max size for this Simple_Allocator is "
+             << mySa.max_size() << endl;
     }
     catch(...)
     {
@@ -63,8 +67,15 @@ void tG1( T dummy )
 {
     try {
         T *p = Guarded_Allocator<T>::fetch( 5 );
+        // Validate (release does then if DBC is on)
+        if( Guarded_Allocator<T>::guard_elements_ok( p, 5 ) )
+            pass( "guard_elements_ok", dummy );
         Guarded_Allocator<T>::release( p, 5 );
 	pass( "tG1", dummy );
+
+        Guarded_Allocator<T> myGa;
+        cout << "max size for this Guarded_Allocator is "
+             << myGa.max_size() << endl;
     }
     catch(...)
     {

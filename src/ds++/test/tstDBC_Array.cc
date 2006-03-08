@@ -11,6 +11,7 @@
 #include "../Release.hh"
 #include "ds_test.hh"
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <vector>
 #include <set>
@@ -75,18 +76,32 @@ bool test_sized_array(AInt const& sv, const size_t Exp_Size,
 
     for(size_t i = 0; i < Exp_Size; ++i)
     {
-	if(sv[i] != Exp_Value[i]) ITFAILS;
+	if(sv[i] != Exp_Value[i])
+        {
+            std::ostringstream msg;
+            int ev( sv[i] );
+            msg << "In tstDBC_Array, the function test_sized_array() "
+                << "did not find \n     an expected value:\n\n"
+                << "\tsv[" << i << "] = "  << ev << " != "
+                << "Exp_Value[" << i << "] = " << Exp_Value[i] << std::endl;
+            FAILMSG( msg.str() );
+            return false;
+        }
     }
 
     size_t counter = 0;
     for(AInt::const_iterator it = sv.begin();
 	it != sv.end(); ++it)
     {
-	if(*it != Exp_Value[counter++]) ITFAILS;
+	if(*it != Exp_Value[counter++])
+        {
+            ITFAILS;
+            return false;
+        }
     }
 
-    if(sv != sv) ITFAILS;
-    if(!(sv == sv)) ITFAILS;
+    if(sv != sv) { ITFAILS; return false; }
+    if(!(sv == sv))  { ITFAILS; return false; }
 
 #if DBC & 1
     size_t catch_count = 0;
@@ -378,6 +393,62 @@ void more_iterator_init_tests()
 
 }
 
+//---------------------------------------------------------------------------//
+void test_resize()
+{
+    AInt A;
+    unsigned const newSize(7);
+    A.resize(newSize);
+    std::vector<int> cmp(newSize, 0);
+    for( int i=0; i< newSize; i++)
+        A[i] = 0;   
+    
+    bool tr_passes = test_sized_array( A, newSize, cmp);
+    if (tr_passes)
+	PASSMSG("resize works.");
+    else
+	PASSMSG("resize FAILED.");
+    return;
+}
+
+//---------------------------------------------------------------------------//
+void test_comparisons()
+{
+    AInt A(7,0);
+    AInt B(7,1);
+    bool p(true);
+
+    // Test operator!=
+    if( A(0) != 0 ) { ITFAILS; p = false; }
+
+    // Test operator>=
+    if( A >= B ) { ITFAILS; p = false; }
+
+    // Test operator<=
+    if( B <= A )  { ITFAILS; p = false; }
+
+    B.assign( DBC_Array<int>::size_type(7),5);
+   // Test operator>
+    if( A > B )  { ITFAILS; p = false; }
+
+    // Test operator<<
+    std::cout << "A = " << A << std::endl;
+    
+    // Test front, back
+    {
+        DBC_Array<int>::reference rf=A.front();
+        DBC_Array<int>::reference rb=A.back();
+        if( rf != 0 || rb != 0 )
+        { ITFAILS;
+            p = false; }
+    }
+    
+    if( p )
+	PASSMSG("comparisons work.");
+    else
+	PASSMSG("comparisons FAILED.");
+    return;
+}
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
@@ -401,6 +472,8 @@ int main(int argc, char *argv[])
 	test_copies();
 	test_assign();
 	more_iterator_init_tests();
+        test_resize();
+        test_comparisons();
     }
     catch (rtt_dsxx::assertion &ass)
     {
@@ -421,7 +494,7 @@ int main(int argc, char *argv[])
 	cout << endl;
     }
 
-    cout << "Done testing DBC_Array on " << endl;
+    cout << "Done testing DBC_Array" << endl;
     return 0;
 }   
 

@@ -9,15 +9,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../SortPermutation.hh"
-#include "../isSorted.hh"
-#include "../Release.hh"
-
 #include <iostream>
 #include <string>
 #include <vector>
 #include <list>
 #include <algorithm>
+
+#include "../SortPermutation.hh"
+#include "../isSorted.hh"
+#include "../Release.hh"
 
 namespace
 {
@@ -82,6 +82,10 @@ inline bool testit(const std::string &name, IT first, IT last)
 	      std::ostream_iterator<value_type>(std::cout, " "));
     std::cout << std::endl;
 
+    std::copy(lfsp.inv_begin(), lfsp.inv_end(),
+	      std::ostream_iterator<int>(std::cout, " "));
+    std::cout << std::endl;
+
     using rtt_dsxx::isSorted;
     bool passed = isSorted(vv2.begin(), vv2.end())
 	&& isSorted(vv1.begin(), vv1.end());
@@ -119,7 +123,7 @@ inline bool testit(const std::string &name, IT first, IT last, const CMP &comp)
 
     using rtt_dsxx::isSorted;
     bool passed = isSorted(vv2.begin(), vv2.end(), comp)
-	&& isSorted(vv1.begin(), vv1.end(), comp);
+                  && isSorted(vv1.begin(), vv1.end(), comp);
 
     return passed;
 }
@@ -161,6 +165,20 @@ struct evenIsLess
 	    (i2%2 == 0 ? false : i1 < i2) ;
     }
 };
+
+//---------------------------------------------------------------------------//
+// void moreTests()
+// {
+//     using rtt_dsxx::SortPermutation;
+//     // 
+//     {
+//         //
+//     }
+//     return;
+// }
+
+    
+//---------------------------------------------------------------------------//
 
 int main( int argc, char *argv[] )
 {
@@ -228,15 +246,24 @@ int main( int argc, char *argv[] )
 	passed = testit("const C-Array<FooGT>", cafg, cafg+ncaf,
 			std::greater<FooGT>());
 	printStatus(name, passed);
+
+        
+        
+//        moreTests();
     }
     catch( rtt_dsxx::assertion& a )
     {
 	cout << "Failed assertion: " << a.what() << endl;
 	printStatus(name, false);
+        return 1;
     }
-    
+    catch( ... )
+    {
+	cout << "tstSortPermulation: Caught unknown exception." << endl;
+	printStatus(name, false);
+        return 1;
+    }
     cout << "Done testing SortPermutation container.\n";
-
     return 0;
 }
 

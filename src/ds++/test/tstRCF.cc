@@ -135,7 +135,6 @@ void test_simple_construction_copy()
     RCF<dbl_field> sf;
     RCF<dbl_field> y;
     if (sf.assigned()) ITFAILS;
-
     {
         sf = new dbl_field(10, 5.2);
         if (!sf.assigned()) ITFAILS;
@@ -204,6 +203,46 @@ void test_simple_construction_copy()
     if (y[0] != 1.1) ITFAILS;
     if (y[1] != 1.2) ITFAILS;
 
+    // test some RCF< const Field > functions.
+    {
+        // reference values
+        int const len(5);
+        dbl_field ref( len, 3.1415 );
+
+        // test copy ctor
+        {
+            RCF< const dbl_field > cf( y );
+            // test empty()
+            if( cf.empty() ) ITFAILS;
+            // test size() -- same size as y!
+            if( cf.size() != 2 ) ITFAILS;
+            // test bracket operator
+            if( ! soft_equiv( cf[0], y[0] ) ) ITFAILS;
+        }
+
+        // create a new RCF using alternate ctor
+        {
+            RCF< const dbl_field > cf2( 5, 3.1415 );
+            if( ! cf2.assigned() ) ITFAILS;
+            if( ! soft_equiv( cf2.begin(), cf2.end(), 
+                              ref.begin(), ref.end() )) ITFAILS;
+        }
+        
+        // check range constructor
+        {
+            RCF< const dbl_field > cf3( ref.begin(), ref.end() );
+            if( ! cf3.assigned() ) ITFAILS;
+            if( ! soft_equiv( cf3.begin(), cf3.end(), 
+                              ref.begin(), ref.end() )) ITFAILS;
+        }
+
+        // check constructor from ptr to field
+        {
+            RCF< const Field > cf( new Field );
+            if (!cf.assigned()) ITFAILS;
+        }
+    }
+    
     if (rtt_ds_test::passed)
         PASSMSG("Simple construction and copy ok.");
 }
@@ -313,11 +352,9 @@ int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
+	if (string(argv[arg]) == "--version")
 	{
-	    std::cout << argv[0] << ": version " 
-		      << rtt_dsxx::release() 
-		      << std::endl;
+	    cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
 	    return 0;
 	}
 
@@ -341,25 +378,20 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	std::cout << "While testing tstRCF, " << ass.what()
-		  << std::endl;
+	cout << "While testing tstRCF, " << ass.what() << endl;
 	return 1;
     }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    if (rtt_ds_test::passed) 
+    catch (...)
     {
-        std::cout << "**** tstRCF Test: PASSED" 
-		  << std::endl;
+	cout << "While testing tstRCF, an unknown error occurred." << endl;
+	return 1;
     }
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    std::cout << std::endl;
-    
-    std::cout << "Done testing tstRCF." << std::endl;
+    // status of test
+    cout <<     "\n*********************************************\n";
+    if (rtt_ds_test::passed) 
+        cout << "**** tstRCF Test: PASSED\n";
+    cout <<     "*********************************************\n\n" 
+         << "Done testing tstRCF." << endl;
     return 0;
 }   
 
