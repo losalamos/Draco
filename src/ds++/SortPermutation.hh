@@ -158,7 +158,7 @@ class SortPermutation
 
     // CREATORS
 
-    SortPermutation() { /* empty */ }
+//    SortPermutation() { /* empty */ }
     
     template<class IT, class COMP>
     SortPermutation(IT first, IT last, const COMP &comp)
@@ -283,20 +283,22 @@ class SortPermutation
 
 	doCreatePermutation(first, last, comp, iters);
     }
-    
+
+#ifdef REMEMBER_ON
     template<class IT, class COMP>
     bool isPermutationSorted(IT first, IT last, const COMP &comp)
     {
-	typedef typename std::iterator_traits<IT>::value_type value_type;
-	std::vector<value_type> vv(first, last);
-
-	for (int i=0; first != last && i < size(); ++i, ++first)
-	{
-	    vv[inv(i)] = *first;
-	}
-
-	return isSorted(vv.begin(), vv.end(), comp);
+        typedef typename std::iterator_traits<IT>::value_type value_type;
+        std::vector<value_type> vv(first, last);
+        
+        for (int i=0; first != last && i < size(); ++i, ++first)
+        {
+            vv[inv(i)] = *first;
+        }
+        
+        return isSorted(vv.begin(), vv.end(), comp);
     }
+#endif
     
     template<class IT, class COMP>
     void doCreatePermutation(IT first, IT last, const COMP &comp,

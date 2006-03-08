@@ -527,12 +527,14 @@ class Mat2 {
 	std::uninitialized_fill( begin(), end(), t );
     }
 
-    Mat2( T *vv, const Bounds& bx, const Bounds& by )
-	: xmin( bx.min() ), xlen( bx.len() ),
-	  ymin( by.min() ), ylen( by.len() ),
-	  may_free_space(false),
-	  v( vv - offset(xmin,ymin) )
-    {}
+// [kt - 3/6/2006] No unit tests for this function.  Since it is not used, we
+// don't need to define it.
+//     Mat2( T *vv, const Bounds& bx, const Bounds& by )
+// 	: xmin( bx.min() ), xlen( bx.len() ),
+// 	  ymin( by.min() ), ylen( by.len() ),
+// 	  may_free_space(false),
+// 	  v( vv - offset(xmin,ymin) )
+//     {}
 
     Mat2( const Mat2<T>& m )
 	: xmin(m.xmin), xlen(m.xlen),
