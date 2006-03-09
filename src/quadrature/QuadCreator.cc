@@ -52,7 +52,8 @@ namespace rtt_quadrature
  */
 rtt_dsxx::SP<Quadrature> 
 QuadCreator::quadCreate( QuadCreator::Qid quad_type, 
-			 size_t sn_order, double norm ) 
+			 size_t sn_order,
+                         double norm ) 
 {
     using rtt_dsxx::soft_equiv;
 
