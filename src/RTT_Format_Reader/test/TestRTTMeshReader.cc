@@ -9,19 +9,31 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "RTT_Format_Reader_test.hh"
-#include "TestRTTMeshReader.hh"
-#include "../Release.hh"
-#include "ds++/Assert.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <sstream>
 
+#include "ds++/Assert.hh"
+#include "../Release.hh"
+#include "../RTT_Mesh_Reader.hh"
+#include "RTT_Format_Reader_test.hh"
+//#include "TestRTTMeshReader.hh"
+
 using namespace std;
 
-using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
+//---------------------------------------------------------------------------//
+// Enum definitions and forward declarations
+//---------------------------------------------------------------------------//
+
+namespace rtt_RTT_Mesh_Reader_test
+{
+using namespace rtt_RTT_Format_Reader;
+using namespace rtt_RTT_Format_Reader_test;
+
+enum Meshes {DEFINED};
+
+bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype);
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -32,8 +44,8 @@ void runTest()
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
     const int MAX_MESHES = 1;
-    std::string filename[MAX_MESHES] = {"rttdef.mesh"};
-    rtt_RTT_Mesh_Reader_test::Meshes mesh_type;
+    string filename[MAX_MESHES] = {"rttdef.mesh"};
+    Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
     {
@@ -44,7 +56,7 @@ void runTest()
 	    ostringstream m;
 	    m << "Read " << filename[mesh_number] 
 	      << " without coreing in or firing an assertion." 
-	      << std::endl;
+	      << endl;
 	    PASSMSG(m.str());
 	}
 	bool all_passed = true;
@@ -55,8 +67,8 @@ void runTest()
 	    // Test all nested class accessor functions for a very simplistic 
 	    // mesh file (enum DEFINED).
 	case (0):
-	    mesh_type = rtt_RTT_Mesh_Reader_test::DEFINED;
-	    all_passed = all_passed && rtt_RTT_Mesh_Reader_test::check_virtual(mesh, mesh_type);
+	    mesh_type = DEFINED;
+	    all_passed = all_passed && check_virtual(mesh, mesh_type);
 	    break;
 
 	default:
@@ -68,13 +80,13 @@ void runTest()
 	{
 	    ostringstream m;
 	    m << "Errors occured testing mesh " 
-	      << "number " << mesh_type << std::endl;
+	      << "number " << mesh_type << endl;
 	    FAILMSG(m.str());
 	}
     }
 
     // Report results of test.
-    if (rtt_RTT_Format_Reader_test::passed)
+    if (passed)
     {
 	PASSMSG("All tests passed.");
     }
@@ -86,30 +98,27 @@ void runTest()
 
 //---------------------------------------------------------------------------//
 
-namespace rtt_RTT_Mesh_Reader_test
-{
-
 bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 {
     // Save and reset at end of function
-    bool unit_test_status( rtt_RTT_Format_Reader_test::passed );
-    rtt_RTT_Format_Reader_test::passed = true;
+    bool unit_test_status( passed );
+    passed = true;
     
     // Exercise the virtual accessor functions for this mesh.
-    std::vector<std::vector<double> > node_coords;
-    std::string node_coord_units;
-    std::vector<std::vector<int> > element_nodes;
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+    vector<vector<double> > node_coords;
+    string node_coord_units;
+    vector<vector<int> > element_nodes;
+    vector<rtt_meshReaders::Element_Definition::Element_Type> 
         element_types;
-    std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+    vector<rtt_meshReaders::Element_Definition::Element_Type> 
         unique_element_types;
-    std::map<std::string, std::set<int> > node_sets;
-    std::map<std::string, std::set<int> > element_sets;
-    std::string title;
-    std::vector<double> coords(3,0.0);
-    std::vector<int> side_nodes;
-    std::set<int> flag_nodes;
-    std::set<int> flag_elements;
+    map<string, set<int> > node_sets;
+    map<string, set<int> > element_sets;
+    string title;
+    vector<double> coords(3,0.0);
+    vector<int> side_nodes;
+    set<int> flag_nodes;
+    set<int> flag_elements;
 
     switch (meshtype)
     {
@@ -173,54 +182,54 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 	    rtt_meshReaders::Element_Definition::HEXA_8); 
 	// load the node sets
 	flag_nodes.insert(0);
-	node_sets.insert(std::make_pair(std::string("node_type/interior"), 
+	node_sets.insert(make_pair(string("node_type/interior"), 
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(1); flag_nodes.insert(2);
-	node_sets.insert(std::make_pair(std::string("node_type/dudded"), 
+	node_sets.insert(make_pair(string("node_type/dudded"), 
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(3);
-	node_sets.insert(std::make_pair(std::string("node_type/parent"), 
+	node_sets.insert(make_pair(string("node_type/parent"), 
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(0); flag_nodes.insert(1);
-	node_sets.insert(std::make_pair(std::string("boundary/reflective"), 
+	node_sets.insert(make_pair(string("boundary/reflective"), 
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(2); flag_nodes.insert(3);
-	node_sets.insert(std::make_pair(std::string("boundary/vacuum"), 
+	node_sets.insert(make_pair(string("boundary/vacuum"), 
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(0); flag_nodes.insert(1); flag_nodes.insert(2);
-	node_sets.insert(std::make_pair(std::string("source/no_source"),
+	node_sets.insert(make_pair(string("source/no_source"),
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	flag_nodes.insert(3);
-	node_sets.insert(std::make_pair(std::string("source/rad_source"), 
+	node_sets.insert(make_pair(string("source/rad_source"), 
 					flag_nodes));
 	flag_nodes.erase(flag_nodes.begin(),flag_nodes.end());
 	// load the element (i.e., sides + cell) sets
 	flag_elements.insert(1); flag_elements.insert(2); 
 	flag_elements.insert(3);
-	element_sets.insert(std::make_pair(std::string("boundary/reflective"),
+	element_sets.insert(make_pair(string("boundary/reflective"),
 					   flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
 	flag_elements.insert(0);
-	element_sets.insert(std::make_pair(std::string("boundary/vacuum"), 
+	element_sets.insert(make_pair(string("boundary/vacuum"), 
 					   flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
 	flag_elements.insert(4);
-	element_sets.insert(std::make_pair(std::string("material/control_rod"),
+	element_sets.insert(make_pair(string("material/control_rod"),
 					   flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
-	element_sets.insert(std::make_pair(std::string("material/shield"), 
+	element_sets.insert(make_pair(string("material/shield"), 
 					   flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
-	element_sets.insert(std::make_pair(std::string("rad_source/src_name1"),
+	element_sets.insert(make_pair(string("rad_source/src_name1"),
 					   flag_elements));
 	flag_elements.insert(4);
-	element_sets.insert(std::make_pair(std::string("rad_source/src_name2"),
+	element_sets.insert(make_pair(string("rad_source/src_name2"),
 					   flag_elements));
 	flag_elements.erase(flag_elements.begin(),flag_elements.end());
 	// set the mesh title
@@ -245,6 +254,12 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
     {
 	FAILMSG("Element nodes not obtained.");
     }
+    // Check dimension
+    if (mesh.get_dims_ndim() != 3 )
+    {
+        FAILMSG("Expected dimension == 3.");
+    }
+    
     // Check Element Types.
     if (element_types != mesh.get_element_types())
     {
@@ -275,16 +290,16 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
     {
 	FAILMSG("Invariant not satisfied.");
     }
-    if( rtt_RTT_Format_Reader_test::passed )
+    if( passed )
     {
         PASSMSG("Got all virtual accessors.");
-	rtt_RTT_Format_Reader_test::passed = unit_test_status;
+	passed = unit_test_status;
 	return true;
     }
     else
     {
 	FAILMSG("Errors in some virtual accessors.");
-	rtt_RTT_Format_Reader_test::passed = unit_test_status;
+	passed = unit_test_status;
 	return false;
     }
 
@@ -294,55 +309,44 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 } // end of rtt_RTT_Format_Reader_test
 
 //---------------------------------------------------------------------------//
-
-void reportVersion()
-{
-    using std::cout;
-    using std::endl;
-    cout << "\nThis is RTT_Format_Reader\n" 
-	 << "Version "<< rtt_RTT_Format_Reader::release()
-	 << "\n==================================================\n" << endl;
-    return;
-}
-
+// Main
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
+    using rtt_RTT_Format_Reader::release;
+    using rtt_RTT_Mesh_Reader_test::runTest;
+    using rtt_RTT_Mesh_Reader_test::passed;
+    
     // version tag
+    cout << argv[0] << ": version " << release() << endl;
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_RTT_Format_Reader::release() 
-		 << endl;
 	    return 0;
-	}
 
     try
     {
-	// >>> UNIT TESTS
-	reportVersion();
 	runTest();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing TestRTTMeshReader, " << ass.what()
-	     << endl;
+	cout << "While testing TestRTTMeshReader, " << ass.what() << endl;
 	return 1;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_RTT_Format_Reader_test::passed) 
+    catch (...)
     {
-        cout << "**** TestRTTMeshReader Test: PASSED" 
-	     << endl;
+	cout << "While testing TestRTTMeshReader, "
+             << "an unknown exception occurred." << endl;
+	return 1;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing TestRTTMeshReader." << endl;
+    
+    // status of test
+    cout <<   "\n*********************************************\n";
+    if (passed) 
+        cout << "**** TestRTTMeshReader Test: PASSED";
+    cout <<   "\n*********************************************\n\n"
+         << "Done testing TestRTTMeshReader." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//
