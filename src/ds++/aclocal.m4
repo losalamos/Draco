@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.9.2 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -10,6 +10,720 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_compiler.m4
+dnl
+dnl Sets up all of the C++ compilers.
+dnl
+dnl Thomas M. Evans
+dnl 1999/03/05 18:16:55
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl C++ COMPILER SETUP FUNCTION-->this is called within AC_DRACO_ENV;
+dnl default is to use the C++ Compiler.  To change defaults,
+dnl AC_WITH_F90 should be called in configure.in (before
+dnl AC_DRACO_ENV)
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_CPP_ENV], [dnl
+
+   # make sure that the host is defined
+   AC_REQUIRE([AC_CANONICAL_HOST])
+
+   dnl set up a default compiler
+   case $host in
+
+   # IRIX -> CC
+   mips-sgi-irix6.*)   
+       if test -z "${with_cxx}" ; then
+	   with_cxx='sgi'
+       fi
+   ;;
+
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='compaq'
+       fi
+   ;;
+
+   # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
+   *ibm-aix*)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='asciwhite'
+       fi
+   ;;
+
+   # EVERYTHING ELSE -> gcc
+   *)
+       if test -z "${with_cxx}" ; then
+	   with_cxx='gcc'
+       fi
+   ;;
+   esac
+
+   dnl determine which compiler we are using
+
+   # do tests of --with-cxx, see if the compiler exists and then call
+   # the proper setup function
+   
+   if test "${with_cxx}" = sgi ; then
+       AC_CHECK_PROG(CXX, CC, CC)
+       AC_CHECK_PROG(CC, cc, cc)  
+
+       if test "${CXX}" = CC && test "${CC}" = cc ; then
+	   AC_DRACO_SGI_CC
+       else 
+	   AC_MSG_ERROR("Did not find SGI CC compiler!")
+       fi
+
+   elif test "${with_cxx}" = gcc ; then 
+       AC_CHECK_PROG(CXX, g++, g++)
+       AC_CHECK_PROG(CC, gcc, gcc)
+
+       if test "${CXX}" = g++ && test "${CC}" = gcc ; then
+	   AC_DRACO_GNU_GCC
+       else
+	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
+       fi
+
+   elif test "${with_cxx}" = compaq ; then
+       AC_CHECK_PROG(CXX, cxx, cxx)
+       AC_CHECK_PROG(CC, cc, cc)
+
+       if test "${CXX}" = cxx && test "${CC}" = cc ; then
+	   AC_DRACO_COMPAQ_CXX
+       else
+	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
+       fi
+
+   elif test "${with_cxx}" = icpc ; then 
+       AC_CHECK_PROG(CXX, icpc, icpc)
+
+       if test "${CXX}" = icpc ; then
+	   CC='icpc'
+	   AC_DRACO_INTEL_ICPC
+       else
+	   AC_MSG_ERROR("Did not find Intel icpc compiler!")
+       fi
+
+   elif test "${with_cxx}" = pgi ; then
+       # only allow PGI on LINUX
+       case $host in
+       *-linux-gnu)
+           AC_CHECK_PROG(CXX, pgCC, pgCC)
+
+           if test "${CXX}" = pgCC ; then 
+               CC='pgcc'
+               AC_DRACO_PGCC
+           else
+               AC_MSG_ERROR("Did not find PGI C++ compiler!")
+           fi
+       ;;
+       *)
+           AC_MSG_ERROR("PGI only available on LINUX.")
+       ;;
+       esac        
+
+   elif test "${with_cxx}" = ibm ; then 
+       AC_CHECK_PROG(CXX, xlC, xlC)
+       AC_CHECK_PROG(CC, xlc, xlc)
+
+       if test "${CXX}" = xlC ; then
+	   AC_DRACO_IBM_VISUAL_AGE
+       else
+	   AC_MSG_ERROR("Did not find IBM Visual Age xlC compiler!")
+       fi
+
+   elif test "${with_cxx}" = asciwhite ; then 
+       # asci white uses different executables depending upon
+       # the mpi setup; so we check to see if mpi is on 
+       # and set the executable appropriately 
+
+       # mpi is on, use newmpxlC
+       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
+	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
+	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
+
+       # scalar build, use newxlC
+       else
+	   AC_CHECK_PROG(CXX, newxlC, newxlC)
+	   AC_CHECK_PROG(CC, newxlc, newxlc)
+
+       fi
+
+       # check to make sure compiler is valid
+       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
+	   AC_DRACO_IBM_VISUAL_AGE
+       else
+	   AC_MSG_ERROR("Did not find ASCI White new(mp)xlC compiler!")
+       fi
+
+   else
+       AC_MSG_ERROR("invalid compiler specification ${with_cxx}")
+
+   fi
+
+   # set the language to C++
+   AC_LANG(C++)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl SGI CC COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_SGI_CC], [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # dirs to clean
+   dirstoclean='ii_files'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+   AR='${CXX}'
+   ARLIBS='${DRACO_LIBS}'
+   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
+
+   # for CC we need to add a flag to AR to determine whether we build 
+   # shared or archive libraries
+   if test "${enable_shared}" = yes ; then
+       ARFLAGS='-shared -o'
+   else
+       ARFLAGS='-ar -o'
+   fi
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       # not really sure what the CC strict flag is, however, since
+       # KCC can do our "strict" checking for us this is probably
+       # not a big deal
+       STRICTFLAG=""
+   fi
+
+   # optimization level
+   # as opposed to KCC, -g overrides the optimization level, thus, we
+   # assume that debug is the default, however, if an optimization
+   # level is set we turn of debugging
+   if test "${with_opt:=0}" != 0 ; then
+       CXXFLAGS="${CXXFLAGS} -O${with_opt}"
+       CFLAGS="${CFLAGS} -O${with_opt}" 
+       enable_debug="no"
+   fi
+
+   if test "${enable_debug:=yes}" = yes ; then
+       CXXFLAGS="${CXXFLAGS} -g"
+       CFLAGS="${CFLAGS} -g"
+   fi
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -non_shared"
+   fi
+
+   # final compiler additions
+   CXXFLAGS="${CXXFLAGS} -LANG:std -no_auto_include"
+   LDFLAGS="${LDFLAGS} -LANG:std"
+
+   AC_MSG_RESULT("SGI CC compiler flags set")
+
+   dnl end of AC_DRACO_CC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl GNU COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
+
+   # finding path of gcc compiler
+   AC_PATH_PROG(GCC_BIN, g++, null)
+
+   AC_MSG_CHECKING("Setting library path of GNU compiler")
+   if test "${GCC_BIN}" = null ; then
+       GCC_LIB_DIR='/usr/lib'
+   else
+       GCC_BIN=`dirname ${GCC_BIN}`
+       GCC_HOME=`dirname ${GCC_BIN}`
+
+       # Ensure that libraries exist at this location.  If we can't
+       # find libstdc++.a at this location we leave GCC_LIB_DIR set to
+       # null and issue a warning.
+
+       if test -r ${GCC_HOME}/lib/libstdc++.a; then
+         GCC_LIB_DIR="${GCC_HOME}/lib"
+       fi
+   fi
+   AC_MSG_RESULT("${GCC_LIB_DIR}")
+
+   if test -z ${GCC_LIB_DIR}; then
+       AC_MSG_WARN("Could not determine location of gcc libraries. GCC_LIB_DIR is null")
+   fi
+
+   # do compiler configuration
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is gcc
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
+   fi
+
+   # optimization level
+   # gcc allows -g with -O (like KCC)
+
+   # set opt level in flags
+   gcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       gcc_opt_flags="-finline-functions ${gcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   gcc_opt_flags="-g ${gcc_opt_flags}"
+       fi
+
+   fi
+
+   # add opt flags
+   CXXFLAGS="${gcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${gcc_opt_flags} ${CFLAGS}"
+
+   # RPATH FLAGS
+
+   # add -rpath for the compiler library (G++ as LD does not do this
+   # automatically) if required.
+   case $host in
+
+   # Darwin doesn't need any special flags
+   powerpc-apple-darwin*)
+   ;;
+
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+   ;;
+
+   # EVERYTHING ELSE -> linux?
+   *)
+      if test -n "${GCC_LIB_DIR}"; then
+           RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+      fi
+   ;;
+   esac
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -Bstatic"
+   fi
+
+   AC_MSG_RESULT("GNU g++ compiler flags set")
+
+   dnl end of AC_DRACO_GNU_GCC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl PGI COMPILER SETUP
+dnl 
+dnl Note that this implementation of PGI uses options that are only
+dnl valid for LINUX
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_PGCC], [dnl
+
+   # do compiler configuration
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is pgCC
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+
+       # must use position-independent code
+       CXXFLAGS="${CXXFLAGS} -fPIC"
+       CFLAGS="${CFLAGS} -fPIC"
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-Xa -A --no_using_std"
+
+       # suppress long long errors in the platform-dependent options
+       # section 
+
+       # suppress missing return statement warning (we get this in
+       # nearly every STL inclusion through PGICC)
+       STRICTFLAG="--diag_suppress 940 ${STRICTFLAG}"
+   fi
+
+   # optimization level
+   # pgCC allows -g with -O
+
+   # set opt level in flags
+   pgcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       pgcc_opt_flags="${pgcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
+       fi
+
+   fi
+
+   # add opt flags
+   CXXFLAGS="${pgcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${pgcc_opt_flags} ${CFLAGS}"
+   
+   # add ieee flag
+   CXXFLAGS="${CXXFLAGS} -Kieee"
+   CFLAGS="${CFLAGS} -Kieee"
+
+   # instantiate only functions that are used in the compilation
+   CXXFLAGS="${CXXFLAGS} -t=used --no_implicit_include"
+
+   # set unnormalized values to zero
+   CXXFLAGS="${CXXFLAGS} -Mdaz"
+   CFLAGS="${CFLAGS} -Mdaz"
+
+   AC_MSG_RESULT("PGI pgCC compiler flags set")
+
+   dnl end of AC_DRACO_PGCC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl COMPAQ CXX COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_COMPAQ_CXX], [dnl
+
+   dnl 6-FEB-02 NEED TO ADD MODS !!!!!!
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # CXX SPECIFIC FLAGS
+   dirstoclean='cxx_repository'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is cxx
+   if test "${enable_shared}" = yes ; then
+       AR='${CXX}'
+       ARFLAGS="-shared -nocxxstd"
+       ARFLAGS="${ARFLAGS} -o"
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   # the contents of the cxx_repository do not seem to need adding 
+   # when building shared libraries; you do have to add them for
+   # archives 
+   if test "${enable_shared}" != yes ; then
+       ARLIBS='$(wildcard cxx_repository/*)'
+       ARTESTLIBS='$(wildcard cxx_repository/*)'
+   fi
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-std strict_ansi"
+       CXX="${CXX} -model ansi"
+   fi
+
+   # make sure we always use the standard IO stream
+   CPPFLAGS="${CPPFLAGS} -D__USE_STD_IOSTREAM" 
+
+   # optimization level
+
+   # if optimization is on turn off debug flag unless asked for
+   if test "${with_opt:=0}" != 0 ; then
+
+       # if debug is on then use -g1,2,3
+       if test "${enable_debug:=no}" = yes ; then
+	   cxx_opt_flag="-g${with_opt}"
+       else
+	   cxx_opt_flag="-O${with_opt}"
+       fi
+
+   # turn off optimizations
+   else
+   
+       # we want -g unless not asked for
+       if test "${enable_debug:=yes}" = yes ; then
+	   cxx_opt_flag="-g -O0"
+       else
+	   cxx_opt_flag="-O0"
+       fi
+
+   fi
+
+   # set up cxx flags
+   CXXFLAGS="${CXXFLAGS} ${cxx_opt_flag}"
+   CFLAGS="${CFLAGS} ${cxx_opt_flag}"
+
+   # add ieee flag
+   CXXFLAGS="${CXXFLAGS} -ieee"
+   CFLAGS="${CFLAGS} -ieee"
+
+   # turn off implicit inclusion
+   CXXFLAGS="${CXXFLAGS} -noimplicit_include"
+
+   # use the -pt template option for the compiler:
+   # -pt Automatically instantiate templates into the repository with
+   #  external linkage. Manually instantiated templates are placed in
+   #  the output object with external linkage. This option is the default.
+   CXXFLAGS="${CXXFLAGS} -pt"
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -non_shared"
+   fi
+
+   # add thread safe linkage
+   LDFLAGS="${LDFLAGS}" # -pthread"
+
+   AC_MSG_RESULT("CXX Compaq compiler flags set")
+   
+   dnl end of AC_DRACO_COMPAQ_CXX
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl Intel icpc COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # icpc SPECIFIC FLAGS
+
+   # LINKER AND LIBRARY
+   LD='${CXX}'
+
+   # if shared then ar is icpc
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-ansi"
+   fi
+
+   # set up compiler when optimized (enable inline keyword but not
+   # compiler-choice inlining)
+   if test "${with_opt:=0}" != 0 ; then
+
+       # turn off debug by default
+       if test "${enable_debug:=no}" = yes ; then
+	   icpc_opt_flags="-g -O${with_opt} -Ob1 -ip"
+       else
+	   icpc_opt_flags="-O${with_opt} -Ob1"
+       fi
+
+   #set up compiler when not optimized (turn off inlining with -Ob0)
+   else
+
+       # turn on debug by default
+       if test "${enable_debug:=yes}" = yes ; then
+	   icpc_opt_flags="-g -O0 -Ob0"
+       else
+	   icpc_opt_flags="-O0 -Ob0"
+       fi
+
+   fi
+   
+   # set the cxx and c flags
+   CXXFLAGS="${CXXFLAGS} ${icpc_opt_flags}"
+   CFLAGS="${CFLAGS} ${icpc_opt_flags}"
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -static"
+   fi
+
+   AC_MSG_RESULT("icpc compiler flags set")
+   
+   dnl end of AC_DRACO_INTEL_ICPC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl IBM VISUAL AGE COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_IBM_VISUAL_AGE], [dnl
+
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # xlC SPECIFIC FLAGS
+
+   # LINKER AND LIBRARY
+   LD='${CXX}'
+
+   # if shared then ar is xlC
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
+
+       # when AR=newmpxlC we need to add /lib/crt0.o to 
+       # avoid p_argcx and p_argvx link error when building libs
+       if test "${AR}" = newmpxlC ; then
+	   ARLIBS='/lib/crt0.o'
+	   ARTESTLIBS='/lib/crt0.o'
+       fi
+
+       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
+       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
+   else
+       AR='ar'
+       ARFLAGS='cr'
+
+       ARLIBS=''
+       ARTESTLIBS=''
+   fi
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-qlanglvl=strict98"
+   fi
+
+   # the qinline option controls inlining, when -g is on no inlining
+   # is done, with -O# inlining is on by default
+
+   # set up compiler when optimized 
+   if test "${with_opt:=0}" != 0; then
+
+       # optflags
+       xlC_opt_flags="-qarch=auto -qtune=auto -qcache=auto"
+
+       # optimization level    
+       if test "${with_opt}" = 1; then
+	   # if asking for 1 just use opt in ibm   
+	   xlC_opt_flags="${xlC_opt_flags} -qopt"
+       else
+	   # otherwise use number
+
+	   # turn of aggressive semantic optimizations on all levels
+	   # -O2 and above
+	   xlC_opt_flags="${xlC_opt_flags} -qopt=${with_opt} -qstrict"
+       fi
+
+       # turn off debug by default
+       if test "${enable_debug:=no}" = yes ; then
+	   xlC_opt_flags="-g ${xlC_opt_flags}"
+       fi
+
+   #set up compiler when not optimized 
+   else
+
+       # optflags
+       xlC_opt_flags="-qnoopt"
+
+       # turn on debug by default
+       if test "${enable_debug:=yes}" = yes ; then
+	   xlC_opt_flags="-g ${xlC_opt_flags}"
+       fi
+
+   fi
+   
+   # set the CXX and CC flags
+
+   # set the optimizations
+   CXXFLAGS="${CXXFLAGS} ${xlC_opt_flags}"
+   CFLAGS="${CFLAGS} ${xlC_opt_flags}"
+
+   # set template stuff
+   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
+
+   # static linking option
+   if test "${enable_static_ld:=no}" = yes ; then
+       LDFLAGS="${LDFLAGS} -bstatic"
+
+   # if we are building shared libraries we need to add
+   # run-time-linking
+   else
+       LDFLAGS="${LDFLAGS} -brtl -Wl,-bh:5"
+
+   fi
+
+   AC_MSG_RESULT("${CXX} compiler flags set")
+   
+   dnl end of AC_DRACO_IBM_VISUAL_AGE
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_compiler.m4
+dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_conf.m4
@@ -40,7 +754,7 @@ dnl add DRACO-dependent libraries necessary for a package
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS, [dnl
+AC_DEFUN([AC_NEEDS_LIBS], [dnl
    if test ${has_libdir:=no} != "yes" ; then
        DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
        has_libdir="yes"
@@ -66,7 +780,7 @@ dnl add DRACO-dependent libraries necessary for a package test
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_NEEDS_LIBS_TEST, [dnl
+AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
    DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
    for lib in $1
    do
@@ -87,7 +801,7 @@ dnl where serial means run as serial test only.
 dnl If compiling with scalar c4 then nprocs are ignored.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_RUNTESTS, [dnl
+AC_DEFUN([AC_RUNTESTS], [dnl
 	test_alltarget="$test_alltarget $1"
         
 	test_nprocs="$2"
@@ -106,7 +820,7 @@ dnl the default is an executable binary
 dnl options are PYTHON
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_TESTEXE, [dnl
+AC_DEFUN([AC_TESTEXE], [dnl
    test_exe="$1"
 ])
 
@@ -117,7 +831,7 @@ dnl where executables will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_EXECUTABLE, [ dnl
+AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
    install_executable="\${bindir}/\${package}"
    installdirs="${installdirs} \${bindir}"
    alltarget="${alltarget} bin/\${package}"
@@ -130,7 +844,7 @@ dnl where libraries will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_LIB, [ dnl
+AC_DEFUN([AC_INSTALL_LIB], [ dnl
    install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
    installdirs="${installdirs} \${libdir}"
    alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
@@ -147,7 +861,7 @@ dnl where headers will be installed
 dnl usage: configure.ac
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_INSTALL_HEADERS, [ dnl
+AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
    install_headers="\${installheaders}"
    installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
 ])
@@ -208,6 +922,20 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
        AC_MSG_WARN("No valid xdvi found!")
    fi
    AC_SUBST(XDVIFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
+   if test "${PS2PDF}" = null ; then
+       AC_MSG_WARN("No valid ps2pdf found!")
+   fi
+   dnl AC_SUBST(PS2PDFFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(DOTCMD, dot, null)
+   if test "${DOTCMD}" = null ; then
+       AC_MSG_WARN("No valid dot found!")
+   fi
+   dnl AC_SUBST(DOTCMDFLAGS)
 
    dnl check for and assign the path to dvips
    AC_CHECK_PROGS(DVIPS, dvips, null)
@@ -299,507 +1027,239 @@ dnl-------------------------------------------------------------------------dnl
 
 
 dnl-------------------------------------------------------------------------dnl
-dnl ac_local.m4
+dnl ac_doxygen.m4
 dnl
-dnl Macros used internally within the Draco build system.
+dnl Macros to help setup doxygen autodoc directories.
 dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:22
+dnl Kelly Thompson
+dnl 2004/03/30 16:41:22
+dnl 1999/02/04 01:56:19
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_WITH_DIR
-dnl
-dnl Define --with-xxx[=DIR] with defaults to an environment variable.
-dnl       Usage: AC_WITH_DIR(flag, CPPtoken, DefaultValue, HelpStr)
-dnl                for environment variables enter \${ENVIRONVAR} for
-dnl                DefaultValue
-dnl usage: in aclocal.m4
+dnl AC_SET_DEFAULT_OUTPUT
 dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_WITH_DIR, [dnl
-
- dnl
- dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
- dnl
- dnl AC_PACKAGE is the flag with all dashes turned to underscores
- dnl AC_WITH_PACKAGE will be substituted to the autoconf shell variable
- dnl    with_xxx
- dnl AC_CMDLINE is the shell command to strip double and trailing slashes
- dnl    from directory names.
-
- define([AC_PACKAGE], [translit($1, [-], [_])])dnl
- define([AC_WITH_PACKAGE], [with_]AC_PACKAGE)dnl
- define([AC_CMDLINE],dnl
-[echo "$]AC_WITH_PACKAGE[" | sed 's%//*%/%g' | sed 's%/$%%'])dnl
-
- AC_ARG_WITH($1,
-   [  --with-$1[=DIR]    $4 ($3 by default)],
-   if test $AC_WITH_PACKAGE != "no" ; then
-      if test $AC_WITH_PACKAGE = "yes" ; then
-         # following eval needed to remove possible '\' from $3
-         eval AC_WITH_PACKAGE=$3
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      AC_WITH_PACKAGE=`eval AC_CMDLINE`
-      if test "$AC_WITH_PACKAGE:-null}" = "null" ; then
-         { echo "configure: error: --with-$1 directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $AC_WITH_PACKAGE ; then
-         { echo "configure: error: $AC_WITH_PACKAGE: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      $2="${AC_WITH_PACKAGE}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      AC_DEFINE_UNQUOTED($2, ${AC_WITH_PACKAGE}/)dnl
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "$2 has been set to $$2" 1>&6
-
-   fi)
-
-   AC_SUBST($2)dnl
-
-])
-	
-dnl-------------------------------------------------------------------------dnl
-dnl AC_VENDORLIB_SETUP(1,2)
-dnl
-dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
-dnl usage: in aclocal.m4
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_VENDORLIB_SETUP, [dnl
-
-   # $1 is the vendor_<> tag (equals pkg or test)
-   # $2 are the directories added 
-
-   if test "${$1}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} $2"
-   elif test "${$1}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} $2"
+#
+# Set the default location for doxygen output
+#
+AC_DEFUN([AC_SET_DEFAULT_OUTPUT], [dnl
+   if test ${doxygen_output_top} = DEFAULT; then
+       AC_SUBST(doxygen_output_top, "${prefix}/documentation")
    fi
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_FIND_TOP_SRC(1,2)
+dnl AC_AUTODOC_PACKAGE_TAGS
+dnl
+dnl  Collect tagfiles for pacakge-to-component dependencies
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
+
+   # XXX Need to change COMPLINKS to generic doxygen list instead of
+   # HTML for Latex compatability. Let doxygen insert the links
+   AC_MSG_CHECKING([for documented sub-components of this package])
+   COMP_LINKS=''
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+   components=''
+   for item in `ls -1 ${package_top_srcdir}/src`; do
+      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
+         dirname=`basename ${item}`
+         components="${components} ${dirname}"
+         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+         tagfile=${doxygen_output_top}/${dirname}.tag
+         TAGFILES="${TAGFILES} ${tagfile}"
+         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
+      fi
+   done
+   AC_MSG_RESULT(${components:-none})
+   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+
+   # XXX TO DO: Add links to dependent packages on this page.
+   PACKAGE_LINKS="<ul> </ul>"
+
+   # Unique to package-level
+   AC_SUBST(PACKAGE_LINKS)
+   AC_SUBST(COMP_LINKS)
+
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_COMPONENT_TAGS
+dnl
+dnl   Collect tagfiles for within-package component dependencies
+dnl-------------------------------------------------------------------------dnl
+#
+# Build a list of tagfiles for other components of the same package
+# and the _relative_ locations of the autodoc directories that they
+# refer to.
+#
+# The relative path between component documentation in the same
+# package is "../component" 
+#
+# These components are specified in AC_NEEDS_LIBS, and are stored
+# in variable DEPENDENT_COMPONENTS. 
+#
+AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
+
+   components=''
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+   AC_MSG_CHECKING([for Doxygen component dependencies])
+   for comp in ${DEPENDENT_COMPONENTS}; do
+       components="${components} ${comp}"
+       tagfile=${doxygen_output_top}/${comp}.tag
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
+   done
+   AC_MSG_RESULT([${components}])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_SUBST
 dnl 
-dnl Find the top source directory of the package by searching upward
-dnl from the argument directory. The top source directory is defined
-dnl as the one with a 'config' sub-directory.
-dnl
-dnl Note: This function will eventually quit if the searched for
-dnl directory is not above the argument. It does so when $temp_dir
-dnl ceases to be a valid directory, which only seems to happen after a
-dnl LOT of ..'s are added to it.
+dnl   Do subsistutions on common AUTODOC variables
 dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_AUTODOC_SUBST], [dnl
 
-AC_DEFUN(AC_FIND_TOP_SRC, [dnl
-   
-   # $1 is the component's source directory
-   # $2 is the variable to store the package's main source directory in.
+   # Doxygen Input
+   AC_SUBST(doxygen_input)
+   AC_SUBST(doxygen_examples)
 
-   temp_dir=$1
-   AC_MSG_CHECKING([package top source directory])
-   while test -d $temp_dir -a ! -d $temp_dir/config ; do   
-       temp_dir="${temp_dir}/.."
-   done
-   if test -d $temp_dir; then
-       $2=`cd $temp_dir; pwd;`
-       AC_MSG_RESULT([$$2])
-   else
-       AC_MSG_ERROR('Could not find package top source directory')
-   fi
+   # Doxygen Output
+   AC_SUBST(doxygen_output_top)
+   AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
+
+   # Other doxygen configuration
+   AC_SUBST(DOXYGEN_TAGFILES)
+
+   # For inclusion in header files and other html
+   AC_SUBST(rel_package_html)
+
+   # For makefiles for configuration:
+   AC_SUBST(header_dir)
+   AC_SUBST(autodoc_dir)
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
+dnl AC_DRACO_AUTODOC
 dnl
-dnl These are all the variable substitutions used within the draco
-dnl build system
+dnl  setup doxygen autodoc directories for COMPONENTS within a package
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
+AC_DEFUN([AC_DRACO_AUTODOC], [dnl
 
-   # these variables are declared "precious", meaning that they are
-   # automatically substituted, put in the configure --help, and
-   # cached 
-   AC_ARG_VAR(CC)dnl
-   AC_ARG_VAR(CFLAGS)dnl
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
 
-   AC_ARG_VAR(CXX)dnl
-   AC_ARG_VAR(CXXFLAGS)dnl
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   config_dir=${package_top_srcdir}/config
 
-   AC_ARG_VAR(LD)dnl
-   AC_ARG_VAR(LDFLAGS)dnl
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}/autodoc
 
-   AC_ARG_VAR(AR)dnl
-   AC_ARG_VAR(ARFLAGS)dnl
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
+   AC_MSG_CHECKING([doxygen input directories])
+   if test -d ${abs_srcdir}; then
+      doxygen_input="${doxygen_input} ${abs_srcdir}"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
+   if test -d ${abs_srcdir}/test; then
+      doxygen_examples=${abs_srcdir}/test
+   fi
 
-   AC_ARG_VAR(CPPFLAGS)dnl
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
 
-   # dependency rules
-   AC_SUBST(DEPENDENCY_RULES)
+   # The local dir is different from the current dir.
+   # localdir=`pwd`/autodoc
 
-   # other compiler substitutions
-   AC_SUBST(STRICTFLAG)dnl
-   AC_SUBST(PARALLEL_FLAG)dnl
-   AC_SUBST(RPATH)dnl
-   AC_SUBST(LIB_PREFIX)dnl
+   # Set the component output locations.
+   doxygen_html_output="${doxygen_output_top}/html/${package}"
+   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
 
-   # install program
-   AC_SUBST(INSTALL)dnl
-   AC_SUBST(INSTALL_DATA)dnl
+   # Relative location of the package-level html output.
+   adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
 
-   # files to install
-   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
-   AC_SUBST(installfiles)dnl
-   AC_SUBST(install_executable)dnl
-   AC_SUBST(install_lib)dnl
-   AC_SUBST(install_headers)dnl
-   AC_SUBST(installdirs)dnl
+   # Get tags for other components in this package which this
+   # component depends on
+   AC_AUTODOC_COMPONENT_TAGS
 
-   # package libraries
-   AC_SUBST(alltarget)dnl
-   AC_SUBST(libsuffix)dnl
-   AC_SUBST(dirstoclean)dnl
-   AC_SUBST(package)dnl
-   AC_SUBST(DRACO_DEPENDS)dnl
-   AC_SUBST(DRACO_LIBS)dnl
-   AC_SUBST(VENDOR_DEPENDS)dnl
-   AC_SUBST(VENDOR_INC)dnl
-   AC_SUBST(VENDOR_LIBS)dnl
-   AC_SUBST(ARLIBS)dnl
+   # find the release number
+   number=$1
+   AC_MSG_CHECKING("component release number")
+   AC_MSG_RESULT($number)
+   AC_SUBST(number)
 
-   # package testing libraries
-   AC_SUBST(PKG_DEPENDS)dnl
-   AC_SUBST(PKG_LIBS)dnl
-   AC_SUBST(DRACO_TEST_DEPENDS)dnl
-   AC_SUBST(DRACO_TEST_LIBS)dnl
-   AC_SUBST(VENDOR_TEST_DEPENDS)dnl
-   AC_SUBST(VENDOR_TEST_LIBS)dnl
-   AC_SUBST(ARTESTLIBS)dnl
-   AC_SUBST(test_alltarget)dnl
-   AC_SUBST(test_flags)dnl
-   AC_SUBST(test_scalar)dnl
-   AC_SUBST(test_nprocs)dnl
-   AC_SUBST(test_output_files)dnl
+   AC_AUTODOC_SUBST
 
-   # libraries
-   AC_ARG_VAR(LIBS)dnl
+   AC_CONFIG_FILES([autodoc/Makefile:${config_dir}/Makefile.autodoc.in \
+                    autodoc/doxygen_config:${config_dir}/doxygen_config.in \
+                    autodoc/header.html:${header_dir}/header.html.in \
+                    autodoc/footer.html:${header_dir}/footer.html.in ])
 
-   # configure options
-   AC_SUBST(configure_command)dnl
-
-   # directories in source tree
-   AC_SUBST(package_top_srcdir)
-   
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl end of ac_local.m4
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl File  : draco/config ac_dracoenv.m4
-dnl Author: Thomas M. Evans
-dnl Date  : 1999/02/04 01:56:21
+dnl AC_PACKAGE_AUTODOC
 dnl
-dnl Defines the Draco build system environment.  This is the main
-dnl configure function.
-dnl
+dnl  setup doxygen autodoc directories for a PACKAGE
 dnl-------------------------------------------------------------------------dnl
 
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DBS_STLPORT_ENV
-dnl
-dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
-dnl presence of "--with-stlport".  If this option is found, the build
-dnl system's environment is modified so that all the all C++ compiles
-dnl use the STL libraries included with STLPort instead of the
-dnl compiler's native STL defintions.
-dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
-AC_DEFUN(AC_DBS_STLPORT_ENV, [dnl
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
 
-   AC_MSG_CHECKING("for stlport")
-   if test "${with_stlport:=no}" != no; then
-      if ! test -d "${with_stlport}/include"; then
-         AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
-      fi
-      CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      CXXFLAGS="-pthread -I${with_stlport}/include ${CXXFLAGS}"
-      AC_MSG_RESULT("-I${with_stlport}/include added to CXXFLAGS.")
+   # Package-level directories
+   header_dir=${srcdir}/html
+   config_dir=${package_top_srcdir}/config
 
-      dnl Include different libraries for debug vs opt mode.
-      dnl Also define _STLP_DEBUG if --enable-debug is set. 
-      AC_MSG_CHECKING("for debug stlport mode")
-      if test "${enable_debug:-yes}" = yes; then
-         if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
-         fi
-         LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         AC_MSG_RESULT("yes")
-      else 
-         dnl Use optimized STLport libraries.
-         if ! test -r "${with_stlport}/lib/libstlport.so"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
-         fi
-         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         AC_MSG_RESULT("no")
-      fi
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}
 
-      AC_MSG_CHECKING("for RPATH mods for stlport")
-      RPATH="-Xlinker -rpath ${with_stlport}/lib ${RPATH}"
-      AC_MSG_RESULT("Added -Xlinker -rpath ${with_stlport}/lib to RPATH")
-
-   elif test "${with_stlport}" = yes; then
-      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
-   else
-      AC_MSG_RESULT("none")
+   # For the package, the input is the current directory, plus
+   # configure/doc. There are no examples
+   AC_MSG_CHECKING([for Doxygen input directories])
+   doxygen_input="`pwd`"
+   if test -d ${config_dir}/doc; then
+      doxygen_input="${doxygen_input} ${config_dir}/doc"
    fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
+   doxygen_examples=''
 
-   dnl end of AC_DBS_STLPORT_ENV
+   # Component output locations
+   doxygen_html_output="${doxygen_output_top}/html/"
+   doxygen_latex_output="${doxygen_output_top}/latex/"
+
+   # Relative location of the package-level html output.
+   rel_package_html='.'
+
+   AC_AUTODOC_PACKAGE_TAGS
+
+   AC_AUTODOC_SUBST
+
+   AC_CONFIG_FILES([doxygen_config:${config_dir}/doxygen_config.in])
+   AC_CONFIG_FILES([Makefile:${config_dir}/Makefile.autodoc.in])
+   AC_CONFIG_FILES([header.html:html/header.html.in])
+   AC_CONFIG_FILES([footer.html:html/footer.html.in])
+   AC_CONFIG_FILES([mainpage.dcc])
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_ENV
-dnl
-dnl Assembles the Draco build system compile-time environment.  
-dnl It processes all of the options given to configure.  It does
-dnl NOT do any compile or link testing.  That functionality is
-dnl defined in ac_dracotests.m4.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_ENV, [dnl
-
-   dnl
-   dnl CONFIGURE ARGUMENTS
-   dnl
-
-   # Retrieve the configure command line for possible use in 
-   # regression test output.
-
-   configure_command="$[]0 $[]*"
-
-   dnl
-   dnl ADD DRACO CONFIGURE ARGUMENTS
-   dnl
-
-   AC_DRACO_ARGS
-
-   dnl
-   dnl first find the host
-   dnl
-   
-   AC_REQUIRE([AC_CANONICAL_HOST])
-
-   dnl
-   dnl INSTALL
-   dnl
-
-   # we use the install script provided with autoconf on all machines
-   INSTALL='${config_dir}/install-sh -c'
-   INSTALL_DATA='${INSTALL} -m 644'
-
-   dnl
-   dnl C4 OPERATIONS
-   dnl
-
-   # do the correct #defines
-   if test "$with_c4" = scalar ; then
-       AC_DEFINE(C4_SCALAR)
-   elif test "$with_c4" = mpi ; then
-       AC_DEFINE(C4_MPI)
-   fi
-
-   dnl
-   dnl DBC SETUP
-   dnl
-
-   # set the DBC level
-   if test "${with_dbc:=default}" != default ; then
-       AC_DEFINE_UNQUOTED(DBC, $with_dbc)
-   fi
-
-   dnl
-   dnl LIBRARIES
-   dnl
-   
-   # set the libsuffix variable
-   if test "${enable_shared:=no}" = yes ; then
-       libsuffix='.so'
-   else
-       libsuffix='.a'
-   fi
-
-   dnl      
-   dnl POSIX SOURCE
-   dnl
-
-   dnl system dependent posix defines are performed in the
-   dnl SYSTEM-SPECIFIC SETUP section below
-
-   dnl
-   dnl TOOL CHECKS 
-   dnl
-
-   # the tool checks are called in the top-level configure, so in 
-   # each subsequent configure these should just grab cached values
-   AC_DRACO_CHECK_TOOLS dnl
-
-   dnl
-   dnl COMPILER SETUPS
-   dnl
-
-   # the default compiler is C++; we do not turn on F90 unless
-   # AC_WITH_F90 is called in configure.in (which sets with_cxx='no')
-   if test "${with_cxx}" = no ; then
-
-       # if with_f90 defined test with_f90 for compiler, and call setup
-       # if with_f90 set to yes or not set 
-       # attempt to guess compiler based on target
-       AC_F90_ENV dnl
-
-   else
-   
-       # set up the C++ compilers; if with_cxx is undefined, an
-       # appropriate default for the machine will be choosen
-       AC_CPP_ENV dnl
-
-   fi
-
-   # STL port checks and setup
-
-   AC_DBS_STLPORT_ENV
-
-   dnl add any additional flags
-
-   # add user defined cppflags
-   if test "${with_cppflags:=no}" != no ; then
-       CPPFLAGS="${with_cppflags} ${CPPFLAGS}"
-   fi
-
-   # add user defined cxxflags
-   if test "${with_cxxflags:=no}" != no ; then
-       CXXFLAGS="${with_cxxflags} ${CXXFLAGS}"
-   fi
-
-   # add user defined cflags
-   if test "${with_cflags:=no}" != no ; then
-       CFLAGS="${with_cflags} ${CFLAGS}"
-   fi
-
-   # add user defined f90flags
-   if test "${with_f90flags:=no}" != no ; then
-       F90FLAGS="${with_f90flags} ${F90FLAGS}"
-   fi
-
-   # add user defined ARFLAGS
-   if test "${with_arflags:=no}" != no ; then
-       ARFLAGS="${with_arflags} ${ARFLAGS}"
-   fi
-
-   # add user defined LDFLAGS
-   if test "${with_ldflags:=no}" != no ; then
-       LDFLAGS="${with_ldflags} ${LDFLAGS}"
-   fi
-
-   # check user added libs (using --with-libs); these are appended to
-   # LIBS after the machine-specific setup
-   if test "${with_libs}" = yes ; then
-       AC_MSG_ERROR("Must define libs when using --with-libs")
-   fi
-
-   dnl throw message errors for poorly defined flags
-   
-   if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
-      test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
-      || test "${with_ldflags}" = yes \
-      || test "${with_cppflags}" = yes ; then
-       AC_MSG_ERROR("Poor definition of user defined flags!")
-   fi
-   
-   dnl check for ranlib
-   AC_PROG_RANLIB
-
-   dnl
-   dnl SYSTEM-SPECIFIC SETUP
-   dnl
-
-   # this function macro sets up all of the platform specific 
-   # environment parameters (except compilers)
-   AC_DBS_PLATFORM_ENVIRONMENT dnl
-
-   # add user-defined libraries
-   LIBS="${LIBS} ${with_libs} -lm"
-
-   dnl
-   dnl DRACO TEST SYSTEM
-   dnl
-
-   # determine whether this is a scalar or parallel test suite,
-   # the tests can be inherently scalar or they can be the result
-   # of a parallel build
-
-   test_scalar='no'
-
-   # If we ran AC_RUNTESTS with "serial" then mark it so here.
-   for np in $test_nprocs; do
-       if test $np = serial || test $np = scalar ; then
-          test_scalar="scalar"
-       fi
-   done
-
-   # if this is a parallel build, mark the tests scalar
-   if test "${with_c4}" = scalar ; then
-       test_scalar="scalar"
-   fi
-
-   # define the TESTFLAGS, for parallel runs the processor will be
-   # added later in the Makefile
-
-   if test "${test_scalar}" = scalar ; then
-       test_flags="--${test_exe:=binary}"
-   elif test "${with_c4}" = mpi ; then
-       test_flags="--${test_exe:=binary} --mpi"
-   fi
-
-   ## define the test_output_files for cleaning
-   for file in $test_alltarget; do
-       if test "${test_scalar}" = scalar ; then
-	   test_output_files="${test_output_files} ${file}-scalar.log"
-       else
-	   for np in $test_nprocs; do
-	       test_output_files="${test_output_files} ${file}-${np}.log"
-	   done
-       fi
-   done
-
-   # Define the package-level source directory (e.g. draco)
-   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
-
-   dnl
-   dnl ENVIRONMENT SUBSTITUTIONS
-   dnl
-
-   AC_DBS_VAR_SUBSTITUTIONS
-
-   dnl end of AC_DRACO_ENV
-])
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_dracoenv.m4
+dnl end of ac_doxygen.m4
 dnl-------------------------------------------------------------------------dnl
 
 
@@ -820,7 +1280,7 @@ dnl Declaration of Draco non-vendor configure options. This macro can
 dnl be called to fill out configure help screens
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_ARGS, [dnl
+AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl
    dnl Library prefix
@@ -1042,6 +1502,305 @@ dnl end of ac_dracoarg.m4
 dnl-------------------------------------------------------------------------dnl
 
 
+dnl-------------------------------------------------------------------------dnl
+dnl File  : draco/config ac_dracoenv.m4
+dnl Author: Thomas M. Evans
+dnl Date  : 1999/02/04 01:56:21
+dnl
+dnl Defines the Draco build system environment.  This is the main
+dnl configure function.
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_STLPORT_ENV
+dnl
+dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
+dnl presence of "--with-stlport".  If this option is found, the build
+dnl system's environment is modified so that all the all C++ compiles
+dnl use the STL libraries included with STLPort instead of the
+dnl compiler's native STL defintions.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
+
+   AC_MSG_CHECKING("for stlport")
+   if test "${with_stlport:=no}" != no; then
+      if ! test -d "${with_stlport}/include"; then
+         AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
+      fi
+      CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
+      AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS.])
+
+      dnl Include different libraries for debug vs opt mode.
+      dnl Also define _STLP_DEBUG if --enable-debug is set. 
+      AC_MSG_CHECKING("for debug stlport mode")
+#     if test "${enable_debug:-yes}" = yes; then
+         if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
+            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
+         fi
+         LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
+         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
+dnl         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
+         AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS.])
+#      else 
+#         dnl Use optimized STLport libraries.
+#         if ! test -r "${with_stlport}/lib/libstlport.so"; then
+#            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
+#         fi
+#         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
+#         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
+#      fi
+
+      AC_MSG_CHECKING("for RPATH mods for stlport")
+      RPATH="-Xlinker -rpath ${with_stlport}/lib ${RPATH}"
+      AC_MSG_RESULT("Added -Xlinker -rpath ${with_stlport}/lib to RPATH")
+
+   elif test "${with_stlport}" = yes; then
+      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
+   else
+      AC_MSG_RESULT("none")
+   fi
+
+   dnl end of AC_DBS_STLPORT_ENV
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_ENV
+dnl
+dnl Assembles the Draco build system compile-time environment.  
+dnl It processes all of the options given to configure.  It does
+dnl NOT do any compile or link testing.  That functionality is
+dnl defined in ac_dracotests.m4.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_ENV], [dnl
+
+   dnl
+   dnl CONFIGURE ARGUMENTS
+   dnl
+
+   # Retrieve the configure command line for possible use in 
+   # regression test output.
+
+   configure_command="$[]0 $[]*"
+
+   dnl
+   dnl ADD DRACO CONFIGURE ARGUMENTS
+   dnl
+
+   AC_DRACO_ARGS
+
+   dnl
+   dnl first find the host
+   dnl
+   
+   AC_REQUIRE([AC_CANONICAL_HOST])
+
+   dnl
+   dnl INSTALL
+   dnl
+
+   # we use the install script provided with autoconf on all machines
+   INSTALL='${config_dir}/install-sh -c'
+   INSTALL_DATA='${INSTALL} -m 644'
+
+   dnl
+   dnl C4 OPERATIONS
+   dnl
+
+   # do the correct #defines
+   if test "$with_c4" = scalar ; then
+       AC_DEFINE(C4_SCALAR)
+   elif test "$with_c4" = mpi ; then
+       AC_DEFINE(C4_MPI)
+   fi
+
+   dnl
+   dnl DBC SETUP
+   dnl
+
+   # set the DBC level
+   if test "${with_dbc:=default}" != default ; then
+       AC_DEFINE_UNQUOTED(DBC, $with_dbc)
+   fi
+
+   dnl
+   dnl LIBRARIES
+   dnl
+   
+   # set the libsuffix variable
+   if test "${enable_shared:=no}" = yes ; then
+       libsuffix='.so'
+   else
+       libsuffix='.a'
+   fi
+
+   dnl      
+   dnl POSIX SOURCE
+   dnl
+
+   dnl system dependent posix defines are performed in the
+   dnl SYSTEM-SPECIFIC SETUP section below
+
+   dnl
+   dnl TOOL CHECKS 
+   dnl
+
+   # the tool checks are called in the top-level configure, so in 
+   # each subsequent configure these should just grab cached values
+   AC_DRACO_CHECK_TOOLS dnl
+
+   dnl
+   dnl COMPILER SETUPS
+   dnl
+
+   # the default compiler is C++; we do not turn on F90 unless
+   # AC_WITH_F90 is called in configure.in (which sets with_cxx='no')
+   if test "${with_cxx}" = no ; then
+
+       # if with_f90 defined test with_f90 for compiler, and call setup
+       # if with_f90 set to yes or not set 
+       # attempt to guess compiler based on target
+       AC_F90_ENV dnl
+
+   else
+   
+       # set up the C++ compilers; if with_cxx is undefined, an
+       # appropriate default for the machine will be choosen
+       AC_CPP_ENV dnl
+
+   fi
+
+   dnl
+   dnl STL port checks and setup
+   dnl
+   dnl If --with-stlport is on the configure line, we must prepend
+   dnl CXXFLAGS and CPPFLAGS with -I<path_to_stlport>.
+   dnl
+   AC_DBS_STLPORT_ENV
+
+   dnl add any additional flags
+
+   # add user defined cppflags
+   if test "${with_cppflags:=no}" != no ; then
+       CPPFLAGS="${with_cppflags} ${CPPFLAGS}"
+   fi
+
+   # add user defined cxxflags
+   if test "${with_cxxflags:=no}" != no ; then
+       CXXFLAGS="${with_cxxflags} ${CXXFLAGS}"
+   fi
+
+   # add user defined cflags
+   if test "${with_cflags:=no}" != no ; then
+       CFLAGS="${with_cflags} ${CFLAGS}"
+   fi
+
+   # add user defined f90flags
+   if test "${with_f90flags:=no}" != no ; then
+       F90FLAGS="${with_f90flags} ${F90FLAGS}"
+   fi
+
+   # add user defined ARFLAGS
+   if test "${with_arflags:=no}" != no ; then
+       ARFLAGS="${with_arflags} ${ARFLAGS}"
+   fi
+
+   # add user defined LDFLAGS
+   if test "${with_ldflags:=no}" != no ; then
+       LDFLAGS="${with_ldflags} ${LDFLAGS}"
+   fi
+
+   # check user added libs (using --with-libs); these are appended to
+   # LIBS after the machine-specific setup
+   if test "${with_libs}" = yes ; then
+       AC_MSG_ERROR("Must define libs when using --with-libs")
+   fi
+
+   dnl throw message errors for poorly defined flags
+   
+   if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
+      test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
+      || test "${with_ldflags}" = yes \
+      || test "${with_cppflags}" = yes ; then
+       AC_MSG_ERROR("Poor definition of user defined flags!")
+   fi
+   
+   dnl check for ranlib
+   AC_PROG_RANLIB
+
+   dnl
+   dnl SYSTEM-SPECIFIC SETUP
+   dnl
+
+   # this function macro sets up all of the platform specific 
+   # environment parameters (except compilers)
+   AC_DBS_PLATFORM_ENVIRONMENT dnl
+
+   # add user-defined libraries
+   LIBS="${LIBS} ${with_libs} -lm"
+
+   dnl
+   dnl DRACO TEST SYSTEM
+   dnl
+
+   # determine whether this is a scalar or parallel test suite,
+   # the tests can be inherently scalar or they can be the result
+   # of a parallel build
+
+   test_scalar='no'
+
+   # If we ran AC_RUNTESTS with "serial" then mark it so here.
+   for np in $test_nprocs; do
+       if test $np = serial || test $np = scalar ; then
+          test_scalar="scalar"
+       fi
+   done
+
+   # if this is a parallel build, mark the tests scalar
+   if test "${with_c4}" = scalar ; then
+       test_scalar="scalar"
+   fi
+
+   # define the TESTFLAGS, for parallel runs the processor will be
+   # added later in the Makefile
+
+   if test "${test_scalar}" = scalar ; then
+       test_flags="--${test_exe:=binary}"
+   elif test "${with_c4}" = mpi ; then
+       test_flags="--${test_exe:=binary} --mpi"
+   fi
+
+   ## define the test_output_files for cleaning
+   for file in $test_alltarget; do
+       if test "${test_scalar}" = scalar ; then
+	   test_output_files="${test_output_files} ${file}-scalar.log"
+       else
+	   for np in $test_nprocs; do
+	       test_output_files="${test_output_files} ${file}-${np}.log"
+	   done
+       fi
+   done
+
+   # Define the package-level source directory (e.g. draco)
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+
+   dnl
+   dnl ENVIRONMENT SUBSTITUTIONS
+   dnl
+
+   AC_DBS_VAR_SUBSTITUTIONS
+
+   dnl end of AC_DRACO_ENV
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_dracoenv.m4
+dnl-------------------------------------------------------------------------dnl
+
+
 dnl ========================================================================
 dnl 
 dnl 	Author:	Mark G. Gray
@@ -1074,7 +1833,7 @@ dnl
 ========================================================================
 
 dnl ### Ensure with_f90 set
-AC_DEFUN(AC_WITH_F90, [dnl
+AC_DEFUN([AC_WITH_F90], [dnl
    : ${with_f90:=yes}
     
    dnl turn off C++ compiler
@@ -1090,7 +1849,7 @@ dnl
 dnl CHOOSE A F90 COMPILER
 dnl
 
-AC_DEFUN(AC_F90_ENV, [dnl
+AC_DEFUN([AC_F90_ENV], [dnl
    AC_REQUIRE([AC_CANONICAL_HOST])
 
    case "${with_f90:=yes}" in
@@ -1181,7 +1940,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IBM XLF95 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_XL_F90, [dnl
+AC_DEFUN([AC_COMPILER_XL_F90], [dnl
 
    # Check for working XL F90 compiler
 
@@ -1239,7 +1998,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl FUJITSU F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_FUJITSU_F90, [dnl
+AC_DEFUN([AC_COMPILER_FUJITSU_F90], [dnl
 
    # Check for working Fujitsu F90 compiler
 
@@ -1285,7 +2044,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl LAHEY F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_LAHEY_F90, [dnl
+AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
 
    AC_CHECK_PROG(F90, lf95, lf95, none)
 
@@ -1326,7 +2085,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl PORTLAND F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_PORTLAND_F90, [dnl
+AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
 
    # Check for working Portland Group F90 compiler
 
@@ -1372,7 +2131,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl COMPAQ F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_COMPAQ_F90, [dnl
+AC_DEFUN([AC_COMPILER_COMPAQ_F90], [dnl
 
    # Check for working compaq F90 compiler
 
@@ -1421,7 +2180,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl SUN WORKSHOP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_WORKSHOP_F90, [dnl
+AC_DEFUN([AC_COMPILER_WORKSHOP_F90], [dnl
 
    # Check for working WorkShop F90 compiler
 
@@ -1467,7 +2226,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl CRAY_F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_CRAY_F90, [dnl
+AC_DEFUN([AC_COMPILER_CRAY_F90], [dnl
 
    # Check for working Cray F90 compiler
 
@@ -1512,7 +2271,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl IRIX MIPS F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_MIPS_F90, [dnl
+AC_DEFUN([AC_COMPILER_MIPS_F90], [dnl
 
    # Look for working MIPS compiler
 
@@ -1560,7 +2319,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl HP F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_HP_F90, [dnl
+AC_DEFUN([AC_COMPILER_HP_F90], [dnl
 
    # CHECK FOR WORKING HP F90 COMPILER
    AC_CHECK_PROG(F90, f90, f90, none)
@@ -1603,7 +2362,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl INTEL F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_INTEL_F90, [dnl
+AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
 
    # CHECK FOR WORKING INTEL F90 COMPILER
    AC_CHECK_PROG(F90, ifc, ifc, none)
@@ -1647,7 +2406,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl NAG F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_NAG_F90, [dnl
+AC_DEFUN([AC_COMPILER_NAG_F90], [dnl
 
    # CHECK FOR WORKING NAG F90 COMPILER
    AC_CHECK_PROG(F90, f95, f95, none)
@@ -1693,7 +2452,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl ABSOFT F90 COMPILER SETUP
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
+AC_DEFUN([AC_COMPILER_ABSOFT_F90], [dnl
 
    # CHECK FOR WORKING ABSOFT F90 COMPILER
    AC_CHECK_PROG(F90, f95, f95, none)
@@ -1729,717 +2488,213 @@ AC_DEFUN(AC_COMPILER_ABSOFT_F90, [dnl
 dnl ========================================================================
 
 dnl-------------------------------------------------------------------------dnl
-dnl ac_compiler.m4
+dnl ac_local.m4
 dnl
-dnl Sets up all of the C++ compilers.
+dnl Macros used internally within the Draco build system.
 dnl
 dnl Thomas M. Evans
-dnl 1999/03/05 18:16:55
+dnl 1999/02/04 01:56:22
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
-dnl C++ COMPILER SETUP FUNCTION-->this is called within AC_DRACO_ENV;
-dnl default is to use the C++ Compiler.  To change defaults,
-dnl AC_WITH_F90 should be called in configure.in (before
-dnl AC_DRACO_ENV)
+dnl AC_WITH_DIR
+dnl
+dnl Define --with-xxx[=DIR] with defaults to an environment variable.
+dnl       Usage: AC_WITH_DIR(flag, CPPtoken, DefaultValue, HelpStr)
+dnl                for environment variables enter \${ENVIRONVAR} for
+dnl                DefaultValue
+dnl usage: in aclocal.m4
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_CPP_ENV, [dnl
-
-   # make sure that the host is defined
-   AC_REQUIRE([AC_CANONICAL_HOST])
-
-   dnl set up a default compiler
-   case $host in
-
-   # IRIX -> CC
-   mips-sgi-irix6.*)   
-       if test -z "${with_cxx}" ; then
-	   with_cxx='sgi'
-       fi
-   ;;
-
-   # COMPAQ -> CXX
-   alpha*-dec-osf*)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='compaq'
-       fi
-   ;;
-
-   # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
-   *ibm-aix*)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='asciwhite'
-       fi
-   ;;
-
-   # EVERYTHING ELSE -> gcc
-   *)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='gcc'
-       fi
-   ;;
-   esac
-
-   dnl determine which compiler we are using
-
-   # do tests of --with-cxx, see if the compiler exists and then call
-   # the proper setup function
-   
-   if test "${with_cxx}" = sgi ; then
-       AC_CHECK_PROG(CXX, CC, CC)
-       AC_CHECK_PROG(CC, cc, cc)  
-
-       if test "${CXX}" = CC && test "${CC}" = cc ; then
-	   AC_DRACO_SGI_CC
-       else 
-	   AC_MSG_ERROR("Did not find SGI CC compiler!")
-       fi
-
-   elif test "${with_cxx}" = gcc ; then 
-       AC_CHECK_PROG(CXX, g++, g++)
-       AC_CHECK_PROG(CC, gcc, gcc)
-
-       if test "${CXX}" = g++ && test "${CC}" = gcc ; then
-	   AC_DRACO_GNU_GCC
-       else
-	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
-       fi
-
-   elif test "${with_cxx}" = compaq ; then
-       AC_CHECK_PROG(CXX, cxx, cxx)
-       AC_CHECK_PROG(CC, cc, cc)
-
-       if test "${CXX}" = cxx && test "${CC}" = cc ; then
-	   AC_DRACO_COMPAQ_CXX
-       else
-	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
-       fi
-
-   elif test "${with_cxx}" = icpc ; then 
-       AC_CHECK_PROG(CXX, icpc, icpc)
-
-       if test "${CXX}" = icpc ; then
-	   CC='icpc'
-	   AC_DRACO_INTEL_ICPC
-       else
-	   AC_MSG_ERROR("Did not find Intel icpc compiler!")
-       fi
-
-   elif test "${with_cxx}" = pgi ; then
-       # only allow PGI on LINUX
-       case $host in
-       *-linux-gnu)
-           AC_CHECK_PROG(CXX, pgCC, pgCC)
-
-           if test "${CXX}" = pgCC ; then 
-               CC='pgcc'
-               AC_DRACO_PGCC
-           else
-               AC_MSG_ERROR("Did not find PGI C++ compiler!")
-           fi
-       ;;
-       *)
-           AC_MSG_ERROR("PGI only available on LINUX.")
-       ;;
-       esac        
-
-   elif test "${with_cxx}" = ibm ; then 
-       AC_CHECK_PROG(CXX, xlC, xlC)
-       AC_CHECK_PROG(CC, xlc, xlc)
-
-       if test "${CXX}" = xlC ; then
-	   AC_DRACO_IBM_VISUAL_AGE
-       else
-	   AC_MSG_ERROR("Did not find IBM Visual Age xlC compiler!")
-       fi
-
-   elif test "${with_cxx}" = asciwhite ; then 
-       # asci white uses different executables depending upon
-       # the mpi setup; so we check to see if mpi is on 
-       # and set the executable appropriately 
-
-       # mpi is on, use newmpxlC
-       if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
-	   AC_CHECK_PROG(CXX, newmpxlC, newmpxlC)
-	   AC_CHECK_PROG(CC, newmpxlc, newmpxlc)
-
-       # scalar build, use newxlC
-       else
-	   AC_CHECK_PROG(CXX, newxlC, newxlC)
-	   AC_CHECK_PROG(CC, newxlc, newxlc)
-
-       fi
-
-       # check to make sure compiler is valid
-       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
-	   AC_DRACO_IBM_VISUAL_AGE
-       else
-	   AC_MSG_ERROR("Did not find ASCI White new(mp)xlC compiler!")
-       fi
-
-   else
-       AC_MSG_ERROR("invalid compiler specification ${with_cxx}")
-
-   fi
-
-   # set the language to C++
-   AC_LANG(C++)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl SGI CC COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_SGI_CC, [dnl
-
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # dirs to clean
-   dirstoclean='ii_files'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-   AR='${CXX}'
-   ARLIBS='${DRACO_LIBS}'
-   ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
-
-   # for CC we need to add a flag to AR to determine whether we build 
-   # shared or archive libraries
-   if test "${enable_shared}" = yes ; then
-       ARFLAGS='-shared -o'
-   else
-       ARFLAGS='-ar -o'
-   fi
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       # not really sure what the CC strict flag is, however, since
-       # KCC can do our "strict" checking for us this is probably
-       # not a big deal
-       STRICTFLAG=""
-   fi
-
-   # optimization level
-   # as opposed to KCC, -g overrides the optimization level, thus, we
-   # assume that debug is the default, however, if an optimization
-   # level is set we turn of debugging
-   if test "${with_opt:=0}" != 0 ; then
-       CXXFLAGS="${CXXFLAGS} -O${with_opt}"
-       CFLAGS="${CFLAGS} -O${with_opt}" 
-       enable_debug="no"
-   fi
-
-   if test "${enable_debug:=yes}" = yes ; then
-       CXXFLAGS="${CXXFLAGS} -g"
-       CFLAGS="${CFLAGS} -g"
-   fi
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} -non_shared"
-   fi
-
-   # final compiler additions
-   CXXFLAGS="${CXXFLAGS} -LANG:std -no_auto_include"
-   LDFLAGS="${LDFLAGS} -LANG:std"
-
-   AC_MSG_RESULT("SGI CC compiler flags set")
-
-   dnl end of AC_DRACO_CC
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl GNU COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_GNU_GCC, [dnl
-
-   # finding path of gcc compiler
-   AC_PATH_PROG(GCC_BIN, g++, null)
-
-   AC_MSG_CHECKING("Setting library path of GNU compiler")
-   if test "${GCC_BIN}" = null ; then
-       GCC_LIB_DIR='/usr/lib'
-   else
-       GCC_BIN=`dirname ${GCC_BIN}`
-       GCC_HOME=`dirname ${GCC_BIN}`
-
-       # Ensure that libraries exist at this location.  If we can't
-       # find libstdc++.a at this location we leave GCC_LIB_DIR set to
-       # null and issue a warning.
-
-       if test -r ${GCC_HOME}/lib/libstdc++.a; then
-         GCC_LIB_DIR="${GCC_HOME}/lib"
-       fi
-   fi
-   AC_MSG_RESULT("${GCC_LIB_DIR}")
-
-   if test -z ${GCC_LIB_DIR}; then
-       AC_MSG_WARN("Could not determine location of gcc libraries. GCC_LIB_DIR is null")
-   fi
-
-   # do compiler configuration
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-
-   # if shared then ar is gcc
-   if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS='-shared -o'
-   else
-       AR='ar'
-       ARFLAGS='cr'
-   fi
-
-   ARLIBS=''
-   ARTESTLIBS=''
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
-   fi
-
-   # optimization level
-   # gcc allows -g with -O (like KCC)
-
-   # set opt level in flags
-   gcc_opt_flags="-O${with_opt:=0}"
-
-   # set up compiler when optimized
-   if test "${with_opt}" != 0; then
-
-       # set up inlining when optimization is on
-       gcc_opt_flags="-finline-functions ${gcc_opt_flags}"
-
-       # turn off debug flag by default if not requested explicitly
-       if test "${enable_debug:=no}" = yes ; then
-	   gcc_opt_flags="-g ${gcc_opt_flags}"
-       fi
-
-   # set up compiler when not optimized
-   else
-
-       # default is to have debug flag on when opt=0
-       if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g ${gcc_opt_flags}"
-       fi
-
-   fi
-
-   # add opt flags
-   CXXFLAGS="${gcc_opt_flags} ${CXXFLAGS}"
-   CFLAGS="${gcc_opt_flags} ${CFLAGS}"
-
-   # RPATH FLAGS
-
-   # add -rpath for the compiler library (G++ as LD does not do this
-   # automatically) if required.
-   case $host in
-
-   # Darwin doesn't need any special flags
-   powerpc-apple-darwin*)
-   ;;
-
-   # COMPAQ -> CXX
-   alpha*-dec-osf*)
-   ;;
-
-   # EVERYTHING ELSE -> linux?
-   *)
-      if test -n "${GCC_LIB_DIR}"; then
-           RPATH="${RPATH} -Xlinker -rpath ${GCC_LIB_DIR}"
+AC_DEFUN([AC_WITH_DIR], [dnl
+
+ dnl
+ dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
+ dnl
+ dnl AC_PACKAGE is the flag with all dashes turned to underscores
+ dnl AC_WITH_PACKAGE will be substituted to the autoconf shell variable
+ dnl    with_xxx
+ dnl AC_CMDLINE is the shell command to strip double and trailing slashes
+ dnl    from directory names.
+
+ define([AC_PACKAGE], [translit($1, [-], [_])])dnl
+ define([AC_WITH_PACKAGE], [with_]AC_PACKAGE)dnl
+ define([AC_CMDLINE],dnl
+[echo "$]AC_WITH_PACKAGE[" | sed 's%//*%/%g' | sed 's%/$%%'])dnl
+
+ AC_ARG_WITH($1,
+   [  --with-$1[=DIR]    $4 ($3 by default)],
+   if test $AC_WITH_PACKAGE != "no" ; then
+      if test $AC_WITH_PACKAGE = "yes" ; then
+         # following eval needed to remove possible '\' from $3
+         eval AC_WITH_PACKAGE=$3
       fi
-   ;;
-   esac
 
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} -Bstatic"
+      # this command removes double slashes and any trailing slash
+
+      AC_WITH_PACKAGE=`eval AC_CMDLINE`
+      if test "$AC_WITH_PACKAGE:-null}" = "null" ; then
+         { echo "configure: error: --with-$1 directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $AC_WITH_PACKAGE ; then
+         { echo "configure: error: $AC_WITH_PACKAGE: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      $2="${AC_WITH_PACKAGE}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      AC_DEFINE_UNQUOTED($2, ${AC_WITH_PACKAGE}/)dnl
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "$2 has been set to $$2" 1>&6
+
+   fi)
+
+   AC_SUBST($2)dnl
+
+])
+	
+dnl-------------------------------------------------------------------------dnl
+dnl AC_VENDORLIB_SETUP(1,2)
+dnl
+dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
+dnl usage: in aclocal.m4
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
+
+   # $1 is the vendor_<> tag (equals pkg or test)
+   # $2 are the directories added 
+
+   if test "${$1}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} $2"
+   elif test "${$1}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} $2"
    fi
-
-   AC_MSG_RESULT("GNU g++ compiler flags set")
-
-   dnl end of AC_DRACO_GNU_GCC
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl PGI COMPILER SETUP
+dnl AC_FIND_TOP_SRC(1,2)
 dnl 
-dnl Note that this implementation of PGI uses options that are only
-dnl valid for LINUX
+dnl Find the top source directory of the package by searching upward
+dnl from the argument directory. The top source directory is defined
+dnl as the one with a 'config' sub-directory.
+dnl
+dnl Note: This function will eventually quit if the searched for
+dnl directory is not above the argument. It does so when $temp_dir
+dnl ceases to be a valid directory, which only seems to happen after a
+dnl LOT of ..'s are added to it.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_PGCC, [dnl
-
-   # do compiler configuration
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
-
-   # if shared then ar is pgCC
-   if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS='-shared -o'
-
-       # must use position-independent code
-       CXXFLAGS="${CXXFLAGS} -fPIC"
-       CFLAGS="${CFLAGS} -fPIC"
-   else
-       AR='ar'
-       ARFLAGS='cr'
-   fi
-
-   ARLIBS=''
-   ARTESTLIBS=''
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-Xa -A --no_using_std"
-
-       # suppress long long errors in the platform-dependent options
-       # section 
-
-       # suppress missing return statement warning (we get this in
-       # nearly every STL inclusion through PGICC)
-       STRICTFLAG="--diag_suppress 940 ${STRICTFLAG}"
-   fi
-
-   # optimization level
-   # pgCC allows -g with -O
-
-   # set opt level in flags
-   pgcc_opt_flags="-O${with_opt:=0}"
-
-   # set up compiler when optimized
-   if test "${with_opt}" != 0; then
-
-       # set up inlining when optimization is on
-       pgcc_opt_flags="${pgcc_opt_flags}"
-
-       # turn off debug flag by default if not requested explicitly
-       if test "${enable_debug:=no}" = yes ; then
-	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
-       fi
-
-   # set up compiler when not optimized
-   else
-
-       # default is to have debug flag on when opt=0
-       if test "${enable_debug:=yes}" = yes ; then
-	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
-       fi
-
-   fi
-
-   # add opt flags
-   CXXFLAGS="${pgcc_opt_flags} ${CXXFLAGS}"
-   CFLAGS="${pgcc_opt_flags} ${CFLAGS}"
+AC_DEFUN([AC_FIND_TOP_SRC], [dnl
    
-   # add ieee flag
-   CXXFLAGS="${CXXFLAGS} -Kieee"
-   CFLAGS="${CFLAGS} -Kieee"
+   # $1 is the component's source directory
+   # $2 is the variable to store the package's main source directory in.
 
-   # instantiate only functions that are used in the compilation
-   CXXFLAGS="${CXXFLAGS} -t=used --no_implicit_include"
-
-   # set unnormalized values to zero
-   CXXFLAGS="${CXXFLAGS} -Mdaz"
-   CFLAGS="${CFLAGS} -Mdaz"
-
-   AC_MSG_RESULT("PGI pgCC compiler flags set")
-
-   dnl end of AC_DRACO_PGCC
+   temp_dir=$1
+   AC_MSG_CHECKING([package top source directory])
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do   
+       temp_dir="${temp_dir}/.."
+   done
+   if test -d $temp_dir; then
+       $2=`cd $temp_dir; pwd;`
+       AC_MSG_RESULT([$$2])
+   else
+       AC_MSG_ERROR('Could not find package top source directory')
+   fi
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl COMPAQ CXX COMPILER SETUP
+dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
+dnl
+dnl These are all the variable substitutions used within the draco
+dnl build system
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_DRACO_COMPAQ_CXX, [dnl
+AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
 
-   dnl 6-FEB-02 NEED TO ADD MODS !!!!!!
+   # these variables are declared "precious", meaning that they are
+   # automatically substituted, put in the configure --help, and
+   # cached 
+   AC_ARG_VAR(CC)dnl
+   AC_ARG_VAR(CFLAGS)dnl
 
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+   AC_ARG_VAR(CXX)dnl
+   AC_ARG_VAR(CXXFLAGS)dnl
 
-   # CXX SPECIFIC FLAGS
-   dirstoclean='cxx_repository'
+   AC_ARG_VAR(LD)dnl
+   AC_ARG_VAR(LDFLAGS)dnl
 
-   # LINKER AND LIBRARY (AR)
-   LD='${CXX}'
+   AC_ARG_VAR(AR)dnl
+   AC_ARG_VAR(ARFLAGS)dnl
 
-   # if shared then ar is cxx
-   if test "${enable_shared}" = yes ; then
-       AR='${CXX}'
-       ARFLAGS="-shared -nocxxstd"
-       ARFLAGS="${ARFLAGS} -o"
-   else
-       AR='ar'
-       ARFLAGS='cr'
-   fi
+   AC_ARG_VAR(CPPFLAGS)dnl
 
-   # the contents of the cxx_repository do not seem to need adding 
-   # when building shared libraries; you do have to add them for
-   # archives 
-   if test "${enable_shared}" != yes ; then
-       ARLIBS='$(wildcard cxx_repository/*)'
-       ARTESTLIBS='$(wildcard cxx_repository/*)'
-   fi
+   # dependency rules
+   AC_SUBST(DEPENDENCY_RULES)
 
-   # COMPILATION FLAGS
+   # other compiler substitutions
+   AC_SUBST(STRICTFLAG)dnl
+   AC_SUBST(PARALLEL_FLAG)dnl
+   AC_SUBST(RPATH)dnl
+   AC_SUBST(LIB_PREFIX)dnl
 
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-std strict_ansi"
-       CXX="${CXX} -model ansi"
-   fi
+   # install program
+   AC_SUBST(INSTALL)dnl
+   AC_SUBST(INSTALL_DATA)dnl
 
-   # make sure we always use the standard IO stream
-   CPPFLAGS="${CPPFLAGS} -D__USE_STD_IOSTREAM" 
+   # files to install
+   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
+   AC_SUBST(installfiles)dnl
+   AC_SUBST(install_executable)dnl
+   AC_SUBST(install_lib)dnl
+   AC_SUBST(install_headers)dnl
+   AC_SUBST(installdirs)dnl
 
-   # optimization level
+   # package libraries
+   AC_SUBST(alltarget)dnl
+   AC_SUBST(libsuffix)dnl
+   AC_SUBST(dirstoclean)dnl
+   AC_SUBST(package)dnl
+   AC_SUBST(DRACO_DEPENDS)dnl
+   AC_SUBST(DRACO_LIBS)dnl
+   AC_SUBST(VENDOR_DEPENDS)dnl
+   AC_SUBST(VENDOR_INC)dnl
+   AC_SUBST(VENDOR_LIBS)dnl
+   AC_SUBST(ARLIBS)dnl
 
-   # if optimization is on turn off debug flag unless asked for
-   if test "${with_opt:=0}" != 0 ; then
+   # package testing libraries
+   AC_SUBST(PKG_DEPENDS)dnl
+   AC_SUBST(PKG_LIBS)dnl
+   AC_SUBST(DRACO_TEST_DEPENDS)dnl
+   AC_SUBST(DRACO_TEST_LIBS)dnl
+   AC_SUBST(VENDOR_TEST_DEPENDS)dnl
+   AC_SUBST(VENDOR_TEST_LIBS)dnl
+   AC_SUBST(ARTESTLIBS)dnl
+   AC_SUBST(test_alltarget)dnl
+   AC_SUBST(test_flags)dnl
+   AC_SUBST(test_scalar)dnl
+   AC_SUBST(test_nprocs)dnl
+   AC_SUBST(test_output_files)dnl
 
-       # if debug is on then use -g1,2,3
-       if test "${enable_debug:=no}" = yes ; then
-	   cxx_opt_flag="-g${with_opt}"
-       else
-	   cxx_opt_flag="-O${with_opt}"
-       fi
+   # libraries
+   AC_ARG_VAR(LIBS)dnl
 
-   # turn off optimizations
-   else
+   # configure options
+   AC_SUBST(configure_command)dnl
+
+   # directories in source tree
+   AC_SUBST(package_top_srcdir)
    
-       # we want -g unless not asked for
-       if test "${enable_debug:=yes}" = yes ; then
-	   cxx_opt_flag="-g -O0"
-       else
-	   cxx_opt_flag="-O0"
-       fi
-
-   fi
-
-   # set up cxx flags
-   CXXFLAGS="${CXXFLAGS} ${cxx_opt_flag}"
-   CFLAGS="${CFLAGS} ${cxx_opt_flag}"
-
-   # add ieee flag
-   CXXFLAGS="${CXXFLAGS} -ieee"
-   CFLAGS="${CFLAGS} -ieee"
-
-   # turn off implicit inclusion
-   CXXFLAGS="${CXXFLAGS} -noimplicit_include"
-
-   # use the -pt template option for the compiler:
-   # -pt Automatically instantiate templates into the repository with
-   #  external linkage. Manually instantiated templates are placed in
-   #  the output object with external linkage. This option is the default.
-   CXXFLAGS="${CXXFLAGS} -pt"
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} -non_shared"
-   fi
-
-   # add thread safe linkage
-   LDFLAGS="${LDFLAGS}" # -pthread"
-
-   AC_MSG_RESULT("CXX Compaq compiler flags set")
-   
-   dnl end of AC_DRACO_COMPAQ_CXX
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl Intel icpc COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_INTEL_ICPC, [dnl
-
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # icpc SPECIFIC FLAGS
-
-   # LINKER AND LIBRARY
-   LD='${CXX}'
-
-   # if shared then ar is icpc
-   if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS='-shared -o'
-   else
-       AR='ar'
-       ARFLAGS='cr'
-   fi
-
-   ARLIBS=''
-   ARTESTLIBS=''
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi"
-   fi
-
-   # set up compiler when optimized (enable inline keyword but not
-   # compiler-choice inlining)
-   if test "${with_opt:=0}" != 0 ; then
-
-       # turn off debug by default
-       if test "${enable_debug:=no}" = yes ; then
-	   icpc_opt_flags="-g -O${with_opt} -Ob1 -ip"
-       else
-	   icpc_opt_flags="-O${with_opt} -Ob1"
-       fi
-
-   #set up compiler when not optimized (turn off inlining with -Ob0)
-   else
-
-       # turn on debug by default
-       if test "${enable_debug:=yes}" = yes ; then
-	   icpc_opt_flags="-g -O0 -Ob0"
-       else
-	   icpc_opt_flags="-O0 -Ob0"
-       fi
-
-   fi
-   
-   # set the cxx and c flags
-   CXXFLAGS="${CXXFLAGS} ${icpc_opt_flags}"
-   CFLAGS="${CFLAGS} ${icpc_opt_flags}"
-
-   # static linking option
-   if test "${enable_static_ld}" = yes ; then
-       LDFLAGS="${LDFLAGS} -static"
-   fi
-
-   AC_MSG_RESULT("icpc compiler flags set")
-   
-   dnl end of AC_DRACO_INTEL_ICPC
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl IBM VISUAL AGE COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN(AC_DRACO_IBM_VISUAL_AGE, [dnl
-
-   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
-
-   # xlC SPECIFIC FLAGS
-
-   # LINKER AND LIBRARY
-   LD='${CXX}'
-
-   # if shared then ar is xlC
-   if test "${enable_shared}" = yes ; then
-       AR="${CXX}"
-       ARFLAGS='-brtl -Wl,-bh:5 -G -o'
-
-       # when AR=newmpxlC we need to add /lib/crt0.o to 
-       # avoid p_argcx and p_argvx link error when building libs
-       if test "${AR}" = newmpxlC ; then
-	   ARLIBS='/lib/crt0.o'
-	   ARTESTLIBS='/lib/crt0.o'
-       fi
-
-       ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"
-       ARTESTLIBS="${ARTESTLIBS} \${PKG_LIBS} \${DRACO_TEST_LIBS}"
-       ARTESTLIBS="${ARTESTLIBS} \${DRACO_LIBS}\${VENDOR_TEST_LIBS}"
-       ARTESTLIBS="${ARTESTLIBS} \${VENDOR_LIBS}"
-   else
-       AR='ar'
-       ARFLAGS='cr'
-
-       ARLIBS=''
-       ARTESTLIBS=''
-   fi
-
-   # COMPILATION FLAGS
-
-   # strict asci compliance
-   if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-qlanglvl=strict98"
-   fi
-
-   # the qinline option controls inlining, when -g is on no inlining
-   # is done, with -O# inlining is on by default
-
-   # set up compiler when optimized 
-   if test "${with_opt:=0}" != 0; then
-
-       # optflags
-       xlC_opt_flags="-qarch=auto -qtune=auto -qcache=auto"
-
-       # optimization level    
-       if test "${with_opt}" = 1; then
-	   # if asking for 1 just use opt in ibm   
-	   xlC_opt_flags="${xlC_opt_flags} -qopt"
-       else
-	   # otherwise use number
-
-	   # turn of aggressive semantic optimizations on all levels
-	   # -O2 and above
-	   xlC_opt_flags="${xlC_opt_flags} -qopt=${with_opt} -qstrict"
-       fi
-
-       # turn off debug by default
-       if test "${enable_debug:=no}" = yes ; then
-	   xlC_opt_flags="-g ${xlC_opt_flags}"
-       fi
-
-   #set up compiler when not optimized 
-   else
-
-       # optflags
-       xlC_opt_flags="-qnoopt"
-
-       # turn on debug by default
-       if test "${enable_debug:=yes}" = yes ; then
-	   xlC_opt_flags="-g ${xlC_opt_flags}"
-       fi
-
-   fi
-   
-   # set the CXX and CC flags
-
-   # set the optimizations
-   CXXFLAGS="${CXXFLAGS} ${xlC_opt_flags}"
-   CFLAGS="${CFLAGS} ${xlC_opt_flags}"
-
-   # set template stuff
-   CXXFLAGS="${CXXFLAGS} -w -qnotempinc"
-
-   # static linking option
-   if test "${enable_static_ld:=no}" = yes ; then
-       LDFLAGS="${LDFLAGS} -bstatic"
-
-   # if we are building shared libraries we need to add
-   # run-time-linking
-   else
-       LDFLAGS="${LDFLAGS} -brtl -Wl,-bh:5"
-
-   fi
-
-   AC_MSG_RESULT("${CXX} compiler flags set")
-   
-   dnl end of AC_DRACO_IBM_VISUAL_AGE
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_compiler.m4
+dnl end of ac_local.m4
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -2670,8 +2925,14 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
    dnl Add C++ options to F90 link line
    AC_MSG_CHECKING("for F90CXXFLAGS")
-   CXXLIBDIR=${GCC_LIB_DIR}
-   F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   if test ${with_cxx} = "pgi"; then
+      CXXLIBDIR=`which pgCC | sed -e 's/\/bin\/pgCC//'`
+      CXXLIBDIR="${CXXLIBDIR}/lib"
+      F90CXXFLAGS="-L${CXXLIBDIR} -lC -lstd"
+   else
+      CXXLIBDIR=${GCC_LIB_DIR}
+      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+   fi   
    AC_MSG_RESULT(${F90CXXFLAGS})
 
    AC_MSG_CHECKING("for F90VENDOR_LIBS")
@@ -2696,6 +2957,7 @@ AC_DEFUN([AC_DBS_COMPAQ_F90_ENVIRONMENT], [dnl
       test -n "${vendor_gandolf}"   || 
       test -n "${vendor_pcg}"       || 
       test -n "${vendor_udm}"       ||
+      test -n "${vendor_superludist}" ||
       test -n "${vendor_blacs}"; then
 
       extra_f90_libs="-L${f90_lib_loc} -lfor"
@@ -2911,6 +3173,15 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
        else
            AC_MSG_RESULT("not needed")
+       fi
+
+       #
+       # PTHREAD FLAG: Add -pthread to CXXFLAGS if we are using either
+       # Trilinos or STLPort
+       #
+       if test "${with_trilinos:-no}" != no || 
+          test "${with_stlport:-no}" != no; then
+          CXXFLAGS="${CXXFLAGS} -pthread"
        fi
 
        #
@@ -3765,17 +4036,20 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        fi
 
        # add vendors to rpath
-       for vendor_dir in ${VENDOR_LIB_DIRS}; 
-       do
-           if test "${dilem}" = "space"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "nospace"; then
-	       RPATH="${rptrigger}${vendor_dir} ${RPATH}"
-           elif test "${dilem}" = "colon"; then
-	       RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
-           else
-               AC_MSG_ERROR("Cannot determine what rpath format to use!")
-	   fi
+       for vendor_dir in ${VENDOR_LIB_DIRS}; do
+           dnl Only append to RPATH if vendor has shared object libs.
+           so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
+           if test ! "${so_libs:-none}" = "none"; then
+              if test "${dilem}" = "space"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "nospace"; then
+	          RPATH="${rptrigger}${vendor_dir} ${RPATH}"
+              elif test "${dilem}" = "colon"; then
+	          RPATH="${rptrigger} ${vendor_dir} ${RPATH}"
+              else
+                  AC_MSG_ERROR("Cannot determine what rpath format to use!")
+   	      fi
+           fi 
        done
 
 ]) dnl setup_rpath
@@ -3783,6 +4057,156 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_platforms.m4
 dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_utils.m4
+dnl
+dnl Macros to perform useful functions
+dnl
+dnl Mike Buksas
+dnl-------------------------------------------------------------------------dnl
+
+dnl Functions taken from:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
+dnl
+
+AC_DEFUN([adl_COMPUTE_RELATIVE_PATHS],
+[for _lcl_i in $1; do
+  _lcl_from=\[$]`echo "[$]_lcl_i" | sed 's,:.*$,,'`
+  _lcl_to=\[$]`echo "[$]_lcl_i" | sed 's,^[[^:]]*:,,' | sed 's,:[[^:]]*$,,'`
+  _lcl_result_var=`echo "[$]_lcl_i" | sed 's,^.*:,,'`
+  adl_RECURSIVE_EVAL([[$]_lcl_from], [_lcl_from])
+  adl_RECURSIVE_EVAL([[$]_lcl_to], [_lcl_to])
+  _lcl_notation="$_lcl_from$_lcl_to"
+  adl_NORMALIZE_PATH([_lcl_from],['/'])
+  adl_NORMALIZE_PATH([_lcl_to],['/'])
+  adl_COMPUTE_RELATIVE_PATH([_lcl_from], [_lcl_to], [_lcl_result_tmp])
+  adl_NORMALIZE_PATH([_lcl_result_tmp],["[$]_lcl_notation"])
+  eval $_lcl_result_var='[$]_lcl_result_tmp'
+done])
+
+
+dnl adl_COMPUTE_RELATIVE_PATH(FROM, TO, RESULT)
+dnl ===========================================
+dnl Compute the relative path to go from $FROM to $TO and set the value
+dnl of $RESULT to that value.  This function work on raw filenames
+dnl (for instead it will considerate /usr//local and /usr/local as
+dnl two distinct paths), you should really use adl_COMPUTE_REALTIVE_PATHS
+dnl instead to have the paths sanitized automatically.
+dnl
+dnl For instance:
+dnl    first_dir=/somewhere/on/my/disk/bin
+dnl    second_dir=/somewhere/on/another/disk/share
+dnl    adl_COMPUTE_RELATIVE_PATH(first_dir, second_dir, first_to_second)
+dnl will set $first_to_second to '../../../another/disk/share'.
+AC_DEFUN([adl_COMPUTE_RELATIVE_PATH],
+[adl_COMPUTE_COMMON_PATH([$1], [$2], [_lcl_common_prefix])
+adl_COMPUTE_BACK_PATH([$1], [_lcl_common_prefix], [_lcl_first_rel])
+adl_COMPUTE_SUFFIX_PATH([$2], [_lcl_common_prefix], [_lcl_second_suffix])
+$3="[$]_lcl_first_rel[$]_lcl_second_suffix"])
+
+dnl adl_COMPUTE_COMMON_PATH(LEFT, RIGHT, RESULT)
+dnl ============================================
+dnl Compute the common path to $LEFT and $RIGHT and set the result to $RESULT.
+dnl
+dnl For instance:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on/another/disk/share
+dnl    adl_COMPUTE_COMMON_PATH(first_path, second_path, common_path)
+dnl will set $common_path to '/somewhere/on'.
+AC_DEFUN([adl_COMPUTE_COMMON_PATH],
+[$3=''
+_lcl_second_prefix_match=''
+while test "[$]_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x[$]$1" : "x\([$]$3/*[[^/]]*\)"`
+  _lcl_second_prefix_match=`expr "x[$]$2" : "x[$]_lcl_first_prefix"`
+  if test "[$]_lcl_second_prefix_match" != 0; then
+    if test "[$]_lcl_first_prefix" != "[$]$3"; then
+      $3="[$]_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done])
+
+dnl adl_COMPUTE_SUFFIX_PATH(PATH, SUBPATH, RESULT)
+dnl ==============================================
+dnl Substrack $SUBPATH from $PATH, and set the resulting suffix
+dnl (or the empty string if $SUBPATH is not a subpath of $PATH)
+dnl to $RESULT.
+dnl
+dnl For instace:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on
+dnl    adl_COMPUTE_SUFFIX_PATH(first_path, second_path, common_path)
+dnl will set $common_path to '/my/disk/bin'.
+AC_DEFUN([adl_COMPUTE_SUFFIX_PATH],
+[$3=`expr "x[$]$1" : "x[$]$2/*\(.*\)"`])
+
+dnl adl_COMPUTE_BACK_PATH(PATH, SUBPATH, RESULT)
+dnl ============================================
+dnl Compute the relative path to go from $PATH to $SUBPATH, knowing that
+dnl $SUBPATH is a subpath of $PATH (any other words, only repeated '../'
+dnl should be needed to move from $PATH to $SUBPATH) and set the value
+dnl of $RESULT to that value.  If $SUBPATH is not a subpath of PATH,
+dnl set $RESULT to the empty string.
+dnl
+dnl For instance:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on
+dnl    adl_COMPUTE_BACK_PATH(first_path, second_path, back_path)
+dnl will set $back_path to '../../../'.
+AC_DEFUN([adl_COMPUTE_BACK_PATH],
+[adl_COMPUTE_SUFFIX_PATH([$1], [$2], [_lcl_first_suffix])
+$3=''
+_lcl_tmp='xxx'
+while test "[$]_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x[$]_lcl_first_suffix" : "x[[^/]]*/*\(.*\)"`
+  if test "[$]_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="[$]_lcl_tmp"
+     $3="../[$]$3"
+  fi
+done])
+
+dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
+dnl =================================
+dnl Interpolate the VALUE in loop until it doesn't change,
+dnl and set the result to $RESULT.
+dnl WARNING: It's easy to get an infinite loop with some unsane input.
+AC_DEFUN([adl_RECURSIVE_EVAL],
+[_lcl_receval="$1"
+$2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "[$]_lcl_receval_old" != "[$]_lcl_receval"; do
+       _lcl_receval_old="[$]_lcl_receval"
+       eval _lcl_receval="\"[$]_lcl_receval\""
+     done
+     echo "[$]_lcl_receval")`])
+
+
+
+dnl Available from the GNU Autoconf Macro Archive at:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/normpath.html
+dnl
+AC_DEFUN([adl_NORMALIZE_PATH],
+[case ":[$]$1:" in
+# change empty paths to '.'
+  ::) $1='.' ;;
+# strip trailing slashes
+  :*[[\\/]]:) $1=`echo "[$]$1" | sed 's,[[\\/]]*[$],,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case ifelse($2,,"[$]$1",$2) in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1/,g'` ;;
+esac])
+
+
+
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_vendors.m4
@@ -4009,7 +4433,7 @@ dnl GSL is a required vendor
 dnl
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN(AC_GSL_SETUP, [dnl
+AC_DEFUN([AC_GSL_SETUP], [dnl
 
    dnl define --with-gsl
    AC_ARG_WITH(gsl,
@@ -4070,6 +4494,75 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_SUPERLUDIST_SETUP
+dnl
+dnl SUPERLUDIST SETUP (on by default)
+dnl SUPERLUDIST is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SUPERLUDIST_SETUP], [dnl
+
+   dnl define --with-superludist
+   AC_ARG_WITH(superludist,
+      [  --with-superludist=[superludist] 
+                       determine SUPERLUDIST lib (superludist is default)])
+
+   dnl define --with-superludist-inc
+   AC_WITH_DIR(superludist-inc, SUPERLUDIST_INC, \${SUPERLUDIST_INC_DIR},
+	       [tell where SUPERLUDIST includes are])
+
+   dnl define --with-superludist-lib
+   AC_WITH_DIR(superludist-lib, SUPERLUDIST_LIB, \${SUPERLUDIST_LIB_DIR},
+	       [tell where SUPERLUDIST libraries are])
+
+   # set default value of superludist includes and libs
+   if test "${with_superludist:=superludist}" = yes ; then
+      with_superludist='superludist'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_superludist=$1
+])
+
+
+AC_DEFUN([AC_SUPERLUDIST_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_superludist}"; then
+
+       # include path
+       if test -n "${SUPERLUDIST_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+       fi
+
+       # library path
+       # if this is a scalar build, use SUPERLU instead.
+       if test "${with_c4}" = "scalar" ; then
+         if test -n "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperlu)
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperlu)
+         fi
+       else
+         if test -n "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperludist)
+         elif test -z "${SUPERLUDIST_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperludist)
+         fi
+       fi
+
+       # add SUPERLUDIST directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SUPERLUDIST_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SUPERLUDIST_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_TRILINOS_SETUP
 dnl
 dnl TRILINOS SETUP (on by default)
@@ -4116,9 +4609,9 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lepetra -lepetraext -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
@@ -4935,14 +5428,16 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # call finalize functions for each vendor, the order is important
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
-   AC_TRILINOS_FINALIZE
-   AC_GSL_FINALIZE
+
+   AC_TRILINOS_FINALIZE dnl Depends on: LAPACK, MPI
+   AC_GSL_FINALIZE      dnl Depends on: LAPACK
+   AC_SUPERLUDIST_FINALIZE
 
    AC_AZTEC_FINALIZE
-   AC_PCG_FINALIZE
+   AC_PCG_FINALIZE      dnl Depends on: LAPACK
    AC_HYPRE_FINALIZE
-   AC_SCALAPACK_FINALIZE
-   AC_BLACS_FINALIZE
+   AC_SCALAPACK_FINALIZE dnl Depends on: BLACS, MPI
+   AC_BLACS_FINALIZE     dnl Depends on: MPI
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
@@ -4984,7 +5479,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl allows one to include all vendor macros by calling this macro.
 dnl designed for draco/configure.in and draco/src/configure.in
 
-AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
+AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
 
    dnl include all macros for easy use in top-level configure.in's
    AC_MPI_SETUP(pkg)
@@ -4992,6 +5487,7 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
    AC_GSL_SETUP(pkg)
+   AC_SUPERLUDIST_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
    AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
@@ -5008,392 +5504,5 @@ AC_DEFUN(AC_ALL_VENDORS_SETUP, [dnl
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_vendors.m4
 dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_doxygen.m4
-dnl
-dnl Macros to help setup doxygen autodoc directories.
-dnl
-dnl Kelly Thompson
-dnl 2004/03/30 16:41:22
-dnl 1999/02/04 01:56:19
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_SET_DEFAULT_OUTPUT
-dnl-------------------------------------------------------------------------dnl
-#
-# Set the default location for doxygen output
-#
-AC_DEFUN([AC_SET_DEFAULT_OUTPUT], [dnl
-   if test ${doxygen_output_top} = DEFAULT; then
-       AC_SUBST(doxygen_output_top, "${prefix}/documentation")
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_AUTODOC_PACKAGE_TAGS
-dnl
-dnl  Collect tagfiles for pacakge-to-component dependencies
-dnl-------------------------------------------------------------------------dnl
-AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
-
-   # XXX Need to change COMPLINKS to generic doxygen list instead of
-   # HTML for Latex compatability. Let doxygen insert the links
-   AC_MSG_CHECKING([for documented sub-components of this package])
-   COMP_LINKS=''
-   TAGFILES=''
-   DOXYGEN_TAGFILES=''
-   components=''
-   for item in `ls -1 ${package_top_srcdir}/src`; do
-      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
-         dirname=`basename ${item}`
-         components="${components} ${dirname}"
-         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
-         tagfile=${doxygen_output_top}/${dirname}.tag
-         TAGFILES="${TAGFILES} ${tagfile}"
-         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
-      fi
-   done
-   AC_MSG_RESULT(${components:-none})
-   COMP_LINKS="<ul> $COMP_LINKS </ul>"
-
-   # XXX TO DO: Add links to dependent packages on this page.
-   PACKAGE_LINKS="<ul> </ul>"
-
-   # Unique to package-level
-   AC_SUBST(PACKAGE_LINKS)
-   AC_SUBST(COMP_LINKS)
-
-])
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_AUTODOC_COMPONENT_TAGS
-dnl
-dnl   Collect tagfiles for within-package component dependencies
-dnl-------------------------------------------------------------------------dnl
-#
-# Build a list of tagfiles for other components of the same package
-# and the _relative_ locations of the autodoc directories that they
-# refer to.
-#
-# The relative path between component documentation in the same
-# package is "../component" 
-#
-# These components are specified in AC_NEEDS_LIBS, and are stored
-# in variable DEPENDENT_COMPONENTS. 
-#
-AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
-
-   components=''
-   TAGFILES=''
-   DOXYGEN_TAGFILES=''
-   AC_MSG_CHECKING([for Doxygen component dependencies])
-   for comp in ${DEPENDENT_COMPONENTS}; do
-       components="${components} ${comp}"
-       tagfile=${doxygen_output_top}/${comp}.tag
-       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
-   done
-   AC_MSG_RESULT([${components}])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_AUTODOC_SUBST
-dnl 
-dnl   Do subsistutions on common AUTODOC variables
-dnl-------------------------------------------------------------------------dnl
-AC_DEFUN([AC_AUTODOC_SUBST], [dnl
-
-   # Doxygen Input
-   AC_SUBST(doxygen_input)
-   AC_SUBST(doxygen_examples)
-
-   # Doxygen Output
-   AC_SUBST(doxygen_output_top)
-   AC_SUBST(doxygen_html_output)
-   AC_SUBST(doxygen_latex_output)
-
-   # Other doxygen configuration
-   AC_SUBST(DOXYGEN_TAGFILES)
-
-   # For inclusion in header files and other html
-   AC_SUBST(rel_package_html)
-
-   # For makefiles for configuration:
-   AC_SUBST(header_dir)
-   AC_SUBST(autodoc_dir)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_AUTODOC
-dnl
-dnl  setup doxygen autodoc directories for COMPONENTS within a package
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_AUTODOC], [dnl
-
-   # Get the default output location
-   AC_SET_DEFAULT_OUTPUT
-
-   # Define some package-level directories
-   header_dir=${package_top_srcdir}/autodoc/html
-   config_dir=${package_top_srcdir}/config
-
-   abs_srcdir=`cd ${srcdir}; pwd`
-   autodoc_dir=${abs_srcdir}/autodoc
-
-   # For a component, the doxygen input is the srcdir and the examples
-   # are in the tests
-   AC_MSG_CHECKING([doxygen input directories])
-   if test -d ${abs_srcdir}; then
-      doxygen_input="${doxygen_input} ${abs_srcdir}"
-   fi
-   if test -d ${autodoc_dir}; then
-      doxygen_input="${doxygen_input} ${autodoc_dir}"
-   fi
-   AC_MSG_RESULT(${doxygen_input})
-   if test -d ${abs_srcdir}/test; then
-      doxygen_examples=${abs_srcdir}/test
-   fi
-
-   # Set the package-level html output location
-   package_html=${doxygen_output_top}/html
-
-   # The local dir is different from the current dir.
-   # localdir=`pwd`/autodoc
-
-   # Set the component output locations.
-   doxygen_html_output="${doxygen_output_top}/html/${package}"
-   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
-
-   # Relative location of the package-level html output.
-   adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
-
-   # Get tags for other components in this package which this
-   # component depends on
-   AC_AUTODOC_COMPONENT_TAGS
-
-   # find the release number
-   number=$1
-   AC_MSG_CHECKING("component release number")
-   AC_MSG_RESULT($number)
-   AC_SUBST(number)
-
-   AC_AUTODOC_SUBST
-
-   AC_CONFIG_FILES([autodoc/Makefile:${config_dir}/Makefile.autodoc.in \
-                    autodoc/doxygen_config:${config_dir}/doxygen_config.in \
-                    autodoc/header.html:${header_dir}/header.html.in \
-                    autodoc/footer.html:${header_dir}/footer.html.in ])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_PACKAGE_AUTODOC
-dnl
-dnl  setup doxygen autodoc directories for a PACKAGE
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
-
-   # Get the default output location
-   AC_SET_DEFAULT_OUTPUT
-
-   # Package-level directories
-   header_dir=${srcdir}/html
-   config_dir=${package_top_srcdir}/config
-
-   abs_srcdir=`cd ${srcdir}; pwd`
-   autodoc_dir=${abs_srcdir}
-
-   # For the package, the input is the current directory, plus
-   # configure/doc. There are no examples
-   AC_MSG_CHECKING([for Doxygen input directories])
-   doxygen_input="`pwd`"
-   if test -d ${config_dir}/doc; then
-      doxygen_input="${doxygen_input} ${config_dir}/doc"
-   fi
-   if test -d ${autodoc_dir}; then
-      doxygen_input="${doxygen_input} ${autodoc_dir}"
-   fi
-   AC_MSG_RESULT(${doxygen_input})
-   doxygen_examples=''
-
-   # Component output locations
-   doxygen_html_output="${doxygen_output_top}/html/"
-   doxygen_latex_output="${doxygen_output_top}/latex/"
-
-   # Relative location of the package-level html output.
-   rel_package_html='.'
-
-   AC_AUTODOC_PACKAGE_TAGS
-
-   AC_AUTODOC_SUBST
-
-   AC_CONFIG_FILES([doxygen_config:${config_dir}/doxygen_config.in])
-   AC_CONFIG_FILES([Makefile:${config_dir}/Makefile.autodoc.in])
-   AC_CONFIG_FILES([header.html:html/header.html.in])
-   AC_CONFIG_FILES([footer.html:html/footer.html.in])
-   AC_CONFIG_FILES([mainpage.dcc])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_doxygen.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_utils.m4
-dnl
-dnl Macros to perform useful functions
-dnl
-dnl Mike Buksas
-dnl-------------------------------------------------------------------------dnl
-
-dnl Functions taken from:
-dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
-dnl
-
-AC_DEFUN([adl_COMPUTE_RELATIVE_PATHS],
-[for _lcl_i in $1; do
-  _lcl_from=\[$]`echo "[$]_lcl_i" | sed 's,:.*$,,'`
-  _lcl_to=\[$]`echo "[$]_lcl_i" | sed 's,^[[^:]]*:,,' | sed 's,:[[^:]]*$,,'`
-  _lcl_result_var=`echo "[$]_lcl_i" | sed 's,^.*:,,'`
-  adl_RECURSIVE_EVAL([[$]_lcl_from], [_lcl_from])
-  adl_RECURSIVE_EVAL([[$]_lcl_to], [_lcl_to])
-  _lcl_notation="$_lcl_from$_lcl_to"
-  adl_NORMALIZE_PATH([_lcl_from],['/'])
-  adl_NORMALIZE_PATH([_lcl_to],['/'])
-  adl_COMPUTE_RELATIVE_PATH([_lcl_from], [_lcl_to], [_lcl_result_tmp])
-  adl_NORMALIZE_PATH([_lcl_result_tmp],["[$]_lcl_notation"])
-  eval $_lcl_result_var='[$]_lcl_result_tmp'
-done])
-
-
-dnl adl_COMPUTE_RELATIVE_PATH(FROM, TO, RESULT)
-dnl ===========================================
-dnl Compute the relative path to go from $FROM to $TO and set the value
-dnl of $RESULT to that value.  This function work on raw filenames
-dnl (for instead it will considerate /usr//local and /usr/local as
-dnl two distinct paths), you should really use adl_COMPUTE_REALTIVE_PATHS
-dnl instead to have the paths sanitized automatically.
-dnl
-dnl For instance:
-dnl    first_dir=/somewhere/on/my/disk/bin
-dnl    second_dir=/somewhere/on/another/disk/share
-dnl    adl_COMPUTE_RELATIVE_PATH(first_dir, second_dir, first_to_second)
-dnl will set $first_to_second to '../../../another/disk/share'.
-AC_DEFUN([adl_COMPUTE_RELATIVE_PATH],
-[adl_COMPUTE_COMMON_PATH([$1], [$2], [_lcl_common_prefix])
-adl_COMPUTE_BACK_PATH([$1], [_lcl_common_prefix], [_lcl_first_rel])
-adl_COMPUTE_SUFFIX_PATH([$2], [_lcl_common_prefix], [_lcl_second_suffix])
-$3="[$]_lcl_first_rel[$]_lcl_second_suffix"])
-
-dnl adl_COMPUTE_COMMON_PATH(LEFT, RIGHT, RESULT)
-dnl ============================================
-dnl Compute the common path to $LEFT and $RIGHT and set the result to $RESULT.
-dnl
-dnl For instance:
-dnl    first_path=/somewhere/on/my/disk/bin
-dnl    second_path=/somewhere/on/another/disk/share
-dnl    adl_COMPUTE_COMMON_PATH(first_path, second_path, common_path)
-dnl will set $common_path to '/somewhere/on'.
-AC_DEFUN([adl_COMPUTE_COMMON_PATH],
-[$3=''
-_lcl_second_prefix_match=''
-while test "[$]_lcl_second_prefix_match" != 0; do
-  _lcl_first_prefix=`expr "x[$]$1" : "x\([$]$3/*[[^/]]*\)"`
-  _lcl_second_prefix_match=`expr "x[$]$2" : "x[$]_lcl_first_prefix"`
-  if test "[$]_lcl_second_prefix_match" != 0; then
-    if test "[$]_lcl_first_prefix" != "[$]$3"; then
-      $3="[$]_lcl_first_prefix"
-    else
-      _lcl_second_prefix_match=0
-    fi
-  fi
-done])
-
-dnl adl_COMPUTE_SUFFIX_PATH(PATH, SUBPATH, RESULT)
-dnl ==============================================
-dnl Substrack $SUBPATH from $PATH, and set the resulting suffix
-dnl (or the empty string if $SUBPATH is not a subpath of $PATH)
-dnl to $RESULT.
-dnl
-dnl For instace:
-dnl    first_path=/somewhere/on/my/disk/bin
-dnl    second_path=/somewhere/on
-dnl    adl_COMPUTE_SUFFIX_PATH(first_path, second_path, common_path)
-dnl will set $common_path to '/my/disk/bin'.
-AC_DEFUN([adl_COMPUTE_SUFFIX_PATH],
-[$3=`expr "x[$]$1" : "x[$]$2/*\(.*\)"`])
-
-dnl adl_COMPUTE_BACK_PATH(PATH, SUBPATH, RESULT)
-dnl ============================================
-dnl Compute the relative path to go from $PATH to $SUBPATH, knowing that
-dnl $SUBPATH is a subpath of $PATH (any other words, only repeated '../'
-dnl should be needed to move from $PATH to $SUBPATH) and set the value
-dnl of $RESULT to that value.  If $SUBPATH is not a subpath of PATH,
-dnl set $RESULT to the empty string.
-dnl
-dnl For instance:
-dnl    first_path=/somewhere/on/my/disk/bin
-dnl    second_path=/somewhere/on
-dnl    adl_COMPUTE_BACK_PATH(first_path, second_path, back_path)
-dnl will set $back_path to '../../../'.
-AC_DEFUN([adl_COMPUTE_BACK_PATH],
-[adl_COMPUTE_SUFFIX_PATH([$1], [$2], [_lcl_first_suffix])
-$3=''
-_lcl_tmp='xxx'
-while test "[$]_lcl_tmp" != ''; do
-  _lcl_tmp=`expr "x[$]_lcl_first_suffix" : "x[[^/]]*/*\(.*\)"`
-  if test "[$]_lcl_first_suffix" != ''; then
-     _lcl_first_suffix="[$]_lcl_tmp"
-     $3="../[$]$3"
-  fi
-done])
-
-dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
-dnl =================================
-dnl Interpolate the VALUE in loop until it doesn't change,
-dnl and set the result to $RESULT.
-dnl WARNING: It's easy to get an infinite loop with some unsane input.
-AC_DEFUN([adl_RECURSIVE_EVAL],
-[_lcl_receval="$1"
-$2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
-     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
-     _lcl_receval_old=''
-     while test "[$]_lcl_receval_old" != "[$]_lcl_receval"; do
-       _lcl_receval_old="[$]_lcl_receval"
-       eval _lcl_receval="\"[$]_lcl_receval\""
-     done
-     echo "[$]_lcl_receval")`])
-
-
-
-dnl Available from the GNU Autoconf Macro Archive at:
-dnl http://www.gnu.org/software/ac-archive/htmldoc/normpath.html
-dnl
-AC_DEFUN([adl_NORMALIZE_PATH],
-[case ":[$]$1:" in
-# change empty paths to '.'
-  ::) $1='.' ;;
-# strip trailing slashes
-  :*[[\\/]]:) $1=`echo "[$]$1" | sed 's,[[\\/]]*[$],,'` ;;
-  :*:) ;;
-esac
-# squeze repeated slashes
-case ifelse($2,,"[$]$1",$2) in
-# if the path contains any backslashes, turn slashes into backslashes
- *\\*) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1\\\\,g'` ;;
-# if the path contains slashes, also turn backslashes into slashes
- *) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1/,g'` ;;
-esac])
-
-
 
 
