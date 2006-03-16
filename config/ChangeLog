@@ -1,3 +1,11 @@
+2006-03-16  Kelly Thompson  <kgt@lanl.gov>
+
+	* ac_dracoenv.m4 (AC_DBS_STLPORT_ENV): Remove settings for use of
+	  optimized STLPort.  There appear to be problems with the
+	  initialization of std::map containers in the optimized version.
+	  In particular, Trilinos Teuchos doesn't function when built
+	  against the optimized version of STLPort.
+
 2005-07-06  Kelly Thompson  <kgt@lanl.gov>
 
 	* ac_platforms (AC_DBS_COMPAQ_F90_ENVIRONMENT):  For OSF1,
