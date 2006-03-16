@@ -31,25 +31,30 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
       CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
       AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS.])
 
+      dnl Problems with STLport-5.0.X prevent us from using the
+      dnl optimized specializations.
+
       dnl Include different libraries for debug vs opt mode.
       dnl Also define _STLP_DEBUG if --enable-debug is set. 
       AC_MSG_CHECKING("for debug stlport mode")
-      if test "${enable_debug:-yes}" = yes; then
+#     if test "${enable_debug:-yes}" = yes; then
          if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
             AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
          fi
          LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
          CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
+         dnl Consider adding -D_STLP_DEBUG_UNINITIALIZED
+
 dnl         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
          AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS.])
-      else 
-         dnl Use optimized STLport libraries.
-         if ! test -r "${with_stlport}/lib/libstlport.so"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
-         fi
-         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
-      fi
+#      else 
+#         dnl Use optimized STLport libraries.
+#         if ! test -r "${with_stlport}/lib/libstlport.so"; then
+#            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
+#         fi
+#         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
+#         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
+#      fi
 
       AC_MSG_CHECKING("for RPATH mods for stlport")
       RPATH="-Xlinker -rpath ${with_stlport}/lib ${RPATH}"
