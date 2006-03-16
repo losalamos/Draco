@@ -51,7 +51,7 @@ AC_INSTALL_LIB
 
 dnl A space delimited list of packages that this package depends on.
 AC_NEEDS_LIBS(\
-   special_functions units 
+   special_functions units \
    ds++ )
 
 dnl tests
