@@ -109,7 +109,7 @@ class Index_Set
     }
 
     // Allow derived classes const access to the dimensions.
-    unsigned const * const get_dimensions() const { return dimensions; }
+    unsigned const * get_dimensions() const { return dimensions; }
 
 };
 
