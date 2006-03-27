@@ -103,9 +103,9 @@ Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ )
     double sumwt( std::accumulate( wt.begin(), wt.end(), // range
                                    0.0 ) );              // init value.
 
-    // Sanity Checks: none at present
+    // Sanity Checks: always none at present
 
-    if( soft_equiv(norm,2.0) ) 
+    if( !soft_equiv(norm,2.0) ) 
     {
 	double c = norm/sumwt;
 	for ( size_t i=0; i < numAngles; ++i )

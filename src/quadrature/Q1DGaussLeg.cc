@@ -53,7 +53,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
     Require( norm > 0.0 );
 
     double const mu1(-1); // range of direction
-    double const mu2(1);
+    double const mu2( 1);
     gauleg( mu1, mu2, mu, wt, numGaussPoints );
     
     double sumwt( std::accumulate( wt.begin(), wt.end(), // range
@@ -67,7 +67,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
     Ensure( soft_equiv(iOmegaOmegaDomega()[0],2.0/3.0) );
 
     // If norm != 2.0 then renormalize the weights to the required values. 
-    if( soft_equiv(norm,2.0) ) 
+    if( !soft_equiv(norm,2.0) ) 
     {
 	double c = norm/sumwt;
 	for ( size_t i=0; i < numAngles; ++i )

@@ -131,7 +131,7 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
     for ( size_t i = 0; i < numGaussPoints; ++i )
 	sumwt += wt[i];
 
-    if( soft_equiv(norm,2.0) ) 
+    if( !soft_equiv(norm,2.0) ) 
     {
 	double c = norm/sumwt;
 	for ( size_t i=0; i < numAngles; ++i )
