@@ -65,13 +65,18 @@ fi
 for dir in `find . -type d -print`; do
    top_dir=`pwd`
    if test -f ${dir}/configure.ac; then
+      echo ">>> Working in ${dir}"
       cd ${dir}
-      echo ">>> Updating configure files in `pwd`"
+      echo "    Removing configure, aclocal.m4 and autom4te.cache"
+      rm -f configure aclocal.m4
+      rm -rf autom4te.cache
+      echo "    Updating configure files."
       aclocal -I ${config_dir}
       autoconf
+      echo "    Done."
       cd ${top_dir}
    fi
 done
 
-echo ">>> Done."
+echo ">>> All Done."
 
