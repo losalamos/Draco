@@ -344,6 +344,7 @@ forced-clean: uninstall
 	-rm -f .tmp?
 	-rm -rf ${dirstoclean}
 	-rmdir bin
+	-rm *.gcov *.gcno *.gcda
 
 mostlyclean: clean forced-mostlyclean
 forced-mostlyclean:

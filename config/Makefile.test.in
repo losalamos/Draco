@@ -334,6 +334,7 @@ clean:
 	-rm -f .tmp? *.flc *~
 	-rm -f ${test_output_files}
 	-rm -rf ${dirstoclean}
+	-rm -rf *.gcov *.gcno *.gcda
 
 distclean: mostlyclean
 	-rm -f config.status config.cache config.log config.h stamp-h Makefile
