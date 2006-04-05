@@ -213,14 +213,14 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    fi
 
    dnl 
-   dnl STLport
+   dnl Arguments for options defined in ac_instrument.m4
    dnl
+   
+   AC_DRACO_INSTR_ARGS
 
-   dnl specify location of stlport installation.
-   AC_ARG_WITH(stlport,
-      [  --with-stlport        replace default STL with stlPort (off by default)])
-
+   dnl
    dnl Doxygen options
+   dnl
 
    AC_ARG_ENABLE(latex-doc,
       [  --enable-latex-doc      build latex docs with doxygen (off by default)],

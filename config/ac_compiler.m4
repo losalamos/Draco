@@ -104,8 +104,8 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        case $host in
        *-linux-gnu)
            AC_CHECK_PROG(CXX, pgCC, pgCC)
-
-           if test "${CXX}" = pgCC ; then 
+           
+           if test `echo ${CXX} | sed -e 's/.*\///g'` == pgCC ; then 
                CC='pgcc'
                AC_DRACO_PGCC
            else

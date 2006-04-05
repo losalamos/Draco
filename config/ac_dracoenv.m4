@@ -7,67 +7,9 @@ dnl Defines the Draco build system environment.  This is the main
 dnl configure function.
 dnl
 dnl-------------------------------------------------------------------------dnl
-##---------------------------------------------------------------------------##
-## $Id$
-##---------------------------------------------------------------------------##
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DBS_STLPORT_ENV
-dnl
-dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
-dnl presence of "--with-stlport".  If this option is found, the build
-dnl system's environment is modified so that all the all C++ compiles
-dnl use the STL libraries included with STLPort instead of the
-dnl compiler's native STL defintions.
+dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
-
-   AC_MSG_CHECKING("for stlport")
-   if test "${with_stlport:=no}" != no; then
-      if ! test -d "${with_stlport}/include"; then
-         AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
-      fi
-      CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      AC_MSG_RESULT([Yes. -I${with_stlport}/include added to CPPFLAGS.])
-
-      dnl Problems with STLport-5.0.X prevent us from using the
-      dnl optimized specializations.
-
-      dnl Include different libraries for debug vs opt mode.
-      dnl Also define _STLP_DEBUG if --enable-debug is set. 
-      AC_MSG_CHECKING("for debug stlport mode")
-#     if test "${enable_debug:-yes}" = yes; then
-         if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
-            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
-         fi
-         LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
-         dnl Consider adding -D_STLP_DEBUG_UNINITIALIZED
-
-dnl         CXXFLAGS="${CXXFLAGS} -D_STLP_DEBUG"
-         AC_MSG_RESULT([Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS.])
-#      else 
-#         dnl Use optimized STLport libraries.
-#         if ! test -r "${with_stlport}/lib/libstlport.so"; then
-#            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
-#         fi
-#         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-#         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
-#      fi
-
-      AC_MSG_CHECKING("for RPATH mods for stlport")
-      RPATH="-Xlinker -rpath ${with_stlport}/lib ${RPATH}"
-      AC_MSG_RESULT("Added -Xlinker -rpath ${with_stlport}/lib to RPATH")
-
-   elif test "${with_stlport}" = yes; then
-      AC_MSG_ERROR("Must define path to stlport when using --with-stlport=[dir]")
-   else
-      AC_MSG_RESULT("none")
-   fi
-
-   dnl end of AC_DBS_STLPORT_ENV
-])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_ENV
@@ -177,14 +119,17 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
    fi
 
    dnl
-   dnl STL port checks and setup
-   dnl
-   dnl If --with-stlport is on the configure line, we must prepend
-   dnl CXXFLAGS and CPPFLAGS with -I<path_to_stlport>.
-   dnl
-   AC_DBS_STLPORT_ENV
+   dnl Modify environment to support instrumentation options selected
+   dnl by the user.  This function will look for these configure options:
+   dnl   --with-stlport[=<dir>]
+   dnl   --with-coverage[=bullseye|gcov]
+   dnl   --with-memory-check[=purify|insure]
+   dnl 
+   AC_DRACO_INSTR_ENV
 
+   dnl
    dnl add any additional flags
+   dnl
 
    # add user defined cppflags
    if test "${with_cppflags:=no}" != no ; then

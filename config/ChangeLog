@@ -1,3 +1,58 @@
+2006-04-05  Kelly Thompson  <kgt@lanl.gov>
+
+	* ac_instrument.m4: This new configure file provides macro
+	  functions for setting up a build that uses one or more of the
+	  following instrumenting tools: STLPort, BullseyeCoverage or
+	  PurifyPlus. 
+
+	  Use STLPort 	[only available for g++ on Linux]:
+	
+	  --with-stlport[=dir]
+
+	  If [=dir] is not provided, configure checks the value of
+	  $STLPORT_BASE_DIR.  If this environment variable is empty it
+	  tries to use /codes/radtran/vendors/stlport/Linux.
+
+          Use Coverage Tool   [only available for g++ on Linux]:
+	
+	  --with-coverage[=bullseye(default)|gcov]
+
+	  Examines the value of $COVERAGE_BASE_DIR to determine location
+	  of coverage tool.  If this environment variable is not set,
+	  configure will look at /usr/local/bullseye.
+
+	  Support for gcov is not implemented at this time.
+
+	  Use Memory Checking   [only available for g++ on Linux]:
+	
+	  --with-memory-check[=purify(default)|insure]
+
+	  This option is stubbed out for now.  I would like to provide a
+	  capability to configure for PurifyPlus or Insure++ using a
+	  format similar to that provided for STLPort and
+	  BullseyeCoverage.	 
+	
+	* ac_platforms.m4 (AC_DBS_LAHEY_ENVIRONMENT): Modify the checks
+	  for $CXX = g++ so that it ignores leading path information.
+
+	* ac_platforms.m4 (AC_DBS_LINUX_ENVIRONMENT): For g++, add
+	  -pthread to $CXXFLAGS if --with-trilinos or --with-stlport is
+	  specified. 
+
+	* ac_dracoenv.m4 (AC_DRACO_ENV): Move STLPort related functions to
+	  ac_instrument.m4.  Replace call to AC_DBS_STLPORT_ENV with a
+	  call to AC_DRACO_INSTR_ENV that is provided in the file
+	  ac_instrument.m4.  
+
+	* ac_dracoarg.m4 (AC_DRACO_ARGS): Replace help string for
+	  --with-stlport by a call to AC_DRACO_INSTR_ARGS.  This new macro
+	  function provides help strings for the instrumenting options
+	  provided in the new config file ac_instrument.m4.
+
+	* ac_compiler.m4 (AC_CPP_ENV): In the check for --with-cxx=pgi,
+	  modify the test that checks $CXX = pgCC so that it ignores
+	  leading path information.
+
 2006-03-16  Kelly Thompson  <kgt@lanl.gov>
 
 	* ac_dracoenv.m4 (AC_DBS_STLPORT_ENV): Remove settings for use of

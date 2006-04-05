@@ -96,7 +96,7 @@ dnl necessary libraries to LIBS.
 dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DBS_LAHEY_ENVIRONMENT], [dnl
 
-   if test "${CXX}" != g++; then
+   if test `echo ${CXX} | sed -e 's/.*\///g'` != "g++"; then
        AC_MSG_ERROR("LAHEY must be configured with g++ on LINUX.")
    fi
 
@@ -340,7 +340,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        
        if test -n "${STRICTFLAG}"; then
 
-           case $CXX in
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
 
            # GNU g++
            g++) 
@@ -408,7 +408,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 	  test -n "${vendor_gandolf}"; then
 
 	   # Add g2c for various compilers
-           case "${CXX}" in
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
 
                g++)
                    LIBS="${LIBS} -lg2c"
@@ -485,7 +485,13 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        if test "${with_trilinos:-no}" != no || 
           test "${with_stlport:-no}" != no; then
-          CXXFLAGS="${CXXFLAGS} -pthread"
+
+          case `echo ${CXX} | sed -e 's/.*\///g'` in
+          # GNU g++
+          g++) 
+             CXXFLAGS="${CXXFLAGS} -pthread"
+             ;;
+          esac
        fi
 
        #
@@ -501,7 +507,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        AC_VENDOR_FINALIZE
 
        # handle rpaths
-       case ${CXX} in
+       case `echo ${CXX} | sed -e 's/.*\///g'` in
            pgCC)
                AC_DBS_SETUP_RPATH(-R, nospace)
                ;;
@@ -1104,7 +1110,7 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        
        if test -n "${STRICTFLAG}"; then
 
-           case $CXX in
+           case `echo ${CXX} | sed -e 's/.*\///g'`  in
 
            # GNU g++
            g++) 
