@@ -18,7 +18,6 @@
 #include "../Release.hh"
 #include "../RTT_Mesh_Reader.hh"
 #include "RTT_Format_Reader_test.hh"
-//#include "TestRTTMeshReader.hh"
 
 using namespace std;
 
