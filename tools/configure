@@ -812,7 +812,19 @@ Optional Packages:
   --with-ldflags=flags  add flags to \$LDFLAGS
   --with-libs=libs      add libs to \$LIBS
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
-  --with-stlport        replace default STL with stlPort (off by default)
+  --with-stlport[=dir]
+                          replace default STL with STLPort (off by default).
+                          examines value of STLPORT_BASE_DIR.
+                          Only available for g++ on Linux.
+  --with-coverage=bullseye(default)|gcov
+                          produce coverage analysis statistics (off by default).
+                          examines value of COVERAGE_BASE_DIR.
+                          Only available for g++ on Linux.
+  --with-memory-check=purify(default)|insure
+                          produce binaries that are instrumented for memory
+                          checking (off by default). examines value of
+                          MEMORYCHECK_BASE_DIR.
+                          Only available for g++ on Linux.
   --with-doc-output=path  build documentation in path (prefix/documentation by default)
 
 _ACEOF
@@ -1467,11 +1479,31 @@ fi;
 
 
 
+
+
 # Check whether --with-stlport or --without-stlport was given.
 if test "${with_stlport+set}" = set; then
   withval="$with_stlport"
 
 fi;
+
+
+
+# Check whether --with-coverage or --without-coverage was given.
+if test "${with_coverage+set}" = set; then
+  withval="$with_coverage"
+
+fi;
+
+
+
+# Check whether --with-memory-check or --without-memory-check was given.
+if test "${with_memory_check+set}" = set; then
+  withval="$with_memory_check"
+
+fi;
+
+
 
 
    # Check whether --enable-latex-doc or --disable-latex-doc was given.

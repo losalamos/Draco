@@ -856,7 +856,19 @@ Optional Packages:
   --with-ldflags=flags  add flags to \$LDFLAGS
   --with-libs=libs      add libs to \$LIBS
   --with-mips=1,2,3,4   set mips, mips4 by default (SGI ONLY)
-  --with-stlport        replace default STL with stlPort (off by default)
+  --with-stlport[=dir]
+                          replace default STL with STLPort (off by default).
+                          examines value of STLPORT_BASE_DIR.
+                          Only available for g++ on Linux.
+  --with-coverage=bullseye(default)|gcov
+                          produce coverage analysis statistics (off by default).
+                          examines value of COVERAGE_BASE_DIR.
+                          Only available for g++ on Linux.
+  --with-memory-check=purify(default)|insure
+                          produce binaries that are instrumented for memory
+                          checking (off by default). examines value of
+                          MEMORYCHECK_BASE_DIR.
+                          Only available for g++ on Linux.
   --with-doc-output=path  build documentation in path (prefix/documentation by default)
 
 Some influential environment variables:
@@ -1633,11 +1645,31 @@ fi;
 
 
 
+
+
 # Check whether --with-stlport or --without-stlport was given.
 if test "${with_stlport+set}" = set; then
   withval="$with_stlport"
 
 fi;
+
+
+
+# Check whether --with-coverage or --without-coverage was given.
+if test "${with_coverage+set}" = set; then
+  withval="$with_coverage"
+
+fi;
+
+
+
+# Check whether --with-memory-check or --without-memory-check was given.
+if test "${with_memory_check+set}" = set; then
+  withval="$with_memory_check"
+
+fi;
+
+
 
 
    # Check whether --enable-latex-doc or --disable-latex-doc was given.
@@ -4797,7 +4829,7 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-           if test "${CXX}" = pgCC ; then
+           if test `echo ${CXX} | sed -e 's/.*\///g'` == pgCC ; then
                CC='pgcc'
 
    # do compiler configuration
@@ -5361,53 +5393,199 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
    fi
 
 
-   echo "$as_me:$LINENO: checking \"for stlport\"" >&5
-echo $ECHO_N "checking \"for stlport\"... $ECHO_C" >&6
-   if test "${with_stlport:=no}" != no; then
-      if ! test -d "${with_stlport}/include"; then
-         { { echo "$as_me:$LINENO: error: \"Invalid directory ${with_stlport}/include\"" >&5
-echo "$as_me: error: \"Invalid directory ${with_stlport}/include\"" >&2;}
-   { (exit 1); exit 1; }; }
-      fi
-      CPPFLAGS="-I${with_stlport}/include ${CPPFLAGS}"
-      echo "$as_me:$LINENO: result: Yes. -I${with_stlport}/include added to CPPFLAGS." >&5
-echo "${ECHO_T}Yes. -I${with_stlport}/include added to CPPFLAGS." >&6
+   # we must know the host
 
-                  echo "$as_me:$LINENO: checking \"for debug stlport mode\"" >&5
-echo $ECHO_N "checking \"for debug stlport mode\"... $ECHO_C" >&6
-#     if test "${enable_debug:-yes}" = yes; then
-         if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
-            { { echo "$as_me:$LINENO: error: \"Invalid library ${with_stlport}/lib/libstlportstlg.so\"" >&5
-echo "$as_me: error: \"Invalid library ${with_stlport}/lib/libstlportstlg.so\"" >&2;}
+
+
+   echo "$as_me:$LINENO: checking \"option: STLPort?\"" >&5
+echo $ECHO_N "checking \"option: STLPort?\"... $ECHO_C" >&6
+   echo "$as_me:$LINENO: result: \"${with_stlport:=no}\"" >&5
+echo "${ECHO_T}\"${with_stlport:=no}\"" >&6
+
+   if test ${with_stlport} != no; then
+
+   # Find STLPort's location
+   echo "$as_me:$LINENO: checking \"for STLPort installation location\"" >&5
+echo $ECHO_N "checking \"for STLPort installation location\"... $ECHO_C" >&6
+   if test ${with_stlport} = yes; then
+      case $host in
+      *-linux-gnu)
+         if ! test -d ${STLPORT_BASE_DIR:=/codes/radtran/vendors/stlport/Linux}; then
+            { { echo "$as_me:$LINENO: error: \"${STLPORT_BASE_DIR} could not be accessed.\"" >&5
+echo "$as_me: error: \"${STLPORT_BASE_DIR} could not be accessed.\"" >&2;}
    { (exit 1); exit 1; }; }
          fi
-         LIBS="-L${with_stlport}/lib -lstlportstlg ${LIBS}"
-         CPPFLAGS="${CPPFLAGS} -D_STLP_DEBUG"
-         echo "$as_me:$LINENO: result: Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS." >&5
-echo "${ECHO_T}Yes. -D_STLP_DEBUG added to CPPFLAGS. -L${with_stlport}/lib -lstlportstlg added to LIBS." >&6
-#      else
-#         dnl Use optimized STLport libraries.
-#         if ! test -r "${with_stlport}/lib/libstlport.so"; then
-#            AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlport.so")
-#         fi
-#         LIBS="-L${with_stlport}/lib -lstlport ${LIBS}"
-#         AC_MSG_RESULT([No. -L${with_stlport}/lib -lstlport added to LIBS.])
-#      fi
-
-      echo "$as_me:$LINENO: checking \"for RPATH mods for stlport\"" >&5
-echo $ECHO_N "checking \"for RPATH mods for stlport\"... $ECHO_C" >&6
-      RPATH="-Xlinker -rpath ${with_stlport}/lib ${RPATH}"
-      echo "$as_me:$LINENO: result: \"Added -Xlinker -rpath ${with_stlport}/lib to RPATH\"" >&5
-echo "${ECHO_T}\"Added -Xlinker -rpath ${with_stlport}/lib to RPATH\"" >&6
-
-   elif test "${with_stlport}" = yes; then
-      { { echo "$as_me:$LINENO: error: \"Must define path to stlport when using --with-stlport=dir\"" >&5
-echo "$as_me: error: \"Must define path to stlport when using --with-stlport=dir\"" >&2;}
+      ;;
+      *)
+            { { echo "$as_me:$LINENO: error: \"STLPort not supported on the ${host} platform.\"" >&5
+echo "$as_me: error: \"STLPort not supported on the ${host} platform.\"" >&2;}
    { (exit 1); exit 1; }; }
-   else
-      echo "$as_me:$LINENO: result: \"none\"" >&5
-echo "${ECHO_T}\"none\"" >&6
+      ;;
+      esac
    fi
+   echo "$as_me:$LINENO: result: \"${STLPORT_BASE_DIR}\"" >&5
+echo "${ECHO_T}\"${STLPORT_BASE_DIR}\"" >&6
+
+   # Double check accessibility.
+
+   if ! test -d "${STLPORT_BASE_DIR}/include"; then
+      { { echo "$as_me:$LINENO: error: \"Invalid directory ${STLPORT_BASE_DIR}/include\"" >&5
+echo "$as_me: error: \"Invalid directory ${STLPORT_BASE_DIR}/include\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+   if ! test -r "${STLPORT_BASE_DIR}/lib/libstlportstlg.so"; then
+      { { echo "$as_me:$LINENO: error: \"Invalid library ${STLPORT_BASE_DIR}/lib/libstlportstlg.so\"" >&5
+echo "$as_me: error: \"Invalid library ${STLPORT_BASE_DIR}/lib/libstlportstlg.so\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+   # Modify environment
+
+   echo "$as_me:$LINENO: checking \"STLPort modification for CPPFLAGS\"" >&5
+echo $ECHO_N "checking \"STLPort modification for CPPFLAGS\"... $ECHO_C" >&6
+   cppflag_mods="-I${STLPORT_BASE_DIR}/include -D_STLP_DEBUG"
+      CPPFLAGS="${cppflag_mods} ${CPPFLAGS}"
+   echo "$as_me:$LINENO: result: ${cppflag_mods}" >&5
+echo "${ECHO_T}${cppflag_mods}" >&6
+
+
+   echo "$as_me:$LINENO: checking \"STLPort modification for LIBS\"" >&5
+echo $ECHO_N "checking \"STLPort modification for LIBS\"... $ECHO_C" >&6
+   libs_mods="-L${STLPORT_BASE_DIR}/lib -lstlportstlg"
+   LIBS="${libs_mods} ${LIBS}"
+   echo "$as_me:$LINENO: result: ${libs_mods}" >&5
+echo "${ECHO_T}${libs_mods}" >&6
+
+   echo "$as_me:$LINENO: checking \"STLPort modifications for RPATH\"" >&5
+echo $ECHO_N "checking \"STLPort modifications for RPATH\"... $ECHO_C" >&6
+   rpath_mods="-Xlinker -rpath ${STLPORT_BASE_DIR}/lib"
+   RPATH="${rpath_mods} ${RPATH}"
+   echo "$as_me:$LINENO: result: \"$rpath_mods}\"" >&5
+echo "${ECHO_T}\"$rpath_mods}\"" >&6
+
+   fi
+
+
+   echo "$as_me:$LINENO: checking \"Option: coverage analysis?\"" >&5
+echo $ECHO_N "checking \"Option: coverage analysis?\"... $ECHO_C" >&6
+   if test "${with_coverage:=no}" = no; then
+      echo "$as_me:$LINENO: result: \"${with_coverage}\"" >&5
+echo "${ECHO_T}\"${with_coverage}\"" >&6
+   else
+      case ${with_coverage} in
+      bBullseye | BULLSEYE | yes )
+         with_coverage=bullseye
+         echo "$as_me:$LINENO: result: \"${with_coverage}\"" >&5
+echo "${ECHO_T}\"${with_coverage}\"" >&6
+
+   # Check availability
+
+   echo "$as_me:$LINENO: checking \"for Bullseye installation location\"" >&5
+echo $ECHO_N "checking \"for Bullseye installation location\"... $ECHO_C" >&6
+   case $host in
+   *-linux-gnu)
+      if ! test -d ${COVERAGE_BASE_DIR:=/usr/local/bullseye}; then
+         { { echo "$as_me:$LINENO: error: \"${COVERAGE_BASE_DIR} could not be accessed.\"" >&5
+echo "$as_me: error: \"${COVERAGE_BASE_DIR} could not be accessed.\"" >&2;}
+   { (exit 1); exit 1; }; }
+      fi
+      ;;
+   *)
+      { { echo "$as_me:$LINENO: error: \"BullseyeCoverage not supported on the ${host} platform.\"" >&5
+echo "$as_me: error: \"BullseyeCoverage not supported on the ${host} platform.\"" >&2;}
+   { (exit 1); exit 1; }; }
+      ;;
+   esac
+   echo "$as_me:$LINENO: result: \"${COVERAGE_BASE_DIR}\"" >&5
+echo "${ECHO_T}\"${COVERAGE_BASE_DIR}\"" >&6
+
+   # Double check accessibility and other requirements
+
+   if ! test -d "${COVERAGE_BASE_DIR}/include"; then
+      { { echo "$as_me:$LINENO: error: \"Invalid directory ${COVERAGE_BASE_DIR}/include\"" >&5
+echo "$as_me: error: \"Invalid directory ${COVERAGE_BASE_DIR}/include\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+   if ! test -r "${COVERAGE_BASE_DIR}/lib/libcov-noThread.a"; then
+      { { echo "$as_me:$LINENO: error: \"Invalid library ${COVERAGE_BASE_DIR}/lib/libcov-noThread.a\"" >&5
+echo "$as_me: error: \"Invalid library ${COVERAGE_BASE_DIR}/lib/libcov-noThread.a\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+   if ! test -x "${COVERAGE_BASE_DIR}/bin/cov01"; then
+      { { echo "$as_me:$LINENO: error: \"Couldn't execute ${COVERAGE_BASE_DIR}/bin/cov01\"" >&5
+echo "$as_me: error: \"Couldn't execute ${COVERAGE_BASE_DIR}/bin/cov01\"" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+   # BullseyeCoverage only works with g++, gcc, icc, and icpc
+
+   echo "$as_me:$LINENO: checking \"Bullseye equivalent compiler\"" >&5
+echo $ECHO_N "checking \"Bullseye equivalent compiler\"... $ECHO_C" >&6
+   case ${CXX} in
+   g++ | gcc)
+      CXX=${COVERAGE_BASE_DIR}/bin/g++
+      CC=${COVERAGE_BASE_DIR}/bin/gcc
+      echo "$as_me:$LINENO: result: \"${CXX}\"" >&5
+echo "${ECHO_T}\"${CXX}\"" >&6
+      ;;
+   icc | icpc)
+      CXX=${COVERAGE_BASE_DIR}/bin/icpc
+      CC=${COVERAGE_BASE_DIR}/bin/icc
+      echo "$as_me:$LINENO: result: \"${CXX}\"" >&5
+echo "${ECHO_T}\"${CXX}\"" >&6
+      ;;
+   *)
+      { { echo "$as_me:$LINENO: error: \"CXX must be one of g++" >&5
+echo "$as_me: error: \"CXX must be one of g++" >&2;}
+   { (exit gcc); exit gcc; }; }
+      ;;
+   esac
+
+   # Modify environment
+
+   echo "$as_me:$LINENO: checking \"Bullseye modification for LIBS\"" >&5
+echo $ECHO_N "checking \"Bullseye modification for LIBS\"... $ECHO_C" >&6
+   libs_mods="-L${COVERAGE_BASE_DIR}/lib -lcov-noThread"
+   LIBS="${libs_mods} ${LIBS}"
+   echo "$as_me:$LINENO: result: ${libs_mods}" >&5
+echo "${ECHO_T}${libs_mods}" >&6
+
+# Turn of DBC checks at these screw up coverage numbers.
+   if test "${with_dbc:-yes}" != 0; then
+      with_dbc=0
+      { echo "$as_me:$LINENO: WARNING: \"Design-by-Contract assertions have been disabled for due to activation of code coverage mode.\"" >&5
+echo "$as_me: WARNING: \"Design-by-Contract assertions have been disabled for due to activation of code coverage mode.\"" >&2;}
+   fi
+
+
+      ;;
+      gcov)
+         { { echo "$as_me:$LINENO: error: \"Support for gcov has not been implemented.\"" >&5
+echo "$as_me: error: \"Support for gcov has not been implemented.\"" >&2;}
+   { (exit 1); exit 1; }; }
+      ;;
+      *)
+         { { echo "$as_me:$LINENO: error: \"Unknown coverage tool ${with_coverage}.\"" >&5
+echo "$as_me: error: \"Unknown coverage tool ${with_coverage}.\"" >&2;}
+   { (exit 1); exit 1; }; }
+      ;;
+      esac
+   fi
+
+
+
+  echo "$as_me:$LINENO: checking \"Option: memory checking?\"" >&5
+echo $ECHO_N "checking \"Option: memory checking?\"... $ECHO_C" >&6
+  if test "${with_memory_check:=no}" = no; then
+     echo "$as_me:$LINENO: result: \"none\"" >&5
+echo "${ECHO_T}\"none\"" >&6
+  else
+     { { echo "$as_me:$LINENO: error: \"This feature is not enabled at this time.\"" >&5
+echo "$as_me: error: \"This feature is not enabled at this time.\"" >&2;}
+   { (exit 1); exit 1; }; }
+  fi
+
+
 
 
 
@@ -5591,7 +5769,7 @@ _ACEOF
 
        if test -n "${STRICTFLAG}"; then
 
-           case $CXX in
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
 
            # GNU g++
            g++)
@@ -5718,7 +5896,7 @@ done
        case ${F90} in
        lf95)
 
-   if test "${CXX}" != g++; then
+   if test `echo ${CXX} | sed -e 's/.*\///g'` != "g++"; then
        { { echo "$as_me:$LINENO: error: \"LAHEY must be configured with g++ on LINUX.\"" >&5
 echo "$as_me: error: \"LAHEY must be configured with g++ on LINUX.\"" >&2;}
    { (exit 1); exit 1; }; }
@@ -5887,7 +6065,7 @@ echo $ECHO_N "checking \"libg2c requirements\"... $ECHO_C" >&6
 	  test -n "${vendor_gandolf}"; then
 
 	   # Add g2c for various compilers
-           case "${CXX}" in
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
 
                g++)
                    LIBS="${LIBS} -lg2c"
@@ -6016,7 +6194,13 @@ echo "${ECHO_T}\"not needed\"" >&6
        #
        if test "${with_trilinos:-no}" != no ||
           test "${with_stlport:-no}" != no; then
-          CXXFLAGS="${CXXFLAGS} -pthread"
+
+          case `echo ${CXX} | sed -e 's/.*\///g'` in
+          # GNU g++
+          g++)
+             CXXFLAGS="${CXXFLAGS} -pthread"
+             ;;
+          esac
        fi
 
        #
@@ -6860,7 +7044,7 @@ echo "${ECHO_T}\"no vendor lib dirs defined\"" >&6
 
 
        # handle rpaths
-       case ${CXX} in
+       case `echo ${CXX} | sed -e 's/.*\///g'` in
            pgCC)
 
        rptrigger=-R
@@ -7047,7 +7231,7 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
 
        # setup lf95 libs
 
-   if test "${CXX}" != g++; then
+   if test `echo ${CXX} | sed -e 's/.*\///g'` != "g++"; then
        { { echo "$as_me:$LINENO: error: \"LAHEY must be configured with g++ on LINUX.\"" >&5
 echo "$as_me: error: \"LAHEY must be configured with g++ on LINUX.\"" >&2;}
    { (exit 1); exit 1; }; }
@@ -12171,7 +12355,7 @@ _ACEOF
 
        if test -n "${STRICTFLAG}"; then
 
-           case $CXX in
+           case `echo ${CXX} | sed -e 's/.*\///g'`  in
 
            # GNU g++
            g++)
@@ -12259,7 +12443,7 @@ echo "$as_me: error: \"Did not find LA-MPI version of mpirun.\"" >&2;}
 
        # setup lf95 libs
 
-   if test "${CXX}" != g++; then
+   if test `echo ${CXX} | sed -e 's/.*\///g'` != "g++"; then
        { { echo "$as_me:$LINENO: error: \"LAHEY must be configured with g++ on LINUX.\"" >&5
 echo "$as_me: error: \"LAHEY must be configured with g++ on LINUX.\"" >&2;}
    { (exit 1); exit 1; }; }
