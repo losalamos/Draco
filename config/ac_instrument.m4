@@ -94,54 +94,63 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
    AC_MSG_CHECKING("option: STLPort?")
    AC_MSG_RESULT("${with_stlport:=no}")
 
+   # Provide an error if this is not Linux
+   if test ${with_stlport} != no; then
+     case ${host} in
+     *-linux-gnu)
+       ;;
+     *)
+       AC_MSG_ERROR("STLPort not supported on the ${host} platform.")
+       ;;
+     esac
+   fi
+
    if test ${with_stlport} != no; then
 
-   # Find STLPort's location
-   AC_MSG_CHECKING("for STLPort installation location")
-   if test ${with_stlport} = yes; then
-      case $host in
-      *-linux-gnu)
-         if ! test -d ${STLPORT_BASE_DIR:=/codes/radtran/vendors/stlport/Linux}; then
-            AC_MSG_ERROR("${STLPORT_BASE_DIR} could not be accessed.")
-         fi
-      ;;
-      *)
-            AC_MSG_ERROR("STLPort not supported on the ${host} platform.")
-      ;;
-      esac
-   fi
-   AC_MSG_RESULT("${STLPORT_BASE_DIR}")
+     # Find STLPort's location
+     AC_MSG_CHECKING("for STLPort installation location")
 
-   # Double check accessibility.
+     # if --with-stlport is requested with no dir specified, then check
+     # the value of STLPORT_BASE_DIR.
+     if test ${with_stlport} = yes; then
+       if test -d ${STLPORT_BASE_DIR:=/codes/radtran/vendors/stlport/Linux}; then
+         with_stlport=${STLPORT_BASE_DIR}
+       else
+         AC_MSG_ERROR("${STLPORT_BASE_DIR} could not be accessed.")
+       fi
+     fi
+     AC_MSG_RESULT("${with_stlport}")
+  
+     # Double check accessibility.
+  
+     if ! test -d "${with_stlport}/include"; then
+        AC_MSG_ERROR("Invalid directory $with_stlport}/include")
+     fi
+     if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
+        AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
+     fi
+  
+     # Modify environment
+  
+     AC_MSG_CHECKING("STLPort modification for CPPFLAGS")
+     cppflag_mods="-I${with_stlport}/include -D_STLP_DEBUG"
+     dnl Consider adding -D_STLP_DEBUG_UNINITIALIZED
+     CPPFLAGS="${cppflag_mods} ${CPPFLAGS}"
+     AC_MSG_RESULT([${cppflag_mods}])
+  
+  dnl Problems with STLport-5.0.X prevent us from using the optimized specializations.
+  
+     AC_MSG_CHECKING("STLPort modification for LIBS")
+     libs_mods="-L${with_stlport}/lib -lstlportstlg"
+     LIBS="${libs_mods} ${LIBS}"
+     AC_MSG_RESULT([${libs_mods}])
+  
+     AC_MSG_CHECKING("STLPort modifications for RPATH")
+     rpath_mods="-Xlinker -rpath ${with_stlport}/lib"
+     RPATH="${rpath_mods} ${RPATH}"
+     AC_MSG_RESULT("$rpath_mods}")
 
-   if ! test -d "${STLPORT_BASE_DIR}/include"; then
-      AC_MSG_ERROR("Invalid directory ${STLPORT_BASE_DIR}/include")
-   fi
-   if ! test -r "${STLPORT_BASE_DIR}/lib/libstlportstlg.so"; then
-      AC_MSG_ERROR("Invalid library ${STLPORT_BASE_DIR}/lib/libstlportstlg.so")
-   fi
-
-   # Modify environment
-
-   AC_MSG_CHECKING("STLPort modification for CPPFLAGS")
-   cppflag_mods="-I${STLPORT_BASE_DIR}/include -D_STLP_DEBUG"
-   dnl Consider adding -D_STLP_DEBUG_UNINITIALIZED
-   CPPFLAGS="${cppflag_mods} ${CPPFLAGS}"
-   AC_MSG_RESULT([${cppflag_mods}])
-
-dnl Problems with STLport-5.0.X prevent us from using the optimized specializations.
-
-   AC_MSG_CHECKING("STLPort modification for LIBS")
-   libs_mods="-L${STLPORT_BASE_DIR}/lib -lstlportstlg"
-   LIBS="${libs_mods} ${LIBS}"
-   AC_MSG_RESULT([${libs_mods}])
-
-   AC_MSG_CHECKING("STLPort modifications for RPATH")
-   rpath_mods="-Xlinker -rpath ${STLPORT_BASE_DIR}/lib"
-   RPATH="${rpath_mods} ${RPATH}"
-   AC_MSG_RESULT("$rpath_mods}")
-
-   fi dnl if ${with_stlport} != no;
+   fi dnl  if test ${with_stlport} != no
 
    dnl end of AC_DBS_STLPORT_ENV
 ])
