@@ -78,6 +78,7 @@ for variable in $*
 	next='proc'
     else
 	executable=$variable
+	executable_name=`echo ${variable} | sed -e 's/.*[/]//' | sed -e 's/[.].*//'`
 	next='exe_options'
     fi
 done
@@ -159,7 +160,7 @@ esac
 echo "****************************************"
 echo "* TEST RUN HEADER"
 echo "*"
-echo "* Name       : $executable"
+echo "* Name       : $executable_name"
 echo "* Processors : $procs"
 echo "* Type       : $exe"
 echo "****************************************"
