@@ -18,8 +18,217 @@
 #include "EoS.hh"
 #include "OpacityCommon.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <vector>
 #include <string>
+#include <cmath>
+
+//---------------------------------------------------------------------------//
+// UNNAMED NAMESPACE
+//---------------------------------------------------------------------------//
+// Nested unnamed namespace that holds data and services used by the
+// Planckian integration routines.  The data in this namespace is accessible
+// by the methods in this file only (internal linkage).
+
+
+namespace
+{
+
+// Constants used in the Taylor series expansion of the Planckian:
+static const double coeff_3  =    1.0 / 3.0;
+static const double coeff_4  =   -1.0 / 8.0;
+static const double coeff_5  =    1.0 / 60.0;
+static const double coeff_7  =   -1.0 / 5040.0;
+static const double coeff_9  =    1.0 / 272160.0;
+static const double coeff_11 =   -1.0 / 13305600.0;
+static const double coeff_13 =    1.0 / 622702080.0;
+static const double coeff_15 =  -6.91 / 196151155200.0;
+static const double coeff_17 =    1.0 / 1270312243200.0;
+static const double coeff_19 = -3.617 / 202741834014720.0;
+static const double coeff_21 = 43.867 / 107290978560589824.0;
+
+static const double coeff       = 0.1539897338202651; // 15/pi^4
+static const double NORM_FACTOR = 0.25*coeff;         // 15/(4*pi^4);
+
+
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Computes the normalized Planck integral via a 21 term Taylor
+ * expansion. 
+ *
+ * The taylor expansion of the planckian integral looks as follows:
+ *
+ * I(x) = c0(c3x^3 + c4x^4 + c5x^5 + c7x^7 + c9x^9 + c11x^11 + c13x^13 +
+ *           c15x^15 + c17x^17 + c19x^19 + c21x^21)
+ *
+ * If done naively, this requires 136 multiplications. If you accumulate
+ * the powers of x as you go, it can be done with 24 multiplications.
+ *
+ * If you express the polynomaial as follows:
+ * 
+ * I(x) = c0*x^3(c3 + x(c4 + x(c5 + x^2(c7 + x^2(c9 + x^2(c11 + x^2(c13 +
+ *               x^2(c15 + x^2(c17 + x^2(c19 + x^2c21))))))))))
+ *
+ * the evaluation can be done with 13 multiplications. Furthermore, we do
+ * not need to worry about overflow on large powers of x, since the largest
+ * power we compute is x^3
+ *
+ * \param  The point at which the Planck integral is evaluated.
+ * \return The integral value.
+ */
+
+inline double taylor_series_planck(double x)
+{
+
+    Require( x >= 0.0 );
+
+    const double xsqrd  = x * x;
+
+    double taylor ( coeff_21 * xsqrd );
+
+    taylor += coeff_19;
+    taylor *= xsqrd;
+
+    taylor += coeff_17;
+    taylor *= xsqrd;
+
+    taylor += coeff_15;
+    taylor *= xsqrd;
+
+    taylor += coeff_13;
+    taylor *= xsqrd;
+
+    taylor += coeff_11;
+    taylor *= xsqrd;
+
+    taylor += coeff_9;
+    taylor *= xsqrd;
+
+    taylor += coeff_7;
+    taylor *= xsqrd;
+
+    taylor += coeff_5;
+    taylor *= x;
+
+    taylor += coeff_4;
+    taylor *= x;
+
+    taylor += coeff_3;
+    taylor *= x * xsqrd * coeff;
+    
+    Ensure (taylor >= 0.0);
+
+    return taylor;
+}
+
+
+// ---------------------------------------------------------------------------
+// return the 10-term Polylogarithmic expansion (minus one) for the Planck
+// integral given x and e^(-x) (for efficiency)
+double polylog_series_minus_one_planck(const double x, const double eix)
+{
+
+    Require (x >= 0.0);
+    Require (rtt_dsxx::soft_equiv(std::exp(-x), eix));
+
+    const double xsqrd = x * x;
+
+    static const double i_plus_two_inv[9] = 
+	{
+	    0.5000000000000000, // 1/2
+	    0.3333333333333333, // 1/3
+	    0.2500000000000000, // 1/4
+	    0.2000000000000000, // 1/5
+	    0.1666666666666667, // 1/6
+	    0.1428571428571429, // 1/7
+	    0.1250000000000000, // 1/8
+	    0.1111111111111111, // 1/9
+	    0.1000000000000000  // 1/10
+	};
+    double const * curr_inv = i_plus_two_inv;
+    
+    // initialize to what would have been the calculation of the i=1 term.
+    // This saves a number of "mul by one" ops.
+    double eixp = eix;
+    double li1  = eix;
+    double li2  = eix; 
+    double li3  = eix;
+    double li4  = eix;
+
+    // calculate terms 2..10.  This loop has been unrolled by a factor of 3
+    for(int i = 2; i < 11; i += 3)
+    {
+	register const double ip0_inv = *curr_inv++;
+	eixp *= eix;
+	double eixr_ip0 = eixp * ip0_inv;
+
+	register const double ip1_inv = *curr_inv++;
+	eixp *= eix;
+	double eixr_ip1 = eixp * ip1_inv;
+
+	register const double ip2_inv = *curr_inv++;
+	eixp *= eix;
+	double eixr_ip2 = eixp * ip2_inv;
+
+	
+	const double r10 = eixr_ip0;
+	const double r11 = eixr_ip1;
+	const double r12 = eixr_ip2;
+
+	const double r20 = (eixr_ip0 *= ip0_inv);
+	const double r21 = (eixr_ip1 *= ip1_inv);
+	const double r22 = (eixr_ip2 *= ip2_inv);
+
+	li1 += r10 + r11 + r12;
+
+	const double r30 = (eixr_ip0 *= ip0_inv);
+	const double r31 = (eixr_ip1 *= ip1_inv);
+	const double r32 = (eixr_ip2 *= ip2_inv);
+
+	li2 += r20 + r21 + r22;
+
+	const double r40 = (eixr_ip0 *= ip0_inv);
+	const double r41 = (eixr_ip1 *= ip1_inv);
+	const double r42 = (eixr_ip2 *= ip2_inv);
+
+	li3 += r30 + r31 + r32;
+	li4 += r40 + r41 + r42;
+    }
+
+
+    // calculate the lower polylogarithmic integral
+    const double poly = -coeff * (xsqrd * x * li1 +
+				  3 * xsqrd * li2 +
+				  6.0 * (x * li3 + li4));
+    
+    Ensure (poly <= 0.0);
+    return poly;
+}
+
+
+
+double Planck2Rosseland(const double freq, const double exp_freq)
+{
+
+    Check(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
+    
+    const double freq_3 = freq*freq*freq;
+    
+    double factor;
+
+    if (freq > 1.0e-5)
+        factor = NORM_FACTOR * exp_freq * (freq_3*freq) / (1 - exp_freq);
+    else
+        factor = NORM_FACTOR * freq_3 / (1 - 0.5*freq);
+
+    return factor;
+
+}
+
+} // end of unnamed namespace
+
+
 
 namespace rtt_cdi
 {
@@ -317,14 +526,17 @@ class CDI
 
     //! Integrate the normalized Planckian from 0 to x (hnu/kT).
     inline static double integrate_planck(
-        const double frequency, 
-        const double T); 
+        const double scaled_frequency);
+    
+    inline static double integrate_planck(
+        const double scaled_frequency,
+        const double exp_scaled_freqeuency);
 
     //! Integrate the normalized Planckian and Rosseland from 0 to x (hnu/kT)
     inline static void integrate_planck_rosseland(
-        const double frequency,
-        const double T,
-        double& placnk,
+        const double sclaed_frequency,
+        const double exp_scaled_frequency,
+        double& planck,
         double& rosseland);
 
 
@@ -463,6 +675,85 @@ class CDI
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/**
+ * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
+ *
+ * \param scaled_freq upper integration limit, scaled by the temperature.
+ * 
+ * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
+ *
+ */
+double CDI::integrate_planck(const double scaled_freq)
+{
+
+    const double exp_scaled_freq = std::exp(-scaled_freq);
+
+    return CDI::integrate_planck(scaled_freq, exp_scaled_freq);
+
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
+ *
+ * \param scaled_freq upper integration limit, scaled by the temperature.
+ * 
+ * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
+ *
+ */
+double CDI::integrate_planck(const double scaled_freq, const double exp_scaled_freq)
+{
+
+    const double poly   = polylog_series_minus_one_planck(scaled_freq, exp_scaled_freq) + 1.0;
+    const double taylor = taylor_series_planck(scaled_freq);
+
+    double integral = std::min(taylor, poly);
+
+    Ensure ( integral >= 0.0 );
+    Ensure ( integral <= 1.0 );
+
+    return integral;
+    
+}
+
+//---------------------------------------------------------------------------//
+/* \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+ * (\frac{h\nu}{kT}) \f$.
+ *
+ * \param scaled_freq frequency upper integration limit scaled by temperature
+ * \param planck Variable to return the Planck integral
+ * \param rosseland Variable to return the Rosseland integral
+ * 
+ */
+void CDI::integrate_planck_rosseland(const double scaled_freq,
+                                     const double exp_scaled_freq,
+                                     double& planck,
+                                     double& rosseland)
+{
+
+    Require(scaled_freq >= 0.0);
+    Require(rtt_dsxx::soft_equiv(exp_scaled_freq, std::exp(-scaled_freq)));
+
+    
+    // Calculate the Planckian integral 
+    planck = integrate_planck(scaled_freq);
+    
+    Require (planck >= 0.0);
+    Require (planck <= 1.0);
+
+    const double diff_rosseland = Planck2Rosseland(scaled_freq, exp_scaled_freq);
+
+    rosseland = planck - diff_rosseland;
+
+    Ensure (rosseland >= 0.0);
+    Ensure (rosseland <= 1.0);
+
+    return;
+
+}
     
 } // end namespace rtt_cdi
 

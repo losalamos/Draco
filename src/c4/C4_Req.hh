@@ -118,7 +118,7 @@ class C4_Req {
     void wait()     { p->wait(); }
     void free()     { p->free(); }
 
-    bool complete() { return p->complete(); }
+    bool complete() { return p->complete(); }  // Should be const?
 
     unsigned count() { return p->count(); }
 
