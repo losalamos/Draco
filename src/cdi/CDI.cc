@@ -378,7 +378,9 @@ void CDI::integrate_Planckian_Spectrum(const std::vector<double>& bounds,
     const int groups = bounds.size() - 1;
     Check(groups >= 1);
 
-    planck.resize(groups);
+    planck.resize(groups, 0.0);
+
+    if (T == 0) return;
 
     double scaled_frequency, last_scaled_frequency;
     double planck_value, last_planck;
@@ -425,13 +427,15 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
                                                  std::vector<double>& rosseland)
 {
 
-    Require( T > 0.0);
+    Require( T >= 0.0);
     
     const int groups = bounds.size() - 1;
     Check(groups >= 1);
 
     planck.resize(groups);
     rosseland.resize(groups);
+
+    if (T == 0.0) return;
 
     double scaled_frequency, last_scaled_frequency;
     double exp_scaled_frequency, last_exp_scaled_frequency;
