@@ -432,8 +432,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
     const int groups = bounds.size() - 1;
     Check(groups >= 1);
 
-    planck.resize(groups);
-    rosseland.resize(groups);
+    planck.resize   (groups, 0.0);
+    rosseland.resize(groups, 0.0);
 
     if (T == 0.0) return;
 
