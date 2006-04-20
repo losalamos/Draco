@@ -43,8 +43,11 @@ while : ; do
 done
 cd ${curdir}
 
+
+
 # Obtain full path name for config_dir
 config_dir=`(cd ${config_dir};pwd)`
+pkg_config_dir=`echo $config_dir | sed -e 's/config/pkg_config/'`
 
 # ensure that we found a directory
 if test ! -d ${config_dir}; then
@@ -71,7 +74,11 @@ for dir in `find . -type d -print`; do
       rm -f configure aclocal.m4
       rm -rf autom4te.cache
       echo "    Updating configure files."
-      aclocal -I ${config_dir}
+      if test -d ${pkg_config_dir}; then
+        aclocal -I ${pkg_config_dir} -I ${config_dir}
+      else
+        aclocal -I ${config_dir}
+      fi
       autoconf
       echo "    Done."
       cd ${top_dir}
