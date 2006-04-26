@@ -1,3 +1,68 @@
+2006-04-26  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Release of draco-5_12_0.  This is a minor Draco release.
+	A summary of changes is:
+
+	ds++
+	  - updates to Index_ services
+	  - small constructor fixups in SortPermutation and Mat
+		
+	parser
+	  - updated tests and fixups
+
+	quadrature
+	  - fixed normalizations
+
+	cdi
+	  - more optimizations and better checking on return values
+
+	c4
+	  - added MPI_Probe implementation to C4_MPI as generic
+	    blocked_probe() function
+
+	RTT_Format_Reader
+	  - added triangle and quadratic line elements
+
+	config 
+	  - added parsing for compilers when the entire compiler path is
+	    set by the environment 
+	  - moved tool settings to ac_instrument.m4; added coverage	    
+	    (BULLSEYE) tool implementation to build system, moved STLPORT
+	    environment setup to this location 
+	  - added some updates for linking TRILINOS
+	
+	Released packages in draco-5_12_0.	
+		
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		fpe_trap
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+		special_functions
+
+	Unreleased packages:
+		pcgWrap
+		cdi_eospac
+
+	This release was required by jayenne [clubimc-3_2_0 and
+	wedgehog-5_2_0]. 
+
 2006-02-09  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Release draco-5_11_0.  This is a minor Draco release.  A
@@ -41,8 +106,8 @@
 	  pcgWrap
 	  cdi_eospac
 
-	This release was required by jayenne (clubimc-3_1_0 and
-	wedgehog-5_1_0). 
+	This release was required by jayenne [clubimc-3_1_0 and
+	wedgehog-5_1_0] . 
 
 2006-01-31 Jae Chang <jhchang@lanl.gov>
 
@@ -127,9 +192,6 @@
 	                    Python source:    3118
 	                    Expect source:       0
 	                     Elisp source:    3289
-
-
-
 
 2006-01-09  Thomas M. Evans  <tme@lanl.gov>
 
