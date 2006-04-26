@@ -2069,8 +2069,6 @@ dnl instrumentation.  Provide support for STLport and BullseyeCoverage
 dnl on Linx.
 dnl
 dnl ----------------------------------------------------------------------- dnl
-dnl $Id$
-dnl ----------------------------------------------------------------------- dnl
 
 dnl ----------------------------------------------------------------------- dnl
 dnl AC_DRACO_INSTR_ARGS

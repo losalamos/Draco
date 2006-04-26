@@ -1829,7 +1829,7 @@ dnl Defines the Draco build system environment.  This is the main
 dnl configure function.
 dnl
 dnl-------------------------------------------------------------------------dnl
-dnl $Id$
+
 dnl-------------------------------------------------------------------------dnl
 
 
@@ -2320,8 +2320,6 @@ dnl Defines the Draco build system environment needed for
 dnl instrumentation.  Provide support for STLport and BullseyeCoverage
 dnl on Linx.
 dnl
-dnl ----------------------------------------------------------------------- dnl
-dnl $Id$
 dnl ----------------------------------------------------------------------- dnl
 
 dnl ----------------------------------------------------------------------- dnl
