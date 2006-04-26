@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.9.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -10,6 +10,2000 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_conf.m4
+dnl
+dnl Service macros used in configure.ac's throughout Draco.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:19
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_PREREQ
+dnl
+dnl Checks the configure version
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_PREREQ], [dnl
+
+   # we need at least autoconf 2.53 to work correctly
+   AC_PREREQ(2.53)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_NEEDS_LIBS
+dnl
+dnl add DRACO-dependent libraries necessary for a package
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_NEEDS_LIBS], [dnl
+   if test ${has_libdir:=no} != "yes" ; then
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
+       has_libdir="yes"
+   fi
+
+   for lib in $1
+   do
+       # temporary string to keep line from getting too long
+       draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
+       DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
+       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
+   done
+
+   # Keep a list of component dependencies free of other tags or paths.
+   DEPENDENT_COMPONENTS="$1"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_NEEDS_LIBS_TEST
+dnl
+dnl add DRACO-dependent libraries necessary for a package test
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
+   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
+   for lib in $1
+   do
+       # temporary string to keep line from getting too long
+       draco_test_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
+       DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
+       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
+   done
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_RUNTESTS
+dnl
+dnl add DRACO-package tests (default to use DejaGnu)
+dnl usage: in configure.ac:
+dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
+dnl where serial means run as serial test only.
+dnl If compiling with scalar c4 then nprocs are ignored.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_RUNTESTS], [dnl
+	test_alltarget="$test_alltarget $1"
+        
+	test_nprocs="$2"
+
+	if test -z "${test_nprocs}" ; then
+	    AC_MSG_ERROR("No procs choosen for the tests!")
+        fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_TESTEXE
+dnl
+dnl determines what type of executable the tests are, for example, you 
+dnl can set the executable to some scripting extension, like python.
+dnl the default is an executable binary
+dnl options are PYTHON
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_TESTEXE], [dnl
+   test_exe="$1"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_INSTALL_EXECUTABLE
+dnl
+dnl where executables will be installed
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
+   install_executable="\${bindir}/\${package}"
+   installdirs="${installdirs} \${bindir}"
+   alltarget="${alltarget} bin/\${package}"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_INSTALL_LIB
+dnl
+dnl where libraries will be installed
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_INSTALL_LIB], [ dnl
+   install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
+   installdirs="${installdirs} \${libdir}"
+   alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
+
+   # test will need to link this library
+   PKG_DEPENDS='../lib${LIB_PREFIX}${package}${libsuffix}'
+   PKG_LIBS='-L.. -l${LIB_PREFIX}${package}'
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_INSTALL_HEADERS
+dnl
+dnl where headers will be installed 
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
+   install_headers="\${installheaders}"
+   installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_CHECK_TOOLS
+dnl
+dnl Find tools used by the build system (latex, bibtex, python, etc)
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
+
+   dnl
+   dnl TOOL CHECKS
+   dnl
+   
+   dnl check for and assign the path to python
+   AC_PATH_PROG(PYTHON_PATH, python, null)
+   if test "${PYTHON_PATH}" = null ; then
+       AC_MSG_ERROR("No valid Python found!")
+   fi
+   
+   dnl check for and assign the path to perl
+   AC_PATH_PROG(PERL_PATH, perl, null)
+   if test "${PERL_PATH}" = null ; then
+       AC_MSG_WARN("No valid Perl found!")
+   fi
+
+   dnl check for CVS
+   AC_PATH_PROG(CVS_PATH, cvs, null)
+   if test "${CVS_PATH}" = null ; then
+       AC_MSG_WARN("No valid CVS found!")
+   fi
+
+   dnl check for and assign the path to ghostview
+   AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)
+   if test "${GHOSTVIEW}" = null ; then
+       AC_MSG_WARN("No valid ghostview found!")
+   fi
+
+   dnl check for and assign the path to latex
+   AC_CHECK_PROGS(LATEX, latex, null)
+   if test "${LATEX}" = null ; then
+       AC_MSG_WARN("No valid latex found!")
+   fi
+   AC_SUBST(LATEXFLAGS)
+
+   dnl check for and assign the path to bibtex
+   AC_CHECK_PROGS(BIBTEX, bibtex, null)
+   if test "${BIBTEX}" = null ; then
+       AC_MSG_WARN("No valid bibtex found!")
+   fi
+   AC_SUBST(BIBTEXFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(XDVI, xdvi, null)
+   if test "${XDVI}" = null ; then
+       AC_MSG_WARN("No valid xdvi found!")
+   fi
+   AC_SUBST(XDVIFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
+   if test "${PS2PDF}" = null ; then
+       AC_MSG_WARN("No valid ps2pdf found!")
+   fi
+   dnl AC_SUBST(PS2PDFFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(DOTCMD, dot, null)
+   if test "${DOTCMD}" = null ; then
+       AC_MSG_WARN("No valid dot found!")
+   fi
+   dnl AC_SUBST(DOTCMDFLAGS)
+
+   dnl check for and assign the path to dvips
+   AC_CHECK_PROGS(DVIPS, dvips, null)
+   if test "${DVIPS}" = null ; then
+       AC_MSG_WARN("No valid dvips found!")
+   fi
+   AC_SUBST(DVIPSFLAGS)
+
+   dnl check for and assign the path for printing (lp)
+   AC_CHECK_PROGS(LP, lp lpr, null)
+   if test "${LP}" = null ; then
+       AC_MSG_WARN("No valid lp or lpr found!")
+   fi
+   AC_SUBST(LPFLAGS)
+
+   dnl check for and assign the path for doxygen
+   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
+   if test "${DOXYGEN_PATH}" = null ; then
+       AC_MSG_WARN("No valid Doxygen found!")
+   fi
+   AC_SUBST(DOXYGEN_PATH)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+dnl
+dnl changes compiler from newmpxlC to newxlC so that tests can be run
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
+
+   # change compiler
+   if test "${CXX}" = newmpxlC; then
+       white_compiler='newmpxlC'
+       CXX='newxlC'
+       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
+dnl
+dnl changes compiler back to newmpxlC
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
+
+   # change compiler back
+   if test "${white_compiler}" = newmpxlC; then
+       CXX='newmpxlC'
+       AC_MSG_WARN("Changing back to ${CXX} compiler.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_HEAD_MAKEFILE
+dnl 
+dnl Builds default makefile in the head directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HEAD_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:config/Makefile.head.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SRC_MAKEFILE
+dnl 
+dnl Builds default makefile in the src directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SRC_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:../config/Makefile.src.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_conf.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_local.m4
+dnl
+dnl Macros used internally within the Draco build system.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:22
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_WITH_DIR
+dnl
+dnl Define --with-xxx[=DIR] with defaults to an environment variable.
+dnl       Usage: AC_WITH_DIR(flag, CPPtoken, DefaultValue, HelpStr)
+dnl                for environment variables enter \${ENVIRONVAR} for
+dnl                DefaultValue
+dnl usage: in aclocal.m4
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_WITH_DIR], [dnl
+
+ dnl
+ dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
+ dnl
+ dnl AC_PACKAGE is the flag with all dashes turned to underscores
+ dnl AC_WITH_PACKAGE will be substituted to the autoconf shell variable
+ dnl    with_xxx
+ dnl AC_CMDLINE is the shell command to strip double and trailing slashes
+ dnl    from directory names.
+
+ define([AC_PACKAGE], [translit($1, [-], [_])])dnl
+ define([AC_WITH_PACKAGE], [with_]AC_PACKAGE)dnl
+ define([AC_CMDLINE],dnl
+[echo "$]AC_WITH_PACKAGE[" | sed 's%//*%/%g' | sed 's%/$%%'])dnl
+
+ AC_ARG_WITH($1,
+   [  --with-$1[=DIR]    $4 ($3 by default)],
+   if test $AC_WITH_PACKAGE != "no" ; then
+      if test $AC_WITH_PACKAGE = "yes" ; then
+         # following eval needed to remove possible '\' from $3
+         eval AC_WITH_PACKAGE=$3
+      fi
+
+      # this command removes double slashes and any trailing slash
+
+      AC_WITH_PACKAGE=`eval AC_CMDLINE`
+      if test "$AC_WITH_PACKAGE:-null}" = "null" ; then
+         { echo "configure: error: --with-$1 directory is unset" 1>&2; \
+           exit 1; }
+      fi
+      if test ! -d $AC_WITH_PACKAGE ; then
+         { echo "configure: error: $AC_WITH_PACKAGE: invalid directory" 1>&2; \
+           exit 1; }
+      fi
+
+      # this sets up the shell variable, with the name of the CPPtoken,
+      # and that we later will do an AC_SUBST on.
+      $2="${AC_WITH_PACKAGE}/"
+
+      # this defines the CPP macro with the directory and single slash appended.
+      AC_DEFINE_UNQUOTED($2, ${AC_WITH_PACKAGE}/)dnl
+
+      # print a message to the users (that can be turned off with --silent)
+
+      echo "$2 has been set to $$2" 1>&6
+
+   fi)
+
+   AC_SUBST($2)dnl
+
+])
+	
+dnl-------------------------------------------------------------------------dnl
+dnl AC_VENDORLIB_SETUP(1,2)
+dnl
+dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
+dnl usage: in aclocal.m4
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
+
+   # $1 is the vendor_<> tag (equals pkg or test)
+   # $2 are the directories added 
+
+   if test "${$1}" = pkg ; then
+       VENDOR_LIBS="${VENDOR_LIBS} $2"
+   elif test "${$1}" = test ; then
+       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} $2"
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_FIND_TOP_SRC(1,2)
+dnl 
+dnl Find the top source directory of the package by searching upward
+dnl from the argument directory. The top source directory is defined
+dnl as the one with a 'config' sub-directory.
+dnl
+dnl Note: This function will eventually quit if the searched for
+dnl directory is not above the argument. It does so when $temp_dir
+dnl ceases to be a valid directory, which only seems to happen after a
+dnl LOT of ..'s are added to it.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_FIND_TOP_SRC], [dnl
+   
+   # $1 is the component's source directory
+   # $2 is the variable to store the package's main source directory in.
+
+   temp_dir=$1
+   AC_MSG_CHECKING([package top source directory])
+   while test -d $temp_dir -a ! -d $temp_dir/config ; do   
+       temp_dir="${temp_dir}/.."
+   done
+   if test -d $temp_dir; then
+       $2=`cd $temp_dir; pwd;`
+       AC_MSG_RESULT([$$2])
+   else
+       AC_MSG_ERROR('Could not find package top source directory')
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
+dnl
+dnl These are all the variable substitutions used within the draco
+dnl build system
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
+
+   # these variables are declared "precious", meaning that they are
+   # automatically substituted, put in the configure --help, and
+   # cached 
+   AC_ARG_VAR(CC)dnl
+   AC_ARG_VAR(CFLAGS)dnl
+
+   AC_ARG_VAR(CXX)dnl
+   AC_ARG_VAR(CXXFLAGS)dnl
+
+   AC_ARG_VAR(LD)dnl
+   AC_ARG_VAR(LDFLAGS)dnl
+
+   AC_ARG_VAR(AR)dnl
+   AC_ARG_VAR(ARFLAGS)dnl
+
+   AC_ARG_VAR(CPPFLAGS)dnl
+
+   # dependency rules
+   AC_SUBST(DEPENDENCY_RULES)
+
+   # other compiler substitutions
+   AC_SUBST(STRICTFLAG)dnl
+   AC_SUBST(PARALLEL_FLAG)dnl
+   AC_SUBST(RPATH)dnl
+   AC_SUBST(LIB_PREFIX)dnl
+
+   # install program
+   AC_SUBST(INSTALL)dnl
+   AC_SUBST(INSTALL_DATA)dnl
+
+   # files to install
+   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
+   AC_SUBST(installfiles)dnl
+   AC_SUBST(install_executable)dnl
+   AC_SUBST(install_lib)dnl
+   AC_SUBST(install_headers)dnl
+   AC_SUBST(installdirs)dnl
+
+   # package libraries
+   AC_SUBST(alltarget)dnl
+   AC_SUBST(libsuffix)dnl
+   AC_SUBST(dirstoclean)dnl
+   AC_SUBST(package)dnl
+   AC_SUBST(DRACO_DEPENDS)dnl
+   AC_SUBST(DRACO_LIBS)dnl
+   AC_SUBST(VENDOR_DEPENDS)dnl
+   AC_SUBST(VENDOR_INC)dnl
+   AC_SUBST(VENDOR_LIBS)dnl
+   AC_SUBST(ARLIBS)dnl
+
+   # package testing libraries
+   AC_SUBST(PKG_DEPENDS)dnl
+   AC_SUBST(PKG_LIBS)dnl
+   AC_SUBST(DRACO_TEST_DEPENDS)dnl
+   AC_SUBST(DRACO_TEST_LIBS)dnl
+   AC_SUBST(VENDOR_TEST_DEPENDS)dnl
+   AC_SUBST(VENDOR_TEST_LIBS)dnl
+   AC_SUBST(ARTESTLIBS)dnl
+   AC_SUBST(test_alltarget)dnl
+   AC_SUBST(test_flags)dnl
+   AC_SUBST(test_scalar)dnl
+   AC_SUBST(test_nprocs)dnl
+   AC_SUBST(test_output_files)dnl
+
+   # libraries
+   AC_ARG_VAR(LIBS)dnl
+
+   # configure options
+   AC_SUBST(configure_command)dnl
+
+   # directories in source tree
+   AC_SUBST(package_top_srcdir)
+   
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_local.m4
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl File  : draco/config ac_dracoenv.m4
+dnl Author: Thomas M. Evans
+dnl Date  : 1999/02/04 01:56:21
+dnl
+dnl Defines the Draco build system environment.  This is the main
+dnl configure function.
+dnl
+dnl-------------------------------------------------------------------------dnl
+dnl $Id$
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_ENV
+dnl
+dnl Assembles the Draco build system compile-time environment.  
+dnl It processes all of the options given to configure.  It does
+dnl NOT do any compile or link testing.  That functionality is
+dnl defined in ac_dracotests.m4.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_ENV], [dnl
+
+   dnl
+   dnl CONFIGURE ARGUMENTS
+   dnl
+
+   # Retrieve the configure command line for possible use in 
+   # regression test output.
+
+   configure_command="$[]0 $[]*"
+
+   dnl
+   dnl ADD DRACO CONFIGURE ARGUMENTS
+   dnl
+
+   AC_DRACO_ARGS
+
+   dnl
+   dnl first find the host
+   dnl
+   
+   AC_REQUIRE([AC_CANONICAL_HOST])
+
+   dnl
+   dnl INSTALL
+   dnl
+
+   # we use the install script provided with autoconf on all machines
+   INSTALL='${config_dir}/install-sh -c'
+   INSTALL_DATA='${INSTALL} -m 644'
+
+   dnl
+   dnl C4 OPERATIONS
+   dnl
+
+   # do the correct #defines
+   if test "$with_c4" = scalar ; then
+       AC_DEFINE(C4_SCALAR)
+   elif test "$with_c4" = mpi ; then
+       AC_DEFINE(C4_MPI)
+   fi
+
+   dnl
+   dnl DBC SETUP
+   dnl
+
+   # set the DBC level
+   if test "${with_dbc:=default}" != default ; then
+       AC_DEFINE_UNQUOTED(DBC, $with_dbc)
+   fi
+
+   dnl
+   dnl LIBRARIES
+   dnl
+   
+   # set the libsuffix variable
+   if test "${enable_shared:=no}" = yes ; then
+       libsuffix='.so'
+   else
+       libsuffix='.a'
+   fi
+
+   dnl      
+   dnl POSIX SOURCE
+   dnl
+
+   dnl system dependent posix defines are performed in the
+   dnl SYSTEM-SPECIFIC SETUP section below
+
+   dnl
+   dnl TOOL CHECKS 
+   dnl
+
+   # the tool checks are called in the top-level configure, so in 
+   # each subsequent configure these should just grab cached values
+   AC_DRACO_CHECK_TOOLS dnl
+
+   dnl
+   dnl COMPILER SETUPS
+   dnl
+
+   # the default compiler is C++; we do not turn on F90 unless
+   # AC_WITH_F90 is called in configure.in (which sets with_cxx='no')
+   if test "${with_cxx}" = no ; then
+
+       # if with_f90 defined test with_f90 for compiler, and call setup
+       # if with_f90 set to yes or not set 
+       # attempt to guess compiler based on target
+       AC_F90_ENV dnl
+
+   else
+   
+       # set up the C++ compilers; if with_cxx is undefined, an
+       # appropriate default for the machine will be choosen
+       AC_CPP_ENV dnl
+
+   fi
+
+   dnl
+   dnl Modify environment to support instrumentation options selected
+   dnl by the user.  This function will look for these configure options:
+   dnl   --with-stlport[=<dir>]
+   dnl   --with-coverage[=bullseye|gcov]
+   dnl   --with-memory-check[=purify|insure]
+   dnl 
+   AC_DRACO_INSTR_ENV
+
+   dnl
+   dnl add any additional flags
+   dnl
+
+   # add user defined cppflags
+   if test "${with_cppflags:=no}" != no ; then
+       CPPFLAGS="${with_cppflags} ${CPPFLAGS}"
+   fi
+
+   # add user defined cxxflags
+   if test "${with_cxxflags:=no}" != no ; then
+       CXXFLAGS="${with_cxxflags} ${CXXFLAGS}"
+   fi
+
+   # add user defined cflags
+   if test "${with_cflags:=no}" != no ; then
+       CFLAGS="${with_cflags} ${CFLAGS}"
+   fi
+
+   # add user defined f90flags
+   if test "${with_f90flags:=no}" != no ; then
+       F90FLAGS="${with_f90flags} ${F90FLAGS}"
+   fi
+
+   # add user defined ARFLAGS
+   if test "${with_arflags:=no}" != no ; then
+       ARFLAGS="${with_arflags} ${ARFLAGS}"
+   fi
+
+   # add user defined LDFLAGS
+   if test "${with_ldflags:=no}" != no ; then
+       LDFLAGS="${with_ldflags} ${LDFLAGS}"
+   fi
+
+   # check user added libs (using --with-libs); these are appended to
+   # LIBS after the machine-specific setup
+   if test "${with_libs}" = yes ; then
+       AC_MSG_ERROR("Must define libs when using --with-libs")
+   fi
+
+   dnl throw message errors for poorly defined flags
+   
+   if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
+      test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
+      || test "${with_ldflags}" = yes \
+      || test "${with_cppflags}" = yes ; then
+       AC_MSG_ERROR("Poor definition of user defined flags!")
+   fi
+   
+   dnl check for ranlib
+   AC_PROG_RANLIB
+
+   dnl
+   dnl SYSTEM-SPECIFIC SETUP
+   dnl
+
+   # this function macro sets up all of the platform specific 
+   # environment parameters (except compilers)
+   AC_DBS_PLATFORM_ENVIRONMENT dnl
+
+   # add user-defined libraries
+   LIBS="${LIBS} ${with_libs} -lm"
+
+   dnl
+   dnl DRACO TEST SYSTEM
+   dnl
+
+   # determine whether this is a scalar or parallel test suite,
+   # the tests can be inherently scalar or they can be the result
+   # of a parallel build
+
+   test_scalar='no'
+
+   # If we ran AC_RUNTESTS with "serial" then mark it so here.
+   for np in $test_nprocs; do
+       if test $np = serial || test $np = scalar ; then
+          test_scalar="scalar"
+       fi
+   done
+
+   # if this is a parallel build, mark the tests scalar
+   if test "${with_c4}" = scalar ; then
+       test_scalar="scalar"
+   fi
+
+   # define the TESTFLAGS, for parallel runs the processor will be
+   # added later in the Makefile
+
+   if test "${test_scalar}" = scalar ; then
+       test_flags="--${test_exe:=binary}"
+   elif test "${with_c4}" = mpi ; then
+       test_flags="--${test_exe:=binary} --mpi"
+   fi
+
+   ## define the test_output_files for cleaning
+   for file in $test_alltarget; do
+       if test "${test_scalar}" = scalar ; then
+	   test_output_files="${test_output_files} ${file}-scalar.log"
+       else
+	   for np in $test_nprocs; do
+	       test_output_files="${test_output_files} ${file}-${np}.log"
+	   done
+       fi
+   done
+
+   # Define the package-level source directory (e.g. draco)
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+
+   dnl
+   dnl ENVIRONMENT SUBSTITUTIONS
+   dnl
+
+   AC_DBS_VAR_SUBSTITUTIONS
+
+   dnl end of AC_DRACO_ENV
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_dracoenv.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_dracoarg.m4
+dnl
+dnl Declarations of Draco configure options (with some default
+dnl settings). 
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:20
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_ARGS
+dnl
+dnl Declaration of Draco non-vendor configure options. This macro can 
+dnl be called to fill out configure help screens
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_ARGS], [dnl
+
+   dnl
+   dnl Library prefix
+   dnl
+     
+   AC_ARG_WITH(lib-prefix,
+      [  --with-lib-prefix[=library prefix]
+                          give prefix to libraries (default rtt_)])
+
+   # default for lib_prefix is rtt_
+   LIB_PREFIX="${with_lib_prefix:=rtt_}"
+   if test "${LIB_PREFIX}" = no ; then
+       LIB_PREFIX=''
+   fi
+
+   dnl
+   dnl c4 toggle (scalar by default)
+   dnl
+
+   dnl define --with-c4
+   AC_ARG_WITH(c4, 
+      [  --with-c4[=scalar,mpi,shmem]   
+		          turn on c4 (default scalar) ])
+
+   # give with-c4 implied argument
+   if test "${with_c4:=scalar}" = yes ; then
+       with_c4='scalar'
+   fi
+
+   dnl
+   dnl DBC toggle
+   dnl
+
+   dnl defines --with-dbc
+   AC_ARG_WITH(dbc,
+      [  --with-dbc[=level]      set Design-by-Contract])
+	
+   if test "${with_dbc}" = yes ; then
+       with_dbc='7'
+   elif test "${with_dbc}" = no ; then
+       with_dbc='0'
+   fi
+	
+   dnl
+   dnl SHARED versus ARCHIVE libraries
+   dnl
+
+   dnl defines --enable-shared
+   AC_ARG_ENABLE(shared,
+      [  --enable-shared         turn on shared libraries (.a default)])
+
+   dnl
+   dnl CHOOSE A C++ COMPILER
+   dnl
+
+   dnl defines --with-cxx
+   AC_ARG_WITH(cxx,
+      [  --with-cxx[=gcc,icpc,sgi,kcc,compaq,guide]                                    
+                          choose a c++ compiler (defaults are machine dependent)])
+
+   dnl the default is gcc
+   if test "${with_cxx}" = yes ; then
+       with_cxx='gcc'
+   fi
+
+   dnl
+   dnl STATIC VERSUS DYNAMIC LINKING
+   dnl
+
+   dnl defines --enable-static-ld
+   AC_ARG_ENABLE(static-ld,
+      [  --enable-static-ld      use (.a) libraries if possible])
+
+   dnl
+   dnl ANSI STRICT COMPLIANCE
+   dnl
+
+   dnl defines --enable-strict-ansi
+   AC_ARG_ENABLE(strict-ansi,
+      [  --disable-strict-ansi   turn off strict ansi compliance])
+
+   dnl
+   dnl ONE_PER INSTANTIATION FLAG
+   dnl
+
+   dnl defines --enable-one-per
+   AC_ARG_ENABLE(one-per,
+      [  --disable-one-per       turn off --one_per flag])
+
+   dnl
+   dnl COMPILER OPTIMZATION LEVEL
+   dnl
+
+   dnl defines --with-opt
+   AC_ARG_WITH(opt,
+      [  --with-opt[=0,1,2,3]    set optimization level (0 by default)])
+
+   if test "${with_opt}" = yes ; then
+       with_opt='0'
+   fi
+
+   dnl defines --enable-debug
+   AC_ARG_ENABLE(debug,
+      [  --enable-debug          turn on debug (-g) option])
+
+   dnl
+   dnl POSIX SOURCE
+   dnl
+
+   dnl defines --with-posix
+   AC_ARG_WITH(posix,
+      [  --with-posix[=num]      give posix source (system-dependent defaults)])
+
+   dnl
+   dnl ADD TO CPPFLAGS
+   dnl
+   
+   dnl defines --with-cppflags
+   AC_ARG_WITH(cppflags,
+      [  --with-cppflags[=flags] add flags to \$CPPFLAGS])
+
+   dnl
+   dnl ADD TO CXXFLAGS
+   dnl
+   
+   dnl defines --with-cxxflags
+   AC_ARG_WITH(cxxflags,
+      [  --with-cxxflags[=flags] add flags to \$CXXFLAGS])
+
+   dnl
+   dnl ADD TO CFLAGS
+   dnl
+   
+   dnl defines --with-cflags
+   AC_ARG_WITH(cflags,
+      [  --with-cflags[=flags]   add flags to \$CFLAGS])
+
+   dnl
+   dnl ADD TO F90FLAGS
+   dnl
+   
+   dnl defines --with-f90flags
+   AC_ARG_WITH(f90flags,
+      [  --with-f90flags[=flags] add flags to \$F90FLAGS])
+
+   dnl
+   dnl ADD TO ARFLAGS
+   dnl
+   
+   dnl defines --with-arflags
+   AC_ARG_WITH(arflags,
+      [  --with-arflags[=flags]  add flags to \$ARFLAGS])
+
+   dnl
+   dnl ADD TO LDFLAGS
+   dnl
+   
+   dnl defines --with-ldflags
+   AC_ARG_WITH(ldflags,
+      [  --with-ldflags[=flags]  add flags to \$LDFLAGS])
+
+   dnl 
+   dnl ADD TO LIBRARIES
+   dnl
+
+   dnl defines --with-libs
+   AC_ARG_WITH(libs,
+      [  --with-libs=[libs]      add libs to \$LIBS])
+
+   dnl
+   dnl CHOSE BIT COMPILATION ON SGI'S
+   dnl
+
+   dnl defines --enable-32-bit
+   AC_ARG_ENABLE(32-bit,
+      [  --enable-32-bit         do 32-bit compilation (compiler dependent)])
+
+   dnl defines --enable-64-bit
+   AC_ARG_ENABLE(64-bit,
+      [  --enable-64-bit         do 64-bit compilation (compiler dependent)])
+
+   dnl
+   dnl CHOSE MIPS INSTRUCTION SET ON SGI'S
+   dnl
+
+   dnl defines --with-mips
+   AC_ARG_WITH(mips,
+      [  --with-mips[=1,2,3,4]   set mips, mips4 by default (SGI ONLY)])
+
+   if test "${with_mips}" = yes ; then
+       with_mips='4'
+   fi
+
+   dnl 
+   dnl Arguments for options defined in ac_instrument.m4
+   dnl
+   
+   AC_DRACO_INSTR_ARGS
+
+   dnl
+   dnl Doxygen options
+   dnl
+
+   AC_ARG_ENABLE(latex-doc,
+      [  --enable-latex-doc      build latex docs with doxygen (off by default)],
+      [AC_SUBST(latex_yes_no,'YES')],
+      [AC_SUBST(latex_yes_no,'NO')])
+
+   AC_ARG_WITH(doc-output,
+      [  --with-doc-output=path  build documentation in path (prefix/documentation by default)],
+      [AC_SUBST(doxygen_output_top,${with_doc_output})],
+      [doxygen_output_top='DEFAULT'])
+
+   dnl end of AC_DRACO_ARGS
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_dracoarg.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl ----------------------------------------------------------------------- dnl
+dnl File  : draco/config/ac_instrument.m4
+dnl Author: Kelly Thompson
+dnl Date  : 2006 MAR 20
+dnl
+dnl Defines the Draco build system environment needed for
+dnl instrumentation.  Provide support for STLport and BullseyeCoverage
+dnl on Linx.
+dnl
+dnl ----------------------------------------------------------------------- dnl
+dnl $Id$
+dnl ----------------------------------------------------------------------- dnl
+
+dnl ----------------------------------------------------------------------- dnl
+dnl AC_DRACO_INSTR_ARGS
+dnl
+dnl Called by : ac_dracoarg.m4
+dnl Purpose   : Provide help/usage messages for the features in this file.
+dnl ----------------------------------------------------------------------- dnl
+
+AC_DEFUN([AC_DRACO_INSTR_ARGS], [dnl
+
+   dnl 
+   dnl STLport 
+   dnl
+
+   dnl Request a build that uses STLPort (specify location of STLPort).
+   AC_ARG_WITH(stlport,
+      [  --with-stlport[[=dir]]
+                          replace default STL with STLPort (off by default).
+                          examines value of STLPORT_BASE_DIR.
+                          Only available for g++ on Linux.])
+
+   dnl 
+   dnl Coverage Analsysis
+   dnl
+
+   dnl specify type of coverage analysis.
+   AC_ARG_WITH(coverage,
+      [  --with-coverage[=bullseye(default)|gcov]
+                          produce coverage analysis statistics (off by default).
+                          examines value of COVERAGE_BASE_DIR.
+                          Only available for g++ on Linux.])
+
+   dnl 
+   dnl Memory Checkers
+   dnl
+
+   dnl specify type of memory checking to be done.
+   AC_ARG_WITH(memory-check,
+      [  --with-memory-check[=purify(default)|insure]
+                          produce binaries that are instrumented for memory 
+                          checking (off by default). examines value of
+                          MEMORYCHECK_BASE_DIR.
+                          Only available for g++ on Linux.])
+
+])
+
+dnl ----------------------------------------------------------------------- dnl
+dnl AC_DRACO_INSTR_ENV
+dnl
+dnl Called by : ac_dracoenv.m4
+dnl Purpose   : Provide a single function that can be called from 
+dnl             ac_dracoarg.m4 (AC_DRACO_ENV) to modify the build 
+dnl             environment if the user requests any of the instrument
+dnl             options.
+dnl ----------------------------------------------------------------------- dnl
+
+AC_DEFUN([AC_DRACO_INSTR_ENV], [dnl
+
+   # we must know the host
+   AC_REQUIRE([AC_CANONICAL_HOST])
+
+   AC_DBS_STLPORT_ENV
+   AC_DBS_COVERAGE_ENV
+   AC_DBS_MEMORY_CHECK_ENV
+
+])
+ 
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_STLPORT_ENV
+dnl
+dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
+dnl presence of "--with-stlport".  If this option is found, the build
+dnl system's environment is modified so that all the all C++ compiles
+dnl use the STL libraries included with STLPort instead of the
+dnl compiler's native STL defintions.
+dnl If --with-stlport is on the configure line, we must prepend
+dnl CXXFLAGS and CPPFLAGS with -I<path_to_stlport>.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
+
+   AC_MSG_CHECKING("option: STLPort?")
+   AC_MSG_RESULT("${with_stlport:=no}")
+
+   # Provide an error if this is not Linux
+   if test ${with_stlport} != no; then
+     case ${host} in
+     *-linux-gnu)
+       ;;
+     *)
+       AC_MSG_ERROR("STLPort not supported on the ${host} platform.")
+       ;;
+     esac
+   fi
+
+   if test ${with_stlport} != no; then
+
+     # Find STLPort's location
+     AC_MSG_CHECKING("for STLPort installation location")
+
+     # if --with-stlport is requested with no dir specified, then check
+     # the value of STLPORT_BASE_DIR.
+     if test ${with_stlport} = yes; then
+       if test -d ${STLPORT_BASE_DIR:=/codes/radtran/vendors/stlport/Linux}; then
+         with_stlport=${STLPORT_BASE_DIR}
+       else
+         AC_MSG_ERROR("${STLPORT_BASE_DIR} could not be accessed.")
+       fi
+     fi
+     AC_MSG_RESULT("${with_stlport}")
+  
+     # Double check accessibility.
+  
+     if ! test -d "${with_stlport}/include"; then
+        AC_MSG_ERROR("Invalid directory $with_stlport}/include")
+     fi
+     if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
+        AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
+     fi
+  
+     # Modify environment
+  
+     AC_MSG_CHECKING("STLPort modification for CPPFLAGS")
+     cppflag_mods="-I${with_stlport}/include -D_STLP_DEBUG"
+     dnl Consider adding -D_STLP_DEBUG_UNINITIALIZED
+     CPPFLAGS="${cppflag_mods} ${CPPFLAGS}"
+     AC_MSG_RESULT([${cppflag_mods}])
+  
+  dnl Problems with STLport-5.0.X prevent us from using the optimized specializations.
+  
+     AC_MSG_CHECKING("STLPort modification for LIBS")
+     libs_mods="-L${with_stlport}/lib -lstlportstlg"
+     LIBS="${libs_mods} ${LIBS}"
+     AC_MSG_RESULT([${libs_mods}])
+  
+     AC_MSG_CHECKING("STLPort modifications for RPATH")
+     rpath_mods="-Xlinker -rpath ${with_stlport}/lib"
+     RPATH="${rpath_mods} ${RPATH}"
+     AC_MSG_RESULT("$rpath_mods}")
+
+   fi dnl  if test ${with_stlport} != no
+
+   dnl end of AC_DBS_STLPORT_ENV
+])
+
+
+dnl ------------------------------------------------------------------------dnl
+dnl AC_DBS_COVERAGE_ENV
+dnl
+dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
+dnl presence of "--with-coverage[=<bullseye|gcov>]".  If this option
+dnl is found, the build system's environment is modified so that all
+dnl the all C++ compiles use the compilers provided by the coverage
+dnl tool and the coverage tool's libraries must be added to the list
+dnl of LIBS.
+dnl
+dnl If support for another coverage tool is added here, then the main
+dnl body of code needs to be replaced with a case statement for each
+dnl tool.  The environment modification for each tool should be in its
+dnl own function.
+dnl
+dnl Defines:
+dnl    with_coverage
+dnl    COVERAGE_BASE_DIR
+dnl
+dnl Modifies:
+dnl    CXX, CC, LIBS
+dnl
+dnl Bullseye specifics:
+dnl
+dnl If --with-coverage[=bulleye] is on the configure line, we must set:
+dnl    CXX=/usr/local/bullseye/bin/g++
+dnl    CC=/usr/local/bullseye/bin/gcc
+dnl    LIBS="${LIBS} -L/usr/local/bullseye/lib -lcov-noThread"
+dnl ------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_COVERAGE_ENV], [dnl
+
+   AC_MSG_CHECKING("Option: coverage analysis?")
+   if test "${with_coverage:=no}" = no; then
+      AC_MSG_RESULT("${with_coverage}")      
+   else
+      case ${with_coverage} in
+      [bB]ullseye | BULLSEYE | yes )
+         with_coverage=bullseye
+         AC_MSG_RESULT("${with_coverage}")
+         AC_DBS_BULLSEYE_ENV
+      ;;
+      gcov)
+         AC_MSG_ERROR("Support for gcov has not been implemented.")
+      ;;
+      *)
+         AC_MSG_ERROR("Unknown coverage tool ${with_coverage}.")
+      ;;
+      esac
+   fi
+
+   dnl end of AC_DBS_COVERAGE_ENV
+])
+
+dnl ------------------------------------------------------------------------dnl
+dnl AC_DBS_BULLSEYE_ENV
+dnl
+dnl Modify build environment to support BullseyeCoverage analsysis (Linux
+dnl only). 
+dnl ------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_BULLSEYE_ENV], [dnl
+
+   # Check availability
+   
+   AC_MSG_CHECKING("for Bullseye installation location")
+   case $host in
+   *-linux-gnu)
+      if ! test -d ${COVERAGE_BASE_DIR:=/usr/local/bullseye}; then
+         AC_MSG_ERROR("${COVERAGE_BASE_DIR} could not be accessed.")
+      fi
+      ;;
+   *)
+      AC_MSG_ERROR("BullseyeCoverage not supported on the ${host} platform.")
+      ;;
+   esac
+   AC_MSG_RESULT("${COVERAGE_BASE_DIR}")
+
+   # Double check accessibility and other requirements
+
+   if ! test -d "${COVERAGE_BASE_DIR}/include"; then
+      AC_MSG_ERROR("Invalid directory ${COVERAGE_BASE_DIR}/include")
+   fi
+   if ! test -r "${COVERAGE_BASE_DIR}/lib/libcov-noThread.a"; then
+      AC_MSG_ERROR("Invalid library ${COVERAGE_BASE_DIR}/lib/libcov-noThread.a")
+   fi
+   if ! test -x "${COVERAGE_BASE_DIR}/bin/cov01"; then
+      AC_MSG_ERROR("Couldn't execute ${COVERAGE_BASE_DIR}/bin/cov01")
+   fi
+
+   # BullseyeCoverage only works with g++, gcc, icc, and icpc
+
+   AC_MSG_CHECKING("Bullseye equivalent compiler")
+   case ${CXX} in
+   g++ | gcc)
+      CXX=${COVERAGE_BASE_DIR}/bin/g++
+      CC=${COVERAGE_BASE_DIR}/bin/gcc
+      AC_MSG_RESULT("${CXX}")
+      ;;
+   icc | icpc)
+      CXX=${COVERAGE_BASE_DIR}/bin/icpc
+      CC=${COVERAGE_BASE_DIR}/bin/icc
+      AC_MSG_RESULT("${CXX}")
+      ;;
+   *)
+      AC_MSG_ERROR("CXX must be one of g++, gcc, icc or icpc")
+      ;;
+   esac
+
+   # Modify environment
+
+   AC_MSG_CHECKING("Bullseye modification for LIBS")
+   libs_mods="-L${COVERAGE_BASE_DIR}/lib -lcov-noThread"
+   LIBS="${libs_mods} ${LIBS}"
+   AC_MSG_RESULT([${libs_mods}])
+
+# Turn of DBC checks at these screw up coverage numbers.
+   if test "${with_dbc:-yes}" != 0; then
+      with_dbc=0
+      AC_MSG_WARN("Design-by-Contract assertions have been disabled for due to activation of code coverage mode.")
+   fi
+
+   dnl end of AC_DBS_COVERAGE_ENV
+])
+
+dnl ------------------------------------------------------------------------dnl
+dnl AC_DBC_MEMORY_CHECK_ENV
+dnl
+dnl Modify environemnt to support memory profiling via Purify, Insure++, etc.
+dnl ------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_MEMORY_CHECK_ENV], [dnl
+
+  AC_MSG_CHECKING("Option: memory checking?")
+  if test "${with_memory_check:=no}" = no; then
+     AC_MSG_RESULT("none")
+  else
+     AC_MSG_ERROR("This feature is not enabled at this time.")
+  fi
+
+   dnl end of AC_DBS_MEMORY_CHECK_ENV
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_instrument.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl ========================================================================
+dnl 
+dnl 	Author:	Mark G. Gray
+dnl 		Los Alamos National Laboratory
+dnl 	Date:	Wed Apr 19 16:39:19 MDT 2000
+dnl 
+dnl 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
+dnl 
+dnl ========================================================================
+
+dnl NAME
+
+dnl	AC_WITH_F90, AC_F90_ENV
+
+dnl SYNOPSIS/USAGE
+
+dnl     AC_WITH_F90
+dnl     AC_F90_ENV
+
+dnl DESCRIPTION
+
+dnl     AC_WITH_F90 sets the variable with_f90 to yes if it is not already 
+dnl     set.
+
+dnl     AC_F90_ENV set environment variables F90, F90FLAGS, F90EXT, 
+dnl     F90FREE, F90FIXED, and MODFLAG for the compiler requested by 
+dnl     with_f90.  If no specific compiler is requested, guess a compiler 
+dnl     based on the target
+dnl
+========================================================================
+
+dnl ### Ensure with_f90 set
+AC_DEFUN([AC_WITH_F90], [dnl
+   : ${with_f90:=yes}
+    
+   dnl turn off C++ compiler
+   with_cxx='no'
+
+   dnl defines --with-f90
+   AC_ARG_WITH(f90,
+       [  --with-f90[=XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
+                          choose an F90 compiler])
+])
+
+dnl
+dnl CHOOSE A F90 COMPILER
+dnl
+
+AC_DEFUN([AC_F90_ENV], [dnl
+   AC_REQUIRE([AC_CANONICAL_HOST])
+
+   case "${with_f90:=yes}" in
+   XL)
+       AC_COMPILER_XL_F90
+   ;;
+   Fujitsu)
+       AC_COMPILER_FUJITSU_F90
+   ;;
+   Lahey)
+       AC_COMPILER_LAHEY_F90
+   ;;
+   Portland)
+       AC_COMPILER_PORTLAND_F90
+   ;;
+   WorkShop)
+       AC_COMPILER_WORKSHOP_F90
+   ;;
+   Cray)
+      AC_COMPILER_CRAY_F90
+   ;;
+   MIPS)
+       AC_COMPILER_MIPS_F90
+   ;;
+   Compaq)
+       AC_COMPILER_COMPAQ_F90
+   ;;
+   HP)
+       AC_COMPILER_HP_F90
+   ;;
+   Intel)
+       AC_COMPILER_INTEL_F90
+   ;;
+   NAG)
+       AC_COMPILER_NAG_F90
+   ;;
+   Absoft)
+       AC_COMPILER_ABSOFT_F90
+   ;;
+   yes)				# guess compiler from target platform
+       case "${host}" in   
+       rs6000-ibm-aix*)
+           AC_COMPILER_XL_F90
+       ;;
+       powerpc-ibm-aix*)
+           AC_COMPILER_XL_F90
+       ;;
+       sparc-sun-solaris2.*)
+           AC_COMPILER_WORKSHOP_F90
+       ;;
+       i?86-pc-linux*)
+           AC_COMPILER_LAHEY_F90
+       ;;
+       ymp-cray-unicos*)
+          AC_COMPILER_CRAY_F90
+       ;;
+       mips-sgi-irix*)
+          AC_COMPILER_MIPS_F90
+       ;;
+       i??86-pc-cygwin*)
+          AC_COMPILER_COMPAQ_F90
+       ;;
+       alpha*)
+          AC_COMPILER_COMPAQ_F90
+       ;;
+       *hp-hpux*)
+          AC_COMPILER_HP_F90
+       ;;
+       *)
+          AC_MSG_ERROR([Cannot guess F90 compiler, set --with-f90])
+       ;;
+       esac
+   ;;
+   no)
+   ;;
+   *)
+       AC_MSG_ERROR([Unrecognized F90 compiler, use --help])
+   ;;
+   esac
+
+   AC_SUBST(F90FREE)
+   AC_SUBST(F90FIXED)
+   AC_SUBST(F90FLAGS)
+   AC_SUBST(MODFLAG)
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl IBM XLF95 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_XL_F90], [dnl
+
+   # Check for working XL F90 compiler
+
+  if test "${with_upslib:=no}" != "no"
+  then
+     AC_CHECK_PROG(F90, mpxlf95, mpxlf95, none)
+     if test "${F90}" != mpxlf95
+     then
+         AC_MSG_ERROR([not found])
+     fi
+  else
+     AC_CHECK_PROG(F90, xlf95, xlf95, none)
+     if test "${F90}" != xlf95
+     then
+         AC_MSG_ERROR([not found])
+     fi
+  fi
+  
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-qfree=f90'
+   F90FIXED='-qfixed'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+
+   # COMPILATION FLAGS
+
+   if test "$F90FLAGS" = ""
+   then
+     # F90FLAGS="-qsuffix=f=f90 -qmaxmem=-1 -qextchk -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp -qhalt=s ${F90FREE}"
+       F90FLAGS="-qsuffix=f=f90 -qmaxmem=-1 -qextchk -qarch=auto -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp -qnosave -qlanglvl=95pure -qzerosize ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	   trapflags="-qinitauto=FF"
+	   trapflags="${trapflags} -qflttrap=overflow:underflow:zerodivide:invalid:enable"
+	   trapflags="${trapflags} -qsigtrap"
+	   F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
+       else
+	 # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	   F90FLAGS="-O3 ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_XL_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl FUJITSU F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_FUJITSU_F90], [dnl
+
+   # Check for working Fujitsu F90 compiler
+
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} -V 2>&1 | grep "Fujitsu"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE='-Free'
+   F90FIXED='-Fixed'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-static-flib'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="-X9 -Am ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -Haesu ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_FUJITSU_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl LAHEY F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
+
+   AC_CHECK_PROG(F90, lf95, lf95, none)
+
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE='--nfix'
+   F90FIXED='--fix'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-static-flib'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+     # F90FLAGS="--f95 ${F90FREE}"
+       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	  # F90FLAGS="-g --chk --trace ${F90FLAGS}"
+	    F90FLAGS="-g --ap --chk --pca --private --trap --wo ${F90FLAGS}"
+       else
+	  # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	    F90FLAGS="-O --ntrace ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_LAHEY_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl PORTLAND F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
+
+   # Check for working Portland Group F90 compiler
+
+   AC_CHECK_PROG(F90, pgf90, pgf90, none)
+   if test "${F90}" = pgf90 && ${F90} --V 2>&1 | grep "Portland"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE='-Mfreeform'
+   F90FIXED='-Mnofreeform'
+   MODFLAG='-module'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC=
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -Mbounds -Mchkptr ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_PORTLAND_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl COMPAQ F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_COMPAQ_F90], [dnl
+
+   # Check for working compaq F90 compiler
+
+   AC_CHECK_PROG(F90, f95, f95, none)
+   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE=''
+   F90FIXED=''
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-non_shared'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+     # F90FLAGS="${F90FREE} -assume byterecl"
+       F90FLAGS="${F90FREE} -assume byterecl -automatic -std -warn argument_checking"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	  # F90FLAGS="-g ${F90FLAGS}"
+	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
+       else
+	  # F90FLAGS="-O ${F90FLAGS}"
+	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_COMPAQ_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl SUN WORKSHOP F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_WORKSHOP_F90], [dnl
+
+   # Check for working WorkShop F90 compiler
+
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} -V 2>&1 | grep "WorkShop"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # Set F90FREE, F90FIXED, and MODFLAG
+
+   F90FREE='-free'
+   F90FIXED='-fixed'
+   MODFLAG='-M'
+
+   # Set LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-Bstatic'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_WORKSHOP_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl CRAY_F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_CRAY_F90], [dnl
+
+   # Check for working Cray F90 compiler
+
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # FREE, FIXED AND MODULE FLAGS
+
+   F90FREE='-f free'
+   F90FIXED='-f fixed'
+   MODFLAG='-p'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE}"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	   F90FLAGS="-g ${F90FLAGS}"
+       else
+	   F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_CRAY_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl IRIX MIPS F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_MIPS_F90], [dnl
+
+   # Look for working MIPS compiler
+
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} -version 2>&1 | grep "MIPS"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # Set F90FREE, F90FIXED, and MODFLAG
+
+   F90FREE='-freeform'
+   F90FIXED='-col72'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+	#F90FLAGS="${F90FREE} -OPT:Olimit=0"
+	F90FLAGS="${F90FREE} -mips4 -r10000 -DEBUG:fullwarn=ON:woff=878,938,1193,1438"
+
+	if test "${enable_debug:=no}" = yes
+	then
+	  # F90FLAGS="-g ${F90FLAGS}"
+	    F90FLAGS="-g -check_bounds -DEBUG:trap_uninitialized=ON ${F90FLAGS}"
+	else
+	  # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+	    F90FLAGS="-O3 -OPT:IEEE_arithmetic=2:roundoff=2 ${F90FLAGS}"
+	fi
+   fi
+
+   dnl end of AC_COMPILER_MIPS_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl HP F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_HP_F90], [dnl
+
+   # CHECK FOR WORKING HP F90 COMPILER
+   AC_CHECK_PROG(F90, f90, f90, none)
+   if test "${F90}" = f90 && ${F90} +version 2>&1 | grep "HP"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE='+source=free'
+   F90FIXED='+source=fixed'
+   MODFLAG='-I'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='+noshared'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE} +U77"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -C ${F90FLAGS}"
+       else
+	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_HP_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl INTEL F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
+
+   # CHECK FOR WORKING INTEL F90 COMPILER
+   AC_CHECK_PROG(F90, ifc, ifc, none)
+   if test "${F90}" = ifc && ${F90} -V 2>&1 | grep "Intel"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE='-FR'
+   F90FIXED='-FI'
+   MODFLAG='-I '
+   MODSUFFIX='mod'
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-static'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE} -e95"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -C -implicitnone ${F90FLAGS}"
+       else
+	    F90FLAGS="-O3 -fno-alias -tpp7 -ipo -pad -align ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_INTEL_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl NAG F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_NAG_F90], [dnl
+
+   # CHECK FOR WORKING NAG F90 COMPILER
+   AC_CHECK_PROG(F90, f95, f95, none)
+   if test "${F90}" = f95 && ${F90} -V 2>&1 | grep "NAGWare"
+   then
+       :
+   else
+       AC_MSG_ERROR([not found])
+   fi
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE='-free'
+   F90FIXED='-fixed'
+   MODFLAG='-I '
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-unsharedf95'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="${F90FREE} -colour -info -target=native"
+
+       if test "${enable_debug:=no}" = yes
+       then
+          # only use first line if memory error is suspected, too much output
+          #   otherwise
+	  # F90FLAGS="-g -C -mtrace=size -nan -u ${F90FLAGS}"
+	    F90FLAGS="-g -C -nan -u ${F90FLAGS}"
+       else
+	    F90FLAGS="-O4 ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_NAG_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl ABSOFT F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_ABSOFT_F90], [dnl
+
+   # CHECK FOR WORKING ABSOFT F90 COMPILER
+   AC_CHECK_PROG(F90, f95, f95, none)
+  
+   # F90FREE, F90FIXED AND MODFLAG
+   F90FREE=''
+   F90FIXED=''
+   MODFLAG='-p '
+
+   # LINKER AND LIBRARY (AR)
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC=''
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       F90FLAGS="-cpu:host -en"
+
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g -et -m0 -M399,1193,878 -Rb -Rc -Rs -Rp -trap=ALL ${F90FLAGS}"
+       else
+	    F90FLAGS="-O3 ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_ABSOFT_F90
+])
+
+dnl ========================================================================
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_compiler.m4
@@ -723,2228 +2717,6 @@ AC_DEFUN([AC_DRACO_IBM_VISUAL_AGE], [dnl
 
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_compiler.m4
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_conf.m4
-dnl
-dnl Service macros used in configure.ac's throughout Draco.
-dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:19
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_PREREQ
-dnl
-dnl Checks the configure version
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_PREREQ], [dnl
-
-   # we need at least autoconf 2.53 to work correctly
-   AC_PREREQ(2.53)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_NEEDS_LIBS
-dnl
-dnl add DRACO-dependent libraries necessary for a package
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_NEEDS_LIBS], [dnl
-   if test ${has_libdir:=no} != "yes" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
-       has_libdir="yes"
-   fi
-
-   for lib in $1
-   do
-       # temporary string to keep line from getting too long
-       draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
-       DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
-       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
-   done
-
-   # Keep a list of component dependencies free of other tags or paths.
-   DEPENDENT_COMPONENTS="$1"
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_NEEDS_LIBS_TEST
-dnl
-dnl add DRACO-dependent libraries necessary for a package test
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
-   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
-   for lib in $1
-   do
-       # temporary string to keep line from getting too long
-       draco_test_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
-       DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
-       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
-   done
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_RUNTESTS
-dnl
-dnl add DRACO-package tests (default to use DejaGnu)
-dnl usage: in configure.ac:
-dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
-dnl where serial means run as serial test only.
-dnl If compiling with scalar c4 then nprocs are ignored.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_RUNTESTS], [dnl
-	test_alltarget="$test_alltarget $1"
-        
-	test_nprocs="$2"
-
-	if test -z "${test_nprocs}" ; then
-	    AC_MSG_ERROR("No procs choosen for the tests!")
-        fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_TESTEXE
-dnl
-dnl determines what type of executable the tests are, for example, you 
-dnl can set the executable to some scripting extension, like python.
-dnl the default is an executable binary
-dnl options are PYTHON
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_TESTEXE], [dnl
-   test_exe="$1"
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_INSTALL_EXECUTABLE
-dnl
-dnl where executables will be installed
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
-   install_executable="\${bindir}/\${package}"
-   installdirs="${installdirs} \${bindir}"
-   alltarget="${alltarget} bin/\${package}"
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_INSTALL_LIB
-dnl
-dnl where libraries will be installed
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_INSTALL_LIB], [ dnl
-   install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
-   installdirs="${installdirs} \${libdir}"
-   alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
-
-   # test will need to link this library
-   PKG_DEPENDS='../lib${LIB_PREFIX}${package}${libsuffix}'
-   PKG_LIBS='-L.. -l${LIB_PREFIX}${package}'
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_INSTALL_HEADERS
-dnl
-dnl where headers will be installed 
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
-   install_headers="\${installheaders}"
-   installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_CHECK_TOOLS
-dnl
-dnl Find tools used by the build system (latex, bibtex, python, etc)
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
-
-   dnl
-   dnl TOOL CHECKS
-   dnl
-   
-   dnl check for and assign the path to python
-   AC_PATH_PROG(PYTHON_PATH, python, null)
-   if test "${PYTHON_PATH}" = null ; then
-       AC_MSG_ERROR("No valid Python found!")
-   fi
-   
-   dnl check for and assign the path to perl
-   AC_PATH_PROG(PERL_PATH, perl, null)
-   if test "${PERL_PATH}" = null ; then
-       AC_MSG_WARN("No valid Perl found!")
-   fi
-
-   dnl check for CVS
-   AC_PATH_PROG(CVS_PATH, cvs, null)
-   if test "${CVS_PATH}" = null ; then
-       AC_MSG_WARN("No valid CVS found!")
-   fi
-
-   dnl check for and assign the path to ghostview
-   AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)
-   if test "${GHOSTVIEW}" = null ; then
-       AC_MSG_WARN("No valid ghostview found!")
-   fi
-
-   dnl check for and assign the path to latex
-   AC_CHECK_PROGS(LATEX, latex, null)
-   if test "${LATEX}" = null ; then
-       AC_MSG_WARN("No valid latex found!")
-   fi
-   AC_SUBST(LATEXFLAGS)
-
-   dnl check for and assign the path to bibtex
-   AC_CHECK_PROGS(BIBTEX, bibtex, null)
-   if test "${BIBTEX}" = null ; then
-       AC_MSG_WARN("No valid bibtex found!")
-   fi
-   AC_SUBST(BIBTEXFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(XDVI, xdvi, null)
-   if test "${XDVI}" = null ; then
-       AC_MSG_WARN("No valid xdvi found!")
-   fi
-   AC_SUBST(XDVIFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
-   if test "${PS2PDF}" = null ; then
-       AC_MSG_WARN("No valid ps2pdf found!")
-   fi
-   dnl AC_SUBST(PS2PDFFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(DOTCMD, dot, null)
-   if test "${DOTCMD}" = null ; then
-       AC_MSG_WARN("No valid dot found!")
-   fi
-   dnl AC_SUBST(DOTCMDFLAGS)
-
-   dnl check for and assign the path to dvips
-   AC_CHECK_PROGS(DVIPS, dvips, null)
-   if test "${DVIPS}" = null ; then
-       AC_MSG_WARN("No valid dvips found!")
-   fi
-   AC_SUBST(DVIPSFLAGS)
-
-   dnl check for and assign the path for printing (lp)
-   AC_CHECK_PROGS(LP, lp lpr, null)
-   if test "${LP}" = null ; then
-       AC_MSG_WARN("No valid lp or lpr found!")
-   fi
-   AC_SUBST(LPFLAGS)
-
-   dnl check for and assign the path for doxygen
-   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
-   if test "${DOXYGEN_PATH}" = null ; then
-       AC_MSG_WARN("No valid Doxygen found!")
-   fi
-   AC_SUBST(DOXYGEN_PATH)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
-dnl
-dnl changes compiler from newmpxlC to newxlC so that tests can be run
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
-
-   # change compiler
-   if test "${CXX}" = newmpxlC; then
-       white_compiler='newmpxlC'
-       CXX='newxlC'
-       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
-   fi
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
-dnl
-dnl changes compiler back to newmpxlC
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
-
-   # change compiler back
-   if test "${white_compiler}" = newmpxlC; then
-       CXX='newmpxlC'
-       AC_MSG_WARN("Changing back to ${CXX} compiler.")
-   fi
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_HEAD_MAKEFILE
-dnl 
-dnl Builds default makefile in the head directory
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_HEAD_MAKEFILE], [dnl
-
-   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
-   AC_DBS_VAR_SUBSTITUTIONS
-   AC_CONFIG_FILES([Makefile:config/Makefile.head.in])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_SRC_MAKEFILE
-dnl 
-dnl Builds default makefile in the src directory
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_SRC_MAKEFILE], [dnl
-
-   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
-   AC_DBS_VAR_SUBSTITUTIONS
-   AC_CONFIG_FILES([Makefile:../config/Makefile.src.in])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_conf.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_doxygen.m4
-dnl
-dnl Macros to help setup doxygen autodoc directories.
-dnl
-dnl Kelly Thompson
-dnl 2004/03/30 16:41:22
-dnl 1999/02/04 01:56:19
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_SET_DEFAULT_OUTPUT
-dnl-------------------------------------------------------------------------dnl
-#
-# Set the default location for doxygen output
-#
-AC_DEFUN([AC_SET_DEFAULT_OUTPUT], [dnl
-   if test ${doxygen_output_top} = DEFAULT; then
-       AC_SUBST(doxygen_output_top, "${prefix}/documentation")
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_AUTODOC_PACKAGE_TAGS
-dnl
-dnl  Collect tagfiles for pacakge-to-component dependencies
-dnl-------------------------------------------------------------------------dnl
-AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
-
-   # XXX Need to change COMPLINKS to generic doxygen list instead of
-   # HTML for Latex compatability. Let doxygen insert the links
-   AC_MSG_CHECKING([for documented sub-components of this package])
-   COMP_LINKS=''
-   TAGFILES=''
-   DOXYGEN_TAGFILES=''
-   components=''
-   for item in `ls -1 ${package_top_srcdir}/src`; do
-      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
-         dirname=`basename ${item}`
-         components="${components} ${dirname}"
-         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
-         tagfile=${doxygen_output_top}/${dirname}.tag
-         TAGFILES="${TAGFILES} ${tagfile}"
-         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
-      fi
-   done
-   AC_MSG_RESULT(${components:-none})
-   COMP_LINKS="<ul> $COMP_LINKS </ul>"
-
-   # XXX TO DO: Add links to dependent packages on this page.
-   PACKAGE_LINKS="<ul> </ul>"
-
-   # Unique to package-level
-   AC_SUBST(PACKAGE_LINKS)
-   AC_SUBST(COMP_LINKS)
-
-])
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_AUTODOC_COMPONENT_TAGS
-dnl
-dnl   Collect tagfiles for within-package component dependencies
-dnl-------------------------------------------------------------------------dnl
-#
-# Build a list of tagfiles for other components of the same package
-# and the _relative_ locations of the autodoc directories that they
-# refer to.
-#
-# The relative path between component documentation in the same
-# package is "../component" 
-#
-# These components are specified in AC_NEEDS_LIBS, and are stored
-# in variable DEPENDENT_COMPONENTS. 
-#
-AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
-
-   components=''
-   TAGFILES=''
-   DOXYGEN_TAGFILES=''
-   AC_MSG_CHECKING([for Doxygen component dependencies])
-   for comp in ${DEPENDENT_COMPONENTS}; do
-       components="${components} ${comp}"
-       tagfile=${doxygen_output_top}/${comp}.tag
-       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
-   done
-   AC_MSG_RESULT([${components}])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_AUTODOC_SUBST
-dnl 
-dnl   Do subsistutions on common AUTODOC variables
-dnl-------------------------------------------------------------------------dnl
-AC_DEFUN([AC_AUTODOC_SUBST], [dnl
-
-   # Doxygen Input
-   AC_SUBST(doxygen_input)
-   AC_SUBST(doxygen_examples)
-
-   # Doxygen Output
-   AC_SUBST(doxygen_output_top)
-   AC_SUBST(doxygen_html_output)
-   AC_SUBST(doxygen_latex_output)
-
-   # Other doxygen configuration
-   AC_SUBST(DOXYGEN_TAGFILES)
-
-   # For inclusion in header files and other html
-   AC_SUBST(rel_package_html)
-
-   # For makefiles for configuration:
-   AC_SUBST(header_dir)
-   AC_SUBST(autodoc_dir)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_AUTODOC
-dnl
-dnl  setup doxygen autodoc directories for COMPONENTS within a package
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_AUTODOC], [dnl
-
-   # Get the default output location
-   AC_SET_DEFAULT_OUTPUT
-
-   # Define some package-level directories
-   header_dir=${package_top_srcdir}/autodoc/html
-   config_dir=${package_top_srcdir}/config
-
-   abs_srcdir=`cd ${srcdir}; pwd`
-   autodoc_dir=${abs_srcdir}/autodoc
-
-   # For a component, the doxygen input is the srcdir and the examples
-   # are in the tests
-   AC_MSG_CHECKING([doxygen input directories])
-   if test -d ${abs_srcdir}; then
-      doxygen_input="${doxygen_input} ${abs_srcdir}"
-   fi
-   if test -d ${autodoc_dir}; then
-      doxygen_input="${doxygen_input} ${autodoc_dir}"
-   fi
-   AC_MSG_RESULT(${doxygen_input})
-   if test -d ${abs_srcdir}/test; then
-      doxygen_examples=${abs_srcdir}/test
-   fi
-
-   # Set the package-level html output location
-   package_html=${doxygen_output_top}/html
-
-   # The local dir is different from the current dir.
-   # localdir=`pwd`/autodoc
-
-   # Set the component output locations.
-   doxygen_html_output="${doxygen_output_top}/html/${package}"
-   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
-
-   # Relative location of the package-level html output.
-   adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
-
-   # Get tags for other components in this package which this
-   # component depends on
-   AC_AUTODOC_COMPONENT_TAGS
-
-   # find the release number
-   number=$1
-   AC_MSG_CHECKING("component release number")
-   AC_MSG_RESULT($number)
-   AC_SUBST(number)
-
-   AC_AUTODOC_SUBST
-
-   AC_CONFIG_FILES([autodoc/Makefile:${config_dir}/Makefile.autodoc.in \
-                    autodoc/doxygen_config:${config_dir}/doxygen_config.in \
-                    autodoc/header.html:${header_dir}/header.html.in \
-                    autodoc/footer.html:${header_dir}/footer.html.in ])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_PACKAGE_AUTODOC
-dnl
-dnl  setup doxygen autodoc directories for a PACKAGE
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
-
-   # Get the default output location
-   AC_SET_DEFAULT_OUTPUT
-
-   # Package-level directories
-   header_dir=${srcdir}/html
-   config_dir=${package_top_srcdir}/config
-
-   abs_srcdir=`cd ${srcdir}; pwd`
-   autodoc_dir=${abs_srcdir}
-
-   # For the package, the input is the current directory, plus
-   # configure/doc. There are no examples
-   AC_MSG_CHECKING([for Doxygen input directories])
-   doxygen_input="`pwd`"
-   if test -d ${config_dir}/doc; then
-      doxygen_input="${doxygen_input} ${config_dir}/doc"
-   fi
-   if test -d ${autodoc_dir}; then
-      doxygen_input="${doxygen_input} ${autodoc_dir}"
-   fi
-   AC_MSG_RESULT(${doxygen_input})
-   doxygen_examples=''
-
-   # Component output locations
-   doxygen_html_output="${doxygen_output_top}/html/"
-   doxygen_latex_output="${doxygen_output_top}/latex/"
-
-   # Relative location of the package-level html output.
-   rel_package_html='.'
-
-   AC_AUTODOC_PACKAGE_TAGS
-
-   AC_AUTODOC_SUBST
-
-   AC_CONFIG_FILES([doxygen_config:${config_dir}/doxygen_config.in])
-   AC_CONFIG_FILES([Makefile:${config_dir}/Makefile.autodoc.in])
-   AC_CONFIG_FILES([header.html:html/header.html.in])
-   AC_CONFIG_FILES([footer.html:html/footer.html.in])
-   AC_CONFIG_FILES([mainpage.dcc])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_doxygen.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_dracoarg.m4
-dnl
-dnl Declarations of Draco configure options (with some default
-dnl settings). 
-dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:20
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_ARGS
-dnl
-dnl Declaration of Draco non-vendor configure options. This macro can 
-dnl be called to fill out configure help screens
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_ARGS], [dnl
-
-   dnl
-   dnl Library prefix
-   dnl
-     
-   AC_ARG_WITH(lib-prefix,
-      [  --with-lib-prefix[=library prefix]
-                          give prefix to libraries (default rtt_)])
-
-   # default for lib_prefix is rtt_
-   LIB_PREFIX="${with_lib_prefix:=rtt_}"
-   if test "${LIB_PREFIX}" = no ; then
-       LIB_PREFIX=''
-   fi
-
-   dnl
-   dnl c4 toggle (scalar by default)
-   dnl
-
-   dnl define --with-c4
-   AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi,shmem]   
-		          turn on c4 (default scalar) ])
-
-   # give with-c4 implied argument
-   if test "${with_c4:=scalar}" = yes ; then
-       with_c4='scalar'
-   fi
-
-   dnl
-   dnl DBC toggle
-   dnl
-
-   dnl defines --with-dbc
-   AC_ARG_WITH(dbc,
-      [  --with-dbc[=level]      set Design-by-Contract])
-	
-   if test "${with_dbc}" = yes ; then
-       with_dbc='7'
-   elif test "${with_dbc}" = no ; then
-       with_dbc='0'
-   fi
-	
-   dnl
-   dnl SHARED versus ARCHIVE libraries
-   dnl
-
-   dnl defines --enable-shared
-   AC_ARG_ENABLE(shared,
-      [  --enable-shared         turn on shared libraries (.a default)])
-
-   dnl
-   dnl CHOOSE A C++ COMPILER
-   dnl
-
-   dnl defines --with-cxx
-   AC_ARG_WITH(cxx,
-      [  --with-cxx[=gcc,icpc,sgi,kcc,compaq,guide]                                    
-                          choose a c++ compiler (defaults are machine dependent)])
-
-   dnl the default is gcc
-   if test "${with_cxx}" = yes ; then
-       with_cxx='gcc'
-   fi
-
-   dnl
-   dnl STATIC VERSUS DYNAMIC LINKING
-   dnl
-
-   dnl defines --enable-static-ld
-   AC_ARG_ENABLE(static-ld,
-      [  --enable-static-ld      use (.a) libraries if possible])
-
-   dnl
-   dnl ANSI STRICT COMPLIANCE
-   dnl
-
-   dnl defines --enable-strict-ansi
-   AC_ARG_ENABLE(strict-ansi,
-      [  --disable-strict-ansi   turn off strict ansi compliance])
-
-   dnl
-   dnl ONE_PER INSTANTIATION FLAG
-   dnl
-
-   dnl defines --enable-one-per
-   AC_ARG_ENABLE(one-per,
-      [  --disable-one-per       turn off --one_per flag])
-
-   dnl
-   dnl COMPILER OPTIMZATION LEVEL
-   dnl
-
-   dnl defines --with-opt
-   AC_ARG_WITH(opt,
-      [  --with-opt[=0,1,2,3]    set optimization level (0 by default)])
-
-   if test "${with_opt}" = yes ; then
-       with_opt='0'
-   fi
-
-   dnl defines --enable-debug
-   AC_ARG_ENABLE(debug,
-      [  --enable-debug          turn on debug (-g) option])
-
-   dnl
-   dnl POSIX SOURCE
-   dnl
-
-   dnl defines --with-posix
-   AC_ARG_WITH(posix,
-      [  --with-posix[=num]      give posix source (system-dependent defaults)])
-
-   dnl
-   dnl ADD TO CPPFLAGS
-   dnl
-   
-   dnl defines --with-cppflags
-   AC_ARG_WITH(cppflags,
-      [  --with-cppflags[=flags] add flags to \$CPPFLAGS])
-
-   dnl
-   dnl ADD TO CXXFLAGS
-   dnl
-   
-   dnl defines --with-cxxflags
-   AC_ARG_WITH(cxxflags,
-      [  --with-cxxflags[=flags] add flags to \$CXXFLAGS])
-
-   dnl
-   dnl ADD TO CFLAGS
-   dnl
-   
-   dnl defines --with-cflags
-   AC_ARG_WITH(cflags,
-      [  --with-cflags[=flags]   add flags to \$CFLAGS])
-
-   dnl
-   dnl ADD TO F90FLAGS
-   dnl
-   
-   dnl defines --with-f90flags
-   AC_ARG_WITH(f90flags,
-      [  --with-f90flags[=flags] add flags to \$F90FLAGS])
-
-   dnl
-   dnl ADD TO ARFLAGS
-   dnl
-   
-   dnl defines --with-arflags
-   AC_ARG_WITH(arflags,
-      [  --with-arflags[=flags]  add flags to \$ARFLAGS])
-
-   dnl
-   dnl ADD TO LDFLAGS
-   dnl
-   
-   dnl defines --with-ldflags
-   AC_ARG_WITH(ldflags,
-      [  --with-ldflags[=flags]  add flags to \$LDFLAGS])
-
-   dnl 
-   dnl ADD TO LIBRARIES
-   dnl
-
-   dnl defines --with-libs
-   AC_ARG_WITH(libs,
-      [  --with-libs=[libs]      add libs to \$LIBS])
-
-   dnl
-   dnl CHOSE BIT COMPILATION ON SGI'S
-   dnl
-
-   dnl defines --enable-32-bit
-   AC_ARG_ENABLE(32-bit,
-      [  --enable-32-bit         do 32-bit compilation (compiler dependent)])
-
-   dnl defines --enable-64-bit
-   AC_ARG_ENABLE(64-bit,
-      [  --enable-64-bit         do 64-bit compilation (compiler dependent)])
-
-   dnl
-   dnl CHOSE MIPS INSTRUCTION SET ON SGI'S
-   dnl
-
-   dnl defines --with-mips
-   AC_ARG_WITH(mips,
-      [  --with-mips[=1,2,3,4]   set mips, mips4 by default (SGI ONLY)])
-
-   if test "${with_mips}" = yes ; then
-       with_mips='4'
-   fi
-
-   dnl 
-   dnl Arguments for options defined in ac_instrument.m4
-   dnl
-   
-   AC_DRACO_INSTR_ARGS
-
-   dnl
-   dnl Doxygen options
-   dnl
-
-   AC_ARG_ENABLE(latex-doc,
-      [  --enable-latex-doc      build latex docs with doxygen (off by default)],
-      [AC_SUBST(latex_yes_no,'YES')],
-      [AC_SUBST(latex_yes_no,'NO')])
-
-   AC_ARG_WITH(doc-output,
-      [  --with-doc-output=path  build documentation in path (prefix/documentation by default)],
-      [AC_SUBST(doxygen_output_top,${with_doc_output})],
-      [doxygen_output_top='DEFAULT'])
-
-   dnl end of AC_DRACO_ARGS
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_dracoarg.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl File  : draco/config ac_dracoenv.m4
-dnl Author: Thomas M. Evans
-dnl Date  : 1999/02/04 01:56:21
-dnl
-dnl Defines the Draco build system environment.  This is the main
-dnl configure function.
-dnl
-dnl-------------------------------------------------------------------------dnl
-dnl $Id$
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_ENV
-dnl
-dnl Assembles the Draco build system compile-time environment.  
-dnl It processes all of the options given to configure.  It does
-dnl NOT do any compile or link testing.  That functionality is
-dnl defined in ac_dracotests.m4.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_ENV], [dnl
-
-   dnl
-   dnl CONFIGURE ARGUMENTS
-   dnl
-
-   # Retrieve the configure command line for possible use in 
-   # regression test output.
-
-   configure_command="$[]0 $[]*"
-
-   dnl
-   dnl ADD DRACO CONFIGURE ARGUMENTS
-   dnl
-
-   AC_DRACO_ARGS
-
-   dnl
-   dnl first find the host
-   dnl
-   
-   AC_REQUIRE([AC_CANONICAL_HOST])
-
-   dnl
-   dnl INSTALL
-   dnl
-
-   # we use the install script provided with autoconf on all machines
-   INSTALL='${config_dir}/install-sh -c'
-   INSTALL_DATA='${INSTALL} -m 644'
-
-   dnl
-   dnl C4 OPERATIONS
-   dnl
-
-   # do the correct #defines
-   if test "$with_c4" = scalar ; then
-       AC_DEFINE(C4_SCALAR)
-   elif test "$with_c4" = mpi ; then
-       AC_DEFINE(C4_MPI)
-   fi
-
-   dnl
-   dnl DBC SETUP
-   dnl
-
-   # set the DBC level
-   if test "${with_dbc:=default}" != default ; then
-       AC_DEFINE_UNQUOTED(DBC, $with_dbc)
-   fi
-
-   dnl
-   dnl LIBRARIES
-   dnl
-   
-   # set the libsuffix variable
-   if test "${enable_shared:=no}" = yes ; then
-       libsuffix='.so'
-   else
-       libsuffix='.a'
-   fi
-
-   dnl      
-   dnl POSIX SOURCE
-   dnl
-
-   dnl system dependent posix defines are performed in the
-   dnl SYSTEM-SPECIFIC SETUP section below
-
-   dnl
-   dnl TOOL CHECKS 
-   dnl
-
-   # the tool checks are called in the top-level configure, so in 
-   # each subsequent configure these should just grab cached values
-   AC_DRACO_CHECK_TOOLS dnl
-
-   dnl
-   dnl COMPILER SETUPS
-   dnl
-
-   # the default compiler is C++; we do not turn on F90 unless
-   # AC_WITH_F90 is called in configure.in (which sets with_cxx='no')
-   if test "${with_cxx}" = no ; then
-
-       # if with_f90 defined test with_f90 for compiler, and call setup
-       # if with_f90 set to yes or not set 
-       # attempt to guess compiler based on target
-       AC_F90_ENV dnl
-
-   else
-   
-       # set up the C++ compilers; if with_cxx is undefined, an
-       # appropriate default for the machine will be choosen
-       AC_CPP_ENV dnl
-
-   fi
-
-   dnl
-   dnl Modify environment to support instrumentation options selected
-   dnl by the user.  This function will look for these configure options:
-   dnl   --with-stlport[=<dir>]
-   dnl   --with-coverage[=bullseye|gcov]
-   dnl   --with-memory-check[=purify|insure]
-   dnl 
-   AC_DRACO_INSTR_ENV
-
-   dnl
-   dnl add any additional flags
-   dnl
-
-   # add user defined cppflags
-   if test "${with_cppflags:=no}" != no ; then
-       CPPFLAGS="${with_cppflags} ${CPPFLAGS}"
-   fi
-
-   # add user defined cxxflags
-   if test "${with_cxxflags:=no}" != no ; then
-       CXXFLAGS="${with_cxxflags} ${CXXFLAGS}"
-   fi
-
-   # add user defined cflags
-   if test "${with_cflags:=no}" != no ; then
-       CFLAGS="${with_cflags} ${CFLAGS}"
-   fi
-
-   # add user defined f90flags
-   if test "${with_f90flags:=no}" != no ; then
-       F90FLAGS="${with_f90flags} ${F90FLAGS}"
-   fi
-
-   # add user defined ARFLAGS
-   if test "${with_arflags:=no}" != no ; then
-       ARFLAGS="${with_arflags} ${ARFLAGS}"
-   fi
-
-   # add user defined LDFLAGS
-   if test "${with_ldflags:=no}" != no ; then
-       LDFLAGS="${with_ldflags} ${LDFLAGS}"
-   fi
-
-   # check user added libs (using --with-libs); these are appended to
-   # LIBS after the machine-specific setup
-   if test "${with_libs}" = yes ; then
-       AC_MSG_ERROR("Must define libs when using --with-libs")
-   fi
-
-   dnl throw message errors for poorly defined flags
-   
-   if test "${with_cxxflags}" = yes || test "${with_cflags}" = yes ||\
-      test "${with_f90flags}" = yes || test "${with_arflags}" = yes \
-      || test "${with_ldflags}" = yes \
-      || test "${with_cppflags}" = yes ; then
-       AC_MSG_ERROR("Poor definition of user defined flags!")
-   fi
-   
-   dnl check for ranlib
-   AC_PROG_RANLIB
-
-   dnl
-   dnl SYSTEM-SPECIFIC SETUP
-   dnl
-
-   # this function macro sets up all of the platform specific 
-   # environment parameters (except compilers)
-   AC_DBS_PLATFORM_ENVIRONMENT dnl
-
-   # add user-defined libraries
-   LIBS="${LIBS} ${with_libs} -lm"
-
-   dnl
-   dnl DRACO TEST SYSTEM
-   dnl
-
-   # determine whether this is a scalar or parallel test suite,
-   # the tests can be inherently scalar or they can be the result
-   # of a parallel build
-
-   test_scalar='no'
-
-   # If we ran AC_RUNTESTS with "serial" then mark it so here.
-   for np in $test_nprocs; do
-       if test $np = serial || test $np = scalar ; then
-          test_scalar="scalar"
-       fi
-   done
-
-   # if this is a parallel build, mark the tests scalar
-   if test "${with_c4}" = scalar ; then
-       test_scalar="scalar"
-   fi
-
-   # define the TESTFLAGS, for parallel runs the processor will be
-   # added later in the Makefile
-
-   if test "${test_scalar}" = scalar ; then
-       test_flags="--${test_exe:=binary}"
-   elif test "${with_c4}" = mpi ; then
-       test_flags="--${test_exe:=binary} --mpi"
-   fi
-
-   ## define the test_output_files for cleaning
-   for file in $test_alltarget; do
-       if test "${test_scalar}" = scalar ; then
-	   test_output_files="${test_output_files} ${file}-scalar.log"
-       else
-	   for np in $test_nprocs; do
-	       test_output_files="${test_output_files} ${file}-${np}.log"
-	   done
-       fi
-   done
-
-   # Define the package-level source directory (e.g. draco)
-   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
-
-   dnl
-   dnl ENVIRONMENT SUBSTITUTIONS
-   dnl
-
-   AC_DBS_VAR_SUBSTITUTIONS
-
-   dnl end of AC_DRACO_ENV
-])
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_dracoenv.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl ========================================================================
-dnl 
-dnl 	Author:	Mark G. Gray
-dnl 		Los Alamos National Laboratory
-dnl 	Date:	Wed Apr 19 16:39:19 MDT 2000
-dnl 
-dnl 	Copyright (c) 2000 U. S. Department of Energy. All rights reserved.
-dnl 
-dnl ========================================================================
-
-dnl NAME
-
-dnl	AC_WITH_F90, AC_F90_ENV
-
-dnl SYNOPSIS/USAGE
-
-dnl     AC_WITH_F90
-dnl     AC_F90_ENV
-
-dnl DESCRIPTION
-
-dnl     AC_WITH_F90 sets the variable with_f90 to yes if it is not already 
-dnl     set.
-
-dnl     AC_F90_ENV set environment variables F90, F90FLAGS, F90EXT, 
-dnl     F90FREE, F90FIXED, and MODFLAG for the compiler requested by 
-dnl     with_f90.  If no specific compiler is requested, guess a compiler 
-dnl     based on the target
-dnl
-========================================================================
-
-dnl ### Ensure with_f90 set
-AC_DEFUN([AC_WITH_F90], [dnl
-   : ${with_f90:=yes}
-    
-   dnl turn off C++ compiler
-   with_cxx='no'
-
-   dnl defines --with-f90
-   AC_ARG_WITH(f90,
-       [  --with-f90[=XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
-                          choose an F90 compiler])
-])
-
-dnl
-dnl CHOOSE A F90 COMPILER
-dnl
-
-AC_DEFUN([AC_F90_ENV], [dnl
-   AC_REQUIRE([AC_CANONICAL_HOST])
-
-   case "${with_f90:=yes}" in
-   XL)
-       AC_COMPILER_XL_F90
-   ;;
-   Fujitsu)
-       AC_COMPILER_FUJITSU_F90
-   ;;
-   Lahey)
-       AC_COMPILER_LAHEY_F90
-   ;;
-   Portland)
-       AC_COMPILER_PORTLAND_F90
-   ;;
-   WorkShop)
-       AC_COMPILER_WORKSHOP_F90
-   ;;
-   Cray)
-      AC_COMPILER_CRAY_F90
-   ;;
-   MIPS)
-       AC_COMPILER_MIPS_F90
-   ;;
-   Compaq)
-       AC_COMPILER_COMPAQ_F90
-   ;;
-   HP)
-       AC_COMPILER_HP_F90
-   ;;
-   Intel)
-       AC_COMPILER_INTEL_F90
-   ;;
-   NAG)
-       AC_COMPILER_NAG_F90
-   ;;
-   Absoft)
-       AC_COMPILER_ABSOFT_F90
-   ;;
-   yes)				# guess compiler from target platform
-       case "${host}" in   
-       rs6000-ibm-aix*)
-           AC_COMPILER_XL_F90
-       ;;
-       powerpc-ibm-aix*)
-           AC_COMPILER_XL_F90
-       ;;
-       sparc-sun-solaris2.*)
-           AC_COMPILER_WORKSHOP_F90
-       ;;
-       i?86-pc-linux*)
-           AC_COMPILER_LAHEY_F90
-       ;;
-       ymp-cray-unicos*)
-          AC_COMPILER_CRAY_F90
-       ;;
-       mips-sgi-irix*)
-          AC_COMPILER_MIPS_F90
-       ;;
-       i??86-pc-cygwin*)
-          AC_COMPILER_COMPAQ_F90
-       ;;
-       alpha*)
-          AC_COMPILER_COMPAQ_F90
-       ;;
-       *hp-hpux*)
-          AC_COMPILER_HP_F90
-       ;;
-       *)
-          AC_MSG_ERROR([Cannot guess F90 compiler, set --with-f90])
-       ;;
-       esac
-   ;;
-   no)
-   ;;
-   *)
-       AC_MSG_ERROR([Unrecognized F90 compiler, use --help])
-   ;;
-   esac
-
-   AC_SUBST(F90FREE)
-   AC_SUBST(F90FIXED)
-   AC_SUBST(F90FLAGS)
-   AC_SUBST(MODFLAG)
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl IBM XLF95 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_XL_F90], [dnl
-
-   # Check for working XL F90 compiler
-
-  if test "${with_upslib:=no}" != "no"
-  then
-     AC_CHECK_PROG(F90, mpxlf95, mpxlf95, none)
-     if test "${F90}" != mpxlf95
-     then
-         AC_MSG_ERROR([not found])
-     fi
-  else
-     AC_CHECK_PROG(F90, xlf95, xlf95, none)
-     if test "${F90}" != xlf95
-     then
-         AC_MSG_ERROR([not found])
-     fi
-  fi
-  
-   # FREE, FIXED AND MODULE FLAGS
-
-   F90FREE='-qfree=f90'
-   F90FIXED='-qfixed'
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-
-   # COMPILATION FLAGS
-
-   if test "$F90FLAGS" = ""
-   then
-     # F90FLAGS="-qsuffix=f=f90 -qmaxmem=-1 -qextchk -qarch=pwr2 -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp -qhalt=s ${F90FREE}"
-       F90FLAGS="-qsuffix=f=f90 -qmaxmem=-1 -qextchk -qarch=auto -bmaxstack:0x70000000 -bmaxdata:0x70000000 -qalias=noaryovrlp -qnosave -qlanglvl=95pure -qzerosize ${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	   trapflags="-qinitauto=FF"
-	   trapflags="${trapflags} -qflttrap=overflow:underflow:zerodivide:invalid:enable"
-	   trapflags="${trapflags} -qsigtrap"
-	   F90FLAGS="-g -d -C ${trapflags} -bloadmap:loadmap.dat ${F90FLAGS}"
-       else
-	 # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-	   F90FLAGS="-O3 ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_XL_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl FUJITSU F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_FUJITSU_F90], [dnl
-
-   # Check for working Fujitsu F90 compiler
-
-   AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90 && ${F90} -V 2>&1 | grep "Fujitsu"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE='-Free'
-   F90FIXED='-Fixed'
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-static-flib'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="-X9 -Am ${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g -Haesu ${F90FLAGS}"
-       else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_FUJITSU_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl LAHEY F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
-
-   AC_CHECK_PROG(F90, lf95, lf95, none)
-
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE='--nfix'
-   F90FIXED='--fix'
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-static-flib'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-     # F90FLAGS="--f95 ${F90FREE}"
-       F90FLAGS="--staticlink --f95 --in --info --swm 2004,2006,2008,8202,8203,8204,8205,8206,8209,8220 ${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	  # F90FLAGS="-g --chk --trace ${F90FLAGS}"
-	    F90FLAGS="-g --ap --chk --pca --private --trap --wo ${F90FLAGS}"
-       else
-	  # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-	    F90FLAGS="-O --ntrace ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_LAHEY_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl PORTLAND F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
-
-   # Check for working Portland Group F90 compiler
-
-   AC_CHECK_PROG(F90, pgf90, pgf90, none)
-   if test "${F90}" = pgf90 && ${F90} --V 2>&1 | grep "Portland"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE='-Mfreeform'
-   F90FIXED='-Mnofreeform'
-   MODFLAG='-module'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC=
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g -Mbounds -Mchkptr ${F90FLAGS}"
-       else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_PORTLAND_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl COMPAQ F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_COMPAQ_F90], [dnl
-
-   # Check for working compaq F90 compiler
-
-   AC_CHECK_PROG(F90, f95, f95, none)
-   if test "${F90}" = f95 && ${F90} -version 2>&1 | grep "Fortran"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # F90FREE, F90FIXED AND MODFLAG
-
-   F90FREE=''
-   F90FIXED=''
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-non_shared'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-     # F90FLAGS="${F90FREE} -assume byterecl"
-       F90FLAGS="${F90FREE} -assume byterecl -automatic -std -warn argument_checking"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	  # F90FLAGS="-g ${F90FLAGS}"
-	    F90FLAGS="-g -check bounds -fpe2 ${F90FLAGS}"
-       else
-	  # F90FLAGS="-O ${F90FLAGS}"
-	    F90FLAGS="-O5 -arch host -assume noaccuracy_sensitive -math_library accurate -tune host ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_COMPAQ_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl SUN WORKSHOP F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_WORKSHOP_F90], [dnl
-
-   # Check for working WorkShop F90 compiler
-
-   AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90 && ${F90} -V 2>&1 | grep "WorkShop"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # Set F90FREE, F90FIXED, and MODFLAG
-
-   F90FREE='-free'
-   F90FIXED='-fixed'
-   MODFLAG='-M'
-
-   # Set LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-Bstatic'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g"
-       else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_WORKSHOP_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl CRAY_F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_CRAY_F90], [dnl
-
-   # Check for working Cray F90 compiler
-
-   AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # FREE, FIXED AND MODULE FLAGS
-
-   F90FREE='-f free'
-   F90FIXED='-f fixed'
-   MODFLAG='-p'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="${F90FREE}"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	   F90FLAGS="-g ${F90FLAGS}"
-       else
-	   F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_CRAY_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl IRIX MIPS F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_MIPS_F90], [dnl
-
-   # Look for working MIPS compiler
-
-   AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90 && ${F90} -version 2>&1 | grep "MIPS"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # Set F90FREE, F90FIXED, and MODFLAG
-
-   F90FREE='-freeform'
-   F90FIXED='-col72'
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-	#F90FLAGS="${F90FREE} -OPT:Olimit=0"
-	F90FLAGS="${F90FREE} -mips4 -r10000 -DEBUG:fullwarn=ON:woff=878,938,1193,1438"
-
-	if test "${enable_debug:=no}" = yes
-	then
-	  # F90FLAGS="-g ${F90FLAGS}"
-	    F90FLAGS="-g -check_bounds -DEBUG:trap_uninitialized=ON ${F90FLAGS}"
-	else
-	  # F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-	    F90FLAGS="-O3 -OPT:IEEE_arithmetic=2:roundoff=2 ${F90FLAGS}"
-	fi
-   fi
-
-   dnl end of AC_COMPILER_MIPS_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl HP F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_HP_F90], [dnl
-
-   # CHECK FOR WORKING HP F90 COMPILER
-   AC_CHECK_PROG(F90, f90, f90, none)
-   if test "${F90}" = f90 && ${F90} +version 2>&1 | grep "HP"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # F90FREE, F90FIXED AND MODFLAG
-   F90FREE='+source=free'
-   F90FIXED='+source=fixed'
-   MODFLAG='-I'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='+noshared'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="${F90FREE} +U77"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g -C ${F90FLAGS}"
-       else
-	    F90FLAGS="-O${with_opt:=} ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_HP_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl INTEL F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
-
-   # CHECK FOR WORKING INTEL F90 COMPILER
-   AC_CHECK_PROG(F90, ifc, ifc, none)
-   if test "${F90}" = ifc && ${F90} -V 2>&1 | grep "Intel"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # F90FREE, F90FIXED AND MODFLAG
-   F90FREE='-FR'
-   F90FIXED='-FI'
-   MODFLAG='-I '
-   MODSUFFIX='mod'
-
-   # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-static'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="${F90FREE} -e95"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g -C -implicitnone ${F90FLAGS}"
-       else
-	    F90FLAGS="-O3 -fno-alias -tpp7 -ipo -pad -align ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_INTEL_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl NAG F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_NAG_F90], [dnl
-
-   # CHECK FOR WORKING NAG F90 COMPILER
-   AC_CHECK_PROG(F90, f95, f95, none)
-   if test "${F90}" = f95 && ${F90} -V 2>&1 | grep "NAGWare"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
-  
-   # F90FREE, F90FIXED AND MODFLAG
-   F90FREE='-free'
-   F90FIXED='-fixed'
-   MODFLAG='-I '
-
-   # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC='-unsharedf95'
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="${F90FREE} -colour -info -target=native"
-
-       if test "${enable_debug:=no}" = yes
-       then
-          # only use first line if memory error is suspected, too much output
-          #   otherwise
-	  # F90FLAGS="-g -C -mtrace=size -nan -u ${F90FLAGS}"
-	    F90FLAGS="-g -C -nan -u ${F90FLAGS}"
-       else
-	    F90FLAGS="-O4 ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_NAG_F90
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl ABSOFT F90 COMPILER SETUP
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_COMPILER_ABSOFT_F90], [dnl
-
-   # CHECK FOR WORKING ABSOFT F90 COMPILER
-   AC_CHECK_PROG(F90, f95, f95, none)
-  
-   # F90FREE, F90FIXED AND MODFLAG
-   F90FREE=''
-   F90FIXED=''
-   MODFLAG='-p '
-
-   # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
-   ARFLAGS=
-   ARLIBS=
-   F90STATIC=''
-
-   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
-   if test "$F90FLAGS" = ""
-   then
-       F90FLAGS="-cpu:host -en"
-
-       if test "${enable_debug:=no}" = yes
-       then
-	    F90FLAGS="-g -et -m0 -M399,1193,878 -Rb -Rc -Rs -Rp -trap=ALL ${F90FLAGS}"
-       else
-	    F90FLAGS="-O3 ${F90FLAGS}"
-       fi
-   fi
-
-   dnl end of AC_COMPILER_ABSOFT_F90
-])
-
-dnl ========================================================================
-
-dnl ----------------------------------------------------------------------- dnl
-dnl File  : draco/config/ac_instrument.m4
-dnl Author: Kelly Thompson
-dnl Date  : 2006 MAR 20
-dnl
-dnl Defines the Draco build system environment needed for
-dnl instrumentation.  Provide support for STLport and BullseyeCoverage
-dnl on Linx.
-dnl
-dnl ----------------------------------------------------------------------- dnl
-dnl $Id$
-dnl ----------------------------------------------------------------------- dnl
-
-dnl ----------------------------------------------------------------------- dnl
-dnl AC_DRACO_INSTR_ARGS
-dnl
-dnl Called by : ac_dracoarg.m4
-dnl Purpose   : Provide help/usage messages for the features in this file.
-dnl ----------------------------------------------------------------------- dnl
-
-AC_DEFUN([AC_DRACO_INSTR_ARGS], [dnl
-
-   dnl 
-   dnl STLport 
-   dnl
-
-   dnl Request a build that uses STLPort (specify location of STLPort).
-   AC_ARG_WITH(stlport,
-      [  --with-stlport[[=dir]]
-                          replace default STL with STLPort (off by default).
-                          examines value of STLPORT_BASE_DIR.
-                          Only available for g++ on Linux.])
-
-   dnl 
-   dnl Coverage Analsysis
-   dnl
-
-   dnl specify type of coverage analysis.
-   AC_ARG_WITH(coverage,
-      [  --with-coverage[=bullseye(default)|gcov]
-                          produce coverage analysis statistics (off by default).
-                          examines value of COVERAGE_BASE_DIR.
-                          Only available for g++ on Linux.])
-
-   dnl 
-   dnl Memory Checkers
-   dnl
-
-   dnl specify type of memory checking to be done.
-   AC_ARG_WITH(memory-check,
-      [  --with-memory-check[=purify(default)|insure]
-                          produce binaries that are instrumented for memory 
-                          checking (off by default). examines value of
-                          MEMORYCHECK_BASE_DIR.
-                          Only available for g++ on Linux.])
-
-])
-
-dnl ----------------------------------------------------------------------- dnl
-dnl AC_DRACO_INSTR_ENV
-dnl
-dnl Called by : ac_dracoenv.m4
-dnl Purpose   : Provide a single function that can be called from 
-dnl             ac_dracoarg.m4 (AC_DRACO_ENV) to modify the build 
-dnl             environment if the user requests any of the instrument
-dnl             options.
-dnl ----------------------------------------------------------------------- dnl
-
-AC_DEFUN([AC_DRACO_INSTR_ENV], [dnl
-
-   # we must know the host
-   AC_REQUIRE([AC_CANONICAL_HOST])
-
-   AC_DBS_STLPORT_ENV
-   AC_DBS_COVERAGE_ENV
-   AC_DBS_MEMORY_CHECK_ENV
-
-])
- 
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DBS_STLPORT_ENV
-dnl
-dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
-dnl presence of "--with-stlport".  If this option is found, the build
-dnl system's environment is modified so that all the all C++ compiles
-dnl use the STL libraries included with STLPort instead of the
-dnl compiler's native STL defintions.
-dnl If --with-stlport is on the configure line, we must prepend
-dnl CXXFLAGS and CPPFLAGS with -I<path_to_stlport>.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
-
-   AC_MSG_CHECKING("option: STLPort?")
-   AC_MSG_RESULT("${with_stlport:=no}")
-
-   if test ${with_stlport} != no; then
-
-   # Find STLPort's location
-   AC_MSG_CHECKING("for STLPort installation location")
-   if test ${with_stlport} = yes; then
-      case $host in
-      *-linux-gnu)
-         if ! test -d ${STLPORT_BASE_DIR:=/codes/radtran/vendors/stlport/Linux}; then
-            AC_MSG_ERROR("${STLPORT_BASE_DIR} could not be accessed.")
-         fi
-      ;;
-      *)
-            AC_MSG_ERROR("STLPort not supported on the ${host} platform.")
-      ;;
-      esac
-   fi
-   AC_MSG_RESULT("${STLPORT_BASE_DIR}")
-
-   # Double check accessibility.
-
-   if ! test -d "${STLPORT_BASE_DIR}/include"; then
-      AC_MSG_ERROR("Invalid directory ${STLPORT_BASE_DIR}/include")
-   fi
-   if ! test -r "${STLPORT_BASE_DIR}/lib/libstlportstlg.so"; then
-      AC_MSG_ERROR("Invalid library ${STLPORT_BASE_DIR}/lib/libstlportstlg.so")
-   fi
-
-   # Modify environment
-
-   AC_MSG_CHECKING("STLPort modification for CPPFLAGS")
-   cppflag_mods="-I${STLPORT_BASE_DIR}/include -D_STLP_DEBUG"
-   dnl Consider adding -D_STLP_DEBUG_UNINITIALIZED
-   CPPFLAGS="${cppflag_mods} ${CPPFLAGS}"
-   AC_MSG_RESULT([${cppflag_mods}])
-
-dnl Problems with STLport-5.0.X prevent us from using the optimized specializations.
-
-   AC_MSG_CHECKING("STLPort modification for LIBS")
-   libs_mods="-L${STLPORT_BASE_DIR}/lib -lstlportstlg"
-   LIBS="${libs_mods} ${LIBS}"
-   AC_MSG_RESULT([${libs_mods}])
-
-   AC_MSG_CHECKING("STLPort modifications for RPATH")
-   rpath_mods="-Xlinker -rpath ${STLPORT_BASE_DIR}/lib"
-   RPATH="${rpath_mods} ${RPATH}"
-   AC_MSG_RESULT("$rpath_mods}")
-
-   fi dnl if ${with_stlport} != no;
-
-   dnl end of AC_DBS_STLPORT_ENV
-])
-
-
-dnl ------------------------------------------------------------------------dnl
-dnl AC_DBS_COVERAGE_ENV
-dnl
-dnl Used by AC_DRACO_ENV, this macro checks the configure line for the
-dnl presence of "--with-coverage[=<bullseye|gcov>]".  If this option
-dnl is found, the build system's environment is modified so that all
-dnl the all C++ compiles use the compilers provided by the coverage
-dnl tool and the coverage tool's libraries must be added to the list
-dnl of LIBS.
-dnl
-dnl If support for another coverage tool is added here, then the main
-dnl body of code needs to be replaced with a case statement for each
-dnl tool.  The environment modification for each tool should be in its
-dnl own function.
-dnl
-dnl Defines:
-dnl    with_coverage
-dnl    COVERAGE_BASE_DIR
-dnl
-dnl Modifies:
-dnl    CXX, CC, LIBS
-dnl
-dnl Bullseye specifics:
-dnl
-dnl If --with-coverage[=bulleye] is on the configure line, we must set:
-dnl    CXX=/usr/local/bullseye/bin/g++
-dnl    CC=/usr/local/bullseye/bin/gcc
-dnl    LIBS="${LIBS} -L/usr/local/bullseye/lib -lcov-noThread"
-dnl ------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DBS_COVERAGE_ENV], [dnl
-
-   AC_MSG_CHECKING("Option: coverage analysis?")
-   if test "${with_coverage:=no}" = no; then
-      AC_MSG_RESULT("${with_coverage}")      
-   else
-      case ${with_coverage} in
-      [bB]ullseye | BULLSEYE | yes )
-         with_coverage=bullseye
-         AC_MSG_RESULT("${with_coverage}")
-         AC_DBS_BULLSEYE_ENV
-      ;;
-      gcov)
-         AC_MSG_ERROR("Support for gcov has not been implemented.")
-      ;;
-      *)
-         AC_MSG_ERROR("Unknown coverage tool ${with_coverage}.")
-      ;;
-      esac
-   fi
-
-   dnl end of AC_DBS_COVERAGE_ENV
-])
-
-dnl ------------------------------------------------------------------------dnl
-dnl AC_DBS_BULLSEYE_ENV
-dnl
-dnl Modify build environment to support BullseyeCoverage analsysis (Linux
-dnl only). 
-dnl ------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DBS_BULLSEYE_ENV], [dnl
-
-   # Check availability
-   
-   AC_MSG_CHECKING("for Bullseye installation location")
-   case $host in
-   *-linux-gnu)
-      if ! test -d ${COVERAGE_BASE_DIR:=/usr/local/bullseye}; then
-         AC_MSG_ERROR("${COVERAGE_BASE_DIR} could not be accessed.")
-      fi
-      ;;
-   *)
-      AC_MSG_ERROR("BullseyeCoverage not supported on the ${host} platform.")
-      ;;
-   esac
-   AC_MSG_RESULT("${COVERAGE_BASE_DIR}")
-
-   # Double check accessibility and other requirements
-
-   if ! test -d "${COVERAGE_BASE_DIR}/include"; then
-      AC_MSG_ERROR("Invalid directory ${COVERAGE_BASE_DIR}/include")
-   fi
-   if ! test -r "${COVERAGE_BASE_DIR}/lib/libcov-noThread.a"; then
-      AC_MSG_ERROR("Invalid library ${COVERAGE_BASE_DIR}/lib/libcov-noThread.a")
-   fi
-   if ! test -x "${COVERAGE_BASE_DIR}/bin/cov01"; then
-      AC_MSG_ERROR("Couldn't execute ${COVERAGE_BASE_DIR}/bin/cov01")
-   fi
-
-   # BullseyeCoverage only works with g++, gcc, icc, and icpc
-
-   AC_MSG_CHECKING("Bullseye equivalent compiler")
-   case ${CXX} in
-   g++ | gcc)
-      CXX=${COVERAGE_BASE_DIR}/bin/g++
-      CC=${COVERAGE_BASE_DIR}/bin/gcc
-      AC_MSG_RESULT("${CXX}")
-      ;;
-   icc | icpc)
-      CXX=${COVERAGE_BASE_DIR}/bin/icpc
-      CC=${COVERAGE_BASE_DIR}/bin/icc
-      AC_MSG_RESULT("${CXX}")
-      ;;
-   *)
-      AC_MSG_ERROR("CXX must be one of g++, gcc, icc or icpc")
-      ;;
-   esac
-
-   # Modify environment
-
-   AC_MSG_CHECKING("Bullseye modification for LIBS")
-   libs_mods="-L${COVERAGE_BASE_DIR}/lib -lcov-noThread"
-   LIBS="${libs_mods} ${LIBS}"
-   AC_MSG_RESULT([${libs_mods}])
-
-# Turn of DBC checks at these screw up coverage numbers.
-   if test "${with_dbc:-yes}" != 0; then
-      with_dbc=0
-      AC_MSG_WARN("Design-by-Contract assertions have been disabled for due to activation of code coverage mode.")
-   fi
-
-   dnl end of AC_DBS_COVERAGE_ENV
-])
-
-dnl ------------------------------------------------------------------------dnl
-dnl AC_DBC_MEMORY_CHECK_ENV
-dnl
-dnl Modify environemnt to support memory profiling via Purify, Insure++, etc.
-dnl ------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DBS_MEMORY_CHECK_ENV], [dnl
-
-  AC_MSG_CHECKING("Option: memory checking?")
-  if test "${with_memory_check:=no}" = no; then
-     AC_MSG_RESULT("none")
-  else
-     AC_MSG_ERROR("This feature is not enabled at this time.")
-  fi
-
-   dnl end of AC_DBS_MEMORY_CHECK_ENV
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_instrument.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_local.m4
-dnl
-dnl Macros used internally within the Draco build system.
-dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:22
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_WITH_DIR
-dnl
-dnl Define --with-xxx[=DIR] with defaults to an environment variable.
-dnl       Usage: AC_WITH_DIR(flag, CPPtoken, DefaultValue, HelpStr)
-dnl                for environment variables enter \${ENVIRONVAR} for
-dnl                DefaultValue
-dnl usage: in aclocal.m4
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_WITH_DIR], [dnl
-
- dnl
- dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
- dnl
- dnl AC_PACKAGE is the flag with all dashes turned to underscores
- dnl AC_WITH_PACKAGE will be substituted to the autoconf shell variable
- dnl    with_xxx
- dnl AC_CMDLINE is the shell command to strip double and trailing slashes
- dnl    from directory names.
-
- define([AC_PACKAGE], [translit($1, [-], [_])])dnl
- define([AC_WITH_PACKAGE], [with_]AC_PACKAGE)dnl
- define([AC_CMDLINE],dnl
-[echo "$]AC_WITH_PACKAGE[" | sed 's%//*%/%g' | sed 's%/$%%'])dnl
-
- AC_ARG_WITH($1,
-   [  --with-$1[=DIR]    $4 ($3 by default)],
-   if test $AC_WITH_PACKAGE != "no" ; then
-      if test $AC_WITH_PACKAGE = "yes" ; then
-         # following eval needed to remove possible '\' from $3
-         eval AC_WITH_PACKAGE=$3
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      AC_WITH_PACKAGE=`eval AC_CMDLINE`
-      if test "$AC_WITH_PACKAGE:-null}" = "null" ; then
-         { echo "configure: error: --with-$1 directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $AC_WITH_PACKAGE ; then
-         { echo "configure: error: $AC_WITH_PACKAGE: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      $2="${AC_WITH_PACKAGE}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      AC_DEFINE_UNQUOTED($2, ${AC_WITH_PACKAGE}/)dnl
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "$2 has been set to $$2" 1>&6
-
-   fi)
-
-   AC_SUBST($2)dnl
-
-])
-	
-dnl-------------------------------------------------------------------------dnl
-dnl AC_VENDORLIB_SETUP(1,2)
-dnl
-dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
-dnl usage: in aclocal.m4
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
-
-   # $1 is the vendor_<> tag (equals pkg or test)
-   # $2 are the directories added 
-
-   if test "${$1}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} $2"
-   elif test "${$1}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} $2"
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_FIND_TOP_SRC(1,2)
-dnl 
-dnl Find the top source directory of the package by searching upward
-dnl from the argument directory. The top source directory is defined
-dnl as the one with a 'config' sub-directory.
-dnl
-dnl Note: This function will eventually quit if the searched for
-dnl directory is not above the argument. It does so when $temp_dir
-dnl ceases to be a valid directory, which only seems to happen after a
-dnl LOT of ..'s are added to it.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_FIND_TOP_SRC], [dnl
-   
-   # $1 is the component's source directory
-   # $2 is the variable to store the package's main source directory in.
-
-   temp_dir=$1
-   AC_MSG_CHECKING([package top source directory])
-   while test -d $temp_dir -a ! -d $temp_dir/config ; do   
-       temp_dir="${temp_dir}/.."
-   done
-   if test -d $temp_dir; then
-       $2=`cd $temp_dir; pwd;`
-       AC_MSG_RESULT([$$2])
-   else
-       AC_MSG_ERROR('Could not find package top source directory')
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
-dnl
-dnl These are all the variable substitutions used within the draco
-dnl build system
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
-
-   # these variables are declared "precious", meaning that they are
-   # automatically substituted, put in the configure --help, and
-   # cached 
-   AC_ARG_VAR(CC)dnl
-   AC_ARG_VAR(CFLAGS)dnl
-
-   AC_ARG_VAR(CXX)dnl
-   AC_ARG_VAR(CXXFLAGS)dnl
-
-   AC_ARG_VAR(LD)dnl
-   AC_ARG_VAR(LDFLAGS)dnl
-
-   AC_ARG_VAR(AR)dnl
-   AC_ARG_VAR(ARFLAGS)dnl
-
-   AC_ARG_VAR(CPPFLAGS)dnl
-
-   # dependency rules
-   AC_SUBST(DEPENDENCY_RULES)
-
-   # other compiler substitutions
-   AC_SUBST(STRICTFLAG)dnl
-   AC_SUBST(PARALLEL_FLAG)dnl
-   AC_SUBST(RPATH)dnl
-   AC_SUBST(LIB_PREFIX)dnl
-
-   # install program
-   AC_SUBST(INSTALL)dnl
-   AC_SUBST(INSTALL_DATA)dnl
-
-   # files to install
-   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
-   AC_SUBST(installfiles)dnl
-   AC_SUBST(install_executable)dnl
-   AC_SUBST(install_lib)dnl
-   AC_SUBST(install_headers)dnl
-   AC_SUBST(installdirs)dnl
-
-   # package libraries
-   AC_SUBST(alltarget)dnl
-   AC_SUBST(libsuffix)dnl
-   AC_SUBST(dirstoclean)dnl
-   AC_SUBST(package)dnl
-   AC_SUBST(DRACO_DEPENDS)dnl
-   AC_SUBST(DRACO_LIBS)dnl
-   AC_SUBST(VENDOR_DEPENDS)dnl
-   AC_SUBST(VENDOR_INC)dnl
-   AC_SUBST(VENDOR_LIBS)dnl
-   AC_SUBST(ARLIBS)dnl
-
-   # package testing libraries
-   AC_SUBST(PKG_DEPENDS)dnl
-   AC_SUBST(PKG_LIBS)dnl
-   AC_SUBST(DRACO_TEST_DEPENDS)dnl
-   AC_SUBST(DRACO_TEST_LIBS)dnl
-   AC_SUBST(VENDOR_TEST_DEPENDS)dnl
-   AC_SUBST(VENDOR_TEST_LIBS)dnl
-   AC_SUBST(ARTESTLIBS)dnl
-   AC_SUBST(test_alltarget)dnl
-   AC_SUBST(test_flags)dnl
-   AC_SUBST(test_scalar)dnl
-   AC_SUBST(test_nprocs)dnl
-   AC_SUBST(test_output_files)dnl
-
-   # libraries
-   AC_ARG_VAR(LIBS)dnl
-
-   # configure options
-   AC_SUBST(configure_command)dnl
-
-   # directories in source tree
-   AC_SUBST(package_top_srcdir)
-   
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_local.m4
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
@@ -4315,156 +4087,6 @@ dnl end of ac_platforms.m4
 dnl-------------------------------------------------------------------------dnl
 
 dnl-------------------------------------------------------------------------dnl
-dnl ac_utils.m4
-dnl
-dnl Macros to perform useful functions
-dnl
-dnl Mike Buksas
-dnl-------------------------------------------------------------------------dnl
-
-dnl Functions taken from:
-dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
-dnl
-
-AC_DEFUN([adl_COMPUTE_RELATIVE_PATHS],
-[for _lcl_i in $1; do
-  _lcl_from=\[$]`echo "[$]_lcl_i" | sed 's,:.*$,,'`
-  _lcl_to=\[$]`echo "[$]_lcl_i" | sed 's,^[[^:]]*:,,' | sed 's,:[[^:]]*$,,'`
-  _lcl_result_var=`echo "[$]_lcl_i" | sed 's,^.*:,,'`
-  adl_RECURSIVE_EVAL([[$]_lcl_from], [_lcl_from])
-  adl_RECURSIVE_EVAL([[$]_lcl_to], [_lcl_to])
-  _lcl_notation="$_lcl_from$_lcl_to"
-  adl_NORMALIZE_PATH([_lcl_from],['/'])
-  adl_NORMALIZE_PATH([_lcl_to],['/'])
-  adl_COMPUTE_RELATIVE_PATH([_lcl_from], [_lcl_to], [_lcl_result_tmp])
-  adl_NORMALIZE_PATH([_lcl_result_tmp],["[$]_lcl_notation"])
-  eval $_lcl_result_var='[$]_lcl_result_tmp'
-done])
-
-
-dnl adl_COMPUTE_RELATIVE_PATH(FROM, TO, RESULT)
-dnl ===========================================
-dnl Compute the relative path to go from $FROM to $TO and set the value
-dnl of $RESULT to that value.  This function work on raw filenames
-dnl (for instead it will considerate /usr//local and /usr/local as
-dnl two distinct paths), you should really use adl_COMPUTE_REALTIVE_PATHS
-dnl instead to have the paths sanitized automatically.
-dnl
-dnl For instance:
-dnl    first_dir=/somewhere/on/my/disk/bin
-dnl    second_dir=/somewhere/on/another/disk/share
-dnl    adl_COMPUTE_RELATIVE_PATH(first_dir, second_dir, first_to_second)
-dnl will set $first_to_second to '../../../another/disk/share'.
-AC_DEFUN([adl_COMPUTE_RELATIVE_PATH],
-[adl_COMPUTE_COMMON_PATH([$1], [$2], [_lcl_common_prefix])
-adl_COMPUTE_BACK_PATH([$1], [_lcl_common_prefix], [_lcl_first_rel])
-adl_COMPUTE_SUFFIX_PATH([$2], [_lcl_common_prefix], [_lcl_second_suffix])
-$3="[$]_lcl_first_rel[$]_lcl_second_suffix"])
-
-dnl adl_COMPUTE_COMMON_PATH(LEFT, RIGHT, RESULT)
-dnl ============================================
-dnl Compute the common path to $LEFT and $RIGHT and set the result to $RESULT.
-dnl
-dnl For instance:
-dnl    first_path=/somewhere/on/my/disk/bin
-dnl    second_path=/somewhere/on/another/disk/share
-dnl    adl_COMPUTE_COMMON_PATH(first_path, second_path, common_path)
-dnl will set $common_path to '/somewhere/on'.
-AC_DEFUN([adl_COMPUTE_COMMON_PATH],
-[$3=''
-_lcl_second_prefix_match=''
-while test "[$]_lcl_second_prefix_match" != 0; do
-  _lcl_first_prefix=`expr "x[$]$1" : "x\([$]$3/*[[^/]]*\)"`
-  _lcl_second_prefix_match=`expr "x[$]$2" : "x[$]_lcl_first_prefix"`
-  if test "[$]_lcl_second_prefix_match" != 0; then
-    if test "[$]_lcl_first_prefix" != "[$]$3"; then
-      $3="[$]_lcl_first_prefix"
-    else
-      _lcl_second_prefix_match=0
-    fi
-  fi
-done])
-
-dnl adl_COMPUTE_SUFFIX_PATH(PATH, SUBPATH, RESULT)
-dnl ==============================================
-dnl Substrack $SUBPATH from $PATH, and set the resulting suffix
-dnl (or the empty string if $SUBPATH is not a subpath of $PATH)
-dnl to $RESULT.
-dnl
-dnl For instace:
-dnl    first_path=/somewhere/on/my/disk/bin
-dnl    second_path=/somewhere/on
-dnl    adl_COMPUTE_SUFFIX_PATH(first_path, second_path, common_path)
-dnl will set $common_path to '/my/disk/bin'.
-AC_DEFUN([adl_COMPUTE_SUFFIX_PATH],
-[$3=`expr "x[$]$1" : "x[$]$2/*\(.*\)"`])
-
-dnl adl_COMPUTE_BACK_PATH(PATH, SUBPATH, RESULT)
-dnl ============================================
-dnl Compute the relative path to go from $PATH to $SUBPATH, knowing that
-dnl $SUBPATH is a subpath of $PATH (any other words, only repeated '../'
-dnl should be needed to move from $PATH to $SUBPATH) and set the value
-dnl of $RESULT to that value.  If $SUBPATH is not a subpath of PATH,
-dnl set $RESULT to the empty string.
-dnl
-dnl For instance:
-dnl    first_path=/somewhere/on/my/disk/bin
-dnl    second_path=/somewhere/on
-dnl    adl_COMPUTE_BACK_PATH(first_path, second_path, back_path)
-dnl will set $back_path to '../../../'.
-AC_DEFUN([adl_COMPUTE_BACK_PATH],
-[adl_COMPUTE_SUFFIX_PATH([$1], [$2], [_lcl_first_suffix])
-$3=''
-_lcl_tmp='xxx'
-while test "[$]_lcl_tmp" != ''; do
-  _lcl_tmp=`expr "x[$]_lcl_first_suffix" : "x[[^/]]*/*\(.*\)"`
-  if test "[$]_lcl_first_suffix" != ''; then
-     _lcl_first_suffix="[$]_lcl_tmp"
-     $3="../[$]$3"
-  fi
-done])
-
-dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
-dnl =================================
-dnl Interpolate the VALUE in loop until it doesn't change,
-dnl and set the result to $RESULT.
-dnl WARNING: It's easy to get an infinite loop with some unsane input.
-AC_DEFUN([adl_RECURSIVE_EVAL],
-[_lcl_receval="$1"
-$2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
-     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
-     _lcl_receval_old=''
-     while test "[$]_lcl_receval_old" != "[$]_lcl_receval"; do
-       _lcl_receval_old="[$]_lcl_receval"
-       eval _lcl_receval="\"[$]_lcl_receval\""
-     done
-     echo "[$]_lcl_receval")`])
-
-
-
-dnl Available from the GNU Autoconf Macro Archive at:
-dnl http://www.gnu.org/software/ac-archive/htmldoc/normpath.html
-dnl
-AC_DEFUN([adl_NORMALIZE_PATH],
-[case ":[$]$1:" in
-# change empty paths to '.'
-  ::) $1='.' ;;
-# strip trailing slashes
-  :*[[\\/]]:) $1=`echo "[$]$1" | sed 's,[[\\/]]*[$],,'` ;;
-  :*:) ;;
-esac
-# squeze repeated slashes
-case ifelse($2,,"[$]$1",$2) in
-# if the path contains any backslashes, turn slashes into backslashes
- *\\*) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1\\\\,g'` ;;
-# if the path contains slashes, also turn backslashes into slashes
- *) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1/,g'` ;;
-esac])
-
-
-
-
-dnl-------------------------------------------------------------------------dnl
 dnl ac_vendors.m4
 dnl
 dnl Macros for each vendor that is used supported by the Draco build
@@ -5760,5 +5382,392 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
 dnl-------------------------------------------------------------------------dnl
 dnl end of ac_vendors.m4
 dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_doxygen.m4
+dnl
+dnl Macros to help setup doxygen autodoc directories.
+dnl
+dnl Kelly Thompson
+dnl 2004/03/30 16:41:22
+dnl 1999/02/04 01:56:19
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SET_DEFAULT_OUTPUT
+dnl-------------------------------------------------------------------------dnl
+#
+# Set the default location for doxygen output
+#
+AC_DEFUN([AC_SET_DEFAULT_OUTPUT], [dnl
+   if test ${doxygen_output_top} = DEFAULT; then
+       AC_SUBST(doxygen_output_top, "${prefix}/documentation")
+   fi
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_PACKAGE_TAGS
+dnl
+dnl  Collect tagfiles for pacakge-to-component dependencies
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_AUTODOC_PACKAGE_TAGS], [dnl
+
+   # XXX Need to change COMPLINKS to generic doxygen list instead of
+   # HTML for Latex compatability. Let doxygen insert the links
+   AC_MSG_CHECKING([for documented sub-components of this package])
+   COMP_LINKS=''
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+   components=''
+   for item in `ls -1 ${package_top_srcdir}/src`; do
+      if test -d ${package_top_srcdir}/src/${item}/autodoc; then
+         dirname=`basename ${item}`
+         components="${components} ${dirname}"
+         COMP_LINKS="${COMP_LINKS} <li><a href=\"${dirname}/index.html\">${dirname}</a></li>"
+         tagfile=${doxygen_output_top}/${dirname}.tag
+         TAGFILES="${TAGFILES} ${tagfile}"
+         DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ${dirname}\""
+      fi
+   done
+   AC_MSG_RESULT(${components:-none})
+   COMP_LINKS="<ul> $COMP_LINKS </ul>"
+
+   # XXX TO DO: Add links to dependent packages on this page.
+   PACKAGE_LINKS="<ul> </ul>"
+
+   # Unique to package-level
+   AC_SUBST(PACKAGE_LINKS)
+   AC_SUBST(COMP_LINKS)
+
+])
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_COMPONENT_TAGS
+dnl
+dnl   Collect tagfiles for within-package component dependencies
+dnl-------------------------------------------------------------------------dnl
+#
+# Build a list of tagfiles for other components of the same package
+# and the _relative_ locations of the autodoc directories that they
+# refer to.
+#
+# The relative path between component documentation in the same
+# package is "../component" 
+#
+# These components are specified in AC_NEEDS_LIBS, and are stored
+# in variable DEPENDENT_COMPONENTS. 
+#
+AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
+
+   components=''
+   TAGFILES=''
+   DOXYGEN_TAGFILES=''
+   AC_MSG_CHECKING([for Doxygen component dependencies])
+   for comp in ${DEPENDENT_COMPONENTS}; do
+       components="${components} ${comp}"
+       tagfile=${doxygen_output_top}/${comp}.tag
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
+   done
+   AC_MSG_RESULT([${components}])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_AUTODOC_SUBST
+dnl 
+dnl   Do subsistutions on common AUTODOC variables
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_AUTODOC_SUBST], [dnl
+
+   # Doxygen Input
+   AC_SUBST(doxygen_input)
+   AC_SUBST(doxygen_examples)
+
+   # Doxygen Output
+   AC_SUBST(doxygen_output_top)
+   AC_SUBST(doxygen_html_output)
+   AC_SUBST(doxygen_latex_output)
+
+   # Other doxygen configuration
+   AC_SUBST(DOXYGEN_TAGFILES)
+
+   # For inclusion in header files and other html
+   AC_SUBST(rel_package_html)
+
+   # For makefiles for configuration:
+   AC_SUBST(header_dir)
+   AC_SUBST(autodoc_dir)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_AUTODOC
+dnl
+dnl  setup doxygen autodoc directories for COMPONENTS within a package
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_AUTODOC], [dnl
+
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
+
+   # Define some package-level directories
+   header_dir=${package_top_srcdir}/autodoc/html
+   config_dir=${package_top_srcdir}/config
+
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}/autodoc
+
+   # For a component, the doxygen input is the srcdir and the examples
+   # are in the tests
+   AC_MSG_CHECKING([doxygen input directories])
+   if test -d ${abs_srcdir}; then
+      doxygen_input="${doxygen_input} ${abs_srcdir}"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
+   if test -d ${abs_srcdir}/test; then
+      doxygen_examples=${abs_srcdir}/test
+   fi
+
+   # Set the package-level html output location
+   package_html=${doxygen_output_top}/html
+
+   # The local dir is different from the current dir.
+   # localdir=`pwd`/autodoc
+
+   # Set the component output locations.
+   doxygen_html_output="${doxygen_output_top}/html/${package}"
+   doxygen_latex_output="${doxygen_output_top}/latex/${package}"
+
+   # Relative location of the package-level html output.
+   adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
+
+   # Get tags for other components in this package which this
+   # component depends on
+   AC_AUTODOC_COMPONENT_TAGS
+
+   # find the release number
+   number=$1
+   AC_MSG_CHECKING("component release number")
+   AC_MSG_RESULT($number)
+   AC_SUBST(number)
+
+   AC_AUTODOC_SUBST
+
+   AC_CONFIG_FILES([autodoc/Makefile:${config_dir}/Makefile.autodoc.in \
+                    autodoc/doxygen_config:${config_dir}/doxygen_config.in \
+                    autodoc/header.html:${header_dir}/header.html.in \
+                    autodoc/footer.html:${header_dir}/footer.html.in ])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_PACKAGE_AUTODOC
+dnl
+dnl  setup doxygen autodoc directories for a PACKAGE
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
+
+   # Get the default output location
+   AC_SET_DEFAULT_OUTPUT
+
+   # Package-level directories
+   header_dir=${srcdir}/html
+   config_dir=${package_top_srcdir}/config
+
+   abs_srcdir=`cd ${srcdir}; pwd`
+   autodoc_dir=${abs_srcdir}
+
+   # For the package, the input is the current directory, plus
+   # configure/doc. There are no examples
+   AC_MSG_CHECKING([for Doxygen input directories])
+   doxygen_input="`pwd`"
+   if test -d ${config_dir}/doc; then
+      doxygen_input="${doxygen_input} ${config_dir}/doc"
+   fi
+   if test -d ${autodoc_dir}; then
+      doxygen_input="${doxygen_input} ${autodoc_dir}"
+   fi
+   AC_MSG_RESULT(${doxygen_input})
+   doxygen_examples=''
+
+   # Component output locations
+   doxygen_html_output="${doxygen_output_top}/html/"
+   doxygen_latex_output="${doxygen_output_top}/latex/"
+
+   # Relative location of the package-level html output.
+   rel_package_html='.'
+
+   AC_AUTODOC_PACKAGE_TAGS
+
+   AC_AUTODOC_SUBST
+
+   AC_CONFIG_FILES([doxygen_config:${config_dir}/doxygen_config.in])
+   AC_CONFIG_FILES([Makefile:${config_dir}/Makefile.autodoc.in])
+   AC_CONFIG_FILES([header.html:html/header.html.in])
+   AC_CONFIG_FILES([footer.html:html/footer.html.in])
+   AC_CONFIG_FILES([mainpage.dcc])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_doxygen.m4
+dnl-------------------------------------------------------------------------dnl
+
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_utils.m4
+dnl
+dnl Macros to perform useful functions
+dnl
+dnl Mike Buksas
+dnl-------------------------------------------------------------------------dnl
+
+dnl Functions taken from:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
+dnl
+
+AC_DEFUN([adl_COMPUTE_RELATIVE_PATHS],
+[for _lcl_i in $1; do
+  _lcl_from=\[$]`echo "[$]_lcl_i" | sed 's,:.*$,,'`
+  _lcl_to=\[$]`echo "[$]_lcl_i" | sed 's,^[[^:]]*:,,' | sed 's,:[[^:]]*$,,'`
+  _lcl_result_var=`echo "[$]_lcl_i" | sed 's,^.*:,,'`
+  adl_RECURSIVE_EVAL([[$]_lcl_from], [_lcl_from])
+  adl_RECURSIVE_EVAL([[$]_lcl_to], [_lcl_to])
+  _lcl_notation="$_lcl_from$_lcl_to"
+  adl_NORMALIZE_PATH([_lcl_from],['/'])
+  adl_NORMALIZE_PATH([_lcl_to],['/'])
+  adl_COMPUTE_RELATIVE_PATH([_lcl_from], [_lcl_to], [_lcl_result_tmp])
+  adl_NORMALIZE_PATH([_lcl_result_tmp],["[$]_lcl_notation"])
+  eval $_lcl_result_var='[$]_lcl_result_tmp'
+done])
+
+
+dnl adl_COMPUTE_RELATIVE_PATH(FROM, TO, RESULT)
+dnl ===========================================
+dnl Compute the relative path to go from $FROM to $TO and set the value
+dnl of $RESULT to that value.  This function work on raw filenames
+dnl (for instead it will considerate /usr//local and /usr/local as
+dnl two distinct paths), you should really use adl_COMPUTE_REALTIVE_PATHS
+dnl instead to have the paths sanitized automatically.
+dnl
+dnl For instance:
+dnl    first_dir=/somewhere/on/my/disk/bin
+dnl    second_dir=/somewhere/on/another/disk/share
+dnl    adl_COMPUTE_RELATIVE_PATH(first_dir, second_dir, first_to_second)
+dnl will set $first_to_second to '../../../another/disk/share'.
+AC_DEFUN([adl_COMPUTE_RELATIVE_PATH],
+[adl_COMPUTE_COMMON_PATH([$1], [$2], [_lcl_common_prefix])
+adl_COMPUTE_BACK_PATH([$1], [_lcl_common_prefix], [_lcl_first_rel])
+adl_COMPUTE_SUFFIX_PATH([$2], [_lcl_common_prefix], [_lcl_second_suffix])
+$3="[$]_lcl_first_rel[$]_lcl_second_suffix"])
+
+dnl adl_COMPUTE_COMMON_PATH(LEFT, RIGHT, RESULT)
+dnl ============================================
+dnl Compute the common path to $LEFT and $RIGHT and set the result to $RESULT.
+dnl
+dnl For instance:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on/another/disk/share
+dnl    adl_COMPUTE_COMMON_PATH(first_path, second_path, common_path)
+dnl will set $common_path to '/somewhere/on'.
+AC_DEFUN([adl_COMPUTE_COMMON_PATH],
+[$3=''
+_lcl_second_prefix_match=''
+while test "[$]_lcl_second_prefix_match" != 0; do
+  _lcl_first_prefix=`expr "x[$]$1" : "x\([$]$3/*[[^/]]*\)"`
+  _lcl_second_prefix_match=`expr "x[$]$2" : "x[$]_lcl_first_prefix"`
+  if test "[$]_lcl_second_prefix_match" != 0; then
+    if test "[$]_lcl_first_prefix" != "[$]$3"; then
+      $3="[$]_lcl_first_prefix"
+    else
+      _lcl_second_prefix_match=0
+    fi
+  fi
+done])
+
+dnl adl_COMPUTE_SUFFIX_PATH(PATH, SUBPATH, RESULT)
+dnl ==============================================
+dnl Substrack $SUBPATH from $PATH, and set the resulting suffix
+dnl (or the empty string if $SUBPATH is not a subpath of $PATH)
+dnl to $RESULT.
+dnl
+dnl For instace:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on
+dnl    adl_COMPUTE_SUFFIX_PATH(first_path, second_path, common_path)
+dnl will set $common_path to '/my/disk/bin'.
+AC_DEFUN([adl_COMPUTE_SUFFIX_PATH],
+[$3=`expr "x[$]$1" : "x[$]$2/*\(.*\)"`])
+
+dnl adl_COMPUTE_BACK_PATH(PATH, SUBPATH, RESULT)
+dnl ============================================
+dnl Compute the relative path to go from $PATH to $SUBPATH, knowing that
+dnl $SUBPATH is a subpath of $PATH (any other words, only repeated '../'
+dnl should be needed to move from $PATH to $SUBPATH) and set the value
+dnl of $RESULT to that value.  If $SUBPATH is not a subpath of PATH,
+dnl set $RESULT to the empty string.
+dnl
+dnl For instance:
+dnl    first_path=/somewhere/on/my/disk/bin
+dnl    second_path=/somewhere/on
+dnl    adl_COMPUTE_BACK_PATH(first_path, second_path, back_path)
+dnl will set $back_path to '../../../'.
+AC_DEFUN([adl_COMPUTE_BACK_PATH],
+[adl_COMPUTE_SUFFIX_PATH([$1], [$2], [_lcl_first_suffix])
+$3=''
+_lcl_tmp='xxx'
+while test "[$]_lcl_tmp" != ''; do
+  _lcl_tmp=`expr "x[$]_lcl_first_suffix" : "x[[^/]]*/*\(.*\)"`
+  if test "[$]_lcl_first_suffix" != ''; then
+     _lcl_first_suffix="[$]_lcl_tmp"
+     $3="../[$]$3"
+  fi
+done])
+
+dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
+dnl =================================
+dnl Interpolate the VALUE in loop until it doesn't change,
+dnl and set the result to $RESULT.
+dnl WARNING: It's easy to get an infinite loop with some unsane input.
+AC_DEFUN([adl_RECURSIVE_EVAL],
+[_lcl_receval="$1"
+$2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "[$]_lcl_receval_old" != "[$]_lcl_receval"; do
+       _lcl_receval_old="[$]_lcl_receval"
+       eval _lcl_receval="\"[$]_lcl_receval\""
+     done
+     echo "[$]_lcl_receval")`])
+
+
+
+dnl Available from the GNU Autoconf Macro Archive at:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/normpath.html
+dnl
+AC_DEFUN([adl_NORMALIZE_PATH],
+[case ":[$]$1:" in
+# change empty paths to '.'
+  ::) $1='.' ;;
+# strip trailing slashes
+  :*[[\\/]]:) $1=`echo "[$]$1" | sed 's,[[\\/]]*[$],,'` ;;
+  :*:) ;;
+esac
+# squeze repeated slashes
+case ifelse($2,,"[$]$1",$2) in
+# if the path contains any backslashes, turn slashes into backslashes
+ *\\*) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1\\\\,g'` ;;
+# if the path contains slashes, also turn backslashes into slashes
+ *) $1=`echo "[$]$1" | sed 's,\(.\)[[\\/]][[\\/]]*,\1/,g'` ;;
+esac])
+
+
 
 
