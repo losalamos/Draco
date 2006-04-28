@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.7.3 -*- Autoconf -*-
+# generated automatically by aclocal 1.9.2 -*- Autoconf -*-
 
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -10,6 +10,364 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+dnl-------------------------------------------------------------------------dnl
+dnl ac_conf.m4
+dnl
+dnl Service macros used in configure.ac's throughout Draco.
+dnl
+dnl Thomas M. Evans
+dnl 1999/02/04 01:56:19
+dnl-------------------------------------------------------------------------dnl
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DRACO_PREREQ
+dnl
+dnl Checks the configure version
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_PREREQ], [dnl
+
+   # we need at least autoconf 2.53 to work correctly
+   AC_PREREQ(2.53)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_NEEDS_LIBS
+dnl
+dnl add DRACO-dependent libraries necessary for a package
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_NEEDS_LIBS], [dnl
+   if test ${has_libdir:=no} != "yes" ; then
+       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
+       has_libdir="yes"
+   fi
+
+   for lib in $1
+   do
+       # temporary string to keep line from getting too long
+       draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
+       DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
+       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
+   done
+
+   # Keep a list of component dependencies free of other tags or paths.
+   DEPENDENT_COMPONENTS="$1"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_NEEDS_LIBS_TEST
+dnl
+dnl add DRACO-dependent libraries necessary for a package test
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
+   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
+   for lib in $1
+   do
+       # temporary string to keep line from getting too long
+       draco_test_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
+       DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
+       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
+   done
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_RUNTESTS
+dnl
+dnl add DRACO-package tests (default to use DejaGnu)
+dnl usage: in configure.ac:
+dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
+dnl where serial means run as serial test only.
+dnl If compiling with scalar c4 then nprocs are ignored.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_RUNTESTS], [dnl
+
+   newtests="$1"
+   test_alltarget="$test_alltarget $newtests"
+
+   test_nprocs="$2"
+
+   if test -z "${test_nprocs}" ; then
+     AC_MSG_ERROR("No procs choosen for the tests!")
+   fi
+
+dnl If we ran AC_RUNTESTS with "serial" then mark it so here.
+     if test "$test_nprocs" = "serial" || test "$test_nprocs" = "scalar" ; then
+       scalar_tests="$scalar_tests $newtests"   
+     else
+       parallel_tests="$parallel_tests $newtests"
+     fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_TESTEXE
+dnl
+dnl determines what type of executable the tests are, for example, you 
+dnl can set the executable to some scripting extension, like python.
+dnl the default is an executable binary
+dnl options are PYTHON
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_TESTEXE], [dnl
+   test_exe="$1"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_TESTBINARY
+dnl
+dnl Register a binary to be tested during "make test".  This function
+dnl takes two arguments. The first argument is a space delimited list
+dnl of binaries to be tested.  These second argument is the number of
+dnl processors to use in these tests.  The 
+dnl
+dnl All of tests are run as parallel tests.
+dnl
+dnl Example use in configure.ac:
+dnl
+dnl AC_TESTBINARY(tstSerranoExe \
+dnl               tstJibberish \
+dnl               , 1 2 6)
+dnl
+dnl Background:
+dnl
+dnl The new m4 macro AC_TESTBINARY has been implemented to support a
+dnl specific type of unit test on BPROC systems.  The Capsaicin
+dnl project has unit tests written in C++ that create new processes
+dnl that run under MPI.  For example, the unit test tstSerranoExe will
+dnl setup an input deck and execute  
+dnl "mpirun -np 4 ../bin/serrano test1.inp". Output is captured and
+dnl evaluated by tstSerranoExe. On most systems, this type of unit
+dnl test could be executed as a normal unit test.  However, BProc
+dnl systems do not allow mpirun to be executed from the backend. Thus,
+dnl AC_TESTBINARY tests will execute the unit test as a scalar test
+dnl with the expectation that an mpi process will be started by the
+dnl unit test.    
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_TESTBINARY], [dnl
+
+   if test -z "$2" ; then
+     AC_MSG_ERROR("ac_testbinary requires 2 arguments.")
+   fi
+
+   if test ! ${testbinary_nprocs:-none} = none ; then
+     AC_MSG_WARN("More than one call to ac_testbinary, using nproc info from last call!")
+   fi   
+
+   testbinary_nprocs="$2"
+   binary_tests="$binary_tests $1"
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_INSTALL_EXECUTABLE
+dnl
+dnl where executables will be installed
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
+   install_executable="\${bindir}/\${package}"
+   installdirs="${installdirs} \${bindir}"
+   alltarget="${alltarget} bin/\${package}"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_INSTALL_LIB
+dnl
+dnl where libraries will be installed
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_INSTALL_LIB], [ dnl
+   install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
+   installdirs="${installdirs} \${libdir}"
+   alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
+
+   # test will need to link this library
+   PKG_DEPENDS='../lib${LIB_PREFIX}${package}${libsuffix}'
+   PKG_LIBS='-L.. -l${LIB_PREFIX}${package}'
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_INSTALL_HEADERS
+dnl
+dnl where headers will be installed 
+dnl usage: configure.ac
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
+   install_headers="\${installheaders}"
+   installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_CHECK_TOOLS
+dnl
+dnl Find tools used by the build system (latex, bibtex, python, etc)
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
+
+   dnl
+   dnl TOOL CHECKS
+   dnl
+   
+   dnl check for and assign the path to python
+   AC_PATH_PROG(PYTHON_PATH, python, null)
+   if test "${PYTHON_PATH}" = null ; then
+       AC_MSG_ERROR("No valid Python found!")
+   fi
+   
+   dnl check for and assign the path to perl
+   AC_PATH_PROG(PERL_PATH, perl, null)
+   if test "${PERL_PATH}" = null ; then
+       AC_MSG_WARN("No valid Perl found!")
+   fi
+
+   dnl check for CVS
+   AC_PATH_PROG(CVS_PATH, cvs, null)
+   if test "${CVS_PATH}" = null ; then
+       AC_MSG_WARN("No valid CVS found!")
+   fi
+
+   dnl check for and assign the path to ghostview
+   AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)
+   if test "${GHOSTVIEW}" = null ; then
+       AC_MSG_WARN("No valid ghostview found!")
+   fi
+
+   dnl check for and assign the path to latex
+   AC_CHECK_PROGS(LATEX, latex, null)
+   if test "${LATEX}" = null ; then
+       AC_MSG_WARN("No valid latex found!")
+   fi
+   AC_SUBST(LATEXFLAGS)
+
+   dnl check for and assign the path to bibtex
+   AC_CHECK_PROGS(BIBTEX, bibtex, null)
+   if test "${BIBTEX}" = null ; then
+       AC_MSG_WARN("No valid bibtex found!")
+   fi
+   AC_SUBST(BIBTEXFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(XDVI, xdvi, null)
+   if test "${XDVI}" = null ; then
+       AC_MSG_WARN("No valid xdvi found!")
+   fi
+   AC_SUBST(XDVIFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
+   if test "${PS2PDF}" = null ; then
+       AC_MSG_WARN("No valid ps2pdf found!")
+   fi
+   dnl AC_SUBST(PS2PDFFLAGS)
+
+   dnl check for and assign the path to xdvi
+   AC_CHECK_PROGS(DOTCMD, dot, null)
+   if test "${DOTCMD}" = null ; then
+       AC_MSG_WARN("No valid dot found!")
+   fi
+   dnl AC_SUBST(DOTCMDFLAGS)
+
+   dnl check for and assign the path to dvips
+   AC_CHECK_PROGS(DVIPS, dvips, null)
+   if test "${DVIPS}" = null ; then
+       AC_MSG_WARN("No valid dvips found!")
+   fi
+   AC_SUBST(DVIPSFLAGS)
+
+   dnl check for and assign the path for printing (lp)
+   AC_CHECK_PROGS(LP, lp lpr, null)
+   if test "${LP}" = null ; then
+       AC_MSG_WARN("No valid lp or lpr found!")
+   fi
+   AC_SUBST(LPFLAGS)
+
+   dnl check for and assign the path for doxygen
+   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
+   if test "${DOXYGEN_PATH}" = null ; then
+       AC_MSG_WARN("No valid Doxygen found!")
+   fi
+   AC_SUBST(DOXYGEN_PATH)
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+dnl
+dnl changes compiler from newmpxlC to newxlC so that tests can be run
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
+
+   # change compiler
+   if test "${CXX}" = newmpxlC; then
+       white_compiler='newmpxlC'
+       CXX='newxlC'
+       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
+dnl
+dnl changes compiler back to newmpxlC
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
+
+   # change compiler back
+   if test "${white_compiler}" = newmpxlC; then
+       CXX='newmpxlC'
+       AC_MSG_WARN("Changing back to ${CXX} compiler.")
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_HEAD_MAKEFILE
+dnl 
+dnl Builds default makefile in the head directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_HEAD_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:config/Makefile.head.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_SRC_MAKEFILE
+dnl 
+dnl Builds default makefile in the src directory
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SRC_MAKEFILE], [dnl
+
+   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
+   AC_DBS_VAR_SUBSTITUTIONS
+   AC_CONFIG_FILES([Makefile:../config/Makefile.src.in])
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl end of ac_conf.m4
+dnl-------------------------------------------------------------------------dnl
+
 
 dnl-------------------------------------------------------------------------dnl
 dnl ac_dracoarg.m4
@@ -553,515 +911,4 @@ dnl-------------------------------------------------------------------------dnl
 dnl end of ac_instrument.m4
 dnl-------------------------------------------------------------------------dnl
 
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_conf.m4
-dnl
-dnl Service macros used in configure.ac's throughout Draco.
-dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:19
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_DRACO_PREREQ
-dnl
-dnl Checks the configure version
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_PREREQ], [dnl
-
-   # we need at least autoconf 2.53 to work correctly
-   AC_PREREQ(2.53)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_NEEDS_LIBS
-dnl
-dnl add DRACO-dependent libraries necessary for a package
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_NEEDS_LIBS], [dnl
-   if test ${has_libdir:=no} != "yes" ; then
-       DRACO_LIBS="${DRACO_LIBS} -L\${libdir}"
-       has_libdir="yes"
-   fi
-
-   for lib in $1
-   do
-       # temporary string to keep line from getting too long
-       draco_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
-       DRACO_DEPENDS="${DRACO_DEPENDS} ${draco_depends}"
-       DRACO_LIBS="${DRACO_LIBS} -l\${LIB_PREFIX}${lib}"
-   done
-
-   # Keep a list of component dependencies free of other tags or paths.
-   DEPENDENT_COMPONENTS="$1"
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_NEEDS_LIBS_TEST
-dnl
-dnl add DRACO-dependent libraries necessary for a package test
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_NEEDS_LIBS_TEST], [dnl
-   DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -L\${libdir}"
-   for lib in $1
-   do
-       # temporary string to keep line from getting too long
-       draco_test_depends="\${libdir}/lib\${LIB_PREFIX}${lib}\${libsuffix}"
-       DRACO_TEST_DEPENDS="${DRACO_TEST_DEPENDS} ${draco_test_depends}"
-       DRACO_TEST_LIBS="${DRACO_TEST_LIBS} -l\${LIB_PREFIX}${lib}"
-   done
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_RUNTESTS
-dnl
-dnl add DRACO-package tests (default to use DejaGnu)
-dnl usage: in configure.ac:
-dnl AC_RUNTESTS(testexec1 testexec2 ... , {nprocs1 nprocs2 ... | scalar})
-dnl where serial means run as serial test only.
-dnl If compiling with scalar c4 then nprocs are ignored.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_RUNTESTS], [dnl
-	test_alltarget="$test_alltarget $1"
-        
-	test_nprocs="$2"
-
-	if test -z "${test_nprocs}" ; then
-	    AC_MSG_ERROR("No procs choosen for the tests!")
-        fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_TESTEXE
-dnl
-dnl determines what type of executable the tests are, for example, you 
-dnl can set the executable to some scripting extension, like python.
-dnl the default is an executable binary
-dnl options are PYTHON
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_TESTEXE], [dnl
-   test_exe="$1"
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_INSTALL_EXECUTABLE
-dnl
-dnl where executables will be installed
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_INSTALL_EXECUTABLE], [ dnl
-   install_executable="\${bindir}/\${package}"
-   installdirs="${installdirs} \${bindir}"
-   alltarget="${alltarget} bin/\${package}"
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_INSTALL_LIB
-dnl
-dnl where libraries will be installed
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_INSTALL_LIB], [ dnl
-   install_lib='${libdir}/lib${LIB_PREFIX}${package}${libsuffix}'
-   installdirs="${installdirs} \${libdir}"
-   alltarget="${alltarget} lib\${LIB_PREFIX}\${package}\${libsuffix}"
-
-   # test will need to link this library
-   PKG_DEPENDS='../lib${LIB_PREFIX}${package}${libsuffix}'
-   PKG_LIBS='-L.. -l${LIB_PREFIX}${package}'
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_INSTALL_HEADERS
-dnl
-dnl where headers will be installed 
-dnl usage: configure.ac
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_INSTALL_HEADERS], [ dnl
-   install_headers="\${installheaders}"
-   installdirs="${installdirs} \${includedir} \${includedir}/\${package}"
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_CHECK_TOOLS
-dnl
-dnl Find tools used by the build system (latex, bibtex, python, etc)
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
-
-   dnl
-   dnl TOOL CHECKS
-   dnl
-   
-   dnl check for and assign the path to python
-   AC_PATH_PROG(PYTHON_PATH, python, null)
-   if test "${PYTHON_PATH}" = null ; then
-       AC_MSG_ERROR("No valid Python found!")
-   fi
-   
-   dnl check for and assign the path to perl
-   AC_PATH_PROG(PERL_PATH, perl, null)
-   if test "${PERL_PATH}" = null ; then
-       AC_MSG_WARN("No valid Perl found!")
-   fi
-
-   dnl check for CVS
-   AC_PATH_PROG(CVS_PATH, cvs, null)
-   if test "${CVS_PATH}" = null ; then
-       AC_MSG_WARN("No valid CVS found!")
-   fi
-
-   dnl check for and assign the path to ghostview
-   AC_CHECK_PROGS(GHOSTVIEW, ghostview gv, null)
-   if test "${GHOSTVIEW}" = null ; then
-       AC_MSG_WARN("No valid ghostview found!")
-   fi
-
-   dnl check for and assign the path to latex
-   AC_CHECK_PROGS(LATEX, latex, null)
-   if test "${LATEX}" = null ; then
-       AC_MSG_WARN("No valid latex found!")
-   fi
-   AC_SUBST(LATEXFLAGS)
-
-   dnl check for and assign the path to bibtex
-   AC_CHECK_PROGS(BIBTEX, bibtex, null)
-   if test "${BIBTEX}" = null ; then
-       AC_MSG_WARN("No valid bibtex found!")
-   fi
-   AC_SUBST(BIBTEXFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(XDVI, xdvi, null)
-   if test "${XDVI}" = null ; then
-       AC_MSG_WARN("No valid xdvi found!")
-   fi
-   AC_SUBST(XDVIFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(PS2PDF, ps2pdf, null)
-   if test "${PS2PDF}" = null ; then
-       AC_MSG_WARN("No valid ps2pdf found!")
-   fi
-   dnl AC_SUBST(PS2PDFFLAGS)
-
-   dnl check for and assign the path to xdvi
-   AC_CHECK_PROGS(DOTCMD, dot, null)
-   if test "${DOTCMD}" = null ; then
-       AC_MSG_WARN("No valid dot found!")
-   fi
-   dnl AC_SUBST(DOTCMDFLAGS)
-
-   dnl check for and assign the path to dvips
-   AC_CHECK_PROGS(DVIPS, dvips, null)
-   if test "${DVIPS}" = null ; then
-       AC_MSG_WARN("No valid dvips found!")
-   fi
-   AC_SUBST(DVIPSFLAGS)
-
-   dnl check for and assign the path for printing (lp)
-   AC_CHECK_PROGS(LP, lp lpr, null)
-   if test "${LP}" = null ; then
-       AC_MSG_WARN("No valid lp or lpr found!")
-   fi
-   AC_SUBST(LPFLAGS)
-
-   dnl check for and assign the path for doxygen
-   AC_PATH_PROG(DOXYGEN_PATH, doxygen, null)
-   if test "${DOXYGEN_PATH}" = null ; then
-       AC_MSG_WARN("No valid Doxygen found!")
-   fi
-   AC_SUBST(DOXYGEN_PATH)
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
-dnl
-dnl changes compiler from newmpxlC to newxlC so that tests can be run
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
-
-   # change compiler
-   if test "${CXX}" = newmpxlC; then
-       white_compiler='newmpxlC'
-       CXX='newxlC'
-       AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
-   fi
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
-dnl
-dnl changes compiler back to newmpxlC
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
-
-   # change compiler back
-   if test "${white_compiler}" = newmpxlC; then
-       CXX='newmpxlC'
-       AC_MSG_WARN("Changing back to ${CXX} compiler.")
-   fi
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_HEAD_MAKEFILE
-dnl 
-dnl Builds default makefile in the head directory
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_HEAD_MAKEFILE], [dnl
-
-   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
-   AC_DBS_VAR_SUBSTITUTIONS
-   AC_CONFIG_FILES([Makefile:config/Makefile.head.in])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_SRC_MAKEFILE
-dnl 
-dnl Builds default makefile in the src directory
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_SRC_MAKEFILE], [dnl
-
-   AC_FIND_TOP_SRC($srcdir, package_top_srcdir)
-   AC_DBS_VAR_SUBSTITUTIONS
-   AC_CONFIG_FILES([Makefile:../config/Makefile.src.in])
-
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_conf.m4
-dnl-------------------------------------------------------------------------dnl
-
-
-dnl-------------------------------------------------------------------------dnl
-dnl ac_local.m4
-dnl
-dnl Macros used internally within the Draco build system.
-dnl
-dnl Thomas M. Evans
-dnl 1999/02/04 01:56:22
-dnl-------------------------------------------------------------------------dnl
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_WITH_DIR
-dnl
-dnl Define --with-xxx[=DIR] with defaults to an environment variable.
-dnl       Usage: AC_WITH_DIR(flag, CPPtoken, DefaultValue, HelpStr)
-dnl                for environment variables enter \${ENVIRONVAR} for
-dnl                DefaultValue
-dnl usage: in aclocal.m4
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_WITH_DIR], [dnl
-
- dnl
- dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
- dnl
- dnl AC_PACKAGE is the flag with all dashes turned to underscores
- dnl AC_WITH_PACKAGE will be substituted to the autoconf shell variable
- dnl    with_xxx
- dnl AC_CMDLINE is the shell command to strip double and trailing slashes
- dnl    from directory names.
-
- define([AC_PACKAGE], [translit($1, [-], [_])])dnl
- define([AC_WITH_PACKAGE], [with_]AC_PACKAGE)dnl
- define([AC_CMDLINE],dnl
-[echo "$]AC_WITH_PACKAGE[" | sed 's%//*%/%g' | sed 's%/$%%'])dnl
-
- AC_ARG_WITH($1,
-   [  --with-$1[=DIR]    $4 ($3 by default)],
-   if test $AC_WITH_PACKAGE != "no" ; then
-      if test $AC_WITH_PACKAGE = "yes" ; then
-         # following eval needed to remove possible '\' from $3
-         eval AC_WITH_PACKAGE=$3
-      fi
-
-      # this command removes double slashes and any trailing slash
-
-      AC_WITH_PACKAGE=`eval AC_CMDLINE`
-      if test "$AC_WITH_PACKAGE:-null}" = "null" ; then
-         { echo "configure: error: --with-$1 directory is unset" 1>&2; \
-           exit 1; }
-      fi
-      if test ! -d $AC_WITH_PACKAGE ; then
-         { echo "configure: error: $AC_WITH_PACKAGE: invalid directory" 1>&2; \
-           exit 1; }
-      fi
-
-      # this sets up the shell variable, with the name of the CPPtoken,
-      # and that we later will do an AC_SUBST on.
-      $2="${AC_WITH_PACKAGE}/"
-
-      # this defines the CPP macro with the directory and single slash appended.
-      AC_DEFINE_UNQUOTED($2, ${AC_WITH_PACKAGE}/)dnl
-
-      # print a message to the users (that can be turned off with --silent)
-
-      echo "$2 has been set to $$2" 1>&6
-
-   fi)
-
-   AC_SUBST($2)dnl
-
-])
-	
-dnl-------------------------------------------------------------------------dnl
-dnl AC_VENDORLIB_SETUP(1,2)
-dnl
-dnl set up for VENDOR_LIBS or VENDOR_TEST_LIBS
-dnl usage: in aclocal.m4
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_VENDORLIB_SETUP], [dnl
-
-   # $1 is the vendor_<> tag (equals pkg or test)
-   # $2 are the directories added 
-
-   if test "${$1}" = pkg ; then
-       VENDOR_LIBS="${VENDOR_LIBS} $2"
-   elif test "${$1}" = test ; then
-       VENDOR_TEST_LIBS="${VENDOR_TEST_LIBS} $2"
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl AC_FIND_TOP_SRC(1,2)
-dnl 
-dnl Find the top source directory of the package by searching upward
-dnl from the argument directory. The top source directory is defined
-dnl as the one with a 'config' sub-directory.
-dnl
-dnl Note: This function will eventually quit if the searched for
-dnl directory is not above the argument. It does so when $temp_dir
-dnl ceases to be a valid directory, which only seems to happen after a
-dnl LOT of ..'s are added to it.
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_FIND_TOP_SRC], [dnl
-   
-   # $1 is the component's source directory
-   # $2 is the variable to store the package's main source directory in.
-
-   temp_dir=$1
-   AC_MSG_CHECKING([package top source directory])
-   while test -d $temp_dir -a ! -d $temp_dir/config ; do   
-       temp_dir="${temp_dir}/.."
-   done
-   if test -d $temp_dir; then
-       $2=`cd $temp_dir; pwd;`
-       AC_MSG_RESULT([$$2])
-   else
-       AC_MSG_ERROR('Could not find package top source directory')
-   fi
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl DO VARIABLE SUBSTITUTIONS ON AC_OUTPUT
-dnl
-dnl These are all the variable substitutions used within the draco
-dnl build system
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
-
-   # these variables are declared "precious", meaning that they are
-   # automatically substituted, put in the configure --help, and
-   # cached 
-   AC_ARG_VAR(CC)dnl
-   AC_ARG_VAR(CFLAGS)dnl
-
-   AC_ARG_VAR(CXX)dnl
-   AC_ARG_VAR(CXXFLAGS)dnl
-
-   AC_ARG_VAR(LD)dnl
-   AC_ARG_VAR(LDFLAGS)dnl
-
-   AC_ARG_VAR(AR)dnl
-   AC_ARG_VAR(ARFLAGS)dnl
-
-   AC_ARG_VAR(CPPFLAGS)dnl
-
-   # dependency rules
-   AC_SUBST(DEPENDENCY_RULES)
-
-   # other compiler substitutions
-   AC_SUBST(STRICTFLAG)dnl
-   AC_SUBST(PARALLEL_FLAG)dnl
-   AC_SUBST(RPATH)dnl
-   AC_SUBST(LIB_PREFIX)dnl
-
-   # install program
-   AC_SUBST(INSTALL)dnl
-   AC_SUBST(INSTALL_DATA)dnl
-
-   # files to install
-   : ${installfiles:='${install_executable} ${install_lib} ${install_headers}'}
-   AC_SUBST(installfiles)dnl
-   AC_SUBST(install_executable)dnl
-   AC_SUBST(install_lib)dnl
-   AC_SUBST(install_headers)dnl
-   AC_SUBST(installdirs)dnl
-
-   # package libraries
-   AC_SUBST(alltarget)dnl
-   AC_SUBST(libsuffix)dnl
-   AC_SUBST(dirstoclean)dnl
-   AC_SUBST(package)dnl
-   AC_SUBST(DRACO_DEPENDS)dnl
-   AC_SUBST(DRACO_LIBS)dnl
-   AC_SUBST(VENDOR_DEPENDS)dnl
-   AC_SUBST(VENDOR_INC)dnl
-   AC_SUBST(VENDOR_LIBS)dnl
-   AC_SUBST(ARLIBS)dnl
-
-   # package testing libraries
-   AC_SUBST(PKG_DEPENDS)dnl
-   AC_SUBST(PKG_LIBS)dnl
-   AC_SUBST(DRACO_TEST_DEPENDS)dnl
-   AC_SUBST(DRACO_TEST_LIBS)dnl
-   AC_SUBST(VENDOR_TEST_DEPENDS)dnl
-   AC_SUBST(VENDOR_TEST_LIBS)dnl
-   AC_SUBST(ARTESTLIBS)dnl
-   AC_SUBST(test_alltarget)dnl
-   AC_SUBST(test_flags)dnl
-   AC_SUBST(test_scalar)dnl
-   AC_SUBST(test_nprocs)dnl
-   AC_SUBST(test_output_files)dnl
-
-   # libraries
-   AC_ARG_VAR(LIBS)dnl
-
-   # configure options
-   AC_SUBST(configure_command)dnl
-
-   # directories in source tree
-   AC_SUBST(package_top_srcdir)
-   
-])
-
-dnl-------------------------------------------------------------------------dnl
-dnl end of ac_local.m4
-dnl-------------------------------------------------------------------------dnl
 
