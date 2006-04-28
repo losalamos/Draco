@@ -41,11 +41,11 @@ pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
 
 .PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
-	dvi autodoc configure reconfigure
+	dvi autodoc configure reconfigure defaul
 
-all: install
+default: install
 
-install dvi: 
+all install dvi: 
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
 			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \

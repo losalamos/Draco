@@ -192,7 +192,7 @@ XDVICMD   := ${TEXINPUTSENV} ${XDVI}
 .PHONY : all postscript index bib tex pdf \
 	installdirs install uninstall configfiles configure \
 	reconfigure clean clean-tex distclean mostlyclean \
-	maintainer-clean forced-maintainer-clean
+	maintainer-clean forced-maintainer-clean 
 
 all: postscript
 

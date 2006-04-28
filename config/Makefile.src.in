@@ -51,8 +51,6 @@ subnj	:= -j $(nj)
 	check uninstall forced-distclean forced-maintainer-clean \
 	dvi configure reconfigure autodoc
 
-all: install
-
 install dvi: 
 	@for dir in ${subdirs} ; do \
 	    if test -d "$${dir}" ; then \
@@ -64,12 +62,12 @@ install dvi:
 
 # Make sure that we do not install a subdirectory before it is checked.
 
-check:
+check all:
 	@for dir in ${subdirs} ; do \
 	    if test -d "$${dir}" ; then \
 	        (cd $${dir} && ${MAKE} dependencies $(subnj)) || ${EXIT}; \
 		(cd $${dir} && ${MAKE} installdirs) || ${EXIT}; \
-		(cd $${dir} && ${MAKE} $(subnj)) || ${EXIT}; \
+		(cd $${dir} && ${MAKE} all $(subnj)) || ${EXIT}; \
 		(cd $${dir} && ${MAKE} $@ $(subnj)) || ${EXIT}; \
 		(cd $${dir} && ${MAKE} install) || ${EXIT}; \
 	    fi; \

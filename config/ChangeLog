@@ -1,3 +1,100 @@
+2006-04-25  Kelly Thompson  <kgt@lanl.gov>
+
+	* I am making a fundamental change to the way unit tests are 
+          registered and executed under the Draco Build System.  But I
+	  have made every effort ensure backward compatbility with 
+	  existing syntax found in our configure.ac filse. The primay
+	  change is the ability for a package to have both parallel and
+	  scalar tests.  A secondary change is the availability of a new
+	  configure keyword AC_TESTBINARY.  Usage is described below. To
+	  ensure backward compatibility, the AC_RUNTESTS command looks the
+	  same, but may be called multiple times.  For example: 
+
+	  dnl Scalar tests
+	  AC_RUNTESTS( tstMyClass1 tstMyClass4, scalar )
+
+	  dnl Parallel tests
+	  AC_RUNTESTS( tstMyClass2 tstMyClass3, 1 2 5)
+
+	  If --with-c4=scalar, then all tests are run as scalar tests. The
+	  same test executable cannot be run as both parallel and scalar.
+	  Any unit test registered to be a parallel test must include
+	  calls to rtt_c4::initialize (or MPI_Init).  Any test registered
+	  as scalar must not include any call to an MPI function.
+
+
+	  The new m4 macro AC_TESTBINARY has been implemented to support
+	  a specific type of unit test on BPROC systems.  The Capsaicin
+	  project has unit tests written in C++ that create new processes
+	  that run under MPI.  For example, the unit test tstSerranoExe
+	  will setup an input deck and execute 
+	  "mpirun -np 4 ../bin/serrano test1.inp".  Output is captured and
+	  evaluated by tstSerranoExe.  On most systems, this type of unit
+	  test could be executed as a normal unit test.  However, BProc
+	  systems do not allow mpirun to be executed from the
+	  backend. Thus, AC_TESTBINARY tests will execute the unit test as
+	  a scalar test with the expectation that an mpi process will be
+	  started by the unit test.  This function takes two arguments: a
+	  list of tests and a list of the number of processors to use when
+	  running the binary under MPI.
+
+	  Details:	
+
+	* ac_conf.m4 (AC_RUNTESTS): Add checks for 2nd argument.  If 2nd
+	  argument is "scalar" or "serial" then append test names to
+	  $scalar_tests, if the 2nd argument is a number, then add the
+	  test names to $parallel_tests and save the list of
+	  $test_nprocs. 
+
+	* ac_conf.m4 (AC_TESTBINARY): This new function should be called
+	  from configure.ac.  It has the same form as AC_RUNTESTS, but is
+	  designed to run each unit test in scalar, but passes the
+	  $test_nprocs variable to the scalar unit test as an argument
+	  "--np <N>" with the expectation that the unit test will execute
+	  some other code (e.g.: serrano) through a system call that
+	  starts mpirun (e.g.:
+	  system("mpirun -np 2 ../bin/serrano test1.inp");)
+	
+	* ac_dracoenv.m4 (AC_DRACO_ENV): Updates reflect new AC_RUNTESTS
+	  capabilties found in ac_conf.m4.  Lists of parallel and scalar
+	  tests are stored seperately.  Some of the options that seperate
+	  parallel and scalar tests have been moved into Makefile.test.in.
+
+	* ac_local.m4 (AC_DBS_VAR_SUBSTITUTIONS): Provide AC_SUBST for the
+	  new variables @scalar_tests@, @parallel_tests@, @binary_tests@
+	  and @testbinary_nprocs@ so that these variables are available in
+	  the package and unit test Makefiles.
+
+	* Makefile.test.in (testing targets and variables): Provide
+	  variables to hold $scalar_tests, $parallel_tests, $binary_tests
+	  and $testbinary_nprocs.  Provide 3 new targets -- one for each
+	  unit test type.  The target "check" will run all three cases.
+
+	* Makefile.src.in (all): Changed the meaning of the target "all." 
+	  The default target is now "install."  The target "all" now means
+	  build and install all libraries and build all tests -- but do
+	  not execute the tests.  This change reflects the need for such a
+	  target on BProc systems where code is built on a compile-node,
+	  but executed on a run-node. 
+
+	* Makefile.package.in (all): Changed the meaning of the target
+	  "all." Combined the target commands for "check" and "all."  The
+	  target all will build package libraries and unit tests.  It does
+	  not run the unit tests.  The default target only builds the
+	  library (not the tests).	
+
+	* Makefile.head.in (all): Redefine target "all" to build all
+	  software and tests instead of only installable code.
+
+	* Makefile.autodoc.in (all): Do not build autodoc with target
+	  "all."
+	
+	* Makefile.test.in (F90 Flags): Make extra F90 autoconf variables
+	  available to unit tests: @F90RPATH@, @F90VENDOR_LIBS@ and
+	  @F90LIBS@.  These variables are not currently set by the
+	  standard DBS environment, but can be set manually in the
+	  configure.ac of a packages that includes F90 sources.  
+
 2006-04-05  Kelly Thompson  <kgt@lanl.gov>
 
 	* ac_instrument.m4: This new configure file provides macro

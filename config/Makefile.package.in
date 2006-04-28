@@ -221,9 +221,18 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
 .PHONY : all install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean dvi dependencies configure reconfigure autodoc
+	forced-clean dvi dependencies configure reconfigure autodoc default
 
-all: ${alltarget}
+default: ${alltarget}
+
+##---------------------------------------------------------------------------##
+## all  : build package library and package unit tests
+## check: run package unit tests
+
+all check: ${alltarget}
+	@if test -d "${srcdir}/test" && test -d "test" ; then \
+		(cd test && ${MAKE} $@) || exit; \
+	fi
 
 dependencies: ${dependfiles}
 	@echo "Package dependencies made."
@@ -248,14 +257,6 @@ bin:
 lib${LIB_PREFIX}${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
 	${AR} ${ARFLAGS} $@ ${objs} ${ARLIBS}
 	${RANLIB} $@
-
-##---------------------------------------------------------------------------##
-## run the test/ directory tests
-
-check: ${alltarget}
-	@if test -d "${srcdir}/test" && test -d "test" ; then \
-		(cd test && ${MAKE} $@) || exit; \
-	fi
 
 ##---------------------------------------------------------------------------##
 ## Build and install autodoc documentation
