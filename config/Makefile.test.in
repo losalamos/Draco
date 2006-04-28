@@ -84,8 +84,11 @@ CXXFLAGS  += ${STRICTFLAG}
 ##---------------------------------------------------------------------------##
 ## F90 Flags
 
-F90= @F90@
-F90FLAGS = @F90FLAGS@
+F90            = @F90@
+F90FLAGS       = @F90FLAGS@
+F90RPATH       = @F90RPATH@
+F90VENDOR_LIBS = @F90VENDOR_LIBS@
+F90LIBS        = @F90LIBS@
 
 ##---------------------------------------------------------------------------##
 ## ar flags
@@ -166,11 +169,15 @@ configure_command = @configure_command@
 ##---------------------------------------------------------------------------##
 ## testing targets and variables
 
-test_alltarget    = @test_alltarget@
-test_flags        = @test_flags@
-test_scalar       = @test_scalar@
-test_nprocs       = @test_nprocs@
-test_output_files = @test_output_files@
+scalar_tests       = @scalar_tests@
+parallel_tests     = @parallel_tests@
+binary_tests       = @binary_tests@
+test_alltarget     = ${scalar_tests} ${parallel_tests} ${binary_tests}
+test_flags         = @test_flags@
+#test_scalar       = @test_scalar@
+test_nprocs        = @test_nprocs@
+testbinary_nprocs  = @testbinary_nprocs@
+#test_output_files = @test_output_files@
 
 ##---------------------------------------------------------------------------##
 ## EXPLICIT VARIABLES
@@ -225,29 +232,64 @@ endif
 LDFLAGS := ${PARALLEL_FLAG} ${LDFLAGS}
 ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
+ifeq (,${parallel_tests})
+  parallel_tests:=none
+endif
+ifeq (,${scalar_tests})
+  scalar_tests:=none
+endif
+ifeq (,${binary_tests})
+  binary_tests:=none
+  testbinary_nprocs:=1
+endif
+
 ##---------------------------------------------------------------------------##
 ## TARGETS
 ##---------------------------------------------------------------------------##
 
 .PHONY : all install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean configure reconfigure
+	forced-clean configure reconfigure check_parallel \
+	check_scalar check_binary
 
 all: ${test_alltarget}
 
-check: all
-	@for testexec in ${test_alltarget}; do \
-	    if test ${test_scalar} = scalar ; then \
-		${libexecdir}/launchtest ${test_flags} ./$$testexec \
-		| ${PYTHON} ${libexecdir}/test_filter.py; \
-	    else \
-		for np in ${test_nprocs}; do \
-		    ${libexecdir}/launchtest ${test_flags} $$np \
-                    ./$$testexec | ${PYTHON} \
-                    ${libexecdir}/test_filter.py; \
-	        done; \
-	    fi; \
-	done; \
+check: all check_parallel check_scalar check_binary
+
+# unit tests run under mpirun or prun.
+check_parallel:
+	@if test ! "${parallel_tests}" = "none"; then \
+	  for testexec in ${parallel_tests}; do \
+	    for np in ${test_nprocs}; do \
+	      ${libexecdir}/launchtest ${test_flags} --mpi $$np ./$$testexec \
+              | ${PYTHON} ${libexecdir}/test_filter.py; \
+            done; \
+          done; \
+	fi;\
+	exit 0
+
+# None of these tests use mpirun or prun.
+check_scalar:
+	@if test ! "${scalar_tests}" = "none"; then \
+	  for testexec in ${scalar_tests}; do \
+	    ${libexecdir}/launchtest ${test_flags} ./$$testexec ${exe_options}\
+	    | ${PYTHON} ${libexecdir}/test_filter.py; \
+	  done; \
+	fi;\
+	exit 0
+
+# These are scalar unit tests built that use the TestExe framework.
+# These tests are executed by the DBS as scalar tests but will start
+# other processes that run under mpirun.
+check_binary:
+	@if test ! "${binary_tests}" = "none"; then \
+	  for testexec in ${binary_tests}; do \
+	    for np in ${testbinary_nprocs}; do \
+	      ${libexecdir}/launchtest ${test_flags} ./$$testexec --np $$np \
+              | ${PYTHON} ${libexecdir}/test_filter.py; \
+            done; \
+          done; \
+	fi;\
 	exit 0
 
 # If available, include Makefile.options from the build directory.
@@ -332,7 +374,7 @@ clean:
 	-rm -f ${test_alltarget} ${objs} ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
 	-rm -f .tmp? *.flc *~
-	-rm -f ${test_output_files}
+	-rm -f *-scalar.log *-[0-9].log
 	-rm -rf ${dirstoclean}
 	-rm -rf *.gcov *.gcno *.gcda
 

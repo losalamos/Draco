@@ -203,37 +203,16 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
 
    test_scalar='no'
 
-   # If we ran AC_RUNTESTS with "serial" then mark it so here.
-   for np in $test_nprocs; do
-       if test $np = serial || test $np = scalar ; then
-          test_scalar="scalar"
-       fi
-   done
-
    # if this is a parallel build, mark the tests scalar
    if test "${with_c4}" = scalar ; then
-       test_scalar="scalar"
+     scalar_tests="$scalar_tests $parallel_tests"
+     parallel_tests=""
+     testbinary_nprocs="scalar"
    fi
 
    # define the TESTFLAGS, for parallel runs the processor will be
    # added later in the Makefile
-
-   if test "${test_scalar}" = scalar ; then
-       test_flags="--${test_exe:=binary}"
-   elif test "${with_c4}" = mpi ; then
-       test_flags="--${test_exe:=binary} --mpi"
-   fi
-
-   ## define the test_output_files for cleaning
-   for file in $test_alltarget; do
-       if test "${test_scalar}" = scalar ; then
-	   test_output_files="${test_output_files} ${file}-scalar.log"
-       else
-	   for np in $test_nprocs; do
-	       test_output_files="${test_output_files} ${file}-${np}.log"
-	   done
-       fi
-   done
+   test_flags="--${test_exe:=binary}"
 
    # Define the package-level source directory (e.g. draco)
    AC_FIND_TOP_SRC($srcdir, package_top_srcdir)

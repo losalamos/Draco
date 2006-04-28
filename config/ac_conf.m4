@@ -78,13 +78,23 @@ dnl If compiling with scalar c4 then nprocs are ignored.
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_RUNTESTS], [dnl
-	test_alltarget="$test_alltarget $1"
-        
-	test_nprocs="$2"
 
-	if test -z "${test_nprocs}" ; then
-	    AC_MSG_ERROR("No procs choosen for the tests!")
-        fi
+   newtests="$1"
+   test_alltarget="$test_alltarget $newtests"
+
+   test_nprocs="$2"
+
+   if test -z "${test_nprocs}" ; then
+     AC_MSG_ERROR("No procs choosen for the tests!")
+   fi
+
+dnl If we ran AC_RUNTESTS with "serial" then mark it so here.
+     if test "$test_nprocs" = "serial" || test "$test_nprocs" = "scalar" ; then
+       scalar_tests="$scalar_tests $newtests"   
+     else
+       parallel_tests="$parallel_tests $newtests"
+     fi
+
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -98,6 +108,53 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_TESTEXE], [dnl
    test_exe="$1"
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_TESTBINARY
+dnl
+dnl Register a binary to be tested during "make test".  This function
+dnl takes two arguments. The first argument is a space delimited list
+dnl of binaries to be tested.  These second argument is the number of
+dnl processors to use in these tests.  The 
+dnl
+dnl All of tests are run as parallel tests.
+dnl
+dnl Example use in configure.ac:
+dnl
+dnl AC_TESTBINARY(tstSerranoExe \
+dnl               tstJibberish \
+dnl               , 1 2 6)
+dnl
+dnl Background:
+dnl
+dnl The new m4 macro AC_TESTBINARY has been implemented to support a
+dnl specific type of unit test on BPROC systems.  The Capsaicin
+dnl project has unit tests written in C++ that create new processes
+dnl that run under MPI.  For example, the unit test tstSerranoExe will
+dnl setup an input deck and execute  
+dnl "mpirun -np 4 ../bin/serrano test1.inp". Output is captured and
+dnl evaluated by tstSerranoExe. On most systems, this type of unit
+dnl test could be executed as a normal unit test.  However, BProc
+dnl systems do not allow mpirun to be executed from the backend. Thus,
+dnl AC_TESTBINARY tests will execute the unit test as a scalar test
+dnl with the expectation that an mpi process will be started by the
+dnl unit test.    
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_TESTBINARY], [dnl
+
+   if test -z "$2" ; then
+     AC_MSG_ERROR("ac_testbinary requires 2 arguments.")
+   fi
+
+   if test ! ${testbinary_nprocs:-none} = none ; then
+     AC_MSG_WARN("More than one call to ac_testbinary, using nproc info from last call!")
+   fi   
+
+   testbinary_nprocs="$2"
+   binary_tests="$binary_tests $1"
+
 ])
 
 dnl-------------------------------------------------------------------------dnl

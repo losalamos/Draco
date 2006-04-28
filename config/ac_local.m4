@@ -195,6 +195,10 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
    AC_SUBST(test_scalar)dnl
    AC_SUBST(test_nprocs)dnl
    AC_SUBST(test_output_files)dnl
+   AC_SUBST(scalar_tests)dnl
+   AC_SUBST(parallel_tests)dnl
+   AC_SUBST(binary_tests)dnl
+   AC_SUBST(testbinary_nprocs)dnl
 
    # libraries
    AC_ARG_VAR(LIBS)dnl
