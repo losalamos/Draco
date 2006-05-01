@@ -165,13 +165,13 @@ echo ">>>"
 mailto="mailx -s ${LOG} "
 case ${PACKAGE} in
 draco) 
-   mailto="${mailto} draco-regression@sf.lanl.gov" ;;
+   mailto="${mailto} draco@lanl.gov" ;;
 jayenne_clubimc | jayenne_wedgehog | jayenne_milagro | jayenne_unclemcflux)
-   mailto="${mailto} jayenne-regression@sf.lanl.gov" ;;
+   mailto="${mailto} jayenne@lanl.gov" ;;
 capsaicin)
-   mailto="${mailto} capsaicin-unit-tests@sf.lanl.gov" ;;
+   mailto="${mailto} capsaicin-unit-tests@sf4.lanl.gov" ;;
 pika)
-   mailto="${mailto} marmot-regression@sf.lanl.gov" ;;
+   mailto="${mailto} marmot-regression@sf4.lanl.gov" ;;
 *)
    mailto="${mailto} kgt@lanl.gov" ;;
 esac
