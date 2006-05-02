@@ -44,7 +44,7 @@ done
 cd ${curdir}
 
 # Obtain full path name for config_dir
-config_dir=`(\cd ${config_dir} &> /dev/null;pwd)`
+config_dir=`(cd ${config_dir} &> /dev/null;pwd)`
 pkg_config_dir=`echo $config_dir | sed -e 's/config/pkg_config/'`
 
 # ensure that we found a directory
