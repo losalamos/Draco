@@ -1,3 +1,24 @@
+2006-05-02  Kelly Thompson  <kgt@lanl.gov>
+
+	* Makefile.test.in: Replaced variable "binary_tests" with
+	  "app_tests." Romoved some obsolete code.  Re-ordered the
+	  declaration of unit test related variables.  Moved existance
+	  checks for unit test variables to AC_DRACOENV funciton.
+
+	* ac_conf.m4 (AC_RUNTESTS): Removed assignment of
+	  "test_alltarget."  This is now done in the Makefile. Renamed
+	  AC_TESTBINARY to AC_TEST_APPLICATION. 
+
+	* ac_dracoenv.m4 (AC_DRACO_ENV): Provided additional checking for
+	  variables related to unit testing.  These changes should prevent
+	  the autoconf version dependency that appeared with the
+	  2006-04-25 changes to the DBS.
+
+	* ac_local.m4 (AC_DBS_VAR_SUBSTITUTIONS): Remove test_alltarget
+	  from list of variables for AC_SUBST.  Rename binary_tests and
+	  testbinary_nprocs to app_tests and app_test_nprocs,
+	  respectively. 
+	
 2006-04-25  Kelly Thompson  <kgt@lanl.gov>
 
 	* I am making a fundamental change to the way unit tests are 

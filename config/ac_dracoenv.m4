@@ -197,22 +197,33 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
    dnl DRACO TEST SYSTEM
    dnl
 
-   # determine whether this is a scalar or parallel test suite,
-   # the tests can be inherently scalar or they can be the result
-   # of a parallel build
-
-   test_scalar='no'
-
-   # if this is a parallel build, mark the tests scalar
+   # Exception: If --with-c4=scalar and this package normally creates
+   # unit tests that run in parallel, then mark all of the parallel
+   # tests as scalar.
    if test "${with_c4}" = scalar ; then
      scalar_tests="$scalar_tests $parallel_tests"
-     parallel_tests=""
-     testbinary_nprocs="scalar"
+     parallel_tests="none"
+     app_test_nprocs="scalar"
    fi
 
    # define the TESTFLAGS, for parallel runs the processor will be
    # added later in the Makefile
    test_flags="--${test_exe:=binary}"
+
+   # Ensure that app_tests, app_test_nprocs are set
+   if test "${app_tests:-none}" = "none"; then
+      app_tests="none"
+      app_test_nprocs=" "
+   fi
+
+   # Ensure that parallel_tests and scalar_tests are set.
+   if test "${parallel_tests:-none}" = "none"; then
+      parallel_tests="none"
+      test_nprocs=" "
+   fi
+   if test "${scalar_tests:-none}" = "none"; then
+      scalar_tests="none"
+   fi
 
    # Define the package-level source directory (e.g. draco)
    AC_FIND_TOP_SRC($srcdir, package_top_srcdir)

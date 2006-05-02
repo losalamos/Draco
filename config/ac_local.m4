@@ -190,15 +190,14 @@ AC_DEFUN([AC_DBS_VAR_SUBSTITUTIONS], [dnl
    AC_SUBST(VENDOR_TEST_DEPENDS)dnl
    AC_SUBST(VENDOR_TEST_LIBS)dnl
    AC_SUBST(ARTESTLIBS)dnl
-   AC_SUBST(test_alltarget)dnl
    AC_SUBST(test_flags)dnl
    AC_SUBST(test_scalar)dnl
    AC_SUBST(test_nprocs)dnl
    AC_SUBST(test_output_files)dnl
    AC_SUBST(scalar_tests)dnl
    AC_SUBST(parallel_tests)dnl
-   AC_SUBST(binary_tests)dnl
-   AC_SUBST(testbinary_nprocs)dnl
+   AC_SUBST(app_tests)dnl
+   AC_SUBST(app_test_nprocs)dnl
 
    # libraries
    AC_ARG_VAR(LIBS)dnl

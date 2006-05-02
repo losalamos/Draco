@@ -80,8 +80,6 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_RUNTESTS], [dnl
 
    newtests="$1"
-   test_alltarget="$test_alltarget $newtests"
-
    test_nprocs="$2"
 
    if test -z "${test_nprocs}" ; then
@@ -111,7 +109,7 @@ AC_DEFUN([AC_TESTEXE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_TESTBINARY
+dnl AC_TEST_APPLICATION
 dnl
 dnl Register a binary to be tested during "make test".  This function
 dnl takes two arguments. The first argument is a space delimited list
@@ -122,38 +120,39 @@ dnl All of tests are run as parallel tests.
 dnl
 dnl Example use in configure.ac:
 dnl
-dnl AC_TESTBINARY(tstSerranoExe \
-dnl               tstJibberish \
-dnl               , 1 2 6)
+dnl AC_TEST_APPLICATION(tstSerranoExe \
+dnl                     tstJibberish \
+dnl                     , 1 2 6)
 dnl
 dnl Background:
 dnl
-dnl The new m4 macro AC_TESTBINARY has been implemented to support a
-dnl specific type of unit test on BPROC systems.  The Capsaicin
-dnl project has unit tests written in C++ that create new processes
-dnl that run under MPI.  For example, the unit test tstSerranoExe will
-dnl setup an input deck and execute  
+
+dnl The new m4 macro AC_TEST_APPLICATION has been implemented to
+dnl support a specific type of unit test on BPROC systems.  The
+dnl Capsaicin project has unit tests written in C++ that create new
+dnl processes that run under MPI.  For example, the unit test
+dnl tstSerranoExe will setup an input deck and execute 
 dnl "mpirun -np 4 ../bin/serrano test1.inp". Output is captured and
 dnl evaluated by tstSerranoExe. On most systems, this type of unit
 dnl test could be executed as a normal unit test.  However, BProc
 dnl systems do not allow mpirun to be executed from the backend. Thus,
-dnl AC_TESTBINARY tests will execute the unit test as a scalar test
-dnl with the expectation that an mpi process will be started by the
-dnl unit test.    
+dnl AC_TEST_APPLICATION tests will execute the unit test as a scalar
+dnl test with the expectation that an mpi process will be started by
+dnl the unit test.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_TESTBINARY], [dnl
+AC_DEFUN([AC_TEST_APPLICATION], [dnl
 
    if test -z "$2" ; then
-     AC_MSG_ERROR("ac_testbinary requires 2 arguments.")
+     AC_MSG_ERROR("ac_test_application requires 2 arguments.")
    fi
 
-   if test ! ${testbinary_nprocs:-none} = none ; then
-     AC_MSG_WARN("More than one call to ac_testbinary, using nproc info from last call!")
+   if test ! "${app_test_nprocs:-none}" = "none" ; then
+     AC_MSG_WARN("More than one call to ac_test_application, using nproc info from last call!")
    fi   
 
-   testbinary_nprocs="$2"
-   binary_tests="$binary_tests $1"
+   app_test_nprocs="$2"
+   app_tests="$app_tests $1"
 
 ])
 

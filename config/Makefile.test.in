@@ -171,13 +171,11 @@ configure_command = @configure_command@
 
 scalar_tests       = @scalar_tests@
 parallel_tests     = @parallel_tests@
-binary_tests       = @binary_tests@
-test_alltarget     = ${scalar_tests} ${parallel_tests} ${binary_tests}
-test_flags         = @test_flags@
-#test_scalar       = @test_scalar@
+app_tests          = @app_tests@
 test_nprocs        = @test_nprocs@
-testbinary_nprocs  = @testbinary_nprocs@
-#test_output_files = @test_output_files@
+app_test_nprocs    = @app_test_nprocs@
+test_alltarget     = ${scalar_tests} ${parallel_tests} ${app_tests}
+test_flags         = @test_flags@
 
 ##---------------------------------------------------------------------------##
 ## EXPLICIT VARIABLES
@@ -232,17 +230,6 @@ endif
 LDFLAGS := ${PARALLEL_FLAG} ${LDFLAGS}
 ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
-ifeq (,${parallel_tests})
-  parallel_tests:=none
-endif
-ifeq (,${scalar_tests})
-  scalar_tests:=none
-endif
-ifeq (,${binary_tests})
-  binary_tests:=none
-  testbinary_nprocs:=1
-endif
-
 ##---------------------------------------------------------------------------##
 ## TARGETS
 ##---------------------------------------------------------------------------##
@@ -250,11 +237,11 @@ endif
 .PHONY : all install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
 	forced-clean configure reconfigure check_parallel \
-	check_scalar check_binary
+	check_scalar check_app
 
 all: ${test_alltarget}
 
-check: all check_parallel check_scalar check_binary
+check: all check_parallel check_scalar check_app
 
 # unit tests run under mpirun or prun.
 check_parallel:
@@ -281,10 +268,10 @@ check_scalar:
 # These are scalar unit tests built that use the TestExe framework.
 # These tests are executed by the DBS as scalar tests but will start
 # other processes that run under mpirun.
-check_binary:
-	@if test ! "${binary_tests}" = "none"; then \
-	  for testexec in ${binary_tests}; do \
-	    for np in ${testbinary_nprocs}; do \
+check_app:
+	@if test ! "${app_tests}" = "none"; then \
+	  for testexec in ${app_tests}; do \
+	    for np in ${app_test_nprocs}; do \
 	      ${libexecdir}/launchtest ${test_flags} ./$$testexec --np $$np \
               | ${PYTHON} ${libexecdir}/test_filter.py; \
             done; \
