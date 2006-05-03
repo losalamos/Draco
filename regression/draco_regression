@@ -85,7 +85,6 @@ fi
 
 ${REGDIR}/regression/echo_env
 
-
 ##---------------------------------------------------------------------------##
 ## set up SourceForge cvs
 
@@ -118,6 +117,10 @@ echo ">>> Checking out ${code} in ${REGDIR}"
 echo "${cvs} -q $cvsroot checkout -P ${code}"
 ${echoonly} ${cvs} -q $cvsroot checkout -P ${code}
 
+# build configures
+echo "cd $code_src; ./draco_config"
+${echoonly} cd $code_src; ./draco_config
+
 ##---------------------------------------------------------------------------##
 ## Set up vendors
 ## VENDOR_LIB_DIR and VENDOR_INC_DIR are set in .bashrc.
@@ -141,7 +144,7 @@ for target in ${target_list}; do
 	${code_mpi})
 
             # Source mpich
-            . $MPI_DIR/mpich.sh p4-lahey
+            . $MPI_DIR/mpich.sh shmem-lahey 
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi'
@@ -160,7 +163,7 @@ for target in ${target_list}; do
 	${code_opt})
 
             # Source mpich
-            . $MPI_DIR/mpich.sh p4-lahey
+            . $MPI_DIR/mpich.sh shmem-lahey
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
@@ -185,8 +188,8 @@ for target in ${target_list}; do
 
 	# setup code coverage options: use shared libs, no dbc.
 	${code_cov_mpi})
-           echo ">>> source /codes/mpi/bin/mpich.sh p4-lahey"
-           source /codes/mpi/bin/mpich.sh p4-lahey
+           echo ">>> source /codes/mpi/bin/mpich.sh shmem-lahey"
+           source /codes/mpi/bin/mpich.sh shmem-lahey
            echo ">>> source /home/regress/capsaicin/scripts/changevendors.sh -v"
            source /home/regress/capsaicin/scripts/changevendors.sh -v
            #setup_using_env_vars

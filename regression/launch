@@ -169,7 +169,7 @@ draco)
 jayenne_clubimc | jayenne_wedgehog | jayenne_milagro | jayenne_unclemcflux)
    mailto="${mailto} jayenne@lanl.gov" ;;
 capsaicin)
-   mailto="${mailto} capsaicin-unit-tests@sf4.lanl.gov" ;;
+   mailto="${mailto} capsaicin@lanl.gov" ;;
 pika)
    mailto="${mailto} marmot-regression@sf4.lanl.gov" ;;
 *)
