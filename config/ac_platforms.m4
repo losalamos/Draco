@@ -350,7 +350,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
            # PGI
            pgCC)
-               AC_MSG_NOTICE([pgCC supressing error 450 for long long!])
+               AC_MSG_NOTICE([pgCC suppressing diagnostic 450 to allow long long!])
                STRICTFLAG="--diag_suppress 450 ${STRICTFLAG}"  
            ;;
 

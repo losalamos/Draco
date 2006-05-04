@@ -361,7 +361,8 @@ AC_DEFUN([AC_DRACO_PGCC], [dnl
    # if shared then ar is pgCC
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-shared -o'
+       ARFLAGS='-fPIC -shared -o'
+       LDFLAGS='-fPIC'
 
        # must use position-independent code
        CXXFLAGS="${CXXFLAGS} -fPIC"
