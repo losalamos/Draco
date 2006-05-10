@@ -437,8 +437,10 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
 
     if (T == 0.0) return;
 
-    double scaled_frequency, last_scaled_frequency;
-    double exp_scaled_frequency, last_exp_scaled_frequency;
+    double scaled_frequency;
+    double exp_scaled_frequency;
+
+    double last_scaled_frequency;
 
     double last_planck,    planck_value;
     double last_rosseland, rosseland_value;
@@ -456,7 +458,6 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
 
         // Shift the data down:
         last_scaled_frequency  = scaled_frequency;
-        last_exp_scaled_frequency = exp_scaled_frequency;
         last_planck     = planck_value;
         last_rosseland  = rosseland_value;
 
