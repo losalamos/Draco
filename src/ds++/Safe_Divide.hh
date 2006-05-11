@@ -48,8 +48,8 @@ template <typename FT>
 inline FT safe_pos_divide (const FT& dividend, const FT& divisor)
 {
 
-    static FT limit = std::numeric_limits<FT>::max();
-    const  FT dividend_bound = limit * std::min (1.0, divisor);
+    const FT limit = std::numeric_limits<FT>::max();
+    const FT dividend_bound = limit * std::min (1.0, divisor);
     return (dividend < dividend_bound) ? dividend / divisor : limit;
 
 }
