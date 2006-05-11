@@ -213,13 +213,13 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
    # Ensure that app_tests, app_test_nprocs are set
    if test "${app_tests:-none}" = "none"; then
       app_tests="none"
-      app_test_nprocs=" "
+      app_test_nprocs="scalar"
    fi
 
    # Ensure that parallel_tests and scalar_tests are set.
    if test "${parallel_tests:-none}" = "none"; then
       parallel_tests="none"
-      test_nprocs=" "
+      test_nprocs="scalar"
    fi
    if test "${scalar_tests:-none}" = "none"; then
       scalar_tests="none"
