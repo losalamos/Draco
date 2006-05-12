@@ -176,6 +176,7 @@ test_nprocs        = @test_nprocs@
 app_test_nprocs    = @app_test_nprocs@
 test_alltarget     = ${scalar_tests} ${parallel_tests} ${app_tests}
 test_flags         = @test_flags@
+test_output_files  = @test_output_files@
 
 ##---------------------------------------------------------------------------##
 ## EXPLICIT VARIABLES
@@ -361,7 +362,7 @@ clean:
 	-rm -f ${test_alltarget} ${objs} ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
 	-rm -f .tmp? *.flc *~
-	-rm -f *-scalar.log *-[0-9].log
+	-rm -f *-scalar.log *-[0-9].log ${test_output_files}
 	-rm -rf ${dirstoclean}
 	-rm -rf *.gcov *.gcno *.gcda
 
