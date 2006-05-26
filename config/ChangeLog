@@ -1,3 +1,9 @@
+2006-05-26  Scott Turner  <turners@lanl.gov>
+
+	* ac_f90env.m4: Changed Compaq compiler optimization from -O5 to -O4
+	  since -O5 is causing failures in Zathras as of version
+	  fortran_5.5A.7.
+
 2006-05-02  Kelly Thompson  <kgt@lanl.gov>
 
 	* Makefile.test.in: Replaced variable "binary_tests" with
