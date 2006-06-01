@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  *
  * Long description.
  */

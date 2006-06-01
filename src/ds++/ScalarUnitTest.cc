@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests.
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -39,22 +39,29 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
 {
     using std::endl;
     using std::string;
-
+    
+    Require( argc > 0 );
+    Require( release != NULL );
+    
     // header
     
     out << "\n============================================="
-         << "\n=== Scalar Unit Test: " << testName
-         << "\n=============================================\n" << endl;
-
+        << "\n=== Scalar Unit Test: " << testName
+        << "\n=============================================\n" << endl;
+    
     // version tag
-
+    
     out << testName << ": version " << release() << "\n" << endl;
-
+    
     // exit if command line contains "--version"
     
-     for( int arg = 1; arg < argc; arg++ )
-         if( string( argv[arg] ) == "--version" )
-             throw rtt_dsxx::assertion( string( "Success" ) );
+    for( int arg = 1; arg < argc; arg++ )
+        if( string( argv[arg] ) == "--version" )
+            throw rtt_dsxx::assertion( string( "Success" ) );
+    
+    Ensure( numPasses == 0 );
+    Ensure( numFails  == 0 );
+    Ensure( testName.length() > 0 );
      
     return;
 }

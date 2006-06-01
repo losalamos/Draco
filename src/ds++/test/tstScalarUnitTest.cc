@@ -3,8 +3,8 @@
  * \file   ds++/test/tstScalarUnitTest.cc
  * \author Kelly Thompson
  * \date   Thu May 18 17:17:24 2006
- * \brief  
- * \note   Copyright 2006 The Regents of the University of California.
+ * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -40,6 +40,10 @@ UnitTest::UnitTest( int &argc, char **&argv, string_fp_void release_,
       numFails(  0 ),
       out( out_ )
 {
+    Require( release != NULL );
+    Ensure( numPasses == 0 );
+    Ensure( numFails  == 0 );
+    Ensure( testName.length() > 0 );
     return;
 }
 
