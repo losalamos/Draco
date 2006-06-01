@@ -13,7 +13,8 @@
 
 \mainpage Overview of the ds++ package
 \version draco-5_12_0
-\author Thomas M. Evans
+\author Kelly G. Thompson, Thomas M. Evans, Rob Lowrie, Mike Buksas,
+Geoffrey Furnish, Paul Henning, Randy Roberts, and Todd Urbatsch
 
 \section abstract Abstract 
 
@@ -30,7 +31,10 @@ pack data types into a char *
 - \b Vector_Lite (rtt_dsxx::Vector_Lite) a tiny vector implementation
 - \b soft_equiv (rtt_dsxx::soft_equiv()) a soft equivalence function for
 floating point comparisons 
-- \b Array (rtt_dsxx::Array and rtt_dsxx::ArraySizes) N-Dimensional Generic Resizable Arrays
+- \b Array (rtt_dsxx::Array and rtt_dsxx::ArraySizes) N-Dimensional
+Generic Resizable Arrays
+- \b ScalarUnitTest (rtt_dsxx::ScalarUnitTest) provides a unit test
+framework for scalar code.  
 .
 
 Additionally, a usefull Design-by-Contract implementation can be found in
@@ -83,6 +87,20 @@ You can use square bracket operators.
          for( ig=0; ig<numGroups; ++ig )
             phi[icell][m][ig] = vphi[ icell + numCells*m + numCells*numAngles*ig ];
 \endcode
+
+<!---------------------------------------------------------------------------->
+
+\section brief_scalarunittest Scalar Unit Test Template
+
+The \ref rtt_dsxx::ScalarUnitTest "ScalarUnitTest" class provides some
+basic functionality for the creation of scalar unit tests within the
+Draco Build System.  This type of unit test corresponds directly to
+the \c configure.ac command \c AC_RUN_TESTS( \c testname, \c scalar).
+Example usage is demonstrated in the unit test file <a
+href="ds++_2test_2tst_array_8cc-example.html#_a1">ds++/test/tstScalarUnitTest.cc</a>.
+The ScalarUnitTest should always be instantiated inside of a try-catch
+block.
+
 
 <!---------------------------------------------------------------------------->
 
