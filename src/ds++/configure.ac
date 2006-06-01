@@ -17,8 +17,9 @@ package="ds++"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-AC_RUNTESTS(tstCheck_Strings \
-            tstAssert \
+AC_RUNTESTS(tstAssert \
+            tstScalarUnitTest \
+            tstCheck_Strings \
             tstSoft_Equiv \
             tstSP \
             tstRCF \
