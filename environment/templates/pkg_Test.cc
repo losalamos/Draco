@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
