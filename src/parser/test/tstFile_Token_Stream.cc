@@ -60,6 +60,23 @@ void tstFile_Token_Stream()
 	    PASSMSG("Dummy error counted properly");
 	}
 
+        try
+        {
+            throw invalid_argument("dummy exception");
+        }
+        catch (exception &msg)
+        {
+            tokens.Report_Semantic_Error(msg);
+        }
+        if (tokens.Error_Count()!=2)
+        {
+            FAILMSG("Dummy exception NOT reported properly");
+        }
+        else
+        {
+            PASSMSG("Dummy exception reported properly");
+        }
+
 	tokens.open("scanner_test.inp");
 
         token = tokens.Lookahead(4);

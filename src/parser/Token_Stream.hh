@@ -84,6 +84,7 @@ class Token_Stream : private std::deque<Token>
 				       std::string const &message);
     
     virtual void Report_Semantic_Error(std::string const &message);
+    virtual void Report_Semantic_Error(std::exception const &message);
     
     //! Return the number of errors reported to the stream. 
     unsigned Error_Count() const { return error_count; }
