@@ -40,13 +40,9 @@ void tstOne( UnitTest &unitTest )
 }
 
 //---------------------------------------------------------------------------//
-// Inclusion of this test will cause failures in the automatic regression
-// system because the python filter clues on the keyword "failed".  Only run
-// this for stand alone testing
+
 void tstTwo( UnitTest &unitTest )
 {
-//     cout << "Executing tstTwo:  testing failure functions.\n"
-//          << "Output will be saved to a buffer." << endl;
     unitTest.failure("Looks like the failure member function is working.");
     FAILMSG("Looks like the FAILMSG macro is working.");
     ITFAILS;

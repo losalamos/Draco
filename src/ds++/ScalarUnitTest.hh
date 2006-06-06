@@ -41,8 +41,6 @@ int main(int argc, char *argv[])
 {
     try
     {
-        // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
-        // function setTestName).
         rtt_utils::ScalarUnitTest ut( argc, argv, release );
         tstOne(ut);
         ut.status();
