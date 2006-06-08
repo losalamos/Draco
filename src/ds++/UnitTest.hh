@@ -138,7 +138,7 @@ class UnitTest
     UnitTest(const UnitTest &rhs);
 
     //! Destructor is virtual because this class will be inherited from.
-    virtual ~UnitTest(void) {};
+    virtual ~UnitTest(void){/*empty*/};
 
     // MANIPULATORS    
 
@@ -155,7 +155,7 @@ class UnitTest
     bool passes(const std::string &failmsg);
     //! This pure virtual function must be provided by the inherited class.
     //It should provide output concerning the status of UnitTest.
-    virtual void status(void)=0;
+    void status(void) const { out << resultMessage() << std::endl; return; }
     //! Reset the pass and fail counts to zero.
     void reset() { numPasses=0;numFails=0; return; }
 
@@ -168,13 +168,16 @@ class UnitTest
   protected:
 
     // IMPLEMENTATION
-    std::string resultMessage(void);
+    std::string resultMessage(void) const;
     std::string setTestName( std::string const fqName );
+    std::string setTestPath( std::string const fqName );
 
     // DATA
     
     //! The name of this unit test.
     std::string const testName;
+    //! Relative path to the unit test.
+    std::string const testPath;
 
     //! Function pointer this package's release(void) function
     string_fp_void release;

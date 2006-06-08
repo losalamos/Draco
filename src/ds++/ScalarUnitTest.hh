@@ -106,16 +106,13 @@ class ScalarUnitTest : public UnitTest
     ScalarUnitTest(const ScalarUnitTest &rhs);
 
     //! Destructor.
-    ~ScalarUnitTest(void);
+    ~ScalarUnitTest(void){ out << resultMessage() << std::endl; return; };
 
     // MANIPULATORS
     
     //! The assignment operator for ScalarUnitTest is disabled.
     ScalarUnitTest& operator=(const ScalarUnitTest &rhs);
 
-    // ACCESSORS
-    void status(void);
-    
 };
 
 } // end namespace rtt_dsxx

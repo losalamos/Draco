@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   © Copyright 2006 LANSLLC, All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -63,28 +63,6 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
     Ensure( numFails  == 0 );
     Ensure( testName.length() > 0 );
      
-    return;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Destructor
- *
- * The destructor will provides a final status report during destruction.
- */
-ScalarUnitTest::~ScalarUnitTest()
-{
-    out << resultMessage() << std::endl;
-    return;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Print a summary of the pass/fail status of UnitTest.
- */
-void ScalarUnitTest::status()
-{
-    out << "\nDone testing " << testName  << "." << std::endl;
     return;
 }
 

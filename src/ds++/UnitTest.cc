@@ -35,6 +35,7 @@ namespace rtt_dsxx
 UnitTest::UnitTest( int &argc, char **&argv, string_fp_void release_,
                     std::ostream & out_ )
     : testName( setTestName( std::string(argv[0])) ),
+      testPath( setTestPath( std::string(argv[0])) ),
       release(   release_ ),
       numPasses( 0 ),
       numFails(  0 ),
@@ -49,7 +50,7 @@ UnitTest::UnitTest( int &argc, char **&argv, string_fp_void release_,
 
 //---------------------------------------------------------------------------//
 //! Build the final message that will be desplayed when UnitTest is destroyed. 
-std::string UnitTest::resultMessage()
+std::string UnitTest::resultMessage() const
 {
     std::ostringstream msg;
     msg << "\n*********************************************\n";
@@ -66,6 +67,7 @@ std::string UnitTest::resultMessage()
 /*!
  * \brief Helper function to strip path information from the filename.
  * \param fqName A fully qualified filename (/path/to/the/unit/test)
+ * \return shortName; the name of the unit test without path information.
  *
  * This function expects a fully qualfied name of a unit test (e.g.:
  * argv[0]).  It strips off the path and returns the name of the unit test. 
@@ -78,6 +80,25 @@ std::string UnitTest::setTestName( std::string const fqName )
         return fqName;
     string shortName = fqName.substr(idx+1);    
     return shortName;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Helper function to save path information from the filename.
+ * \param fqName A fully qualified filename (/path/to/the/unit/test)
+ * \return pathName; the relative path to the unit test.
+ *
+ * This function expects a fully qualfied name of a unit test (e.g.:
+ * argv[0]).  It strips off the path and returns the name of the unit test. 
+ */
+std::string UnitTest::setTestPath( std::string const fqName )
+{
+    using std::string;
+    string::size_type idx=fqName.rfind('/');
+    if( idx == string::npos )
+        return string("./");
+    string pathName = fqName.substr(0,idx+1);    
+    return pathName;
 }
 
 //---------------------------------------------------------------------------//
