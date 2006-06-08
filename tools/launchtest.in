@@ -72,6 +72,10 @@ for variable in $*
 	exe='python'
     elif test "$variable" = '--binary' ; then
 	exe='binary'
+    elif test "$variable" = '--np' ; then
+	exe='binary'
+        parallel='application'
+        next='proc'
     elif test "$variable" = '--mpi' ; then
 	mpi='yes'
 	parallel='yes'
@@ -106,6 +110,10 @@ case $exe in
         if test "$parallel" = 'no' ; then
 
             test_exec="$executable $exe_options"
+
+        elif test "$parallel" = 'application'; then
+
+            test_exec="$executable --np $procs $exe_options"
 
         elif test "$parallel" = 'yes'; then
 

@@ -273,7 +273,7 @@ check_app:
 	@if test ! "${app_tests}" = "none"; then \
 	  for testexec in ${app_tests}; do \
 	    for np in ${app_test_nprocs}; do \
-	      ${libexecdir}/launchtest ${test_flags} ./$$testexec --np $$np \
+	      ${libexecdir}/launchtest ${test_flags} --np $$np ./$$testexec \
               | ${PYTHON} ${libexecdir}/test_filter.py; \
             done; \
           done; \

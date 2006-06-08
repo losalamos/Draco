@@ -14,9 +14,9 @@ testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 
 thistestdep := libc4_test${libsuffix}
 thistestlib := -L. -lc4_test
-thistestlib_dep := c4_test.o 
+thistestlib_dep := c4_test.o
 
-${test_alltarget}: ${thistestdep} ${testdeps}
+${test_alltarget}: ${thistestdep} ${testdeps} phw
 
 %: %.o
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
