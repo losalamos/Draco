@@ -327,25 +327,28 @@ void probe_ping_pong()
     // receive requests
     C4_Req irr;
 
-    // assign on node 0
-    if (rtt_c4::node() == 0)
+    // Only 2 procs so, dest is either 0 or 1.
+    int dest( std::abs( rtt_c4::node() - 1 ) );
+    
+    // assign on node 1
+    if (rtt_c4::node() == 1)
     {
 
 	// give values to the send data
 	i = 2;
 	
 	// send out data
-	send_async(irs, &i, 1, 1);
+	send_async(irs, &i, 1, dest);
     }
 
-    // receive and send on node 1
-    if (rtt_c4::node() == 1)
+    // receive and send on node 0
+    if (rtt_c4::node() == 0)
     {
 	// test the probe function
         int message_size;
 	for (;;)
 	{
-	    if (probe(0, C4_Traits<int*>::tag, message_size))
+	    if (probe(dest, C4_Traits<int*>::tag, message_size))
 	    {
 		if (message_size==sizeof(int))
 		{
@@ -360,7 +363,7 @@ void probe_ping_pong()
 	}
 
         // test the blocking probe function
-        blocking_probe(0, C4_Traits<int*>::tag, message_size);
+        blocking_probe(dest, C4_Traits<int*>::tag, message_size);
         if (message_size==sizeof(int))
         {
             PASSMSG("Blocking probe returned correct size");
@@ -371,7 +374,7 @@ void probe_ping_pong()
         }
 
 	// post receives
-	receive_async(irr, &ir, 1, 0);
+	receive_async(irr, &ir, 1, dest);
     }
 
     rtt_c4::global_barrier();
