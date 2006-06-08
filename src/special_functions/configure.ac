@@ -55,6 +55,7 @@ AC_NEEDS_LIBS( ds++ )
 dnl tests
 AC_RUNTESTS(\
    tstSpecialFunctions \
+   tstYlm \
    , scalar)
 
 dnl Evaluate requested build environment and create values to be
