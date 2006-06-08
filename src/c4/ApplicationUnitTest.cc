@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdlib.h>
 #include "ApplicationUnitTest.hh"
 #include "c4/config.h"
 
@@ -56,7 +57,7 @@ ApplicationUnitTest::ApplicationUnitTest(
     Require( applicationName.length() > 0 );
     Require( numProcs == string("scalar") ||
              numProcs == std::string("serial") ||
-             atoi( numProcs.c_str() ) > 0 );
+             std::atoi( numProcs.c_str() ) > 0 );
     Require( mpiCommand.length() > 0 );
     Require( logExtension.length() > 0 );
     Require( testName.length() > 0 );
@@ -113,7 +114,7 @@ std::string ApplicationUnitTest::getNumProcs( int & argc, char **&argv )
             np = argv[++arg];
     Ensure( np == std::string("scalar") ||
             np == std::string("serial") ||
-            atoi( np.c_str() ) > 0 );
+            std::atoi( np.c_str() ) > 0 );
     return np;
 }
 
@@ -135,7 +136,7 @@ std::string ApplicationUnitTest::buildLogExtension( std::string const & numProcs
     std::ostringstream le;
     Require( numProcs == std::string("scalar") ||
              numProcs == std::string("serial") ||
-             atoi( numProcs.c_str() ) > 0 );
+             std::atoi( numProcs.c_str() ) > 0 );
     le << "-";
     if( numProcs == "scalar" || numProcs == "serial" )
         le << "scalar";
