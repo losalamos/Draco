@@ -25,12 +25,21 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 /*!
  * C4 unit tests.
- *
- * \example c4/test/tstAbort.cc
- * \example c4/test/tstBroadcast.cc
- * \example c4/test/tstComm_Dup.cc
- * \example c4/test/tstPingPong.cc
- * \example c4/test/tstReduction.cc
+ */
+/*! \example c4/test/tstAbort.cc
+ * Example of MPI abort functions.
+ */
+/*! \example c4/test/tstBroadcast.cc
+ * Example of MPI broadcast-like functions
+ */
+/*! \example c4/test/tstComm_Dup.cc
+ * Example
+ */
+/*! \example c4/test/tstPingPong.cc
+ * Example of point-to-point communications
+ */
+/*! \example c4/test/tstReduction.cc
+ * Example of many-to-one communications
  */
 //---------------------------------------------------------------------------//
  
