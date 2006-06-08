@@ -15,15 +15,70 @@
 \version draco-5_12_0
 \author Thomas M. Evans, Todd Urbatsch, Geoff Furnish
 
+<!---------------------------------------------------------------------------->
+
+\section Overview
+
+The C4 package provides the facilities of a generic communicator.  It
+sits between Draco code and the real parallel communications library.
+It does this to encapsulate the functionality of the parallel
+communications library (e.g.: mpich or OpenMPI).
+
+<!---------------------------------------------------------------------------->
+
+\section fe Functionality and Examples
+
 The basic functions provided by C4 sit in the C4_Functions.hh header.
 These are canonical forms of message passing functions.  c4 is set to
 either serial or mpi (as determined by the C4_MPI or C4_SCALAR
 macros). To use c4 include the following                        
 \code                                                                   
-#include "c4/global.hh"                                                 
+#include "c4/global.hh"
+
+int main( int argc, char *argv[] )
+{
+   rtt_c4::initialize(argc, argv);
+
+   char c;
+
+   int numProcs = rtt_c4::nodes();
+   int myId = rtt_c4::node();
+
+   if( numProcs != 2) return;
+
+   if( myId == 0 )
+      send(&c,1,1);
+   else
+      receive(&c,1,1);
+
+   rtt_c4::global_barrier();
+
+   rtt_c4::finalize();
+   return 0;
+}
 \endcode
 
 <!---------------------------------------------------------------------------->
+
+\section co Configure Options
+
+The C4 package must be configured correctly so that it knows what
+communicator is being wrapped.  The following configure options need
+to be specified before building libc4.
+
+\c --with-c4=[mpi|scalar] Tell C4 that the communicator follows the MPI
+standard.  If \c mpi is replaced by \c scalar, the communicator
+assumes that all data will be on a local processor (no parallelism).
+In this case, calls to C4 functions like initialize() are valid but
+don't do anything.
+
+\c --with-mpi-inc=[location of mpi.h]
+
+\c --with-mpi-lib=[location of libmpi]
+
+\c --with-mpi=[vendor,mpich,lampi]  If omitted, this defaults to \c
+vendor.  Specifying this configure option allows the developer to
+choose between mpich or lampi as the MPI library.
 
 */
 
