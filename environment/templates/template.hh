@@ -28,14 +28,13 @@ namespace <namespace>
  *
  * \sa <class>.cc for detailed descriptions.
  *
- * Code Sample:
+ * \par Code Sample:
  * \code
  *     cout << "Hello, world." << endl;
  * \endcode
  */
 /*! 
  * \example <pkg>/test/tst<class>.cc 
- * 
  * description of example
  */
 //===========================================================================//
