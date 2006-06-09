@@ -65,8 +65,13 @@ double Ylm(unsigned const l, int const m, double const theta, double phi)
     Require(abs(m)<=l);
 
     unsigned const absm = abs(m);
-    double const cost = cos(theta);
-    double Result = gsl_sf_legendre_sphPlm( l, absm, cost ) ;
+    double const mu = cos(theta);
+
+    // This routine computes the normalized associated legendre polynomial
+    // $\sqrt{(2l+1)/(4\pi)} \sqrt{(l-m)!/(l+m)!} P_l^m(x)$ suitable 
+    // for use in spherical harmonics.
+
+    double Result = gsl_sf_legendre_sphPlm( l, absm, mu ) ;
 
     // Not sure how important this sign convention really is, but ...
     if (m<0)

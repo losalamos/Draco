@@ -5,6 +5,7 @@ digraph draco_level {
     ranksep=4;
     
     /* levels */
+    legend [shape=plaintext, label="Legend:", fontsize=14];
     level1 [shape=plaintext, label="Level 1:", fontsize=18];
     level2 [shape=plaintext, label="Level 2:", fontsize=18];
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
@@ -13,13 +14,15 @@ digraph draco_level {
 /*    level6 [shape=plaintext, label="Level 6:", fontsize=18]; */
     
     /* level6 -> level5 -> */
-    level4 -> level3 -> level2 -> level1 [style=invis];
+    level4 -> level3 -> level2 -> level1 -> legend [style=invis];
     
     /* packages */
 
+    /* legend */
+    leg_vendor [shape=box, label="3rd party vendor", color=green, shape=hexagon];
+    leg_draco  [shape=box, label="Draco component",  color=blue,  shape=house ];
+
     /* level 1 */
-/*    stdheaders [shape=box,     color=brown, label="stdheaders\n(Only when
-      C++ compiler does not\nfully support C++ standard header files.)"]; */
     vmpi       [shape=hexagon, color=green, label="MPI"];
     vlapack    [shape=hexagon, color=green, label="LAPACK"];
     vgandolf   [shape=hexagon, color=green, label="GANDOLF"];
@@ -28,48 +31,45 @@ digraph draco_level {
     vspring    [shape=hexagon, color=green, label="SPRING"];
     vdlopen    [shape=hexagon, color=green, label="dlopen"];
         
-    dsxx [shape=box, label="ds++", width=6];
+    dsxx [shape=box, color=blue, label="ds++", width=6];
     
     /* level 2 */
     vgsl       [shape=hexagon, color=green, label="GSL"];
     vpcg       [shape=hexagon, color=green, label="PCG"];
 
-    traits [shape=box, label="traits"];
-    xm     [shape=box, label="xm"];
-    c4     [shape=box, label="c4"];
-    rng    [shape=box, label="rng"];
-    units  [shape=box, label="units"];
-    cdi    [shape=box, label="cdi"];
-    meshelement [shape=box, label="mesh_element"];
-    plot   [shape=box, label="plot2D"];
-    lapack [shape=box, label="lapack_wrap"];
-    shlib  [shape=box, label="shared_lib"];
-    sf     [shape=box, label="special_functions"];
+    traits [shape=box, color=blue, label="traits"];
+    xm     [shape=box, color=blue, label="xm"];
+    c4     [shape=box, color=blue, label="c4"];
+    rng    [shape=box, color=blue, label="rng"];
+    units  [shape=box, color=blue, label="units"];
+    cdi    [shape=box, color=blue, label="cdi"];
+    meshelement [shape=box, color=blue, label="mesh_element"];
+    plot   [shape=box, color=blue, label="plot2D"];
+    lapack [shape=box, color=blue, label="lapack_wrap"];
+    shlib  [shape=box, color=blue, label="shared_lib"];
         
     /* level 3 */
-    quad   [shape=box, label="quadrature"];
-    viz      [shape=box, label="viz"];
-    timestep [shape=box, label="timestep"];
-    cdianal  [shape=box, label="cdi_analytic"];
-    cdieos   [shape=box, label="cdi_eospac"];
-    cdigan   [shape=box, label="cdi_gandolf"];
-    pcg      [shape=box, label="pcgWrap"];
-    meshread [shape=box, label="meshReaders"];
-    parser   [shape=box, label="parser"];
-    norms    [shape=box, label="norms"];
+    viz      [shape=box, color=blue, label="viz"];
+    timestep [shape=box, color=blue, label="timestep"];
+    cdianal  [shape=box, color=blue, label="cdi_analytic"];
+    cdieos   [shape=box, color=blue, label="cdi_eospac"];
+    cdigan   [shape=box, color=blue, label="cdi_gandolf"];
+    pcg      [shape=box, color=blue, label="pcgWrap"];
+    meshread [shape=box, color=blue, label="meshReaders"];
+    parser   [shape=box, color=blue, label="parser"];
+    norms    [shape=box, color=blue, label="norms"];
+    sf       [shape=box, color=blue, label="special_functions"];
     
     /* level 4 */
-    rttread     [shape=box, label="RTT_Format_Reader"];
-    
-    /* level 6 */
-/*    meshservice [shape=box, label="meshReaders_Services"]; */
+    quad        [shape=box, color=blue, label="quadrature"];
+    rttread     [shape=box, color=blue, label="RTT_Format_Reader"];
     
     /* dependencies */
+    {rank=same; legend leg_vendor leg_draco};
     {rank=same; level1 dsxx vlapack vmpi veospac  vgandolf vgrace vspring vdlopen };
-    {rank=same; level2 shlib plot lapack traits xm c4 rng units cdi meshelement vgsl vpcg sf};
-    {rank=same; level3 viz timestep cdianal cdieos cdigan pcg meshread quad parser};
-    {rank=same; level4 rttread};
-/*    {rank=same; level6 meshservice}; */
+    {rank=same; level2 shlib plot lapack traits xm c4 rng units cdi meshelement vgsl vpcg};
+    {rank=same; level3 viz timestep cdianal cdieos cdigan pcg meshread parser sf};
+    {rank=same; level4 rttread quad};
     
     /* draco packages */
 
@@ -79,43 +79,43 @@ digraph draco_level {
      * graph. 
     
     /* level 2 */
-    xm          -> {dsxx};
-    units       -> {dsxx};
-    traits      -> {dsxx};
-    c4          -> {dsxx};
-    c4          -> {vmpi}         [color="green"];
-    sf          -> {dsxx};       /*  [ color="orange" style=dotted]; */
-    rng         -> {dsxx};
-    rng         -> {vspring}      [color="green"];
-    cdi         -> {dsxx};
-    meshelement -> {dsxx};
-    plot        -> {dsxx};
-    plot        -> {vgrace}       [color="green"];
-    lapack      -> {dsxx};
-    lapack      -> {vlapack}      [color="green"];
-    shlib       -> {dsxx};
-    shlib       -> {vdlopen}      [color="green"];
-    vgsl        -> {vlapack}      [color="green"];
-    vpcg        -> {vlapack}      [color="green"];
+    xm          -> {dsxx}        [color=blue];
+    units       -> {dsxx}        [color=blue];
+    traits      -> {dsxx}        [color=blue];
+    c4          -> {dsxx}        [color=blue];
+    c4          -> {vmpi}        [color="green"];
+    rng         -> {dsxx}        [color=blue];
+    rng         -> {vspring}     [color="green"];
+    cdi         -> {dsxx}        [color=blue];
+    meshelement -> {dsxx}        [color=blue];
+    plot        -> {dsxx}        [color=blue];
+    plot        -> {vgrace}      [color="green"];
+    lapack      -> {dsxx}        [color=blue];
+    lapack      -> {vlapack}     [color="green"];
+    shlib       -> {dsxx}        [color=blue];
+    shlib       -> {vdlopen}     [color="green"];
+    vgsl        -> {vlapack}     [color="green"];
+    vpcg        -> {vlapack}     [color="green"];
     
     /* level 3 */
-    quad        -> {units sf};
-    quad        -> {vgsl}         [color="green"];
-    viz         -> {traits};      /* traits: dsxx */
-    timestep    -> {c4};          /* c4      : dsxx */
-    pcg         -> {dsxx};
-    pcg         -> {vpcg} [color="green"];
-    pcg         -> {c4}           [color="orange" style=dotted];
-    cdianal     -> {cdi};         /* cdi     : dsxx */
-    cdieos      -> {cdi};         /* cdi     : dsxx */
-    cdieos      -> {veospac}      [color="green"]; 
-    cdigan      -> {cdi};         /* cdi     : dsxx */
-    cdigan      -> {vgandolf}     [color="green"];
-    meshread    -> {meshelement};
-    parser      -> {c4 units}; /* dsxx */
-    norms       -> {c4}; /* dsxx */
+    viz         -> {traits}      [color=blue];
+    timestep    -> {c4}          [color=blue];
+    pcg         -> {dsxx}        [color=blue];
+    pcg         -> {vpcg}        [color="green"];
+    pcg         -> {c4}          [color="blue" style=dotted];
+    cdianal     -> {cdi}         [color=blue];
+    cdieos      -> {cdi}         [color=blue];
+    cdieos      -> {veospac}     [color="green"]; 
+    cdigan      -> {cdi}         [color=blue]; 
+    cdigan      -> {vgandolf}    [color="green"];
+    meshread    -> {meshelement} [color=blue];
+    parser      -> {c4 units}    [color=blue];
+    norms       -> {c4}          [color=blue];
+    sf          -> {units}       [color=blue];
+    sf          -> {vgsl}        [color="green"];
 
     /* level 4 */
-    rttread     -> {meshread};           /* meshread: dsxx */
+    quad        -> {sf}        [color=blue];
+    rttread     -> {meshread}  [color=blue];
 
 }

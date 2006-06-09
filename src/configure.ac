@@ -32,14 +32,15 @@ AC_CONFIG_SUBDIRS( ds++ )
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
-                   plot2D lapack_wrap shared_lib special_functions )
+                   plot2D lapack_wrap shared_lib )
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( norms timestep pcgWrap viz parser quadrature \
-                   cdi_gandolf cdi_analytic meshReaders fpe_trap )
+AC_CONFIG_SUBDIRS( norms timestep pcgWrap viz parser \
+                   cdi_gandolf cdi_analytic meshReaders fpe_trap \
+                   special_functions )
 dnl
 dnl Kelly Thompson 12 January 2005
 dnl Removed cdi_eospac from list of packages to build and test because
@@ -53,7 +54,7 @@ dnl
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( RTT_Format_Reader )
+AC_CONFIG_SUBDIRS( RTT_Format_Reader quadrature )
 
 ##---------------------------------------------------------------------------##
 ## build the makefile in src/
