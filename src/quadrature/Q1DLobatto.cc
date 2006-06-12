@@ -73,16 +73,16 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
     // Number of Gauss points in the half range.
     // The roots are symmetric in the interval.  We only need to search for
     // half of them.
-    unsigned const numHrGaussPoints( (numGaussPoints+1)/2 );
+    unsigned const numHrGaussPoints( numGaussPoints/2 );
 
     mu[0]   = mu1;
     mu[N-1] = mu2;
 
     // Loop over the desired roots.
-    for ( size_t iroot=0; iroot<numHrGaussPoints-2; ++iroot)
+    for ( size_t iroot=0; iroot<numHrGaussPoints-1; ++iroot)
     {
 	// Approximate the i-th root.
-	double z( cos( PI * ( iroot+0.25 ) / ( (N-2)+0.5 )) );
+	double z( cos( PI * ( iroot-0.25 ) / ( (N-2)+0.5 )) );
         double z1;
 
 	do // Use Newton's method to refine the value for the i-th root.  
@@ -109,9 +109,9 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
 
  	} while( ! soft_equiv(z,z1, tolerance) );
 
-	// Roots wil be between -1 and 1.0 and symmetric about the origin. 
-	mu[ iroot ]             = -z;       
-	mu[ numGaussPoints-iroot-1] =  z;       
+	// Roots will be in [-1,1], symmetric about the origin. 
+	mu[ iroot+1 ]                 = -z;       
+	mu[ numGaussPoints-iroot-2] =  z;       
     }	
 
     // Loop over the quadrature points to compute weights.
@@ -121,7 +121,7 @@ Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ )
         double const p( gsl_sf_legendre_Pl(N-1, z) );
 
 	// Compute the associated weight and its symmetric counterpart.
-        wt[ m ]               = 2.0/N/(N-1)/p/p;
+        wt[ m ]                 = 2.0/N/(N-1)/p/p;
         wt[ numGaussPoints-m-1] = wt[m];
     }
 

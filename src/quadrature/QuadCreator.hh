@@ -75,6 +75,7 @@ class QuadCreator
      * added to this package. 
      */
     enum Qid { 
+	SquareCL,    /*!< Square 2D Chebyshev-Legendre */
 	GaussLeg,    /*!< 1D Gauss Legendre (arbitrary order). */
 	Lobatto,     /*!< 1D Lobatto (arbitrary order). */
 	DoubleGauss, /*!< 1D Double Gauss (arbitrary order). */

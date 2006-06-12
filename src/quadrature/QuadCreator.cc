@@ -22,6 +22,7 @@
 #include "Q1Axial.hh"
 #include "Q2DLevelSym.hh"
 #include "Q3DLevelSym.hh"
+#include "Q2DSquareChebyshevLegendre.hh"
 #include "QuadCreator.hh"
 
 namespace rtt_quadrature
@@ -96,7 +97,12 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
 	    spQuad = new Q3DLevelSym( sn_order, norm );
 	    break;
-	    
+
+	case SquareCL:
+	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
+	    spQuad = new Q2DSquareChebyshevLegendre( sn_order, norm );
+	    break;	    
+
 	default:
 	    Insist ( false, "Unknown value for quad_type." );
 	    break;
