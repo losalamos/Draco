@@ -222,6 +222,44 @@ void Parse_Vector(Token_Stream &tokens, double x[])
     }
 }
 
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Parse a vector.
+ * 
+ * \param tokens
+ * Token stream from which to parse the quantity.
+ * \param x
+ * On return, contains the parsed vector components.
+ * \pre \c x!=NULL
+ */
+
+void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[])
+{
+    Require(x!=NULL);
+
+    // At least one component must be present.
+    x[0] = Parse_Real(tokens);
+
+    if (At_Real(tokens))
+    {
+	x[1] = Parse_Unsigned_Integer(tokens);
+	if (At_Real(tokens))
+	{
+	    x[2] = Parse_Unsigned_Integer(tokens);
+	}
+	else
+	{
+	    x[2] = 0;
+	}
+    }
+    else
+    {
+	x[1] = 0;
+	x[2] = 0;
+    }
+}
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Are we at a unit term?

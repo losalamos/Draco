@@ -141,7 +141,19 @@ void tstutilities()
     {
 	FAILMSG("3-D vector NOT successfully parsed");
     }
-
+    unsigned w[3];
+    Parse_Unsigned_Vector(tokens, w);
+    token = tokens.Shift();
+    if (w[0] == 3 && w[1] == 2 && w[2] == 1 &&
+        token.Type() == KEYWORD && token.Text() == "stop")
+    {
+        PASSMSG("Vector of unsigned successfully parsed");
+    }
+    else
+    {
+        FAILMSG("Vector of unsigned NOT successfully parsed");
+    }
+    
     // Try to read some unit expressions
 
     Unit one = {0,0,0,0,0,0,0,0,0, 1};
