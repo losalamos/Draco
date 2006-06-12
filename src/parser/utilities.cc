@@ -239,7 +239,7 @@ void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[])
     Require(x!=NULL);
 
     // At least one component must be present.
-    x[0] = Parse_Real(tokens);
+    x[0] = Parse_Unsigned_Integer(tokens);
 
     if (At_Real(tokens))
     {
