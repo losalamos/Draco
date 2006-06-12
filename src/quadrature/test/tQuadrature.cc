@@ -23,6 +23,7 @@
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
 #include "../Q1DGaussLeg.hh"
+#include "../Q2DSquareChebyshevLegendre.hh"
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
 #include "../Release.hh"
@@ -62,7 +63,7 @@ void quadrature_test()
     const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
-    const int nquads = 5;
+    const int nquads = 6;
 
     // Declare an enumeration object that specifies the Quadrature set to be
     // tested.
@@ -71,21 +72,23 @@ void quadrature_test()
     //
     // #   Qid         Description
     // -   --------    ------------------
-    // 0   GaussLeg    1D Gauss Legendre
-    // 1   Lobatto     1D Labotto
-    // 2   DoubleGauss 1D DoubleGauss
-    // 3   LevelSym2D  2D Level Symmetric
-    // 4   LevelSym    3D Level Symmetric
+    // 0   SquareCL    2D Chebyshev-Legendre
+    // 1   GaussLeg    1D Gauss-Legendre
+    // 2   Lobatto     1D Lobatto
+    // 3   DoubleGauss 1D DoubleGauss
+    // 4   LevelSym2D  2D Level Symmetric
+    // 5   LevelSym    3D Level Symmetric
 
-    QuadCreator::Qid qid[nquads] = { QuadCreator::GaussLeg,
+    QuadCreator::Qid qid[nquads] = { QuadCreator::SquareCL,
+                                     QuadCreator::GaussLeg,
                                      QuadCreator::Lobatto,
                                      QuadCreator::DoubleGauss,
 				     QuadCreator::LevelSym2D,
 				     QuadCreator::LevelSym };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = { 0.8611363116, 1.0, 0.7886751346,
-			  -0.350021174581541, -0.350021174581541 };
+    double mu0[nquads] = {  0.861136311594053,   0.861136311594053, 1.0, 0.7886751346,
+			   -0.350021174581541, -0.350021174581541 };
     
     SP< const Quadrature > spQuad;
 
@@ -103,6 +106,7 @@ void quadrature_test()
 	{
 	    // Instantiate the quadrature object.
 	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order ); 
+            spQuad->display();
 
 	    // print the name of the quadrature set that we are testing.
 	    string qname = spQuad->name();
