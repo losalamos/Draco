@@ -36,8 +36,10 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
     : Quadrature( sn_order_, norm_ ), numAngles (sn_order_ * sn_order_)
 {
     using std::fabs;
+    using std::sqrt;
+    using std::cos;
     using rtt_dsxx::soft_equiv;
-
+    
     Require ( snOrder > 0 );
     Require ( norm > 0.0 );
 
