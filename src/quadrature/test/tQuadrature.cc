@@ -54,7 +54,7 @@ void quadrature_test()
 
     // double precesion values will be tested for correctness against this
     // tolerance. 
-    const double TOL = 1.0e-10; 
+    const double TOL = 1.0e-08; 
 
     // create an object that is responsible for creating quadrature objects.
     QuadCreator QuadratureCreator;
@@ -87,8 +87,12 @@ void quadrature_test()
 				     QuadCreator::LevelSym };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = {  0.861136311594053,   0.861136311594053, 1.0, 0.7886751346,
-			   -0.350021174581541, -0.350021174581541 };
+    double mu0[nquads] = {  0.469676450658365,
+                           -0.861136311594053,
+                           -1.0,
+                           -0.7886751346,
+			    0.350021174581541,
+                            0.350021174581541 };
     
     SP< const Quadrature > spQuad;
 
@@ -106,7 +110,6 @@ void quadrature_test()
 	{
 	    // Instantiate the quadrature object.
 	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order ); 
-            spQuad->display();
 
 	    // print the name of the quadrature set that we are testing.
 	    string qname = spQuad->name();
@@ -199,19 +202,22 @@ void quadrature_test()
 	    {
 		// get the mu vector
 		vector<double> mu = spQuad->getMu();
+
 		// get the omega vector for direction m=1.
 		vector<double> omega_1 = spQuad->getOmega(1);
+
 		// get the total omega object.
 		vector< vector<double> > omega = spQuad->getOmega();
+
 		// compare values.
 		if ( mu.size() != spQuad->getNumAngles() )
 		    FAILMSG("The direction vector has the wrong length.")
-		else if ( fabs( mu[0] + mu0[ix] ) >= TOL ) 
-		    FAILMSG("mu[0] has the wrong value.")
-		else if ( fabs( mu[1] - omega_1[0] ) >= TOL )
-		    FAILMSG("mu[1] != omega_1[0].")
-		else if ( fabs( omega[1][0] - omega_1[0] ) >= TOL )
-		    FAILMSG("omega[1][0] != omega_1[0].")
+                else if ( fabs(mu[0]-mu0[ix] > TOL) ) 
+                    FAILMSG("mu[0] has the wrong value.")
+                else if ( fabs(mu[1]-omega_1[0] > TOL) )
+                    FAILMSG("mu[1] != omega_1[0].")
+                else if ( fabs(omega[1][0]-omega_1[0] > TOL) )
+                    FAILMSG("omega[1][0] != omega_1[0].")
 		else 
 		{
 		    spQuad->display();

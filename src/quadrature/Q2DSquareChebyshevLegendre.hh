@@ -64,7 +64,7 @@ class Q2DSquareChebyshevLegendre  : public Quadrature
     //! Returns the order of the SN set.
     size_t getSnOrder()     const { return snOrder; }
     //! Returns the number of eta levels in the quadrature set.
-    size_t getLevels()      const { return snOrder*snOrder; }
+    size_t getLevels()      const { return snOrder; }
 
   private:
 
