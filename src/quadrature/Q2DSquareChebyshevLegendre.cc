@@ -22,6 +22,7 @@
 
 namespace rtt_quadrature
 {
+  using namespace std;
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructs a 2D Square Chebyshev Legendre quadrature object.
