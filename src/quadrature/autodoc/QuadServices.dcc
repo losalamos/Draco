@@ -43,8 +43,9 @@
  * \f[
  * \mathbf\Omega\cdot\mathbf\nabla\psi(\mathbf{r},\mathbf{\Omega},E)
  * + (\sigma_a + \sigma_{s0}) \psi - Q(\mathbf{r},\mathbf{\Omega},E) 
- * = \int\limits^\infty_0{dE' \sum\limits_{k=0}^\infty{
- * \sum\limits_{\ell=-k}^k{\frac{2k+1}{4\pi} c_{\ell,k} Y_{\ell,k}(\mathbf\Omega)
+ * = \int\limits^\infty_0{dE' \sum\limits_{\ell=0}^\infty{
+ * \sum\limits_{k=-\ell}^\ell{\frac{2\ell+1}{4\pi} c_{\ell,k}
+ * Y_{\ell,k}(\mathbf\Omega) 
  * \phi_{\ell,k}(\mathbf{r},E')\sigma_{sk}(\mathbf{r},E'\rightarrow E)}}}.
  * \f]
  *
@@ -53,7 +54,7 @@
  *
  * \f[
  * \sigma_{sk}(\mathbf{r},E'\rightarrow E) = \int\limits_{-1}^1{d\mu_0
- * P_k(\mu_0)\sigma_s(\mathbf{r},\mu_0,E'\rightarrow E)}
+ * P_\ell(\mu_0)\sigma_s(\mathbf{r},\mu_0,E'\rightarrow E)}
  * \f]
  * and
  * \f[
@@ -122,22 +123,149 @@
  * \sum\limits_{k=-\ell}^\ell\mathbf{M}_{m,(\ell,k)}\Phi_\ell^k.
  * \f]
  * 
+ * \section sph_harm Spherical Harmonics
+ * 
+ * Any arbitrary function, \f$ f_{surface}(\theta, \phi) \f$, can be expanded
+ * in a seriece of spherical harmonics.
+ *
+ * \f[
+ * f_{surface} (\theta ,\phi ) = \sum\limits_{l = 0}^\infty  {\sum\limits_{k =  - l}^l {c_{l,k} Y_{l,k} } } (\theta ,\phi ),
+ * \f]
+ * 
+ * where the \f$ c_{l,k} \f$ are real, constant coefficients associated with a
+ * specific, complex spherical harmonic \f$ Y_{l,k} \f$.  The coefficients
+ * must be defined so that the following orthonormal condition is obeyed.
+ *
+ * \f[
+ * \int d\mathbf\Omega Y_{l,k}(\mathbf\Omega_m)Y_{l',k'}^*(\mathbf\Omega_m) = \delta_{ll'}\delta_{kk'}
+ * \f]
+ *
+ * In this expression \f$ Y^* \f$ represents the complex conjugate of the
+ * function.
+ * 
+ * For our uses, we define the spherical harmonic function to have the
+ * following form,
+ *
+ * \f[
+ * Y_{\ell,k}(\mathbf\Omega_m) = Y_{\ell,k}(\theta_m,\omega_m)
+ * \f]
+ * and
+ * \f[
+ * Y_{\ell,k}(\theta_m,\omega_m) = P_{\ell,k}(\mu_m) e^{i k\omega_m}, \,\,\,\,\,
+ * \forall \,\,\,\,\, k \ge 0, \mu_m = \cos(\theta_m),
+ * \f]
+ *
+ * where \f$ P_{\ell,k} \f$ are the \ref assoc_leg_poly "Associated Legendre Functions" of degree
+ * \f$ \ell \f$ and order \f$ k \f$.  Note, for 1D quadrature sets, \f$ k=0
+ * \f$, and the spherical harmonics functions become the associated Legendre
+ * polynomials.
+ *
+ * The imaginary exponential in the definition of the spherical harmonic
+ * function is equivalent to
+ *
+ * \f[
+ * e^{i k\omega_m} = \cos( k\omega_m ) + i \sin( k\omega_m )
+ * \f]
+ *
+ * We define the azimuthal angle, \f$\omega_m\f$, in terms of quadrature
+ * ordinates, as:
+ * \f[
+ * \omega_m = tan^{-1}\frac{\xi_m}{\eta_m}, \,\,\,\,\, \forall
+ * \,\,\,\,\,\eta_m \ge 0,\,\,\,\,\,\xi_m \ge 0,
+ * \f]
+ * \f[
+ * \omega_m = \pi - tan^{-1}\frac{\xi_m}{\eta_m}, \,\,\,\,\, \forall
+ * \,\,\,\,\,\eta_m < 0,\,\,\,\,\,\xi_m \ge 0,
+ * \f]
+ * \f[
+ * \omega_m = tan^{-1}\frac{\xi_m}{\eta_m} + \pi, \,\,\,\,\, \forall
+ * \,\,\,\,\,\eta_m, < 0\,\,\,\,\,\xi_m<0,
+ * \f]
+ * \f[
+ * \omega_m = 2\pi - tan^{-1}\frac{\xi_m}{\eta_m}, \,\,\,\,\, \forall
+ * \,\,\,\,\,\eta_m \ge 0,\,\,\,\,\,\xi_m < 0.
+ * \f]
+ *
+ * In practice, we are only concerned with real surface quantities, so it is
+ * more convenient to work with real spherical harmonics, \f$
+ * y_{l,k}(\theta,\phi) \f$.  We define the following approximations (common
+ * in literature)
+ *
+ * \f[
+ * y_{l,k}(\theta,\phi) = \frac{1}{{\sqrt 2 }}\left[ {Y_{l,k} (\theta ,\phi )
+ * + Y_{l,k}^* (\theta ,\phi )} \right], \qquad \forall \qquad k>0,
+ * \f]
+ * \f[
+ * y_{l,k}(\theta,\phi) = Y_{l,0}(\theta,\phi), \qquad \forall \qquad k=0,
+ * \f]
+ * \f[
+ * y_{l,k}(\theta,\phi) = \frac{{ - i}}{{\sqrt 2 }}\left[ {Y_{l,\left| k \right|} (\theta ,\phi ) -
+ * Y_{l,\left| k \right|}^* (\theta ,\phi )} \right], \qquad \forall \qquad k<0,
+ * \f]
+ *
+ * This expression can be evaluated so that only the real component remains.
+ *
+\f[
+\begin{array}{l}
+ k > 0:\;\;y_{l,k} (\theta _m ,\phi _m ) = \sqrt {\frac{{2(2l + 1)}}{{\sum\limits_{m'} {w_{m'} } }}\frac{{(l - k)!}}{{(l + k)!}}} P_{l,k} (\mu _m )\cos (k\phi _m ), \\ 
+ k = 0:\;\;y_{l,0} (\theta _m ,\phi _m ) = \sqrt {\frac{{2l + 1}}{{4\pi }}} P_{l,k} (\mu _m ),\;\;\;\;\;\;{\rm{and}} \\ 
+ k < 0:\;\;y_{l,k} (\theta _m ,\phi _m ) = \sqrt {\frac{{2(2l + 1)}}{{\sum\limits_{m'} {w_{m'} } }}\frac{{(l - \left| k \right|)!}}{{(l + \left| k \right|)!}}} P_{l,\left| k \right|} (\mu _m )\sin (\left| k \right|\phi _m ). \\ 
+ \end{array}
+\f]
+ *
+ * This is equivalent to the formulation provided by Morel in \em
+ * "Collocation-Galerkin-Sn Solution." Morel writes this expression more
+ * compactly.  The \f$ (2-\delta_{k,0}) \f$ in this paper provides the extra
+ * factor of \f$ \sqrt{2} \f$ that exists for \f$ k>0 \f$ but not for \f$ k=0
+ * \f$.
+ *
+ * Here are some common spherical harmonic expressions:
+ *
+ * \f[
+ * Y_{0,0}(\theta,\phi) = \frac{1}{2\sqrt{\pi}}
+ * \f]
+ * \f[
+ * Y_{1,-1}(\theta,\phi) = \frac{1}{2}\sqrt{\frac{3}{2\pi}}\sin\theta e^{-i\phi}
+ * \f]
+ * \f[
+ * Y_{1,0}(\theta,\phi) = \frac{1}{2}\sqrt{\frac{3}{\pi}}\cos\theta
+ * \f]
+ * \f[
+ * Y_{1,1}(\theta,\phi) = -\frac{1}{2}\sqrt{\frac{3}{2\pi}}\sin\theta e^{i\phi}
+ * \f]
+ * \f[
+ * Y_{2,-2}(\theta,\phi) = \frac{1}{4}\sqrt{\frac{15}{2\pi}}\sin^2\theta e^{-2i\phi}
+ * \f]
+  * \f[
+ * Y_{2,-1}(\theta,\phi) = \frac{1}{2}\sqrt{\frac{15}{2\pi}}\sin\theta\cos\theta e^{-i\phi}
+ * \f]
+ * \f[
+ * Y_{2,0}(\theta,\phi) = \frac{1}{4}\sqrt{\frac{5}{\pi}}(3\cos^2\theta -1) e^{i\phi}
+ * \f]
+  * \f[
+ * Y_{2,1}(\theta,\phi) = 1\frac{1}{2}\sqrt{\frac{15}{2\pi}}\sin\theta\cos\theta e^{i\phi}
+ * \f]
+ * \f[
+ * Y_{2,2}(\theta,\phi) = \frac{1}{4}\sqrt{\frac{15}{2\pi}}\sin^2\theta e^{2i\phi}
+ * \f]
+ *
  * \section galerkin_formulation Galerkin Formulation
  *
- * For this class, we always take the discrete-to-moment operator
- * to be the inverse of the moment-to-discrete operator.  That is,
+ * For this class, we compute the moment-to-discrete operator according to
+ * Morel's heuristic found in \em "Collocation-Galerkin-Sn Solution."
+ * Additionally, we always create the discrete-to-moment operator to be the
+ * inverse of the moment-to-discrete operator.  That is,
  *
  * \f[
  * \mathbf{D}_{m,(\ell,k)} = \mathbf{M}_{m,(\ell,k)}^{-1}.
  * \f]
+ *
+ * Morel does not place the term \f$ \frac{\ell+1}{4\pi} \f$ inside the
+ * square root.  For his application, this is okay because the factors will
+ * eventually cancel.  However, to strictly preserve all of the properties of
+ * spherical harmonics we have chosen to put this factor inside of the square
+ * root. 
  * 
- * Morel suggests the following formula for computing \f$ c_{\ell,k} \f$,
- *
- * \f[
- * c_{\ell,k} = \sqrt{(2-\delta_{k,0})\frac{ (\ell - |k|)!}{(\ell + |k|)!}},
- * \f]
- * where \f$ \delta_x \f$ is the Kronecker delta function.
- *
  * In Morel's Galerkin treatment, specific \f$ (\ell, k) \f$ moments are
  * chosen to produce a square matrix, \f$ \mathbf{M} \f$.  
  *
@@ -170,48 +298,7 @@
  *
  *
  *
- * \section sph_harm Spherical Harmonics
- * 
- * For our uses, we define the spherical harmonic function to have the
- * following form,
- *
- * \f[
- * Y_{\ell,k}(\mathbf\Omega_m) = Y_{\ell,k}(\mu_m,\omega_m)
- * \f]
- * and
- * \f[
- * Y_{\ell,k}(\mu_m,\omega_m) = P_{\ell,k}(\mu_m) cos(k\omega_m), \,\,\,\,\,
- * \forall \,\,\,\,\, k \ge 0,
- * \f]
- * \f[
- * Y_{\ell,k}(\mu_m,\omega_m) = P_{\ell,-k}(\mu_m) sin(-k\omega_m), \,\,\,\,\,
- * \forall \,\,\,\,\, k < 0,
- * \f]
- * where \f$ P_{\ell,k} \f$ are the associated Legendre functions of degree
- * \f$ \ell \f$ and order k.  Note, for 1D quadrature sets, \f$ k=0 \f$, and
- * the spherical harmonics functions become associated Legendre
- * polynomials.
- *
- * \f$\omega_m\f$ is the azimuthal angle
- * defined as
- * \f[
- * \omega_m = tan^{-1}\frac{\xi_m}{\eta_m}, \,\,\,\,\, \forall
- * \,\,\,\,\,\eta_m \ge 0,\,\,\,\,\,\xi_m \ge 0,
- * \f]
- * \f[
- * \omega_m = \pi - tan^{-1}\frac{\xi_m}{\eta_m}, \,\,\,\,\, \forall
- * \,\,\,\,\,\eta_m < 0,\,\,\,\,\,\xi_m \ge 0,
- * \f]
- * \f[
- * \omega_m = tan^{-1}\frac{\xi_m}{\eta_m} + \pi, \,\,\,\,\, \forall
- * \,\,\,\,\,\eta_m, < 0\,\,\,\,\,\xi_m<0,
- * \f]
- * \f[
- * \omega_m = 2\pi - tan^{-1}\frac{\xi_m}{\eta_m}, \,\,\,\,\, \forall
- * \,\,\,\,\,\eta_m \ge 0,\,\,\,\,\,\xi_m < 0.
- * \f]
- * 
- *
+
  * \section assoc_leg_poly Associated Legendre Polynomials
  *
  * The associated Legendre function, \f$ P_{\ell,k}(\mu) \f$ is defined for 
