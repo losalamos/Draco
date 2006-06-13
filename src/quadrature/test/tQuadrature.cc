@@ -212,11 +212,11 @@ void quadrature_test()
 		// compare values.
 		if ( mu.size() != spQuad->getNumAngles() )
 		    FAILMSG("The direction vector has the wrong length.")
-                else if ( fabs(mu[0]-mu0[ix] > TOL) ) 
+                else if ( fabs(mu[0]-mu0[ix]) > TOL ) 
                     FAILMSG("mu[0] has the wrong value.")
-                else if ( fabs(mu[1]-omega_1[0] > TOL) )
+                else if ( fabs(mu[1]-omega_1[0]) > TOL )
                     FAILMSG("mu[1] != omega_1[0].")
-                else if ( fabs(omega[1][0]-omega_1[0] > TOL) )
+                else if ( fabs(omega[1][0]-omega_1[0]) > TOL )
                     FAILMSG("omega[1][0] != omega_1[0].")
 		else 
 		{
