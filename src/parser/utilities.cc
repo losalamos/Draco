@@ -225,7 +225,7 @@ void Parse_Vector(Token_Stream &tokens, double x[])
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Parse a vector.
+ * \brief Parse a vector of unsigned.
  * 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -234,29 +234,14 @@ void Parse_Vector(Token_Stream &tokens, double x[])
  * \pre \c x!=NULL
  */
 
-void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[])
+void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[], unsigned size)
 {
     Require(x!=NULL);
 
-    // At least one component must be present.
-    x[0] = Parse_Unsigned_Integer(tokens);
-
-    if (At_Real(tokens))
+    for ( int i = 0; i < size; ++i )
     {
-	x[1] = Parse_Unsigned_Integer(tokens);
-	if (At_Real(tokens))
-	{
-	    x[2] = Parse_Unsigned_Integer(tokens);
-	}
-	else
-	{
-	    x[2] = 0;
-	}
-    }
-    else
-    {
-	x[1] = 0;
-	x[2] = 0;
+        if (At_Real(tokens))
+            x[i] = Parse_Unsigned_Integer(tokens);
     }
 }
 

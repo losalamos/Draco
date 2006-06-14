@@ -41,7 +41,7 @@ Unit Parse_Unit(Token_Stream &);
 
 void Parse_Vector(Token_Stream &, double[]);
 
-void Parse_Unsigned_Vector(Token_Stream &, unsigned[]);
+void Parse_Unsigned_Vector(Token_Stream &, unsigned[], unsigned);
 
 double Parse_Quantity(Token_Stream &tokens,
 		      Unit const &unit,

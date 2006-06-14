@@ -142,7 +142,7 @@ void tstutilities()
 	FAILMSG("3-D vector NOT successfully parsed");
     }
     unsigned w[3];
-    Parse_Unsigned_Vector(tokens, w);
+    Parse_Unsigned_Vector(tokens, w, 3);
     token = tokens.Shift();
     if (w[0] == 3 && w[1] == 2 && w[2] == 1 &&
         token.Type() == KEYWORD && token.Text() == "stop")
