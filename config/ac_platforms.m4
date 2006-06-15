@@ -372,7 +372,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #
        AC_DBS_SETUP_COMM(mpich)
 
-       # 
+       #
        # setup lapack 
        #
        
@@ -388,16 +388,19 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       # setup F90 libs, rpath, etc.
-       AC_CHECK_PROGS(F90, pgf90 lf95)
-       case ${F90} in
-       lf95)
-          AC_DBS_LAHEY_ENVIRONMENT
-          ;;
-       pgf90)
-          AC_DBS_PGF90_ENVIRONMENT
-          ;;
-       esac
+       # setup F90 libs, rpath, etc. for apps when CXX is the
+       # principal compiler
+       if test "${with_f90:=no}" = no ; then
+           AC_CHECK_PROGS(F90, pgf90 lf95)
+           case ${F90} in
+           lf95)
+               AC_DBS_LAHEY_ENVIRONMENT
+               ;;
+           pgf90)
+               AC_DBS_PGF90_ENVIRONMENT
+               ;;
+           esac
+       fi
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -507,25 +510,27 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        AC_VENDOR_FINALIZE
 
        # handle rpaths
-       case `echo ${CXX} | sed -e 's/.*\///g'` in
-           pgCC)
-               AC_DBS_SETUP_RPATH(-R, nospace)
-               ;;
-           g++ | icpc)
-               AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
-               ;;
-           *)
-               AC_MSG_ERROR("Unrecognized compiler on LINUX")
-               ;;
-       esac
+       if test "${with_f90:=no}" = no ; then
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
+               pgCC)
+                   AC_DBS_SETUP_RPATH(-R, nospace)
+                   ;;
+               g++ | icpc)
+                   AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+                   ;;
+               *)
+                   AC_MSG_ERROR("Unrecognized compiler on LINUX")
+                   ;;
+           esac
+       fi
 
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icpc; then
 	   LIBS="$LIBS -limf"
        fi
-]) dnl linux
 
+]) dnl linux
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_CYWGIN_ENVIRONMENT
@@ -664,14 +669,17 @@ AC_DEFUN([AC_DBS_OSF_ENVIRONMENT], [dnl
 
        #
        # FORTRAN configuration for Compaq f90
-       # setup F90, libs, rpath, etc.
+       # setup F90, libs, rpath, etc. for apps when CXX is the
+       # principal compiler
        #
-       AC_CHECK_PROGS(F90, f90)
-       case ${F90} in
-       f90)
-          AC_DBS_COMPAQ_F90_ENVIRONMENT
-          ;;
-       esac
+       if test "${with_f90:=no}" ; then
+           AC_CHECK_PROGS(F90, f90)
+           case ${F90} in
+           f90)
+               AC_DBS_COMPAQ_F90_ENVIRONMENT
+               ;;
+           esac
+       fi
 
        #
        # libudm/librmscall setup
@@ -854,7 +862,6 @@ AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
        fi
 
 ])
-
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_SUN_ENVIRONMENT
@@ -1160,8 +1167,10 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # end of lapack setup
        # 
 
-       # setup lf95 libs
-       AC_DBS_LAHEY_ENVIRONMENT
+       # setup lf95 libs when CXX is the principle compiler
+       if test "${with_f90:=no}" = no ; then
+           AC_DBS_LAHEY_ENVIRONMENT
+       fi
 
        #
        # add libg2c to LIBS if lapack, gandolf, or pcg is used
@@ -1188,7 +1197,6 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        else
 	   AC_MSG_RESULT("not needed")
        fi
-
 
        #
        # If dlopen is specified, 1) add libdl to LIBS; 
