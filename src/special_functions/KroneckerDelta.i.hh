@@ -27,8 +27,6 @@ namespace rtt_sf
  * \param test_value
  * \param offset
  * \return 1 if test_value == offset, otherwise return 0;
- *
- * \bug move to ds++
  */
 template< typename T >
 T kronecker_delta( T const test_value, T const offset ) 
