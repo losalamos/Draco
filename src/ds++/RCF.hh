@@ -200,7 +200,7 @@ template<class Field_t>
 RCF<Field_t>::RCF(const int        n,
 		  const value_type v)
 {
-    Require(n > 0);
+    //Require(n > 0);
     sp_field = new Field_t(n, v);
     ptr_field = sp_field.bp();
 }
@@ -437,7 +437,7 @@ template<class Field_t>
 RCF<const Field_t>::RCF(const int        n,
 			const value_type v)
 {
-    Require(n > 0);
+    //Require(n > 0);
     sp_field = new Field_t(n, v);
     ptr_field = sp_field.bp();
 }
