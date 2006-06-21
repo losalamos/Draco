@@ -50,8 +50,6 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
 
 //     if ( snOrder == 8)
 //     {
-//         Insist( numAngles == 64, "Square CL Quad hand-coded for S8 only." );
-
 //         eta[ 0] =   -9.602898564975362317E-01;
 //         eta[ 1] =   -9.602898564975362317E-01;
 //         eta[ 2] =   -9.602898564975362317E-01;
@@ -302,7 +300,7 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
 	omega[angle][1] = eta[angle];
     }
 
-    display();
+    //display();
 
 } // end of Q2DLevelSym() constructor.
 
