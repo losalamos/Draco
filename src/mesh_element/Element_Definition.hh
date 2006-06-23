@@ -4,6 +4,7 @@
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
+ * \note   © Copyright 2006 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
