@@ -51,7 +51,7 @@ AC_INSTALL_LIB
 
 dnl A space delimited list of packages that this package depends on.
 AC_NEEDS_LIBS(\
-   special_functions units \
+   special_functions units mesh_element \
    ds++ )
 
 dnl tests
@@ -61,6 +61,7 @@ AC_RUNTESTS(\
    tQuadrature \
    tAxialQuadrature \
    tQuadServices\
+   tstOrdinate \
    , scalar)
 
 dnl Evaluate requested build environment and create values to be
