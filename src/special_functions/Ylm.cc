@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of Ylm
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright 2004 The Regents of the University of California.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,107 +15,308 @@
 #include <gsl/gsl_sf_legendre.h>
 #include "ds++/Assert.hh"
 #include "units/PhysicalConstants.hh"
+#include "Factorial.hh"
 #include "Ylm.hh"
 
 namespace rtt_sf
 {
 using rtt_units::PI;
-using namespace std;
 
 //---------------------------------------------------------------------------//
 /*!
- * We use the real representation of the spherical harmonics
+ * \brief Compute the spherical harmonic coefficient multiplied by the
+ * Associated Legendre Polynomial \f$ {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta )}. \f$  
  *
- * The spherical harmonics \f$ Y_l^m (\theta,\phi) \f$ are the angular portion
- * of the solution to <a
- * href="http://mathworld.wolfram.com/LaplacesEquation.html">Laplace's
- * equation</a> in <a
- * href="http://mathworld.wolfram.com/SphericalCoordinates.html">spherical
- * coordinates</a> where azimuthal symmetry is not present. Some care must be
- * taken in identifying the notational convention being used. In this entry,
- * \f$ \theta \f$ is taken as the polar (colatitudinal) coordinate with \f$
- * \theta\in [0,\pi] \f$, and \f$ \phi \f$ as the azimuthal (longitudinal)
- * coordinate with \f$ \phi\in [0,2\pi ] \f$.
- * 
- * \f[
- * Y_{lm}(\theta,\phi) = (-1)^{\frac{\left| m
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$ P_{\ell,k}(\theta) \f$.
+ * \param m Used to specify the order \f$ k \f$ of \f$ P_{\ell,k}(\theta) \f$.
+ * \param mu The cosine of the azimuthal angle, \f$ \mu = \cos \theta \f$.
+ * \return The spherical harmonic coefficient multiplied by the Associated
+ * Legendre Polynomial, \f$ c_{l,k}P_{l,k}(\mu) \f$.
  *
- * \right|+m}{2}}i^{m+1} \sqrt{\frac{2l+1}{4\pi}
- * \frac{(l-\left|m\right|)!}{(l+\left|m\right|)!}} P_l^{\left|m\right|} (\cos
- * \theta)\frac{e^{im\phi}-(-1)^me^{-im\phi}}{\sqrt{2}}
- * \qquad for \qquad m<0,
- * \f]
- * \f[
- * Y_{lm}(\theta,\phi) = \sqrt{\frac{2l+1}{4\pi}}P_l^0(\cos \theta) \qquad for
- * \qquad m=0,
- * \f]
- * and
- * \f[
- * Y_{lm}(\theta,\phi) = (-1)^{\frac{\left| m
- * \right|+m}{2}}i^m \sqrt{\frac{2l+1}{4\pi}
- * \frac{(l-m)!}{(l+m)!}} P_l^m (\cos
- * \theta)\frac{e^{im\phi}+(-1)^me^{-im\phi}}{\sqrt{2}} \qquad for \qquad m>0.
- * \f]
+ * For details on what is being computed by this routine see the Draco
+ * documentation on \ref sf_sph.
  *
- * \pre \f$\left|m\right| \le l\f$
+ * This function simply wraps the GSL function \c gsl_sf_legendre_sphPlm
+ * computes the value of \f$ {\sqrt {\frac{{2l + 1}}{{4\pi }}\frac{{(l -
+ * m)!}}{{(l + m)!}}} P_l^m ( \mu )} \f$.
  *
- * \sa http://mathworld.wolfram.com/SphericalHarmonic.html
+ * The Condon-Shortley Phase, \f$ (-1)^m \f$ is provided by this
+ * definition of \f$ P_{l,k} \f$. 
+ *
+ * \sa <a href="http://mathworld.wolfram.com/Condon-ShortleyPhase.html">
+ * Condon-Shortley Phase</a> 
+ *
+ * \pre \f$ l \ge 0 \f$
+ * \pre \f$ l \ge k \f$
+ * \pre \f$ \mu \in [-1, 1] \f$
  */
-double Ylm(unsigned const l, int const m, double const theta, double phi)
+double cPlk( unsigned const l, unsigned const k, double const mu )
 {
-    Require(abs(m)<=l);
-
-    unsigned const absm = abs(m);
-    double const mu = cos(theta);
+    Require(k<=l);
+    Require(mu>=-1.0);
+    Require(mu<=1.0);
 
     // This routine computes the normalized associated legendre polynomial
-    // $\sqrt{(2l+1)/(4\pi)} \sqrt{(l-m)!/(l+m)!} P_l^m(x)$ suitable 
+    // \f$ \sqrt{(2l+1)/(4\pi)} \sqrt{(l-m)!/(l+m)!} P_l^m(x) \f$ suitable 
     // for use in spherical harmonics.
 
-    double Result = gsl_sf_legendre_sphPlm( l, absm, mu ) ;
+    return gsl_sf_legendre_sphPlm( l, k, mu );
+}
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Compute the spherical harmonic coefficient multiplied by the Associated Legendre Polynomial as specified by Morel's Galerkin Quadrature paper.
+ *
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$ P_{\ell,k}(\theta) \f$.
+ * \param m Used to specify the order \f$ k \f$ of \f$ P_{\ell,k}(\theta) \f$.
+ * \param mu The cosine of the azimuthal angle, \f$ \mu = \cos \theta \f$.
+ * \return Morel's spherical harmonic coefficient multiplied by the Associated
+ * Legendre Polynomial, \f$ c_{l,k}P_{l,k}(\mu) \f$.
+ *
+ * Computes the coefficient \f$ \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt
+ * {\frac{{(l - \left | k \right |)!}}{{(l - \left | k \right
+ * |)!}}}P_{l,\left | k \right |}
+ * (\cos \theta ) \f$
+ *
+ * For details on what is being computed by this routine see the Draco
+ * documentation on \ref sf_sph.
+ *
+ * This function uses the GSL function \c gsl_sf_legendre_Plm to
+ * compute the value of \f$ P_l^k ( \mu ) \f$.
+ *
+ * The Condon-Shortley Phase, \f$ (-1)^m \f$ is provided by this
+ * definition of \f$ P_{l,k} \f$. 
+ *
+ * \sa <a href="http://mathworld.wolfram.com/Condon-ShortleyPhase.html">
+ * Condon-Shortley Phase</a> 
+ *
+ * \pre \f$ l \ge 0 \f$
+ * \pre \f$ l \ge k \f$
+ * \pre \f$ k \ge 0 \f$
+ * \pre \f$ \mu \in [-1, 1] \f$
+ */
+double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
+    double const sumwt )
+{
+    Require(k<=l);
+    Require(k>=0);
+    Require(mu>=-1.0);
+    Require(mu<=1.0);
 
-    // Not sure how important this sign convention really is, but ...
-    if (m<0)
+    double coeff( (2*l+1)/sumwt );
+    coeff *= sqrt(1.0*factorial(l-k)/factorial(l+k));
+    coeff *= gsl_sf_legendre_Plm( l, k, mu );
+    
+    return coeff;
+}
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Compute the normalized spherical harmonic \f$ y_{l,k}(\theta,\phi) \f$ 
+ *
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
+ * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
+ * \return The normalized spherical harmonic value, \f$ y_l^m(\theta,\phi) \f$.
+ *
+ * For details on what is being computed by this routine see the Draco
+ * documentation on \ref sf_sph.
+ *
+ * The GSL function \c gsl_sf_legendre_sphPlm computes the value of \f$ {\sqrt
+ * {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta
+ * )} \f$.
+ *
+ * \pre \f$ l \ge 0 \f$
+ * \pre \f$\left|m\right| \le l\f$
+ * \pre \f$ \theta \in [0,\pi] \f$
+ * \pre \f$ \phi \in [0, 2\pi] \f$
+ *
+ *  \warning We cannot correct for sum of quadrature weights not equal to 4
+ *  PI, \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
+ *  quadrature.  This adjustment will need to be done if the quadrature
+ *  packages uses Ylm.
+ */
+double normalizedYlk( unsigned const l,     int    const k,
+                      double   const theta, double const phi )
+{
+    unsigned const absk( abs(k)     );
+    double   const mu  ( cos(theta) );
+
+    // The constant and the Associated Legendre Polynomial.
+    double const cP( cPlk( l, absk, mu ) );
+
+    // for k>0 and odd, the sign will be negative.
+    double sign( pow(-1.0,absk) );
+    
+    // As noted on the \ref main mainpage for this package, we are interested
+    // in the real portion of the spherical harmonics function.
+
+    double result(-9999.0);
+    
+    if( k > 0 )
+        result = cP * sqrt(2.0) * sin( k * phi );
+    else if ( k == 0 )
+        result = cP;
+    else if ( k < 0 )
+        result = sign * cP * sqrt(2.0) * cos( absk * phi );
+    return result;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Compute the real portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
+ *
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
+ * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
+ * \return The real portion of the spherical harmonic value, \f$ Y_l^m(\theta,\phi) \f$.
+ *
+ * For details on what is being computed by this routine see the Draco
+ * documentation on \ref sf_sph.
+ *
+ * The GSL function \c gsl_sf_legendre_sphPlm computes the value of \f$ {\sqrt
+ * {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta
+ * )} \f$.
+ *
+ * Note that there is a possible sign change for k<0,
+ * \f[
+ *  Y_{l,-k}(\theta,\phi) = (-1)^m Y^*_{l,k}(\theta,phi)
+ * \f]
+ *
+ * \pre \f$ l \ge 0 \f$
+ * \pre \f$\left|m\right| \le l\f$
+ * \pre \f$ \theta \in [0,\pi] \f$
+ * \pre \f$ \phi \in [0, 2\pi] \f$
+ *
+ *  \warning We cannot correct for sum of quadrature weights not equal to 4
+ *  PI, \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
+ *  quadrature.  This adjustment will need to be done if the quadrature
+ *  packages uses Ylm.
+ */
+double realYlk( unsigned const l, int const k,
+                double const theta, double const phi )
+{
+    unsigned const absk( abs(k)     );
+    double   const mu  ( cos(theta) );
+    double   sign( 1.0 );
+    
+    // The constant and the Associated Legendre Polynomial.
+    double const cP( cPlk( l, absk, mu ) );
+
+    // Adjust the sign.
+    if( k < 0 )
+        sign=std::pow( -1.0, static_cast<int>(absk) );
+
+    // As noted on the \ref main mainpage for this package, we are interested
+    // in the real portion of the spherical harmonics function.
+
+    return sign * cP * cos( absk * phi );
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Compute the complex portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$ 
+ *
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
+ * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
+ * \return The complex portion of the spherical harmonic value, \f$ Y_l^m(\theta,\phi) \f$.
+ *
+ * For details on what is being computed by this routine see the Draco
+ * documentation on \ref sf_sph.
+ *
+ * The GSL function \c gsl_sf_legendre_sphPlm computes the value of \f$ {\sqrt
+ * {\frac{{2l + 1}}{{4\pi }}\frac{{(l - m)!}}{{(l + m)!}}} P_l^m (\cos \theta
+ * )} \f$.
+ *
+ * \pre \f$ l \ge 0 \f$
+ * \pre \f$\left|m\right| \le l\f$
+ * \pre \f$ \theta \in [0,\pi] \f$
+ * \pre \f$ \phi \in [0, 2\pi] \f$
+ *
+ *  \warning We cannot correct for sum of quadrature weights not equal to 4
+ *  PI, \f$ \sum\limits_m{w_m} \ne 4\pi \f$, because this package lives below
+ *  quadrature.  This adjustment will need to be done if the quadrature
+ *  packages uses Ylm.
+ */
+double complexYlk( unsigned const l, int const k,
+                   double const theta, double const phi )
+{
+    unsigned const absk( abs(k)     );
+    double   const mu  ( cos(theta) );
+    double   sign( 1.0 );
+    
+    // The constant and the Associated Legendre Polynomial.
+    double const cP( cPlk( l, absk, mu ) );
+
+    // Adjust the sign.
+    if( k < 0 )
+        sign=std::pow( -1.0, static_cast<int>(absk) );
+
+    return sign * cP * sin( absk * phi );
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Compute the spherical harmonic as used by Morel's Galerkin Quadrature paper.
+ *
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param mu The cosine of the polar (colatitudinal) coordinate in (-1,1).
+ * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
+ * \return The spherical harmonic value as specified in the detailed documentation.
+ *
+ We use a special form of spherical harmonics for creating the
+ moment-to-discrete and discrete-to-moment matrixes.  Morel describes
+ the functional form in his paper \e A \e Hybrid \e
+ Collocation-Galerkin-Sn \e Method \e for \e Solving \e the \e
+ Boltzmann \e Transport \e Equation," Nuclear Science and Engineering,
+ \b 101, 72-87, 1989.
+
+The principal difference is that the \f$ \frac{2\ell+1}{4\pi} \f$
+coefficient does not appear inside of a square root.  This change from
+the normal spherical harmonic coefficient is required in order to
+provide the correct magnitude for the quadrature weights.  Morel's
+formulation is
+
+\f[
+\begin{array}{l}
+ k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - k)!}}{{(l - k)!}}} P_{l,k} (\cos \theta )\cos (\phi ) \\ 
+ k = 0:\;\;Y_{l,0} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}P_l (\cos \theta ) \\ 
+ k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \\ 
+ \end{array}
+\f]
+
+Morel's scheme only includes specific order and moment combinations.
+Please see the reference for a full description.
+
+ * \pre \f$ l \ge 0 \f$
+ * \pre \f$\left|m\right| \le l\f$
+ * \pre \f$ \theta \in [0,\pi] \f$
+ * \pre \f$ \phi \in [0, 2\pi] \f$
+ */
+double galerkinYlk( unsigned const l,
+                    int      const k,
+                    double   const mu,
+                    double   const phi,
+                    double   const sumwt )
+{
+    unsigned const absk( abs(k) );
+    
+    // The constant and the Associated Legendre Polynomial.
+    double Ylk( cPlkGalerkin( l, absk, mu, sumwt ) );
+
+    // Adjust the sign.
+    if( k < 0 )
     {
-        if (absm%2)
-            // m odd
-        {
-            Result *= cos(m*phi);
-            int const power = absm+2*m+1;
-            Check(power%2==0);
-            if ((power/2)%2) Result = -Result;
-        }
-        else
-            // m even
-        {
-            Result *= sin(m*phi);
-            int const power = absm+2*m+2;
-            Check(power%2==0);
-            if ((power/2)%2) Result = -Result;
-        }
-        Result *= sqrt(2.0);
+//        Ylk*=std::pow( -1.0, static_cast<int>(absk) );
+        Ylk*=sqrt(2.0)*sin(absk*phi);
     }
-    else if (m>0)
-    {
-        if (m%2)
-            // m odd
-        {
-            Result *= sin(m*phi);
-            int const power = absm+2*m+1;
-            Check(power%2==0);
-            if ((power/2)%2) Result = -Result;
-        }
-        else
-            // m even
-        {
-            Result *= cos(m*phi);
-            int const power = absm+2*m;
-            Check(power%2==0);
-            if ((power/2)%2) Result = -Result;
-        }
-        Result *= sqrt(2.0);
-    }
-    return Result;
+    else if( k > 0 )
+        Ylk*=sqrt(2.0)*cos(absk*phi);
+
+    return Ylk;
 }
 
 } // end namespace rtt_sf
