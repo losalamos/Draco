@@ -21,6 +21,7 @@
 namespace rtt_sf
 {
 using rtt_units::PI;
+using namespace std;
 
 //---------------------------------------------------------------------------//
 /*!
@@ -98,7 +99,6 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
     double const sumwt )
 {
     Require(k<=l);
-    Require(k>=0);
     Require(mu>=-1.0);
     Require(mu<=1.0);
 
@@ -138,7 +138,7 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
 double normalizedYlk( unsigned const l,     int    const k,
                       double   const theta, double const phi )
 {
-    unsigned const absk( abs(k)     );
+    int const absk( abs(k)     );
     double   const mu  ( cos(theta) );
 
     // The constant and the Associated Legendre Polynomial.
