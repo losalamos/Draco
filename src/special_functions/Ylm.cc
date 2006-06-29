@@ -21,7 +21,6 @@
 namespace rtt_sf
 {
 using rtt_units::PI;
-using namespace std;
 
 //---------------------------------------------------------------------------//
 /*!
@@ -103,7 +102,7 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
     Require(mu<=1.0);
 
     double coeff( (2*l+1)/sumwt );
-    coeff *= sqrt(1.0*factorial(l-k)/factorial(l+k));
+    coeff *= std::sqrt(1.0*factorial(l-k)/factorial(l+k));
     coeff *= gsl_sf_legendre_Plm( l, k, mu );
     
     return coeff;
@@ -138,14 +137,14 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
 double normalizedYlk( unsigned const l,     int    const k,
                       double   const theta, double const phi )
 {
-    int const absk( abs(k)     );
-    double   const mu  ( cos(theta) );
+    int    const absk( std::abs(k)      );
+    double const mu  ( std::cos(theta)  );
 
     // The constant and the Associated Legendre Polynomial.
     double const cP( cPlk( l, absk, mu ) );
 
     // for k>0 and odd, the sign will be negative.
-    double sign( pow(-1.0,absk) );
+    double sign( std::pow(-1.0,absk) );
     
     // As noted on the \ref main mainpage for this package, we are interested
     // in the real portion of the spherical harmonics function.
@@ -153,11 +152,11 @@ double normalizedYlk( unsigned const l,     int    const k,
     double result(-9999.0);
     
     if( k > 0 )
-        result = cP * sqrt(2.0) * sin( k * phi );
+        result = cP * std::sqrt(2.0) * std::sin( k * phi );
     else if ( k == 0 )
         result = cP;
     else if ( k < 0 )
-        result = sign * cP * sqrt(2.0) * cos( absk * phi );
+        result = sign * cP * std::sqrt(2.0) * std::cos( absk * phi );
     return result;
 }
 
@@ -196,21 +195,21 @@ double normalizedYlk( unsigned const l,     int    const k,
 double realYlk( unsigned const l, int const k,
                 double const theta, double const phi )
 {
-    unsigned const absk( abs(k)     );
-    double   const mu  ( cos(theta) );
-    double   sign( 1.0 );
+    int    const absk( std::abs(k)     );
+    double const mu  ( std::cos(theta) );
+    double sign( 1.0 );
     
     // The constant and the Associated Legendre Polynomial.
     double const cP( cPlk( l, absk, mu ) );
 
     // Adjust the sign.
     if( k < 0 )
-        sign=std::pow( -1.0, static_cast<int>(absk) );
+        sign=std::pow( -1.0, absk );
 
     // As noted on the \ref main mainpage for this package, we are interested
     // in the real portion of the spherical harmonics function.
 
-    return sign * cP * cos( absk * phi );
+    return sign * cP * std::cos( absk * phi );
 }
 
 //---------------------------------------------------------------------------//
@@ -243,18 +242,18 @@ double realYlk( unsigned const l, int const k,
 double complexYlk( unsigned const l, int const k,
                    double const theta, double const phi )
 {
-    unsigned const absk( abs(k)     );
-    double   const mu  ( cos(theta) );
-    double   sign( 1.0 );
+    int    const absk( std::abs(k)     );
+    double const mu  ( std::cos(theta) );
+    double sign( 1.0 );
     
     // The constant and the Associated Legendre Polynomial.
     double const cP( cPlk( l, absk, mu ) );
 
     // Adjust the sign.
     if( k < 0 )
-        sign=std::pow( -1.0, static_cast<int>(absk) );
+        sign=std::pow( -1.0, absk );
 
-    return sign * cP * sin( absk * phi );
+    return sign * cP * std::sin( absk * phi );
 }
 
 //---------------------------------------------------------------------------//
@@ -302,7 +301,7 @@ double galerkinYlk( unsigned const l,
                     double   const phi,
                     double   const sumwt )
 {
-    unsigned const absk( abs(k) );
+    int const absk( std::abs(k) );
     
     // The constant and the Associated Legendre Polynomial.
     double Ylk( cPlkGalerkin( l, absk, mu, sumwt ) );
@@ -310,11 +309,11 @@ double galerkinYlk( unsigned const l,
     // Adjust the sign.
     if( k < 0 )
     {
-//        Ylk*=std::pow( -1.0, static_cast<int>(absk) );
-        Ylk*=sqrt(2.0)*sin(absk*phi);
+//        Ylk*=std::pow( -1.0, absk );
+        Ylk*=std::sqrt(2.0)*std::sin(absk*phi);
     }
     else if( k > 0 )
-        Ylk*=sqrt(2.0)*cos(absk*phi);
+        Ylk*=std::sqrt(2.0)*std::cos(absk*phi);
 
     return Ylk;
 }
