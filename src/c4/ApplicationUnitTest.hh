@@ -171,6 +171,12 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
 } // end namespace rtt_c4
 
+
+#ifdef c4_isDarwin
+#define C4_MPICMD "mpirun -np "
+#define C4_UNAME "Darwin"
+#endif
+
 #ifdef c4_isLinux
 #define C4_MPICMD "mpirun -np "
 #define C4_UNAME "Linux"

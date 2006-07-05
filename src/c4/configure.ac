@@ -73,6 +73,8 @@ Linux)
   AC_DEFINE(c4_isLinux) ;; 
 OSF1)
   AC_DEFINE(c4_isOSF1) ;; 
+Darwin)
+  AC_DEFINE(c4_isDarwin) ;;
 esac
 
 dnl Evaluate requested build environment and create values to be
