@@ -8,6 +8,8 @@ digraph quadrature_package_level {
     /* draco nodes */
     rtt_units [shape=house, color=blue, label="rtt_units"];
     rtt_dsxx [shape=house, color=blue, label="rtt_ds++"];
+    rtt_special_functions [shape=house, color=blue, label="rtt_special_functions"];
+    rtt_mesh_element [shape=house, color=blue, label="rtt_mesh_element"];
 
     /* vendor nodes */
     GSL [shape=hexagon, color=green, label="GSL"];
@@ -18,11 +20,13 @@ digraph quadrature_package_level {
     /* level dependencies for packages */
     rtt_units -> { };
     rtt_dsxx -> { };
+    rtt_special_functions -> { };
+    rtt_mesh_element -> { };
     GSL -> { };
-    rtt_quadrature -> { rtt_units rtt_dsxx } [color=blue];
+    rtt_quadrature -> { rtt_units rtt_dsxx rtt_special_functions rtt_mesh_element } [color=blue];
     rtt_quadrature -> { GSL } [color=green];
 
-    {rank=same;  rtt_units rtt_dsxx GSL };
+    {rank=same;  rtt_units rtt_dsxx rtt_special_functions rtt_mesh_element GSL };
     {rank=same;  rtt_quadrature };
 
 }
