@@ -95,7 +95,7 @@ class QuadCreator
 
 } // end namespace rtt_quadrature
 
-#endif                          // __quadrature_QuadCreator_hh__
+#endif // __quadrature_QuadCreator_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of quadrature/QuadCreator.hh

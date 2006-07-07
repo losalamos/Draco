@@ -60,6 +60,9 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 
     rtt_dsxx::SP<Quadrature> spQuad;
 
+    try
+    {
+        
     switch( quad_type ) 
 	{
 	case GaussLeg:
@@ -107,6 +110,14 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    Insist ( false, "Unknown value for quad_type." );
 	    break;
 	}
+
+    }
+    catch( rtt_dsxx::assertion &error)
+    {
+        std::cout << "ERROR: While constructing " << quad_type << ", "
+                  << error.what() << std::endl;
+        throw;
+    }
     
     return spQuad;
 
