@@ -16,6 +16,7 @@
 #define quadrature_QuadServices_hh
 
 #include "ds++/SP.hh"
+#include "Ordinate.hh"
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
@@ -36,12 +37,15 @@ class QuadServices
     // CREATORS
     
     //! Default constructor assumes that only isotropic scattering is used. 
-    explicit QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ );
+    explicit QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_);
+
+//     //! Create a QuadServices from an ordinate set.
+//     explicit QuadServices( OrdinateSet const & os );
     
     //! Constructor that allows the user to pick the (k,l) moments to use.
     //! \todo This still needs to be defined.
     QuadServices( rtt_dsxx::SP< const Quadrature > const   spQuad_,
-		  std::vector< lk_index >          const & lkMoments_ );
+		  std::vector< lk_index >          const & lkMoments_);
 
     //! Copy constructor (the long doxygen description is in the .cc file).
     QuadServices( QuadServices const & rhs );
@@ -54,6 +58,9 @@ class QuadServices
     //! Assignment operator for QuadServices.
     QuadServices& operator=( QuadServices const & rhs );
 
+    //! Compute extra "moment-to-discrete" entries that are needed for starting direction angles.
+    double augmentM( unsigned moment, Ordinate const & Omega ) const;
+    
     // ACCESSORS
 
     //! \brief Return the moment-to-discrete operator.
@@ -77,6 +84,16 @@ class QuadServices
     //! \brief Return the (l,k) index pair associated with moment index n.
     lk_index lkPair( unsigned n ) const { Require( n<numMoments ); return n2lk[n]; }
 
+    //! Helper functions to compute coefficients
+    static
+    double compute_azimuthalAngle( double const mu,
+				   double const eta,
+				   double const xi ) ;
+
+    //! Helper function to check validity of LU matrix
+    static
+    bool diagonal_not_zero( std::vector<double> const & vec,
+                            int m, int n ) ;
     //! Checks
     bool D_equals_M_inverse() const;
 
@@ -86,11 +103,6 @@ class QuadServices
 
     // IMPLEMENTATION
 
-    //! Compute the (k,ell) spherical harmonic evaluated at Omega_m.
-    double spherical_harmonic( unsigned const m,
-			       unsigned const k,
-			       int      const ell ) const;    
-
     //! \brief constuct maps between moment index n and the tuple (k,l).
     // This can optionally be provided by the user.
     std::vector< lk_index > compute_n2lk()    const;
@@ -99,14 +111,8 @@ class QuadServices
     std::vector< lk_index > compute_n2lk_3D() const;
 
     //! Build the Mmatrix.
-    std::vector< double > computeM() const;
-    std::vector< double > computeD() const;
-
-    //! Helper functions to compute coefficients
-    double compute_clk( unsigned const ell, int const k ) const;
-    double compute_azimuthalAngle( double const mu,
-				   double const eta,
-				   double const xi ) const;
+    std::vector< double > computeM(void) const;
+    std::vector< double > computeD(void) const;
 
     // DATA
     rtt_dsxx::SP< const Quadrature > const spQuad;

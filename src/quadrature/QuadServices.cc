@@ -23,7 +23,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "special_functions/Factorial.hh"
-#include "special_functions/KroneckerDelta.hh"
+#include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
 
 #include "QuadServices.hh"
@@ -48,18 +48,13 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
 
-    Ensure( soft_equiv( compute_clk( 0, 0 ), 1.0 ));
-    Ensure( soft_equiv( compute_clk( 1, -1 ), 1.0 ));
-    Ensure( soft_equiv( compute_clk( 1, 0 ), 1.0 ));
-    Ensure( soft_equiv( compute_clk( 1, 1 ), 1.0 ));
-
     double const mu1( std::sqrt(2.0)/2.0 );
     double const mu2( std::sqrt(3.0)/3.0 );
     Ensure( soft_equiv( compute_azimuthalAngle( 1.0, 0.0, 0.0 ), 0.0 ) );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, mu2 ), PI/4.0 )  );
-    Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, mu2 ), 3.0*PI/4.0 )  );
-    Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, -1.0*mu2 ), 5.0*PI/4.0 )  );
-    Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, -1.0*mu2 ), 7.0*PI/4.0 )  );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, mu2 ), 7.0*PI/4.0 )  );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, -1.0*mu2 ), 7.0*PI/4.0 )  );
+    Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, -1.0*mu2 ), PI/4.0 )  );
 
     Check( soft_equiv(gsl_sf_legendre_Plm( 0, 0, 0.5 ), 1.0 ));
     Check( soft_equiv(gsl_sf_legendre_Plm( 1, 0, 0.5 ), 0.5 ));
@@ -87,6 +82,23 @@ QuadServices::QuadServices(
 { 
     Ensure( D_equals_M_inverse() );
 }
+
+// //---------------------------------------------------------------------------//
+// /*!
+//  * \brief Constructor that allows construction from an OrdinateSet.
+//  * \param os_ An OrdinateSet
+//  * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
+//  */
+// QuadServices::QuadServices( OrdinateSet const & os )
+//     : spQuad( os.getQuadrature() ),   
+//       numMoments( spQuad->getNumAngles() ),    
+//       n2lk(       compute_n2lk() ),
+//       Mmatrix(    computeM() ),
+//       Dmatrix(    computeD() )	
+// {
+//     Ensure( D_equals_M_inverse() );
+// }
+
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -144,7 +156,7 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
  * Computes \f$ \mathbf{D} \equiv \mathbf{M}^{-1} \f$.  This private function
  * is called by the constuctor. 
  */
-std::vector< double > QuadServices::computeD() const
+std::vector< double > QuadServices::computeD(void) const
 {
     int n( numMoments );
     int m( spQuad->getNumAngles() );
@@ -182,6 +194,7 @@ std::vector< double > QuadServices::computeD() const
     
     int result = gsl_linalg_LU_decomp( &LU.matrix, p, &signum );
     Check( result == 0 );
+    Check( diagonal_not_zero( M, m, n ) );
 
     // Compute the inverse of the matrix LU from its LU decomposition (LU,p),
     // storing the results in the matrix Dmatrix.  The inverse is computed by
@@ -195,6 +208,24 @@ std::vector< double > QuadServices::computeD() const
 
 //---------------------------------------------------------------------------//
 /*! 
+ * \brief Check the diagonal of a matrix
+ * \return true if all entries are non-zero.
+ *
+ * This private member function used by DBC routines in computeD.
+ */
+bool QuadServices::diagonal_not_zero( std::vector<double> const & vec,
+                                      int m, int n ) 
+{
+    int dim( std::min(m,n) );
+    for(int i=0;i<dim;++i)
+        if( rtt_dsxx::soft_equiv(vec[i+i*m],0.0) )
+            return false;
+    return true;
+}
+
+
+//---------------------------------------------------------------------------//
+/*! 
  * \brief Create the M array (moment-to-discrete matrix).
  * \return The moment-to-discrete matrix.
  *
@@ -203,13 +234,13 @@ std::vector< double > QuadServices::computeD() const
  * The moment-to-discrete matrix will be num_moments by num_angles in size.
  * If the default constructor is used num_moments == num_angles. 
  */
-std::vector< double > QuadServices::computeM() const
+std::vector< double > QuadServices::computeM(void) const
 {
+    using std::sqrt;
+
     unsigned const numAngles( spQuad->getNumAngles() );
     unsigned const dim(       spQuad->dimensionality() );
-    double sumwt( 0.0 );
-    for( size_t m=0; m<numAngles; ++m )
-	sumwt += spQuad->getWt(m);
+    double   const sumwt(     spQuad->getNorm() );
 
     // resize the M matrix.
     std::vector< double > Mmatrix( numAngles*numMoments, -9999.0 );
@@ -218,54 +249,48 @@ std::vector< double > QuadServices::computeM() const
     {
 	unsigned const ell ( n2lk[n].first  );
 	int      const k   ( n2lk[n].second ); 
-	double   const norm( (2*ell+1)/sumwt );
-	double   const clk ( compute_clk(ell,k) );
-	
-	// Loop over all angles that use these values.
-	for( unsigned m=0; m<numAngles; ++m )
-	    Mmatrix[ n + m*numMoments ] 
-		= norm * clk * spherical_harmonic(m,ell,k);
+        
+        if( dim == 1 ) // 1D mesh, 1D quadrature
+        { // for 1D, mu is the polar direction and phi == 0, k==0
+            for( unsigned m=0; m<numAngles; ++m )
+            {
+                double mu ( spQuad->getMu(m) );
+                Mmatrix[ n + m*numMoments ] 
+                    = rtt_sf::galerkinYlk( ell, k, mu, 0.0, sumwt );
+            }
+        }
+        else if( dim == 2 ) // 2D mesh, 2D quadrature
+        { // for 2D, mu is taken to be the polar direction.
+          // xi is always positive (a half-space).
+
+            //! \todo this is the same computation as Ordinate.cc::Y(l,k,Ordinate,norm). Try to prevent code duplication.
+
+            for( unsigned m=0; m<numAngles; ++m )
+            {
+                double mu ( spQuad->getMu(m) );
+                double xi( spQuad->getXi(m) );
+                double eta( std::sqrt(1.0-mu*mu-xi*xi) );
+                double phi( compute_azimuthalAngle( xi, eta, mu ) );
+                Mmatrix[ n + m*numMoments ]
+                    = rtt_sf::galerkinYlk( ell, k, mu, phi, sumwt );
+            }
+        }
+        else // 3D mesh, 3D quadrature
+        {
+            Check( dim == 3);
+            for( unsigned m=0; m<numAngles; ++m )
+            {
+                double mu ( spQuad->getMu(m)  );
+                double eta( spQuad->getEta(m) );
+                double xi ( spQuad->getXi( m) );
+                double phi( compute_azimuthalAngle( mu, eta, xi ) );
+                
+                Mmatrix[ n + m*numMoments ] 
+                    = rtt_sf::galerkinYlk( ell, k, xi, phi, sumwt );
+            }
+        }
     }
     return Mmatrix;
-}
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Compute the \f$ (\ell,k) \f$ spherical harmonic evaluated at \f$
- * \Omega_m \f$.
- * \param m The index for the current discrete angle.
- * \param ell The \f$ \ell \f$ index for the current spherical harmonic function.
- * \param k The k index for the current spherical harmonic function. 
- * \return The \f$ (\ell,k) \f$ sphercial harmonic evaluated at \f$ \Omega_m. \f$
- *
- * \sa <a
- * href="http://mathworld.wolfram.com/SphericalHarmonic.html">Mathworld's
- * entry for Spherical Harmonic</a>.
- */
-double QuadServices::spherical_harmonic( unsigned const m, 
-					 unsigned const ell,
-					 int      const k   ) const
-{
-    Require( std::abs(k) <= ell );
-    Require( m           <  spQuad->getNumAngles() );
-
-    unsigned const dim( spQuad->dimensionality() );
-    double   const mu ( spQuad->getMu(m) );
-    double   const eta( dim>1 ? spQuad->getEta(m) : 0.0 );
-    double   const xi ( dim>2 ? spQuad->getXi( m) : std::sqrt(1.0-mu*mu-eta*eta) );
-
-    // Compute the azimuthal angle.
-    double const azimuthalAngle( compute_azimuthalAngle( mu, eta, xi ) );
-    
-    double sphHarm(0.0);
-    if( k < 0 )
-	sphHarm = gsl_sf_legendre_Plm( ell, std::abs(k), mu )
-	    * std::sin( std::abs(k) * azimuthalAngle );
-    else
-	sphHarm = gsl_sf_legendre_Plm( ell, k, mu ) 
-	    * std::cos( k * azimuthalAngle );
-    
-    return sphHarm;
 }
 
 //---------------------------------------------------------------------------//
@@ -274,7 +299,7 @@ double QuadServices::spherical_harmonic( unsigned const m,
  */
 double QuadServices::compute_azimuthalAngle( double const mu,
 					     double const eta,
-					     double const xi ) const
+					     double const xi ) 
 {
     using rtt_units::PI;
     using rtt_dsxx::soft_equiv;
@@ -286,50 +311,39 @@ double QuadServices::compute_azimuthalAngle( double const mu,
     // For 1D sets, we define this angle to be zero.
     if( soft_equiv( eta, 0.0 ) ) return 0.0;
 
-    // For 2D sets, reconstruct xi from known information: 
-    // xi*xi = 1.0 - eta*eta - mu*mu
-    // Always use positive value for xi.
-    double local_xi( xi );
-    if( soft_equiv( local_xi,  0.0 ) )
-	local_xi = std::sqrt( 1.0 - mu*mu - eta*eta );
+    double azimuthalAngle ( std::atan2( eta, mu ) );
+    if( azimuthalAngle < 0.0 )
+        azimuthalAngle += 2.0*PI;
+    
+//     // For 2D sets, reconstruct xi from known information: 
+//     // xi*xi = 1.0 - eta*eta - mu*mu
+//     // Always use positive value for xi.
+//     double local_xi( xi );
+//     if( soft_equiv( local_xi,  0.0 ) )
+// 	local_xi = std::sqrt( 1.0 - mu*mu - eta*eta );
 
-    double azimuthalAngle(999.0);
+//     double azimuthalAngle(999.0);
 
-    if( local_xi > 0.0 )
-    {
-	if( eta > 0.0 )
-	    azimuthalAngle = std::atan(xi/eta);
-	else
-	    azimuthalAngle = PI - std::atan(xi/std::abs(eta));
-    } 
-    else 
-    {
-	if( eta > 0 )
-	    azimuthalAngle = 2*PI - std::atan(std::abs(xi)/eta);
-	else
-	    azimuthalAngle = PI + std::atan(xi/eta);
-    }
+//     if( local_xi > 0.0 )
+//     {
+// 	if( eta > 0.0 )
+// 	    azimuthalAngle = std::atan(xi/eta);
+// 	else
+// 	    azimuthalAngle = PI - std::atan(xi/std::abs(eta));
+//     } 
+//     else 
+//     {
+// 	if( eta > 0 )
+// 	    azimuthalAngle = 2*PI - std::atan(std::abs(xi)/eta);
+// 	else
+// 	    azimuthalAngle = PI + std::atan(xi/eta);
+//     }
 
     // ensure that theta is in the range 0...2*PI.
     Ensure( azimuthalAngle >= 0 );
     Ensure( azimuthalAngle <= 2*PI );
     
     return azimuthalAngle;
-}
-
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Compute the c(l,k) spherical harmonics coefficient.
- */
-double QuadServices::compute_clk( unsigned const ell, int const k ) const
-{
-    using rtt_sf::factorial;
-    using rtt_sf::kronecker_delta;
-    
-    return std::sqrt( ( 2 - kronecker_delta(k,0) ) 
-		      * factorial( ell - std::abs(k) )
-		      / ( 1.0 * factorial( ell + std::abs(k) ) ) );
 }
 
 //---------------------------------------------------------------------------//
@@ -458,6 +472,19 @@ std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_2D() const
 	    result.push_back( lk_index(ell,k) );
     }
 
+    // Adjust if we have extra angles
+//     if( n < numMoments )
+//     {
+//         unsigned ell(snOrder);
+//         for(int k=0; k<=ell && n<numMoments; k+=2, ++n )
+//             result.push_back( lk_index(ell,k) );
+//     }
+//     if( n < numMoments )
+//     {
+//         unsigned ell(snOrder+1);
+//         for( int k=1; k<=ell && n<numMoments; k+=2, ++n )
+//             result.push_back( lk_index(ell,k) ); 
+//     }
     Ensure( n == numMoments );
     Ensure( result.size() == numMoments );
     return result;
@@ -485,6 +512,32 @@ std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_1D() const
     Ensure( result.size() == numMoments );
     return result;
 }
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute extra entries for M (for starting directions).
+ * \param n Spherical Harmonic moment n -> (l,k).
+ * \param Omega A discrete direction ordinate.
+ * \return An appropriate value for augmenting M.
+ *
+ * These values are not used in determing D.  They only extent M for starting
+ * directions.  For example, for S2 RZ there are 2 additional starting
+ * directions.  The S2 XY M operator has 16 values (4 angles and 4 moments).
+ * The starting directions will have the same moment values as the first 4
+ * angles (Y00, Y10, Y11, Y21), but will be evaluated as the starting
+ * direction angles.
+ */
+double QuadServices::augmentM( unsigned n, Ordinate const & Omega ) const
+{
+    // If you trigger this exception, you may have requested too many
+    // moments.  Your quadrature set must have more angles than the number of
+    // moments requested.
+    Require(n<n2lk.size());
+    // The n-th moment is the (l,k) pair used to evaluate Y_{l,k}.
+    return OrdinateSet::Y( n2lk[n].first, n2lk[n].second,
+                           Omega, spQuad->getNorm() );
+}
+
 
 
 } // end namespace rtt_quadrature
