@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Mar 26 12:36:41 2002
  * \brief  quadrature package test.
+ * \note   © Copyright 2006 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,6 +19,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "units/PhysicalConstants.hh"
 
 #include "../Quadrature.hh"
@@ -27,8 +29,6 @@
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
 #include "../Release.hh"
-
-#include "quadrature_test.hh"
 
 using namespace std;
 
@@ -48,7 +48,7 @@ using rtt_dsxx::SP;
  * verify nquads is set to the correct number of quadrature sets being
  * tested.
  */
-void quadrature_test()
+void quadrature_test( rtt_dsxx::UnitTest & ut )
 {
     using rtt_dsxx::soft_equiv;
 
@@ -91,7 +91,7 @@ void quadrature_test()
                            -0.861136311594053,
                            -1.0,
                            -0.7886751346,
-			    0.350021174581541,
+			   -0.350021174581541,
                             0.350021174581541 };
     
     SP< const Quadrature > spQuad;
@@ -103,7 +103,7 @@ void quadrature_test()
 	// Verify that the enumeration value matches its int value.
 	if ( qid[ix] != ix ) 
 	{
-	    FAILMSG("Setting QuadCreator::Qid enumeration failed.");
+	    ut.failure("Setting QuadCreator::Qid enumeration failed.");
 	    break;
 	}
 	else 
@@ -126,7 +126,7 @@ void quadrature_test()
 		double const expected_sumwt( 2.0 );
 		if( soft_equiv( spQuad->iDomega(), expected_sumwt ) )
 		{
-		    PASSMSG("Sumwt for GaussLeg quad is 2.0, as expected.");
+		    ut.passes("Sumwt for GaussLeg quad is 2.0, as expected.");
 		}
 		else
 		{
@@ -136,7 +136,7 @@ void quadrature_test()
 			<< "Expected iDomega() to return " << expected_sumwt
 			<< ", but instead it returned" << spQuad->iDomega()
 			<< "." << endl;
-		    FAILMSG( msg.str() );
+		    ut.failure( msg.str() );
 		}
 	    }
 	    else if( qid[ix] == QuadCreator::LevelSym )
@@ -152,19 +152,19 @@ void quadrature_test()
 		    double const xi( spQuad->getXi(m) );
 		    double const len( mu*mu + eta*eta + xi*xi );
 		    if( soft_equiv( veta[m], eta ) )
-			PASSMSG( "vector and single eta accessor agree." )
+			ut.passes( "vector and single eta accessor agree." );
 		    else
-			FAILMSG( "vector and single eta accessor disagree." )
+			ut.failure( "vector and single eta accessor disagree." );
 		    if( soft_equiv( vxi[m], xi ) )
-			PASSMSG( "vector and single xi accessor agree." )
+			ut.passes( "vector and single xi accessor agree." );
 		    else
-			FAILMSG( "vector and single xi accessor disagree." )
+			ut.failure( "vector and single xi accessor disagree." );
 		    if( soft_equiv( len, 1.0 ) )
 		    {
 			ostringstream msg;
 			msg << "Length of direction ordinate " << m
 			    << " has correct value of 1.0" << endl;
-			PASSMSG(msg.str());		       
+			ut.passes(msg.str());		       
 		    }
 		    else
 		    {
@@ -174,7 +174,7 @@ void quadrature_test()
 			    << endl
 			    << "It was found to have length " << len
 			    << ", which is incorrect." << endl;
-			FAILMSG(msg.str());
+			ut.failure(msg.str());
 		    }
 		}
 		
@@ -186,18 +186,18 @@ void quadrature_test()
 //                 cout <<  spQuad->dimensionality() << endl;
                 if( spQuad->dimensionality() == expected_dim )
                 {
-                    PASSMSG("Dimensionality of Lobatto quadrature set is 1.");
+                    ut.passes("Dimensionality of Lobatto quadrature set is 1.");
                 }
                 else
                 {
-                    FAILMSG("Dimensionality of Lobatto quadrature set is incorrect.");
+                    ut.failure("Dimensionality of Lobatto quadrature set is incorrect.");
                 }
             }
 
 	    // If the object was constructed sucessfully then we continue
 	    // with the tests.
 	    if ( ! spQuad )
-		FAILMSG("QuadCreator failed to create a new quadrature set.")
+		ut.failure("QuadCreator failed to create a new quadrature set.");
 	    else 
 	    {
 		// get the mu vector
@@ -211,13 +211,13 @@ void quadrature_test()
 
 		// compare values.
 		if ( mu.size() != spQuad->getNumAngles() )
-		    FAILMSG("The direction vector has the wrong length.")
+		    ut.failure("The direction vector has the wrong length.");
                 else if ( fabs(mu[0]-mu0[ix]) > TOL ) 
-                    FAILMSG("mu[0] has the wrong value.")
+                    ut.failure("mu[0] has the wrong value.");
                 else if ( fabs(mu[1]-omega_1[0]) > TOL )
-                    FAILMSG("mu[1] != omega_1[0].")
+                    ut.failure("mu[1] != omega_1[0].");
                 else if ( fabs(omega[1][0]-omega_1[0]) > TOL )
-                    FAILMSG("omega[1][0] != omega_1[0].")
+                    ut.failure("omega[1][0] != omega_1[0].");
 		else 
 		{
 		    spQuad->display();
@@ -231,7 +231,7 @@ void quadrature_test()
 
 //---------------------------------------------------------------------------//
 
-void Q2DLevelSym_tests()
+void Q2DLevelSym_tests( rtt_dsxx::UnitTest & ut )
 {
     using rtt_quadrature::Q2DLevelSym;
     using std::ostringstream;
@@ -244,7 +244,7 @@ void Q2DLevelSym_tests()
     size_t const expected_nlevels((sn_order+2)*sn_order/8);
     if( quad.getLevels() == expected_nlevels)
     {
-	PASSMSG("Found expected number of levels in quadrature set.");
+	ut.passes("Found expected number of levels in quadrature set.");
     }
     else
     {
@@ -253,13 +253,13 @@ void Q2DLevelSym_tests()
 	    << "quad.getLevels() returned " << quad.getLevels()
 	    << ", but we expected to find " << expected_nlevels << "."
 	    << endl;
-	FAILMSG( msg.str() );
+	ut.failure( msg.str() );
     }
     return;
 } // end of Q2DLevelSym_tests()
 //---------------------------------------------------------------------------//
 
-void Q3DLevelSym_tests()
+void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
 {
     using rtt_dsxx::soft_equiv;
     using rtt_quadrature::Q3DLevelSym;
@@ -273,7 +273,7 @@ void Q3DLevelSym_tests()
     size_t const expected_nlevels((sn_order+2)*sn_order/8);
     if( quad.getLevels() == expected_nlevels)
     {
-	PASSMSG("Found expected number of levels in quadrature set.");
+	ut.passes("Found expected number of levels in quadrature set.");
     }
     else
     {
@@ -282,13 +282,13 @@ void Q3DLevelSym_tests()
 	    << "quad.getLevels() returned " << quad.getLevels()
 	    << ", but we expected to find " << expected_nlevels << "."
 	    << endl;
-	FAILMSG( msg.str() );
+	ut.failure( msg.str() );
     }
     
     double const sumwt( 1.0 );
     if( soft_equiv( sumwt, assigned_sumwt ) )
     {
-	PASSMSG("Stored sumwt matches assigned value.");
+	ut.passes("Stored sumwt matches assigned value.");
     }
     else
     {
@@ -298,7 +298,7 @@ void Q3DLevelSym_tests()
 	    << "quad.iDomega() returned " << quad.iDomega()
 	    << ", but we expected to find " << assigned_sumwt << "."
 	    << endl;
-	FAILMSG( msg.str() );
+	ut.failure( msg.str() );
     }
 
     // Test renormalize member function
@@ -309,8 +309,10 @@ void Q3DLevelSym_tests()
         double const fourpi( 4.0*rtt_units::PI );
         myQuad.renormalize( fourpi );
 
-        if( ! soft_equiv( myQuad.getNorm(), fourpi     ) ) ITFAILS;
-        if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) ) ITFAILS;
+        if( ! soft_equiv( myQuad.getNorm(), fourpi     ) )
+            ut.failure(__LINE__);
+        if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) )
+            ut.failure(__LINE__);
     }
     
     return;
@@ -320,44 +322,38 @@ void Q3DLevelSym_tests()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_quadrature::release() 
-		 << endl;
-	    return 0;
-	}
-
-    cout << "This is the quadrature package." << endl
-	 << "Version " << rtt_quadrature::release() << endl;
-
     try
     {
-	// >>> UNIT TESTS
-	quadrature_test();
-	Q2DLevelSym_tests();
-	Q3DLevelSym_tests();
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_quadrature::release );
+	quadrature_test(ut);
+	Q2DLevelSym_tests(ut);
+	Q3DLevelSym_tests(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tQuadrature, " << ass.what()
-	     << endl;
-	return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
+    }
+    catch (exception &err)
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_quadrature_test::passed) 
+    catch( ... )
     {
-        cout << "**** tQuadrature Test: PASSED" 
-	     << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
 
-    cout << "Done testing tQuadrature." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

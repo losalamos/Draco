@@ -1,3 +1,22 @@
+2006-07-07  Kelly Thompson  <kgt@lanl.gov>
+
+	* test/tQuadServices.cc (test_quad_services_with_3D_S4_quad):
+	  Provided more extensive testing of quadrature sets.  Updated
+	  unit test to use ds++/ScalarUnitTest framework.
+
+	* Quadrature.cc (rtt_quadrature): Modified iOmegaDomega() and
+	  iOmegaOmegaDomega() so that these tests makes sense for 2D
+	  quadratures used in 1D problems.
+
+	* QuadServices.hh (class QuadServices ): Provide the ability to
+	  compute extra moments when needed to fill M operator before
+	  computing the D operator.  This may occur when the mesh
+	  dimension is 1 but a 2D quadrature set is used (i.e. 1D
+	  cylindrical problems). Also provide new service routines
+	  compute_azimuthalAngle and diagonal_not_zero.  The later
+	  function is used to check the validity of the D = Inv(M)
+	  computation.
+
 2005-09-27  Kelly Thompson  <kgt@lanl.gov>
 
 	* Q1DDoubleGauss: Replaced header file include directive for
