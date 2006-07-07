@@ -61,8 +61,8 @@ AC_RUNTESTS(\
    tQuadrature \
    tAxialQuadrature \
    tQuadServices\
+   tstOrdinate \
    , scalar)
-dnl   tstOrdinate \
 
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT
