@@ -22,7 +22,8 @@ namespace rtt_quadrature
  */
 double Quadrature::iDomega() const {
     double integral = 0.0;
-    for ( size_t i = 0; i < getNumAngles(); ++i )
+    size_t N( wt.size() );
+    for ( size_t i=0; i<N; ++i )
 	integral += wt[i];
     return integral;
 }
@@ -43,27 +44,36 @@ double Quadrature::iDomega() const {
  * Omega is a vector quantity.
  */
 vector<double> Quadrature::iOmegaDomega() const {
-    size_t ndims = dimensionality();
-    vector<double> integral(ndims);
-    // initialize the sum to zero.
-    for ( size_t j = 0; j < ndims; ++j ) 
-	integral[j] = 0.0;
-    switch( ndims ) {
-    case 3:
-	for ( size_t i = 0; i < getNumAngles(); ++i )
-	    integral[2] += wt[i]*xi[i];
-	//lint -fallthrough
-    case 2:
-	for ( size_t i = 0; i < getNumAngles(); ++i )
-	    integral[1] += wt[i]*eta[i];
-	//lint -fallthrough
-    case 1:
-	for ( size_t i = 0; i < getNumAngles(); ++i )
-	    integral[0] += wt[i]*mu[i];
-	break;
-    default:
-	Insist(false,"Number of spatial dimensions must be 1, 2 or 3.");
-    }
+    vector<double> integral(3,0.0);
+    Require( wt.size() > 0 );
+    Require( mu.size() == wt.size() );
+    unsigned n(mu.size());
+    for( unsigned i=0; i<n; ++i )
+        integral[0] += wt[i]*mu[i];
+    n = eta.size();
+    Check( n <= wt.size() );
+    for( unsigned i=0; i<n; ++i )
+        integral[1] += wt[i]*eta[i];
+    n = xi.size();
+    Check( n <= wt.size() );
+    for( unsigned i=0; i<n; ++i )
+        integral[2] += wt[i]*xi[i];    
+//     switch( ndims ) {
+//     case 3:
+// 	for ( size_t i = 0; i < getNumAngles(); ++i )
+// 	    integral[2] += wt[i]*xi[i];
+// 	//lint -fallthrough
+//     case 2:
+// 	for ( size_t i = 0; i < getNumAngles(); ++i )
+// 	    integral[1] += wt[i]*eta[i];
+// 	//lint -fallthrough
+//     case 1:
+// 	for ( size_t i = 0; i < getNumAngles(); ++i )
+// 	    integral[0] += wt[i]*mu[i];
+// 	break;
+//     default:
+// 	Insist(false,"Number of spatial dimensions must be 1, 2 or 3.");
+//    }
     return integral;
 }
 
@@ -87,45 +97,55 @@ vector<double> Quadrature::iOmegaDomega() const {
  */
 vector<double> Quadrature::iOmegaOmegaDomega() const {
     size_t ndims = dimensionality();
+//     // may want full tensor for 2D quadrature set.
+//     if( eta.size() > 0 && eta.size() == xi.size() )
+//         ndims = 3;
     // The size of the solution tensor will be ndims^2.
     // The solution is returned as a vector and not a tensor.  The diagonal
     // elements of the tensor are elements 0, 4 and 8 of the vector.
-    vector<double> integral( ndims*ndims );
-    // initialize the solution to zero.
-    for ( size_t i = 0; i < ndims*ndims; ++i) 
-	integral[i] = 0.0;
+    vector<double> integral( ndims*ndims, 0.0 );
 
     // We are careful to only compute the terms of the tensor solution that
     // are available for the current dimensionality of the quadrature set.
-    switch (ndims) {
-    case 1:
-	for ( size_t i = 0; i < getNumAngles(); ++i ) {
+    if( xi.size()>0 && eta.size()>0 )
+    {
+        for ( size_t i = 0; i < getNumAngles(); ++i )
+        {
+            integral[0] += wt[i]*mu[i]*mu[i];
+            integral[1] += wt[i]*mu[i]*eta[i];
+            integral[2] += wt[i]*mu[i]*xi[i];
+            integral[3] += wt[i]*eta[i]*mu[i];
+            integral[4] += wt[i]*eta[i]*eta[i];
+            integral[5] += wt[i]*eta[i]*xi[i];
+            integral[6] += wt[i]*xi[i]*mu[i];
+            integral[7] += wt[i]*xi[i]*eta[i];
+            integral[8] += wt[i]*xi[i]*xi[i];
+        }
+    }
+    else if( xi.size()>0 )
+    {
+        for ( size_t i = 0; i < getNumAngles(); ++i )
+        {
+            integral[0] += wt[i]*mu[i]*mu[i];
+            integral[1] += wt[i]*mu[i]*xi[i];
+            integral[2] += wt[i]*xi[i]*mu[i];
+            integral[3] += wt[i]*xi[i]*xi[i];
+        }
+    }
+    else if( eta.size()>0 )
+    {
+        for ( size_t i = 0; i < getNumAngles(); ++i )
+        {
+            integral[0] += wt[i]*mu[i]*mu[i];
+            integral[1] += wt[i]*mu[i]*eta[i];
+            integral[2] += wt[i]*eta[i]*mu[i];
+                integral[3] += wt[i]*eta[i]*eta[i];
+        }
+    }
+    else
+    {
+	for ( size_t i = 0; i < getNumAngles(); ++i )
 	    integral[0] += wt[i]*mu[i]*mu[i];
-	}
-	break;
-    case 2:
-	for ( size_t i = 0; i < getNumAngles(); ++i ) {
-	    integral[0] += wt[i]*mu[i]*mu[i];
-	    integral[1] += wt[i]*mu[i]*eta[i];
-	    integral[2] += wt[i]*eta[i]*mu[i];
-	    integral[3] += wt[i]*eta[i]*eta[i];
-	}
-	break;
-    case 3:
-	for ( size_t i = 0; i < getNumAngles(); ++i ) {
-	    integral[0] += wt[i]*mu[i]*mu[i];
-	    integral[1] += wt[i]*mu[i]*eta[i];
-	    integral[2] += wt[i]*mu[i]*xi[i];
-	    integral[3] += wt[i]*eta[i]*mu[i];
-	    integral[4] += wt[i]*eta[i]*eta[i];
-	    integral[5] += wt[i]*eta[i]*xi[i];
-	    integral[6] += wt[i]*xi[i]*mu[i];
-	    integral[7] += wt[i]*xi[i]*eta[i];
-	    integral[8] += wt[i]*xi[i]*xi[i];
-	}
-	break;
-    default:
-	Insist(false,"Number of spatial dimensions must be 1, 2 or 3.");
     }
     return integral;
 }

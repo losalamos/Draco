@@ -136,7 +136,6 @@ class Quadrature
      */
     const vector<double>& getXi() const 
     {
-	Require( dimensionality() >= 3 );
 	return xi;
     }
 
@@ -205,8 +204,6 @@ class Quadrature
      */
     double getXi( const size_t m ) const
     {
-	// The quadrature set must have at least 3 dimensions to return xi.
-	Require( dimensionality() >= 3 );
 	// Angle index m must be greater than zero and less than numAngles.
 	Require( m < getNumAngles() ); 
 	return xi[m];
