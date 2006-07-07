@@ -60,9 +60,12 @@ class Q2DLevelSym : public Quadrature
     size_t dimensionality() const { return 2; }
     //! Returns the order of the SN set.
     size_t getSnOrder()     const { return snOrder; }
-    //! Returns the number of eta levels in the quadrature set.
+    //! Returns the number of xi levels in the quadrature set.
     size_t getLevels()      const { return (snOrder+2)*snOrder/8; }
 
+    // MANIPULATORS
+    void sortOrdinates(void);
+    
   private:
     // DATA
     size_t numAngles; // defaults to 12.

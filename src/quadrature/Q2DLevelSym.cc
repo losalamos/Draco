@@ -13,10 +13,12 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <algorithm>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "Q3DLevelSym.hh"
 #include "Q2DLevelSym.hh"
+#include "Ordinate.hh"
 
 namespace rtt_quadrature
 {
@@ -46,7 +48,7 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
 
     // Force the direction vectors to be the correct length.
     mu.resize(numAngles);
-    eta.resize(numAngles);
+    xi.resize(numAngles);
     wt.resize(numAngles);
 
     // Use the 3D level-symmetric quadrature to construct the 2D one.
@@ -57,7 +59,7 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     for( size_t angle = 0; angle < numAngles; ++angle )
     {
 	mu[angle] = quad3D.getMu(angle);
-	eta[angle] = quad3D.getEta(angle);
+	xi[angle] = quad3D.getEta(angle);
 	wt[angle] = quad3D.getWt(angle);
     }
 
@@ -69,6 +71,9 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     for(size_t angle = 0; angle < numAngles; ++angle)
 	wt[angle] = wt[angle]*(norm/wsum);
 
+    // Sort the directions by xi and then by mu
+    sortOrdinates();
+    
     // Verify that the quadrature meets our integration requirements.
     Ensure( soft_equiv(iDomega(),norm) );
 
@@ -80,20 +85,51 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     // check each component of the tensor result
     vector<double> iood = iOmegaOmegaDomega();
     Ensure( soft_equiv(iood[0],norm/3.0) );  // mu*mu
-    Ensure( soft_equiv(iood[1],0.0) ); // mu*eta
-    Ensure( soft_equiv(iood[2],0.0) ); // eta*mu
-    Ensure( soft_equiv(iood[3],norm/3.0) ); // eta*eta
+    Ensure( soft_equiv(iood[1],0.0) ); // mu*xi
+    Ensure( soft_equiv(iood[2],0.0) ); // xi*mu
+    Ensure( soft_equiv(iood[3],norm/3.0) ); // xi*xi
 
-    // Copy quadrature data { mu, eta } into the vector omega.
+    // Copy quadrature data { mu, xi } into the vector omega.
     omega.resize( numAngles );
     size_t ndims = dimensionality();
     for ( size_t angle = 0; angle < numAngles; ++angle )
     {
 	omega[angle].resize(ndims);
 	omega[angle][0] = mu[angle];
-	omega[angle][1] = eta[angle];
+	omega[angle][1] = xi[angle];
     }
 } // end of Q2DLevelSym() constructor.
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Resort all of the ordinates by xi and then by mu.
+ *
+ * The ctor for OrdinateSet sorts automatically.
+ */
+void Q2DLevelSym::sortOrdinates(void)
+{
+    size_t len( mu.size() );
+
+    // temporary storage
+    vector<Ordinate> omega;
+    for( size_t m=0; m<len; ++m )
+    {
+        double eta=std::sqrt(1.0-mu[m]*mu[m]-xi[m]*xi[m]);
+        omega.push_back( Ordinate(mu[m],eta,xi[m],wt[m] ) );    
+    }
+    
+    std::sort(omega.begin(),omega.end(),OrdinateSet::SnCompare);
+    
+    // Save sorted data
+    for( size_t m=0; m<len; ++m )
+    {
+        mu[m]=omega[m].mu();
+        xi[m]=omega[m].xi();
+        wt[m]=omega[m].wt();        
+    }
+    
+    return;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -105,7 +141,7 @@ void Q2DLevelSym::display() const
 
     cout << endl << "The Quadrature directions and weights are:" 
 	 << endl << endl;
-    cout << "   m  \t    mu        \t    eta       \t     wt      " << endl;
+    cout << "   m  \t    mu        \t    xi        \t     wt      " << endl;
     cout << "  --- \t------------- \t------------- \t-------------" << endl;
     double sum_wt = 0.0;
     for ( size_t angle = 0; angle < mu.size(); ++angle )
@@ -113,7 +149,7 @@ void Q2DLevelSym::display() const
 	cout << "   "
 	     << angle << "\t"
 	     << setprecision(10) << mu[angle]  << "\t"
-	     << setprecision(10) << eta[angle] << "\t"
+	     << setprecision(10) << xi[angle] << "\t"
 	     << setprecision(10) << wt[angle]  << endl;
 	sum_wt += wt[angle];
     }
