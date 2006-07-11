@@ -503,6 +503,14 @@ bool Parse_Table::Keyword_Compare::operator()(const Keyword &k1,
     return kt_comparison(k1.moniker, k2.Text().c_str())<0;
 }
 
+bool Parse_Table::Keyword_Compare::operator()( const Token   &k2,
+                                               const Keyword &k1 ) const
+{
+//     Require(k1.moniker);
+//     return kt_comparison(k1.moniker, k2.Text().c_str())<0;
+    return ! operator()(k1,k2);
+}
+
 int Parse_Table::Keyword_Compare::kt_comparison(const char *m1,
 						const char *m2) const
 {

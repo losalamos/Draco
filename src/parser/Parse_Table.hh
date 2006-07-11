@@ -199,12 +199,12 @@ class Parse_Table : private std::vector<Keyword>
       public:
 	Keyword_Compare(unsigned char flags);
 	
-	bool operator()(const Keyword &k1, const Keyword &k2) const;
+	bool operator()( const Keyword &k1, const Keyword &k2 ) const;
 	
-	bool operator()(const Keyword &keyword, const Token &token) const;
+	bool operator()( const Keyword &keyword, const Token   &token   ) const;
+	bool operator()( const Token & token,    const Keyword &keyword ) const;
 
 	int kk_comparison(const char *, const char *) const;
-
 	int kt_comparison(const char *, const char *) const;
 	
       private:
