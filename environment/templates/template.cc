@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

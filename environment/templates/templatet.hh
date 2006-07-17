@@ -4,9 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright © 2006 Los Alamos National Security, LLC
- *
- * Long description.
+ * \note   Copyright (C) 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,7 +34,7 @@ namespace <namespace>
 /*! 
  * \example <pkg>/test/tst<class>.cc 
  * 
- * description of example
+ * Test of <class>.
  */
 //===========================================================================//
 
