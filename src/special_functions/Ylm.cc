@@ -97,12 +97,14 @@ double cPlk( unsigned const l, unsigned const k, double const mu )
 double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
     double const sumwt )
 {
+    using std::sqrt;
+    
     Require(k<=l);
     Require(mu>=-1.0);
     Require(mu<=1.0);
 
     double coeff( (2*l+1)/sumwt );
-    coeff *= std::sqrt(1.0*factorial(l-k)/factorial(l+k));
+    coeff *= sqrt(1.0*factorial_fraction(l-k,l+k)); // ff = (l-k)! / (l+k)!
     coeff *= gsl_sf_legendre_Plm( l, k, mu );
     
     return coeff;

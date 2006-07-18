@@ -27,6 +27,15 @@ int factorial( int const k ) ;
 template
 long factorial( long const k ) ;
 
+template
+double factorial_fraction( unsigned const k, unsigned const l );
+
+template
+double factorial_fraction( int const k, int const l );
+
+template
+double factorial_fraction( long const k, long const l );
+
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//

@@ -20,6 +20,10 @@ namespace rtt_sf
 template< typename T >
 T factorial( T const k );
 
+//! \brief fraction of factorials, \f$ (k!)/(l!) \f$
+template< typename T >
+double factorial_fraction( T const k, T const l );
+
 } // end namespace rtt_sf
 
 #endif // sf_Factorial_hh

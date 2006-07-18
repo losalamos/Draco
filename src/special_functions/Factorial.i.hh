@@ -64,6 +64,28 @@ T factorial( T const k )
     }
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Fraction of factorials, \f$ (k!)/(l!) \f$
+ * 
+ * \param k The numerator, \f$ k! \f$
+ * \param l The denominator, \f$ l! \f$
+ * \return \f$ (k!)/(l!) \f$
+ * \post \c Result>=1
+ */
+template< typename T >
+double factorial_fraction( T const k, T const l ) 
+{
+    double result( 1.0 );
+    if( k > l )
+        for( T i=l+1; i<=k; ++i )
+            result *= i;
+    if( k < l )
+        for( T i=l+1; i<=k; ++i )
+            result /= 1.0*i;
+    return result;    
+}
+
 } // end namespace rtt_sf
 
 #endif // sf_factorial_i_hh
