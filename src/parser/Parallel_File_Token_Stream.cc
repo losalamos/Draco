@@ -126,7 +126,10 @@ void Parallel_File_Token_Stream::open()
 	errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
 	       << "The file specified could not be found.\n"
 	       << "The file requested was: \"" << filename 
-	       << "\"" << " (PE " << rtt_c4::node() << ")" <<endl;
+	       << "\"" << " (PE " << rtt_c4::node() << ")\n\n"
+               << "This error can also occur if you forgot to "
+               << "execute the code under mpirun or prun."
+               << endl;
 	throw assertion( errmsg.str().c_str() );
     }
 }
