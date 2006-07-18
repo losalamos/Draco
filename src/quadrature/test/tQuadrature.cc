@@ -265,7 +265,8 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
     using rtt_quadrature::Q3DLevelSym;
     using std::ostringstream;
     using std::endl;
-    
+
+    {
     int    const sn_order( 4 );
     double const assigned_sumwt( 1.0 );
     Q3DLevelSym const quad( sn_order, assigned_sumwt );
@@ -314,7 +315,40 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
         if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) )
             ut.failure(__LINE__);
     }
-    
+    }
+
+    { // Test a high order quadrature set
+        int    const sn_order( 22 );
+        double const assigned_sumwt( 1.0 );
+        Q3DLevelSym const quad( sn_order, assigned_sumwt );
+
+        size_t const expected_nlevels((sn_order+2)*sn_order/8);
+        if( quad.getLevels() == expected_nlevels)
+            ut.passes("Found expected number of levels in quadrature set.");
+        else
+        {
+            ostringstream msg;
+            msg << "Found the wrong number of quadrature levels." << endl
+                << "quad.getLevels() returned " << quad.getLevels()
+                << ", but we expected to find " << expected_nlevels << "."
+                << endl;
+            ut.failure( msg.str() );
+        }
+        
+        double const sumwt( 1.0 );
+        if( soft_equiv( sumwt, assigned_sumwt ) )
+            ut.passes("Stored sumwt matches assigned value.");
+        else
+        {
+            ostringstream msg;
+            msg << "Stored sumwt does not match assigned value as retrieved"
+                << " by iDomega()." << endl
+                << "quad.iDomega() returned " << quad.iDomega()
+                << ", but we expected to find " << assigned_sumwt << "."
+                << endl;
+            ut.failure( msg.str() );
+        }
+    }
     return;
 } // end of Q3DLevelSym_tests()
 
