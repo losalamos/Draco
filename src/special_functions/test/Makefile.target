@@ -12,9 +12,9 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-thistestdep := libsf_test${libsuffix}
-thistestlib := -L. -lsf_test
-thistestlib_dep := sf_test.o 
+#thistestdep := libsf_test${libsuffix}
+#thistestlib := -L. -lsf_test
+#thistestlib_dep := sf_test.o 
 
 ${test_alltarget}: ${thistestdep} ${testdeps}
 

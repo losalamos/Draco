@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized factorial function.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -81,7 +81,7 @@ double factorial_fraction( T const k, T const l )
         for( T i=l+1; i<=k; ++i )
             result *= i;
     if( k < l )
-        for( T i=l+1; i<=k; ++i )
+        for( T i=k+1; i<=l; ++i )
             result /= 1.0*i;
     return result;    
 }

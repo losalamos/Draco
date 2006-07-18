@@ -3,8 +3,8 @@
  * \file   sf/test/test_sf.cc
  * \author Kelly Thompson
  * \date   Tue Sep 27 12:49:39 2005
- * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \brief  Unit tests for kronecker_delta and factorial.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,67 +12,43 @@
 
 #include <iostream>
 
-#include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "../Factorial.hh"
 #include "../KroneckerDelta.hh"
 #include "../Release.hh"
-#include "sf_test.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstKdelta()
+void tstKdelta( rtt_dsxx::UnitTest &ut )
 {
     using rtt_sf::kronecker_delta;
     if( kronecker_delta( 0, 0 ) == 1 )
-    {
-	PASSMSG("Found kronecker_delta(0,0) == 1, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta(0,0) == 1, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta(0,0) != 1, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta(0,0) != 1, kronecker_delta is not working.");
     if( kronecker_delta( 0, 1 ) == 0 )
-    {
-	PASSMSG("Found kronecker_delta(0,1) == 0, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta(0,1) == 0, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta(0,1) != 0, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta(0,1) != 0, kronecker_delta is not working.");
     if( kronecker_delta( 1, 1 ) == 1 )
-    {
-	PASSMSG("Found kronecker_delta(1,1) == 1, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta(1,1) == 1, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta(1,1) != 1, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta(1,1) != 1, kronecker_delta is not working.");
     if( kronecker_delta( 1, 0 ) == 0 )
-    {
-	PASSMSG("Found kronecker_delta(1,0) == 0, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta(1,0) == 0, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta(1,0) != 0, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta(1,0) != 0, kronecker_delta is not working.");
     if( kronecker_delta( -1, 0 ) == 0 )
-    {
-	PASSMSG("Found kronecker_delta(-1,0) == 0, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta(-1,0) == 0, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta(-1,0) != 0, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta(-1,0) != 0, kronecker_delta is not working.");
     if( kronecker_delta( -1, -1 ) == 1 )
-    {
-	PASSMSG("Found kronecker_delta(-1,-1) == 1, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta(-1,-1) == 1, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta(-1,-1) != 1, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta(-1,-1) != 1, kronecker_delta is not working.");
 
     unsigned uZero(0);
     unsigned uOne(1);
@@ -80,94 +56,88 @@ void tstKdelta()
     long lOne(1);
 
     if( kronecker_delta( uOne, uZero ) == uZero )
-    {
-	PASSMSG("Found kronecker_delta<unsigned>(uOne,uZero) == uZero, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta<unsigned>(uOne,uZero) == uZero, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta<unsigned>(uOne,uZero) != uZero, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta<unsigned>(uOne,uZero) != uZero, kronecker_delta is not working.");
 
     if( kronecker_delta( lOne, lZero ) == lZero )
-    {
-	PASSMSG("Found kronecker_delta<long>(uOne,uZero) == uZero, kronecker_delta is working.");
-    }
+	ut.passes("Found kronecker_delta<long>(uOne,uZero) == uZero, kronecker_delta is working.");
     else
-    {
-	PASSMSG("Found kronecker_delta<long>(uOne,uZero) != uZero, kronecker_delta is not working.");
-    }
+	ut.failure("Found kronecker_delta<long>(uOne,uZero) != uZero, kronecker_delta is not working.");
 
     return;
 }
 
 //---------------------------------------------------------------------------//
 
-void tstFactorial()
+void tstFactorial( rtt_dsxx::UnitTest &ut )
 {
     using rtt_sf::factorial;
 
     // Test factorial
 
     if( factorial(0) == 1 )
-    {
-	PASSMSG("Found factorial(0) == 1, factorial is working.");
-    }
+	ut.passes("Found factorial(0) == 1, factorial is working.");
     else
-    {
-	PASSMSG("Found factorial(0) != 1, factorial is not working.");
-    }
+	ut.failure("Found factorial(0) != 1, factorial is not working.");
     if( factorial(1) == 1 )
-    {
-	PASSMSG("Found factorial(1) == 1, factorial is working.");
-    }
+	ut.passes("Found factorial(1) == 1, factorial is working.");
     else
-    {
-	PASSMSG("Found factorial(1) != 1, factorial is not working.");
-    }
+	ut.failure("Found factorial(1) != 1, factorial is not working.");
     if( factorial(2) == 2 )
-    {
-	PASSMSG("Found factorial(2) == 2, factorial is working.");
-    }
+	ut.passes("Found factorial(2) == 2, factorial is working.");
     else
-    {
-	PASSMSG("Found factorial(2) != 2, factorial is not working.");
-    }
+	ut.failure("Found factorial(2) != 2, factorial is not working.");
     if( factorial(3) == 6 )
-    {
-	PASSMSG("Found factorial(3) == 6, factorial is working.");
-    }
+	ut.passes("Found factorial(3) == 6, factorial is working.");
     else
-    {
-	PASSMSG("Found factorial(3) != 6, factorial is not working.");
-    }
+	ut.failure("Found factorial(3) != 6, factorial is not working.");
     if( factorial(-3) == 1 )
-    {
-	PASSMSG("Found factorial(-3) == 1, factorial is working.");
-    }
+	ut.passes("Found factorial(-3) == 1, factorial is working.");
     else
-    {
-	PASSMSG("Found factorial(-3) != 1, factorial is not working.");
-    }
+	ut.failure("Found factorial(-3) != 1, factorial is not working.");
 
     unsigned uOne(1);
     long     lOne(1);
     
     if( factorial(uOne) == uOne )
-    {
-	PASSMSG("Found factorial<unsigned>(1) == unsigned(1), factorial is working.");
-    }
+	ut.passes("Found factorial<unsigned>(1) == unsigned(1), factorial is working.");
     else
-    {
-	PASSMSG("Found factorial<unsigned>(1) != unsigned(1), factorial is not working.");
-    }
+	ut.failure("Found factorial<unsigned>(1) != unsigned(1), factorial is not working.");
     if( factorial(lOne) == lOne )
-    {
-	PASSMSG("Found factorial<long>(1) == long(1), factorial is working.");
-    }
+	ut.passes("Found factorial<long>(1) == long(1), factorial is working.");
     else
-    {
-	PASSMSG("Found factorial<long>(1) != long(1), factorial is not working.");
-    }   
+	ut.failure("Found factorial<long>(1) != long(1), factorial is not working.");
+    return;
+}
+//---------------------------------------------------------------------------//
+
+void tstFF( rtt_dsxx::UnitTest &ut )
+{
+    using rtt_sf::factorial_fraction;
+
+    // Test factorial_fraction
+
+    if( factorial_fraction(1,1) == 1 )
+        ut.passes("factorial_fraction(1,1) == 1");
+    else
+        ut.failure("factorial_fraction(1,1) != 1");
+
+    if( factorial_fraction(6,4) == 30 )
+        ut.passes("factorial_fraction(6,4) == 30");
+    else
+        ut.failure("factorial_fraction(6,4) != 30");
+    
+    if( rtt_dsxx::soft_equiv( factorial_fraction(1,2), 0.5 ) )
+        ut.passes("factorial_fraction(1,2) == 0.5");
+    else
+        ut.failure("factorial_fraction(1,2) != 0.5");
+   
+    if( factorial_fraction(100,99) == 100 )
+        ut.passes("factorial_fraction(100,99) == 100");
+    else
+        ut.failure("factorial_fraction(100,99) != 100");
+    
     return;
 }
 
@@ -175,40 +145,32 @@ void tstFactorial()
 
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-    
-    // version tag
-    cout << argv[0] << ": version " << rtt_sf::release() << endl;
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-            return 0;
-
+    using namespace rtt_sf;
+    using namespace std;
     try
     {
-        tstFactorial();
-        tstKdelta();
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, release );
+        tstFactorial(ut);
+        tstKdelta(ut);
+        tstFF(ut);
     }
-    catch (std::exception &err)
+    catch( rtt_dsxx::assertion &err )
     {
-        cout << "ERROR: While testing test_sf," 
-                  << err.what() << endl;
-        return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
     }
     catch( ... )
     {
-        cout << "ERROR: While testing test_sf, " 
-                  << "An unknown exception was thrown." << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
         return 1;
     }
 
-    // status of test
-    cout <<   "\n*********************************************\n";
-    if (rtt_sf_test::passed) 
-        cout << "**** test_sf Test: PASSED";
-    cout <<   "\n*********************************************\n\n"
-         << "Done testing test_sf." << endl;
     return 0;
 }   
 
