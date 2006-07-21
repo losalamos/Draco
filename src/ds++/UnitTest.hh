@@ -16,6 +16,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <map>
 #include "Assert.hh"
 
 namespace rtt_dsxx
@@ -165,6 +166,10 @@ class UnitTest
     //! The number of failures found for this test.
     unsigned numFails;
 
+    // Features
+    static std::map< std::string, unsigned >
+    get_word_count( std::ostringstream const & data, bool verbose=false );
+    
   protected:
 
     // IMPLEMENTATION

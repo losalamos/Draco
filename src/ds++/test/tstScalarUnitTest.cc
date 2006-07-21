@@ -56,61 +56,37 @@ void tstTwo( UnitTest &unitTest )
     return;
 }
 
+
+
 //---------------------------------------------------------------------------//
 void tstTwoCheck( UnitTest &unitTest, std::ostringstream & msg )
 {
-    std::map<string,unsigned> word_list;
-    string msgbuf( msg.str() );
-    string delims(" \n\t:,.;");
+    bool verbose(true);
+    std::map<string,unsigned> word_list(
+        UnitTest::get_word_count( msg, verbose ) );
 
-    { // Build a list of words found in msgbuf.  Count the number of
-      // occurances.
-        
-        // Find the beginning of the first word.
-        string::size_type begIdx = msgbuf.find_first_not_of(delims);
-        string::size_type endIdx;
-        
-        // While beginning of a word found
-        while( begIdx != string::npos )
-        {
-            // search end of actual word
-            endIdx = msgbuf.find_first_of( delims, begIdx );
-            if( endIdx == string::npos)
-                endIdx = msgbuf.length();
-            
-            // the word is we found is...
-            string word( msgbuf, begIdx, endIdx-begIdx );
-            
-            // add it to the map
-            word_list[ word ]++;
-            
-            // search to the beginning of the next word
-            begIdx = msgbuf.find_first_not_of( delims, endIdx );        
-        }
-    }
-
-//     cout << "The messages from tstTwo contained the following words/occurances."
-//           << endl;
-//     // print the word_list
-//     for( std::map<string,unsigned>::iterator it = word_list.begin();
-//          it != word_list.end(); ++it)
-//     {
-//         cout << it->first << ": " << it->second << endl;
-//     }
-    
     // Check the list of occurances against the expected values
-    if( word_list[ string("Test") ] == 5 )
-        unitTest.passes("Found 5 occurances of \"Test\"");
+    if( word_list[ string("Test") ] == 6 )
+        unitTest.passes("Found 6 occurances of \"Test\"");
+    else
+        unitTest.failure("Did not find expected number of occurances of \"Test\"");
+
     if( word_list[ string("failed") ] != 4 )
         unitTest.failure("Did not find 4 occurances of failure.");
     if( word_list[ string("FAILMSG") ] != 1 )
         unitTest.failure("Found 1 occurance of \"FAILMSG\"");
     if( word_list[ string("failure") ] != 1 )
         unitTest.failure("Found 1 occurance of \"failure\"");
+
     if( word_list[ string("macro") ] == 1 )
         unitTest.passes("Found 1 occurance of \"macro\"");
+    else
+        unitTest.failure("Did not find expected number of occurances of \"macro\"");
+
     if( word_list[ string("working") ] == 2 )
         unitTest.passes("Found 2 occurances of \"working\"");
+    else
+        unitTest.failure("Did not find expected number of occurances of \"working\"");
     
     return;
 }
@@ -150,8 +126,6 @@ int main(int argc, char *argv[])
             // Test --version option.
             tstVersion( ut, argc, argv );
         }
-
-        ut.status();
     }
     catch( rtt_dsxx::assertion &err )
     {

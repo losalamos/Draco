@@ -1,5 +1,10 @@
 2006-03-08  Kelly Thompson  <kgt@lanl.gov>
 
+	* UnitTest (get_word_cound): Added a new static member function,
+	  get_word_count, that can be used by unit tests to parse an
+	  ostringstream into a map of words and number of occurances in
+	  the stream.
+
 	* test/tstRCF.cc (test_simple_construction_copy): I added some
 	  additional tests to improve unit test coverage of member
 	  functions.  In particular I added a scoping block to test some

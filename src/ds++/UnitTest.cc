@@ -155,6 +155,63 @@ bool UnitTest::failure(const std::string &failmsg)
     return false;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Parse msg to provide a list of words and the number of occurances of each.
+ */
+std::map< std::string, unsigned >
+UnitTest::get_word_count( std::ostringstream const & msg, bool verbose )
+{
+    using std::map;
+    using std::string;
+    using std::cout;
+    using std::endl;
+    
+    map<string,unsigned> word_list;
+    string msgbuf( msg.str() );
+    string delims(" \n\t:,.;");
+    
+    { // Build a list of words found in msgbuf.  Count the number of
+      // occurances.
+        
+        // Find the beginning of the first word.
+        string::size_type begIdx = msgbuf.find_first_not_of(delims);
+        string::size_type endIdx;
+        
+        // While beginning of a word found
+        while( begIdx != string::npos )
+        {
+            // search end of actual word
+            endIdx = msgbuf.find_first_of( delims, begIdx );
+            if( endIdx == string::npos)
+                endIdx = msgbuf.length();
+            
+            // the word is we found is...
+            string word( msgbuf, begIdx, endIdx-begIdx );
+            
+            // add it to the map
+            word_list[ word ]++;
+            
+            // search to the beginning of the next word
+            begIdx = msgbuf.find_first_not_of( delims, endIdx );        
+        }
+    }
+
+    if( verbose )
+    {
+        cout << "The messages from tstTwo contained the following words/occurances."
+             << endl;
+        // print the word_list
+        for( std::map<string,unsigned>::iterator it = word_list.begin();
+             it != word_list.end(); ++it)
+        {
+            cout << it->first << ": " << it->second << endl;
+        }
+    }
+
+    return word_list;
+}
+
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
