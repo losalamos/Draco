@@ -12,6 +12,7 @@
 
 #include <string>
 #include <sstream>
+#include <stdlib.h>
 #include "ds++/Soft_Equivalence.hh"
 #include "Token_Equivalence.hh"
 
