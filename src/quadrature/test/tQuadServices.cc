@@ -29,6 +29,7 @@
 #include "../Release.hh"
 
 using namespace rtt_quadrature;
+using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -1354,6 +1355,25 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
 
 //---------------------------------------------------------------------------//
 
+void test_dnz( UnitTest & ut )
+{
+    vector<double> vec(9,1.0);
+    if( QuadServices::diagonal_not_zero(vec,3,3) )
+        ut.passes("Found non-zero diagonal.");
+    else
+        ut.failure("Incorrectly reported zero on the diagonal.");
+
+    vec[0]=0.0; // Put a zero on the diagonal.
+    if( QuadServices::diagonal_not_zero(vec,3,3) )
+        ut.failure("Incorrectly reported no zeroes on the diagonal.");
+    else
+        ut.passes("Correctly found a zero on the diagonal.");
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     using std::cout;
@@ -1364,6 +1384,7 @@ int main(int argc, char *argv[])
         // function setTestName).
         rtt_dsxx::ScalarUnitTest ut( argc, argv, release );
 
+        test_dnz(ut);
   	test_quad_services_with_1D_S2_quad(ut);
    	test_quad_services_with_1D_S8_quad(ut);
   	test_quad_services_with_3D_S2_quad(ut);

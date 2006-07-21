@@ -28,13 +28,12 @@
 #include "../Q2DSquareChebyshevLegendre.hh"
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
+#include "../GeneralQuadrature.hh"
 #include "../Release.hh"
 
 using namespace std;
-
-using rtt_quadrature::QuadCreator;
-using rtt_quadrature::Quadrature;
-using rtt_dsxx::SP;
+using namespace rtt_quadrature;
+using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -354,6 +353,41 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
 
 //---------------------------------------------------------------------------//
 
+void tst_general_quadrature( UnitTest & ut )
+{
+    int const snOrder(4);
+    double const norm(1.0);
+    Q3DLevelSym const refQuad( snOrder, norm );
+
+    // Create a general quadrature
+    GeneralQuadrature const quad( snOrder,
+                                  norm,
+                                  refQuad.getMu(),
+                                  refQuad.getEta(),
+                                  refQuad.getXi(),
+                                  refQuad.getWt(),
+                                  refQuad.getLevels(),
+                                  refQuad.dimensionality(),
+                                  string("GeneralQuadrature") ); 
+
+    quad.display();
+    
+    if( quad.getNumAngles() != refQuad.getNumAngles() )
+        ut.failure(__LINE__);
+    if( quad.name() != string("GeneralQuadrature") )
+        ut.failure(__LINE__);
+    if( quad.dimensionality() != refQuad.dimensionality() )
+        ut.failure(__LINE__);
+    if( quad.getSnOrder() != refQuad.getSnOrder() )
+        ut.failure(__LINE__);
+    if( quad.getLevels() != refQuad.getLevels() )
+        ut.failure(__LINE__);
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     try
@@ -362,6 +396,7 @@ int main(int argc, char *argv[])
 	quadrature_test(ut);
 	Q2DLevelSym_tests(ut);
 	Q3DLevelSym_tests(ut);
+        tst_general_quadrature(ut);
     }
     catch( rtt_dsxx::assertion &err )
     {
