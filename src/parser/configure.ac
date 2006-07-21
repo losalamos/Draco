@@ -36,8 +36,9 @@ dnl Unit tests
 dnl
 AC_RUNTESTS(tstToken tstToken_Equivalence, scalar)
 AC_RUNTESTS(
+            tstUnit \
             tstFile_Token_Stream \
-            tstParse_Table tstUnit \
+            tstParse_Table \
 	    tstParallel_File_Token_Stream \
             tstString_Token_Stream \
             tstutilities \
