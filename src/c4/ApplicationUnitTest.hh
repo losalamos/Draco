@@ -136,7 +136,10 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     //! Name of the log file
     std::string logFileName() const { return logFile; }
-    
+
+    //! Return number of processors that are to be used by this test.
+    std::string nodes() const { return numProcs; }
+        
   private:
 
     // NESTED CLASSES AND TYPEDEFS

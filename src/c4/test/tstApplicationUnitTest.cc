@@ -26,11 +26,20 @@ using namespace rtt_c4;
 
 void tstOne( ApplicationUnitTest &unitTest )
 {
-    std::string const extraArg( "hello" );
+    string const extraArg( "hello" );
     unitTest.addCommandLineArgument( extraArg );
-    std::cout << ">>> Executing unitTest.runTests()..." << std::endl;
+    cout << ">>> Executing unitTest.runTests()..." << endl;
     unitTest.runTests();
 
+    string const logFilename( unitTest.logFileName() );
+    ostringstream msg;
+    msg << "./phw_hello-"<< unitTest.nodes() <<".out";
+    string const expLogFilename( msg.str() );
+    if( expLogFilename == logFilename )
+        unitTest.passes( "Found expected log filename." );
+    else
+        unitTest.failure( "Did not find expected log filename." );
+    cout << endl;
     return;
 }
 
