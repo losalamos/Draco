@@ -43,6 +43,7 @@ AC_RUNTESTS(tstAssert \
             tstIndex_Converter \
             tstIndex_Counter \
             tstDynArray \
+            tstPower \
             , scalar)
 
 AC_DRACO_ENV
