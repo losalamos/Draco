@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
+ * \note   Copyright (C) 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -29,6 +30,7 @@ void wall_clock_test()
 {
     using std::endl;
     using std::cout;
+    using std::ostringstream;
 
     using rtt_dsxx::soft_equiv; 
     using rtt_c4::wall_clock_time;
@@ -39,14 +41,14 @@ void wall_clock_test()
     double const wcrDeprecated( C4::Wtick() );
     if( wcr > 0.0 && wcr <= 100.0)
     {
-        std::ostringstream msg;
+        ostringstream msg;
         msg << "The timer has a wall clock resoution of "
             << wcr << " ticks." << endl;
         PASSMSG(msg.str());
     }
     else
     {
-        std::ostringstream msg;
+        ostringstream msg;
         msg << "The timer does not appear to have a reasonable resolution."
             << " rtt_c4::wall_clock_resolution() = " << wcr << " ticks."
             << endl;
@@ -55,14 +57,14 @@ void wall_clock_test()
     double tolerance(1.0e-14);
     if( rtt_dsxx::soft_equiv( wcr, wcrDeprecated, tolerance ) )
     {
-        std::ostringstream msg;
+        ostringstream msg;
         msg << "Wtick() and wall_clock_resolution() returned equivalent "
             << "values (tolerance = " << tolerance << ")." << endl;
         PASSMSG(msg.str());
     }
     else
     {
-        std::ostringstream msg;
+        ostringstream msg;
         msg << "The function wall_clock_resolution() returned a value of "
             << wcr << " ticks, but the equivalent deprecated function "
             << "Wtick() returned a value of " << wcrDeprecated
@@ -75,17 +77,30 @@ void wall_clock_test()
 
     double const prec( 1.5*t.posix_err() );
     
-    double begin = rtt_c4::wall_clock_time();
-    double const beginDeprecated = C4::Wtime();
+    double begin           = rtt_c4::wall_clock_time();
+    double beginDeprecated = C4::Wtime();
 
-    if( beginDeprecated >= begin &&
+    if( ! beginDeprecated < begin &&
         rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
     {
         PASSMSG("Wtime() and wall_clock_time() returned equivalent values.");
     }
     else
     {
-        FAILMSG("Wtime() and wall_clock_time() failed to return equivalent values.");
+        ostringstream msg;
+        msg << "Wtime() and wall_clock_time() failed to return "
+            << "equivalent values.";
+        cout.precision(14);
+        if( beginDeprecated < begin )
+            msg << "\n\tFound begin < beginDeprecated."
+                << "\n\tbegin           = " << begin
+                << "\n\tbeginDeprecated = " << beginDeprecated;
+        else
+            msg << "\n\tFound begin != beginDeprecated."
+                << "\n\tbegin           = " << begin
+                << "\n\tbeginDeprecated = " << beginDeprecated;
+        msg << endl;
+        FAILMSG(msg.str());
     }
     t.start();
     
@@ -103,7 +118,7 @@ void wall_clock_test()
     }
     else
     {
-	std::ostringstream msg;
+	ostringstream msg;
 	msg << "t.wall_clock() value does not match the expected value."
 	    << "\n\tend            = " << end
 	    << "\n\tbegin          = " << begin
@@ -126,7 +141,7 @@ void wall_clock_test()
     
     if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= prec )
     {
-	std::ostringstream msg;
+	ostringstream msg;
 	msg << "The sum of cpu and user time is less than or equal to the\n\t"
 	    << "reported wall clock time (within error bars = " << prec
 	    << " secs.)." << endl;
@@ -134,7 +149,7 @@ void wall_clock_test()
     }
     else
     {
-	std::ostringstream msg;
+	ostringstream msg;
 	msg << "The sum of cpu and user time exceeds the reported wall "
 	    << "clock time.  Here are the details:"
 	    << "\n\tposix_error() = " << prec << " sec."
