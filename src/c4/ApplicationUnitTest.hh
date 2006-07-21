@@ -133,6 +133,9 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
     
     //! Provide a report of the number of unit test passes and fails.
     void status(void);
+
+    //! Name of the log file
+    std::string logFileName() const { return logFile; }
     
   private:
 
@@ -141,8 +144,7 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
     // IMPLEMENTATION
 
     //! Construct the MPI directive that will be used to execute the binary.
-    std::string constructMpiCommand( std::string const &,
-                                     std::string const & );
+    std::string constructMpiCommand( std::string const & );
 
     //! Provide file extension that is used to cpature output from binary.
     std::string buildLogExtension( std::string const & );
@@ -152,8 +154,11 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     // DATA
 
-    //! The name of the binary fie to be tested.
+    //! The name of the binary file to be tested.
     std::string const applicationName;
+    
+    //! The path to the binary file to be tested.
+    std::string const applicationPath;
 
     //! Number of processors for the test(s).
     std::string const numProcs;
@@ -166,6 +171,9 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     //! A list of command line arguments used during execution of the test.
     std::list< std::string > listOfArgs;
+
+    //! Name of file for logging output of application execution
+    std::string logFile;
     
 };
 

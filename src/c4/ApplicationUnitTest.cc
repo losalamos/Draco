@@ -43,8 +43,9 @@ ApplicationUnitTest::ApplicationUnitTest(
     std::ostream & out_ )
     : UnitTest( argc, argv, release_, out_ ),
       applicationName( setTestName(applicationName_) ),
+      applicationPath( setTestPath(applicationName_) ),
       numProcs( getNumProcs( argc, argv ) ),
-      mpiCommand( constructMpiCommand( applicationName, numProcs ) ),
+      mpiCommand( constructMpiCommand( numProcs ) ),
       listOfArgs( listOfArgs_ ),
       logExtension( buildLogExtension( numProcs ) )
 {
@@ -160,15 +161,18 @@ std::string ApplicationUnitTest::buildLogExtension( std::string const & numProcs
  * \brief Determine the UNIX command that will be used to run the specified
  * binary.  In particular, determine if an MPI directive is required (mpirun
  * or prun) or if we are running in scalar mode.
- * \param exeName_ The path to and name of the binary to be executed.
+ * \param numProcs The number of processors for this test: "scalar" or unsigned>0.
  */
 std::string ApplicationUnitTest::constructMpiCommand(
-    std::string const & applicationName,
     std::string const & numProcs )
 {
+    Require( numProcs == std::string("scalar") ||
+             numProcs == std::string("serial") ||
+             std::atoi( numProcs.c_str() ) > 0 );
+
     { // The binary should exist and marked by the filesystem as executable.  
         
-        std::string exeExistsAndExecutable("test -x " + testPath
+        std::string exeExistsAndExecutable("test -x " + applicationPath
                                            + applicationName );
         Require( system( exeExistsAndExecutable.c_str() ) == 0 );
     }
@@ -180,7 +184,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
     //     prun -n 16 ../bin/program
     std::ostringstream cmd;
     if( numProcs == "scalar" )
-        cmd << testPath + applicationName << " "; // "../bin/serrano ";
+        cmd << applicationPath + applicationName << " "; // "../bin/serrano ";
     else
     {
         std::ostringstream testUname;
@@ -191,7 +195,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
         cmd << C4_MPICMD;
             
         // relative path to the binary.
-        cmd << numProcs << " " << testPath + applicationName << " ";
+        cmd << numProcs << " " << applicationPath + applicationName << " ";
     }
 
     Ensure( cmd.str().length() > 0 );
@@ -222,8 +226,8 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
 
     std::string seperator("");
     if( appArg.length() > 0 ) seperator = std::string("_");
-    std::string logFile( testPath + applicationName + seperator
-                         + appArg + logExtension );
+    logFile = testPath + applicationName + seperator
+              + appArg + logExtension;
     
     std::ostringstream unixCommand;
     unixCommand << mpiCommand << appArg << " > " << logFile;

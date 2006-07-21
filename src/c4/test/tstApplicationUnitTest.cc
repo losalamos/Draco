@@ -62,46 +62,9 @@ void tstTwo( ApplicationUnitTest &unitTest )
 
 void tstTwoCheck( ApplicationUnitTest &unitTest, std::ostringstream & msg )
 {
-    std::map<string,unsigned> word_list;
-    string msgbuf( msg.str() );
-    string delims(" \n\t:,.;");
-
-    { // Build a list of words found in msgbuf.  Count the number of
-      // occurances.
-        
-        // Find the beginning of the first word.
-        string::size_type begIdx = msgbuf.find_first_not_of(delims);
-        string::size_type endIdx;
-        
-        // While beginning of a word found
-        while( begIdx != string::npos )
-        {
-            // search end of actual word
-            endIdx = msgbuf.find_first_of( delims, begIdx );
-            if( endIdx == string::npos)
-                endIdx = msgbuf.length();
-            
-            // the word is we found is...
-            string word( msgbuf, begIdx, endIdx-begIdx );
-            
-            // add it to the map
-            word_list[ word ]++;
-            
-            // search to the beginning of the next word
-            begIdx = msgbuf.find_first_not_of( delims, endIdx );        
-        }
-    }
-
-//  {
-//     cout << "The messages from tstTwo contained the following words/occurances."
-//           << endl;
-//     // print the word_list
-//     for( std::map<string,unsigned>::iterator it = word_list.begin();
-//          it != word_list.end(); ++it)
-//     {
-//         cout << it->first << ": " << it->second << endl;
-//     }
-//  }
+    using rtt_dsxx::UnitTest;
+    
+    std::map<string,unsigned> word_list( UnitTest::get_word_count( msg ) );
     
     // Check the list of occurances against the expected values
     if( word_list[ string("Test") ] == 5 )
