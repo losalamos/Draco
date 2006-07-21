@@ -34,7 +34,8 @@ AC_NEEDS_LIBS( c4 units \
 dnl
 dnl Unit tests
 dnl
-AC_RUNTESTS(tstToken \
+AC_RUNTESTS(tstToken tstToken_Equivalence, scalar)
+AC_RUNTESTS(
             tstFile_Token_Stream \
             tstParse_Table tstUnit \
 	    tstParallel_File_Token_Stream \

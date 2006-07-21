@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit tests for String_Token_Stream class.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
