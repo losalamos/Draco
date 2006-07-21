@@ -242,7 +242,17 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 
 all: ${test_alltarget}
 
-check: all check_parallel check_scalar check_app
+check: all check_scalar check_parallel check_app
+
+# None of these tests use mpirun or prun.
+check_scalar:
+	@if test ! "${scalar_tests}" = "none"; then \
+	  for testexec in ${scalar_tests}; do \
+	    ${libexecdir}/launchtest ${test_flags} ./$$testexec ${exe_options}\
+	    | ${PYTHON} ${libexecdir}/test_filter.py; \
+	  done; \
+	fi;\
+	exit 0
 
 # unit tests run under mpirun or prun.
 check_parallel:
@@ -253,16 +263,6 @@ check_parallel:
               | ${PYTHON} ${libexecdir}/test_filter.py; \
             done; \
           done; \
-	fi;\
-	exit 0
-
-# None of these tests use mpirun or prun.
-check_scalar:
-	@if test ! "${scalar_tests}" = "none"; then \
-	  for testexec in ${scalar_tests}; do \
-	    ${libexecdir}/launchtest ${test_flags} ./$$testexec ${exe_options}\
-	    | ${PYTHON} ${libexecdir}/test_filter.py; \
-	  done; \
 	fi;\
 	exit 0
 
