@@ -1,5 +1,5 @@
 //---------------------------------*-text-*-----------------------------------//
-// sf.dcc
+// special_functions.dcc
 // Draco Special Functions Overview page
 // Kelly Thompson
 // Mon Apr 19 21:19:57 2004
@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the sf package
-\version draco-5_12_0
+\version draco-5_13_0
 \author Kelly Thompson
 
 \section abstract Abstract
@@ -320,5 +320,5 @@ Science and Engineering, \b 101, 72-87, 1989.
 */
 
 //---------------------------------------------------------------------------//
-//                              end of sf.dcc
+//                              end of special_functions.dcc
 //---------------------------------------------------------------------------//
