@@ -125,7 +125,7 @@ case $exe in
 
                     # IBM AIX (with poe)
                     AIX)
-                        test_exec="poe $executable $exe_options -procs $procs -rmpool 2 -retry 1"
+                        test_exec="poe $executable $exe_options -procs $procs -rmpool viz -retry 1"
                     ;;
                     
                     # COMPAQ

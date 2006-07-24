@@ -1,3 +1,71 @@
+2006-07-24  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Release of draco-5_13_0.  This is a minor Draco release.
+	A summary of changes is:
+
+	ds++
+	 - added unit-testing helper classes for serial tests
+
+	parser
+	 - added std::exception error handling
+
+	quadrature
+	 - added 1D-to-2D quadrature permutations
+
+	special_functions
+	 - moved sf.dcc to special_functions.dcc
+	 - added spherical harmonics functions
+
+	c4
+	 - added unit-testing helper class for parallel tests
+
+	config 
+	 - updated asciwhite option to ascipurple (name and compiler
+	   options) 
+	 - removed configure/aclocal.m4 from CVS 
+	 - added updated compiler options for PGI compiler 
+	 - allow nested test executables on BPROC systems through
+	   AC_TEST_APPLICATION 
+	 - allow mixed serial and scalar tests in a test directory
+	 - added *some* F90/C++ compatibility, not enough to be useful	 
+	   yet; at least C++ doesn't step on F90 when F90 is the principal
+	   compiler
+
+	tools
+	 - updated launchtest for asci purple
+	
+	Released packages in draco-5_13_0.	
+		
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		fpe_trap
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+		special_functions
+
+	Unreleased packages:
+		pcgWrap
+		cdi_eospac
+
+	This release was required by jayenne [clubimc-3_3_0 and
+	wedgehog-5_3_0]. 
+
 2006-05-01  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Updated messages to draco-cvs@lanl.gov and draco@lanl.gov
