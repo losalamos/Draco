@@ -56,6 +56,7 @@ dnl tests
 AC_RUNTESTS(\
    tstSpecialFunctions \
    tstYlm \
+   tstPower \
    , scalar)
 
 dnl Evaluate requested build environment and create values to be
