@@ -265,12 +265,107 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
     using std::ostringstream;
     using std::endl;
 
-    {
-    int    const sn_order( 4 );
-    double const assigned_sumwt( 1.0 );
-    Q3DLevelSym const quad( sn_order, assigned_sumwt );
+    { // Test low order quadrature sest.
+        
+        int    const sn_order( 4 );
+        double const assigned_sumwt( 1.0 );
+        Q3DLevelSym const quad( sn_order, assigned_sumwt );
+        
+        size_t const expected_nlevels((sn_order+2)*sn_order/8);
+        if( quad.getLevels() == expected_nlevels)
+        {
+            ut.passes("Found expected number of levels in quadrature set.");
+        }
+        else
+        {
+            ostringstream msg;
+            msg << "Found the wrong number of quadrature levels." << endl
+                << "quad.getLevels() returned " << quad.getLevels()
+                << ", but we expected to find " << expected_nlevels << "."
+                << endl;
+            ut.failure( msg.str() );
+        }
+        
+        double const sumwt( 1.0 );
+        if( soft_equiv( sumwt, assigned_sumwt ) )
+        {
+            ut.passes("Stored sumwt matches assigned value.");
+        }
+        else
+        {
+            ostringstream msg;
+            msg << "Stored sumwt does not match assigned value as retrieved by iDomega()."
+                << endl
+                << "quad.iDomega() returned " << quad.iDomega()
+                << ", but we expected to find " << assigned_sumwt << "."
+                << endl;
+            ut.failure( msg.str() );
+        }
+        
+        // Test renormalize member function
+        {
+            // must create a non-const quadrature
+            Q3DLevelSym myQuad( sn_order, assigned_sumwt );
+            double const wt1a( myQuad.getWt(1) );
+            double const fourpi( 4.0*rtt_units::PI );
+            myQuad.renormalize( fourpi );
+            
+            if( ! soft_equiv( myQuad.getNorm(), fourpi     ) )
+                ut.failure(__LINE__);
+            if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) )
+                ut.failure(__LINE__);
+        }
+    }
+    
+    { // Test a high order quadrature set
+        int    const sn_order( 22 );
+        double const assigned_sumwt( 1.0 );
+        Q3DLevelSym const quad( sn_order, assigned_sumwt );
+        
+        size_t const expected_nlevels((sn_order+2)*sn_order/8);
+        if( quad.getLevels() == expected_nlevels)
+            ut.passes("Found expected number of levels in quadrature set.");
+        else
+        {
+            ostringstream msg;
+            msg << "Found the wrong number of quadrature levels." << endl
+                << "quad.getLevels() returned " << quad.getLevels()
+                << ", but we expected to find " << expected_nlevels << "."
+                << endl;
+            ut.failure( msg.str() );
+        }
+        
+        double const sumwt( 1.0 );
+        if( soft_equiv( sumwt, assigned_sumwt ) )
+            ut.passes("Stored sumwt matches assigned value.");
+        else
+        {
+            ostringstream msg;
+            msg << "Stored sumwt does not match assigned value as retrieved"
+                << " by iDomega()." << endl
+                << "quad.iDomega() returned " << quad.iDomega()
+                << ", but we expected to find " << assigned_sumwt << "."
+                << endl;
+            ut.failure( msg.str() );
+        }
+    }
+    return;
+} // end of Q3DLevelSym_tests()
 
-    size_t const expected_nlevels((sn_order+2)*sn_order/8);
+//---------------------------------------------------------------------------//
+void Q2DSCL_test( rtt_dsxx::UnitTest & ut )
+{
+    using namespace rtt_dsxx;
+    using namespace rtt_quadrature;
+    using namespace std;
+
+    cout << "\nLooking at Q2DSquareChebyshevLegendre\n" << endl;
+    
+    int    const sn_order( 8 );
+    double const assigned_sumwt( 1.0 );
+    Q2DSquareChebyshevLegendre const quad( sn_order, assigned_sumwt );
+
+    size_t const expected_nlevels(sn_order);
     if( quad.getLevels() == expected_nlevels)
     {
 	ut.passes("Found expected number of levels in quadrature set.");
@@ -301,53 +396,6 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
 	ut.failure( msg.str() );
     }
 
-    // Test renormalize member function
-    {
-        // must create a non-const quadrature
-        Q3DLevelSym myQuad( sn_order, assigned_sumwt );
-        double const wt1a( myQuad.getWt(1) );
-        double const fourpi( 4.0*rtt_units::PI );
-        myQuad.renormalize( fourpi );
-
-        if( ! soft_equiv( myQuad.getNorm(), fourpi     ) )
-            ut.failure(__LINE__);
-        if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) )
-            ut.failure(__LINE__);
-    }
-    }
-
-    { // Test a high order quadrature set
-        int    const sn_order( 22 );
-        double const assigned_sumwt( 1.0 );
-        Q3DLevelSym const quad( sn_order, assigned_sumwt );
-
-        size_t const expected_nlevels((sn_order+2)*sn_order/8);
-        if( quad.getLevels() == expected_nlevels)
-            ut.passes("Found expected number of levels in quadrature set.");
-        else
-        {
-            ostringstream msg;
-            msg << "Found the wrong number of quadrature levels." << endl
-                << "quad.getLevels() returned " << quad.getLevels()
-                << ", but we expected to find " << expected_nlevels << "."
-                << endl;
-            ut.failure( msg.str() );
-        }
-        
-        double const sumwt( 1.0 );
-        if( soft_equiv( sumwt, assigned_sumwt ) )
-            ut.passes("Stored sumwt matches assigned value.");
-        else
-        {
-            ostringstream msg;
-            msg << "Stored sumwt does not match assigned value as retrieved"
-                << " by iDomega()." << endl
-                << "quad.iDomega() returned " << quad.iDomega()
-                << ", but we expected to find " << assigned_sumwt << "."
-                << endl;
-            ut.failure( msg.str() );
-        }
-    }
     return;
 } // end of Q3DLevelSym_tests()
 
@@ -396,6 +444,7 @@ int main(int argc, char *argv[])
 	quadrature_test(ut);
 	Q2DLevelSym_tests(ut);
 	Q3DLevelSym_tests(ut);
+        Q2DSCL_test(ut);
         tst_general_quadrature(ut);
     }
     catch( rtt_dsxx::assertion &err )

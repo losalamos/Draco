@@ -62,7 +62,7 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
         double const sqrtThird(std::sqrt(1.0/3.0)), wt(PI/2);
         Ordinate Omega( sqrtThird, sqrtThird, sqrtThird, wt );
         if( soft_equiv( Omega.x, sqrtThird ) &&
-            soft_equiv( Omega.y, sqrtThird ) &&
+            soft_equiv( Omega.eta(), sqrtThird ) &&
             soft_equiv( Omega.z, sqrtThird ) &&
             soft_equiv( Omega.weight, wt ) )
             ut.passes("Constructor initializes data to correct values.");
@@ -140,6 +140,13 @@ void test_create_ordinate_set( UnitTest & ut )
     else
         ut.passes("Create_Ordinate_Set failed for 1D S8.");
 
+    // test accessor
+    SP< Quadrature const > const spQ2( angles.getQuadrature() );
+    if( spQ == spQ2 )
+        ut.passes("Quadrature sets match.");
+    else
+        ut.failure("Quadrature sets do not match.");
+    
     return;
 }
 
