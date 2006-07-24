@@ -721,7 +721,7 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
 
        # dependency rules for IBM visual age compiler are complex
-       if test "${with_cxx}" = asciwhite || test "${with_cxx}" = ibm; then
+       if test "${with_cxx}" = ascipurple || test "${with_cxx}" = ibm; then
 	   DEPENDENCY_RULES='Makefile.dep.xlC'
        fi
    
@@ -738,7 +738,7 @@ AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
 	   if test "${with_cxx}" = gcc; then
 	       CXXFLAGS="${CXXFLAGS} -maix32"
 	       CFLAGS="${CFLAGS} -maix32"
-	   elif test "${with_cxx}" = asciwhite || 
+	   elif test "${with_cxx}" = ascipurple || 
                 test "${with_cxx}" = ibm; then
 	       CXXFLAGS="${CXXFLAGS} -q32"
 	       CFLAGS="${CFLAGS} -q32"
@@ -750,7 +750,7 @@ AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
 	   if test "${with_cxx}" = gcc; then
 	       CXXFLAGS="${CXXFLAGS} -maix64"
 	       CFLAGS="${CFLAGS} -maix64"
-	   elif test "${with_cxx}" = asciwhite || 
+	   elif test "${with_cxx}" = ascipurple || 
                 test "${with_cxx}" = ibm; then
 	       CXXFLAGS="${CXXFLAGS} -q64"
 	       CFLAGS="${CFLAGS} -q64"
@@ -759,7 +759,7 @@ AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
        fi
 
        # set up the heap size
-       if test "${with_cxx}" = asciwhite ; then
+       if test "${with_cxx}" = ascipurple ; then
 	   LDFLAGS="${LDFLAGS} -bmaxdata:0x80000000"
        fi
 
@@ -793,11 +793,11 @@ AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
 	   # setup vendor mpi
 	   if test "${with_mpi}" = vendor ; then
 
-	       # on asciwhite the newmpxlC compiler script takes care
+	       # on ascipurple the newmpxlC compiler script takes care
 	       # of loading the mpi libraries; since it will fail
 	       # if libraries are loaded and newmpxlC is used; throw
 	       # an error if it occurs
-	       if test "${with_cxx}" = asciwhite; then
+	       if test "${with_cxx}" = ascipurple; then
 
 		   if test -n "${MPI_INC}" || test -n "${MPI_LIB}"; then
 		       AC_MSG_ERROR("Cannot set mpi paths with newmpxlC.")
@@ -818,7 +818,7 @@ AC_DEFUN([AC_DBS_IBM_ENVIRONMENT], [dnl
 	       # now turn on long long support if we are using the 
 	       # visual age compiler
 	       if test "${with_cxx}" = ibm || 
-	          test "${with_cxx}" = asciwhite ; then
+	          test "${with_cxx}" = ascipurple ; then
 
 		   if test "${enable_strict_ansi}"; then
 		       AC_MSG_WARN("xlC set to allow long long")

@@ -39,10 +39,10 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        fi
    ;;
 
-   # IBM ASCI WHITE -> newxlC (use --with-cxx=ibm for regular SP2)
+   # IBM ASCI PURPLE -> newxlC (use --with-cxx=ibm for regular SP2)
    *ibm-aix*)
        if test -z "${with_cxx}" ; then
-	   with_cxx='asciwhite'
+	   with_cxx='ascipurple'
        fi
    ;;
 
@@ -127,8 +127,8 @@ AC_DEFUN([AC_CPP_ENV], [dnl
 	   AC_MSG_ERROR("Did not find IBM Visual Age xlC compiler!")
        fi
 
-   elif test "${with_cxx}" = asciwhite ; then 
-       # asci white uses different executables depending upon
+   elif test "${with_cxx}" = ascipurple ; then 
+       # asci purple uses different executables depending upon
        # the mpi setup; so we check to see if mpi is on 
        # and set the executable appropriately 
 
@@ -148,7 +148,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
 	   AC_DRACO_IBM_VISUAL_AGE
        else
-	   AC_MSG_ERROR("Did not find ASCI White new(mp)xlC compiler!")
+	   AC_MSG_ERROR("Did not find ASCI Purple new(mp)xlC compiler!")
        fi
 
    else
@@ -622,11 +622,11 @@ AC_DEFUN([AC_DRACO_IBM_VISUAL_AGE], [dnl
        AR="${CXX}"
        ARFLAGS='-brtl -Wl,-bh:5 -G -o'
 
-       # when AR=newmpxlC we need to add /lib/crt0.o to 
+       # when AR=newmpxlC we need to add /lib/crt0_64.o to 
        # avoid p_argcx and p_argvx link error when building libs
        if test "${AR}" = newmpxlC ; then
-	   ARLIBS='/lib/crt0.o'
-	   ARTESTLIBS='/lib/crt0.o'
+	   ARLIBS='/lib/crt0_64.o'
+	   ARTESTLIBS='/lib/crt0_64.o'
        fi
 
        ARLIBS="${ARLIBS} \${DRACO_LIBS} \${VENDOR_LIBS}"

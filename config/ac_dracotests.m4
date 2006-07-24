@@ -128,7 +128,7 @@ AC_DEFUN([AC_CHECK_EIGHT_BYTE_INT_TYPE], [dnl
 	   # if we are using visual age then we may need to do some
 	   # adjustment
 	   if test "${with_cxx}" = ibm || 
-	      test "${with_cxx}" = asciwhite ; then
+	      test "${with_cxx}" = ascipurple ; then
 
 	       # if the code package is serial we need to turn on long
 	       # long or if mpi is on, but is not the vendor then

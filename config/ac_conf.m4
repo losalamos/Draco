@@ -293,16 +293,16 @@ AC_DEFUN([AC_DRACO_CHECK_TOOLS], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND
+dnl AC_ASCI_PURPLE_TEST_WORK_AROUND_PREPEND
 dnl
 dnl changes compiler from newmpxlC to newxlC so that tests can be run
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
+AC_DEFUN([AC_ASCI_PURPLE_TEST_WORK_AROUND_PREPEND], [dnl
 
    # change compiler
    if test "${CXX}" = newmpxlC; then
-       white_compiler='newmpxlC'
+       purple_compiler='newmpxlC'
        CXX='newxlC'
        AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")
    fi
@@ -310,15 +310,15 @@ AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_PREPEND], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND
+dnl AC_ASCI_PURPLE_TEST_WORK_AROUND_APPEND
 dnl
 dnl changes compiler back to newmpxlC
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_ASCI_WHITE_TEST_WORK_AROUND_APPEND], [dnl
+AC_DEFUN([AC_ASCI_PURPLE_TEST_WORK_AROUND_APPEND], [dnl
 
    # change compiler back
-   if test "${white_compiler}" = newmpxlC; then
+   if test "${purple_compiler}" = newmpxlC; then
        CXX='newmpxlC'
        AC_MSG_WARN("Changing back to ${CXX} compiler.")
    fi
