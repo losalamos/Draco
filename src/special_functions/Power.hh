@@ -56,7 +56,7 @@ struct P
     }
 };
 
-template <> template <typename F>
+template <typename F>
 struct P<0,F>
 {
     static F compute(F x, F p) { return p; }
