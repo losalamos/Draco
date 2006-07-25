@@ -19,8 +19,6 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "../Release.hh"
 
-#include "sf_test.hh"
-
 #include "../Power.hh"
 
 using namespace std;
