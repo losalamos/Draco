@@ -213,14 +213,29 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
     // and set up the associated task dependencies in axisymmetric
     // geometry.
     
-    for (unsigned a=0; a<number_of_angles; a++)
+    if( quadrature->getEta().empty() )
     {
-        double const mu = quadrature->getMu(a);
-        double const xi = quadrature->getXi(a);
-        double const eta = sqrt(1-xi*xi-mu*mu);
-        double const weight = quadrature->getWt(a);
-        operator[](a) = Ordinate(mu, eta, xi, weight);
+        for (unsigned a=0; a<number_of_angles; a++)
+        {
+            double const mu = quadrature->getMu(a);
+            double const xi = quadrature->getXi(a);
+            double const eta = sqrt(1-xi*xi-mu*mu);
+            double const weight = quadrature->getWt(a);
+            operator[](a) = Ordinate(mu, eta, xi, weight);
+        }
     }
+    else // assume xi is empty.
+    {
+        for (unsigned a=0; a<number_of_angles; a++)
+        {
+            double const mu = quadrature->getMu(a);
+            double const eta = quadrature->getEta(a);
+            double const xi = sqrt(1-eta*eta-mu*mu);
+            double const weight = quadrature->getWt(a);
+            operator[](a) = Ordinate(mu, xi, eta, weight);
+        }
+    }       
+        
     sort( begin(), end(), SnCompare );
     
     if( geometry == rtt_mesh_element::AXISYMMETRIC )

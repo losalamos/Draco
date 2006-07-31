@@ -3,8 +3,8 @@
  * \file   quadrature/QuadServices.cc
  * \author Kelly Thompson
  * \date   Mon Nov  8 11:17:12 2004
- * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \brief  Provide Moment-to-Discrete and Discrete-to-Moment operators.
+ * \note   © Copyright 2006 LANSLLC All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -265,15 +265,30 @@ std::vector< double > QuadServices::computeM(void) const
 
             //! \todo this is the same computation as Ordinate.cc::Y(l,k,Ordinate,norm). Try to prevent code duplication.
 
-            for( unsigned m=0; m<numAngles; ++m )
+            if( spQuad->getEta().empty() )
             {
-                double mu ( spQuad->getMu(m) );
-                double xi( spQuad->getXi(m) );
-                double eta( std::sqrt(1.0-mu*mu-xi*xi) );
-                double phi( compute_azimuthalAngle( xi, eta, mu ) );
-                Mmatrix[ n + m*numMoments ]
-                    = rtt_sf::galerkinYlk( ell, k, mu, phi, sumwt );
+                for( unsigned m=0; m<numAngles; ++m )
+                {
+                    double mu ( spQuad->getMu(m) );
+                    double xi( spQuad->getXi(m) );
+                    double eta( std::sqrt(1.0-mu*mu-xi*xi) );
+                    double phi( compute_azimuthalAngle( xi, eta, mu ) );
+                    Mmatrix[ n + m*numMoments ]
+                        = rtt_sf::galerkinYlk( ell, k, mu, phi, sumwt );
+                }
             }
+            else // assume xi is empty
+            {
+                for( unsigned m=0; m<numAngles; ++m )
+                {
+                    double mu ( spQuad->getMu(m) );
+                    double eta( spQuad->getEta(m) );
+                    double xi( std::sqrt(1.0-mu*mu-eta*eta) );
+                    double phi( compute_azimuthalAngle( eta, xi, mu ) );
+                    Mmatrix[ n + m*numMoments ]
+                        = rtt_sf::galerkinYlk( ell, k, mu, phi, sumwt );
+                }
+            } 
         }
         else // 3D mesh, 3D quadrature
         {
