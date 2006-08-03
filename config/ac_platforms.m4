@@ -176,7 +176,13 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
       (test -n "${vendor_lapack}" && test "${with_lapack}" = "atlas") ||
       test -n "${vendor_scalapack}" ||
       test -n "${vendor_trilinos}"; then
-         f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
+      f90_lib_loc=`which pgf90 | sed -e 's/bin\/pgf90/lib/'`
+      # 64-bit pgf90 flags
+      if test `uname -m` = x86_64 ; then
+         extra_f90_libs="-L${f90_lib_loc}  -lpgf90rtl -lpgf90 -lpgf90_rpm1"
+         extra_f90_libs="${extra_f90_libs}  -lpgf902 -lpgftnrtl -lpgc"
+         extra_f90_rpaths="$rpath${f90_lib_loc}"
+      else
          if test -r ${f90_lib_loc}/libpgc.a; then
 	    extra_f90_libs="-L${f90_lib_loc} -lpgf90 -lpgf902 -lpgc -lpgftnrtl"
             extra_f90_libs="${extra_f90_libs} -lpgf90_rpm1 -lpghpf2"
@@ -191,6 +197,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
                extra_f90_rpaths="${extra_f90_rpaths} $rpath${f90_lib_locs}"
             fi
          fi
+       fi
          LIBS="${LIBS} ${extra_f90_libs}"
          RPATH="${RPATH} ${extra_f90_rpaths}"
          AC_MSG_RESULT("${extra_f90_libs}")

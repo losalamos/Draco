@@ -307,6 +307,11 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
 
    fi
 
+   # 64-bit gcc require -fPIC for enabled shared
+   if test "${enable_shared}" = yes && test `uname -m` = x86_64 ; then
+      CXXFLAGS="${CXXFLAGS} -fPIC"
+   fi
+   
    # add opt flags
    CXXFLAGS="${gcc_opt_flags} ${CXXFLAGS}"
    CFLAGS="${gcc_opt_flags} ${CFLAGS}"
