@@ -41,13 +41,14 @@ void QuadServices::print_matrix( std::string    const & matrix_name,
     unsigned pad_len( matrix_name.length()+2 );
     string padding( pad_len, ' ' );
     cout << matrix_name << " =";
-    for( unsigned i=0; i<dims[0]; ++i )
+    // row
+    for( unsigned i=0; i<dims[1]; ++i )
     {
 	if( i != 0 ) cout << padding;
 	cout << "{ ";
-	for( unsigned j=0; j<dims[1]-1; ++j )
+	for( unsigned j=0; j<dims[0]-1; ++j )
 	    cout << x[j+dims[0]*i] << ", ";
-	cout << x[dims[1]-1+dims[0]*i] << " }." << endl;
+	cout << x[dims[0]-1+dims[0]*i] << " }." << endl;
     }
     cout << endl;
     return;

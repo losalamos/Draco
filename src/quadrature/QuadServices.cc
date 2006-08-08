@@ -22,6 +22,7 @@
 // Draco software
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/Array.hh"
 #include "special_functions/Factorial.hh"
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
@@ -38,10 +39,13 @@ namespace rtt_quadrature
  * \param spQuad_ a smart pointer to a Quadrature object.
  * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
  */
-QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
-    : spQuad(     spQuad_ ), 
-      numMoments( spQuad->getNumAngles() ),
-      n2lk(       compute_n2lk() ),
+QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
+                            QuadModel                        const qm,
+                            unsigned                         const expansionOrder )
+    : spQuad(         spQuad_        ),
+      qm(         qm         ),
+      n2lk(       compute_n2lk( expansionOrder ) ),
+      numMoments( n2lk.size() ),
       Mmatrix(    computeM() ),
       Dmatrix(    computeD() )	
 { 
@@ -61,7 +65,8 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
     Check( soft_equiv(gsl_sf_legendre_Plm( 1, 1, mu2 ), -1.0*std::sqrt(1.0-mu2*mu2) ));
     Check( soft_equiv(gsl_sf_legendre_Plm( 2, 2, mu2 ), 3.0*(1.0-mu2*mu2) ));
 
-    Ensure( D_equals_M_inverse() );
+    if( qm == MOREL ) Ensure( D_equals_M_inverse() );
+    Ensure( D_0_equals_wt() );
 }
 
 //---------------------------------------------------------------------------//
@@ -73,10 +78,12 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_ )
  */
 QuadServices::QuadServices( 
     rtt_dsxx::SP< const Quadrature > const   spQuad_,
-    std::vector< lk_index >          const & lkMoments_ )
-    : spQuad(     spQuad_ ), 
-      numMoments( lkMoments_.size() ),
+    std::vector< lk_index >          const & lkMoments_,
+    QuadModel                        const   qm )
+    : spQuad(     spQuad_    ),
+      qm(         qm         ),
       n2lk(       lkMoments_ ),
+      numMoments( n2lk.size() ),
       Mmatrix(    computeM() ),
       Dmatrix(    computeD() )	
 { 
@@ -138,8 +145,8 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
     std::vector< double > phi( numMoments, 0.0 );
 
     for( size_t m=0; m<numAngles; ++m )
-	for( size_t n=0; n<numMoments; ++n )
-	    phi[ n ] += Dmatrix[ m + n*numAngles ] * psi[m];
+        for( size_t n=0; n<numMoments; ++n )
+            phi[ n ] += Dmatrix[ m + n*numAngles ] * psi[m];
     
     return phi;
 }
@@ -148,28 +155,55 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
 // PRIVATE MEMBER FUNCTIONS
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute the discrete-to-moment matrix. 
+ *
+ * Computes \f$ \mathbf{D} \equiv \mathbf{M}^{-1} \f$.  This private function
+ * is called by the constuctor.
+ *
+ * Normally, M will not be square because we only have isotropic scatting.
+ * For isotropic scattering M will be (numAngles x 1 moment).  We will use the
+ * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.
+ */
+std::vector< double > QuadServices::computeD(void) const
+{
+    if( qm == MOREL )       return computeD_morel();
+    if( qm == TRADITIONAL ) return computeD_traditional();
+    if( qm == SVD )         return computeD_svd();
+
+    // Should never get here.
+    Insist( qm == MOREL || qm == TRADITIONAL || qm == SVD,
+            "qm has an unknown value!");
+    return std::vector<double>();
+}
 
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Compute the discrete-to-moment matrix. 
  *
  * Computes \f$ \mathbf{D} \equiv \mathbf{M}^{-1} \f$.  This private function
- * is called by the constuctor. 
+ * is called by the constuctor.
+ *
+ * Under Morel's method, M is always square and we do a direct inversion to
+ * obtain D, \f$ D = M^{-1} \f$.
  */
-std::vector< double > QuadServices::computeD(void) const
+std::vector< double > QuadServices::computeD_morel(void) const
 {
     int n( numMoments );
     int m( spQuad->getNumAngles() );
 
+    Require( n == m );
+
     // create a copy of Mmatrix to use a temp space.
     std::vector< double > M( Mmatrix );
-    std::vector< double > Dmatrix( n*m );
+    std::vector< double > D( m*n );
 
     // Create GSL matrix views of our M and D matrices.
     // LU will get a copy of M.  This matrix will be decomposed into LU. 
-    gsl_matrix_view LU = gsl_matrix_view_array( &M[0],       m, n );
-    gsl_matrix_view D  = gsl_matrix_view_array( &Dmatrix[0], m, n );
-
+    gsl_matrix_view gsl_M = gsl_matrix_view_array( &M[0], m, n );
+    gsl_matrix_view gsl_D = gsl_matrix_view_array( &D[0], n, m );
+    
     // Create some local space for the permutation matrix.
     gsl_permutation *p = gsl_permutation_alloc( m );
 
@@ -191,19 +225,211 @@ std::vector< double > QuadServices::computeD(void) const
     // The algorithm used in the decomposition is Gaussian Elimination with
     // partial pivoting (Golub & Van Loan, Matrix Computations, Algorithm
     // 3.4.1).
-    
-    int result = gsl_linalg_LU_decomp( &LU.matrix, p, &signum );
+
+    // Store the LU decomposition in the matrix M.
+    int result = gsl_linalg_LU_decomp( &gsl_M.matrix, p, &signum );
     Check( result == 0 );
-    Check( diagonal_not_zero( M, m, n ) );
+    Check( diagonal_not_zero( M, n, m ) );
 
     // Compute the inverse of the matrix LU from its LU decomposition (LU,p),
     // storing the results in the matrix Dmatrix.  The inverse is computed by
     // solving the system (LU) x = b for each column of the identity matrix.
 
-    result = gsl_linalg_LU_invert( &LU.matrix, p, &D.matrix );
+    result = gsl_linalg_LU_invert( &gsl_M.matrix, p, &gsl_D.matrix );
     Check( result == 0 );
 
-    return Dmatrix;
+    return D;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute the discrete-to-moment matrix. 
+ *
+ * This function does not attempt to ensure \f$ D = M^{-1} \f$.  Instead, it
+ * simply computes the D so that,
+ * \f[
+ *    \Phi_{(l,k)} = \int\limits_{4\pi}{d\Omega c_{(l,k)} Y_{(l,k)}(\Omega)}.
+ * \f]
+ */
+std::vector< double > QuadServices::computeD_traditional(void) const
+{
+    using rtt_sf::galerkinYlk;
+
+    int      const numAngles( spQuad->getNumAngles() );
+    double   const sumwt(     spQuad->getNorm() );
+    unsigned const dim(       spQuad->dimensionality() );
+    
+    std::vector< double > D( numAngles*numMoments );
+    
+    for( unsigned m=0; m<numAngles; ++m )
+    {
+        double mu( spQuad->getMu(m) );
+        double wt( spQuad->getWt(m) );
+
+        for( unsigned n=0; n<numMoments; ++n )
+        {
+            unsigned const ell ( n2lk[n].first  );
+            int      const k   ( n2lk[n].second );  
+            // Must mult by (sumwt/(2ell+1)) twice to back out this
+            // coefficient.
+//            double c( sumwt*sumwt/(2*ell+1)/(2*ell+1) );
+            double c( sumwt/(2*ell+1) );
+
+            if( dim == 1 ) // 1D mesh, 1D quadrature
+            { // for 1D, mu is the polar direction and phi == 0, k==0
+                D[ m + n*numAngles ] =
+                    c*wt*galerkinYlk( ell, std::abs(k), mu, 0.0, sumwt );
+            }
+
+            else if( dim == 2 ) // 2D mesh, 2D quadrature
+            { // for 2D, mu is taken to be the polar direction.
+                // xi is always positive (a half-space).
+
+                if( spQuad->getEta().empty() )
+                {
+                    double xi(  spQuad->getXi(m) );
+                    double eta( sqrt(1.0-mu*mu-xi*xi) );
+                    double phi( compute_azimuthalAngle( xi, eta, mu ) );
+                    D[ m + n*numAngles ] =
+                        c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
+                }
+                else // assume xi is empty
+                {
+                    double eta( spQuad->getEta(m) );
+                    double xi(  sqrt(1.0-mu*mu-eta*eta) );
+                    double phi( compute_azimuthalAngle( eta, xi, mu ) );
+                    D[ m + n*numAngles ] =
+                        c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
+                }
+            }
+            
+            else // 3D mesh, 3D quadrature
+            {
+                Check( dim == 3);
+                double eta( spQuad->getEta(m) );
+                double xi ( spQuad->getXi( m) );
+                double phi( compute_azimuthalAngle( mu, eta, xi ) );
+                D[ m + n*numAngles ] =
+                    c*wt*galerkinYlk( ell, k, xi, phi, sumwt );
+            }
+            
+        } // n: end moment loop
+    } // m: end angle loop
+
+    return D;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Compute the discrete-to-moment matrix. 
+ *
+ * Computes \f$ \mathbf{D} \equiv \mathbf{M}^{-1} \f$.  This private function
+ * is called by the constuctor.
+ *
+ * Normally, M will not be square because we only have isotropic scatting.
+ * For isotropic scattering M will be (numAngles x 1 moment).  We will use the
+ * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.
+ */
+std::vector< double > QuadServices::computeD_svd(void) const
+{
+    int n( numMoments );
+    int m( spQuad->getNumAngles() );
+
+    // SVD:
+    //! \f$ M = U S V^T \f$
+    
+    // create a copy of Mmatrix to use a temp space.
+    std::vector< double > M( Mmatrix );
+    std::vector< double > V( n*n );
+    std::vector< double > D( m*n );
+    std::vector< double > S( n );
+
+    // Create GSL matrix views of our M and D matrices.
+    // LU will get a copy of M.  This matrix will be decomposed into LU. 
+    gsl_matrix_view gsl_M = gsl_matrix_view_array( &M[0], m, n );
+    gsl_vector_view gsl_S = gsl_vector_view_array( &S[0], n );
+    gsl_matrix_view gsl_V = gsl_matrix_view_array( &V[0], n, n );
+    gsl_matrix_view gsl_D = gsl_matrix_view_array( &D[0], n, m );
+    
+    // Store information aobut sign changes in this variable.
+    int signum(0);
+    
+    // Singular Value Decomposition
+    //
+    // A general rectangular m-by-n matrix M has a singular value
+    // decomposition (svd) into the product of an m-by-n orthogonal matrix U,
+    // an n-by-n diagonal matrix of singular values S and the transpose of an
+    // n-by-n orthogonal square matrix V,
+    //
+    //      M = U S V^T
+    //
+    // The singular values \sigma_i = S_{ii} are all non-negative and are
+    // generally chosen to form a non-increasing sequence
+    // \sigma_1 >= \sigma_2 >= ... >= \sigma_n >= 0.
+    //
+    // The singular value decomposition of a matrix has many practical
+    // uses. The condition number of the matrix is given by the ratio of the
+    // largest singular value to the smallest singular value. The presence of
+    // a zero singular value indicates that the matrix is singular. The number
+    // of non-zero singular values indicates the rank of the matrix. In
+    // practice singular value decomposition of a rank-deficient matrix will
+    // not produce exact zeroes for singular values, due to finite numerical
+    // precision. Small singular values should be edited by choosing a
+    // suitable tolerance.
+    //
+    // This function factorizes the m-by-n matrix M into the singular value
+    // decomposition M = U S V^T for m >= n. On output the matrix M is
+    // replaced by U. The diagonal elements of the singular value matrix S are
+    // stored in the vector S. The singular values are non-negative and form a
+    // non-increasing sequence from S_1 to S_n. The matrix V contains the
+    // elements of V in untransposed form. To form the product U S V^T it is
+    // necessary to take the transpose of V. M workspace of length n is
+    // required in work.
+    //
+    // This routine uses the Golub-Reinsch SVD algorithm.
+    //
+    
+    // returns U in storage "M"
+    {
+        gsl_vector    * gsl_w = gsl_vector_alloc(n);
+        int result = gsl_linalg_SV_decomp( &gsl_M.matrix, &gsl_V.matrix,
+                                           &gsl_S.vector, gsl_w );
+        gsl_vector_free(gsl_w);
+        Check( result == 0 );
+    }
+
+    //
+    // Now D = V S^-1 M^T
+    //
+    
+    // Invert S
+    for( int nn=0; nn<n; ++nn )
+        S[nn]=1.0/S[nn];
+
+    // Now, D = V S M^T
+
+    // mult V(nxn) by S(diag,n)
+
+    for( int nn=0; nn<n; ++nn )
+        for( int nnn=0; nnn<n; ++nnn )
+            V[nnn+n*nn] *= S[nnn];
+    
+    // mult VS by U^T
+
+    for( int nn=0; nn<n; ++nn )
+    {
+        for( int mm=0; mm<m; ++mm )
+        {
+            double sum(0);
+            for( int nnn=0; nnn<n; ++nnn )
+            {
+                sum += V[nnn+n*nn] * M[nnn+mm*n];
+            }
+            D[m*nn+mm] = sum;
+        }
+    }
+
+    return D;
 }
 
 //---------------------------------------------------------------------------//
@@ -223,7 +449,6 @@ bool QuadServices::diagonal_not_zero( std::vector<double> const & vec,
     return true;
 }
 
-
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Create the M array (moment-to-discrete matrix).
@@ -232,79 +457,71 @@ bool QuadServices::diagonal_not_zero( std::vector<double> const & vec,
  * This private member function is called by the constructor. 
  * 
  * The moment-to-discrete matrix will be num_moments by num_angles in size.
- * If the default constructor is used num_moments == num_angles. 
  */
 std::vector< double > QuadServices::computeM(void) const
 {
     using std::sqrt;
+    using rtt_sf::galerkinYlk;
 
     unsigned const numAngles( spQuad->getNumAngles() );
     unsigned const dim(       spQuad->dimensionality() );
     double   const sumwt(     spQuad->getNorm() );
 
     // resize the M matrix.
-    std::vector< double > Mmatrix( numAngles*numMoments, -9999.0 );
+    std::vector< double > Mmatrix( numMoments*numAngles, -9999.0 );
 
     for( unsigned n=0; n<numMoments; ++n )
     {
-	unsigned const ell ( n2lk[n].first  );
-	int      const k   ( n2lk[n].second ); 
+        for( unsigned m=0; m<numAngles; ++m )
+        {
+            unsigned const ell ( n2lk[n].first  );
+            int      const k   ( n2lk[n].second ); 
         
-        if( dim == 1 ) // 1D mesh, 1D quadrature
-        { // for 1D, mu is the polar direction and phi == 0, k==0
-            for( unsigned m=0; m<numAngles; ++m )
-            {
+            if( dim == 1 ) // 1D mesh, 1D quadrature
+            { // for 1D, mu is the polar direction and phi == 0, k==0
                 double mu ( spQuad->getMu(m) );
                 Mmatrix[ n + m*numMoments ] 
-                    = rtt_sf::galerkinYlk( ell, k, mu, 0.0, sumwt );
+                    = galerkinYlk( ell, k, mu, 0.0, sumwt );
             }
-        }
-        else if( dim == 2 ) // 2D mesh, 2D quadrature
-        { // for 2D, mu is taken to be the polar direction.
-          // xi is always positive (a half-space).
 
-            //! \todo this is the same computation as Ordinate.cc::Y(l,k,Ordinate,norm). Try to prevent code duplication.
+            else if( dim == 2 ) // 2D mesh, 2D quadrature
+            { // for 2D, mu is taken to be the polar direction.
+                // xi is always positive (a half-space).
 
-            if( spQuad->getEta().empty() )
-            {
-                for( unsigned m=0; m<numAngles; ++m )
+                //! \todo this is the same computation as Ordinate.cc::Y(l,k,Ordinate,norm). Try to prevent code duplication.
+
+                if( spQuad->getEta().empty() )
                 {
                     double mu ( spQuad->getMu(m) );
-                    double xi( spQuad->getXi(m) );
-                    double eta( std::sqrt(1.0-mu*mu-xi*xi) );
+                    double xi(  spQuad->getXi(m) );
+                    double eta( sqrt(1.0-mu*mu-xi*xi) );
                     double phi( compute_azimuthalAngle( xi, eta, mu ) );
                     Mmatrix[ n + m*numMoments ]
-                        = rtt_sf::galerkinYlk( ell, k, mu, phi, sumwt );
+                        = galerkinYlk( ell, k, mu, phi, sumwt );
                 }
-            }
-            else // assume xi is empty
-            {
-                for( unsigned m=0; m<numAngles; ++m )
+                else // assume xi is empty
                 {
                     double mu ( spQuad->getMu(m) );
                     double eta( spQuad->getEta(m) );
-                    double xi( std::sqrt(1.0-mu*mu-eta*eta) );
+                    double xi(  sqrt(1.0-mu*mu-eta*eta) );
                     double phi( compute_azimuthalAngle( eta, xi, mu ) );
                     Mmatrix[ n + m*numMoments ]
-                        = rtt_sf::galerkinYlk( ell, k, mu, phi, sumwt );
+                        = galerkinYlk( ell, k, mu, phi, sumwt );
                 }
-            } 
-        }
-        else // 3D mesh, 3D quadrature
-        {
-            Check( dim == 3);
-            for( unsigned m=0; m<numAngles; ++m )
+            }
+            
+            else // 3D mesh, 3D quadrature
             {
+                Check( dim == 3);
                 double mu ( spQuad->getMu(m)  );
                 double eta( spQuad->getEta(m) );
                 double xi ( spQuad->getXi( m) );
                 double phi( compute_azimuthalAngle( mu, eta, xi ) );
-                
                 Mmatrix[ n + m*numMoments ] 
-                    = rtt_sf::galerkinYlk( ell, k, xi, phi, sumwt );
-            }
-        }
-    }
+                    = galerkinYlk( ell, k, xi, phi, sumwt );
+            } 
+        } // n: end moment loop
+    } // m: end angle loop
     return Mmatrix;
 }
 
@@ -372,15 +589,15 @@ bool QuadServices::D_equals_M_inverse() const
 
     int n( numMoments );
     int m( spQuad->getNumAngles() );
-    int nm( std::min(n,m) );
+//    int nm( std::min( n,m ) );
 
     // create non-const versions of M and D.
     std::vector< double > Marray( Mmatrix );
     std::vector< double > Darray( Dmatrix );
-    std::vector< double > Iarray( nm*nm, -999.0 );
+    std::vector< double > Iarray( n*n, -999.0 );
     gsl_matrix_view M = gsl_matrix_view_array( &Marray[0], m, n );
     gsl_matrix_view D = gsl_matrix_view_array( &Darray[0], n, m );
-    gsl_matrix_view I = gsl_matrix_view_array( &Iarray[0], nm, nm );
+    gsl_matrix_view I = gsl_matrix_view_array( &Iarray[0], n, n );
     
     // Compute the matrix-matrix product and sum:
     //
@@ -394,10 +611,10 @@ bool QuadServices::D_equals_M_inverse() const
     double alpha(1.0);
     double beta( 0.0);
     
-    gsl_blas_dgemm( op, op, alpha, &M.matrix, &D.matrix, beta, &I.matrix );
+    gsl_blas_dgemm( op, op, alpha, &D.matrix, &M.matrix, beta, &I.matrix );
 
-    for( unsigned i=0; i<nm; ++i )
-	if( ! soft_equiv( Iarray[ i + i*nm ], 1.0 ) ) return false;
+    for( unsigned i=0; i<n; ++i )
+	if( ! soft_equiv( Iarray[ i + i*n ], 1.0 ) ) return false;
 
     return true;
 }
@@ -410,56 +627,83 @@ bool QuadServices::D_equals_M_inverse() const
  * Collocation-Galerkin-Sn Method for Solving the Boltzmann Transport
  * Equation." 
  */
-std::vector< QuadServices::lk_index > QuadServices::compute_n2lk() const
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk( unsigned const expansionOrder ) const
 {
     unsigned const dim( spQuad->dimensionality() );
+    unsigned const L( expansionOrder+1 );
 
-    if ( dim == 3 ) return compute_n2lk_3D();
-    if ( dim == 2 ) return compute_n2lk_2D();
+    if( dim == 3 )
+    {
+        if( qm == MOREL )  
+            return compute_n2lk_3D_morel();
+        else
+            return compute_n2lk_3D_traditional(L);
+    }
+
+    Check( dim < 3 );
+    if( dim == 2 )
+    {
+        if( qm == MOREL ) 
+            return compute_n2lk_2D_morel();
+        else
+            return compute_n2lk_2D_traditional(L);
+    }
+    
     Check( dim == 1 );
-    return compute_n2lk_1D();
-}
+    if( dim == 1 )
+    {
+        if( qm == MOREL )
+            return compute_n2lk_1D( spQuad->getNumAngles() );
+        else
+            return compute_n2lk_1D(L);
+    }
 
+    // Should never get here.
+    Insist( dim <= 3 && dim >= 1, "I only know about dim = {1,2,3}.");
+    return std::vector< QuadServices::lk_index >();
+}
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
-std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_3D() const
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk_3D_morel( void ) const
 {
-    unsigned const numAngles( spQuad->getNumAngles() );
-    unsigned const snOrder(   spQuad->getSnOrder()   );
-    unsigned n(0);
+    unsigned const L(         spQuad->getSnOrder() );
+
+    // This algorithm only  works for level symmetric sets because it
+    // assumes numAngles = (L)(L+2).
+    Require( spQuad->getNumAngles()  == L*(L+2) );
     
     std::vector< lk_index > result;
 
-    // Choose: l= 0, ..., N-1, k = -l, ..., l
-    for( unsigned ell=0; ell< snOrder; ++ell )
-	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k, ++n )
+    // Choose: l= 0, ..., L-1, k = -l, ..., l
+    for( unsigned ell=0; ell< L; ++ell )
+	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k )
 	    result.push_back( lk_index(ell,k) );
 
-    // Add ell=N and k<0
+    // Add ell=L and k<0
     {
-	unsigned ell( snOrder );
-	for( int k(-1*static_cast<int>(ell)); k<0; ++k, ++n )
+	unsigned ell( L );
+	for( int k(-1*static_cast<int>(ell)); k<0; ++k )
 	    result.push_back( lk_index(ell,k) );
     }
 
-    // Add ell=N, k>0, k odd
+    // Add ell=L, k>0, k odd
     {
-	unsigned ell( snOrder );
-	for( int k=1; k<=ell; k+=2, ++n )
+	unsigned ell( L );
+	for( int k=1; k<=ell; k+=2 )
 	    result.push_back( lk_index(ell,k) );
     }
 
-    // Add ell=N+1 and k<0, k even
+    // Add ell=L+1 and k<0, k even
     {
-	unsigned ell( snOrder+1 );
-	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2, ++n )
+	unsigned ell( L+1 );
+	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2 )
 	    result.push_back( lk_index(ell,k) );
     }
 
-    Ensure( n == numMoments );
-    Ensure( result.size() == numMoments );
     return result;
 }
 
@@ -467,41 +711,27 @@ std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_3D() const
 /*! 
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
-std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_2D() const
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk_2D_morel( void ) const
 {
-    unsigned const numAngles( spQuad->getNumAngles() );
-    unsigned const snOrder(   spQuad->getSnOrder()   );
-    unsigned n(0);
-    
+    unsigned const L(         spQuad->getSnOrder()   );
+
+    // This algorithm only  works for level symmetric sets because it
+    // assumes numAngles = (L)(L+2)/2.
+    Require( spQuad->getNumAngles() == L*(L+2)/2 );
+
     std::vector< lk_index > result;
     
     // Choose: l= 0, ..., N-1, k = 0, ..., l
-    for( unsigned ell=0; ell< snOrder; ++ell )
-	for( int k=0; k<= ell; ++k, ++n )
+    for( unsigned ell=0; ell<L; ++ell )
+	for( int k=0; k<=ell; ++k )
 	    result.push_back( lk_index(ell,k) );
 
     // Add ell=N and k>0, k odd
-    {
-	unsigned ell( snOrder );
-	for( int k=1; k<=ell; k+=2, ++n )
-	    result.push_back( lk_index(ell,k) );
-    }
-
-    // Adjust if we have extra angles
-//     if( n < numMoments )
-//     {
-//         unsigned ell(snOrder);
-//         for(int k=0; k<=ell && n<numMoments; k+=2, ++n )
-//             result.push_back( lk_index(ell,k) );
-//     }
-//     if( n < numMoments )
-//     {
-//         unsigned ell(snOrder+1);
-//         for( int k=1; k<=ell && n<numMoments; k+=2, ++n )
-//             result.push_back( lk_index(ell,k) ); 
-//     }
-    Ensure( n == numMoments );
-    Ensure( result.size() == numMoments );
+    unsigned ell( L );
+    for( int k=1; k<=ell; k+=2 )
+        result.push_back( lk_index(ell,k) );
+    
     return result;
 }
 
@@ -510,21 +740,52 @@ std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_2D() const
 /*! 
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
-std::vector< QuadServices::lk_index > QuadServices::compute_n2lk_1D() const
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk_3D_traditional( unsigned const L ) const
 {
-    unsigned const numAngles( spQuad->getNumAngles() );
-    unsigned const snOrder(   spQuad->getSnOrder()   );
-    unsigned n(0);
-    
+    std::vector< lk_index > result;
+
+    // Choose: l= 0, ..., L, k = -l, ..., l
+    for( unsigned ell=0; ell<L; ++ell )
+	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k )
+	    result.push_back( lk_index(ell,k) );
+
+    return result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Creates a mapping between moment index n and the index pair (k,l).
+ */
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk_2D_traditional( unsigned const L ) const
+{
     std::vector< lk_index > result;
     
-    // Choose: l= 0, ..., N-1, k = 0
+    // Choose: l= 0, ..., N, k = 0, ..., l
+    for( unsigned ell=0; ell<L; ++ell )
+	for( int k=0; k<=ell; ++k )
+	    result.push_back( lk_index(ell,k) );
+
+    return result;
+}
+
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Creates a mapping between moment index n and the index pair (k,l).
+ */
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk_1D( unsigned const L ) const
+{
+    std::vector< lk_index > result;
+    
+    // Choose: l= 0, ..., L-1, k = 0
     int k(0); // k is always zero for 1D.
-    for( unsigned ell=0; ell<snOrder; ++ell, ++n )
+    
+    for( unsigned ell=0; ell<L; ++ell )
 	result.push_back( lk_index(ell,k) );
 
-    Ensure( n == numMoments );
-    Ensure( result.size() == numMoments );
     return result;
 }
 
@@ -553,7 +814,19 @@ double QuadServices::augmentM( unsigned n, Ordinate const & Omega ) const
                            Omega, spQuad->getNorm() );
 }
 
+/*! 
+ * \brief Test the D matrix to ensure that the first row matches the
+ * associated quadrature set's weights.
+ */
 
+bool QuadServices::D_0_equals_wt(void) const
+{
+    std::vector< double > wt = spQuad->getWt();
+    bool matches = rtt_dsxx::soft_equiv(
+        wt.begin(), wt.end(),
+        Dmatrix.begin(), Dmatrix.begin()+wt.size() );
+    return matches;
+}
 
 } // end namespace rtt_quadrature
 

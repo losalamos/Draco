@@ -157,15 +157,16 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
 
     //----------------------------------------
     // Setup QuadServices object
-    
-    QuadServices qs( spQuad );
+
+    unsigned const expansionOrder( 1 ); // 2 moments.
+    QuadServices qs( spQuad, TRADITIONAL, expansionOrder ); // 
     
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
 
     std::vector< unsigned > dims;
-    dims.push_back( numAngles );
     dims.push_back( numMoments );
+    dims.push_back( numAngles );
     
     qs.print_matrix( "Mmatrix", M, dims );
 
@@ -373,14 +374,14 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
     //----------------------------------------
     // Setup QuadServices object
     
-    QuadServices qs( spQuad );
+    QuadServices qs( spQuad, TRADITIONAL, 7 ); // 8 moments
     
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
 
     std::vector< unsigned > dims;
-    dims.push_back( numAngles );
     dims.push_back( numMoments );
+    dims.push_back( numAngles );
     
     qs.print_matrix( "Mmatrix", M, dims );
 
@@ -530,17 +531,18 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 
     //----------------------------------------
     // Setup QuadServices object
-    
+
     QuadServices qs( spQuad );
     
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
 
-    std::vector< unsigned > dims;
-    dims.push_back( numAngles );
-    dims.push_back( numMoments );
-    
-    qs.print_matrix( "Mmatrix", M, dims );
+    {
+        std::vector< unsigned > dims;
+        dims.push_back( numMoments );
+        dims.push_back( numAngles );
+        qs.print_matrix( "Mmatrix", M, dims );
+    }
 
     //----------------------------------------
     // For 3D Quadrature we have the following:
@@ -600,7 +602,12 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     //-----------------------------------//
 
     vector<double> const D( qs.getD() );
-    qs.print_matrix( "Dmatrix", D, dims );
+    {
+        std::vector< unsigned > dims;
+        dims.push_back( numAngles );
+        dims.push_back( numMoments );
+        qs.print_matrix( "Dmatrix", D, dims );
+    }
     
     // The first row of D should contain the quadrature weights.
     {
@@ -648,7 +655,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
         double magnitude(7.0);
 	vector<double> const angularFlux( numAngles, magnitude );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
-        vector<double> expectedPhi( numAngles, 0.0 );
+        vector<double> expectedPhi( numMoments, 0.0 );
         expectedPhi[0]=magnitude*sumwt;
 
 	if( soft_equiv( fluxMoments.begin(), fluxMoments.end(),
@@ -660,10 +667,10 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	{
 	    ostringstream msg;
 	    msg << "applyD() failed to work as expected." << endl
-		<< "Expected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
-                << "but found phi = { \n";
+		<< "\tExpected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
+                << "but found \n\tphi = {";
             for( int i=0; i< numAngles; ++i)
-                msg << fluxMoments[i] << "\n";
+                msg << "\n\t" << fluxMoments[i];
             msg << " }." << endl;
 	    ut.failure(msg.str());
 	}
@@ -675,7 +682,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
         // moments that are all zero except first entry are equal to an
         // isotropic angular flux.x
         double magnitude(7.0);
-	vector<double> fluxMoments( numAngles, 0.0 );
+	vector<double> fluxMoments( numMoments, 0.0 );
         fluxMoments[0]=magnitude;
 	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
         vector<double> expectedPsi( numAngles, magnitude/sumwt );
@@ -703,13 +710,14 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     // Test applyM and applyD for anisotropic angular flux.
     // ------------------------------------------------------------
     {
+        QuadServices qsm( spQuad, MOREL );
         double magnitude(7.0);
         for( int i=0; i< numAngles; ++i )
         {
             vector<double> psi(numAngles,0.0);
             psi[i]=magnitude;
-            vector<double> phi( qs.applyD( psi ) );
-            vector<double> psi2( qs.applyM( phi ) );
+            vector<double> phi( qsm.applyD( psi ) );
+            vector<double> psi2( qsm.applyM( phi ) );
             if( soft_equiv( psi.begin(),  psi.end(),
                             psi2.begin(), psi2.end() ) )
             {
@@ -805,11 +813,12 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
 
-    std::vector< unsigned > dims;
-    dims.push_back( numAngles );
-    dims.push_back( numMoments );
-    
-    qs.print_matrix( "Mmatrix", M, dims );
+    {
+        std::vector< unsigned > dims;
+        dims.push_back( numMoments );
+        dims.push_back( numAngles );
+        qs.print_matrix( "Mmatrix", M, dims );
+    }
 
     //----------------------------------------
     // For 3D Quadrature we have the following:
@@ -872,7 +881,12 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     //-----------------------------------//
 
     vector<double> const D( qs.getD() );
-    qs.print_matrix( "Dmatrix", D, dims );
+    {
+        std::vector< unsigned > dims;
+        dims.push_back( numAngles );
+        dims.push_back( numMoments );
+        qs.print_matrix( "Dmatrix", D, dims );
+    }
     
     // The first row of D should contain the quadrature weights.
     {
@@ -920,7 +934,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
         double magnitude(7.0);
 	vector<double> const angularFlux( numAngles, magnitude );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
-        vector<double> expectedPhi( numAngles, 0.0 );
+        vector<double> expectedPhi( numMoments, 0.0 );
         expectedPhi[0]=magnitude*sumwt;
 
 	if( soft_equiv( fluxMoments.begin(), fluxMoments.end(),
@@ -947,7 +961,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
         // moments that are all zero except first entry are equal to an
         // isotropic angular flux.x
         double magnitude(7.0);
-	vector<double> fluxMoments( numAngles, 0.0 );
+	vector<double> fluxMoments( numMoments, 0.0 );
         fluxMoments[0]=magnitude;
 	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
         vector<double> expectedPsi( numAngles, magnitude/sumwt );
@@ -975,13 +989,14 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     // Test applyM and applyD for anisotropic angular flux.
     // ------------------------------------------------------------
     {
+        QuadServices qsm( spQuad, MOREL );
         double magnitude(7.0);
         for( int i=0; i< numAngles; ++i )
         {
             vector<double> psi(numAngles,0.0);
             psi[i]=magnitude;
-            vector<double> phi( qs.applyD( psi ) );
-            vector<double> psi2( qs.applyM( phi ) );
+            vector<double> phi( qsm.applyD( psi ) );
+            vector<double> psi2( qsm.applyM( phi ) );
             if( soft_equiv( psi.begin(),  psi.end(),
                             psi2.begin(), psi2.end() ) )
             {
@@ -1078,11 +1093,12 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
 
-    std::vector< unsigned > dims;
-    dims.push_back( numAngles );
-    dims.push_back( numMoments );
-    
-    qs.print_matrix( "Mmatrix", M, dims );
+    {
+        std::vector< unsigned > dims;
+        dims.push_back( numMoments );
+        dims.push_back( numAngles );
+        qs.print_matrix( "Mmatrix", M, dims );
+    }
 
     //----------------------------------------
     // For 3D Quadrature we have the following:
@@ -1134,7 +1150,13 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     //-----------------------------------//
 
     vector<double> const D( qs.getD() );
-    qs.print_matrix( "Dmatrix", D, dims );
+
+    {
+        std::vector< unsigned > dims;
+        dims.push_back( numAngles );
+        dims.push_back( numMoments );
+        qs.print_matrix( "Dmatrix", D, dims );
+    }
     
     // The first row of D should contain the quadrature weights.
     {
@@ -1182,7 +1204,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
         double magnitude(7.0);
 	vector<double> const angularFlux( numAngles, magnitude );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
-        vector<double> expectedPhi( numAngles, 0.0 );
+        vector<double> expectedPhi( numMoments, 0.0 );
         expectedPhi[0]=magnitude*sumwt;
 
 	if( soft_equiv( fluxMoments.begin(), fluxMoments.end(),
@@ -1209,7 +1231,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
         // moments that are all zero except first entry are equal to an
         // isotropic angular flux.x
         double magnitude(7.0);
-	vector<double> fluxMoments( numAngles, 0.0 );
+	vector<double> fluxMoments( numMoments, 0.0 );
         fluxMoments[0]=magnitude;
 	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
         vector<double> expectedPsi( numAngles, magnitude/sumwt );
@@ -1237,13 +1259,14 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     // Test applyM and applyD for anisotropic angular flux.
     // ------------------------------------------------------------
     {
+        QuadServices qsm( spQuad, MOREL );
         double magnitude(7.0);
         for( int i=0; i< numAngles; ++i )
         {
             vector<double> psi(numAngles,0.0);
             psi[i]=magnitude;
-            vector<double> phi( qs.applyD( psi ) );
-            vector<double> psi2( qs.applyM( phi ) );
+            vector<double> phi( qsm.applyD( psi ) );
+            vector<double> psi2( qsm.applyM( phi ) );
             if( soft_equiv( psi.begin(),  psi.end(),
                             psi2.begin(), psi2.end() ) )
             {
@@ -1323,8 +1346,8 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
     //----------------------------------------
     // Setup QuadServices object using alternate constructor.
     
-    QuadServices qsStd( spQuad );
-    QuadServices qsAlt( spQuad, lkMoments );
+    QuadServices qsStd( spQuad, MOREL );
+    QuadServices qsAlt( spQuad, lkMoments, MOREL );
 
     for( unsigned n=0; n<numMoments; ++n )
     {
@@ -1387,7 +1410,7 @@ int main(int argc, char *argv[])
         test_dnz(ut);
   	test_quad_services_with_1D_S2_quad(ut);
    	test_quad_services_with_1D_S8_quad(ut);
-  	test_quad_services_with_3D_S2_quad(ut);
+ 	test_quad_services_with_3D_S2_quad(ut);
   	test_quad_services_with_3D_S4_quad(ut);
   	test_quad_services_with_2D_S6_quad(ut);
    	test_quad_services_alt_constructor(ut);

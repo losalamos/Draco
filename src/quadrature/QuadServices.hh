@@ -22,6 +22,13 @@
 namespace rtt_quadrature
 {
 
+enum QuadModel
+{
+    TRADITIONAL,
+    MOREL,
+    SVD
+};
+
 class QuadServices 
 {
   public:
@@ -37,7 +44,9 @@ class QuadServices
     // CREATORS
     
     //! Default constructor assumes that only isotropic scattering is used. 
-    explicit QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_);
+    QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
+                  QuadModel                        const qm = TRADITIONAL,
+                  unsigned                         const expansionOrder = 0 );
 
 //     //! Create a QuadServices from an ordinate set.
 //     explicit QuadServices( OrdinateSet const & os );
@@ -45,7 +54,8 @@ class QuadServices
     //! Constructor that allows the user to pick the (k,l) moments to use.
     //! \todo This still needs to be defined.
     QuadServices( rtt_dsxx::SP< const Quadrature > const   spQuad_,
-		  std::vector< lk_index >          const & lkMoments_);
+		  std::vector< lk_index >          const & lkMoments_,
+                  QuadModel                        const   qm = TRADITIONAL );
 
     //! Copy constructor (the long doxygen description is in the .cc file).
     QuadServices( QuadServices const & rhs );
@@ -95,29 +105,36 @@ class QuadServices
     bool diagonal_not_zero( std::vector<double> const & vec,
                             int m, int n ) ;
     //! Checks
-    bool D_equals_M_inverse() const;
+    bool D_equals_M_inverse(void) const;
+    bool D_0_equals_wt(void) const;
 
   private:
 
     // NESTED CLASSES AND TYPEDEFS
 
     // IMPLEMENTATION
-
+    
     //! \brief constuct maps between moment index n and the tuple (k,l).
     // This can optionally be provided by the user.
-    std::vector< lk_index > compute_n2lk()    const;
-    std::vector< lk_index > compute_n2lk_1D() const;
-    std::vector< lk_index > compute_n2lk_2D() const;
-    std::vector< lk_index > compute_n2lk_3D() const;
+    std::vector< lk_index > compute_n2lk(    unsigned const L ) const;
+    std::vector< lk_index > compute_n2lk_1D( unsigned const L ) const;
+    std::vector< lk_index > compute_n2lk_2D_traditional( unsigned const L ) const;
+    std::vector< lk_index > compute_n2lk_3D_traditional( unsigned const L ) const;
+    std::vector< lk_index > compute_n2lk_2D_morel( void ) const;
+    std::vector< lk_index > compute_n2lk_3D_morel( void ) const;
 
     //! Build the Mmatrix.
     std::vector< double > computeM(void) const;
     std::vector< double > computeD(void) const;
-
+    std::vector< double > computeD_morel(      void) const;
+    std::vector< double > computeD_traditional(void) const;
+    std::vector< double > computeD_svd(        void) const;
+    
     // DATA
     rtt_dsxx::SP< const Quadrature > const spQuad;
-    unsigned                         const numMoments;
+    QuadModel                        const qm;
     std::vector< lk_index >          const n2lk;
+    unsigned                         const numMoments;
     std::vector< double >            const Mmatrix;
     std::vector< double >            const Dmatrix;
 
