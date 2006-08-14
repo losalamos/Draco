@@ -61,6 +61,7 @@ class Q1Axial : public Quadrature
     string name()           const { return "1D Axial"; }
     size_t dimensionality() const { return 1; }
     size_t getSnOrder()     const { return snOrder; }
+    Quadrature_Class getClass() const { return ONE_DIM; }
 
   private:
 

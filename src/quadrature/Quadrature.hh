@@ -65,6 +65,15 @@ class Quadrature
 {
   public:
 
+    //! Enumerate supported classes of quadratures 
+    enum Quadrature_Class 
+    {
+        ONE_DIM,             
+        TWO_DIM_TRIANGULAR,  
+        TWO_DIM_SQUARE,
+        THREE_DIM_TRIANGULAR
+    };
+
     // CREATORS
 
     /*!
@@ -82,8 +91,9 @@ class Quadrature
      *                 value is set in QuadCreator.
      */
 
-    Quadrature( size_t snOrder_, double norm_ )
+    Quadrature( size_t snOrder_, double norm_)
 	: snOrder( snOrder_ ), norm( norm_ ) { /* empty */ }
+
     Quadrature();     // prevent defaults
 
     //! Virtual destructor.
@@ -274,6 +284,11 @@ class Quadrature
      * \brief Returns a string containing the name of the quadrature set.
      */
     virtual string name() const = 0;
+
+    /*!
+     * \brief Returns the class of quadrature
+     */
+    virtual Quadrature_Class getClass() const = 0;
 
     /*!
      * \brief Returns an integer containing the dimensionality of the quadrature set.

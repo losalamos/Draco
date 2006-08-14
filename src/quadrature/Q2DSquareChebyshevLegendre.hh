@@ -65,6 +65,8 @@ class Q2DSquareChebyshevLegendre  : public Quadrature
     size_t getSnOrder()     const { return snOrder; }
     //! Returns the number of eta levels in the quadrature set.
     size_t getLevels()      const { return snOrder; }
+    //! Returns the class of quadrature.
+    Quadrature_Class getClass() const { return TWO_DIM_SQUARE; }
 
   private:
 

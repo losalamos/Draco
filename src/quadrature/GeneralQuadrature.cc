@@ -138,7 +138,8 @@ void GeneralQuadrature::display() const
     using std::endl;
     using std::setprecision;
 
-    cout << endl << "The Quadrature directions and weights are:" 
+    cout << endl << name() << " quadrature." 
+         << endl << " Directions and weights are:" 
 	 << endl << endl;
     cout << "   m  \t    mu        \t    eta       \t    xi        \t     wt      " << endl;
     cout << "  --- \t------------- \t------------- \t------------- \t-------------" << endl;

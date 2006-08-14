@@ -62,6 +62,9 @@ class Q2DLevelSym : public Quadrature
     size_t getSnOrder()     const { return snOrder; }
     //! Returns the number of xi levels in the quadrature set.
     size_t getLevels()      const { return (snOrder+2)*snOrder/8; }
+    //! Returns the class of quadrature.
+    Quadrature_Class getClass() const { return TWO_DIM_TRIANGULAR; }
+
 
     // MANIPULATORS
     void sortOrdinates(void);
