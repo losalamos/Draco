@@ -288,7 +288,7 @@ std::vector< double > QuadServices::computeD_traditional(void) const
                 if( spQuad->getEta().empty() )
                 {
                     double xi(  spQuad->getXi(m) );
-                    double eta( sqrt(1.0-mu*mu-xi*xi) );
+                    double eta( std::sqrt(1.0-mu*mu-xi*xi) );
                     double phi( compute_azimuthalAngle( xi, eta, mu ) );
                     D[ m + n*numAngles ] =
                         c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
@@ -296,7 +296,7 @@ std::vector< double > QuadServices::computeD_traditional(void) const
                 else // assume xi is empty
                 {
                     double eta( spQuad->getEta(m) );
-                    double xi(  sqrt(1.0-mu*mu-eta*eta) );
+                    double xi(  std::sqrt(1.0-mu*mu-eta*eta) );
                     double phi( compute_azimuthalAngle( eta, xi, mu ) );
                     D[ m + n*numAngles ] =
                         c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
