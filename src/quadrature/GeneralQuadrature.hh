@@ -38,14 +38,16 @@ class GeneralQuadrature : public Quadrature
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
     GeneralQuadrature( size_t snOrder_,
-             double norm_,
-             std::vector<double>  const & mu_,
-             std::vector<double>  const & eta_,
-             std::vector<double>  const & xi_,
-             std::vector<double>  const & wt_,
-             size_t levels,
-             size_t dim,
-             std::string  const & quadratureName );
+                       double norm_,
+                       std::vector<double>  const & mu_,
+                       std::vector<double>  const & eta_,
+                       std::vector<double>  const & xi_,
+                       std::vector<double>  const & wt_,
+                       size_t levels,
+                       size_t dim,
+                       std::string  const & quadratureName,
+                       Quadrature_Class quadratureClass);
+
     GeneralQuadrature();    // disable default construction
 
     // ACCESSORS
@@ -66,6 +68,8 @@ class GeneralQuadrature : public Quadrature
     //! Returns the number of xi levels in the quadrature set.
     size_t getLevels()      const { return numLevels; }
 
+    Quadrature_Class getClass() const {return quadratureClass; };
+
   private:
 
     // DATA
@@ -73,7 +77,7 @@ class GeneralQuadrature : public Quadrature
     size_t const numLevels;
     size_t const numDims;
     std::string const quadratureName;
-    
+    Quadrature_Class quadratureClass; 
 };
 
 } // end namespace rtt_quadrature

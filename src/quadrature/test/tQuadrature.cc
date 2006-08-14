@@ -416,7 +416,8 @@ void tst_general_quadrature( UnitTest & ut )
                                   refQuad.getWt(),
                                   refQuad.getLevels(),
                                   refQuad.dimensionality(),
-                                  string("GeneralQuadrature") ); 
+                                  string("GeneralQuadrature"),
+                                  refQuad.getClass()); 
 
     quad.display();
     
@@ -429,6 +430,8 @@ void tst_general_quadrature( UnitTest & ut )
     if( quad.getSnOrder() != refQuad.getSnOrder() )
         ut.failure(__LINE__);
     if( quad.getLevels() != refQuad.getLevels() )
+        ut.failure(__LINE__);
+    if( quad.getClass() != refQuad.getClass() )
         ut.failure(__LINE__);
     
     return;

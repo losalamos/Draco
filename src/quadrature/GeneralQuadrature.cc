@@ -38,12 +38,14 @@ GeneralQuadrature::GeneralQuadrature(
     std::vector<double> const & wt_,
     size_t levels_,
     size_t dim_,
-    std::string const & quadratureName_ ) 
+    std::string const & quadratureName_,
+    Quadrature_Class quadratureClass_) 
     : Quadrature( sn_order_, norm_ ), 
       numAngles ( mu_.size() ),
       numLevels ( levels_ ),
       numDims   ( dim_ ),
-      quadratureName ( quadratureName_ )
+      quadratureName ( quadratureName_ ),
+      quadratureClass ( quadratureClass_ )
 { 
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
