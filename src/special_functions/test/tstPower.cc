@@ -51,6 +51,16 @@ void test( rtt_dsxx::UnitTest &ut )
     else
         ut.passes("");
 
+    if (Power<0>(1) != 1)
+        ut.failure("1^0 in int failed.");
+    else
+        ut.passes("");
+
+    if (!soft_equiv(Power<0>(1.0), 1.0))
+        ut.failure("1.0^0 in float failed.");
+    else
+        ut.passes("");
+
 }
 
 
