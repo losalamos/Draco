@@ -14,7 +14,9 @@
 #include <cmath>
 
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/SP.hh"
 #include "units/PhysicalConstants.hh"
+#include "parser/utilities.hh"
 
 #include "Q1DGaussLeg.hh"
 #include "Q1DLobatto.hh"
@@ -121,6 +123,105 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
     
     return spQuad;
 
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief quadCreate constructs a Quadrature object from a Token_Stream.
+ *
+ * This quadrature creator only requires 1 parameter -- a
+ * rtt_parser::Token_Stream.  This function generates the appropriate
+ * information for a call to the default constructor from data streams in the
+ * Token_Stream.
+ *
+ * The Token_Stream is expected to have the following data:
+ *
+ * 1. A text string that describes the type of quadratre.  Valid strings are: 
+ *
+ *   \arg \c gauss \c legendre
+ *   \arg \c level \c symmetric
+ *   \arg \c square \c CL
+ * 
+ * 2. The quadrature order, specified by the keyword \c order followed by an
+ * integer value:
+ *
+ *    \arg \c order \c 8
+ *
+ * 3. The keyword \c end to specify that we are at the end of the quadrature
+ * specification block.
+ * 
+ * Example 1:
+ * \code
+ * level symmetric
+ *    order 4
+ * end
+ * \endcode
+ * When called from a solver, the quadrature block is typically initialized by
+ * the keyword "angle quadrature."  In a SERRANO input deck, one would expect
+ * to find the following token stream within the digraph block:
+ * \code
+ * angle quadrature
+ *    square CL
+ *       order 40
+ *    end
+ * end
+ * \endcode
+ * It is the responsibility of the digraph parser/creator function to identify
+ * the keyword \c angle \c quadrature and make a call to this function.
+ *
+ * \par tokens A Token_Stream that provide text information about the quadrature set to be created.
+ * \return Smart pointer to a quadrature object.
+ */
+rtt_dsxx::SP<Quadrature> 
+QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
+{
+    using namespace rtt_parser;
+    
+    QuadCreator::Qid quad_type;
+    double quad_norm;
+
+    Token const token = tokens.Shift();
+    if (token.Text()=="gauss legendre")
+    {
+        quad_type = QuadCreator::GaussLeg;
+        quad_norm = 2.0;
+    }
+    else if (token.Text()=="level symmetric")
+    {
+        quad_type = QuadCreator::LevelSym2D;
+        quad_norm = 4.0*rtt_units::PI;
+    }
+    else if (token.Text()=="square CL")
+    {
+        quad_type = QuadCreator::SquareCL;
+        quad_norm = 4.0*rtt_units::PI;
+    }
+    else
+    {
+        tokens.Report_Syntax_Error("expected a quadrature type specification");
+    }
+
+    if (tokens.Shift().Text() != "order")
+        tokens.Report_Syntax_Error("unrecognized keyword");
+
+    unsigned sn_order = Parse_Positive_Integer(tokens);
+    if (sn_order%2 != 0)
+    {
+        tokens.Report_Semantic_Error("quadrature order must be even");
+        sn_order = 2;
+    }
+
+    // end of quadrature type block.
+    if (tokens.Shift().Type() != END)
+        tokens.Report_Syntax_Error("missing 'end'");
+
+    rtt_dsxx::SP<Quadrature> parsed_quadrature =
+        quadCreate(quad_type,sn_order, quad_norm);
+
+    if (parsed_quadrature == rtt_dsxx::SP<rtt_quadrature::Quadrature>())
+        tokens.Report_Semantic_Error("Could not construct quadrature");
+
+    return parsed_quadrature;
 }
 
 } // end namespace rtt_quadrature

@@ -13,6 +13,7 @@
 #define __quadrature_QuadCreator_hh__
 
 #include "ds++/SP.hh"
+#include "parser/Token_Stream.hh"
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
@@ -24,9 +25,9 @@ namespace rtt_quadrature
  *
  * \brief A class to instantiate Quadrature objects.
  *
- * The generation of Quadrature objects can be implemented as a
- * "Parameterized Factory Method" (Booch).  This class acts as the virtual
- * creator for all quadrature objects.
+ * The generation of Quadrature objects can be implemented as a "Parameterized
+ * Factory Method" (Booch).  This class acts as the virtual creator for all
+ * quadrature objects.
  */
 
 /*!
@@ -37,7 +38,7 @@ namespace rtt_quadrature
  * enumeration QuadCreator::Qid).  The SN order is optional and will be
  * defaulted to 4 is not specified.  The client may also specify a
  * normalization constant for the sum of of the direction weights.  If
- * unspecified, this normalization will default to 2, 2*PI or 4*PI for 1D, 2D 
+ * unspecified, this normalization will default to 2, 2*PI or 4*PI for 1D, 2D
  * or 3D quadratures, respectively.
  * 
  */
@@ -52,6 +53,7 @@ namespace rtt_quadrature
 //         based on the dimensionality of the quadrature set.
 // 1.3) Renamed member function "QuadCreate" to start with a lower
 //         case letter ("quadCreate").
+// 1.17) Provide creator function for rtt_parser::Token_Stream.
 // 
 //===========================================================================//
 
@@ -84,12 +86,16 @@ class QuadCreator
 	Axial1D      /*!< 1D Axial used for filter sweeps */
     };
 
+//    rtt_mesh_element::Geometry parsed_geometry;
+    
     // CREATORS
 
     // I'm not sure if this needs to be virtual or not.
     virtual rtt_dsxx::SP<Quadrature> quadCreate( Qid quad_type,
 						 size_t sn_order = 4,
 						 double norm = 0.0 );
+
+    rtt_dsxx::SP<Quadrature> quadCreate( rtt_parser::Token_Stream &tokens );
 
 };
 
