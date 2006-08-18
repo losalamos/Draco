@@ -115,7 +115,7 @@ digraph draco_level {
     sf          -> {vgsl}        [color="green"];
 
     /* level 4 */
-    quad        -> {sf mesh_element} [color=blue];
-    rttread     -> {meshread}        [color=blue];
+    quad        -> {sf meshelement parser} [color=blue];
+    rttread     -> {meshread}               [color=blue];
 
 }
