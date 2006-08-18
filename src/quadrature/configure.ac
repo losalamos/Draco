@@ -40,6 +40,7 @@ dnl
 dnl VENDOR DEPENDENCIES
 dnl 
 dnl Register vendors dependencies for this component
+AC_MPI_SETUP(pkg)
 AC_LAPACK_SETUP(pkg)
 AC_GSL_SETUP(pkg)
 
@@ -51,7 +52,8 @@ AC_INSTALL_LIB
 
 dnl A space delimited list of packages that this package depends on.
 AC_NEEDS_LIBS(\
-   special_functions units mesh_element \
+   special_functions parser \
+   units mesh_element c4 \
    ds++ )
 
 dnl tests
@@ -62,6 +64,7 @@ AC_RUNTESTS(\
    tAxialQuadrature \
    tQuadServices\
    tstOrdinate \
+   tQuadCreator \
    , scalar)
 
 dnl Evaluate requested build environment and create values to be
