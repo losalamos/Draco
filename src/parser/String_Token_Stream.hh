@@ -36,7 +36,7 @@ class String_Token_Stream : public Text_Token_Stream
 
     //! Construct a String_Token_Stream from a file.
     String_Token_Stream(std::string const &text,
-			       std::set<char> const &whitespace);
+                        std::set<char> const &whitespace);
     
     void Rewind();
 

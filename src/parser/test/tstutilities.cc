@@ -390,6 +390,18 @@ void tstutilities()
     {
 	PASSMSG("manifest string successfully parsed");
     }
+
+    // Try reading a geometry.
+    rtt_mesh_element::Geometry geometry = rtt_mesh_element::END_GEOMETRY;
+    Parse_Geometry(tokens, geometry);
+    if (geometry != rtt_mesh_element::AXISYMMETRIC)
+    {
+	FAILMSG("geometry NOT successfully parsed");
+    }
+    else
+    {
+	PASSMSG("geometry successfully parsed");
+    }
 }
 
 //---------------------------------------------------------------------------//

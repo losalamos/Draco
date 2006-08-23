@@ -744,6 +744,53 @@ std::string Parse_Manifest_String(Token_Stream &tokens)
     return Result;
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Parse a geometry specification.
+ * 
+ * \param tokens
+ * Token stream from which to parse the geometry.
+ * \param parsed_geometry On entry, if the value is not \c END_GEOMETRY, a
+ * diagnostic is generated to the token stream. On return, contains the
+ * geometry that was parsed.
+ *
+ * \post <code> parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
+ *         parsed_geometry == rtt_mesh_element::CARTESIAN    ||
+ *         parsed_geometry == rtt_mesh_element::SPHERICAL </code>
+ */
+
+void Parse_Geometry(Token_Stream &tokens,
+                    rtt_mesh_element::Geometry &parsed_geometry)
+{
+    if (parsed_geometry != rtt_mesh_element::END_GEOMETRY)
+    {
+        tokens.Report_Semantic_Error("geometry specified twice");
+    }
+    Token const token = tokens.Shift();
+    if (token.Text() == "axisymmetric")
+    {
+        parsed_geometry = rtt_mesh_element::AXISYMMETRIC;
+    }
+    else if (token.Text() == "cartesian")
+    {
+        parsed_geometry = rtt_mesh_element::CARTESIAN;
+    }
+    else if (token.Text() == "spherical")
+	{
+	    parsed_geometry = rtt_mesh_element::SPHERICAL;
+	}
+    else
+    {
+        tokens.Report_Syntax_Error(token,
+                                   "expected a geometry option, but saw " + 
+                                   token.Text());
+    }
+    Ensure(parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
+           parsed_geometry == rtt_mesh_element::CARTESIAN    ||
+           parsed_geometry == rtt_mesh_element::SPHERICAL);
+    return;
+}
+
 } // rtt_parser
 //---------------------------------------------------------------------------//
 //                          end of utilities.cc

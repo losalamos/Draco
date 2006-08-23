@@ -20,6 +20,7 @@
 
 #include "Token_Stream.hh"
 #include "Unit.hh"
+#include "mesh_element/Geometry.hh"
 
 namespace rtt_parser 
 {
@@ -51,6 +52,10 @@ double Parse_Temperature(Token_Stream &);
 
 //! Parse a quote-delimited string, stripping the quotes.
 std::string Parse_Manifest_String(Token_Stream &tokens);
+
+//! Parse a geometry specification.
+void Parse_Geometry(Token_Stream &tokens,
+                    rtt_mesh_element::Geometry &parsed_geometry);
 
 } // rtt_parser
 //---------------------------------------------------------------------------//
