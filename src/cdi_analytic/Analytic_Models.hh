@@ -88,6 +88,12 @@ class Analytic_Opacity_Model
     //! Interface for derived analytic opacity models.
     virtual double calculate_opacity(double T, double rho) const = 0;
 
+    //! Interface for derived analytic opacity models.
+    virtual double calculate_opacity(double T, double rho, double nu) const
+    {
+        return calculate_opacity(T, rho); 
+    };
+
     //! Return parameters.
     virtual sf_double get_parameters() const = 0;
 
@@ -164,6 +170,7 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
     double b;  // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
     double c;  // temperature power
     double d;  // density power
+    double e;  // frequency power
 
   public:
     /*!
@@ -172,10 +179,11 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
      * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
      * \param c_ temperature power
      * \param d_ density power
+     * \param e_ frequency power
      */
     Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_,
-				      double d_)
-	: a(a_), b(b_), c(c_), d(d_)
+				      double d_, double e_=0)
+	: a(a_), b(b_), c(c_), d(d_), e(e_)
     {
 	/*...*/
     }
@@ -184,15 +192,32 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
     explicit Polynomial_Analytic_Opacity_Model(const sf_char &packed);
 
     //! Calculate the opacity in units of cm^2/g
+    double calculate_opacity(double T, double rho, double nu) const
+    {
+	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
+	Require (rho >= 0.0);
+	Require (nu >= 0.0);
+
+	double T_power   = std::pow(T,   c);
+	double rho_power = std::pow(rho, d);
+	double nu_power  = std::pow(nu,  e);
+
+	double opacity   = (a + b * T_power * nu_power) * rho_power;
+
+	Ensure (opacity >= 0.0);
+	return opacity;
+    }
+
+    //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho) const
     {
 	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
-	Require (rho > 0.0);
+	Require (rho >= 0.0);
 
-	double T_power   = std::pow(T, c);
+	double T_power   = std::pow(T,   c);
 	double rho_power = std::pow(rho, d);
 
-	double opacity   = (a + b * T_power) * rho_power;
+	double opacity   = (a + b * T_power) * rho_power; 
 
 	Ensure (opacity >= 0.0);
 	return opacity;
