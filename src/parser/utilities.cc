@@ -767,11 +767,14 @@ void Parse_Geometry(Token_Stream &tokens,
         tokens.Report_Semantic_Error("geometry specified twice");
     }
     Token const token = tokens.Shift();
-    if (token.Text() == "axisymmetric")
+    if (token.Text() == "axisymmetric" ||
+        token.Text() == "cylindrical")
     {
         parsed_geometry = rtt_mesh_element::AXISYMMETRIC;
     }
-    else if (token.Text() == "cartesian")
+    else if (token.Text() == "cartesian" ||
+             token.Text() == "xy" ||
+             token.Text() == "slab")
     {
         parsed_geometry = rtt_mesh_element::CARTESIAN;
     }
