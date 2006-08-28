@@ -1,3 +1,63 @@
+2006-08-28 Jae H. Chang <jhchang@lanl.gov>
+
+	* draco: Release of draco-5-14.0. This is a minor Draco release.
+	A summary of changes is:
+
+	- Build system:
+	  . added compile flags for pgf90 and gcc for flash-64 (64-bit).
+
+	- cdi_analytic:
+	  . Added frequency dependence to polynomial models.
+
+	- parser:
+	  . Added function to parse rtt_mesh_element::Geometry
+	    specification.
+
+	- quadrature:
+	  . Added capability to reflect 2D square quadratures.
+	  . Provided quadCreate fucntion that accepts a Token_Stream
+	    as an argument.  This code block was moved from Capsaicin's
+	    sn_operator/Sweeper_Creator__Parser.cc
+          . Provided two different mechanisms for building
+	    moment-to-discrete matrix (traditional Sn and Morel's Galerkin
+	    methods). Also provided three new mechanisms for generating
+	    discrete-to-moment matrix (traditional Sn, Morel's Galerkin
+	    and an experimental SVD methods).
+
+	- special_functions:
+	  . Added experimental static integer power function
+	
+	Released packages in draco-5_13_0.	
+		
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		fpe_trap
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+		special_functions
+
+	Unreleased packages:
+		pcgWrap
+		cdi_eospac	  
+
+	This release was required by capsaicin-2_8_0.
+
 2006-07-24  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Release of draco-5_13_0.  This is a minor Draco release.
