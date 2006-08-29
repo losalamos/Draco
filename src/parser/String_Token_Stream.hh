@@ -40,6 +40,8 @@ class String_Token_Stream : public Text_Token_Stream
     
     void Rewind();
 
+    std::string Get_Messages() const { return messages; }
+
     bool check_class_invariants() const;
     
   protected:

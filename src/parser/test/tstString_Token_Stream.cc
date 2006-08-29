@@ -165,6 +165,14 @@ void tstString_Token_Stream()
 	else
 	{
 	    PASSMSG("Syntax error correctly counted");
+            if (tokens.Get_Messages()=="test_parser: dummy syntax error\n")
+            {
+                PASSMSG("Correct error message");
+            }
+            else
+            {
+                FAILMSG("NOT correct error message");
+            }
 	}
 
 	token = tokens.Shift();
