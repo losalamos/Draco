@@ -289,20 +289,17 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
     {
 	FAILMSG("Invariant not satisfied.");
     }
+    
     if( passed )
     {
         PASSMSG("Got all virtual accessors.");
 	passed = unit_test_status;
 	return true;
     }
-    else
-    {
-	FAILMSG("Errors in some virtual accessors.");
-	passed = unit_test_status;
-	return false;
-    }
 
-    return false;        // should never get here!
+    FAILMSG("Errors in some virtual accessors.");
+    passed = unit_test_status;
+    return false;
 }
 
 } // end of rtt_RTT_Format_Reader_test
