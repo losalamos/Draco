@@ -40,7 +40,7 @@ namespace rtt_quadrature
  * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
  */
 QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
-                            QuadModel                        const qm,
+                            QIM                              const qm,
                             unsigned                         const expansionOrder )
     : spQuad(         spQuad_        ),
       qm(         qm         ),
@@ -65,7 +65,7 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
     Check( soft_equiv(gsl_sf_legendre_Plm( 1, 1, mu2 ), -1.0*std::sqrt(1.0-mu2*mu2) ));
     Check( soft_equiv(gsl_sf_legendre_Plm( 2, 2, mu2 ), 3.0*(1.0-mu2*mu2) ));
 
-    if( qm == MOREL ) Ensure( D_equals_M_inverse() );
+    if( qm == GALERKIN ) Ensure( D_equals_M_inverse() );
     Ensure( D_0_equals_wt() );
 }
 
@@ -79,7 +79,7 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
 QuadServices::QuadServices( 
     rtt_dsxx::SP< const Quadrature > const   spQuad_,
     std::vector< lk_index >          const & lkMoments_,
-    QuadModel                        const   qm )
+    QIM                              const   qm )
     : spQuad(     spQuad_    ),
       qm(         qm         ),
       n2lk(       lkMoments_ ),
@@ -168,12 +168,12 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
  */
 std::vector< double > QuadServices::computeD(void) const
 {
-    if( qm == MOREL )       return computeD_morel();
-    if( qm == TRADITIONAL ) return computeD_traditional();
-    if( qm == SVD )         return computeD_svd();
+    if( qm == GALERKIN ) return computeD_morel();
+    if( qm == SN )       return computeD_traditional();
+    if( qm == SVD )      return computeD_svd();
 
     // Should never get here.
-    Insist( qm == MOREL || qm == TRADITIONAL || qm == SVD,
+    Insist( qm == GALERKIN || qm == SN || qm == SVD,
             "qm has an unknown value!");
     return std::vector<double>();
 }
@@ -635,7 +635,7 @@ compute_n2lk( unsigned const expansionOrder ) const
 
     if( dim == 3 )
     {
-        if( qm == MOREL )  
+        if( qm == GALERKIN )  
             return compute_n2lk_3D_morel();
         else
             return compute_n2lk_3D_traditional(L);
@@ -644,7 +644,7 @@ compute_n2lk( unsigned const expansionOrder ) const
     Check( dim < 3 );
     if( dim == 2 )
     {
-        if( qm == MOREL ) 
+        if( qm == GALERKIN ) 
             return compute_n2lk_2D_morel();
         else
             return compute_n2lk_2D_traditional(L);
@@ -653,7 +653,7 @@ compute_n2lk( unsigned const expansionOrder ) const
     Check( dim == 1 );
     if( dim == 1 )
     {
-        if( qm == MOREL )
+        if( qm == GALERKIN )
             return compute_n2lk_1D( spQuad->getNumAngles() );
         else
             return compute_n2lk_1D(L);

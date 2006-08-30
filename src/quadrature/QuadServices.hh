@@ -22,11 +22,12 @@
 namespace rtt_quadrature
 {
 
-enum QuadModel
+//! Specify how to compute the Discrete-to-Moment operator.
+enum QIM // Quadrature Interpolation Model
 {
-    TRADITIONAL,
-    MOREL,
-    SVD
+    SN,        /*!< Use the standard SN method. */
+    GALERKIN,  /*!< Use Morel's Galerkin colocation method. */
+    SVD        /*!< Let M be an approximate inverse of D. */
 };
 
 class QuadServices 
@@ -45,7 +46,7 @@ class QuadServices
     
     //! Default constructor assumes that only isotropic scattering is used. 
     QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
-                  QuadModel                        const qm = TRADITIONAL,
+                  QIM                              const qm = SN,
                   unsigned                         const expansionOrder = 0 );
 
 //     //! Create a QuadServices from an ordinate set.
@@ -55,7 +56,7 @@ class QuadServices
     //! \todo This still needs to be defined.
     QuadServices( rtt_dsxx::SP< const Quadrature > const   spQuad_,
 		  std::vector< lk_index >          const & lkMoments_,
-                  QuadModel                        const   qm = TRADITIONAL );
+                  QIM                              const   qm = SN );
 
     //! Copy constructor (the long doxygen description is in the .cc file).
     QuadServices( QuadServices const & rhs );
@@ -132,7 +133,7 @@ class QuadServices
     
     // DATA
     rtt_dsxx::SP< const Quadrature > const spQuad;
-    QuadModel                        const qm;
+    QIM                              const qm;
     std::vector< lk_index >          const n2lk;
     unsigned                         const numMoments;
     std::vector< double >            const Mmatrix;
