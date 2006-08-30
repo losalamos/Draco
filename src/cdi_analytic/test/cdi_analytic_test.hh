@@ -65,6 +65,11 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
 	return a / (T * T * T);
     }
 
+    double calculate_opacity(double T, double rho, double nu) const
+    {
+        return calculate_opacity(T, rho);
+    }
+
     std::vector<double> get_parameters() const
     {
 	return std::vector<double>(1, a);

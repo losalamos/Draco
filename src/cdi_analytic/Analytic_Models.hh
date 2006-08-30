@@ -139,6 +139,12 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
 	return sigma;
     }
 
+    //! Calculate the opacity in units of cm^2/g.
+    double calculate_opacity(double T, double rho, double nu) const
+    {
+        return sigma;
+    }
+
     //! Return the model parameters.
     sf_double get_parameters() const;
 
