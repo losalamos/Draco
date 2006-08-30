@@ -126,9 +126,14 @@ void Parallel_File_Token_Stream::open()
 	errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
 	       << "The file specified could not be found.\n"
 	       << "The file requested was: \"" << filename 
-	       << "\"" << " (PE " << rtt_c4::node() << ")\n\n"
-               << "This error can also occur if you forgot to "
-               << "execute the code under mpirun or prun."
+	       << "\"" << " (PE " << rtt_c4::node() << ")\n"
+               << "Ensure that the filename includes the full path or "
+               << "a relative path from\n"
+               << "the binary to the input file (e.g. ../test/deck.inp)."
+               << "\n\n"
+               << "This error can also occur if you forgot to"
+               << "execute the code under\n"
+               << "mpirun or prun."
                << endl;
 	throw assertion( errmsg.str().c_str() );
     }
