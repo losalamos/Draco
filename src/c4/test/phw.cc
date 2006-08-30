@@ -26,14 +26,10 @@ int main(int argc, char *argv[])
         finalize();
         return 0;
     }
-    else
-    {
-        std::cout << "Goodbye cruel world..." << std::endl;
-        finalize();
-        return 1;
-    }
+    
+    std::cout << "Goodbye cruel world..." << std::endl;
     finalize();
-    return 0;
+    return 1;
 }   
 
 //---------------------------------------------------------------------------//
