@@ -159,7 +159,7 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
     // Setup QuadServices object
 
     unsigned const expansionOrder( 1 ); // 2 moments.
-    QuadServices qs( spQuad, TRADITIONAL, expansionOrder ); // 
+    QuadServices qs( spQuad, SN, expansionOrder ); // 
     
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
@@ -374,7 +374,7 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
     //----------------------------------------
     // Setup QuadServices object
     
-    QuadServices qs( spQuad, TRADITIONAL, 7 ); // 8 moments
+    QuadServices qs( spQuad, SN, 7 ); // 8 moments
     
     vector<double> const M( qs.getM() );
     unsigned const numMoments( qs.getNumMoments() );
@@ -710,7 +710,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     // Test applyM and applyD for anisotropic angular flux.
     // ------------------------------------------------------------
     {
-        QuadServices qsm( spQuad, MOREL );
+        QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
         for( int i=0; i< numAngles; ++i )
         {
@@ -989,7 +989,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     // Test applyM and applyD for anisotropic angular flux.
     // ------------------------------------------------------------
     {
-        QuadServices qsm( spQuad, MOREL );
+        QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
         for( int i=0; i< numAngles; ++i )
         {
@@ -1259,7 +1259,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     // Test applyM and applyD for anisotropic angular flux.
     // ------------------------------------------------------------
     {
-        QuadServices qsm( spQuad, MOREL );
+        QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
         for( int i=0; i< numAngles; ++i )
         {
@@ -1346,8 +1346,8 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
     //----------------------------------------
     // Setup QuadServices object using alternate constructor.
     
-    QuadServices qsStd( spQuad, MOREL );
-    QuadServices qsAlt( spQuad, lkMoments, MOREL );
+    QuadServices qsStd( spQuad, GALERKIN );
+    QuadServices qsAlt( spQuad, lkMoments, GALERKIN );
 
     for( unsigned n=0; n<numMoments; ++n )
     {

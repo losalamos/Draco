@@ -27,18 +27,21 @@
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstTokenCtor( rtt_dsxx::ScalarUnitTest & ut )
+void tstTokenCtor1( rtt_dsxx::ScalarUnitTest & ut )
 {
     using namespace std;
     using namespace rtt_quadrature;
 
+    cout << "\n>>> tstTokenCtor1 <<<\n" << endl;
+    
     try
     {
         ostringstream contents;
 
-        contents << "level symmetric\n"
-                 << "  order 2\n"
-                 << "end" << endl;
+        contents << "type = level symmetric\n"
+                 << "order = 2\n"
+                 << "end\n"
+                 << endl;
         
         rtt_parser::String_Token_Stream tokens( contents.str() );
         
@@ -61,16 +64,29 @@ void tstTokenCtor( rtt_dsxx::ScalarUnitTest & ut )
         ut.failure("Encountered a C++ Exception.");
         throw;
     }
+    return;
+}
 
 //---------------------------------------------------------------------------//
+
+void tstTokenCtor2( rtt_dsxx::ScalarUnitTest & ut )
+{
+    using namespace std;
+    using namespace rtt_quadrature;
+
+    cout << "\n>>> tstTokenCtor2 <<<\n" << endl;
 
     try
     {
         ostringstream contents;
 
-        contents << "square CL\n"
-                 << "  order 17\n"
-                 << "end" << endl;
+        // All caps set to lc.
+        // order must be even.
+        
+        contents << "sQuaRe CL\n"
+                 << "order 16\n"
+                 << "end\n"
+                 << endl;
 
         rtt_parser::String_Token_Stream tokens( contents.str() );
         
@@ -83,7 +99,50 @@ void tstTokenCtor( rtt_dsxx::ScalarUnitTest & ut )
         else
             ut.failure("Did not find expected quadrature name.");
         
-        if( spQuad->getSnOrder() == 2 )
+        if( spQuad->getSnOrder() == 16 )
+            ut.passes("Found correct SnOrder.");
+        else
+            ut.failure("Did not find expected SnOrder.");
+        
+    }
+    catch(...)
+    {
+        ut.failure("Encountered a C++ Exception.");
+        throw;
+    }
+    return;
+}
+//---------------------------------------------------------------------------//
+
+void tstTokenCtor3( rtt_dsxx::ScalarUnitTest & ut )
+{
+    using namespace std;
+    using namespace rtt_quadrature;
+
+    cout << "\n>>> tstTokenCtor3 <<<\n" << endl;
+    
+    try
+    {
+        ostringstream contents;
+
+        contents << "type = gauss legendre\n"
+                 << "order = 128\n"
+                 << "interpolation algorithm = Galerkin\n"
+                 << "end\n"
+                 << endl;
+
+        rtt_parser::String_Token_Stream tokens( contents.str() );
+        
+        // Create a Quadrature from this set of tokens.
+        
+        rtt_dsxx::SP< Quadrature const > spQuad = QuadCreator().quadCreate( tokens );
+
+        if( spQuad->name() == "1D Gauss Legendre" )
+            ut.passes("Found correct quadrature name.");
+        else
+            ut.failure("Did not find expected quadrature name.");
+        
+        if( spQuad->getSnOrder() == 128 )
             ut.passes("Found correct SnOrder.");
         else
             ut.failure("Did not find expected SnOrder.");
@@ -106,7 +165,9 @@ int main(int argc, char *argv[])
     try
     {
         rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_quadrature::release );
-        tstTokenCtor( ut );
+        tstTokenCtor1( ut );
+        tstTokenCtor2( ut );
+        tstTokenCtor3( ut );
     }
     catch( rtt_dsxx::assertion &err )
     {
