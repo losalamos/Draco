@@ -75,6 +75,8 @@ OSF1)
   AC_DEFINE(c4_isOSF1) ;; 
 Darwin)
   AC_DEFINE(c4_isDarwin) ;;
+AIX)
+  AC_DEFINE(c4_isAIX) ;;
 esac
 
 dnl Evaluate requested build environment and create values to be

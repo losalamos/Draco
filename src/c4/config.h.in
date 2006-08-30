@@ -42,6 +42,9 @@
 /* Is this Darwin */
 #undef c4_isDarwin
 
+/* Is this AIX */
+#undef c4_isAIX
+
 #endif                          /* rtt_c4_config_h */
 
 /*---------------------------------------------------------------------------*/
