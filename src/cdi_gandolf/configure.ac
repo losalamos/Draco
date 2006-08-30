@@ -25,7 +25,7 @@ AC_RUNTESTS(tGandolfFile tGandolfOpacity tGandolfWithCDI, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-5_14_0)
+AC_DRACO_AUTODOC(draco-5_15_0)
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in \

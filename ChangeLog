@@ -1,3 +1,56 @@
+2006-08-30  Thomas M. Evans  <tme@lanl.gov>
+
+	* draco: Release of draco-5-15.0. This is a minor Draco release.
+	A summary of changes is:
+
+	c4
+	 - added AIX options to ApplicationUnitTest
+	 - fixed warnings from PGI compiler
+	
+	RTT_Format_Reader
+	 - fixed warnings from PGI compiler
+	
+	cdi_analytic
+	 - fixed warnings from PGI compiler
+	
+	parser
+	 - added more detailed error reporting
+	
+	quadrature
+	 - added ability to generate quadratures from Token_Stream
+
+	Released packages in draco-5_15_0.	
+		
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		fpe_trap
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+		special_functions
+
+	Unreleased packages:
+		pcgWrap
+		cdi_eospac
+
+	This release was required by jayenne [clubimc-3_4_0 and
+	wedgehog-5_4_0]. 
+
 2006-08-28 Jae H. Chang <jhchang@lanl.gov>
 
 	* draco: Release of draco-5-14.0. This is a minor Draco release.
