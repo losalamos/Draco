@@ -1,0 +1,124 @@
+digraph bubba_package_level {
+
+    /* graph attributes */
+    center=1;
+    size="8,14";
+    ranksep=1;
+
+   /* levels */
+   level0 [shape=plaintext, label="Level 0:", fontsize=14];
+   level1 [shape=plaintext, label="Level 1:", fontsize=14];
+   level2 [shape=plaintext, label="Level 2:", fontsize=14];
+   level3 [shape=plaintext, label="Level 3:", fontsize=14];
+   level4 [shape=plaintext, label="Level 4:", fontsize=14];
+   level5 [shape=plaintext, label="Level 5:", fontsize=14];
+   level6 [shape=plaintext, label="Level 6:", fontsize=14];
+
+   level6 -> level5 -> level4 -> level3 -> level2 -> level1 -> level0;
+
+   /* level 0 */
+   test_parser_testhh [shape=box, label="test/parser_test.hh" color=orange];
+   Releasehh [shape=box, label="Release.hh"];
+
+   /* level 1 */
+   Parse_Tablehh [shape=box, label="Parse_Table.hh"];
+   Unithh [shape=box, label="Unit.hh"];
+   Tokenhh [shape=box, label="Token.hh"];
+   test_driver4tstConsole_Token_Streamcc [shape=box, label="test/driver4tstConsole_Token_Stream.cc" color=orange];
+   Releasecc [shape=box, label="Release.cc"];
+   test_parser_testcc [shape=box, label="test/parser_test.cc" color=orange];
+
+   /* level 2 */
+   test_tstUnitcc [shape=box, label="test/tstUnit.cc" color=orange];
+   test_tstTokencc [shape=box, label="test/tstToken.cc" color=orange];
+   Token_Streamhh [shape=box, label="Token_Stream.hh"];
+   Tokencc [shape=box, label="Token.cc"];
+   Unitcc [shape=box, label="Unit.cc"];
+
+   /* level 3 */
+   utilitieshh [shape=box, label="utilities.hh"];
+   Parse_Tablecc [shape=box, label="Parse_Table.cc"];
+   Token_Streamcc [shape=box, label="Token_Stream.cc"];
+   Text_Token_Streamhh [shape=box, label="Text_Token_Stream.hh"];
+
+   /* level 4 */
+   Console_Token_Streamhh [shape=box, label="Console_Token_Stream.hh"];
+   Text_Token_Streamcc [shape=box, label="Text_Token_Stream.cc"];
+   String_Token_Streamhh [shape=box, label="String_Token_Stream.hh"];
+   File_Token_Streamhh [shape=box, label="File_Token_Stream.hh"];
+   Parallel_File_Token_Streamhh [shape=box, label="Parallel_File_Token_Stream.hh"];
+   utilitiescc [shape=box, label="utilities.cc"];
+
+   /* level 5 */
+   File_Token_Streamcc [shape=box, label="File_Token_Stream.cc"];
+   Parallel_File_Token_Streamcc [shape=box, label="Parallel_File_Token_Stream.cc"];
+   test_tstParse_Tablecc [shape=box, label="test/tstParse_Table.cc" color=orange];
+   test_tstutilitiescc [shape=box, label="test/tstutilities.cc" color=orange];
+   test_tstParallel_File_Token_Streamcc [shape=box, label="test/tstParallel_File_Token_Stream.cc" color=orange];
+   Console_Token_Streamcc [shape=box, label="Console_Token_Stream.cc"];
+   test_tstFile_Token_Streamcc [shape=box, label="test/tstFile_Token_Stream.cc" color=orange];
+   String_Token_Streamcc [shape=box, label="String_Token_Stream.cc"];
+   Token_Equivalencehh [shape=box, label="Token_Equivalence.hh"];
+   test_tstConsole_Token_Streamcc [shape=box, label="test/tstConsole_Token_Stream.cc" color=orange];
+   test_tstString_Token_Streamcc [shape=box, label="test/tstString_Token_Stream.cc" color=orange];
+
+   /* level 6 */
+   Token_Equivalencecc [shape=box, label="Token_Equivalence.cc"];
+   test_tstToken_Equivalencecc [shape=box, label="test/tstToken_Equivalence.cc" color=orange];
+
+   /* Dependencies */
+   {rank=same; level0 test_parser_testhh Releasehh};
+   {rank=same; level1 Parse_Tablehh Unithh Tokenhh test_driver4tstConsole_Token_Streamcc Releasecc test_parser_testcc};
+   {rank=same; level2 test_tstUnitcc test_tstTokencc Token_Streamhh Tokencc Unitcc};
+   {rank=same; level3 utilitieshh Parse_Tablecc Token_Streamcc Text_Token_Streamhh};
+   {rank=same; level4 Console_Token_Streamhh Text_Token_Streamcc String_Token_Streamhh File_Token_Streamhh Parallel_File_Token_Streamhh utilitiescc};
+   {rank=same; level5 File_Token_Streamcc Parallel_File_Token_Streamcc test_tstParse_Tablecc test_tstutilitiescc test_tstParallel_File_Token_Streamcc Console_Token_Streamcc test_tstFile_Token_Streamcc String_Token_Streamcc Token_Equivalencehh test_tstConsole_Token_Streamcc test_tstString_Token_Streamcc};
+   {rank=same; level6 Token_Equivalencecc test_tstToken_Equivalencecc};
+
+   /* level 1 */
+   Parse_Tablehh -> {};
+   Unithh -> {};
+   Tokenhh -> {};
+   test_driver4tstConsole_Token_Streamcc -> { Releasehh test_parser_testhh} [color=orange, style=solid];
+   Releasecc -> { Releasehh};
+   test_parser_testcc -> { test_parser_testhh} [color=orange, style=solid];
+
+   /* level 2 */
+   test_tstUnitcc -> { test_parser_testhh Releasehh Unithh} [color=orange, style=solid];
+   test_tstTokencc -> { Releasehh Tokenhh} [color=orange, style=solid];
+   Token_Streamhh -> { Tokenhh};
+   Tokencc -> { Tokenhh};
+   Unitcc -> { Unithh};
+
+   /* level 3 */
+   utilitieshh -> { Token_Streamhh Unithh};
+   Parse_Tablecc -> { Parse_Tablehh Token_Streamhh};
+   Token_Streamcc -> { Token_Streamhh};
+   Text_Token_Streamhh -> { Token_Streamhh};
+
+   /* level 4 */
+   Console_Token_Streamhh -> { Text_Token_Streamhh};
+   Text_Token_Streamcc -> { Text_Token_Streamhh};
+   String_Token_Streamhh -> { Text_Token_Streamhh};
+   File_Token_Streamhh -> { Text_Token_Streamhh};
+   Parallel_File_Token_Streamhh -> { Text_Token_Streamhh};
+   utilitiescc -> { utilitieshh};
+
+   /* level 5 */
+   File_Token_Streamcc -> { File_Token_Streamhh};
+   Parallel_File_Token_Streamcc -> { Parallel_File_Token_Streamhh};
+   test_tstParse_Tablecc -> { test_parser_testhh Releasehh Parse_Tablehh File_Token_Streamhh} [color=orange, style=solid];
+   test_tstutilitiescc -> { test_parser_testhh Releasehh File_Token_Streamhh utilitieshh} [color=orange, style=solid];
+   test_tstParallel_File_Token_Streamcc -> { test_parser_testhh Releasehh Parallel_File_Token_Streamhh} [color=orange, style=solid];
+   Console_Token_Streamcc -> { Console_Token_Streamhh};
+   test_tstFile_Token_Streamcc -> { test_parser_testhh Releasehh File_Token_Streamhh} [color=orange, style=solid];
+   String_Token_Streamcc -> { String_Token_Streamhh};
+   Token_Equivalencehh -> { String_Token_Streamhh};
+   test_tstConsole_Token_Streamcc -> { test_parser_testhh Releasehh Console_Token_Streamhh} [color=orange, style=solid];
+   test_tstString_Token_Streamcc -> { test_parser_testhh Releasehh String_Token_Streamhh} [color=orange, style=solid];
+
+   /* level 6 */
+   Token_Equivalencecc -> { Token_Equivalencehh};
+   test_tstToken_Equivalencecc -> { Token_Equivalencehh Releasehh} [color=orange, style=solid];
+
+}
