@@ -12,6 +12,8 @@
 #ifndef __quadrature_QuadCreator_hh__
 #define __quadrature_QuadCreator_hh__
 
+#include <map>
+
 #include "ds++/SP.hh"
 #include "parser/Token_Stream.hh"
 #include "Quadrature.hh"
@@ -59,14 +61,9 @@ namespace rtt_quadrature
 
 class QuadCreator 
 {
-
-    // NESTED CLASSES AND TYPEDEFS
-
-    // DATA
-
   public:
 
-    // DATA
+    // ENUMERATIONS
     
     /*!
      * \brief A list of available quadrature types.
@@ -86,7 +83,19 @@ class QuadCreator
 	Axial1D      /*!< 1D Axial used for filter sweeps */
     };
 
+    // TYPEDEFS
+
+    typedef std::map< std::string, Qid > qidm;
+    typedef std::map< Qid, double > normmap;
+
 //    rtt_mesh_element::Geometry parsed_geometry;
+
+    QuadCreator(void)
+        : Qid_map( createQidMap() ),
+          norm_map( createNormMap() )
+    { /* empty */ }
+
+    virtual ~QuadCreator(void) { /* empty */ }
     
     // CREATORS
 
@@ -97,6 +106,16 @@ class QuadCreator
 
     rtt_dsxx::SP<Quadrature> quadCreate( rtt_parser::Token_Stream &tokens );
 
+  private:
+
+    // Functions
+    qidm createQidMap(void) const;
+    normmap createNormMap(void) const;
+        
+    // DATA
+    qidm    const Qid_map;
+    normmap const norm_map;
+    
 };
 
 } // end namespace rtt_quadrature

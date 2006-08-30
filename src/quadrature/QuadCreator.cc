@@ -26,6 +26,7 @@
 #include "Q3DLevelSym.hh"
 #include "Q2DSquareChebyshevLegendre.hh"
 #include "QuadCreator.hh"
+#include "QuadServices.hh"
 
 namespace rtt_quadrature
 {
@@ -161,8 +162,9 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
  * to find the following token stream within the digraph block:
  * \code
  * angle quadrature
- *    square CL
- *       order 40
+ *    type  = square CL
+ *    order = 40
+ *    interpolation algorithm = SVD
  *    end
  * end
  * \endcode
@@ -176,45 +178,103 @@ rtt_dsxx::SP<Quadrature>
 QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
 {
     using namespace rtt_parser;
-    
-    QuadCreator::Qid quad_type;
-    double quad_norm;
+    using std::string;
+        
 
+    // Items that refine the quadrature set definition.
+
+    QuadCreator::Qid quad_type( QuadCreator::LevelSym2D );
+    double quad_norm(     4.0*rtt_units::PI );
+    unsigned sn_order(    2 );     // default
+    QIM      interpModel( SN );    // default
+
+    while( tokens.Lookahead().Type() != END )
+    {
+        // Get next token
+        Token const token = tokens.Shift();
+        Check( token.Type() == KEYWORD );
+
+        std::string tokenText = token.Text();
+        std::transform(tokenText.begin(),tokenText.end(),
+                       tokenText.begin(),tolower);
+
+        
+        if( tokenText == "type" )
+        {
+            // Get the type.
+            string qtype = tokens.Shift().Text();
+            // convert to use all lower case
+            std::transform(qtype.begin(),qtype.end(),
+                           qtype.begin(),tolower);
+
+            qidm::const_iterator pos = Qid_map.find( qtype );
+            
+            if( pos == Qid_map.end() )
+                tokens.Report_Semantic_Error(
+                    "I don't know anything about the quadrature type = "
+                    +qtype);
+            else
+                quad_type = pos->second;
+            
+            // Set the default norm value
+            quad_norm = norm_map.find( quad_type )->second;
+        }
+
+        // This block parses the quad_type when "type =" was not provided.
+        else if( Qid_map.find( tokenText ) != Qid_map.end() )
+        {
+            qidm::const_iterator pos = Qid_map.find( tokenText );
+            
+            if( pos == Qid_map.end() )
+                tokens.Report_Semantic_Error(
+                    "I don't know anything about the quadrature type = "
+                    +tokenText);
+            else
+                quad_type = pos->second;
+            
+            // Set the default norm value
+            quad_norm = norm_map.find( quad_type )->second;
+        }
+
+        
+        else if( token.Text() == "order")
+        {
+            sn_order = Parse_Positive_Integer(tokens);
+            if (sn_order%2 != 0)
+            {
+                tokens.Report_Semantic_Error("quadrature order must be even");
+                sn_order = 2;
+            }
+        }   
+        else if( token.Text() == "interpolation algorithm")
+        {
+            string s = tokens.Shift().Text();
+            std::cout << s << std::endl;
+            // force lower case
+            std::transform(s.begin(),s.end(),s.begin(),tolower);
+            if( s == "sn" )
+                interpModel = SN;
+            else if( s == "galerkin" )
+                interpModel = GALERKIN;
+            else if( s == "svd" )
+                interpModel = SVD;
+            else
+                tokens.Report_Semantic_Error(
+                    string("I don't know anything about \"angle quadrature: ")
+                    +string("interpolation algorithm = ")+s
+                    +string("\". Expecting one of: SN, Galerkin or SVD"));
+        }
+        else
+        {
+            tokens.Report_Syntax_Error("unrecognized keyword.  Expected \"end,\" \"order,\" or \"interpolation algorithm.\"");
+        }
+
+    } // end while
+
+    // Read the "end" that signifies the end of the quadrature block
     Token const token = tokens.Shift();
-    if (token.Text()=="gauss legendre")
-    {
-        quad_type = QuadCreator::GaussLeg;
-        quad_norm = 2.0;
-    }
-    else if (token.Text()=="level symmetric")
-    {
-        quad_type = QuadCreator::LevelSym2D;
-        quad_norm = 4.0*rtt_units::PI;
-    }
-    else if (token.Text()=="square CL")
-    {
-        quad_type = QuadCreator::SquareCL;
-        quad_norm = 4.0*rtt_units::PI;
-    }
-    else
-    {
-        tokens.Report_Syntax_Error("expected a quadrature type specification");
-    }
-
-    if (tokens.Shift().Text() != "order")
-        tokens.Report_Syntax_Error("unrecognized keyword");
-
-    unsigned sn_order = Parse_Positive_Integer(tokens);
-    if (sn_order%2 != 0)
-    {
-        tokens.Report_Semantic_Error("quadrature order must be even");
-        sn_order = 2;
-    }
-
-    // end of quadrature type block.
-    if (tokens.Shift().Type() != END)
-        tokens.Report_Syntax_Error("missing 'end'");
-
+    Ensure( token.Type() == END );
+    
     rtt_dsxx::SP<Quadrature> parsed_quadrature =
         quadCreate(quad_type,sn_order, quad_norm);
 
@@ -223,6 +283,44 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
 
     return parsed_quadrature;
 }
+
+/*!
+ * \brief Generate a map that returns the appropriate enum given a string."
+ */
+QuadCreator::qidm QuadCreator::createQidMap(void) const
+{
+    qidm qid_map;
+
+    qid_map["square cl"] = SquareCL;
+    qid_map["gauss legendre"] = GaussLeg;
+    qid_map["lobatto"] = Lobatto;
+    qid_map["double gauss"] = DoubleGauss;
+    qid_map["level symmetric"] = LevelSym2D;
+    qid_map["level symmetric 3D"] = LevelSym;
+    qid_map["axial"] = Axial1D;
+    
+    return qid_map;
+}
+
+/*!
+ * \brief Generate a map that returns the appropriate norm given a quadrature type."
+ */
+QuadCreator::normmap QuadCreator::createNormMap(void) const
+{
+    normmap nmap;
+    double const fourpi = 4.0*rtt_units::PI;
+
+    nmap[SquareCL]=fourpi;
+    nmap[GaussLeg]=2.0;
+    nmap[Lobatto]=2.0;
+    nmap[DoubleGauss]=2.0;
+    nmap[LevelSym2D]=fourpi;
+    nmap[LevelSym]=fourpi;
+    nmap[Axial1D] = 2.0;
+    
+    return nmap;
+}
+
 
 } // end namespace rtt_quadrature
 
