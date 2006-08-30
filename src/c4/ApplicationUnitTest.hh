@@ -198,6 +198,11 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 #define C4_UNAME "OSF1"
 #endif
 
+#ifdef c4_isAIX
+#define C4_MPICMD "poe -procs "
+#define C4_UNAME "AIX"
+#endif
+
 #endif // c4_ApplicationUnitTest_hh
 
 //---------------------------------------------------------------------------//
