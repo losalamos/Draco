@@ -148,7 +148,12 @@ echo ">>> DATE              : $date"
 echo ">>>"
 echo ">>> Start Time        : ${start_time}"
 echo ""
-$regression_script $*
+case ${PACKAGE} in
+capsaicin)
+   /bin/nice -n 10 $regression_script $* ;;
+*)
+   $regression_script $* ;;
+esac
 stop_time=`s_time`
 elapsed_time=`s_interval ${start_time} ${stop_time}`
 echo ">>> Stop Time         : ${stop_time}"
@@ -182,7 +187,7 @@ echo ">>> Preparing/Emailing final report"
 echo ">>>"
 echo " "
 
-regression_cmd="python /home/regress/draco/draco/tools/regression_filter.py"
+regression_cmd="python /home/regress/draco/tools/regression_filter.py"
 if test ${interactive_job} = yes; then
    echo ">>> Running the command: ${regression_cmd}<${LOG}"
    ${regression_cmd}<${LOG}

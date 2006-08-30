@@ -36,31 +36,33 @@ parse_options $*
 ##---------------------------------------------------------------------------##
 ## make regression directories
 
-# REGDIR      : the regression top-level directory
+# REGDIR      : the regression top-level directory, where scripts,
+#             : environment stuff, and logs live
+# BUILDDIR    : the place where we will do checkouts and builds
 # code_src    : location of draco source directory
 # code_mpi    : location of parallel build target directory
 # code_scalar : location of scalar build target directory
 # code_opt    : location of parallel, optimized build target directory
 # target_list : list of build target directories
 
-code_src="${REGDIR}/${code}"
+code_src="${BUILDDIR}/${code}"
 
-code_mpi="${REGDIR}/mpi"
-code_mpi_dbg="${REGDIR}/mpi_dbg"
-code_scalar="${REGDIR}/scalar"
-code_opt="${REGDIR}/opt"
-code_cov_mpi="${REGDIR}/cov_mpi"
-code_cov_scalar="${REGDIR}/cov_scalar"
-code_apptest="${REGDIR}/apptest"
-code_lampi_dbg="${REGDIR}/lampi_dbg"
-docs="${REGDIR}/docs"
+code_mpi="${BUILDDIR}/mpi"
+code_mpi_dbg="${BUILDDIR}/mpi_dbg"
+code_scalar="${BUILDDIR}/scalar"
+code_opt="${BUILDDIR}/opt"
+code_cov_mpi="${BUILDDIR}/cov_mpi"
+code_cov_scalar="${BUILDDIR}/cov_scalar"
+code_apptest="${BUILDDIR}/apptest"
+code_lampi_dbg="${BUILDDIR}/lampi_dbg"
+docs="${BUILDDIR}/docs"
 
 if test ${withcoverage:-no} = yes; then
    echo ">>> Proceeding with code coverage regression run."
    target_list="${code_cov_mpi} ${code_cov_scalar}"
    if test -x /usr/local/bullseye/bin/cov01; then
       export PATH=${PATH}:/usr/local/bullseye/bin
-      export COVFILE="${REGDIR}/test.cov"
+      export COVFILE="${BUILDDIR}/draco.cov"
       if test -f ${COVFILE}; then
          echo "Removing ${COVFILE}."
          rm ${COVFILE}
@@ -102,7 +104,7 @@ cvsroot="-d /codes/radtran/cvsroot"
 
 # goto regression directory and do a draco checkout
 
-cd ${REGDIR}
+cd ${BUILDDIR}
 
 # remove the source directory
 
@@ -113,7 +115,7 @@ fi
 
 # checkout draco
 
-echo ">>> Checking out ${code} in ${REGDIR}"
+echo ">>> Checking out ${code} in ${BUILDDIR}"
 echo "${cvs} -q $cvsroot checkout -P ${code}"
 ${echoonly} ${cvs} -q $cvsroot checkout -P ${code}
 
@@ -136,7 +138,7 @@ VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
 
 for target in ${target_list}; do
 
-    cd ${REGDIR}
+    cd ${BUILDDIR}
 
     case $target in
 	

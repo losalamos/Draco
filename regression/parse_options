@@ -27,9 +27,18 @@ if test ${username} = regress; then
 else
   regress_home=`pwd`
 fi
+
 REGDIR="${regress_home}/${code}"
 origdir=`pwd`
 draco_regress=/home/regress/draco
+
+# set builddir to a different to local disk space on ios
+if test "${hostname}" = 'ios.lanl.gov'; then
+    BUILDDIR="/regress/${code}"
+    draco_regress=/regress/draco
+else
+    BUILDDIR="${REGDIR}"
+fi
 
 # check the regression directory
 if [ ! -d ${REGDIR} ] ; then
