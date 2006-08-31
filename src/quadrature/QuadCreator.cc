@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cctype>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/SP.hh"
@@ -174,12 +175,19 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
  * \par tokens A Token_Stream that provide text information about the quadrature set to be created.
  * \return Smart pointer to a quadrature object.
  */
+
+struct func {
+    int operator()(int x) { return std::tolower(x); }
+};
+
 rtt_dsxx::SP<Quadrature> 
 QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
 {
     using namespace rtt_parser;
     using std::string;
-        
+
+
+    struct func tl;
 
     // Items that refine the quadrature set definition.
 
@@ -196,7 +204,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
 
         std::string tokenText = token.Text();
         std::transform(tokenText.begin(),tokenText.end(),
-                       tokenText.begin(),tolower);
+                       tokenText.begin(),tl);
 
         
         if( tokenText == "type" )
@@ -205,7 +213,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             string qtype = tokens.Shift().Text();
             // convert to use all lower case
             std::transform(qtype.begin(),qtype.end(),
-                           qtype.begin(),tolower);
+                           qtype.begin(),tl);
 
             qidm::const_iterator pos = Qid_map.find( qtype );
             
@@ -251,7 +259,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             string s = tokens.Shift().Text();
             std::cout << s << std::endl;
             // force lower case
-            std::transform(s.begin(),s.end(),s.begin(),tolower);
+            std::transform(s.begin(),s.end(),s.begin(),tl);
             if( s == "sn" )
                 interpModel = SN;
             else if( s == "galerkin" )
