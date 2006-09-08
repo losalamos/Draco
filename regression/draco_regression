@@ -146,7 +146,8 @@ for target in ${target_list}; do
 	${code_mpi})
 
             # Source mpich
-            . $MPI_DIR/mpich.sh shmem-lahey 
+            . $MPI_DIR/mpich.sh shmem-lahey
+            cleanipcs
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi'
@@ -166,6 +167,7 @@ for target in ${target_list}; do
 
             # Source mpich
             . $MPI_DIR/mpich.sh shmem-lahey
+            cleanipcs
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
@@ -192,6 +194,7 @@ for target in ${target_list}; do
 	${code_cov_mpi})
            echo ">>> source /codes/mpi/bin/mpich.sh shmem-lahey"
            source /codes/mpi/bin/mpich.sh shmem-lahey
+           cleanipcs
            echo ">>> source /home/regress/capsaicin/scripts/changevendors.sh -v"
            source /home/regress/capsaicin/scripts/changevendors.sh -v
            #setup_using_env_vars
