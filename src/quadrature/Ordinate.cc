@@ -179,13 +179,18 @@ void OrdinateSet::create_set_from_1d_quadrature( void )
     
     if( geometry ==  rtt_mesh_element::SPHERICAL )
     {
+        Insist(quadrature->dimensionality() == 1, "Quadrature dimensionality != 1");
+
         // insert mu=-1 starting direction 
-        
         OrdinateSet::iterator a = begin();
         a = insert(a, Ordinate(-1.0,
                                0.0,
                                0.0,
                                0.0));
+    }
+    else if ( geometry ==  rtt_mesh_element::CARTESIAN)
+    {
+        Insist(quadrature->dimensionality() == 1, "Quadrature dimensionality != 1");
     }
     return;
 }
@@ -282,6 +287,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
     // Define an impossible value for a direction cosine.  We use
     // this to simplify the logic of determining when we are at
     // the head of a new level set.
+
+    Insist(geometry == rtt_mesh_element::AXISYMMETRIC, "Mesh geometry != AXISYMMETRIC");
     
     double const SENTINEL_COSINE = 2.0;
     
