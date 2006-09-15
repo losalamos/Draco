@@ -48,10 +48,11 @@ General options [default setting]:
            contains no numeric data [%s].
 
    -s, --skip=REGEX
-           if the current lines in both files satisfy the regular
-           expression REGEX, then skip the comparison.  This option
-           may be specified multiple times.  If only one of the files
-           satisfies the REGEX, the comparison is still performed.
+           skip lines that satisfy the regular expression REGEX.
+           In no way do skipped lines determine whether two files
+           DIFFER.  In other words, two files may contain a different
+           number of skipped lines and yet still be considered the
+           same.
                    
    -v, --verbosity=V
            Sets the verbosity level to standard out [%d]:
@@ -218,18 +219,20 @@ class Stats:
       rel = relative difference for float data
       line1 = line string in file #1
       line2 = line string in file #2
-      lineNum = line number in file #1
+      lineNum1 = line number in file #1
+      lineNum2 = line number in file #2
       columnNum = data column number
       tolerances = Tolerances object for float data
       equal = if true, values are equal
     '''
-    def __init__(self, line1='', line2='', lineNum=0,
+    def __init__(self, line1='', line2='', lineNum1=0, lineNum2=0,
                  tolerances=Tolerances()):
         self.abs = 0
         self.rel = 0
         self.line1 = line1
         self.line2 = line2
-        self.lineNum = lineNum
+        self.lineNum1 = lineNum1
+        self.lineNum2 = lineNum2
         self.tolerances = tolerances
         self.equal = 1
     def findDiff(self, s1, s2, columnNum):
@@ -332,12 +335,12 @@ class Numdiff:
         if len(self.startString) > 0:
             lineNum = advanceFileToString(file, self.startString, 0)
         return lineNum
-    def _skipLine(self, line1, line2):
+    def _skipLine(self, line):
         '''
-        Returns true if line1 and line2 satisfy any of the regex.
+        Returns true if line satisfies any of the skip regex.
         '''
         for regex in self.skip:
-            if regex.search(line1) and regex.search(line2):
+            if regex.search(line):
                 return 1
 
         return 0
@@ -359,21 +362,18 @@ class Numdiff:
             for i in range(numCol - len(s1)):
                 s1.append(' ')
         return (s1, s2, numCol)
-    def _compareLines(self, line1, line2, lineNum1, tstats):
+    def _compareLines(self, line1, line2, lineNum1, lineNum2, tstats):
         '''
         Compares lines line1 and line2, and accumulates the
         differences into stats.
         '''
-
-        if self._skipLine(line1, line2):
-            return tstats # we are done
 
         (s1, s2, numCol) = self._splitLines(line1, line2)
 
         # Find the difference between each respective column
         # and accumulate the stats
         
-        s = Stats(line1, line2, lineNum1, self.tolerances)
+        s = Stats(line1, line2, lineNum1, lineNum2, self.tolerances)
             
         printLine = 0
         diff = [] # differences
@@ -387,7 +387,11 @@ class Numdiff:
             
         if self.verbosity > 1:
             if printLine:
-                print '\nLine ' + `lineNum1` + ':'
+                if lineNum1 == lineNum2:
+                    print '\nLine ' + `lineNum1` + ':'
+                else:
+                    print '\nLine ' + `lineNum1` + ' of file 1,'
+                    print '\nLine ' + `lineNum2` + ' of file 2:'
                 print line1,
                 print line2,
                 print "diffs:",
@@ -419,25 +423,32 @@ class Numdiff:
             if len(self.startString) > 0:
                 print "Advanced " + fileName1 + " to line " + `lineNum1`
                 print "Advanced " + fileName2 + " to line " + `lineNum2`
-            if lineNum2 != lineNum1:
-                print "*** Line numbers will be with respect to file " + fileName1
                 
         # Loop until EOF on either file
         
         while 1:
             line1 = file1.readline()
+            lineNum1 = lineNum1 + 1
+            while self._skipLine(line1):
+                line1 = file1.readline()
+                lineNum1 = lineNum1 + 1
+
             line2 = file2.readline()
+            lineNum2 = lineNum2 + 1
+            while self._skipLine(line2):
+                line2 = file2.readline()
+                lineNum2 = lineNum2 + 1
+
+            warn = "Warning: File %s has more non-skipped lines than file %s"
             if len(line1) == 0:
                 if len(line2) > 0:
-                    print "Warning: File " + fileName2 + \
-                          " has more lines than file " + fileName1
+                    print warn % (fileName2, fileName1)
                 break;
             if len(line2) == 0:
-                print "Warning: File " + fileName1 + \
-                      " has more lines than file " + fileName2
+                print warn % (fileName1, fileName2)
                 break;
-            lineNum1 = lineNum1 + 1
-            tstats = self._compareLines(line1, line2, lineNum1, tstats)
+            tstats = self._compareLines(line1, line2,
+                                        lineNum1, lineNum2, tstats)
 
         file1.close()
         file2.close()
@@ -463,11 +474,13 @@ class Numdiff:
             print "Total numbers compared = %d" % (tstats.totalFloats)
             print "Numbers that differed  = %d" % (tstats.diffFloats)
             if tstats.diffFloats > 0:
-                print "Max absolute = %.4e on line %d, column %d (relative = %.4e)" \
-                      % (tstats.maxAbs.abs, tstats.maxAbs.lineNum,
+                print "Max absolute = %.4e on lines (%d,%d), column %d (relative = %.4e)" \
+                      % (tstats.maxAbs.abs, tstats.maxAbs.lineNum1,
+                         tstats.maxAbs.lineNum2,
                          tstats.maxAbs.columnNum, tstats.maxAbs.rel)
-                print "Max relative = %.4e on line %d, column %d (absolute = %.4e)" \
-                      % (tstats.maxRel.rel, tstats.maxRel.lineNum,
+                print "Max relative = %.4e on lines (%d,%d), column %d (absolute = %.4e)" \
+                      % (tstats.maxRel.rel, tstats.maxRel.lineNum1,
+                         tstats.maxRel.lineNum2,
                          tstats.maxRel.columnNum, tstats.maxRel.abs)
             if differ:
                 print "DIFFER"
