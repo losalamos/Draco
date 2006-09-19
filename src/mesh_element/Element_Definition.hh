@@ -29,56 +29,53 @@ namespace rtt_mesh_element
  * \brief Provides some descriptive information on the standard mesh 
  *        elements used in the RTT meshReader class.
  *
- * A few high points, trying not to wax eloquent. It was originally desired
- * to create a simple class that would concisely, unambiguously, and 
- * completely describe any mesh element that could be conceived. While
- * this may be a laudable goal, it appears to be harder than it appears. Perhaps
- * we could get some help on this from some computational geometry experts
- * at some time. In the mean time here is my 80% solution.
+ * A few high points, trying not to wax eloquent. It was originally desired to
+ * create a simple class that would concisely, unambiguously, and completely
+ * describe any mesh element that could be conceived. While this may be a
+ * laudable goal, it appears to be harder than it appears. Perhaps we could
+ * get some help on this from some computational geometry experts at some
+ * time. In the mean time here is my 80% solution.
  *
- *  First, we will
- * reduce the scope from any element to just the elements currently supported
- * by the <a href="http://www.cgns.org/"> CGNS </a> data storage system. 
- * CGNS is an emerging industry standard for the storage and retrival of
- * computational physics data. Remember that it is only necessary to describe
- * the problem "geometry" with these elements, not the solution, or any
- * other field on the mesh, so this may not be as much of a restriction
- * as it first appears. The CGNS set consists of 18 elements including most
- * of the commonly used ones. Moreover, remember we currently have no means of
- * generating a mesh with weird custom elements. Any mesh anyone in the
- * group has ever run on can be expressed with just six of the 18
- * CGNS elements.
+ * First, we will * reduce the scope from any element to just the elements
+ * currently supported * by the <a href="http://www.cgns.org/"> CGNS </a> data
+ * storage system. * CGNS is an emerging industry standard for the storage and
+ * retrival of * computational physics data. Remember that it is only
+ * necessary to describe * the problem "geometry" with these elements, not the
+ * solution, or any * other field on the mesh, so this may not be as much of a
+ * restriction * as it first appears. The CGNS set consists of 18 elements
+ * including most * of the commonly used ones. Moreover, remember we currently
+ * have no means of * generating a mesh with weird custom elements. Any mesh
+ * anyone in the * group has ever run on can be expressed with just six of the
+ * 18 * CGNS elements.
  *
- * Second, we will not try to design a completely general element
- * description, but will settle for providing a limited set of services that can
- * be used to discover a lot of things about the elements in the CGNS sub-set,
- * but may not necessarily be a universal, complete, and unambiguous 
- * description. 
- * The ultimate authority on the element descriptions are the 
- * <a href="http://www.CGNS.org/documents/Elements.pdf"> figures </a> and
- * text found in the CGNS SIDS-Additions manual.
+ * Second, we will not try to design a completely general element description,
+ * but will settle for providing a limited set of services that can be used to
+ * discover a lot of things about the elements in the CGNS sub-set, but may
+ * not necessarily be a universal, complete, and unambiguous description. The
+ * ultimate authority on the element descriptions are the <a
+ * href="http://www.CGNS.org/documents/Elements.pdf"> figures </a> and text
+ * found in the CGNS SIDS-Additions manual.
  *
- * The description implemented herein utilizes a hierarchical approach. 3D 
- * elements
- * are described as assemblies of 2D elements, which are composed of 1D
- * elements, which are themselves composed of nodes. For example, a 3D hexahedra
- * is described in terms of its 2D quadrilateral faces, which are described in 
- * terms of 1D line edge elements, which are then described in terms of their
- * constituent nodes.  This approach appears to be adequate for
- * the subset of elements under consideration herein, but it is not clear
- * that this will suffice in the general case.
+ * The description implemented herein utilizes a hierarchical approach. 3D
+ * elements are described as assemblies of 2D elements, which are composed of
+ * 1D elements, which are themselves composed of nodes. For example, a 3D
+ * hexahedra is described in terms of its 2D quadrilateral faces, which are
+ * described in terms of 1D line edge elements, which are then described in
+ * terms of their constituent nodes.  This approach appears to be adequate for
+ * the subset of elements under consideration herein, but it is not clear that
+ * this will suffice in the general case.
  *
  * Utilities are provided to inquired about the type of a face (i.e. quad,
  * triangle, etc....) as well as the nodes that compose the face.
  *
- * In addition to face types, there is a concept of "node-location" within
- * the element. All nodes are given a location (i.e. "CORNER", "EDGE",
- * etc....) to aide in the description of the element. Again this appears 
- * to be adequate for the sub-set of elements under consideration herein
- * but may not be adequate in a more general case.
+ * In addition to face types, there is a concept of "node-location" within the
+ * element. All nodes are given a location (i.e. "CORNER", "EDGE", etc....) to
+ * aide in the description of the element. Again this appears to be adequate
+ * for the sub-set of elements under consideration herein but may not be
+ * adequate in a more general case.
  *
  * It is hoped that the node-location, together with the data available
- * through recursively descending through element faces, edges, and nodes 
+ * through recursively descending through element faces, edges, and nodes
  * provides an adequate amount of information for our present needs. However,
  * it is difficult to show that this description is complete and unambiguous.
  *
@@ -144,9 +141,9 @@ class Element_Definition
 	BAR_3,      /*!< Same as "BAR_2" except that a node is added in the 
                      *   center. */
 	TRI_3,      /*!< The basic two-D, three-node, "triangle" element. */
-	TRI_6,      /*!< Same as "TRI_3" except that  nodes are added in the 
-		     *   middle of each edge. This is the
-                     *   standard quadratic-serendipity finite element triangle.*/
+	TRI_6,      /*!< Same as "TRI_3" except that nodes are added in the *
+                     *   middle of each edge. This is the standard
+                     *   quadratic-serendipity finite element triangle.*/
 	QUAD_4,     /*!< The basic two-D, four-node "quadrilateral" element. */
 	QUAD_8,     /*!< Same as "QUAD_4" except a node is added in the
 		     *   middle of each edge. This is the
@@ -172,9 +169,13 @@ class Element_Definition
 	HEXA_20,    /*!< Same as "HEXA_8" except that a node is added in 
                      *   the center of each edge. This is the
                      *   standard quadratic-serendipity finite element hex.*/
-	HEXA_27     /*!< Same as "HEXA_20" except that a node is added 
+	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added 
 		     *   in the center of each face, and at the center of 
                      *   the element. */
+        OTHER,      /*!< Catchall for any nonstandard element type, such as an
+                     *   arbitrary polygon in 2-D. */
+
+        NUMBER_OF_ELEMENT_TYPES
     };
 
   private:
@@ -203,7 +204,14 @@ class Element_Definition
     Element_Definition( Element_Type const & type_ );
 
     // MANIPULATORS
-    // (none)
+
+    /*!
+     * \brief Destructor for the Element_Definition class.
+     *
+     * This destructor is virtual, implying that Element_Definition is
+     * extensible by inheritance.
+     */
+    virtual ~Element_Definition(){}
     
     // ACCESSORS
 
