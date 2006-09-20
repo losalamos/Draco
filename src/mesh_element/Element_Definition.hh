@@ -82,6 +82,10 @@ namespace rtt_mesh_element
  * \sa The \ref rtt_meshreaders_overview page provides an overview of
  * the other utilities in the rtt_mesh_element namespace.
  *
+ * \todo KGB:  The sizing information (<code>dimension</code>,
+ * <code>number_of_nodes</code>, <code>number_of_sides</code>) really ought to
+ * be unsigned ints.  This automatically enforces important invariants and
+ * makes it simpler to express preconditions and postconditions.
  */
 // revision history:
 // -----------------
@@ -202,6 +206,96 @@ class Element_Definition
      * \param type_ The element type to be constructed.
      */
     Element_Definition( Element_Type const & type_ );
+    
+    /*!
+     * \brief Constructor for the Element_Definition class.
+     *
+     * This constructor supports the description of a nonstandard element
+     * type.
+     *
+     * \param name_ The name of the element.
+     *
+     * \param dimension_ The dimension of the element. i.e. nodes return 0,
+     * lines return 1, quads return 2, hexahedra return 3.
+     *
+     * \param number_of_nodes_ Total number of nodes in the element
+     *
+     * \param number_of_sides_ The number of n-1 dimensional entities that
+     * compose an n dimensional element. i.e. nodes return 0, lines return 2,
+     * quads return 4, hexahedra return 6. 
+     *
+     * \param elem_defs_ Element definitions that describe element sides.
+     * There need be only one such definition for each type of side present in
+     * the element.  For example, a QUAD_4 element would need only one side
+     * element definition, for BAR_2.
+     *
+     * \param side_type_ Index into \c elem_defs_ of the element definition
+     * appropriate for each side.
+     *
+     * \param side_nodes_ A vector of vectors specifying the nodes associated
+     * with each side. For example, <code>side_nodes_[2]</code> is a vector
+     * specifying the nodes associated with the third side of the element.
+     * Note that the node numbering is 0 based.
+     *
+     * \param node_loc_ The location of each node. See the
+     * <code>Element_Definition::Node_Location</code> enumeration for
+     * additional discussion on node locations.
+     *
+     *
+     * \pre <code>dimension_>=0</code>
+     *
+     * \pre <code>number_of_nodes_>0</code>
+     *
+     * \pre <code>number_of_sides_>=0</code>
+     *
+     * \pre All elements of \c elem_defs_ must satisfy
+     * <code>elem_defs_[i].get_dimension()+1==dimension_</code> 
+     *
+     * \pre <code>side_type_.size()==number_of_sides_</code>
+     *
+     * \pre All elements of \c side_type_ must satisfy
+     * <code>static_cast<unsigned>(side_type_[i])<elem_defs_.size()</code>
+     *
+     * \pre <code>side_nodes_.size()==number_of_sides_</code>
+     *
+     * \pre All elements of \c side_nodes_ must satisfy
+     * <code>side_nodes_[i].size() ==
+     * elem_defs_[side_type_[i]].get_number_of_nodes() </code>  
+     *
+     * \pre All elements of \c side_nodes_ must satisfy
+     * <code>static_cast<unsigned>(side_nodes_[i][j])<number_of_nodes_ </code>
+     *
+     * \pre <code>node_loc_.size()==number_of_nodes_</code>
+     *
+     * \pre The element locations in \c node_loc_ must be consistent with the
+     * element locations implied by \c side_nodes_, \c side_type_, and \c
+     * elem_defs_
+     *
+     *
+     * \post <code> get_type()==Element_Definition::OTHER </code>
+     *
+     * \post <code> get_name()==name_  </code>
+     *
+     * \post <code> get_dimension()==dimension_  </code>
+     *
+     * \post <code> get_number_of_nodes()==number_of_nodes_  </code>
+     *
+     * \post <code> get_number_of_sides()==number_of_sides_  </code>
+     *
+     * \post <code> get_node_location(i)==node_loc_[i]  </code>
+     *
+     * \post <code> get_side_type(i)==elem_defs_[side_type_[i]]  </code>
+     *
+     * \post <code> get_side_nodes(i)==side_nodes_[i]  </code>
+     */
+    Element_Definition( std::string  name_,
+                        int dimension_,
+                        int number_of_nodes_,
+                        int number_of_sides_,
+                        std::vector< Element_Definition > const &elem_defs_,
+                        std::vector< int > const &side_type_,
+                        std::vector< std::vector< int > > const &side_nodes_,
+                        std::vector< Node_Location > const &node_loc_ );
 
     // MANIPULATORS
 

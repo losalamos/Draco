@@ -16,6 +16,7 @@
 namespace rtt_mesh_element
 {
 
+//---------------------------------------------------------------------------//
 Element_Definition::Element_Definition( Element_Type const & type_ )
     : type(type_)
 {
@@ -72,7 +73,85 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
     
     Ensure( invariant_satisfied() );
 }
+    
+//---------------------------------------------------------------------------//
+Element_Definition::
+Element_Definition( std::string  name_,
+                    int dimension_,
+                    int number_of_nodes_,
+                    int number_of_sides_,
+                    std::vector< Element_Definition > const &elem_defs_,
+                    std::vector< int > const &side_type_,
+                    std::vector< std::vector< int > > const &side_nodes_,
+                    std::vector< Node_Location > const &node_loc_ )
+    :
+    name(name_),
+    type(OTHER),
+    dimension(dimension_),
+    number_of_nodes(number_of_nodes_),
+    number_of_sides(number_of_sides_),
+    elem_defs(elem_defs_),
+    side_type(side_type_),
+    side_nodes(side_nodes_),
+    node_loc(node_loc_)
+{
+     Require( dimension_>=0 );
+     Require( number_of_nodes_>0 );
+     Require( number_of_sides_>=0 );
 
+#if DBC & 1
+     for (unsigned i=0; i<elem_defs_.size(); ++i)
+     {
+         Require( elem_defs_[i].get_dimension()+1==dimension_ );
+     }
+#endif
+     Require( side_type_.size()==number_of_sides_ );
+#if DBC & 1
+     for (unsigned i=0; i<number_of_sides_; ++i)
+     {
+         Require( static_cast<unsigned>(side_type_[i])<elem_defs.size() );
+     }
+#endif
+     Require( side_nodes_.size()==number_of_sides_ );
+     Require( node_loc_.size()==number_of_nodes_ );
+#if DBC & 1
+     for (unsigned i=0; i<number_of_sides_; ++i)
+     {
+         Require( side_nodes_[i].size() ==
+                  elem_defs_[side_type_[i]].get_number_of_nodes() );
+
+         for (unsigned j=0; j<side_nodes_[i].size(); ++j)
+         {
+             Require( static_cast<unsigned>(side_nodes_[i][j])
+                      < number_of_nodes_ );
+
+             Require( elem_defs_[side_type_[i]].get_node_location(j) ==
+                      node_loc_[side_nodes_[i][j]] );
+         }
+     }
+#endif
+
+     Ensure( invariant_satisfied() );
+
+     Ensure( get_type()==Element_Definition::OTHER );
+     Ensure( get_name()==name_  );
+     Ensure( get_dimension()==dimension_  );
+     Ensure( get_number_of_nodes()==number_of_nodes_  );
+     Ensure( get_number_of_sides()==number_of_sides_  );
+#if DBC & 4
+     for (unsigned i=0; i<number_of_nodes; ++i)
+     {
+         Ensure( get_node_location(i)==node_loc_[i]  );
+     }
+     for (unsigned i=0; i<number_of_sides; ++i)
+     {
+//         Ensure( get_side_type(i)==elem_defs_[side_type_[i]]  );
+         Ensure( get_side_nodes(i)==side_nodes_[i]  );
+     }
+#endif
+}
+
+//---------------------------------------------------------------------------//
 bool Element_Definition::invariant_satisfied() const
 {
     bool ldum = ( name.empty() == false );

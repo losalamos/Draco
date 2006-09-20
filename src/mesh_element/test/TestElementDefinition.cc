@@ -85,6 +85,38 @@ void runTest()
     rtt_mesh_element_test::test_hexa_8(elem_defs[15]);
     rtt_mesh_element_test::test_hexa_20(elem_defs[16]);
     rtt_mesh_element_test::test_hexa_27(elem_defs[17]);
+
+    // Test the OTHER category.
+
+    elem_defs.clear();
+    elem_defs.resize(1, Element_Definition::BAR_2);
+
+    vector< int > side_type(8,  // number of sides
+                            0); // index into elem_defs
+
+    vector< vector< int > > side_nodes(8);
+    for (unsigned side=0; side<8; ++side)
+    {
+        side_nodes[side].push_back(side);
+        side_nodes[side].push_back((side+1)%8);
+    }
+
+    vector< Element_Definition::Node_Location >
+        node_loc(8,                           // number of nodes
+                 Element_Definition::CORNER); // node location
+    
+    Element_Definition other("OCT_8", // name
+                             2, // dimension
+                             8, // number_of_nodes
+                             8, // number_of_sides
+                             elem_defs,
+                             side_type,
+                             side_nodes,
+                             node_loc);
+    
+    // Merely attempting construction, with DBC active, will invoke a slew of
+    // precondition, postcondition, and consistency checks.  We perform no
+    // other explicit checks here.
     
     if (rtt_mesh_element_test::passed)
     {
