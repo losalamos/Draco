@@ -13,6 +13,7 @@
 #include <iostream>
 #include <cmath>
 #include <cctype>
+#include <algorithm>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/SP.hh"
