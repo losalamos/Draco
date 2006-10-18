@@ -25,7 +25,7 @@ namespace rtt_quadrature
 
 using namespace std;
 using rtt_dsxx::SP;
-using rtt_quadrature::Quadrature;
+
 
 //---------------------------------------------------------------------------//
 /*!
