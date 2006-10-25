@@ -142,15 +142,11 @@ bool Console_Token_Stream::end() const
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Report an error to the user.
- *
- * This function reports an error by writing it to the error console stream.
+ * This function sends a message by writing it to the error console stream.
  */
 
-void Console_Token_Stream::Report_Error(const Token &token,
-				     const std::string &message)
+void Console_Token_Stream::Report(const Token &token,
+                                  const std::string &message)
 {
     std::cerr << token.Location() << ": " << message << std::endl;
 
@@ -159,15 +155,11 @@ void Console_Token_Stream::Report_Error(const Token &token,
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Report an error to the user.
- *
- * This function reports an error by writing it to the error console stream.
- * This version assumes that the cursor gives the correct error location.
+ * This function sends a message by writing it to the error console stream.
+ * This version assumes that the cursor gives the correct message location.
  */
 
-void Console_Token_Stream::Report_Error(const std::string &message)
+void Console_Token_Stream::Report(const std::string &message)
 {
     Token token = Lookahead();
     std::cerr << token.Location() << ": " << message << std::endl;

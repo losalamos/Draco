@@ -85,7 +85,39 @@ class Token_Stream : private std::deque<Token>
     
     virtual void Report_Semantic_Error(std::string const &message);
     virtual void Report_Semantic_Error(std::exception const &message);
+
     
+    //-----------------------------------------------------------------------//
+    /*! 
+     * \author Kent G. Budge
+     * \date Thu Jan 23 08:41:54 MST 2003
+     * \brief Report an error to the user.
+     *
+     * This function sends a message to the user in a stream-specific manner.
+     *
+     * \param token
+     * Token with which the message is associated.
+     * \param message
+     * Message to be passed to the user.
+     */
+    virtual void Report(Token const &token,
+                                    std::string const &message) = 0;
+    
+    //-----------------------------------------------------------------------//
+    /*! 
+     * \author Kent G. Budge
+     * \date Thu Jan 23 08:41:54 MST 2003
+     * \brief Report an error to the user.
+     *
+     * This function sends a message to the user in a stream-specific
+     * manner.  This variant assumes that the cursor gives the correct
+     * location.
+     *
+     * \param message
+     * Message to be passed to the user.
+     */
+    virtual void Report(std::string const &message) = 0;
+
     //! Return the number of errors reported to the stream. 
     unsigned Error_Count() const { return error_count; }
 
@@ -112,38 +144,6 @@ class Token_Stream : private std::deque<Token>
      */
     
     virtual Token fill() = 0;
-    
-    //-----------------------------------------------------------------------//
-    /*! 
-     * \author Kent G. Budge
-     * \date Thu Jan 23 08:41:54 MST 2003
-     * \brief Report an error to the user.
-     *
-     * This function reports an error to the user in a stream-specific
-     * manner.
-     *
-     * \param token
-     * Token at which the error occurred.
-     * \param message
-     * Message to be passed to the user.
-     */
-    virtual void Report_Error(Token const &token,
-			      std::string const &message) = 0;
-    
-    //-----------------------------------------------------------------------//
-    /*! 
-     * \author Kent G. Budge
-     * \date Thu Jan 23 08:41:54 MST 2003
-     * \brief Report an error to the user.
-     *
-     * This function reports an error to the user in a stream-specific
-     * manner.  This variant assumes that the cursor gives the correct
-     * location.
-     *
-     * \param message
-     * Message to be passed to the user.
-     */
-    virtual void Report_Error(std::string const &message) = 0;
 
 //---------------------------------------------------------------------------//
 /*! 

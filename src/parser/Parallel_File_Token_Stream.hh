@@ -47,6 +47,11 @@ class Parallel_File_Token_Stream : public Text_Token_Stream
 			       std::set<char> const &whitespace);
     
     void Rewind();
+    
+    virtual void Report(Token const & token,
+                        std::string const &message);
+    
+    virtual void Report(std::string const &message);
 
     bool check_class_invariants() const;
     
@@ -59,11 +64,6 @@ class Parallel_File_Token_Stream : public Text_Token_Stream
 
     virtual bool error() const;
     virtual bool end() const;
-    
-    virtual void Report_Error(Token const & token,
-			      std::string const &message);
-    
-    virtual void Report_Error(std::string const &message);
 
   private:
 

@@ -295,17 +295,13 @@ bool Parallel_File_Token_Stream::end() const
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Report an error to the user.
- *
- * This function reports an error by writing it to the error console stream.
- * Only processor 0 writes the error, to avoid many (possibly thousands) of
+ * This function sends a message by writing it to the error console stream.
+ * Only processor 0 writes the message, to avoid many (possibly thousands) of
  * duplicate messages.
  */
 
-void Parallel_File_Token_Stream::Report_Error(Token const &token,
-					      string const &message)
+void Parallel_File_Token_Stream::Report(Token const &token,
+                                        string const &message)
 {
     if (rtt_c4::node()==0)
     {
@@ -317,18 +313,14 @@ void Parallel_File_Token_Stream::Report_Error(Token const &token,
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Report an error to the user.
- *
- * This function reports an error by writing it to the error console stream.
- * Only processor 0 writes the error, to avoid many (possibly thousands) of
+ * This function sends a message by writing it to the error console stream.
+ * Only processor 0 writes the message, to avoid many (possibly thousands) of
  * duplicate messages.
  *
- * This version assumes that the cursor is the error location.
+ * This version assumes that the cursor is the message location.
  */
 
-void Parallel_File_Token_Stream::Report_Error(string const &message)
+void Parallel_File_Token_Stream::Report(string const &message)
 {
     Require(check_class_invariants());
 

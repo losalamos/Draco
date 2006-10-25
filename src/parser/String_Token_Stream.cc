@@ -161,10 +161,10 @@ bool String_Token_Stream::end() const
  * \date Wed Jan 22 15:35:42 MST 2003
  * \brief Report an error to the user.
  *
- * This function reports an error by writing it to an internal string.
+ * This function sends a messsage by writing it to an internal string.
  */
 
-void String_Token_Stream::Report_Error(Token const &token,
+void String_Token_Stream::Report(Token const &token,
 				       string const &message)
 {
     messages += token.Location() + ": " + message + '\n';
@@ -178,12 +178,12 @@ void String_Token_Stream::Report_Error(Token const &token,
  * \date Wed Jan 22 15:35:42 MST 2003
  * \brief Report an error to the user.
  *
- * This function reports an error by writing it to an internal string..
+ * This function sends a message by writing it to an internal string..
  *
  * This version assumes that the cursor is the error location.
  */
 
-void String_Token_Stream::Report_Error(string const &message)
+void String_Token_Stream::Report(string const &message)
 {
     Token token = Lookahead();
     messages += token.Location() + ": " + message + '\n';

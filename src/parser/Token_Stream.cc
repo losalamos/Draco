@@ -128,9 +128,8 @@ void Token_Stream::Pushback(Token const &token)
  *
  * \post <code>Error_Count()==old Error_Count()+1</code>
  *
- * \throw Syntax_Error
- * This function never returns.  It always throws a Syntax_Error
- * exception to be handled by the parsing software.
+ * \throw Syntax_Error This function never returns.  It always throws a
+ * Syntax_Error exception to be handled by the parsing software.
  */
 
 void Token_Stream::Report_Syntax_Error(Token const &token,
@@ -139,7 +138,7 @@ void Token_Stream::Report_Syntax_Error(Token const &token,
     try 
     {
 	error_count++;
-	Report_Error(token, message);
+	Report(token, message);
     }
     catch(...)
     {
@@ -158,7 +157,7 @@ void Token_Stream::Report_Syntax_Error(Token const &token,
  * \brief Report a syntax error to the user.
  *
  * The default implementation of this function passes its message
- * on to Report_Error, then throws a Syntax_Error exception.
+ * on to Report, then throws a Syntax_Error exception.
  *
  * A syntax error is a badly formed construct that requires explicit
  * error recovery (including resynchronization) by the parsing software.
@@ -170,9 +169,8 @@ void Token_Stream::Report_Syntax_Error(Token const &token,
  *
  * \post <code>Error_Count()==old Error_Count()+1</code>
  *
- * \throw Syntax_Error
- * This function never returns.  It always throws a Syntax_Error
- * exception to be handled by the parsing software.
+ * \throw Syntax_Error This function never returns.  It always throws a
+ * Syntax_Error exception to be handled by the parsing software.
  */
 
 void Token_Stream::Report_Syntax_Error(string const &message)
@@ -180,7 +178,7 @@ void Token_Stream::Report_Syntax_Error(string const &message)
     try 
     {
 	error_count++;
-	Report_Error(message);
+	Report(message);
     }
     catch(...)
     {
@@ -198,7 +196,7 @@ void Token_Stream::Report_Syntax_Error(string const &message)
  * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message
- * on to Report_Error, then returns.
+ * on to Report, then returns.
  *
  * A semantic error is a well-formed construct that has a bad value.  Because
  * the construct is well-formed, parsing may be able to continue after the
@@ -216,7 +214,7 @@ void Token_Stream::Report_Semantic_Error(Token const &token,
 					 string const &message)
 {
     error_count++;
-    Report_Error(token, message);
+    Report(token, message);
 
     Ensure(check_class_invariants());
 }
@@ -226,12 +224,11 @@ void Token_Stream::Report_Semantic_Error(Token const &token,
  * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message
- * on to Report_Error, then returns.
+ * on to Report, then returns.
  *
- * A semantic error is a well-formed construct
- * that has a bad value.  Because the construct is well-formed, parsing
- * may be able to continue after the error is reported without any
- * explicit recovery by the parsing software.
+ * A semantic error is a well-formed construct that has a bad value.  Because
+ * the construct is well-formed, parsing may be able to continue after the
+ * error is reported without any explicit recovery by the parsing software.
  *
  * This version assumes that the cursor is the error location.
  *
@@ -244,7 +241,7 @@ void Token_Stream::Report_Semantic_Error(Token const &token,
 void Token_Stream::Report_Semantic_Error(string const &message)
 {
     error_count++;
-    Report_Error(message);
+    Report(message);
 
     Ensure(check_class_invariants());
 }
@@ -254,12 +251,11 @@ void Token_Stream::Report_Semantic_Error(string const &message)
  * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message
- * on to Report_Error, then returns.
+ * on to Report, then returns.
  *
- * A semantic error is a well-formed construct
- * that has a bad value.  Because the construct is well-formed, parsing
- * may be able to continue after the error is reported without any
- * explicit recovery by the parsing software.
+ * A semantic error is a well-formed construct that has a bad value.  Because
+ * the construct is well-formed, parsing may be able to continue after the
+ * error is reported without any explicit recovery by the parsing software.
  *
  * This version assumes that the cursor is the error location.
  *
@@ -272,7 +268,7 @@ void Token_Stream::Report_Semantic_Error(string const &message)
 void Token_Stream::Report_Semantic_Error(exception const &message)
 {
     error_count++;
-    Report_Error(message.what());
+    Report(message.what());
 
     Ensure(check_class_invariants());
 }

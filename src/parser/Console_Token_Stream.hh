@@ -48,7 +48,12 @@ class Console_Token_Stream : public Text_Token_Stream
     Console_Token_Stream(std::set<char> const &whitespace);
     
     void Rewind();
+        
+    virtual void Report(const Token & token,
+                        const std::string &message);
     
+    virtual void Report(const std::string &message);
+
   protected:
     
     virtual std::string location() const;
@@ -56,11 +61,6 @@ class Console_Token_Stream : public Text_Token_Stream
     virtual void fill_character_buffer();
     virtual bool error() const;
     virtual bool end() const;
-    
-    virtual void Report_Error(const Token & token,
-			      const std::string &message);
-    
-    virtual void Report_Error(const std::string &message);
 };
 
 } // rtt_parser

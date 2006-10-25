@@ -46,7 +46,12 @@ class File_Token_Stream : public Text_Token_Stream
     void open(std::string filename);
     
     void Rewind();
+       
+    virtual void Report(Token const & token,
+                        std::string const &message);
     
+    virtual void Report(std::string const &message);
+
   protected:
     
     virtual std::string location() const;
@@ -54,12 +59,7 @@ class File_Token_Stream : public Text_Token_Stream
     virtual void fill_character_buffer();
     virtual bool error() const;
     virtual bool end() const;
-    
-    virtual void Report_Error(Token const & token,
-			      std::string const &message);
-    
-    virtual void Report_Error(std::string const &message);
-
+ 
   private:
     std::string filename;  //!< File from which to take token text.
     std::ifstream infile;  //!< Stream from which to take token text.

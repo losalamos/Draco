@@ -254,14 +254,12 @@ bool File_Token_Stream::end() const
 
 //-------------------------------------------------------------------------//
 /*!
- * \brief Report an error to the user.
- *
- * This function reports an error by writing a diagnostic message to the
+ * This function sends a message by writing a diagnostic message to the
  * error console stream. 
  */
 
-void File_Token_Stream::Report_Error(const Token &token,
-				     const string &message)
+void File_Token_Stream::Report(const Token &token,
+                               const string &message)
 {
     Require(check_class_invariants());
 
@@ -272,13 +270,11 @@ void File_Token_Stream::Report_Error(const Token &token,
 
 //-------------------------------------------------------------------------//
 /*!
- * \brief Report an error to the user.
- *
- * This function reports an error by writing it to the error console stream.
+ * This function sends a message by writing it to the error console stream.
  * This version assumes that the cursor gives the correct error location.
  */
 
-void File_Token_Stream::Report_Error(const string &message)
+void File_Token_Stream::Report(const string &message)
 {
     Token token = Lookahead();
     std::cerr << token.Location() << ": " << message << std::endl;

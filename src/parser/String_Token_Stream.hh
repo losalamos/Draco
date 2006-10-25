@@ -41,6 +41,11 @@ class String_Token_Stream : public Text_Token_Stream
     void Rewind();
 
     std::string Get_Messages() const { return messages; }
+    
+    virtual void Report(Token const & token,
+			      std::string const &message);
+    
+    virtual void Report(std::string const &message);
 
     bool check_class_invariants() const;
     
@@ -53,11 +58,6 @@ class String_Token_Stream : public Text_Token_Stream
 
     virtual bool error() const;
     virtual bool end() const;
-    
-    virtual void Report_Error(Token const & token,
-			      std::string const &message);
-    
-    virtual void Report_Error(std::string const &message);
 
   private:
 
