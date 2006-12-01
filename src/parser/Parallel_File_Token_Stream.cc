@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <limits>
 #include "c4/global.hh"
 #include "Parallel_File_Token_Stream.hh"
 
