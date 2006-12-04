@@ -410,41 +410,6 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        fi
 
        #
-       # add libg2c to LIBS if lapack, gandolf, or pcg is used
-       #
-       AC_MSG_CHECKING("libg2c requirements")
-       if test -n "${vendor_lapack}" || 
-          test -n "${vendor_pcg}"    ||
-	  test -n "${vendor_gandolf}"; then
-
-	   # Add g2c for various compilers
-           case `echo ${CXX} | sed -e 's/.*\///g'` in
-
-               g++)
-                   LIBS="${LIBS} -lg2c"
-                   AC_MSG_RESULT("-lg2c added to LIBS")
-                   ;;
-
-               icpc | pgCC)
-                   AC_PATH_PROG(GCC_BIN, g++, null)
-                   GCC_BIN=`dirname ${GCC_BIN}`
-                   GCC_HOME=`dirname ${GCC_BIN}`
-                   GCC_LIB_DIR="${GCC_HOME}/lib"
-                   LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
-                   AC_MSG_RESULT("-lg2c added to LIBS")
-                   ;;
-
-               *)
-                   AC_MSG_RESULT("not needed")
-                   ;;
-
-           esac
-
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
-
-       #
        # add librt to LIBS if udm is used
        #
        AC_MSG_CHECKING("librt requirements")
@@ -574,23 +539,6 @@ AC_DEFUN([AC_DBS_CYGWIN_ENVIRONMENT], [dnl
 
        # setup lf95 libs
        AC_DBS_LAHEY_ENVIRONMENT
-
-       dnl
-       dnl add libg2c to LIBS if lapack, gandolf, or pcg is used
-       dnl
-       AC_MSG_CHECKING("libg2c requirements")
-       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
-	  test -n "${vendor_gandolf}"; then
-	   
-	   dnl Add g2c for various compilers
-	   if test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   fi
-
-       else
-	   AC_MSG_RESULT("not needed")
-       fi
 
        dnl
        dnl finalize vendors
@@ -1177,32 +1125,6 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
        # setup lf95 libs when CXX is the principle compiler
        if test "${with_f90:=no}" = no ; then
            AC_DBS_LAHEY_ENVIRONMENT
-       fi
-
-       #
-       # add libg2c to LIBS if lapack, gandolf, or pcg is used
-       #
-       AC_MSG_CHECKING("libg2c requirements")
-       if test -n "${vendor_lapack}" || test -n "${vendor_pcg}" ||
-	  test -n "${vendor_gandolf}"; then
-	   
-	   # Add g2c for various compilers
-	   if test "${CXX}" = g++ ; then
-	       LIBS="${LIBS} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-	   elif test "${CXX}" = icpc ; then
-               AC_PATH_PROG(GCC_BIN, g++, null)
-               GCC_BIN=`dirname ${GCC_BIN}`
-               GCC_HOME=`dirname ${GCC_BIN}`
-               GCC_LIB_DIR="${GCC_HOME}/lib"
-	       LIBS="${LIBS} -L${GCC_LIB_DIR} -lg2c"
-	       AC_MSG_RESULT("-lg2c added to LIBS")
-           else
-               AC_MSG_RESULT("not needed")
-	   fi
-
-       else
-	   AC_MSG_RESULT("not needed")
        fi
 
        #
