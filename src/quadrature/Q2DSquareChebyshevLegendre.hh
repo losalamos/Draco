@@ -68,6 +68,9 @@ class Q2DSquareChebyshevLegendre  : public Quadrature
     //! Returns the class of quadrature.
     Quadrature_Class getClass() const { return TWO_DIM_SQUARE; }
 
+    // MANIPULATORS
+    void sortOrdinates(void);
+
   private:
 
     size_t numAngles;
