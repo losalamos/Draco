@@ -19,7 +19,6 @@
 
 #include "Q1DGaussLeg.hh"
 #include "Q2DSquareChebyshevLegendre.hh"
-#include "Ordinate.hh"
 
 namespace rtt_quadrature
 {
@@ -46,7 +45,7 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
 
     // Force the direction vectors to be the correct length.
     mu.resize(numAngles);
-    xi.resize(numAngles);
+    eta.resize(numAngles);
     wt.resize(numAngles);
 
 //     if ( snOrder == 8)
@@ -261,7 +260,7 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
             {
                 size_t angle=j+i*snOrder;
                 
-                xi[angle] = xmu;
+                eta[angle] = xmu;
                 mu[angle]  = xsr*cos(rtt_units::PI*(2.0*j+1.0)/snOrder/2.0);
                 wt[angle]  = xwt/snOrder;
             }
@@ -275,9 +274,6 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
     
     for(size_t angle = 0; angle < numAngles; ++angle)
 	wt[angle] = wt[angle]*(norm/wsum);
-
-    // Sort the directions by xi and then by mu
-    sortOrdinates();
 
     // Verify that the quadrature meets our integration requirements.
     Ensure( soft_equiv(iDomega(),norm) );
@@ -301,43 +297,12 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
     {
 	omega[angle].resize(ndims);
 	omega[angle][0] = mu[angle];
-	omega[angle][1] = xi[angle];
+	omega[angle][1] = eta[angle];
     }
 
     //display();
 
 } // end of Q2DLevelSym() constructor.
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Resort all of the ordinates by xi and then by mu.
- *
- * The ctor for OrdinateSet sorts automatically.
- */
-void Q2DSquareChebyshevLegendre::sortOrdinates(void)
-{
-    size_t len( mu.size() );
-
-    // temporary storage
-    vector<Ordinate> omega;
-    for( size_t m=0; m<len; ++m )
-    {
-        double eta=std::sqrt(1.0-mu[m]*mu[m]-xi[m]*xi[m]);
-        omega.push_back( Ordinate(mu[m],eta,xi[m],wt[m] ) );    
-    }
-    
-    std::sort(omega.begin(),omega.end(),OrdinateSet::SnCompare);
-    
-    // Save sorted data
-    for( size_t m=0; m<len; ++m )
-    {
-        mu[m]=omega[m].mu();
-        xi[m]=omega[m].xi();
-        wt[m]=omega[m].wt();        
-    }
-    
-    return;
-}
 
 //---------------------------------------------------------------------------//
 
@@ -356,7 +321,7 @@ void Q2DSquareChebyshevLegendre::display() const
     {
 	cout << "   "
 	     << angle << "\t"
-	     << setprecision(10) << xi[angle]  << "\t"
+	     << setprecision(10) << eta[angle]  << "\t"
 	     << setprecision(10) << mu[angle] << "\t"
 	     << setprecision(10) << wt[angle]  << endl;
 	sum_wt += wt[angle];
