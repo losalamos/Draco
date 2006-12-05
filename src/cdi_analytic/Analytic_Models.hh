@@ -160,7 +160,7 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
  *
  * The opacity is defined:
  *
- * \arg opacity = (a + b * T^c) * rho^d
+ * \arg opacity = (a + b * T^c * nu^e) * rho^d
  *
  * where the coefficients have the following units:
  *
