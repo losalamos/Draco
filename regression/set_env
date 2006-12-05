@@ -41,8 +41,8 @@ export SESPATHU=/codes/radtran/physical_data/eos
 export SESPATHC=/codes/radtran/physical_data/eos
 
 # XMGRACE
-export GRACE_INC_DIR=/usr/local/grace/include
-export GRACE_LIB_DIR=/usr/local/grace/lib
+export GRACE_INC_DIR=/usr/local/grace/grace/include
+export GRACE_LIB_DIR=/usr/local/grace/grace/lib
 
 # GNU Scientific Library
 export GSL_INC_DIR=/codes/radtran/vendors/gsl/Linux/include

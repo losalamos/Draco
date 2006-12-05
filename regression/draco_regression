@@ -133,6 +133,8 @@ VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
 --with-grace-lib --with-gandolf-lib --with-eospac-lib --with-pcg-lib \
 --with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
 
+LIBS_SETUP="--with-libs='-L/codes/radtran/vendors/libf2c -lf2c'"
+
 ##---------------------------------------------------------------------------##
 ## LOOP THROUGH AND DO BUILD AND CHECKS
 
@@ -248,8 +250,8 @@ for target in ${target_list}; do
     echo ">>> Running configure in $target/draco"
     pushd $target/draco
 
-    echo "$code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS"
-    ${echoonly} $code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS
+    echo "$code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS ${LIBS_SETUP}"
+    eval ${echoonly} $code_src/configure --prefix=$target $OPTIONS $VENDOR_OPTIONS ${LIBS_SETUP}
 
     # do gmake check
     echo ">>> Doing gmake check in $target/draco"
