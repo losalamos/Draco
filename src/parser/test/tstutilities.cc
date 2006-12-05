@@ -166,6 +166,7 @@ void tstutilities()
     if (left!=right || left!=C) ITFAILS;
 
     left = Parse_Unit(tokens);
+    cout << left << endl;
     if (left!=1/s) ITFAILS;
 
     left = Parse_Unit(tokens);

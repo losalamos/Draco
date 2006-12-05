@@ -309,40 +309,41 @@ Unit const sr  = { 0, 0, 0, 0, 0, 0, 0, 0, 1,  1}; //!< steradian
 
 // Derived SI units
 
-Unit const C  = A*s;               //!< coulomb (SI charge unit)
-Unit const Hz = 1/s;               //!< hertz   (SI frequency unit)
-Unit const N  = m*kg/(s*s);        //!< newton  (SI force unit)
-Unit const J  = N*m;               //!< joule   (SI energy unit)
-Unit const Pa = N/(m*m);           //!< pascal  (SI pressure unit)
-Unit const W  = J/s;               //!< watt    (SI power unit)
-Unit const V  = W/A;               //!< volt    (SI electric potential unit)
-Unit const F  = C/V;               //!< farad   (SI capacitance unit)
-Unit const ohm = V/A;              //!< ohm     (SI resistance unit)
-Unit const S  = A/V;               //!< siemens (SI conductance unit)
-Unit const Wb = V*s;               //!< weber   (SI magnetic flux unit)
-Unit const T  = Wb/(m*m);          //!< tesla   (SI magnetic flux density unit)
-Unit const H  = Wb/A;              //!< henry   (SI inductance unit)
-Unit const lm = cd*sr;             //!< lumen   (SI luminous flux unit)
-Unit const lx = lm/(m*m);          //!< lux     (SI illuminance unit)
+Unit const C  = { 0, 0, 1, 1, 0, 0, 0, 0, 0,  1}; //!< coulomb
+Unit const Hz = { 0, 0,-1, 0, 0, 0, 0, 0, 0,  1}; //!< hertz 
+Unit const N  = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< newton 
+Unit const J  = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< joule
+Unit const Pa = {-1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< pascal
+Unit const W  = { 2, 1,-3, 0, 0, 0, 0, 0, 0,  1}; //!< watt
+Unit const V  = { 2, 1,-3,-1, 0, 0, 0, 0, 0,  1}; //!< volt
+Unit const F  = {-2,-1, 4, 2, 0, 0, 0, 0, 0,  1}; //!< farad
+Unit const ohm ={ 2, 1,-3,-2, 0, 0, 0, 0, 0,  1}; //!< ohm 
+Unit const S  = {-2,-1, 3, 2, 0, 0, 0, 0, 0,  1}; //!< siemens
+Unit const Wb = { 2, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< weber
+Unit const T  = { 0, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< tesla 
+Unit const H  = { 2, 1,-2,-2, 0, 0, 0, 0, 0,  1}; //!< henry 
+Unit const lm = { 0, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lumen
+Unit const lx = {-2, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lux 
 
 // CGS units
 
-Unit const cm   = 1.0e-2*m;           //!< centimeter (cgs length unit)
-Unit const g    = 1.0e-3*kg;          //!< gram       (cgs mass unit)
+Unit const cm   = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.01}; //!< centimeter
+Unit const g    = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  1e-3}; //!< gram
 
-Unit const dyne = cm*g/(s*s);         //!< dyne       (cgs force unit)
-Unit const erg  = dyne*cm;            //!< erg        (cgs energy unit)
+Unit const dyne = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  1e-5}; //!< dyne
+Unit const erg  = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1e-7}; //!< erg
 
 // English units
 
-Unit const inch  = 0.0254*m;              //!< inch (English length unit)
-Unit const foot  = 12*inch;               //!< foot (English length unit)
-Unit const lbm   = 0.45359237*kg;         //!< pound mass (English mass unit)
-Unit const pound = 4.448221615*N;         //!< pound force (English force unit)
+Unit const inch  = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.0254};     //!< inch
+Unit const foot  = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.3048};     //!< foot
+Unit const lbm   = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  0.45359237}; //!< pound mass
+Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
 
 // Miscellaneous units popular in X-Division
 
-Unit const keV = erg*1.602176462e-9;      //!< Thousands of electron volts
+Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16};
+//!< Thousands of electron volts
 
 } // end namespace rtt_parser
 
