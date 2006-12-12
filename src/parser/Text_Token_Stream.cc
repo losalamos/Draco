@@ -279,6 +279,8 @@ Token Text_Token_Stream::fill()
 	    Ensure(check_class_invariants());
 	    return Token(c, token_location);
 	}
+
+        return Token(ERROR, token_location);
     }
 }
 
