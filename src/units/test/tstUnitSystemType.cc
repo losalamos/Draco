@@ -783,7 +783,7 @@ void test_sust_ctor()
 	    << "T().label() == \"K\"." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.T().cf(), 1.1604449278e7 ) )
+   if( soft_equiv( x4.T().cf(), 1.0/1.1604449278e7 ) )
     {
 	PASSMSG("x4 units container has T().cf() == 8.6173843847e-8");
     }

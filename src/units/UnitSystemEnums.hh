@@ -81,7 +81,7 @@ enum Ttype
 };
 
 int    const num_Ttype(3);
-double const T_cf[num_Ttype] = { 0.0, 1.0, 1.1604449278e7 };
+double const T_cf[num_Ttype] = { 0.0, 1.0, 1.0/1.1604449278e7 };
 std::string const T_labels( "NA,K,keV" );
 
 //========================================//

@@ -470,6 +470,9 @@ void test_scaled_values()
     dev = 5.67051e-8; // W / m^2 / K^4
     dev = dev * us.p() / si.p() * pow( si.L() / us.L(), 2 ) 
 	* pow( si.T() / us.T(), 4 );
+
+
+    std::cout << " ste = " << pc.stefanBoltzmann() << endl;
     if( soft_equiv( pc.stefanBoltzmann(), dev ) )
     {
 	ostringstream msg;

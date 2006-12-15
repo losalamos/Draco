@@ -166,7 +166,7 @@ void test_enumValues()
 //---------------------------------------------------------------------------//
     {
 	int    const iSenVal(3);
-	double const adSenVal[iSenVal] = { 0.0, 1.0, 1.1604449278e7 };
+	double const adSenVal[iSenVal] = { 0.0, 1.0, 1.0/1.1604449278e7 };
 	string const sSenVal( "NA,K,keV" );
 
 	if( rtt_units::num_Ttype == iSenVal )
