@@ -15,10 +15,12 @@
 #include <cmath>
 
 #include "ds++/Assert.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "../Release.hh"
-#include "<spkg>_test.hh"
 
 using namespace std;
+using namespace rtt_dsxx;
+using namespace <namespace>;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -30,16 +32,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            std::cout << argv[0] << ": version " 
-                      << <namespace>::release() 
-                      << std::endl;
-            return 0;
-        }
-
+    ScalarUnitTest ut(argc, argv, release);
     try
     {
         // >>> UNIT TESTS
@@ -48,32 +41,17 @@ int main(int argc, char *argv[])
     {
         std::cout << "ERROR: While testing <class>, " 
                   << err.what()
-                  << std::endl;
-        return 1;
+                  << endl;
+        ut.numFails++;
     }
     catch( ... )
     {
         std::cout << "ERROR: While testing <class>, " 
                   << "An unknown exception was thrown."
-                  << std::endl;
-        return 1;
+                  << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    if (<namespace>_test::passed) 
-    {
-        std::cout << "**** <class> Test: PASSED" 
-                  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    std::cout << std::endl;
-    
-    std::cout << "Done testing <class>." << std::endl;
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
