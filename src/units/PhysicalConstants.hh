@@ -22,7 +22,7 @@ namespace rtt_units
 // Mathematical constants
     
 //! pi the ratio of a circle's circumference to its diameter (dimensionless)
-static double const PI = 3.14159265358979324; 
+static double const PI = 3.141592653589793238462643383279; 
 
 // Base physical constants in SI units:
 
