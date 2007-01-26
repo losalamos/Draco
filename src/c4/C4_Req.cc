@@ -107,14 +107,15 @@ C4_ReqRefRep::C4_ReqRefRep()
 /*!
  * \brief Destructor.
  *
- * If we've been left holding the bag, make sure the message has completed.
- * This should plug a wide class of potential programming errors.
+ * It is important that all existing requests are cleared before the
+ * destructor is called.  We used to have a wait() in here; however, this
+ * causes exception safety problems.  In any case, it is probably a bad idea
+ * to clean up communication by going out of scope.
  */
 //---------------------------------------------------------------------------//
 
 C4_ReqRefRep::~C4_ReqRefRep()
 {
-    wait();
 }
 
 //---------------------------------------------------------------------------//
