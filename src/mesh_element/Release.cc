@@ -25,7 +25,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "mesh_element(draco-5_15_0)";
+    string pkg_release = "mesh_element(draco-5_16_0)";
     return pkg_release;
 }
 
