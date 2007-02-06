@@ -80,8 +80,7 @@ void wall_clock_test()
     double begin           = rtt_c4::wall_clock_time();
     double beginDeprecated = C4::Wtime();
 
-    if( ! beginDeprecated < begin &&
-        rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
+    if( rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
     {
         PASSMSG("Wtime() and wall_clock_time() returned equivalent values.");
     }
