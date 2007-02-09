@@ -38,6 +38,7 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
 	break;
 
     case QUAD_4 :
+    case QUAD_5 :
     case QUAD_8 :
     case QUAD_9 :
 	construct_quad();
@@ -315,7 +316,11 @@ void Element_Definition::construct_quad()
 	number_of_nodes=4;
 	elem_defs.push_back(Element_Definition(BAR_2));
 	break;
-    case QUAD_8 :
+    case QUAD_5 :
+	name = "QUAD_5";
+	number_of_nodes=5;
+	elem_defs.push_back(Element_Definition(BAR_2));
+	break;
     case QUAD_9 :
 	elem_defs.push_back(Element_Definition(BAR_3));
 	for (int i=0; i < 4; i++)

@@ -149,6 +149,8 @@ class Element_Definition
                      *   middle of each edge. This is the standard
                      *   quadratic-serendipity finite element triangle.*/
 	QUAD_4,     /*!< The basic two-D, four-node "quadrilateral" element. */
+	QUAD_5,     /*!< A two-D , five-node "quadrilateral" element for a new
+                         CFEM-based spatial discretization. */
 	QUAD_8,     /*!< Same as "QUAD_4" except a node is added in the
 		     *   middle of each edge. This is the
                      *   standard quadratic-serendipity finite element quad.*/
