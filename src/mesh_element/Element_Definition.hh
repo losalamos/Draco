@@ -128,7 +128,7 @@ class Element_Definition
 	FACE,   /*!< Located in the interior of a 2D element. */
 	CELL    /*!< Located in the interior of a 3D element. */
     };
-    
+
     /*!
      * \brief Standard element identifiers.
      *

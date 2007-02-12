@@ -321,6 +321,7 @@ void Element_Definition::construct_quad()
 	number_of_nodes=5;
 	elem_defs.push_back(Element_Definition(BAR_2));
 	break;
+    case QUAD_8 :
     case QUAD_9 :
 	elem_defs.push_back(Element_Definition(BAR_3));
 	for (int i=0; i < 4; i++)
