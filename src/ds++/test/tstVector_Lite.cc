@@ -39,6 +39,20 @@ main(int argc, char *argv[])
 	}
     }
 
+    cout << "assignment from another Vector_Lite" << endl;
+    Vector_Lite<int, 3> ix(0, 1, 2);
+    Vector_Lite<int, 3> iy(5, 6, 7);
+    iy    = ix;
+    ix[1] = 4;
+    {
+        UNIT_TEST(ix[0] == 0);
+        UNIT_TEST(ix[1] == 4);
+        UNIT_TEST(ix[2] == 2);
+        UNIT_TEST(iy[0] == 0);
+        UNIT_TEST(iy[1] == 1);
+        UNIT_TEST(iy[2] == 2);
+    }
+
     cout << "assignment to scalar" << endl;
     double c1 = 3.0;
     x = c1;

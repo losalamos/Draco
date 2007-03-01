@@ -95,6 +95,9 @@ class Vector_Lite
 
     // MANIPULATORS
 
+    // Assignment to a another Vector_Lite.
+    inline Vector_Lite &operator=(const Vector_Lite &rhs);
+
     // Assignment to a scalar.
     inline Vector_Lite &operator=(const T &rhs);
 

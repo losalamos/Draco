@@ -39,7 +39,6 @@ Vector_Lite(const T &u)
     }
 }
 
-
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for N = 2.
@@ -140,6 +139,28 @@ fill(const T u[N])
     for (size_t i=0; i<N; i++) {
 	d_U[i] = u[i];
     }
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Assignment to another Vector_Lite.
+ */
+template <class T, size_t N>
+Vector_Lite<T, N> &
+Vector_Lite<T, N>::
+operator=(const Vector_Lite &rhs)
+{
+    // return if objects are the same
+    if (&rhs == this)
+        return *this;
+
+    // otherwise do member assignment
+    for ( size_type i = 0; i < N; i++ )
+    {
+	d_U[i] = rhs.d_U[i];
+    }
+	
+    return *this;
 }
 
 //---------------------------------------------------------------------------//
