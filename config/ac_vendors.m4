@@ -391,8 +391,8 @@ AC_DEFUN([AC_TRILINOS_SETUP], [dnl
 	       [tell where TRILINOS libraries are])
 
    # set default value of trilinos includes and libs
-   if test "${with_trilinos:=aztecoo}" = yes ; then
-       with_trilinos='aztecoo'
+   if test "${with_trilinos:=yes}" = yes ; then
+       with_trilinos='-laztecoo -lamesos -lepetraext -lepetra -lteuchos -ltriutil'  
    fi
 
    # determine if this package is needed for testing or for the 
@@ -416,9 +416,9 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} ${with_trilinos})
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -l${with_trilinos} -lamesos -lepetraext -lepetra -lteuchos -ltriutils)
+	   AC_VENDORLIB_SETUP(vendor_trilinos, ${with_trilinos})
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
