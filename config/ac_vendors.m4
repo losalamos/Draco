@@ -392,7 +392,7 @@ AC_DEFUN([AC_TRILINOS_SETUP], [dnl
 
    # set default value of trilinos includes and libs
    if test "${with_trilinos:=yes}" = yes ; then
-       with_trilinos='-laztecoo -lamesos -lepetraext -lepetra -lteuchos -ltriutil'  
+       with_trilinos='-laztecoo -lamesos -lepetraext -lepetra -lteuchos -ltriutils'  
    fi
 
    # determine if this package is needed for testing or for the 
