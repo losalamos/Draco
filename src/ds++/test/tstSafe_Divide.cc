@@ -30,9 +30,21 @@ void test()
 
     double max = numeric_limits<double>::max();
 
-    if (safe_pos_divide (1.0, 0.0) != max) ITFAILS;
+    double big  = 1.0e200;
+    double tiny = 1.0e-200;
 
+    if (safe_pos_divide (big, tiny) != max) ITFAILS;
     if (safe_pos_divide (10.0, 5.0) != 2.0) ITFAILS;
+
+    if (safe_divide ( big, tiny) !=  max) ITFAILS;
+    if (safe_divide (-big, tiny) != -max) ITFAILS;
+    if (safe_divide (-big,-tiny) !=  max) ITFAILS;
+    if (safe_divide ( big,-tiny) != -max) ITFAILS;
+
+    if (safe_divide ( 10.0,  5.0) !=  2.0) ITFAILS;
+    if (safe_divide (-10.0,  5.0) != -2.0) ITFAILS;
+    if (safe_divide (-10.0, -5.0) !=  2.0) ITFAILS;
+    if (safe_divide ( 10.0, -5.0) != -2.0) ITFAILS;
     
 }
 
