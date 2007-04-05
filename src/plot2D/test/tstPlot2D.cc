@@ -14,7 +14,6 @@
 #include <sstream>
 #include <string>
 #include <cmath>
-#include <unistd.h> // for sleep
 
 #include "../Plot2D.hh"
 #include "../Release.hh"
@@ -193,10 +192,6 @@ main(int argc, char *argv[])
     try {
         // tests
         tstPlot2D(batch);
-
-        // We need to sleep so that the file system can catch up on the plot
-        // files that were created by tstPlot2D().
-        sleep(3); // from unistd.h (hopefully)
  
         // run python diff scrips
         if (system("python ./tstPlot2D_Diff.py"))
