@@ -8,12 +8,32 @@
 #  Checks standard tstPlot2D output.
 ##---------------------------------------------------------------------------##
 
-import string, re, sys
+import os, string, re, sys, time
 
 sys.path.append('@prefix@/bin') # for numdiff
 
 import numdiff
 
+def waitForFiles(files):
+  '''
+  Waits until all files in list "files" are created.  The problem
+  is that grace does not always exit gracefully, so the files it
+  creates may not get flushed right away.
+  '''
+  tries = 10 # number of attempts
+  wait = 2.0 # time to wait between each attempt
+  for i in range(tries):
+    exist = 1
+    for f in files:
+      if not os.path.exists(f):
+        exist = 0
+        break
+    if exist: return
+    else: time.sleep(wait)
+  print 'tstPlot2D_Diff could not find plot files!'
+  print 'fail'
+  sys.exit(1)
+        
 # ignore lines that start with these regex
 skip = ['^@.*']
 #skip = ['^@version.*', '^@timestamp.*', '^@default.sformat.*']
@@ -23,6 +43,8 @@ files = ['plot1.agr',
          'plot2.agr',
          'plot3.agr',
          'plot4.agr']
+
+waitForFiles(files)
 
 # Prefix to add to compare files to
 benchPrefix = 'bench_'
