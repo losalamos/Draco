@@ -51,8 +51,8 @@ class Q3DLevelSym : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
 
-    //! Returns the number of angles in the current quadrature set.
-    size_t getNumAngles()   const { return numAngles; }
+    //! Returns the number of ordinates in the current quadrature set.
+    size_t getNumOrdinates()   const { return numOrdinates; }
     //! Prints a short table containing the quadrature directions and weights.
     void display()       const;
     //! Returns the official name of the current quadrature set.
@@ -69,7 +69,7 @@ class Q3DLevelSym : public Quadrature
   private:
 
     // DATA
-    size_t numAngles; // defaults to 24.
+    size_t numOrdinates; // defaults to 24.
 };
 
 } // end namespace rtt_quadrature

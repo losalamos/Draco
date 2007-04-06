@@ -31,7 +31,7 @@ namespace rtt_quadrature
  */
 
 Q1Axial::Q1Axial( size_t n, double norm_ )
-    : Quadrature( n, norm_ ), numAngles( n )
+    : Quadrature( n, norm_ ), numOrdinates( n )
 {
     // We require the sn_order to be 2.
     Require( n == 2.0 );

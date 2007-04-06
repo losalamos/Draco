@@ -115,7 +115,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 	    cout << "\nTesting the "  << qname
 		 << " quadrature set." << endl
                  << "   Sn Order         = " << spQuad->getSnOrder() << endl
-                 << "   Number of Angles = " << spQuad->getNumAngles() << endl
+                 << "   Number of Ordinates = " << spQuad->getNumOrdinates() << endl
                  << "   Dimensionality   = " << spQuad->dimensionality()
                  << endl << endl; 
 
@@ -144,7 +144,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 		vector<double> const vxi( spQuad->getXi() );
 
 		// ensure that the length of the discrete ordinate vector is 1.
-		for( size_t m=0; m<spQuad->getNumAngles(); ++m )
+		for( size_t m=0; m<spQuad->getNumOrdinates(); ++m )
 		{
 		    double const mu( spQuad->getMu(m) );
 		    double const eta( spQuad->getEta(m) );
@@ -209,7 +209,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 		vector< vector<double> > omega = spQuad->getOmega();
 
 		// compare values.
-		if ( mu.size() != spQuad->getNumAngles() )
+		if ( mu.size() != spQuad->getNumOrdinates() )
 		    ut.failure("The direction vector has the wrong length.");
                 else if ( fabs(mu[0]-mu0[ix]) > TOL ) 
                     ut.failure("mu[0] has the wrong value.");
@@ -421,7 +421,7 @@ void tst_general_quadrature( UnitTest & ut )
 
     quad.display();
     
-    if( quad.getNumAngles() != refQuad.getNumAngles() )
+    if( quad.getNumOrdinates() != refQuad.getNumOrdinates() )
         ut.failure(__LINE__);
     if( quad.name() != string("GeneralQuadrature") )
         ut.failure(__LINE__);

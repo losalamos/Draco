@@ -52,7 +52,6 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
 
-    double const mu1( std::sqrt(2.0)/2.0 );
     double const mu2( std::sqrt(3.0)/3.0 );
     Ensure( soft_equiv( compute_azimuthalAngle( 1.0, 0.0, 0.0 ), 0.0 ) );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, mu2 ), PI/4.0 )  );
@@ -98,7 +97,7 @@ QuadServices::QuadServices(
 //  */
 // QuadServices::QuadServices( OrdinateSet const & os )
 //     : spQuad( os.getQuadrature() ),   
-//       numMoments( spQuad->getNumAngles() ),    
+//       numMoments( spQuad->getNumOrdinates() ),    
 //       n2lk(       compute_n2lk() ),
 //       Mmatrix(    computeM() ),
 //       Dmatrix(    computeD() )	
@@ -119,10 +118,10 @@ std::vector< double > QuadServices::applyM( std::vector< double > const & phi ) 
 {
     Require( phi.size() == numMoments );
 
-    size_t const numAngles( spQuad->getNumAngles() );
-    std::vector< double > psi( numAngles, 0.0 );
+    size_t const numOrdinates( spQuad->getNumOrdinates() );
+    std::vector< double > psi( numOrdinates, 0.0 );
 
-    for( size_t m=0; m<numAngles; ++m )
+    for( size_t m=0; m<numOrdinates; ++m )
 	for( size_t n=0; n<numMoments; ++n )
 	    psi[ m ] += Mmatrix[ n + m*numMoments ] * phi[n];
     
@@ -131,22 +130,22 @@ std::vector< double > QuadServices::applyM( std::vector< double > const & phi ) 
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Apply the action of \f$ D \f$ to the discrete-angle based solution vector
+ * \brief Apply the action of \f$ D \f$ to the discrete-ordinate based solution vector
  * \f$ \mathbf\Psi \f$. That is, \f$ \mathbf\Phi = \mathbf{D}\mathbf\Psi \f$.
  * 
- * \param psi Discrete angle-based solution vector, \f$ \mathbf\Psi \f$.
+ * \param psi Discrete ordinate-based solution vector, \f$ \mathbf\Psi \f$.
  * \return The moment-based solution vector, \f$ \mathbf\Phi \f$.
  */
 std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) const
 {
-    size_t const numAngles( spQuad->getNumAngles() );
-    Require( psi.size() == numAngles );
+    size_t const numOrdinates( spQuad->getNumOrdinates() );
+    Require( psi.size() == numOrdinates );
 
     std::vector< double > phi( numMoments, 0.0 );
 
-    for( size_t m=0; m<numAngles; ++m )
+    for( size_t m=0; m<numOrdinates; ++m )
         for( size_t n=0; n<numMoments; ++n )
-            phi[ n ] += Dmatrix[ m + n*numAngles ] * psi[m];
+            phi[ n ] += Dmatrix[ m + n*numOrdinates ] * psi[m];
     
     return phi;
 }
@@ -163,7 +162,7 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
  * is called by the constuctor.
  *
  * Normally, M will not be square because we only have isotropic scatting.
- * For isotropic scattering M will be (numAngles x 1 moment).  We will use the
+ * For isotropic scattering M will be (numOrdinates x 1 moment).  We will use the
  * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.
  */
 std::vector< double > QuadServices::computeD(void) const
@@ -191,7 +190,7 @@ std::vector< double > QuadServices::computeD(void) const
 std::vector< double > QuadServices::computeD_morel(void) const
 {
     int n( numMoments );
-    int m( spQuad->getNumAngles() );
+    int m( spQuad->getNumOrdinates() );
 
     Require( n == m );
 
@@ -255,13 +254,13 @@ std::vector< double > QuadServices::computeD_traditional(void) const
 {
     using rtt_sf::galerkinYlk;
 
-    int      const numAngles( spQuad->getNumAngles() );
+    unsigned const numOrdinates( spQuad->getNumOrdinates() );
     double   const sumwt(     spQuad->getNorm() );
     unsigned const dim(       spQuad->dimensionality() );
     
-    std::vector< double > D( numAngles*numMoments );
+    std::vector< double > D( numOrdinates*numMoments );
     
-    for( unsigned m=0; m<numAngles; ++m )
+    for( unsigned m=0; m<numOrdinates; ++m )
     {
         double mu( spQuad->getMu(m) );
         double wt( spQuad->getWt(m) );
@@ -277,7 +276,7 @@ std::vector< double > QuadServices::computeD_traditional(void) const
 
             if( dim == 1 ) // 1D mesh, 1D quadrature
             { // for 1D, mu is the polar direction and phi == 0, k==0
-                D[ m + n*numAngles ] =
+                D[ m + n*numOrdinates ] =
                     c*wt*galerkinYlk( ell, std::abs(k), mu, 0.0, sumwt );
             }
 
@@ -290,7 +289,7 @@ std::vector< double > QuadServices::computeD_traditional(void) const
                     double xi(  spQuad->getXi(m) );
                     double eta( std::sqrt(1.0-mu*mu-xi*xi) );
                     double phi( compute_azimuthalAngle( xi, eta, mu ) );
-                    D[ m + n*numAngles ] =
+                    D[ m + n*numOrdinates ] =
                         c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
                 }
                 else // assume xi is empty
@@ -298,7 +297,7 @@ std::vector< double > QuadServices::computeD_traditional(void) const
                     double eta( spQuad->getEta(m) );
                     double xi(  std::sqrt(1.0-mu*mu-eta*eta) );
                     double phi( compute_azimuthalAngle( eta, xi, mu ) );
-                    D[ m + n*numAngles ] =
+                    D[ m + n*numOrdinates ] =
                         c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
                 }
             }
@@ -309,12 +308,12 @@ std::vector< double > QuadServices::computeD_traditional(void) const
                 double eta( spQuad->getEta(m) );
                 double xi ( spQuad->getXi( m) );
                 double phi( compute_azimuthalAngle( mu, eta, xi ) );
-                D[ m + n*numAngles ] =
+                D[ m + n*numOrdinates ] =
                     c*wt*galerkinYlk( ell, k, xi, phi, sumwt );
             }
             
         } // n: end moment loop
-    } // m: end angle loop
+    } // m: end ordinate loop
 
     return D;
 }
@@ -327,13 +326,13 @@ std::vector< double > QuadServices::computeD_traditional(void) const
  * is called by the constuctor.
  *
  * Normally, M will not be square because we only have isotropic scatting.
- * For isotropic scattering M will be (numAngles x 1 moment).  We will use the
+ * For isotropic scattering M will be (numOrdinates x 1 moment).  We will use the
  * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.
  */
 std::vector< double > QuadServices::computeD_svd(void) const
 {
     int n( numMoments );
-    int m( spQuad->getNumAngles() );
+    int m( spQuad->getNumOrdinates() );
 
     // SVD:
     //! \f$ M = U S V^T \f$
@@ -350,9 +349,6 @@ std::vector< double > QuadServices::computeD_svd(void) const
     gsl_vector_view gsl_S = gsl_vector_view_array( &S[0], n );
     gsl_matrix_view gsl_V = gsl_matrix_view_array( &V[0], n, n );
     gsl_matrix_view gsl_D = gsl_matrix_view_array( &D[0], n, m );
-    
-    // Store information aobut sign changes in this variable.
-    int signum(0);
     
     // Singular Value Decomposition
     //
@@ -456,23 +452,23 @@ bool QuadServices::diagonal_not_zero( std::vector<double> const & vec,
  *
  * This private member function is called by the constructor. 
  * 
- * The moment-to-discrete matrix will be num_moments by num_angles in size.
+ * The moment-to-discrete matrix will be num_moments by num_ordinates in size.
  */
 std::vector< double > QuadServices::computeM(void) const
 {
     using std::sqrt;
     using rtt_sf::galerkinYlk;
 
-    unsigned const numAngles( spQuad->getNumAngles() );
+    unsigned const numOrdinates( spQuad->getNumOrdinates() );
     unsigned const dim(       spQuad->dimensionality() );
     double   const sumwt(     spQuad->getNorm() );
 
     // resize the M matrix.
-    std::vector< double > Mmatrix( numMoments*numAngles, -9999.0 );
+    std::vector< double > Mmatrix( numMoments*numOrdinates, -9999.0 );
 
     for( unsigned n=0; n<numMoments; ++n )
     {
-        for( unsigned m=0; m<numAngles; ++m )
+        for( unsigned m=0; m<numOrdinates; ++m )
         {
             unsigned const ell ( n2lk[n].first  );
             int      const k   ( n2lk[n].second ); 
@@ -521,7 +517,7 @@ std::vector< double > QuadServices::computeM(void) const
                     = galerkinYlk( ell, k, xi, phi, sumwt );
             } 
         } // n: end moment loop
-    } // m: end angle loop
+    } // m: end ordinate loop
     return Mmatrix;
 }
 
@@ -587,8 +583,8 @@ bool QuadServices::D_equals_M_inverse() const
 {
     using rtt_dsxx::soft_equiv;
 
-    int n( numMoments );
-    int m( spQuad->getNumAngles() );
+    unsigned n( numMoments );
+    int m( spQuad->getNumOrdinates() );
 //    int nm( std::min( n,m ) );
 
     // create non-const versions of M and D.
@@ -654,7 +650,7 @@ compute_n2lk( unsigned const expansionOrder ) const
     if( dim == 1 )
     {
         if( qm == GALERKIN )
-            return compute_n2lk_1D( spQuad->getNumAngles() );
+            return compute_n2lk_1D( spQuad->getNumOrdinates() );
         else
             return compute_n2lk_1D(L);
     }
@@ -673,8 +669,8 @@ compute_n2lk_3D_morel( void ) const
     unsigned const L(         spQuad->getSnOrder() );
 
     // This algorithm only  works for level symmetric sets because it
-    // assumes numAngles = (L)(L+2).
-    Require( spQuad->getNumAngles()  == L*(L+2) );
+    // assumes numOrdinates = (L)(L+2).
+    Require( spQuad->getNumOrdinates()  == L*(L+2) );
     
     std::vector< lk_index > result;
 
@@ -717,8 +713,8 @@ compute_n2lk_2D_morel( void ) const
     unsigned const L(         spQuad->getSnOrder()   );
 
     // This algorithm only  works for level symmetric sets because it
-    // assumes numAngles = (L)(L+2)/2.
-    Require( spQuad->getNumAngles() == L*(L+2)/2 );
+    // assumes numOrdinates = (L)(L+2)/2.
+    Require( spQuad->getNumOrdinates() == L*(L+2)/2 );
 
     std::vector< lk_index > result;
     
@@ -798,15 +794,15 @@ compute_n2lk_1D( unsigned const L ) const
  *
  * These values are not used in determing D.  They only extent M for starting
  * directions.  For example, for S2 RZ there are 2 additional starting
- * directions.  The S2 XY M operator has 16 values (4 angles and 4 moments).
+ * directions.  The S2 XY M operator has 16 values (4 ordinates and 4 moments).
  * The starting directions will have the same moment values as the first 4
- * angles (Y00, Y10, Y11, Y21), but will be evaluated as the starting
- * direction angles.
+ * ordinates (Y00, Y10, Y11, Y21), but will be evaluated as the starting
+ * direction ordinates.
  */
 double QuadServices::augmentM( unsigned n, Ordinate const & Omega ) const
 {
     // If you trigger this exception, you may have requested too many
-    // moments.  Your quadrature set must have more angles than the number of
+    // moments.  Your quadrature set must have more ordinates than the number of
     // moments requested.
     Require(n<n2lk.size());
     // The n-th moment is the (l,k) pair used to evaluate Y_{l,k}.

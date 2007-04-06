@@ -52,7 +52,7 @@ class Q1DLobatto : public Quadrature
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
     
-    size_t getNumAngles()   const { return numAngles; }
+    size_t getNumOrdinates()   const { return numOrdinates; }
     void   display()        const;
     string name()           const { return "1D Lobatto"; }
     size_t dimensionality() const { return 1; }
@@ -62,7 +62,7 @@ class Q1DLobatto : public Quadrature
   private:
 
     // DATA
-    size_t numAngles;  // == snOrder
+    size_t numOrdinates;  // == snOrder
 };
 
 } // end namespace rtt_quadrature

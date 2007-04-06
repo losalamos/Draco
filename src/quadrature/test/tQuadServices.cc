@@ -122,7 +122,7 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
     // print the name of the quadrature set that we are testing.
     string const qname   (  spQuad->name()         );
     size_t const snOrder(   spQuad->getSnOrder()   );
-    size_t const numAngles( spQuad->getNumAngles() );
+    size_t const numOrdinates( spQuad->getNumOrdinates() );
     double const sumwt(     spQuad->getNorm() );
     
     // check basic quadrature setup.
@@ -134,13 +134,13 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
 	ut.passes("Found correct Sn Order.");
     }
-    if( numAngles != n_ang_ref  )
+    if( numOrdinates != n_ang_ref  )
     {
-	ut.failure("Found incorrect number of angles.");
+	ut.failure("Found incorrect number of ordinates.");
     }
     else 
     {
-	ut.passes("Found correct number of angles.");
+	ut.passes("Found correct number of ordinates.");
     }
     if( qname != qname_ref  )
     {
@@ -166,7 +166,7 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
 
     std::vector< unsigned > dims;
     dims.push_back( numMoments );
-    dims.push_back( numAngles );
+    dims.push_back( numOrdinates );
     
     qs.print_matrix( "Mmatrix", M, dims );
 
@@ -190,7 +190,7 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
     { 
 	double const c( (2.0*n+1.0)/sumwt );
 
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
 	    if( soft_equiv( M[ n + m*numMoments ], c*clk*P(n,mu[m]) ) )
 	    {
@@ -220,13 +220,13 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
 	unsigned n(0);
 	std::vector< double > const wt( spQuad->getWt() );
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
-	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    if( soft_equiv( D[ m + n*numOrdinates ], wt[m] ) )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " matched the expected value." << endl;
 		ut.passes( msg.str() );
 	    }
@@ -234,7 +234,7 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " did not match the expected value of " 
 		    << wt[m] << "." << endl;
 		ut.failure( msg.str() );
@@ -258,7 +258,7 @@ void test_quad_services_with_1D_S2_quad( rtt_dsxx::UnitTest & ut )
     // Test applyD function
     // ------------------------------------------------------------
     {
-	vector<double> const angularFlux( numAngles, 7.0 );
+	vector<double> const angularFlux( numOrdinates, 7.0 );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
 
 	if( soft_equiv( fluxMoments[0], 14.0 ) &&
@@ -338,8 +338,7 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
     // print the name of the quadrature set that we are testing.
     const string qname   (  spQuad->name()         );
     const size_t snOrder(   spQuad->getSnOrder()   );
-    const size_t numAngles( spQuad->getNumAngles() );
-    const double sumwt(     spQuad->getNorm() );
+    const size_t numOrdinates( spQuad->getNumOrdinates() );
     
     // check basic quadrature setup.
     if( snOrder != sn_ord_ref ) 
@@ -350,13 +349,13 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
     {
 	ut.passes("Found correct Sn Order.");
     }
-    if( numAngles != n_ang_ref  )
+    if( numOrdinates != n_ang_ref  )
     {
-	ut.failure("Found incorrect number of angles.");
+	ut.failure("Found incorrect number of ordinates.");
     }
     else 
     {
-	ut.passes("Found correct number of angles.");
+	ut.passes("Found correct number of ordinates.");
     }
     if( qname != qname_ref  )
     {
@@ -381,7 +380,7 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
 
     std::vector< unsigned > dims;
     dims.push_back( numMoments );
-    dims.push_back( numAngles );
+    dims.push_back( numOrdinates );
     
     qs.print_matrix( "Mmatrix", M, dims );
 
@@ -405,7 +404,7 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
     { 
 	double const c( (2.0*n+1.0)/2.0 );
 
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
 	    if( soft_equiv( M[ n + m*numMoments ], c*clk*P(n,mu[m]) ) )
 	    {
@@ -435,13 +434,13 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
     {
 	unsigned n(0);
 	std::vector< double > const wt( spQuad->getWt() );
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
-	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    if( soft_equiv( D[ m + n*numOrdinates ], wt[m] ) )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " matched the expected value." << endl;
 		ut.passes( msg.str() );
 	    }
@@ -449,7 +448,7 @@ void test_quad_services_with_1D_S8_quad( rtt_dsxx::UnitTest & ut )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " did not match the expected value of " 
 		    << wt[m] << "." << endl;
 		ut.failure( msg.str() );
@@ -496,7 +495,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     // print the name of the quadrature set that we are testing.
     const string qname   (  spQuad->name()         );
     const size_t snOrder(   spQuad->getSnOrder()   );
-    const size_t numAngles( spQuad->getNumAngles() );
+    const size_t numOrdinates( spQuad->getNumOrdinates() );
     const double sumwt(     spQuad->getNorm() );
 
     // check basic quadrature setup.
@@ -508,13 +507,13 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
 	ut.passes("Found correct Sn Order.");
     }
-    if( numAngles != n_ang_ref  )
+    if( numOrdinates != n_ang_ref  )
     {
-	ut.failure("Found incorrect number of angles.");
+	ut.failure("Found incorrect number of ordinates.");
     }
     else 
     {
-	ut.passes("Found correct number of angles.");
+	ut.passes("Found correct number of ordinates.");
     }
     if( qname != qname_ref  )
     {
@@ -540,7 +539,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
         std::vector< unsigned > dims;
         dims.push_back( numMoments );
-        dims.push_back( numAngles );
+        dims.push_back( numOrdinates );
         qs.print_matrix( "Mmatrix", M, dims );
     }
 
@@ -568,7 +567,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	double   const c(   ( 2.0*ell+1.0 ) / sumwt );
 	
         if( ell < 4 )
-        for( size_t m=0; m<numAngles; ++m )
+        for( size_t m=0; m<numOrdinates; ++m )
         {
             double expVal = c*getclk(ell,k)*P(ell,std::abs(k),xi[m]);
             double phi    = QuadServices::compute_azimuthalAngle( mu[m], eta[m], xi[m] );
@@ -604,7 +603,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     vector<double> const D( qs.getD() );
     {
         std::vector< unsigned > dims;
-        dims.push_back( numAngles );
+        dims.push_back( numOrdinates );
         dims.push_back( numMoments );
         qs.print_matrix( "Dmatrix", D, dims );
     }
@@ -613,13 +612,13 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
 	unsigned n(0);
 	std::vector< double > const wt( spQuad->getWt() );
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
-	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    if( soft_equiv( D[ m + n*numOrdinates ], wt[m] ) )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " matched the expected value." << endl;
 		ut.passes( msg.str() );
 	    }
@@ -627,7 +626,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " did not match the expected value of " 
 		    << wt[m] << "." << endl;
 		ut.failure( msg.str() );
@@ -653,7 +652,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
         // Isotropic angular flux -> only 1 non-zero moment.
         double magnitude(7.0);
-	vector<double> const angularFlux( numAngles, magnitude );
+	vector<double> const angularFlux( numOrdinates, magnitude );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
         vector<double> expectedPhi( numMoments, 0.0 );
         expectedPhi[0]=magnitude*sumwt;
@@ -669,7 +668,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	    msg << "applyD() failed to work as expected." << endl
 		<< "\tExpected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
                 << "but found \n\tphi = {";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << "\n\t" << fluxMoments[i];
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -685,7 +684,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	vector<double> fluxMoments( numMoments, 0.0 );
         fluxMoments[0]=magnitude;
 	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
-        vector<double> expectedPsi( numAngles, magnitude/sumwt );
+        vector<double> expectedPsi( numOrdinates, magnitude/sumwt );
 	
 	if( soft_equiv( angularFlux.begin(), angularFlux.end(),
                         expectedPsi.begin(), expectedPsi.end() ) )
@@ -697,10 +696,10 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	    ostringstream msg;
 	    msg << "applyM() failed to work as expected." << endl
 		<< "Expected psi = { ";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << expectedPsi[i] << "\n";
             msg << " }, but found psi = { ";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << angularFlux[i] << "\n"; 
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -712,9 +711,9 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
         QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
-        for( int i=0; i< numAngles; ++i )
+        for( int i=0; i< numOrdinates; ++i )
         {
-            vector<double> psi(numAngles,0.0);
+            vector<double> psi(numOrdinates,0.0);
             psi[i]=magnitude;
             vector<double> phi( qsm.applyD( psi ) );
             vector<double> psi2( qsm.applyM( phi ) );
@@ -772,7 +771,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     // print the name of the quadrature set that we are testing.
     const string qname   (  spQuad->name()         );
     const size_t snOrder(   spQuad->getSnOrder()   );
-    const size_t numAngles( spQuad->getNumAngles() );
+    const size_t numOrdinates( spQuad->getNumOrdinates() );
     const double sumwt(     spQuad->getNorm() );
 
     // check basic quadrature setup.
@@ -784,13 +783,13 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     {
 	ut.passes("Found correct Sn Order.");
     }
-    if( numAngles != n_ang_ref  )
+    if( numOrdinates != n_ang_ref  )
     {
-	ut.failure("Found incorrect number of angles.");
+	ut.failure("Found incorrect number of ordinates.");
     }
     else 
     {
-	ut.passes("Found correct number of angles.");
+	ut.passes("Found correct number of ordinates.");
     }
     if( qname != qname_ref  )
     {
@@ -816,7 +815,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     {
         std::vector< unsigned > dims;
         dims.push_back( numMoments );
-        dims.push_back( numAngles );
+        dims.push_back( numOrdinates );
         qs.print_matrix( "Mmatrix", M, dims );
     }
 
@@ -844,7 +843,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	double   const c(   ( 2.0*ell+1.0 ) / sumwt );
 	
         if( ell < 4 )
-        for( size_t m=0; m<numAngles; ++m )
+        for( size_t m=0; m<numOrdinates; ++m )
         {
             double expVal = c*getclk(ell,k)*P(ell,std::abs(k),xi[m]);
             double phi    = QuadServices::compute_azimuthalAngle( mu[m], eta[m], xi[m] );
@@ -883,7 +882,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     vector<double> const D( qs.getD() );
     {
         std::vector< unsigned > dims;
-        dims.push_back( numAngles );
+        dims.push_back( numOrdinates );
         dims.push_back( numMoments );
         qs.print_matrix( "Dmatrix", D, dims );
     }
@@ -892,13 +891,13 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     {
 	unsigned n(0);
 	std::vector< double > const wt( spQuad->getWt() );
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
-	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    if( soft_equiv( D[ m + n*numOrdinates ], wt[m] ) )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " matched the expected value." << endl;
 		ut.passes( msg.str() );
 	    }
@@ -906,7 +905,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " did not match the expected value of " 
 		    << wt[m] << "." << endl;
 		ut.failure( msg.str() );
@@ -932,7 +931,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     {
         // Isotropic angular flux -> only 1 non-zero moment.
         double magnitude(7.0);
-	vector<double> const angularFlux( numAngles, magnitude );
+	vector<double> const angularFlux( numOrdinates, magnitude );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
         vector<double> expectedPhi( numMoments, 0.0 );
         expectedPhi[0]=magnitude*sumwt;
@@ -948,7 +947,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	    msg << "applyD() failed to work as expected." << endl
 		<< "Expected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
                 << "but found phi = { \n";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << fluxMoments[i] << "\n";
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -964,7 +963,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	vector<double> fluxMoments( numMoments, 0.0 );
         fluxMoments[0]=magnitude;
 	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
-        vector<double> expectedPsi( numAngles, magnitude/sumwt );
+        vector<double> expectedPsi( numOrdinates, magnitude/sumwt );
 	
 	if( soft_equiv( angularFlux.begin(), angularFlux.end(),
                         expectedPsi.begin(), expectedPsi.end() ) )
@@ -976,10 +975,10 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	    ostringstream msg;
 	    msg << "applyM() failed to work as expected." << endl
 		<< "Expected psi = { ";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << expectedPsi[i] << "\n";
             msg << " }, but found psi = { ";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << angularFlux[i] << "\n"; 
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -991,9 +990,9 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     {
         QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
-        for( int i=0; i< numAngles; ++i )
+        for( int i=0; i< numOrdinates; ++i )
         {
-            vector<double> psi(numAngles,0.0);
+            vector<double> psi(numOrdinates,0.0);
             psi[i]=magnitude;
             vector<double> phi( qsm.applyD( psi ) );
             vector<double> psi2( qsm.applyM( phi ) );
@@ -1052,7 +1051,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     // print the name of the quadrature set that we are testing.
     const string qname   (  spQuad->name()         );
     const size_t snOrder(   spQuad->getSnOrder()   );
-    const size_t numAngles( spQuad->getNumAngles() );
+    const size_t numOrdinates( spQuad->getNumOrdinates() );
     const double sumwt(     spQuad->getNorm() );
 
     // check basic quadrature setup.
@@ -1064,13 +1063,13 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     {
 	ut.passes("Found correct Sn Order.");
     }
-    if( numAngles != n_ang_ref  )
+    if( numOrdinates != n_ang_ref  )
     {
-	ut.failure("Found incorrect number of angles.");
+	ut.failure("Found incorrect number of ordinates.");
     }
     else 
     {
-	ut.passes("Found correct number of angles.");
+	ut.passes("Found correct number of ordinates.");
     }
     if( qname != qname_ref  )
     {
@@ -1096,7 +1095,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     {
         std::vector< unsigned > dims;
         dims.push_back( numMoments );
-        dims.push_back( numAngles );
+        dims.push_back( numOrdinates );
         qs.print_matrix( "Mmatrix", M, dims );
     }
 
@@ -1123,7 +1122,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
         
 	if( k == 0 ) 
 	{
-	    for( size_t m=0; m<numAngles; ++m )
+	    for( size_t m=0; m<numOrdinates; ++m )
 	    {
                 double expectedValue = c*getclk(ell,k)*P( ell, mu[m] );
 		if( soft_equiv( M[ n + m*numMoments ], expectedValue ) )
@@ -1153,7 +1152,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 
     {
         std::vector< unsigned > dims;
-        dims.push_back( numAngles );
+        dims.push_back( numOrdinates );
         dims.push_back( numMoments );
         qs.print_matrix( "Dmatrix", D, dims );
     }
@@ -1162,13 +1161,13 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     {
 	unsigned n(0);
 	std::vector< double > const wt( spQuad->getWt() );
-	for( size_t m=0; m<numAngles; ++m )
+	for( size_t m=0; m<numOrdinates; ++m )
 	{
-	    if( soft_equiv( D[ m + n*numAngles ], wt[m] ) )
+	    if( soft_equiv( D[ m + n*numOrdinates ], wt[m] ) )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " matched the expected value." << endl;
 		ut.passes( msg.str() );
 	    }
@@ -1176,7 +1175,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 	    {
 		ostringstream msg;
 		msg << "D[" << m << "," << n << "] = " 
-		    << D[ m + n*numAngles ] 
+		    << D[ m + n*numOrdinates ] 
 		    << " did not match the expected value of " 
 		    << wt[m] << "." << endl;
 		ut.failure( msg.str() );
@@ -1202,7 +1201,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     {
         // Isotropic angular flux -> only 1 non-zero moment.
         double magnitude(7.0);
-	vector<double> const angularFlux( numAngles, magnitude );
+	vector<double> const angularFlux( numOrdinates, magnitude );
 	vector<double> const fluxMoments( qs.applyD( angularFlux ) );
         vector<double> expectedPhi( numMoments, 0.0 );
         expectedPhi[0]=magnitude*sumwt;
@@ -1218,7 +1217,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 	    msg << "applyD() failed to work as expected." << endl
 		<< "Expected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
                 << "but found phi = { \n";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << fluxMoments[i] << "\n";
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -1234,7 +1233,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 	vector<double> fluxMoments( numMoments, 0.0 );
         fluxMoments[0]=magnitude;
 	vector<double> const angularFlux( qs.applyM( fluxMoments ) );
-        vector<double> expectedPsi( numAngles, magnitude/sumwt );
+        vector<double> expectedPsi( numOrdinates, magnitude/sumwt );
 	
 	if( soft_equiv( angularFlux.begin(), angularFlux.end(),
                         expectedPsi.begin(), expectedPsi.end() ) )
@@ -1246,10 +1245,10 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 	    ostringstream msg;
 	    msg << "applyM() failed to work as expected." << endl
 		<< "Expected psi = { ";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << expectedPsi[i] << "\n";
             msg << " }, but found psi = { ";
-            for( int i=0; i< numAngles; ++i)
+            for( int i=0; i< numOrdinates; ++i)
                 msg << angularFlux[i] << "\n"; 
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -1261,9 +1260,9 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     {
         QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
-        for( int i=0; i< numAngles; ++i )
+        for( int i=0; i< numOrdinates; ++i )
         {
-            vector<double> psi(numAngles,0.0);
+            vector<double> psi(numOrdinates,0.0);
             psi[i]=magnitude;
             vector<double> phi( qsm.applyD( psi ) );
             vector<double> psi2( qsm.applyM( phi ) );
@@ -1311,7 +1310,7 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
     spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, snOrder ); 
     
     // Create a vector that designates the (l,k) moments that will be used
-    unsigned const numMoments( spQuad->getNumAngles() );
+    unsigned const numMoments( spQuad->getNumOrdinates() );
     unsigned n(0);
     vector< lk_index > lkMoments;
     

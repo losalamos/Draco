@@ -27,13 +27,13 @@ namespace rtt_quadrature
  * \brief Constructs a 2D Square Chebyshev Legendre quadrature object.
  *
  * \param snOrder_ Integer specifying the order of the SN set to be
- *                 constructed.  Number of angles = (snOrder*snOrder)
+ *                 constructed.  Number of ordinates = (snOrder*snOrder)
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 2*PI).
  */
 //---------------------------------------------------------------------------//
 Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double norm_ ) 
-    : Quadrature( sn_order_, norm_ ), numAngles (sn_order_ * sn_order_)
+    : Quadrature( sn_order_, norm_ ), numOrdinates (sn_order_ * sn_order_)
 {
     using std::fabs;
     using std::sqrt;
@@ -44,9 +44,9 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
     Require ( norm > 0.0 );
 
     // Force the direction vectors to be the correct length.
-    mu.resize(numAngles);
-    eta.resize(numAngles);
-    wt.resize(numAngles);
+    mu.resize(numOrdinates);
+    eta.resize(numOrdinates);
+    wt.resize(numOrdinates);
 
 //     if ( snOrder == 8)
 //     {
@@ -249,31 +249,31 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
 
         // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
 
-        for (int i=0; i<snOrder; ++i)
+        for (unsigned i=0; i<snOrder; ++i)
         {
             double const xmu=gauss.getMu(i);
 
             double const xwt=gauss.getWt(i);
             double const xsr=sqrt(1.0-xmu*xmu);
             
-            for (int j=0; j<snOrder; ++j)
+            for (unsigned j=0; j<snOrder; ++j)
             {
-                size_t angle=j+i*snOrder;
+                size_t ordinate=j+i*snOrder;
                 
-                eta[angle] = xmu;
-                mu[angle]  = xsr*cos(rtt_units::PI*(2.0*j+1.0)/snOrder/2.0);
-                wt[angle]  = xwt/snOrder;
+                eta[ordinate] = xmu;
+                mu[ordinate]  = xsr*cos(rtt_units::PI*(2.0*j+1.0)/snOrder/2.0);
+                wt[ordinate]  = xwt/snOrder;
             }
         }
 //     }
 
     // Normalize the quadrature set
     double wsum = 0.0;
-    for(size_t angle = 0; angle < numAngles; ++angle)
-	wsum = wsum + wt[angle];
+    for(size_t ordinate = 0; ordinate < numOrdinates; ++ordinate)
+	wsum = wsum + wt[ordinate];
     
-    for(size_t angle = 0; angle < numAngles; ++angle)
-	wt[angle] = wt[angle]*(norm/wsum);
+    for(size_t ordinate = 0; ordinate < numOrdinates; ++ordinate)
+	wt[ordinate] = wt[ordinate]*(norm/wsum);
 
     // Verify that the quadrature meets our integration requirements.
     Ensure( soft_equiv(iDomega(),norm) );
@@ -291,13 +291,13 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
     Ensure( soft_equiv(iood[3],norm/3.0) ); // eta*eta
 
     // Copy quadrature data { mu, eta } into the vector omega.
-    omega.resize( numAngles );
+    omega.resize( numOrdinates );
     size_t ndims = dimensionality();
-    for ( size_t angle = 0; angle < numAngles; ++angle )
+    for ( size_t ordinate = 0; ordinate < numOrdinates; ++ordinate )
     {
-	omega[angle].resize(ndims);
-	omega[angle][0] = mu[angle];
-	omega[angle][1] = eta[angle];
+	omega[ordinate].resize(ndims);
+	omega[ordinate][0] = mu[ordinate];
+	omega[ordinate][1] = eta[ordinate];
     }
 
     //display();
@@ -317,14 +317,14 @@ void Q2DSquareChebyshevLegendre::display() const
     cout << "   m  \t    mu        \t    eta       \t     wt      " << endl;
     cout << "  --- \t------------- \t------------- \t-------------" << endl;
     double sum_wt = 0.0;
-    for ( size_t angle = 0; angle < mu.size(); ++angle )
+    for ( size_t ordinate = 0; ordinate < mu.size(); ++ordinate )
     {
 	cout << "   "
-	     << angle << "\t"
-	     << setprecision(10) << eta[angle]  << "\t"
-	     << setprecision(10) << mu[angle] << "\t"
-	     << setprecision(10) << wt[angle]  << endl;
-	sum_wt += wt[angle];
+	     << ordinate << "\t"
+	     << setprecision(10) << eta[ordinate]  << "\t"
+	     << setprecision(10) << mu[ordinate] << "\t"
+	     << setprecision(10) << wt[ordinate]  << endl;
+	sum_wt += wt[ordinate];
     }
     cout << endl << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;

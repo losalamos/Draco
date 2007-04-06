@@ -28,13 +28,13 @@ namespace rtt_quadrature
  * \brief Constructs a 2D Level Symmetric quadrature object.
  *
  * \param snOrder_ Integer specifying the order of the SN set to be
- *                 constructed.  Number of angles = (snOrder+2)*snOrder/2.
+ *                 constructed.  Number of ordinates = (snOrder+2)*snOrder/2.
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 2*PI).
  */
 //---------------------------------------------------------------------------//
 Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ ) 
-    : Quadrature( sn_order_, norm_ ), numAngles (sn_order_ * (sn_order_+2)/2)
+    : Quadrature( sn_order_, norm_ ), numOrdinates (sn_order_ * (sn_order_+2)/2)
 {
     using std::fabs;
     using rtt_dsxx::soft_equiv;
@@ -47,29 +47,29 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     Require ( snOrder >= 2 && snOrder <= 24 );
 
     // Force the direction vectors to be the correct length.
-    mu.resize(numAngles);
-    xi.resize(numAngles);
-    wt.resize(numAngles);
+    mu.resize(numOrdinates);
+    xi.resize(numOrdinates);
+    wt.resize(numOrdinates);
 
     // Use the 3D level-symmetric quadrature to construct the 2D one.
     // In the future we probably should reverse the dependence - we should
     // use the 2D quadrature to construct the 3D one, rather than depending
     // on a particular data layout in the 3D quadrature.
     Q3DLevelSym quad3D(snOrder, 2.0*norm);
-    for( size_t angle = 0; angle < numAngles; ++angle )
+    for( size_t ordinate = 0; ordinate < numOrdinates; ++ordinate )
     {
-	mu[angle] = quad3D.getMu(angle);
-	xi[angle] = quad3D.getEta(angle);
-	wt[angle] = quad3D.getWt(angle);
+	mu[ordinate] = quad3D.getMu(ordinate);
+	xi[ordinate] = quad3D.getEta(ordinate);
+	wt[ordinate] = quad3D.getWt(ordinate);
     }
 
     // Normalize the quadrature set
     double wsum = 0.0;
-    for(size_t angle = 0; angle < numAngles; ++angle)
-	wsum = wsum + wt[angle];
+    for(size_t ordinate = 0; ordinate < numOrdinates; ++ordinate)
+	wsum = wsum + wt[ordinate];
     
-    for(size_t angle = 0; angle < numAngles; ++angle)
-	wt[angle] = wt[angle]*(norm/wsum);
+    for(size_t ordinate = 0; ordinate < numOrdinates; ++ordinate)
+	wt[ordinate] = wt[ordinate]*(norm/wsum);
 
     // Sort the directions by xi and then by mu
     sortOrdinates();
@@ -90,13 +90,13 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     Ensure( soft_equiv(iood[3],norm/3.0) ); // xi*xi
 
     // Copy quadrature data { mu, xi } into the vector omega.
-    omega.resize( numAngles );
+    omega.resize( numOrdinates );
     size_t ndims = dimensionality();
-    for ( size_t angle = 0; angle < numAngles; ++angle )
+    for ( size_t ordinate = 0; ordinate < numOrdinates; ++ordinate )
     {
-	omega[angle].resize(ndims);
-	omega[angle][0] = mu[angle];
-	omega[angle][1] = xi[angle];
+	omega[ordinate].resize(ndims);
+	omega[ordinate][0] = mu[ordinate];
+	omega[ordinate][1] = xi[ordinate];
     }
 } // end of Q2DLevelSym() constructor.
 
@@ -144,14 +144,14 @@ void Q2DLevelSym::display() const
     cout << "   m  \t    mu        \t    xi        \t     wt      " << endl;
     cout << "  --- \t------------- \t------------- \t-------------" << endl;
     double sum_wt = 0.0;
-    for ( size_t angle = 0; angle < mu.size(); ++angle )
+    for ( size_t ordinate = 0; ordinate < mu.size(); ++ordinate )
     {
 	cout << "   "
-	     << angle << "\t"
-	     << setprecision(10) << mu[angle]  << "\t"
-	     << setprecision(10) << xi[angle] << "\t"
-	     << setprecision(10) << wt[angle]  << endl;
-	sum_wt += wt[angle];
+	     << ordinate << "\t"
+	     << setprecision(10) << mu[ordinate]  << "\t"
+	     << setprecision(10) << xi[ordinate] << "\t"
+	     << setprecision(10) << wt[ordinate]  << endl;
+	sum_wt += wt[ordinate];
     }
     cout << endl << "  The sum of the weights is " << sum_wt << endl;
     cout << endl;

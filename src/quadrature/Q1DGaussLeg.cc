@@ -43,7 +43,7 @@ namespace rtt_quadrature
 
 Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ ) 
     : Quadrature( numGaussPoints, norm_ ), 
-      numAngles( numGaussPoints )
+      numOrdinates( numGaussPoints )
 {
     using rtt_dsxx::soft_equiv;
 
@@ -61,7 +61,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
 
     // The quadrature weights should sum to 2.0
     Ensure( soft_equiv(iDomega(),2.0) );
-    // The integral of mu over all angles should be zero.
+    // The integral of mu over all ordinates should be zero.
     Ensure( soft_equiv(iOmegaDomega()[0],0.0) );
     // The integral of mu^2 should be 2/3.
     Ensure( soft_equiv(iOmegaOmegaDomega()[0],2.0/3.0) );
@@ -70,7 +70,7 @@ Q1DGaussLeg::Q1DGaussLeg( size_t numGaussPoints, double norm_ )
     if( !soft_equiv(norm,2.0) ) 
     {
 	double c = norm/sumwt;
-	for ( size_t i=0; i < numAngles; ++i )
+	for ( size_t i=0; i < numOrdinates; ++i )
 	    wt[i] = c * wt[i];
     }
     

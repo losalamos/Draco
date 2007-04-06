@@ -81,17 +81,17 @@ void test_ordinate_sort( UnitTest & ut )
     // Generate a quadrature set.
     QuadCreator qc;
     SP< Quadrature const > const spQ( qc.quadCreate( QuadCreator::GaussLeg, 8 ) );
-    int const numAngles( spQ->getNumAngles() );
-    vector< Ordinate > angles;
-    for( int i=0; i<numAngles; ++i )
-        angles.push_back( Ordinate( spQ->getMu(i), spQ->getWt(i) ) );
+    int const numOrdinates( spQ->getNumOrdinates() );
+    vector< Ordinate > ordinates;
+    for( int i=0; i<numOrdinates; ++i )
+        ordinates.push_back( Ordinate( spQ->getMu(i), spQ->getWt(i) ) );
 
-    std::sort(angles.begin(), angles.end(), OrdinateSet::SnCompare );
+    std::sort(ordinates.begin(), ordinates.end(), OrdinateSet::SnCompare );
 
     bool sorted(true);
-    for( int i=0; i<numAngles-1; ++i )
+    for( int i=0; i<numOrdinates-1; ++i )
     {
-        if( angles[i+1].x < angles[i].x )
+        if( ordinates[i+1].x < ordinates[i].x )
         {
             sorted = false;
             break;
@@ -114,22 +114,22 @@ void test_create_ordinate_set( UnitTest & ut )
     // Generate a quadrature set.
     QuadCreator qc;
     SP< Quadrature const > const spQ( qc.quadCreate( QuadCreator::GaussLeg, 8 ) );
-    int const numAngles( spQ->getNumAngles() );
+    int const numOrdinates( spQ->getNumOrdinates() );
 
     // Call the function that we are testing.
     int const dim( 1 );
-    OrdinateSet const angles( spQ, rtt_mesh_element::CARTESIAN, dim );
+    OrdinateSet const ordinates( spQ, rtt_mesh_element::CARTESIAN, dim );
 
     // Check the result
     bool looksGood(true);
-    for( int i=0; i<numAngles; ++i )
+    for( int i=0; i<numOrdinates; ++i )
     {
-        if( ! soft_equiv( angles[i].x, spQ->getMu(i) ) )
+        if( ! soft_equiv( ordinates[i].x, spQ->getMu(i) ) )
         {
             looksGood = false;
             break;
         }
-        if( ! soft_equiv( angles[i].weight, spQ->getWt(i) ) )
+        if( ! soft_equiv( ordinates[i].weight, spQ->getWt(i) ) )
         {
             looksGood = false;
             break;
@@ -141,7 +141,7 @@ void test_create_ordinate_set( UnitTest & ut )
         ut.passes("Create_Ordinate_Set failed for 1D S8.");
 
     // test accessor
-    SP< Quadrature const > const spQ2( angles.getQuadrature() );
+    SP< Quadrature const > const spQ2( ordinates.getQuadrature() );
     if( spQ == spQ2 )
         ut.passes("Quadrature sets match.");
     else
@@ -159,12 +159,11 @@ void test_Y( UnitTest & ut)
     QuadCreator qc;
     int const quadOrder(2);
     SP< Quadrature const > const spQ( qc.quadCreate( QuadCreator::LevelSym2D, quadOrder ) );
-    int    const numAngles( spQ->getNumAngles() );
     double const sumwt(     spQ->getNorm()      );
 
     // Call the function that we are testing.
     int const dim( 2 );
-    OrdinateSet const angles( spQ, rtt_mesh_element::CARTESIAN, dim );
+    OrdinateSet const ordinates( spQ, rtt_mesh_element::CARTESIAN, dim );
 
     for( int ell=0; ell < 3; ++ell )
     {
@@ -172,11 +171,10 @@ void test_Y( UnitTest & ut)
         for( ; k<=ell ; ++k )
         {
             unsigned m=0;
-            double sph( OrdinateSet::Y(ell,k, angles[m], sumwt ) );
-            double theta( std::acos( angles[m].x ) );
-            double phi( QuadServices::compute_azimuthalAngle( angles[m].x, angles[m].y, angles[m].z ) );
+            double sph( OrdinateSet::Y(ell,k, ordinates[m], sumwt ) );
+            double phi( QuadServices::compute_azimuthalAngle( ordinates[m].x, ordinates[m].y, ordinates[m].z ) );
             
-            double sfYlm( rtt_sf::galerkinYlk(ell,k,angles[m].z,phi,sumwt ) );
+            double sfYlm( rtt_sf::galerkinYlk(ell,k,ordinates[m].z,phi,sumwt ) );
             
             if( soft_equiv( sfYlm, sph ) )
             {
@@ -193,7 +191,7 @@ void test_Y( UnitTest & ut)
                     << "\tFound           Y(" << ell << "," << k << ",Omega,sumwt) = " << sph << "\n"
                     << "\tFound galerkinYlk(" << ell << "," << k << ",xi,phi,sumwt) = " << sfYlm << "\n"
                     << "\tFound   phi = " << phi << "\n"
-                    << "\tFound atan2 = " << std::atan2(angles[m].y,angles[m].x) 
+                    << "\tFound atan2 = " << std::atan2(ordinates[m].y,ordinates[m].x) 
                     << std::endl;
                 ut.failure( msg.str() );
             }

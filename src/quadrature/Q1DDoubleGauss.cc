@@ -43,7 +43,7 @@ namespace rtt_quadrature
 
 Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ ) 
     : Quadrature( numGaussPoints, norm_ ), 
-      numAngles( numGaussPoints )
+      numOrdinates( numGaussPoints )
 {
     using rtt_dsxx::soft_equiv;
 
@@ -108,7 +108,7 @@ Q1DDoubleGauss::Q1DDoubleGauss( size_t numGaussPoints, double norm_ )
     if( !soft_equiv(norm,2.0) ) 
     {
 	double c = norm/sumwt;
-	for ( size_t i=0; i < numAngles; ++i )
+	for ( size_t i=0; i < numOrdinates; ++i )
 	    wt[i] = c * wt[i];
     }
     

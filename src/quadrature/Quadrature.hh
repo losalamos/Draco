@@ -82,10 +82,10 @@ class Quadrature
      * The default constructor sets the SN Order and normalization values.
      * This constructor complements the concrecte constructor for the
      * quadrature class being instantiated.  The concrete class will also
-     * initialize the variable numAngles to an appropriate value.
+     * initialize the variable numOrdinates to an appropriate value.
      *
      * \param snOrder_ Integer specifying the order of the SN set to be
-     *                 constructed.  Number of angles = (snOrder+2)*snOrder.
+     *                 constructed.  Number of ordinates = (snOrder+2)*snOrder.
      * \param norm_    A normalization constant.  The sum of the quadrature
      *                 weights will be equal to this value.  Its default
      *                 value is set in QuadCreator.
@@ -168,12 +168,12 @@ class Quadrature
      * See comments for getMu().
      *
      * \param m The direction index must be contained in the range
-     *          (0,numAngles). 
+     *          (0,numOrdinates). 
      */
     double getMu( const size_t m ) const
     {
-	// Angle index m must be greater than zero and less than numAngles.
-	Require( m < getNumAngles() );
+	// Ordinate index m must be greater than zero and less than numOrdinates.
+	Require( m < getNumOrdinates() );
 	// Die if the vector mu appears to be the wrong size.
 	Require( m < mu.size() );
 	return mu[m];
@@ -189,14 +189,14 @@ class Quadrature
      * See comments for getMu().
      *
      * \param m The direction index must be contained in the range
-     *          (0,numAngles). 
+     *          (0,numOrdinates). 
      */
     double getEta( const size_t m ) const
     {
 	// The quadrature set must have at least 2 dimensions to return eta.
 	Require( dimensionality() >= 2 );
-	// Angle index m must be greater than zero and less than numAngles.
-	Require( m < getNumAngles() ); 
+	// Ordinate index m must be greater than zero and less than numOrdinates.
+	Require( m < getNumOrdinates() ); 
 	return eta[m];
     }
 
@@ -210,12 +210,12 @@ class Quadrature
      * See comments for getMu().
      *
      * \param m The direction index must be contained in the range
-     *          (0,numAngles). 
+     *          (0,numOrdinates). 
      */
     double getXi( const size_t m ) const
     {
-	// Angle index m must be greater than zero and less than numAngles.
-	Require( m < getNumAngles() ); 
+	// Ordinate index m must be greater than zero and less than numOrdinates.
+	Require( m < getNumOrdinates() ); 
 	return xi[m];
     }
 
@@ -228,19 +228,19 @@ class Quadrature
      * See comments for getMu().
      *
      * \param m The direction index must be contained in the range
-     *          (0,numAngles). 
+     *          (0,numOrdinates). 
      */
     double getWt( const size_t m ) const
     {
-	// Angle index m must be greater than zero and less than numAngles.
-	Require( m < getNumAngles() ); 
+	// Ordinate index m must be greater than zero and less than numOrdinates.
+	Require( m < getNumOrdinates() ); 
 	return wt[m];
     }
 
     /*!
      * \brief Returns the Omega vector for all directions.
      *
-     * Returns a vector of length numAngles.  Each entry is a length three 
+     * Returns a vector of length numOrdinates.  Each entry is a length three 
      * vector of doubles that together represent the m-th discrete
      * direction. 
      */
@@ -256,18 +256,18 @@ class Quadrature
      * specified index.
      *
      * \param m The direction index must be contained in the range
-     * (0,numAngles). 
+     * (0,numOrdinates). 
      */
     const vector<double> &getOmega( const size_t m ) const
     {
-	Require( m < getNumAngles() );
+	Require( m < getNumOrdinates() );
 	return omega[m];
     }
 
     /*!
      * \brief Returns the number of directions in the current quadrature set.
      */
-    virtual size_t getNumAngles() const = 0;
+    virtual size_t getNumOrdinates() const = 0;
 
     /*!
      * \brief Prints a table containing all quadrature directions and weights.

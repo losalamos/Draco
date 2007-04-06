@@ -85,7 +85,7 @@ void quadrature_test()
 	    cout << "\nTesting the "  << qname
 		 << "Quadrature set." << endl;
 	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
-	    cout << "   Number of Angles = " << spQuad->getNumAngles() << endl;
+	    cout << "   Number of Ordinates = " << spQuad->getNumOrdinates() << endl;
 
 	    // If the object was constructed sucessfully then we continue
 	    // with the tests.
@@ -94,7 +94,7 @@ void quadrature_test()
 	    else {
 		// get the mu vector
 		vector<double> mu = spQuad->getMu();
-		if ( mu.size() != spQuad->getNumAngles() )
+		if ( mu.size() != spQuad->getNumOrdinates() )
 		    FAILMSG("The direction vector has the wrong length.")
 		else 
 		{

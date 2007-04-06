@@ -69,7 +69,7 @@ class QuadServices
     //! Assignment operator for QuadServices.
     QuadServices& operator=( QuadServices const & rhs );
 
-    //! Compute extra "moment-to-discrete" entries that are needed for starting direction angles.
+    //! Compute extra "moment-to-discrete" entries that are needed for starting direction ordinates.
     double augmentM( unsigned moment, Ordinate const & Omega ) const;
     
     // ACCESSORS

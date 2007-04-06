@@ -25,13 +25,13 @@ namespace rtt_quadrature
  * \brief Constructs a 3D Level Symmetric quadrature object.
  *
  * \param snOrder_ Integer specifying the order of the SN set to be
- *                 constructed.  Number of angles = (snOrder+2)*snOrder.
+ *                 constructed.  Number of ordinates = (snOrder+2)*snOrder.
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 4*PI).
  */
 Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ ) 
     : Quadrature( sn_order_, norm_ ), 
-      numAngles ( sn_order_ * (sn_order_+2) )
+      numOrdinates ( sn_order_ * (sn_order_+2) )
 
 { 
     using rtt_dsxx::soft_equiv;
@@ -45,13 +45,13 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 
     // The number of quadrature levels is equal to the requested SN order.
     size_t levels( snOrder );
-    size_t octantAngles( numAngles/8 );  // 8 octants in 3D.
+    size_t octantOrdinates( numOrdinates/8 );  // 8 octants in 3D.
 
     // Force the direction vectors to be the correct length.
-    mu.resize(numAngles);
-    eta.resize(numAngles);
-    xi.resize(numAngles);
-    wt.resize(numAngles);
+    mu.resize(numOrdinates);
+    eta.resize(numOrdinates);
+    xi.resize(numOrdinates);
+    wt.resize(numOrdinates);
 
     // Set up some temporaries.
     vector<double> att;
@@ -72,7 +72,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	att[1] = 0.868890300722201205229788;
 	wtt[0] = 0.333333333333333333333333;
  	size_t wp4[3] = {0,0,0};
-	for(size_t m=0;m<=octantAngles-1;++m)
+	for(size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp4[m]];
 	break;
     }	
@@ -86,7 +86,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[0] = 0.176126130863383433783565;
 	wtt[1] = 0.157207202469949899549768;
  	size_t wp6[6] = {0,1,0,1,1,0};
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp6[m]];
 	break;
     }
@@ -102,7 +102,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[1] = 0.0907407407407407407407407;
 	wtt[2] = 0.0925925925925925925925926;
  	size_t wp8[10]  = {0,1,1,0,1,2,1,1,1,0};
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp8[m]];
 	break;
     }
@@ -120,7 +120,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[2] = 0.0450437674364086390490892;
 	wtt[3] = 0.0539281144878369243545650;
  	size_t wp10[15] = {0,1,2,1,0,1,3,3,1,2,3,2,1,1,0};
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp10[m]];
 	break;
     }
@@ -140,7 +140,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[3] = 0.0502819010600571181385765;
 	wtt[4] = 0.0258512916557503911218290;
  	size_t wp12[21] = {0,1,2,2,1,0,1,3,4,3,1,2,4,4,2,2,3,2,1,1,0};
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp12[m]];
 	break;
     }
@@ -164,7 +164,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[6] = 0.00826957997262252825269908;
  	size_t wp14[28] = { 0,1,2,3,2,1,0,1,4,5,5,4,1,2,5,6,5,2,3,5,5,3,2,4,2,1,
 			     1,0 }; 
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp14[m]];
 	break;
     }
@@ -190,7 +190,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[7] = 0.0103769578385399087825920;
  	size_t wp16[36] = { 0,1,2,3,3,2,1,0,1,4,5,6,5,4,1,2,5,7,7,5,2,3,6,7,6,3,
 			     3,5,5,3,2,4,2,1,1,0 };
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp16[m]];
 	break;
     }
@@ -219,7 +219,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	wtt[9]  = 0.0163797038522425240494567;
  	size_t wp18[45] = { 0,1,2,3,4,3,2,1,0,1,5,6,7,7,6,5,1,2,6,8,9,8,6,2,3,7, 
 			     9,9,7,3,4,7,8,7,4,3,6,6,3,2,5,2,1,1,0 };
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp18[m]];
 	break;
     }
@@ -252,7 +252,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
  	size_t wp20[55] = { 0,1,2,3,4,4,3,2,1,0,1,5,6,7,8,7,6,5,1,2,6,9,10,10,9,
 			     6,2,3,7,10,11,10,7,3,4,8,10,10,8,4,4,7,9,7,4,3,6,6,3,
 			     2,5,2,1,1,0};
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp20[m]];
 	break;
     }
@@ -288,7 +288,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
  	size_t wp22[66] = { 0,1,2,3,4,5,4,3,2,1,0,1,6,7,8,9,9,8,7,6,1,2,7,10,11,
 			     12,11,10,7,2,3,8,11,13,13,11,8,3,4,9,12,13,12,9,4,5,
 			     9,11,11,9,5,4,8,10,8,4,3,7,7,3,2,6,2,1,1,0 };
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp22[m]];
 	break;
     }
@@ -329,7 +329,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 			     11,12,13,13,12,11,7,2,3,8,12,14,15,14,12,8,3,4,9,13,
 			     15,15,13,9,4,5,10,13,14,13,10,5,5,9,12,12,9,5,4,8,
 			     11,8,4,3,7,7,3,2,6,2,1,1,0 };
-	for( size_t m=0;m<=octantAngles-1;++m)
+	for( size_t m=0;m<=octantOrdinates-1;++m)
 	    wt[m] = wtt[wp24[m]];
 	break;
     }
@@ -350,9 +350,9 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 
     // Evaluate mu and eta for octants 2-4
     for(size_t octant=2; octant<=4; ++octant)
-	for(size_t n=0; n<=octantAngles-1; ++n) 
+	for(size_t n=0; n<=octantOrdinates-1; ++n) 
 	{
-	    m = (octant-1)*octantAngles+n;
+	    m = (octant-1)*octantOrdinates+n;
 	    switch (octant) {
 	    case 2:
 		mu[m]  = -mu[n];
@@ -378,26 +378,26 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 	}
     
     // Evaluate mu and eta for octants 5-8
-    for( size_t n=0; n<=numAngles/2-1; ++n)
+    for( size_t n=0; n<=numOrdinates/2-1; ++n)
     {
-	mu[n+numAngles/2]  = mu[n];
-	eta[n+numAngles/2] = eta[n];
-	wt[n+numAngles/2]  = wt[n];
+	mu[n+numOrdinates/2]  = mu[n];
+	eta[n+numOrdinates/2] = eta[n];
+	wt[n+numOrdinates/2]  = wt[n];
     }
     
     // Evaluate xi for all octants
-    for( size_t n=0;n<=numAngles/2-1;++n)
+    for( size_t n=0;n<=numOrdinates/2-1;++n)
 	xi[n] = std::sqrt(1.0-(mu[n]*mu[n]+eta[n]*eta[n]));
     
-    for(size_t n=0;n<=numAngles/2-1;++n)
-	xi[n+numAngles/2] = -xi[n];
+    for(size_t n=0;n<=numOrdinates/2-1;++n)
+	xi[n+numOrdinates/2] = -xi[n];
     
     // Normalize the quadrature set
     double wsum = 0.0;
-    for(size_t n=0;n<=numAngles-1;++n)
+    for(size_t n=0;n<=numOrdinates-1;++n)
 	wsum = wsum + wt[n];
     
-    for(size_t n=0; n<=numAngles-1; ++n)
+    for(size_t n=0; n<=numOrdinates-1; ++n)
 	wt[n] = wt[n]*(norm/wsum);
     
     // clear the temporaries.
@@ -426,9 +426,9 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
     Ensure( soft_equiv(iood[8],norm/3.0) ); // xi*xi
 
     // Copy quadrature data { mu, eta, xi } into the vector omega.
-    omega.resize( numAngles );
+    omega.resize( numOrdinates );
     size_t ndims = dimensionality();
-    for ( size_t i=0; i<numAngles; ++i )
+    for ( size_t i=0; i<numOrdinates; ++i )
     {
 	omega[i].resize( ndims );
 	omega[i][0] = mu[i];

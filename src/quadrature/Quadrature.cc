@@ -60,15 +60,15 @@ vector<double> Quadrature::iOmegaDomega() const {
         integral[2] += wt[i]*xi[i];    
 //     switch( ndims ) {
 //     case 3:
-// 	for ( size_t i = 0; i < getNumAngles(); ++i )
+// 	for ( size_t i = 0; i < getNumOrdinates(); ++i )
 // 	    integral[2] += wt[i]*xi[i];
 // 	//lint -fallthrough
 //     case 2:
-// 	for ( size_t i = 0; i < getNumAngles(); ++i )
+// 	for ( size_t i = 0; i < getNumOrdinates(); ++i )
 // 	    integral[1] += wt[i]*eta[i];
 // 	//lint -fallthrough
 //     case 1:
-// 	for ( size_t i = 0; i < getNumAngles(); ++i )
+// 	for ( size_t i = 0; i < getNumOrdinates(); ++i )
 // 	    integral[0] += wt[i]*mu[i];
 // 	break;
 //     default:
@@ -109,7 +109,7 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     // are available for the current dimensionality of the quadrature set.
     if( xi.size()>0 && eta.size()>0 )
     {
-        for ( size_t i = 0; i < getNumAngles(); ++i )
+        for ( size_t i = 0; i < getNumOrdinates(); ++i )
         {
             integral[0] += wt[i]*mu[i]*mu[i];
             integral[1] += wt[i]*mu[i]*eta[i];
@@ -124,7 +124,7 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     }
     else if( xi.size()>0 )
     {
-        for ( size_t i = 0; i < getNumAngles(); ++i )
+        for ( size_t i = 0; i < getNumOrdinates(); ++i )
         {
             integral[0] += wt[i]*mu[i]*mu[i];
             integral[1] += wt[i]*mu[i]*xi[i];
@@ -134,7 +134,7 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     }
     else if( eta.size()>0 )
     {
-        for ( size_t i = 0; i < getNumAngles(); ++i )
+        for ( size_t i = 0; i < getNumOrdinates(); ++i )
         {
             integral[0] += wt[i]*mu[i]*mu[i];
             integral[1] += wt[i]*mu[i]*eta[i];
@@ -144,7 +144,7 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
     }
     else
     {
-	for ( size_t i = 0; i < getNumAngles(); ++i )
+	for ( size_t i = 0; i < getNumOrdinates(); ++i )
 	    integral[0] += wt[i]*mu[i]*mu[i];
     }
     return integral;
@@ -158,7 +158,7 @@ void Quadrature::renormalize(const double new_norm)
 
     double const c=new_norm/norm;
     
-    for ( size_t i = 0; i < getNumAngles(); ++i )
+    for ( size_t i = 0; i < getNumOrdinates(); ++i )
     {
         wt[i] = c * wt[i];
     }

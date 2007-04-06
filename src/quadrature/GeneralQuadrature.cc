@@ -25,7 +25,7 @@ namespace rtt_quadrature
  * \brief Constructs a 3D Level Symmetric quadrature object.
  *
  * \param snOrder_ Integer specifying the order of the SN set to be
- *                 constructed.  Number of angles = (snOrder+2)*snOrder.
+ *                 constructed.  Number of ordinates = (snOrder+2)*snOrder.
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 4*PI).
  */
@@ -41,7 +41,7 @@ GeneralQuadrature::GeneralQuadrature(
     std::string const & quadratureName_,
     Quadrature_Class quadratureClass_) 
     : Quadrature( sn_order_, norm_ ), 
-      numAngles ( mu_.size() ),
+      numOrdinates ( mu_.size() ),
       numLevels ( levels_ ),
       numDims   ( dim_ ),
       quadratureName ( quadratureName_ ),
@@ -91,7 +91,7 @@ GeneralQuadrature::GeneralQuadrature(
     Ensure( soft_equiv(iood[8],norm/3.0) ); // xi*xi
 
     // Copy quadrature data { mu, eta, xi } into the vector omega.
-    omega.resize( numAngles );
+    omega.resize( numOrdinates );
     size_t ndims(0);
     // Set the dimensionality based on the available data.
     if(  mu.size() > 0 ) ndims++;
@@ -100,7 +100,7 @@ GeneralQuadrature::GeneralQuadrature(
     
     if( ndims == 1 )
     {
-        for ( size_t i=0; i<numAngles; ++i )
+        for ( size_t i=0; i<numOrdinates; ++i )
         {
             omega[i].resize( ndims );
             omega[i][0] = mu[i];
@@ -108,7 +108,7 @@ GeneralQuadrature::GeneralQuadrature(
     }
     else if( ndims == 2 )
     {
-        for ( size_t i=0; i<numAngles; ++i )
+        for ( size_t i=0; i<numOrdinates; ++i )
         {
             omega[i].resize( ndims );
             omega[i][0] = mu[i];
@@ -117,7 +117,7 @@ GeneralQuadrature::GeneralQuadrature(
     }
     else if( ndims ==3 )
     {
-        for ( size_t i=0; i<numAngles; ++i )
+        for ( size_t i=0; i<numOrdinates; ++i )
         {
             omega[i].resize( ndims );
             omega[i][0] = mu[i];
