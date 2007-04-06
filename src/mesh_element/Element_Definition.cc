@@ -10,6 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <iostream>
+
 #include "Element_Definition.hh"
 #include "ds++/Assert.hh"
 
@@ -60,12 +62,18 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
 	construct_penta();
 	break;	
 
+    case POLY_2D_4:
+    case POLY_2D_5:
+    case POLY_2D_6:
+	construct_poly_2d();
+	break;
+
     case HEXA_8  :
     case HEXA_20 :
     case HEXA_27 :
 	construct_hexa();
-	break;
-	
+	break;	
+
     default :
 	
 	Insist(false,"#1 Unrecognized Element-Type Flag");
@@ -194,6 +202,7 @@ bool Element_Definition::invariant_satisfied() const
 			    elem_defs[ side_type[i] ].node_loc[j]);
 	}
     }
+
     return ldum;
 }
 
@@ -351,6 +360,51 @@ void Element_Definition::construct_quad()
 
     for( int i = 0; i < number_of_sides; i++ )
 	side_type.push_back(0);
+}
+//---------------------------------------------------------------------------//
+
+void Element_Definition::construct_poly_2d()
+{
+    dimension=2;
+
+    switch ( type )
+    {
+    case POLY_2D_4:
+        name = "POLY_2D_4";
+	number_of_nodes=4;
+        number_of_sides=4;
+	elem_defs.push_back(Element_Definition(BAR_2));
+	break;
+    case POLY_2D_5:
+        name = "POLY_2D_5";
+	number_of_nodes=5;
+        number_of_sides=5;
+	elem_defs.push_back(Element_Definition(BAR_2));
+	break;
+    case POLY_2D_6:
+        name = "POLY_2D_6";
+	number_of_nodes=6;
+        number_of_sides=6;
+	elem_defs.push_back(Element_Definition(BAR_2));
+	break;
+    default :
+	Insist(false,"Unrecognized polygon element-type");
+    }
+
+    for( int i=0; i < number_of_nodes; i++ )
+	node_loc.push_back(CORNER);
+
+    std::vector<int> tmp;
+
+    for( int i = 0; i < number_of_sides; i++ )
+    {
+	side_type.push_back(0);
+
+        tmp.clear();
+        tmp.push_back(i);
+        tmp.push_back((i+1)%number_of_nodes);    
+        side_nodes.push_back(tmp);
+    }
 }
 
 //---------------------------------------------------------------------------//

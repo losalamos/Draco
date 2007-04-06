@@ -53,6 +53,12 @@ void RTT_Mesh_Reader::transform2CGNS()
 	    cell_defs = rtt_meshReaders::Element_Definition::PENTA_6;
 	else if (cell_name == "hexahedron")
 	    cell_defs = rtt_meshReaders::Element_Definition::HEXA_8;
+        else if (cell_name == "polygon_4")
+            cell_defs = rtt_meshReaders::Element_Definition::POLY_2D_4;
+        else if (cell_name == "polygon_5")
+            cell_defs = rtt_meshReaders::Element_Definition::POLY_2D_5;
+        else if (cell_name == "polygon_6")
+            cell_defs = rtt_meshReaders::Element_Definition::POLY_2D_6;
 	else
 	    throw std::runtime_error("Unrecognized cell definition");
 
@@ -97,7 +103,9 @@ std::vector<std::vector<int> > RTT_Mesh_Reader::get_element_nodes() const
 
     int nsides = rttMesh->get_dims_nsides();
     for (int i = 0; i < rttMesh->get_dims_ncells(); i++)
+    {
 	element_nodes[i + nsides] = rttMesh->get_cells_nodes(i);
+    }
 
     return element_nodes;
 }

@@ -178,8 +178,10 @@ class Element_Definition
 	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added 
 		     *   in the center of each face, and at the center of 
                      *   the element. */
-        OTHER,      /*!< Catchall for any nonstandard element type, such as an
-                     *   arbitrary polygon in 2-D. */
+        POLY_2D_4,  /*!<  Straight-sided 4 node polygon */
+        POLY_2D_5,  /*!<  Straight-sided 5 node polygon */
+        POLY_2D_6,  /*!<  Straight-sided 6 node polygon */
+        OTHER,      /*!< Catchall for any nonstandard element type. */
 
         NUMBER_OF_ELEMENT_TYPES
     };
@@ -480,6 +482,7 @@ class Element_Definition
     void construct_pyra();
     void construct_penta();
     void construct_hexa();
+    void construct_poly_2d();
 
 };
 

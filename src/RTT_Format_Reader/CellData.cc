@@ -53,10 +53,11 @@ void CellData::readData(ifstream & meshfile)
     for (int i = 0; i < dims.get_ncells(); ++i)
     {
 	meshfile >> cellNum;
-	Insist(cellNum == i+1,
-	       "Invalid mesh file: cell data index out of order");
+	Insist(cellNum == i+1, "Invalid mesh file: cell data index out of order");
 	for (int j = 0; j < dims.get_ncell_data(); ++j)
+        {
 	    meshfile >> data[i][j];
+        }
 	std::getline(meshfile, dummyString);
     }
 }
