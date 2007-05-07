@@ -735,6 +735,11 @@ AC_DEFUN([AC_GANDOLF_SETUP], [dnl
    # gandolf is set to libgandolf by default
    if test "${with_gandolf:=gandolf}" = yes ; then
        with_gandolf='gandolf'
+   elif test "${with_gandolf}" = no ; then ## TK added May 7 07 
+       vendor_gandolf=''                 ## skip finalize
+       with_gandolf=''                     ## stub this out
+       AC_MSG_RESULT("NOT USING GANDOLF")  ## alert/remind user
+       AC_DEFINE(rtt_cdi_gandolf_stub)     ## used in cdi_gandolf/config.h
    fi
 
 ])
@@ -744,7 +749,7 @@ AC_DEFUN([AC_GANDOLF_SETUP], [dnl
 AC_DEFUN([AC_GANDOLF_FINALIZE], [dnl
 
    # set up the libraries
-   if test -n "${vendor_gandolf}"; then
+   if test -n "${vendor_gandolf}" ; then
 
        # set up library paths
        if test -z "${GANDOLF_LIB}" ; then
