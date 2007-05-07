@@ -9,6 +9,8 @@
 #ifndef __cdi_gandolf_config_h__
 #define __cdi_gandolf_config_h__
 
+#undef rtt_cdi_gandolf_stub
+
 #endif                          /* __cdi_config_h__ */
 
 /*---------------------------------------------------------------------------*/

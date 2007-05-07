@@ -10,7 +10,7 @@ dnl-------------------------------------------------------------------------dnl
 AC_INIT
 AC_CONFIG_SRCDIR([GandolfGrayOpacity.hh])
 AC_CONFIG_AUX_DIR(../../config)
-AC_CONFIG_HEADER(cdi_gandolf/config.h:config.h.in)
+AC_CONFIG_HEADERS(cdi_gandolf/config.h:config.h.in)
 package="cdi_gandolf"
 
 dnl VENDOR SETUPS

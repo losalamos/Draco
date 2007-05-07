@@ -12,6 +12,8 @@
 #ifndef __cdi_gandolf_GandolfWrapper_hh__
 #define __cdi_gandolf_GandolfWrapper_hh__
 
+#include <cdi_gandolf/config.h>
+
 #include <string>
 #include <cstring>
 #include <vector>
@@ -259,6 +261,7 @@ namespace rtt_cdi_gandolf {
     } // end namepsace wrapper
 } // end namespace rtt_cdi_gandolf
 
+#ifndef rtt_cdi_gandolf_stub
 
 // Function prototypes for Gandolf F77 subroutines.
 //---------------------------------------------------------------------------//
@@ -310,6 +313,8 @@ extern "C" {
 		    double *ansmg );
 
 } // end of extern "C" block
+
+#endif // rtt_cdi_gandolf_stub
 
 #endif // __cdi_gandolf_GandolfWrapper_hh__
 

@@ -11,6 +11,10 @@
 
 #include "GandolfWrapper.hh"
 
+#ifdef rtt_cdi_gandolf_stub
+#warning "USING GANDOLF STUB"
+#endif
+
 #include "ds++/Assert.hh"
 
 #include <cstring>
@@ -55,6 +59,7 @@ namespace rtt_cdi_gandolf {
 	int wgmatids( const std::string& fname, vector<int>& matids, 
 		      const int const_kmat, int &nmat ) 
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// I could change this subroutine so that it identifies
 		// nmat=kmat by repeatedly calling gmatids_().
 		
@@ -93,6 +98,9 @@ namespace rtt_cdi_gandolf {
 		
 		return errorCode;
 		
+#else // ifndef rtt_cdi_gandolf_stub
+                return 1; // requested file not found.
+#endif
 	    } // end of gmatids
 	
 	
@@ -103,6 +111,7 @@ namespace rtt_cdi_gandolf {
 	int wgkeys( const std::string &fname, const int &const_matid, 
 		    vector<string> &vkeys, const int &const_kkeys, int &nkeys )
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
@@ -162,6 +171,9 @@ namespace rtt_cdi_gandolf {
 
 		return ier;
 		
+#else //  rtt_cdi_gandolf_stub
+                return 1; // requested file not found.
+#endif
 	    } // end of gkeys
 	
 	
@@ -173,6 +185,7 @@ namespace rtt_cdi_gandolf {
 		       int &nt, int &nrho, int &nhnu, int &ngray, 
 		       int &nmg )
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
@@ -195,6 +208,9 @@ namespace rtt_cdi_gandolf {
 
 		return ier;
 		
+#else
+                return 1; // requested file not found.
+#endif
 	    } // end of gchgrids
 	
 	//----------------------------------------//
@@ -207,6 +223,7 @@ namespace rtt_cdi_gandolf {
 		       vector<double> &rhos,   const int &const_krho,
 		       vector<double> &data,   const int &const_kgray )
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
@@ -279,6 +296,9 @@ namespace rtt_cdi_gandolf {
 		
 		return ier;
 
+#else // #ifndef rtt_cdi_gandolf_stub
+                return 1; // requested file not found.
+#endif
 	    } // end of ggetgray
 	
 	//----------------------------------------//
@@ -290,6 +310,7 @@ namespace rtt_cdi_gandolf {
 			   const vector<double> &data,  const int &const_ngray,
 			   const double &const_tlog, const double &const_rlog ) 
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
@@ -333,6 +354,10 @@ namespace rtt_cdi_gandolf {
 
 		return ans;
 		
+#else // #ifndef rtt_cdi_gandolf_stub
+                double ans = 0.0;
+                return ans; // dummy scalar.
+#endif
 	    } // end of ginggrlog
 	
 	//----------------------------------------//
@@ -349,6 +374,7 @@ namespace rtt_cdi_gandolf {
 		     vector<double> &hnus,   const int &const_khnu,
 		     vector<double> &data,   const int &const_kdata )
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
@@ -423,6 +449,9 @@ namespace rtt_cdi_gandolf {
 
 		return ier;
 		
+#else // #ifndef rtt_cdi_gandolf_stub
+                return 1; // requested file not found.
+#endif
 	    } // end of ggetgray
 	
 	//----------------------------------------//
@@ -436,6 +465,7 @@ namespace rtt_cdi_gandolf {
 			const vector<double> &data,  const int &const_ndata,
 			const double &const_tlog, const double &const_rlog )
 	    {
+#ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
@@ -490,6 +520,10 @@ namespace rtt_cdi_gandolf {
 
 		return ansmg;
 		
+#else // rtt_cdi_gandolf_stub
+        vector<double> ansmg( const_nhnu - 1, 0.0 );
+        return ansmg; // dummy vector.
+#endif
 	    } // end of wgintmglog
 	
     } // end namespace wrapper
