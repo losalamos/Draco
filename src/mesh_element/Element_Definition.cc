@@ -32,11 +32,13 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
     case BAR_2 :
     case BAR_3 :
 	construct_bar();
+        Ensure( invariant_satisfied() );
 	break;
 
     case TRI_3 :
     case TRI_6 :
 	construct_tri();
+        Ensure( invariant_satisfied() );
 	break;
 
     case QUAD_4 :
@@ -44,43 +46,67 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
     case QUAD_8 :
     case QUAD_9 :
 	construct_quad();
+        Ensure( invariant_satisfied() );
 	break;
 
     case TETRA_4  :
     case TETRA_10 :
 	construct_tetra();
+        Ensure( invariant_satisfied() );
 	break;
 
     case PYRA_5  :
     case PYRA_14 :
 	construct_pyra();
+        Ensure( invariant_satisfied() );
 	break;
 
     case PENTA_6  :
     case PENTA_15 :
     case PENTA_18 :
 	construct_penta();
+        Ensure( invariant_satisfied() );
 	break;	
 
     case POLY_2D_4:
     case POLY_2D_5:
     case POLY_2D_6:
 	construct_poly_2d();
+        Ensure( invariant_satisfied() );
 	break;
 
     case HEXA_8  :
     case HEXA_20 :
     case HEXA_27 :
 	construct_hexa();
+        Ensure( invariant_satisfied() );
+	break;	
+
+    case POLYGON:
+        dimension = 2;
 	break;	
 
     default :
 	
-	Insist(false,"#1 Unrecognized Element-Type Flag");
+	Insist(false,"Unrecognized Element-Type Flag");
 	
     }
+
+//     number_of_face_nodes.resize(side_type.size());
+//     for (unsigned s=0; s < side_type.size(); ++s)
+//         number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
+
+//     face_nodes.resize(side_nodes.size());
+
+//     for (unsigned s=0; s < face_nodes.size(); ++s)
+//     {
+//         std::vector<int> nodes(get_side_nodes(s)); 
+//         face_nodes[s].resize(nodes.size());
+
+//         for (unsigned n=0; n < nodes.size(); ++n)
+//             face_nodes[s][n] = nodes[n];
+//     }
     
-    Ensure( invariant_satisfied() );
 }
     
 //---------------------------------------------------------------------------//
@@ -95,7 +121,7 @@ Element_Definition( std::string  name_,
                     std::vector< Node_Location > const &node_loc_ )
     :
     name(name_),
-    type(OTHER),
+    type(POLYGON),
     dimension(dimension_),
     number_of_nodes(number_of_nodes_),
     number_of_sides(number_of_sides_),
@@ -142,7 +168,7 @@ Element_Definition( std::string  name_,
 
      Ensure( invariant_satisfied() );
 
-     Ensure( get_type()==Element_Definition::OTHER );
+     Ensure( get_type()==Element_Definition::POLYGON );
      Ensure( get_name()==name_  );
      Ensure( get_dimension()==dimension_  );
      Ensure( get_number_of_nodes()==number_of_nodes_  );
@@ -158,6 +184,21 @@ Element_Definition( std::string  name_,
          Ensure( get_side_nodes(i)==side_nodes_[i]  );
      }
 #endif
+
+//     number_of_face_nodes.resize(side_type.size());
+//     for (unsigned s=0; s < side_type.size(); ++s)
+//         number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
+
+//     face_nodes.resize(side_nodes.size());
+
+//     for (unsigned s=0; s < face_nodes.size(); ++s)
+//     {
+//         std::vector<int> nodes(get_side_nodes(s)); 
+//         face_nodes[s].resize(nodes.size());
+
+//         for (unsigned n=0; n < nodes.size(); ++n)
+//             face_nodes[s][n] = nodes[n];
+//     }
 }
 
 //---------------------------------------------------------------------------//

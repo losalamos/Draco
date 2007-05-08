@@ -51,21 +51,24 @@ class CellDef
     int nnodes;
     int nsides;
     vector_int side_types;
-    std::vector<set_int > sides;
+    std::vector<vector_int > sides;
     // Add the capability to maintain the sense of the outward normals.
     vector_vector_int ordered_sides;
     // Mapping between the old and new cell definition nodes.
     vector_int node_map;
 
   public:
+
     CellDef(const CellDefs & cellDefs_, const string & name_) 
 	: cellDefs(cellDefs_), name(name_), ordered_sides(0) {}
+
     ~CellDef() {}
 
     void readDef(ifstream & meshfile);
     void redefineCellDef(const vector_int & new_side_types_, 
 			 const vector_vector_int & new_ordered_sides_);
   public:
+
 /*!
  * \brief  Returns the cell definition name.
  * \return The cell definition name.
@@ -88,6 +91,11 @@ class CellDef
  * \return  The side type number.
  */
     int get_side_types(int s) const { return side_types[s]; }
+
+    vector_int get_all_side_types() const {return side_types;}
+    std::vector<vector_int > get_all_sides() const {return sides;}
+    vector_vector_int get_all_ordered_sides() const {return ordered_sides;}
+
 /*!
  * \brief Returns the side definition of the specified side index of this cell
  *        definition with the returned cell-node indexes in sorted order.
@@ -95,7 +103,7 @@ class CellDef
  * \return The side definition (i.e., the cell-node indexes that comprise the 
  *         side).
  */
-    const set_int & get_side(int s) const { return sides[s]; }
+    const vector_int & get_side(int s) const { return sides[s]; }
 /*!
  * \brief Returns the side definition of the specified side index of this cell
  *        definition with the returned cell-node indexes ordered to preserve 
@@ -178,6 +186,7 @@ class CellDefs
  * \return The cell definition.
  */
     const CellDef & get_cell_def(int i) const { return *(defs[i]); }
+    rtt_dsxx::SP<CellDef> get_def(int i) const { return defs[i]; }
 /*!
  * \brief Returns the number of nodes associated with the specified cell 
  *        definition.
@@ -210,7 +219,7 @@ class CellDefs
  * \return The side definition (i.e., the cell-node indexes that comprise the 
  *         side).
  */
-    const set_int & get_side(int i, int s) const 
+    const vector_int & get_side(int i, int s) const 
     { return defs[i]->get_side(s); }
 /*!
  * \brief Returns the side definition associated with the specified cell  

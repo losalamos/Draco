@@ -17,6 +17,7 @@
 
 #include "RTT_Format_Reader.hh"
 #include "meshReaders/Mesh_Reader.hh"
+#include "mesh_element/Element_Definition.hh"
 
 namespace rtt_RTT_Format_Reader
 {
@@ -56,12 +57,12 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     // DATA
 
   private:
-     rtt_dsxx::SP<RTT_Format_Reader> rttMesh;
-     std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
-         element_types;
-     std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
-         unique_element_types;
 
+    rtt_dsxx::SP<RTT_Format_Reader> rttMesh;
+    std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > element_defs;
+    std::vector<rtt_mesh_element::Element_Definition::Element_Type> element_types;
+    std::vector<rtt_mesh_element::Element_Definition::Element_Type> unique_element_types;
+    
   public:
 
     // Constructors
@@ -108,16 +109,20 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  *        TETRA_4).
  * \return Element definitions.
  */
-    virtual std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+    virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
         get_element_types() const
     { return element_types; }
+
+    virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > 
+        get_element_defs() const
+    { return element_defs; }
 
 /*!
  * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that 
  *        are defined in the mesh file.
  * \return Element definitions.
  */
-    virtual std::vector<rtt_meshReaders::Element_Definition::Element_Type> 
+    virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
         get_unique_element_types() const
     { return unique_element_types; }
 
@@ -134,6 +139,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     virtual bool invariant() const;
 
     // IMPLEMENTATION
+
   private:
     
     void transform2CGNS();

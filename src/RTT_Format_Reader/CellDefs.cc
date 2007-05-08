@@ -72,8 +72,7 @@ void CellDefs::readEndKeyword(ifstream & meshfile)
     string dummyString;
 
     meshfile >> dummyString;
-    Insist(dummyString == "end_cell_defs",
-	   "Invalid mesh file: cell_defs block missing end");
+    Insist(dummyString == "end_cell_defs", "Invalid mesh file: cell_defs block missing end");
     std::getline(meshfile, dummyString);       // read and discard blank line.
 }
 /*!
@@ -86,7 +85,7 @@ void CellDefs::readEndKeyword(ifstream & meshfile)
  *        definitions.
  */
 void CellDefs::redefineCellDefs(const vector_vector_int & cell_side_types, 
-		      const vector_vector_vector_int & cell_ordered_sides)
+                                const vector_vector_vector_int & cell_ordered_sides)
 {
     Insist(cell_side_types.size() == dims.get_ncell_defs(),
 	   "Error in supplied cell redefinition side types data.");
@@ -144,7 +143,7 @@ void CellDef::readDef(ifstream & meshfile)
 	{
 	    meshfile >> side;
 	    --side;
-	    sides[i].insert(side);
+	    sides[i].push_back(side);
 	    Check(j<ordered_sides[i].size());
 	    ordered_sides[i][j] = side;
 	}
@@ -478,6 +477,41 @@ void CellDef::redefineCellDef(const vector_int & new_side_types,
 	    std::fill(old_node_count.begin(), old_node_count.end(), 0);
 	}
     }
+    else // OTHER 
+    {
+        // Arbitrarily assign the first node in the old and the new cell 
+        // definitions to be the same. This assumption is necessary because
+        // the cell definitions do not assume a specific orientation relative
+        // to any coordinate system. The transformed cell may be rotated 
+        // about it's outward normal relative to the input cell definition.
+        node_map[0] = 0;
+	// The right hand rule has to apply, so only the ordering of the
+        // nodes (edges) can change for a two-dimensional cell.
+	int old_node = 0;
+	int new_node = 0;
+        for (int n = 0; n < nnodes - 1; n++)
+	{
+	    // Find the new side that starts with this node.
+	    int new_side = 0;
+	    while (new_ordered_sides[new_side][0] != new_node)
+	    {
+	        ++new_side;
+		Insist(new_side < nsides, 
+		       "Edge error for new two dimensional cell definition.");
+	    }
+	    new_node = new_ordered_sides[new_side][1];
+	    // Find the old side that starts with this node.
+	    int old_side = 0;
+	    while (ordered_sides[old_side][0] != old_node)
+	    {
+	        ++old_side;
+		Insist(old_side < nsides, 
+		       "Edge error for old two dimensional cell definition.");
+	    }
+	    old_node = ordered_sides[old_side][1];
+	    node_map[old_node] = new_node;
+	}
+    }
     // Assign the new side types, sides, and ordered sides to this cell 
     // definition.
     side_types = new_side_types;
@@ -486,7 +520,7 @@ void CellDef::redefineCellDef(const vector_int & new_side_types,
     {
         sides[i].erase(sides[i].begin(), sides[i].end());
 	for (int n = 0; n < ordered_sides[i].size(); ++n)
-	    sides[i].insert(ordered_sides[i][n]);
+	    sides[i].push_back(ordered_sides[i][n]);
     }
 }
 

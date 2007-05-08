@@ -61,8 +61,7 @@ class RTT_Format_Reader
     typedef std::set<int> set_int;
     typedef std::vector<int> vector_int;
     typedef std::vector<std::vector<int> > vector_vector_int;
-    typedef std::vector<std::vector<std::vector<int> > >
-        vector_vector_vector_int;
+    typedef std::vector<std::vector<std::vector<int> > > vector_vector_vector_int;
     typedef std::vector<double> vector_dbl;
     typedef std::vector<std::vector<double> > vector_vector_dbl;
     typedef std::vector<string> vector_str;
@@ -458,6 +457,9 @@ class RTT_Format_Reader
  */
     const CellDef & get_cell_defs_cell_def(int i) const 
     { return spCellDefs->get_cell_def(i); }
+
+    rtt_dsxx::SP<CellDef> get_cell_defs_def(int i) const 
+    { return spCellDefs->get_def(i); }
 /*!
  * \brief Returns the number of nodes associated with the specified cell 
  *        definition.
@@ -490,7 +492,7 @@ class RTT_Format_Reader
  * \return The side definition (i.e., the cell-node indexes that comprise the 
  *         side).
  */
-    const set_int & get_cell_defs_side(int i, int s) const 
+    const vector_int & get_cell_defs_side(int i, int s) const 
     { return spCellDefs->get_side(i,s); }
 /*!
  * \brief Returns the side definition associated with the specified cell  

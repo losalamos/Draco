@@ -18,6 +18,8 @@
 namespace rtt_meshReaders
 {
 
+using rtt_mesh_element::Element_Definition;
+
 Hex_Mesh_Reader::Hex_Mesh_Reader( std::string filename )
     : meshfile_name(filename)
 {

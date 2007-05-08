@@ -29,6 +29,7 @@ namespace rtt_RTT_Mesh_Reader_test
 {
 using namespace rtt_RTT_Format_Reader;
 using namespace rtt_RTT_Format_Reader_test;
+using rtt_mesh_element::Element_Definition;
 
 enum Meshes {DEFINED};
 
@@ -107,10 +108,8 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
     vector<vector<double> > node_coords;
     string node_coord_units;
     vector<vector<int> > element_nodes;
-    vector<rtt_meshReaders::Element_Definition::Element_Type> 
-        element_types;
-    vector<rtt_meshReaders::Element_Definition::Element_Type> 
-        unique_element_types;
+    vector<Element_Definition::Element_Type> element_types;
+    vector<Element_Definition::Element_Type> unique_element_types;
     map<string, set<int> > node_sets;
     map<string, set<int> > element_sets;
     string title;
@@ -156,29 +155,21 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 	side_nodes.resize(0);
 	// load the element types defined for RTT_Format according to the
 	// corresponding Element_Definition::Element_Type.
-	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
-	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
-	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
-	element_types.push_back(rtt_meshReaders::Element_Definition::TRI_3); 
-	element_types.push_back(rtt_meshReaders::Element_Definition::TETRA_4);
+	element_types.push_back(Element_Definition::TRI_3); 
+	element_types.push_back(Element_Definition::TRI_3); 
+	element_types.push_back(Element_Definition::TRI_3); 
+	element_types.push_back(Element_Definition::TRI_3); 
+	element_types.push_back(Element_Definition::TETRA_4);
 	// load the unique element types defined for RTT_Format according to 
 	// the corresponding Element_Definition::Element_Type.
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::NODE); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::BAR_2); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::TRI_3); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::QUAD_4); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::PYRA_5); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::TETRA_4); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::PENTA_6); 
-	unique_element_types.push_back(
-	    rtt_meshReaders::Element_Definition::HEXA_8); 
+	unique_element_types.push_back( Element_Definition::NODE); 
+	unique_element_types.push_back( Element_Definition::BAR_2); 
+	unique_element_types.push_back( Element_Definition::TRI_3); 
+	unique_element_types.push_back( Element_Definition::QUAD_4); 
+	unique_element_types.push_back( Element_Definition::PYRA_5); 
+	unique_element_types.push_back( Element_Definition::TETRA_4); 
+	unique_element_types.push_back( Element_Definition::PENTA_6); 
+	unique_element_types.push_back( Element_Definition::HEXA_8); 
 	// load the node sets
 	flag_nodes.insert(0);
 	node_sets.insert(make_pair(string("node_type/interior"), 

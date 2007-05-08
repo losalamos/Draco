@@ -181,7 +181,7 @@ class Element_Definition
         POLY_2D_4,  /*!<  Straight-sided 4 node polygon */
         POLY_2D_5,  /*!<  Straight-sided 5 node polygon */
         POLY_2D_6,  /*!<  Straight-sided 6 node polygon */
-        OTHER,      /*!< Catchall for any nonstandard element type. */
+        POLYGON,     /*!< Catchall for any nonstandard polygon element. */
 
         NUMBER_OF_ELEMENT_TYPES
     };
@@ -276,7 +276,7 @@ class Element_Definition
      * elem_defs_
      *
      *
-     * \post <code> get_type()==Element_Definition::OTHER </code>
+     * \post <code> get_type()==Element_Definition::POLYGON </code>
      *
      * \post <code> get_name()==name_  </code>
      *
@@ -335,7 +335,7 @@ class Element_Definition
      * \brief Returns the total number of nodes in an element.
      * \return Total number of nodes in an element.
      */
-    int get_number_of_nodes() const
+    unsigned get_number_of_nodes() const
     {
 	return number_of_nodes;
     }
@@ -345,7 +345,7 @@ class Element_Definition
      *
      * \return The element dimension (0, 1, 2, or 3).
      */
-    int get_dimension() const
+    unsigned get_dimension() const
     {
 	return dimension;
     }
@@ -356,7 +356,7 @@ class Element_Definition
      *         dimensional element. i.e. nodes return 0, lines return 2,
      *        quads return 4, hexahedra return 6.
      */
-    int get_number_of_sides() const
+    unsigned get_number_of_sides() const
     {
 	return number_of_sides;
     }
@@ -446,6 +446,31 @@ class Element_Definition
 	if ( side_number >= side_nodes.size() )
 	    Insist(false,"Side index out of range!");
 	return side_nodes[side_number];
+    }
+
+    std::vector<unsigned> get_number_of_face_nodes() const
+    {
+        std::vector<unsigned> number_of_face_nodes(side_type.size());
+
+        for (unsigned s=0; s < side_type.size(); ++s)
+            number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
+
+        return number_of_face_nodes;
+    }
+
+    std::vector<std::vector<unsigned> > get_face_nodes() const
+    {
+        std::vector<std::vector<unsigned> > face_nodes(side_nodes.size());
+        
+        for (unsigned s=0; s < face_nodes.size(); ++s)
+        {
+            std::vector<int> nodes(get_side_nodes(s)); 
+            face_nodes[s].resize(nodes.size());
+            
+            for (unsigned n=0; n < nodes.size(); ++n)
+                face_nodes[s][n] = nodes[n];
+        }
+        return face_nodes;
     }
 
     /*!

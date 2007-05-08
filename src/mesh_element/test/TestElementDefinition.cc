@@ -86,7 +86,7 @@ void runTest()
     rtt_mesh_element_test::test_hexa_20(elem_defs[16]);
     rtt_mesh_element_test::test_hexa_27(elem_defs[17]);
 
-    // Test the OTHER category.
+    // Test the POLYGON category.
 
     elem_defs.clear();
     elem_defs.resize(1, Element_Definition::BAR_2);
@@ -105,14 +105,14 @@ void runTest()
         node_loc(8,                           // number of nodes
                  Element_Definition::CORNER); // node location
     
-    Element_Definition other("OCT_8", // name
-                             2, // dimension
-                             8, // number_of_nodes
-                             8, // number_of_sides
-                             elem_defs,
-                             side_type,
-                             side_nodes,
-                             node_loc);
+    Element_Definition polygon("OCT_8", // name
+                               2, // dimension
+                               8, // number_of_nodes
+                               8, // number_of_sides
+                               elem_defs,
+                               side_type,
+                               side_nodes,
+                               node_loc);
     
     // Merely attempting construction, with DBC active, will invoke a slew of
     // precondition, postcondition, and consistency checks.  We perform no

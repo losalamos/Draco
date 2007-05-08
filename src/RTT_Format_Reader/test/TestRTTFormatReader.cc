@@ -1006,7 +1006,7 @@ bool check_cell_defs(const RTT_Format_Reader & mesh, const Meshes & meshtype)
     std::vector<int> nnodes;
     std::vector<int> nsides;
     std::vector<std::vector<int> > side_types;
-    std::vector<std::vector<std::set<int> > > sides;
+    std::vector<std::vector<std::vector<int> > > sides;
     std::vector<std::vector<std::vector<int> > > ordered_sides;
 
     switch (meshtype)
@@ -1174,7 +1174,7 @@ bool check_cell_defs(const RTT_Format_Reader & mesh, const Meshes & meshtype)
 	for (int c = 1; c < ordered_sides.size(); c++)
 	    for (int s = 0; s < ordered_sides[c].size(); s++)
 	        for (int n = 0; n < ordered_sides[c][s].size(); n++)
-		    sides[c][s].insert(ordered_sides[c][s][n]);
+		    sides[c][s].push_back(ordered_sides[c][s][n]);
 	break;
 
     default:

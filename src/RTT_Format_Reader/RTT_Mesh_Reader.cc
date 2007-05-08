@@ -16,77 +16,116 @@
 
 namespace rtt_RTT_Format_Reader
 {
+
+using rtt_mesh_element::Element_Definition;
+
 /*!
  * \brief Transforms the RTT_Format data to the CGNS format.
  */
 void RTT_Mesh_Reader::transform2CGNS()
 {
-    rtt_meshReaders::Element_Definition::Element_Type cell_defs;
-    rtt_dsxx::SP<rtt_meshReaders::Element_Definition> cell;
+    Element_Definition::Element_Type cell_def;
+    rtt_dsxx::SP<rtt_mesh_element::Element_Definition> cell;
+    std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > cell_definitions;
     vector_int new_side_types;
     vector_vector_int new_ordered_sides;
     vector_vector_int cell_side_types(rttMesh->get_dims_ncell_defs());
-    vector_vector_vector_int 
-        cell_ordered_sides(rttMesh->get_dims_ncell_defs());
+    vector_vector_vector_int cell_ordered_sides(rttMesh->get_dims_ncell_defs());
 
     for (unsigned cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd++)
     {
         string cell_name = rttMesh->get_cell_defs_name(cd);
 
 	if (cell_name == "point")
-	    cell_defs = rtt_meshReaders::Element_Definition::NODE;
+	    cell_def = Element_Definition::NODE;
 	else if (cell_name == "line")
-	    cell_defs = rtt_meshReaders::Element_Definition::BAR_2;
+	    cell_def = Element_Definition::BAR_2;
 	else if (cell_name == "line_qdr")
-	    cell_defs = rtt_meshReaders::Element_Definition::BAR_3;
+	    cell_def = Element_Definition::BAR_3;
 	else if (cell_name == "triangle")
-	    cell_defs = rtt_meshReaders::Element_Definition::TRI_3;
+	    cell_def = Element_Definition::TRI_3;
 	else if (cell_name == "triangle_qdr")
-	    cell_defs = rtt_meshReaders::Element_Definition::TRI_6;
+	    cell_def = Element_Definition::TRI_6;
 	else if (cell_name == "quad")
-	    cell_defs = rtt_meshReaders::Element_Definition::QUAD_4;
+	    cell_def = Element_Definition::QUAD_4;
 	else if (cell_name == "tetrahedron")
-	    cell_defs = rtt_meshReaders::Element_Definition::TETRA_4;
+	    cell_def = Element_Definition::TETRA_4;
 	else if (cell_name == "quad_pyr")
-	    cell_defs = rtt_meshReaders::Element_Definition::PYRA_5;
+	    cell_def = Element_Definition::PYRA_5;
 	else if (cell_name == "tri_prism")
-	    cell_defs = rtt_meshReaders::Element_Definition::PENTA_6;
+	    cell_def = Element_Definition::PENTA_6;
 	else if (cell_name == "hexahedron")
-	    cell_defs = rtt_meshReaders::Element_Definition::HEXA_8;
+	    cell_def = Element_Definition::HEXA_8;
         else if (cell_name == "polygon_4")
-            cell_defs = rtt_meshReaders::Element_Definition::POLY_2D_4;
+            cell_def = Element_Definition::POLY_2D_4;
         else if (cell_name == "polygon_5")
-            cell_defs = rtt_meshReaders::Element_Definition::POLY_2D_5;
+            cell_def = Element_Definition::POLY_2D_5;
         else if (cell_name == "polygon_6")
-            cell_defs = rtt_meshReaders::Element_Definition::POLY_2D_6;
+            cell_def = Element_Definition::POLY_2D_6;
 	else
-	    throw std::runtime_error("Unrecognized cell definition");
+            cell_def = Element_Definition::POLYGON;
 
-	unique_element_types.push_back(cell_defs);
-	cell = new rtt_meshReaders::Element_Definition(cell_defs);
-	new_side_types.resize(cell->get_number_of_sides());
-	new_ordered_sides.resize(cell->get_number_of_sides());
-	for (unsigned s = 0; s < cell->get_number_of_sides(); s++)
-	{
-	    new_side_types[s] = (std::find(unique_element_types.begin(), 
-					   unique_element_types.end(),
-					   cell->get_side_type(s).get_type())
-				 - unique_element_types.begin());
-	    new_ordered_sides[s] = cell->get_side_nodes(s);
-	}
-	Check(cd<cell_side_types.size() && cd<cell_ordered_sides.size());
-	cell_side_types[cd] = new_side_types;
-	cell_ordered_sides[cd] = new_ordered_sides;
+	unique_element_types.push_back(cell_def);
+
+        if (cell_def == Element_Definition::POLYGON)
+        {
+            if (rttMesh->get_dims_ndim() == 2)
+            {
+                rtt_dsxx::SP<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd)); 
+                
+                std::vector<Element_Definition> elem_defs;
+                elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
+                
+                std::vector<int> side_types(cell_definition->get_nsides(), 0);
+                
+                std::vector<Element_Definition::Node_Location>
+                    node_loc(cell_definition->get_nnodes(), Element_Definition::CORNER);
+                
+                cell = new rtt_mesh_element::Element_Definition(cell_definition->get_name(),
+                                                                rttMesh->get_dims_ndim(),
+                                                                cell_definition->get_nnodes(),
+                                                                cell_definition->get_nsides(),
+                                                                elem_defs,
+                                                                side_types,
+                                                                cell_definition->get_all_sides(),
+                                                                node_loc);
+            }
+            else
+            {
+                throw std::runtime_error("Polygon cell definition only supported in 2D");
+            }
+        }
+        else
+        {
+            cell = new rtt_mesh_element::Element_Definition(cell_def);
+        }
+
+        cell_definitions.push_back(cell);
+
+        new_side_types.resize(cell->get_number_of_sides());
+        new_ordered_sides.resize(cell->get_number_of_sides());
+        for (unsigned s = 0; s < cell->get_number_of_sides(); s++)
+        {
+            new_side_types[s] = (std::find(unique_element_types.begin(), 
+                                           unique_element_types.end(),
+                                           cell->get_side_type(s).get_type())
+                                 - unique_element_types.begin());
+            new_ordered_sides[s] = cell->get_side_nodes(s);
+        }
+        Check(cd<cell_side_types.size() && cd<cell_ordered_sides.size());
+        cell_side_types[cd] = new_side_types;
+        cell_ordered_sides[cd] = new_ordered_sides;
     }
     rttMesh->reformatData(cell_side_types, cell_ordered_sides);
-
+    
     // Load the element types vector.
     for (int s = 0; s < rttMesh->get_dims_nsides(); s++)
-        element_types.push_back(
-	    unique_element_types[rttMesh->get_sides_type(s)]);
+        element_types.push_back(unique_element_types[rttMesh->get_sides_type(s)]);
     for (int c = 0; c < rttMesh->get_dims_ncells(); c++)
-        element_types.push_back(
-	    unique_element_types[rttMesh->get_cells_type(c)]);
+    {
+        element_types.push_back(unique_element_types[rttMesh->get_cells_type(c)]);
+        element_defs.push_back(cell_definitions[rttMesh->get_cells_type(c)]);
+    }
 }
 /*!
  * \brief Returns the node numbers associated with each element (i.e., sides
