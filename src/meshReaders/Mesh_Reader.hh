@@ -155,7 +155,8 @@ class Mesh_Reader
     virtual std::string get_title() const = 0;
 
     virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > 
-       get_element_defs() const = 0;
+    get_element_defs() const
+    {return std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> >(); };
 
     /*!
      * \brief Provides a check on the integrity of the mesh data.
