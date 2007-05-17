@@ -41,8 +41,9 @@ def store(file, comment = '', hpss_path = "xfer", verbose = Verbosity.ignore()):
     verbose(" ... return status: %d" % (store_status,), 2)
 
     if store_status != 0:
-        raise exceptions.RuntimeError("Unable to store file %s in HPSS. Psi command " \
-                                      "return code is %s" % (file, store_status,))
+        raise exceptions.RuntimeError( \
+            "Unable to store file %s in HPSS. Psi command " \
+            "return code is %s" % (file, store_status,))
                            
     return hpss_file
 
@@ -70,8 +71,9 @@ def push(hpss_filename, tag = '', verbose  = Verbosity.ignore()):
     push_status = os.spawnv(os.P_WAIT, command[0], command)
 
     if push_status != 0:
-        raise exceptions.RunTimeError("Failed to push file: %s with error " +
-                                      "condition: %s " % (hpss_filename, push_status))
+        raise exceptions.RuntimeError(
+            "Failed to push file: %s with error " +
+            "condition: %s " % (hpss_filename, push_status))
 
 
 
