@@ -6,6 +6,10 @@
 #======================================================================
 
 ##---------------------------------------------------------------------------##
+## Basic data types:
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
 class Bunch(object):
     """An object created with attributes from a dictionary and/or a
     keyword list
@@ -25,6 +29,7 @@ class Bunch(object):
 
 
 
+##---------------------------------------------------------------------------##
 class Parameters(object):
     """A specialized kind of Bunch which keeps a list of expected
     parameters and can print their values.
@@ -56,6 +61,114 @@ class Parameters(object):
             s += '\n'
 
         return s[:-1]
+
+
+##---------------------------------------------------------------------------##
+class Data(object):
+    """ Accumulate and report statistics on data.
+
+    >>> d = Data()
+    >>> d.add(10)
+    >>> d.add(20)
+    >>> d.add(30)
+    >>> d.trials
+    3
+    >>> d.average()
+    20.0
+    >>> d.deviation()
+    10.0
+    """
+    
+    def __init__(self):
+        self.values = []
+        self.value  = 0.0
+        self.trials = 0
+
+    def add(self, value):
+        self.values.append(value)
+        self.value  += value
+        self.trials += 1
+
+    def average(self):
+        return self.value / self.trials
+
+    def deviation(self):
+
+        if self.trials < 2: return 0.0
+
+        average = self.average()
+
+        import math
+
+        deviations = map(lambda x: (x-average)**2, self.values)
+        summation  = reduce(lambda x,y: x+y, deviations)
+
+        return math.sqrt(summation / ( self.trials - 1))
+
+
+
+##---------------------------------------------------------------------------##
+## List manipulations
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+def padlist(l, length, value=None):
+
+    """ Pads a list on the right with 'value' (default None) until it
+    reaches the given length
+
+    >>> padlist([1,2,3], 5)
+    [1, 2, 3, None, None]
+    
+    >>> padlist([1,2,3], 5, 0)
+    [1, 2, 3, 0, 0]
+    
+    >>> padlist([1,2,3,4,5], 3)
+    [1, 2, 3, 4, 5]
+    """
+
+    ll = l[:]
+    ll.extend([value]*(length-len(l)))
+    return ll
+
+##---------------------------------------------------------------------------##
+def unique_append(a_list, an_item):
+
+    """Append an_item to a_list only if it does not yet appear
+
+    >>> unique_append([1,2,3],4)
+    [1, 2, 3, 4]
+
+    >>> unique_append([1,2,3,4],4)
+    [1, 2, 3, 4]
+    """
+    if an_item not in a_list: a_list.append(an_item)
+
+    return a_list
+
+##---------------------------------------------------------------------------##
+def unique_extend(a_list, b_list):
+
+    """Extend a_list with items in b_list if they do not already
+    appear.
+
+    >>> unique_extend([1,2,3], [3,4,5])
+    [1, 2, 3, 4, 5]
+
+    """
+
+    for an_item in b_list:
+        if an_item not in a_list: a_list.append(an_item)
+
+    return a_list
+
+
+
+
+##---------------------------------------------------------------------------##
+## XML stuff:
+##---------------------------------------------------------------------------##
+
 
 
 ##---------------------------------------------------------------------------##
@@ -114,24 +227,8 @@ def parse_attrib(value):
 
 
 ##---------------------------------------------------------------------------##
-def padlist(l, length, value=None):
-
-    """ Pads a list on the right with 'value' (default None) until it
-    reaches the given length
-
-    >>> padlist([1,2,3], 5)
-    [1, 2, 3, None, None]
-    
-    >>> padlist([1,2,3], 5, 0)
-    [1, 2, 3, 0, 0]
-    
-    >>> padlist([1,2,3,4,5], 3)
-    [1, 2, 3, 4, 5]
-    """
-
-    ll = l[:]
-    ll.extend([value]*(length-len(l)))
-    return ll
+## File manipulation:
+##---------------------------------------------------------------------------##
 
 #----------------------------------------------------------------------
 def ScanTo(fileHandle, regexString):
@@ -171,7 +268,10 @@ def ScanTo(fileHandle, regexString):
     """
 
     import re
-    regex = re.compile(regexString)
+    if isinstance(regexString, str):
+        regex = re.compile(regexString)
+    else:
+        regex = regexString
 
     original_position = fileHandle.tell()
     
@@ -213,6 +313,11 @@ def openFileOrString(source):
     # treat source as string
     import StringIO                       
     return StringIO.StringIO(str(source))  
+
+
+##---------------------------------------------------------------------------##
+## Option processing
+##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
 def process_setter_options(options, option_param_map, defaults):
@@ -286,7 +391,14 @@ def process_setter_options(options, option_param_map, defaults):
     return Parameters(parameters, defaults), unknowns
 
 
-    
+
+
+
+##---------------------------------------------------------------------------##
+## String completion
+##---------------------------------------------------------------------------##
+
+
 ##---------------------------------------------------------------------------##
 class KeyError(Exception):
     "An exception class for all disambuguation errors."
@@ -301,6 +413,24 @@ class InvalidKeyError(KeyError):
     """An exception raised by Utils.disambiguate when no matching
     values are found."""
     pass
+
+##---------------------------------------------------------------------------##
+def complete(value, targets):
+    """
+    Return a list of strings from targets which begin with the
+    characters in value
+    
+    >>> complete('g', ['tall', 'grande', 'venti', 'giant'])
+    ['grande', 'giant']
+    
+    >>> complete('gr', ['tall', 'grande', 'venti', 'giant'])
+    ['grande']
+    
+    >>> complete('s', ['tall', 'grande', 'venti', 'giant'])
+    []
+    """
+
+    return [target for target in targets if target.startswith(value)]
 
 ##---------------------------------------------------------------------------##
 def disambiguate(value, targets):
@@ -338,52 +468,25 @@ def disambiguate(value, targets):
     else:
         raise InvalidKeyError(value, targets)
 
-##---------------------------------------------------------------------------##
-def complete(value, targets):
-    """
-    Return a list of strings from targets which begin with the
-    characters in value
-    
-    >>> complete('g', ['tall', 'grande', 'venti', 'giant'])
-    ['grande', 'giant']
-    
-    >>> complete('s', ['tall', 'grande', 'venti', 'giant'])
-    []
-    """
 
-    return [target for target in targets if target.startswith(value)]
+
+
 
 ##---------------------------------------------------------------------------##
-def unique_append(a_list, an_item):
-
-    """Append an_item to a_list only if it does not yet appear
-
-    >>> unique_append([1,2,3],4)
-    [1, 2, 3, 4]
-
-    >>> unique_append([1,2,3,4],4)
-    [1, 2, 3, 4]
-    """
-    if an_item not in a_list: a_list.append(an_item)
-
-    return a_list
-
+## Filesystem:
 ##---------------------------------------------------------------------------##
-def unique_extend(a_list, b_list):
 
-    """Extend a_list with items in b_list if they do not already
-    appear.
 
-    >>> unique_extend([1,2,3], [3,4,5])
-    [1, 2, 3, 4, 5]
+def get_timestamp_as_string(filename):
+    """
+    Return the timestamp of the given filename formatted as a string
 
+    >>> get_timestamp_as_string("/home/mwbuksas")
+    'Tue Sep 12 15:31:51 2006'
     """
 
-    for an_item in b_list:
-        if an_item not in a_list: a_list.append(an_item)
-
-    return a_list
-
+    import os, stat, time
+    return time.asctime(time.localtime(os.stat(filename)[stat.ST_MTIME]))
 
 
 ##---------------------------------------------------------------------------##
@@ -416,7 +519,8 @@ def listdir(dir, recurse = 0):
 
 
 ##---------------------------------------------------------------------------##
-def listFiles(root, patterns='*', recurse=1, relative_paths=0, return_folders=0):
+def listFiles(root, patterns='*', recurse=True, relative_paths=False,
+              return_folders=False):
     """ From the Python Cookbook version 1 section 4.18 by Robin
     Parmar and Alex Martelli
 
@@ -428,9 +532,14 @@ def listFiles(root, patterns='*', recurse=1, relative_paths=0, return_folders=0)
     # Expand patterns from semicolon-separated string to list
     pattern_list = patterns.split(';')
 
-    arg = Bunch(root=root, recurse=recurse, pattern_list=pattern_list,
-                return_folders=return_folders, results=[])
+    # We turn the arguments into a bunch for passing into os.path.walk:
+    arg = Bunch(root=root,
+                recurse=recurse,
+                pattern_list=pattern_list,
+                return_folders=return_folders,
+                results=[])
  
+    # This is the function we pass to os.path.walk. 
     def visit(arg, dirname, files):
         
         # Append to arg.results all relevant files (and perhaps folders)
@@ -449,56 +558,12 @@ def listFiles(root, patterns='*', recurse=1, relative_paths=0, return_folders=0)
                         arg.results.append(display_name)
                         break
 
-        # Block recursion if recursion was disallowed
+        # If not recursing, clobber the file list to stop recursion.
         if not arg.recurse: files[:]=[]
  
     os.path.walk(root, visit, arg)
  
     return arg.results
-
-class Data:
-    """ Accumulate and report statistics on data.
-
-    >>> d = Data()
-    >>> d.add(10)
-    >>> d.add(20)
-    >>> d.add(30)
-    >>> d.trials
-    3
-    >>> d.average()
-    20.0
-    >>> d.deviation()
-    10.0
-    """
-    
-    def __init__(self):
-        self.values = []
-        self.value  = 0.0
-        self.trials = 0
-
-    def add(self, value):
-        self.values.append(value)
-        self.value  += value
-        self.trials += 1
-
-    def average(self):
-        return self.value / self.trials
-
-    def deviation(self):
-
-        if self.trials < 2: return 0.0
-
-        average = self.average()
-
-        import math
-
-        deviations = map(lambda x: (x-average)**2, self.values)
-        summation  = reduce(lambda x,y: x+y, deviations)
-
-        return math.sqrt(summation / ( self.trials - 1))
-
-
-
 
 
 ##---------------------------------------------------------------------------##

@@ -26,6 +26,7 @@ class Cycle_Data:
         self.__read_next_cycle( file_handle )
     
 
+
     def __read_next_cycle( self, file_handle ):
         """Read the next cycle from the file object and store the
         results in the internal arrays. If no cycle is found, set
@@ -70,6 +71,8 @@ class Cycle_Data:
             # still need to scan for the execution time.
             file_handle.seek( file_position )
             self.found_cycle = False;
+
+
 
 
     def gnuplot_output( self, file_out ):
