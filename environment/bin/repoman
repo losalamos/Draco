@@ -1,0 +1,128 @@
+#!/usr/bin/env python
+
+"""Get a compressed tar file of the named repository. Optinally store
+the file in HPSS and push it to the secure network.
+"""
+
+import Repo, HPSS, Verbosity, Utils
+import tempfile, os, sys
+
+
+def parse_command_line():
+
+    import optparse
+
+    # Documentation string for optparse module:
+    usage       = "usage: %prog [options] package"
+    version     = "version: %prog 1.0"
+    description = ' '.join(["Make tarfiles of the cvs repositories in",
+                           "/codes/radtran/cvsroot. Optionally store",
+                           "in HPSS and push via Mercury."])
+    
+    parser = optparse.OptionParser(usage=usage,
+                                   version=version,
+                                   description=description)
+
+    parser.add_option("-z", "--compress",
+                      action="store_true",
+                      dest="compress",
+                      default=False,
+                      help="Use zgip to compress the archive.")
+    
+    parser.add_option("-s", "--store",
+                      action="store_true",
+                      dest="store",
+                      default=False,
+                      help="Put the resulting tarfile in HPSS under directory xfer") 
+    
+    parser.add_option("-p", "--push",
+                      action="store_true",
+                      dest="push",
+                      default=False,
+                      help="Push the HPSS file to the secure network. Implies -s") 
+    
+    parser.add_option("-v", "--verbose",
+                      action="count",
+                      dest="verbose",
+                      default=False,
+                      help="Print more information")
+
+    parser.add_option("-S", "--secure",
+                      action="store_true",
+                      dest="secure",
+                      default=False,
+                      help="Equivalent to -pz")
+
+    (options, packages) = parser.parse_args()
+
+    # Push implies store:
+    if options.push: options.store = True
+
+    if options.secure:
+        options.push     = True
+        options.store    = True
+        options.compress = True
+
+    for package in packages:
+        
+        if not Repo.is_valid_package(package):
+            print "Do not know about package: %s. Dropping from list." % package
+            packages.remove(package)
+
+    if len(packages) < 1:
+        parser.error("Missing a package name.")
+        
+    return (options, packages)
+
+
+
+##---------------------------------------------------------------------------##
+def make_archive(package_name, directory, compress, verbose = Verbosity.ignore()):
+
+    verbose("Creating archive for package %s" % (package_name, ))
+
+    archive = Repo.get_tar_file(package_name, compress, directory)
+
+    verbose(" ... as file: %s" % (archive, ),2)
+
+    return archive
+
+
+##---------------------------------------------------------------------------##
+if __name__=="__main__":
+
+    (options, packages) = parse_command_line()
+
+    verbose = Verbosity.make(options.verbose)
+
+    for package_name in packages:
+
+        if options.store:
+            temp_dir = tempfile.mkdtemp()
+        else:
+            temp_dir = ""
+
+        archive = make_archive(package_name, temp_dir, options.compress, verbose)
+    
+        if options.store:
+            time = Utils.get_timestamp_as_string(archive)
+            message = "Created: %s" %(time,)
+            hpss_filename = HPSS.store(archive, message, verbose=verbose)
+
+        if temp_dir:
+            os.remove(archive)
+            os.rmdir(temp_dir)
+
+        if options.push:
+            HPSS.push(hpss_filename, package_name, verbose=verbose)
+
+
+        
+
+
+
+    
+
+
+
+

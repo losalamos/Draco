@@ -84,13 +84,6 @@ if '-h' in options or '--help' in options:
     list_packages()
     sys.exit()
 
-    # Attempt to find package name
-    package = tag.split('-')[0];
-    if package not in package_archive.keys():
-        print "Could not determine package name from tag: %s. " \
-        "Looking elsewhere." % (tag,)
-        package = ''
-
 if '-n' in options or '--dry-run' in options:
     dry_run = True;
 
@@ -101,6 +94,13 @@ if '-l' in options or '--list' in options:
 if '-e' in options:
     command = 'export'
 
+
+# Attempt to find package name
+package = tag.split('-')[0];
+if package not in package_archive.keys():
+    print "Could not determine package name from tag: %s. " \
+          "Looking elsewhere." % (tag,)
+    package = ''
 
 # If we don't have a package, try and get it from the first
 # argument. If this argument contains '/' treat the first part before
@@ -150,8 +150,8 @@ if not tag:
 if tag:       tag = "-r %s" % tag
 if directory: directory = "-d %s" % directory;
 
-command = "cvs -z9 -d:ext:%s@sf.lanl.gov:/cvsroot/%s %s %s %s %s" % \
-          (username, archive, command, directory, tag, package_name)
+command = "cvs -z9 -d /codes/radtran/cvsroot/ %s %s %s %s" % \
+          (command, directory, tag, package_name)
 
 print "%s" % command
 
