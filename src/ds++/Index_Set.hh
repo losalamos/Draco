@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Thu Feb  2 10:01:46 2006
  * \brief  
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   © Copyright 2006 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,6 +15,7 @@
 
 #include <functional>
 #include <numeric>
+#include <algorithm>
 
 #include "Assert.hh"
 
