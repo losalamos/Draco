@@ -1,0 +1,50 @@
+#! /usr/bin/env python
+
+import Module
+
+def with_do(argv):
+    """COMMAND: with do
+
+Establish a module context for a single command given as arguments
+to this script. Implement table look-up for abbreviations of module
+names.
+
+USAGE:
+
+    with <options> <modules> do <command>
+
+<options> control the behavior of with.
+<modules> consists of one or more module names and/or abbreviations
+
+Everything after 'do' is treated as the command to execute, including
+all arguments and flags.
+    
+"""
+
+    try:
+        do_index = sys.argv.index('do')
+    except ValueError:
+        sys.stderr.write("ERROR: Missing 'do' command\n")
+        sys.stderr.write(with_do.__doc__)
+        sys.exit(-1)
+
+    modules, command = argv[1:do_index], argv[do_index+1:]
+
+    print "Loading modules: ", modules
+    
+    for module in modules:
+        Module.add_module(module)
+
+        
+    print "Executing command: " 
+    status = os.execvp(command[0], command)
+
+    return status
+
+
+
+if __name__ == "__main__":
+
+    import sys, os
+    with_do(sys.argv)
+
