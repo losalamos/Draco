@@ -53,6 +53,19 @@ parallel='no'
 ## SYSTEM
 host=`uname`
 
+
+##---------------------------------------------------------------------------##
+## Setting up rmpool for AIX machines (up/purple)
+if test "$host" = 'AIX' ; then
+    mach=`uname -n`
+    mach_name=`echo ${mach} | sed 's/[0-9].*//'`
+    if test "$mach_name" = 'up' ; then
+       pool='pdebug'
+    else
+       pool='viz'
+    fi
+fi
+
 ##---------------------------------------------------------------------------##
 ## MPI EXECUTABLE
 
@@ -109,7 +122,11 @@ case $exe in
     binary)
         if test "$parallel" = 'no' ; then
 
-            test_exec="$executable $exe_options"
+           if test "$host" = 'AIX' ; then 
+              test_exec="$executable $exe_options -rmpool $pool"
+           else
+              test_exec="$executable $exe_options"
+           fi
 
         elif test "$parallel" = 'application'; then
 
@@ -125,7 +142,7 @@ case $exe in
 
                     # IBM AIX (with poe)
                     AIX)
-                        test_exec="poe $executable $exe_options -procs $procs -rmpool viz -retry 1"
+                        test_exec="poe $executable $exe_options -procs $procs -rmpool $pool -retry 1"
                     ;;
                     
                     # COMPAQ
@@ -139,13 +156,13 @@ case $exe in
 			if test "$LSB_SUB_HOST" = "lambda" && test $mpich_path; then
 			    test_exec="$libexecdir/mpijob -v mpirun -np $procs $executable $exe_options"
 			else
-			    test_exec="mpirun -np $procs $executable $exe_options"
+			    test_exec="mpirun -np $procs $executable $exe_options $number"
 			fi
 		    ;;
 
                     # all other standard MPI implementations
                     *)
-                        test_exec="mpirun -np $procs $executable $exe_options"
+                        test_exec="mpirun -np $procs $executable $exe_options $number"
                     ;;
                 esac
 
