@@ -6,14 +6,17 @@
 
 import os, Utils
 
-modulepath   = os.environ['MODULEPATH'].split(':')
-module_home  = os.environ['MODULESHOME']
+modulepath  = os.environ['MODULEPATH'].split(':')
+module_home = os.environ['MODULESHOME']
 
-def mod_file(s): return (s.find('modulefiles') > -1)
-def ver_file(s): return (s.find('version')     > -1)
+module_paths = [path for path in os.environ['MODULEPATH'].split(':')
+                if (path.find('modulefiles') > -1) and
+                os.access(path, os.R_OK)]
 
-module_paths    = filter(mod_file , modulepath)
-module_versions = filter(ver_file , modulepath)
+avail_modules = reduce( (lambda a,b: a+b),
+                        [[module for module in Utils.listdir(path, 1) if
+                          module.find('/') != -1] for path in
+                         module_paths] )
 
 def module_command(command):
 
@@ -23,22 +26,6 @@ def module_command(command):
     exec os.popen('/usr/bin/modulecmd python %s' % command).read()
 
 
-def avail_modules():
-
-    """Return list of the available modules from the contents of
-    os.environ['MODULEPATH']. We only dive one directory level from
-    this path in search of files which represent modules.
-
-    """
-
-    modules = []
-
-    for path in module_paths:
-        modules.extend(Utils.listdir(path, 1))
-
-    return modules
-
-    
 def loaded_modules():
     """Get the list of currently loaded modules."""
 
@@ -48,7 +35,7 @@ def loaded_modules():
 def add_module(module):
     """Add the module with the provided name"""
 
-    if not module in avail_modules():
+    if not module in avail_modules:
         raise "Module %s does not exist." % module
     if not module in loaded_modules():
         module_command("add %s" % module)
@@ -57,7 +44,7 @@ def add_module(module):
 
 def remove_module(module):
 
-    if not module in avail_modules():
+    if not module in avail_modules:
         raise "Module %s does not exist." % module
     if module in loaded_modules():
         module_command("remove %s" % module)
@@ -68,24 +55,23 @@ def remove_module(module):
 def list():
 
     print "Currently Loaded modules:"
-    i = 0
-    for module in loaded_modules():
-        i += 1
-        print " %s) %s" % (i, module)
+    for i,module in enumerate(loaded_modules()):
+        print " %s) %s" % (i+1, module)
 
 def avail():
 
     print "Available modules:"
-    for module in avail_modules():
+    for module in avail_modules:
         print " %s" % module
     
+def _test():
+
+    # Try adding idl. Remove it first to make sure we added it.
+    remove_module('idl/6.1')
+    list()
+    add_module('idl/6.1')
+    list()
 
 if __name__=='__main__':
 
-    # Try adding idl. Remove it first to make sure we added it.
-    remove_module('tools/idl-6.1')
-    list()
-    add_module('tools/idl-6.1')
-    list()
-    avail()
-
+    _test()
