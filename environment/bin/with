@@ -1,17 +1,17 @@
 #! /usr/bin/env python
 
 import Module
+import Verbosity
+import optparse
 
 def with_do(argv):
-    """COMMAND: with do
 
+    usage = "usage: with <options> <modules> do <command>"
+    version = "version: %prog 0.1"
+    description = """
 Establish a module context for a single command given as arguments
 to this script. Implement table look-up for abbreviations of module
 names.
-
-USAGE:
-
-    with <options> <modules> do <command>
 
 <options> control the behavior of with.
 <modules> consists of one or more module names and/or abbreviations
@@ -20,23 +20,43 @@ Everything after 'do' is treated as the command to execute, including
 all arguments and flags.
     
 """
+    
+    parser = optparse.OptionParser(usage=usage,
+                                   version=version,
+                                   description=description)
+
+    parser.add_option("-v", "--verbose",
+                      action="count",
+                      dest="verbose",
+                      default=False,
+                      help="Print more information")
+
+    parser.add_option("-f", "--file",
+                      dest="filename",
+                      default="~/.withrc",
+                      help="Specify an alternate configuration file"
+                      )
+
+
+    (options, commands) = parser.parse_args()
+
+    verbose = Verbosity.make(options.verbose)
 
     try:
-        do_index = sys.argv.index('do')
+        do_index = commands.index('do')
     except ValueError:
         sys.stderr.write("ERROR: Missing 'do' command\n")
-        sys.stderr.write(with_do.__doc__)
         sys.exit(-1)
 
-    modules, command = argv[1:do_index], argv[do_index+1:]
+    modules, command = commands[0:do_index], commands[do_index+1:]
 
-    print "Loading modules: ", modules
+    verbose("Loading modules: %s" % ', '.join(modules), 1)
     
     for module in modules:
         Module.add_module(module)
 
         
-    print "Executing command: " 
+    verbose("Executing command: %s" % ' '.join(command), 1)
     status = os.execvp(command[0], command)
 
     return status
