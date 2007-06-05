@@ -149,8 +149,6 @@ class Element_Definition
                      *   middle of each edge. This is the standard
                      *   quadratic-serendipity finite element triangle.*/
 	QUAD_4,     /*!< The basic two-D, four-node "quadrilateral" element. */
-	QUAD_5,     /*!< A two-D , five-node "quadrilateral" element for a new
-                         CFEM-based spatial discretization. */
 	QUAD_8,     /*!< Same as "QUAD_4" except a node is added in the
 		     *   middle of each edge. This is the
                      *   standard quadratic-serendipity finite element quad.*/
@@ -178,10 +176,7 @@ class Element_Definition
 	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added 
 		     *   in the center of each face, and at the center of 
                      *   the element. */
-        POLY_2D_4,  /*!<  Straight-sided 4 node polygon */
-        POLY_2D_5,  /*!<  Straight-sided 5 node polygon */
-        POLY_2D_6,  /*!<  Straight-sided 6 node polygon */
-        POLYGON,     /*!< Catchall for any nonstandard polygon element. */
+        POLYGON,     /*!< A polygon element with straight sides. */
 
         NUMBER_OF_ELEMENT_TYPES
     };

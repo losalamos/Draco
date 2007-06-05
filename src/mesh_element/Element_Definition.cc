@@ -42,7 +42,6 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
 	break;
 
     case QUAD_4 :
-    case QUAD_5 :
     case QUAD_8 :
     case QUAD_9 :
 	construct_quad();
@@ -68,13 +67,6 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
         Ensure( invariant_satisfied() );
 	break;	
 
-    case POLY_2D_4:
-    case POLY_2D_5:
-    case POLY_2D_6:
-	construct_poly_2d();
-        Ensure( invariant_satisfied() );
-	break;
-
     case HEXA_8  :
     case HEXA_20 :
     case HEXA_27 :
@@ -82,12 +74,11 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
         Ensure( invariant_satisfied() );
 	break;	
 
-    case POLYGON:
+    case POLYGON :
         dimension = 2;
 	break;	
 
     default :
-	
 	Insist(false,"Unrecognized Element-Type Flag");
 	
     }
@@ -366,11 +357,6 @@ void Element_Definition::construct_quad()
 	number_of_nodes=4;
 	elem_defs.push_back(Element_Definition(BAR_2));
 	break;
-    case QUAD_5 :
-	name = "QUAD_5";
-	number_of_nodes=5;
-	elem_defs.push_back(Element_Definition(BAR_2));
-	break;
     case QUAD_8 :
     case QUAD_9 :
 	elem_defs.push_back(Element_Definition(BAR_3));
@@ -401,51 +387,6 @@ void Element_Definition::construct_quad()
 
     for( int i = 0; i < number_of_sides; i++ )
 	side_type.push_back(0);
-}
-//---------------------------------------------------------------------------//
-
-void Element_Definition::construct_poly_2d()
-{
-    dimension=2;
-
-    switch ( type )
-    {
-    case POLY_2D_4:
-        name = "POLY_2D_4";
-	number_of_nodes=4;
-        number_of_sides=4;
-	elem_defs.push_back(Element_Definition(BAR_2));
-	break;
-    case POLY_2D_5:
-        name = "POLY_2D_5";
-	number_of_nodes=5;
-        number_of_sides=5;
-	elem_defs.push_back(Element_Definition(BAR_2));
-	break;
-    case POLY_2D_6:
-        name = "POLY_2D_6";
-	number_of_nodes=6;
-        number_of_sides=6;
-	elem_defs.push_back(Element_Definition(BAR_2));
-	break;
-    default :
-	Insist(false,"Unrecognized polygon element-type");
-    }
-
-    for( int i=0; i < number_of_nodes; i++ )
-	node_loc.push_back(CORNER);
-
-    std::vector<int> tmp;
-
-    for( int i = 0; i < number_of_sides; i++ )
-    {
-	side_type.push_back(0);
-
-        tmp.clear();
-        tmp.push_back(i);
-        tmp.push_back((i+1)%number_of_nodes);    
-        side_nodes.push_back(tmp);
-    }
 }
 
 //---------------------------------------------------------------------------//

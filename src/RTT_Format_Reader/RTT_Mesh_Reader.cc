@@ -56,12 +56,6 @@ void RTT_Mesh_Reader::transform2CGNS()
 	    cell_def = Element_Definition::PENTA_6;
 	else if (cell_name == "hexahedron")
 	    cell_def = Element_Definition::HEXA_8;
-        else if (cell_name == "polygon_4")
-            cell_def = Element_Definition::POLY_2D_4;
-        else if (cell_name == "polygon_5")
-            cell_def = Element_Definition::POLY_2D_5;
-        else if (cell_name == "polygon_6")
-            cell_def = Element_Definition::POLY_2D_6;
 	else
             cell_def = Element_Definition::POLYGON;
 

@@ -203,8 +203,7 @@ void CellDef::redefineCellDef(const vector_int & new_side_types,
         }
         node_map[old_node] = new_node;
     }
-    else if (name == "triangle" || name == "quad" || 
-             name == "polygon_4" || name == "polygon_5" || name == "polygon_6" )
+    else if (name == "triangle" || name == "quad")
     {
         // Arbitrarily assign the first node in the old and the new cell 
         // definitions to be the same. This assumption is necessary because
