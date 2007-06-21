@@ -1227,10 +1227,21 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
 	   mpi_libs='-lmpi'
            AC_MSG_CHECKING("mpirun -version")
            mpi_version=`mpirun -version`
-           if test -n "`echo ${mpi_version} | grep -i LA-MPI`"; then
+           if (expr " $mpi_version" : '.*LA-MPI' > /dev/null); then 
               AC_MSG_RESULT(${mpi_version})
            else
-              AC_MSG_ERROR("Did not find LA-MPI version of mpirun.")
+               AC_MSG_ERROR("Did not find LA-MPI version of mpirun.")
+           fi
+           ;;
+       openmpi)
+           with_mpi='OPENMPI'
+           mpi_libs='-lmpi'
+           AC_MSG_CHECKING("mpirun -version")
+           mpi_version=`mpirun -version`
+           if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
+              AC_MSG_RESULT(${mpi_version})
+           else
+               AC_MSG_ERROR("Did not find Open MPI version of mpirun.")
            fi
            ;;
        openmpi)
