@@ -1217,10 +1217,6 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
 	   # define mpi libs for mpich on linux
 	   mpi_libs='-lmpich'
            ;;
-       openmpi)
-	   # define mpi libs for openmpi on linux
-	   mpi_libs='-lmpi -lmpi_cxx'
-           ;;
        lampi | LAMPI | LA-MPI)
            with_mpi='LAMPI'
 	   # define mpi libs for LAMPI on linux
@@ -1235,7 +1231,7 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            ;;
        openmpi)
            with_mpi='OPENMPI'
-           mpi_libs='-lmpi'
+           mpi_libs='-lmpi -lmpi_cxx'
            AC_MSG_CHECKING("mpirun -version")
            mpi_version=`mpirun -version`
            if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
@@ -1243,10 +1239,6 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            else
                AC_MSG_ERROR("Did not find Open MPI version of mpirun.")
            fi
-           ;;
-       openmpi)
-	   # define mpi libs for mpich on linux
-	   mpi_libs='-lmpi'
            ;;
        esac 
 ])
