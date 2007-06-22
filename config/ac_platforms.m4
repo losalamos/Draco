@@ -1226,7 +1226,7 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            if (expr " $mpi_version" : '.*LA-MPI' > /dev/null); then 
               AC_MSG_RESULT(${mpi_version})
            else
-               AC_MSG_ERROR("Did not find LA-MPI version of mpirun.")
+              AC_MSG_ERROR("Did not find LA-MPI version of mpirun.")
            fi
            ;;
        openmpi)
@@ -1237,7 +1237,7 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
               AC_MSG_RESULT(${mpi_version})
            else
-               AC_MSG_ERROR("Did not find Open MPI version of mpirun.")
+              AC_MSG_ERROR("Did not find Open MPI version of mpirun.")
            fi
            ;;
        esac 
