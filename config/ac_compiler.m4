@@ -73,7 +73,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        AC_CHECK_PROG(CXX, g++, g++)
        AC_CHECK_PROG(CC, gcc, gcc)
 
-       if test "${CXX}" = g++ && test "${CC}" = gcc ; then
+       if test `basename ${CXX}` = g++ && test `basename ${CC}` = gcc ; then
 	   AC_DRACO_GNU_GCC
        else
 	   AC_MSG_ERROR("Did not find gnu c++ compiler!")
@@ -105,7 +105,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        *-linux-gnu)
            AC_CHECK_PROG(CXX, pgCC, pgCC)
            
-           if test `echo ${CXX} | sed -e 's/.*\///g'` == pgCC ; then 
+           if test `basename ${CXX}` == pgCC ; then 
                CC='pgcc'
                AC_DRACO_PGCC
            else
