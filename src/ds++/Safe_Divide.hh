@@ -64,11 +64,11 @@ inline FT safe_pos_divide (const FT& dividend, const FT& divisor)
  * \return The quotient.
  *
  * Just like safe_positive_divide, but the arguments do not need to be
- * positive. This means there is more work done to determing the currect sign
- * of the result.
+ * positive. This means there is more work done to determe the correct sign of
+ * the result.
  *
  * Also note that this code cannot make any guarantee about the sign of the
- * result when the divisor it exactly zero..
+ * result when the divisor is exactly zero..
  * 
  */
 template <typename FT>
