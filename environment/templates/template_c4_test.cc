@@ -30,7 +30,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    ParallelUnitTest ut(argc, argv, release);
+    rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
         // >>> UNIT TESTS
