@@ -192,6 +192,14 @@ void OrdinateSet::create_set_from_1d_quadrature( void )
     {
         Insist(quadrature->dimensionality() == 1, "Quadrature dimensionality != 1");
     }
+    else
+    {
+        Check(geometry == rtt_mesh_element::AXISYMMETRIC);
+
+        Insist(false, "Axisymmetric geometry is incompatible with "
+               "a 1-D quadrature set");
+    }
+    
     return;
 }
 
@@ -280,7 +288,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Helper for creating an OrdinateSet from a 2D quadrature specification.
+ * \brief Helper for creating an OrdinateSet from a 2D quadrature
+ * specification.
  */
 void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
 {
@@ -288,7 +297,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
     // this to simplify the logic of determining when we are at
     // the head of a new level set.
 
-    Insist(geometry == rtt_mesh_element::AXISYMMETRIC, "Mesh geometry != AXISYMMETRIC");
+    Insist(geometry == rtt_mesh_element::AXISYMMETRIC,
+           "Mesh geometry != AXISYMMETRIC");
     
     double const SENTINEL_COSINE = 2.0;
     
@@ -298,10 +308,10 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
     reserve(number_of_ordinates + number_of_levels);
     resize(number_of_ordinates);
 
-    // Copy the ordinates, then sort -- first by xi (into level sets) and second
-    // by mu.  This yields a consistent structure for the level sets that
-    // makes it simpler to insert the supplemental ordinates and set up the
-    // associated task dependencies in axisymmetric geometry.
+    // Copy the ordinates, then sort -- first by xi (into level sets) and
+    // second by mu.  This yields a consistent structure for the level sets
+    // that makes it simpler to insert the supplemental ordinates and set up
+    // the associated task dependencies in axisymmetric geometry.
     
     unsigned check_number_of_ordinates = 0;
     for (unsigned a=0; a<2*number_of_ordinates; a++)
@@ -319,7 +329,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
         {
             double const eta = sqrt(1-xi*xi-mu*mu);
             double const weight = quadrature->getWt(a);
-            operator[](check_number_of_ordinates) = Ordinate(mu, eta, xi, weight);
+            operator[](check_number_of_ordinates) =
+                Ordinate(mu, eta, xi, weight);
             ++check_number_of_ordinates;
         }
     }

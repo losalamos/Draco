@@ -201,7 +201,11 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
     {
         // Get next token
         Token const token = tokens.Shift();
-        Check( token.Type() == KEYWORD );
+
+        if (token.Type() != KEYWORD)
+        {
+            tokens.Report_Syntax_Error("expected a keyword");
+        }
 
         std::string tokenText = token.Text();
         std::transform(tokenText.begin(),tokenText.end(),
