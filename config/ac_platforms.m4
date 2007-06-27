@@ -1236,6 +1236,8 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            mpi_version=`mpirun -version`
            if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
               AC_MSG_RESULT(${mpi_version})
+              # Do not include C++ bindings. See Draco artifact: artf7384
+              CXXFLAGS="-DOMPI_SKIP_MPICXX ${CXXFLAGS}"
            else
               AC_MSG_ERROR("Did not find Open MPI version of mpirun.")
            fi
