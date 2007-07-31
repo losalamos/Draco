@@ -42,7 +42,8 @@ namespace rtt_dsxx
  * The functions Range_funder and Range_finder_catch_end take an enumeration
  * parameter RANGE_DIRECTION to determine the direction: LEFT or RIGHT.
  * 
- * Values which are out of range result in an exception. 
+ * Values which are out of range will fail a DCB check, but pass silently if
+ * DBC is off. You have been warned!
  *
  * This function uses the equal_range algorithm, which returns an iterator
  * pair. Both iterators will point to the first value _after_ r in v, unless
@@ -62,17 +63,18 @@ enum RANGE_DIRECTION { LEFT = 0, RIGHT = 1};
 
 namespace {
 
-// Toss an exception of the iterator pair is showing out-of-range.
+// Return false if the iterator pair indicate an out of range result.
 template <typename IT>
 bool validate(const std::pair<IT,IT> &it, IT begin, IT end)
 {
-    return !(it.first  == end ||        // v > v[n-1]
-             it.second == begin );      // v < v[0]
+    return !(it.first  == end ||        // v > *(end-1)
+             it.second == begin );      // v < *begin
 
 }
 
 }
 
+//---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_left(
     IT begin,
@@ -88,6 +90,7 @@ int Range_finder_left(
     return index;
 }
 
+//---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_right(
     IT begin,
@@ -103,7 +106,7 @@ int Range_finder_right(
     return index;
 }
 
-
+//---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_left_catch_end(
     IT begin,
@@ -116,16 +119,14 @@ int Range_finder_left_catch_end(
     const int index      = static_cast<int>(it.second - begin) - 1;
     const int range_size = static_cast<int>(end-begin) - 1;
 
-    // If (index==range_size), subtract one. This indicates that the value is
-    // equal to *end.
+    // If index==range_size, subtract one. This happens when value=*end.
     const int fix_index = std::min(index, range_size - 1);
     Ensure(fix_index >= 0); Ensure(begin+fix_index < end);
 
     return fix_index;
-    
-
 }
 
+//---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_right_catch_end(
     IT begin,
@@ -150,6 +151,7 @@ int Range_finder_right_catch_end(
 // Generic versions.
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder(
     IT begin,
@@ -171,6 +173,7 @@ int Range_finder(
 }
 
 
+//---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_catch_end(
     IT begin,
