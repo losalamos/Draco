@@ -1,3 +1,29 @@
+2007-08-09  Michael W. Buksas <mwbuksas@lanl.gov> 
+
+	* draco: Release of draco-5_17-0. This is a minor Draco release.
+	A summary of changes is:
+
+	config 
+
+		- Added more robust checking on compiler values and
+		additional support for openMPI
+
+	environment/share/python
+
+		- New utitlities in the the shared python modules.
+
+	cdi_gandolf
+
+		- Functions stubs and configuration support for optional
+		compilation.
+
+	ds++
+
+		- Additional utitlity functions for overflow-protected
+		division and searching for data in vectors.
+
+	
+
 2007-01-29  Thomas M. Evans  <tme@lanl.gov>
 
 	* draco: Release of draco-5_16_0.  This is a minor Draco release.

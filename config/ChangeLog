@@ -1,3 +1,15 @@
+2007-08-09  Mike Buksas  <mwbuksas@lanl.gov>
+
+	* ac_vendors.m4 (Repository): Tim's tests for Gandolf as a
+	dependency. 
+
+	* ac_platforms.m4 (Repository): Added proper checking of
+	executable for openMPI and added compiler options to disable
+	including the C++ bindings.
+
+	* ac_compiler.m4 (Repository): Added "basename" to tests on g++
+	and gcc to fix configuration errors on Flash/Lightning
+
 2006-05-26  Scott Turner  <turners@lanl.gov>
 
 	* ac_f90env.m4: Changed Compaq compiler optimization from -O5 to -O4

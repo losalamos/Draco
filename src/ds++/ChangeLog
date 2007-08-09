@@ -1,3 +1,8 @@
+2007-08-09  Mike Buksas  <mwbuksas@lanl.gov>
+
+	* Safe_Divide.hh: Added a version of the safe_divide function
+	which works for non-positive arguments.
+
 2006-03-08  Kelly Thompson  <kgt@lanl.gov>
 
 	* UnitTest (get_word_cound): Added a new static member function,
