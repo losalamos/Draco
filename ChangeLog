@@ -73,8 +73,33 @@
 
                 - Added executable options for AIX in launchtest.in
 
+	Released Packages:
 	
-
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_gandolf
+		ds++
+		fpe_trap
+		lapack_wrap
+		meshReaders
+		mesh_element
+		norms
+		parser
+		plot2D
+		quadrature
+		rng
+		shared_lib
+		timestep
+		traits
+		units
+		viz
+		xm
+		special_functions
+	
+	This release was required by jayenne [clubimc-3_7_0 and
+	wedgehog-5_7_0]. 
 	
 
 2007-01-29  Thomas M. Evans  <tme@lanl.gov>
