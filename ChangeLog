@@ -5,72 +5,73 @@
 
         config
 
-	                - Added more robust checking on compiler values,
-	                additional support for openMPI
+                - Added more robust checking on compiler values,
+                additional support for openMPI
 
-	                - Vendor setup changes for trilinos
+                - Vendor setup changes for trilinos
 
-	                - Add a stub for building without gandolf libs.
+                - Add a stub for building without gandolf libs.
 
-	        environment/share/python
+        environment/share/python
 
-	                - New utitlities in the the shared python modules.
+                - New utitlities in the the shared python modules.
 
-	        RTT_Format_Reader
-	                - Added support for general Polygon type mesh element,
-	                fixed a bug in the logic of the redefineCells function.
+        RTT_Format_Reader
 
-	        c4
-	                - Removed a begin<beginDeprecated test when 
-			checking to see if Wtime and wall_clock_time() 
-			return equivalent values to prevent tests from 
-			failing in scalar mode.  We now just check
-	                to see that they are approximately equal.
+                - Added support for general Polygon type mesh element,
+                fixed a bug in the logic of the redefineCells function.
 
-	        cdi_gandolf
+        c4
+                - Removed a begin<beginDeprecated test when 
+		checking to see if Wtime and wall_clock_time() 
+		return equivalent values to prevent tests from 
+		failing in scalar mode.  We now just check
+                to see that they are approximately equal.
 
-	                - Functions stubs and configuration support for optional
-	                compilation.
+        cdi_gandolf
 
-	        ds++
+                - Functions stubs and configuration support for optional
+                compilation.
 
-	                - Additional utitlity functions for overflow-protected
-	                division and searching for data in vectors.
+        ds++
 
-	                - Added include files needed by AIX compiler.
+                - Additional utitlity functions for overflow-protected
+                division and searching for data in vectors.
 
-	                - Added explicit definition of
-	                assignment operator from another Vector_Lite.
+                - Added include files needed by AIX compiler.
 
-	                - Previously added constructor from C arrays is ambiguous
-	                when the first template argument is size_t; changed
-	                constructor to fill member function.
+                - Added explicit definition of
+                assignment operator from another Vector_Lite.
 
-	        meshReaders
-	                - Returning a cell_defs vector by default in the 
-			Mesh_Reader base class to avoid errors.
+                - Previously added constructor from C arrays is ambiguous
+                when the first template argument is size_t; changed
+                constructor to fill member function.
 
-	                - Added support for general Polygon type mesh element
+        meshReaders
 
-	        mesh_element
+                - Returning a cell_defs vector by default in the 
+		Mesh_Reader base class to avoid errors.
 
-	                - Added support for general Polygon type mesh element
+                - Added support for general Polygon type mesh element
 
-	        quadrature
+        mesh_element
 
-	                - Replace "angle" with "ordinate" everywhere but 
-			Angle_Operator.
+                - Added support for general Polygon type mesh element
 
-	                - Fix sweeper to compute dot of face normal with 
-			ordinate in any dimension.
+        quadrature
 
+                - Replace "angle" with "ordinate" everywhere but 
+		Angle_Operator.
 
-	                - Check for invalid use of 1-D quadrature for 
-			axisymmetric geometry.
+                - Fix sweeper to compute dot of face normal with 
+		ordinate in any dimension.
 
-	        tools
+                - Check for invalid use of 1-D quadrature for 
+		axisymmetric geometry.
 
-	                - Added executable options for AIX in launchtest.in
+        tools
+
+                - Added executable options for AIX in launchtest.in
 
 	
 
