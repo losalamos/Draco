@@ -1233,7 +1233,7 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            with_mpi='OPENMPI'
            mpi_libs='-lmpi -lmpi_cxx'
            AC_MSG_CHECKING("mpirun -version")
-           mpi_version=`mpirun -version`
+           mpi_version=`mpirun -version 2>&1`
            if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
               AC_MSG_RESULT(${mpi_version})
               # Do not include C++ bindings. See Draco artifact: artf7384
