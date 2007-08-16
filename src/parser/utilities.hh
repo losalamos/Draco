@@ -37,6 +37,8 @@ int Parse_Integer(Token_Stream &);
 
 double Parse_Real(Token_Stream &);
 
+double Parse_Positive_Real(Token_Stream &);
+
 //! Parse a unit expression.
 Unit Parse_Unit(Token_Stream &);
 

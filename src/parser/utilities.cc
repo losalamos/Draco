@@ -187,6 +187,27 @@ double Parse_Real(Token_Stream &tokens)
 
 //---------------------------------------------------------------------------//
 /*! 
+ * \param tokens
+ * Token stream from which to parse the quantity.
+ *
+ * \return The parsed quantity.
+ */
+
+double Parse_Positive_Real(Token_Stream &tokens)
+{
+    double Result = Parse_Real(tokens);
+    if (Result<=0.0)
+    {
+	tokens.Report_Semantic_Error("expected a positive quantity");
+	Result = 1;
+    }
+
+    Ensure(Result>0);
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
  * \brief Parse a vector.
  * 
  * \param tokens
