@@ -68,8 +68,7 @@ void test_basic()
             if ( ! foo ) ITFAILS;
         }
         
-        foo.delete_data(); // does *NOT* set pointer to NULL
-        foo = 0; // set pointer to NULL
+        foo.delete_data();
         if ( foo ) ITFAILS;
     }
     catch(rtt_dsxx::assertion &ass)
@@ -371,6 +370,86 @@ void test_polymorph()
 
 //---------------------------------------------------------------------------//
 
+
+// Make sure that we don't obscure a real exception with a complaint about
+// dangling memory.
+void
+test_exception_cleanup()
+{
+
+    try
+    {
+        DBC_Ptr<Base_Class> base(new Base_Class);
+
+        throw(std::exception());
+
+        // the base dtor will get called
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+        std::cout << ass.what() << std::endl;
+        ITFAILS;
+    }
+    catch(...)
+    {
+        std::cout << "caught other exception" << std::endl;
+    }
+
+    if(rtt_ds_test::passed)
+        PASSMSG("test_exception_cleanup");
+    else
+        FAILMSG("test_exception_cleanup");
+
+}
+
+
+
+//---------------------------------------------------------------------------//
+
+
+void
+test_vector_of_ptrs()
+{
+
+    // Create a vector with one pointer
+    std::vector<DBC_Ptr<int> > v(1, DBC_Ptr<int>(new int));
+
+    DBC_Ptr<int>* origAddr = &(v[0]);
+
+    // Add enough new pointers to create a resize
+    size_t N = v.capacity();
+
+    for(size_t i = 0; i < N; ++i)
+    {
+        v.push_back(DBC_Ptr<int>(new int));
+    }
+
+
+    if(&(v[0]) == origAddr) ITFAILS;
+
+    N = v.size();
+
+    // Check that each pointer still has a ref_count of 1
+    for(size_t i = 0; i < N; ++i)
+    {
+#if DBC
+        if(v[i].ref_count() != 1) ITFAILS;
+#endif
+        v[i].delete_data();
+    }
+
+
+    if(rtt_ds_test::passed)
+        PASSMSG("test_vector_of_ptrs");
+    else
+        FAILMSG("test_vector_of_ptrs");
+
+}
+
+
+
+//---------------------------------------------------------------------------//
+
 int 
 main(int argc, char *argv[])
 {
@@ -397,6 +476,8 @@ main(int argc, char *argv[])
 	test_polymorph();
 	test_void();
 	test_nested();
+        test_vector_of_ptrs();
+        test_exception_cleanup();
     }
     catch (rtt_dsxx::assertion &ass)
     {

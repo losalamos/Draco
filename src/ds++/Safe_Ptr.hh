@@ -13,19 +13,21 @@
 #define rtt_dsxx_Safe_Ptr_hh
 
 #include "Assert.hh"
+#include "Compiler.hh"
 #include <typeinfo>
 #include <iostream>
 
 namespace rtt_dsxx
 {
 
+
 //! A reference counting object for Safe_Ptr
 struct Safe_Ptr_Ref
 {
     //! Constructor
     explicit Safe_Ptr_Ref(const int r = 1) 
-	: refs(r)
-	, deleted(false) { }
+        : refs(r)
+        , deleted(false) { }
 
     //! Number of references.  
     /*!  
@@ -55,31 +57,31 @@ struct Safe_Ptr_Ref
   Of course, this macro only makes sense in the definition of Safe_Ptr, since
   it assumes that there is a variable called d_bad_state available to set.
 */
-#define DBC_Check(COND) \
-    if (!(COND)) { \
-	d_bad_state = true; \
-	rtt_dsxx::toss_cookies_ptr( #COND, __FILE__, __LINE__ ); \
+#define DBC_Check(COND)                                                 \
+    if (!(COND)) {                                                      \
+	d_bad_state = true;                                             \
+	rtt_dsxx::toss_cookies_ptr( #COND, __FILE__, __LINE__ );        \
     } 
 
-#define DBC_Check_Eq(VAR, VAL)			\
-    if (VAR != VAL) { \
-	std::cout << "Expecting " #VAR " == " << VAL << ", got " \
+#define DBC_Check_Eq(VAR, VAL)                                          \
+    if (VAR != VAL) {                                                   \
+	std::cout << "Expecting " #VAR " == " << VAL << ", got "        \
 		  << VAR << " at File " << __FILE__ << ":" << __LINE__ << std::endl; \
-	d_bad_state = true; \
-	rtt_dsxx::toss_cookies_ptr( #VAR "==" #VAL, __FILE__, __LINE__ );	\
+	d_bad_state = true;                                             \
+	rtt_dsxx::toss_cookies_ptr( #VAR "==" #VAL, __FILE__, __LINE__ ); \
     } 
 
 
 //! A safe pointer-like class for scalars
 /*! 
 
-  Except for strange situations, you should use the \c DBC_Ptr macro in
-  DBC_Ptr.hh instead of using this class explicitly.
+Except for strange situations, you should use the \c DBC_Ptr macro in
+DBC_Ptr.hh instead of using this class explicitly.
 
-  void pointers are not reference counted!
+void pointers are not reference counted!
 
-  \sa DBC_Ptr.hh
- */
+\sa DBC_Ptr.hh
+*/
 template<class T>
 class Safe_Ptr 
 {
@@ -182,7 +184,7 @@ class Safe_Ptr
     // >>> IMPLEMENTATION
 
     // Decrement_Rc the pointer.
-    inline void decrement_rc();
+    inline void decrement_rc() HIDE_FUNC;
 
     //! All derivatives of SP are friends. 
     template<class X> friend class Safe_Ptr;
@@ -542,6 +544,7 @@ Safe_Ptr<T>::delete_data()
 	}
 	d_r->deleted = true;
 	delete d_p;
+        d_p = 0;
     } else {
 	// If there isn't a reference counter, there shouldn't be data.
 	DBC_Check(!d_p);       
@@ -570,7 +573,10 @@ void Safe_Ptr<T>::decrement_rc()
 	// if the count goes to zero then we free the reference.
 	if (--d_r->refs == 0)
 	{
-	    if(!d_r->deleted)
+            // Check that someone called delete_data.  If we are in the
+            // middle of an uncaught exception unwind, we aren't going to
+            // complain, since this would obscure the original exception.
+	    if(!d_r->deleted && !std::uncaught_exception())
 	    {
 		d_bad_state = true;
 		std::cout << "***DBC_Ptr error: memory leak\n\tSafe_Ptr<"
@@ -584,6 +590,10 @@ void Safe_Ptr<T>::decrement_rc()
 	}
     }
 }
+
+#undef DBC_Check
+#undef DBC_Check_Eq
+
 
 } // end namespace rtt_dsxx
 
