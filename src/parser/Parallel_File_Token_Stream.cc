@@ -325,9 +325,11 @@ void Parallel_File_Token_Stream::Report(string const &message)
 {
     Require(check_class_invariants());
 
+    Token token = Lookahead();
+    // The lookahead must be done on all processors to avoid a potential
+    // lockup condition.
     if (rtt_c4::node()==0)
     {
-	Token token = Lookahead();
 	cerr << token.Location() << ": " << message << endl;
     }
 
