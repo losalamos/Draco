@@ -41,10 +41,10 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
     
     { // Test default constructor.
         Ordinate Omega;
-        if( soft_equiv( Omega.x, 0.0 ) &&
-            soft_equiv( Omega.y, 0.0 ) &&
-            soft_equiv( Omega.z, 0.0 ) &&
-            soft_equiv( Omega.weight, 0.0 ) )
+        if( soft_equiv( Omega.mu(), 0.0 ) &&
+            soft_equiv( Omega.eta(), 0.0 ) &&
+            soft_equiv( Omega.xi(), 0.0 ) &&
+            soft_equiv( Omega.wt(), 0.0 ) )
             ut.passes("Default constructor initializes data to zero.");
         else
             ut.failure("Default constructor did not initialize data to zero.");
@@ -52,8 +52,8 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
     { // Test 1D constructor
         double const sqrtThird(std::sqrt(1.0/3.0)), wt(PI/2);
         Ordinate Omega( sqrtThird, wt );
-        if( soft_equiv( Omega.x, sqrtThird ) &&
-            soft_equiv( Omega.weight, wt ) )
+        if( soft_equiv( Omega.mu(), sqrtThird ) &&
+            soft_equiv( Omega.wt(), wt ) )
             ut.passes("Constructor initializes data to correct values.");
         else
             ut.failure("Constructor did not initialize data to correct values.");
@@ -61,10 +61,10 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
     { // Test 3D constructor
         double const sqrtThird(std::sqrt(1.0/3.0)), wt(PI/2);
         Ordinate Omega( sqrtThird, sqrtThird, sqrtThird, wt );
-        if( soft_equiv( Omega.x, sqrtThird ) &&
+        if( soft_equiv( Omega.mu(), sqrtThird ) &&
             soft_equiv( Omega.eta(), sqrtThird ) &&
-            soft_equiv( Omega.z, sqrtThird ) &&
-            soft_equiv( Omega.weight, wt ) )
+            soft_equiv( Omega.xi(), sqrtThird ) &&
+            soft_equiv( Omega.wt(), wt ) )
             ut.passes("Constructor initializes data to correct values.");
         else
             ut.failure("Constructor did not initialize data to correct values.");
@@ -86,12 +86,12 @@ void test_ordinate_sort( UnitTest & ut )
     for( int i=0; i<numOrdinates; ++i )
         ordinates.push_back( Ordinate( spQ->getMu(i), spQ->getWt(i) ) );
 
-    std::sort(ordinates.begin(), ordinates.end(), OrdinateSet::SnCompare );
+    std::sort(ordinates.begin(), ordinates.end(), Ordinate::SnCompare );
 
     bool sorted(true);
     for( int i=0; i<numOrdinates-1; ++i )
     {
-        if( ordinates[i+1].x < ordinates[i].x )
+        if( ordinates[i+1].mu() < ordinates[i].mu() )
         {
             sorted = false;
             break;
@@ -118,18 +118,19 @@ void test_create_ordinate_set( UnitTest & ut )
 
     // Call the function that we are testing.
     int const dim( 1 );
-    OrdinateSet const ordinates( spQ, rtt_mesh_element::CARTESIAN, dim );
+    OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim );
+    vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
 
     // Check the result
     bool looksGood(true);
     for( int i=0; i<numOrdinates; ++i )
     {
-        if( ! soft_equiv( ordinates[i].x, spQ->getMu(i) ) )
+        if( ! soft_equiv( ordinates[i].mu(), spQ->getMu(i) ) )
         {
             looksGood = false;
             break;
         }
-        if( ! soft_equiv( ordinates[i].weight, spQ->getWt(i) ) )
+        if( ! soft_equiv( ordinates[i].wt(), spQ->getWt(i) ) )
         {
             looksGood = false;
             break;
@@ -141,7 +142,7 @@ void test_create_ordinate_set( UnitTest & ut )
         ut.passes("Create_Ordinate_Set failed for 1D S8.");
 
     // test accessor
-    SP< Quadrature const > const spQ2( ordinates.getQuadrature() );
+    SP< Quadrature const > const spQ2( ordinate_set.getQuadrature() );
     if( spQ == spQ2 )
         ut.passes("Quadrature sets match.");
     else
@@ -163,7 +164,8 @@ void test_Y( UnitTest & ut)
 
     // Call the function that we are testing.
     int const dim( 2 );
-    OrdinateSet const ordinates( spQ, rtt_mesh_element::CARTESIAN, dim );
+    OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim );
+    vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
 
     for( int ell=0; ell < 3; ++ell )
     {
@@ -171,27 +173,36 @@ void test_Y( UnitTest & ut)
         for( ; k<=ell ; ++k )
         {
             unsigned m=0;
-            double sph( OrdinateSet::Y(ell,k, ordinates[m], sumwt ) );
-            double phi( QuadServices::compute_azimuthalAngle( ordinates[m].x, ordinates[m].y, ordinates[m].z ) );
+            double sph( Ordinate::Y(ell,k, ordinates[m], sumwt ) );
+            double phi( QuadServices::compute_azimuthalAngle( ordinates[m].mu(), ordinates[m].eta(), ordinates[m].xi() ) );
             
-            double sfYlm( rtt_sf::galerkinYlk(ell,k,ordinates[m].z,phi,sumwt ) );
+            double sfYlm( rtt_sf::galerkinYlk(ell,
+                                              k,
+                                              ordinates[m].xi(),
+                                              phi,
+                                              sumwt ) );
             
             if( soft_equiv( sfYlm, sph ) )
             {
                 std::ostringstream msg;
-                msg << "Y(l,k,Omega,sumwt) == galerkinYlk(l,k,xi,phi,sumwt) for l=" << ell
+                msg << "Y(l,k,Omega,sumwt) == galerkinYlk(l,k,xi,phi,sumwt) "
+                    "for l=" << ell
                     << " and k=" << k << "." << std::endl;
                 ut.passes( msg.str() );
             }
             else
             {
                 std::ostringstream msg;
-                msg << "Y(l,k,Omega,sumwt) != galerkinYlk(l,k,xi,phi,sumwt) for l=" << ell
+                msg << "Y(l,k,Omega,sumwt) != galerkinYlk(l,k,xi,phi,sumwt) "
+                    "for l=" << ell
                     << " and k=" << k << ".\n"
-                    << "\tFound           Y(" << ell << "," << k << ",Omega,sumwt) = " << sph << "\n"
-                    << "\tFound galerkinYlk(" << ell << "," << k << ",xi,phi,sumwt) = " << sfYlm << "\n"
+                    << "\tFound           Y(" << ell << "," << k
+                    << ",Omega,sumwt) = " << sph << "\n"
+                    << "\tFound galerkinYlk(" << ell << "," << k
+                    << ",xi,phi,sumwt) = " << sfYlm << "\n"
                     << "\tFound   phi = " << phi << "\n"
-                    << "\tFound atan2 = " << std::atan2(ordinates[m].y,ordinates[m].x) 
+                    << "\tFound atan2 = " << std::atan2(ordinates[m].eta(),
+                                                        ordinates[m].mu()) 
                     << std::endl;
                 ut.failure( msg.str() );
             }

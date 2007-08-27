@@ -666,17 +666,17 @@ compute_n2lk( unsigned const expansionOrder ) const
 std::vector< QuadServices::lk_index > QuadServices::
 compute_n2lk_3D_morel( void ) const
 {
-    unsigned const L(         spQuad->getSnOrder() );
+    int const L(         spQuad->getSnOrder() );
 
     // This algorithm only  works for level symmetric sets because it
     // assumes numOrdinates = (L)(L+2).
-    Require( spQuad->getNumOrdinates()  == L*(L+2) );
+    Require( static_cast<int>(spQuad->getNumOrdinates()) == L*(L+2) );
     
     std::vector< lk_index > result;
 
     // Choose: l= 0, ..., L-1, k = -l, ..., l
-    for( unsigned ell=0; ell< L; ++ell )
-	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k )
+    for( int ell=0; ell< L; ++ell )
+	for( int k = -ell; k <= ell; ++k )
 	    result.push_back( lk_index(ell,k) );
 
     // Add ell=L and k<0
@@ -688,7 +688,7 @@ compute_n2lk_3D_morel( void ) const
 
     // Add ell=L, k>0, k odd
     {
-	unsigned ell( L );
+	int ell( L );
 	for( int k=1; k<=ell; k+=2 )
 	    result.push_back( lk_index(ell,k) );
     }
@@ -710,21 +710,21 @@ compute_n2lk_3D_morel( void ) const
 std::vector< QuadServices::lk_index > QuadServices::
 compute_n2lk_2D_morel( void ) const
 {
-    unsigned const L(         spQuad->getSnOrder()   );
+    int const L(         spQuad->getSnOrder()   );
 
     // This algorithm only  works for level symmetric sets because it
     // assumes numOrdinates = (L)(L+2)/2.
-    Require( spQuad->getNumOrdinates() == L*(L+2)/2 );
+    Require( static_cast<int>(spQuad->getNumOrdinates()) == L*(L+2)/2 );
 
     std::vector< lk_index > result;
     
     // Choose: l= 0, ..., N-1, k = 0, ..., l
-    for( unsigned ell=0; ell<L; ++ell )
+    for( int ell=0; ell<L; ++ell )
 	for( int k=0; k<=ell; ++k )
 	    result.push_back( lk_index(ell,k) );
 
     // Add ell=N and k>0, k odd
-    unsigned ell( L );
+    int ell( L );
     for( int k=1; k<=ell; k+=2 )
         result.push_back( lk_index(ell,k) );
     
@@ -742,7 +742,7 @@ compute_n2lk_3D_traditional( unsigned const L ) const
     std::vector< lk_index > result;
 
     // Choose: l= 0, ..., L, k = -l, ..., l
-    for( unsigned ell=0; ell<L; ++ell )
+    for( int ell=0; ell<static_cast<int>(L); ++ell )
 	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k )
 	    result.push_back( lk_index(ell,k) );
 
@@ -759,7 +759,7 @@ compute_n2lk_2D_traditional( unsigned const L ) const
     std::vector< lk_index > result;
     
     // Choose: l= 0, ..., N, k = 0, ..., l
-    for( unsigned ell=0; ell<L; ++ell )
+    for( int ell=0; ell<static_cast<int>(L); ++ell )
 	for( int k=0; k<=ell; ++k )
 	    result.push_back( lk_index(ell,k) );
 
@@ -806,8 +806,8 @@ double QuadServices::augmentM( unsigned n, Ordinate const & Omega ) const
     // moments requested.
     Require(n<n2lk.size());
     // The n-th moment is the (l,k) pair used to evaluate Y_{l,k}.
-    return OrdinateSet::Y( n2lk[n].first, n2lk[n].second,
-                           Omega, spQuad->getNorm() );
+    return Ordinate::Y( n2lk[n].first, n2lk[n].second,
+                        Omega, spQuad->getNorm() );
 }
 
 /*! 

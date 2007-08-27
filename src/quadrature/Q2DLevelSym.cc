@@ -118,7 +118,7 @@ void Q2DLevelSym::sortOrdinates(void)
         omega.push_back( Ordinate(mu[m],eta,xi[m],wt[m] ) );    
     }
     
-    std::sort(omega.begin(),omega.end(),OrdinateSet::SnCompare);
+    std::sort(omega.begin(),omega.end(),Ordinate::SnCompare);
     
     // Save sorted data
     for( size_t m=0; m<len; ++m )

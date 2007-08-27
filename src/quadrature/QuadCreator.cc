@@ -119,7 +119,8 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
     }
     catch( rtt_dsxx::assertion &error)
     {
-        std::cout << "ERROR: While constructing " << quad_type << ", "
+        std::cout << "ERROR: While constructing "
+                  << static_cast<unsigned>(quad_type) << ", "
                   << error.what() << std::endl;
         throw;
     }
