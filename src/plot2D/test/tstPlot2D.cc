@@ -191,11 +191,16 @@ main(int argc, char *argv[])
  
     try {
         // tests
-        tstPlot2D(batch);
+        if ( Plot2D::is_supported() ) {
+            tstPlot2D(batch);
  
-        // run python diff scrips
-        if (system("python ./tstPlot2D_Diff.py"))
-	    throw rtt_dsxx::assertion ("Python script failed.");
+            // run python diff scrips
+            if (system("python ./tstPlot2D_Diff.py"))
+                throw rtt_dsxx::assertion ("Python script failed.");
+        }
+        else {
+            cout << "Unsupported test: pass\n";
+        }
     }
     catch(rtt_dsxx::assertion &ass) {
         cout << "Assertion: " << ass.what() << endl;

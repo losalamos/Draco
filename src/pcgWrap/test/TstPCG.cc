@@ -36,6 +36,13 @@ using namespace rtt_pcgWrap;
 
 int main( int argc, char *argv[] )
 {
+    if ( ! PCG_Ctrl<double>::is_supported() )
+    {
+        // This platform not supported.
+        std::cout << "Unsupported test: pass\n";
+        return 0;
+    }
+    
 // Initialize C4.
     C4::Init( argc, argv );
 
