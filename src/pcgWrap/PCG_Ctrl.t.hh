@@ -25,6 +25,9 @@ PCG_Ctrl(const Method method)
       d_uExact(1),
       d_method(method)
 {
+    // is_supported must be checked for all constructors.
+    Insist(is_supported(), "PCG unsupported on this platform!");
+
     // Initialize iparm and fparm arrays via PCG defaults
     xdfalt(&d_iparm(1), &d_fparm(1));
     

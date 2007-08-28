@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------//
 
 #include "PCG_Subroutines.hh"
+#include "externals.hh"
 
 using namespace rtt_pcgWrap;
 

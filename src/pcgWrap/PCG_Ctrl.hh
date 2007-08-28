@@ -122,6 +122,12 @@ class PCG_Ctrl
     void setUinit(const Uinit value);
     void setUexact(const rtt_dsxx::Mat1<T>& uExact);
 
+#if USE_PCGLIB
+    static bool is_supported() { return true; }
+#else
+    static bool is_supported() { return false; }
+#endif
+    
   private:
 
     // IMPLEMENTATION
