@@ -675,14 +675,24 @@ AC_DEFUN([AC_PCG_SETUP], [dnl
    dnl define --with-pcg-lib
    AC_WITH_DIR(pcg-lib, PCG_LIB, \${PCG_LIB_DIR},
 	       [tell where PCG libraries are])
+   if test -n "${PCG_LIB}" ; then
+      if test -z "${with_pcg}" ; then
+           with_pcg='yes'
+      fi
+   fi
 
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_pcg=$1
+   # Set up pcg only if --with-pcg or --with-pcg-lib is explicitly set
+   if test -n "${with_pcg}" ; then
+      # pcg is set to libpcg by default
+      if test "${with_pcg}" = yes ; then
+           with_pcg='pcg'
+      fi
 
-   # pcg is set to libpcg by default
-   if test "${with_pcg:=pcg}" = yes ; then
-       with_pcg='pcg'
+      AC_DEFINE(USE_PCGLIB)
+
+      # determine if this package is needed for testing or for the 
+      # package
+      vendor_pcg=$1
    fi
 
 ])
@@ -889,23 +899,36 @@ AC_DEFUN([AC_GRACE_SETUP], [dnl
    dnl define --with-grace-inc
    AC_WITH_DIR(grace-inc, GRACE_INC, \${GRACE_INC_DIR},
 	       [tell where GRACE includes are])
+   if test -n "${GRACE_INC}" ; then
+      if test -z "${with_grace}" ; then
+           with_grace='yes'
+      fi
+   fi
 
    dnl define --with-grace-lib
    AC_WITH_DIR(grace-lib, GRACE_LIB, \${GRACE_LIB_DIR},
 	       [tell where GRACE libraries are])
-
-   # set default value of grace includes and libs
-   if test "${with_grace:=grace_np}" = yes ; then
-       with_grace='grace_np'
+   if test -n "${GRACE_LIB}" ; then
+      if test -z "${with_grace}" ; then
+           with_grace='yes'
+      fi
    fi
 
-   # define GRACE header file
-   GRACE_H="<${with_grace}.h>"
-   AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
+   # Set up grace only if --with-grace or --with-grace-lib is explicitly set
+   if test -n "${with_grace}" ; then
+      # set default value of grace includes and libs
+      if test "${with_grace}" = yes ; then
+           with_grace='grace_np'
+      fi
 
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_grace=$1
+      # define GRACE header file
+      GRACE_H="<${with_grace}.h>"
+      AC_DEFINE_UNQUOTED(GRACE_H, ${GRACE_H})dnl
+
+      # determine if this package is needed for testing or for the 
+      # package
+      vendor_grace=$1
+   fi
 
 ])
 

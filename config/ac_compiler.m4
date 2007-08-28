@@ -323,7 +323,7 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
    case $host in
 
    # Darwin doesn't need any special flags
-   powerpc-apple-darwin*)
+   *-apple-darwin*)
    ;;
 
    # COMPAQ -> CXX

@@ -71,11 +71,18 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
        AC_DBS_SUN_ENVIRONMENT
    ;;
 
-   # *********************
-   # MAC OS X/DARWIN SETUP
-   # *********************
+   # *****************************
+   # MAC OS X/DARWIN POWERPC SETUP
+   # *****************************
    powerpc-apple-darwin*)
-       AC_DBS_DARWIN_ENVIRONMENT
+       AC_DBS_DARWIN_PPC_ENVIRONMENT
+   ;;      
+
+   # *****************************
+   # MAC OS X/DARWIN INTEL SETUP
+   # *****************************
+   *86-apple-darwin*)
+       AC_DBS_DARWIN_INTEL_ENVIRONMENT
    ;;      
 
    # *******
@@ -1044,14 +1051,13 @@ AC_DEFUN([AC_DBS_IRIX_ENVIRONMENT], [dnl
 ]) dnl irix
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_DBS_DARWIN_ENVIRONMENT
+dnl AC_DBS_DARWIN_COMMON_ENVIRONMENT
 dnl
-dnl Configure draco build system Darwin-specific variables
-dnl This function is called within AC_DBS_PLATFORM_ENVIRONMENT
-dnl ***** NOT FULLY IMPLEMENTED *****
+dnl Configure draco build system Darwin-specific variables, common to
+dnl both PowerPC and Intel.
 dnl-------------------------------------------------------------------------dnl
 
-AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
+AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
 
        # dependency rules for IBM visual age compiler are complex
        if test "${with_cxx}" = ibm; then
@@ -1153,10 +1159,44 @@ AC_DEFUN([AC_DBS_DARWIN_ENVIRONMENT], [dnl
            AC_MSG_RESULT("not needed")
        fi
 
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_DARWIN_PPC_ENVIRONMENT
+dnl
+dnl Configure draco build system Darwin-PowerPC variables.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_DARWIN_PPC_ENVIRONMENT], [dnl
+
+       AC_DBS_DARWIN_COMMON_ENVIRONMENT
+
        #
        # Set up fpe_trap for this platform.
        #
        AC_DEFINE(FPETRAP_DARWIN_PPC)
+
+       #
+       # finalize vendors
+       #
+       AC_VENDOR_FINALIZE
+
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_DBS_DARWIN_INTEL_ENVIRONMENT
+dnl
+dnl Configure draco build system Darwin-Intel variables.
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DBS_DARWIN_INTEL_ENVIRONMENT], [dnl
+
+       AC_DBS_DARWIN_COMMON_ENVIRONMENT
+
+       #
+       # Set up fpe_trap for this platform (not yet!!!)
+       #
+       # AC_DEFINE(FPETRAP_DARWIN_INTEL)
 
        #
        # finalize vendors
