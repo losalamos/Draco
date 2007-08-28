@@ -36,9 +36,11 @@ if test ${CXX} = 'cxx'; then
 fi
 
 dnl Grace must be in the path!
-AC_PATH_PROG(XMGRACE_PATH, xmgrace, null)
-if test "${XMGRACE_PATH}" = null; then
-   AC_MSG_ERROR("No valid xmgrace found!")
+if test -n ${with_grace}; then
+   AC_PATH_PROG(XMGRACE_PATH, xmgrace, null)
+   if test "${XMGRACE_PATH}" = null; then
+       AC_MSG_ERROR("No valid xmgrace found!")
+   fi
 fi
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \

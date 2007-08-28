@@ -153,6 +153,9 @@ class Plot2D
 
     // MANIPULATORS
 
+    //! Returns true if platform is supported.
+    static bool is_supported();
+
     // arranges the graph matrix
     void arrange(const int numRows = 0,
 		 const int numCols = 0);

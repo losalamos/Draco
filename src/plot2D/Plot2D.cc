@@ -32,6 +32,9 @@ using namespace rtt_plot2D;
 Plot2D::
 Plot2D()
 {
+    // is_supported must be checked for all constructors.
+    Insist(is_supported(), "Plot2D unsupported on this platform!");
+
     d_graceVersion = graceVersion();
 }
 //---------------------------------------------------------------------------//
@@ -44,6 +47,9 @@ Plot2D(const int numGraphs,
        const std::string &paramFile,
        const bool batch)
 {
+    // is_supported must be checked for all constructors.
+    Insist(is_supported(), "Plot2D unsupported on this platform!");
+
     d_graceVersion = graceVersion();
 
     open(numGraphs, paramFile, batch);
