@@ -13,13 +13,11 @@
 #include <iostream>
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
-#include "utils/dbc.hh"
 #include "Angle_Operator.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_quadrature;
-using namespace rtt_utils;
 using namespace rtt_units;
 
 namespace rtt_quadrature
@@ -98,7 +96,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
                     // Save the normalization sum for the previous level, if
                     // any. 
                 {
-                    Check(isFinite(1.0/Csum));
+//                    Check(isFinite(1.0/Csum));
                     C[level] = 1.0/Csum;
                 }
                 level++;
@@ -109,7 +107,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
             }
         }
         // Save the normalization sum for the final level.
-        Check(isFinite(1.0/Csum));
+//        Check(isFinite(1.0/Csum));
         C[level] = 1.0/Csum;
 
 #if DBC & 2
@@ -159,7 +157,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
             mup = sinth*std::cos(omp);
             if (wt!=0)
             {
-                Check(isFinite((mu-mum)/(mup-mum)));
+//                Check(isFinite((mu-mum)/(mup-mum)));
                 tau[a] = (mu-mum)/(mup-mum);
                 Check(tau[a] >= 0.0 && tau[a]<1.0);
             }
@@ -208,7 +206,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
 
             if (wt !=0)
             {
-                Check(isFinite((mu-mum)/wt));
+//                Check(isFinite((mu-mum)/wt));
                 tau[a] = (mu-mum)/wt;
                 Check(tau[a]>0.0 && tau[a]<=1.0);
             }
