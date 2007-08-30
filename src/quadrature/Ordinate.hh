@@ -111,6 +111,9 @@ class OrdinateSet
                  rtt_mesh_element::Geometry geometry,
                  unsigned const dimension );
 
+    //! destructor
+    virtual ~OrdinateSet(){}
+
     //! Return the ordinates.
     std::vector<Ordinate> const &getOrdinates() const { return ordinates; }
 
