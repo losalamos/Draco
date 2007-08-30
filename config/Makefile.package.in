@@ -219,7 +219,7 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 ## TARGETS
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install installdirs clean distclean forced-distclean \
+.PHONY : all run install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
 	forced-clean dvi dependencies configure reconfigure autodoc default
 
@@ -229,7 +229,9 @@ default: ${alltarget}
 ## all  : build package library and package unit tests
 ## check: run package unit tests
 
-all check: ${alltarget}
+check: all run
+
+all run: ${alltarget}
 	@if test -d "${srcdir}/test" && test -d "test" ; then \
 		(cd test && ${MAKE} $@) || exit; \
 	fi

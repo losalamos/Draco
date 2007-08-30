@@ -47,9 +47,16 @@ subnj	:= -j $(nj)
 ## TARGETS AND RULES
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
+.PHONY : all run install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
 	dvi configure reconfigure autodoc
+
+run: 
+	@for dir in ${subdirs} ; do \
+	    if test -d "$${dir}" ; then \
+		(cd $${dir} && ${MAKE} $@ $(subnj)) || ${EXIT}; \
+	    fi; \
+	done
 
 install dvi: 
 	@for dir in ${subdirs} ; do \

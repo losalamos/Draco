@@ -235,14 +235,16 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 ## TARGETS
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install installdirs clean distclean forced-distclean \
+.PHONY : all run install installdirs clean distclean forced-distclean \
 	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
 	forced-clean configure reconfigure check_parallel \
 	check_scalar check_app
 
 all: ${test_alltarget}
 
-check: all check_scalar check_parallel check_app
+run: check_scalar check_parallel check_app
+
+check: all run
 
 # None of these tests use mpirun or prun.
 check_scalar:

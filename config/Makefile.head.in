@@ -39,21 +39,21 @@ pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
 ## TARGETS AND RULES
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
+.PHONY : all run install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
 	dvi autodoc configure reconfigure defaul
 
 default: install
 
-all install dvi: 
+# These make targets just dispatch to all subdirectories:
+all install run dvi: 
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
 			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
 		fi \
 	done
 
-# Make sure that we do not install a subdirectory before it is checked.
-
+# Have "make check" at this level also install each subdirectory.
 check:
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
@@ -63,7 +63,6 @@ check:
 	done
 
 # autodoc target 
-
 autodoc:
 	@if test -d src ; then \
 		(cd src && ${MAKE} $@) || ${EXIT}; \

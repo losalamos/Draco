@@ -72,7 +72,7 @@ autodoc: install_header install_support
 	   ${DOXYGEN} doxygen_config; \
 	fi
 
-all check install: # do nothing on install, all or check
+all check install run: # do nothing on install, all, check or run
 
 ##---------------------------------------------------------------------------##
 ## Install support files

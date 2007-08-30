@@ -45,9 +45,11 @@ endif
 ## RULES AND TARGETS
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install installdirs clean distclean mostlyclean maintainer-clean \
+.PHONY : all run install installdirs clean distclean mostlyclean maintainer-clean \
 	check uninstall forced-distclean forced-maintainer-clean \
 	dvi configure reconfigure
+
+run:
 
 all: install
 
