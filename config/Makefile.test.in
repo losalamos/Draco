@@ -353,7 +353,7 @@ include ${config_dir}/@DEPENDENCY_RULES@
 ## Do not include the dependfiles when doing clean-like stuff.
 
 ifneq (,$(filter uninstall distclean mostlyclean clean \
-	configure reconfigure maintainer-clean, \
+	configure reconfigure maintainer-clean run, \
 	${MAKECMDGOALS}))
 #empty
 else
