@@ -348,18 +348,16 @@ reconfigure:
 
 include ${config_dir}/@DEPENDENCY_RULES@
 
-##---------------------------------------------------------------------------##
-## clean rules
-## Do not include the dependfiles when doing clean-like stuff.
-
-ifneq (,$(filter uninstall distclean mostlyclean clean \
-	configure reconfigure maintainer-clean run, \
+# Do not include the dependencies if we are cleaning up or just running
+# the tests.
+ifeq (,$(filter uninstall dvi distclean mostlyclean clean \
+	configure reconfigure maintainer-clean autodoc run, \
 	${MAKECMDGOALS}))
-#empty
-else
 -include ${dependfiles}
 endif
 
+##---------------------------------------------------------------------------##
+## clean rules
 clean:
 	-rm -f ${test_alltarget} ${objs} ${dependfiles}
 	-rm -f lex.yy.c y.output y.tab.c y.tab.h
