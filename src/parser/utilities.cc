@@ -601,7 +601,7 @@ static Unit Parse_Unit_Term(Token_Stream &tokens)
 {
     Unit const Result = Parse_Unit_Name(tokens);
     Token const token = tokens.Lookahead();
-    if (token.Type()==OTHER && token.Text()=="^")
+    if (token.Text()=="^")
     {
 	tokens.Shift();
 	double const exponent = Parse_Real(tokens);

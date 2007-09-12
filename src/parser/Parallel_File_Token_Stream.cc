@@ -194,6 +194,8 @@ void Parallel_File_Token_Stream::fill_character_buffer()
     unsigned i = 1;    // first character is status character
     if (is_io_processor)
     {
+        // Read up to numeric_limits<signed char>::max()+1 characters from the
+        // input file.
 	while (i < static_cast<unsigned>(numeric_limits<signed char>::max()+1))
 	{
 	    char const c = infile.get();

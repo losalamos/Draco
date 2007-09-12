@@ -34,15 +34,9 @@ using namespace std;
 /*! 
  * \brief Construct a parse table with the specified keywords.
  * 
- * \param table 
- * Pointer to an array of keywords.
- * \param count
- * Length of the array of keywords pointed to by \c table.
+ * \param table Pointer to an array of keywords.
  *
- * \pre <code>count==0 || table != NULL</code>
- * \pre <code>std::find_if(table, table+count, Is_Well_Formed_Keyword)</code>
- *
- * \post <code>Get_Flags()==0</code>
+ * \param count Length of the array of keywords pointed to by \c table.
  *
  * \throw std::bad_alloc If there is not enough memory to initialize the table.
  * \throw rtt_dsxx::assertion If the keyword table is ill-formed or ambiguous.
@@ -67,14 +61,9 @@ Parse_Table::Parse_Table(Keyword const *const table, size_t const count)
 /*!
  * \brief Add a set of keywords to a Parse_Table.
  *
- * \param table
- * Array of keywords to be added to the table.
+ * \param table Array of keywords to be added to the table.
  *   
- * \param count
- * Number of valid elements in the array of keywords.
- *
- * \pre <code>count==0 || table != NULL</code>
- * \pre <code>std::find_if(table, table+count, Is_Well_Formed_Keyword)</code>
+ * \param count Number of valid elements in the array of keywords.
  *
  * \throw std::bad_alloc If there is not enough memory to initialize the table.
  * \throw rtt_dsxx::assertion If the keyword table is ill-formed or ambiguous.
@@ -89,6 +78,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
     Require(count == 0  ||  table != NULL);
 
     // Add the new keywords.
+    
     for (size_t i=0; i<count; i++)
     {
 	Require(Is_Well_Formed_Keyword(table[i]));
@@ -96,23 +86,25 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
 	push_back(table[i]);
     }
 
-    Keyword_Compare const comp(flags);
+    // Sort the parse table, using a comparator predicate appropriate for the
+    // selected parser flags.
 
-    // Sort the parse table.
+    Keyword_Compare const comp(flags);
     std::sort(begin(), end(), comp);
 
     // Look for ambiguous keywords, and resolve the ambiguity, if possible.
+    
     std::vector<Keyword>::iterator i = begin();
     while (i+1 != end())
     {
 	Check(i->moniker != NULL  &&  (i+1)->moniker != NULL);
 	if (!comp(i[0], i[1]))
-	{
 	    // kptr[i] and kptr[i+1] have the same moniker.
+	{
 	    if (i->func == (i+1)->func  &&  i->index == (i+1)->index)
 	    {
 		// They have the same parse function and index.  No 
-		// real ambiguity.  Delete one.
+		// real ambiguity.  Delete the duplicate.
 
 		// This can occur when there is diamond inheritance
 		// in a parse table hierarchy, e.g., this parse table
@@ -123,7 +115,8 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
 	    }
 	    else
 	    {
-		// The keywords are genuinely ambiguous.
+		// The keywords are genuinely ambiguous. Throw an exception
+		// identifying the duplicate keyword.
 		using std::ostringstream;
 		using std::endl;
 		ostringstream err;
@@ -140,6 +133,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
 	    }
 	}
 	else
+            // kptr[i] and kptr[i+1] have different monikers. No ambiguity.
 	{
 	    i++;
 	}
@@ -372,15 +366,12 @@ void Parse_Table::Set_Flags(unsigned f)
 
 //-------------------------------------------------------------------------//
 /*!
- * \brief Constructor for comparison functor for sorting keyword tables.
+ * \brief Constructor for comparison predicate for sorting keyword tables.
  *
- * The functor is used by a Parse_Table to sort its keyword list
+ * The predicate is used by a Parse_Table to sort its keyword list
  * using std::sort.
  *
- * \param flags
- * The flags controlling this comparator's operations.
- *
- * \pre <CODE>pt!=NULL</CODE>
+ * \param flags The flags controlling this comparator's operations.
  */
 
 Parse_Table::Keyword_Compare::Keyword_Compare(unsigned char const flags)
@@ -408,30 +399,24 @@ Parse_Table::Keyword_Compare::Keyword_Compare(unsigned char const flags)
  *
  * A valid Parse_Table may not contain any keywords that test equal.
  * 
- * \param k1
- * The first Keyword to be compared.
+ * \param k1 The first Keyword to be compared.
  *
- * \param k2
- * The second Keyword to be compared.
- *
- * \pre <CODE>k1.moniker!=NULL</CODE>
- *
- * \pre <CODE>k2.moniker!=NULL</CODE>
+ * \param k2 The second Keyword to be compared.
  *
  * \return <CODE>kk_comparison(k1.moniker, k2.moniker)<0 </CODE>
  */
 
-bool Parse_Table::Keyword_Compare::operator()(const Keyword &k1, 
-					      const Keyword &k2) const
+bool Parse_Table::Keyword_Compare::operator()(Keyword const &k1, 
+					      Keyword const &k2) const
 {
-    Require(k1.moniker);
-    Require(k2.moniker);
+    Require(k1.moniker != NULL);
+    Require(k2.moniker != NULL);
 
     return kk_comparison(k1.moniker, k2.moniker)<0;
 }
 
-int Parse_Table::Keyword_Compare::kk_comparison(const char *m1, 
-						const char *m2) const
+int Parse_Table::Keyword_Compare::kk_comparison(char const *m1, 
+						char const *m2) const
 {
     using namespace std;
 
@@ -495,24 +480,24 @@ int Parse_Table::Keyword_Compare::kk_comparison(const char *m1,
  *                          token.Text().c_str())<0 </CODE>
  */
 
-bool Parse_Table::Keyword_Compare::operator()(const Keyword &k1,
-					      const Token &k2) const
+bool Parse_Table::Keyword_Compare::operator()(Keyword const &k1,
+					      Token const &k2) const
 {
     Require(k1.moniker);
 
     return kt_comparison(k1.moniker, k2.Text().c_str())<0;
 }
 
-bool Parse_Table::Keyword_Compare::operator()( const Token   &k2,
-                                               const Keyword &k1 ) const
+bool Parse_Table::Keyword_Compare::operator()( Token const   &k2,
+                                               Keyword const &k1 ) const
 {
 //     Require(k1.moniker);
 //     return kt_comparison(k1.moniker, k2.Text().c_str())<0;
     return ! operator()(k1,k2);
 }
 
-int Parse_Table::Keyword_Compare::kt_comparison(const char *m1,
-						const char *m2) const
+int Parse_Table::Keyword_Compare::kt_comparison(char const *m1,
+						char const *m2) const
 {
     using namespace std;
 
@@ -585,12 +570,12 @@ int Parse_Table::Keyword_Compare::kt_comparison(const char *m1,
  * <li>\c key.func must point to a parsing function.</li></ul>
  */
 
-bool Is_Well_Formed_Keyword(const Keyword &key)
+bool Is_Well_Formed_Keyword(Keyword const &key)
 {
     using namespace std;
 
     if (key.moniker == NULL  ||  key.func == NULL) return false;
-    const char *cptr = key.moniker;
+    char const *cptr = key.moniker;
     for (;;)
     {
 	// Must be at the start of a C identifier, which begins with an
