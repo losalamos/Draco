@@ -461,6 +461,12 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
  * complement of this function is unpack_data, which takes a packed
  * vector<char> and writes data into the field.
  *
+ * The resulting size of the data stored in the vector<char> argument is
+ *
+ *   sizeof(FT::value_type) * field.size() + sizeof(int).
+ *
+ * The extra integer is for storing the size of the data field.
+ *
  * \sa rtt_dsxx::Packer, tstPacking_Utils.cc, and rtt_dsxx::unpack_data
  *
  * \param field container or string
@@ -522,6 +528,13 @@ void pack_data(const FT &field, std::vector<char> &packed)
  * Unpacker class for fields (vector<double>, list<int>, string, etc).  The
  * complement of this function is pack_data, which packs fields into a
  * vector<char>
+ *
+ * The correct size of the vector<char> containing the data is:
+ *
+ *   sizeof(FT::value_type)*field_size + sizeof(int)
+ *
+ * where field_size is the size of the resulting field. So you'd better know
+ * this in advance.
  *
  * \sa rtt_dsxx::Unpacker, tstPacking_Utils.cc, and rtt_dsxx::pack_data
  *
