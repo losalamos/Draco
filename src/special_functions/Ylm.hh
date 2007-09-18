@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:03:25 MDT 2004
  * \brief  Declare the Ylm function template.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -40,7 +40,7 @@ double realYlk( unsigned const l,
                 double   const phi );
                 
 
-//! Compute the complex portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$.
+//! Compute the imaginary portion of the spherical harmonic \f$ Y_{l,k}(\theta,\phi) \f$.
 double complexYlk( unsigned const l,
                    int      const m,
                    double   const theta,
