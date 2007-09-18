@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definitions of Console_Token_Stream methods.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  *
  * revision history:
  * 0) original
@@ -29,8 +29,6 @@ using namespace std;
  * 
  * Construct a Console_Token_Stream. Use the default Text_Token_Stream
  * user-defined whitespace characters.
- *
- * \post <code>location() == "input"</code>
  */
 
 Console_Token_Stream::Console_Token_Stream()
@@ -48,12 +46,6 @@ Console_Token_Stream::Console_Token_Stream()
  * Construct a Console_Token_Stream. 
  *
  * \param ws User-defined whitespace characters.
- *
- * \pre <code>ws!=NULL</code>
- *
- * \post <code>location() == "input"</code>
- *
- * \post <code>Whitespace()==ws</code>
  */
 
 Console_Token_Stream::Console_Token_Stream(set<char> const &ws)
@@ -99,7 +91,10 @@ void Console_Token_Stream::fill_character_buffer()
     }
     else
     {
-	if (c=='\n') c=';';
+	if (c=='\n')
+        {
+            c=';';
+        }
 	character_push_back(c);
     }
     
@@ -174,9 +169,6 @@ void Console_Token_Stream::Report(const std::string &message)
  * \brief Rewind the token stream.
  *
  * This function flushes cin and resets the error count.
- *
- * \post <code>location() == "input";</code>
- * \post <code>Error_Count() == 0</code>
  */
 
 void Console_Token_Stream::Rewind()
@@ -186,8 +178,8 @@ void Console_Token_Stream::Rewind()
 
     Text_Token_Stream::Rewind();
 
-    Ensure(cin.rdstate() == 0);
     Ensure(check_class_invariants());
+    Ensure(cin.rdstate() == 0);
     Ensure(location() == "input");
     Ensure(Error_Count()==0);
 }

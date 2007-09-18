@@ -4,12 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of Keyword and Parse_Table.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): 
- *    Fix documentation.
- *    Add Is_Valid_Keyword function.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -58,7 +53,7 @@ struct Keyword
      * monikers in its Keyword table according to a set of rules stored in the
      * Parse_Table (q.v.)
      */
-    const char *moniker;  
+    char const *moniker;  
     
     /*! \brief The keyword parsing function.
      *
@@ -99,7 +94,7 @@ struct Keyword
      * clashes, where two modules have registered keywords with the same
      * moniker in the same Parse_Table.
      */
-    const char *module;  
+    char const *module;  
 }; 
 
 //-------------------------------------------------------------------------//
@@ -166,7 +161,7 @@ class Parse_Table : private std::vector<Keyword>
     };
     
     //! Create an empty Parse_Table.
-    Parse_Table() : flags(0) {}
+    Parse_Table() : flags_(0) {}
 
     Parse_Table(Keyword const *table, size_t count);
     
@@ -199,26 +194,29 @@ class Parse_Table : private std::vector<Keyword>
       public:
 	Keyword_Compare(unsigned char flags);
 	
-	bool operator()( const Keyword &k1, const Keyword &k2 ) const;
+	bool operator()( Keyword const &k1, Keyword const &k2 ) const;
 	
-	bool operator()( const Keyword &keyword, const Token   &token   ) const;
-	bool operator()( const Token & token,    const Keyword &keyword ) const;
+	bool operator()( Keyword const &keyword, Token const &token  ) const;
+	bool operator()( Token const & token, Keyword const &keyword ) const;
 
-	int kk_comparison(const char *, const char *) const;
-	int kt_comparison(const char *, const char *) const;
+	int kk_comparison(char const *, char const *) const;
+	int kt_comparison(char const *, char const *) const;
 	
       private:
-	unsigned char flags;
+	unsigned char flags_;
     };
     
-    unsigned char flags;  //!< Option flags for this parse table.
+    unsigned char flags_;  //!< Option flags for this parse table.
 };
 
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Test equality of Keywords
  *
- * Tests equality of two Keyword structs.
+ * Tests equality of two Keyword structs. Note that this is strict equality,
+ * which differs from the comparison offered by the
+ * Parse_Table::Keyword_Compare predicate class. It is used primarily for
+ * checking assertions.
  *
  * \param a
  * First keyword to be compared.
@@ -231,7 +229,7 @@ class Parse_Table : private std::vector<Keyword>
  *	a.module == b.module </code>
  */
 
-inline bool operator==(const Keyword &a, const Keyword &b)
+inline bool operator==(Keyword const &a, Keyword const &b)
 {
     return a.moniker == b.moniker &&
 	a.func == b.func &&
@@ -239,7 +237,10 @@ inline bool operator==(const Keyword &a, const Keyword &b)
 	a.module == b.module;
 }    
 
-bool Is_Well_Formed_Keyword(const Keyword &key);
+//---------------------------------------------------------------------------//
+//! Check whether a keyword is well-formed.
+
+bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // rtt_parser
 

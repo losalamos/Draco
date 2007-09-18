@@ -4,6 +4,7 @@
  *  \author Kent G. Budge
  *  \date   Thu Jul 15 09:31:44 1999
  *  \brief  Header file for parser library release function.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //===========================================================================//
 // $Id$

@@ -25,7 +25,7 @@ namespace rtt_quadrature
 //===========================================================================//
 /*!
  * \class Ordinate
- * \brief Struct containing angle cosines and weights for an element of
+ * \brief Class containing angle cosines and weights for an element of
  * an angle quadrature set.
  *
  * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x +
@@ -42,30 +42,32 @@ class Ordinate
 
     //! Create an uninitialized Ordinate.  This is required by the
     //! constructor for vector<Ordinate>.
-    Ordinate() : x(0), y(0), z(0), weight(0) {}
+    Ordinate() : x_(0), y_(0), z_(0), weight_(0) {}
 
     //! Construct an Ordinate from the specified vector and weight.
-    inline
-    Ordinate(double x, double y, double z, double weight)
-        : x(x), y(y), z(z), weight(weight)
+    Ordinate(double const x,
+             double const y,
+             double const z,
+             double const weight)
+        :
+        x_(x), y_(y), z_(z), weight_(weight)
     {
-        // Ensure(rtt_dsxx::soft_equiv(x*x+y*y+z*z, 1.0));
     }
 
     //! Construct a 1D Ordinate from the specified angle and weight.
     inline
-    Ordinate(double xx, double weight)
-    : x(xx), y(0.0), z(0.0), weight(weight)
+    Ordinate(double const xx, double const weight)
+    : x_(xx), y_(0.0), z_(0.0), weight_(weight)
     {
         Require(xx != 0.0 && xx<=1.0);
     }
     
     // Accessors
     
-    double mu()  const { return x; };
-    double eta() const { return y; };
-    double xi()  const { return z; };
-    double wt()  const { return weight; };
+    double mu()  const { return x_; };
+    double eta() const { return y_; };
+    double xi()  const { return z_; };
+    double wt()  const { return weight_; };
     
     //! STL-compatible comparator predicate to sort ordinates by xi
     //! then mu. 
@@ -86,18 +88,15 @@ class Ordinate
     // The data must be kept private in order to preserve the norm invariant.
     
     //! Angle cosines for the ordinate.
-    double x, y, z;
+    double x_, y_, z_;
     //! Quadrature weight for the ordinate.
-    double weight;
+    double weight_;
 };
 
 //===========================================================================//
 /*!
  * \class OrdinateSet
  * \brief A collection of Ordinates that make up a complete quadrature set.
- *
- * Calculate an ordinate set from a Quadrature.
- *
  */
 //===========================================================================//
 class OrdinateSet
@@ -115,19 +114,23 @@ class OrdinateSet
     virtual ~OrdinateSet(){}
 
     //! Return the ordinates.
-    std::vector<Ordinate> const &getOrdinates() const { return ordinates; }
+    std::vector<Ordinate> const &getOrdinates() const { return ordinates_; }
 
     //! Return the quadrature on which this OrdinateSet is based.
     rtt_dsxx::SP< const Quadrature > getQuadrature( void ) const
     {
-        return quadrature;
+        Ensure(quadrature_ != rtt_dsxx::SP<Quadrature>());
+        
+        return quadrature_;
     }
 
     //! Return the geometry.
-    rtt_mesh_element::Geometry getGeometry() const { return geometry; }
+    rtt_mesh_element::Geometry getGeometry() const { return geometry_; }
 
     //! Return the dimension.
-    unsigned getDimension() const { return dimension; }
+    unsigned getDimension() const { return dimension_; }
+
+    bool check_class_invariants() const;
     
   private:
 
@@ -137,10 +140,10 @@ class OrdinateSet
     void create_set_from_2d_quadrature_for_1d_mesh( void );
 
     // DATA
-    std::vector<Ordinate> ordinates;
-    rtt_dsxx::SP< Quadrature const > const quadrature;
-    rtt_mesh_element::Geometry const geometry;
-    unsigned const dimension;
+    std::vector<Ordinate> ordinates_;
+    rtt_dsxx::SP< Quadrature const > const quadrature_;
+    rtt_mesh_element::Geometry const geometry_;
+    unsigned const dimension_;
     
 };
 

@@ -4,15 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 14:57:49 MST 2003
  * \brief Definitions of Token_Stream member functions.
- * \note Copyright @ 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): 
- *    Fix indentation and curly brace placement.
- *    Fix erronous documentation for Push_Back.
- * 2) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -47,19 +39,16 @@ Syntax_Error::Syntax_Error()
  * cursor. It will, if necessary, fill() the token buffer first.
  *
  * \return <code>old Lookahead()</code>
- *
- * \post <code>Lookahead()==old Lookahead(1)</code>
  */
 
 Token Token_Stream::Shift()
-{
-    // The postcondition is not checked because it changes the physical
-    // (though not the logical) state of the stream.
-    
+{    
     Token const Result = Lookahead();
     pop_front();
     
     Ensure(check_class_invariants());
+    // Ensure the cursor advances one place to the right, discarding the
+    // leftmost token.
     return Result;
 }
 
@@ -99,8 +88,6 @@ Token Token_Stream::Lookahead(unsigned const pos)
  * This function pushes the specified token onto the front of the
  * token stream, so that it is now the token in the Lookahead(0)
  * position.
- *
- * \post <code>Lookahead()==token</code>
  */
 
 void Token_Stream::Pushback(Token const &token)
@@ -126,8 +113,6 @@ void Token_Stream::Pushback(Token const &token)
  * \param message
  * The message to be passed to the user.
  *
- * \post <code>Error_Count()==old Error_Count()+1</code>
- *
  * \throw Syntax_Error This function never returns.  It always throws a
  * Syntax_Error exception to be handled by the parsing software.
  */
@@ -137,7 +122,7 @@ void Token_Stream::Report_Syntax_Error(Token const &token,
 {
     try 
     {
-	error_count++;
+	error_count_++;
 	Report(token, message);
     }
     catch(...)
@@ -177,7 +162,7 @@ void Token_Stream::Report_Syntax_Error(string const &message)
 {
     try 
     {
-	error_count++;
+	error_count_++;
 	Report(message);
     }
     catch(...)
@@ -206,14 +191,12 @@ void Token_Stream::Report_Syntax_Error(string const &message)
  * Token at which the error occurred.
  * \param message
  * The message to be passed to the user.
- *
- * \post <code>Error_Count()==old Error_Count()+1</code>
  */
 
 void Token_Stream::Report_Semantic_Error(Token const &token,
 					 string const &message)
 {
-    error_count++;
+    error_count_++;
     Report(token, message);
 
     Ensure(check_class_invariants());
@@ -240,7 +223,7 @@ void Token_Stream::Report_Semantic_Error(Token const &token,
 
 void Token_Stream::Report_Semantic_Error(string const &message)
 {
-    error_count++;
+    error_count_++;
     Report(message);
 
     Ensure(check_class_invariants());
@@ -267,7 +250,7 @@ void Token_Stream::Report_Semantic_Error(string const &message)
 
 void Token_Stream::Report_Semantic_Error(exception const &message)
 {
-    error_count++;
+    error_count_++;
     Report(message.what());
 
     Ensure(check_class_invariants());
@@ -278,14 +261,14 @@ void Token_Stream::Report_Semantic_Error(exception const &message)
  * \brief Reset the token stream.
  *
  * This function is normally called by its overriding version in children of
- * Token_Stream. 
+ * Token_Stream. It flushes the queues and resets the error count.
  */
 
 void Token_Stream::Rewind()
 {
     Require(check_class_invariants());
 
-    error_count = 0;
+    error_count_ = 0;
     clear();
 
     Ensure(check_class_invariants());

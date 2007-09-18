@@ -4,12 +4,7 @@
  * \author Kent G. Budge
  * \date 18 Feb 2003
  * \brief Definitions of parsing utility functions.
- * \note   Copyright © 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -259,7 +254,7 @@ void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[], unsigned size)
 {
     Require(x!=NULL);
 
-    for ( int i = 0; i < size; ++i )
+    for ( unsigned i = 0; i < size; ++i )
     {
         if (At_Real(tokens))
             x[i] = Parse_Unsigned_Integer(tokens);
@@ -659,11 +654,15 @@ Unit Parse_Unit(Token_Stream &tokens)
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Parse a dimensioned quantity.
+ * This function parses a quantity having dimensions. It is assumed that the
+ * client expects certain dimensions for the quantity, and an exception is
+ * thrown if the dimensions are not what the client expected. The quantity
+ * will be converted to the desired unit system, as indicated by the \c .conv
+ * member of the \c target_unit argument.
  * 
  * \param tokens
  * Token stream from which to parse the quantity.
- * \param unit
+ * \param target_unit
  * Expected units for the quantity parsed, including conversion factor.
  * \param name
  * Name of the units expected for the quantity parsed, such as "length" or
@@ -707,37 +706,29 @@ double Parse_Temperature(Token_Stream &tokens)
 {
     double const T = Parse_Real(tokens);
     Unit const u = Parse_Unit(tokens);
+    double Result;
     if (is_compatible(u, K))
     {
-	double const Result = T * u.conv;
-	if (Result<0.0)
-	{
-	    tokens.Report_Semantic_Error("temperature must be nonnegative");
-	    return 0.0;
-	}
-	else
-	{
-	    return Result;
-	}
+	Result = T * u.conv;
     }
     else if (is_compatible(u, J))
     {
-	double const Result = T * u.conv/rtt_units::boltzmannSI;
-	if (Result<0.0)
-	{
-	    tokens.Report_Semantic_Error("energy must be nonnegative");
-	    return 0.0;
-	}
-	else
-	{
-	    return Result;
-	}
+	Result = T * u.conv/rtt_units::boltzmannSI;
     }
     else
     {
 	tokens.Report_Syntax_Error("expected quantity with units of "
 				   "temperature");
 	return 0.0;
+    }
+    if (Result<0.0)
+    {
+        tokens.Report_Semantic_Error("temperature must be nonnegative");
+        return 0.0;
+    }
+    else
+    {
+        return Result;
     }
 }
 

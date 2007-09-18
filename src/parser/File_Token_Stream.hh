@@ -4,12 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class File_Token_Stream.
- * \note   Copyright © 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -30,18 +25,17 @@ namespace rtt_parser
  * \brief File-based token stream
  *
  * File_Token_Stream represents a text token stream that derives its text
- * stream from a file in the filesystem.  It reports errors to the standard 
+ * stream from a file in the file system.  It reports errors to the standard 
  * console error stream \c cerr.
- *
- * \invariant <code>line > 0</code>
  */
 
 class File_Token_Stream : public Text_Token_Stream
 {
   public:
     File_Token_Stream();
-    File_Token_Stream(std::string filename);
-    File_Token_Stream(std::string filename, std::set<char> const &whitespace);
+    File_Token_Stream(std::string const &filename);
+    File_Token_Stream(std::string const &filename,
+                      std::set<char> const &whitespace);
 
     void open(std::string filename);
     
@@ -61,8 +55,8 @@ class File_Token_Stream : public Text_Token_Stream
     virtual bool end() const;
  
   private:
-    std::string filename;  //!< File from which to take token text.
-    std::ifstream infile;  //!< Stream from which to take token text.
+    std::string filename_;  //!< File from which to take token text.
+    std::ifstream infile_;  //!< Stream from which to take token text.
 };
 
 } // rtt_parser

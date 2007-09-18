@@ -3,7 +3,7 @@
  * \file   quadrature/Angle_Operator.cc
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
- * \brief  
+ * \brief  Define methods of class Angle_Operator
  * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
@@ -24,6 +24,11 @@ namespace rtt_quadrature
 {
 //---------------------------------------------------------------------------//
 /*!
+ *
+ * The computation of the tau and alpha coefficients is described by Morel in
+ * various technical notes on the treatment of the angle derivatives in the
+ * streaming operator.
+ *
  * \param quadrature Sn quadrature set.
  *
  * \param geometry Geometry of the physical problem space.
@@ -47,25 +52,25 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
     // Compute the ordinate derivative coefficients.
     
     // Default values are for the trivial case (Cartesian geometry).
-    is_dependent.resize(number_of_ordinates, false);
-    alpha.resize(number_of_ordinates, 0.0);
-    tau.resize(number_of_ordinates, 1.0);
+    is_dependent_.resize(number_of_ordinates, false);
+    alpha_.resize(number_of_ordinates, 0.0);
+    tau_.resize(number_of_ordinates, 1.0);
 
     // We rely on OrdinateSet to have already sorted the ordinates and
     // inserted the starting ordinates for each level. We assume that the
     // starting ordinates are distinguished by zero quadrature weight.
 
-    number_of_levels = 0;
-    levels.resize(number_of_ordinates);
+    number_of_levels_ = 0;
+    levels_.resize(number_of_ordinates);
     if (geometry==rtt_mesh_element::AXISYMMETRIC)
     {
-        number_of_levels = quadrature->getSnOrder();
+        number_of_levels_ = quadrature->getSnOrder();
         if (dimension == 1)
         {
-            number_of_levels /= 2;
+            number_of_levels_ /= 2;
         }
 
-        vector<double> C(number_of_levels);
+        vector<double> C(number_of_levels_);
 
         double Csum = 0;
         int level = -1;
@@ -77,37 +82,35 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
                 // Not a starting ordinate.  Use Morel's recurrence relations
                 // to determine the next ordinate derivative coefficient.
             {
-                alpha[a] = alpha[a-1] + mu*wt;
+                alpha_[a] = alpha_[a-1] + mu*wt;
                 Csum += wt;
-                levels[a] = level;
-                is_dependent[a] = true;
+                levels_[a] = level;
+                is_dependent_[a] = true;
             }
             else
                 // A starting ordinate. Reinitialize the recurrence relation.
             {
-                Check(a==0 || std::fabs(alpha[a-1])<1.0e-15);
+                Check(a==0 || std::fabs(alpha_[a-1])<1.0e-15);
                 // Be sure that the previous level (if any) had a final alpha
                 // of zero, to within roundoff, as expected for the Morel
                 // recursion formula.
 
-                alpha[a] = 0.0;
+                alpha_[a] = 0.0;
 
                 if (level>=0)
                     // Save the normalization sum for the previous level, if
                     // any. 
                 {
-//                    Check(isFinite(1.0/Csum));
                     C[level] = 1.0/Csum;
                 }
                 level++;
                 Csum = 0.0;
 
-                levels[a] = level;
-                is_dependent[a] = false;
+                levels_[a] = level;
+                is_dependent_[a] = false;
             }
         }
         // Save the normalization sum for the final level.
-//        Check(isFinite(1.0/Csum));
         C[level] = 1.0/Csum;
 
 #if DBC & 2
@@ -115,11 +118,11 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
             // Check that the level normalizations have the expected
             // properties. 
         {
-            for (unsigned n=0; n<number_of_levels/2; n++)
+            for (unsigned n=0; n<number_of_levels_/2; n++)
             {
                 Check(C[n]>0.0);
-                Check(C[number_of_levels-1-n] > 0.0);
-                Check(soft_equiv(C[n], C[number_of_levels-1-n]));
+                Check(C[number_of_levels_-1-n] > 0.0);
+                Check(soft_equiv(C[n], C[number_of_levels_-1-n]));
             }
         }
 #endif
@@ -144,7 +147,6 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
                 {
                     omp = 0.0;
                 }
-                //Check(omp>=-1.e-15 && omp<rtt_units::PI+1.e-15);
             }
             else
                 // New level.  Reinitialize the recurrence relation.
@@ -157,19 +159,18 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
             mup = sinth*std::cos(omp);
             if (wt!=0)
             {
-//                Check(isFinite((mu-mum)/(mup-mum)));
-                tau[a] = (mu-mum)/(mup-mum);
-                Check(tau[a] >= 0.0 && tau[a]<1.0);
+                tau_[a] = (mu-mum)/(mup-mum);
+                Check(tau_[a] >= 0.0 && tau_[a]<1.0);
             }
         }
     }
     else if (geometry == rtt_mesh_element::SPHERICAL)
     {
-        number_of_levels = 1;
+        number_of_levels_ = 1;
         double norm(0);
         for (unsigned a=0; a < number_of_ordinates; ++a)
         {
-            levels[a] = 0;
+            levels_[a] = 0;
             double const wt(ordinates[a].wt());
             norm += wt;
         }
@@ -181,13 +182,13 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
 
             if (wt!=0)
             {
-                is_dependent[a] = true;
-                alpha[a] = alpha[a-1] + 2*wt*mu;
+                is_dependent_[a] = true;
+                alpha_[a] = alpha_[a-1] + 2*wt*mu;
             }
             else
             {
-                is_dependent[a] = false;
-                alpha[a] = 0;
+                is_dependent_[a] = false;
+                alpha_[a] = 0;
             }
         }
 
@@ -206,9 +207,8 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
 
             if (wt !=0)
             {
-//                Check(isFinite((mu-mum)/wt));
-                tau[a] = (mu-mum)/wt;
-                Check(tau[a]>0.0 && tau[a]<=1.0);
+                tau_[a] = (mu-mum)/wt;
+                Check(tau_[a]>0.0 && tau_[a]<=1.0);
             }
         }
     }
@@ -216,38 +216,52 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
     {
         Check(geometry == rtt_mesh_element::CARTESIAN);
     }
+
+    Ensure(check_class_invariants());
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * The psi coefficient is used to compute the self term in the angle
+ * derivative term of the streaming operator.
+ */
 double Angle_Operator::Psi_Coefficient(unsigned const a) const
 {
     Require(a!=0);
 
     double const wt = getOrdinates()[a].wt();
-    double const alpha_a = alpha[a];
-    double const tau_a = tau[a];
+    double const alpha_a = alpha_[a];
+    double const tau_a = tau_[a];
     double const Result = alpha_a/(wt*tau_a);
     return Result;
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * The source coefficient is used to compute the previous midpoint angle term
+ * in the angle derivative term of the streaming operator.
+ */
 double Angle_Operator::Source_Coefficient(unsigned const a) const
 {
     Require(a!=0);
 
     double const wt = getOrdinates()[a].wt();
-    double const alpha_a = alpha[a];
-    double const alpha_am1 = alpha[a-1];
-    double const tau_a = tau[a];
+    double const alpha_a = alpha_[a];
+    double const alpha_am1 = alpha_[a-1];
+    double const tau_a = tau_[a];
     double const Result = (alpha_a*(1-tau_a)/tau_a + alpha_am1)/wt;
     return Result;
 }
 //---------------------------------------------------------------------------//
+/*!
+ * The bookkeeping coefficient is used to compute the next midpoint angle
+ * specific intensity.
+ */
 double Angle_Operator::Bookkeeping_Coefficient(unsigned const a) const
 {
     Require(a!=0);
 
-    double const tau_a = tau[a];
+    double const tau_a = tau_[a];
     double const Result = 1.0/tau_a;
 
     Require(Result>0.0);
@@ -259,27 +273,27 @@ bool Angle_Operator::check_class_invariants() const
 {
     if (getGeometry() == rtt_mesh_element::CARTESIAN)
     {
-        return number_of_levels == 0;
+        return number_of_levels_ == 0;
     }
     else
     {
         vector<Ordinate> const &ordinates = getOrdinates();
         unsigned const number_of_ordinates = ordinates.size();
         
-        double levels = 0;
+        unsigned levels = 0;
         for (unsigned a=0; a<number_of_ordinates; ++a)
         {
-            if (!is_dependent[a])
+            if (!is_dependent_[a])
             {
                 ++levels;
             }
         }
-        Require(number_of_levels>=levels);
+        Require(number_of_levels_>=levels);
         
         return
-            is_dependent.size()==number_of_ordinates &&
-            alpha.size()==number_of_ordinates &&
-            tau.size()==number_of_ordinates;
+            is_dependent_.size()==number_of_ordinates &&
+            alpha_.size()==number_of_ordinates &&
+            tau_.size()==number_of_ordinates;
     }
 }
 
@@ -318,8 +332,17 @@ bool Angle_Operator::is_compatible( SP<Quadrature const> const &quadrature,
 }
 
 //---------------------------------------------------------------------------//
-//! Return the projection of an ordinate direction onto the mesh geometry.
-
+/*!
+ *
+ * In 1-D or 2-D geometry, it is useful to be able to project the
+ * three-dimensional ordinate direction onto the problem geometry to produce a
+ * pseudo-1D or -2D vector that can (for instance) be dotted with the
+ * pseudo-1D or -2D vector representating a finite element face normal. This
+ * is not entirely straightforward in 2-D, because one generally wants to map
+ * the third component of the ordinate direction onto the second component of
+ * the pseudo-2D vector. This function provides a handy interface for such
+ * mapping that hides these details from the client.
+ */
 vector<double>
 Angle_Operator::Projected_Ordinate(unsigned const a) const
 {

@@ -264,7 +264,7 @@ void tstParallel_File_Token_Stream()
 	    // Token token = tokens.Shift();
 	    // if (token.Type()!=ERROR) ITFAILS;
 	}
-	catch( rtt_dsxx::assertion const &a )
+	catch( std::invalid_argument const &a )
 	{
 	    std::ostringstream errmsg;
 	    errmsg << "Parallel_File_Token_Stream threw an expected exception.\n"
@@ -330,9 +330,17 @@ int main(int argc, char *argv[])
     {
 	tstParallel_File_Token_Stream();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (std::exception &ass)
     {
 	cout << "While testing tstParallel_File_Token_Stream, " << ass.what()
+	     << endl;
+	rtt_c4::finalize();
+	return 1;
+    }
+    catch (...)
+    {
+	cout << "While testing tstParallel_File_Token_Stream, "
+             "an unrecognized exception was thrown."
 	     << endl;
 	rtt_c4::finalize();
 	return 1;

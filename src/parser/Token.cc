@@ -4,18 +4,10 @@
  * \author Kent G. Budge
  * \date 18 Feb 2003
  * \brief Definitions of Token helper functions.
- * \note Copyright @ 2003 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  *
  * This file defines the various token type identification functions
  * used in conjuction with struct Token.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): 
- *    Correct brief descriptions of Is_*_Text functions.
- *    Add operator== for Token to support DBC checks.
- * 2) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -41,7 +33,7 @@ namespace rtt_parser
  * \pre <code>text!=NULL</code>
  */
 
-bool Is_Keyword_Text(const char *text)
+bool Is_Keyword_Text(char const *text)
 {
     Require(text!=NULL);
     
@@ -67,7 +59,7 @@ bool Is_Keyword_Text(const char *text)
  * \pre <code>text!=NULL</code>
  */
 
-bool Is_String_Text(const char *text)
+bool Is_String_Text(char const *text)
 {
     Require(text!=NULL);
     
@@ -96,7 +88,7 @@ bool Is_String_Text(const char *text)
  * \pre <code>text!=NULL</code>
  */
 
-bool Is_Real_Text(const char *text)
+bool Is_Real_Text(char const *text)
 {
     Require(text!=NULL);
     
@@ -117,7 +109,7 @@ bool Is_Real_Text(const char *text)
  * \pre <code>text!=NULL</code>
  */
 
-bool Is_Integer_Text(const char *text)
+bool Is_Integer_Text(char const *text)
 {
     Require(text!=NULL);
     
@@ -159,12 +151,12 @@ bool operator==(const Token &a, const Token &b)
 bool Token::check_class_invariants() const
 {
     return 
-	(!(type==END   || type==EXIT || type==ERROR) || text=="") &&
-	(type!=OTHER   || text.size()==1)  &&
-	(type!=KEYWORD || Is_Keyword_Text(text.c_str()))  &&
-	(type!=REAL    || Is_Real_Text(text.c_str()) )  &&
-	(type!=INTEGER || Is_Integer_Text(text.c_str()) )  &&
-	(type!=STRING  || Is_String_Text(text.c_str()) );
+	(!(type_==END   || type_==EXIT || type_==ERROR) || text_=="") &&
+	(type_!=OTHER   || text_.size()==1)  &&
+	(type_!=KEYWORD || Is_Keyword_Text(text_.c_str()))  &&
+	(type_!=REAL    || Is_Real_Text(text_.c_str()) )  &&
+	(type_!=INTEGER || Is_Integer_Text(text_.c_str()) )  &&
+	(type_!=STRING  || Is_String_Text(text_.c_str()) );
 }
 
 } // rtt_parser

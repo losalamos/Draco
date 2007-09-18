@@ -4,12 +4,7 @@
  * \author Kent Budge
  * \date   Mon Feb 24 07:13:42 2003
  * \brief  Definition the Unit struct
- * \note   Copyright © 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,12 +31,7 @@ namespace rtt_parser
  * whose unit description requires noninteger powers of the basic units.
  *
  * Several examples follow the struct definition.
- *
- */
-// revision history:
-// -----------------
-// 0) original
-// 
+ */ 
 //===========================================================================//
 
 struct Unit 
@@ -223,7 +213,7 @@ inline Unit pow(Unit const &b, double const a)
 /*! 
  * \brief Test two units for equality
  *
- * Compare two Units for precise equality, in both dimensions and
+ * Compare two Units for strict equality, in both dimensions and
  * conversion factor.  To test only the dimensions, ignoring the
  * conversion factor, use the \c is_compatible function.
  * 
@@ -340,7 +330,7 @@ Unit const foot  = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.3048};     //!< foot
 Unit const lbm   = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  0.45359237}; //!< pound mass
 Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
 
-// Miscellaneous units popular in X-Division
+// Miscellaneous units
 
 Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16};
 //!< Thousands of electron volts

@@ -4,12 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 14:57:49 MST 2003
  * \brief Contains definitions of all Text_Token_Stream member functions.
- * \note Copyright @ 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -69,7 +64,7 @@ default_whitespace(default_ws_string,
  */
 
 Text_Token_Stream::Text_Token_Stream(set<char> const &ws)
-    : whitespace(ws), line(1)
+    : whitespace_(ws), line_(1)
 {
     Ensure(check_class_invariants());
     Ensure(ws == Whitespace());
@@ -114,7 +109,7 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws)
  */
 
 Text_Token_Stream::Text_Token_Stream()
-    : whitespace(default_whitespace), line(1)
+    : whitespace_(default_whitespace), line_(1)
 {
     Ensure(check_class_invariants());
     Ensure(Whitespace()==default_whitespace);
@@ -137,7 +132,8 @@ Token Text_Token_Stream::fill()
 
     string token_location = location();
     
-    if (c=='\0')   // Sentinel value for error or end of file.
+    if (c=='\0')
+        // Sentinel value for error or end of file.
     {
 	if (end())
 	{
@@ -153,8 +149,8 @@ Token Text_Token_Stream::fill()
     else 
     {
 	if (isalpha(c) || c=='_')
-	{
 	    // Beginning of a keyword or END token
+	{
 	    string text(1, c);
 	    pop_char();
 	    c = peek();
@@ -191,11 +187,11 @@ Token Text_Token_Stream::fill()
 	    }
 	}
 	else if (isdigit(c) || c=='.') 
-	{
 	    // A number of some kind.  Note that an initial sign ('+' or '-')
 	    // is tokenized independently, because it could be interpreted as
 	    // a binary operator in arithmetic expressions.  It is up to the
 	    // parser to decide if this is the correct interpretation.
+	{
 	    string text;
 	    unsigned const float_length = scan_floating_literal();
 	    unsigned const int_length = scan_integer_literal();
@@ -228,8 +224,8 @@ Token Text_Token_Stream::fill()
 	    }
 	}
 	else if (c=='"')
-	{
 	    // Manifest string
+	{
 	    string text(1, c);
 	    pop_char();
 	    c = peek();
@@ -273,13 +269,14 @@ Token Text_Token_Stream::fill()
 	    return Token(STRING, text, token_location);
 	}
 	else   
-	{
 	    // OTHER
+	{
 	    pop_char();
 	    Ensure(check_class_invariants());
 	    return Token(c, token_location);
 	}
 
+        Ensure(check_class_invariants());
         return Token(ERROR, token_location);
     }
 }
@@ -298,7 +295,7 @@ Token Text_Token_Stream::fill()
 
 bool Text_Token_Stream::is_whitespace(char const c) const
 {
-    return isspace(c) || whitespace.count(c);
+    return isspace(c) || whitespace_.count(c);
 }
 
 //-----------------------------------------------------------------------//
@@ -316,7 +313,7 @@ bool Text_Token_Stream::is_whitespace(char const c) const
 
 bool Text_Token_Stream::is_nb_whitespace(char const c) const
 {
-    return !whitespace.count(c) && (c==' ' || c=='\t');
+    return !whitespace_.count(c) && (c==' ' || c=='\t');
 }
 
 //-------------------------------------------------------------------------//
@@ -335,14 +332,14 @@ bool Text_Token_Stream::is_nb_whitespace(char const c) const
 
 char Text_Token_Stream::pop_char()
 {
-    Remember(unsigned const old_line = line);
+    Remember(unsigned const old_line = line_);
 
     char const Result = peek();
-    buffer.pop_front();
-    if (Result == '\n') line++;
+    buffer_.pop_front();
+    if (Result == '\n') line_++;
 
     Ensure(check_class_invariants());
-    Ensure(Result == '\n' && line == old_line+1  ||  line == old_line);
+    Ensure(Result == '\n' && line_ == old_line+1  ||  line_ == old_line);
     return Result;
 }
 
@@ -569,13 +566,13 @@ unsigned Text_Token_Stream::scan_octal_literal(unsigned &pos)
 
 char Text_Token_Stream::peek(unsigned const pos)
 {
-    while (buffer.size()<=pos)
+    while (buffer_.size()<=pos)
     {
 	fill_character_buffer();
     }
 
     Ensure(check_class_invariants());
-    return buffer[pos];
+    return buffer_[pos];
  }
   
 //-------------------------------------------------------------------------//
@@ -583,15 +580,12 @@ char Text_Token_Stream::peek(unsigned const pos)
  * This function flushes the Text_Token_Stream's internal buffers, so that
  * scanning resumes at the beginning of the file stream.  It is normally
  * called by its overriding version in children of Text_Token_Stream.
- *
- * \post <code>location() == filename + ", line 1"</code>;
- * \post <code>Error_Count() == 0</code>
  */
 
 void Text_Token_Stream::Rewind()
 {
-    buffer.clear();
-    line = 1;
+    buffer_.clear();
+    line_ = 1;
 
     Token_Stream::Rewind();
     
@@ -600,24 +594,13 @@ void Text_Token_Stream::Rewind()
 }
 
 //---------------------------------------------------------------------------//
-/*! 
- * This function checks the Text_Token_Stream class invariants.  At present,
- * the only invariant is:
- *
- * \c line>0
- *
- * This reflects the fact that very little else about an I/O object can be
- * guaranteed. 
- * 
- * \return \c true if the class invariants are satisfied; \c false otherwise
- */
-
 bool Text_Token_Stream::check_class_invariants() const
 {
-    return line > 0;
+    return line_ > 0;
 }
 
 //---------------------------------------------------------------------------//
+/* private */
 void Text_Token_Stream::eat_whitespace()
 {
     for (;;)
@@ -688,7 +671,7 @@ void Text_Token_Stream::eat_whitespace()
 
 void Text_Token_Stream::character_push_back(char const c)
 {
-    buffer.push_back(c);
+    buffer_.push_back(c);
 
     Ensure(check_class_invariants());
 }

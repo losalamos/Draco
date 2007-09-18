@@ -22,10 +22,8 @@
 
 namespace rtt_quadrature
 {
-
 using namespace std;
-using rtt_dsxx::SP;
-
+using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 /*!
@@ -34,27 +32,23 @@ using rtt_dsxx::SP;
  * \param geometry Geometry of the problem.
  * \param dimension The dimension of the problem (1 or 2)
  *
- * \pre \c quadrature!=SP<Quadrature>()
- *
  * \note The quadrature object must be a level set quadrature, and it must
  * supply the number of levels.  At present all we can do is *assume* it is a
  * level set (since there is presently no way to query the object) and that
  * the number of levels equals the Sn order.
- * \todo The insertion of starting ordinates uses an algorithm that is \f$L^3\f$
- * in the number of levels \f$L\f$.  This could conceivably bite us someday
- * if computing power becomes great enough for computations with very large
- * \f$L\f$. 
  *
- * \note Notice it defaults to 2 spatial dimensions. See class boundary_source
- * for a reason why.
+ * \todo The insertion of starting ordinates uses an algorithm that is
+ * \f$L^3\f$ in the number of levels \f$L\f$.  This could conceivably bite us
+ * someday if computing power becomes great enough for computations with very
+ * large \f$L\f$.
  */
 
-OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature_,
-                          rtt_mesh_element::Geometry const geometry_,
-                          unsigned                   const dimension_ )
-    : quadrature( quadrature_ ),
-      geometry(   geometry_   ),
-      dimension(  dimension_  )
+OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
+                          rtt_mesh_element::Geometry const geometry,
+                          unsigned                   const dimension )
+    : quadrature_( quadrature ),
+      geometry_(   geometry   ),
+      dimension_(  dimension  )
 {
     Require( quadrature!=SP<Quadrature>()               );
     Require( quadrature->dimensionality() == 1 ||
@@ -65,19 +59,31 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature_,
 
     if( quadrature->dimensionality() == 1 ) 
         create_set_from_1d_quadrature();
+    
     if( quadrature->dimensionality() == 2 && dimension == 2 )
         create_set_from_2d_quadrature_for_2d_mesh();
+    
     if( quadrature->dimensionality() == 2 && dimension == 1 )
         create_set_from_2d_quadrature_for_1d_mesh();
 
-    // OrdinateSet does not support 3D quadrature sets at this time.
-    Ensure( quadrature->dimensionality() < 3 );
-    Ensure( ordinates.size() > 0 );    
+    Ensure( check_class_invariants() );
+    Ensure( getOrdinates().size() > 0 );
+    Ensure( getQuadrature() == quadrature );
+    Ensure( getGeometry() == geometry );
+    Ensure( getDimension() == dimension );
+}
+
+//---------------------------------------------------------------------------//
+bool OrdinateSet::check_class_invariants() const
+{
+    return
+        quadrature_ != SP<Quadrature>() &&
+        ordinates_.size()>0;
 }
     
 //---------------------------------------------------------------------------//
 /*! 
- * \brief STL-compatible comparator predicate to sort ordinate vectors by xi then mu.
+ *
  * \param a
  * First comparand
  * \param b
@@ -113,14 +119,11 @@ bool Ordinate::SnCompare(Ordinate const &a, Ordinate const &b)
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Use the same representation as rtt_sf::galerkinYlk.
+ * This function uses the same representation as rtt_sf::galerkinYlk.
  *
  * \param l Compute spherical harmonic of degree l.
  * \param k Compute spherical harmonic of order k.
  * \param ordinate Direction cosines
- *
- * \pre \c -l<=k<=l
- * \bug depricated!!!
  */
 double Ordinate::Y( unsigned const l,
                     int      const k,
@@ -135,41 +138,44 @@ double Ordinate::Y( unsigned const l,
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Helper for creating an OrdinateSet from a 1D quadrature specification.
+/*!\brief Helper for creating an OrdinateSet from a 1D quadrature
+ * specification.
  */
 void OrdinateSet::create_set_from_1d_quadrature( void )
 {
-    unsigned const number_of_ordinates = quadrature->getNumOrdinates();
-    ordinates.resize( number_of_ordinates );
+    unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
+    ordinates_.resize( number_of_ordinates );
     
     for (unsigned a=0; a<number_of_ordinates; a++)
     {
-        double const mu = quadrature->getMu(a);
-        double const weight = quadrature->getWt(a);
-        ordinates[a] = Ordinate(mu, weight);
+        double const mu = quadrature_->getMu(a);
+        double const weight = quadrature_->getWt(a);
+        ordinates_[a] = Ordinate(mu, weight);
     }
     
-    if( geometry ==  rtt_mesh_element::SPHERICAL )
+    if( geometry_ ==  rtt_mesh_element::SPHERICAL )
     {
-        Insist(quadrature->dimensionality() == 1, "Quadrature dimensionality != 1");
+        Insist(quadrature_->dimensionality() == 1,
+               "Quadrature dimensionality != 1");
 
         // insert mu=-1 starting direction 
-        vector<Ordinate>::iterator a = ordinates.begin();
-        a = ordinates.insert(a, Ordinate(-1.0,
+        vector<Ordinate>::iterator a = ordinates_.begin();
+        a = ordinates_.insert(a, Ordinate(-1.0,
                                          0.0,
                                          0.0,
                                          0.0));
     }
-    else if ( geometry ==  rtt_mesh_element::CARTESIAN)
+    else if ( geometry_ ==  rtt_mesh_element::CARTESIAN)
     {
-        Insist(quadrature->dimensionality() == 1, "Quadrature dimensionality != 1");
+        Insist(quadrature_->dimensionality() == 1,
+               "Quadrature dimensionality != 1");
     }
     else
     {
-        Check(geometry == rtt_mesh_element::AXISYMMETRIC);
+        Check(geometry_ == rtt_mesh_element::AXISYMMETRIC);
 
-        Insist(false, "Axisymmetric geometry is incompatible with "
+        Insist(false,
+               "Axisymmetric geometry is incompatible with "
                "a 1-D quadrature set");
     }
     
@@ -182,16 +188,16 @@ void OrdinateSet::create_set_from_1d_quadrature( void )
  */
 void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
 {
-    unsigned const number_of_ordinates = quadrature->getNumOrdinates();
-    unsigned const number_of_levels = quadrature->getSnOrder();
+    unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
+    unsigned const number_of_levels = quadrature_->getSnOrder();
         
     // If the geometry is axisymmetric, reserve enough room for both the
     // ordinate quadrature set and the supplemental eta==0, mu<0 starting
     // ordinates.  The latter are required to supply a starting value for
     // the ordinate differencing.
     
-    ordinates.reserve(number_of_ordinates + number_of_levels);
-    ordinates.resize(number_of_ordinates);
+    ordinates_.reserve(number_of_ordinates + number_of_levels);
+    ordinates_.resize(number_of_ordinates);
     
     // Copy the ordinates, then sort -- first by xi (into level sets) and
     // second by mu.  This yields a consistent structure for the level
@@ -199,32 +205,32 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
     // and set up the associated task dependencies in axisymmetric
     // geometry.
     
-    if( quadrature->getEta().empty() )
+    if( quadrature_->getEta().empty() )
     {
         for (unsigned a=0; a<number_of_ordinates; a++)
         {
-            double const mu = quadrature->getMu(a);
-            double const xi = quadrature->getXi(a);
+            double const mu = quadrature_->getMu(a);
+            double const xi = quadrature_->getXi(a);
             double const eta = sqrt(1-xi*xi-mu*mu);
-            double const weight = quadrature->getWt(a);
-            ordinates[a] = Ordinate(mu, eta, xi, weight);
+            double const weight = quadrature_->getWt(a);
+            ordinates_[a] = Ordinate(mu, eta, xi, weight);
         }
     }
     else // assume xi is empty.
     {
         for (unsigned a=0; a<number_of_ordinates; a++)
         {
-            double const mu = quadrature->getMu(a);
-            double const eta = quadrature->getEta(a);
+            double const mu = quadrature_->getMu(a);
+            double const eta = quadrature_->getEta(a);
             double const xi = sqrt(1-eta*eta-mu*mu);
-            double const weight = quadrature->getWt(a);
-            ordinates[a] = Ordinate(mu, xi, eta, weight);
+            double const weight = quadrature_->getWt(a);
+            ordinates_[a] = Ordinate(mu, xi, eta, weight);
         }
     }       
         
-    sort( ordinates.begin(), ordinates.end(), Ordinate::SnCompare );
+    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
     
-    if( geometry == rtt_mesh_element::AXISYMMETRIC )
+    if( geometry_ == rtt_mesh_element::AXISYMMETRIC )
     {
         // Define an impossible value for a direction cosine.  We use
         // this to simplify the logic of determining when we are at
@@ -237,8 +243,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
         
         unsigned check_number_of_levels = 0;
         double xi = -SENTINEL_COSINE;
-        for ( vector<Ordinate>::iterator a = ordinates.begin();
-              a != ordinates.end();
+        for ( vector<Ordinate>::iterator a = ordinates_.begin();
+              a != ordinates_.end();
               ++a)
         {
             double const old_xi = xi;
@@ -250,7 +256,7 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
             {
                 check_number_of_levels++;
                 Check(1.0-xi*xi >= 0.0);
-                a = ordinates.insert(a, Ordinate(-sqrt(1.0-xi*xi),
+                a = ordinates_.insert(a, Ordinate(-sqrt(1.0-xi*xi),
                                                  0.0,
                                                  xi,
                                                  0.0));
@@ -272,16 +278,16 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
     // this to simplify the logic of determining when we are at
     // the head of a new level set.
 
-    Insist(geometry == rtt_mesh_element::AXISYMMETRIC,
+    Insist(geometry_ == rtt_mesh_element::AXISYMMETRIC,
            "Mesh geometry != AXISYMMETRIC");
     
     double const SENTINEL_COSINE = 2.0;
     
-    unsigned const number_of_ordinates = quadrature->getNumOrdinates()/2;
-    unsigned const number_of_levels = quadrature->getSnOrder()/2;
+    unsigned const number_of_ordinates = quadrature_->getNumOrdinates()/2;
+    unsigned const number_of_levels = quadrature_->getSnOrder()/2;
 
-    ordinates.reserve(number_of_ordinates + number_of_levels);
-    ordinates.resize(number_of_ordinates);
+    ordinates_.reserve(number_of_ordinates + number_of_levels);
+    ordinates_.resize(number_of_ordinates);
 
     // Copy the ordinates, then sort -- first by xi (into level sets) and
     // second by mu.  This yields a consistent structure for the level sets
@@ -291,8 +297,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
     unsigned check_number_of_ordinates = 0;
     for (unsigned a=0; a<2*number_of_ordinates; a++)
     {
-        double const mu = quadrature->getMu(a);
-        double const xi = quadrature->getXi(a);
+        double const mu = quadrature_->getMu(a);
+        double const xi = quadrature_->getXi(a);
         
         // \todo Here we check for ordinates only for \f$\xi > 0\f$ because
         // we are reducing the 2D quadrature to 1D cylindrical geometry which
@@ -303,23 +309,23 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
         if (xi >= 0)
         {
             double const eta = sqrt(1-xi*xi-mu*mu);
-            double const weight = quadrature->getWt(a);
-            ordinates[check_number_of_ordinates] =
+            double const weight = quadrature_->getWt(a);
+            ordinates_[check_number_of_ordinates] =
                 Ordinate(mu, eta, xi, weight);
             ++check_number_of_ordinates;
         }
     }
     Check(number_of_ordinates==check_number_of_ordinates);
     
-    sort( ordinates.begin(), ordinates.end(), Ordinate::SnCompare);
+    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare);
     
     // Insert the supplemental ordinates.  Count the levels as a sanity
     // check.
     
     unsigned check_number_of_levels = 0;
     double xi = -SENTINEL_COSINE;
-    for( vector<Ordinate>::iterator a = ordinates.begin();
-         a != ordinates.end();
+    for( vector<Ordinate>::iterator a = ordinates_.begin();
+         a != ordinates_.end();
          ++a )
     {
         double const old_xi = xi;
@@ -331,7 +337,7 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
         {
             check_number_of_levels++;
             Check(1.0-xi*xi >= 0.0);
-            a = ordinates.insert(a, Ordinate(-sqrt(1.0-xi*xi),
+            a = ordinates_.insert(a, Ordinate(-sqrt(1.0-xi*xi),
                                              0.0,
                                              xi,
                                              0.0));

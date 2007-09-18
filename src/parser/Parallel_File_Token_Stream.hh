@@ -4,6 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class Parallel_File_Token_Stream.
+ * \note   Copyright © 2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -30,9 +31,6 @@ namespace rtt_parser
  * advantage of parallelism at this level is that it avoids the I/O cost of
  * many processors reading one file while communicating data that is still
  * very flat.
- *
- * \invariant \c line>0
- * \invariant There is exactly one designated I/O processor
  */
 
 class Parallel_File_Token_Stream : public Text_Token_Stream
@@ -74,13 +72,13 @@ class Parallel_File_Token_Stream : public Text_Token_Stream
 
     // DATA
 
-    std::string filename;  //!< File from which to take token text.
-    std::ifstream infile;  //!< Stream from which to take token text.
+    std::string filename_;  //!< File from which to take token text.
+    std::ifstream infile_;  //!< Stream from which to take token text.
 
-    bool is_io_processor;     //!< Is this the designated I/O processor?
+    bool is_io_processor_;     //!< Is this the designated I/O processor?
 
-    bool at_eof;        //!< Did processor 0 see the end of file?
-    bool at_error;      //!< Did processor 0 see an I/O error?
+    bool at_eof_;        //!< Did processor 0 see the end of file?
+    bool at_error_;      //!< Did processor 0 see an I/O error?
 };
 
 } // rtt_parser

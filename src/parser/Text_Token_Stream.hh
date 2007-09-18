@@ -4,16 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 13:15:29 MST 2003
  * \brief Definition of the Text_Token_Stream class.
- * \note Copyright @ 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): 
- *    Fix indentation and comments.
- * 2) kgbudge (03/18/03): 
- *    Fix bugs and add capability to scan comments.
- * 3) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -33,17 +24,13 @@ namespace rtt_parser
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Abstract text-based token stream for simple parsers.
  *
- * A Text_Token_Stream obtains its stream of tokens by scanning a stream
- * of text characters, supplied through the getc member of its child
- * classes.
+ * A Text_Token_Stream obtains its stream of tokens by scanning a stream of
+ * text characters, supplied through the getc member of its child classes.
  *
  * C and C++ comments are treated as breaking whitespace.
  *
  * Null characters are not permitted in the character stream.  They are used
  * internally to indicate the end of file or an error condition.
- *
- * \invariant The whitespace list is a superset of the nonbreaking whitespace
- * list.
  */
 
 class Text_Token_Stream : public Token_Stream
@@ -58,10 +45,10 @@ class Text_Token_Stream : public Token_Stream
     
   public:
 
-    unsigned Line() const { Ensure(line>0); return line; }
+    unsigned Line() const { Ensure(line_>0); return line_; }
     //!< Return the current line in the text stream.
 
-    std::set<char> const &Whitespace() const { return whitespace; }
+    std::set<char> const &Whitespace() const { return whitespace_; }
 
     //! Does the Token_Stream consider \c c to be whitespace?
     bool is_whitespace(char c) const;
@@ -129,12 +116,12 @@ class Text_Token_Stream : public Token_Stream
 
     // DATA
 
-    std::deque<char> buffer;
+    std::deque<char> buffer_;
     //!< Character buffer. Refilled as needed using fill_character_buffer()
 
-    std::set<char> whitespace; //!< the whitespace character list
+    std::set<char> whitespace_; //!< the whitespace character list
          
-    unsigned line;  //!< Current line in input file.
+    unsigned line_;  //!< Current line in input file.
 };
 
 }  // namespace rtt_parser

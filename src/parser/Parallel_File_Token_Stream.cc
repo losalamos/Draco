@@ -4,13 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definitions of Parallel_File_Token_Stream methods.
- * \note   Copyright @ 2003 The Regents of the University of California.
- *
- * This file defines all methods of class Parallel_File_Token_Stream.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): Fix indentation. Add additional DBC assertions.
+ * \note   Copyright © 2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -26,7 +20,7 @@
 namespace rtt_parser 
 {
 using namespace std;
-using rtt_dsxx::assertion;
+using namespace rtt_dsxx;
 
 //-------------------------------------------------------------------------//
 /*!
@@ -39,21 +33,20 @@ using rtt_dsxx::assertion;
  * \param file_name
  * Name of the file from which to extract tokens.
  *
- * \post <code>location() == file_name + ", line 1"</code>
- * \post \c Whitespace()==Text_Token_Stream::default_whitespace
- *
- * \throw assertion If the file cannot be opened.
+ * \throw std::bad_alloc If there is not enough memory to initialize the
+ * token and character queues.
+ * \throw std::invalid_argument If the file cannot be opened.
  *
  * \todo Make this constructor more failsafe.
  */
 
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
-    : filename(        file_name         ),
-      is_io_processor( rtt_c4::node()==0 ),  // The current implementation
-					     // always designates processor 0
-					     // as the I/O  processor. 
-      at_eof(   false ),
-      at_error( false )
+    : filename_(file_name),
+      is_io_processor_(rtt_c4::node()==0),  // The current implementation
+				           // always designates processor 0
+				           // as the I/O  processor. 
+      at_eof_(   false ),
+      at_error_( false )
 {
     open();
 
@@ -72,18 +65,13 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
  * specified file. If the file cannot be opened, then \c error()
  * will test true. 
  *
- * \param file_name
- * Name of the file from which to extract tokens.
- * \param ws
- * Points to a string containing user-defined whitespace
- * characters.
+ * \param file_name Name of the file from which to extract tokens.
  *
- * \post <code>location() == file_name + ", line 1"</code>
- * \post <code>Whitespace()==ws</code>
+ * \param ws Points to a string containing user-defined whitespace characters.
  *
  * \throw std::bad_alloc If there is not enough memory to initialize the
  * token and character queues.
- * \throw assertion If the file cannot be opened.
+ * \throw std::invalid_argument If the file cannot be opened.
  *
  * \todo Make this constructor more failsafe.
  */
@@ -91,10 +79,10 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
 						       set<char> const &ws)
     : Text_Token_Stream(ws),
-      filename(file_name),
-      is_io_processor(rtt_c4::node()==0),
-      at_eof(false),
-      at_error(false)
+      filename_(file_name),
+      is_io_processor_(rtt_c4::node()==0),
+      at_eof_(false),
+      at_error_(false)
 {
     open();
 
@@ -106,27 +94,28 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
 //---------------------------------------------------------------------------//
 /*! 
  *
- * \throw assertion If the file cannot be opened.
+ * \throw std::invalid_argument If the file cannot be opened.
  *
  * \todo Make this function more failsafe.
  */
 
+/* private */
 void Parallel_File_Token_Stream::open()
 {
     // Create in input stream by opening the specified file on the IO proc.
-    if( is_io_processor ) 
+    if( is_io_processor_ ) 
     {
-	infile.open(filename.c_str());
-	if (!infile) at_error = true;
+	infile_.open(filename_.c_str());
+	if (!infile_) at_error_ = true;
     }
-    unsigned err_count = at_error;
+    unsigned err_count = at_error_;
     rtt_c4::global_sum( err_count );
     if( err_count > 0 )
     {
 	ostringstream errmsg;
 	errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
 	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << filename 
+	       << "The file requested was: \"" << filename_ 
 	       << "\"" << " (PE " << rtt_c4::node() << ")\n"
                << "Ensure that the filename includes the full path or "
                << "a relative path from\n"
@@ -136,7 +125,7 @@ void Parallel_File_Token_Stream::open()
                << "execute the code under\n"
                << "mpirun or prun."
                << endl;
-	throw assertion( errmsg.str().c_str() );
+	throw std::invalid_argument( errmsg.str().c_str() );
     }
 }
 
@@ -158,7 +147,7 @@ void Parallel_File_Token_Stream::open()
 string Parallel_File_Token_Stream::location() const
 {
     ostringstream Result;
-    Result << filename << ", line " << Line();
+    Result << filename_ << ", line " << Line();
     return Result.str();
 }
   
@@ -192,14 +181,14 @@ void Parallel_File_Token_Stream::fill_character_buffer()
     
     vector<char> comm_buffer(numeric_limits<signed char>::max()+1);
     unsigned i = 1;    // first character is status character
-    if (is_io_processor)
+    if (is_io_processor_)
     {
         // Read up to numeric_limits<signed char>::max()+1 characters from the
         // input file.
 	while (i < static_cast<unsigned>(numeric_limits<signed char>::max()+1))
 	{
-	    char const c = infile.get();
-	    if (infile.eof() || infile.fail()) break;
+	    char const c = infile_.get();
+	    if (infile_.eof() || infile_.fail()) break;
 	    comm_buffer[i++] = c;
 	}
 	
@@ -211,7 +200,7 @@ void Parallel_File_Token_Stream::fill_character_buffer()
 	    // the next call to fill_character_buffer.  
 	    comm_buffer[0] = static_cast<char>(i-1);
         }   
-        else if (infile.eof() && !infile.bad())
+        else if (infile_.eof() && !infile_.bad())
 	{
 	    // Normal end of file condition.
 	    comm_buffer[0] = '\0';
@@ -231,12 +220,12 @@ void Parallel_File_Token_Stream::fill_character_buffer()
     if (comm_buffer[0]=='\0')
     {
 	character_push_back('\0');
-	at_eof = true;
+	at_eof_ = true;
     }
     else if (comm_buffer[0]==static_cast<char>(-1))
     {
 	character_push_back('\0');
-	at_error = true;
+	at_error_ = true;
     }
     else
     {
@@ -275,7 +264,7 @@ void Parallel_File_Token_Stream::fill_character_buffer()
 
 bool Parallel_File_Token_Stream::error() const
 {
-    return at_error;
+    return at_error_;
 }
 
 //-------------------------------------------------------------------------//
@@ -293,7 +282,7 @@ bool Parallel_File_Token_Stream::error() const
 
 bool Parallel_File_Token_Stream::end() const
 {
-    return at_eof;
+    return at_eof_;
 }
 
 //-------------------------------------------------------------------------//
@@ -356,18 +345,18 @@ void Parallel_File_Token_Stream::Rewind()
 {
     Require(check_class_invariants());
 
-    if (is_io_processor)
+    if (is_io_processor_)
     {
-	infile.clear();    // Must clear the error/end flag bits.
-	infile.seekg(0);
+	infile_.clear();    // Must clear the error/end flag bits.
+	infile_.seekg(0);
     }
 
-    at_eof = at_error = false;
+    at_eof_ = at_error_ = false;
 
     Text_Token_Stream::Rewind();
     
     Ensure(check_class_invariants());
-    Ensure(location() == filename + ", line 1");
+    Ensure(location() == filename_ + ", line 1");
     Ensure(Error_Count()==0);
 }
 
@@ -380,7 +369,7 @@ void Parallel_File_Token_Stream::Rewind()
 
 bool Parallel_File_Token_Stream::check_class_invariants() const
 {
-    unsigned iocount = is_io_processor;
+    unsigned iocount = is_io_processor_;
     rtt_c4::global_sum(iocount);
     return iocount == 1;
 }

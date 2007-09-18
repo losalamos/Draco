@@ -4,14 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definitions of File_Token_Stream methods.
- * \note   Copyright © 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): 
- *    Fix indentation. Add additional DBC assertions.
- * 2) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -37,8 +30,6 @@ using std::set;
  * File_Token_Streams.  An example of where this might be useful is in serial
  * code that combines output files produced by each processor in a parallel
  * run. 
- *
- * \post <code>location() =="<uninitialized>"</code>
  */
 
 File_Token_Stream::File_Token_Stream()
@@ -59,20 +50,18 @@ File_Token_Stream::File_Token_Stream()
  * \param file_name
  * Name of the file from which to extract tokens.
  *
- * \post <code>location() == file_name + ", line 1"</code>
- *
  * \throw std::alloc If there is not enough memory to initialize the queues.
  * \throw rtt_dsxx::assertion If the input stream cannot be opened.
  *
  * \todo Make this constructor failsafe.
  */
 
-File_Token_Stream::File_Token_Stream(string file_name)
+File_Token_Stream::File_Token_Stream(string const &file_name)
     :
-    filename(file_name),
-    infile(file_name.c_str())
+    filename_(file_name),
+    infile_(file_name.c_str())
 {
-    if( ! infile )
+    if( ! infile_ )
     {
 	std::ostringstream errmsg;
 	errmsg << "Cannot construct File_Token_Stream.\n"
@@ -96,28 +85,19 @@ File_Token_Stream::File_Token_Stream(string file_name)
  * specified file. If the file cannot be opened, then \c error()
  * will test true. 
  *
- * \param file_name
- * Name of the file from which to extract tokens.
+ * \param file_name Name of the file from which to extract tokens.
  *
- * \param ws
- * Points to a string containing user-defined whitespace
- * characters.
- *
- * \pre <code>ws!=NULL</code>
- *
- * \post <code>location() == file_name + ", line 1"</code>
- *
- * \post <code>Whitespace()==ws</code>
+ * \param ws Points to a string containing user-defined whitespace characters.
  */
 
-File_Token_Stream::File_Token_Stream(string file_name,
+File_Token_Stream::File_Token_Stream(string const &file_name,
 				     set<char> const &ws)
     :
     Text_Token_Stream(ws),
-    filename(file_name),
-    infile(file_name.c_str())
+    filename_(file_name),
+    infile_(file_name.c_str())
 {
-    if( ! infile )
+    if( ! infile_ )
     {
 	std::ostringstream errmsg;
 	errmsg << "Cannot construct File_Token_Stream.\n"
@@ -144,12 +124,12 @@ File_Token_Stream::File_Token_Stream(string file_name,
 
 void File_Token_Stream::open(string file_name)
 {
-    infile.close();
-    infile.clear();
-    infile.open(file_name.c_str());
-    filename = file_name;
+    infile_.close();
+    infile_.clear();
+    infile_.open(file_name.c_str());
+    filename_ = file_name;
     
-    if( ! infile )
+    if( ! infile_ )
     {
 	std::ostringstream errmsg;
 	errmsg << "Cannot open File_Token_Stream.\n"
@@ -181,9 +161,9 @@ string File_Token_Stream::location() const
     Require(check_class_invariants());
 
     std::ostringstream Result;
-    if (filename != "")
+    if (filename_ != "")
     {
-        Result << filename << ", line " << Line();
+        Result << filename_ << ", line " << Line();
     }
     else
     {
@@ -204,8 +184,8 @@ string File_Token_Stream::location() const
 
 void File_Token_Stream::fill_character_buffer()
 {
-    char const c = infile.get();
-    if (infile.fail())
+    char const c = infile_.get();
+    if (infile_.fail())
     {
 	character_push_back('\0');
     }
@@ -231,7 +211,7 @@ void File_Token_Stream::fill_character_buffer()
 
 bool File_Token_Stream::error() const
 {
-    return infile.fail();
+    return infile_.fail();
 }
 
 //-------------------------------------------------------------------------//
@@ -249,20 +229,14 @@ bool File_Token_Stream::error() const
 
 bool File_Token_Stream::end() const
 {
-    return infile.eof();
+    return infile_.eof();
 }
 
 //-------------------------------------------------------------------------//
-/*!
- * This function sends a message by writing a diagnostic message to the
- * error console stream. 
- */
-
-void File_Token_Stream::Report(const Token &token,
-                               const string &message)
+/* virtual */
+void File_Token_Stream::Report(Token const &token,
+                               string const &message)
 {
-    Require(check_class_invariants());
-
     std::cerr << token.Location() << ": " << message << std::endl;
 
     Ensure(check_class_invariants());
@@ -274,9 +248,9 @@ void File_Token_Stream::Report(const Token &token,
  * This version assumes that the cursor gives the correct error location.
  */
 
-void File_Token_Stream::Report(const string &message)
+void File_Token_Stream::Report(string const &message)
 {
-    Token token = Lookahead();
+    Token const token = Lookahead();
     std::cerr << token.Location() << ": " << message << std::endl;
 
     Ensure(check_class_invariants());
@@ -288,23 +262,20 @@ void File_Token_Stream::Report(const string &message)
  *
  * This function rewinds the file stream associated with the file token
  * stream and flushes its internal buffers, so that scanning resumes at
- * the beginning of the file stream
- *
- * \post <code>location() == filename + ", line 1"</code>;
- * \post <code>Error_Count() == 0</code>
+ * the beginning of the file stream. The error count is also reset.
  */
 
 void File_Token_Stream::Rewind()
 {
     Require(check_class_invariants());
 
-    infile.clear();    // Must clear the error/end flag bits.
-    infile.seekg(0);
+    infile_.clear();    // Must clear the error/end flag bits.
+    infile_.seekg(0);
 
     Text_Token_Stream::Rewind();
     
     Ensure(check_class_invariants());
-    Ensure(location() == filename + ", line 1");
+    Ensure(location() == filename_ + ", line 1");
     Ensure(Error_Count()==0);
 }
 

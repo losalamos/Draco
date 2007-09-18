@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class Console_Token_Stream.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -37,8 +37,6 @@ namespace rtt_parser
  * \note This class is an experimental concept and <i> should not be used in
  * production codes </i>.  In particular, the class cannot readily be tested
  * under our current unit testing system, since it is inherently interactive.
- *
- * \invariant <code>line > 0</code>
  */
 
 class Console_Token_Stream : public Text_Token_Stream

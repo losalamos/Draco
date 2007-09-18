@@ -4,6 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class String_Token_Stream.
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -24,7 +25,8 @@ namespace rtt_parser
  * \brief std::string-based token stream
  *
  * String_Token_Stream is a Text_Token_Stream that obtains its text from a
- * std::string passed to the constructor. 
+ * std::string passed to the constructor. The diagnostic output is directed to
+ * an internal string that can be retrieved at will.
  */
 
 class String_Token_Stream : public Text_Token_Stream
@@ -40,7 +42,7 @@ class String_Token_Stream : public Text_Token_Stream
     
     void Rewind();
 
-    std::string Get_Messages() const { return messages; }
+    std::string Get_Messages() const { return messages_; }
     
     virtual void Report(Token const & token,
 			      std::string const &message);
@@ -65,10 +67,10 @@ class String_Token_Stream : public Text_Token_Stream
 
     // DATA
 
-    std::string text;  //!< Text to be tokenized
-    unsigned pos;      //!< Cursor position in string
+    std::string text_;  //!< Text to be tokenized
+    unsigned pos_;      //!< Cursor position in string
 
-    std::string messages; //!< Collection of diagnostic messages
+    std::string messages_; //!< Collection of diagnostic messages
 };
 
 } // rtt_parser

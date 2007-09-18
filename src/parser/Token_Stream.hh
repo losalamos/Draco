@@ -4,13 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 13:15:29 MST 2003
  * \brief Definition of class Token_Stream.
- * \note Copyright @ 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): Remove erroneous precondition from Report_Error.
- * 2) kgbudge (03/08/10): Solo inspection of documentation, assertions, and
- * tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -52,7 +46,7 @@ class Syntax_Error : public std::runtime_error
  * this release.  In other words, the client may look as many tokens to the
  * right of the cursor as he desires, and he may push any number of tokens
  * onto the stream at the cursor position; but when the cursor advances (via
- * the Shift method) the token it advances over is discarded.
+ * the Shift method) the token it advances over is discarded forever.
  */
 
 class Token_Stream : private std::deque<Token>
@@ -119,7 +113,7 @@ class Token_Stream : private std::deque<Token>
     virtual void Report(std::string const &message) = 0;
 
     //! Return the number of errors reported to the stream. 
-    unsigned Error_Count() const { return error_count; }
+    unsigned Error_Count() const { return error_count_; }
 
     //! The current implementation of Token_Stream has no invariants.
     bool check_class_invariants() const { return true; }
@@ -151,15 +145,13 @@ class Token_Stream : private std::deque<Token>
  *
  * This function resets the token stream to some initial state defined
  * by the child class.
- *
- * \post \c Error_Count()==0
  */
 
     virtual void Rewind() = 0;
     
   private:
 
-    unsigned error_count;  //!< Number of errors reported.
+    unsigned error_count_;  //!< Number of errors reported.
 
     Token_Stream(Token_Stream const &);            //!< Not copyable
     Token_Stream& operator=(Token_Stream const &); //!< Not assignable
@@ -169,12 +161,10 @@ class Token_Stream : private std::deque<Token>
 /*! 
  * Construct a Token_Stream and place the cursor at the start of the
  * stream.
- *
- * \post <code>Error_Count() == 0</code>
  */
 
 inline Token_Stream::Token_Stream() 
-    : error_count(0) 
+    : error_count_(0) 
 {
     Ensure(check_class_invariants());
     Ensure(Error_Count() == 0);

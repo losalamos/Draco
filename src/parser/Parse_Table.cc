@@ -4,15 +4,7 @@
  * \author Kent G. Budge
  * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definitions of member functions of class Parse_Table
- * \note   Copyright © 2003 The Regents of the University of California.
- *
- * revision history:
- * 0) original revision
- * 1) kgbudge (03/12/03):  
- *    Fix DBC assertions. Add new DBC assertions.
- *    Add code to check for and resolve keyword ambiguities.
- * 2) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -46,10 +38,10 @@ using namespace std;
  */
 
 Parse_Table::Parse_Table(Keyword const *const table, size_t const count)
-    : flags(0)
+    : flags_(0)
 {
     Require(count == 0  ||  table != NULL);
-    // Require(std::find_if(table, table+count, Is_Well_Formed_Keyword));
+    Require(std::find_if(table, table+count, Is_Well_Formed_Keyword));
 
     Add(table, count);
 
@@ -79,7 +71,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
 
     // Add the new keywords.
     
-    for (size_t i=0; i<count; i++)
+    for (unsigned i=0; i<count; i++)
     {
 	Require(Is_Well_Formed_Keyword(table[i]));
 
@@ -89,7 +81,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
     // Sort the parse table, using a comparator predicate appropriate for the
     // selected parser flags.
 
-    Keyword_Compare const comp(flags);
+    Keyword_Compare const comp(flags_);
     std::sort(begin(), end(), comp);
 
     // Look for ambiguous keywords, and resolve the ambiguity, if possible.
@@ -171,7 +163,7 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
     // comparator object incorporates the current settings of the
     // Parse_Table, such as case sensitivity and partial matching options.
 
-    Keyword_Compare const comp(flags);
+    Keyword_Compare const comp(flags_);
 
     // Now begin the process of pulling keywords off the input token stream,
     // and attempting to match these to the keyword table.
@@ -334,7 +326,7 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 
 unsigned Parse_Table::Get_Flags() const
 {
-    return flags;
+    return flags_;
 }
 
 //-------------------------------------------------------------------------//
@@ -351,7 +343,7 @@ void Parse_Table::Set_Flags(unsigned f)
 {
     Require(check_class_invariants());
 
-    flags = f;
+    flags_ = f;
 
     Add(NULL, 0U);  
     // The keyword list needs to be sorted and checked.  For example, if the
@@ -359,9 +351,8 @@ void Parse_Table::Set_Flags(unsigned f)
     // no longer case-sensitive, then the ordering changes, and previously
     // unambiguous keywords may become ambiguous.
     
-    Ensure(Get_Flags() == f);
-
     Ensure(check_class_invariants());
+    Ensure(Get_Flags() == f);
 }
 
 //-------------------------------------------------------------------------//
@@ -375,7 +366,7 @@ void Parse_Table::Set_Flags(unsigned f)
  */
 
 Parse_Table::Keyword_Compare::Keyword_Compare(unsigned char const flags)
-    : flags(flags)
+    : flags_(flags)
 {
 } 
 
@@ -423,7 +414,7 @@ int Parse_Table::Keyword_Compare::kk_comparison(char const *m1,
     Require(m1!=NULL);
     Require(m2!=NULL);
 
-    if (flags & CASE_INSENSITIVE)
+    if (flags_ & CASE_INSENSITIVE)
     {
 	while (*m1 != '\0' && *m2 != '\0')
 	{
@@ -434,10 +425,8 @@ int Parse_Table::Keyword_Compare::kk_comparison(char const *m1,
 	    if (c1<c2) return -1;
 	    if (c1>c2) return 1;
 	}
-	char c1 = *m1++;
-	char c2 = *m2++;
-	if (islower(c1)) c1 = toupper(c1);
-	if (islower(c2)) c2 = toupper(c2);
+	char c1 = *m1;
+	char c2 = *m2;
 	if (c1<c2) return -1;
 	if (c1>c2) return 1;
 	return 0;
@@ -473,9 +462,6 @@ int Parse_Table::Keyword_Compare::kk_comparison(char const *m1,
  * \param token
  * The token to be compared.
  *
- * \pre <CODE>token.Type()==KEYWORD</CODE>
- * \pre <CODE>keyword.moniker!=NULL</CODE>
- *
  * \return <CODE>comparison(keyword.moniker,
  *                          token.Text().c_str())<0 </CODE>
  */
@@ -491,8 +477,8 @@ bool Parse_Table::Keyword_Compare::operator()(Keyword const &k1,
 bool Parse_Table::Keyword_Compare::operator()( Token const   &k2,
                                                Keyword const &k1 ) const
 {
-//     Require(k1.moniker);
-//     return kt_comparison(k1.moniker, k2.Text().c_str())<0;
+    Require(k1.moniker);
+
     return ! operator()(k1,k2);
 }
 
@@ -504,7 +490,7 @@ int Parse_Table::Keyword_Compare::kt_comparison(char const *m1,
     Require(m1!=NULL);
     Require(m2!=NULL);
 
-    if (flags & PARTIAL_IDENTIFIER_MATCH)
+    if (flags_ & PARTIAL_IDENTIFIER_MATCH)
     {
 	while (*m1 != '\0' && *m2 != '\0')
 	{
@@ -512,7 +498,7 @@ int Parse_Table::Keyword_Compare::kt_comparison(char const *m1,
 	    {
 		char c1 = *m1++;
 		char c2 = *m2++;
-		if (flags & CASE_INSENSITIVE)
+		if (flags_ & CASE_INSENSITIVE)
 		{
 		    if (islower(c1)) c1 = toupper(c1);
 		    if (islower(c2)) c2 = toupper(c2);
@@ -531,7 +517,7 @@ int Parse_Table::Keyword_Compare::kt_comparison(char const *m1,
     }
     else
     {
-	if (flags & CASE_INSENSITIVE)
+	if (flags_ & CASE_INSENSITIVE)
 	{
 	    while (*m1 != '\0' && *m2 != '\0')
 	    {
@@ -605,7 +591,7 @@ bool Parse_Table::check_class_invariants() const
 {
     // The keyword table must be well-formed, sorted, and unambiguous.
 
-    Keyword_Compare const comparator(flags);
+    Keyword_Compare const comparator(flags_);
     for (std::vector<Keyword>::const_iterator i=begin(); i!=end(); ++i)
     {
 	if (!Is_Well_Formed_Keyword(i[0])) return false;
