@@ -268,6 +268,70 @@ Token Text_Token_Stream::fill()
 	    Ensure(check_class_invariants());
 	    return Token(STRING, text, token_location);
 	}
+        else if (c=='<')
+            // Multicharacter OTHER
+        {
+            pop_char();
+            if (peek()=='=')
+            {
+                pop_char();
+                Ensure(check_class_invariants());
+                return Token(OTHER, "<=", token_location);
+            }
+            else
+            {
+                Ensure(check_class_invariants());
+                return Token(c, token_location);
+            }
+        }
+        else if (c=='>')
+            // Multicharacter OTHER
+        {
+            pop_char();
+            if (peek()=='=')
+            {
+                pop_char();
+                Ensure(check_class_invariants());
+                return Token(OTHER, ">=", token_location);
+            }
+            else
+            {
+                Ensure(check_class_invariants());
+                return Token(c, token_location);
+            }
+        }
+        else if (c=='&')
+            // Multicharacter OTHER
+        {
+            pop_char();
+            if (peek()=='&')
+            {
+                pop_char();
+                Ensure(check_class_invariants());
+                return Token(OTHER, "&&", token_location);
+            }
+            else
+            {
+                Ensure(check_class_invariants());
+                return Token(c, token_location);
+            }
+        }
+        else if (c=='|')
+            // Multicharacter OTHER
+        {
+            pop_char();
+            if (peek()=='|')
+            {
+                pop_char();
+                Ensure(check_class_invariants());
+                return Token(OTHER, "||", token_location);
+            }
+            else
+            {
+                Ensure(check_class_invariants());
+                return Token(c, token_location);
+            }
+        }
 	else   
 	    // OTHER
 	{

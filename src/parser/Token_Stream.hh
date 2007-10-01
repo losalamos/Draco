@@ -152,9 +152,6 @@ class Token_Stream : private std::deque<Token>
   private:
 
     unsigned error_count_;  //!< Number of errors reported.
-
-    Token_Stream(Token_Stream const &);            //!< Not copyable
-    Token_Stream& operator=(Token_Stream const &); //!< Not assignable
 };
 
 //-----------------------------------------------------------------------//

@@ -152,7 +152,6 @@ bool Token::check_class_invariants() const
 {
     return 
 	(!(type_==END   || type_==EXIT || type_==ERROR) || text_=="") &&
-	(type_!=OTHER   || text_.size()==1)  &&
 	(type_!=KEYWORD || Is_Keyword_Text(text_.c_str()))  &&
 	(type_!=REAL    || Is_Real_Text(text_.c_str()) )  &&
 	(type_!=INTEGER || Is_Integer_Text(text_.c_str()) )  &&

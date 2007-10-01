@@ -123,7 +123,7 @@ Token::Token(Token_Type const ty,
     : 
     type_(ty), text_(tx), location_(loc)
 {
-    Require(ty==KEYWORD || ty==REAL || ty==INTEGER || ty==STRING);
+    Require(ty==KEYWORD || ty==REAL || ty==INTEGER || ty==STRING || ty==OTHER);
     Require(ty!=KEYWORD || Is_Keyword_Text(tx.c_str()));
     Require(ty!=REAL || Is_Real_Text(tx.c_str()));
     Require(ty!=INTEGER || Is_Integer_Text(tx.c_str()));
