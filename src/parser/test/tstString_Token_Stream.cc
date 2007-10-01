@@ -336,6 +336,26 @@ void tstString_Token_Stream()
 	    }
 	    else ITFAILS;
 	}
+
+        // Now test assignment of new string and dipthong OTHER tokens
+
+        tokens = string("<= >= && ||");
+
+        Token token = tokens.Shift();
+	if (token.Text()!="<=") ITFAILS;
+
+        token = tokens.Shift();
+	if (token.Text()!=">=") ITFAILS;
+
+        token = tokens.Shift();
+	if (token.Text()!="&&") ITFAILS;
+
+        token = tokens.Shift();
+	if (token.Text()!="||") ITFAILS;
+
+        token = tokens.Shift();
+	if (token.Type()!=EXIT) ITFAILS;
+
     }
 
     return;
