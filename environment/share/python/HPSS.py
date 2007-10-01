@@ -71,7 +71,7 @@ def push(hpss_filename, tag = '', verbose  = Verbosity.ignore()):
     push_status = os.spawnv(os.P_WAIT, command[0], command)
 
     if push_status != 0:
-        raise exceptions.RuntimeError(
+        raise exceptions.RuntimeError( \
             "Failed to push file: %s with error " +
             "condition: %s " % (hpss_filename, push_status))
 
