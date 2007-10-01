@@ -1,5 +1,13 @@
-"""Pacakge defined facilities for working with HPSS and the Mercury
-system."""
+"""Package HPSS
+
+Pacakge defined facilities for working with HPSS and the Mercury
+system.
+
+This package needs functions for pulling via Mercury and retrieving
+files from HPSS.
+
+
+"""
 
 import exceptions
 

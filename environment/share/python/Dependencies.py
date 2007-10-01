@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #======================================================================
-# module: Packages
+# module: Dependencies
 #
 # Contains functions for parsing C/C++ code, directories and packages
 # for tasks such as component dependency tracking.
@@ -168,8 +168,8 @@ def find_components_files(dependency_dict, exclude = []):
 ## Test function
 ##---------------------------------------------------------------------------##
 def _test():
-    import doctest, Pacakges
-    doctest.testmod(Packages)
+    import doctest, Dependencies
+    doctest.testmod(Dependencies)
 
 
 ##---------------------------------------------------------------------------##
@@ -178,7 +178,7 @@ def _test():
 
 if __name__=='__main__':
 
-    """Module Packages
+    """Module Dependencies
 
     Contains functions useful for pasrsing the contents of C/C++
     code, and determining dependencies between files and components.
