@@ -37,8 +37,8 @@ def output_components(directory, test_directory = None):
 
     """
 
-    deps = Packages.scan_directory(directory)
-    comps = Packages.find_components(deps)
+    deps = Dependencies.scan_directory(directory)
+    comps = Dependencies.find_components(deps)
 
 
     print "Referenced components:"
@@ -48,8 +48,8 @@ def output_components(directory, test_directory = None):
     
     if test_directory:
         print "Test only components:"
-        deps = Packages.scan_directory(test_directory)
-        comps = Packages.find_components(deps, comps)
+        deps = Dependencies.scan_directory(test_directory)
+        comps = Dependencies.find_components(deps, comps)
 
         for comp in comps: print "  %s" % comp
         print
@@ -65,7 +65,7 @@ def output_component_files(directory, component_list):
 
     print "Selected dependencies in %s:" % directory
 
-    deps = Packages.scan_directory(directory)
+    deps = Dependencies.scan_directory(directory)
 
     for (file, include_dict) in deps.items():
         for (component, dep_files) in include_dict.items():
@@ -80,7 +80,7 @@ def output_component_files(directory, component_list):
 
 if __name__=='__main__':
 
-    import Packages, os, os.path, sys, getopt
+    import Dependencies, os, os.path, sys, getopt
 
     try:
         options, component_names = getopt.getopt(sys.argv[1:], 'd:h', ['help'])
