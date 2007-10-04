@@ -14,34 +14,45 @@ information through a configuration file.
 Where should this information live?
 
 """
+##---------------------------------------------------------------------------##
+## Repository Information:
+##---------------------------------------------------------------------------##
+PACKAGES = {'draco'       : "/codes/radtran/cvsroot",
+            'tools'       : "/codes/radtran/cvsroot",
+            'imcdoc'      : "/codes/radtran/cvsroot",
+            'clubimc'     : "/codes/radtran/cvsroot",
+            'milagro'     : "/codes/radtran/cvsroot",
+            'wedgehog'    : "/codes/radtran/cvsroot",
+            'uncleMcFlux' : "/codes/radtran/cvsroot"}
 
-REPO_ROOT = '/codes/radtran/cvsroot'
-
-PACKAGES = [
-    'draco',
-    'tools',      
-    'imcdoc',     
-    'clubimc',    
-    'milagro',    
-    'wedgehog',   
-    'uncleMcFlux'
-    ];
+def package_list():
+    return PACKAGES.keys()
 
 
+##---------------------------------------------------------------------------##
 def is_valid_package(package):
     "Is 'pacakge' a package we know about?"
     return package in PACKAGES
 
-def get_cvs_root(package):
+##---------------------------------------------------------------------------##
+def get_cvs_repo(package):
+    "Get the path of the cvs reposistory containing the given package"
 
-    """get_cvs_root:
+    assert(is_valid_package(package))
+
+    return PACKAGES[package]
+
+
+##---------------------------------------------------------------------------##
+def get_cvs_path(package):
+    """get_cvs_path:
 
     Return the path of the cvsroot for a given package.
 
-    >>> get_cvs_root('draco')
+    >>> get_cvs_path('draco')
     '/codes/radtran/cvsroot/draco'
 
-    >>> get_cvs_root('Bite me!')
+    >>> get_cvs_path('Bite me!')
     Traceback (most recent call last):
     ...
     AssertionError
@@ -50,7 +61,7 @@ def get_cvs_root(package):
 
     assert(is_valid_package(package))
 
-    repo_path =  os.path.join(REPO_ROOT, package)
+    repo_path =  os.path.join(PACKAGES[package], package)
 
     # Verify the existence and readability of the directory:
     assert(os.access(repo_path, os.F_OK | os.R_OK))
@@ -60,6 +71,12 @@ def get_cvs_root(package):
 
 
 
+##---------------------------------------------------------------------------##
+## Tarball creation:
+##---------------------------------------------------------------------------##
+
+
+##---------------------------------------------------------------------------##
 def get_archive_name(package, compress = True):
 
     """Transform a package name into the name of a tar repository.
@@ -86,6 +103,7 @@ def get_archive_name(package, compress = True):
 
 
 
+##---------------------------------------------------------------------------##
 def get_tar_file(package, compress, archive_path):
     """Get a tar file for the specified package.
 
@@ -98,7 +116,7 @@ def get_tar_file(package, compress, archive_path):
     mode = 'w'
     if compress: mode += ":gz"
 
-    repository_path   = get_cvs_root(package)
+    repository_path = get_cvs_path(package)
 
     if not archive_path: archive_path = ""
     archive_name = os.path.join(archive_path, get_archive_name(package, compress))

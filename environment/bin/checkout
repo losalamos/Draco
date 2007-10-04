@@ -48,6 +48,7 @@ Examples:
 from Utils import disambiguate, AmbiguousKeyError, InvalidKeyError, padlist
 import Verbosity
 import CVS
+import Repo
 import sys, os, getopt
 
 package_archive = {'draco'       : "/codes/radtran/cvsroot",
@@ -58,7 +59,7 @@ package_archive = {'draco'       : "/codes/radtran/cvsroot",
                    'wedgehog'    : "/codes/radtran/cvsroot",
                    'uncleMcFlux' : "/codes/radtran/cvsroot"}
 
-package_list = ', '.join(package_archive.keys())
+package_list = ', '.join(Repo.package_list())
 
 def list_packages(): print "Available Packages:", package_list
 
@@ -97,7 +98,7 @@ if '-e' in options:
 
 # Attempt to find package name
 package = tag.split('-')[0];
-if package not in package_archive.keys():
+if not Repo.is_valid_package(package):
     print "Could not determine package name from tag: %s. " \
           "Looking elsewhere." % (tag,)
     package = ''
@@ -110,7 +111,7 @@ if not package:
     try:
         package_name = words[0]
         package_parts = package_name.split('/',1)
-        package_parts[0] = disambiguate(package_parts[0], package_archive.keys())
+        package_parts[0] = disambiguate(package_parts[0], Repo.package_list())
         package_name = '/'.join(package_parts)
 
         package = package_parts[0]
@@ -126,7 +127,7 @@ if not package:
 # Look up the archive name, catch (unlikely at this point) invalid
 # package names. 
 try:
-    archive = package_archive[package]
+    archive = Repo.get_cvs_repo(package)
 except KeyError:
     sys.exit("ERROR: Unrecognized package name: %s" % package)
     
