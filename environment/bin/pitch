@@ -6,63 +6,30 @@ from optparse import OptionValueError
 # Global application data:
 packages = ['draco', 'clubimc', 'wedgehog']
 
-usage = "usage: %prog component [-v version] [dependency -v version]"
+usage = "usage: %prog component [[date:]version] [-d dependency [date:]version]"
 
-def add_component(option, opt_str, value, parser):
-    """This function takes a component name from the positional
-    arguments and assigns the value as it's version number.
-    """
-    
-    # No positional arguments yet? That's an error.
-    try:
-        component = parser.largs.pop().lower()
-    except IndexError:
-        raise OptionValueError(
-            "No package name proceeding %s option" % option)
-
-    if component not in packages:
-        raise OptionValueError(
-            "Unrecognized pacakge '%s'." % component)
-
-    if not hasattr(parser.values, "versions"):
-        parser.values.versions = {}
-    parser.values.versions[component] = value
-
-    if len(parser.largs) == 0:
-        # the user versioned the main component
-        parser.values.component = component
-    
 parser = OptionParser(usage=usage)
-parser.add_option("-v", "--version",
+parser.add_option("-d", "--depend",
                   type     = "string",
-                  action   = "callback",
-                  metavar  = "TAG",
-                  help     = "Set a version/tag for previously listed component",
-                  callback = add_component);
-parser.add_option("-c", "--comp",
-                  type     = "string",
-                  action   = "store",
-                  dest     = "component",
-                  help     = "Set the component to package");
-
+                  nargs    = 2,
+                  action   = "append",
+                  metavar  = "COMPONENT",
+                  help     = "Set a version/tag for a dependency"
+                  );
 
 
 if __name__=="__main__":
 
     (options, args) = parser.parse_args()
 
-    # Convert a single positional argument into the component
-    # argument. 
-    if (len(args) == 1) and not options.component:
-        options.component = args.pop()
+    if len(args) < 1:
+        parser.error("No top component specified.")
 
-    # Check for various error conditions.
-    if (len(args) > 0):
-        parser.error("Too many component names without versions.")
+    if len(args) > 2:
+        parser.error("Too many parameters")
 
-    if (len(args) == 0) and not options.component:
-        parser.error("No component specified.")
+    print options
+    print args
 
-    print options.component
-    print options.versions
+    
     

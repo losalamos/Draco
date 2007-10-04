@@ -46,21 +46,21 @@ Examples:
 """
 
 from Utils import disambiguate, AmbiguousKeyError, InvalidKeyError, padlist
+import Verbosity
+import CVS
 import sys, os, getopt
 
-package_archive = {'draco'      :'draco',
-                   'tools'      :'jayenne',
-                   'imcdoc'     :'jayenne',
-                   'clubimc'    :'jayenne',
-                   'milagro'    :'jayenne',
-                   'wedgehog'   :'jayenne',
-                   'uncleMcFlux':'jayenne'}
+package_archive = {'draco'       : "/codes/radtran/cvsroot",
+                   'tools'       : "/codes/radtran/cvsroot",
+                   'imcdoc'      : "/codes/radtran/cvsroot",
+                   'clubimc'     : "/codes/radtran/cvsroot",
+                   'milagro'     : "/codes/radtran/cvsroot",
+                   'wedgehog'    : "/codes/radtran/cvsroot",
+                   'uncleMcFlux' : "/codes/radtran/cvsroot"}
 
 package_list = ', '.join(package_archive.keys())
 
 def list_packages(): print "Available Packages:", package_list
-
-username =  os.environ['LOGNAME']
 
 try:
     options, words = getopt.getopt(sys.argv[1:], 'r:d:hnle', \
@@ -145,18 +145,15 @@ if not tag:
         tag = "%s-%s" % (package, version)
 
 
-# Build the cvs command:
-
-if tag:       tag = "-r %s" % tag
-if directory: directory = "-d %s" % directory;
-
-command = "cvs -z9 -d /codes/radtran/cvsroot/ %s %s %s %s" % \
-          (command, directory, tag, package_name)
-
-print "%s" % command
+#Make a repositiry object
+repo = CVS.Repository("/codes/radtran/cvsroot")
 
 if not dry_run:
-    command_out = os.popen(command)
-    output = command_out.read()
-    print output
+    repo.checkout(package,
+                  destination=os.getcwd(),
+                  tag=tag,
+                  directory=directory,
+                  verbose = Verbosity.make(1)
+                  )
+
 
