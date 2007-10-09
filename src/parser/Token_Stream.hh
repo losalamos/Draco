@@ -2,9 +2,8 @@
 /*! 
  * \file Token_Stream.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 13:15:29 MST 2003
  * \brief Definition of class Token_Stream.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -21,8 +20,6 @@ namespace rtt_parser
 {
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Parser exception class
  *
  * This is an exception class for reporting syntax errors in simple parsers.
@@ -31,13 +28,14 @@ namespace rtt_parser
 class Syntax_Error : public std::runtime_error
 {
   public:
+
+    // CREATORS
+    
     Syntax_Error();
 };
 
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Abstract token stream for simple parsers
  *
  * A Token_Stream is a source of tokens for a Parse_Table or other parsing
@@ -49,36 +47,46 @@ class Syntax_Error : public std::runtime_error
  * the Shift method) the token it advances over is discarded forever.
  */
 
-class Token_Stream : private std::deque<Token>
+class Token_Stream
+    : private std::deque<Token>
 {
-  protected:
-
-    //! Construct a Token_Stream.
-    inline Token_Stream();
-    
   public:
 
-    //! This is an abstract class.
+    // CREATORS
+    
     virtual ~Token_Stream(){}
     
-    Token Shift();
+
+    // MANIPULATORS
+
+    //! Return the next token in the stream and advance the cursor.
+    Token shift();
     
     //! Look ahead at tokens.
-    Token Lookahead(unsigned pos=0);
+    Token lookahead(unsigned pos=0);
     
     //! Insert a token into the stream at the cursor position.
-    void Pushback(Token const &token);
-    
-    virtual void Report_Syntax_Error(Token const &token,
+    void pushback(Token const &token);
+
+    //-----------------------------------------------------------------------//
+    /*! 
+     * \brief Reset the stream
+     *
+     * This function resets the token stream to some initial state defined
+     * by the child class.
+     */
+    virtual void rewind() = 0;
+
+    virtual void report_syntax_error(Token const &token,
 				     std::string const &message);
 
-    virtual void Report_Syntax_Error(std::string const &message);
+    virtual void report_syntax_error(std::string const &message);
     
-    virtual void Report_Semantic_Error(Token const &token,
+    virtual void report_semantic_error(Token const &token,
 				       std::string const &message);
     
-    virtual void Report_Semantic_Error(std::string const &message);
-    virtual void Report_Semantic_Error(std::exception const &message);
+    virtual void report_semantic_error(std::string const &message);
+    virtual void report_semantic_error(std::exception const &message);
 
     
     //-----------------------------------------------------------------------//
@@ -94,7 +102,7 @@ class Token_Stream : private std::deque<Token>
      * \param message
      * Message to be passed to the user.
      */
-    virtual void Report(Token const &token,
+    virtual void report(Token const &token,
                                     std::string const &message) = 0;
     
     //-----------------------------------------------------------------------//
@@ -110,19 +118,30 @@ class Token_Stream : private std::deque<Token>
      * \param message
      * Message to be passed to the user.
      */
-    virtual void Report(std::string const &message) = 0;
+    virtual void report(std::string const &message) = 0;
+    
+
+    // ACCESSORS
 
     //! Return the number of errors reported to the stream. 
-    unsigned Error_Count() const { return error_count_; }
+    unsigned error_count() const { return error_count_; }
 
     //! The current implementation of Token_Stream has no invariants.
     bool check_class_invariants() const { return true; }
+    
+
+    // STATICS
 
     //! The current implementation of Token_Stream has no static invariants.
     bool check_static_class_invariants() const { return true; }
     
   protected:
-    
+
+    // IMPLEMENTATION
+
+    //! Construct a Token_Stream.
+    inline Token_Stream();
+
     //-----------------------------------------------------------------------//
     /*! 
      * \author Kent G. Budge
@@ -137,19 +156,11 @@ class Token_Stream : private std::deque<Token>
      * \return Next token to put on the token buffer.
      */
     
-    virtual Token fill() = 0;
-
-//---------------------------------------------------------------------------//
-/*! 
- * \brief Reset the stream
- *
- * This function resets the token stream to some initial state defined
- * by the child class.
- */
-
-    virtual void Rewind() = 0;
+    virtual Token fill_() = 0;
     
   private:
+
+    // DATA
 
     unsigned error_count_;  //!< Number of errors reported.
 };
@@ -164,7 +175,7 @@ inline Token_Stream::Token_Stream()
     : error_count_(0) 
 {
     Ensure(check_class_invariants());
-    Ensure(Error_Count() == 0);
+    Ensure(error_count() == 0);
 }
 
 }  // namespace rtt_parser

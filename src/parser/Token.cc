@@ -2,12 +2,8 @@
 /*!
  * \file Token.cc
  * \author Kent G. Budge
- * \date 18 Feb 2003
  * \brief Definitions of Token helper functions.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
- *
- * This file defines the various token type identification functions
- * used in conjuction with struct Token.
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,14 +19,56 @@ namespace rtt_parser
 
 //-----------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Is the argument a valid keyword?
+ * Is the argument a token type that has no associated text?
+ */
+
+bool Is_Text_Token(Token_Type const type)
+{
+    return type!=ERROR && type!=EXIT && type!=END;
+}
+
+//-----------------------------------------------------------------------//
+/*! 
+ * Is the argument a valid OTHER text?
+ *
+ * \return \c true if the argument points to a string of a single character
+ * that does not fit any other token type pattern, or if the argument points
+ * to a string of two or three characters from a recognized standard set.
+ */
+
+bool Is_Other_Text(char const *text)
+{
+    Require(text!=NULL);
+
+    if (text[0]==0)
+    {
+        return false;
+    }
+    else if (text[1]==0)
+    {
+        char const c = text[0];
+        return !isalnum(c) && !isspace(c) && c!='_';
+    }
+    else if (text[2]==0)
+    {
+        return
+            !strcmp(text, "<=") || !strcmp(text, ">=") ||
+            !strcmp(text, "==") || !strcmp(text, "!=") ||
+            !strcmp(text, "&&") || !strcmp(text, "||");
+    }
+    else
+        // no three-character OTHER tokens recognized at present
+    {
+        return false;
+    }
+}
+
+//-----------------------------------------------------------------------//
+/*! 
+ * Is the argument a valid keyword?
  *
  * \return \c true if the argument points to a string consisting of a
  * sequence of  C++ identifiers separated by single spaces.
- *
- * \pre <code>text!=NULL</code>
  */
 
 bool Is_Keyword_Text(char const *text)
@@ -49,14 +87,10 @@ bool Is_Keyword_Text(char const *text)
 
 //-----------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Is the argument a valid string constant?
+ * Is the argument a valid string constant?
  *
  * \return \c true if the argument points to a string consisting of a
  * single C++ string constant, including the delimiting quotes.
- *
- * \pre <code>text!=NULL</code>
  */
 
 bool Is_String_Text(char const *text)
@@ -78,14 +112,10 @@ bool Is_String_Text(char const *text)
 
 //-----------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Is the argument a valid real constant?
+ *  Is the argument a valid real constant?
  *
  * \return \c true if the argument points to a string consisting of a
  * single C++ floating-point constant.
- *
- * \pre <code>text!=NULL</code>
  */
 
 bool Is_Real_Text(char const *text)
@@ -99,14 +129,10 @@ bool Is_Real_Text(char const *text)
 
 //-----------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Is the argument a valid integer constanta?
+ * Is the argument a valid integer constanta?
  *
  * \return \c true if the argument points to a string consisting of a
  * single C++ integer constant.
- *
- * \pre <code>text!=NULL</code>
  */
 
 bool Is_Integer_Text(char const *text)
@@ -120,26 +146,22 @@ bool Is_Integer_Text(char const *text)
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Test equality of two tokens
- * 
  * \param a First token to compare
  * \param b Second token to compare
  *
  * \return \c true if the two tokens are equal.
  */
 
-bool operator==(const Token &a, const Token &b)
+bool operator==(Token const &a, Token const &b)
 {
     return 
-	a.Type() == b.Type()  &&  
-	a.Text() == b.Text()  &&
-	a.Location() == b.Location();
+	a.type() == b.type()  &&  
+	a.text() == b.text()  &&
+	a.location() == b.location();
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Check that class invariants are satisfied
- *
  * The invariants all reflect the basic requirement that the token text is
  * consistent with the token type.  For example, if the type is REAL, the
  * text must be a valid C representation of a real number, which can be
@@ -151,11 +173,12 @@ bool operator==(const Token &a, const Token &b)
 bool Token::check_class_invariants() const
 {
     return 
-	(!(type_==END   || type_==EXIT || type_==ERROR) || text_=="") &&
+	(Is_Text_Token(type_) || text_=="") &&
 	(type_!=KEYWORD || Is_Keyword_Text(text_.c_str()))  &&
 	(type_!=REAL    || Is_Real_Text(text_.c_str()) )  &&
 	(type_!=INTEGER || Is_Integer_Text(text_.c_str()) )  &&
-	(type_!=STRING  || Is_String_Text(text_.c_str()) );
+	(type_!=STRING  || Is_String_Text(text_.c_str()) ) &&
+        (type_!=OTHER   || Is_Other_Text(text_.c_str()));
 }
 
 } // rtt_parser

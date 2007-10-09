@@ -41,15 +41,15 @@ static void Parse_Color(Token_Stream &, int i)
 
 static void Parse_Any_Color(Token_Stream &tokens, int)
 {
-  Token token = tokens.Shift();
+  Token token = tokens.shift();
   for (unsigned i=0; i<sizeof(color)/sizeof(const char*); i++)
-    if (!strcmp(token.Text().c_str(), color[i])){
+    if (!strcmp(token.text().c_str(), color[i])){
       cout << "You have requested " << color[i] << endl;
       color_set[i] = true;
       return;
     }
 
-  tokens.Report_Syntax_Error(token, "expected a color");
+  tokens.report_syntax_error(token, "expected a color");
 }     
 
 const Keyword raw_table[] = {
@@ -84,44 +84,44 @@ void tstParse_Table()
     Parse_Table table;
     
     table.reserve(raw_table_size);
-    table.Add(raw_table, raw_table_size);
+    table.add(raw_table, raw_table_size);
 
     if (table.size()!=raw_table_size) ITFAILS;
     
     File_Token_Stream token_stream("parser_test.inp");
     
-    table.Parse(token_stream);
+    table.parse(token_stream);
     
     if (!color_set[1]) ITFAILS;
     
-    if (token_stream.Error_Count()!=5) ITFAILS;
+    if (token_stream.error_count()!=5) ITFAILS;
 
 
-    token_stream.Rewind();
+    token_stream.rewind();
 
-    table.Set_Flags(Parse_Table::CASE_INSENSITIVE);
+    table.set_flags(Parse_Table::CASE_INSENSITIVE);
 
     color_set[0] = color_set[1] = 0;
-    table.Parse(token_stream);
+    table.parse(token_stream);
 
     if (!color_set[1]) ITFAILS;
-    if (token_stream.Error_Count()!=4) ITFAILS;
+    if (token_stream.error_count()!=4) ITFAILS;
 
 
-    token_stream.Rewind();
+    token_stream.rewind();
 
-    table.Set_Flags(Parse_Table::CASE_INSENSITIVE |
+    table.set_flags(Parse_Table::CASE_INSENSITIVE |
 		    Parse_Table::PARTIAL_IDENTIFIER_MATCH);
 
     color_set[0] = color_set[1] = 0;
-    table.Parse(token_stream);
+    table.parse(token_stream);
 
     if (!color_set[1]) ITFAILS;
-    if (token_stream.Error_Count()!=3) ITFAILS;
+    if (token_stream.error_count()!=3) ITFAILS;
 
     // Test the Get_Flags() function, even if this test is built with the flag
     // --with-dbc=0.
-    if( table.Get_Flags() != 3 ) ITFAILS;
+    if( table.get_flags() != 3 ) ITFAILS;
     
     // Test the check_class_invariants() function, even if this test is built
     // with the flag --with-dbc=0.
@@ -131,13 +131,13 @@ void tstParse_Table()
 
     if (table_2.size()!=raw_table_size) ITFAILS;
     
-    token_stream.Rewind();
+    token_stream.rewind();
     
-    table_2.Parse(token_stream);
+    table_2.parse(token_stream);
     
     if (!color_set[1]) ITFAILS;
     
-    if (token_stream.Error_Count()!=5) ITFAILS;
+    if (token_stream.error_count()!=5) ITFAILS;
 
     Keyword test_key = {"THIS SHOULD WORK", Parse_Color, 0, 0};
     if (!Is_Well_Formed_Keyword(test_key)) ITFAILS;
@@ -147,9 +147,9 @@ void tstParse_Table()
 	    {"KEY", Parse_Color, 0, 0},
 	    {"KEY", Parse_Color, 0, 0}
 	};
-    table_2.Add(benign_ambiguous_table, 2);
-    token_stream.Rewind();
-    table_2.Parse(token_stream);
+    table_2.add(benign_ambiguous_table, 2);
+    token_stream.rewind();
+    table_2.parse(token_stream);
 
     Keyword malign_ambiguous_table[] = 
 	{
@@ -157,20 +157,20 @@ void tstParse_Table()
 	};
     try 
     {
-	table_2.Add(malign_ambiguous_table, 1);
-	token_stream.Rewind();
-	table_2.Parse(token_stream);
+	table_2.add(malign_ambiguous_table, 1);
+	token_stream.rewind();
+	table_2.parse(token_stream);
 	FAILMSG("did NOT catch ambiguous keyword");
     }
-    catch (const rtt_dsxx::assertion &msg)
+    catch (invalid_argument const &msg)
     {
 	cout << msg.what() << endl;
 	PASSMSG("successfully detected ambiguous keyword");
     }
 
     File_Token_Stream recover_stream("recovery.inp");
-    table.Parse(recover_stream);
-    if (recover_stream.Error_Count() != 2) ITFAILS;
+    table.parse(recover_stream);
+    if (recover_stream.error_count() != 2) ITFAILS;
 
     Parse_Table table_3;
     Keyword case_ambiguous_table[] = 
@@ -180,14 +180,14 @@ void tstParse_Table()
 	};    
     try 
     {
-	table_3.Add(case_ambiguous_table, 2);
-	table_3.Parse(token_stream);
-	table_3.Set_Flags(Parse_Table::CASE_INSENSITIVE);
-	token_stream.Rewind();
-	table_3.Parse(token_stream);
+	table_3.add(case_ambiguous_table, 2);
+	table_3.parse(token_stream);
+	table_3.set_flags(Parse_Table::CASE_INSENSITIVE);
+	token_stream.rewind();
+	table_3.parse(token_stream);
 	FAILMSG("did NOT catch case-dependent ambiguous keyword");
     }
-    catch (const rtt_dsxx::assertion &msg)
+    catch (invalid_argument const &msg)
     {
 	cout << msg.what() << endl;
 	PASSMSG("successfully detected case-dependent ambiguous keyword");
@@ -199,15 +199,15 @@ void tstParse_Table()
 	Parse_Table table;
 	
 	table.reserve(raw_table_2_size);
-	table.Add(raw_table_2, raw_table_2_size);
+	table.add(raw_table_2, raw_table_2_size);
 	
 	if (table.size()!=raw_table_2_size) ITFAILS;
 	
 	File_Token_Stream token_stream("parser_test.inp");
 	
-	table.Parse(token_stream);
+	table.parse(token_stream);
 
-	if (token_stream.Error_Count() != 5) ITFAILS;
+	if (token_stream.error_count() != 5) ITFAILS;
     }
 
     return;

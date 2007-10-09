@@ -48,11 +48,10 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
       at_eof_(   false ),
       at_error_( false )
 {
-    open();
+    open_();
 
     Ensure(check_class_invariants());
-    Ensure(Whitespace()==Text_Token_Stream::default_whitespace);
-    Ensure(location() == file_name + ", line 1");
+    Ensure(location_() == file_name + ", line 1");
 }
 
 //-------------------------------------------------------------------------//
@@ -84,11 +83,11 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
       at_eof_(false),
       at_error_(false)
 {
-    open();
+    open_();
 
     Ensure(check_class_invariants());
-    Ensure(location() == file_name + ", line 1");
-    Ensure(Whitespace() == ws);
+    Ensure(location_() == file_name + ", line 1");
+    Ensure(whitespace() == ws);
 }
 
 //---------------------------------------------------------------------------//
@@ -100,7 +99,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
  */
 
 /* private */
-void Parallel_File_Token_Stream::open()
+void Parallel_File_Token_Stream::open_()
 {
     // Create in input stream by opening the specified file on the IO proc.
     if( is_io_processor_ ) 
@@ -131,30 +130,23 @@ void Parallel_File_Token_Stream::open()
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Returns a locator string.
  *
- * This function constructs and returns a string of the form
- * "filename, line #" indicating the location at which the last
- * token was parsed.  This is useful for error reporting in parsers.
+ * This function constructs and returns a string of the form "filename, line
+ * #" indicating the location at which the last token was parsed.  This is
+ * useful for error reporting in parsers.
  *
  * \return A string of the form "filename, line #"
- *
- * \throw bad_alloc If there is not enough memory to store the location string.
  */
 
-string Parallel_File_Token_Stream::location() const
+string Parallel_File_Token_Stream::location_() const
 {
     ostringstream Result;
-    Result << filename_ << ", line " << Line();
+    Result << filename_ << ", line " << line();
     return Result.str();
 }
   
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
  *
  * Only the I/O processor actually reads from the file.  Up to
  * numeric_limits<signed char>::max() characters are read by this processor.
@@ -165,17 +157,13 @@ string Parallel_File_Token_Stream::location() const
  * is set to \c static_cast<char>(-1).  Otherwise the status character is the
  * number of characters to be transmitted.
  *
- * \post <code> error() || end() || buffer.size()>old buffer.size()
- *
  * \return The next character in the text stream.
  *
- * \throw std::bad_alloc If there is not enough memory to expand the
- * character queue.
  * \throw rtt_dsxx::assert If a received message has a length greater than
  * the maximum expected. 
  */
 
-void Parallel_File_Token_Stream::fill_character_buffer()
+void Parallel_File_Token_Stream::fill_character_buffer_()
 {
     using rtt_c4::broadcast;
     
@@ -219,12 +207,12 @@ void Parallel_File_Token_Stream::fill_character_buffer()
 
     if (comm_buffer[0]=='\0')
     {
-	character_push_back('\0');
+	character_push_back_('\0');
 	at_eof_ = true;
     }
     else if (comm_buffer[0]==static_cast<char>(-1))
     {
-	character_push_back('\0');
+	character_push_back_('\0');
 	at_error_ = true;
     }
     else
@@ -241,7 +229,7 @@ void Parallel_File_Token_Stream::fill_character_buffer()
 
 	for (vector<char>::iterator iter = first+1; iter != last; ++iter)
 	{
-	    character_push_back(*iter);
+	    character_push_back_(*iter);
 	}
     }
 
@@ -252,35 +240,29 @@ void Parallel_File_Token_Stream::fill_character_buffer()
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Return error flag.
  *
- * This function may be used to check whether an I/O error has occured,
- * such as failure to open the text file.
+ * This function may be used to check whether an I/O error has occured, such
+ * as failure to open the text file.
  *
  * \return \c true if an error has occured; \c false otherwise.
  */
 
-bool Parallel_File_Token_Stream::error() const
+bool Parallel_File_Token_Stream::error_() const
 {
     return at_error_;
 }
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Return end of file flag.
  *
- * This function may be used to check whether the end of the text file
- * has been reached.
+ * This function may be used to check whether the end of the text file has
+ * been reached.
  *
  * \return \c true if the end of the text file has been reached; \c false
  * otherwise.
  */
 
-bool Parallel_File_Token_Stream::end() const
+bool Parallel_File_Token_Stream::end_() const
 {
     return at_eof_;
 }
@@ -292,12 +274,12 @@ bool Parallel_File_Token_Stream::end() const
  * duplicate messages.
  */
 
-void Parallel_File_Token_Stream::Report(Token const &token,
+void Parallel_File_Token_Stream::report(Token const &token,
                                         string const &message)
 {
     if (rtt_c4::node()==0)
     {
-	cerr << token.Location() << ": " << message << endl;
+	cerr << token.location() << ": " << message << endl;
     }
 
     Ensure(check_class_invariants());
@@ -312,16 +294,16 @@ void Parallel_File_Token_Stream::Report(Token const &token,
  * This version assumes that the cursor is the message location.
  */
 
-void Parallel_File_Token_Stream::Report(string const &message)
+void Parallel_File_Token_Stream::report(string const &message)
 {
     Require(check_class_invariants());
 
-    Token token = Lookahead();
+    Token token = lookahead();
     // The lookahead must be done on all processors to avoid a potential
     // lockup condition.
     if (rtt_c4::node()==0)
     {
-	cerr << token.Location() << ": " << message << endl;
+	cerr << token.location() << ": " << message << endl;
     }
 
     Ensure(check_class_invariants());
@@ -329,22 +311,14 @@ void Parallel_File_Token_Stream::Report(string const &message)
   
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Rewind the file token stream.
  *
  * This function rewinds the file stream associated with the file token
  * stream and flushes its internal buffers, so that scanning resumes at
  * the beginning of the file stream.
- *
- * \post <code>location() == filename + ", line 1"</code>;
- * \post <code>Error_Count() == 0</code>
  */
 
-void Parallel_File_Token_Stream::Rewind()
+void Parallel_File_Token_Stream::rewind()
 {
-    Require(check_class_invariants());
-
     if (is_io_processor_)
     {
 	infile_.clear();    // Must clear the error/end flag bits.
@@ -353,20 +327,13 @@ void Parallel_File_Token_Stream::Rewind()
 
     at_eof_ = at_error_ = false;
 
-    Text_Token_Stream::Rewind();
+    Text_Token_Stream::rewind();
     
     Ensure(check_class_invariants());
-    Ensure(location() == filename_ + ", line 1");
-    Ensure(Error_Count()==0);
+    Ensure(location_() == filename_ + ", line 1");
 }
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief Check that the class invariants are satisfied.
- * 
- * \return \c true if the invariants are satisfied; \c false otherwise
- */
-
 bool Parallel_File_Token_Stream::check_class_invariants() const
 {
     unsigned iocount = is_io_processor_;

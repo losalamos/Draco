@@ -2,9 +2,8 @@
 /*! 
  * \file File_Token_Stream.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class File_Token_Stream.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,10 +17,12 @@
 
 namespace rtt_parser 
 {
+using std::string;
+using std::set;
+using std::ifstream;
+
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief File-based token stream
  *
  * File_Token_Stream represents a text token stream that derives its text
@@ -32,31 +33,47 @@ namespace rtt_parser
 class File_Token_Stream : public Text_Token_Stream
 {
   public:
-    File_Token_Stream();
-    File_Token_Stream(std::string const &filename);
-    File_Token_Stream(std::string const &filename,
-                      std::set<char> const &whitespace);
 
-    void open(std::string filename);
+    // CREATORS
     
-    void Rewind();
-       
-    virtual void Report(Token const & token,
-                        std::string const &message);
-    
-    virtual void Report(std::string const &message);
+    //! Construct an uninitialized File_Token_Stream.
+    File_Token_Stream();
+
+        //! Construct a File_Token_Stream from a file.
+    explicit File_Token_Stream(string const &filename);
+
+    //! Construct a File_Token_Stream from a file.
+    File_Token_Stream(string const &filename,
+                      set<char> const &whitespace);
+
+    // MANIPULATORS
+
+    //! Attach the File_Token_Stream to a file.
+    void open(string const &filename);
+
+    virtual void rewind();
+
+    virtual void report(Token const & token,
+                        string const &message);
+
+    virtual void report(string const &message);
 
   protected:
-    
-    virtual std::string location() const;
-    
-    virtual void fill_character_buffer();
-    virtual bool error() const;
-    virtual bool end() const;
+
+    // IMPLEMENTATION
+
+    virtual string location_() const;
+
+    virtual void fill_character_buffer_();
+    virtual bool error_() const;
+    virtual bool end_() const;
  
   private:
-    std::string filename_;  //!< File from which to take token text.
-    std::ifstream infile_;  //!< Stream from which to take token text.
+
+    // DATA
+    
+    string filename_;  //!< File from which to take token text.
+    ifstream infile_;  //!< Stream from which to take token text.
 };
 
 } // rtt_parser

@@ -2,13 +2,8 @@
 /*! 
  * \file Console_Token_Stream.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definitions of Console_Token_Stream methods.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
- *
- * revision history:
- * 0) original
- * 1) kgbudge (03/12/03): Fix indentation. Add additional DBC assertions.
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,28 +18,18 @@ namespace rtt_parser
 using namespace std;
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Construct a Console_Token_Stream.
  * 
- * Construct a Console_Token_Stream. Use the default Text_Token_Stream
- * user-defined whitespace characters.
+ * Use the default Text_Token_Stream user-defined whitespace characters.
  */
 
 Console_Token_Stream::Console_Token_Stream()
 {
     Ensure(check_class_invariants());
-    Ensure(location() == "input");
+    Ensure(location_() == "input");
 }
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Construct a Console_Token_Stream.
- * 
- * Construct a Console_Token_Stream. 
- *
  * \param ws User-defined whitespace characters.
  */
 
@@ -52,15 +37,12 @@ Console_Token_Stream::Console_Token_Stream(set<char> const &ws)
     : Text_Token_Stream(ws)
 {
     Ensure(check_class_invariants());
-    Ensure(location() == "input");
-    Ensure(Whitespace()==ws);
+    Ensure(location_() == "input");
+    Ensure(whitespace()==ws);
 }
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Returns a locator string.
  *
  * For a Console_Token_Stream, location is not a terribly  meaningful
  * concept.  So we return "input" as the location, which is true enough.
@@ -68,26 +50,22 @@ Console_Token_Stream::Console_Token_Stream(set<char> const &ws)
  * \return The string "input".
  */
 
-std::string Console_Token_Stream::location() const
+std::string Console_Token_Stream::location_() const
 {
     return "input";
 }
   
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Fill the character buffer.
- *
  * This function moves the next character from cin into the character buffer.
  */
 
-void Console_Token_Stream::fill_character_buffer()
+void Console_Token_Stream::fill_character_buffer_()
 {
     char c = cin.get();
     if (cin.fail())
     {
-	character_push_back('\0');
+	character_push_back_('\0');
     }
     else
     {
@@ -95,34 +73,20 @@ void Console_Token_Stream::fill_character_buffer()
         {
             c=';';
         }
-	character_push_back(c);
+	character_push_back_(c);
     }
     
     Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------//
-/*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Return error flag.
- *
- * This function may be used to check whether an I/O error has occured.
- *
- * \return \c true if an error has occured; \c false otherwise.
- */
-
-bool Console_Token_Stream::error() const
+bool Console_Token_Stream::error_() const
 {
     return cin.fail();
 }
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Return end of file flag.
- *
  * This function may be used to check whether the user has typed an end of
  * file character (ctrl-D on most Unix systems).
  *
@@ -130,7 +94,7 @@ bool Console_Token_Stream::error() const
  * otherwise.
  */
 
-bool Console_Token_Stream::end() const
+bool Console_Token_Stream::end_() const
 {
     return cin.eof();
 }
@@ -140,10 +104,10 @@ bool Console_Token_Stream::end() const
  * This function sends a message by writing it to the error console stream.
  */
 
-void Console_Token_Stream::Report(const Token &token,
-                                  const std::string &message)
+void Console_Token_Stream::report(Token const &token,
+                                  string const &message)
 {
-    std::cerr << token.Location() << ": " << message << std::endl;
+    std::cerr << token.location() << ": " << message << std::endl;
 
     Ensure(check_class_invariants());
 }
@@ -154,10 +118,10 @@ void Console_Token_Stream::Report(const Token &token,
  * This version assumes that the cursor gives the correct message location.
  */
 
-void Console_Token_Stream::Report(const std::string &message)
+void Console_Token_Stream::report(string const &message)
 {
-    Token token = Lookahead();
-    std::cerr << token.Location() << ": " << message << std::endl;
+    Token token = lookahead();
+    std::cerr << token.location() << ": " << message << std::endl;
 
     Ensure(check_class_invariants());
 }
@@ -171,17 +135,16 @@ void Console_Token_Stream::Report(const std::string &message)
  * This function flushes cin and resets the error count.
  */
 
-void Console_Token_Stream::Rewind()
+void Console_Token_Stream::rewind()
 {
     cin.clear();    // Must clear the error/end flag bits.
     cin.seekg(0);
 
-    Text_Token_Stream::Rewind();
+    Text_Token_Stream::rewind();
 
     Ensure(check_class_invariants());
     Ensure(cin.rdstate() == 0);
-    Ensure(location() == "input");
-    Ensure(Error_Count()==0);
+    Ensure(location_() == "input");
 }
 
 } // namespace rtt_parser

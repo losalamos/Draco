@@ -2,9 +2,8 @@
 /*!
  * \file Text_Token_Stream.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 14:57:49 MST 2003
  * \brief Contains definitions of all Text_Token_Stream member functions.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,8 +16,7 @@
 
 namespace rtt_parser 
 {
-using std::string;
-using std::set;
+using namespace std;
 
 //---------------------------------------------------------------------------//
 char const default_ws_string[] = "=:;,";
@@ -31,8 +29,6 @@ default_whitespace(default_ws_string,
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
  *
  * Constructs a Text_Token_Stream with the specified set of breaking
  * whitespace characters.
@@ -53,89 +49,59 @@ default_whitespace(default_ws_string,
  * Breaking whitespace characters include all other characters for which the
  * standard C library function <CODE>isspace(char)</CODE> returns a nonzero
  * value, plus additional characters defined as nonbreaking whitespace by the
- * client of the Token_Stream.
+ * client of the Token_Stream. In particular, a newline character is always
+ * breaking whitespace.
  * 
  * Whitespace is stripped from the beginning and end of every token, and the
  * nonbreaking whitespace separating each identifier within a keyword is
  * replaced by a single space character.
- *
- * \post <CODE>Whitespace()==ws</code>
- * \post \c Line()==1
  */
 
 Text_Token_Stream::Text_Token_Stream(set<char> const &ws)
     : whitespace_(ws), line_(1)
 {
     Ensure(check_class_invariants());
-    Ensure(ws == Whitespace());
-    Ensure(Line()==1);
+    Ensure(ws == whitespace());
+    Ensure(line()==1);
 }
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
  *
  * Constructs a Text_Token_Stream with the default set of breaking whitespace
- * characters.
+ * characters. See the previous constructor documentation for a discussion of
+ * how whitespace is defined and handled.
  *
- * Whitespace characters are classified as breaking or nonbreaking whitespace.
- * Nonbreaking whitespace separates non-keyword tokens and identifiers within
- * a keyword but has no other significance. Breaking whitespace is similar to
- * nonbreaking whitespace except that it always separates tokens; thus, two
- * identifiers separated by breaking whitespace are considered to belong to
- * separate keywords.
- *
- * Nonbreaking whitespace characters are the space and horizontal tab
- * characters.
- *
- * Breaking whitespace characters include all other characters for which the
- * standard C library function <CODE>isspace(char)</CODE> returns a nonzero
- * value, plus additional characters defined as nonbreaking whitespace by the
- * client of the Token_Stream.
- * 
- * Whitespace is stripped from the beginning and end of every token, and the
- * nonbreaking whitespace separating each identifier within a keyword is
- * replaced by a single space character.
- *
- * By default, the equals sign '=', the colon and semicolon ':' and ';', and
- * the comma ',' are defined as breaking whitespace.  Thus, by default, the
- * sequence <CODE>MY</code> <code>COLOR = GREEN</CODE> is parsed as the
- * keyword token <CODE>MY</code> <code>COLOR</CODE> followed by the keyword
- * token <CODE>GREEN</CODE>.
- *
- * \post \c Line()==1
- * \post \c Whitespace()==default_whitespace
+ * The default whitespace characters are contained in the set
+ * Text_Token_Stream::default_whitespace.
  */
 
 Text_Token_Stream::Text_Token_Stream()
     : whitespace_(default_whitespace), line_(1)
 {
     Ensure(check_class_invariants());
-    Ensure(Whitespace()==default_whitespace);
-    Ensure(Line()==1);
+    Ensure(whitespace()==default_whitespace);
+    Ensure(line()==1);
 }
 
 //-------------------------------------------------------------------------//
 /*!
  * The next token is scanned from the character stream, which is accessed via
  * the fill_character_buffer, error, and end functions.
- *
- * \post <code>size()==old size()+1</code>
  */
 
-Token Text_Token_Stream::fill()
+Token Text_Token_Stream::fill_()
 {
-    eat_whitespace();
+    eat_whitespace_();
 
-    char c = peek();    // Character at the current cursor position
+    char c = peek_();    // Character at the current cursor position
 
-    string token_location = location();
+    string token_location = location_();
     
     if (c=='\0')
         // Sentinel value for error or end of file.
     {
-	if (end())
+	if (end_())
 	{
 	    Ensure(check_class_invariants());
 	    return Token(EXIT, token_location);
@@ -152,24 +118,24 @@ Token Text_Token_Stream::fill()
 	    // Beginning of a keyword or END token
 	{
 	    string text(1, c);
-	    pop_char();
-	    c = peek();
+	    pop_char_();
+	    c = peek_();
 	    do 
 	    {
 		// Scan a C identifier.
 		while (isalnum(c) || c=='_')
 		{
 		    text += c;
-		    pop_char();
-		    c = peek();
+		    pop_char_();
+		    c = peek_();
 		}
 		// Replace any nonbreaking whitespace after the identifier
 		// with a single space, but ONLY if the identifier is
 		// followed by another identifer.
 		while (is_nb_whitespace(c))
 		{
-		    pop_char();
-		    c = peek();
+		    pop_char_();
+		    c = peek_();
 		}
 		if (isalpha(c) || c=='_') text += ' ';
 	    } 
@@ -193,13 +159,13 @@ Token Text_Token_Stream::fill()
 	    // parser to decide if this is the correct interpretation.
 	{
 	    string text;
-	    unsigned const float_length = scan_floating_literal();
-	    unsigned const int_length = scan_integer_literal();
+	    unsigned const float_length = scan_floating_literal_();
+	    unsigned const int_length = scan_integer_literal_();
 	    if (float_length>int_length)
 	    {
 		for (unsigned i=0; i<float_length; i++)
 		{
-		    c = pop_char();
+		    c = pop_char_();
 		    text += c;
 		}
 		Ensure(check_class_invariants());
@@ -209,7 +175,7 @@ Token Text_Token_Stream::fill()
 	    {
 		for (unsigned i=0; i<int_length; i++)
 		{
-		    char c = pop_char();
+		    char c = pop_char_();
 		    text += c;
 		}
 		Ensure(check_class_invariants());
@@ -218,7 +184,7 @@ Token Text_Token_Stream::fill()
 	    else 
 	    {
                 Check(c=='.');
-                pop_char();
+                pop_char_();
                 Ensure(check_class_invariants());
                 return Token('.', token_location);
 	    }
@@ -227,54 +193,54 @@ Token Text_Token_Stream::fill()
 	    // Manifest string
 	{
 	    string text(1, c);
-	    pop_char();
-	    c = peek();
+	    pop_char_();
+	    c = peek_();
 	    for (;;)
 	    {
-		while (c!='"' && c!='\\' && c!='\n' && !end() && !error())
+		while (c!='"' && c!='\\' && c!='\n' && !end_() && !error_())
 		{
 		    text += c;
-		    pop_char();
-		    c = peek();
+		    pop_char_();
+		    c = peek_();
 		}
 		if (c=='"') break;
 		if (c=='\\')
 		{
 		    text += c;
-		    pop_char();
-		    c = pop_char();
+		    pop_char_();
+		    c = pop_char_();
 		    text += c;
-		    c = peek();
+		    c = peek_();
 		}
 		else
 		{
-		    if (end() || error())
+		    if (end_() || error_())
 		    {
-			Report_Syntax_Error(Token(c, token_location),
+			report_syntax_error(Token(EXIT, token_location),
 					    "unexpected end of file; "
 					    "did you forget a closing quote?");
 		    }
 		    else
 		    {
 			Check(c=='\n');
-			Report_Syntax_Error(Token(c, token_location),
+			report_syntax_error(Token(EXIT, token_location),
 					    "unexpected end of line; "
 					    "did you forget a closing quote?");
 		    }
 		}
 	    }
 	    text += '"';
-	    pop_char();
+	    pop_char_();
 	    Ensure(check_class_invariants());
 	    return Token(STRING, text, token_location);
 	}
         else if (c=='<')
             // Multicharacter OTHER
         {
-            pop_char();
-            if (peek()=='=')
+            pop_char_();
+            if (peek_()=='=')
             {
-                pop_char();
+                pop_char_();
                 Ensure(check_class_invariants());
                 return Token(OTHER, "<=", token_location);
             }
@@ -287,10 +253,10 @@ Token Text_Token_Stream::fill()
         else if (c=='>')
             // Multicharacter OTHER
         {
-            pop_char();
-            if (peek()=='=')
+            pop_char_();
+            if (peek_()=='=')
             {
-                pop_char();
+                pop_char_();
                 Ensure(check_class_invariants());
                 return Token(OTHER, ">=", token_location);
             }
@@ -303,10 +269,10 @@ Token Text_Token_Stream::fill()
         else if (c=='&')
             // Multicharacter OTHER
         {
-            pop_char();
-            if (peek()=='&')
+            pop_char_();
+            if (peek_()=='&')
             {
-                pop_char();
+                pop_char_();
                 Ensure(check_class_invariants());
                 return Token(OTHER, "&&", token_location);
             }
@@ -319,10 +285,10 @@ Token Text_Token_Stream::fill()
         else if (c=='|')
             // Multicharacter OTHER
         {
-            pop_char();
-            if (peek()=='|')
+            pop_char_();
+            if (peek_()=='|')
             {
-                pop_char();
+                pop_char_();
                 Ensure(check_class_invariants());
                 return Token(OTHER, "||", token_location);
             }
@@ -335,7 +301,7 @@ Token Text_Token_Stream::fill()
 	else   
 	    // OTHER
 	{
-	    pop_char();
+	    pop_char_();
 	    Ensure(check_class_invariants());
 	    return Token(c, token_location);
 	}
@@ -389,16 +355,14 @@ bool Text_Token_Stream::is_nb_whitespace(char const c) const
  * character in the buffer.   If the next character is a carriage return, the
  * line count is incremented.  
  *
- * \post <code>Result=='\n' && line==old_line+1  ||  line==old_line</code>
- *
  * \return The next character in the buffer.
  */
 
-char Text_Token_Stream::pop_char()
+char Text_Token_Stream::pop_char_()
 {
     Remember(unsigned const old_line = line_);
 
-    char const Result = peek();
+    char const Result = peek_();
     buffer_.pop_front();
     if (Result == '\n') line_++;
 
@@ -414,17 +378,17 @@ char Text_Token_Stream::pop_char()
  * \return length of scanned literal; 0 if no literal could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_floating_literal()
+unsigned Text_Token_Stream::scan_floating_literal_()
 {
     unsigned pos = 0;
-    if (scan_fractional_constant(pos))
+    if (scan_fractional_constant_(pos))
     {
-	scan_exponent_part(pos);
+	scan_exponent_part_(pos);
 	return pos;
     }
-    else if (scan_digit_sequence(pos))
+    else if (scan_digit_sequence_(pos))
     {
-	if (!scan_exponent_part(pos)) return 0;
+	if (!scan_exponent_part_(pos)) return 0;
 	return pos;
     }
     else
@@ -440,10 +404,10 @@ unsigned Text_Token_Stream::scan_floating_literal()
  * \return length of scanned text; 0 if no text could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_digit_sequence(unsigned &pos)
+unsigned Text_Token_Stream::scan_digit_sequence_(unsigned &pos)
 {
     unsigned const old_pos = pos;
-    while (isdigit(peek(pos))) pos++;
+    while (isdigit(peek_(pos))) pos++;
     return pos-old_pos;
 }   
 
@@ -454,16 +418,16 @@ unsigned Text_Token_Stream::scan_digit_sequence(unsigned &pos)
  * \return length of scanned text; 0 if no text could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_exponent_part(unsigned &pos)
+unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos)
 {
     unsigned const old_pos = pos;
-    char c = peek(pos);
+    char c = peek_(pos);
     if (c=='e' || c=='E')
     {
 	pos++;
-	c = peek(pos);
+	c = peek_(pos);
 	if (c=='-' || c=='+') pos++;
-	if (!scan_digit_sequence(pos))
+	if (!scan_digit_sequence_(pos))
 	{
 	    pos = old_pos;
 	}
@@ -478,26 +442,26 @@ unsigned Text_Token_Stream::scan_exponent_part(unsigned &pos)
  * \return length of scanned text; 0 if no text could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_fractional_constant(unsigned &pos)
+unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos)
 {
     unsigned const old_pos = pos;
-    if (scan_digit_sequence(pos))
+    if (scan_digit_sequence_(pos))
     {
-	if (peek(pos) != '.')
+	if (peek_(pos) != '.')
 	{
 	    pos = old_pos;
 	}
 	else
 	{
 	    pos++;
-	    scan_digit_sequence(pos);
+	    scan_digit_sequence_(pos);
 	}
 
     }
-    else if (peek(pos) == '.')
+    else if (peek_(pos) == '.')
     {
 	pos++;
-	if (scan_digit_sequence(pos)==0)
+	if (scan_digit_sequence_(pos)==0)
 	{
 	    pos = old_pos;
 	}
@@ -512,16 +476,16 @@ unsigned Text_Token_Stream::scan_fractional_constant(unsigned &pos)
  * \return length of scanned literal; 0 if no literal could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_integer_literal()
+unsigned Text_Token_Stream::scan_integer_literal_()
 {
     unsigned pos = 0;
-    if (scan_decimal_literal(pos))
+    if (scan_decimal_literal_(pos))
     {
     }
-    else if (scan_hexadecimal_literal(pos))
+    else if (scan_hexadecimal_literal_(pos))
     {
     }
-    else if (scan_octal_literal(pos))
+    else if (scan_octal_literal_(pos))
     {
     }
     else
@@ -538,16 +502,16 @@ unsigned Text_Token_Stream::scan_integer_literal()
  * \return length of scanned text; 0 if no text could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_decimal_literal(unsigned &pos)
+unsigned Text_Token_Stream::scan_decimal_literal_(unsigned &pos)
 {
     unsigned const old_pos = pos;
-    char c = peek(pos);
+    char c = peek_(pos);
     if (isdigit(c) && c!='0')
     {
 	while (isdigit(c))
 	{
 	    pos++;
-	    c = peek(pos);
+	    c = peek_(pos);
 	}
     }
     return pos-old_pos;
@@ -560,17 +524,17 @@ unsigned Text_Token_Stream::scan_decimal_literal(unsigned &pos)
  * \return length of scanned text; 0 if no text could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_hexadecimal_literal(unsigned &pos)
+unsigned Text_Token_Stream::scan_hexadecimal_literal_(unsigned &pos)
 {
     unsigned old_pos = pos;
-    if (peek(pos)=='0')
+    if (peek_(pos)=='0')
     {
 	pos++;
-	char c = peek(pos);
+	char c = peek_(pos);
 	if (c=='x' || c=='X')
 	{
 	    pos++;
-	    c = peek(pos);
+	    c = peek_(pos);
 	    if (!isxdigit(c))
 	    {
 		pos = old_pos;
@@ -580,7 +544,7 @@ unsigned Text_Token_Stream::scan_hexadecimal_literal(unsigned &pos)
 		while (isxdigit(c))
 		{
 		    pos++;
-		    c = peek(pos);
+		    c = peek_(pos);
 		}
 	    }
 	}
@@ -599,16 +563,16 @@ unsigned Text_Token_Stream::scan_hexadecimal_literal(unsigned &pos)
  * \return length of scanned text; 0 if no text could be scanned.
  */
 
-unsigned Text_Token_Stream::scan_octal_literal(unsigned &pos)
+unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos)
 {
     unsigned old_pos = pos;
-    char c = peek(pos);
+    char c = peek_(pos);
     if (c=='0')
     {
 	while (isdigit(c) && c!='8' && c!='9')
 	{
 	    pos++;
-	    c = peek(pos);
+	    c = peek_(pos);
 	}
     }
     return pos-old_pos;
@@ -628,11 +592,11 @@ unsigned Text_Token_Stream::scan_octal_literal(unsigned &pos)
  * \return The character at \c buffer[pos].
  */
 
-char Text_Token_Stream::peek(unsigned const pos)
+char Text_Token_Stream::peek_(unsigned const pos)
 {
     while (buffer_.size()<=pos)
     {
-	fill_character_buffer();
+	fill_character_buffer_();
     }
 
     Ensure(check_class_invariants());
@@ -646,15 +610,15 @@ char Text_Token_Stream::peek(unsigned const pos)
  * called by its overriding version in children of Text_Token_Stream.
  */
 
-void Text_Token_Stream::Rewind()
+void Text_Token_Stream::rewind()
 {
     buffer_.clear();
     line_ = 1;
 
-    Token_Stream::Rewind();
+    Token_Stream::rewind();
     
     Ensure(check_class_invariants());
-    Ensure(Error_Count()==0);
+    Ensure(error_count()==0);
 }
 
 //---------------------------------------------------------------------------//
@@ -665,41 +629,41 @@ bool Text_Token_Stream::check_class_invariants() const
 
 //---------------------------------------------------------------------------//
 /* private */
-void Text_Token_Stream::eat_whitespace()
+void Text_Token_Stream::eat_whitespace_()
 {
     for (;;)
     {
 	// Scan whitespace
-	char c = peek();
+	char c = peek_();
 	while (is_whitespace(c) && c!='\0')
 	{
-	    pop_char();
-	    c = peek();
+	    pop_char_();
+	    c = peek_();
 	}
 	
 	// Check for a comment
 	if (c=='/')
 	{
-	    if (peek(1)=='/')
+	    if (peek_(1)=='/')
 	    {
 		// C++ comment
-		while (c!='\n' && !error() && !end())
+		while (c!='\n' && !error_() && !end_())
 		{
-		    pop_char();
-		    c = peek();
+		    pop_char_();
+		    c = peek_();
 		}
 	    }
-	    else if (peek(1)=='*')
+	    else if (peek_(1)=='*')
 	    {
-		pop_char();  // pop the '/'
-		pop_char();  // pop the '*'
-		while ((peek(0) != '*' || peek(1) != '/') && !error() && 
-		       !end())
+		pop_char_();  // pop the '/'
+		pop_char_();  // pop the '*'
+		while ((peek_(0) != '*' || peek_(1) != '/') && !error_() && 
+		       !end_())
 		{
-		    pop_char();
+		    pop_char_();
 		}
-		pop_char(); // pop the '*'
-		pop_char(); // pop the '/'
+		pop_char_(); // pop the '*'
+		pop_char_(); // pop the '/'
 	    }
 	    else
 	    {
@@ -717,8 +681,6 @@ void Text_Token_Stream::eat_whitespace()
 //---------------------------------------------------------------------//
 /*!
  * \func Text_Token_Stream::location 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  *
  * This function returns a location string whose exact format is 
  * stream-specific.  For example, for a token stream that scans tokens
@@ -733,7 +695,7 @@ void Text_Token_Stream::eat_whitespace()
  * \param c Character to be pushed onto the back of the character queue.
  */
 
-void Text_Token_Stream::character_push_back(char const c)
+void Text_Token_Stream::character_push_back_(char const c)
 {
     buffer_.push_back(c);
 

@@ -2,9 +2,8 @@
 /*!
  * \file Token_Stream.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 14:57:49 MST 2003
  * \brief Definitions of Token_Stream member functions.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,33 +16,24 @@ namespace rtt_parser
 using namespace std;
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief Construct a Syntax_Error exception object.
- *
- * \post \c what()=="syntax error"
- */
-
 Syntax_Error::Syntax_Error()
     : runtime_error("syntax error")
 {
-    using namespace std;
-
     Ensure(!strcmp(what(), "syntax error"));
 }
 
 //-----------------------------------------------------------------------//
 /*! 
- * \brief Return the next token in the Token_Stream.
  *
  * This function returns the token at the cursor position and advance the 
  * cursor. It will, if necessary, fill() the token buffer first.
  *
- * \return <code>old Lookahead()</code>
+ * \return <code>old lookahead()</code>
  */
 
-Token Token_Stream::Shift()
+Token Token_Stream::shift()
 {    
-    Token const Result = Lookahead();
+    Token const Result = lookahead();
     pop_front();
     
     Ensure(check_class_invariants());
@@ -54,13 +44,11 @@ Token Token_Stream::Shift()
 
 //-----------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  *
- * This function looks ahead in the token stream without changing the
- * cursor position.  It will, if necessary, fill() the token buffer
- * first.  If the requested position is at or past the end of the file, an
- * EXIT token will be returned.
+ * This function looks ahead in the token stream without changing the cursor
+ * position.  It will, if necessary, fill_() the token buffer first.  If the
+ * requested position is at or past the end of the file, an EXIT token will be
+ * returned.
  *
  * \param pos Number of tokens to look ahead, with 0 being the token at the
  * cursor position.
@@ -69,11 +57,11 @@ Token Token_Stream::Shift()
  * cursor.
  */
 
-Token Token_Stream::Lookahead(unsigned const pos)
+Token Token_Stream::lookahead(unsigned const pos)
 {
     while (size()<=pos)
     {
-	push_back(fill());
+	push_back(fill_());
     }
 
     Ensure(check_class_invariants());
@@ -82,31 +70,28 @@ Token Token_Stream::Lookahead(unsigned const pos)
 
 //-----------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  *
- * This function pushes the specified token onto the front of the
- * token stream, so that it is now the token in the Lookahead(0)
- * position.
+ * This function pushes the specified token onto the front of the token
+ * stream, so that it is now the token in the lookahead(0) position.
  */
 
-void Token_Stream::Pushback(Token const &token)
+void Token_Stream::pushback(Token const &token)
 {
     push_front(token);
 
     Ensure(check_class_invariants());
-    Ensure(Lookahead()==token);
+    Ensure(lookahead()==token);
 }
 
 //-----------------------------------------------------------------------//
 /*! 
  * \brief Report a syntax error to the user.
  *
- * The default implementation of this function passes its message
- * on to Report_Error, then throws a Syntax_Error exception.
+ * The default implementation of this function passes its message on to
+ * Report_Error, then throws a Syntax_Error exception.
  *
- * A syntax error is a badly formed construct that requires explicit
- * error recovery (including resynchronization) by the parsing software.
+ * A syntax error is a badly formed construct that requires explicit error
+ * recovery (including resynchronization) by the parsing software.
  *
  * \param token
  * Token at which the error occurred.
@@ -117,13 +102,13 @@ void Token_Stream::Pushback(Token const &token)
  * Syntax_Error exception to be handled by the parsing software.
  */
 
-void Token_Stream::Report_Syntax_Error(Token const &token,
+void Token_Stream::report_syntax_error(Token const &token,
 				       string const &message)
 {
     try 
     {
 	error_count_++;
-	Report(token, message);
+	report(token, message);
     }
     catch(...)
     {
@@ -141,8 +126,8 @@ void Token_Stream::Report_Syntax_Error(Token const &token,
 /*! 
  * \brief Report a syntax error to the user.
  *
- * The default implementation of this function passes its message
- * on to Report, then throws a Syntax_Error exception.
+ * The default implementation of this function passes its message on to
+ * report, then throws a Syntax_Error exception.
  *
  * A syntax error is a badly formed construct that requires explicit
  * error recovery (including resynchronization) by the parsing software.
@@ -152,18 +137,16 @@ void Token_Stream::Report_Syntax_Error(Token const &token,
  * \param message
  * The message to be passed to the user.
  *
- * \post <code>Error_Count()==old Error_Count()+1</code>
- *
  * \throw Syntax_Error This function never returns.  It always throws a
  * Syntax_Error exception to be handled by the parsing software.
  */
 
-void Token_Stream::Report_Syntax_Error(string const &message)
+void Token_Stream::report_syntax_error(string const &message)
 {
     try 
     {
 	error_count_++;
-	Report(message);
+	report(message);
     }
     catch(...)
     {
@@ -176,12 +159,12 @@ void Token_Stream::Report_Syntax_Error(string const &message)
     throw Syntax_Error();
 }
 
-//-----------------------------------------------------------------------//
+//--------------------------------------------------------------------------//
 /*! 
  * \brief Report a semantic error to the user.
  *
- * The default implementation of this function passes its message
- * on to Report, then returns.
+ * The default implementation of this function passes its message on to
+ * report, then returns.
  *
  * A semantic error is a well-formed construct that has a bad value.  Because
  * the construct is well-formed, parsing may be able to continue after the
@@ -193,21 +176,21 @@ void Token_Stream::Report_Syntax_Error(string const &message)
  * The message to be passed to the user.
  */
 
-void Token_Stream::Report_Semantic_Error(Token const &token,
+void Token_Stream::report_semantic_error(Token const &token,
 					 string const &message)
 {
     error_count_++;
-    Report(token, message);
+    report(token, message);
 
     Ensure(check_class_invariants());
 }
 
-//-----------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*! 
  * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message
- * on to Report, then returns.
+ * on to report, then returns.
  *
  * A semantic error is a well-formed construct that has a bad value.  Because
  * the construct is well-formed, parsing may be able to continue after the
@@ -217,24 +200,22 @@ void Token_Stream::Report_Semantic_Error(Token const &token,
  *
  * \param message
  * The message to be passed to the user.
- *
- * \post <code>Error_Count()==old Error_Count()+1</code>
  */
 
-void Token_Stream::Report_Semantic_Error(string const &message)
+void Token_Stream::report_semantic_error(string const &message)
 {
     error_count_++;
-    Report(message);
+    report(message);
 
     Ensure(check_class_invariants());
 }
 
-//-----------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*! 
  * \brief Report a semantic error to the user.
  *
- * The default implementation of this function passes its message
- * on to Report, then returns.
+ * The default implementation of this function passes its message on to
+ * report, then returns.
  *
  * A semantic error is a well-formed construct that has a bad value.  Because
  * the construct is well-formed, parsing may be able to continue after the
@@ -244,14 +225,12 @@ void Token_Stream::Report_Semantic_Error(string const &message)
  *
  * \param message
  * The exception whose message is to be passed to the user.
- *
- * \post <code>Error_Count()==old Error_Count()+1</code>
  */
 
-void Token_Stream::Report_Semantic_Error(exception const &message)
+void Token_Stream::report_semantic_error(exception const &message)
 {
     error_count_++;
-    Report(message.what());
+    report(message.what());
 
     Ensure(check_class_invariants());
 }
@@ -264,10 +243,8 @@ void Token_Stream::Report_Semantic_Error(exception const &message)
  * Token_Stream. It flushes the queues and resets the error count.
  */
 
-void Token_Stream::Rewind()
+void Token_Stream::rewind()
 {
-    Require(check_class_invariants());
-
     error_count_ = 0;
     clear();
 

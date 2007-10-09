@@ -29,24 +29,24 @@ using namespace std;
  * \return The parsed quantity.
  */
 
-unsigned Parse_Unsigned_Integer(Token_Stream &tokens)
+unsigned parse_unsigned_integer(Token_Stream &tokens)
 {
-    Token const token = tokens.Shift();
-    if (token.Type() == INTEGER)
+    Token const token = tokens.shift();
+    if (token.type() == INTEGER)
     {
 	errno = 0;
 	char *endptr;
-	unsigned long const Result = strtoul(token.Text().c_str(), &endptr, 0);
+	unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
 	if (Result != static_cast<unsigned>(Result) || errno==ERANGE)
 	{
-	    tokens.Report_Semantic_Error("integer value overflows");
+	    tokens.report_semantic_error("integer value overflows");
 	}
 	Check(endptr != NULL && *endptr=='\0');
 	return Result;
     }
     else
     {
-	tokens.Report_Syntax_Error(token, "expected an unsigned integer");
+	tokens.report_syntax_error(token, "expected an unsigned integer");
 	return 0;
     }
 }
@@ -59,12 +59,12 @@ unsigned Parse_Unsigned_Integer(Token_Stream &tokens)
  * \return The parsed quantity.
  */
 
-unsigned Parse_Positive_Integer(Token_Stream &tokens)
+unsigned parse_positive_integer(Token_Stream &tokens)
 {
-    unsigned  Result = Parse_Unsigned_Integer(tokens);
+    unsigned  Result = parse_unsigned_integer(tokens);
     if (Result==0)
     {
-	tokens.Report_Semantic_Error("expected a positive integer");
+	tokens.report_semantic_error("expected a positive integer");
 	Result = 1;
     }
 
@@ -80,64 +80,60 @@ unsigned Parse_Positive_Integer(Token_Stream &tokens)
  * \return The parsed quantity.
  */
 
-int Parse_Integer(Token_Stream &tokens)
+int parse_integer(Token_Stream &tokens)
 {
-    Token token = tokens.Shift();
+    Token token = tokens.shift();
     string text;
-    if (token.Text() == "+")
+    if (token.text() == "+")
     {
-        token = tokens.Shift();
+        token = tokens.shift();
     }
-    else if (token.Text() == "-")
+    else if (token.text() == "-")
     {
         text = '-';
-        token = tokens.Shift();
+        token = tokens.shift();
     }
-    if (token.Type() == INTEGER)
+    if (token.type() == INTEGER)
     {
-        text += token.Text();
+        text += token.text();
 	errno = 0;
 	char *endptr;
 	const long Result = strtol(text.c_str(), &endptr, 0);
 	if (Result != static_cast<int>(Result) || errno==ERANGE)
 	{
-	    tokens.Report_Semantic_Error("integer value overflows");
+	    tokens.report_semantic_error("integer value overflows");
 	}
 	Check(endptr != NULL && *endptr=='\0');
 	return Result;
     }
     else
     {
-	tokens.Report_Syntax_Error(token, "expected an integer");
+	tokens.report_syntax_error(token, "expected an integer");
 	return 0;
     }
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Is the next token compatible with Parse_Real?
- *
- * This function does not change the token stream.
+ * This function does not move the cursor in the token stream.
  * 
  * \param tokens
  * Token stream from which to parse the quantity.
  * \return \c true if the next token is REAL or INTEGER; \c false otherwise.
  */
 
-bool At_Real(Token_Stream &tokens)
+bool at_real(Token_Stream &tokens)
 {
-    Token token = tokens.Lookahead();
-    if (token.Text() == "-" || token.Text() == "+")
+    Token token = tokens.lookahead();
+    if (token.text() == "-" || token.text() == "+")
     {
-        token = tokens.Lookahead(1);
+        token = tokens.lookahead(1);
     }
-    return (token.Type()==REAL || token.Type()==INTEGER);
+    return (token.type()==REAL || token.type()==INTEGER);
 }
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Parse a real quantity.
- * 
  * We permit an integer token to appear where a real is expected, consistent
  * with the integers being a subset of reals, and with about five decades of
  * common practice in the computer language community.
@@ -147,35 +143,35 @@ bool At_Real(Token_Stream &tokens)
  * \return The parsed quantity.
  */
 
-double Parse_Real(Token_Stream &tokens)
+double parse_real(Token_Stream &tokens)
 {
-    Token token = tokens.Shift();
+    Token token = tokens.shift();
     string text;
-    if (token.Text() == "+")
+    if (token.text() == "+")
     {
-        token = tokens.Shift();
+        token = tokens.shift();
     }
-    else if (token.Text() == "-")
+    else if (token.text() == "-")
     {
         text = '-';
-        token = tokens.Shift();
+        token = tokens.shift();
     }
-    if (token.Type() == REAL || token.Type() == INTEGER)
+    if (token.type() == REAL || token.type() == INTEGER)
     {
-        text += token.Text();
+        text += token.text();
 	errno = 0;
 	char *endptr;
 	const double Result = strtod(text.c_str(), &endptr);
 	if (errno==ERANGE)
 	{
-	    tokens.Report_Semantic_Error("real value overflows");
+	    tokens.report_semantic_error("real value overflows");
 	}
 	Check(endptr != NULL && *endptr=='\0');
 	return Result;
     }
     else
     {
-	tokens.Report_Syntax_Error(token, "expected a real number");
+	tokens.report_syntax_error(token, "expected a real number");
 	return 0.0;
     }
 }
@@ -188,12 +184,12 @@ double Parse_Real(Token_Stream &tokens)
  * \return The parsed quantity.
  */
 
-double Parse_Positive_Real(Token_Stream &tokens)
+double parse_positive_real(Token_Stream &tokens)
 {
-    double Result = Parse_Real(tokens);
+    double Result = parse_real(tokens);
     if (Result<=0.0)
     {
-	tokens.Report_Semantic_Error("expected a positive quantity");
+	tokens.report_semantic_error("expected a positive quantity");
 	Result = 1;
     }
 
@@ -203,8 +199,6 @@ double Parse_Positive_Real(Token_Stream &tokens)
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Parse a vector.
- * 
  * \param tokens
  * Token stream from which to parse the quantity.
  * \param x
@@ -212,19 +206,19 @@ double Parse_Positive_Real(Token_Stream &tokens)
  * \pre \c x!=NULL
  */
 
-void Parse_Vector(Token_Stream &tokens, double x[])
+void parse_vector(Token_Stream &tokens, double x[])
 {
     Require(x!=NULL);
 
     // At least one component must be present.
-    x[0] = Parse_Real(tokens);
+    x[0] = parse_real(tokens);
 
-    if (At_Real(tokens))
+    if (at_real(tokens))
     {
-	x[1] = Parse_Real(tokens);
-	if (At_Real(tokens))
+	x[1] = parse_real(tokens);
+	if (at_real(tokens))
 	{
-	    x[2] = Parse_Real(tokens);
+	    x[2] = parse_real(tokens);
 	}
 	else
 	{
@@ -241,8 +235,6 @@ void Parse_Vector(Token_Stream &tokens, double x[])
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Parse a vector of unsigned.
- * 
  * \param tokens
  * Token stream from which to parse the quantity.
  * \param x
@@ -250,14 +242,14 @@ void Parse_Vector(Token_Stream &tokens, double x[])
  * \pre \c x!=NULL
  */
 
-void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[], unsigned size)
+void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size)
 {
     Require(x!=NULL);
 
     for ( unsigned i = 0; i < size; ++i )
     {
-        if (At_Real(tokens))
-            x[i] = Parse_Unsigned_Integer(tokens);
+        if (at_real(tokens))
+            x[i] = parse_unsigned_integer(tokens);
     }
 }
 
@@ -272,17 +264,17 @@ void Parse_Unsigned_Vector(Token_Stream &tokens, unsigned x[], unsigned size)
  * Token_Stream from which to parse.
  * \param pos
  * Position in Token_Stream at which to parse.  This lookahead capability is
- * needed by Parse_Unit to see if a hyphen '-' is part of a unit expression.
+ * needed by parse_unit to see if a hyphen '-' is part of a unit expression.
  *
  * \return \c true if we are at the start of a unit term; \c false otherwise
  */
 
-bool At_Unit_Term(Token_Stream &tokens, unsigned position = 0)
+bool at_unit_term(Token_Stream &tokens, unsigned position = 0)
 {
-    Token const token = tokens.Lookahead(position);
-    if (token.Type()==KEYWORD)
+    Token const token = tokens.lookahead(position);
+    if (token.type()==KEYWORD)
     {
-	string const u = token.Text();
+	string const u = token.text();
 	switch( u[0] )
 	{
 	case 'A':
@@ -296,7 +288,7 @@ bool At_Unit_Term(Token_Stream &tokens, unsigned position = 0)
 	    return (u.size() == 1);
 
 	case 'H':
-	    return (u.size() == 1 || token.Text()=="Hz");
+	    return (u.size() == 1 || token.text()=="Hz");
 
 	case 'J':
 	    return (u.size() == 1);
@@ -308,7 +300,7 @@ bool At_Unit_Term(Token_Stream &tokens, unsigned position = 0)
 	    return (u.size() == 1);
 
 	case 'P':
-	    return (token.Text()=="Pa");
+	    return (token.text()=="Pa");
 
 	case 'S':
 	    return (u.size() == 1);
@@ -320,52 +312,52 @@ bool At_Unit_Term(Token_Stream &tokens, unsigned position = 0)
 	    return (u.size() == 1);
 
 	case 'W':
-	    return (u.size() == 1 || token.Text()=="Wb");
+	    return (u.size() == 1 || token.text()=="Wb");
 
 	case 'c':
-	    return (token.Text()=="cd" || token.Text()=="cm");
+	    return (token.text()=="cd" || token.text()=="cm");
 
 	case 'd':
-	    return (token.Text()=="dyne");
+	    return (token.text()=="dyne");
 
 	case 'e':
-	    return (token.Text()=="erg");
+	    return (token.text()=="erg");
 
 	case 'f':
-	    return (token.Text()=="foot");
+	    return (token.text()=="foot");
 
 	case 'g':
 	    return (u.size() == 1);
 
 	case 'i':
-	    return (token.Text()=="inch");
+	    return (token.text()=="inch");
 
 	case 'k':
-	    return (token.Text()=="kg" || token.Text()=="keV");
+	    return (token.text()=="kg" || token.text()=="keV");
 
 	case 'l':
-	    return (token.Text()=="lm" || token.Text()=="lx");
+	    return (token.text()=="lm" || token.text()=="lx");
 
 	case 'm':
-	    return (u.size() == 1 || token.Text() == "mol");
+	    return (u.size() == 1 || token.text() == "mol");
 
 	case 'o':
-	    return (token.Text()=="ohm");
+	    return (token.text()=="ohm");
 
 	case 'p':
-	    return (token.Text()=="pound");
+	    return (token.text()=="pound");
 
 	case 'r':
-	    return (token.Text()=="rad");
+	    return (token.text()=="rad");
 
 	case 's':
-	    return (u.size() == 1 || token.Text()=="sr");
+	    return (u.size() == 1 || token.text()=="sr");
 
 	default:
 	    return false;
 	}
     }
-    else if (token.Type()==OTHER && token.Text()=="(")
+    else if (token.type()==OTHER && token.text()=="(")
     {
 	return true;
     }
@@ -375,7 +367,7 @@ bool At_Unit_Term(Token_Stream &tokens, unsigned position = 0)
     }
 }
 
-Unit Parse_Unit(Token_Stream &tokens);
+Unit parse_unit(Token_Stream &tokens);
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -389,31 +381,31 @@ Unit Parse_Unit(Token_Stream &tokens);
  * \return The unit.
  */
 
-static Unit Parse_Unit_Name(Token_Stream &tokens)
+static Unit parse_unit_name(Token_Stream &tokens)
 {
-    Token token = tokens.Shift();
-    if (token.Type()==KEYWORD)
+    Token token = tokens.shift();
+    if (token.type()==KEYWORD)
     {
-	string const u = token.Text();
+	string const u = token.text();
 	switch ( u[0] )
 	{
 	case 'A':
 	    if ( u.size() == 1 )
 		return A;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'C':
 	    if ( u.size() == 1 )
 		return C;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'F':
 	    if ( u.size() == 1 )
 		return F;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'H':
 	    if ( u.size() == 1 )
@@ -421,161 +413,161 @@ static Unit Parse_Unit_Name(Token_Stream &tokens)
 	    else if ( u.size() == 2 )
 		return Hz;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'J':
 	    if ( u.size() == 1 )
 		return J;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'K':
 	    if ( u.size() == 1 )
 		return K;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'N':
 	    if ( u.size() == 1 )
 		return N;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'P':
 	    if ( u.size() == 2 )
 		return Pa;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'S':
 	    if ( u.size() == 1 )
 		return S;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'T':
 	    if ( u.size() == 1 )
 		return T;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'V':
 	    if ( u.size() == 1 )
 		return V;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'W':
 	    if ( u.size() == 1 )
 		return W;
-	    else if (token.Text()=="Wb")
+	    else if (token.text()=="Wb")
 		return Wb;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'c':
-	    if (token.Text()=="cd")
+	    if (token.text()=="cd")
 		return cd;
-	    else if (token.Text()=="cm")
+	    else if (token.text()=="cm")
 		return cm;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'd':
-	    if (token.Text()=="dyne")
+	    if (token.text()=="dyne")
 		return dyne;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'e':
-	    if (token.Text()=="erg")
+	    if (token.text()=="erg")
 		return erg;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'f':
-	    if (token.Text()=="foot")
+	    if (token.text()=="foot")
 		return foot;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'g':
 	    if ( u.size() == 1 )
 		return g;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'i':
-	    if (token.Text()=="inch")
+	    if (token.text()=="inch")
 		return inch;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'k':
-	    if (token.Text()=="kg")
+	    if (token.text()=="kg")
 		return kg;
-	    else if (token.Text()=="keV")
+	    else if (token.text()=="keV")
 		return keV;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'l':
-	    if (token.Text()=="lm")
+	    if (token.text()=="lm")
 		return lm;
-	    else if (token.Text()=="lx")
+	    else if (token.text()=="lx")
 		return lx;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'm':
 	    if ( u.size() == 1 )
 		return m;
-	    else if (token.Text() == "mol")
+	    else if (token.text() == "mol")
 		return mol;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'o':
-	    if (token.Text()=="ohm")
+	    if (token.text()=="ohm")
 		return ohm;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'p':
-	    if (token.Text()=="pound")
+	    if (token.text()=="pound")
 		return pound;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 'r':
-	    if (token.Text()=="rad")
+	    if (token.text()=="rad")
 		return rad;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	case 's':
 	    if ( u.size() == 1 )
 		return s;
-	    else if (token.Text()=="sr")
+	    else if (token.text()=="sr")
 		return sr;
 	    else
-		tokens.Report_Syntax_Error("expected a unit");
+		tokens.report_syntax_error("expected a unit");
 
 	default:
-	    tokens.Report_Syntax_Error("expected a unit");
+	    tokens.report_syntax_error("expected a unit");
 	}
     }
-    else if (token.Type()==OTHER && token.Text()=="(")
+    else if (token.type()==OTHER && token.text()=="(")
     {
-	Unit Result = Parse_Unit(tokens);
-        token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!=")")
-	    tokens.Report_Syntax_Error("missing ')'");
+	Unit Result = parse_unit(tokens);
+        token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!=")")
+	    tokens.report_syntax_error("missing ')'");
 	return Result;
     }
     else
     {
-	tokens.Report_Syntax_Error("expected a unit expression");
+	tokens.report_syntax_error("expected a unit expression");
     }
     // never reached but causes warnings
     return dimensionless;
@@ -592,14 +584,14 @@ static Unit Parse_Unit_Name(Token_Stream &tokens)
  * \return The unit term.
  */
 
-static Unit Parse_Unit_Term(Token_Stream &tokens)
+static Unit parse_unit_term(Token_Stream &tokens)
 {
-    Unit const Result = Parse_Unit_Name(tokens);
-    Token const token = tokens.Lookahead();
-    if (token.Text()=="^")
+    Unit const Result = parse_unit_name(tokens);
+    Token const token = tokens.lookahead();
+    if (token.text()=="^")
     {
-	tokens.Shift();
-	double const exponent = Parse_Real(tokens);
+	tokens.shift();
+	double const exponent = parse_real(tokens);
 	return pow(Result, exponent);
     }
     return Result;
@@ -619,26 +611,26 @@ static Unit Parse_Unit_Term(Token_Stream &tokens)
  * \return The unit expression.
  */
 
-Unit Parse_Unit(Token_Stream &tokens)
+Unit parse_unit(Token_Stream &tokens)
 {
-    if (!At_Unit_Term(tokens)) return dimensionless;
+    if (!at_unit_term(tokens)) return dimensionless;
 
-    Unit Result = Parse_Unit_Term(tokens);
+    Unit Result = parse_unit_term(tokens);
 
     for (;;)
     {
-	Token const token = tokens.Lookahead();
-	if (token.Type()==OTHER)
+	Token const token = tokens.lookahead();
+	if (token.type()==OTHER)
 	{
-	    if (token.Text()=="-" && At_Unit_Term(tokens, 1))
+	    if (token.text()=="-" && at_unit_term(tokens, 1))
 	    {
-		tokens.Shift();
-		Result = Result * Parse_Unit_Term(tokens);
+		tokens.shift();
+		Result = Result * parse_unit_term(tokens);
 	    }
-	    else if (token.Text()=="/")
+	    else if (token.text()=="/")
 	    {
-		tokens.Shift();
-		Result = Result / Parse_Unit_Term(tokens);
+		tokens.shift();
+		Result = Result / parse_unit_term(tokens);
 	    }
 	    else
 	    {
@@ -671,17 +663,17 @@ Unit Parse_Unit(Token_Stream &tokens)
  * \return The parsed value, converted to the desired unit system. 
  */
 
-double Parse_Quantity(Token_Stream &tokens,
+double parse_quantity(Token_Stream &tokens,
 		      Unit const &target_unit,
 		      char const *const name)
 {
-    double const value = Parse_Real(tokens);
-    Unit const unit = Parse_Unit(tokens);
+    double const value = parse_real(tokens);
+    Unit const unit = parse_unit(tokens);
     if (!is_compatible(unit, target_unit))
     {
 	ostringstream buffer;
 	buffer << "expected quantity with dimensions of " << name;
-	tokens.Report_Semantic_Error(buffer.str().c_str());
+	tokens.report_semantic_error(buffer.str().c_str());
     }
     return  value*unit.conv/target_unit.conv;
 }
@@ -702,10 +694,10 @@ double Parse_Quantity(Token_Stream &tokens,
  * \post \c Result>=0.0
  */
 
-double Parse_Temperature(Token_Stream &tokens)
+double parse_temperature(Token_Stream &tokens)
 {
-    double const T = Parse_Real(tokens);
-    Unit const u = Parse_Unit(tokens);
+    double const T = parse_real(tokens);
+    Unit const u = parse_unit(tokens);
     double Result;
     if (is_compatible(u, K))
     {
@@ -717,13 +709,13 @@ double Parse_Temperature(Token_Stream &tokens)
     }
     else
     {
-	tokens.Report_Syntax_Error("expected quantity with units of "
+	tokens.report_syntax_error("expected quantity with units of "
 				   "temperature");
 	return 0.0;
     }
     if (Result<0.0)
     {
-        tokens.Report_Semantic_Error("temperature must be nonnegative");
+        tokens.report_semantic_error("temperature must be nonnegative");
         return 0.0;
     }
     else
@@ -741,15 +733,15 @@ double Parse_Temperature(Token_Stream &tokens)
  * \return The stripped string.
  */
 
-std::string Parse_Manifest_String(Token_Stream &tokens)
+std::string parse_manifest_string(Token_Stream &tokens)
 {
-    Token const token = tokens.Shift();
-    if (token.Type() != STRING)
+    Token const token = tokens.shift();
+    if (token.type() != STRING)
     {
-	tokens.Report_Syntax_Error("expected a string, but saw " + 
-				   token.Text());
+	tokens.report_syntax_error("expected a string, but saw " + 
+				   token.text());
     }
-    string Result = token.Text();
+    string Result = token.text();
     string::size_type const length = Result.size();
     Check(length>1);
     Result = Result.substr(1, length-2);
@@ -771,34 +763,34 @@ std::string Parse_Manifest_String(Token_Stream &tokens)
  *         parsed_geometry == rtt_mesh_element::SPHERICAL </code>
  */
 
-void Parse_Geometry(Token_Stream &tokens,
+void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry)
 {
     if (parsed_geometry != rtt_mesh_element::END_GEOMETRY)
     {
-        tokens.Report_Semantic_Error("geometry specified twice");
+        tokens.report_semantic_error("geometry specified twice");
     }
-    Token const token = tokens.Shift();
-    if (token.Text() == "axisymmetric" ||
-        token.Text() == "cylindrical")
+    Token const token = tokens.shift();
+    if (token.text() == "axisymmetric" ||
+        token.text() == "cylindrical")
     {
         parsed_geometry = rtt_mesh_element::AXISYMMETRIC;
     }
-    else if (token.Text() == "cartesian" ||
-             token.Text() == "xy" ||
-             token.Text() == "slab")
+    else if (token.text() == "cartesian" ||
+             token.text() == "xy" ||
+             token.text() == "slab")
     {
         parsed_geometry = rtt_mesh_element::CARTESIAN;
     }
-    else if (token.Text() == "spherical")
+    else if (token.text() == "spherical")
 	{
 	    parsed_geometry = rtt_mesh_element::SPHERICAL;
 	}
     else
     {
-        tokens.Report_Syntax_Error(token,
+        tokens.report_syntax_error(token,
                                    "expected a geometry option, but saw " + 
-                                   token.Text());
+                                   token.text());
     }
     Ensure(parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
            parsed_geometry == rtt_mesh_element::CARTESIAN    ||

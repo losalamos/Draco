@@ -198,17 +198,17 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
     unsigned sn_order(    2 );     // default
     QIM      interpModel( SN );    // default
 
-    while( tokens.Lookahead().Type() != END )
+    while( tokens.lookahead().type() != END )
     {
         // Get next token
-        Token const token = tokens.Shift();
+        Token const token = tokens.shift();
 
-        if (token.Type() != KEYWORD)
+        if (token.type() != KEYWORD)
         {
-            tokens.Report_Syntax_Error("expected a keyword");
+            tokens.report_syntax_error("expected a keyword");
         }
 
-        std::string tokenText = token.Text();
+        std::string tokenText = token.text();
         std::transform(tokenText.begin(),tokenText.end(),
                        tokenText.begin(),tl);
 
@@ -216,7 +216,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
         if( tokenText == "type" )
         {
             // Get the type.
-            string qtype = tokens.Shift().Text();
+            string qtype = tokens.shift().text();
             // convert to use all lower case
             std::transform(qtype.begin(),qtype.end(),
                            qtype.begin(),tl);
@@ -224,7 +224,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             qidm::const_iterator pos = Qid_map.find( qtype );
             
             if( pos == Qid_map.end() )
-                tokens.Report_Semantic_Error(
+                tokens.report_semantic_error(
                     "I don't know anything about the quadrature type = "
                     +qtype);
             else
@@ -240,7 +240,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             qidm::const_iterator pos = Qid_map.find( tokenText );
             
             if( pos == Qid_map.end() )
-                tokens.Report_Semantic_Error(
+                tokens.report_semantic_error(
                     "I don't know anything about the quadrature type = "
                     +tokenText);
             else
@@ -251,18 +251,18 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
         }
 
         
-        else if( token.Text() == "order")
+        else if( token.text() == "order")
         {
-            sn_order = Parse_Positive_Integer(tokens);
+            sn_order = parse_positive_integer(tokens);
             if (sn_order%2 != 0)
             {
-                tokens.Report_Semantic_Error("quadrature order must be even");
+                tokens.report_semantic_error("quadrature order must be even");
                 sn_order = 2;
             }
         }   
-        else if( token.Text() == "interpolation algorithm")
+        else if( token.text() == "interpolation algorithm")
         {
-            string s = tokens.Shift().Text();
+            string s = tokens.shift().text();
             std::cout << s << std::endl;
             // force lower case
             std::transform(s.begin(),s.end(),s.begin(),tl);
@@ -273,27 +273,27 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             else if( s == "svd" )
                 interpModel = SVD;
             else
-                tokens.Report_Semantic_Error(
+                tokens.report_semantic_error(
                     string("I don't know anything about \"angle quadrature: ")
                     +string("interpolation algorithm = ")+s
                     +string("\". Expecting one of: SN, Galerkin or SVD"));
         }
         else
         {
-            tokens.Report_Syntax_Error("unrecognized keyword.  Expected \"end,\" \"order,\" or \"interpolation algorithm.\"");
+            tokens.report_syntax_error("unrecognized keyword.  Expected \"end,\" \"order,\" or \"interpolation algorithm.\"");
         }
 
     } // end while
 
     // Read the "end" that signifies the end of the quadrature block
-    Token const token = tokens.Shift();
-    Ensure( token.Type() == END );
+    Token const token = tokens.shift();
+    Ensure( token.type() == END );
     
     rtt_dsxx::SP<Quadrature> parsed_quadrature =
         quadCreate(quad_type,sn_order, quad_norm);
 
     if (parsed_quadrature == rtt_dsxx::SP<rtt_quadrature::Quadrature>())
-        tokens.Report_Semantic_Error("Could not construct quadrature");
+        tokens.report_semantic_error("Could not construct quadrature");
 
     return parsed_quadrature;
 }

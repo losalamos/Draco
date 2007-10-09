@@ -2,9 +2,8 @@
 /*! 
  * \file Parse_Table.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of Keyword and Parse_Table.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,37 +14,32 @@
 
 #include <vector>
 #include "ds++/Assert.hh"
+#include "Token_Stream.hh"
 
 namespace rtt_parser 
 {
-class Token;
-class Token_Stream;
-
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Structure to describe a parser keyword.
  *
- * A Keyword describes a keyword in a Parse_Table.  It is
- * a POD struct so that it can be initialized using the low-level
- * C++ initialization construct, e.g.,
+ * A Keyword describes a keyword in a Parse_Table.  It is a POD struct so that
+ * it can be initialized using the low-level C++ initialization construct,
+ * e.g.,
  *
  * \code
  *   Keyword my_table[] = {{"FIRST",  Parse_First,  0, "TestModule"},
  *                         {"SECOND", Parse_Second, 0, "TestModule"}}; 
  * \endcode
  *
- * As a POD struct, Keyword can have no invariants.  However,
- * Parse_Table imposes constraints on the keywords it will accept
- * for its keyword list.
+ * As a POD struct, Keyword can have no invariants.  However, Parse_Table
+ * imposes constraints on the keywords it will accept for its keyword list.
  */
 struct Keyword
 {
     /*! \brief The keyword moniker.
      *
-     * The moniker is a sequence of valid C++ identifiers separated by white
-     * space.  For example, <CODE>"WORD"</CODE>, <CODE>"First_Word
+     * The moniker should be a sequence of valid C++ identifiers separated by
+     * a single space.  For example, <CODE>"WORD"</CODE>, <CODE>"First_Word
      * Second_Word"</CODE>, and <CODE>"B1 T2 T3"</CODE> are all valid Keyword
      * monikers.  Identifiers beginning with an underscore are permitted but
      * may be reserved for internal use by frameworks that uses the
@@ -59,15 +53,16 @@ struct Keyword
      *
      * When a Parse_Table finds a match to a moniker in its keyword table, the
      * corresponding parse function is called. The parse function may read
-     * additional tokens from the input Token_Stream, such as parameter
-     * values, before returning control to the Parse_Table.
+     * additional tokens from the input Token_Stream, such as a parameter
+     * value or an entire keyword block, before returning control to the
+     * Parse_Table.
      *
      * \param stream
      * The token stream currently being parsed.
      * 
      * \param index
      * An integer argument that optionally allows a single parse function to
-     * handle a set of related keywords.
+     * handle a set of related keywords. The 
      */
     void (*func)(Token_Stream &stream, int index);
     
@@ -99,8 +94,6 @@ struct Keyword
 
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Simple keyword-matching parse table
  *
  * A Parse_Table is a table of keywords and associated parsing functions.
@@ -150,49 +143,71 @@ struct Keyword
  * processing.
  */
 
-class Parse_Table : private std::vector<Keyword>
+class Parse_Table
+    : private std::vector<Keyword>
 {
   public:
 
+    // TYPEDEFS AND ENUMERATIONS
+
+    //! Parser settings, which can be bitwise OR-ed together.
     enum
     {
 	CASE_INSENSITIVE = 1U,          //!< Keyword match is case-insensitive
 	PARTIAL_IDENTIFIER_MATCH = 2U   //!< Match incomplete identifiers
     };
+
+    // CREATORS
     
     //! Create an empty Parse_Table.
-    Parse_Table() : flags_(0) {}
+    Parse_Table()
+        : flags_(0)
+    {}
 
+    //! Construct a parse table with the specified keywords.
     Parse_Table(Keyword const *table, size_t count);
-    
-    void Add(Keyword const *table, size_t count);
+
+    // MANIPULATORS
+
+    //! Add keywords to the table.
+    void add(Keyword const *table, size_t count);
+
+    std::vector<Keyword>::reserve;
+
+    //! Set parser options.
+    void set_flags(unsigned char);
+
+    // ACCESSORS
     
     std::vector<Keyword>::size;
-    std::vector<Keyword>::reserve;
-    
-    Token Parse(Token_Stream &tokens) const;
-    
-    unsigned Get_Flags() const;
-    void Set_Flags(unsigned);
 
+    //! Return the current parser options.
+    unsigned char get_flags() const { return flags_; }
+
+    // SERVICES
+
+    //! Parse a token stream.
+    Token parse(Token_Stream &tokens) const;
+
+    //! Check the class invariants
     bool check_class_invariants() const;
     
   private:
 
+    // TYPEDEFS AND ENUMERATIONS
+
     //-----------------------------------------------------------------------//
     /*! 
-     * \author Kent G. Budge
-     * \date Thu Jan 23 08:41:54 MST 2003
      * \brief Ordering functor for Keyword
      *
-     * Provides an ordering for Keyword compatible with STL sort
-     * and search routines.
+     * Provides an ordering for Keyword compatible with STL sort and search
+     * routines.
      */
     
-    class Keyword_Compare 
+    class Keyword_Compare_ 
     {
       public:
-	Keyword_Compare(unsigned char flags);
+	Keyword_Compare_(unsigned char flags);
 	
 	bool operator()( Keyword const &k1, Keyword const &k2 ) const;
 	
@@ -203,8 +218,11 @@ class Parse_Table : private std::vector<Keyword>
 	int kt_comparison(char const *, char const *) const;
 	
       private:
+        
 	unsigned char flags_;
     };
+
+    // DATA
     
     unsigned char flags_;  //!< Option flags for this parse table.
 };

@@ -2,7 +2,6 @@
 /*! 
  * \file Token_Equivalence.hh
  * \author Kelly G. Thompson
- * \date Thu Jul 20 9:27:29 MST 2006
  * \brief Provide services for ApplicationUnitTest framework.
  * \note Copyright © 2006 Los Alamos National Security, LLC
  */
@@ -25,14 +24,16 @@ void check_token_keyword( String_Token_Stream       & tokens,
                           rtt_dsxx::UnitTest        & ut,
                           unsigned            const & occurance=1 );
 
-//! Search tokens for keyword and compare associated value.  Report result to UnitTest.
+//! Search tokens for keyword and compare associated value.  Report result to
+//! UnitTest. 
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
                                 int                 const   value,
                                 rtt_dsxx::UnitTest        & ut,
                                 unsigned            const & occurance=1 );
 
-//! Search tokens for keyword and compare associated value.  Report result to UnitTest.
+//! Search tokens for keyword and compare associated value.  Report result to
+//! UnitTest. 
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
                                 double              const   value,

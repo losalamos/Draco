@@ -2,9 +2,8 @@
 /*!
  * \file   parser/Unit.hh
  * \author Kent Budge
- * \date   Mon Feb 24 07:13:42 2003
  * \brief  Definition the Unit struct
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

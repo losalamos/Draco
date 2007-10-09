@@ -28,16 +28,16 @@ void token_test( UnitTest & ut )
     Token other_token('$',               "parser_test 2");
     Token real_token (REAL,  "+1.56e-3", "parser_test 3");
 
-    if (end_token.Type()!=END) ut.failure(__LINE__);
-    if (other_token.Type()!=OTHER) ut.failure(__LINE__);
-    if (real_token.Type()!=REAL) ut.failure(__LINE__);
+    if (end_token.type()!=END) ut.failure(__LINE__);
+    if (other_token.type()!=OTHER) ut.failure(__LINE__);
+    if (real_token.type()!=REAL) ut.failure(__LINE__);
 
-    if (other_token.Text()!="$") ut.failure(__LINE__);
-    if (real_token.Text()!="+1.56e-3") ut.failure(__LINE__);
+    if (other_token.text()!="$") ut.failure(__LINE__);
+    if (real_token.text()!="+1.56e-3") ut.failure(__LINE__);
 
-    if (end_token.Location()!="parser_test 1") ut.failure(__LINE__);
-    if (other_token.Location()!="parser_test 2") ut.failure(__LINE__);
-    if (real_token.Location()!="parser_test 3") ut.failure(__LINE__);
+    if (end_token.location()!="parser_test 1") ut.failure(__LINE__);
+    if (other_token.location()!="parser_test 2") ut.failure(__LINE__);
+    if (real_token.location()!="parser_test 3") ut.failure(__LINE__);
 
     if (!Is_Integer_Text("057133")) ut.failure(__LINE__);
     if (Is_Integer_Text("08223")) ut.failure(__LINE__);

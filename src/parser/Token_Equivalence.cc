@@ -34,15 +34,15 @@ void check_token_keyword( String_Token_Stream       & tokens,
     unsigned count(0);
     bool done(false);
 
-    tokens.Rewind();
-    Token token( tokens.Lookahead(1) );
+    tokens.rewind();
+    Token token( tokens.lookahead(1) );
 
     while( !done               &&
-           token.Type() != END &&
-           token.Type() != EXIT )
+           token.type() != END &&
+           token.type() != EXIT )
     {
-        if( token.Type() == KEYWORD &&
-            token.Text() == keyword &&
+        if( token.type() == KEYWORD &&
+            token.text() == keyword &&
             ++count == occurance        )
         {
             msg << "Found the keyword \"" << keyword
@@ -52,7 +52,7 @@ void check_token_keyword( String_Token_Stream       & tokens,
         }
         
         // Get the next token in the stream.
-        token = tokens.Shift();
+        token = tokens.shift();
     }
 
     if(!done)
@@ -79,22 +79,22 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
     unsigned count(0);
     bool done(false);
 
-    tokens.Rewind();
-    Token token( tokens.Lookahead(1) );
+    tokens.rewind();
+    Token token( tokens.lookahead(1) );
 
     while( !done               &&
-           token.Type() != END &&
-           token.Type() != EXIT )
+           token.type() != END &&
+           token.type() != EXIT )
     {
-        if( token.Type() == KEYWORD &&
-            token.Text() == keyword &&
+        if( token.type() == KEYWORD &&
+            token.text() == keyword &&
             ++count == occurance        )
         {
             // Get the value token
-            token = tokens.Shift();
+            token = tokens.shift();
 
             // Check it's type.
-            if( token.Type() != INTEGER )
+            if( token.type() != INTEGER )
             {
                 msg << "Did not find the token " << keyword <<
                     " in the String_Token_Stream." << std::endl;
@@ -103,7 +103,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
             }
 
             // Get the actual value.
-            int value( atoi(token.Text().c_str()));
+            int value( atoi(token.text().c_str()));
             if( value == expected_value )
             {
                 msg << "Keyword \"" << keyword
@@ -123,7 +123,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
         }
 
         // Get the next token in the stream.
-        token = tokens.Shift();
+        token = tokens.shift();
     }
     return;
 }
@@ -144,22 +144,22 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
     unsigned count(0);
     bool done(false);
 
-    tokens.Rewind();
-    Token token( tokens.Lookahead(1) );
+    tokens.rewind();
+    Token token( tokens.lookahead(1) );
 
     while( !done               &&
-           token.Type() != END &&
-           token.Type() != EXIT )
+           token.type() != END &&
+           token.type() != EXIT )
     {
-        if( token.Type() == KEYWORD &&
-            token.Text() == keyword &&
+        if( token.type() == KEYWORD &&
+            token.text() == keyword &&
             ++count == occurance        )
         {
             // Get the value token
-            token = tokens.Shift();
+            token = tokens.shift();
 
             // Check it's type.
-            if( token.Type() != REAL )
+            if( token.type() != REAL )
             {
                 msg << "Did not find the token " << keyword <<
                     " in the String_Token_Stream." << std::endl;
@@ -168,7 +168,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
             }
 
             // Get the actual value.
-            double value( atof(token.Text().c_str()));
+            double value( atof(token.text().c_str()));
             if( rtt_dsxx::soft_equiv(value, expected_value, 1.0e-7) )
             {
                 msg << "Keyword \"" << keyword
@@ -188,7 +188,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
         }
 
         // Get the next token in the stream.
-        token = tokens.Shift();
+        token = tokens.shift();
     }
     return;
 }

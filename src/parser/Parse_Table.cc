@@ -24,14 +24,13 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Construct a parse table with the specified keywords.
  * 
  * \param table Pointer to an array of keywords.
  *
  * \param count Length of the array of keywords pointed to by \c table.
  *
- * \throw std::bad_alloc If there is not enough memory to initialize the table.
- * \throw rtt_dsxx::assertion If the keyword table is ill-formed or ambiguous.
+ * \throw invalid_argument If the keyword table is ill-formed or
+ * ambiguous.
  *
  * \note See documentation for Parse_Table::Add for an explanation of the
  * low-level argument list.
@@ -43,31 +42,31 @@ Parse_Table::Parse_Table(Keyword const *const table, size_t const count)
     Require(count == 0  ||  table != NULL);
     Require(std::find_if(table, table+count, Is_Well_Formed_Keyword));
 
-    Add(table, count);
+    add(table, count);
 
     Ensure(check_class_invariants());
-    Ensure(Get_Flags()==0);
+    Ensure(get_flags()==0);
 }
 
 //-------------------------------------------------------------------------//
 /*!
- * \brief Add a set of keywords to a Parse_Table.
  *
  * \param table Array of keywords to be added to the table.
  *   
  * \param count Number of valid elements in the array of keywords.
  *
- * \throw std::bad_alloc If there is not enough memory to initialize the table.
- * \throw rtt_dsxx::assertion If the keyword table is ill-formed or ambiguous.
+ * \throw invalid_argument If the keyword table is ill-formed or
+ * ambiguous.
  *
  * \note The argument list reflects the convenience of defining raw keyword
  * tables as static C arrays.  This justifies a low-level interface in place
  * of, say, vector<Keyword>.
  */
 
-void Parse_Table::Add(Keyword const *const table, size_t const count)
+void Parse_Table::add(Keyword const *const table, size_t const count)
 {
     Require(count == 0  ||  table != NULL);
+    // Additional precondition checked in loop below
 
     // Add the new keywords.
     
@@ -81,7 +80,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
     // Sort the parse table, using a comparator predicate appropriate for the
     // selected parser flags.
 
-    Keyword_Compare const comp(flags_);
+    Keyword_Compare_ const comp(flags_);
     std::sort(begin(), end(), comp);
 
     // Look for ambiguous keywords, and resolve the ambiguity, if possible.
@@ -121,7 +120,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
 		if ((i+1)->module) err << (i+1)->module;
 		else err << "<null>";
 		err << endl;
-		throw rtt_dsxx::assertion(err.str().c_str());
+		throw invalid_argument(err.str().c_str());
 	    }
 	}
 	else
@@ -136,7 +135,6 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
 
 //-------------------------------------------------------------------------//
 /*!
- * \brief Parse the token stream.
  *
  * Parse the stream of tokens until an END, EXIT, or ERROR token is 
  * reached.
@@ -149,7 +147,7 @@ void Parse_Table::Add(Keyword const *const table, size_t const count)
  * \throw rtt_dsxx::assertion If the keyword table is ambiguous.
  */
 
-Token Parse_Table::Parse(Token_Stream &tokens) const
+Token Parse_Table::parse(Token_Stream &tokens) const
 {
     // The is_recovering flag is used during error recovery to suppress
     // additional error messages.  This reduces the likelihood that a single
@@ -163,14 +161,14 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
     // comparator object incorporates the current settings of the
     // Parse_Table, such as case sensitivity and partial matching options.
 
-    Keyword_Compare const comp(flags_);
+    Keyword_Compare_ const comp(flags_);
 
     // Now begin the process of pulling keywords off the input token stream,
     // and attempting to match these to the keyword table.
     
     for (;;)
     {
-	Token const token = tokens.Shift();
+	Token const token = tokens.shift();
 
 	// The END, EXIT, and ERROR tokens are terminating tokens.  EXIT
 	// means the end of the token stream has been reached.  END is used
@@ -181,7 +179,7 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 	// something went very wrong and we're probably hosed, but it allows
 	// some error recovery from within a nested parse table.
 
-	if (token.Type()==END || token.Type()==EXIT || token.Type()==ERROR) 
+	if (token.type()==END || token.type()==EXIT || token.type()==ERROR) 
 	{
 	    return token;
 	}
@@ -194,7 +192,7 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 	// token stream should be pointing either at a terminating token or
 	// the next keyword.
 
-	if (token.Type()==KEYWORD)
+	if (token.type()==KEYWORD)
 	{
 	    // Attempt to match the keyword to the keyword table.  The
 	    // following call returns an iterator pointing to the first
@@ -206,7 +204,7 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 		lower_bound(begin(), end(), token, comp);
 	    
 	    if (match == end() || 
-		comp.kt_comparison(match->moniker, token.Text().c_str()) != 0)
+		comp.kt_comparison(match->moniker, token.text().c_str()) != 0)
 	    {
 		// The token was not lexically equal to anything in the
 		// keyword table.  In other words, the keyword is
@@ -225,9 +223,9 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 		    // a diagnostic, and flag that we are now in error
 		    // recovery mode. 
 
-		    tokens.Report_Semantic_Error(token,
+		    tokens.report_semantic_error(token,
 						  ": unrecognized keyword: " + 
-						  token.Text());
+						  token.text());
 		    is_recovering = true;
 		}
 		// else we are in recovery mode, and additional diagnostics
@@ -243,15 +241,15 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 
 		if (match+1 != end() &&
 		    comp.kt_comparison(match[1].moniker,
-				       token.Text().c_str()) == 0)
+				       token.text().c_str()) == 0)
 		{
 		    // The match is ambiguous.  This is diagnosed whether or
 		    // not we are already in recovery mode, but it does put
 		    // us into recovery mode.
 
-		    tokens.Report_Semantic_Error(token, 
+		    tokens.report_semantic_error(token, 
 						  "ambiguous keyword: " +
-						  token.Text());
+						  token.text());
 		    is_recovering = true;
 		}
 		else
@@ -281,7 +279,7 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 		}
 	    }
 	}
-	else if (token.Type() == OTHER && token.Text() == ";")
+	else if (token.type() == OTHER && token.text() == ";")
 	{
 	    // Treat a semicolon token as an empty keyword.  We are no longer
 	    // in recovery mode, but we don't actually do anything.
@@ -307,8 +305,8 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 		// mode.
 
 		std::ostringstream msg;
-		msg << "expected a keyword, but saw " << token.Text();
-		tokens.Report_Semantic_Error(token, msg.str());
+		msg << "expected a keyword, but saw " << token.text();
+		tokens.report_semantic_error(token, msg.str());
 		is_recovering = true;
 	    }
 	    // else we are in recovery mode, and additional diagnostics are
@@ -319,40 +317,22 @@ Token Parse_Table::Parse(Token_Stream &tokens) const
 
 //-------------------------------------------------------------------------//
 /*!
- * \brief Get the option flags.
- *
- * \return The option flags, ORed together.
- */
-
-unsigned Parse_Table::Get_Flags() const
-{
-    return flags_;
-}
-
-//-------------------------------------------------------------------------//
-/*!
- * \brief Set option flags.
- *
  * \param f
  * Flags to be set, ORed together.
- *
- * \post <code>Get_Flags() == f</code>
  */
 
-void Parse_Table::Set_Flags(unsigned f)
+void Parse_Table::set_flags(unsigned char const f)
 {
-    Require(check_class_invariants());
-
     flags_ = f;
 
-    Add(NULL, 0U);  
+    add(NULL, 0U);  
     // The keyword list needs to be sorted and checked.  For example, if the
     // options are changed so that a previously case-sensitive Parse_Table is
     // no longer case-sensitive, then the ordering changes, and previously
     // unambiguous keywords may become ambiguous.
     
     Ensure(check_class_invariants());
-    Ensure(Get_Flags() == f);
+    Ensure(get_flags() == f);
 }
 
 //-------------------------------------------------------------------------//
@@ -365,7 +345,7 @@ void Parse_Table::Set_Flags(unsigned f)
  * \param flags The flags controlling this comparator's operations.
  */
 
-Parse_Table::Keyword_Compare::Keyword_Compare(unsigned char const flags)
+Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
     : flags_(flags)
 {
 } 
@@ -397,7 +377,7 @@ Parse_Table::Keyword_Compare::Keyword_Compare(unsigned char const flags)
  * \return <CODE>kk_comparison(k1.moniker, k2.moniker)<0 </CODE>
  */
 
-bool Parse_Table::Keyword_Compare::operator()(Keyword const &k1, 
+bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1, 
 					      Keyword const &k2) const
 {
     Require(k1.moniker != NULL);
@@ -406,7 +386,7 @@ bool Parse_Table::Keyword_Compare::operator()(Keyword const &k1,
     return kk_comparison(k1.moniker, k2.moniker)<0;
 }
 
-int Parse_Table::Keyword_Compare::kk_comparison(char const *m1, 
+int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1, 
 						char const *m2) const
 {
     using namespace std;
@@ -463,18 +443,18 @@ int Parse_Table::Keyword_Compare::kk_comparison(char const *m1,
  * The token to be compared.
  *
  * \return <CODE>comparison(keyword.moniker,
- *                          token.Text().c_str())<0 </CODE>
+ *                          token.text().c_str())<0 </CODE>
  */
 
-bool Parse_Table::Keyword_Compare::operator()(Keyword const &k1,
+bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
 					      Token const &k2) const
 {
     Require(k1.moniker);
 
-    return kt_comparison(k1.moniker, k2.Text().c_str())<0;
+    return kt_comparison(k1.moniker, k2.text().c_str())<0;
 }
 
-bool Parse_Table::Keyword_Compare::operator()( Token const   &k2,
+bool Parse_Table::Keyword_Compare_::operator()( Token const   &k2,
                                                Keyword const &k1 ) const
 {
     Require(k1.moniker);
@@ -482,7 +462,7 @@ bool Parse_Table::Keyword_Compare::operator()( Token const   &k2,
     return ! operator()(k1,k2);
 }
 
-int Parse_Table::Keyword_Compare::kt_comparison(char const *m1,
+int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
 						char const *m2) const
 {
     using namespace std;
@@ -591,7 +571,7 @@ bool Parse_Table::check_class_invariants() const
 {
     // The keyword table must be well-formed, sorted, and unambiguous.
 
-    Keyword_Compare const comparator(flags_);
+    Keyword_Compare_ const comparator(flags_);
     for (std::vector<Keyword>::const_iterator i=begin(); i!=end(); ++i)
     {
 	if (!Is_Well_Formed_Keyword(i[0])) return false;

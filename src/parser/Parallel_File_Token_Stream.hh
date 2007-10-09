@@ -2,9 +2,8 @@
 /*! 
  * \file Parallel_File_Token_Stream.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class Parallel_File_Token_Stream.
- * \note   Copyright © 2007 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,10 +17,12 @@
 
 namespace rtt_parser 
 {
+using std::string;
+using std::set;
+using std::ifstream;
+
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Parallel file-based token stream
  *
  * Parallel_File_Token_Stream is similar to File_Token_Stream.  However, it
@@ -37,43 +38,52 @@ class Parallel_File_Token_Stream : public Text_Token_Stream
 {
   public:
 
-    //! Construct a Parallel_File_Token_Stream from a file.
-    Parallel_File_Token_Stream(std::string const &filename);
+    // CREATORS
 
     //! Construct a Parallel_File_Token_Stream from a file.
-    Parallel_File_Token_Stream(std::string const &filename,
-			       std::set<char> const &whitespace);
-    
-    void Rewind();
-    
-    virtual void Report(Token const & token,
-                        std::string const &message);
-    
-    virtual void Report(std::string const &message);
+    Parallel_File_Token_Stream(string const &filename);
 
+    //! Construct a Parallel_File_Token_Stream from a file.
+    Parallel_File_Token_Stream(string const &filename,
+			       set<char> const &whitespace);
+
+    // MANIPULATORS
+
+    //! Rewind the Parallel_File_Token_Stream.
+    virtual void rewind();
+
+    //! Report a condition.
+    virtual void report(Token const & token,
+                        string const &message);
+
+    //! Report a condition.
+    virtual void report(string const &message);
+
+    // ACCESSORS
+
+    //! Check the class invariants.
     bool check_class_invariants() const;
     
   protected:
-    
-    virtual std::string location() const;
-    
-    //! Fill the character buffer.
-    virtual void fill_character_buffer();
 
-    virtual bool error() const;
-    virtual bool end() const;
+    // IMPLEMENTATION
+    
+    virtual string location_() const;
+    
+    virtual void fill_character_buffer_();
+
+    virtual bool error_() const;
+    virtual bool end_() const;
 
   private:
 
-    // IMPLEMENTATION
-
     //! Open the input stream.
-    void open();
+    void open_();
 
     // DATA
 
-    std::string filename_;  //!< File from which to take token text.
-    std::ifstream infile_;  //!< Stream from which to take token text.
+    string filename_;  //!< File from which to take token text.
+    ifstream infile_;  //!< Stream from which to take token text.
 
     bool is_io_processor_;     //!< Is this the designated I/O processor?
 

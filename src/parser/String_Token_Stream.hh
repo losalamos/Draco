@@ -2,9 +2,8 @@
 /*! 
  * \file String_Token_Stream.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class String_Token_Stream.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,10 +17,11 @@
 
 namespace rtt_parser 
 {
+using std::string;
+using std::set;
+
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief std::string-based token stream
  *
  * String_Token_Stream is a Text_Token_Stream that obtains its text from a
@@ -33,33 +33,44 @@ class String_Token_Stream : public Text_Token_Stream
 {
   public:
 
+    // CREATORS
+
     //! Construct a String_Token_Stream from a string.
-    String_Token_Stream(std::string const &text);
+    String_Token_Stream(string const &text);
 
     //! Construct a String_Token_Stream from a file.
-    String_Token_Stream(std::string const &text,
-                        std::set<char> const &whitespace);
-    
-    void Rewind();
+    String_Token_Stream(string const &text,
+                        set<char> const &whitespace);
 
-    std::string Get_Messages() const { return messages_; }
-    
-    virtual void Report(Token const & token,
-			      std::string const &message);
-    
-    virtual void Report(std::string const &message);
+    // MANIPULATORS
 
+    // Return to the start of the string.
+    void rewind();
+
+    //! Report a condition.
+    virtual void report(Token const & token,
+                        string const &message);
+
+    //! Report a condition.
+    virtual void report(string const &message);
+
+    // ACCESSORS
+
+    //! Return the accumulated set of messages.
+    string messages() const { return messages_; }
+
+    //! Check the class invariant.
     bool check_class_invariants() const;
     
   protected:
-    
-    virtual std::string location() const;
-    
-    //! Fill the character buffer.
-    virtual void fill_character_buffer();
 
-    virtual bool error() const;
-    virtual bool end() const;
+    //! Generate a locator string.
+    virtual string location_() const;
+    
+    virtual void fill_character_buffer_();
+
+    virtual bool error_() const;
+    virtual bool end_() const;
 
   private:
 
@@ -67,10 +78,10 @@ class String_Token_Stream : public Text_Token_Stream
 
     // DATA
 
-    std::string text_;  //!< Text to be tokenized
+    string text_;       //!< Text to be tokenized
     unsigned pos_;      //!< Cursor position in string
 
-    std::string messages_; //!< Collection of diagnostic messages
+    string messages_;   //!< Collection of diagnostic messages
 };
 
 } // rtt_parser

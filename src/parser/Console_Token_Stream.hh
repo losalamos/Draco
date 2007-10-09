@@ -2,7 +2,6 @@
 /*! 
  * \file Console_Token_Stream.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
  * \brief Definition of class Console_Token_Stream.
  * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
@@ -18,10 +17,11 @@
 
 namespace rtt_parser 
 {
+using std::set;
+using std::string;
+
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Console-based token stream
  *
  * Console_Token_Stream represents a text token stream that derives its text
@@ -42,23 +42,34 @@ namespace rtt_parser
 class Console_Token_Stream : public Text_Token_Stream
 {
   public:
+
+    // CREATORS
+    
+    //! Construct a Console_Token_Stream.
     Console_Token_Stream();
-    Console_Token_Stream(std::set<char> const &whitespace);
+
+    //! Construct a Console_Token_Stream.
+    explicit Console_Token_Stream(set<char> const &whitespace);
+
+    // MANIPULATORS
     
-    void Rewind();
+    void rewind();
         
-    virtual void Report(const Token & token,
-                        const std::string &message);
+    virtual void report(const Token & token,
+                        const string &message);
     
-    virtual void Report(const std::string &message);
+    virtual void report(const string &message);
 
   protected:
+
+    // IMPLEMENTATION
+
+    //! Return a locator string.
+    virtual string location_() const;
     
-    virtual std::string location() const;
-    
-    virtual void fill_character_buffer();
-    virtual bool error() const;
-    virtual bool end() const;
+    virtual void fill_character_buffer_();
+    virtual bool error_() const;
+    virtual bool end_() const;
 };
 
 } // rtt_parser

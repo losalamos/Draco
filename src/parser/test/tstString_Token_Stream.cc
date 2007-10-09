@@ -40,7 +40,7 @@ void tstString_Token_Stream()
 
     {
 	String_Token_Stream tokens(contents);
-	if (tokens.Whitespace()!=Text_Token_Stream::default_whitespace)
+	if (tokens.whitespace()!=Text_Token_Stream::default_whitespace)
 	{
 	    FAILMSG("whitespace characters are NOT correct defaults");
 	}
@@ -49,18 +49,18 @@ void tstString_Token_Stream()
 	    PASSMSG("whitespace characters are correct defaults");
 	}
 
-	Token token = tokens.Lookahead(4);
-	if (token.Type()!=KEYWORD || token.Text()!="BLACK") 
+	Token token = tokens.lookahead(4);
+	if (token.type()!=KEYWORD || token.text()!="BLACK") 
 	{
-	    FAILMSG("Lookahead(4) does NOT have correct value");
+	    FAILMSG("lookahead(4) does NOT have correct value");
 	}
 	else
 	{
-	    PASSMSG("Lookahead(4) has correct value");
+	    PASSMSG("lookahead(4) has correct value");
 	}
 
-	tokens.Report_Semantic_Error(token, "dummy error");
-	if (tokens.Error_Count()!=1)
+	tokens.report_semantic_error(token, "dummy error");
+	if (tokens.error_count()!=1)
 	{
 	    FAILMSG("Dummy error NOT counted properly");
 	}
@@ -76,7 +76,7 @@ void tstString_Token_Stream()
 	set<char> ws;
 	ws.insert(':');
 	String_Token_Stream tokens(contents, ws);
-	if (tokens.Whitespace()!=ws)
+	if (tokens.whitespace()!=ws)
 	{
 	    FAILMSG("whitespace characters are NOT correctly specified");
 	}
@@ -85,18 +85,18 @@ void tstString_Token_Stream()
 	    PASSMSG("whitespace characters are correctly specified");
 	}
 
-	Token token = tokens.Lookahead(4);
-	if (token.Type()!=OTHER || token.Text()!="=")
+	Token token = tokens.lookahead(4);
+	if (token.type()!=OTHER || token.text()!="=")
 	{
-	    FAILMSG("Lookahead(4) does NOT have correct value");
+	    FAILMSG("lookahead(4) does NOT have correct value");
 	}
 	else
 	{
-	    PASSMSG("Lookahead(4) has correct value");
+	    PASSMSG("lookahead(4) has correct value");
 	}
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="BLUE")
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="BLUE")
 	{
 	    FAILMSG("First shift does NOT have correct value");
 	}
@@ -105,8 +105,8 @@ void tstString_Token_Stream()
 	    PASSMSG("First shift has correct value");
 	}
 
-	token = tokens.Lookahead();
-	if (token.Type()!=KEYWORD || token.Text()!="GENERATE ERROR")
+	token = tokens.lookahead();
+	if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR")
 	{
 	    FAILMSG("Lookahed after first shift does NOT have correct value");
 	}
@@ -115,8 +115,8 @@ void tstString_Token_Stream()
 	    PASSMSG("Lookahead after first shift has correct value");
 	}
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="GENERATE ERROR")
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR")
 	{
 	    FAILMSG("Second shift does NOT have correct value");
 	}
@@ -125,9 +125,9 @@ void tstString_Token_Stream()
 	    PASSMSG("Second shift has correct value");
 	}
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || 
-	    token.Text()!="GENERATE ANOTHER ERROR")
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || 
+	    token.text()!="GENERATE ANOTHER ERROR")
 	{
 	    FAILMSG("Third shift does NOT have correct value");
 	}
@@ -137,10 +137,10 @@ void tstString_Token_Stream()
 	}
 
         token = Token('$', "test_parser");
-	tokens.Pushback(token);
+	tokens.pushback(token);
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="$")
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="$")
 	{
 	    FAILMSG("Shift after pushback does NOT have correct value");
 	}
@@ -151,21 +151,21 @@ void tstString_Token_Stream()
 
 	try 
 	{
-	    tokens.Report_Syntax_Error(token, "dummy syntax error");  
+	    tokens.report_syntax_error(token, "dummy syntax error");  
 	    FAILMSG("Syntax error NOT correctly thrown");
 	}
 	catch (const Syntax_Error &msg)
 	{
 	    PASSMSG("Syntax error correctly thrown and caught");
 	}
-	if (tokens.Error_Count()!=1)
+	if (tokens.error_count()!=1)
 	{
 	    FAILMSG("Syntax error NOT correctly counted");
 	}
 	else
 	{
 	    PASSMSG("Syntax error correctly counted");
-            if (tokens.Get_Messages()=="test_parser: dummy syntax error\n")
+            if (tokens.messages()=="test_parser: dummy syntax error\n")
             {
                 PASSMSG("Correct error message");
             }
@@ -175,102 +175,102 @@ void tstString_Token_Stream()
             }
 	}
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="COLOR") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="COLOR") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="=") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="=") ITFAILS;
 	
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="BLACK") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="BLACK") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=END) ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=END) ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="-") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="-") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.563e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.563e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.563e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.563e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!=".563e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!=".563e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!=".") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!=".") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="-") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="-") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.563") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.563") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.e3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.e3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1e3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1e3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="19090") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="19090") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="01723") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="01723") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="0x1111a") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="0x1111a") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="0") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="0") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="8123") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="8123") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=STRING || token.Text()!="\"manifest string\"")
+	token = tokens.shift();
+	if (token.type()!=STRING || token.text()!="\"manifest string\"")
 	    ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=STRING || 
-	    token.Text()!="\"manifest \\\"string\\\"\"")
+	token = tokens.shift();
+	if (token.type()!=STRING || 
+	    token.text()!="\"manifest \\\"string\\\"\"")
 	    ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="@") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="@") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="1") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="1") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="e") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="e") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="0") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="0") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="x") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="x") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=EXIT) ITFAILS;
-	token = tokens.Shift();
-	if (token.Type()!=EXIT) ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=EXIT) ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=EXIT) ITFAILS;
 
-	tokens.Rewind();
-	token = tokens.Lookahead();
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="BLUE") ITFAILS;
+	tokens.rewind();
+	token = tokens.lookahead();
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="BLUE") ITFAILS;
     }
 
 //---------------------------------------------------------------------------//
@@ -287,7 +287,7 @@ void tstString_Token_Stream()
 	String_Token_Stream tokens(contents);
 	try
 	{
-	    tokens.Shift();
+	    tokens.shift();
 	    ostringstream msg;
 	    msg << "Token_Stream did not throw an exception when\n"
 		<< "\tunbalanced quotes were read from the input\n"
@@ -313,7 +313,7 @@ void tstString_Token_Stream()
 
 	try
 	{
-	    tokens.Shift();
+	    tokens.shift();
 	    ostringstream msg;
 	    msg << "Token_Stream did not throw an exception when\n"
 		<< "\tunbalanced quotes were read from the input\n"
@@ -341,20 +341,20 @@ void tstString_Token_Stream()
 
         tokens = string("<= >= && ||");
 
-        Token token = tokens.Shift();
-	if (token.Text()!="<=") ITFAILS;
+        Token token = tokens.shift();
+	if (token.text()!="<=") ITFAILS;
 
-        token = tokens.Shift();
-	if (token.Text()!=">=") ITFAILS;
+        token = tokens.shift();
+	if (token.text()!=">=") ITFAILS;
 
-        token = tokens.Shift();
-	if (token.Text()!="&&") ITFAILS;
+        token = tokens.shift();
+	if (token.text()!="&&") ITFAILS;
 
-        token = tokens.Shift();
-	if (token.Text()!="||") ITFAILS;
+        token = tokens.shift();
+	if (token.text()!="||") ITFAILS;
 
-        token = tokens.Shift();
-	if (token.Type()!=EXIT) ITFAILS;
+        token = tokens.shift();
+	if (token.type()!=EXIT) ITFAILS;
 
     }
 

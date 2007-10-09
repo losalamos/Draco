@@ -34,7 +34,7 @@ void tstParallel_File_Token_Stream()
 
     {
 	Parallel_File_Token_Stream tokens("scanner_test.inp");
-	if (tokens.Whitespace()!=Text_Token_Stream::default_whitespace)
+	if (tokens.whitespace()!=Text_Token_Stream::default_whitespace)
 	{
 	    FAILMSG("Whitespace not set correctly");
 	}
@@ -43,8 +43,8 @@ void tstParallel_File_Token_Stream()
 	    PASSMSG("Whitespace set correctly.");
 	}
 
-	Token token = tokens.Lookahead(4);
-	if (token.Type()!=KEYWORD || token.Text()!="BLACK")
+	Token token = tokens.lookahead(4);
+	if (token.type()!=KEYWORD || token.text()!="BLACK")
 	{
 	    FAILMSG("Keyword not read correctly");
 	}
@@ -53,8 +53,8 @@ void tstParallel_File_Token_Stream()
 	    PASSMSG("Keyword read correctly.");
 	}
 
-	tokens.Report_Semantic_Error(token, "dummy error");
-	if (tokens.Error_Count()!=1)
+	tokens.report_semantic_error(token, "dummy error");
+	if (tokens.error_count()!=1)
 	{
 	    FAILMSG("Semantic error not handled correctly.");
 	}
@@ -63,8 +63,8 @@ void tstParallel_File_Token_Stream()
 	    PASSMSG("Semantic error handled correctly.");
 	}
 
-	tokens.Report_Semantic_Error("dummy error");
-	if (tokens.Error_Count()!=2)
+	tokens.report_semantic_error("dummy error");
+	if (tokens.error_count()!=2)
 	{
 	    FAILMSG("Second semantic error not handled correctly.");
 	}
@@ -78,7 +78,7 @@ void tstParallel_File_Token_Stream()
 	set<char> ws;
 	ws.insert(':');
 	Parallel_File_Token_Stream tokens("scanner_test.inp", ws);
-	if (tokens.Whitespace()!=ws)
+	if (tokens.whitespace()!=ws)
 	{
 	    FAILMSG("Whitespace not set correctly");
 	}
@@ -87,8 +87,8 @@ void tstParallel_File_Token_Stream()
 	    PASSMSG("Whitespace set correctly.");
 	}
 
-	Token token = tokens.Lookahead(4);
-	if (token.Type()!=OTHER || token.Text()!="=")
+	Token token = tokens.lookahead(4);
+	if (token.type()!=OTHER || token.text()!="=")
 	{
 	    FAILMSG("'=' token not read correctly");
 	}
@@ -97,8 +97,8 @@ void tstParallel_File_Token_Stream()
 	    PASSMSG("'=' token read correctly.");
 	}
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="BLUE")
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="BLUE")
 	{
 	    FAILMSG("Keyword BLUE not read correctly");
 	}
@@ -106,8 +106,8 @@ void tstParallel_File_Token_Stream()
 	{
 	    PASSMSG("Keyword BLUE read correctly.");
 	}
-	token = tokens.Lookahead();
-	if (token.Type()!=KEYWORD || token.Text()!="GENERATE ERROR")
+	token = tokens.lookahead();
+	if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR")
 	{
 	    FAILMSG("Keyword GENERATE ERROR not read correctly");
 	}
@@ -116,22 +116,22 @@ void tstParallel_File_Token_Stream()
 	    PASSMSG("Keyword GENERATE ERROR read correctly.");
 	}
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="GENERATE ERROR") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || 
-	    token.Text()!="GENERATE ANOTHER ERROR") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || 
+	    token.text()!="GENERATE ANOTHER ERROR") ITFAILS;
 
         token = Token('$', "test_parser");
-	tokens.Pushback(token);
+	tokens.pushback(token);
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="$") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="$") ITFAILS;
 
 	try 
 	{
-	    tokens.Report_Syntax_Error(token, "dummy syntax error");  
+	    tokens.report_syntax_error(token, "dummy syntax error");  
 	    {
 		ostringstream msg;
 		msg << "Parallel_File_Token_Stream did not throw an exception when\n"
@@ -148,104 +148,104 @@ void tstParallel_File_Token_Stream()
 		PASSMSG( msg.str() );
 	    }
 	}
-	if (tokens.Error_Count()!=1) ITFAILS;
+	if (tokens.error_count()!=1) ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="COLOR") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="COLOR") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="=") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="=") ITFAILS;
 	
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="BLACK") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="BLACK") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=END) ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=END) ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="-") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="-") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.563e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.563e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.563e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.563e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!=".563e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!=".563e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!=".") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!=".") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="-") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="-") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.563") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.563") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1.e3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1.e3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1e+3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1e+3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=REAL || token.Text()!="1e3") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=REAL || token.text()!="1e3") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="19090") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="19090") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="01723") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="01723") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="0x1111a") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="0x1111a") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="0") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="0") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="8123") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="8123") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=STRING || token.Text()!="\"manifest string\"")
+	token = tokens.shift();
+	if (token.type()!=STRING || token.text()!="\"manifest string\"")
 	    ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=STRING || 
-	    token.Text()!="\"manifest \\\"string\\\"\"")
+	token = tokens.shift();
+	if (token.type()!=STRING || 
+	    token.text()!="\"manifest \\\"string\\\"\"")
 	    ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=OTHER || token.Text()!="@") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=OTHER || token.text()!="@") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="1") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="1") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="e") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="e") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=INTEGER || token.Text()!="0") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=INTEGER || token.text()!="0") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="x") ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="x") ITFAILS;
 
-	token = tokens.Shift();
-	if (token.Type()!=EXIT) ITFAILS;
-	token = tokens.Shift();
-	if (token.Type()!=EXIT) ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=EXIT) ITFAILS;
+	token = tokens.shift();
+	if (token.type()!=EXIT) ITFAILS;
 
-	tokens.Rewind();
-	token = tokens.Lookahead();
-	token = tokens.Shift();
-	if (token.Type()!=KEYWORD || token.Text()!="BLUE") ITFAILS;
+	tokens.rewind();
+	token = tokens.lookahead();
+	token = tokens.shift();
+	if (token.type()!=KEYWORD || token.text()!="BLUE") ITFAILS;
 
         // Check invariance even when --with-dbc=0.
         if( ! tokens.check_class_invariants() ) ITFAILS;
@@ -261,8 +261,8 @@ void tstParallel_File_Token_Stream()
 		   << "\tThe constructor should throw an exception if the requested\n"
 		   << "\tfile can not be opened." << endl;
 	    FAILMSG( errmsg.str() );
-	    // Token token = tokens.Shift();
-	    // if (token.Type()!=ERROR) ITFAILS;
+	    // Token token = tokens.shift();
+	    // if (token.type()!=ERROR) ITFAILS;
 	}
 	catch( std::invalid_argument const &a )
 	{
@@ -286,7 +286,7 @@ void tstParallel_File_Token_Stream()
 	bool exception = false;
 	try
 	{
-	    tokens.Shift();
+	    tokens.shift();
 	}
 	catch (const Syntax_Error &msg)
 	{
@@ -298,7 +298,7 @@ void tstParallel_File_Token_Stream()
 	exception = false;
 	try
 	{
-	    tokens.Shift();
+	    tokens.shift();
 	}
 	catch (const Syntax_Error &msg)
 	{

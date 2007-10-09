@@ -2,9 +2,8 @@
 /*! 
  * \file Text_Token_Stream.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 13:15:29 MST 2003
  * \brief Definition of the Text_Token_Stream class.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -20,8 +19,6 @@ namespace rtt_parser
 {
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Abstract text-based token stream for simple parsers.
  *
  * A Text_Token_Stream obtains its stream of tokens by scanning a stream of
@@ -34,30 +31,33 @@ namespace rtt_parser
  */
 
 class Text_Token_Stream : public Token_Stream
-{
-  protected:
-
-    //! Construct a Text_Token_Stream.
-    Text_Token_Stream();
-
-    //! Construct a Text_Token_Stream.
-    Text_Token_Stream(std::set<char> const &);
-    
+{    
   public:
 
-    unsigned Line() const { Ensure(line_>0); return line_; }
-    //!< Return the current line in the text stream.
+    // ACCESSORS
 
-    std::set<char> const &Whitespace() const { return whitespace_; }
+    //! Return the current line in the text stream.
+    unsigned line() const { Ensure(line_>0); return line_; }
 
+    //! Return the current set of whitespace characters.
+    std::set<char> const &whitespace() const { return whitespace_; }
+       
+    //! Check the class invariants.
+    bool check_class_invariants() const;
+
+    // MANIPULATORS
+    
+    virtual void rewind() = 0;
+
+    // SERVICES
+    
     //! Does the Token_Stream consider \c c to be whitespace?
     bool is_whitespace(char c) const;
 
     //! Does the Token_Stream consider <i>c</i> to be nonbreaking
     bool is_nb_whitespace(char c) const;
-       
-    //! Check the class invariants.
-    bool check_class_invariants() const;
+
+    // CONST DATA
 
     //! The default whitespace definition
     static std::set<char> const default_whitespace;
@@ -65,50 +65,48 @@ class Text_Token_Stream : public Token_Stream
   protected:
 
     // IMPLEMENTATION
-    
+
+    //! Construct a Text_Token_Stream.
+    Text_Token_Stream();
+
+    //! Construct a Text_Token_Stream.
+    Text_Token_Stream(std::set<char> const &);
+
     //! Scan the next token.
-    virtual Token fill();
+    virtual Token fill_();
     
     //! Push a character onto the back of the character queue.
-    void character_push_back(char c);
+    void character_push_back_(char c);
 
-    virtual void fill_character_buffer() = 0;
-    //!< Move one or more characters from the text stream into the character
-    //!< buffer. 
+    //! Move one or more characters from the text stream into the character
+    //! buffer. 
+    virtual void fill_character_buffer_() = 0;
     
-    virtual bool error() const = 0;
-    //!< Has an I/O error occurred while reading the text stream?
-    
-    virtual bool end() const = 0;
-    //!< Has the end of the text stream been reached?
-   
-    //! Returns a location string.    
-    virtual std::string location() const = 0;
-
-    //! Rewind the file token stream.
-    virtual void Rewind() = 0;
+    virtual bool error_() const = 0;
+    virtual bool end_() const = 0;
+       virtual std::string location_() const = 0;
 
     //! Pop a character off the internal buffer. 
-    char pop_char();
+    char pop_char_();
     //! Peek ahead at the internal buffer. 
-    char peek(unsigned pos = 0);
+    char peek_(unsigned pos = 0);
 
-    //! Skip initial whitespace, if any.
-    void eat_whitespace();
+    //! Skip any whitespace at the cursor position.
+    void eat_whitespace_();
 
     // The following scan_ functions are for numeric scanning.  The names
     // reflect the context-free grammar given by Stroustrup in appendix A 
     // of _The C++ Programming Language_.  However, we do not presently
     // recognize type suffixes on either integers or floats.
-    unsigned scan_floating_literal();
-    unsigned scan_digit_sequence(unsigned &);
-    unsigned scan_exponent_part(unsigned &);
-    unsigned scan_fractional_constant(unsigned &);
+    unsigned scan_floating_literal_();
+    unsigned scan_digit_sequence_(unsigned &);
+    unsigned scan_exponent_part_(unsigned &);
+    unsigned scan_fractional_constant_(unsigned &);
     
-    unsigned scan_integer_literal();
-    unsigned scan_decimal_literal(unsigned &);
-    unsigned scan_hexadecimal_literal(unsigned &);
-    unsigned scan_octal_literal(unsigned &);
+    unsigned scan_integer_literal_();
+    unsigned scan_decimal_literal_(unsigned &);
+    unsigned scan_hexadecimal_literal_(unsigned &);
+    unsigned scan_octal_literal_(unsigned &);
 
   private:    
 
@@ -117,11 +115,13 @@ class Text_Token_Stream : public Token_Stream
     // DATA
 
     std::deque<char> buffer_;
-    //!< Character buffer. Refilled as needed using fill_character_buffer()
+    //!< Character buffer. Refilled as needed using fill_character_buffer_()
 
-    std::set<char> whitespace_; //!< the whitespace character list
+    std::set<char> whitespace_;
+    //!< The whitespace character list
          
-    unsigned line_;  //!< Current line in input file.
+    unsigned line_;
+    //!< Current line in input file.
 };
 
 }  // namespace rtt_parser

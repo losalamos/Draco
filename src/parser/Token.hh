@@ -2,12 +2,8 @@
 /*! 
  * \file Token.hh
  * \author Kent G. Budge
- * \date Wed Jan 22 13:15:29 MST 2003
- * \brief Tokens for use with simple parsers
- * \note   Copyright © 2006 Los Alamos National Security, LLC
- *
- * This header file defines a class representing a lexical token, for use
- * in simple parsing systems for analysis codes.
+ * \brief Define class Token and enum Token_Type
+ * \note Copyright © 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -21,6 +17,7 @@
 
 namespace rtt_parser 
 {
+using std::string;
 
 //-------------------------------------------------------------------------//
 /*! 
@@ -57,139 +54,138 @@ enum Token_Type
     //!< the file failed to open.
     
     OTHER
-    /*! A single character that does not belong to one of the regular token
-     * types described above.
+    /*! A single character or sequence of characters (such as "==") that does
+     *  not belong to one of the regular token types described above.
      */
 };
 
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Description of a token.
  *
- * Contains the type, value, and location of a parsed token.
+ * This class represents a lexical token, for use in simple parsing systems
+ * for analysis codes.  The token is characterized by its type, value, and
+ * location.
  */
 
 class Token
 {
   public:
-    inline Token(Token_Type t, std::string const &loc);
-    inline Token(char c,       std::string const &loc);
+
+    // CREATORS
+
+    //! Construct a Token with the specified non-text type and location.
+    inline Token(Token_Type t, string const &loc);
+
+    //! Construct a single-character OTHER token with the specified location.
+    inline Token(char c,       string const &loc);
 
     //! Construct a Token with specified type, text, and location.
-    inline Token(Token_Type ty, std::string const &tx, std::string const &loc);
+    inline Token(Token_Type ty, string const &tx, string const &loc);
+
+    // ACCESSORS
     
     //! Return the token type.
-    Token_Type Type() const { return type_; }
+    Token_Type type() const { return type_; }
     
     //! Return the token text.
-    std::string Text() const { return text_; }
+    string text() const { return text_; }
     
     //! Return the location information.
-    std::string Location() const { return location_; }
-    
-  private:
-    Token_Type type_;      //!< Type of this token
-    std::string text_;     //!< Text of this token
-    std::string location_; //!< Location information (such as file and line)
+    string location() const { return location_; }
 
+    //! Check that the class invariants are satisfied.
     bool check_class_invariants() const;
+
+  private:
+    
+    Token_Type type_; //!< Type of this token
+    string text_;     //!< Text of this token
+    string location_; //!< Location information (such as file and line)
 };
 
 // For checking of assertions
+bool Is_Text_Token  (Token_Type type);
 bool Is_Integer_Text(char const *string);
 bool Is_Keyword_Text(char const *string);
 bool Is_Real_Text   (char const *string);
 bool Is_String_Text (char const *string);
+bool Is_Other_Text  (char const *string);
 
+//! Test equality of two Tokens
 bool operator==(Token const &, Token const &);
 
 //-------------------------------------------------------------------------//
 /*! 
- * \param ty
- * Type of the Token.  Must equal KEYWORD, REAL, INTEGER, or STRING.
+ * \param type
+ * Type of the Token.
  *
- * \param tx
+ * \param text
  * Text of the Token.
  *
- * \param loc
+ * \param location
  * The token location.
  */
-
-Token::Token(Token_Type const ty, 
-	     std::string const &tx, 
-	     std::string const &loc)
+inline
+Token::Token(Token_Type const type, 
+	     string const &text, 
+	     string const &location)
     : 
-    type_(ty), text_(tx), location_(loc)
+    type_(type), text_(text), location_(location)
 {
-    Require(ty==KEYWORD || ty==REAL || ty==INTEGER || ty==STRING || ty==OTHER);
-    Require(ty!=KEYWORD || Is_Keyword_Text(tx.c_str()));
-    Require(ty!=REAL || Is_Real_Text(tx.c_str()));
-    Require(ty!=INTEGER || Is_Integer_Text(tx.c_str()));
-    Require(ty!=STRING || Is_String_Text(tx.c_str()));
+    Require(Is_Text_Token(type));
+    Require(type!=KEYWORD || Is_Keyword_Text(text.c_str()));
+    Require(type!=REAL || Is_Real_Text(text.c_str()));
+    Require(type!=INTEGER || Is_Integer_Text(text.c_str()));
+    Require(type!=STRING || Is_String_Text(text.c_str()));
+    Require(type!=OTHER || Is_Other_Text(text.c_str()));
 
     Ensure(check_class_invariants());
-    Ensure(Type()==ty);
-    Ensure(Text()==tx);
-    Ensure(Location()==loc);
+    Ensure(this->type()==type);
+    Ensure(this->text()==text);
+    Ensure(this->location()==location);
 }
 
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Construct a token of type OTHER.
- *
  * \param c
  * The token text (a single character)
  *
- * \param loc
+ * \param location
  * The token location.
- *
- * \post <code>Type()==OTHER</code>
- * \post <code>Text().size()==1 && Text()[0]==c</code>
- * \post <code>Location()==loc</code>
  */
-
-Token::Token(char c, std::string const &loc)
-    : type_(OTHER), text_(1, c), location_(loc)
+inline
+Token::Token(char const c, string const &location)
+    : type_(OTHER), text_(1, c), location_(location)
 {
+    Require(Is_Other_Text(string(1, c).c_str()));
+    
     Ensure(check_class_invariants());
-    Ensure(Type()==OTHER);
-    Ensure(Text().size()==1 && Text()[0]==c);
-    Ensure(Location()==loc);
+    Ensure(this->type()==OTHER);
+    Ensure(this->text()==string(1,c));
+    Ensure(this->location()==location);
 }
 
 //-------------------------------------------------------------------------//
 /*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Construct a token of type END, EXIT, or ERROR.
- *
- * \param t
+ * \param type
  * Token type to create; must be one of END, EXIT, or ERROR.
  *
- * \param loc
+ * \param location
  * The token location
  *
  * These token types have no associated text.
- *
- * \pre <code>t==END || t==EXIT || t==ERROR</code>
- * \post <code>Type()==t</code>
- * \post <code>Text()==""</code>
- * \post <code>Location()==loc</code>
  */
-
-Token::Token(Token_Type t, std::string const &loc)
-    : type_(t), text_(), location_(loc)
+inline
+Token::Token(Token_Type const type, string const &location)
+    : type_(type), text_(), location_(location)
 {
-    Require(t==END || t==EXIT || t==ERROR);
+    Require(!Is_Text_Token(type));
 
     Ensure(check_class_invariants());
-    Ensure(Type()==t);
-    Ensure(Text()=="");
-    Ensure(Location()==loc);
+    Ensure(this->type()==type);
+    Ensure(this->text()=="");
+    Ensure(this->location()==location);
 }
 
 }  // namespace rtt_parser
