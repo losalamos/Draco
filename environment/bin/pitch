@@ -2,6 +2,10 @@
 
 from optparse import OptionParser
 from optparse import OptionValueError
+import tempfile, tarfile
+import os
+
+import Verbosity, Repo, CVS
 
 # Global application data:
 packages = ['draco', 'clubimc', 'wedgehog']
@@ -12,24 +16,210 @@ parser = OptionParser(usage=usage)
 parser.add_option("-d", "--depend",
                   type     = "string",
                   nargs    = 2,
+                  default  = [],
                   action   = "append",
                   metavar  = "COMPONENT",
                   help     = "Set a version/tag for a dependency"
-                  );
+                  )
+
+parser.add_option("-v", "--verbose",
+                  action   = "count",
+                  dest     = "verbosity"
+                  )
+
+parser.add_option("-e", "--export",
+                  action   = "store_true",
+                  dest     = "export",
+                  help     = "Export sources, instead of checking them out",
+                  )
+
+parser.add_option("-l", "--location",
+                  action   = "store",
+                  dest     = "location",
+                  help     = "Location for resulting source tree or tarball."
+                  )
+
+parser.add_option("-t", "--tarball",
+                  action   = "store",
+                  dest     = "tarfile",
+                  help     = "Create a tarball of the source tree"
+                  )
+
+##---------------------------------------------------------------------------##
+class ArgumentError(Exception):
+    "An exception class for inconsistent combinations of arguments."
+    pass
 
 
+##---------------------------------------------------------------------------##
+def extract_module(args):
+    
+    # Get a tag:
+    if len(args) == 2:
+        tag_name = args[1]
+    else:
+        tag_name = ''
+    
+
+    # Get module name
+    try:
+        name = Repo.disambiguate_component(args[0])
+    except KeyError:
+        sys.exit("Could not determine correct package from: %s" % \
+                 args[0])
+
+    module = CVS.Module(name, tag=tag_name)
+
+    return module
+
+
+##---------------------------------------------------------------------------##
+def form_get_draco(package, import_only = False):
+
+    depends = Repo.get_depends(package)
+    depends_repos = [Repo.get_cvs_repo(dep) for dep in depends]
+
+    command = "./get_draco -l"
+    if import_only:
+        command += " -i"
+
+    if 'draco' in depends_repos:
+        command += " -d %s" % Repo.get_cvs_repo_dir('draco')
+
+    if 'jayenne' in depends_repos:
+        command += " -j %s" % Repo.get_cvs_repo_dir('jayenne')
+
+    return command
+
+
+##---------------------------------------------------------------------------##
 if __name__=="__main__":
 
     (options, args) = parser.parse_args()
 
-    if len(args) < 1:
-        parser.error("No top component specified.")
+    # Parse error checks:
+    if len(args) < 1: parser.error("No top component specified.")
+    if len(args) > 2: parser.error("Too many parameters")
 
-    if len(args) > 2:
-        parser.error("Too many parameters")
+    message = Verbosity.make(options.verbosity)
 
-    print options
-    print args
+    message("Options: %s" % str(options), 3)
+    message("Arguments: %s " % str(args), 3)
 
+    # Location/Tarball combinations:
+    # Neither:   Put source in CWD. No tarball
+    # -l only:   Put source at location
+    # -t only:   Put tarball in CWD.       Requires temp dir.
+    # -l and -t: Put tarball at location.  Requires temp dir.
     
+    # Set default location to CWD:
+    if not options.location: options.location = os.getcwd()
+    options.location = os.path.abspath(options.location)
     
+    # If it doesn't exist, try to create it.
+    if not os.path.exists(options.location):
+        try:
+            os.mkdir(options.location)
+        except:
+            sys.exit("Failed to create directory %s:" % options.location)
+
+
+
+    # Set the value of checkout_dir
+    if options.tarfile:
+        # Get a temporary directory.
+        checkout_dir = tempfile.mkdtemp()
+        message("Created a temporary directory: %s" % checkout_dir, 3)
+    elif options.location:
+        checkout_dir = options.location
+        
+
+
+
+
+
+    # Get the CVS.Module object and Repo object, checkout module, and cd there:
+    module = extract_module(args)
+    repo   = CVS.Repository(Repo.get_cvs_dir(module.name))
+    message("Checking out head package: %s" % module, 1)
+    message("With tag: %s" % module.tag, 1)
+    location = CVS.checkout(repo, module, checkout_dir, options.export, message)
+    os.chdir(location)
+    message("Changing to new directory: %s" % location, 2)
+
+
+
+    # Run get_draco with correct repositories for dependencies. Get
+    # release versions for now.
+    command = form_get_draco(module.name)
+    message("Running get_draco command in: %s" % location, 1)
+    message("Command: %s" % command, 2)
+    os.system(command)
+
+
+
+    # Run autoconf in the main package directory
+    autoconf_script = "./%s_config" % module.name
+    message("Running autoconf script in: %s" % location, 1)
+    message("Command: %s" % autoconf_script, 2)
+    os.system(autoconf_script)
+
+
+
+    # Get the full and named depenency information
+    named_dependencies = [extract_module(dep) for dep in
+                          options.depend]
+    all_dependencies   = Repo.get_depends(module.name)
+    message("Named dependencies: %s" % map(str, named_dependencies), 3)
+    message("All dependencites: %s"  % all_dependencies,   3)
+
+
+
+    # Enter dependency directories
+    for dependency in all_dependencies:
+
+        #1. Find the dependencys path and go there.
+        dependency_path = os.path.join(checkout_dir, dependency)
+        message("Changing directory to: %s" % dependency_path, 2)
+        os.chdir(dependency_path)
+
+        #2. run cvs update if this was a named depdenency.
+        matching_named_dep = filter(lambda x: x.name == dependency,
+                                    named_dependencies)
+
+        if matching_named_dep:
+            # Use the last tag, if multiple ones were provided:
+            named_dep_tag = matching_named_dep[-1].tag
+            command = "cvs update %s" % named_dep_tag
+            message("Running cvs update in dependent module: %s" % \
+                    dependency, 1)
+            message("With command: %s" % command, 2)
+            os.system(command)
+            
+
+        #3. run get_draco -i, if it isn't draco.
+        if dependency != 'draco':
+            command = form_get_draco(dependency, import_only=True)
+            message("Executing get_draco in %s" % dependency_path, 1)
+            message("Command: %s" % command)
+            os.system(command)
+
+        #4. run the autoconf script.
+        autoconf_script = "./%s_config" % dependency
+        message("Running autoconf script in: %s" % dependency_path, 1)
+        message("Command: %s" % autoconf_script, 2)
+        os.system(autoconf_script)
+
+
+    # Make the tarfile
+    if options.tarfile:
+
+        filename = os.path.join(
+            options.location, options.tarfile + ".tgz")
+        
+        tar = tarfile.open(filename, 'w:gz')
+        tar.add(checkout_dir, options.tarfile)
+        tar.close()
+
+        
+    # Delete the temp directory, if we used one.
