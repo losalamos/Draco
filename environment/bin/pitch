@@ -18,13 +18,14 @@ parser.add_option("-d", "--depend",
                   nargs    = 2,
                   default  = [],
                   action   = "append",
-                  metavar  = "COMPONENT",
+                  metavar  = "COMPONENT TAG",
                   help     = "Set a version/tag for a dependency"
                   )
 
 parser.add_option("-v", "--verbose",
                   action   = "count",
-                  dest     = "verbosity"
+                  dest     = "verbosity",
+                  help     = "Increase verbosity of output. Multiple uses supported.",
                   )
 
 parser.add_option("-e", "--export",
@@ -74,12 +75,18 @@ def extract_module(args):
 
 
 ##---------------------------------------------------------------------------##
-def form_get_draco(package, import_only = False):
+def form_get_draco(package, checkout_head = False, import_only = False):
 
     depends = Repo.get_depends(package)
     depends_repos = [Repo.get_cvs_repo(dep) for dep in depends]
 
-    command = "./get_draco -l"
+    command = "./get_draco"
+
+    if checkout_head:
+        command += " -H"
+    else:
+        command += " -l"
+
     if import_only:
         command += " -i"
 
@@ -142,7 +149,7 @@ if __name__=="__main__":
     # Get the CVS.Module object and Repo object, checkout module, and cd there:
     module = extract_module(args)
     repo   = CVS.Repository(Repo.get_cvs_dir(module.name))
-    message("Checking out head package: %s" % module, 1)
+    message("Checking out package: %s" % module, 1)
     message("With tag: %s" % module.tag, 1)
     location = CVS.checkout(repo, module, checkout_dir, options.export, message)
     os.chdir(location)
@@ -150,9 +157,11 @@ if __name__=="__main__":
 
 
 
-    # Run get_draco with correct repositories for dependencies. Get
-    # release versions for now.
-    command = form_get_draco(module.name)
+
+    # Run get_draco with correct repositories for dependencies. 
+    # We need to know if the main module is a head version.
+    main_head = (module.tag.kind == "h")
+    command = form_get_draco(module.name, main_head)
     message("Running get_draco command in: %s" % location, 1)
     message("Command: %s" % command, 2)
     os.system(command)
