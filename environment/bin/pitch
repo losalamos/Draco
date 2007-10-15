@@ -5,7 +5,7 @@ from optparse import OptionValueError
 import tempfile, tarfile
 import os
 
-import Verbosity, Repo, CVS
+import Verbosity, Repo, CVS, Cleanup
 
 # Global application data:
 packages = ['draco', 'clubimc', 'wedgehog']
@@ -127,8 +127,9 @@ if __name__=="__main__":
 
     # Set the value of checkout_dir
     if options.tarfile:
-        # Get a temporary directory.
+        # Get a temporary directory & register with cleanup
         checkout_dir = tempfile.mkdtemp()
+        Cleanup.delete_on_exit(checkout_dir)
         message("Created a temporary directory: %s" % checkout_dir, 3)
     elif options.location:
         checkout_dir = options.location
