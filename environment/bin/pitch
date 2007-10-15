@@ -10,7 +10,33 @@ import Verbosity, Repo, CVS, Cleanup
 # Global application data:
 packages = ['draco', 'clubimc', 'wedgehog']
 
-usage = "usage: %prog component [[date:]version] [-d dependency [date:]version]"
+usage = """usage:
+
+  %prog component [[date:]version] [-d dependency [date:]version]
+
+Quick intro:
+
+  To check out a package:
+
+  > pitch <package>
+
+  For a specific version:
+
+  > pitch <package> <some_cvs_tag>
+
+  For a specific date:
+
+  > pitch <package> date:<some_date>
+
+  Specific versions of dependencies can be selected with '-d'.
+
+  Head of main package implies head of dependencies. A specific version
+  of the main package will result in correspinding release versions of
+  the dependencies. (Unless over-ridden with '-d')
+
+  Use -t <filename> to make a tarball.
+
+"""
 
 parser = OptionParser(usage=usage)
 parser.add_option("-d", "--depend",
