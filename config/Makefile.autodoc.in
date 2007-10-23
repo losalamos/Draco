@@ -40,7 +40,8 @@ header_files := $(wildcard ${header_dir}/*.png)\
 	$(wildcard ${header_dir}/*.gif)\
 	$(wildcard ${header_dir}/*.jpg)\
 	$(wildcard ${header_dir}/*.css)\
-	$(wildcard ${header_dir}/*.pdf)
+	$(wildcard ${header_dir}/*.pdf)\
+	$(wildcard ${header_dir}/*.ps)
 
 support_files := $(wildcard ${autodoc_dir}/*.png)\
 	$(wildcard ${autodoc_dir}/*.gif)\
