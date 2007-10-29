@@ -75,17 +75,55 @@ def parse_command_line():
     return (options, packages)
 
 
+##---------------------------------------------------------------------------##
+def get_archive_name(package, compress = True):
+
+    """Transform a package name into the name of a tar repository.
+
+    Optional argument indicates gnu-zip compression. Defaults to true.
+
+    >>> get_archive_name("Whatever")
+    'Whatever.tgz'
+
+    >>> get_archive_name("andEver", False)
+    'andEver.tar'
+
+    >>> get_archive_name("Amen", True)
+    'Amen.tgz'
+
+    """
+
+    if compress:
+        extension = ".tgz"
+    else:
+        extension = ".tar"
+
+    return package + extension
+
+
 
 ##---------------------------------------------------------------------------##
 def make_archive(package_name, directory, compress, verbose = Verbosity.ignore()):
 
     verbose("Creating archive for package %s" % (package_name, ))
 
-    archive = Repo.get_tar_file(package_name, compress, directory)
+    assert(is_valid_package(package_name))
+
+    mode = 'w'
+    if compress: mode += ":gz"
+
+    repository_path = get_cvs_path(package)
+
+    if not archive_path: archive_path = ""
+    archive_name = os.path.join(archive_path, get_archive_name(package, compress))
+
+    tar = tarfile.open(archive_name, mode)
+    tar.add(repository_path, package)
+    tar.close()
 
     verbose(" ... as file: %s" % (archive, ),2)
 
-    return archive
+    return archive_name
 
 
 ##---------------------------------------------------------------------------##
