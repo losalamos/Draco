@@ -78,6 +78,7 @@ void test_idempotence(ScalarUnitTest& ut)
          value *= 3.4)
     {
 
+        // Use the in-place version to test positive values.
         double local = value;
         byte_swap(local);   
         byte_swap(local);
@@ -87,9 +88,9 @@ void test_idempotence(ScalarUnitTest& ut)
             ut.failure("byte_swap failed to reproduce original number");
 
 
-        double neg_local = -value;
-        byte_swap(neg_local);
-        byte_swap(neg_local);
+        // Use the copy-generating version to test negative numbers.
+
+        double neg_local = byte_swap_copy( byte_swap_copy( -value ) );
 
         if (neg_local != -value)
             ut.failure("byte_swap failed to reproduce original number");

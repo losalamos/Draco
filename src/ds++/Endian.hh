@@ -31,10 +31,8 @@ namespace rtt_dsxx
  */
 void char_byte_swap(unsigned char *data, int n)
 {
-
     unsigned char *end = data+n-1;
     while (data < end) std::swap(*data++, *end--);
-
 }
 
 
@@ -49,6 +47,21 @@ template <typename T>
 void byte_swap(T& value)
 {
     char_byte_swap((unsigned char*)(&value), sizeof(T));
+}
+
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief General byte-swapping routine.
+ *
+ * This function returns a bite-swapped copy of the argument.
+ * 
+ */
+template <typename T>
+T byte_swap_copy(T value) 
+{
+    byte_swap(value);
+    return value;
 }
 
 } // end namespace rtt_dsxx
