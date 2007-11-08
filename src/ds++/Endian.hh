@@ -35,6 +35,13 @@ void char_byte_swap(unsigned char *data, int n)
     while (data < end) std::swap(*data++, *end--);
 }
 
+void char_byte_swap(char *data, int n)
+{
+    char* end = data+n-1;
+    while (data < end) std::swap(*data++, *end--);
+}
+                
+
 
 //---------------------------------------------------------------------------//
 /**
