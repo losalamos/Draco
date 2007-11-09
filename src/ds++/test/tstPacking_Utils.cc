@@ -431,8 +431,34 @@ void packing_functions_test()
 	PASSMSG("pack_data and unpack_data work fine.");
 }
 
+
 //---------------------------------------------------------------------------//
 
+void endian_conversion_test()
+{
+
+    long int moo = 0xDEADBEEF;
+
+    const int length = sizeof(long int);
+    char data[length];
+
+    Packer p;
+    p.set_buffer(length, data);
+
+    p << moo;
+
+    Unpacker up(true);
+    up.set_buffer(length, data);
+
+    long int oom = 0;
+
+    up >> oom;
+
+    if (oom != 0xEFBEADDE) ITFAILS;
+
+}
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
     // version tag
@@ -454,6 +480,8 @@ int main(int argc, char *argv[])
 	packing_functions_test();
 
 	compute_buffer_size_test();
+
+        endian_conversion_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
