@@ -13,6 +13,7 @@
 #define rtt_ds_Packing_Utils_hh
 
 #include "Assert.hh"
+#include "Endian.hh"
 
 #include <string>
 #include <vector>
@@ -316,9 +317,17 @@ class Unpacker
     const_pointer begin_ptr;
     const_pointer end_ptr;
 
+    // Should we convert the endian nature of the data?
+    bool do_byte_swap;
+
   public:
     //! Constructor.
-    Unpacker() : stream_size(0), ptr(0), begin_ptr(0), end_ptr(0) {/*...*/} 
+    Unpacker(bool byte_swap = false)
+        : do_byte_swap(byte_swap),
+          stream_size(0),
+          ptr(0),
+          begin_ptr(0),
+          end_ptr(0) {/*...*/} 
 
     // Set the buffer.
     inline void set_buffer(unsigned int, const_pointer);
@@ -405,6 +414,8 @@ void Unpacker::unpack(T &value)
 
     // copy data into the value reference
     std::memcpy(&value, ptr, sizeof(T));
+
+    if (do_byte_swap) byte_swap(value);
 
     // advance the iterator pointer to the next location
     ptr += sizeof(T);

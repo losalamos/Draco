@@ -29,19 +29,8 @@ namespace rtt_dsxx
  * interface. 
  * 
  */
-void char_byte_swap(unsigned char *data, int n)
-{
-    unsigned char *end = data+n-1;
-    while (data < end) std::swap(*data++, *end--);
-}
-
-void char_byte_swap(char *data, int n)
-{
-    char* end = data+n-1;
-    while (data < end) std::swap(*data++, *end--);
-}
-                
-
+void char_byte_swap(unsigned char *data, int n);
+void char_byte_swap(char *data, int n);
 
 //---------------------------------------------------------------------------//
 /**
@@ -62,7 +51,7 @@ void byte_swap(T& value)
  * \brief General byte-swapping routine.
  *
  * This function returns a bite-swapped copy of the argument.
- * 
+ *
  */
 template <typename T>
 T byte_swap_copy(T value) 
