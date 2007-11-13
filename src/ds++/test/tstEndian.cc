@@ -15,8 +15,8 @@
 #include <cmath>
 #include <iterator>
 
-#include "ds++/Assert.hh"
-#include "ds++/ScalarUnitTest.hh"
+#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 
 #include "../Endian.hh"
