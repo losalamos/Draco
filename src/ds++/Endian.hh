@@ -22,15 +22,29 @@ namespace rtt_dsxx
 /**
  * \brief Elemetary byte-swapping routine.
  *
- * \arg The data to byte-swap, represented as unsigned character data.
+ * \arg The data to byte-swap, represented as character data.
  * \arg The size of the data array.
  *
  * This is a core routine used by other functions with a friendlier
- * interface. 
+ * interface.
+ *
+ * Note that we provide two versions for signed and unsigned character
+ * data. Internally, we use unsigned. Certain applications use signed char
+ * data, and the second form is provided if they need to manipulate the
+ * character data directly, instead of using one of the byte_swap functions. 
  * 
  */
-void char_byte_swap(unsigned char *data, int n);
-void char_byte_swap(char *data, int n);
+inline void char_byte_swap(unsigned char *data, int n)
+{
+    unsigned char *end = data+n-1;
+    while (data < end) std::swap(*data++, *end--);
+}
+
+inline void char_byte_swap(char *data, int n)
+{
+    char* end = data+n-1;
+    while (data < end) std::swap(*data++, *end--);
+}
 
 //---------------------------------------------------------------------------//
 /**
