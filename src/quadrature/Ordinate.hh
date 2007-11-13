@@ -93,6 +93,17 @@ class Ordinate
     double weight_;
 };
 
+//---------------------------------------------------------------------------//
+//! Test ordinates for equality
+inline bool operator==(Ordinate const &a, Ordinate const &b)
+{
+    return
+        a.mu()==b.mu() &&
+        a.eta()==b.eta() &&
+        a.xi()==b.xi() &&
+        a.wt()==b.wt();
+}
+
 //===========================================================================//
 /*!
  * \class OrdinateSet
