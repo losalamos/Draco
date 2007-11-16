@@ -437,24 +437,47 @@ void packing_functions_test()
 void endian_conversion_test()
 {
 
-    long int moo = 0xDEADBEEF;
-
-    const int length = sizeof(long int);
-    char data[length];
-
     Packer p;
-    p.set_buffer(length, data);
+    Unpacker up(true);
 
+
+    // Test the long int type.
+    const long int moo = 0xDEADBEEF;
+    const int length = sizeof(long int);
+
+    // Pack
+    char data[length];
+    p.set_buffer(length, data);
     p << moo;
 
-    Unpacker up(true);
+    // Unpack
+    long int oom = 0; 
     up.set_buffer(length, data);
-
-    long int oom = 0;
-
     up >> oom;
 
+    // Check
     if (oom != 0xEFBEADDE) ITFAILS;
+
+    
+
+    // Verify that char data (being one byte) is unchanged.
+    const char letters[] = "abcdefg";
+    const int letter_length = sizeof(letters)/sizeof(char);
+
+    // Pack
+    char letter_data[letter_length];
+    p.set_buffer(letter_length, letter_data);
+    for (int i=0; i<letter_length; ++i) p << letters[i];
+
+    // Unpack
+    char unpacked_letters[letter_length];
+    up.set_buffer(letter_length, letter_data);
+    for (int i=0; i<letter_length; ++i) up >> unpacked_letters[i];
+
+    // Check
+    for (int i=0; i<letter_length; ++i)
+        if (unpacked_letters[i] != letters[i]) ITFAILS;
+
 
 }
 
