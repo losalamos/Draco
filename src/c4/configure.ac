@@ -62,6 +62,7 @@ AC_RUNTESTS( \
             tstAbort \
             tstScalar \
             tstParallelUnitTest \
+            tstInvert_Comm_Map \
             , 1 2 4)
 
 dnl application tests
