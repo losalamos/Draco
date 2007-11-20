@@ -78,23 +78,22 @@ void master_impl(const std::vector<int> &in, std::vector<int> &out)
 
 
 
-    // Communicate the results for remote nodes
-    for (map_type::const_iterator to_node = out_maps.begin();
-         to_node != out_maps.end();
-         ++to_node)
+    // Communicate the results for all remote nodes
+    for (int node = 1; node < nodes; ++node)
     {
-        // Grab the to-node value and a reference to the values.
-        const int to_node_val              = to_node->first;
-        const std::vector<int> &from_nodes = to_node->second;
-
-        if (to_node_val == HOST) continue; // Don't communicate to host.
         
-        // Send the size, and the data if size > 0
-        const int size = from_nodes.size();
-        send(&size, 1, to_node_val, SIZE_CHANNEL);
-        if (size > 0)
+        if (out_maps.count(node) && out_maps[node].size() > 0)
         {
-            send(&from_nodes[0], size, to_node_val, MAP_CHANNEL);
+            // Send size and data
+            const int size = out_maps[node].size();
+            send(&size, 1, node, SIZE_CHANNEL);
+            send(&(out_maps[node])[0], size, node, MAP_CHANNEL);
+        }
+        else
+        {
+            // Send zero for the size and no data.
+            const int size = 0;
+            send(&size, 1, node, SIZE_CHANNEL);
         }
 
     }

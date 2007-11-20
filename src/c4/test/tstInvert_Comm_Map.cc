@@ -158,6 +158,19 @@ void test_cyclic(rtt_c4::ParallelUnitTest& ut)
 }
 
 
+void test_empty(rtt_c4::ParallelUnitTest& ut)
+{
+
+    std::vector<int> to_nodes;
+    std::vector<int> from_nodes;
+
+    invert_comm_map(to_nodes, from_nodes);
+
+    if (from_nodes.size() != 0) ut.failure("Incorrect map size in empty test.");
+
+}
+
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -174,6 +187,8 @@ int main(int argc, char *argv[])
         test_n_to_n(ut);
 
         test_cyclic(ut);
+
+        test_empty(ut);
 
         ut.passes("Just Because.");
     }

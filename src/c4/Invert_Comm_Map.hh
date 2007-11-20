@@ -14,7 +14,7 @@
 #define c4_Invert_Comm_Map_hh
 
 #include <vector>
-#include "C4_Functions.hh"
+#include "global.hh"
 
 namespace rtt_c4
 {
