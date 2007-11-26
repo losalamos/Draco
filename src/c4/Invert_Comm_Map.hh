@@ -63,8 +63,8 @@ void invert_comm_map(const T& to_values, T& from_values)
  * avoids data copy operations.
  * 
  */
-void invert_comm_map(const std::vector<int>& to_values,
-                     std::vector<int>& from_values)
+inline void invert_comm_map(const std::vector<int>& to_values,
+                            std::vector<int>& from_values)
 {
     const int node = rtt_c4::node();
 
