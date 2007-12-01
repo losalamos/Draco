@@ -249,7 +249,8 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
       F90CXXFLAGS="-L${CXXLIBDIR} -lC -lstd"
    else
       CXXLIBDIR=${GCC_LIB_DIR}
-      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+dnl      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
+      F90CXXFLAGS="-lstdc++"  
    fi   
    AC_MSG_RESULT(${F90CXXFLAGS})
 
@@ -1271,7 +1272,7 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            ;;
        openmpi)
            with_mpi='OPENMPI'
-           mpi_libs='-lmpi -lmpi_cxx'
+           mpi_libs='-lmpi -lmpi_cxx -lmpi_f77'
            AC_MSG_CHECKING("mpirun -version")
            mpi_version=`mpirun -version 2>&1`
            if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
