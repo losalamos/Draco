@@ -338,7 +338,7 @@ class Unpacker
     // >>> ACCESSORS
 
     //! Skip a specific number of bytes
-    void skip(unsigned int bytes);
+    inline void skip(unsigned int bytes);
 
     //! Copy data to a provied iterator
     template <typename IT>
