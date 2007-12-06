@@ -128,7 +128,12 @@ void packing_test()
 
 	if (p.get_ptr() != b1+s1) ITFAILS;
 
-	// try catching a failure
+	p.set_buffer(s2, b2);
+	p << iz << z;
+	
+	if (p.get_ptr() != b2+s2) ITFAILS;
+
+	// Catch a failure when excedding the buffer limit:
 #if DBC
 	bool caught = false;
 	try
@@ -142,10 +147,8 @@ void packing_test()
 	}
 	if (!caught) ITFAILS;
 #endif
-	p.set_buffer(s2, b2);
-	p << iz << z;
-	
-	if (p.get_ptr() != b2+s2) ITFAILS;
+
+
     }
     
     // unpack the data
@@ -192,6 +195,18 @@ void packing_test()
 
     delete [] b1;
     delete [] b2;
+
+
+
+
+
+
+
+
+
+
+
+
 
     // try packing a vector and char array
     double r = 0;
@@ -346,112 +361,134 @@ void std_string_test()
  
 void packing_functions_test()
 {
-    // make a packing container
+    
+    // Data to pack:
+    // -------------
+    vector<double> x(5);
+    string         y("Tom Evans is a hack!");
+    
+    for (int i=0; i<5; ++i) x[i] = 100.0*static_cast<double>(i) + 2.5;
+
+
+    // Pack the data
+    // -------------
+
+    vector<char> packed_vector;
+    vector<char> packed_string;
+
+    pack_data(x, packed_vector);
+    pack_data(y, packed_string);
+
+    if (packed_vector.size() != 5*sizeof(double) + sizeof(int)) ITFAILS;
+    if (packed_string.size() != y.size() + sizeof(int))         ITFAILS;
+        
+    
+    /* We now pack the two packed datums (x and s) together by manually
+     * inserting the data, including the size of the already packed arrays,
+     * into a new array.
+     *
+     * Honestly, I can't think of a better demonstration of how brain-dead
+     * the packing system is. The root cause is the inistance of only packing
+     * and unpacking into vector<char>. These manage their own memory, so any
+     * attempt to put non-trivial objects together in a data stream will
+     * require copying data. We need the size of the packed data (which
+     * already contains size data) because we have to reserve space in a
+     * vector<char> when we unpack.
+     *
+     * The repeated steps for the two vectors performed below could be
+     * factored out into a function, but this is another layer of abstraction
+     * which shouldn't be necessary. Furthermore, it wouldn't fix all of the
+     * extra copies that this approach requires.
+     *
+     * I was able to improve the unpacking step somewhat with the addition of
+     * the extract command in the unpacker. At least we don't have to spoon
+     * the packed data between containers one character at a time any more.
+     *
+     * Someday, I'll fix this mess. But right now, I've got work to do.
+     *
+     *                                   -MWB. 
+     */ 
+
+    // A place the hold the packed sizes of already packed data.
+    vector<char> packed_int(sizeof(int));
+    Packer p;
+
+    // Storage for the combined packed data.
     vector<char> total_packed;
 
-    vector<double> x_ref;
-    string         y_ref("Tom Evans is a hack!");
+    p.set_buffer(sizeof(int), &packed_int[0]);
+
+    // Pack the size of the packed vector into packed_int;
+    p << static_cast<int>(packed_vector.size());
+
+    // Now, manually copy the packed size of the packed vector into the total
+    // data array.
+    std::copy(packed_int.begin(), packed_int.end(), back_inserter(total_packed));
+    
+    // Now, manually append the data of the packed vector into the total data
+    // array. 
+    std::copy(packed_vector.begin(), packed_vector.end(),
+              back_inserter(total_packed));
+
+    
+
+    /* Now, we repeat the process for the string data */
+
+    // Reset the packer, to re-use the space for holding packed data sizes:
+    p.set_buffer(sizeof(int), &packed_int[0]);
+
+    // Pack the size of the packed string.
+    p << static_cast<int>(packed_string.size());
+
+    // Manually copy the packed size of the packed string into the total data
+    // array.
+    std::copy(packed_int.begin(), packed_int.end(), back_inserter(total_packed));
+
+    // Manually append the data of the packed string into the total data
+    // array.
+    std::copy(packed_string.begin(), packed_string.end(),
+              back_inserter(total_packed));
+
+
+
+    // Unpack the data
+    // ---------------
     
     vector<double> x_new;
     string         y_new;
 
-    // pack some data
-    {
-	vector<char> packed_int(sizeof(int));
-	vector<char> packed_vector;
-	vector<char> packed_string;
+    // Holding place for the size data.
+    int size;
 
-	vector<double> x(5);
-	string         y("Tom Evans is a hack!");
-
-	x_ref.resize(5);
-
-	for (int i = 0; i < 5; i++)
-	{
-	    x[i]     = 100.0 * (static_cast<double>(i) + x[i]) + 2.5;
-	    x_ref[i] = x[i];
-	}
-
-	pack_data(x, packed_vector);
-	pack_data(y, packed_string);
-
-	if (packed_vector.size() != 5 * sizeof(double) + sizeof(int)) ITFAILS;
-	if (packed_string.size() != y_ref.size() + sizeof(int))       ITFAILS;
-
-	Packer p;
-	p.set_buffer(sizeof(int), &packed_int[0]);
-
-	// pack the size of the vector
-	p << static_cast<int>(packed_vector.size());
-
-	// push the vector onto the total packed
-	total_packed.insert(total_packed.end(),
-			    packed_int.begin(), packed_int.end());
-	total_packed.insert(total_packed.end(),
-			    packed_vector.begin(), packed_vector.end());
-
-	// reset the packer
-	p.set_buffer(sizeof(int), &packed_int[0]);
+    Unpacker u;
+    u.set_buffer(total_packed.size(), &total_packed[0]);
 	
-	// pack the size of the string
-	p << static_cast<int>(packed_string.size());
+    u >> size;
+    vector<char> packed_vector_new(size);
+    u.extract(size, packed_vector_new.begin());
 
-	// push the string onto the total packed
-	total_packed.insert(total_packed.end(),
-			    packed_int.begin(), packed_int.end());
-	total_packed.insert(total_packed.end(),
-			    packed_string.begin(), packed_string.end());
+    u >> size;
+    vector<char> packed_string_new(size);
+    u.extract(size, packed_string_new.begin());
+        
+    if (u.get_ptr() != &total_packed[0] + total_packed.size()) ITFAILS;
+    
+    unpack_data(x_new, packed_vector_new);
+    unpack_data(y_new, packed_string_new);
 
-	if (total_packed.size() != 2*packed_int.size() + packed_vector.size()
-	    + packed_string.size()) ITFAILS;
-    }
 
-    // unpack the data
-    {
-	int size;
-	Unpacker u;
-	u.set_buffer(total_packed.size(), &total_packed[0]);
-	
-	// unpack the packed vector
-	u >> size;
-	vector<char> packed_vector(size);
+    
+    // Compare the results
+    // -------------------
 
-	for (int i = 0; i < size; i++)
-	    u >> packed_vector[i];
-
-	// unpack the packed string
-	u >> size;
-	vector<char> packed_string(size);
-
-	for (int i = 0; i < size; i++)
-	    u >> packed_string[i];
-
-	if (u.get_ptr() != &total_packed[0] + total_packed.size()) ITFAILS;
-
-	unpack_data(x_new, packed_vector);
-	unpack_data(y_new, packed_string);
-    }
-
-    if (!soft_equiv(x_new.begin(), x_new.end(), x_ref.begin(), x_ref.end()))
+    if (!soft_equiv(x_new.begin(), x_new.end(), x.begin(), x.end()))
 	ITFAILS;
 
-    if (y_new == y_ref)
-    {
-	ostringstream message;
-	message << "Correctly unpacked string " << y_new << " from "
-		<< "packed " << y_ref;
-	PASSMSG(message.str());
-    }
-    else
-    {
-	ostringstream message;
-	message << "Failed to unpack string " << y_ref << " correctly. Instead "
-		<< "unpacked " << y_new;
-	FAILMSG(message.str());
-    }
+    if (y_new != y) ITFAILS;
 
     if (rtt_ds_test::passed)
 	PASSMSG("pack_data and unpack_data work fine.");
+
 }
 
 

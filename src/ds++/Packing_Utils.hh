@@ -114,6 +114,12 @@ class Packer
     // the size of the type into the total buffer size required.
     template<class T> inline void pack(const T&);
 
+    // Accept data from another character stream.
+    template<class IT> void accept(unsigned int bytes, IT data);
+
+    // Advance the pointer without adding data. Useful for byte-aligning.
+    inline void pad(unsigned int bytes);
+
     // >>> ACCESSORS
 
     //! Get a pointer to the current position of the data stream.
@@ -241,6 +247,40 @@ void Packer::pack(const T &value)
 	// advance the iterator pointer to the next location
 	ptr += sizeof(T);
     }
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Add data from another character stream of a given size.
+ * 
+ */
+template <typename IT>
+void Packer::accept(unsigned int bytes, IT data)
+{
+
+    if ( size_mode ) stream_size += bytes;
+    else
+    {
+        Require (begin_ptr);
+        Require (ptr >= begin_ptr);
+        Require (ptr + bytes <= end_ptr);
+
+        while (bytes-- > 0) *(ptr++) = *(data++);
+    }
+    
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Add the given number of blank bytes to the stream.
+ * 
+ */
+
+void Packer::pad(unsigned int bytes)
+{
+
+    while (bytes-- > 0) pack(char(0));
+
 }
 
 //---------------------------------------------------------------------------//
@@ -536,12 +576,12 @@ void pack_data(const FT &field, std::vector<char> &packed)
     Require (packed.empty());
 
     // determine the size of the field
-    int field_size = field.size();
+    const int field_size = field.size();
 
     // determine the number of bytes in the field
-    int size = field_size * sizeof(typename FT::value_type) + sizeof(int);
+    const int size = field_size * sizeof(typename FT::value_type) + sizeof(int);
 
-    // make a vector<char> large enought to hold the packed field
+    // make a vector<char> large enough to hold the packed field
     packed.resize(size);
 
     // make an unpacker and set it
@@ -552,7 +592,8 @@ void pack_data(const FT &field, std::vector<char> &packed)
     packer << field_size;
 
     // iterate and pack
-    for (typename FT::const_iterator itr = field.begin(); itr != field.end();
+    for (typename FT::const_iterator itr = field.begin();
+         itr != field.end();
 	 itr++)
 	packer << *itr;
 
