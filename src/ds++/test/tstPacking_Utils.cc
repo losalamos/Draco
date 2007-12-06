@@ -237,8 +237,7 @@ void packing_test()
 	for (int i = 0; i < x.size(); i++)
 	    u >> x[i];
 
-	for (int i = 0; i < 4; i++)
-	    u >> cc[i];
+        u.extract(4, cc);
 
 	if (u.get_ptr() != buffer+size) ITFAILS;
 	
@@ -249,6 +248,30 @@ void packing_test()
 	if (c[1] != 'h') ITFAILS;
 	if (c[2] != 'a') ITFAILS;
 	if (c[3] != 'r') ITFAILS;
+    }
+
+    // Skip some data and unpack
+    {
+        char cc[2];
+        vector<double> x(100, 0.0);
+
+        Unpacker u;
+        u.set_buffer(size, buffer);
+
+        // Skip the first 50 integers.
+        u.skip(50*sizeof(double));
+        for (int i=50; i < x.size(); ++i) u >> x[i];
+
+        // Skip the first two chatacters
+        u.skip(2);
+        u.extract(2,cc);
+
+        for (int i=0;  i<50;       ++i) if (x[i] != 0) ITFAILS;
+        for (int i=50; i<x.size(); ++i) if (x[i] != ref[i]) ITFAILS;
+
+        if (cc[0] != 'a') ITFAILS;
+        if (cc[1] != 'r') ITFAILS;
+
     }
 
     delete [] buffer;
@@ -327,7 +350,7 @@ void packing_functions_test()
     vector<char> total_packed;
 
     vector<double> x_ref;
-    string         y_ref("Todd Urbatsch is an ass!");
+    string         y_ref("Tom Evans is a hack!");
     
     vector<double> x_new;
     string         y_new;
@@ -339,7 +362,7 @@ void packing_functions_test()
 	vector<char> packed_string;
 
 	vector<double> x(5);
-	string         y("Todd Urbatsch is an ass!");
+	string         y("Tom Evans is a hack!");
 
 	x_ref.resize(5);
 

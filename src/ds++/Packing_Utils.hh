@@ -337,6 +337,13 @@ class Unpacker
     
     // >>> ACCESSORS
 
+    //! Skip a specific number of bytes
+    void skip(unsigned int bytes);
+
+    //! Copy data to a provied iterator
+    template <typename IT>
+    void extract(unsigned int bytes, IT destination);
+
     //! Get a pointer to the current position of the data stream.
     const_pointer get_ptr() const { return ptr; }
 
@@ -419,6 +426,46 @@ void Unpacker::unpack(T &value)
 
     // advance the iterator pointer to the next location
     ptr += sizeof(T);
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Skip a specified number of bytes forward in the data stream
+ *
+ * \param bytes The number of bytes to skip.
+ *
+ * This is useful for data streams which have space inserted for alignment
+ * purposes. 
+ * 
+ */
+void Unpacker::skip(unsigned int bytes)
+{
+
+    Require (begin_ptr);
+    Check   (ptr >= begin_ptr);
+    Check   (ptr + bytes <= end_ptr);
+
+    ptr += bytes;
+
+}
+
+//---------------------------------------------------------------------------//
+/**
+ * \brief Copy a piece of the data to memory referenced by the provided
+ * iterator.
+ *
+ * \param it The destination iterator. Must model ForwardIterator
+ * 
+ */
+template <typename T>
+void Unpacker::extract(unsigned int bytes, T it)
+{
+    Require (begin_ptr);
+    Check   (ptr >= begin_ptr);
+    Check   (ptr + bytes <= end_ptr);
+
+    while (bytes-- > 0)  *(it++) = *(ptr++);
+
 }
 
 //---------------------------------------------------------------------------//
