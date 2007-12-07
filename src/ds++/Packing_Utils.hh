@@ -459,12 +459,10 @@ void Unpacker::unpack(T &value)
     Ensure  (ptr >= begin_ptr);
     Ensure  (ptr + sizeof(T) <= end_ptr);
 
-    // copy data into the value reference
     std::memcpy(&value, ptr, sizeof(T));
 
     if (do_byte_swap) byte_swap(value);
 
-    // advance the iterator pointer to the next location
     ptr += sizeof(T);
 }
 
@@ -495,7 +493,7 @@ void Unpacker::skip(unsigned int bytes)
  * iterator.
  *
  * \param it The destination iterator. Must model ForwardIterator
- * 
+ *
  */
 template <typename T>
 void Unpacker::extract(unsigned int bytes, T it)
@@ -521,10 +519,7 @@ void Unpacker::extract(unsigned int bytes, T it)
 template<class T>
 inline Unpacker& operator>>(Unpacker &u, T &value)
 {
-    // unpack the value
     u.unpack(value);
-
-    // return the unpacker object
     return u;
 }
 
