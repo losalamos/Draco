@@ -2,9 +2,8 @@
 /*!
  * \file   <pkg>/<class>.hh
  * \author <user>
- * \date   <date>
- * \brief  <start>
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \brief  Define class <class>
+ * \note   Copyright (C) 2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -61,6 +60,14 @@ class <class>
     <class>& operator=(const <class> &rhs);
 
     // ACCESSORS
+
+    // SERVICES
+
+    // STATICS
+
+  protected:
+
+    // IMPLEMENTATION
 
   private:
 
