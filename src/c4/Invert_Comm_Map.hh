@@ -43,7 +43,7 @@ void invert_comm_map(const T& to_values, T& from_values)
 
     // Copy the provided container to a std::vector<int>
     std::vector<int> to_data, from_data;
-    to_data.assign(to_values.begin(), to_values.end());
+    to_data.insert(to_data.end(), to_values.begin(), to_values.end());
 
 
     if (node == 0)
