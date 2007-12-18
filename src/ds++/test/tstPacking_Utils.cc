@@ -501,9 +501,9 @@ void endian_conversion_test()
     Unpacker up(true);
 
 
-    // Test the long int type.
-    const long int moo = 0xDEADBEEF;
-    const int length = sizeof(long int);
+    // Test the int type.
+    const int moo = 0xDEADBEEF;
+    const int length = sizeof(int);
 
     // Pack
     char data[length];
@@ -511,7 +511,7 @@ void endian_conversion_test()
     p << moo;
 
     // Unpack
-    long int oom = 0; 
+    int oom = 0; 
     up.set_buffer(length, data);
     up >> oom;
 

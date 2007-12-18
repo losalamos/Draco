@@ -90,7 +90,7 @@ void test_idempotence(ScalarUnitTest& ut)
 
         // Use the copy-generating version to test negative numbers.
 
-        double neg_local = byte_swap_copy( byte_swap_copy( -value ) );
+        const double neg_local = byte_swap_copy( byte_swap_copy( -value ) );
 
         if (neg_local != -value)
             ut.failure("byte_swap failed to reproduce original number");
