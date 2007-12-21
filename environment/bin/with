@@ -33,7 +33,7 @@ all arguments and flags.
 
     parser.add_option("-f", "--file",
                       dest="filename",
-                      default="~/.withrc",
+                      default="~/.with.cfg",
                       help="Specify an alternate configuration file"
                       )
 
@@ -55,12 +55,16 @@ all arguments and flags.
     for module in modules:
         Module.add_module(module)
 
-        
     verbose("Executing command: %s" % ' '.join(command), 1)
-    status = os.execvp(command[0], command)
 
-    return status
+    error = os.spawnvp(os.P_WAIT, command[0], command)
 
+    verbose("...with exit status: %s" % error, 2)
+
+    if error:
+        sys.stderr.write("Command '%s' failed with error code %s\n" %
+                         (' '.join(command), error))
+        sys.exit(-1)
 
 
 if __name__ == "__main__":
