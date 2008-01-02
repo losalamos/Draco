@@ -25,7 +25,7 @@ install_access = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
 build_access = stat.S_IRWXU | stat.S_IRWXG
 
 
-# Ugh. This information is a repeat from somewhere else. 'Pitch' probably.
+# Ugh. This information is repeated in Repo.
 targets = ['draco', 'clubimc', 'milagro', 'wedgehog']
 dependencies = {'draco'    : [],
                 'clubimc'  : ['draco'],
@@ -124,6 +124,10 @@ make. Default is no.")
                       help    = "Specify the kind of \
 build. Repeatable. Defaults to %default",
                       default = ['debug','opt'])
+
+    parser.add_option("-l", "--location",
+
+                      
 
 
     for p in ['draco','clubimc']: add_package(parser, p, ".")
