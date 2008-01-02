@@ -6,6 +6,9 @@
 
 import os, Utils
 
+class ModuleError(Exception): pass
+
+
 modulepath  = os.environ['MODULEPATH'].split(':')
 module_home = os.environ['MODULESHOME']
 
@@ -15,9 +18,10 @@ module_paths = [path for path in os.environ['MODULEPATH'].split(':')
 
 avail_modules = reduce( (lambda a,b: a+b),
                         [[module for module in Utils.listdir(path, 1) if
-                          module.find('/') != -1] for path in
+                          '/' in module] for path in
                          module_paths] )
 
+##---------------------------------------------------------------------------##
 def module_command(command):
 
     """Pass the given command to '/usr/bin/modulecmd python' and
@@ -26,44 +30,56 @@ def module_command(command):
     exec os.popen('/usr/bin/modulecmd python %s' % command).read()
 
 
+##---------------------------------------------------------------------------##
 def loaded_modules():
     """Get the list of currently loaded modules."""
 
-    return os.environ['LOADEDMODULES'].split(':')
+    try:
+        return os.environ['LOADEDMODULES'].split(':')
+    except KeyError:
+        return []
 
 
+##---------------------------------------------------------------------------##
 def add_module(module):
     """Add the module with the provided name"""
 
     if not module in avail_modules:
-        raise "Module %s does not exist." % module
+        raise ModuleError ("Module %s does not exist." % module)
     if not module in loaded_modules():
         module_command("add %s" % module)
 
     assert(module in loaded_modules())
 
+##---------------------------------------------------------------------------##
 def remove_module(module):
 
     if not module in avail_modules:
-        raise "Module %s does not exist." % module
+        raise ModuleError("Module %s does not exist." % module)
     if module in loaded_modules():
         module_command("remove %s" % module)
 
     assert (module not in loaded_modules())
 
 
+##---------------------------------------------------------------------------##
 def list():
 
     print "Currently Loaded modules:"
     for i,module in enumerate(loaded_modules()):
         print " %s) %s" % (i+1, module)
 
+##---------------------------------------------------------------------------##
 def avail():
 
     print "Available modules:"
     for module in avail_modules:
         print " %s" % module
     
+
+
+
+##---------------------------------------------------------------------------##
 def _test():
 
     # Try adding idl. Remove it first to make sure we added it.
