@@ -252,6 +252,9 @@ void Packer::pack(const T &value)
 //---------------------------------------------------------------------------//
 /**
  * \brief Add data from another character stream of a given size.
+ *
+ * \param bytes Number of bytes of data to copy.
+ * \param data The data.
  * 
  */
 template <typename IT>
@@ -273,6 +276,8 @@ void Packer::accept(unsigned int bytes, IT data)
 //---------------------------------------------------------------------------//
 /**
  * \brief Add the given number of blank bytes to the stream.
+ *
+ * \param bytes Number of bytes of blank data to add.
  * 
  */
 
@@ -380,7 +385,7 @@ class Unpacker
     //! Skip a specific number of bytes
     inline void skip(unsigned int bytes);
 
-    //! Copy data to a provied iterator
+    //! Copy data to a provided iterator
     template <typename IT>
     void extract(unsigned int bytes, IT destination);
 
@@ -492,6 +497,7 @@ void Unpacker::skip(unsigned int bytes)
  * \brief Copy a piece of the data to memory referenced by the provided
  * iterator.
  *
+ * \param bytes The number of bytes to copy.
  * \param it The destination iterator. Must model ForwardIterator
  *
  */

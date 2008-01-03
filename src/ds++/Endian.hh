@@ -32,9 +32,18 @@
  * (char*). We then manipulate the order, but not the contents, of the
  * character data.
  *
+ * Note that we are implicitly assuming that the size of char on each platform
+ * is one byte.
+ *
+ * In order for these functions to work on floating point data, we are
+ * assuming that the floating point representations are identical on the two
+ * architectures _except_ for the difference in endianness. Also, the sign and
+ * exponent information of the floating point representation must fit within a
+ * single byte of data, so that it does not require extra steps at the
+ * bit-level for conversion.
+ *
  */
 //---------------------------------------------------------------------------//
-
 
 
 namespace rtt_dsxx
@@ -55,7 +64,7 @@ namespace rtt_dsxx
  * elements are not changed, only their order.
  *
  * For example, consider the unsigned integer value: 0xDEADBEEF.  (0x means
- * this is a hexidecimal avlue) Two hexidecimal digits is a single byte (16^2
+ * this is a hexidecimal value) Two hexidecimal digits is a single byte (16^2
  * = 2^8) so the layout of the value in big endian style is:
  *
  *       0        1        2        3
