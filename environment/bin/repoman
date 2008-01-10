@@ -5,7 +5,7 @@ the file in HPSS and push it to the secure network.
 """
 
 import Repo, HPSS, Verbosity, Utils
-import tempfile, os, sys
+import tempfile, tarfile, os, sys
 
 
 def parse_command_line():
@@ -103,27 +103,27 @@ def get_archive_name(package, compress = True):
 
 
 ##---------------------------------------------------------------------------##
-def make_archive(package_name, directory, compress, verbose = Verbosity.ignore()):
+def make_archive(package, directory, compress, verbose = Verbosity.ignore()):
 
     verbose("Creating archive for package %s" % (package_name, ))
 
-    assert(is_valid_package(package_name))
+    assert(Repo.is_valid_package(package_name))
 
     mode = 'w'
     if compress: mode += ":gz"
 
-    repository_path = get_cvs_path(package)
+    repository_path = Repo.get_cvs_path(package)
 
-    if not archive_path: archive_path = ""
-    archive_name = os.path.join(archive_path, get_archive_name(package, compress))
+    if not directory: directory = ""
+    archive = os.path.join(directory, get_archive_name(package, compress))
 
-    tar = tarfile.open(archive_name, mode)
+    tar = tarfile.open(archive, mode)
     tar.add(repository_path, package)
     tar.close()
 
     verbose(" ... as file: %s" % (archive, ),2)
 
-    return archive_name
+    return archive
 
 
 ##---------------------------------------------------------------------------##
@@ -153,14 +153,4 @@ if __name__=="__main__":
 
         if options.push:
             HPSS.push(hpss_filename, package_name, verbose=verbose)
-
-
-        
-
-
-
-    
-
-
-
 

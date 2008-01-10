@@ -24,7 +24,6 @@ install_access = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
 # All access for user and group. Zilch for world.
 build_access = stat.S_IRWXU | stat.S_IRWXG
 
-
 # Ugh. This information is repeated in Repo.
 targets = ['draco', 'clubimc', 'milagro', 'wedgehog']
 dependencies = {'draco'    : [],
@@ -443,4 +442,5 @@ if __name__=="__main__":
         if status: die("Make failed with status=%s" % status)
 
         message("Completed make in directory " + build_directory, 2)
+
         
