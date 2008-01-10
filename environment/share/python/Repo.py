@@ -19,8 +19,8 @@ class RepoError(Exception):
 ##---------------------------------------------------------------------------##
 ## Repository Information:
 ##---------------------------------------------------------------------------##
-REPOS = {'draco'   : "/codes/radtran/cvsroot",
-         'jayenne' : "/codes/radtran/cvsroot"
+REPOS = {'draco'   : "/ccs/codes/radtran/cvsroot",
+         'jayenne' : "/ccs/codes/radtran/cvsroot"
          }
 
 PACKAGES = {'draco'       : "draco",
