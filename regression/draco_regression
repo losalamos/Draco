@@ -25,7 +25,7 @@ source /home/regress/draco/regression/set_env
 
 # Replace default FORTRAN environment as a hack around EOSPAC5 bug
 # (see SF bug report)
-source /usr/local/lf9562/bash_setup
+source /ccs/opt/x86/lf9562/bash_setup
 
 # set defaults
 set_default_values $*
@@ -60,8 +60,8 @@ docs="${BUILDDIR}/docs"
 if test ${withcoverage:-no} = yes; then
    echo ">>> Proceeding with code coverage regression run."
    target_list="${code_cov_mpi} ${code_cov_scalar}"
-   if test -x /usr/local/bullseye/bin/cov01; then
-      export PATH=${PATH}:/usr/local/bullseye/bin
+   if test -x /ccs/opt/x86/bullseye/bin/cov01; then
+      export PATH=${PATH}:/ccs/opt/x86/bullseye/bin
       export COVFILE="${BUILDDIR}/draco.cov"
       if test -f ${COVFILE}; then
          echo "Removing ${COVFILE}."
@@ -202,7 +202,7 @@ for target in ${target_list}; do
            #setup_using_env_vars
            VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
            OPTIONS='--with-c4=mpi --enable-debug --with-dbc=0 --enable-shared'
-           MAKE_OPTIONS="check CC=/usr/local/bullseye/bin/gcc CXX=/usr/local/bullseye/bin/g++"
+           MAKE_OPTIONS="check CC=/ccs/opt/x86/bullseye/bin/gcc CXX=/ccs/opt/x86/bullseye/bin/g++"
 	;;
 
 	# setup code coverage options: 
@@ -214,7 +214,7 @@ for target in ${target_list}; do
            #setup_using_env_vars
            VENDOR_OPTIONS="${VENDOR_SETUP}"
            OPTIONS='--with-c4=scalar --enable-debug --with-dbc=0'
-           MAKE_OPTIONS="check CC=/usr/local/bullseye/bin/gcc CXX=/usr/local/bullseye/bin/g++"
+           MAKE_OPTIONS="check CC=/ccs/opt/x86/bullseye/bin/gcc CXX=/ccs/opt/x86/bullseye/bin/g++"
 	;;
 
 	# catchall
