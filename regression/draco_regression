@@ -97,7 +97,7 @@ cvs=`which cvs`
 # set cvs environment
 export CVS_RSH="${REGDIR}/regression/draco_ssh"
 
-cvsroot="-d /codes/radtran/cvsroot"
+cvsroot="-d /ccs/codes/radtran/cvsroot"
 
 ##---------------------------------------------------------------------------##
 ## Checkout draco
@@ -133,7 +133,7 @@ VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
 --with-grace-lib --with-gandolf-lib --with-eospac-lib --with-pcg-lib \
 --with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
 
-LIBS_SETUP="--with-libs='-L/codes/radtran/vendors/libf2c -lf2c'"
+LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
 
 ##---------------------------------------------------------------------------##
 ## LOOP THROUGH AND DO BUILD AND CHECKS
@@ -187,15 +187,15 @@ for target in ${target_list}; do
 
             MPI_SETUP="--with-mpi=lampi $MPI_SETUP"
             OPTIONS='--enable-shared --with-c4=mpi --with-dbc=7 --enable-debug'
-            STLPORT_SETUP="--with-stlport=/codes/radtran/vendors/stlport/Linux"
+            STLPORT_SETUP="--with-stlport=/ccs/codes/radtran/vendors/stlport/Linux"
             VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP} ${STLPORT_SETUP}"
             MAKE_OPTIONS="check"
         ;;
 
 	# setup code coverage options: use shared libs, no dbc.
 	${code_cov_mpi})
-           echo ">>> source /codes/mpi/bin/mpich.sh shmem-lahey"
-           source /codes/mpi/bin/mpich.sh shmem-lahey
+           echo ">>> source /ccs/codes/mpi/bin/mpich.sh shmem-lahey"
+           source /ccs/codes/mpi/bin/mpich.sh shmem-lahey
            cleanipcs
            echo ">>> source /home/regress/capsaicin/scripts/changevendors.sh -v"
            source /home/regress/capsaicin/scripts/changevendors.sh -v
@@ -207,8 +207,8 @@ for target in ${target_list}; do
 
 	# setup code coverage options: 
 	${code_cov_scalar})
-           echo ">>> source /codes/mpi/bin/mpich.sh scalar"
-           source /codes/mpi/bin/mpich.sh scalar
+           echo ">>> source /ccs/codes/mpi/bin/mpich.sh scalar"
+           source /ccs/codes/mpi/bin/mpich.sh scalar
            echo ">>> source /home/regress/capsaicin/scripts/changevendors.sh -v"
            source /home/regress/capsaicin/scripts/changevendors.sh -v
            #setup_using_env_vars
