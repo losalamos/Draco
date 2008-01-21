@@ -182,9 +182,9 @@ dnl
 dnl Bullseye specifics:
 dnl
 dnl If --with-coverage[=bulleye] is on the configure line, we must set:
-dnl    CXX=/usr/local/bullseye/bin/g++
-dnl    CC=/usr/local/bullseye/bin/gcc
-dnl    LIBS="${LIBS} -L/usr/local/bullseye/lib -lcov-noThread"
+dnl    CXX=/ccs/opt/x86/bullseye/bin/g++
+dnl    CC=/ccs/opt/x86/bullseye/bin/gcc
+dnl    LIBS="${LIBS} -L/ccs/opt/x86/bullseye/lib -lcov-noThread"
 dnl ------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DBS_COVERAGE_ENV], [dnl
@@ -225,7 +225,7 @@ AC_DEFUN([AC_DBS_BULLSEYE_ENV], [dnl
    AC_MSG_CHECKING("for Bullseye installation location")
    case $host in
    *-linux-gnu)
-      if ! test -d ${COVERAGE_BASE_DIR:=/usr/local/bullseye}; then
+      if ! test -d ${COVERAGE_BASE_DIR:=/ccs/opt/x86/bullseye}; then
          AC_MSG_ERROR("${COVERAGE_BASE_DIR} could not be accessed.")
       fi
       ;;
