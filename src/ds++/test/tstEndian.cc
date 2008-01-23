@@ -14,6 +14,7 @@
 #include <vector>
 #include <cmath>
 #include <iterator>
+#include <limits>
 
 #include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
