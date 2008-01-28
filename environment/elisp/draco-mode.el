@@ -116,7 +116,7 @@ to anything else will generate errors."
 (define-key draco-mode-map [(control f9)]       'cvs-checkout)
 
 ;; Mouse commands
-(define-key draco-mode-map 'button3             'kill-region)
+(define-key draco-mode-map [(button3)]          'kill-region)
 (define-key draco-mode-map [(meta button3)]     'delete-rectangle)
 (define-key draco-mode-map [(control button1)]  'popup-buffer-menu)
 (define-key draco-mode-map [(control button2)]  'function-menu)

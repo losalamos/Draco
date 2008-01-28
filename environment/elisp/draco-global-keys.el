@@ -18,7 +18,7 @@
 (define-key global-map "\C-z"     'undo)
 
 ;; Force these onto the global map as well as the draco-mode-map
-(define-key global-map 'button3             'kill-region)
+(define-key global-map [(button3)]          'kill-region)
 (define-key global-map [(meta button3)]     'delete-rectangle)
 (define-key global-map [(control button1)]  'popup-buffer-menu)
 (define-key global-map [(control button2)]  'function-menu)
