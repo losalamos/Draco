@@ -114,7 +114,7 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
      # if --with-stlport is requested with no dir specified, then check
      # the value of STLPORT_BASE_DIR.
      if test ${with_stlport} = yes; then
-       if test -d ${STLPORT_BASE_DIR:=/codes/radtran/vendors/stlport/Linux}; then
+       if test -d ${STLPORT_BASE_DIR:=/ccs/codes/radtran/vendors/stlport/Linux}; then
          with_stlport=${STLPORT_BASE_DIR}
        else
          AC_MSG_ERROR("${STLPORT_BASE_DIR} could not be accessed.")

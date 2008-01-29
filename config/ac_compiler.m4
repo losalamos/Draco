@@ -105,7 +105,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        *-linux-gnu)
            AC_CHECK_PROG(CXX, pgCC, pgCC)
            
-           if test `basename ${CXX}` == pgCC ; then 
+           if test "${CXX}" == pgCC ; then 
                CC='pgcc'
                AC_DRACO_PGCC
            else
