@@ -164,7 +164,7 @@ class Repository:
 def checkout(repository,
              module,
              location,
-             export  = False,
+             export,
              verbose = Verbosity.ignore()
              ):
     """Function checkout implemenets the checkout and export cvs
@@ -174,7 +174,7 @@ def checkout(repository,
 
     cvs_command = export and "export" or "checkout"
 
-    command = "cvs -d %s %s %s %s %s" % \
+    command = "cvs -Q -d %s %s %s %s %s" % \
               (repository.location,
                cvs_command,
                module.dir_string(),

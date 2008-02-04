@@ -36,7 +36,7 @@ def store(file, comment = '', hpss_path = "xfer", verbose = Verbosity.ignore()):
 
     directory_arg = "-d %s" % (hpss_path,)
 
-    command = ["/usr/local/bin/psi", "store",
+    command = ["/ccs/opt/x86/bin/psi", "store",
                comment_arg,
                directory_arg,
                file_name] 
@@ -44,6 +44,7 @@ def store(file, comment = '', hpss_path = "xfer", verbose = Verbosity.ignore()):
     verbose("... with command: %s" % " ".join(command), 2)
 
     os.chdir(file_path)
+    verbose("... in directory: %s" % file_path, 2)
     store_status = os.spawnv(os.P_WAIT, command[0], command)
         
     verbose(" ... return status: %d" % (store_status,), 2)
@@ -71,7 +72,7 @@ def push(hpss_filename, tag = '', verbose  = Verbosity.ignore()):
     else:
         file_id = ''
 
-    command = ["/usr/local/bin/push", file_id, hpss_filename]
+    command = ["/ccs/opt/x86/bin/push", file_id, hpss_filename]
         
     verbose("Pushing file %s" % (hpss_filename,))
     verbose("...with command: %s" % (" ".join(command),), 2)
