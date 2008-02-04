@@ -83,7 +83,6 @@ parser.add_option("-l", "--location",
 parser.add_option("-e", "--export",
                   action  = "store_true",
                   dest    = "export",
-                  default = "False",
                   help    = "Export, instead of checking out sources."
                   )
 

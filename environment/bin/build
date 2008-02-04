@@ -6,6 +6,7 @@ import re
 import sys
 import stat
 import commands
+import optparse
 
 # Utitlity modules in draco/environment/share/python
 import Verbosity
@@ -13,8 +14,8 @@ import Utils
 import Configure
 
 # Local utitlity modules for these applications.
+import Jayenne
 import Vendors
-import arguments
 
 die = sys.exit
 
@@ -23,14 +24,6 @@ install_access = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
 
 # All access for user and group. Zilch for world.
 build_access = stat.S_IRWXU | stat.S_IRWXG
-
-# Ugh. This information is repeated in Repo.
-targets = ['draco', 'clubimc', 'milagro', 'wedgehog']
-dependencies = {'draco'    : [],
-                'clubimc'  : ['draco'],
-                'milagro'  : ['draco', 'clubimc'],
-                'wedgehog' : ['draco', 'clubimc']
-                }
 
 platform = Vendors.flash
 
@@ -61,7 +54,7 @@ def add_package(parser, name, brief=""):
 
 
 
-def make_parser()
+def make_parser():
 
     """Create a builder script parser. Include switches for packages
     given in the argument list.
@@ -69,8 +62,6 @@ def make_parser()
     We assume that the first package in the list is the one being
     built while the rest are build dependencies.
 
-    The kinds argument is used for specifying the default list
-    of kinds arguments.
     """
 
     usage = "usage: %prog <package> source_dir [options]"
@@ -124,86 +115,10 @@ make. Default is no.")
 build. Repeatable. Defaults to %default",
                       default = ['debug','opt'])
 
-    parser.add_option("-l", "--location",
-
-                      
-
 
     for p in ['draco','clubimc']: add_package(parser, p, ".")
 
-    
     return parser
-
-
-##---------------------------------------------------------------------------##
-keywords = ['install', 'name', 'kind']
-
-def extract_jayenne_dependencies(target, options):
-
-    """Return a map of the form: {component : path}
-
-    Keys and values are both strings. The component keys are the
-    jayenne components that 'target depends on. The path values may
-    contain keywords for later textual subsistution: <install>, <name>
-    and <kind>.
-
-    """
-
-    assert(target in targets)
-
-    depends = dependencies[target]
-
-    depend_mapping = {}
-    for component in depends:
-
-        directory = getattr(options, component)
-        depend_mapping[component] = directory
-
-    return depend_mapping
-    
-
-def convert_jayenne_dependencies(jayenne_deps, **keywords):
-
-    """Convert the map of jayenne dependencies into --with-blah=dir
-    configure statements. Keywords in the form <fubar> in the path
-    specifications are replaced with keywords from the extra names
-    parameter arguments.
-    """
-
-    strings = []
-    for component, path in jayenne_deps.items():
-
-        assert(component in targets)
-
-        # Slap a try block here to report unknown <keys>
-        true_path = os.path.normpath(os.path.expanduser(
-            re.sub("<(.*?)>", (lambda m: keywords[m.group(1)]), path)
-            ))
-
-        is_install_dir(true_path) or die("Path %s does not appear to \
-be a jayenne component installation." % true_path)
-        
-        strings.append("--with-%s=%s" % (component, true_path))
-
-    return " ".join(strings)
-
-##---------------------------------------------------------------------------##
-def make_dependency_string(component, path):
-    """Return a configure string which specified a jayenne component
-    dependency. """
-
-    assert(component in targets)
-
-    return "--with-%s=%s" % (component, path)
-
-
-##---------------------------------------------------------------------------##
-def is_install_dir(path):
-    """Check to see if the given path looks like a install location for
-    a Jayenne component"""
-
-    return os.path.exists(os.path.join(path, "lib")) and os.path.exists(
-        os.path.join(path, "include"))
 
 
 ##---------------------------------------------------------------------------##
@@ -297,7 +212,7 @@ if __name__=="__main__":
         target, source_dir = args[0], os.getcwd()
 
     try: 
-        jayenne_target = Utils.disambiguate(target, targets)
+        jayenne_target = Utils.disambiguate(target, Jayenne.targets)
     except KeyError, e:
         die("Could not understand target name: " + target)
     message("Building jayenne target: " + jayenne_target,3)
@@ -321,6 +236,10 @@ if __name__=="__main__":
     message("Building with prefix:   %s" % build_prefix,   2)
     message("Installing with prefix: %s" % install_prefix, 2)
 
+    # Extract the Jayenne dependencies into a dictionary:
+    jayenne_deps = Jayenne.extract_jayenne_dependencies(jayenne_target, options)
+    message("Dependency configuration string: " + str(jayenne_deps), 3)
+
 
     # Build configure options
     # =======================
@@ -337,8 +256,6 @@ if __name__=="__main__":
     binding_string = "--enable-shared"
     message("Libary type string "+ binding_string, 3)
 
-    jayenne_deps = extract_jayenne_dependencies(jayenne_target, options)
-    message("Dependency configuration string: " + str(jayenne_deps), 3)
 
 
     # Get kind information
@@ -378,12 +295,12 @@ if __name__=="__main__":
 
         # Convert the jayenne dependencies into a configuration
         # string.
-        dependency_string = convert_jayenne_dependencies(
-            jayenne_deps, kind=kind, name=name, install=install_prefix)
+        dependency_string = Jayenne.convert_jayenne_dependencies(
+            jayenne_deps, dict(kind=kind, name=name, install=install_prefix))
 
 
-        # Set directory access: XXX Might have a problem with higher
-        # directory levels here. 
+        # Set directory access: XXX Might have a problem with
+        # permissions of parent directories here.
         if options.go: os.chmod(build_directory,   build_access)
         if options.go: os.chmod(install_directory, install_access)
         if options.go: os.chdir(build_directory)
