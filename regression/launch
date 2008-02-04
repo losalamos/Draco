@@ -47,12 +47,12 @@ shift
 # Setup of the REGHOME variable
 if test ${user} = regress; then
    # Are we on CCS-2/4 Linux or the ICN?
-   if test -d /codes/radtran; then
+   if test -d /ccs/codes/radtran; then
       REGHOME="/home/regress"
    elif test -d /usr/projects/draco; then
       REGHOME="/usr/projects/draco/regress"
    else
-      echo ">>> I don't know what system we are on.  I can't find /codes/radtran"
+      echo ">>> I don't know what system we are on.  I can't find /css/codes/radtran"
       echo ">>> or /usr/projects/draco.  This is a fatal error."
       exit 1
    fi

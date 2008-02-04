@@ -19,13 +19,14 @@ uname=`uname -a`
 username=`/usr/bin/whoami`
 code=`echo $0 | sed -e 's/_.*//' | sed -e 's/.*[/]//'`
 if test ${username} = regress; then
+   # Are we on CCS-2 Linux or the ICN?
    if test -d /ccs/codes/radtran; then
       regress_home=/home/regress
    elif test -d /usr/projects/${code}; then
       regress_home=/usr/projects/${code}/regress
    fi
 else
-  regress_home=`pwd`
+   regress_home=`pwd`
 fi
 
 REGDIR="${regress_home}/${code}"
