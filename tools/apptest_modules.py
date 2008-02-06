@@ -59,7 +59,7 @@ class AppTest:
             self.exec_head = "mpirun -np"
         else:
             print "apptest_modules.py does not know what mpirun to use."
-            print "please notify Kelly Thompson (kgt@lanl.gov) if you"
+            print "please notify Jae Chang (jhchang@lanl.gov) if you"
             print "receive this message.  Please email him with the name"
             print "of the machine where this error occured and provide"
             print "the following variable information:"

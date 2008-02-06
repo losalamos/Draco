@@ -547,7 +547,7 @@ if options_str=='':
 
 # print out test results
 
-print "CCS-4 Regression Report:\n"
+print "CCS-2 Regression Report:\n"
 print "Package : %s" % (pkg_tag_str)
 print "Machine : %s" % (hostname)
 print "Date    : %s" % (date_tag_str)

@@ -2,21 +2,25 @@
 ##---------------------------------------------------------------------------##
 ## build_ccs4_release
 ##
+## (The Transport Methods group, CCS-4, merged with the Continuum Dynamics
+##  group, CCS-2, to form a new group, Computational Physics, CCS-2, in
+##  January, 2007.)
+##
 ## Build draco or draco_client releases.  When provided a project
 ## source directory this script will build optimized and debug
 ## releases in a location relative to where this script is executed.
 ## We recommend that this script be run from $project_dir/$pkg/tools
 ## where $project_dir is one of the following:
 ##
-##    /codes/radtran/vendors/ccs4-package-#_#_#
+##    /codes/radtran/vendors/ccs2-package-#_#_#
 ##
-## on the CCS-4 Linux network or
+## on the CCS-2 Linux network or
 ## 
-##    /usr/projects/draco/ccs4-package-#_#_#
+##    /usr/projects/draco/ccs2-package-#_#_#
 ##
 ## on the LANL ICN network or from a home directory as a test build.
 ##
-##    $HOME/ccs4-package
+##    $HOME/ccs2-package
 ##
 ## $pkg is a directory that contains source code and is typically the
 ## name of the CVS module (e.g.: "draco", "capsaicin", etc.)
@@ -36,7 +40,7 @@
 ##
 ## When building Draco you should not include the --with-draco
 ## argument.  When building a Draco client specify the installation
-## location for Draco.  For example to build capsaicin on the CCS-4
+## location for Draco.  For example to build capsaicin on the CCS-2
 ## Linux LAN I would execute the following commands (with
 ## $project_dir=/codes/radtran/vendors/capsaicin-3_7_2;
 ## $pkg=capsaicin)
