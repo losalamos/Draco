@@ -158,8 +158,8 @@ if __name__=="__main__":
 
         if options.store:
             time = Utils.get_timestamp_as_string(archive)
-            message = "Created: %s" %(time,)
-            hpss_filename = HPSS.store(archive, message, verbose=message)
+            comment = "Created: %s" %(time,)
+            hpss_filename = HPSS.store(archive, comment, verbose=message)
 
         if options.push:
             HPSS.push(hpss_filename, package_name, verbose=message)
