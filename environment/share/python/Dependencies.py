@@ -45,7 +45,7 @@ def get_dependencies(file):
       #include \"package/filename\"   or
       #include <package/filename>
 
-    >>> get_dependencies('/codes/radtran/vendors/clubimc/clubimc/src/imc/Source.hh')
+    >>> get_dependencies('/ccs/codes/radtran/vendors/clubimc/clubimc/src/imc/Source.hh')
     {'rng': ['Random.hh'], 'ds++': ['SP.hh'], 'mc': ['Particle_Stack.hh', 'Topology.hh']}
     
     """
@@ -60,7 +60,7 @@ def get_dependencies(file):
     
     f = open(file, 'r')
 
-    # Loop through the file and get look for include statements
+    # Loop through the file and look for include statements
     for line in f.readlines():
 
         # Check for "#include" from other packages
@@ -84,9 +84,9 @@ def scan_directory(directory):
     to the output of get_dependencies(filename). Viewing the resulting
     dictionary as a map, it's signature would be:
 
-       d: filename -> package -> [included_files]
+       d: filename -> {package : [included_files]}
 
-   >>> d = scan_directory('/codes/radtran/vendors/clubimc/clubimc/src/imc/')
+   >>> d = scan_directory('/ccs/codes/radtran/vendors/clubimc/clubimc/src/imc/')
 
    >>> d['Source.hh']
    {'rng': ['Random.hh'], 'ds++': ['SP.hh'], 'mc': ['Particle_Stack.hh', 'Topology.hh']}
@@ -115,7 +115,7 @@ def find_components(dependency_dict, exclude = []):
     """ Extract a list of referenced components from 'dependency_dict',
     excluding the ones in list 'exclude'.
 
-   >>> d = dependency_dict('/codes/radtran/vendors/clubimc/clubimc/src/imc/')
+   >>> d = dependency_dict('/ccs/codes/radtran/vendors/clubimc/clubimc/src/imc/')
     
    >>> c = find_components(d)
    >>> print c
