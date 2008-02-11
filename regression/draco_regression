@@ -59,7 +59,8 @@ docs="${BUILDDIR}/docs"
 
 if test ${withcoverage:-no} = yes; then
    echo ">>> Proceeding with code coverage regression run."
-   target_list="${code_cov_mpi} ${code_cov_scalar}"
+##   target_list="${code_cov_mpi} ${code_cov_scalar}"
+   target_list="${code_cov_mpi}"
    if test -x /ccs/opt/x86/bullseye/bin/cov01; then
       export PATH=${PATH}:/ccs/opt/x86/bullseye/bin
       export COVFILE="${BUILDDIR}/draco.cov"
@@ -72,6 +73,11 @@ if test ${withcoverage:-no} = yes; then
       export COVFNCFG="${REGDIR}/regression/covclass.cfg"
       export COVSRCCFG="${REGDIR}/regression/covclass.cfg"
       cov01 --on
+      echo $COVCLASSCFG
+      echo $COVDIRCFG
+      echo $COVFNCFG
+      echo $COVSRCCFG
+      echo $COVFILE
    else
       echo " "
       echo ">>>  Cannot find Bullseye bin directory.  Aborting."
