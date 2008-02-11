@@ -398,29 +398,35 @@ class RCF<const Field_t>
     // Assignment operator for type Field_t *.
     inline RCF<const Field_t>& operator=(Field_t *p_in);
 
+    // Const member functions apparently must be defined within this class
+    // definition for the IBM compiler to work.
+
     //! Get the field (const).
-    const Field_t& get_field() const { Require(assigned()); 
-	return *ptr_field; }
+    const Field_t& get_field() const
+    {
+        Require(assigned()); 
+	return *ptr_field;
+    }
 
     //! Determine if field is assigned.
     bool assigned() const { return bool(sp_field); }
 
     // Expose operator[] on underlying Field_t (const).
-    inline const value_type& operator[](const size_type i) const
+    const value_type& operator[](const size_type i) const
     {
        Require (assigned());
        return ptr_field->operator[](i);
     }
 
     // Expose begin() (const).
-    inline const_iterator begin() const
+    const_iterator begin() const
     {
-      Require (assigned());
-      return ptr_field->begin();
+        Require (assigned());
+        return ptr_field->begin();
     }
 
     // Expose end() (const).
-    inline const_iterator end() const
+    const_iterator end() const
     {
       Require (assigned());
       return ptr_field->end();
@@ -526,34 +532,21 @@ RCF<const Field_t>& RCF<const Field_t>::operator=(Field_t *p_in)
 /*!
  * \brief Expose operator[] on underlying Field_t (const).
  */
+//
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// NOTE: Moving the following function definition outside the class
+// definition, as below, does not compile with the IBM compiler on Purple.
+// Apparently it is the const qualifier, because the other definitions above
+// compile just fine.  
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // template<class Field_t>
 // const typename RCF<const Field_t>::value_type& 
 // RCF<const Field_t>::operator[](const size_type i) const
 // {
 //     Require (assigned());
 //     return ptr_field->operator[](i);
-// }
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Expose begin() (const).
- */
-// template<class Field_t>
-// typename RCF<const Field_t>::const_iterator RCF<const Field_t>::begin() const
-// {
-//     Require (assigned());
-//     return ptr_field->begin();
-// }
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Expose end() (const).
- */
-// template<class Field_t>
-// typename RCF<const Field_t>::const_iterator RCF<const Field_t>::end() const
-// {
-//     Require (assigned());
-//     return ptr_field->end();
 // }
 
 } // end namespace rtt_dsxx
