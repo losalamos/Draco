@@ -406,13 +406,25 @@ class RCF<const Field_t>
     bool assigned() const { return bool(sp_field); }
 
     // Expose operator[] on underlying Field_t (const).
-    inline const value_type& operator[](const size_type) const;
+    inline const value_type& operator[](const size_type i) const
+    {
+       Require (assigned());
+       return ptr_field->operator[](i);
+    }
 
     // Expose begin() (const).
-    inline const_iterator begin() const;
+    inline const_iterator begin() const
+    {
+      Require (assigned());
+      return ptr_field->begin();
+    }
 
     // Expose end() (const).
-    inline const_iterator end() const;
+    inline const_iterator end() const
+    {
+      Require (assigned());
+      return ptr_field->end();
+    }
 
     // Expose size().
     size_type size() const { Require(assigned()); return ptr_field->size(); }
@@ -514,35 +526,35 @@ RCF<const Field_t>& RCF<const Field_t>::operator=(Field_t *p_in)
 /*!
  * \brief Expose operator[] on underlying Field_t (const).
  */
-template<class Field_t>
-const typename RCF<const Field_t>::value_type& 
-RCF<const Field_t>::operator[](const size_type i) const
-{
-    Require (assigned());
-    return ptr_field->operator[](i);
-}
+// template<class Field_t>
+// const typename RCF<const Field_t>::value_type& 
+// RCF<const Field_t>::operator[](const size_type i) const
+// {
+//     Require (assigned());
+//     return ptr_field->operator[](i);
+// }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Expose begin() (const).
  */
-template<class Field_t>
-typename RCF<const Field_t>::const_iterator RCF<const Field_t>::begin() const
-{
-    Require (assigned());
-    return ptr_field->begin();
-}
+// template<class Field_t>
+// typename RCF<const Field_t>::const_iterator RCF<const Field_t>::begin() const
+// {
+//     Require (assigned());
+//     return ptr_field->begin();
+// }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Expose end() (const).
  */
-template<class Field_t>
-typename RCF<const Field_t>::const_iterator RCF<const Field_t>::end() const
-{
-    Require (assigned());
-    return ptr_field->end();
-}
+// template<class Field_t>
+// typename RCF<const Field_t>::const_iterator RCF<const Field_t>::end() const
+// {
+//     Require (assigned());
+//     return ptr_field->end();
+// }
 
 } // end namespace rtt_dsxx
 
