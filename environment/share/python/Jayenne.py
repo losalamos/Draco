@@ -2,13 +2,92 @@
 codes.
 """ 
 
+class PackageError(Exception):
+    """Reports errors relating to the Jayenne packages"""
+    pass
+
+class LookupError(PackageError): pass
+
+
 # Ugh. This information is repeated in Repo.
-targets = ['draco', 'clubimc', 'milagro', 'wedgehog']
+packages     = ['draco', 'clubimc', 'milagro', 'wedgehog']
+
 dependencies = {'draco'    : [],
                 'clubimc'  : ['draco'],
                 'milagro'  : ['draco', 'clubimc'],
                 'wedgehog' : ['draco', 'clubimc']
                 }
+
+components = {'draco'    : ['RTT_Format_Reader', 
+                            'c4', 
+                            'cdi',
+                            'cdi_analytic', 
+                            'ds++', 
+                            'meshReaders',
+                            'mesh_element', 
+                            'rng', 
+                            'traits', 
+                            'viz'
+                           ],
+              'clubimc'  : ['mc', 
+                            'imc', 
+                            'chimpy', 
+                            'rng_nr', 
+                            'utils'
+                           ],
+              'milagro'  : ['milagro',
+                            'milagro_amr_rz',
+                            'milagro_amr_rz_rz_mg',
+                            'milagro_amr_xyz',
+                            'milagro_amr_xyz_mg',
+                            'milagro_builders',
+                            'milagro_data',
+                            'milagro_interfaces',
+                            'milagro_manager',
+                            'milagro_r',
+                            'milagro_r_mg',
+                            'milagro_release',
+                            'milagro_rz',
+                            'milagro_rz_mg',
+                            'milagro_xyz',
+                            'milagro_xyz_mg'
+                            ],
+              'wedgehog' : ['wedgehog',
+                            'wedgehog_components',
+                            'wedgehog_dd',
+                            'wedgehog_gs',
+                            'wedgehog_interfaces',
+                            'wedgehog_managers',
+                            'wedgehog_output',
+                            'wedgehog_release',
+                            'wedgehog_shunt',
+                            'fortran_shunts'
+                            ]
+              }
+
+##---------------------------------------------------------------------------##
+def component_to_package(component):
+    """Return the package that a component belongs to
+
+    >>> component_to_package('c4')
+    'draco'
+
+    >>> component_to_package('bite me')
+    Traceback (most recent call last):
+    ...
+    LookupError: Found no packages
+    """
+
+    results = [package for (package,comp_list) in components.items() if
+               component in comp_list]
+
+    if len(results) > 1: 
+        raise LookupError("Found more than one package")
+    if len(results) < 1:
+        raise LookupError("Found no packages")
+    
+    return results[0]
+
 
 ##---------------------------------------------------------------------------##
 def is_install_dir(path):
@@ -32,7 +111,7 @@ def extract_jayenne_dependencies(target, options):
 
     """
 
-    assert(target in targets)
+    assert(target in packages)
 
     depends = dependencies[target]
 
@@ -79,7 +158,7 @@ def convert_jayenne_dependencies(jayenne_deps, keywords):
     strings = []
     for component, path in jayenne_deps.items():
 
-        assert(component in targets)
+        assert(component in packages)
 
         expanded_path = expand_template(path, keywords)
 
@@ -98,7 +177,7 @@ def make_dependency_string(component, path):
     """Return a configure string which specified a jayenne component
     dependency. """
 
-    assert(component in targets)
+    assert(component in packages)
 
     return "--with-%s=%s" % (component, path)
 

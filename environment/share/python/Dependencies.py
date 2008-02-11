@@ -10,6 +10,15 @@
 # $Id$
 #======================================================================
 
+import re
+
+# Variables for #include regular expressions.
+include  = "#include\s*"
+contents = "(?P<package>[\w+]*)\/+(?P<filename>[\w+.]*.\w*)\s*"
+
+quotes   = re.compile(include + '\"'+ contents + '\"')
+brackets = re.compile(include + '<' + contents + '>')
+    
 
 ##---------------------------------------------------------------------------##
 def get_files(dir):
@@ -27,37 +36,25 @@ def get_files(dir):
     return files
 
 ##---------------------------------------------------------------------------##
-def get_dependencies(file):
-
-    import re
-
+def file_includes(file):
     """
+    Create a dictionary of dependencies by parsing 'file'. Keys in the
+    dictionary are components and the values are filenames in that component.
 
-    Create a dictionary of dependencies by parsing
-    'file'. Viewed as a functions, the resulting signature is:
-
-       get_dependencies:: file -> d, where:
-
-       d:: package -> [list of included files]
+       d:: component -> [list of included files from component]
 
     The included files appear in #include directives as either:
 
       #include \"package/filename\"   or
       #include <package/filename>
 
-    >>> get_dependencies('/ccs/codes/radtran/vendors/clubimc/clubimc/src/imc/Source.hh')
+    For example:
+
+    >>> file_includes('/home/mwbuksas/work/source/clubimc/head/src/imc/Source.hh')
     {'rng': ['Random.hh'], 'ds++': ['SP.hh'], 'mc': ['Particle_Stack.hh', 'Topology.hh']}
     
     """
-
-    include_dict = {}
-
-    include  = "#include\s*"
-    contents = "(?P<package>[\w+]*)\/+(?P<filename>[\w+.]*.\w*)\s*"
-
-    quotes   = re.compile(include + '\"'+ contents + '\"')
-    brackets = re.compile(include + '<' + contents + '>')
-    
+    includes = {}
     f = open(file, 'r')
 
     # Loop through the file and look for include statements
@@ -71,76 +68,68 @@ def get_dependencies(file):
             package  = match.group('package')
             filename = match.group('filename')
             
-            include_dict.setdefault(package, []).append(filename)
+            includes.setdefault(package, []).append(filename)
 
     f.close()
 
-    return include_dict
+    return includes
+
 
 ##---------------------------------------------------------------------------##
-def scan_directory(directory):
+def file_dependencies(file):
+    """Extract just the components that contain header files that
+    'file' depends on.
 
-    """Build a dictionary which maps filenames in the given directory 
-    to the output of get_dependencies(filename). Viewing the resulting
-    dictionary as a map, it's signature would be:
+    >>> file_dependencies('/home/mwbuksas/work/source/clubimc/head/src/imc/Source.hh')
+    ['rng', 'ds++', 'mc']
 
-       d: filename -> {package : [included_files]}
-
-   >>> d = scan_directory('/ccs/codes/radtran/vendors/clubimc/clubimc/src/imc/')
-
-   >>> d['Source.hh']
-   {'rng': ['Random.hh'], 'ds++': ['SP.hh'], 'mc': ['Particle_Stack.hh', 'Topology.hh']}
-
-   >>> d['Global.cc']
-   {}
-
-   >>> d['Global.hh']
-   {'mc': ['Math.hh', 'Constants.hh']}
-    
     """
-    
-    files = get_files(directory)
-    file_includes = {}
 
-    for file in files:
-        file_includes[file] = get_dependencies(file)
-
-    return file_includes
+    return file_includes(file).keys()
 
 
 
 ##---------------------------------------------------------------------------##
-def find_components(dependency_dict, exclude = []):
+def directory_includes(directory):
+    """Generates a combined depednency map for all of the files in a
+    directory. 
 
-    """ Extract a list of referenced components from 'dependency_dict',
-    excluding the ones in list 'exclude'.
+    map :: component -> [list of included files]
 
-   >>> d = dependency_dict('/ccs/codes/radtran/vendors/clubimc/clubimc/src/imc/')
-    
-   >>> c = find_components(d)
-   >>> print c
-   ['imc', 'mc', 'c4', 'rng', 'cdi', 'ds++']
+    Examples:
 
-   >>> d = dependency_dict('/codes/radtran/vendors/clubimc/clubimc/src/imc/test/')
-   >>> find_components(d, c)
-   ['cdi_analytic']
-    
+    >>> d = directory_includes('/home/mwbuksas/work/source/clubimc/head/src/mc/')
+    >>> print d['ds++']
+    ['SP.hh', 'Assert.hh', 'Range_Finder.hh', 'Index_Converter.hh', 'Index_Counter.hh', 'Packing_Utils.hh', 'Soft_Equivalence.hh', 'Safe_Divide.hh']
     """
 
     import Utils
 
+    dir_includes = {}
+
+    for file in get_files(directory):
+        for (component, files) in file_includes(file).items():
+            Utils.unique_extend(dir_includes.setdefault(component, []), files)
+
+    return dir_includes
+
+
+##---------------------------------------------------------------------------##
+def directory_dependencies(directory):
+    """Extract the components that files in 'directory' depend on.
+
+   >>> c = directory_dependencies('/home/mwbuksas/work/source/clubimc/head/src/imc/')
+   >>> print c
+   ['ds++', 'mc', 'cdi', 'rng', 'utils', 'c4', 'imc']
+   """
+    import Utils
+
     components = []
-
-    for (file, include_dict) in dependency_dict.items():
-
-        for component in include_dict.keys():
-
-            if (component not in exclude):
-                Utils.unique_append(components, component)
+    for file in get_files(directory):
+        Utils.unique_extend(components, file_dependencies(file))
 
     return components
     
-
 
 ##---------------------------------------------------------------------------##
 def find_components_files(dependency_dict, exclude = []):
