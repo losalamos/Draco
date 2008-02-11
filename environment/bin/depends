@@ -55,7 +55,8 @@ if __name__=='__main__':
     deps = Dependencies.directory_dependencies(directory)
 
     print "Referenced components:"
-    for comp in deps: print "  %s" % comp
+    for comp in deps: 
+        print "  %s/%s" % (Jayenne.component_to_package(comp), comp)
     print
 
     test_directory = os.path.join(directory,'test')
