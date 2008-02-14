@@ -52,7 +52,7 @@ parallel='no'
 ##---------------------------------------------------------------------------##
 ## SYSTEM
 host=`uname`
-
+sandiasys=`echo $SNLSYSTEM` 
 
 ##---------------------------------------------------------------------------##
 ## Setting up rmpool for AIX machines (up/purple)
@@ -124,6 +124,8 @@ case $exe in
 
            if test "$host" = 'AIX' ; then 
               test_exec="$executable $exe_options -rmpool $pool"
+	   elif test "$sandiasys" = "redstorm"; then
+	      test_exec="yod -np 1 $executable $exe_options"
            else
               test_exec="$executable $exe_options"
            fi
@@ -155,6 +157,8 @@ case $exe in
 			mpich_path=`which mpirun | sed -e "/mpich/!d"`
 			if test "$LSB_SUB_HOST" = "lambda" && test $mpich_path; then
 			    test_exec="$libexecdir/mpijob -v mpirun -np $procs $executable $exe_options"
+			elif test "$sandiasys" = "redstorm"; then
+			    test_exec="yod -np $procs $executable $exe_options"
 			else
 			    test_exec="mpirun -np $procs $executable $exe_options $number"
 			fi
