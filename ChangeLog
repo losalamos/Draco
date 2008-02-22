@@ -1,3 +1,79 @@
+2008-02-22  Mike Buksas  <mwbuksas@nammu.lanl.gov>
+
+	* draco: Release of draco-5_18_0. This is a minor Draco release. A
+	summary of chagnes is:
+
+	config
+
+		- Seperation of test building and execution in makefiles.
+	
+		- Filesystem changes to many files.
+
+		- Additional compiler support on Darwin.
+
+		- Testing for PCG and Grace presence availability.
+
+		- Redtail compatability fixes.
+
+	environment/share/python and environment/bin
+	
+		- Protype bulti-platform build tools.
+
+		- Code Improvements to pitch and checkout tools.
+
+	environment/elisp
+
+		- Compatability fixes to support Emacs 22.1
+
+	environment/templates
+
+		- Changes to reflect changes in year and group.
+
+	regression
+
+		- Updateds to regression and coverage scripts to match
+		filesystem change.
+
+	c4
+
+		- Added utilities to support creating data mapping
+		operators. 
+
+	ds++
+
+		- Collection of compiler-specific macros
+
+		- Endian conversion functions and support in serialization
+		operators.
+
+		- Fixed compilation issue with ICM xlc compiler.
+
+	parser
+
+		- Code style improvements and additional functionality.
+
+	pcgWrap
+
+		- Functions to test for availbility of external vendor.
+
+	plot2D
+
+		- Functions to test for availbility of external vendor.
+
+	quadrature
+
+		- Code style improvements
+
+		- Refactored to improve encapsulation and reduce
+		dependencies.
+
+	tools
+
+		- Redstorm support
+
+		- Changes to automatic notifications reflecting personnel
+		changes. 
+
 2007-08-10  Aimee Hungerford <aimee@lanl.gov>
 
 	* draco: Release of draco-5_17-0. This is a minor Draco release.
