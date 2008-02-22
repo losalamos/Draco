@@ -16,7 +16,7 @@
 Draco is a C++ radiation transport component library developed by CCS-2, Los
 Alamos National Laboratory. In addition to providing infrastructure for
 radiation transport code development, Draco serves as a "model Development
-Environment (DE)" for code development activities within CCS-4.  Most CCS-4
+Environment (DE)" for code development activities within CCS-2.  Most CCS-2
 code projects are based on the coding standards, idioms, style, organization,
 and architecture of Draco. 
 
@@ -27,7 +27,7 @@ section of the documentation.
 
 \par Code Access
 To get access to Draco source contact 
-<a href="mailto:draco@lanl.gov">CCS-4</a> or see the Draco LANL SourceForge
+<a href="mailto:draco@lanl.gov">CCS-2</a> or see the Draco LANL SourceForge
 <a href=http://sf.lanl.gov/projects/draco>page</a>.
 
 \par Components
