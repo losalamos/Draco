@@ -1,28 +1,17 @@
 #!/usr/bin/env python
 
 """
-checkout.py
+Checks out a variety of CCS-2 packages from the local CVS
+repositories.  
 
-Checks out a variety of CCS-4 packages from the sourceforge server.
-The package argument may be omitted only if the -r <tagname> option is
+Argument 'module' may be omitted only if the -r <tagname> option is
 used and the name of the package is the first word in the tag name,
 e.g. -r wedgehog-4_3_0 implies a package name of 'wedgehog'
 
-The package argument can refer to an entire package, e.g. 'draco' or a
-component within the package, e.g. 'draco/tools'. In the latter case,
-it may be desirable to use the -d option to specify a more compact
-directory name.
-
-Options:
--r <tagname>   Check out a particular tagged version. If [package] is
-               not given, extract it from the tagname as package-###.
--d <dir>       Create <dir> to hold the checked out sources, instead
-               of a directory based on the pacakge name,
--e --export    Export sources, instead of checking them out. (No CVS
-               dirs). Cannot be used with head version.
--n  --dry-run  Causes the cvs command to be printed but not executed.
--h  --help     Prints this message and exits.
--l  --list     Lists the available packages for checkout and exits.
+The 'module' argument can also refer to an entire package,
+e.g. 'draco' or a component within the package, e.g. 'draco/tools'. In
+the latter case, it may be desirable to use the -d option to specify a
+more compact directory name.
 
 Examples:
 
@@ -40,12 +29,9 @@ Examples:
   checkout draco/tools -d tools      # Ditto, but into directory tools.
 """
 
-from Utils import disambiguate, AmbiguousKeyError, InvalidKeyError, padlist
 from optparse import OptionParser, OptionValueError
-import Verbosity
-import CVS
-import Repo
 import sys, os
+import Utils, Verbosity, CVS, Repo, Checkout
 
 class ArgumentsException (Exception):
     """An exception class representing an improper combination of
@@ -54,7 +40,7 @@ class ArgumentsException (Exception):
 package_list = ', '.join(Repo.package_list())
 def list_packages(): print "Available Packages:", package_list
 
-usage="usage: %prog [module] -r version -d dest [options]"
+usage="usage: %prog [module] -r version -d dest [options]" + __doc__
 
 parser = OptionParser(usage=usage)
 parser.add_option("-r", "--tagname",
@@ -93,72 +79,48 @@ parser.add_option("-v", "--verbose",
                   )
 
 ##---------------------------------------------------------------------------##
-def extract_module(options, args):
+def parse_input(options, args):
     """Build a CVS.Module object from the options and arguments
 
     Supported Module/tag combos:
 
     1.  module              | module is args[0], tag is not specified -> HEAD.
     2.  module -r tag       | tag is options.tagname, module is args[0]
-    2b. module/part -r tag  | same as above, bit module is args[0].split('/')[0]
+    2b. module/part -r tag  | same as above, but module is args[0].split('/')[0]
                             | CVS.Module takes care of this case.
     3.  -r module-version   | Tag is options.tagname, module is
                             | options.tagname.split('-')[0]
     4.  module version      | Both in args. Tag is 'module-version'
-    4b. module/part version | Tag is build from 'module' not 'module/part'
+    4b. module/part version | Tag is built from 'module' not 'module/part'
     
     """
+
+    if len(args) > 2:
+        raise ArgumentsException("Too many arguments.")
+
     
     # If there is nothing in agrs, we must be in case 3.
     if not args:
         parts = options.tagname.split("-",1)
         if len(parts) < 2:
-            raise ArgumentsException("Missing package name. Could not"
+            raise ArgumentsException("Missing package name. Could not "
                                      "deduce from tag.")
         else:
-            given_module = parts[0]
-            tag          = options.tagname
+            module = parts[0]
+            tag    = options.tagname
             
-            
-    # Cases 1,2
-    elif len(args)==1:
-        given_module = args[0]
-        tag          = options.tagname
-        
-
-    # Case 4:
-    elif len(args)==2:
-        given_module = args[0]
-
-        # Ouch! This code is duplicated in CVS.Module:
-        tag = args[0].split('/',1)[0] + '-' + options.tagname
-
     else:
-        raise ArgumentsException("Too many arguments")
+        module = args[0]
 
+        if options.tagname:
+            tag = options.tagname
+        elif len(args)==2:
+            tag = module.split('/',1)[0] + '-' + args[1]
+        else:
+            tag=None
 
-    # Try to find the name in the known lists of packages:
     
-    try:
-        module = Repo.disambiguate_component(given_module)
-    except AmbiguousKeyError:
-        raise ArgumentsException("Ambiguous package name: %s" % given_module)
-    except InvalidKeyError:
-        raise ArgumentsException("Unrecognized package name: %s" % given_module)
-
-    return CVS.Module(module, options.destination, tag)
-
-
-
-##---------------------------------------------------------------------------##
-def find_repository(module):
-    """Determine the correct repository from the CVS.Module object and
-    the Repo package"""
-
-    # No try here, module.name has been checked already.
-    archive = Repo.get_cvs_dir(module.name)
-    return CVS.Repository(archive)
-
+    return (module, tag)
 
 
 ##---------------------------------------------------------------------------##
@@ -170,33 +132,19 @@ if __name__=="__main__":
 
     verbosity("Options: "   + str(options), 3)
     verbosity("Arguments: " + str(args),    3)
+    
+    module,   tag      = parse_input(options, args)
+    tag_kind, tag_name = Checkout.parse_tag(tag)
 
-    try:
-        module = extract_module(options, args)
-    except Exception, s:
-        sys.exit("Error: %s" % s)
+    verbosity("Identified module name %s" % module, 2)
+    verbosity("Identified tag name: %s" % tag_name, 2)
+    verbosity("Identified tag kind: %s" % tag_kind, 2)
 
-
-    verbosity("Identified module name %s" % module.name, 2)
-    verbosity("Identified tag name: %s" % module.tag, 2)
-    verbosity("Module: %s " %  module, 3)
-
-
-    # Look up the repository name, 
-    repo = find_repository(module)
-
-    verbosity("Identified repository %s" % repo.location, 2)
-    verbosity(str(repo))
-
-    try:
-        CVS.checkout(repository = repo,
-                     module     = module,
-                     location   = options.location,
-                     export     = options.export,
-                     verbose    = verbosity
-                     )
-    except Exception, s:
-        sys.exit("Error: %s" % s)
+    Checkout.checkout(
+        module, 
+        options.destination, options.location, options.export, 
+        tag_kind, tag_name, 
+        verbosity)
                  
 
 

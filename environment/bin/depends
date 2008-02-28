@@ -65,7 +65,8 @@ if __name__=='__main__':
         test_deps = Dependencies.directory_dependencies(test_directory)
 
         for comp in test_deps: 
-            if comp not in deps: print "  %s" % comp
+            if comp not in deps: 
+                print "  %s/%s" % (Jayenne.component_to_package(comp), comp)
         print
 
     
