@@ -6,7 +6,7 @@ from Utils import disambiguate, AmbiguousKeyError, InvalidKeyError, padlist
 """Repo
 
 A module of functions which describe the repository structure for
-CCS-2 radiation transport codes.
+CCS-2 radiation transport codes on our local network.
 
 This module should be split into data, read from a configuration file,
 and functionality, which presents the data via functions.
@@ -29,6 +29,7 @@ PACKAGES = {'draco'       : "draco",
             'clubimc'     : "jayenne",
             'milagro'     : "jayenne",
             'wedgehog'    : "jayenne",
+            'jayenne'     : "jayenne",
             'uncleMcFlux' : "jayenne"}
 
 DEPENDS = {'wedgehog'    : ['clubimc','draco'],
@@ -60,7 +61,7 @@ def is_valid_repository(repo):
     return repo in REPOS
 
 ##---------------------------------------------------------------------------##
-def get_cvs_dir(package):
+def get_dir(package):
     """Get the path of the cvs reposistory containing the given
     package
 
@@ -75,7 +76,7 @@ def get_cvs_dir(package):
 
 
 ##---------------------------------------------------------------------------##
-def get_cvs_repo(package):
+def get_repo_name(package):
     """Get the repository name that a package can be found in.
 
     >>> get_cvs_repo('uncleMcFlux')
@@ -88,7 +89,7 @@ def get_cvs_repo(package):
     return PACKAGES[package]
 
 ##---------------------------------------------------------------------------##
-def get_cvs_repo_dir(repo):
+def get_repo_dir(repo):
     """The the directory for a particular repository
 
     >>> get_cvs_repo_dir('jayenne')

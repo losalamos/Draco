@@ -1,12 +1,24 @@
 import exceptions, os
-import Verbosity, Utils
+import Verbosity, Utils, Repo
 
 """Package CVS
 
 Facilities for interacting with CVS in Python.
 
-A Repository objects represents a specific CVS repository. It
-implements commands to check out modules from it.
+Contains classes:
+
+  Repository
+  Module
+  WorkingCopy
+
+Here's the relationship:
+
+  WorkingCopy ===> Module ---> Repo
+              \           \--> Tag (string)
+               \     
+                \--> Destination
+
+
 """
 
 ##---------------------------------------------------------------------------##
@@ -14,204 +26,164 @@ class ArgumentError(Exception):
     "An exception class for inconsistent combinations of arguments."
     pass
 
-
 ##---------------------------------------------------------------------------##
-class Tag:
-    """Represents the kinds of tags that we can apply to a package
-    when checking it out.
+##---------------------------------------------------------------------------##
 
-    Converts itself to a string for composition of CVS commands
+class Repository(object):
+    """Represents a repository
 
-    >>> print Tag('r', 'tag_name')
-    -r tag_name
+    A Repository object represents a specific CVS repository.  It
+    verifies the existence and readability of the directory where it
+    lives.
 
+    >>> r = Repository('/ccs/codes/radtran/cvsroot')
+    >>> print r.location
+    /ccs/codes/radtran/cvsroot
 
-    >>> print Tag('x', 'tag_name')
-    Traceback (most recent call last):
-    ...
-    ArgumentError: Unrecognized tag kind: x
-
-
-    >>> t = Tag('D', 'yesterday')
-    >>> t.kind
-    'D'
-    >>> t.name
-    'yesterday'
-
-    >>> str(Tag())
-    '-r HEAD'
-
-    >>> t = Tag.build('some_branch')
-    >>> t.kind
-    'r'
-
-    >>> t = Tag.build('date:sometime')
-    >>> t.kind
-    'D'
-    >>> t.name
-    'sometime'
+    >>> print r
+    -d /ccs/codes/radtran/cvsroot
 
     """
+    
+    def __init__(self, repository):
+        self.location = repository
+        assert(os.access(self.location, (os.F_OK | os.R_OK)))
 
-    kinds = ['h', 'D', 'r']
+    def __str__(self): return "-d %s" % self.location
 
-    # Add a head kind?
-    descriptors = {'date':'D','symbolic':'r'}
-
-    def __init__(self, kind="-r", name=""):
-
-        self.kind = kind
-        self.name = name
-
-        # If no name provided, no tag is intended.
-        if not self.name:
-            self.kind = 'h'
-
-        if (self.name and not self.kind):
-                raise ArgumentError("Must provide kind of tag.");
-
-        if self.kind not in self.kinds:
-            raise ArgumentError(
-                "Unrecognized tag kind: %s" % self.kind)
-
-    def __str__(self): return self.tag_string()
-
-    def tag_string(self):
-
-        if not self.kind:      return "-r HEAD"
-        elif self.kind == 'D': return "-D %s" % self.name
-        elif self.kind == 'r': return "-r %s" % self.name
-        else:                  return "-r HEAD"
-        
-
-    def build(desc, splitter=":"):
-        "Look for keywords in the tag string which indicate the type."
-
-        parts = desc.split(splitter, 1)
-
-        # If splitter not encountered, assume symbolic tag
-        if len(parts) == 1:
-            return Tag('r', desc)
-        else:
-            kind = Utils.complete(parts[0], Tag.descriptors.keys())
-            # If the first word fits exactly one key, use it:
-            if len(kind)==1:
-                return Tag(Tag.descriptors[kind[0]], parts[1])
-            else:
-                return desc
-        
-    build = staticmethod(build)            
-
-
+def lookup_repo(module_name): return Repository(Repo.get_dir(module_name))
 
 ##---------------------------------------------------------------------------##
-class Module:
-    """Represents a module in a CVS repository.
+##---------------------------------------------------------------------------##
 
-    The directory varaible is used to select a destination name for
-    the result when checked out.
+def make_tag(kind, name=None):
+    """Convert a tag kind and name into a tag.  Performs completion on
+    the kind.
 
-    >>> m = Module('draco/environment', 'environment')
+    This could be a static member of the Tag class.
+    """
+    kinds = ['head', 'date', 'symbolic']
+
+    try:
+        kind = Utils.disambiguate(kind, kinds)
+    except Utils.KeyError, e:
+        raise ArgumentError("Bad tag prefix %s" % e.args[0])
+
+    if not name and kind != 'head':
+        raise ArgumentError("Date and revision tags need a name")
+
+    if name and kind == 'head':
+        raise ArgumentError("Head tags to net have a name")
+
+    if   kind=='head':     return ""                   # Head
+    elif kind=='date':     return "-D %s" % name       # Date(name)
+    elif kind=='symbolic': return "-r %s" % name       # Symbolic(name)
+    else:
+        raise ArgumentError("Unrecognized tag kind: %s" % kind) 
+    
+##---------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
+
+class Module(object):
+    """Represents a module, version and checkout location.
+
+    >>> m = Module('draco/environment', "-r dummy_tag")
     >>> m.name
     'draco'
     >>> m.module
     'draco/environment'
-    >>> m.destination
+    >>> print m
+    -r dummy_tag draco/environment
+    
+    """
+    
+    def __init__(self, module_name, tag):
+        self.tag     = tag
+        self.module  = module_name
+        self.name    = module_name.split("/",1)[0]
+
+        # Lookup the correct repository:
+        self.repo = lookup_repo(self.name)
+
+    def __str__(self): 
+        return "%s %s" % (self.tag, self.module)
+
+
+def make_module(module_name, tag_kind, tag_name):
+    tag = make_tag(tag_kind, tag_name)
+    return Module(module_name, tag)
+
+##---------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
+
+class WorkingCopy(Module):
+
+    """A WorkingCopy is a version of a module, assigned to a particular
+    location.
+
+    >>> w = WorkingCopy('draco/environment', "-r dummy_tag", 'environment')
+    >>> w.output_dir()
     'environment'
-    """
-    
-    def __init__(self, module, destination="", tag="" ):
+    >>> w.checked_out()
+    False
 
-        self.name        = module.split("/",1)[0]
-        self.module      = module
+    For now, all you can do with it is check it out.
+    """
+
+    def __init__(self, module_name, tag, destination=None):
+
+        super(WorkingCopy, self).__init__(module_name, tag)
+
         self.destination = destination
-        self.tag         = Tag.build(tag)
+        self.path        = None
 
-    def dir_string(self):
-
-        if self.destination:
-            return "-d %s" % self.destination
-        else:
-            return ""
-
-    # TODO Make this spew more stuff:
     def __str__(self):
-        return self.module
+        if self.destination:
+            part = "-d %s " % self.destination
+        else:
+            part = " "
 
+        return part + super(WorkingCopy,self).__str__()
         
+    def output_dir(self):  return self.destination or self.name
 
+    def checked_out(self): return bool(self.path)
 
-##---------------------------------------------------------------------------##
-class Repository:
-    """Represents a repository
-
-    >>> r = Repository('/codes/radtran/cvsroot')
-    >>> print r.location
-    /codes/radtran/cvsroot
-
-    """
-    
-
-    def __init__(self, repository):
-
-        self.location = repository
-        assert(os.access(self.location, (os.F_OK | os.R_OK)))
-
-
-
-
-##---------------------------------------------------------------------------##
-def checkout(repository,
-             module,
-             location,
-             export,
-             verbose = Verbosity.ignore()
-             ):
-    """Function checkout implemenets the checkout and export cvs
-    commands given a description of the desired module, the repository
-    it comes from, and where the result should go.
-    """
-
-    cvs_command = export and "export" or "checkout"
-
-    command = "cvs -Q -d %s %s %s %s %s" % \
-              (repository.location,
-               cvs_command,
-               module.dir_string(),
-               module.tag.tag_string(),
-               module.module
-               )
-
-    verbose("Executing CVS command: %s" % command, 1)
-    verbose("in directory %s" % location, 2)
-
-    
-    # Switch to the indicated directory.
-    try:
-        os.chdir(location)
-    except OSError:
-        sys.exit("Could not find directory %s" % location)
+    def checkout(self, location, export=False, verbose=Verbosity.ignore()):
+        # Switch to the indicated directory.
+        try:
+            os.chdir(location)
+        except OSError:
+            sys.exit("Could not chdir to directory %s" % location)
             
-    command_out = os.popen(command)
-    output = command_out.read()
-    error_code = command_out.close()
+        cvs_command = export and "export" or "checkout"
+
+        command = "cvs -Q %s %s %s" % (self.repo, cvs_command, self)
+
+        verbose("Executing CVS command: %s" % command, 1)
+        verbose("in directory %s" % location, 2)
+
+        command_out = os.popen(command)
+        output = command_out.read()
+        error_code = command_out.close()
     
-    if error_code:
-        raise exceptions.RuntimeError(
-            "CVS command failed with error: %s" % error_code)
+        if error_code:
+            raise exceptions.RuntimeError(
+                "CVS command failed with error: %s" % error_code)
 
-    # Figure out what directory we just created. If we used a module
-    # destination, return that appended to the location. Otherwise,
-    # append the module path to the location and return that
-
-    new_path = module.destination or module.module
-    path     = os.path.join(location, new_path);
-
-    assert(os.access(path, os.F_OK | os.R_OK))
-
-    return path
+        self.path = os.path.join(location, self.output_dir());
+        assert(os.access(self.path, os.F_OK | os.R_OK))
+        
+        return self.path
 
 
+def make_working_copy(module_name, checkout_name, tag_kind, tag_name):
+    tag = make_tag(tag_kind, tag_name)
+    return WorkingCopy(module_name, tag, checkout_name)
+
+
+##---------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
 def _test():
     import doctest, CVS
     return doctest.testmod(CVS)

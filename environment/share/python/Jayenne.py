@@ -82,9 +82,10 @@ def component_to_package(component):
                component in comp_list]
 
     if len(results) > 1: 
-        raise LookupError("Found more than one package")
-    if len(results) < 1:
-        raise LookupError("Found no packages")
+        raise LookupError("Found more than one package for component"
+                          "%s" % component)
+
+    if len(results) < 1: return ""
     
     return results[0]
 
