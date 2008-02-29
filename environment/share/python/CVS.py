@@ -75,9 +75,9 @@ def make_tag(kind, name=None):
     if name and kind == 'head':
         raise ArgumentError("Head tags to net have a name")
 
-    if   kind=='head':     return ""                   # Head
-    elif kind=='date':     return "-D %s" % name       # Date(name)
-    elif kind=='symbolic': return "-r %s" % name       # Symbolic(name)
+    if   kind=='head':     return ""
+    elif kind=='date':     return "-D %s" % name
+    elif kind=='symbolic': return "-r %s" % name
     else:
         raise ArgumentError("Unrecognized tag kind: %s" % kind) 
     
@@ -85,7 +85,7 @@ def make_tag(kind, name=None):
 ##---------------------------------------------------------------------------##
 
 class Module(object):
-    """Represents a module, version and checkout location.
+    """Represents a CVS module, versioned with a tag string.
 
     >>> m = Module('draco/environment', "-r dummy_tag")
     >>> m.name
@@ -109,17 +109,13 @@ class Module(object):
         return "%s %s" % (self.tag, self.module)
 
 
-def make_module(module_name, tag_kind, tag_name):
-    tag = make_tag(tag_kind, tag_name)
-    return Module(module_name, tag)
-
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
 
 class WorkingCopy(Module):
 
-    """A WorkingCopy is a version of a module, assigned to a particular
-    location.
+    """A WorkingCopy is a module, assigned to a particular directory
+    name for checking out.
 
     >>> w = WorkingCopy('draco/environment', "-r dummy_tag", 'environment')
     >>> w.output_dir()

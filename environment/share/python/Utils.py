@@ -6,6 +6,11 @@
 #======================================================================
 
 ##---------------------------------------------------------------------------##
+class ArgumentsException (Exception):
+    """An exception class representing an improper combination of
+    arguments and options"""
+
+
 ## Basic data types:
 ##---------------------------------------------------------------------------##
 

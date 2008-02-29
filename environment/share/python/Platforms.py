@@ -1,4 +1,8 @@
-class flash:
+class openICN:
+    # Put repository locations in here.
+    pass
+
+class flash(openICN):
 
     sprng = {
         "lib"  : "/usr/projects/jayenne/sprng-0.5x/Linux64/",
@@ -24,6 +28,19 @@ class flash:
         "gandolf" : gandolf,
         "pcg"     : pcg
         }
+
+
+class closedICN:
+    # Put repo locations in here.
+    pass
+
+class lightning(closedICN):
+    # Put vendor locations in here
+    pass
+
+class redtail(closedICN):
+    # Put vendor locations in here
+    pass
 
 
 class ccs2:

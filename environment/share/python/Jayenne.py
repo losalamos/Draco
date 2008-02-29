@@ -141,7 +141,6 @@ def expand_template(path, keywords):
 
 
     """
-
     import re
 
     return re.sub("<(.*?)>", (lambda m: keywords.get(m.group(1),"")), path)
