@@ -7,12 +7,9 @@ import os, sys
 
 import Verbosity, Repo, CVS, Cleanup, Checkout
 
-# Global application data:
-packages = ['draco', 'clubimc', 'wedgehog']
+usage = """
 
-usage = """usage:
-
-  %prog component [[date:]version] [-d dependency [date:]version]
+  %prog [module] [-r [date:]version] [-d dependency [date:]version]
 
 Quick intro:
 
@@ -73,6 +70,14 @@ Quick intro:
 """
 
 parser = OptionParser(usage=usage)
+parser.add_option("-r", "--tagname",
+                  type    = "string",
+                  action  = "store",
+                  dest    = "tagname",
+                  default = "",
+                  help    = "Specify a symbolic tag for the package."
+                  )
+
 parser.add_option("-d", "--depend",
                   type     = "string",
                   nargs    = 2,
@@ -80,18 +85,6 @@ parser.add_option("-d", "--depend",
                   action   = "append",
                   metavar  = "COMPONENT TAG",
                   help     = "Set a version/tag for a dependency"
-                  )
-
-parser.add_option("-v", "--verbose",
-                  action   = "count",
-                  dest     = "verbosity",
-                  help     = "Increase verbosity of output. Multiple uses supported.",
-                  )
-
-parser.add_option("-e", "--export",
-                  action   = "store_true",
-                  dest     = "export",
-                  help     = "Export sources, instead of checking them out",
                   )
 
 parser.add_option("-l", "--location",
@@ -112,6 +105,18 @@ parser.add_option("-n", "--name",
                   default  = "",
                   dest     = "name",
                   help     = "Specify a top-level name for source tree."
+                  )
+
+parser.add_option("-e", "--export",
+                  action   = "store_true",
+                  dest     = "export",
+                  help     = "Export sources, instead of checking them out",
+                  )
+
+parser.add_option("-v", "--verbose",
+                  action   = "count",
+                  dest     = "verbosity",
+                  help     = "Increase verbosity of output. Multiple uses supported.",
                   )
 
 ##---------------------------------------------------------------------------##
@@ -150,21 +155,11 @@ def cvs_update(tag):
 ##---------------------------------------------------------------------------##
 def parse_input(options, args):
 
-    if len(args) < 1: parser.error("No top component specified.")
-    if len(args) > 2: parser.error("Too many parameters")
-
-    module = args[0]
-
-    if len(args) == 2: tag = args[1]
-    else: tag = None
-
-    message("Got module name: %s" % module, 3)
-    message("Got tag descriptor: %s" % tag, 3)
+    module, tag = Checkout.parse_input(options, args)
 
     # Set default location to CWD:
     if not options.location: options.location = os.getcwd()
     options.location = os.path.abspath(options.location)
-    message("Value for location: %s " % options.location, 3)
     
 
     # Set the value of checkout_dir
@@ -189,14 +184,27 @@ def parse_input(options, args):
 ##---------------------------------------------------------------------------##
 if __name__=="__main__":
 
+    die = sys.exit
+
     (options, args) = parser.parse_args()
     message = Verbosity.make(options.verbosity)
     message("Options: %s" % str(options), 3)
     message("Arguments: %s " % str(args), 3)
 
-    main_module_name, tag, checkout_dir, named_depends  = parse_input(options, args)
-    tag_kind, tag_name = Checkout.parse_tag(tag)
+    try:
 
+        (main_module_name, tag, checkout_dir, named_depends) = \
+            parse_input(options, args)
+
+        (tag_kind, tag_name) = Checkout.parse_tag(tag)
+
+    except Utils.ArgumentError, e:
+        parser.error(e.__str__)
+        
+    message("main module name:   %s" % main_module_name, 3)
+    message("tag string:         %s" % tag, 3)
+    message("checkout directory: %s" % checkout_dir, 3)
+    message("work location:      %s" % options.location, 3)
     message("Named dependencies: %s" % named_depends, 3)
     
     # Location/Tarball combinations:
@@ -212,18 +220,12 @@ if __name__=="__main__":
     
     # If <location> doesn't exist, try to create it.
     if not os.path.exists(options.location):
-        try:
-            os.mkdirs(options.location)
-        except:
-            sys.exit("Failed to create directory %s:" % options.location)
-
+        os.makedirs(options.location) or \
+        die("Failed to create directory %s:" % options.location) 
 
     if not os.path.exists(checkout_dir): 
-        try:
-            os.mkdirs(checkout_dir)
-        except:
-            sys.exit("Failed to create directory %s:" % checkout_dir)
-
+        os.makedirs(checkout_dir) or \
+        die("Failed to create directory %s:" % checkout_dir) 
 
     # Checkout the main module.
     main_module = Checkout.checkout(
@@ -272,7 +274,7 @@ if __name__=="__main__":
             tarfile.add(checkout_dir, options.name)
         else:
             tarfile.add(os.path.join(checkout_dir, main_module.name))
-            for dir in [main_module.name]+all_dependency_names:
+            for dir in [main_module.name]+all_deps:
                 tarfile.add(os.path.join(checkout_dir, dir), options.tarfile)
 
         tarfile.close()

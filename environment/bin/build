@@ -15,7 +15,7 @@ import Configure
 
 # Local utitlity modules for these applications.
 import Jayenne
-import Vendors
+import Platforms
 
 die = sys.exit
 
