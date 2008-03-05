@@ -12,7 +12,7 @@ delete non-empty files and/or directories.
 
 Off-hand, I can't think of any resources other than temporary files
 that need to be cleaned up this way. If I think of them, I'll put
-handelers for them here.
+handlers for them here.
 
 """
 

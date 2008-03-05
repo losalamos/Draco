@@ -65,8 +65,8 @@ def get_dir(package):
     """Get the path of the cvs reposistory containing the given
     package
 
-    >>> get_cvs_dir('draco')
-    '/codes/radtran/cvsroot'
+    >>> get_dir('draco')
+    '/ccs/codes/radtran/cvsroot'
 
     """
 
@@ -79,7 +79,7 @@ def get_dir(package):
 def get_repo_name(package):
     """Get the repository name that a package can be found in.
 
-    >>> get_cvs_repo('uncleMcFlux')
+    >>> get_repo_name('uncleMcFlux')
     'jayenne'
 
     """
@@ -92,8 +92,8 @@ def get_repo_name(package):
 def get_repo_dir(repo):
     """The the directory for a particular repository
 
-    >>> get_cvs_repo_dir('jayenne')
-    '/codes/radtran/cvsroot'
+    >>> get_repo_dir('jayenne')
+    '/ccs/codes/radtran/cvsroot'
 
     """
 
@@ -115,15 +115,15 @@ def get_depends(package):
     return DEPENDS[package]
 
 ##---------------------------------------------------------------------------##
-def get_cvs_path(package):
-    """get_cvs_path:
+def get_path(package):
+    """get_path:
 
     Return the path of the cvsroot for a given package.
 
-    >>> get_cvs_path('draco')
-    '/codes/radtran/cvsroot/draco'
+    >>> get_path('draco')
+    '/ccs/codes/radtran/cvsroot/draco'
 
-    >>> get_cvs_path('Bite me!')
+    >>> get_path('Bite me!')
     Traceback (most recent call last):
     ...
     AssertionError
@@ -132,7 +132,7 @@ def get_cvs_path(package):
 
     assert(is_valid_package(package))
 
-    repo_path =  os.path.join(get_cvs_dir(package), package)
+    repo_path =  os.path.join(get_dir(package), package)
 
     # Verify the existence and readability of the directory:
     assert(os.access(repo_path, os.F_OK | os.R_OK))
