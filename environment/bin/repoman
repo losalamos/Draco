@@ -116,7 +116,7 @@ def make_archive(package, directory, compress):
     mode = 'w'
     if compress: mode += ":gz"
 
-    repository_path = Repo.get_cvs_path(package)
+    repository_path = Repo.get_path(package)
 
     if not directory: directory = ""
     archive = os.path.join(directory, get_archive_name(package, compress))
