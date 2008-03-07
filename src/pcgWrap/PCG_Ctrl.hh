@@ -12,6 +12,7 @@
 #include "ds++/Mat.hh"
 #include "ds++/SP.hh"
 
+#include "pcgWrap/config.h"
 #include "PCG_MatVec.hh"
 #include "PCG_PreCond.hh"
 
