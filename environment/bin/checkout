@@ -31,9 +31,9 @@ Examples:
 
 from optparse import OptionParser, OptionValueError
 import sys, os
-import Utils, Verbosity, CVS, Repo, Checkout
+import Utils, Verbosity, Jayenne, Checkout
 
-package_list = ', '.join(Repo.package_list())
+package_list = ', '.join(Jayenne.packages)
 def list_packages(): print "Available Packages:", package_list
 
 usage="usage: %prog [module] -r version -d dest [options]" + __doc__

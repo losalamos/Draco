@@ -1,144 +1,54 @@
 
 import os, tarfile, os.path
 from Utils import disambiguate, AmbiguousKeyError, InvalidKeyError, padlist
-
+import Platforms
 
 """Repo
 
-A module of functions which describe the repository structure for
-CCS-2 radiation transport codes on our local network.
-
-This module should be split into data, read from a configuration file,
-and functionality, which presents the data via functions.
-
 """
 
-class RepoError(Exception):
-    """An Exception Class for errors relating to the known repositiories"""
+platform = Platforms.ccs2
 
 ##---------------------------------------------------------------------------##
-## Repository Information:
 ##---------------------------------------------------------------------------##
-REPOS = {'draco'   : "/ccs/codes/radtran/cvsroot",
-         'jayenne' : "/ccs/codes/radtran/cvsroot"
-         }
 
-PACKAGES = {'draco'       : "draco",
-            'tools'       : "draco",
-            'imcdoc'      : "jayenne",
-            'clubimc'     : "jayenne",
-            'milagro'     : "jayenne",
-            'wedgehog'    : "jayenne",
-            'jayenne'     : "jayenne",
-            'uncleMcFlux' : "jayenne"}
+class Repository(object):
+    """Represents a repository
 
-DEPENDS = {'wedgehog'    : ['clubimc','draco'],
-           'milagro'     : ['clubimc','draco'],
-           'uncleMcFlux' : ['clubimc','draco'],
-           'clubimc'     : ['draco'],
-           'draco'       : [],
-           'tools'       : [],
-           'imcdoc'      : []
-           }
-           
+    A Repository object represents a specific CVS repository.  It
+    verifies the existence and readability of the directory where it
+    lives.
 
+    >>> r = Repository('jayenne')
+    >>> print r.location
+    /ccs/codes/radtran/cvsroot
 
-def package_list(): return PACKAGES.keys()
-
-def disambiguate_component(component):
-
-    return disambiguate(component, PACKAGES.keys())
-
-
-##---------------------------------------------------------------------------##
-def is_valid_package(package):
-    "Is 'pacakge' a package we know about?"
-    return package in PACKAGES
-
-##---------------------------------------------------------------------------##
-def is_valid_repository(repo):
-    "Is 'repo' a repositiry we know about?"
-    return repo in REPOS
-
-##---------------------------------------------------------------------------##
-def get_dir(package):
-    """Get the path of the cvs reposistory containing the given
-    package
-
-    >>> get_dir('draco')
-    '/ccs/codes/radtran/cvsroot'
+    >>> print r
+    -d /ccs/codes/radtran/cvsroot
 
     """
+    
+    def __init__(self, name):
+        assert(is_valid_name(name))
+        self.name     = name
+        self.location = platform.repos[self.name]
 
-    assert(is_valid_package(package))
+        assert(os.access(self.location, (os.F_OK | os.R_OK)))
 
-    return REPOS[PACKAGES[package]]
-
-
-##---------------------------------------------------------------------------##
-def get_repo_name(package):
-    """Get the repository name that a package can be found in.
-
-    >>> get_repo_name('uncleMcFlux')
-    'jayenne'
-
-    """
-
-    assert(is_valid_package(package))
-
-    return PACKAGES[package]
+    def __str__(self): return "-d %s" % self.location
 
 ##---------------------------------------------------------------------------##
-def get_repo_dir(repo):
-    """The the directory for a particular repository
-
-    >>> get_repo_dir('jayenne')
-    '/ccs/codes/radtran/cvsroot'
-
-    """
-
-    assert(is_valid_repository(repo))
-
-    return REPOS[repo]
+def is_valid_name(name): return name in platform.repos
 
 ##---------------------------------------------------------------------------##
-def get_depends(package):
-    """Get a list of packages the given package depends on.
-
-    >>> get_depends('wedgehog')
-    ['clubimc', 'draco']
-
-    """
-
-    assert(is_valid_package(package))
-
-    return DEPENDS[package]
-
-##---------------------------------------------------------------------------##
-def get_path(package):
-    """get_path:
-
-    Return the path of the cvsroot for a given package.
-
-    >>> get_path('draco')
-    '/ccs/codes/radtran/cvsroot/draco'
-
-    >>> get_path('Bite me!')
-    Traceback (most recent call last):
-    ...
-    AssertionError
+def get_repository(name):
+    """Get the repository object corresponding to name
+    >>> print get_repository('jayenne')
+    -d /ccs/codes/radtran/cvsroot
 
     """
-
-    assert(is_valid_package(package))
-
-    repo_path =  os.path.join(get_dir(package), package)
-
-    # Verify the existence and readability of the directory:
-    assert(os.access(repo_path, os.F_OK | os.R_OK))
-
-    return repo_path
-
+    assert(is_valid_name(name))
+    return Repository(name)
 
 ##---------------------------------------------------------------------------##
 ## Main functions.
@@ -147,7 +57,6 @@ def get_path(package):
 def _test():
     import doctest, Repo
     return doctest.testmod(Repo)
-
 
 if __name__=="__main__":
     _test()

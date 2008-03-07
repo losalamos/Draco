@@ -4,7 +4,7 @@
 the file in HPSS and push it to the secure network.
 """
 
-import Repo, HPSS, Verbosity, Utils, Cleanup
+import Jayenne, HPSS, Verbosity, Utils, Cleanup
 import tempfile, tarfile, os, sys
 
 
@@ -71,7 +71,7 @@ def parse_command_line():
 
     for package in packages:
         
-        if not Repo.is_valid_package(package):
+        if not Jayenne.is_valid_package(package):
             print "Do not know about package: %s. Dropping from list." % package
             packages.remove(package)
 
@@ -82,7 +82,7 @@ def parse_command_line():
 
 
 ##---------------------------------------------------------------------------##
-def get_archive_name(package, compress = True):
+def get_archive_name(package, directory=None, compress = True):
 
     """Transform a package name into the name of a tar repository.
 
@@ -99,36 +99,40 @@ def get_archive_name(package, compress = True):
 
     """
 
+    if not directory: 
+        directory = ""
+
     if compress:
         extension = ".tgz"
     else:
         extension = ".tar"
 
-    return "".join([package, "_arch", extension])
+    return os.path.join(directory, "".join([package, "_arch", extension]))
 
 
 
 ##---------------------------------------------------------------------------##
-def make_archive(package, directory, compress):
+def make_archive(package_name, directory, compress):
 
-    assert(Repo.is_valid_package(package))
+    # We only allow "top-level" packages to be archived.
+    assert(Jayenne.is_valid_package(package_name))
+    package = Jayenne.make_package(package_name)
 
-    mode = 'w'
-    if compress: mode += ":gz"
+    archive_file = get_archive_name(package.name, directory, compress)
 
-    repository_path = Repo.get_path(package)
-
-    if not directory: directory = ""
-    archive = os.path.join(directory, get_archive_name(package, compress))
+    message("Directory to be archived: %s" % package.path, 3)
 
     if options.go:
-        tar = tarfile.open(archive, mode)
-        tar.add(repository_path, package)
+        mode = 'w'
+        if compress: mode += ":gz"
+
+        tar = tarfile.open(archive_file, mode)
+        tar.add(package.path, package.name)
         tar.close()
 
-    message(" ... as file: %s" % (archive, ),2)
+    message(" ... as file: %s" % (archive_file, ),2)
 
-    return archive
+    return archive_file
 
 
 ##---------------------------------------------------------------------------##

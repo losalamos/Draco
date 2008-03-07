@@ -2,6 +2,8 @@
 codes.
 """ 
 
+import Repo, CVS
+
 class PackageError(Exception):
     """Reports errors relating to the Jayenne packages"""
     pass
@@ -9,9 +11,82 @@ class PackageError(Exception):
 class LookupError(PackageError): pass
 
 
-# Ugh. This information is repeated in Repo.
-packages     = ['draco', 'clubimc', 'milagro', 'wedgehog']
+# A map from package names to repositiry names.
+repositories = {'draco'       : "draco",
+                'tools'       : "draco",
+                'imcdoc'      : "jayenne",
+                'clubimc'     : "jayenne",
+                'milagro'     : "jayenne",
+                'wedgehog'    : "jayenne",
+                'jayenne'     : "jayenne",
+                'uncleMcFlux' : "jayenne"}
 
+packages     = repositories.keys()
+
+
+##---------------------------------------------------------------------------##
+## Respository and CVS source packages:
+##---------------------------------------------------------------------------##
+
+##---------------------------------------------------------------------------##
+def is_valid_package(package): return package in packages
+def disambiguate_package(package): return disambiguate(package, packages)
+
+##---------------------------------------------------------------------------##
+def get_repository(package_name):
+    """Get an object for the repository that contains a package.
+
+    >>> r = get_repository('uncleMcFlux')
+    >>> r.name
+    'jayenne'
+
+    >>> r = get_repository('draco/environment')
+    >>> r.name
+    'draco'
+
+    """
+    parent = package_name.split("/",1)[0]
+    assert(is_valid_package(parent))
+    return Repo.get_repository(repositories[parent])
+
+
+##---------------------------------------------------------------------------##
+def make_package(package_name):
+    """Get a CVS.Package object representing a Jayenne package.
+
+    >>> w = make_package('wedgehog')
+    >>> w.package
+    'wedgehog'
+    >>> w.repository.name
+    'jayenne'
+    >>> w.repository.location
+    '/ccs/codes/radtran/cvsroot'
+    >>> w.path
+    '/ccs/codes/radtran/cvsroot/wedgehog'
+
+    """
+
+    repository = get_repository(package_name)
+    return CVS.Package(package_name, repository)
+
+
+##---------------------------------------------------------------------------##
+def make_working_copy(package_name, checkout_name, tag_kind, tag_name):
+    """Create a CVS.working_copy_object from a package name, the name
+    to check it out under, and the tag information
+    """
+
+    tag = CVS.make_tag(tag_kind, tag_name)
+    package = make_package(package_name)
+
+    return CVS.WorkingCopy(package, tag, checkout_name)
+
+
+##---------------------------------------------------------------------------##
+## Dependencies and Components
+##---------------------------------------------------------------------------##
+
+# These are package level dependencies.
 dependencies = {'draco'    : [],
                 'clubimc'  : ['draco'],
                 'milagro'  : ['draco', 'clubimc'],
@@ -65,6 +140,7 @@ components = {'draco'    : ['RTT_Format_Reader',
                             ]
               }
 
+
 ##---------------------------------------------------------------------------##
 def component_to_package(component):
     """Return the package that a component belongs to
@@ -75,19 +151,29 @@ def component_to_package(component):
     >>> component_to_package('bite me')
     Traceback (most recent call last):
     ...
-    LookupError: Found no packages
+    LookupError: Found no packages for bite me
     """
-
     results = [package for (package,comp_list) in components.items() if
                component in comp_list]
 
     if len(results) > 1: 
-        raise LookupError("Found more than one package for component"
-                          "%s" % component)
+        raise LookupError("Found multiple packages for %s" % component)
 
-    if len(results) < 1: return ""
+    if len(results) < 1: 
+        raise LookupError("Found no packages for %s" % component)
     
     return results[0]
+
+##---------------------------------------------------------------------------##
+def get_dependencies(package):
+    """Get a list of packages the given package depends on.
+
+    >>> get_dependencies('wedgehog')
+    ['draco', 'clubimc']
+
+    """
+    assert(is_valid_package(package))
+    return dependencies[package]
 
 
 ##---------------------------------------------------------------------------##
@@ -142,9 +228,7 @@ def expand_template(path, keywords):
 
     """
     import re
-
     return re.sub("<(.*?)>", (lambda m: keywords.get(m.group(1),"")), path)
-
 
 ##---------------------------------------------------------------------------##
 def convert_jayenne_dependencies(jayenne_deps, keywords):
@@ -171,17 +255,7 @@ be a jayenne component installation." % true_path)
 
     return " ".join(strings)
 
-
 ##---------------------------------------------------------------------------##
-def make_dependency_string(component, path):
-    """Return a configure string which specified a jayenne component
-    dependency. """
-
-    assert(component in packages)
-
-    return "--with-%s=%s" % (component, path)
-
-
 def _test():
     import doctest
     doctest.testmod()

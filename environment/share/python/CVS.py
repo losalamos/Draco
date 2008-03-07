@@ -8,12 +8,12 @@ Facilities for interacting with CVS in Python.
 Contains classes:
 
   Repository
-  Module
+  Package
   WorkingCopy
 
 Here's the relationship:
 
-  WorkingCopy ===> Module ---> Repo
+  WorkingCopy ===> Package ---> Repo.Repositiry
               \           \--> Tag (string)
                \     
                 \--> Destination
@@ -26,34 +26,6 @@ class ArgumentError(Exception):
     "An exception class for inconsistent combinations of arguments."
     pass
 
-##---------------------------------------------------------------------------##
-##---------------------------------------------------------------------------##
-
-class Repository(object):
-    """Represents a repository
-
-    A Repository object represents a specific CVS repository.  It
-    verifies the existence and readability of the directory where it
-    lives.
-
-    >>> r = Repository('/ccs/codes/radtran/cvsroot')
-    >>> print r.location
-    /ccs/codes/radtran/cvsroot
-
-    >>> print r
-    -d /ccs/codes/radtran/cvsroot
-
-    """
-    
-    def __init__(self, repository):
-        self.location = repository
-        assert(os.access(self.location, (os.F_OK | os.R_OK)))
-
-    def __str__(self): return "-d %s" % self.location
-
-def lookup_repo(module_name): return Repository(Repo.get_dir(module_name))
-
-##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
 
 def make_tag(kind, name=None):
@@ -84,38 +56,63 @@ def make_tag(kind, name=None):
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
 
-class Module(object):
-    """Represents a CVS module, versioned with a tag string.
+class Package(object):
+    """Represents a code package, defined as a subdirectory of the CVS
+    root directory continaing source code.
 
-    >>> m = Module('draco/environment', "-r dummy_tag")
+    Because a package is contained in a single directory in the CVS
+    directory tree, we can copy it to populate another repository.
+
+    This is less general than a CVS module, which is anything that can
+    be checked out, and comes in several kinds.
+
+    >>> m = Package('draco/environment')
     >>> m.name
     'draco'
-    >>> m.module
+    >>> m.package
     'draco/environment'
     >>> print m
-    -r dummy_tag draco/environment
+    draco/environment
     
     """
     
-    def __init__(self, module_name, tag):
-        self.tag     = tag
-        self.module  = module_name
-        self.name    = module_name.split("/",1)[0]
-
-        # Lookup the correct repository:
-        self.repo = lookup_repo(self.name)
-
+    def __init__(self, package_name, repository):
+        self.name       = package_name
+        self.repository = repository
+        self.path       = os.path.join(self.repository.location, self.name)
+        
+        assert(os.access(self.path, (os.F_OK | os.R_OK)))
+               
     def __str__(self): 
-        return "%s %s" % (self.tag, self.module)
+        return self.name
+    
+
+##---------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
+
+class Module(object):
+    """Represents a CVS module. This is basically anything that can be
+    checked out of CVS and is usually defined in the CVSROOT/module
+    file.
+
+    Have to: 
+
+    Figure out how to get the reposotiry from the module name. Put
+    these module names in the master table also?
+
+    Verify the validity of the module name.
+    """
+    pass
 
 
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
 
-class WorkingCopy(Module):
+class WorkingCopy(object):
 
-    """A WorkingCopy is a module, assigned to a particular directory
-    name for checking out.
+    """A WorkingCopy is a package, with an optional versioning tag,
+    and assigned to a location for checking out, either at
+    construction or when checked out.
 
     >>> w = WorkingCopy('draco/environment', "-r dummy_tag", 'environment')
     >>> w.output_dir()
@@ -124,12 +121,13 @@ class WorkingCopy(Module):
     False
 
     For now, all you can do with it is check it out.
+
     """
 
-    def __init__(self, module_name, tag, destination=None):
+    def __init__(self, package, tag, destination=None):
 
-        super(WorkingCopy, self).__init__(module_name, tag)
-
+        self.package     = package
+        self.tag         = tag
         self.destination = destination
         self.path        = None
 
@@ -139,14 +137,14 @@ class WorkingCopy(Module):
         else:
             part = " "
 
-        return part + super(WorkingCopy,self).__str__()
+        return part + self.package.__str__()
         
-    def output_dir(self):  return self.destination or self.name
+    def output_dir(self):  return self.destination or self.package.name
 
     def checked_out(self): return bool(self.path)
 
     def checkout(self, location, export=False, verbose=Verbosity.ignore()):
-        # Switch to the indicated directory.
+
         try:
             os.chdir(location)
         except OSError:
@@ -154,7 +152,14 @@ class WorkingCopy(Module):
             
         cvs_command = export and "export" or "checkout"
 
-        command = "cvs -Q %s %s %s" % (self.repo, cvs_command, self)
+        command = "cvs -Q %s %s %s" % (
+            self.package.repository, 
+            cvs_command, 
+            self)
+
+
+
+
 
         verbose("Executing CVS command: %s" % command, 1)
         verbose("in directory %s" % location, 2)
@@ -171,11 +176,6 @@ class WorkingCopy(Module):
         assert(os.access(self.path, os.F_OK | os.R_OK))
         
         return self.path
-
-
-def make_working_copy(module_name, checkout_name, tag_kind, tag_name):
-    tag = make_tag(tag_kind, tag_name)
-    return WorkingCopy(module_name, tag, checkout_name)
 
 
 ##---------------------------------------------------------------------------##

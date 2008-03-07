@@ -5,7 +5,7 @@ from optparse import OptionValueError
 import tempfile, tarfile
 import os, sys
 
-import Verbosity, Repo, CVS, Cleanup, Checkout
+import Verbosity, CVS, Cleanup, Checkout, Jayenne
 
 usage = """
 
@@ -122,18 +122,20 @@ parser.add_option("-v", "--verbose",
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
 def get_draco(all_deps, head = False, import_only = False):
-    all_repos = dict([(dep, CVS.lookup_repo(dep)) for dep in all_deps])
+    """A simple interface to the get_draco scripts which live in the
+    top directory of draco pacakges"""
 
-    command = "./get_draco"
+    command = "./get_draco -q"
 
     if head: command += " -H"
     else: command += " -l"
 
     if import_only: command += " -i"
-    
+
+    all_repos = dict([(dep, Jayenne.get_repository(dep)) for dep in all_deps])
     for name, repo in all_repos.items():
-        if name == "draco": command += " -d %s" % repo.location
-        if name == "jayenne" : command += "-j %s" % repo.location
+        if name == "draco":   command += " -d %s" % repo.location
+        if name == "jayenne": command += " -j %s" % repo.location
 
     os.system(command)
 
@@ -218,15 +220,13 @@ if __name__=="__main__":
     # directory to <name>/<package>.
 
     
-    # If <location> doesn't exist, try to create it.
+    # If the necessary directories don't exist, create them.
     if not os.path.exists(options.location):
-        os.makedirs(options.location) or \
-        die("Failed to create directory %s:" % options.location) 
+        os.makedirs(options.location) 
 
     if not os.path.exists(checkout_dir): 
-        os.makedirs(checkout_dir) or \
-        die("Failed to create directory %s:" % checkout_dir) 
-
+        os.makedirs(checkout_dir)
+        
     # Checkout the main module.
     main_module = Checkout.checkout(
         main_module_name, None, checkout_dir, options.export,
@@ -236,18 +236,18 @@ if __name__=="__main__":
     message("Changed dir to %s" % os.getcwd(), 3)
 
     # Run correct get_draco command
-    all_deps = Repo.get_depends(main_module.name)
+    all_deps = Jayenne.get_dependencies(main_module.package.name)
     is_head  = bool(tag_kind == "head")
     get_draco(all_deps, is_head, import_only=False)
 
     # Run autoconf script.
-    autoconf(main_module.name)
+    autoconf(main_module.package.name)
 
     # For each depndency directory:
     for module in all_deps:
         message("Working on module %s" % module, 1)
+
         # Find it's path and enter.
-        
         dep_path = os.path.join(checkout_dir, module)
         os.chdir(dep_path)
         message("Changeing directory to %s" % dep_path)
@@ -256,7 +256,7 @@ if __name__=="__main__":
             cvs_update(named_depends[module])
             
         if module != 'draco':  
-            deps = Repo.get_depends(module)
+            deps = Jayenne.get_dependencies(module)
             get_draco(deps, is_head, import_only=True)
 
         # Run autoconf script.
@@ -273,9 +273,10 @@ if __name__=="__main__":
         if options.name:
             tarfile.add(checkout_dir, options.name)
         else:
-            tarfile.add(os.path.join(checkout_dir, main_module.name))
-            for dir in [main_module.name]+all_deps:
-                tarfile.add(os.path.join(checkout_dir, dir), options.tarfile)
+            tarfile.add( main_module.output_dir() )
+            for name in all_deps:
+                dir = os.path.join(checkout_dir, name)
+                tarfile.add(dir, name)
 
         tarfile.close()
 

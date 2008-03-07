@@ -1,4 +1,4 @@
-import CVS, Utils
+import Jayenne, Utils
 
 """ These are functions common to applications that work with CVS
 repositories. Currently: checkout and pitch.
@@ -69,7 +69,7 @@ def parse_tag(tag, splitter=":"):
 def checkout(module, dir_name, path_name, export, tag_kind, tag_name, verbosity):
     "Get a WorkingCopy object and check it out"
 
-    work_copy = CVS.make_working_copy(module, dir_name, tag_kind, tag_name)
+    work_copy = Jayenne.make_working_copy(module, dir_name, tag_kind, tag_name)
     work_copy.checkout(path_name, export, verbosity)
 
     return work_copy

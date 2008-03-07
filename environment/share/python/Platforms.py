@@ -1,6 +1,29 @@
+##---------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
+# Parent classes for shared filesystems.
+
+class closedICN:
+    repos = {
+        'draco'   : "/usr/projects/jayenne/cvsroot/draco",
+        'jayenne' : "/usr/projects/jayenne/cvsroot/jayenne"
+        }
+
 class openICN:
-    # Put repository locations in here.
-    pass
+    repos = {
+        'draco'   : "ios:/ccs/codes/radtran/cvsroot",
+        'jayenne' : "ios:/ccs/codes/radtran/cvsroot"
+        }
+    
+class ccs2LAN:
+    repos = {
+        'draco'   : "/ccs/codes/radtran/cvsroot",
+        'jayenne' : "/ccs/codes/radtran/cvsroot"
+        }
+
+
+##---------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
+# Classes for particular platforms. Inherit from filesystem classes.
 
 class flash(openICN):
 
@@ -30,10 +53,6 @@ class flash(openICN):
         }
 
 
-class closedICN:
-    # Put repo locations in here.
-    pass
-
 class lightning(closedICN):
     # Put vendor locations in here
     pass
@@ -43,7 +62,7 @@ class redtail(closedICN):
     pass
 
 
-class ccs2:
+class ccs2(ccs2LAN):
 
     sprng = { }
 
