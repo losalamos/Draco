@@ -81,7 +81,8 @@ class Package(object):
         self.repository = repository
         self.path       = os.path.join(self.repository.location, self.name)
         
-        assert(os.access(self.path, (os.F_OK | os.R_OK)))
+        if self.repository.is_local():
+            assert(os.access(self.path, (os.F_OK | os.R_OK)))
                
     def __str__(self): 
         return self.name

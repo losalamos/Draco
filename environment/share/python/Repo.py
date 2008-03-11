@@ -33,9 +33,12 @@ class Repository(object):
         self.name     = name
         self.location = platform.repos[self.name]
 
-        assert(os.access(self.location, (os.F_OK | os.R_OK)))
+        if self.is_local():
+            assert(os.access(self.location, (os.F_OK | os.R_OK)))
 
     def __str__(self): return "-d %s" % self.location
+
+    def is_local(self): return not ":" in self.location
 
 ##---------------------------------------------------------------------------##
 def is_valid_name(name): return name in platform.repos
