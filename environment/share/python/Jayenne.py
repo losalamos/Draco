@@ -34,7 +34,8 @@ def disambiguate_package(package): return disambiguate(package, packages)
 
 ##---------------------------------------------------------------------------##
 def get_repository(package_name):
-    """Get an object for the repository that contains a package.
+    """Get a Repo.Repository object for the repository that contains the
+    given package.
 
     >>> r = get_repository('uncleMcFlux')
     >>> r.name

@@ -27,6 +27,8 @@ class ccs2LAN:
 
 class flash(openICN):
 
+    hostnames = "ffe[1-6]|flash[a-b]"
+
     sprng = {
         "lib"  : "/usr/projects/jayenne/sprng-0.5x/Linux64/",
         "inc"  : "/usr/projects/jayenne/sprng/include"
@@ -55,14 +57,24 @@ class flash(openICN):
 
 class lightning(closedICN):
     # Put vendor locations in here
-    pass
+    hostnames = "lc-[1-6]"
+
+class yellowrail(openICN):
+    # Put vendor locations in here
+    hostnames = "yr-fe1|yra\d{3}"
 
 class redtail(closedICN):
     # Put vendor locations in here
-    pass
+    hostnames = "rt-fe[1-4]|rt[a-n]\d{3}"
 
+class cx(closedICN):
+    # Put vendor locations in here
+    hostnames = "cxfe|cx\d{1,2}"
 
 class ccs2(ccs2LAN):
+
+    # Will match all hostnames.
+    hostnames=""
 
     sprng = { }
 
@@ -80,6 +92,43 @@ class ccs2(ccs2LAN):
         }
 
 
+all_platforms = [flash, lightning, yellowrail, redtail, cx, ccs2]
+
+import os, re
+def get_platform(hostname = os.environ.get("HOSTNAME")):
+    """A function which attempts to identify the platform it is
+    running on
+
+    We "fall-over" to ccs2's local network.
+    >>> p = get_platform("nammu.lanl.gov")
+    >>> print p.__name__
+    ccs2
+
+    >>> p = get_platform("rt-fe1")
+    >>> print p.__name__
+    redtail
+
+"""
 
 
+    for platform in all_platforms:
+        if re.match(platform.hostnames, hostname): return platform
+
+
+def _test():
+    import doctest, Platforms
+    return doctest.testmod(Platforms)
+
+if __name__=="__main__":
+    _test()
+
+
+    
+
+
+
+    
+    
+
+    
 

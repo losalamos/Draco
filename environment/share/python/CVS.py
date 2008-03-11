@@ -154,11 +154,7 @@ class WorkingCopy(object):
 
         command = "cvs -Q %s %s %s" % (
             self.package.repository, 
-            cvs_command, 
-            self)
-
-
-
+            cvs_command, self)
 
 
         verbose("Executing CVS command: %s" % command, 1)
