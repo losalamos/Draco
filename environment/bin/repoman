@@ -116,7 +116,10 @@ def make_archive(package_name, directory, compress):
 
     # We only allow "top-level" packages to be archived.
     assert(Jayenne.is_valid_package(package_name))
+
     package = Jayenne.make_package(package_name)
+
+    assert(package.repository.is_local())
 
     archive_file = get_archive_name(package.name, directory, compress)
 
@@ -158,7 +161,6 @@ if __name__=="__main__":
         if options.go:
             archive = make_archive(package_name, temp_dir,
             options.compress)
-
 
         if options.store:
             time = Utils.get_timestamp_as_string(archive)
