@@ -66,11 +66,11 @@ class Package(object):
     This is less general than a CVS module, which is anything that can
     be checked out, and comes in several kinds.
 
-    >>> m = Package('draco/environment')
+    >>> m = Package('draco/environment', Utils.Bunch(location='stub'))
     >>> m.name
-    'draco'
-    >>> m.package
     'draco/environment'
+    >>> m.path
+    'stub/draco/environment'
     >>> print m
     draco/environment
     
@@ -81,9 +81,6 @@ class Package(object):
         self.repository = repository
         self.path       = os.path.join(self.repository.location, self.name)
         
-        if self.repository.is_local():
-            assert(os.access(self.path, (os.F_OK | os.R_OK)))
-               
     def __str__(self): 
         return self.name
     

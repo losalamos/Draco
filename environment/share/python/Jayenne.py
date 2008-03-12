@@ -41,6 +41,10 @@ def get_repository(package_name):
     >>> r.name
     'jayenne'
 
+    >>> r = get_repository('clubimc/src/mc')
+    >>> r.name
+    'jayenne'
+
     >>> r = get_repository('draco/environment')
     >>> r.name
     'draco'
@@ -56,7 +60,7 @@ def make_package(package_name):
     """Get a CVS.Package object representing a Jayenne package.
 
     >>> w = make_package('wedgehog')
-    >>> w.package
+    >>> w.name
     'wedgehog'
     >>> w.repository.name
     'jayenne'
