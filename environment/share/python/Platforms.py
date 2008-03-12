@@ -56,20 +56,84 @@ class flash(openICN):
 
 
 class lightning(closedICN):
-    # Put vendor locations in here
+
     hostnames = "lc-[1-6]"
 
+    sprng = { }
+
+    grace = { }
+
+    gandolf = { }
+
+    pcg = { }
+
+    vendors = {
+        "sprng"   : sprng,
+        "grace"   : grace,
+        "gandolf" : gandolf,
+        "pcg"     : pcg
+        }
+
+
 class yellowrail(openICN):
-    # Put vendor locations in here
+
     hostnames = "yr-fe1|yra\d{3}"
 
+    sprng = { }
+
+    grace = { }
+
+    gandolf = { }
+
+    pcg = { }
+
+    vendors = {
+        "sprng"   : sprng,
+        "grace"   : grace,
+        "gandolf" : gandolf,
+        "pcg"     : pcg
+        }
+
+
 class redtail(closedICN):
-    # Put vendor locations in here
+
     hostnames = "rt-fe[1-4]|rt[a-n]\d{3}"
 
+    sprng = { }
+
+    grace = { }
+
+    gandolf = { }
+
+    pcg = { }
+
+    vendors = {
+        "sprng"   : sprng,
+        "grace"   : grace,
+        "gandolf" : gandolf,
+        "pcg"     : pcg
+        }
+
+
 class cx(closedICN):
-    # Put vendor locations in here
+
     hostnames = "cxfe|cx\d{1,2}"
+
+    sprng = { }
+
+    grace = { }
+
+    gandolf = { }
+
+    pcg = { }
+
+    vendors = {
+        "sprng"   : sprng,
+        "grace"   : grace,
+        "gandolf" : gandolf,
+        "pcg"     : pcg
+        }
+
 
 class ccs2(ccs2LAN):
 
@@ -107,8 +171,7 @@ def get_platform(hostname = os.environ.get("HOSTNAME")):
     >>> p = get_platform("rt-fe1")
     >>> print p.__name__
     redtail
-
-"""
+    """
 
 
     for platform in all_platforms:

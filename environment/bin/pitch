@@ -121,31 +121,6 @@ parser.add_option("-v", "--verbose",
 
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
-def get_draco(all_deps, head = False, import_only = False):
-    """A simple interface to the get_draco scripts which live in the
-    top directory of draco pacakges"""
-
-    command = "./get_draco -q"
-
-    if head: command += " -H"
-    else: command += " -l"
-
-    if import_only: command += " -i"
-
-    all_repos = dict([(dep, Jayenne.get_repository(dep)) for dep in all_deps])
-    for name, repo in all_repos.items():
-        if name == "draco":   command += " -d %s" % repo.location
-        if name == "jayenne": command += " -j %s" % repo.location
-
-    os.system(command)
-
-
-##---------------------------------------------------------------------------##
-##---------------------------------------------------------------------------##
-def autoconf(package):
-    os.system("./%s_config" % package)
-
-##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
 def cvs_update(tag):
     kind, name = Checkout.parse_tag(tag)
@@ -186,8 +161,6 @@ def parse_input(options, args):
 ##---------------------------------------------------------------------------##
 if __name__=="__main__":
 
-    die = sys.exit
-
     (options, args) = parser.parse_args()
     message = Verbosity.make(options.verbosity)
     message("Options: %s" % str(options), 3)
@@ -227,7 +200,11 @@ if __name__=="__main__":
     if not os.path.exists(checkout_dir): 
         os.makedirs(checkout_dir)
         
-    # Checkout the main module.
+
+
+    # Main Module:
+    # ------------
+
     main_module = Checkout.checkout(
         main_module_name, None, checkout_dir, options.export,
         tag_kind, tag_name, message)
@@ -238,32 +215,41 @@ if __name__=="__main__":
     # Run correct get_draco command
     all_deps = Jayenne.get_dependencies(main_module.package.name)
     is_head  = bool(tag_kind == "head")
-    get_draco(all_deps, is_head, import_only=False)
+    message("All dependencies: %s" % all_deps, 2)
+    message("Is head version?: %s" % is_head,  2)
+    os.system(Jayenne.get_draco(all_deps, is_head, import_only=False))
 
     # Run autoconf script.
-    autoconf(main_module.package.name)
+    os.system(Jayenne.autoconf(main_module.package.name))
 
-    # For each depndency directory:
+
+
+
+    # Dependencies:
+    # -------------
+
     for module in all_deps:
         message("Working on module %s" % module, 1)
 
         # Find it's path and enter.
         dep_path = os.path.join(checkout_dir, module)
         os.chdir(dep_path)
-        message("Changeing directory to %s" % dep_path)
+        message("Changing directory to %s" % dep_path)
         
         if module in named_depends:
             cvs_update(named_depends[module])
             
         if module != 'draco':  
             deps = Jayenne.get_dependencies(module)
-            get_draco(deps, is_head, import_only=True)
+            os.system(Jayenne.get_draco(deps, is_head, import_only=True))
 
         # Run autoconf script.
-        autoconf(module)
+            os.system(Jayenne.autoconf(module))
 
 
-    # Make the tarfile
+    # Optional tarfile
+    # ----------------
+
     if options.tarfile:
         filename = os.path.join(
             options.location, 

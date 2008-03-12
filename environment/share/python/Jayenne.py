@@ -87,6 +87,44 @@ def make_working_copy(package_name, checkout_name, tag_kind, tag_name):
     return CVS.WorkingCopy(package, tag, checkout_name)
 
 
+
+
+##---------------------------------------------------------------------------##
+def get_draco(all_deps, head = False, import_only = False):
+    """A simple interface to the get_draco scripts which live in the
+    top directory of Jayenne pacakges
+
+    >>> get_draco(["draco", "clubimc"])
+    './get_draco -Q -l -d /ccs/codes/radtran/cvsroot -j /ccs/codes/radtran/cvsroot'
+    """
+
+    command = "./get_draco -Q"
+
+    if head: command += " -H"
+    else:    command += " -l"
+
+    if import_only: command += " -i"
+
+    all_repos     = [get_repository(dep) for dep in all_deps]
+    repos_by_name = [(repo.name, repo) for repo in all_repos]
+    for name, repo in repos_by_name:
+        if name == "draco":   command += " -d %s" % repo.location
+        if name == "jayenne": command += " -j %s" % repo.location
+
+    return command
+
+
+##---------------------------------------------------------------------------##
+def autoconf(name): 
+    """The script which runs autoconf in Jayenne packages
+    >>> autoconf('FooBar')
+    ./FooBar_config
+
+    """
+    
+    return "./%s_config" % name
+
+
 ##---------------------------------------------------------------------------##
 ## Dependencies and Components
 ##---------------------------------------------------------------------------##
@@ -188,7 +226,6 @@ def is_install_dir(path):
 
     return os.path.exists(os.path.join(path, "lib")) and os.path.exists(
         os.path.join(path, "include"))
-
 
 
 ##---------------------------------------------------------------------------##
