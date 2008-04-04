@@ -179,6 +179,14 @@ test_flags         = @test_flags@
 test_output_files  = @test_output_files@
 
 ##---------------------------------------------------------------------------##
+## First of all, avoid 'none' as a target.  Second, if no tests were
+## specified, then ensure our ending target is empty for now.
+## Typically, test_alltarget will be redefined in Makefile.target.  If
+## not, then there is nothing for target 'all' to do.
+
+test_alltarget := $(strip $(subst none,,${test_alltarget}))
+
+##---------------------------------------------------------------------------##
 ## EXPLICIT VARIABLES
 ## these are assigned using ":="
 ##---------------------------------------------------------------------------##
