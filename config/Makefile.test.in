@@ -184,7 +184,7 @@ test_output_files  = @test_output_files@
 ## Typically, test_alltarget will be redefined in Makefile.target.  If
 ## not, then there is nothing for target 'all' to do.
 
-test_alltarget := $(strip $(subst none,,${test_alltarget}))
+test_alltarget := $(strip $(filter-out none,${test_alltarget}))
 
 ##---------------------------------------------------------------------------##
 ## EXPLICIT VARIABLES
