@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- mode: Python -*-
 
 """Get a compressed tar file of the named repository. Optinally store
 the file in HPSS and push it to the secure network.
