@@ -96,7 +96,7 @@ if __name__=="__main__":
                          assertion[2], assertion[0], assertion[1]))
 
     contents.sort()
-    print "\n".join(["%20s %40s generated assertion: %s in file: %s"
+    print "\n".join(["%20s %40s generated assertion: %s in file: %s "
                     "line: %s" % c for c in contents])
 
 
