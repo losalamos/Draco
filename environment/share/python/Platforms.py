@@ -27,7 +27,7 @@ class ccs2LAN:
 
 class flash(openICN):
 
-    hostnames = "ffe[1-6]|flash[a-b]"
+    hostnames = "ffe[1-6]|flash[a-d]"
 
     sprng = {
         "lib"  : "/usr/projects/jayenne/sprng-0.5x/Linux64/",
@@ -57,7 +57,7 @@ class flash(openICN):
 
 class lightning(closedICN):
 
-    hostnames = "lc-[1-6]"
+    hostnames = "lc-[1-6]|ll-[1-6]|lb-[1-7]"
 
     sprng = { }
 
@@ -172,7 +172,6 @@ def get_platform(hostname = os.environ.get("HOSTNAME")):
     >>> print p.__name__
     redtail
     """
-
 
     for platform in all_platforms:
         if re.match(platform.hostnames, hostname): return platform

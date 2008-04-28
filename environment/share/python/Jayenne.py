@@ -18,6 +18,7 @@ repositories = {'draco'       : "draco",
                 'clubimc'     : "jayenne",
                 'milagro'     : "jayenne",
                 'wedgehog'    : "jayenne",
+                'radtest'     : "jayenne",
                 'jayenne'     : "jayenne",
                 'uncleMcFlux' : "jayenne"}
 

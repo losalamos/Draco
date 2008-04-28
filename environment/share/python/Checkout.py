@@ -29,10 +29,14 @@ def parse_input(options, args):
     
     # If there is nothing in agrs, we must be in case 3.
     if not args:
+        if not options.tagname:
+            raise Utils.ArgumentsException(\
+                "Missing package name")
         parts = options.tagname.split("-",1)
         if len(parts) < 2:
             raise Utils.ArgumentsException( \
-                "Missing package name. Could not deduce from tag.")
+                "Missing package name. Could not deduce from tag: '%s'"
+                % options.tagname)
         else:
             module = parts[0]
             tag    = options.tagname
