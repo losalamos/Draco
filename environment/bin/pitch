@@ -6,7 +6,7 @@ from optparse import OptionValueError
 import tempfile, tarfile
 import os, sys
 
-import Verbosity, CVS, Cleanup, Checkout, Jayenne
+import Verbosity, CVS, Cleanup, Checkout, Jayenne, Utils
 
 usage = """
 
@@ -174,8 +174,8 @@ if __name__=="__main__":
 
         (tag_kind, tag_name) = Checkout.parse_tag(tag)
 
-    except Utils.ArgumentError, e:
-        parser.error(e.__str__)
+    except Utils.ArgumentsException, e:
+        parser.error(str(e))
         
     message("main module name:   %s" % main_module_name, 3)
     message("tag string:         %s" % tag, 3)

@@ -1,0 +1,104 @@
+#! /usr/bin/env python
+# -*- mode: Python -*-
+
+"""Descends the tree looking for .log files. Parses for failures and
+produces a log with filenames, processor numbers and line numbers.
+"""
+
+import re
+
+import FileUtils
+import os
+import commands
+
+def get_local_logfiles(dir):
+
+    files = FileUtils.gen_find("*.log", dir)
+    return FileUtils.gen_open(files)
+
+
+logfile_pattern = re.compile(".*/src/(?P<component>\w+)"
+                             "/test/"
+                             "(?P<test>\w+)-(?P<procs>\d+).log")
+logfile_keys    = logfile_pattern.groupindex.keys()
+
+error_test  = re.compile("Test: failed on line (?P<line>\d+)")
+assert_test = re.compile("Assertion: (?P<assert>.+)?, failed in "
+                         "(?P<file>\S+), line (?P<line>\d+)\.")
+
+
+def extract_errors(open_files):
+
+    for file in open_files:
+
+        logfile_match = logfile_pattern.match(file.name)
+        if logfile_match: 
+            logfile_info = logfile_match.groupdict()
+        else: 
+            continue
+
+        for line in file:
+
+            error_info = error_test.search(line)
+            if error_info: 
+                result = logfile_info
+                result.update(error_info.groupdict())
+                result["type"] = "test failure"
+                yield result
+
+            assert_info = assert_test.search(line)
+            if assert_info:
+                result = logfile_info
+                result.update(assert_info.groupdict())
+                result["type"] = "assertion"
+
+                yield result
+
+if __name__=="__main__":
+
+    log_files  = get_local_logfiles(os.getcwd())
+    all_errors = extract_errors(log_files)
+
+
+    errors={}
+    assertions={}
+
+    # I'm thinking there are things in itertools which could make this
+    # section more elegant.
+    for error in all_errors:
+
+        key = (error["component"], error["test"])
+
+        # Build two dictionaries of errors and assertions.
+        if error["type"]=="test failure":
+            errors.setdefault(key, set()).add(error["line"])
+        elif error["type"]=="assertion":
+            assertions[key] = (error["file"], error["line"], error["assert"])
+            
+    # Display each error with a sorted list of line numbers
+    print "Test failures:"
+    contents = []
+    for (test, lines) in errors.items():
+        lines = map(int, lines)
+        lines.sort()
+        lines = map(str, lines)
+        contents.append( (test[0], test[1], lines) )
+    
+    contents.sort()
+    print "\n".join(["%20s %40s failed on lines: %s" % \
+                     (c[0], c[1], ", ".join(c[2])) for c in contents]   )
+        
+    # Display the assertions
+    contents = []
+    print "\n\nAssertions:"
+    for (test, assertion) in assertions.items():
+        contents.append((test[0], test[1], 
+                         assertion[2], assertion[0], assertion[1]))
+
+    contents.sort()
+    print "\n".join(["%20s %40s generated assertion: %s in file: %s"
+                    "line: %s" % c for c in contents])
+
+
+
+
