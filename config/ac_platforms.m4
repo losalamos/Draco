@@ -1111,7 +1111,6 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
        # Setup communications packages
        #
        AC_DBS_SETUP_COMM(mpich)
-	mpi_libs="-lmpich -lpmpich -lz"
 
        # 
        # setup lapack 
