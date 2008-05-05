@@ -173,7 +173,7 @@ AC_DEFUN([AC_DRACO_SGI_CC], [dnl
    dirstoclean='ii_files'
 
    # LINKER AND LIBRARY (AR)
-   LD='${LD}'
+   LD='${CXX}'
    AR='${CXX}'
    ARLIBS='${DRACO_LIBS}'
    ARTESTLIBS='${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS}'
@@ -259,9 +259,7 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
    # LINKER AND LIBRARY (AR)
-   if test "${LD}" = null ; then
-      LD='${CXX}'
-   fi
+   LD='${CXX}'
 
    # if shared then ar is gcc
    if test "${enable_shared}" = yes ; then
@@ -363,9 +361,7 @@ AC_DEFUN([AC_DRACO_PGCC], [dnl
    AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
 
    # LINKER AND LIBRARY (AR)
-   if test "${LD}" = null ; then
-      LD='${CXX}'
-   fi
+   LD='${CXX}'
 
    # if shared then ar is pgCC
    if test "${enable_shared}" = yes ; then
@@ -459,10 +455,7 @@ AC_DEFUN([AC_DRACO_COMPAQ_CXX], [dnl
    dirstoclean='cxx_repository'
 
    # LINKER AND LIBRARY (AR)
-   if test "${LD}" = null ; then
-      LD='${CXX}'
-   fi
-   
+   LD='${CXX}'
 
    # if shared then ar is cxx
    if test "${enable_shared}" = yes ; then
@@ -558,9 +551,7 @@ AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
    # icpc SPECIFIC FLAGS
 
    # LINKER AND LIBRARY
-   if test "${LD}" = null ; then
-      LD='${CXX}'
-   fi
+   LD='${CXX}'
 
    # if shared then ar is icpc
    if test "${enable_shared}" = yes ; then
@@ -629,9 +620,7 @@ AC_DEFUN([AC_DRACO_IBM_VISUAL_AGE], [dnl
    # xlC SPECIFIC FLAGS
 
    # LINKER AND LIBRARY
-   if test "${LD}" = null ; then
-      LD='${CXX}'
-   fi
+   LD='${CXX}'
 
    # if shared then ar is xlC
    if test "${enable_shared}" = yes ; then
