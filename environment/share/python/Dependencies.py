@@ -21,27 +21,35 @@ brackets = re.compile(include + '<' + contents + '>')
     
 
 ##---------------------------------------------------------------------------##
-def get_files(dir):
-    "Get a list of C/C++ files in the specified directory"
-    
-    import os,glob
+def gen_cpp_files(dir, recurse=True):
+    """Generate a list of C/C++ files in the specified
+    directory. Recurse into subdirectories if recurse=True."""
 
-    os.chdir(dir)
+    import os
+    import fnmatch
 
-    files = glob.glob("*.hh")
-    files.extend(glob.glob("*.cc"))
-    files.extend(glob.glob("*.c"))
-    files.extend(glob.glob("*.h"))
+    extensions = ["hh", "cc", "h", "c"]
 
-    return files
+    for path, dirlist, filelist in os.walk(dir):
+        if not recurse: dirlist[:] = []
+        for ext in extensions:
+            for name in fnmatch.filter(filelist, "*.%s" % ext):
+                yield os.path.join(path,name)
+
 
 ##---------------------------------------------------------------------------##
-def file_includes(file):
-    """
-    Create a dictionary of dependencies by parsing 'file'. Keys in the
-    dictionary are components and the values are filenames in that component.
+def get_files(dir, recurse=True):
+    import FileUtils
+    return FileUtils.gen_open(gen_cpp_files(dir, recurse))
 
-       d:: component -> [list of included files from component]
+##---------------------------------------------------------------------------##
+def file_includes(files):
+    """
+    Create a dictionary of dependencies by parsing each file in
+    'files'. Keys in the dictionary are components imported from and
+    the values are the names of imported files.
+
+    file -> {component: set of files included into file}
 
     The included files appear in #include directives as either:
 
@@ -50,108 +58,70 @@ def file_includes(file):
 
     For example:
 
-    >>> file_includes('/home/mwbuksas/work/source/clubimc/head/src/imc/Source.hh')
-    {'rng': ['Random.hh'], 'ds++': ['SP.hh'], 'mc': ['Particle_Stack.hh', 'Topology.hh']}
+    >>> file_includes([open('/home/mwbuksas/work/source/clubimc/head/src/imc/Source.hh','r')])
+    {'rng': set(['Random.hh']), 'ds++': set(['SP.hh']), 'mc': set(['Topology.hh', 'Particle_Stack.hh'])}
     
     """
+
+    import itertools
+
     includes = {}
-    f = open(file, 'r')
+    for line in itertools.chain(*files):
 
-    # Loop through the file and look for include statements
-    for line in f.readlines():
-
-        # Check for "#include" from other packages
         match = quotes.match(line) or brackets.match(line)
 
         if match:
-
             package  = match.group('package')
             filename = match.group('filename')
-            
-            includes.setdefault(package, []).append(filename)
-
-    f.close()
+            includes.setdefault(package, set()).add(filename)
 
     return includes
 
 
+
+
 ##---------------------------------------------------------------------------##
-def file_dependencies(file):
+## Reducers:
+##---------------------------------------------------------------------------##
+# These pair down the information from file_includes:
+
+##---------------------------------------------------------------------------##
+def file_inc_comps(files):
     """Extract just the components that contain header files that
     'file' depends on.
 
-    >>> file_dependencies('/home/mwbuksas/work/source/clubimc/head/src/imc/Source.hh')
-    ['rng', 'ds++', 'mc']
+    >>> file_inc_comps([open('/home/mwbuksas/work/source/clubimc/head/src/imc/Source.hh','r')])
+    set(['rng', 'ds++', 'mc'])
 
     """
 
-    return file_includes(file).keys()
-
+    return set(file_includes(files).keys())
 
 
 ##---------------------------------------------------------------------------##
-def directory_includes(directory):
-    """Generates a combined depednency map for all of the files in a
+def dir_inc_file(directory):
+    """Generates a merged depednency map for all of the files in a
     directory. 
 
-    map :: component -> [list of included files]
+    map :: directory -> {set of included files}
 
-    Examples:
-
-    >>> d = directory_includes('/home/mwbuksas/work/source/clubimc/head/src/mc/')
+    >>> d = dir_inc_file('/home/mwbuksas/work/source/clubimc/head/src/mc/')
     >>> print d['ds++']
-    ['SP.hh', 'Assert.hh', 'Range_Finder.hh', 'Index_Converter.hh', 'Index_Counter.hh', 'Packing_Utils.hh', 'Soft_Equivalence.hh', 'Safe_Divide.hh']
+    set(['Index_Counter.hh', 'Safe_Divide.hh', 'Assert.hh', 'SP.hh', 'Soft_Equivalence.hh', 'Range_Finder.hh', 'Packing_Utils.hh', 'Index_Converter.hh'])
     """
 
-    import Utils
-
-    dir_includes = {}
-
-    for file in get_files(directory):
-        for (component, files) in file_includes(file).items():
-            Utils.unique_extend(dir_includes.setdefault(component, []), files)
-
-    return dir_includes
-
+    return file_includes(get_files(directory, False))
 
 ##---------------------------------------------------------------------------##
-def directory_dependencies(directory):
-    """Extract the components that files in 'directory' depend on.
+def dir_inc_comp(directory):
+    """Extract the components that files in 'directory' include from.
 
-   >>> c = directory_dependencies('/home/mwbuksas/work/source/clubimc/head/src/imc/')
-   >>> print c
-   ['ds++', 'mc', 'cdi', 'rng', 'utils', 'c4', 'imc']
+   >>> dir_inc_comp('/home/mwbuksas/work/source/clubimc/head/src/imc/')
+   set(['imc', 'mc', 'utils', 'rng', 'cdi', 'ds++', 'c4'])
    """
-    import Utils
+    return file_inc_comps(get_files(directory, False))
 
-    components = []
-    for file in get_files(directory):
-        Utils.unique_extend(components, file_dependencies(file))
 
-    return components
-    
-
-##---------------------------------------------------------------------------##
-def find_components_files(dependency_dict, exclude = []):
-
-    """Extract a dictionary from 'dependency_dict' whose keys are
-    referenced components and whose values are lists of included files.
-    """
-
-    import Utils
-
-    components = {}
-
-    for (file, include_dict) in dependency_dict.items():
-
-        for (component, included_files) in include_dict.items():
-
-            if component not in exclude:
-
-                current_files = components.setdefault(component,[])
-                Utils.unique_extend(current_files, included_files)
-
-    return components
 
 ##---------------------------------------------------------------------------##
 ## Test function

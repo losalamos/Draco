@@ -11,7 +11,7 @@ class PackageError(Exception):
 class LookupError(PackageError): pass
 
 
-# A map from package names to repositiry names.
+# A map from package names to repository names.
 repositories = {'draco'       : "draco",
                 'tools'       : "draco",
                 'imcdoc'      : "jayenne",
