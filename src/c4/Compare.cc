@@ -11,12 +11,13 @@
 //---------------------------------------------------------------------------//
 
 #include "Compare.hh"
-#include "c4/global.hh"
+#include "global.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_c4
 {
 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Function to check the equivalence of an int across all processors.
  *
