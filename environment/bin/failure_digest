@@ -11,74 +11,71 @@ import FileUtils
 import os
 import commands
 
+##---------------------------------------------------------------------------##
 def get_local_logfiles(dir):
 
     files = FileUtils.gen_find("*.log", dir)
     return FileUtils.gen_open(files)
 
 
+##---------------------------------------------------------------------------##
+# Pattern and key values for log filenames
 logfile_pattern = re.compile(".*/src/(?P<component>\w+)"
                              "/test/"
                              "(?P<test>\w+)-(?P<procs>\d+).log")
-logfile_keys    = logfile_pattern.groupindex.keys()
+logfile_keys = logfile_pattern.groupindex.keys()
 
-error_test  = re.compile("Test: failed on line (?P<line>\d+)")
+##---------------------------------------------------------------------------##
+# Patterns for failures and assertions in log files. 
+failure_test = re.compile("Test: failed on line (?P<line>\d+)")
 assert_test = re.compile("Assertion: (?P<assert>.+)?, failed in "
                          "(?P<file>\S+), line (?P<line>\d+)\.")
 
 
+##---------------------------------------------------------------------------##
 def extract_errors(open_files):
 
     for file in open_files:
 
         logfile_match = logfile_pattern.match(file.name)
-        if logfile_match: 
-            logfile_info = logfile_match.groupdict()
-        else: 
-            continue
+        if not logfile_match: continue
 
         for line in file:
 
-            error_info = error_test.search(line)
-            if error_info: 
-                result = logfile_info
-                result.update(error_info.groupdict())
-                result["type"] = "test failure"
+            error_match = failure_test.search(line) or \
+                assert_test.search(line)  
+
+            if error_match:
+                result = error_match.groupdict()
+                result.update(logfile_match.groupdict())
                 yield result
 
-            assert_info = assert_test.search(line)
-            if assert_info:
-                result = logfile_info
-                result.update(assert_info.groupdict())
-                result["type"] = "assertion"
-
-                yield result
-
+##---------------------------------------------------------------------------##
 if __name__=="__main__":
 
+    # Generate all of the errors in all of the logfiles:
     log_files  = get_local_logfiles(os.getcwd())
     all_errors = extract_errors(log_files)
 
 
-    errors={}
+    # Build two dictionaries of failures and assertions from the error
+    # stream. 
+    failures={}
     assertions={}
-
-    # I'm thinking there are things in itertools which could make this
-    # section more elegant.
     for error in all_errors:
 
         key = (error["component"], error["test"])
 
-        # Build two dictionaries of errors and assertions.
-        if error["type"]=="test failure":
-            errors.setdefault(key, set()).add(error["line"])
-        elif error["type"]=="assertion":
+        if error.has_key("assert"):
             assertions[key] = (error["file"], error["line"], error["assert"])
+        else:
+            failures.setdefault(key, set()).add(error["line"])
             
     # Display each error with a sorted list of line numbers
-    print "Test failures:"
+    if failures: print "Test failures:"
+    else: print "No failures"
     contents = []
-    for (test, lines) in errors.items():
+    for (test, lines) in failures.items():
         lines = map(int, lines)
         lines.sort()
         lines = map(str, lines)
@@ -88,13 +85,16 @@ if __name__=="__main__":
     print "\n".join(["%20s %40s failed on lines: %s" % \
                      (c[0], c[1], ", ".join(c[2])) for c in contents]   )
         
+    print "\n"
+
     # Display the assertions
     contents = []
-    print "\n\nAssertions:"
+    if assertions: print "Assertions:"
+    else: print "No assertions"
     for (test, assertion) in assertions.items():
         contents.append((test[0], test[1], 
                          assertion[2], assertion[0], assertion[1]))
-
+        
     contents.sort()
     print "\n".join(["%20s %40s generated assertion: %s in file: %s "
                     "line: %s" % c for c in contents])
