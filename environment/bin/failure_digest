@@ -28,9 +28,13 @@ logfile_keys = logfile_pattern.groupindex.keys()
 ##---------------------------------------------------------------------------##
 # Patterns for failures and assertions in log files. 
 failure_test = re.compile("Test: failed on line (?P<line>\d+)")
-assert_test = re.compile("Assertion: (?P<assert>.+)?, failed in "
-                         "(?P<file>\S+), line (?P<line>\d+)\.")
-
+assert_test  = re.compile("Assertion: (?P<assert>.+)?, failed in "
+                          "(?P<file>\S+), line (?P<line>\d+)\.")
+error_test   = re.compile(r"ERROR: While testing (?P<test>\S+)?," 
+                          r"(?P<error>.+?)?, "
+                          r"failed in (?P<file>[.|/|_|\w]+?), "
+                          r"line (?P<line>\d+)\.") 
+                        
 
 ##---------------------------------------------------------------------------##
 def extract_errors(open_files):
@@ -42,12 +46,21 @@ def extract_errors(open_files):
 
         for line in file:
 
-            error_match = failure_test.search(line) or \
-                assert_test.search(line)  
+            problem_match = failure_test.search(line) or \
+                assert_test.search(line)
+
+            if problem_match:
+                result = problem_match.groupdict()
+                result.update(logfile_match.groupdict())
+                yield result
+
+            error_match = error_test.search(line)
 
             if error_match:
                 result = error_match.groupdict()
                 result.update(logfile_match.groupdict())
+                file.next()
+                result["assert"] = file.next().strip()
                 yield result
 
 ##---------------------------------------------------------------------------##
@@ -67,7 +80,7 @@ if __name__=="__main__":
         key = (error["component"], error["test"])
 
         if error.has_key("assert"):
-            assertions[key] = (error["file"], error["line"], error["assert"])
+            assertions[key] = error
         else:
             failures.setdefault(key, set()).add(error["line"])
             
@@ -93,7 +106,7 @@ if __name__=="__main__":
     else: print "No assertions"
     for (test, assertion) in assertions.items():
         contents.append((test[0], test[1], 
-                         assertion[2], assertion[0], assertion[1]))
+                         assertion["assert"], assertion["file"], assertion["line"]))
         
     contents.sort()
     print "\n".join(["%20s %40s generated assertion: %s in file: %s "
