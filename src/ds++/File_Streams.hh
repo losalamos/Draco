@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include <string>
 #include "Assert.hh"
 
