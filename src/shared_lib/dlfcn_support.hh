@@ -44,7 +44,7 @@ void *dlopen(const char *filename, int flag)
     return dummy;
 }
 
-char *dlerror(void)
+const char *dlerror(void)
 {
     Insist(0, "Serious Shared_Lib error.");
     return "dummy";

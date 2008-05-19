@@ -131,7 +131,7 @@ void *Shared_Lib::do_dlsym(const std::string &name)
 
     void *f = dlsym(d_handle, name.c_str());
 
-    char *error_msg = dlerror();
+    const char *error_msg = dlerror();
     if ( error_msg )
     {
 	std::ostringstream m;
