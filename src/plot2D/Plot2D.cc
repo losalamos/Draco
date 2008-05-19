@@ -168,17 +168,29 @@ open(const int numGraphs,
     if ( d_batch ) {
 	// Add -nosafe and -noask options for versions 5.1.8
 	// and later.
-	
+
+        // GraceOpenVA takes a char * as its first arg, when it should take a
+        // const char *.  So to avoid the justified warnings/errors, jump
+        // through some hoops:
+        char *exe = new char[9];
+        std::strcpy(exe, "gracebat");
+        
 	if ( d_graceVersion.v[0] >= 5 &&
 	     d_graceVersion.v[1] >= 1 &&
 	     d_graceVersion.v[2] >= 8 ) {
-	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+	    openStatus = GraceOpenVA(exe, bufferSize, "-noprint",
 				     "-nosafe", "-noask", NULL);
+// 	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+// 				     "-nosafe", "-noask", NULL);
 	}
 	else {
-	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+	    openStatus = GraceOpenVA(exe, bufferSize, "-noprint",
 				     NULL);
+// 	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+// 				     NULL);
 	}
+        
+        delete[] exe; // end jumping through hoops
     }
     else {
 	// Still want "safe" for non-batch mode?
