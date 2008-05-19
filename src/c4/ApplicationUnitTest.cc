@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "ApplicationUnitTest.hh"
 #include "c4/config.h"
 
