@@ -254,7 +254,7 @@ remains.  This is the value provided by the function rtt_sf::normalizedYlk.
  * P_{\ell,k=0}(\mu) = P_\ell(\mu).
  *\f]
  *
- * Taking $\f \mu \equiv cos\theta we may write the first few associated
+ * Taking \f$ \mu \equiv cos\theta \f$ we may write the first few associated
  * Legendre polynomials as:
  *
  * \f[ P_{0,0}(\mu) = 1, \f]
