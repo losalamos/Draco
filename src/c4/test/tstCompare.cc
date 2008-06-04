@@ -107,13 +107,6 @@ void test_equivalence(const T value, const T alt_value)
 	if (!check_global_equiv(local_value)) ITFAILS;
     }
 
-//     if (rtt_c4_test::passed)
-//     {
-//         ostringstream m;
-//         m << "test_equivalence finished on " << rtt_c4::node();
-//         PASSMSG(m.str());
-//     }
-
 }
 //---------------------------------------------------------------------------//
 
