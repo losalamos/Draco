@@ -15,8 +15,8 @@
 #include <cmath>
 
 #include "ds++/Assert.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
+#include "../global.hh"
+#include "../SpinLock.hh"
 #include "../Release.hh"
 #include "c4_test.hh"
 
@@ -55,8 +55,6 @@ struct Receive_Double_Vector : public Receiver
         return v;
     }
 
-
-
 };
 
     
@@ -68,6 +66,10 @@ struct Receive_Double_Vector : public Receiver
 // TESTS
 //---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
+/*
+ * A single node communicates with itself.
+ */
 void auto_communication_test()
 {
 
@@ -93,6 +95,10 @@ void auto_communication_test()
 }
 
     
+//---------------------------------------------------------------------------//
+/* 
+ * One way communication from node 0 to 1.
+ */
 void single_comm_test()
 {
 
@@ -100,26 +106,23 @@ void single_comm_test()
 
     if (node() == 0)
     {
-        Send_Double_Vector sdv(1);
-
         vector<double> v(3);
         v[0] = 1.0; v[1] = 2.0; v[2] = 3.0;
 
+        Send_Double_Vector sdv(1);
         sdv.send(v);
-
-        sdv.wait();
 
     }
 
     if (node() == 1)
     {
         Receive_Double_Vector sdv(0);
-
         vector<double> v = sdv.receive();
 
         if (v.size() != 3) ITFAILS;
         if (v[0] != 1.0) ITFAILS;
-
+        if (v[1] != 2.0) ITFAILS;
+        if (v[2] != 3.0) ITFAILS;
     }
 
     if (rtt_c4_test::passed)
@@ -127,25 +130,33 @@ void single_comm_test()
 }
 
 
+//---------------------------------------------------------------------------//
+/*
+ * Nodes 0 and 1 both send and receive data from the other.
+ * 
+ */
 void double_comm_test()
 {
 
     Check(nodes() == 2);
 
-    // Make data vectors of differeing size:
-    vector<double> data((node()+1)*2);
-    for (int i = 0; i < data.size(); ++i)
-        data[i] = static_cast<double>(i);
+    const int other = 1-node();
+
+    // Assign sizes and contents of the two vectors.
+    const int sizes[2] = {4,7};
+    vector<double> data(sizes[node()]);
+    for (int i = 0; i < data.size(); ++i) data[i] = static_cast<double>(i);
     
     // Make a sender and receiver on each node to/from the other node.
-    Send_Double_Vector sdv(1-node());
-    Receive_Double_Vector rdv(1-node());
+    Send_Double_Vector sdv(other);
+    Receive_Double_Vector rdv(other);
     
-    // Send, receive and wait.
+    // Send and receive.
     sdv.send(data);
     vector<double> r = rdv.receive();
 
-    if (r.size() != (2-node())*2) ITFAILS;
+    // Check the size and contents of the received vector.
+    if (r.size() != sizes[other]) ITFAILS;
 
     for (int i = 0; i < r.size(); ++i)
         if (r[i] != static_cast<double>(i)) ITFAILS;
@@ -153,6 +164,43 @@ void double_comm_test()
     if (rtt_c4_test::passed)
         PASSMSG("Passed double communication test");
 }
+
+
+
+//---------------------------------------------------------------------------//
+/*
+ * Four nodes pass data to the right.
+ * 
+ */
+void ring_test()
+{
+
+    Check(nodes() == 4);
+
+    const int to_node   = (node()+1) % nodes();
+    const int from_node = (node()-1+nodes()) % nodes();
+
+    const int sizes[] = {1, 4, 7, 10};
+    vector<double> data(sizes[node()]);
+
+    for (int i=0; i<data.size(); ++i) data[i] = static_cast<double>(i*i);
+
+    Send_Double_Vector sender(to_node);
+    Receive_Double_Vector receiver(from_node);
+
+    sender.send(data);
+    vector<double> r = receiver.receive();
+
+    if (r.size() != sizes[from_node]) ITFAILS;
+    for (int i=0; i<r.size(); ++i)
+        if (r[i] != static_cast<double>(i*i)) ITFAILS;
+
+    if (rtt_c4_test::passed)
+        PASSMSG("Passed ring communication test");
+
+}
+
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -181,6 +229,11 @@ int main(int argc, char *argv[])
         {
             single_comm_test();
             double_comm_test();
+        }
+
+        if (rtt_c4::nodes() == 4)
+        {
+            ring_test();
         }
     }
     catch (std::exception &err)
