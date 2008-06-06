@@ -40,14 +40,14 @@ namespace rtt_quadrature
  * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
  */
 QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
-                            QIM                              const qm,
-                            unsigned                         const expansionOrder )
-    : spQuad(         spQuad_        ),
-      qm(         qm         ),
-      n2lk(       compute_n2lk( expansionOrder ) ),
+                            QIM const qm,
+                            unsigned const expansionOrder )
+    : spQuad( spQuad_ ),
+      qm( qm ),
+      n2lk( compute_n2lk( expansionOrder ) ),
       numMoments( n2lk.size() ),
-      Mmatrix(    computeM() ),
-      Dmatrix(    computeD() )	
+      Mmatrix( computeM() ),
+      Dmatrix( computeD() )	
 { 
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
@@ -75,16 +75,15 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
  * \param lkMoments_  vector of tuples that maps from index n to (k,l).
  * \post \f$ \mathbf{D} = \mathbf{M}^{-1} \f$.
  */
-QuadServices::QuadServices( 
-    rtt_dsxx::SP< const Quadrature > const   spQuad_,
-    std::vector< lk_index >          const & lkMoments_,
-    QIM                              const   qm )
-    : spQuad(     spQuad_    ),
-      qm(         qm         ),
-      n2lk(       lkMoments_ ),
+QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
+                            std::vector< lk_index > const & lkMoments_,
+                            QIM const   qm )
+    : spQuad( spQuad_ ),
+      qm( qm ),
+      n2lk( lkMoments_ ),
       numMoments( n2lk.size() ),
-      Mmatrix(    computeM() ),
-      Dmatrix(    computeD() )	
+      Mmatrix( computeM() ),
+      Dmatrix( computeD() )	
 { 
     Ensure( D_equals_M_inverse() );
 }
@@ -476,8 +475,7 @@ std::vector< double > QuadServices::computeM(void) const
             if( dim == 1 ) // 1D mesh, 1D quadrature
             { // for 1D, mu is the polar direction and phi == 0, k==0
                 double mu ( spQuad->getMu(m) );
-                Mmatrix[ n + m*numMoments ] 
-                    = galerkinYlk( ell, k, mu, 0.0, sumwt );
+                Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, 0.0, sumwt );
             }
 
             else if( dim == 2 ) // 2D mesh, 2D quadrature
@@ -492,8 +490,7 @@ std::vector< double > QuadServices::computeM(void) const
                     double xi(  spQuad->getXi(m) );
                     double eta( sqrt(1.0-mu*mu-xi*xi) );
                     double phi( compute_azimuthalAngle( xi, eta, mu ) );
-                    Mmatrix[ n + m*numMoments ]
-                        = galerkinYlk( ell, k, mu, phi, sumwt );
+                    Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, phi, sumwt );
                 }
                 else // assume xi is empty
                 {
@@ -501,8 +498,7 @@ std::vector< double > QuadServices::computeM(void) const
                     double eta( spQuad->getEta(m) );
                     double xi(  sqrt(1.0-mu*mu-eta*eta) );
                     double phi( compute_azimuthalAngle( eta, xi, mu ) );
-                    Mmatrix[ n + m*numMoments ]
-                        = galerkinYlk( ell, k, mu, phi, sumwt );
+                    Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, phi, sumwt );
                 }
             }
             
@@ -513,8 +509,7 @@ std::vector< double > QuadServices::computeM(void) const
                 double eta( spQuad->getEta(m) );
                 double xi ( spQuad->getXi( m) );
                 double phi( compute_azimuthalAngle( mu, eta, xi ) );
-                Mmatrix[ n + m*numMoments ] 
-                    = galerkinYlk( ell, k, xi, phi, sumwt );
+                Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, xi, phi, sumwt );
             } 
         } // n: end moment loop
     } // m: end ordinate loop
@@ -666,7 +661,7 @@ compute_n2lk( unsigned const expansionOrder ) const
 std::vector< QuadServices::lk_index > QuadServices::
 compute_n2lk_3D_morel( void ) const
 {
-    int const L(         spQuad->getSnOrder() );
+    int const L( spQuad->getSnOrder() );
 
     // This algorithm only  works for level symmetric sets because it
     // assumes numOrdinates = (L)(L+2).
@@ -710,7 +705,7 @@ compute_n2lk_3D_morel( void ) const
 std::vector< QuadServices::lk_index > QuadServices::
 compute_n2lk_2D_morel( void ) const
 {
-    int const L(         spQuad->getSnOrder()   );
+    int const L( spQuad->getSnOrder() );
 
     // This algorithm only  works for level symmetric sets because it
     // assumes numOrdinates = (L)(L+2)/2.
@@ -765,7 +760,6 @@ compute_n2lk_2D_traditional( unsigned const L ) const
 
     return result;
 }
-
 
 //---------------------------------------------------------------------------//
 /*! 

@@ -71,7 +71,7 @@ class QuadServices
 
     //! Compute extra "moment-to-discrete" entries that are needed for starting direction ordinates.
     double augmentM( unsigned moment, Ordinate const & Omega ) const;
-    
+
     // ACCESSORS
 
     //! \brief Return the moment-to-discrete operator.
@@ -94,6 +94,9 @@ class QuadServices
     
     //! \brief Return the (l,k) index pair associated with moment index n.
     lk_index lkPair( unsigned n ) const { Require( n<numMoments ); return n2lk[n]; }
+
+    //! \brief Provide the number of moments used by QuadServices.
+    std::vector< lk_index > get_n2lk() const { return n2lk; }
 
     //! Helper functions to compute coefficients
     static
