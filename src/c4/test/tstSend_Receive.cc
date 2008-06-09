@@ -57,10 +57,6 @@ struct Receive_Double_Vector : public Receiver
 
 };
 
-    
-
-
-
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -222,8 +218,10 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
+#ifndef C4_SCALAR
         if (rtt_c4::nodes() == 1)
             auto_communication_test();
+#endif
         
         if (rtt_c4::nodes() == 2)
         {
