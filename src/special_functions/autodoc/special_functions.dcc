@@ -273,7 +273,7 @@ remains.  This is the value provided by the function rtt_sf::normalizedYlk.
  * Research's MathWorld</a>.
  * 
  * 
- * \section gelerkin_sph Gelerkin Spherical Harmonics
+ * \section galerkin_sph Gelerkin Spherical Harmonics
  
  We use a special form of spherical harmonics for creating the
  moment-to-discrete and discrete-to-moment matrixes.  Morel describes
@@ -292,7 +292,7 @@ formulation is
 \begin{array}{l}
  k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - k)!}}{{(l - k)!}}} P_{l,k} (\cos \theta )\cos (\phi ) \\ 
  k = 0:\;\;Y_{l,0} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}P_l (\cos \theta ) \\ 
- k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \\ 
+ k < 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \\ 
  \end{array}
 \f]
 
