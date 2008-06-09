@@ -273,7 +273,7 @@ remains.  This is the value provided by the function rtt_sf::normalizedYlk.
  * Research's MathWorld</a>.
  * 
  * 
- * \section galerkin_sph Gelerkin Spherical Harmonics
+ * \section galerkin_sph Galerkin Spherical Harmonics
  
  We use a special form of spherical harmonics for creating the
  moment-to-discrete and discrete-to-moment matrixes.  Morel describes
