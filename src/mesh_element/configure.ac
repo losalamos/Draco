@@ -36,7 +36,6 @@ dnl AC_SPRNG_SETUP(pkg)
 dnl AC_PCGLIB_SETUP(pkg)
 dnl AC_TRILINOS_SETUP(pkg)
 dnl AC_LAPACK_SETUP(pkg)
-dnl AC_PARMETIS_SETUP(pkg)
 
 dnl This macro should be uncommented if the current package is a Draco
 dnl client (i.e.: This package exists in Capsaicin, Milagro, etc.)

@@ -627,6 +627,39 @@ AC_DEFUN([AC_METIS_SETUP], [dnl
 
 ])
 
+dnl-------------------------------------------------------------------------dnl
+dnl AC_PARMETIS_SETUP
+dnl
+dnl PARMETIS SETUP (on by default)
+dnl PARMETIS is a required vendor
+dnl
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_PARMETIS_SETUP], [dnl
+
+   dnl define --with-parmetis
+   AC_ARG_WITH(parmetis,
+      [  --with-parmetis=[lib]    the parmetis implementation])
+ 
+   dnl define --with-parmetis-inc
+   AC_WITH_DIR(parmetis-inc, PARMETIS_INC, \${PARMETIS_INC_DIR},
+	       [tell where PARMETIS includes are])
+
+   dnl define --with-parmetis-lib
+   AC_WITH_DIR(parmetis-lib, PARMETIS_LIB, \${PARMETIS_LIB_DIR},
+	       [tell where PARMETIS libraries are])
+
+   # set default value of parmetis includes and libs
+   if test "${with_parmetis:=parmetis}" = yes ; then
+       with_parmetis='parmetis'
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_parmetis=$1
+
+])
+
 ##---------------------------------------------------------------------------##
 
 AC_DEFUN([AC_METIS_FINALIZE], [dnl
@@ -650,6 +683,34 @@ AC_DEFUN([AC_METIS_FINALIZE], [dnl
        # add METIS directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${METIS_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${METIS_INC}"
+
+   fi
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_PARMETIS_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_parmetis}" ; then
+
+       # include path
+       if test -n "${PARMETIS_INC}"; then 
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${PARMETIS_INC}"
+       fi
+
+       # library path
+       if test -n "${PARMETIS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_parmetis, -L${PARMETIS_LIB} -l${with_parmetis})
+       elif test -z "${PARMETIS_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_parmetis, -l${with_parmetis})
+       fi
+
+       # add PARMETIS directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PARMETIS_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${PARMETIS_INC}"
 
    fi
 
@@ -1278,21 +1339,23 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # each vendor setup is appended to the previous; thus, the calling
    # level goes from high to low
 
-   AC_TRILINOS_FINALIZE dnl Depends on: LAPACK, MPI
-   AC_GSL_FINALIZE      dnl Depends on: LAPACK
-   AC_SUPERLUDIST_FINALIZE
-
+   AC_TRILINOS_FINALIZE dnl  Depends on: LAPACK, MPI
+   AC_GSL_FINALIZE           dnl Depends on: LAPACK
    AC_AZTEC_FINALIZE
-   AC_PCG_FINALIZE      dnl Depends on: LAPACK
+
+   AC_SUPERLUDIST_FINALIZE   dnl Depends on: PARMETIS
+   AC_PARMETIS_FINALIZE      dnl Depends on: METIS
+   AC_METIS_FINALIZE
+
+   AC_PCG_FINALIZE           dnl Depends on: LAPACK
    AC_HYPRE_FINALIZE
-   AC_SCALAPACK_FINALIZE dnl Depends on: BLACS, MPI
-   AC_BLACS_FINALIZE     dnl Depends on: MPI
+   AC_SCALAPACK_FINALIZE     dnl Depends on: BLACS, MPI
+   AC_BLACS_FINALIZE         dnl Depends on: MPI
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
    AC_SPRNG_FINALIZE
    AC_GRACE_FINALIZE
-   AC_METIS_FINALIZE
    AC_SPICA_FINALIZE
    AC_XERCES_FINALIZE
 
@@ -1338,6 +1401,7 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
    AC_GSL_SETUP(pkg)
    AC_SUPERLUDIST_SETUP(pkg)
    AC_TRILINOS_SETUP(pkg)
+   AC_PARMETIS_SETUP(pkg)
    AC_METIS_SETUP(pkg)
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
