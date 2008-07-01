@@ -110,13 +110,19 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
     return coeff;
 }
 //---------------------------------------------------------------------------//
-/*!
- * \brief Compute the normalized spherical harmonic \f$ y_{l,k}(\theta,\phi) \f$ 
+/*!\brief Compute the normalized spherical harmonic \f$ y_{l,k}(\theta,\phi)
+ * \f$
  *
- * \param l Used to specify the degree \f$ \ell \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
- * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi) \f$.
+ * \param l Used to specify the degree \f$ \ell \f$ of \f$
+ * Y_{\ell,k}(\theta,\phi) \f$.
+ *
+ * \param m Used to specify the order \f$ k \f$ of \f$ Y_{\ell,k}(\theta,\phi)
+ * \f$.
+ *
  * \param theta The polar (colatitudinal) coordinate in (0,\f$\pi\f$).
+ *
  * \param phi The azimuthal (longitudinal) coordinate in (0,\f$ 2\pi\f$).
+ *
  * \return The normalized spherical harmonic value, \f$ y_l^m(\theta,\phi) \f$.
  *
  * For details on what is being computed by this routine see the Draco
