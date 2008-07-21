@@ -29,7 +29,7 @@ void slave_impl(const std::vector<int> &, std::vector<int>&);
  *
  * The argument on each node is a container whose stored values are other
  * nodes. The result is collection of the same type containing the nodes which
- * referred the local node.
+ * referred to the local node.
  *
  * E.g. if the argument contains "communicate to" node values. The result
  * contains the "receive from" node values.
