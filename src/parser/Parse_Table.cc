@@ -39,8 +39,10 @@ using namespace std;
 Parse_Table::Parse_Table(Keyword const *const table, size_t const count)
     : flags_(0)
 {
-    Require(count == 0  ||  table != NULL);
-    Require(std::find_if(table, table+count, Is_Well_Formed_Keyword));
+    Require(count == 0 || table != NULL);
+    Require(count == 0 || std::find_if(table,
+                                       table+count,
+                                       Is_Well_Formed_Keyword));
 
     add(table, count);
 
@@ -76,6 +78,8 @@ void Parse_Table::add(Keyword const *const table, size_t const count)
 
 	push_back(table[i]);
     }
+
+    if (size()==0) return;
 
     // Sort the parse table, using a comparator predicate appropriate for the
     // selected parser flags.
