@@ -55,6 +55,7 @@ class Q1DDoubleGauss : public Quadrature
     size_t getNumOrdinates()   const { return numOrdinates; }
     void   display()        const;
     string name()           const { return "1D Double-Gauss"; }
+    string parse_name()     const { return "double gauss"; }
     size_t dimensionality() const { return 1; }
     size_t getSnOrder()     const { return snOrder; }
     Quadrature_Class getClass() const { return ONE_DIM; }

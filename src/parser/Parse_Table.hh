@@ -154,7 +154,8 @@ class Parse_Table
     enum
     {
 	CASE_INSENSITIVE = 1U,          //!< Keyword match is case-insensitive
-	PARTIAL_IDENTIFIER_MATCH = 2U   //!< Match incomplete identifiers
+	PARTIAL_IDENTIFIER_MATCH = 2U,  //!< Match incomplete identifiers
+        ONCE = 4U                       //!< Parse single keyword, not a block
     };
 
     // CREATORS

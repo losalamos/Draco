@@ -56,6 +56,8 @@ class Q2DLevelSym : public Quadrature
     void display()       const;
     //! Returns the official name of the current quadrature set.
     string name()        const { return "2D Level Symmetric"; }
+    //! Returns the input deck name of the current quadrature set.
+    string parse_name()  const { return "level symmetric"; }
     //! Returns the number of dimensions in the current quadrature set.
     size_t dimensionality() const { return 2; }
     //! Returns the order of the SN set.

@@ -23,6 +23,9 @@
 #include "../QuadCreator.hh"
 #include "../Release.hh"
 
+using namespace rtt_dsxx;
+using namespace rtt_parser;
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -58,6 +61,23 @@ void tstTokenCtor1( rtt_dsxx::ScalarUnitTest & ut )
             ut.passes("Found correct SnOrder.");
         else
             ut.failure("Did not find expected SnOrder.");
+
+        // test write/read
+
+        string const text = spQuad->as_text("\n");
+
+        tokens = String_Token_Stream(text);
+
+        SP<Quadrature const> spTextWuad = QuadCreator().quadCreate(tokens);
+
+        if (tokens.error_count()==0)
+        {
+            ut.passes("write\reawd is correct");
+        }
+        else
+        {
+            ut.failure("write\read is NOT correct");
+        }
     }
     catch(...)
     {

@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include <cmath>
+#include <sstream>
 
 #include "Quadrature.hh"
 
@@ -165,6 +166,19 @@ void Quadrature::renormalize(const double new_norm)
 
     // re-set normalization value
     norm = new_norm;
+}
+
+//---------------------------------------------------------------------------//
+string Quadrature::as_text(string const &indent) const
+{
+    using namespace std;
+
+    stringstream text;
+    text << indent + "\t type, " << parse_name()
+         << indent + "\t order, " << snOrder
+         << indent + " end";
+
+    return text.str();
 }
 
 } // end namespace rtt_quadrature

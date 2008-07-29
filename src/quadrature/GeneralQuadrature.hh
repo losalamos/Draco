@@ -61,6 +61,8 @@ class GeneralQuadrature : public Quadrature
     void display()       const;
     //! Returns the official name of the current quadrature set.
     string name()        const { return quadratureName; }
+    //! Returns the official name of the current quadrature set.
+    string parse_name()  const { return quadratureName; }
     //! Returns the number of dimensions in the current quadrature set.
     size_t dimensionality() const { return numDims; }
     //! Returns the order of the SN set.

@@ -59,6 +59,8 @@ class Q2DSquareChebyshevLegendre  : public Quadrature
     void display()       const;
     //! Returns the official name of the current quadrature set.
     string name()        const { return "2D Square Chebyshev Legendre"; }
+    //! Returns the input deck name of the current quadrature set.
+    string parse_name()  const { return "square cl"; }
     //! Returns the number of dimensions in the current quadrature set.
     size_t dimensionality() const { return 2; }
     //! Returns the order of the SN set.

@@ -56,6 +56,7 @@ class Q1DGaussLeg : public Quadrature
     size_t getNumOrdinates()   const { return numOrdinates; }
     void   display()        const;
     string name()           const { return "1D Gauss Legendre"; }
+    string parse_name()     const { return "gauss legendre"; }
     size_t dimensionality() const { return 1; }
     size_t getSnOrder()     const { return snOrder; }
     Quadrature_Class getClass() const { return ONE_DIM; }

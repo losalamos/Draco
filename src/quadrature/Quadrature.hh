@@ -286,6 +286,11 @@ class Quadrature
     virtual string name() const = 0;
 
     /*!
+     * \brief Returns a string containing the input deck name of the set.
+     */
+    virtual string parse_name() const = 0;
+
+    /*!
      * \brief Returns the class of quadrature
      */
     virtual Quadrature_Class getClass() const = 0;
@@ -311,6 +316,9 @@ class Quadrature
 
     //! \brief Re-normalize quadrature 
     void renormalize(const double new_norm);
+
+    //! Produce a text representation of the object
+    virtual string as_text(string const &indent) const;
 
   protected:
 

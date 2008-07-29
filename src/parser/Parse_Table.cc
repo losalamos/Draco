@@ -267,6 +267,14 @@ Token Parse_Table::parse(Token_Stream &tokens) const
 			// Call the parse function associated with the
 			// keyword.
 			match->func(tokens, match->index);
+
+                        if (flags_ & ONCE)
+                            // Quit after parsing a single keyword. This is
+                            // useful for parse tables for selecting one of a
+                            // set of short options.
+                        {
+                            return Token(END, "");
+                        }
 		    }
 		    catch (const Syntax_Error &)
 		    {
