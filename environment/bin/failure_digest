@@ -13,7 +13,9 @@ import commands
 
 ##---------------------------------------------------------------------------##
 def get_local_logfiles(dir):
-
+    """ Creates a generator for all files matching *.log. Generates
+    open file handles.
+    """
     files = FileUtils.gen_find("*.log", dir)
     return FileUtils.gen_open(files)
 
@@ -38,6 +40,10 @@ error_test   = re.compile(r"ERROR: While testing (?P<test>\S+)?,"
 
 ##---------------------------------------------------------------------------##
 def extract_errors(open_files):
+    """ This generator yields successive matches of failures in a
+    collection of open files. The open files are tested against the
+    pattern for log files first.
+    """
 
     for file in open_files:
 
@@ -83,6 +89,9 @@ if __name__=="__main__":
             assertions[key] = error
         else:
             failures.setdefault(key, set()).add(error["line"])
+
+
+
             
     # Display each error with a sorted list of line numbers
     if failures: print "Test failures:"
@@ -97,8 +106,10 @@ if __name__=="__main__":
     contents.sort()
     print "\n".join(["%20s %40s failed on lines: %s" % \
                      (c[0], c[1], ", ".join(c[2])) for c in contents]   )
-        
     print "\n"
+
+
+
 
     # Display the assertions
     contents = []

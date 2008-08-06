@@ -193,7 +193,10 @@ if __name__=="__main__":
     # <location>/<name>. For tarfiles, we then move each source
     # directory to <name>/<package>.
 
-    
+
+    if not Jayenne.is_valid_package(main_module_name):
+        parser.error("Unrecognized package name: %s" % main_module_name)
+
     # If the necessary directories don't exist, create them.
     if not os.path.exists(options.location):
         os.makedirs(options.location) 
@@ -245,7 +248,7 @@ if __name__=="__main__":
             os.system(Jayenne.get_draco(deps, is_head, import_only=True))
 
         # Run autoconf script.
-            os.system(Jayenne.autoconf(module))
+        os.system(Jayenne.autoconf(module))
 
 
     # Optional tarfile
