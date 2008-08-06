@@ -14,7 +14,7 @@ Contains classes:
 Here's the relationship:
 
   WorkingCopy ===> Package ---> Repo.Repositiry
-              \           \--> Tag (string)
+              \           \---> Tag (string)
                \     
                 \--> Destination
 
@@ -135,7 +135,7 @@ class WorkingCopy(object):
         else:
             part = " "
 
-        return part + self.package.__str__()
+        return "%s %s %s" % (part, self.tag, self.package)
         
     def output_dir(self):  return self.destination or self.package.name
 
@@ -152,7 +152,8 @@ class WorkingCopy(object):
 
         command = "cvs -Q %s %s %s" % (
             self.package.repository, 
-            cvs_command, self)
+            cvs_command, 
+            self.__str__())
 
 
         verbose("Executing CVS command: %s" % command, 1)
