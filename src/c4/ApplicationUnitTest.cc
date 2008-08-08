@@ -174,7 +174,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
         
         std::string exeExistsAndExecutable("test -x " + applicationPath
                                            + applicationName );
-        Require( system( exeExistsAndExecutable.c_str() ) == 0 );
+        Require( std::system( exeExistsAndExecutable.c_str() ) == 0 );
     }
 
     // cmd will contain the UNIX command that will be used to execute the
@@ -233,7 +233,7 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
     unixCommand << mpiCommand << appArg << " > " << logFile;
     std::cout << "\nExecuting command from the shell: \n\t\""
               << unixCommand.str().c_str() << "\"\n" << std::endl;
-    errorLevel = system( unixCommand.str().c_str() );
+    errorLevel = std::system( unixCommand.str().c_str() );
 
     bool result(false);
     if( errorLevel == 0 )
@@ -277,7 +277,7 @@ void ApplicationUnitTest::runTests()
 //         std::cout << "\nExecuting command from the shell: \n\t\""
 //                   << unixCommand.str().c_str() << "\"\n" << std::endl;
         bool result = runTest( *it_arg );
-//         errorLevel = system( unixCommand.str().c_str() );
+//         errorLevel = std::system( unixCommand.str().c_str() );
         
 //         if( errorLevel == 0 )
 //         {
