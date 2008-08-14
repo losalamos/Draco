@@ -48,7 +48,7 @@ dnl
 dnl DRACO SETUP
 dnl
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-5_18_0)
+AC_DRACO_AUTODOC(draco-5_19_0)
 
 dnl 
 dnl Create build system files in pwd.
