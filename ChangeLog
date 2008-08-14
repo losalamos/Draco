@@ -1,3 +1,28 @@
+2008-08-13  Aimee Hungerford  <aimee@lanl.gov>
+
+	* draco: Release of draco-5_19_0. This is a minor Draco release. A
+	summary of changes is:
+
+	changes to library names and namespace to satisfy gcc-4.3 and AIX compilers
+
+	changes to support flat_interfaces that can extend selection of transport and flux
+	limiter models in capsaicin
+
+	config
+	        - added vendor support for ParMetis which is needed by SuperLU_Dist, v. 2.2
+	
+	environment
+	        - Refactored python script for the pitch and repoman tools
+
+	c4
+	        - added a variable to serve as the source/destination of a null process
+
+		- added function Compare for equivalence testing of values on different processors
+		
+		- added base class in Send_Receive to support custom data communicators (will be
+		  of use for a general decomposition method for Jayenne codes)
+	 
+
 2008-02-22  Mike Buksas  <mwbuksas@nammu.lanl.gov>
 
 	* draco: Release of draco-5_18_0. This is a minor Draco release. A
@@ -74,6 +99,7 @@
 		- Changes to automatic notifications reflecting personnel
 		changes. 
 
+	
 2007-08-10  Aimee Hungerford <aimee@lanl.gov>
 
 	* draco: Release of draco-5_17-0. This is a minor Draco release.
