@@ -225,7 +225,7 @@ std::vector< double > GandolfMultigroupOpacity::getOpacity(
     // data will be copied into the opacityIterator.
     std::vector<double> opacity( numGroups );
 	    
-    // logorithmic interpolation:
+    // logarithmic interpolation:
     opacity = wrapper::wgintmglog( 
 	spGandolfDataTable->getLogTemperatures(),
 	spGandolfDataTable->getNumTemperatures(), 

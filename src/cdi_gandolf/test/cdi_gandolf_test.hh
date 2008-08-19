@@ -67,6 +67,11 @@ bool match(const std::vector< std::vector<double> >& computedValue,
 	   const std::vector< std::vector<double> >& referenceValue );
 
 //---------------------------------------------------------------------------//
+
+bool match(
+	const std::vector< std::vector< std::vector< double > > >& computedValue, 
+   const std::vector< std::vector< std::vector< double > > >& referenceValue );
+//---------------------------------------------------------------------------//
 // COMPARISON FUNCTIONS USED IN GANDOLF OPACITY TESTS
 //---------------------------------------------------------------------------//
 

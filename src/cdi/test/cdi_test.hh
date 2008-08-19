@@ -59,8 +59,13 @@ bool match(double computedValue, double referenceValue);
 bool match(const std::vector< double > &computedValue, 
 	   const std::vector< double > &referenceValue );
 
-bool match(const std::vector< std::vector< double > >& computedValue, 
+bool match(
+		const std::vector< std::vector< double > >& computedValue, 
 	   const std::vector< std::vector< double > >& referenceValue ); 
+
+bool match(
+	const std::vector< std::vector< std::vector< double > > >& computedValue, 
+   const std::vector< std::vector< std::vector< double > > >& referenceValue ); 
 
 } // end namespace rtt_cdi_test
 

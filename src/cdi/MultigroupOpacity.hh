@@ -197,6 +197,12 @@ class MultigroupOpacity
      */
     virtual std::vector<char> pack() const = 0;
 	
+	/*!
+	 * \brief Returns the general opacity model type (Analytic or Gandolf),
+	 * defined in OpacityCommon.hh
+	 */
+	virtual rtt_cdi::OpacityModelType getOpacityModelType() const = 0;
+
 }; // end of class MultigroupOpacity
     
     

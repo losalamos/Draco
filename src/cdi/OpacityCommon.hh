@@ -65,6 +65,25 @@ enum Reaction
     SCATTERING  /*!< Scattering cross sections only. */
 };
 
+/*!
+ * \brief Type of opacity model: analytic, or gandolf. Used in Milagro 
+ * Material_Data in packing the objects, returned by each opacity type.
+ * It was previously defined as \code
+ * typeid(rtt_cdi_analytic::Analytic_Odfmg_Opacity)
+ * \endcode
+ * mapping to 1, and \code
+ * typeid(rtt_cdi_gandolf::GandolfOdfmgOpacity)
+ * \endcode
+ * mapping to 2.
+ * 
+ */
+enum OpacityModelType
+{
+    UNASSIGNED_TYPE = 0,  /*!< unassigned type; used as a placeholder before deciding type */
+    ANALYTIC_TYPE   = 1,  /*!< an Analytic opacity model */
+    GANDOLF_TYPE    = 2,  /*!< a Gandolf opacity model */
+    DUMMY_TYPE      = 99  /*!< a dummy opacity model */
+};
 } // end namespace rtt_cdi
 
 #endif // __cdi_OpacityCommon_hh__

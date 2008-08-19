@@ -170,6 +170,15 @@ namespace rtt_cdi_analytic
 
     // Pack the Analytic_Multigroup_Opacity into a character string.
     sf_char pack() const;
+
+	/*!
+	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+	 *
+	 * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
+	 */
+	rtt_cdi::OpacityModelType getOpacityModelType() const {
+		return rtt_cdi::ANALYTIC_TYPE;
+	}
 };
 
 //---------------------------------------------------------------------------//
@@ -201,7 +210,7 @@ Analytic_Multigroup_Opacity::getDataDescriptor() const
 	descriptor = "Analytic Multigroup Scattering";
     else
     {
-	Insist (0, "Invalid analytic gray model opacity!");
+	Insist (0, "Invalid analytic multigroup model opacity!");
     }
 
     return descriptor;

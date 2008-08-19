@@ -45,7 +45,7 @@ namespace rtt_cdi_gandolf
      *     specifies the energy model { "gray" or "mg" } for the
      *     opacity data contained in this GandolfDataTable object. 
      * \param opacityModel This enumerated value specifies the
-     *     physics model { Rosseland or Plank } for the opacity data
+     *     physics model { Rosseland or Planck } for the opacity data
      *     contained in this object.  The enumeration is defined in
      *     GandolfOpacity.hh 
      * \param opacityReaction This enumerated value specifies the 
@@ -137,6 +137,8 @@ namespace rtt_cdi_gandolf
 			    dataDescriptor = "Gray Rosseland Absorption";
 			    break;
 			case ( rtt_cdi::SCATTERING ) :
+				// *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+				// See LA-UR-01-5543
 			    gandolfDataTypeKey = "rsgray";
 			    dataDescriptor = "Gray Rosseland Scattering";
 			    break;
@@ -150,16 +152,20 @@ namespace rtt_cdi_gandolf
 			
 			switch ( opacityReaction ) {
 			case ( rtt_cdi::TOTAL ) :
-			    gandolfDataTypeKey = "pgray";
-			    dataDescriptor = "Gray Plank Total";
+				// *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+				// See LA-UR-01-5543
+			    gandolfDataTypeKey = "ptgray";
+			    dataDescriptor = "Gray Planck Total";
 			    break;
 			case ( rtt_cdi::ABSORPTION ) :
-			    gandolfDataTypeKey = "pagray";
-			    dataDescriptor = "Gray Plank Absorption";
+			    gandolfDataTypeKey = "pgray";
+			    dataDescriptor = "Gray Planck Absorption";
 			    break;
 			case ( rtt_cdi::SCATTERING ) :
+				// *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+				// See LA-UR-01-5543
 			    gandolfDataTypeKey = "psgray";
-			    dataDescriptor = "Gray Plank Scattering";
+			    dataDescriptor = "Gray Planck Scattering";
 			    break;
 			default :
 			    Assert(false);
@@ -200,16 +206,20 @@ namespace rtt_cdi_gandolf
 			
 			switch ( opacityReaction ) {
 			case ( rtt_cdi::TOTAL ) :
-			    gandolfDataTypeKey = "pmg";
-			    dataDescriptor = "Multigroup Plank Total";
+				// *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+				// See LA-UR-01-5543
+			    gandolfDataTypeKey = "ptmg";
+			    dataDescriptor = "Multigroup Planck Total";
 			    break;
 			case ( rtt_cdi::ABSORPTION ) :
-			    gandolfDataTypeKey = "pamg";
-			    dataDescriptor = "Multigroup Plank Absorption";
+			    gandolfDataTypeKey = "pmg";
+			    dataDescriptor = "Multigroup Planck Absorption";
 			    break;
 			case ( rtt_cdi::SCATTERING ) :
+				// *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+				// See LA-UR-01-5543
 			    gandolfDataTypeKey = "psmg";
-			    dataDescriptor = "Multigroup Plank Scattering";
+			    dataDescriptor = "Multigroup Planck Scattering";
 			    break;
 			default :
 			    Assert(false);

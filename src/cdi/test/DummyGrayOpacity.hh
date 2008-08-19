@@ -204,6 +204,13 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     // Dummy pack function.
     std::vector<char> pack() const { return std::vector<char>(); }
 	
+	/*!
+	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+	 */
+	rtt_cdi::OpacityModelType getOpacityModelType() const {
+		return rtt_cdi::DUMMY_TYPE;
+	}
+	
 };
     
 } // end namespace rtt_cdi_test

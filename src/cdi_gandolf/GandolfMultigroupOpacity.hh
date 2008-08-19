@@ -471,6 +471,14 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      */ 
     std::vector<char> pack() const;
 
+	/*!
+	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+	 *
+	 * Since this is a Gandolf model, return 2 (rtt_cdi::GANDOLF_TYPE)
+	 */
+	rtt_cdi::OpacityModelType getOpacityModelType() const {
+		return rtt_cdi::GANDOLF_TYPE;
+	}
 }; // end of class GandolfMultigroupOpacity
 
 //---------------------------------------------------------------------------//

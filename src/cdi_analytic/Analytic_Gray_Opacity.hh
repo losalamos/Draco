@@ -143,6 +143,15 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 
     // Pack the Analytic_Gray_Opacity into a character string.
     sf_char pack() const;
+
+	/*!
+	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+	 *
+	 * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
+	 */
+	rtt_cdi::OpacityModelType getOpacityModelType() const {
+		return rtt_cdi::ANALYTIC_TYPE;
+	}
 };
 
 //---------------------------------------------------------------------------//

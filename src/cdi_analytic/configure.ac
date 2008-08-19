@@ -24,7 +24,7 @@ AC_INSTALL_LIB
 AC_NEEDS_LIBS(cdi ds++)
 
 AC_RUNTESTS(tstAnalytic_Gray_Opacity tstAnalytic_Multigroup_Opacity \
-            tstAnalytic_EoS, scalar)
+            tstAnalytic_Multigroup_Opacity tstAnalytic_EoS, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV

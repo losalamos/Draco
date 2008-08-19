@@ -21,7 +21,8 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(cdi ds++)
 
-AC_RUNTESTS(tGandolfFile tGandolfOpacity tGandolfWithCDI, scalar)
+AC_RUNTESTS(tGandolfFile tGandolfOpacity tGandolfWithCDI tGandolfOdfmgOpacity, scalar)
+AC_RUNTESTS(ReadOdfGandolfFile, app)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
@@ -34,13 +35,17 @@ AC_OUTPUT
 
 # The IPCRESS files are binary so we copy them to the target directory manually.
 echo copying ${srcdir}/test/Al_BeCu.ipcress to test/Al_BeCu.ipcress
-cp -f --backup=simple  ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
+cp --backup=simple  ${srcdir}/test/Al_BeCu.ipcress test/Al_BeCu.ipcress
+
 echo copying ${srcdir}/test/analyticOpacities.ipcress to test/analyticOpacities.ipcress
-cp -f --backup=simple ${srcdir}/test/analyticOpacities.ipcress test/analyticOpacities.ipcress
+cp --backup=simple ${srcdir}/test/analyticOpacities.ipcress test/analyticOpacities.ipcress
+
+echo copying ${srcdir}/test/odfregression10.ipcress to test/odfregression10.ipcress
+cp --backup=simple  ${srcdir}/test/odfregression10.ipcress test/odfregression10.ipcress
 
 # If build directory == srcdir, (in-tree build) cp will make
 # backups. Remove them if they exist.
-rm -f test/Al_BeCu.ipcres~ test/analyticOpacities.ipcress~
+rm -f test/Al_BeCu.ipcress~ test/analyticOpacities.ipcress~ test/odfregression10.ipcress~
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/src/cdi_gandolf configure.ac

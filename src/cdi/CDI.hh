@@ -15,6 +15,7 @@
 
 #include "GrayOpacity.hh"
 #include "MultigroupOpacity.hh"
+#include "OdfmgOpacity.hh"
 #include "EoS.hh"
 #include "OpacityCommon.hh"
 #include "ds++/SP.hh"
@@ -461,11 +462,14 @@ class CDI
     // NESTED CLASSES AND TYPEDEFS
     typedef rtt_dsxx::SP<const GrayOpacity>       SP_GrayOpacity;
     typedef rtt_dsxx::SP<const MultigroupOpacity> SP_MultigroupOpacity;
+    typedef rtt_dsxx::SP<const OdfmgOpacity> 	  SP_OdfmgOpacity;
     typedef rtt_dsxx::SP<const EoS>               SP_EoS;
     typedef std::vector<SP_GrayOpacity>           SF_GrayOpacity;
     typedef std::vector<SF_GrayOpacity>           VF_GrayOpacity;
     typedef std::vector<SP_MultigroupOpacity>     SF_MultigroupOpacity;
     typedef std::vector<SF_MultigroupOpacity>     VF_MultigroupOpacity;
+    typedef std::vector<SP_OdfmgOpacity>     	  SF_OdfmgOpacity;
+    typedef std::vector<SF_OdfmgOpacity>     	  VF_OdfmgOpacity;
     typedef std::string                           std_string;
     
     // DATA
@@ -492,6 +496,13 @@ class CDI
      * [rtt_cdi::Model][rtt_cdi::Reaction]. 
      */
     VF_MultigroupOpacity multigroupOpacities;
+	
+    /*!
+     * \brief Array that stores the list of possible OdfmgOpacity types.
+     *
+     */
+    VF_OdfmgOpacity odfmgOpacities;
+
 
     /*!
      * \brief Frequency group boundaries for multigroup data.
@@ -506,6 +517,16 @@ class CDI
      *
      */
     static std::vector<double> frequencyGroupBoundaries;
+
+    /*!
+     * \brief Band boundaries for odf multigroup data.
+     *
+     * This data is stored as static so that the same structure is guaranteed
+     * for all multigroup odf data sets.  Thus, each CDI object will have access
+     * to the same opacity band structure.
+     *
+     */
+    static std::vector<double> opacityCdfBandBoundaries;
 	
     /*!
      * \brief Smart pointer to the equation of state object.
@@ -560,6 +581,9 @@ class CDI
     //! Register a multigroup opacity (rtt_cdi::MultigroupOpacity) with CDI.
     void setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp);
 
+    //! Register an ODF Multigroup opacity (rtt_cdi::OdfmgOpacity) with CDI.
+    void setOdfmgOpacity(const SP_OdfmgOpacity &spMGOp);
+	 
     //! Register an EOS (rtt_cdi::Eos) with CDI.
     void setEoS(const SP_EoS &in_spEoS);
 
@@ -570,8 +594,9 @@ class CDI
     // GETTERS
     // -------
 	
-    SP_GrayOpacity       gray(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
-    SP_MultigroupOpacity mg  (rtt_cdi::Model m, rtt_cdi::Reaction r) const;
+    SP_GrayOpacity       gray (rtt_cdi::Model m, rtt_cdi::Reaction r) const;
+    SP_MultigroupOpacity mg   (rtt_cdi::Model m, rtt_cdi::Reaction r) const;
+    SP_OdfmgOpacity 		 odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
     SP_EoS eos() const;
 
     //! Return material ID string.
@@ -579,13 +604,16 @@ class CDI
 
     bool isGrayOpacitySet      (rtt_cdi::Model, rtt_cdi::Reaction) const;
     bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
+    bool isOdfmgOpacitySet     (rtt_cdi::Model, rtt_cdi::Reaction) const;
     bool isEoSSet() const;
 
     //! Copies the vector of the stored frequency group boundary vector
     static std::vector<double> getFrequencyGroupBoundaries();
+	 static std::vector<double> getOpacityCdfBandBoundaries();
 
     //! Returns the number of frequency groups in the stored frequency vector.
     static int getNumberFrequencyGroups();
+    static int getNumberOpacityBands();
 
 
 

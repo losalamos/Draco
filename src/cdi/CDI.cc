@@ -43,12 +43,15 @@ CDI::CDI(const std_string &id)
           SF_GrayOpacity(constants::num_Reactions)),
       multigroupOpacities(
           constants::num_Models,
-          SF_MultigroupOpacity(constants::num_Reactions))
+          SF_MultigroupOpacity(constants::num_Reactions)),
+      odfmgOpacities(
+          constants::num_Models,
+          SF_OdfmgOpacity(constants::num_Reactions))
 {
 
     Ensure (grayOpacities.size()       == constants::num_Models);
     Ensure (multigroupOpacities.size() == constants::num_Models);
-
+    Ensure (odfmgOpacities.size()      == constants::num_Models);
 }
 
 //---------------------------------------------------------------------------//
@@ -61,6 +64,7 @@ CDI::~CDI() { /* empty */ }
 //---------------------------------------------------------------------------//
 
 std::vector<double> CDI::frequencyGroupBoundaries = std::vector<double>();
+std::vector<double> CDI::opacityCdfBandBoundaries = std::vector<double>();
 
 //---------------------------------------------------------------------------//
 // STATIC FUNCTIONS
@@ -82,6 +86,22 @@ std::vector<double> CDI::getFrequencyGroupBoundaries()
 {
     return frequencyGroupBoundaries;
 }
+/*!
+ * \brief Return the opacity band boundaries.
+ *
+ * Every multiband opacity object held by any CDI object contains the
+ * same band boundaries, and also inside each group.  This static function
+ * allows CDI users to access the band boundaries without referencing a
+ * particular material. 
+ *
+ * Note, the band boundaries are not set until a multigroup opacity
+ * object is set for the first time (in any CDI object) with the
+ * setOdfmgOpacity function.
+ */
+std::vector<double> CDI::getOpacityCdfBandBoundaries()
+{
+    return opacityCdfBandBoundaries;
+}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -97,8 +117,19 @@ int CDI::getNumberFrequencyGroups()
     return ng;
 }    
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the number of opacity bands. 
+ */
+int CDI::getNumberOpacityBands()
+{
+	int nb = 0;
 
+	if (!opacityCdfBandBoundaries.empty())
+		nb = opacityCdfBandBoundaries.size() - 1;
 
+	return nb;
+}    
 
 
 //---------------------------------------------------------------------------//
@@ -506,8 +537,8 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp)
     // range because the Model and Reaction are constrained by the
     // rtt_cdi::Model and rtt_cdi::Reaction enumerations, assuming nobody
     // hosed these)
-    int model    = spGOp->getModelType();
-    int reaction = spGOp->getReactionType();
+    rtt_cdi::Model 		model    = spGOp->getModelType();
+    rtt_cdi::Reaction	reaction = spGOp->getReactionType();
 
     Insist (!grayOpacities[model][reaction], 
 	    "Tried to overwrite a set GrayOpacity object!");
@@ -540,8 +571,8 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
     Require (spMGOp);
 
     // determine the model and reaction types
-    int model    = spMGOp->getModelType();
-    int reaction = spMGOp->getReactionType();
+    rtt_cdi::Model	 model		= spMGOp->getModelType();
+    rtt_cdi::Reaction reaction	= spMGOp->getReactionType();
 
     Insist (!multigroupOpacities[model][reaction],
 	    "Tried to overwrite a set MultigroupOpacity object!");
@@ -574,6 +605,90 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
     multigroupOpacities[model][reaction] = spMGOp;
 
     Ensure (multigroupOpacities[model][reaction]);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Register a multigroup opacity (rtt_cdi::OdfmgOpacity) with
+ * CDI.
+ *
+ * This function sets a multigroup opacity object of type
+ * rtt_cdi::OdfmgOpacity with the CDI object.  It stores the multigroup
+ * opacity object based upon its rtt_cdi::Model and rtt_cdi::Reaction types.
+ * If a OdfmgOpacity with these type has already been registered an
+ * exception is thrown.  To register a new set of OdfmgOpacity objects
+ * call CDI::reset() first.  You cannot overwrite registered objects with the
+ * setOdfmgOpacity() function!
+ *
+ * \param spGOp smart pointer (rtt_dsxx::SP) to a OdfmgOpacity object
+ */
+void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp) 
+{
+	using rtt_dsxx::soft_equiv;
+
+	Require (spODFOp);
+
+	// determine the model and reaction types
+	rtt_cdi::Model		model		= spODFOp->getModelType();
+	rtt_cdi::Reaction	reaction	= spODFOp->getReactionType();
+
+	Insist (!odfmgOpacities[model][reaction],
+			"Tried to overwrite a set odfmgOpacity object!");
+
+	// if the frequency group boundaries have not been assigned in any CDI
+	// object, then assign them here
+	if (frequencyGroupBoundaries.empty())
+	{
+		// copy the the group boundaries for this material to the "global"
+		// group boundaries that will be enforced for all CDI objects
+		frequencyGroupBoundaries = spODFOp->getGroupBoundaries();
+	}
+
+	// if the opacity band boundaries have not been assigned in any CDI
+	// object, then assign them here
+	if (opacityCdfBandBoundaries.empty())
+	{
+		// copy the the band boundaries for this material to the "global"
+		// band boundaries that will be enforced for all CDI objects
+		opacityCdfBandBoundaries = spODFOp->getBandBoundaries();
+	}
+	
+
+	// always check that the number of frequency groups is the same for each
+	// odfmg material added to CDI
+	Insist (spODFOp->getNumGroupBoundaries() == 
+			frequencyGroupBoundaries.size(),
+			"Incompatible frequency groups assigned for this material");
+
+	// always check that the number of frequency groups is the same for each
+	// odfmg material added to CDI
+	Insist (spODFOp->getNumBandBoundaries() == 
+			opacityCdfBandBoundaries.size(),
+			"Incompatible opacity bands assigned for this material");
+
+	// do a check of the actual boundary values when DBC check is on (this is
+	// more expensive so we retain the option of turning it off)
+	const std::vector<double> &refGroup = spODFOp->getGroupBoundaries();
+	Check (soft_equiv(frequencyGroupBoundaries.begin(),
+				frequencyGroupBoundaries.end(),
+				refGroup.begin(),
+				refGroup.end(),
+				1.0e-6));
+	
+	// do a check of the actual band boundary values when DBC check is on 
+	// (this is more expensive so we retain the option of turning it off)
+	const std::vector<double> &refBand = spODFOp->getBandBoundaries();
+	Check (soft_equiv(opacityCdfBandBoundaries.begin(),
+				opacityCdfBandBoundaries.end(),
+				refBand.begin(),
+				refBand.end(),
+				1.0e-6));
+
+
+	// assign the smart pointer
+	odfmgOpacities[model][reaction] = spODFOp;
+
+	Ensure (odfmgOpacities[model][reaction]);
 }
 
 //---------------------------------------------------------------------------//
@@ -637,6 +752,27 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model    m,
     return multigroupOpacities[m][r]; 
 }
 
+/*!
+ * \brief This fuction returns the OdfmgOpacity object.
+ *
+ * This provides the CDI with the full functionality of the interface
+ * defined in OdfmgOpacity.hh.  For example, the host code could
+ * make the following call:<br> <tt> int numGroups =
+ * spCDI1->mg()->getNumGroupBoundaries(); </tt>
+ *
+ * The appropriate multigroup opacity is returned for the given reaction
+ * type.
+ *
+ * \param m rtt_cdi::Model specifying the desired physics model
+ * \param r rtt_cdi::Reaction specifying the desired reaction type.
+ *
+ */
+CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model    m,
+				  rtt_cdi::Reaction r) const 
+{
+    Insist (odfmgOpacities[m][r], "Undefined OdfmgOpacity!");
+    return odfmgOpacities[m][r]; 
+}
 //---------------------------------------------------------------------------//
 
 /*!
@@ -673,36 +809,45 @@ CDI::SP_EoS CDI::eos() const
  */
 void CDI::reset()
 {
-    Check (grayOpacities.size() == constants::num_Models);
-    Check (multigroupOpacities.size() == constants::num_Models);
+	Check (grayOpacities.size() == constants::num_Models);
+	Check (multigroupOpacities.size() == constants::num_Models);
+	Check (odfmgOpacities.size() == constants::num_Models);
 
-    // reset the gray opacities
-    for (int i = 0; i < constants::num_Models; i++)
-    {
-	Check (grayOpacities[i].size() == constants::num_Reactions);
-	Check (multigroupOpacities[i].size() == constants::num_Reactions);
-
-	for (int j = 0; j < constants::num_Reactions; j++)
+	// reset the gray opacities
+	for (int i = 0; i < constants::num_Models; i++)
 	{
-	    // reassign the GrayOpacity SP to a null SP
-	    grayOpacities[i][j] = SP_GrayOpacity();
+		Check (grayOpacities[i].size() == constants::num_Reactions);
+		Check (multigroupOpacities[i].size() == constants::num_Reactions);
+		Check (odfmgOpacities[i].size() == constants::num_Reactions);
 
-	    // reassign the MultigroupOpacity SP to a null SP
-	    multigroupOpacities[i][j] = SP_MultigroupOpacity();
+		for (int j = 0; j < constants::num_Reactions; j++)
+		{
+			// reassign the GrayOpacity SP to a null SP
+			grayOpacities[i][j] = SP_GrayOpacity();
 
-	    // check it
-	    Check (!grayOpacities[i][j]);
-	    Check (!multigroupOpacities[i][j]);
+			// reassign the MultigroupOpacity SP to a null SP
+			multigroupOpacities[i][j] = SP_MultigroupOpacity();
+
+			// reassign the OdfmgOpacity SP to a null SP
+			odfmgOpacities[i][j] = SP_OdfmgOpacity();
+
+			// check it
+			Check (!grayOpacities[i][j]);
+			Check (!odfmgOpacities[i][j]);
+		}
 	}
-    }
 
-    // empty the frequency group boundaries
-    frequencyGroupBoundaries.clear();
-    Check (frequencyGroupBoundaries.empty());
+	// empty the frequency group boundaries
+	frequencyGroupBoundaries.clear();
+	Check (frequencyGroupBoundaries.empty());
 
-    // reset the EoS SP
-    spEoS = SP_EoS();
-    Check (!spEoS);
+	// empty the opacity band boundaries
+	opacityCdfBandBoundaries.clear();
+	Check (opacityCdfBandBoundaries.empty());
+	
+	// reset the EoS SP
+	spEoS = SP_EoS();
+	Check (!spEoS);
 }
 
 //---------------------------------------------------------------------------//
@@ -724,6 +869,14 @@ bool CDI::isGrayOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
 bool CDI::isMultigroupOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
 {
     return static_cast<bool>(multigroupOpacities[m][r]);
+}
+
+/*!
+ * \brief Query to see if an odf multigroup opacity is set.
+ */
+bool CDI::isOdfmgOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const
+{
+    return static_cast<bool>(odfmgOpacities[m][r]);
 }
 
 /*!

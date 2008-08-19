@@ -10,8 +10,12 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_gandolf_test.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <iostream>
+#include <iomanip>
 #include <cmath>
+
+using rtt_dsxx::soft_equiv;
 
 namespace rtt_cdi_gandolf_test
 {
@@ -66,94 +70,95 @@ bool passed = true;
 // DATA EQUIVALENCE FUNCTIONS USED FOR TESTING
 //---------------------------------------------------------------------------//
 
-bool match( const double computedValue,
-	    const double referenceValue )
+bool match( double computedValue, double referenceValue )
 {
-    using std::fabs;
-
-    // Start by assuming that the two quantities match exactly.
-    bool em = true;
-    
-    // Compare items up to 10 digits of accuracy.
-    
-    const double TOL = 1.0e-10;
-    
-    // Calculate the absolute value of the relative difference between 
-    // the computed and reference values.
-    
-    double reldiff = fabs( ( computedValue - referenceValue )
-			   / referenceValue );
-    
-    // If the comparison fails then change the value of "em" return
-    // the result;
-    if ( reldiff > TOL )
-	em = false;
-    
-    return em;    
-}
-
-//---------------------------------------------------------------------------//
-
-bool match(const std::vector< double >& computedValue, 
-	   const std::vector< double >& referenceValue )
-{
-    using std::fabs;
-
-    // Start by assuming that the two quantities match exactly.
-    bool em = true;
-
-    // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-10;
-
-    // Test each item in the list
-    double reldiff = 0.0;
-    for ( int i=0; i<computedValue.size(); ++i )
-    {
-		
-	reldiff = fabs( ( computedValue[i] - referenceValue[i] )
-			/ referenceValue[i] );
-	// If the comparison fails then change the value of "em"
-	// and exit the loop.
-
-	if ( reldiff > TOL )
-	{
-	    em = false;
-	    break;
-	}
-    }
-    return em;
-}
-
-//---------------------------------------------------------------------------//
-
-bool match(const std::vector< std::vector<double> >& computedValue, 
-	   const std::vector< std::vector<double> >& referenceValue )
-{
-    using std::fabs;
-
-    // Start by assuming that the two quantities match exactly.
-    bool em = true;
-
-    // Compare items up to 10 digits of accuracy.
-    const double TOL = 1.0e-10;
-
-    // Test each item in the list
-    double reldiff = 0.0;
-    for ( int i=0; i<computedValue.size(); ++i )
-    {
-	for ( int j=0; j<computedValue[i].size(); ++j )
-	{	    
-	    reldiff = fabs( ( computedValue[i][j] - referenceValue[i][j] )
-			    / referenceValue[i][j] );
-
-	    // If the comparison fails then change the value of "em"
-	    // and exit the loop.
-	    if ( reldiff > TOL ) {
-		em = false; break; }
-	}
-    }
-    return em;
+	return soft_equiv(computedValue, referenceValue );
 } 
+
+bool match( const std::vector< double > &computedValue, 
+	    const std::vector< double > &referenceValue ) 
+{
+	// If the vector sizes don't match then die
+	if ( computedValue.size() != referenceValue.size() )
+		return false;
+
+	for ( int i=0; i<computedValue.size(); ++i )
+	{
+		if (! soft_equiv(computedValue[i], referenceValue[i] ))
+			return false;
+	}
+	return true;
+}
+
+bool match(const std::vector< std::vector< double > >& computedValue, 
+	   const std::vector< std::vector< double > >& referenceValue )
+{
+	// If the vector sizes don't match then die
+	if ( computedValue.size() != referenceValue.size() )
+	{
+		std::cout << "computedValue's size " << computedValue.size()
+			<< " is not equal to referenceValue's size " << referenceValue.size()
+			<< std::endl;
+		return false;
+	}
+
+	// Test each item in the list
+	for ( int i=0; i<computedValue.size(); ++i )
+	{
+		// If the vector sizes don't match then die
+		if ( computedValue[i].size() != referenceValue[i].size() )
+		{
+			std::cout << "computedValue[" << i << "]'s size "
+				<< computedValue.size()
+				<< " is not equal to referenceValue[" << i << "]'s size "
+				<< referenceValue.size() << std::endl;
+			return false;
+		}
+
+		for ( int j=0; j<computedValue[i].size(); ++j )
+		{
+			// If the comparison fails then stop testing and
+			// return "false" to indicate that the test
+			// failed. 
+			if (! soft_equiv(computedValue[i][j], referenceValue[i][j] ))
+			{
+				std::cout << std::setprecision(14)
+					<< "At index [" << i << "][" << j << "], "
+					<< "computed value " << computedValue[i][j] << " "
+					<< "does not match reference value " << referenceValue[i][j]
+					<< std::endl;
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool match(
+	const std::vector< std::vector< std::vector< double > > >& computedValue, 
+   const std::vector< std::vector< std::vector< double > > >& referenceValue )
+{
+	// If the vector sizes don't match then die
+	if ( computedValue.size() != referenceValue.size() )
+	{
+		std::cout << "computedValue's size " << computedValue.size()
+			<< " is not equal to referenceValue's size " << referenceValue.size()
+			<< std::endl;
+		return false;
+	}
+
+	// Test each item in the list
+	for ( int i=0; i<computedValue.size(); ++i )
+	{
+		//call the 2-D vector comparison
+		if (!match(computedValue[i], referenceValue[i]))
+		{
+			std::cout << "... returned for base index "<< i << "." << std::endl;
+			return false;
+		}
+	}
+	return true;
+}
 
 } // end namespace rtt_cdi_gandolf_test
 
