@@ -96,7 +96,6 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
 	// unpack the number of band boundaries
 	int nband_bounds = 0;
 	unpacker >> nband_bounds;
-	int num_bands  = nband_bounds - 1;
 
 	// make the group boundaries and model vectors
 	bandBoundaries.resize(nband_bounds);
