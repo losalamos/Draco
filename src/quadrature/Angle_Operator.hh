@@ -143,6 +143,11 @@ class Angle_Operator : public rtt_quadrature::OrdinateSet
                               unsigned dimension,
                               std::ostream &cerr);
 
+    static bool check_static_class_invariants()
+    {
+        return true;
+    }
+
   private:
 
     // NESTED CLASSES AND TYPEDEFS

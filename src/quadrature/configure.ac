@@ -65,6 +65,7 @@ AC_RUNTESTS(\
    tQuadServices\
    tstOrdinate \
    tQuadCreator \
+   tAngle_Operator \
    , scalar)
 
 dnl Evaluate requested build environment and create values to be

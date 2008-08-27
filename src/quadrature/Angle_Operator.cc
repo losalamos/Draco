@@ -227,7 +227,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
  */
 double Angle_Operator::Psi_Coefficient(unsigned const a) const
 {
-    Require(a!=0);
+    Require(Is_Dependent(a));
 
     double const wt = getOrdinates()[a].wt();
     double const alpha_a = alpha_[a];
@@ -243,7 +243,7 @@ double Angle_Operator::Psi_Coefficient(unsigned const a) const
  */
 double Angle_Operator::Source_Coefficient(unsigned const a) const
 {
-    Require(a!=0);
+    Require(Is_Dependent(a));
 
     double const wt = getOrdinates()[a].wt();
     double const alpha_a = alpha_[a];
@@ -259,7 +259,7 @@ double Angle_Operator::Source_Coefficient(unsigned const a) const
  */
 double Angle_Operator::Bookkeeping_Coefficient(unsigned const a) const
 {
-    Require(a!=0);
+    Require(Is_Dependent(a));
 
     double const tau_a = tau_[a];
     double const Result = 1.0/tau_a;
@@ -328,6 +328,7 @@ bool Angle_Operator::is_compatible( SP<Quadrature const> const &quadrature,
         Result = false;
     }
 
+    Ensure(check_static_class_invariants());
     return Result;
 }
 

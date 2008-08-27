@@ -3,7 +3,7 @@
  * \file Token_Stream.hh
  * \author Kent G. Budge
  * \brief Definition of class Token_Stream.
- * \note Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \note Copyright 2006-2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -129,11 +129,7 @@ class Token_Stream
     //! The current implementation of Token_Stream has no invariants.
     bool check_class_invariants() const { return true; }
     
-
     // STATICS
-
-    //! The current implementation of Token_Stream has no static invariants.
-    bool check_static_class_invariants() const { return true; }
     
   protected:
 

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Implementation file for the class rtt_quadrature::Ordinate.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright 2006 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
