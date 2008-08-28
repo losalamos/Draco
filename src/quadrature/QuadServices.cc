@@ -162,7 +162,7 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
  *
  * Normally, M will not be square because we only have isotropic scatting.
  * For isotropic scattering M will be (numOrdinates x 1 moment).  We will use the
- * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.
+ * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.\f$
  */
 std::vector< double > QuadServices::computeD(void) const
 {
@@ -326,7 +326,7 @@ std::vector< double > QuadServices::computeD_traditional(void) const
  *
  * Normally, M will not be square because we only have isotropic scatting.
  * For isotropic scattering M will be (numOrdinates x 1 moment).  We will use the
- * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.
+ * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.\f$
  */
 std::vector< double > QuadServices::computeD_svd(void) const
 {
