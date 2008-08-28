@@ -225,7 +225,14 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
    AC_AUTODOC_SUBST
 
-   AC_CONFIG_FILES([doxygen_config:${config_dir}/doxygen_config.in])
+   # See if a specialized doxygen_config.in file was specified.
+   if test -z "$1" ; then
+     doxygen_config_in="${config_dir}/doxygen_config.in"
+   else
+     doxygen_config_in="$1"
+   fi
+
+   AC_CONFIG_FILES([doxygen_config:${doxygen_config_in}])
    AC_CONFIG_FILES([Makefile:${config_dir}/Makefile.autodoc.in])
    AC_CONFIG_FILES([header.html:html/header.html.in])
    AC_CONFIG_FILES([footer.html:html/footer.html.in])
