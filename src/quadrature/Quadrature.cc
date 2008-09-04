@@ -174,9 +174,9 @@ string Quadrature::as_text(string const &indent) const
     using namespace std;
 
     stringstream text;
-    text << indent + "\t type, " << parse_name()
-         << indent + "\t order, " << snOrder
-         << indent + " end";
+    text << indent + "  type, " << parse_name()
+         << indent + "  order, " << snOrder
+         << indent + "end";
 
     return text.str();
 }
