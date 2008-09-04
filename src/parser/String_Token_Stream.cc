@@ -76,7 +76,8 @@ string String_Token_Stream::location_() const
 {
     ostringstream Result;
     Result << "near \"";
-    for (unsigned i=min(0U, pos_-20); i<pos_; ++i) 
+    unsigned const begin = (pos_<20? 0U : pos_-20);
+    for (unsigned i=begin; i<pos_; ++i) 
     {
 	char const c = text_[i];
 	Result.put(c);
