@@ -75,14 +75,29 @@ String_Token_Stream::String_Token_Stream(string const &text,
 string String_Token_Stream::location_() const
 {
     ostringstream Result;
-    Result << "near \"";
-    unsigned const begin = (pos_<20? 0U : pos_-20);
-    for (unsigned i=begin; i<pos_; ++i) 
+    Result << "near\n";
+
+    // search backwards four endlines
+    unsigned begin;
+    unsigned count = 0;
+    for (begin=pos_; begin>0; --begin)
+    {
+        if (text_[begin]=='\n')
+        {
+            if (++count==4) break;
+        }
+    }
+    unsigned const end = text_.size();
+    for (unsigned i=begin; i<end; ++i) 
     {
 	char const c = text_[i];
+        if (i>=pos_ && c=='\n')
+        {
+            break;
+        }
 	Result.put(c);
     }
-    Result.put('\"');
+    Result.put('\n');
     return Result.str();
 }
   
@@ -121,7 +136,7 @@ bool String_Token_Stream::end_() const
 void String_Token_Stream::report(Token const &token,
                                  string const &message)
 {
-    messages_ += token.location() + ": " + message + '\n';
+    messages_ += token.location() + "\n" + message + '\n';
 
     Ensure(check_class_invariants());
 }
@@ -136,7 +151,7 @@ void String_Token_Stream::report(Token const &token,
 void String_Token_Stream::report(string const &message)
 {
     Token token = lookahead();
-    messages_ += token.location() + ": " + message + '\n';
+    messages_ += token.location() + "\n" + message + '\n';
 
     Ensure(check_class_invariants());
 }
