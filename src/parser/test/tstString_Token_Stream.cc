@@ -165,7 +165,7 @@ void tstString_Token_Stream()
 	else
 	{
 	    PASSMSG("Syntax error correctly counted");
-            if (tokens.messages()=="test_parser: dummy syntax error\n")
+            if (tokens.messages()=="test_parser\ndummy syntax error\n")
             {
                 PASSMSG("Correct error message");
             }
