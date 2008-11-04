@@ -17,34 +17,35 @@ package="ds++"
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-AC_RUNTESTS(tstAssert \
-            tstScalarUnitTest \
-            tstCheck_Strings \
-            tstSoft_Equiv \
-            tstSP \
-            tstRCF \
-            tstPacking_Utils \
-            tstAllocators \
-            tstSortPermutation \
-            tstVector_Lite \
+AC_RUNTESTS(tstAllocators \
+            tstArray \
+            tstAssert \     
             tstBounds \
+            tstCheck_Strings \
+            tstData_Table \
+            tstDBC_Array \
+            tstDBC_Ptr \
+            tstDynArray \
+            tstEndian \
+            tstFile_Streams \
+            tstIndex_Converter \
+            tstIndex_Counter \
+            tstIndex_Set \
             tstMat \
             tstMat1RA \
             tstMat2RA \
             tstMat3RA \
             tstMat4RA \
             tstMat5RA \
-            tstFile_Streams \
-	    tstDBC_Array \
-	    tstDBC_Ptr \
-            tstArray \
-	    tstSafe_Divide \
-            tstIndex_Set \
-            tstIndex_Converter \
-            tstIndex_Counter \
-            tstDynArray \
+            tstPacking_Utils \
+            tstRCF \
             tstRange_finder \
-            tstEndian \
+            tstSP \
+            tstSafe_Divide \
+            tstScalarUnitTest \
+            tstSoft_Equiv \
+            tstSortPermutation \
+            tstVector_Lite \
             , scalar)
 
 AC_DRACO_ENV

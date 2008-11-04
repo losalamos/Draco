@@ -1,8 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   rng/test/tstRnd_Control.cc
- * \author Thomas M. Evans
- * \date   Wed Jan  9 13:59:31 2002
+ * \file   rng/test/tstRnd_Control_Inline.cc
+ * \author Paul Henning
  * \brief  Rnd_Control test.
  */
 //---------------------------------------------------------------------------//
@@ -11,17 +10,16 @@
 
 #include "rng_test.hh"
 #include "../Release.hh"
-#include "../Random.hh"
+#include "../Random_Inline.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
-#include <vector>
-#include <cmath>
+
 
 using rtt_rng::Rnd_Control;
-using rtt_rng::Sprng;
-using rtt_dsxx::soft_equiv;
+using rtt_rng::LF_Gen;
+
 
 using namespace std;
 
@@ -42,21 +40,22 @@ void control_test()
     if (control.get_num()    != 0)          ITFAILS;
 
     // make some random numbers
-    Sprng r0  = control.get_rn();
+    LF_Gen r0; control.initialize(r0);
     if (control.get_num()    != 1)          ITFAILS;
-    Sprng r1  = control.get_rn();
+    LF_Gen r1; control.initialize(r1);
     if (control.get_num()    != 2)          ITFAILS;
-    Sprng r2  = control.get_rn();
+    LF_Gen r2; control.initialize(r2);
     if (control.get_num()    != 3)          ITFAILS;
 
-    Sprng rr2 = control.get_rn(2);
+    LF_Gen rr2; control.initialize(2, rr2);
     if (control.get_num()    != 3)          ITFAILS;
 
-    Sprng rr1 = control.get_rn(1);
+    LF_Gen rr1; control.initialize(1, rr1);
     if (control.get_num()    != 2)          ITFAILS;
 
     control.set_num(0);
-    Sprng rr0 = control.get_rn();
+
+    LF_Gen rr0; control.initialize(rr0);
     if (control.get_num()    != 1)          ITFAILS;
 
     for (int i = 0; i < 100; i++)
@@ -68,17 +67,15 @@ void control_test()
 	double rn2  = r2.ran();
 	double rrn2 = rr2.ran();
 
-	if (!soft_equiv(rn0, rrn0))         ITFAILS;
-	if (!soft_equiv(rn1, rrn1))         ITFAILS;
-	if (!soft_equiv(rn2, rrn2))         ITFAILS;
+	if (rn0 != rrn0)         ITFAILS;
+	if (rn1 != rrn1)         ITFAILS;
+	if (rn2 != rrn2)         ITFAILS;
 
-	if (soft_equiv(rn0, rrn1))          ITFAILS;
-	if (soft_equiv(rn1, rrn2))          ITFAILS;
-	if (soft_equiv(rn2, rrn0))          ITFAILS;
+	if (rn0 == rrn1)          ITFAILS;
+	if (rn1 == rrn2)          ITFAILS;
+	if (rn2 == rrn0)          ITFAILS;
     }
     
-    vector<char> pack = r0.pack();
-    if (control.get_size() != pack.size())  ITFAILS;
 
     if (rtt_rng_test::passed)
 	PASSMSG("Rnd_Control simple test ok.");

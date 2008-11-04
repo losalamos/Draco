@@ -121,7 +121,7 @@ bool UnitTest::failure(int line)
  * \param line The line number of the source code where fail was called from.
  * \param file The name of the file where the failure occured.
  */
-bool UnitTest::failure(int line, char *file)
+bool UnitTest::failure(int line, char const *file)
 {
     out << "Test: failed on line " << line << " in " << file
 	      << std::endl;

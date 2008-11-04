@@ -7,7 +7,7 @@ dnl @> configure.in for rng
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT
-AC_CONFIG_SRCDIR([Sprng.hh])
+AC_CONFIG_SRCDIR([Release.hh])
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(rng/config.h:config.h.in)
 package="rng"
@@ -19,8 +19,12 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 
+AC_ARG_ENABLE([rng-nr],AS_HELP_STRING([--enable-rng-nr],
+                                      [use non-reproducible random number streams]),
+        AC_DEFINE([RNG_NR]))
+
 # TESTS
-AC_RUNTESTS(tstSprng tstRnd_Control, scalar)
+AC_RUNTESTS(tstRnd_Control_Inline, scalar)
 
 # DRACO SETUP
 AC_DRACO_ENV

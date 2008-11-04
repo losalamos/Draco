@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include <cstdlib>
 
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
@@ -100,7 +101,7 @@ void tstVersion( UnitTest & ut, int & argc, char **& argv )
         cmd += " " + string( argv[0] );
     cmd += " --version";
     
-    system( cmd.c_str() );
+    std::system( cmd.c_str() );
     return;
 }
 

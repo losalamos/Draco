@@ -151,7 +151,7 @@ class UnitTest
     
     // ACCESSORS
     bool failure(int line);
-    bool failure(int line, char *file);
+    bool failure(int line, char const *file);
     bool failure(const std::string &failmsg);
     bool passes(const std::string &failmsg);
     //! This pure virtual function must be provided by the inherited class.
