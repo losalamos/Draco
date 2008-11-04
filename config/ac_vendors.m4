@@ -109,66 +109,6 @@ AC_DEFUN([AC_MPI_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
-dnl AC_SPRNG_SETUP
-dnl
-dnl SPRNG LIBRARY SETUP (on by default -lfg)
-dnl SPRNG is a required vendor
-dnl-------------------------------------------------------------------------dnl
-
-AC_DEFUN([AC_SPRNG_SETUP], [dnl
-
-   dnl define --with-sprng
-   AC_ARG_WITH(sprng,
-      [  --with-sprng[=lib]      determine the rng lib (lfg is default)])
-	
-   dnl define --with-sprng-inc and --with-sprng-lib
-   AC_WITH_DIR(sprng-inc, SPRNG_INC, \${SPRNG_INC_DIR},
-	       [tell where SPRNG includes are])
-   AC_WITH_DIR(sprng-lib, SPRNG_LIB, \${SPRNG_LIB_DIR},
-	       [tell where SPRNG libraries are])
-
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_sprng=$1
-
-   # choices are with_sprng = lfg, lcg, yes, or no
-
-   # default (sprng is set to lfg by default)
-   if test "${with_sprng:=lfg}" = yes ; then
-       with_sprng='lfg'
-   fi
-
-])
-
-##---------------------------------------------------------------------------##
-
-AC_DEFUN([AC_SPRNG_FINALIZE], [dnl
-
-   # set up the libraries and include path
-   if test -n "${vendor_sprng}"; then
-
-       # include path
-       if test -n "${SPRNG_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${SPRNG_INC}"
-       fi
-   
-       # libraries
-       if test -n "${SPRNG_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_sprng, -L${SPRNG_LIB} -l${with_sprng})
-       elif test -z "${SPRNG_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_sprng, -l${with_sprng})
-       fi
-
-       # add sprng directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SPRNG_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SPRNG_INC}"
-
-   fi
-
-])
-
-dnl-------------------------------------------------------------------------dnl
 dnl AC_AZTEC_SETUP
 dnl
 dnl AZTEC SETUP (on by default)
@@ -1354,7 +1294,6 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_LAPACK_FINALIZE
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
-   AC_SPRNG_FINALIZE
    AC_GRACE_FINALIZE
    AC_SPICA_FINALIZE
    AC_XERCES_FINALIZE
@@ -1395,7 +1334,6 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
 
    dnl include all macros for easy use in top-level configure.in's
    AC_MPI_SETUP(pkg)
-   AC_SPRNG_SETUP(pkg)
    AC_PCG_SETUP(pkg)
    AC_AZTEC_SETUP(pkg)
    AC_GSL_SETUP(pkg)
