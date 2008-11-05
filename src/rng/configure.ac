@@ -12,9 +12,6 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(rng/config.h:config.h.in)
 package="rng"
 
-# DRACO VENDOR SETUPS
-AC_SPRNG_SETUP(pkg)
-
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
