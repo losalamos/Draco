@@ -23,6 +23,11 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    # we must know the host
    AC_REQUIRE([AC_CANONICAL_HOST])
 
+   AC_ARG_WITH(fortlib,
+        AS_HELP_STRING([--with-fortlib],
+                       [specify a Fortran support library to link in (g2c, gfortran)]))
+
+
    # dependency rules
    DEPENDENCY_RULES='Makefile.dep.general'
 
@@ -402,6 +407,46 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # 
        # end of lapack setup
        # 
+
+
+       AC_MSG_CHECKING("libgfortran requirements")
+       if test -n "${vendor_lapack}" || 
+          test -n "${vendor_pcg}"    ||
+	  test -n "${vendor_gandolf}"; then
+
+
+           if test "x${with_fortlib}" = "x" ; then
+                flib="gfortran"
+           else
+                flib="${with_fortlib}"
+           fi
+
+	   # Add gfortran for various compilers
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
+
+               g++)
+                   LIBS="${LIBS} -l${flib}"
+                   AC_MSG_RESULT("Fortran support added to LIBS")
+                   ;;
+
+               icpc | pgCC)
+                   AC_PATH_PROG(GCC_BIN, g++, null)
+                   GCC_BIN=`dirname ${GCC_BIN}`
+                   GCC_HOME=`dirname ${GCC_BIN}`
+                   GCC_LIB_DIR="${GCC_HOME}/lib"
+                   LIBS="${LIBS} -L${GCC_LIB_DIR} -l${flib}"
+                   AC_MSG_RESULT("Fortran support added to LIBS")
+                   ;;
+
+               *)
+                   AC_MSG_RESULT("not needed")
+                   ;;
+
+           esac
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
 
        # setup F90 libs, rpath, etc. for apps when CXX is the
        # principal compiler
@@ -1085,8 +1130,6 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
            g++) 
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
-               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
-               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
   	   ibm)	
 	       AC_MSG_WARN("xlC set to allow long long")
@@ -1127,6 +1170,47 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
        # 
        # end of lapack setup
        # 
+
+
+       AC_MSG_CHECKING("libgfortran requirements")
+       if test -n "${vendor_lapack}" || 
+          test -n "${vendor_pcg}"    ||
+	  test -n "${vendor_gandolf}"; then
+
+
+           if test "x${with_fortlib}" = "x" ; then
+                flib="gfortran"
+           else
+                flib="${with_fortlib}"
+           fi
+
+	   # Add gfortran for various compilers
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
+
+               g++)
+                   LIBS="${LIBS} -l${flib}"
+                   AC_MSG_RESULT("Fortran support added to LIBS")
+                   ;;
+
+               icpc | pgCC)
+                   AC_PATH_PROG(GCC_BIN, g++, null)
+                   GCC_BIN=`dirname ${GCC_BIN}`
+                   GCC_HOME=`dirname ${GCC_BIN}`
+                   GCC_LIB_DIR="${GCC_HOME}/lib"
+                   LIBS="${LIBS} -L${GCC_LIB_DIR} -l${flib}"
+                   AC_MSG_RESULT("Fortran support added to LIBS")
+                   ;;
+
+               *)
+                   AC_MSG_RESULT("not needed")
+                   ;;
+
+           esac
+
+       else
+	   AC_MSG_RESULT("not needed")
+       fi
+
 
        # setup lf95 libs when CXX is the principle compiler
        if test "${with_f90:=no}" = no ; then
@@ -1271,16 +1355,25 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
            ;;
        openmpi)
            with_mpi='OPENMPI'
-           mpi_libs='-lmpi -lmpi_cxx -lmpi_f77'
-           AC_MSG_CHECKING("mpirun -version")
-           mpi_version=`mpirun -version 2>&1`
-           if (expr " $mpi_version" : '.*Open MPI' > /dev/null); then 
-              AC_MSG_RESULT(${mpi_version})
-              # Do not include C++ bindings. See Draco artifact: artf7384
-              CXXFLAGS="-DOMPI_SKIP_MPICXX ${CXXFLAGS}"
+           AC_ARG_VAR([MPICXX],[OpenMPI C++ wrapper])
+           AC_PATH_PROG([MPICXX],[mpicxx])
+           if test -n "$MPICXX"; then
+                mpi_libs=`$MPICXX --showme:link`
+                mpi_incs=`$MPICXX --showme:compile`
            else
-              AC_MSG_ERROR("Did not find Open MPI version of mpirun.")
+                AC_MSG_ERROR([Did not find OpenMPI mpicxx compiler in path])
            fi
+           if test -n "$MPI_INC"; then
+                AC_MSG_WARN([MPI_INC ignored in favor of 'mpicxx --showme:compile'])
+                MPI_INC=''
+           fi
+           if test -n "$MPI_LIB"; then
+                AC_MSG_WARN([MPI_LIB ignored in favor of 'mpicxx --showme:compile'])
+                MPI_LIB=''
+           fi
+
+           # Do not include C++ bindings. See Draco artifact: artf7384
+           CXXFLAGS="-DOMPI_SKIP_MPICXX ${CXXFLAGS}"
            ;;
        esac 
 ])
