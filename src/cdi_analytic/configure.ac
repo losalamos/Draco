@@ -16,7 +16,6 @@ package="cdi_analytic"
 dnl VENDOR SETUPS
 dnl AC_MPI_SETUP(pkg)
 dnl AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
 dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
