@@ -12,7 +12,7 @@
 #ifndef __cdi_gandolf_GandolfWrapper_hh__
 #define __cdi_gandolf_GandolfWrapper_hh__
 
-#include <cdi_gandolf/config.h>
+#include "cdi_gandolf/config.h"
 
 #include <string>
 #include <cstring>
