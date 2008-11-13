@@ -14,7 +14,7 @@
 #define c4_C4_Req_hh
 
 // C4 package configure
-#include <c4/config.h>
+#include "c4/config.h"
 
 #ifdef C4_MPI
 #include "c4_mpi.h"

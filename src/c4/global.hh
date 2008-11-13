@@ -18,7 +18,7 @@
 #define rtt_c4_global_hh
 
 // C4 package configure
-#include <c4/config.h>
+#include "c4/config.h"
 
 // C4 Message Passing Functions
 #include "C4_Functions.hh"

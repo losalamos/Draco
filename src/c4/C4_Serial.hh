@@ -12,7 +12,7 @@
 #ifndef __c4_C4_Serial_hh__
 #define __c4_C4_Serial_hh__
 
-#include <c4/config.h>
+#include "c4/config.h"
 
 #ifdef C4_SCALAR
 
