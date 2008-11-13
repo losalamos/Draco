@@ -17,7 +17,7 @@
 #include <string>
 
 // add ds++ package configure
-#include <ds++/config.h>
+#include "ds++/config.h"
 
 namespace rtt_dsxx
 {
