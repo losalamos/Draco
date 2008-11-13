@@ -9,7 +9,7 @@
 #ifndef rtt_c4_c4_mpi_h
 #define rtt_c4_c4_mpi_h
 
-#include <c4/config.h>
+#include "c4/config.h"
 
 /* defined in ac_vendors.m4, location of <mpi.h> */
 #include <mpi.h>
