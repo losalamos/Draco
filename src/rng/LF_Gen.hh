@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <ds++/Assert.hh>
 #include <ds++/Data_Table.hh>
-#include <rng/config.h>
+#include "rng/config.h"
 #include "LFG.h"
 
 namespace rtt_rng

@@ -13,8 +13,8 @@
 #define rtt_rng_Rnd_Control_Inline_hh
 
 
-#include <ds++/Assert.hh>
-#include <rng/config.h>
+#include "ds++/Assert.hh"
+#include "rng/config.h"
 
 // header file for SPRNG package
 #include "LFG.h"
