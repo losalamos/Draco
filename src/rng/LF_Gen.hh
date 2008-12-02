@@ -146,7 +146,6 @@ class LF_Gen
     // Copying RNG streams shouldn't be done lightly!
     inline LF_Gen& operator=(LF_Gen const &src)
     {
-#warning "Copying LF_Gen... breaks stream independence"
         if(&src != this)
             std::memcpy(data, src.data, size_bytes());
         return *this;
