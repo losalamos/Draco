@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <cstdlib>
 
 #include "c4_test.hh"
 #include "../C4_Traits.hh"
