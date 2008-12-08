@@ -136,11 +136,11 @@
 
 #define NPARAMS 11
 struct vstruct {
-      int L;        // The length of the generator in bytes
-      int K;        // The lag (index distance) between the first and second
-                    // generator
-      int LSBS;     // number of least significant bits that are 1 
-      int first;    // the first seed whose LSB is 1 
+    int L;        // The length of the generator in bytes 
+    int K;        // The lag (index distance) between the first and second 
+                  // generator 
+    int LSBS;     // number of least significant bits that are 1  
+    int first;    // the first seed whose LSB is 1  
 };
 
 const struct vstruct valid[NPARAMS] = { {1279,861,1,233}, 
@@ -182,17 +182,17 @@ Pick a particular valid parameter set.  Note that if you change these,
 #endif
 
 
-/* 
+/*
    There used to this lfgen structure:
 
 struct lfgen 
 {
-  unsigned si[VALID_LM1];	// sets next branch seed  
-  unsigned r0[VALID_L];		// the even generator data 
-  unsigned r1[VALID_L];		// the odd generator data
-  unsigned hidx;		// index into r0 and r1 
-  unsigned seed;
-  unsigned initseed;
+    unsigned si[VALID_LM1];	// sets next branch seed   
+    unsigned r0[VALID_L];	// the even generator data 
+    unsigned r1[VALID_L];	// the odd generator data 
+    unsigned hidx;		// index into r0 and r1  
+    unsigned seed;
+    unsigned initseed;
 };
 
   But to reduce the in-memory size to be exactly the state size, I replaced
@@ -412,7 +412,7 @@ advance_reg(int *reg_fill)
 
     const unsigned urf0_sr_24 = urf0 >> 24;
 
-    // i = 28
+    /* i = 28 */
     temp = bitcount[(urf0 >> 28)&mask];
     temp ^= bitcount[urf1&(mask>>4)];
     new_fill0 |= (1&temp)<<28;
@@ -421,7 +421,7 @@ advance_reg(int *reg_fill)
     temp ^= bitcount[urf1 & 0x1b];
     new_fill1 |= (1&temp)<<28;
 
-    // i = 29
+    /* i = 29 */
 
     temp = bitcount[(urf0 >> 29)&mask];
     temp ^= bitcount[urf1&(mask>>3)];
@@ -431,7 +431,7 @@ advance_reg(int *reg_fill)
     temp ^= bitcount[urf1 & 0x2d];
     new_fill1 |= (1&temp)<<29;
 
-    // i = 30
+    /* i = 30 */
 
     temp = bitcount[(urf0 >> 30)&mask];
     temp ^= bitcount[urf1&(mask>>2)];
@@ -441,7 +441,7 @@ advance_reg(int *reg_fill)
     temp ^= bitcount[urf1 & 0x5a];
     new_fill1 |= (1&temp)<<30;
 
-    // i = 31
+    /* i = 31 */
 
     temp = bitcount[(urf0 >> 31)&mask];
     temp ^= bitcount[urf1&(mask>>1)];
@@ -608,7 +608,7 @@ fake_rn_int_Lmul(unsigned * const genptr, unsigned const nmul)
         hidx = VALID_LM1;
         lidx = VALID_K - 1;
 
-        // This first loop decrements lidx down to -1
+        /* This first loop decrements lidx down to -1 */
         for(inner_idx = 0; inner_idx < VALID_K; ++inner_idx)
         {
             r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]);
@@ -617,10 +617,10 @@ fake_rn_int_Lmul(unsigned * const genptr, unsigned const nmul)
             --lidx;
         }
 
-        // Loop it around
+        /* Loop it around */
         lidx = VALID_LM1;
 
-        // Now run hidx down to -1
+        /* Now run hidx down to -1 */
         for(inner_idx = 0; inner_idx < (VALID_L - VALID_K); ++inner_idx)
         {
             r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]);
@@ -630,8 +630,8 @@ fake_rn_int_Lmul(unsigned * const genptr, unsigned const nmul)
         }
     }
 
-    // We don't need to change genptr[OFFSET_hidx] because it is back to its
-    // original value of VALID_LM1
+    /* We don't need to change genptr[OFFSET_hidx] because it is back to its */
+    /* original value of VALID_LM1 */
 }
 
 
