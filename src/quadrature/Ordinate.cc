@@ -30,7 +30,7 @@ using namespace rtt_dsxx;
  * \brief Constructor for OrdinateSet.
  * \param quadrature Quadrature from which to generate ordinate set
  * \param geometry Geometry of the problem.
- * \param dimension The dimension of the problem (1 or 2)
+ * \param dimension The dimension of the problem
  *
  * \note The quadrature object must be a level set quadrature, and it must
  * supply the number of levels.  At present all we can do is *assume* it is a
@@ -52,8 +52,9 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
 {
     Require( quadrature!=SP<Quadrature>()               );
     Require( quadrature->dimensionality() == 1 ||
-             quadrature->dimensionality() == 2          );
-    Require( dimension == 1 || dimension == 2 );
+             quadrature->dimensionality() == 2 ||
+             quadrature->dimensionality() == 3          );
+    Require( dimension == 1 || dimension == 2 || dimension == 3);
 
     // vector<Ordinate> ordinates;
 
@@ -65,6 +66,9 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
     
     if( quadrature->dimensionality() == 2 && dimension == 1 )
         create_set_from_2d_quadrature_for_1d_mesh();
+    
+    if( quadrature->dimensionality() == 2 && dimension == 3 )
+        create_set_from_2d_quadrature_for_3d_mesh();
 
     Ensure( check_class_invariants() );
     Ensure( getOrdinates().size() > 0 );
@@ -141,7 +145,7 @@ double Ordinate::Y( unsigned const l,
 /*!\brief Helper for creating an OrdinateSet from a 1D quadrature
  * specification.
  */
-void OrdinateSet::create_set_from_1d_quadrature( void )
+void OrdinateSet::create_set_from_1d_quadrature()
 {
     unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
     ordinates_.resize( number_of_ordinates );
@@ -186,7 +190,7 @@ void OrdinateSet::create_set_from_1d_quadrature( void )
 /*!
  * \brief Helper for creating an OrdinateSet from a 2D quadrature specification.
  */
-void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
+void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh()
 {
     unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
     unsigned const number_of_levels = quadrature_->getSnOrder();
@@ -272,7 +276,7 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh( void )
  * \brief Helper for creating an OrdinateSet from a 2D quadrature
  * specification.
  */
-void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
+void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh()
 {
     // Define an impossible value for a direction cosine.  We use
     // this to simplify the logic of determining when we are at
@@ -344,6 +348,53 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh( void )
         }
     }
     Check(number_of_levels==check_number_of_levels);
+    return;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Helper for creating an OrdinateSet from a 3D quadrature
+ * specification.
+ */
+void OrdinateSet::create_set_from_2d_quadrature_for_3d_mesh()
+{
+    unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
+    unsigned const number_of_levels = quadrature_->getSnOrder();
+    ordinates_.resize(2*number_of_ordinates);
+    
+    // Copy the ordinates, then sort -- first by xi (into level sets) and
+    // second by mu.  This yields a consistent structure for the level
+    // sets that makes it simpler to insert the supplemental ordinates
+    // and set up the associated task dependencies in axisymmetric
+    // geometry.
+    
+    if( quadrature_->getEta().empty() )
+    {
+        for (unsigned a=0; a<number_of_ordinates; a++)
+        {
+            double const mu = quadrature_->getMu(a);
+            double const xi = quadrature_->getXi(a);
+            double const eta = sqrt(1-xi*xi-mu*mu);
+            double const weight = quadrature_->getWt(a);
+            ordinates_[a] = Ordinate(mu, eta, xi, weight);
+            ordinates_[a+number_of_ordinates] = Ordinate(mu, -eta, xi, weight);
+        }
+    }
+    else // assume xi is empty.
+    {
+        for (unsigned a=0; a<number_of_ordinates; a++)
+        {
+            double const mu = quadrature_->getMu(a);
+            double const eta = quadrature_->getEta(a);
+            double const xi = sqrt(1-eta*eta-mu*mu);
+            double const weight = quadrature_->getWt(a);
+            ordinates_[a] = Ordinate(mu, xi, eta, weight);
+            ordinates_[a+number_of_ordinates] = Ordinate(mu, -xi, eta, weight);
+        }
+    }       
+        
+    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
+
     return;
 }
 

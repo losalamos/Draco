@@ -128,7 +128,7 @@ class OrdinateSet
     std::vector<Ordinate> const &getOrdinates() const { return ordinates_; }
 
     //! Return the quadrature on which this OrdinateSet is based.
-    rtt_dsxx::SP< const Quadrature > getQuadrature( void ) const
+    rtt_dsxx::SP< const Quadrature > getQuadrature() const
     {
         Ensure(quadrature_ != rtt_dsxx::SP<Quadrature>());
         
@@ -146,9 +146,10 @@ class OrdinateSet
   private:
 
     // Helper functions called by the constructor.
-    void create_set_from_1d_quadrature( void );
-    void create_set_from_2d_quadrature_for_2d_mesh( void );
-    void create_set_from_2d_quadrature_for_1d_mesh( void );
+    void create_set_from_1d_quadrature();
+    void create_set_from_2d_quadrature_for_2d_mesh();
+    void create_set_from_2d_quadrature_for_1d_mesh();
+    void create_set_from_2d_quadrature_for_3d_mesh();
 
     // DATA
     std::vector<Ordinate> ordinates_;
