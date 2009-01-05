@@ -25,7 +25,7 @@ class LF_Gen;
 class LF_Gen_Ref
 {
   public:
-    LF_Gen_Ref(unsigned * const db, unsigned * const de)
+    LF_Gen_Ref(unsigned int* const db, unsigned int* const de)
         : data(db, de) 
     {
         Require(std::distance(db,de) == LFG_DATA_SIZE);
@@ -40,7 +40,7 @@ class LF_Gen_Ref
     inline void spawn(LF_Gen& new_gen) const;
 
     //! Return the identifier for this stream
-    unsigned get_num() const
+    unsigned int get_num() const
     {
         return lfg_gennum(data.access());
     }
@@ -50,7 +50,7 @@ class LF_Gen_Ref
 
 
   private:
-    mutable rtt_dsxx::Data_Table<unsigned> data;
+    mutable rtt_dsxx::Data_Table<unsigned int> data;
 };
 
 
@@ -59,21 +59,34 @@ class LF_Gen_Ref
  * stream */
 class LF_Gen
 {
+  private:
+
     friend class LF_Gen_Ref;
+    mutable unsigned int data[LFG_DATA_SIZE];
+
   public:
-    typedef unsigned* iterator;
-    typedef unsigned const * const_iterator;
+
+    typedef unsigned int* iterator;
+    typedef unsigned int const * const_iterator;
+
   public:
+
     LF_Gen() 
     {
         Require(lfg_size() == LFG_DATA_SIZE);
     }
 
 
-    LF_Gen(unsigned const seed, unsigned const streamnum)
+    LF_Gen(unsigned int const seed, unsigned int const streamnum)
     {
         // create a new Rnd object
         lfg_create_rng(streamnum, seed, begin(), end());
+    }
+
+    LF_Gen(unsigned int* const _data)
+    {
+	// create a new Rnd object from data
+	std::copy (_data, _data + LFG_DATA_SIZE, data);
     }
 
 
@@ -98,14 +111,14 @@ class LF_Gen
 
 
     //! Return the identifier for this stream
-    unsigned get_num() const
+    unsigned int get_num() const
     {
         return lfg_gennum(data);
     }
 
 
     //! Return the size of the state
-    unsigned size() const { return LFG_DATA_SIZE; }
+    unsigned int size() const { return LFG_DATA_SIZE; }
 
 
     iterator begin() 
@@ -140,7 +153,7 @@ class LF_Gen
         return LF_Gen_Ref(data, data+LFG_DATA_SIZE);
     }
 
-    static unsigned size_bytes() { return LFG_DATA_SIZE*sizeof(unsigned); }
+    static unsigned int size_bytes() { return LFG_DATA_SIZE*sizeof(unsigned int); }
     
 #if 0
     // Copying RNG streams shouldn't be done lightly!
@@ -155,10 +168,6 @@ class LF_Gen
   private:
     LF_Gen(LF_Gen const &);
 
-
-
-  private:
-    mutable unsigned data[LFG_DATA_SIZE];
 };
 
 inline void LF_Gen_Ref::spawn(LF_Gen& new_gen) const

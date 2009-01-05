@@ -40,7 +40,7 @@ class Rnd_Control
 
   public:
     // Constructor.
-    Rnd_Control(int s, int n = 1000000000, int sn = 0, int p = 1);
+    Rnd_Control(int seed, int max_streams = 1000000000, int sn = 0, int p = 1);
 
 
     //! Query for the current random number stream index.
