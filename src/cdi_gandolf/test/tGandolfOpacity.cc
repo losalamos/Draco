@@ -417,7 +417,7 @@ void file_check_analytic()
     try 
     { 
 	spOp_Analytic_pgray = new GandolfGrayOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::TOTAL );
+	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
     } 
     catch ( const rtt_cdi_gandolf::GandolfException& GandError ) 
     {
@@ -462,7 +462,7 @@ void file_check_analytic()
     try 
     { 
 	spOp_Analytic_pmg = new GandolfMultigroupOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::TOTAL ); 
+	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION); 
     } 
     catch ( const rtt_cdi_gandolf::GandolfException& GandError ) 
     {
@@ -1294,7 +1294,7 @@ void mg_opacity_packing_test()
 	SP<MultigroupOpacity> spOp_Analytic_pmg;
 	
 	spOp_Analytic_pmg = new GandolfMultigroupOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::TOTAL );
+	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION );
 
 	packed = spOp_Analytic_pmg->pack();
     }
@@ -1327,8 +1327,8 @@ void mg_opacity_packing_test()
     if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
 	ITFAILS;
 
-    if (unpacked_opacity->getReactionType() != rtt_cdi::TOTAL) ITFAILS;
-    if (unpacked_opacity->getModelType() != rtt_cdi::PLANCK)   ITFAILS;
+    if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
+    if (unpacked_opacity->getModelType() != rtt_cdi::PLANCK)        ITFAILS;
 
     // Setup the test problem.
 	    
