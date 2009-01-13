@@ -20,7 +20,7 @@ extern "C" {
 
 
 #ifndef LFG_PARAM_SET
-#  ifdef RNGNR
+#  ifdef RNG_NR
 #    define LFG_PARAM_SET 2
 #  else 
 #    define LFG_PARAM_SET 1
@@ -49,10 +49,10 @@ extern "C" {
 
    NOTE: [begin, end) MUST be contiguous addresses!
 */
-extern int lfg_create_rng(const unsigned gennum, 
-			  unsigned seed,
-			  unsigned* begin,
-			  unsigned* end);
+extern void lfg_create_rng(const unsigned gennum, 
+                           unsigned seed,
+                           unsigned* begin,
+                           unsigned* end);
 
 
 /* 

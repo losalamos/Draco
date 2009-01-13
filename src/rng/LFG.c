@@ -831,7 +831,7 @@ lfg_create_rng_part2(unsigned* begin, unsigned* end)
 }
 
 
-int
+void
 lfg_create_rng(const unsigned gennum, unsigned seed,
 	       unsigned* begin, unsigned* end)
 {
