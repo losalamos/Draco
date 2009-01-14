@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
     {
         cout << "ERROR: While testing " << unitTestName << ", "
              << err.what() << endl;
-        rtt_c4::finalize();
+        rtt_c4::abort();
         return 1;
     }
     catch( ... )
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
         cout << "ERROR: While testing " << unitTestName << ", " 
              << "An unknown exception was thrown on processor "
              << rtt_c4::node() << endl;
-        rtt_c4::finalize();
+        rtt_c4::abort();
         return 1;
     }
 

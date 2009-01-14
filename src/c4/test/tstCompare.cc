@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 	std::cout << "ERROR: While testing tstCompare, " 
 		  << err.what()
 		  << std::endl;
-	rtt_c4::finalize();
+	rtt_c4::abort();
 	return 1;
     }
     catch( ... )
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 	std::cout << "ERROR: While testing tstCompare, " 
 		  << "An unknown exception was thrown on processor "
                   << rtt_c4::node() << std::endl;
-	rtt_c4::finalize();
+	rtt_c4::abort();
 	return 1;
     }
 

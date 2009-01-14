@@ -420,7 +420,7 @@ int main(int argc, char *argv[])
     {
 	cout << "While testing tstPingPong, " << ass.what()
 	     << endl;
-	rtt_c4::finalize();
+	rtt_c4::abort();
 	return 1;
     }
 
