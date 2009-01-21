@@ -1085,8 +1085,8 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
            g++) 
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
-               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
-               STRICTFLAG="$STRICTFLAG -Wno-long-double"
+#               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
+#               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
   	   ibm)	
 	       AC_MSG_WARN("xlC set to allow long long")

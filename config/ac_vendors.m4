@@ -1217,6 +1217,76 @@ AC_DEFUN([AC_UDM_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_SILO_SETUP
+dnl
+dnl SILO SETUP
+dnl SILO is an optional vendor
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_SILO_SETUP], [dnl
+
+   dnl define --with-silo
+   AC_ARG_WITH(silo,
+      [  --with-silo=[yes,no]      use silo ])
+
+   dnl define --with-silo-inc
+   AC_WITH_DIR(silo-inc, SILO_INC, \${SILO_INC_DIR},
+	       [tell where SILO includes are])
+
+   dnl define --with-silo-lib
+   AC_WITH_DIR(silo-lib, SILO_LIB, \${SILO_LIB_DIR},
+	       [tell where SILO libraries are])
+
+   dnl if either silo-inc or silo-lib defined, then set with_silo
+   dnl thus, don't need --with-silo when using --with-silo-inc or
+   dnl --with-silo-lib
+   if test -n "${SILO_INC}" ; then
+    with_silo="yes"
+   fi
+   if test -n "${SILO_LIB}" ; then
+    with_silo="yes"
+   fi
+
+   # determine if this package is needed for testing or for the 
+   # package
+   vendor_silo=$1
+
+   # define variable if silo is on
+   if test "${with_silo:=no}" != no; then
+       AC_DEFINE([USE_SILO])
+   fi
+
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_SILO_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_silo}" ; then
+
+       # include path
+       if test -n "${SILO_INC}"; then
+	   # add to include path
+	   VENDOR_INC="${VENDOR_INC} -I${SILO_INC}"
+       fi
+
+       # library path
+       if test -n "${SILO_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_silo, -L${SILO_LIB} -lsiloh5)
+       elif test -z "${SILO_LIB}" ; then
+	   AC_VENDORLIB_SETUP(vendor_silo, -lsiloh5)
+       fi
+
+       # add SILO directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${SILO_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${SILO_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_DLOPEN_SETUP
 dnl
 dnl This is an optional vendor.
@@ -1299,6 +1369,7 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_XERCES_FINALIZE
 
    AC_UDM_FINALIZE
+   AC_SILO_FINALIZE
    AC_HDF5_FINALIZE
 
    AC_MPI_FINALIZE
@@ -1349,6 +1420,7 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
    AC_XERCES_SETUP(pkg)
    AC_HDF5_SETUP(pkg)
    AC_UDM_SETUP(pkg)
+   AC_SILO_SETUP(pkg)
    AC_DLOPEN_SETUP(pkg)
 ])
 
