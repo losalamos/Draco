@@ -240,7 +240,10 @@ pdf: ${allpdf}
 	   ${MAKEIDX} -s ${package_top_srcdir}/environment/latex/draco_index.ist $*;\
 	   ${LATEXCMD} $<      ;\
 	fi
-
+	if test -f $ $*.nlo; then\
+	   ${MAKEIDX} $*.nlo -s ${package_top_srcdir}/environment/latex/nomencl.ist -o $*.nls;\
+	   ${LATEXCMD} $<      ;\
+	fi
 #	${LATEXCMD} ${LATEXFLAGS} $<
 #	-${BIBTEXCMD} ${BIBTEXFLAGS} $(basename $@)
 #	${LATEXCMD} ${LATEXFLAGS} $<
