@@ -173,6 +173,9 @@ class Parse_Table
     //! Add keywords to the table.
     void add(Keyword const *table, size_t count);
 
+    //! Add the keywords from another Parse_Table
+    void add(Parse_Table const &);
+
     std::vector<Keyword>::reserve;
 
     //! Set parser options.
@@ -222,6 +225,11 @@ class Parse_Table
         
 	unsigned char flags_;
     };
+
+    // IMPLEMENTATION
+
+    //! Sort and check the table following the addition of new keywords
+    void sort_table_();
 
     // DATA
     

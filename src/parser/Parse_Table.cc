@@ -79,6 +79,39 @@ void Parse_Table::add(Keyword const *const table, size_t const count)
 	push_back(table[i]);
     }
 
+    sort_table_();
+    
+    Ensure(check_class_invariants());
+}
+
+//-------------------------------------------------------------------------//
+/*!
+ *
+ * \param source Parse_Table whose keywords are to be added to this
+ * Parse_Table. 
+ *
+ * \throw invalid_argument If the keyword table is ill-formed or
+ * ambiguous.
+ */
+
+void Parse_Table::add(Parse_Table const &source)
+{
+    // Add the new keywords.
+    
+    for (Parse_Table::const_iterator i=source.begin(); i!=source.end(); ++i)
+    {
+	push_back(*i);
+    }
+
+    sort_table_();
+        
+    Ensure(check_class_invariants());
+}
+
+//---------------------------------------------------------------------------//
+/* private */
+void Parse_Table::sort_table_()
+{
     if (size()==0) return;
 
     // Sort the parse table, using a comparator predicate appropriate for the
@@ -133,8 +166,6 @@ void Parse_Table::add(Keyword const *const table, size_t const count)
 	    i++;
 	}
     }
-    
-    Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------//
