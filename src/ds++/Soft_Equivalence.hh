@@ -61,14 +61,14 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
     bool passed = false;
 
     if (fabs(value - reference) < precision * fabs(reference))
-	passed = true;
+        passed = true;
     else
-	passed = false;
-
+        passed = false;
+    
     // second chance for passing if reference is within machine error of zero
     if (!passed && (fabs(reference) < 1.0e-14))
-	if (fabs(value) < precision) passed = true;
-
+        if (fabs(value) < precision) passed = true;
+    
     return passed;
 }
 
