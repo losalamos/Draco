@@ -8,7 +8,7 @@
 
 # Load the subdirs variable into the present scope
 
-execfile( "subdirs.py")
+execfile( "draco_subdirs.py")
 
 
 # Visit subdirs and build there
