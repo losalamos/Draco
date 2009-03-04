@@ -11,6 +11,7 @@
 #endif
 
 #include <cmath>
+#include <cstdlib>
 
 XM_NAMESPACE_BEG
 

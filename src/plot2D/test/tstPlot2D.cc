@@ -14,6 +14,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <cstdlib>
 
 #include "../Plot2D.hh"
 #include "../Release.hh"
@@ -195,7 +196,7 @@ main(int argc, char *argv[])
             tstPlot2D(batch);
  
             // run python diff scrips
-            if (system("python ./tstPlot2D_Diff.py"))
+            if (std::system("python ./tstPlot2D_Diff.py"))
                 throw rtt_dsxx::assertion ("Python script failed.");
         }
         else {
