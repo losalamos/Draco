@@ -55,20 +55,65 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
              quadrature->dimensionality() == 2 ||
              quadrature->dimensionality() == 3          );
     Require( dimension == 1 || dimension == 2 || dimension == 3);
+    Require(geometry==rtt_mesh_element::SPHERICAL && dimension == 1 ||
+            geometry==rtt_mesh_element::AXISYMMETRIC && dimension <3 ||
+            geometry==rtt_mesh_element::CARTESIAN);
 
     // vector<Ordinate> ordinates;
 
-    if( quadrature->dimensionality() == 1 ) 
-        create_set_from_1d_quadrature();
-    
-    if( quadrature->dimensionality() == 2 && dimension == 2 )
-        create_set_from_2d_quadrature_for_2d_mesh();
-    
-    if( quadrature->dimensionality() == 2 && dimension == 1 )
-        create_set_from_2d_quadrature_for_1d_mesh();
-    
-    if( quadrature->dimensionality() == 2 && dimension == 3 )
-        create_set_from_2d_quadrature_for_3d_mesh();
+    if( quadrature->dimensionality() == 1 )
+    {
+        if (dimension == 1)
+        {
+            create_set_from_1d_quadrature();
+        }
+        else if (dimension == 2)
+        {
+            throw invalid_argument("cannot construct 2D ordinate set "
+                                   "from 1D quadrature");
+        }
+        else
+        {
+            Check(dimension==3);
+            throw invalid_argument("cannot construct 3D ordinate set "
+                                   "from 1D quadrature");
+        }
+    }
+    else if( quadrature->dimensionality() == 2)
+    {
+        if (dimension == 1 )
+        {
+            create_set_from_2d_quadrature_for_1d_mesh();
+        }
+        else if (dimension == 2 )
+        {
+            create_set_from_2d_quadrature_for_2d_mesh();
+        }
+        else
+        {
+            Check(dimension == 3 );
+            create_set_from_2d_quadrature_for_3d_mesh();
+        }
+    }
+    else
+    {
+        Check(quadrature->dimensionality() == 3);
+        if (dimension == 1)
+        {
+            throw invalid_argument("sorry, not implemented: 1D ordinate set "
+                                   "from 3D quadrature");
+        }
+        else if (dimension == 2)
+        {
+            throw invalid_argument("sorry, not implemented: 2D ordinate set "
+                                   "from 3D quadrature");
+        }
+        else
+        {
+            Check(dimension == 3);
+            create_set_from_3d_quadrature_for_3d_mesh();
+        }
+    }
 
     Ensure( check_class_invariants() );
     Ensure( getOrdinates().size() > 0 );
@@ -359,7 +404,6 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh()
 void OrdinateSet::create_set_from_2d_quadrature_for_3d_mesh()
 {
     unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
-    unsigned const number_of_levels = quadrature_->getSnOrder();
     ordinates_.resize(2*number_of_ordinates);
     
     // Copy the ordinates, then sort -- first by xi (into level sets) and
@@ -395,6 +439,31 @@ void OrdinateSet::create_set_from_2d_quadrature_for_3d_mesh()
         
     sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
 
+    return;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Helper for creating an OrdinateSet from a 3D quadrature
+ * specification.
+ */
+void OrdinateSet::create_set_from_3d_quadrature_for_3d_mesh()
+{
+    unsigned const number_of_ordinates = quadrature_->getNumOrdinates();
+    
+    ordinates_.reserve(number_of_ordinates);
+    ordinates_.resize(number_of_ordinates);
+    
+    // Copy the ordinates
+
+    for (unsigned a=0; a<number_of_ordinates; a++)
+    {
+        double const mu = quadrature_->getMu(a);
+        double const xi = quadrature_->getXi(a);
+        double const eta = quadrature_->getEta(a);
+        double const weight = quadrature_->getWt(a);
+        ordinates_[a] = Ordinate(mu, eta, xi, weight);
+    }
     return;
 }
 

@@ -60,8 +60,8 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
     // inserted the starting ordinates for each level. We assume that the
     // starting ordinates are distinguished by zero quadrature weight.
 
-    number_of_levels_ = 0;
     levels_.resize(number_of_ordinates);
+    number_of_levels_ = 0;
     if (geometry==rtt_mesh_element::AXISYMMETRIC)
     {
         number_of_levels_ = quadrature->getSnOrder();

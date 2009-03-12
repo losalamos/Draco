@@ -150,6 +150,7 @@ class OrdinateSet
     void create_set_from_2d_quadrature_for_2d_mesh();
     void create_set_from_2d_quadrature_for_1d_mesh();
     void create_set_from_2d_quadrature_for_3d_mesh();
+    void create_set_from_3d_quadrature_for_3d_mesh();
 
     // DATA
     std::vector<Ordinate> ordinates_;
