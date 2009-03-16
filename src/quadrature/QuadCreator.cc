@@ -310,7 +310,7 @@ QuadCreator::qidm QuadCreator::createQidMap(void) const
     qid_map["lobatto"] = Lobatto;
     qid_map["double gauss"] = DoubleGauss;
     qid_map["level symmetric"] = LevelSym2D;
-    qid_map["level symmetric 3D"] = LevelSym;
+    qid_map["level symmetric three_d"] = LevelSym;
     qid_map["axial"] = Axial1D;
     
     return qid_map;
