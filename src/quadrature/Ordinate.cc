@@ -139,7 +139,8 @@ bool OrdinateSet::check_class_invariants() const
  * Second comparand
  * \return \c true if the first comparand has a smaller xi than the second,
  * or if the xis are equal and the first comparand has a smaller mu than the
- * second; \c false otherwise.
+ * second, of if the xis and mus are equal and the first comparand has a
+ * smaller eta than the second; \c false otherwise.
  *
  * Typical usage:
  * \code
@@ -160,9 +161,17 @@ bool Ordinate::SnCompare(Ordinate const &a, Ordinate const &b)
     {
 	return false;
     }
+    else if (a.mu() < b.mu())
+    {
+	return true;
+    }
+    else if (a.mu() > b.mu())
+    {
+        return false;
+    }
     else
     {
-	return (a.mu() < b.mu());
+        return a.eta() < b.eta();
     }
 }
 
@@ -464,6 +473,9 @@ void OrdinateSet::create_set_from_3d_quadrature_for_3d_mesh()
         double const weight = quadrature_->getWt(a);
         ordinates_[a] = Ordinate(mu, eta, xi, weight);
     }
+
+    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
+
     return;
 }
 
