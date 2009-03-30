@@ -92,7 +92,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
    elif test "${with_cxx}" = icpc ; then 
        AC_CHECK_PROG(CXX, icpc, icpc)
 
-       if test "${CXX}" = icpc ; then
+       if test `basename ${CXX}` = icpc ; then
 	   CC='icpc'
 	   AC_DRACO_INTEL_ICPC
        else
