@@ -1337,6 +1337,15 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
 
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS}; do
+           dnl Only append to RPATH if RPATH doesn't alreayd contain vendor_dir
+           if [[[ ${RPATH} =~ ${vendor_dir} ]]]; then
+              continue
+           fi
+           dnl This is evil; should match against libdir, but libdir doesn't get
+           dnl expanded until the actual make, so that's not an option here.
+           if test "${vendor_dir}" = "${prefix}/lib"; then
+              continue
+           fi
            dnl Only append to RPATH if vendor has shared object libs.
            so_libs=`ls ${vendor_dir}/*.so 2>/dev/null`
            if test ! "${so_libs:-none}" = "none"; then

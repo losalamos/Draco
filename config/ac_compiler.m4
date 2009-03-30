@@ -556,7 +556,12 @@ AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
    # if shared then ar is icpc
    if test "${enable_shared}" = yes ; then
        AR="${CXX}"
-       ARFLAGS='-shared -o'
+       ARFLAGS='-fPIC -shared -o'
+       LDFLAGS='-fPIC'
+
+       # must use position-independent code
+       CXXFLAGS="${CXXFLAGS} -fPIC"
+       CFLAGS="${CFLAGS} -fPIC"
    else
        AR='ar'
        ARFLAGS='cr'
@@ -578,9 +583,13 @@ AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
 
        # turn off debug by default
        if test "${enable_debug:=no}" = yes ; then
-	   icpc_opt_flags="-g -O${with_opt} -Ob1 -ip"
+	   icpc_opt_flags="-g -O${with_opt} -inline-level=1 -ip"
+           # icpc 10.0.023 apparently can't link when opt>0
+           LDFLAGS="${LDFLAGS} -O0"
        else
-	   icpc_opt_flags="-O${with_opt} -Ob1"
+	   icpc_opt_flags="-O${with_opt} -inline-level=1"
+           # icpc 10.0.023 apparently can't link when opt>0
+           LDFLAGS="${LDFLAGS} -O0"
        fi
 
    #set up compiler when not optimized (turn off inlining with -Ob0)
@@ -588,9 +597,11 @@ AC_DEFUN([AC_DRACO_INTEL_ICPC], [dnl
 
        # turn on debug by default
        if test "${enable_debug:=yes}" = yes ; then
-	   icpc_opt_flags="-g -O0 -Ob0"
+	   icpc_opt_flags="-g -O0 -inline-level=0"
+           LDFLAGS="${LDFLAGS} -O0"
        else
-	   icpc_opt_flags="-O0 -Ob0"
+	   icpc_opt_flags="-O0 -inline-level=0"
+           LDFLAGS="${LDFLAGS} -O0"
        fi
 
    fi
