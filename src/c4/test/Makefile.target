@@ -18,6 +18,9 @@ thistestlib_dep := c4_test.o
 
 ${test_alltarget}: ${thistestdep} ${testdeps} phw
 
+phw: phw.o
+	${LD} ${LDFLAGS} -o $@ $< ${testlibs}
+
 %: %.o
 	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
 
