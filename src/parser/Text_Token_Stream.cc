@@ -381,14 +381,14 @@ char Text_Token_Stream::pop_char_()
 unsigned Text_Token_Stream::scan_floating_literal_()
 {
     unsigned pos = 0;
-    if (scan_fractional_constant_(pos))
+    if (scan_fractional_constant_(pos)>0)
     {
 	scan_exponent_part_(pos);
 	return pos;
     }
     else if (scan_digit_sequence_(pos))
     {
-	if (!scan_exponent_part_(pos)) return 0;
+	if (scan_exponent_part_(pos)==0) return 0;
 	return pos;
     }
     else
@@ -445,7 +445,7 @@ unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos)
 unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos)
 {
     unsigned const old_pos = pos;
-    if (scan_digit_sequence_(pos))
+    if (scan_digit_sequence_(pos)>0)
     {
 	if (peek_(pos) != '.')
 	{
@@ -479,7 +479,7 @@ unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos)
 unsigned Text_Token_Stream::scan_integer_literal_()
 {
     unsigned pos = 0;
-    if (scan_decimal_literal_(pos))
+    if (scan_decimal_literal_(pos)>0)
     {
     }
     else if (scan_hexadecimal_literal_(pos))
@@ -628,6 +628,12 @@ bool Text_Token_Stream::check_class_invariants() const
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ *
+ * This function skips past any whitespace present at the cursor position,
+ * leaving the cursor at the first non-whitespace character following the
+ * initial cursor position.
+ */
 /* private */
 void Text_Token_Stream::eat_whitespace_()
 {

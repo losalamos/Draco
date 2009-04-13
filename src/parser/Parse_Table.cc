@@ -32,7 +32,7 @@ using namespace std;
  * \throw invalid_argument If the keyword table is ill-formed or
  * ambiguous.
  *
- * \note See documentation for Parse_Table::Add for an explanation of the
+ * \note See documentation for \c Parse_Table::add for an explanation of the
  * low-level argument list.
  */
 

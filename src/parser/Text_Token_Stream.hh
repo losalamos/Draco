@@ -21,8 +21,8 @@ namespace rtt_parser
 /*! 
  * \brief Abstract text-based token stream for simple parsers.
  *
- * A Text_Token_Stream obtains its stream of tokens by scanning a stream of
- * text characters, supplied through the getc member of its child classes.
+ * A Text_Token_Stream constructs its stream of tokens by scanning a stream of
+ * text characters, supplied through the \c getc method of its child classes.
  *
  * C and C++ comments are treated as breaking whitespace.
  *

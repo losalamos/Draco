@@ -38,13 +38,60 @@ class Syntax_Error : public std::runtime_error
 /*! 
  * \brief Abstract token stream for simple parsers
  *
- * A Token_Stream is a source of tokens for a Parse_Table or other parsing
- * code. Each token is returned as a Token struct.  There is unlimited
- * lookahead and pushback capability, but no backtracking is implemented in
- * this release.  In other words, the client may look as many tokens to the
- * right of the cursor as he desires, and he may push any number of tokens
- * onto the stream at the cursor position; but when the cursor advances (via
- * the Shift method) the token it advances over is discarded forever.
+ * Modern simulation codes require detailed problem specifications, which
+ * typically take the form of a human-readable ASCII text input file.  The
+ * problem specification language used in such input files has some
+ * similarities to a programming language, though it is typically simpler than
+ * a high-level language like C++ or Java. The problem specification expressed
+ * in this problem specification langauge must be scanned and parsed by the
+ * simulation code in order to load the data structures and control parameters
+ * required to run the simulation.
+ *
+ * For example, if a fragment of a problem specification text takes the form
+ *
+ * <code>   boundary 1 gray source 1.0 keV  </code>
+ *
+ * then the simulation code must be able to recognize keywords like "boundary"
+ * or "gray source", numerical values like "1" or "1.0", and expressions like
+ * "keV". It must also understand the syntax of the problem specification
+ * language, which requires an integer value after a "boundary" keyword,
+ * followed by a keyword identifying the kind of boundary ("gray source"), and
+ * so on.
+ *
+ * Modern input readers split the task of reading a problem specification taxt
+ * into scanning and parsing. Scanning is the task of converting the raw text
+ * into a sequence of \b tokens\b, which represent the keywords, numerical or
+ * stringn values, and other lowest-level constructs in the problem
+ * specification language. This sequence or stream of tokens is then analyzed
+ * by a parser that understands the syntax of the problem specification
+ * language and can extract the semantic meaning of each part of the problem
+ * specification. 
+ *
+ * A Token_Stream is an abstract representation of a stream of tokens that can
+ * be presented to a Parse_Table or other parsing client. Each token is
+ * represented as a Token struct.  There is unlimited lookahead and pushback
+ * capability, but no backtracking is implemented in this release.  In other
+ * words, the client may look as many tokens to the right of the cursor as he
+ * desires, and he may push any number of tokens onto the stream at the cursor
+ * position; but when the cursor advances (via the Shift method) the token it
+ * advances over is discarded forever.
+ *
+ * The actual scanner that does the conversion of raw text to tokens is
+ * provided by an implementation of the \c fill function in a child
+ * class. This is usually the \c Text_Token_Stream class, whose implementation
+ * of the \c fill function converts a stream of ASCII characters to a stream
+ * of tokens, but one can imagine unconventional sources of tokens such as an
+ * HTML form on a web interface.
+ *
+ * Because the token stream object is specific to a particular kind of user
+ * interface, we find it convenient to allow the parser to report any syntax
+ * or semantic errors it discovers in the problem specification to the token
+ * stream, which "knows" the best way to convey these to the human client
+ * running the program. This style of error reporting also permits the token
+ * stream to add additional information to the error message, indicating to
+ * the human client where the error occurred. For example, a \c
+ * File_Token_Stream can tell the human client the line in the input file
+ * where the error was detected.
  */
 
 class Token_Stream
@@ -77,43 +124,46 @@ class Token_Stream
      */
     virtual void rewind() = 0;
 
+    //! Report a syntax error to the user.
     virtual void report_syntax_error(Token const &token,
 				     std::string const &message);
 
+    //! Report a syntax error to the user.
     virtual void report_syntax_error(std::string const &message);
-    
+
+    //! Report a semantic error to the user.
     virtual void report_semantic_error(Token const &token,
 				       std::string const &message);
-    
+
+    //! Report a semantic error to the user.
     virtual void report_semantic_error(std::string const &message);
+
+    //! Report a semantic error to the user.
     virtual void report_semantic_error(std::exception const &message);
 
     
     //-----------------------------------------------------------------------//
     /*! 
-     * \author Kent G. Budge
-     * \date Thu Jan 23 08:41:54 MST 2003
      * \brief Report an error to the user.
      *
      * This function sends a message to the user in a stream-specific manner.
      *
      * \param token
-     * Token with which the message is associated.
+     * Token that triggered the error.
+     *
      * \param message
      * Message to be passed to the user.
      */
     virtual void report(Token const &token,
-                                    std::string const &message) = 0;
+                        std::string const &message) = 0;
     
     //-----------------------------------------------------------------------//
     /*! 
-     * \author Kent G. Budge
-     * \date Thu Jan 23 08:41:54 MST 2003
      * \brief Report an error to the user.
      *
      * This function sends a message to the user in a stream-specific
      * manner.  This variant assumes that the cursor gives the correct
-     * location.
+     * location of the error.
      *
      * \param message
      * Message to be passed to the user.
@@ -123,10 +173,11 @@ class Token_Stream
 
     // ACCESSORS
 
-    //! Return the number of errors reported to the stream. 
+    //! Return the number of errors reported to the stream since it was last
+    //! constructed or rewound.
     unsigned error_count() const { return error_count_; }
 
-    //! The current implementation of Token_Stream has no invariants.
+    //! Check that all class invariants are satisfied.
     bool check_class_invariants() const { return true; }
     
     // STATICS
@@ -140,25 +191,26 @@ class Token_Stream
 
     //-----------------------------------------------------------------------//
     /*! 
-     * \author Kent G. Budge
-     * \date Thu Jan 23 08:41:54 MST 2003
      * \brief Add one or more tokens to the end of the lookahead buffer.
      *
-     * This function must be overridden by all child classes to scan 
-     * tokens from the ultimate token source (such as a text file or GUI).
-     * If no more tokens are available, the overriding function must return
-     * an EXIT token onto the end of the token buffer.
+     * This function is used by \c shift and \c lookahead to keep the token
+     * stream filled.
+     *
+     * Each call to the function scans the next token from the ultimate token
+     * source (such as a text file or GUI) and returns it to the client. If no
+     * more tokens are available, the function must return an EXIT token.
      *
      * \return Next token to put on the token buffer.
      */
-    
     virtual Token fill_() = 0;
     
   private:
 
     // DATA
 
-    unsigned error_count_;  //!< Number of errors reported.
+    //! Number of errors reported to the stream since it was constructed or
+    //! last rewound.
+    unsigned error_count_;
 };
 
 //-----------------------------------------------------------------------//

@@ -85,7 +85,6 @@ void Token_Stream::pushback(Token const &token)
 
 //-----------------------------------------------------------------------//
 /*! 
- * \brief Report a syntax error to the user.
  *
  * The default implementation of this function passes its message on to
  * Report_Error, then throws a Syntax_Error exception.
@@ -124,7 +123,6 @@ void Token_Stream::report_syntax_error(Token const &token,
 
 //-----------------------------------------------------------------------//
 /*! 
- * \brief Report a syntax error to the user.
  *
  * The default implementation of this function passes its message on to
  * report, then throws a Syntax_Error exception.
@@ -161,7 +159,6 @@ void Token_Stream::report_syntax_error(string const &message)
 
 //--------------------------------------------------------------------------//
 /*! 
- * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message on to
  * report, then returns.
@@ -187,7 +184,6 @@ void Token_Stream::report_semantic_error(Token const &token,
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message
  * on to report, then returns.
@@ -212,7 +208,6 @@ void Token_Stream::report_semantic_error(string const &message)
 
 //---------------------------------------------------------------------------//
 /*! 
- * \brief Report a semantic error to the user.
  *
  * The default implementation of this function passes its message on to
  * report, then returns.

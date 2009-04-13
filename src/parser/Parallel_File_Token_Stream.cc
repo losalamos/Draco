@@ -33,20 +33,19 @@ using namespace rtt_dsxx;
  * \param file_name
  * Name of the file from which to extract tokens.
  *
- * \throw std::bad_alloc If there is not enough memory to initialize the
- * token and character queues.
  * \throw std::invalid_argument If the file cannot be opened.
  *
  * \todo Make this constructor more failsafe.
  */
 
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
-    : filename_(file_name),
-      is_io_processor_(rtt_c4::node()==0),  // The current implementation
-				           // always designates processor 0
-				           // as the I/O  processor. 
-      at_eof_(   false ),
-      at_error_( false )
+    :
+    filename_(file_name),
+    is_io_processor_(rtt_c4::node()==0),
+    // The current implementation always designates processor 0 as the I/O
+    // processor.
+    at_eof_(   false ),
+    at_error_( false )
 {
     open_();
 
@@ -56,9 +55,6 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
 
 //-------------------------------------------------------------------------//
 /*!
- * \author Kent G. Budge
- * \date Wed Jan 22 15:35:42 MST 2003
- * \brief Construct a Parallel_File_Token_Stream from a file.
  * 
  * Construct a Parallel_File_Token_Stream that derives its text from the
  * specified file. If the file cannot be opened, then \c error()
@@ -93,6 +89,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
 //---------------------------------------------------------------------------//
 /*! 
  *
+ * 
  * \throw std::invalid_argument If the file cannot be opened.
  *
  * \todo Make this function more failsafe.
@@ -102,10 +99,14 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
 void Parallel_File_Token_Stream::open_()
 {
     // Create in input stream by opening the specified file on the IO proc.
+    at_error_ = false;
     if( is_io_processor_ ) 
     {
 	infile_.open(filename_.c_str());
-	if (!infile_) at_error_ = true;
+	if (!infile_)
+        {
+            at_error_ = true;
+        }
     }
     unsigned err_count = at_error_;
     rtt_c4::global_sum( err_count );
