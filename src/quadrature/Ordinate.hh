@@ -141,6 +141,9 @@ class OrdinateSet
     //! Return the dimension.
     unsigned getDimension() const { return dimension_; }
 
+    //! Return the norm.
+    double getNorm() const { return norm_; }
+
     bool check_class_invariants() const;
     
   private:
@@ -154,9 +157,10 @@ class OrdinateSet
 
     // DATA
     std::vector<Ordinate> ordinates_;
-    rtt_dsxx::SP< Quadrature const > const quadrature_;
-    rtt_mesh_element::Geometry const geometry_;
-    unsigned const dimension_;
+    rtt_dsxx::SP< Quadrature const > quadrature_;
+    rtt_mesh_element::Geometry geometry_;
+    unsigned dimension_;
+    double norm_; 
     
 };
 

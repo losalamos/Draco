@@ -115,6 +115,13 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
         }
     }
 
+    norm_ = 0;
+    unsigned const N = ordinates_.size();
+    for (unsigned a=0; a<N; ++a)
+    {
+        norm_ += ordinates_[a].wt();
+    }
+
     Ensure( check_class_invariants() );
     Ensure( getOrdinates().size() > 0 );
     Ensure( getQuadrature() == quadrature );
