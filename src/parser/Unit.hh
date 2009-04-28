@@ -334,6 +334,24 @@ Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
 Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16};
 //!< Thousands of electron volts
 
+//---------------------------------------------------------------------------//
+//! Systems of units
+
+/*
+  double m;            //!< Length dimension
+  double kg;           //!< Mass dimension
+  double s;            //!< Time dimension
+  double A;            //!< Current dimension
+  double K;            //!< Temperature dimension
+  double mol;          //!< Quantity dimension
+  double cd;           //!< Luminous intensity dimension
+  double rad;          //!< Plane angle dimension
+  double sr;           //!< Solid angle dimension
+*/
+
+Unit const MKS = { 1.,   1.,    1., 1., 1., 1., 1., 1., 1.,  0.};
+Unit const CGS = { 0.01, 0.001, 1., 1., 1., 1., 1., 1., 1.,  0.};
+
 } // end namespace rtt_parser
 
 #endif // __parser_Unit_hh__
