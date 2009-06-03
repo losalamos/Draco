@@ -318,6 +318,16 @@ AC_DEFUN([AC_COMPILER_GFORTRAN_F90], [dnl
        fi
    fi
 
+   #do shared specific stuff
+   if test "${enable_shared}" = yes ; then
+       AC_MSG_CHECKING("rpath based on CXX")
+       AR=${CXX}
+       ARFLAGS='-shared -o'
+       AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+    else
+       AR='ar'
+    fi
+
    dnl end of AC_COMPILER_GFORTRAN_F90
 ])
 

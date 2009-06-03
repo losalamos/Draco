@@ -505,16 +505,13 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            esac
        fi
 
-       #do shared specific stuff
-       if test "${enable_shared}" = yes ; then
-           AC_MSG_CHECKING("rpath based on CXX")
-           case `echo ${F90} | sed -e 's/.*\///g'` in
-               gfortran)
-                   AC_F90_ENV
-                   AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
-                   ;;
-           esac
-       fi
+       AC_MSG_CHECKING("gfortran setup")
+       case `echo ${F90} | sed -e 's/.*\///g'` in
+          gfortran)
+                  AC_F90_ENV
+                  AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+                  ;;
+       esac
 
        # add the intel math library for better performance when
        # compiling with intel
