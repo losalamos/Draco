@@ -409,6 +409,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            AC_CHECK_PROGS(F90, pgf90 lf95)
            case ${F90} in
            lf95)
+               AC_MSG_CHECKING("if lahey found")
                AC_DBS_LAHEY_ENVIRONMENT
                ;;
            pgf90)
@@ -507,20 +508,13 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        #do shared specific stuff
        if test "${enable_shared}" = yes ; then
            AC_MSG_CHECKING("rpath based on CXX")
-           case `echo ${CXX} | sed -e 's/.*\///g'` in
-               pgCC)
-                   AC_DBS_SETUP_RPATH(-R, nospace)
-                   ;;
-               g++ | icpc)
+           case `echo ${F90} | sed -e 's/.*\///g'` in
+               gfortran)
+                   AC_F90_ENV
                    AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
-                   ;;
-               *)
-                   AC_MSG_ERROR("Unrecognized compiler on LINUX")
                    ;;
            esac
        fi
-
-      
 
        # add the intel math library for better performance when
        # compiling with intel
