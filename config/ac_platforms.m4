@@ -504,6 +504,24 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            esac
        fi
 
+       #do shared specific stuff
+       if test "${enable_shared}" = yes ; then
+           AC_MSG_CHECKING("rpath based on CXX")
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
+               pgCC)
+                   AC_DBS_SETUP_RPATH(-R, nospace)
+                   ;;
+               g++ | icpc)
+                   AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+                   ;;
+               *)
+                   AC_MSG_ERROR("Unrecognized compiler on LINUX")
+                   ;;
+           esac
+       fi
+
+      
+
        # add the intel math library for better performance when
        # compiling with intel
        if test "${CXX}" = icpc; then

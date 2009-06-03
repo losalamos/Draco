@@ -188,6 +188,7 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
 
    # this function macro sets up all of the platform specific 
    # environment parameters (except compilers)
+   AC_MSG_CHECKING("setting platform")
    AC_DBS_PLATFORM_ENVIRONMENT dnl
 
    # add user-defined libraries

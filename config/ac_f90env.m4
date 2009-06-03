@@ -41,7 +41,7 @@ AC_DEFUN([AC_WITH_F90], [dnl
 
    dnl defines --with-f90
    AC_ARG_WITH(f90,
-       [  --with-f90[=XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
+       [  --with-f90[=gfortran,XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
                           choose an F90 compiler])
 ])
 
@@ -58,6 +58,9 @@ AC_DEFUN([AC_F90_ENV], [dnl
    ;;
    Fujitsu)
        AC_COMPILER_FUJITSU_F90
+   ;;
+   gfortran)
+       AC_COMPILER_GFORTRAN_F90
    ;;
    Lahey)
        AC_COMPILER_LAHEY_F90
@@ -279,6 +282,43 @@ AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
    fi
 
    dnl end of AC_COMPILER_LAHEY_F90
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl GFORTRAN F90 COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_COMPILER_GFORTRAN_F90], [dnl
+
+   AC_MSG_CHECKING("gfortran")
+   AC_CHECK_PROG(gfortran, none)
+
+   # F90FREE, F90FIXED AND MODFLAG
+
+   F90FREE='-ffree-form -x f95-cpp-input'
+   F90FIXED='-ffixed-form -x f77-cpp-input'
+   MODFLAG='-M'
+
+   # LINKER AND LIBRARY (AR)
+
+   LD='${F90}'
+   AR='ar'
+   ARFLAGS=
+   ARLIBS=
+   F90STATIC='-static -static-libgfortran'
+
+   # SET COMPILATION FLAGS IF NOT SET IN ENVIRONMENT
+   if test "$F90FLAGS" = ""
+   then
+       if test "${enable_debug:=no}" = yes
+       then
+	    F90FLAGS="-g ${F90FLAGS}"
+       else
+	    F90FLAGS="-O3 ${F90FLAGS}"
+       fi
+   fi
+
+   dnl end of AC_COMPILER_GFORTRAN_F90
 ])
 
 dnl-------------------------------------------------------------------------dnl

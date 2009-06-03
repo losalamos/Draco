@@ -10,6 +10,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <cstdlib>
 #include <cmath>
 #include <iostream>
 #include <gsl/gsl_sf_legendre.h>
@@ -145,7 +146,7 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
 double normalizedYlk( unsigned const l,     int    const k,
                       double   const theta, double const phi )
 {
-    int    const absk( std::abs(k)      );
+    int    const absk( std::abs( k)      );
     double const mu  ( std::cos(theta)  );
 
     // The constant and the Associated Legendre Polynomial.
@@ -203,7 +204,7 @@ double normalizedYlk( unsigned const l,     int    const k,
 double realYlk( unsigned const l, int const k,
                 double const theta, double const phi )
 {
-    int    const absk( std::abs(k)     );
+    int    const absk( std::abs( k)     );
     double const mu  ( std::cos(theta) );
     double sign( 1.0 );
     
@@ -250,7 +251,7 @@ double realYlk( unsigned const l, int const k,
 double complexYlk( unsigned const l, int const k,
                    double const theta, double const phi )
 {
-    int    const absk( std::abs(k)     );
+    int    const absk( std::abs( k)     );
     double const mu  ( std::cos(theta) );
     double sign( 1.0 );
     
@@ -309,7 +310,7 @@ double galerkinYlk( unsigned const l,
                     double   const phi,
                     double   const sumwt )
 {
-    int const absk( std::abs(k) );
+    int const absk( std::abs( k) );
     
     // The constant and the Associated Legendre Polynomial.
     double Ylk( cPlkGalerkin( l, absk, mu, sumwt ) );

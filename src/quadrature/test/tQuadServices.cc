@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include <cmath>
 #include <sstream>
 #include <string>
@@ -83,7 +84,7 @@ double getclk( unsigned const ell, int const k )
     using rtt_sf::factorial;
     using rtt_sf::kronecker_delta;
     return sqrt( (2.0 - kronecker_delta(k,0) ) 
-		 * factorial(ell-abs(k)) / (1.0*factorial(ell+abs(k)) ));
+		 * factorial(ell-abs( k)) / (1.0*factorial(ell+abs( k)) ));
 }
 
 //---------------------------------------------------------------------------//
@@ -569,7 +570,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
         if( ell < 4 )
         for( size_t m=0; m<numOrdinates; ++m )
         {
-            double expVal = c*getclk(ell,k)*P(ell,std::abs(k),xi[m]);
+            double expVal = c*getclk(ell,k)*P(ell,std::abs( k),xi[m]);
             double phi    = QuadServices::compute_azimuthalAngle( mu[m], eta[m], xi[m] );
             if( k<0 )
                 expVal *= std::sin(-1*k*phi);
@@ -845,7 +846,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
         if( ell < 4 )
         for( size_t m=0; m<numOrdinates; ++m )
         {
-            double expVal = c*getclk(ell,k)*P(ell,std::abs(k),xi[m]);
+            double expVal = c*getclk(ell,k)*P(ell,std::abs( k),xi[m]);
             double phi    = QuadServices::compute_azimuthalAngle( mu[m], eta[m], xi[m] );
             if( k<0 )
             {
@@ -1318,7 +1319,7 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
     // -------------------------------------
     // Choose: l= 0, ..., N-1, k = -l, ..., l
     for( unsigned ell=0; ell< snOrder; ++ell )
-	for( int k(-1*static_cast<int>(ell)); std::abs(k) <= ell; ++k, ++n )
+	for( int k(-1*static_cast<int>(ell)); std::abs( k) <= ell; ++k, ++n )
 	    lkMoments.push_back( lk_index(ell,k) );
 
     // Add ell=N and k<0

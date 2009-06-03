@@ -9,6 +9,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <string.h>
 #include "Token_Stream.hh"
 
 namespace rtt_parser 

@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
-#include <string>
+#include <string.h>
 #include "ds++/Assert.hh"
 #include "Parse_Table.hh"
 #include "Token_Stream.hh"

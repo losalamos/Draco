@@ -15,6 +15,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <string.h>
 #include "parser_test.hh"
 #include "../Release.hh"
 #include "../Parse_Table.hh"

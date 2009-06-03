@@ -70,6 +70,11 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    AC_ARG_ENABLE(shared,
       [  --enable-shared         turn on shared libraries (.a default)])
 
+   # do shared specific stuff
+   if test "${enable_shared}" = yes ; then
+      RANLIB=':'
+   fi
+
    dnl
    dnl CHOOSE A C++ COMPILER
    dnl

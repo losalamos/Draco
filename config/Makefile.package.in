@@ -183,6 +183,8 @@ installheaders := $(addprefix ${includedir}/${package}/, ${headers})
 # directory that defines the variables:
 # "csrc" "ccsrc" "cobjs" "ccobjs" and "objs"
 
+exe_obj := $(addsuffix __main.o, ${package})
+
 ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
 
   csrc := $(wildcard ${srcdir}/*.c)
@@ -190,12 +192,13 @@ ifeq (,$(wildcard ${srcdir}/Makefile.srcs))
   cobjs := $(notdir $(patsubst %.c,%.o,${csrc}))
   ccobjs := $(notdir $(patsubst %.cc,%.o,${ccsrc}))
   objs := ${cobjs} ${ccobjs}
-
+  objs_lib := $(filter-out ${exe_obj}, ${cobjs}) $(filter-out ${exe_obj}, ${ccobjs})
 else
 
   include ${srcdir}/Makefile.srcs
 
 endif
+
 
 # package library dependencies
 
@@ -262,7 +265,7 @@ bin:
 ## build any libraries in this package
 
 lib${LIB_PREFIX}${package}${libsuffix}: ${objs} ${DRACO_DEPENDS} ${VENDOR_DEPENDS}
-	${AR} ${ARFLAGS} $@ ${objs} ${ARLIBS}
+	${AR} ${ARFLAGS} $@ ${objs_lib} ${ARLIBS}
 	${RANLIB} $@
 
 ##---------------------------------------------------------------------------##
