@@ -260,6 +260,76 @@ dnl      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
 ])
 
 dnl ------------------------------------------------------------------------ dnl
+dnl AC_DBS_GFORTRAN_ENVIRONMENT
+dnl
+dnl Some vendor setups require that the gfortran compiler libraries be provided 
+dnl on the link line.  This m4 function adds the necessary libraries to LIBS.
+dnl ------------------------------------------------------------------------ dnl
+AC_DEFUN([AC_DBS_GFORTRAN_ENVIRONMENT], [dnl
+
+   # set the proper RPATH command depending on the C++ compiler
+   case ${CXX} in 
+       g++)
+           rpath='-Xlinker -rpath '
+           ;;
+       *)
+           AC_MSG_ERROR("Improper compiler set in LINUX with gfortran.")
+           ;;
+   esac
+
+   AC_MSG_CHECKING("for extra gfortran library requirements.")
+   if test -n "${vendor_eospac}"    ||
+      (test -n "${vendor_lapack}" && test "${with_lapack}" = "atlas") ||
+      test -n "${vendor_scalapack}" ||
+      test -n "${vendor_trilinos}"; then
+      extra_f90_libs="-lgfortranbegin -lgfortran"
+      LIBS="${LIBS} ${extra_f90_libs}"
+      AC_MSG_RESULT("${extra_f90_libs}")
+   else
+      AC_MSG_RESULT("none.")
+   fi
+
+   dnl Optimize flag   
+   AC_MSG_CHECKING("for F90FLAGS")
+   if test "${with_opt:=0}" != 0 ; then
+      if test ${with_opt} -gt 2; then
+         F90FLAGS="${F90FLAGS} -O3"
+      else
+         F90FLAGS="${F90FLAGS} -O${with_opt}"
+      fi
+   else 
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+   dnl C preprocessor flag
+   F90FLAGS="${F90FLAGS}" 
+   AC_MSG_RESULT(${F90FLAGS})
+
+   dnl scalar or mpi ?
+   AC_MSG_CHECKING("for F90MPIFLAGS")
+   if test ${with_mpi:=no} = "no"; then
+      F90FLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+       case ${with_mpi} in
+       mpich)
+         F90MPIFLAGS="-lfmpich"
+         ;;
+       lampi | LAMPI | LA-MPI)
+         F90MPIFLAGS="-lmpi"
+         ;;
+       openmpi)
+         F90MPIFLAGS ="-lmpi -lmpi_cxx -lmpi_f77" 
+         ;;
+       esac
+   fi
+   AC_MSG_RESULT(${F90MPIFLAGS})
+
+   AC_MSG_CHECKING("for F90VENDOR_LIBS")
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   AC_MSG_RESULT("${F90VENDOR_LIBS}")
+])
+
+dnl ------------------------------------------------------------------------ dnl
 dnl AC_DBS_COMPAQ_F90_ENVIRONMENT
 dnl
 dnl Some vendor setups require that the Portland Group F90 lib dir and
@@ -406,7 +476,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # setup F90 libs, rpath, etc. for apps when CXX is the
        # principal compiler
        if test "${with_f90:=no}" = no ; then
-           AC_CHECK_PROGS(F90, pgf90 lf95)
+           AC_CHECK_PROGS(F90, pgf90 lf95 gfortran)
            case ${F90} in
            lf95)
                AC_MSG_CHECKING("if lahey found")
@@ -414,6 +484,9 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                ;;
            pgf90)
                AC_DBS_PGF90_ENVIRONMENT
+               ;;
+           gfortran)
+               AC_DBS_GFORTRAN_ENVIRONMENT
                ;;
            esac
        fi
@@ -504,14 +577,6 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                    ;;
            esac
        fi
-
-       AC_MSG_CHECKING("gfortran setup")
-       case `echo ${F90} | sed -e 's/.*\///g'` in
-          gfortran)
-                  AC_F90_ENV
-                  AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
-                  ;;
-       esac
 
        # add the intel math library for better performance when
        # compiling with intel

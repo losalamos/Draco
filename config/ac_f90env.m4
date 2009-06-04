@@ -296,7 +296,7 @@ AC_DEFUN([AC_COMPILER_GFORTRAN_F90], [dnl
    # F90FREE, F90FIXED AND MODFLAG
 
    F90FREE='-ffree-form -x f95-cpp-input'
-   F90FIXED='-ffixed-form -x f77-cpp-input'
+   F90FIXED='-ffixed-form -x f95-cpp-input'
    MODFLAG='-M'
 
    # LINKER AND LIBRARY (AR)
