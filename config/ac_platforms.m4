@@ -303,7 +303,9 @@ AC_DEFUN([AC_DBS_GFORTRAN_ENVIRONMENT], [dnl
 
    dnl C preprocessor flag
    F90FLAGS="${F90FLAGS}" 
+   F90FREE="-x f95-cpp-input"
    AC_MSG_RESULT(${F90FLAGS})
+   AC_MSG_RESULT(${F90FREE})
 
    dnl scalar or mpi ?
    AC_MSG_CHECKING("for F90MPIFLAGS")
