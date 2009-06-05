@@ -225,7 +225,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
    fi
 
    dnl C preprocessor flag
-   F90FLAGS="${F90FLAGS} -Mpreprocess"
+   F90FLAGS="${F90FLAGS} -Mpreprocess -g77libs -pgcpplibs -pgf90libs"
    AC_MSG_RESULT(${F90FLAGS})
 
    dnl scalar or mpi ?
@@ -250,7 +250,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
    else
       CXXLIBDIR=${GCC_LIB_DIR}
 dnl      F90CXXFLAGS="-L${CXXLIBDIR} -lstdc++"
-      F90CXXFLAGS="-lstdc++"  
+      F90CXXFLAGS="-lrt"  
    fi   
    AC_MSG_RESULT(${F90CXXFLAGS})
 
