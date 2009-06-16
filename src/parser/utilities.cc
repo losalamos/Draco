@@ -41,7 +41,7 @@ unsigned parse_unsigned_integer(Token_Stream &tokens)
 	{
 	    tokens.report_semantic_error("integer value overflows");
 	}
-	Check(endptr != NULL && *endptr=='\0');
+	Check(endptr != NULL);
 	return Result;
     }
     else
