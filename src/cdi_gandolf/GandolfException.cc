@@ -46,7 +46,11 @@ namespace rtt_cdi_gandolf
 	{
 	    // message is allocated by what().  If what() was never
 	    // called then message is a null pointer.
-	    if ( message ) delete [] message;
+	    if ( message )
+		{
+		    delete [] message;
+		    message = NULL;
+		}
 	}
 
     const char* GandolfException::what() const throw() 
