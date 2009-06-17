@@ -14,6 +14,8 @@
 #ifndef rtt_rng_LFG_H
 #define rtt_rng_LFG_H
 
+#include "rng/config.h"
+
 #ifdef __cplusplus
 extern "C" { 
 #endif
