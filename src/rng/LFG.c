@@ -403,14 +403,13 @@ advance_reg(int *reg_fill)
     unsigned temp;
     const unsigned urf0 = (unsigned)reg_fill[0];
     const unsigned urf1 = (unsigned)reg_fill[1];
-    
+    const unsigned urf0_sr_24 = urf0 >> 24;
+
     for (i=0; i < 28; i+=4) 
     {
 	new_fill0 |= mask_gen[(urf0 >> i)&255] << i; 
 	new_fill1 |= mask_gen[(urf1 >> i)&255] << i; 
     }
-
-    const unsigned urf0_sr_24 = urf0 >> 24;
 
     /* i = 28 */
     temp = bitcount[(urf0 >> 28)&mask];
