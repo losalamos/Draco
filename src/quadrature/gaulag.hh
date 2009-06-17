@@ -91,7 +91,7 @@ void gaulag(FieldVector &x,
 
             // Newton's Method
             z = z1-p1/pp;
-	    if (fabs(z-z1) < 100*numeric_limits<Field>::epsilon()) break;
+	    if (fabs(z-z1) < 100*std::numeric_limits<Field>::epsilon()) break;
 	}
 	if (its >= MAXITS) 
 	{
