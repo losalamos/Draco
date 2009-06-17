@@ -11,10 +11,6 @@
 
 #include "GandolfWrapper.hh"
 
-#ifdef rtt_cdi_gandolf_stub
-#warning "USING GANDOLF STUB"
-#endif
-
 #include "ds++/Assert.hh"
 
 #include <cstring>
