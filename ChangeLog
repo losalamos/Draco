@@ -1,3 +1,132 @@
+2009-06-16 Jae Chang <jhchang@lanl.gov> and Gabe Rockefeller <gaber@lanl.gov>
+
+	* draco: Release of draco-5_20-0. This is a minor Draco release.
+	A summary of changes is:
+
+	config
+		- Added changes to accomodate linking of fortran main
+		programs
+		
+		- Added support for Intel compilers
+
+		- Altered doxygen to allow a user to optionally specify a
+		different doxygen_config.in file that the one in config.
+
+	   	- Added support for gfortran
+
+		- Added Silo library support
+
+	c4
+		- Replaced rtt_c4::finalized() with rtt_c4::abort() when
+		it appears in a catch block in unit tests.
+		
+
+	cdi 
+		- Added support Opacity Distribution Function (ODF). See
+		note below written by Seth.
+
+	cdi_analytic
+		
+		- See note for cdi
+
+	cdi_gandolf
+
+		- See note for cdi
+
+	ds++ 
+		- Added scons build system input files
+
+
+	parser
+
+		- Fixed error in location()
+	  
+		- Improved diagnostics for String_Token_Stream
+
+	plot2D
+
+		- Minor fixed for gcc 4.3 (using C++ header files)
+Counting lines of source code -- 
+Directory:  /home/jhchang/release/draco
+Date     :  Thu Jun 18 09:16:04 MDT 2009
+
+                 Total C++ source: 31730
+   C++ source in test directories: 18151
+      C++ contract specifications: 1222
+                     C++ comments: 34947
+             Total f90/f95 source: 0
+                 f90/f95 comments: 0
+              LaTeX Documentation: 13565
+                      html source: 0
+   Executable shell script source: 3012
+           Executable Perl source: 0
+                    Python source: 4158
+                    Expect source: 0
+                     Elisp source: 3289
+
+
+	quadrature
+
+		- Extended Discrete_To_Moment and Moment_To_Discrete to 3D
+
+		- Corrected normalization of angle quadrature set
+
+	rng
+
+		- Added support for inline sprng lfg
+
+		- Added inline Random and Rnd_Control classes
+
+		
+	Released Packages:
+
+		RTT_Format_Reader
+		c4
+		cdi
+		cdi_analytic
+		cdi_eospac
+		cdi_gandolf - where libgandolf.a exist
+	     	ds++
+		fpe_trap
+		lapack_wrap - where lapack and blas installed
+		meshReaders
+		mesh_element
+		norms
+		parser
+		pcgWrap
+		plot2D - where xmgrace installed
+		quadrature - where gsl installed
+		rng
+		shared_lib
+		special_functions - where gsl installed
+		timestep
+		traits
+		units
+		viz
+		xm - doesn't build on Redstorm
+	
+		Counting lines of source code -- 
+		Directory:  /home/jhchang/release/draco
+		Date     :  Thu Jun 18 09:16:04 MDT 2009
+
+		                 Total C++ source: 31730
+		   C++ source in test directories: 18151
+		      C++ contract specifications: 1222
+		                     C++ comments: 34947
+   		             Total f90/f95 source: 0
+    		                 f90/f95 comments: 0
+       		              LaTeX Documentation: 13565
+  		                      html source: 0
+		   Executable shell script source: 3012
+    	       	           Executable Perl source: 0
+   		                    Python source: 4158
+          		            Expect source: 0
+                                     Elisp source: 3289
+		
+	This release was required by jayenne [clubimc-4_2_0,
+	wedgehog-6_2_0 and capsaicin-2_10_0].
+	
+
 2008-08-18  Seth R. Johnson  <sethrj@umich.edu>
 
 	* Implementation of Opacity Distribution Function (ODF) method with
