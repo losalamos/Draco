@@ -1414,7 +1414,7 @@ AC_DEFUN([AC_DBS_SETUP_RPATH], [dnl
        # add vendors to rpath
        for vendor_dir in ${VENDOR_LIB_DIRS}; do
            dnl Only append to RPATH if RPATH doesn't alreayd contain vendor_dir
-           if expr "${RPATH}" : "${vendor_dir}"; then
+           if (expr "${RPATH}" : ".*${vendor_dir}" > /dev/null); then
               continue
            fi
            dnl This is evil; should match against libdir, but libdir doesn't get
