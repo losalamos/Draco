@@ -24,7 +24,6 @@
 #include <iostream>
 #include <string>
 #include <ds++/Assert.hh>
-#include <c4/global.hh>
 
 #include <signal.h>
 #include <fenv.h>
@@ -79,8 +78,7 @@ catch_sigfpe (int sig, siginfo_t *code, void *v)
         }
     }
 
-    std::cerr << mesg << std::endl;
-    rtt_c4::abort();
+    Insist(0, mesg);
 }
 
 } // end of namespace

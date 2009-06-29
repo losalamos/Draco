@@ -24,7 +24,6 @@
 #include <iostream>
 #include <string>
 #include <ds++/Assert.hh>
-#include <c4/global.hh>
 
 #include <signal.h>
 #include <machine/fpu.h>
@@ -43,8 +42,7 @@ catch_sigfpe(int sig)
 
     // decipher sig later...
 
-    std::cerr << mesg << std::endl;
-    rtt_c4::abort();
+    Insist(0, mesg);
 }
 
 } // end of namespace

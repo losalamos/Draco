@@ -29,14 +29,8 @@ namespace rtt_fpe_trap
     number.
   - Overflow.
 
-  If an exception is called, ideally, a diagnostic is printed to \b stderr and
-  \b rtt_c4::abort() is called.  However, on some platforms, exception
-  handlers may not be defined, in which case the the behavior may not be
-  followed.
-
-  A future option may be to throw a C++ exception, instead of calling \b
-  abort().  But cross-platform consistency would require that all platforms
-  define exception handlers, which may not be possible.
+  If a floating-point exception is detected, ds++'s Insist is called; that is,
+  a C++ exception is thrown.
 
   Typically, an application calls this function once, before any
   floating-point operations are performed.  Note that all program

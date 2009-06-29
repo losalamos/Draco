@@ -64,7 +64,7 @@ dnl AC_NEEDS_LIBS.  If this is a Draco client (i.e.: a part of
 dnl Capsaicin, Milagro, etc.), the dependencies on Draco libraries
 dnl should be listed as arguments to AC_NEEDS_LIBS_DRACO.
 
-AC_NEEDS_LIBS(c4 ds++)
+AC_NEEDS_LIBS(ds++)
 dnl AC_NEEDS_LIBS_DRACO(ds++)
 
 dnl ----------------------------------------
@@ -77,8 +77,8 @@ dnl different than package dependencies.  If this is a Draco client,
 dnl the unit test dependencies on Draco libraries should be listed as
 dnl arguments to AC_NEEDS_LIBS_TEST_DRACO.
 
-dnl AC_NEEDS_LIBS_TEST(c4 ds++)
-dnl AC_NEEDS_LIBS_TEST_DRACO(c4 ds++)
+dnl AC_NEEDS_LIBS_TEST(ds++)
+dnl AC_NEEDS_LIBS_TEST_DRACO(ds++)
 
 dnl List the unit tests that should be run and the number of
 dnl processors that should be used when running the test. If this is a
@@ -89,8 +89,7 @@ dnl should be listed as "scalar".
 AC_TESTEXE(python)
 
 dnl Scalar for now, because test is python driving c++ (but see pika's
-dnl run.py for a way to handle this, someday).  Anyway, the only parallel
-dnl routine used is c4::abort().
+dnl run.py for a way to handle this, someday).
 AC_RUNTESTS(test_fpe_trap.py, scalar)
 
 dnl ----------------------------------------

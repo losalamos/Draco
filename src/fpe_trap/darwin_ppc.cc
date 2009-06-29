@@ -23,7 +23,6 @@
 
 #include <iostream>
 #include <ds++/Assert.hh>
-#include <c4/global.hh>
 #include <mach/mach.h>
 
 // Local functions
@@ -63,9 +62,7 @@ void* fpe_enabler(void *parent)
 
 static void catch_sigfpe(int sig)
 {
-    std::cerr << "Floating point exception caught by fpe_trap."
-              << std::endl;
-    rtt_c4::abort();
+    Insist(0, "Floating point exception caught by fpe_trap.")
 }
 
 } // end of namespace

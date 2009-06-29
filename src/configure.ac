@@ -32,14 +32,14 @@ AC_CONFIG_SUBDIRS( ds++ )
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
-                   plot2D lapack_wrap shared_lib )
+                   plot2D lapack_wrap shared_lib fpe_trap )
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS( norms timestep pcgWrap viz parser \
-                   cdi_gandolf cdi_analytic meshReaders fpe_trap \
+                   cdi_gandolf cdi_analytic meshReaders \
                    special_functions )
 dnl
 dnl Kelly Thompson 12 January 2005
