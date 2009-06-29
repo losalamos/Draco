@@ -168,7 +168,7 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
    case ${CXX} in 
-       g++ | icpc)
+       g++ | icpc | ppu-g++)
            rpath='-Xlinker -rpath '
            ;;
        pgCC)
@@ -269,7 +269,7 @@ AC_DEFUN([AC_DBS_GFORTRAN_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
    case ${CXX} in 
-       g++)
+       g++ | ppu-g++)
            rpath='-Xlinker -rpath '
            ;;
        *)
