@@ -13,7 +13,6 @@
 #include <fstream>
 #include <cmath>
 #include <ds++/Assert.hh>
-#include <c4/global.hh>
 #include "../fpe_trap.hh"
 
 int main(int argc, char *argv[]);
@@ -39,32 +38,23 @@ using namespace std;
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-    
     Insist(argc == 2, "Wrong number of args.");
-
-    bool host = (rtt_c4::node() == 0);
 
     std::ofstream f;
 
-    if ( host ) f.open("output.dat");
+    f.open("output.dat");
 
     if ( rtt_fpe_trap::enable_fpe() )
     {
         // Platform supported.
-        if ( host ) f << "supported" << endl;
+        f << "supported" << endl;
     }
     else
     {
         // Platform not supported.
-        if ( host )
-        {
-            f << "unsupported\n";
-            f.close();
-        }
-        
-        rtt_c4::global_barrier();
-        rtt_c4::finalize();
+        f << "unsupported\n";
+        f.close();
+
         return 0;
     }
 
@@ -91,37 +81,31 @@ int main(int argc, char *argv[])
 
     switch ( test ) {
     case 0:
-	if ( host ) f << "should_work" << endl;
-        rtt_c4::global_barrier();
+	f << "should_work" << endl;
 	result = 1.0 + zero + sqrt(-neg);
-	if ( host ) f << "result = " << result << endl;
+	f << "result = " << result << endl;
 	break;
     case 1:
-	if ( host ) f << "div_by_zero" << endl;
-        rtt_c4::global_barrier();
+	f << "div_by_zero" << endl;
 	result = 1.0 / zero; // should fail here
-	if ( host ) f << "result = " << result << endl;
+	f << "result = " << result << endl;
 	break;
     case 2:
-	if ( host ) f << "sqrt(-1.0)" << endl;
-        rtt_c4::global_barrier();
+	f << "sqrt(-1.0)" << endl;
 	result = sqrt(neg); // should fail here
-	if ( host ) f << "result = " << result << endl;
+	f << "result = " << result << endl;
 	break;
     case 3: {
-	if ( host ) f << "overflow" << endl;
-        rtt_c4::global_barrier();
+	f << "overflow" << endl;
 	result = 2.0;
 	for ( int i = 0; i < 100; i++ ) {
 	    result = exp(result); // should fail at some i
 	}
-	if ( host ) f << "result = " << result << endl;
+	f << "result = " << result << endl;
 	break;
     }
     }
     
-    rtt_c4::global_barrier();
-    rtt_c4::finalize();
     return 0;
 }
 
