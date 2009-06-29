@@ -58,8 +58,17 @@ AC_DEFUN([AC_CPP_ENV], [dnl
 
    # do tests of --with-cxx, see if the compiler exists and then call
    # the proper setup function
-   
-   if test "${with_cxx}" = sgi ; then
+
+   if test "${with_cxx}" = ppu-gcc || test "${with_cxx}" = ppu-g++ ; then 
+       AC_CHECK_PROG(CXX, ppu-g++, ppu-g++)
+       AC_CHECK_PROG(CC, ppu-gcc, ppu-gcc)
+
+       if test `basename ${CXX}` = ppu-g++ && test `basename ${CC}` = ppu-gcc ; then
+           AC_DRACO_GNU_PPU_GCC
+       else
+	   AC_MSG_ERROR("Did not find ppu-g++ compiler!")
+       fi
+   elif test "${with_cxx}" = sgi ; then
        AC_CHECK_PROG(CXX, CC, CC)
        AC_CHECK_PROG(CC, cc, cc)  
 
@@ -347,6 +356,131 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
    AC_MSG_RESULT("GNU g++ compiler flags set")
 
    dnl end of AC_DRACO_GNU_GCC
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl PPU GNU COMPILER SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_DRACO_GNU_PPU_GCC], [dnl
+
+   # finding path of gcc compiler
+   AC_PATH_PROG(PPU_GCC_BIN, ppu-g++, null)
+
+   AC_MSG_CHECKING("Setting library path of ppu-g++ compiler")
+   if test "${PPU_GCC_BIN}" = null ; then
+       #PPU_GCC_LIB_DIR='/usr/lib'
+       PPU_GCC_LIB_DIR='/opt/cell/toolchain/lib/gcc/ppu/4.1.1/'
+   else
+       PPU_GCC_BIN=`dirname ${PPU_GCC_BIN}`
+       PPU_GCC_HOME=`dirname ${PPU_GCC_BIN}`
+
+       # Ensure that libraries exist at this location.  If we can't
+       # find libstdc++.a at this location we leave PPU_GCC_LIB_DIR set to
+       # null and issue a warning.
+
+       #if test -r ${PPU_GCC_HOME}/lib/libstdc++.a; then
+       #  PPU_GCC_LIB_DIR="${PPU_GCC_HOME}/lib"
+       #fi
+       PPU_GCC_LIB_DIR='/opt/cell/toolchain/lib/gcc/ppu/4.1.1/'
+   fi
+   AC_MSG_RESULT("${PPU_GCC_LIB_DIR}")
+
+   if test -z ${PPU_GCC_LIB_DIR}; then
+       AC_MSG_WARN("Could not determine location of ppu_gcc libraries. PPU_GCC_LIB_DIR is null")
+   fi
+
+   # do compiler configuration
+   AC_MSG_CHECKING("configuration of ${CXX}/${CC} compilers")
+
+   # LINKER AND LIBRARY (AR)
+   LD='${CXX}'
+
+   # if shared then ar is ppu_gcc
+   if test "${enable_shared}" = yes ; then
+       AR="${CXX}"
+       ARFLAGS='-shared -o'
+   else
+       AR='ar'
+       ARFLAGS='cr'
+   fi
+
+   ARLIBS=''
+   ARTESTLIBS=''
+
+   # COMPILATION FLAGS
+
+   # strict asci compliance
+   if test "${enable_strict_ansi:=yes}" = yes ; then
+       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
+   fi
+
+   # optimization level
+   # ppu_gcc allows -g with -O (like KCC)
+
+   # set opt level in flags
+   ppu_gcc_opt_flags="-O${with_opt:=0}"
+
+   # set up compiler when optimized
+   if test "${with_opt}" != 0; then
+
+       # set up inlining when optimization is on
+       ppu_gcc_opt_flags="-finline-functions ${ppu_gcc_opt_flags}"
+
+       # turn off debug flag by default if not requested explicitly
+       if test "${enable_debug:=no}" = yes ; then
+	   ppu_gcc_opt_flags="-g ${ppu_gcc_opt_flags}"
+       fi
+
+   # set up compiler when not optimized
+   else
+
+       # default is to have debug flag on when opt=0
+       if test "${enable_debug:=yes}" = yes ; then
+	   ppu_gcc_opt_flags="-g ${ppu_gcc_opt_flags}"
+       fi
+
+   fi
+
+   # 64-bit ppu_gcc require -fPIC for enabled shared
+   if test "${enable_shared}" = yes && test `uname -m` = x86_64 ; then
+      CXXFLAGS="${CXXFLAGS} -fPIC"
+   fi
+   
+   # add opt flags
+   CXXFLAGS="${ppu_gcc_opt_flags} ${CXXFLAGS}"
+   CFLAGS="${ppu_gcc_opt_flags} ${CFLAGS}"
+
+   # RPATH FLAGS
+
+   # add -rpath for the compiler library (G++ as LD does not do this
+   # automatically) if required.
+   case $host in
+
+   # Darwin doesn't need any special flags
+   *-apple-darwin*)
+   ;;
+
+   # COMPAQ -> CXX
+   alpha*-dec-osf*)
+   ;;
+
+   # EVERYTHING ELSE -> linux?
+   *)
+      if test -n "${PPU_GCC_LIB_DIR}"; then
+           RPATH="${RPATH} -Xlinker -rpath ${PPU_GCC_LIB_DIR}"
+      fi
+   ;;
+   esac
+
+   # static linking option
+   if test "${enable_static_ld}" = yes ; then
+       LDFLAGS="${LDFLAGS} -Bstatic"
+   fi
+
+   AC_MSG_RESULT("ppu_g++ compiler flags set")
+
+   dnl end of AC_DRACO_GNU_PPU_GCC
 ])
 
 dnl-------------------------------------------------------------------------dnl

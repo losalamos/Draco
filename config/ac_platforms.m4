@@ -574,6 +574,9 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                g++ | icpc)
                    AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
                    ;;
+               ppu-g++)
+                   AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
+                   ;;
                *)
                    AC_MSG_ERROR("Unrecognized compiler on LINUX")
                    ;;
