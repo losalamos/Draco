@@ -1275,7 +1275,7 @@ AC_DEFUN([AC_DBS_DARWIN_INTEL_ENVIRONMENT], [dnl
        #
        # Set up fpe_trap for this platform (not yet!!!)
        #
-       # AC_DEFINE(FPETRAP_DARWIN_INTEL)
+       AC_DEFINE(FPETRAP_DARWIN_INTEL)
 
        #
        # finalize vendors
