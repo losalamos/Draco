@@ -26,6 +26,7 @@
 #include "Q1Axial.hh"
 #include "Q2DLevelSym.hh"
 #include "Q3DLevelSym.hh"
+#include "Q2DTriChebyshevLegendre.hh"
 #include "Q2DSquareChebyshevLegendre.hh"
 #include "QuadCreator.hh"
 #include "QuadServices.hh"
@@ -111,6 +112,11 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    spQuad = new Q2DSquareChebyshevLegendre( sn_order, norm );
 	    break;	    
 
+	case TriCL:
+	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
+	    spQuad = new Q2DTriChebyshevLegendre( sn_order, norm );
+	    break;	    
+
 	default:
 	    Insist ( false, "Unknown value for quad_type." );
 	    break;
@@ -145,6 +151,7 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
  *   \arg \c gauss \c legendre
  *   \arg \c level \c symmetric
  *   \arg \c square \c CL
+ *   \arg \c tri \c CL
  * 
  * 2. The quadrature order, specified by the keyword \c order followed by an
  * integer value:
@@ -305,6 +312,7 @@ QuadCreator::qidm QuadCreator::createQidMap(void) const
 {
     qidm qid_map;
 
+    qid_map["tri cl"] = TriCL;
     qid_map["square cl"] = SquareCL;
     qid_map["gauss legendre"] = GaussLeg;
     qid_map["lobatto"] = Lobatto;
@@ -324,6 +332,7 @@ QuadCreator::normmap QuadCreator::createNormMap(void) const
     normmap nmap;
     double const fourpi = 4.0*rtt_units::PI;
 
+    nmap[TriCL]=fourpi;
     nmap[SquareCL]=fourpi;
     nmap[GaussLeg]=2.0;
     nmap[Lobatto]=2.0;

@@ -26,6 +26,7 @@
 #include "../QuadCreator.hh"
 #include "../Q1DGaussLeg.hh"
 #include "../Q2DSquareChebyshevLegendre.hh"
+#include "../Q2DTriChebyshevLegendre.hh"
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
 #include "../GeneralQuadrature.hh"
@@ -62,7 +63,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
     const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
-    const int nquads = 6;
+    const int nquads = 7;
 
     // Declare an enumeration object that specifies the Quadrature set to be
     // tested.
@@ -70,15 +71,17 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
     // Quadrature sets to be tested:
     //
     // #   Qid         Description
-    // -   --------    ------------------
-    // 0   SquareCL    2D Chebyshev-Legendre
-    // 1   GaussLeg    1D Gauss-Legendre
-    // 2   Lobatto     1D Lobatto
-    // 3   DoubleGauss 1D DoubleGauss
-    // 4   LevelSym2D  2D Level Symmetric
-    // 5   LevelSym    3D Level Symmetric
+    // --- --------    ------------------
+    // 0   TriCL       2D Triangular Chebyshev-Legendre
+    // 1   SquareCL    2D Square Chebyshev-Legendre
+    // 2   GaussLeg    1D Gauss-Legendre
+    // 3   Lobatto     1D Lobatto
+    // 4   DoubleGauss 1D DoubleGauss
+    // 5   LevelSym2D  2D Level Symmetric
+    // 6   LevelSym    3D Level Symmetric
 
-    QuadCreator::Qid qid[nquads] = { QuadCreator::SquareCL,
+    QuadCreator::Qid qid[nquads] = { QuadCreator::TriCL,
+                                     QuadCreator::SquareCL,
                                      QuadCreator::GaussLeg,
                                      QuadCreator::Lobatto,
                                      QuadCreator::DoubleGauss,
@@ -86,7 +89,8 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 				     QuadCreator::LevelSym };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = {  0.469676450658365,
+    double mu0[nquads] = {  0.359474792477992,
+                            0.469676450658365,
                            -0.861136311594053,
                            -1.0,
                            -0.7886751346,
@@ -397,7 +401,54 @@ void Q2DSCL_test( rtt_dsxx::UnitTest & ut )
     }
 
     return;
-} // end of Q3DLevelSym_tests()
+} // end of Q2DSCL_test()
+
+//---------------------------------------------------------------------------//
+void Q2DTCL_test( rtt_dsxx::UnitTest & ut )
+{
+    using namespace rtt_dsxx;
+    using namespace rtt_quadrature;
+    using namespace std;
+
+    cout << "\nLooking at Q2DTriChebyshevLegendre\n" << endl;
+    
+    int    const sn_order( 8 );
+    double const assigned_sumwt( 2*rtt_units::PI );
+    Q2DTriChebyshevLegendre const quad( sn_order, assigned_sumwt );
+
+    size_t const expected_nlevels(sn_order);
+    if( quad.getLevels() == expected_nlevels)
+    {
+	ut.passes("Found expected number of levels in quadrature set.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Found the wrong number of quadrature levels." << endl
+	    << "quad.getLevels() returned " << quad.getLevels()
+	    << ", but we expected to find " << expected_nlevels << "."
+	    << endl;
+	ut.failure( msg.str() );
+    }
+    
+    double const sumwt(quad.iDomega());
+    if( soft_equiv( sumwt, assigned_sumwt ) )
+    {
+	ut.passes("Stored sumwt matches assigned value.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Stored sumwt does not match assigned value as retrieved by iDomega()."
+	    << endl
+	    << "quad.iDomega() returned " << quad.iDomega()
+	    << ", but we expected to find " << assigned_sumwt << "."
+	    << endl;
+	ut.failure( msg.str() );
+    }
+
+    return;
+} // end of Q2DTCL_test()
 
 //---------------------------------------------------------------------------//
 
@@ -448,6 +499,7 @@ int main(int argc, char *argv[])
 	Q2DLevelSym_tests(ut);
 	Q3DLevelSym_tests(ut);
         Q2DSCL_test(ut);
+        Q2DTCL_test(ut);
         tst_general_quadrature(ut);
     }
     catch( rtt_dsxx::assertion &err )

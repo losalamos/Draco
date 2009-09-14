@@ -42,6 +42,7 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
     
     Require ( snOrder > 0 );
     Require ( norm > 0.0 );
+    Insist( snOrder%2 == 0, "SN order must be even");
 
     // Force the direction vectors to be the correct length.
     mu.resize(numOrdinates);
