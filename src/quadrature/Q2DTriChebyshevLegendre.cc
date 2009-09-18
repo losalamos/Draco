@@ -19,6 +19,7 @@
 
 #include "Q1DGaussLeg.hh"
 #include "Q2DTriChebyshevLegendre.hh"
+#include "Ordinate.hh"
 
 namespace rtt_quadrature
 {
@@ -46,7 +47,7 @@ Q2DTriChebyshevLegendre::Q2DTriChebyshevLegendre( size_t sn_order_, double norm_
 
     // Force the direction vectors to be the correct length.
     mu.resize(numOrdinates);
-    eta.resize(numOrdinates);
+    xi.resize(numOrdinates);
     wt.resize(numOrdinates);
 
     Q1DGaussLeg gauss(snOrder, 2.0);    
@@ -67,7 +68,7 @@ Q2DTriChebyshevLegendre::Q2DTriChebyshevLegendre( size_t sn_order_, double norm_
         {
             unsigned ordinate=icount;
                 
-            eta[ordinate] = xmu;
+            xi[ordinate] = xmu;
             mu[ordinate]  = xsr*cos(rtt_units::PI*(2.0*j+1.0)/k/2.0);
             wt[ordinate]  = xwt/k;
 
@@ -84,7 +85,7 @@ Q2DTriChebyshevLegendre::Q2DTriChebyshevLegendre( size_t sn_order_, double norm_
         {
             unsigned ordinate=icount;
                 
-            eta[ordinate] = xmu;
+            xi[ordinate] = xmu;
             mu[ordinate]  = xsr*cos(rtt_units::PI*(2.0*j+1.0)/k/2.0);
             wt[ordinate]  = xwt/k;
 
@@ -102,6 +103,9 @@ Q2DTriChebyshevLegendre::Q2DTriChebyshevLegendre( size_t sn_order_, double norm_
     for(size_t ordinate = 0; ordinate < numOrdinates; ++ordinate)
 	wt[ordinate] = wt[ordinate]*(norm/wsum);
 
+    // Sort the directions by xi and then by mu
+    sortOrdinates();
+    
     // Verify that the quadrature meets our integration requirements.
     Ensure( soft_equiv(iDomega(),norm) );
 
@@ -124,12 +128,43 @@ Q2DTriChebyshevLegendre::Q2DTriChebyshevLegendre( size_t sn_order_, double norm_
     {
 	omega[ordinate].resize(ndims);
 	omega[ordinate][0] = mu[ordinate];
-	omega[ordinate][1] = eta[ordinate];
+	omega[ordinate][1] = xi[ordinate];
     }
 
     //display();
 
-} // end of Q2DLevelSym() constructor.
+} // end of Q2DTriChebyshevLegendre constructor
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Resort all of the ordinates by xi and then by mu.
+ *
+ * The ctor for OrdinateSet sorts automatically.
+ */
+void Q2DTriChebyshevLegendre::sortOrdinates(void)
+{
+    size_t len( mu.size() );
+
+    // temporary storage
+    vector<Ordinate> omega;
+    for( size_t m=0; m<len; ++m )
+    {
+        double eta=std::sqrt(1.0-mu[m]*mu[m]-xi[m]*xi[m]);
+        omega.push_back( Ordinate(mu[m],eta,xi[m],wt[m] ) );    
+    }
+    
+    std::sort(omega.begin(),omega.end(),Ordinate::SnCompare);
+    
+    // Save sorted data
+    for( size_t m=0; m<len; ++m )
+    {
+        mu[m]=omega[m].mu();
+        xi[m]=omega[m].xi();
+        wt[m]=omega[m].wt();        
+    }
+    
+    return;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -141,14 +176,14 @@ void Q2DTriChebyshevLegendre::display() const
 
     cout << endl << "The Quadrature directions and weights are:" 
 	 << endl << endl;
-    cout << "   m  \t    mu        \t    eta       \t     wt      " << endl;
+    cout << "   m  \t    mu        \t    xi        \t     wt      " << endl;
     cout << "  --- \t------------- \t------------- \t-------------" << endl;
     double sum_wt = 0.0;
     for ( size_t ordinate = 0; ordinate < mu.size(); ++ordinate )
     {
 	cout << "   "
 	     << ordinate << "\t"
-	     << setprecision(10) << eta[ordinate]  << "\t"
+	     << setprecision(10) << xi[ordinate]  << "\t"
 	     << setprecision(10) << mu[ordinate] << "\t"
 	     << setprecision(10) << wt[ordinate]  << endl;
 	sum_wt += wt[ordinate];
