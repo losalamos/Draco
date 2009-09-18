@@ -183,8 +183,8 @@ void Q2DTriChebyshevLegendre::display() const
     {
 	cout << "   "
 	     << ordinate << "\t"
-	     << setprecision(10) << xi[ordinate]  << "\t"
-	     << setprecision(10) << mu[ordinate] << "\t"
+	     << setprecision(10) << mu[ordinate]  << "\t"
+	     << setprecision(10) << xi[ordinate] << "\t"
 	     << setprecision(10) << wt[ordinate]  << endl;
 	sum_wt += wt[ordinate];
     }

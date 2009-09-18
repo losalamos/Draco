@@ -89,8 +89,8 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 				     QuadCreator::LevelSym };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
-    double mu0[nquads] = {  0.359474792477992,
-                            0.469676450658365,
+    double mu0[nquads] = { -0.359474792477992,
+                           -0.469676450658365,
                            -0.861136311594053,
                            -1.0,
                            -0.7886751346,
