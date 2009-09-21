@@ -98,7 +98,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
 	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
        fi
 
-   elif test "${with_cxx}" = icpc ; then 
+   elif test "${with_cxx}" = intel ; then 
        AC_CHECK_PROG(CXX, icpc, icpc)
 
        if test `basename ${CXX}` = icpc ; then
