@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <algorithm>
 
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
