@@ -478,7 +478,15 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # setup F90 libs, rpath, etc. for apps when CXX is the
        # principal compiler
        if test "${with_f90:=no}" = no ; then
-           AC_CHECK_PROGS(F90, pgf90 lf95 gfortran)
+           case `echo ${CXX} | sed -e 's/.*\///g'` in
+           pgCC)
+               AC_CHECK_PROGS(F90, pgf90)
+               ;;
+           *)
+               AC_CHECK_PROGS(F90, lf95 gfortran)
+               ;;
+           esac
+           
            case ${F90} in
            lf95)
                AC_MSG_CHECKING("if lahey found")
