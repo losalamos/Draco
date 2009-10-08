@@ -49,9 +49,9 @@ if [ ! -d ${REGDIR} ] ; then
 fi
 
 # add to the PATH so that the script can find: gcc-4.1.1, xmgrace, ghostview.
-export PATH=.:/ccs/opt/x86/gcc-4.1.1/bin:/ccs/codes/mpi/bin:/ccs/opt/x86/grace/grace/bin:/ccs/opt/x86/bin:${PATH}
+#export PATH=.:/ccs/opt/x86/gcc-4.1.1/bin:/ccs/codes/mpi/bin:/ccs/opt/x86/grace/grace/bin:/ccs/opt/x86/bin:${PATH}
 # add to LD_LIBRARY_PATH so that the script can find the g++ libraries.
-export LD_LIBRARY_PATH=/ccs/opt/x86/gcc-4.1.1/lib:${LD_LIBRARY_PATH}
+#export LD_LIBRARY_PATH=/ccs/opt/x86/gcc-4.1.1/lib:${LD_LIBRARY_PATH}
 
 }
 

@@ -25,7 +25,9 @@ source /home/regress/draco/regression/set_env
 
 # Replace default FORTRAN environment as a hack around EOSPAC5 bug
 # (see SF bug report)
-source /ccs/opt/x86/lf9562/bash_setup
+if [ "`uname -m`" != "x86_64" ]; then
+    source /ccs/opt/x86/lf9562/bash_setup
+fi
 
 # set defaults
 set_default_values $*
@@ -138,8 +140,12 @@ MPI_SETUP="--with-mpi-inc --with-mpi-lib"
 VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
 --with-grace-lib --with-gandolf-lib --with-eospac-lib --with-pcg-lib \
 --with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
+if [ "`uname -m`" == "x86_64" ]; then
+    LIBS_SETUP="--with-libs='-L/usr/lib/gcc/x86_64-redhat-linux5E/4.1.2 -lgfortran'"
+else
+    LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
+fi
 
-LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
 
 ##---------------------------------------------------------------------------##
 ## LOOP THROUGH AND DO BUILD AND CHECKS
@@ -152,15 +158,28 @@ for target in ${target_list}; do
 	
 	# setup parallel build options
 	${code_mpi})
+        if [ "`uname -m`" == "x86_64" ]; then
+	    MPIRUN='/ccs/codes/mpi/openmpi/Linux64/1.3.3/bin/mpirun'
+	    MPI_INC_DIR='/ccs/codes/mpi/openmpi/Linux64/1.3.3/include'
+	    MPI_LIB_DIR='/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib'
+	    MPI_TAG='openmpi'
+	    export MPI_INC_DIR
+	    export MPI_LIB_DIR
+	    export MPIRUN
+	    export MPI_TAG  
 
+	    OPTIONS='--with-c4=mpi --with-mpi=openmpi'
+        else
             # Source mpich
             . $MPI_DIR/mpich.sh shmem-lahey
             cleanipcs
             echo $MPI_TAG
 
 	    OPTIONS='--with-c4=mpi'
-	    VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
-            MAKE_OPTIONS="check"
+        fi
+
+	VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+	MAKE_OPTIONS="check"
 	;;
 
 	# setup serial build options
@@ -189,6 +208,7 @@ for target in ${target_list}; do
             # Source lampi
             echo "source $MPI_DIR/lampi.sh shmem-lahey"
             . $MPI_DIR/lampi.sh shmem-lahey
+            cleanipcs
             echo "MPI_TAG = $MPI_TAG"
 
             MPI_SETUP="--with-mpi=lampi $MPI_SETUP"
