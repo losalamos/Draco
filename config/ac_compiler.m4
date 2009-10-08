@@ -254,7 +254,9 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
        # find libstdc++.a at this location we leave GCC_LIB_DIR set to
        # null and issue a warning.
 
-       if test -r ${GCC_HOME}/lib/libstdc++.a; then
+       libstdc=`ls ${GCC_HOME}/lib/libstdc++.* | head -1`
+
+       if test -n "${libstdc}" && test -r "${libstdc}"; then
          GCC_LIB_DIR="${GCC_HOME}/lib"
        fi
    fi
