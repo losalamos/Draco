@@ -104,6 +104,9 @@ bool enable_fpe()
      */
 
     (void)feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+    
+    // ... if you want to catch "everything" :
+    //(void)feenableexcept(FE_ALL_EXCEPT);
 
     return true;
 }

@@ -99,7 +99,13 @@ int main(int argc, char *argv[])
 	f << "overflow" << endl;
 	result = 2.0;
 	for ( int i = 0; i < 100; i++ ) {
-	    result = exp(result); // should fail at some i
+            // exp() should work, but on 64-bit linux, it's not raising the
+	    // overflow flag:
+	    // result = exp(result); // should fail at some i
+
+            // ... so instead:
+	    result = result * result * result * result * result; // should fail at some i
+            
 	}
 	f << "result = " << result << endl;
 	break;
