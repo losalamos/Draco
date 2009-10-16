@@ -94,6 +94,81 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
    esac
 ])
 
+dnl ------------------------------------------------------------------------ dnl
+dnl AC_DBS_IFORT_ENVIRONMENT
+dnl
+dnl Some vendor setups require that the intel fortran compiler libraries be provided 
+dnl on the link line.  This m4 function adds the necessary libraries to LIBS.
+dnl ------------------------------------------------------------------------ dnl
+AC_DEFUN([AC_DBS_IFORT_ENVIRONMENT], [dnl
+
+   # set the proper RPATH command depending on the C++ compiler
+   case ${CXX} in 
+       g++ | icpc | ppu-g++)
+           rpath='-Xlinker -rpath '
+           ;;
+       pgCC)
+           rpath='-R'
+           ;;
+       *)
+           AC_MSG_ERROR("Improper compiler set in LINUX.")
+   esac
+
+   AC_MSG_CHECKING("for extra ifort library requirements.")
+   if test -n "${vendor_eospac}"    ||
+      (test -n "${vendor_lapack}" && test "${with_lapack}" = "atlas") ||
+      test -n "${vendor_scalapack}" ||
+      test -n "${vendor_trilinos}"; then
+      f90_lib_loc=`which ifort | sed -e 's/bin\/ifort/lib/'`
+      extra_f90_libs="-L${f90_lib_loc} -lifcore -lgfortran"
+      LIBS="${LIBS} ${extra_f90_libs}"
+      AC_MSG_RESULT("${extra_f90_libs}")
+   else
+      AC_MSG_RESULT("none.")
+   fi
+
+   dnl Optimize flag   
+   AC_MSG_CHECKING("for F90FLAGS")
+   if test "${with_opt:=0}" != 0 ; then
+      if test ${with_opt} -gt 2; then
+         F90FLAGS="${F90FLAGS} -O3"
+      else
+         F90FLAGS="${F90FLAGS} -O${with_opt}"
+      fi
+   else 
+      F90FLAGS="${F90FLAGS} -g"
+   fi
+
+   dnl C preprocessor flag
+   F90FLAGS="${F90FLAGS}" 
+   F90FREE="-cpp"
+   AC_MSG_RESULT(${F90FLAGS})
+   AC_MSG_RESULT(${F90FREE})
+
+   dnl scalar or mpi ?
+   AC_MSG_CHECKING("for F90MPIFLAGS")
+   if test ${with_mpi:=no} = "no"; then
+      F90FLAGS="${F90FLAGS} -DC4_SCALAR"
+   else
+       case ${with_mpi} in
+       mpich)
+         F90MPIFLAGS="-lfmpich"
+         ;;
+       lampi | LAMPI | LA-MPI)
+         F90MPIFLAGS="-lmpi"
+         ;;
+       openmpi)
+         F90MPIFLAGS ="-lmpi -lmpi_cxx -lmpi_f77" 
+         ;;
+       esac
+   fi
+   AC_MSG_RESULT(${F90MPIFLAGS})
+
+   AC_MSG_CHECKING("for F90VENDOR_LIBS")
+   F90VENDOR_LIBS="$F90VENDOR_LIBS ${F90MPIFLAGS} ${F90CXXFLAGS}"
+   AC_MSG_RESULT("${F90VENDOR_LIBS}")
+])
+
 dnl-------------------------------------------------------------------------dnl
 dnl AC_DBS_LAHEY_ENVIRONMENT
 dnl
@@ -497,6 +572,9 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                ;;
            gfortran)
                AC_DBS_GFORTRAN_ENVIRONMENT
+               ;;
+           ifort)
+               AC_DBS_IFORT_ENVIRONMENT
                ;;
            esac
        fi

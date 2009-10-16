@@ -615,8 +615,8 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
 
    # CHECK FOR WORKING INTEL F90 COMPILER
-   AC_CHECK_PROG(F90, ifc, ifc, none)
-   if test "${F90}" = ifc && ${F90} -V 2>&1 | grep "Intel"
+   AC_CHECK_PROG(F90, ifort, ifort, none)
+   if test "${F90}" = ifort && ${F90} -V 2>&1 | grep "Intel"
    then
        :
    else
