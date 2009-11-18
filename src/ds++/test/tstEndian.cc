@@ -37,7 +37,15 @@ void test_char_data(ScalarUnitTest& ut)
     char_byte_swap(data, length);
 
     if ((data[0] != 'c') || (data[1] != 'b') || (data[2] != 'a'))
-        ut.failure("char_byte_swap function failed");
+        ut.failure("unsigned char_byte_swap function failed");
+
+    /* plain */ char pdata[] = {'a', 'b', 'c'};
+    unsigned int plength = sizeof(pdata)/sizeof(/* plain */ char);
+
+    char_byte_swap(pdata, plength);
+
+    if ((pdata[0] != 'c') || (pdata[1] != 'b') || (pdata[2] != 'a'))
+        ut.failure("plain char_byte_swap function failed");
     
 }
 

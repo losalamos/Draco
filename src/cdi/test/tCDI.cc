@@ -863,6 +863,7 @@ void test_planck_integration()
 
 	// Check the normalized planck integrals.
 	if (CDI::getNumberFrequencyGroups() != 3) ITFAILS;
+	if (CDI::getNumberOpacityBands() != 0) ITFAILS;
 
 	double g1_integral = CDI::integratePlanckSpectrum(1, 1.0);
 	double g2_integral = CDI::integratePlanckSpectrum(2, 1.0);
@@ -966,6 +967,18 @@ void test_planck_integration()
 	std::vector<double> planck;
 
 	CDI::integrate_Planckian_Spectrum(group_bounds, 1.0, planck);
+
+	for (int group_index = 1; group_index <= 3; ++group_index)
+	{
+
+		double planck_g = CDI::integratePlanckSpectrum(group_index, 1.0);
+
+		if (!soft_equiv( planck[group_index-1], planck_g) ) ITFAILS;
+
+	}
+
+        // Test zero temperature special case
+	CDI::integrate_Planckian_Spectrum(group_bounds, 0.0, planck);
 
 	for (int group_index = 1; group_index <= 3; ++group_index)
 	{
@@ -1264,6 +1277,21 @@ void test_rosseland_integration()
 
 	}
 
+	// Special case of zero temperature
+	CDI::integrate_Rosseland_Planckian_Spectrum(3, 0.0, PL, ROS);
+	if (!soft_equiv(PL,  0.0, 1.e-6)) ITFAILS;
+	if (!soft_equiv(ROS, 0.0, 1.e-6)) ITFAILS;
+
+	if (rtt_cdi_test::passed)
+	{
+		PASSMSG("Zero T Rosseland and Planck integrals ok.");
+	}
+	else
+	{
+		FAILMSG("Zero T Rosseland and Planck integrals failed.");
+	}
+
+        
 	if (rtt_cdi_test::passed)
 	{
 		PASSMSG("Group-wize and Full spectrum Planckian and Rosseland integrals match.");

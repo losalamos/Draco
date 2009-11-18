@@ -40,6 +40,11 @@ struct Send_Double_Vector : public Sender
         Sender::send(v.size(), &v[0]);
     }
 
+    void wait()
+    {
+        Sender::wait();
+    }
+
 };
 
 struct Receive_Double_Vector : public Receiver
@@ -53,6 +58,20 @@ struct Receive_Double_Vector : public Receiver
         vector<double> v(size);
         receive_data(size, &v[0]);
         return v;
+    }
+
+};
+
+struct Receive_Double_Vector_Autosize : public Receiver
+{
+
+    Receive_Double_Vector_Autosize(int node) : Receiver(node) {  }
+
+    vector<double> receive()
+    {
+        double *v;
+        unsigned const size = Receiver::receive(v);
+        return vector<double>(v, v+size);
     }
 
 };
@@ -108,6 +127,11 @@ void single_comm_test()
         Send_Double_Vector sdv(1);
         sdv.send(v);
 
+        // Check zero length branch
+        
+        sdv.wait();
+        v.clear();
+        sdv.send(v);
     }
 
     if (node() == 1)
@@ -119,6 +143,55 @@ void single_comm_test()
         if (v[0] != 1.0) ITFAILS;
         if (v[1] != 2.0) ITFAILS;
         if (v[2] != 3.0) ITFAILS;
+
+        // Check zero length branch
+        v = sdv.receive();
+
+        if (v.size() != 0) ITFAILS;
+    }
+
+    if (rtt_c4_test::passed)
+        PASSMSG("Passed single communication test");
+}
+
+    
+//---------------------------------------------------------------------------//
+/* 
+ * One way communication from node 0 to 1, autosized receive.
+ */
+void single_comm_autosize_test()
+{
+
+    Check(nodes() == 2);
+
+    if (node() == 0)
+    {
+        vector<double> v(3);
+        v[0] = 1.0; v[1] = 2.0; v[2] = 3.0;
+
+        Send_Double_Vector sdv(1);
+        sdv.send(v);
+
+        // Check zero length branch
+        
+        sdv.wait();
+        v.clear();
+        sdv.send(v);
+    }
+
+    if (node() == 1)
+    {
+        Receive_Double_Vector_Autosize sdv(0);
+        vector<double> v = sdv.receive();
+
+        if (v.size() != 3) ITFAILS;
+        if (v[1] != 2.0) ITFAILS;
+        if (v[2] != 3.0) ITFAILS;
+
+        // Check zero length branch
+        v = sdv.receive();
+
+        if (v.size() != 0) ITFAILS;
     }
 
     if (rtt_c4_test::passed)
@@ -226,6 +299,7 @@ int main(int argc, char *argv[])
         if (rtt_c4::nodes() == 2)
         {
             single_comm_test();
+            single_comm_autosize_test();
             double_comm_test();
         }
 

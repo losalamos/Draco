@@ -429,6 +429,10 @@ void type_X_test()
             spfoo = spbar;
             CHECK_N_OBJECTS(1, 1, 0, 0);
 
+            // check reassignment
+            spfoo = spbar;
+            CHECK_N_OBJECTS(1, 1, 0, 0);
+
             if (spfoo->f() != 51)  ITFAILS;
             if (spfoo->vf() != 52) ITFAILS;
 
@@ -467,6 +471,14 @@ void type_X_test()
 
             // assign SPfoo2 to a bar
             spfoo2 = new Bar(20);
+            CHECK_N_OBJECTS(3, 3, 0, 0);
+
+            // assign SPfoo2 to itself
+            spfoo2 = spfoo2;
+            CHECK_N_OBJECTS(3, 3, 0, 0);
+            
+            // assign SPfoo2 to itself (underlying object)
+            spfoo2 = spfoo2.bp();
             CHECK_N_OBJECTS(3, 3, 0, 0);
             
         }
