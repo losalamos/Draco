@@ -127,13 +127,13 @@ class Receiver
 
     
     template <typename T>
-    int receive(T* data) const
+    int receive(T* &data) const
     {
         int size = receive_size();
         if (size > 0)
         {
             data = new T[size];
-            data_receive(size, data);
+            receive_data(size, data);
         }
 
         return size;
