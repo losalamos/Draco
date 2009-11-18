@@ -780,6 +780,21 @@ std::ostream& Element_Definition::print( std::ostream & os_out ) const
 	    os_out << std::endl;
 	}
     }
+    {
+        std::vector<unsigned> num_face_nodes = get_number_of_face_nodes();
+        std::vector<std::vector<unsigned> > face_nodes = get_face_nodes();
+        os_out <<"Face Nodes: " << std::endl;
+        for (int j=0; j<num_face_nodes.size(); ++j)
+        {
+            os_out << "  Face " << j << ": " << num_face_nodes[j]
+                   << " nodes : ";
+            for (int k=0; k<num_face_nodes[j]; ++k)
+            {
+                os_out << face_nodes[j][k] << " ";
+            }
+            os_out << std::endl;
+        }
+    }
     os_out << std::endl;
     return os_out;
 }
