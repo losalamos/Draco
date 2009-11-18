@@ -133,6 +133,7 @@ void runTest()
 namespace rtt_mesh_element_test
 {
     
+//---------------------------------------------------------------------------//
 bool test_node(const rtt_mesh_element::Element_Definition elem_def)
 {
     // Test the NODE element.
@@ -144,6 +145,7 @@ bool test_node(const rtt_mesh_element::Element_Definition elem_def)
     ldum = ldum && elem_def.get_dimension() == 0;
     ldum = ldum && elem_def.get_node_location(0) ==
 	Element_Definition::CORNER;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 0;
     if (ldum) 
     {
 	ostringstream message;
@@ -159,6 +161,7 @@ bool test_node(const rtt_mesh_element::Element_Definition elem_def)
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_bar_2(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -170,6 +173,9 @@ bool test_bar_2(
     ldum = ldum && elem_def.get_number_of_nodes() == 2;
     ldum = ldum && elem_def.get_dimension() == 1;
     ldum = ldum && elem_def.get_number_of_sides() == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 1;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 1;
     for (int j=0; j<2; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -199,6 +205,7 @@ bool test_bar_2(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_bar_3(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -210,6 +217,9 @@ bool test_bar_3(
     ldum = ldum && elem_def.get_number_of_nodes() == 3;
     ldum = ldum && elem_def.get_dimension() == 1;
     ldum = ldum && elem_def.get_number_of_sides() == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 1;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 1;
     for (int j=0; j<2; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -241,6 +251,7 @@ bool test_bar_3(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_tri_3(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -252,6 +263,10 @@ bool test_tri_3(
     ldum = ldum && elem_def.get_number_of_nodes() == 3;
     ldum = ldum && elem_def.get_dimension() == 2;
     ldum = ldum && elem_def.get_number_of_sides() == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
     for (int j=0; j<3; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -284,6 +299,7 @@ bool test_tri_3(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_tri_6(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -295,6 +311,10 @@ bool test_tri_6(
     ldum = ldum && elem_def.get_number_of_nodes() == 6;
     ldum = ldum && elem_def.get_dimension() == 2;
     ldum = ldum && elem_def.get_number_of_sides() == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
     for (int j=0; j<3; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -330,6 +350,7 @@ bool test_tri_6(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_quad_4(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -341,6 +362,11 @@ bool test_quad_4(
     ldum = ldum && elem_def.get_number_of_nodes() == 4;
     ldum = ldum && elem_def.get_dimension() == 2;
     ldum = ldum && elem_def.get_number_of_sides() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 2;
     for (int j=0; j<4; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -376,6 +402,7 @@ bool test_quad_4(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_quad_8(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -387,6 +414,11 @@ bool test_quad_8(
     ldum = ldum && elem_def.get_number_of_nodes() == 8;
     ldum = ldum && elem_def.get_dimension() == 2;
     ldum = ldum && elem_def.get_number_of_sides() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
     for (int j=0; j<4; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -425,6 +457,7 @@ bool test_quad_8(
     return ldum;
 }   
 
+//---------------------------------------------------------------------------//
 bool test_quad_9(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -436,6 +469,11 @@ bool test_quad_9(
     ldum = ldum && elem_def.get_number_of_nodes() == 9;
     ldum = ldum && elem_def.get_dimension() == 2;
     ldum = ldum && elem_def.get_number_of_sides() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
     for (int j=0; j<4; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -476,6 +514,7 @@ bool test_quad_9(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_tetra_4(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -487,6 +526,11 @@ bool test_tetra_4(
     ldum = ldum && elem_def.get_number_of_nodes() == 4;
     ldum = ldum && elem_def.get_dimension() == 3;
     ldum = ldum && elem_def.get_number_of_sides() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
     for (int j=0; j<4; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -522,6 +566,7 @@ bool test_tetra_4(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_tetra_10(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -533,6 +578,11 @@ bool test_tetra_10(
     ldum = ldum && elem_def.get_number_of_nodes() == 10;
     ldum = ldum && elem_def.get_dimension() == 3;
     ldum = ldum && elem_def.get_number_of_sides() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 6;
     for (int j=0; j<4; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -571,6 +621,7 @@ bool test_tetra_10(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_pyra_5(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -586,6 +637,12 @@ bool test_pyra_5(
 	Element_Definition::CORNER;
     ldum = ldum && elem_def.get_side_type(0).get_type() == 
 	Element_Definition::QUAD_4;
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 3;
     for (int j=1; j<5; ++j)
     {
 	ldum = ldum && elem_def.get_node_location(j) == 
@@ -625,6 +682,7 @@ bool test_pyra_5(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_pyra_14(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -669,6 +727,12 @@ bool test_pyra_14(
 	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 6;
     if (ldum) 
     {
 	ostringstream message;
@@ -684,6 +748,7 @@ bool test_pyra_14(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_penta_6(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -721,6 +786,12 @@ bool test_penta_6(
 	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 3;
     if (ldum)
     {
 	ostringstream message; 
@@ -736,6 +807,7 @@ bool test_penta_6(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_penta_15(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -776,6 +848,12 @@ bool test_penta_15(
 	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 6;
     if (ldum)
     {
 	ostringstream message; 
@@ -791,6 +869,7 @@ bool test_penta_15(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_penta_18(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -834,6 +913,13 @@ bool test_penta_18(
 	std::vector<int>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
 	std::vector<int>(s4,s4+sizet);
+        ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 6;
+
     if (ldum) 
     {
 	ostringstream message;
@@ -849,6 +935,7 @@ bool test_penta_18(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_hexa_8(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -885,6 +972,13 @@ bool test_hexa_8(
 	std::vector<int>(s4,s4+size);
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 4;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[5] == 4;
     if (ldum) 
     {
 	ostringstream message;
@@ -900,6 +994,7 @@ bool test_hexa_8(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_hexa_20(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -939,6 +1034,14 @@ bool test_hexa_20(
 	std::vector<int>(s4,s4+size);
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
+        ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 8;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[5] == 8;
+
     if (ldum) 
     {
 	ostringstream message;
@@ -954,6 +1057,7 @@ bool test_hexa_20(
     return ldum;
 }
 
+//---------------------------------------------------------------------------//
 bool test_hexa_27(
     const rtt_mesh_element::Element_Definition elem_def)
 {
@@ -998,6 +1102,47 @@ bool test_hexa_27(
 	std::vector<int>(s4,s4+size);
     ldum = ldum && elem_def.get_side_nodes(5) == 
 	std::vector<int>(s5,s5+size);
+        ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[4] == 9;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[5] == 9;
+
+    try
+    {
+        elem_def.get_node_location(27);
+        ldum = false;
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        elem_def.get_node_location(-1);
+        ldum = false;
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        elem_def.get_side_type(6);
+        ldum = false;
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        elem_def.get_side_nodes(6);
+        ldum = false;
+    }
+    catch (...)
+    {
+    }
+
     if (ldum) 
     {
 	ostringstream message;

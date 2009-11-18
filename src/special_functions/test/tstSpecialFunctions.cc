@@ -92,6 +92,17 @@ void tstFactorial( rtt_dsxx::UnitTest &ut )
 	ut.passes("Found factorial(3) == 6, factorial is working.");
     else
 	ut.failure("Found factorial(3) != 6, factorial is not working.");
+
+    try
+    {
+        factorial(13);
+        ut.failure("factorial(13) failed to trigger out of range error");
+    }
+    catch (std::range_error &)
+    {
+        ut.passes("factorial(13) correctly triggered out of range error");
+    }
+        
     if( factorial(-3) == 1 )
 	ut.passes("Found factorial(-3) == 1, factorial is working.");
     else

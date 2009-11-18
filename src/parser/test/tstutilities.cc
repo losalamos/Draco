@@ -399,21 +399,184 @@ void tstutilities(UnitTest &ut)
     parse_geometry(tokens, geometry);
     if (geometry != rtt_mesh_element::AXISYMMETRIC)
     {
-	FAILMSG("geometry NOT successfully parsed");
+	FAILMSG("axisymmetric geometry NOT successfully parsed");
+    }
+    else
+    {
+	PASSMSG("geometry successfully parsed");
+    }
+    geometry = rtt_mesh_element::END_GEOMETRY;
+    parse_geometry(tokens, geometry);
+    if (geometry != rtt_mesh_element::CARTESIAN)
+    {
+	FAILMSG("cartesian geometry NOT successfully parsed");
+    }
+    else
+    {
+	PASSMSG("geometry successfully parsed");
+    }
+    geometry = rtt_mesh_element::END_GEOMETRY;
+    parse_geometry(tokens, geometry);
+    if (geometry != rtt_mesh_element::SPHERICAL)
+    {
+	FAILMSG("spherical geometry NOT successfully parsed");
     }
     else
     {
 	PASSMSG("geometry successfully parsed");
     }
 
-    String_Token_Stream string("4.5");
-    if (soft_equiv(parse_positive_real(string), 4.5))
     {
-        ut.passes("read positive real correctly");
+        String_Token_Stream string("4.5");
+        if (soft_equiv(parse_positive_real(string), 4.5))
+        {
+            ut.passes("read positive real correctly");
+        }
+        else
+        {
+            ut.failure("did NOT read positive real correctly");
+        }
     }
-    else
+
     {
-        ut.failure("did NOT read positive real correctly");
+        String_Token_Stream string("4.5");
+        try
+        {
+            parse_unsigned_integer(string);
+            ut.failure("did NOT detect bad uinteger correctly");
+        }
+        catch (...)
+        {        
+            ut.passes("detected bad uinteger correctly");
+        }
+    }
+    {
+        String_Token_Stream string("333333333333333333333333");
+        parse_unsigned_integer(string);
+        if (string.error_count()==0)
+        {
+            ut.failure("did NOT detect bad uinteger correctly");
+        }
+        else
+        {        
+            ut.passes("detected bad uinteger correctly");
+        }
+    }
+    {
+        String_Token_Stream string("0");
+        parse_positive_integer(string);
+        if (string.error_count()==0)
+        {
+            ut.failure("did NOT detect bad positive integer correctly");
+        }
+        else
+        {        
+            ut.passes("detected bad positive integer correctly");
+        }
+    }
+    {
+        String_Token_Stream string("+3");
+        if (parse_integer(string) == 3)
+        {        
+            ut.passes("correctly parsed +3");
+        }
+        else
+        {
+            ut.failure("did NOT correctly parse +3");
+        }
+    }
+    {
+        String_Token_Stream string("4.5");
+        try
+        {
+            parse_integer(string);
+            ut.failure("did NOT detect bad integer correctly");
+        }
+        catch (...)
+        {        
+            ut.passes("detected bad integer correctly");
+        }
+    }
+    {
+        String_Token_Stream string("333333333333333333333333");
+        parse_integer(string);
+        if (string.error_count()==0)
+        {
+            ut.failure("did NOT detect bad integer correctly");
+        }
+        else
+        {        
+            ut.passes("detected bad integer correctly");
+        }
+    }
+    {
+        String_Token_Stream string("-6.5");
+        if (at_real(string))
+        {
+            ut.passes("detected at real correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT detect at real for -6.5 correctly");
+        }
+    }
+    {
+        String_Token_Stream string("+3f");
+        if (at_real(string))
+        {
+            ut.passes("detected at real correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT detect at real for +3 correctly");
+        }
+    }
+    {
+        String_Token_Stream string("+3f");
+        if (parse_real(string)==3.0)
+        {
+            ut.passes("parsed real correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse real +3 correctly");
+        }
+    }
+    {
+        String_Token_Stream string("abba");
+        try
+        {
+            parse_real(string);
+            ut.failure("did NOT detect bad real correctly");
+        }
+        catch (...)
+        {        
+            ut.passes("detected bad real correctly");
+        }
+    }
+    {
+        String_Token_Stream string("1.8e10000");
+        parse_real(string);
+        if (string.error_count()==0)
+        {
+            ut.failure("did NOT detect real overflow correctly");
+        }
+        else
+        {        
+            ut.passes("detected real overflow correctly");
+        }
+    }
+    {
+        String_Token_Stream string("-8");
+        parse_positive_real(string);
+        if (string.error_count()==0)
+        {
+            ut.failure("did NOT detect nonpositive real correctly");
+        }
+        else
+        {        
+            ut.passes("detected nonpositive real correctly");
+        }
     }
 }
 
