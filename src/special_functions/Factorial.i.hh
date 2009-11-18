@@ -48,20 +48,7 @@ T factorial( T const k )
     if( k < N )
         return tabularValue[k];
     else
-    {
-        Check(k>=N);
-
-    // recursive algorithm:
-    // return  k * factorial(k-1);
-
-    // direct algorithm
-    
-        T Result( tabularValue[N-1] );
-        for( unsigned i=N; i<=k; i++)
-            Result *= i;
-        Ensure(Result>tabularValue[N-1]);
-        return Result;
-    }
+        throw std::range_error("factorial out of range");
 }
 
 //---------------------------------------------------------------------------//
