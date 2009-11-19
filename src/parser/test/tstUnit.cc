@@ -14,79 +14,81 @@
 #include "../Release.hh"
 #include "../Unit.hh"
 #include "ds++/Assert.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 
 using namespace std;
 
 using namespace rtt_parser;
+using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void unit_test()
+void unit_test(UnitTest &ut)
 {
     Unit tstC  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
     if (C!=tstC)
     {
-	FAILMSG("unit C does NOT have expected dimensions");
+	ut.failure("unit C does NOT have expected dimensions");
     }
     else
     {
-	PASSMSG("unit C has expected dimensions");
+	ut.passes("unit C has expected dimensions");
     }
 
     Unit tstHz = { 0, 0, -1, 0, 0, 0, 0, 0, 0,    1};
     if (Hz!=tstHz)
     {
-	FAILMSG("unit Hz does NOT have expected dimensions");
+	ut.failure("unit Hz does NOT have expected dimensions");
     }
     else
     {
-	PASSMSG("unit Hz has expected dimensions");
+	ut.passes("unit Hz has expected dimensions");
     }
 
     Unit tstN  = { 1, 1, -2, 0, 0, 0, 0, 0, 0,    1}; 
     if (N!=tstN)
     {
-	FAILMSG("unit N does NOT have expected dimensions");
+	ut.failure("unit N does NOT have expected dimensions");
     }
     else
     {
-	PASSMSG("unit N has expected dimensions");
+	ut.passes("unit N has expected dimensions");
     }
 
     Unit tstJ  = { 2, 1, -2, 0, 0, 0, 0, 0, 0,    1};
     if (J!=tstJ)
     {
-	FAILMSG("unit J does NOT have expected dimensions");
+	ut.failure("unit J does NOT have expected dimensions");
     }
     else
     {
-	PASSMSG("unit J has expected dimensions");
+	ut.passes("unit J has expected dimensions");
     }
     {
         ostringstream buffer;
         buffer << tstJ;
         if (buffer.str() == "1 m^2-kg-s^-2")
         {
-            PASSMSG("correct text representation of J");
+            ut.passes("correct text representation of J");
         }
         else
         {
-            FAILMSG("NOT correct text representation of J");
+            ut.failure("NOT correct text representation of J");
         }
     }
 
     Unit tstinch = {1, 0, 0, 0, 0, 0, 0, 0, 0,    0.0254};
     if (inch == tstinch)
     {
-	PASSMSG("unit inch has expected dimensions");
+	ut.passes("unit inch has expected dimensions");
     }
     else
     {
-	FAILMSG("unit inch does NOT have expected dimensions");
+	ut.failure("unit inch does NOT have expected dimensions");
     }
 
     // Test divisor
@@ -95,7 +97,7 @@ void unit_test()
         Unit one_cm  = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0.01};
         if( five_cm/5.0 == one_cm )
         {
-            PASSMSG("Units: Division by a constant works.");
+            ut.passes("Units: Division by a constant works.");
         }
         else
         {
@@ -104,50 +106,116 @@ void unit_test()
                    << "five_cm/5.0 = " << five_cm/5.0 << "\n\t"
                    << "one_cm = " << one_cm << "\n\t"
                    << "test five_cm/5.0 == one_cm ?" << std::endl;
-            FAILMSG( buffer.str() );
+            ut.failure( buffer.str() );
         }
     }
-    
+
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0.1, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect length difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect length difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0.1,  1, 1, 0, 0, 0, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect mass difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect mass difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1.1, 1, 0, 0, 0, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect time difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect time difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1.1, 0, 0, 0, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect current difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect current difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1, 0.1, 0, 0, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect temperature difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect temperature difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1, 0, 0.1, 0, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect mole difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect mole difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1, 0, 0, 0.1, 0, 0,    1};
+        if (t1==t2) ut.failure("failed to detect luminence difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect luminence difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1, 0, 0, 0, 0.1, 0,    1};
+        if (t1==t2) ut.failure("failed to detect rad difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect rad difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1, 0, 0, 0, 0, 0.1,    1};
+        if (t1==t2) ut.failure("failed to detect solid angle difference");
+        if (is_compatible(t1, t2))
+            ut.failure("failed to detect solid angle difference");
+    }
+    {
+        Unit t1  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
+        Unit t2  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1.1};
+        if (t1==t2) ut.failure("failed to detect conversion factor difference");
+        if (!is_compatible(t1, t2))
+            ut.failure("failed to ignore conversion factor difference");
+    }
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_parser::release() 
-		 << endl;
-            rtt_c4::finalize();
-	    return 0;
-	}
-
     try
     {
 	// >>> UNIT TESTS
-	if ( rtt_c4::nodes() == 1 ) unit_test();
+        ScalarUnitTest ut( argc, argv, release );
+        unit_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tstUnit, " << ass.what()
-	     << endl;
-        rtt_c4::finalize();
-	return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
+    }
+    catch (exception &err)
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
 
-    // status of test
-    cout <<     "\n*********************************************\n";
-    if( rtt_parser_test::passed )
-        cout << "**** tstUnit Test: PASSED\n";
-    cout <<     "*********************************************\n" << endl;
+    catch( ... )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
+    }
 
-    rtt_c4::global_barrier();
-    cout << "Done testing tstUnit." << endl;
-    rtt_c4::finalize();
     return 0;
 }   
 

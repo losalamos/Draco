@@ -45,10 +45,35 @@ void token_test( UnitTest & ut )
     if (!Is_Integer_Text("0x33a8")) ut.failure(__LINE__);
     if (!Is_Keyword_Text("This is a test")) ut.failure(__LINE__);
     if (Is_Keyword_Text("This is 1 test")) ut.failure(__LINE__);
+    if (!Is_Keyword_Text("_")) ut.failure(__LINE__);
+    if (Is_Keyword_Text("_$")) ut.failure(__LINE__);
+    if (!Is_Keyword_Text("__")) ut.failure(__LINE__);
     if (!Is_Real_Text("+1.56e-3")) ut.failure(__LINE__);
     if (Is_Real_Text("1.39d-3")) ut.failure(__LINE__);
     if (!Is_String_Text("\"This is a test.\"")) ut.failure(__LINE__);
     if (Is_String_Text("\"This is a test")) ut.failure(__LINE__);
+    if (Is_String_Text("This is a test")) ut.failure(__LINE__);
+    if (!Is_String_Text("\"Backslash \\ test\"")) ut.failure(__LINE__);
+    if (Is_String_Text("\"Backslash \\")) ut.failure(__LINE__);
+    if (Is_Other_Text("")) ut.failure(__LINE__);
+    if (Is_Other_Text("a")) ut.failure(__LINE__);
+    if (Is_Other_Text(" ")) ut.failure(__LINE__);
+    if (Is_Other_Text("_")) ut.failure(__LINE__);
+    if (Is_Other_Text("...")) ut.failure(__LINE__);
+    if (!Is_Other_Text("==")) ut.failure(__LINE__);
+    if (!Is_Other_Text("!=")) ut.failure(__LINE__);
+    if (!Is_Other_Text("<=")) ut.failure(__LINE__);
+    if (!Is_Other_Text(">=")) ut.failure(__LINE__);
+    if (!Is_Other_Text("&&")) ut.failure(__LINE__);
+    if (!Is_Other_Text("||")) ut.failure(__LINE__);
+    if (Is_Other_Text("!!")) ut.failure(__LINE__);
+
+    if (Is_Text_Token(ERROR)) ut.failure(__LINE__);
+    if (Is_Text_Token(EXIT)) ut.failure(__LINE__);
+
+    if (Token(REAL, "2", "")==Token(REAL,"3","")) ut.failure(__LINE__);
+    if (Token(REAL, "2", "1")==Token(REAL,"2","3")) ut.failure(__LINE__);
+
 
     if (real_token == end_token)
     {
@@ -80,7 +105,7 @@ int main(int argc, char *argv[])
         ScalarUnitTest ut( argc, argv, release );
 	token_test( ut );
     }
-        catch( rtt_dsxx::assertion &err )
+    catch( rtt_dsxx::assertion &err )
     {
         std::string msg = err.what();
         if( msg != std::string( "Success" ) )
