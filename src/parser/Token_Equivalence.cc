@@ -125,6 +125,13 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
         // Get the next token in the stream.
         token = tokens.shift();
     }
+
+    if(!done)
+    {
+        msg << "Did not find the keyword \"" << keyword
+            << "\" in the token stream." << std::endl;
+        ut.failure(msg.str());
+    }
     return;
 }
 

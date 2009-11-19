@@ -249,7 +249,18 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size)
     for ( unsigned i = 0; i < size; ++i )
     {
         if (at_real(tokens))
+        {
             x[i] = parse_unsigned_integer(tokens);
+        }
+        else
+        {
+            ostringstream str;
+            str << "unsigned integer sequence too short; expected "
+                << size << " values.";
+
+            tokens.report_semantic_error(str.str().c_str());
+            return;
+        }
     }
 }
 
