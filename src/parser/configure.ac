@@ -34,11 +34,11 @@ AC_NEEDS_LIBS( c4 units \
 dnl
 dnl Unit tests
 dnl
-AC_RUNTESTS(tstToken tstToken_Equivalence tstutilities , scalar)
+AC_RUNTESTS(tstToken tstToken_Equivalence tstutilities tstUnit tstParse_Table, scalar)
 AC_RUNTESTS(
-            tstUnit \
+dnl            tstUnit \
             tstFile_Token_Stream \
-            tstParse_Table \
+dnl            tstParse_Table \
 	    tstParallel_File_Token_Stream \
             tstString_Token_Stream \
             driver4tstConsole_Token_Stream \
