@@ -18,12 +18,11 @@
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
 #include "../RCF.hh"
+#include "../ScalarUnitTest.hh"
 #include "ds_test.hh"
 
 using namespace std;
-
-using rtt_dsxx::RCF;
-using rtt_dsxx::soft_equiv;
+using namespace rtt_dsxx;
 
 typedef vector<double> dbl_field;
 
@@ -63,39 +62,43 @@ class Field
 
 //---------------------------------------------------------------------------//
 
-RCF<Field> get_field()
+RCF<Field> get_field(UnitTest &ut)
 {
     RCF<Field> f(new Field);
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     return f;
 }
 
 //---------------------------------------------------------------------------//
 
-void use_const_field(const RCF<dbl_field> &f, const dbl_field &ref)
+void use_const_field(const RCF<dbl_field> &f,
+                     const dbl_field &ref,
+                     UnitTest &ut)
 {
     // test const_iterator access
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ITFAILS;
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
 
     // get the field to test const get_field
     const dbl_field &field = f.get_field();
     if (!soft_equiv(field.begin(), field.end(), ref.begin(), ref.end())) 
-        ITFAILS;
+        ut.failure("test fails");
 
     // check constant operator[] access
     for (int i = 0; i < f.size(); i++)
     {
-        if (!soft_equiv(f[i], ref[i])) ITFAILS;
+        if (!soft_equiv(f[i], ref[i])) ut.failure("test fails");
     }
 }
 
 
 //---------------------------------------------------------------------------//
 
-void use_const_field(const Field &f, const dbl_field &ref)
+void use_const_field(const Field &f,
+                     const dbl_field &ref,
+                     UnitTest &ut)
 {
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ITFAILS;
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
 }
 
 //---------------------------------------------------------------------------//
@@ -129,54 +132,54 @@ void use_non_const_field(Field &f)
 //   assigned()
 // 
 
-void test_simple_construction_copy()
+void test_simple_construction_copy(UnitTest &ut)
 {
     // make a smart field on a vector of doubles
     RCF<dbl_field> sf;
     RCF<dbl_field> y;
-    if (sf.assigned()) ITFAILS;
+    if (sf.assigned()) ut.failure("test fails");
     {
         sf = new dbl_field(10, 5.2);
-        if (!sf.assigned()) ITFAILS;
+        if (!sf.assigned()) ut.failure("test fails");
 
         dbl_field ref(10, 5.2);
 
-        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ITFAILS;
+        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ut.failure("test fails");
 
         // fill in 2.2 (tests non-const begin and end)
         fill(sf.begin(), sf.end(), 2.2);
         fill(ref.begin(), ref.end(), 2.2);
 
-        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ITFAILS;
+        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ut.failure("test fails");
         
         // check size
-        if (sf.size() != 10) ITFAILS;
-        if (sf.empty())      ITFAILS;
+        if (sf.size() != 10) ut.failure("test fails");
+        if (sf.empty())      ut.failure("test fails");
 
         // check with subscript access
         for (int i = 0; i < sf.size(); i++)
         {
-            if (!soft_equiv(sf[i], 2.2)) ITFAILS;
+            if (!soft_equiv(sf[i], 2.2)) ut.failure("test fails");
             
             // reassign and check
             sf[i] = 12.46;
-            if (!soft_equiv(sf[i], 12.46)) ITFAILS;
+            if (!soft_equiv(sf[i], 12.46)) ut.failure("test fails");
         }
 
         fill(ref.begin(), ref.end(), 12.46);
-        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ITFAILS;
+        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ut.failure("test fails");
 
         // check const functions
-        use_const_field(sf, ref);
+        use_const_field(sf, ref, ut);
 
         // get field and empty it
         sf.get_field().resize(0);
-        if (!sf.empty()) ITFAILS;
+        if (!sf.empty()) ut.failure("test fails");
 
         // make a field, using alternative ctor.
         RCF<dbl_field> x(10, 12.46);
-        if (!x.assigned()) ITFAILS;
-        if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end())) ITFAILS;
+        if (!x.assigned()) ut.failure("test fails");
+        if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end())) ut.failure("test fails");
 
         // assign it to x
         y = x;
@@ -186,22 +189,22 @@ void test_simple_construction_copy()
         x[0] = 1.1;
         y[1] = 1.2;
 
-        if (y.size() != 2) ITFAILS;
+        if (y.size() != 2) ut.failure("test fails");
 
-        if (y[0] != 1.1) ITFAILS;
-        if (x[1] != 1.2) ITFAILS;
+        if (y[0] != 1.1) ut.failure("test fails");
+        if (x[1] != 1.2) ut.failure("test fails");
 
 	// check range constructor
 	RCF<dbl_field> z(x.begin(), x.end());
-        if (!soft_equiv(x.begin(), x.end(), z.begin(), z.end())) ITFAILS;
+        if (!soft_equiv(x.begin(), x.end(), z.begin(), z.end())) ut.failure("test fails");
     }
 
-    if (!sf.assigned()) ITFAILS;
-    if (!y.assigned())  ITFAILS;
+    if (!sf.assigned()) ut.failure("test fails");
+    if (!y.assigned())  ut.failure("test fails");
 
-    if (y.size() != 2) ITFAILS;
-    if (y[0] != 1.1) ITFAILS;
-    if (y[1] != 1.2) ITFAILS;
+    if (y.size() != 2) ut.failure("test fails");
+    if (y[0] != 1.1) ut.failure("test fails");
+    if (y[1] != 1.2) ut.failure("test fails");
 
     // test some RCF< const Field > functions.
     {
@@ -213,185 +216,192 @@ void test_simple_construction_copy()
         {
             RCF< const dbl_field > cf( y );
             // test empty()
-            if( cf.empty() ) ITFAILS;
+            if( cf.empty() ) ut.failure("test fails");
             // test size() -- same size as y!
-            if( cf.size() != 2 ) ITFAILS;
+            if( cf.size() != 2 ) ut.failure("test fails");
             // test bracket operator
-            if( ! soft_equiv( cf[0], y[0] ) ) ITFAILS;
+            if( ! soft_equiv( cf[0], y[0] ) ) ut.failure("test fails");
         }
 
         // create a new RCF using alternate ctor
         {
             RCF< const dbl_field > cf2( 5, 3.1415 );
-            if( ! cf2.assigned() ) ITFAILS;
+            if( ! cf2.assigned() ) ut.failure("test fails");
             if( ! soft_equiv( cf2.begin(), cf2.end(), 
-                              ref.begin(), ref.end() )) ITFAILS;
+                              ref.begin(), ref.end() )) ut.failure("test fails");
         }
         
         // check range constructor
         {
             RCF< const dbl_field > cf3( ref.begin(), ref.end() );
-            if( ! cf3.assigned() ) ITFAILS;
+            if( ! cf3.assigned() ) ut.failure("test fails");
             if( ! soft_equiv( cf3.begin(), cf3.end(), 
-                              ref.begin(), ref.end() )) ITFAILS;
+                              ref.begin(), ref.end() )) ut.failure("test fails");
         }
 
         // check constructor from ptr to field
         {
             RCF< const Field > cf( new Field );
-            if (!cf.assigned()) ITFAILS;
+            if (!cf.assigned()) ut.failure("test fails");
         }
     }
     
     if (rtt_ds_test::passed)
-        PASSMSG("Simple construction and copy ok.");
+        ut.passes("Simple construction and copy ok.");
 }
 
 //---------------------------------------------------------------------------//
 
-void test_counting()
+void test_counting(UnitTest &ut)
 {
-    if (nfields != 0) ITFAILS;
+    if (nfields != 0) ut.failure("test fails");
 
-    RCF<Field> f = get_field();
-    if (!f.assigned()) ITFAILS;
+    RCF<Field> f = get_field(ut);
+    if (!f.assigned()) ut.failure("test fails");
 
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     {
         RCF<Field> g = f;
         
-        if (nfields != 1) ITFAILS;
+        if (nfields != 1) ut.failure("test fails");
     }
     
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     dbl_field ref(5, 1.0);
     
     // check const field access
-    use_const_field(f.get_field(), ref);
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ITFAILS;
+    use_const_field(f.get_field(), ref, ut);
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
     
     // check non-const field access
     use_non_const_field(f.get_field());
     ref[1] = 13.231;
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ITFAILS;
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
 
     RCF<Field> g;
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     // test copying and assignment
     {
         g = f;
-        if (nfields != 1) ITFAILS;
-        f = new Field();
-        if (nfields != 2) ITFAILS;
+        if (nfields != 1) ut.failure("test fails");
+        Field *ptr = new Field();
+        f = ptr;
+        if (nfields != 2) ut.failure("test fails");
+        f = ptr;
+        if (nfields != 2) ut.failure("test fails");
     }
 
-    if (nfields != 2) ITFAILS;
+    if (nfields != 2) ut.failure("test fails");
 
     g = RCF<Field>();
-    if (g.assigned()) ITFAILS;
+    if (g.assigned()) ut.failure("test fails");
 
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     if (rtt_ds_test::passed)
-        PASSMSG("Reference counting and copy construction ok.");
+        ut.passes("Reference counting and copy construction ok.");
 }
 
 //---------------------------------------------------------------------------//
 
-void test_constness()
+void test_constness(UnitTest &ut)
 {
-    if (nfields != 0) ITFAILS;
+    if (nfields != 0) ut.failure("test fails");
 
-    RCF<const Field> f = get_field();
-    if (!f.assigned()) ITFAILS;
+    RCF<const Field> f = get_field(ut);
+    if (!f.assigned()) ut.failure("test fails");
 
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     {
         RCF<const Field> g = f;
         
-        if (nfields != 1) ITFAILS;
+        if (nfields != 1) ut.failure("test fails");
     }
     
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     dbl_field ref(5, 1.0);
     
     // check const field access
-    use_const_field(f.get_field(), ref);
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ITFAILS;
+    use_const_field(f.get_field(), ref, ut);
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
 
     RCF<const Field> g;
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     // test copying and assignment
     {
         g = f;
-        if (nfields != 1) ITFAILS;
+        if (nfields != 1) ut.failure("test fails");
         f = new Field();
-        if (nfields != 2) ITFAILS;
+        if (nfields != 2) ut.failure("test fails");
+        g = const_cast<Field *>(&g.get_field());
+        if (nfields != 2) ut.failure("test fails");
     }
 
-    if (nfields != 2) ITFAILS;
+    if (nfields != 2) ut.failure("test fails");
 
     g = RCF<const Field>();
-    if (g.assigned()) ITFAILS;
+    if (g.assigned()) ut.failure("test fails");
 
-    if (nfields != 1) ITFAILS;
+    if (nfields != 1) ut.failure("test fails");
 
     if (rtt_ds_test::passed)
-        PASSMSG("Constness tests ok.");
+        ut.passes("Constness tests ok.");
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
-	    return 0;
-	}
-
     try
     {
 	// >>> UNIT TESTS
 
-        test_simple_construction_copy();
-        test_counting();
-        test_constness();
+        ScalarUnitTest ut( argc, argv, release );
+
+        test_simple_construction_copy(ut);
+        test_counting(ut);
+        test_constness(ut);
 
         // make sure that the field number is zero
         if (nfields == 0)
         {
-            PASSMSG("All fields destroyed.");
+            ut.passes("All fields destroyed.");
         }
         else
         {
-            FAILMSG("Error in reference counting of fields.");
+            ut.failure("Error in reference counting of fields.");
         }
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tstRCF, " << ass.what() << endl;
-	return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
     }
-    catch (...)
+    catch (exception &err)
     {
-	cout << "While testing tstRCF, an unknown error occurred." << endl;
-	return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
-    // status of test
-    cout <<     "\n*********************************************\n";
-    if (rtt_ds_test::passed) 
-        cout << "**** tstRCF Test: PASSED\n";
-    cout <<     "*********************************************\n\n" 
-         << "Done testing tstRCF." << endl;
+
+    catch( ... )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
+    }
+
     return 0;
 }   
 

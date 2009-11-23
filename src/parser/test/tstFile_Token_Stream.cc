@@ -311,15 +311,62 @@ void tstFile_Token_Stream()
 		   << "during contruction." << endl;
 	    FAILMSG( errmsg.str() );
 	}
-// 	Token token = tokens.shift();
-// 	if (token.type()!=ERROR)
-// 	{
-// 	    FAILMSG("no such file does NOT return error token");
-// 	}
-// 	else
-// 	{
-// 	    PASSMSG("no such file returns error token");
-// 	}
+    }
+    {
+	try
+	{
+            set<char> ws;
+	    File_Token_Stream tokens("no such file", ws);
+	    // The preceeding file does not exist.
+	    ostringstream errmsg;
+	    errmsg << "File_Token_Stream did not throw an expected exception.\n"
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
+	    FAILMSG( errmsg.str() );
+	}
+	catch (	invalid_argument const &a )
+	{
+	    std::ostringstream errmsg;
+	    errmsg << "File_Token_Stream threw an expected exception.\n"
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
+	    PASSMSG( errmsg.str() );
+	}
+	catch ( ... )
+	{
+	    ostringstream errmsg;
+	    errmsg << "File_Token_Stream threw an unknown exception "
+		   << "during contruction." << endl;
+	    FAILMSG( errmsg.str() );
+	}
+    }
+    {
+	try
+	{
+	    File_Token_Stream tokens;
+            tokens.open("no such file");
+	    // The preceeding file does not exist.
+	    ostringstream errmsg;
+	    errmsg << "File_Token_Stream did not throw an expected exception.\n"
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
+	    FAILMSG( errmsg.str() );
+	}
+	catch (	invalid_argument const &a )
+	{
+	    std::ostringstream errmsg;
+	    errmsg << "File_Token_Stream threw an expected exception.\n"
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
+	    PASSMSG( errmsg.str() );
+	}
+	catch ( ... )
+	{
+	    ostringstream errmsg;
+	    errmsg << "File_Token_Stream threw an unknown exception "
+		   << "during contruction." << endl;
+	    FAILMSG( errmsg.str() );
+	}
     }
 
 //---------------------------------------------------------------------------//

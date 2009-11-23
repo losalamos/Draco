@@ -39,11 +39,11 @@ void tstutilities(UnitTest &ut)
     double d = parse_real(tokens);
     if (tokens.error_count() != 0 || d != 5.)
     {
-	FAILMSG("real NOT successfully parsed");
+	ut.failure("real NOT successfully parsed");
     }
     else
     {
-	PASSMSG("real successfully parsed");
+	ut.passes("real successfully parsed");
     }
 
     // Try to read an integer.
@@ -51,11 +51,11 @@ void tstutilities(UnitTest &ut)
     int i = parse_integer(tokens);
     if (tokens.error_count() != 0 || i != 1)
     {
-	FAILMSG("integer NOT successfully parsed");
+	ut.failure("integer NOT successfully parsed");
     }
     else
     {
-	PASSMSG("integer successfully parsed");
+	ut.passes("integer successfully parsed");
     }
 
     // Try to read a negative integer.
@@ -63,11 +63,11 @@ void tstutilities(UnitTest &ut)
     i = parse_integer(tokens);
     if (tokens.error_count() != 0 || i != -3)
     {
-	FAILMSG("integer NOT successfully parsed");
+	ut.failure("integer NOT successfully parsed");
     }
     else
     {
-	PASSMSG("integer successfully parsed");
+	ut.passes("integer successfully parsed");
     }
 
     // Try to read an unsigned integer.
@@ -75,11 +75,11 @@ void tstutilities(UnitTest &ut)
     i = parse_unsigned_integer(tokens);
     if (tokens.error_count() != 0 || i != 4)
     {
-	FAILMSG("integer NOT successfully parsed");
+	ut.failure("integer NOT successfully parsed");
     }
     else
     {
-	PASSMSG("integer successfully parsed");
+	ut.passes("integer successfully parsed");
     }
 
     // Try to read a positive integer.
@@ -87,11 +87,11 @@ void tstutilities(UnitTest &ut)
     i = parse_positive_integer(tokens);
     if (tokens.error_count() != 0 || i != 1198)
     {
-	FAILMSG("positive integer NOT successfully parsed");
+	ut.failure("positive integer NOT successfully parsed");
     }
     else
     {
-	PASSMSG("positive integer successfully parsed");
+	ut.passes("positive integer successfully parsed");
     }
 
     // Try to read an integer as a real.
@@ -99,11 +99,11 @@ void tstutilities(UnitTest &ut)
     d = parse_real(tokens);
     if (tokens.error_count() != 0 || d != 2.)
     {
-	FAILMSG("integer NOT successfully parsed as real");
+	ut.failure("integer NOT successfully parsed as real");
     }
     else
     {
-	PASSMSG("integer successfully parsed as real");
+	ut.passes("integer successfully parsed as real");
     }
 
     // Try to read some vectors.
@@ -114,11 +114,11 @@ void tstutilities(UnitTest &ut)
     if (v[0] == 3. && v[1] == 0.0 && v[2] == 0.0 && 
 	token.type() == KEYWORD && token.text() == "stop")
     {
-	PASSMSG("1-D vector successfully parsed");
+	ut.passes("1-D vector successfully parsed");
     }
     else
     {
-	FAILMSG("1-D vector NOT successfully parsed");
+	ut.failure("1-D vector NOT successfully parsed");
     }
 
     parse_vector(tokens, v);
@@ -126,22 +126,22 @@ void tstutilities(UnitTest &ut)
     if (v[0] == 1. && v[1] == 2.0 && v[2] == 0.0 && 
 	token.type() == KEYWORD && token.text() == "stop")
     {
-	PASSMSG("2-D vector successfully parsed");
+	ut.passes("2-D vector successfully parsed");
     }
     else
     {
-	FAILMSG("2-D vector NOT successfully parsed");
+	ut.failure("2-D vector NOT successfully parsed");
     }
 
     parse_vector(tokens, v);
     if (v[0] == 4. && v[1] == 3.0 && v[2] == 2.0
 	&& tokens.shift().text()=="stop")
     {
-	PASSMSG("3-D vector successfully parsed");
+	ut.passes("3-D vector successfully parsed");
     }
     else
     {
-	FAILMSG("3-D vector NOT successfully parsed");
+	ut.failure("3-D vector NOT successfully parsed");
     }
     unsigned w[3];
     parse_unsigned_vector(tokens, w, 3);
@@ -149,11 +149,11 @@ void tstutilities(UnitTest &ut)
     if (w[0] == 3 && w[1] == 2 && w[2] == 1 &&
         token.type() == KEYWORD && token.text() == "stop")
     {
-        PASSMSG("Vector of unsigned successfully parsed");
+        ut.passes("Vector of unsigned successfully parsed");
     }
     else
     {
-        FAILMSG("Vector of unsigned NOT successfully parsed");
+        ut.failure("Vector of unsigned NOT successfully parsed");
     }
     
     // Try to read some unit expressions
@@ -161,161 +161,161 @@ void tstutilities(UnitTest &ut)
     Unit one = {0,0,0,0,0,0,0,0,0, 1};
 
     Unit left = parse_unit(tokens);
-    if (left!=J) ITFAILS;
+    if (left!=J) ut.failure("test fails");
 
     left = parse_unit(tokens);
     Unit right = parse_unit(tokens);
-    if (left!=right || left!=C) ITFAILS;
+    if (left!=right || left!=C) ut.failure("test fails");
 
     left = parse_unit(tokens);
     cout << left << endl;
-    if (left!=1/s) ITFAILS;
+    if (left!=1/s) ut.failure("test fails");
 
     left = parse_unit(tokens);
     right = parse_unit(tokens);
-    if (left!=right || left!=N) ITFAILS;
+    if (left!=right || left!=N) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=J/K) ITFAILS;
+    if (left!=J/K) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=J/mol) ITFAILS;
+    if (left!=J/mol) ut.failure("test fails");
 
     left = parse_unit(tokens);
     right = parse_unit(tokens);
-    if (left!=right || left!=lm) ITFAILS;
+    if (left!=right || left!=lm) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=rad/s) ITFAILS;
+    if (left!=rad/s) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=one) ITFAILS;
+    if (left!=one) ut.failure("test fails");
 
     left = parse_unit(tokens);
     if (left!=one)
     {
-	FAILMSG("dyne definition did NOT check out");
+	ut.failure("dyne definition did NOT check out");
     }
     else
     {
-	PASSMSG("dyne definition checks out");
+	ut.passes("dyne definition checks out");
     }
 
     left = parse_unit(tokens);
     if (left!=one)
     {
-	FAILMSG("erg definition did NOT check out");
+	ut.failure("erg definition did NOT check out");
     }
     else
     {
-	PASSMSG("erg definition checks out");
+	ut.passes("erg definition checks out");
     }
 
     left = parse_unit(tokens);
     if (!is_compatible(left, cm) || !soft_equiv(left.conv, 0.0254))
     {
-	FAILMSG("inch definition did NOT check out");
+	ut.failure("inch definition did NOT check out");
     }
     else
     {
-	PASSMSG("inch definition checks out");
+	ut.passes("inch definition checks out");
     }
 
     left = parse_unit(tokens);
     if (!is_compatible(left, one) || !soft_equiv(left.conv, 12.0))
     {
-	FAILMSG("foot definition did NOT check out");
+	ut.failure("foot definition did NOT check out");
     }
     else
     {
-	PASSMSG("foot definition checks out");
+	ut.passes("foot definition checks out");
     }
 
     left = parse_unit(tokens);
     if (!is_compatible(left, one) || !soft_equiv(left.conv, 4.448221615))
     {
-	FAILMSG("pound definition did NOT check out");
+	ut.failure("pound definition did NOT check out");
     }
     else
     {
-	PASSMSG("pound definition checks out");
+	ut.passes("pound definition checks out");
     }
 
     left = parse_unit(tokens);
     if (!is_compatible(left, one))
     {
-	FAILMSG("keV definition did NOT check out");
+	ut.failure("keV definition did NOT check out");
     }
     else
     {
-	PASSMSG("keV definition checks out");
+	ut.passes("keV definition checks out");
     }
 
     left = parse_unit(tokens);
-    if (left!=J) ITFAILS;
+    if (left!=J) ut.failure("test fails");
 
     left = parse_unit(tokens);
-    if (left!=J) ITFAILS;
+    if (left!=J) ut.failure("test fails");
 
     left = parse_unit(tokens);
     if (left!=K)
     {
-	FAILMSG("K definition did NOT check out");
+	ut.failure("K definition did NOT check out");
     }
     else
     {
-	PASSMSG("K definition checks out");
+	ut.passes("K definition checks out");
     }
 
     left = parse_unit(tokens);
     if (left!=sr)
     {
-	FAILMSG("sr definition did NOT check out");
+	ut.failure("sr definition did NOT check out");
     }
     else
     {
-	PASSMSG("sr definition checks out");
+	ut.passes("sr definition checks out");
     }
 
     // Now see if we catch a bogus unit expression.
     try
     {
 	left = parse_unit(tokens);
-	FAILMSG("did NOT successfully catch bogus unit");
+	ut.failure("did NOT successfully catch bogus unit");
     }
     catch (const Syntax_Error &)
     {
-	PASSMSG("successfully caught bogus unit");
+	ut.passes("successfully caught bogus unit");
     }
 
 
@@ -324,74 +324,111 @@ void tstutilities(UnitTest &ut)
     double length = parse_quantity(tokens, rtt_parser::m, "length");
     if (fabs(length-3.0)<=std::numeric_limits<double>::epsilon())
     {
-	PASSMSG("length successfully parsed");
+	ut.passes("length successfully parsed");
     }
     else
     {
-	FAILMSG("length NOT successfully parsed");
+	ut.failure("length NOT successfully parsed");
     }
 
     double energy = parse_quantity(tokens, rtt_parser::J, "energy");
     if (fabs(energy-2.3e-7)<=std::numeric_limits<double>::epsilon())
     {
-	PASSMSG("cgs energy successfully parsed");
+	ut.passes("cgs energy successfully parsed");
     }
     else
     {
-	FAILMSG("cgs energy NOT successfully parsed");
+	ut.failure("cgs energy NOT successfully parsed");
     }
 
     unsigned old_error_count = tokens.error_count();
     length = parse_quantity(tokens, rtt_parser::m, "length");
     if (tokens.error_count()==old_error_count)
     {
-	FAILMSG("bad length NOT successfully detected");
+	ut.failure("bad length NOT successfully detected");
     }
     else
     {
-	PASSMSG("bad length successfully detected");
+	ut.passes("bad length successfully detected");
     }
 
     old_error_count = tokens.error_count();
     double T = parse_temperature(tokens);
     if (tokens.error_count()!=old_error_count)
     {
-	FAILMSG("temperature NOT successfully parsed");
+	ut.failure("temperature NOT successfully parsed");
     }
     else
     {
-	PASSMSG("temperature successfully parsed");
+	ut.passes("temperature successfully parsed");
     }
     T = parse_temperature(tokens);
     if (tokens.error_count()!=old_error_count)
     {
-	FAILMSG("temperature NOT successfully parsed");
+	ut.failure("temperature NOT successfully parsed");
     }
     else
     {
-	PASSMSG("temperature successfully parsed");
+	ut.passes("temperature successfully parsed");
+    }
+    {
+        String_Token_Stream tokens("3.0 m");
+        try
+        {
+            parse_temperature(tokens);
+            ut.failure("did NOT detect bad temperature units");
+        }
+        catch(...)
+        {
+            ut.passes("correctly detected bad temperature units");
+        }
+    }
+    {
+        String_Token_Stream tokens("-3.0 K");
+        double const T = parse_temperature(tokens);
+        if (tokens.error_count()==0 || T!=0)
+        {
+            ut.failure("did NOT detect negative temperature");
+        }
+        else
+        {
+            ut.passes("correctly detected negative temperature");
+        }
     }
 
     // Try reading sequence of quantities with signs
     T = parse_quantity(tokens, J, "energy");
     if (tokens.error_count()!=old_error_count)
     {
-	FAILMSG("second negative quantity NOT successfully parsed");
+	ut.failure("second negative quantity NOT successfully parsed");
     }
     else
     {
-	PASSMSG("second negative quantity successfully parsed");
+	ut.passes("second negative quantity successfully parsed");
     }
 
     // Try reading a manifest string.
     string parsed_string = parse_manifest_string(tokens);
     if (parsed_string!="manifest string")
     {
-	FAILMSG("manifest string NOT successfully parsed");
+	ut.failure("manifest string NOT successfully parsed");
     }
     else
     {
-	PASSMSG("manifest string successfully parsed");
+	ut.passes("manifest string successfully parsed");
+    }
+
+    {
+        String_Token_Stream tokens("bad");
+        try
+        {
+            parse_manifest_string(tokens);
+            ut.failure("did NOT detect bad manifest string");
+        }
+        catch(...)
+        {
+            ut.passes("correctly detected bad manifest string");
+        }
     }
 
     // Try reading a geometry.
@@ -399,31 +436,31 @@ void tstutilities(UnitTest &ut)
     parse_geometry(tokens, geometry);
     if (geometry != rtt_mesh_element::AXISYMMETRIC)
     {
-	FAILMSG("axisymmetric geometry NOT successfully parsed");
+	ut.failure("axisymmetric geometry NOT successfully parsed");
     }
     else
     {
-	PASSMSG("geometry successfully parsed");
+	ut.passes("geometry successfully parsed");
     }
     geometry = rtt_mesh_element::END_GEOMETRY;
     parse_geometry(tokens, geometry);
     if (geometry != rtt_mesh_element::CARTESIAN)
     {
-	FAILMSG("cartesian geometry NOT successfully parsed");
+	ut.failure("cartesian geometry NOT successfully parsed");
     }
     else
     {
-	PASSMSG("geometry successfully parsed");
+	ut.passes("geometry successfully parsed");
     }
     geometry = rtt_mesh_element::END_GEOMETRY;
     parse_geometry(tokens, geometry);
     if (geometry != rtt_mesh_element::SPHERICAL)
     {
-	FAILMSG("spherical geometry NOT successfully parsed");
+	ut.failure("spherical geometry NOT successfully parsed");
     }
     else
     {
-	PASSMSG("geometry successfully parsed");
+	ut.passes("geometry successfully parsed");
     }
 
     {
@@ -435,6 +472,38 @@ void tstutilities(UnitTest &ut)
         else
         {
             ut.failure("did NOT read positive real correctly");
+        }
+    }
+    {
+        String_Token_Stream tokens("cylindrical, cartesian, xy, bad");
+        rtt_mesh_element::Geometry parsed_geometry =
+            rtt_mesh_element::AXISYMMETRIC;
+        parse_geometry(tokens, parsed_geometry);
+        if (tokens.error_count()==0)
+        {
+            ut.failure("did NOT detect duplicate geometry definition");
+        }
+        if (parsed_geometry != rtt_mesh_element::AXISYMMETRIC)
+        {
+            ut.failure("did NOT parse cylindrical geometry correctly");
+        }
+        parse_geometry(tokens, parsed_geometry);
+        if (parsed_geometry != rtt_mesh_element::CARTESIAN)
+        {
+            ut.failure("did NOT parse cartesian geometry correctly");
+        }
+        parse_geometry(tokens, parsed_geometry);
+        if (parsed_geometry != rtt_mesh_element::CARTESIAN)
+        {
+            ut.failure("did NOT parse xy geometry correctly");
+        }
+        try
+        {
+            parse_geometry(tokens, parsed_geometry);
+            ut.failure("did NOT catch bad geometry");
+        }
+        catch(...)
+        {
         }
     }
 
@@ -578,40 +647,69 @@ void tstutilities(UnitTest &ut)
             ut.passes("detected nonpositive real correctly");
         }
     }
+    {
+        String_Token_Stream string("1 2 3");
+        unsigned x[4];
+        parse_unsigned_vector(string, x, 4);
+        if (string.error_count()==0)
+        {
+            ut.failure("did NOT detect too short vector correctly");
+        }
+        else
+        {        
+            ut.passes("detected too short vector correctly");
+        }
+    }
+    {
+        String_Token_Stream string("fred");
+        Unit const unit = parse_unit(string);
+        if (!is_compatible(unit, dimensionless))
+        {
+            ut.failure("did NOT detect no unit");
+        }
+        else
+        {        
+            ut.passes("detected no unit correctly");
+        }
+        
+    }
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    ScalarUnitTest ut(argc, argv, release);
-
     try
     {
 	// >>> UNIT TESTS
+        ScalarUnitTest ut(argc, argv, release);
         tstutilities(ut);
     }
-    catch (std::exception &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tstutilities, " << ass.what()
-	     << endl;
-	ut.numFails++;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
     }
-    catch (...)
+    catch (exception &err)
     {
-        cout << "ERROR: While testing tstBudge_Opacity_Model, "
-             << "An unknown exception was thrown." << endl;
-        ut.numFails++;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
 
-    if (ut.numFails==0)
+    catch( ... )
     {
-        return EXIT_SUCCESS;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
     }
-    else
-    {
-        return EXIT_FAILURE;
-    }
+
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

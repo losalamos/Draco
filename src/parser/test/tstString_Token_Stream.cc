@@ -12,6 +12,7 @@
 
 #include <sstream>
 
+#include "ds++/ScalarUnitTest.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 
@@ -27,7 +28,7 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstString_Token_Stream()
+void tstString_Token_Stream(UnitTest &ut)
 {
     ifstream infile("scanner_test.inp");
     string contents;
@@ -358,6 +359,28 @@ void tstString_Token_Stream()
 
     }
 
+    {
+        String_Token_Stream tokens("09");
+        if (tokens.is_nb_whitespace('\t'))
+        {
+            ut.passes("tab correctly identified as nonbreaking whitespace");
+        }
+        else
+        {
+            ut.failure("tab NOT correctly identified as nonbreaking "
+                       "whitespace");  
+        }
+        Token token = tokens.shift();
+        if (token.type()!=INTEGER || token.text()!="0")
+        {
+            ut.failure("did NOT scan 09 correctly");
+        }
+        else
+        {
+            ut.passes("scanned 09 correctly");
+        }
+    }
+
     return;
 }
 
@@ -365,43 +388,36 @@ void tstString_Token_Stream()
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_parser::release() 
-		 << endl;
-	    return 0;
-	}
-
     try
     {
-	// >>> UNIT TESTS
-	if (rtt_c4::nodes() == 1) tstString_Token_Stream();
+        ScalarUnitTest ut( argc, argv, release );
+        tstString_Token_Stream(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tstString_Token_Stream, " << ass.what()
-	     << endl;
-	return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
+    }
+    catch (exception &err)
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_parser_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstString_Token_Stream Test: PASSED" 
-	     << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
 
-    rtt_c4::global_barrier();
-    cout << "Done testing tstString_Token_Stream." << endl;
-    rtt_c4::finalize();
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//

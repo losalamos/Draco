@@ -58,7 +58,11 @@ void compute_buffer_size_test()
     vi[0] = 7;
     vi[1] = 22;
 
-    unsigned int total_size = num_vi * sizeof(int) + num_vd * sizeof(double);
+    char const test_string[]="test";
+
+    unsigned int total_size =
+        num_vi * sizeof(int) + num_vd * sizeof(double) + sizeof(test_string);
+    // includes one padding byte
 
     Packer p;
 
@@ -66,6 +70,9 @@ void compute_buffer_size_test()
 
     p.compute_buffer_size_mode();
     do_some_packing(p, vd, vi); // computes the size
+
+    p.pad(1);
+    p.accept(4, test_string);
 
     if ( total_size != p.size() ) ITFAILS;
 
@@ -76,11 +83,18 @@ void compute_buffer_size_test()
     p.set_buffer(p.size(), &buffer[0]);
     do_some_packing(p, vd, vi); // actually does the packing
 
+    p.pad(1);
+    p.accept(4, test_string);
+
+    if ( total_size != p.end()-p.begin()) ITFAILS;
+
     // Unpack
 
     Unpacker u;
 
     u.set_buffer(p.size(), &buffer[0]);
+
+    if ( u.size() != u.end()-u.begin()) ITFAILS;
 
     for ( int i = 0; i < vd.size(); ++i )
     {
@@ -94,6 +108,16 @@ void compute_buffer_size_test()
 	int j;
 	u >> j;
 	if ( j != vi[i] ) ITFAILS;
+    }
+    
+    // padding byte
+    u.skip(1);
+
+    for ( unsigned i=0; i<4; ++i)
+    {
+        char c;
+        u >> c;
+        if (c != test_string[i]) ITFAILS;
     }
 
     if (rtt_ds_test::passed)
