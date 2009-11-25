@@ -120,9 +120,10 @@ class Receiver
     template <typename T>
     void receive_data(int size, T* data) const
     {
-        Check(data);
-        if (size > 0)
+        if (size > 0) {
+            Check(data);
             rtt_c4::receive(data, size, from_node, DATA_CHANNEL);
+        }
     }
 
     
