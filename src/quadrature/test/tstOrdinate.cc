@@ -69,6 +69,58 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
         else
             ut.failure("Constructor did not initialize data to correct values.");
     }
+    { // Test 3D constructor
+        double const sqrtThird(std::sqrt(1.0/3.0)), wt(PI/2);
+        Ordinate Omega( sqrtThird, sqrtThird, sqrtThird, wt );
+        if( soft_equiv( Omega.mu(), sqrtThird ) &&
+            soft_equiv( Omega.eta(), sqrtThird ) &&
+            soft_equiv( Omega.xi(), sqrtThird ) &&
+            soft_equiv( Omega.wt(), wt ) )
+            ut.passes("Constructor initializes data to correct values.");
+        else
+            ut.failure("Constructor did not initialize data to correct values.");
+
+        if (Omega == Ordinate( sqrtThird, sqrtThird, sqrtThird, wt ))
+        {
+            ut.passes("Ordinate tests equal to self");
+        }
+        else
+        {
+            ut.failure("Ordinate does NOT test equal to self");
+        }
+        if (Omega == Ordinate( 1.9, sqrtThird, sqrtThird, wt ))
+        {
+            ut.failure("Ordinate does NOT fail equality test on mod mu");
+        }
+        else
+        {
+            ut.passes("Ordinate doest not test equal on mod mu");
+        }
+        if (Omega == Ordinate( sqrtThird, 1.9, sqrtThird, wt ))
+        {
+            ut.failure("Ordinate does NOT fail equality test on mod eta");
+        }
+        else
+        {
+            ut.passes("Ordinate doest not test equal on mod eta");
+        }
+        if (Omega == Ordinate( sqrtThird, sqrtThird, 1.9, wt ))
+        {
+            ut.failure("Ordinate does NOT fail equality test on mod xi");
+        }
+        else
+        {
+            ut.passes("Ordinate doest not test equal on mod xi");
+        }
+        if (Omega == Ordinate( sqrtThird, sqrtThird, sqrtThird, 0.2 ))
+        {
+            ut.failure("Ordinate does NOT fail equality test on mod wt");
+        }
+        else
+        {
+            ut.passes("Ordinate doest not test equal on mod wt");
+        }
+    }
     return;
 }
 
@@ -147,6 +199,241 @@ void test_create_ordinate_set( UnitTest & ut )
         ut.passes("Quadrature sets match.");
     else
         ut.failure("Quadrature sets do not match.");
+
+    {
+        // 1d set for 2d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym2D, 8 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 1 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::AXISYMMETRIC,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 10 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 12 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 14 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 16 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 18 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 20 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 22 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
+    {
+        // 3d set for 3d quadrature
+        SP< Quadrature const > const
+            spQ( qc.quadCreate( QuadCreator::LevelSym, 24 ) );
+
+        {
+            // Call the function that we are testing.
+            int const dim( 3 );
+            OrdinateSet const ordinate_set( spQ,
+                                            rtt_mesh_element::CARTESIAN,
+                                            dim );
+            
+            vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+            double sum = 0;
+            for (unsigned i=0; i<ordinates.size(); ++i)
+            {
+                sum += ordinates[i].wt();
+            }
+            if (soft_equiv(sum, ordinate_set.getNorm()))
+                ut.passes("norm matches.");
+            else
+                ut.failure("norm does NOT match");
+        }
+    }
     
     return;
 }
@@ -166,6 +453,15 @@ void test_Y( UnitTest & ut)
     int const dim( 2 );
     OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim );
     vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
+
+    if (ordinate_set.getNorm() != sumwt)
+    {
+        ut.failure("did NOT get right norm");
+    }
+    else
+    {
+        ut.passes("got right norm");
+    }
 
     for( int ell=0; ell < 3; ++ell )
     {
