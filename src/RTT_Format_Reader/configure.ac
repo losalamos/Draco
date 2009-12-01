@@ -22,8 +22,8 @@ AC_NEEDS_LIBS(meshReaders \
               mesh_element \
               c4 \
               ds++)
-
-AC_RUNTESTS(TestRTTFormatReader TestRTTMeshReader, scalar)
+AC_RUNTESTS(TestRTTMeshReader, scalar)
+AC_RUNTESTS(TestRTTFormatReader, 1)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
