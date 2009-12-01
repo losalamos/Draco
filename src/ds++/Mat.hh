@@ -1858,7 +1858,7 @@ class Mat5 {
 	  ymin(0), ylen(ymax_),
 	  zmin(0), zlen(zmax_),
 	  wmin(0), wlen(wmax_),
-	  umin(0), ulen(wmax_),
+	  umin(0), ulen(umax_),
 	  may_free_space(true),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
     {
@@ -1870,7 +1870,7 @@ class Mat5 {
 	  ymin(0), ylen(ymax_),
 	  zmin(0), zlen(zmax_),
 	  wmin(0), wlen(wmax_),
-	  umin(0), ulen(wmax_),
+	  umin(0), ulen(umax_),
 	  may_free_space(false), v(vv)
     {}
 

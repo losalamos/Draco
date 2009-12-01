@@ -334,7 +334,7 @@ Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<X> &spx_in)
     DBC_Check(spx_in.d_r);
 
     // make a pointer to T *
-    T *np = dynamic_cast<T *>(spx_in.p);
+    T *np = dynamic_cast<T *>(spx_in.d_p);
     DBC_Check(spx_in.d_p ? np != 0 : true);
 
     // assign the pointer and reference
@@ -342,8 +342,8 @@ Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<X> &spx_in)
     d_r = spx_in.d_r;
     
     // advance the reference to T
-    if(d_r)
-	++d_r->refs;
+    // Precondition guarantees the d_r pointer will be valid
+    ++d_r->refs;
 }
 
 //---------------------------------------------------------------------------//

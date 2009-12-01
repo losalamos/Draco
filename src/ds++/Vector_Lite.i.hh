@@ -514,7 +514,13 @@ inline const Vector_Lite<T, N>
 operator-(const T a,
 	  const Vector_Lite<T, N> &b)
 {
-    return Vector_Lite<T, N>(b) -= a;
+    Vector_Lite<T, N> Result;
+    for ( typename Vector_Lite<T, N>::size_type i = 0; i < N; i++ )
+    {
+	Result[i] = a - b[i];
+    }
+    
+    return Result;
 }
 
 //---------------------------------------------------------------------------//

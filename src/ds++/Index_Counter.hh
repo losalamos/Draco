@@ -96,8 +96,9 @@ class Index_Counter
     bool dimension_okay(int d) const { return (d >= 0) && (d < D); }
 
     // Private constructor for use by Index_Converter
-    Index_Counter(const Index_Set<D,OFFSET>& base,
-                  const int index, int const * const indices);
+    // kgbudge (091201): Appears to be dead code
+//     Index_Counter(const Index_Set<D,OFFSET>& base,
+//                   const int index, int const * const indices);
 
 
 };
@@ -190,24 +191,25 @@ void Index_Counter<D,OFFSET>::decrement()
 }
 
 
-//---------------------------------------------------------------------------//
-/**
- * \brief Explicit constructor for use by Index_Converter
- * 
- */
-template <unsigned D, int OFFSET>
-Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& set,
-                                       const int index_,
-                                       int const * const indices_)
-    : index_set(set),
-      index(index_)
-{
+// kgbudge (091201): Appears to be dead code
+// //---------------------------------------------------------------------------//
+// /**
+//  * \brief Explicit constructor for use by Index_Converter
+//  * 
+//  */
+// template <unsigned D, int OFFSET>
+// Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& set,
+//                                        const int index_,
+//                                        int const * const indices_)
+//     : index_set(set),
+//       index(index_)
+// {
 
-    Check(index_set.indices_in_range(indices_));
+//     Check(index_set.indices_in_range(indices_));
 
-    std::copy(indices_, indices_+D, indices);
+//     std::copy(indices_, indices_+D, indices);
 
-}
+// }
 
 } // end namespace rtt_dsxx
 
