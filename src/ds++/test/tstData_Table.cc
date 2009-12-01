@@ -67,6 +67,8 @@ void test_array()
         if(dt.begin() != array) ITFAILS;
         if(dt.end() != array + 3) ITFAILS;
 
+        if (dt.access() != &dt[0]) ITFAILS;
+
         {
             Data_Table<int> dt3(dt);
             if(dt3.size() != dt.size()) ITFAILS;
@@ -133,6 +135,14 @@ void test_scalar()
         if(dt.back() != 32) ITFAILS;
         if(*(dt.begin()) != 32) ITFAILS;
         if((dt.end() - dt.begin()) != 1) ITFAILS;
+
+        Data_Table<int> dt3(dt2);
+        if(dt[0] != dt3[0]) ITFAILS;
+        if(&(dt[0]) == &(dt3[0])) ITFAILS;
+
+        dt3 = dt3;
+        if(dt[0] != dt3[0]) ITFAILS;
+        if(&(dt[0]) == &(dt3[0])) ITFAILS;
     }
     catch(rtt_dsxx::assertion &ass) 
     {

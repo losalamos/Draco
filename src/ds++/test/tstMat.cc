@@ -52,6 +52,7 @@ void t1()
 	Mat1<int> x;
         PASSMSG("Successfully contructed a Mat1<int>.");
         
+	x.redim( newsize-1 );
 	x.redim( newsize );
         PASSMSG("Successfully resized a Mat1<int>.");
 
@@ -96,12 +97,12 @@ void t1()
         if( x(0) == 0 )
             PASSMSG("Successful test of paren operator.");
         else
-            PASSMSG("Unsuccessful test of paren operator.");
+            FAILMSG("Unsuccessful test of paren operator.");
         
         if( y(0) == 0 )
             PASSMSG("Successful test of const paren operator.");
         else
-            PASSMSG("Unsuccessful test of const paren operator.");
+            FAILMSG("Unsuccessful test of const paren operator.");
 
         // Test *= operator
         x*=5;
@@ -114,7 +115,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of *= operator (scalar).");
         else
-            PASSMSG("Unsuccessful test of *= operator (scalar).");
+            FAILMSG("Unsuccessful test of *= operator (scalar).");
 
         x*=y;
         mybool = true;
@@ -126,19 +127,74 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of *= operator (Mat1).");
         else
-            PASSMSG("Unsuccessful test of *= operator (Mat1).");
+            FAILMSG("Unsuccessful test of *= operator (Mat1).");
 
         // Test redim(Bounds)
         int const newbmax( 5 );
         x.redim( Bounds( bmin, newbmax ) );
-        if (x.get_xlen() == newbmax)
+        if (x.get_xlen() == newbmax-bmin+1)
             PASSMSG("Successful test redim(Bounds).");
         else
-            PASSMSG("Unsuccessful test redim(Bounds).");
+            FAILMSG("Unsuccessful test redim(Bounds).");
         
         // What does this do?
         // Mat1<int> const z( Bounds(0,1) );
         // x*=z;
+    }
+
+    // Construction from C array and other constructor corner cases
+    {
+        int raw_x[3] = {0, 1, 2};
+        Mat1<int> x(raw_x, 3);
+        if (x[0]!=0)
+            FAILMSG("construction from C array FAILS");
+
+        x.redim(2);
+        if (x.size()!=2)
+            FAILMSG("redim from C array FAILS");
+
+        Mat1<int> y;
+        y.redim(Bounds(1,2));
+        if (y.size()!=2)
+            FAILMSG("redim from C array FAILS");
+        
+        Mat1<int> z(raw_x, 3);
+        z.redim(Bounds(2,2));
+        if (z.size()!=1)
+            FAILMSG("redim from C array FAILS");
+    }
+
+    // Assignment
+    {
+        int raw_x[3] = {0, 1, 2};
+        Mat1<int> x(raw_x, 3);
+        x = x;
+        if (x[0]!=0)
+            FAILMSG("assignment from C array FAILS");
+
+        if (x.conformal(4))
+            FAILMSG("conformal FAILS");
+
+        x = Mat1<int>(Bounds(1,2));
+        if (x.size() != 2)
+            FAILMSG("assignment from variable bounds FAILS");
+
+        if (x.conformal(4))
+            FAILMSG("conformal FAILS");
+    }
+
+    // Test equivalence
+    {
+        int raw_x[3] = {0, 1, 2};
+        Mat1<int> x(raw_x, 3);
+        Mat1<int> y(2);
+        if (y==x)
+            FAILMSG("equivalence FAILS");
+
+        y = x;
+        y[0] = 1;
+        if (y==x)
+            FAILMSG("equivalence FAILS");        
     }
 
     // Test += operator
@@ -157,7 +213,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of += operator (scalar).");
         else
-            PASSMSG("Unsuccessful test of += operator (scalar).");
+            FAILMSG("Unsuccessful test of += operator (scalar).");
 
         x+=y;
         mybool = true;
@@ -169,7 +225,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of += operator (Mat1).");
         else
-            PASSMSG("Unsuccessful test of += operator (Mat1).");
+            FAILMSG("Unsuccessful test of += operator (Mat1).");
     }
 
     // Test -= operator
@@ -188,7 +244,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of -= operator (scalar).");
         else
-            PASSMSG("Unsuccessful test of -= operator (scalar).");
+            FAILMSG("Unsuccessful test of -= operator (scalar).");
 
         x-=y;
         mybool = true;
@@ -200,7 +256,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of -= operator (Mat1).");
         else
-            PASSMSG("Unsuccessful test of -= operator (Mat1).");
+            FAILMSG("Unsuccessful test of -= operator (Mat1).");
     }
 
     // Test /= operator
@@ -220,7 +276,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of /= operator (scalar).");
         else
-            PASSMSG("Unsuccessful test of /= operator (scalar).");
+            FAILMSG("Unsuccessful test of /= operator (scalar).");
 
         x=5;
         x/=y;
@@ -233,7 +289,7 @@ void t1()
         if( mybool )
             PASSMSG("Successful test of /= operator (Mat1).");
         else
-            PASSMSG("Unsuccessful test of /= operator (Mat1).");
+            FAILMSG("Unsuccessful test of /= operator (Mat1).");
     }
 
     PASSMSG("Done with test t1.");
@@ -262,6 +318,9 @@ void t2()
 	Assert( x.ny() == bmax );
 	Assert( x.index(0,0) == 0 );
 	Assert( x.size() == bmax*bmax );
+
+        if (x.conformal(bmax+1, bmax)) FAILMSG("Mat2<int> conformal check FAILS");
+        if (x.conformal(bmax, bmax+2)) FAILMSG("Mat2<int> conformal check FAILS");
 
 	int k=0;
 	for( int j=0; j < bmax; j++ )
@@ -346,6 +405,42 @@ void t2()
         PASSMSG("Successfully constructed a Mat2<int> using Bounds constructor.");
     }
 
+    // Test construction from C array
+    {
+        int const bmax(4);
+        
+        Mat2<int> x;
+        x.redim( Bounds(1,bmax), Bounds(1,bmax+1));
+        if (x.size() != bmax*(bmax+1))
+            FAILMSG("Mat2 redim from Bounds FAILS");
+
+        int raw_y[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        
+        Mat2<int> y(raw_y, 4, 4);
+        x.redim( Bounds(1,4), Bounds(1,4+1));
+        if (x.size() != 4*(4+1))
+            FAILMSG("Mat2 redim from Bounds FAILS");
+        
+        Mat2<int> z(raw_y, 4, 4);
+        z.redim(4,5);
+        if (z.size() != 4*5)
+            FAILMSG("Mat2 redim from Bounds FAILS");
+        
+        Mat2<int> w;
+        w.redim(4,5);
+        if (w.size() != 4*5)
+            FAILMSG("Mat2 redim from Bounds FAILS");
+
+        w.redim(2,3);
+        if (x==y)
+            FAILMSG("Mat2 operator== FAILS");
+
+        y(1,1) = 3;
+        z(1,1) = 4;
+        if (y==z)
+            FAILMSG("Mat2 operator== FAILS");
+    }
+
     // Test paren operator
     {
         int const bmin(0);
@@ -356,7 +451,7 @@ void t2()
         if( x(0,0) == y(0,0) )
             PASSMSG("Successfull test of paren operator.");
         else
-            PASSMSG("Unsuccessfull test of paren operator.");
+            FAILMSG("Unsuccessfull test of paren operator.");
     }
 
     // Test = operator
@@ -378,7 +473,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of = operator.");
         else
-            PASSMSG("Unsuccessfull test of = operator.");
+            FAILMSG("Unsuccessfull test of = operator.");
     }
 
     // Test *= operator
@@ -402,7 +497,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of *= operator (scalar).");
         else
-            PASSMSG("Unsuccessfull test of *= operator (scalar).");
+            FAILMSG("Unsuccessfull test of *= operator (scalar).");
 
         y=2;
         x*=y;
@@ -417,7 +512,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of *= operator (Mat2).");
         else
-            PASSMSG("Unsuccessfull test of *= operator (Mat2).");
+            FAILMSG("Unsuccessfull test of *= operator (Mat2).");
     }
     
     // Test += operator
@@ -441,7 +536,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of += operator (scalar).");
         else
-            PASSMSG("Unsuccessfull test of += operator (scalar).");
+            FAILMSG("Unsuccessfull test of += operator (scalar).");
 
         y=2;
         x+=y;
@@ -456,7 +551,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of += operator (Mat2).");
         else
-            PASSMSG("Unsuccessfull test of += operator (Mat2).");
+            FAILMSG("Unsuccessfull test of += operator (Mat2).");
     }
 
     // Test -= operator
@@ -480,7 +575,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of -= operator (scalar).");
         else
-            PASSMSG("Unsuccessfull test of -= operator (scalar).");
+            FAILMSG("Unsuccessfull test of -= operator (scalar).");
 
         y=1;
         x-=y;
@@ -495,7 +590,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of -= operator (Mat2).");
         else
-            PASSMSG("Unsuccessfull test of -= operator (Mat2).");
+            FAILMSG("Unsuccessfull test of -= operator (Mat2).");
     }
 
     // Test /= operator
@@ -519,7 +614,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of /= operator (scalar).");
         else
-            PASSMSG("Unsuccessfull test of /= operator (scalar).");
+            FAILMSG("Unsuccessfull test of /= operator (scalar).");
 
         y=5;
         x/=y;
@@ -534,7 +629,7 @@ void t2()
         if( mybool )
             PASSMSG("Successfull test of /= operator (Mat2).");
         else
-            PASSMSG("Unsuccessfull test of /= operator (Mat2).");
+            FAILMSG("Unsuccessfull test of /= operator (Mat2).");
     }
 
     // test redim operators
@@ -635,7 +730,7 @@ int main( int argc, char *argv[] )
     // status of test
     cout << endl;
     cout <<     "*********************************************" << endl;
-//    if( rtt_ds_test::passed ) 
+    if( rtt_ds_test::passed ) 
     {
         cout << "**** tstMat Test: PASSED" << endl;
     }

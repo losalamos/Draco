@@ -146,6 +146,18 @@ void t1()
             passed = false;
         if (w.size() != x.size())
             passed = false;
+
+        w = X(3, 2, 2, value+0.5);
+        if (w.size() != 12)
+            passed  = false;
+        w = X(2, 4, 2, value+0.5);
+        if (w.size() != 16)
+            passed  = false;
+        w = X(2, 2, 1, value+0.5);
+        if (w.size() != 4)
+            passed  = false;
+
+        // Mat3 with variable lower bounds not constructible
     }
 
     {
@@ -160,6 +172,14 @@ void t1()
         if (!(x == y))
             passed = false;
         if ((x != y) != !(x == y))
+            passed = false;
+
+        y[0] = 5;
+        x[0] = 4;
+        if (x==y)
+            passed = false;
+
+        if (y==z)
             passed = false;
 
     // Invariants

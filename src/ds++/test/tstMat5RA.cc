@@ -146,6 +146,43 @@ void t1()
             passed = false;
         if (w.size() != x.size())
             passed = false;
+        w = w;
+        if (w != x)
+            passed = false;
+        if (w.size() != x.size())
+            passed = false;
+        w = X(3, 2, 2, 2, 2, value+0.5);
+        if (w.size() != 48)
+            passed  = false;
+        w = X(2, 4, 2, 2, 2, value+0.5);
+        if (w.size() != 64)
+            passed  = false;
+        w = X(2, 2, 1, 2, 2, value+0.5);
+        if (w.size() != 16)
+            passed  = false;
+        w = X(2, 2, 2, 3, 2, value+0.5);
+        if (w.size() != 48)
+            passed  = false;
+        w = X(2, 2, 2, 2, 5, value+0.5);
+        if (w.size() != 80)
+            passed  = false;
+
+        // kgbudge (091201): Mat5 with variable minimum bounds not constructible
+//         w = X(Bounds(1,2), Bounds(1,2), Bounds(1,2), Bounds(1,2), Bounds(1,2), value);
+//         if (w.size() != 48)
+//             passed  = false;
+//         w = X(2, 4, 2, 2, 2, value+0.5);
+//         if (w.size() != 64)
+//             passed  = false;
+//         w = X(2, 2, 1, 2, 2, value+0.5);
+//         if (w.size() != 16)
+//             passed  = false;
+//         w = X(2, 2, 2, 3, 2, value+0.5);
+//         if (w.size() != 48)
+//             passed  = false;
+//         w = X(2, 2, 2, 2, 5, value+0.5);
+//         if (w.size() != 80)
+//             passed  = false;
     }
 
     {

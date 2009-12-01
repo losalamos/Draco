@@ -6,15 +6,16 @@
 // @> Test for Vector_Lite class
 //---------------------------------------------------------------------------//
 
+#include <algorithm>
+#include <sstream>
+
 #include "ds_test.hh"
 #include "../Vector_Lite.hh"
 #include "../Soft_Equivalence.hh"
 
-#include <algorithm>
-
 using rtt_dsxx::Vector_Lite;
-using std::cout;
-using std::endl;
+using rtt_dsxx::soft_equiv;
+using namespace std;
 
 // Prototypes
 
@@ -28,6 +29,8 @@ main(int argc, char *argv[])
     cout << "constructor from scalar" << endl;
     Vector_Lite<double, m> x(0.0);
     UNIT_TEST(std::count(x.begin(), x.end(), 0.0) == m);
+    UNIT_TEST(!x.empty());
+    UNIT_TEST(x.max_size()==m);
 
     {
 	cout << "fill in from C array" << endl;
@@ -53,14 +56,129 @@ main(int argc, char *argv[])
         UNIT_TEST(iy[2] == 2);
     }
 
+    {
+        cout << "constructor for N = 4" << endl;
+        Vector_Lite<int, 4> ix(0, 1, 2, 3);
+        UNIT_TEST(ix[0] == 0);
+        UNIT_TEST(ix[1] == 1);
+        UNIT_TEST(ix[2] == 2);
+        UNIT_TEST(ix[3] == 3);
+    }
+
     cout << "assignment to scalar" << endl;
     double c1 = 3.0;
     x = c1;
     cout << "x = " << x << endl;
     UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+
+    {
+        ostringstream out;
+        out << x;
+        istringstream in(out.str());
+        Vector_Lite<double, m> y;
+        in >> y;
+        UNIT_TEST(x==y);
+    }
     
     cout << "operator==" << endl;
     UNIT_TEST(x == x);
+    {
+        Vector_Lite<double, m> y;
+        y = x;
+        y = y;
+        UNIT_TEST(x==y);
+        y = x+1.0;
+        UNIT_TEST(!(y==x));
+    }
+    
+    cout << "operator<" << endl;
+    UNIT_TEST(!(x < x));
+    {
+        Vector_Lite<double, m> y = x+1.0;
+        UNIT_TEST(x<y);
+    }
+    
+    cout << "operator!=" << endl;
+    UNIT_TEST(!(x != x));
+    
+    cout << "operator<=" << endl;
+    UNIT_TEST((x <= x));
+    
+    cout << "operator>=" << endl;
+    UNIT_TEST((x >= x));
+    
+    {
+        cout << "operator*" << endl;
+	Vector_Lite<double, m> y = x*x;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == x[i]*x[i]);
+        }
+        y = 2.2*x;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == 2.2*x[i]);
+        }
+        y = x*2.2;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == 2.2*x[i]);
+        }
+    }
+    {
+        cout << "operator+" << endl;
+	Vector_Lite<double, m> y = x+x;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == x[i]+x[i]);
+        }
+        y = 2.2+x;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == 2.2+x[i]);
+        }
+        y = x+2.2;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == 2.2+x[i]);
+        }
+    }
+    {
+        cout << "operator-" << endl;
+	Vector_Lite<double, m> y = x-x;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == x[i]-x[i]);
+        }
+        y = 2.2-x;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == 2.2-x[i]);
+        }
+        y = x-2.2;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == x[i]-2.2);
+        }
+    }
+    {
+        cout << "operator/" << endl;
+	Vector_Lite<double, m> y = x/(x+1.0);
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(y[i] == x[i]/(x[i]+1.0));
+        }
+//         y = 2.2/x;
+//         for (unsigned i=0; i<m; ++i)
+//         {
+//             UNIT_TEST(y[i] == 2.2/x[i]);
+//         }
+        y = x/2.2;
+        for (unsigned i=0; i<m; ++i)
+        {
+            UNIT_TEST(soft_equiv(y[i], x[i]/2.2));
+        }
+    }
 
     {
 	cout << "copy constructor" << endl;

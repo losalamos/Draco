@@ -89,6 +89,36 @@ void test_fileio(const bool binary)
 	UNIT_TEST(soft_equiv(x, x_in));
 	UNIT_TEST(bf == bf_in);
 	UNIT_TEST(bt == bt_in);
+
+        File_Input fnull("");
+    }
+
+    // test some corner cases
+
+    {
+        File_Output f;
+        f.close();
+
+        f.open("File_Stream_last_was_char.txt");
+        f << 'c';
+        f.close();
+
+        File_Input fr("File_Stream_last_was_char.txt");
+        char c;
+        fr >> c;
+        UNIT_TEST(c=='c');
+
+        fr.open("File_Stream_last_was_char.txt");
+        fr >> c;
+        UNIT_TEST(c=='c');
+        
+        f.open("File_Stream_last_was_char.txt", false);
+        f.open("File_Stream_last_was_char.txt", false);
+        f << 'c';
+        f.close();
+        fr.open("File_Stream_last_was_char.txt");
+        fr >> c;
+        UNIT_TEST(c=='c');
     }
 
     if ( rtt_ds_test::passed )

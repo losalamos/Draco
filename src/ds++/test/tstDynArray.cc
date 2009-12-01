@@ -92,6 +92,27 @@ void test_dynarray()
         {
             FAILMSG("Use of copy constructor failed.");
         }
+
+        copyOfArray[-3] = 3;
+        if( !(myArray == copyOfArray) )
+        {
+            PASSMSG("Successful use of operator==.");
+        }
+        else
+        {
+            FAILMSG("Use of operator== FAILS.");
+        }        
+
+        copyOfArray = myArray;
+        copyOfArray[32];
+        if( !(myArray == copyOfArray) )
+        {
+            PASSMSG("Successful use of operator==.");
+        }
+        else
+        {
+            FAILMSG("Use of operator== FAILS.");
+        }        
     }
 
     // Assignment Operator

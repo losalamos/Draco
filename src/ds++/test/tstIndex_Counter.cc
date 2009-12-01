@@ -43,6 +43,14 @@ void test_index_counter()
     if (it.get_index(1) != 1) ITFAILS;
     if (it.get_index(2) != 1) ITFAILS;
     if (!it.is_in_range()) ITFAILS;
+    if (it.get_indices()[0]!=1) ITFAILS;
+    if (it.get_indices()[1]!=1) ITFAILS;
+    if (it.get_indices()[2]!=1) ITFAILS;
+    vector<unsigned> it_copy(3);
+    it.get_indices(it_copy.begin());
+    if (it_copy[0]!=1) ITFAILS;
+    if (it_copy[1]!=1) ITFAILS;
+    if (it_copy[2]!=1) ITFAILS;
 
     ++it;
 

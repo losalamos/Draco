@@ -50,6 +50,10 @@ void test_index_set()
     if (box.min_of_index(2) != 1) ITFAILS;
     if (box.max_of_index(2) != 5) ITFAILS;
 
+    if (box.limit_of_index(2, true) != 5) ITFAILS;
+    if (box.limit_of_index(2, false) != 1) ITFAILS;
+    if (box.limit_of_index(false) != 1) ITFAILS;
+
 
     // Test for indices in the total range and the range of each
     // dimension.
@@ -68,6 +72,8 @@ void test_index_set()
     if (!box.index_in_range(3,0)) ITFAILS;
     if (box.index_in_range(4,0))  ITFAILS;
 
+    unsigned indices[] = {4,5,6};
+    if (box.indices_in_range(indices)) ITFAILS;
 
     // Test the functions for vetting direction and dimension arguments.
     if (box.direction_okay(0))  ITFAILS;
@@ -115,8 +121,12 @@ void test_index_set()
     if (!(box2 != box)) ITFAILS;
     
         
-    
+    Index_Set<2, 0> csquare(4);
 
+    // Check the sizes and ranges of each dimensions
+    if (csquare.get_size() != 16) ITFAILS;
+    if (csquare.min_of_index() !=  0) ITFAILS;
+    if (csquare.max_of_index() != 15) ITFAILS;
 
 
 }

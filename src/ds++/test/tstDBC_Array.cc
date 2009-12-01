@@ -7,9 +7,6 @@
 */
 
 
-#include "../DBC_Array.hh"
-#include "../Release.hh"
-#include "ds_test.hh"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -17,6 +14,9 @@
 #include <set>
 #include <algorithm>
 #include <time.h>
+#include "../DBC_Array.hh"
+#include "../Release.hh"
+#include "ds_test.hh"
 
 using std::cout;
 using std::endl;
@@ -103,6 +103,9 @@ bool test_sized_array(AInt const& sv, const size_t Exp_Size,
     if(sv != sv) { ITFAILS; return false; }
     if(!(sv == sv))  { ITFAILS; return false; }
 
+    if (&sv.front()!=sv.begin()) ITFAILS;
+    if (&sv.back()+1!=sv.end()) ITFAILS;
+
 #if DBC & 1
     size_t catch_count = 0;
 
@@ -149,6 +152,22 @@ void test_size_5()
     AInt sv8(size_t(8),int(10));
     exp_val.assign(8,10);
     test_sized_array(sv8, 8, exp_val);
+
+    AInt sv0(0);
+    sv0.clear();
+    test_empty(sv0);
+    sv0.swap(sv0);
+    test_empty(sv0);
+    AInt sv0_copy(sv0);
+    test_empty(sv0_copy);
+    sv0_copy = sv0_copy;
+    test_empty(sv0_copy);
+
+    std::ostringstream out;
+    out << sv0;
+    if (out.str().size()>0) ITFAILS;
+
+    if (sv5 == sv8) ITFAILS;
 
     if (rtt_ds_test::passed)
 	PASSMSG("length/value constructor works.");

@@ -35,6 +35,10 @@ void test_index_converter()
     unsigned dimensions[] = {3,4,5};
 
     {
+        Index_Converter<3,1> box;
+    }
+
+    {
         Index_Converter<3,1> box(dimensions);
 
         if (box.limit_of_index(0,true) != 3) ITFAILS;
