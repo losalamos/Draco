@@ -23,6 +23,7 @@ AC_RUNTESTS(tstAllocators \
             tstBounds \
             tstCheck_Strings \
             tstData_Table \
+            tstSafe_Ptr \
             tstDBC_Array \
             tstDBC_Ptr \
             tstDynArray \

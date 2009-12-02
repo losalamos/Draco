@@ -49,7 +49,6 @@ void test_basic()
     {
 	DBC_Ptr<double> foo(new double);
         if ( ! foo ) ITFAILS;
-        if ( foo.ref_count() != 1) ITFAILS;
         
 	{ // copy ctor
             DBC_Ptr<double> bar(foo);
@@ -61,7 +60,6 @@ void test_basic()
 
 	{ // assignment
             DBC_Ptr<double> bar;
-            if (bar.ref_count()!=0) ITFAILS;
             bar = foo;
             if ( ! foo ) ITFAILS;
             if ( foo != bar ) ITFAILS;
@@ -368,53 +366,6 @@ void test_polymorph()
 	std::cout << ass.what() << std::endl;
 	caught = true;
     }
-
-    caught = false;
-    try
-    {
-	DBC_Ptr<Derived_Class> derv(new Derived_Class);
-	DBC_Ptr<Base_Class> base(derv);
-	derv.release_data();
-	derv = base;
-	base.release_data();
-	derv.delete_data();
-    }
-    catch(rtt_dsxx::assertion &ass)
-    {
-	std::cout << ass.what() << std::endl;
-	caught = true;
-    }
-
-    caught = false;
-    try
-    {
-	DBC_Ptr<Derived_Class> derv(new Derived_Class);
-	DBC_Ptr<Base_Class> base(derv);
-	derv.release_data();
-	derv = base;
-        derv = base;
-	base.release_data();
-	derv.delete_data();
-    }
-    catch(rtt_dsxx::assertion &ass)
-    {
-	std::cout << ass.what() << std::endl;
-	caught = true;
-    }
-
-    caught = false;
-    try
-    {
-	DBC_Ptr<Derived_Class> derv;
-  	Base_Class *base = new Derived_Class;
-  	derv = base;
-  	derv.delete_data();
-    }
-    catch(rtt_dsxx::assertion &ass)
-    {
-	std::cout << ass.what() << std::endl;
-	caught = true;
-    }
     
     if(caught) ITFAILS;
 
@@ -515,8 +466,6 @@ test_overload()
     int *raw_v = new int;
     DBC_Ptr<int> v(raw_v);
 
-    if (!(raw_v==v)) ITFAILS;
-    if ((raw_v!=v)) ITFAILS;
     if (!(v==v)) ITFAILS;
 
     v.delete_data();
