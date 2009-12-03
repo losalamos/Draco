@@ -14,8 +14,8 @@
 #include <vector>
 #include <cmath>
 
-#include "ds++/Assert.hh"
-#include "ds++/ScalarUnitTest.hh"
+#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Safe_Ptr.hh"
 
@@ -534,7 +534,7 @@ test_vector_of_ptrs(UnitTest &ut)
 
 
 void
-test_overload(UnitTest &ut)
+test_raw(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
     
@@ -547,12 +547,28 @@ test_overload(UnitTest &ut)
     if ((raw_v!=v)) ut.failure("test FAILS");
     if (!(v==v)) ut.failure("test FAILS");
 
+    v = raw_v;
+    v = v;
+
+    if (!(raw_v==v)) ut.failure("test FAILS");
+    if ((raw_v!=v)) ut.failure("test FAILS");
+    if (!(v==v)) ut.failure("test FAILS");
+
+     raw_v = NULL;
+     Safe_Ptr<int> vc(raw_v);
+     vc = v;
+     vc = raw_v;
+
+     if (!(raw_v==vc)) ut.failure("test FAILS");
+     if ((raw_v!=vc)) ut.failure("test FAILS");
+     if (!(vc==vc)) ut.failure("test FAILS");
+
     v.delete_data();
 
     if(ut.numFails<=old_ut_numFails)
-        ut.passes("test_overload");
+        ut.passes("test_raw");
     else
-        ut.failure("test_overload");
+        ut.failure("test_raw");
 
 }
 
@@ -576,7 +592,7 @@ int main(int argc, char *argv[])
 	test_nested(ut);
         test_vector_of_ptrs(ut);
         test_exception_cleanup(ut);
-        test_overload(ut);
+        test_raw(ut);
     }
     catch (std::exception &err)
     {
