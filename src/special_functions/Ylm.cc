@@ -164,7 +164,7 @@ double normalizedYlk( unsigned const l,     int    const k,
         result = cP * std::sqrt(2.0) * std::sin( k * phi );
     else if ( k == 0 )
         result = cP;
-    else if ( k < 0 )
+    else /* if k<0 */
         result = sign * cP * std::sqrt(2.0) * std::cos( absk * phi );
     return result;
 }
