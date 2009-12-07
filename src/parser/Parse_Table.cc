@@ -497,14 +497,6 @@ bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
     return kt_comparison(k1.moniker, k2.text().c_str())<0;
 }
 
-bool Parse_Table::Keyword_Compare_::operator()( Token const   &k2,
-                                               Keyword const &k1 ) const
-{
-    Require(k1.moniker);
-
-    return ! operator()(k1,k2);
-}
-
 int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
 						char const *m2) const
 {
@@ -532,6 +524,8 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
 	    if (*m1 == ' ' && *m2 != ' ') return -1;
 	    while (isalnum(*m1)) m1++;
 	    while (isalnum(*m2)) m2++;
+            if (*m1==' ') ++m1;
+            if (*m2==' ') ++m2;
 	}
 	if (*m1 == '\0' && *m2 != '\0') return -1;
 	if (*m1 != '\0' && *m2 == '\0') return 1;

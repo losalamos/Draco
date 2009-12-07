@@ -216,7 +216,6 @@ class Parse_Table
 	bool operator()( Keyword const &k1, Keyword const &k2 ) const;
 	
 	bool operator()( Keyword const &keyword, Token const &token  ) const;
-	bool operator()( Token const & token, Keyword const &keyword ) const;
 
 	int kk_comparison(char const *, char const *) const;
 	int kt_comparison(char const *, char const *) const;
