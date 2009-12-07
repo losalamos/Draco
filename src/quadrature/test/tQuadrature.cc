@@ -121,7 +121,9 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
                  << "   Sn Order         = " << spQuad->getSnOrder() << endl
                  << "   Number of Ordinates = " << spQuad->getNumOrdinates() << endl
                  << "   Dimensionality   = " << spQuad->dimensionality()
-                 << endl << endl; 
+                 << endl << endl
+                 << "   Parser Name = " << spQuad->parse_name() << endl
+                 << "   Class = " << spQuad->getClass() << endl;
 
 	    // Extra tests for improving coverage analysis
 	    if( qid[ix] == QuadCreator::GaussLeg)

@@ -83,7 +83,24 @@ void multigroup_test()
 	if (opacity.getEnergyPolicyDescriptor() != "mg")      ITFAILS;
 	if (opacity.getDataDescriptor() != desc)              ITFAILS;
 	if (opacity.getDataFilename() != string())            ITFAILS;
+
+        if (opacity.getOpacityModelType() != rtt_cdi::ANALYTIC_TYPE) ITFAILS;
     }
+    {       
+        Analytic_Multigroup_Opacity anal_opacity(groups,
+                                                 models,
+                                                 rtt_cdi::SCATTERING);
+        if (anal_opacity.getDataDescriptor() !=
+            "Analytic Multigroup Scattering") ITFAILS;
+    }
+    {       
+        Analytic_Multigroup_Opacity anal_opacity(groups,
+                                                 models,
+                                                 rtt_cdi::TOTAL);
+        if (anal_opacity.getDataDescriptor() !=
+            "Analytic Multigroup Total") ITFAILS;
+    }
+
 
     // check the group structure
     vector<double> mg_groups = opacity.getGroupBoundaries();

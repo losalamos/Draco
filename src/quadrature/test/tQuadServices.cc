@@ -1378,6 +1378,97 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
 
 //---------------------------------------------------------------------------//
 
+void test_quad_services_SVD( rtt_dsxx::UnitTest & ut )
+{
+    using rtt_dsxx::SP;
+    using rtt_dsxx::soft_equiv;
+
+    using std::endl;
+    using std::vector;
+    using std::ostringstream;
+
+    typedef std::pair< unsigned, int > lk_index;
+
+    //----------------------------------------
+    // Setup Quadrature set
+    
+    // we will only look at S2 Sets in this test.
+    size_t const snOrder( 2 );
+
+    // Create a quadrature set from a temporary instance of a
+    // QuadratureCreator factory object.
+    SP< const Quadrature > spQuad;
+    spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, snOrder ); 
+    
+    // Create a vector that designates the (l,k) moments that will be used
+    unsigned n(0);
+    vector< lk_index > lkMoments;
+    
+    // Copy algorithm from compute_n2lk_3D()
+    // -------------------------------------
+    // Choose: l= 0, ..., N-1, k = -l, ..., l
+    for( unsigned ell=0; ell< snOrder; ++ell )
+	for( int k(-1*static_cast<int>(ell)); std::abs( k) <= ell; ++k, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+
+    // Add ell=N and k<0
+    {
+	unsigned ell( snOrder );
+	for( int k(-1*static_cast<int>(ell)); k<0; ++k, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+    }
+
+    // Add ell=N, k>0, k odd
+    {
+	unsigned ell( snOrder );
+	for( int k=1; k<=ell; k+=2, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+    }
+
+    // Add ell=N+1 and k<0, k even
+    {
+	unsigned ell( snOrder+1 );
+	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2, ++n )
+	    lkMoments.push_back( lk_index(ell,k) );
+    }
+
+    //----------------------------------------
+    // Setup QuadServices object using alternate constructor.
+    
+    QuadServices qsStd( spQuad, SVD );
+    QuadServices qsAlt( spQuad, lkMoments, SVD );
+
+    unsigned const numMoments( qsStd.getNumMoments() );
+
+    for( unsigned n=0; n<numMoments; ++n )
+    {
+	lk_index stdIndexValues( qsStd.lkPair(n) );
+	lk_index altIndexValues( qsAlt.lkPair(n) );
+	if( stdIndexValues.first == altIndexValues.first &&
+	    stdIndexValues.second == altIndexValues.second )
+	{
+	    ostringstream msg;
+	    msg << "Alternate Constructor -- lk_index has expected value for moment "
+		<< n << "." << endl;
+	    ut.passes(msg.str());
+	}
+	else
+	{
+	    ostringstream msg;
+	    msg << "Alternate Constructor -- "
+		<< "lk_index does not have the expected value for moment "
+		<< n << "." << endl
+		<< "Found lk_index = (" << altIndexValues.first << ", "
+		<< altIndexValues.second << ") but expected (" << stdIndexValues.first
+		<< ", " << stdIndexValues.second << ")." << endl;
+	    ut.passes(msg.str());
+	}
+    }
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
 void test_dnz( UnitTest & ut )
 {
     vector<double> vec(9,1.0);
@@ -1414,6 +1505,7 @@ int main(int argc, char *argv[])
   	test_quad_services_with_3D_S4_quad(ut);
   	test_quad_services_with_2D_S6_quad(ut);
    	test_quad_services_alt_constructor(ut);
+   	test_quad_services_SVD(ut);
     }
     catch( rtt_dsxx::assertion &err )
     {

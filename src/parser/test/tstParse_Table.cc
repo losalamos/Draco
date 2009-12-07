@@ -34,8 +34,8 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-static const char *color[2] = {"BLACK", "BLUE"};
-bool color_set[2];
+static const char *color[3] = {"BLACK", "BLUE", "BLUE GREEN"};
+bool color_set[3];
 
 static void Parse_Color(Token_Stream &, int i)
 {
@@ -59,6 +59,9 @@ static void Parse_Any_Color(Token_Stream &tokens, int)
 const Keyword raw_table[] = {
   {"BLUE", Parse_Color, 1, "main"},
   {"BLACK", Parse_Color, 0, "main"},
+  {"BLUE GREEN", Parse_Color, 2, "main"},
+  {"BLUISH GREEN", Parse_Color, 2, "main"},
+  {"lower blue", Parse_Color, 2, "main"},
   {"COLOR", Parse_Any_Color, 0, "main"},
 };
 const size_t raw_table_size = sizeof(raw_table)/sizeof(Keyword);
@@ -68,6 +71,70 @@ const Keyword raw_table_2[] = {
   {"BLACK", Parse_Color, 0, "main"},
 };
 const size_t raw_table_2_size = sizeof(raw_table_2)/sizeof(Keyword);
+
+class Error_Token_Stream : public Token_Stream
+{
+  public:
+
+    void rewind(){}
+
+  protected:
+
+    void report(Token const &, string const &err)
+    {
+        cout << "error reported to Error_Token_Stream" << endl;
+    }
+
+    void report(string const &err)
+    {
+        cout << "error reported to Error_Token_Stream" << endl;
+    }
+
+    Token fill_()
+    {
+        return Token(ERROR, "error");
+    }
+};
+
+class Colon_Token_Stream : public Token_Stream
+{
+  public:
+
+    Colon_Token_Stream() : count_(0) {}
+
+    void rewind(){}
+
+  protected:
+
+    void report(Token const &, string const &err)
+    {
+        cout << "error reported to Colon_Token_Stream" << endl;
+    }
+
+    void report(string const &err)
+    {
+        cout << "error reported to Colon_Token_Stream" << endl;
+    }
+
+    Token fill_()
+    {
+        switch (count_++)
+        {
+            case 0:
+                return Token(';', "");
+            case 1:
+                return Token(END, "end");
+            case 2:
+                return Token(EXIT, "");
+            default:
+                Insist(false, "bad case");
+        }
+    }
+
+  private:
+
+    unsigned count_;
+};
 
 //---------------------------------------------------------------------------//
 void tstKeyword(UnitTest &ut)
@@ -160,6 +227,31 @@ void tstParse_Table(UnitTest &ut)
     if (!color_set[1]) ut.failure("test FAILS");
     if (token_stream.error_count()!=4) ut.failure("test FAILS");
 
+    {
+        String_Token_Stream tokens("BLUE green");
+        table.parse(tokens);
+        if (tokens.error_count()!=0)
+            ut.failure("Did NOT match mismatched case");
+    }
+    {
+        String_Token_Stream tokens("lower blue");
+        table.parse(tokens);
+        if (tokens.error_count()!=0)
+            ut.failure("Did NOT match lower case");
+    }
+    {
+        String_Token_Stream tokens("lowe");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT detect partial match case");
+    }
+    {
+        String_Token_Stream tokens("lower bluer");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT detect partial match case");
+    }
+
 
     token_stream.rewind();
 
@@ -183,25 +275,15 @@ void tstParse_Table(UnitTest &ut)
     // Check variations on partial match
     {
         String_Token_Stream tokens("BLUEE");
-        try
-        {
-            table.parse(tokens);
-        }
-        catch (Syntax_Error &)
-        {
-            ut.failure("Did not match ambiguous keyword");
-        }
+        table.parse(tokens);
+        if (tokens.error_count()!=0)
+            ut.failure("Did NOT match partial keyword");
     }
     {
         String_Token_Stream tokens("blue");
-        try
-        {
-            table.parse(tokens);
-        }
-        catch (Syntax_Error &)
-        {
-            ut.failure("Did not match ambiguous keyword");
-        }
+        table.parse(tokens);
+        if (tokens.error_count()!=0)
+            ut.failure("Did NOT match keyword with wrong case");
     }
     {
         String_Token_Stream tokens("end");
@@ -210,7 +292,78 @@ void tstParse_Table(UnitTest &ut)
             ut.failure("END detection FAILED");
         }
     }
+    // Test recovery
+    {
+    }
     
+    table.set_flags(Parse_Table::PARTIAL_IDENTIFIER_MATCH);
+    {
+        String_Token_Stream tokens("BLUEE");
+        table.parse(tokens);
+        if (tokens.error_count()!=0)
+            ut.failure("Did NOT match partial keyword");
+    }
+    {
+        String_Token_Stream tokens("BLU green");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT detect mismatched case");
+    }
+    {
+        String_Token_Stream tokens("blue");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT detect mismatched case");
+    }
+    {
+        String_Token_Stream tokens("blue green red");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT detect mismatched case");
+    }
+    {
+        String_Token_Stream tokens("BLUE RED");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT detect unknown keyword");
+    }
+    {
+        String_Token_Stream tokens("BLUISH");
+        table.parse(tokens);
+        if (tokens.error_count()!=1)
+            ut.failure("Did NOT catch partial mismatch");
+    }
+    {
+        String_Token_Stream tokens("end");
+        if (table.parse(tokens).type()!=END)
+        {
+            ut.failure("END detection FAILED");
+        }
+        if (table.parse(tokens).type()!=EXIT)
+        {
+            ut.failure("exit detection FAILED");
+        }
+    }
+    {
+        Colon_Token_Stream tokens;
+        if (table.parse(tokens).type()!=END)
+        {
+            ut.failure("END detection FAILED");
+        }
+        if (table.parse(tokens).type()!=EXIT)
+        {
+            ut.failure("exit detection FAILED");
+        }
+    }
+    // Error handling
+    {
+        Error_Token_Stream tokens;
+        if (table.parse(tokens).type()!=ERROR)
+        {
+            ut.failure("error detection FAILED");
+        }
+    }
+
     Parse_Table table_2(raw_table, raw_table_size);
 
     if (table_2.size()!=raw_table_size) ut.failure("test FAILS");

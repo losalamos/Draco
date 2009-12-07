@@ -63,9 +63,19 @@ void constant_test()
     if (grayp->getDataDescriptor() != "Analytic Gray Total") ITFAILS;
     if (grayp->getReactionType() != rtt_cdi::TOTAL)          ITFAILS;
     if (grayp->getModelType() != rtt_cdi::ANALYTIC)          ITFAILS;
+    if (grayp->getOpacityModelType() != rtt_cdi::ANALYTIC_TYPE) ITFAILS;
     if (typeid(grayp) != typeid(GrayOpacity *))              ITFAILS;
     if (typeid(*grayp) != typeid(Analytic_Gray_Opacity))     ITFAILS;
 
+    {       
+        Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::ABSORPTION);
+        if (anal_opacity.getDataDescriptor() != "Analytic Gray Absorption") ITFAILS;
+    }
+    {       
+        Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
+        if (anal_opacity.getDataDescriptor() != "Analytic Gray Total") ITFAILS;
+    }
+    
     // check the output
     vector<double> T(10);
     vector<double> rho(10);
@@ -160,8 +170,23 @@ void CDI_test()
     SP<Analytic_Opacity_Model> smodel
 	(new Constant_Analytic_Opacity_Model(1.0));
 
+    if (!soft_equiv(amodel->calculate_opacity(2.0, 3.0, 4.0),
+                    100.0/(2.0*2.0*2.0)))
+        FAILMSG("FAILED to calculate grey absorption opacity");
+    if (!soft_equiv(smodel->calculate_opacity(1.0, 1.0, 1.0), 1.0))
+        FAILMSG("FAILED to calculate grey scattering opacity");
+
     absorption = new const Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION);
     scattering = new const Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING);
+    if (absorption->getDataDescriptor() != "Analytic Gray Absorption") ITFAILS;
+    if (scattering->getDataDescriptor() != "Analytic Gray Scattering") ITFAILS;
+    {
+        SP<const GrayOpacity> total;
+        total =
+            new const Analytic_Gray_Opacity(smodel, rtt_cdi::TOTAL);
+        if (total->getDataDescriptor() != "Analytic Gray Total") ITFAILS;
+    }
+
 
     if (!absorption) FAILMSG("Failed to build absorption analytic opacity")
     if (!scattering) FAILMSG("Failed to build scattering analytic opacity")

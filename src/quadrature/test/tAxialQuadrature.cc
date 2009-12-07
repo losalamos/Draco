@@ -86,6 +86,8 @@ void quadrature_test()
 		 << "Quadrature set." << endl;
 	    cout << "   Sn Order         = " << spQuad->getSnOrder() << endl;
 	    cout << "   Number of Ordinates = " << spQuad->getNumOrdinates() << endl;
+            cout << "   Parser Name = " << spQuad->parse_name() << endl;
+            cout << "   Class = " << spQuad->getClass() << endl;
 
 	    // If the object was constructed sucessfully then we continue
 	    // with the tests.

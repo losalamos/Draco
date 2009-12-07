@@ -16,7 +16,9 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 
+#include "ds++/Soft_Equivalence.hh"
 #include "parser_test.hh"
+#include "../utilities.hh"
 #include "../Release.hh"
 #include "../String_Token_Stream.hh"
 
@@ -379,6 +381,27 @@ void tstString_Token_Stream(UnitTest &ut)
         {
             ut.passes("scanned 09 correctly");
         }
+    }
+    {
+        String_Token_Stream tokens("_, __, _ _, > < & | 1E3 0XA");
+        if (tokens.shift().text()!="_")
+            ut.failure("Did NOT correctly scan _");
+        if (tokens.shift().text()!="__")
+            ut.failure("Did NOT correctly scan __");
+        if (tokens.shift().text()!="_ _")
+            ut.failure("Did NOT correctly scan _ _");
+        if (tokens.shift().text()!=">")
+            ut.failure("Did NOT correctly scan >");
+        if (tokens.shift().text()!="<")
+            ut.failure("Did NOT correctly scan <");
+        if (tokens.shift().text()!="&")
+            ut.failure("Did NOT correctly scan &");
+        if (tokens.shift().text()!="|")
+            ut.failure("Did NOT correctly scan |");
+        if (!soft_equiv(parse_real(tokens), 1e3))
+            ut.failure("Did NOT correctly scan 1E3");
+        if (parse_integer(tokens) != 10)
+            ut.failure("Did NOT correctly scan 0XA");
     }
 
     return;

@@ -180,6 +180,33 @@ void compareRealYlk(unsigned const l, int const k,
 
 //---------------------------------------------------------------------------//
 
+void compareGalerkinYlk(unsigned const l, int const k,
+                        double const theta, double const phi,
+                        double const expVal, rtt_dsxx::UnitTest & ut )
+{
+    using rtt_dsxx::soft_equiv;
+    std::ostringstream msg;
+
+    double const Ylk( galerkinYlk(l,k,cos(theta),phi,(4.0*rtt_units::PI)) );
+    
+    if (soft_equiv( Ylk, expVal ) )
+    {
+        msg << "galerkinYlk(" << l << "," << k
+            << ") function returned the expected value = "
+            << expVal << ".";
+        ut.passes( msg.str() );
+    }
+    else
+    {
+        msg << "galerkinYlk(" << l << "," << k
+            << ") function did NOT return the expected value.\n"
+            << "\tExpected " << expVal << ", but found " << Ylk;
+        ut.failure(msg.str());
+    }
+}
+
+//---------------------------------------------------------------------------//
+
 void compareComplexYlk( unsigned const l,      int const k,
                         double   const theta,  double const phi,
                         double   const expVal, rtt_dsxx::UnitTest & ut )
@@ -325,6 +352,34 @@ void tstComplexYlk( rtt_dsxx::UnitTest & ut )
 
 //---------------------------------------------------------------------------//
 
+void tstgalerkinYlk( rtt_dsxx::UnitTest & ut )
+{
+    using rtt_units::PI;
+    using rtt_dsxx::soft_equiv;
+
+    cout << "\nTesting realYlk function.\n" << endl;
+    
+    double const theta = 0.9, phi = 0.06;
+
+    // Y(0,0)
+    double expVal = (1.0/(4.0*PI));
+    compareGalerkinYlk(0,0,theta,phi,expVal,ut);
+    
+//     // y(1,0)
+//     expVal = sqrt(3.0/(4.0*PI))*cos(theta);
+//     compareGalerkinYlk(1,0,theta,phi,expVal,ut);
+    // y(1,-1)
+    double expVal_1_m1 = -(3.0/(4.0*PI))*sin(theta)*sin(phi);
+    compareGalerkinYlk(1,-1,theta,phi,expVal_1_m1,ut);
+//     // y(1,1)
+    double expVal_1_1 = -(3.0/(4.0*PI))*sin(theta)*cos(phi);
+    compareGalerkinYlk(1,1,theta,phi,expVal_1_1,ut);
+
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
 int main(int argc, char *argv[])
 {
     try
@@ -334,6 +389,7 @@ int main(int argc, char *argv[])
         tstNormalizedYlk( ut );
         tstRealYlk(       ut );
         tstComplexYlk(    ut );
+        tstgalerkinYlk(   ut );
     }
     catch (exception &err)
     {

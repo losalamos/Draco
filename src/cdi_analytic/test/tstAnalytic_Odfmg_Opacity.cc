@@ -103,6 +103,8 @@ void odfmg_test()
 	{
 		string desc = "Analytic Odfmg Absorption";
 
+		if (opacity.getOpacityModelType()!=
+                    rtt_cdi::ANALYTIC_TYPE)                           ITFAILS;
 		if (opacity.data_in_tabular_form())                   ITFAILS;
 		if (opacity.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
 		if (opacity.getModelType() != rtt_cdi::ANALYTIC)      ITFAILS;
@@ -117,6 +119,25 @@ void odfmg_test()
 		if (opacity.getEnergyPolicyDescriptor() != "odfmg")   ITFAILS;
 		if (opacity.getDataDescriptor() != desc)              ITFAILS;
 		if (opacity.getDataFilename() != string())            ITFAILS;
+
+                if (opacity.get_Analytic_Model(1, 1) != models[0])    ITFAILS;
+                if (opacity.get_Analytic_Model(2, 1) != models[1])    ITFAILS;
+                if (opacity.get_Analytic_Model(3, 1) != models[2])    ITFAILS;
+	}
+
+	{
+            // make an analytic multigroup opacity object for scattering
+            Analytic_Odfmg_Opacity opacity(groups, bands, models, rtt_cdi::SCATTERING);
+            string desc = "Analytic Odfmg Scattering";
+
+		if (opacity.getDataDescriptor() != desc)              ITFAILS;
+	}
+	{
+            // make an analytic multigroup opacity object for scattering
+            Analytic_Odfmg_Opacity opacity(groups, bands, models, rtt_cdi::TOTAL);
+            string desc = "Analytic Odfmg Total";
+
+		if (opacity.getDataDescriptor() != desc)              ITFAILS;
 	}
 
 	// check the group structure

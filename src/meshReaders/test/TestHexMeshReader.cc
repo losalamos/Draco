@@ -30,6 +30,8 @@ using namespace std;
 void runTest()
 {
     using rtt_meshReaders::Hex_Mesh_Reader;
+    using rtt_dsxx::SP;
+    using rtt_mesh_element::Element_Definition;
 
     cout << std::endl << "******* CIC-19 Hex Mesh Reader Tests *******" 
 	 << std::endl;
@@ -43,6 +45,9 @@ void runTest()
 		<< std::endl;
     }
     rtt_meshReaders_test::check_mesh(mesh_1D, "slab");
+    vector<SP<Element_Definition> > element_defs = mesh_1D.get_element_defs();
+    if (element_defs.size()>0)
+        FAILMSG("element defs is NOT empty for slab");
 
     // Read and test a 2D mesh.
     filename = "quad.mesh";
@@ -54,6 +59,9 @@ void runTest()
 		<< std::endl;
     }
     rtt_meshReaders_test::check_mesh(mesh_2D, "quad");
+    element_defs = mesh_2D.get_element_defs();
+    if (element_defs.size()>0)
+        FAILMSG("element defs is NOT empty for quad");
 
     // Read and test a 3D mesh.
     filename = "cube.mesh";
@@ -65,7 +73,11 @@ void runTest()
 		<< std::endl;
     }
     rtt_meshReaders_test::check_mesh(mesh_3D, "cube");
+    element_defs = mesh_3D.get_element_defs();
+    if (element_defs.size()>0)
+        FAILMSG("element defs is NOT empty for cube");
     cout << endl;
+    
    
     // Report results of test.
     if (rtt_meshReaders_test::passed)
