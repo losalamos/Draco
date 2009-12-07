@@ -59,9 +59,7 @@ C4_Req::C4_Req( const C4_Req& req )
 
 C4_Req::~C4_Req()
 {
-    --p->n;
-    if (p->n <= 0)
-	delete p;
+    free_();
 }
 
 //---------------------------------------------------------------------------//
@@ -75,9 +73,7 @@ C4_Req::~C4_Req()
 
 C4_Req& C4_Req::operator=( const C4_Req& req )
 {
-    --p->n;
-    if (p->n <= 0)
-	delete p;
+    free_();
 
     if (req.inuse())
         p = req.p;
@@ -87,6 +83,18 @@ C4_Req& C4_Req::operator=( const C4_Req& req )
     ++p->n;
 
     return *this;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Utility for cleaning up letter in letter/envelope idiom
+ */
+/* private */
+void C4_Req::free_()
+{
+    --p->n;
+    if (p->n <= 0)
+	delete p;
 }
 
 //---------------------------------------------------------------------------//

@@ -131,13 +131,10 @@ class C4_Req {
     // Private access to the C4_ReqRefRep internals.
     
 #ifdef C4_MPI
-// Commented out by KT on 2005 Nov 1    
-// It does not appear that this member function serves any purpose.  It is not
-// used by C4_Req or friend class C4_ReqReqRef and it is private.
-// else can use it.
-//    MPI_Status  &s() { return p->s; }
     MPI_Request &r() { return p->r; }
 #endif
+
+    void free_();
 
     // FRIENDSHIP
     
