@@ -128,6 +128,7 @@ class Colon_Token_Stream : public Token_Stream
                 return Token(EXIT, "");
             default:
                 Insist(false, "bad case");
+                return Token(ERROR, "");
         }
     }
 
