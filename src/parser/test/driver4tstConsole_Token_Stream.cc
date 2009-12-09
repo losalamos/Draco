@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <stdlib.h>
+#include <cerrno>
 
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
@@ -53,11 +54,14 @@ void runtest()
     int errorLevel(-1);
     
     // run the test.
+    errno = 0;
     errorLevel = system( unixCommand.str().c_str() );
     
     // check the errorLevel
     std::ostringstream msg;
-    if( errorLevel == 0 )
+    // On Linux, the child process information is sometimes unavailable even
+    // for a correct run.
+    if( errorLevel == 0 || errno == ECHILD)
     {
         msg << "Successful execution of tstConsole_Token_Stream:"
             << "\n\t Standard input from: console_test.inp\n";
@@ -66,7 +70,9 @@ void runtest()
     else
     {
         msg << "Unsuccessful execution of tstConsole_Token_Stream:"
-            << "\n\t Standard input from: console_test.inp\n";
+            << "\n\t Standard input from: console_test.inp\n"
+            << "\t errorLevel = " << errorLevel << endl
+            << "\t errno = " << errno << ", " << strerror(errno) << endl;
         FAILMSG( msg.str() );   
     }
     
