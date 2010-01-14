@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
