@@ -13,7 +13,7 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-extraExe := tstConsole_Token_Stream
+#extraExe := tstConsole_Token_Stream
 
 thistestdep := libparser_test${libsuffix}
 thistestlib := -L. -lparser_test
