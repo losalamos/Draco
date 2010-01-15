@@ -13,7 +13,7 @@ testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
 testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
 		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
 
-#extraExe := tstConsole_Token_Stream
+extraExe := tstConsole_Token_Stream
 
 thistestdep := libparser_test${libsuffix}
 thistestlib := -L. -lparser_test
@@ -31,6 +31,8 @@ ${test_alltarget}: ${thistestdep} ${testdeps}
 ${thistestdep}: ${thistestlib_dep} ${testdeps}
 	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
 	${RANLIB} $@
+
+tstConsole_Token_Stream: libparser_test${libsuffix}
 
 objs += ${thistestdep}
 
