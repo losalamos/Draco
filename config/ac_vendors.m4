@@ -133,7 +133,7 @@ AC_DEFUN([AC_NDI_SETUP], [dnl
    fi
 
    # determine if this package is needed for testing or for the package
-   vendor_gsl=$1
+   vendor_ndi=$1
 ])
 
 ##---------------------------------------------------------------------------##
@@ -1423,6 +1423,8 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    AC_GRACE_FINALIZE
    AC_SPICA_FINALIZE
    AC_XERCES_FINALIZE
+
+   AC_NDI_FINALIZE
 
    AC_UDM_FINALIZE
    AC_SILO_FINALIZE
