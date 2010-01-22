@@ -109,6 +109,62 @@ AC_DEFUN([AC_MPI_FINALIZE], [dnl
 ])
 
 dnl-------------------------------------------------------------------------dnl
+dnl AC_NDI_SETUP
+dnl-------------------------------------------------------------------------dnl
+
+AC_DEFUN([AC_NDI_SETUP], [dnl
+
+   dnl define --with-ndi
+   AC_ARG_WITH(ndi,
+      [  --with-ndi=[ndi]
+                       determine NDI lib (ndi is default)])
+
+   dnl define --with-ndi-inc
+   AC_WITH_DIR(ndi-inc, NDI_INC, \${NDI_INC_DIR},
+               [tell where NDI includes are])
+
+   dnl define --with-ndi-lib
+   AC_WITH_DIR(ndi-lib, NDI_LIB, \${NDI_LIB_DIR},
+               [tell where NDI libraries are])
+
+   # set default value of ndi includes and libs
+   if test "${with_ndi:=ndi}" = yes ; then
+       with_ndi='ndi'
+   fi
+
+   # determine if this package is needed for testing or for the package
+   vendor_gsl=$1
+])
+
+##---------------------------------------------------------------------------##
+
+AC_DEFUN([AC_NDI_FINALIZE], [dnl
+
+   # set up the libraries and include path
+   if test -n "${vendor_ndi}"; then
+
+       # include path
+       if test -n "${NDI_INC}"; then
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${NDI_INC}"
+       fi
+
+       # library path
+       if test -n "${NDI_LIB}" ; then
+           AC_VENDORLIB_SETUP(vendor_ndi, -L${NDI_LIB} ${ndi_libs})
+       elif test -z "${NDI_LIB}" ; then
+           AC_VENDORLIB_SETUP(vendor_ndi, ${ndi_libs})
+       fi
+
+       # add NDI directory to VENDOR_LIB_DIRS
+       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${NDI_LIB}"
+       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${NDI_INC}"
+
+   fi
+
+])
+
+dnl-------------------------------------------------------------------------dnl
 dnl AC_AZTEC_SETUP
 dnl
 dnl AZTEC SETUP (on by default)
@@ -1415,6 +1471,7 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
    AC_LAPACK_SETUP(pkg)
    AC_GANDOLF_SETUP(pkg)
    AC_EOSPAC5_SETUP(pkg)
+   AC_NDI_SETUP(pkg)
    AC_GRACE_SETUP(pkg)
    AC_SPICA_SETUP(pkg)
    AC_XERCES_SETUP(pkg)
