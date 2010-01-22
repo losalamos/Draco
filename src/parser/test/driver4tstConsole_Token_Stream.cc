@@ -16,6 +16,7 @@
 #include <string>
 #include <stdlib.h>
 #include <cerrno>
+#include <string.h>
 
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
