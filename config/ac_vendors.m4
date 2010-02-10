@@ -132,8 +132,7 @@ AC_DEFUN([AC_NDI_SETUP], [dnl
        with_ndi='ndi'
    fi
 
-   #remove this until the ndi library is installed locally
-   #ndi_libs='-lndi'
+   ndi_libs='-lndi'
 
    # determine if this package is needed for testing or for the package
    vendor_ndi=$1
