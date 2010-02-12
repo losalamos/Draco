@@ -284,7 +284,7 @@ class SortPermutation
 	doCreatePermutation(first, last, comp, iters);
     }
 
-#ifdef REMEMBER_ON
+#ifdef ENSURE_ON
     template<class IT, class COMP>
     bool isPermutationSorted(IT first, IT last, const COMP &comp)
     {
