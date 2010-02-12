@@ -282,6 +282,13 @@ void insist_ptr(char const * const cond,
 #define DBC 7
 #endif
 
+#if DBC
+#define REMEMBER_ON
+#define Remember(c) c
+#else
+#define Remember(c)
+#endif
+
 #if DBC & 1
 #define REQUIRE_ON
 #define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
@@ -299,12 +306,10 @@ void insist_ptr(char const * const cond,
 #endif
 
 #if DBC & 4
-#define REMEMBER_ON
+#define ENSURE_ON
 #define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
-#define Remember(c) c
 #else
 #define Ensure(c) 
-#define Remember(c)
 #endif
 
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
