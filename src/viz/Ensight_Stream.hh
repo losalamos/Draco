@@ -105,7 +105,7 @@ class Ensight_Stream
 
     Ensight_Stream& operator<<(FP f);
 
-    friend Ensight_Stream& rtt_viz::endl(Ensight_Stream &s);
+    friend Ensight_Stream& endl(Ensight_Stream &s);
 
   private:
 
