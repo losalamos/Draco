@@ -86,6 +86,25 @@ std::ostream &operator<<(std::ostream &str, const Unit &u)
     return str;
 }
 
+//---------------------------------------------------------------------------//
+double conversion_factor(Unit const &units, Unit const &unit_system)
+{
+    using std::pow;
+    
+    double const conv =
+        pow(unit_system.m, units.m) *
+        pow(unit_system.kg, units.kg) *
+        pow(unit_system.s, units.s) *
+        pow(unit_system.A, units.A) *
+        pow(unit_system.K, units.K) *
+        pow(unit_system.mol, units.mol) *
+        pow(unit_system.cd, units.cd) *
+        pow(unit_system.rad, units.rad) *
+        pow(unit_system.sr, units.sr);
+    
+    return conv;
+}
+
 } // namespace rtt_parser
 
 //---------------------------------------------------------------------------//

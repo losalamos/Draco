@@ -352,6 +352,13 @@ Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16};
 Unit const MKS = { 1.,   1.,    1., 1., 1., 1., 1., 1., 1.,  0.};
 Unit const CGS = { 0.01, 0.001, 1., 1., 1., 1., 1., 1., 1.,  0.};
 
+//---------------------------------------------------------------------------//
+/*! Calculate conversion factor to a system of units. Assumes the units are
+/* initially MKS.
+*/
+
+double conversion_factor(Unit const &units, Unit const &unit_system);
+
 } // end namespace rtt_parser
 
 #endif // __parser_Unit_hh__
