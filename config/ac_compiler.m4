@@ -529,6 +529,11 @@ AC_DEFUN([AC_DRACO_PGCC], [dnl
        # suppress missing return statement warning (we get this in
        # nearly every STL inclusion through PGICC)
        STRICTFLAG="--diag_suppress 940 ${STRICTFLAG}"
+
+       # suppress "unrecognized preprocessing directive" when pgCC
+       # encounters #warning; because #warning is non-standard, emitting
+       # a warning via #warning won't work anyway in strict mode
+       STRICTFLAG="--diag_suppress 11 ${STRICTFLAG}"
    fi
 
    # optimization level
