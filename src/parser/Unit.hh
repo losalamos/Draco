@@ -360,7 +360,7 @@ Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e-3/rtt_units::EV2K, 1., 1., 1., 1.,
 
 //---------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are
-/* initially MKS.
+* initially MKS.
 */
 
 double conversion_factor(Unit const &units, Unit const &unit_system);
