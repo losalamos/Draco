@@ -343,7 +343,8 @@ dnl ------------------------------------------------------------------------ dnl
 AC_DEFUN([AC_DBS_GFORTRAN_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
-   case ${CXX} in 
+   dnl case ${CXX} in 
+   case `echo ${CXX} | sed -e 's/.*\///g'` in  
        g++ | ppu-g++)
            rpath='-Xlinker -rpath '
            ;;
