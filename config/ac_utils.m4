@@ -9,6 +9,36 @@ dnl-------------------------------------------------------------------------dnl
 dnl Functions taken from:
 dnl http://www.gnu.org/software/ac-archive/htmldoc/relpaths.html
 dnl
+dnl adl_COMPUTE_RELATIVE_PATHS(PATH_LIST)
+dnl
+dnl PATH_LIST is a space-separated list of colon-separated triplets of
+dnl the form 'FROM:TO:RESULT'. This function iterates over these
+dnl triplets and set $RESULT to the relative path from $FROM to
+dnl $TO. Note that $FROM and $TO needs to be absolute filenames for
+dnl this macro to success. 
+dnl
+dnl For instance,
+dnl
+dnl   first=/usr/local/bin
+dnl   second=/usr/local/share
+dnl   adl_COMPUTE_RELATIVE_PATHS([first:second:fs second:first:sf])
+dnl   # $fs is set to ../share
+dnl   # $sf is set to ../bin
+dnl
+dnl $FROM and $TO are both eval'ed recursively and normalized, this
+dnl means that you can call this macro with autoconf's dirnames like
+dnl `prefix' or `datadir'. For example: 
+dnl
+dnl   adl_COMPUTE_RELATIVE_PATHS([bindir:datadir:bin_to_data])
+dnl
+dnl adl_COMPUTE_RELATIVE_PATHS should also works with DOS filenames.
+dnl
+dnl You may want to use this macro in order to make your package
+dnl relocatable. Instead of hardcoding $datadir into your programs
+dnl just encode $bin_to_data and try to determine $bindir at
+dnl run-time. 
+dnl
+dnl This macro requires adl_NORMALIZE_PATH. 
 
 AC_DEFUN([adl_COMPUTE_RELATIVE_PATHS],
 [for _lcl_i in $1; do

@@ -16,7 +16,7 @@ dnl AC_MIDDLEWARE_VENDOR_SETUP(1)
 dnl
 dnl Setup macro that allows a middleware vendor using the draco build
 dnl system to be defined as a vendor. This should be called in a
-dnl middleware-client configure.in as follows:
+dnl middleware-client configure.ac as follows:
 dnl
 dnl AC_MIDDLEWARE_VENDOR_SETUP(vendor_name)
 dnl
