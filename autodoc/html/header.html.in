@@ -1,23 +1,40 @@
-<HTML>
-<HEAD>
-   <TITLE> $title </TITLE>
-   <LINK HREF="doxygen.css" REL="stylesheet" TYPE="text/css" >
-   <LINK HREF="draco.css" REL="stylesheet" TYPE="text/css" >
-</HEAD>
-<BODY BGCOLOR="#FFFFFF">
+<!-- This comment will put IE 6, 7 and 8 in quirks mode -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+    <title>$title</title>
+    <link href="$relpath$tabs.css" rel="stylesheet" type="text/css"/>
+    <link href="$relpath$search/search.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javaScript" src="$relpath$search/search.js"></script>
+    <link href="$relpath$doxygen.css" rel="stylesheet" type="text/css"/>
+  </head>
+<body onload='searchBox.OnSelectItem(0);'>
+<table border=0, cellpadding=2 cellspacing=2 width="50%" align="right"><tr>
+<td align="right">
+  <a href="@rel_package_html@/index.html"> Draco Autodoc Home </a>
+  &nbsp; | &nbsp;
+  <a href="./index.html"> Main Index </a>
+</td>
+</tr></table>
+<br clear="all">
 
-<img src="dragon.jpg"   width=150 border="0" alt="Draco Logo" align="left">
-<img src="dragon-r.jpg" width=150 border="0" alt="Draco Logo" align="right"> 
+<!--  Old header
+
+<BODY BGCOLOR="#FFFFFF"> 
+
+<img src="wedgehog.jpg"   width=150 border="0" alt="Wedgehog Logo" align="left">
 
 <div class="header">
-  Draco Computational Physics System<br>
-  On-Line Documentation 
+   Jayenne Computational Physics System<br>
+   Wedgehog On-Line Documentation 
 </div>
 
 <p class="menuitems">
-<a class="menuitems" href="https://sf4.lanl.gov/sf/sfmain/do/viewProject/projects.draco"> Draco Home </a> &nbsp;
-<a class="menuitems" href="@rel_package_html@/index.html"> Draco Autodoc Home </a> &nbsp;
+<a class="menuitems" href="http://sf.lanl.gov/projects/jayenne"> Jayenne Home </a> &nbsp;
+<a class="menuitems" href="http://sf.lanl.gov/projects/draco"> Draco Home </a> &nbsp;
+<a class="menuitems" href="@rel_package_html@/index.html"> Jayenne Autodoc Home </a> &nbsp;
 <a class="menuitems" href="./index.html"> Main Index </a>
 <hr size=4 color=#336699>
 
-
+-->
