@@ -87,6 +87,28 @@ AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
        tagfile=${doxygen_output_top}/${comp}.tag
        DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${comp}\""
    done
+
+#
+# If we can find Draco .tag files, provide them.
+#
+   if test -f ${with_draco}/documentation/Draco.tag; then
+     # lookup relative path between current tagfiles and draco
+     # tagfiles. 
+     clubimc_html_dir=${doxygen_output_top}/html
+     draco_html_dir=${with_draco}/documentation/html
+     adl_COMPUTE_RELATIVE_PATHS([clubimc_html_dir:draco_html_dir:rel_path])
+     draco_tagfiles=`\ls -1 ${with_draco}/documentation/*.tag`
+     for tagfile in ${draco_tagfiles}; do
+       comp=`echo ${tagfile} | sed -e 's/.*\///' | sed -e 's/[.]tag//'`
+       components="${components} ${comp}"
+       # since we are navigating from ${clubimc_html_dir}/${package}
+       # to ${draco_html_dir}/${package}, we must add the 2 extra
+       # 'package' directories to the relative path:
+       # Prepend with '../' and append with ${comp}
+       DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} \"${tagfile} = ../${rel_path}/${comp}\""
+     done
+   fi
+
    AC_MSG_RESULT([${components}])
 
 ])
@@ -109,6 +131,7 @@ AC_DEFUN([AC_AUTODOC_SUBST], [dnl
 
    # Other doxygen configuration
    AC_SUBST(DOXYGEN_TAGFILES)
+   AC_SUBST(draco_html_rel_path)
 
    # For inclusion in header files and other html
    AC_SUBST(rel_package_html)
@@ -123,6 +146,9 @@ dnl-------------------------------------------------------------------------dnl
 dnl AC_DRACO_AUTODOC
 dnl
 dnl  setup doxygen autodoc directories for COMPONENTS within a package
+dnl
+dnl  Accepted arguments:
+dnl   $1 == release number (e.g.: milagro-4_3_0)
 dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_DRACO_AUTODOC], [dnl
@@ -164,13 +190,21 @@ AC_DEFUN([AC_DRACO_AUTODOC], [dnl
    # Relative location of the package-level html output.
    adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:package_html:rel_package_html])
 
+   # Relative location of the draco top-level html output.
+   if test -f ${with_draco}/documentation/Draco.tag; then
+     # lookup relative path between clubimc tagfiles and draco
+     # tagfiles. 
+     current_html_dir=${with_draco}/documentation/html
+     adl_COMPUTE_RELATIVE_PATHS([doxygen_html_output:current_html_dir:draco_html_rel_path])
+   fi
+
    # Get tags for other components in this package which this
    # component depends on
    AC_AUTODOC_COMPONENT_TAGS
 
    # find the release number
    number=$1
-   AC_MSG_CHECKING("component release number")
+   AC_MSG_CHECKING([component release number])
    AC_MSG_RESULT($number)
    AC_SUBST(number)
 
@@ -220,6 +254,15 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
 
    # Relative location of the package-level html output.
    rel_package_html='.'
+
+   # Relative location of the draco top-level html output.
+   if test -f ${with_draco}/documentation/Draco.tag; then
+     # lookup relative path between clubimc tagfiles and draco
+     # tagfiles. 
+     clubimc_html_dir=${doxygen_output_top}/html
+     draco_html_dir=${with_draco}/documentation/html
+     adl_COMPUTE_RELATIVE_PATHS([clubimc_html_dir:draco_html_dir:draco_html_rel_path])
+   fi
 
    AC_AUTODOC_PACKAGE_TAGS
 
