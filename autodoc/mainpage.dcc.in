@@ -26,15 +26,17 @@ overviews can be found in the <a href="pages.html">Related Pages</a>
 section of the documentation.
 
 \par Code Access
-To get access to Draco source contact 
+To gain access to Draco source contact 
 <a href="mailto:draco@lanl.gov">CCS-2</a> or see the Draco LANL SourceForge
 <a href=http://sf.lanl.gov/projects/draco>page</a>.
 
 \par Components
 @COMP_LINKS@
 
+<!--
 \par Packages
 @PACKAGE_LINKS@
+-->
 
 */
 
