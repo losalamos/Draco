@@ -154,8 +154,15 @@ mode?"
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-python-mode t
-  "*Does the user want to have  the Draco minor mode enabled forPython
-mode?" 
+  "*Does the user want to have  the Draco minor mode enabled for
+Python mode?" 
+:group 'draco-mode
+:type '(radio	(const :tag "Yes" t)
+		(const :tag "No"  nil)))
+
+(defcustom draco-want-cmake-mode t
+  "*Does the user want to have  the Draco minor mode enabled for CMake
+mode?"  
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
@@ -349,25 +356,26 @@ compilation-mode?"
 ;; using draco specific settings.  This includes turning on 
 ;; draco-mode as a minor mode for each <pkg> mode.
 
-(if draco-want-mppl-mode       (draco-setup-mppl-mode))
-(if draco-want-tcl-mode        (draco-setup-tcl-mode))
-(if draco-want-python-mode     (draco-setup-python-mode))
-(if draco-want-autoconf-mode   (draco-setup-autoconf-mode))
-(if draco-want-makefile-mode   (draco-setup-makefile-mode))
-(if draco-want-cc-mode         (draco-setup-cc-mode))
 (if draco-want-auctex-mode     (draco-setup-auctex-mode))
+(if draco-want-autoconf-mode   (draco-setup-autoconf-mode))
+(if draco-want-cc-mode         (draco-setup-cc-mode))
+(if draco-want-change-log-mode (draco-setup-change-log-mode))
+(if draco-want-cmake-mode      (draco-setup-cmake-mode))
+(if draco-want-compilation-mode (draco-setup-compilation-mode))
+(if draco-want-cvs-mode        (draco-setup-cvs-mode))
+(if draco-want-dired-mode      (draco-setup-dired-mode))
+(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
+(if draco-want-emacs-lisp-mode (draco-setup-emacs-lisp-mode))
 (if draco-want-f90-mode        (draco-setup-f90-mode))
 (if draco-want-fortran-mode    (draco-setup-fortran-mode))
-(if draco-want-change-log-mode (draco-setup-change-log-mode))
-(if draco-want-emacs-lisp-mode (draco-setup-emacs-lisp-mode))
-(if draco-want-shell-mode      (draco-setup-shell-mode))
-(if draco-want-cvs-mode        (draco-setup-cvs-mode))
-(if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
-(if draco-want-sh-mode         (draco-setup-sh-mode))
-(if draco-want-text-mode       (draco-setup-text-mode))
+(if draco-want-makefile-mode   (draco-setup-makefile-mode))
+(if draco-want-mppl-mode       (draco-setup-mppl-mode))
+(if draco-want-python-mode     (draco-setup-python-mode))
 (if draco-want-sgml-mode       (draco-setup-sgml-mode))
-(if draco-want-dired-mode      (draco-setup-dired-mode))
-(if draco-want-compilation-mode (draco-setup-compilation-mode))
+(if draco-want-sh-mode         (draco-setup-sh-mode))
+(if draco-want-shell-mode      (draco-setup-shell-mode))
+(if draco-want-tcl-mode        (draco-setup-tcl-mode))
+(if draco-want-text-mode       (draco-setup-text-mode))
 (if draco-want-global-keys     (require 'draco-global-keys))
 
 ;(kill-buffer "*Compile-Log-Show*")

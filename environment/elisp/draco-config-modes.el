@@ -98,6 +98,31 @@ auto-mode-alist."
       (add-hook 'python-mode-hook 'draco-python-mode-hook)))
 
 ;; ========================================
+;; CMake
+;; ========================================
+
+(defun draco-setup-cmake-mode ()
+  "Autoload cmake-mode and append the appropriate suffixes to
+auto-mode-alist."
+  (interactive)
+      (progn
+      (autoload 'cmake-mode "cmake-mode" "CMake editing mode." t)
+      (setq auto-mode-alist
+	      (append '(("\\.cmake$"         . cmake-mode)
+			("CMakeLists\\.txt$" . cmake-mode)
+			("\\.cmake.in$"      . cmake-mode))
+		      auto-mode-alist))
+      (defun draco-cmake-mode-hook ()
+	"DRACO hooks added to CMake mode."
+	(defvar cmake-tab-width 2)
+	(local-set-key [(control c)(control c)] 'comment-region)
+	(local-set-key [(f5)] 'draco-makefile-divider)
+	(local-set-key [(f6)] 'draco-makefile-comment-divider)
+	(turn-on-draco-mode)
+	(turn-on-auto-fill))
+      (add-hook 'cmake-mode-hook 'draco-cmake-mode-hook)))
+
+;; ========================================
 ;; Autoconf
 ;; ========================================
 
@@ -183,7 +208,7 @@ auto-mode-alist.
 
 - Autoload c-mode, c++-mode and doxymacs-mode.
 - Associate files *.C, *.cc, *.pt, *.hh, *.hpp, *.cpp, *.hh.in,
-  *.h.in, *.c, *.h and *.dot with this mode.
+  *.h.in, *.c, *.h, *.dcc, *.dcc.in and *.dot with this mode.
 - Create and install menu items for inserting C++/C/Doxygen comment
   blocks.
 - Set the C++ indentation style to match Draco source code.
@@ -207,17 +232,19 @@ auto-mode-alist.
       (autoload 'c-mode   "cc-mode" "C Editing Mode" t)
       (autoload 'doxymacs-mode "doxymacs-mode" "Doxygen Editing Mode" t)
       (setq auto-mode-alist
-	    (append '(("\\.C$"   . c++-mode)
-		      ("\\.cc$"  . c++-mode)
-                      ("\\.pt$"  . c++-mode)
-		      ("\\.hh$"  . c++-mode)
-		      ("\\.hpp$"  . c++-mode)
-		      ("\\.cpp$"  . c++-mode)
-                      ("\\.hh.in$" . c++-mode)
-		      ("\\.h.in$"  . c-mode)
-		      ("\\.c$"   . c-mode)   ; to edit C code
-		      ("\\.h$"   . c-mode)   ; to edit C code
- 		      ("\\.dot$" . c-mode)  ; for dot files
+	    (append '(("\\.C$"      . c++-mode)
+		      ("\\.cc$"     . c++-mode)
+                      ("\\.pt$"     . c++-mode)
+		      ("\\.hh$"     . c++-mode)
+		      ("\\.hpp$"    . c++-mode)
+		      ("\\.cpp$"    . c++-mode)
+                      ("\\.hh.in$"  . c++-mode)
+		      ("\\.h.in$"   . c-mode)
+		      ("\\.c$"      . c-mode)   ; to edit C code
+		      ("\\.h$"      . c-mode)   ; to edit C code
+		      ("\\.dcc$"    . c-mode)   ; to edit C code
+		      ("\\.dcc.in$" . c-mode)   ; to edit C code
+ 		      ("\\.dot$"    . c-mode)  ; for dot files
 		      ) auto-mode-alist))
       (defun draco-menu-insert-comments-cc () 
 	"Submenu for inserting comments (context sensitive)."

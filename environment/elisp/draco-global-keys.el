@@ -37,6 +37,10 @@
 (define-key global-map [(f8)]               'draco-toggle-previous-buffer)
 (define-key global-map [(control f8)]       'draco-find-companion-file)
 
+;; Newer keyboards (Microsoft 4000 via Reflection X)
+(define-key global-map [(f17)]       'kill-this-buffer)
+(define-key global-map [(f18)]       'draco-find-companion-file)
+
 ;; Mouse wheel for Lambda, Flash and QSC
 (if (getenv "HOST")
     (setq machine-name (getenv "HOST"))

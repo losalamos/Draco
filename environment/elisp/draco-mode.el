@@ -370,6 +370,7 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 	      ("\\(.H\\)$" . ".C")
 	      ("\\(.hh\\)$" . ".cc")
 	      ("\\(.hh\\)$" . ".i.hh")
+	      ("\\(.hh\\)$" . ".t.hh")
 	      ("\\(.hxx\\)$" . ".cxx")
 	      ("\\(.hpp\\)$" . ".cpp")
 	      ("\\(.h\\)$" . ".cpp")
@@ -635,17 +636,21 @@ draco-companion-file-alist."
 ;;---------------------------------------------------------------------------;;
 ;; time stamp function
 ;;---------------------------------------------------------------------------;;
+(defvar draco-user-name nil
+  "Name of current user")
 (defun draco-name-and-time ()
   "Insert a time stamp"
   (interactive)
   (require 'time-stamp)
+  (time-stamp-toggle-active 1)
+  
   (setq draco-user-name (concat fill-prefix
 				"Author: " 
 				(user-full-name) 
 				", " (user-login-name)
 				"@lanl.gov\n" ))
-  (setq time-stamp-format "%a, %y %b %d, %H:%M:%S %Z")
-  (setq draco-time-stamp (concat fill-prefix
+  (defvar time-stamp-format "%a, %y %b %d, %H:%M:%S %Z")
+  (defvar draco-time-stamp (concat fill-prefix
 				 "Date  : " 
 				 (time-stamp-string)))
   (insert draco-user-name) 
