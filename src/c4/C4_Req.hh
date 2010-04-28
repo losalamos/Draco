@@ -154,6 +154,8 @@ class C4_Req {
     template<class T>
     friend void receive_async(C4_Req &r, T *buf, int nels, int source, 
 			      int tag);
+
+    friend void wait_all(int count, C4_Req *requests);
 #endif
 };
 

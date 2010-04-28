@@ -275,6 +275,19 @@ bool probe(int source, int tag, int &message_size);
 void blocking_probe(int source, int tag, int &message_size);
 
 //---------------------------------------------------------------------------//
+/*! 
+ * \brief Wait until every one of a set of posted sends/receives is complete.
+ *
+ * This version returns no status information.
+ * 
+ * \param count
+ * Size of the set of requests to wait on.
+ * \param requests
+ * Set of requests to wait on.
+ */
+void wait_all(int count, C4_Req *requests);
+
+//---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
 /*!

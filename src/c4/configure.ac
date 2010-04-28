@@ -65,6 +65,7 @@ AC_RUNTESTS( \
             tstInvert_Comm_Map \
             tstCompare \
             tstSend_Receive \
+            tstSwap \
             , 1 2 4)
 
 dnl application tests

@@ -14,6 +14,7 @@
 
 #include <unistd.h>
 #include <sys/times.h>
+#include <vector>
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
 
@@ -156,6 +157,20 @@ void blocking_probe(int  source,
     MPI_Status status;
     MPI_Probe(source, tag, communicator, &status);
     MPI_Get_count(&status, MPI_CHAR, &message_size);
+}
+
+void wait_all(int count,
+              C4_Req *requests)
+{
+    using std::vector;
+    
+    vector<MPI_Request> array_of_requests(count);
+    vector<MPI_Status> array_of_statuses(count);
+    for (unsigned i=0; i<count; ++i)
+    {
+        array_of_requests[i] = requests[i].r();
+    }
+    MPI_Waitall(count, &array_of_requests[0], &array_of_statuses[0]);
 }
 
 //---------------------------------------------------------------------------//
