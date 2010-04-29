@@ -10,22 +10,23 @@
 //---------------------------------------------------------------------------//
 
 #include <c4/config.h>
+#include "C4_Functions.hh"
 #include "C4_Req.hh"
 #include "swap.t.hh"
 
 namespace rtt_c4
 {
-using namespace std;
+using std::vector;
 
 //---------------------------------------------------------------------------//
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
-template void determinate_swap(vector<unsigned> const &outgoing_pid,
+template void determinate_swap(vector<unsigned>          const &outgoing_pid,
                                vector<vector<unsigned> > const &outgoing_data,
-                               vector<unsigned> const &incoming_pid,
-                               vector<vector<unsigned> > &incoming_data,
-                               int tag = C4_Traits<unsigned*>::tag);
+                               vector<unsigned>          const &incoming_pid,
+                               vector<vector<unsigned> >       &incoming_data,
+                               int tag);
 } // end namespace rtt_c4
 
 

@@ -30,7 +30,7 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
                       vector<vector<T> > const &outgoing_data,
                       vector<unsigned>   const &incoming_pid,
                       vector<vector<T> >       &incoming_data,
-                      int tag = C4_Traits<T*>::tag )
+                      int tag )
 {
     Require(outgoing_pid.size()==outgoing_data.size());
     Require(incoming_pid.size()==incoming_data.size());
