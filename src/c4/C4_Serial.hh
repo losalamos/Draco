@@ -136,6 +136,26 @@ void broadcast(ForwardIterator first,
     return;
 }
 
+
+
+//---------------------------------------------------------------------------//
+// GATHER/SCATTER
+//---------------------------------------------------------------------------//
+
+template<class T>
+int gather(T *send_buffer, T *receive_buffer, int size)
+{
+    copy(send_buffer, send_buffer+size, receive_buffer);
+    return C4_SUCCESS;
+}
+
+template<class T>
+int scatter(T *send_buffer, T *receive_buffer, int size)
+{
+    copy(send_buffer, send_buffer+size, receive_buffer);
+    return C4_SUCCESS;
+}
+
 //---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//

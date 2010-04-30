@@ -66,6 +66,7 @@ AC_RUNTESTS( \
             tstCompare \
             tstSend_Receive \
             tstSwap \
+            tstGatherScatter \
             , 1 2 4)
 
 dnl application tests

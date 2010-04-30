@@ -65,33 +65,27 @@ void broadcast(ForwardIterator first,
 	diff_type;
 
     // Proc 0 does not copy any data into the result iterator.
-    
+
+    diff_type size;
     if( rtt_c4::node() == 0)
     {
-	diff_type size = std::distance(first, last);
-
-	value_type *buf = new value_type[size];
-	std::copy(first, last, buf);
-
-	for (int i=1; i<rtt_c4::nodes(); ++i)
-	{
-            rtt_c4::send(&size, 1, i);
-            rtt_c4::send(buf, size, i);
-	}
-	delete [] buf;
+	size = std::distance(first, last);
     }
-    else
+    broadcast(&size, 1, 0);
+
+    value_type *buf = new value_type[size];
+    if ( rtt_c4::node() == 0)
     {
-	diff_type size;
-
-        rtt_c4::receive(&size, 1, 0);
-	value_type *buf = new value_type[size];
-        rtt_c4::receive(buf,size,0);
-
-	std::copy(buf, buf+size, result);
-
-	delete [] buf;
+	std::copy(first, last, buf);
     }
+    broadcast(buf, size, 0);
+    
+    if ( rtt_c4::node() != 0)
+    {
+	std::copy(buf, buf+size, result);
+    }
+    
+    delete [] buf;
 }
 
 } // end namespace rtt_c4

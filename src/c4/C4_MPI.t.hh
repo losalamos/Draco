@@ -158,6 +158,42 @@ int broadcast(T   *buffer,
 
 
 //---------------------------------------------------------------------------//
+// GATHER/SCATTER
+//---------------------------------------------------------------------------//
+
+template<class T>
+int gather(T *send_buffer, T *receive_buffer, int size)
+{
+    int Result = MPI_Gather(send_buffer,
+                            size,
+                            MPI_Traits<T>::element_type(),
+                            receive_buffer,
+                            size,
+                            MPI_Traits<T>::element_type(),
+                            0, // root is always processor 0 at present
+                            communicator);
+
+    return Result;
+}
+
+template<class T>
+int scatter(T *send_buffer, T *receive_buffer, int size)
+{
+    int Result = MPI_Scatter(send_buffer,
+                             size,
+                             MPI_Traits<T>::element_type(),
+                             receive_buffer,
+                             size,
+                             MPI_Traits<T>::element_type(),
+                             0, // root is always processor 0 at present
+                             communicator);
+
+    return Result;
+}
+
+
+
+//---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//
 
