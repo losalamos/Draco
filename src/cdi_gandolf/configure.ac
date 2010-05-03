@@ -14,8 +14,10 @@ AC_CONFIG_HEADERS(cdi_gandolf/config.h:config.h.in)
 package="cdi_gandolf"
 
 dnl VENDOR SETUPS
-dnl why again - already done via draco/configure.in AC_ALL_VENDORS_SETUP
-AC_GANDOLF_SETUP(pkg)
+dnl [KT 2010-4-28] Note that the setup done in AC_ALL_VENDORS_SETUP
+dnl    does not propigate to the sub-packages.  Here we register the
+dnl    gandolf vendor as required for building the unit tests.
+AC_GANDOLF_SETUP(test)dnl vendor is only used for the unit tests.
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
