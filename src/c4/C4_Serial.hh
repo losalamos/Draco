@@ -20,6 +20,7 @@
 #include "C4_Req.hh"
 #include "C4_Tags.hh"
 #include "ds++/Assert.hh"
+#include <algorithm>
 
 namespace rtt_c4
 {
@@ -145,14 +146,14 @@ void broadcast(ForwardIterator first,
 template<class T>
 int gather(T *send_buffer, T *receive_buffer, int size)
 {
-    copy(send_buffer, send_buffer+size, receive_buffer);
+    std::copy(send_buffer, send_buffer+size, receive_buffer);
     return C4_SUCCESS;
 }
 
 template<class T>
 int scatter(T *send_buffer, T *receive_buffer, int size)
 {
-    copy(send_buffer, send_buffer+size, receive_buffer);
+    std::copy(send_buffer, send_buffer+size, receive_buffer);
     return C4_SUCCESS;
 }
 
