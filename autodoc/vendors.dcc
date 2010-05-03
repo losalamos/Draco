@@ -1,0 +1,52 @@
+/*!
+
+\page vendors The Draco Vendors
+
+\par  Authors
+<a href="mailto:kgt@lanl.gov">Kelly Thompson</a>,
+<a href="mailto:jhchang@lanl.gov">Jae Chang</a>
+
+\par Executive Summary
+
+Some Draco packages use third party libraries.  This page provides some
+information about these third parties and how to obtian or build them.
+
+\par Table of Contents
+- \ref vendor_locations
+- \ref vendor_how2build
+
+<hr><!-- ------------------------------------------------------------ -->
+
+\section vendor_locations Location of pre-built vendor code:
+
+\subsection vendor_location_ccs2_lan CCS2 LAN
+
+\par GLS - GNU Scientific Library
+
+Linux64/GCC - <tt>/ccs/codes/radtran/vendors/gsl/Linux64</tt>.
+
+\subsection vendor_location_icn ICN machines
+
+\par Need to provide this information!
+
+<hr><!-- ------------------------------------------------------------ -->
+
+\section vendor_how2build Building vendor code:
+
+\subsection vendor_how2build_gsl GSL - PGI - ccscs8
+
+\code
+% CC=/ccs/opt/x86_64/pgi_7.0-5/linux86-64/7.0-5/bin/pgcc
+% CFLAGS="-fPIC -O2"
+% cd /ccs/codes/radtran/vendors/gsl/Linux64-pgi/b
+% ../s/gsl-1.8/configure --prefix=/ccs/codes/radtran/vendors/gsl/Linux64-pgi
+% make -j4 install
+\endcode
+
+
+*/
+
+//---------------------------------------------------------------------------//
+// end of vendors.dcc
+//---------------------------------------------------------------------------//
+
