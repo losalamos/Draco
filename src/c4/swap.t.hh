@@ -77,6 +77,62 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
     return;
 }
 
+//---------------------------------------------------------------------------//
+template<class T>
+void determinate_swap(vector<vector<T> > const &outgoing_data,
+                      vector<vector<T> >       &incoming_data,
+                      int tag )
+{
+    Require(outgoing_data.size()==rtt_c4::nodes());
+    Require(incoming_data.size()==rtt_c4::nodes());
+
+#ifdef C4_MPI
+    { // This block is a no-op for with-c4=scalar 
+
+        unsigned const N = rtt_c4::nodes();
+        
+        // Post the asynchronous sends.
+        vector<C4_Req> outgoing_C4_Req(N);
+        for (unsigned p=0; p<N; ++p)
+        {
+            if (outgoing_data[p].size()>0)
+            {
+                outgoing_C4_Req[p] =
+                    rtt_c4::send_async(&outgoing_data[p][0],
+                                       outgoing_data[p].size(),
+                                       p,
+                                       tag);
+            }
+        }
+        
+        // Post the asynchronous receives
+        vector<C4_Req> incoming_C4_Req(N);
+        for (unsigned p=0; p<N; ++p)
+        {
+            if (incoming_data[p].size()>0)
+            {
+                incoming_C4_Req[p] =
+                    receive_async(&incoming_data[p][0],
+                                  incoming_data[p].size(),
+                                  p,
+                                  tag);
+            }
+        }
+        
+        // Wait for all the receives to complete.
+        
+        wait_all(N, &incoming_C4_Req[0]);
+        
+        // Wait until all the posted sends have completed.
+        
+        wait_all(N, &outgoing_C4_Req[0]);
+        
+    }
+#endif // C4_MPI
+
+    return;
+}
+
 } // end namespace rtt_c4
 
 #endif // c4_swap_t_hh

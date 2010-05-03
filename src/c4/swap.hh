@@ -55,6 +55,31 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Send and receive a known pattern of messages of known size.
+ *
+ * It is common for a program to reach a point where processes wish to
+ * exchange data with other processes in a way which is hard to
+ * synchronize. This function exchanges the data using asynchronous
+ * communications in the case where each process knows which other processes
+ * it is expecting data from, and how much data to expect.
+ *
+ * \param outgoing_data Data to be send to other processors. If
+ * outgoing_data[p].size()==0, then no message is sent to processor p.
+ *
+ * \param incoming_data On entry, the size of each subarray must be set to the
+ * expected size of the incoming message. On return, contains the received
+ * data. If incoming_data[p].size()==0, then no message is looked for from
+ * processor p.
+ *
+ * \param tag Tag for this exchange of data.
+ */
+template<class T>
+void determinate_swap( std::vector<std::vector<T> > const &outgoing_data,
+                       std::vector<std::vector<T> > &incoming_data,
+                       int tag = C4_Traits<T*>::tag);
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Send and receive a known pattern of messages of unknown size.
  *
  * It is common for a program to reach a point where processes wish to
