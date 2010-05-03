@@ -17,7 +17,7 @@
 #include "ds++/Assert.hh"
 #include "../Release.hh"
 #include "../ParallelUnitTest.hh"
-#include "../C4_Functions.hh"
+#include "../global.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

@@ -74,6 +74,28 @@ void tstScalar()
         PASSMSG("For --with-c4=scalar, broadcast() did not return C4_SUCCCESS.");
     }
 
+    // Test gather and scatter
+    
+    result = rtt_c4::gather(&int3, &int3, 1);
+    if( result == rtt_c4::C4_SUCCESS )
+    {
+        PASSMSG("For --with-c4=scalar, gather() returned C4_SUCCCESS.");
+    }
+    else
+    {
+        PASSMSG("For --with-c4=scalar, gather() did not return C4_SUCCCESS.");
+    }
+    
+    result = rtt_c4::scatter(&int3, &int3, 1);
+    if( result == rtt_c4::C4_SUCCESS )
+    {
+        PASSMSG("For --with-c4=scalar, scatter() returned C4_SUCCCESS.");
+    }
+    else
+    {
+        PASSMSG("For --with-c4=scalar, scatter() did not return C4_SUCCCESS.");
+    }
+
     // Test send function
     result = rtt_c4::send( &int3, 1, 0, 0 );
     if( result == rtt_c4::C4_SUCCESS )
