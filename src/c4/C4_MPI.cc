@@ -165,12 +165,18 @@ void wait_all(int count,
     using std::vector;
     
     vector<MPI_Request> array_of_requests(count);
-    vector<MPI_Status> array_of_statuses(count);
     for (unsigned i=0; i<count; ++i)
     {
-        array_of_requests[i] = requests[i].r();
+        if (requests[i].inuse())
+        {
+            array_of_requests[i] = requests[i].r();
+        }
+        else
+        {
+            array_of_requests[i] = MPI_REQUEST_NULL;
+        }
     }
-    MPI_Waitall(count, &array_of_requests[0], &array_of_statuses[0]);
+    MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
 }
 
 //---------------------------------------------------------------------------//
