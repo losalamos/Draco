@@ -28,7 +28,7 @@ source /home/regress/draco/regression/set_env
 if [ "`uname -m`" != "x86_64" ]; then
     source /ccs/opt/x86/lf9562/bash_setup
     BULLSEYE_DIR=/ccs/opt/x86/bullseye
-else if test -d /ccs/codes/radtran/vendors/CCS64-gnu/Bullseye
+else if test -d /ccs/codes/radtran/vendors/CCS64-gnu/Bullseye; then
     BULLSEYE_DIR=/ccs/codes/radtran/vendors/CCS64-gnu/Bullseye
 fi
 
