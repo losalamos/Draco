@@ -148,6 +148,7 @@ bool probe(int  source,
     return true;
 }
 
+//---------------------------------------------------------------------------//
 void blocking_probe(int  source, 
                     int  tag,
                     int &message_size)
@@ -159,6 +160,7 @@ void blocking_probe(int  source,
     MPI_Get_count(&status, MPI_CHAR, &message_size);
 }
 
+//---------------------------------------------------------------------------//
 void wait_all(int count,
               C4_Req *requests)
 {
@@ -177,6 +179,31 @@ void wait_all(int count,
         }
     }
     MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
+}
+
+//---------------------------------------------------------------------------//
+unsigned wait_any(int count,
+                  C4_Req *requests)
+{
+    using std::vector;
+    
+    vector<MPI_Request> array_of_requests(count);
+    for (unsigned i=0; i<count; ++i)
+    {
+        if (requests[i].inuse())
+        {
+            array_of_requests[i] = requests[i].r();
+        }
+        else
+        {
+            array_of_requests[i] = MPI_REQUEST_NULL;
+        }
+    }
+    int index;
+    MPI_Waitany(count, &array_of_requests[0], &index, MPI_STATUSES_IGNORE);
+    requests[index] = C4_Req();
+
+    return index;
 }
 
 //---------------------------------------------------------------------------//

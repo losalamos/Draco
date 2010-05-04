@@ -22,6 +22,10 @@ namespace rtt_c4
 // EXPLICIT INSTANTIATIONS OF GATHER/SCATTER
 //---------------------------------------------------------------------------//
 
+template int gather(int *send_buffer,
+                    int *receive_buffer,
+                    int size);
+
 template int gather(unsigned *send_buffer,
                     unsigned *receive_buffer,
                     int size);
@@ -29,6 +33,12 @@ template int gather(unsigned *send_buffer,
 template int scatter(unsigned *send_buffer,
                      unsigned *receive_buffer,
                      int size);
+template
+int gatherv(unsigned *send_buffer,
+            int send_size,
+            unsigned *receive_buffer,
+            int *receive_sizes,
+            int *receive_displs);
 
 } // end namespace rtt_c4
 

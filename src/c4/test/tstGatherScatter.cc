@@ -18,6 +18,7 @@
 #include "../Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../global.hh"
+#include "../gatherv.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -56,6 +57,44 @@ void tstDeterminateGatherScatter(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
+void tstIndeterminateGatherv(UnitTest &ut)
+{
+    unsigned pid = node();
+    unsigned const number_of_processors = nodes();
+    vector<unsigned> send(pid, pid);
+    vector<vector<unsigned> > receive;
+    indeterminate_gatherv(send, receive);
+
+    ut.passes("No exception thrown");
+
+    if (pid==0)
+    {
+        if (receive.size() == number_of_processors)
+        {
+            ut.passes("correct number of processors in gatherv");
+        }
+        else
+        {
+            ut.failure("NOT correct number of processors in gatherv");
+        }
+        for (unsigned p=0; p<number_of_processors; ++p)
+        {
+            if (receive[p].size() != p)
+            {
+                ut.failure("NOT correct number of elements in gatherv");
+                for (unsigned i=0; i<p; ++i)
+                {
+                    if (receive[p][i] != p)
+                    {
+                        ut.failure("NOT correct values in gatherv");
+                    }
+                }
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -63,6 +102,7 @@ int main(int argc, char *argv[])
     try
     {
         tstDeterminateGatherScatter(ut);
+        tstIndeterminateGatherv(ut);
     }
     catch (std::exception &err)
     {

@@ -157,6 +157,17 @@ int scatter(T *send_buffer, T *receive_buffer, int size)
     return C4_SUCCESS;
 }
 
+template<class T>
+int gatherv(T *send_buffer,
+            int send_size,
+            T *receive_buffer,
+            int *receive_sizes,
+            int *receive_displs)
+{
+    std::copy(send_buffer, send_buffer+send_size, receive_buffer);
+    return C4_SUCCESS;
+}
+
 //---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//

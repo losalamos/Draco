@@ -179,6 +179,13 @@ template<class T>
 int gather(T *send_buffer, T *receive_buffer, int size);
 
 template<class T>
+int gatherv(T *send_buffer,
+            int send_size,
+            T *receive_buffer,
+            int *receive_sizes,
+            int *receive_displs);
+
+template<class T>
 int scatter(T *send_buffer, T *receive_buffer, int size);
 
 //---------------------------------------------------------------------------//
@@ -296,6 +303,18 @@ void blocking_probe(int source, int tag, int &message_size);
  * Set of requests to wait on.
  */
 void wait_all(int count, C4_Req *requests);
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Wait until one of a set of posted sends/receives is complete.
+ * 
+ * \param count
+ * Size of the set of requests to wait on.
+ * \param requests
+ * Set of requests to wait on.
+ * \return The request that completed.
+ */
+unsigned wait_any(int count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 // ABORT

@@ -155,7 +155,8 @@ class C4_Req {
     friend void receive_async(C4_Req &r, T *buf, int nels, int source, 
 			      int tag);
 
-    friend void wait_all(int count, C4_Req *requests);
+    friend void     wait_all(int count, C4_Req *requests);
+    friend unsigned wait_any(int count, C4_Req *requests);
 #endif
 };
 

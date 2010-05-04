@@ -191,6 +191,26 @@ int scatter(T *send_buffer, T *receive_buffer, int size)
     return Result;
 }
 
+template<class T>
+int gatherv(T *send_buffer,
+            int send_size,
+            T *receive_buffer,
+            int *receive_sizes,
+            int *receive_displs)
+{
+    int Result = MPI_Gatherv(send_buffer,
+                             send_size,
+                             MPI_Traits<T>::element_type(),
+                             receive_buffer,
+                             receive_sizes,
+                             receive_displs,
+                             MPI_Traits<T>::element_type(),
+                             0,
+                             communicator);
+
+    return Result;
+}
+
 
 
 //---------------------------------------------------------------------------//
