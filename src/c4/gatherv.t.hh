@@ -13,13 +13,15 @@
 #define c4_gatherv_t_hh
 
 #include "c4/config.h"
-#include "ds++/Assert.hh"
 #include "gatherv.hh"
 #include "C4_Functions.hh"
+#include "ds++/Assert.hh"
+#include <algorithm>
 
 namespace rtt_c4
 {
 using std::vector;
+using std::copy;
 
 //---------------------------------------------------------------------------//
 // EXCHANGE
