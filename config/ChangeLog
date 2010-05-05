@@ -1,3 +1,36 @@
+2010-05-05  Kelly (KT) Thompson  <kt@transpireinc.com>
+
+	* ac_doxygen.m4 (AC_AUTODOC_COMPONENT_TAGS): Provide links between
+	  other packages and the Draco .tag files (i.e.: let ClubIMC
+	  autodoc link directly to draco documentation.).
+
+	* ac_draco_arg.m4 (AC_DRACO_ARG): Comment out the option for
+	  --with-mips as it is deprecated. 
+
+	* ac_f90env.m4 (AC_WITH_F90):  Clean up the output from
+	  'configure --help' by using the m4 standard AS_HELP_STRING()
+	  macro.
+	  - same changes apply for ac_instrument.m4, ac_local.m4,
+	  ac_vendors.m4, ac_draco_arg.m4.
+
+	* ac_platforms.m4 (AC_DBS_PGF90_ENVIRONMENT): Strip the path from
+	  the variable $CXX before trying to match it to a compiler name
+	  in a case statement.  This allows the developer to have
+	  CXX=/fully/qualified/path/g++ set in his/her environment. 
+
+	* ac_vendors.m4 (AC_GANDOLF_SETUP): Only set $vendor_gandolf if
+	  $with_gandolf != "no".
+
+	* ac_vendors.m4 (AC_GANDOLF_FINALIZE): Added some logic (somewhat
+	  beta still) to try and determine what libraries libgandolf.a
+	  will need.  Older versions on Linux needed -lg2c, but newer
+	  versions need -lgfortran (from gcc-4.1 and not gcc-4.3!).
+
+	* doxygen_config.in: Add *.py *.h *.c to FILE_PATTERNS.
+
+	* src/configure.ac (Level 2): Only include plot2D if grace was
+	  found. 
+
 2007-08-09  Mike Buksas  <mwbuksas@lanl.gov>
 
 	* ac_vendors.m4 (Repository): Tim's tests for Gandolf as a

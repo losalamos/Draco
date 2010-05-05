@@ -26,22 +26,21 @@ AC_DEFUN([AC_DRACO_INSTR_ARGS], [dnl
    dnl
 
    dnl Request a build that uses STLPort (specify location of STLPort).
-   AC_ARG_WITH(stlport,
-      [  --with-stlport[[=dir]]
-                          replace default STL with STLPort (off by default).
-                          examines value of STLPORT_BASE_DIR.
-                          Only available for g++ on Linux.])
+   AC_ARG_WITH([stlport],
+     [AS_HELP_STRING([--with-stlport=DIR],
+       [replace default STL with STLPort (off by default). Examines
+        value of @S|@STLPORT_BASE_DIR. Only available for g++ on Linux.])])
 
    dnl 
    dnl Coverage Analsysis
    dnl
 
    dnl specify type of coverage analysis.
-   AC_ARG_WITH(coverage,
-      [  --with-coverage[=bullseye(default)|gcov]
-                          produce coverage analysis statistics (off by default).
-                          examines value of COVERAGE_BASE_DIR.
-                          Only available for g++ on Linux.])
+   AC_ARG_WITH([coverage],
+     [AS_HELP_STRING([--with-coverage@<:@=bullseye(default)|gcov@:>@],
+       [produce coverage analysis statistics (off by
+        default). Examines value of @S|@COVERAGE_BASE_DIR. Only
+        available for g++ on Linux.])]) 
 
    dnl 
    dnl Memory Checkers
@@ -49,11 +48,10 @@ AC_DEFUN([AC_DRACO_INSTR_ARGS], [dnl
 
    dnl specify type of memory checking to be done.
    AC_ARG_WITH(memory-check,
-      [  --with-memory-check[=purify(default)|insure]
-                          produce binaries that are instrumented for memory 
-                          checking (off by default). examines value of
-                          MEMORYCHECK_BASE_DIR.
-                          Only available for g++ on Linux.])
+     [AS_HELP_STRING([--with-memory-check@<:@=purify(default)|insure@:>@],
+       [produce binaries that are instrumented for memory checking
+        (off by default). examines value of
+        @S|@MEMORYCHECK_BASE_DIR. Only available for g++ on Linux.])]) 
 
 ])
 

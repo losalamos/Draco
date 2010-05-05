@@ -26,8 +26,8 @@ dnl     AC_F90_ENV set environment variables F90, F90FLAGS, F90EXT,
 dnl     F90FREE, F90FIXED, and MODFLAG for the compiler requested by 
 dnl     with_f90.  If no specific compiler is requested, guess a compiler 
 dnl     based on the target
-dnl
-========================================================================
+dnl ========================================================================
+
 ##---------------------------------------------------------------------------##
 ## $Id$ 
 ##---------------------------------------------------------------------------##
@@ -40,10 +40,16 @@ AC_DEFUN([AC_WITH_F90], [dnl
    with_cxx='no'
 
    dnl defines --with-f90
-   AC_ARG_WITH(f90,
-       [  --with-f90[=gfortran,XL,Fujitsu,Lahey,Portland,WorkShop,Cray,MIPS,Compaq,HP,Intel,NAG,Absoft]
-                          choose an F90 compiler])
+
+   AC_ARG_WITH([f90],
+     [AS_HELP_STRING([--with-f90@<:@string@:>@],
+      [choose a F90 compiler. Currently accepted values are
+       @<:@ gfortran | XL | Fujitsu | Lahey | Portland | WorkShop |
+       Cray | MIPS | Compaq | HP | Intel | NAG | Absoft @:>@ ])])
 ])
+
+dnl KT (2010-04-27): We should probably inspect the value of ${FC} if
+dnl --with-f90=yes is provided.
 
 dnl
 dnl CHOOSE A F90 COMPILER

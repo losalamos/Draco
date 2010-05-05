@@ -39,9 +39,9 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    dnl
 
    dnl define --with-c4
-   AC_ARG_WITH(c4, 
-      [  --with-c4[=scalar,mpi,shmem]   
-		          turn on c4 (default scalar) ])
+   AC_ARG_WITH([c4],
+     [AS_HELP_STRING([--with-c4@<:@=scalar|mpi|shmem@:>@],
+       [turn on c4 (default scalar)])])
 
    # give with-c4 implied argument
    if test "${with_c4:=scalar}" = yes ; then
@@ -53,8 +53,9 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    dnl
 
    dnl defines --with-dbc
-   AC_ARG_WITH(dbc,
-      [  --with-dbc[=level]      set Design-by-Contract])
+   AC_ARG_WITH([dbc],
+     [AS_HELP_STRING([--with-dbc@<:@=@<:@0-7@:>@@:>@],[set Design-by-Contract
+level. 0 is off; +1 turns on Require; +2 turns on Check; +4 turns on Ensure.])])
 	
    if test "${with_dbc}" = yes ; then
        with_dbc='7'
@@ -80,9 +81,9 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    dnl
 
    dnl defines --with-cxx
-   AC_ARG_WITH(cxx,
-      [  --with-cxx[=gcc,icpc,sgi,kcc,compaq,guide]                                    
-                          choose a c++ compiler (defaults are machine dependent)])
+   AC_ARG_WITH([cxx],
+     [AS_HELP_STRING([--with-cxx@<:@=gcc|icpc|sgi|kcc|compaq|guide@:>@],                                    
+       [choose a c++ compiler (defaults are machine dependent)])])
 
    dnl the default is gcc
    if test "${with_cxx}" = yes ; then
@@ -119,7 +120,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl defines --with-opt
    AC_ARG_WITH(opt,
-      [  --with-opt[=0,1,2,3]    set optimization level (0 by default)])
+      [  --with-opt[=0,1,2,3]      set optimization level (0 by default)])
 
    if test "${with_opt}" = yes ; then
        with_opt='0'
@@ -135,7 +136,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl defines --with-posix
    AC_ARG_WITH(posix,
-      [  --with-posix[=num]      give posix source (system-dependent defaults)])
+      [  --with-posix[=num]        give posix source (system-dependent defaults)])
 
    dnl
    dnl ADD TO CPPFLAGS
@@ -143,7 +144,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    
    dnl defines --with-cppflags
    AC_ARG_WITH(cppflags,
-      [  --with-cppflags[=flags] add flags to \$CPPFLAGS])
+      [  --with-cppflags@<:@=flags@:>@ add flags to @S|@CPPFLAGS])
 
    dnl
    dnl ADD TO CXXFLAGS
@@ -151,7 +152,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    
    dnl defines --with-cxxflags
    AC_ARG_WITH(cxxflags,
-      [  --with-cxxflags[=flags] add flags to \$CXXFLAGS])
+      [  --with-cxxflags@<:@=flags@:>@ add flags to @S|@CXXFLAGS])
 
    dnl
    dnl ADD TO CFLAGS
@@ -159,7 +160,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    
    dnl defines --with-cflags
    AC_ARG_WITH(cflags,
-      [  --with-cflags[=flags]   add flags to \$CFLAGS])
+      [  --with-cflags@<:@=flags@:>@   add flags to @S|@CFLAGS])
 
    dnl
    dnl ADD TO F90FLAGS
@@ -167,7 +168,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    
    dnl defines --with-f90flags
    AC_ARG_WITH(f90flags,
-      [  --with-f90flags[=flags] add flags to \$F90FLAGS])
+      [  --with-f90flags@<:@=flags@:>@ add flags to @S|@F90FLAGS])
 
    dnl
    dnl ADD TO ARFLAGS
@@ -175,7 +176,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    
    dnl defines --with-arflags
    AC_ARG_WITH(arflags,
-      [  --with-arflags[=flags]  add flags to \$ARFLAGS])
+      [  --with-arflags@<:@=flags@:>@  add flags to @S|@ARFLAGS])
 
    dnl
    dnl ADD TO LDFLAGS
@@ -183,7 +184,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    
    dnl defines --with-ldflags
    AC_ARG_WITH(ldflags,
-      [  --with-ldflags[=flags]  add flags to \$LDFLAGS])
+      [  --with-ldflags@<:@=flags@:>@  add flags to @S|@LDFLAGS])
 
    dnl 
    dnl ADD TO LIBRARIES
@@ -191,7 +192,7 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl defines --with-libs
    AC_ARG_WITH(libs,
-      [  --with-libs=[libs]      add libs to \$LIBS])
+      [  --with-libs=[libs]        add libs to @S|@LIBS])
 
    dnl
    dnl CHOSE BIT COMPILATION ON SGI'S
@@ -210,12 +211,12 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
    dnl
 
    dnl defines --with-mips
-   AC_ARG_WITH(mips,
-      [  --with-mips[=1,2,3,4]   set mips, mips4 by default (SGI ONLY)])
+dnl    AC_ARG_WITH(mips,
+dnl       [  --with-mips[=1,2,3,4]   set mips, mips4 by default (SGI ONLY)])
 
-   if test "${with_mips}" = yes ; then
-       with_mips='4'
-   fi
+dnl    if test "${with_mips}" = yes ; then
+dnl        with_mips='4'
+dnl    fi
 
    dnl 
    dnl Arguments for options defined in ac_instrument.m4
@@ -232,8 +233,9 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
       [AC_SUBST(latex_yes_no,'YES')],
       [AC_SUBST(latex_yes_no,'NO')])
 
-   AC_ARG_WITH(doc-output,
-      [  --with-doc-output=path  build documentation in path (prefix/documentation by default)],
+   AC_ARG_WITH([doc-output],
+     [AS_HELP_STRING([--with-doc-output=PATH],[build documentation in
+      path (prefix/documentation by default)])], 
       [AC_SUBST(doxygen_output_top,${with_doc_output})],
       [doxygen_output_top='DEFAULT'])
 

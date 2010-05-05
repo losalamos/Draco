@@ -32,7 +32,12 @@ AC_CONFIG_SUBDIRS( ds++ )
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
-                   plot2D lapack_wrap shared_lib fpe_trap )
+		   lapack_wrap shared_lib fpe_trap ) 
+# Only build plot2D if xmgrace is available
+if test -n "${vendor_grace}"; then
+  AC_CONFIG_SUBDIRS( plot2D )
+fi
+
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3

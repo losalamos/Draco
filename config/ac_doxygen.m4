@@ -94,14 +94,14 @@ AC_DEFUN([AC_AUTODOC_COMPONENT_TAGS], [dnl
    if test -f ${with_draco}/documentation/Draco.tag; then
      # lookup relative path between current tagfiles and draco
      # tagfiles. 
-     clubimc_html_dir=${doxygen_output_top}/html
+     product_html_dir=${doxygen_output_top}/html
      draco_html_dir=${with_draco}/documentation/html
-     adl_COMPUTE_RELATIVE_PATHS([clubimc_html_dir:draco_html_dir:rel_path])
+     adl_COMPUTE_RELATIVE_PATHS([product_html_dir:draco_html_dir:rel_path])
      draco_tagfiles=`\ls -1 ${with_draco}/documentation/*.tag`
      for tagfile in ${draco_tagfiles}; do
        comp=`echo ${tagfile} | sed -e 's/.*\///' | sed -e 's/[.]tag//'`
        components="${components} ${comp}"
-       # since we are navigating from ${clubimc_html_dir}/${package}
+       # since we are navigating from ${product_html_dir}/${package}
        # to ${draco_html_dir}/${package}, we must add the 2 extra
        # 'package' directories to the relative path:
        # Prepend with '../' and append with ${comp}
@@ -132,6 +132,7 @@ AC_DEFUN([AC_AUTODOC_SUBST], [dnl
    # Other doxygen configuration
    AC_SUBST(DOXYGEN_TAGFILES)
    AC_SUBST(draco_html_rel_path)
+   AC_SUBST(MIDDLEWARE_DOXYGEN_TAGFILES)
 
    # For inclusion in header files and other html
    AC_SUBST(rel_package_html)
@@ -259,9 +260,10 @@ AC_DEFUN([AC_PACKAGE_AUTODOC], [dnl
    if test -f ${with_draco}/documentation/Draco.tag; then
      # lookup relative path between clubimc tagfiles and draco
      # tagfiles. 
-     clubimc_html_dir=${doxygen_output_top}/html
+     product_html_dir=${doxygen_output_top}/html
      draco_html_dir=${with_draco}/documentation/html
-     adl_COMPUTE_RELATIVE_PATHS([clubimc_html_dir:draco_html_dir:draco_html_rel_path])
+     adl_COMPUTE_RELATIVE_PATHS([product_html_dir:draco_html_dir:draco_html_rel_path])
+     AC_SUBST(with_draco)
    fi
 
    AC_AUTODOC_PACKAGE_TAGS

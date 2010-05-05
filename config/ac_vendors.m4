@@ -38,18 +38,37 @@ dnl to continue doing this; so we do all these operations in the
 dnl platform specific section of ac_dracoenv.m4
 dnl-------------------------------------------------------------------------dnl
 
+dnl KT (2010-04-27): Replace these bits of logic with something that
+dnl looks more like this?
+
+dnl AC_ARG_WITH(xmlparser,
+dnl     AS_HELP_STRING([--with-xmlparser], [select used xml parser; you can chose from expat,
+dnl 	libxml2 or auto. @<:@default=libxml2@:>@]),
+dnl     [case "$withval" in
+dnl         expat)    CONFIG_XMLPARSER=expat ;;
+dnl         libxml2)  CONFIG_XMLPARSER=libxml2 ;;
+dnl         n | no)   CONFIG_XMLPARSER=no ;;
+dnl         auto | *) CONFIG_XMLPARSER=auto ;;
+dnl     esac],
+dnl     [CONFIG_XMLPARSER=auto]
+dnl )
+
 AC_DEFUN([AC_MPI_SETUP], [dnl
 
    dnl define --with-mpi
-   AC_ARG_WITH(mpi,
-      [  --with-mpi=[vendor,mpich,lampi,openmpi] 
-	                  determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)])
+dnl    AC_ARG_WITH(mpi,
+dnl       [  --with-mpi=[vendor,mpich,lampi,openmpi] 
+dnl                       determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)])
+   AC_ARG_WITH([mpi],
+     [AS_HELP_STRING([--with-mpi@<:@=vendor|mpich|lampi|openmpi@:>@], 
+                     [determine MPI implementation (default is vendor,
+                      on LINUX the default is mpich)])])
 
    dnl define --with-mpi-inc and --with-mpi-lib
-   AC_WITH_DIR(mpi-inc, MPI_INC, \${MPI_INC_DIR},
-	       [tell where MPI includes are])
-   AC_WITH_DIR(mpi-lib, MPI_LIB, \${MPI_LIB_DIR},
-	       [tell where MPI libs are])
+   AC_WITH_DIR(mpi-inc, MPI_INC, @S|@{MPI_INC_DIR},
+               [tell where MPI includes are])
+   AC_WITH_DIR(mpi-lib, MPI_LIB, @S|@{MPI_LIB_DIR},
+               [tell where MPI libs are])
 
    # determine if this package is needed for testing or for the
    # package
@@ -64,9 +83,9 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
    # with_mpi and set it to vendor if with_mpi=no to begin with
    if test "${with_mpi}" = no ; then
        if test -n "${MPI_INC}" ; then
-	   with_mpi='vendor'
+           with_mpi='vendor'
        elif test -n "${MPI_LIB}" ; then
-	   with_mpi='vendor'
+           with_mpi='vendor'
        fi
    fi
    
@@ -74,7 +93,7 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
    # define them (mpi gets set to vendor by default)
    if test "$with_c4" = mpi ; then
        if test "$with_mpi" = no ; then
-	   with_mpi='vendor'
+           with_mpi='vendor'
        fi
    fi
 
@@ -89,15 +108,15 @@ AC_DEFUN([AC_MPI_FINALIZE], [dnl
 
        # include path
        if test -n "${MPI_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
        fi
    
        # libraries
        if test -n "${MPI_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${mpi_libs})
+           AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${mpi_libs})
        elif test -z "${MPI_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_mpi, ${mpi_libs})
+           AC_VENDORLIB_SETUP(vendor_mpi, ${mpi_libs})
        fi
 
        # add MPI directory to VENDOR_LIB_DIRS
@@ -115,16 +134,16 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_NDI_SETUP], [dnl
 
    dnl define --with-ndi
-   AC_ARG_WITH(ndi,
-      [  --with-ndi=[ndi]
-                       determine NDI lib (ndi is default)])
+   AC_ARG_WITH([ndi],
+     [AS_HELP_STRING([--with-ndi@<:@=ndi@:>@],
+       [determine NDI lib (ndi is default)])])
 
    dnl define --with-ndi-inc
-   AC_WITH_DIR(ndi-inc, NDI_INC, \${NDI_INC_DIR},
+   AC_WITH_DIR(ndi-inc, NDI_INC, @S|@{NDI_INC_DIR},
                [tell where NDI includes are])
 
    dnl define --with-ndi-lib
-   AC_WITH_DIR(ndi-lib, NDI_LIB, \${NDI_LIB_DIR},
+   AC_WITH_DIR(ndi-lib, NDI_LIB, @S|@{NDI_LIB_DIR},
                [tell where NDI libraries are])
 
    # set default value of ndi includes and libs
@@ -177,16 +196,17 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_AZTEC_SETUP], [dnl
 
    dnl define --with-aztec
-   AC_ARG_WITH(aztec,
-      [  --with-aztec=[lib]      determine the aztec lib (aztec is the default)])
+   AC_ARG_WITH([aztec],
+     [AS_HELP_STRING([--with-aztec@<:@=aztec@:>@],
+       [determine the aztec lib (aztec is the default)])])
  
    dnl define --with-aztec-inc
-   AC_WITH_DIR(aztec-inc, AZTEC_INC, \${AZTEC_INC_DIR},
-	       [tell where AZTEC includes are])
+   AC_WITH_DIR(aztec-inc, AZTEC_INC, @S|@{AZTEC_INC_DIR},
+               [tell where AZTEC includes are])
 
    dnl define --with-aztec-lib
-   AC_WITH_DIR(aztec-lib, AZTEC_LIB, \${AZTEC_LIB_DIR},
-	       [tell where AZTEC libraries are])
+   AC_WITH_DIR(aztec-lib, AZTEC_LIB, @S|@{AZTEC_LIB_DIR},
+               [tell where AZTEC libraries are])
 
    # set default value of aztec includes and libs
    if test "${with_aztec:=aztec}" = yes ; then
@@ -208,15 +228,15 @@ AC_DEFUN([AC_AZTEC_FINALIZE], [dnl
 
        # include path
        if test -n "${AZTEC_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${AZTEC_INC}"
        fi
 
        # library path
        if test -n "${AZTEC_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_aztec, -L${AZTEC_LIB} -l${with_aztec})
+           AC_VENDORLIB_SETUP(vendor_aztec, -L${AZTEC_LIB} -l${with_aztec})
        elif test -z "${AZTEC_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_aztec, -l${with_aztec})
+           AC_VENDORLIB_SETUP(vendor_aztec, -l${with_aztec})
        fi
 
        # add AZTEC directory to VENDOR_LIB_DIRS
@@ -238,17 +258,16 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_GSL_SETUP], [dnl
 
    dnl define --with-gsl
-   AC_ARG_WITH(gsl,
-      [  --with-gsl=[gsl] 
-                       determine GSL lib (gsl is default)])
+   AC_ARG_WITH([gsl],
+     [AS_HELP_STRING([--with-gsl@<:@=gsl@:>@],[determine GSL lib (gsl is default)])])
  
    dnl define --with-gsl-inc
-   AC_WITH_DIR(gsl-inc, GSL_INC, \${GSL_INC_DIR},
-	       [tell where GSL includes are])
+   AC_WITH_DIR(gsl-inc, GSL_INC, @S|@{GSL_INC_DIR},
+               [tell where GSL includes are])
 
    dnl define --with-gsl-lib
-   AC_WITH_DIR(gsl-lib, GSL_LIB, \${GSL_LIB_DIR},
-	       [tell where GSL libraries are])
+   AC_WITH_DIR(gsl-lib, GSL_LIB, @S|@{GSL_LIB_DIR},
+               [tell where GSL libraries are])
 
    # set default value of gsl includes and libs
    if test "${with_gsl:=gsl}" = yes ; then
@@ -277,15 +296,15 @@ AC_DEFUN([AC_GSL_FINALIZE], [dnl
 
        # include path
        if test -n "${GSL_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
        fi
 
        # library path
        if test -n "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} ${gsl_libs})
+           AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} ${gsl_libs})
        elif test -z "${GSL_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gsl, ${gsl_libs})
+           AC_VENDORLIB_SETUP(vendor_gsl, ${gsl_libs})
        fi
 
        # add GSL directory to VENDOR_LIB_DIRS
@@ -307,17 +326,17 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_SUPERLUDIST_SETUP], [dnl
 
    dnl define --with-superludist
-   AC_ARG_WITH(superludist,
-      [  --with-superludist=[superludist] 
-                       determine SUPERLUDIST lib (superludist is default)])
+   AC_ARG_WITH([superludist],
+     [AS_HELP_STRING([--with-superludist@<:@=superludist@:>@],
+       [determine SUPERLUDIST lib (superludist is default)])])
 
    dnl define --with-superludist-inc
-   AC_WITH_DIR(superludist-inc, SUPERLUDIST_INC, \${SUPERLUDIST_INC_DIR},
-	       [tell where SUPERLUDIST includes are])
+   AC_WITH_DIR(superludist-inc, SUPERLUDIST_INC, @S|@{SUPERLUDIST_INC_DIR},
+               [tell where SUPERLUDIST includes are])
 
    dnl define --with-superludist-lib
-   AC_WITH_DIR(superludist-lib, SUPERLUDIST_LIB, \${SUPERLUDIST_LIB_DIR},
-	       [tell where SUPERLUDIST libraries are])
+   AC_WITH_DIR(superludist-lib, SUPERLUDIST_LIB, @S|@{SUPERLUDIST_LIB_DIR},
+               [tell where SUPERLUDIST libraries are])
 
    # set default value of superludist includes and libs
    if test "${with_superludist:=superludist}" = yes ; then
@@ -338,23 +357,23 @@ AC_DEFUN([AC_SUPERLUDIST_FINALIZE], [dnl
 
        # include path
        if test -n "${SUPERLUDIST_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${SUPERLUDIST_INC}"
        fi
 
        # library path
        # if this is a scalar build, use SUPERLU instead.
        if test "${with_c4}" = "scalar" ; then
          if test -n "${SUPERLUDIST_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperlu)
+           AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperlu)
          elif test -z "${SUPERLUDIST_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperlu)
+           AC_VENDORLIB_SETUP(vendor_superludist, -lsuperlu)
          fi
        else
          if test -n "${SUPERLUDIST_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperludist)
+           AC_VENDORLIB_SETUP(vendor_superludist, -L${SUPERLUDIST_LIB} -lsuperludist)
          elif test -z "${SUPERLUDIST_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_superludist, -lsuperludist)
+           AC_VENDORLIB_SETUP(vendor_superludist, -lsuperludist)
          fi
        fi
 
@@ -377,16 +396,17 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_TRILINOS_SETUP], [dnl
 
    dnl define --with-trilinos
-   AC_ARG_WITH(trilinos,
-      [  --with-trilinos=[lib]    determine the trilinos implementation (aztecoo is default)])
+   AC_ARG_WITH([trilinos],
+     [AS_HELP_STRING([--with-trilinos@<:@=aztecoo@:>@],
+       [determine the trilinos implementation (aztecoo is default)])])
  
    dnl define --with-trilinos-inc
-   AC_WITH_DIR(trilinos-inc, TRILINOS_INC, \${TRILINOS_INC_DIR},
-	       [tell where TRILINOS includes are])
+   AC_WITH_DIR(trilinos-inc, TRILINOS_INC, @S|@{TRILINOS_INC_DIR},
+               [tell where TRILINOS includes are])
 
    dnl define --with-trilinos-lib
-   AC_WITH_DIR(trilinos-lib, TRILINOS_LIB, \${TRILINOS_LIB_DIR},
-	       [tell where TRILINOS libraries are])
+   AC_WITH_DIR(trilinos-lib, TRILINOS_LIB, @S|@{TRILINOS_LIB_DIR},
+               [tell where TRILINOS libraries are])
 
    # set default value of trilinos includes and libs
    if test "${with_trilinos:=yes}" = yes ; then
@@ -408,15 +428,15 @@ AC_DEFUN([AC_TRILINOS_FINALIZE], [dnl
 
        # include path
        if test -n "${TRILINOS_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${TRILINOS_INC}"
        fi
 
        # library path
        if test -n "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} ${with_trilinos})
+           AC_VENDORLIB_SETUP(vendor_trilinos, -L${TRILINOS_LIB} ${with_trilinos})
        elif test -z "${TRILINOS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_trilinos, ${with_trilinos})
+           AC_VENDORLIB_SETUP(vendor_trilinos, ${with_trilinos})
        fi
 
        # add TRILINOS directory to VENDOR_LIB_DIRS
@@ -437,12 +457,13 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_SCALAPACK_SETUP], [dnl
 
    dnl define --with-scalapack
-   AC_ARG_WITH(scalapack,
-      [  --with-scalapack=[scalapack] ])
+   AC_ARG_WITH([scalapack],
+     [AS_HELP_STRING([--with-scalapack@<:@=scalapack@:>@],
+       [determine the scalapack library name (default is scalapack)])])
  
    dnl define --with-scalapack-lib
-   AC_WITH_DIR(scalapack-lib, SCALAPACK_LIB, \${SCALAPACK_LIB_DIR},
-	       [tell where SCALAPACK libraries are])
+   AC_WITH_DIR(scalapack-lib, SCALAPACK_LIB, @S|@{SCALAPACK_LIB_DIR},
+               [tell where SCALAPACK libraries are])
 
    # set default value of scalapack includes and libs
    if test "${with_scalapack:=scalapack}" = yes ; then
@@ -466,9 +487,9 @@ AC_DEFUN([AC_SCALAPACK_FINALIZE], [dnl
 
        # library path
        if test -n "${SCALAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_scalapack, -L${SCALAPACK_LIB} -lscalapack)
+           AC_VENDORLIB_SETUP(vendor_scalapack, -L${SCALAPACK_LIB} -lscalapack)
        elif test -z "${SCALAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_scalapack, -lscalapack)
+           AC_VENDORLIB_SETUP(vendor_scalapack, -lscalapack)
        fi
 
        # add SCALAPACK directory to VENDOR_LIB_DIRS
@@ -488,12 +509,11 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_BLACS_SETUP], [dnl
 
    dnl define --with-blacs
-   AC_ARG_WITH(blacs,
-      [  --with-blacs=[blacs] ])
+   AC_ARG_WITH([blacs],[  --with-blacs=[blacs] ])
  
    dnl define --with-blacs-lib
-   AC_WITH_DIR(blacs-lib, BLACS_LIB, \${BLACS_LIB_DIR},
-	       [tell where BLACS libraries are])
+   AC_WITH_DIR(blacs-lib, BLACS_LIB, @S|@{BLACS_LIB_DIR},
+               [tell where BLACS libraries are])
 
    # set default value of blacs includes and libs
    if test "${with_blacs:=blacs}" = yes ; then
@@ -517,9 +537,9 @@ AC_DEFUN([AC_BLACS_FINALIZE], [dnl
 
        # library path
        if test -n "${BLACS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_blacs, -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
+           AC_VENDORLIB_SETUP(vendor_blacs, -L${BLACS_LIB} -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
        elif test -z "${BLACS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_blacs, -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
+           AC_VENDORLIB_SETUP(vendor_blacs, -lblacsF77init -lblacsCinit -lblacs -lblacsCinit -lblacs)
        fi
 
        # add BLACS directory to VENDOR_LIB_DIRS
@@ -538,16 +558,15 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_HYPRE_SETUP], [dnl
 
    dnl define --with-hypre
-   AC_ARG_WITH(hypre,
-      [  --with-hypre=[hypre] ])
+   AC_ARG_WITH([hypre],[  --with-hypre=[hypre] ])
  
    dnl define --with-hypre-inc
-   AC_WITH_DIR(hypre-inc, HYPRE_INC, \${HYPRE_INC_DIR},
-	       [tell where HYPRE includes are])
+   AC_WITH_DIR(hypre-inc, HYPRE_INC, @S|@{HYPRE_INC_DIR},
+               [tell where HYPRE includes are])
 
    dnl define --with-hypre-lib
-   AC_WITH_DIR(hypre-lib, HYPRE_LIB, \${HYPRE_LIB_DIR},
-	       [tell where HYPRE libraries are])
+   AC_WITH_DIR(hypre-lib, HYPRE_LIB, @S|@{HYPRE_LIB_DIR},
+               [tell where HYPRE libraries are])
 
    # set default value of hypre includes and libs
    if test "${with_hypre:=hypre}" = yes ; then
@@ -569,18 +588,18 @@ AC_DEFUN([AC_HYPRE_FINALIZE], [dnl
 
        # include path
        if test -n "${HYPRE_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${HYPRE_INC}"
        fi
 
        # library path
        if test -n "${HYPRE_LIB}" ; then
 
-	   AC_VENDORLIB_SETUP(vendor_hypre, -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+           AC_VENDORLIB_SETUP(vendor_hypre, -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
 
        elif test -z "${HYPRE_LIB}" ; then
 
-	   AC_VENDORLIB_SETUP(vendor_hypre, -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+           AC_VENDORLIB_SETUP(vendor_hypre, -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
 
        fi
 
@@ -603,16 +622,15 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_METIS_SETUP], [dnl
 
    dnl define --with-metis
-   AC_ARG_WITH(metis,
-      [  --with-metis=[lib]    the metis implementation])
+   AC_ARG_WITH([metis],[  --with-metis=[metis]      the metis implementation])
  
    dnl define --with-metis-inc
-   AC_WITH_DIR(metis-inc, METIS_INC, \${METIS_INC_DIR},
-	       [tell where METIS includes are])
+   AC_WITH_DIR(metis-inc, METIS_INC, @S|@{METIS_INC_DIR},
+               [tell where METIS includes are])
 
    dnl define --with-metis-lib
-   AC_WITH_DIR(metis-lib, METIS_LIB, \${METIS_LIB_DIR},
-	       [tell where METIS libraries are])
+   AC_WITH_DIR(metis-lib, METIS_LIB, @S|@{METIS_LIB_DIR},
+               [tell where METIS libraries are])
 
    # set default value of metis includes and libs
    if test "${with_metis:=metis}" = yes ; then
@@ -636,16 +654,17 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_PARMETIS_SETUP], [dnl
 
    dnl define --with-parmetis
-   AC_ARG_WITH(parmetis,
-      [  --with-parmetis=[lib]    the parmetis implementation])
+   AC_ARG_WITH([parmetis],
+     [AS_HELP_STRING([--with-parmetis@<:@=parmetis@:>@],
+       [the parmetis implementation])])
  
    dnl define --with-parmetis-inc
-   AC_WITH_DIR(parmetis-inc, PARMETIS_INC, \${PARMETIS_INC_DIR},
-	       [tell where PARMETIS includes are])
+   AC_WITH_DIR(parmetis-inc, PARMETIS_INC, @S|@{PARMETIS_INC_DIR},
+               [tell where PARMETIS includes are])
 
    dnl define --with-parmetis-lib
-   AC_WITH_DIR(parmetis-lib, PARMETIS_LIB, \${PARMETIS_LIB_DIR},
-	       [tell where PARMETIS libraries are])
+   AC_WITH_DIR(parmetis-lib, PARMETIS_LIB, @S|@{PARMETIS_LIB_DIR},
+               [tell where PARMETIS libraries are])
 
    # set default value of parmetis includes and libs
    if test "${with_parmetis:=parmetis}" = yes ; then
@@ -667,15 +686,15 @@ AC_DEFUN([AC_METIS_FINALIZE], [dnl
 
        # include path
        if test -n "${METIS_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${METIS_INC}"
        fi
 
        # library path
        if test -n "${METIS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_metis, -L${METIS_LIB} -l${with_metis})
+           AC_VENDORLIB_SETUP(vendor_metis, -L${METIS_LIB} -l${with_metis})
        elif test -z "${METIS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_metis, -l${with_metis})
+           AC_VENDORLIB_SETUP(vendor_metis, -l${with_metis})
        fi
 
        # add METIS directory to VENDOR_LIB_DIRS
@@ -695,15 +714,15 @@ AC_DEFUN([AC_PARMETIS_FINALIZE], [dnl
 
        # include path
        if test -n "${PARMETIS_INC}"; then 
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${PARMETIS_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${PARMETIS_INC}"
        fi
 
        # library path
        if test -n "${PARMETIS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_parmetis, -L${PARMETIS_LIB} -l${with_parmetis})
+           AC_VENDORLIB_SETUP(vendor_parmetis, -L${PARMETIS_LIB} -l${with_parmetis})
        elif test -z "${PARMETIS_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_parmetis, -l${with_parmetis})
+           AC_VENDORLIB_SETUP(vendor_parmetis, -l${with_parmetis})
        fi
 
        # add PARMETIS directory to VENDOR_LIB_DIRS
@@ -728,12 +747,13 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_PCG_SETUP], [dnl
 
    dnl define --with-pcg
-   AC_ARG_WITH(pcg,        
-      [  --with-pcg[=lib]        determine the pcg lib name (pcg is default)])
+   AC_ARG_WITH([pcg],
+     [AS_HELP_STRING([--with-pcg@<:@=pcg@:>@],
+       [determine the pcg library name (pcg is default)])])
 
    dnl define --with-pcg-lib
-   AC_WITH_DIR(pcg-lib, PCG_LIB, \${PCG_LIB_DIR},
-	       [tell where PCG libraries are])
+   AC_WITH_DIR(pcg-lib, PCG_LIB, @S|@{PCG_LIB_DIR},
+               [tell where PCG libraries are])
    if test -n "${PCG_LIB}" ; then
       if test -z "${with_pcg}" ; then
            with_pcg='yes'
@@ -765,9 +785,9 @@ AC_DEFUN([AC_PCG_FINALIZE], [dnl
 
        # library path
        if test -z "${PCG_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_pcg, -l${with_pcg})
+           AC_VENDORLIB_SETUP(vendor_pcg, -l${with_pcg})
        elif test -n "${PCG_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -l${with_pcg})
+           AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -l${with_pcg})
        fi
 
        # add PCG directory to VENDOR_LIB_DIRS
@@ -790,27 +810,30 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_GANDOLF_SETUP], [dnl
 
    dnl define --with-gandolf
-   AC_ARG_WITH(gandolf,        
-      [  --with-gandolf[=lib]    determine the gandolf lib name (gandolf is default)])
+   AC_ARG_WITH([gandolf],
+     [AS_HELP_STRING([--with-gandolf@<:@=gandolf@:>@],
+       [determine the gandolf lib name (gandolf is default)])])
 
    dnl define --with-gandolf-lib
-   AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, \${GANDOLF_LIB_DIR},
-	       [tell where GANDOLF libraries are])
-
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_gandolf=$1
+   AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, @S|@{GANDOLF_LIB_DIR},
+               [tell where GANDOLF libraries are])
 
    # gandolf is set to libgandolf by default
    if test "${with_gandolf:=gandolf}" = yes ; then
        with_gandolf='gandolf'
+       # determine if this package is needed for testing or for the 
+       # package
+       vendor_gandolf=$1
    elif test "${with_gandolf}" = no ; then ## TK added May 7 07 
-       vendor_gandolf=''                 ## skip finalize
+       vendor_gandolf=''                   ## skip finalize
        with_gandolf=''                     ## stub this out
        AC_MSG_RESULT("NOT USING GANDOLF")  ## alert/remind user
        AC_DEFINE(rtt_cdi_gandolf_stub)     ## used in cdi_gandolf/config.h
+   else
+       # determine if this package is needed for testing or for the 
+       # package
+       vendor_gandolf=$1
    fi
-
 ])
 
 ##---------------------------------------------------------------------------##
@@ -818,17 +841,73 @@ AC_DEFUN([AC_GANDOLF_SETUP], [dnl
 AC_DEFUN([AC_GANDOLF_FINALIZE], [dnl
 
    # set up the libraries
+   # This string should be blank, 'test' or 'pkg'
+   # This is set except when $with_gandolf = 'no'
    if test -n "${vendor_gandolf}" ; then
 
-       # set up library paths
-       if test -z "${GANDOLF_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gandolf, -l${with_gandolf})
-       elif test -n "${GANDOLF_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_gandolf, -L${GANDOLF_LIB} -l${with_gandolf})
-       fi
+     # [2010-04-28 KT] Special case when on Linux and libgfortran is
+     # available, but is incompatible with libgandolf.a.  This is the
+     # case on ccscs8 when using gcc-4.3.4 while libgandolf.a expects
+     # gcc-4.1.2 (the symbol 'gfortran_copy_string' is missing from
+     # the newer libgfortran.so)
+     case $host in
+     *-linux-gnu)
+       # The code in ac_platforms should have already identified $F90
+dnl    if test "${F90}" = gfortran; then
+dnl          # Examine libgfortran to determine if it has the features
+dnl          # needed by libgandolf.a
+dnl          AC_CHECK_LIB( [gfortran], [gfortran_copy_string],
+dnl            [], [gandolf_gfortran_special_lib=yes] )
 
-       # add GANDOLF directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
+         # This library is crazy.  Some versions need -lg2c and others
+         # need -lgfortran.  Let's try to figure it out.
+         
+         AC_PATH_PROG( NM_BIN, nm, null )
+         AC_MSG_CHECKING([for extra libraries to support vendor gandolf])
+         if test -x ${NM_BIN}; then
+           if test -n "${GANDOLF_LIB}"; then
+             # undefined symbols found in libgandolf.a
+             libgandolf_need_gfortran=`$NM_BIN -a ${GANDOLF_LIB}/libgandolf.a | grep " U _gfortran_compare_string"`
+             libgandolf_need_g2c=`$NM_BIN -a ${GANDOLF_LIB}/libgandolf.a | grep " U s_copy"`
+             if test -n "${libgandolf_need_gfortran}"; then
+               gandolf_gfortran_special_lib='-lgfortran'
+             fi
+             if test -n "${libgandolf_need_g2c}"; then
+               gandolf_gfortran_special_lib='${gandolf_gfortran_special_lib} -lg2c'
+             fi
+           fi
+         fi     
+
+         # GANDOLF_LIB is the location of the libgandolf.  
+#         if test -z "${GANDOLF_LIB}"; then
+            #with_gandolf should be a fully qualified path to
+            #libgandolf.a, if not, then assume that the default
+	    #linkage will work (don't set gandolf_gfortran_special_lib.
+#            filename=${with_gandolf##*/}dnl return just the library name
+
+#            libpath=${with_gandolf%%${filename}}dnl return just the path
+
+#            if test -f ${libpath}/libgfortran.so; then
+#              gandolf_gfortran_special_lib='-l${libpath}/libgfortran.so'
+#            fi
+#	 fi
+
+         AC_MSG_RESULT([${gandolf_gfortran_special_lib}])
+dnl       fi       
+       ;;
+     esac
+
+     # set up library paths
+     if test -z "${GANDOLF_LIB}" ; then
+       # look for a vendor local version of gfortran
+       AC_VENDORLIB_SETUP(vendor_gandolf, -l${with_gandolf} ${gandolf_gfortran_special_lib})
+     elif test -n "${GANDOLF_LIB}" ; then
+       # if available also link against the local gfortran
+       AC_VENDORLIB_SETUP(vendor_gandolf, -L${GANDOLF_LIB} -l${with_gandolf} ${gandolf_gfortran_special_lib})
+     fi
+
+     # add GANDOLF directory to VENDOR_LIB_DIRS
+     VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
 
    fi
 
@@ -844,12 +923,13 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_EOSPAC5_SETUP], [dnl
 
    dnl define --with-eospac
-   AC_ARG_WITH(eospac,        
-      [  --with-eospac[=lib]     determine the eospac lib name (eospac is default)])
+   AC_ARG_WITH([eospac],
+     [AS_HELP_STRING([--with-eospac@<:@=eospac@:>@],
+       [determine the eospac lib name (eospac is default)])])
 
    dnl define --with-eospac-lib
-   AC_WITH_DIR(eospac-lib, EOSPAC5_LIB, \${EOSPAC5_LIB_DIR},
-	       [tell where EOSPAC5 libraries are])
+   AC_WITH_DIR(eospac-lib, EOSPAC5_LIB, @S|@{EOSPAC5_LIB_DIR},
+               [tell where EOSPAC5 libraries are])
 
    # determine if this package is needed for testing or for the 
    # package (valid values are pkg or test)
@@ -871,9 +951,9 @@ AC_DEFUN([AC_EOSPAC5_FINALIZE], [dnl
 
        # set up library paths
        if test -z "${EOSPAC5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_eospac, -l${with_eospac})
+           AC_VENDORLIB_SETUP(vendor_eospac, -l${with_eospac})
        elif test -n "${EOSPAC5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_eospac, -L${EOSPAC5_LIB} -l${with_eospac})
+           AC_VENDORLIB_SETUP(vendor_eospac, -L${EOSPAC5_LIB} -l${with_eospac})
        fi
 
        # add EOSPAC5 directory to VENDOR_LIB_DIRS
@@ -898,13 +978,13 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_LAPACK_SETUP], [dnl
 
    dnl define --with-lapack
-   AC_ARG_WITH(lapack,
-      [  --with-lapack=[vendor,atlas]
-                          determine LAPACK implementation (vendor default)])
+   AC_ARG_WITH([lapack],
+     [AS_HELP_STRING([--with-lapack@<:@=vendor|atlas@:>@],
+       [determine LAPACK implementation (vendor default)])])
 
    dnl define --with-lapack-lib
-   AC_WITH_DIR(lapack-lib, LAPACK_LIB, \${LAPACK_LIB_DIR}, 
-	       [tell where LAPACK libs are])
+   AC_WITH_DIR(lapack-lib, LAPACK_LIB, @S|@{LAPACK_LIB_DIR}, 
+               [tell where LAPACK libs are])
 
    # determine if this package is needed for testing or for the 
    # package
@@ -930,9 +1010,9 @@ AC_DEFUN([AC_LAPACK_FINALIZE], [dnl
 
        # set libraries
        if test -z "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, ${lapack_libs})
+           AC_VENDORLIB_SETUP(vendor_lapack, ${lapack_libs})
        elif test -n "${LAPACK_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${lapack_libs})
+           AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${lapack_libs})
        fi
 
        # add LAPACK directory to VENDOR_LIB_DIRS
@@ -952,12 +1032,13 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_GRACE_SETUP], [dnl
 
    dnl define --with-grace
-   AC_ARG_WITH(grace,
-      [  --with-grace=[lib]      determine the grace lib (grace_np is the default])
+   AC_ARG_WITH([grace],
+     [AS_HELP_STRING([--with-grace@<:@=grace_np@:>@],
+       [determine the grace lib (grace_np is the default)])])
  
    dnl define --with-grace-inc
-   AC_WITH_DIR(grace-inc, GRACE_INC, \${GRACE_INC_DIR},
-	       [tell where GRACE includes are])
+   AC_WITH_DIR(grace-inc, GRACE_INC, @S|@{GRACE_INC_DIR},
+               [tell where GRACE includes are])
    if test -n "${GRACE_INC}" ; then
       if test -z "${with_grace}" ; then
            with_grace='yes'
@@ -965,16 +1046,19 @@ AC_DEFUN([AC_GRACE_SETUP], [dnl
    fi
 
    dnl define --with-grace-lib
-   AC_WITH_DIR(grace-lib, GRACE_LIB, \${GRACE_LIB_DIR},
-	       [tell where GRACE libraries are])
+   AC_WITH_DIR(grace-lib, GRACE_LIB, @S|@{GRACE_LIB_DIR},
+               [tell where GRACE libraries are])
    if test -n "${GRACE_LIB}" ; then
       if test -z "${with_grace}" ; then
            with_grace='yes'
       fi
    fi
 
-   # Set up grace only if --with-grace or --with-grace-lib is explicitly set
-   if test -n "${with_grace}" ; then
+   # Set up grace only if --with-grace or --with-grace-lib is
+   # explicitly set if $with_grace is "yes" or if it has a value other
+   # than "no" the setup grace.  $with_grace will be "no" if
+   # --without-grace is specified on the configure line.
+   if ! test "${with_grace}" = "no" ; then
       # set default value of grace includes and libs
       if test "${with_grace}" = yes ; then
            with_grace='grace_np'
@@ -1000,15 +1084,15 @@ AC_DEFUN([AC_GRACE_FINALIZE], [dnl
 
        # include path
        if test -n "${GRACE_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
        fi
 
        # library path
        if test -n "${GRACE_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_grace, -L${GRACE_LIB} -l${with_grace})
+           AC_VENDORLIB_SETUP(vendor_grace, -L${GRACE_LIB} -l${with_grace})
        elif test -z "${GRACE_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_grace, -l${with_grace})
+           AC_VENDORLIB_SETUP(vendor_grace, -l${with_grace})
        fi
 
        # add GRACE directory to VENDOR_LIB_DIRS
@@ -1029,14 +1113,14 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_SPICA_SETUP], [dnl
 
    dnl define --with-spica
-   AC_ARG_WITH(spica,
-      [  --with-spica[=yes]                 spica is on by default])
-	
+   AC_ARG_WITH([spica],
+     [AS_HELP_STRING([--with-spica],[spica is on by default])])
+        
    dnl define --with-spica-inc and --with-spica-lib
-   AC_WITH_DIR(spica-inc, SPICA_INC, \${SPICA_INC_DIR},
-	       [tell where SPICA includes are])
-   AC_WITH_DIR(spica-lib, SPICA_LIB, \${SPICA_LIB_DIR},
-	       [tell where SPICA libraries are])
+   AC_WITH_DIR(spica-inc, SPICA_INC, @S|@{SPICA_INC_DIR},
+               [tell where SPICA includes are])
+   AC_WITH_DIR(spica-lib, SPICA_LIB, @S|@{SPICA_LIB_DIR},
+               [tell where SPICA libraries are])
 
    # determine if this package is needed for testing or for the 
    # package
@@ -1057,15 +1141,15 @@ AC_DEFUN([AC_SPICA_FINALIZE], [dnl
 
        # include path
        if test -n "${SPICA_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${SPICA_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${SPICA_INC}"
        fi
    
        # libraries
        if test -n "${SPICA_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_spica, -L${SPICA_LIB} -lSpicaCSG)
+           AC_VENDORLIB_SETUP(vendor_spica, -L${SPICA_LIB} -lSpicaCSG)
        elif test -z "${SPICA_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_spica, -lSpicaCSG)
+           AC_VENDORLIB_SETUP(vendor_spica, -lSpicaCSG)
        fi
 
        # add spica directory to VENDOR_LIB_DIRS
@@ -1085,14 +1169,15 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_XERCES_SETUP], [dnl
 
    dnl define --with-xerces
-   AC_ARG_WITH(xerces,
-      [  --with-xerces[=lib]      determine the XERCES xml lib (xerces-c is default)])
-	
+   AC_ARG_WITH([xerces],
+     [AS_HELP_STRING([--with-xerces@<:@=xerces-c@:>@],
+       [determine the XERCES xml lib (xerces-c is default)])])
+        
    dnl define --with-xerces-inc and --with-xerces-lib
-   AC_WITH_DIR(xerces-inc, XERCES_INC, \${XERCES_INC_DIR},
-	       [tell where XERCES includes are])
-   AC_WITH_DIR(xerces-lib, XERCES_LIB, \${XERCES_LIB_DIR},
-	       [tell where XERCES libraries are])
+   AC_WITH_DIR(xerces-inc, XERCES_INC, @S|@{XERCES_INC_DIR},
+               [tell where XERCES includes are])
+   AC_WITH_DIR(xerces-lib, XERCES_LIB, @S|@{XERCES_LIB_DIR},
+               [tell where XERCES libraries are])
 
    # determine if this package is needed for testing or for the 
    # package
@@ -1113,15 +1198,15 @@ AC_DEFUN([AC_XERCES_FINALIZE], [dnl
 
        # include path
        if test -n "${XERCES_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${XERCES_INC}"
        fi
    
        # libraries
        if test -n "${XERCES_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_xerces, -L${XERCES_LIB} -l${with_xerces})
+           AC_VENDORLIB_SETUP(vendor_xerces, -L${XERCES_LIB} -l${with_xerces})
        elif test -z "${XERCES_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_xerces, -l${with_xerces})
+           AC_VENDORLIB_SETUP(vendor_xerces, -l${with_xerces})
        fi
 
        # add xerces directory to VENDOR_LIB_DIRS
@@ -1142,23 +1227,24 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_HDF5_SETUP], [dnl
 
    dnl define --with-hdf5
-   AC_ARG_WITH(hdf5,
-      [  --with-hdf5=[serial,mpi]      determine hdf5 implementation (default:  'mpi' if mpi in use, else 'serial')])
+   AC_ARG_WITH([hdf5],
+     [AS_HELP_STRING([--with-hdf5@<:@=serial|mpi@:>@],
+       [determine hdf5 implementation (default is mpi if mpi in use, otherwise serial)])])
  
    dnl define --with-hdf5-inc
-   AC_WITH_DIR(hdf5-inc, HDF5_INC, \${HDF5_INC_DIR},
-	       [tell where HDF5 includes are])
+   AC_WITH_DIR(hdf5-inc, HDF5_INC, @S|@{HDF5_INC_DIR},
+               [tell where HDF5 includes are])
 
    dnl define --with-hdf5-lib
-   AC_WITH_DIR(hdf5-lib, HDF5_LIB, \${HDF5_LIB_DIR},
-	       [tell where HDF5 libraries are])
+   AC_WITH_DIR(hdf5-lib, HDF5_LIB, @S|@{HDF5_LIB_DIR},
+               [tell where HDF5 libraries are])
 
    # default (mpi if mpi is in use, else serial)
    if test "${with_hdf5:=no}" = yes ; then
        if test "${with_mpi}" != no ; then
-	   with_hdf5='mpi'
+           with_hdf5='mpi'
        else
-	   with_hdf5='serial'
+           with_hdf5='serial'
        fi
    fi
 
@@ -1182,15 +1268,15 @@ AC_DEFUN([AC_HDF5_FINALIZE], [dnl
 
        # include path
        if test -n "${HDF5_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${HDF5_INC}"
        fi
 
        # library path
        if test -n "${HDF5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5 -lz)
+           AC_VENDORLIB_SETUP(vendor_hdf5, -L${HDF5_LIB} -lhdf5 -lz)
        elif test -z "${HDF5_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5 -lz)
+           AC_VENDORLIB_SETUP(vendor_hdf5, -lhdf5 -lz)
        fi
 
        # add HDF5 directory to VENDOR_LIB_DIRS
@@ -1211,23 +1297,24 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_UDM_SETUP], [dnl
 
    dnl define --with-udm
-   AC_ARG_WITH(udm,
-      [  --with-udm=[serial,mpi]      determine udm implementation (default:  'mpi' if mpi in use, else 'serial')])
+   AC_ARG_WITH([udm],
+     [AS_HELP_STRING([--with-udm@<:@=serial|mpi@:>@],
+       [determine udm implementation (default is mpi if mpi in use, else serial)])])
  
    dnl define --with-udm-inc
-   AC_WITH_DIR(udm-inc, UDM_INC, \${UDM_INC_DIR},
-	       [tell where UDM includes are])
+   AC_WITH_DIR(udm-inc, UDM_INC, @S|@{UDM_INC_DIR},
+               [tell where UDM includes are])
 
    dnl define --with-udm-lib
-   AC_WITH_DIR(udm-lib, UDM_LIB, \${UDM_LIB_DIR},
-	       [tell where UDM libraries are])
+   AC_WITH_DIR(udm-lib, UDM_LIB, @S|@{UDM_LIB_DIR},
+               [tell where UDM libraries are])
 
    # default (mpi if mpi is in use, else serial)
    if test "${with_udm:=no}" = yes ; then
        if test "${with_mpi}" != no ; then
-	   with_udm='mpi'
+           with_udm='mpi'
        else
-	   with_udm='serial'
+           with_udm='serial'
        fi
    fi
 
@@ -1251,8 +1338,8 @@ AC_DEFUN([AC_UDM_FINALIZE], [dnl
 
        # include path
        if test -n "${UDM_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${UDM_INC}"
            # set extra #define if using udm in parallel
            if test "${with_udm}" = mpi ; then
                AC_DEFINE(UDM_HAVE_PARALLEL)
@@ -1261,9 +1348,9 @@ AC_DEFUN([AC_UDM_FINALIZE], [dnl
 
        # library path
        if test -n "${UDM_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_udm, -L${UDM_LIB} -ludm)
+           AC_VENDORLIB_SETUP(vendor_udm, -L${UDM_LIB} -ludm)
        elif test -z "${UDM_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_udm, -ludm)
+           AC_VENDORLIB_SETUP(vendor_udm, -ludm)
        fi
 
        # add UDM directory to VENDOR_LIB_DIRS
@@ -1284,16 +1371,17 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_SILO_SETUP], [dnl
 
    dnl define --with-silo
-   AC_ARG_WITH(silo,
-      [  --with-silo=[yes,no]      use silo ])
+   AC_ARG_WITH([silo],
+     [AS_HELP_STRING([--with-silo],
+       [use silo (default is on)])])
 
    dnl define --with-silo-inc
-   AC_WITH_DIR(silo-inc, SILO_INC, \${SILO_INC_DIR},
-	       [tell where SILO includes are])
+   AC_WITH_DIR(silo-inc, SILO_INC, @S|@{SILO_INC_DIR},
+               [tell where SILO includes are])
 
    dnl define --with-silo-lib
-   AC_WITH_DIR(silo-lib, SILO_LIB, \${SILO_LIB_DIR},
-	       [tell where SILO libraries are])
+   AC_WITH_DIR(silo-lib, SILO_LIB, @S|@{SILO_LIB_DIR},
+               [tell where SILO libraries are])
 
    dnl if either silo-inc or silo-lib defined, then set with_silo
    dnl thus, don't need --with-silo when using --with-silo-inc or
@@ -1325,15 +1413,15 @@ AC_DEFUN([AC_SILO_FINALIZE], [dnl
 
        # include path
        if test -n "${SILO_INC}"; then
-	   # add to include path
-	   VENDOR_INC="${VENDOR_INC} -I${SILO_INC}"
+           # add to include path
+           VENDOR_INC="${VENDOR_INC} -I${SILO_INC}"
        fi
 
        # library path
        if test -n "${SILO_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_silo, -L${SILO_LIB} -lsiloh5)
+           AC_VENDORLIB_SETUP(vendor_silo, -L${SILO_LIB} -lsiloh5)
        elif test -z "${SILO_LIB}" ; then
-	   AC_VENDORLIB_SETUP(vendor_silo, -lsiloh5)
+           AC_VENDORLIB_SETUP(vendor_silo, -lsiloh5)
        fi
 
        # add SILO directory to VENDOR_LIB_DIRS
@@ -1353,8 +1441,9 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_DLOPEN_SETUP], [dnl
 
    dnl define --enable-dlopen
-   AC_ARG_ENABLE(dlopen,
-      [  --enable-dlopen          Enable dlopen (default: on if --enable-shared, off otherwise)])
+   AC_ARG_ENABLE([dlopen],
+     [AS_HELP_STRING([--enable-dlopen],
+       [Enable dlopen (default: on if --enable-shared, off otherwise)])])
 
    # determine if this package is needed for testing or for the
    # package.
@@ -1363,18 +1452,18 @@ AC_DEFUN([AC_DLOPEN_SETUP], [dnl
    # set default value for enable_dlopen, which is the value of enable_shared.
    if test "${enable_shared}" = yes ; then
        if test "${enable_dlopen:=yes}" != no ; then 
-	   enable_dlopen=yes
+           enable_dlopen=yes
        fi
    else
        if test "${enable_dlopen:=no}" != no ; then 
-	   enable_dlopen=yes
+           enable_dlopen=yes
        fi
    fi
 
    # turn off dlopen if not using shared libraries.
    if test "${enable_shared}" != yes ; then
        if test "${enable_dlopen}" = yes ; then
-	   AC_MSG_WARN("Must specify --enable-shared when using --enable-dlopen.")
+           AC_MSG_WARN("Must specify --enable-shared when using --enable-dlopen.")
            AC_MSG_WARN("   dlopen disabled.")
        fi
        enable_dlopen=no

@@ -23,7 +23,7 @@ dnl-------------------------------------------------------------------------dnl
 AC_DEFUN([AC_WITH_DIR], [dnl
 
  dnl
- dnl  The following M4 macros will be expanded into the body of AC_ARG_WITH
+ dnl The following M4 macros will be expanded into the body of AC_ARG_WITH
  dnl
  dnl AC_PACKAGE is the flag with all dashes turned to underscores
  dnl AC_WITH_PACKAGE will be substituted to the autoconf shell variable
@@ -36,8 +36,9 @@ AC_DEFUN([AC_WITH_DIR], [dnl
  define([AC_CMDLINE],dnl
 [echo "$]AC_WITH_PACKAGE[" | sed 's%//*%/%g' | sed 's%/$%%'])dnl
 
- AC_ARG_WITH($1,
-   [  --with-$1[=DIR]    $4 ($3 by default)],
+dnl   [  --with-$1[=DIR]    $4 ($3 by default)],
+ AC_ARG_WITH([$1],
+   [AS_HELP_STRING([--with-$1@<:@=DIR@:>@],[$4 ($3 by default)])],
    if test $AC_WITH_PACKAGE != "no" ; then
       if test $AC_WITH_PACKAGE = "yes" ; then
          # following eval needed to remove possible '\' from $3
