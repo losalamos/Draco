@@ -24,7 +24,7 @@ using std::vector;
 using std::copy;
 
 //---------------------------------------------------------------------------//
-// EXCHANGE
+// GATHER
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
@@ -70,6 +70,64 @@ void indeterminate_gatherv(vector<T> &outgoing_data,
         else
         {
             gather(&count, static_cast<int*>(NULL), 1);
+            gatherv(&outgoing_data[0],
+                    outgoing_data.size(),
+                    static_cast<T*>(NULL),
+                    0,
+                    static_cast<int*>(NULL));
+        }
+    }
+#else
+    {
+        // Only need to copy outgoing to incoming
+        incoming_data.resize(0);
+        incoming_data.resize(1, outgoing_data);
+    }
+#endif // C4_MPI
+
+    return;
+}
+
+//---------------------------------------------------------------------------//
+template<class T>
+void determinate_gatherv(vector<T>           &outgoing_data,
+                         vector<vector<T> >  &incoming_data)
+{
+    Require(incoming_data.size()==rtt_c4::nodes());
+    
+#ifdef C4_MPI
+    { // This block is a no-op for with-c4=scalar 
+        unsigned const N = rtt_c4::nodes();
+        
+        if (rtt_c4::node()==0)
+        {
+            vector<int> counts(N), displs(N);
+            unsigned total_count = 0;
+            for (unsigned p=0; p<N; ++p)
+            {
+                counts[p] = incoming_data[p].size();
+                displs[p] = total_count;
+                total_count += counts[p];
+            }
+            
+            vector<T> recbuf(total_count);
+            rtt_c4::gatherv(&outgoing_data[0],
+                            outgoing_data.size(),
+                            &recbuf[0],
+                            &counts[0],
+                            &displs[0]);
+            
+            for (unsigned p=0; p<N; ++p)
+            {
+                incoming_data[p].resize(counts[p]);
+                copy(recbuf.begin()+displs[p],
+                     recbuf.begin()+displs[p]+counts[p],
+                     incoming_data[p].begin());
+            }
+
+        }
+        else
+        {
             gatherv(&outgoing_data[0],
                     outgoing_data.size(),
                     static_cast<T*>(NULL),

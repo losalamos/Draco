@@ -95,6 +95,48 @@ void tstIndeterminateGatherv(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
+void tstDeterminateGatherv(UnitTest &ut)
+{
+    unsigned pid = node();
+    unsigned const number_of_processors = nodes();
+    vector<unsigned> send(pid, pid);
+    vector<vector<unsigned> > receive(number_of_processors);
+    for (unsigned p=0; p<number_of_processors; ++p)
+    {
+        receive[p].resize(p, p);
+    }
+    determinate_gatherv(send, receive);
+
+    ut.passes("No exception thrown");
+
+    if (pid==0)
+    {
+        if (receive.size() == number_of_processors)
+        {
+            ut.passes("correct number of processors in gatherv");
+        }
+        else
+        {
+            ut.failure("NOT correct number of processors in gatherv");
+        }
+        for (unsigned p=0; p<number_of_processors; ++p)
+        {
+            if (receive[p].size() != p)
+            {
+                ut.failure("NOT correct number of elements in gatherv");
+                for (unsigned i=0; i<p; ++i)
+                {
+                    if (receive[p][i] != p)
+                    {
+                        ut.failure("NOT correct values in gatherv");
+                    }
+                }
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -103,6 +145,7 @@ int main(int argc, char *argv[])
     {
         tstDeterminateGatherScatter(ut);
         tstIndeterminateGatherv(ut);
+        tstDeterminateGatherv(ut);
     }
     catch (std::exception &err)
     {
