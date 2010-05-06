@@ -12,6 +12,15 @@
 ## $Id$
 ##---------------------------------------------------------------------------##
 
+##---------------------------------------------------------------------------##
+## History
+## 2010-05-06 (KT): Added '&' to the 2 'build_config $dir' lines.
+##      This should fork the configure process for each discovered
+##      directory.  This appears to speed up ./draco_config by 7X when
+##      run on ccscs8.
+##---------------------------------------------------------------------------##
+
+
 ## Build the configure scripts
 
 build_config ()
@@ -46,7 +55,7 @@ dive()
 	# dive and build configures
 	cd $d
 	dd=`pwd`
-	build_config $dd
+	build_config $dd &
 
 	# recursively dive to the next level
 	dive
@@ -83,7 +92,7 @@ fi
 
 # build the configures
 cd $home
-build_config $home
+build_config $home &
 dive
 
 ##---------------------------------------------------------------------------##
