@@ -15,6 +15,50 @@ information about these third parties and how to obtian or build them.
 - \ref vendor_locations
 - \ref vendor_how2build
 
+\par Introduction
+The vendors used by Draco and associated projects are maintained by the Draco
+core team.  Vendor software is typically built per platform (Roadrunner, CCS64
+Linux, etc.) and stored in the {{{radtran}}} directory.
+
+Draco uses the compilers and MPI files provided by the systems team for each
+platform.  Each MPI installation requires a custom installation to correctly
+use the high speed interconnect hardware.
+
+\todo [5/4/10 KT]: Reorganize the {{{radtran/vendors} directory so that it has
+the following format:{{{radtran/vendors/<platform>-<arch>-<mpi>-<fortran>-<cpp>}}}.
+Portions of the string may be skipped if there is only a single value
+available (e.g. <mpi> may always be openmpi or <arch> is always Linux64 for
+the given <platform> tag).
+
+For example:
+{{{
+radtran/vendors/
+    CCS64-pgi705-pgi705/ # assume <arch>=Linux64, <mpi>=openmpi
+       BLACS/
+          lib/
+       CASC/
+       EOSlib/
+       ParMetis-3.1/
+           include/
+          lib/
+       ...
+    rr-dev-gcc430-gfortran530/ # assume <arch>=64-bit, <mpi>=openmpi
+       BLACS/
+          lib/
+       CASC/
+       EOSlib/
+       ParMetis-3.1/
+           include/
+          lib/
+       ...
+    sources/
+       BLACS/
+       CASC/
+       EOSlib/
+       ParMetis-3.1/
+       ...
+}}}
+
 <hr><!-- ------------------------------------------------------------ -->
 
 \section vendor_locations Location of pre-built vendor code:
