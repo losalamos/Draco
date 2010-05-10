@@ -220,10 +220,11 @@ AC_DEFUN([AC_DBS_BULLSEYE_ENV], [dnl
 
    # Check availability
    
-   AC_MSG_CHECKING("for Bullseye installation location")
    case $host in
    *-linux-gnu)
-      if ! test -d ${COVERAGE_BASE_DIR:=/ccs/opt/x86/bullseye}; then
+      AC_PATH_PROG( BULLSEYECOVERAGE, cov01, null )
+      COVERAGE_BASE_DIR=`echo ${BULLSEYECOVERAGE} | sed -e 's/\/bin\/.*//'`
+      if ! test -d ${COVERAGE_BASE_DIR}; then
          AC_MSG_ERROR("${COVERAGE_BASE_DIR} could not be accessed.")
       fi
       ;;
@@ -231,6 +232,7 @@ AC_DEFUN([AC_DBS_BULLSEYE_ENV], [dnl
       AC_MSG_ERROR("BullseyeCoverage not supported on the ${host} platform.")
       ;;
    esac
+   AC_MSG_CHECKING("for Bullseye installation location")
    AC_MSG_RESULT("${COVERAGE_BASE_DIR}")
 
    # Double check accessibility and other requirements
@@ -248,7 +250,8 @@ AC_DEFUN([AC_DBS_BULLSEYE_ENV], [dnl
    # BullseyeCoverage only works with g++, gcc, icc, and icpc
 
    AC_MSG_CHECKING("Bullseye equivalent compiler")
-   case ${CXX} in
+   short_cxx=`echo ${CXX} | sed -e 's/.*\///g'`
+   case ${short_cxx} in
    g++ | gcc)
       CXX=${COVERAGE_BASE_DIR}/bin/g++
       CC=${COVERAGE_BASE_DIR}/bin/gcc
