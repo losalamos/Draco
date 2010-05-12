@@ -1,0 +1,25 @@
+//---------------------------------------------------------------------------//
+// software_development_policies.dcc
+// Example configure commands
+//---------------------------------------------------------------------------//
+
+/*!
+
+\page software_development_policies Software Development Policies
+
+\section copyright Copyright notification
+Before a file is commited back to the version control repository, the
+copyright statment in the file header must be updated.  The updated statement
+should have one of these forms:
+
+- Copyright (C) 2010 Los Alamos National Security, LLC
+- Copyright (C) 2006-2010 Los Alamos National Security, LLC
+- Copyright (C) 1990-2006 The Regents of the University of California.<br>
+  Copyright (C) 2006-2010 Los Alamos National Security, LLC<br>
+  All rights reserved.
+
+
+//---------------------------------------------------------------------------//
+// end
+//---------------------------------------------------------------------------//
+
