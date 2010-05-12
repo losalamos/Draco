@@ -1,0 +1,46 @@
+
+# Where are we?
+_BINDIR=`dirname "$BASH_ARGV"`
+DRACO_MODULE_DIR=`(cd $_BINDIR/..;pwd)`
+
+if [ "${MODULE_VERSION:-}" = "" ]; then
+   target="`uname -n | sed -e s/[.].*//`"
+   case $target in
+   # 32-bit CCS-2 Linux
+   coder | vikings  | hersheys  | monk | paxi   | shaft       |\
+          elmore   | monkeyboy | rayo | nammu  | ccscs[23457])
+      MODULE_VERSION_STACK="ccs-Linux32"
+      MODULE_VERSION="ccs-Linux32"
+      ;;
+
+   # 64-bit CCS-2 Linux
+   ccscs[1689])
+      MODULE_VERSION_STACK="ccs-Linux64"
+      MODULE_VERSION="ccs-Linux64"
+      ;;
+   esac
+   export MODULE_VERSION
+
+else
+  MODULE_VERSION_STACK="$MODULE_VERSION"
+fi
+export MODULE_VERSION_STACK
+
+export MODULESHOME=$DRACO_MODULE_DIR
+
+# Define the module command
+module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
+export -f module
+
+if [ "${LOADEDMODULES:-}" = "" ]; then
+  LOADEDMODULES=
+  export LOADEDMODULES
+fi
+
+if [ "${MODULEPATH:-}" = "" ]; then
+  export MODULEPATH=$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION/modulefiles
+fi
+
+if [ ${BASH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/bash_completion ]; then
+ . ${MODULESHOME}/init/bash_completion
+fi

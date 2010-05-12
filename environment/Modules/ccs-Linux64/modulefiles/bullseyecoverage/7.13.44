@@ -1,0 +1,56 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+# global control file
+if { [file exists $env(MODULESHOME)/etc/control] } {
+   source $env(MODULESHOME)/etc/control;
+}
+
+# conflict openmpi-gcc;
+ 
+#====== begin modulefile code =========
+ 
+if { [module-info mode load] } {
+    catch {set ignorant $env(IGNOREMODULECONFLICTS)};
+    if { ![info exists ignorant] } {
+       catch {set mpi $env(_MODULES_MPI)};
+       if { [info exists mpi] && ($mpi != "[module-info name]") } {
+          puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$mpi'";
+          break;
+          exit 1;
+       }
+    }
+}
+setenv          _MODULES_MPI   [module-info name];
+ 
+#====== end modulefile code =========
+
+
+# local variables
+set version     7.13.44;
+set compiler    gcc;
+# set device      ib;
+# set arch        x86_64;
+set prefix      /ccs/codes/radtran/vendors/CCS64-gnu/Bullseye
+
+if { ![file exists $prefix] } {
+   puts stderr "\n[module-info name]: $prefix: No such file or directory.\n";
+   break;
+   exit 1;
+}
+set bindir      $prefix/bin;
+
+# module whatis
+module-whatis   "BullseyeCoverage $version";
+# module help
+proc ModulesHelp { } {   global version prefix incdir;
+
+   puts stderr "\tBullseyeCoverage $version";
+}
+
+prepend-path   PATH              $bindir;
+
