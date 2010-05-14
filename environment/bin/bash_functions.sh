@@ -70,18 +70,32 @@ elif test -d /usr/projects/data/eos; then
 fi
 
 ##---------------------------------------------------------------------------##
-## Functions
+## Start Emacs.  First invokation will start the Emacs server.
+## Additional invokations will connect to the already running Emacs
+## server. 
 ##---------------------------------------------------------------------------##
 
 function xe
 {
-  local me=`whoami`
-  if test ${HOST:-none} = lambda; then
-    xemacs -no-site-file -l /users/kellyt/.emacs $*
-  elif test -z "`ps -u${me} | grep xemacs`" ; then
-    xemacs $* -g 90x65+100+10
+  # Look for XEmacs first.  Choose to use xemacs/gnuclient:
+  if test -n "`which xemacs 2>/dev/null`"; then
+    if test -z "`ps | grep xemacs`" ; then
+      xemacs $* -g 90x65
+      # xemacs -no-site-file -l /users/kellyt/.emacs $*
+    else
+      gnuclient $*
+    fi
+
+  # If no XEmacs, then look for GNU emacs;  
+  # Choose to use the emacs/emacsclient:
+  elif test -n "`which emacs 2>/dev/null`"; then
+    if test -z "`ps | grep emacs`" ; then
+      emacs -g 90x65 $*
+    else
+      emacsclient -a emacs $*
+    fi
   else
-    gnuclient $*
+    echo "Could not find XEmacs or GNU Emacs in your path."
   fi
 }
 
