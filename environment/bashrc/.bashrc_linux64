@@ -33,7 +33,8 @@ ulimit -s unlimited
 # modules
 if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
   source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-  module load modules 
+  module load grace BLACS SCALAPACK SuperLU_DIST/2.3 gandolf gcc/4.3.4 gsl hypre/1.8.2b lapack/atlas-3.8.3 ndi openmpi/1.3.3 parmetis trilinos/9.0.2 
+  module list
 fi
 
 # CVS
