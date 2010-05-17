@@ -32,5 +32,5 @@ esac
 ## Establish environment for login shell
 ##---------------------------------------------------------------------------##
 if [ -f ~/.bashrc ]; then
-  source ~/.bashrc
+  source ~/draco/environment/bashrc/.bashrc
 fi
