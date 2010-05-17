@@ -45,9 +45,7 @@ else
 fi
 
 # CVS
-if test -d /ccs/codes/radtran/cvsroot; then
-  export CVSROOT=/ccs/codes/radtran/cvsroot
-fi
+export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
 
 #LaTeX
 vendordir=/ccs/codes/radtran/vendors
