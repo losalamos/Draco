@@ -30,4 +30,4 @@ fi
 
 cvs history -x MA -D $date -a | \
    awk '$8 ~ /^'$repo'/{printf ("%s/%s\n",$8,$7)}' | sort | uniq | \
-   sed 's/^'$repo\/'//' | xargs cvs -q log -d ">=${date}" -N -S
+   sed 's/^'$repo'\///' | xargs cvs -q log -d ">=${date}" -N -S
