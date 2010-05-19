@@ -16,8 +16,6 @@ case ${-} in
    if test -n "${verbose}"; then
       echo "in .bashrc"
    fi
-   # Turn on checkwinsize
-   shopt -s checkwinsize
    ;;
 *) # Not an interactive shell (e.g. A PBS shell?)
    export INTERACTIVE=false
@@ -28,6 +26,9 @@ esac
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
+
+# Turn on checkwinsize
+shopt -s checkwinsize
 
 # X server resources
 if test -f ${HOME}/.Xdefaults; then
