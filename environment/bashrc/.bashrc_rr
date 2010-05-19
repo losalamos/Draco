@@ -1,0 +1,61 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_ccs4_linux - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_rr"
+fi
+
+##---------------------------------------------------------------------------##
+## ALIASES
+##---------------------------------------------------------------------------##
+
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is draco
+_BINDIR=`dirname "$BASH_ARGV"`
+export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
+
+# modules
+export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
+export IGNOREMODULECONFLICTS=1
+function module() { eval `/usr/bin/modulecmd bash $*`; }
+module load modules pgi lapack python openmpi-pgi gandolf gsl
+
+if test "${LSFUSER:-notset}" = "notset" ; then
+  function llogin()
+  {
+     ##local myshell="/usr/bin/ssh-agent /bin/bash"
+     local myshell="/bin/bash"
+     bsub $* -J "${USER}" -Is ${myshell}
+   }
+else
+  function llogin()
+  {
+    echo "Already on worker node." 
+  }
+fi
+
+# CVS
+export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
+
+#LaTeX
+vendordir=/ccs/codes/radtran/vendors
+if test -d ${vendordir}/environment/latex; then
+   export TEXINPUTS=.:${vendordir}/environment/latex:$TEXINPUTS
+fi
+if test -d ${vendordir}/environment/bibtex; then
+   export BSTINPUTS=.:${vendordir}/environment/bibtex:$BSTINPUTS
+fi
+unset vendordir
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_rr
+##---------------------------------------------------------------------------##
