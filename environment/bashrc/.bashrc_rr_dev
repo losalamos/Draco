@@ -27,8 +27,7 @@ export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
 export IGNOREMODULECONFLICTS=1
 function module() { eval `/usr/bin/modulecmd bash $*`; }
-module load modules pgi/9.0-3 lapack/atlas-3.8.2 python
-module load openmpi/1.3.3 hpc-tools 
+module load modules pgi lapack python openmpi gandolf gsl
 
 if test "${LSFUSER:-notset}" = "notset" ; then
   function llogin()
@@ -45,6 +44,7 @@ else
 fi
 
 # CVS
+export CVS_RSH=ssh
 export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
 
 #LaTeX
