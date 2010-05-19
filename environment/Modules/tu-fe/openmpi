@@ -10,28 +10,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
-# load openmpi
-if { [module-info mode load] } {
-    if { ! [is-loaded hpc-tools] } {
-	module load hpc-tools
-    }
-}
-module load openmpi-intel/1.3.3
+prereq openmpi-gcc openmpi-pgi openmpi-intel;
 
 # local variables
-set version     1.3.3
 set prefix      $env(MPIHOME)
 set incdir      $prefix/include
 set libdir      $prefix/lib
 
 # module whatis
-module-whatis	"Open MPI $version for the Infiniband device";
+module-whatis	"Open MPI wrapper for draco";
 
 # module help
 proc ModulesHelp { } {
    global version prefix incdir;
 
-   puts stderr "\tOpen MPI $version for the Infiniband device";
+   puts stderr "\tOpen MPI wrapper for draco";
 }
 
 if { ![file exists $prefix] } {
