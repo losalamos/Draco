@@ -31,11 +31,17 @@ esac
 ulimit -s unlimited
 
 # modules
-if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
-  source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-  module load grace BLACS SCALAPACK SuperLU_DIST gandolf gcc gsl hypre
-  module load lapack ndi openmpi parmetis trilinos
-  module list
+if test -d /ccs/codes/radtran/vendors/Linux/Modules/bin; then
+   export PATH=/ccs/codes/radtran/vendors/Linux/Modules/bin:$PATH
+   export LD_LIBRARY_PATH=/ccs/codes/radtran/vendors/Linux/Modules/lib:$LD_LIBRARY_PATH
+   if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
+      source ${DRACO_SRC_DIR}/environment/Modules/init/bash
+      # gcc-4.3.4 doesn't seem to work on ccscs7 because the mpfr
+      # installation is bad?
+      module load modules grace gandolf gcc/4.1.1 gsl python
+      module load lapack ndi mpich totalview
+      module list
+   fi
 fi
 
 # CVS

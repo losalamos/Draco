@@ -28,7 +28,8 @@ esac
 ##---------------------------------------------------------------------------##
 
 # Turn on checkwinsize
-shopt -s checkwinsize
+shopt -s checkwinsize # autocorrect window size
+#shopt -s cdspell # autocorrect spelling errors on cd command line.
 
 # X server resources
 if test -f ${HOME}/.Xdefaults; then
@@ -70,7 +71,7 @@ if test -f /proc/cpuinfo; then
 fi
 
 ##---------------------------------------------------------------------------##
-## cd paths - I don't like to use these.
+## cd paths - disable here, let user choose in ~/.bashrc
 ##---------------------------------------------------------------------------##
 
 CDPATH=
@@ -78,11 +79,6 @@ CDPATH=
 ##---------------------------------------------------------------------------##
 ## aliases
 ##---------------------------------------------------------------------------##
-
-# Remove unwanted aliased commands.
-#if test -n "`alias | grep rm`"; then
-#   unalias rm
-#fi
 
 # Generic Settings
 
@@ -237,11 +233,13 @@ source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
 ## Aliases for machines
 ##---------------------------------------------------------------------------##
 
-for num in 1 2 3 4 5 6 7 8 9; do
-  alias ccscs${num}='nt ccscs${num}'
-done
+alias ccscs1='nt ccscs1'
+alias ccscs8='nt ccscs8'
+alias ccscs9='nt ccscs9'
 alias rayo='nt rayo.lanl.gov'
 alias rr='nt rr-dev-fe'
+alias yr='nt yr-fe1'
+alias turing='nt tu-fe1'
 
 # No need to use ssh to pop a terminal from the current machine
 alias ${target}='${term} ${term_opts}'
