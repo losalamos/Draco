@@ -12,14 +12,12 @@
 #include <vector>
 #include "Assert.hh"
 
-
 /*
   Data_Table provides read-only, DBC-checked, container-like
   access to a sequential range of memory locations, or a scalar.  This is
   useful in situations where the amount of data changes depending on
   compile-time factors, but you always want to access it as an array.
 */
-
 
 namespace rtt_dsxx
 {
@@ -94,15 +92,18 @@ Data_Table<T>::operator=(Data_Table<T> const &rhs)
 /*!
   Bad things will happen if you alter the size of the source vector while
   this Data_Table is in existence.
+  \bug Removed ctor because it does not conform to the C++ standard
+  (dereferencing of end iterator is not allowed).  This particular ctor causes
+  run time failures for STLport and MSVC/Debug.
 */
-template<class T> inline
-Data_Table<T>::Data_Table(std::vector<T> const & v)
-    : d_begin(&(*(v.begin())))
-    , d_end(&(*(v.end())))
-    , d_value()
-{
-    Require(size() == v.size());
-}
+// template<class T> inline
+// Data_Table<T>::Data_Table(std::vector<T> const & v)
+//     : d_begin(&(*(v.begin())))
+//     , d_end(&(*(v.end())))
+//     , d_value()
+// {
+//     Require(size() == v.size());
+// }
 
 
 template<class T> inline

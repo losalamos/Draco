@@ -170,56 +170,60 @@ void test_scalar()
 
 
 //---------------------------------------------------------------------------//
+/*!
+  As noted in the Class Declaration/Definition, this use of Data_Table is no
+  longer supported because it did not conform to the C++ standard.
+*/
+  
+// void test_vector()
+// {
+//     std::vector<char> v;
+//     v.push_back('a');
+//     v.push_back('b');
+//     v.push_back('c');
 
-void test_vector()
-{
-    std::vector<char> v;
-    v.push_back('a');
-    v.push_back('b');
-    v.push_back('c');
+//     Data_Table<char> dt(v);
 
-    Data_Table<char> dt(v);
+//     bool caught = false;
+//     try
+//     {
+//         if(dt.size() != 3) ITFAILS;
+//         if(dt[0] != 'a') ITFAILS;
+//         if(dt[1] != 'b') ITFAILS;
+//         if(dt[2] != 'c') ITFAILS;
 
-    bool caught = false;
-    try
-    {
-        if(dt.size() != 3) ITFAILS;
-        if(dt[0] != 'a') ITFAILS;
-        if(dt[1] != 'b') ITFAILS;
-        if(dt[2] != 'c') ITFAILS;
-
-        Data_Table<char> dt2;
-        dt2 = dt;
-        if(dt[0] != dt2[0]) ITFAILS;
-        if(&(dt[0]) != &(dt2[0])) ITFAILS;
-        if(dt.front() != 'a') ITFAILS;
-        if(dt.back() != 'c') ITFAILS;
-        if(*(dt.begin()) != 'a') ITFAILS;
-        if((dt.end() - dt.begin()) != 3) ITFAILS;
-    }
-    catch(rtt_dsxx::assertion &ass) 
-    {
-        caught = true;
-    }
-    if(caught) ITFAILS;
+//         Data_Table<char> dt2;
+//         dt2 = dt;
+//         if(dt[0] != dt2[0]) ITFAILS;
+//         if(&(dt[0]) != &(dt2[0])) ITFAILS;
+//         if(dt.front() != 'a') ITFAILS;
+//         if(dt.back() != 'c') ITFAILS;
+//         if(*(dt.begin()) != 'a') ITFAILS;
+//         if((dt.end() - dt.begin()) != 3) ITFAILS;
+//     }
+//     catch(rtt_dsxx::assertion &ass) 
+//     {
+//         caught = true;
+//     }
+//     if(caught) ITFAILS;
 
 
-    caught = false;
-    try
-    {
-        std::cout << dt[3];
-    }
-    catch(rtt_dsxx::assertion &ass) 
-    {
-        caught = true;
-    }
-    if(!caught) ITFAILS;
+//     caught = false;
+//     try
+//     {
+//         std::cout << dt[3];
+//     }
+//     catch(rtt_dsxx::assertion &ass) 
+//     {
+//         caught = true;
+//     }
+//     if(!caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
-	PASSMSG("test_vector");
-    else
-	FAILMSG("test_vector FAILED!");
-}
+//     if (rtt_ds_test::passed)
+// 	PASSMSG("test_vector");
+//     else
+// 	FAILMSG("test_vector FAILED!");
+// }
 
 //---------------------------------------------------------------------------//
 
@@ -241,7 +245,7 @@ main(int argc, char *argv[])
 	// >>> UNIT TESTS
 	test_array();
         test_scalar();
-        test_vector();
+//        test_vector();
     }
     catch (rtt_dsxx::assertion &ass)
     {
