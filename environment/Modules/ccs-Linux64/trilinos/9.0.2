@@ -11,21 +11,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set prefix      /ccs/opt/x86_64/grace/grace
-set bindir      $prefix/bin;
+set version     9.0.2
+set prefix      /ccs/codes/radtran/vendors/trilinos-$version/Linux64/openmpi-gfortran434-gcc434
 set incdir      $prefix/include;
 set libdir      $prefix/lib
 
 # module whatis
-module-whatis   "XMGrace";
+module-whatis   "Trilinos $version";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tXMGrace\n";
-   puts stderr "\tGRACE_INC_DIR\t= $incdir";
-   puts stderr "\tGRACE_LIB_DIR\t= $libdir";
+   puts stderr "\tTrilinos $version\n";
+   puts stderr "\tTRILINOS_INC_DIR\t= $incdir";
+   puts stderr "\tTRILINOS_LIB_DIR\t= $libdir";
 }
 
 if { ![file exists $prefix] } {
@@ -36,9 +36,7 @@ if { ![file exists $prefix] } {
 
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
-prepend-path    PATH            $bindir;
+# prepend-path    PATH            $bindir;
 
-setenv GRACE_INC_DIR $incdir
-setenv GRACE_LIB_DIR $libdir
-
-
+setenv TRILINOS_INC_DIR $incdir
+setenv TRILINOS_LIB_DIR $libdir

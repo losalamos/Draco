@@ -12,12 +12,12 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     7.0-5;
-set arch        linux86;
+set arch        linux86-64;
 set prefix      /ccs/opt/x86_64/pgi_${version}/$arch/$version;
 set bindir      $prefix/bin;
 set libdir      $prefix/lib;
 set mandir      $prefix/man;
-set licfile     /ccs/opt/x86_64/pgi_${version}/license.dat
+set licfile     /ccs/opt/x86_64/pgi_7.0-5/license.dat
 
 # module whatis
 module-whatis   "PGI C/C++/Fortran $version";

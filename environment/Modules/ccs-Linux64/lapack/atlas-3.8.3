@@ -11,18 +11,18 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set prefix      /ccs/codes/radtran/vendors/atlas/Linux
+set prefix      /ccs/codes/radtran/vendors/atlas/Linux64
 set libdir      $prefix/lib;
 set incdir      $prefix/include
 
 # module whatis
-module-whatis   "LAPACK (Atlas)";
+module-whatis   "LAPACK (Atlas-3.8.3)";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tLAPACK (Atlas)\n";
+   puts stderr "\tLAPACK (Atlas-3.8.3)\n";
    puts stderr "\tLAPACK_LIB_DIR\t= $libdir";
    puts stderr "\tLAPACK_INC_DIR\t= $incdir";
 }

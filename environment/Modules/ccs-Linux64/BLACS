@@ -11,21 +11,18 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set prefix      /ccs/opt/x86_64/grace/grace
-set bindir      $prefix/bin;
-set incdir      $prefix/include;
+set prefix      /ccs/codes/radtran/vendors/BLACS/Linux64/openmpi-gfortran434-gcc434
 set libdir      $prefix/lib
 
 # module whatis
-module-whatis   "XMGrace";
+module-whatis   "BLACS";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tXMGrace\n";
-   puts stderr "\tGRACE_INC_DIR\t= $incdir";
-   puts stderr "\tGRACE_LIB_DIR\t= $libdir";
+   puts stderr "\tBLACS\n";
+   puts stderr "\tBLACS_LIB_DIR\t= $libdir";
 }
 
 if { ![file exists $prefix] } {
@@ -36,9 +33,8 @@ if { ![file exists $prefix] } {
 
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
-prepend-path    PATH            $bindir;
+# prepend-path    PATH            $bindir;
 
-setenv GRACE_INC_DIR $incdir
-setenv GRACE_LIB_DIR $libdir
+setenv BLACS_LIB_DIR $libdir
 
 

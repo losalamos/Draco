@@ -11,14 +11,12 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version     4.3.4;
+set version     4.3.0;
 set arch        x86_64;
 set prefix      /ccs/opt/$arch/gcc-$version;
 set bindir      $prefix/bin;
 set libdir      $prefix/lib64;
 set mandir      $prefix/man;
-
-set mpfrdir     /ccs/opt/$arch/mpfr/lib
 
 # module whatis
 module-whatis   "GNU C/C++/Fortran $version";
@@ -39,11 +37,6 @@ proc ModulesHelp { } {
 
 if { ![file exists $prefix] } {
    puts stderr "\n[module-info name]: $prefix: No such file or directory.\n";
-   break;
-   exit 1;
-}
-if { ![file exists $mpfrdir] } {
-   puts stderr "\n[module-info name]: $mpfrdir: No such file or directory.\n";
    break;
    exit 1;
 }
@@ -79,7 +72,6 @@ setenv          F95             $bindir/gfortran;
 
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
-prepend-path    LD_LIBRARY_PATH $mpfrdir;
 prepend-path    LD_LIBRARY_PATH $libdir;
 prepend-path    PATH            $bindir;
 

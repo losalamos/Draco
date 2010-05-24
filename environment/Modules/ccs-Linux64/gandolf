@@ -11,7 +11,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set prefix      /ccs/codes/radtran/vendors/gandolf/Linux
+set prefix      /ccs/codes/radtran/vendors/gandolf/Linux64
 set libdir      $prefix/lib
 
 # module whatis
