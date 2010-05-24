@@ -123,7 +123,7 @@ AC_DEFUN([AC_DBS_STLPORT_ENV], [dnl
      # Double check accessibility.
   
      if ! test -d "${with_stlport}/include"; then
-        AC_MSG_ERROR("Invalid directory $with_stlport}/include")
+        AC_MSG_ERROR("Invalid directory ${with_stlport}/include")
      fi
      if ! test -r "${with_stlport}/lib/libstlportstlg.so"; then
         AC_MSG_ERROR("Invalid library ${with_stlport}/lib/libstlportstlg.so")
