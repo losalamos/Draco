@@ -3,8 +3,8 @@
 _BINDIR=`dirname "$BASH_ARGV"`
 DRACO_MODULE_DIR=`(cd $_BINDIR/..;pwd)`
 
+target="`uname -n | sed -e s/[.].*//`"
 if [ "${MODULE_VERSION:-}" = "" ]; then
-   target="`uname -n | sed -e s/[.].*//`"
    case $target in
    # 32-bit CCS-2 Linux
    coder | vikings  | hersheys  | monk | paxi   | shaft       |\
@@ -29,7 +29,19 @@ export MODULE_VERSION_STACK
 export MODULESHOME=$DRACO_MODULE_DIR
 
 # Define the module command
-module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
+
+case $target in
+# 32-bit CCS-2 Linux
+coder | vikings  | hersheys  | monk | paxi   | shaft       |\
+        elmore   | monkeyboy | rayo | nammu  | ccscs[23457])
+      module() { eval `/ccs/codes/radtran/vendors/Linux/Modules/bin/modulecmd bash $*`; }
+      ;;
+
+   # 64-bit CCS-2 Linux
+   ccscs[1689])
+   module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
+      ;;
+esac
 export -f module
 
 if [ "${LOADEDMODULES:-}" = "" ]; then
@@ -38,7 +50,7 @@ if [ "${LOADEDMODULES:-}" = "" ]; then
 fi
 
 if [ "${MODULEPATH:-}" = "" ]; then
-  export MODULEPATH=$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION/modulefiles
+  export MODULEPATH=$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION
 fi
 
 if [ ${BASH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/bash_completion ]; then
