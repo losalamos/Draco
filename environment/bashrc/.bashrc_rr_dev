@@ -27,14 +27,14 @@ export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
 export IGNOREMODULECONFLICTS=1
 function module() { eval `/usr/bin/modulecmd bash $*`; }
-module load modules pgi lapack python openmpi gandolf gsl
+module load modules hpc-tools friendly-testing pgi lapack python openmpi gandolf gsl
 
-if test "${LSFUSER:-notset}" = "notset" ; then
+if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
   function llogin()
   {
      ##local myshell="/usr/bin/ssh-agent /bin/bash"
      local myshell="/bin/bash"
-     bsub $* -J "${USER}" -Is ${myshell}
+     qsub $* -IS ${myshell}
    }
 else
   function llogin()
@@ -46,16 +46,6 @@ fi
 # CVS
 export CVS_RSH=ssh
 export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
-
-#LaTeX
-vendordir=/ccs/codes/radtran/vendors
-if test -d ${vendordir}/environment/latex; then
-   export TEXINPUTS=.:${vendordir}/environment/latex:$TEXINPUTS
-fi
-if test -d ${vendordir}/environment/bibtex; then
-   export BSTINPUTS=.:${vendordir}/environment/bibtex:$BSTINPUTS
-fi
-unset vendordir
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_rr_dev

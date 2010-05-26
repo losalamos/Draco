@@ -214,7 +214,7 @@ flash[a-d] | ffe-64 | lb-[1-7] | lc-64 | ll-[2-6] | lc-[1-6] | ffe[1-2] |\
     ;;
 
 # RoadRunner machines
-rt-fe[1-4] | yr-fe1 | rt*[0-9]* | yra[0-9]*)
+rt-fe[1-4] | yr-fe1 | rt*[0-9]* | yra[0-9]* | rra[0-9]*a)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rr
     ;;
 rr-dev-fe)
