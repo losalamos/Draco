@@ -243,7 +243,7 @@
 (require 'url)
 (require 'tempo)
 
-(defconst doxymacs-version "@VERSION@"
+(defconst doxymacs-version "1.8"
   "Doxymacs version number")
 
 (defun doxymacs-version ()
@@ -283,7 +283,7 @@ file:///home/me/project/bar/doc/ and the XML tags file is at
   :group 'doxymacs)
 
 (defcustom doxymacs-doxygen-style
-n  "@DOXYMACS_DEFAULT_STYLE@"
+  "C++"
   "The style of comments to insert into code.
 See http://www.stack.nl/~dimitri/doxygen/docblocks.html#docblocks for examples
 of the various styles.
@@ -305,17 +305,17 @@ must be one of \"@\" or \"\\\"."
   :group 'doxymacs)
 
 (defcustom doxymacs-use-external-xml-parser
-n  @DOXYMACS_USE_EXTERNAL_XML_PARSER@
+  t
   "*Use the external (written in C) XML parser or the internal (LISP) parser.
 For smallish tag files, you are better off with the internal parser.
 For larger tag files, you are better off with the external one.
 Set to non-nil to use the external XML parser."
-n  :type '(choice (const :tag "Yes" t)
+  :type '(choice (const :tag "Yes" t)
 		 (const :tag "No" nil))
   :group 'doxymacs)
 
 (defcustom doxymacs-external-xml-parser-executable
-  "@DOXYMACS_PARSER@"
+  "doxymacs_parser.c"
   "*Where the external XML parser executable is."
   :type 'string
   :group 'doxymacs)
@@ -537,7 +537,7 @@ Key bindings:
     ;; One shot keywords that take no arguments
     (concat "\\([@\\\\]\\(brief\\|li\\|\\(end\\)?code\\|sa"
 	    "\\|note\\|\\(end\\)?verbatim\\|return\\|arg\\|fn"
-n	    "\\|hideinitializer\\|showinitializer"
+	    "\\|hideinitializer\\|showinitializer"
 	    ;; FIXME
 	    ;; How do I get & # < > % to work?
 	    ;;"\\|\\\\&\\|\\$\\|\\#\\|<\\|>\\|\\%"

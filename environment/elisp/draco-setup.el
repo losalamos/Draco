@@ -237,7 +237,7 @@ cvs-mode?"
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
-(defcustom draco-want-doxymacs-mode t
+(defcustom draco-want-doxymacs-mode nil
   "*Does the user want to have the Draco minor mode enabled for
 doxymacs-mode?" 
 :group 'draco-mode
@@ -355,8 +355,7 @@ compilation-mode?"
 ;; If the bool draco-want-<pkg>-mode is t then setup mode <pkg> 
 ;; using draco specific settings.  This includes turning on 
 ;; draco-mode as a minor mode for each <pkg> mode.
-
-(if draco-want-auctex-mode     (draco-setup-auctex-mode))
+;; (if draco-want-auctex-mode     (draco-setup-auctex-mode))
 (if draco-want-autoconf-mode   (draco-setup-autoconf-mode))
 (if draco-want-cc-mode         (draco-setup-cc-mode))
 (if draco-want-change-log-mode (draco-setup-change-log-mode))
@@ -369,9 +368,9 @@ compilation-mode?"
 (if draco-want-f90-mode        (draco-setup-f90-mode))
 (if draco-want-fortran-mode    (draco-setup-fortran-mode))
 (if draco-want-makefile-mode   (draco-setup-makefile-mode))
-(if draco-want-mppl-mode       (draco-setup-mppl-mode))
+;; (if draco-want-mppl-mode       (draco-setup-mppl-mode))
 (if draco-want-python-mode     (draco-setup-python-mode))
-(if draco-want-sgml-mode       (draco-setup-sgml-mode))
+;; (if draco-want-sgml-mode       (draco-setup-sgml-mode))
 (if draco-want-sh-mode         (draco-setup-sh-mode))
 (if draco-want-shell-mode      (draco-setup-shell-mode))
 (if draco-want-tcl-mode        (draco-setup-tcl-mode))
