@@ -2,12 +2,12 @@
 ;;; doxymacs.el --- ELisp package for making doxygen related stuff easier.
 ;;
 ;;
-;; Copyright (C) 2001, 2002, 2003 Ryan T. Sammartino
+;; Copyright (C) 2001-2007 Ryan T. Sammartino
 ;;
-;; Author: Ryan T. Sammartino <ryants at shaw dot ca>
+;; Author: Ryan T. Sammartino <ryan.sammartino at gmail dot com>
 ;;      Kris Verbeeck <kris.verbeeck at advalvas dot be>
 ;; Created: 24/03/2001
-;; Version: 1.5.0
+;; Version: @VERSION@
 ;; Keywords: doxygen documentation
 ;;
 ;; This file is NOT part of GNU Emacs or XEmacs.
@@ -107,14 +107,32 @@
 ;;   - C-c d @ will insert grouping comments around the current region.
 ;;
 ;; Doxymacs has been tested on and works with:
-;; - GNU Emacs 20.7.1, 21.1.1, 21.2.1, 21.2.92.1
-;; - XEmacs 21.1 (patch 14), 21.4 (patches 4-10)
+;; - GNU Emacs 20.7.1, 21.1.1, 21.2.1, 21.2.92.1, 21.3, 21.4.1
+;; - XEmacs 21.1 (patch 14), 21.4 (patches 4-17)
 ;;
 ;; If you have success or failure with other version of {X}Emacs, please
 ;; let the authors know.
 
 ;; Change log:
 ;;
+;; 10/06/2007 - version 1.8.0 
+;; 02/02/2007 - bug #1490021: Allow spaces in @param [in] documentation.
+;;              bug #1496399: Allow for different ways of user-mail-address
+;;              to be defined.
+;; 22/04/2006 - feature #1338245: Add tokens to filladapt to match 
+;;              doxygen markup.
+;;            - version 1.7.0
+;; 04/06/2005 - version 1.6.0
+;; 14/04/2005 - Use doxymacs-url-exists-p to wrap the various ways of
+;;              checking whether a URL exists.
+;;            - Clean up symbol-near-point hack.
+;; 13/04/2005 - feature request #868413: ability to customize the browser
+;;              doxymacs uses to display documentation.
+;; 12/04/2005 - bug #990123: grouping comments do not work.
+;;            - add some missing doxygen keywords.
+;; 01/04/2005 - patch #1024026: use new font-lock-add-keywords function if
+;;              available.
+;; 31/03/2005 - patch #1102042: handle @param[in] etc. constructs
 ;; 25/01/2003 - remove hard coded version number from comments.
 ;;            - add instructions to avoid byte compiling files.
 ;;            - version 1.5.0
@@ -122,7 +140,7 @@
 ;;            - fix bug #665099: missing @var fontification.
 ;;            - fix bug #665372: @example not fontified properly.
 ;;            - fix fontification for other keywords as well.
-;;            - new customisation variable doxymacs-command-character
+;;            - new customisation variable doxymacs command-character
 ;;              which allows for customisation of the character used
 ;;              to introduce Doxygen commands independent of the
 ;;              current style.
@@ -223,10 +241,9 @@
 (require 'custom)
 (require 'xml-parse)
 (require 'url)
-(require 'w3-cus)
 (require 'tempo)
 
-(defconst doxymacs-version "1.5.0"
+(defconst doxymacs-version "@VERSION@"
   "Doxymacs version number")
 
 (defun doxymacs-version ()
@@ -266,7 +283,7 @@ file:///home/me/project/bar/doc/ and the XML tags file is at
   :group 'doxymacs)
 
 (defcustom doxymacs-doxygen-style
-  "JavaDoc"
+n  "@DOXYMACS_DEFAULT_STYLE@"
   "The style of comments to insert into code.
 See http://www.stack.nl/~dimitri/doxygen/docblocks.html#docblocks for examples
 of the various styles.
@@ -288,21 +305,28 @@ must be one of \"@\" or \"\\\"."
   :group 'doxymacs)
 
 (defcustom doxymacs-use-external-xml-parser
-  nil
+n  @DOXYMACS_USE_EXTERNAL_XML_PARSER@
   "*Use the external (written in C) XML parser or the internal (LISP) parser.
 For smallish tag files, you are better off with the internal parser.
 For larger tag files, you are better off with the external one.
 Set to non-nil to use the external XML parser."
-  :type '(chioce (const :tag "Yes" t)
+n  :type '(choice (const :tag "Yes" t)
 		 (const :tag "No" nil))
   :group 'doxymacs)
 
 (defcustom doxymacs-external-xml-parser-executable
-  ""
+  "@DOXYMACS_PARSER@"
   "*Where the external XML parser executable is."
   :type 'string
   :group 'doxymacs)
 
+(defcustom doxymacs-browse-url-function
+  'browse-url
+  "*Function to call to launch a browser to display Doxygen documentation.
+This function should take one argument, a string representing the URL to
+display."
+  :type 'function
+  :group 'doxymacs)
 
 (defcustom doxymacs-blank-multiline-comment-template
   nil
@@ -381,24 +405,22 @@ Should be an empty string if comments are terminated by end-of-line."
 		 string)
   :group 'doxymacs)
 
-(defcustom doxymacs-group-begin-comment-template
+(defcustom doxymacs-group-comment-start
   nil
-  "A tempo template to begin `doxymacs-insert-grouping-comments'.
+  "A string to begin a grouping comment (`doxymacs-insert-grouping-comments').
 If nil, then a default template based on the current style as indicated
-by `doxymacs-doxygen-style' will be used.
-
-For help with tempo templates, see http://www.lysator.liu.se/~davidk/elisp/"
-  :type 'list
+by `doxymacs-doxygen-style' will be used."
+  :type '(choice (const :tag "None" nil)
+		 string)
   :group 'doxymacs)
 
-(defcustom doxymacs-group-end-comment-template
+(defcustom doxymacs-group-comment-end
   nil
-  "A tempo template to end `doxymacs-insert-grouping-comments'.
+  "A string to end a grouping comment (`doxymacs-insert-grouping-comments').
 If nil, then a default template based on the current style as indicated
-by `doxymacs-doxygen-style' will be used.
-
-For help with tempo templates, see http://www.lysator.liu.se/~davidk/elisp/"
-  :type 'list
+by `doxymacs-doxygen-style' will be used."
+  :type '(choice (const :tag "None" nil)
+		 string)
   :group 'doxymacs)
 
 ;; End of customisable variables
@@ -462,7 +484,15 @@ Key bindings:
             ;; Toggle mode
             (not doxymacs-mode)
           ;; Enable/Disable according to arg
-          (> (prefix-numeric-value arg) 0))))
+          (> (prefix-numeric-value arg) 0)))
+  (when doxymacs-mode
+    (when (boundp 'filladapt-token-table)
+      ;; add tokens to filladapt to match doxygen markup
+      (let ((bullet-regexp "[@\\]\\(param\\(?:\\s-*\\[\\(?:in\\|out\\|in,out\\)\\]\\)?\\s-+\\sw+\\|return\\)"))
+	(unless (assoc bullet-regexp filladapt-token-table)
+	  (setq filladapt-token-table
+		(append filladapt-token-table
+			(list (list bullet-regexp 'bullet)))))))))
 
 ;; Keymap
 
@@ -507,13 +537,18 @@ Key bindings:
     ;; One shot keywords that take no arguments
     (concat "\\([@\\\\]\\(brief\\|li\\|\\(end\\)?code\\|sa"
 	    "\\|note\\|\\(end\\)?verbatim\\|return\\|arg\\|fn"
-	    "\\|hideinitializer\\|showinitializer\\|interface"
+n	    "\\|hideinitializer\\|showinitializer"
+	    ;; FIXME
+	    ;; How do I get & # < > % to work?
+	    ;;"\\|\\\\&\\|\\$\\|\\#\\|<\\|>\\|\\%"
+	    "\\|\\$"
 	    "\\|internal\\|nosubgrouping\\|author\\|date\\|endif"
 	    "\\|invariant\\|post\\|pre\\|remarks\\|since\\|test\\|version"
 	    "\\|\\(end\\)?htmlonly\\|\\(end\\)?latexonly\\|f\\$\\|file"
+	    "\\|\\(end\\)?xmlonly\\|\\(end\\)?manonly\\|property"
 	    "\\|mainpage\\|name\\|overload\\|typedef\\|deprecated\\|par"
 	    "\\|addindex\\|line\\|skip\\|skipline\\|until\\|see"
-	    "\\|endlink\\)\\)\\>")
+	    "\\|endlink\\|callgraph\\|endcond\\|else\\)\\)\\>")
     '(0 font-lock-keyword-face prepend))
    ;; attention, warning, etc. given a different font
    (list
@@ -521,14 +556,15 @@ Key bindings:
     '(0 font-lock-warning-face prepend))
    ;; keywords that take a variable name as an argument
    (list
-    (concat "\\([@\\\\]\\(var\\|param\\|a\\|if\\|namespace\\|relates"
-	    "\\|def\\)\\)\\s-+\\(\\sw+\\)")
+    (concat "\\([@\\\\]\\(param\\(?:\\s-*\\[\\(?:in\\|out\\|in,out\\)\\]\\)?"
+	    "\\|a\\|namespace\\|relates\\(also\\)?"
+	    "\\|var\\|def\\)\\)\\s-+\\(\\sw+\\)")
     '(1 font-lock-keyword-face prepend)
-    '(3 font-lock-variable-name-face prepend))
+    '(4 font-lock-variable-name-face prepend))
    ;; keywords that take a type name as an argument
    (list
-    (concat "\\([@\\\\]\\(class\\|struct\\|union\\|exception"
-	    "\\|throw\\)\\)\\s-+\\(\\sw+\\)")
+    (concat "\\([@\\\\]\\(class\\|struct\\|union\\|exception\\|enum"
+	    "\\|throw\\|interface\\|protocol\\)\\)\\s-+\\(\\(\\sw\\|:\\)+\\)")
     '(1 font-lock-keyword-face prepend)
     '(3 font-lock-type-face prepend))
    ;; keywords that take a function name as an argument
@@ -558,12 +594,24 @@ Key bindings:
     '(2 font-lock-string-face prepend))
    ;; one argument that can contain arbitrary non-whitespace stuff
    (list
-    "\\([@\\\\]\\(link\\|copydoc\\)\\)\\s-+\\([^ \t\n]+\\)"
+    (concat "\\([@\\\\]\\(link\\|copydoc\\|xrefitem"
+	    "\\|if\\(not\\)?\\|elseif\\)\\)"
+	    "\\s-+\\([^ \t\n]+\\)")
     '(1 font-lock-keyword-face prepend)
-    '(3 font-lock-string-face prepend))
+    '(4 font-lock-string-face prepend))
+   ;; one optional argument that can contain arbitrary non-whitespace stuff
+   (list
+    "\\([@\\\\]\\(cond\\|dir\\)\\(\\s-+[^ \t\n]+\\)?\\)"
+    '(1 font-lock-keyword-face prepend)
+    '(3 font-lock-string-face prepend t))
+   ;; one optional argument with no space between
+   (list
+    "\\([@\\\\]\\(~\\)\\([^ \t\n]+\\)?\\)"
+    '(1 font-lock-keyword-face prepend)
+    '(3 font-lock-string-face prepend t))
    ;; one argument that has to be a filename
    (list
-    (concat "\\([@\\\\]\\(example\\|\\(dont\\)?include"
+    (concat "\\([@\\\\]\\(example\\|\\(dont\\)?include\\|includelineno"
 	    "\\|htmlinclude\\|verbinclude\\)\\)\\s-+"
 	    "\\(\"?[~:\\/a-zA-Z0-9_. ]+\"?\\)")
     '(1 font-lock-keyword-face prepend)
@@ -595,10 +643,14 @@ Key bindings:
   "Turn on font-lock for Doxygen keywords."
   ;; FIXME How do I turn *off* font-lock for Doxygen keywords?
   (interactive)
-  (let ((old (if (eq (car-safe font-lock-keywords) t)
+  (if (functionp 'font-lock-add-keywords)
+      ;; Use new (proper?) font-lock-add-keywords function
+      (font-lock-add-keywords nil doxymacs-doxygen-keywords)
+    ;; Use old-school way
+    (let ((old (if (eq (car-safe font-lock-keywords) t)
 		 (cdr font-lock-keywords)
 	       font-lock-keywords)))
-    (setq font-lock-keywords (append old doxymacs-doxygen-keywords))))
+      (setq font-lock-keywords (append old doxymacs-doxygen-keywords)))))
 
 
 
@@ -673,6 +725,39 @@ buffer."
 to comp-list."
   (doxymacs-set-dir-element dir doxymacs-completion-lists comp-list))
 
+(defun doxymacs-url-exists-p (url)
+  "Return t iff the URL exists."
+  (let* ((urlobj (url-generic-parse-url url))
+	 (type (url-type urlobj))
+	 (exists nil))
+    (cond
+     ((equal type "http")
+      (cond
+       ;; Try url-file-exists, if it exists
+       ((fboundp 'url-file-exists)
+	(setq exists (url-file-exists url)))
+       ;; Otherwise, try url-file-exists-p (newer url.el)
+       ((fboundp 'url-file-exists-p)
+	(setq exists (url-file-exists-p url)))
+       ;; Otherwise, try wget
+       ((executable-find (if (eq system-type 'windows-nt) "wget.exe" "wget"))
+	(if (string-match "200 OK"
+			  (shell-command-to-string
+			   (concat "wget -S --spider " url)))
+	    (setq exists t)))
+       ;; Otherwise, try lynx
+       ((executable-find (if (eq system-type 'windows-nt) "lynx.exe" "lynx"))
+	(if (string-match "200 OK"
+			  (shell-command-to-string
+			   (concat "lynx -head -source " url)))
+	    (setq exists t)))
+       ;; Give up.
+       (t (error "Could not find url-file-exists, url-file-exists-p, wget or lynx"))))
+     ((equal type "file")
+      (setq exists (file-exists-p (url-filename urlobj))))
+     (t (error (concat "Scheme " type " not supported for URL " url))))
+    exists))
+
 (defun doxymacs-load-tags (f)
   "Loads a Doxygen generated XML tags file into the buffer *doxytags*."
   (let* ((tags-buffer (doxymacs-filename-to-buffer f))
@@ -698,7 +783,7 @@ to comp-list."
 		      (insert-file-contents xml))
 		  ;; Otherwise, try and grab it as a URL
 		  (progn
-		    (if (url-file-exists xml)
+		    (if (doxymacs-url-exists-p xml)
 			(progn
 			  (set-buffer new-buffer)
 			  (url-insert-file-contents xml)
@@ -860,31 +945,31 @@ completion list."
 
 (defun doxymacs-display-url (root url)
   "Displays the given match."
-  (browse-url (concat root "/" url)))
+  (apply doxymacs-browse-url-function (list (concat root "/" url))))
 
-;; GNU Emacs doesn't have symbol-near-point apparently
+;; Some versions of GNU Emacs don't have symbol-near-point apparently
 ;; stolen from browse-cltl2.el, and in turn:
 ;; stolen from XEmacs 19.15 syntax.el
-(if (not (fboundp (function symbol-near-point)))
-    (defun symbol-near-point ()
-      "Return the first textual item to the nearest point."
-      (interactive)
-      ;;alg stolen from etag.el
-      (save-excursion
-	(if (not (memq (char-syntax (preceding-char)) '(?w ?_)))
-	    (while (not (looking-at "\\sw\\|\\s_\\|\\'"))
-	      (forward-char 1)))
-	(while (looking-at "\\sw\\|\\s_")
-	  (forward-char 1))
-	(if (re-search-backward "\\sw\\|\\s_" nil t)
-	    (regexp-quote
-	     (progn (forward-char 1)
-		    (buffer-substring (point)
-				      (progn (forward-sexp -1)
-					     (while (looking-at "\\s'")
-					       (forward-char 1))
-					     (point)))))
-	  nil))))
+(defun doxymacs-symbol-near-point ()
+  "Return the first textual item to the nearest point."
+  (if (fboundp 'symbol-near-point)
+      (symbol-near-point)
+    ;;alg stolen from etag.el
+    (save-excursion
+      (if (not (memq (char-syntax (preceding-char)) '(?w ?_)))
+	  (while (not (looking-at "\\sw\\|\\s_\\|\\'"))
+	    (forward-char 1)))
+      (while (looking-at "\\sw\\|\\s_")
+	(forward-char 1))
+      (if (re-search-backward "\\sw\\|\\s_" nil t)
+	  (regexp-quote
+	   (progn (forward-char 1)
+		  (buffer-substring (point)
+				    (progn (forward-sexp -1)
+					   (while (looking-at "\\s'")
+					     (forward-char 1))
+					   (point)))))
+	nil))))
 
 (defun doxymacs-lookup (symbol &optional filename)
   "Look up the symbol under the cursor in Doxygen generated documentation."
@@ -903,7 +988,7 @@ completion list."
 	   (let ((symbol (completing-read
 			  "Look up: "
 			  completion-list nil nil
-			  (symbol-near-point)))
+			  (doxymacs-symbol-near-point)))
 		 (filename f))
 	     (list symbol filename)))))))
   (let ((url (doxymacs-symbol-completion
@@ -1004,7 +1089,7 @@ the completion or nil if canceled by the user."
  "Default JavaDoc-style template for a blank multiline doxygen comment.")
 
 (defconst doxymacs-Qt-blank-multiline-comment-template
- '("/*! " > n " * " p > n " * " > n " */" > n)
+ '("//! " p > n "/*! " > n > n "*/" > n)
  "Default Qt-style template for a blank multiline doxygen comment.")
 
 (defconst doxymacs-C++-blank-multiline-comment-template
@@ -1031,6 +1116,14 @@ the completion or nil if canceled by the user."
    ((string= doxymacs-doxygen-style "C++") "@")
    (t "@")))
 
+(defun doxymacs-user-mail-address ()
+  "Return the user's email address"
+  (or
+   (and (and (fboundp 'user-mail-address) (user-mail-address))
+	(list 'l " <" (user-mail-address) ">"))
+   (and (and (boundp 'user-mail-address) user-mail-address)
+	(list 'l " <" user-mail-address ">"))))
+
 (defconst doxymacs-JavaDoc-file-comment-template
  '("/**" > n
    " * " (doxymacs-doxygen-command-char) "file   "
@@ -1038,8 +1131,7 @@ the completion or nil if canceled by the user."
        (file-name-nondirectory (buffer-file-name))
      "") > n
    " * " (doxymacs-doxygen-command-char) "author " (user-full-name)
-   (if (fboundp 'user-mail-address)
-       (list 'l " <" (user-mail-address) ">"))
+   (doxymacs-user-mail-address)
    > n
    " * " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
    " * " > n
@@ -1051,19 +1143,18 @@ the completion or nil if canceled by the user."
 
 (defconst doxymacs-Qt-file-comment-template
  '("/*!" > n
-   " * " (doxymacs-doxygen-command-char) "file   "
+   " " (doxymacs-doxygen-command-char) "file   "
    (if (buffer-file-name)
        (file-name-nondirectory (buffer-file-name))
      "") > n
-   " * " (doxymacs-doxygen-command-char) "author " (user-full-name)
-   (if (fboundp 'user-mail-address)
-       (list 'l " <" (user-mail-address) ">"))
+   " " (doxymacs-doxygen-command-char) "author " (user-full-name)
+   (doxymacs-user-mail-address)
    > n
-   " * " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
-   " * " > n
-   " * " (doxymacs-doxygen-command-char) "brief  " (p "Brief description of this file: ") > n
-   " * " > n
-   " * " p > n
+   " " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
+   " " > n
+   " " (doxymacs-doxygen-command-char) "brief  " (p "Brief description of this file: ") > n
+   " " > n
+   " " p > n
    "*/" > n)
  "Default Qt-style template for file documentation.")
 
@@ -1074,8 +1165,7 @@ the completion or nil if canceled by the user."
        (file-name-nondirectory (buffer-file-name))
      "") > n
    "/// " (doxymacs-doxygen-command-char) "author " (user-full-name)
-   (if (fboundp 'user-mail-address)
-       (list 'l " <" (user-mail-address) ">"))
+   (doxymacs-user-mail-address)
    > n
    "/// " (doxymacs-doxygen-command-char) "date   " (current-time-string) > n
    "/// " > n
@@ -1096,7 +1186,7 @@ the completion or nil if canceled by the user."
 		"param " (car parms) " " (list 'p prompt) '> 'n
 		(doxymacs-parm-tempo-element (cdr parms))))
 	 ((string= doxymacs-doxygen-style "Qt")
-	  (list 'l " * " (doxymacs-doxygen-command-char)
+	  (list 'l " " (doxymacs-doxygen-command-char)
 		"param " (car parms) " " (list 'p prompt) '> 'n
 		(doxymacs-parm-tempo-element (cdr parms))))
 	 ((string= doxymacs-doxygen-style "C++")
@@ -1133,17 +1223,16 @@ the completion or nil if canceled by the user."
      (if next-func
 	 (list
 	  'l
-	  "/*---------------------------------------------------------------------------*/" '> 'n
+	  "//! " 'p '> 'n
 	  "/*! " '> 'n
-	  " * " (doxymacs-doxygen-command-char) "brief " 'p '> 'n
-	  " * " '> 'n
+	  " " '> 'n
 	  (doxymacs-parm-tempo-element (cdr (assoc 'args next-func)))
 	  (unless (string-match
                    (regexp-quote (cdr (assoc 'return next-func)))
                    doxymacs-void-types)
-	    '(l " * " > n " * " (doxymacs-doxygen-command-char)
+	    '(l " " > n "  " (doxymacs-doxygen-command-char)
 		"return " (p "Returns: ") > n))
-	  " */" '> 'n '>)
+	  " */" '>)
        (progn
 	 (error "Can't find next function declaraton.")
 	 nil))))
@@ -1167,36 +1256,6 @@ the completion or nil if canceled by the user."
 	 (error "Can't find next function declaraton.")
 	 nil))))
  "Default C++-style template for function documentation.")
-
-(defconst doxymacs-JavaDoc-group-begin-comment-template
-  ;; The leading space is a hack to get the indentation to work properly
-  '(" //@{" > n)
-  "Default JavaDoc-style template for beginning-of-group comment.")
-
-(defconst doxymacs-JavaDoc-group-end-comment-template
-  ;; The leading space is a hack to get the indentation to work properly
-  '(n " //@}" >)
-  "Default JavaDoc-style template for end-of-group comment.")
-
-(defconst doxymacs-Qt-group-begin-comment-template
-  ;; The leading space is a hack to get the indentation to work properly
-  '(" /*@{*/" > n)
-  "Default Qt-style template for beginning-of-group comment.")
-
-(defconst doxymacs-Qt-group-end-comment-template
-  ;; The leading space is a hack to get the indentation to work properly
-  '(n " /*@}*/" >)
-  "Default Qt-style template for end-of-group comment.")
-
-(defconst doxymacs-C++-group-begin-comment-template
-  ;; The leading space is a hack to get the indentation to work properly
-  '(" /// @{" > n)
-  "Default C++-style template for beginning-of-group comment.")
-
-(defconst doxymacs-C++-group-end-comment-template
-  ;; The leading space is a hack to get the indentation to work properly
-  '(n " /// @}" >)
-  "Default C++-style template for end-of-group comment.")
 
 (defun doxymacs-invalid-style ()
   "Warn the user that he has set `doxymacs-doxygen-style' to an invalid
@@ -1344,13 +1403,34 @@ the column given by `comment-column' (much like \\[indent-for-comment])."
 (defun doxymacs-insert-grouping-comments (start end)
   "Inserts doxygen grouping comments around the current region."
   (interactive "*r")
-  (save-excursion
-    (goto-char start)
-    (beginning-of-line)
-    (doxymacs-call-template "group-begin-comment")
-    (goto-char end)
-    (end-of-line)
-    (doxymacs-call-template "group-end-comment")))
+  (let* ((starter  (or doxymacs-group-comment-start
+		      (cond
+		       ((string= doxymacs-doxygen-style "JavaDoc")
+			"//@{")
+		       ((string= doxymacs-doxygen-style "Qt")
+			"/*@{*/")
+		       ((string= doxymacs-doxygen-style "C++")
+			"/// @{")
+		       (t
+			(doxymacs-invalid-style)))))
+	 (ender (or doxymacs-group-comment-end
+		    (cond
+		       ((string= doxymacs-doxygen-style "JavaDoc")
+			"//@}")
+		       ((string= doxymacs-doxygen-style "Qt")
+			"/*@}*/")
+		       ((string= doxymacs-doxygen-style "C++")
+			"/// @}")
+		       (t
+			(doxymacs-invalid-style))))))
+    (save-excursion
+      (goto-char end)
+      (end-of-line)
+      (insert ender)
+      (goto-char start)
+      (beginning-of-line)
+      (insert starter))))
+
 
 
 ;; These are helper functions that search for the next function
