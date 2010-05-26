@@ -31,11 +31,15 @@ esac
 ulimit -s unlimited
 
 # modules
-if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
-  source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-  module load grace BLACS SCALAPACK SuperLU_DIST gandolf gcc gsl hypre
-  module load lapack ndi openmpi parmetis trilinos
-  module list
+
+if test -z "$MODULESHOME"; then
+  # This is a new login
+  if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
+    source ${DRACO_SRC_DIR}/environment/Modules/init/bash
+    module load grace BLACS SCALAPACK SuperLU_DIST gandolf gcc gsl hypre
+    module load lapack ndi openmpi parmetis trilinos
+    module list
+  fi
 fi
 
 # CVS

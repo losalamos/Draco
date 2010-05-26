@@ -39,7 +39,7 @@ coder | vikings  | hersheys  | monk | paxi   | shaft       |\
 
    # 64-bit CCS-2 Linux
    ccscs[1689])
-   module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
+      module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
       ;;
 esac
 export -f module
