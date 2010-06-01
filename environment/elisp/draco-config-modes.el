@@ -372,6 +372,7 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(turn-on-font-lock)
 	(turn-on-auto-fill))
       (add-hook 'c-mode-common-hook 'draco-c-mode-hook)
+      (add-hook 'c-mode-common-hook 'imenu-add-menubar-index)
 ;      (add-hook 'c-mode-common-hook 'draco-add-style)
       (add-hook 'c-mode-common-hook 'turn-on-draco-mode)
       (add-hook 'font-lock-mode-hook
