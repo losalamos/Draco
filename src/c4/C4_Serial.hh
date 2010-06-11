@@ -164,7 +164,24 @@ int gatherv(T *send_buffer,
             int *receive_sizes,
             int *receive_displs)
 {
-    std::copy(send_buffer, send_buffer+send_size, receive_buffer);
+    std::copy(send_buffer,
+              send_buffer+send_size,
+              receive_buffer+receive_displs[0]);
+    
+    return C4_SUCCESS;
+}
+
+template<class T>
+int scatterv(T *send_buffer,
+             int *send_sizes,
+             int *send_displs,
+             T *receive_buffer,
+             int receive_size)
+{
+    std::copy(send_buffer+send_displs[0],
+              send_buffer+send_displs[0]+send_size,
+              receive_buffer);
+    
     return C4_SUCCESS;
 }
 

@@ -19,6 +19,7 @@
 #include "../ParallelUnitTest.hh"
 #include "../global.hh"
 #include "../gatherv.hh"
+#include "../scatterv.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -57,7 +58,7 @@ void tstDeterminateGatherScatter(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-void tstIndeterminateGatherv(UnitTest &ut)
+void tstIndeterminateGatherScatterv(UnitTest &ut)
 {
     unsigned pid = node();
     unsigned const number_of_processors = nodes();
@@ -90,12 +91,33 @@ void tstIndeterminateGatherv(UnitTest &ut)
                     }
                 }
             }
+            // Prepare for next test
+            receive[p].resize(0);
+            receive[p].resize(2*p, 3*p);
+        }
+    }
+
+    indeterminate_scatterv(receive, send);
+
+    if (send.size() == 2*pid)
+    {
+        ut.passes("correct number of processors in scatterv");
+    }
+    else
+    {
+        ut.failure("NOT correct number of processors in scatterv");
+    }
+    for (unsigned i=0; i<2*pid; ++i)
+    {
+        if (send[i] != 3*pid)
+        {
+            ut.failure("NOT correct values in scatterv");
         }
     }
 }
 
 //---------------------------------------------------------------------------//
-void tstDeterminateGatherv(UnitTest &ut)
+void tstDeterminateGatherScatterv(UnitTest &ut)
 {
     unsigned pid = node();
     unsigned const number_of_processors = nodes();
@@ -132,6 +154,29 @@ void tstDeterminateGatherv(UnitTest &ut)
                     }
                 }
             }
+            // Prepare for next test
+            receive[p].resize(0);
+            receive[p].resize(2*p, 3*p);   
+        }
+    }
+
+    send.resize(2*pid);
+
+    indeterminate_scatterv(receive, send);
+
+    if (send.size() == 2*pid)
+    {
+        ut.passes("correct number of processors in scatterv");
+    }
+    else
+    {
+        ut.failure("NOT correct number of processors in scatterv");
+    }
+    for (unsigned i=0; i<2*pid; ++i)
+    {
+        if (send[i] != 3*pid)
+        {
+            ut.failure("NOT correct values in scatterv");
         }
     }
 }
@@ -144,8 +189,8 @@ int main(int argc, char *argv[])
     try
     {
         tstDeterminateGatherScatter(ut);
-        tstIndeterminateGatherv(ut);
-        tstDeterminateGatherv(ut);
+        tstIndeterminateGatherScatterv(ut);
+        tstDeterminateGatherScatterv(ut);
     }
     catch (std::exception &err)
     {

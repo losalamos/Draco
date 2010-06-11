@@ -188,6 +188,13 @@ int gatherv(T *send_buffer,
 template<class T>
 int scatter(T *send_buffer, T *receive_buffer, int size);
 
+template<class T>
+int scatterv(T *send_buffer,
+             int *send_sizes,
+             int *send_displs,
+             T *receive_buffer,
+             int receive_size);
+
 //---------------------------------------------------------------------------//
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//
