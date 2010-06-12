@@ -12,7 +12,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     8.4.1-7;
-set arch        x86;
+set arch        x86_64;
 set prefix      /ccs/opt/$arch/toolworks/totalview.$version;
 set bindir      $prefix/bin;
 set libdir      $prefix/lib;
