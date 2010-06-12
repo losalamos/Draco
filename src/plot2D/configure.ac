@@ -36,7 +36,7 @@ if test ${CXX} = 'cxx'; then
 fi
 
 dnl Grace must be in the path!
-if test -n ${with_grace}; then
+if ! test ${with_grace:-no} = "no"; then
    AC_PATH_PROG(XMGRACE_PATH, xmgrace, null)
    if test "${XMGRACE_PATH}" = null; then
        AC_MSG_ERROR("No valid xmgrace found!")
