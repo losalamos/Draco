@@ -12,6 +12,9 @@ AC_CONFIG_AUX_DIR(config)
 # draco version
 AC_DRACO_PREREQ
 
+dnl The only reason for vendor setup at this level is to produce the
+dnl correct message (configure --help).   With out including this
+dnl macro, none of the --with-<vendor> messages will show up.
 AC_ALL_VENDORS_SETUP
 AC_DRACO_ARGS
 

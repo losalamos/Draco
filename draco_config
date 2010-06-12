@@ -95,6 +95,9 @@ cd $home
 build_config $home &
 dive
 
+# Let all of those forked processes finish
+sleep 2
+
 ##---------------------------------------------------------------------------##
 ## end of draco_config
 ##---------------------------------------------------------------------------##
