@@ -179,7 +179,7 @@ int scatterv(T *send_buffer,
              int receive_size)
 {
     std::copy(send_buffer+send_displs[0],
-              send_buffer+send_displs[0]+send_size,
+              send_buffer+send_displs[0]+send_sizes[0],
               receive_buffer);
     
     return C4_SUCCESS;
