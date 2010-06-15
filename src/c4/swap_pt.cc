@@ -30,6 +30,13 @@ void determinate_swap(vector<unsigned>          const &outgoing_pid,
                       int tag);
 
 template
+void determinate_swap(vector<unsigned>          const &outgoing_pid,
+                      vector<vector<double> >   const &outgoing_data,
+                      vector<unsigned>          const &incoming_pid,
+                      vector<vector<double> >         &incoming_data,
+                      int tag);
+
+template
 void semideterminate_swap(vector<unsigned>          const &outgoing_pid,
                           vector<vector<unsigned> > const &outgoing_data,
                           vector<unsigned>          const &incoming_pid,
