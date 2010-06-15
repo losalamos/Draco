@@ -142,7 +142,6 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
                           int tag )
 {
     Require(outgoing_pid.size()==outgoing_data.size());
-    Require(incoming_pid.size()==incoming_data.size());
 
     unsigned incoming_processor_count = incoming_pid.size();
     unsigned outgoing_processor_count = outgoing_pid.size();
@@ -179,6 +178,7 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
         }
         
         // Post the asynchronous receives
+        incoming_data.resize(incoming_pid.size());
         vector<C4_Req> incoming_C4_Req(incoming_processor_count);
         for (unsigned p=0; p<incoming_processor_count; ++p)
         {
