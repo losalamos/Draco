@@ -23,7 +23,7 @@
   "Autoload compilation-mode and add mode local keybindings to the compilation-mode-hook."
   (interactive)
   (progn
-    (autoload 'compilation-mode "compilation-mode" nil t)
+;    (autoload 'compilation-mode "compilation-mode" nil t)
     (defun draco-compilation-mode-hook ()
       "draco-mode hooks added to MPPL mode."
       (turn-on-draco-mode)
@@ -403,9 +403,9 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
       (setq auto-mode-alist
 	    (append '(("\\.tex$" . tex-mode)
 		      ("\\.bib$" . bibtex-mode)
-                      ("\\.bst$" . tex-mode)
+              ("\\.bst$" . tex-mode)
 		      ("\\.bbl$" . tex-mode)
-                      ("\\.blg$" . tex-mode)
+              ("\\.blg$" . tex-mode)
 		      ("\\.idx$" . tex-mode)
 		      ("\\.ilg$" . tex-mode)   
 		      ("\\.ind$" . tex-mode)  
@@ -416,7 +416,7 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 		      ("\\.sty$" . tex-mode)            
 		      ) auto-mode-alist))
 
-      (setq reftex-enable-partial-scans           t
+      (setq reftex-enable-partial-scans       t
 	    reftex-save-parse-info                t
 	    reftex-use-multiple-selection-buffers t
 	    reftex-plug-into-AUCTeX               t)
@@ -596,6 +596,7 @@ auto-mode-alist and set up some customizations for DRACO."
     (setq auto-mode-alist
 	  (append
 	   '(("\\.el$"  . emacs-lisp-mode)
+         (".emacs$"  . emacs-lisp-mode)
 	     ) auto-mode-alist))
 
     (if draco-colorize-modeline 
@@ -645,7 +646,7 @@ auto-mode-alist and set up some customizations for DRACO."
   (interactive)
   (progn
 ;    (autoload 'cvs-examine "pcl-cvs" "CVS mode" t)
-    (require 'pcl-cvs)
+;    (require 'pcl-cvs)
 
     (defun draco-menu-extras-cvs () 
       "Submenu for inserting comments (context sensitive)."
@@ -660,15 +661,17 @@ auto-mode-alist and set up some customizations for DRACO."
     (add-hook 'cvs-mode-hook 'draco-cvs-edit-mode-hook)
     (add-hook 'cvs-mode-hook 'turn-on-draco-mode)
     (if draco-colorize-modeline 
-	(add-hook 'cvs-mode-hook        
-		  '(lambda () ;; M-x list-colors-display
-		     (set-face-background 'modeline 
-					  "honeydew" (current-buffer))
-		     (set-face-foreground 'modeline 
-					  "black"   (current-buffer)))))
-    (setq cvs-erase-input-buffer        nil)
-    (setq cvs-inhibit-copyright-message t  )
-    ; If this variable is set to any non-nil value
+        (add-hook 'cvs-mode-hook        
+                  '(lambda () ;; M-x list-colors-display
+                     (set-face-background 'modeline 
+                                          "honeydew" (current-buffer))
+                     (set-face-foreground 'modeline 
+                                          "black"   (current-buffer)))))
+    (setq cvs-erase-input-buffer        nil
+          cvs-inhibit-copyright-message t  
+          cvs-status-flags "-q" 
+          vc-dired-terse-display nil )
+        ; If this variable is set to any non-nil value
     ; `cvs-mode-remove-handled' will be called every time you check in
     ; files, after the check-in is ready. See section 5.11 Removing handled
     ; entries.
