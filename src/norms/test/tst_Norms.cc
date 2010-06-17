@@ -10,21 +10,22 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <cmath>
+#include "norms_test.hh"
+
+#include "../Release.hh"
+#include "../Norms.hh"
+#include "../Norms_Labeled.hh"
+#include "../Norms_Proc.hh"
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
-#include "../Release.hh"
-#include "norms_test.hh"
 
-#include "../Norms.hh"
-#include "../Norms_Labeled.hh"
-#include "../Norms_Proc.hh"
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
 

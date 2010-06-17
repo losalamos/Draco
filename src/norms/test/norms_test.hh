@@ -37,13 +37,13 @@ namespace rtt_norms_test
 
 bool fail(int line);
 
-bool fail(int line, char *file);
+bool fail(int line, char const * file);
 
 bool pass_msg(const std::string &);
 
 bool fail_msg(const std::string &);
 
-void unit_test(const bool pass, int line, char *file);
+void unit_test(const bool pass, int line, char const * file);
 
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS

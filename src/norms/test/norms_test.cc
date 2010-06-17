@@ -29,7 +29,7 @@ bool fail(int line)
 
 //---------------------------------------------------------------------------//
 
-bool fail(int line, char *file)
+bool fail(int line, char const * file)
 {
     std::cout << "Test: failed on line " << line << " in " << file
 	      << std::endl;
@@ -58,7 +58,7 @@ bool fail_msg(const std::string &failmsg)
 
 //---------------------------------------------------------------------------//
 
-void unit_test(const bool pass, int line, char *file)
+void unit_test(const bool pass, int line, char const * file)
 {
     if ( ! pass ) fail(line, file);
 }
