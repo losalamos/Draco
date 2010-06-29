@@ -174,6 +174,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
             double const wt(ordinates[a].wt());
             norm += wt;
         }
+        double const rnorm = 1.0/norm;
 
         for (unsigned a=0; a < number_of_ordinates; ++a)
         {
@@ -201,13 +202,13 @@ Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
             double const mum = mup;
 
             if (wt !=0)
-                mup = mum + wt;
+                mup = mum + 2*wt*rnorm;
             else
                 mup = mu;
 
             if (wt !=0)
             {
-                tau_[a] = (mu-mum)/wt;
+                tau_[a] = (mu-mum)/(2*wt*rnorm);
                 Check(tau_[a]>0.0 && tau_[a]<=1.0);
             }
         }
@@ -320,11 +321,9 @@ bool Angle_Operator::is_compatible( SP<Quadrature const> const &quadrature,
 
     bool Result = true;
 
-    if ( (geometry == rtt_mesh_element::SPHERICAL) &&
-         (dimension==1) &&
-         (!soft_equiv(quadrature->getNorm(),2.0)))
+    if (!soft_equiv(quadrature->getNorm(), 1.0))
     {
-        cerr << "Quadrature must be normalized to 2.0" << endl;
+        cerr << "Quadrature must be normalized to unity" << endl;
         Result = false;
     }
 

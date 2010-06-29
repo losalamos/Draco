@@ -40,8 +40,8 @@ namespace rtt_quadrature
  * enumeration QuadCreator::Qid).  The SN order is optional and will be
  * defaulted to 4 is not specified.  The client may also specify a
  * normalization constant for the sum of of the direction weights.  If
- * unspecified, this normalization will default to 2, 2*PI or 4*PI for 1D, 2D
- * or 3D quadratures, respectively.
+ * unspecified, this normalization will default to 1 (so that the zeroth
+ * moment is equal to the mean over the sphere.)
  * 
  */
 // revision history:
@@ -92,8 +92,7 @@ class QuadCreator
 //    rtt_mesh_element::Geometry parsed_geometry;
 
     QuadCreator(void)
-        : Qid_map( createQidMap() ),
-          norm_map( createNormMap() )
+        : Qid_map( createQidMap() )
     { /* empty */ }
 
     virtual ~QuadCreator(void) { /* empty */ }
@@ -111,12 +110,9 @@ class QuadCreator
 
     // Functions
     qidm createQidMap(void) const;
-    normmap createNormMap(void) const;
         
     // DATA
-    qidm    const Qid_map;
-    normmap const norm_map;
-    
+    qidm    const Qid_map;    
 };
 
 } // end namespace rtt_quadrature

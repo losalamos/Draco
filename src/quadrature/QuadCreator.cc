@@ -201,7 +201,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
     // Items that refine the quadrature set definition.
 
     QuadCreator::Qid quad_type( QuadCreator::LevelSym2D );
-    double quad_norm(     4.0*rtt_units::PI );
+    double quad_norm(     1.0 );   // default
     unsigned sn_order(    2 );     // default
     QIM      interpModel( SN );    // default
 
@@ -236,9 +236,6 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
                     +qtype);
             else
                 quad_type = pos->second;
-            
-            // Set the default norm value
-            quad_norm = norm_map.find( quad_type )->second;
         }
 
         // This block parses the quad_type when "type =" was not provided.
@@ -252,10 +249,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
                     +tokenText);
             else
                 quad_type = pos->second;
-            
-            // Set the default norm value
-            quad_norm = norm_map.find( quad_type )->second;
-        }
+         }
 
         
         else if( token.text() == "order")
@@ -323,27 +317,6 @@ QuadCreator::qidm QuadCreator::createQidMap(void) const
     
     return qid_map;
 }
-
-/*!
- * \brief Generate a map that returns the appropriate norm given a quadrature type."
- */
-QuadCreator::normmap QuadCreator::createNormMap(void) const
-{
-    normmap nmap;
-    double const fourpi = 4.0*rtt_units::PI;
-
-    nmap[TriCL]=fourpi;
-    nmap[SquareCL]=fourpi;
-    nmap[GaussLeg]=2.0;
-    nmap[Lobatto]=2.0;
-    nmap[DoubleGauss]=2.0;
-    nmap[LevelSym2D]=fourpi;
-    nmap[LevelSym]=fourpi;
-    nmap[Axial1D] = 2.0;
-    
-    return nmap;
-}
-
 
 } // end namespace rtt_quadrature
 

@@ -83,10 +83,10 @@ void tstAngle_Quadrature(ScalarUnitTest &ut)
         ut.failure("Number of alphas NOT correct");
     }
     if (soft_equiv(alpha[0], 0.0) &&
-        soft_equiv(alpha[1], -1.8137993642342176148) &&
+        soft_equiv(alpha[1], -0.144337567297406) &&
         soft_equiv(alpha[2], 0.0) &&
         soft_equiv(alpha[3], 0.0) &&
-        soft_equiv(alpha[4], -1.8137993642342176148) &&
+        soft_equiv(alpha[4], -0.144337567297406) &&
         soft_equiv(alpha[5], 0.0))
     {
         ut.passes("alphas correct");
@@ -250,7 +250,7 @@ void tstAngle_Quadrature_Sphere(ScalarUnitTest &ut)
         ut.failure("Number of alphas NOT correct");
     }
     if (soft_equiv(alpha[0], 0.0) &&
-        soft_equiv(alpha[1], -1.154700538379251018) &&
+        soft_equiv(alpha[1], -0.577350269189626) &&
         soft_equiv(alpha[2], 0.0))
     {
         ut.passes("alphas correct");
