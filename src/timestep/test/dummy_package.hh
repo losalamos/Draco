@@ -1,9 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-// dummy_package.hh
-// John McGhee
-// Thu Aug 27 07:48:41 1998
-//---------------------------------------------------------------------------//
-// @> A dummy package to exercize the field time-step advisors.
+/*!
+ * \file   dummy_package.hh
+ * \author John McGhee
+ * \date   Thu Aug 27 07:48:41 1998
+ * \brief  A dummy package to exercize the field time-step advisors.
+ * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -49,13 +51,13 @@ class dummy_package
     void advance_state();
 
     //! \brief Provide recommended dt values (TE).
-    double const get_dt_rec_te();
+    double get_dt_rec_te() const;
 
     //! \brief Provide recommended dt values (TI).
-    double const get_dt_rec_ti();
+    double get_dt_rec_ti() const;
 
     //! \brief Provide recommended dt values (RI).
-    double const get_dt_rec_ri();
+    double get_dt_rec_ri() const;
     
   private:
 

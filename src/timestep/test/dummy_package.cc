@@ -5,6 +5,7 @@
  * \date Thu Aug 27 07:48:41 1998
  * \brief A dummy package to exercize the time-step controller field
  *        advisors.
+ * \note Copyright (C) 1998-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -113,19 +114,19 @@ std::vector< double > dummy_package::element_wise_multiply(
 
 
 //! \brief Provide recommended dt values (TE).
-double const dummy_package::get_dt_rec_te()
+double dummy_package::get_dt_rec_te() const
 {
     return sp_te->get_dt_rec(tsm);
 }
 
 //! \brief Provide recommended dt values (TI).
-double const dummy_package::get_dt_rec_ti() 
+double dummy_package::get_dt_rec_ti() const
 {
     return sp_ti->get_dt_rec(tsm);
 }
 
 //! \brief Provide recommended dt values (RI).
-double const dummy_package::get_dt_rec_ri()
+double dummy_package::get_dt_rec_ri() const
 { 
     return sp_ri->get_dt_rec(tsm);
 }
