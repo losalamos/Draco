@@ -203,7 +203,8 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
     QuadCreator::Qid quad_type( QuadCreator::LevelSym2D );
     double quad_norm(     1.0 );   // default
     unsigned sn_order(    2 );     // default
-    QIM      interpModel( SN );    // default
+    // This variable is not currently used
+    // QIM      interpModel( SN );    // default
 
     while( tokens.lookahead().type() != END )
     {
@@ -267,13 +268,14 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             std::cout << s << std::endl;
             // force lower case
             std::transform(s.begin(),s.end(),s.begin(),tl);
-            if( s == "sn" )
-                interpModel = SN;
-            else if( s == "galerkin" )
-                interpModel = GALERKIN;
-            else if( s == "svd" )
-                interpModel = SVD;
-            else
+            // if( s == "sn" )
+                // interpModel = SN;
+            // else if( s == "galerkin" )
+                // interpModel = GALERKIN;
+            // else if( s == "svd" )
+                // interpModel = SVD;
+            // else
+            if( s != "sn" && s != "galerkin" && s != "svd" )
                 tokens.report_semantic_error(
                     string("I don't know anything about \"angle quadrature: ")
                     +string("interpolation algorithm = ")+s
@@ -281,7 +283,10 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
         }
         else
         {
-            tokens.report_syntax_error("unrecognized keyword.  Expected \"end,\" \"order,\" or \"interpolation algorithm.\"");
+            tokens.report_syntax_error(
+                string( "unrecognized keyword.  Expected \"end,\" \"order,\" or" )
+                + string( " \"interpolation algorithm.\"")
+                );
         }
 
     } // end while
