@@ -1,16 +1,48 @@
+
+# Where are we?
+_BINDIR=`dirname "$BASH_ARGV"`
+DRACO_MODULE_DIR=`(cd $_BINDIR/..;pwd)`
+
+target="`uname -n | sed -e s/[.].*//`"
 if [ "${MODULE_VERSION:-}" = "" ]; then
-	MODULE_VERSION_STACK="3.2.7"
-	MODULE_VERSION="3.2.7"
-	export MODULE_VERSION
+   case $target in
+   # 32-bit CCS-2 Linux
+   vikings | hersheys  | monk        | paxi | shaft | nammu |\
+   elmore  | monkeyboy | ccscs[2345])
+      MODULE_VERSION_STACK="ccs-Linux32"
+      MODULE_VERSION="ccs-Linux32"
+      ;;
+
+   # 64-bit CCS-2 Linux
+   ccscs[16789])
+      MODULE_VERSION_STACK="ccs-Linux64"
+      MODULE_VERSION="ccs-Linux64"
+      ;;
+   esac
+   export MODULE_VERSION
+
 else
-	MODULE_VERSION_STACK="$MODULE_VERSION"
+  MODULE_VERSION_STACK="$MODULE_VERSION"
 fi
 export MODULE_VERSION_STACK
 
-module() { eval `/ccs/codes/radtran/vendors/Linux64/Modules/$MODULE_VERSION/bin/modulecmd zsh $*`; }
+export MODULESHOME=$DRACO_MODULE_DIR
 
-MODULESHOME=/ccs/codes/radtran/vendors/Linux64/Modules/3.2.7
-export MODULESHOME
+# Define the module command
+
+case $target in
+# 32-bit CCS-2 Linux
+   vikings | hersheys  | monk        | paxi | shaft | nammu |\
+   elmore  | monkeyboy | ccscs[2345])
+      module() { eval `/ccs/codes/radtran/vendors/Linux/Modules/bin/modulecmd bash $*`; }
+      ;;
+
+   # 64-bit CCS-2 Linux
+   ccscs[16789])
+      module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
+      ;;
+esac
+export -f module
 
 if [ "${LOADEDMODULES:-}" = "" ]; then
   LOADEDMODULES=
@@ -18,6 +50,9 @@ if [ "${LOADEDMODULES:-}" = "" ]; then
 fi
 
 if [ "${MODULEPATH:-}" = "" ]; then
-  MODULEPATH=`sed -n 's/[ 	#].*$//; /./H; $ { x; s/^\n//; s/\n/:/g; p; }' ${MODULESHOME}/init/.modulespath`
-  export MODULEPATH
+  export MODULEPATH=$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION
+fi
+
+if [ ${BASH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/bash_completion ]; then
+ . ${MODULESHOME}/init/bash_completion
 fi
