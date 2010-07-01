@@ -4,20 +4,19 @@
  * \author Kelly Thompson
  * \date   Fri Jan 30 17:53:51 2006
  * \brief  Unit tests and example usage for the DynArray class.
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-
 #include "../Assert.hh"
 #include "../Release.hh"
 #include "ds_test.hh"
-
 #include "../DynArray.hh"
+
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -42,7 +41,7 @@ void test_dynarray()
     if( myArray[3] != 300 ) ITFAILS;
     if( myArray[15] != -1 ) ITFAILS;
 
-    cout << "myArray = " << myArray << endl;
+    // cout << "myArray = " << myArray << endl;
 
     // Test Bounds
     {
@@ -150,7 +149,7 @@ void test_dynarray()
         float const growthFactor(1.5);
         DynArray<int> thirdArray( size, base, init, growthFactor );
 
-        if( thirdArray[0] != init ) ITFAILS;
+        if( thirdArray[1] != init ) ITFAILS;
         if( thirdArray[3] != init ) ITFAILS;
         if( thirdArray.Get_defval() == init )
         {
@@ -158,7 +157,7 @@ void test_dynarray()
         }
         else
         {
-            PASSMSG("Get_defval() member function did not return the expected value.");
+            FAILMSG("Get_defval() member function did not return the expected value.");
         }
         if( thirdArray.Get_base() == base )
         {
@@ -166,7 +165,7 @@ void test_dynarray()
         }
         else
         {
-            PASSMSG("Get_base() member function did not return the expected value.");
+            FAILMSG("Get_base() member function did not return the expected value.");
         }
         if( thirdArray.Get_growthfactor() == growthFactor )
         {
@@ -174,7 +173,7 @@ void test_dynarray()
         }
         else
         {
-            PASSMSG("Get_growthfactor() member function did not return the expected value.");
+            FAILMSG("Get_growthfactor() member function did not return the expected value.");
         }
 
     }

@@ -3,21 +3,22 @@
  * \file   test/ds++/tstSortPermutation.cc
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
+ * \note   Copyright (c) 2000-2010 Los Alamos National Security, LLC
  * \brief  
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../SortPermutation.hh"
+#include "../isSorted.hh"
+#include "../Release.hh"
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <list>
 #include <algorithm>
-
-#include "../SortPermutation.hh"
-#include "../isSorted.hh"
-#include "../Release.hh"
 
 namespace
 {
@@ -36,26 +37,22 @@ void printStatus(const std::string &name, bool passed)
     // Print the status of the test.
 
     std::string stars;
-    for (int i=0; i<name.length(); i++)
-	stars += '*';
+    for (size_t i=0; i<name.length(); i++)
+        stars += '*';
 
     cout << endl;
-    cout <<     "********" << stars << "********************" << endl;
+    cout <<     "********" << stars << "********************\n";
     if (passed) 
-    {
-        cout << "**** " << name  << " Self Test: PASSED ****" << endl;
-    }
+        cout << "**** " << name  << " Self Test: PASSED ****\n";
     else
-    {
-        cout << "**** " << name  << " Self Test: FAILED ****" << endl;
-    }
-    cout <<     "********" << stars << "********************" << endl;
+        cout << "**** " << name  << " Self Test: FAILED ****\n";
+    cout <<     "********" << stars << "********************\n";
     cout << endl;
 
 }
 
 template<class IT>
-inline bool testit(const std::string &name, IT first, IT last)
+inline bool testit(const std::string & /*name*/, IT first, IT last)
 {
     rtt_dsxx::SortPermutation lfsp(first, last);
     
@@ -63,12 +60,12 @@ inline bool testit(const std::string &name, IT first, IT last)
     std::vector<value_type> vv1(first, last);
     std::vector<value_type> vv2;
 
-    for (int i=0; i < vv1.size(); i++)
-	vv2.push_back(vv1[lfsp[i]]);
+    for (size_t i=0; i < vv1.size(); i++)
+        vv2.push_back(vv1[lfsp[i]]);
 
     IT lfi = first;
-    for (int i=0; lfi != last; i++, ++lfi)
-	vv1[lfsp.inv(i)] = *lfi;
+    for (size_t i=0; lfi != last; i++, ++lfi)
+        vv1[lfsp.inv(i)] = *lfi;
     
     std::copy(first, last,
 	      std::ostream_iterator<value_type>(std::cout, " "));
@@ -88,13 +85,13 @@ inline bool testit(const std::string &name, IT first, IT last)
 
     using rtt_dsxx::isSorted;
     bool passed = isSorted(vv2.begin(), vv2.end())
-	&& isSorted(vv1.begin(), vv1.end());
+                  && isSorted(vv1.begin(), vv1.end());
 
     return passed;
 }
 
 template<class IT, class CMP>
-inline bool testit(const std::string &name, IT first, IT last, const CMP &comp)
+inline bool testit(const std::string & /*name*/, IT first, IT last, const CMP &comp)
 {
     rtt_dsxx::SortPermutation lfsp(first, last, comp);
 
@@ -102,11 +99,11 @@ inline bool testit(const std::string &name, IT first, IT last, const CMP &comp)
     std::vector<value_type> vv1(first, last);
     std::vector<value_type> vv2;
 
-    for (int i=0; i < vv1.size(); i++)
-	vv2.push_back(vv1[lfsp[i]]);
+    for (size_t i=0; i < vv1.size(); i++)
+        vv2.push_back(vv1[lfsp[i]]);
 
     IT lfi = first;
-    for (int i=0; lfi != last; i++, ++lfi)
+    for (size_t i=0; lfi != last; i++, ++lfi)
 	vv1[lfsp.inv(i)] = *lfi;
 
     std::copy(first, last,
@@ -148,7 +145,7 @@ struct FooGT
     bool operator>(const FooGT &rhs) const { return d > rhs.d; }
     friend std::ostream &operator<<(std::ostream &os, const FooGT &f)
     {
-	return os << f.d;
+        return os << f.d;
     }
 };
 
@@ -183,84 +180,82 @@ struct evenIsLess
 int main( int argc, char *argv[] )
 {
     for (int arg=1; arg < argc; arg++)
-    {
-	if (std::string(argv[arg]) == "--version")
-	{
-	    std::string prog = argv[0];
-	    printVersion(prog);
-	    return 0;
-	}
-    }
+        if (std::string(argv[arg]) == "--version")
+        {
+            std::string prog = argv[0];
+            printVersion(prog);
+            return 0;
+        }
 
     cout << "Initiating test of the SortPermutation.\n";
 
     std::string name = "SortPermutation";
 
-    try {
-	bool passed = false;
+    try 
+    {
+        bool passed = false;
 
-	name = "SortPermutation(empty vector<Foo>)";
-	std::vector<Foo> evf;
-	passed = testit("empty vector<Foo>", evf.begin(), evf.end());
-	printStatus(name, passed);
+        name = "SortPermutation(empty vector<Foo>)";
+        std::vector<Foo> evf;
+        passed = testit("empty vector<Foo>", evf.begin(), evf.end());
+        printStatus(name, passed);
 
-	Foo caf[] = { 64, 89, 64, 73, 14, 90, 63, 14 };
-	const int ncaf =  sizeof(caf)/sizeof(*caf);
+        Foo caf[] = { 64, 89, 64, 73, 14, 90, 63, 14 };
+        const int ncaf =  sizeof(caf)/sizeof(*caf);
 
-	name = "SortPermutation(const list<Foo>)";
-	const std::list<Foo> lf(caf, caf+ncaf);
-	passed = testit("const list<Foo>", lf.begin(), lf.end());
-	printStatus(name, passed);
+        name = "SortPermutation(const list<Foo>)";
+        const std::list<Foo> lf(caf, caf+ncaf);
+        passed = testit("const list<Foo>", lf.begin(), lf.end());
+        printStatus(name, passed);
 
-	name = "SortPermutation(vector<Foo>)";
-	std::vector<Foo> vf(caf, caf+ncaf);
-	passed = testit("vector<Foo>", vf.begin(), vf.end());
-	printStatus(name, passed);
+        name = "SortPermutation(vector<Foo>)";
+        std::vector<Foo> vf(caf, caf+ncaf);
+        passed = testit("vector<Foo>", vf.begin(), vf.end());
+        printStatus(name, passed);
 
-	name = "SortPermutation(C-Array<Foo>)";
-	passed = testit("C-Array<Foo>", caf, caf+ncaf);
-	printStatus(name, passed);
+        name = "SortPermutation(C-Array<Foo>)";
+        passed = testit("C-Array<Foo>", caf, caf+ncaf);
+        printStatus(name, passed);
 
-	name = "SortPermutation(const list<Foo>, evenIsLess<Foo>)";
-	const std::list<Foo> lfeven(caf, caf+ncaf);
-	passed = testit("const list<Foo>", lfeven.begin(), lfeven.end(),
-			evenIsLess<Foo>());
-	printStatus(name, passed);
+        name = "SortPermutation(const list<Foo>, evenIsLess<Foo>)";
+        const std::list<Foo> lfeven(caf, caf+ncaf);
+        passed = testit( "const list<Foo>", lfeven.begin(), lfeven.end(),
+                         evenIsLess<Foo>());
+        printStatus(name, passed);
 
-	const FooGT cafg[] = { 64, 89, 64, 73, 14, 90, 63, 14 };
-	const int ncafg =  sizeof(cafg)/sizeof(*cafg);
+        const FooGT cafg[] = { 64, 89, 64, 73, 14, 90, 63, 14 };
+        const int ncafg =  sizeof(cafg)/sizeof(*cafg);
 	
-	name = "SortPermutation(list<FooGT>, greater<FooGT>)";
-	std::list<FooGT> lfg(cafg, cafg+ncafg);
-	passed = testit("list<FooGT>", lfg.begin(), lfg.end(),
-			std::greater<FooGT>());
-	printStatus(name, passed);
+        name = "SortPermutation(list<FooGT>, greater<FooGT>)";
+        std::list<FooGT> lfg(cafg, cafg+ncafg);
+        passed = testit( "list<FooGT>", lfg.begin(), lfg.end(),
+                         std::greater<FooGT>());
+        printStatus(name, passed);
 
-	name = "SortPermutation(const vector<FooGT>, greater<FooGT>)";
-	const std::vector<FooGT> vfg(cafg, cafg+ncafg);
-	passed = testit("const vector<FooGT>", vfg.begin(), vfg.end(),
-			std::greater<FooGT>());
-	printStatus(name, passed);
+        name = "SortPermutation(const vector<FooGT>, greater<FooGT>)";
+        const std::vector<FooGT> vfg(cafg, cafg+ncafg);
+        passed = testit( "const vector<FooGT>", vfg.begin(), vfg.end(),
+                         std::greater<FooGT>());
+        printStatus(name, passed);
 
-	name = "SortPermutation(const C-Array<FooGT>, greater<FooGT>)";
-	passed = testit("const C-Array<FooGT>", cafg, cafg+ncaf,
-			std::greater<FooGT>());
-	printStatus(name, passed);
+        name = "SortPermutation(const C-Array<FooGT>, greater<FooGT>)";
+        passed = testit( "const C-Array<FooGT>", cafg, cafg+ncaf,
+                         std::greater<FooGT>());
+        printStatus(name, passed);
 
-        
-        
-//        moreTests();
+//  moreTests();
+
     }
     catch( rtt_dsxx::assertion& a )
     {
-	cout << "Failed assertion: " << a.what() << endl;
-	printStatus(name, false);
+        cout << "Failed assertion: " << a.what() << endl;
+        printStatus(name, false);
         return 1;
     }
     catch( ... )
     {
-	cout << "tstSortPermulation: Caught unknown exception." << endl;
-	printStatus(name, false);
+        cout << "tstSortPermulation: Caught unknown exception." << endl;
+        printStatus(name, false);
         return 1;
     }
     cout << "Done testing SortPermutation container.\n";

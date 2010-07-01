@@ -3,6 +3,7 @@
  * \file   ds++/test/tstDBC_Ptr.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
+ * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -76,7 +77,7 @@ void test_basic()
         foo.delete_data();
         if ( foo ) ITFAILS;
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
 	caught = true;
     }
@@ -111,25 +112,25 @@ void test_retval_compiles()
 void test_undeleted()
 {
     bool caught = false;
-    Base_Class *memory_cleanup;
+    Base_Class *memory_cleanup(0);
     
     try
     {
-	DBC_Ptr<Base_Class> foo(new Base_Class);
+        DBC_Ptr<Base_Class> foo(new Base_Class);
         memory_cleanup = &(*foo);
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
-	caught = true;
+        caught = true;
         delete memory_cleanup;
     }
 
     if(!caught) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_undeleted");
+        PASSMSG("test_undeleted");
     else
-	FAILMSG("test_undeleted FAILED!");
+        FAILMSG("test_undeleted FAILED!");
 }
 
 //---------------------------------------------------------------------------//
@@ -143,7 +144,7 @@ void test_over_deleted()
 	foo.delete_data();
 	foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
 	caught = true;
     }
@@ -178,7 +179,7 @@ void test_function_return()
 	DBC_Ptr<int> foo = gen_func();
 	foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
 	caught = true;
     }
@@ -211,7 +212,7 @@ void test_pass_by_ref()
 	Check(*foo == 3);
 	foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
 	caught = true;
     }
@@ -233,31 +234,31 @@ void test_pass_by_ref()
 void test_dangling()
 {
     bool caught = false;
-    int *memory_cleanup;
+    int *memory_cleanup(0);
 
     try
     {
-	DBC_Ptr<int> foo(new int);
-	DBC_Ptr<int> bar(foo);
+        DBC_Ptr<int> foo(new int);
+        DBC_Ptr<int> bar(foo);
         memory_cleanup = &(*foo);
-	foo.delete_data();
+        foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
-	caught = true;
+        caught = true;
         delete memory_cleanup;
     }
     catch(...)
     {
-	std::cout << "WTF, mate?" << std::endl;
+        std::cout << "Caught an exception?" << std::endl;
     }
 
     if(!caught) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_dangling");
+        PASSMSG("test_dangling");
     else
-	FAILMSG("test_dangling FAILED!");
+        FAILMSG("test_dangling FAILED!");
 }
 
 
@@ -267,32 +268,32 @@ void test_dangling()
 void test_nested()
 {
     bool caught = false;
-    int *memory_cleanup;
+    int *memory_cleanup(0);
     
     try
     {
-	Owner o;
+        Owner o;
         memory_cleanup = &(*o.ptr);
-	o.ptr.release_data();
+        o.ptr.release_data();
 
 	// o.ptr.delete_data() gets called here by ~Owner
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
-	caught = true;
+        caught = true;
         delete memory_cleanup;
     }
     catch(...)
     {
-	std::cout << "WTF, mate?" << std::endl;
+        std::cout << "Caught an exception." << std::endl;
     }
 
     if(!caught) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_nested");
+        PASSMSG("test_nested");
     else
-	FAILMSG("test_nested FAILED!");
+        FAILMSG("test_nested FAILED!");
 }
 
 //---------------------------------------------------------------------------//
@@ -303,11 +304,11 @@ void test_void()
     bool caught = false;
     try
     {
-	DBC_Ptr<int> foo;
+        DBC_Ptr<int> foo;
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(caught) ITFAILS;
@@ -315,20 +316,20 @@ void test_void()
     caught = false;
     try
     {
-	DBC_Ptr<int> foo;
-	DBC_Ptr<int> bar = foo;
+        DBC_Ptr<int> foo;
+        DBC_Ptr<int> bar = foo;
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(caught) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_void");
+        PASSMSG("test_void");
     else
-	FAILMSG("test_void FAILED!");
+        FAILMSG("test_void FAILED!");
 }
 
 //---------------------------------------------------------------------------//
@@ -338,41 +339,41 @@ void test_polymorph()
     bool caught = false;
     try
     {
-	DBC_Ptr<Base_Class> base(new Derived_Class);
+        DBC_Ptr<Base_Class> base(new Derived_Class);
         base->a = 1;
         if (base->a != 1) ITFAILS;
-	base.delete_data();
+        base.delete_data();
     }
     catch(rtt_dsxx::assertion &ass)
     {
-	std::cout << ass.what() << std::endl;
-	caught = true;
+        std::cout << ass.what() << std::endl;
+        caught = true;
     }
     if(caught) ITFAILS;
 
     caught = false;
     try
     {
-	DBC_Ptr<Base_Class> base;
-	DBC_Ptr<Derived_Class> derv(new Derived_Class);
-	base = derv;
-	derv.release_data();
-	derv = base;
-	base.release_data();
-	derv.delete_data();
+        DBC_Ptr<Base_Class> base;
+        DBC_Ptr<Derived_Class> derv(new Derived_Class);
+        base = derv;
+        derv.release_data();
+        derv = base;
+        base.release_data();
+        derv.delete_data();
     }
     catch(rtt_dsxx::assertion &ass)
     {
-	std::cout << ass.what() << std::endl;
-	caught = true;
+        std::cout << ass.what() << std::endl;
+        caught = true;
     }
     
     if(caught) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_polymorph");
+        PASSMSG("test_polymorph");
     else
-	FAILMSG("test_polymorph FAILED!");
+        FAILMSG("test_polymorph FAILED!");
 }
 
 //---------------------------------------------------------------------------//
@@ -496,32 +497,32 @@ main(int argc, char *argv[])
 #if DBC
     try
     {
-	// >>> UNIT TESTS
-	test_basic();
+        // >>> UNIT TESTS
+        test_basic();
         test_retval_compiles();
-	test_undeleted();
-	test_over_deleted();
-	test_dangling();
-	test_function_return();
-	test_pass_by_ref();
-	test_polymorph();
-	test_void();
-	test_nested();
+        test_undeleted();
+        test_over_deleted();
+        test_dangling();
+        test_function_return();
+        test_pass_by_ref();
+        test_polymorph();
+        test_void();
+        test_nested();
         test_vector_of_ptrs();
         test_exception_cleanup();
         test_overload();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &error)
     {
-	cout << "While testing tstDBC_Ptr, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "While testing tstDBC_Ptr, " << error.what()
+             << endl;
+        return 1;
     }
 
     catch (...)
     {
-	cout << "caught uncaught exception" << std::endl;
-	return 10;
+        cout << "caught uncaught exception" << std::endl;
+        return 10;
     }
 #else
     // Tests without DBC.
@@ -535,7 +536,7 @@ main(int argc, char *argv[])
     if (rtt_ds_test::passed) 
     {
         cout << "**** tstDBC_Ptr Test: PASSED" 
-	     << endl;
+             << endl;
     }
     cout <<     "*********************************************" << endl;
     cout << endl;

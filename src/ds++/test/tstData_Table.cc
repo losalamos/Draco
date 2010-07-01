@@ -3,6 +3,7 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
+ * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -34,7 +35,7 @@ void test_array()
     {
         Data_Table<int> dt(array, array+3);
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion &/* error */)
     {
 	caught = true;
     }
@@ -45,7 +46,7 @@ void test_array()
     {
         Data_Table<int> dt(array+3,array);
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* error */)
     {
 	caught = true;
     }
@@ -90,7 +91,7 @@ void test_array()
             if(dt3.back() != dt.back()) ITFAILS;
         }
     }
-    catch(rtt_dsxx::assertion &ass) 
+    catch(rtt_dsxx::assertion & /* error */) 
     {
         caught = true;
     }
@@ -102,7 +103,7 @@ void test_array()
     {
         std::cout << dt[3];
     }
-    catch(rtt_dsxx::assertion &ass) 
+    catch(rtt_dsxx::assertion & /* error */) 
     {
         caught = true;
     }
@@ -144,7 +145,7 @@ void test_scalar()
         if(dt[0] != dt3[0]) ITFAILS;
         if(&(dt[0]) == &(dt3[0])) ITFAILS;
     }
-    catch(rtt_dsxx::assertion &ass) 
+    catch(rtt_dsxx::assertion & /* error */) 
     {
         caught = true;
     }
@@ -156,16 +157,16 @@ void test_scalar()
     {
         std::cout << dt[1];
     }
-    catch(rtt_dsxx::assertion &ass) 
+    catch(rtt_dsxx::assertion & /* error */) 
     {
         caught = true;
     }
     if(!caught) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_scalar");
+        PASSMSG("test_scalar");
     else
-	FAILMSG("test_scalar FAILED!");
+        FAILMSG("test_scalar FAILED!");
 }
 
 
@@ -247,17 +248,17 @@ main(int argc, char *argv[])
         test_scalar();
 //        test_vector();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &error)
     {
-	cout << "While testing tstData_Table_Ptr, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "While testing tstData_Table_Ptr, " << error.what()
+             << endl;
+        return 1;
     }
 
     catch (...)
     {
-	cout << "caught uncaught exception" << std::endl;
-	return 10;
+        cout << "caught uncaught exception" << std::endl;
+        return 10;
     }
 
 #endif

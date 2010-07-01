@@ -4,19 +4,18 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:17:24 2006
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../ScalarUnitTest.hh"
+#include "../Release.hh"
 #include <iostream>
 #include <sstream>
 #include <map>
 #include <cstdlib>
-
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -93,7 +92,7 @@ void tstTwoCheck( UnitTest &unitTest, std::ostringstream & msg )
 }
 
 //---------------------------------------------------------------------------//
-void tstVersion( UnitTest & ut, int & argc, char **& argv )
+void tstVersion( UnitTest & /* ut */, int & argc, char **& argv )
 {
     // build the command that contains "--version"
     string cmd;
@@ -107,7 +106,7 @@ void tstVersion( UnitTest & ut, int & argc, char **& argv )
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
     try
     {

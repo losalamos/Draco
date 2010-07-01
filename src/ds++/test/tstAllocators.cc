@@ -1,9 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstAllocators.cc
-// Geoffrey M. Furnish
-// Mon Mar  2 11:09:12 1998
-//---------------------------------------------------------------------------//
-// @> Exercise the DS++ Allocators.hh component.
+/*!
+ * \file    ds++/test/tstAllocators.cc
+ * \author  Geoffrey M. Furnish
+ * \date    Mon Mar  2 11:09:12 1998
+ * \brief   Exercise the DS++ Allocators.hh component.
+ * \note    Copyright (c) 1997-2010 Los Alamos National Security, LLC 
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
 
 #include "../Allocators.hh"
@@ -21,7 +24,7 @@ using namespace std;
 //---------------------------------------------------------------------------//
 
 template<class T>
-void pass( const char *name, T dummy )
+void pass( const char *name, T /* dummy */ )
 {
     cout << name << '<' << typeid(T).name() << ">test: passed" << endl;
 }
@@ -31,7 +34,7 @@ void pass( const char *name, T dummy )
 //---------------------------------------------------------------------------//
 
 template<class T>
-void fail( const char *name, T dummy )
+void fail( const char *name, T /* dummy */ )
 {
     cout << name << '<' << typeid(T).name() << ">test: failed" << endl;
 }
@@ -65,13 +68,14 @@ void tS1( T dummy )
 template<class T>
 void tG1( T dummy )
 {
-    try {
+    try
+    {
         T *p = Guarded_Allocator<T>::fetch( 5 );
         // Validate (release does then if DBC is on)
         if( Guarded_Allocator<T>::guard_elements_ok( p, 5 ) )
             pass( "guard_elements_ok", dummy );
         Guarded_Allocator<T>::release( p, 5 );
-	pass( "tG1", dummy );
+        pass( "tG1", dummy );
 
         Guarded_Allocator<T> myGa;
         cout << "max size for this Guarded_Allocator is "
@@ -114,7 +118,7 @@ void tG2( T dummy )
 	pass( "tG2", dummy );
 #endif
     }
-    catch( assertion const & x)
+    catch( assertion const & /* err */ )
     {
 #if DBC & 2
 	pass( "tG2", dummy );
@@ -136,16 +140,16 @@ template<class T>
 void tG3( T dummy )
 {
     try {
-    // First we have to fetch some memory.
+        // First we have to fetch some memory.
         T *p = Guarded_Allocator<T>::fetch( 5 );
 
-    // Now initialize it.
+        // Now initialize it.
 	std::uninitialized_fill_n( p, 5, dummy );
 
-    // Now currupt the top end of the memory :-).
+        // Now currupt the top end of the memory :-).
 	p[5] = dummy;
 
-    // Now release the memory.
+        // Now release the memory.
         Guarded_Allocator<T>::release( p, 5 );
 #if DBC & 2
 	fail( "tG3", dummy );
@@ -153,7 +157,7 @@ void tG3( T dummy )
 	pass( "tG3", dummy );
 #endif
     }
-    catch( assertion const & x )
+    catch( assertion const & /* error */ )
     {
 #if DBC & 2
 	pass( "tG3", dummy );
@@ -187,13 +191,18 @@ int main( int argc, char *argv[] )
 
     cout << "Starting tstAllocators.\n";
 
-    tS1( 7 );
-
-    tG1( 7 );
-    tG2( 7 );
-    tG3( 7 );
-
-    cout << "Ending tstAllocators.\n";
+    try
+    {
+        tS1( 7 );
+        tG1( 7 );
+        tG2( 7 );
+        tG3( 7 );
+    }
+    catch( ... )
+    {
+        cout << "Test: FAILED" << endl;
+    }
+    cout << "Test: PASSED" << endl;
     return 0;
 }
 

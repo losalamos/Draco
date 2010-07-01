@@ -4,22 +4,22 @@
  * \author Rob Lowrie
  * \date   Sun Nov 21 19:36:12 2004
  * \brief  Tests File_Input and File_Output.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright 2004-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <cmath>
 
 #include "../Assert.hh"
 #include "../Release.hh"
 #include "../File_Streams.hh"
 #include "../Soft_Equivalence.hh"
 #include "ds_test.hh"
+
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
 using rtt_dsxx::File_Input;

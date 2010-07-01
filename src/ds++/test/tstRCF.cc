@@ -4,22 +4,21 @@
  * \author Thomas M. Evans
  * \date   Wed Jan 28 10:53:26 2004
  * \brief  Test of RCF (reference counted field) class.
- * \note   Copyright Â© 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <algorithm>
 
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
 #include "../RCF.hh"
 #include "../ScalarUnitTest.hh"
 #include "ds_test.hh"
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -77,7 +76,8 @@ void use_const_field(const RCF<dbl_field> &f,
                      UnitTest &ut)
 {
     // test const_iterator access
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end()))
+        ut.failure("test fails");
 
     // get the field to test const get_field
     const dbl_field &field = f.get_field();
@@ -85,10 +85,8 @@ void use_const_field(const RCF<dbl_field> &f,
         ut.failure("test fails");
 
     // check constant operator[] access
-    for (int i = 0; i < f.size(); i++)
-    {
+    for (size_t i = 0; i < f.size(); i++)
         if (!soft_equiv(f[i], ref[i])) ut.failure("test fails");
-    }
 }
 
 
@@ -98,7 +96,8 @@ void use_const_field(const Field &f,
                      const dbl_field &ref,
                      UnitTest &ut)
 {
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end()))
+        ut.failure("test fails");
 }
 
 //---------------------------------------------------------------------------//
@@ -144,20 +143,22 @@ void test_simple_construction_copy(UnitTest &ut)
 
         dbl_field ref(10, 5.2);
 
-        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ut.failure("test fails");
+        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end()))
+            ut.failure("test fails");
 
         // fill in 2.2 (tests non-const begin and end)
         fill(sf.begin(), sf.end(), 2.2);
         fill(ref.begin(), ref.end(), 2.2);
 
-        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ut.failure("test fails");
+        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end()))
+            ut.failure("test fails");
         
         // check size
         if (sf.size() != 10) ut.failure("test fails");
         if (sf.empty())      ut.failure("test fails");
 
         // check with subscript access
-        for (int i = 0; i < sf.size(); i++)
+        for (size_t i = 0; i < sf.size(); i++)
         {
             if (!soft_equiv(sf[i], 2.2)) ut.failure("test fails");
             
@@ -167,7 +168,8 @@ void test_simple_construction_copy(UnitTest &ut)
         }
 
         fill(ref.begin(), ref.end(), 12.46);
-        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end())) ut.failure("test fails");
+        if (!soft_equiv(sf.begin(), sf.end(), ref.begin(), ref.end()))
+            ut.failure("test fails");
 
         // check const functions
         use_const_field(sf, ref, ut);
@@ -179,7 +181,8 @@ void test_simple_construction_copy(UnitTest &ut)
         // make a field, using alternative ctor.
         RCF<dbl_field> x(10, 12.46);
         if (!x.assigned()) ut.failure("test fails");
-        if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end())) ut.failure("test fails");
+        if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()))
+            ut.failure("test fails");
 
         // assign it to x
         y = x;
@@ -196,7 +199,8 @@ void test_simple_construction_copy(UnitTest &ut)
 
 	// check range constructor
 	RCF<dbl_field> z(x.begin(), x.end());
-        if (!soft_equiv(x.begin(), x.end(), z.begin(), z.end())) ut.failure("test fails");
+        if (!soft_equiv(x.begin(), x.end(), z.begin(), z.end()))
+            ut.failure("test fails");
     }
 
     if (!sf.assigned()) ut.failure("test fails");
@@ -273,12 +277,14 @@ void test_counting(UnitTest &ut)
     
     // check const field access
     use_const_field(f.get_field(), ref, ut);
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end()))
+        ut.failure("test fails");
     
     // check non-const field access
     use_non_const_field(f.get_field());
     ref[1] = 13.231;
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end()))
+        ut.failure("test fails");
 
     RCF<Field> g;
     if (nfields != 1) ut.failure("test fails");
@@ -328,7 +334,8 @@ void test_constness(UnitTest &ut)
     
     // check const field access
     use_const_field(f.get_field(), ref, ut);
-    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end())) ut.failure("test fails");
+    if (!soft_equiv(f.begin(), f.end(), ref.begin(), ref.end()))
+        ut.failure("test fails");
 
     RCF<const Field> g;
     if (nfields != 1) ut.failure("test fails");

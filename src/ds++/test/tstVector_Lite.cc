@@ -1,17 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstVector_Lite.cc
-// lowrie
-// $Id$
+/*!
+ * \file    ds++/test/tstVector_Lite.cc
+ * \author  lowrie
+ * \brief   Test for Vector_Lite class
+ * \note    Copyright (c) 2009-2010 Los Alamos National Security, LLC
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
-// @> Test for Vector_Lite class
-//---------------------------------------------------------------------------//
-
-#include <algorithm>
-#include <sstream>
 
 #include "ds_test.hh"
 #include "../Vector_Lite.hh"
 #include "../Soft_Equivalence.hh"
+
+#include <algorithm>
+#include <sstream>
 
 using rtt_dsxx::Vector_Lite;
 using rtt_dsxx::soft_equiv;
@@ -21,8 +23,9 @@ using namespace std;
 
 int main(int argc, char *argv[]);
 
-int
-main(int argc, char *argv[])
+
+// Main for test
+int main(int /* argc */, char * /* *argv */ [] )
 {
     const int m = 5;
 
@@ -33,13 +36,13 @@ main(int argc, char *argv[])
     UNIT_TEST(x.max_size()==m);
 
     {
-	cout << "fill in from C array" << endl;
-	double v1[5];
-	for (size_t i=0; i<5; i++) {v1[i] = 1.*i;}
-	Vector_Lite<double, 5> v2; v2.fill(v1);
-	for (size_t i=0; i<5; i++) {
-	    UNIT_TEST(v1[i] == v2[i]);
-	}
+        cout << "fill in from C array" << endl;
+        double v1[5];
+        for (size_t i=0; i<5; i++) {v1[i] = 1.*i;}
+        Vector_Lite<double, 5> v2; v2.fill(v1);
+        for (size_t i=0; i<5; i++) {
+            UNIT_TEST(v1[i] == v2[i]);
+        }
     }
 
     cout << "assignment from another Vector_Lite" << endl;
@@ -79,7 +82,7 @@ main(int argc, char *argv[])
         in >> y;
         UNIT_TEST(x==y);
     }
-    
+
     cout << "operator==" << endl;
     UNIT_TEST(x == x);
     {
@@ -90,26 +93,26 @@ main(int argc, char *argv[])
         y = x+1.0;
         UNIT_TEST(!(y==x));
     }
-    
+
     cout << "operator<" << endl;
     UNIT_TEST(!(x < x));
     {
         Vector_Lite<double, m> y = x+1.0;
         UNIT_TEST(x<y);
     }
-    
+
     cout << "operator!=" << endl;
     UNIT_TEST(!(x != x));
-    
+
     cout << "operator<=" << endl;
     UNIT_TEST((x <= x));
-    
+
     cout << "operator>=" << endl;
     UNIT_TEST((x >= x));
-    
+
     {
         cout << "operator*" << endl;
-	Vector_Lite<double, m> y = x*x;
+        Vector_Lite<double, m> y = x*x;
         for (unsigned i=0; i<m; ++i)
         {
             UNIT_TEST(y[i] == x[i]*x[i]);
@@ -127,7 +130,7 @@ main(int argc, char *argv[])
     }
     {
         cout << "operator+" << endl;
-	Vector_Lite<double, m> y = x+x;
+        Vector_Lite<double, m> y = x+x;
         for (unsigned i=0; i<m; ++i)
         {
             UNIT_TEST(y[i] == x[i]+x[i]);
@@ -145,7 +148,7 @@ main(int argc, char *argv[])
     }
     {
         cout << "operator-" << endl;
-	Vector_Lite<double, m> y = x-x;
+        Vector_Lite<double, m> y = x-x;
         for (unsigned i=0; i<m; ++i)
         {
             UNIT_TEST(y[i] == x[i]-x[i]);
@@ -163,16 +166,16 @@ main(int argc, char *argv[])
     }
     {
         cout << "operator/" << endl;
-	Vector_Lite<double, m> y = x/(x+1.0);
+        Vector_Lite<double, m> y = x/(x+1.0);
         for (unsigned i=0; i<m; ++i)
         {
             UNIT_TEST(y[i] == x[i]/(x[i]+1.0));
         }
-//         y = 2.2/x;
-//         for (unsigned i=0; i<m; ++i)
-//         {
-//             UNIT_TEST(y[i] == 2.2/x[i]);
-//         }
+        //         y = 2.2/x;
+        //         for (unsigned i=0; i<m; ++i)
+        //         {
+        //             UNIT_TEST(y[i] == 2.2/x[i]);
+        //         }
         y = x/2.2;
         for (unsigned i=0; i<m; ++i)
         {
@@ -181,9 +184,9 @@ main(int argc, char *argv[])
     }
 
     {
-	cout << "copy constructor" << endl;
-	Vector_Lite<double, m> xCopy(x);
-	UNIT_TEST(x == xCopy);
+        cout << "copy constructor" << endl;
+        Vector_Lite<double, m> xCopy(x);
+        UNIT_TEST(x == xCopy);
     }
 
     cout << "operator+=, scalar" << endl;
@@ -219,116 +222,120 @@ main(int argc, char *argv[])
     Vector_Lite<double, m> y(y0, y1, y2, y3, y4);
 
     {
-	cout << "operator*=" << endl;
-	Vector_Lite<double, m> z(x);
-	Vector_Lite<double, m> ans(c1*y0, c1*y1, c1*y2, c1*y3, c1*y4);
-	z *= y;
-	cout << " z = " << z << endl;
-	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-				       ans.begin(), ans.end()));
+        cout << "operator*=" << endl;
+        Vector_Lite<double, m> z(x);
+        Vector_Lite<double, m> ans(c1*y0, c1*y1, c1*y2, c1*y3, c1*y4);
+        z *= y;
+        cout << " z = " << z << endl;
+        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                       ans.begin(), ans.end()));
 
-	cout << "operator/=" << endl;
-	z /= y;
-	cout << " z = " << z << endl;
-	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-				       x.begin(), x.end()));
+        cout << "operator/=" << endl;
+        z /= y;
+        cout << " z = " << z << endl;
+        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                       x.begin(), x.end()));
     }
 
     {
-	cout << "operator+=" << endl;
-	Vector_Lite<double, m> z(x);
-	Vector_Lite<double, m> ans(c1+y0, c1+y1, c1+y2, c1+y3, c1+y4);
-	z += y;
-	cout << " z = " << z << endl;
-	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-				       ans.begin(), ans.end()));
+        cout << "operator+=" << endl;
+        Vector_Lite<double, m> z(x);
+        Vector_Lite<double, m> ans(c1+y0, c1+y1, c1+y2, c1+y3, c1+y4);
+        z += y;
+        cout << " z = " << z << endl;
+        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                       ans.begin(), ans.end()));
 
-	cout << "operator-=" << endl;
-	z -= y;
-	cout << " z = " << z << endl;
-	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-				       x.begin(), x.end()));
+        cout << "operator-=" << endl;
+        z -= y;
+        cout << " z = " << z << endl;
+        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                       x.begin(), x.end()));
     }
 
     {
-	cout << "unary-" << endl;
-	Vector_Lite<double, m> z;
-	Vector_Lite<double, m> ans(-c1);
-	z = -x;
-	cout << " z = " << z << endl;
-	UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-				       ans.begin(), ans.end()));
+        cout << "unary-" << endl;
+        Vector_Lite<double, m> z;
+        Vector_Lite<double, m> ans(-c1);
+        z = -x;
+        cout << " z = " << z << endl;
+        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                       ans.begin(), ans.end()));
     }
 
     {
-	cout << "Inner product" << endl;
-	Vector_Lite<double, 2> x1(1.0, 2.0);
-	Vector_Lite<double, 2> x2(4.0, 6.0);
-	UNIT_TEST(rtt_dsxx::inner_product(x1, x2) == 16.0);
+        cout << "Inner product" << endl;
+        Vector_Lite<double, 2> x1(1.0, 2.0);
+        Vector_Lite<double, 2> x2(4.0, 6.0);
+        UNIT_TEST(rtt_dsxx::inner_product(x1, x2) == 16.0);
     }
 
     {
-	cout << "Nested Vector_Lites ";
-	Vector_Lite<Vector_Lite<double, m>, 3> xNest(x);
-	xNest(1) = y;
-	cout << xNest << endl;
-	UNIT_TEST(xNest(0) == x);
-	UNIT_TEST(xNest(1) == y);
-	UNIT_TEST(xNest(2) == x);
+        cout << "Nested Vector_Lites ";
+        Vector_Lite<Vector_Lite<double, m>, 3> xNest(x);
+        xNest(1) = y;
+        cout << xNest << endl;
+        UNIT_TEST(xNest(0) == x);
+        UNIT_TEST(xNest(1) == y);
+        UNIT_TEST(xNest(2) == x);
     }
 
     int i = -1;
     cout << "Negative bounds check x(" << i << ")\n";
     try {
-	x(i);
+        x(i);
     }
-    catch ( rtt_dsxx::assertion &a ) {
-	UNIT_TEST(1);
+    catch ( rtt_dsxx::assertion & /* error */ ) {
+        UNIT_TEST(1);
     }
     catch (...) {
-      cout << "Unknown error thrown.\n";
-      UNIT_TEST(0);
+        cout << "Unknown error thrown.\n";
+        UNIT_TEST(0);
     }
 
     Vector_Lite<double, m>::size_type iu(i);
     cout << "Negative bounds check test, unsigned x(" << iu << ")\n";
     try {
-	x(iu);
+        x(iu);
     }
-    catch ( rtt_dsxx::assertion &a ) {
-	UNIT_TEST(1);
+    catch ( rtt_dsxx::assertion & /* error */ ) {
+        UNIT_TEST(1);
     }
     catch (...) {
-      cout << "Unknown error thrown.\n";
-      UNIT_TEST(0);
+        cout << "Unknown error thrown.\n";
+        UNIT_TEST(0);
     }
 
     i = x.size();
     cout << "Positive bounds check x(" << i << ")\n";
     try {
-	x(i);
+        x(i);
     }
-    catch ( rtt_dsxx::assertion &a ) {
-	UNIT_TEST(1);
+    catch ( rtt_dsxx::assertion & /* error */ ) {
+        UNIT_TEST(1);
     }
     catch (...) {
-      cout << "Unknown error thrown.\n";
-      UNIT_TEST(0);
+        cout << "Unknown error thrown.\n";
+        UNIT_TEST(0);
     }
-    
-    cout << "\nVector_Lite Summary: ";
-
-    if ( rtt_ds_test::passed )
+	
+    std::ostringstream msg;
+    msg << "\n*********************************************\n";
+    std::string testName( "tstVector_Lite" );
+    int returnCode(0);
+    if( rtt_ds_test::passed ) 
     {
-	cout << "ALL TESTS PASSED\n";
+        msg << "**** " << testName << " Test: PASSED.\n";
     }
     else
     {
-	cout << "FAILED\n";
+        msg << "**** " << testName << " Test: FAILED.\n";
+        returnCode = 1;
     }
+    msg << "*********************************************\n";
+    cout << msg.str() << endl;
 	
-    
-    return(0);
+    return(returnCode);
 }
 
 //---------------------------------------------------------------------------//

@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:55:54 2001
  * \brief  Soft_Equiv header testing utilities.
+ * \note   Copyright (c) 2001-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -37,10 +38,10 @@ void test_soft_equiv_scalar()
 
         try
         {
-            bool result = soft_equiv(x,y,tol);
-            throw "Bogus!";
+            /* bool result =  */ soft_equiv(x,y,tol);
+            throw "Bogus!";            
         }
-        catch( rtt_dsxx::assertion const & a )
+        catch( rtt_dsxx::assertion const & /* error */ )
         {
             PASSMSG("Successfully prevented use of soft_equiv(int,int,int).");
         }

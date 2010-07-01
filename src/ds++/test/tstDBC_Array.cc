@@ -1,11 +1,12 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
   \file    ds++/test/tstArray.cc
   \author  Paul Henning
   \brief   Test of the rtt_dsxx::DBC_Array class
-  \note    Copyright 2005 The Regents of the University of California.
+  \note    Copyright 2005-2010  Los Alamos National Security, LLC
   \version $Id$
 */
-
+//---------------------------------------------------------------------------//
 
 #include <string>
 #include <sstream>
@@ -53,9 +54,9 @@ bool test_empty(AInt& empty_array)
     size_t catch_count = 0;
     try
     {
-    empty_array[0] = 1;
+        empty_array[0] = 1;
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion & /* error */ )
     {
 	catch_count += 1;
     }
@@ -67,16 +68,18 @@ bool test_empty(AInt& empty_array)
 
 
 //---------------------------------------------------------------------------//
-bool test_sized_array(AInt const& sv, const size_t Exp_Size, 
-		      const std::vector<int>& Exp_Value)
+bool test_sized_array(AInt             const & sv, 
+                      size_t           const   Exp_Size, 
+                      std::vector<int> const & Exp_Value)
 {
     if(sv.size() != Exp_Size) ITFAILS;
     if(sv.empty()) ITFAILS;
-    if(std::distance(sv.begin(), sv.end()) != Exp_Size) ITFAILS;
+    if(static_cast<size_t>(std::distance(sv.begin(), sv.end())) != Exp_Size)
+        ITFAILS;
 
     for(size_t i = 0; i < Exp_Size; ++i)
     {
-	if(sv[i] != Exp_Value[i])
+        if(sv[i] != Exp_Value[i])
         {
             std::ostringstream msg;
             int ev( sv[i] );
@@ -116,9 +119,9 @@ bool test_sized_array(AInt const& sv, const size_t Exp_Size,
 	{
 	    foo += sv[i];
 	}
-	catch (rtt_dsxx::assertion &ass)
+	catch (rtt_dsxx::assertion & /* error */ )
 	{
-	catch_count += 1;
+            catch_count += 1;
 	}
     }
     if(catch_count != Exp_Size) ITFAILS;
@@ -447,7 +450,7 @@ void test_comparisons()
     if( B <= A )  { ITFAILS; p = false; }
 
     B.assign( DBC_Array<int>::size_type(7),5);
-   // Test operator>
+    // Test operator>
     if( A > B )  { ITFAILS; p = false; }
 
     // Test operator<<

@@ -2,19 +2,20 @@
 /*! \file  tstMat.cc
  * \author Geoffrey Furnish
  * \date   Wed Apr  2 12:48:48 1997
+ * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../Assert.hh"
+#include "../Release.hh"
+#include "ds_test.hh"
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
-
-#include "../Assert.hh"
-#include "../Release.hh"
-#include "ds_test.hh"
 
 // This is heinous beyond description, but I /really/ want to test all the
 // parts of the Matrix classes here.  Wantom abuse of CPP like that which
@@ -32,7 +33,7 @@ using namespace std;
 //---------------------------------------------------------------------------//
 
 template<class T, class A>
-void ikv1( Mat1<T,A>& x )
+void ikv1( Mat1<T,A>& /* x */ )
 {
     PASSMSG("Successfully passed a reference to a Mat1<T,A> to the function ikv1.");
 }

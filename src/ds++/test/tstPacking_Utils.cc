@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:58:08 2001
  * \brief  
+ * \note   Copyright (c) 2001-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -35,14 +36,14 @@ using rtt_dsxx::soft_equiv;
 //---------------------------------------------------------------------------//
 
 void do_some_packing(Packer &p,
-		     const vector<double> &vd,
-		     const vector<int> &vi)
+                     const vector<double> &vd,
+                     const vector<int> &vi)
 {
-    for ( int i = 0; i < vd.size(); ++i )
-	p << vd[i];
+    for ( size_t i = 0; i < vd.size(); ++i )
+        p << vd[i];
 
-    for ( int i = 0; i < vi.size(); ++i )
-	p << vi[i];
+    for ( size_t i = 0; i < vi.size(); ++i )
+        p << vi[i];
 }
 
 void compute_buffer_size_test()
@@ -86,7 +87,7 @@ void compute_buffer_size_test()
     p.pad(1);
     p.accept(4, test_string);
 
-    if ( total_size != p.end()-p.begin()) ITFAILS;
+    if ( static_cast<int>(total_size) != p.end()-p.begin()) ITFAILS;
 
     // Unpack
 
@@ -94,20 +95,20 @@ void compute_buffer_size_test()
 
     u.set_buffer(p.size(), &buffer[0]);
 
-    if ( u.size() != u.end()-u.begin()) ITFAILS;
+    if ( static_cast<int>(u.size()) != u.end()-u.begin()) ITFAILS;
 
-    for ( int i = 0; i < vd.size(); ++i )
+    for ( size_t i = 0; i < vd.size(); ++i )
     {
-	double d;
-	u >> d;
-	if ( ! soft_equiv(d, vd[i]) ) ITFAILS;
+        double d;
+        u >> d;
+        if ( ! soft_equiv(d, vd[i]) ) ITFAILS;
     }
 
-    for ( int i = 0; i < vi.size(); ++i )
+    for ( size_t i = 0; i < vi.size(); ++i )
     {
-	int j;
-	u >> j;
-	if ( j != vi[i] ) ITFAILS;
+        int j;
+        u >> j;
+        if ( j != vi[i] ) ITFAILS;
     }
     
     // padding byte
@@ -121,7 +122,7 @@ void compute_buffer_size_test()
     }
 
     if (rtt_ds_test::passed)
-	PASSMSG("compute_buffer_size_test() worked fine.");
+        PASSMSG("compute_buffer_size_test() worked fine.");
 }
 
 void packing_test()
@@ -143,33 +144,33 @@ void packing_test()
 
     // pack the data
     {
-	Packer p;
+        Packer p;
 
-	p.set_buffer(s1, b1);
-	p << x << ix;
-	p.pack(y);
-	p.pack(iy);
+        p.set_buffer(s1, b1);
+        p << x << ix;
+        p.pack(y);
+        p.pack(iy);
 
-	if (p.get_ptr() != b1+s1) ITFAILS;
+        if (p.get_ptr() != b1+s1) ITFAILS;
 
-	p.set_buffer(s2, b2);
-	p << iz << z;
-	
-	if (p.get_ptr() != b2+s2) ITFAILS;
+        p.set_buffer(s2, b2);
+        p << iz << z;
+        
+        if (p.get_ptr() != b2+s2) ITFAILS;
 
-	// Catch a failure when excedding the buffer limit:
+        // Catch a failure when excedding the buffer limit:
 #if DBC
-	bool caught = false;
-	try
-	{
-	    p << iz;
-	}
-	catch (const rtt_dsxx::assertion &a)
-	{
-	    cout << "Good, caught the exception" << endl;
-	    caught = true;
-	}
-	if (!caught) ITFAILS;
+        bool caught = false;
+        try
+        {
+            p << iz;
+        }
+        catch (const rtt_dsxx::assertion & /* error */ )
+        {
+            cout << "Good, caught the exception" << endl;
+            caught = true;
+        }
+        if (!caught) ITFAILS;
 #endif
 
 
@@ -177,60 +178,48 @@ void packing_test()
     
     // unpack the data
     {
-	Unpacker u;
+        Unpacker u;
 
-	double   d = 0;
-	int      i = 0;
+        double   d = 0;
+        int      i = 0;
 
-	u.set_buffer(s1, b1);
-	u >> d >> i;
-	if (d != 102.45)          ITFAILS;
-	if (i != 10)              ITFAILS;
+        u.set_buffer(s1, b1);
+        u >> d >> i;
+        if (d != 102.45)          ITFAILS;
+        if (i != 10)              ITFAILS;
 
-	u.unpack(d);
-	u.unpack(i); 
-	if (d != 203.89)          ITFAILS;
-	if (i != 11)              ITFAILS;
+        u.unpack(d);
+        u.unpack(i); 
+        if (d != 203.89)          ITFAILS;
+        if (i != 11)              ITFAILS;
 
-	if (u.get_ptr() != s1+b1) ITFAILS;
+        if (u.get_ptr() != s1+b1) ITFAILS;
 
 #if DBC
-	// try catching a failure
-	bool caught = false;
-	try
-	{
-	     u.unpack(i);
-	}
-	catch (const rtt_dsxx::assertion &a)
-	{
-	    cout << "Good, caught the exception" << endl;
-	    caught = true;
-	}
-	if (!caught) ITFAILS;
+        // try catching a failure
+        bool caught = false;
+        try
+        {
+            u.unpack(i);
+        }
+        catch (const rtt_dsxx::assertion & /* error */ )
+        {
+            cout << "Good, caught the exception" << endl;
+            caught = true;
+        }
+        if (!caught) ITFAILS;
 #endif 
 
-	u.set_buffer(s2, b2);
-	u >> i >> d;
-	if (i != 12)              ITFAILS;
-	if (d != 203.88)          ITFAILS;
-	
-	if (u.get_ptr() != s2+b2) ITFAILS;
+        u.set_buffer(s2, b2);
+        u >> i >> d;
+        if (i != 12)              ITFAILS;
+        if (d != 203.88)          ITFAILS;
+        
+        if (u.get_ptr() != s2+b2) ITFAILS;
     }
 
     delete [] b1;
     delete [] b2;
-
-
-
-
-
-
-
-
-
-
-
-
 
     // try packing a vector and char array
     double r = 0;
@@ -241,11 +230,11 @@ void packing_test()
 
     char c[4] = {'c','h','a','r'};
 
-    for (int i = 0; i < vx.size(); i++)
+    for (size_t i = 0; i < vx.size(); i++)
     {
-	r      = rand();
-	vx[i]  = r / RAND_MAX;
-	ref[i] = vx[i];
+        r      = rand();
+        vx[i]  = r / RAND_MAX;
+        ref[i] = vx[i];
     }
 
     int size     = 100 * sizeof(double) + 4;
@@ -253,40 +242,40 @@ void packing_test()
     
     // pack
     {
-	Packer p;
-	p.set_buffer(size, buffer);
+        Packer p;
+        p.set_buffer(size, buffer);
 
-	for (int i = 0; i < vx.size(); i++)
-	    p << vx[i];
+        for (size_t i = 0; i < vx.size(); i++)
+            p << vx[i];
 
-	for (int i = 0; i < 4; i++)
-	    p << c[i];
+        for (size_t i = 0; i < 4; i++)
+            p << c[i];
 
-	if (p.get_ptr() != buffer+size) ITFAILS;
+        if (p.get_ptr() != buffer+size) ITFAILS;
     }
     
     // unpack
     {
-	char cc[4];
-	vector<double> x(100, 0.0);
+        char cc[4];
+        vector<double> x(100, 0.0);
 
-	Unpacker u;
-	u.set_buffer(size, buffer);
+        Unpacker u;
+        u.set_buffer(size, buffer);
 
-	for (int i = 0; i < x.size(); i++)
-	    u >> x[i];
+        for (size_t i = 0; i < x.size(); i++)
+            u >> x[i];
 
         u.extract(4, cc);
 
-	if (u.get_ptr() != buffer+size) ITFAILS;
-	
-	for (int i = 0; i < x.size(); i++)
- 	    if (x[i] != ref[i]) ITFAILS;
+        if (u.get_ptr() != buffer+size) ITFAILS;
+        
+        for (size_t i = 0; i < x.size(); i++)
+            if (x[i] != ref[i]) ITFAILS;
 
-	if (c[0] != 'c') ITFAILS;
-	if (c[1] != 'h') ITFAILS;
-	if (c[2] != 'a') ITFAILS;
-	if (c[3] != 'r') ITFAILS;
+        if (c[0] != 'c') ITFAILS;
+        if (c[1] != 'h') ITFAILS;
+        if (c[2] != 'a') ITFAILS;
+        if (c[3] != 'r') ITFAILS;
     }
 
     // Skip some data and unpack
@@ -299,14 +288,14 @@ void packing_test()
 
         // Skip the first 50 integers.
         u.skip(50*sizeof(double));
-        for (int i=50; i < x.size(); ++i) u >> x[i];
+        for (size_t i=50; i < x.size(); ++i) u >> x[i];
 
         // Skip the first two chatacters
         u.skip(2);
         u.extract(2,cc);
 
-        for (int i=0;  i<50;       ++i) if (x[i] != 0) ITFAILS;
-        for (int i=50; i<x.size(); ++i) if (x[i] != ref[i]) ITFAILS;
+        for (size_t i=0;  i<50;       ++i) if (x[i] != 0) ITFAILS;
+        for (size_t i=50; i<x.size(); ++i) if (x[i] != ref[i]) ITFAILS;
 
         if (cc[0] != 'a') ITFAILS;
         if (cc[1] != 'r') ITFAILS;
@@ -323,25 +312,25 @@ void std_string_test()
     vector<char> pack_string;
 
     {
-	// make a string
-	string hw("Hello World"); 
+        // make a string
+        string hw("Hello World"); 
 
-	// make a packer 
-	Packer packer;
+        // make a packer 
+        Packer packer;
 
-	// make a char to write the string into
-	pack_string.resize(hw.size() + 1 * sizeof(int));
+        // make a char to write the string into
+        pack_string.resize(hw.size() + 1 * sizeof(int));
 
-	packer.set_buffer(pack_string.size(), &pack_string[0]);
+        packer.set_buffer(pack_string.size(), &pack_string[0]);
 
-	packer << static_cast<int>(hw.size());
+        packer << static_cast<int>(hw.size());
 
-	// pack it
-	for (string::const_iterator it = hw.begin(); it != hw.end(); it++)
-	    packer << *it;
-	
-	if (packer.get_ptr() != &pack_string[0] + pack_string.size()) ITFAILS;
-	if (packer.get_ptr() != packer.begin()  + pack_string.size()) ITFAILS;
+        // pack it
+        for (string::const_iterator it = hw.begin(); it != hw.end(); it++)
+            packer << *it;
+        
+        if (packer.get_ptr() != &pack_string[0] + pack_string.size()) ITFAILS;
+        if (packer.get_ptr() != packer.begin()  + pack_string.size()) ITFAILS;
     }
 
     // now unpack it
@@ -357,7 +346,7 @@ void std_string_test()
 
     // unpack the string
     for (string::iterator it = nhw.begin(); it != nhw.end(); it++)
-	unpacker >> *it;
+        unpacker >> *it;
 
     if (unpacker.get_ptr() != &pack_string[0] + pack_string.size()) ITFAILS;
 
@@ -367,17 +356,17 @@ void std_string_test()
 
     if (hw == nhw)
     {
-	ostringstream message;
-	message << "Unpacked string " << nhw << " that matches original "
-		<< "string " << hw;
-	PASSMSG(message.str());
+        ostringstream message;
+        message << "Unpacked string " << nhw << " that matches original "
+                << "string " << hw;
+        PASSMSG(message.str());
     }
     else
     {
-	ostringstream message;
-	message << "Failed to unpack string " << hw << " correctly. Instead "
-		<< "unpacked " << nhw;
-	FAILMSG(message.str());
+        ostringstream message;
+        message << "Failed to unpack string " << hw << " correctly. Instead "
+                << "unpacked " << nhw;
+        FAILMSG(message.str());
     }
 }
 
@@ -486,7 +475,7 @@ void packing_functions_test()
 
     Unpacker u;
     u.set_buffer(total_packed.size(), &total_packed[0]);
-	
+        
     u >> size;
     vector<char> packed_vector_new(size);
     u.extract(size, packed_vector_new.begin());
@@ -506,12 +495,12 @@ void packing_functions_test()
     // -------------------
 
     if (!soft_equiv(x_new.begin(), x_new.end(), x.begin(), x.end()))
-	ITFAILS;
+        ITFAILS;
 
     if (y_new != y) ITFAILS;
 
     if (rtt_ds_test::passed)
-	PASSMSG("pack_data and unpack_data work fine.");
+        PASSMSG("pack_data and unpack_data work fine.");
 
 }
 
@@ -570,31 +559,31 @@ int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
+        if (string(argv[arg]) == "--version")
+        {
+            cout << argv[0] << ": version " << rtt_dsxx::release() 
+                 << endl;
+            return 0;
+        }
 
     try
     {
-	// >>> UNIT TESTS
-	packing_test();
-	
-	std_string_test();
+        // >>> UNIT TESTS
+        packing_test();
+        
+        std_string_test();
 
-	packing_functions_test();
+        packing_functions_test();
 
-	compute_buffer_size_test();
+        compute_buffer_size_test();
 
         endian_conversion_test();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing tstPacking_Utils, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "While testing tstPacking_Utils, " << ass.what()
+             << endl;
+        return 1;
     }
 
     // status of test
@@ -603,7 +592,7 @@ int main(int argc, char *argv[])
     if (rtt_ds_test::passed) 
     {
         cout << "**** tstPacking_Utils Test: PASSED" 
-	     << endl;
+             << endl;
     }
     cout <<     "*********************************************" << endl;
     cout << endl;

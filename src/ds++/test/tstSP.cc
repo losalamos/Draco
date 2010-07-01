@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Feb  5 17:29:59 2003
  * \brief  SP test.
+ * \note   Copyright (c) 2003-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -231,7 +232,7 @@ void type_T_test()
         
         // there should be 3 Foos, 2 Bars and 1 Baz
         CHECK_N_OBJECTS(3, 2, 1, 0);
-}
+    }
 
     // now all should be destroyed
     CHECK_0_OBJECTS;
@@ -552,7 +553,7 @@ void fail_modes_test()
     {
         spfoo->f();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion & /* assertion */ )
     {
         caught = true;
         ostringstream m;
@@ -580,7 +581,7 @@ void fail_modes_test()
     {
         spfoo->f();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion & /* assertion */ )
     {
         caught = true;
         ostringstream m;
@@ -599,12 +600,12 @@ void fail_modes_test()
     {
         spfoo = spbat;
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &assert)
     {
         caught = true;
         ostringstream m;
         m << "Good, caught the following exception, " << endl
-          << ass.what();
+          << assert.what();
         PASSMSG(m.str());
     }
     if (!caught)
@@ -616,12 +617,12 @@ void fail_modes_test()
     {
         SP<Foo> s(spbat);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &assert)
     {
         caught = true;
         ostringstream m;
         m << "Good, caught the following exception, " << endl
-          << ass.what();
+          << assert.what();
         PASSMSG(m.str());
     }
     if (!caught)
@@ -636,12 +637,12 @@ void fail_modes_test()
     {
         spfoo = bat;
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &assert)
     {
         caught = true;
         ostringstream m;
         m << "Good, caught the following exception, " << endl
-          << ass.what();
+          << assert.what();
         PASSMSG(m.str());
     }
     if (!caught)
@@ -653,12 +654,12 @@ void fail_modes_test()
     {
         SP<Foo> s(bat);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &assert)
     {
         caught = true;
         ostringstream m;
         m << "Good, caught the following exception, " << endl
-          << ass.what();
+          << assert.what();
         PASSMSG(m.str());
     }
     if (!caught)
@@ -780,7 +781,7 @@ void list_test()
         p = p->next;
         if ( p->next ) ITFAILS;
     }
-        
+
     if (rtt_ds_test::passed)
         PASSMSG("Linked-list test works ok.");
 }
@@ -809,7 +810,7 @@ int main(int argc, char *argv[])
 
         type_X_test();
         cout << endl;
-        
+
         fail_modes_test();
         cout << endl;
 
@@ -825,9 +826,9 @@ int main(int argc, char *argv[])
 
         CHECK_0_OBJECTS;
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &assert)
     {
-        cout << "While testing tstSP, " << ass.what()
+        cout << "While testing tstSP, " << assert.what()
              << endl;
         return 1;
     }
@@ -836,10 +837,10 @@ int main(int argc, char *argv[])
     cout << endl;
     cout <<     "*********************************************" << endl;
     if (rtt_ds_test::passed) 
-    {
-        cout << "**** tstSP Test: PASSED" 
-             << endl;
-    }
+        cout << "**** tstSP Test: PASSED" << endl;
+    else
+        cout << "**** tstSP Test: FAILED" << endl;
+	
     cout <<     "*********************************************" << endl;
     cout << endl;
 

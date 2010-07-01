@@ -4,22 +4,20 @@
  * \author Mike Buksas
  * \date   Thu Feb  2 13:46:36 2006
  * \brief  
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
+#include "../Index_Set.hh"
 #include "../Assert.hh"
 #include "../Release.hh"
 #include "ds_test.hh"
 
-#include "../Index_Set.hh"
-
+#include <iostream>
+#include <vector>
+#include <cmath>
 using namespace std;
 using namespace rtt_dsxx;
 

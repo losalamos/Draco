@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 12 12:11:22 2003
  * \brief  Assertion tests.
+ * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -142,7 +143,7 @@ static void ttoss_cookies()
             rtt_dsxx::toss_cookies( msg, file, line );
             throw "Bogus!";
         }
-        catch( rtt_dsxx::assertion const & a )
+        catch( rtt_dsxx::assertion const & /* error */ )
         {
             std::cout << "passed" << std::endl;
         }
@@ -161,7 +162,7 @@ static void ttoss_cookies()
             rtt_dsxx::toss_cookies_ptr( msg, file, line );
             throw "Bogus!";
         }
-        catch( rtt_dsxx::assertion const & a )
+        catch( rtt_dsxx::assertion const &  /* error */ )
         {
             std::cout << "passed" << std::endl;
         }

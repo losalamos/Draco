@@ -4,30 +4,27 @@
  * \author Kent Budge
  * \date   Wed Dec  2 07:48:27 2009
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
+#include "../Release.hh"
+#include "../Safe_Ptr.hh"
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <cstdlib>
 
-#include "../Assert.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../Safe_Ptr.hh"
-
 using namespace std;
-using namespace rtt_dsxx;
 using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-
 
 struct Base_Class
 {
@@ -52,15 +49,15 @@ struct Owner
 void test_basic(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
+
     bool caught = false;
     try
     {
-	Safe_Ptr<double> foo(new double);
+        Safe_Ptr<double> foo(new double);
         if ( ! foo ) ut.failure("test FAILS");
         if ( foo.ref_count() != 1) ut.failure("test FAILS");
-        
-	{ // copy ctor
+
+        { // copy ctor
             Safe_Ptr<double> bar(foo);
             if ( foo != bar ) ut.failure("test FAILS");
             bar.release_data();
@@ -68,7 +65,7 @@ void test_basic(UnitTest &ut)
             if ( ! foo ) ut.failure("test FAILS");
         }
 
-	{ // assignment
+        { // assignment
             Safe_Ptr<double> bar;
             if (bar.ref_count()!=0) ut.failure("test FAILS");
             bar = foo;
@@ -83,24 +80,23 @@ void test_basic(UnitTest &ut)
             if ( bar ) ut.failure("test FAILS");
             if ( ! foo ) ut.failure("test FAILS");
         }
-        
+
         foo.delete_data();
         if ( foo ) ut.failure("test FAILS");
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
     }
     if(caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_basic");
+        ut.passes("test_basic");
     else
-	ut.failure("test_basic FAILED!");
+        ut.failure("test_basic FAILED!");
 }
 
 //---------------------------------------------------------------------------//
-
 
 Safe_Ptr<Derived_Class> make_derived()
 {
@@ -122,57 +118,54 @@ void test_retval_compiles(UnitTest &ut)
 void test_undeleted(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
+
     bool caught = false;
-    Base_Class *memory_cleanup;
-    
+    Base_Class *memory_cleanup(0);
+
     try
     {
-	Safe_Ptr<Base_Class> foo(new Base_Class);
+        Safe_Ptr<Base_Class> foo(new Base_Class);
         memory_cleanup = &(*foo);
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
         delete memory_cleanup;
     }
 
     if(!caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_undeleted");
+        ut.passes("test_undeleted");
     else
-	ut.failure("test_undeleted FAILED!");
+        ut.failure("test_undeleted FAILED!");
 }
-
 //---------------------------------------------------------------------------//
 
 void test_over_deleted(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     bool caught = false;
     try
     {
-	Safe_Ptr<Base_Class> foo(new Base_Class);
-	foo.delete_data();
-	foo.delete_data();
+        Safe_Ptr<Base_Class> foo(new Base_Class);
+        foo.delete_data();
+        foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(!caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_over_deleted");
+        ut.passes("test_over_deleted");
     else
-	ut.failure("test_over_deleted FAILED!");
+        ut.failure("test_over_deleted FAILED!");
 }
 
 //---------------------------------------------------------------------------//
-
 
 Safe_Ptr<int> gen_func()
 {
@@ -188,29 +181,26 @@ Safe_Ptr<int> gen_func()
 void test_function_return(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     bool caught = false;
     try
     {
-	Safe_Ptr<int> foo = gen_func();
-	foo.delete_data();
+        Safe_Ptr<int> foo = gen_func();
+        foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_function_return");
+        ut.passes("test_function_return");
     else
-	ut.failure("test_function_return FAILED!");
+        ut.failure("test_function_return FAILED!");
 }
 
-
 //---------------------------------------------------------------------------//
-
 
 void update_func(Safe_Ptr<int>& foo)
 {
@@ -221,118 +211,109 @@ void update_func(Safe_Ptr<int>& foo)
 void test_pass_by_ref(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     bool caught = false;
     try
     {
-	Safe_Ptr<int> foo(new int);
-	update_func(foo);
-	Check(*foo == 3);
-	foo.delete_data();
+        Safe_Ptr<int> foo(new int);
+        update_func(foo);
+        Check(*foo == 3);
+        foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_pass_by_ref");
+        ut.passes("test_pass_by_ref");
     else
-	ut.failure("test_pass_by_ref FAILED!");
+        ut.failure("test_pass_by_ref FAILED!");
 }
 
-
 //---------------------------------------------------------------------------//
-
 // Ensure that the reference counting system catches a dangling reference
 // (deleting through one pointer while another pointer still points at the
 // object).
 void test_dangling(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     bool caught = false;
-    int *memory_cleanup;
+    int *memory_cleanup(0);
 
     try
     {
-	Safe_Ptr<int> foo(new int);
-	Safe_Ptr<int> bar(foo);
+        Safe_Ptr<int> foo(new int);
+        Safe_Ptr<int> bar(foo);
         memory_cleanup = &(*foo);
-	foo.delete_data();
+        foo.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
         delete memory_cleanup;
     }
     catch(...)
     {
-	std::cout << "WTF, mate?" << std::endl;
+        std::cout << "WTF, mate?" << std::endl;
     }
 
     if(!caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_dangling");
+        ut.passes("test_dangling");
     else
-	ut.failure("test_dangling FAILED!");
+        ut.failure("test_dangling FAILED!");
 }
 
-
 //---------------------------------------------------------------------------//
-
 
 void test_nested(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
+
     bool caught = false;
-    int *memory_cleanup;
-    
+    int *memory_cleanup(0);
+  
     try
     {
-	Owner o;
+        Owner o;
         memory_cleanup = &(*o.ptr);
-	o.ptr.release_data();
-
-	// o.ptr.delete_data() gets called here by ~Owner
+        o.ptr.release_data();
+        // o.ptr.delete_data() gets called here by ~Owner
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
         delete memory_cleanup;
     }
     catch(...)
     {
-	std::cout << "WTF, mate?" << std::endl;
+        std::cout << "WTF, mate?" << std::endl;
     }
 
     if(!caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_nested");
+        ut.passes("test_nested");
     else
-	ut.failure("test_nested FAILED!");
+        ut.failure("test_nested FAILED!");
 }
 
 //---------------------------------------------------------------------------//
 
-
 void test_void(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     bool caught = false;
     try
     {
-	Safe_Ptr<int> foo;
+        Safe_Ptr<int> foo;
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(caught) ut.failure("test FAILS");
@@ -340,20 +321,20 @@ void test_void(UnitTest &ut)
     caught = false;
     try
     {
-	Safe_Ptr<int> foo;
-	Safe_Ptr<int> bar = foo;
+        Safe_Ptr<int> foo;
+        Safe_Ptr<int> bar = foo;
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & /* assertion */ )
     {
-	caught = true;
+        caught = true;
     }
 
     if(caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_void");
+        ut.passes("test_void");
     else
-	ut.failure("test_void FAILED!");
+        ut.failure("test_void FAILED!");
 }
 
 //---------------------------------------------------------------------------//
@@ -361,96 +342,96 @@ void test_void(UnitTest &ut)
 void test_polymorph(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
+
     bool caught = false;
     try
     {
-	Safe_Ptr<Base_Class> base(new Derived_Class);
+        Safe_Ptr<Base_Class> base(new Derived_Class);
         base->a = 1;
         if (base->a != 1) ut.failure("test FAILS");
-	base.delete_data();
+        base.delete_data();
     }
     catch(rtt_dsxx::assertion &ass)
     {
-	std::cout << ass.what() << std::endl;
-	caught = true;
+        std::cout << ass.what() << std::endl;
+        caught = true;
     }
+
     if(caught) ut.failure("test FAILS");
 
     caught = false;
     try
     {
-	Safe_Ptr<Base_Class> base;
-	Safe_Ptr<Derived_Class> derv(new Derived_Class);
-	base = derv;
-	derv.release_data();
-	derv = base;
-	base.release_data();
-	derv.delete_data();
-    }
-    catch(rtt_dsxx::assertion &ass)
-    {
-	std::cout << ass.what() << std::endl;
-	caught = true;
-    }
-
-    caught = false;
-    try
-    {
-	Safe_Ptr<Derived_Class> derv(new Derived_Class);
-	Safe_Ptr<Base_Class> base(derv);
-	derv.release_data();
-	derv = base;
-	base.release_data();
-	derv.delete_data();
-    }
-    catch(rtt_dsxx::assertion &ass)
-    {
-	std::cout << ass.what() << std::endl;
-	caught = true;
-    }
-
-    caught = false;
-    try
-    {
-	Safe_Ptr<Derived_Class> derv(new Derived_Class);
-	Safe_Ptr<Base_Class> base(derv);
-	derv.release_data();
-	derv = base;
+        Safe_Ptr<Base_Class> base;
+        Safe_Ptr<Derived_Class> derv(new Derived_Class);
+        base = derv;
+        derv.release_data();
         derv = base;
-	base.release_data();
-	derv.delete_data();
+        base.release_data();
+        derv.delete_data();
     }
     catch(rtt_dsxx::assertion &ass)
     {
-	std::cout << ass.what() << std::endl;
-	caught = true;
+        std::cout << ass.what() << std::endl;
+        caught = true;
     }
 
     caught = false;
     try
     {
-	Safe_Ptr<Derived_Class> derv;
-  	Base_Class *base = new Derived_Class;
-  	derv = base;
-  	derv.delete_data();
+        Safe_Ptr<Derived_Class> derv(new Derived_Class);
+        Safe_Ptr<Base_Class> base(derv);
+        derv.release_data();
+        derv = base;
+        base.release_data();
+        derv.delete_data();
     }
     catch(rtt_dsxx::assertion &ass)
     {
-	std::cout << ass.what() << std::endl;
-	caught = true;
+        std::cout << ass.what() << std::endl;
+        caught = true;
     }
-    
+
+    caught = false;
+    try
+    {
+        Safe_Ptr<Derived_Class> derv(new Derived_Class);
+        Safe_Ptr<Base_Class> base(derv);
+        derv.release_data();
+        // derv = base;
+        derv = base;
+        base.release_data();
+        derv.delete_data();
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+        std::cout << ass.what() << std::endl;
+        caught = true;
+    }
+
+    caught = false;
+    try
+    {
+        Safe_Ptr<Derived_Class> derv;
+        Base_Class *base = new Derived_Class;
+        derv = base;
+        derv.delete_data();
+    }
+    catch(rtt_dsxx::assertion &ass)
+    {
+        std::cout << ass.what() << std::endl;
+        caught = true;
+    }
+
     if(caught) ut.failure("test FAILS");
 
     if (ut.numFails<=old_ut_numFails)
-	ut.passes("test_polymorph");
+        ut.passes("test_polymorph");
     else
-	ut.failure("test_polymorph FAILED!");
+        ut.failure("test_polymorph FAILED!");
 }
 
 //---------------------------------------------------------------------------//
-
 
 // Make sure that we don't obscure a real exception with a complaint about
 // dangling memory.
@@ -458,7 +439,6 @@ void
 test_exception_cleanup(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     try
     {
         Safe_Ptr<Base_Class> base(new Base_Class);
@@ -484,16 +464,12 @@ test_exception_cleanup(UnitTest &ut)
 
 }
 
-
-
 //---------------------------------------------------------------------------//
-
 
 void
 test_vector_of_ptrs(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
     // Create a vector with one pointer
     std::vector<Safe_Ptr<int> > v(1, Safe_Ptr<int>(new int));
 
@@ -506,7 +482,6 @@ test_vector_of_ptrs(UnitTest &ut)
     {
         v.push_back(Safe_Ptr<int>(new int));
     }
-
 
     if(&(v[0]) == origAddr) ut.failure("test FAILS");
 
@@ -521,7 +496,6 @@ test_vector_of_ptrs(UnitTest &ut)
         v[i].delete_data();
     }
 
-
     if(ut.numFails<=old_ut_numFails)
         ut.passes("test_vector_of_ptrs");
     else
@@ -529,16 +503,12 @@ test_vector_of_ptrs(UnitTest &ut)
 
 }
 
-
-
 //---------------------------------------------------------------------------//
-
 
 void
 test_raw(UnitTest &ut)
 {
     unsigned const old_ut_numFails = ut.numFails;
-    
 
     // Create a vector with one pointer
     int *raw_v = new int;
@@ -555,14 +525,14 @@ test_raw(UnitTest &ut)
     if ((raw_v!=v)) ut.failure("test FAILS");
     if (!(v==v)) ut.failure("test FAILS");
 
-     raw_v = NULL;
-     Safe_Ptr<int> vc(raw_v);
-     vc = v;
-     vc = raw_v;
+    raw_v = NULL;
+    Safe_Ptr<int> vc(raw_v);
+    vc = v;
+    vc = raw_v;
 
-     if (!(raw_v==vc)) ut.failure("test FAILS");
-     if ((raw_v!=vc)) ut.failure("test FAILS");
-     if (!(vc==vc)) ut.failure("test FAILS");
+    if (!(raw_v==vc)) ut.failure("test FAILS");
+    if ((raw_v!=vc)) ut.failure("test FAILS");
+    if (!(vc==vc)) ut.failure("test FAILS");
 
     v.delete_data();
 
@@ -581,16 +551,16 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
-	test_basic(ut);
+        test_basic(ut);
         test_retval_compiles(ut);
-	test_undeleted(ut);
-	test_over_deleted(ut);
-	test_dangling(ut);
-	test_function_return(ut);
-	test_pass_by_ref(ut);
-	test_polymorph(ut);
-	test_void(ut);
-	test_nested(ut);
+        test_undeleted(ut);
+        test_over_deleted(ut);
+        test_dangling(ut);
+        test_function_return(ut);
+        test_pass_by_ref(ut);
+        test_polymorph(ut);
+        test_void(ut);
+        test_nested(ut);
         test_vector_of_ptrs(ut);
         test_exception_cleanup(ut);
         test_raw(ut);
@@ -598,8 +568,7 @@ int main(int argc, char *argv[])
     catch (std::exception &err)
     {
         std::cout << "ERROR: While testing tstSafe_Ptr, " 
-                  << err.what()
-                  << endl;
+                  << err.what() << endl;
         ut.numFails++;
     }
     catch( ... )

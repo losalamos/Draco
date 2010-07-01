@@ -4,6 +4,7 @@
  * \author Giovanni Bavestrelli
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  Array unit test.
+ * \note   Copyright (c) 2003-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -91,7 +92,7 @@ void array_tests( UnitTest &ut )
 	   cout << A3[3][100][1] << endl;
 	       ut.failure("Failed to catch out-of-bounds access!");
        }
-       catch ( assertion const & err )
+       catch ( assertion const & /* err */ )
        {
 	   // cout << err.what() << endl;
 	   ut.passes("Caught out of bounds access!");

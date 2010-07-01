@@ -4,6 +4,7 @@
  * \author Shawn Pautz
  * \date   Wed Dec 23 17:00:00 1998
  * \brief  Test of Mat3.
+ * \note   Copyright (c) 1998-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -65,7 +66,7 @@ void f1(const X& x, const X& xcopy)
         passed = false;
 }
 
-void f2(const X::iterator& x) {}
+void f2(const X::iterator& ) {}
 
 void f3(const X::iterator& x, const X::iterator& xcopy)
 {
@@ -73,7 +74,7 @@ void f3(const X::iterator& x, const X::iterator& xcopy)
         passed = false;
 }
 
-void f4(const X::const_iterator& x) {}
+void f4(const X::const_iterator& ) {}
 
 void f5(const X::const_iterator& x, const X::const_iterator& xcopy)
 {
@@ -81,7 +82,7 @@ void f5(const X::const_iterator& x, const X::const_iterator& xcopy)
         passed = false;
 }
 
-void f6(const X::reverse_iterator& x) {}
+void f6(const X::reverse_iterator& ) {}
 
 void f7(const X::reverse_iterator& x, const X::reverse_iterator& xcopy)
 {
@@ -89,7 +90,7 @@ void f7(const X::reverse_iterator& x, const X::reverse_iterator& xcopy)
         passed = false;
 }
 
-void f8(const X::const_reverse_iterator& x) {}
+void f8(const X::const_reverse_iterator& ) {}
 
 void f9(const X::const_reverse_iterator& x,
         const X::const_reverse_iterator& xcopy)
@@ -295,7 +296,7 @@ void t1()
         for (X::iterator iter = x.begin(); iter != x.end(); iter++) {}
         for (X::const_iterator iter = cx.begin(); iter != cx.end(); iter++) {}
 
-        if (!(x.size() == distance(x.begin(),x.end())))
+        if (!(static_cast<int>(x.size()) == distance(x.begin(),x.end())))
             passed = false;
     }
 
