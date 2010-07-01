@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  Array template implementation.
+ * \note   Copyright (C) 2003-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -31,8 +32,8 @@ namespace rtt_dsxx
  */
 template<typename T, unsigned N>
 RefArray<T,N>::RefArray<T,N>( T            * pElements,
-			      size_t const * pNDimensions,
-			      size_t const * pSubArrayLen )
+                              size_t const * pNDimensions,
+                              size_t const * pSubArrayLen )
     : m_pElements(    pElements    ),
       m_pNDimensions( pNDimensions ),
       m_pSubArrayLen( pSubArrayLen )   

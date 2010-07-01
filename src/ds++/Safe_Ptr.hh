@@ -3,7 +3,7 @@
  * \file   ds++/Safe_Ptr.hh
  * \author Paul Henning
  * \brief  Safe pointer-like class for scalars.
- * \note   Copyright &copy; 2005 The Regents of the University of California.
+ * \note   Copyright &copy; 2005-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

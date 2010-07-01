@@ -1,14 +1,15 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
   \file    Thin_Ptr.hh
   \author  Paul Henning
   \brief   Declaration of class Thin_Ptr
-  \note    Copyright &copy; 2005 The Regents of the University of California.
+  \note    Copyright &copy; 2005-2010 Los Alamos National Security, LLC
   \version $Id$
 */
+//---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_Thin_Ptr_hh
 #define rtt_dsxx_Thin_Ptr_hh
-
 
 namespace rtt_dsxx
 {

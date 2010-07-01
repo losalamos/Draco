@@ -4,6 +4,7 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  File_Streams implementation file.
+ * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -229,7 +230,7 @@ File_Input& File_Input::operator>>(char &c)
 	    d_char_line = 0;
 	}
 
-	Check(d_char_line < d_line.size());
+	Check(static_cast<size_t>(d_char_line) < d_line.size());
 	c = d_line[d_char_line];
 	++d_char_line;
     }

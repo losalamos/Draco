@@ -1,18 +1,19 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
   \file    Data_Table.hh
   \author  Paul Henning
   \brief   Declaration of class Data_Table
-  \note    Copyright 2007 Los Alamos National Security, LLC.
+  \note    Copyright (C) 2007-2010 Los Alamos National Security, LLC.
   \version $Id$
 */
-
+//---------------------------------------------------------------------------//
 #ifndef dsxx_Data_Table_hh
 #define dsxx_Data_Table_hh
 
-#include <vector>
 #include "Assert.hh"
+#include <vector>
 
-/*
+/*!
   Data_Table provides read-only, DBC-checked, container-like
   access to a sequential range of memory locations, or a scalar.  This is
   useful in situations where the amount of data changes depending on
@@ -92,6 +93,7 @@ Data_Table<T>::operator=(Data_Table<T> const &rhs)
 /*!
   Bad things will happen if you alter the size of the source vector while
   this Data_Table is in existence.
+  
   \bug Removed ctor because it does not conform to the C++ standard
   (dereferencing of end iterator is not allowed).  This particular ctor causes
   run time failures for STLport and MSVC/Debug.
@@ -137,7 +139,7 @@ Data_Table<T>::Data_Table()
 template<class T> inline T const & 
 Data_Table<T>::operator[](unsigned const i) const
 {
-    Require(i < (d_end - d_begin));
+    Require(static_cast<int>(i) < (d_end - d_begin));
     return d_begin[i];
 }
 

@@ -4,6 +4,7 @@
  * \author Randy M. Roberts
  * \date   Wed Feb 16 09:27:40 2000
  * \brief  Functions that checks to see if a container is sorted.
+ * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,13 +18,9 @@ namespace rtt_dsxx
  
 //===========================================================================//
 /*!
- * \fn isSorted
+ * \fn    isSorted
  * \brief Checks to see if elements of [first, last) are sorted, via "<".
  */
-// revision history:
-// -----------------
-// 0) original
-// 
 //===========================================================================//
 
 template<class ForwardIterator>

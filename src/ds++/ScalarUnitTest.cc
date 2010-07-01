@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests.
- * \note   © Copyright 2006 LANSLLC, All rights reserved.
+ * \note   © Copyright 2006-2010 LANSLLC, All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

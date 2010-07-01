@@ -4,7 +4,7 @@
  * \brief  Header for Vector_Lite.
  * \author Rob Lowrie
  * \date   2002-10-19
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -4,7 +4,7 @@
  * \author Geoffrey Furnish, Thomas Evans
  * \date   Tue Feb  4 11:27:53 2003
  * \brief  Smart Point class file.
- * \note   Copyright Â© 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010  Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

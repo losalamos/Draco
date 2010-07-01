@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Fri Jan 20 14:51:51 2006
  * \brief  Decleration and Definition of Index_Converter
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,13 +13,14 @@
 #ifndef dsxx_Index_Converter_hh
 #define dsxx_Index_Converter_hh
 
+#include "Index_Set.hh"
+#include "Index_Counter.hh"
+#include "ds++/config.h"
+
 #include <vector>
 #include <functional>
 #include <algorithm>
 #include <numeric>
-
-#include "Index_Set.hh"
-#include "Index_Counter.hh"
 
 namespace rtt_dsxx
 {
@@ -31,11 +32,9 @@ namespace rtt_dsxx
  * N-dimensional ones.
  *
  * \sa Index_Converter.cc for detailed descriptions.
- *
  */
 /*! 
  * \example ds++/test/tstIndex_Converter.cc 
- * 
  */
 //===========================================================================//
 template<unsigned D, int OFFSET>
@@ -94,8 +93,6 @@ class Index_Converter : public Index_Set<D,OFFSET>
     // Create an iterator over the index set
     Counter counter() const { return Counter(*this); }
 
-
-
   private:
 
     // DATA
@@ -107,7 +104,6 @@ class Index_Converter : public Index_Set<D,OFFSET>
     
     void compute_sub_sizes();
 
-    
 };
 
 //---------------------------------------------------------------------------//

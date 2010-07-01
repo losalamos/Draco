@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Jul 19 11:27:46 2001
  * \brief  Packing Utilities, classes for packing stuff.
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,6 @@
 
 #include "Assert.hh"
 #include "Endian.hh"
-
 #include <string>
 #include <vector>
 #include <cstring>

@@ -4,8 +4,8 @@
  * \author Giovanni Bavestrelli
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  A Class Template for N-Dimensional Generic Resizable Arrays.
- *
- * \sa C/C++ Users Journal, December 2000, http://www.cuj.com.
+ * \note   Copyright (C) 2003-2010 Los Alamos National Security, LLC
+ * \sa     C/C++ Users Journal, December 2000, http://www.cuj.com.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -106,12 +106,15 @@ class RefArray
     
     size_t const * const m_pNDimensions; //!< Array dimensions
     size_t const * const m_pSubArrayLen; //!< SubArray dimensions
-    T               * const m_pElements;    //!< Point to SubArray with elements within Array
+    T            * const m_pElements;    //!< Point to SubArray with elements within Array
     
     //! Constructor for RefArray
     RefArray<T,N>( T * pElements, 
 		   const size_t * pNDimensions, 
 		   const size_t * pSubArrayLen );
+       
+    // Disable assignment operator
+    RefArray<T,N> & operator=( RefArray<T,N> const & rhs );
     
   public:
     
@@ -147,16 +150,16 @@ class RefArray
     //!  Where not possible, initialize them to a specified value Init
     void copy(const RefArray<T,N> & SA, const T & Init=T())
     {
-	size_t below=std::min(size(1),SA.size(1));
-	size_t above=size(1);
-	
-	// Copy the elements we can copy
-	for (size_t i=0;i<below;i++) 
-	    (*this)[i].copy(SA[i],Init);
-	
-	// Reset the elements we can't copy
-	for (size_t j=below;j<above;j++)
-	    (*this)[j].initialize(Init);
+        size_t below=std::min(size(1),SA.size(1));
+        size_t above=size(1);
+        
+        // Copy the elements we can copy
+        for (size_t i=0;i<below;i++) 
+            (*this)[i].copy(SA[i],Init);
+        
+        // Reset the elements we can't copy
+        for (size_t j=below;j<above;j++)
+            (*this)[j].initialize(Init);
     }
 
    //! Reset all the elements
@@ -217,6 +220,9 @@ class RefArray<T,1>
     RefArray<T,1>( T               * pElements, 
 		   size_t const * pNDimensions, 
 		   size_t const * pSubArrayLen );
+       
+    // Disable assignment operator
+    RefArray<T,1> & operator=( RefArray<T,1> const & rhs );
 
   public:
 

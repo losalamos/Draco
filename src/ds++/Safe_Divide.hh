@@ -4,8 +4,7 @@
  * \author Mike Buksas
  * \date   Tue Jun 21 15:35:05 2005
  * \brief  Provide protected division functions.
- * \note   Copyright 2004 The Regents of the University of California.
- *
+ * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -3,10 +3,7 @@
  * \file   ds++/Index_Counter.hh
  * \author Mike Buksas
  * \date   Tue Jan 31 16:45:39 2006
- * \brief  
- * \note   Copyright 2006 The Regents of the University of California.
- *
- * Long description.
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,24 +14,24 @@
 
 #include "Assert.hh"
 #include "Index_Set.hh"
+#include "ds++/config.h"
+#include <vector>
 
 namespace rtt_dsxx
 {
 
-template <unsigned D, int OFFSET> class Index_Converter;
+// forward declaration
+template <unsigned D, int OFFSET>
+class Index_Converter;
 
 //===========================================================================//
 /*!
  * \class Index_Counter
  * \brief Facilitates iterating over a multi-dimensional range of indices.
- *
- *
  * \sa Index_Counter.cc for detailed descriptions.
- *
  */
 /*! 
  * \example ds++/test/tstIndex_Counter.cc 
- * 
  */
 //===========================================================================//
 template <unsigned D, int OFFSET>
@@ -189,27 +186,6 @@ void Index_Counter<D,OFFSET>::decrement()
 
 
 }
-
-
-// kgbudge (091201): Appears to be dead code
-// //---------------------------------------------------------------------------//
-// /**
-//  * \brief Explicit constructor for use by Index_Converter
-//  * 
-//  */
-// template <unsigned D, int OFFSET>
-// Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& set,
-//                                        const int index_,
-//                                        int const * const indices_)
-//     : index_set(set),
-//       index(index_)
-// {
-
-//     Check(index_set.indices_in_range(indices_));
-
-//     std::copy(indices_, indices_+D, indices);
-
-// }
 
 } // end namespace rtt_dsxx
 

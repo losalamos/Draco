@@ -4,8 +4,8 @@
  * \author Giovanni Bavestrelli
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  A Class Template for N-Dimensional Generic Resizable Arrays.
- *
- * \sa C/C++ Users Journal, December 2000, http://www.cuj.com.
+ * \note   Copyright (C) 2003-2010 Los Alamos National Security, LLC.
+ * \sa     C/C++ Users Journal, December 2000, http://www.cuj.com.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,9 +13,9 @@
 #ifndef rtt_dsxx_Array_hh
 #define rtt_dsxx_Array_hh
 
-#include <algorithm>
 #include "RefArray.hh"
 #include "Assert.hh"
+#include <algorithm>
 
 namespace rtt_dsxx
 {

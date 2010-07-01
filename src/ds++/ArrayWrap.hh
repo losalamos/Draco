@@ -1,11 +1,12 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
   \file    ds++/ArrayWrap.hh
   \author  Paul Henning
   \brief   Declaration of class ArrayWrap
-  \note    Copyright 2007 Los Alamos National Security, LLC.
+  \note    Copyright 2007-2010 Los Alamos National Security, LLC.
   \version $Id$
 */
-
+//---------------------------------------------------------------------------//
 #ifndef ArrayWrap_hh
 #define ArrayWrap_hh
 
@@ -14,13 +15,16 @@
 namespace rtt_dsxx
 {
 
-
-/* This is sort of like the TR1 array<> class, but it uses our range checking
+//==============================================================================
+/*!
+ * \class ArrayWray
+ * This is sort of like the TR1 array<> class, but it uses our range checking
  * mechanism and doesn't introduce other iterator types. The reason for using
  * this class is to allow zero-length arrays, and to provide normal container
  * iterator stuff.
  */
-template<class T, unsigned N> class ArrayWrap
+template<class T, unsigned N>
+class ArrayWrap
 {
   public:
     typedef T& reference;
@@ -74,8 +78,6 @@ template<class T, unsigned N> class ArrayWrap
   private:
     T d_data[N];
 };
-
-
 
 
 // ---------------------------------------------------------------------------

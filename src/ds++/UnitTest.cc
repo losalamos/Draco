@@ -4,16 +4,15 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "UnitTest.hh"
 #include <iostream>
 #include <sstream>
-
-#include "UnitTest.hh"
 
 namespace rtt_dsxx
 {
@@ -32,8 +31,10 @@ namespace rtt_dsxx
  * the unit test (used when generating status reports).  The object produced
  * by this constructor will respond to the command line argument "--version."
  */
-UnitTest::UnitTest( int &argc, char **&argv, string_fp_void release_,
-                    std::ostream & out_ )
+UnitTest::UnitTest( int              & /* argc */, 
+                    char           **& argv,
+                    string_fp_void     release_,
+                    std::ostream     & out_ )
     : testName( setTestName( std::string(argv[0])) ),
       testPath( setTestPath( std::string(argv[0])) ),
       release(   release_ ),
@@ -41,10 +42,10 @@ UnitTest::UnitTest( int &argc, char **&argv, string_fp_void release_,
       numFails(  0 ),
       out( out_ )
 {
-    Require( release != NULL );
-    Ensure( numPasses == 0 );
-    Ensure( numFails  == 0 );
-    Ensure( testName.length() > 0 );
+    Require( release   != NULL );
+    Ensure(  numPasses == 0 );
+    Ensure(  numFails  == 0 );
+    Ensure(  testName.length() > 0 );
     return;
 }
 

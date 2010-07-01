@@ -4,6 +4,7 @@
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:18:27 2000
  * \brief  SortPermutation class definition.
+ * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,7 @@
 
 #include "Assert.hh"
 #include "isSorted.hh"
+
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -108,43 +110,42 @@ class SortPermutation
     template<class IT>
     class Proxy
     {
-	friend class CompareProxy<Proxy>;
+        friend class CompareProxy<Proxy>;
 	
-	typedef typename std::iterator_traits<IT>::value_type value_type;
+        typedef typename std::iterator_traits<IT>::value_type value_type;
 	
-	SortPermutation::value_type pos;
-	const std::vector<IT> &iters;
+        SortPermutation::value_type pos;
+        const std::vector<IT> &iters;
 	
       public:
 
-	Proxy(SortPermutation::value_type pos_, const std::vector<IT> &iters_)
-	    : pos(pos_), iters(iters_)
-	{
-	    // empty
-	}
+        Proxy(SortPermutation::value_type pos_, const std::vector<IT> &iters_)
+            : pos(pos_), iters(iters_)
+        { /* empty */ }
 	    
-	Proxy &operator=(const Proxy &rhs)
-	{
-	    // std::cout << "assigning " << pos << "=" << rhs.pos << std::endl;
-	    pos = rhs.pos;
-	    return *this;
-	}
+        Proxy & operator=( Proxy const & rhs )
+        {
+            // std::cout << "assigning " << pos << "=" << rhs.pos << std::endl;
+            pos = rhs.pos;
+            return *this;
+        }
 
-	const value_type &value() const { return *iters[pos]; }
+        const value_type &value() const { return *iters[pos]; }
 
-	operator SortPermutation::value_type() { return pos; }
+        operator SortPermutation::value_type() { return pos; }
     };
     
     template<class COMP>
-    struct CompareProxy
+    class CompareProxy
     {
-	const COMP &comp;
-	CompareProxy(const COMP &comp_) : comp(comp_) { }
-	template<class IT>
-	bool operator()(const Proxy<IT> &p1, const Proxy<IT> &p2) const
-	{
-	    return comp(p1.value(), p2.value());
-	}
+      public:
+        const COMP &comp;
+        CompareProxy(const COMP &comp_) : comp(comp_) { /* empty */ }
+        template<class IT> 
+        CompareProxy & operator=( CompareProxy const & comp_ );
+        template<class IT>
+        bool operator()(const Proxy<IT> &p1, const Proxy<IT> &p2) const {
+            return comp(p1.value(), p2.value()); }
     };
 
     // DATA
@@ -165,7 +166,7 @@ class SortPermutation
 	: indexTable_m(std::distance(first, last)),
 	  rankTable_m(indexTable_m.size())
     {
-	createPermutation(first, last, comp);
+        createPermutation(first, last, comp);
     }
 
     template<class IT>
@@ -173,8 +174,8 @@ class SortPermutation
 	: indexTable_m(std::distance(first, last)),
 	  rankTable_m(indexTable_m.size())
     {
-	typedef typename std::iterator_traits<IT>::value_type value_type;
-	createPermutation(first, last, std::less<value_type>());
+        typedef typename std::iterator_traits<IT>::value_type value_type;
+        createPermutation(first, last, std::less<value_type>());
     }
 
     //Defaulted: SortPermutation(const SortPermutation &rhs);
@@ -211,7 +212,7 @@ class SortPermutation
     
     const_iterator begin() const
     {
-	return indexTable_m.begin();
+        return indexTable_m.begin();
     }
 
     /*!
@@ -220,7 +221,7 @@ class SortPermutation
     
     const_iterator end() const
     {
-	return indexTable_m.end();
+        return indexTable_m.end();
     }
 
     /*!
@@ -246,7 +247,7 @@ class SortPermutation
     
     const_iterator inv_begin() const
     {
-	return rankTable_m.begin();
+        return rankTable_m.begin();
     }
 
     /*!
@@ -255,7 +256,7 @@ class SortPermutation
     
     const_iterator inv_end() const
     {
-	return rankTable_m.end();
+        return rankTable_m.end();
     }
 
     /*!
@@ -270,18 +271,18 @@ class SortPermutation
     template<class IT, class COMP>
     void createPermutation(IT first, IT last, const COMP &comp)
     {
-	typedef typename std::iterator_traits<IT>::value_type value_type;
-	std::vector<IT> iters;
+        typedef typename std::iterator_traits<IT>::value_type value_type;
+        std::vector<IT> iters;
 
-	iters.reserve(size());
+        iters.reserve(size());
 
-	IT it = first;
-	while (it != last)
-	{
-	    iters.push_back(it); ++it;
-	}
+        IT it = first;
+        while (it != last)
+        {
+            iters.push_back(it); ++it;
+        }
 
-	doCreatePermutation(first, last, comp, iters);
+        doCreatePermutation(first, last, comp, iters);
     }
 
 #ifdef ENSURE_ON
@@ -304,29 +305,29 @@ class SortPermutation
     void doCreatePermutation(IT first, IT last, const COMP &comp,
 			     const std::vector<IT> &iters)
     {
-	typedef typename std::iterator_traits<IT>::value_type value_type;
-	
-	std::vector< Proxy<IT> > proxies;
-	proxies.reserve(size());
-	
-	for (SortPermutation::value_type i=0; i<size(); ++i)
-	    proxies.push_back(Proxy<IT>(i, iters));
-	
-	std::sort(proxies.begin(), proxies.end(), CompareProxy<COMP>(comp));
-	
-	for (SortPermutation::value_type i=0; i<size(); ++i)
-	{
-	    indexTable_m[i] = proxies[i];
-	    rankTable_m[indexTable_m[i]] = i;
-	}
+        typedef typename std::iterator_traits<IT>::value_type value_type;
+      
+        std::vector< Proxy<IT> > proxies;
+        proxies.reserve(size());
+      
+        for (SortPermutation::value_type i=0; i<size(); ++i)
+            proxies.push_back(Proxy<IT>(i, iters));
+      
+        std::sort(proxies.begin(), proxies.end(), CompareProxy<COMP>(comp));
+      
+        for (SortPermutation::value_type i=0; i<size(); ++i)
+        {
+            indexTable_m[i] = proxies[i];
+            rankTable_m[indexTable_m[i]] = i;
+        }
 
-	Ensure(isPermutationSorted(first, last, comp));
+        Ensure(isPermutationSorted(first, last, comp));
     }
 };
 
 } // end namespace rtt_dsxx
 
-#endif                          // __ds_SortPermutation_hh__
+#endif // __ds_SortPermutation_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of ds++/SortPermutation.hh

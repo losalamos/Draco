@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  Array template implementation.
+ * \note   Copyright (C) 2003-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

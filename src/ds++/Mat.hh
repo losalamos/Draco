@@ -4,6 +4,7 @@
  * \author Geoffrey Furnish
  * \date   Fri Jan 24 15:48:31 1997
  * \brief  Mat class definitions.
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

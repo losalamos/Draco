@@ -1,19 +1,20 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
   \file    ds++/DBC_Array.hh
   \author  Paul Henning
   \brief   Declaration of class DBC_Array
-  \note    Copyright 2005 The Regents of the University of California.
+  \note    Copyright 2005-2010 Los Alamos National Security, LLC
   \version $Id$
 */
 
 #ifndef DBC_Array_hh
 #define DBC_Array_hh
 
+#include "Assert.hh"
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <limits>
-#include "Assert.hh"
 
 namespace rtt_dsxx
 {

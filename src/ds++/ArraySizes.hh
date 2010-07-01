@@ -4,7 +4,7 @@
  * \author Giovanni Bavestrelli
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  A Class Template for N-Dimensional Generic Resizable Arrays.
- *
+ * \note   Copyright (C) 2003-2010 Los Alamos National Security, LLC.
  * \sa C/C++ Users Journal, December 2000, http://www.cuj.com.
  */
 //---------------------------------------------------------------------------//

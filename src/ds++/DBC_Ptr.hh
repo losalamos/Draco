@@ -1,14 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/DBC_Ptr.hh
- * \author Paul Henning
- * \brief  Pointer-like class that is checked in DBC mode.
- * \note   Copyright &copy; 2005 The Regents of the University of California.
+ * \file    ds++/DBC_Ptr.hh
+ * \author  Paul Henning
+ * \brief   Pointer-like class that is checked in DBC mode.
+ * \note    Copyright &copy; 2005-2010 Los Alamos National Security, LLC.
+ * \version $Id$
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
-
 #ifndef rtt_dsxx_DBC_Ptr_HH
 #define rtt_dsxx_DBC_Ptr_HH
 

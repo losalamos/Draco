@@ -4,7 +4,7 @@
  * \author Thomas M. Evans, Rob Lowrie
  * \date   Mon Jan 26 15:12:22 2004
  * \brief  Reference Counted Field class definition file.
- * \note   Copyright Â© 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

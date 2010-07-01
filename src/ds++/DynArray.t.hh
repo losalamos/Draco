@@ -1,14 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
-// DynArray.cc
-// Geoffrey Furnish
-// 28 January 1994
-//---------------------------------------------------------------------------//
-// @> A dynamically growing array template class.
+/*!
+ * \file    ds++/DynArray.cc
+ * \author  Geoffrey Furnish
+ * \date    28 January 1994
+ * \brief   A dynamically growing array template class.
+ * \note    Copyright (C) 1994-2010 Los Alamos National Security, LLC.
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
 
 #include "DynArray.hh"
 #include "Assert.hh"
-
 #include <iostream>
 
 namespace rtt_dsxx
@@ -21,7 +23,9 @@ namespace rtt_dsxx
 
 template<class T>
 DynArray<T>::DynArray( int sz_, int base_, float gf )
-    : sz(sz_), base(base_), growthfactor(gf)
+    : base(base_),
+      sz(sz_),
+      growthfactor(gf)
 {
     if (sz < 1) sz = 1;
     v = new T[sz];
@@ -42,7 +46,10 @@ DynArray<T>::DynArray( int sz_, int base_, float gf )
 
 template<class T>
 DynArray<T>::DynArray( int sz_, int base_, T dv, float gf )
-    : sz(sz_), base(base_), defval(dv), growthfactor(gf)
+    : defval(dv),
+      base(base_),
+      sz(sz_),
+      growthfactor(gf)
 {
     if (sz < 1) sz = 1;
     v = new T[sz];
@@ -66,12 +73,13 @@ DynArray<T>::DynArray( const DynArray<T>& da )
     sz = da.sz;
     lowref = da.lowref;
     hiref = da.hiref;
+    growthfactor = da.growthfactor;
 
     v = new T[sz];
     v -= base;
 
     for( int i=base; i < base + sz; i++ )
-	v[i] = da.v[i];
+        v[i] = da.v[i];
 }
 
 //---------------------------------------------------------------------------//
@@ -82,7 +90,7 @@ template<class T>
 DynArray<T>& DynArray<T>::operator=( const DynArray<T>& da )
 {
     if ( this == &da )
-	return *this;
+        return *this;
 
     v += base;
     delete[] v;
@@ -98,7 +106,7 @@ DynArray<T>& DynArray<T>::operator=( const DynArray<T>& da )
     v -= base;
 
     for( int i=base; i < base + sz; i++ )
-	v[i] = da.v[i];
+        v[i] = da.v[i];
 
     return *this;
 }

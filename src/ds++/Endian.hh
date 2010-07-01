@@ -4,8 +4,7 @@
  * \author Mike Buksas
  * \date   Tue Oct 23 14:15:55 2007
  * \brief  Function declarations for endian conversions
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
- *
+ * \note   Copyright (C) 2007-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,7 +16,8 @@
 #include <algorithm>
 
 //---------------------------------------------------------------------------//
-/* Endian conversion functions.
+/*!
+ * Endian conversion functions.
  *
  * The endian nature of a data representation describes the order in which the
  * constitutent bytes of a multi-byte data value are ordered. We are concerned
@@ -50,7 +50,7 @@ namespace rtt_dsxx
 {
 
 //---------------------------------------------------------------------------//
-/**
+/*!
  * \brief Elemetary byte-swapping routine.
  *
  * \arg The data to byte-swap, represented as character data.
@@ -63,10 +63,10 @@ namespace rtt_dsxx
  * swapped with element n, 1 with n-1 etc... The contents of the individual
  * elements are not changed, only their order.
  *
- * For example, consider the unsigned integer value: 0xDEADBEEF.  (0x means
- * this is a hexidecimal value) Two hexidecimal digits is a single byte (16^2
- * = 2^8) so the layout of the value in big endian style is:
- *
+ * For example, consider the unsigned integer value: \c 0xDEADBEEF.  (\c 0x
+ * means this is a hexidecimal value) Two hexidecimal digits is a single byte
+ * (16^2 = 2^8) so the layout of the value in big endian style is:
+ * \verbatim
  *       0        1        2        3
  *     D  E     A  D     B  E     E  F 
  *  |--------|--------|--------|--------|
@@ -74,17 +74,15 @@ namespace rtt_dsxx
  *       |        +--------+        |
  *       +--------------------------+
  *                 swapped
- *
+ * \endverbatim
  * The conversion to little endian involves the swap operations pictured in
  * the diagram above. The resulting value (if still interpreted as big-endian)
- * is 0xEFBEADDE.
+ * is \c 0xEFBEADDE.
  *
  * We provide two versions for signed and unsigned character data. Internally,
  * we use unsigned. Certain applications use signed char data, and the second
  * form is provided if they need to manipulate the character data directly,
  * instead of using one of the byte_swap functions.
- *
- * 
  */
 inline void char_byte_swap(unsigned char *data, int n)
 {
@@ -99,7 +97,7 @@ inline void char_byte_swap(char *data, int n)
 }
 
 //---------------------------------------------------------------------------//
-/**
+/*!
  * \brief General byte-swapping routine
  *
  * This function operates in place on its argument.
@@ -113,7 +111,7 @@ void byte_swap(T& value)
 
 
 //---------------------------------------------------------------------------//
-/**
+/*!
  * \brief General byte-swapping routine.
  *
  * This function returns a bite-swapped copy of the argument.

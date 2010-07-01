@@ -4,6 +4,7 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
+ * \note   Copyright (C) 1999-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
