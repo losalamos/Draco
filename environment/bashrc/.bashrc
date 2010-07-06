@@ -70,6 +70,9 @@ if test -f /proc/cpuinfo; then
   export nj=`cat /proc/cpuinfo | grep processor | wc -l`
 fi
 
+# Tell wget to use LANL's www proxy
+export http_proxy=http://wpad.lanl.gov/wpad.dat
+
 ##---------------------------------------------------------------------------##
 ## cd paths - disable here, let user choose in ~/.bashrc
 ##---------------------------------------------------------------------------##
@@ -200,11 +203,17 @@ arch=`uname -m`
 case $target in
 # 32-bit CCS-2 Linux
 coder | vikings  | hersheys  | monk | paxi   | shaft       |\
-        elmore   | monkeyboy | rayo | nammu  | ccscs[23457])
+        elmore   | monkeyboy | rayo | nammu  | ccscs[2345])
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux
    ;;
 # 64-bit CCS-2 Linux
-ccscs[1689])
+#----------------------------------------
+# ccscs1: 4 core AMD 280 (2GHz)
+# ccscs6: 4 core AMD 850 (1GHz)
+# ccscs7: 4 core AMD 850 (1GHz)
+# ccscs8: 16 core Intel X5550 (2.7GHz)
+# ccscs9: 16 core Intel X5550 (2.7GHz)
+ccscs[16789])
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
    ;;
 # flash / lightning
