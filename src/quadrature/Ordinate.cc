@@ -115,11 +115,24 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
         }
     }
 
-    norm_ = 0;
+    // Ensure that the norm is the same as that of the quadrature.
+    double norm = 0;
     unsigned const N = ordinates_.size();
     for (unsigned a=0; a<N; ++a)
     {
-        norm_ += ordinates_[a].wt();
+        norm += ordinates_[a].wt();
+    }
+    norm_ = quadrature->getNorm();
+    norm = norm_/norm;
+    if (norm != 1.0)
+    {
+        for (unsigned a=0; a<N; ++a)
+        {
+            ordinates_[a] = Ordinate(ordinates_[a].mu(),
+                                     ordinates_[a].eta(),
+                                     ordinates_[a].xi(),
+                                     ordinates_[a].wt()*norm);
+        }
     }
 
     Ensure( check_class_invariants() );
