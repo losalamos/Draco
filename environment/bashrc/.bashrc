@@ -213,7 +213,7 @@ coder | vikings  | hersheys  | monk | paxi   | shaft       |\
 # ccscs7: 4 core AMD 850 (1GHz)
 # ccscs8: 16 core Intel X5550 (2.7GHz)
 # ccscs9: 16 core Intel X5550 (2.7GHz)
-ccscs[16789])
+gondolin | ccscs[16789])
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
    ;;
 # flash / lightning

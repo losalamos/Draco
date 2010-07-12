@@ -14,7 +14,7 @@ if [ "${MODULE_VERSION:-}" = "" ]; then
       ;;
 
    # 64-bit CCS-2 Linux
-   ccscs[16789])
+   ccscs[16789] | gondolin)
       MODULE_VERSION_STACK="ccs-Linux64"
       MODULE_VERSION="ccs-Linux64"
       ;;
@@ -38,7 +38,7 @@ case $target in
       ;;
 
    # 64-bit CCS-2 Linux
-   ccscs[16789])
+   ccscs[16789] | gondolin)
       module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
       ;;
 esac
