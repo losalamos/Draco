@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 14:58:55 2001
  * \brief  MultigroupOpacity class header file (an abstract class)
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +13,9 @@
 #ifndef __cdi_MultigroupOpacity_hh__
 #define __cdi_MultigroupOpacity_hh__
 
+#include "OpacityCommon.hh"
 #include <vector>
 #include <string>
-
-#include "OpacityCommon.hh"
 
 namespace rtt_cdi
 {

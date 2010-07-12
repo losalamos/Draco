@@ -24,7 +24,7 @@ namespace constants
 /*!
  * \brief Number of models contained in rtt_cdi::Model.
  */
-const int num_Models = 6;
+const int num_Models = 7;
 
 /*!
   \brief Number of reaction types contained in rtt_cdi::Reaction.
@@ -48,7 +48,8 @@ enum Model
     ANALYTIC,  /*!< use Analytic model opacities. */
     ISOTROPIC, /*!< use Isotropic scattering opacities. */
     THOMSON,   /*!< use Thomson scattering opacities. */
-    COMPTON    /*!< use Compton scattering opacities. */
+    COMPTON,   /*!< use Compton scattering opacities. */
+    NOMODEL    /*!< null model */
 };
 
 //---------------------------------------------------------------------------//
