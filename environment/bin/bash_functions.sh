@@ -469,6 +469,42 @@ function findgrep()
 }
 
 ##---------------------------------------------------------------------------##
+## Usage:
+##    archive [age_in_days]
+##
+## Move all files older than [age_in_days] (default: 7d) from the
+## current directory into a subdirectory named as the current year.
+##---------------------------------------------------------------------------##
+function archive()
+{
+  # Find files (-type f) older than 7 days (-mtime +7) and in the local
+  # directory (-maxdepth 1) and move them to a subdirectory named by
+  # the current year.
+  local dt=7
+  if test -n "$1"; then
+    dt=$1
+  fi
+  local year=`date +%Y`
+#  local year=`stat {} | grep Change | sed -e 's/Change: //' -e 's/[-].*//'
+#  if ! test -d $year; then
+#    mkdir $year
+#  fi
+#  echo "Moving files to ${year}/..."
+#  cmd="find . -maxdepth 1 -mtime +${dt} -type f -exec mv {} ${year}/. \;"
+  # echo $cmd
+#  eval $cmd
+  files=`find . -maxdepth 1 -mtime +${dt} -type f`
+  for file in $files; do
+    year=`stat ${file} | grep Modify | sed -e 's/Modify: //' -e 's/[-].*//'`
+    echo "   Moving $file to ${year}"
+    if ! test -d $year; then
+      mkdir $year
+    fi
+    mv ${file} $year/$file
+  done
+}
+
+##---------------------------------------------------------------------------##
 ## Publish all functions to the current shell.
 ##---------------------------------------------------------------------------##
 

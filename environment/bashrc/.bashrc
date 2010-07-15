@@ -200,20 +200,19 @@ export nt
 target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
+if test -d /ccs/codes/radtran; then # this is a CCS lan machine
+   if test `uname -m` = "x86_64"; then
+      target=ccslan64
+   else
+      target=ccslan32
+   fi
+fi
+
 case $target in
-# 32-bit CCS-2 Linux
-coder | vikings  | hersheys  | monk | paxi   | shaft       |\
-        elmore   | monkeyboy | rayo | nammu  | ccscs[2345])
+ccslan32)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux
    ;;
-# 64-bit CCS-2 Linux
-#----------------------------------------
-# ccscs1: 4 core AMD 280 (2GHz)
-# ccscs6: 4 core AMD 850 (1GHz)
-# ccscs7: 4 core AMD 850 (1GHz)
-# ccscs8: 16 core Intel X5550 (2.7GHz)
-# ccscs9: 16 core Intel X5550 (2.7GHz)
-gondolin | ccscs[16789])
+ccslan64)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
    ;;
 # flash / lightning
