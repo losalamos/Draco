@@ -214,10 +214,10 @@ class RefArray<T,1>
   private:
     
     size_t const * const m_pNDimensions; //!< Array dimension
-    T               * const m_pElements;    //!< Point to elements within Array
+    T            * const m_pElements;    //!< Point to elements within Array
     
     //! Constructor for Specialized RefArray<T,1>
-    RefArray<T,1>( T               * pElements, 
+    RefArray<T,1>( T            * pElements, 
 		   size_t const * pNDimensions, 
 		   size_t const * pSubArrayLen );
        
@@ -242,11 +242,11 @@ class RefArray<T,1>
     const_iterator end()   const { return m_pElements+size(); }
 
     //! Return size of array
-    size_t    size()                 const { return m_pNDimensions[0]; } 
+    size_t    size()       const { return m_pNDimensions[0]; } 
     //! Return size of subdimensions
     size_t    size(size_t Dim) const;
     //! Return number of dimensions 
-    size_t dimensions()           const { return 1; }
+    size_t dimensions()    const { return 1; }
 
   protected:
     

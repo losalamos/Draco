@@ -4,6 +4,7 @@
  * \author Thomas M. Evans and Todd Urbatsch
  * \date   Wed Nov  7 14:10:55 2001
  * \brief  Soft_Equivalence functions for floating point comparisons.
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -54,8 +55,9 @@ namespace rtt_dsxx
  *       e-12 and e-14?
  */
 template<class FPT>
-inline bool soft_equiv(const FPT &value, const FPT &reference, 
-		       const FPT precision = 1.0e-12)
+inline bool soft_equiv( const FPT &value, 
+                        const FPT &reference, 
+                        const FPT precision = 1.0e-12)
 {
     using std::fabs;
     bool passed = false;
@@ -75,8 +77,9 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
 //---------------------------------------------------------------------------//
 
 template<>
-inline bool soft_equiv(const int &value, const int &reference,
-		       const int precision)
+inline bool soft_equiv( const int & /* value */, 
+                        const int & /* reference */,
+                        const int   /* precision */ )
 {
     Insist (0, "Can't do a soft compare with integers!");
     return false;
@@ -120,18 +123,18 @@ inline bool soft_equiv(
     // first check that the sizes are equivalent
     if (distance(value, value_end) != distance(ref, ref_end))
     {
-	passed = false;
+        passed = false;
     }
 
     // if the sizes are the same, loop through and check each element
     else
     {
-	while (value != value_end && passed == true)
-	{
-	    passed = soft_equiv(*value, *ref, precision);
-	    value++;
-	    ref++;
-	}
+        while (value != value_end && passed == true)
+        {
+            passed = soft_equiv(*value, *ref, precision);
+            value++;
+            ref++;
+      }
     }
     
     return passed;
@@ -139,7 +142,7 @@ inline bool soft_equiv(
 
 } // end namespace rtt_dsxx
 
-#endif                          // __ds_Soft_Equivalence_hh__
+#endif // __ds_Soft_Equivalence_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of ds++/Soft_Equivalence.hh

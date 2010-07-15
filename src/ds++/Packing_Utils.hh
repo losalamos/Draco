@@ -368,11 +368,12 @@ class Unpacker
   public:
     //! Constructor.
     Unpacker(bool byte_swap = false)
-        : do_byte_swap(byte_swap),
-          stream_size(0),
+        : stream_size(0),
           ptr(0),
           begin_ptr(0),
-          end_ptr(0) {/*...*/} 
+          end_ptr(0),
+          do_byte_swap(byte_swap)
+    {/*...*/} 
 
     // Set the buffer.
     inline void set_buffer(unsigned int, const_pointer);

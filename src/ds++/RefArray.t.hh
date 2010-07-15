@@ -34,9 +34,9 @@ template<typename T, unsigned N>
 RefArray<T,N>::RefArray<T,N>( T            * pElements,
                               size_t const * pNDimensions,
                               size_t const * pSubArrayLen )
-    : m_pElements(    pElements    ),
-      m_pNDimensions( pNDimensions ),
-      m_pSubArrayLen( pSubArrayLen )   
+    : m_pNDimensions( pNDimensions ),
+      m_pSubArrayLen( pSubArrayLen ),
+      m_pElements(    pElements    )
 {
     // Ensure that no arguments are zero.
     // The RefArray must point to real data.
@@ -117,8 +117,8 @@ template<typename T>
 RefArray<T,1>::RefArray<T,1>( T               * pElements,
 			      size_t const * pNDimensions,
 			      size_t const * pSubArrayLen )
-    : m_pElements(    pElements    ),
-      m_pNDimensions( pNDimensions )
+    : m_pNDimensions( pNDimensions ),
+      m_pElements(    pElements    )     
 {
     // Ensure that no arguments are zero.
     // The RefArray must point to real data.

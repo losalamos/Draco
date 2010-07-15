@@ -35,11 +35,11 @@ UnitTest::UnitTest( int              & /* argc */,
                     char           **& argv,
                     string_fp_void     release_,
                     std::ostream     & out_ )
-    : testName( setTestName( std::string(argv[0])) ),
+    : numPasses( 0 ),
+      numFails(  0 ),
+      testName( setTestName( std::string(argv[0])) ),
       testPath( setTestPath( std::string(argv[0])) ),
       release(   release_ ),
-      numPasses( 0 ),
-      numFails(  0 ),
       out( out_ )
 {
     Require( release   != NULL );

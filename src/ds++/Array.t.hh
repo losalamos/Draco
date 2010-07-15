@@ -32,9 +32,9 @@ template<typename T, unsigned N>
 RefArray<T,N>::RefArray( T * pElements,
 			 size_t const * pNDimensions,
 			 size_t const * pSubArrayLen )
-    : m_pElements(    pElements    ),
-      m_pNDimensions( pNDimensions ),
-      m_pSubArrayLen( pSubArrayLen )   
+    : m_pNDimensions( pNDimensions ),
+      m_pSubArrayLen( pSubArrayLen ),
+      m_pElements(    pElements    )
 {
     // Ensure that no arguments are zero.
     // The RefArray must point to real data.
@@ -115,8 +115,8 @@ template<typename T>
 RefArray<T,1>::RefArray( T            * pElements,
 			 size_t const * pNDimensions,
 			 size_t const * pSubArrayLen )
-    : m_pElements(    pElements    ),
-      m_pNDimensions( pNDimensions )
+    : m_pNDimensions( pNDimensions ),
+      m_pElements(    pElements    )      
 {
     // Ensure that no arguments are zero.
     // The RefArray must point to real data.
@@ -311,14 +311,14 @@ bool Array<T,N>::resize( unsigned const   (&Dimensions)[N],
     
     // Calculate all the information you need to use the array
     Temp.m_nArrayElements=1;
-    for (int i=0;i<N;i++)
+    for (size_t i=0;i<N;i++)
     {
 	if (Dimensions[i]==0)
             return false; // Check that no dimension was zero 
 	Temp.m_nArrayElements*=Dimensions[i]; 
 	Temp.m_NDimensions[i]=Dimensions[i];
 	Temp.m_SubArrayLen[i]=1;              
-	for (int k=N-1;k>i;k--)
+	for (size_t k=N-1;k>i;k--)
             Temp.m_SubArrayLen[i]*=Dimensions[k];
     }  
     

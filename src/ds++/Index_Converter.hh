@@ -181,7 +181,7 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 
     index -= OFFSET;
 
-    for (int d = 0; d <= D-1; ++d)
+    for (size_t d = 0; d <= D-1; ++d)
     {
         const int dim_size = Base::get_size(d);
         *(iter++) = index % dim_size + OFFSET;

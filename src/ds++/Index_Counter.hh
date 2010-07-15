@@ -90,7 +90,7 @@ class Index_Counter
     void increment();
     void decrement();
 
-    bool dimension_okay(int d) const { return (d >= 0) && (d < D); }
+    bool dimension_okay(size_t d) const { return (d >= 0) && (d < D); }
 
     // Private constructor for use by Index_Converter
     // kgbudge (091201): Appears to be dead code
@@ -108,10 +108,10 @@ class Index_Counter
 template <unsigned D, int OFFSET>
 Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& converter)
     : index_set(converter),
-      in_range(true),
-      index(OFFSET)
+      index(OFFSET),
+      in_range(true)
 {
-    for (int d=0; d < D; ++d) indices[d] = OFFSET;
+    for (size_t d=0; d < D; ++d) indices[d] = OFFSET;
 }
 
 //---------------------------------------------------------------------------//
@@ -132,7 +132,7 @@ void Index_Counter<D,OFFSET>::increment()
     ++indices[0];
     ++index;
 
-    for (int d = 0; d < D-1; ++d)
+    for (size_t d = 0; d < D-1; ++d)
     {
         if (indices[d] > index_set.max_of_index(d))
         {
@@ -166,7 +166,7 @@ void Index_Counter<D,OFFSET>::decrement()
     --indices[0];
     --index;
 
-    for (int d = 0; d < D-1; ++d)
+    for (size_t d = 0; d < D-1; ++d)
     {
         if (indices[d] < index_set.min_of_index(d))
         {

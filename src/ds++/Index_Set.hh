@@ -91,8 +91,8 @@ class Index_Set
          return positive ? max_of_index(d) : min_of_index(d);
     }
             
-    static bool direction_okay(const int d) { return (d >  0) && (d <= 2*D); }
-    static bool dimension_okay(const int d) { return (d >= 0) && (d <  D);   }
+    static bool direction_okay(const size_t d) { return (d >  0) && (d <= 2*D); }
+    static bool dimension_okay(const size_t d) { return (d >= 0) && (d <  D);   }
 
   private:
 

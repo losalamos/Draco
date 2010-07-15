@@ -89,8 +89,8 @@ class Safe_Ptr
     //! Default constructor.
     /*! The pointer is initialized to \c NULL. */
     Safe_Ptr() 
-	: d_p(0)
-	, d_r(0)
+	: d_r(0)
+	, d_p(0)
 	, d_bad_state(false) 
     { 
     }
@@ -232,8 +232,8 @@ operator!=(const T *pt, const Safe_Ptr<T> &sp)
  */
 template<class T>
 Safe_Ptr<T>::Safe_Ptr(T *p_in)
-    : d_p(p_in)
-    , d_r(0)
+    : d_r(0)
+    , d_p(p_in)
     , d_bad_state(false)
     
 {
@@ -274,8 +274,8 @@ Safe_Ptr<T>::Safe_Ptr(T *p_in)
 template<class T>
 template<class X>
 Safe_Ptr<T>::Safe_Ptr(X *px_in)
-    : d_p(0)
-    , d_r(0)
+    : d_r(0)
+    , d_p(0)
     , d_bad_state(false)
 {
     DBC_Check(px_in);
@@ -304,8 +304,8 @@ Safe_Ptr<T>::Safe_Ptr(X *px_in)
  */
 template<class T>
 Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<T> &sp_in)
-    : d_p(sp_in.d_p)
-    , d_r(sp_in.d_r)
+    : d_r(sp_in.d_r)
+    , d_p(sp_in.d_p)
     , d_bad_state(false)
 {
     // advance the reference to T
@@ -327,8 +327,8 @@ Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<T> &sp_in)
 template<class T>
 template<class X>
 Safe_Ptr<T>::Safe_Ptr(const Safe_Ptr<X> &spx_in)
-    : d_p(0)
-    , d_r(0)
+    : d_r(0)
+    , d_p(0)
     , d_bad_state(false)
 {
     DBC_Check(spx_in.d_r);

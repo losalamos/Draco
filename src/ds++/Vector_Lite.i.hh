@@ -4,7 +4,7 @@
  * \brief  Implementation of functions for Vector_Lite.
  * \author Rob Lowrie
  * \date   2002-10-19
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -112,10 +112,10 @@ Vector_Lite(const T &u0,
 template <class T, size_t N>
 Vector_Lite<T, N>::
 Vector_Lite(const T &u0,
-	    const T &u1,
-	    const T &u2,
-	    const T &u3,
-	    const T &u4)
+            const T &u1,
+            const T &u2,
+            const T &u3,
+            const T &u4)
 {
     Require(N == 5);
     d_U[0] = u0;

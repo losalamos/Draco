@@ -9,8 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <sstream>
 #include "Assert.hh"
+#include <sstream>
 
 namespace rtt_dsxx
 {
@@ -67,7 +67,7 @@ void toss_cookies( std::string const & cond,
 void 
 toss_cookies_ptr(char const * const cond, 
 		 char const * const file, 
-		 int  const line )
+		 int  const         line )
 {
     throw assertion( cond, file, line );
 }
@@ -80,7 +80,7 @@ toss_cookies_ptr(char const * const cond,
 void insist( std::string const & cond, 
 	     std::string const & msg, 
 	     std::string const & file, 
-	     int         const line)
+	     int         const   line)
 {
     std::ostringstream myMessage;
     myMessage <<  "Insist: " << cond << ", failed in "
