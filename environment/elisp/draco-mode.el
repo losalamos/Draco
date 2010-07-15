@@ -222,13 +222,29 @@ to anything else will generate errors."
 	    "\\|endlink\\)\\)\\>")
     '(0 font-lock-keyword-face prepend))
 
-   ;; DRACO DBC - One shot keywords that take no arguments
+   ;; DRACO DBC - One shot keywords that take no arguments but are
+   ;; followed by parenthesis.
    (list
     ;; Match single keyword that is followed by 0 or more spaces, 
     ;; followed by an opening paren.
-    "\\<\\(Require\\|Ensure\\|Check\\|Remember\\|Insist\\|Assert\\)\\>\\([ ]*\\s(\\)"
+    (concat "\\<\\(Assert\\|Check\\|Ensure\\|Insist\\|Require"
+            "\\|Remember\\)\\>\\([ ]*\\s(\\)")
     '(1 font-lock-draco-dbc-face)
     '(2 default))
+
+   ;; DRACO Unit testing - One shot keywords that take no arguments
+   (list
+    ;; Match single keyword
+    "\\<\\(FAILMSG\\|ITFAILS\\|PASSMSG\\)\\>"
+    '(0 font-lock-draco-dbc-face prepend))
+
+   ;; Draco extra C++ typenames
+   (list
+    ;; Match single keyword that is followed by at whitespace and
+    ;; another word.
+    "\\(size_t\\)\\s-+\\(\\sw+\\)"
+    '(0 font-lock-type-face prepend)
+    '(2 font-lock-variable-name-face prepend))
 
    ;; keywords that take a variable name as an argument
 ;   (list
@@ -236,37 +252,44 @@ to anything else will generate errors."
 ;	    "\\|def\\)\\)\\s-+\\(\\sw+\\)")
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(3 font-lock-variable-name-face prepend))
+
 ;   ;; keywords that take a type name as an argument
 ;   (list
-;    (concat "\\([@\\\\]\\(class\\|struct\\|union\\|exception"
+;    (concat "\\([@\\\\]\\(size_t\\|struct\\|union\\|exception"
 ;	    "\\|throw\\)\\)\\s-+\\(\\sw+\\)")
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(3 font-lock-type-face prepend))
+
 ;   ;; keywords that take a function name as an argument
 ;   (list
 ;    "\\([@\\\\]retval\\)\\s-+\\([^ \t\n]+\\)"
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(2 font-lock-function-name-face prepend))
+
 ;   ;; bold
 ;   (list
 ;    "\\([@\\\\]b\\)\\s-+\\([^ \t\n]+\\)"
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(2 (quote bold) prepend))
+
 ;   ;; code
 ;   (list
 ;    "\\([@\\\\][cp]\\)\\s-+\\([^ \t\n]+\\)"
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(2 (quote underline) prepend))
+
 ;   ;; italics/emphasised
 ;   (list
 ;    "\\([@\\\\]e\\(m\\)?\\)\\s-+\\([^ \t\n]+\\)"
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(3 (quote italic) prepend))
+
 ;   ;; keywords that take a list
 ;   (list
 ;    "\\([@\\\\]ingroup\\)\\s-+\\(\\(\\sw+\\s-*\\)+\\)\\s-*$"
 ;    '(1 font-lock-keyword-face prepend)
 ;    '(2 font-lock-string-face prepend))
+
 ;   ;; one argument that can contain arbitrary non-whitespace stuff
 ;   (list
 ;    "\\([@\\\\]\\(link\\|copydoc\\)\\)\\s-+\\([^ \t\n]+\\)"
@@ -314,6 +337,15 @@ to anything else will generate errors."
 		    font-lock-keywords)))
     (setq font-lock-keywords (append old draco-mode-keywords))
     ))
+
+
+;; http://www.emacswiki.org/emacs/AddKeywords
+;(unless (fboundp 'font-lock-add-keywords)
+;  (defalias 'font-lock-add-keywords 'ignore))
+
+;(font-lock-add-keywords 'c++-mode
+;  '(("\\<\\(size_t\\):" 1 font-lock-keyword-face prepend)
+;    ("\\<\\(and\\|or\\|not\\)\\>" . font-lock-keyword-face)))
 
 ;;============================================================
 ;; Default templates
