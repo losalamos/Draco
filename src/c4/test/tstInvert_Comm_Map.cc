@@ -30,7 +30,7 @@ void test2(rtt_c4::ParallelUnitTest& ut)
 {
 
     const int node  = rtt_c4::node();
-    const int nodes = rtt_c4::nodes();
+    // const int nodes = rtt_c4::nodes();
 
     std::vector<int> to_nodes;
 
@@ -69,7 +69,7 @@ void test4(rtt_c4::ParallelUnitTest& ut)
 {
 
     const int node = rtt_c4::node();
-    const int nodes = rtt_c4::nodes();
+    // const int nodes = rtt_c4::nodes();
 
     std::list<int> to_nodes;
 
@@ -119,7 +119,7 @@ void test4(rtt_c4::ParallelUnitTest& ut)
 void test_n_to_n(rtt_c4::ParallelUnitTest& ut)
 {
 
-    const int node  = rtt_c4::node();
+    // const int node  = rtt_c4::node();
     const int nodes = rtt_c4::nodes();
 
     std::list<int> to_nodes;

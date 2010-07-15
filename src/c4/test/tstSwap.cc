@@ -125,7 +125,7 @@ void tstDeterminateSwap(UnitTest &ut)
             ut.passes("Incoming data is correct size");
         }
         if (incoming_data[i][0] != pid ||
-            incoming_data[i][1] != rtt_c4::node())
+            incoming_data[i][1] != static_cast<size_t>(rtt_c4::node()))
         {
             ut.failure("Incoming data is NOT correct");
         }
@@ -167,7 +167,7 @@ void tstDeterminateSwap(UnitTest &ut)
             ut.passes("Incoming data is correct size");
         }
         if (incoming_data[pid][0] != pid ||
-            incoming_data[pid][1] != rtt_c4::node())
+            incoming_data[pid][1] != static_cast<size_t>(rtt_c4::node()))
         {
             ut.failure("Incoming data is NOT correct");
         }
@@ -275,7 +275,7 @@ void tstSemideterminateSwap(UnitTest &ut)
             ut.passes("Incoming data is correct size");
         }
         if (incoming_data[i][0] != pid ||
-            incoming_data[i][1] != rtt_c4::node())
+            incoming_data[i][1] != static_cast<size_t>(rtt_c4::node()))
         {
             ut.failure("Incoming data is NOT correct");
         }

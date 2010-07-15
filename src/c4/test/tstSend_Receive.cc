@@ -69,7 +69,7 @@ struct Receive_Double_Vector_Autosize : public Receiver
 
     vector<double> receive()
     {
-        double *v;
+        double *v(NULL);
         unsigned const size = Receiver::receive(v);
         return vector<double>(v, v+size);
     }
@@ -88,7 +88,7 @@ struct Receive_Double_Vector_Autosize : public Receiver
 void auto_communication_test()
 {
 
-    Check(nodes() == 1);
+    Check (nodes() == 1);
 
     Send_Double_Vector sdv(0);
     Receive_Double_Vector rdv(0);
@@ -209,12 +209,13 @@ void double_comm_test()
 
     Check(nodes() == 2);
 
-    const int other = 1-node();
+    size_t const other = 1-node();
 
     // Assign sizes and contents of the two vectors.
-    const int sizes[2] = {4,7};
+    size_t const sizes[2] = {4,7};
     vector<double> data(sizes[node()]);
-    for (int i = 0; i < data.size(); ++i) data[i] = static_cast<double>(i);
+    for( size_t i = 0; i < data.size(); ++i )
+        data[i] = static_cast<double>(i);
     
     // Make a sender and receiver on each node to/from the other node.
     Send_Double_Vector sdv(other);
@@ -227,7 +228,7 @@ void double_comm_test()
     // Check the size and contents of the received vector.
     if (r.size() != sizes[other]) ITFAILS;
 
-    for (int i = 0; i < r.size(); ++i)
+    for (size_t i = 0; i < r.size(); ++i)
         if (r[i] != static_cast<double>(i)) ITFAILS;
 
     if (rtt_c4_test::passed)
@@ -249,10 +250,11 @@ void ring_test()
     const int to_node   = (node()+1) % nodes();
     const int from_node = (node()-1+nodes()) % nodes();
 
-    const int sizes[] = {1, 4, 7, 10};
+    size_t const sizes[] = {1, 4, 7, 10};
     vector<double> data(sizes[node()]);
 
-    for (int i=0; i<data.size(); ++i) data[i] = static_cast<double>(i*i);
+    for (size_t i=0; i<data.size(); ++i)
+        data[i] = static_cast<double>(i*i);
 
     Send_Double_Vector sender(to_node);
     Receive_Double_Vector receiver(from_node);
@@ -261,7 +263,7 @@ void ring_test()
     vector<double> r = receiver.receive();
 
     if (r.size() != sizes[from_node]) ITFAILS;
-    for (int i=0; i<r.size(); ++i)
+    for (size_t i=0; i<r.size(); ++i)
         if (r[i] != static_cast<double>(i*i)) ITFAILS;
 
     if (rtt_c4_test::passed)
