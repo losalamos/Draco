@@ -31,14 +31,20 @@ void tstOne( ApplicationUnitTest &unitTest )
     cout << ">>> Executing unitTest.runTests()..." << endl;
     unitTest.runTests();
 
+    //! \bug Consider using Boost or other 3rd party library to aid with
+    // file path manipulation, including finding the cwd.
+    
     string const logFilename( unitTest.logFileName() );
     ostringstream msg;
-    msg << "./phw_hello-"<< unitTest.nodes() <<".out";
+    msg << "phw_hello-"<< unitTest.nodes() <<".out";
     string const expLogFilename( msg.str() );
-    if( expLogFilename == logFilename )
-        unitTest.passes( "Found expected log filename." );
+
+    // Find the expected filename (no path) in the real filename
+    size_t pos( logFilename.find( expLogFilename ) );
+    if( pos != string::npos )
+        unitTest.passes( "Found expected log filename (pos != npos)." );
     else
-        unitTest.failure( "Did not find expected log filename." );
+        unitTest.failure( "Did not find expected log filename (pos == npos)." );
     cout << endl;
     return;
 }
