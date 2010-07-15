@@ -183,7 +183,7 @@ int main( int argc, char *argv[] )
     //          (string comparison, unknown length, etc.)
 
     for( int arg=1; arg < argc; arg++ )
-	if( size_t idx=std::string( argv[arg] ).find( "--version" ) == 0 )
+	if( std::string( argv[arg] ).find( "--version" ) == 0 )
 	{
 	    version( argv[0] );
 	    return 0;

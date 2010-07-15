@@ -21,19 +21,19 @@ using namespace std;
 
 // Prototypes
 
-int main(int argc, char *argv[]);
+int main( int argc, char *argv[] );
 
 
 // Main for test
-int main(int /* argc */, char * /* *argv */ [] )
+int main( int /* argc */, char * /* *argv */ [] )
 {
-    const int m = 5;
+    size_t const m( 5 );
 
     cout << "constructor from scalar" << endl;
     Vector_Lite<double, m> x(0.0);
-    UNIT_TEST(std::count(x.begin(), x.end(), 0.0) == m);
-    UNIT_TEST(!x.empty());
-    UNIT_TEST(x.max_size()==m);
+    UNIT_TEST( std::count(x.begin(), x.end(), 0.0) == static_cast<int>(m) );
+    UNIT_TEST( ! x.empty() );
+    UNIT_TEST( x.max_size() == m );
 
     {
         cout << "fill in from C array" << endl;
@@ -72,7 +72,7 @@ int main(int /* argc */, char * /* *argv */ [] )
     double c1 = 3.0;
     x = c1;
     cout << "x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+    UNIT_TEST( std::count(x.begin(), x.end(), c1) == static_cast<int>(m) );
 
     {
         ostringstream out;
@@ -194,25 +194,25 @@ int main(int /* argc */, char * /* *argv */ [] )
     c1 += dc1;
     x += dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+    UNIT_TEST( std::count(x.begin(), x.end(), c1) == static_cast<int>(m) );
 
     cout << "operator-=, scalar" << endl;
     c1 -= dc1;
     x -= dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+    UNIT_TEST(std::count(x.begin(), x.end(), c1) == static_cast<int>(m) );
 
     cout << "operator*=, scalar" << endl;
     c1 *= dc1;
     x *= dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+    UNIT_TEST(std::count(x.begin(), x.end(), c1) == static_cast<int>(m));
 
     cout << "operator/=, scalar" << endl;
     c1 /= dc1;
     x /= dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == m);
+    UNIT_TEST(std::count(x.begin(), x.end(), c1) == static_cast<int>(m));
 
     double y0 = 2.0;
     double y1 = 1.0;

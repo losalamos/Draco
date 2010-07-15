@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 
     // version tag
     for( int arg = 1; arg < argc; arg++ )
-	if( size_t idx = std::string(argv[arg]).find("--version") == 0 )
+	if( std::string(argv[arg]).find("--version") == 0 )
 	{
 	    std::cout << argv[0] << ": version " << rtt_dsxx::release() << std::endl; 
 	    return 0;

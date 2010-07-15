@@ -529,7 +529,7 @@ void endian_conversion_test()
     up >> oom;
 
     // Check
-    if (oom != 0xEFBEADDE) ITFAILS;
+    if (static_cast<unsigned>(oom) != 0xEFBEADDE) ITFAILS;
 
     
 

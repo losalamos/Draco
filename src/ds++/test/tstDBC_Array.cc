@@ -422,7 +422,7 @@ void test_resize()
     unsigned const newSize(7);
     A.resize(newSize);
     std::vector<int> cmp(newSize, 0);
-    for( int i=0; i< newSize; i++)
+    for( size_t i=0; i< newSize; i++)
         A[i] = 0;   
     
     bool tr_passes = test_sized_array( A, newSize, cmp);

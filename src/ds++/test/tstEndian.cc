@@ -57,7 +57,7 @@ void test_integer(ScalarUnitTest& ut)
 
     byte_swap(moo);
 
-    if (moo != 0xEFBEADDE)
+    if (static_cast<unsigned>(moo) != 0xEFBEADDE)
         ut.failure("byte_swap failed for for integer type");
 
     // Unsigned integer

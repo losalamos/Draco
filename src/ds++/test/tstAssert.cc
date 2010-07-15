@@ -503,7 +503,7 @@ int main( int argc, const char *argv[] )
 
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if( size_t idx=string( argv[arg] ).find( "--version" ) == 0 )
+	if( string( argv[arg] ).find( "--version" ) == 0 )
 	{
 	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
