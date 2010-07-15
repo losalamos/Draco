@@ -189,23 +189,23 @@ void t1()
         y = x;
         if (x < y)
             passed = false;
-        if (x < y != lexicographical_compare(x.begin(),x.end(),
+        if ((x < y) != lexicographical_compare(x.begin(),x.end(),
                                              y.begin(),y.end()))
             passed = false;
-        if (x > y != y < x)
+        if ((x > y) != (y < x))
             passed = false;
-        if (x <= y != !(y < x))
+        if ((x <= y) != !(y < x))
             passed = false;
-        if (x >= y != !(x < y))
+        if ((x >= y) != !(x < y))
             passed = false;
 
         if (x < z)
             passed = false;
-        if (x > z != z < x)
+        if ((x > z) != (z < x))
             passed = false;
-        if (x <= z != !(z < x))
+        if ((x <= z) != !(z < x))
             passed = false;
-        if (x >= z != !(x < z))
+        if ((x >= z) != !(x < z))
             passed = false;
 
     // Invariants
@@ -214,7 +214,7 @@ void t1()
             passed = false;
         y = x;
         x[1] -= 1.;
-        if (x < y != !(y < x))
+        if ((x < y) != !(y < x))
             passed = false;
         z = y;
         z[1] += 1.;
@@ -420,22 +420,22 @@ void t2()
         iter2 = iter1;
         if (iter1 < iter2)
             passed = false;
-        if (iter1 > iter2 != iter2 < iter1)
+        if ((iter1 > iter2) != (iter2 < iter1))
             passed = false;
-        if (iter1 <= iter2 != !(iter2 < iter1))
+        if ((iter1 <= iter2) != !(iter2 < iter1))
             passed = false;
-        if (iter1 >= iter2 != !(iter1 < iter2))
+        if ((iter1 >= iter2) != !(iter1 < iter2))
             passed = false;
 
         iter3 = iter1;
         ++iter3;
         if (iter3 < iter1)
             passed = false;
-        if (iter3 > iter1 != iter1 < iter3)
+        if ((iter3 > iter1) != (iter1 < iter3))
             passed = false;
-        if (iter3 <= iter1 != !(iter1 < iter3))
+        if ((iter3 <= iter1) != !(iter1 < iter3))
             passed = false;
-        if (iter3 >= iter1 != !(iter3 < iter1))
+        if ((iter3 >= iter1) != !(iter3 < iter1))
             passed = false;
 
     // Invariants
@@ -444,7 +444,7 @@ void t2()
             passed = false;
         iter2 = iter1;
         iter2++;
-        if (iter1 < iter2 != !(iter2 < iter1))
+        if ((iter1 < iter2) != !(iter2 < iter1))
             passed = false;
         iter3 = iter2;
         iter3++;
@@ -847,22 +847,22 @@ void t3()
         iter2 = iter1;
         if (iter1 < iter2)
             passed = false;
-        if (iter1 > iter2 != iter2 < iter1)
+        if ((iter1 > iter2) != (iter2 < iter1))
             passed = false;
-        if (iter1 <= iter2 != !(iter2 < iter1))
+        if ((iter1 <= iter2) != !(iter2 < iter1))
             passed = false;
-        if (iter1 >= iter2 != !(iter1 < iter2))
+        if ((iter1 >= iter2) != !(iter1 < iter2))
             passed = false;
 
         iter3 = iter1;
         ++iter3;
         if (iter3 < iter1)
             passed = false;
-        if (iter3 > iter1 != iter1 < iter3)
+        if ((iter3 > iter1) != (iter1 < iter3))
             passed = false;
-        if (iter3 <= iter1 != !(iter1 < iter3))
+        if ((iter3 <= iter1) != !(iter1 < iter3))
             passed = false;
-        if (iter3 >= iter1 != !(iter3 < iter1))
+        if ((iter3 >= iter1) != !(iter3 < iter1))
             passed = false;
 
     // Invariants
@@ -871,7 +871,7 @@ void t3()
             passed = false;
         iter2 = iter1;
         iter2++;
-        if (iter1 < iter2 != !(iter2 < iter1))
+        if ((iter1 < iter2) != !(iter2 < iter1))
             passed = false;
         iter3 = iter2;
         iter3++;
@@ -1267,22 +1267,22 @@ void t4()
         iter2 = iter1;
         if (iter1 < iter2)
             passed = false;
-        if (iter1 > iter2 != iter2 < iter1)
+        if ((iter1 > iter2) != (iter2 < iter1))
             passed = false;
-        if (iter1 <= iter2 != !(iter2 < iter1))
+        if ((iter1 <= iter2) != !(iter2 < iter1))
             passed = false;
-        if (iter1 >= iter2 != !(iter1 < iter2))
+        if ((iter1 >= iter2) != !(iter1 < iter2))
             passed = false;
 
         iter3 = iter1;
         ++iter3;
         if (iter3 < iter1)
             passed = false;
-        if (iter3 > iter1 != iter1 < iter3)
+        if ((iter3 > iter1) != (iter1 < iter3))
             passed = false;
-        if (iter3 <= iter1 != !(iter1 < iter3))
+        if ((iter3 <= iter1) != !(iter1 < iter3))
             passed = false;
-        if (iter3 >= iter1 != !(iter3 < iter1))
+        if ((iter3 >= iter1) != !(iter3 < iter1))
             passed = false;
 
     // Invariants
@@ -1291,7 +1291,7 @@ void t4()
             passed = false;
         iter2 = iter1;
         iter2++;
-        if (iter1 < iter2 != !(iter2 < iter1))
+        if ((iter1 < iter2) != !(iter2 < iter1))
             passed = false;
         iter3 = iter2;
         iter3++;
@@ -1697,22 +1697,22 @@ void t5()
         iter2 = iter1;
         if (iter1 < iter2)
             passed = false;
-        if (iter1 > iter2 != iter2 < iter1)
+        if ((iter1 > iter2) != (iter2 < iter1))
             passed = false;
-        if (iter1 <= iter2 != !(iter2 < iter1))
+        if ((iter1 <= iter2) != !(iter2 < iter1))
             passed = false;
-        if (iter1 >= iter2 != !(iter1 < iter2))
+        if ((iter1 >= iter2) != !(iter1 < iter2))
             passed = false;
 
         iter3 = iter1;
         ++iter3;
         if (iter3 < iter1)
             passed = false;
-        if (iter3 > iter1 != iter1 < iter3)
+        if ((iter3 > iter1) != (iter1 < iter3))
             passed = false;
-        if (iter3 <= iter1 != !(iter1 < iter3))
+        if ((iter3 <= iter1) != !(iter1 < iter3))
             passed = false;
-        if (iter3 >= iter1 != !(iter3 < iter1))
+        if ((iter3 >= iter1) != !(iter3 < iter1))
             passed = false;
 
     // Invariants
@@ -1721,7 +1721,7 @@ void t5()
             passed = false;
         iter2 = iter1;
         iter2++;
-        if (iter1 < iter2 != !(iter2 < iter1))
+        if ((iter1 < iter2) != !(iter2 < iter1))
             passed = false;
         iter3 = iter2;
         iter3++;

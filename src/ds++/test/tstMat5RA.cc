@@ -894,22 +894,22 @@ void t3()
         iter2 = iter1;
         if (iter1 < iter2)
             passed = false;
-        if (iter1 > iter2 != iter2 < iter1)
+        if ( (iter1 > iter2) != (iter2 < iter1) )
             passed = false;
-        if (iter1 <= iter2 != !(iter2 < iter1))
+        if ( (iter1 <= iter2) != (!(iter2 < iter1)) )
             passed = false;
-        if (iter1 >= iter2 != !(iter1 < iter2))
+        if ( (iter1 >= iter2) != (!(iter1 < iter2)) )
             passed = false;
 
         iter3 = iter1;
         ++iter3;
         if (iter3 < iter1)
             passed = false;
-        if (iter3 > iter1 != iter1 < iter3)
+        if ( (iter3 > iter1) != (iter1 < iter3) )
             passed = false;
-        if (iter3 <= iter1 != !(iter1 < iter3))
+        if ( (iter3 <= iter1) != (!(iter1 < iter3)) )
             passed = false;
-        if (iter3 >= iter1 != !(iter3 < iter1))
+        if ( (iter3 >= iter1) != !(iter3 < iter1) )
             passed = false;
 
     // Invariants
