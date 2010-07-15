@@ -22,41 +22,41 @@ namespace rtt_c4
 // EXPLICIT INSTANTIATIONS OF BLOCKING SEND/RECEIVE AND BROADCAST
 //---------------------------------------------------------------------------//
 
-template int send(const char *, int, int, int);
-template int send(const unsigned char *, int, int, int);
-template int send(const short *, int, int, int);
-template int send(const unsigned short *, int, int, int);
-template int send(const int *, int, int, int);
-template int send(const unsigned int *, int, int, int);
-template int send(const long *, int, int, int);
-template int send(const unsigned long *, int, int, int);
-template int send(const float *, int, int, int);
-template int send(const double *, int, int, int); 
-template int send(const long double *, int, int, int);
+template int send<char>(const char *, int, int, int);
+template int send<unsigned char>(const unsigned char *, int, int, int);
+template int send<short>(const short *, int, int, int);
+template int send<unsigned short>(const unsigned short *, int, int, int);
+template int send<int>(const int *, int, int, int);
+template int send<unsigned int>(const unsigned int *, int, int, int);
+template int send<long>(const long *, int, int, int);
+template int send<unsigned long>(const unsigned long *, int, int, int);
+template int send<float>(const float *, int, int, int);
+template int send<double>(const double *, int, int, int); 
+template int send<long double>(const long double *, int, int, int);
 
-template int receive(char *, int, int, int);
-template int receive(unsigned char *, int, int, int);
-template int receive(short *, int, int, int);
-template int receive(unsigned short *, int, int, int);
-template int receive(int *, int, int, int);
-template int receive(unsigned int *, int, int, int);
-template int receive(long *, int, int, int);
-template int receive(unsigned long *, int, int, int);
-template int receive(float *, int, int, int);
-template int receive(double *, int, int, int); 
-template int receive(long double *, int, int, int);
+template int receive<char>(char *, int, int, int);
+template int receive<unsigned char>(unsigned char *, int, int, int);
+template int receive<short>(short *, int, int, int);
+template int receive<unsigned short>(unsigned short *, int, int, int);
+template int receive<int>(int *, int, int, int);
+template int receive<unsigned int>(unsigned int *, int, int, int);
+template int receive<long>(long *, int, int, int);
+template int receive<unsigned long>(unsigned long *, int, int, int);
+template int receive<float>(float *, int, int, int);
+template int receive<double>(double *, int, int, int); 
+template int receive<long double>(long double *, int, int, int);
 
-template int broadcast(char *, int, int);
-template int broadcast(unsigned char *, int, int);
-template int broadcast(short *, int, int);
-template int broadcast(unsigned short *, int, int);
-template int broadcast(int *, int, int);
-template int broadcast(unsigned int *, int, int);
-template int broadcast(long *, int, int);
-template int broadcast(unsigned long *, int, int);
-template int broadcast(float *, int, int);
-template int broadcast(double *, int, int); 
-template int broadcast(long double *, int, int);
+template int broadcast<char>(char *, int, int);
+template int broadcast<unsigned char>(unsigned char *, int, int);
+template int broadcast<short>(short *, int, int);
+template int broadcast<unsigned short>(unsigned short *, int, int);
+template int broadcast<int>(int *, int, int);
+template int broadcast<unsigned int>(unsigned int *, int, int);
+template int broadcast<long>(long *, int, int);
+template int broadcast<unsigned long>(unsigned long *, int, int);
+template int broadcast<float>(float *, int, int);
+template int broadcast<double>(double *, int, int); 
+template int broadcast<long double>(long double *, int, int);
 
 } // end namespace rtt_c4
 

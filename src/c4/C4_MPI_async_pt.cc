@@ -22,53 +22,98 @@ namespace rtt_c4
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
-template C4_Req send_async(const char *, int, int, int);
-template C4_Req send_async(const unsigned char *, int, int, int);
-template C4_Req send_async(const short *, int, int, int);
-template C4_Req send_async(const unsigned short *, int, int, int);
-template C4_Req send_async(const int *, int, int, int);
-template C4_Req send_async(const unsigned int *, int, int, int);
-template C4_Req send_async(const long *, int, int, int);
-template C4_Req send_async(const unsigned long *, int, int, int);
-template C4_Req send_async(const float *, int, int, int);
-template C4_Req send_async(const double *, int, int, int);
-template C4_Req send_async(const long double *, int, int, int);
+template
+C4_Req send_async<char>(const char *, int, int, int);
+template
+C4_Req send_async<unsigned char>(const unsigned char *, int, int, int);
+template
+C4_Req send_async<short>(const short *, int, int, int);
+template
+C4_Req send_async<unsigned short>(const unsigned short *, int, int, int);
+template
+C4_Req send_async<int>(const int *, int, int, int);
+template
+C4_Req send_async<unsigned int>(const unsigned int *, int, int, int);
+template
+C4_Req send_async<long>(const long *, int, int, int);
+template
+C4_Req send_async<unsigned long>(const unsigned long *, int, int, int);
+template
+C4_Req send_async<float>(const float *, int, int, int);
+template
+C4_Req send_async<double>(const double *, int, int, int);
+template
+C4_Req send_async<long double>(const long double *, int, int, int);
 
-template C4_Req receive_async(char *, int, int, int);
-template C4_Req receive_async(unsigned char *, int, int, int);
-template C4_Req receive_async(short *, int, int, int);
-template C4_Req receive_async(unsigned short *, int, int, int);
-template C4_Req receive_async(int *, int, int, int);
-template C4_Req receive_async(unsigned int *, int, int, int);
-template C4_Req receive_async(long *, int, int, int);
-template C4_Req receive_async(unsigned long *, int, int, int);
-template C4_Req receive_async(float *, int, int, int);
-template C4_Req receive_async(double *, int, int, int);
-template C4_Req receive_async(long double *, int, int, int);
+template
+C4_Req receive_async<char>(char *, int, int, int);
+template
+C4_Req receive_async<unsigned char>(unsigned char *, int, int, int);
+template
+C4_Req receive_async<short>(short *, int, int, int);
+template
+C4_Req receive_async<unsigned short>(unsigned short *, int, int, int);
+template
+C4_Req receive_async<int>(int *, int, int, int);
+template
+C4_Req receive_async<unsigned int>(unsigned int *, int, int, int);
+template
+C4_Req receive_async<long>(long *, int, int, int);
+template
+C4_Req receive_async<unsigned long>(unsigned long *, int, int, int);
+template
+C4_Req receive_async<float>(float *, int, int, int);
+template
+C4_Req receive_async<double>(double *, int, int, int);
+template
+C4_Req receive_async<long double>(long double *, int, int, int);
 
-template void send_async(C4_Req &, const char *, int, int, int);
-template void send_async(C4_Req &, const unsigned char *, int, int, int);
-template void send_async(C4_Req &, const short *, int, int, int);
-template void send_async(C4_Req &, const unsigned short *, int, int, int);
-template void send_async(C4_Req &, const int *, int, int, int);
-template void send_async(C4_Req &, const unsigned int *, int, int, int);
-template void send_async(C4_Req &, const long *, int, int, int);
-template void send_async(C4_Req &, const unsigned long *, int, int, int);
-template void send_async(C4_Req &, const float *, int, int, int);
-template void send_async(C4_Req &, const double *, int, int, int);
-template void send_async(C4_Req &, const long double *, int, int, int);
+template
+void send_async<char>(C4_Req &, const char *, int, int, int);
+template
+void send_async<unsigned char>(C4_Req &, const unsigned char *, int, int, int);
+template
+void send_async<short>(C4_Req &, const short *, int, int, int);
+template
+void send_async<unsigned short>(
+    C4_Req &, const unsigned short *, int, int, int);
+template
+void send_async<int>(C4_Req &, const int *, int, int, int);
+template
+void send_async<unsigned int>(C4_Req &, const unsigned int *, int, int, int);
+template
+void send_async<long>(C4_Req &, const long *, int, int, int);
+template
+void send_async<unsigned long>(C4_Req &, const unsigned long *, int, int, int);
+template
+void send_async<float>(C4_Req &, const float *, int, int, int);
+template
+void send_async<double>(C4_Req &, const double *, int, int, int);
+template
+void send_async<long double>(C4_Req &, const long double *, int, int, int);
 
-template void receive_async(C4_Req &, char *, int, int, int);
-template void receive_async(C4_Req &, unsigned char *, int, int, int);
-template void receive_async(C4_Req &, short *, int, int, int);
-template void receive_async(C4_Req &, unsigned short *, int, int, int);
-template void receive_async(C4_Req &, int *, int, int, int);
-template void receive_async(C4_Req &, unsigned int *, int, int, int);
-template void receive_async(C4_Req &, long *, int, int, int);
-template void receive_async(C4_Req &, unsigned long *, int, int, int);
-template void receive_async(C4_Req &, float *, int, int, int);
-template void receive_async(C4_Req &, double *, int, int, int);
-template void receive_async(C4_Req &, long double *, int, int, int);
+template
+void receive_async<char>(C4_Req &, char*, int, int, int);
+template
+void receive_async<unsigned char>(C4_Req &, unsigned char *, int, int, int);
+template
+void receive_async<short>(C4_Req &, short *, int, int, int);
+template
+void receive_async<unsigned short>(C4_Req &, unsigned short *, int, int, int);
+template
+void receive_async<int>(C4_Req &, int *, int, int, int);
+template
+void receive_async<unsigned int>(C4_Req &, unsigned int *, int, int, int);
+template
+void receive_async<long>(C4_Req &, long *, int, int, int);
+template
+void receive_async<unsigned long>(C4_Req &, unsigned long *, int, int, int);
+template
+void receive_async<float>(C4_Req &, float *, int, int, int);
+template
+void receive_async<double>(C4_Req &, double *, int, int, int);
+template
+void receive_async<long double>(C4_Req &, long double *, int, int, int);
 
 } // end namespace rtt_c4
 

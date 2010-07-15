@@ -22,68 +22,72 @@ namespace rtt_c4
 // EXPLICIT INSTANTIATIONS OF GATHER/SCATTER
 //---------------------------------------------------------------------------//
 
-template int gather(unsigned *send_buffer,
-                    unsigned *receive_buffer,
-                    int size);
-
-template int gather(int *send_buffer,
-                    int *receive_buffer,
-                    int size);
+template
+int gather<unsigned>(unsigned * send_buffer,
+                     unsigned * receive_buffer,
+                     int        size);
 
 template
-int gatherv(unsigned *send_buffer,
-            int send_size,
-            unsigned *receive_buffer,
-            int *receive_sizes,
-            int *receive_displs);
+int gather<int>(int * send_buffer,
+                int * receive_buffer,
+                int   size);
 
 template
-int gatherv(int *send_buffer,
-            int send_size,
-            int *receive_buffer,
-            int *receive_sizes,
-            int *receive_displs);
+int gatherv<unsigned>(unsigned * send_buffer,
+                      int        send_size,
+                      unsigned * receive_buffer,
+                      int      * receive_sizes,
+                      int      * receive_displs);
 
 template
-int gatherv(double *send_buffer,
-            int send_size,
-            double *receive_buffer,
-            int *receive_sizes,
-            int *receive_displs);
-
-template int scatter(unsigned *send_buffer,
-                     unsigned *receive_buffer,
-                     int size);
-
-template int scatter(int *send_buffer,
-                     int *receive_buffer,
-                     int size);
+int gatherv<int>(int * send_buffer,
+                 int   send_size,
+                 int * receive_buffer,
+                 int * receive_sizes,
+                 int * receive_displs);
 
 template
-int scatterv(unsigned *send_buffer,
-             int *send_sizes,
-             int *send_displs,
-             unsigned *receive_buffer,
-             int receive_size);
+int gatherv<double>(double * send_buffer,
+                    int      send_size,
+                    double * receive_buffer,
+                    int    * receive_sizes,
+                    int    * receive_displs);
 
 template
-int scatterv(int *send_buffer,
-             int *send_sizes,
-             int *send_displs,
-             int *receive_buffer,
-             int receive_size);
+int scatter<unsigned>(unsigned * send_buffer,
+                      unsigned * receive_buffer,
+                      int        size);
 
 template
-int scatterv(double *send_buffer,
-             int *send_sizes,
-             int *send_displs,
-             double *receive_buffer,
-             int receive_size);
+int scatter<int>(int * send_buffer,
+                 int * receive_buffer,
+                 int   size);
+
+template
+int scatterv<unsigned>(unsigned * send_buffer,
+                       int      * send_sizes,
+                       int      * send_displs,
+                       unsigned * receive_buffer,
+                       int        receive_size);
+
+template
+int scatterv<int>(int * send_buffer,
+                  int * send_sizes,
+                  int * send_displs,
+                  int * receive_buffer,
+                  int   receive_size);
+
+template
+int scatterv<double>(double * send_buffer,
+                     int    * send_sizes,
+                     int    * send_displs,
+                     double * receive_buffer,
+                     int      receive_size);
 
 } // end namespace rtt_c4
 
 #endif // C4_MPI
 
 //---------------------------------------------------------------------------//
-//                              end of C4_MPI_gather_scatter_pt.cc
+// end of C4_MPI_gather_scatter_pt.cc
 //---------------------------------------------------------------------------//
