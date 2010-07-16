@@ -90,7 +90,7 @@ class Index_Counter
     void increment();
     void decrement();
 
-    bool dimension_okay(size_t d) const { return (d >= 0) && (d < D); }
+    bool dimension_okay(size_t d) const { return d < D; }
 
     // Private constructor for use by Index_Converter
     // kgbudge (091201): Appears to be dead code

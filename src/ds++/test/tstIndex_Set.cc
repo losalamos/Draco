@@ -77,13 +77,10 @@ void test_index_set()
     if (box.direction_okay(0))  ITFAILS;
     if (!box.direction_okay(1)) ITFAILS;
     if (!box.direction_okay(6)) ITFAILS;
-    if (box.direction_okay(7))  ITFAILS;
-
-    if (box.dimension_okay(-1)) ITFAILS;
+    if (box.direction_okay(7))  ITFAILS;    
     if (!box.dimension_okay(0)) ITFAILS;
     if (!box.dimension_okay(2)) ITFAILS;
     if (box.dimension_okay(3))  ITFAILS;
-
 
     // Resize the object and repeat some of the tests:
 
