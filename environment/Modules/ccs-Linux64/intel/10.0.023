@@ -34,8 +34,8 @@ proc ModulesHelp { } {
 
    puts stderr "\t Intel C/C++/F90 $version\n";
    puts stderr "\tMakefile variables:";
-   puts stderr "\t\tCC\t= $bindir/icc";
-   puts stderr "\t\tCXX\t= $bindir/icc";
+   puts stderr "\t\tCC\t= $bindir/icpc";
+   puts stderr "\t\tCXX\t= $bindir/icpc";
    puts stderr "\t\tFC\t= $f90bindir/ifort";
    puts stderr "\t\tF77\t= $f90bindir/ifort";
    puts stderr "\t\tF90\t= $f90bindir/ifort";
@@ -71,8 +71,8 @@ if { [module-info mode load] } {
 setenv          _MODULES_CC     [module-info name];
 setenv          _MODULES_FC     [module-info name];
 
-setenv          CC              $bindir/icc;
-setenv          CXX             $bindir/icc;
+setenv          CC              $bindir/icpc;
+setenv          CXX             $bindir/icpc;
 setenv          F77             $f90bindir/ifort;
 setenv          F90             $f90bindir/ifort;
 setenv          FC              $f90bindir/ifort;
