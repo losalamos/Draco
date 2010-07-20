@@ -1417,7 +1417,7 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
 	   with_mpi=$1
        fi
 
-       # For CCS-2/4 users, we can also specify LAMPI in place of
+       # For CCS-2/4 users, we can also specify lampi or openmpi in place of
        # mpich. 
 
        case ${with_mpi} in

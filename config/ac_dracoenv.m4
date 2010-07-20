@@ -81,6 +81,7 @@ AC_DEFUN([AC_DRACO_ENV], [dnl
    # set the libsuffix variable
    if test "${enable_shared:=no}" = yes ; then
        libsuffix='.so'
+       AC_DEFINE(DRACO_SHARED_LIBS)
    else
        libsuffix='.a'
    fi
