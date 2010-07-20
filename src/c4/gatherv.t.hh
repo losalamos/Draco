@@ -61,7 +61,7 @@ void indeterminate_gatherv( vector<T>          & outgoing_data,
             // We can only use the &vec[0] notation if the vector is non-zero
             // in length.  An shorthand-if is used to pass 'NULL' to mpi if
             // there is no data to gather.
-            vector<T> recbuf(total_count, -1);
+            vector<T> recbuf(total_count, 42);
             rtt_c4::gatherv(
                 (count>0?&outgoing_data[0]:NULL),
                 outgoing_data.size(),
@@ -126,7 +126,7 @@ void determinate_gatherv(vector<T>           &outgoing_data,
                 total_count += counts[p];
             }
             
-            vector<T> recbuf(total_count,-1);
+            vector<T> recbuf(total_count,42);
             rtt_c4::gatherv(
                 (count>0?&outgoing_data[0]:NULL),
                 count,
