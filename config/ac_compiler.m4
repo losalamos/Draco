@@ -22,37 +22,19 @@ AC_DEFUN([AC_CPP_ENV], [dnl
    # make sure that the host is defined
    AC_REQUIRE([AC_CANONICAL_HOST])
 
-   dnl set up a default compiler
-   case $host in
-
-   # IRIX -> CC
-   mips-sgi-irix6.*)   
-       if test -z "${with_cxx}" ; then
-	   with_cxx='sgi'
-       fi
-   ;;
-
-   # COMPAQ -> CXX
-   alpha*-dec-osf*)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='compaq'
-       fi
-   ;;
-
-   # IBM ASCI PURPLE -> newxlC (use --with-cxx=ibm for regular SP2)
-   *ibm-aix*)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='ascipurple'
-       fi
-   ;;
-
-   # EVERYTHING ELSE -> gcc
-   *)
-       if test -z "${with_cxx}" ; then
-	   with_cxx='gcc'
-       fi
-   ;;
-   esac
+   dnl If not specified on the command line, set up a default compiler:
+   dnl IRIX -> CC
+   dnl COMPAQ -> CXX
+   dnl IBM ASCI PURPLE -> newxlC (use --with-cxx=ibm for regular SP2)
+   dnl EVERYTHING ELSE -> gcc
+   if test -z "${with_cxx}" ; then
+      case $host in
+      mips-sgi-irix6.*) with_cxx='sgi' ;;
+      alpha*-dec-osf*)  with_cxx='compaq' ;;
+      *ibm-aix*)        with_cxx='ascipurple' ;;
+      *)                with_cxx='gcc' ;;
+      esac
+   fi
 
    dnl determine which compiler we are using
 
@@ -137,9 +119,9 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        fi
 
    elif test "${with_cxx}" = ascipurple ; then 
-       # asci purple uses different executables depending upon
-       # the mpi setup; so we check to see if mpi is on 
-       # and set the executable appropriately 
+       # asci purple uses different executables depending upon the mpi
+       # setup; so we check to see if mpi is on and set the executable
+       # appropriately
 
        # mpi is on, use newmpxlC
        if test -n "${vendor_mpi}" && test "${with_mpi}" = vendor; then
@@ -255,6 +237,7 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
        # null and issue a warning.
 
        libstdc=`ls ${GCC_HOME}/lib/libstdc++.* | head -1`
+       dnl libstdc=`${CXX} -print-file-name=libstdc++.a`
 
        if test -n "${libstdc}" && test -r "${libstdc}"; then
          GCC_LIB_DIR="${GCC_HOME}/lib"
@@ -286,13 +269,38 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
 
    # COMPILATION FLAGS
 
-   # strict asci compliance
+   # Strict adhereance to the ISO C standard.
+   dnl For C++ -ansi is equivalent to "-std=c++98"
+
    if test "${enable_strict_ansi:=yes}" = yes ; then
-       STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
+      STRICTFLAG="-ansi -Wnon-virtual-dtor -Wreturn-type -pedantic"
    fi
 
+   # Verbosity of warnings
+   # -Wall: This enables all the warnings about constructions that
+   #    some users consider questionable, and that are easy to avoid
+   #    (or modify to prevent the warning), even in conjunction with
+   #    macros. 
+   # -Wextra: This enables some extra warning flags that are not
+   #    enabled by -Wall. 
+   # -Weffc++: Warn about violations of the style guidelines from
+   #    Scott Meyers' Effective C++ book. 
+   # -Woverloaded-virtual: Warn when a function declaration hides
+   #    virtual functions from a base class.
+   # -Wcast-align: Warn whenever a pointer is cast such that the
+   #    required alignment of the target is increased. 
+   # -Wpointer-arith:  Warn about anything that depends on the "size
+   #    of" a function type or of "void". 
+   gcc_warn_flags="-Wall -Wextra -Weffc++ -Woverloaded-virtual "
+   gcc_warn_flags="$gcc_warn_flags -Wcast-align -Wpointer-arith"
+
+   # help for this variable activated in ac_dracoarg.m4:
+   if test "${enable_all_warnings:=no}" = yes; then
+      STRICTFLAG="${STRICTFLAG} ${gcc_warn_flags}"
+   fi  
+
    # optimization level
-   # gcc allows -g with -O (like KCC)
+   dnl Note: gcc allows -g with -O (like KCC)
 
    # set opt level in flags
    gcc_opt_flags="-O${with_opt:=0}"
@@ -522,6 +530,12 @@ AC_DEFUN([AC_DRACO_PGCC], [dnl
    # strict asci compliance
    if test "${enable_strict_ansi:=yes}" = yes ; then
        STRICTFLAG="-Xa -A --no_using_std"
+
+       # pgCC 9 and 10 have problem with our redhat systems.  
+       # http://bit.ly/az9QIa
+       # The suggested work around is to add -DNO_PGI_OFFSET to the
+       # compile flags
+       STRICTFLAG="${STRICTFLAG} -DNO_PGI_OFFSET"
 
        # suppress long long errors in the platform-dependent options
        # section 
