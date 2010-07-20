@@ -1,8 +1,9 @@
 ###############################################################################
-# draco/ Makefile.in
-# $Id$
+# File:  draco/Makefile.in
+# Brief: General Makefile for draco
+# Note:  Copyright (C) 2010 Los Alamos National Security, LLC.
 ###############################################################################
-# @> General Makefile for draco/
+# $Id$
 ###############################################################################
 
 # @configure_input@
@@ -39,9 +40,10 @@ pkg_config_inc := $(shell if test -d ${pkg_config_dir}; then \
 ## TARGETS AND RULES
 ##---------------------------------------------------------------------------##
 
-.PHONY : all run install installdirs clean distclean mostlyclean maintainer-clean \
-	check uninstall forced-distclean forced-maintainer-clean \
-	dvi autodoc configure reconfigure defaul
+.PHONY : all run install installdirs clean distclean mostlyclean \
+	maintainer-clean check test uninstall forced-distclean \
+	forced-maintainer-clean dvi autodoc configure reconfigure \
+	default 
 
 default: install
 
@@ -54,7 +56,7 @@ all install run dvi:
 	done
 
 # Have "make check" at this level also install each subdirectory.
-check:
+check test:
 	@for dir in ${subdirs} ; do \
 		if test -d "$${dir}" ; then \
 			(cd $${dir} && ${MAKE} $@) || ${EXIT}; \
