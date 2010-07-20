@@ -94,7 +94,7 @@ template<class T>
 void determinate_scatterv(vector<vector<T> >  &outgoing_data,
                           vector<T>           &incoming_data)
 {
-    Require(incoming_data.size()==rtt_c4::nodes());
+    Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
     
 #ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar 
@@ -113,7 +113,7 @@ void determinate_scatterv(vector<vector<T> >  &outgoing_data,
                 total_count += n;
             }
             int count = counts[0];
-            Check(incoming_data.size()==count);
+            Check(static_cast<int>(incoming_data.size())==count);
             
             vector<T> sendbuf(total_count);
             for (unsigned p=0; p<N; ++p)

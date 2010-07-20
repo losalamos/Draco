@@ -22,12 +22,16 @@ namespace rtt_c4
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
+//! Send char data asynchronously.
 template
 C4_Req send_async<char>(const char *, int, int, int);
+//! Send uchar data asynchronously.
 template
 C4_Req send_async<unsigned char>(const unsigned char *, int, int, int);
+//! Send short data asynchronously.
 template
 C4_Req send_async<short>(const short *, int, int, int);
+//! Send ushort data asynchronously.
 template
 C4_Req send_async<unsigned short>(const unsigned short *, int, int, int);
 template

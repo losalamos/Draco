@@ -276,7 +276,8 @@ void ApplicationUnitTest::runTests()
 //         unixCommand << mpiCommand << *it_arg << " > " << logFile;
 //         std::cout << "\nExecuting command from the shell: \n\t\""
 //                   << unixCommand.str().c_str() << "\"\n" << std::endl;
-        bool result = runTest( *it_arg );
+//         bool result = runTest( *it_arg );
+        runTest( *it_arg );
 //         errorLevel = std::system( unixCommand.str().c_str() );
         
 //         if( errorLevel == 0 )

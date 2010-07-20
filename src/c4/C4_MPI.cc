@@ -48,6 +48,8 @@ void initialize(int &argc, char **&argv)
 
     // Resync clocks for Darwin mpich
     double foo( MPI_Wtick() );
+    Ensure( foo > 0.0 );
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -167,7 +169,7 @@ void wait_all(int count,
     using std::vector;
     
     vector<MPI_Request> array_of_requests(count);
-    for (unsigned i=0; i<count; ++i)
+    for (unsigned i=0; i<static_cast<unsigned>(count); ++i)
     {
         if (requests[i].inuse())
         {
@@ -188,7 +190,7 @@ unsigned wait_any(int count,
     using std::vector;
     
     vector<MPI_Request> array_of_requests(count);
-    for (unsigned i=0; i<count; ++i)
+    for (unsigned i=0; i<static_cast<unsigned>(count); ++i)
     {
         if (requests[i].inuse())
         {

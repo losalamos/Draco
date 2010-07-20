@@ -169,11 +169,11 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
     //! The command that will be executed by the system.
     std::string const mpiCommand;
 
-    //! The extension used when creating log files
-    std::string const logExtension;
-
     //! A list of command line arguments used during execution of the test.
     std::list< std::string > listOfArgs;
+
+    //! The extension used when creating log files
+    std::string const logExtension;
 
     //! Name of file for logging output of application execution
     std::string logFile;

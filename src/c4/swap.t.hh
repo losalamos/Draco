@@ -83,8 +83,8 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
                       vector<vector<T> >       &incoming_data,
                       int tag )
 {
-    Require(outgoing_data.size()==rtt_c4::nodes());
-    Require(incoming_data.size()==rtt_c4::nodes());
+    Require(static_cast<int>(outgoing_data.size())==rtt_c4::nodes());
+    Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
 
 #ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar 
