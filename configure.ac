@@ -22,6 +22,7 @@ AC_DRACO_ARGS
 AC_DRACO_CHECK_TOOLS
 
 # define fortran
+dnl AC_DRACO_ENV
 AC_WITH_F90
 
 # The order of packages in AC_CONFIG_SUBDIRS **is** important.
@@ -34,6 +35,8 @@ AC_CONFIG_SUBDIRS(tools src autodoc)
 AC_HEAD_MAKEFILE
 
 AC_OUTPUT
+
+AC_VENDOR_REPORT
 
 dnl-------------------------------------------------------------------------dnl
 dnl			 end of draco/ configure.in

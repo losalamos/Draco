@@ -40,13 +40,32 @@ AC_DEFUN([AC_DRACO_ARGS], [dnl
 
    dnl define --with-c4
    AC_ARG_WITH([c4],
-     [AS_HELP_STRING([--with-c4@<:@=scalar|mpi|shmem@:>@],
-       [turn on c4 (default scalar)])])
-
-   # give with-c4 implied argument
-   if test "${with_c4:=scalar}" = yes ; then
-       with_c4='scalar'
-   fi
+     [AS_HELP_STRING([--with-c4@<:@=@<:@scalar|mpi@:>@@:>@], dnl shmem
+       [turn on c4 (default mpi)])],
+     [
+        dnl If the user provides a --with-c4 command for configure,
+        dnl ensure that a valid value has been provided
+        if test ${with_c4:=mpi} = yes; then
+           with_c4=mpi
+        elif ! test ${with_c4} = scalar && 
+             ! test ${with_c4} = mpi    &&
+             ! test ${with_c4} = no; then
+           { echo "configure: error: --with-c4 must be one of [yes|no|mpi|scalar]." 1>&2; \
+           exit 1; }
+        fi
+     ],
+     [
+        dnl If user does not provide a --with-c4 command for
+        dnl configure, default to mpi.
+        if test "${with_mpi:-no}" = "no"; then
+           with_c4=scalar
+        else
+           with_c4=mpi
+        fi
+     ]
+   )
+   AC_MSG_CHECKING([for c4 configuration])
+   AC_MSG_RESULT([${with_c4}])
 
    dnl
    dnl DBC toggle
@@ -239,6 +258,10 @@ dnl    fi
       [AC_SUBST(doxygen_output_top,${with_doc_output})],
       [doxygen_output_top='DEFAULT'])
 
+   AC_ARG_ENABLE([all-warnings],
+    [AS_HELP_STRING([--enable-all-warnings],[activate all gcc warnings
+       (-Wall -Wextra)])])
+   
    dnl end of AC_DRACO_ARGS
 ])
 

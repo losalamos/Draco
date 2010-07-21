@@ -37,7 +37,7 @@ AC_DEFUN([AC_WITH_F90], [dnl
    : ${with_f90:=yes}
     
    dnl turn off C++ compiler
-   with_cxx='no'
+dnl   with_cxx='no'
 
    dnl defines --with-f90
 
@@ -139,6 +139,13 @@ AC_DEFUN([AC_F90_ENV], [dnl
    ;;
    esac
 
+   # Always use the CXX linker if the project has C++.  If this is a
+   # F90 only project, then use the F90 linker.
+   if test ${with_cxx:-yes} = no; then
+      AR=${F90AR}
+      LD=${F90LD}
+   fi
+
    AC_SUBST(F90FREE)
    AC_SUBST(F90FIXED)
    AC_SUBST(F90FLAGS)
@@ -176,8 +183,8 @@ AC_DEFUN([AC_COMPILER_XL_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
 
@@ -227,8 +234,8 @@ AC_DEFUN([AC_COMPILER_FUJITSU_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-static-flib'
@@ -265,8 +272,8 @@ AC_DEFUN([AC_COMPILER_LAHEY_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-static-flib'
@@ -307,8 +314,8 @@ AC_DEFUN([AC_COMPILER_GFORTRAN_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-static -static-libgfortran'
@@ -327,7 +334,7 @@ AC_DEFUN([AC_COMPILER_GFORTRAN_F90], [dnl
    #do shared specific stuff
    if test "${enable_shared}" = yes ; then
        AC_MSG_CHECKING("rpath based on CXX")
-       AR=${CXX}
+       F90AR=${CXX}
        ARFLAGS='-shared -o'
        AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
     else
@@ -361,8 +368,8 @@ AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC=
@@ -407,8 +414,8 @@ AC_DEFUN([AC_COMPILER_COMPAQ_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-non_shared'
@@ -456,8 +463,8 @@ AC_DEFUN([AC_COMPILER_WORKSHOP_F90], [dnl
 
    # Set LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-Bstatic'
@@ -502,8 +509,8 @@ AC_DEFUN([AC_COMPILER_CRAY_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
 
@@ -547,8 +554,8 @@ AC_DEFUN([AC_COMPILER_MIPS_F90], [dnl
 
    # LINKER AND LIBRARY (AR)
 
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
 
@@ -592,8 +599,8 @@ AC_DEFUN([AC_COMPILER_HP_F90], [dnl
    MODFLAG='-I'
 
    # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='+noshared'
@@ -636,8 +643,8 @@ AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
    MODSUFFIX='mod'
 
    # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-static'
@@ -679,8 +686,8 @@ AC_DEFUN([AC_COMPILER_NAG_F90], [dnl
    MODFLAG='-I '
 
    # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC='-unsharedf95'
@@ -719,8 +726,8 @@ AC_DEFUN([AC_COMPILER_ABSOFT_F90], [dnl
    MODFLAG='-p '
 
    # LINKER AND LIBRARY (AR)
-   LD='${F90}'
-   AR='ar'
+   F90LD='${F90}'
+   F90AR='ar'
    ARFLAGS=
    ARLIBS=
    F90STATIC=''

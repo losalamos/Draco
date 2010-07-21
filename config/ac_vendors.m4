@@ -23,7 +23,7 @@ dnl-------------------------------------------------------------------------dnl
 dnl-------------------------------------------------------------------------dnl
 dnl AC_MPI_SETUP
 dnl
-dnl MPI implementation (off by default)
+dnl MPI implementation (on by default)
 dnl MPI is an optional vendor
 dnl
 dnl we wait to set the basic MPI libraries (if it is on) until
@@ -38,92 +38,71 @@ dnl to continue doing this; so we do all these operations in the
 dnl platform specific section of ac_dracoenv.m4
 dnl-------------------------------------------------------------------------dnl
 
-dnl KT (2010-04-27): Replace these bits of logic with something that
-dnl looks more like this?
-
-dnl AC_ARG_WITH(xmlparser,
-dnl     AS_HELP_STRING([--with-xmlparser], [select used xml parser; you can chose from expat,
-dnl 	libxml2 or auto. @<:@default=libxml2@:>@]),
-dnl     [case "$withval" in
-dnl         expat)    CONFIG_XMLPARSER=expat ;;
-dnl         libxml2)  CONFIG_XMLPARSER=libxml2 ;;
-dnl         n | no)   CONFIG_XMLPARSER=no ;;
-dnl         auto | *) CONFIG_XMLPARSER=auto ;;
-dnl     esac],
-dnl     [CONFIG_XMLPARSER=auto]
-dnl )
-
 AC_DEFUN([AC_MPI_SETUP], [dnl
 
-   dnl define --with-mpi
-dnl    AC_ARG_WITH(mpi,
-dnl       [  --with-mpi=[vendor,mpich,lampi,openmpi] 
-dnl                       determine MPI implementation (vendor on SGI,SUN; mpich on LINUX)])
-   AC_ARG_WITH([mpi],
-     [AS_HELP_STRING([--with-mpi@<:@=vendor|mpich|lampi|openmpi@:>@], 
-                     [determine MPI implementation (default is vendor,
-                      on LINUX the default is mpich)])])
+   # make sure that the host is defined
+   AC_REQUIRE([AC_CANONICAL_HOST])
 
-   dnl define --with-mpi-inc and --with-mpi-lib
-   AC_WITH_DIR(mpi-inc, MPI_INC, @S|@{MPI_INC_DIR},
-               [tell where MPI includes are])
-   AC_WITH_DIR(mpi-lib, MPI_LIB, @S|@{MPI_LIB_DIR},
-               [tell where MPI libs are])
+   # platform defaults:
+   case $host in
+   mips-sgi-irix6.*) 
+      mpi_default=vendor ;;
+   alpha*-dec-osf*)
+      mpi_default=vendor ;;
+   *ibm-aix*)
+      mpi_default=vendor ;;
+   *-linux-gnu)
+      mpi_default=openmpi ;;
+   *)
+      mpi_default=vendor ;;
+   esac
 
-   # determine if this package is needed for testing or for the
-   # package
-   vendor_mpi=$1 
+   AC_SETUP_VENDOR( [mpi], [yes], [${mpi_default}], 
+                    [@S|@{MPI_INC_DIR}], [@S|@{MPI_LIB_DIR}], 
+                    [vendor|mpich|lampi|openmpi] )
 
-   # set default value for with_mpi which is no
-   if test "${with_mpi:=no}" = yes ; then 
-       with_mpi='vendor'
+   dnl echo "with_mpi = ${with_mpi}"
+   dnl echo "with_c4  = ${with_c4}"
+
+   if test "${with_mpi}" = "no" ; then
+      # if with_mpi is no, but with_c4=mpi, then abort.
+      if test "${with_c4}" = "mpi"; then
+        { echo "configure: error: --with-c4=mpi requires with_mpi to \
+have a value other than 'no'.  Try setting --with-c4=scalar or \
+setting --with-mpi=[vendor|mpich|lampi|openmpi].  Also examine the \
+values of @S|@MPI_INC_DIR and @S|@MPI_LIB_DIR." 1>&2; \
+          exit 1; }
+      fi
+   else
+      # determine if this package is needed for testing or for the
+      # package
+      vendor_mpi=$1 
    fi
 
-   # if the user sets MPI_INC and MPI_LIB directories then turn on  
-   # with_mpi and set it to vendor if with_mpi=no to begin with
-   if test "${with_mpi}" = no ; then
-       if test -n "${MPI_INC}" ; then
-           with_mpi='vendor'
-       elif test -n "${MPI_LIB}" ; then
-           with_mpi='vendor'
-       fi
-   fi
-   
-   # if c4=mpi and with-mpi=no explicitly then 
-   # define them (mpi gets set to vendor by default)
-   if test "$with_c4" = mpi ; then
-       if test "$with_mpi" = no ; then
-           with_mpi='vendor'
-       fi
-   fi
-
-]) 
+])
 
 ##---------------------------------------------------------------------------##
 
 AC_DEFUN([AC_MPI_FINALIZE], [dnl
 
-   # only add stuff if mpi is not no and the vendor is defined
-   if test "${with_mpi}" != no && test -n "${vendor_mpi}"; then
+   dnl echo "mpi_finalize: with_mpi=${with_mpi}"
+   dnl echo "              with_c4 =${with_c4}"
 
-       # include path
-       if test -n "${MPI_INC}"; then
-           # add to include path
-           VENDOR_INC="${VENDOR_INC} -I${MPI_INC}"
-       fi
-   
-       # libraries
-       if test -n "${MPI_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_mpi, -L${MPI_LIB} ${mpi_libs})
-       elif test -z "${MPI_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_mpi, ${mpi_libs})
-       fi
+   save_with_mpi=${with_mpi}
+   case ${with_mpi} in
+   mpich) 
+     dnl default works correctly.
+     ;;
+   lampi | LAMPI | openmpi | OPENMPI)
+      with_mpi=mpi dnl We want '-lmpi' on the link linke
+      ;;
+   esac
 
-       # add MPI directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${MPI_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${MPI_INC}"
+   dnl mpi_libs is set in ac_vendors.m4
+   AC_FINALIZE_VENDOR([mpi],[${mpi_libs}]) 
 
-   fi
+   dnl reset with_mpi value.
+   with_mpi=${save_with_mpi}
 
 ])
 
@@ -180,7 +159,6 @@ AC_DEFUN([AC_NDI_FINALIZE], [dnl
        # add NDI directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${NDI_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${NDI_INC}"
-
    fi
 
 ])
@@ -242,7 +220,6 @@ AC_DEFUN([AC_AZTEC_FINALIZE], [dnl
        # add AZTEC directory to VENDOR_LIB_DIRS
        VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${AZTEC_LIB}"
        VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${AZTEC_INC}"
-
    fi
 
 ])
@@ -257,63 +234,34 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_GSL_SETUP], [dnl
 
-   dnl define --with-gsl
-   AC_ARG_WITH([gsl],
-     [AS_HELP_STRING([--with-gsl@<:@=gsl@:>@],[determine GSL lib (gsl is default)])])
- 
-   dnl define --with-gsl-inc
-   AC_WITH_DIR(gsl-inc, GSL_INC, @S|@{GSL_INC_DIR},
-               [tell where GSL includes are])
+   AC_SETUP_VENDOR( gsl, yes, gsl,
+                   @S|@{GSL_INC_DIR}, @S|@{GSL_LIB_DIR},
+                   [gsl] )
 
-   dnl define --with-gsl-lib
-   AC_WITH_DIR(gsl-lib, GSL_LIB, @S|@{GSL_LIB_DIR},
-               [tell where GSL libraries are])
+   # Set up gsl only if --with-gsl or --with-gsl-lib is
+   # explicitly set if $with_gsl is "yes" or if it has a value other
+   # than "no" the setup gsl.  $with_gsl will be "no" if
+   # --without-gsl is specified on the configure line.
+   if ! test "${with_gsl}" = "no" ; then
 
-   # set default value of gsl includes and libs
-   if test "${with_gsl:=gsl}" = yes ; then
-       with_gsl='gsl'
+     # if atlas is available use it's version of cblas, 
+     # otherwise use the version provided by GSL
+     if ! test "${with_lapack}" = atlas; then
+       gsl_extra_libs='-lgslcblas'
+     fi
+
+     # determine if this package is needed for testing or for the 
+     # package
+     vendor_gsl=$1
+
    fi
-
-   # if atlas is available use it's version of cblas, 
-   # otherwise use the version provided by GSL
-   if test "${with_lapack}" = atlas; then
-       gsl_libs='-lgsl'
-   else
-       gsl_libs='-lgsl -lgslcblas'
-   fi
-
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_gsl=$1
 ])
 
 ##---------------------------------------------------------------------------##
 
-AC_DEFUN([AC_GSL_FINALIZE], [dnl
-
-   # set up the libraries and include path
-   if test -n "${vendor_gsl}"; then
-
-       # include path
-       if test -n "${GSL_INC}"; then 
-           # add to include path
-           VENDOR_INC="${VENDOR_INC} -I${GSL_INC}"
-       fi
-
-       # library path
-       if test -n "${GSL_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_gsl, -L${GSL_LIB} ${gsl_libs})
-       elif test -z "${GSL_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_gsl, ${gsl_libs})
-       fi
-
-       # add GSL directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GSL_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GSL_INC}"
-
-   fi
-
-])
+dnl AC_DEFUN([AC_GSL_FINALIZE], [dnl
+dnl    AC_FINALIZE_VENDOR([gsl],[${gsl_extra_libs}])
+dnl ])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_SUPERLUDIST_SETUP
@@ -746,26 +694,11 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_PCG_SETUP], [dnl
 
-   dnl define --with-pcg
-   AC_ARG_WITH([pcg],
-     [AS_HELP_STRING([--with-pcg@<:@=pcg@:>@],
-       [determine the pcg library name (pcg is default)])])
-
-   dnl define --with-pcg-lib
-   AC_WITH_DIR(pcg-lib, PCG_LIB, @S|@{PCG_LIB_DIR},
-               [tell where PCG libraries are])
-   if test -n "${PCG_LIB}" ; then
-      if test -z "${with_pcg}" ; then
-           with_pcg='yes'
-      fi
-   fi
+   AC_SETUP_VENDOR( [pcg], [no], [pcg],
+                   [], [@S|@{PCG_LIB_DIR}], [pcg] )
 
    # Set up pcg only if --with-pcg or --with-pcg-lib is explicitly set
-   if test -n "${with_pcg}" ; then
-      # pcg is set to libpcg by default
-      if test "${with_pcg}" = yes ; then
-           with_pcg='pcg'
-      fi
+   if ! test -n "${with_pcg}" = no ; then
 
       AC_DEFINE(USE_PCGLIB)
 
@@ -778,24 +711,9 @@ AC_DEFUN([AC_PCG_SETUP], [dnl
 
 ##---------------------------------------------------------------------------##
 
-AC_DEFUN([AC_PCG_FINALIZE], [dnl
-
-   # set up the libraries
-   if test -n "${vendor_pcg}"; then
-
-       # library path
-       if test -z "${PCG_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_pcg, -l${with_pcg})
-       elif test -n "${PCG_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_pcg, -L${PCG_LIB} -l${with_pcg})
-       fi
-
-       # add PCG directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${PCG_LIB}"
-
-   fi
-
-])
+dnl AC_DEFUN([AC_PCG_FINALIZE], [dnl
+dnl    AC_FINALIZE_VENDOR([pcg],[${pcg_extra_libs}])
+dnl ])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_GANDOLF_SETUP
@@ -809,30 +727,23 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_GANDOLF_SETUP], [dnl
 
-   dnl define --with-gandolf
-   AC_ARG_WITH([gandolf],
-     [AS_HELP_STRING([--with-gandolf@<:@=gandolf@:>@],
-       [determine the gandolf lib name (gandolf is default)])])
-
-   dnl define --with-gandolf-lib
-   AC_WITH_DIR(gandolf-lib, GANDOLF_LIB, @S|@{GANDOLF_LIB_DIR},
-               [tell where GANDOLF libraries are])
+   AC_SETUP_VENDOR( [gandolf], [yes], [gandolf],
+                   [], [@S|@{GANDOLF_LIB_DIR}],
+                   [gandolf] )
 
    # gandolf is set to libgandolf by default
-   if test "${with_gandolf:=gandolf}" = yes ; then
-       with_gandolf='gandolf'
+   dnl echo "gandolf_setup: with_gandolf = ${with_gandolf}"
+
+   if ! test "${with_gandolf:=gandolf}" = "no" ; then
        # determine if this package is needed for testing or for the 
        # package
        vendor_gandolf=$1
-   elif test "${with_gandolf}" = no ; then ## TK added May 7 07 
+   else
+       ## TK added May 7 07: 
        vendor_gandolf=''                   ## skip finalize
        with_gandolf=''                     ## stub this out
        AC_MSG_RESULT("NOT USING GANDOLF")  ## alert/remind user
        AC_DEFINE(rtt_cdi_gandolf_stub)     ## used in cdi_gandolf/config.h
-   else
-       # determine if this package is needed for testing or for the 
-       # package
-       vendor_gandolf=$1
    fi
 ])
 
@@ -852,6 +763,7 @@ AC_DEFUN([AC_GANDOLF_FINALIZE], [dnl
      # the newer libgfortran.so)
      case $host in
      *-linux-gnu)
+
        # The code in ac_platforms should have already identified $F90
 dnl    if test "${F90}" = gfortran; then
 dnl          # Examine libgfortran to determine if it has the features
@@ -865,10 +777,10 @@ dnl            [], [gandolf_gfortran_special_lib=yes] )
          AC_PATH_PROG( NM_BIN, nm, null )
          AC_MSG_CHECKING([for extra libraries to support vendor gandolf])
          if test -x ${NM_BIN}; then
-           if test -n "${GANDOLF_LIB}"; then
+           if test -n "${with_gandolf_lib}"; then
              # undefined symbols found in libgandolf.a
-             libgandolf_need_gfortran=`$NM_BIN -a ${GANDOLF_LIB}/libgandolf.a | grep " U _gfortran_compare_string"`
-             libgandolf_need_g2c=`$NM_BIN -a ${GANDOLF_LIB}/libgandolf.a | grep " U s_copy"`
+             libgandolf_need_gfortran=`$NM_BIN -a ${with_gandolf_lib}/libgandolf.a | grep " U _gfortran_compare_string"`
+             libgandolf_need_g2c=`$NM_BIN -a ${with_gandolf_lib}/libgandolf.a | grep " U s_copy"`
              if test -n "${libgandolf_need_gfortran}"; then
                gandolf_gfortran_special_lib='-lgfortran'
              fi
@@ -878,39 +790,12 @@ dnl            [], [gandolf_gfortran_special_lib=yes] )
            fi
          fi     
 
-         # GANDOLF_LIB is the location of the libgandolf.  
-#         if test -z "${GANDOLF_LIB}"; then
-            #with_gandolf should be a fully qualified path to
-            #libgandolf.a, if not, then assume that the default
-	    #linkage will work (don't set gandolf_gfortran_special_lib.
-#            filename=${with_gandolf##*/}dnl return just the library name
-
-#            libpath=${with_gandolf%%${filename}}dnl return just the path
-
-#            if test -f ${libpath}/libgfortran.so; then
-#              gandolf_gfortran_special_lib='-l${libpath}/libgfortran.so'
-#            fi
-#	 fi
-
          AC_MSG_RESULT([${gandolf_gfortran_special_lib}])
-dnl       fi       
        ;;
      esac
-
-     # set up library paths
-     if test -z "${GANDOLF_LIB}" ; then
-       # look for a vendor local version of gfortran
-       AC_VENDORLIB_SETUP(vendor_gandolf, -l${with_gandolf} ${gandolf_gfortran_special_lib})
-     elif test -n "${GANDOLF_LIB}" ; then
-       # if available also link against the local gfortran
-       AC_VENDORLIB_SETUP(vendor_gandolf, -L${GANDOLF_LIB} -l${with_gandolf} ${gandolf_gfortran_special_lib})
-     fi
-
-     # add GANDOLF directory to VENDOR_LIB_DIRS
-     VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GANDOLF_LIB}"
-
    fi
 
+   AC_FINALIZE_VENDOR([gandolf],[${gandolf_gfortran_special_lib}])
 ])
 
 dnl-------------------------------------------------------------------------dnl
@@ -977,50 +862,36 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_LAPACK_SETUP], [dnl
 
-   dnl define --with-lapack
-   AC_ARG_WITH([lapack],
-     [AS_HELP_STRING([--with-lapack@<:@=vendor|atlas@:>@],
-       [determine LAPACK implementation (vendor default)])])
-
-   dnl define --with-lapack-lib
-   AC_WITH_DIR(lapack-lib, LAPACK_LIB, @S|@{LAPACK_LIB_DIR}, 
-               [tell where LAPACK libs are])
-
-   # determine if this package is needed for testing or for the 
-   # package
-   vendor_lapack=$1
-
-   # lapack is set to vendor by default
-   if test "${with_lapack:=vendor}" = yes ; then
-       with_lapack='vendor'
+   # By default use vendor supplied LAPACK.  On Linux, if
+   # LAPACK_LIB_DIR is set to an atlas path, then use atlas by
+   # default. 
+   lapack_default="vendor"
+   if test -n "`echo $LAPACK_LIB_DIR | grep atlas`"; then
+      lapack_default="atlas"
    fi
 
-   # define the atlas libraries (these are system independent)
-   if test "${with_lapack}" = atlas; then
-       lapack_libs='-llapack -lf77blas -lcblas -latlas'
+   AC_SETUP_VENDOR( [lapack], [yes], [${lapack_default}],
+                   [], [@S|@{LAPACK_LIB_DIR}], [vendor|atlas] )
+
+   if ! test "${with_lapack}" = no ; then
+
+      # define the atlas libraries (these are system independent)
+      if test "${with_lapack}" = atlas; then
+         lapack_extra_libs='-llapack -lf77blas -lcblas -latlas'
+      fi
+
+      # determine if this package is needed for testing or for the
+      # package
+      vendor_lapack=$1
+
    fi
 ])
 
 ##---------------------------------------------------------------------------##
 
-AC_DEFUN([AC_LAPACK_FINALIZE], [dnl
-
-   # set up lapack libraries
-   if test -n "${vendor_lapack}"; then
-
-       # set libraries
-       if test -z "${LAPACK_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_lapack, ${lapack_libs})
-       elif test -n "${LAPACK_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_lapack, -L${LAPACK_LIB} ${lapack_libs})
-       fi
-
-       # add LAPACK directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${LAPACK_LIB}"
-
-   fi
-
-])
+dnl AC_DEFUN([AC_LAPACK_FINALIZE], [dnl
+dnl    AC_FINALIZE_VENDOR([lapack],[${lapack_extra_libs}])
+dnl ])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_GRACE_SETUP
@@ -1031,38 +902,10 @@ dnl-------------------------------------------------------------------------dnl
 
 AC_DEFUN([AC_GRACE_SETUP], [dnl
 
-   dnl define --with-grace
-   AC_ARG_WITH([grace],
-     [AS_HELP_STRING([--with-grace@<:@=grace_np@:>@],
-       [determine the grace lib (grace_np is the default)])])
- 
-   dnl define --with-grace-inc
-   AC_WITH_DIR(grace-inc, GRACE_INC, @S|@{GRACE_INC_DIR},
-               [tell where GRACE includes are])
-   if test -n "${GRACE_INC}" ; then
-      if test -z "${with_grace}" ; then
-           with_grace='yes'
-      fi
-   fi
+   AC_SETUP_VENDOR( grace, yes, grace_np, 
+                   @S|@{GRACE_INC_DIR}, @S|@{GRACE_LIB_DIR}, [grace_np] )
 
-   dnl define --with-grace-lib
-   AC_WITH_DIR(grace-lib, GRACE_LIB, @S|@{GRACE_LIB_DIR},
-               [tell where GRACE libraries are])
-   if test -n "${GRACE_LIB}" ; then
-      if test -z "${with_grace}" ; then
-           with_grace='yes'
-      fi
-   fi
-
-   # Set up grace only if --with-grace or --with-grace-lib is
-   # explicitly set if $with_grace is "yes" or if it has a value other
-   # than "no" the setup grace.  $with_grace will be "no" if
-   # --without-grace is specified on the configure line.
    if ! test "${with_grace}" = "no" ; then
-      # set default value of grace includes and libs
-      if test "${with_grace}" = yes ; then
-           with_grace='grace_np'
-      fi
 
       # define GRACE header file
       GRACE_H="<${with_grace}.h>"
@@ -1077,31 +920,9 @@ AC_DEFUN([AC_GRACE_SETUP], [dnl
 
 ##---------------------------------------------------------------------------##
 
-AC_DEFUN([AC_GRACE_FINALIZE], [dnl
-
-   # set up the libraries and include path
-   if test -n "${vendor_grace}" ; then
-
-       # include path
-       if test -n "${GRACE_INC}"; then
-           # add to include path
-           VENDOR_INC="${VENDOR_INC} -I${GRACE_INC}"
-       fi
-
-       # library path
-       if test -n "${GRACE_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_grace, -L${GRACE_LIB} -l${with_grace})
-       elif test -z "${GRACE_LIB}" ; then
-           AC_VENDORLIB_SETUP(vendor_grace, -l${with_grace})
-       fi
-
-       # add GRACE directory to VENDOR_LIB_DIRS
-       VENDOR_LIB_DIRS="${VENDOR_LIB_DIRS} ${GRACE_LIB}"
-       VENDOR_INC_DIRS="${VENDOR_INC_DIRS} ${GRACE_INC}"
-
-   fi
-
-])
+dnl AC_DEFUN([AC_GRACE_FINALIZE], [dnl
+dnl    AC_FINALIZE_VENDOR( grace )
+dnl ])
 
 dnl-------------------------------------------------------------------------dnl
 dnl AC_SPICA_SETUP
@@ -1497,21 +1318,28 @@ AC_DEFUN([AC_VENDOR_FINALIZE], [dnl
    # level goes from high to low
 
    AC_TRILINOS_FINALIZE dnl  Depends on: LAPACK, MPI
-   AC_GSL_FINALIZE           dnl Depends on: LAPACK
+   dnl AC_GSL_FINALIZE           dnl Depends on: LAPACK
+   AC_FINALIZE_VENDOR([gsl],[${gsl_extra_libs}])dnl Depends on: LAPACK
+
    AC_AZTEC_FINALIZE
 
    AC_SUPERLUDIST_FINALIZE   dnl Depends on: PARMETIS
    AC_PARMETIS_FINALIZE      dnl Depends on: METIS
    AC_METIS_FINALIZE
 
-   AC_PCG_FINALIZE           dnl Depends on: LAPACK
+   dnl AC_PCG_FINALIZE        dnl Depends on: LAPACK
+   AC_FINALIZE_VENDOR([pcg])  dnl Depends on: LAPACK
+
    AC_HYPRE_FINALIZE
    AC_SCALAPACK_FINALIZE     dnl Depends on: BLACS, MPI
    AC_BLACS_FINALIZE         dnl Depends on: MPI
-   AC_LAPACK_FINALIZE
+
+   dnl AC_LAPACK_FINALIZE
+   AC_FINALIZE_VENDOR([lapack],[${lapack_extra_libs}]) dnl Optionally depends on: ATLAS
    AC_EOSPAC5_FINALIZE
    AC_GANDOLF_FINALIZE
-   AC_GRACE_FINALIZE
+   dnl AC_GRACE_FINALIZE
+   AC_FINALIZE_VENDOR([grace])
    AC_SPICA_FINALIZE
    AC_XERCES_FINALIZE
 
@@ -1572,6 +1400,61 @@ AC_DEFUN([AC_ALL_VENDORS_SETUP], [dnl
    AC_UDM_SETUP(pkg)
    AC_SILO_SETUP(pkg)
    AC_DLOPEN_SETUP(pkg)
+  
+])
+
+dnl-------------------------------------------------------------------------dnl
+dnl AC_VENDORS_REPORT
+dnl
+dnl DRACO Report of vendors found
+dnl-------------------------------------------------------------------------dnl
+AC_DEFUN([AC_VENDOR_REPORT], [dnl
+
+   echo " "
+   echo "Configuration Report:"
+   echo " "
+   echo "   Prefix                 : ${prefix}"
+   echo "   Debug symbols          : ${enable_debug}"
+   echo "   Optimization level     : ${with_opt}"
+   echo "   Design-by-Contract     : ${with_dbc}"
+dnl this is not defined in the top level configure.ac
+dnl echo "   Compiler vendor        : ${with_cxx}" 
+   echo "   Create shared libraries: ${enable_shared}"
+
+   echo " "
+   echo "Vendors found:"
+   echo " "
+   if test ${with_mpi:-no} != no; then
+      echo "   MPI                YES - ${with_mpi}"
+   else
+      echo "   MPI                NO  - all code will be built with-c4=scalar."
+   fi
+   if test ${with_pcg:-no} != no; then
+      echo "   PCG                YES"
+   else
+      echo "   PCG                NO  - pcgWrap will be omitted."
+   fi
+   if test ${with_gsl:-no} != no; then
+      echo "   GSL                YES"
+   else
+      echo "   GSL                NO  - special_functions and quadrature will be omitted."
+   fi
+   if test ${with_lapack:-no} != no; then
+      echo "   LAPACK             YES"
+   else
+      echo "   LAPACK             NO  - lapack_wrap will be omitted."
+   fi
+   if test ${with_gandolf:-no} != no; then
+      echo "   GANDOLF            YES"
+   else
+      echo "   GANDOLF            NO  - cdi_gandolf will be omitted."
+   fi
+   if test ${with_grace:-no} != no; then
+      echo "   GRACE              YES"
+   else
+      echo "   GRACE              NO  - plot2D will be omitted."
+   fi
+
 ])
 
 dnl-------------------------------------------------------------------------dnl

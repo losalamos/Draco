@@ -12,7 +12,23 @@ AC_CONFIG_AUX_DIR(../config)
 # draco version
 AC_DRACO_PREREQ
 
-AC_ALL_VENDORS_SETUP
+dnl VENDORS:
+dnl - This call is needed here so that the local configure script
+dnl   knows what vendors are available for the current built.
+dnl - The design works closely with the 'modules' feature provided by
+dnl   draco/environment/Modules.  For example, loading the openmpi
+dnl   module will set the environment variables MPI_INC_DIR and
+dnl   MPI_LIB_DIR.   The configure script looks for these environment
+dnl   variables to automatically configure the MPI vendor and package
+dnl   c4. 
+dnl - Alternatively, you can specify vendor configurations on the
+dnl   command line using --with-<vendor>=library|keyword,
+dnl   --with-<vendor>-inc=<DIR>, and --with-<vendor>-lib=<DIR>.  For
+dnl   example, --with-mpi=openmpi
+dnl   --with-mpi-inc=/ccs/codes/mpi/openmpi/Linux64/1.3.3/include
+dnl   --with-mpi-lib=/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib
+dnl AC_ALL_VENDORS_SETUP 
+
 AC_DRACO_ARGS
 
 # The order of packages in AC_CONFIG_SUBDIRS **is** important.  Each
@@ -31,11 +47,29 @@ AC_CONFIG_SUBDIRS( ds++ )
 ## LEVEL 2
 ##---------------------------------------------------------------------------##
 
+dnl Warning: if we do not find an MPI vendor, c4 will default to
+dnl scalar-mode.
+AC_MPI_SETUP(pkg)
+dnl AC_CONFIG_SUBDIRS( c4 )
 AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
-		   lapack_wrap shared_lib fpe_trap ) 
+ 		   shared_lib fpe_trap ) 
+
+dnl Determine if these vendors are available.
+AC_LAPACK_SETUP(pkg)
+AC_GRACE_SETUP(pkg)
+
+# Only build lapack_wrap if lapack is available
+if test -n "${vendor_lapack}"; then
+  AC_CONFIG_SUBDIRS( lapack_wrap )
+else
+  AC_NO_VENDOR_WARN([lapack_wrap],[lapack])
+fi
+
 # Only build plot2D if xmgrace is available
 if test -n "${vendor_grace}"; then
   AC_CONFIG_SUBDIRS( plot2D )
+else
+  AC_NO_VENDOR_WARN([plot2D],[grace])
 fi
 
 
@@ -43,9 +77,31 @@ fi
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( norms timestep pcgWrap viz parser \
-                   cdi_gandolf cdi_analytic meshReaders \
-                   special_functions )
+AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders )
+
+AC_GSL_SETUP(pkg)
+AC_GANDOLF_SETUP(pkg)
+
+# Only build special_functions if GSL is available.
+if test -n "${vendor_gsl}"; then
+  AC_CONFIG_SUBDIRS( special_functions )
+else
+  AC_NO_VENDOR_WARN([special_functions],[gsl])
+fi
+
+if test -n "${vendor_gandolf}"; then
+  AC_CONFIG_SUBDIRS( cdi_gandolf )
+else
+  AC_NO_VENDOR_WARN([cdi_gandolf],[gandolf])
+fi
+
+# Only build pcgWrap if pcg and lapack are available
+if test -n "${vendor_lapack}" && test -n "${vendor_pcg}"; then
+  AC_CONFIG_SUBDIRS( pcgWrap )
+else
+  AC_NO_VENDOR_WARN([pcgWrap],[pcg])
+fi
+
 dnl
 dnl Kelly Thompson 12 January 2005
 dnl Removed cdi_eospac from list of packages to build and test because
@@ -59,7 +115,14 @@ dnl
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( RTT_Format_Reader quadrature )
+AC_CONFIG_SUBDIRS( RTT_Format_Reader )
+
+# Only build quadrarure if GSL is available.
+if test -n "${vendor_gsl}"; then
+  AC_CONFIG_SUBDIRS( quadrature )
+else
+  AC_NO_VENDOR_WARN([quadrature],[gsl])
+fi
 
 ##---------------------------------------------------------------------------##
 ## build the makefile in src/
