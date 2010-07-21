@@ -14,13 +14,14 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 set version     10.0.023;
 set arch        x86_64;
 
-set prefix      /ccs/opt/$arch/intel/cc/$version;
+set prefix      /ccs/opt/$arch/intel/cce/$version;
 set bindir      $prefix/bin;
 set libdir      $prefix/lib;
 set mandir      $prefix/man;
-set licdir      $prefix/licenses;
+#set licdir      $prefix/licenses;
+set licdir      /ccs/opt/$arch/intel/cc/$version/licenses; 
 
-set f90prefix   /ccs/opt/$arch/intel/fc/$version;
+set f90prefix   /ccs/opt/$arch/intel/fce/$version;
 set f90bindir   $f90prefix/bin;
 set f90libdir   $f90prefix/lib;
 set f90mandir   $f90prefix/man;
