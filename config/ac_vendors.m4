@@ -698,7 +698,7 @@ AC_DEFUN([AC_PCG_SETUP], [dnl
                    [], [@S|@{PCG_LIB_DIR}], [pcg] )
 
    # Set up pcg only if --with-pcg or --with-pcg-lib is explicitly set
-   if ! test -n "${with_pcg}" = no ; then
+   if ! test  "${with_pcg:-no}" = no ; then
 
       AC_DEFINE(USE_PCGLIB)
 
