@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/times.h>  // defines the struct tms.
 #include "C4_Traits.hh"
+#include "C4_Req.hh"
 
 namespace rtt_c4
 {
@@ -125,16 +126,62 @@ int receive(T *buffer, int size, int source, int tag = C4_Traits<T*>::tag);
  * \return C4_Req object to handle communciation requests
  */
 template<class T>
-C4_Req send_async(const T *buffer, int size, int destination,
-		  int tag = C4_Traits<T*>::tag);
+C4_Req send_async( T const * buffer,
+                   int       size,
+                   int       destination )
+{
+    int tag =  C4_Traits<T*>::tag;
+    return send_async( buffer, size, destination, tag );
+}
+template<class T>
+C4_Req send_async( T const * buffer,
+                   int       size,
+                   int       destination,
+                   int       tag );
+
+// [2010-07-22 KT] This declaration should replace the two preceeding ones.
+// However, PGI-10 doesn't like this syntax and issues the warning:
+//    error: specifying a default argument when redeclaring an unreferenced 
+//    function template is nonstandard 
+
+// template<class T>
+// C4_Req send_async( T const * buffer,
+//                    int       size,
+//                    int       destination,
+//                    int       tag = C4_Traits<T*>::tag );
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a point-to-point, non-blocking send.
  */
 template<class T>
-void send_async(C4_Req &request, const T *buffer, int size, int destination,
-		int tag = C4_Traits<T*>::tag);
+void send_async( C4_Req       & request,
+                 T      const * buffer,
+                 int            size,
+                 int            destination )
+{
+    int tag = C4_Traits<T*>::tag;
+    send_async( request, buffer, size, destination, tag );
+    return;
+}
+template<class T>
+void send_async( C4_Req       & request,
+                 T      const * buffer,
+                 int            size,
+                 int            destination,
+                 int            tag );
+
+// [2010-07-22 KT] This declaration should replace the two preceeding ones.
+// However, PGI-10 doesn't like this syntax and issues the warning:
+//    error: specifying a default argument when redeclaring an unreferenced 
+//    function template is nonstandard 
+
+// template<class T>
+// void send_async( C4_Req       & request,
+//                  T      const * buffer,
+//                  int            size,
+//                  int            destination,
+//                  int            tag = C4_Traits<T*>::tag );
 
 //---------------------------------------------------------------------------//
 /*!
@@ -143,17 +190,62 @@ void send_async(C4_Req &request, const T *buffer, int size, int destination,
  * \return C4_Req object to handle communciation requests
  */
 template<class T>
-C4_Req receive_async(T *buffer, int size, int source,
-		     int tag = C4_Traits<T*>::tag);
+C4_Req receive_async( T   * buffer,
+                      int   size,
+                      int   source )
+{
+    int tag = C4_Traits<T*>::tag;
+    return receive_async( buffer, size, source, tag );
+}
+template<class T>
+C4_Req receive_async( T   * buffer,
+                      int   size,
+                      int   source,
+                      int   tag );
+
+// [2010-07-22 KT] This declaration should replace the two preceeding ones.
+// However, PGI-10 doesn't like this syntax and issues the warning:
+//    error: specifying a default argument when redeclaring an unreferenced 
+//    function template is nonstandard 
+
+// template<class T>
+// C4_Req receive_async( T   * buffer,
+//                       int   size,
+//                       int   source,
+//                       int   tag = C4_Traits<T*>::tag );
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a point-to-point, non-blocking receive.
  */
 template<class T>
-void receive_async(C4_Req& request, T *buffer, int size, int source,
-		   int tag = C4_Traits<T*>::tag);
+void receive_async( C4_Req & request,
+                    T      * buffer,
+                    int      size,
+                    int      source)
+{
+    int tag = C4_Traits<T*>::tag;
+    receive_async( request, buffer, size, source, tag );
+    return;
+}
+template<class T>
+void receive_async( C4_Req & request,
+                    T      * buffer,
+                    int      size,
+                    int      source,
+                    int      tag );
 
+// [2010-07-22 KT] This declaration should replace the two preceeding ones.
+// However, PGI-10 doesn't like this syntax and issues the warning:
+//    error: specifying a default argument when redeclaring an unreferenced 
+//    function template is nonstandard 
+
+// template<class T>
+// void receive_async( C4_Req & request,
+//                     T      * buffer,
+//                     int      size,
+//                     int      source,
+//                     int      tag = C4_Traits<T*>::tag );
 //---------------------------------------------------------------------------//
 // BROADCAST
 //---------------------------------------------------------------------------//
