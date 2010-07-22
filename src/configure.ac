@@ -59,19 +59,22 @@ AC_LAPACK_SETUP(pkg)
 AC_GRACE_SETUP(pkg)
 
 # Only build lapack_wrap if lapack is available
-if test -n "${vendor_lapack}"; then
-  AC_CONFIG_SUBDIRS( lapack_wrap )
-else
-  AC_NO_VENDOR_WARN([lapack_wrap],[lapack])
+if test -d lapack_wrap; then
+  if test -n "${vendor_lapack}"; then
+    AC_CONFIG_SUBDIRS( lapack_wrap )
+  else
+    AC_NO_VENDOR_WARN([lapack_wrap],[lapack])
+  fi
 fi
 
 # Only build plot2D if xmgrace is available
-if test -n "${vendor_grace}"; then
-  AC_CONFIG_SUBDIRS( plot2D )
-else
-  AC_NO_VENDOR_WARN([plot2D],[grace])
+if test -d plot2D; then
+  if test -n "${vendor_grace}"; then
+    AC_CONFIG_SUBDIRS( plot2D )
+  else
+    AC_NO_VENDOR_WARN([plot2D],[grace])
+  fi
 fi
-
 
 ##---------------------------------------------------------------------------##
 ## LEVEL 3
@@ -83,23 +86,29 @@ AC_GSL_SETUP(pkg)
 AC_GANDOLF_SETUP(pkg)
 
 # Only build special_functions if GSL is available.
-if test -n "${vendor_gsl}"; then
-  AC_CONFIG_SUBDIRS( special_functions )
-else
-  AC_NO_VENDOR_WARN([special_functions],[gsl])
+if test -d special_functions; then
+  if test -n "${vendor_gsl}"; then
+    AC_CONFIG_SUBDIRS( special_functions )
+  else
+    AC_NO_VENDOR_WARN([special_functions],[gsl])
+  fi
 fi
 
-if test -n "${vendor_gandolf}"; then
-  AC_CONFIG_SUBDIRS( cdi_gandolf )
-else
-  AC_NO_VENDOR_WARN([cdi_gandolf],[gandolf])
+if test -d cdi_gandolf; then
+  if test -n "${vendor_gandolf}"; then
+    AC_CONFIG_SUBDIRS( cdi_gandolf )
+  else
+    AC_NO_VENDOR_WARN([cdi_gandolf],[gandolf])
+  fi
 fi
 
 # Only build pcgWrap if pcg and lapack are available
-if test -n "${vendor_lapack}" && test -n "${vendor_pcg}"; then
-  AC_CONFIG_SUBDIRS( pcgWrap )
-else
-  AC_NO_VENDOR_WARN([pcgWrap],[pcg])
+if test -d pcgWrap; then
+  if test -n "${vendor_lapack}" && test -n "${vendor_pcg}"; then
+    AC_CONFIG_SUBDIRS( pcgWrap )
+  else
+    AC_NO_VENDOR_WARN([pcgWrap],[pcg])
+  fi
 fi
 
 dnl
@@ -118,10 +127,12 @@ dnl
 AC_CONFIG_SUBDIRS( RTT_Format_Reader )
 
 # Only build quadrarure if GSL is available.
-if test -n "${vendor_gsl}"; then
-  AC_CONFIG_SUBDIRS( quadrature )
-else
-  AC_NO_VENDOR_WARN([quadrature],[gsl])
+if test -d quadrature; then
+  if test -n "${vendor_gsl}"; then
+    AC_CONFIG_SUBDIRS( quadrature )
+  else
+    AC_NO_VENDOR_WARN([quadrature],[gsl])
+  fi
 fi
 
 ##---------------------------------------------------------------------------##
