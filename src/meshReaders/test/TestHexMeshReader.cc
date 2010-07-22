@@ -113,7 +113,7 @@ bool check_mesh(
     bool pass_et = check_element_types(mesh, testid);
     bool pass_ut = check_unique_element_types(mesh, testid);
 
-    return pass_nc && pass_cu && pass_ns && pass_ti && pass_en
+    return pass_nc && pass_cu && pass_ns && pass_ti && pass_gdn && pass_en
 	&& pass_in && pass_es && pass_et && pass_ut;
 }
 
@@ -378,7 +378,7 @@ bool check_element_sets(
     const mt elmsets = mesh.get_element_sets();
     if (testid == "slab") 
     {
-	pass_es == pass_es && elmsets.size() == 4;
+	pass_es = pass_es && elmsets.size() == 4;
 	pass_es = pass_es && check_map(elmsets,"Interior",0,100);
 	pass_es = pass_es && check_map(elmsets,"Interior_Region_1",0,100);
 	pass_es = pass_es && check_map(elmsets,"Vacuum_Boundary",100,102);
@@ -444,22 +444,16 @@ bool check_element_types(
     { 
 	for (int i=0; i<100; ++i)
 	    pass_et = pass_et && etypes[i] == et::BAR_2;
-	for (int i=100; i<102; ++i)
-	    etypes[i] == et::NODE;
     }
     else if (testid == "quad")
     {
 	for (int i=0; i<400; ++i)
 	    pass_et = pass_et && etypes[i] == et::QUAD_4;
-	for (int i=400; i<480; ++i)
-	    etypes[i] == et::BAR_2;
     }
     else if (testid == "cube") 
     {
 	for (int i=0; i<125; ++i)
 	    pass_et = pass_et && etypes[i] == et::HEXA_8;
-	for (int i=125; i<275; ++i)
-	    etypes[i] == et::QUAD_4;
     }
     else
 	Insist(false,"Unrecognized test id string!");
