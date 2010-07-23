@@ -1,20 +1,25 @@
-
 # Where are we?
-_BINDIR=`dirname "$BASH_ARGV"`
-DRACO_MODULE_DIR=`(cd $_BINDIR/..;pwd)`
+DRACO_MODULE_DIR=`(pwd)`
 
-target="`uname -n | sed -e s/[.].*//`"
+# What is the platform?
+
+if test -d /ccs/codes/radtran; then  
+  if test `uname -m` = "x86_64"; then 
+    platform=ccslan64
+  else
+    platform=ccslan32
+  fi
+fi
+
+#target="`uname -n | sed -e s/[.].*//`"
 if [ "${MODULE_VERSION:-}" = "" ]; then
-   case $target in
-   # 32-bit CCS-2 Linux
-   vikings | hersheys  | monk        | paxi | shaft | nammu |\
-   elmore  | monkeyboy | ccscs[2345])
+   case $platform in
+   ccslan32 ) 
       MODULE_VERSION_STACK="ccs-Linux32"
       MODULE_VERSION="ccs-Linux32"
       ;;
 
-   # 64-bit CCS-2 Linux
-   ccscs[16789])
+   ccslan64)
       MODULE_VERSION_STACK="ccs-Linux64"
       MODULE_VERSION="ccs-Linux64"
       ;;
@@ -25,24 +30,11 @@ else
   MODULE_VERSION_STACK="$MODULE_VERSION"
 fi
 export MODULE_VERSION_STACK
-
 export MODULESHOME=$DRACO_MODULE_DIR
 
 # Define the module command
-
-case $target in
-# 32-bit CCS-2 Linux
-   vikings | hersheys  | monk        | paxi | shaft | nammu |\
-   elmore  | monkeyboy | ccscs[2345])
-      module() { eval `/ccs/codes/radtran/vendors/Linux/Modules/bin/modulecmd bash $*`; }
-      ;;
-
-   # 64-bit CCS-2 Linux
-   ccscs[16789])
-      module() { eval `$MODULESHOME/bin/modulecmd bash $*`; }
-      ;;
-esac
-export -f module
+module() { eval `$MODULESHOME/bin/modulecmd zsh $*`; }
+export module
 
 if [ "${LOADEDMODULES:-}" = "" ]; then
   LOADEDMODULES=
@@ -50,9 +42,9 @@ if [ "${LOADEDMODULES:-}" = "" ]; then
 fi
 
 if [ "${MODULEPATH:-}" = "" ]; then
-  export MODULEPATH=$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION
+  export MODULEPATH=./$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION
 fi
 
-if [ ${BASH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/bash_completion ]; then
- . ${MODULESHOME}/init/bash_completion
+if [ ${ZSH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/zsh_completion ]; then
+  source ${MODULESHOME}/init/zsh_completion
 fi
