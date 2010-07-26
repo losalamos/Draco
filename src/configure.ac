@@ -27,7 +27,7 @@ dnl   --with-<vendor>-inc=<DIR>, and --with-<vendor>-lib=<DIR>.  For
 dnl   example, --with-mpi=openmpi
 dnl   --with-mpi-inc=/ccs/codes/mpi/openmpi/Linux64/1.3.3/include
 dnl   --with-mpi-lib=/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib
-dnl AC_ALL_VENDORS_SETUP 
+AC_ALL_VENDORS_SETUP 
 
 AC_DRACO_ARGS
 
@@ -50,7 +50,6 @@ AC_CONFIG_SUBDIRS( ds++ )
 dnl Warning: if we do not find an MPI vendor, c4 will default to
 dnl scalar-mode.
 AC_MPI_SETUP(pkg)
-dnl AC_CONFIG_SUBDIRS( c4 )
 AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
  		   shared_lib fpe_trap ) 
 
@@ -59,7 +58,7 @@ AC_LAPACK_SETUP(pkg)
 AC_GRACE_SETUP(pkg)
 
 # Only build lapack_wrap if lapack is available
-if test -d lapack_wrap; then
+if test -d ${srcdir}/lapack_wrap; then
   if test -n "${vendor_lapack}"; then
     AC_CONFIG_SUBDIRS( lapack_wrap )
   else
@@ -68,7 +67,7 @@ if test -d lapack_wrap; then
 fi
 
 # Only build plot2D if xmgrace is available
-if test -d plot2D; then
+if test -d ${srcdir}/plot2D; then
   if test -n "${vendor_grace}"; then
     AC_CONFIG_SUBDIRS( plot2D )
   else
@@ -86,7 +85,7 @@ AC_GSL_SETUP(pkg)
 AC_GANDOLF_SETUP(pkg)
 
 # Only build special_functions if GSL is available.
-if test -d special_functions; then
+if test -d ${srcdir}/special_functions; then
   if test -n "${vendor_gsl}"; then
     AC_CONFIG_SUBDIRS( special_functions )
   else
@@ -94,7 +93,7 @@ if test -d special_functions; then
   fi
 fi
 
-if test -d cdi_gandolf; then
+if test -d ${srcdir}/cdi_gandolf; then
   if test -n "${vendor_gandolf}"; then
     AC_CONFIG_SUBDIRS( cdi_gandolf )
   else
@@ -103,7 +102,7 @@ if test -d cdi_gandolf; then
 fi
 
 # Only build pcgWrap if pcg and lapack are available
-if test -d pcgWrap; then
+if test -d ${srcdir}/pcgWrap; then
   if test -n "${vendor_lapack}" && test -n "${vendor_pcg}"; then
     AC_CONFIG_SUBDIRS( pcgWrap )
   else
@@ -126,8 +125,8 @@ dnl
 
 AC_CONFIG_SUBDIRS( RTT_Format_Reader )
 
-# Only build quadrarure if GSL is available.
-if test -d quadrature; then
+# Only build quadrature if GSL is available.
+if test -d ${srcdir}/quadrature; then
   if test -n "${vendor_gsl}"; then
     AC_CONFIG_SUBDIRS( quadrature )
   else
