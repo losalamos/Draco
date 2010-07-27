@@ -102,7 +102,7 @@ if test -d ${srcdir}/cdi_gandolf; then
 fi
 
 # Only build pcgWrap if pcg and lapack are available
-if test -d ${srcdir}/pcgWrap; then
+if test -d ${srcdir}/pcgWrap && ! test "${with_pcg:-no}" = "no"; then
   if test -n "${vendor_lapack}" && test -n "${vendor_pcg}"; then
     AC_CONFIG_SUBDIRS( pcgWrap )
   else
