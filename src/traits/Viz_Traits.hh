@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:10:54 2000
  * \brief  Viz_Traits header file.
+ * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -125,8 +126,8 @@ class Viz_Traits< std::vector<std::vector<int> > >
     // Overloaded operator().
     int operator()(int i, int j) const
     {
-	Require(i >= 0 && i < field.size());
-	Require(j >= 0 && j < field[i].size());
+	Require(i >= 0 && i < static_cast<int>(field.size()));
+	Require(j >= 0 && j < static_cast<int>(field[i].size()));
 	return field[i][j];
     }
 
@@ -136,7 +137,7 @@ class Viz_Traits< std::vector<std::vector<int> > >
     // Column size accessor.
     int ncols(int row) const
     {
-	Require (row >= 0 && row < field.size());
+	Require (row >= 0 && row < static_cast<int>(field.size()));
 	return field[row].size();
     }
 };
@@ -162,8 +163,8 @@ class Viz_Traits< std::vector<std::vector<double> > >
     // Overloaded operator().
     double operator()(int i, int j) const
     {
-	Require(i >= 0 && i < field.size());
-	Require(j >= 0 && j < field[i].size());
+	Require(i >= 0 && i < static_cast<int>(field.size()));
+	Require(j >= 0 && j < static_cast<int>(field[i].size()));
 	return field[i][j];
     }
 
@@ -173,7 +174,7 @@ class Viz_Traits< std::vector<std::vector<double> > >
     // Column size accessor.
     int ncols(int row) const
     {
-	Require (row >= 0 && row < field.size());
+	Require (row >= 0 && row < static_cast<int>(field.size()));
 	return field[row].size();
     }
 };
