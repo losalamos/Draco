@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Aug 29 16:46:52 2001
  * \brief  Analytic_Model definitions
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -89,7 +90,7 @@ class Analytic_Opacity_Model
     virtual double calculate_opacity(double T, double rho) const = 0;
 
     //! Interface for derived analytic opacity models.
-    virtual double calculate_opacity(double T, double rho, double nu) const
+    virtual double calculate_opacity(double T, double rho, double /*nu*/) const
     {
         return calculate_opacity(T, rho); 
     };
@@ -134,13 +135,13 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
     explicit Constant_Analytic_Opacity_Model(const sf_char &packed);
 
     //! Calculate the opacity in units of cm^2/g.
-    double calculate_opacity(double T, double rho) const
+    double calculate_opacity(double /*T*/, double /*rho*/) const
     {
 	return sigma;
     }
 
     //! Calculate the opacity in units of cm^2/g.
-    double calculate_opacity(double T, double rho, double nu) const
+    double calculate_opacity(double /*T*/, double /*rho*/, double /*nu*/) const
     {
         return sigma;
     }
@@ -467,11 +468,11 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     }
     
     //! Return 0 for the number of electrons per ion.
-    double calculate_num_free_elec_per_ion(double T, double rho) const
+    double calculate_num_free_elec_per_ion(double /*T*/, double /*rho*/) const
     { return 0.0; }
 
     //! Return 0 for the electron thermal conductivity.
-    double calculate_elec_thermal_conductivity(double T, double rho) const
+    double calculate_elec_thermal_conductivity(double /*T*/, double /*rho*/) const
     { return 0.0; }
 
     //! Return the model parameters.
@@ -483,8 +484,8 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
 
 } // end namespace rtt_cdi_analytic
 
-#endif                          // __cdi_analytic_Analytic_Models_hh__
+#endif  // __cdi_analytic_Analytic_Models_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_analytic/Analytic_Models.hh
+// end of cdi_analytic/Analytic_Models.hh
 //---------------------------------------------------------------------------//
