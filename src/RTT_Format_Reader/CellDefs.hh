@@ -60,9 +60,16 @@ class CellDef
   public:
 
     CellDef(const CellDefs & cellDefs_, const string & name_) 
-	: cellDefs(cellDefs_), name(name_), ordered_sides(0) {}
+	: cellDefs(cellDefs_),
+          name(name_),
+          nnodes(0),
+          nsides(0),
+          side_types( std::vector<int>() ),
+          sides( std::vector< std::vector<int> >() ),
+          ordered_sides(0)
+    { /* empty */ }
 
-    ~CellDef() {}
+    ~CellDef(void) {/*empty*/}
 
     void readDef(ifstream & meshfile);
     void redefineCellDef(const vector_int & new_side_types_, 

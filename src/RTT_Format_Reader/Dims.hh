@@ -65,8 +65,33 @@ class Dims
     int ncell_data;
 
   public:
-    Dims() { ncells = 0; }
-    ~Dims() {}
+    Dims(void)
+        : coor_units( std::string() ),
+          prob_time_units( std::string() ),
+          ncell_defs(0),
+          nnodes_max(0),
+          nsides_max(0),
+          nnodes_side_max(0),
+          ndim(0),
+          ndim_topo(0),
+          nnodes(0),
+          nnode_flag_types(0),
+          nnode_flags(std::vector<int>()),
+          nnode_data(0),
+          nsides(0),
+          nside_types(0),
+          side_types(std::vector<int>()),
+          nside_flag_types(0),
+          nside_flags(std::vector<int>()),
+          nside_data(0),
+          ncells(0),
+          ncell_types(0),
+          cell_types(std::vector<int>()),
+          ncell_flag_types(0),
+          ncell_flags(std::vector<int>()),
+          ncell_data(0)
+    { /* empty */ }
+    ~Dims(void) {/*empty*/}
 
     void readDims(ifstream & meshfile);
 

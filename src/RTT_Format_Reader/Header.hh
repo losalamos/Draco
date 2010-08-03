@@ -42,8 +42,16 @@ class Header
     vector_str comments;
 
   public:
-    Header() {}
-    ~Header() {}
+    Header(void)
+        : version( std::string("") ),
+          title(   std::string("") ),
+          date(    std::string("") ),
+          cycle(     0   ),
+          time(      0.0 ),
+          ncomments( 0   ),
+          comments( std::vector<string>() )
+    {/*empty*/}
+    ~Header(void) {/*empty*/}
 
     void readHeader(ifstream & meshfile);
 
