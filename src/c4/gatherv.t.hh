@@ -127,6 +127,7 @@ void determinate_gatherv(vector<T>           &outgoing_data,
             }
             
             vector<T> recbuf(total_count,42);
+            // &vec[0] is only valid if vector has non-zero length
             rtt_c4::gatherv(
                 (count>0?&outgoing_data[0]:NULL),
                 count,

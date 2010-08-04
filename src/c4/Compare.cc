@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Thu May  1 14:42:10 2008
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

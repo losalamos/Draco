@@ -1,9 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-// Sync.hh
-// Maurice LeBrun
-// Wed Jan 25 16:04:40 1995
+/*!
+ * \file   Sync.hh
+ * \author Maurice LeBrun
+ * \date   Wed Jan 25 16:04:40 1995
+ * \brief  Classes for forcing a global sync at the head and/or tail of a block.
+ * \note   Copyright (C) 1995-2010 Los Alamos National Security, LLC.
+ */
 //---------------------------------------------------------------------------//
-// @> Classes for forcing a global sync at the head and/or tail of a block.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_Sync_hh__
@@ -19,13 +23,14 @@ namespace rtt_c4
 // the ctor.
 //===========================================================================//
 
-class HSync {
-
+class HSync
+{
     HSync( const HSync& );
     HSync& operator=( const HSync& );
 
   public:
-    HSync( int s =1 );
+    explicit HSync( int s =1 );
+    virtual ~HSync(void) {/*empty*/};
 };
 
 //===========================================================================//
@@ -35,7 +40,8 @@ class HSync {
 // the dtor.
 //===========================================================================//
 
-class TSync {
+class TSync
+{
 
     TSync( const TSync& );
     TSync& operator=( const TSync& );
@@ -44,7 +50,7 @@ class TSync {
 
   public:
     TSync( int s =1 ) : sync(s) {}
-    ~TSync();
+    virtual ~TSync(void);
 };
 
 

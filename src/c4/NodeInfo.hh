@@ -1,9 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-// NodeInfo.hh
-// Geoffrey Furnish
-// Tue Jan 17 10:13:47 1995
+/*!
+ * \file   NodeInfo.hh
+ * \author Geoffrey Furnish
+ * \date   Tue Jan 17 10:13:47 1995
+ * \brief  Class to hold parallel configuration information.
+ * \note   Copyright (C) 1995-2010 Los Alamos National Security, LLC.
+ */
 //---------------------------------------------------------------------------//
-// @> Class to hold parallel configuration information.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_NodeInfo_hh__
@@ -29,6 +33,7 @@ class NodeInfo {
     int lastnode;
 
     NodeInfo();
+    virtual ~NodeInfo(void) {/*empty*/};
 };
 
 } // end of rtt_c4

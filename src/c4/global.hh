@@ -19,13 +19,8 @@
 
 // C4 package configure
 #include "c4/config.h"
-
-// C4 Message Passing Functions
-#include "C4_Functions.hh"
-
-// C4 Request handler
-#include "C4_Req.hh"
-
+#include "C4_Functions.hh" // C4 Message Passing Functions
+#include "C4_Req.hh"       // C4 Request handler
 #include "C4_Traits.hh"
 
 //---------------------------------------------------------------------------//
@@ -83,14 +78,14 @@ inline void gsync()
 
 template<class T>
 inline int Send(const T *buf, int nels, int dest,
-		int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+		int tag = rtt_c4::C4_Traits<T*>::tag, int /*group*/ = 0)
 {
     return rtt_c4::send(buf, nels, dest, tag);
 }
 
 template<class T>
 inline int Recv(T *buf, int nels, int source,
-		int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+		int tag = rtt_c4::C4_Traits<T*>::tag, int /*group*/ = 0)
 {
     return rtt_c4::receive(buf, nels, source, tag);
 }
@@ -118,28 +113,28 @@ inline int Recv(T *buf, int nels, int source,
 
 template<class T>
 inline void SendAsync(C4_Req& r, const T *buf, int nels, int dest,
-		      int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+		      int tag = rtt_c4::C4_Traits<T*>::tag, int /*group*/ = 0)
 {
     rtt_c4::send_async(r, buf, nels, dest, tag);
 }
 
 template<class T>
 inline void RecvAsync(C4_Req& r, T *buf, int nels, int source,
-		      int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+		      int tag = rtt_c4::C4_Traits<T*>::tag, int /*group*/ = 0)
 {
     rtt_c4::receive_async(r, buf, nels, source, tag);
 }
 
 template<class T>
 inline C4_Req SendAsync(const T *buf, int nels, int dest,
-			int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+			int tag = rtt_c4::C4_Traits<T*>::tag, int /*group*/ = 0)
 {
     return rtt_c4::send_async(buf, nels, dest, tag); 
 }
 
 template<class T>
 inline C4_Req RecvAsync(T *buf, int nels, int source,
-			int tag = rtt_c4::C4_Traits<T*>::tag, int group = 0)
+			int tag = rtt_c4::C4_Traits<T*>::tag, int /*group*/ = 0)
 {
     return rtt_c4::receive_async(buf, nels, source, tag);
 }
@@ -148,48 +143,56 @@ template<class T>
 inline void gsum(T &x)
 {
     rtt_c4::global_sum(x);
+    return;
 }
 
 template<class T>
 inline void gprod(T &x)
 {
     rtt_c4::global_prod(x);
+    return;
 }
 
 template<class T>
 inline void gmin(T &x)
 {
     rtt_c4::global_min(x);
+    return;
 }
 
 template<class T>
 inline void gmax(T &x)
 {
     rtt_c4::global_max(x);
+    return;
 }
 
 template<class T>
 inline void gsum(T *x, int n)
 {
     rtt_c4::global_sum(x, n);
+    return;
 }
 
 template<class T>
 inline void gprod(T *x, int n)
 {
     rtt_c4::global_prod(x, n);
+    return;
 }
 
 template<class T>
 inline void gmin(T *x, int n)
 {
     rtt_c4::global_min(x, n);
+    return;
 }
 
 template<class T>
 inline void gmax(T *x, int n)
 {
     rtt_c4::global_max(x, n);
+    return;
 }
 
 inline double Wtime()

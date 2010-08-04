@@ -1,18 +1,21 @@
 //----------------------------------*-C++-*----------------------------------//
-// SpinLock.hh
-// Geoffrey Furnish
-// Fri Dec 16 13:29:01 1994
+/*!
+ * \file   SpinLock.hh
+ * \author Geoffrey Furnish
+ * \date   Fri Dec 16 13:29:01 1994
+ * \brief  A spin lock class.  Serializes execution of a blcok.
+ * \note   Copyright (C) 1995-2010 Los Alamos National Security, LLC.
+ */
 //---------------------------------------------------------------------------//
-// @> A spin lock class.  Serializes execution of a blcok.
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_SpinLock_hh__
 #define __c4_SpinLock_hh__
 
-#include <cstdio>
-
 #include "NodeInfo.hh"
 #include "Sync.hh"
+#include <cstdio>
 
 namespace rtt_c4
 {
@@ -25,8 +28,8 @@ namespace rtt_c4
 // finished.
 //===========================================================================//
 
-class SpinLock : public NodeInfo {
-
+class SpinLock : public NodeInfo
+{
     SpinLock( const SpinLock& );
     SpinLock& operator=( const SpinLock& );
 

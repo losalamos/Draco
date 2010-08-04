@@ -10,12 +10,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 
 #include "Invert_Comm_Map.hh"
 #include "ds++/Assert.hh"
 #include <vector>
 #include <map>
+#include <iostream>
+#include <iterator> // back_inserter
 
 namespace rtt_c4
 {

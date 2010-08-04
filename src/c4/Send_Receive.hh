@@ -3,7 +3,7 @@
  * \file   c4/Send_Receive.hh
  * \author Mike Buksas
  * \brief  Define class Send_Receive
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,6 +13,8 @@
 #define c4_Send_Receive_hh
 
 #include "C4_Functions.hh"
+#include "C4_Req.hh"
+#include "ds++/Assert.hh"
 
 namespace rtt_c4
 {
@@ -61,8 +63,9 @@ class Sender
 
     
   public:
-
-    Sender(int node) : to_node(node)
+  
+    explicit Sender(int node) 
+      : to_node(node)
     {
         Check (to_node >= 0);
         Check (to_node < rtt_c4::nodes());
@@ -101,7 +104,8 @@ class Receiver
 
   public:
 
-    Receiver(int node) : from_node(node)
+    explicit Receiver(int node) 
+      : from_node(node)
     {
         Check (from_node >= 0);
         Check (from_node < rtt_c4::nodes());
@@ -110,10 +114,10 @@ class Receiver
   protected:
 
     int receive_size() const
-    {
-        int size;
-        rtt_c4::receive(&size, 1, from_node, SIZE_CHANNEL);
-        return size;
+    {        
+        int size_rec(0);
+        int count = rtt_c4::receive<int>(&size_rec, 1, from_node, SIZE_CHANNEL);
+        return size_rec;
     }
 
 
@@ -122,7 +126,8 @@ class Receiver
     {
         if (size > 0) {
             Check(data);
-            rtt_c4::receive(data, size, from_node, DATA_CHANNEL);
+            rtt_c4::receive<T>(data, size, from_node, DATA_CHANNEL);
+
         }
     }
 
