@@ -12,6 +12,74 @@
 /* DBC ENVIRONMENTS */
 #undef DBC
 
+/* Remove extra declspec values (for Windows dll) */
+/* #define DLL_PUBLIC
+   #define DLL_LOCAL */
+
+/* Are we building static or shared libraries? */
+#undef DRACO_SHARED_LIBS
+
+/*!
+ * Provide toolset for hiding symbols from shared libraries.  By default MSVC
+ * hides everying unless they are marked as 'dllexport'.  By default
+ * Linux-based linkers export everything unless they are marked as
+ * 'hidden'. The macros DLL_PUBLIC and DLL_LOCAL are provided to help make
+ * symbol export portable between Linux and Windows.
+ *
+ * \ref http://gcc.gnu.org/wiki/Visibility
+ *
+ * For MSVC, you must also mark functions as dllexport or dllimport.  When
+ * compiling a file to place it in a dll, the symbols must be marked
+ * 'dllexport', but when including a header that is associated with an
+ * external .dll (include Array.hh and linking against -ldsxx.so), the same
+ * symbol must be marked as 'dllimport.' The macro 'BUILDING_DLL' will be used
+ * to control how the symbols are marked.
+ */
+
+/* Windows ---------------------------------------- */
+#if defined _WIN32 || defined __CYGWIN__ 
+  #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
+    #ifdef BUILDING_DLL /* building dll or importing symbols? */
+      #ifdef __GNUC__
+        #define DLL_PUBLIC __attribute__((dllexport))
+      #else
+        /* Note: actually gcc seems to also supports this syntax. */
+        #define DLL_PUBLIC __declspec(dllexport) 
+      #endif /* __GNUC__ */
+    #else  /* BUILDING_DLL */
+      #ifdef __GNUC__
+        #define DLL_PUBLIC __attribute__((dllimport))
+      #else
+        /* Note: actually gcc seems to also supports this syntax. */
+        #define DLL_PUBLIC __declspec(dllimport) 
+      #endif /* __GNUC__ */
+    #endif  /* BUILDING_DLL */
+    #define DLL_LOCAL
+        
+  #else /* DRACO_SHARED_LIBS */
+    /* when building static libraries, no need to export symbols. */
+    #define DLL_PUBLIC
+    #define DLL_LOCAL
+  #endif /* DRACO_SHARED_LIBS */
+
+/* Linux ---------------------------------------- */
+#else 
+  #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
+    #if __GNUC__ >= 4
+      #define DLL_PUBLIC __attribute__ ((visibility("default")))
+      #define DLL_LOCAL  __attribute__ ((visibility("hidden")))
+    #else
+      #define DLL_PUBLIC
+      #define DLL_LOCAL
+    #endif /* __GNUC__ >=4 */
+
+  #else /* DRACO_SHARED_LIBS */
+    /* when building static libraries, no need to export symbols. */
+    #define DLL_PUBLIC
+    #define DLL_LOCAL
+  #endif /* DRACO_SHARED_LIBS */
+#endif
+
 #endif                          /* __dsxx_config_h__ */
 
 /*---------------------------------------------------------------------------*/

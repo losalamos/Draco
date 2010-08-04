@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- *  \file   ds++/Release.hh
- *  \author Thomas Evans
- *  \date   Thu Jul 15 09:31:44 1999
- *  \brief  Header file for ds++ library release function.
+ * \file   ds++/Release.hh
+ * \author Thomas Evans
+ * \date   Thu Jul 15 09:31:44 1999
+ * \brief  Header file for ds++ library release function.
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC
  */
 //===========================================================================//
 // $Id$
@@ -13,6 +14,8 @@
 #define rtt_ds_Release_hh
 
 #include <string>
+#include "ds++/config.h"
+
 
 //===========================================================================//
 /*!

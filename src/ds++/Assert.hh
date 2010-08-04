@@ -5,6 +5,7 @@
  * \date   6 December 1993
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
+ * \note   Copyright (C) 1993-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,11 +14,9 @@
 #ifndef RTT_dsxx_Assert_HH
 #define RTT_dsxx_Assert_HH
 
+#include "ds++/config.h"
 #include <stdexcept>
 #include <string>
-
-// add ds++ package configure
-#include "ds++/config.h"
 
 namespace rtt_dsxx
 {
@@ -71,45 +70,46 @@ namespace rtt_dsxx
  * 
  * Assertion and DBC examples.
  */
-// revision history:
-// -----------------
-// 11 March 2003 (Kelly Thompson)
-// 
-// Major changes for class rtt_dsxx::assertion:
-//
-// Let rtt_dsxx::assertion derive from std::runtime_error.  G. Furnish
-// intended for the design to follow this model but the C++ compilers at time
-// did not have full support for <stdexcept>.  API is unchanged but the guts
-// of the class are significantly different (i.e.: use copy and assignment
-// operators from base class, use string instead of const char *, etc.).
-//
-// 28 July 1997
-//
-// Total rewrite of the DS++ Assertion facility.  In the old formulation,
-// Assert and Insist expanded into inline if statements, for which the body
-// were blocks which both contained output to cerr, and which threw an
-// exception.  This has proven problematic because it meant that Assert.hh
-// included iostream.h, and also because throw was inlined (not a problem for
-// Assert per se, since Assert was generally shut off for optimized codes,
-// but still a problem for Insist).  These effects combined to present
-// problems both at compile time and, possibly, at run time.
-//
-// The new formulation, motivated by suggestions from Arch Robison and Dave
-// Nystrom, uses a call to an out-of-line function to do the actual logging
-// and throwing of exceptions.  This permits removing iostream.h from the
-// inclusion graph for translation units including Assert.hh, and avoids
-// inlining of exception throwing code.  Moreover, it also allows us to get
-// __FILE__ into play, which we couldn't do before because there was no way
-// to do string concatenation with it, and you couldn't do free store
-// management effectively in an inlined macro.  By going out to a global
-// function, we pick up the ability to formulate a more complete picture of
-// the error, and provide some optimization capability (both compile time and
-// run time).
-//
-// Note also that at this juncture, we go ahead and drop all support for
-// compilers which are incapable of compiling exception code.  From here
-// forward, exceptions are assumed to be available.  And thereby we do our
-// part to promote "standard C++".
+/*!
+ * \section assertRevisionHistory Revision history:
+ * \subsection date11March2003 11 March 2003 (Kelly Thompson)
+ * 
+ * Major changes for class rtt_dsxx::assertion:
+ *
+ * Let rtt_dsxx::assertion derive from std::runtime_error.  G. Furnish
+ * intended for the design to follow this model but the C++ compilers at time
+ * did not have full support for \c <stdexcept>.  API is unchanged but the
+ * guts of the class are significantly different (i.e.: use copy and
+ * assignment operators from base class, use string instead of \c const \c
+ * char \c *, etc.).
+ *
+ * \subsection date28July1997 28 July 1997
+ *
+ * Total rewrite of the ds++ Assertion facility.  In the old formulation,
+ * Assert and Insist expanded into inline if statements, for which the body
+ * were blocks which both contained output to cerr, and which threw an
+ * exception.  This has proven problematic because it meant that \c Assert.hh
+ * included \c iostream.h, and also because throw was inlined (not a problem
+ * for Assert per se, since Assert was generally shut off for optimized codes,
+ * but still a problem for Insist).  These effects combined to present
+ * problems both at compile time and, possibly, at run time.
+ *
+ * The new formulation, motivated by suggestions from Arch Robison and Dave
+ * Nystrom, uses a call to an out-of-line function to do the actual logging
+ * and throwing of exceptions.  This permits removing \c iostream.h from the
+ * inclusion graph for translation units including \c Assert.hh, and avoids
+ * inlining of exception throwing code.  Moreover, it also allows us to get \c
+ * __FILE__ into play, which we couldn't do before because there was no way to
+ * do string concatenation with it, and you couldn't do free store management
+ * effectively in an inlined macro.  By going out to a global function, we
+ * pick up the ability to formulate a more complete picture of the error, and
+ * provide some optimization capability (both compile time and run time).
+ *
+ * Note also that at this juncture, we go ahead and drop all support for
+ * compilers which are incapable of compiling exception code.  From here
+ * forward, exceptions are assumed to be available.  And thereby we do our
+ * part to promote "standard C++".
+ */
 //===========================================================================//
 
 class assertion : public std::logic_error
@@ -156,7 +156,8 @@ class assertion : public std::logic_error
     virtual ~assertion() throw() { /* empty */ }
 
   private:
-    //! Helper function to build error message that includes source file name and line number.
+    /*! Helper function to build error message that includes source file name
+     *  and line number. */
     std::string build_message( std::string const & cond, 
 			       std::string const & file, 
 			       int         const   line ) const;
@@ -217,7 +218,7 @@ void insist_ptr(char const * const cond,
      ---     ------------------
       0      Require
       1      Check
-      2      Ensure
+      2      Ensure, Remember
 \endverbatim
  * 
  * So for instance, \c -DDBC=7 turns them all on, \c -DDBC=0 turns them all
@@ -315,8 +316,8 @@ void insist_ptr(char const * const cond,
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
-#endif				// RTT_dsxx_Assert_HH
+#endif // RTT_dsxx_Assert_HH
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/Assert.hh
+// end of ds++/Assert.hh
 //---------------------------------------------------------------------------//

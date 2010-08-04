@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  *
  * Long description.
  */
@@ -15,9 +15,9 @@
 #ifndef dsxx_ScalarUnitTest_hh
 #define dsxx_ScalarUnitTest_hh
 
-#include <iostream>
-
 #include "UnitTest.hh"
+#include "ds++/config.h"
+#include <iostream>
 
 namespace rtt_dsxx
 {

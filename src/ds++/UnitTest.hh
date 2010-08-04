@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,11 +13,11 @@
 #ifndef dsxx_UnitTest_hh
 #define dsxx_UnitTest_hh
 
+#include "Assert.hh"
 #include <string>
 #include <list>
 #include <iostream>
 #include <map>
-#include "Assert.hh"
 
 namespace rtt_dsxx
 {

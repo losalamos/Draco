@@ -260,6 +260,7 @@ SP<T>::SP(T *p_in)
 template<class T>
 template<class X>
 SP<T>::SP(X *px_in)
+    : p(NULL), r(NULL)
 {
     Require (px_in);
 
@@ -308,6 +309,7 @@ SP<T>::SP(const SP<T> &sp_in)
 template<class T>
 template<class X>
 SP<T>::SP(const SP<X> &spx_in)
+    :p(NULL), r(NULL)
 {
     Require (spx_in.r);
 

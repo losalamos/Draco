@@ -1,38 +1,47 @@
 //----------------------------------*-C++-*----------------------------------//
-// DynArray.hh
-// Geoffrey Furnish
-// 28 January 1994
+/*!
+ * \file   DynArray.hh
+ * \author Geoffrey Furnish
+ * \date   28 January 1994
+ * \brief  A dynamically growing array template class.
+ * \note   Copyright (C) 1994-2010 Los Alamos National Security, LLC.
+ */
 //---------------------------------------------------------------------------//
-// @> A dynamically growing array template class.
+// $Id$ 
 //---------------------------------------------------------------------------//
 
 #ifndef __ds_DynArray_hh__
 #define __ds_DynArray_hh__
 
+#include "ds++/config.h"
 #include <iosfwd>
 
 namespace rtt_dsxx
 {
 
 //===========================================================================//
-// class DynArray<T> - A dynamically growable templated array class
-
-// This class provides an array facility which expands dynamically on
-// reference so that it is always big enough to hold what you want to put on
-// it, but predimensioning is not required.  When a reference is made to an
-// element which is out of bounds on either end, the array is resized,
-// extending in the direction of the reference.  
-//
-// The default subscripting mechanism exports a reference to the internal
-// datum.  This is obviously dangerous, and the user is hereby forewarned.
-// Beware of dangling references!  You should assume that any reference may
-// invalidate the previous result.  A const form of indexing allows retrieval
-// by value without dynamic extension, if such semantics are desired for a
-// particular situation.
+/*!
+ * \class DynArray
+ * \brief A dynamically growable templated array class
+ *
+ * This class provides an array facility which expands dynamically on
+ * reference so that it is always big enough to hold what you want to put on
+ * it, but predimensioning is not required.  When a reference is made to an
+ * element which is out of bounds on either end, the array is resized,
+ * extending in the direction of the reference.  
+ *
+ * The default subscripting mechanism exports a reference to the internal
+ * datum.  This is obviously dangerous, and the user is hereby forewarned.
+ * Beware of dangling references!  You should assume that any reference may
+ * invalidate the previous result.  A const form of indexing allows retrieval
+ * by value without dynamic extension, if such semantics are desired for a
+ * particular situation.
+ */
 //===========================================================================//
 
 template<class T>
-class DynArray {
+class DynArray 
+{
 
     T *v;
     T defval;

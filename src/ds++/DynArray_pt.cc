@@ -1,19 +1,24 @@
 //----------------------------------*-C++-*----------------------------------//
-// DynArray.pt
-// Dave Nystrom
-// 14 January 1997
+/*!
+ * \file    ds++/DynArray.pt
+ * \author  Dave Nystrom
+ * \date    14 January 1997
+ * \brief   Explicit instantiate of DynArray.
+ * \note    Copyright (C) 1997-2010 Los Alamos National Security, LLC
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
 
+#include "DynArray.t.hh"
 #include <iostream>
 #include <string>
-#include "DynArray.t.hh"
 
 namespace rtt_dsxx
 {
 
 template class DynArray<int>;
 template std::ostream& operator<<( std::ostream& os, 
-				   const DynArray<int>& d );
+                                   const DynArray<int>& d );
 
 template class DynArray<long>;
 template std::ostream& operator<<( std::ostream& os, 
