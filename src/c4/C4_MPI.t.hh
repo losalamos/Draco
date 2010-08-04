@@ -13,6 +13,7 @@
 #define c4_C4_MPI_t_hh
 
 #include "c4/config.h"
+#include "C4_Functions.hh"
 
 #ifdef C4_MPI
 
@@ -205,7 +206,7 @@ int gatherv(T *send_buffer,
                              receive_sizes,
                              receive_displs,
                              MPI_Traits<T>::element_type(),
-                             0,
+                             0, // root is always processor 0 at present
                              communicator);
 
     return Result;
