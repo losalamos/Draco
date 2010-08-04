@@ -18,6 +18,9 @@
 ##
 ## xe                - start XEmacs using gnuclient if an instance is
 ##                     already running
+## 
+## em                - start GNU Emacs using emacsclient if an instance is 
+##                     already running
 ##
 ## cleanemacs        - recursively remove ~ files, .flc files and .rel
 ##                     files.
@@ -49,13 +52,6 @@
 ## npwd              - function used to set the prompt under bash.
 ##
 ##---------------------------------------------------------------------------##
-
-## Use gnu tools by default
-if test -d /usr/local/gnu/bin; then
-   export PATH=/usr/local/gnu/bin:${PATH}
-fi
-
-ulimit -s unlimited
 
 ##---------------------------------------------------------------------------##
 ## EOSPAC Setup
@@ -97,6 +93,17 @@ function xe
   else
     echo "Could not find XEmacs or GNU Emacs in your path."
   fi
+}
+
+function em
+{
+    # export GDK_NATIVE_WINDOWS=1
+    if test -z "`ps | grep emacs-x`"; then
+        emacs $* -g 90x65
+    else
+        exec emacsclient --alternate-editor="emacs" -c "$@"
+    fi
+    export EDITOR=em
 }
 
 ##---------------------------------------------------------------------------##
