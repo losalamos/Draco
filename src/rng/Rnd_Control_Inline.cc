@@ -27,7 +27,7 @@ namespace rtt_rng
  * \param n total number of independent streams; default = 1.0e9 
  * \param sn stream index; default = 0 
  */
-Rnd_Control::Rnd_Control(int s, int n, int sn, int p)
+Rnd_Control::Rnd_Control(int s, int n, int sn, int /*p*/)
     : d_seed(s), d_number(n), d_streamnum(sn)
 {
     Require (d_streamnum <= d_number);
