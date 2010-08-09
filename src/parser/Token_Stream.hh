@@ -92,6 +92,9 @@ class Syntax_Error : public std::runtime_error
  * the human client where the error occurred. For example, a \c
  * File_Token_Stream can tell the human client the line in the input file
  * where the error was detected.
+ *
+ * \bug It is not recommended to derive from STL containers because they do
+ * not provide virtual destructors.
  */
 
 class Token_Stream

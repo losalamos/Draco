@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Parallel_File_Token_Stream.hh
+ * \file   Parallel_File_Token_Stream.hh
  * \author Kent G. Budge
- * \brief Definition of class Parallel_File_Token_Stream.
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Definition of class Parallel_File_Token_Stream.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,8 +12,8 @@
 #ifndef CCS4_Parallel_File_Token_Stream_HH
 #define CCS4_Parallel_File_Token_Stream_HH
 
-#include <fstream>
 #include "Text_Token_Stream.hh"
+#include <fstream>
 
 namespace rtt_parser 
 {

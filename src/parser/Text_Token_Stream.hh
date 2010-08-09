@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Text_Token_Stream.hh
+ * \file   Text_Token_Stream.hh
  * \author Kent G. Budge
- * \brief Definition of the Text_Token_Stream class.
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Definition of the Text_Token_Stream class.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,8 +12,8 @@
 #ifndef CCS4_Text_Token_Stream_HH
 #define CCS4_Text_Token_Stream_HH
 
-#include <set>
 #include "Token_Stream.hh"
+#include <set>
 
 namespace rtt_parser 
 {
@@ -83,22 +83,22 @@ class Text_Token_Stream : public Token_Stream
     virtual void fill_character_buffer_() = 0;
     
     virtual bool error_() const = 0;
-    virtual bool end_() const = 0;
-       virtual std::string location_() const = 0;
+    virtual bool end_(void) const = 0;
+    virtual std::string location_(void) const = 0;
 
     //! Pop a character off the internal buffer. 
-    char pop_char_();
+    char pop_char_(void);
     //! Peek ahead at the internal buffer. 
     char peek_(unsigned pos = 0);
 
     //! Skip any whitespace at the cursor position.
-    void eat_whitespace_();
+    void eat_whitespace_(void);
 
     // The following scan_ functions are for numeric scanning.  The names
     // reflect the context-free grammar given by Stroustrup in appendix A 
     // of _The C++ Programming Language_.  However, we do not presently
     // recognize type suffixes on either integers or floats.
-    unsigned scan_floating_literal_();
+    unsigned scan_floating_literal_(void);
     unsigned scan_digit_sequence_(unsigned &);
     unsigned scan_exponent_part_(unsigned &);
     unsigned scan_fractional_constant_(unsigned &);

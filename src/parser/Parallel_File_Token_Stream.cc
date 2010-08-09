@@ -39,13 +39,13 @@ using namespace rtt_dsxx;
  */
 
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
-    :
-    filename_(file_name),
-    is_io_processor_(rtt_c4::node()==0),
-    // The current implementation always designates processor 0 as the I/O
-    // processor.
-    at_eof_(   false ),
-    at_error_( false )
+    : filename_(file_name),
+      infile_(),
+      is_io_processor_(rtt_c4::node()==0),
+      // The current implementation always designates processor 0 as the I/O
+      // processor.
+      at_eof_(   false ),
+      at_error_( false )
 {
     open_();
 
@@ -75,6 +75,7 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
 						       set<char> const &ws)
     : Text_Token_Stream(ws),
       filename_(file_name),
+      infile_(),
       is_io_processor_(rtt_c4::node()==0),
       at_eof_(false),
       at_error_(false)

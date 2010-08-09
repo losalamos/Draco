@@ -1,18 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file Text_Token_Stream.cc
+ * \file   Text_Token_Stream.cc
  * \author Kent G. Budge
- * \brief Contains definitions of all Text_Token_Stream member functions.
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Contains definitions of all Text_Token_Stream member functions.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "Text_Token_Stream.hh"
 #include <ctype.h>
 #include <string>
-#include <string.h>
-#include "Text_Token_Stream.hh"
+#include <cstring>
+
 
 namespace rtt_parser 
 {
@@ -29,7 +30,6 @@ default_whitespace(default_ws_string,
 
 //-------------------------------------------------------------------------//
 /*!
- *
  * Constructs a Text_Token_Stream with the specified set of breaking
  * whitespace characters.
  *
@@ -58,7 +58,9 @@ default_whitespace(default_ws_string,
  */
 
 Text_Token_Stream::Text_Token_Stream(set<char> const &ws)
-    : whitespace_(ws), line_(1)
+    : buffer_(),
+      whitespace_(ws),
+      line_(1)
 {
     Ensure(check_class_invariants());
     Ensure(ws == whitespace());
@@ -76,8 +78,10 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws)
  * Text_Token_Stream::default_whitespace.
  */
 
-Text_Token_Stream::Text_Token_Stream()
-    : whitespace_(default_whitespace), line_(1)
+Text_Token_Stream::Text_Token_Stream(void)
+    : buffer_(),
+      whitespace_(default_whitespace),
+      line_(1)
 {
     Ensure(check_class_invariants());
     Ensure(whitespace()==default_whitespace);
@@ -367,7 +371,8 @@ char Text_Token_Stream::pop_char_()
     if (Result == '\n') line_++;
 
     Ensure(check_class_invariants());
-    Ensure(Result == '\n' && line_ == old_line+1  ||  line_ == old_line);
+    Ensure( (Result == '\n' && line_ == old_line+1 ) ||
+            line_ == old_line);
     return Result;
 }
 

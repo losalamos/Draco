@@ -1,18 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file File_Token_Stream.cc
+ * \file   File_Token_Stream.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
- * \brief Definitions of File_Token_Stream methods.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \date   Wed Jan 22 15:18:23 MST 2003
+ * \brief  Definitions of File_Token_Stream methods.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "File_Token_Stream.hh"
 #include <iostream>
 #include <sstream>
-#include "File_Token_Stream.hh"
 
 namespace rtt_parser 
 {
@@ -29,7 +29,9 @@ using namespace std;
  * run. 
  */
 
-File_Token_Stream::File_Token_Stream()
+File_Token_Stream::File_Token_Stream(void)
+    : filename_( std::string() ),
+      infile_()
 {
     Ensure(check_class_invariants());
     Ensure(location_() == "<uninitialized>");
