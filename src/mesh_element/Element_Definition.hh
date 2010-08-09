@@ -4,7 +4,8 @@
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,17 +37,16 @@ namespace rtt_mesh_element
  * get some help on this from some computational geometry experts at some
  * time. In the mean time here is my 80% solution.
  *
- * First, we will * reduce the scope from any element to just the elements
- * currently supported * by the <a href="http://www.cgns.org/"> CGNS </a> data
- * storage system. * CGNS is an emerging industry standard for the storage and
- * retrival of * computational physics data. Remember that it is only
- * necessary to describe * the problem "geometry" with these elements, not the
- * solution, or any * other field on the mesh, so this may not be as much of a
- * restriction * as it first appears. The CGNS set consists of 18 elements
- * including most * of the commonly used ones. Moreover, remember we currently
- * have no means of * generating a mesh with weird custom elements. Any mesh
- * anyone in the * group has ever run on can be expressed with just six of the
- * 18 * CGNS elements.
+ * First, we will reduce the scope from any element to just the elements
+ * currently supported by the <a href="http://www.cgns.org/"> CGNS </a> data
+ * storage system. CGNS is an emerging industry standard for the storage and
+ * retrival of computational physics data. Remember that it is only necessary
+ * to describe the problem "geometry" with these elements, not the solution,
+ * or any other field on the mesh, so this may not be as much of a restriction
+ * as it first appears. The CGNS set consists of 18 elements including most of
+ * the commonly used ones. Moreover, remember we currently have no means of
+ * generating a mesh with weird custom elements. Any mesh anyone in the group
+ * has ever run on can be expressed with just six of the 18 CGNS elements.
  *
  * Second, we will not try to design a completely general element description,
  * but will settle for providing a limited set of services that can be used to
@@ -82,10 +82,10 @@ namespace rtt_mesh_element
  * \sa The \ref rtt_meshreaders_overview page provides an overview of
  * the other utilities in the rtt_mesh_element namespace.
  *
- * \todo KGB:  The sizing information (<code>dimension</code>,
- * <code>number_of_nodes</code>, <code>number_of_sides</code>) really ought to
- * be unsigned ints.  This automatically enforces important invariants and
- * makes it simpler to express preconditions and postconditions.
+ * \todo KGB: The sizing information (\c dimension, \c number_of_nodes,
+ * \c number_of_sides) really ought to be unsigned ints.  This automatically
+ * enforces important invariants and makes it simpler to express preconditions
+ * and postconditions. (2010-08-05 KT -- done)
  */
 // revision history:
 // -----------------
@@ -104,22 +104,20 @@ class Element_Definition
     /*!
      * \brief Describes the location of a node within an element.
      *
-     * For the purposes of this enumeration, the terms have the
-     * following meaning: A "corner" node terminates one or more edges
-     *  of an element.
-     * The term "edge" describes a node that lies on the interior of
-     * a 1D element. The term "face" describes a node that lies on the
-     * interior of a 2D element. Finally the term "cell" connotates
-     * a node that lies on the interior of a 3D element.
+     * For the purposes of this enumeration, the terms have the following
+     * meaning: A "corner" node terminates one or more edges of an element.
+     * The term "edge" describes a node that lies on the interior of a 1D
+     * element. The term "face" describes a node that lies on the interior of
+     * a 2D element. Finally the term "cell" connotates a node that lies on
+     * the interior of a 3D element.
      *
-     * All elements will
-     * always have corner nodes. In addition, all elements may have
-     * edge nodes. Two and three dimensional elements may also have face
-     * nodes, and finally, three-dimensional elements may have cell
+     * All elements will always have corner nodes. In addition, all elements
+     * may have edge nodes. Two and three dimensional elements may also have
+     * face nodes, and finally, three-dimensional elements may have cell
      * nodes. Under these definitions, note that a node's location is
-     * unchanged in an element and all its sub-elements. i.e. the corner
-     * nodes of a quadrilateral are also corner nodes in the line elements
-     * which form the edges of the quadrilateral.
+     * unchanged in an element and all its sub-elements. i.e. the corner nodes
+     * of a quadrilateral are also corner nodes in the line elements which
+     * form the edges of the quadrilateral.
      *
      */
     enum Node_Location {
@@ -132,12 +130,11 @@ class Element_Definition
     /*!
      * \brief Standard element identifiers.
      *
-     * These names and the elements that they
-     * represent are the same as those defined in the 
-     *  <a href="http://www.cgns.org/"> CGNS </a> SIDS Manual.
-     * <a href="http://www.CGNS.org/documents/Elements.pdf"> 
-     * Element-Descriptions </a>  (Adobe PDF format) are
-     * are available  at the CGNS www site.
+     * These names and the elements that they represent are the same as those
+     * defined in the <a href="http://www.cgns.org/"> CGNS </a> SIDS Manual.
+     * <a href="http://www.CGNS.org/documents/Elements.pdf">
+     * Element-Descriptions </a> (Adobe PDF format) are are available at the
+     * CGNS www site.
      */
     enum Element_Type {
 	NODE,       /*!< A dimensionless point in space. */
@@ -187,12 +184,12 @@ class Element_Definition
 
     std::string  name;
     Element_Type type;
-    int          dimension;
-    int          number_of_nodes;
-    int          number_of_sides;
+    size_t       dimension;
+    size_t       number_of_nodes;
+    size_t       number_of_sides;
     std::vector< Element_Definition > elem_defs;
     std::vector< int >                side_type;
-    std::vector< std::vector< int > > side_nodes;
+    std::vector< std::vector< size_t > > side_nodes;
     std::vector< Node_Location >      node_loc;
 
   public:
@@ -201,10 +198,9 @@ class Element_Definition
     
     /*!
      * \brief Constructor for the Element_Definition class.
-     *
      * \param type_ The element type to be constructed.
      */
-    Element_Definition( Element_Type const & type_ );
+    explicit Element_Definition( Element_Type const & type_ );
     
     /*!
      * \brief Constructor for the Element_Definition class.
@@ -215,30 +211,30 @@ class Element_Definition
      * \param name_ The name of the element.
      *
      * \param dimension_ The dimension of the element. i.e. nodes return 0,
-     * lines return 1, quads return 2, hexahedra return 3.
+     *        lines return 1, quads return 2, hexahedra return 3.
      *
      * \param number_of_nodes_ Total number of nodes in the element
      *
      * \param number_of_sides_ The number of n-1 dimensional entities that
-     * compose an n dimensional element. i.e. nodes return 0, lines return 2,
-     * quads return 4, hexahedra return 6. 
+     *        compose an n dimensional element. i.e. nodes return 0, lines
+     *        return 2, quads return 4, hexahedra return 6.
      *
      * \param elem_defs_ Element definitions that describe element sides.
-     * There need be only one such definition for each type of side present in
-     * the element.  For example, a QUAD_4 element would need only one side
-     * element definition, for BAR_2.
+     *        There need be only one such definition for each type of side
+     *        present in the element.  For example, a QUAD_4 element would
+     *        need only one side element definition, for BAR_2.
      *
      * \param side_type_ Index into \c elem_defs_ of the element definition
-     * appropriate for each side.
+     *        appropriate for each side.
      *
      * \param side_nodes_ A vector of vectors specifying the nodes associated
-     * with each side. For example, <code>side_nodes_[2]</code> is a vector
-     * specifying the nodes associated with the third side of the element.
-     * Note that the node numbering is 0 based.
+     *        with each side. For example, <code>side_nodes_[2]</code> is a
+     *        vector specifying the nodes associated with the third side of
+     *        the element.  Note that the node numbering is 0 based.
      *
      * \param node_loc_ The location of each node. See the
-     * <code>Element_Definition::Node_Location</code> enumeration for
-     * additional discussion on node locations.
+     *        <code>Element_Definition::Node_Location</code> enumeration for
+     *        additional discussion on node locations.
      *
      *
      * \pre <code>dimension_>=0</code>
@@ -288,13 +284,13 @@ class Element_Definition
      * \post <code> get_side_nodes(i)==side_nodes_[i]  </code>
      */
     Element_Definition( std::string  name_,
-                        int dimension_,
-                        int number_of_nodes_,
-                        int number_of_sides_,
-                        std::vector< Element_Definition > const &elem_defs_,
-                        std::vector< int > const &side_type_,
-                        std::vector< std::vector< int > > const &side_nodes_,
-                        std::vector< Node_Location > const &node_loc_ );
+                        size_t       dimension_,
+                        size_t       number_of_nodes_,
+                        size_t       number_of_sides_,
+                        std::vector< Element_Definition >  const &elem_defs_,
+                        std::vector< int >                 const &side_type_,
+                        std::vector< std::vector<size_t> > const &side_nodes_,
+                        std::vector< Node_Location >       const &node_loc_ );
 
     // MANIPULATORS
 
@@ -304,7 +300,7 @@ class Element_Definition
      * This destructor is virtual, implying that Element_Definition is
      * extensible by inheritance.
      */
-    virtual ~Element_Definition(){}
+    virtual ~Element_Definition(void){/*empty*/}
     
     // ACCESSORS
 
@@ -312,7 +308,7 @@ class Element_Definition
      * \brief Returns the name of an element.
      * \return Returns the element name as a string.
      */
-    std::string get_name() const
+    std::string get_name(void) const
     {
 	return name;
     }
@@ -321,7 +317,7 @@ class Element_Definition
      * \brief Returns the type of an element.
      * \return Returns the element type. 
      */
-    Element_Type get_type() const
+    Element_Type get_type(void) const
     {
 	return type;
     }
@@ -330,17 +326,17 @@ class Element_Definition
      * \brief Returns the total number of nodes in an element.
      * \return Total number of nodes in an element.
      */
-    unsigned get_number_of_nodes() const
+    unsigned get_number_of_nodes(void) const
     {
 	return number_of_nodes;
     }
     /*!
-     * \brief Returns the dimension of an element. i.e. nodes return 0,
-     * lines return 1, quads return 2, hexahedra return 3.
+     * \brief Returns the dimension of an element. i.e. nodes return 0, lines
+     *        return 1, quads return 2, hexahedra return 3.
      *
      * \return The element dimension (0, 1, 2, or 3).
      */
-    unsigned get_dimension() const
+    unsigned get_dimension(void) const
     {
 	return dimension;
     }
@@ -348,41 +344,41 @@ class Element_Definition
      * \brief Returns the number of sides on an element.
      *
      * \return The number of n-1 dimensional entities that compose an n
-     *         dimensional element. i.e. nodes return 0, lines return 2,
-     *        quads return 4, hexahedra return 6.
+     *        dimensional element. i.e. nodes return 0, lines return 2, quads
+     *        return 4, hexahedra return 6.
      */
-    unsigned get_number_of_sides() const
+    unsigned get_number_of_sides(void) const
     {
 	return number_of_sides;
     }
+    
     /*!
      * \brief Returns the location of a node within the element.
      *
      * \param node_number the node number for which a location is
-     *  desired. Node numbers must be in the range [0:number_of_nodes).
+     *        desired. Node numbers must be in the range [0:number_of_nodes).
      *
-     * \return The location of the node. See the 
-     * Element_Definition::Node_Location enumeration
-     * for additional discussion on node locations.
+     * \return The location of the node. See the
+     *        Element_Definition::Node_Location enumeration for additional
+     *        discussion on node locations.
      *
      */
-    Node_Location get_node_location( int const node_number ) const
+    Node_Location get_node_location( size_t const node_number ) const
     {
-       if (node_number < 0 || node_number >= number_of_nodes) 
-	   Insist(false,"Node index out of range!");
-       return node_loc[node_number]; 
+        Insist( node_number < number_of_nodes, "Node index out of range!");
+        return node_loc[node_number]; 
     }
 
     /*!
-     * \brief Returns the type (i.e. quad, tri, etc.) of a specified
-     * element side.
+     * \brief Returns the type (i.e. quad, tri, etc.) of a specified element
+     *        side.
      *
-     * \return Returns a valid element definition that
-     *  describes a element side. Can be queried using any of 
-     *  the accessors provided in the Element_Definition class.
+     * \return Returns a valid element definition that describes a element
+     *        side. Can be queried using any of the accessors provided in the
+     *        Element_Definition class.
 
-     * \param side_number Side number for which a type is desired.
-     *   Side numbers are in the range [0:number_of_sides).
+     * \param side_number Side number for which a type is desired.  Side
+     *        numbers are in the range [0:number_of_sides).
      *
      * Note that there is no valid side number for a "NODE" element.
      * "Side" in the context of this method means the
@@ -398,45 +394,39 @@ class Element_Definition
 
 
     /*!
-     * \brief Returns a vector of node numbers that are associated
-     * with a particular element side.
+     * \brief Returns a vector of node numbers that are associated with a
+     *        particular element side.
      *
-     * \param side_number The number of the element side for which
-     *        the nodes are desired. Side numbers are in the 
-     *         range [0:number_of_sides)
+     * \param side_number The number of the element side for which the nodes
+     *        are desired. Side numbers are in the range [0:number_of_sides)
      *
      * \return A vector of the nodes associated with the side. Note
      * that the node numbering is 0 based.
      *
-     * "Side" in the context of this method means the
-     * (n-1) dimensional element that composes a (n) dimensional
-     * element. For example, on a hexahedra, a side is a quadrilateral,
-     * whereas, on a quadrilateral a side is a line element.
-     * The returned order of the side nodes is significant. The side-node
-     * numbers are returned in the following order based on node
-     * location: (corners, edges, faces, cells). For sides which are faces
-     * of 3D elements, the vector cross product of the vector from
-     * (side-node1 to side-node2) with the vector from (side-node1 to
-     * side- node3) results in a vector that is oriented outward from
-     * the parent element.
-     * Equivalently, the side
-     * corner-nodes are listed sequentially in a counter-clockwise
-     * direction when viewed from outside the element. Both corner 
-     * and edge nodes
-     * are returned in a sequential order as one progresses around
-     * a side. Moreover, the corner and edge nodes are returned so that
-     * edge-node1 lies between corner-node1 and corner-node2, etc., etc.
+     * "Side" in the context of this method means the (n-1) dimensional
+     * element that composes a (n) dimensional element. For example, on a
+     * hexahedra, a side is a quadrilateral, whereas, on a quadrilateral a
+     * side is a line element.  The returned order of the side nodes is
+     * significant. The side-node numbers are returned in the following order
+     * based on node location: (corners, edges, faces, cells). For sides which
+     * are faces of 3D elements, the vector cross product of the vector from
+     * (side-node1 to side-node2) with the vector from (side-node1 to side-
+     * node3) results in a vector that is oriented outward from the parent
+     * element.  Equivalently, the side corner-nodes are listed sequentially
+     * in a counter-clockwise direction when viewed from outside the
+     * element. Both corner and edge nodes are returned in a sequential order
+     * as one progresses around a side. Moreover, the corner and edge nodes
+     * are returned so that edge-node1 lies between corner-node1 and
+     * corner-node2, etc., etc.
      *
-     * For sides which are edges of 2D elements, the vector cross 
-     * product of the vector from
-     * (side-node1 to side-node2) with a vector pointing towards the
-     * observer results in a vector that is oriented outward from the 
-     * parent element.
+     * For sides which are edges of 2D elements, the vector cross product of
+     * the vector from (side-node1 to side-node2) with a vector pointing
+     * towards the observer results in a vector that is oriented outward from
+     * the parent element.
      *
      * Note that there is no valid side number for a "NODE" element.
-     *
      */
-    std::vector<int> get_side_nodes( unsigned const side_number ) const
+    std::vector<size_t> get_side_nodes( unsigned const side_number ) const
     {
 	if ( side_number >= side_nodes.size() )
 	    Insist(false,"Side index out of range!");
@@ -459,7 +449,7 @@ class Element_Definition
         
         for (unsigned s=0; s < face_nodes.size(); ++s)
         {
-            std::vector<int> nodes(get_side_nodes(s)); 
+            std::vector<size_t> nodes(get_side_nodes(s)); 
             face_nodes[s].resize(nodes.size());
             
             for (unsigned n=0; n < nodes.size(); ++n)

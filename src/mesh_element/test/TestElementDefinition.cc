@@ -4,21 +4,22 @@
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:06:55 2002
  * \brief  Test Element Definitions.
+ * \note   Copyright © 2002-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "mesh_element_test.hh"
+#include "TestElementDefinition.hh"
+#include "../Element_Definition.hh"
+#include "../Release.hh"
+#include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <sstream>
-
-#include "ds++/Assert.hh"
-#include "../Element_Definition.hh"
-#include "../Release.hh"
-#include "mesh_element_test.hh"
-#include "TestElementDefinition.hh"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ void runTest()
 {
     using rtt_mesh_element::Element_Definition;
 
-    std::vector<Element_Definition::Element_Type> type_list;
+    vector<Element_Definition::Element_Type> type_list;
     type_list.push_back(Element_Definition::NODE);
     type_list.push_back(Element_Definition::BAR_2);
     type_list.push_back(Element_Definition::BAR_3);
@@ -50,9 +51,9 @@ void runTest()
     type_list.push_back(Element_Definition::HEXA_20);
     type_list.push_back(Element_Definition::HEXA_27);
 
-    std::vector<Element_Definition> elem_defs;
+    vector<Element_Definition> elem_defs;
     cout << endl << "Building Elements for Test ---" << endl << endl;
-    for (int i=0; i< type_list.size(); i++)
+    for (size_t i=0; i< type_list.size(); i++)
     {
 	elem_defs.push_back( Element_Definition(type_list[i]) );
 	cout << elem_defs[i];
@@ -89,12 +90,12 @@ void runTest()
     // Test the POLYGON category.
 
     elem_defs.clear();
-    elem_defs.resize(1, Element_Definition::BAR_2);
+    elem_defs.resize(1, Element_Definition(Element_Definition::BAR_2));
 
     vector< int > side_type(8,  // number of sides
                             0); // index into elem_defs
 
-    vector< vector< int > > side_nodes(8);
+    vector< vector< size_t > > side_nodes(8);
     for (unsigned side=0; side<8; ++side)
     {
         side_nodes[side].push_back(side);
@@ -138,7 +139,7 @@ bool test_node(const rtt_mesh_element::Element_Definition elem_def)
 {
     // Test the NODE element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="NODE";
+    string ename="NODE";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::NODE;
     ldum = ldum && elem_def.get_number_of_nodes() == 1;
@@ -167,7 +168,7 @@ bool test_bar_2(
 {
     // Test the BAR_2 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="BAR_2";
+    string ename="BAR_2";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::BAR_2 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 2;
@@ -186,10 +187,10 @@ bool test_bar_2(
     const int size = 1;
     int s0[size] = {0};
     int s1[size] = {1};
-    ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
-    ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+    ldum = ldum &&
+           ( elem_def.get_side_nodes(0) == vector<size_t>(s0,s0+size) );
+    ldum = ldum &&
+           ( elem_def.get_side_nodes(1) == vector<size_t>(s1,s1+size) );
     if (ldum) 
     {
 	ostringstream message;
@@ -211,7 +212,7 @@ bool test_bar_3(
 {
     // Test the BAR_3 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="BAR_3";
+    string ename="BAR_3";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::BAR_3 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 3;
@@ -232,10 +233,10 @@ bool test_bar_3(
     const int size = 1;
     int s0[size] = {0};
     int s1[size] = {1};
-    ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
-    ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+    ldum = ldum &&
+           (elem_def.get_side_nodes(0) == vector<size_t>(s0,s0+size));
+    ldum = ldum &&
+           (elem_def.get_side_nodes(1) == vector<size_t>(s1,s1+size));
     if (ldum)
     {
 	ostringstream message; 
@@ -257,7 +258,7 @@ bool test_tri_3(
 {
     // Test the TRI_3 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="TRI_3";
+    string ename="TRI_3";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::TRI_3 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 3;
@@ -279,11 +280,11 @@ bool test_tri_3(
     int s1[size] = {1,2};
     int s2[size] = {2,0};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     if (ldum)
     {
 	ostringstream message; 
@@ -305,7 +306,7 @@ bool test_tri_6(
 {
     // Test the element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="TRI_6";
+    string ename="TRI_6";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::TRI_6 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 6;
@@ -330,11 +331,11 @@ bool test_tri_6(
     int s1[size] = {1,2,4};
     int s2[size] = {2,0,5};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     if (ldum) 
     {
 	ostringstream message;
@@ -356,7 +357,7 @@ bool test_quad_4(
 {
     // Test the QUAD_4 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="QUAD_4";
+    string ename="QUAD_4";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::QUAD_4 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 4;
@@ -380,13 +381,13 @@ bool test_quad_4(
     int s2[size] = {2,3};
     int s3[size] = {3,0};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     if (ldum) 
     {
 	ostringstream message;
@@ -408,7 +409,7 @@ bool test_quad_8(
 {
     // Test the QUAD_8 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="QUAD_8";
+    string ename="QUAD_8";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::QUAD_8 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 8;
@@ -435,13 +436,13 @@ bool test_quad_8(
     int s2[size] = {2,3,6};
     int s3[size] = {3,0,7};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     if (ldum)
     {
 	ostringstream message; 
@@ -463,7 +464,7 @@ bool test_quad_9(
 {
     // Test the QUAD_9 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="QUAD_9";
+    string ename="QUAD_9";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::QUAD_9 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 9;
@@ -492,13 +493,13 @@ bool test_quad_9(
     int s2[size] = {2,3,6};
     int s3[size] = {3,0,7};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     if (ldum)
     {
 	ostringstream message; 
@@ -520,7 +521,7 @@ bool test_tetra_4(
 {
     // Test the TETRA_4 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="TETRA_4";
+    string ename="TETRA_4";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::TETRA_4 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 4;
@@ -544,13 +545,13 @@ bool test_tetra_4(
     int s2[size] = {1,2,3};
     int s3[size] = {2,0,3};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     if (ldum)
     {
 	ostringstream message; 
@@ -572,7 +573,7 @@ bool test_tetra_10(
 {
     // Test the TETRA_10 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="TETRA_10";
+    string ename="TETRA_10";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::TETRA_10 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 10;
@@ -599,13 +600,13 @@ bool test_tetra_10(
     int s2[size] = {1,2,3,5,9,8};
     int s3[size] = {2,0,3,6,7,9};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     if (ldum) 
     {
 	ostringstream message;
@@ -627,7 +628,7 @@ bool test_pyra_5(
 {
     // Test the PYRA_5 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="PYRA_5";
+    string ename="PYRA_5";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::PYRA_5 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 5;
@@ -658,15 +659,15 @@ bool test_pyra_5(
     int s3[sizet] = {2,3,4};
     int s4[sizet] = {3,0,4};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+sizeq);
+	vector<size_t>(s0,s0+sizeq);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+sizet);
+	vector<size_t>(s1,s1+sizet);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+sizet);
+	vector<size_t>(s2,s2+sizet);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+sizet);
+	vector<size_t>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+sizet);
+	vector<size_t>(s4,s4+sizet);
     if (ldum) 
     {
 	ostringstream message;
@@ -688,7 +689,7 @@ bool test_pyra_14(
 {
     // Test the PYRA_14 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="PYRA_14";
+    string ename="PYRA_14";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::PYRA_14 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 14;
@@ -718,15 +719,15 @@ bool test_pyra_14(
     int s3[sizet] = {2,3,4,7,12,11};
     int s4[sizet] = {3,0,4,8,9,12};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+sizeq);
+	vector<size_t>(s0,s0+sizeq);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+sizet);
+	vector<size_t>(s1,s1+sizet);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+sizet);
+	vector<size_t>(s2,s2+sizet);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+sizet);
+	vector<size_t>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+sizet);
+	vector<size_t>(s4,s4+sizet);
     ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 6;
@@ -754,7 +755,7 @@ bool test_penta_6(
 {
     // Test the PENTA_6 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="PENTA_6";
+    string ename="PENTA_6";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::PENTA_6 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 6;
@@ -777,15 +778,15 @@ bool test_penta_6(
     int s3[sizet] = {0,2,1};
     int s4[sizet] = {3,4,5};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+sizeq);
+	vector<size_t>(s0,s0+sizeq);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+sizeq);
+	vector<size_t>(s1,s1+sizeq);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+sizeq);
+	vector<size_t>(s2,s2+sizeq);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+sizet);
+	vector<size_t>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+sizet);
+	vector<size_t>(s4,s4+sizet);
     ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -813,7 +814,7 @@ bool test_penta_15(
 {
     // Test the PENTA_15 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="PENTA_15";
+    string ename="PENTA_15";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::PENTA_15 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 15;
@@ -839,15 +840,15 @@ bool test_penta_15(
     int s3[sizet] = {0,2,1,8,7,6};
     int s4[sizet] = {3,4,5,12,13,14};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+sizeq);
+	vector<size_t>(s0,s0+sizeq);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+sizeq);
+	vector<size_t>(s1,s1+sizeq);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+sizeq);
+	vector<size_t>(s2,s2+sizeq);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+sizet);
+	vector<size_t>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+sizet);
+	vector<size_t>(s4,s4+sizet);
     ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
@@ -875,7 +876,7 @@ bool test_penta_18(
 {
     // Test the PENTA_18 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="PENTA_18";
+    string ename="PENTA_18";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::PENTA_18 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 18;
@@ -904,15 +905,15 @@ bool test_penta_18(
     int s3[sizet] = {0,2,1,8,7,6};
     int s4[sizet] = {3,4,5,12,13,14};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+sizeq);
+	vector<size_t>(s0,s0+sizeq);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+sizeq);
+	vector<size_t>(s1,s1+sizeq);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+sizeq);
+	vector<size_t>(s2,s2+sizeq);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+sizet);
+	vector<size_t>(s3,s3+sizet);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+sizet);
+	vector<size_t>(s4,s4+sizet);
         ldum = ldum && elem_def.get_number_of_face_nodes().size() == 5;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
@@ -941,7 +942,7 @@ bool test_hexa_8(
 {
     // Test the HEXA_8 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="HEXA_8";
+    string ename="HEXA_8";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::HEXA_8 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 8;
@@ -961,17 +962,17 @@ bool test_hexa_8(
     int s4[size] = {0,4,7,3};
     int s5[size] = {4,5,6,7};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+size);
+	vector<size_t>(s4,s4+size);
     ldum = ldum && elem_def.get_side_nodes(5) == 
-	std::vector<int>(s5,s5+size);
+	vector<size_t>(s5,s5+size);
     ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -1000,7 +1001,7 @@ bool test_hexa_20(
 {
     // Test the HEXA_20 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="HEXA_20";
+    string ename="HEXA_20";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::HEXA_20 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 20;
@@ -1023,17 +1024,17 @@ bool test_hexa_20(
     int s4[size] = {0,4,7,3,12,19,15,11};
     int s5[size] = {4,5,6,7,16,17,18,19};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+size);
+	vector<size_t>(s4,s4+size);
     ldum = ldum && elem_def.get_side_nodes(5) == 
-	std::vector<int>(s5,s5+size);
+	vector<size_t>(s5,s5+size);
         ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
@@ -1063,7 +1064,7 @@ bool test_hexa_27(
 {
     // Test the HEXA_27 element.
     using rtt_mesh_element::Element_Definition;
-    std::string ename="HEXA_27";
+    string ename="HEXA_27";
     bool ldum = elem_def.get_name() == ename;
     ldum = ldum && elem_def.get_type() == Element_Definition::HEXA_27 ;
     ldum = ldum && elem_def.get_number_of_nodes() == 27;
@@ -1091,17 +1092,17 @@ bool test_hexa_27(
     int s4[size] = {0,4,7,3,12,19,15,11,24};
     int s5[size] = {4,5,6,7,16,17,18,19,25};
     ldum = ldum && elem_def.get_side_nodes(0) == 
-	std::vector<int>(s0,s0+size);
+	vector<size_t>(s0,s0+size);
     ldum = ldum && elem_def.get_side_nodes(1) == 
-	std::vector<int>(s1,s1+size);
+	vector<size_t>(s1,s1+size);
     ldum = ldum && elem_def.get_side_nodes(2) == 
-	std::vector<int>(s2,s2+size);
+	vector<size_t>(s2,s2+size);
     ldum = ldum && elem_def.get_side_nodes(3) == 
-	std::vector<int>(s3,s3+size);
+	vector<size_t>(s3,s3+size);
     ldum = ldum && elem_def.get_side_nodes(4) == 
-	std::vector<int>(s4,s4+size);
+	vector<size_t>(s4,s4+size);
     ldum = ldum && elem_def.get_side_nodes(5) == 
-	std::vector<int>(s5,s5+size);
+	vector<size_t>(s5,s5+size);
         ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
