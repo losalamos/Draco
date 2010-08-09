@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------//
 
 #ifndef __meshReaders_Mesh_Reader_hh__
-#define __meshReaders_Mesh_Reader_hh__
 
 #include <vector>
 #include <set>
@@ -164,7 +163,7 @@ class Mesh_Reader
      */
     virtual bool invariant() const = 0;
 
-    virtual int get_dims_ndim() const = 0;
+    virtual size_t get_dims_ndim() const = 0;
 
   private:
     
