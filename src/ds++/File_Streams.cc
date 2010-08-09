@@ -38,10 +38,11 @@ namespace rtt_dsxx
  * \param binary   If true, use binary mode for writing.
  */
 File_Output::
-File_Output(const std::string &filename,
-	    const bool binary)
-    : d_last_was_char(false)
-    , d_binary(binary)
+File_Output(std::string const & filename,
+	    bool        const   binary)
+    : d_stream(),
+      d_last_was_char(false),
+      d_binary(binary)
   
 {
     if ( ! filename.empty() ) open(filename, binary);
@@ -136,8 +137,11 @@ File_Output& File_Output::operator<<(const char c)
  *                 be used later to open a file.
  */
 File_Input::
-File_Input(const std::string &filename)
-    : d_char_line(-1)
+File_Input(std::string const & filename)
+    : d_stream(),
+      d_line(   std::string()   ),
+      d_char_line(-1   ),
+      d_binary(   false)
 {
     if ( ! filename.empty() ) open(filename);
 }

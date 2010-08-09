@@ -17,39 +17,51 @@ namespace rtt_dsxx
 {
 
 //---------------------------------------------------------------------------//
-// Principal constructor.  Specify initial size. Base defaults to zero, and
-// growth factor defaults to 1.5, but both can be overridden if desired.
-//---------------------------------------------------------------------------//
-
+n/*!
+ * \brief Principal constructor.  Specify initial size. Base defaults to zero,
+ * and growth factor defaults to 1.5, but both can be overridden if desired.
+ * \arg sz_ Size of the array
+ * \arg base_
+ * \arg gf Growth factor
+ */
 template<class T>
 DynArray<T>::DynArray( int sz_, int base_, float gf )
-    : base(base_),
+    : v(NULL),
+      defval( static_cast<T>(0)),
+      base(base_),
       sz(sz_),
-      growthfactor(gf)
+      growthfactor(gf),
+      lowref(base),     // For lack of a better plan, we set lo and hi refs to
+      hiref(base)       // base. 
 {
-    if (sz < 1) sz = 1;
+    if (sz < 1)
+        sz = 1;
     v = new T[sz];
     v -= base;			// v[base] is first allocated element.
 
-// For lack of a better plan, we set lo and hi refs to base.
-
-    hiref = lowref = base;
-    defval = (T) 0;
+    // hiref = lowref = base;
+    // defval = (T) 0;
+    
+    Require( sz > 0 );
+    Require( v );
 }
 
 //---------------------------------------------------------------------------//
-// ctor.  Allows specification of default value.  Note that in order to use
-// this method for setting the default, you have to also specify the growth
-// factor and base.  This to prevent resolution trauma if T happens to be a
-// float, etc.
-//---------------------------------------------------------------------------//
-
+/*!
+ * Constructor.  Allows specification of default value.  Note that in order to
+ * use this method for setting the default, you have to also specify the
+ * growth factor and base.  This to prevent resolution trauma if T happens to
+ * be a float, etc.
+ */
 template<class T>
 DynArray<T>::DynArray( int sz_, int base_, T dv, float gf )
-    : defval(dv),
+    : v(NULL),
+      defval(dv),
       base(base_),
       sz(sz_),
-      growthfactor(gf)
+      growthfactor(gf),
+      lowref(base),     // For lack of a better plan, we set lo and hi refs to
+      hiref(base)     // base. 
 {
     if (sz < 1) sz = 1;
     v = new T[sz];
@@ -57,35 +69,39 @@ DynArray<T>::DynArray( int sz_, int base_, T dv, float gf )
 
     for( int i=base; i < base + sz; i++ )
       v[i] = defval;
-
-    hiref = lowref = base;
+    
+    Require( sz > 0 );
+    Require( v );    
 }
 
 //---------------------------------------------------------------------------//
-// Initialize from existing DynArray<T>.
-//---------------------------------------------------------------------------//
-
+//! Copy constructor
 template<class T>
 DynArray<T>::DynArray( const DynArray<T>& da )
+    : v(NULL),
+      defval(       da.defval ),
+      base(         da.base   ),
+      sz(           da.sz     ),
+      growthfactor( da.growthfactor ),
+      lowref(       da.lowref ),
+      hiref(        da.hiref  )
 {
-    defval = da.defval;
-    base = da.base;
-    sz = da.sz;
-    lowref = da.lowref;
-    hiref = da.hiref;
-    growthfactor = da.growthfactor;
+    // defval = da.defval;
+    // base = da.base;
+    // sz = da.sz;
+    // lowref = da.lowref;
+    // hiref = da.hiref;
+    // growthfactor = da.growthfactor;
 
     v = new T[sz];
     v -= base;
 
-    for( int i=base; i < base + sz; i++ )
+    for( int i=base; i < base + sz; ++i )
         v[i] = da.v[i];
 }
 
 //---------------------------------------------------------------------------//
-// Assign from existing DynArray<T>.
-//---------------------------------------------------------------------------//
-
+//! Assign from existing DynArray<T>.
 template<class T>
 DynArray<T>& DynArray<T>::operator=( const DynArray<T>& da )
 {
@@ -112,11 +128,10 @@ DynArray<T>& DynArray<T>::operator=( const DynArray<T>& da )
 }
 
 //---------------------------------------------------------------------------//
-// Automatically expands the DynArray<T> on reference.  Note that it returns
-// a reference, so be careful of the famous "dangling reference" problem.
-// Basically it's up to the user to avoid hosing his code.
-//---------------------------------------------------------------------------//
-
+/*! Automatically expands the DynArray<T> on reference.  Note that it returns 
+ * a reference, so be careful of the famous "dangling reference" problem.
+ * Basically it's up to the user to avoid hosing his code.
+ */
 template<class T>
 T& DynArray<T>::operator[]( int n )
 {
@@ -187,24 +202,20 @@ T& DynArray<T>::operator[]( int n )
 }
 
 //---------------------------------------------------------------------------//
-// operator[] const
-
-// Use this one for a const DynArray.  In other words, this one doesn't
-// expand on reference.  It also doesn't export a reference.
-//---------------------------------------------------------------------------//
-
+/*! operator[] const
+ *
+ * Use this one for a const DynArray.  In other words, this one doesn't expand
+ * on reference.  It also doesn't export a reference.
+ */
 template<class T>
 T DynArray<T>::operator[]( int n ) const
 {
     Require( n >= base && n < base + sz );
-
     return v[n];
 }
 
 //---------------------------------------------------------------------------//
-// Equality operator.
-//---------------------------------------------------------------------------//
-
+//! Equality operator.
 template<class T>
 int DynArray<T>::operator==( const DynArray<T>& da ) const
 {
@@ -225,9 +236,7 @@ int DynArray<T>::operator==( const DynArray<T>& da ) const
 }
 
 //---------------------------------------------------------------------------//
-// Inequality operator.
-//---------------------------------------------------------------------------//
-
+//! Inequality operator.
 template<class T>
 int DynArray<T>::operator!=( const DynArray<T>& da ) const
 {
@@ -235,9 +244,7 @@ int DynArray<T>::operator!=( const DynArray<T>& da ) const
 }
 
 //---------------------------------------------------------------------------//
-// Output a DynArray<T> to an ostream.  Useful for diagnostics, etc.
-//---------------------------------------------------------------------------//
-
+//! Output a DynArray<T> to an ostream.  Useful for diagnostics, etc.
 template<class T>
 std::ostream& operator<<( std::ostream& os, const DynArray<T>& d )
 {
