@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Quadrature class header file.
+ * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -92,7 +94,10 @@ class Quadrature
      */
 
     Quadrature( size_t snOrder_, double norm_)
-	: snOrder( snOrder_ ), norm( norm_ ) { /* empty */ }
+	: snOrder( snOrder_ ),
+          norm( norm_ ),
+          mu(), eta(), xi(), wt(), omega()          
+    { /* empty */ }
 
     Quadrature();     // prevent defaults
 

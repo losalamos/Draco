@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright ©  2006-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$

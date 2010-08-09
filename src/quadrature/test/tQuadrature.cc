@@ -186,9 +186,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 	    }
             else if( qid[ix] == QuadCreator::Lobatto )
             {
-                int const expected_dim(1);
-//                 cout << expected_dim << endl;
-//                 cout <<  spQuad->dimensionality() << endl;
+                size_t const expected_dim(1);
                 if( spQuad->dimensionality() == expected_dim )
                 {
                     ut.passes("Dimensionality of Lobatto quadrature set is 1.");

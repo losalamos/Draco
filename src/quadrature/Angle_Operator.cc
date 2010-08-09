@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Angle_Operator
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,11 +36,12 @@ namespace rtt_quadrature
  * \param dimension Dimension of the physical problem space (1, 2, or 3)
  */
 
-Angle_Operator::Angle_Operator( SP<Quadrature const> const &quadrature,
-                                rtt_mesh_element::Geometry const geometry,
-                                unsigned const dimension)
-    :
-    OrdinateSet(quadrature, geometry, dimension)
+Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
+                                rtt_mesh_element::Geometry const   geometry,
+                                unsigned                   const   dimension)
+    : OrdinateSet(quadrature, geometry, dimension),
+      number_of_levels_(0),
+      levels_(), is_dependent_(), alpha_(), tau_()
 {
     Require(quadrature!=SP<Quadrature>());
     Require(dimension>0 && dimension<4);

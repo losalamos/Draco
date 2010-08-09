@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Implementation file for the class rtt_quadrature::Ordinate.
- * \note   Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright ©  2006-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -46,18 +47,20 @@ using namespace rtt_dsxx;
 OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
                           rtt_mesh_element::Geometry const geometry,
                           unsigned                   const dimension )
-    : quadrature_( quadrature ),
+    : ordinates_(),
+      quadrature_( quadrature ),
       geometry_(   geometry   ),
-      dimension_(  dimension  )
+      dimension_(  dimension  ),
+      norm_(0.0)
 {
     Require( quadrature!=SP<Quadrature>()               );
     Require( quadrature->dimensionality() == 1 ||
              quadrature->dimensionality() == 2 ||
              quadrature->dimensionality() == 3          );
     Require( dimension == 1 || dimension == 2 || dimension == 3);
-    Require(geometry==rtt_mesh_element::SPHERICAL && dimension == 1 ||
-            geometry==rtt_mesh_element::AXISYMMETRIC && dimension <3 ||
-            geometry==rtt_mesh_element::CARTESIAN);
+    Require( (geometry==rtt_mesh_element::SPHERICAL && dimension == 1 )  ||
+             (geometry==rtt_mesh_element::AXISYMMETRIC && dimension <3 ) ||
+             geometry==rtt_mesh_element::CARTESIAN);
 
     // vector<Ordinate> ordinates;
 

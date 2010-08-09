@@ -669,7 +669,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	    msg << "applyD() failed to work as expected." << endl
 		<< "\tExpected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
                 << "but found \n\tphi = {";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << "\n\t" << fluxMoments[i];
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -697,10 +697,10 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
 	    ostringstream msg;
 	    msg << "applyM() failed to work as expected." << endl
 		<< "Expected psi = { ";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << expectedPsi[i] << "\n";
             msg << " }, but found psi = { ";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << angularFlux[i] << "\n"; 
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -712,7 +712,7 @@ void test_quad_services_with_3D_S2_quad( rtt_dsxx::UnitTest & ut )
     {
         QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
-        for( int i=0; i< numOrdinates; ++i )
+        for( size_t i=0; i< numOrdinates; ++i )
         {
             vector<double> psi(numOrdinates,0.0);
             psi[i]=magnitude;
@@ -948,7 +948,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	    msg << "applyD() failed to work as expected." << endl
 		<< "Expected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
                 << "but found phi = { \n";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << fluxMoments[i] << "\n";
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -976,10 +976,10 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
 	    ostringstream msg;
 	    msg << "applyM() failed to work as expected." << endl
 		<< "Expected psi = { ";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << expectedPsi[i] << "\n";
             msg << " }, but found psi = { ";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << angularFlux[i] << "\n"; 
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -991,7 +991,7 @@ void test_quad_services_with_3D_S4_quad( rtt_dsxx::UnitTest & ut )
     {
         QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
-        for( int i=0; i< numOrdinates; ++i )
+        for( size_t i=0; i< numOrdinates; ++i )
         {
             vector<double> psi(numOrdinates,0.0);
             psi[i]=magnitude;
@@ -1218,7 +1218,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 	    msg << "applyD() failed to work as expected." << endl
 		<< "Expected phi = { " << expectedPhi[0] << ", 0.0, ... 0.0 } "
                 << "but found phi = { \n";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << fluxMoments[i] << "\n";
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -1246,10 +1246,10 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
 	    ostringstream msg;
 	    msg << "applyM() failed to work as expected." << endl
 		<< "Expected psi = { ";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << expectedPsi[i] << "\n";
             msg << " }, but found psi = { ";
-            for( int i=0; i< numOrdinates; ++i)
+            for( size_t i=0; i< numOrdinates; ++i)
                 msg << angularFlux[i] << "\n"; 
             msg << " }." << endl;
 	    ut.failure(msg.str());
@@ -1261,7 +1261,7 @@ void test_quad_services_with_2D_S6_quad( rtt_dsxx::UnitTest & ut )
     {
         QuadServices qsm( spQuad, GALERKIN );
         double magnitude(7.0);
-        for( int i=0; i< numOrdinates; ++i )
+        for( size_t i=0; i< numOrdinates; ++i )
         {
             vector<double> psi(numOrdinates,0.0);
             psi[i]=magnitude;
@@ -1332,7 +1332,7 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
     // Add ell=N, k>0, k odd
     {
 	unsigned ell( snOrder );
-	for( int k=1; k<=ell; k+=2, ++n )
+	for( int k=1; k<=static_cast<int>(ell); k+=2, ++n )
 	    lkMoments.push_back( lk_index(ell,k) );
     }
 
@@ -1421,7 +1421,7 @@ void test_quad_services_SVD( rtt_dsxx::UnitTest & ut )
     // Add ell=N, k>0, k odd
     {
 	unsigned ell( snOrder );
-	for( int k=1; k<=ell; k+=2, ++n )
+	for( int k=1; k<=static_cast<int>(ell); k+=2, ++n )
 	    lkMoments.push_back( lk_index(ell,k) );
     }
 
