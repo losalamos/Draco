@@ -4,6 +4,7 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  Ensight_Stream implementation file.
+ * \note   Copyright © 2004-2010 Los Alamos National Security, LLC. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -51,6 +52,8 @@ Ensight_Stream& endl(Ensight_Stream &s)
 Ensight_Stream::Ensight_Stream(const std::string &file_name,
 			       const bool binary,
 			       const bool geom_file)
+    : d_stream(),
+      d_binary(false)
 {
     if (! file_name.empty())
     {
@@ -64,7 +67,7 @@ Ensight_Stream::Ensight_Stream(const std::string &file_name,
  *
  * Automatically closes stream, if open.
  */
-Ensight_Stream::~Ensight_Stream()
+Ensight_Stream::~Ensight_Stream(void)
 {
     close();
 }

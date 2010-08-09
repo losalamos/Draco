@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator implementation file (non-templated code).
+ * \note   Copyright © 2000-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -51,7 +52,7 @@ open(const int        icycle,
 
     // Increment local dump counter and add dump time
     d_dump_times.push_back(time);
-    int igrdump_num = d_dump_times.size();
+    size_t igrdump_num = d_dump_times.size();
     Check (igrdump_num < 10000);
 
     // create ensight postfix indicators
@@ -112,7 +113,7 @@ open(const int        icycle,
     d_vertex_out.resize(d_vdata_names.size());
     
     // loop over all vertex data fields and write out data for each field
-    for (int nvd = 0; nvd < d_vdata_names.size(); nvd++)
+    for (size_t nvd = 0; nvd < d_vdata_names.size(); nvd++)
     {
 	// open file for this data
 	std::string filename  = d_vdata_dirs[nvd] + "/" + postfix;
@@ -126,7 +127,7 @@ open(const int        icycle,
     d_cell_out.resize(d_cdata_names.size());
     
     // loop over all cell data fields
-    for (int ncd = 0; ncd < d_cdata_names.size(); ncd++)
+    for (size_t ncd = 0; ncd < d_cdata_names.size(); ncd++)
     {
 	// open file for this data
 	std::string filename  = d_cdata_dirs[ncd] + "/" + postfix;
@@ -146,12 +147,12 @@ close()
 {
     if ( d_geom_out.is_open() ) d_geom_out.close();
 
-    for ( int i = 0; i < d_vertex_out.size(); i++ )
+    for ( size_t i = 0; i < d_vertex_out.size(); i++ )
     {
 	if ( d_vertex_out[i]->is_open() ) d_vertex_out[i]->close();
     }
 
-    for ( int i = 0; i < d_cell_out.size(); i++ )
+    for ( size_t i = 0; i < d_cell_out.size(); i++ )
     {
 	if ( d_cell_out[i]->is_open() ) d_cell_out[i]->close();
     }
@@ -310,15 +311,15 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     // names will be used to label output and to create directories,
     // the names should also be unique.
 
-    int nvdata = d_vdata_names.size();
-    int ncdata = d_cdata_names.size();
+    size_t nvdata = d_vdata_names.size();
+    size_t ncdata = d_cdata_names.size();
 
     typedef std::vector<sf_string::iterator> SFS_iter_vec;
     // Create a name list for testing.
     sf_string name_tmp(nvdata+ncdata);
-    for (int i=0; i < nvdata; i++ )
+    for (size_t i=0; i < nvdata; i++ )
 	name_tmp[i] = d_vdata_names[i];
-    for (int i=0; i < ncdata; i++ )
+    for (size_t i=0; i < ncdata; i++ )
 	name_tmp[i+nvdata] = d_cdata_names[i];
     // Check for name lengths out of limits
     {
@@ -330,7 +331,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	if (result.size() != 0) 
 	{
 	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (int i=0; i<result.size(); i++)
+	    for (size_t i=0; i<result.size(); i++)
 		std::cerr << "Size of name is not in allowable range: \"" 
 			  << *result[i] << "\"" << std::endl;
 	    std::cerr << "Name lengths must be greater than " << low 
@@ -347,7 +348,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	if (result.size() != 0) 
 	{
 	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (int i=0; i<result.size(); i++) 
+	    for (size_t i=0; i<result.size(); i++) 
 	        std::cerr << "Found disallowed character(s) in name: \"" 
 	                  << *result[i] << "\"" << std::endl;
 	    std::cerr << "The following characters are forbidden:" << 
@@ -363,7 +364,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	if (result.size() != 0) 
 	{
 	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (int i=0; i<result.size(); i++)
+	    for (size_t i=0; i<result.size(); i++)
 		std::cerr << "Duplicate name found: \"" 
 			  << *result[i] << "\"" << std::endl;
 	    std::cerr << "All variable names must be unique!" << std::endl;
@@ -380,7 +381,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     // make data directory names and directories
     d_vdata_dirs.resize(d_vdata_names.size());
     d_cdata_dirs.resize(d_cdata_names.size());
-    for (int i = 0; i < d_vdata_names.size(); i++)
+    for (size_t i = 0; i < d_vdata_names.size(); i++)
     {
 	d_vdata_dirs[i] = d_prefix + "/" + d_vdata_names[i];
 	
@@ -388,7 +389,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	if (!graphics_continue)
 	    mkdir(d_vdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
     }
-    for (int i = 0; i < d_cdata_names.size(); i++)
+    for (size_t i = 0; i < d_cdata_names.size(); i++)
     {
 	d_cdata_dirs[i] = d_prefix + "/" + d_cdata_names[i];
 
@@ -426,14 +427,14 @@ void Ensight_Translator::write_case()
     caseout << "VARIABLE" << endl;
 
     // write the pointer to the node variables
-    for (int i = 0; i < d_vdata_names.size(); i++)
+    for (size_t i = 0; i < d_vdata_names.size(); i++)
 	caseout << "scalar per node:    1  " << setw(19)
 		<< setiosflags(ios::left)
 		<< d_vdata_names[i] << setw(4) << " "
 		<< "./" << d_vdata_names[i] << "/data.****" << endl;
 
     // write the pointer to the cell variables
-    for (int i = 0; i < d_cdata_names.size(); i++)
+    for (size_t i = 0; i < d_cdata_names.size(); i++)
 	caseout << "scalar per element: 1  " << setw(19)
 		<< setiosflags(ios::left)
 		<< d_cdata_names[i] << setw(4) << " "
@@ -452,7 +453,7 @@ void Ensight_Translator::write_case()
     // write out times
     caseout.precision(5);
     caseout.setf(ios::scientific, ios::floatfield);
-    for (int i = 0; i < d_dump_times.size(); i++)
+    for (size_t i = 0; i < d_dump_times.size(); i++)
 	caseout << setw(12) << setiosflags(ios::right) << d_dump_times[i] 
 		<< endl;
 }

@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:28:37 2004
  * \brief  Header for Ensight_Stream.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright © 2004-2010 Los Alamos National Security, LLC. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
