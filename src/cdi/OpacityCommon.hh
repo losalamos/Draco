@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 19 13:41:01 2001
  * \brief  Datatypes needed in GrayOpacity and MultigroupOpacity
+ * \note   Copyright (C) 2001-2010 Los Alamos National Securty, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -21,15 +22,11 @@ namespace rtt_cdi
 
 namespace constants
 {
-/*!
- * \brief Number of models contained in rtt_cdi::Model.
- */
-const int num_Models = 7;
+//! Number of models contained in rtt_cdi::Model.
+unsigned int const num_Models(7);
 
-/*!
-  \brief Number of reaction types contained in rtt_cdi::Reaction.
- */
-const int num_Reactions = 3;
+//! Number of reaction types contained in rtt_cdi::Reaction.
+unsigned int const num_Reactions(3);
 }
 
 //===========================================================================//

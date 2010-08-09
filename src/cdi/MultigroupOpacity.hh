@@ -32,11 +32,9 @@ namespace rtt_cdi
  * access to the data grid and the ability to return interpolated opacity
  * values.
  */
-    
 /*!
  * \example cdi/test/tDummyOpacity.cc
  * \example cdi/test/tCDI.cc
- *
  */
 //========================================================================
     
@@ -59,7 +57,7 @@ class MultigroupOpacity
      * This is required to correctly release memory when any
      * object derived from MultigroupOpacity is destroyed.
      */
-    virtual ~MultigroupOpacity();
+    virtual ~MultigroupOpacity() {/*empty*/};
 	
     // --------- //
     // Accessors //
@@ -168,24 +166,24 @@ class MultigroupOpacity
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    virtual int getNumTemperatures() const = 0;
+    virtual size_t getNumTemperatures() const = 0;
 	
     /*! 
      * \brief Returns the size of the density grid.
      */
-    virtual int getNumDensities() const = 0;
+    virtual size_t getNumDensities() const = 0;
 	
     /*!
      * \brief Returns the number of group boundaries found in the
      *     current multigroup data set.
      */
-    virtual int getNumGroupBoundaries() const = 0;
+    virtual size_t getNumGroupBoundaries() const = 0;
 	
     /*!
      * \brief Returns the number of energy groups 
      * ( getNumGroupBoundaries() - 1 ).
      */
-    virtual int getNumGroups() const = 0;
+    virtual size_t getNumGroups() const = 0;
 
     /*!
      * \brief Interface for packing a derived MultigroupOpacity object.

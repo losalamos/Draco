@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:02:21 2001
  * \brief  GrayOpacity class header file (an abstract class)
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -32,11 +33,9 @@ namespace rtt_cdi
  * outlined in this routine.  This functionality includes access to the data
  * grid and the ability to return interpolated opacity values.
  */
-    
 /*!
  * \example cdi/test/tDummyOpacity.cc
  * \example cdi/test/tCDI.cc
- *
  */
 //========================================================================
     
@@ -59,7 +58,7 @@ class GrayOpacity
      * This is required to correctly release memory when any
      * object derived from GrayOpacity is destroyed.
      */
-    virtual ~GrayOpacity();
+    virtual ~GrayOpacity() {/*empty*/};
 	
     // --------- //
     // Accessors //
@@ -163,12 +162,12 @@ class GrayOpacity
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    virtual int getNumTemperatures() const = 0;
+    virtual size_t getNumTemperatures() const = 0;
 	
     /*! 
      * \brief Returns the size of the density grid.
      */
-    virtual int getNumDensities() const = 0;
+    virtual size_t getNumDensities() const = 0;
 
     /*!
      * \brief Interface for packing a derived GrayOpacity object.

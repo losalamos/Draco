@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 14:58:55 2001
  * \brief  OdfmgOpacity class header file (an abstract class)
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +13,9 @@
 #ifndef __cdi_OdfmgOpacity_hh__
 #define __cdi_OdfmgOpacity_hh__
 
+#include "OpacityCommon.hh"
 #include <vector>
 #include <string>
-
-#include "OpacityCommon.hh"
 
 namespace rtt_cdi
 {
@@ -32,11 +32,9 @@ namespace rtt_cdi
  * access to the data grid and the ability to return interpolated opacity
  * values.
  */
-    
 /*!
  * \example cdi/test/tDummyOpacity.cc
  * \example cdi/test/tCDI.cc
- *
  */
 //========================================================================
     
@@ -59,7 +57,7 @@ public:
    * This is required to correctly release memory when any
    * object derived from OdfmgOpacity is destroyed.
    */
-  virtual ~OdfmgOpacity();
+    virtual ~OdfmgOpacity() {/*empty*/};
 
   // --------- //
   // Accessors //
@@ -168,24 +166,24 @@ public:
   /*!
    * \brief Returns the size of the temperature grid.
    */
-  virtual int getNumTemperatures() const = 0;
+  virtual size_t getNumTemperatures() const = 0;
 
   /*! 
    * \brief Returns the size of the density grid.
    */
-  virtual int getNumDensities() const = 0;
+  virtual size_t getNumDensities() const = 0;
 
   /*!
    * \brief Returns the number of group boundaries found in the
    *     current multigroup data set.
    */
-  virtual int getNumGroupBoundaries() const = 0;
+  virtual size_t getNumGroupBoundaries() const = 0;
 
   /*!
    * \brief Returns the number of energy groups 
    * ( getNumGroupBoundaries() - 1 ).
    */
-  virtual int getNumGroups() const = 0;
+  virtual size_t getNumGroups() const = 0;
 
   /*!
    * \brief Returns a vector of points along the cumulative opacity 
@@ -197,12 +195,12 @@ public:
    * \brief Returns the number of band boundaries found in the
    *     current multigroup data set.
    */
-  virtual int getNumBandBoundaries() const = 0;
+  virtual size_t getNumBandBoundaries() const = 0;
 
   /*!
    * \brief Returns the number of opacity bands 
    */
-  virtual int getNumBands() const = 0;
+  virtual size_t getNumBands() const = 0;
 
   /*!
    * \brief Interface for packing a derived OdfmgOpacity object.

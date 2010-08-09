@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Fri Apr 13 16:15:59 2001
  * \brief  EoS class header file (an abstract class)
+ * \note  Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +14,6 @@
 #define __cdi_EoS_hh__
 
 #include <vector>
-// #include <string>
 
 namespace rtt_cdi
 {
@@ -54,7 +54,7 @@ class EoS
      * This is required to correctly release memory when any
      * object derived from EoS is destroyed.
      */
-    virtual ~EoS();
+    virtual ~EoS() {/*empty*/};
 	
     // --------- //
     // Accessors //

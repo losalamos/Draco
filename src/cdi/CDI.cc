@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -37,8 +37,7 @@ namespace rtt_cdi
  * \param id string material id descriptor, this is defaulted to null
  */
 CDI::CDI(const std_string &id)
-    : matID(id),
-      grayOpacities(
+    : grayOpacities(
           constants::num_Models, 
           SF_GrayOpacity(constants::num_Reactions)),
       multigroupOpacities(
@@ -46,9 +45,10 @@ CDI::CDI(const std_string &id)
           SF_MultigroupOpacity(constants::num_Reactions)),
       odfmgOpacities(
           constants::num_Models,
-          SF_OdfmgOpacity(constants::num_Reactions))
+          SF_OdfmgOpacity(constants::num_Reactions)),
+      spEoS( SP_EoS() ),
+      matID(id)
 {
-
     Ensure (grayOpacities.size()       == constants::num_Models);
     Ensure (multigroupOpacities.size() == constants::num_Models);
     Ensure (odfmgOpacities.size()      == constants::num_Models);
@@ -107,28 +107,22 @@ std::vector<double> CDI::getOpacityCdfBandBoundaries()
 /*!
  * \brief Return the number of frequency groups.
  */
-int CDI::getNumberFrequencyGroups()
+size_t CDI::getNumberFrequencyGroups()
 {
-    int ng = 0;
-
-    if (!frequencyGroupBoundaries.empty())
-	ng = frequencyGroupBoundaries.size() - 1;
-
-    return ng;
+    return frequencyGroupBoundaries.empty() ?
+        0 :
+        frequencyGroupBoundaries.size() - 1;
 }    
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return the number of opacity bands. 
  */
-int CDI::getNumberOpacityBands()
+size_t CDI::getNumberOpacityBands()
 {
-	int nb = 0;
-
-	if (!opacityCdfBandBoundaries.empty())
-		nb = opacityCdfBandBoundaries.size() - 1;
-
-	return nb;
+    return opacityCdfBandBoundaries.empty() ?
+        0 :
+        opacityCdfBandBoundaries.size() - 1;
 }    
 
 
@@ -196,7 +190,7 @@ double CDI::integratePlanckSpectrum(double lowFreq,
  *                   by groupIndex.
  *
  */
-double CDI::integratePlanckSpectrum(const int groupIndex, const double T)
+double CDI::integratePlanckSpectrum(size_t const groupIndex, double const T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
 
@@ -333,7 +327,7 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
  *                   by groupIndex.
  *
  */
-double CDI::integrateRosselandSpectrum(const int groupIndex, const double T)
+double CDI::integrateRosselandSpectrum(size_t const groupIndex, double const T)
 {
     Insist  (!frequencyGroupBoundaries.empty(), "No groups defined!");
     Require (T >= 0.0);
@@ -367,7 +361,7 @@ double CDI::integrateRosselandSpectrum(const int groupIndex, const double T)
  * and ROSL
  *
  */
-void CDI::integrate_Rosseland_Planckian_Spectrum(const int     groupIndex,
+void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t  groupIndex,
 						 const double  T, 
 						 double       &planck, 
 						 double       &rosseland)
@@ -400,13 +394,13 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const int     groupIndex,
  * \param T The temperature
  * \param planck Return argument containing the Planckian integrals. Size n
  */
-void CDI::integrate_Planckian_Spectrum(const std::vector<double>& bounds,
-                                       const double T,
-                                       std::vector<double>& planck)
+void CDI::integrate_Planckian_Spectrum(std::vector<double>  const & bounds,
+                                       double               const   T,
+                                       std::vector<double>        & planck)
 {
     Require ( T >= 0.0 );
 
-    const int groups = bounds.size() - 1;
+    size_t const groups( bounds.size() - 1 );
     Check(groups >= 1);
 
     planck.resize(groups, 0.0);
@@ -420,7 +414,7 @@ void CDI::integrate_Planckian_Spectrum(const std::vector<double>& bounds,
     scaled_frequency = bounds[0] / T;
     planck_value = integrate_planck(scaled_frequency);
 
-    for (int group = 0; group < groups; ++group)
+    for (size_t group = 0; group < groups; ++group)
     {
         // Shift the data down:
         last_scaled_frequency     = scaled_frequency;
@@ -452,15 +446,16 @@ void CDI::integrate_Planckian_Spectrum(const std::vector<double>& bounds,
  * \param planck Return argument containing the Planckian integrals. Size n
  * \param rosseland Return argumant containing the Rosseland integrals. Size n
  */
-void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& bounds,
-                                                 const double T,
-                                                 std::vector<double>& planck,
-                                                 std::vector<double>& rosseland)
+void CDI::integrate_Rosseland_Planckian_Spectrum(
+    std::vector<double> const & bounds,
+    double              const   T,
+    std::vector<double>       & planck,
+    std::vector<double>       & rosseland)
 {
 
     Require( T >= 0.0);
     
-    const int groups = bounds.size() - 1;
+    size_t const groups( bounds.size() - 1 );
     Check(groups >= 1);
 
     planck.resize   (groups, 0.0);
@@ -484,7 +479,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const std::vector<double>& boun
                                planck_value, rosseland_value); 
 
 
-    for (int group = 0; group < groups; ++group)
+    for (size_t group = 0; group < groups; ++group)
     {
 
         // Shift the data down:
@@ -735,7 +730,7 @@ CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model    m,
  *
  * This provides the CDI with the full functionality of the interface
  * defined in MultigroupOpacity.hh.  For example, the host code could
- * make the following call:<br> <tt> int numGroups =
+ * make the following call:<br> <tt> size_t numGroups =
  * spCDI1->mg()->getNumGroupBoundaries(); </tt>
  *
  * The appropriate multigroup opacity is returned for the given reaction
@@ -757,7 +752,7 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model    m,
  *
  * This provides the CDI with the full functionality of the interface
  * defined in OdfmgOpacity.hh.  For example, the host code could
- * make the following call:<br> <tt> int numGroups =
+ * make the following call:<br> <tt> size_t numGroups =
  * spCDI1->mg()->getNumGroupBoundaries(); </tt>
  *
  * The appropriate multigroup opacity is returned for the given reaction
@@ -809,45 +804,45 @@ CDI::SP_EoS CDI::eos() const
  */
 void CDI::reset()
 {
-	Check (grayOpacities.size() == constants::num_Models);
-	Check (multigroupOpacities.size() == constants::num_Models);
-	Check (odfmgOpacities.size() == constants::num_Models);
-
-	// reset the gray opacities
-	for (int i = 0; i < constants::num_Models; i++)
-	{
-		Check (grayOpacities[i].size() == constants::num_Reactions);
-		Check (multigroupOpacities[i].size() == constants::num_Reactions);
-		Check (odfmgOpacities[i].size() == constants::num_Reactions);
-
-		for (int j = 0; j < constants::num_Reactions; j++)
-		{
-			// reassign the GrayOpacity SP to a null SP
-			grayOpacities[i][j] = SP_GrayOpacity();
-
-			// reassign the MultigroupOpacity SP to a null SP
-			multigroupOpacities[i][j] = SP_MultigroupOpacity();
-
-			// reassign the OdfmgOpacity SP to a null SP
-			odfmgOpacities[i][j] = SP_OdfmgOpacity();
-
-			// check it
-			Check (!grayOpacities[i][j]);
-			Check (!odfmgOpacities[i][j]);
+    Check (grayOpacities.size() == constants::num_Models);
+    Check (multigroupOpacities.size() == constants::num_Models);
+    Check (odfmgOpacities.size() == constants::num_Models);
+    
+    // reset the gray opacities
+    for (size_t i = 0; i < constants::num_Models; ++i)
+    {
+        Check (grayOpacities[i].size() == constants::num_Reactions);
+        Check (multigroupOpacities[i].size() == constants::num_Reactions);
+        Check (odfmgOpacities[i].size() == constants::num_Reactions);
+        
+        for (size_t j = 0; j < constants::num_Reactions; j++)
+        {
+            // reassign the GrayOpacity SP to a null SP
+            grayOpacities[i][j] = SP_GrayOpacity();
+            
+            // reassign the MultigroupOpacity SP to a null SP
+            multigroupOpacities[i][j] = SP_MultigroupOpacity();
+            
+            // reassign the OdfmgOpacity SP to a null SP
+            odfmgOpacities[i][j] = SP_OdfmgOpacity();
+            
+            // check it
+            Check (!grayOpacities[i][j]);
+            Check (!odfmgOpacities[i][j]);
 		}
-	}
-
-	// empty the frequency group boundaries
-	frequencyGroupBoundaries.clear();
-	Check (frequencyGroupBoundaries.empty());
-
-	// empty the opacity band boundaries
-	opacityCdfBandBoundaries.clear();
-	Check (opacityCdfBandBoundaries.empty());
-	
-	// reset the EoS SP
-	spEoS = SP_EoS();
-	Check (!spEoS);
+    }
+    
+    // empty the frequency group boundaries
+    frequencyGroupBoundaries.clear();
+    Check (frequencyGroupBoundaries.empty());
+    
+    // empty the opacity band boundaries
+    opacityCdfBandBoundaries.clear();
+    Check (opacityCdfBandBoundaries.empty());
+    
+    // reset the EoS SP
+    spEoS = SP_EoS();
+    Check (!spEoS);
 }
 
 //---------------------------------------------------------------------------//

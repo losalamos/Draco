@@ -159,7 +159,7 @@ double polylog_series_minus_one_planck(double const x, double const eix)
     double li4  = eix;
 
     // calculate terms 2..10.  This loop has been unrolled by a factor of 3
-    for(int i = 2; i < 11; i += 3)
+    for(size_t i = 2; i < 11; i += 3)
     {
         register double const ip0_inv = *curr_inv++;
         eixp *= eix;
@@ -611,10 +611,8 @@ class CDI
     static std::vector<double> getOpacityCdfBandBoundaries();
 
     //! Returns the number of frequency groups in the stored frequency vector.
-    static int getNumberFrequencyGroups( void );
-    static int getNumberOpacityBands(   void );
-
-
+    static size_t getNumberFrequencyGroups( void );
+    static size_t getNumberOpacityBands(   void );
 
 
     // INTEGRATORS:
@@ -651,49 +649,42 @@ class CDI
 
     //! Integrate the normalized Planckian spectrum over a frequency group.
     static double integratePlanckSpectrum(
-        int    const groupIndex,
+        size_t const groupIndex,
         double const T);
 
     //! Integrate the normalized Rosseland spectrum over a frequency group
     static double integrateRosselandSpectrum(
-        int    const groupIndex, 
+        size_t const groupIndex, 
         double const T);
 
     //! Integrate the Planckian and Rosseland over a frequency group.
     static void integrate_Rosseland_Planckian_Spectrum(
-        int    const groupIndex,
+        size_t const groupIndex,
         double const T,
         double& planck,
         double& rosseland);
 
-
-
-    
     // Over the entire group spectrum:
     // ------------------------------
     
     //! Integrate the normalized Planckian spectrum over all frequency groups.
     static double integratePlanckSpectrum(double const T);
     
-
-
-    
     // Over a provided vector of frequency bounds at once:
     // --------------------------------------------------
     
     //! Integrate the Planckian over all frequency groups
     static void integrate_Planckian_Spectrum(
-        const std::vector<double>& bounds,
-        double const T,
-        std::vector<double>& planck);
-
+        std::vector<double> const & bounds,
+        double              const   T,
+        std::vector<double>       & planck);
 
     //! Integrate the Planckian and Rosseland over all frequency groups
     static void integrate_Rosseland_Planckian_Spectrum(
-        const std::vector<double>& bounds,
-        double const T,
-        std::vector<double>& planck,
-        std::vector<double>& rosseland);
+        std::vector<double> const & bounds,
+        double              const   T,
+        std::vector<double>       & planck,
+        std::vector<double>       & rosseland);
 
 };
 
@@ -714,9 +705,7 @@ class CDI
  */
 double CDI::integrate_planck(double const scaled_freq)
 {
-
     double const exp_scaled_freq = std::exp(-scaled_freq);
-
     return CDI::integrate_planck(scaled_freq, exp_scaled_freq);
 
 }
@@ -731,29 +720,26 @@ double CDI::integrate_planck(double const scaled_freq)
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  *
  */
-double CDI::integrate_planck(double const scaled_freq, double const exp_scaled_freq)
+double CDI::integrate_planck(double const scaled_freq,
+                             double const exp_scaled_freq)
 {
-
-    double const poly   = polylog_series_minus_one_planck(scaled_freq, exp_scaled_freq) + 1.0;
-    double const taylor = taylor_series_planck(scaled_freq);
-
-    double integral = std::min(taylor, poly);
+    double const poly
+        = polylog_series_minus_one_planck(scaled_freq, exp_scaled_freq) + 1.0;
+    double const taylor   = taylor_series_planck(scaled_freq);
+    double       integral = std::min(taylor, poly);
 
     Ensure ( integral >= 0.0 );
     Ensure ( integral <= 1.0 );
-
     return integral;
-    
 }
 
 //---------------------------------------------------------------------------//
-/* \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+/*! \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
  * (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq frequency upper integration limit scaled by temperature
  * \param planck Variable to return the Planck integral
  * \param rosseland Variable to return the Rosseland integral
- * 
  */
 void CDI::integrate_planck_rosseland(double const scaled_freq,
                                      double const exp_scaled_freq,
