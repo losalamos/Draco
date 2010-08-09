@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Header file for Shared_Lib.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -74,7 +74,7 @@ class Shared_Lib
     explicit Shared_Lib(const std::string &file_name = "");
 
     // Copy constructor.
-    Shared_Lib(const Shared_Lib &from);
+    explicit Shared_Lib(const Shared_Lib &from);
 
     //! Destructor.  Automatically closes the shared library.
     ~Shared_Lib() { close(); }

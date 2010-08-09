@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Implementation of Shared_Lib.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -45,7 +45,8 @@ Shared_Lib::Shared_Lib(const std::string &file_name)
   This is implemented by opening a new handle to the shared file.
 */
 Shared_Lib::Shared_Lib(const Shared_Lib &from)
-    : d_handle(0)
+    : d_handle(0),
+      d_file_name( std::string() )
 {
     open(from.d_file_name);
 }
