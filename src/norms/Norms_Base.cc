@@ -4,6 +4,7 @@
   \author Rob Lowrie
   \date   Fri Jan 14 13:01:37 2005
   \brief  Implemention for Norms_Base class.
+  \note   Copyright © 2005-2010 Los Alamos National Security, LLC.  
 */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,23 +14,21 @@
 
 using namespace rtt_norms;
 
-//---------------------------------------------------------------------------//
-/*!
-  \brief Default constructor.
-*/
-//---------------------------------------------------------------------------//
-Norms_Base::Norms_Base()
+//! Default constructor.
+Norms_Base::Norms_Base(void)
+    : d_sum_L1( -42.0 ),
+      d_sum_L2( -42.0 ),
+      d_Linf  ( -42.0 ),
+      d_sum_weights( -42.0 )
 {
     reset();
 }
-//---------------------------------------------------------------------------//
-/*!
-  \brief Destructor.
-*/
-//---------------------------------------------------------------------------//
+
+//! Destructor.
 Norms_Base::~Norms_Base()
-{
+{ /* empty */
 }
+
 //---------------------------------------------------------------------------//
 /*!
   \brief  Re-initializes the norm values.

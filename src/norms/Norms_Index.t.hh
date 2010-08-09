@@ -4,6 +4,7 @@
   \author Rob Lowrie
   \date   Fri Jan 14 13:00:47 2005
   \brief  Implemention for Norms_Index class.
+  \note   Copyright © 2005-2010 Los Alamos National Security, LLC.  
 */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,15 +17,16 @@ namespace rtt_norms
 {
 
 //---------------------------------------------------------------------------//
-/*!
-  \brief Default constructor.
-*/
+//! Default constructor.
 //---------------------------------------------------------------------------//
 template <class Index_t>
 Norms_Index<Index_t>::Norms_Index()
-    : Norms_Base()
+    : Norms_Base(),
+      d_index_Linf( Index_t() )
 {
+    /* empty */
 }
+
 //---------------------------------------------------------------------------//
 /*!
   \brief Adds to the norm values.
