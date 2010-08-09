@@ -40,6 +40,7 @@ C4_Req::C4_Req()
 //---------------------------------------------------------------------------//
 
 C4_Req::C4_Req( const C4_Req& req )
+    : p(NULL)
 {
     if (req.inuse())
         p = req.p;
@@ -106,8 +107,12 @@ void C4_Req::free_()
 //---------------------------------------------------------------------------//
 
 C4_ReqRefRep::C4_ReqRefRep()
-    : n(0),
-      assigned(0)
+    : n(0)
+    , assigned(0)
+#ifdef C4_MPI
+    , s(MPI_Status())
+    , r(MPI_Request())
+#endif
 {
     // empty
 }

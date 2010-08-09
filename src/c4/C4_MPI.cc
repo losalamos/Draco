@@ -9,16 +9,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <c4/config.h>
+#include "c4/config.h"
+
 #ifdef C4_MPI
 
-#include <unistd.h>
-#include <sys/times.h>
-#include <vector>
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
-
 #include "C4_MPI.hh"
+#include <vector>
+#include <unistd.h>
+#include <sys/times.h>
 
 namespace rtt_c4
 {
@@ -169,16 +169,12 @@ void wait_all(int count,
     using std::vector;
     
     vector<MPI_Request> array_of_requests(count);
-    for (unsigned i=0; i<static_cast<unsigned>(count); ++i)
+    for (int i=0; i<count; ++i)
     {
         if (requests[i].inuse())
-        {
             array_of_requests[i] = requests[i].r();
-        }
         else
-        {
             array_of_requests[i] = MPI_REQUEST_NULL;
-        }
     }
     MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
 }
@@ -190,7 +186,7 @@ unsigned wait_any(int count,
     using std::vector;
     
     vector<MPI_Request> array_of_requests(count);
-    for (unsigned i=0; i<static_cast<unsigned>(count); ++i)
+    for (int i=0; i<count; ++i)
     {
         if (requests[i].inuse())
         {

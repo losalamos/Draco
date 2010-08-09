@@ -10,11 +10,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ApplicationUnitTest.hh"
+#include "c4/config.h"
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
-#include "ApplicationUnitTest.hh"
-#include "c4/config.h"
+#include <fstream>
 
 namespace rtt_c4
 {
@@ -46,8 +47,9 @@ ApplicationUnitTest::ApplicationUnitTest(
       applicationPath( setTestPath(applicationName_) ),
       numProcs( getNumProcs( argc, argv ) ),
       mpiCommand( constructMpiCommand( numProcs ) ),
+      logExtension( buildLogExtension( numProcs ) ),
       listOfArgs( listOfArgs_ ),
-      logExtension( buildLogExtension( numProcs ) )
+      logFile( std::string() )
 {
     using std::string;
 
@@ -106,16 +108,16 @@ void ApplicationUnitTest::status()
  */
 std::string ApplicationUnitTest::getNumProcs( int & argc, char **&argv )
 {
-    Require(argc > 2);
-    std::string np;
-    // command line arguments
-    for( int arg = 1; arg < argc; arg++ )
-	if( std::string( argv[arg] ) == "--np" &&
-            arg + 1 < argc )
-            np = argv[++arg];
-    Ensure( np == std::string("scalar") ||
-            np == std::string("serial") ||
-            std::atoi( np.c_str() ) > 0 );
+   Require(argc > 2);
+   std::string np;
+   // command line arguments
+   for( int arg = 1; arg < argc; arg++ )
+      if( std::string( argv[arg] ) == "--np" &&
+          arg + 1 < argc )
+          np = argv[++arg];
+   Ensure( np == std::string("scalar") ||
+           np == std::string("serial") ||
+           std::atoi( np.c_str() ) > 0 );
     return np;
 }
 
@@ -170,12 +172,19 @@ std::string ApplicationUnitTest::constructMpiCommand(
              numProcs == std::string("serial") ||
              std::atoi( numProcs.c_str() ) > 0 );
 
+#if defined( c4_isWin )
+    { // The binary should exist.  Windows does not provide an execute bit.  
+         std::string exeExists( applicationPath + applicationName + ".exe" );
+         Require( std::ifstream( exeExists.c_str() ) );
+    }
+#else             
     { // The binary should exist and marked by the filesystem as executable.  
         
         std::string exeExistsAndExecutable("test -x " + applicationPath
                                            + applicationName );
         Require( std::system( exeExistsAndExecutable.c_str() ) == 0 );
     }
+#endif
 
     // cmd will contain the UNIX command that will be used to execute the
     // specified program.  Possible formats include:
@@ -195,7 +204,12 @@ std::string ApplicationUnitTest::constructMpiCommand(
         cmd << C4_MPICMD;
             
         // relative path to the binary.
-        cmd << numProcs << " " << applicationPath + applicationName << " ";
+        cmd << numProcs << " " << applicationPath + applicationName;
+#if defined( c4_isWin )
+        cmd << ".exe ";
+#else
+        cmd << " ";        
+#endif        
     }
 
     Ensure( cmd.str().length() > 0 );
@@ -267,33 +281,7 @@ void ApplicationUnitTest::runTests()
          it_arg != listOfArgs.end();
          ++it_arg )
     {
-//         std::ostringstream msg;
-//         int errorLevel(0);
-
-//         std::string logFile( testPath + applicationName + "_" + *it_arg + logExtension );
-        
-//         std::ostringstream unixCommand;
-//         unixCommand << mpiCommand << *it_arg << " > " << logFile;
-//         std::cout << "\nExecuting command from the shell: \n\t\""
-//                   << unixCommand.str().c_str() << "\"\n" << std::endl;
-//         bool result = runTest( *it_arg );
         runTest( *it_arg );
-//         errorLevel = std::system( unixCommand.str().c_str() );
-        
-//         if( errorLevel == 0 )
-//         {
-//             msg << "Test: passed\n\tSuccessful ";
-//             numPasses++;
-//         }
-//         else
-//         {
-//             msg << "Test: failed\n\tUnsuccessful ";
-//             numFails++;
-//         }
-//         msg << "execution of " << testPath + applicationName << " :"
-//             << "\n\tArguments           : " << *it_arg
-//             << "\n\tOutput Logfile      : " << logFile << "\n";
-//         out << msg.str() << std::endl;
     }
     return;
 }

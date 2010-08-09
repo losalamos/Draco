@@ -18,7 +18,8 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 
 SpinLock::SpinLock( int _lock /*=1*/ )
-    : lock(_lock)
+    : trash(0),
+      lock(_lock)
 {
     if (lock && node)
 	receive( &trash, 0, node-1, SL_Next );
