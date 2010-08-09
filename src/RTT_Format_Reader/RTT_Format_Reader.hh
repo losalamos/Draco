@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// RTT_Format_Reader.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/RTT_Format_Reader.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader library.
+ * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_RTT_Format_Reader_hh__
@@ -86,8 +85,8 @@ class RTT_Format_Reader
 
   public:
 
-    // Constructors
-    RTT_Format_Reader(const string & RTT_File);
+    //! Constructor
+    explicit RTT_Format_Reader(const string & RTT_File);
 /*!
  * \brief Destroys an RTT_Format_Reader class object
  */
@@ -115,7 +114,7 @@ class RTT_Format_Reader
  * \brief Returns the mesh file cycle number.
  * \return Cycle number.
  */
-    int get_header_cycle() const { return header.get_cycle(); }
+    size_t get_header_cycle() const { return header.get_cycle(); }
 /*!
  * \brief Returns the mesh file problem time.
  * \return Problem time.
@@ -125,13 +124,13 @@ class RTT_Format_Reader
  * \brief Returns the number of comment lines in the mesh file.
  * \return The number of comment lines.
  */
-    int get_header_ncomments() const { return header.get_ncomments(); }	
+    size_t get_header_ncomments() const { return header.get_ncomments(); }	
 /*!
  * \brief Returns the specified comment line from the mesh file.
  * \param i Line number of the comment to be returned.
  * \return The comment line.
  */
-    string get_header_comments(int i) const { return header.get_comments(i); }
+    string get_header_comments(size_t i) const { return header.get_comments(i); }
 
     // dimensions units and cell definition data access
 /*!
@@ -149,127 +148,127 @@ class RTT_Format_Reader
  * \brief Returns the number of unique cell type definitions.
  * \return The number of cell definitions.
  */
-    int get_dims_ncell_defs() const { return dims.get_ncell_defs(); }
+    size_t get_dims_ncell_defs() const { return dims.get_ncell_defs(); }
 /*!
  * \brief Returns the maximum number of nodes per cell type.
  * \return The maximum number of nodes per cell type.
  */
-    int get_dims_nnodes_max() const { return dims.get_nnodes_max(); }
+    size_t get_dims_nnodes_max() const { return dims.get_nnodes_max(); }
 /*!
  * \brief Returns the maximum number of sides per cell type.
  * \return The maximum number of sides per cell type.
  */
-    int get_dims_nsides_max() const { return dims.get_nsides_max(); }
+    size_t get_dims_nsides_max() const { return dims.get_nsides_max(); }
 /*!
  * \brief Returns the maximum number of nodes per cell side.
  * \return The maximum number of nodes per cell side.
  */
-    int get_dims_nnodes_side_max() const { return dims.get_nnodes_side_max(); }
+    size_t get_dims_nnodes_side_max() const { return dims.get_nnodes_side_max(); }
 
     // dimensions node data access
 /*!
  * \brief Returns the number of spatial dimensions.
  * \return The number of spatial dimensions.
  */
-    int get_dims_ndim() const { return dims.get_ndim(); }
+    size_t get_dims_ndim() const { return dims.get_ndim(); }
 /*!
  * \brief Returns the number of topological dimensions.
  * \return The number of topological dimensions.
  */
-    int get_dims_ndim_topo() const { return dims.get_ndim_topo(); }
+    size_t get_dims_ndim_topo() const { return dims.get_ndim_topo(); }
 /*!
  * \brief Returns the number of nodes.
  * \return The number of nodes.
  */
-    int get_dims_nnodes() const { return dims.get_nnodes(); }
+    size_t get_dims_nnodes() const { return dims.get_nnodes(); }
 /*!
  * \brief Returns the number of node flag types.
  * \return The number of node flag types.
  */
-    int get_dims_nnode_flag_types() const 
+    size_t get_dims_nnode_flag_types() const 
     { return dims.get_nnode_flag_types(); }
 /*!
  * \brief Returns the number of node flags for the specified node flag type.
  * \param i Node flag type number.
  * \return The number of node flags.
  */
-    int get_dims_nnode_flags(int i) const { return dims.get_nnode_flags(i); }
+    size_t get_dims_nnode_flags(size_t i) const { return dims.get_nnode_flags(i); }
 /*!
  * \brief Returns the number of node data fields.
  * \return The number of node data fields.
  */
-    int get_dims_nnode_data() const { return dims.get_nnode_data(); }
+    size_t get_dims_nnode_data() const { return dims.get_nnode_data(); }
 
     // dimensions side data access
 /*!
  * \brief Returns the number of sides.
  * \return The number of sides.
  */
-    int get_dims_nsides() const { return dims.get_nsides(); }
+    size_t get_dims_nsides() const { return dims.get_nsides(); }
 /*!
  * \brief Returns the number of side types that are present in the "sides"
  *        block.
  * \return The number of side types.
  */
-    int get_dims_nside_types() const { return dims.get_nside_types(); }
+    size_t get_dims_nside_types() const { return dims.get_nside_types(); }
 /*!
  * \brief Returns the side type index for the specified side type.
  * \param i Side type number.
  * \return The side type index.
  */
-    int get_dims_side_types(int i) const  { return  dims.get_side_types(i); }
+    int get_dims_side_types(size_t i) const  { return  dims.get_side_types(i); }
 /*!
  * \brief Returns the number of side flag types.
  * \return The number of side flag types.
  */
-    int get_dims_nside_flag_types() const 
+    size_t get_dims_nside_flag_types() const 
     { return dims.get_nside_flag_types(); }
 /*!
  * \brief Returns the number of side flags for the specified side flag type.
  * \param i Side flag type number.
  * \return The number of side flags.
  */
-    int get_dims_nside_flags(int i) const { return dims.get_nside_flags(i); }
+    size_t get_dims_nside_flags(size_t i) const { return dims.get_nside_flags(i); }
 /*!
  * \brief Returns the number of side data fields.
  * \return The number of side data fields.
  */
-    int get_dims_nside_data() const { return dims.get_nside_data(); }
+    size_t get_dims_nside_data() const { return dims.get_nside_data(); }
 
     // dimensions cell data access
 /*!
  * \brief Returns the number of cells.
  */
-    int get_dims_ncells() const { return dims.get_ncells(); }
+    size_t get_dims_ncells() const { return dims.get_ncells(); }
 /*!
  * \brief Returns the number of cell types that are present in the "cells"
  *        block.
  * \return The number of cell types.
  */
-    int get_dims_ncell_types() const { return dims.get_ncell_types(); }    
+    size_t get_dims_ncell_types() const { return dims.get_ncell_types(); }    
 /*!
  * \brief Returns the cell type index for the specified cell type.
  * \param i Cell type number.
  * \return The cell type index.
  */
-    int get_dims_cell_types(int i)  const { return dims.get_cell_types(i); }
+    int get_dims_cell_types(size_t i)  const { return dims.get_cell_types(i); }
 /*!
  * \brief Returns the number of cell flag types.
  * \return The number of cell flag types.
  */
-    int get_dims_ncell_flag_types() const 
+    size_t get_dims_ncell_flag_types() const 
     { return dims.get_ncell_flag_types(); }
 /*!
  * \brief Returns the number of cell flags for the specified cell flag type.
  * \param i Cell flag type number.
  * \return The number of cell flags.
  */
-    int get_dims_ncell_flags(int i) const { return dims.get_ncell_flags(i); }
+    size_t get_dims_ncell_flags(size_t i) const { return dims.get_ncell_flags(i); }
 /*!
  * \brief Returns the number of cell data fields.
  * \return The number of cell data fields.
  */
-    int get_dims_ncell_data() const { return dims.get_ncell_data(); }
+    size_t get_dims_ncell_data() const { return dims.get_ncell_data(); }
 
     // node flags access
 /*!
@@ -301,7 +300,7 @@ class RTT_Format_Reader
  * \param flagtype Node flag type number.
  * \return The number of node flags.
  */
-    int get_node_flags_flag_size(int flagtype) const 
+    size_t get_node_flags_flag_size(int flagtype) const 
     { return spNodeFlags->get_flag_size(flagtype); }
 /*!
  * \brief Returns the node flag name associated with the specified node flag
@@ -383,7 +382,7 @@ class RTT_Format_Reader
  * \param flagtype Cell flag type number.
  * \return The number of cell flags.
  */
-    int get_cell_flags_flag_size(int flagtype) const 
+    size_t get_cell_flags_flag_size(int flagtype) const 
     { return spCellFlags->get_flag_size(flagtype); }
 /*!
  * \brief Returns the cell flag name associated with the specified cell flag
@@ -466,14 +465,14 @@ class RTT_Format_Reader
  * \param i Cell definition index number.
  * \return The number of nodes comprising the cell definition.
  */
-    int get_cell_defs_nnodes(int i) const { return spCellDefs->get_nnodes(i); }
+    size_t get_cell_defs_nnodes(size_t i) const { return spCellDefs->get_nnodes(i); }
 /*!
  * \brief Returns the number of sides associated with the specified cell 
  *        definition.
  * \param i Cell definition index number.
  * \return The number of sides comprising the cell definition.
  */
-    int get_cell_defs_nsides(int i) const { return spCellDefs->get_nsides(i); }
+    size_t get_cell_defs_nsides(size_t i) const { return spCellDefs->get_nsides(i); }
 /*!
  * \brief Returns the side type number associated with the specified side 
  *        index and cell definition.
@@ -483,28 +482,28 @@ class RTT_Format_Reader
  */
     int get_cell_defs_side_types(int i, int s) const
     { return spCellDefs->get_side_types(i,s); }
-/*!
- * \brief Returns the side definition associated with the specified cell 
- *        definition and side index with the returned cell-node indexes in 
- *        sorted order.
- * \param i Cell definition index number.
- * \param s Side index number.
- * \return The side definition (i.e., the cell-node indexes that comprise the 
- *         side).
- */
-    const vector_int & get_cell_defs_side(int i, int s) const 
+    /*!
+     * \brief Returns the side definition associated with the specified cell
+     *        definition and side index with the returned cell-node indexes in
+     *        sorted order.
+     * \param i Cell definition index number.
+     * \param s Side index number.
+     * \return The side definition (i.e., the cell-node indexes that comprise
+     *         the side).
+     */
+    std::vector<size_t> const & get_cell_defs_side(int i, int s) const 
     { return spCellDefs->get_side(i,s); }
-/*!
- * \brief Returns the side definition associated with the specified cell  
- *        definition and side index with the returned cell-node indexes 
- *        ordered to preserve the right hand rule for the outward-directed 
- *        normal.
- * \param i Cell definition index number.
- * \param s Side index number.
- * \return The side definition (i.e., the cell-node indexes that comprise the 
- *         side).
- */
-    const vector_int & get_cell_defs_ordered_side(int i, int s) const 
+    /*!
+     * \brief Returns the side definition associated with the specified cell
+     *        definition and side index with the returned cell-node indexes
+     *        ordered to preserve the right hand rule for the outward-directed
+     *        normal.
+     * \param i Cell definition index number.
+     * \param s Side index number.
+     * \return The side definition (i.e., the cell-node indexes that comprise
+     *         the side).
+     */
+    std::vector<size_t> const & get_cell_defs_ordered_side(int i, int s) const 
     { return spCellDefs->get_ordered_side(i,s); }
 /*!
  * \brief Returns the status of the flag indicating that the cell definitions
@@ -728,14 +727,16 @@ class RTT_Format_Reader
     void readEndKeyword(ifstream & meshfile);
 
   public:
-    void reformatData(const vector_vector_int & cell_side_types_, 
-		      const vector_vector_vector_int & cell_ordered_sides_);
+    void reformatData(
+        vector_vector_int const & cell_side_types_, 
+        std::vector< std::vector< std::vector< size_t > > >
+        const& cell_ordered_sides_);
 };
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif                          // __RTT_Format_Reader_RTT_Format_Reader_hh__
+#endif // __RTT_Format_Reader_RTT_Format_Reader_hh__
 
 //---------------------------------------------------------------------------//
-//                end of RTT_Format_Reader/RTT_Format_Reader.hh
+// end of RTT_Format_Reader/RTT_Format_Reader.hh
 //---------------------------------------------------------------------------//

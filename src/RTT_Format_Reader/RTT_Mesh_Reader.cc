@@ -1,15 +1,13 @@
 //----------------------------------*-C++-*--------------------------------//
-// RTT_Mesh_Reader.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/RTT_Mesh_Reader.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Mesh_Reader library.
+ * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "RTT_Mesh_Reader.hh"
@@ -22,15 +20,16 @@ using rtt_mesh_element::Element_Definition;
 /*!
  * \brief Transforms the RTT_Format data to the CGNS format.
  */
-void RTT_Mesh_Reader::transform2CGNS()
+void RTT_Mesh_Reader::transform2CGNS(void)
 {
     Element_Definition::Element_Type cell_def;
     rtt_dsxx::SP<rtt_mesh_element::Element_Definition> cell;
     std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > cell_definitions;
     vector_int new_side_types;
-    vector_vector_int new_ordered_sides;
+    std::vector< std::vector< size_t > > new_ordered_sides;
     vector_vector_int cell_side_types(rttMesh->get_dims_ncell_defs());
-    vector_vector_vector_int cell_ordered_sides(rttMesh->get_dims_ncell_defs());
+    std::vector< std::vector< std::vector< size_t > > > cell_ordered_sides(
+        rttMesh->get_dims_ncell_defs());
 
     for (unsigned cd = 0; cd < rttMesh->get_dims_ncell_defs(); cd++)
     {
@@ -75,14 +74,15 @@ void RTT_Mesh_Reader::transform2CGNS()
                 std::vector<Element_Definition::Node_Location>
                     node_loc(cell_definition->get_nnodes(), Element_Definition::CORNER);
                 
-                cell = new rtt_mesh_element::Element_Definition(cell_definition->get_name(),
-                                                                rttMesh->get_dims_ndim(),
-                                                                cell_definition->get_nnodes(),
-                                                                cell_definition->get_nsides(),
-                                                                elem_defs,
-                                                                side_types,
-                                                                cell_definition->get_all_sides(),
-                                                                node_loc);
+                cell = new rtt_mesh_element::Element_Definition(
+                    cell_definition->get_name(),
+                    rttMesh->get_dims_ndim(),
+                    cell_definition->get_nnodes(),
+                    cell_definition->get_nsides(),
+                    elem_defs,
+                    side_types,
+                    cell_definition->get_all_sides(),
+                    node_loc);
             }
             else
             {

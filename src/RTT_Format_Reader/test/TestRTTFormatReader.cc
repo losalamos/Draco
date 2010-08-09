@@ -1045,8 +1045,8 @@ bool check_cell_defs(const RTT_Format_Reader & mesh,
     std::vector<int> nnodes;
     std::vector<int> nsides;
     std::vector<std::vector<int> > side_types;
-    std::vector<std::vector<std::vector<int> > > sides;
-    std::vector<std::vector<std::vector<int> > > ordered_sides;
+    std::vector<std::vector<std::vector<size_t> > > sides;
+    std::vector<std::vector<std::vector<size_t> > > ordered_sides;
 
     switch (meshtype)
     {

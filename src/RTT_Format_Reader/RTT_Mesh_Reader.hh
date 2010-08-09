@@ -1,15 +1,13 @@
 //----------------------------------*-C++-*----------------------------------//
-// RTT_Mesh_Reader.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/RTT_Mesh_Reader.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Mesh_Reader library.
+ * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_RTT_Mesh_Reader_hh__
@@ -51,7 +49,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     typedef std::vector<int> vector_int;
     typedef std::vector<std::vector<int> > vector_vector_int;
     typedef std::vector<std::vector<std::vector<int> > > 
-        vector_vector_vector_int;
+    vector_vector_vector_int;
     typedef std::vector<std::vector<double> > vector_vector_dbl;
 
     // DATA
@@ -100,7 +98,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  * \brief Returns the topological dimenstion (1, 2 or 3).
  * \return Topological dimension.
  */
-    virtual int get_dims_ndim() const
+    virtual size_t get_dims_ndim() const
     { return rttMesh->get_dims_ndim(); }
 
     virtual vector_vector_int get_element_nodes() const;
@@ -110,11 +108,11 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  * \return Element definitions.
  */
     virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
-        get_element_types() const
+    get_element_types() const
     { return element_types; }
 
     virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > 
-        get_element_defs() const
+    get_element_defs() const
     { return element_defs; }
 
 /*!
@@ -123,7 +121,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  * \return Element definitions.
  */
     virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
-        get_unique_element_types() const
+    get_unique_element_types() const
     { return unique_element_types; }
 
 
@@ -142,7 +140,7 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 
   private:
     
-    void transform2CGNS();
+    void transform2CGNS(void);
 };
 
 } // end namespace rtt_RTT_Format_Reader

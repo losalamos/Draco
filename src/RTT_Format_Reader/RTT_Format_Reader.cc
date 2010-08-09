@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// RTT_Format_Reader.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/RTT_Format_Reader.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader library.
+ * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include <sstream>
@@ -144,8 +143,10 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
  * \param cell_ordered_sides New ordered sides for each of the existing cell 
  *        definitions.
  */
-void RTT_Format_Reader::reformatData(const vector_vector_int & cell_side_types,
-                                     const vector_vector_vector_int & cell_ordered_sides)
+void RTT_Format_Reader::reformatData(
+    vector_vector_int const & cell_side_types,
+    std::vector< std::vector< std::vector< size_t > > >
+    const & cell_ordered_sides)
 {
     spCellDefs->redefineCellDefs(cell_side_types, cell_ordered_sides);
     spSides->redefineSides();

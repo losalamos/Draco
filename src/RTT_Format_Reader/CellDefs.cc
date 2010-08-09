@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// CellDefs.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/CellDefs.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellDefs class.
+ * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
+ *         reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "CellDefs.hh"
@@ -84,8 +83,10 @@ void CellDefs::readEndKeyword(ifstream & meshfile)
  * \param cell_ordered_sides New ordered sides for each of the existing cell 
  *        definitions.
  */
-void CellDefs::redefineCellDefs(const vector_vector_int & cell_side_types, 
-                                const vector_vector_vector_int & cell_ordered_sides)
+void CellDefs::redefineCellDefs(
+    vector_vector_int const & cell_side_types,
+    std::vector< std::vector< std::vector< size_t > > >
+    const & cell_ordered_sides)
 {
     Insist(cell_side_types.size() == dims.get_ncell_defs(),
 	   "Error in supplied cell redefinition side types data.");
@@ -158,8 +159,9 @@ void CellDef::readDef(ifstream & meshfile)
  * \param new_side_types New cell side types.
  * \param new_ordered_sides New cell ordered sides.
  */
-void CellDef::redefineCellDef(const vector_int & new_side_types, 
-			      const vector_vector_int & new_ordered_sides)
+void CellDef::redefineCellDef(
+    vector_int const & new_side_types, 
+    std::vector< std::vector< size_t > > const & new_ordered_sides)
 {
     Insist(new_side_types.size() == nsides, "New side types input error");
     Insist(new_ordered_sides.size() == nsides,
