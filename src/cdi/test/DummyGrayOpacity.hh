@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:29:17 2001
  * \brief  DummyGrayOpacity class header file (derived from ../GrayOpacity)
+ * \note   Copyright © 2001-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -54,8 +56,8 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     const std::string energyPolicyDescriptor;  // "Gray"
 	
     // data grid size
-    const int numTemperatures;  // = 3
-    const int numDensities;     // = 2
+    const size_t numTemperatures;  // = 3
+    const size_t numDensities;     // = 2
 	
     // the data grid
     std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
@@ -194,12 +196,12 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    int getNumTemperatures() const { return numTemperatures; };
+    size_t getNumTemperatures() const { return numTemperatures; };
 	
     /*! 
      * \brief Returns the size of the density grid.
      */
-    int getNumDensities() const { return numDensities; };
+    size_t getNumDensities() const { return numDensities; };
 
     // Dummy pack function.
     std::vector<char> pack() const { return std::vector<char>(); }

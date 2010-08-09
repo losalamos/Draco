@@ -46,11 +46,11 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
     densityGrid.resize( numDensities );
     groupBoundaries.resize( numGroupBoundaries );  
 	    
-    for ( int i=0; i<numTemperatures; ++i )
+    for ( size_t i=0; i<numTemperatures; ++i )
 	temperatureGrid[i] = (i+1) * 1.0;
-    for ( int i=0; i<numDensities; ++i )
+    for ( size_t i=0; i<numDensities; ++i )
 	densityGrid[i] = (i+1) * 0.1;
-    for ( int i=0; i<numGroupBoundaries; ++i )
+    for ( size_t i=0; i<numGroupBoundaries; ++i )
 	groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
 } 
 
@@ -59,7 +59,7 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
 DummyMultigroupOpacity::DummyMultigroupOpacity(
     rtt_cdi::Reaction reaction,
     rtt_cdi::Model    model,
-    int num_boundaries)
+    size_t num_boundaries)
     : dataFilename( "none" ),
       dataDescriptor( "DummyMultigroupOpacity" ),
       energyPolicyDescriptor( "Multigroup" ),
@@ -73,11 +73,11 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(
     densityGrid.resize( numDensities );
     groupBoundaries.resize( numGroupBoundaries );  
 	    
-    for ( int i=0; i<numTemperatures; ++i )
+    for ( size_t i=0; i<numTemperatures; ++i )
 	temperatureGrid[i] = (i+1) * 1.0;
-    for ( int i=0; i<numDensities; ++i )
+    for ( size_t i=0; i<numDensities; ++i )
 	densityGrid[i] = (i+1) * 0.1;
-    for ( int i=0; i<numGroupBoundaries; ++i )
+    for ( size_t i=0; i<numGroupBoundaries; ++i )
 	groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
 } 
     
@@ -99,7 +99,7 @@ std::vector<double> DummyMultigroupOpacity::getOpacity(
     double targetDensity ) const
 { 
     std::vector< double > opacity( numGroupBoundaries-1 );
-    for ( int ig=0; ig<numGroupBoundaries-1; ++ig)
+    for ( size_t ig=0; ig<numGroupBoundaries-1; ++ig)
 	opacity[ig] = 2.0 * 
 	    ( targetTemperature + targetDensity/1000.0) 
 	    / ( groupBoundaries[ig] + groupBoundaries[ig+1] );
@@ -122,11 +122,11 @@ DummyMultigroupOpacity::getOpacity(
 { 
     std::vector< std::vector< double > > opacity( targetTemperature.size() );
 	    
-    for ( int it=0; it<targetTemperature.size(); ++it )
+    for ( size_t it=0; it<targetTemperature.size(); ++it )
     {
 	opacity[it].resize( numGroupBoundaries-1 );
 		    
-	for ( int ig=0; ig<numGroupBoundaries-1; ++ig)
+	for ( size_t ig=0; ig<numGroupBoundaries-1; ++ig)
 	    opacity[it][ig] = 2.0 * 
 		( targetTemperature[it] + targetDensity/1000.0) 
 		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
@@ -151,11 +151,11 @@ DummyMultigroupOpacity::getOpacity(
 { 
     std::vector< std::vector< double > > opacity( targetDensity.size() );
 	    
-    for ( int id=0; id<targetDensity.size(); ++id )
+    for ( size_t id=0; id<targetDensity.size(); ++id )
     {
 	opacity[id].resize( numGroupBoundaries-1 );
 		    
-	for ( int ig=0; ig<numGroupBoundaries-1; ++ig)
+	for ( size_t ig=0; ig<numGroupBoundaries-1; ++ig)
 	    opacity[id][ig] = 2.0 * 
 		( targetTemperature + targetDensity[id]/1000.0) 
 		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );

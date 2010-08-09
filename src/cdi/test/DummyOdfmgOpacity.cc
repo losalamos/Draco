@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:17:16 2001
  * \brief  DummyOdfmgOpacity templated class implementation file.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -35,70 +37,71 @@ namespace rtt_cdi_test
  *
  */
 DummyOdfmgOpacity::DummyOdfmgOpacity(rtt_cdi::Reaction reaction,
-		rtt_cdi::Model    model)
-	: dataFilename( "none" ),
-	dataDescriptor( "DummyOdfmgOpacity" ),
-	energyPolicyDescriptor( "Odfmg" ),
-	numTemperatures( 3 ),
-	numDensities( 2 ),
-	numGroupBoundaries( 4 ),
-	numBandBoundaries( 5 ),
-	reaction_type(reaction),
-	model_type(model)
+                                     rtt_cdi::Model    model)
+    : dataFilename( "none" ),
+      dataDescriptor( "DummyOdfmgOpacity" ),
+      energyPolicyDescriptor( "Odfmg" ),
+      numTemperatures( 3 ),
+      numDensities( 2 ),
+      numGroupBoundaries( 4 ),
+      numBandBoundaries( 5 ),
+      reaction_type(reaction),
+      groupBoundaries(), bandBoundaries(), temperatureGrid(), densityGrid(),
+      model_type(model)
 {
-	temperatureGrid.resize( numTemperatures );
-	densityGrid.resize( numDensities );
-	groupBoundaries.resize( numGroupBoundaries );
-	bandBoundaries.resize( numBandBoundaries );
+    temperatureGrid.resize( numTemperatures );
+    densityGrid.resize( numDensities );
+    groupBoundaries.resize( numGroupBoundaries );
+    bandBoundaries.resize( numBandBoundaries );
 
-	for ( int i=0; i<numTemperatures; ++i )
-		temperatureGrid[i] = (i+1) * 1.0;
-	for ( int i=0; i<numDensities; ++i )
-		densityGrid[i] = (i+1) * 0.1;
+    for ( size_t i=0; i<numTemperatures; ++i )
+        temperatureGrid[i] = (i+1) * 1.0;
+    for ( size_t i=0; i<numDensities; ++i )
+        densityGrid[i] = (i+1) * 0.1;
 
-	// due to the way the CDI test is implemented, these group boundaries MUST
-	// match the multigroup frequency boundaries
-	for ( int i=0; i<numGroupBoundaries; ++i )
-		groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
+    // due to the way the CDI test is implemented, these group boundaries MUST
+    // match the multigroup frequency boundaries
+    for ( size_t i=0; i<numGroupBoundaries; ++i )
+        groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
 
-	bandBoundaries[0] = 0.0;
-	for ( int i=1; i < numBandBoundaries; ++i )
-		bandBoundaries[i] = std::pow(2,(i - 4.0));
-	//Check(bandBoundaries[numBandBoundaries - 1] == 1.0);
+    bandBoundaries[0] = 0.0;
+    for ( size_t i=1; i < numBandBoundaries; ++i )
+        bandBoundaries[i] = std::pow(2,(i - 4.0));
+    //Check(bandBoundaries[numBandBoundaries - 1] == 1.0);
 } 
 
 // Constructor for entering a different group boundary structure than the
 // default 
 DummyOdfmgOpacity::DummyOdfmgOpacity(
-		rtt_cdi::Reaction reaction,
-		rtt_cdi::Model    model,
-		int num_groupboundaries, int num_bandboundaries)
-	: dataFilename( "none" ),
-	dataDescriptor( "DummyOdfmgOpacity" ),
-	energyPolicyDescriptor( "Odfmg" ),
-	numTemperatures( 3 ),
-	numDensities( 2 ),
-	numGroupBoundaries( num_groupboundaries ),
-	numBandBoundaries( num_bandboundaries ),
-	reaction_type(reaction),
-	model_type(model)
+    rtt_cdi::Reaction reaction,
+    rtt_cdi::Model    model,
+    size_t num_groupboundaries, size_t num_bandboundaries)
+    : dataFilename( "none" ),
+      dataDescriptor( "DummyOdfmgOpacity" ),
+      energyPolicyDescriptor( "Odfmg" ),
+      numTemperatures( 3 ),
+      numDensities( 2 ),
+      numGroupBoundaries( num_groupboundaries ),
+      numBandBoundaries( num_bandboundaries ),
+      reaction_type(reaction),
+      model_type(model)
 {
-	temperatureGrid.resize( numTemperatures );
-	densityGrid.resize( numDensities );
-	groupBoundaries.resize( numGroupBoundaries );  
-	bandBoundaries.resize( numBandBoundaries );
+    temperatureGrid.resize( numTemperatures );
+    densityGrid.resize( numDensities );
+    groupBoundaries.resize( numGroupBoundaries );  
+    bandBoundaries.resize( numBandBoundaries );
 
-	for ( int i=0; i<numTemperatures; ++i )
-		temperatureGrid[i] = (i+1) * 1.0;
-	for ( int i=0; i<numDensities; ++i )
-		densityGrid[i] = (i+1) * 0.1;
-	for ( int i=0; i<numGroupBoundaries; ++i )
-		groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
+    for ( size_t i=0; i<numTemperatures; ++i )
+        temperatureGrid[i] = (i+1) * 1.0;
+    for ( size_t i=0; i<numDensities; ++i )
+        densityGrid[i] = (i+1) * 0.1;
+    for ( size_t i=0; i<numGroupBoundaries; ++i )
+        groupBoundaries[i] = 5.0 * std::pow(10.0,(i-2.0));
 
-	bandBoundaries[0] = 0.0;
-	for ( int i=1; i < numBandBoundaries; ++i )
-		bandBoundaries[i] = std::pow(2,(i - numBandBoundaries - 1.0));
-	//Check(bandBoundaries[numBandBoundaries - 1] == 1.0);
+    bandBoundaries[0] = 0.0;
+    for ( size_t i=1; i < numBandBoundaries; ++i )
+        bandBoundaries[i] = std::pow(2,(i - numBandBoundaries - 1.0));
+    //Check(bandBoundaries[numBandBoundaries - 1] == 1.0);
 } 
 
 // --------- //
@@ -115,26 +118,27 @@ DummyOdfmgOpacity::DummyOdfmgOpacity(
  *
  */
 std::vector< std::vector<double> > DummyOdfmgOpacity::getOpacity( 
-		double targetTemperature,
-		double targetDensity ) const
+    double targetTemperature,
+    double targetDensity ) const
 { 
-	const int numGroups = getNumGroups();
-	const int numBands  = getNumBands();
+    const size_t numGroups = getNumGroups();
+    const size_t numBands  = getNumBands();
 
-	std::vector< std::vector<double> > opacity( numGroups );
-	for ( int group = 0; group < numGroups; group++)
-	{
-		opacity[group].resize(numBands);
+    std::vector< std::vector<double> > opacity( numGroups );
+    for ( size_t group = 0; group < numGroups; group++)
+    {
+        opacity[group].resize(numBands);
 
-		for (int band = 0; band < numBands; band++)
-		{
-			opacity[group][band] = 2.0 * 
-				( targetTemperature + targetDensity/1000.0) 
-				/ ( groupBoundaries[group] + groupBoundaries[group+1] )
-				* pow(10.0, band - 2);
-		}
-	}
-	return opacity;
+        for (size_t band = 0; band < numBands; band++)
+        {
+            opacity[group][band] =
+                2.0 * 
+                ( targetTemperature + targetDensity/1000.0) 
+                / ( groupBoundaries[group] + groupBoundaries[group+1] )
+                * pow(10.0, static_cast<int>(band) - 2);
+        }
+    }
+    return opacity;
 }
 
 /*!
@@ -148,16 +152,16 @@ std::vector< std::vector<double> > DummyOdfmgOpacity::getOpacity(
  */
 std::vector< std::vector< std::vector<double> > > 
 DummyOdfmgOpacity::getOpacity( 
-		const std::vector<double>& targetTemperature,
-		double targetDensity ) const
+    const std::vector<double>& targetTemperature,
+    double targetDensity ) const
 { 
-	std::vector< std::vector< std::vector<double> > > opacity( targetTemperature.size() );
+    std::vector< std::vector< std::vector<double> > > opacity( targetTemperature.size() );
 
-	for ( int i=0; i<targetTemperature.size(); ++i )
-	{
-		opacity[i] = getOpacity(targetTemperature[i], targetDensity);
-	}
-	return opacity;
+    for ( size_t i=0; i<targetTemperature.size(); ++i )
+    {
+        opacity[i] = getOpacity(targetTemperature[i], targetDensity);
+    }
+    return opacity;
 }
 
 /*!
@@ -171,17 +175,17 @@ DummyOdfmgOpacity::getOpacity(
  */
 std::vector< std::vector< std::vector<double> > > 
 DummyOdfmgOpacity::getOpacity(
-		double targetTemperature,
-		const std::vector<double>& targetDensity ) const
+    double targetTemperature,
+    const std::vector<double>& targetDensity ) const
 { 
-	std::vector< std::vector< std::vector<double> > > opacity( targetDensity.size() );
+    std::vector< std::vector< std::vector<double> > > opacity( targetDensity.size() );
 
-	//call our regular getOpacity function for every target density
-	for ( int i=0; i<targetDensity.size(); ++i )
-	{
-		opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
-	}
-	return opacity;
+    //call our regular getOpacity function for every target density
+    for ( size_t i=0; i<targetDensity.size(); ++i )
+    {
+        opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
+    }
+    return opacity;
 }
 
 } // end namespace rtt_cdi_test

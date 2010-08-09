@@ -203,7 +203,8 @@ void check_CDI(const CDI &cdi)
 	energyBoundary[2] = 5.0;
 	energyBoundary[3] = 50.0;
 
-	if (cdi.odfmg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->getNumGroups() == numGroups )
+	if (cdi.odfmg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->getNumGroups()
+            == numGroups )
 	{
 		PASSMSG("CDI.odfmg()->getNumGroups() is ok.");
 	}

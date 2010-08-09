@@ -5,6 +5,8 @@
  * \date   Mon Jan 8 17:12:51 2001
  * \brief  DummyMultigroupOpacity class header file (derived from 
  *         ../MultigroupOpacity)
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC. All rights
+ *         reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -56,9 +58,9 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     const std::string dataDescriptor;          // "DummyMultigroupOpacity"
     const std::string energyPolicyDescriptor;  // "Multigroup"
 
-    const int numTemperatures;     // = 3
-    const int numDensities;        // = 2
-    const int numGroupBoundaries;  // = 4
+    const size_t numTemperatures;     // = 3
+    const size_t numDensities;        // = 2
+    const size_t numGroupBoundaries;  // = 4
 
     std::vector< double > groupBoundaries;  // = { 0.05, 0.5, 5.0, 50.0 }
     std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
@@ -89,7 +91,7 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * This constructor allows the user to enter a different number of
      * frequency boundaries.
      */
-    DummyMultigroupOpacity(rtt_cdi::Reaction, rtt_cdi::Model, int);
+    DummyMultigroupOpacity(rtt_cdi::Reaction, rtt_cdi::Model, size_t);
 
     /*!
      * \brief Default DummyMultigroupOpacity destructor.
@@ -330,25 +332,25 @@ class DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    int getNumTemperatures() const {
+    size_t getNumTemperatures() const {
 	return numTemperatures; };
 
     /*! 
      * \brief Returns the size of the density grid.
      */
-    int getNumDensities() const {
+    size_t getNumDensities() const {
 	return numDensities; };
 
     /*! 
      * \brief Returns the number of energy group boundaries.
      */
-    int getNumGroupBoundaries() const {
+    size_t getNumGroupBoundaries() const {
 	return numGroupBoundaries; };
 
     /*!
      * \brief Returns the number of energy groups.
      */
-    int getNumGroups() const {
+    size_t getNumGroups() const {
 	return numGroupBoundaries - 1; };
 
     // Dummy pack function.
@@ -384,12 +386,12 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opacityIter ) const
 { 
-    int ng = numGroupBoundaries - 1;
+    size_t ng = numGroupBoundaries - 1;
     // loop over all temperatures and densities in the range
     // (tempFirst,tempLast) & (densIter,densLast).
     for ( ; densIter != densLast && tempIter != tempLast;
 	  ++tempIter, ++densIter )
-	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
+	for ( size_t ig=0; ig<ng; ++ig, ++opacityIter )
 	    *opacityIter = 2.0 * ( *tempIter + *densIter/1000.0 )
 		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
     return opacityIter;
@@ -409,11 +411,11 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
     double targetDensity,
     OpacityIterator opacityIter ) const
 { 
-    int ng = numGroupBoundaries - 1;
+    size_t ng = numGroupBoundaries - 1;
     // loop over all temperatures in the range
     // (tempFirst,tempLast).
     for ( ; tempIter != templast; ++tempIter )
-	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
+	for ( size_t ig=0; ig<ng; ++ig, ++opacityIter )
 	    *opacityIter = 2.0 * ( *tempIter + targetDensity/1000.0 )
 		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
     return opacityIter;
@@ -433,11 +435,11 @@ OpacityIterator DummyMultigroupOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opacityIter ) const
 { 
-    int ng = numGroupBoundaries - 1;
+    size_t ng = numGroupBoundaries - 1;
     // loop over all densities in the range
     // (densIter,densLast).
     for ( ; densIter != densLast; ++densIter )
-	for ( int ig=0; ig<ng; ++ig, ++opacityIter )
+	for ( size_t ig=0; ig<ng; ++ig, ++opacityIter )
 	    *opacityIter = 2.0 * ( targetTemperature + *densIter/1000.0 )
 		/ ( groupBoundaries[ig] + groupBoundaries[ig+1] );
     return opacityIter;
