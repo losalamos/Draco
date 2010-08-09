@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  * \file   timestep/ts_advisor.hh
- * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the base class time-step advisor.
+ * \note   Copyright © 1998-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,12 +13,11 @@
 #ifndef __timestep_ts_advisor_hh__
 #define __timestep_ts_advisor_hh__
 
-
 #include <limits>
-
 #include <string>
 
-namespace rtt_timestep {
+namespace rtt_timestep
+{
 
 // FORWARD REFERENCES
 
@@ -33,7 +33,8 @@ class ts_manager;
  */
 // 
 //===========================================================================//
-class ts_advisor {
+class ts_advisor
+{
 
 // NESTED CLASSES AND TYPEDEFS
 
@@ -43,8 +44,8 @@ class ts_advisor {
     /*! The recommended value "dt_rec" is to be used as indicated by 
      *  the enumeration value selected
      */
-    enum usage_flag {
-
+    enum usage_flag
+    {
 	min , //!< use as a lower limit
 	max , //!< use as a upper limit
 	req , //!< use as a required value
@@ -104,8 +105,7 @@ class ts_advisor {
 	       const bool active_ = true);
 
     //! Destroy the advisor
-    virtual ~ts_advisor();
-
+    virtual ~ts_advisor(void);
 
 
 //MANIPULATORS
@@ -137,7 +137,7 @@ class ts_advisor {
     //! Determine if the advisor is fit to use in a time-step calculation
     /*! \param tsm the timestep manager in which the advisor resides
      */
-    virtual bool advisor_usable(const ts_manager &tsm) const
+    virtual bool advisor_usable(const ts_manager &/*tsm*/) const
     {
 	return (active == true);
     }

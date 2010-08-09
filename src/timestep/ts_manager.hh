@@ -4,6 +4,7 @@
  * \author  <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
  * \date    Mon Apr  6 17:22:53 1998
  * \brief   Header file for the manager utility for time-step advisors.
+ * \note    Copyright © 1998-2010 Los Alamos National Security, LLC. 
  * \version $Id$
  */
 //---------------------------------------------------------------------------//
@@ -13,16 +14,13 @@
 #ifndef __timestep_ts_manager_hh__
 #define __timestep_ts_manager_hh__
 
+#include "ts_advisor.hh"
+#include "ds++/SP.hh"
+#include <string>
 #include <list>
 
-#include "ts_advisor.hh"
-
-#include "ds++/SP.hh"
-
-#include <string>
-
-
-namespace rtt_timestep {
+namespace rtt_timestep
+{
 
 //===========================================================================//
 /*!
@@ -37,7 +35,8 @@ namespace rtt_timestep {
  * radiation energy, ion energy, max allowed change, etc...). 
  */
 //===========================================================================//
-class ts_manager {
+class ts_manager
+{
 
 // NESTED CLASSES AND TYPEDEFS
 

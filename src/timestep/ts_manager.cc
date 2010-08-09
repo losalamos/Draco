@@ -1,23 +1,20 @@
 //----------------------------------*-C++-*----------------------------------//
-// ts_manager.cc
-// John McGhee
-// Mon Apr  6 17:22:53 1998
-//---------------------------------------------------------------------------//
-// @> Defines a manager utility for time-step advisors.
+/*!
+ * \file   ts_manager.cc
+ * \author John McGhee
+ * \date   Mon Apr  6 17:22:53 1998
+ * \brief  Defines a manager utility for time-step advisors.
+ * \note   Copyright © 1998-2010 Los Alamos National Security, LLC.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "ts_manager.hh"
-
 #include "ds++/Assert.hh"
-
 #include "c4/global.hh"
-
 #include <functional>
-
 #include <stdexcept>
-
 #include <iostream>
 
 using std::list;
@@ -30,9 +27,14 @@ using rtt_dsxx::SP;
 namespace rtt_timestep
 {
 
-ts_manager::ts_manager()
-    :time(0.), dt_new(ts_advisor::small()), dt(ts_advisor::small()), 
-     cycle(9999), controlling_advisor("Not Set")
+ts_manager::ts_manager(void)
+    : dt_new(ts_advisor::small()),
+      time(0.0),
+      dt(ts_advisor::small()), 
+      cycle(9999),
+      controlling_advisor("Not Set"),
+      advisors( rtt_dsxx::SP<ts_advisor>() )
+      
 {
     Ensure(invariant_satisfied());
 }
@@ -216,11 +218,18 @@ double ts_manager::compute_new_timestep()
     return dt_new;
 }
 
-// Defines a functor which determines if one timestep advisor is 
-// less than another. This is done by comparing the recommended
-// time step of each advisor.
-struct sptsa_less_than : public std::binary_function< SP<ts_advisor>,
-			 SP<ts_advisor>, bool > 
+//---------------------------------------------------------------------------//
+/*!
+ * Defines a functor which determines if one timestep advisor is less than
+ * another. This is done by comparing the recommended time step of each
+ * advisor.
+ *
+ * \bug It is not advisable to inherit from STL containers because they do not
+ * provide virtual distructors.
+ */
+struct sptsa_less_than : public std::binary_function<
+    SP<ts_advisor>,
+    SP<ts_advisor>, bool > 
 {
 
     // The timestep manager

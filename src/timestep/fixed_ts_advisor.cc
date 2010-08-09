@@ -1,19 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
-// fixed_ts_advisor.cc
-// John McGhee
-// Thu Apr  2 14:06:18 1998
-//---------------------------------------------------------------------------//
-// @> Defines the fixed time-step advisor. 
+/*!
+ * \file   fixed_ts_manager.cc
+ * \author John McGhee
+ * \date   Mon Apr  6 17:22:53 1998
+ * \brief  Defines the fixed time-step advisor.
+ * \note   Copyright © 1998-2010 Los Alamos National Security, LLC.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "fixed_ts_advisor.hh"
-
 #include "ds++/Assert.hh"
-
 #include "c4/global.hh"
-
 #include <iostream>
 
 using std::cout;
@@ -39,7 +38,7 @@ fixed_ts_advisor::~fixed_ts_advisor()
 // empty
 }
 
-double fixed_ts_advisor::get_dt_rec(const ts_manager &tsm) const
+double fixed_ts_advisor::get_dt_rec(const ts_manager &/*tsm*/) const
 {
     Require(invariant_satisfied());
     return fixed_value;
