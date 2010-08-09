@@ -17,7 +17,7 @@ namespace rtt_dsxx
 {
 
 //---------------------------------------------------------------------------//
-n/*!
+/*!
  * \brief Principal constructor.  Specify initial size. Base defaults to zero,
  * and growth factor defaults to 1.5, but both can be overridden if desired.
  * \arg sz_ Size of the array
