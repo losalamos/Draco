@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
-  \file   Plot2D.cc
-  \author lowrie
-  \date   2002-04-12
-  \brief  Implementation for Plot2D.
-*/
+ *  \file   Plot2D.cc
+ *  \author lowrie
+ * \date   2002-04-12
+ * \brief  Implementation for Plot2D.
+ * \note   Copyright © 2002-2010 Los Alamos National Security, LLC.  
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -21,7 +22,8 @@
 
 #include "plot2D_grace.h"
 
-using namespace rtt_plot2D;
+namespace rtt_plot2D
+{
 
 //---------------------------------------------------------------------------//
 /*!
@@ -30,8 +32,15 @@ using namespace rtt_plot2D;
   Must then call open() to actually generate plots.
 */
 //---------------------------------------------------------------------------//
-Plot2D::
-Plot2D()
+Plot2D::Plot2D()
+    : d_autoscale(0),
+      d_numGraphs(0),
+      d_numRows(0),
+      d_numCols(0),
+      d_batch(false),
+      d_graceVersion(),
+      d_numSets( std::vector<int>() ),
+      d_setsBeenRead( std::vector<bool>() )
 {
     // is_supported must be checked for all constructors.
     Insist(is_supported(), "Plot2D unsupported on this platform!");
@@ -43,10 +52,17 @@ Plot2D()
   \brief Constructor that calls open(); see open() for arguments.
 */
 //---------------------------------------------------------------------------//
-Plot2D::
-Plot2D(const int numGraphs,
-       const std::string &paramFile,
-       const bool batch)
+Plot2D::Plot2D(const int numGraphs,
+               const std::string &paramFile,
+               const bool batch)
+    : d_autoscale(0),
+      d_numGraphs( numGraphs ),
+      d_numRows(0),
+      d_numCols(0),
+      d_batch( batch ),
+      d_graceVersion(),
+      d_numSets( std::vector<int>() ),
+      d_setsBeenRead( std::vector<bool>() )
 {
     // is_supported must be checked for all constructors.
     Insist(is_supported(), "Plot2D unsupported on this platform!");
@@ -113,11 +129,11 @@ graceVersion()
 	std::string sn(s);
 	
 	if ( i < 2 ) {
-	    int dot = s.find(".");
+	    size_t dot = s.find(".");
 	    Insist(dot != std::string::npos,
 		   "plot2D::graceVersion: Version string wrong format.");
 	    sn = s.substr(0, dot);
-	    s = s.substr(dot + 1);
+	    s  = s.substr(dot + 1);
 	}
 
 	std::istringstream is(sn);
@@ -692,12 +708,16 @@ numColumnsInFile(const std::string filename) const
     int n = 0; // return value
     bool whitespace = true;
 
-    for ( int i = 0; i < buf.size(); i++ ) {
-	if ( isspace(buf[i]) ) {
+    for ( size_t i = 0; i < buf.size(); i++ )
+    {
+	if ( isspace(buf[i]) )
+        {
 	    whitespace = true;
 	}
-	else {
-	    if ( whitespace ) {
+	else
+        {
+	    if ( whitespace )
+            {
 		++n;
 	    }
 	    whitespace = false;
@@ -736,6 +756,8 @@ setAutoscale(const int iG)
 	break;
     }
 }
+
+} // end namespace rtt_plot2D
 
 //---------------------------------------------------------------------------//
 // end of Plot2D.cc

@@ -4,6 +4,7 @@
   \author lowrie
   \date   2002-04-12
   \brief  Header for Plot2D.
+ * \note   Copyright © 2002-2010 Los Alamos National Security, LLC.  
 */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -19,7 +20,8 @@
 
 #include "SetProps.hh"
 
-namespace rtt_plot2D {
+namespace rtt_plot2D
+{
 
 //===========================================================================//
 /*!
