@@ -105,13 +105,13 @@ namespace rtt_cdi_gandolf {
 	//----------------------------------------//
 	
 	int wgkeys( const std::string &fname, const int &const_matid, 
-		    vector<string> &vkeys, const int &const_kkeys, int &nkeys )
+		    vector<string> &vkeys, const int &const_kkeys, size_t &nkeys_in )
 	    {
 #ifndef rtt_cdi_gandolf_stub
 		// ----------------------------------------
 		// Create simple flat data types
 		// ----------------------------------------
-		
+                
 		// copy filename into a const char * array;
 		char cfname[maxDataFilenameLength];
 		const char * ccfname = s2ccwp( fname, cfname,
@@ -121,7 +121,9 @@ namespace rtt_cdi_gandolf {
 		int matid = const_matid;
 		int kkeys = const_kkeys;
 		int ier = 0;
-		
+
+                int nkeys( static_cast<int>(nkeys_in) );
+                
 		// we do not know the value of numKeys until after we call 
 		// gkeys() so we create the character array keys[][] to be 
 		// maxKeys long.  This array will later be copied into the

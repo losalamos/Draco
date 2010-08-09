@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 22 14:11:10 2001
  * \brief  GandolfGrayOpacity templated class implementation file.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -43,16 +44,18 @@ namespace rtt_cdi_gandolf
  * See GandolfGrayOpacity.hh for details.
  */
 GandolfGrayOpacity::GandolfGrayOpacity( 
-    const rtt_dsxx::SP< const GandolfFile >& in_spGandolfFile,
-    int in_materialID,
-    rtt_cdi::Model in_opacityModel,
+    rtt_dsxx::SP< const GandolfFile > const & in_spGandolfFile,
+    size_t            in_materialID,
+    rtt_cdi::Model    in_opacityModel,
     rtt_cdi::Reaction in_opacityReaction )
     : spGandolfFile( in_spGandolfFile ),
       materialID( in_materialID ),
       numKeys( 0 ),
+      vKnownKeys(),
       opacityModel( in_opacityModel ),
       opacityReaction( in_opacityReaction ),
-      energyPolicyDescriptor( "gray" )
+      energyPolicyDescriptor( "gray" ),
+      spGandolfDataTable()
 {
     // Verify that the requested material ID is available in the
     // specified IPCRESS file.
@@ -85,9 +88,14 @@ GandolfGrayOpacity::GandolfGrayOpacity(
  * See GandolfGrayOpacity.hh for details.
  */
 GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
-    : numKeys( 0 ),
+    : spGandolfFile(),
       materialID( 0 ),
-      energyPolicyDescriptor( "gray" )
+      numKeys( 0 ),
+      vKnownKeys(),
+      opacityModel(),
+      opacityReaction(),
+      energyPolicyDescriptor( "gray" ),
+      spGandolfDataTable()
 {
     Require (packed.size() >= 5 * sizeof(int));
 
@@ -105,7 +113,7 @@ GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
 
     // unpack it
     std::string descriptor;
-    for (int i = 0; i < packed_descriptor_size; i++)
+    for (size_t i = 0; i < packed_descriptor_size; i++)
 	unpacker >> packed_descriptor[i];
     rtt_dsxx::unpack_data(descriptor, packed_descriptor);
 
@@ -114,7 +122,7 @@ GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
 	    "Tried to unpack a non-gray opacity in GandolfGrayOpacity.");
 
     // unpack the size of the packed filename
-    int packed_filename_size = 0;
+    size_t packed_filename_size = 0;
     unpacker >> packed_filename_size;
 
     // make a vector<char> for the packed filename
@@ -122,7 +130,7 @@ GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
 
     // unpack it
     std::string filename;
-    for (int i = 0; i < packed_filename_size; i++)
+    for (size_t i = 0; i < packed_filename_size; i++)
 	unpacker >> packed_filename[i];
     rtt_dsxx::unpack_data(filename, packed_filename);
 
@@ -244,7 +252,7 @@ std::vector< double > GandolfGrayOpacity::getOpacity(
     double targetDensity ) const
 { 
     std::vector< double > opacity( targetTemperature.size() );
-    for ( int i=0; i<targetTemperature.size(); ++i )
+    for ( size_t i=0; i<targetTemperature.size(); ++i )
 	// logorithmic interpolation:
 	opacity[i] = 
 	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
@@ -269,7 +277,7 @@ std::vector< double > GandolfGrayOpacity::getOpacity(
     const std::vector<double>& targetDensity ) const
 { 
     std::vector< double > opacity( targetDensity.size() );
-    for ( int i=0; i<targetDensity.size(); ++i )
+    for ( size_t i=0; i<targetDensity.size(); ++i )
 	// logorithmic interpolation:
 	opacity[i] = 
 	    wrapper::wgintgrlog( spGandolfDataTable->getLogTemperatures(),
@@ -295,7 +303,7 @@ std::vector< double > GandolfGrayOpacity::getTemperatureGrid() const
 /*!
  * \brief Returns the size of the temperature grid.
  */
-int GandolfGrayOpacity::getNumTemperatures() const
+size_t GandolfGrayOpacity::getNumTemperatures() const
 {
     return spGandolfDataTable->getNumTemperatures();
 }
@@ -312,7 +320,7 @@ std::vector<double> GandolfGrayOpacity::getDensityGrid() const
 /*! 
  * \brief Returns the size of the density grid.
  */
-int GandolfGrayOpacity::getNumDensities() const
+size_t GandolfGrayOpacity::getNumDensities() const
 {
     return spGandolfDataTable->getNumDensities();
 }
@@ -347,8 +355,8 @@ std::vector<char> GandolfGrayOpacity::pack() const
     // determine the total size: 3 ints (reaction, model, material id) + 2
     // ints for packed_filename size and packed_descriptor size + char in
     // packed_filename and packed_descriptor
-    int size = 5 * sizeof(int) + packed_filename.size() + 
-	packed_descriptor.size();
+    size_t size = 5 * sizeof(int) + packed_filename.size() + 
+                  packed_descriptor.size();
 
     // make a container to hold packed data
     vector<char> packed(size);
@@ -359,16 +367,16 @@ std::vector<char> GandolfGrayOpacity::pack() const
 
     // pack the descriptor
     packer << static_cast<int>(packed_descriptor.size());
-    for (int i = 0; i < packed_descriptor.size(); i++)
+    for (size_t i = 0; i < packed_descriptor.size(); i++)
 	packer << packed_descriptor[i];
 
     // pack the filename (size and elements)
     packer << static_cast<int>(packed_filename.size());
-    for (int i = 0; i < packed_filename.size(); i++)
+    for (size_t i = 0; i < packed_filename.size(); i++)
 	packer << packed_filename[i];
 
     // pack the material id
-    packer << materialID;
+    packer << static_cast<int>(materialID);
 
     // pack the model and reaction
     packer << static_cast<int>(opacityModel) 

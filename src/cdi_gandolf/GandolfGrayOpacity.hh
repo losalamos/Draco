@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 22 13:23:37 2001
  * \brief  GandolfGrayOpacity class header file (derived from cdi/GrayOpacity)
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -134,7 +135,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * \brief Identification number for one of the materials found in
      *     the IPCRESS file pointed to by spGandolfFile.
      */
-    int materialID;
+    size_t materialID;
 
     // -------------------- //
     // Available data types //
@@ -145,7 +146,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     /*!
      * \brief Number of types of data found in the IPCRESS file.
      */
-    int numKeys;
+    size_t numKeys;
 
     /*!
      * \brief A list of keys known by the IPCRESS file.
@@ -218,7 +219,7 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      *     current data set represents. 
      */
     GandolfGrayOpacity( const rtt_dsxx::SP< const GandolfFile >& spGandolfFile,
-			int materialID, 
+			size_t materialID, 
 			rtt_cdi::Model opacityModel,
 			rtt_cdi::Reaction opacityReaction );
 
@@ -445,12 +446,12 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    int getNumTemperatures() const;
+    size_t getNumTemperatures() const;
 
     /*! 
      * \brief Returns the size of the density grid.
      */
-    int getNumDensities() const;
+    size_t getNumDensities() const;
 
     /*!
      * \brief Pack a GandolfGrayOpacity object.

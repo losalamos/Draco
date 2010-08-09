@@ -48,12 +48,12 @@ namespace rtt_cdi_gandolf {
 	 * \brief The maximum length of the data filename.  This
 	 * 	  length is set by the Gandolf libraries.
 	 */
-	const int maxDataFilenameLength = 80;
+	const size_t maxDataFilenameLength = 80;
 
 	/*!
 	 * \brief The length of each descriptor key (set by Gandolf).
 	 */
-	const int key_length = 24;  
+	const size_t key_length = 24;  
 	
 	// maxMaterials and maxKeys are size descriptors that define
 	// the pre-allocated sizes of the matIDs and keys arrays.
@@ -76,12 +76,12 @@ namespace rtt_cdi_gandolf {
 	/*!
 	 * \brief Maximum number of materials allowed in the IPCRESS file.
 	 */
-	const int maxMaterials = 10; 
+	const size_t maxMaterials = 10; 
 	
 	/*!
 	 * \brief Maximum number of data keys per material.
 	 */
-	const int maxKeys = 26;
+	const size_t maxKeys = 26;
 	
 	//====================================================================
 	/*! 
@@ -129,7 +129,7 @@ namespace rtt_cdi_gandolf {
 	 * \return       ier (also returns keys and nkeys).
 	 */
 	int wgkeys( const string &fname, const int &matid, 
-		    vector<string> &vkeys, const int &kkeys, int &nkeys );
+		    vector<string> &vkeys, const int &kkeys, size_t &nkeys );
 	
 	/*!
 	 * \brief Retrieves the size of the data grid including the number of

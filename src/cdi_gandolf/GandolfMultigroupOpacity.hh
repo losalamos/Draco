@@ -5,6 +5,7 @@
  * \date   Mon Jan 22 13:56:01 2001
  * \brief  GandolfMultigroupOpacity class header file (derived from
  *         cdi/MultigroupOpacity) 
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -39,17 +40,16 @@ class GandolfDataTable;
 /*!
  * \class GandolfMultigroupOpacity
  *
- * \brief GandolfMultigroupOpacity allows the client code to retrieve
- *        opacity data for a particular material.  Each GandolfOpacity
- *        object represents a specific type of data defined by five
- *        attributes: an IPCRESS File (via a GandolfFile object), a
- *        material identifier, an energy model (already selecte since
- *        this is a Multigroup Opacity class), a physics model and a
- *        reaction type.
+ * \brief GandolfMultigroupOpacity allows the client code to retrieve opacity
+ *        data for a particular material.  Each GandolfOpacity object
+ *        represents a specific type of data defined by five attributes: an
+ *        IPCRESS File (via a GandolfFile object), a material identifier, an
+ *        energy model (already selecte since this is a Multigroup Opacity
+ *        class), a physics model and a reaction type.
  *
- *      This is a concrete class derived from cdi/MultigroupOpacity.
- *      This class allows to client to access the data in IPCRESS
- *      files via the Gandolf libraries.
+ *      This is a concrete class derived from cdi/MultigroupOpacity.  This
+ *        class allows to client to access the data in IPCRESS files via the
+ *        Gandolf libraries.
  * <p>
  *      This class is designed to be used in conjuction with the CDI.
  *      The client code will create a GandolfMultigroupOpacity object
@@ -127,7 +127,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * \brief Identification number for one of the materials found in
      *     the IPCRESS file pointed to by spGandolfFile.
      */
-    int materialID;
+    size_t materialID;
 
     // -------------------- //
     // Available data types //
@@ -138,7 +138,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Number of types of data found in the IPCRESS file.
      */
-    int numKeys;
+    size_t numKeys;
 
     /*!
      * \brief A list of keys known by the IPCRESS file.
@@ -211,7 +211,7 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     current data set represents. 
      */
     GandolfMultigroupOpacity( const rtt_dsxx::SP< const GandolfFile >& spGandolfFile,
-			      int materialID, 
+			      size_t materialID, 
 			      rtt_cdi::Model opacityModel,
 			      rtt_cdi::Reaction opacityReaction );
 
@@ -444,24 +444,24 @@ class GandolfMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    int getNumTemperatures() const;
+    size_t getNumTemperatures() const;
 
     /*! 
      * \brief Returns the size of the density grid.
      */
-    int getNumDensities() const;
+    size_t getNumDensities() const;
 
     /*!
      * \brief Returns the number of group boundaries found in the
      *     current multigroup data set.
      */
-    int getNumGroupBoundaries() const;
+    size_t getNumGroupBoundaries() const;
 
     /*!
      * \brief Returns the number of gruops found in the current
      *     multigroup data set.
      */
-    int getNumGroups() const {
+    size_t getNumGroups() const {
 	return getNumGroupBoundaries() - 1; }; 
 
     /*!
@@ -511,7 +511,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 	     == std::distance( densIter, densLast ) );
 
     // number of groups in this multigroup set.
-    const int ng = spGandolfDataTable->getNumGroupBoundaries()-1;
+    const size_t ng = spGandolfDataTable->getNumGroupBoundaries()-1;
 	
     // temporary opacity vector used by the wrapper.  The returned 
     // data will be copied into the opacityIterator.
@@ -535,7 +535,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 		
 	// The opacity vector contains the solution.  Now
 	// we copy this solution into the OpacityIterator
-	for ( int i=0; i<ng; ++i, ++opIter )
+	for ( size_t i=0; i<ng; ++i, ++opIter )
 	    *opIter = mgOpacity[i];
     }
     return opIter;
@@ -555,7 +555,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
     using std::log;
 
     // number of groups in this multigroup set.
-    const int ng = spGandolfDataTable->getNumGroupBoundaries()-1;
+    const size_t ng = spGandolfDataTable->getNumGroupBoundaries()-1;
 	
     // temporary opacity vector used by the wrapper.  The returned 
     // data will be copied into the opacityIterator.
@@ -579,7 +579,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 		
 	// The opacity vector contains the solution.  Now
 	// we copy this solution into the OpacityIterator
-	for ( int i=0; i<ng; ++i, ++opIter )
+	for ( size_t i=0; i<ng; ++i, ++opIter )
 	    *opIter = mgOpacity[i];
     }
     return opIter;
@@ -599,7 +599,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
     using std::log;
 
     // number of groups in this multigroup set.
-    const int ng = spGandolfDataTable->getNumGroupBoundaries()-1;
+    const size_t ng = spGandolfDataTable->getNumGroupBoundaries()-1;
 	
     // temporary opacity vector used by the wrapper.  The returned 
     // data will be copied into the opacityIterator.
@@ -623,7 +623,7 @@ OpacityIterator GandolfMultigroupOpacity::getOpacity(
 		
 	// The opacity vector contains the solution.  Now
 	// we copy this solution into the OpacityIterator
-	for ( int i=0; i<ng; ++i, ++opIter )
+	for ( size_t i=0; i<ng; ++i, ++opIter )
 	    *opIter = mgOpacity[i];
     }
     return opIter;

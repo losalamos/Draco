@@ -44,15 +44,17 @@ namespace rtt_cdi_gandolf
  */
 GandolfMultigroupOpacity::GandolfMultigroupOpacity( 
     const rtt_dsxx::SP< const GandolfFile >& in_spGandolfFile,
-    int in_materialID,
+    size_t in_materialID,
     rtt_cdi::Model in_opacityModel,
     rtt_cdi::Reaction in_opacityReaction )
     : spGandolfFile( in_spGandolfFile ),
       materialID( in_materialID ),
       numKeys( 0 ),
+      vKnownKeys(),
       opacityModel( in_opacityModel ),
       opacityReaction( in_opacityReaction ),
-      energyPolicyDescriptor( "mg" )
+      energyPolicyDescriptor( "mg" ),
+      spGandolfDataTable()
 {
     // Verify that the requested material ID is available in the
     // specified IPCRESS file.
@@ -82,9 +84,14 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
  */
 GandolfMultigroupOpacity::GandolfMultigroupOpacity(
     const std::vector<char> &packed)
-    : numKeys( 0 ),
-      materialID( 0 ),
-      energyPolicyDescriptor( "mg" )
+    : spGandolfFile(),
+      materialID(0),
+      numKeys(0),
+      vKnownKeys(),
+      opacityModel(),
+      opacityReaction(),
+      energyPolicyDescriptor( "mg" ),
+      spGandolfDataTable()
 {
     Require (packed.size() >= 5 * sizeof(int));
 
@@ -102,7 +109,7 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
 
     // unpack it
     std::string descriptor;
-    for (int i = 0; i < packed_descriptor_size; i++)
+    for (size_t i = 0; i < packed_descriptor_size; i++)
 	unpacker >> packed_descriptor[i];
     rtt_dsxx::unpack_data(descriptor, packed_descriptor);
 
@@ -111,7 +118,7 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
 	    "Tried to unpack a non-mg opacity in GandolfMultigroupOpacity.");
 
     // unpack the size of the packed filename
-    int packed_filename_size = 0;
+    size_t packed_filename_size = 0;
     unpacker >> packed_filename_size;
 
     // make a vector<char> for the packed filename
@@ -119,7 +126,7 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
 
     // unpack it
     std::string filename;
-    for (int i = 0; i < packed_filename_size; i++)
+    for (size_t i = 0; i < packed_filename_size; i++)
 	unpacker >> packed_filename[i];
     rtt_dsxx::unpack_data(filename, packed_filename);
 
@@ -219,7 +226,7 @@ std::vector< double > GandolfMultigroupOpacity::getOpacity(
     double targetDensity ) const
 { 
     // number of groups in this multigroup set.
-    const int numGroups = spGandolfDataTable->getNumGroupBoundaries() - 1;
+    const size_t numGroups = spGandolfDataTable->getNumGroupBoundaries() - 1;
 	    
     // temporary opacity vector used by the wrapper.  The returned 
     // data will be copied into the opacityIterator.
@@ -249,9 +256,9 @@ std::vector< std::vector< double > > GandolfMultigroupOpacity::getOpacity(
     const std::vector<double>& targetTemperature,
     double targetDensity ) const
 { 
-    int numGroups = spGandolfDataTable->getNumGroupBoundaries() - 1;
+    size_t numGroups = spGandolfDataTable->getNumGroupBoundaries() - 1;
     std::vector< std::vector< double > > opacity( targetTemperature.size() );
-    for ( int i=0; i<targetTemperature.size(); ++i )
+    for ( size_t i=0; i<targetTemperature.size(); ++i )
     {
 	opacity[i].resize( numGroups );
 	// logorithmic interpolation:
@@ -279,9 +286,9 @@ std::vector< std::vector< double > > GandolfMultigroupOpacity::getOpacity(
     double targetTemperature,
     const std::vector<double>& targetDensity ) const
 { 
-    int numGroups = spGandolfDataTable->getNumGroupBoundaries() - 1;
+    size_t numGroups = spGandolfDataTable->getNumGroupBoundaries() - 1;
     std::vector< std::vector< double > > opacity( targetDensity.size() );
-    for ( int i=0; i<targetDensity.size(); ++i )
+    for ( size_t i=0; i<targetDensity.size(); ++i )
     {
 	opacity[i].resize(numGroups);
 	// logorithmic interpolation:
@@ -311,7 +318,7 @@ std::vector< double > GandolfMultigroupOpacity::getTemperatureGrid() const
 /*!
  * \brief Returns the size of the temperature grid.
  */
-int GandolfMultigroupOpacity::getNumTemperatures() const
+size_t GandolfMultigroupOpacity::getNumTemperatures() const
 {
     return spGandolfDataTable->getNumTemperatures();
 }
@@ -328,7 +335,7 @@ std::vector<double> GandolfMultigroupOpacity::getDensityGrid() const
 /*! 
  * \brief Returns the size of the density grid.
  */
-int GandolfMultigroupOpacity::getNumDensities() const
+size_t GandolfMultigroupOpacity::getNumDensities() const
 {
     return spGandolfDataTable->getNumDensities();
 }
@@ -348,7 +355,7 @@ std::vector< double > GandolfMultigroupOpacity::getGroupBoundaries() const
  * \brief Returns the number of group boundaries found in the
  *     current multigroup data set.
  */
-int GandolfMultigroupOpacity::getNumGroupBoundaries() const
+size_t GandolfMultigroupOpacity::getNumGroupBoundaries() const
 {
     return spGandolfDataTable->getNumGroupBoundaries();
 }
@@ -383,7 +390,7 @@ std::vector<char> GandolfMultigroupOpacity::pack() const
     // determine the total size: 3 ints (reaction, model, material id) + 2
     // ints for packed_filename size and packed_descriptor size + char in
     // packed_filename and packed_descriptor
-    int size = 5 * sizeof(int) + packed_filename.size() + 
+    size_t size = 5 * sizeof(int) + packed_filename.size() + 
 	packed_descriptor.size();
 
     // make a container to hold packed data
@@ -395,12 +402,12 @@ std::vector<char> GandolfMultigroupOpacity::pack() const
 
     // pack the descriptor
     packer << static_cast<int>(packed_descriptor.size());
-    for (int i = 0; i < packed_descriptor.size(); i++)
+    for (size_t i = 0; i < packed_descriptor.size(); i++)
 	packer << packed_descriptor[i];
 
     // pack the filename (size and elements)
     packer << static_cast<int>(packed_filename.size());
-    for (int i = 0; i < packed_filename.size(); i++)
+    for (size_t i = 0; i < packed_filename.size(); i++)
 	packer << packed_filename[i];
 
     // pack the material id

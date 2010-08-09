@@ -4,6 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Oct 12 09:39:22 2000
  * \brief  Header file for GandolfDataTable
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -24,10 +25,10 @@
 namespace rtt_cdi_gandolf
 {
     
-    // forward declaration (we don't need to include the full
-    // definition of GandolfFile).
+// forward declaration (we don't need to include the full
+// definition of GandolfFile).
     
-    class GandolfFile;
+class GandolfFile;
     
 //===========================================================================//
 /*!
@@ -53,36 +54,34 @@ class GandolfDataTable
     // Data Descriptors:
 
     /*!
-     * \brief A string that specifies the type of data being stored.
-     *     Possible values are rgray, ragray, rsgray, etc.  This key
-     *     is provided to the Gandolf libraries as a data specifier.
+     * \brief A string that specifies the type of data being stored.  Possible
+     *     values are rgray, ragray, rsgray, etc.  This key is provided to the
+     *     Gandolf libraries as a data specifier.
      */
     mutable std::string gandolfDataTypeKey;
 
     /*!
-     * \brief A string that specifies the type of data being stored.
-     *     This variables holds an English version of
-     *     gandolfDataTypeKey. 
+     * \brief A string that specifies the type of data being stored.  This
+     *     variables holds an English version of gandolfDataTypeKey.
      */
     mutable std::string dataDescriptor;
 
     /*!
-     * \brief A string that specifies the energy model for the data
-     *     being stored.  Possible values are "mg" or "gray".
+     * \brief A string that specifies the energy model for the data being
+     *     stored.  Possible values are "mg" or "gray".
      */
     const std::string opacityEnergyDescriptor;
 
     /*!
-     * \brief An enumerated value defined in GandolfOpacity.hh that
-     *     specifies the data model.  Possible values are "Rosseland"
-     *     or "Plank".
+     * \brief An enumerated value defined in GandolfOpacity.hh that specifies
+     *     the data model.  Possible values are "Rosseland" or "Plank".
      */
     const rtt_cdi::Model opacityModel;
 
     /*!
-     * \brief An enumerated valued defined in GandolfOpacity.hh that
-     *     specifies the reaction model.  Possible values are "Total", 
-     *     "Absorption" or "Scattering".
+     * \brief An enumerated valued defined in GandolfOpacity.hh that specifies
+     *     the reaction model.  Possible values are "Total", "Absorption" or
+     *     "Scattering".
      */
     const rtt_cdi::Reaction opacityReaction;
 
@@ -122,7 +121,7 @@ class GandolfDataTable
     /*!
      * \brief The number of energy group boundaries in the opacity
      *     table (this entry is not used for gray data).
-    */
+     */
     mutable int numGroupBoundaries;
 
     /*
