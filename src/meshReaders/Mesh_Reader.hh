@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #ifndef __meshReaders_Mesh_Reader_hh__
+#define __meshReaders_Mesh_Reader_hh__
 
 #include <vector>
 #include <set>
