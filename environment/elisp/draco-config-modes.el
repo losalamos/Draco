@@ -596,9 +596,9 @@ auto-mode-alist and set up some customizations for DRACO."
     (setq auto-mode-alist
 	  (append
 	   '(("\\.el$"  . emacs-lisp-mode)
-         (".emacs$"  . emacs-lisp-mode)
+	     (".emacs$"  . emacs-lisp-mode)
 	     ) auto-mode-alist))
-
+    
     (if draco-colorize-modeline 
 	(add-hook 'emacs-lisp-mode-hook        
 		  '(lambda () 
@@ -661,17 +661,17 @@ auto-mode-alist and set up some customizations for DRACO."
     (add-hook 'cvs-mode-hook 'draco-cvs-edit-mode-hook)
     (add-hook 'cvs-mode-hook 'turn-on-draco-mode)
     (if draco-colorize-modeline 
-        (add-hook 'cvs-mode-hook        
-                  '(lambda () ;; M-x list-colors-display
-                     (set-face-background 'modeline 
-                                          "honeydew" (current-buffer))
-                     (set-face-foreground 'modeline 
-                                          "black"   (current-buffer)))))
+	(add-hook 'cvs-mode-hook        
+		  '(lambda () ;; M-x list-colors-display
+		     (set-face-background 'modeline 
+					  "honeydew" (current-buffer))
+		     (set-face-foreground 'modeline 
+					  "black"   (current-buffer)))))
     (setq cvs-erase-input-buffer        nil
-          cvs-inhibit-copyright-message t  
-          cvs-status-flags "-q" 
-          vc-dired-terse-display nil )
-        ; If this variable is set to any non-nil value
+	  cvs-inhibit-copyright-message t  
+	  cvs-status-flags "-q"
+	  vc-dired-terse-display nil )
+    ; If this variable is set to any non-nil value
     ; `cvs-mode-remove-handled' will be called every time you check in
     ; files, after the check-in is ready. See section 5.11 Removing handled
     ; entries.

@@ -411,6 +411,7 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 	      ("\\(.C\\)$" . ".H")
 	      ("\\(.cc\\)$" . ".hh")
 	      ("\\(.i.hh\\)$" . ".hh")
+	      ("\\(.t.hh\\)$" . ".hh")
 	      ("\\(.cxx\\)$" . ".hxx")
 	      ("\\(.cpp\\)$" . ".hpp")
 	      ("\\(.cpp\\)$" . ".h")
