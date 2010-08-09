@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity member definitions.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -58,6 +59,9 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
  * enumeration. 
  */
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
+    : analytic_model(),
+      reaction(),
+      model()
 {
     // the packed size must be at least 4 integers (size, reaction type,
     // model type, analytic model indicator)
@@ -266,7 +270,7 @@ Analytic_Gray_Opacity::sf_char Analytic_Gray_Opacity::pack() const
     packer << static_cast<int>(anal_model.size());
 
     // now pack the anal model
-    for (int i = 0; i < anal_model.size(); i++)
+    for (size_t i = 0; i < anal_model.size(); i++)
 	packer << anal_model[i];
 
     // pack the reaction and model type

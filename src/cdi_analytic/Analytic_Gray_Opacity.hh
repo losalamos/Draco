@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity class definition.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -53,14 +54,10 @@ namespace rtt_cdi_analytic
  * This class conforms to the interface specified by rtt_cdi::GrayOpacity and
  * can be used with rtt_cdi::CDI to get analytic opacities.
  *
- */
-/*!
- *
  * \example cdi_analytic/test/tstAnalytic_Gray_Opacity.cc
  *
  * Example usage of Analytic_Gray_Opacity, Analytic_Opacity_Model, and their
  * incorporation into rtt_cdi::CDI.
- *
  */
 // revision history:
 // -----------------
@@ -136,10 +133,10 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
     sf_double getDensityGrid() const { return sf_double(0); }
 
     //! Get the size of the temperature grid (size 0).
-    int getNumTemperatures() const { return 0; }
+    size_t getNumTemperatures() const { return 0; }
 
     //! Get the size of the density grid (size 0).
-    int getNumDensities() const { return 0; }
+    size_t getNumDensities() const { return 0; }
 
     // Pack the Analytic_Gray_Opacity into a character string.
     sf_char pack() const;

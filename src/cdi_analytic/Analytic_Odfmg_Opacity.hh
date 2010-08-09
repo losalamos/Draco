@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Odfmg_Opacity class definition.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -163,16 +164,16 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
     sf_double getGroupBoundaries() const { return groupBoundaries; }
 
     //! Get the size of the temperature grid (size 0).
-    int getNumTemperatures() const { return 0; }
+    size_t getNumTemperatures() const { return 0; }
 
     //! Get the size of the density grid (size 0).
-    int getNumDensities() const { return 0; }
+    size_t getNumDensities() const { return 0; }
 
     //! Get the number of frequency group boundaries.
-    int getNumGroupBoundaries() const { return groupBoundaries.size(); }
+    size_t getNumGroupBoundaries() const { return groupBoundaries.size(); }
 
     //! Get the number of frequency group boundaries.
-    int getNumGroups() const { return groupBoundaries.size() - 1; }
+    size_t getNumGroups() const { return groupBoundaries.size() - 1; }
 
     /*!
      * \brief Returns a vector of points along the cumulative opacity 
@@ -187,7 +188,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      * \brief Returns the number of group boundaries found in the
      *     current multigroup data set.
      */
-    int getNumBandBoundaries() const {
+    size_t getNumBandBoundaries() const {
         return bandBoundaries.size();
     }
 
@@ -197,7 +198,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      *     and the upper boundary is always one. Analagous to multigroup:
      *     numBands = numBandBoundaries - 1.
      */
-    int getNumBands() const {
+    size_t getNumBands() const {
         return getNumBandBoundaries() - 1;
     }
 

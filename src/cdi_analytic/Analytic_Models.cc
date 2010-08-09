@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 21 14:36:15 2001
  * \brief  Analytic_Models implementation file.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -97,9 +98,10 @@ Constant_Analytic_Opacity_Model::get_parameters() const
 
 Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
     const sf_char &packed)
+    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0)
 {
     // size of stream
-    int size = sizeof(int) + 4 * sizeof(double);
+    size_t size = sizeof(int) + 4 * sizeof(double);
 
     Require (packed.size() == size);
 
@@ -179,9 +181,10 @@ Polynomial_Analytic_Opacity_Model::get_parameters() const
 
 Polynomial_Specific_Heat_Analytic_EoS_Model::
 Polynomial_Specific_Heat_Analytic_EoS_Model(const sf_char &packed)
+    : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0), f(0.0)
 {
     // size of stream
-    int size = sizeof(int) + 6 * sizeof(double);
+    size_t size = sizeof(int) + 6 * sizeof(double);
 
     Require (packed.size() == size);
 

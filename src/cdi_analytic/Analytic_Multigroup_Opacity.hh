@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Multigroup_Opacity class definition.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -64,14 +65,10 @@ namespace rtt_cdi_analytic
  * rtt_cdi::MultigroupOpacity and can be used with rtt_cdi::CDI to get
  * analytic opacities.
  *
- */
-/*!
- *
  * \example cdi_analytic/test/tstAnalytic_Multigroup_Opacity.cc
  *
  * Example usage of Analytic_Multigroup_Opacity, Analytic_Opacity_Model, and
  * their incorporation into rtt_cdi::CDI.
- *
  */ 
 // revision history:
 // -----------------
@@ -116,7 +113,7 @@ namespace rtt_cdi_analytic
     explicit Analytic_Multigroup_Opacity(const sf_char &);
 
     // >>> ACCESSORS
-    const_Model get_Analytic_Model(int g) const { return group_models[g-1]; }
+    const_Model get_Analytic_Model(size_t g) const { return group_models[g-1]; }
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 
@@ -157,16 +154,16 @@ namespace rtt_cdi_analytic
     sf_double getGroupBoundaries() const { return group_boundaries; }
 
     //! Get the size of the temperature grid (size 0).
-    int getNumTemperatures() const { return 0; }
+    size_t getNumTemperatures() const { return 0; }
 
     //! Get the size of the density grid (size 0).
-    int getNumDensities() const { return 0; }
+    size_t getNumDensities() const { return 0; }
 
     //! Get the number of frequency group boundaries.
-    int getNumGroupBoundaries() const { return group_boundaries.size(); }
+    size_t getNumGroupBoundaries() const { return group_boundaries.size(); }
 
     //! Get the number of frequency group boundaries.
-    int getNumGroups() const { return group_boundaries.size() - 1; }
+    size_t getNumGroups() const { return group_boundaries.size() - 1; }
 
     // Pack the Analytic_Multigroup_Opacity into a character string.
     sf_char pack() const;

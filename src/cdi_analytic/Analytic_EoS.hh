@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS class definition.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,14 +37,10 @@ namespace rtt_cdi_analytic
  *
  * See the member functions for details about the data types and units.
  *
- */
-/*!
- *
  * \example cdi_analytic/test/tstAnalytic_EoS.cc
  *
  * Example usage of Analytic_EoS, Analytic_EoS_Model, and their incorporation
  * into rtt_cdi::CDI.
- *
  */
 // revision history:
 // -----------------

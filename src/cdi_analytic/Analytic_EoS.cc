@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS member definitions.
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -43,6 +44,7 @@ Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)
  * that have been registered in the rtt_cdi_analytic::EoS_Models enumeration.
  */
 Analytic_EoS::Analytic_EoS(const sf_char &packed)
+    : analytic_model()
 {
     // the packed size must be at least 2 integers (size,
     // analytic model indicator)
@@ -61,7 +63,7 @@ Analytic_EoS::Analytic_EoS(const sf_char &packed)
 
     // unpack the packed analytic model
     std::vector<char> packed_analytic(size_analytic);
-    for (int i = 0; i < size_analytic; i++)
+    for (size_t i = 0; i < size_analytic; i++)
 	unpacker >> packed_analytic[i];
 
     Check (unpacker.get_ptr() == &packed[0] + packed.size());
@@ -142,7 +144,7 @@ Analytic_EoS::getSpecificElectronInternalEnergy(const sf_double &T,
     sf_double internal_energy(T.size(), 0.0);
 
     // loop through T/rho field and solve for internal energy
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	Check (T[i] >= 0.0);
 	Check (rho[i] >= 0.0);
@@ -208,7 +210,7 @@ Analytic_EoS::getSpecificIonInternalEnergy(const sf_double &T,
     sf_double internal_energy(T.size(), 0.0);
 
     // loop through T/rho field and solve for internal energy
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	Check (T[i] >= 0.0);
 	Check (rho[i] >= 0.0);
@@ -273,7 +275,7 @@ Analytic_EoS::getElectronHeatCapacity(const sf_double &T,
     sf_double heat_capacity(T.size(), 0.0);
 
     // loop through T/rho field and solve for the heat capacity
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	Check (T[i] >= 0.0);
 	Check (rho[i] >= 0.0);
@@ -338,7 +340,7 @@ Analytic_EoS::getIonHeatCapacity(const sf_double &T,
     sf_double heat_capacity(T.size(), 0.0);
 
     // loop through T/rho field and solve for the heat capacity
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	Check (T[i] >= 0.0);
 	Check (rho[i] >= 0.0);
@@ -404,7 +406,7 @@ Analytic_EoS::getNumFreeElectronsPerIon(const sf_double &T,
 
     // loop through T/rho field and solve for the number of free electrons
     // per ion
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	Check (T[i] >= 0.0);
 	Check (rho[i] >= 0.0);
@@ -471,7 +473,7 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
     sf_double thermal_conductivity(T.size(), 0.0);
 
     // loop through T/rho field and solve for the thermal conductivity
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	Check (T[i] >= 0.0);
 	Check (rho[i] >= 0.0);
@@ -518,7 +520,7 @@ Analytic_EoS::sf_char Analytic_EoS::pack() const
     packer << static_cast<int>(anal_model.size());
 
     // now pack the anal model
-    for (int i = 0; i < anal_model.size(); i++)
+    for (size_t i = 0; i < anal_model.size(); i++)
 	packer << anal_model[i];
 
     Ensure (packer.get_ptr() == &packed[0] + size);
