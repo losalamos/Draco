@@ -1121,7 +1121,7 @@ bool test_hexa_27(
     }
     try
     {
-        elem_def.get_node_location(-1);
+        elem_def.get_node_location(0);
         ldum = false;
     }
     catch (...)
