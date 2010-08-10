@@ -485,11 +485,11 @@ void file_check_analytic()
 	    
     // Setup the test problem.
 	    
-    int ng = 12;
+    size_t ng = 12;
     tabulatedMGOpacity.resize( ng );
     temperature = 0.4; // keV
     density     = 0.22; // g/cm^3
-    for ( int ig=0; ig<ng; ++ig )
+    for ( size_t ig=0; ig<ng; ++ig )
 	tabulatedMGOpacity[ig] = density * pow( temperature, 4 ); // cm^2/g
 	    
     // If this test fails then stop testing.
@@ -532,7 +532,7 @@ void file_check_analytic()
     density         = 0.35; // g/cm^3
 	    
     std::vector<double> vtabulatedGrayOpacity( vtemperature.size() );
-    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+    for ( size_t i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
 	    
     if ( ! rtt_cdi_gandolf_test::opacityAccessorPassed( 
@@ -554,7 +554,7 @@ void file_check_analytic()
     vdensity[2] = 0.6; // g/cm^3
 	    
     vtabulatedGrayOpacity.resize( vdensity.size() );
-    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+    for ( size_t i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = vdensity[i] * pow ( temperature, 4 );
 	    
     if ( ! rtt_cdi_gandolf_test::opacityAccessorPassed( 
@@ -579,7 +579,7 @@ void file_check_analytic()
     density         = 0.35; // g/cm^3q
 	    
     vtabulatedGrayOpacity.resize( vtemperature.size() );
-    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+    for ( size_t i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = density * pow ( vtemperature[i], 4 );
 	    
     if ( ! rtt_cdi_gandolf_test::opacityAccessorPassed( 
@@ -601,7 +601,7 @@ void file_check_analytic()
     vdensity[2] = 0.6; // g/cm^3
 	    
     vtabulatedGrayOpacity.resize( vdensity.size() );
-    for ( int i=0; i< vtabulatedGrayOpacity.size(); ++i )
+    for ( size_t i=0; i< vtabulatedGrayOpacity.size(); ++i )
 	vtabulatedGrayOpacity[i] = vdensity[i] * pow ( temperature, 4 );
 	    
     if ( ! rtt_cdi_gandolf_test::opacityAccessorPassed( 
@@ -627,10 +627,10 @@ void file_check_analytic()
     ng              = spOp_Analytic_ramg->getNumGroupBoundaries() - 1;
 	    
     vector< vector< double > > vtabulatedMGOpacity( vtemperature.size() );
-    for ( int i=0; i< vtemperature.size(); ++i )
+    for ( size_t i=0; i< vtemperature.size(); ++i )
     {
 	vtabulatedMGOpacity[i].resize(ng);
-	for ( int ig=0; ig<ng; ++ig )
+	for (size_t ig=0; ig<ng; ++ig )
 	    vtabulatedMGOpacity[i][ig] = 
 		density * pow ( vtemperature[i], 4 );
     }
@@ -653,10 +653,10 @@ void file_check_analytic()
     ng          = spOp_Analytic_ramg->getNumGroupBoundaries() - 1;
 	    
     vtabulatedMGOpacity.resize( vdensity.size() );
-    for ( int i=0; i<vdensity.size(); ++i )
+    for ( size_t i=0; i<vdensity.size(); ++i )
     {
 	vtabulatedMGOpacity[i].resize(ng);
-	for ( int ig=0; ig<ng; ++ig )
+	for ( size_t ig=0; ig<ng; ++ig )
 	    vtabulatedMGOpacity[i][ig] = 
 		vdensity[i] * pow ( temperature, 4 );
     }
@@ -684,10 +684,10 @@ void file_check_analytic()
     ng              = spOp_Analytic_pmg->getNumGroupBoundaries() - 1;
 	    
     vtabulatedMGOpacity.resize( vtemperature.size() );
-    for ( int i=0; i< vtemperature.size(); ++i )
+    for ( size_t i=0; i< vtemperature.size(); ++i )
     {
 	vtabulatedMGOpacity[i].resize(ng);
-	for ( int ig=0; ig<ng; ++ig )
+	for ( size_t ig=0; ig<ng; ++ig )
 	    vtabulatedMGOpacity[ i ][ ig ] = 
 		density * pow ( vtemperature[i], 4 );
     }
@@ -710,10 +710,10 @@ void file_check_analytic()
     ng          = spOp_Analytic_pmg->getNumGroupBoundaries() - 1;
 	    
     vtabulatedMGOpacity.resize( vdensity.size() );
-    for ( int i=0; i<vdensity.size(); ++i )
+    for ( size_t i=0; i<vdensity.size(); ++i )
     {
 	vtabulatedMGOpacity[i].resize(ng);
-	for ( int ig=0; ig<ng; ++ig )
+	for ( size_t ig=0; ig<ng; ++ig )
 	    vtabulatedMGOpacity[ i ][ ig ] = 
 		vdensity[i] * pow ( temperature, 4 );
     }

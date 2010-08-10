@@ -5,6 +5,7 @@
  * \date   Mon Jan 22 13:23:37 2001
  * \brief  GandolfGrayOpacity class header file (derived from cdi/GrayOpacity)
  * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -43,51 +44,50 @@ class GandolfFile;
  *
  * \brief provides access to gray opacity data located in IPCRESS files.
  *
- *        GandolfGrayOpacity allows the client code to retrieve opacity
- *        data for a particular material.  Each GandolfOpacity object
- *        represents a specific type of data defined by five
- *        attributes: an IPCRESS File (via a GandolfFile object), a
- *        material identifier, an energy model (already selected
- *        since this is a Gray Opacity class), a physics model and a
- *        reaction type.
+ * GandolfGrayOpacity allows the client code to retrieve opacity data for a
+ * particular material.  Each GandolfOpacity object represents a specific type
+ * of data defined by five attributes: an IPCRESS File (via a GandolfFile
+ * object), a material identifier, an energy model (already selected since
+ * this is a Gray Opacity class), a physics model and a reaction type.
  *
- *      This is a concrete class derived from cdi/GrayOpacity.  This
- *      class allows to client to access the data in IPCRESS files
- *      via the Gandolf libraries.
- * <p>
- *      This class is designed to be used in conjuction with the CDI.
- *      The client code will create a GandolfGrayOpacity object and
- *      use this object as an argument during the CDI instantiation.
- *      The purpose of this class is to provide a mechanism for
- *      accessing data in IPCRESS files and works by calling the
- *      Gandolf library provided by X-5.  The GandolfGrayOpacity
- *      constructor expects four arguments: a hook to IPCRESS data
- *      file (spGandolfFile), a material identifier, an opacity model
- *      (Rosseland or Plank) and an opacity reaction specifier (total,
- *      scattering or absorption).  Once constructed, this object
- *      allows the client to access any data found in the IPCRESS file
- *      for that one material.  The client code will need to create a
- *      separate GandolfGrayOpacity object for each material that it
- *      needs information about. Multiple opacity objects can exist
- *      per IPCRESS file.
- * <p> 
- *      This class only provides access to gray opacity data.  If the
- *      user needs multigroup opacity IPCRESS data he/she should use
- *      the cdi_gandolf/GandolfMultigroupOpacity class.
- * <p>
- *      When instantiated, the GandolfGrayOpacity object creates a
- *      GandolfDataTable object.  The IPCRESS data is cached in this
- *      table object.  When the client requests an opacity value at a
- *      specified temperature and density the GandolfGrayOpcity object
- *      calls the appropriate GANDOLF library routine, which in turn,
- *      interpolates on the data cached in the GandolfDataTable
- *      object.
- * <p>
- *      When compiling DRACO with support for the IPCRESS file reader
- *      (via Gandolf) you must add the following option on the
- *      configure line:<br><br>
- *      <tt>    --with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64</tt><br><br>
- * <p>
+ * This is a concrete class derived from cdi/GrayOpacity.  This class
+ * allows to client to access the data in IPCRESS files via the Gandolf
+ * libraries.
+ * 
+ * This class is designed to be used in conjuction with the CDI.  The client
+ * code will create a GandolfGrayOpacity object and use this object as an
+ * argument during the CDI instantiation.  The purpose of this class is to
+ * provide a mechanism for accessing data in IPCRESS files and works by
+ * calling the Gandolf library provided by X-5.  The GandolfGrayOpacity
+ * constructor expects four arguments: a hook to IPCRESS data file
+ * (spGandolfFile), a material identifier, an opacity model (Rosseland or
+ * Plank) and an opacity reaction specifier (total, scattering or absorption).
+ * Once constructed, this object allows the client to access any data found in
+ * the IPCRESS file for that one material.  The client code will need to
+ * create a separate GandolfGrayOpacity object for each material that it needs
+ * information about. Multiple opacity objects can exist per IPCRESS file.
+ * 
+ * This class only provides access to gray opacity data.  If the user needs
+ * multigroup opacity IPCRESS data he/she should use the
+ * cdi_gandolf/GandolfMultigroupOpacity class.
+ * 
+ * When instantiated, the GandolfGrayOpacity object creates a GandolfDataTable
+ * object.  The IPCRESS data is cached in this table object.  When the client
+ * requests an opacity value at a specified temperature and density the
+ * GandolfGrayOpcity object calls the appropriate GANDOLF library routine,
+ * which in turn, interpolates on the data cached in the GandolfDataTable
+ * object.
+ * 
+ * When compiling DRACO with support for the IPCRESS file reader (via Gandolf)
+ * you must add the following option on the configure line:
+ *
+ * <tt>   --with-gandolf-lib</tt><br>
+ * or<br>
+ * <tt>   --with-gandolf-lib=${GANDOLF_LIB_DIR}</tt><br><br>
+ *
+ * where \c ${GANDOLF_LIB_DIR} is either set in the developer's environment
+ * (first case) or on the configure command line (second case).
+ * 
  * Things to do:
  * <ul>
  *   <li>Implement an interpolation policy</li>
@@ -99,14 +99,13 @@ class GandolfFile;
 /*!
  * \example cdi_gandolf/test/tGandolfOpacity.cc
  *
- * Example of GandolfGrayOpacity usage independent of CDI.  In
- *      this example we construct a GandolfGrayOpacity object for the
- *      material Aluminum (matID=10001 in our example IPCRESS file).
- *      We then use the GandolfGrayOpacity object to compute a
- *      Rosseland Gray opacity value for a specified material,
- *      temperature and density.  Other forms of the getOpacity()
- *      accessor are tested along with accessors that return
- *      information about the data set and the cached data table.
+ * Example of GandolfGrayOpacity usage independent of CDI.  In this example we
+ * construct a GandolfGrayOpacity object for the material Aluminum
+ * (matID=10001 in our example IPCRESS file).  We then use the
+ * GandolfGrayOpacity object to compute a Rosseland Gray opacity value for a
+ * specified material, temperature and density.  Other forms of the
+ * getOpacity() accessor are tested along with accessors that return
+ * information about the data set and the cached data table.
  *
  * \example cdi_gandolf/test/tGandolfWithCDI.cc
  * 
@@ -125,15 +124,14 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     // ----------------------- //
 
     /*!
-     * \brief DS++ Smart Pointer to a GandolfFile object.
-     *     spGandolfFile acts as a hook to link this object to an
-     *     IPCRESS file.
+     * \brief DS++ Smart Pointer to a GandolfFile object.  spGandolfFile acts
+     *     as a hook to link this object to an IPCRESS file.
      */
     rtt_dsxx::SP< const GandolfFile > spGandolfFile;
 
     /*!
-     * \brief Identification number for one of the materials found in
-     *     the IPCRESS file pointed to by spGandolfFile.
+     * \brief Identification number for one of the materials found in the
+     *     IPCRESS file pointed to by spGandolfFile.
      */
     size_t materialID;
 
@@ -143,14 +141,10 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     
     // The IPCRESS file only holds specific data for each of its materials.
 
-    /*!
-     * \brief Number of types of data found in the IPCRESS file.
-     */
+    //! Number of types of data found in the IPCRESS file.
     size_t numKeys;
 
-    /*!
-     * \brief A list of keys known by the IPCRESS file.
-     */
+    //! A list of keys known by the IPCRESS file.
     std::vector< std::string > vKnownKeys;
 
     // --------------- //
@@ -159,22 +153,19 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
 
     /*!
      * \brief The physics model that the current data set is based on.
-     *        { Rosseland, Plank }.  This enumeration is defined
-     *        in cdi/OpacityCommon.hh.
+     *     {Rosseland, Plank}.  This enumeration is defined in
+     *     cdi/OpacityCommon.hh.
      */
     rtt_cdi::Model opacityModel;
 
     /*!
-     * \brief The type of reaction rates that the current data set
-     *        represents { Total, Scattering, Absorption }. This
-     *        enumeration is defined in cdi/OpacityCommon.hh.
+     * \brief The type of reaction rates that the current data set represents
+     *     { Total, Scattering, Absorption }. This enumeration is defined in
+     *     cdi/OpacityCommon.hh.
      */
     rtt_cdi::Reaction opacityReaction;
 
-    /*!
-     * \brief A string that identifies the energy model for this
-     *     class.
-     */
+    //! A string that identifies the energy model for this class.
     const std::string energyPolicyDescriptor;
 
     // -------------------- //
@@ -182,8 +173,8 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     // -------------------- //
 
     /*!
-     * \brief spGandolfDataTable contains a cached copy of the
-     *        requested IPCRESS opacity lookup table.
+     * \brief spGandolfDataTable contains a cached copy of the requested
+     *     IPCRESS opacity lookup table.
      *
      * There is a one-to-one relationship between GandolfGrayOpacity and
      * GandolfDataTable. 
@@ -197,30 +188,28 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
     // ------------ //
 
     /*!
-     * \brief This is the default GandolfGrayOpacity constructor.  It
-     *     requires four arguments plus the energy policy (this class)
-     *     to be instantiated.
+     * \brief This is the default GandolfGrayOpacity constructor.  It requires
+     *     four arguments plus the energy policy (this class) to be
+     *     instantiated.
      * 
-     *     The combiniation of a data file and a material ID uniquely 
-     *     specifies a material.  If we add the Model, Reaction and
-     *     EnergyPolicy the opacity table is uniquely defined.
+     * The combiniation of a data file and a material ID uniquely specifies a
+     * material.  If we add the Model, Reaction and EnergyPolicy the opacity
+     * table is uniquely defined.
      *
-     * \param spGandolfFile This smart pointer links an IPCRESS
-     *     file (via the GandolfFile object) to a GandolfOpacity
-     *     object. There may be many GandolfOpacity objects per
-     *     GandolfFile object but only one GandolfFile object for each 
-     *     GandolfOpacity object.
-     * \param materialID An identifier that links the
-     *     GandolfOpacity object to a single material found in the
-     *     specified IPCRESS file.
-     * \param opacityModel The physics model that the current
-     *     data set is based on.
-     * \param opacityReaction The type of reaction rate that the
-     *     current data set represents. 
+     * \param spGandolfFile This smart pointer links an IPCRESS file (via the
+     *     GandolfFile object) to a GandolfOpacity object. There may be many
+     *     GandolfOpacity objects per GandolfFile object but only one
+     *     GandolfFile object for each GandolfOpacity object.
+     * \param materialID An identifier that links the GandolfOpacity object to
+     *     a single material found in the specified IPCRESS file.
+     * \param opacityModel The physics model that the current data set is
+     *     based on.
+     * \param opacityReaction The type of reaction rate that the current data
+     *     set represents.
      */
-    GandolfGrayOpacity( const rtt_dsxx::SP< const GandolfFile >& spGandolfFile,
-			size_t materialID, 
-			rtt_cdi::Model opacityModel,
+    GandolfGrayOpacity( rtt_dsxx::SP< const GandolfFile > const & spGandolfFile,
+			size_t            materialID, 
+			rtt_cdi::Model    opacityModel,
 			rtt_cdi::Reaction opacityReaction );
 
     /*!
@@ -230,46 +219,43 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      * attained through the pack function.
      *
      * \param packed vector<char> of packed GandolfGrayOpacity state; the
-     * packed state is attained by calling pack()
+     *     packed state is attained by calling pack()
      */
-    explicit GandolfGrayOpacity(const std::vector<char> &packed);
+    explicit GandolfGrayOpacity( std::vector<char> const &packed );
 
     /*!
      * \brief Default GandolfOpacity() destructor.
      *
-     *     This is required to correctly release memory when a
-     *     GandolfGrayOpacity is destroyed.  We define the destructor
-     *     in the implementation file to avoid including the
-     *     unnecessary header files.
+     * This is required to correctly release memory when a GandolfGrayOpacity
+     * is destroyed.  We define the destructor in the implementation file to
+     * avoid including the unnecessary header files.
      */
-    ~GandolfGrayOpacity();
+    ~GandolfGrayOpacity(void);
 
     // --------- //
     // Accessors //
     // --------- //
 
     /*!
-     * \brief Opacity accessor that utilizes STL-like iterators.  This 
-     *     accessor expects a list of (temperature,density) tuples.
-     *     An opacity value will be returned for each tuple.  The
-     *     temperature and density iterators are required to
-     *     be the same length.  The opacity iterator should also have
-     *     this same length.
+     * \brief Opacity accessor that utilizes STL-like iterators.  This
+     *     accessor expects a list of (temperature,density) tuples.  An
+     *     opacity value will be returned for each tuple.  The temperature and
+     *     density iterators are required to be the same length.  The opacity
+     *     iterator should also have this same length.
      * 
-     * \param temperatureFirst The beginning position of a STL
-     *     container that holds a list of temperatures.
-     * \param temperatureLast The end position of a STL
-     *     container that holds a list of temperatures.
-     * \param densityFirst The beginning position of a STL
-     *     container that holds a list of densities.
-     * \param densityLast
-     *     container that holds a list of temperatures.
-     * \param opacityFirst The beginning position of a STL
-     *     container into which opacity values corresponding to the
-     *     given (temperature,density) tuple will be stored.
-     * \return A list (of type OpacityIterator) of opacities are
-     *     returned.  These opacities correspond to the temperature
-     *     and density values provied in the two InputIterators.
+     * \param temperatureFirst The beginning position of a STL container that
+     *     holds a list of temperatures.
+     * \param temperatureLast The end position of a STL container that holds a
+     *     list of temperatures.
+     * \param densityFirst The beginning position of a STL container that
+     *     holds a list of densities.
+     * \param densityLast container that holds a list of temperatures.
+     * \param opacityFirst The beginning position of a STL container into
+     *     which opacity values corresponding to the given
+     *     (temperature,density) tuple will be stored.
+     * \return A list (of type OpacityIterator) of opacities are returned.
+     *     These opacities correspond to the temperature and density values
+     *     provied in the two InputIterators.
      */
     template < class TemperatureIterator, class DensityIterator,
                class OpacityIterator >
@@ -460,15 +446,15 @@ class GandolfGrayOpacity : public rtt_cdi::GrayOpacity
      */ 
     std::vector<char> pack() const;
 
-	/*!
-	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
-	 *
-	 * Since this is a Gandolf model, return 2 (rtt_cdi::GANDOLF_TYPE)
-	 */
-	rtt_cdi::OpacityModelType getOpacityModelType() const {
-		return rtt_cdi::GANDOLF_TYPE;
-	}
-
+    /*!
+     * \brief Returns the general opacity model type, defined in
+     *     OpacityCommon.hh.  Since this is a Gandolf model, return 2
+     *     (rtt_cdi::GANDOLF_TYPE) 
+     */
+    rtt_cdi::OpacityModelType getOpacityModelType() const {
+        return rtt_cdi::GANDOLF_TYPE;
+    }
+    
 }; // end of class GandolfGrayOpacity
 
 //---------------------------------------------------------------------------//

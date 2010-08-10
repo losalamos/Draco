@@ -118,7 +118,7 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
 	    "Tried to unpack a non-mg opacity in GandolfMultigroupOpacity.");
 
     // unpack the size of the packed filename
-    size_t packed_filename_size = 0;
+    int packed_filename_size(0);
     unpacker >> packed_filename_size;
 
     // make a vector<char> for the packed filename
@@ -131,7 +131,10 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
     rtt_dsxx::unpack_data(filename, packed_filename);
 
     // unpack the material id
-    unpacker >> materialID;
+    // unpacker >> materialID;
+    int itmp(0);
+    unpacker >> itmp;
+    materialID = static_cast<size_t>(itmp);
 
     // unpack the model and reaction
     int model    = 0;
@@ -411,7 +414,7 @@ std::vector<char> GandolfMultigroupOpacity::pack() const
 	packer << packed_filename[i];
 
     // pack the material id
-    packer << materialID;
+    packer << static_cast<int>(materialID);
 
     // pack the model and reaction
     packer << static_cast<int>(opacityModel) 

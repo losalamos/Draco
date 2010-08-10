@@ -11,25 +11,18 @@
 //---------------------------------------------------------------------------//
 
 #include "GandolfGrayOpacity.hh"
-
 #include "GandolfWrapper.hh"    // we make calls to the wrapper routines.
-
 #include "GandolfFile.hh"       // we have smart pointers to
                                 // GandolfFile objects.
-
 #include "GandolfException.hh"  // Since we call wrapper routines we
                                 // need to be able to throw exceptions
                                 // if the Gandolf libraries return an 
                                 // error.
-
 #include "GandolfDataTable.hh"  // we have a smart pointer to a
                                 // GandolfDataTable object.
-
-#include <cmath> // we need to define log(double) and exp(double)
-
-#include "ds++/Assert.hh" // we make use of Require()
-
+#include "ds++/Assert.hh"       // we make use of Require()
 #include "ds++/Packing_Utils.hh"
+#include <cmath>                // we need to define log(double) and exp(double)
 
 namespace rtt_cdi_gandolf
 {
@@ -87,7 +80,7 @@ GandolfGrayOpacity::GandolfGrayOpacity(
  * 
  * See GandolfGrayOpacity.hh for details.
  */
-GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
+GandolfGrayOpacity::GandolfGrayOpacity( std::vector<char> const & packed )
     : spGandolfFile(),
       materialID( 0 ),
       numKeys( 0 ),
@@ -113,7 +106,7 @@ GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
 
     // unpack it
     std::string descriptor;
-    for (size_t i = 0; i < packed_descriptor_size; i++)
+    for (int i = 0; i < packed_descriptor_size; ++i)
 	unpacker >> packed_descriptor[i];
     rtt_dsxx::unpack_data(descriptor, packed_descriptor);
 
@@ -122,7 +115,7 @@ GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
 	    "Tried to unpack a non-gray opacity in GandolfGrayOpacity.");
 
     // unpack the size of the packed filename
-    size_t packed_filename_size = 0;
+    int packed_filename_size(0);
     unpacker >> packed_filename_size;
 
     // make a vector<char> for the packed filename
@@ -130,12 +123,15 @@ GandolfGrayOpacity::GandolfGrayOpacity(const std::vector<char> &packed)
 
     // unpack it
     std::string filename;
-    for (size_t i = 0; i < packed_filename_size; i++)
+    for (int i = 0; i < packed_filename_size; ++i)
 	unpacker >> packed_filename[i];
     rtt_dsxx::unpack_data(filename, packed_filename);
 
     // unpack the material id
-    unpacker >> materialID;
+    // unpacker >> materialID;
+    int itmp(0);
+    unpacker >> itmp;
+    materialID = static_cast<size_t>(itmp);
 
     // unpack the model and reaction
     int model    = 0;
@@ -309,17 +305,15 @@ size_t GandolfGrayOpacity::getNumTemperatures() const
 }
     
 /*!
- * \brief Returns a vector of densities that define the cached
- *     opacity data table.
+ * \brief Returns a vector of densities that define the cached opacity data
+ *     table.
  */
 std::vector<double> GandolfGrayOpacity::getDensityGrid() const
 {
     return spGandolfDataTable->getDensities();
 }
     
-/*! 
- * \brief Returns the size of the density grid.
- */
+//!  Returns the size of the density grid.
 size_t GandolfGrayOpacity::getNumDensities() const
 {
     return spGandolfDataTable->getNumDensities();
@@ -330,11 +324,11 @@ size_t GandolfGrayOpacity::getNumDensities() const
 // ------- //
 
 /*!
- * Pack the GandolfGrayOpacity state into a char string represented by a
+ * Pack the GandolfGrayOpacity state into a char string represented by a \c
  * vector<char>. This can be used for persistence, communication, etc. by
- * accessing the char * under the vector (required by implication by the
- * standard) with the syntax &char_string[0]. Note, it is unsafe to use
- * iterators because they are \b not required to be char *.
+ * accessing the \c char* under the vector (required by implication by the
+ * standard) with the syntax \c &char_string[0]. Note, it is unsafe to use
+ * iterators because they are \b not required to be \c char*.
  */
 std::vector<char> GandolfGrayOpacity::pack() const
 {
