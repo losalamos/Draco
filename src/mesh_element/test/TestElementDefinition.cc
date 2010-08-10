@@ -1118,15 +1118,7 @@ bool test_hexa_27(
     }
     catch (...)
     {
-    }
-    try
-    {
-        elem_def.get_node_location(0);
-        ldum = false;
-    }
-    catch (...)
-    {
-    }
+    }    
     try
     {
         elem_def.get_side_type(6);
