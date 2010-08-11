@@ -48,6 +48,10 @@ if [ "${MODULEPATH:-}" = "" ]; then
   export MODULEPATH=$MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION
 fi
 
-if [ ${BASH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/bash_completion ]; then
-  source ${MODULESHOME}/init/bash_completion
+# Only for interactive shells
+if ! test -z "$PS1"; then
+  if [ ${BASH_VERSINFO:-0} -ge 3 ] && [ -r ${MODULESHOME}/init/bash_completion ]; then
+    echo "Modules: bash command completion turned on."
+    source ${MODULESHOME}/init/bash_completion
+  fi
 fi
