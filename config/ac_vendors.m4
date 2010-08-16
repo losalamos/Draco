@@ -543,11 +543,11 @@ AC_DEFUN([AC_HYPRE_FINALIZE], [dnl
        # library path
        if test -n "${HYPRE_LIB}" ; then
 
-           AC_VENDORLIB_SETUP(vendor_hypre, -L${HYPRE_LIB} -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+           AC_VENDORLIB_SETUP(vendor_hypre, -L${HYPRE_LIB} -lHYPRE)
 
        elif test -z "${HYPRE_LIB}" ; then
 
-           AC_VENDORLIB_SETUP(vendor_hypre, -lHYPRE_parcsr_ls -lHYPRE_DistributedMatrixPilutSolver -lHYPRE_ParaSails -lHYPRE_Euclid -lHYPRE_MatrixMatrix -lHYPRE_DistributedMatrix -lHYPRE_IJ_mv -lHYPRE_parcsr_mv -lHYPRE_seq_mv -lHYPRE_krylov -lHYPRE_utilities)
+           AC_VENDORLIB_SETUP(vendor_hypre, -lHYPRE)
 
        fi
 
