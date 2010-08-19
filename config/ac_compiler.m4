@@ -319,9 +319,13 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
    # set up compiler when not optimized
    else
 
+       # Ref http://gcc.gnu.org/onlinedocs/libstdc++/manual/debug.html
        # default is to have debug flag on when opt=0
        if test "${enable_debug:=yes}" = yes ; then
-	   gcc_opt_flags="-g ${gcc_opt_flags}"
+           addflags="-g -fno-inline -fno-eliminate-unused-debug-types"
+	   gcc_opt_flags="${addflags} ${gcc_opt_flags}"
+           addflags="-D_GLIBCXX_DEBUG -D_GLIBXX_DEBUG_PEDANTIC"
+	   gcc_opt_flags="${gcc_opt_flags} ${addflags}"
        fi
 
    fi
