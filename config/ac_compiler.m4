@@ -324,8 +324,8 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
        if test "${enable_debug:=yes}" = yes ; then
            addflags="-g -fno-inline -fno-eliminate-unused-debug-types"
 	   gcc_opt_flags="${addflags} ${gcc_opt_flags}"
-           addflags="-D_GLIBCXX_DEBUG -D_GLIBXX_DEBUG_PEDANTIC"
-	   gcc_opt_flags="${gcc_opt_flags} ${addflags}"
+         #  addflags="-D_GLIBCXX_DEBUG -D_GLIBXX_DEBUG_PEDANTIC"
+	 #  gcc_opt_flags="${gcc_opt_flags} ${addflags}"
        fi
 
    fi
