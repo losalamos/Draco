@@ -1240,7 +1240,7 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
        AC_DBS_SETUP_POSIX
 
        #   
-       # LONG LONG on Linux
+       # LONG LONG on Darwin
        #
        
        # always allow long long in strict ansi mode (if possible)
@@ -1278,7 +1278,7 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
        #
        # Setup communications packages
        #
-       AC_DBS_SETUP_COMM(mpich)
+       AC_DBS_SETUP_COMM([${with_mpi:-openmpi}])
 
        # 
        # setup lapack 
@@ -1413,6 +1413,9 @@ AC_DEFUN([AC_DBS_SETUP_COMM], [dnl
        # setup for mpi support, on linux vendor and mpich are one
        # and the same because there is no vendor for mpi on linux
         
+       dnl echo "ac_dbs_setup_comm: 1        = $1"
+       dnl echo "ac_dbs_setup_comm: with_mpi = $with_mpi"
+
        if test "${with_mpi}" = vendor ; then
 	   with_mpi=$1
        fi

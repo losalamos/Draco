@@ -94,7 +94,7 @@ AC_DEFUN([AC_MPI_FINALIZE], [dnl
      dnl default works correctly.
      ;;
    lampi | LAMPI | openmpi | OPENMPI)
-      with_mpi=mpi dnl We want '-lmpi' on the link linke
+      with_mpi=mpi dnl We want '-lmpi' on the link line
       ;;
    esac
 
