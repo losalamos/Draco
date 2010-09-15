@@ -15,8 +15,49 @@ should have one of these forms:
 - Copyright (C) 2010 Los Alamos National Security, LLC
 - Copyright (C) 2006-2010 Los Alamos National Security, LLC
 - Copyright (C) 1990-2006 The Regents of the University of California.<br>
-  Copyright (C) 2006-2010 Los Alamos National Security, LLC<br>
+  Copyright (C) 2006-2010 Los Alamos National Security, LLC.<br>
   All rights reserved.
+
+\section development_links
+
+- <a
+  herf="http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#index-flto-801">
+  Options that Control Optimization</a>
+- <a href="http://ci-tutor.ncsa.illinois.edu/login.php">
+  Cyberinfrastructure Tutor </a> (Learn OpenMPI, OpenMP, etc.)
+- <a
+  href="http://wiki.services.openoffice.org/wiki/Writing_warning-free_code">
+  Writing warning-free code </a>  
+- <a href="http://www.possibility.com/Cpp/CppCodingStandard.html">C++ Coding Standard </a>  
+- <a href="http://www.parashift.com/c++-faq-lite/index.html">C++ FAQ LITE</a>  
+  
+\section joel_test Twelve Steps to Better Code
+
+   1. Do you use source control?<br>
+   2. Can you make a build in one step?<br>
+   3. Do you make daily builds?<br>
+   4. Do you have a bug database?<br>
+   5. Do you fix bugs before writing new code?<br>
+   6. Do you have an up-to-date schedule?<br>
+   7. Do you have a spec?<br>
+   8. Do programmers have quiet working conditions?<br>
+   9. Do you use the best tools money can buy?<br>
+  10. Do you have testers?<br>
+  11. Do new candidates write code during their interview?<br>
+  12. Do you do hallway usability testing? 
+
+  <a href="http://www.joelonsoftware.com/articles/fog0000000043.html">The Joel
+  Test: 12 Steps to Better Code</a> 
+
+\section known_bugs Known Bugs
+
+- Some Draco classes inherit from STL containers.  In general, this is a bad
+  idea because the STL classes are not designed to support this use (e.g.:
+  they do not provide virtual destructors).  Some discussion on this topic is
+  found at
+  http://stackoverflow.com/questions/679520/advice-on-a-better-way-to-extend-c-stl-container-with-user-defined-methods.
+
+  
 
 
 //---------------------------------------------------------------------------//
