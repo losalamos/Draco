@@ -261,7 +261,12 @@ dnl    fi
    AC_ARG_ENABLE([all-warnings],
     [AS_HELP_STRING([--enable-all-warnings],[activate all gcc warnings
        (-Wall -Wextra)])])
-   
+
+   AC_ARG_ENABLE([glibcxx-debug],
+    [AS_HELP_STRING([--enable-glibcxx-debug],[Use the debug GLIBCXX
+    libraries. This provides bounds checking for STL and
+    more. (-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)])])
+
    dnl end of AC_DRACO_ARGS
 ])
 

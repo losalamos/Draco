@@ -324,8 +324,10 @@ AC_DEFUN([AC_DRACO_GNU_GCC], [dnl
        if test "${enable_debug:=yes}" = yes ; then
            addflags="-g -fno-inline -fno-eliminate-unused-debug-types"
 	   gcc_opt_flags="${addflags} ${gcc_opt_flags}"
-         #  addflags="-D_GLIBCXX_DEBUG -D_GLIBXX_DEBUG_PEDANTIC"
-	 #  gcc_opt_flags="${gcc_opt_flags} ${addflags}"
+           if test "${enable_glibcxx_debug:=no}" = yes; then
+              addflags="-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC"
+              gcc_opt_flags="${gcc_opt_flags} ${addflags}"
+           fi
        fi
 
    fi
@@ -558,6 +560,15 @@ AC_DEFUN([AC_DRACO_PGCC], [dnl
    # pgCC allows -g with -O
 
    # set opt level in flags
+
+   # Consider adding: 
+   # -Mipa=fast      invoke interprocedural analysis.
+   # -Minline=levels:10
+   # --no_exceptions
+   # -Mpfi
+   # -Mpfo
+   # -Msafeptr
+   # -O[0-4]
    pgcc_opt_flags="-O${with_opt:=0}"
 
    # set up compiler when optimized
@@ -578,7 +589,8 @@ AC_DEFUN([AC_DRACO_PGCC], [dnl
        if test "${enable_debug:=yes}" = yes ; then
 	   pgcc_opt_flags="-g ${pgcc_opt_flags}"
        fi
-
+ 
+       # -c    array bounds checking
    fi
 
    # add opt flags
