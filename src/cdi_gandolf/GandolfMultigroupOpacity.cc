@@ -109,7 +109,7 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
 
     // unpack it
     std::string descriptor;
-    for (size_t i = 0; i < packed_descriptor_size; i++)
+    for (size_t i = 0; i < static_cast<size_t>(packed_descriptor_size); i++)
 	unpacker >> packed_descriptor[i];
     rtt_dsxx::unpack_data(descriptor, packed_descriptor);
 
@@ -126,7 +126,7 @@ GandolfMultigroupOpacity::GandolfMultigroupOpacity(
 
     // unpack it
     std::string filename;
-    for (size_t i = 0; i < packed_filename_size; i++)
+    for (size_t i = 0; i < static_cast<size_t>(packed_filename_size); i++)
 	unpacker >> packed_filename[i];
     rtt_dsxx::unpack_data(filename, packed_filename);
 
