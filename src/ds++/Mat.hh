@@ -67,7 +67,8 @@ class Mat1 {
 
     void detach()
     {
-	if (may_free_space) {
+	if (may_free_space)
+        {
 	    rtt_dsxx::Destroy( begin(), end() );
 	    alloc.release( v + offset(xmin), size() );
 	}
@@ -123,28 +124,37 @@ class Mat1 {
     int nx() const { return xlen; }
 
     // Constructors
-    Mat1()
-	: xmin(0), xlen(0),
-	  may_free_space(false), v(0)
-    {}
+    Mat1(void)
+	: xmin(0),
+          xlen(0),
+	  may_free_space(false),
+          alloc(),
+          v(0)
+    {/*empty*/}
 
     explicit Mat1( int xmax_, const T& t = T() )
-	: xmin(0), xlen(xmax_),
+	: xmin(0),
+          xlen(xmax_),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - offset(xmin) )
+	  alloc(),
+          v( alloc.fetch( size() ) - offset(xmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
 
     Mat1( T *vv, int xmax_ )
-	: xmin(0), xlen(xmax_),
-	  may_free_space(false), v(vv)
-    {}
+	: xmin(0),
+          xlen(xmax_),
+	  may_free_space(false),
+          alloc(),
+          v(vv)
+    {/*empty*/}
 
     explicit Mat1( const Bounds& bx, const T& t = T() )
 	: xmin( bx.min() ),
           xlen( bx.len() ),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
@@ -157,9 +167,11 @@ class Mat1 {
 //     {}
 
     Mat1( const Mat1<T>& m )
-	: xmin(m.xmin), xlen(m.xlen),
+	: xmin(m.xmin),
+          xlen(m.xlen),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - offset(xmin) )
+	  alloc(),
+          v( alloc.fetch( size() ) - offset(xmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -499,30 +511,45 @@ class Mat2 {
 
     // Constructors
 
-    Mat2()
-	: xmin(0), xlen(0), ymin(0), ylen(0),
-	  may_free_space(false), v(0)
-    {}
+    Mat2(void)
+	: xmin(0),
+          xlen(0),
+          ymin(0),
+          ylen(0),
+	  may_free_space(false),
+          alloc(),
+          v(0)
+    {/*empty*/}
 
     Mat2( int xmax_, int ymax_, const T& t = T() )
-	: xmin(0), xlen(xmax_),
-	  ymin(0), ylen(ymax_),
+	: xmin(0),
+          xlen(xmax_),
+	  ymin(0),
+          ylen(ymax_),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
 
     Mat2( T *vv, int xmax_, int ymax_ )
-	: xmin(0), xlen(xmax_),
-	  ymin(0), ylen(ymax_),
-	  may_free_space(false), v(vv)
-    {}
+	: xmin(0),
+          xlen(xmax_),
+	  ymin(0),
+          ylen(ymax_),
+	  may_free_space(false),
+          alloc(),
+          v(vv)
+    {/*empty*/}
 
     Mat2( const Bounds& bx, const Bounds& by, const T& t = T() )
-	: xmin( bx.min() ), xlen( bx.len() ),
-	  ymin( by.min() ), ylen( by.len() ),
+	: xmin( bx.min() ),
+          xlen( bx.len() ),
+	  ymin( by.min() ),
+          ylen( by.len() ),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
@@ -538,9 +565,12 @@ class Mat2 {
 //     {}
 
     Mat2( const Mat2<T>& m )
-	: xmin(m.xmin), xlen(m.xlen),
-	  ymin(m.ymin), ylen(m.ylen),
+	: xmin(m.xmin),
+          xlen(m.xlen),
+	  ymin(m.ymin),
+          ylen(m.ylen),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
@@ -915,6 +945,7 @@ class Mat3 {
 	  ymin(0), ylen(ymax_),
 	  zmin(0), zlen(zmax_),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
@@ -924,8 +955,10 @@ class Mat3 {
 	: xmin(0), xlen(xmax_),
 	  ymin(0), ylen(ymax_),
 	  zmin(0), zlen(zmax_),
-	  may_free_space(false), v(vv)
-    {}
+	  may_free_space(false),
+          alloc(),
+          v(vv)
+    {/*empty*/}
 
 //     Mat3( const Bounds& bx, const Bounds& by,
 // 	  const Bounds& bz, const T& t = T() )
@@ -951,6 +984,7 @@ class Mat3 {
 	  ymin(m.ymin), ylen(m.ylen),
 	  zmin(m.zmin), zlen(m.zlen),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
@@ -1371,6 +1405,7 @@ class Mat4 {
 	  zmin(0), zlen(zmax_),
 	  wmin(0), wlen(wmax_),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
@@ -1381,8 +1416,10 @@ class Mat4 {
 	  ymin(0), ylen(ymax_),
 	  zmin(0), zlen(zmax_),
 	  wmin(0), wlen(wmax_),
-	  may_free_space(false), v(vv)
-    {}
+	  may_free_space(false),
+          alloc(),
+          v(vv)
+    {/*empty*/}
 
 //     Mat4( const Bounds& bx, const Bounds& by,
 // 	  const Bounds& bz, const Bounds& bw, const T& t = T() )
@@ -1413,6 +1450,7 @@ class Mat4 {
 	  zmin(m.zmin), zlen(m.zlen),
 	  wmin(m.wmin), wlen(m.wlen),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
@@ -1861,7 +1899,8 @@ class Mat5 {
 	  wmin(0), wlen(wmax_),
 	  umin(0), ulen(umax_),
 	  may_free_space(true),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+	  alloc(),
+          v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -1872,8 +1911,10 @@ class Mat5 {
 	  zmin(0), zlen(zmax_),
 	  wmin(0), wlen(wmax_),
 	  umin(0), ulen(umax_),
-	  may_free_space(false), v(vv)
-    {}
+	  may_free_space(false),
+          alloc(),
+          v(vv)
+    {/*empty*/}
 
 //     Mat5( const Bounds& bx, const Bounds& by,
 // 	  const Bounds& bz, const Bounds& bw,
@@ -1908,6 +1949,7 @@ class Mat5 {
 	  wmin(m.wmin), wlen(m.wlen),
 	  umin(m.umin), ulen(m.ulen),
 	  may_free_space(true),
+          alloc(),
 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );

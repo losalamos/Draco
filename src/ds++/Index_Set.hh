@@ -41,13 +41,13 @@ class Index_Set
     // CREATORS
     
     //! Default constructors.
-    Index_Set() { /* ... */ }
+    Index_Set() :array_size(0) { /* ... */ }
 
     //! Construct with pointer to sizes
-    Index_Set(unsigned const * const dimensions) { set_size(dimensions); }
+    Index_Set(unsigned const * const dimensions) :array_size(0) { set_size(dimensions); }
 
     //! Construct with all dimensions equal
-    Index_Set(const unsigned dimension) { set_size(dimension); }
+    Index_Set(const unsigned dimension) :array_size(0) { set_size(dimension); }
 
     //! Destructor
     virtual ~Index_Set() { /* ... */ }

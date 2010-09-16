@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Jul 19 11:27:46 2001
  * \brief  Packing Utilities, classes for packing stuff.
- * \note   Copyright (C) 2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -536,8 +537,8 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
 /*!
  * \brief Packing function.
  *
- * This function uses the rtt_dsxx::Packer to pack a given field into a
- * vector<char>.  The field type is represented by the template argument FT.
+ * This function uses the rtt_dsxx::Packer to pack a given field into a \c
+ * vector<char>.  The field type is represented by the template argument \b FT.
  * The field type must have the following members defined:
  *
  * \arg FT::value_type type stored in the field
@@ -551,20 +552,20 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
  * array; however, this is accomplished easily enough with the Packer class
  * alone.
  *
- * The data in the field is packed into a vector<char>. The vector<char>
- * passed to the function must be empty; an assertion is thrown if it is
- * not.  We do this for usage protection; we want the user to be aware that
- * data in the vector<char> would be destroyed.
+ * The data in the field is packed into a \c vector<char>. The \c vector<char>
+ * passed to the function must be empty; an assertion is thrown if it is not.
+ * We do this for usage protection; we want the user to be aware that data in
+ * the \c vector<char> would be destroyed.
  *
  * In summary, this is a simple function that is a shortcut for using the
- * Packer class for fields (vector<double>, list<int>, string, etc).  The
- * complement of this function is unpack_data, which takes a packed
- * vector<char> and writes data into the field.
+ * Packer class for fields (\c vector<double>, \c list<int>, \c string, etc).
+ * The complement of this function is unpack_data, which takes a packed
+ * \c vector<char> and writes data into the field.
  *
- * The resulting size of the data stored in the vector<char> argument is
- *
+ * The resulting size of the data stored in the \c vector<char> argument is
+ * \code
  *   sizeof(FT::value_type) * field.size() + sizeof(int).
- *
+ * \endcode
  * The extra integer is for storing the size of the data field.
  *
  * \sa rtt_dsxx::Packer, tstPacking_Utils.cc, and rtt_dsxx::unpack_data

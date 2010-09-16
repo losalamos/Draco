@@ -28,12 +28,14 @@ using namespace rtt_dsxx;
 
 struct Base_Class
 {
-    virtual ~Base_Class() {}
+    Base_Class(void) : a(0) {/*empty*/}
+    virtual ~Base_Class(void) {/*empty*/}
     int a;
 };
 
 struct Derived_Class : public Base_Class
 {
+    Derived_Class(void) : Base_Class(),b(0) {/*empty*/}
     int b;
 };
 
@@ -124,11 +126,17 @@ void test_undeleted(UnitTest &ut)
 
     try
     {
+        // Create a new Base_Class object and assign the pointer to the
+        // Safe_Ptr<T> foo.
         Safe_Ptr<Base_Class> foo(new Base_Class);
+
         memory_cleanup = &(*foo);
+
+        // End of scope calls destructor for foo.
     }
     catch(rtt_dsxx::assertion & /* assertion */ )
     {
+
         caught = true;
         delete memory_cleanup;
     }

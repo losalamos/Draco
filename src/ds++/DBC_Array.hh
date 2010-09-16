@@ -215,23 +215,27 @@ template<class T> class DBC_Array
     typedef value_type const* const_pointer;
   public:
     //! Create an empty array
-    DBC_Array()  
+    DBC_Array(void)  
 	: d_ptr(0), 
 	  d_size(0) 
-    {}
+    {/* empty */}
 
     //! Create an uninitialized array of size \p n
     /*! 
-      If T is a POD, the contents of the array will be arbitrary.
-      Otherwise, the default ctor is called for each array element.
-    */
+     * If T is a POD, the contents of the array will be arbitrary.  Otherwise,
+     * the default ctor is called for each array element.
+     */
     explicit DBC_Array(const size_type n)
+         : d_ptr(0), 
+           d_size(0)
     {
 	DBCA_Support::common_construct<T>(d_ptr, d_size, n, false);
     }
 
     //! Create an array of size \p n initialized to \p value.
     DBC_Array(const size_type n, const value_type& value)
+        : d_ptr(0), 
+          d_size(0)
     {
 	DBCA_Support::common_construct<T>(d_ptr, d_size, n, true, value);
     }
@@ -239,6 +243,8 @@ template<class T> class DBC_Array
     //! Create an array from the iterators [first, last)
     template<class InputIterator>
     DBC_Array(InputIterator first, InputIterator last)
+        : d_ptr(0), 
+          d_size(0)
     {
 	// This dispatcher mechanism is used to differentiate between
 	// InputIterator being an integral type or not.  If it is, it cannot
@@ -451,7 +457,9 @@ operator>=(const DBC_Array<T>& lhs, const DBC_Array<T>& rhs)
 
 //---------------------------------------------------------------------------//
 template<class T> 
-DBC_Array<T>::DBC_Array(const DBC_Array<T>& rhs) 
+DBC_Array<T>::DBC_Array(const DBC_Array<T>& rhs)
+     : d_ptr(0), 
+       d_size(0)
 {
     DBCA_Support::common_construct<T>(d_ptr, d_size, rhs.d_size, false);
     if(d_size)

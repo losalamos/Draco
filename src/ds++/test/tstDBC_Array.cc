@@ -28,7 +28,7 @@ typedef DBC_Array<int> AInt;
 
 struct Test_Class
 {
-    Test_Class() { class_time = time(0); }
+    Test_Class(void) : class_time(time(0)) { /*empty class_time = time(0);*/ }
     Test_Class const & operator=(Test_Class const & rhs)
     {
 	class_time = rhs.class_time - 1;

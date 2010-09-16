@@ -25,12 +25,14 @@ using rtt_dsxx::DBC_Ptr;
 
 struct Base_Class
 {
-    virtual ~Base_Class() {}
+    Base_Class(void) :a(0) { /* empty */ }
+    virtual ~Base_Class(void) { /* empty */ }
     int a;
 };
 
 struct Derived_Class : public Base_Class
 {
+    Derived_Class(void) :Base_Class(),b(0) { /* empty */ }
     int b;
 };
 
