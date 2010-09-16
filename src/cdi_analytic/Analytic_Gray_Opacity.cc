@@ -76,7 +76,7 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
     // unpack the size of the analytic model
     int size_analytic;
     unpacker >> size_analytic;
-    Check (size_analytic >= sizeof(int));
+    Check (static_cast<size_t>(size_analytic) >= sizeof(int));
 
     // unpack the packed analytic model
     std::vector<char> packed_analytic(size_analytic);

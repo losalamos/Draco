@@ -117,7 +117,7 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     {
         // unpack the size of the analytic model
         unpacker >> model_size;
-        Check (model_size >= sizeof(int));
+        Check (static_cast<size_t>(model_size) >= sizeof(int));
 
         models[i].resize(model_size);
 

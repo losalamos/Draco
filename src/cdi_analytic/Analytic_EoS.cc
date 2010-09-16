@@ -59,11 +59,11 @@ Analytic_EoS::Analytic_EoS(const sf_char &packed)
     // unpack the size of the analytic model
     int size_analytic;
     unpacker >> size_analytic;
-    Check (size_analytic >= sizeof(int));
+    Check (static_cast<size_t>(size_analytic) >= sizeof(int));
 
     // unpack the packed analytic model
     std::vector<char> packed_analytic(size_analytic);
-    for (size_t i = 0; i < size_analytic; i++)
+    for (size_t i = 0; i < static_cast<size_t>(size_analytic); ++i)
 	unpacker >> packed_analytic[i];
 
     Check (unpacker.get_ptr() == &packed[0] + packed.size());

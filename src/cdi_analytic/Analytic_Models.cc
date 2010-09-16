@@ -26,9 +26,9 @@ Constant_Analytic_Opacity_Model::Constant_Analytic_Opacity_Model(
     : sigma(0)
 {
     // size of stream
-    int size = sizeof(int) + sizeof(double);
+    int size( sizeof(int) + sizeof(double) );
 
-    Require (packed.size() == size);
+    Require (packed.size() == static_cast<size_t>(size));
 
     // make an unpacker
     rtt_dsxx::Unpacker unpacker;
