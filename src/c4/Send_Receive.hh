@@ -65,12 +65,15 @@ class Sender
   public:
   
     explicit Sender(int node) 
-      : to_node(node)
+        : to_node(node),
+          size_handle( C4_Req() ),
+          data_handle( C4_Req() )
     {
         Check (to_node >= 0);
         Check (to_node < rtt_c4::nodes());
     }
-
+    virtual ~Sender() {/* empty */}
+    
   protected:
 
     template <typename T>
@@ -110,6 +113,7 @@ class Receiver
         Check (from_node >= 0);
         Check (from_node < rtt_c4::nodes());
     }
+    virtual ~Receiver() {/*empty*/}
 
   protected:
 
@@ -124,7 +128,8 @@ class Receiver
     template <typename T>
     void receive_data(int size, T* data) const
     {
-        if (size > 0) {
+        if (size > 0)
+        {
             Check(data);
             rtt_c4::receive<T>(data, size, from_node, DATA_CHANNEL);
 

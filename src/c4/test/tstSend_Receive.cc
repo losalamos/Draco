@@ -33,11 +33,11 @@ using namespace rtt_c4;
 struct Send_Double_Vector : public Sender
 {
 
-    Send_Double_Vector(int node) : Sender(node) {  }
+    Send_Double_Vector(int node) : Sender(node) { /*empty*/ }
 
-    void send(const vector<double>& v)
+    void send(vector<double> const & v)
     {
-        Sender::send(v.size(), &v[0]);
+        Sender::send(v.size(), (v.size()>0 ? &v[0] : NULL));
     }
 
     void wait()
@@ -56,7 +56,9 @@ struct Receive_Double_Vector : public Receiver
     {
         int size = receive_size();
         vector<double> v(size);
-        receive_data(size, &v[0]);
+        if( size > 0 )
+            receive_data(size, &v[0]);
+
         return v;
     }
 

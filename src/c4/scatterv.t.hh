@@ -59,24 +59,25 @@ void indeterminate_scatterv(vector<vector<T> >  &outgoing_data,
                      outgoing_data[p].end(),
                      sendbuf.begin()+displs[p]);
             }
-            rtt_c4::scatterv(&sendbuf[0],
-                             &counts[0],
-                             &displs[0],
-                             &incoming_data[0],
-                             count);
-            
-
+            if( total_count > 0 )
+                rtt_c4::scatterv(
+                    (sendbuf.size()>0 ? &sendbuf[0]: NULL),
+                    (counts.size() >0 ? &counts[0] : NULL),
+                    (displs.size() >0 ? &displs[0] : NULL),
+                    (incoming_data.size()>0?&incoming_data[0]:NULL),
+                    count);
         }
         else
         {
             int count;
             scatter(static_cast<int*>(NULL), &count, 1);
             incoming_data.resize(count);
-            scatterv(static_cast<T*>(NULL),
-                     static_cast<int>(NULL),
-                     static_cast<int>(NULL),
-                     &incoming_data[0],
-                     count);
+            if( count > 0 )
+                scatterv(static_cast<T*>(NULL),
+                         static_cast<int>(NULL),
+                         static_cast<int>(NULL),
+                         &incoming_data[0],
+                         count);
         }
     }
 #else
