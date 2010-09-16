@@ -45,7 +45,7 @@ T factorial( T const k )
 
     if( k <= 1 ) 
 	return 1;
-    if( k < N )
+    if( static_cast<unsigned int>(k) < N )
         return tabularValue[k];
     else
         throw std::range_error("factorial out of range");
