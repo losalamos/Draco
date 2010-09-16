@@ -44,6 +44,7 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
    AC_REQUIRE([AC_CANONICAL_HOST])
 
    # platform defaults:
+   if test ${with_mpi:-no} = no || test ${with_mpi:-no} = yes; then
    case $host in
    mips-sgi-irix6.*) 
       mpi_default=vendor ;;
@@ -56,12 +57,17 @@ AC_DEFUN([AC_MPI_SETUP], [dnl
    *)
       mpi_default=vendor ;;
    esac
+   else
+     mpi_default=${with_mpi}
+   fi
+
+   dnl echo "Before: with_mpi = ${with_mpi}"
 
    AC_SETUP_VENDOR( [mpi], [yes], [${mpi_default}], 
                     [@S|@{MPI_INC_DIR}], [@S|@{MPI_LIB_DIR}], 
                     [vendor|mpich|lampi|openmpi] )
 
-   dnl echo "with_mpi = ${with_mpi}"
+   dnl echo "After: with_mpi = ${with_mpi}"
    dnl echo "with_c4  = ${with_c4}"
 
    if test "${with_mpi}" = "no" ; then
