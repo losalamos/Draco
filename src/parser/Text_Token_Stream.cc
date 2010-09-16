@@ -310,8 +310,8 @@ Token Text_Token_Stream::fill_()
 	    return Token(c, token_location);
 	}
 
-        Ensure(check_class_invariants());
-        return Token(ERROR, token_location);
+        // Ensure(check_class_invariants());
+        // return Token(ERROR, token_location);
     }
 }
 
