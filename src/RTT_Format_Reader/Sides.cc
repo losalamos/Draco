@@ -46,11 +46,11 @@ void Sides::readData(ifstream & meshfile)
     string dummyString;
     int sideNum;
 
-    for( unsigned i = 0; i < dims.get_nsides(); ++i )
+    for( unsigned i = 0; i < static_cast<unsigned int>(dims.get_nsides()); ++i )
     {
 	sideNum = Nodes::readNextInt( meshfile );	
 	// meshfile >> sideNum;
-	Insist(sideNum == i+1,
+	Insist(static_cast<unsigned int>(sideNum) == i+1,
 	       "Invalid mesh file: side index out of order");
 	Check(i<sideType.size());
 	meshfile >> sideType[i];
@@ -65,7 +65,8 @@ void Sides::readData(ifstream & meshfile)
 	    meshfile >> nodes[i][j];
 	    --nodes[i][j];
 	}
-	for (unsigned j = 0; j < dims.get_nside_flag_types(); ++j)
+	for (unsigned j = 0;
+             j < static_cast<unsigned int>(dims.get_nside_flag_types()); ++j)
 	{
 	    Check(j<flags[i].size());
 	    meshfile >> flags[i][j];
@@ -104,7 +105,7 @@ void Sides::redefineSides()
 	       "Error in Sides redefinition.");
 	// Check to see if the nodes need to be rearranged for this side type.
 	bool redefined = false;
-	for (int n = 0; n < node_map.size(); n ++)
+	for (size_t n = 0; n < node_map.size(); n++)
 	{
 	    if (node_map[n] != n)
 	        redefined = true;
@@ -114,9 +115,9 @@ void Sides::redefineSides()
 	    temp_nodes.resize(cellDefs.get_nnodes(this_side_type));
 	    for (int s = 0; s < dims.get_nsides(); s++)
 	    {
-	        if (sideType[s] = this_side_type)
+	        if (sideType[s] == this_side_type)
 		{
-		    for (int n = 0; n < nodes[s].size(); n++)
+		    for (size_t n = 0; n < nodes[s].size(); n++)
 		        temp_nodes[node_map[n]] = nodes[s][n];
 		    nodes[s] = temp_nodes;
 		}

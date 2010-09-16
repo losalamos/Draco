@@ -65,7 +65,8 @@ class CellDef
           nsides(0),
           side_types( std::vector<int>() ),
           sides( std::vector< std::vector<size_t> >() ),
-          ordered_sides(0)
+          ordered_sides(0),
+          node_map()
     { /* empty */ }
 
     ~CellDef(void) {/*empty*/}
