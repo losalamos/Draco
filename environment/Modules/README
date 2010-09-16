@@ -1,0 +1,17 @@
+Information & Download links: http://modules.sourceforge.net
+
+Draco Developers:
+
+Setup:
+1. check out Draco/environment from CVS.
+2. from ~/.bashrc, source Draco/environment/bashrc/.bashrc.  This will initialize the module system and load a default set of modules.
+
+Use:
+% module avail
+% module list
+% module unload <name>
+% module load <name>
+% module switch <name1> <name2>
+% module purge
+
+
