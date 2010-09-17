@@ -47,6 +47,7 @@ AC_RUNTESTS(tstAllocators \
             tstSoft_Equiv \
             tstSortPermutation \
             tstVector_Lite \
+            tstSlice \
             , scalar)
 
 AC_DRACO_ENV
