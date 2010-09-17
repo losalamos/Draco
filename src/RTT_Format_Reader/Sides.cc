@@ -107,7 +107,7 @@ void Sides::redefineSides()
 	bool redefined = false;
 	for (size_t n = 0; n < node_map.size(); n++)
 	{
-	    if (node_map[n] != n)
+	    if (node_map[n] != static_cast<int>(n))
 	        redefined = true;
 	}
 	if (redefined)
