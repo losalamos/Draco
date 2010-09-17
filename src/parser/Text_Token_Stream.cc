@@ -103,8 +103,8 @@ Token Text_Token_Stream::fill_()
     string token_location = location_();
     
     if (c=='\0')
-        // Sentinel value for error or end of file.
     {
+        // Sentinel value for error or end of file.
 	if (end_())
 	{
 	    Ensure(check_class_invariants());
@@ -157,11 +157,11 @@ Token Text_Token_Stream::fill_()
 	    }
 	}
 	else if (isdigit(c) || c=='.') 
+	{
 	    // A number of some kind.  Note that an initial sign ('+' or '-')
 	    // is tokenized independently, because it could be interpreted as
 	    // a binary operator in arithmetic expressions.  It is up to the
 	    // parser to decide if this is the correct interpretation.
-	{
 	    string text;
 	    unsigned const float_length = scan_floating_literal_();
 	    unsigned const int_length = scan_integer_literal_();
@@ -310,9 +310,9 @@ Token Text_Token_Stream::fill_()
 	    return Token(c, token_location);
 	}
 
-        // Ensure(check_class_invariants());
-        // return Token(ERROR, token_location);
+        Ensure(check_class_invariants());
     }
+    return Token(ERROR, token_location);
 }
 
 //-----------------------------------------------------------------------//
