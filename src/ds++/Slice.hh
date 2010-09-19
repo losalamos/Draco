@@ -14,7 +14,7 @@
 #define container_Slice_hh
 
 #include <iterator>
-#include "ds++/Assert.hh"
+#include "Assert.hh"
 
 namespace rtt_dsxx
 {
