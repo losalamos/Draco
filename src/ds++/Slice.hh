@@ -144,12 +144,12 @@ class Slice
 	    return const_iterator(first, offset-stride, stride);
 	}
 
-	reference const operator*() const
+	value_type const & operator*() const
 	{
 	    return first[offset];
 	}
 
-	reference const operator[](difference_type i) const
+	value_type const & operator[](difference_type i) const
 	{
 	    return first[offset+i];
 	}
@@ -200,9 +200,8 @@ class Slice
 
     typedef typename traits::pointer   pointer;
     typedef typename traits::reference reference;
-    typedef typename traits::pointer const   const_pointer;
-    typedef typename traits::reference const const_reference;
-
+    typedef value_type const *         const_pointer;
+    typedef value_type const &         const_reference;
 
     // CREATORS
 

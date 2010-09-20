@@ -17,8 +17,8 @@
 namespace rtt_dsxx
 {
 
-template class Slice<double*>;
-template class Slice<std::vector<double>::iterator>;
+template<> class Slice<double*>;
+template<> class Slice<std::vector<double>::iterator>;
 
 } // end namespace rtt_dsxx
 

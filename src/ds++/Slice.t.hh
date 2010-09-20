@@ -28,7 +28,7 @@ template<class T>
 inline typename Slice<T>::reference
 Slice<T>::operator[](typename Slice<T>::size_type i)
 {
-    Require(i>=0 && i<size());
+    Require(i<size());
     return first[stride*i];
 }
 
@@ -42,7 +42,7 @@ template<class T>
 inline typename Slice<T>::const_reference
 Slice<T>::operator[](typename Slice<T>::size_type i) const
 {
-    Require(i>=0 && i<size());
+    Require(i<size());
     return first[stride*i];
 }
 
