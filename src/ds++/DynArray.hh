@@ -40,9 +40,10 @@ namespace rtt_dsxx
 //===========================================================================//
 
 template<class T>
-class DynArray 
+class DLL_PUBLIC DynArray 
 {
 
+    // Private DATA //
     T *v;
     T defval;
     int base;
@@ -82,7 +83,7 @@ class DynArray
 };
 
 template<class T>
-std::ostream& operator<<( std::ostream& os, const DynArray<T>& d );
+DLL_PUBLIC std::ostream& operator<<( std::ostream& os, const DynArray<T>& d );
 
 #define INSTANTIATE_DynArray(a) \
 template class DynArray<a>; \
