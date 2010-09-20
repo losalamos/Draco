@@ -242,6 +242,11 @@ void test_dangling()
     {
         DBC_Ptr<int> foo(new int);
         DBC_Ptr<int> bar(foo);
+        if( foo == bar )
+            PASSMSG( "copy constructor works");
+        else
+            FAILMSG( "copy constructor broken");
+                
         memory_cleanup = &(*foo);
         foo.delete_data();
     }
@@ -320,6 +325,10 @@ void test_void()
     {
         DBC_Ptr<int> foo;
         DBC_Ptr<int> bar = foo;
+        if( foo == bar )
+            PASSMSG( "Assignment operator works." );
+        else
+            FAILMSG( "Assignment operator is broken." );
     }
     catch(rtt_dsxx::assertion & /* error */ )
     {

@@ -10,14 +10,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "../Assert.hh"
 #include "../Release.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Slice.hh"
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
 using namespace rtt_dsxx;
