@@ -19,6 +19,12 @@
 /* Are we building static or shared libraries? */
 #undef DRACO_SHARED_LIBS
 
+/* Help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
+#ifdef _MSC_VER
+#undef max
+#undef min
+#endif
+
 /*!
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC
  * hides everying unless they are marked as 'dllexport'.  By default
