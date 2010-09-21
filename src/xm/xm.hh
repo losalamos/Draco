@@ -20,11 +20,8 @@
 // facility which is generally useful to Kull.
 
 #include "applicative.hh"
-
 #include "Xpr.hh"
-
 #include "XprBin.hh"
-
 #include "XprUnary.hh"
 
 #undef XM_NAMESPACE_BEG
@@ -33,8 +30,8 @@
 // This will not be necessary when the compiler adopt Koenig lookup
 using namespace xm;
 
-#endif                          // __xm_xm_hh__
+#endif // __xm_xm_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of xm.hh
+// end of xm.hh
 //---------------------------------------------------------------------------//

@@ -1,37 +1,36 @@
 //----------------------------------*-C++-*----------------------------------//
-// Copyright 1996 The Regents of the University of California. 
-// All rights reserved.
-//---------------------------------------------------------------------------//
-
-//---------------------------------------------------------------------------//
-// Created on: Thu Sep 12 10:51:22 1996
-// Created by: Geoffrey Furnish
-// Also maintained by:
-//
+/*! \file    UserVec.hh
+ *  \author  Geoffrey Furnish
+ *  \date    Thu Sep 12 10:51:22 1996
+ *  \brief
+ *  \note    Copyright (C) 1996-2010 Los Alamos National Security, LLC.
+ *           All rights reserved.
+ *  \version $Id$
+ */
 //---------------------------------------------------------------------------//
 
 #ifndef __xm_UserVec_hh__
 #define __xm_UserVec_hh__
 
+#include "../xm.hh"
 #include "ds++/Assert.hh"
 
-#include "../xm.hh"
-
 //===========================================================================//
-// class UserVec - Prototypical "user" array class
-
-// The purpose of this class is to serve as a prototypical example of a user
-// defined indexable class, which is to be integrated into the expression
-// math suite.  The goal is very simple:  to see how a user's indexable class
-// may be included into the expression math suite, without modifying the
-// expression math suite.  That is, we want to find out what a client can do
-// to include his own indexable classes in expression math statements, by
-// making only reasonable modifications to his own class, without touching
-// the xm suite itself.  Here goes...
+/*! \class UserVec - Prototypical "user" array class
+ *
+ * The purpose of this class is to serve as a prototypical example of a user
+ * defined indexable class, which is to be integrated into the expression math
+ * suite.  The goal is very simple: to see how a user's indexable class may be
+ * included into the expression math suite, without modifying the expression
+ * math suite.  That is, we want to find out what a client can do to include
+ * his own indexable classes in expression math statements, by making only
+ * reasonable modifications to his own class, without touching the xm suite
+ * itself.  Here goes...
+ */
 //===========================================================================//
-
 template<class T>
-class UserVec : public xm::Indexable<T,UserVec<T> > {
+class UserVec : public xm::Indexable<T,UserVec<T> >
+{
 
     T *v;
     int sz;
@@ -39,8 +38,9 @@ class UserVec : public xm::Indexable<T,UserVec<T> > {
     UserVec( const UserVec& );
 
   public:
-    UserVec( int n )
+    explicit UserVec( int n )
 	: xm::Indexable<T,UserVec<T> >(),
+          v(NULL),
 	  sz(n) 
     {
 	v = new T[sz];
@@ -71,7 +71,7 @@ class UserVec : public xm::Indexable<T,UserVec<T> > {
 	return v[n];
     }
 
-// This is the routine which evaluates the expression.
+    // This is the routine which evaluates the expression.
     template<class X>
     UserVec<T>& operator=( const xm::Xpr< T, X, UserVec<T> >& x )
     {
@@ -83,13 +83,11 @@ class UserVec : public xm::Indexable<T,UserVec<T> > {
 
 //===========================================================================//
 // class FooBar - A test class.
-
-// 
 //===========================================================================//
 
 template<class T>
-class FooBar : public xm::Indexable<T,FooBar<T> > {
-
+class FooBar : public xm::Indexable<T,FooBar<T> >
+{
     T *v;
     int sz;
 
@@ -97,8 +95,9 @@ class FooBar : public xm::Indexable<T,FooBar<T> > {
     FooBar& operator=( const FooBar& );
 
   public:
-    FooBar( int n )
+    FooBar( size_t const n )
 	: xm::Indexable<T,FooBar<T> >(),
+          v(NULL),
 	  sz(n) 
     {
 	v = new T[sz];
@@ -134,8 +133,8 @@ class FooBar : public xm::Indexable<T,FooBar<T> > {
     }
 };
 
-#endif                          // __xm_UserVec_hh__
+#endif // __xm_UserVec_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of UserVec.hh
+// end of UserVec.hh
 //---------------------------------------------------------------------------//

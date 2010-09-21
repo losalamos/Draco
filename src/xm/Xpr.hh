@@ -38,7 +38,7 @@ class Val {
   public:
     explicit Val( const P& _v ) : v(_v) {}
 
-    P operator[]( int n ) const { return v; }
+    P operator[]( int /*n*/ ) const { return v; }
 };
 
 //===========================================================================//
@@ -68,7 +68,8 @@ class Indexable {
   public:
     explicit Indexable() {}
     Indexable( const Indexable& a ) {}
-
+    virtual ~Indexable(){}
+    
     P operator[]( int n ) const
     {
 	return static_cast<const I*>(this)->operator[](n);
