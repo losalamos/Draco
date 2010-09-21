@@ -40,21 +40,37 @@ int nbats = 0;
 
 //---------------------------------------------------------------------------//
 
-struct List
+class List
 {
+  public:
+    List() : next() {/*empty*/};
     SP<List> next;
 };
 
-struct ListD;
+// forward declaration
+class ListD;
 
-struct ListWithDerived
+class ListWithDerived
 {
+  public:
+    ListWithDerived(void);
+    virtual ~ListWithDerived(void);
     SP<ListD> next;
 };
 
-struct ListD : public ListWithDerived
+class ListD : public ListWithDerived
 {
+  public:
+    ListD(void);
+    ~ListD(void);
 };
+
+ListWithDerived::ListWithDerived( void) : next(NULL) {/*empty*/}
+ListWithDerived::~ListWithDerived(void)              {/*empty*/}
+
+ListD::ListD( void) : ListWithDerived() {/*empty*/}
+ListD::~ListD(void)                     {/*empty*/}
+      
 
 class Foo
 {
@@ -62,32 +78,12 @@ class Foo
     int v;
 
   public:
-    Foo() 
-        : v(0)
-    {
-        nfoos++;
-    }
-
-    explicit Foo(int i)
-        : v(i)
-    {
-        nfoos++;
-    }
-
-    Foo(const Foo &f)
-        : v(f.v)
-    {
-        nfoos++;
-    }
-
-    virtual ~Foo()
-    {
-        nfoos--;
-    }
-
+    Foo(void)           : v(0)   { nfoos++; }
+    explicit Foo(int i) : v(i)   { nfoos++; }
+    Foo(const Foo &f)   : v(f.v) { nfoos++; }
+    virtual ~Foo(void) {  nfoos--; }
     virtual int vf() { return v; }
-
-    int f() { return v+1; }
+    int f(void) { return v+1; }
 };
 
 
@@ -99,20 +95,10 @@ class Bar : public Foo
     Bar(const Bar &);
 
   public:
-    explicit Bar(int i) 
-        : Foo(i)
-    {
-        nbars++;
-    }
-
-    virtual ~Bar()
-    {
-        nbars--;
-    }
-
+    explicit Bar(int i) : Foo(i) { nbars++; }
+    virtual ~Bar(void)  { nbars--; }
     virtual int vf() { return Foo::f() + 1; }
-
-    int f() { return Foo::f() + 2; }
+    int f(void) { return Foo::f() + 2; }
 };
 
 //---------------------------------------------------------------------------//
@@ -123,20 +109,10 @@ class Baz : public Bar
     Baz(const Baz &);
 
   public:
-    explicit Baz(int i) 
-        : Bar(i)
-    {
-        nbazs++;
-    }
-
-    virtual ~Baz()
-    {
-        nbazs--;
-    }
-
-    virtual int vf() { return Bar::f() + 1; }
-
-    int f() { return Bar::f() + 2; }
+    explicit Baz(int i) : Bar(i) { nbazs++; }
+    virtual ~Baz() { nbazs--; }
+    virtual int vf(void) { return Bar::f() + 1; }
+    int f(void) { return Bar::f() + 2; }
 };
 
 //---------------------------------------------------------------------------//

@@ -140,7 +140,7 @@ class SP
     inline SP(const SP<X> &spx_in);
 
     //! Destructor, memory is released when count goes to zero.
-    ~SP() { free(); }
+    ~SP(void) { free(); }
 
     // Assignment operator for type T *.
     inline SP<T>& operator=(T *p_in);
