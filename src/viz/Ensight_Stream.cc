@@ -12,9 +12,9 @@
 
 #include "Ensight_Stream.hh"
 
-#include <iomanip>
 #include <ds++/Assert.hh>
 #include <ds++/Packing_Utils.hh>
+#include <iomanip>
 
 namespace rtt_viz
 {

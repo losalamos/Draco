@@ -52,12 +52,24 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 				       const bool        overwrite,
 				       const bool        static_geom,
 				       const bool        binary)
-    : d_static_geom(static_geom)
-    , d_binary(binary)
-    , d_dump_dir(gd_wpath)
-    , d_vdata_names(vdata_names)
-    , d_cdata_names(cdata_names)
-      
+    : d_static_geom(static_geom),
+      d_binary(binary),
+      d_dump_dir(gd_wpath),
+      d_num_cell_types(0),
+      d_cell_names(),
+      d_vrtx_cnt(0),
+      d_cell_type_index(),
+      d_dump_times(),
+      d_prefix(),
+      d_vdata_names(vdata_names),
+      d_cdata_names(cdata_names),
+      d_case_filename(),
+      d_geo_dir(),
+      d_vdata_dirs(),
+      d_cdata_dirs(),
+      d_geom_out(),
+      d_cell_out(),
+      d_vertex_out()
 {
     Require (d_dump_times.empty());
     create_filenames(prefix);
@@ -208,11 +220,11 @@ ensight_dump(int        icycle,
     int nrgn    = rgn_name.size();
 
     // Check sizes of all data.
-    Require (iel_type.size() == ncells);
-    Require (cell_rgn_index.size() == ncells);
-    Require (cell_data.nrows() == ncells  || cell_data.nrows() == 0);
-    Require (vrtx_data.nrows() == nvertices || vrtx_data.nrows() == 0);
-    Require (rgn_numbers.size() == nrgn);
+    Require (iel_type.size()       == static_cast<size_t>(ncells));
+    Require (cell_rgn_index.size() == static_cast<size_t>(ncells));
+    Require (cell_data.nrows()     == ncells    || cell_data.nrows() == 0);
+    Require (vrtx_data.nrows()     == nvertices || vrtx_data.nrows() == 0);
+    Require (rgn_numbers.size()    == static_cast<size_t>(nrgn));
 
     // create the parts list
     vector<int>::const_iterator find_location_c;
@@ -300,7 +312,7 @@ ensight_dump(int        icycle,
 
     open(icycle, time, dt);
 
-    for ( int ipart = 0; ipart < part_names.size(); ipart++ )
+    for ( size_t ipart = 0; ipart < part_names.size(); ipart++ )
     {
 	// Load vertices_of_part into a vector.
 	set_int &v = vertices_of_part[ipart];
@@ -394,11 +406,11 @@ write_part(int               part_num,
     int nvertices = pt_coor.nrows();
 
     // Check sizes of all data.
-    Require (iel_type.size() == ncells);
-    Require (cell_data.nrows() == ncells  || cell_data.nrows() == 0);
+    Require (iel_type.size()   == static_cast<size_t>(ncells));
+    Require (cell_data.nrows() == ncells    || cell_data.nrows() == 0);
     Require (vrtx_data.nrows() == nvertices || vrtx_data.nrows() == 0);
-    Require (g_vrtx_indices.size() == nvertices);
-    Require (g_cell_indices.size() == ncells);
+    Require (g_vrtx_indices.size() == static_cast<size_t>(nvertices));
+    Require (g_cell_indices.size() == static_cast<size_t>(ncells));
 
     // cells_of_type[itype][i] is the cell index of the i'th cell of
     // type itype.
@@ -534,7 +546,7 @@ write_vrtx_data(const int                          part_num,
 
     std::string err = "Vertex data files not open."
 	"  Must call open() before write_part().";
-    Insist(d_vertex_out.size() == ndata, err.c_str());
+    Insist(d_vertex_out.size() == static_cast<size_t>(ndata), err.c_str());
     
     // loop over all vertex data fields and write out data for each field
     for (int nvd = 0; nvd < ndata; nvd++)
@@ -570,7 +582,7 @@ write_cell_data(const int                          part_num,
     std::string err = "Cell data files not open."
 	"  Must call open() before write_part().";
     
-    Insist(d_cell_out.size() == ndata, err.c_str());
+    Insist(d_cell_out.size() == static_cast<size_t>(ndata), err.c_str());
 
     // loop over all cell data fields and write out data for each field
     for (int ncd = 0; ncd < ndata; ncd++)

@@ -131,7 +131,7 @@ void test_simple(const bool binary)
 
     string s_in;
     readit(in, binary, s_in);
-    for ( int k = 0; k < s.size(); ++k )
+    for ( size_t k = 0; k < s.size(); ++k )
 	UNIT_TEST(s[k] == s_in[k]);
 }
 

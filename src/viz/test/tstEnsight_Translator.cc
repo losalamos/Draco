@@ -21,7 +21,7 @@
 #include <set>
 #include <algorithm>
 #include <cmath>
-#include <stdlib.h> 
+#include <cstdlib>
 
 using namespace std;
 using rtt_viz::Ensight_Translator;
@@ -72,7 +72,7 @@ void ensight_dump_test(const bool binary)
 
     string prefix   = "testproblem";
     if ( binary )
-	prefix += "_binary";
+        prefix += "_binary";
     
     int icycle      = 1;
     double time     = .01;
@@ -93,11 +93,11 @@ void ensight_dump_test(const bool binary)
 
     // read cell data
     ifstream input("cell_data");
-    for (int i = 0; i < pt_coor.size(); i++)
-	for (int j = 0; j < pt_coor[i].size(); j++)
+    for (size_t i = 0; i < pt_coor.size(); i++)
+	for (size_t j = 0; j < pt_coor[i].size(); j++)
 	    input >> pt_coor[i][j];
-    for (int i = 0; i < ipar.size(); i++)
-	for (int j = 0; j < ipar[i].size(); j++)
+    for (size_t i = 0; i < ipar.size(); i++)
+	for (size_t j = 0; j < ipar[i].size(); j++)
 	    input >> ipar[i][j];
 
     const bool static_geom = false;
@@ -110,7 +110,7 @@ void ensight_dump_test(const bool binary)
     {
 	int ipart = rgn_index[i] - 1;
 	g_cell_indices[ipart].push_back(i);
-	for ( int j = 0; j < ipar[i].size(); j++ )
+	for ( size_t j = 0; j < ipar[i].size(); j++ )
 	    tmp_vrtx[ipart].insert(ipar[i][j] - 1);
     }
 
@@ -154,7 +154,7 @@ void ensight_dump_test(const bool binary)
 	    p_cell_data[i][j] = cell_data[g];
 	    p_iel_type[i][j]  = iel_type[g];
 
-	    for ( int k = 0; k < ipar[g].size(); k++ )
+	    for ( size_t k = 0; k < ipar[g].size(); k++ )
 	    {
 		int tmp =  ipar[g][k] - 1;
 
@@ -247,33 +247,33 @@ int main(int argc, char *argv[])
 
     try
     {
-	// tests
-	ensight_dump_test(false); // ascii dump
-	
-	// run python diff scrips (only works for ascii)
-	system("python ./tstEnsight_Diff.py");
+        // tests
+        ensight_dump_test(false); // ascii dump
 
-	ensight_dump_test(true); // binary dump
+        // run python diff scrips (only works for ascii)
+        system("python ./tstEnsight_Diff.py");
 
-	// ... there's no check for binary, yet.
+        ensight_dump_test(true); // binary dump
+
+        // ... there's no check for binary, yet.
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion &err)
     {
-	cout << "Dumbass you screwed up on " << ass.what() << endl;
-	return 1;
+        cout << "Caught an exception: " << err.what() << endl;
+        return 1;
+    }
+    catch(...)
+    {
+        cout << "An unknown exception was thrown." << endl;
+        return 1;
     }
 
     // status of test
-    cout << endl;
-    cout <<     "**********************************************" << endl;
+    cout <<     "\n**********************************************";
     if (rtt_viz_test::passed) 
-    {
-        cout << "**** Ensight_Translator Self Test: PASSED ****" << endl;
-    }
-    cout <<     "**********************************************" << endl;
-    cout << endl;
-    
-    cout << "Done testing Ensight_Translator." << endl;
+        cout << "\n**** Ensight_Translator Self Test: PASSED ****";
+    cout <<     "\n**********************************************\n"
+         <<     "\nDone testing Ensight_Translator." << endl;
 }
 
 //---------------------------------------------------------------------------//
