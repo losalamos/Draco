@@ -43,7 +43,7 @@ class Field
     dbl_field d;
 
   public:
-    Field() : d(5, 1.0) { nfields++; }
+    Field(void) : d(5, 1.0) { nfields++; }
     Field(int n, value_type v = value_type()) : d(n,v) { nfields++; }
     ~Field() { nfields--; }
 
@@ -71,8 +71,8 @@ RCF<Field> get_field(UnitTest &ut)
 
 //---------------------------------------------------------------------------//
 
-void use_const_field(const RCF<dbl_field> &f,
-                     const dbl_field &ref,
+void use_const_field(RCF<dbl_field> const & f,
+                     dbl_field      const & ref,
                      UnitTest &ut)
 {
     // test const_iterator access
