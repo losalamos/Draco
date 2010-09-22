@@ -45,8 +45,8 @@ DummyOdfmgOpacity::DummyOdfmgOpacity(rtt_cdi::Reaction reaction,
       numDensities( 2 ),
       numGroupBoundaries( 4 ),
       numBandBoundaries( 5 ),
-      reaction_type(reaction),
       groupBoundaries(), bandBoundaries(), temperatureGrid(), densityGrid(),
+      reaction_type(reaction),
       model_type(model)
 {
     temperatureGrid.resize( numTemperatures );
@@ -83,6 +83,7 @@ DummyOdfmgOpacity::DummyOdfmgOpacity(
       numDensities( 2 ),
       numGroupBoundaries( num_groupboundaries ),
       numBandBoundaries( num_bandboundaries ),
+      groupBoundaries(), bandBoundaries(), temperatureGrid(), densityGrid(),
       reaction_type(reaction),
       model_type(model)
 {

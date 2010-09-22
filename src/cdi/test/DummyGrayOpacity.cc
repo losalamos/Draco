@@ -35,15 +35,17 @@ DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
       energyPolicyDescriptor( "Gray" ), 
       numTemperatures( 3 ), 
       numDensities( 2 ),
+      temperatureGrid(),
+      densityGrid(),
       reaction_type(reaction),
       model_type(model)
 {
     // Set up the temperature and density grid.
     temperatureGrid.resize( numTemperatures );
     densityGrid.resize( numDensities );
-    for ( int i=0; i<numTemperatures; ++i )
+    for ( size_t i=0; i<numTemperatures; ++i )
 	temperatureGrid[i] = 1.0 * (i+1);
-    for ( int i=0; i<numDensities; ++i )
+    for ( size_t i=0; i<numDensities; ++i )
 	densityGrid[i] = 0.1 * (i+1);
 }
     
@@ -78,7 +80,7 @@ std::vector< double > DummyGrayOpacity::getOpacity(
 {
     std::vector< double > grayOpacity(
 	targetTemperature.size() );
-    for ( int i=0; i<targetTemperature.size(); ++i )
+    for ( size_t i=0; i<targetTemperature.size(); ++i )
 	grayOpacity[i] = targetTemperature[i] +
 	    targetDensity/1000.0;
     return grayOpacity;
@@ -97,7 +99,7 @@ std::vector< double > DummyGrayOpacity::getOpacity(
 {
     std::vector< double > grayOpacity(
 	targetDensity.size() );
-    for ( int i=0; i<targetDensity.size(); ++i )
+    for ( size_t i=0; i<targetDensity.size(); ++i )
 	grayOpacity[i] = targetTemperature +
 	    targetDensity[i]/1000.0;
     return grayOpacity;

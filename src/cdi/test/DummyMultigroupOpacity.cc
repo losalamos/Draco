@@ -39,6 +39,7 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(rtt_cdi::Reaction reaction,
       numTemperatures( 3 ),
       numDensities( 2 ),
       numGroupBoundaries( 4 ),
+      groupBoundaries(),temperatureGrid(),densityGrid(),
       reaction_type(reaction),
       model_type(model)
 {
@@ -66,6 +67,7 @@ DummyMultigroupOpacity::DummyMultigroupOpacity(
       numTemperatures( 3 ),
       numDensities( 2 ),
       numGroupBoundaries( num_boundaries ),
+      groupBoundaries(),temperatureGrid(),densityGrid(),
       reaction_type(reaction),
       model_type(model)
 {

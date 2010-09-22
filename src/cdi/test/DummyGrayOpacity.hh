@@ -51,13 +51,13 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
     // DATA - all of these values are set in the constructor.
 	
     // string descriptors
-    const std::string dataFilename;            // "none"
-    const std::string dataDescriptor;          // "DummyGrayOpacity"
-    const std::string energyPolicyDescriptor;  // "Gray"
+    std::string const dataFilename;            // "none"
+    std::string const dataDescriptor;          // "DummyGrayOpacity"
+    std::string const energyPolicyDescriptor;  // "Gray"
 	
     // data grid size
-    const size_t numTemperatures;  // = 3
-    const size_t numDensities;     // = 2
+    size_t const numTemperatures;  // = 3
+    size_t const numDensities;     // = 2
 	
     // the data grid
     std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
@@ -88,7 +88,7 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
      * This is required to correctly release memory when a
      * DummyGrayOpacity object is destroyed.
      */
-    ~DummyGrayOpacity() {};
+    ~DummyGrayOpacity(void) {/*empty*/};
 	
     // --------- //
     // Accessors //

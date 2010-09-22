@@ -83,7 +83,7 @@ std::vector< double > DummyEoS::getSpecificElectronInternalEnergy(
     const std::vector< double >& vdensity ) const
 {
     std::vector< double > seie( vdensity.size() );
-    for ( int i=0; i<vdensity.size(); ++i )
+    for ( size_t i=0; i<vdensity.size(); ++i )
 	seie[i] = vtemperature[i] + 1000.0*vdensity[i];
     return seie;
 }
@@ -120,7 +120,7 @@ std::vector< double > DummyEoS::getElectronHeatCapacity(
     const std::vector< double >& vdensity ) const
 {
     std::vector< double > ehc( vdensity.size() );
-    for ( int i=0; i<vdensity.size(); ++i )
+    for ( size_t i=0; i<vdensity.size(); ++i )
 	ehc[i] = vtemperature[i] + vdensity[i]/1000.0;
     return ehc;
 }
@@ -206,7 +206,7 @@ std::vector< double > DummyEoS::getIonHeatCapacity(
  * \return The number of free electrons per ion.
  */
 double DummyEoS::getNumFreeElectronsPerIon(
-    double temperature, double density ) const 
+    double temperature, double /*density*/ ) const 
 {
     return temperature/100.0;
 }
@@ -225,7 +225,7 @@ std::vector< double > DummyEoS::getNumFreeElectronsPerIon(
     const std::vector< double >& vdensity ) const
 {
     std::vector< double > nfepi( vdensity.size() );
-    for ( int i=0; i<vdensity.size(); ++i )
+    for ( size_t i=0; i<vdensity.size(); ++i )
 	nfepi[i] = vtemperature[i]/100.0;
     return nfepi;
 }
@@ -263,7 +263,7 @@ std::vector< double > DummyEoS::getElectronThermalConductivity(
     const std::vector< double >& vdensity ) const 
 {
     std::vector< double > ebtc( vdensity.size() );
-    for ( int i=0; i<vdensity.size(); ++i )
+    for ( size_t i=0; i<vdensity.size(); ++i )
 	ebtc[i] = 1000.0*vtemperature[i] + vdensity[i];
     return ebtc;
 }

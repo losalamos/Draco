@@ -93,7 +93,7 @@ void test_EoS()
 
     // Retrieve electron based heat capacities.
     std::vector< double > vRefCve( vtemperature.size() );
-    for ( int i=0; i<vtemperature.size(); ++i )
+    for ( size_t i=0; i<vtemperature.size(); ++i )
 	vRefCve[i] = vtemperature[i] + vdensity[i]/1000.0;
 	    
     std::vector< double > vCve = spEoS->getElectronHeatCapacity(
