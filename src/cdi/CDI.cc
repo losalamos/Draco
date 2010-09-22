@@ -378,13 +378,13 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t  groupIndex,
     Check (highFreq  > lowFreq);
 
     // Call the general frequency version
-    integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck, rosseland);
- 
+    integrate_Rosseland_Planckian_Spectrum(lowFreq,
+                                           highFreq,
+                                           T,
+                                           planck,
+                                           rosseland); 
     return;
-
 }
-
-
 
 //---------------------------------------------------------------------------//
 /*!\brief Integrate the Planckian Specrum over an entire a set of frequency
@@ -407,8 +407,10 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double>  const & bounds,
 
     if (T == 0) return;
 
-    double scaled_frequency, last_scaled_frequency;
-    double planck_value, last_planck;
+    double scaled_frequency;
+    Remember(double last_scaled_frequency;);
+    double planck_value;
+    double last_planck;
     
     // Initialize the loop:
     scaled_frequency = bounds[0] / T;
@@ -417,23 +419,21 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double>  const & bounds,
     for (size_t group = 0; group < groups; ++group)
     {
         // Shift the data down:
-        last_scaled_frequency     = scaled_frequency;
-        last_planck               = planck_value;
+        Remember(last_scaled_frequency = scaled_frequency;);
+        last_planck = planck_value;
 
         // New values:
         scaled_frequency = bounds[group+1] / T;
-        Check (scaled_frequency > last_scaled_frequency);
+        Ensure (scaled_frequency > last_scaled_frequency);
         planck_value = integrate_planck(scaled_frequency);
 
         // Record the definite integral between frequencies.
         planck[group] = planck_value - last_planck;
-        Ensure(planck[group] >= 0.0); Ensure(planck[group] <= 1.0);
 
+        Ensure(planck[group] >= 0.0);
+        Ensure(planck[group] <= 1.0);
     }
-
     return;
-
-    
 }
 
 //---------------------------------------------------------------------------//
@@ -466,7 +466,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
     double scaled_frequency;
     double exp_scaled_frequency;
 
-    double last_scaled_frequency;
+    Remember(double last_scaled_frequency;);
 
     double last_planck,    planck_value;
     double last_rosseland, rosseland_value;
@@ -483,7 +483,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
     {
 
         // Shift the data down:
-        last_scaled_frequency  = scaled_frequency;
+        Remember(last_scaled_frequency  = scaled_frequency;);
         last_planck     = planck_value;
         last_rosseland  = rosseland_value;
 
