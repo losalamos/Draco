@@ -52,23 +52,23 @@ template<class VVF>
 void test_vector()
 {
     VVF field(3);
-    for (int i = 0; i < field.size(); i++)
+    for (size_t i = 0; i < field.size(); i++)
     {
 	field[i].resize(i+2);
-	for (int j = 0; j < field[i].size(); j++)
+	for (size_t j = 0; j < field[i].size(); j++)
 	    field[i][j] = 2 * i + 4 * j;
     }
 
     Viz_Traits<VVF> vdf(field);
 
-    if (vdf.nrows() != field.size()) ITFAILS;
+    if (static_cast<size_t>(vdf.nrows()) != field.size())         ITFAILS; 
     for (int i = 0; i < vdf.nrows(); i++)
     {
-	if (vdf.ncols(i) != field[i].size()) ITFAILS;
+	if (static_cast<size_t>(vdf.ncols(i)) != field[i].size()) ITFAILS;
 	for (int j = 0; j < vdf.ncols(i); j++)
 	{
-	    if (vdf(i, j) != field[i][j]) ITFAILS;
-	    if (vdf(i, j) != 2*i + 4*j)   ITFAILS;
+	    if (vdf(i, j) != field[i][j])                         ITFAILS;
+	    if (vdf(i, j) != 2*i + 4*j)                           ITFAILS;
 	}
     }				   
 }
@@ -80,10 +80,10 @@ template<class T>
 void test_FT()
 {
     vector<vector<T> > field(3);
-    for (int i = 0; i < field.size(); i++)
+    for (size_t i = 0; i < field.size(); i++)
     {
 	field[i].resize(i+2);
-	for (int j = 0; j < field[i].size(); j++)
+	for (size_t j = 0; j < field[i].size(); j++)
 	    field[i][j] = 2 * i + 4 * j;
     }
 
@@ -91,12 +91,12 @@ void test_FT()
     
     Viz_Traits<Test_Field<T> > vt(test_field);
 
-    if (vt.nrows() != 3) ITFAILS;
+    if (vt.nrows() != 3)                                         ITFAILS;
     for (int i = 0; i < vt.nrows(); i++)
     {
-	if (vt.ncols(i) != field[i].size()) ITFAILS;
+	if (static_cast<size_t>(vt.ncols(i)) != field[i].size()) ITFAILS;
 	for (int j = 0; j < vt.ncols(i); j++)
-	    if (vt(i, j) != field[i][j]) ITFAILS;
+	    if (vt(i, j) != field[i][j])                         ITFAILS;
     }
 }
 
