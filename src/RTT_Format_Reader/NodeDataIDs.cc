@@ -49,11 +49,11 @@ void NodeDataIDs::readData(ifstream & meshfile)
     int dataIDNum;
     string dummyString;
 
-    for (unsigned i = 0; i < dims.get_nnode_data(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(dims.get_nnode_data()); ++i)
     {
 	Check(i<names.size() && i<units.size());
 	meshfile >> dataIDNum >> names[i] >> units[i];
-	Insist(dataIDNum == i+1,
+	Insist(static_cast<size_t>(dataIDNum) == i+1,
 	       "Invalid mesh file: node data ID out of order");
 	std::getline(meshfile, dummyString);
     }

@@ -49,11 +49,11 @@ void CellDataIDs::readData(ifstream & meshfile)
     int dataIDNum;
     string dummyString;
 
-    for (unsigned i = 0; i < dims.get_ncell_data(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(dims.get_ncell_data()); ++i)
     {
 	Check(i<names.size() && i<units.size());
 	meshfile >> dataIDNum >> names[i] >> units[i];
-	Insist(dataIDNum == i+1,
+	Insist(static_cast<size_t>(dataIDNum) == i+1,
 	       "Invalid mesh file: cell data ID out of order");
 	std::getline(meshfile, dummyString);
     }

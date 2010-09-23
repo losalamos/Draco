@@ -48,11 +48,12 @@ void Cells::readData(ifstream & meshfile)
     string dummyString;
     int cellNum;
 
-    for (unsigned i = 0; i < dims.get_ncells(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(dims.get_ncells()); ++i)
     {
 	cellNum = Nodes::readNextInt( meshfile );	
 	// meshfile >> cellNum;
-	Insist(cellNum == i+1, "Invalid mesh file: cell index out of order");
+	Insist(static_cast<size_t>(cellNum) == i+1,
+               "Invalid mesh file: cell index out of order");
 	Check(i<cellType.size());
 	meshfile >> cellType[i];
 	--cellType[i];
@@ -66,7 +67,8 @@ void Cells::readData(ifstream & meshfile)
 	    meshfile >> nodes[i][j];
 	    --nodes[i][j];
 	}
-	for (unsigned j = 0; j < dims.get_ncell_flag_types(); ++j)
+	for (size_t j = 0;
+             j < static_cast<size_t>(dims.get_ncell_flag_types()); ++j)
 	{
 	    Check(j<flags[i].size());
 	    meshfile >> flags[i][j];
@@ -106,9 +108,9 @@ void Cells::redefineCells()
 
 	// Check to see if the nodes need to be rearranged for this cell type.
 	bool redefined = false;
-	for (int n = 0; n < node_map.size(); n ++)
+	for (size_t n = 0; n < node_map.size(); n ++)
 	{
-	    if (node_map[n] != n)
+	    if (static_cast<size_t>(node_map[n]) != n)
 	        redefined = true;
 	}
 
@@ -119,7 +121,7 @@ void Cells::redefineCells()
 	    {
 	        if (cellType[c] == this_cell_type)
 		{
-		    for (int n = 0; n < nodes[c].size(); n++)
+		    for (size_t n = 0; n < nodes[c].size(); n++)
 		        temp_nodes[node_map[n]] = nodes[c][n];
 		    nodes[c] = temp_nodes;
 		}

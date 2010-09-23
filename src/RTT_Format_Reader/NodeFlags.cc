@@ -49,10 +49,11 @@ void NodeFlags::readFlagTypes(ifstream & meshfile)
     int flagTypeNum;
     string dummyString;
 
-    for (unsigned i = 0; i < dims.get_nnode_flag_types(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(dims.get_nnode_flag_types());
+         ++i)
     {
 	meshfile >> flagTypeNum >> dummyString;
-	Insist(flagTypeNum == i+1,
+	Insist(static_cast<size_t>(flagTypeNum) == i+1,
 	       "Invalid mesh file: node flag type out of order");
 	Check(i<flagTypes.size());
 	flagTypes[i] = new Flags(dims.get_nnode_flags(i), dummyString);

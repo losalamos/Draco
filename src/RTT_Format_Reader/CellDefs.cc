@@ -48,10 +48,10 @@ void CellDefs::readDefs(ifstream & meshfile)
     int cellDefNum;
     string dummyString;
 
-    for (unsigned i = 0; i < dims.get_ncell_defs(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(dims.get_ncell_defs()); ++i)
     {
 	meshfile >> cellDefNum >> dummyString;
-	Insist(cellDefNum == i+1,
+	Insist(static_cast<size_t>(cellDefNum) == i+1,
 	       "Invalid mesh file: cell def out of order");
 	// Ignore plurals in cell definitions
 	if (dummyString[dummyString.size()-1] == 's')
@@ -88,14 +88,16 @@ void CellDefs::redefineCellDefs(
     std::vector< std::vector< std::vector< size_t > > >
     const & cell_ordered_sides)
 {
-    Insist(cell_side_types.size() == dims.get_ncell_defs(),
+    Insist(cell_side_types.size()
+           == static_cast<size_t>(dims.get_ncell_defs()),
 	   "Error in supplied cell redefinition side types data.");
-    Insist(cell_ordered_sides.size() == dims.get_ncell_defs(),
+    Insist(cell_ordered_sides.size()
+           == static_cast<size_t>(dims.get_ncell_defs()),
 	   "Error in supplied cell redefinition ordered side data.");
 
     redefined = true;
 
-    for (unsigned cd = 0; cd < dims.get_ncell_defs(); cd ++)
+    for (size_t cd = 0; cd < static_cast<size_t>(dims.get_ncell_defs()); cd ++)
     {
 	Check(cd<defs.size());
 	Check(cd<cell_side_types.size());
@@ -140,7 +142,7 @@ void CellDef::readDef(ifstream & meshfile)
 	Check(i<ordered_sides.size());
         ordered_sides[i].resize(numb_nodes);
 	Check(i<sides.size());
-	for (unsigned j = 0; j < numb_nodes; ++j)
+	for (size_t j = 0; j < static_cast<size_t>(numb_nodes); ++j)
 	{
 	    meshfile >> side;
 	    --side;
@@ -215,13 +217,14 @@ void CellDef::redefineCellDef(
         node_map[0] = 0;
 	// The right hand rule has to apply, so only the ordering of the
         // nodes (edges) can change for a two-dimensional cell.
-	int old_node = 0;
-	int new_node = 0;
-        for (int n = 0; n < nnodes - 1; n++)
+	size_t old_node = 0;
+	size_t new_node = 0;
+        for (size_t n = 0; n < static_cast<size_t>(nnodes - 1); n++)
 	{
 	    // Find the new side that starts with this node.
-	    int new_side = 0;
-	    while (new_ordered_sides[new_side][0] != new_node)
+	    size_t new_side = 0;
+	    while (static_cast<size_t>(new_ordered_sides[new_side][0])
+                   != new_node)
 	    {
 	        ++new_side;
 		Insist(new_side < nsides, 
@@ -229,7 +232,7 @@ void CellDef::redefineCellDef(
 	    }
 	    new_node = new_ordered_sides[new_side][1];
 	    // Find the old side that starts with this node.
-	    int old_side = 0;
+	    size_t old_side = 0;
 	    while (ordered_sides[old_side][0] != old_node)
 	    {
 	        ++old_side;
@@ -250,12 +253,12 @@ void CellDef::redefineCellDef(
         node_map[0] = 0;
 	// The right hand rule has to apply, so only the ordering of the
         // nodes (edges) can change for a two-dimensional cell.
-	int old_node = 0;
-	int new_node = 0;
-        for (int n = 0; n < nnodes - nsides; n++)
+	size_t old_node = 0;
+	size_t new_node = 0;
+        for (size_t n = 0; n < nnodes - nsides; n++)
 	{
 	    // Find the new side that starts with this node.
-	    int new_side = 0;
+	    size_t new_side = 0;
 	    while (new_ordered_sides[new_side][0] != new_node)
 	    {
 	        ++new_side;
@@ -264,7 +267,7 @@ void CellDef::redefineCellDef(
 	    }
 	    new_node = new_ordered_sides[new_side][1];
 	    // Find the old side that starts with this node.
-	    int old_side = 0;
+	    size_t old_side = 0;
 	    while (ordered_sides[old_side][0] != old_node)
 	    {
 	        ++old_side;
@@ -288,7 +291,7 @@ void CellDef::redefineCellDef(
         // input cell definition.
         node_map[0] = 0;
 	// Find the one side definition that does not contain the first node.
-	int new_side = 0;
+	size_t new_side = 0;
 	while (std::count(new_ordered_sides[new_side].begin(), 
 			  new_ordered_sides[new_side].end(), node_map[0]) > 0)
 	{
@@ -297,7 +300,7 @@ void CellDef::redefineCellDef(
 		   "Side error for new tetrahedron cell definition.");
 	}
  	// Find the one side definition that does not contain the first node.
-	int old_side = 0;
+	size_t old_side = 0;
 	while (std::count(ordered_sides[old_side].begin(), 
 			  ordered_sides[old_side].end(), node_map[0]) > 0)
 	{
@@ -306,7 +309,7 @@ void CellDef::redefineCellDef(
 		   "Side error for old tetrahedron cell definition.");
 	}
 	// Now just apply the right-hand rule.
-	for (int n = 0; n < ordered_sides[old_side].size(); n++)
+	for (size_t n = 0; n < ordered_sides[old_side].size(); n++)
 	    node_map[ordered_sides[old_side][n]] = 
 	        new_ordered_sides[new_side][n];
     }
@@ -315,14 +318,14 @@ void CellDef::redefineCellDef(
         // Find the side that is the quad. The transformed cell may be rotated 
         // about the outward normal of this face relative to the input cell 
         // definition.
-        int new_side = 0;
+        size_t new_side = 0;
 	while (new_ordered_sides[new_side].size() != 4)
 	{
 	    ++new_side;
 	    Insist(new_side < nsides, 
 		   "Quad side error for new quad pyramid cell definition.");
 	}
-        int old_side = 0;
+        size_t old_side = 0;
 	while (ordered_sides[old_side].size() != 4)
 	{
 	    ++old_side;
@@ -333,7 +336,7 @@ void CellDef::redefineCellDef(
 	// definition and assign this to the node map.
 	int new_node = 0;
 	int old_node = 0;
-	for (int n = 0; n < nnodes; n++)
+	for (size_t n = 0; n < nnodes; n++)
 	{
 	    if (std::count(new_ordered_sides[new_side].begin(), 
 			   new_ordered_sides[new_side].end(), n) == 0)
@@ -344,7 +347,7 @@ void CellDef::redefineCellDef(
 	}
 	node_map[old_node] = new_node;
 	// Now just apply the right-hand rule to the quad side.
-	for (int n = 0; n < ordered_sides[old_side].size(); n++)
+	for (size_t n = 0; n < ordered_sides[old_side].size(); n++)
 	    node_map[ordered_sides[old_side][n]] = 
 	        new_ordered_sides[new_side][n];
     }
@@ -353,7 +356,7 @@ void CellDef::redefineCellDef(
 	// Find the one quad side definition that does not contain the first 
 	// node. The transformed cell may be rotated about the outward normal
         // of this face relative to the input cell definition.
-	int new_quad = 0;
+	size_t new_quad = 0;
 	while (new_ordered_sides[new_quad].size() != 4 ||
 	       std::count(new_ordered_sides[new_quad].begin(), 
 			  new_ordered_sides[new_quad].end(), 0) > 0)
@@ -364,7 +367,7 @@ void CellDef::redefineCellDef(
 	}
 	// Find the one quad side definition that does not contain the first 
 	// node.
-	int old_quad = 0;
+	size_t old_quad = 0;
 	while (ordered_sides[old_quad].size() != 4 ||
 	       std::count(ordered_sides[old_quad].begin(), 
 			  ordered_sides[old_quad].end(), 0) > 0)
@@ -374,11 +377,11 @@ void CellDef::redefineCellDef(
 		   "Quad side error for old tri-prism cell definition.");
 	}
 	// Apply the right-hand rule to this quad.
-	for (int n = 0; n < ordered_sides[old_quad].size(); n++)
+	for (size_t n = 0; n < ordered_sides[old_quad].size(); n++)
 	    node_map[ordered_sides[old_quad][n]] = 
 	        new_ordered_sides[new_quad][n];
 	// Equate the two remaining triangle nodes. Find the first node.
-	int old_tri = 0;
+	size_t old_tri = 0;
 	while (ordered_sides[old_tri].size() != 3 ||
 	       std::count(ordered_sides[old_tri].begin(), 
 			  ordered_sides[old_tri].end(), 0) > 0)
@@ -389,7 +392,7 @@ void CellDef::redefineCellDef(
 	}
 	// Find out which of the two triangles this is by identifying one
 	// of the nodes common to both the triangle and the previous quad.
-	int old_node = 0;
+	size_t old_node = 0;
 	while (std::count(ordered_sides[old_quad].begin(), 
 			  ordered_sides[old_quad].end(),
 			  ordered_sides[old_tri][old_node]) == 0)
@@ -398,7 +401,7 @@ void CellDef::redefineCellDef(
 	    Insist(old_node < ordered_sides[old_tri].size(), 
 		   "Node error for old tri-prism cell definition.");
 	}
-	int new_tri = 0;
+	size_t new_tri = 0;
 	while (new_ordered_sides[new_tri].size() != 3 ||
 	       std::count(new_ordered_sides[new_tri].begin(), 
 			  new_ordered_sides[new_tri].end(),
@@ -409,7 +412,7 @@ void CellDef::redefineCellDef(
 		   "Triangle side error for new tri-prism cell definition.");
 	}
 	--old_node;
-	int new_node = 0;
+	size_t new_node = 0;
 	while (std::count(new_ordered_sides[new_quad].begin(), 
 			  new_ordered_sides[new_quad].end(),
 			  new_ordered_sides[new_tri][new_node]) != 0)
@@ -422,7 +425,7 @@ void CellDef::redefineCellDef(
 	    new_ordered_sides[new_tri][new_node];
 	// The node that is neither in the previous quad or triangle is all
 	// that is left.
-	for (int n = 0; n < nnodes; n++)
+	for (size_t n = 0; n < nnodes; n++)
 	{
 	    if (std::count(new_ordered_sides[new_quad].begin(), 
 			   new_ordered_sides[new_quad].end(), n) == 0 &&
@@ -448,25 +451,25 @@ void CellDef::redefineCellDef(
         int quad = 0;
 	vector_int new_node_count(nnodes,0);
 	vector_int old_node_count(nnodes,0);
-	for (int n = 0; n < ordered_sides[quad].size(); n++)
+	for (size_t n = 0; n < ordered_sides[quad].size(); n++)
 	{
 	    int new_node = new_ordered_sides[quad][n];
 	    int old_node = ordered_sides[quad][n];
 	    node_map[old_node] = new_node;
-	    for (int s = 0; s < nsides; s++)
+	    for (size_t s = 0; s < nsides; s++)
 	    {
 	        if (std::count(new_ordered_sides[s].begin(), 
 			       new_ordered_sides[s].end(), new_node) > 0)
-		    for (int c = 0; c < new_ordered_sides[s].size(); c++)
+		    for (size_t c = 0; c < new_ordered_sides[s].size(); c++)
 		        ++new_node_count[new_ordered_sides[s][c]];
 		if (std::count(ordered_sides[s].begin(), 
 			       ordered_sides[s].end(), old_node) > 0)
-		    for (int c = 0; c < ordered_sides[s].size(); c++)
+		    for (size_t c = 0; c < ordered_sides[s].size(); c++)
 		        ++old_node_count[ordered_sides[s][c]];
 	    }
 	    // The node located diagonally across the hexahedron relative to
 	    // the first node will have a count of zero from the previous loop.
-	    for (int c = 0; c < nnodes; c++)
+	    for (size_t c = 0; c < nnodes; c++)
 	    {
 	        if (new_node_count[c] == 0)
 		    new_node = c;
@@ -488,12 +491,12 @@ void CellDef::redefineCellDef(
         node_map[0] = 0;
 	// The right hand rule has to apply, so only the ordering of the
         // nodes (edges) can change for a two-dimensional cell.
-	int old_node = 0;
-	int new_node = 0;
-        for (int n = 0; n < nnodes - 1; n++)
+	size_t old_node = 0;
+	size_t new_node = 0;
+        for (size_t n = 0; n < nnodes - 1; n++)
 	{
 	    // Find the new side that starts with this node.
-	    int new_side = 0;
+	    size_t new_side = 0;
 	    while (new_ordered_sides[new_side][0] != new_node)
 	    {
 	        ++new_side;
@@ -502,7 +505,7 @@ void CellDef::redefineCellDef(
 	    }
 	    new_node = new_ordered_sides[new_side][1];
 	    // Find the old side that starts with this node.
-	    int old_side = 0;
+	    size_t old_side = 0;
 	    while (ordered_sides[old_side][0] != old_node)
 	    {
 	        ++old_side;
@@ -517,10 +520,10 @@ void CellDef::redefineCellDef(
     // definition.
     side_types = new_side_types;
     ordered_sides = new_ordered_sides;
-    for (int i = 0; i < ordered_sides.size(); ++i)
+    for (size_t i = 0; i < ordered_sides.size(); ++i)
     {
         sides[i].erase(sides[i].begin(), sides[i].end());
-	for (int n = 0; n < ordered_sides[i].size(); ++n)
+	for (size_t n = 0; n < ordered_sides[i].size(); ++n)
 	    sides[i].push_back(ordered_sides[i][n]);
     }
 }

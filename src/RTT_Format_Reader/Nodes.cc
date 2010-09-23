@@ -79,14 +79,14 @@ void Nodes::readData(ifstream & meshfile)
     string dummyString;
     int nodeNum;
 
-    for (unsigned i = 0; i < dims.get_nnodes(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(dims.get_nnodes()); ++i)
     {
 	nodeNum = readNextInt( meshfile );
 	// meshfile >> nodeNum;
-	Insist(nodeNum == i+1,
+	Insist(static_cast<size_t>(nodeNum) == i+1,
 	       "Invalid mesh file: node index out of order");
 	Check(i<coords.size());
-	for (unsigned j = 0; j < dims.get_ndim(); ++j)
+	for (size_t j = 0; j < static_cast<size_t>(dims.get_ndim()); ++j)
 	{
 	    Check(j<coords[i].size());
 	    meshfile >> coords[i][j];
@@ -95,7 +95,8 @@ void Nodes::readData(ifstream & meshfile)
 	meshfile >> parents[i];
 	--parents[i];
 	Check(i<flags.size());
-	for (unsigned j = 0; j < dims.get_nnode_flag_types(); ++j)
+	for (size_t j = 0;
+             j < static_cast<size_t>(dims.get_nnode_flag_types()); ++j)
 	{
 	    Check(j<flags[i].size());
 	    meshfile >> flags[i][j];

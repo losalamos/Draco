@@ -63,13 +63,16 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     
   public:
 
-    // Constructors
-/*!
- * \brief Constructs an RTT_Mesh_Reader class object.
- * \param RTT_File Mesh file name.
- */
+   // Constructors
+   /*!
+    * \brief Constructs an RTT_Mesh_Reader class object.
+    * \param RTT_File Mesh file name.
+    */
     RTT_Mesh_Reader(const string & RTT_File)
-        : rttMesh(new RTT_Format_Reader(RTT_File))
+        : rttMesh(new RTT_Format_Reader(RTT_File)),
+          element_defs(),
+          element_types(),
+          unique_element_types()
     {
         transform2CGNS();
     }

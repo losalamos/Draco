@@ -113,9 +113,9 @@ void RTT_Mesh_Reader::transform2CGNS(void)
     rttMesh->reformatData(cell_side_types, cell_ordered_sides);
     
     // Load the element types vector.
-    for (int s = 0; s < rttMesh->get_dims_nsides(); s++)
+    for (size_t s = 0; s < rttMesh->get_dims_nsides(); s++)
         element_types.push_back(unique_element_types[rttMesh->get_sides_type(s)]);
-    for (int c = 0; c < rttMesh->get_dims_ncells(); c++)
+    for (size_t c = 0; c < rttMesh->get_dims_ncells(); c++)
     {
         element_types.push_back(unique_element_types[rttMesh->get_cells_type(c)]);
         element_defs.push_back(cell_definitions[rttMesh->get_cells_type(c)]);
@@ -131,11 +131,11 @@ std::vector<std::vector<int> > RTT_Mesh_Reader::get_element_nodes() const
     vector_vector_int element_nodes(rttMesh->get_dims_nsides() + 
 				    rttMesh->get_dims_ncells());
 
-    for (int i = 0; i < rttMesh->get_dims_nsides(); i++)
+    for (size_t i = 0; i < rttMesh->get_dims_nsides(); i++)
 	element_nodes[i] = rttMesh->get_sides_nodes(i);
 
     int nsides = rttMesh->get_dims_nsides();
-    for (int i = 0; i < rttMesh->get_dims_ncells(); i++)
+    for (size_t i = 0; i < rttMesh->get_dims_ncells(); i++)
     {
 	element_nodes[i + nsides] = rttMesh->get_cells_nodes(i);
     }
@@ -154,10 +154,11 @@ std::map<std::string, std::set<int> > RTT_Mesh_Reader::get_node_sets() const
     string flag_types_and_names;
 
     // loop over the number of node flag types.
-    for (int type = 0; type < rttMesh->get_dims_nnode_flag_types(); type++)
+    for (size_t type = 0; type < rttMesh->get_dims_nnode_flag_types(); type++)
     {
         // loop over the number of node flags for this type.
-        for (int flag = 0; flag < rttMesh->get_dims_nnode_flags(type); flag++)
+        for (size_t flag = 0; flag < rttMesh->get_dims_nnode_flags(type);
+             flag++)
 	{
             set_int node_flags;
             flag_types_and_names =  rttMesh->get_node_flags_flag_type(type);
@@ -166,7 +167,7 @@ std::map<std::string, std::set<int> > RTT_Mesh_Reader::get_node_sets() const
 								      flag);
 	    int flag_number = rttMesh->get_node_flags_flag_number(type, flag);
             // loop over the nodes.
-	    for (int node = 0; node < rttMesh->get_dims_nnodes(); node++)
+	    for (size_t node = 0; node < rttMesh->get_dims_nnodes(); node++)
 	    {
 	        if (flag_number == rttMesh->get_nodes_flags(node,type))
 		   node_flags.insert(node);
@@ -189,10 +190,10 @@ std::map<std::string, std::set<int> > RTT_Mesh_Reader::get_element_sets() const
     string flag_types_and_names;
 
     // loop over the number of side flag types.
-    for (int type = 0; type < rttMesh->get_dims_nside_flag_types(); type++)
+    for (size_t type = 0; type < rttMesh->get_dims_nside_flag_types(); type++)
     {
         // loop over the number of side flags for this type.
-        for (int flag = 0; flag < rttMesh->get_dims_nside_flags(type); flag++)
+        for (size_t flag = 0; flag < rttMesh->get_dims_nside_flags(type); flag++)
 	{
             set_int side_flags;
             flag_types_and_names = rttMesh->get_side_flags_flag_type(type);
@@ -201,7 +202,7 @@ std::map<std::string, std::set<int> > RTT_Mesh_Reader::get_element_sets() const
 								     flag);
 	    int flag_number =rttMesh->get_side_flags_flag_number(type, flag);
             // loop over the sides.
-	    for (int side = 0; side < rttMesh->get_dims_nsides(); side++)
+	    for (size_t side = 0; side < rttMesh->get_dims_nsides(); side++)
 	    {
 	        if (flag_number == rttMesh->get_sides_flags(side, type))
 		   side_flags.insert(side);
@@ -213,10 +214,10 @@ std::map<std::string, std::set<int> > RTT_Mesh_Reader::get_element_sets() const
     }
     int nsides = rttMesh->get_dims_nsides();
     // loop over the number of cell flag types.
-    for (int type = 0; type < rttMesh->get_dims_ncell_flag_types(); type++)
+    for (size_t type = 0; type < rttMesh->get_dims_ncell_flag_types(); type++)
     {
         // loop over the number of cell flags for this type.
-        for (int flag = 0; flag < rttMesh->get_dims_ncell_flags(type); flag++)
+        for (size_t flag = 0; flag < rttMesh->get_dims_ncell_flags(type); flag++)
 	{
             set_int cell_flags;
             flag_types_and_names =  rttMesh->get_cell_flags_flag_type(type);
@@ -225,7 +226,7 @@ std::map<std::string, std::set<int> > RTT_Mesh_Reader::get_element_sets() const
 								      flag);
 	    int flag_number = rttMesh->get_cell_flags_flag_number(type, flag);
             // loop over the cells.
-	    for (int cell = 0; cell < rttMesh->get_dims_ncells(); cell++)
+	    for (size_t cell = 0; cell < rttMesh->get_dims_ncells(); cell++)
 	    {
 	        if (flag_number == rttMesh->get_cells_flags(cell, type))
 		   cell_flags.insert(cell + nsides);
