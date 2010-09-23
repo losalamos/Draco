@@ -80,7 +80,7 @@ void constant_test()
     vector<double> T(10);
     vector<double> rho(10);
 
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	T[i]   = 0.1 + i/100.0;
 	rho[i] = 1.0 + i/10.0;
@@ -125,7 +125,7 @@ void user_defined_test()
     vector<double> opacities = grayp->getOpacity(T, rho[0]);
     if (opacities.size() != 6) ITFAILS;
 
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	double ref         = 10.0 / (T[i]*T[i]*T[i]);
 	double error       = fabs(grayp->getOpacity(T[i], rho[i]) - ref);
@@ -211,7 +211,7 @@ void CDI_test()
 	std::fill(rho.begin(), rho.end(), 3.0);
     }
 
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	double ref = 100.0 / (T[i]*T[i]*T[i]);
 	rtt_cdi::Model model   = rtt_cdi::ANALYTIC;
@@ -282,7 +282,7 @@ void packing_test()
 	std::fill(rho.begin(), rho.end(), 3.0);
     }
 
-    for (int i = 0; i < T.size(); i++)
+    for (size_t i = 0; i < T.size(); i++)
     {
 	double ref = 100.0 / (T[i]*T[i]*T[i]);
 

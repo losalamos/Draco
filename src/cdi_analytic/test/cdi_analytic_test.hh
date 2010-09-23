@@ -60,12 +60,12 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
   public:
     Marshak_Model(double a_) : a(a_) {/*...*/}
 
-    double calculate_opacity(double T, double rho) const
+    double calculate_opacity(double T, double /*rho*/) const
     {
 	return a / (T * T * T);
     }
 
-    double calculate_opacity(double T, double rho, double nu) const
+    double calculate_opacity(double T, double rho, double /*nu*/) const
     {
         return calculate_opacity(T, rho);
     }

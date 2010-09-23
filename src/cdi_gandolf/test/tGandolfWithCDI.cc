@@ -185,7 +185,7 @@ void test_gandolf_CDI()
     vtemperature[1] = 0.7;  // keV
     density         = 0.35; // g/cm^3
     std::vector< double > vRefOpacity( vtemperature.size() );
-    for ( int i=0; i<vtemperature.size(); ++i )
+    for ( size_t i=0; i<vtemperature.size(); ++i )
 	vRefOpacity[i] = density * pow ( vtemperature[i], 4 );
 	    
     std::vector< double > vOpacity = spCDI_Analytic->gray(r, a)->
