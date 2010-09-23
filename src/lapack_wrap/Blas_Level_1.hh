@@ -132,7 +132,7 @@ inline void blas_scal(int     N,
 template<class T>
 inline void blas_scal(T               alpha,
 		      std::vector<T> &x,
-		      int             increment_x)
+		      int             /*increment_x*/)
 {
     Check (typeid(T) == typeid(float) || typeid(T) == typeid(double));
 

@@ -121,7 +121,7 @@ void tst_axpy()
     
     double alpha = 10.0;
 
-    for (int i = 0; i < x.size(); i++)
+    for (size_t i = 0; i < x.size(); i++)
     {
 	x[i]   = static_cast<double>(i) + 1.0;
 	ref[i] = alpha * x[i] + y[i];
@@ -147,7 +147,7 @@ void tst_nrm2()
     double ref = 0.0;
     double nrm = 0.0;
 
-    for (int i = 0; i < x.size(); i++)
+    for (size_t i = 0; i < x.size(); i++)
     {
 	x[i] = 1.25 + (1.0 - i * 0.5);
 	ref += x[i] * x[i];

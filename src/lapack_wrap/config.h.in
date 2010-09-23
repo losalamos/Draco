@@ -9,6 +9,9 @@
 #ifndef __lapack_wrap_config_h__
 #define __lapack_wrap_config_h__
 
+#undef AUTOCONF
+#ifdef AUTOCONF
+
 /* LEVEL 1 BLAS */
 
 /* x */
@@ -31,7 +34,24 @@
 #undef SNRM2
 #undef DNRM2
 
-#endif                          /* __lapack_wrap_config_h__ */
+#else
+
+/* CMAKE setup */
+/* #ifdef _MSC_VER */
+#cmakedefine SCOPY @SCOPY@
+#cmakedefine DCOPY @DCOPY@
+#cmakedefine SSCAL @SSCAL@
+#cmakedefine DSCAL @DSCAL@
+#cmakedefine SDOT  @SDOT@
+#cmakedefine DDOT  @DDOT@
+#cmakedefine DAXPY @DAXPY@
+#cmakedefine SAXPY @SAXPY@
+#cmakedefine SNRM2 @SNRM2@
+#cmakedefine DNRM2 @DNRM2@
+
+#endif
+
+#endif /* __lapack_wrap_config_h__ */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of lapack_wrap/config.h */
