@@ -1,22 +1,24 @@
 //----------------------------------*-C++-*----------------------------------//
-// field_ts_advisor.t.hh
-// John McGhee
-// Mon Aug 24 07:48:00 1998
-//---------------------------------------------------------------------------//
-// @> Contains the template methods for the field ts_advisor class.
+/*!
+ * \file   field_ts_advisor.t.hh
+ * \author John McGhee
+ * \date   Mon Aug 24 07:48:00 1998
+ * \brief  Contains the template methods for the field ts_advisor class.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "field_ts_advisor.hh"
+#include "ts_manager.hh"
+
+#include "ds++/Assert.hh"
+#include "ds++/config.h"
+#include "c4/global.hh"
+
 #include <algorithm>
 #include <stdexcept>
 #include <cmath>
-
-#include "ds++/Assert.hh"
-#include "c4/global.hh"
-
-#include "field_ts_advisor.hh"
-#include "ts_manager.hh"
 
 namespace rtt_timestep
 {
@@ -35,9 +37,9 @@ void field_ts_advisor::set_floor(const FT &y1, double frac)
 	}
     }
     x1 = x1*frac;
-    if (x1 <= small())
+    if (x1 <= ts_small())
     {
-	x1 = small();
+	x1 = ts_small();
     }
     floor_value = x1;
 
@@ -126,20 +128,20 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
 	C4::gsum(x2);
     }
     
-    if (x1 < small()) 
+    if (x1 < ts_small()) 
     {
 	dt_rec = large();
     }
     else 
     {
 	double fact = x2*fc_value/x1;
-	if (fact < small())
+	if (fact < ts_small())
 	{
-	    dt_rec = small();
+	    dt_rec = ts_small();
 	}
 	else
 	{
-	    dt_rec = std::max(small(),fact*tsm.get_dt());
+	    dt_rec = std::max(ts_small(),fact*tsm.get_dt());
 	}
     }
 

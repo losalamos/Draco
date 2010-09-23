@@ -13,8 +13,8 @@
 #ifndef __timestep_test_dummy_package_hh__
 #define __timestep_test_dummy_package_hh__
 
-#include <vector>
 #include "ds++/SP.hh"
+#include <vector>
 
 // FORWARD REFERENCES
 
@@ -42,22 +42,22 @@ class dummy_package
 
     // CREATORS
 
-    dummy_package( rtt_timestep::ts_manager & tsm_ );
-    ~dummy_package();
+    explicit dummy_package( rtt_timestep::ts_manager & tsm_ );
+    ~dummy_package(void);
 
     // MANIPULATORS
     
     //! \brief Method to advance the time-step
-    void advance_state();
+    void advance_state(void);
 
     //! \brief Provide recommended dt values (TE).
-    double get_dt_rec_te() const;
+    double get_dt_rec_te(void) const;
 
     //! \brief Provide recommended dt values (TI).
-    double get_dt_rec_ti() const;
+    double get_dt_rec_ti(void) const;
 
     //! \brief Provide recommended dt values (RI).
-    double get_dt_rec_ri() const;
+    double get_dt_rec_ri(void) const;
     
   private:
 

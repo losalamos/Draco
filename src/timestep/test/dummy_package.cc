@@ -1,53 +1,47 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file dummy_package.cc
+ * \file   dummy_package.cc
  * \author John McGhee
- * \date Thu Aug 27 07:48:41 1998
- * \brief A dummy package to exercize the time-step controller field
- *        advisors.
- * \note Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ * \date   Thu Aug 27 07:48:41 1998
+ * \brief  A dummy package to exercize the time-step controller field
+ *         advisors.
+ * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
-
+#include "dummy_package.hh"
 #include "../ts_manager.hh"
 #include "../field_ts_advisor.hh"
-
-#include "dummy_package.hh"
+#include <vector>
 
 namespace rtt_timestep_test
 {
 
 dummy_package::dummy_package( rtt_timestep::ts_manager & tsm_ )
-    : tsm( tsm_ )
+    : tsm( tsm_ ),
+      sp_te( new  rtt_timestep::field_ts_advisor(
+                 "Electron Temperature",
+                 rtt_timestep::ts_advisor::max,
+                 rtt_timestep::field_ts_advisor::a_mean ) ),
+      sp_ti( new rtt_timestep::field_ts_advisor(
+                 "Ion Temperature",
+                 rtt_timestep::ts_advisor::max,
+                 rtt_timestep::field_ts_advisor::rc_mean ) ),
+      sp_ri( new  rtt_timestep::field_ts_advisor(
+                 "Radiation Intensity",
+                 rtt_timestep::ts_advisor::max,
+                 rtt_timestep::field_ts_advisor::rcq_mean ) )
 {
-    using rtt_timestep::ts_advisor;
-    using rtt_timestep::field_ts_advisor;
-
     // Set up a Electron Temperature advisor
-    
-    sp_te = new field_ts_advisor( "Electron Temperature",
-				  ts_advisor::max,
-				  field_ts_advisor::a_mean );
     tsm.add_advisor( sp_te );
 
     // Set up a Ion-Temperature advisor
-    
-    sp_ti = new field_ts_advisor( "Ion Temperature",
-				  ts_advisor::max,
-				  field_ts_advisor::rc_mean );
     tsm.add_advisor(sp_ti);
     
     // Set up a Radiation-Intensity advisor
-
-    sp_ri = new field_ts_advisor( "Radiation Intensity",
-				  ts_advisor::max,
-				  field_ts_advisor::rcq_mean );
     tsm.add_advisor(sp_ri);
-
 }
 
 dummy_package::~dummy_package()
@@ -104,7 +98,7 @@ std::vector< double > dummy_package::element_wise_multiply(
 {
     std::vector< double > results( v.size() );
 
-    for( int i=0; i<v.size(); ++i )
+    for( size_t i=0; i<v.size(); ++i )
  	results[i] = a * v[i];
     
     return results;

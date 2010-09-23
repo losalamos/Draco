@@ -55,7 +55,7 @@ class target_ts_advisor : public ts_advisor {
 	const bool active_ = true );
     
     //! Destroys a target time step advisor
-    ~target_ts_advisor();
+    ~target_ts_advisor(void) {/*empty*/};
 
 // MANIPULATORS
 

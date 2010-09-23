@@ -5,6 +5,7 @@
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the base class time-step advisor.
  * \note   Copyright © 1998-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,6 +16,7 @@
 
 #include <limits>
 #include <string>
+#include "ds++/config.h"
 
 namespace rtt_timestep
 {
@@ -46,9 +48,9 @@ class ts_advisor
      */
     enum usage_flag
     {
-	min , //!< use as a lower limit
-	max , //!< use as a upper limit
-	req , //!< use as a required value
+        min       , //!< use as a lower limit
+        max       , //!< use as a upper limit
+        req       , //!< use as a required value
         last_usage  //!< dummy to mark end of list
     };
 
@@ -57,8 +59,8 @@ class ts_advisor
   private:
 
     std::string name;                 //!< ID string
-    usage_flag usage;                 //!< how to use dt_rec 
-    bool   active;                    //!< on-off switch
+    usage_flag  usage;                //!< how to use dt_rec 
+    bool        active;               //!< on-off switch
 
 // STATIC CLASS METHODS
 
@@ -67,29 +69,29 @@ class ts_advisor
     //! Returns a number close to machine precision
     static double eps() 
     {
-	return 100.*std::numeric_limits<double>::epsilon(); 
+        return 100.*std::numeric_limits<double>::epsilon(); 
     }
 
     //! Returns a small number
-    static double small() 
+    static double ts_small() 
     {
-	return 100.*std::numeric_limits<double>::min(); 
+        return 100.*std::numeric_limits<double>::min(); 
     }
 
     //! Returns a large number
     static double large() 
     {
-	return 0.01*std::numeric_limits<double>::max(); 
+        return 0.01*std::numeric_limits<double>::max(); 
     }
 
     //! Returns the name of the usage flag requested
     static std::string usage_flag_name(const int i) 
     {
 	static const std::string usage_flag_names [last_usage] =
-	{	"minimum",
+            {	"minimum",
 		"maximum",
 		"required"};
-	return usage_flag_names[i];
+        return usage_flag_names[i];
     };
 
 
@@ -101,33 +103,24 @@ class ts_advisor
      *  \param active_ turns the advisor on/off 
      */
     ts_advisor(const std::string &name_  = std::string("Unlabeled"),
-	       const usage_flag usage_ = max,
-	       const bool active_ = true);
+               const usage_flag usage_   = max,
+               const bool active_        = true);
 
     //! Destroy the advisor
-    virtual ~ts_advisor(void);
+    virtual ~ts_advisor(void){/*empty*/};
 
 
 //MANIPULATORS
 
     //! Turn the advisor on
-    void activate()
-    {
-	active = true;
-    }
+    void activate() { active = true;}
     //! Turn the advisor off
-    void deactivate()
-    {
-	active = false;
-    }
+    void deactivate() { active = false; }
 
 // ACCESSORS
 
     //! Determine if the advisor is active or not
-    bool is_active() const
-    {
-	return active;
-    }
+    bool is_active() const { return active; }
 
     //! Update and/or produce the time-step recommended by this advisor
     /*! \param tsm the timestep manager in which the advisor resides
@@ -138,21 +131,14 @@ class ts_advisor
     /*! \param tsm the timestep manager in which the advisor resides
      */
     virtual bool advisor_usable(const ts_manager &/*tsm*/) const
-    {
-	return (active == true);
-    }
+
+    { return (active == true); }
 
     //! Get the usage
-    usage_flag get_usage() const
-    {
-	return usage;
-    }
+    usage_flag get_usage() const { return usage; }
 
     //! Get the name
-    const std::string &get_name() const
-    {
-	return name;
-    }
+    const std::string &get_name() const { return name; }
     
     //! Vomit the entire internal state of the advisor to std out
     virtual void print_state() const = 0;

@@ -1,21 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
-// target_ts_advisor.cc
-// John McGhee
-// Thu Apr  2 14:06:18 1998
-//---------------------------------------------------------------------------//
-// @> Defines the target time-step advisor.
-//---------------------------------------------------------------------------//
-// $Id$
+/*!
+ * \file    target_ts_advisor.cc
+ * \author  John McGhee
+ * \date    Thu Apr  2 14:06:18 1998
+ * \brief   Defines the target time-step advisor.
+ * \note    Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ *          All rights reserved.
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
 
 #include "target_ts_advisor.hh"
-
 #include "ts_manager.hh"
-
 #include "ds++/Assert.hh"
-
 #include "c4/global.hh"
-
 #include <iostream>
 
 using std::cout;
@@ -37,17 +35,12 @@ target_ts_advisor::target_ts_advisor(
     Ensure(invariant_satisfied());
 }
 
-target_ts_advisor::~target_ts_advisor()
-{
-// empty
-}
-
 double target_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 {
     Require(invariant_satisfied());
 
     double dt_rec = target_value - tsm.get_time();
-    if (dt_rec <= small())
+    if (dt_rec <= ts_small())
     {
 	dt_rec = large();
     }

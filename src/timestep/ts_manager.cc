@@ -12,6 +12,7 @@
 
 #include "ts_manager.hh"
 #include "ds++/Assert.hh"
+#include "ds++/config.h"
 #include "c4/global.hh"
 #include <functional>
 #include <stdexcept>
@@ -28,9 +29,9 @@ namespace rtt_timestep
 {
 
 ts_manager::ts_manager(void)
-    : dt_new(ts_advisor::small()),
+    : dt_new(ts_advisor::ts_small()),
       time(0.0),
-      dt(ts_advisor::small()), 
+      dt(ts_advisor::ts_small()), 
       cycle(9999),
       controlling_advisor("Not Set"),
       advisors( rtt_dsxx::SP<ts_advisor>() )
@@ -145,7 +146,7 @@ double ts_manager::compute_new_timestep()
 
     list< SP<ts_advisor> >::iterator py1=advisors.end();
     list< SP<ts_advisor> >::iterator py2=advisors.end();
-    double x1 = ts_advisor::small();
+    double x1 = ts_advisor::ts_small();
     double x2 = ts_advisor::large();
     for (list< SP<ts_advisor> >::iterator py = advisors.begin(); 
 	 py != advisors.end(); py++) 
@@ -224,22 +225,22 @@ double ts_manager::compute_new_timestep()
  * another. This is done by comparing the recommended time step of each
  * advisor.
  *
- * \bug It is not advisable to inherit from STL containers because they do not
+ * \bug It is not advisable to inherit from STL containers because they do not 
  * provide virtual distructors.
  */
-struct sptsa_less_than : public std::binary_function<
+class sptsa_less_than : public std::binary_function<
     SP<ts_advisor>,
     SP<ts_advisor>, bool > 
 {
-
+  public:
     // The timestep manager
-    const ts_manager &tsm;
+    ts_manager const &tsm;
 
     // Constructs the sptsa_less_than functor
-    sptsa_less_than(const ts_manager &tsm_)
+    sptsa_less_than(ts_manager const &tsm_)
 	: tsm(tsm_)
     {
-    // empty
+        // empty
     }
 
     // Defines the operator () for sptsa_less_than functor

@@ -1,31 +1,31 @@
 //----------------------------------*-C++-*----------------------------------//
-// tstTimeStep.c
-// John McGhee
-// Fri May  1 09:43:49 1998
+/*! \file   tstTimeStep.c
+ *  \author John McGhee
+ *  \date   Fri May  1 09:43:49 1998
+ *  \brief  A driver for the time-step manager test facility.
+ *  \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ *          All rights reserved.  */
 //---------------------------------------------------------------------------//
-// @> A driver for the time-step manager test facility.
-//---------------------------------------------------------------------------//
-// $Id$
+//! \version $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <cmath>
-
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-
+#include "dummy_package.hh"
+#include "timestep_test.hh"
 #include "../ts_manager.hh"
 #include "../Release.hh"
 #include "../fixed_ts_advisor.hh"
 #include "../ratio_ts_advisor.hh"
 #include "../target_ts_advisor.hh"
 
-#include "dummy_package.hh"
-#include "timestep_test.hh"
+#include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <cmath>
 
 // forward declaration
 void run_tests();
@@ -159,7 +159,7 @@ void run_tests()
     SP< fixed_ts_advisor > sp_min(
 	new fixed_ts_advisor( "Minimum",
 			      ts_advisor::min, 
-			      ts_advisor::small()) );
+			      ts_advisor::ts_small()) );
     mngr.add_advisor( sp_min );
     sp_min -> set_fixed_value( dt_min );
 

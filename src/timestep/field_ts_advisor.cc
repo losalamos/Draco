@@ -1,21 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
-// field_ts_advisor.cc
-// John McGhee
-// Thu Apr  2 14:06:18 1998
-//---------------------------------------------------------------------------//
-// @> Defines the field time-step advisor.
-//---------------------------------------------------------------------------//
-// $Id$
+/*!
+ * \file   field_ts_advisor.cc
+ * \author John McGhee
+ * \date   Thu Apr  2 14:06:18 1998
+ * \brief  Defines the field time-step advisor.
+ * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC.  All
+ *         rights reserved.
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
 
 #include "field_ts_advisor.hh"
-
 #include "ts_manager.hh"
-
 #include "ds++/Assert.hh"
-
 #include "c4/global.hh"
-
 #include <iostream>
 
 using std::cout;
@@ -37,11 +35,6 @@ field_ts_advisor::field_ts_advisor(const std::string &name_,
       cycle_at_last_update(-989898), dt_rec(large())
 {
     Ensure(invariant_satisfied());
-}
-
-field_ts_advisor::~field_ts_advisor()
-{
-// empty
 }
 
 // Produce the recommended time-step

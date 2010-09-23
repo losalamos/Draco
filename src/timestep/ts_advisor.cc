@@ -1,17 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
-// ts_advisor.cc
-// John McGhee
-// Thu Apr  2 14:06:18 1998
-//---------------------------------------------------------------------------//
-// @> Defines the base class time-step advisor.
+/*!
+ * \file   ts_advisor.cc
+ * \author John McGhee
+ * \date   Thu Apr  2 14:06:18 1998
+ * \brief  Defines the base class time-step advisor.
+ * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "ts_advisor.hh"
-
 #include "c4/global.hh"
-
+#include "ds++/config.h"
 #include <iostream>
 
 using std::string; 
@@ -26,11 +28,6 @@ ts_advisor::ts_advisor(const string &name_,
 		       const bool active_)
 
     : name(name_), usage(usage_), active(active_) 
-{
-// empty
-}
-
-ts_advisor::~ts_advisor()
 {
 // empty
 }

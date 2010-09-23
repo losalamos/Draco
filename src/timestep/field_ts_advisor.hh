@@ -15,7 +15,8 @@
 #include "ts_advisor.hh"
 #include <iostream>
 
-namespace rtt_timestep {
+namespace rtt_timestep 
+{
 
 //===========================================================================//
 /*!
@@ -39,20 +40,21 @@ namespace rtt_timestep {
  * by the update method flag.
  */ 
 //===========================================================================//
-class field_ts_advisor : public ts_advisor {
+class field_ts_advisor : public ts_advisor 
+{
 
 // NESTED CLASSES AND TYPEDEFS
 
   public:
 
     //! Selects the vector norm used to evaluate changes in the control field. 
-    enum update_method_flag {
-
-	inf_norm,   //!< infinity norm (max)
-	a_mean,     //!< arithmetic mean
-	q_mean,     //!< Q weighted mean
-	rc_mean,    //!< relative change (alpha) weighted mean
-	rcq_mean,   //!< product of Q and alpha weighted mean
+    enum update_method_flag 
+    {
+        inf_norm,   //!< infinity norm (max)
+        a_mean,     //!< arithmetic mean
+        q_mean,     //!< Q weighted mean
+        rc_mean,    //!< relative change (alpha) weighted mean
+        rcq_mean,   //!< product of Q and alpha weighted mean
         last_umf    //!< dummy to mark end of list
     };    
 
@@ -76,14 +78,14 @@ class field_ts_advisor : public ts_advisor {
      */
     static std::string update_method_flag_name(const int i)
     {
-	static const std::string update_method_flag_names [last_umf] =
-	{ "infinity norm",
-	  "arithmetic mean",
-	  "weighted by field value",
-	  "weighted by relative change",
-	  "field value and relative change"
-	};
-	return update_method_flag_names[i];
+        static const std::string update_method_flag_names [last_umf] =
+        { "infinity norm",
+          "arithmetic mean",
+          "weighted by field value",
+          "weighted by relative change",
+          "field value and relative change"
+        };
+        return update_method_flag_names[i];
     };
 
 // CREATORS
@@ -100,16 +102,19 @@ class field_ts_advisor : public ts_advisor {
 		     const usage_flag usage_ = max,
 		     const update_method_flag update_method_ = inf_norm,
 		     const double fc_value_ = 0.1,
-		     const double floor_value_ = small(),
+		     const double floor_value_ = ts_small(),
 		     const bool active_ = true);
     
     //! Destroys a field time step advisor
-    ~field_ts_advisor();
+    ~field_ts_advisor(void){/*empty*/};
 
 // MANIPULATORS
 
-    //! A utility function to set the floor value as a fraction of the max value in a field
-    /*! The floor is computed as the max of frac*y1
+    /*! \brief The floor is computed as the max of frac*y1
+     *
+     * A utility function to set the floor value as a fraction of the max
+     * value in a field 
+     *
      *  \param y1 The field to be examined
      *  \param frac The fractional value to be applied to the field
      */
@@ -137,7 +142,7 @@ class field_ts_advisor : public ts_advisor {
     //! Sets the floor value 
     /*! \param value_ the value to set the floor
      */
-    void set_floor(const double value_ = small() )
+    void set_floor(const double value_ = ts_small() )
     { 
 	floor_value = value_;
     }
