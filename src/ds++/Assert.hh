@@ -112,7 +112,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class assertion : public std::logic_error
+class DLL_PUBLIC assertion : public std::logic_error
 {
   public:
     /*!
@@ -168,25 +168,25 @@ class assertion : public std::logic_error
 //---------------------------------------------------------------------------//
 
 //! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-void toss_cookies( std::string const & cond, 
-		   std::string const & file, 
-		   int         const line );
+DLL_PUBLIC void toss_cookies( std::string const & cond, 
+                              std::string const & file, 
+                              int         const line );
 
-void toss_cookies_ptr(char const * const cond,
-		      char const * const file, 
-		      int         const line );
+DLL_PUBLIC void toss_cookies_ptr(char const * const cond,
+                                 char const * const file, 
+                                 int         const line );
 
 //! Throw a rtt_dsxx::assertion for Insist.
-void insist( std::string const & cond, 
-	     std::string const & msg, 
-	     std::string const & file, 
-	     int         const line);
+DLL_PUBLIC void insist( std::string const & cond, 
+                        std::string const & msg, 
+                        std::string const & file, 
+                        int         const line);
 
 //! Pointer version of insist
-void insist_ptr(char const * const cond, 
-		char const * const msg, 
-		char const * const file, 
-		int          const line);
+DLL_PUBLIC void insist_ptr(char const * const cond, 
+                           char const * const msg, 
+                           char const * const file, 
+                           int          const line);
 
 } // end of rtt_dsxx
 

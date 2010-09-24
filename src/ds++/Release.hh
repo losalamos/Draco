@@ -30,7 +30,7 @@ namespace rtt_dsxx
 {
 
 //! Query package for the release number.
-const std::string release();
+DLL_PUBLIC const std::string release();
 
 } // end of rtt_ds++
 
