@@ -3,6 +3,17 @@
 ## .bashrc - my bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
 
+## Instructions (customization)
+## 
+## Before sourcing this file, you may wish to set the following
+## variables to customize your environment (ie: set in ~/.bashrc
+## before sourcing this file).
+##
+## $prefered_term - a space delimited list of terminal names.  The
+##           default list is "gnome-terminal knosole xterm".  You can
+##           modify the order of this list or remove items.  If you
+##           add a new terminal you will need to modify this file to
+##           set the optional parameters.
 
 ##---------------------------------------------------------------------------##
 ## If this is a non interactive shell then don't process this rc file
@@ -129,7 +140,7 @@ if test -x /opt/bin/gstat; then
   alias cqs='echo -e "\nCurrent Queuing System: $PREFERED_QUEUE_SYSTEM \n"'
 fi
 
-# Settings for machine aliases
+# Provide special ls commands if this is a color-xterm or compatible terminal.
 if test "${TERM}" != emacs && 
    test "${TERM}" != dumb; then
    # replace list aliases with ones that include colorized output.
@@ -138,41 +149,71 @@ if test "${TERM}" != emacs &&
    alias lt='ls --color -Flt'
    alias lt.='ls --color -aFlt'
    alias ls='ls --color -F'
-   # choose a terminal
+fi
+
+# Use 'nt' to create new terminal window.
+if test -z "$prefered_term"; then
+   export prefered_term="gnome-terminal konsole xterm"
+fi
+if test "${TERM}" != emacs && 
+   test "${TERM}" != dumb; then
+   # choose a terminal {konsole,gnome-terminal,xterm}
    if test -z "$term"; then
-     tmp=`which gnome-terminal 2> /dev/null`
-     if test ${tmp:-notset} != notset; then
-       export term='gnome-terminal'
-       export term_opts='--use-factory --geometry=80x60 --hide-menubar'
-       export title_flag=-t
-       export exe_flag=-x
-     fi
-   fi
-   if test -z "$term"; then
-     tmp=`which xterm 2> /dev/null`
-     if test ${tmp:-notset} != notset; then
-       export term='xterm'
-       export term_opts='-geometry 80x60'
-       export title_flag=-T
-       export exe_flag=-e
-     fi
+     for item in ${prefered_term}; do
+       tmp=`which ${item} 2> /dev/null`
+       if test ${tmp:-notset} != notset; then
+         export term=$item
+         case ${item} in
+         konsole)
+           export term_opts='--vt_sz 90x60 --nomenubar'
+           export title_flag=-T
+           export exe_flag=-e
+           break
+           ;;
+         gnome-terminal)
+           export term_opts='--use-factory --geometry=80x60 --hide-menubar'
+           export title_flag=-t
+           export exe_flag=-x
+           break
+           ;;
+         xterm)
+           export term_opts='-geometry 80x60'
+           export title_flag=-T
+           export exe_flag=-e
+           break
+           ;;
+         *)
+           echo "You must must setup the variables term, term_opts,"
+           echo "title_flag and exe_flag for this terminal ($item)"
+           echo "in draco/environment/bashrc/.bashrc."  
+           break
+           ;;
+         esac
+       fi
+     done
    fi
 fi
 
 # Function to create a new terminal window (requires X11)
+if test ${term:-notset} != notset; then
+
 function nt()
 {
   ssh_cmd="ssh -AX"
   localmachine=`uname -n | sed -e 's/[.].*//'`
   machine=$1
+  shift
   if test "${machine}notset" = notset ||
      test "${localmachine}" = "${machine}"; then
     machine=localhost
   fi
   case ${machine} in
   -h)
+    opts="${title_flag} [machineName] ${exe_flag} ${ssh_cmd} [machineName]"
     echo "Usage: nt [machinename]"
-    echo "  A new terminal window will be created using the command  ${term} ${term_opts} $2 $3 $4 $5 $6 $7 $8 $9 ${title_flag} ${machineName} ${exe_flag} ${ssh_cmd} ${machine}"
+    echo "  A new terminal window will be created using the command"
+    echo "  ${term} ${term_opts} [extra args] $opts"
+    return
     ;;
   localhost)
     machineName=localhost
@@ -182,15 +223,17 @@ function nt()
     ;;
   esac
 
+  cmd="${term} ${term_opts} $* ${title_flag}"
   if test ${machineName} = localhost; then
-    echo ${term} ${term_opts} $2 $3 $4 $5 $6 $7 $8 $9 ${title_flag} ${localmachine} 
-    ${term} ${term_opts} $2 $3 $4 $5 $6 $7 $8 $9 ${title_flag} ${localmachine} 
+    cmd="${cmd} ${localmachine}"
   else
-    ${term} ${term_opts} $2 $3 $4 $5 $6 $7 $8 $9 ${title_flag} ${machineName} ${exe_flag} ${ssh_cmd} ${machine}
-    echo ${term} ${term_opts} $2 $3 $4 $5 $6 $7 $8 $9 ${title_flag} ${machineName} ${exe_flag} ${ssh_cmd} ${machine}
+    cmd="${cmd} ${machineName} ${exe_flag} ${ssh_cmd} ${machine}"
   fi
+  echo $cmd
+  eval $cmd
 }
 export nt
+fi
 
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
