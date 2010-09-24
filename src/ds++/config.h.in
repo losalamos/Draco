@@ -1,13 +1,23 @@
 /*-----------------------------------*-C-*-----------------------------------*/
-/* config.h */
-/* Thomas M. Evans */
-/* Thu Jan  7 17:40:56 1999 */
-/*---------------------------------------------------------------------------*/
-/* @> defines necessary for the ds++ package                                 */
+/*!
+ * \file   config.h 
+ * \author Kelly Thompson <kgt@lanl.gov>
+ * \date   Thu Sep 23 17:26:56 2010
+ * \brief  CPP defines necessary for the ds++ package.
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC
+ */
 /*---------------------------------------------------------------------------*/
 
 #ifndef __dsxx_config_h__
 #define __dsxx_config_h__
+
+/* Switch between Autoconf-based build system and CMake-based build */
+#undef AUTOCONF
+
+/* ---------------------------------------- */
+/* AUTOCONF based build system              */
+/* ---------------------------------------- */
+#ifdef AUTOCONF
 
 /* DBC ENVIRONMENTS */
 #undef DBC
@@ -19,12 +29,33 @@
 /* Are we building static or shared libraries? */
 #undef DRACO_SHARED_LIBS
 
-/* Help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
-#ifdef _MSC_VER
-#undef max
-#undef min
-#endif
+/* ---------------------------------------- */
+/* CMAKE based build system                 */
+/* ---------------------------------------- */
+#else
 
+   /* DBC ENVIRONMENTS */
+#define DBC @DRACO_DBC_LEVEL@
+
+   /* Version Inforation */
+#cmakedefine DRACO_VERSION @DRACO_VERSION@
+#cmakedefine DRACO_VERSION_FULL @DRACO_VERSION_FULL@
+
+   /* System Type */
+#cmakedefine MSVC @MSVC@
+#cmakedefine UNIX @UNIX@ 
+
+   /* define BUILDING_DLL */
+#cmakedefine BUILDING_DLL @BUILDING_DLL@
+
+   /* define DRACO_SHARED_LIBS */
+#cmakedefine DRACO_SHARED_LIBS @DRACO_SHARED_LIBS@
+
+#endif /* Autoconf based build */
+
+/* ---------------------------------------- */
+/* GENERAL build system setup               */
+/* ---------------------------------------- */
 /*!
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC
  * hides everying unless they are marked as 'dllexport'.  By default
@@ -40,6 +71,19 @@
  * external .dll (include Array.hh and linking against -ldsxx.so), the same
  * symbol must be marked as 'dllimport.' The macro 'BUILDING_DLL' will be used
  * to control how the symbols are marked.
+ *
+ * \example Example use of DLL_PUBLIC CPP Symbol.
+ * \code
+ * extern "C" DLL_PUBLIC void function(int a);
+ * class DLL_PUBLIC SomeClass
+ * {
+ *    int c;
+ *    DLL_LOCAL void privateMethod();  // Only for use within this DSO
+ *  public:
+ *    Person(int _c) : c(_c) { }
+ *    static void foo(int a);
+ * };
+ * \endcode 
  */
 
 /* Windows ---------------------------------------- */
@@ -84,6 +128,13 @@
     #define DLL_PUBLIC
     #define DLL_LOCAL
   #endif /* DRACO_SHARED_LIBS */
+#endif
+
+/* Help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
+#ifdef _MSC_VER
+#undef max
+#undef min
+#define NOMINMAX
 #endif
 
 #endif                          /* __dsxx_config_h__ */

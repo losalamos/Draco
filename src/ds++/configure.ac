@@ -14,6 +14,10 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(ds++/config.h:config.h.in)
 package="ds++"
 
+# Toggle between autoconf and cmake build systems when constructing
+# config.h from config.h.in
+AC_DEFINE(AUTOCONF autoconf)
+
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
