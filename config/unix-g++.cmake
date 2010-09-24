@@ -87,16 +87,19 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 # -Wnon-virtual-dtor 
 # -Wreturn-type 
 # -Wno-long-long
+# -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC
+# -Wextra
+# -Weffc++
 
 IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS                "-fPIC -Wall" )
-  set( CMAKE_C_FLAGS_DEBUG          "-W -g -DDEBUG" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -DDEBUG" ) # -W
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} -O3 -funroll-loops -march=k8" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
-  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
+  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -Wnon-virtual-dtor -Wreturn-type -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith -Wno-long-long")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -finline-functions -fomit-frame-pointer")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -finline-functions -fomit-frame-pointer" )

@@ -38,18 +38,55 @@ macro( setVendorVersionDefaults )
   #environment variable. If defined as both then take the
   #environment variable.
 
-  if( IS_DIRECTORY "$ENV{VENDOR_DIR}" )
+  # See if VENDOR_DIR is set.  Try some defaults if it is not set.
+  if( NOT VENDOR_DIR AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
     set( VENDOR_DIR $ENV{VENDOR_DIR} )
-  endif( IS_DIRECTORY "$ENV{VENDOR_DIR}" )
-
+  endif()
+  # If needed, try some obvious palces.
+  if( NOT VENDOR_DIR )
+     if( IS_DIRECTORY /ccs/codes/radtran/vendors/Linux64 )
+        set( VENDOR_DIR /ccs/codes/radtran/vendors/Linux64 )
+     endif()
+     if( IS_DIRECTORY /usr/projects/draco/vendors )
+        set( VENDOR_DIR /usr/projects/draco/vendors )
+     endif()
+     if( IS_DIRECTORY c:/vendors )
+        set( VENDOR_DIR c:/vendors )
+     endif()
+  endif()
+  # Cache the result
   if( IS_DIRECTORY "${VENDOR_DIR}")
     set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
       "Root directory where Transpire 3rd party libraries are located." )
   else( IS_DIRECTORY "${VENDOR_DIR}")
     message( "
 WARNING: VENDOR_DIR not defined locally or in user environment,
-individual vendor directories must be defined." )
+individual vendor directories should be defined." )
   endif( IS_DIRECTORY "${VENDOR_DIR}")
+
+  # Import environment variables related to vendors
+  # 1. Use command line variables (-DLAPACK_LIB_DIR=<path>
+  # 2. Use environment variables ($ENV{LAPACK_LIB_DIR}=<path>)
+  # 3. Try to find vendor in $VENDOR_DIR
+  # 4. Don't set anything and let the user set a value in the cache
+  #    after failed 1st configure attempt.
+  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY $ENV{LAPACK_LIB_DIR} )
+     set( LAPACK_LIB_DIR $ENV{LAPACK_LIB_DIR} )
+     set( LAPACK_INC_DIR $ENV{LAPACK_INC_DIR} )
+  endif()
+  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
+     set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
+     set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
+  endif()
+
+  if( NOT GSL_LIB_DIR AND IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
+     set( GSL_LIB_DIR $ENV{GSL_LIB_DIR} )
+     set( GSL_INC_DIR $ENV{GSL_INC_DIR} )
+  endif()
+  if( NOT GSL_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/gsl/lib )
+     set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
+     set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
+  endif()
 
   #Set the preferred search paths
   
@@ -212,6 +249,7 @@ macro( SetupVendorLibrariesUnix )
    find_package( MPI )
    if( MPI_FOUND )
       set( DRACO_C4 "MPI" )  
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
    else()
       set( DRACO_C4 "SCALAR" )
    endif()
