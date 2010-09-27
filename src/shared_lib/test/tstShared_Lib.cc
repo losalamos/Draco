@@ -135,7 +135,7 @@ void test_simple()
         bool caught = false;
         try
         {
-	    Creator no = so_lib.get_function<Creator>("not_in_lib");
+	    /* Creator no = */ so_lib.get_function<Creator>("not_in_lib");
         }
         catch ( const rtt_dsxx::assertion &ass )
         {
