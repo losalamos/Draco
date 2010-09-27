@@ -7,6 +7,7 @@
 # when a floating-point exception is encountered.
 
 import sys, os
+import platform
 
 def mesg(s):
     print 'fpe_trap: %s' % s
@@ -21,7 +22,18 @@ def finish(passed):
     print '*********************************************'
     sys.exit(0)
 
-exe = './do_exception'
+arglist = []
+for arg in sys.argv:
+    if arg != "--scalar":
+        arglist.append( arg )
+
+if len(arglist) < 2:
+    if platform.system() == 'Windows':
+        exe = 'do_exception'
+    else:
+        exe = './do_exception'
+else:
+    exe = sys.argv[1]
 file = 'output.dat'
 
 # Check if the platform is supported
