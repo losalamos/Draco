@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:54:59 2001
  * \brief  ds++ testing utilities.
+ * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +13,7 @@
 #ifndef __ds_test_hh__
 #define __ds_test_hh__
 
+#include "ds++/config.h"
 #include <iostream>
 #include <string>
 
@@ -34,21 +36,22 @@ namespace rtt_ds_test
 // ways.  We do not constrain draco tests except that the output must be of
 // the form "Test: pass/fail"
 
-bool fail(int line);
+DLL_PUBLIC bool fail(int line);
 
-bool fail(int line, char const *file);
+DLL_PUBLIC bool fail(int line, char const *file);
 
-bool pass_msg(const std::string &);
+DLL_PUBLIC bool pass_msg(const std::string &);
 
-bool fail_msg(const std::string &);
+DLL_PUBLIC bool fail_msg(const std::string &);
 
-void unit_test(const bool pass, int line, char const *file);
+DLL_PUBLIC void unit_test(const bool pass, int line, char const *file);
 
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
 
-extern bool passed;
+extern 
+DLL_PUBLIC bool passed;
 
 } // end namespace rtt_ds_test
 

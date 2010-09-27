@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class UnitTest 
+class DLL_PUBLIC UnitTest 
 {
   public:
 

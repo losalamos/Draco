@@ -11,6 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "UnitTest.hh"
+#include "path.hh"
 #include <iostream>
 #include <sstream>
 
@@ -76,9 +77,17 @@ std::string UnitTest::resultMessage() const
 std::string UnitTest::setTestName( std::string const fqName )
 {
     using std::string;
-    string::size_type idx=fqName.rfind('/');
+    string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
     if( idx == string::npos )
-        return fqName;
+    {
+        // Didn't find directory separator, as 2nd chance look for Windows
+        // directory separator. 
+        string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
+        if( idx == string::npos )
+            // If we still cannot find a path separator, return the whole
+            // string as the test name. 
+            return fqName;
+    }
     string shortName = fqName.substr(idx+1);    
     return shortName;
 }
@@ -95,10 +104,17 @@ std::string UnitTest::setTestName( std::string const fqName )
 std::string UnitTest::setTestPath( std::string const fqName )
 {
     using std::string;
-    string::size_type idx=fqName.rfind('/');
-    if( idx == string::npos )
-        return string("./");
-    string pathName = fqName.substr(0,idx+1);    
+    string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
+    if( idx == string::npos ) 
+    {
+        // Didn't find directory separator, as 2nd chance look for Windows
+        // directory separator. 
+        string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
+        if( idx == string::npos )
+            // If we still cannot find a path separator, return "./"
+            return string( string(".") + rtt_dsxx::dirSep );
+    }
+    string pathName = fqName.substr(0,idx+1); 
     return pathName;
 }
 
