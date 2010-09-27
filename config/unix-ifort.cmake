@@ -1,25 +1,13 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   acuros/config/unix-ifort.cmake
-# author Kelly Thompson <kt@transpireinc.com>
+# file   config/unix-ifort.cmake
+# author Kelly Thompson 
 # date   2008 May 30
 # brief  Establish flags for Unix - Intel Fortran
-# note   © Copyright 2008-2009 Transpire, Inc, All rights reserved.
+# note   Copyright © 2010 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
-
-###########################################################################
-#                              WARNING
-###########################################################################
-#
-# Acuros uses .F95 files.  This extension is not accepted by ifort by default
-# You must edit $cmake_install_dir/share/cmake-2.6/Modules/Platform/
-# Linux-Intel-Fortran.cmake and add the following line:
-# SET( CMAKE_Fortran_COMPILE_OBJECT
-#   "<CMAKE_Fortran_COMPILER> -o <OBJECT> <DEFINES> <FLAGS> -c -Tf <SOURCE>")
-#
-# KT (2009-11-02)
-###########################################################################
 
 # Let anyone who is interested in which FORTRAN compiler we're using
 # switch on this macro.

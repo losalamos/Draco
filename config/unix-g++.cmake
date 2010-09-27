@@ -1,9 +1,10 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   abracuros/config/unix-g++.cmake
-# author Kelly Thompson <kt@transpireinc.com>
+# file   config/unix-g++.cmake
+# author Kelly Thompson 
 # date   2008 May 30
 # brief  Establish flags for Windows - MSVC
-# note   © Copyright 2008 Transpire, Inc, All rights reserved.
+# note   Copyright © 2010 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#

@@ -1,9 +1,10 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   acuros/config/compiler_env.cmake
-# author Kelly Thompson <kt@transpireinc.com>
+# file   config/compiler_env.cmake
+# author Kelly Thompson
 # date   2008 May 30
 # brief  Default CMake build parameters
-# note   © Copyright 2008 Transpire, Inc, All rights reserved.
+# note   Copyright © 2010 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -67,20 +68,20 @@ macro(dbsSetupCompilers)
   
   # shared or static libararies?
   if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-		message(STATUS "Building static libraries.")
-		set( MD_or_MT "MD" )
-	elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-		message(STATUS "Building shared libraries.")
-		set( MD_or_MT "MD" )
-		# This CPP symbol is used by config.h to signal if we are need to add 
-		# declspec(dllimport) or declspec(dllexport) for MSVC.
-		set( DRACO_SHARED_LIBS 1 CACHE STRING 
-		"This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
-	else()
-		message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
-	endif()
-
-	set( gen_comp_env_set 1 )
+     message(STATUS "Building static libraries.")
+     set( MD_or_MT "MD" )
+  elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
+     message(STATUS "Building shared libraries.")
+     set( MD_or_MT "MD" )
+     # This CPP symbol is used by config.h to signal if we are need to add 
+     # declspec(dllimport) or declspec(dllexport) for MSVC.
+     set( DRACO_SHARED_LIBS 1 CACHE STRING 
+	"This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
+  else()
+     message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
+  endif()
+  
+  set( gen_comp_env_set 1 )
 endmacro()
 
 #------------------------------------------------------------------------------#

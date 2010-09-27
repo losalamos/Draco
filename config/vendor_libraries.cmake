@@ -3,7 +3,7 @@
 # author 
 # date   2010 June 6
 # brief  Setup Vendors
-# note   © Copyright 2010 LANS, LLC  
+# note   Copyright © 2010 LANS, LLC  
 #------------------------------------------------------------------------------#
 # $Id$ 
 #------------------------------------------------------------------------------#
@@ -21,16 +21,6 @@ macro( setVendorVersionDefaults )
   # set( TSP_BOOST_VERSION 1.40.0 CACHE STRING
     # "Minimum supported Boost version." )
   # set( XERCESC_VERSION 2.8.0 )
-  # if( NOT ONLY_LIBTRANSPIRE )
-    # set( LAPACK_VERSION 3.1.1 ) 
-    # set( HDF5_VERSION 1.8.0 )
-    # set( ALM_VERSION "" )
-    # set( EXPAT_VERSION "" )
-    # set( OPENSSL_VERSION "" )
-    # set( SIMMETRIX_VERSION "6.3-080514" )
-    # set( BISON_VERSION "" )
-    # set( FLEX_VERSION "" )
-  # endif( NOT ONLY_LIBTRANSPIRE )
 
   #Set the preferred search directories(ROOT)
 
@@ -57,7 +47,7 @@ macro( setVendorVersionDefaults )
   # Cache the result
   if( IS_DIRECTORY "${VENDOR_DIR}")
     set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
-      "Root directory where Transpire 3rd party libraries are located." )
+      "Root directory where CCS-2 3rd party libraries are located." )
   else( IS_DIRECTORY "${VENDOR_DIR}")
     message( "
 WARNING: VENDOR_DIR not defined locally or in user environment,
@@ -101,33 +91,11 @@ individual vendor directories should be defined." )
   # set( XERCESC_ROOT
     # ${VENDOR_DIR}/xerces-c-${XERCESC_VERSION} )
         
-    # if    (NOT ONLY_LIBTRANSPIRE )
-      # set( LAPACK_ROOT  ${VENDOR_DIR}/lapack-${LAPACK_VERSION} )
-      # set( HDF5_ROOT    ${VENDOR_DIR}/hdf5-${HDF5_VERSION} )
-      # set( ALM_ROOT 
-        # ${transpire_SOURCE_DIR}/lib/alm/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME} )
-      # set( EXPAT_ROOT   ${VENDOR_DIR}/Expat )
-      # set( OPENSSL_ROOT ${VENDOR_DIR}/OpenSSL )
-      # set( SIMMETRIX_ROOT ${VENDOR_DIR}/simmetrix-${SIMMETRIX_VERSION} )
-      # set( BISON_ROOT   ${VENDOR_DIR}/bison-${BISON_VERSION} )
-      # set( FLEX_ROOT    ${VENDOR_DIR}/flex-${FLEX_VERSION} )
-    # endif (NOT ONLY_LIBTRANSPIRE )
-
-    # if   ( VERBOSE )
+     # if   ( VERBOSE )
       # message("")
       # message("Preferred search directories:")
       # message("BOOST_ROOT     = ${BOOST_ROOT}") 
       # message("XERCESC_ROOT   = ${XERCESC_ROOT}")
-      # if    (NOT ONLY_LIBTRANSPIRE )
-        # message("LAPACK_ROOT    = ${LAPACK_ROOT}") 
-        # message("HDF5_ROOT      = ${HDF5_ROOT}") 
-        # message("ALM_ROOT       = ${ALM_ROOT}") 
-        # message("EXPAT_ROOT     = ${EXPAT_ROOT}") 
-        # message("OPENSSL_ROOT   = ${OPENSSL_ROOT}") 
-        # message("SIMMETRIX_ROOT = ${SIMMETRIX_ROOT}") 
-        # message("BISON_ROOT     = ${BISON_ROOT}") 
-        # message("FLEX_ROOT      = ${FLEX_ROOT}") 
-      # endif (NOT ONLY_LIBTRANSPIRE )
       # message("--VERBOSE--")
       # message("")
     # endif( VERBOSE )
@@ -283,7 +251,7 @@ macro( SetupVendorLibrariesUnix )
   # Boost: 
   #
   # required by the build system (not by any files that are
-  # released). See libtranspire/generate_build_date_f90.cpp.
+
 
   # set( Boost_USE_MULTITHREADED ON )
   # set( Boost_USE_STATIC_LIBS ON CACHE BOOL 
