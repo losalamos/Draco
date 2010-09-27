@@ -10,6 +10,8 @@
  */
 //---------------------------------------------------------------------------//
 
+#include <string>
+
 namespace rtt_dsxx
 {
 
@@ -18,8 +20,10 @@ char const WinDirSep  = '\\';
 char const UnixDirSep = '/';
 #ifdef _MSC_VER
 char const dirSep = WinDirSep;
+std::string const exeExtension( ".exe" );
 #else
 char const dirSep = UnixDirSep;
+std::string const exeExtension( "" );
 #endif
 
 } // end namespace rtt_dsxx

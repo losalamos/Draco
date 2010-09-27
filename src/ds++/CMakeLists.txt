@@ -42,13 +42,15 @@ if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
       # Provide compile define macro to enable declspec(dllexport) linkage.
       COMPILE_DEFINITIONS BUILDING_DLL 
       # Use custom library naming
-      OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}dsxx${CMAKE_SHARED_LIBRARY_SUFFIX}
+      # OUTPUT_NAME ${CMAKE_SHARED_LIBRARY_PREFIX}rtt_ds++${CMAKE_SHARED_LIBRARY_SUFFIX}
+      OUTPUT_NAME rtt_ds++
       )
 else()
-   set_target_properties( Lib_dsxx 
+   set_target_properties( Lib_dsxx
       PROPERTIES 
-      # Use custom library naming
-      OUTPUT ${CMAKE_STATIC_LIBRARY_PREFIX}dsxx${CMAKE_STATIC_LIBRARY_SUFFIX}
+        # Use custom library naming
+        # OUTPUT_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}rtt_ds++${CMAKE_STATIC_LIBRARY_SUFFIX}
+        OUTPUT_NAME rtt_ds++
       )
 endif()
 
