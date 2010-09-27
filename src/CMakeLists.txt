@@ -41,13 +41,16 @@ add_subdirectory( ds++ )
 # Level 2
 message( STATUS "\nConfiguring Level 2 packages --\n" )
 add_subdirectory( c4 )           # needs ds++
-
-if( EXISTS ${PROJECT_SOURCE_DIR}/cdi/CMakeLists.txt )
-
 add_subdirectory( cdi )          # needs ds++
-add_subdirectory( mesh_element ) # needs ds++
 add_subdirectory( fpe_trap )     # needs ds++
 add_subdirectory( lapack_wrap )  # needs ds++
+add_subdirectory( mesh_element ) # needs ds++
+add_subdirectory( traits )       # needs ds++
+add_subdirectory( units )        # needs ds++
+add_subdirectory( xm )           # needs ds++
+
+if( EXISTS ${PROJECT_SOURCE_DIR}/rng/CMakeLists.txt )
+add_subdirectory( rng )          # needs ds++
 
 if( PCG_FOUND )
   add_subdirectory( pcgWrap )    # needs ds++
@@ -55,12 +58,9 @@ endif()
 if( XMGRACE_FOUND )
   add_subdirectory( plot2D )
 endif()
-add_subdirectory( rng )          # needs ds++
-add_subdirectory( traits )       # needs ds++
-add_subdirectory( units )        # needs ds++
-add_subdirectory( xm )           # needs ds++
 
 # Level 3
+
 message( STATUS "\nConfiguring Level 3 packages --\n" )
 add_subdirectory( cdi_analytic ) # needs cdi
 add_subdirectory( cdi_gandolf )  # needs cdi
@@ -103,8 +103,8 @@ GANDOLF     : ${GANDOLF_LIBRARY}
 
 ## Install cmake files that help external projects link to the targets from this project.
 #install( 
-#  EXPORT transpire_targets
-#  NAMESPACE transpire_
+#  EXPORT draco_targets
+#  NAMESPACE draco_
 #  DESTINATION lib/export
 #)
 
