@@ -38,11 +38,12 @@ setupVendorLibraries()
 message( STATUS "\nConfiguring Level 1 packages --\n" )
 add_subdirectory( ds++ )
 
-if( EXISTS ${PROJECT_SOURCE_DIR}/c4/CMakeLists.txt )
-
 # Level 2
 message( STATUS "\nConfiguring Level 2 packages --\n" )
 add_subdirectory( c4 )           # needs ds++
+
+if( EXISTS ${PROJECT_SOURCE_DIR}/cdi/CMakeLists.txt )
+
 add_subdirectory( cdi )          # needs ds++
 add_subdirectory( mesh_element ) # needs ds++
 add_subdirectory( fpe_trap )     # needs ds++
