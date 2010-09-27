@@ -4,14 +4,15 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Parallel application used by the unit test for tstApplicationUnitTest.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   © Copyright 2006-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include "../global.hh"
+#include <iostream>
 
 using namespace rtt_c4;
 

@@ -10,15 +10,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
+#include "../Invert_Comm_Map.hh"
 #include "ds++/Assert.hh"
 #include "../Release.hh"
 #include "../ParallelUnitTest.hh"
 
-#include "../Invert_Comm_Map.hh"
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iterator>
 
 using namespace std;
 using namespace rtt_c4;

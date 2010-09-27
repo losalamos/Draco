@@ -9,11 +9,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <unistd.h>
-#include <sys/times.h>
-#include <iomanip>
 #include <c4/config.h>
+#include "C4_sys_times.h"
 #include "Timer.hh"
+#include <iomanip>
 
 namespace rtt_c4
 {
@@ -26,7 +25,9 @@ namespace rtt_c4
 Timer::Timer()
     : begin( 0.0 ),
       end(   0.0 ),
-      posix_clock_ticks_per_second( sysconf( _SC_CLK_TCK ) ),
+      tms_begin( DRACO_TIME_TYPE() ),
+      tms_end(   DRACO_TIME_TYPE() ),
+      posix_clock_ticks_per_second( DRACO_CLOCKS_PER_SEC ),
       timer_on(          false ),
       isMPIWtimeAvailable( setIsMPIWtimeAvailable() ),
       sum_wall( 0.0 ),

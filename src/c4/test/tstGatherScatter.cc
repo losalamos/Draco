@@ -4,22 +4,21 @@
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test c4::gather and c4::scatter functions
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
 #include "../Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../global.hh"
 #include "../gatherv.hh"
 #include "../scatterv.hh"
+#include "ds++/Assert.hh"
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
 using namespace rtt_dsxx;

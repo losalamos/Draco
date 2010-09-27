@@ -23,20 +23,20 @@ using std::vector;
 //---------------------------------------------------------------------------//
 
 template
-void indeterminate_scatterv(std::vector<std::vector<unsigned> > &outgoing_data,
-                            std::vector<unsigned> &incoming_data);
+void indeterminate_scatterv(vector<std::vector<unsigned> > &outgoing_data,
+                            vector<unsigned> &incoming_data);
 
 template
-void determinate_scatterv(std::vector<std::vector<unsigned> > &outgoing_data,
-                          std::vector<unsigned> &incoming_data);
+void determinate_scatterv(vector<std::vector<unsigned> > &outgoing_data,
+                          vector<unsigned> &incoming_data);
 
 template
-void determinate_scatterv(std::vector<std::vector<int> > &outgoing_data,
-                          std::vector<int> &incoming_data);
+void determinate_scatterv(vector<std::vector<int> > &outgoing_data,
+                          vector<int> &incoming_data);
 
 template
-void determinate_scatterv(std::vector<std::vector<double> > &outgoing_data,
-                          std::vector<double> &incoming_data);
+void determinate_scatterv(vector<std::vector<double> > &outgoing_data,
+                          vector<double> &incoming_data);
 
 } // end namespace rtt_c4
 

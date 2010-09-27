@@ -4,24 +4,23 @@
  * \author Mike Buksas
  * \date   Tue Jun  3 14:19:33 2008
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
+#include "../Send_Receive.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 #include "../Release.hh"
 #include "c4_test.hh"
 
 #include "ds++/Packing_Utils.hh"
-#include "../Send_Receive.hh"
+#include "ds++/Assert.hh"
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
 using namespace rtt_c4;
@@ -30,11 +29,18 @@ using namespace rtt_c4;
 // Implementation classes
 //---------------------------------------------------------------------------//
 
-struct Send_Double_Vector : public Sender
+class Send_Double_Vector : public Sender
 {
+  public:
+  
+    explicit Send_Double_Vector(int node) 
+      : Sender(node) 
+    { 
+      return; 
+    }
 
-    Send_Double_Vector(int node) : Sender(node) { /*empty*/ }
-
+    /*! \bug should this be const data?  If so the base class Sender must also
+     *       mark the data as const. */
     void send(vector<double> const & v)
     {
         Sender::send(v.size(), (v.size()>0 ? &v[0] : NULL));
@@ -47,15 +53,17 @@ struct Send_Double_Vector : public Sender
 
 };
 
-struct Receive_Double_Vector : public Receiver
+class Receive_Double_Vector : public Receiver
 {
-
-    Receive_Double_Vector(int node) : Receiver(node) {  }
+  public:
+    explicit Receive_Double_Vector(int node) 
+      : Receiver(node)
+    { return; }
 
     vector<double> receive()
     {
-        int size = receive_size();
-        vector<double> v(size);
+        int size = Receiver::receive_size();
+        vector<double> v(size,0.0);
         if( size > 0 )
             receive_data(size, &v[0]);
 
@@ -64,10 +72,15 @@ struct Receive_Double_Vector : public Receiver
 
 };
 
-struct Receive_Double_Vector_Autosize : public Receiver
+class Receive_Double_Vector_Autosize : public Receiver
 {
-
-    Receive_Double_Vector_Autosize(int node) : Receiver(node) {  }
+  public:
+  
+    explicit Receive_Double_Vector_Autosize(int node) 
+      : Receiver(node) 
+    {
+      return; 
+    }
 
     vector<double> receive()
     {
@@ -90,16 +103,16 @@ struct Receive_Double_Vector_Autosize : public Receiver
 void auto_communication_test()
 {
 
-    Check (nodes() == 1);
-
-    Send_Double_Vector sdv(0);
-    Receive_Double_Vector rdv(0);
-
+    Require(nodes() == 1);
     vector<double> v(3);
     v[0] = 1.0; v[1] = 2.0; v[2] = 3.0;
 
+    Send_Double_Vector sdv(0);
     sdv.send(v);
+
+    Receive_Double_Vector rdv(0);
     vector<double> v2 = rdv.receive();
+    Check( v2.size() == 3 );
 
     if (v2.size() != 3) ITFAILS;
     if (v2[0] != v[0]) ITFAILS;
@@ -108,7 +121,7 @@ void auto_communication_test()
 
     if (rtt_c4_test::passed)
         PASSMSG("Passed auto communication test");
-
+    return;
 }
 
     

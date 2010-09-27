@@ -15,10 +15,9 @@
 #ifndef c4_scatterv_hh
 #define c4_scatterv_hh
 
-#include <unistd.h>
-#include <sys/times.h>  // defines the struct tms.
-#include <vector>
+#include "C4_sys_times.h" // defines the struct DRACE_TIME_TYPE (tms for Linux).
 #include "C4_Traits.hh"
+#include <vector>
 
 namespace rtt_c4
 {
@@ -38,7 +37,7 @@ namespace rtt_c4
  */
 template<class T>
 void determinate_scatterv(std::vector<std::vector<T> > &outgoing_data,
-                          std::vector<T> &incoming_data);
+                          std::vector<T>               &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -54,7 +53,7 @@ void determinate_scatterv(std::vector<std::vector<T> > &outgoing_data,
  */
 template<class T>
 void indeterminate_scatterv(std::vector<std::vector<T> > &outgoing_data,
-                            std::vector<T> &incoming_data);
+                            std::vector<T>               &incoming_data);
 
 } // end namespace rtt_c4
 

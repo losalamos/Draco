@@ -175,7 +175,6 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
     //! A list of command line arguments used during execution of the test.
     std::list< std::string > listOfArgs;
 
-
     //! Name of file for logging output of application execution
     std::string logFile;
     

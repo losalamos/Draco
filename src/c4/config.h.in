@@ -12,11 +12,70 @@
 
 /* C4 Environments */
 
+/* Switch between Autoconf-based build system and CMake-based build */
+#undef AUTOCONF
+
+/* ---------------------------------------- */
+/* AUTOCONF based build system              */
+/* ---------------------------------------- */
+#ifdef AUTOCONF
+
 /* scalar (default) */
 #undef C4_SCALAR
-
 /* mpi */
 #undef C4_MPI
+/* Add version check for Compaq ALASKA MPI releases */
+#undef MPI_VERSION_CHECK
+
+/* We need to know the system type.  These are set by configure.ac.  The
+ * values of these environment variables will set C4_MPICMD and C4_UNAME in
+ * ApplicationUnitTest.hh.
+ */
+/* Is this Linux */
+#undef c4_isLinux
+/* Is this OSF1 */
+#undef c4_isOSF1
+/* Is this Darwin */
+#undef c4_isDarwin
+/* Is this AIX */
+#undef c4_isAIX
+
+/* ---------------------------------------- */
+/* CMAKE based build system                 */
+/* ---------------------------------------- */
+#else
+
+/* DRACO_C4:= [MPI|SCALR] */
+#cmakedefine DRACO_C4 @DRACO_C4@
+/* C4_SCALAR */
+#cmakedefine C4_SCALAR
+/* C4_MPI */
+#cmakedefine C4_MPI
+
+/* We need to know the system type.  These are set by configure.ac.  The
+ * values of these environment variables will set C4_MPICMD and C4_UNAME in
+ * ApplicationUnitTest.hh.
+ */
+
+/* Is this Windows */
+#cmakedefine c4_isWin
+ /* Is this Linux */
+#cmakedefine c4_isLinux
+/* Is this OSF1 */
+#cmakedefine c4_isOSF1
+/* Is this Darwin */
+#cmakedefine c4_isDarwin
+/* Is this AIX */
+#cmakedefine c4_isAIX
+
+/* CMake binary directory */
+#define CMAKE_C4_BINARY_DIR "@PROJECT_BINARY_DIR@"
+
+#endif /* cmake or autoconf */
+
+/* ---------------------------------------- */
+/* All build systems                        */
+/* ---------------------------------------- */
 
 /* POSIX DEFINES */
 #undef _POSIX_SOURCE
@@ -29,25 +88,8 @@
 /* Add version check for Compaq ALASKA MPI releases */
 #undef MPI_VERSION_CHECK
 
-/* We need to know the system type.  These are set by configure.ac.  The
- * values of these environment variables will set C4_MPICMD and C4_UNAME in
- * ApplicationUnitTest.hh.
- */
-
-/* Is this Linux */
-#undef c4_isLinux
-
-/* Is this OSF1 */
-#undef c4_isOSF1
-
-/* Is this Darwin */
-#undef c4_isDarwin
-
-/* Is this AIX */
-#undef c4_isAIX
-
-#endif                          /* rtt_c4_config_h */
+#endif /* rtt_c4_config_h */
 
 /*---------------------------------------------------------------------------*/
-/*                              end of config.h */
+/* end of config.h                                                           */
 /*---------------------------------------------------------------------------*/

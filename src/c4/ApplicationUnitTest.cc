@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco application unit tests.
- * \note   Copyright 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +12,7 @@
 
 #include "ApplicationUnitTest.hh"
 #include "c4/config.h"
+#include "ds++/path.hh"
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
@@ -49,7 +50,7 @@ ApplicationUnitTest::ApplicationUnitTest(
       mpiCommand( constructMpiCommand( numProcs ) ),
       logExtension( buildLogExtension( numProcs ) ),
       listOfArgs( listOfArgs_ ),
-      logFile( std::string() )
+      logFile()
 {
     using std::string;
 
@@ -204,12 +205,8 @@ std::string ApplicationUnitTest::constructMpiCommand(
         cmd << C4_MPICMD;
             
         // relative path to the binary.
-        cmd << numProcs << " " << applicationPath + applicationName;
-#if defined( c4_isWin )
-        cmd << ".exe ";
-#else
-        cmd << " ";        
-#endif        
+        cmd << numProcs << " " << applicationPath + applicationName
+            + rtt_dsxx::exeExtension;
     }
 
     Ensure( cmd.str().length() > 0 );
@@ -244,7 +241,7 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
               + appArg + logExtension;
     
     std::ostringstream unixCommand;
-    unixCommand << mpiCommand << appArg << " > " << logFile;
+    unixCommand << mpiCommand << " " << appArg << " > " << logFile;
     std::cout << "\nExecuting command from the shell: \n\t\""
               << unixCommand.str().c_str() << "\"\n" << std::endl;
     errorLevel = std::system( unixCommand.str().c_str() );

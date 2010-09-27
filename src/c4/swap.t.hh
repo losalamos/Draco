@@ -39,7 +39,10 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
     unsigned outgoing_processor_count = outgoing_pid.size();
 
 #ifdef C4_MPI
-    { // This block is a no-op for with-c4=scalar 
+    // This block is a no-op for with-c4=scalar.
+    // Dito when the vectors are of zero-length.
+    if( incoming_processor_count > 0 )
+    { 
         
         // Post the asynchronous sends.
         vector<C4_Req> outgoing_C4_Req(outgoing_processor_count);
@@ -189,14 +192,14 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
                               incoming_pid[p],
                               tag);
         }
-        
+
         // Wait for all the receives to complete.
-        
-        wait_all(incoming_processor_count, &incoming_C4_Req[0]);
+        if( incoming_C4_Req.size() > 0 )
+            wait_all(incoming_processor_count, &incoming_C4_Req[0]);
         
         // Wait until all the posted sends have completed.
-        
-        wait_all(outgoing_processor_count, &outgoing_C4_Req[0]);
+        if( outgoing_C4_Req.size() > 0 )
+            wait_all(outgoing_processor_count, &outgoing_C4_Req[0]);
         
     }
 #endif // C4_MPI

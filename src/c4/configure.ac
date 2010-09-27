@@ -25,6 +25,10 @@ dnl scripts 'install-sh', 'config.sub' and 'config.guess' found in
 dnl this directory.
 AC_CONFIG_AUX_DIR(../../config)
 
+# Toggle between autoconf and cmake build systems when constructing
+# config.h from config.h.in
+AC_DEFINE(AUTOCONF autoconf)
+
 dnl If needed, AC_CONFIG_HEADER(config.h.in) should go here (p. 15)
 dnl This will replace @DEFS@ with -DHAVE_CONFIG_H in generated files
 dnl and will create the file config.h with a list of #define val1

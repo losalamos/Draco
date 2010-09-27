@@ -4,23 +4,22 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <sstream>
-
-#include "ds++/Soft_Equivalence.hh"
 #include "../Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 #include "../Timer.hh"
 #include "c4_test.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -137,12 +136,16 @@ void wall_clock_test()
     
     double const deltaWallTime( t.wall_clock() - (
 				    t.system_cpu() + t.user_cpu() ) );
-    
-    if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= prec )
+#ifdef _MSC_VER
+    double const time_resolution( 1.0 );  
+#else
+    double const time_resolution( prec );  
+#endif    
+    if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= time_resolution )
     {
 	ostringstream msg;
 	msg << "The sum of cpu and user time is less than or equal to the\n\t"
-	    << "reported wall clock time (within error bars = " << prec
+	    << "reported wall clock time (within error bars = " << time_resolution
 	    << " secs.)." << endl;
 	PASSMSG(msg.str());
     }

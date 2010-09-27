@@ -120,7 +120,8 @@ class Receiver
     int receive_size() const
     {        
         int size_rec(0);
-        rtt_c4::receive<int>(&size_rec, 1, from_node, SIZE_CHANNEL);
+        /*int count = */ rtt_c4::receive<int>(&size_rec, 1, from_node, SIZE_CHANNEL);
+
         return size_rec;
     }
 

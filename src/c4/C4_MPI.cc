@@ -10,15 +10,13 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/config.h"
-
 #ifdef C4_MPI
 
+#include "C4_sys_times.h"
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
 #include "C4_MPI.hh"
 #include <vector>
-#include <unistd.h>
-#include <sys/times.h>
 
 namespace rtt_c4
 {
@@ -111,11 +109,15 @@ double wall_clock_time()
     return MPI_Wtime();
 }
 // overloaded function (provide POSIX timer information).
-double wall_clock_time( tms & now )
+double wall_clock_time( DRACO_TIME_TYPE & now )
 {
     // obtain posix timer information and return it to the user via the
     // reference value argument "now".
+#ifdef WIN32
+    now = time(NULL);
+#else
     times( &now );
+#endif
     // This funtion will return the MPI wall-clock time.
     return MPI_Wtime();
 }

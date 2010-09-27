@@ -14,8 +14,7 @@
 #ifdef C4_SCALAR
 
 #include "C4_Serial.hh"
-#include <unistd.h>
-#include <sys/times.h>
+#include "C4_sys_times.h"
 #include <cstdlib>
 
 namespace rtt_c4
@@ -67,14 +66,23 @@ int nodes()
 // BARRIER FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void global_barrier()
-{
-}
+void global_barrier() { /* empty */ }
 
 //---------------------------------------------------------------------------//
 // TIMING FUNCTIONS
 //---------------------------------------------------------------------------//
 
+#if defined( WIN32 )
+double wall_clock_time()
+{
+    __timeb64 now;
+    return _ftime64_s( &now );
+}
+double wall_clock_time( __timeb64 & now )
+{
+    return _ftime64_s( &now );
+}
+#else
 double wall_clock_time()
 {
     tms now;
@@ -84,12 +92,13 @@ double wall_clock_time( tms & now )
 {
     return times( &now ) / wall_clock_resolution();
 }
+#endif
 
 //---------------------------------------------------------------------------//
 
 double wall_clock_resolution()
 {
-    return static_cast<double>(sysconf(_SC_CLK_TCK));
+    return static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
 
 //---------------------------------------------------------------------------//

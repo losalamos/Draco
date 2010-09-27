@@ -15,10 +15,9 @@
 #ifndef c4_gatherv_hh
 #define c4_gatherv_hh
 
-#include <unistd.h>
-#include <sys/times.h>  // defines the struct tms.
-#include <vector>
+#include "C4_sys_times.h"
 #include "C4_Traits.hh"
+#include <vector>
 
 namespace rtt_c4
 {

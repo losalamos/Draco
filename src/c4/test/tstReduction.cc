@@ -118,8 +118,8 @@ void array_reduction()
     vector<double> x(100);
     vector<double> prod(100, 1.0);
     vector<double> sum(100, 0.0);
-    vector<double> min(100, 0.0);
-    vector<double> max(100, 0.0);
+    vector<double> lmin(100, 0.0);
+    vector<double> lmax(100, 0.0);
     
     // fill it
     for (int i = 0; i < 100; i++)
@@ -130,8 +130,8 @@ void array_reduction()
 	    sum[i]  += (j + 0.11);
 	    prod[i] *= (j + 0.11);
 	}
-	min[i] = 0.11;
-	max[i] = rtt_c4::nodes() + 0.11 - 1.0;
+	lmin[i] = 0.11;
+	lmax[i] = rtt_c4::nodes() + 0.11 - 1.0;
     }
 
     vector<double> c;
@@ -147,11 +147,11 @@ void array_reduction()
         
         c = x;
         global_min(&c[0], 100);
-        if (!soft_equiv(c.begin(), c.end(), min.begin(), min.end())) ITFAILS;
+        if (!soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end())) ITFAILS;
         
         c = x;
         global_max(&c[0], 100);
-        if (!soft_equiv(c.begin(), c.end(), max.begin(), max.end())) ITFAILS;
+        if (!soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end())) ITFAILS;
         
     }
 
@@ -169,11 +169,11 @@ void array_reduction()
         
         c = x;
         C4::gmin(&c[0], 100);
-        if (!soft_equiv(c.begin(), c.end(), min.begin(), min.end())) ITFAILS;
+        if (!soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end())) ITFAILS;
         
         c = x;
         C4::gmax(&c[0], 100);
-        if (!soft_equiv(c.begin(), c.end(), max.begin(), max.end())) ITFAILS;
+        if (!soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end())) ITFAILS;
         
     }
     

@@ -4,18 +4,19 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Test the Draco class ApplicationUnitTest
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../Release.hh"
+#include "../ApplicationUnitTest.hh"
+#include "ds++/path.hh"
 #include <iostream>
 #include <sstream>
 #include <map>
-
-#include "../Release.hh"
-#include "../ApplicationUnitTest.hh"
 
 using namespace std;
 using namespace rtt_c4;
@@ -24,7 +25,7 @@ using namespace rtt_c4;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstOne( ApplicationUnitTest &unitTest )
+void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
 {
     string const extraArg( "hello" );
     unitTest.addCommandLineArgument( extraArg );
@@ -36,15 +37,18 @@ void tstOne( ApplicationUnitTest &unitTest )
     
     string const logFilename( unitTest.logFileName() );
     ostringstream msg;
-    msg << "phw_hello-"<< unitTest.nodes() <<".out";
+    msg << appPath << "phw_hello-" << unitTest.nodes() <<".out";
     string const expLogFilename( msg.str() );
-
-    // Find the expected filename (no path) in the real filename
-    size_t pos( logFilename.find( expLogFilename ) );
-    if( pos != string::npos )
-        unitTest.passes( "Found expected log filename (pos != npos)." );
+    if( expLogFilename == logFilename )
+        unitTest.passes( "Found expected log filename." );
     else
-        unitTest.failure( "Did not find expected log filename (pos == npos)." );
+    {
+      ostringstream msg2;
+      msg2 << "Did not find expected log filename.  Looking for \"" 
+           << expLogFilename << "\" but found \"" << logFilename 
+           << "\" instead.";
+        unitTest.failure( msg2.str() );
+    }
     cout << endl;
     return;
 }
@@ -92,20 +96,43 @@ void tstTwoCheck( ApplicationUnitTest &unitTest, std::ostringstream & msg )
     return;
 }
 
+// Helper function
+std::string setTestPath( std::string const fqName )
+{
+    using std::string;
+    string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
+    if( idx == string::npos ) 
+    {
+        // Didn't find directory separator, as 2nd chance look for Windows
+        // directory separator. 
+        string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
+        if( idx == string::npos )
+            // If we still cannot find a path separator, return "./"
+            return string( string(".") + rtt_dsxx::dirSep );
+    }
+    string pathName = fqName.substr(0,idx+1);    
+    return pathName;
+}
+
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     try
     {
+        // build the application path + name
+        string const appPath( setTestPath( argv[0] ) );
+        string const appName( appPath + string("phw") );
+        
         // Test ctor for ApplicationUnitTest 
-        ApplicationUnitTest ut( argc, argv, release, "./phw" );
-        tstOne(ut);
+        ApplicationUnitTest ut( argc, argv, release, appName );
+        tstOne( ut, appPath );
 
         // Silent version.
         std::ostringstream messages;
         ApplicationUnitTest sut(
-            argc, argv, release, "./phw", std::list<std::string>(), messages );
+            argc, argv, release, appName, std::list<std::string>(), messages );
         tstTwo(sut);
         tstTwoCheck( ut, messages );
         

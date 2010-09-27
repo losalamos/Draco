@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Timer class.
+ * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,13 +14,13 @@
 #ifndef __c4_Timer_hh__
 #define __c4_Timer_hh__
 
-#include <iostream>
-#include "ds++/Assert.hh"
 #include "C4_Functions.hh"
+#include "ds++/Assert.hh"
+#include <iostream>
 
 namespace rtt_c4
 {
- 
+
 //===========================================================================//
 /*!
  * \class Timer
@@ -28,9 +30,6 @@ namespace rtt_c4
  * The Timer class is used to calculate wall clock, user cpu, and system cpu
  * timings.  It uses the POSIX standard times function, so it should work
  * well on all (POSIX) systems.
- *
- * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced
- * Programming in the UNIX Environment" by Stevens.
  *
  * Usage:
  * \code
@@ -45,12 +44,68 @@ namespace rtt_c4
  * std::cout << t.wall_clock() << std::endl;
  * \endcode
  *
+ * The POSIX implementation of timers are described in Sec. 8.15 of "Advanced
+ * Programming in the UNIX Environment" by Stevens.
+ *
+ * The MSVC implementation of timers is described on MSDN
+ * - http://msdn.microsoft.com/en-us/library/4e2ess30%28vs.71%29.aspx
+ * - http://msdn.microsoft.com/en-us/library/1f4c8f33%28v=vs.71%29.aspx
+ *
+ * \code
+ * #include <sys/timeb.h>
+ * clock_t start = clock();
+ * // do stuff
+ * clock_t end = clock();
+ * double duration = static_cast<double>(end-start)/CLOCKS_PER_SEC;
+ * \endcode
+ * \code
+ * #define tms __timeb64
+ * struct tms
+ * {
+ *    clock_t tms_utime;   // User CPU time.
+ *    clock_t tms_stime;   // System CPU time. 
+ *    clock_t tms_cutime;  // User CPU time of dead children. 
+ *    clock_t tms_cstime;  // System CPU time of dead children. 
+ * };
+ * \endocde
+ * 
+ * Store the CPU time used by this process and all its dead children (and
+ * their dead children) in \c BUFFER. Return the elapsed real time, or (\c
+ * clock_t) -1 for errors.  All times are in \c CLK_TCK ths of a second.
+ *
+ * \code
+ * extern clock_t times (struct tms *__buffer) __THROW;
+ * \endcode
+ *
+ * An alternate, Unix-style time model:
+ * \code
+ * #include <time.h>
+ * #include <sys/types.h>
+ * #include <sys/timeb.h>
+ * __time64_t ltime;
+ * // Get UNIX-style time and display as number and string. 
+ * _time64( &ltime );
+ * printf( "Time in seconds since UTC 1/1/70:\t%ld\n", ltime );
+ * printf( "UNIX time and date:\t\t\t%s", _ctime64( &ltime ) );
+ *
+ *  // Print additional time information. 
+ *  struct __timeb64 tstruct;
+ * _ftime64( &tstruct );
+ * printf( "Plus milliseconds:\t\t\t%u\n", tstruct.millitm );
+ * printf( "Zone difference in hours from UTC:\t%u\n", 
+ *          tstruct.timezone/60 );
+ * printf( "Time zone name:\t\t\t\t%s\n", _tzname[0] );
+ * printf( "Daylight savings:\t\t\t%s\n", 
+ *          tstruct.dstflag ? "YES" : "NO" );
+ * \endcode
+ *
  * \example c4/test/tstTime.cc
  */
 // revision history:
 // -----------------
 // 0) original
 // 1) 2003/01/21 Added sum_* member functions (Lowrie).
+// 2) 2010/09/27 Added support for MSVC & CMake (KT).
 // 
 //===========================================================================//
 
@@ -64,10 +119,9 @@ class Timer
     double end;
 
     //! POSIX tms structure for beginning time.
-    tms tms_begin;
-
+    DRACO_TIME_TYPE tms_begin;
     //! POSIX tms structure for ending time.
-    tms tms_end;
+    DRACO_TIME_TYPE tms_end;
 
     //! The number of clock ticks per second.
     //! \sa man times
@@ -98,7 +152,9 @@ class Timer
     
     Timer();
     virtual ~Timer() { /* empty */ };
+    // Disable copy and assignment operators
     Timer( Timer const & rhs );
+    Timer const & operator=( Timer const & rhs );
     inline void start();
     inline void stop();
     inline double wall_clock() const;
@@ -133,7 +189,7 @@ void Timer::start()
     timer_on = true;
     ++num_intervals;
     // set both begin and tms_begin.
-    begin    = wall_clock_time( tms_begin );
+    begin = wall_clock_time( tms_begin );  
 }
 
 //---------------------------------------------------------------------------//
@@ -163,8 +219,12 @@ double Timer::wall_clock() const
 double Timer::system_cpu() const
 {
     Require(! timer_on);
+#if defined(WIN32)
+    return 0.0; // difftime( tms_end, tms_begin );
+#else
     return( tms_end.tms_stime - tms_begin.tms_stime )
 	/ static_cast<double>(posix_clock_ticks_per_second);
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -172,15 +232,19 @@ double Timer::system_cpu() const
 double Timer::user_cpu() const
 {
     Require(! timer_on);
+#if defined(WIN32)
+    return difftime( tms_end, tms_begin );
+#else
     return( tms_end.tms_utime - tms_begin.tms_utime )
 	/ static_cast<double>(posix_clock_ticks_per_second); 
+#endif
 }
 
 //---------------------------------------------------------------------------//
 //! The error in the posix timings
 double Timer::posix_err() const
 {
-    return 1.0/static_cast<double>(posix_clock_ticks_per_second);
+    return 1.0/static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
 
 //---------------------------------------------------------------------------//

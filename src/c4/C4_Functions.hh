@@ -15,8 +15,8 @@
 #ifndef c4_C4_Functions_hh
 #define c4_C4_Functions_hh
 
-#include <unistd.h>
-#include <sys/times.h>  // defines the struct tms.
+#include "ds++/config.h"
+#include "C4_sys_times.h"
 #include "C4_Traits.hh"
 #include "C4_Req.hh"
 
@@ -202,7 +202,7 @@ C4_Req receive_async( T   * buffer,
                       int   source )
 {
     int tag = C4_Traits<T*>::tag;
-    return receive_async( buffer, size, source, tag );
+    return receive_async<T>( buffer, size, source, tag );
 }
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
@@ -354,7 +354,8 @@ void global_max(T *x, int n);
  * \brief Return the wall-clock time in seconds.
  */
 double wall_clock_time();
-double wall_clock_time( tms & now );
+double wall_clock_time( DRACO_TIME_TYPE & now );
+
 
 //---------------------------------------------------------------------------//
 /*!
