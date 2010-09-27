@@ -53,7 +53,17 @@ ld --version
 echo " "
 
 # get F90 version
-echo "% lf95 --version"
-lf95 --version
-echo " "
+if test ${F90-notset} = notset; then 
+   echo "F90 not set in environment."
+else
+   echo "F90 = ${F90}"
+   case $F90 in
+   *gfortran)
+      $F90 --version
+      ;;
+   *pgf90)
+      $F90 -V
+      ;;
+   esac
+fi
 
