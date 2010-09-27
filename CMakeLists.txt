@@ -81,8 +81,13 @@ add_test( SystemInformationNew
   # )
 
 # Define release targets (Win32 only)
-#TODO: Needed for libtranspire?:
 #include( release )
+
+# Extra custom commands
+
+# alias for 'make configure'
+add_custom_target( configure
+   COMMAND ${CMAKE_MAKE_COMMAND} rebuild_cache )   
 
 # set PATH=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Windows\Microsoft.NET\Framework\v3.5;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\VCPackages;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\NETFX 4.0 Tools;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Intel\Shared Files\fortran\bin\Intel64;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files (x86)\QT Lite\QTSystem;c:\Program Files (x86)\Microsoft SQL Server\90\Tools\binn\;c:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\DTS\Binn;C:\Program Files (x86)\CMake 2.8\bin;C:\Program Files (x86)\QT Lite\QTSystem\;C:\Program Files (x86)\MPICH2\bin
 
