@@ -12,13 +12,17 @@ AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(rng/config.h:config.h.in)
 package="rng"
 
+# Toggle between autoconf and cmake build systems when constructing
+# config.h from config.h.in
+AC_DEFINE(AUTOCONF autoconf)
+
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
 
 AC_ARG_ENABLE([rng-nr],AS_HELP_STRING([--enable-rng-nr],
                                       [use non-reproducible random number streams]),
-        AC_DEFINE([RNG_NR]))
+        AC_DEFINE([RNG_NR]))   
 
 # TESTS
 AC_RUNTESTS(tstRnd_Control_Inline, scalar)

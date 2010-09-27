@@ -248,7 +248,7 @@ bool check_title(
 
 bool check_get_dims_ndim(
     rtt_meshReaders::Hex_Mesh_Reader const & mesh,
-    std::string const & testid )
+    std::string                      const & testid )
 {
     // Check dimensionality.
     int expectedDim(0);
@@ -256,9 +256,8 @@ bool check_get_dims_ndim(
     if( testid == "quad" ) expectedDim = 2;
     if( testid == "cube" ) expectedDim = 3;
 
-    bool pass_gdn(true);
-    
-    if( pass_gdn = mesh.get_dims_ndim() == expectedDim )
+    bool pass_gdn( mesh.get_dims_ndim() == static_cast<size_t>(expectedDim) );
+    if( pass_gdn )
     {
 	ostringstream message;
 	message << "For " << testid << " mesh, mesh.get_dims_ndim() reported "
@@ -443,17 +442,23 @@ bool check_element_types(
     if (testid == "slab")
     { 
 	for (int i=0; i<100; ++i)
-	    pass_et = pass_et && etypes[i] == et::BAR_2;
+	    pass_et = pass_et && ( etypes[i] == et::BAR_2 );
+	for (int i=100; i<102; ++i)
+	    etypes[i] = et::NODE;
     }
     else if (testid == "quad")
     {
 	for (int i=0; i<400; ++i)
-	    pass_et = pass_et && etypes[i] == et::QUAD_4;
+	    pass_et = pass_et && ( etypes[i] == et::QUAD_4 );
+	for (int i=400; i<480; ++i)
+	    etypes[i] = et::BAR_2;
     }
     else if (testid == "cube") 
     {
 	for (int i=0; i<125; ++i)
-	    pass_et = pass_et && etypes[i] == et::HEXA_8;
+	    pass_et = pass_et && ( etypes[i] == et::HEXA_8 );
+	for (int i=125; i<275; ++i)
+	    etypes[i] = et::QUAD_4;
     }
     else
 	Insist(false,"Unrecognized test id string!");
@@ -528,7 +533,7 @@ bool check_map(const std::map<std::string, std::set<int> >
     if (iter != elmsets.end())
     {
 	const std::set<int> &elem_subset = (*iter).second;
-	if (elem_subset.size() == end-begin) 
+	if (elem_subset.size() == static_cast<size_t>(end-begin)) 
 	{
 	    for (int i=begin; i<end; ++i)
 	    {

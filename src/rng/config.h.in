@@ -9,15 +9,39 @@
 #ifndef rtt_rng_config_h
 #define rtt_rng_config_h
 
-/* USE STANDARD C INTERFACE */
-#ifndef __STDC__
-#define __STDC__
-#endif
+/* Switch between Autoconf-based build system and CMake-based build */
+#undef AUTOCONF
+
+/* ---------------------------------------- */
+/* AUTOCONF based build system              */
+/* ---------------------------------------- */
+#ifdef AUTOCONF
 
 /* Use a non-reproducable random number generator (*_Inline only) */
 #undef RNG_NR
 
-#endif                          /* rtt_rng_config_h */
+/* ---------------------------------------- */
+/* CMAKE based build system                 */
+/* ---------------------------------------- */
+#else
+
+/* Use a non-reproducable random number generator (*_Inline only) */
+#cmakedefine RNG_NR @RNG_NR@
+
+#endif
+
+/* ---------------------------------------- */
+/* GENERAL build system setup               */
+/* ---------------------------------------- */
+
+/* USE STANDARD C INTERFACE */
+#ifndef _MSC_VER
+#ifndef __STDC__
+#define __STDC__
+#endif
+#endif
+
+#endif /* rtt_rng_config_h */
 
 /*---------------------------------------------------------------------------*/
 /*                              end of config.h */

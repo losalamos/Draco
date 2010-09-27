@@ -59,6 +59,11 @@
   June 28, 2006 
 */
 
+#ifdef _MSC_VER
+#define LFG_RESTRICT
+#else
+#define LFG_RESTRICT __restrict__
+#endif
 
 #include <assert.h>
 #include <stdio.h>
@@ -772,7 +777,7 @@ lfg_create_rng_part1(const unsigned gennum,
 {
     int i;
     unsigned nstart[VALID_LM1];
-    unsigned * const si = begin + OFFSET_si;
+    /* unsigned * const si = begin + OFFSET_si; */
 
   
     /*      gives back one generator (node gennum) with updated spawning  */

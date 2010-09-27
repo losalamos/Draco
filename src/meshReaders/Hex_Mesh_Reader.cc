@@ -9,11 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "Hex_Mesh_Reader.hh"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "Hex_Mesh_Reader.hh"
 
 namespace rtt_meshReaders
 {
@@ -21,7 +21,23 @@ namespace rtt_meshReaders
 using rtt_mesh_element::Element_Definition;
 
 Hex_Mesh_Reader::Hex_Mesh_Reader( std::string filename )
-    : meshfile_name(filename)
+    : meshfile_name(filename),
+      version("unknown"),
+      npoints(0),
+      ncells(0),
+      nvrtx(0),
+      nvrpf(0),
+      ndim(0),
+      nvb_faces(0),
+      nrb_faces(0),
+      nmat(0),
+      point_coords(),
+      ipar(),
+      imat_index(),
+      irgn_vb_index(),
+      ipar_vb(),
+      ipar_rb(),
+      node_sets()
 {
 
     // Open the mesh file for read.
@@ -317,28 +333,28 @@ Hex_Mesh_Reader::get_element_sets() const
 bool Hex_Mesh_Reader::invariant() const
 {
     bool ldum = check_dims()
-	&& (point_coords.size() == npoints)
-	&& (ipar.size() == ncells)
-	&& (imat_index.size() == ncells)
-	&& (irgn_vb_index.size() == nvb_faces)
-	&& (ipar_vb.size() == nvb_faces)
-	&& (ipar_rb.size() == nrb_faces);
+                && (point_coords.size()  == static_cast<size_t>(npoints))
+                && (ipar.size()          == static_cast<size_t>(ncells))
+                && (imat_index.size()    == static_cast<size_t>(ncells))
+                && (irgn_vb_index.size() == static_cast<size_t>(nvb_faces))
+                && (ipar_vb.size()       == static_cast<size_t>(nvb_faces))
+                && (ipar_rb.size()       == static_cast<size_t>(nrb_faces));
 
     for (int i=0; i<ncells; ++i)
     {
-	ldum = ldum && ipar[i].size() == nvrtx;
+	ldum = ldum && ipar[i].size() == static_cast<size_t>(nvrtx);
 	for (int j=0; j<nvrtx; ++j)
 	    ldum = ldum && ipar[i][j] >=0 && ipar[i][j] < npoints;
     }
     for (int i=0; i<nvb_faces; ++i)
     {
-	ldum = ldum && ipar_vb[i].size() == nvrpf;
+	ldum = ldum && ipar_vb[i].size() == static_cast<size_t>(nvrpf);
 	for (int j=0; j<nvrpf; ++j) 
 	    ldum = ldum && ipar_vb[i][j] >=0 && ipar_vb[i][j] < npoints;
     }
     for (int i=0; i<nrb_faces; ++i)
     {
-	ldum = ldum && ipar_rb[i].size() == nvrpf;
+	ldum = ldum && ipar_rb[i].size() == static_cast<size_t>(nvrpf);
 	for (int j=0; j<nvrpf; ++j) 
 	    ldum = ldum && ipar_rb[i][j] >=0 && ipar_rb[i][j] < npoints;
     }
@@ -361,5 +377,5 @@ bool Hex_Mesh_Reader::check_dims() const
 
 
 //---------------------------------------------------------------------------//
-//                          end of Hex_Mesh_Reader.cc
+// end of Hex_Mesh_Reader.cc
 //---------------------------------------------------------------------------//
