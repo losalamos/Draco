@@ -17,7 +17,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_gandolf/config.h )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-#list( REMOVE_ITEM headers ${template_implementations} )
+list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_gandolf/config.h )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE )

@@ -30,6 +30,16 @@ cpp_loc()
   grep ";" $* | wc -l
 }
 
+#
+# awk '/<search pattern>/ {<actions>}'
+#
+
+#Count lines in text files, stripping any blank lines.
+text_loc()
+{
+  awk '/^[ \t]*$/ {next} {print}' $* | wc -l
+}
+
 #Count lines of code in a script file, stripping any blank lines 
 #and/or comments. Comment character is "#".
 script_loc()
@@ -41,7 +51,21 @@ script_loc()
 #and the first line of any comments. Comment character is "<!--".
 html_loc()
 {
-  awk '/^[ \t]*$/ || $1 ~ /^<!--/ {next} {print}' $* | wc -l
+  # 1. Omit lines that start with spaces or tabs. Omit blank lines.
+  # 2. OR (|| )
+  # 2. omit if first record($1 ~) has an HTML comment dilemeter '<!--'
+
+  awk 'BEGIN {skip = 0} \
+    skip == 0 {if ( $1 ~ /^[ \t\n\r]*$/ )
+                 {next} \
+               else if ( $1 ~ /<!--/ )
+                 {skip = 1} \
+               else 
+                 {print}; \
+               next} \
+    skip == 1 { if ( $1 ~ /-->/ )
+                  {skip = 0};\
+                next}' $* | wc -l
 }
 
 #Count lines of code in a tex file, stripping any blank lines
@@ -72,39 +96,41 @@ f77_loc()
   awk '/^[ \t]*$/ || /^[Cc]/ {next} {print}' $* | wc -l
 }
 
+# Count lines of code in m4 files and configure.ac, stripping any
+# blank lines and/or comments.  Comment characters are 'dnl' or '#'.
+m4_loc()
+{
+  awk '/^[ \t]*$/ || $1 ~ /^#/ || $1 ~ /^dnl/ {next} {print}' $* | wc -l
+}
 
-#Define a fucntion which  lists the names of any 
+#Define a fucntion which lists the names of any 
 #shell script files
 list_shell_scripts()
 {
-for file in $*
-do 
-    if file $file | grep 'shell script' >/dev/null
-    then
+  for file in $*; do 
+    if file $file | grep 'shell script' >/dev/null; then
       echo $file
     fi
-done
+  done
 }
 
 #Define a fucntion which  lists the names of any 
 #perl script files
 list_perl_scripts()
 {
-for file in $*
-do 
-    if file $file | grep 'perl script' >/dev/null
-    then
+  for file in $*; do 
+    if file $file | grep 'perl script' >/dev/null;  then
       echo $file
     fi
-done
+  done
 }
 
+#------------------------ Main Code -------------------------------------#
+
 #Get the command line arguments (if any)
-if [ $# = 0 ]
-then
+if [ $# = 0 ]; then
   TMP="."
-elif [ $# = 1 ]
-then
+elif [ $# = 1 ]; then
   TMP="$1"
 else
   TMP="$1"
@@ -114,8 +140,7 @@ else
 fi
 
 #Check for existence of the directory to be scanned
-if [ ! -d $TMP ];
-then
+if [ ! -d $TMP ]; then
  echo $TMP " is not a directory."
  exit 1
 fi
@@ -133,31 +158,36 @@ echo
 # Go to the directory to be scanned.
 cd $CODE_DIR
 
-#------------------------- C++ Source Code ------------------------------
+#------------------------- C++ Source Code [ .cc .hh .cpp .h ] ----------
+
+all_cpp_fils=`find . -type f \( -name '*.cc' -o -name '*.cpp' -o -name '*.hh' -o -name '*.h' \) \
+! -name '#*' -exec cat {} \;`
 
 #Scan for C++ source code
 echo -n "                 Total C++ source: "
-find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
-       -exec cat {} \; |  cpp_loc 
+find . -type f \
+   \( -name '*.cc' -o -name '*.hh' -o -name '*.cpp' -o -name '*.h' \) \
+   ! -name '#*' -exec cat {} \; |  cpp_loc 
 #echo
 
 #------------------------ C++ Test Code ----------------------------------
 
 #Scan for C++ test code
 echo -n "   C++ source in test directories: "
-for i in `find . -name test -type d -print`
-do
-  find ${i} -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
+for i in `find . -name 'test*' -type d -print`; do
+  find ${i} -type f \( -name '*.cc' -o -name '*.hh' -o -name '*.cpp' -o -name '*.h' \) ! -name '#*' \
             -exec cat {} \; 
 done | cpp_loc
 #echo
 
 #Scan for C++ Design-by-Contract specifications
 echo -n "      C++ contract specifications: "
-for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
-          -print` 
-do
-  awk '$1 ~ /[aA]ssert|[rR]equire|[eE]nsure|[cC]heck|[iI]nsist/ {print}' ${i}
+for i in `find . -type f \( -name '*.cc' -o -name '*.hh' -o -name '*.cpp' -o -name '*.h' \) ! -name '#*' \
+          -print`; do
+#   echo ${i}
+#  awk '/[Cc]heck[ ]*\(/ {print}' ${i}
+#  awk '$1 ~ /[aA]ssert|[rR]equire|[eE]nsure|[Cc]heck|[iI]nsist/ {print}' ${i}
+  awk '/[aA]ssert[ ]*\(|[rR]equire[ ]*\(|[eE]nsure[ ]*\(|[ ][Cc]heck[ ]*\(|[iI]nsist[ ]*\(/ {print}' ${i}
 done | cpp_loc
 #echo
 
@@ -165,9 +195,8 @@ done | cpp_loc
 
 #Scan for C++ comments (finds both C and C++ style comments)
 echo -n "                     C++ comments: "
-for i in `find . -type f \( -name '*.cc' -o -name '*.hh' \) ! -name '#*' \
-          -print`
-do 
+for i in `find . -type f \( -name '*.cc' -o -name '*.hh' -o -name '*.cpp' -o -name '*.h'  \) ! -name '#*' \
+          -print`; do 
   awk '$1~/\/\// {print} /\/\*/, /\*\// {print}' ${i}
 done | wc -l
 #echo
@@ -175,18 +204,17 @@ done | wc -l
 #------------------------- f90/f95 Source Code ------------------------------
 
 #Scan for f90/f95 source code
-echo -n "             Total f90/f95 source: "
-find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' \) ! -name '#*' \
-       -exec cat {} \; |  f90_loc 
+echo -n "             Total Fortran source: "
+find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.F95' \) ! -name '#*' \
+       -exec cat {} \; | f90_loc 
 #echo
 
 #------------------------ f90/f95 Documentation ----------------------------
 
 #Scan for f90/f95 comments 
-echo -n "                 f90/f95 comments: "
-for i in `find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' \) \
-          ! -name '#*' -print`
-do 
+echo -n "                 Fortran comments: "
+for i in `find . -type f \( -name '*.F' -o -name '*.f90' -o -name '*.f95' -o -name '*.F95' \) \
+          ! -name '#*' -print`; do 
   awk '$1 ~ /!/ {print}' ${i}
 done | wc -l
 #echo
@@ -196,16 +224,27 @@ done | wc -l
 
 #Scan for LaTeX source code
 echo -n '              LaTeX Documentation: '
-find . -name "*.tex" ! -name '#*' -type f -exec cat {} \; |  latex_loc
+find . -type f \( -name "*.tex" -o -name '*.bib' \) ! -name '#*' -exec cat {} \; |  latex_loc
 #echo
 
 #Scan for html source
-echo -n '                      html source: '
+echo -n '                      HTML source: '
 find . -type f \( -name '*.html' -o -name '*.htm' -o -name '*.shml'  \) \
        ! -name '#*' -exec cat {} \; |  html_loc
+# echo
+
+#Scan for plain text documents
+echo -n '                        Text docs: '
+find . -type f \( -name ChangeLog -o -name 'README*' -o -name '*.txt' -o -name '*.asc' \) \
+  ! -name '#*' -exec cat {} \; | text_loc
 #echo
 
 #------------------------ Scripts ----------------------------------------
+
+#Scan for Build System (M4/configure.ac/Makefile.in) scripts.
+echo -n "       Build system script source: "
+find . -type f ! -name '*~' ! -name '#*' \( -name '*.ac' -o -name '*.m4' -o -name Makefile -o -name '*.in' -o -name '*.cmake' -o -name CMakeLists.txt \) \
+  -exec cat {} \; | m4_loc
 
 #Scan for executable shell script source code. 
 #(such as sh, bash, csh, etc.)

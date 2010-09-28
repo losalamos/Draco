@@ -17,6 +17,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/fpe_trap/config.h )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
+list( APPEND headers ${PROJECT_BINARY_DIR}/fpe_trap/config.h )
 #list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
