@@ -19,22 +19,26 @@ namespace rtt_plot2D {
 
 //===========================================================================//
 /*!
-  \struct SetProps
+  \class SetProps
 
   \brief Set properties for Plot2D class.
 
   See Grace documentation for a detailed explanation of properties.
 */
 //===========================================================================//
-struct SetProps
+class SetProps
 {
-    /// The symbol properties
+  public:
+
+    SetProps(void) : symbol(), line(), legend() {/*empty*/};
+    
+    //! The symbol properties
     SymbolProps symbol;
 
-    /// The line properties
+    //! The line properties
     LineProps line;
 
-    /// Legend title
+    //! Legend title
     std::string legend;
 };
 
