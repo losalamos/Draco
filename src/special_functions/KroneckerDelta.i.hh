@@ -29,7 +29,7 @@ namespace rtt_sf
  * \return 1 if test_value == offset, otherwise return 0;
  */
 template< typename T >
-T kronecker_delta( T const test_value, T const offset ) 
+unsigned int kronecker_delta( T const test_value, T const offset )
 { 
     return (test_value==offset) ? 1 : 0; 
 }

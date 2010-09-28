@@ -67,7 +67,7 @@ struct P
 template <typename F>
 struct P<0,F>
 {
-    static F compute(F x, F p) { return p; }
+    static F compute(F /*x*/, F p) { return p; }
 };
 
 }

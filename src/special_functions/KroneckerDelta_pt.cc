@@ -19,19 +19,19 @@ namespace rtt_sf
 // Make kronecker delta valid only for double, int, unsigned, and float.
 
 template 
-double kronecker_delta( double const test_value, 
+unsigned int kronecker_delta( double const test_value, 
 			double const offset ) ;
 template 
-int kronecker_delta( int const test_value, 
+unsigned int kronecker_delta( int const test_value, 
 		     int const offset ) ;
 template 
-long kronecker_delta( long const test_value, 
+unsigned int kronecker_delta( long const test_value, 
 		      long const offset ) ;
 template 
-unsigned kronecker_delta( unsigned const test_value, 
+unsigned int kronecker_delta( unsigned const test_value, 
 			  unsigned const offset ) ;
 template 
-float kronecker_delta( float const test_value, 
+unsigned int kronecker_delta( float const test_value, 
 		       float const offset ) ;
 
 } // end namespace rtt_sf

@@ -18,7 +18,7 @@ namespace rtt_sf
 
 //! \brief kronecker_delta
 template< typename T >
-T kronecker_delta( T const test_value, T const offset );
+unsigned int kronecker_delta( T const test_value, T const offset );
 
 } // end namespace rtt_sf
 
