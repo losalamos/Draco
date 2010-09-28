@@ -12,10 +12,6 @@
 
 #include "Ensight_Translator.hh"
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 namespace rtt_viz
 {
 
@@ -260,8 +256,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 		  << strerror(errno);
 	Insist (0,  dir_error.str().c_str());
     }
-    
-    mkdir(d_prefix.c_str(), ENSIGHT_DIR_MODE);
+    DRACO_MKDIR( d_prefix.c_str() );
     stat_ret = stat(d_prefix.c_str(), &sbuf);
     if(stat_ret)
     {
@@ -285,9 +280,9 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	{
 	    // This is probably too agressive...
 	    std::ostringstream cmd;
-	    cmd << "rm -rf " << d_prefix;
+            cmd << DRACO_RMDIR << d_prefix;
 	    system(cmd.str().c_str());
-	    mkdir(d_prefix.c_str(), ENSIGHT_DIR_MODE);
+            DRACO_MKDIR( d_prefix.c_str() );
 	}
     }
     else
@@ -376,7 +371,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     // continuation
     d_geo_dir = d_prefix + "/geo";
     if (!graphics_continue)
-	mkdir(d_geo_dir.c_str(), ENSIGHT_DIR_MODE);
+        DRACO_MKDIR( d_geo_dir.c_str() );
 
     // make data directory names and directories
     d_vdata_dirs.resize(d_vdata_names.size());
@@ -387,7 +382,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
-	    mkdir(d_vdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
+            DRACO_MKDIR( d_vdata_dirs[i].c_str() );
     }
     for (size_t i = 0; i < d_cdata_names.size(); i++)
     {
@@ -395,7 +390,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
-	    mkdir(d_cdata_dirs[i].c_str(), ENSIGHT_DIR_MODE);
+            DRACO_MKDIR( d_cdata_dirs[i].c_str() );
     }   
 }
 

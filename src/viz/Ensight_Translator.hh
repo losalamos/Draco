@@ -12,11 +12,12 @@
 #ifndef rtt_viz_Ensight_Translator_hh
 #define rtt_viz_Ensight_Translator_hh
 
+#include "viz/config.h"
+#include "Ensight_Stream.hh"
 #include "traits/Viz_Traits.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Check_Strings.hh"
-#include "Ensight_Stream.hh"
 
 #include <sstream>
 #include <iostream>
@@ -31,12 +32,9 @@
 #include <errno.h>
 #include <cstring>
 #include <cstdlib>
-#include <stdlib.h>
-#include <unistd.h>
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#define ENSIGHT_DIR_MODE S_IRWXU | S_IRWXG | S_IRWXO
 
 namespace rtt_viz
 {
