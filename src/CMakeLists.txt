@@ -45,10 +45,10 @@ add_subdirectory( cdi )          # needs ds++
 add_subdirectory( fpe_trap )     # needs ds++
 add_subdirectory( lapack_wrap )  # needs ds++
 add_subdirectory( mesh_element ) # needs ds++
+add_subdirectory( rng )          # needs ds++
 add_subdirectory( traits )       # needs ds++
 add_subdirectory( units )        # needs ds++
 add_subdirectory( xm )           # needs ds++
-add_subdirectory( rng )          # needs ds++
 
 if( PCG_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/pcgWrap/CMakeLists.txt)
   add_subdirectory( pcgWrap )    # needs ds++
@@ -64,20 +64,19 @@ add_subdirectory( cdi_analytic ) # needs cdi
 add_subdirectory( cdi_gandolf )  # needs cdi
 add_subdirectory( meshReaders )  # needs c4
 add_subdirectory( norms )        # needs c4
+add_subdirectory( special_functions ) # needs units, ds++
+add_subdirectory( timestep )     # needs c4, ds++
 
 if( EXISTS ${PROJECT_SOURCE_DIR}/parser/CMakeLists.txt )
 
 add_subdirectory( parser )       # needs units, c4
-add_subdirectory( special_functions ) # needs units, ds++
-add_subdirectory( timestep )     # needs c4, ds++
 add_subdirectory( viz )          # needs traits, ds++
+
+endif()
 
 # Level 4
 message( STATUS "\nConfiguring Level 4 packages --\n" )
 add_subdirectory( quadrature ) # needs units, c4, special_functions
-
-endif()
-
 add_subdirectory( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, dsxx
 
 # Summary
