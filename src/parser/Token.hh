@@ -27,31 +27,31 @@ using std::string;
 enum Token_Type 
 {
     END,    
-    //!< The identifier <CODE>end</CODE>, denoting that the Parse_Table
-    //!< should return control to its client.  Can be used to implement 
-    //!< nested parse tables.
+    /*!< The identifier <CODE>end</CODE>, denoting that the Parse_Table
+     *   should return control to its client.  Can be used to implement 
+     *   nested parse tables.*/
     
     EXIT,    
-    //!< Denotes that the end of the Token_Stream has been reached.
-    //!< The Token_Stream will continue to return EXIT indefinitely
-    //!< once its end has been reached.
+    /*!< Denotes that the end of the Token_Stream has been reached.
+     *   The Token_Stream will continue to return EXIT indefinitely
+     *   once its end has been reached. */
     
     KEYWORD, 
-    //!< A sequence of one or more C++ identifiers separated by whitespace.
+    /*!< A sequence of one or more C++ identifiers separated by whitespace. */
     
     REAL,
-    //!< A valid C++ floating-point constant.
+    /*!< A valid C++ floating-point constant. */
     
     INTEGER,
-    //!< A valid C++ integer constant.
+    /*!< A valid C++ integer constant. */
     
     STRING,
-    //!< A valid C++ string constant. 
+    /*!< A valid C++ string constant. */
     
     ERROR,
-    //!< The error token, indicating something wrong with the token stream.
-    //!< For example, a file-based token stream would return this token if
-    //!< the file failed to open.
+    /*!< The error token, indicating something wrong with the token stream.
+     *   For example, a file-based token stream would return this token if
+     *   the file failed to open. */
     
     OTHER
     /*! A single character or sequence of characters (such as "==") that does

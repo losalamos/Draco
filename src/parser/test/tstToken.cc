@@ -10,9 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Token.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 using namespace std;
 using namespace rtt_parser;
@@ -49,7 +49,9 @@ void token_test( UnitTest & ut )
     if (Is_Keyword_Text("_$")) ut.failure(__LINE__);
     if (!Is_Keyword_Text("__")) ut.failure(__LINE__);
     if (!Is_Real_Text("+1.56e-3")) ut.failure(__LINE__);
+#ifndef _MSC_VER    
     if (Is_Real_Text("1.39d-3")) ut.failure(__LINE__);
+#endif    
     if (!Is_String_Text("\"This is a test.\"")) ut.failure(__LINE__);
     if (Is_String_Text("\"This is a test")) ut.failure(__LINE__);
     if (Is_String_Text("This is a test")) ut.failure(__LINE__);
@@ -68,7 +70,7 @@ void token_test( UnitTest & ut )
     if (!Is_Other_Text("||")) ut.failure(__LINE__);
     if (Is_Other_Text("!!")) ut.failure(__LINE__);
 
-    if (Is_Text_Token(ERROR)) ut.failure(__LINE__);
+    if (Is_Text_Token(rtt_parser::ERROR)) ut.failure(__LINE__);
     if (Is_Text_Token(EXIT)) ut.failure(__LINE__);
 
     if (Token(REAL, "2", "")==Token(REAL,"3","")) ut.failure(__LINE__);

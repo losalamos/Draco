@@ -101,6 +101,8 @@ Token Text_Token_Stream::fill_()
     char c = peek_();    // Character at the current cursor position
 
     string token_location = location_();
+
+    Token returnValue(END, token_location);
     
     if (c=='\0')
     {
@@ -108,12 +110,12 @@ Token Text_Token_Stream::fill_()
 	if (end_())
 	{
 	    Ensure(check_class_invariants());
-	    return Token(EXIT, token_location);
+	    returnValue = Token(EXIT, token_location);
 	}
 	else
 	{
 	    Ensure(check_class_invariants());
-	    return Token(ERROR, token_location);
+	    returnValue = Token(rtt_parser::ERROR, token_location);
 	}
     }
     else 
@@ -309,10 +311,8 @@ Token Text_Token_Stream::fill_()
 	    Ensure(check_class_invariants());
 	    return Token(c, token_location);
 	}
-
-        Ensure(check_class_invariants());
     }
-    return Token(ERROR, token_location);
+    return returnValue;
 }
 
 //-----------------------------------------------------------------------//

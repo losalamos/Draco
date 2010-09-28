@@ -12,8 +12,8 @@
 #ifndef CCS4_Parallel_File_Token_Stream_HH
 #define CCS4_Parallel_File_Token_Stream_HH
 
-#include "Text_Token_Stream.hh"
 #include <fstream>
+#include "Text_Token_Stream.hh"
 
 namespace rtt_parser 
 {

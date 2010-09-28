@@ -5,23 +5,23 @@
  * \date   Wed Oct 19 14:42 2005
  * \brief  Execute the binary tstConsole_Token_Stream by redirecting the
  * contents of console_test.inp as stdin.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-1020 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "parser_test.hh"
+#include "../Release.hh"
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <cerrno>
-#include <string.h>
-
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-#include "../Release.hh"
-#include "parser_test.hh"
+#include <cstring>
 
 using namespace std;
 
@@ -47,16 +47,17 @@ void runtest()
     // String to hold command that will start the test.  For example:
     // "mpirun -np 1 ./tstConsole_Token_Stream < console_test.inp"
     
-    std::ostringstream unixCommand;
-    
-    unixCommand << " ./tstConsole_Token_Stream < console_test.inp ";
-    
+    std::string consoleCommand("tstConsole_Token_Stream < console_test.inp ");
+#ifndef _MSC_VER    
+    // Unix needs the leading dot-slash.
+    consoleCommand = std::string("./") + consoleCommand;
+#endif
     // return code from the system command
     int errorLevel(-1);
     
     // run the test.
     errno = 0;
-    errorLevel = system( unixCommand.str().c_str() );
+    errorLevel = system( consoleCommand.c_str() );
     
     // check the errorLevel
     std::ostringstream msg;
@@ -109,41 +110,33 @@ int main(int argc, char *argv[])
     catch (exception &err)
     {
         cout << "ERROR: While testing driver4tstConsole_Token_Stream.cc, " 
-                  << err.what() << endl;
+             << err.what() << endl;
         rtt_c4::finalize();
         return 1;
     }
     catch( ... )
     {
         cout << "ERROR: While testing driver4tstConsole_Token_Stream.cc, " 
-                  << "An unknown exception was thrown on processor "
-                  << rtt_c4::node() << endl;
+             << "An unknown exception was thrown on processor "
+             << rtt_c4::node() << endl;
         rtt_c4::finalize();
         return 1;
     }
 
-    {
+    { // status of test
         rtt_c4::HTSyncSpinLock slock;
-
-        // status of test
-        cout << endl;
-        cout <<     "*********************************************" 
-                  << endl;
+        cout <<     "\n*********************************************" ;
         if (rtt_parser_test::passed) 
-        {
-            cout << "**** driver4tstConsole_Token_Stream.cc Test: PASSED on " 
-                      << rtt_c4::node() << endl;
-        }
-        cout <<     "*********************************************" 
-                  << endl;
-        cout << endl;
+            cout << "\n**** driver4tstConsole_Token_Stream.cc Test: PASSED on " 
+                 << rtt_c4::node();
+        cout <<     "\n*********************************************\n"
+             << endl;
     }
     
     rtt_c4::global_barrier();
 
     cout << "Done testing driver4tstConsole_Token_Stream.cc on " << rtt_c4::node() 
-              << endl;
-    
+         << endl;
     rtt_c4::finalize();
 
     return 0;

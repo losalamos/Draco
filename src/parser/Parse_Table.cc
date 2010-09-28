@@ -1,22 +1,22 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Parse_Table.cc
+ * \file   Parse_Table.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
- * \brief Definitions of member functions of class Parse_Table
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \date   Wed Jan 22 15:18:23 MST 2003
+ * \brief  Definitions of member functions of class Parse_Table
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "Parse_Table.hh"
+#include "Token_Stream.hh"
+#include "ds++/Assert.hh"
 #include <algorithm>
 #include <cctype>
 #include <sstream>
 #include <string.h>
-#include "ds++/Assert.hh"
-#include "Parse_Table.hh"
-#include "Token_Stream.hh"
 
 namespace rtt_parser 
 {
@@ -214,7 +214,9 @@ Token Parse_Table::parse(Token_Stream &tokens) const
 	// something went very wrong and we're probably hosed, but it allows
 	// some error recovery from within a nested parse table.
 
-	if (token.type()==END || token.type()==EXIT || token.type()==ERROR) 
+	if (token.type()==END  ||
+            token.type()==EXIT ||
+            token.type()==rtt_parser::ERROR) 
 	{
 	    return token;
 	}

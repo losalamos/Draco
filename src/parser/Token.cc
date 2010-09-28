@@ -1,18 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file Token.cc
+ * \file   Token.cc
  * \author Kent G. Budge
- * \brief Definitions of Token helper functions.
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Definitions of Token helper functions.
+ * \note   Copyright © 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
 #include "Token.hh"
+#include <ctype.h>
+#include <cstring>
+#include <cstdlib>
 
 namespace rtt_parser 
 {
@@ -24,7 +24,7 @@ namespace rtt_parser
 
 bool Is_Text_Token(Token_Type const type)
 {
-    return type!=ERROR && type!=EXIT && type!=END;
+    return type!=rtt_parser::ERROR && type!=EXIT && type!=END;
 }
 
 //-----------------------------------------------------------------------//
@@ -123,7 +123,8 @@ bool Is_Real_Text(char const *text)
     Require(text!=NULL);
     
     char *endtext;
-    strtod(text, &endtext);
+    double d=strtod(text, &endtext);
+    Check( d != 0.0 ); // no valid conversion found.
     return !*endtext;
 }
 

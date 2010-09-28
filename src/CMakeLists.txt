@@ -64,15 +64,10 @@ add_subdirectory( cdi_analytic ) # needs cdi
 add_subdirectory( cdi_gandolf )  # needs cdi
 add_subdirectory( meshReaders )  # needs c4
 add_subdirectory( norms )        # needs c4
+add_subdirectory( parser )       # needs units, c4
 add_subdirectory( special_functions ) # needs units, ds++
 add_subdirectory( timestep )     # needs c4, ds++
-
-if( EXISTS ${PROJECT_SOURCE_DIR}/parser/CMakeLists.txt )
-
-add_subdirectory( parser )       # needs units, c4
 add_subdirectory( viz )          # needs traits, ds++
-
-endif()
 
 # Level 4
 message( STATUS "\nConfiguring Level 4 packages --\n" )

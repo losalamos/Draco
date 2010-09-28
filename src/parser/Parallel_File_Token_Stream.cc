@@ -1,21 +1,22 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Parallel_File_Token_Stream.cc
+ * \file   Parallel_File_Token_Stream.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
- * \brief Definitions of Parallel_File_Token_Stream methods.
- * \note   Copyright © 2007 Los Alamos National Security, LLC
+ * \date   Wed Jan 22 15:18:23 MST 2003
+ * \brief  Definitions of Parallel_File_Token_Stream methods.
+ * \note   Copyright © 2007-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "c4/global.hh"
+#include "ds++/config.h"
+#include "Parallel_File_Token_Stream.hh"
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <limits>
-#include "c4/global.hh"
-#include "Parallel_File_Token_Stream.hh"
 
 namespace rtt_parser 
 {
@@ -30,8 +31,7 @@ using namespace rtt_dsxx;
  * Text_Token_Stream breaking whitespace characters. If the file cannot be
  * opened, then an exception is thrown.
  *
- * \param file_name
- * Name of the file from which to extract tokens.
+ * \param file_name Name of the file from which to extract tokens.
  *
  * \throw std::invalid_argument If the file cannot be opened.
  *
@@ -169,13 +169,13 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
 {
     using rtt_c4::broadcast;
     
-    vector<char> comm_buffer(numeric_limits<signed char>::max()+1);
+    vector<char> comm_buffer(std::numeric_limits<signed char>::max()+1);
     unsigned i = 1;    // first character is status character
     if (is_io_processor_)
     {
         // Read up to numeric_limits<signed char>::max()+1 characters from the
         // input file.
-	while (i < static_cast<unsigned>(numeric_limits<signed char>::max()+1))
+	while (i < static_cast<unsigned>(std::numeric_limits<signed char>::max()+1))
 	{
 	    char const c = infile_.get();
 	    if (infile_.eof() || infile_.fail()) break;

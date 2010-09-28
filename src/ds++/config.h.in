@@ -4,7 +4,8 @@
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Thu Sep 23 17:26:56 2010
  * \brief  CPP defines necessary for the ds++ package.
- * \note   Copyright (C) 2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2010 Los Alamos National Security, LLC.
+ * \version $Id$
  */
 /*---------------------------------------------------------------------------*/
 

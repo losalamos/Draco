@@ -80,19 +80,19 @@ class Error_Token_Stream : public Token_Stream
 
   protected:
 
-    void report(Token const &, string const &err)
+    void report(Token const &, string const & /*err*/)
     {
         cout << "error reported to Error_Token_Stream" << endl;
     }
 
-    void report(string const &err)
+    void report(string const & /*err*/)
     {
         cout << "error reported to Error_Token_Stream" << endl;
     }
 
     Token fill_()
     {
-        return Token(ERROR, "error");
+        return Token(rtt_parser::ERROR, "error");
     }
 };
 
@@ -106,12 +106,12 @@ class Colon_Token_Stream : public Token_Stream
 
   protected:
 
-    void report(Token const &, string const &err)
+    void report(Token const &, string const &/*err*/)
     {
         cout << "error reported to Colon_Token_Stream" << endl;
     }
 
-    void report(string const &err)
+    void report(string const & /*err*/)
     {
         cout << "error reported to Colon_Token_Stream" << endl;
     }
@@ -128,7 +128,7 @@ class Colon_Token_Stream : public Token_Stream
                 return Token(EXIT, "");
             default:
                 Insist(false, "bad case");
-                return Token(ERROR, ""); // dummy return to eliminate warning
+                return Token(rtt_parser::ERROR, ""); // dummy return to eliminate warning
         }
     }
 
@@ -359,7 +359,7 @@ void tstParse_Table(UnitTest &ut)
     // Error handling
     {
         Error_Token_Stream tokens;
-        if (table.parse(tokens).type()!=ERROR)
+        if (table.parse(tokens).type()!=rtt_parser::ERROR)
         {
             ut.failure("error detection FAILED");
         }
