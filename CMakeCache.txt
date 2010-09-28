@@ -1,0 +1,52 @@
+# CMakeCache.txt template for Draco
+# $Id$
+
+# Instructions.
+# 1. Copy this file to your build directory as CMakeCache.txt.
+# 2. Review and update all values in this file.
+# 3. From the build directory run 'cmake /full/path/to/source'
+# 4. make
+# 5. ctest
+# 6. make install
+
+#
+# You must set these values for your build:
+# 
+
+# Location where 'make install' will copy files to.
+# CMAKE_INSTALL_PREFIX:PATH=c:/Release-x64/draco
+CMAKE_INSTALL_PREFIX:PATH=/var/tmp/$ENV{LOGNAME}/Release-x64/draco
+
+# VENDOR_DIR:PATH=$ENV{VENDOR_DIR}
+# Windows: k:/vendors/x64-Windows
+VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
+
+#
+# You must choose one of the provided options
+# 
+
+# CMAKE_BUILD_TYPE == { Release, Debug, RelWithDebInfo, MinSizeRel }
+CMAKE_BUILD_TYPE:STRING=Debug
+
+# CMAKE_GENERATOR == { NMake Makefiles, Unix Makefiles, 
+#                      Visual Studio 9 2008, Visual Studio 9 2008 Win64 }
+CMAKE_GENERATOR:STRING=Unix Makefiles
+
+#
+# Review these additional settings
+# 
+
+# Should we compile the tests?
+DRACO_BUILD_TESTS:BOOL=ON
+
+# C4 communication mode (SCALAR or MPI)
+DRACO_C4:STRING=MPI
+
+# Design-by-Contract (0-7)?
+DRACO_DBC_LEVEL:STRING=7
+ 
+# Keyword for creating new libraries (STATIC or SHARED).
+DRACO_LIBRARY_TYPE:STRING=SHARED
+
+
+
