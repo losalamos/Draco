@@ -123,9 +123,8 @@ bool Is_Real_Text(char const *text)
     Require(text!=NULL);
     
     char *endtext;
-    double d=strtod(text, &endtext);
-    Check( d != 0.0 ); // no valid conversion found.
-    return !*endtext;
+    strtod(text, &endtext);
+    return endtext != text && *endtext == '\0';
 }
 
 //-----------------------------------------------------------------------//
