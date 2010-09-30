@@ -1,52 +1,230 @@
+2010-09-28  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-5_21_0.  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - clubimc-5_0_0
+	  - milagro-5_0_0
+	  - wedgehog-7_0_0
+	  - capsaicin-2_11_0
+
+	* Summary of changes:
+	  - 584 files were changed, added or removed.
+	  - Code base was updated to eliminate many gcc warnings that were
+	    generated when configured with the option
+	    --enable-all-warnings.
+	  - Modifications that do not modify behavior were implemented to
+	    provide better multiplatform support (Mac OS-X and MSVC).
+	  - Extension of unit tests provides better code coverage.
+	  - This release does not include the packages pcgWrap or plot2D.
+
+	* Details per package:
+
+	Build System:
+	  - Added a CMake-based build system that sits parallel to the
+  	    existing autoconf-based build system.
+	  - Reworked ac_vendors.m4 so that vendors are automatically
+	    included for any given build if they vendor libraries are
+	    found. That is, you no longer are required to type
+	    --with-mpi-inc=<path> if $MPI_INC_DIR is found in the
+	    environment.
+	  - M4 macros for setting up vendors have been improved to reduce
+	    code duplication.
+	  - Packages that require vendor code that is not found at
+	    configure time will not be build.  That is, we will not
+	    attempt to compile pcgWrap if libpcg.a is not found.
+	  - The build system now defaults to building parallel aware
+	    libraries (--with-c4=mpi) instead of the previous scalar
+	    default. --with-c4=shmem is now deprecated.
+	  - The draco_config script was improved by allowing it to spawn
+	    multiple threads.
+	  - Provide new configure options --enable-glibcxx-debug and
+	    --enable-all-warnings.
+	  - Added support for options --with-cxx=intel | ppu-gcc ppu-g++.
+	  - Updated scripts to work with 64-bit BullseyeCoverage tool on
+	    Linux64.
+	  - Provided a couple of logic change to better support the Darwin
+	    platform (help it find libopenmpi.so!).
+	  - Added support for Intel Fortran (ifort).
+	  - Added support for finding the NDI libraries.
+
+	Doxygen:
+	  - Update style sheet and some of the top level documents.
+
+	Developer Environment:
+	  - Updated elisp to better support GNU Emacs.
+
+	c4:
+	  - Encapsulate platform specific header files to better support
+	    non-Linux systems.
+	  - Added some scatter and gather operations with multiple
+	    convenience interfaces.
+	  - Added routines to manage swapping of data between processors.
+	  - Update routines to correctly treat the case where message size
+	    is zero.  Prevent safe &v[0] type operations so that
+	    instrumentation of the code doesn't trip over itself.
+
+	ds++:
+	  - Provide support for hiding/exposing symbols in shared object
+	    libraries (DLL_SHARED macro).  See ds++/config.h.in for
+	    details.
+	  - The DbC macro REMEMBER is now defined anytime DBC != 0.
+	  - Provide a new header, path.hh, that encapsulates path
+	    separation symbols along with a few other file system related
+	    behaviors.
+	  - Provide a new class Slice that allows viewing a slice of an
+	    arbitrary container.
+
+	fpe_trap:
+	  - No longer depends on c4.
+	  - Throws an exception of a floating point exception is
+	    encountered.
+
+	units:
+	  - Added cgsh and cgmu unit systems.
+	  - Added output unit system specification.
+
+	quadrature:
+	  - The Transport_Model/Radiation_Package interface has been
+	    refactored.
+	  - All quadrature sets are now normalized so that their weights
+	    sum to 1.
+	  - Provided triangular Chebyshev-Legendre quadrature set.
+
+	special_functions:
+	  - Eliminate code that will always overflow.
+	  - Change the signature of KroneckerDelta so that it returns an
+	    unsigned integer.
+
+	* Statistics:
+
+        Counting lines of source code --
+        Directory:  /home/kgt/draco
+        Date     :  Tue Sep 28 18:10:19 MDT 2010
+
+                         Total C++ source: 33651
+           C++ source in test directories: 19572
+              C++ contract specifications: 1249
+                             C++ comments: 36276
+                     Total Fortran source: 0
+                         Fortran comments: 0
+                      LaTeX Documentation: 14182
+                              HTML source: 0
+                                Text docs: 6470
+               Build system script source: 11727
+           Executable shell script source: 3464
+                   Executable Perl source: 7597
+                            Python source: 4175
+                            Expect source: 0
+                             Elisp source: 6583
+
+    % tools/cloc .
+        2024 text files.
+        1318 unique files.
+        1290 files ignored.
+
+    --------------------------------------------------------------------------------
+    Language                      files          blank        comment           code
+    --------------------------------------------------------------------------------
+    C++                             283          12053          15540          50568
+    C/C++ Header                    281           7460          20216          17362
+    Perl                              2           1262           1456           7062
+    Lisp                             12           1220           1873           6543
+    m4                               45           1860           1390           6337
+    Visual Basic                     13            144              0           4929
+    Bourne Shell                     17            395            940           3776
+    Python                           51           1907           2098           3385
+    XML                               9           1085              0           2798
+    C                                 1            172            234            486
+    make                             15            230            168            466
+    CSS                               1            113             37            395
+    Bourne Again Shell                1              7             24             55
+    C Shell                           1             10             10             50
+    awk                               1              6              2             27
+    --------------------------------------------------------------------------------
+    SUM:                            733          27924          43988         104239
+    --------------------------------------------------------------------------------
+
+    >>> Generating coverage reports...
+
+    Directory               Function Coverage           C/D Coverage
+    ------------------  ---------------------  ---------------------
+    RTT_Format_Reader/     316 /   322 =  98%     273 /   356 =  76%
+    c4/                    155 /   158 =  98%     173 /   218 =  79%
+    cdi/                    40 /    40 = 100%      27 /    30 =  90%
+    cdi_analytic/          105 /   106 =  99%     105 /   110 =  95%
+    cdi_gandolf/            79 /   131 =  60%     125 /   232 =  53%
+    ds++/                  643 /   683 =  94%     564 /   658 =  85%
+    fpe_trap/                1 /     2 =  50%       0 /     0
+    lapack_wrap/            11 /    17 =  64%       0 /     0
+    meshReaders/            16 /    16 = 100%     127 /   172 =  73%
+    mesh_element/           25 /    25 = 100%     157 /   205 =  76%
+    norms/                  22 /    24 =  91%      21 /    34 =  61%
+    parser/                136 /   140 =  97%     798 /   910 =  87%
+    plot2D/                 21 /    29 =  72%      46 /    76 =  60%
+    quadrature/            162 /   170 =  95%     413 /   500 =  82%
+    rng/                    22 /    48 =  45%      46 /    72 =  63%
+    shared_lib/             11 /    13 =  84%       7 /    10 =  70%
+    special_functions/      13 /    13 = 100%      32 /    32 = 100%
+    timestep/               49 /    62 =  79%      88 /   178 =  49%
+    traits/                 12 /    17 =  70%       0 /     0
+    units/                  83 /    83 = 100%      58 /    58 = 100%
+    viz/                    23 /    26 =  88%     129 /   168 =  76%
+    xm/                     56 /    58 =  96%      29 /    32 =  90%
+    ------------------  ---------------------  ---------------------
+    Total                 2001 /  2183 =  91%    3218 /  4051 =  79%
+
+
 2009-06-16 Jae Chang <jhchang@lanl.gov> and Gabe Rockefeller <gaber@lanl.gov>
 
-	* draco: Release of draco-5_20-0. This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5_20-0. This is a minor Draco release.
+        A summary of changes is:
 
-	config
-		- Added changes to accomodate linking of fortran main
-		programs
-		
-		- Added support for Intel compilers
+        config
+                - Added changes to accomodate linking of fortran main
+                programs
 
-		- Altered doxygen to allow a user to optionally specify a
-		different doxygen_config.in file that the one in config.
+                - Added support for Intel compilers
 
-	   	- Added support for gfortran
+                - Altered doxygen to allow a user to optionally specify a
+                different doxygen_config.in file that the one in config.
 
-		- Added Silo library support
+                - Added support for gfortran
 
-	c4
-		- Replaced rtt_c4::finalized() with rtt_c4::abort() when
-		it appears in a catch block in unit tests.
-		
+                - Added Silo library support
 
-	cdi 
-		- Added support Opacity Distribution Function (ODF). See
-		note below written by Seth.
-
-	cdi_analytic
-		
-		- See note for cdi
-
-	cdi_gandolf
-
-		- See note for cdi
-
-	ds++ 
-		- Added scons build system input files
+        c4
+                - Replaced rtt_c4::finalized() with rtt_c4::abort() when
+                it appears in a catch block in unit tests.
 
 
-	parser
+        cdi
+                - Added support Opacity Distribution Function (ODF). See
+                note below written by Seth.
 
-		- Fixed error in location()
-	  
-		- Improved diagnostics for String_Token_Stream
+        cdi_analytic
 
-	plot2D
+                - See note for cdi
 
-		- Minor fixed for gcc 4.3 (using C++ header files)
-Counting lines of source code -- 
+        cdi_gandolf
+
+                - See note for cdi
+
+        ds++
+                - Added scons build system input files
+
+
+        parser
+
+                - Fixed error in location()
+
+                - Improved diagnostics for String_Token_Stream
+
+        plot2D
+
+                - Minor fixed for gcc 4.3 (using C++ header files)
+Counting lines of source code --
 Directory:  /home/jhchang/release/draco
 Date     :  Thu Jun 18 09:16:04 MDT 2009
 
@@ -65,214 +243,214 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
                      Elisp source: 3289
 
 
-	quadrature
+        quadrature
 
-		- Extended Discrete_To_Moment and Moment_To_Discrete to 3D
+                - Extended Discrete_To_Moment and Moment_To_Discrete to 3D
 
-		- Corrected normalization of angle quadrature set
+                - Corrected normalization of angle quadrature set
 
-	rng
+        rng
 
-		- Added support for inline sprng lfg
+                - Added support for inline sprng lfg
 
-		- Added inline Random and Rnd_Control classes
+                - Added inline Random and Rnd_Control classes
 
-		
-	Released Packages:
+                
+        Released Packages:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf - where libgandolf.a exist
-	     	ds++
-		fpe_trap
-		lapack_wrap - where lapack and blas installed
-		meshReaders
-		mesh_element
-		norms
-		parser
-		pcgWrap
-		plot2D - where xmgrace installed
-		quadrature - where gsl installed
-		rng
-		shared_lib
-		special_functions - where gsl installed
-		timestep
-		traits
-		units
-		viz
-		xm - doesn't build on Redstorm
-	
-		Counting lines of source code -- 
-		Directory:  /home/jhchang/release/draco
-		Date     :  Thu Jun 18 09:16:04 MDT 2009
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf - where libgandolf.a exist
+                ds++
+                fpe_trap
+                lapack_wrap - where lapack and blas installed
+                meshReaders
+                mesh_element
+                norms
+                parser
+                pcgWrap
+                plot2D - where xmgrace installed
+                quadrature - where gsl installed
+                rng
+                shared_lib
+                special_functions - where gsl installed
+                timestep
+                traits
+                units
+                viz
+                xm - doesn't build on Redstorm
+        
+                Counting lines of source code -- 
+                Directory:  /home/jhchang/release/draco
+                Date     :  Thu Jun 18 09:16:04 MDT 2009
 
-		                 Total C++ source: 31730
-		   C++ source in test directories: 18151
-		      C++ contract specifications: 1222
-		                     C++ comments: 34947
-   		             Total f90/f95 source: 0
-    		                 f90/f95 comments: 0
-       		              LaTeX Documentation: 13565
-  		                      html source: 0
-		   Executable shell script source: 3012
-    	       	           Executable Perl source: 0
-   		                    Python source: 4158
-          		            Expect source: 0
+                                 Total C++ source: 31730
+                   C++ source in test directories: 18151
+                      C++ contract specifications: 1222
+                                     C++ comments: 34947
+                             Total f90/f95 source: 0
+                                 f90/f95 comments: 0
+                              LaTeX Documentation: 13565
+                                      html source: 0
+                   Executable shell script source: 3012
+                           Executable Perl source: 0
+                                    Python source: 4158
+                                    Expect source: 0
                                      Elisp source: 3289
-		
-	This release was required by jayenne [clubimc-4_2_0,
-	wedgehog-6_2_0 and capsaicin-2_10_0].
-	
+                
+        This release was required by jayenne [clubimc-4_2_0,
+        wedgehog-6_2_0 and capsaicin-2_10_0].
+        
 
 2008-08-18  Seth R. Johnson  <sethrj@umich.edu>
 
-	* Implementation of Opacity Distribution Function (ODF) method with
-	multiple groups (ODFMG), see tech memo CCS-2-2-08-52
+        * Implementation of Opacity Distribution Function (ODF) method with
+        multiple groups (ODFMG), see tech memo CCS-2-2-08-52
 
-		- New opacity class: OdfmgOpacity returns opacities with one more
-		dimension than multigroup (some number of opacity "bands" per group)
-		- New gandolf class: GandolfOdfmgOpacity, which inherits from
-		OdfmgOpacity, interfaces with an IPCRESS file written with the TOPS odf 
-		capability. The number of opacity bands is passed to the constructor,
-		which unflattens the apparently multigroup data inside the IPCRESS file.
-		It interprets the band structure (one structure per file, not one per
-		group) and group boundaries, and returns opacities that have the extra
-		dimension of bands.
-		- New analytic opacity class: Analytic_Odfmg_Opacity is an almost
-		identical copy of Analytic_Multigroup_Opacity. Its difference is that it
-		stores the band boundaries, and it replicates the opacities generated by
-		the multigroup models to return a multi-band, multi-group opacity. Note
-		that its input has only one model per group, regardless of the number of
-		bands: it simply copies the output of the model to every band.
-		- Modifications to CDI to support ODFMG model, return band structure
-		(opacityCdfBandBoundaries). Most ODFMG code in CDI is based on
-		multigroup code.
+                - New opacity class: OdfmgOpacity returns opacities with one more
+                dimension than multigroup (some number of opacity "bands" per group)
+                - New gandolf class: GandolfOdfmgOpacity, which inherits from
+                OdfmgOpacity, interfaces with an IPCRESS file written with the TOPS odf 
+                capability. The number of opacity bands is passed to the constructor,
+                which unflattens the apparently multigroup data inside the IPCRESS file.
+                It interprets the band structure (one structure per file, not one per
+                group) and group boundaries, and returns opacities that have the extra
+                dimension of bands.
+                - New analytic opacity class: Analytic_Odfmg_Opacity is an almost
+                identical copy of Analytic_Multigroup_Opacity. Its difference is that it
+                stores the band boundaries, and it replicates the opacities generated by
+                the multigroup models to return a multi-band, multi-group opacity. Note
+                that its input has only one model per group, regardless of the number of
+                bands: it simply copies the output of the model to every band.
+                - Modifications to CDI to support ODFMG model, return band structure
+                (opacityCdfBandBoundaries). Most ODFMG code in CDI is based on
+                multigroup code.
 
-		- New member function for each opacity class: getOpacityModelType
-		returns an enum of OpacityModelType that indicates whether it is an
-		analytic or Gandolf opacity. Previously, typeid checking was used in
-		Milagro to determine the opacity class at runtime.
-		- New utility ReadOdfGandolfFile inside cdi_gandolf/test: reads data
-		from multigroup or odf-enabled IPCRESS files.
+                - New member function for each opacity class: getOpacityModelType
+                returns an enum of OpacityModelType that indicates whether it is an
+                analytic or Gandolf opacity. Previously, typeid checking was used in
+                Milagro to determine the opacity class at runtime.
+                - New utility ReadOdfGandolfFile inside cdi_gandolf/test: reads data
+                from multigroup or odf-enabled IPCRESS files.
 
-	* bug fixes/issues
+        * bug fixes/issues
 
-		- Changed Gandolf data keys for Planck model in GandolfDataTable.cc. It
-		previously misreported absorption opacities as being total opacities
-		(both multigroup and gray). IPCRESS files have Planck absorption
-		opacities, and no Planck total opacities. See: R. L. Judd, C. J. Fontes,
-		and H. L. Zhang, "Gandolf Interface Rou- tines for IPCRESS Files," Tech.
-		Rep. LA-UR-01-5543, Los Alamos National Laboratory (2001).
+                - Changed Gandolf data keys for Planck model in GandolfDataTable.cc. It
+                previously misreported absorption opacities as being total opacities
+                (both multigroup and gray). IPCRESS files have Planck absorption
+                opacities, and no Planck total opacities. See: R. L. Judd, C. J. Fontes,
+                and H. L. Zhang, "Gandolf Interface Rou- tines for IPCRESS Files," Tech.
+                Rep. LA-UR-01-5543, Los Alamos National Laboratory (2001).
 
 2008-08-13  Aimee Hungerford  <aimee@lanl.gov>
 
-	* draco: Release of draco-5_19_0. This is a minor Draco release. A
-	summary of changes is:
+        * draco: Release of draco-5_19_0. This is a minor Draco release. A
+        summary of changes is:
 
-	changes to library names and namespace to satisfy gcc-4.3 and AIX compilers
+        changes to library names and namespace to satisfy gcc-4.3 and AIX compilers
 
-	changes to support flat_interfaces that can extend selection of transport and flux
-	limiter models in capsaicin
+        changes to support flat_interfaces that can extend selection of transport and flux
+        limiter models in capsaicin
 
-	config
-	        - added vendor support for ParMetis which is needed by SuperLU_Dist, v. 2.2
-	
-	environment
-	        - Refactored python script for the pitch and repoman tools
+        config
+                - added vendor support for ParMetis which is needed by SuperLU_Dist, v. 2.2
+        
+        environment
+                - Refactored python script for the pitch and repoman tools
 
-	c4
-	        - added a variable to serve as the source/destination of a null process
+        c4
+                - added a variable to serve as the source/destination of a null process
 
-		- added function Compare for equivalence testing of values on different processors
-		
-		- added base class in Send_Receive to support custom data communicators (will be
-		  of use for a general decomposition method for Jayenne codes)
-	 
+                - added function Compare for equivalence testing of values on different processors
+                
+                - added base class in Send_Receive to support custom data communicators (will be
+                  of use for a general decomposition method for Jayenne codes)
+         
 
 2008-02-22  Mike Buksas  <mwbuksas@nammu.lanl.gov>
 
-	* draco: Release of draco-5_18_0. This is a minor Draco release. A
-	summary of changes is:
+        * draco: Release of draco-5_18_0. This is a minor Draco release. A
+        summary of changes is:
 
-	config
+        config
 
-		- Seperation of test building and execution in makefiles.
-	
-		- Filesystem changes to many files.
+                - Seperation of test building and execution in makefiles.
+        
+                - Filesystem changes to many files.
 
-		- Additional compiler support on Darwin.
+                - Additional compiler support on Darwin.
 
-		- Testing for PCG and Grace presence availability.
+                - Testing for PCG and Grace presence availability.
 
-		- Redtail compatability fixes.
+                - Redtail compatability fixes.
 
-	environment/share/python and environment/bin
-	
-		- Protype bulti-platform build tools.
+        environment/share/python and environment/bin
+        
+                - Protype bulti-platform build tools.
 
-		- Code Improvements to pitch and checkout tools.
+                - Code Improvements to pitch and checkout tools.
 
-	environment/elisp
+        environment/elisp
 
-		- Compatability fixes to support Emacs 22.1
+                - Compatability fixes to support Emacs 22.1
 
-	environment/templates
+        environment/templates
 
-		- Changes to reflect changes in year and group.
+                - Changes to reflect changes in year and group.
 
-	regression
+        regression
 
-		- Updateds to regression and coverage scripts to match
-		filesystem change.
+                - Updateds to regression and coverage scripts to match
+                filesystem change.
 
-	c4
+        c4
 
-		- Added utilities to support creating data mapping
-		operators. 
+                - Added utilities to support creating data mapping
+                operators. 
 
-	ds++
+        ds++
 
-		- Collection of compiler-specific macros
+                - Collection of compiler-specific macros
 
-		- Endian conversion functions and support in serialization
-		operators.
+                - Endian conversion functions and support in serialization
+                operators.
 
-		- Fixed compilation issue with ICM xlc compiler.
+                - Fixed compilation issue with ICM xlc compiler.
 
-	parser
+        parser
 
-		- Code style improvements and additional functionality.
+                - Code style improvements and additional functionality.
 
-	pcgWrap
+        pcgWrap
 
-		- Functions to test for availbility of external vendor.
+                - Functions to test for availbility of external vendor.
 
-	plot2D
+        plot2D
 
-		- Functions to test for availbility of external vendor.
+                - Functions to test for availbility of external vendor.
 
-	quadrature
+        quadrature
 
-		- Code style improvements
+                - Code style improvements
 
-		- Refactored to improve encapsulation and reduce
-		dependencies.
+                - Refactored to improve encapsulation and reduce
+                dependencies.
 
-	tools
+        tools
 
-		- Redstorm support
+                - Redstorm support
 
-		- Changes to automatic notifications reflecting personnel
-		changes. 
+                - Changes to automatic notifications reflecting personnel
+                changes. 
 
-	
+        
 2007-08-10  Aimee Hungerford <aimee@lanl.gov>
 
-	* draco: Release of draco-5_17-0. This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5_17-0. This is a minor Draco release.
+        A summary of changes is:
 
         config
 
@@ -294,9 +472,9 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
 
         c4
                 - Removed a begin<beginDeprecated test when 
-		checking to see if Wtime and wall_clock_time() 
-		return equivalent values to prevent tests from 
-		failing in scalar mode.  We now just check
+                checking to see if Wtime and wall_clock_time() 
+                return equivalent values to prevent tests from 
+                failing in scalar mode.  We now just check
                 to see that they are approximately equal.
 
         cdi_gandolf
@@ -321,7 +499,7 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
         meshReaders
 
                 - Returning a cell_defs vector by default in the 
-		Mesh_Reader base class to avoid errors.
+                Mesh_Reader base class to avoid errors.
 
                 - Added support for general Polygon type mesh element
 
@@ -332,750 +510,750 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
         quadrature
 
                 - Replace "angle" with "ordinate" everywhere but 
-		Angle_Operator.
+                Angle_Operator.
 
                 - Fix sweeper to compute dot of face normal with 
-		ordinate in any dimension.
+                ordinate in any dimension.
 
                 - Check for invalid use of 1-D quadrature for 
-		axisymmetric geometry.
+                axisymmetric geometry.
 
         tools
 
                 - Added executable options for AIX in launchtest.in
 
-	Released Packages:
-	
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		special_functions
-	
-	This release was required by jayenne [clubimc-3_7_0 and
-	wedgehog-5_7_0]. 
-	
+        Released Packages:
+        
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                special_functions
+        
+        This release was required by jayenne [clubimc-3_7_0 and
+        wedgehog-5_7_0]. 
+        
 
 2007-01-29  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Release of draco-5_16_0.  This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5_16_0.  This is a minor Draco release.
+        A summary of changes is:
 
-	c4
-	 - removed wait() from C4_Req destructor; this was creating
-	   non-exception safe code in parallel execution modes
+        c4
+         - removed wait() from C4_Req destructor; this was creating
+           non-exception safe code in parallel execution modes
 
-	mesh_element
+        mesh_element
          - added generic element identifier and support
 
-	parser 
-	 - added informational messaging
+        parser 
+         - added informational messaging
 
-	quadrature	
+        quadrature      
          - added 1D level-symmetric to SquareChebyshevLegendre
 
-	config
+        config
          - removed automatic addition of libg2c in build system.  This
            change was required in order to use gcc > 4.0 because it no
            longer contains gcc.  Now, if a client needs libg2c use the
            --with-libs configure option,
            ie. "--with-libs=/codes/radtran/vendors/libf2c -lf2c"
 
-	Released Packages:
-	
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		special_functions
-	
-	Unreleased packages:
-	
-		pcgWrap
-		cdi_eospac
+        Released Packages:
+        
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                special_functions
+        
+        Unreleased packages:
+        
+                pcgWrap
+                cdi_eospac
 
-	This release was required by jayenne [clubimc-3_5_0 and
-	wedgehog-5_5_0]. 
+        This release was required by jayenne [clubimc-3_5_0 and
+        wedgehog-5_5_0]. 
 
 2006-08-30  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Release of draco-5-15_0. This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5-15_0. This is a minor Draco release.
+        A summary of changes is:
 
-	c4
-	 - added AIX options to ApplicationUnitTest
-	 - fixed warnings from PGI compiler
-	
-	RTT_Format_Reader
-	 - fixed warnings from PGI compiler
-	
-	cdi_analytic
-	 - fixed warnings from PGI compiler
-	
-	parser
-	 - added more detailed error reporting
-	
-	quadrature
-	 - added ability to generate quadratures from Token_Stream
+        c4
+         - added AIX options to ApplicationUnitTest
+         - fixed warnings from PGI compiler
+        
+        RTT_Format_Reader
+         - fixed warnings from PGI compiler
+        
+        cdi_analytic
+         - fixed warnings from PGI compiler
+        
+        parser
+         - added more detailed error reporting
+        
+        quadrature
+         - added ability to generate quadratures from Token_Stream
 
-	Released packages in draco-5_15_0.	
-		
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		special_functions
+        Released packages in draco-5_15_0.      
+                
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                special_functions
 
-	Unreleased packages:
-		pcgWrap
-		cdi_eospac
+        Unreleased packages:
+                pcgWrap
+                cdi_eospac
 
-	This release was required by jayenne [clubimc-3_4_0 and
-	wedgehog-5_4_0]. 
+        This release was required by jayenne [clubimc-3_4_0 and
+        wedgehog-5_4_0]. 
 
 2006-08-28 Jae H. Chang <jhchang@lanl.gov>
 
-	* draco: Release of draco-5-14.0. This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5-14.0. This is a minor Draco release.
+        A summary of changes is:
 
-	- Build system:
-	  . added compile flags for pgf90 and gcc for flash-64 (64-bit).
+        - Build system:
+          . added compile flags for pgf90 and gcc for flash-64 (64-bit).
 
-	- cdi_analytic:
-	  . Added frequency dependence to polynomial models.
+        - cdi_analytic:
+          . Added frequency dependence to polynomial models.
 
-	- parser:
-	  . Added function to parse rtt_mesh_element::Geometry
-	    specification.
+        - parser:
+          . Added function to parse rtt_mesh_element::Geometry
+            specification.
 
-	- quadrature:
-	  . Added capability to reflect 2D square quadratures.
-	  . Provided quadCreate fucntion that accepts a Token_Stream
-	    as an argument.  This code block was moved from Capsaicin's
-	    sn_operator/Sweeper_Creator__Parser.cc
+        - quadrature:
+          . Added capability to reflect 2D square quadratures.
+          . Provided quadCreate fucntion that accepts a Token_Stream
+            as an argument.  This code block was moved from Capsaicin's
+            sn_operator/Sweeper_Creator__Parser.cc
           . Provided two different mechanisms for building
-	    moment-to-discrete matrix (traditional Sn and Morel's Galerkin
-	    methods). Also provided three new mechanisms for generating
-	    discrete-to-moment matrix (traditional Sn, Morel's Galerkin
-	    and an experimental SVD methods).
+            moment-to-discrete matrix (traditional Sn and Morel's Galerkin
+            methods). Also provided three new mechanisms for generating
+            discrete-to-moment matrix (traditional Sn, Morel's Galerkin
+            and an experimental SVD methods).
 
-	- special_functions:
-	  . Added experimental static integer power function
-	
-	Released packages in draco-5_13_0.	
-		
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		special_functions
+        - special_functions:
+          . Added experimental static integer power function
+        
+        Released packages in draco-5_13_0.      
+                
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                special_functions
 
-	Unreleased packages:
-		pcgWrap
-		cdi_eospac	  
+        Unreleased packages:
+                pcgWrap
+                cdi_eospac        
 
-	This release was required by capsaicin-2_8_0.
+        This release was required by capsaicin-2_8_0.
 
 2006-07-24  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Release of draco-5_13_0.  This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5_13_0.  This is a minor Draco release.
+        A summary of changes is:
 
-	ds++
-	 - added unit-testing helper classes for serial tests
+        ds++
+         - added unit-testing helper classes for serial tests
 
-	parser
-	 - added std::exception error handling
+        parser
+         - added std::exception error handling
 
-	quadrature
-	 - added 1D-to-2D quadrature permutations
+        quadrature
+         - added 1D-to-2D quadrature permutations
 
-	special_functions
-	 - moved sf.dcc to special_functions.dcc
-	 - added spherical harmonics functions
+        special_functions
+         - moved sf.dcc to special_functions.dcc
+         - added spherical harmonics functions
 
-	c4
-	 - added unit-testing helper class for parallel tests
+        c4
+         - added unit-testing helper class for parallel tests
 
-	config 
-	 - updated asciwhite option to ascipurple (name and compiler
-	   options) 
-	 - removed configure/aclocal.m4 from CVS 
-	 - added updated compiler options for PGI compiler 
-	 - allow nested test executables on BPROC systems through
-	   AC_TEST_APPLICATION 
-	 - allow mixed serial and scalar tests in a test directory
-	 - added *some* F90/C++ compatibility, not enough to be useful	 
-	   yet; at least C++ doesn't step on F90 when F90 is the principal
-	   compiler
+        config 
+         - updated asciwhite option to ascipurple (name and compiler
+           options) 
+         - removed configure/aclocal.m4 from CVS 
+         - added updated compiler options for PGI compiler 
+         - allow nested test executables on BPROC systems through
+           AC_TEST_APPLICATION 
+         - allow mixed serial and scalar tests in a test directory
+         - added *some* F90/C++ compatibility, not enough to be useful   
+           yet; at least C++ doesn't step on F90 when F90 is the principal
+           compiler
 
-	tools
-	 - updated launchtest for asci purple
-	
-	Released packages in draco-5_13_0.	
-		
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		special_functions
+        tools
+         - updated launchtest for asci purple
+        
+        Released packages in draco-5_13_0.      
+                
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                special_functions
 
-	Unreleased packages:
-		pcgWrap
-		cdi_eospac
+        Unreleased packages:
+                pcgWrap
+                cdi_eospac
 
-	This release was required by jayenne [clubimc-3_3_0 and
-	wedgehog-5_3_0]. 
+        This release was required by jayenne [clubimc-3_3_0 and
+        wedgehog-5_3_0]. 
 
 2006-05-01  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Updated messages to draco-cvs@lanl.gov and draco@lanl.gov
-	mailing list.
+        * draco: Updated messages to draco-cvs@lanl.gov and draco@lanl.gov
+        mailing list.
 
 2006-04-26  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Release of draco-5_12_0.  This is a minor Draco release.
-	A summary of changes is:
+        * draco: Release of draco-5_12_0.  This is a minor Draco release.
+        A summary of changes is:
 
-	ds++
-	  - updates to Index_ services
-	  - small constructor fixups in SortPermutation and Mat
-		
-	parser
-	  - updated tests and fixups
+        ds++
+          - updates to Index_ services
+          - small constructor fixups in SortPermutation and Mat
+                
+        parser
+          - updated tests and fixups
 
-	quadrature
-	  - fixed normalizations
+        quadrature
+          - fixed normalizations
 
-	cdi
-	  - more optimizations and better checking on return values
+        cdi
+          - more optimizations and better checking on return values
 
-	c4
-	  - added MPI_Probe implementation to C4_MPI as generic
-	    blocked_probe() function
+        c4
+          - added MPI_Probe implementation to C4_MPI as generic
+            blocked_probe() function
 
-	RTT_Format_Reader
-	  - added triangle and quadratic line elements
+        RTT_Format_Reader
+          - added triangle and quadratic line elements
 
-	config 
-	  - added parsing for compilers when the entire compiler path is
-	    set by the environment 
-	  - moved tool settings to ac_instrument.m4; added coverage	    
-	    (BULLSEYE) tool implementation to build system, moved STLPORT
-	    environment setup to this location 
-	  - added some updates for linking TRILINOS
-	
-	Released packages in draco-5_12_0.	
-		
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		special_functions
+        config 
+          - added parsing for compilers when the entire compiler path is
+            set by the environment 
+          - moved tool settings to ac_instrument.m4; added coverage         
+            (BULLSEYE) tool implementation to build system, moved STLPORT
+            environment setup to this location 
+          - added some updates for linking TRILINOS
+        
+        Released packages in draco-5_12_0.      
+                
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                special_functions
 
-	Unreleased packages:
-		pcgWrap
-		cdi_eospac
+        Unreleased packages:
+                pcgWrap
+                cdi_eospac
 
-	This release was required by jayenne [clubimc-3_2_0 and
-	wedgehog-5_2_0]. 
+        This release was required by jayenne [clubimc-3_2_0 and
+        wedgehog-5_2_0]. 
 
 2006-02-09  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Release draco-5_11_0.  This is a minor Draco release.  A
-	summary of changes is:
-	
-	- ds++
-	 . Better documentation and testing of Assert class.			
-	 . Better testing and implementation of Index_Converter,
-	   Index_Counter, and Index_set classes.
+        * draco: Release draco-5_11_0.  This is a minor Draco release.  A
+        summary of changes is:
+        
+        - ds++
+         . Better documentation and testing of Assert class.                    
+         . Better testing and implementation of Index_Converter,
+           Index_Counter, and Index_set classes.
 
-	- config
-	 . Added some FORTRAN support for PGI.
+        - config
+         . Added some FORTRAN support for PGI.
 
-	Released Packages in draco-5_11_0:
-		 
-	  RTT_Format_Reader
-	  c4
-	  cdi
-	  cdi_analytic
-	  cdi_gandolf
-	  ds++
-	  fpe_trap
-	  lapack_wrap
-	  meshReaders
-  	  mesh_element
-	  norms
-	  parser
-	  plot2D
-	  quadrature
-	  rng
-	  shared_lib
-	  timestep
-	  traits
-	  units
-	  viz
-	  xm
-	  special_functions
+        Released Packages in draco-5_11_0:
+                 
+          RTT_Format_Reader
+          c4
+          cdi
+          cdi_analytic
+          cdi_gandolf
+          ds++
+          fpe_trap
+          lapack_wrap
+          meshReaders
+          mesh_element
+          norms
+          parser
+          plot2D
+          quadrature
+          rng
+          shared_lib
+          timestep
+          traits
+          units
+          viz
+          xm
+          special_functions
 
-	Unreleased packages:
+        Unreleased packages:
 
-	  pcgWrap
-	  cdi_eospac
+          pcgWrap
+          cdi_eospac
 
-	This release was required by jayenne [clubimc-3_1_0 and
-	wedgehog-5_1_0] . 
+        This release was required by jayenne [clubimc-3_1_0 and
+        wedgehog-5_1_0] . 
 
 2006-01-31 Jae Chang <jhchang@lanl.gov>
 
-	* draco: Released draco-5_10_0.  This is a minor Draco release
-	required for the release of Capsaicin-2_7_0.  A summary of changes
-	are:
+        * draco: Released draco-5_10_0.  This is a minor Draco release
+        required for the release of Capsaicin-2_7_0.  A summary of changes
+        are:
 
-	-config
-	 . Added support for Superlu_dist(parallel) and Superlu(scalar)
+        -config
+         . Added support for Superlu_dist(parallel) and Superlu(scalar)
 
-	-RTT_Format_Reader:
-	 . Improved error reporting.
+        -RTT_Format_Reader:
+         . Improved error reporting.
 
-	-C4:
-	 . Added isScalar(). This function returns true if MPI is
-	   unavailable.
-	 . Fixed memory leak in C4_Req::free() by adding a
-	   MPI_Request_free afterthe MPI_Cancel call.
+        -C4:
+         . Added isScalar(). This function returns true if MPI is
+           unavailable.
+         . Fixed memory leak in C4_Req::free() by adding a
+           MPI_Request_free afterthe MPI_Cancel call.
 
-	-ds++:
-	 . Added a utiltity class: Index_Converter which maps  
-	   multiple dimensio indices to and from a single dimensional 
-	   version. 
-	 . Improved the documentation and variable names in
-	   pos_save_divide.
+        -ds++:
+         . Added a utiltity class: Index_Converter which maps  
+           multiple dimensio indices to and from a single dimensional 
+           version. 
+         . Improved the documentation and variable names in
+           pos_save_divide.
 
-	-parser:
-	 . Fixed inconsistency in constructors for File_Token_Stream.
-	 . Added a default constructor for File_Token_Stream.
+        -parser:
+         . Fixed inconsistency in constructors for File_Token_Stream.
+         . Added a default constructor for File_Token_Stream.
 
-	-quadrature:
-	 . Extracted computation of Gauss-Legendre abscissas and weights
-	   into new function.
-	 
-	-special_functions:
-	 . A new package containing math functions, e.g. factorial
-	   and Kronecker delta.
+        -quadrature:
+         . Extracted computation of Gauss-Legendre abscissas and weights
+           into new function.
+         
+        -special_functions:
+         . A new package containing math functions, e.g. factorial
+           and Kronecker delta.
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		fpe_trap
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		quadrature
-		rng
-		shared_lib
-		special_functions
-		timestep
-		traits
-		units
-		viz
-		xm
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                fpe_trap
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                quadrature
+                rng
+                shared_lib
+                special_functions
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
-	time although these packages are part of the head revision of
-	Draco. 
+        We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
+        time although these packages are part of the head revision of
+        Draco. 
 
-	Code Statistics:
+        Code Statistics:
 
-	Counting lines of source code -- 
-	Directory:  /home/jhchang/release/draco
-	Date     :  Tue Jan 31 08:09:07 MST 2006
-	                 Total C++ source:   25978
-	   C++ source in test directories:   15457
-	      C++ contract specifications:     934
-	                     C++ comments:   27890
-	             Total f90/f95 source:       0
-	                 f90/f95 comments:       0
-	              LaTeX Documentation:   13047
-	                      html source:       0
-	   Executable shell script source:    3012
-	           Executable Perl source:       0
-	                    Python source:    3118
-	                    Expect source:       0
-	                     Elisp source:    3289
+        Counting lines of source code -- 
+        Directory:  /home/jhchang/release/draco
+        Date     :  Tue Jan 31 08:09:07 MST 2006
+                         Total C++ source:   25978
+           C++ source in test directories:   15457
+              C++ contract specifications:     934
+                             C++ comments:   27890
+                     Total f90/f95 source:       0
+                         f90/f95 comments:       0
+                      LaTeX Documentation:   13047
+                              html source:       0
+           Executable shell script source:    3012
+                   Executable Perl source:       0
+                            Python source:    3118
+                            Expect source:       0
+                             Elisp source:    3289
 
 2006-01-09  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Moved repository from SourceForge to CCS-2/4 LAN.
-	Located in /codes/radtran/cvsroot.  Moved regression under draco
-	head directory.
+        * draco: Moved repository from SourceForge to CCS-2/4 LAN.
+        Located in /codes/radtran/cvsroot.  Moved regression under draco
+        head directory.
 
 2005-11-21  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Released draco-5_9_0.  This is a minor Draco release.  A
-	summary of changes is:
+        * draco: Released draco-5_9_0.  This is a minor Draco release.  A
+        summary of changes is:
 
-	ds++
-	   - Fixed memory leak in DBC_Ptr classes (Safe_Ptr) and updated
-	     testing.  Fixed an assignment error in Thin_Ptr.
-	   - Added fill member function to Vector_Lite.
+        ds++
+           - Fixed memory leak in DBC_Ptr classes (Safe_Ptr) and updated
+             testing.  Fixed an assignment error in Thin_Ptr.
+           - Added fill member function to Vector_Lite.
 
-	c4
-	   - Added broadcast() function that uses iterators.
-	   - Removed C4::send() and C4::recv() deprecated functions from
-	     the old C4 namespace.	
-	   - Updated unit tests.
+        c4
+           - Added broadcast() function that uses iterators.
+           - Removed C4::send() and C4::recv() deprecated functions from
+             the old C4 namespace.      
+           - Updated unit tests.
 
-	parser 
-	   - Added additional DBC checking.
-	   - Better parallel/serial integration.
-	   - Integration with units package.
-	   - Added unit tests.
+        parser 
+           - Added additional DBC checking.
+           - Better parallel/serial integration.
+           - Integration with units package.
+           - Added unit tests.
 
-	plot2D 
-	   - Updated file.h include to <cfile>
+        plot2D 
+           - Updated file.h include to <cfile>
 
-	quadrature
-	   - Added renormalize() function.
+        quadrature
+           - Added renormalize() function.
 
-	rng
-	   - Cleaned up #include's.
-	   - Fixed-up some comments.
+        rng
+           - Cleaned up #include's.
+           - Fixed-up some comments.
 
-	fpe_trap
-	   - Added package.
+        fpe_trap
+           - Added package.
 
-	config
-	   - Updated settings for INTEL icpc compiler.
-	   - Added configure options for fpe_trap package.
+        config
+           - Updated settings for INTEL icpc compiler.
+           - Added configure options for fpe_trap package.
 
-	environment
-	   - New python tools added.
-	   - Updated draco-new-files.el to add .t.hh when draco-class is
-	     called.
-	
-	Packages that are included:
+        environment
+           - New python tools added.
+           - Updated draco-new-files.el to add .t.hh when draco-class is
+             called.
+        
+        Packages that are included:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
-		fpe_trap
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
+                fpe_trap
 
-	Package that are NOT included: 
+        Package that are NOT included: 
 
-		cdi_eospac
-		pcgWrap	
+                cdi_eospac
+                pcgWrap 
 
-	This release was required by jayenne (clubimc-3_0_0 and
-	wedgehog-5_0_0). 
+        This release was required by jayenne (clubimc-3_0_0 and
+        wedgehog-5_0_0). 
 
 2005-10-06  Jae Chang <jhchang@lanl.gov>
 
-	* draco: Released draco-5_8_0.  This is a minor Draco release that
-	  containes build system updates required for the release of
-	  Capsaicin-2_6_0.  A summary of changes are:
+        * draco: Released draco-5_8_0.  This is a minor Draco release that
+          containes build system updates required for the release of
+          Capsaicin-2_6_0.  A summary of changes are:
 
-	- Build system: 
-	  . Added paser package
+        - Build system: 
+          . Added paser package
 
-	-cdi:
-	 . Added a function to CDI which will return Planckian and
-	   Rosseland integrals for all groups in a group structure.
-	 . Added a new full-spectrum integrator which just integrates the
-	   planckian over all of the groups in the group structure.
+        -cdi:
+         . Added a function to CDI which will return Planckian and
+           Rosseland integrals for all groups in a group structure.
+         . Added a new full-spectrum integrator which just integrates the
+           planckian over all of the groups in the group structure.
 
-	-ds++:
-	 . Declared some previously undeclared virtual function.
+        -ds++:
+         . Declared some previously undeclared virtual function.
 
-	-parser:
-	 . New package added to draco.
+        -parser:
+         . New package added to draco.
 
-	-quadrature:
-	 . Added quadrature/Q1DDoubleGauss.cc
-	 . Added quadrature/Q1DDoubleGauss.hh
-	 . Added quadrature/Q1DLobatto.cc (1D Lobatto quadrature)
-	 . Added quadrature/Q1DLobatto.hh
+        -quadrature:
+         . Added quadrature/Q1DDoubleGauss.cc
+         . Added quadrature/Q1DDoubleGauss.hh
+         . Added quadrature/Q1DLobatto.cc (1D Lobatto quadrature)
+         . Added quadrature/Q1DLobatto.hh
          . Added quadrature/doc/package.dot
 
-	-rng:
-	 . Fixed memory leak in Sprng::get_size() function.
-	 
-	-shared_lib:
-	 . Included an elegant hack to prevent g++ 4.0 from complaining
-	   about an unavoidable cast from pointer-to-object to
-	   pointer-to-function
+        -rng:
+         . Fixed memory leak in Sprng::get_size() function.
+         
+        -shared_lib:
+         . Included an elegant hack to prevent g++ 4.0 from complaining
+           about an unavoidable cast from pointer-to-object to
+           pointer-to-function
 
-	-tools:
-	 . update_release_tags.py now checks on existing of configure.ac
-	   or Release.cc in a directory before doing tag updates.
-	
-	-Elisp:
-	 . Fix code for reftex- mode.
-	 . Defined custom variables draco-bibpath and draco-textpath.
+        -tools:
+         . update_release_tags.py now checks on existing of configure.ac
+           or Release.cc in a directory before doing tag updates.
+        
+        -Elisp:
+         . Fix code for reftex- mode.
+         . Defined custom variables draco-bibpath and draco-textpath.
 
-	-Environment:
-	 . Added /python/draco-cc-head
-	 . Added /python/draco-class
-	 . Added /python/draco-package
-	 . Added /python/parse-draco-template
-	 . Added /templates/templatet.hh
-	 . Added /templates/templatet.i.hh
+        -Environment:
+         . Added /python/draco-cc-head
+         . Added /python/draco-class
+         . Added /python/draco-package
+         . Added /python/parse-draco-template
+         . Added /templates/templatet.hh
+         . Added /templates/templatet.i.hh
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		parser
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                parser
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
-	time although these packages are part of the head revision of
-	Draco. 
+        We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
+        time although these packages are part of the head revision of
+        Draco. 
 
-	Code Statistics:
-	
-	  Counting lines of source code -- 
-	  Directory:  /home/jhchang/release/draco
-	  Date     :  Thu Oct 6 12:35:20 MDT 2005
+        Code Statistics:
+        
+          Counting lines of source code -- 
+          Directory:  /home/jhchang/release/draco
+          Date     :  Thu Oct 6 12:35:20 MDT 2005
 
-        	           Total C++ source:   25297
- 	     C++ source in test directories:   14979
-      	        C++ contract specifications:     918
-                  	       C++ comments:   26895
-             	       Total f90/f95 source:       0
-                 	   f90/f95 comments:       0
-              	        LaTeX Documentation:   13048
-                      	        html source:       0
-   	     Executable shell script source:    3033
-               	     Executable Perl source:     201
-                    	      Python source:    2770
-                    	      Expect source:       0
-                     	       Elisp source:    3281
-	
+                           Total C++ source:   25297
+             C++ source in test directories:   14979
+                C++ contract specifications:     918
+                               C++ comments:   26895
+                       Total f90/f95 source:       0
+                           f90/f95 comments:       0
+                        LaTeX Documentation:   13048
+                                html source:       0
+             Executable shell script source:    3033
+                     Executable Perl source:     201
+                              Python source:    2770
+                              Expect source:       0
+                               Elisp source:    3281
+        
 
 2005-10-05  Kelly Thompson  <kgt@lanl.gov>
 
-	* parser: I moved the parser package from Capsaicin to Draco.  The
-	  motivation for this change is based on the generic nature of the
-	  parser, the relative stability of this code and it's possible
-	  use by other development teams.
+        * parser: I moved the parser package from Capsaicin to Draco.  The
+          motivation for this change is based on the generic nature of the
+          parser, the relative stability of this code and it's possible
+          use by other development teams.
 
 2005-08-08  Kelly Thompson  <kgt@lanl.gov>
 
-	* draco: Released draco-5_7_0.  This is a minor Draco release that
-	  containes build system updates required for the release of
-	  Capsaicin-2_5_0.  A summary of changes are:	
-	
-	- Build system: 
-	  . Added support for vendors that require PGI F90 libraries
-	    instead of lahey F90 libraries. 
-	- Elisp: 
-	  . Fixes for bibtex and auctex modes.
-	  . Removed keybinding \C-c\C-c for auctex mode.
-	  . Rework the way the elisp code picks package and namespace
-	    names when creating new files from templates.
-	  . Fix some problems with C and C++ indentation.
-	  . By default change all tabs to spaces in C/C++ mode.
-	  . Attempt to enable wheel support for XEmacs on Flash and QSC. 
-	  . Assign the "f2" key to comment-region.
-	  . Additions to reftex-mode.
-	- RTT_Format_Reader:
-	  . Beefed up some of the unit tests.
-	- cdi:
-	  . Efficiency improvements.
-	- ds++:
-	  . Added overloaded form of toss_cookies_ptr(char const* const,
-	    char const* const, int const)
-	  . Added new unit test, tstBounds.
-	  . Added many new tests to tstMat.hh
-	  . Commented out much of the code in Mat.hh -- code that was not
-	    being unit tested.
-	  . Added ds++/DBC_Ptr.hh
-	  . Added ds++/Safe_Divide.hh
-	  . Added ds++/Safe_Ptr.hh
-	  . Added ds++/Thin_Ptr.hh
-	- MeshReaders:
-	  . Force one argument constructor to be explicit to prevent
-	    automatic convertion of std:string to
-	    rtt_meshReaders::Hex_Mesh_Reader.
-	- Tools:
-	  . Updated count_loc.sh to support automated weekly reporting of
-	    line counts.
-	- Environment:
-	  . Added /share/python/module.py
-	  . Added /share/python/milagro/__init__.py
-	  . Added /share/python/milagro/data.py
-	  . Added /share/python/milagro/input.py
-	  . Added /share/python/milagro/run.py
-	  
-	This draco release includes the following packages:
+        * draco: Released draco-5_7_0.  This is a minor Draco release that
+          containes build system updates required for the release of
+          Capsaicin-2_5_0.  A summary of changes are:   
+        
+        - Build system: 
+          . Added support for vendors that require PGI F90 libraries
+            instead of lahey F90 libraries. 
+        - Elisp: 
+          . Fixes for bibtex and auctex modes.
+          . Removed keybinding \C-c\C-c for auctex mode.
+          . Rework the way the elisp code picks package and namespace
+            names when creating new files from templates.
+          . Fix some problems with C and C++ indentation.
+          . By default change all tabs to spaces in C/C++ mode.
+          . Attempt to enable wheel support for XEmacs on Flash and QSC. 
+          . Assign the "f2" key to comment-region.
+          . Additions to reftex-mode.
+        - RTT_Format_Reader:
+          . Beefed up some of the unit tests.
+        - cdi:
+          . Efficiency improvements.
+        - ds++:
+          . Added overloaded form of toss_cookies_ptr(char const* const,
+            char const* const, int const)
+          . Added new unit test, tstBounds.
+          . Added many new tests to tstMat.hh
+          . Commented out much of the code in Mat.hh -- code that was not
+            being unit tested.
+          . Added ds++/DBC_Ptr.hh
+          . Added ds++/Safe_Divide.hh
+          . Added ds++/Safe_Ptr.hh
+          . Added ds++/Thin_Ptr.hh
+        - MeshReaders:
+          . Force one argument constructor to be explicit to prevent
+            automatic convertion of std:string to
+            rtt_meshReaders::Hex_Mesh_Reader.
+        - Tools:
+          . Updated count_loc.sh to support automated weekly reporting of
+            line counts.
+        - Environment:
+          . Added /share/python/module.py
+          . Added /share/python/milagro/__init__.py
+          . Added /share/python/milagro/data.py
+          . Added /share/python/milagro/input.py
+          . Added /share/python/milagro/run.py
+          
+        This draco release includes the following packages:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
-	time although these packages are part of the head revision of
-	Draco. 
+        We are not releaseing cdi_eospac, plot2d or pcgWrap at the current
+        time although these packages are part of the head revision of
+        Draco. 
 
-	Code Statistics:
+        Code Statistics:
 
           Counting lines of source code -- 
           Directory:  /home/kellyt/draco
@@ -1095,7 +1273,7 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
                               Expect source:       0
                                Elisp source:    3288
 
-	Code Coverage:
+        Code Coverage:
 
           Directory               Function Coverage           C/D Coverage
           ------------------  ---------------------  ---------------------
@@ -1122,56 +1300,56 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
           ------------------  ---------------------  ---------------------
           Total                 1335 /  1790 =  74%    1807 /  2689 =  67%
 
-	* Coverage numbers for RTT_Format_Reader from capsaicin log report
-	  2005-08-07. 
+        * Coverage numbers for RTT_Format_Reader from capsaicin log report
+          2005-08-07. 
 
 
 2005-06-14  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Released draco-5_6_0.  This is a minor draco release. 
-	  A summary of changes are:
+        * draco: Released draco-5_6_0.  This is a minor draco release. 
+          A summary of changes are:
 
-	- RTT_Format_Reader: Code reordering to eliminate compiler warnings.
-	- c4: Added abort() function. Added some additional doxygen
-	  comments.
-	- cdi: Optimized Planckian integrator.
-	- cdi_analytic: Added ; to DBC statements.
-	- cdi_gandolf: Updated maxKeys from 25 to 26 to work with newest
-	  TOPS.
-	- ds++: Added insist_ptr option to DBC.  Added DBC_Array class.
-	  Added comparison operator to Vector_Lite.  Optimizations and
-	  operator= fixes to SP.
-	- config: Made check target parallel.
-	- environment: Updated elisp environment to define a draco-mode.
-	  Significant cleanup of old environment.
+        - RTT_Format_Reader: Code reordering to eliminate compiler warnings.
+        - c4: Added abort() function. Added some additional doxygen
+          comments.
+        - cdi: Optimized Planckian integrator.
+        - cdi_analytic: Added ; to DBC statements.
+        - cdi_gandolf: Updated maxKeys from 25 to 26 to work with newest
+          TOPS.
+        - ds++: Added insist_ptr option to DBC.  Added DBC_Array class.
+          Added comparison operator to Vector_Lite.  Optimizations and
+          operator= fixes to SP.
+        - config: Made check target parallel.
+        - environment: Updated elisp environment to define a draco-mode.
+          Significant cleanup of old environment.
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		lapack_wrap
-		meshReaders
-		mesh_element
-		norms
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		timestep
-		traits
-		units
-		viz
-		xm
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                lapack_wrap
+                meshReaders
+                mesh_element
+                norms
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	Retired meshReaders_Services. We are not releasing cdi_eospac and
-	pcgWrap at the current time although these packages are part of
-	the head version of draco.
+        Retired meshReaders_Services. We are not releasing cdi_eospac and
+        pcgWrap at the current time although these packages are part of
+        the head version of draco.
 
-	Code Statistics:
+        Code Statistics:
 
           Counting lines of source code -- 
           Directory:  /home/kellyt/draco-5_6_0
@@ -1191,118 +1369,118 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
                               Expect source:       0
                                Elisp source:    3239
 
-	
+        
 2005-02-25  Kelly Thompson <kgt@lanl.gov>
 
-	* draco: Released draco-5_5_0.  This is a minor draco release.
-	Changes are:
+        * draco: Released draco-5_5_0.  This is a minor draco release.
+        Changes are:
 
-		- config: Moved all of STLPort setup to a new m4 function;
-		- doc: Updated Makefiles and .tex files for gettingStarted
-		       to be compatible with new location of Draco LaTeX
-		       environment.
-		- environment: Updated configure.package.ac so that
-		       includes examples of setting up new vendors: GSL,
-		       BLACS, SCALAPACK and HYPRE.
-		- src: Updated configure.ac to reflect the retirement of
-		       stdheaders and the addition of norms.
-		- RTT_Format_Reader: Improved robustness of reader when
-		       comment only lines are found in the rtt mesh file. 
-		- c4: Restructured the Timer class so that it can always
-		       provide POSIX timer information, even when compiled
-		       with MPI.  If MPI is available, also provide access
-		       to the MPI_Wtime() timer values.  This release
-		       includes support for the Darwin operating system.
-		- ds++: Updated the File_Streams class to improve
-		       performance. 
-		- meshReaders_Services: Corrected some logic to prevent
-		       potential out-of-bounds memory read.
-		- quadrature: Modified the computation of 1D
-		       Guass-Legendre quadrature set for higher
-		       precision;  Corrected the value returned by
-		       Q[23]DLevelSym.getLevels(); Provide public access
-		       to DbC checks for D and M being inverse matrices of
-		       each other; Add these checks to unit tests;  Add
-		       tests of applyD() and applyM() functions; Add test
-		       of QuadServices constructor where the lkMoments are
-		       provided by the user; Added tests to improve code
-		       coverage values.
+                - config: Moved all of STLPort setup to a new m4 function;
+                - doc: Updated Makefiles and .tex files for gettingStarted
+                       to be compatible with new location of Draco LaTeX
+                       environment.
+                - environment: Updated configure.package.ac so that
+                       includes examples of setting up new vendors: GSL,
+                       BLACS, SCALAPACK and HYPRE.
+                - src: Updated configure.ac to reflect the retirement of
+                       stdheaders and the addition of norms.
+                - RTT_Format_Reader: Improved robustness of reader when
+                       comment only lines are found in the rtt mesh file. 
+                - c4: Restructured the Timer class so that it can always
+                       provide POSIX timer information, even when compiled
+                       with MPI.  If MPI is available, also provide access
+                       to the MPI_Wtime() timer values.  This release
+                       includes support for the Darwin operating system.
+                - ds++: Updated the File_Streams class to improve
+                       performance. 
+                - meshReaders_Services: Corrected some logic to prevent
+                       potential out-of-bounds memory read.
+                - quadrature: Modified the computation of 1D
+                       Guass-Legendre quadrature set for higher
+                       precision;  Corrected the value returned by
+                       Q[23]DLevelSym.getLevels(); Provide public access
+                       to DbC checks for D and M being inverse matrices of
+                       each other; Add these checks to unit tests;  Add
+                       tests of applyD() and applyM() functions; Add test
+                       of QuadServices constructor where the lkMoments are
+                       provided by the user; Added tests to improve code
+                       coverage values.
 
-		- config: Major update to apptest_modules.py; Constructor
-		       no longer needs to know about the arguments
-		       exec_head or test_name;  These are now determined
-		       by the apptest class;  The actual number of cpus
-		       used is now a part of the test banner; Added
-		       soft_equiv test functions; Added a new class
-		       GMVFile to parse a GMV file and make it's contents
-		       available to a calling routine;
-		       regression_filter.py was updated to report on
-		       coverage values if available.
-	
-	Packages included in this release:
-	
-        	RTT_Format_Reader 
-        	c4 
-        	cdi 
-        	cdi_analytic 
-        	cdi_gandolf 
-        	ds++ 
-        	lapack_wrap 
-        	meshReaders 
-        	meshReaders_Services 
-        	mesh_element 
-		norms
-        	plot2D 
-		quadrature
-        	rng 
-        	shared_lib 
-        	timestep 
-        	traits 
-        	units 
-        	viz 
-        	xm
+                - config: Major update to apptest_modules.py; Constructor
+                       no longer needs to know about the arguments
+                       exec_head or test_name;  These are now determined
+                       by the apptest class;  The actual number of cpus
+                       used is now a part of the test banner; Added
+                       soft_equiv test functions; Added a new class
+                       GMVFile to parse a GMV file and make it's contents
+                       available to a calling routine;
+                       regression_filter.py was updated to report on
+                       coverage values if available.
+        
+        Packages included in this release:
+        
+                RTT_Format_Reader 
+                c4 
+                cdi 
+                cdi_analytic 
+                cdi_gandolf 
+                ds++ 
+                lapack_wrap 
+                meshReaders 
+                meshReaders_Services 
+                mesh_element 
+                norms
+                plot2D 
+                quadrature
+                rng 
+                shared_lib 
+                timestep 
+                traits 
+                units 
+                viz 
+                xm
 
-	Package that are NOT included: 
+        Package that are NOT included: 
 
-		cdi_eospac
-		pcgWrap
-	
-	     We are not releasing cdi_eospac in draco until the compiler
- 	     issues have been resolved [hopefully with the release of a C
-	     version of EOSPAC].
+                cdi_eospac
+                pcgWrap
+        
+             We are not releasing cdi_eospac in draco until the compiler
+             issues have been resolved [hopefully with the release of a C
+             version of EOSPAC].
 
-	     We are not releasing pcgWrap in draco until the pcgWrap
-	     component in Draco is updated to only call double precision
-	     routines.  The single precision routines in libpcg have been
-	     removed in recent versions.
+             We are not releasing pcgWrap in draco until the pcgWrap
+             component in Draco is updated to only call double precision
+             routines.  The single precision routines in libpcg have been
+             removed in recent versions.
 
-	     For the first time, the package norms is available as a part
-	     of a Draco release.
+             For the first time, the package norms is available as a part
+             of a Draco release.
 
-	Code Statistics:
+        Code Statistics:
 
-	     These numbers do not include pcgWrap, cdi_eospac or
-	     regression scripts. 
+             These numbers do not include pcgWrap, cdi_eospac or
+             regression scripts. 
 
-	     Total C++ source:               23086
-	     C++ source in test directories: 13701
-	     C++ contract specifications:      823
-	     C++ comments:                   24032
-	     Total f90/f95 source:               0
-	     f90/f95 comments:                   0
-	     LaTeX Documentation:            13056
-	     html source:                        0
-	     Executable shell script source:  3040
-	     Executable Perl source:           201
-	     Python source:                   2430
-	     Expect source:                      0
-	     Elisp source:                    6063
+             Total C++ source:               23086
+             C++ source in test directories: 13701
+             C++ contract specifications:      823
+             C++ comments:                   24032
+             Total f90/f95 source:               0
+             f90/f95 comments:                   0
+             LaTeX Documentation:            13056
+             html source:                        0
+             Executable shell script source:  3040
+             Executable Perl source:           201
+             Python source:                   2430
+             Expect source:                      0
+             Elisp source:                    6063
 
-	Code coverage:
+        Code coverage:
 
-	     Extensive reports are located in the Documentation directory
-	     of the released code.  Configure options: --enable-debug
-	     --with-dbc=0 --with-c4=mpi 
+             Extensive reports are located in the Documentation directory
+             of the released code.  Configure options: --enable-debug
+             --with-dbc=0 --with-c4=mpi 
 
      Directory                            Function Coverage           C/D Coverage
      -------------------------------  ---------------------  ---------------------
@@ -1332,957 +1510,957 @@ Date     :  Thu Jun 18 09:16:04 MDT 2009
      -------------------------------  ---------------------  ---------------------
      Total                              1569 /  2031 =  77%    4371 /  7834 =  55%
 
-	Code Releae:
+        Code Releae:
 
-	     Code installed on CCS-4/2 LAN at
-	     /codes/radtran/vendors/draco-5_5_0. Code installed on LANL
-	     ICN machines at /usr/projects/draco/draco-5_5_0. 
-	
+             Code installed on CCS-4/2 LAN at
+             /codes/radtran/vendors/draco-5_5_0. Code installed on LANL
+             ICN machines at /usr/projects/draco/draco-5_5_0. 
+        
 2005-01-12  Kelly Thompson  <kgt@lanl.gov>
 
-	* config/ac_platforms.m4 (AC_DBS_LAHEY_ENVIRONMENT): Created a new
-	m4 function that will modify the RPATH and LIBS environment
-	variables by appending the Lahey lib directory.  Additionally, the
-	Lahey compiler libraries are appended to LIBS.  RPATH and LIBS are
-	only modified for components that require the Lahey libraries at
-	link time (cdi_eospac and trilinos).  
+        * config/ac_platforms.m4 (AC_DBS_LAHEY_ENVIRONMENT): Created a new
+        m4 function that will modify the RPATH and LIBS environment
+        variables by appending the Lahey lib directory.  Additionally, the
+        Lahey compiler libraries are appended to LIBS.  RPATH and LIBS are
+        only modified for components that require the Lahey libraries at
+        link time (cdi_eospac and trilinos).  
 
-	* src/configure.ac (Level 3): Removed cdi_eospac from list of
-	packages to build and test because EOSPAC-5.35 is not fully
-	compatible with Lahey 6.2.  See SF tracker at
-	https://sourceforge-web.lanl.gov/tracker/?aid=4566. 
+        * src/configure.ac (Level 3): Removed cdi_eospac from list of
+        packages to build and test because EOSPAC-5.35 is not fully
+        compatible with Lahey 6.2.  See SF tracker at
+        https://sourceforge-web.lanl.gov/tracker/?aid=4566. 
 
 2004-12-02  Kelly Thompson  <kgt@lanl.gov>
 
-	* draco: Released draco-5_3_0.  This is a minor draco release.  A
-	summary of changes are:
+        * draco: Released draco-5_3_0.  This is a minor draco release.  A
+        summary of changes are:
 
-	- autodoc: Recent mods look for dcc files in the top level autodoc
-	  direcotry.
-	- elisp: some small changes to improve font lock for DbC keywords.
+        - autodoc: Recent mods look for dcc files in the top level autodoc
+          direcotry.
+        - elisp: some small changes to improve font lock for DbC keywords.
         - c4: new broadcast signatures.
-	- ds++: extensions to RCF and addition of File_Streams class.
-	- quadrature: finished addition of QuadServices class.  New
-  	  dependance on vendor GSL. Mods to build system were also made to
-	  provide GSL as a draco vendor.
-	- viz: switched to ensight gold format; added write_part() member
-	  function. 
-	- tools: added launchtest as an installed tool to improve
-	  mpirun compatibility on lambda.
-	
-	This draco release includes the following packages:
+        - ds++: extensions to RCF and addition of File_Streams class.
+        - quadrature: finished addition of QuadServices class.  New
+          dependance on vendor GSL. Mods to build system were also made to
+          provide GSL as a draco vendor.
+        - viz: switched to ensight gold format; added write_part() member
+          function. 
+        - tools: added launchtest as an installed tool to improve
+          mpirun compatibility on lambda.
+        
+        This draco release includes the following packages:
 
-		RTT_Format_Reader 
-		c4
-		cdi 
-		cdi_analytic 
-		cdi_gandolf 
-		ds++ 
-		lapack_wrap
-		meshReaders
-		meshReaders_Services
-		mesh_element
-		plot2D
-		quadrature
-		rng
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
-	
-	We are not releasing cdi_eospac in draco until the compiler issues
-	have been resolved [hopefully with the release of a C version of
-	EOSPAC].
+                RTT_Format_Reader 
+                c4
+                cdi 
+                cdi_analytic 
+                cdi_gandolf 
+                ds++ 
+                lapack_wrap
+                meshReaders
+                meshReaders_Services
+                mesh_element
+                plot2D
+                quadrature
+                rng
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
+        
+        We are not releasing cdi_eospac in draco until the compiler issues
+        have been resolved [hopefully with the release of a C version of
+        EOSPAC].
 
-	We are not releasing pcgWrap in draco until the pcgWrap component
+        We are not releasing pcgWrap in draco until the pcgWrap component
         in Draco is updated to only call double precision routines.  The
         single precision routines in libpcg have been removed in recent
         versions. 
 
-	We are not releaseing shared_lib in draco until this package
+        We are not releaseing shared_lib in draco until this package
         passes its unit tests on QSC.
 
 2004-11-10  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Released draco-5_2_0.  This is a minor draco release.  A
-	summary of changes are:
+        * draco: Released draco-5_2_0.  This is a minor draco release.  A
+        summary of changes are:
 
-	- build systems chages: more darwin support, vendors added 
-	- timestep: improvements to field_ts_advisor
-	- quadrature: beginning of significant redesign
-	- shared_lib: added to released packages; only on when compile in
-	  shared mode
+        - build systems chages: more darwin support, vendors added 
+        - timestep: improvements to field_ts_advisor
+        - quadrature: beginning of significant redesign
+        - shared_lib: added to released packages; only on when compile in
+          shared mode
 
-	Removed get_tex script because it is no longer needed [the tex
-	stuff resides in environment].
+        Removed get_tex script because it is no longer needed [the tex
+        stuff resides in environment].
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		RTT_Format_Reader 
-		c4
-		cdi 
-		cdi_analytic 
-		cdi_gandolf 
-		ds++ 
-		lapack_wrap
-		meshReaders
-		meshReaders_Services
-		mesh_element
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		shared_lib
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+                RTT_Format_Reader 
+                c4
+                cdi 
+                cdi_analytic 
+                cdi_gandolf 
+                ds++ 
+                lapack_wrap
+                meshReaders
+                meshReaders_Services
+                mesh_element
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                shared_lib
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	We are not releasing cdi_eospac in draco until the compiler issues
-	have been resolved [hopefully with the release of a C version of
-	EOSPAC].
+        We are not releasing cdi_eospac in draco until the compiler issues
+        have been resolved [hopefully with the release of a C version of
+        EOSPAC].
 
 2004-06-22  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Released draco-5_1_0.  This is a minor draco release. A
-	summary of changes are:
+        * draco: Released draco-5_1_0.  This is a minor draco release. A
+        summary of changes are:
 
-	- build system changes: support for darwin [MacOS], dlopen
-	  support,  changed Q template option to -pt, improved autodoc
-	  support over last release
-	- meshReaders has been redesigned with its base functionality
-	  moved to the mesh_element component
+        - build system changes: support for darwin [MacOS], dlopen
+          support,  changed Q template option to -pt, improved autodoc
+          support over last release
+        - meshReaders has been redesigned with its base functionality
+          moved to the mesh_element component
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		rng
-		ds++
-		shared_lib
-		RTT_Format_Reader
-		lapack_wrap
-		stdheaders
-		meshReaders
-		timestep
-		c4
-		meshReaders_Services
-		traits
-		cdi
-		mesh_element
-		units
-		cdi_analytic
-		pcgWrap
-		viz
-		cdi_gandolf
-		plot2D
-		xm
-		quadrature
+                rng
+                ds++
+                shared_lib
+                RTT_Format_Reader
+                lapack_wrap
+                stdheaders
+                meshReaders
+                timestep
+                c4
+                meshReaders_Services
+                traits
+                cdi
+                mesh_element
+                units
+                cdi_analytic
+                pcgWrap
+                viz
+                cdi_gandolf
+                plot2D
+                xm
+                quadrature
 
-	We are not releasing cdi_eospac in draco until the compiler issues
-	have been resolved [hopefully with the release of a C version of
-	EOSPAC].
+        We are not releasing cdi_eospac in draco until the compiler issues
+        have been resolved [hopefully with the release of a C version of
+        EOSPAC].
 
 2004-04-30  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Released draco-5_0_0.  See CCS-4:04-36 for details about
-	the release.  This draco release includes the following component
-	packages:
+        * draco: Released draco-5_0_0.  See CCS-4:04-36 for details about
+        the release.  This draco release includes the following component
+        packages:
 
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_gandolf
-		ds++
-		lapack_wrap
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
+                lapack_wrap
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	Note that imc and mc have been moved out of draco [to clubimc].
-	Also, we have not released cdi_eospac as part of draco-5_0_0
-	because of compiler issues involving EOSPAC.
+        Note that imc and mc have been moved out of draco [to clubimc].
+        Also, we have not released cdi_eospac as part of draco-5_0_0
+        because of compiler issues involving EOSPAC.
 
-	There are significant build system changes particularly with
-	regard to the autodoc system [see CCS-4:04-25].  
+        There are significant build system changes particularly with
+        regard to the autodoc system [see CCS-4:04-25].  
 
-	The Project Thuban [CCS-4:04-21] directory reorganization has been
-	completed.  The draco development environment files have been
-	moved to draco/environment.  Also, draco CVS now exists at
-	sf.lanl.gov:/cvsroot/draco [draco SourceForge page].
+        The Project Thuban [CCS-4:04-21] directory reorganization has been
+        completed.  The draco development environment files have been
+        moved to draco/environment.  Also, draco CVS now exists at
+        sf.lanl.gov:/cvsroot/draco [draco SourceForge page].
 
-	Again, see CCS-4:04-36 for details.
+        Again, see CCS-4:04-36 for details.
 
 2004-04-19  Thomas M. Evans  <tme@lanl.gov>
 
-	* src/*/autodoc/*: added autodoc/pkg.dcc to each draco package to
-	conform to the new draco doxygenization system.
+        * src/*/autodoc/*: added autodoc/pkg.dcc to each draco package to
+        conform to the new draco doxygenization system.
 
 2004-04-13  Thomas M. Evans  <tme@lanl.gov>
 
-	* src/Makefile.in: Because of upgrades to
-	config/Makefile.dep.general, we can now do full parallel builds
-	[including parallel dependency builds].
+        * src/Makefile.in: Because of upgrades to
+        config/Makefile.dep.general, we can now do full parallel builds
+        [including parallel dependency builds].
 
 2004-04-08  Thomas M. Evans  <tme@lanl.gov>
 
-	* mc, imc: Moved these packages to CLUBIMC library.  The last
-	versions in draco were mc-4_0_0 and imc-4_0_0.  These tags were
-	added just before the move.  Obviously, any history prior to these
-	versions lives in draco, not clubimc. [Side Note: mc had one
-	accidental commit to its ChangeLog after mc-4_0_0 tag.  This can
-	be ignored].
+        * mc, imc: Moved these packages to CLUBIMC library.  The last
+        versions in draco were mc-4_0_0 and imc-4_0_0.  These tags were
+        added just before the move.  Obviously, any history prior to these
+        versions lives in draco, not clubimc. [Side Note: mc had one
+        accidental commit to its ChangeLog after mc-4_0_0 tag.  This can
+        be ignored].
 
 2004-04-07  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: Moved to SourceForge CVS control.  Formal time of move:
+        * draco: Moved to SourceForge CVS control.  Formal time of move:
 
-		2004-04-06: 12:00 p.m.
+                2004-04-06: 12:00 p.m.
 
 2004-03-11  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: release draco-4_3_0.  This is a minor release, as such it
-	does not have a release memo associated with it.  In summary, the
-	changes are:
+        * draco: release draco-4_3_0.  This is a minor release, as such it
+        does not have a release memo associated with it.  In summary, the
+        changes are:
 
-		- added RCF and Vector_Lite to ds++
-		- added MG surface tallies to imc particles tracking
-		- small additions to draco-stdheaders
-		- moved elisp XEmacs development environment to draco
+                - added RCF and Vector_Lite to ds++
+                - added MG surface tallies to imc particles tracking
+                - small additions to draco-stdheaders
+                - moved elisp XEmacs development environment to draco
 
-	This draco release includes the following packages:
-	
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf
-		ds++
-		imc
-		lapack_wrap
-		mc
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+        This draco release includes the following packages:
+        
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
+                lapack_wrap
+                mc
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	The forthcoming changes in draco will include moving the mc and
-	imc packages into a Jayenne project source directory.
+        The forthcoming changes in draco will include moving the mc and
+        imc packages into a Jayenne project source directory.
 
 2004-01-13  Thomas M. Evans  <tme@lanl.gov>
-	
-	* draco: release draco-4_2_0.  This is a minor release, as such it
-	does not have a release memo associated with it.  In summary, the
-	changes are:
+        
+        * draco: release draco-4_2_0.  This is a minor release, as such it
+        does not have a release memo associated with it.  In summary, the
+        changes are:
 
-		- added code test coverage to doc/code_stats; this data
-		  will be provided in future release notes
-		- changes in ds++ classes as a result of KT's elint work;
-		  these changes do not affect the package interface
-		- imc has several changes; chief among these are full
-		  surface tally integration
-		- mc has the sphyramid mesh added
-		- the units package has been redesigned
-		- cdi_eospac now checks that the Lahey compiler is in the
-		  path.	 This is an EOSPAC issue.  See the
-		  cdi_eospac/ChangeLog for details.
+                - added code test coverage to doc/code_stats; this data
+                  will be provided in future release notes
+                - changes in ds++ classes as a result of KT's elint work;
+                  these changes do not affect the package interface
+                - imc has several changes; chief among these are full
+                  surface tally integration
+                - mc has the sphyramid mesh added
+                - the units package has been redesigned
+                - cdi_eospac now checks that the Lahey compiler is in the
+                  path.  This is an EOSPAC issue.  See the
+                  cdi_eospac/ChangeLog for details.
 
-	This version of draco has been tested successfully with gcc-3.3.2.
-		
-	This draco release includes the following packages:
-	
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf
-		ds++
-		imc
-		lapack_wrap
-		mc
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+        This version of draco has been tested successfully with gcc-3.3.2.
+                
+        This draco release includes the following packages:
+        
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
+                lapack_wrap
+                mc
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	The forthcoming changes in draco will include moving the mc and
-	imc packages into a Jayenne project source directory.
+        The forthcoming changes in draco will include moving the mc and
+        imc packages into a Jayenne project source directory.
 
 2003-09-22  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: release draco-4_1_0.  This is a minor release, as such it
-	does not have a release memo associated with it.  In summary, the
-	changes are:
+        * draco: release draco-4_1_0.  This is a minor release, as such it
+        does not have a release memo associated with it.  In summary, the
+        changes are:
 
-		- updated compaq LAPACK/BLAS numerics library in DBS
-		- added cygwin to supported platforms in DBS
-		- updated random walk in imc
-		- updated libraries in build system for EOSPAC on LINUX
-		- updated the regression and test filters
+                - updated compaq LAPACK/BLAS numerics library in DBS
+                - added cygwin to supported platforms in DBS
+                - updated random walk in imc
+                - updated libraries in build system for EOSPAC on LINUX
+                - updated the regression and test filters
 
-	See the individual package changelogs for more details.
+        See the individual package changelogs for more details.
 
-	This draco release includes the following packages:
-	
-		RTT_Format_Reader
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf
-		ds++
-		imc
-		lapack_wrap
-		mc
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+        This draco release includes the following packages:
+        
+                RTT_Format_Reader
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
+                lapack_wrap
+                mc
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	We still have not put in default build parameters.
+        We still have not put in default build parameters.
 
 2003-09-05  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: release draco-4_0_0. This is a major release with
-	relatively minor changes from draco-3_2_0.  See
-	draco/doc/releases/draco-4_0_0.tex for detail.	We are making this
-	a major change because of the significant build system changes
-	between draco-3_1_0 and draco-3_2_0.  In summary the changes are:
+        * draco: release draco-4_0_0. This is a major release with
+        relatively minor changes from draco-3_2_0.  See
+        draco/doc/releases/draco-4_0_0.tex for detail.  We are making this
+        a major change because of the significant build system changes
+        between draco-3_1_0 and draco-3_2_0.  In summary the changes are:
 
-		- updates to mc and imc for random walk and surface
-		  tracking
-		- small build system improvements
-		- some tool improvements
+                - updates to mc and imc for random walk and surface
+                  tracking
+                - small build system improvements
+                - some tool improvements
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf
-		ds++
-		imc
-		lapack_wrap
-		mc
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		RTT_Format_Reader
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
+                lapack_wrap
+                mc
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                RTT_Format_Reader
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	We still have not put in default build parameters.
+        We still have not put in default build parameters.
 
 2003-07-25  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: release draco-3_2_0.  This is a minor release that has
-	some significant build changes.	 These changes are detailed in
-	draco/doc/releases/draco-3_2_0.tex.  In summary they are:
+        * draco: release draco-3_2_0.  This is a minor release that has
+        some significant build changes.  These changes are detailed in
+        draco/doc/releases/draco-3_2_0.tex.  In summary they are:
 
-		- finished ASCI White build system mods
-		- updated vendor treatments in build system to add include
-		  paths to CPPFLAGS
-		- surfaces added to mc package
-		- tally surfaces added to imc package
-		- Rosseland integrators added to cdi
-		- improvements to RTT_Format_Reader
-		- improvements to c4::Timer
+                - finished ASCI White build system mods
+                - updated vendor treatments in build system to add include
+                  paths to CPPFLAGS
+                - surfaces added to mc package
+                - tally surfaces added to imc package
+                - Rosseland integrators added to cdi
+                - improvements to RTT_Format_Reader
+                - improvements to c4::Timer
 
-	This draco release includes the following packages:
+        This draco release includes the following packages:
 
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf
-		ds++
-		imc
-		lapack_wrap
-		mc
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		RTT_Format_Reader
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
+                lapack_wrap
+                mc
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                RTT_Format_Reader
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	Future releases of draco will include DBS defaults and better
-	build system Doxygen documentation.
+        Future releases of draco will include DBS defaults and better
+        build system Doxygen documentation.
 
 2003-07-03  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: release draco-3_1_0.  This is a minor release that
-	predates some [more] significant changes.  A summary of changes in
-	this release is:
+        * draco: release draco-3_1_0.  This is a minor release that
+        predates some [more] significant changes.  A summary of changes in
+        this release is:
 
-		- updated tests with return 0; statements in some packages
-		- gray random walk implemented in imc package
-		- surfaces added to mc package
-		- small mods to c4 that returns the count after an async
-		  receive 
-		- improved templates
-		- additions for IBM xlC compiler support
-		- the find_tags.py and find_tags_diff.py tools have
-		  been updated for more general usage
+                - updated tests with return 0; statements in some packages
+                - gray random walk implemented in imc package
+                - surfaces added to mc package
+                - small mods to c4 that returns the count after an async
+                  receive 
+                - improved templates
+                - additions for IBM xlC compiler support
+                - the find_tags.py and find_tags_diff.py tools have
+                  been updated for more general usage
 
-	This release includes the following packages:
+        This release includes the following packages:
 
-		c4
-		cdi
-		cdi_analytic
-		cdi_eospac
-		cdi_gandolf
-		ds++
-		imc
-		lapack_wrap
-		mc
-		meshReaders
-		meshReaders_Services
-		pcgWrap
-		plot2D
-		quadrature
-		rng
-		RTT_Format_Reader
-		stdheaders
-		timestep
-		traits
-		units
-		viz
-		xm
+                c4
+                cdi
+                cdi_analytic
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
+                lapack_wrap
+                mc
+                meshReaders
+                meshReaders_Services
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                RTT_Format_Reader
+                stdheaders
+                timestep
+                traits
+                units
+                viz
+                xm
 
-	Because this is a minor release we have not formally documented it
-	with a release note. Also, we have not updated the code
-	statistics. 
+        Because this is a minor release we have not formally documented it
+        with a release note. Also, we have not updated the code
+        statistics. 
 
 2003-06-04  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: released draco-3_0_0.	We have adopted some new policies,
-	in particular, we now will not require package tags to be
-	synchronized with the draco tag.  The package tags should be used
-	for interim package releases [in between draco releases].  
+        * draco: released draco-3_0_0.  We have adopted some new policies,
+        in particular, we now will not require package tags to be
+        synchronized with the draco tag.  The package tags should be used
+        for interim package releases [in between draco releases].  
 
-	We will now be more proactive about documenting major draco
-	releases.  As part of that spirit, see "Release of Draco-3_0_0" in
-	draco/doc/releases/draco-3_0_0.tex for details of this release.
+        We will now be more proactive about documenting major draco
+        releases.  As part of that spirit, see "Release of Draco-3_0_0" in
+        draco/doc/releases/draco-3_0_0.tex for details of this release.
 
-	The following packages are part of this release:
-	
-		c4 
-		cdi
-		cdi_analytic
-		cdi_eospac 
-		cdi_gandolf 
-		ds++ 
-		imc 
-		lapack_wrap
-		mc 
-		meshReaders 
-		meshReaders_Services
-		pcgWrap 
-		plot2D 
-		quadrature 
-		rng 
-		RTT_Format_Reader 
-		stdheaders
-		timestep 
-		traits 
-		units 
-		viz 
-		xm 
+        The following packages are part of this release:
+        
+                c4 
+                cdi
+                cdi_analytic
+                cdi_eospac 
+                cdi_gandolf 
+                ds++ 
+                imc 
+                lapack_wrap
+                mc 
+                meshReaders 
+                meshReaders_Services
+                pcgWrap 
+                plot2D 
+                quadrature 
+                rng 
+                RTT_Format_Reader 
+                stdheaders
+                timestep 
+                traits 
+                units 
+                viz 
+                xm 
 
-	They all have draco-3_0_0 tags as their latest release.
+        They all have draco-3_0_0 tags as their latest release.
 
-	We will be releasing a new version of the "Draco Release Policy
-	and Procedures" document to cover the new release policy.
+        We will be releasing a new version of the "Draco Release Policy
+        and Procedures" document to cover the new release policy.
 
-	We will also be releasing a new version of the "The Draco Build
-	System".  This release contains all build system updates
-	documented in this file since draco-2_4_0.
+        We will also be releasing a new version of the "The Draco Build
+        System".  This release contains all build system updates
+        documented in this file since draco-2_4_0.
 
 2003-05-07  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco/config: updated to [hopefully] work correctly on the IBM
-	platform.  I added platform-specific makefiles for dependency
-	rules.	This is necesary because the IBM xlC compiler works goofy
-	when it comes to dependencies.
+        * draco/config: updated to [hopefully] work correctly on the IBM
+        platform.  I added platform-specific makefiles for dependency
+        rules.  This is necesary because the IBM xlC compiler works goofy
+        when it comes to dependencies.
 
 2003-04-30  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco, draco/config: committed first set of changes to make the
-	build system autoconf > 2.5 compliant.	This commit changed the
-	following: 
+        * draco, draco/config: committed first set of changes to make the
+        build system autoconf > 2.5 compliant.  This commit changed the
+        following: 
 
-		- Each directory now has its own aclocal.m4 [generated by
-		automake] and configure [generated by autoconf].  Both of
-		these files are stored in cvs.
+                - Each directory now has its own aclocal.m4 [generated by
+                automake] and configure [generated by autoconf].  Both of
+                these files are stored in cvs.
 
-		- The configure.in's have been replaced by configure.ac's
-		matching the autoconf manual spec.
+                - The configure.in's have been replaced by configure.ac's
+                matching the autoconf manual spec.
 
-		- We updated some configure macros, particularly those
-		that determined the word-sizes.	 Vendor defines are no
-		done in a body at the end of AC_DRACO_ENV.  This
-		necessitates adding the vendor defines to the
-		AC_VENDOR_DEFINES macro.
+                - We updated some configure macros, particularly those
+                that determined the word-sizes.  Vendor defines are no
+                done in a body at the end of AC_DRACO_ENV.  This
+                necessitates adding the vendor defines to the
+                AC_VENDOR_DEFINES macro.
 
-		- We added all the variable substitutions to the
-		AC_DBS_VAR_SUBSTITUTIONS macro.
+                - We added all the variable substitutions to the
+                AC_DBS_VAR_SUBSTITUTIONS macro.
 
-		- We will be releasing draco as an entity in the next
-		release cycle.
+                - We will be releasing draco as an entity in the next
+                release cycle.
 
-		- Make no longer automatically checks the configure system
-		as a dependency.  We have provided the targets gmake
-		configure and gmake reconfigure to manually do this.
+                - Make no longer automatically checks the configure system
+                as a dependency.  We have provided the targets gmake
+                configure and gmake reconfigure to manually do this.
 
-		- The draco_config script effectively replaces autoreconf
-		for building configure infrastructure in the draco source
-		directory.
+                - The draco_config script effectively replaces autoreconf
+                for building configure infrastructure in the draco source
+                directory.
 
-	We will be releasing a technical note describing the build
-	system updates.	 We will also update the draco release procedures
-	document.  The draco build system doxygen page will also get
-	updated.  
+        We will be releasing a technical note describing the build
+        system updates.  We will also update the draco release procedures
+        document.  The draco build system doxygen page will also get
+        updated.  
 
-	We will continue to tweak this until draco-3_0_0.  This release
-	will be the first draco release with the "new" build system.
-	
+        We will continue to tweak this until draco-3_0_0.  This release
+        will be the first draco release with the "new" build system.
+        
 2003-04-28  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco, draco/config: updated draco build system to use autoconf
-	> 1.5.	This version of autoconf is NOT backward compatible with
-	autoconf 2.1*.	This update results in many changes:
+        * draco, draco/config: updated draco build system to use autoconf
+        > 1.5.  This version of autoconf is NOT backward compatible with
+        autoconf 2.1*.  This update results in many changes:
 
-		- no longer will configure/build system stuff get
-		automatically built during gmake; you can manually rebuild
-		configure stuff with the new makefile targets gmake
-		configure and gmake reconfigure
+                - no longer will configure/build system stuff get
+                automatically built during gmake; you can manually rebuild
+                configure stuff with the new makefile targets gmake
+                configure and gmake reconfigure
 
-		- we will now start releasing draco under one tag, and we
-		will not update each package tag to correspond with a
-		draco tag.  Package tags are still valid; however, they do
-		not have to be sync'd with a draco tag.	 The draco tag [or
-		package] tag will signify the latest version of a package.
+                - we will now start releasing draco under one tag, and we
+                will not update each package tag to correspond with a
+                draco tag.  Package tags are still valid; however, they do
+                not have to be sync'd with a draco tag.  The draco tag [or
+                package] tag will signify the latest version of a package.
 
-		- We are now storing aclocal.m4 and configure files in
-		each package directory.
+                - We are now storing aclocal.m4 and configure files in
+                each package directory.
 
 2003-03-14  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: released draco-2_4_0.	This release contains the
-	following packages:
+        * draco: released draco-2_4_0.  This release contains the
+        following packages:
 
-		c4-2_3_0
-		cdi-1_3_0
-		cdi_analytic-1_1_0
-		cdi_eospac-1_2_0
-		cdi_gandolf-1_3_0
-		ds++-1_9_0
-		imc-3_3_0
-		lapack_wrap-1_0_0
-		mc-3_3_0
-		meshReaders-1_4_0
-		meshReaders_Services-1_0_0
-		pcgWrap-1_2_0
-		plot2D-1_1_0
-		quadrature-1_2_0
-		rng-1_6_0
-		RTT_Format_Reader-1_3_0
-		stdheaders-1_3_0
-		timestep-1_3_0
-		traits-1_5_0
-		units-1_3_0
-		viz-1_3_0
-		xm-1_5_0
+                c4-2_3_0
+                cdi-1_3_0
+                cdi_analytic-1_1_0
+                cdi_eospac-1_2_0
+                cdi_gandolf-1_3_0
+                ds++-1_9_0
+                imc-3_3_0
+                lapack_wrap-1_0_0
+                mc-3_3_0
+                meshReaders-1_4_0
+                meshReaders_Services-1_0_0
+                pcgWrap-1_2_0
+                plot2D-1_1_0
+                quadrature-1_2_0
+                rng-1_6_0
+                RTT_Format_Reader-1_3_0
+                stdheaders-1_3_0
+                timestep-1_3_0
+                traits-1_5_0
+                units-1_3_0
+                viz-1_3_0
+                xm-1_5_0
 
-	See package ChangeLogs for package details.  On the draco front we
-	changed:
-		
-		1) better doxygen front page
-		2) build-system documentation
-		3) new improved templates
-		4) small build system fixes [Compaq link options]
-		5) moved draco/Merge and draco/assesment to 
-		   draco/doc/merge and draco/doc/assessment
+        See package ChangeLogs for package details.  On the draco front we
+        changed:
+                
+                1) better doxygen front page
+                2) build-system documentation
+                3) new improved templates
+                4) small build system fixes [Compaq link options]
+                5) moved draco/Merge and draco/assesment to 
+                   draco/doc/merge and draco/doc/assessment
 
-	Made significant update to build system.  The libraries are now
-	built prefixed by a rtt_ by default.  For example, the ds++
-	package library will be:
+        Made significant update to build system.  The libraries are now
+        built prefixed by a rtt_ by default.  For example, the ds++
+        package library will be:
 
-		librtt_ds++.a(so)
+                librtt_ds++.a(so)
 
-	Everything else is the same.  The prefix is added to the Makefiles
-	at configure time.  Packages are still referenced by their package
-	name, not library name.	 The prefix can be changed by the
-	--with-lib-prefix configure option.
+        Everything else is the same.  The prefix is added to the Makefiles
+        at configure time.  Packages are still referenced by their package
+        name, not library name.  The prefix can be changed by the
+        --with-lib-prefix configure option.
 
-	This change will help avoid library name collisions.  The
-	following files were changed to accomodate the update:
+        This change will help avoid library name collisions.  The
+        following files were changed to accomodate the update:
 
-		config/Makefile.package.in
-		config/Makefile.test.in
-		config/ac_conf.m4
-		config/ac_draco_vendor.m4
-		config/ac_dracoarg.m4
-		config/ac_dracoenv.m4
-		config/doc/build_system.dcc
+                config/Makefile.package.in
+                config/Makefile.test.in
+                config/ac_conf.m4
+                config/ac_draco_vendor.m4
+                config/ac_dracoarg.m4
+                config/ac_dracoenv.m4
+                config/doc/build_system.dcc
 
 2003-02-05  Thomas M. Evans  <tme@lanl.gov>
 
-	* html: removed old John McGhee html info directory.
+        * html: removed old John McGhee html info directory.
 
-	* stopwatch: retired stopwatch package (corresponded to
-	stopwatch-1_2_0). 
+        * stopwatch: retired stopwatch package (corresponded to
+        stopwatch-1_2_0). 
 
 2002-12-11  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: released draco-2_3_0.	This release contains the
-	following updates to packages:
+        * draco: released draco-2_3_0.  This release contains the
+        following updates to packages:
 
-		c4-2_2_0
-		cdi-1_3_0 
-		cdi_analytic-1_0_0
-		cdi_eospac-1_2_0
-		cdi_gandolf-1_3_0 
-		ds++-1_8_0
-		imc-3_2_0 
-		lapack_wrap-1_0_0
-		mc-3_2_0
-		meshReaders-1_4_0 
-		meshReaders_Services-1_0_0	    
-		pcgWrap-1_1_0
-		plot2D-1_1_0
-		quadrature-1_2_0
-		rng-1_6_0 
-		RTT_Format_Reader-1_3_0
-		stdheaders-1_3_0
-		stopwatch-1_2_0
-		timestep-1_3_0
-		traits-1_5_0
-		units-1_3_0
-		viz-1_3_0 
-		xm-1_5_0
+                c4-2_2_0
+                cdi-1_3_0 
+                cdi_analytic-1_0_0
+                cdi_eospac-1_2_0
+                cdi_gandolf-1_3_0 
+                ds++-1_8_0
+                imc-3_2_0 
+                lapack_wrap-1_0_0
+                mc-3_2_0
+                meshReaders-1_4_0 
+                meshReaders_Services-1_0_0          
+                pcgWrap-1_1_0
+                plot2D-1_1_0
+                quadrature-1_2_0
+                rng-1_6_0 
+                RTT_Format_Reader-1_3_0
+                stdheaders-1_3_0
+                stopwatch-1_2_0
+                timestep-1_3_0
+                traits-1_5_0
+                units-1_3_0
+                viz-1_3_0 
+                xm-1_5_0
 
-		radphys-retired (no longer part of head)
+                radphys-retired (no longer part of head)
 
-	Mainly small fixes.
+        Mainly small fixes.
 
 2002-12-10  Thomas M. Evans  <tme@lanl.gov>
 
-	* radphys: Retired radphys (corresponded to radphys-1_5_0).  This
-	package simply was not standard compliant.
+        * radphys: Retired radphys (corresponded to radphys-1_5_0).  This
+        package simply was not standard compliant.
 
 2002-11-15  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: released draco-2_2_0.	This release includes the
-	following packages:
-	
-		c4-2_2_0
-		cdi-1_2_0
-		cdi_analytic-1_0_0
-		cdi_eospac-1_1_0
-		cdi_gandolf-1_2_0
-		ds++-1_7_0
-		imc-3_2_0 
-		lapack_wrap-1_0_0 
-		mc-3_2_0
-		meshReaders-1_4_0
-		meshReaders_Services-1_0_0	    
-		pcgWrap-1_1_0
-		plot2D-1_1_0
-		quadrature-1_1_0
-		radphys-1_5_0
-		rng-1_6_0
-		RTT_Format_Reader-1_3_0
-		stdheaders-1_3_0
-		stopwatch-1_2_0 
-		timestep-1_3_0
-		traits-1_4_0
-		units-1_3_0 
-		viz-1_3_0
-		xm-1_4_0
+        * draco: released draco-2_2_0.  This release includes the
+        following packages:
+        
+                c4-2_2_0
+                cdi-1_2_0
+                cdi_analytic-1_0_0
+                cdi_eospac-1_1_0
+                cdi_gandolf-1_2_0
+                ds++-1_7_0
+                imc-3_2_0 
+                lapack_wrap-1_0_0 
+                mc-3_2_0
+                meshReaders-1_4_0
+                meshReaders_Services-1_0_0          
+                pcgWrap-1_1_0
+                plot2D-1_1_0
+                quadrature-1_1_0
+                radphys-1_5_0
+                rng-1_6_0
+                RTT_Format_Reader-1_3_0
+                stdheaders-1_3_0
+                stopwatch-1_2_0 
+                timestep-1_3_0
+                traits-1_4_0
+                units-1_3_0 
+                viz-1_3_0
+                xm-1_4_0
 
-	This release mainly has fixes for standard-compliant compiler
-	stuff.	Very minor release, but it does seem to run on all
-	systems.  The standard compliant fixes are for gcc 3.2.
+        This release mainly has fixes for standard-compliant compiler
+        stuff.  Very minor release, but it does seem to run on all
+        systems.  The standard compliant fixes are for gcc 3.2.
 
 2002-09-05  Thomas M. Evans  <tme@lanl.gov>
 
-	* lapack_wrap: Added lapack_wrap component that provides
-	C++-wrapped BLAS and LAPACK functions.
+        * lapack_wrap: Added lapack_wrap component that provides
+        C++-wrapped BLAS and LAPACK functions.
 
 2002-08-15  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: released draco-2_1_0.	It includes the following
-	packages:
+        * draco: released draco-2_1_0.  It includes the following
+        packages:
 
-		ds++-1_6_0
-		stdheaders-1_2_0
-		c4-2_1_0
-		traits-1_4_0
-		units-1_3_0
-		xm-1_3_0
-		rng-1_6_0
-		meshReaders-1_4_0
-		cdi-1_2_0
-		quadrature-1_1_0
-		stopwatch-1_2_0
-		plot2D-1_0_0
-		timestep-1_3_0
-		pcgWrap-1_1_0
-		viz-1_3_0
-		radphys-1_4_0
-		RTT_Format_Reader-1_3_0
-		cdi_gandolf-1_2_0
-		cdi_eospac-1_1_0
-		cdi_analytic-1_0_0
-		mc-3_1_0
-		meshReaders_Services-1_0_0
-		imc-3_1_0
+                ds++-1_6_0
+                stdheaders-1_2_0
+                c4-2_1_0
+                traits-1_4_0
+                units-1_3_0
+                xm-1_3_0
+                rng-1_6_0
+                meshReaders-1_4_0
+                cdi-1_2_0
+                quadrature-1_1_0
+                stopwatch-1_2_0
+                plot2D-1_0_0
+                timestep-1_3_0
+                pcgWrap-1_1_0
+                viz-1_3_0
+                radphys-1_4_0
+                RTT_Format_Reader-1_3_0
+                cdi_gandolf-1_2_0
+                cdi_eospac-1_1_0
+                cdi_analytic-1_0_0
+                mc-3_1_0
+                meshReaders_Services-1_0_0
+                imc-3_1_0
 
-	This is a minor draco release.	Most of the packages have been
-	tested with the COMPAQ 6_5_0 compiler (all packages used by IMC
-	codes).	 Some build system updates were added: principally, draco
-	can now be used as a vendor by clients using the draco build
-	system.	 It also has expanded COMPAQ support.
+        This is a minor draco release.  Most of the packages have been
+        tested with the COMPAQ 6_5_0 compiler (all packages used by IMC
+        codes).  Some build system updates were added: principally, draco
+        can now be used as a vendor by clients using the draco build
+        system.  It also has expanded COMPAQ support.
 
-	We still have the following to work on:
-		
-		- support for the draco/doc and draco/src/<pkg>/doc
-		  builds, native format is not important, but pdfs
-		  must be able to be generated
-		- better F90 integration
-		- better documentation for draco build system
+        We still have the following to work on:
+                
+                - support for the draco/doc and draco/src/<pkg>/doc
+                  builds, native format is not important, but pdfs
+                  must be able to be generated
+                - better F90 integration
+                - better documentation for draco build system
 
 2002-05-09  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco: released draco-2_0_0.	The following packages no longer
-	have their own tags:
+        * draco: released draco-2_0_0.  The following packages no longer
+        have their own tags:
 
-		config
-		tools
-		templates
+                config
+                tools
+                templates
 
-	The new policy is that only packages under draco/src have their
-	own formal tags.  All other parts of draco simply carry a release
-	tag.  This release of draco contains the following tagged
-	packages:
+        The new policy is that only packages under draco/src have their
+        own formal tags.  All other parts of draco simply carry a release
+        tag.  This release of draco contains the following tagged
+        packages:
 
-		ds++-1_6_0
-		stdheaders-1_2_0
-		c4-2_0_0
-		traits-1_4_0
-		units-1_3_0
-		xm-1_3_0
-		rng-1_6_0
-		meshReaders-1_4_0
-		cdi-1_2_0
-		quadrature-1_1_0
-		stopwatch-1_2_0
-		plot2D-1_0_0
-		timestep-1_3_0
-		pcgWrap-1_1_0
-		viz-1_3_0
-		radphys-1_4_0
-		RTT_Format_Reader-1_3_0
-		cdi_gandolf-1_2_0
-		cdi_eospac-1_1_0
-		cdi_analytic-1_0_0
-		mc-3_0_0
-		meshReaders_Services-1_0_0
-		imc-3_0_0
+                ds++-1_6_0
+                stdheaders-1_2_0
+                c4-2_0_0
+                traits-1_4_0
+                units-1_3_0
+                xm-1_3_0
+                rng-1_6_0
+                meshReaders-1_4_0
+                cdi-1_2_0
+                quadrature-1_1_0
+                stopwatch-1_2_0
+                plot2D-1_0_0
+                timestep-1_3_0
+                pcgWrap-1_1_0
+                viz-1_3_0
+                radphys-1_4_0
+                RTT_Format_Reader-1_3_0
+                cdi_gandolf-1_2_0
+                cdi_eospac-1_1_0
+                cdi_analytic-1_0_0
+                mc-3_0_0
+                meshReaders_Services-1_0_0
+                imc-3_0_0
 
-	Pre-built versions of draco are available on
-	/radtran/vendors/draco.	 This is a link that points to the latest
-	release. 
+        Pre-built versions of draco are available on
+        /radtran/vendors/draco.  This is a link that points to the latest
+        release. 
 
-	As of this release, all of draco is required to build with the g++
-	(> 3.0.1) compiler.  This is, of course, subject to discussion;
-	however, we will keep this as a general rule.  
+        As of this release, all of draco is required to build with the g++
+        (> 3.0.1) compiler.  This is, of course, subject to discussion;
+        however, we will keep this as a general rule.  
 
-	The build system has been significantly updated:
+        The build system has been significantly updated:
 
-		- real support for autodoc (doxygen)
-		- cleaned up compiler and vendor support
-		- support cxx, gcc, kcc, and SGI CC compilers
-		- improved support for F90
+                - real support for autodoc (doxygen)
+                - cleaned up compiler and vendor support
+                - support cxx, gcc, kcc, and SGI CC compilers
+                - improved support for F90
 
-	We still have the following to work on:
-		
-		- support for the draco/doc and draco/src/<pkg>/doc
-		  builds, native format is not important, but pdfs
-		  must be able to be generated
-		- better F90 integration
-		- better documentation for draco build system
+        We still have the following to work on:
+                
+                - support for the draco/doc and draco/src/<pkg>/doc
+                  builds, native format is not important, but pdfs
+                  must be able to be generated
+                - better F90 integration
+                - better documentation for draco build system
 
-	To figure out the parameters of a draco build, use the bin/draco
-	tool.  This script will tell the following info:
+        To figure out the parameters of a draco build, use the bin/draco
+        tool.  This script will tell the following info:
 
-		- version of draco
-		- configure options used in build
-		- installation prefix
+                - version of draco
+                - configure options used in build
+                - installation prefix
 
-	As implied above, it gets installed inside of bin. Use draco
-	--help to query options.
+        As implied above, it gets installed inside of bin. Use draco
+        --help to query options.
 
 2001-10-17  Thomas M. Evans  <tme@lanl.gov>
 
-	* doc/design: added draco levelization diagrams reflecting current
-	version of draco.
+        * doc/design: added draco levelization diagrams reflecting current
+        version of draco.
 
-	* src/configure.in: updated this configure.in to reflect the
-	current state of draco.
+        * src/configure.in: updated this configure.in to reflect the
+        current state of draco.
 
-	* draco: on this date--between release 1_0_0 and 2_0_0--draco has
-	the following packages:
+        * draco: on this date--between release 1_0_0 and 2_0_0--draco has
+        the following packages:
 
-		level 1: ds++ stdheaders
-		level 2: xm rng c4 units traits UnitTestFrame cdi
-		level 3: timestep pcgWrap stopwatch quadrature radphys
-			 ConjGrad meshReaders viz cdi_eospac 
-			 cdi_gandolf cdi_analytic
-		level 4: RTT_Format_Reader
-		level 5: mc meshReaders_Services
-		level 6: imc
+                level 1: ds++ stdheaders
+                level 2: xm rng c4 units traits UnitTestFrame cdi
+                level 3: timestep pcgWrap stopwatch quadrature radphys
+                         ConjGrad meshReaders viz cdi_eospac 
+                         cdi_gandolf cdi_analytic
+                level 4: RTT_Format_Reader
+                level 5: mc meshReaders_Services
+                level 6: imc
 
-	* pcgWrap: changed linalg to pcgWrap.  Released pcgWrap-1_0_0.
-	This is a temporary package because pcg is no longer supported at
-	the lab.  It will be superceded in the near future.
+        * pcgWrap: changed linalg to pcgWrap.  Released pcgWrap-1_0_0.
+        This is a temporary package because pcg is no longer supported at
+        the lab.  It will be superceded in the near future.
 
-	* config: build-system improvements.  Notably, cleaned up vendor
-	stuff--added with-lapack, with-gandolf, with-pcg, removed
-	with-pcglib.
+        * config: build-system improvements.  Notably, cleaned up vendor
+        stuff--added with-lapack, with-gandolf, with-pcg, removed
+        with-pcglib.
 
 2000-05-03  Thomas M. Evans  <tme@lanl.gov>
 
-	* draco/: Released draco version draco-1_0_0.  This version
-	contains the following sub-directories:
+        * draco/: Released draco version draco-1_0_0.  This version
+        contains the following sub-directories:
 
-		src/
-		doc/
-		templates/
-		autodoc/
+                src/
+                doc/
+                templates/
+                autodoc/
 
-	It contains the following packages under draco/:
+        It contains the following packages under draco/:
 
-		config-1_2_0
-		tools-1_0_0
+                config-1_2_0
+                tools-1_0_0
 
-	It contains the following packages under draco/src/:
+        It contains the following packages under draco/src/:
 
-		mesh-1_8_0
-		meshReaders-1_0_0
-		imc-1_3_0
-		mc-1_2_0
-		rng-1_3_0
-		c4-1_3_0
-		viz-1_0_0 
-		timestep-1_2_0
-		xm-1_2_0
-		stopwatch-1_1_0
-		matprops-1_4_0
-		nml-1_2_0
-		UnitTestFrame-1_0_0
-		traits-1_3_0
-		diffusion-1_3_0
-		radphys-1_4_0
-		units-1_3_0
-		ds++-1_3_0
-		P1Diffusion-1_5_0
-		ConjGradDiffusionSolver-1_0_0
-		ConjGrad-1_0_0
-		meshTest-1_2_0
+                mesh-1_8_0
+                meshReaders-1_0_0
+                imc-1_3_0
+                mc-1_2_0
+                rng-1_3_0
+                c4-1_3_0
+                viz-1_0_0 
+                timestep-1_2_0
+                xm-1_2_0
+                stopwatch-1_1_0
+                matprops-1_4_0
+                nml-1_2_0
+                UnitTestFrame-1_0_0
+                traits-1_3_0
+                diffusion-1_3_0
+                radphys-1_4_0
+                units-1_3_0
+                ds++-1_3_0
+                P1Diffusion-1_5_0
+                ConjGradDiffusionSolver-1_0_0
+                ConjGrad-1_0_0
+                meshTest-1_2_0
 
-	All regression tests in these packages passed on mikonos utilizing 
-	the following configuration:
+        All regression tests in these packages passed on mikonos utilizing 
+        the following configuration:
 
-		draco_config .. --with-c4=mpi 
-		--with-mpi-inc=/usr/local/mpich/include 
-		--with-mpi-lib=/usr/local/mpich/lib 
-		--with-sprng-inc=/usr/local/vendors/sprng/include 
-		--with-sprng-lib=/usr/local/vendors/sprng/lib
+                draco_config .. --with-c4=mpi 
+                --with-mpi-inc=/usr/local/mpich/include 
+                --with-mpi-lib=/usr/local/mpich/lib 
+                --with-sprng-inc=/usr/local/vendors/sprng/include 
+                --with-sprng-lib=/usr/local/vendors/sprng/lib
 
-	KCC 3.4g (LINUX) was used as the compiler.  See Memo
-	X-6:00-22(U). For details.
+        KCC 3.4g (LINUX) was used as the compiler.  See Memo
+        X-6:00-22(U). For details.
 
 1999-09-08  Thomas M. Evans  <tme@lanl.gov>
 
-	* templates: update templates to 1_1_0, added ChangeLog file to
-	templates directory.  In the future, each package in draco that
-	maintains its own numbered release tag, autodoc, templates,
-	config, c4, ds++, etc. should have their own ChangeLog files to
-	record package-wide changes.  The draco ChangeLog will only record 
-	draco-specific changes, releases, etc.	Of course, developers
-	should feel free to "mirror" any changes noted in the individual
-	package ChangeLogs to the draco ChangeLogs.  Even comments such
-	as, "made changes in templates" are effective, as a user could
-	simply peruse the templates ChangeLog file to see actual changes
-	made. 
+        * templates: update templates to 1_1_0, added ChangeLog file to
+        templates directory.  In the future, each package in draco that
+        maintains its own numbered release tag, autodoc, templates,
+        config, c4, ds++, etc. should have their own ChangeLog files to
+        record package-wide changes.  The draco ChangeLog will only record 
+        draco-specific changes, releases, etc.  Of course, developers
+        should feel free to "mirror" any changes noted in the individual
+        package ChangeLogs to the draco ChangeLogs.  Even comments such
+        as, "made changes in templates" are effective, as a user could
+        simply peruse the templates ChangeLog file to see actual changes
+        made. 
 
 1999-09-03  Thomas M. Evans  <tme@lanl.gov>
 
-	* autodoc, Makefile.in: added autodoc directory for automatic
-	document generation.  added gmake autodoc target that runs doxygen 
-	to build the documentation in the installation directory.  The
-	documentation is built in the html and latex directories.  Running 
-	gmake autodoc automatically does an install of the documentation.
-	Running gmake clean will remove the documentation files from html
-	and latex.  Note that no dependencies have been added to this
-	target yet.
+        * autodoc, Makefile.in: added autodoc directory for automatic
+        document generation.  added gmake autodoc target that runs doxygen 
+        to build the documentation in the installation directory.  The
+        documentation is built in the html and latex directories.  Running 
+        gmake autodoc automatically does an install of the documentation.
+        Running gmake clean will remove the documentation files from html
+        and latex.  Note that no dependencies have been added to this
+        target yet.
 
-$Id$	
+$Id$ 
 
-	* src (all directories): initial release.
+        * src (all directories): initial release.

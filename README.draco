@@ -1,5 +1,5 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> DRACO RELEASE draco-5_20_0   
+>>> DRACO RELEASE draco-5_21_0   
 >>> CCS-2 Computational Physics Group      
 >>> Copyright LANS LLC 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -19,28 +19,20 @@ by any clients.  Retired packages can be recovered from cvs by using
 the tag <package>-retired or, in some cases, the last version of the
 package (for packages that have been moved elsewhere) e.g. imc-4_0_0.
 
-Draco development is performed by project teams within CCS-4 and
-CCS-2.  The following code projects use/supply code to draco:
+Draco development is performed by project teams within CCS-2.  The
+following code projects use/supply code to draco: 
 
-	1) JAYENNE/CCS-4/Tom Evans <tme@lanl.gov>
-		         Todd Urbatsch <tmonster@lanl.gov>
-			 Mike Buksas <mwbuksas@lanl.gov>
-
-	2) CAPSAICIN/CCS-4/Jae Chang <jhchang@lanl.gov>
-
-	3) MACH/CCS-2/Rob Lowrie <lowrie@lanl.gov>
-
-	4) ZATHRAS/CCS-4/Scott Turner <turners@lanl.gov>
-
-        5) MARMOT/CompSci/Tom Evans <tme@lanl.gov>
-                          Rob Lowrie <lowrie@lanl.gov>
+	1) JAYENNE   Todd Urbatsch <tmonster@lanl.gov>
+	2) CAPSAICIN Jae Chang     <jhchang@lanl.gov>
+	3) MACH      Rob Lowrie    <lowrie@lanl.gov>
+	4) ZATHRAS   Scott Turner  <turners@lanl.gov>
+        5) MARMOT    Rob Lowrie    <lowrie@lanl.gov>
 
 Draco is governed by a board consisting of:
 
-      Tom Evans/CCS-4/<tme@lanl.gov> (Chair)
-      Jim Warsa/CCS-4/<warsa@lanl.gov>
-      Jon Dahl/CCS-4/<dahl@lanl.gov>
-      Rob Lowrie/CCS-2/<lowrie@lanl.gov>
+      Jim Warsa  <warsa@lanl.gov>
+      Jon Dahl   <dahl@lanl.gov>
+      Rob Lowrie <lowrie@lanl.gov>
 
 A brief description of the packages in draco follows.
 
