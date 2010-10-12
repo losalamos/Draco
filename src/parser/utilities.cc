@@ -201,6 +201,27 @@ double parse_positive_real(Token_Stream &tokens)
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
+ *
+ * \return The parsed quantity.
+ */
+
+double parse_nonnegative_real(Token_Stream &tokens)
+{
+    double Result = parse_real(tokens);
+    if (Result<0.0)
+    {
+	tokens.report_semantic_error("expected a nonnegative quantity");
+	Result = 1;
+    }
+
+    Ensure(Result>=0);
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \param tokens
+ * Token stream from which to parse the quantity.
  * \param x
  * On return, contains the parsed vector components.
  * \pre \c x!=NULL
