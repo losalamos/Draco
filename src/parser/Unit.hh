@@ -332,8 +332,10 @@ Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
 
 // Miscellaneous units
 
-Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16};
-//!< Thousands of electron volts
+Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16}; //!< Thousands of electron volts
+
+
+Unit const constant = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< used for numbers with no units 
 
 //---------------------------------------------------------------------------//
 /*! Systems of units
