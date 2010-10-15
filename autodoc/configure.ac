@@ -37,6 +37,11 @@ AC_PACKAGE_AUTODOC
 dotpath="${srcdir}/../doc/design"
 AC_SUBST(dotpath)
 
+htmlheader="html/header.html"
+htmlfooter="html/footer.html"
+AC_SUBST(htmlheader)
+AC_SUBST(htmlfooter)
+
 # find the release number
 number='null'
 AC_MSG_CHECKING("draco release number")
