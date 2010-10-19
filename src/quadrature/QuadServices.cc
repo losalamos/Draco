@@ -793,15 +793,22 @@ compute_n2lk_1D( unsigned const L ) const
  * ordinates (Y00, Y10, Y11, Y21), but will be evaluated as the starting
  * direction ordinates.
  */
-double QuadServices::augmentM( unsigned n, Ordinate const & Omega ) const
+double QuadServices::augmentM( unsigned n, Ordinate const &Omega ) const
 {
     // If you trigger this exception, you may have requested too many
     // moments.  Your quadrature set must have more ordinates than the number of
     // moments requested.
     Require(n<n2lk.size());
     // The n-th moment is the (l,k) pair used to evaluate Y_{l,k}.
-    return Ordinate::Y( n2lk[n].first, n2lk[n].second,
-                        Omega, spQuad->getNorm() );
+    //return Ordinate::Y( n2lk[n].first, n2lk[n].second, Omega, spQuad->getNorm() );
+
+    using rtt_sf::galerkinYlk;
+
+    double mu(Omega.mu());
+    double xi(Omega.eta());
+    double eta(Omega.xi());
+    double phi( compute_azimuthalAngle( xi, eta, mu ) );
+    return galerkinYlk( n2lk[n].first, n2lk[n].second, mu, phi, spQuad->getNorm());
 }
 
 /*! 
