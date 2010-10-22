@@ -875,6 +875,9 @@ AC_DEFUN([AC_LAPACK_SETUP], [dnl
    if test -n "`echo $LAPACK_LIB_DIR | grep atlas`"; then
       lapack_default="atlas"
    fi
+   if test ${with_lapack} = atlas; then
+      lapack_default=$with_lapack
+   fi
 
    AC_SETUP_VENDOR( [lapack], [yes], [${lapack_default}],
                    [], [@S|@{LAPACK_LIB_DIR}], [vendor|atlas] )
@@ -886,11 +889,17 @@ AC_DEFUN([AC_LAPACK_SETUP], [dnl
          lapack_extra_libs='-llapack -lf77blas -lcblas -latlas'
       fi
 
+      # If lapack is built with pgf90, then we may need more libraries.
+#      if test "${with_cxx}" = pgi; then
+#         lapack_extra_libs="${lapack_extra_libs} -lpgf90"
+#      fi
+
       # determine if this package is needed for testing or for the
       # package
       vendor_lapack=$1
 
    fi
+
 ])
 
 ##---------------------------------------------------------------------------##
