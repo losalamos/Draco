@@ -33,6 +33,8 @@ double parse_positive_real(Token_Stream &);
 
 double parse_nonnegative_real(Token_Stream &);
 
+bool parse_bool(Token_Stream &);
+
 Unit parse_unit(Token_Stream &);
 
 void parse_vector(Token_Stream &, double[]);

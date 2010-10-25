@@ -830,6 +830,32 @@ void parse_geometry(Token_Stream &tokens,
     return;
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \param tokens
+ * Token stream from which to parse the quantity.
+ *
+ * \return The parsed quantity.
+ */
+
+bool parse_bool(Token_Stream &tokens)
+{
+    Token const token = tokens.shift();
+    if (token.text()=="true")
+    {
+        return true;
+    }
+    else if (token.text()=="false")
+    {
+        return false;
+    }
+    else
+    {
+        tokens.report_syntax_error("expected 'true' or 'false'");
+        return true; // to turn off warning; never reached
+    }
+}
+
 } // rtt_parser
 //---------------------------------------------------------------------------//
 //                          end of utilities.cc
