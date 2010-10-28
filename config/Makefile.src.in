@@ -48,7 +48,7 @@ subnj	:= -j $(nj)
 ##---------------------------------------------------------------------------##
 
 .PHONY : all run install installdirs clean distclean mostlyclean maintainer-clean \
-	check uninstall forced-distclean forced-maintainer-clean \
+	check build_check uninstall forced-distclean forced-maintainer-clean \
 	dvi configure reconfigure autodoc
 
 run: 
@@ -69,7 +69,7 @@ install dvi:
 
 # Make sure that we do not install a subdirectory before it is checked.
 
-check all:
+check build_check all:
 	@for dir in ${subdirs} ; do \
 	    if test -d "$${dir}" ; then \
 	        (cd $${dir} && ${MAKE} dependencies $(subnj)) || ${EXIT}; \

@@ -223,8 +223,9 @@ ARFLAGS := ${PARALLEL_FLAG} ${ARFLAGS}
 ##---------------------------------------------------------------------------##
 
 .PHONY : all run install installdirs clean distclean forced-distclean \
-	mostlyclean maintainer-clean forced-maintainer-clean check uninstall \
-	forced-clean dvi dependencies configure reconfigure autodoc default
+	mostlyclean maintainer-clean forced-maintainer-clean check \
+	build_check uninstall forced-clean dvi dependencies configure \
+	reconfigure autodoc default
 
 default: ${alltarget}
 
@@ -242,6 +243,11 @@ all: ${alltarget}
 run: 
 	@if test -d "${srcdir}/test" && test -d "test" ; then \
 		(cd test && ${MAKE} $@) || exit; \
+	fi
+
+build_check: all
+	@if test -d "${srcdir}/test" && test -d "test" ; then \
+		(cd test && ${MAKE}) || exit; \
 	fi
 
 dependencies: ${dependfiles}
