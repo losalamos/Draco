@@ -176,11 +176,16 @@ bool OrdinateSet::check_class_invariants() const
 bool Ordinate::SnCompare(Ordinate const &a, Ordinate const &b)
 {
     // Note that x==r==mu, z==xi
-    if (a.xi() < b.xi())
+
+    if (soft_equiv(a.xi(), b.xi()) && soft_equiv(a.mu(), b.mu()) && soft_equiv(a.eta(), b.eta()) )
+    {
+        return false;
+    }
+    else if (a.xi() < b.xi()) 
     {
 	return true;
     }
-    else if (a.xi() > b.xi())
+    else if (a.xi() > b.xi()) 
     {
 	return false;
     }
