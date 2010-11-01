@@ -1,19 +1,22 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
-  \file    rng/LF_Gen.hh
-  \author  Paul Henning
-  \brief   Declaration of class LF_Gen
-  \note    Copyright 2006 Los Alamos National Security, LLC.
-  \version $Id$
-*/
+ * \file    rng/LF_Gen.hh
+ * \author  Paul Henning
+ * \brief   Declaration of class LF_Gen
+ * \note    Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ *          All rights reserved.
+ * \version $Id$
+ */
+//---------------------------------------------------------------------------//
 
 #ifndef LF_Gen_hh
 #define LF_Gen_hh
 
-#include <algorithm>
+#include "LFG.h"
+#include "rng/config.h"
 #include <ds++/Assert.hh>
 #include <ds++/Data_Table.hh>
-#include "rng/config.h"
-#include "LFG.h"
+#include <algorithm>
 
 namespace rtt_rng
 {
@@ -55,8 +58,10 @@ class LF_Gen_Ref
 
 
 
-/*! This holds the data for, and acts as the interface to, one random number
- * stream */
+/*!
+ * \brief This holds the data for, and acts as the interface to, one random
+ * number stream
+ */
 class LF_Gen
 {
   private:
