@@ -566,17 +566,17 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
            esac
            
            case ${F90} in
-           lf95)
+           *lf95)
                AC_MSG_CHECKING("if lahey found")
                AC_DBS_LAHEY_ENVIRONMENT
                ;;
-           pgf90)
+           *pgf90)
                AC_DBS_PGF90_ENVIRONMENT
                ;;
-           gfortran)
+           *gfortran)
                AC_DBS_GFORTRAN_ENVIRONMENT
                ;;
-           ifort)
+           *ifort)
                AC_DBS_IFORT_ENVIRONMENT
                ;;
            esac

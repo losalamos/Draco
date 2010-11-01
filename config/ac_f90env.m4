@@ -353,12 +353,23 @@ AC_DEFUN([AC_COMPILER_PORTLAND_F90], [dnl
    # Check for working Portland Group F90 compiler
 
    AC_CHECK_PROG(F90, pgf90, pgf90, none)
-   if test "${F90}" = pgf90 && ${F90} --V 2>&1 | grep "Portland"
-   then
-       :
-   else
-       AC_MSG_ERROR([not found])
-   fi
+   case $F90 in
+   *pgf90)
+      tmp=`${F90} -V 2>&1 | grep "Portland"`
+      if test "${tmp}no" = "no"; then
+         AC_MSG_ERROR([not found])
+      fi
+      ;;
+   *) AC_MSG_ERROR([not found]) 
+      ;;
+   esac
+
+dnl   if test "${F90}" = pgf90 && ${F90} --V 2>&1 | grep "Portland"
+dnl   then
+dnl       :
+dnl   else
+dnl       AC_MSG_ERROR([not found])
+dnl   fi
   
    # F90FREE, F90FIXED AND MODFLAG
 
