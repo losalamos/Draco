@@ -93,18 +93,33 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 # -Weffc++
 
 IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-fPIC -Wall" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -DDEBUG" ) # -W
+  set( CMAKE_C_FLAGS                "-fPIC" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wcast-align -Wpointer-arith -Wall -Wextra -DDEBUG") # -W
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} -O3 -funroll-loops -march=k8" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
-  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -Wnon-virtual-dtor -Wreturn-type -pedantic -Woverloaded-virtual -Wcast-align -Wpointer-arith -Wno-long-long")
+  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -finline-functions -fomit-frame-pointer")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -finline-functions -fomit-frame-pointer" )
 ENDIF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
+
+
+string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
+if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
+   option( GCC_ENABLE_ALL_WARNINGS 
+      "Add \"-Weffc++\" to the compile options (only available for DEBUG builds)." OFF )
+   option( GCC_ENABLE_GLIBCXX_DEBUG "Use special version of libc.so that
+   includes STL bounds checking (only available for DEBUG builds)." OFF )
+   if( GCC_ENABLE_ALL_WARNINGS )
+      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weffc++" )
+   endif()
+   if( GCC_ENABLE_GLIBCXX_DEBUG )
+      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" )
+   endif()
+endif()
 
 if( ENABLE_SSE )
   set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -msse2 -mfpmath=sse" )
