@@ -63,7 +63,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_viz DESTINATION lib )
-install( FILES ${headers} DESTINATION include/viz )
+install( FILES ${headers} ${template_implementations} DESTINATION include/viz )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
