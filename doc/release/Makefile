@@ -19,9 +19,10 @@ BIBTEX := ${BIBTEXENVS} bibtex
 
 MAKEIDX := makeindex
 
-.PHONY : all install clean dvi postscript clean-tex index bib tex
+.PHONY : all install clean dvi postscript clean-tex index bib tex pdf
 
 all: postscript
+pdf: draco-release.pdf
 
 install: all
 	@echo install not ready
@@ -32,6 +33,9 @@ dvi: draco-release.dvi
 
 draco-release.ps: draco-release.dvi
 	dvips -t letter -Ppdf -o draco-release.ps draco-release.dvi
+
+draco-release.pdf: draco-release.ps
+	ps2pdf $<
 
 draco-release.dvi: draco-release.tex 
 	${LATEX} draco-release
