@@ -60,7 +60,7 @@
 */
 
 #ifdef _MSC_VER
-#define LFG_RESTRICT
+#define LFG_RESTRICT  
 #else
 #define LFG_RESTRICT __restrict__
 #endif
@@ -226,7 +226,7 @@ static unsigned gseed = 0;
 /*************************************************************************/
 
 
-static void errprint(char *level, char *routine, char *error)
+void errprint(char const *level, char const *routine, char const *error)
 {
       fprintf(stderr,"%s from %s: %s\n",level,routine,error);
 }
@@ -470,8 +470,8 @@ advance_reg(int *reg_fill)
 */
 
 static void
-get_fill(unsigned const * __restrict__ n, 
-	 unsigned * __restrict__ r, 
+get_fill(unsigned const * LFG_RESTRICT n,
+	 unsigned * LFG_RESTRICT r,
 	 const unsigned seed)
 {
     int i,j,k,temp[2];
@@ -516,9 +516,10 @@ get_fill(unsigned const * __restrict__ n,
 /*************************************************************************/
 
 /* a = b<<1 */
-static void 
-si_double(unsigned * __restrict__ a,  
-          unsigned const * const __restrict__ b) 
+
+static void
+si_double(unsigned * LFG_RESTRICT a,
+          unsigned const * const LFG_RESTRICT b)
 {
     int i;
 
@@ -527,9 +528,9 @@ si_double(unsigned * __restrict__ a,
 
     a[VALID_L-2] = (INTX2_MASK&b[VALID_L-2])<<1;
 
-    for (i=VALID_L-3;i>=0;i--) 
+    for (i=VALID_L-3;i>=0;i--)
     {
-        if (b[i]&(1<<MAX_BIT_INT)) 
+        if (b[i]&(1<<MAX_BIT_INT))
             a[i+1]++;
 
         a[i] = (INTX2_MASK&b[i])<<1;
@@ -563,33 +564,34 @@ si_double_aeqb(unsigned * const a)
 /*************************************************************************/
 
 
-int 
-lfg_gen_int(unsigned *genptr)
-{
-    unsigned new_val;
-    unsigned * const __restrict__ r0 = genptr+OFFSET_r0;
-    unsigned * const __restrict__ r1 = genptr+OFFSET_r1;
-    unsigned * const __restrict__ hp = genptr+OFFSET_hidx;
+/* [2010-11-04 KT: Comment out unused function. */
 
-    int hidx, lidx;
+/* int lfg_gen_int(unsigned *genptr) */
+/* { */
+/*     unsigned new_val; */
+/*     unsigned * const LFG_RESTRICT r0 = genptr+OFFSET_r0; */
+/*     unsigned * const LFG_RESTRICT r1 = genptr+OFFSET_r1; */
+/*     unsigned * const LFG_RESTRICT hp = genptr+OFFSET_hidx; */
 
-    hidx = *hp;
-    lidx = hidx + VALID_K;
-    if (lidx > VALID_LM1) lidx -= VALID_L;
-    /*    INT_MOD_MASK causes arithmetic to be modular when integer size is  */
-    /*         different from generator modulus                              */
-    r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]);
-    r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]);
-    new_val = (r1[hidx]&(~1)) ^ (r0[hidx]>>1);
+/*     int hidx, lidx; */
 
-    if (--hidx < 0) hidx = VALID_LM1; /* skip an element in the sequence */
-    if (--lidx < 0) lidx = VALID_LM1;
-    r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]);
-    r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]);
-    *hp = (--hidx < 0) ? VALID_LM1 : hidx;
+/*     hidx = *hp; */
+/*     lidx = hidx + VALID_K; */
+/*     if (lidx > VALID_LM1) lidx -= VALID_L; */
+/*     /\*    INT_MOD_MASK causes arithmetic to be modular when integer size is  *\/ */
+/*     /\*         different from generator modulus                              *\/ */
+/*     r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]); */
+/*     r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]); */
+/*     new_val = (r1[hidx]&(~1)) ^ (r0[hidx]>>1); */
 
-    return (new_val>>1);
-}
+/*     if (--hidx < 0) hidx = VALID_LM1; /\* skip an element in the sequence *\/ */
+/*     if (--lidx < 0) lidx = VALID_LM1; */
+/*     r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]); */
+/*     r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]); */
+/*     *hp = (--hidx < 0) ? VALID_LM1 : hidx; */
+
+/*     return (new_val>>1); */
+/* } */
 
 
 /* A special version of lfg_gen_int used to initialize a stream. This
@@ -600,8 +602,8 @@ lfg_gen_int(unsigned *genptr)
 static void
 fake_rn_int_Lmul(unsigned * const genptr, unsigned const nmul)
 {
-    unsigned * const __restrict__ r0 = genptr+OFFSET_r0;
-    unsigned * const __restrict__ r1 = genptr+OFFSET_r1;
+    unsigned * const LFG_RESTRICT r0 = genptr+OFFSET_r0;
+    unsigned * const LFG_RESTRICT r1 = genptr+OFFSET_r1;
 
     int hidx, lidx, inner_idx;
     unsigned outer_idx;
@@ -639,44 +641,44 @@ fake_rn_int_Lmul(unsigned * const genptr, unsigned const nmul)
 }
 
 
+/* [2010-11-04 KT: Comment out unused function. */
 
+/* float lfg_gen_flt(unsigned *genptr) */
+/* { */
+/*     /\* this cannot be unsigned int due to a bug in the SGI compiler *\/ */
+/*     unsigned long new_val;  */
 
-float 
-lfg_gen_flt(unsigned *genptr)
-{
-    unsigned long new_val; /* this cannot be unsigned int due to a bug in the SGI compiler */
+/*     unsigned * const LFG_RESTRICT r0 = genptr+OFFSET_r0; */
+/*     unsigned * const LFG_RESTRICT r1 = genptr+OFFSET_r1; */
+/*     unsigned * const LFG_RESTRICT hp = genptr+OFFSET_hidx; */
+/*     int hidx,lidx; */
 
-    unsigned * const __restrict__ r0 = genptr+OFFSET_r0;
-    unsigned * const __restrict__ r1 = genptr+OFFSET_r1;
-    unsigned * const __restrict__ hp = genptr+OFFSET_hidx;
-    int hidx,lidx;
+/*     hidx = *hp; */
+/*     lidx = hidx + VALID_K; */
+/*     if (lidx >= VALID_L) lidx -= VALID_L; */
+/*     /\*    INT_MOD_MASK causes arithmetic to be modular when integer size is  *\/ */
+/*     /\*         different from generator modulus                              *\/ */
+/*     r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]); */
+/*     r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]); */
+/*     new_val = (r1[hidx]&(~1)) ^ (r0[hidx]>>1); */
 
-    hidx = *hp;
-    lidx = hidx + VALID_K;
-    if (lidx >= VALID_L) lidx -= VALID_L;
-    /*    INT_MOD_MASK causes arithmetic to be modular when integer size is  */
-    /*         different from generator modulus                              */
-    r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]);
-    r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]);
-    new_val = (r1[hidx]&(~1)) ^ (r0[hidx]>>1);
+/*     if (--hidx < 0) hidx = VALID_LM1; /\* skip an element in the sequence *\/ */
+/*     if (--lidx < 0) lidx = VALID_LM1; */
+/*     r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]); */
+/*     r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]); */
+/*     *hp = (--hidx<0) ? VALID_L -1 : hidx; */
 
-    if (--hidx < 0) hidx = VALID_LM1; /* skip an element in the sequence */
-    if (--lidx < 0) lidx = VALID_LM1;
-    r0[hidx] = INT_MOD_MASK&(r0[hidx] + r0[lidx]);
-    r1[hidx] = INT_MOD_MASK&(r1[hidx] + r1[lidx]);
-    *hp = (--hidx<0) ? VALID_L -1 : hidx;
-
-    return (new_val*FLT_MULT);
-} 
+/*     return (new_val*FLT_MULT); */
+/* }  */
 
 
 
 double 
 lfg_gen_dbl(unsigned *genptr)
 {
-    unsigned * const __restrict__ r0 = genptr+OFFSET_r0;
-    unsigned * const __restrict__ r1 = genptr+OFFSET_r1;
-    unsigned * const __restrict__ hp = genptr+OFFSET_hidx;
+    unsigned * const LFG_RESTRICT r0 = genptr+OFFSET_r0;
+    unsigned * const LFG_RESTRICT r1 = genptr+OFFSET_r1;
+    unsigned * const LFG_RESTRICT hp = genptr+OFFSET_hidx;
 
     unsigned long temp1,temp2; /* Due to a bug in the SGI compiler, this should not be unsigned int */
     int hidx,lidx;
@@ -739,14 +741,14 @@ initialize1(
 
 static void
 initialize2(
-    unsigned* begin,
-    unsigned* end
+    unsigned* begin
+/*    ,unsigned* end */
     )
 {
     int j,k;
-    unsigned* const q0 = begin;
-    unsigned* const si = begin + OFFSET_si;
-    unsigned const seed = q0[OFFSET_seed];
+    unsigned* const q0   = begin;
+    unsigned* const si   = begin + OFFSET_si;
+    unsigned  const seed = q0[OFFSET_seed];
 
     get_fill(si, q0+OFFSET_r0, seed);
     si[0]++;
@@ -820,11 +822,11 @@ lfg_create_rng_part1(const unsigned gennum,
 
 
 void
-lfg_create_rng_part2(unsigned* begin, unsigned* end)
+lfg_create_rng_part2(unsigned* begin /*, unsigned* end */)
 {
     unsigned * const si = begin + OFFSET_si;
 
-    initialize2(begin, end); 
+    initialize2(begin /*, end */); 
  
     /* update si array to allow for future spawning of generators */
 
@@ -840,7 +842,7 @@ lfg_create_rng(const unsigned gennum, unsigned seed,
 	       unsigned* begin, unsigned* end)
 {
     lfg_create_rng_part1(gennum, seed, begin, end);
-    lfg_create_rng_part2(begin, end);
+    lfg_create_rng_part2(begin /*, end */);
 }
 
 
@@ -859,7 +861,7 @@ lfg_spawn_rng(unsigned *genptr, unsigned* begin, unsigned* end)
                p,
                genptr[OFFSET_initseed],
                begin, end);
-    initialize2(begin, end);
+    initialize2(begin /*, end */);
   
     /* The new gennum is the same as the old one */
     begin[OFFSET_gennum] = genptr[OFFSET_gennum];
@@ -868,15 +870,15 @@ lfg_spawn_rng(unsigned *genptr, unsigned* begin, unsigned* end)
     si_double_aeqb(p);
 }
 
+/* [2010-11-04 KT: Comment out unused function. */
 
-
-void
-lfg_print(unsigned *genptr)
-{
-    printf("\nLagged Fibonacci Generator:\n");
-    printf("\n \tseed = %u, lags = (%d,%d)\n\n", 
-	   genptr[OFFSET_initseed], VALID_L, VALID_K);
-}
+/* void */
+/* lfg_print(unsigned *genptr) */
+/* { */
+/*     printf("\nLagged Fibonacci Generator:\n"); */
+/*     printf("\n \tseed = %u, lags = (%d,%d)\n\n",  */
+/* 	   genptr[OFFSET_initseed], VALID_L, VALID_K); */
+/* } */
 
 
 unsigned

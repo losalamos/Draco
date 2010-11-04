@@ -68,8 +68,8 @@ extern void lfg_create_rng_part1(const unsigned gennum,
                                  unsigned* begin,
                                  unsigned* end);
 
-extern void lfg_create_rng_part2(unsigned* begin,
-                                 unsigned* end);
+extern void lfg_create_rng_part2(unsigned* begin
+                                 /*, unsigned* end */);
 
 
 /*
@@ -112,6 +112,8 @@ extern unsigned lfg_size();
 */
 extern unsigned lfg_gennum(unsigned* genptr);
 
+extern void errprint(char const *level, char const *routine, char const *error);
+    
 
 #ifdef __cplusplus
 }

@@ -21,7 +21,7 @@
 namespace rtt_rng
 {
 
-
+// forward declaration
 class LF_Gen;
 
 /*! This is a reference to an LF_Gen */
@@ -57,11 +57,13 @@ class LF_Gen_Ref
 };
 
 
-
+//===========================================================================//
 /*!
+ * \class LF_Gen
  * \brief This holds the data for, and acts as the interface to, one random
- * number stream
+ *        number stream
  */
+//===========================================================================//
 class LF_Gen
 {
   private:
@@ -74,13 +76,11 @@ class LF_Gen
     typedef unsigned int* iterator;
     typedef unsigned int const * const_iterator;
 
-  public:
-
+    //! Default constructor.
     LF_Gen() 
     {
         Require(lfg_size() == LFG_DATA_SIZE);
     }
-
 
     LF_Gen(unsigned int const seed, unsigned int const streamnum)
     {
@@ -94,12 +94,10 @@ class LF_Gen
 	std::copy (_data, _data + LFG_DATA_SIZE, data);
     }
 
-
     void finish_init() const
     {
-        lfg_create_rng_part2(data, data + LFG_DATA_SIZE);
+        lfg_create_rng_part2(data /*, data + LFG_DATA_SIZE */);
     }
-
 
     //! Return a random double
     double ran() const 
@@ -107,13 +105,11 @@ class LF_Gen
         return lfg_gen_dbl(data); 
     }
 
-
     //! Spawn a new, independent stream from this one.
     void spawn(LF_Gen& new_gen) const
     { 
         lfg_spawn_rng(data, new_gen.data, new_gen.data+LFG_DATA_SIZE); 
     }
-
 
     //! Return the identifier for this stream
     unsigned int get_num() const
@@ -121,10 +117,8 @@ class LF_Gen
         return lfg_gennum(data);
     }
 
-
     //! Return the size of the state
     unsigned int size() const { return LFG_DATA_SIZE; }
-
 
     iterator begin() 
     { 
@@ -136,7 +130,6 @@ class LF_Gen
         return data + LFG_DATA_SIZE; 
     }
 
-
     const_iterator begin() const 
     { 
         return data; 
@@ -146,7 +139,6 @@ class LF_Gen
     { 
         return data + LFG_DATA_SIZE; 
     }
-
 
     bool operator==(LF_Gen const & rhs) const 
     { 

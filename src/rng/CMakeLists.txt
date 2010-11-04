@@ -7,7 +7,7 @@ project( rng CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
-option( ENABLE_RNG_NR "Enable non reproducable random number generator" ON )
+option( ENABLE_RNG_NR "Enable non reproducable random number generator" OFF )
 if( ENABLE_RNG_NR )
    set( RNG_NR 1 )
 endif()

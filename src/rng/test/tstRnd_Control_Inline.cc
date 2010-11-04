@@ -11,6 +11,7 @@
 #include "rng_test.hh"
 #include "../Release.hh"
 #include "../Random_Inline.hh"
+#include "../LFG.h"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 
@@ -19,7 +20,7 @@
 
 using rtt_rng::Rnd_Control;
 using rtt_rng::LF_Gen;
-
+using rtt_rng::LF_Gen_Ref;
 
 using namespace std;
 
@@ -29,8 +30,20 @@ int seed = 2452423;
 // TESTS
 //---------------------------------------------------------------------------//
 
+void check_basics()
+{
+    // Test RNG.cc's errprint function
+    cerr << "Testing RNG.cc's errprint function "
+         << "(a fake message should appear next)." << endl;
+    errprint("noway","check_basics","error message goes here");
+        
+    return;
+}
+
 void control_test()
 {
+    cout << "\nStarting control tests ..." << endl;
+    
     // make a controller
     Rnd_Control control(seed);
 
@@ -71,14 +84,70 @@ void control_test()
 	if (rn1 != rrn1)         ITFAILS;
 	if (rn2 != rrn2)         ITFAILS;
 
-	if (rn0 == rrn1)          ITFAILS;
-	if (rn1 == rrn2)          ITFAILS;
-	if (rn2 == rrn0)          ITFAILS;
+	if (rn0 == rrn1)         ITFAILS;
+	if (rn1 == rrn2)         ITFAILS;
+	if (rn2 == rrn0)         ITFAILS;
     }
-    
 
     if (rtt_rng_test::passed)
 	PASSMSG("Rnd_Control simple test ok.");
+}
+
+void check_accessors(void)
+{
+    cout << "\nStarting additional tests...\n" << endl;
+    
+    // make a controller
+    Rnd_Control control(seed);
+
+    // make some random numbers
+    LF_Gen r0;
+    control.initialize(r0);
+
+    {
+        LF_Gen_Ref gr0 = r0.ref();
+        double rn0     = gr0.ran();
+        if( rn0 < 0 || rn0 >1 )         ITFAILS;
+        if( gr0.get_num() != 0 )        ITFAILS;
+    }
+
+    { // test ctors
+        
+        // create some data
+        vector<unsigned int> foo(5,0);
+        for( size_t i=0; i<5; ++i)
+            foo[i] = i+100;
+
+        // try ctor form 2
+        LF_Gen r2( seed, 0 );        
+
+        // try ctor form 3
+        LF_Gen r3( &foo[0] );
+
+        // try to spawn
+        r3.spawn( r2 );
+        if( r3 == r2 )
+            PASSMSG("LF_Gen equality operator works.");
+
+        // Check the id for this stream
+        double rn = r3.ran();
+        cout << "LF_Gen r3 returne ran() = " << rn << endl;
+        unsigned int id = r3.get_num();
+        if( id != 0 )                             ITFAILS;
+        if( r3.size() != LFG_DATA_SIZE )          ITFAILS;
+
+        int count(0);
+        for( LF_Gen::iterator it=r3.begin(); it != r3.end(); ++it )
+            count++;
+        if( count != LFG_DATA_SIZE )              ITFAILS;
+        
+        
+        r3.finish_init();
+    }
+    
+    if (rtt_rng_test::passed)
+	PASSMSG("Rnd_Control simple test ok.");
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -94,10 +163,14 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
+    cout << "\nThis is rng: version" << rtt_rng::release() << "\n" << endl;
+    
     try
     {
 	// >>> UNIT TESTS
+        check_basics();
 	control_test();
+        check_accessors();
     }
     catch (rtt_dsxx::assertion &ass)
     {
