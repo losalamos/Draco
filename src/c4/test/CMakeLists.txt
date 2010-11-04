@@ -86,7 +86,11 @@ foreach( file ${test_sources} )
       PROJECT_LABEL Ut_c4
       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
   )
-  target_link_libraries( Ut_c4_${testname}_exe Lib_c4 Lib_c4_test Lib_dsxx ${MPI_LIBRARIES})
+  target_link_libraries( Ut_c4_${testname}_exe 
+     Lib_c4 
+     Lib_c4_test 
+     Lib_dsxx 
+     ${MPI_LIBRARIES})
   # if( WIN32 )
    # add_custom_command( TARGET Ut_c4_${testname}_exe 
       # POST_BUILD
