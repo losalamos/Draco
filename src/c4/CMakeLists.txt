@@ -32,7 +32,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )
 file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
-file( GLOB headers *.hh )
+file( GLOB headers *.hh *.h)
 list( APPEND headers ${PROJECT_BINARY_DIR}/c4/config.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
@@ -78,8 +78,12 @@ endif()
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_c4 DESTINATION lib )
+install( TARGETS Lib_c4 
+         DESTINATION lib 
+         EXPORT draco_c4 )
 install( FILES ${headers} DESTINATION include/c4 )
+install( EXPORT draco_c4
+         DESTINATION . )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
