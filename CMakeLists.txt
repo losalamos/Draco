@@ -9,7 +9,7 @@
 #------------------------------------------------------------------------------#
 
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
-project( Draco )
+project( Draco CXX )
 
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
@@ -52,9 +52,7 @@ set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-7)?" )
 # Build the packages:
 # 
 add_subdirectory( src )
-#add_subdirectory( autodoc )
-#add_subdirectory( config ) #add it so that it may be installed for attila use.
-#add_subdirecotory( tools )
+add_subdirectory( config )
 
 # Top level tests
 add_test( SystemInformationNew 
@@ -91,6 +89,8 @@ add_custom_target( configure
 
 # Doxygen documentation
 add_subdirectory( autodoc )
+
+
 
 # set PATH=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Windows\Microsoft.NET\Framework\v3.5;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\VCPackages;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\NETFX 4.0 Tools;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Intel\Shared Files\fortran\bin\Intel64;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files (x86)\QT Lite\QTSystem;c:\Program Files (x86)\Microsoft SQL Server\90\Tools\binn\;c:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\DTS\Binn;C:\Program Files (x86)\CMake 2.8\bin;C:\Program Files (x86)\QT Lite\QTSystem\;C:\Program Files (x86)\MPICH2\bin
 
