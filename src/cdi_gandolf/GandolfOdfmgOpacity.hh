@@ -14,18 +14,17 @@
 #ifndef __cdi_gandolf_GandolfOdfmgOpacity_hh__
 #define __cdi_gandolf_GandolfOdfmgOpacity_hh__
 
-#include <vector>
-#include <string>
-#include <cmath> // we need to define log(double) and exp(double)
-
+#include "GandolfWrapper.hh"    // we make calls to the wrapper routines.
+#include "GandolfDataTable.hh"  // we have a smart pointer to a
+                                // GandolfDataTable object.
 #include "ds++/Assert.hh" 
 #include "ds++/SP.hh"
 #include "cdi/OdfmgOpacity.hh"
 #include "cdi/OpacityCommon.hh"
 
-#include "GandolfWrapper.hh"    // we make calls to the wrapper routines.
-#include "GandolfDataTable.hh"  // we have a smart pointer to a
-                                // GandolfDataTable object.
+#include <vector>
+#include <string>
+#include <cmath> // we need to define log(double) and exp(double)
 
 namespace rtt_cdi_gandolf
 {
@@ -385,9 +384,9 @@ class GandolfOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     value is being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
-        const std::vector<double>& targetTemperature,
-        double targetDensity ) const; 
+    std::vector< std::vector< std::vector<double> > >
+    getOpacity( std::vector<double> const & targetTemperature,
+                double targetDensity ) const; 
 
     /*!
      * \brief Opacity accessor that returns a vector of 2-D vectors of
@@ -575,8 +574,6 @@ OpacityIterator GandolfOdfmgOpacity::getOpacity(
 { 
     using std::log;
 
-    // from twix:/scratch/tme/kai/KCC_BASE/include/algorithm
-
     // assert that the two input iterators have compatible sizes.
     Require( std::distance( tempIter, tempLast )
              == std::distance( densIter, densLast ) );
@@ -670,7 +667,7 @@ OpacityIterator GandolfOdfmgOpacity::getOpacity(
     using std::log;
 
     // number of groups in this multigroup set.
-    const size_t ng = spGandolfDataTable->getNumGroupBoundaries()-1;
+    size_t const ng = spGandolfDataTable->getNumGroupBoundaries()-1;
 
     // temporary opacity vector used by the wrapper.  The returned 
     // data will be copied into the opacityIterator.

@@ -3,7 +3,9 @@
  * \file   cdi_gandolf/test/ReadOdfGandolfFile.cc
  * \author Seth R. Johnson
  * \date   Thu July 10 2008
- * \brief  Regression test based on odfregression10.ipcress, also checks packing and unpacking.
+ * \brief  Regression test based on odfregression10.ipcress, also checks
+ *         packing and unpacking.
+ * \note   Copyright (C) 2008-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id: ReadOdfGandolfFile.cc
@@ -40,20 +42,20 @@ using std::string;
 using std::istringstream;
 using std::ostringstream;
 
-typedef SP<const GandolfOdfmgOpacity>			SP_Goo;
-typedef std::vector< double >						vec_d;
-typedef std::vector< std::vector<double> >	vec2_d;
+typedef SP<GandolfOdfmgOpacity const>           SP_Goo;
+typedef std::vector< double >                   vec_d;
+typedef std::vector< std::vector<double> >      vec2_d;
 
 //---------------------------------------------------------------------------//
 
 namespace benchmarkData
 {
-const rtt_cdi::Model model = rtt_cdi::ROSSELAND;
-const rtt_cdi::Reaction reaction = rtt_cdi::ABSORPTION;
-const int matID = 19000;
+rtt_cdi::Model    const model    = rtt_cdi::ROSSELAND;
+rtt_cdi::Reaction const reaction = rtt_cdi::ABSORPTION;
+int               const matID    = 19000;
 
-const int numGroups = 10;
-const double groupBoundaries[numGroups + 1] = {
+int    const numGroups = 10;
+double const groupBoundaries[numGroups + 1] = {
     1.00000000e-02, 
     2.51188643e-02,
     6.30957344e-02,
@@ -67,8 +69,8 @@ const double groupBoundaries[numGroups + 1] = {
     1.00000000e+02
 };
 
-const int numBands = 8;
-const double bandBoundaries[numBands + 1] = {
+int    const numBands = 8;
+double const bandBoundaries[numBands + 1] = {
     0,
     0.03,
     0.13,
@@ -80,10 +82,10 @@ const double bandBoundaries[numBands + 1] = {
     1
 };
 
-const double temp = 0.1;
-const double dens = 0.1;
+double const temp = 0.1;
+double const dens = 0.1;
 
-const double opacities[numGroups][numBands] = {
+double const opacities[numGroups][numBands] = {
     {
         16775.49059752706,              // group 1 band 1
         18182.67295203084,              // group 1 band 2
@@ -200,12 +202,12 @@ int main(int /*argc*/, char ** /*argv[] */)
 
     // get the gandolf file name, and create the gandolf file
     string gandolfFileName = "odfregression10.ipcress";
-    SP<const GandolfFile> file;
+    SP<GandolfFile const> file;
     try
     {
         file = new GandolfFile(gandolfFileName);
     }
-    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
+    catch ( rtt_cdi_gandolf::GandolfException const & GandError )
     {
         ostringstream message;
         message << "Failed to create SP to new GandolfFile object for "
@@ -216,22 +218,24 @@ int main(int /*argc*/, char ** /*argv[] */)
         return 1;
     }
 
-
     //load the Gandolf ODFMG Opacity
-    SP<const GandolfOdfmgOpacity> spGandOpacity;
+    SP<GandolfOdfmgOpacity const> spGandOpacity;
 
     try
     {
-        spGandOpacity = new GandolfOdfmgOpacity(file, benchmarkData::matID,
-                                                benchmarkData::model, benchmarkData::reaction,
-                                                benchmarkData::numBands);
-
+        spGandOpacity = new GandolfOdfmgOpacity(
+            file,
+            benchmarkData::matID,
+            benchmarkData::model,
+            benchmarkData::reaction,
+            benchmarkData::numBands);
+        
         ostringstream message;
         message << "Successfully read Gandolf file \"" << gandolfFileName 
                 << "\"." << endl;
         PASSMSG(message.str());
     }
-    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
+    catch ( rtt_cdi_gandolf::GandolfException const& GandError )
     {
         ostringstream message;
         message << "Failed to create SP to new GandolfOpacity object with "
@@ -241,7 +245,7 @@ int main(int /*argc*/, char ** /*argv[] */)
         cout << "Aborting tests.";
         return 1;
     }
-	
+        
     // check the data
     itPassed = checkData(spGandOpacity);
 
@@ -259,14 +263,14 @@ int main(int /*argc*/, char ** /*argv[] */)
 
     packed = spGandOpacity->pack();
 
-    SP<const GandolfOdfmgOpacity> spUnpackedGandOpacity;
+    SP<GandolfOdfmgOpacity const> spUnpackedGandOpacity;
 
     try
     {
         spUnpackedGandOpacity = new GandolfOdfmgOpacity(packed);
         PASSMSG( "Successfully unpacked GandolfOdfmgOpacity.");
     }
-    catch ( const rtt_cdi_gandolf::GandolfException& GandError )
+    catch ( rtt_cdi_gandolf::GandolfException const& GandError )
     {
         ostringstream message;
         message << "Failed to unpack "
@@ -276,7 +280,7 @@ int main(int /*argc*/, char ** /*argv[] */)
         cout << "Aborting tests.";
         return 1;
     }
-	
+        
     // check the unpacked data
     itPassed = checkData(spUnpackedGandOpacity);
 
@@ -295,18 +299,21 @@ int main(int /*argc*/, char ** /*argv[] */)
     {
         SP<GandolfMultigroupOpacity> opacity(new GandolfMultigroupOpacity(packed));
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion const & err)
     {
         itPassed = true;
         ostringstream message;
         message << "Good, we caught the following assertion, \n"
-                << ass.what();
+                << err.what();
         PASSMSG(message.str());
     }
 
     if (!itPassed)
     {
-        FAILMSG("Failed to catch an illegal packing asserion (odfmg should not unpack as mg).");
+        ostringstream msg;
+        msg << "Failed to catch an illegal packing asserion "
+            << "(odfmg should not unpack as mg).";
+        FAILMSG( msg.str() );
     }
 
     // status of test
@@ -329,11 +336,37 @@ bool checkData(SP_Goo spGandOpacity)
 {
     Require(spGandOpacity);
 
-    const double temperature = benchmarkData::temp;
-    const double density     = benchmarkData::dens;
+    rtt_cdi::OpacityModelType omt( spGandOpacity->getOpacityModelType() );
+    if( omt == rtt_cdi::GANDOLF_TYPE )
+        PASSMSG( "OpacityModelType() returned expected value.")
+    else
+        FAILMSG( "OpacityModelType() did not return the expected value.");
 
-    const int numBands  = spGandOpacity->getNumBands();
-    const int numGroups = spGandOpacity->getNumGroups();
+    std::string edp( spGandOpacity->getEnergyPolicyDescriptor() );
+    if( edp == std::string("odfmg") )
+        PASSMSG( "EDP = odfmg" )
+    else
+        FAILMSG( "EDP != odfmg" );
+
+    if( ! spGandOpacity->data_in_tabular_form() )                     ITFAILS;
+
+    rtt_cdi::Model om( spGandOpacity->getModelType() );
+    if( om != rtt_cdi::ROSSELAND )                                    ITFAILS;
+
+    rtt_cdi::Reaction rt( spGandOpacity->getReactionType() );
+    if( rt !=  rtt_cdi::ABSORPTION )                                  ITFAILS;
+
+    std::string dataFilename( spGandOpacity->getDataFilename() );
+    if( dataFilename != std::string("odfregression10.ipcress") )      ITFAILS;
+
+    std::string ddesc( spGandOpacity->getDataDescriptor() );
+    if( ddesc != std::string("Multigroup Rosseland Absorption") )     ITFAILS;        
+    
+    double const temperature = benchmarkData::temp;
+    double const density     = benchmarkData::dens;
+
+    int const numBands  = spGandOpacity->getNumBands();
+    int const numGroups = spGandOpacity->getNumGroups();
 
     bool hasNotFailed = true;
 
@@ -367,7 +400,7 @@ bool checkData(SP_Goo spGandOpacity)
     bool itFails = false;
 
     // test group boundaries
-    const vec_d groupBoundaries = spGandOpacity->getGroupBoundaries();
+    vec_d const groupBoundaries = spGandOpacity->getGroupBoundaries();
     for (int group = 0; group < numGroups; group++) 
     {
         if (!soft_equiv( groupBoundaries[group],
@@ -389,7 +422,7 @@ bool checkData(SP_Goo spGandOpacity)
     }
 
     // test band boundaries
-    const vec_d bandBoundaries  = spGandOpacity->getBandBoundaries();
+    vec_d const bandBoundaries  = spGandOpacity->getBandBoundaries();
 
     itFails = false;
 
@@ -444,9 +477,41 @@ bool checkData(SP_Goo spGandOpacity)
         PASSMSG("Opacities did match.");
     }
 
+    // check alternate accessors:
+    
+    std::vector<double> vtemp(1, temperature);
+    std::vector< std::vector< std::vector<double> > >
+        mbovt( spGandOpacity->getOpacity( vtemp, density ) );
+                 
+    std::vector<double> vdens( 1, density);
+    std::vector< std::vector< std::vector<double> > >
+        mbovd( spGandOpacity->getOpacity( temperature, vdens ) );
+
+    for( size_t i=0; i<mbovt.size(); ++i )
+        for( size_t j=0; j<mbovt[i].size(); ++j )
+            for( size_t k=0; k<mbovt[i][j].size(); ++k )
+                if( ! soft_equiv( mbovt[i][j][k], mbovd[i][j][k] ) ) ITFAILS;
+
+    // blah
+
+    std::vector<double> opacs( numGroups*numBands, 0.0 );
+    spGandOpacity->getOpacity( temperature,
+                               vdens.begin(), vdens.end(),
+                               opacs.begin() );
+    // for( size_t i=0; i<numGroups; ++i)
+    //     std::cout << opacs[i] << std::endl;
+
+    spGandOpacity->getOpacity( vtemp.begin(), vtemp.end(),
+                               density,
+                               opacs.begin() );
+    
+    spGandOpacity->getOpacity( vtemp.begin(), vtemp.end(),
+                               vdens.begin(), vdens.end(),
+                               opacs.begin() );
+    
     return hasNotFailed;
 }
 
 //---------------------------------------------------------------------------//
-//                        end of ReadOdfGandolfFile.cc
+// end of tGandolfOdfmgOpacity.cc
 //---------------------------------------------------------------------------//

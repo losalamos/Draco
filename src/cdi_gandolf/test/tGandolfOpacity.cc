@@ -3,7 +3,8 @@
  * \file   cdi_gandolf/test/tGandolfOpacity.cc
  * \author Thomas M. Evans
  * \date   Fri Oct 26 10:50:44 2001
- * \brief  
+ * \brief
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,6 +19,7 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 #include <iostream>
 #include <vector>
@@ -34,6 +36,7 @@ using rtt_cdi_gandolf::GandolfFile;
 using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -146,7 +149,43 @@ void file_check_Al_BeCu()
 	FAILMSG("Aborting tests.")
 	return;
     }
-	    
+
+    // Check accessor functions
+
+    rtt_cdi::OpacityModelType omt( spOp_Al_rgt->getOpacityModelType() );
+    if( omt == rtt_cdi::GANDOLF_TYPE )
+        PASSMSG( "OpacityModelType() returned expected value.")
+    else
+        FAILMSG( "OpacityModelType() did not return the expected value.");
+
+    std::string edp( spOp_Al_rgt->getEnergyPolicyDescriptor() );
+    if( edp == std::string("gray") )
+        PASSMSG( "EDP = gray" )
+    else
+        FAILMSG( "EDP != gray" );
+
+    if( ! spOp_Al_rgt->data_in_tabular_form() ) ITFAILS;
+    
+    size_t nd( spOp_Al_rgt->getNumDensities() );
+    size_t nt( spOp_Al_rgt->getNumTemperatures() );
+    if( nd != 5  ) FAILMSG( "Found wrong number of density values." );
+    if( nt != 10 ) FAILMSG( "Found wrong number of temperature values." );
+    
+    std::vector<double> densGrid( spOp_Al_rgt->getDensityGrid() );
+    std::vector<double> tempGrid( spOp_Al_rgt->getTemperatureGrid() );
+    if( densGrid.size() != nd ) ITFAILS;
+    if( tempGrid.size() != nt ) ITFAILS;
+
+    double expected_densGrid[] = { 0.01, 0.1, 1.0, 10.0, 100.0 };
+    double expected_tempGrid[] = { 0.0005, 0.0015, 0.004, 0.0125, 0.04,
+                                   0.125, 0.4, 1.25, 4, 15 };
+
+    for( size_t i=0; i<densGrid.size(); ++i )
+        if( ! soft_equiv( densGrid[i], expected_densGrid[i] ) ) ITFAILS;
+    for( size_t i=0; i<tempGrid.size(); ++i )
+        if( ! soft_equiv( tempGrid[i], expected_tempGrid[i] ) ) ITFAILS;
+            
+            
     // --------------- //
     // MG Opacity test //
     // --------------- //
@@ -174,9 +213,27 @@ void file_check_Al_BeCu()
     // Setup the test point.
     temperature = 0.01; // keV
     density     = 2.0; // g/cm^3
-	    
+
+    // Check accessor functions
+    
+    omt = spOp_Al_rtmg->getOpacityModelType();
+    if( omt == rtt_cdi::GANDOLF_TYPE )
+        PASSMSG( "OpacityModelType() returned expected value.")
+    else
+        FAILMSG( "OpacityModelType() did not return the expected value.");
+
+    edp = spOp_Al_rtmg->getEnergyPolicyDescriptor();
+    if( edp == std::string("mg") )
+        PASSMSG( "EDP = mg" )
+    else
+        FAILMSG( "EDP != mg" );
+
+    if( ! spOp_Al_rtmg->data_in_tabular_form() ) ITFAILS;
+
+    size_t numGroups = 33;
+    if( spOp_Al_rtmg->getNumGroups() != numGroups ) ITFAILS;
+
     // The solution to compare against:
-    int numGroups                    = 33;
     double tabulatedMGOpacityArray[] = {2.4935245299837247e+08,
 					2.6666789027326573e+04,
 					1.6270621515227660e+04,
@@ -1234,12 +1291,12 @@ void gray_opacity_packing_test()
     {
 	SP<MultigroupOpacity> opacity(new GandolfMultigroupOpacity(packed));
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
 	caught = true;
 	ostringstream message;
 	message << "Good, we caught the following assertion, \n"
-		<< ass.what();
+		<< error.what();
 	PASSMSG(message.str());
     }
     if (!caught)
@@ -1371,12 +1428,12 @@ void mg_opacity_packing_test()
     {
 	SP<GrayOpacity> opacity(new GandolfGrayOpacity(packed));
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
 	caught = true;
 	ostringstream message;
 	message << "Good, we caught the following assertion, \n"
-		<< ass.what();
+		<< error.what();
 	PASSMSG(message.str());
     }
     if (!caught)
@@ -1388,6 +1445,303 @@ void mg_opacity_packing_test()
     {
 	PASSMSG("GandolfMultigroupOpacity packing test successfull.");
     }
+}
+
+//---------------------------------------------------------------------------//
+void test_exception_classes()
+{
+    using namespace rtt_cdi_gandolf;
+    
+    bool all_ok(true);
+    std::string const dummyMsg( "Dummy fail" );
+    std::string msg;
+
+
+    // ggetmgException(int)
+    { 
+        std::string const expectedMsg(
+            "Unknown error returned from Gandolf::ggetmg()." );
+        try
+        {
+            all_ok=false;
+            throw ggetmgException( dummyMsg );
+        }
+        catch( ggetmgException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+    
+    // ggetmgException(string)
+    {
+        std::string const expectedMsg("The IPCRESS file was not found.");
+        try
+        {
+            all_ok=false;
+            // 1 == "IPCRESS file was not found."
+            throw ggetmgException( 1 );
+        }
+        catch( ggetmgException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+    // ggetgrayException(string)
+    { 
+        std::string const expectedMsg(
+            "Unknown error returned from Gandolf::ggetgray()." );
+        try
+        {
+            all_ok=false;
+            throw ggetgrayException( dummyMsg );
+        }
+        catch( ggetgrayException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+    
+    // ggetgrayException(int):
+    {
+        std::string const expectedMsg("The IPCRESS file was not found.");
+        try
+        {
+            all_ok=false;
+            // 1 == "IPCRESS file was not found."
+            throw ggetgrayException( 1 );
+        }
+        catch( ggetgrayException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+   // gmatidsException(string)
+    { 
+        std::string const expectedMsg(
+            "Unknown error returned from Gandolf::gmatids()." );
+        try
+        {
+            all_ok=false;
+            throw gmatidsException( dummyMsg );
+        }
+        catch( gmatidsException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+    // gmatidsException(int)
+    {
+        std::string const expectedMsg("The IPCRESS file was not found.");
+        try
+        {
+            all_ok=false;
+            throw gmatidsException( 1 );
+        }
+        catch( gmatidsException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+    
+    // gchgridsException(string)
+    { 
+        std::string const expectedMsg(
+            "Unknown error returned from Gandolf::gchgrids()." );
+        try
+        {
+            all_ok=false;
+            throw gchgridsException( dummyMsg );
+        }
+        catch( gchgridsException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+    // gchgridsException(int)
+    {
+        std::string const expectedMsg("The IPCRESS file was not found.");
+        try
+        {
+            all_ok=false;
+            throw gchgridsException( 1 );
+        }
+        catch( gchgridsException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+     // gkeysException(string)
+    { 
+        std::string const expectedMsg(
+            "Unknown error returned from Gandolf::gkeys()." );
+        try
+        {
+            all_ok=false;
+            throw gkeysException( dummyMsg );
+        }
+        catch( gkeysException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+    // gkeysException(int)
+    {
+        std::string const expectedMsg("The IPCRESS file was not found.");
+        try
+        {
+            all_ok=false;
+            throw gkeysException( 1 );
+        }
+        catch( gkeysException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg = error.getErrorMessage();
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )              ITFAILS;
+        if( ! (msg==expectedMsg) )  ITFAILS;
+    }
+
+    // Check the GandolfException base class
+    {
+        std::string const expectedMsg("bogus error message.");
+        std::string gfn;
+        int ec(0);
+        std::string es;
+        std::string whatMsg;
+        try
+        {
+            all_ok=false;
+            throw GandolfException( dummyMsg );
+        }
+        catch( GandolfException const & error)
+        {
+            PASSMSG("Caught an expected exception");
+            msg     = error.getErrorMessage();
+            gfn     = error.getGandolfFunctionName();
+            ec      = error.getErrorCode();
+            es      = error.errorSummary();
+            whatMsg = error.what();
+            
+            all_ok=true;        
+        }
+        catch(...)
+        {
+            FAILMSG("Caught an unexpected exception");
+            all_ok=false;
+        }
+        
+        if( ! all_ok )                      ITFAILS;
+        if( msg != expectedMsg )            ITFAILS;
+        if( ec != -99 )                     ITFAILS;
+        if( gfn != std::string("unknown") ) ITFAILS;
+        if( whatMsg != es )                 ITFAILS;
+
+    }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -1403,6 +1757,9 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 
+    std::cout << "\nWe are testing cdi_gandolf: version "
+              << rtt_cdi_gandolf::release() << "\n" << std::endl;
+    
     try
     {
 	// >>> UNIT TESTS
@@ -1412,10 +1769,12 @@ int main(int argc, char *argv[])
 
 	gray_opacity_packing_test();
 	mg_opacity_packing_test();
+
+        test_exception_classes();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &error)
     {
-	cout << "While testing tGandolfOpacity, " << ass.what()
+	cout << "While testing tGandolfOpacity, " << error.what()
 	     << endl;
 	return 1;
     }
