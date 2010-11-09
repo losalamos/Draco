@@ -20,17 +20,21 @@ if( DOXYGEN_FOUND )
   # Source directories that should be examined by doxygen Sets
   # ${DOXYGEN_INPUT}.  This value is embedded in the doxygen_config
   # file below.
-  set( DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/autodoc" )
+  set( DOXYGEN_INPUT 
+     "${PROJECT_SOURCE_DIR}/autodoc ${PROJECT_BINARY_DIR}/autodoc" )
 
   file( GLOB package_list ${PROJECT_SOURCE_DIR}/src/* )
   foreach( package ${package_list} )
      if( EXISTS ${package}/CMakeLists.txt )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}" )
-        message( "Doxygen will use ${package}" )
+#        message( "Doxygen will use ${package}" )
      endif()
      if( EXISTS ${package}/test/CMakeLists.txt )
         set( DOXYGEN_EXAMPLES "${DOXYGEN_EXAMPLES} ${package}/test" )
-        message( "Doxygen examples will use ${package}/test" )
+#        message( "Doxygen examples will use ${package}/test" )
+     endif()
+     if( EXISTS ${package}/autodoc )
+        set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
      endif()
   endforeach()  
 

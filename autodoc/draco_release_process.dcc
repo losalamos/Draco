@@ -13,7 +13,7 @@ installations provided at \c /usr/projects/draco/draco-#_#_#.
 
 <!-- ---------------------------------------------------------------------- -->
     
-\section draco_release_prepare Prerequisits for release
+\section draco_release_prepare Prerequisites for release
 
 - Before starting the release process, you must ensure that the current
   repository HEAD version is suitable for release.  That is, the code must
@@ -24,7 +24,6 @@ installations provided at \c /usr/projects/draco/draco-#_#_#.
   \code
         % export CVSROOT='ccscs8:/ccs/codes/radtran/cvsroot'
         % export CVS RSH='ssh'
-        % source /path/to/draco/environment/bashrc/.bashrc
         % module purge
         % module load hpc-tools friendly-testing python/2.5.2
         % module load intel-f/10.0.023 intel-c/10.0.023 openmpi-intel/1.4.3
@@ -42,10 +41,10 @@ installations provided at \c /usr/projects/draco/draco-#_#_#.
         % ./draco_config
         % cd ..
   \endcode
-  - Tar the directories and make copies on each of the
-    architectures that you plan to release the code on.
+  - Tar the directories and make copies on each of the architectures that you
+    plan to release the code on.
   \code
-        % tar --use-compress-program /usr/bin/bzip2' cvf draco_src.tar.bz2 draco
+        % tar --use-compress-program /usr/bin/bzip2 cvf draco_src.tar.bz2 draco
         % scp draco_src.tar.bz2 tu-fe1:/usr/projects/draco/draco-#_#_#/.
   \endcode
 
@@ -107,13 +106,11 @@ Determine the last release number
 \section draco_release_list_changes Identify what has changed
 
 \code
-   % python $draco_src_dir/tools/find_tags_diff.py -t "package" > \
-     changes_since_#_#_#.
+   % python $draco_src_dir/tools/find_tags_diff.py -t "package" > changes_since_#_#_#.
 \endcode
 or
 \code
-   % $draco_src_dir/draco/environment/bin/log_changes_since "date" >  \
-     changes_since_#_#_#.log
+   % $draco_src_dir/draco/environment/bin/log_changes_since "date" > changes_since_#_#_#.log
 \endcode
 or
 \code
@@ -133,8 +130,7 @@ or
 
 What files have changed since the last release?
 \code
-   % cat changes_since_5_20_0.log | grep "Index:" &> \
-     files_changed_since_5_20_0.log  
+   % cat changes_since_5_20_0.log | grep "Index:" &> files_changed_since_5_20_0.log  
 \endcode
 - Report this in the ChangeLog.
 
@@ -179,18 +175,9 @@ Replace all version tags found in source code with the new version number.
 
 - The ones to do by hand are:
   - \c $RELEASEDIR/draco/README.draco
-  - \c $RELEASEDIR/clubimc/get draco
-  - \c $RELEASEDIR/wedgehog/get_draco
-  - \c $RELEASEDIR/imcdoc/infobook/clubimc.xml
-  - \c $RELEASEDIR/imcdoc/infobook/wedgehog.xml
        
 - get both the version number right under author list, and
   update the dependency table. 
-- Once you have updated the xml files, then run make in the
-  infobook directory and copy the resulting \c clubimc.txt and
-  \c wedgehog.txt files to:
-  - \c $RELEASEDIR/clubimc/README.clubimc
-  - \c $RELEASEDIR/wedgehog/README.wedgehog
 - Finally there are a few files in each subpackage directory
   that have version numbers in them. To be sure that you go
   change all of these, run the following script in the src
@@ -200,8 +187,8 @@ Replace all version tags found in source code with the new version number.
   \endcode
 - Example:
   \code
-   oldtag is replaced by clubimc-4_0_0
-   newtag is replaced by clubimc-4_1_0
+   oldtag is replaced by draco-5_20_0
+   newtag is replaced by clubimc-5_21_0
   \endcode
 - This should update files like \c Release.cc, \c configure.ac,
   \c "subpackage".dcc for each subpackage.
