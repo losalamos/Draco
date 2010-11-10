@@ -51,7 +51,7 @@ dnl Warning: if we do not find an MPI vendor, c4 will default to
 dnl scalar-mode.
 AC_MPI_SETUP(pkg)
 AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
- 		   shared_lib fpe_trap ode ) 
+ 		   shared_lib fpe_trap ode linear ) 
 
 dnl Determine if these vendors are available.
 AC_LAPACK_SETUP(pkg)
@@ -79,7 +79,8 @@ fi
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders )
+AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders \
+                   roots )
 
 AC_GSL_SETUP(pkg)
 AC_GANDOLF_SETUP(pkg)
