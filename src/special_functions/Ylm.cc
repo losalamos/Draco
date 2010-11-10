@@ -155,8 +155,8 @@ double normalizedYlk( unsigned const l,     int    const k,
     // for k>0 and odd, the sign will be negative.
     double sign( std::pow(-1.0,absk) );
     
-    // As noted on the \ref main mainpage for this package, we are interested
-    // in the real portion of the spherical harmonics function.
+    // As noted on the \ref special_functions_overview for this package, we
+    // are interested in the real portion of the spherical harmonics function.
 
     double result(-9999.0);
     
@@ -215,8 +215,8 @@ double realYlk( unsigned const l, int const k,
     if( k < 0 )
         sign=std::pow( -1.0, absk );
 
-    // As noted on the \ref main mainpage for this package, we are interested
-    // in the real portion of the spherical harmonics function.
+    // As noted on the \ref special_functions_overview for this package, we
+    // are interested in the real portion of the spherical harmonics function.
 
     return sign * cP * std::cos( absk * phi );
 }
