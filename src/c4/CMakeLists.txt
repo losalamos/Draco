@@ -78,12 +78,8 @@ endif()
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_c4 
-         DESTINATION lib 
-         EXPORT draco_c4 )
+install( TARGETS Lib_c4 DESTINATION lib )
 install( FILES ${headers} DESTINATION include/c4 )
-install( EXPORT draco_c4
-         DESTINATION . )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

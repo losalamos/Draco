@@ -59,12 +59,8 @@ endif()
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_dsxx 
-         DESTINATION lib 
-         EXPORT draco_dsxx )
+install( TARGETS Lib_dsxx DESTINATION lib )
 install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
-install( EXPORT draco_dsxx 
-         DESTINATION . )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
