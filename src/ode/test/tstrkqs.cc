@@ -27,7 +27,7 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-static void ederivs(double x,
+static void ederivs(double /*x*/,
 		    const vector<double> &y,
 		    vector<double> &dydx)
 {
