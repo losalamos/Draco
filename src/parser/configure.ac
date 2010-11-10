@@ -40,6 +40,8 @@ AC_RUNTESTS(tstToken \
             tstUnit \
             tstString_Token_Stream \
             tstParse_Table \
+            tstClass_Parser \
+            tstAbstract_Class_Parser \
             , scalar)
 
 AC_RUNTESTS(tstFile_Token_Stream \
