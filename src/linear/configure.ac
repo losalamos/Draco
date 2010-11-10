@@ -111,7 +111,7 @@ AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
 dnl Create test/Makefile.options, if it exists.
 
 AC_CHECK_FILE($srcdir/test/Makefile.options.in, \
-              AC_CONFIG_FILES([test/Makefile.options:test/Makefile.options.in]))
+AC_CONFIG_FILES([test/Makefile.options:test/Makefile.options.in]))
 
 AC_OUTPUT
 

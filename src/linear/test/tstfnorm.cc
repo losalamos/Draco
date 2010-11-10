@@ -57,23 +57,23 @@ void tstfnorm(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
+    ScalarUnitTest ut( argc,argv,release );
     try
     {
-        UnitTest ut( argc,argv,release );
 	tstfnorm(ut);
     }
     catch (exception &err)
     {
 	cout << "ERROR: While testing tstfnorm, " << err.what() << endl;
-        return 1;
+        ut.numFails++;
     }
     catch( ... )
     {
 	cout << "ERROR: While testing tstfnorm, " 
              << "An unknown exception was thrown." << endl;
-	return 1;
+        ut.numFails++;
     }
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

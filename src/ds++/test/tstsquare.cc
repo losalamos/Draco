@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        UnitTest ut( argc, argv, release );
+        ScalarUnitTest ut( argc, argv, release );
 	if (soft_equiv(square(3.0), 9.0))
 	{
 	    ut.passes("square function returned correct double");

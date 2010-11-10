@@ -80,7 +80,13 @@ foreach( file ${test_sources} )
        VS_KEYWORD ${testname}
        PROJECT_LABEL Ut_linear
   )
-  target_link_libraries( Ut_linear_${testname}_exe Lib_linear Lib_linear_test Lib_traits Lib_c4 Lib_dsxx ${MPI_LIBRARY} )
+  target_link_libraries( Ut_linear_${testname}_exe 
+     Lib_linear 
+     Lib_linear_test 
+     Lib_traits 
+     Lib_c4 
+     Lib_dsxx 
+     ${MPI_LIBRARY} )
   add_test( linear_${testname} ${testname} )
   set_tests_properties( linear_${testname} PROPERTIES	
      PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
