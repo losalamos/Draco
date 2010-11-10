@@ -57,6 +57,8 @@ AC_RUNTESTS(tstAllocators \
             tstpythag \
             tstabs \
             tstconj \
+            tstcube \
+            tstsign \
             , scalar)
 
 AC_DRACO_ENV

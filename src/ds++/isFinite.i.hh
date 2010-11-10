@@ -16,8 +16,8 @@
 #include <iterator>
 #include <functional>
 #include <limits>
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
+#include "Assert.hh"
+#include "Soft_Equivalence.hh"
 
 namespace rtt_dsxx
 {
