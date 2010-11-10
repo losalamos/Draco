@@ -1,7 +1,13 @@
 # $Id$
 
 cmake_minimum_required(VERSION 2.6)
-project( special_functions CXX )
+project( roots CXX )
+
+# ---------------------------------------------------------------------------- #
+# Generate config.h (only occurs when cmake is run)
+# ---------------------------------------------------------------------------- #
+
+configure_file( config.h.in ${PROJECT_BINARY_DIR}/roots/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -9,8 +15,8 @@ project( special_functions CXX )
 
 file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
-file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
+list( APPEND headers ${PROJECT_BINARY_DIR}/roots/config.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
@@ -23,46 +29,46 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 include_directories( 
-   ${PROJECT_SOURCE_DIR}       # sources
-   ${ode_BINARY_DIR}           # ode/config.h
-   ${draco_src_dir_SOURCE_DIR} # ds++ header files
-   ${dsxx_BINARY_DIR}          # ds++/config.h
-   ${GSL_INCLUDE_DIRS}
-   )
+   ${PROJECT_SOURCE_DIR}      # sources
+   ${PROJECT_BINARY_DIR}      # roots/config.h
+   ${PROJECT_SOURCE_DIR}/..   # ds++ header files
+   ${dsxx_BINARY_DIR}         # ds++/config.h
+) 
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_special_functions ${DRACO_LIBRARY_TYPE} ${sources} )
-add_dependencies( Lib_special_functions Lib_units Lib_ode )
+add_library( Lib_roots ${DRACO_LIBRARY_TYPE} ${sources} )
+add_dependencies( Lib_roots Lib_linear )
 if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_special_functions 
-    PROPERTIES 
+   set_target_properties( Lib_roots 
+      PROPERTIES 
       # Provide compile define macro to enable declspec(dllexport) linkage.
       COMPILE_DEFINITIONS BUILDING_DLL 
       # Use custom library naming
-      OUTPUT_NAME rtt_special_functions
-  )
+      OUTPUT_NAME rtt_roots
+      )
 else()
-  set_target_properties( Lib_special_functions 
-    PROPERTIES 
+   set_target_properties( Lib_roots 
+      PROPERTIES 
       # Use custom library naming
-      OUTPUT_NAME rtt_special_functions
-  )
+      OUTPUT_NAME rtt_roots
+      )
 endif()
+#target_link_libraries( Lib_roots Lib_c4 Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_special_functions DESTINATION lib )
-install( FILES ${headers} DESTINATION include/special_functions )
+install( TARGETS Lib_roots DESTINATION lib )
+install( FILES ${headers} ${template_implementations} DESTINATION include/roots )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
 
 if( DRACO_BUILD_TESTS )
- add_subdirectory( test )
+   add_subdirectory( test )
 endif()   

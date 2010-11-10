@@ -44,7 +44,9 @@ add_subdirectory( c4 )           # needs ds++
 add_subdirectory( cdi )          # needs ds++
 add_subdirectory( fpe_trap )     # needs ds++
 add_subdirectory( lapack_wrap )  # needs ds++
+add_subdirectory( linear )  # needs ds++
 add_subdirectory( mesh_element ) # needs ds++
+add_subdirectory( ode )          # needs ds++
 add_subdirectory( rng )          # needs ds++
 add_subdirectory( traits )       # needs ds++
 add_subdirectory( units )        # needs ds++
@@ -65,6 +67,7 @@ add_subdirectory( cdi_gandolf )  # needs cdi
 add_subdirectory( meshReaders )  # needs c4
 add_subdirectory( norms )        # needs c4
 add_subdirectory( parser )       # needs units, c4
+add_subdirectory( roots  )       # needs linear
 add_subdirectory( special_functions ) # needs units, ds++
 add_subdirectory( timestep )     # needs c4, ds++
 add_subdirectory( viz )          # needs traits, ds++
