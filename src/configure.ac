@@ -85,15 +85,6 @@ AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders \
 AC_GSL_SETUP(pkg)
 AC_GANDOLF_SETUP(pkg)
 
-# Only build special_functions if GSL is available.
-if test -d ${srcdir}/special_functions; then
-  if test -n "${vendor_gsl}"; then
-    AC_CONFIG_SUBDIRS( special_functions )
-  else
-    AC_NO_VENDOR_WARN([special_functions],[gsl])
-  fi
-fi
-
 if test -d ${srcdir}/cdi_gandolf; then
   if test -n "${vendor_gandolf}"; then
     AC_CONFIG_SUBDIRS( cdi_gandolf )
@@ -125,6 +116,19 @@ dnl
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS( RTT_Format_Reader )
+
+# Only build special_functions if GSL is available.
+if test -d ${srcdir}/special_functions; then
+  if test -n "${vendor_gsl}"; then
+    AC_CONFIG_SUBDIRS( special_functions )
+  else
+    AC_NO_VENDOR_WARN([special_functions],[gsl])
+  fi
+fi
+
+##---------------------------------------------------------------------------##
+## LEVEL 5
+##---------------------------------------------------------------------------##
 
 # Only build quadrature if GSL is available.
 if test -d ${srcdir}/quadrature; then
