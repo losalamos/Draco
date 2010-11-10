@@ -18,6 +18,7 @@
 #include <limits>
 
 #include "ds++/Assert.hh"
+#include "ds++/isFinite.hh"
 
 namespace rtt_roots
 {
@@ -179,7 +180,7 @@ Real zbrent(Function func,
         try
         {
             fb = func(b);
-            if (!isFinite(fb))
+            if (!rtt_dsxx::isFinite(fb))
             {
                 throw std::domain_error("function is not analytic "
                                         "in the search interval");
