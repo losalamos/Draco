@@ -35,7 +35,7 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_library( Lib_special_functions ${DRACO_LIBRARY_TYPE} ${sources} )
-add_dependencies( Lib_special_functions Lib_units Lib_ode )
+add_dependencies( Lib_special_functions Lib_units Lib_ode Lib_traits)
 if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
   set_target_properties( Lib_special_functions 
     PROPERTIES 

@@ -34,6 +34,7 @@ foreach( file ${test_sources} )
       Lib_ode
       Lib_dsxx 
       ${GSL_LIBRARIES} )
+   add_dependencies( Ut_special_functions_${testname}_exe Lib_special_functions)
    add_test( special_functions_${testname} ${testname} )
    set_tests_properties( special_functions_${testname} PROPERTIES	
       PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED"

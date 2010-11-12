@@ -1,11 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
-  \file   Norms_Index.t.hh
-  \author Rob Lowrie
-  \date   Fri Jan 14 13:00:47 2005
-  \brief  Implemention for Norms_Index class.
-  \note   Copyright © 2005-2010 Los Alamos National Security, LLC.  
-*/
+ * \file   Norms_Index.t.hh
+ * \author Rob Lowrie
+ * \date   Fri Jan 14 13:00:47 2005
+ * \brief  Implemention for Norms_Index class.
+ * \note   Copyright © 2005-2010 Los Alamos National Security, LLC.  
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//

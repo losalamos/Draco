@@ -423,7 +423,7 @@ Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
  */
 
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1, 
-					      Keyword const &k2) const
+                                               Keyword const &k2) const
 {
     Require(k1.moniker != NULL);
     Require(k2.moniker != NULL);
@@ -432,7 +432,7 @@ bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
 }
 
 int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1, 
-						char const *m2) const
+                                                 char const *m2) const
 {
     using namespace std;
 
@@ -500,7 +500,7 @@ bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
 }
 
 int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
-						char const *m2) const
+                                                 char const *m2) const
 {
     using namespace std;
 

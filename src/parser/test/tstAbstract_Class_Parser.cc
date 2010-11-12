@@ -118,7 +118,7 @@ class Son : public Parent
 
     virtual string name(){ return "son"; }
 
-    Son(double snip_and_snails){}
+    Son(double /*snip_and_snails*/){}
 
     static SP<Son> parse(Token_Stream &tokens);
 
@@ -215,7 +215,7 @@ class Daughter : public Parent
 
     virtual string name(){ return "daughter"; }
 
-    Daughter(double sugar_and_spice){}
+    Daughter(double /*sugar_and_spice*/){}
 
     static SP<Daughter> parse(Token_Stream &tokens);
 

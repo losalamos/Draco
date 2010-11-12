@@ -26,6 +26,10 @@
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 
+#ifdef _MSC_VER
+#undef ERROR
+#endif
+
 using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;

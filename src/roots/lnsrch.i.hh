@@ -122,8 +122,9 @@ void lnsrch(RandomContainer const &xold,
 	try 
 	{
 	    f = fnorm(x, fvec, vecfunc);
-	    if (ALF<0.0 ||
-                f < fold+ALF*lambda*slope || fold>0 && f <= 0.5*fold)
+	    if (ALF<0.0                     ||
+                (f < fold+ALF*lambda*slope) ||
+                (fold>0 && f <= 0.5*fold))
 	    {
 		return;
 		// Good enough

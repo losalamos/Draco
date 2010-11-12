@@ -15,6 +15,10 @@
 #include <string>
 #include "ds++/Assert.hh"
 
+#ifdef _MSC_VER
+#undef ERROR
+#endif
+
 namespace rtt_parser 
 {
 using std::string;

@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 12:45:49 2005
  * \brief  Header for Comm_Traits.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright © 2004-2010 Los Alamos National Security, LLC.  All
+ *         rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,9 +14,9 @@
 #ifndef rtt_norms_Comm_Traits_hh
 #define rtt_norms_Comm_Traits_hh
 
-#include <c4/global.hh>
 #include "Index_Labeled.hh"
 #include "Index_Proc.hh"
+#include <c4/global.hh>
 
 namespace rtt_norms
 {

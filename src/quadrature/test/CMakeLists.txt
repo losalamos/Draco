@@ -65,6 +65,7 @@ foreach( file ${test_sources} )
     Lib_parser
     Lib_c4 
     Lib_special_functions
+    Lib_ode
     Lib_dsxx 
     ${GSL_LIBRARIES}
     ${MPI_LIBRARIES} )

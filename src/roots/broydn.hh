@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Jul  7 09:14:09 2004
  * \brief  Find a solution of a set of nonlinear equations.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   © Copyright 2006-2010 LANSLLC. All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,21 +13,20 @@
 #ifndef roots_broydn_hh
 #define roots_broydn_hh
 
-#include <numeric>
-#include <vector>
-
-#include "ds++/Assert.hh"
-
+#include "lnsrch.hh"
+#include "fdjac.hh"
+#include "linear/fnorm.hh"
 #include "linear/qr_unpack.hh"
 #include "linear/qrdcmp.hh"
 #include "linear/qrupdt.hh"
 #include "linear/rsolv.hh"
-#include "ds++/square.hh"
 #include "linear/svdcmp.hh"
 #include "linear/svbksb.hh"
-#include "lnsrch.hh"
-#include "fdjac.hh"
-#include "linear/fnorm.hh"
+#include "ds++/Assert.hh"
+#include "ds++/square.hh"
+
+#include <numeric>
+#include <vector>
 
 namespace rtt_roots
 {
@@ -74,7 +73,7 @@ namespace rtt_roots
  */
 template<class Field, class Function_N_to_N>
 void broydn(std::vector<Field> &x,
-	    const double STPMX,
+	    const double /*STPMX*/,
 	    const Function_N_to_N &vecfunc,
 	    const double alf)
 {
@@ -358,7 +357,7 @@ void broydn(std::vector<Field> &x,
  */
 template<class Field, class Function_N_to_N, class Function_N_to_NN>
 void broydn(std::vector<Field> &x,
-	    const double STPMX,
+	    const double /*STPMX*/,
 	    Function_N_to_N vecfunc,
 	    Function_N_to_NN dvecfunc,
 	    const double alf,

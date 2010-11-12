@@ -37,7 +37,10 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # ---------------------------------------------------------------------------- #
 
 add_library( Lib_quadrature ${DRACO_LIBRARY_TYPE} ${sources} )
-add_dependencies( Lib_quadrature Lib_units )
+add_dependencies( Lib_quadrature
+   Lib_units
+   Lib_special_functions
+   Lib_ode )
 if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
   set_target_properties( Lib_quadrature 
     PROPERTIES 

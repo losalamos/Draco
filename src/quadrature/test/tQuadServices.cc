@@ -1319,7 +1319,8 @@ void test_quad_services_alt_constructor( rtt_dsxx::UnitTest & ut )
     // -------------------------------------
     // Choose: l= 0, ..., N-1, k = -l, ..., l
     for( unsigned ell=0; ell< snOrder; ++ell )
-	for( int k(-1*static_cast<int>(ell)); std::abs( k) <= ell; ++k, ++n )
+	for( int k(-1*static_cast<int>(ell));
+             std::abs( k ) <= static_cast<int>(ell); ++k, ++n )
 	    lkMoments.push_back( lk_index(ell,k) );
 
     // Add ell=N and k<0
@@ -1408,7 +1409,8 @@ void test_quad_services_SVD( rtt_dsxx::UnitTest & ut )
     // -------------------------------------
     // Choose: l= 0, ..., N-1, k = -l, ..., l
     for( unsigned ell=0; ell< snOrder; ++ell )
-	for( int k(-1*static_cast<int>(ell)); std::abs( k) <= ell; ++k, ++n )
+	for( int k(-1*static_cast<int>(ell));
+             std::abs( k ) <= static_cast<int>(ell); ++k, ++n )
 	    lkMoments.push_back( lk_index(ell,k) );
 
     // Add ell=N and k<0

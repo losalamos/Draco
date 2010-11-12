@@ -4,19 +4,19 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:06:56 2004
  * \brief  Test the broydn nonlinear equation solver.
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "c4/global.hh"
 #include "../Release.hh"
 #include "../broydn.hh"
+
+#include <iostream>
+#include <vector>
 
 using namespace std;
 using namespace rtt_dsxx;

@@ -69,7 +69,8 @@ void zbrac(Function func, Real &x1, Real &x2)
     Real af2 = (f2>0.? f2 : -f2);
     
     double scale = 0.5;
-    while (f1<0 && f2<0 || f1>0 && f2>0)
+    while ((f1<0 && f2<0) ||
+           (f1>0 && f2>0))
     {
 	if (af1<af2)
 	{
@@ -144,7 +145,8 @@ void zbrac(Function func, Real &x1, Real &x2)
 	}
     }
     
-    Ensure(f1<=0 && f2>=0 || f1>=0 && f2<=0);
+    Ensure((f1<=0 && f2>=0) ||
+           (f1>=0 && f2<=0));
 }
 
 } // end namespace rtt_roots
