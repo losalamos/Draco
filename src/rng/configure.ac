@@ -16,6 +16,9 @@ package="rng"
 # config.h from config.h.in
 AC_DEFINE(AUTOCONF autoconf)
 
+AC_LAPACK_SETUP(pkg)
+AC_GSL_SETUP(pkg)
+
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(ds++)
@@ -25,7 +28,9 @@ AC_ARG_ENABLE([rng-nr],AS_HELP_STRING([--enable-rng-nr],
         AC_DEFINE([RNG_NR]))   
 
 # TESTS
-AC_RUNTESTS(tstRnd_Control_Inline, scalar)
+AC_RUNTESTS(tstRnd_Control_Inline \
+            tstSubrandom_Sequence \
+            , scalar)
 
 # DRACO SETUP
 AC_DRACO_ENV
