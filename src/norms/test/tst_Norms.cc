@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 09:12:16 2005
  * \brief  Tests Norms.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright 2004-2010 Los Alamos National Security, LLC. All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
