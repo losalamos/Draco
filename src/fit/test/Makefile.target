@@ -1,0 +1,34 @@
+###############################################################################
+# fit Makefile.target
+# Kent G. Budge
+# Mon Nov 15 10:27:49 2010
+# $Id$
+###############################################################################
+# Copyright (C) 2006 Los Alamos National Security, LLC
+###############################################################################
+# General Makefile.target for fit
+###############################################################################
+
+testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
+		${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
+testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
+		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
+
+thistestdep := libfit_test${libsuffix}
+thistestlib := -L. -lfit_test
+thistestlib_dep := fit_test.o 
+
+${test_alltarget}: ${thistestdep} ${testdeps}
+
+%: %.o
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
+
+objs += ${thistestdep}
+
+###############################################################################
+#			 end of fit Makefile.target
+###############################################################################
