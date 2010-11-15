@@ -62,6 +62,7 @@ AC_RUNTESTS(tstAllocators \
             tstvalue \
             tstField_Traits \
             tstto_string \
+            tstdbc \
             , scalar)
 
 AC_DRACO_ENV

@@ -1,0 +1,229 @@
+//----------------------------------*-C++-*----------------------------------//
+/*! 
+ * \file   ds++/dbc.i.hh
+ * \author Kent G. Budge
+ * \date   Wed Jan 22 15:18:23 MST 2003
+ * \brief  Template implementation for dbc
+ *
+ * This header defines several function templates that perform common
+ * numerical operations not standardized in the STL algorithm header. It also
+ * defines some useful STL-style predicates. These predicates are
+ * particularly useful for writing Design by Contract assertions.
+ */
+//---------------------------------------------------------------------------//
+// $Id$ 
+//---------------------------------------------------------------------------//
+
+#ifndef rtt_dsxx_dbc_i_hh
+#define rtt_dsxx_dbc_i_hh
+
+#include <algorithm>
+#include <iterator>
+#include <functional>
+#include <limits>
+#include "Assert.hh"
+#include "Soft_Equivalence.hh"
+
+namespace rtt_dsxx
+{
+
+//-------------------------------------------------------------------------//
+/*! 
+ * \author Kent G. Budge
+ * \date Thu Jan 23 08:41:54 MST 2003
+ * \brief Check whether a sequence is monotonically increasing.
+ * 
+ * Checks whether every element in a sequence is less than or equal
+ * to the next element of the sequence.  This is particularly useful for
+ * Design by Contract assertions that check that a sequence is sorted.
+ *
+ * \arg \a Forward_Iterator
+ * A forward iterator whose value type supports \c operator<.
+ *
+ * \param first
+ * Points to the first element of the sequence.
+ *
+ * \param last
+ * Points one element past the end of the sequence.
+ *
+ * \return \c true if \f$a_i<=a_{i+1}\f$ for all \f$a_i\f$ in the sequence;
+ * \c false otherwise.
+ */
+
+template <class Forward_Iterator>
+bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last)
+{
+    Forward_Iterator prev = first;
+    while( ++first != last)
+    {
+	if (*first < *prev) 
+	    return false;
+	prev = first;
+    }
+    Ensure( prev != first );
+    return true;
+}
+
+//-------------------------------------------------------------------------//
+/*! 
+ * \author Kent G. Budge
+ * \date Thu Jan 23 08:41:54 MST 2003
+ * \brief Check whether a sequence is strictly monotonically increasing.
+ * 
+ * Checks whether every element in a sequence is less than the next element
+ * of the sequence.  This is particularly useful for Design by Contract
+ * assertions that check the validity of a table of data. 
+ *
+ * \arg \a Forward_Iterator
+ * A forward iterator whose value type supports \c operator<.
+ *
+ * \param first
+ * Points to the first element of the sequence.
+ *
+ * \param last
+ * Points one element past the end of the sequence.
+ *
+ * \return \c true if \f$a_i<a_{i+1}\f$ for all \f$a_i\f$ in the sequence;
+ * \c false otherwise.
+ */
+
+template <class Forward_Iterator>
+bool is_strict_monotonic_increasing(Forward_Iterator first,
+                                    Forward_Iterator last)
+{
+    Forward_Iterator prev = first;
+    while( ++first != last )
+    {
+	if (!(*prev < *first)) return false;
+	prev = first;
+    }
+    return true;
+}
+
+//-------------------------------------------------------------------------//
+/*! 
+ * \author Kent G. Budge
+ * \date Thu Jan 23 08:41:54 MST 2003
+ * \brief Check whether a sequence is strictly monotonically decreasing.
+ * 
+ * Checks whether every element in a sequence is greater than
+ * the next element of the sequence.
+ *
+ * \arg \a Forward_Iterator
+ * A forward iterator whose value type supports \c operator<.
+ *
+ * \param first
+ * Points to the first element of the sequence.
+ *
+ * \param last
+ * Points one element past the end of the sequence.
+ *
+ * \pre \c last>first
+ *
+ * \return \c true if \f$a_{i+1}<a_i\f$ for all \f$a_i\f$ in the sequence;
+ * \c false otherwise.
+ */
+
+template <class Forward_Iterator>
+bool is_strict_monotonic_decreasing( Forward_Iterator first,
+				  Forward_Iterator last )
+{
+    Require( first < last );
+    Forward_Iterator prev = first;
+    while( ++first != last )
+    {
+	if ( *prev < *first ) return false;
+	prev = first;
+    }
+    return true;
+}
+
+
+//-------------------------------------------------------------------------//
+/*! 
+ * \brief Check whether a matrix is symmetric.
+ *
+ * \arg \a Random_Access_Container
+ * A random access container type.
+ *
+ * \param A Matrix that is supposed to be symmetric.
+ *
+ * \param n Rank of the matrix.
+ *
+ * \param tolerance Tolerance for comparing matrix elements.
+ *
+ * \pre \c A.size()==n*n
+ * \pre \c tolerance>=0.0
+ *
+ * \return \c true if <code>A[i+n*j]==A[j+n*i]</code> for all \c i and \c j; \c false
+ * otherwise.
+ */
+
+template <class Random_Access_Container>
+bool is_symmetric_matrix( Random_Access_Container const &A,
+                          unsigned const n,
+                          double const tolerance)
+{
+    Require( A.size()==n*n );
+    Require( tolerance>=0.0 );
+
+    for (unsigned i=1; i<n; ++i)
+    {
+        for (unsigned j=0; j<i; ++j)
+        {
+            if (!rtt_dsxx::soft_equiv(A[i+n*j], A[j+n*i], tolerance))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+//-------------------------------------------------------------------------//
+/*! 
+ * \author Kent G. Budge
+ * \date Thu Jan 23 08:41:54 MST 2003
+ * \brief Return the positive difference of the arguments.
+ * 
+ * This is a replacement for the FORTRAN DIM function.
+ *
+ * \arg \a Ordered_Group_Element
+ * A type for which operator< and unary operator- are defined and which
+  * can be constructed from a literal \c 0.
+ *
+ * \param a
+ * Minuend
+ *
+ * \param b
+ * Subtrahend
+ *
+ * \return \f$max(0, a-b)\f$
+ *
+ * \deprecated A FORTRAN relic that should disappear eventually.
+ */
+
+template <class Ordered_Group_Element>
+inline Ordered_Group_Element dim(Ordered_Group_Element a, 
+				 Ordered_Group_Element b)
+{
+    if (a<b)
+    {
+	return Ordered_Group_Element(0);
+    }
+    else
+    {
+	return a-b;
+    }
+}
+
+}  // rtt_dsxx
+
+#endif // rtt_dsxx_dbc_i_hh
+//---------------------------------------------------------------------------//
+//                           end of dbc.i.hh
+//---------------------------------------------------------------------------//
+
+
+
