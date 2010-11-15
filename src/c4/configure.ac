@@ -73,6 +73,7 @@ AC_RUNTESTS( \
             tstGatherScatter \
             tstProcessor_Group \
             tstTermination_Detector \
+            tstglobal_containers \
             , 1 2 4)
 
 dnl application tests
