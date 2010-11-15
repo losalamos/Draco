@@ -81,7 +81,7 @@ fi
 ##---------------------------------------------------------------------------##
 
 AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders \
-                   roots )
+                   roots fit )
 
 AC_GANDOLF_SETUP(pkg)
 
@@ -115,7 +115,7 @@ dnl
 ## LEVEL 4
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( RTT_Format_Reader )
+AC_CONFIG_SUBDIRS( RTT_Format_Reader min )
 
 # Only build special_functions if GSL is available.
 if test -d ${srcdir}/special_functions; then
