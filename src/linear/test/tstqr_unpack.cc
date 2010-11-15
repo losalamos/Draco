@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        ScalarUnitTest ut( argc, argv, release );
+        UnitTest ut( argc, argv, release );
 	tstqr_unpack(ut);
     }
     catch (exception &err)

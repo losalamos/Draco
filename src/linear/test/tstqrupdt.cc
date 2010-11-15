@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        ScalarUnitTest ut( argc,argv, release );
+        UnitTest ut( argc,argv, release );
 	tstqrupdt(ut);
     }
     catch (exception &err)
