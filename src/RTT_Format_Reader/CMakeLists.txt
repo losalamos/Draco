@@ -33,7 +33,10 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # ---------------------------------------------------------------------------- #
 
 add_library( Lib_RTT_Format_Reader ${DRACO_LIBRARY_TYPE} ${sources} )
-add_dependencies( Lib_RTT_Format_Reader Lib_meshReaders Lib_mesh_element Lib_c4 Lib_dsxx )
+add_dependencies( Lib_RTT_Format_Reader
+   Lib_meshReaders
+   Lib_mesh_element 
+   Lib_dsxx )
 if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
   set_target_properties( Lib_RTT_Format_Reader 
     PROPERTIES 
