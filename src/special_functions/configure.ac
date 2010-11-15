@@ -57,9 +57,15 @@ AC_RUNTESTS(\
    tstSpecialFunctions \
    tstYlm \
    tstPower \
+   tstFM12 \
    tstF12inv \
-   tstF_eta_inv \
    tstF12 \
+   tstF1 \
+   tstF2inv \
+   tstF32 \
+   tstF3 \
+   tstF4 \
+   tstF_eta_inv \
    , scalar)
 
 dnl Evaluate requested build environment and create values to be
