@@ -29,6 +29,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${c4_BINARY_DIR}           # c4/config.h
+   ${MPI_INCLUDE_PATH}
 )
 
 # ---------------------------------------------------------------------------- #

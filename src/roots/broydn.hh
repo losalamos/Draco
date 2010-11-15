@@ -181,8 +181,8 @@ void broydn(std::vector<Field> &x,
 		// Shouldn't happen, as a negligible change in x should
 		// already have triggered a successful return. 
 		double const rscale = 1/scale;
-		double sum = square(s[0]*rscale);
-		for (unsigned i=1; i<n; i++) sum += square(s[i]*rscale);
+		double sum = rtt_dsxx::square(s[0]*rscale);
+		for (unsigned i=1; i<n; i++) sum += rtt_dsxx::square(s[i]*rscale);
 		double const rnorm2 = 1/((scale*sum)*scale); 
 		// The ordering of the above expression is important to avoid
 		// overflow. 
@@ -453,13 +453,13 @@ void broydn(std::vector<Field> &x,
 		    t[i] = sum;
 		}
 		double scale = fabs(s[0]);  // To avoid overflow
-		for (unsigned i=1; i<n; i++) scale = max(scale, fabs(s[i]));
+		for (unsigned i=1; i<n; i++) scale = std::max(scale, fabs(s[i]));
 		Check(scale);
 		// Shouldn't happen, as a negligible change in x should
 		// already have triggered a successful return. 
 		double const rscale = 1/scale;
-		double sum = square(s[0]*rscale);
-		for (unsigned i=1; i<n; i++) sum += square(s[i]*rscale);
+		double sum = rtt_dsxx::square(s[0]*rscale);
+		for (unsigned i=1; i<n; i++) sum += rtt_dsxx::square(s[i]*rscale);
 		double const rnorm2 = 1/((scale*sum)*scale); 
 		// The ordering of the above expression is important to avoid
 		// overflow. 
@@ -506,7 +506,7 @@ void broydn(std::vector<Field> &x,
 	    double wmax = fabs(w[0]);
 	    for (unsigned i=1; i<n; i++)
 	    {
-		wmax = max(wmax, w[i]);
+		wmax = std::max(wmax, w[i]);
 	    }
 	    for (unsigned i=0; i<n; i++)
 	    {
@@ -548,10 +548,10 @@ void broydn(std::vector<Field> &x,
 	    else 
 	    {
 		double test=0.0;
-		double den = max(f, 0.5*n);
+		double den = std::max(f, 0.5*n);
 		for (unsigned i=0; i<n; i++)
 		{
-		    double const temp = fabs(g[i])*max(fabs(x[i]),1.0)/den;
+		    double const temp = fabs(g[i])*std::max(fabs(x[i]),1.0)/den;
 		    if (temp > test) test=temp;
 		}
 		restrt = true;
