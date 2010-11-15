@@ -92,6 +92,7 @@ AC_RUNTESTS(tstfdjac \
             tstzbrent \
             tstcubic1 \
             tstquadratic \
+            tstlnsrch \
             tstbroydn, scalar)
 
 dnl ----------------------------------------
