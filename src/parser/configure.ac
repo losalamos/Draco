@@ -42,6 +42,7 @@ AC_RUNTESTS(tstToken \
             tstParse_Table \
             tstClass_Parser \
             tstAbstract_Class_Parser \
+            tstExpression \
             , scalar)
 
 AC_RUNTESTS(tstFile_Token_Stream \
