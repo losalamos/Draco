@@ -82,7 +82,7 @@ dnl parallel package the number of processors should be a an integer.
 dnl If this is a scalar package, the number of processors required
 dnl should be listed as "scalar".
 
-AC_RUNTESTS(tst_Norms, 1 2 4)
+AC_RUNTESTS(tst_Norms tstL2norm , 1 2 4)
 dnl AC_RUNTESTS(tstnorms alt_tstnorms, scalar)
 
 dnl ----------------------------------------
