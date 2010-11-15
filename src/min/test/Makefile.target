@@ -1,0 +1,48 @@
+###############################################################################
+# min Makefile.target
+# Kent G. Budge
+# Mon Nov 15 10:28:04 2010
+# $Id$
+###############################################################################
+# Copyright (C) 2006 Los Alamos National Security, LLC
+###############################################################################
+# General Makefile.target for min
+###############################################################################
+
+testdeps := ${PKG_DEPENDS} ${DRACO_TEST_DEPENDS} ${DRACO_DEPENDS} \
+		${VENDOR_TEST_DEPENDS} ${VENDOR_DEPENDS}
+testlibs := ${PKG_LIBS} ${DRACO_TEST_LIBS} ${DRACO_LIBS} \
+		${VENDOR_TEST_LIBS} ${VENDOR_LIBS} ${LIBS}
+
+thistestdep := libmin_test${libsuffix}
+thistestlib := -L. -lmin_test
+thistestlib_dep := min_test.o 
+
+inpsrc := $(wildcard ${srcdir}/*.inp)
+inpfiles := $(notdir ${inpsrc})
+inpbld := $(addprefix ${curdir}/, ${inpfiles})
+
+${test_alltarget}: ${thistestdep} ${testdeps}
+
+%: %.o
+	${LD} ${LDFLAGS} -o $@ $< ${thistestlib} ${testlibs}
+
+${thistestdep}: ${thistestlib_dep} ${testdeps}
+	${AR} ${ARFLAGS} $@ ${thistestlib_dep} ${ARTESTLIBS}
+	${RANLIB} $@
+
+objs += ${thistestdep}
+
+all: ${inpbld}
+
+check: all
+
+update: all
+
+${curdir}/%.inp: ${srcdir}/%.inp
+	@echo Copying $(@F) to ${curdir}
+	@cp ${srcdir}/$(@F) .
+
+###############################################################################
+#			 end of min Makefile.target
+###############################################################################
