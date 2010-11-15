@@ -99,7 +99,8 @@ AC_RUNTESTS(tstrotate \
             tstludcmp \
             tsttqli \
             tsttred2 \
-            tstqrupdt, scalar)
+            tstqrupdt \
+           , scalar)
 
 dnl ----------------------------------------
 dnl Finish Draco setup:
