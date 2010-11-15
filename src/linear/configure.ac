@@ -94,6 +94,11 @@ AC_RUNTESTS(tstrotate \
             tstsvbksb \
             tstqrdcmp \
             tstqr_unpack \
+            tstbtridag \
+            tstgaussj \
+            tstludcmp \
+            tsttqli \
+            tsttred2 \
             tstqrupdt, scalar)
 
 dnl ----------------------------------------
