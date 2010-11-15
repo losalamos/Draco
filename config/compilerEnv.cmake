@@ -21,7 +21,7 @@ option( ENABLE_OPENMP "Link against OpenMP libraries?" OFF )
 #        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
 # MSVC : STATIC is <XXX>.lib
 #        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
-set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
+set( DRACO_LIBRARY_TYPE "SHARED" CACHE STRING 
 	"Keyword for creating new libraries (STATIC or SHARED).")
 
 #----------------------------------------------------------------------#
@@ -99,6 +99,8 @@ macro(dbsSetupCxx)
     include( unix-g++ )
   elseif( ${CMAKE_CXX_COMPILER} MATCHES "icpc" )
      include( unix-intel )
+  elseif( ${CMAKE_CXX_COMPILER} MATCHES "pgCC" )
+     include( unix-pgi )
   else( ${CMAKE_CXX_COMPILER} MATCHES "cl" )
     message( FATAL_ERROR "Build system does not support CXX=${CMAKE_CXX_COMPILER}" )
   endif( ${CMAKE_CXX_COMPILER} MATCHES "cl" )

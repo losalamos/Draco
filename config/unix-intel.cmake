@@ -93,7 +93,7 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 # -Weffc++
 
 IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-fPIC" )
+  set( CMAKE_C_FLAGS                "-fPIC -vec-report0" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
