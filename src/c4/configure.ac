@@ -71,6 +71,8 @@ AC_RUNTESTS( \
             tstSend_Receive \
             tstSwap \
             tstGatherScatter \
+            tstProcessor_Group \
+            tstTermination_Detector \
             , 1 2 4)
 
 dnl application tests
