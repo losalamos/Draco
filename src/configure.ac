@@ -56,6 +56,7 @@ AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
 dnl Determine if these vendors are available.
 AC_LAPACK_SETUP(pkg)
 AC_GRACE_SETUP(pkg)
+AC_GSL_SETUP(pkg)
 
 # Only build lapack_wrap if lapack is available
 if test -d ${srcdir}/lapack_wrap; then
@@ -82,7 +83,6 @@ fi
 AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders \
                    roots )
 
-AC_GSL_SETUP(pkg)
 AC_GANDOLF_SETUP(pkg)
 
 if test -d ${srcdir}/cdi_gandolf; then
