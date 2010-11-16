@@ -21,7 +21,6 @@ file( GLOB sources *.cc *.c )
 file( GLOB headers *.hh *.h )
 list( APPEND headers ${PROJECT_BINARY_DIR}/rng/config.h )
 
-
 # Make the header files available in the IDE.
 if( MSVC_IDE )
    list( APPEND sources ${headers} )
@@ -36,6 +35,7 @@ include_directories(
    ${PROJECT_BINARY_DIR}      # rng/config.h
    ${PROJECT_SOURCE_DIR}/..   # ds++ header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
+   ${GSL_INCLUDE_DIR}
 ) 
 
 # ---------------------------------------------------------------------------- #
@@ -58,6 +58,8 @@ else()
       OUTPUT_NAME rtt_rng
       )
 endif()
+target_link_libraries( Lib_rng 
+   ${GSL_LIBRARIES}  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

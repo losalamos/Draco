@@ -77,7 +77,11 @@ foreach( file ${test_sources} )
        VS_KEYWORD ${testname}
        PROJECT_LABEL Ut_rng
   )
-  target_link_libraries( Ut_rng_${testname}_exe Lib_rng Lib_rng_test Lib_dsxx )
+  target_link_libraries( Ut_rng_${testname}_exe 
+     Lib_rng 
+     Lib_rng_test
+     Lib_dsxx 
+     ${GSL_LIBRARIES} )
   add_test( rng_${testname} ${testname} )
   set_tests_properties( rng_${testname} PROPERTIES	
      PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 

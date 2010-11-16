@@ -21,9 +21,10 @@ namespace rtt_rng
  */
 Halton_Subrandom_Generator::Halton_Subrandom_Generator(unsigned const count)
     :
-    Subrandom_Generator(count)
+    Subrandom_Generator(count),
+    sequences_()
 {
-    
+    /* empty */
 }
 
 //---------------------------------------------------------------------------//

@@ -75,7 +75,7 @@ class Halton_Sequence
     // CREATORS
     
     //! Default constructor for declaring arrays et al.
-    Halton_Sequence() : base_(0), count_(0), value_(0.0) {}
+    Halton_Sequence() : base_(0), count_(0), value_(0.0), n_() {/*empty*/}
 
     //! Normal constructor.
     Halton_Sequence( unsigned const base_index,

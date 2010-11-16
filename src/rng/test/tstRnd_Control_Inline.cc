@@ -114,26 +114,30 @@ void check_accessors(void)
     { // test ctors
         
         // create some data
-        vector<unsigned int> foo(5,0);
-        for( size_t i=0; i<5; ++i)
+        size_t N(LFG_DATA_SIZE);
+        vector<unsigned int> foo(N,0);
+        for( size_t i=0; i<N; ++i)
             foo[i] = i+100;
 
         // try ctor form 2
         LF_Gen r2( seed, 0 );        
 
-        // try ctor form 3
+        // try ctor form 3 (foo must have length = LFG_DATA_SIZE
         LF_Gen r3( &foo[0] );
 
         // try to spawn
         r3.spawn( r2 );
         if( r3 == r2 )
-            PASSMSG("LF_Gen equality operator works.");
+            FAILMSG("LF_Gen spawn creates a distinct LF_Gen object.")
+        else
+            PASSMSG("LF_Gen equality operator works.")
+
 
         // Check the id for this stream
         double rn = r3.ran();
         cout << "LF_Gen r3 returne ran() = " << rn << endl;
         unsigned int id = r3.get_num();
-        if( id != 0 )                             ITFAILS;
+        if( id != 153 )                           ITFAILS;
         if( r3.size() != LFG_DATA_SIZE )          ITFAILS;
 
         int count(0);
