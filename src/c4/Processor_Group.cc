@@ -29,6 +29,9 @@ using namespace std;
  * group.
  */
 Processor_Group::Processor_Group(unsigned const stride)
+    : size_(0),
+      group_(),
+      comm_()
 {
     int flag;
     MPI_Initialized(&flag);

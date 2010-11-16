@@ -33,6 +33,10 @@ Termination_Detector::Termination_Detector(int const tag)
     tag_(tag),
     number_of_processors_(nodes()),
     pid_(node()),
+    parent_pid_((pid_-1)/2),
+    son_pid_(2*pid_+1),
+    daughter_pid_(son_pid_+1),
+    ptype_(),
     state_(UP),
     send_count_(0),
     receive_count_(0),
@@ -42,10 +46,6 @@ Termination_Detector::Termination_Detector(int const tag)
     subtree_work_count_(0),
     old_global_work_count_(0)
 {
-    parent_pid_ = (pid_-1)/2;
-    son_pid_ = 2*pid_+1;
-    daughter_pid_ = son_pid_+1;
-
     if (pid_==0)
     {
         ptype_ = ROOT;
