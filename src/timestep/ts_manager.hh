@@ -64,7 +64,7 @@ class ts_manager
     ts_manager();
 
     //! Destroys a timestep manager
-    ~ts_manager();
+    ~ts_manager() {/* empty */ };
 
 // MANIPULATORS
 

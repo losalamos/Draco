@@ -40,11 +40,6 @@ ts_manager::ts_manager(void)
     Ensure(invariant_satisfied());
 }
 
-ts_manager::~ts_manager()
-{
-// empty
-}
-
 void ts_manager::add_advisor(const SP<ts_advisor> &new_advisor)
 {
     bool not_in_use = true;
