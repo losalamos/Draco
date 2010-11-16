@@ -17,9 +17,9 @@
 #include <stdexcept>
 #include <string>
 #include "ds++/Assert.hh"
-#include "c4/C4_Functions.hh"
-#include "c4/C4_Req.hh"
-#include "c4/gatherv.hh"
+#include "C4_Functions.hh"
+#include "C4_Req.hh"
+#include "gatherv.hh"
 #include "global_containers.hh"
 
 namespace rtt_c4
