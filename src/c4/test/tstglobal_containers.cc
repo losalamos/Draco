@@ -10,16 +10,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../Release.hh"
+#include "../ParallelUnitTest.hh"
+#include "../C4_Functions.hh"
+#include "../global_containers.i.hh"
+#include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <set>
-
-#include "ds++/Assert.hh"
-#include "../Release.hh"
-#include "c4/ParallelUnitTest.hh"
-#include "c4/C4_Functions.hh"
-#include "../global_containers.i.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
