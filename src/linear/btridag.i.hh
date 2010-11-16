@@ -66,12 +66,12 @@ void btridag(FieldVector const &a,
 	std::vector<unsigned> indx(m);
 	double d;
 	ludcmp(rbet, indx, d);
-	copy(r.begin(), r.begin()+m, u.begin());
+	std::copy(r.begin(), r.begin()+m, u.begin());
 	Slice<typename FieldVector::iterator> u0(u.begin(), m);
 	lubksb(rbet, indx, u0);
 	for (unsigned j=1; j<n; ++j)
 	{
-	    copy(c.begin()+(j-1)*m*m, c.begin()+j*m*m, gam.begin()+j*m*m);
+	    std::copy(c.begin()+(j-1)*m*m, c.begin()+j*m*m, gam.begin()+j*m*m);
 
 	    for (unsigned k=0; k<m; ++k)
 	    {

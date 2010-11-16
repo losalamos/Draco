@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        UnitTest ut( argc, argv, release );
+        ScalarUnitTest ut( argc, argv, release );
 	tstbtridag(ut);
     }
     catch (exception &err)

@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        UnitTest ut( argc, argv, release );
+        ScalarUnitTest ut( argc, argv, release );
 	tsttqli(ut);
     }
     catch (exception &err)
