@@ -3,13 +3,13 @@
  * \file   c4/Processor_Group.cc
  * \author Kent Budge
  * \brief  Define non-template methods of class Processor_Group.
- * \note   Copyright (C) 2006-2007 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "c4_mpi.h"
+//#include "c4_mpi.h"
 #include "C4_Functions.hh"
 #include "ds++/Assert.hh"
 #include "Processor_Group.hh"
