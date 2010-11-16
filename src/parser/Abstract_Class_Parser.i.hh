@@ -64,7 +64,7 @@ register_child(string const &keyword,
     {
         unsigned const n = keyword.size();
         char *ptr = new char[n+1];
-        copy(keyword.begin(), keyword.end(), ptr);
+        std::copy(keyword.begin(), keyword.end(), ptr);
         ptr[n] = '\0';
         keys_.push_back(ptr);
     }

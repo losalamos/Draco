@@ -7,19 +7,27 @@
 
 project( parser_test CXX )
 
-# Find local headers
+# ---------------------------------------------------------------------------- #
+# Source files
+# ---------------------------------------------------------------------------- #
+
+file( GLOB test_lib_sources *_pt.cc )
+list( APPEND test_lib_sources 
+   ${PROJECT_SOURCE_DIR}/parser_test.cc 
+   ${PROJECT_SOURCE_DIR}/parser_test.hh)
+file( GLOB test_sources *.cc )
+list( REMOVE_ITEM test_sources ${test_lib_sources} )
+file( GLOB input_files *.inp )
+
+# ---------------------------------------------------------------------------- #
+# Directories to search for include directives
+# ---------------------------------------------------------------------------- #
+
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # config.h
    ${MPI_INCLUDE_PATH} )
-
-set( test_lib_sources 
-	${PROJECT_SOURCE_DIR}/parser_test.cc 
-	${PROJECT_SOURCE_DIR}/parser_test.hh)
-file( GLOB test_sources *.cc )
-list( REMOVE_ITEM test_sources ${test_lib_sources} )
-file( GLOB input_files *.inp )
 
 # Library Lib_parser_test
 add_library( Lib_parser_test ${DRACO_LIBRARY_TYPE} ${test_lib_sources} )

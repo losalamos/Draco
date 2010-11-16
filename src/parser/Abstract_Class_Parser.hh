@@ -21,8 +21,6 @@ namespace rtt_parser
 using std::string;
 using std::vector;
 using rtt_dsxx::SP;
-using rtt_parser::Token_Stream;
-using rtt_parser::Parse_Table;
 
 //===========================================================================//
 /*!

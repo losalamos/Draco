@@ -18,8 +18,6 @@
 
 namespace rtt_parser
 {
-using rtt_parser::Token_Stream;
-using rtt_parser::Parse_Table;
 
 //===========================================================================//
 /*!

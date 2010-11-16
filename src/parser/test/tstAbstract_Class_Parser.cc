@@ -37,13 +37,9 @@ using namespace rtt_parser;
 class Parent
 {
   public:
-
     virtual ~Parent(){}
-
     virtual string name() = 0;
-
     static SP<Parent> parse(Token_Stream &tokens);
-
     static void register_model(string const &keyword,
                                SP<Parent> parse_function(Token_Stream&) );
 
@@ -51,16 +47,7 @@ class Parent
 
 SP<Parent> parsed_child;
 
-Parse_Table &get_parse_table()
-{
-    return Class_Parser<Parent, Parent, true>::parse_table_;
-}
-
-SP<Parent> &get_parsed_object()
-{
-    return parsed_child;
-}
-
+//---------------------------------------------------------------------------//
 namespace rtt_parser
 {
 
@@ -92,6 +79,17 @@ Class_Parser<Parent, Parent, true>::create_object_()
 }
 
 } // namespace rtt_parser
+//---------------------------------------------------------------------------//
+
+Parse_Table &get_parse_table()
+{
+    return Class_Parser<Parent, Parent, true>::parse_table_;
+}
+
+SP<Parent> &get_parsed_object()
+{
+    return parsed_child;
+}
 
 SP<Parent> Parent::parse(Token_Stream &tokens)
 {

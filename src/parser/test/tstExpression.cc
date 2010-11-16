@@ -149,7 +149,7 @@ void tstExpression(UnitTest &ut)
     }        
 
     if (soft_equiv((*expression)(xs),
-                   20.0*(r>=1.1 && z<=1.5 || r>=2.0)))
+                   20.0*((r>=1.1) && ((z<=1.5) || (r>=2.0)))))
     {
         ut.passes("expression successfully evaluated");
     }
