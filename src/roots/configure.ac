@@ -30,7 +30,7 @@ dnl Uncomment any vendor setups that are required for this package.
 dnl For example, if this package has parallel programming directives
 dnl you need to uncomment AC_MPI_SETUP.
 
-dnl AC_MPI_SETUP(pkg)
+AC_MPI_SETUP(pkg)
 dnl AC_SHMEM_SETUP(pkg)
 dnl AC_SPRNG_SETUP(pkg)
 dnl AC_PCGLIB_SETUP(pkg)
@@ -64,7 +64,7 @@ dnl AC_NEEDS_LIBS.  If this is a Draco client (i.e.: a part of
 dnl Capsaicin, Milagro, etc.), the dependencies on Draco libraries
 dnl should be listed as arguments to AC_NEEDS_LIBS_DRACO.
 
-AC_NEEDS_LIBS(ds++ linear)
+AC_NEEDS_LIBS(linear ds++)
 dnl AC_NEEDS_LIBS_DRACO(ds++)
 
 dnl ----------------------------------------
@@ -77,7 +77,7 @@ dnl different than package dependencies.  If this is a Draco client,
 dnl the unit test dependencies on Draco libraries should be listed as
 dnl arguments to AC_NEEDS_LIBS_TEST_DRACO.
 
-dnl AC_NEEDS_LIBS_TEST(c4 ds++)
+AC_NEEDS_LIBS_TEST(c4)
 dnl AC_NEEDS_LIBS_TEST_DRACO(c4 ds++)
 
 dnl List the unit tests that should be run and the number of
