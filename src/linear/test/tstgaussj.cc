@@ -61,8 +61,8 @@ void tstgaussj(UnitTest &ut)
                 {
                     sum += a[i+N*k]*ai[k+N*j];
                 }
-                count = count || (i==j && !soft_equiv(sum, 1.0)  ||
-                                  i!=j && !soft_equiv(sum, 0.0));
+                count = count || (((i==j) && !soft_equiv(sum, 1.0))  ||
+                                  ((i!=j) && !soft_equiv(sum, 0.0)));
             }
         }
         for (unsigned i=0,k=0; i<N; i++)
@@ -111,8 +111,8 @@ void tstgaussj(UnitTest &ut)
                 {
                     sum += a[i][k]*ai[k][j];
                 }
-                count = count || (i==j && !soft_equiv(sum, 1.0)  ||
-                                  i!=j && !soft_equiv(sum, 0.0));
+                count = count || (((i==j) && !soft_equiv(sum, 1.0))  ||
+                                  ((i!=j) && !soft_equiv(sum, 0.0)));
             }
         }
         for (unsigned i=0,k=0; i<N; i++)
@@ -159,8 +159,8 @@ void tstgaussj(UnitTest &ut)
                 {
                     sum += a[i+N*k]*ai[k+N*j];
                 }
-                count = count || (i==j && !soft_equiv(sum, 1.0)  ||
-                                  i!=j && !soft_equiv(sum, 0.0));
+                count = count || (((i==j) && !soft_equiv(sum, 1.0))  ||
+                                  ((i!=j) && !soft_equiv(sum, 0.0)));
             }
         }
         for (unsigned i=0,k=0; i<N; i++)
