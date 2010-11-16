@@ -3,7 +3,7 @@
  * \file   parser/Expression.hh
  * \author Kent Budge
  * \brief  Definition of class Expression
- * \note   Copyright 2006-2007 Los Alamos National Security, LLC
+ * \note   Copyright 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,13 +12,13 @@
 #ifndef parser_Expression_hh
 #define parser_Expression_hh
 
+#include "Token_Stream.hh"
+#include "Unit.hh"
+#include "ds++/SP.hh"
 #include <vector>
 #include <utility>
 #include <ostream>
 #include <map>
-#include "ds++/SP.hh"
-#include "Token_Stream.hh"
-#include "Unit.hh"
 
 namespace rtt_parser
 {
@@ -28,8 +28,6 @@ using std::string;
 using std::map;
 using std::ostream;
 using rtt_dsxx::SP;
-using rtt_parser::Unit;
-using rtt_parser::Token_Stream;
 
 //===========================================================================//
 /*!
