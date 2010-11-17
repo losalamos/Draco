@@ -25,7 +25,7 @@ AC_NEEDS_LIBS(ds++)
 
 AC_ARG_ENABLE([rng-nr],AS_HELP_STRING([--enable-rng-nr],
                                       [use non-reproducible random number streams]),
-        AC_DEFINE([RNG_NR]))   
+AC_DEFINE([RNG_NR]))   
 
 # TESTS
 AC_RUNTESTS(tstRnd_Control_Inline \
