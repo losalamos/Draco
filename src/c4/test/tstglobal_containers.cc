@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
+#include "c4/config.h"
 
 #include "../Release.hh"
 #include "../ParallelUnitTest.hh"
@@ -27,7 +28,7 @@ using namespace rtt_c4;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-
+#ifdef C4_MPI
 void tstglobal_containers(UnitTest &ut)
 {
     unsigned const pid = rtt_c4::node();
@@ -123,13 +124,18 @@ void tstglobal_containers(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
+#endif // C4_MPI 
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
+#ifdef C4_MPI
         tstglobal_containers(ut);
+        #else
+        ut.passes("Test inactive for scalar" );
+        
+#endif // C4_MPI         
     }
     catch (std::exception &err)
     {

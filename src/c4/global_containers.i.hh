@@ -13,6 +13,8 @@
 #ifndef c4_global_containers_i_hh
 #define c4_global_containers_i_hh
 
+#ifdef C4_MPI
+
 #include <vector>
 #include <stdexcept>
 #include <string>
@@ -261,6 +263,8 @@ void global_merge(map<IndexType, bool> &local_map)
 }
 
 } // end namespace rtt_c4
+
+#endif // C4_MPI 
 
 #endif // c4_global_containers_i_hh
 

@@ -15,7 +15,7 @@
 
 #include "ds++/Assert.hh"
 #include "MPI_Traits.hh"
-
+#ifdef C4_MPI
 namespace rtt_c4
 {
 //---------------------------------------------------------------------------//
@@ -37,6 +37,7 @@ void Processor_Group::sum(std::vector<T> &x)
 
 } // end namespace rtt_c4
 
+#endif  // C4_MPI
 #endif // c4_Processor_Group_i_hh
 
 //---------------------------------------------------------------------------//

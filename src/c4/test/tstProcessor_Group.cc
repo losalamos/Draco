@@ -24,7 +24,7 @@ using namespace rtt_c4;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-
+#ifdef C4_MPI
 void tstProcessor_Group( UnitTest & ut )
 {
     unsigned const pid = rtt_c4::node();
@@ -47,7 +47,7 @@ void tstProcessor_Group( UnitTest & ut )
     
     return;
 }
-
+#endif // C4_MPI
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -55,8 +55,14 @@ int main(int argc, char *argv[])
     // version tag
     try
     {
-       ParallelUnitTest ut( argc, argv, release );
+        ParallelUnitTest ut( argc, argv, release );
+        
+#ifdef C4_MPI
+
        tstProcessor_Group(ut);
+#else
+       ut.passes("Test inactive for scalar");
+#endif //C4_MPI
     }
     catch( rtt_dsxx::assertion &err )
     {

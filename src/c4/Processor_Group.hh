@@ -15,6 +15,7 @@
 #include <vector>
 #include "c4_mpi.h"
 
+#ifdef C4_MPI
 namespace rtt_c4
 {
 
@@ -79,6 +80,7 @@ class Processor_Group
 
 } // end namespace rtt_c4
 
+#endif   // C4_MPI
 #endif // c4_Processor_Group_hh
 
 //---------------------------------------------------------------------------//

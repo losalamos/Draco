@@ -12,6 +12,8 @@
 //#include "c4_mpi.h"
 #include "C4_Functions.hh"
 #include "ds++/Assert.hh"
+
+#ifdef C4_MPI
 #include "Processor_Group.hh"
 
 namespace rtt_c4
@@ -78,6 +80,8 @@ Processor_Group::~Processor_Group()
 }
 
 } // end namespace rtt_c4
+
+#endif //C4_MPI
 
 //---------------------------------------------------------------------------//
 //                 end of Processor_Group.cc

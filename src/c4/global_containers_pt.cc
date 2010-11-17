@@ -12,6 +12,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "c4/config.h"
+#ifdef C4_MPI
 #include "global_containers.i.hh"
 
 namespace rtt_c4
@@ -28,7 +30,7 @@ template
 void global_merge(map<unsigned, bool> &);
 
 } // end namespace rtt_c4
-
+#endif // C4_MPI 
 //---------------------------------------------------------------------------//
 //                 end of global_containers_pt.cc
 //---------------------------------------------------------------------------//
