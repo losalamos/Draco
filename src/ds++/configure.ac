@@ -63,6 +63,7 @@ AC_RUNTESTS(tstAllocators \
             tstField_Traits \
             tstto_string \
             tstdbc \
+            tstHomogeneous_New \
             , scalar)
 
 AC_DRACO_ENV
