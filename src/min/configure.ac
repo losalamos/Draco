@@ -89,6 +89,8 @@ dnl should be listed as "scalar".
 dnl AC_RUNTESTS(tstmin, 1 2)
 AC_RUNTESTS(tstmnbrak \
             tstmrqmin \
+            tstpowell \
+            tstbrent \
           , scalar)
 
 dnl ----------------------------------------

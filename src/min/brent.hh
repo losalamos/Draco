@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   roots/brent.hh
+ * \file   min/brent.hh
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a function.
@@ -10,8 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef roots_brent_hh
-#define roots_brent_hh
+#ifndef min_brent_hh
+#define min_brent_hh
 
 #include <cmath>
 #include <limits>
@@ -21,7 +21,7 @@
 #include "ds++/sign.hh"
 #include "brent.hh"
 
-namespace rtt_roots
+namespace rtt_min
 {
 
 //---------------------------------------------------------------------------//
@@ -50,6 +50,7 @@ double brent(double const ax,
              double &xmin)
 {
     using std::numeric_limits;
+    using rtt_dsxx::sign;
 
     unsigned const ITMAX = 100;
     double const ZEPS = numeric_limits<double>::epsilon()*1.0e-3;
@@ -98,7 +99,7 @@ double brent(double const ax,
                 u = x+d;
                 if (u-a < tol2 || b-u < tol2)
                 {
-                    d = rtt_dsxx::sign(tol1, xm-x);
+                    d = sign(tol1, xm-x);
                 }
             }
         }
@@ -107,7 +108,7 @@ double brent(double const ax,
             e = (x>=xm? a-x : b-x);
             d = CGOLD*e;
         }
-        u = (fabs(d) >= tol1 ? x+d : x+rtt_dsxx::sign(tol1,d));
+        u = (fabs(d) >= tol1 ? x+d : x+sign(tol1,d));
         fu = f(u);
         if (fu <= fx)
         {
@@ -151,10 +152,10 @@ double brent(double const ax,
     return fx;
 }
 
-} // end namespace rtt_roots
+} // end namespace rtt_min
 
-#endif // roots_brent_hh
+#endif // min_brent_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/brent.hh
+//              end of min/brent.hh
 //---------------------------------------------------------------------------//

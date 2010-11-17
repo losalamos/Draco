@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   utils/linmin.hh
+ * \file   min/linmin.hh
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a multivariate function on a specified line.
@@ -10,19 +10,18 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef utils_linmin_hh
-#define utils_linmin_hh
+#ifndef min_linmin_hh
+#define min_linmin_hh
 
 #include <cmath>
 #include <vector>
 
 #include "ds++/Assert.hh"
-#include "dbc.hh"
 #include "linmin.hh"
 #include "mnbrak.hh"
 #include "brent.hh"
 
-namespace rtt_utils
+namespace rtt_min
 {
 
 //---------------------------------------------------------------------------//
@@ -113,10 +112,10 @@ void linmin(RandomContainer &p,
     }
 }
 
-} // end namespace rtt_utils
+} // end namespace rtt_min
 
-#endif // utils_linmin_hh
+#endif // min_linmin_hh
 
 //---------------------------------------------------------------------------//
-//              end of utils/linmin.hh
+//              end of min/linmin.hh
 //---------------------------------------------------------------------------//
