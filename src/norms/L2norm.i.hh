@@ -47,9 +47,9 @@ double L2norm(In const &x)
 {
     double norm =
         std::accumulate(x.begin(),
-                   x.end(),
-                   0.0,
-                   accumulate_norm_<typename In::value_type>);
+                        x.end(),
+                        0.0,
+                        accumulate_norm_<typename In::value_type>);
     
     rtt_c4::global_sum(norm);
 
