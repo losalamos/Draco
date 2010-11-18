@@ -523,7 +523,7 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
 		if (c1<c2) return -1;
 		if (c1>c2) return 1;
 	    }
-	    if (*m1 == ' ' && *m2 != ' ') return -1;
+	    if (*m1 == ' ' && *m2 != ' ') return 1;
 	    while (isalnum(*m1)) m1++;
 	    while (isalnum(*m2)) m2++;
             if (*m1==' ') ++m1;
