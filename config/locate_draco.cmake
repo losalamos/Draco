@@ -16,19 +16,35 @@
 
 message("Looking for Draco...")
 
+# Check for hints found in the environment.
+if( "${DRACO_DIR}none" STREQUAL "none" AND 
+    EXISTS $ENV{DRACO_DIR} )
+   set( DRACO_DIR $ENV{DRACO_DIR} )
+endif()
+if( "${DRACO_LIB_DIR}none" STREQUAL "none" AND
+    EXISTS $ENV{DRACO_LIB_DIR} )
+   set( DRACO_LIB_DIR $ENV{DRACO_LIB_DIR} )
+endif()
+if( "${DRACO_INCLUDE_DIR}none" STREQUAL "none" AND
+    EXISTS $ENV{DRACO_INCLUDE_DIR} )
+   set( DRACO_INCLUDE_DIR $ENV{DRACO_INCLUDE_DIR} )
+endif()
+
+# Find the headers
 find_path( DRACO_INCLUDE_DIR ds++/config.h
-    ${CMAKE_INSTALL_PREFIX}/include 
     ${DRACO_INC_DIR}
-    $ENV{DRACO_INC_DIR} )
+    ${DRACO_DIR}/include
+    ${CMAKE_INSTALL_PREFIX}/include 
+ )
 set( components ds++ c4 viz rng mesh_element RTT_Format_Reader
     meshReaders traits cdi cdi_analytic)
 foreach( component ${components} )
    string( REGEX REPLACE [+] "x" safe_component ${component} )
    find_library( Lib_${safe_component}
       NAMES rtt_${component}
-      PATHS ${CMAKE_INSTALL_PREFIX}/lib 
-            ${DRACO_LIB_DIR} 
-            $ENV{DRACO_LIB_DIR} )
+      PATHS ${DRACO_LIB_DIR} 
+            ${DRACO_DIR}/lib
+            ${CMAKE_INSTALL_PREFIX}/lib )
    mark_as_advanced(Lib_${safe_component})
 endforeach()
 
