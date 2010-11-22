@@ -146,11 +146,11 @@ MPI_SETUP="--with-mpi-inc --with-mpi-lib"
 VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
 --with-grace-lib --with-gandolf-lib --with-eospac-lib --enable-shared \
 --with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
-if [ "`uname -m`" == "x86_64" ]; then
-    LIBS_SETUP="--with-libs='-L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran'"
-else
-    LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
-fi
+#if [ "`uname -m`" == "x86_64" ]; then
+#    LIBS_SETUP="--with-libs='-L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran'"
+#else
+#    LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
+#fi
 
 
 ##---------------------------------------------------------------------------##

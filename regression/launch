@@ -39,6 +39,13 @@ start_time=`s_time`
 hostname=`hostname`
 uname=`uname -a`
 user=`whoami`
+
+# set top level build directory, if on hostname ios
+if [ ${hostname} = "ios.lanl.gov" ]; then
+    topblddir='/regress/'
+else
+    topblddir=' '
+fi
  
 # obtain name of package
 PACKAGE=$1
@@ -150,7 +157,7 @@ echo ">>> Start Time        : ${start_time}"
 echo ""
 case ${PACKAGE} in
 capsaicin)
-   /bin/nice -n 10 $regression_script $* ;;
+   /bin/nice -n 0 $regression_script $* ;;
 *)
    $regression_script $* ;;
 esac
