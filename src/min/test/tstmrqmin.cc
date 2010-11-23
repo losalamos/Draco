@@ -4,20 +4,21 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright 2006-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <fstream>
-#include <vector>
+#include "../Release.hh"
+#include "../mrqmin.hh"
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include "../Release.hh"
-#include "../mrqmin.hh"
+#include <fstream>
+#include <vector>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -632,9 +633,9 @@ void tstmrqmin( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
+    ScalarUnitTest ut( argc, argv, release );
     try
     {
-        UnitTest ut( argc, argv, release );
 	tstmrqmin(ut);
     }
     catch (exception &err)

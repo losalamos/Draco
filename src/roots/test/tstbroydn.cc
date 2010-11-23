@@ -10,11 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
-#include "c4/global.hh"
 #include "../Release.hh"
 #include "../broydn.hh"
-
+#include "ds++/ScalarUnitTest.hh"
+#include "c4/global.hh"
 #include <iostream>
 #include <vector>
 

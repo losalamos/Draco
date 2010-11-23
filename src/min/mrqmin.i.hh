@@ -4,9 +4,7 @@
  * \author Kent Budge
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Implementation of mrqmin
- * \note   © Copyright 2009 LANSLLC All rights reserved.
- *
- * Long description.
+ * \note   © Copyright 2009-2010 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,14 +13,15 @@
 #ifndef min_mrqmin_i_hh
 #define min_mrqmin_i_hh
 
-#include <cmath>
-#include <math.h>
-#include "ds++/Assert.hh"
+#include "mrqmin.hh"
 
+#include "ds++/Assert.hh"
 #include "ds++/square.hh"
 #include "ds++/dbc.hh"
 #include "linear/gaussj.hh"
-#include "mrqmin.hh"
+
+#include <cmath>
+#include <math.h>
 
 namespace rtt_min
 {

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Levenberg-Marquardt method for nonlinear data fitting
- * \note   © Copyright 2009 LANSLLC All rights reserved.
+ * \note   © Copyright 2009-2010 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

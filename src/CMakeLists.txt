@@ -64,7 +64,9 @@ endif()
 message( STATUS "\nConfiguring Level 3 packages --\n" )
 add_subdirectory( cdi_analytic ) # needs cdi
 add_subdirectory( cdi_gandolf )  # needs cdi
+add_subdirectory( fit )          # needs lienar
 add_subdirectory( meshReaders )  # needs c4
+add_subdirectory( min )          # needs linear
 add_subdirectory( norms )        # needs c4
 add_subdirectory( parser )       # needs units, c4
 add_subdirectory( roots  )       # needs linear
@@ -73,6 +75,7 @@ add_subdirectory( timestep )     # needs c4, ds++
 add_subdirectory( viz )          # needs traits, ds++
 
 # Level 4
+
 message( STATUS "\nConfiguring Level 4 packages --\n" )
 add_subdirectory( quadrature ) # needs units, c4, special_functions
 add_subdirectory( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, dsxx

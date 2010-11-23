@@ -54,7 +54,9 @@ digraph draco_level {
     cdianal   [shape=box, color=blue, label="cdi_analytic"];
     cdieos    [shape=box, color=blue, label="cdi_eospac"];
     cdigan    [shape=box, color=blue, label="cdi_gandolf"];
+    fit       [shape=box, color=blue, label="fit"];
     meshread  [shape=box, color=blue, label="meshReaders"];
+    min       [shape=box, color=blue, label="min"];
     norms     [shape=box, color=blue, label="norms"];
     parser    [shape=box, color=blue, label="parser"];
     pcg       [shape=box, color=blue, label="pcgWrap"];
@@ -110,7 +112,9 @@ digraph draco_level {
     cdieos      -> {veospac}     [color=green]; 
     cdigan      -> {cdi}         [color=blue]; 
     cdigan      -> {vgandolf}    [color=green];
+    fit         -> {linear}      [color=blue];
     meshread    -> {meshelement} [color=blue];
+    min         -> {linear}      [color=blue];
     norms       -> {c4}          [color=blue];
     parser      -> {c4 units}    [color=blue];
     pcg         -> {c4}          [color=blue style=dotted];
