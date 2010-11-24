@@ -39,7 +39,8 @@ find_package_handle_standard_args(GSL DEFAULT_MSG GSL_INCLUDE_DIR GSL_LIBRARY)
 
 if (GSL_FOUND)
     set(GSL_INCLUDE_DIRS ${GSL_INCLUDE_DIR})
-    set(GSL_LIBRARIES    ${GSL_LIBRARY} ${GSL_BLAS_LIBRARY} )
+    set(GSL_LIBRARIES    ${GSL_LIBRARY} ${GSL_BLAS_LIBRARY} CACHE
+    FILEPATH "GSL libraries for linking."  )
 
     string( REPLACE "_dll.lib" ".dll" GSL_DLL ${GSL_LIBRARY} )
     string( REPLACE "_dll.lib" ".dll" GSL_BLAS_DLL ${GSL_BLAS_LIBRARY} )
