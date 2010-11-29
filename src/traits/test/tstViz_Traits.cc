@@ -4,6 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
+ * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -40,9 +41,9 @@ class Test_Field
   public:
     Test_Field(const vector<vector<T> > &data_in) : data(data_in) {}
 
-    T operator()(int i, int j) const { return data[i][j]; }
-    int nrows() const { return data.size(); }
-    int ncols(int r) const { return data[r].size(); }
+    T operator()(size_t i, size_t j) const { return data[i][j]; }
+    size_t nrows() const { return data.size(); }
+    size_t ncols(size_t r) const { return data[r].size(); }
 };
 
 //---------------------------------------------------------------------------//
@@ -61,13 +62,13 @@ void test_vector()
 
     Viz_Traits<VVF> vdf(field);
 
-    if (static_cast<size_t>(vdf.nrows()) != field.size())         ITFAILS; 
-    for (int i = 0; i < vdf.nrows(); i++)
+    if (vdf.nrows() != field.size())         ITFAILS; 
+    for (size_t i = 0; i < vdf.nrows(); i++)
     {
-	if (static_cast<size_t>(vdf.ncols(i)) != field[i].size()) ITFAILS;
-	for (int j = 0; j < vdf.ncols(i); j++)
+	if (vdf.ncols(i) != field[i].size()) ITFAILS;
+	for (size_t j = 0; j < vdf.ncols(i); j++)
 	{
-	    if (vdf(i, j) != field[i][j])                         ITFAILS;
+	    if (static_cast<int>(vdf(i, j)) != field[i][j])       ITFAILS;
 	    if (vdf(i, j) != 2*i + 4*j)                           ITFAILS;
 	}
     }				   
@@ -92,10 +93,10 @@ void test_FT()
     Viz_Traits<Test_Field<T> > vt(test_field);
 
     if (vt.nrows() != 3)                                         ITFAILS;
-    for (int i = 0; i < vt.nrows(); i++)
+    for (size_t i = 0; i < vt.nrows(); i++)
     {
-	if (static_cast<size_t>(vt.ncols(i)) != field[i].size()) ITFAILS;
-	for (int j = 0; j < vt.ncols(i); j++)
+	if (vt.ncols(i) != field[i].size()) ITFAILS;
+	for (size_t j = 0; j < vt.ncols(i); j++)
 	    if (vt(i, j) != field[i][j])                         ITFAILS;
     }
 }
@@ -105,31 +106,25 @@ void test_FT()
 int main(int argc, char *argv[])
 {
     // version tag
+    cout << argv[0] << ": version " << rtt_traits::release() << endl; 
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_traits::release() << endl; 
 	    return 0;
-	}
-
+    
     // tests
     test_vector<vector<vector<int> > >   ();
     test_vector<vector<vector<double> > >();
+    test_vector<vector<vector<float> > > ();
 
     test_FT<int>   ();
     test_FT<double>();
 
     // status of test
-    cout << endl;
-    cout <<     "*************************************" << endl;
+    cout <<     "\n*************************************";
     if (passed) 
-    {
-        cout << "****Viz_Traits Self Test: PASSED ****" << endl;
-    }
-    cout <<     "*************************************" << endl;
-    cout << endl;
-    
-    cout << "Done testing Viz_Traits." << endl;
+        cout << "\n****Viz_Traits Self Test: PASSED ****";
+    cout <<     "\n*************************************\n\n"
+         << "Done testing Viz_Traits." << endl;
 }
 
 //---------------------------------------------------------------------------//

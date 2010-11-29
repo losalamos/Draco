@@ -59,14 +59,14 @@ class Viz_Traits
     Viz_Traits(const FT &field_in) : field(field_in) {/*...*/}
 
     //! Overloaded operator().
-    typename FT::value_type operator()(int i, int j) const
+    typename FT::value_type operator()(size_t i, size_t j) const
     { return field(i, j); }
 
     //! Row size accessor.
-    int nrows() const { return field.nrows(); }
+    size_t nrows() const { return field.nrows(); }
 
     //! Column size accessor.
-    int ncols(int row) const { return field.ncols(row); }
+    size_t ncols(size_t row) const { return field.ncols(row); }
 };
 
 //---------------------------------------------------------------------------//
@@ -87,20 +87,20 @@ class Viz_Traits< std::vector<std::vector<T> > >
     } 
 
     // Overloaded operator().
-    T operator()(int i, int j) const
+    T operator()(size_t i, size_t j) const
     {
-	Require(i >= 0 && i < field.size());
-	Require(j >= 0 && j < field[i].size());
+	Require(i < field.size());
+	Require(j < field[i].size());
 	return field[i][j];
     }
 
     // Row size accessor.
-    int nrows() const { return field.size(); }
+    size_t nrows() const { return field.size(); }
 
     // Column size accessor.
-    int ncols(int row) const
+    size_t ncols(size_t row) const
     {
-	Require (row >= 0 && row < field.size());
+	Require (row < field.size());
 	return field[row].size();
     }
 };
@@ -124,20 +124,20 @@ class Viz_Traits< std::vector<std::vector<int> > >
     } 
 
     // Overloaded operator().
-    int operator()(int i, int j) const
+    size_t operator()(size_t i, size_t j) const
     {
-	Require(i >= 0 && i < static_cast<int>(field.size()));
-	Require(j >= 0 && j < static_cast<int>(field[i].size()));
+	Require(i < field.size());
+	Require(j < field[i].size());
 	return field[i][j];
     }
 
     // Row size accessor.
-    int nrows() const { return field.size(); }
+    size_t nrows() const { return field.size(); }
 
     // Column size accessor.
-    int ncols(int row) const
+    size_t ncols(size_t row) const
     {
-	Require (row >= 0 && row < static_cast<int>(field.size()));
+	Require (row < field.size());
 	return field[row].size();
     }
 };
@@ -161,20 +161,20 @@ class Viz_Traits< std::vector<std::vector<double> > >
     } 
 
     // Overloaded operator().
-    double operator()(int i, int j) const
+    double operator()(size_t i, size_t j) const
     {
-	Require(i >= 0 && i < static_cast<int>(field.size()));
-	Require(j >= 0 && j < static_cast<int>(field[i].size()));
+	Require(i < field.size());
+	Require(j < field[i].size());
 	return field[i][j];
     }
 
     // Row size accessor.
-    int nrows() const { return field.size(); }
+    size_t nrows() const { return field.size(); }
 
     // Column size accessor.
-    int ncols(int row) const
+    size_t ncols(size_t row) const
     {
-	Require (row >= 0 && row < static_cast<int>(field.size()));
+	Require (row < field.size());
 	return field[row].size();
     }
 };
