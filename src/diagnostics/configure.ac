@@ -1,47 +1,34 @@
 dnl-------------------------------------------------------------------------dnl
-dnl norms/configure.ac
-dnl Rob Lowrie
-dnl Fri Jan 14 09:06:56 2005
+dnl diagnostics/configure.ac
+dnl Thomas M. Evans
+dnl Fri Dec  9 11:05:13 2005
 dnl $Id$
 dnl-------------------------------------------------------------------------dnl
 dnl Copyright © 2003 The Regents of the University of California.
 dnl-------------------------------------------------------------------------dnl
-dnl configure.in for norms
+dnl configure.ac for diagnostics
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT
 
 dnl As an argument to this macro provide the name of a file that
 dnl exists in the local package directory.  
-AC_CONFIG_SRCDIR([Release.hh])  
+AC_CONFIG_SRCDIR([Diagnostics.hh])  
 
 AC_CONFIG_AUX_DIR(../../config)
-AC_CONFIG_HEADER(norms/config.h:config.h.in)
-package="norms"
+AC_CONFIG_HEADER(diagnostics/config.h:config.h.in)
+package="diagnostics"
 
 dnl Draco version
 AC_DRACO_PREREQ
+
+AC_DEFINE(AUTOCONF autoconf)
 
 dnl ----------------------------------------
 dnl Vendor setups: 
 dnl ----------------------------------------
 
-dnl Uncomment any vendor setups that are required for this package.
-dnl For example, if this package has parallel programming directives
-dnl you need to uncomment AC_MPI_SETUP.
-
 AC_MPI_SETUP(pkg)
-dnl AC_SHMEM_SETUP(pkg)
-dnl AC_SPRNG_SETUP(pkg)
-dnl AC_PCGLIB_SETUP(pkg)
-dnl AC_TRILINOS_SETUP(pkg)
-dnl AC_LAPACK_SETUP(pkg)
-dnl AC_PARMETIS_SETUP(pkg)
-
-dnl This macro should be uncommented if the current package is a Draco
-dnl client (i.e.: This package exists in Capsaicin, Milagro, etc.)
-
-dnl AC_DRACO_VENDOR_SETUP
 
 dnl ----------------------------------------
 dnl Install options:
@@ -49,7 +36,6 @@ dnl ----------------------------------------
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-dnl AC_INSTALL_EXECUTABLE
 
 dnl ----------------------------------------
 dnl Package dependencies:
@@ -61,7 +47,6 @@ dnl Capsaicin, Milagro, etc.), the dependencies on Draco libraries
 dnl should be listed as arguments to AC_NEEDS_LIBS_DRACO.
 
 AC_NEEDS_LIBS(c4 ds++)
-dnl AC_NEEDS_LIBS_DRACO(ds++)
 
 dnl ----------------------------------------
 dnl Setup for unit tests:
@@ -82,8 +67,48 @@ dnl parallel package the number of processors should be a an integer.
 dnl If this is a scalar package, the number of processors required
 dnl should be listed as "scalar".
 
-AC_RUNTESTS(tst_Norms tstL2norm , 1 2 4)
-dnl AC_RUNTESTS(tstnorms alt_tstnorms, scalar)
+dnl AC_RUNTESTS(tstutils, 1 2)
+AC_RUNTESTS(tstDiagnostics \
+            tstTiming, 1)
+
+dnl ----------------------------------------
+dnl SETUP TIMING AND DIAGNOSTICS
+
+AC_ARG_WITH(draco-diagnostics,
+   [  --with-draco-diagnostics[=0-7]
+                             set draco diagnostics level (default 0)])
+
+AC_ARG_WITH(draco-timing,
+   [  --with-draco-timing[=0-2]
+                             set draco timing level (default 0)])
+
+AC_MSG_CHECKING("for diagnostics")
+# setup diagnostics level
+if test "${with_draco_diagnostics:=default}" = no ; then
+   with_draco_diagnostics='0'
+elif test "${with_draco_diagnostics}" = yes ; then
+   with_draco_diagnostics='7'
+fi
+
+if test "${with_draco_diagnostics}" != default ; then
+   AC_DEFINE_UNQUOTED(DRACO_DIAGNOSTICS, $with_draco_diagnostics)
+fi
+AC_MSG_RESULT("$with_draco_diagnostics")
+
+AC_MSG_CHECKING("for timing diagnostics")
+# setup timing level
+if test "${with_draco_timing:=default}" = no ; then
+   with_draco_timing='0'
+elif test "${with_draco_timing}" = yes ; then
+   with_draco_timing='2'
+fi
+
+if test "${with_draco_timing}" != default ; then
+   AC_DEFINE_UNQUOTED(DRACO_TIMING, $with_draco_timing)
+fi
+AC_MSG_RESULT("$with_draco_timing")
+
+dnl ----------------------------------------
 
 dnl ----------------------------------------
 dnl Finish Draco setup:
@@ -105,5 +130,5 @@ AC_CONFIG_FILES([test/Makefile.options:test/Makefile.options.in]))
 AC_OUTPUT
 
 dnl-------------------------------------------------------------------------dnl
-dnl			 end of norms/configure.ac
+dnl			 end of diagnostics/configure.ac
 dnl-------------------------------------------------------------------------dnl

@@ -1,0 +1,47 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/*!
+ * \file   diagnostics/config.h
+ * \author Thomas M. Evans 
+ * \date   Fri Dec  9 11:05:13 2005
+ * \brief  diagnostics defines.
+ * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC.
+ */
+/*---------------------------------------------------------------------------*/
+/* $Id$ */
+/*---------------------------------------------------------------------------*/
+
+#ifndef __diagnostics_config_h__
+#define __diagnostics_config_h__
+
+/* Switch between Autoconf-based build system and CMake-based build */
+#undef AUTOCONF
+
+/* ---------------------------------------- */
+/* AUTOCONF based build system              */
+/* ---------------------------------------- */
+#ifdef AUTOCONF
+
+/* DRACO DIAGNOSTICS LEVEL */
+#undef DRACO_DIAGNOSTICS
+
+/* DRACO TIMING LEVEL */
+#undef DRACO_TIMING
+
+/* ---------------------------------------- */
+/* CMAKE based build system                 */
+/* ---------------------------------------- */
+#else
+
+/* DRACO DIAGNOSTICS LEVEL */
+#cmakedefine DRACO_DIAGNOSTICS @DRACO_DIAGNOSTICS@
+
+/* DRACO TIMING LEVEL */
+#cmakedefine DRACO_TIMING @DRACO_TIMING@
+
+#endif /* Autoconf based build */
+
+#endif /* __diagnostics_config_h__ */
+
+/*---------------------------------------------------------------------------*/
+/* end of diagnostics/config.h */
+/*---------------------------------------------------------------------------*/

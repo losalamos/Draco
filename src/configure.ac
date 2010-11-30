@@ -80,8 +80,8 @@ fi
 ## LEVEL 3
 ##---------------------------------------------------------------------------##
 
-AC_CONFIG_SUBDIRS( norms timestep viz parser cdi_analytic meshReaders \
-                   roots fit )
+AC_CONFIG_SUBDIRS( norms timestep diagnostics viz parser \
+   cdi_analytic meshReaders roots fit )
 
 AC_GANDOLF_SETUP(pkg)
 

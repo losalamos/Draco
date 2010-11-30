@@ -28,9 +28,6 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${GSL_INCLUDE_DIRS}
                      ${MPI_INCLUDE_PATH}
 )
-   # special_functions parser \
-   # units mesh_element c4 \
-   # ds++ )
 
 # ---------------------------------------------------------------------------- #
 # Build package library

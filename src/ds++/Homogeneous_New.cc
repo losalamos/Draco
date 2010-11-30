@@ -80,7 +80,7 @@ void *Homogeneous_New::allocate()
 }
 
 //---------------------------------------------------------------------------//
-void Homogeneous_New::allocate_block_(unsigned const block_size)
+void Homogeneous_New::allocate_block_(unsigned const /*block_size*/)
 {
     char *const new_first_block = new char[default_block_size_];
     *reinterpret_cast<void**>(new_first_block) = first_block_;

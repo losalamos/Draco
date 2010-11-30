@@ -44,7 +44,7 @@ add_subdirectory( c4 )           # needs ds++
 add_subdirectory( cdi )          # needs ds++
 add_subdirectory( fpe_trap )     # needs ds++
 add_subdirectory( lapack_wrap )  # needs ds++
-add_subdirectory( linear )  # needs ds++
+add_subdirectory( linear )       # needs ds++
 add_subdirectory( mesh_element ) # needs ds++
 add_subdirectory( ode )          # needs ds++
 add_subdirectory( rng )          # needs ds++
@@ -63,7 +63,7 @@ endif()
 
 message( STATUS "\nConfiguring Level 3 packages --\n" )
 add_subdirectory( cdi_analytic ) # needs cdi
-add_subdirectory( cdi_gandolf )  # needs cdi
+add_subdirectory( diagnostics )  # needs c4
 add_subdirectory( fit )          # needs lienar
 add_subdirectory( meshReaders )  # needs c4
 add_subdirectory( min )          # needs linear
@@ -73,6 +73,10 @@ add_subdirectory( roots  )       # needs linear
 add_subdirectory( special_functions ) # needs units, ds++
 add_subdirectory( timestep )     # needs c4, ds++
 add_subdirectory( viz )          # needs traits, ds++
+
+if( EXISTS ${GANDOLF_LIBRARY} )
+   add_subdirectory( cdi_gandolf )  # needs cdi and libgandolf.a
+endif()
 
 # Level 4
 
