@@ -13,15 +13,38 @@
 #ifndef fpe_trap_config_h
 #define fpe_trap_config_h
 
-// At most, only one of these should be defined in config/ac_platforms.m4
+/* Switch between Autoconf-based build system and CMake-based build */
+#undef AUTOCONF
 
+/* ---------------------------------------- */
+/* AUTOCONF based build system              */
+/* ---------------------------------------- */
+#ifdef AUTOCONF
+
+// At most, only one of these should be defined in config/ac_platforms.m4
 #undef FPETRAP_OSF_ALPHA
 #undef FPETRAP_DARWIN_INTEL
 #undef FPETRAP_DARWIN_PPC
 #undef FPETRAP_LINUX_X86
 
-// Using values above, determine if fpe_trap is supported
+/* ---------------------------------------- */
+/* CMAKE based build system                 */
+/* ---------------------------------------- */
+#else
 
+// At most, only one of these should be defined in config/ac_platforms.m4
+#cmakedefine FPETRAP_OSF_ALPHA    @FPETRAP_OSF_ALPHA@ 
+#cmakedefine FPETRAP_DARWIN_INTEL @FPETRAP_DARWIN_INTEL@
+#cmakedefine FPETRAP_DARWIN_PPC   @FPETRAP_DARWIN_PPC@
+#cmakedefine FPETRAP_LINUX_X86    @FPETRAP_LINUX_X86@
+
+#endif /* autoconf or cmake */
+
+/* ---------------------------------------- */
+/* All build systems                        */
+/* ---------------------------------------- */
+
+// Using values above, determine if fpe_trap is supported
 #if defined(FPETRAP_OSF_ALPHA) ||\
     defined(FPETRAP_DARWIN_INTEL) ||\
     defined(FPETRAP_DARWIN_PPC) ||\

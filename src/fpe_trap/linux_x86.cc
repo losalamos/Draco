@@ -36,9 +36,13 @@ namespace
 /* Signal handler for floating point exceptions. */
 
 static void
-catch_sigfpe (int sig, siginfo_t *code, void *v)
+catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
 {
+//    using namespace std;
+    
     std::string mesg;
+
+//    cout << "In catch_sigfpe" << endl;
     
     if (sig != SIGFPE)
     {
@@ -107,6 +111,9 @@ bool enable_fpe()
     
     // ... if you want to catch "everything" :
     //(void)feenableexcept(FE_ALL_EXCEPT);
+    // Also available:
+    // FE_INEXACT
+    // FE_UNDERFLOW
 
     return true;
 }

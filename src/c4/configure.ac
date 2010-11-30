@@ -12,6 +12,9 @@ dnl the files listed on the AC_OUTPUT line.
 dnl Process any command line arguments and find the source code
 dnl directory.
 AC_INIT
+
+dnl As an argument to this macro provide the name of a file that
+dnl exists in the local package directory. 
 AC_CONFIG_SRCDIR([C4_Req.hh])
 
 dnl echo " "

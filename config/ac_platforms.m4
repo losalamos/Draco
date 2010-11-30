@@ -97,17 +97,18 @@ AC_DEFUN([AC_DBS_PLATFORM_ENVIRONMENT], [dnl
 dnl ------------------------------------------------------------------------ dnl
 dnl AC_DBS_IFORT_ENVIRONMENT
 dnl
-dnl Some vendor setups require that the intel fortran compiler libraries be provided 
-dnl on the link line.  This m4 function adds the necessary libraries to LIBS.
+dnl Some vendor setups require that the intel fortran compiler
+dnl libraries be provided on the link line.  This m4 function adds the
+dnl necessary libraries to LIBS.
 dnl ------------------------------------------------------------------------ dnl
 AC_DEFUN([AC_DBS_IFORT_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
    case ${CXX} in 
-       g++ | icpc | ppu-g++)
+       */g++ | */icpc | */ppu-g++)
            rpath='-Xlinker -rpath '
            ;;
-       pgCC)
+       */pgCC)
            rpath='-R'
            ;;
        *)
@@ -243,7 +244,6 @@ AC_DEFUN([AC_DBS_PGF90_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
    case `echo ${CXX} | sed -e 's/.*\///g'` in
-   dnl case ${CXX} in
        g++ | icpc | ppu-g++)
            rpath='-Xlinker -rpath '
            ;;
@@ -345,7 +345,6 @@ dnl ------------------------------------------------------------------------ dnl
 AC_DEFUN([AC_DBS_GFORTRAN_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
-   dnl case ${CXX} in 
    case `echo ${CXX} | sed -e 's/.*\///g'` in  
        g++ | ppu-g++)
            rpath='-Xlinker -rpath '
@@ -589,12 +588,15 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        if test -n "${vendor_udm}"; then
 
 	   # Add rt for g++
-	   if test "${CXX}" = g++ ; then
+           case $CXX in
+           */g++)
 	       LIBS="${LIBS} -lrt"
 	       AC_MSG_RESULT("-lrt added to LIBS")
-           else
+               ;;
+           *)
                AC_MSG_RESULT("not needed")
-	   fi
+               ;;
+	   esac
 
        else
            AC_MSG_RESULT("not needed")
@@ -611,13 +613,15 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
                # if we are using g++ add fPIC (pgCC already has fPIC
                # when building shared libraries
-               if test "${CXX}" = g++; then
+               case $CXX in
+               */g++)
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
-               else
-                   AC_MSG_RESULT("-ldl added to LIBS")
-               fi
+                   ;;
+               *)
+                   AC_MSG_RESULT("-ldl added to LIBS") ;;
+               esac
 
            else  
                AC_MSG_RESULT("not needed")
@@ -634,20 +638,17 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        if test "${with_trilinos:-no}" != no || 
           test "${with_stlport:-no}" != no; then
 
-          case `echo ${CXX} | sed -e 's/.*\///g'` in
-          # GNU g++
-          g++) 
-             CXXFLAGS="${CXXFLAGS} -pthread"
-             ;;
+          case ${CXX} in
+            */g++) CXXFLAGS="${CXXFLAGS} -pthread" ;;
           esac
        fi
 
        #
        # Set up fpe_trap for this platform if gcc is on.
        #
-       if test "${CXX}" = g++; then
-           AC_DEFINE(FPETRAP_LINUX_X86)
-       fi
+       case ${CXX} in
+         */g++)  AC_DEFINE(FPETRAP_LINUX_X86) ;;
+       esac
 
        #
        # finalize vendors
@@ -656,27 +657,19 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
        # handle rpaths
        if test "${with_f90:=no}" = no ; then
-           case `echo ${CXX} | sed -e 's/.*\///g'` in
-               pgCC)
-                   AC_DBS_SETUP_RPATH(-R, nospace)
-                   ;;
-               g++ | icpc)
-                   AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
-                   ;;
-               ppu-g++)
-                   AC_DBS_SETUP_RPATH('-Xlinker -rpath', space)
-                   ;;
-               *)
-                   AC_MSG_ERROR("Unrecognized compiler on LINUX")
-                   ;;
-           esac
+         case ${CXX} in
+           */pgCC)         AC_DBS_SETUP_RPATH(-R, nospace) ;;
+           */g++ | */icpc) AC_DBS_SETUP_RPATH('-Xlinker -rpath', space) ;;
+           */ppu-g++)      AC_DBS_SETUP_RPATH('-Xlinker -rpath', space) ;;
+           *)              AC_MSG_ERROR("Unrecognized compiler on LINUX") ;;
+         esac
        fi
 
        # add the intel math library for better performance when
        # compiling with intel
-       if test "${CXX}" = icpc; then
-	   LIBS="$LIBS -limf"
-       fi
+       case ${CXX} in
+         */icpc) LIBS="$LIBS -limf" ;;
+       esac
 
 ]) dnl linux
 
@@ -1247,24 +1240,24 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
        
        if test -n "${STRICTFLAG}"; then
 
-           case `echo ${CXX} | sed -e 's/.*\///g'`  in
+           case ${CXX} in
 
            # GNU g++
-           g++) 
+           */g++) 
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
 #               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
 #               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
-  	   ibm)	
+  	   */ibm)	
 	       AC_MSG_WARN("xlC set to allow long long")
 	       STRICTFLAG="-qlanglvl=extended"
 	       CFLAGS="${CFLAGS} -qlonglong"
 	       CXXFLAGS="${CXXFLAGS} -qlonglong"
 	   ;;
-           # catchall
-           *) 
-               # do nothing
+
+           *) # catchall
+              # do nothing
            ;;
 
            esac
@@ -1311,13 +1304,15 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
                LIBS="${LIBS} -ldl"
 
                # if we are using g++ add fPIC
-               if test "${CXX}" = g++ ; then
+               case ${CXX} in
+               */g++)
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
-               else
-                   AC_MSG_RESULT("-ldl added to LIBS")
-               fi
+                   ;;
+               *)
+                   AC_MSG_RESULT("-ldl added to LIBS") ;;
+               esac
 
            else  
                AC_MSG_RESULT("not needed")

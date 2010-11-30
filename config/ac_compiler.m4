@@ -54,7 +54,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        AC_CHECK_PROG(CXX, CC, CC)
        AC_CHECK_PROG(CC, cc, cc)  
 
-       if test "${CXX}" = CC && test "${CC}" = cc ; then
+       if test `basename ${CXX}` = CC && test `basename ${CC}` = cc ; then
 	   AC_DRACO_SGI_CC
        else 
 	   AC_MSG_ERROR("Did not find SGI CC compiler!")
@@ -74,7 +74,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        AC_CHECK_PROG(CXX, cxx, cxx)
        AC_CHECK_PROG(CC, cc, cc)
 
-       if test "${CXX}" = cxx && test "${CC}" = cc ; then
+       if test `basename ${CXX}` = cxx && test `basename ${CC}` = cc ; then
 	   AC_DRACO_COMPAQ_CXX
        else
 	   AC_MSG_ERROR("Did not find Compaq cxx compiler!")
@@ -112,7 +112,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        AC_CHECK_PROG(CXX, xlC, xlC)
        AC_CHECK_PROG(CC, xlc, xlc)
 
-       if test "${CXX}" = xlC ; then
+       if test `basename ${CXX}` = xlC ; then
 	   AC_DRACO_IBM_VISUAL_AGE
        else
 	   AC_MSG_ERROR("Did not find IBM Visual Age xlC compiler!")
@@ -136,7 +136,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        fi
 
        # check to make sure compiler is valid
-       if test "${CXX}" = newxlC || test "${CXX}" = newmpxlC ; then
+       if test `basename ${CXX}` = newxlC || test `basename ${CXX}` = newmpxlC ; then
 	   AC_DRACO_IBM_VISUAL_AGE
        else
 	   AC_MSG_ERROR("Did not find ASCI Purple new(mp)xlC compiler!")

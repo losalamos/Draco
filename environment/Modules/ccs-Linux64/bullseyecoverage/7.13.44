@@ -14,18 +14,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
  
 #====== begin modulefile code =========
  
-#if { [module-info mode load] } {
-#    catch {set ignorant $env(IGNOREMODULECONFLICTS)};
-#    if { ![info exists ignorant] } {
-#       catch {set mpi $env(_MODULES_MPI)};
-#       if { [info exists mpi] && ($mpi != "[module-info name]") } {
-#          puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$mpi'";
-#          break;
-#          exit 1;
-#       }
-#    }
-#}
-#setenv          _MODULES_MPI   [module-info name];
+if { [module-info mode load] } {
+  catch {set ignorant $env(IGNOREMODULECONFLICTS)};
+  if { ![info exists ignorant] } {
+    catch {set cc $env(_MODULES_CC)};
+    if { [info exists cc] } {
+      if { ($cc != "gcc/4.5.0") && ($cc != "gcc/4.4.4") && ($cc != "gcc/4.3.4") && ($cc != "gcc/4.3.0") && ($cc != "gcc/4.1.1")  } {
+        puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$cc'";
+        puts stderr "BullseyeCoverage only configured for GNU compilers.\n";
+        break;
+        exit 1;
+        }
+      }
+   }
+}
+setenv          _MODULES_bullseye   [module-info name];
  
 #====== end modulefile code =========
 
@@ -33,8 +36,6 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 # local variables
 set version     7.13.44;
 set compiler    gcc;
-# set device      ib;
-# set arch        x86_64;
 set prefix      /ccs/codes/radtran/vendors/CCS64-gnu/Bullseye
 
 if { ![file exists $prefix] } {
@@ -44,13 +45,22 @@ if { ![file exists $prefix] } {
 }
 set bindir      $prefix/bin;
 
+
 # module whatis
 module-whatis   "BullseyeCoverage $version";
 # module help
 proc ModulesHelp { } {   global version prefix incdir;
 
    puts stderr "\tBullseyeCoverage $version";
+   puts stderr "\tCC\t= $bindir/gcc";
+   puts stderr "\tCXX\t= $bindir/g++";
+   puts stderr "\tF90\t= $bindir/gfortran";
+   puts stderr "\n\tUse cov01 --on to turn on coverage tracking.";
+   puts stderr "\tUse CoverageBrowser to view results.";
 }
 
-prepend-path   PATH              $bindir;
+prepend-path   PATH  $bindir;
+setenv CC            $bindir/gcc;
+setenv CXX           $bindir/g++;
+setenv F90           $bindir/gfortran;
 

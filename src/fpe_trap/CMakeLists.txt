@@ -7,6 +7,18 @@ project( fpe_trap CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
+if( ${CMAKE_SYSTEM} MATCHES "OSF" )
+   set( FPETRAP_OSF_ALPHA 1 )
+elseif( ${CMAKE_SYSTEM} MATCHES "Linux" )
+   set( FPETRAP_LINUX_X86 1 )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+   if( ${_CMAKE_OSX_MACHINE} MATCHES "ppc" )
+      set( FPETRAP_DARWIN_PPC 1 )
+   else()
+      set( FPETRAP_DARWIN_INTEL 1 )
+   endif()
+endif()
+
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/fpe_trap/config.h )
 
 # ---------------------------------------------------------------------------- #

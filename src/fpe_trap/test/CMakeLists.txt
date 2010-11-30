@@ -14,18 +14,14 @@ project( fpe_trap_test CXX )
 find_package(PythonInterp)
 #  PYTHONINTERP_FOUND - Was the Python executable found
 #  PYTHON_EXECUTABLE  - path to the Python interpreter
+
 if( PYTHONINTERP_FOUND )
 
     # ---------------------------------------------------------------------------- #
     # Source files
     # ---------------------------------------------------------------------------- #
 
-    # set( test_lib_sources 
-       # ${PROJECT_SOURCE_DIR}/fpe_trap_test.cc 
-       # ${PROJECT_SOURCE_DIR}/fpe_trap_test.hh
-    # )
     file( GLOB test_sources *.cc )
-    # list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
     # ---------------------------------------------------------------------------- #
     # Directories to search for include directives
@@ -35,42 +31,6 @@ if( PYTHONINTERP_FOUND )
        ${PROJECT_SOURCE_DIR}      # headers for tests
        ${PROJECT_SOURCE_DIR}/..   # headers for package
     )
-
-    # ---------------------------------------------------------------------------- #
-    # Build library for test directory
-    # ---------------------------------------------------------------------------- #
-
-    # add_library( Lib_fpe_trap_test ${DRACO_LIBRARY_TYPE} ${test_lib_sources} )
-    # if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-       # set_target_properties( 
-          # Lib_fpe_trap_test
-            # PROPERTIES 
-            # # Provide compile define macro to enable declspec(dllexport) linkage.
-            # COMPILE_DEFINITIONS BUILDING_DLL 
-            # # Use custom library naming
-            # OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}fpe_trap_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-       # )
-    # else()
-       # set_target_properties( 
-          # Lib_fpe_trap_test 
-          # PROPERTIES 
-            # # Use custom library naming
-        # OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}fpe_trap_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-       # )
-    # endif()
-
-    # For Win32 with shared libraries, the package dll must be located in
-    # the test directory.
-
-    # get_target_property( Lib_fpe_trap_loc Lib_fpe_trap LOCATION )
-    # if( WIN32 )
-       # add_custom_command( TARGET Lib_fpe_trap_test
-          # POST_BUILD
-          # COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_fpe_trap_loc} 
-          # ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-       # )
-    # endif()
-    # add_dependencies( Lib_fpe_trap_test Lib_fpe_trap )
 
     # ---------------------------------------------------------------------------- #
     # Build Unit tests
@@ -90,7 +50,9 @@ if( PYTHONINTERP_FOUND )
     )
     add_test( 
         NAME fpe_trap_python_test 
-        COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/python/test_fpe_trap.py $<TARGET_FILE:Ut_fpe_trap_do_exception_exe>
+        COMMAND ${PYTHON_EXECUTABLE}
+                ${PROJECT_SOURCE_DIR}/python/test_fpe_trap.py 
+                $<TARGET_FILE:Ut_fpe_trap_do_exception_exe>
     )
     set_tests_properties( fpe_trap_python_test 
        PROPERTIES	
