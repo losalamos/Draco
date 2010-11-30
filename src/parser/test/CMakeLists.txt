@@ -153,7 +153,11 @@ endif()
 unset(required_input_files)
 foreach( inputfile ${input_files} )
     get_filename_component( inputfilenameonly ${inputfile} NAME_WE )
-    set( outfile ${PROJECT_BINARY_DIR}/${inputfilenameonly}.inp )
+	if ( ${CMAKE_GENERATOR} MATCHES "Makefiles")
+		set( outfile ${PROJECT_BINARY_DIR}/${inputfilenameonly}.inp )
+	else ()
+		set( outfile ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${inputfilenameonly}.inp )
+	endif()
     add_custom_command( 
         OUTPUT  ${outfile}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${inputfile} ${outfile}

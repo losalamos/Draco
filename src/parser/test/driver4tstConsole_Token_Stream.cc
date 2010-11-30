@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        if( rtt_c4::nodes() == 1 ) runtest();
+        runtest();
     }
     catch (exception &err)
     {
@@ -125,12 +125,15 @@ int main(int argc, char *argv[])
 
     { // status of test
         rtt_c4::HTSyncSpinLock slock;
-        cout <<     "\n*********************************************" ;
-        if (rtt_parser_test::passed) 
-            cout << "\n**** driver4tstConsole_Token_Stream.cc Test: PASSED on " 
-                 << rtt_c4::node();
-        cout <<     "\n*********************************************\n"
-             << endl;
+        if (rtt_c4::node() == 0)
+        {
+            cout <<     "\n*********************************************" ;
+            if (rtt_parser_test::passed) 
+                cout << "\n**** driver4tstConsole_Token_Stream.cc Test: PASSED on " 
+                << rtt_c4::node();
+            cout <<     "\n*********************************************\n"
+              << endl;
+        }
     }
     
     rtt_c4::global_barrier();
