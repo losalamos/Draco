@@ -78,6 +78,11 @@ add_dependencies( Lib_cdi_gandolf_test Lib_cdi_gandolf )
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
+# Only add tests that are valid for this build configuration
+if( rtt_cdi_gandolf_stub )
+   set( test_sources ${PROJECT_SOURCE_DIR}/ReadOdfGandolfFile.cc )
+endif()
+
 foreach( file ${test_sources} )
   get_filename_component( testname ${file} NAME_WE )
   add_executable( Ut_cdi_gandolf_${testname}_exe ${file})
@@ -95,11 +100,11 @@ foreach( file ${test_sources} )
     Lib_dsxx 
     ${GANDOLF_LIBRARIES}
   )
-  add_test( cdi_gandolf_${testname} ${testname} )
-  set_tests_properties( cdi_gandolf_${testname} PROPERTIES	
-     PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
-     FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
-  )
+add_test( cdi_gandolf_${testname} ${testname} )
+set_tests_properties( cdi_gandolf_${testname} PROPERTIES	
+   PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
+   FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
+   )
 endforeach()
 
 # source_group( cdi_gandolf\\test FILES ${test_lib_sources} ${test_sources} )
