@@ -140,17 +140,19 @@ ${echoonly} cd $code_src; ./draco_config
 ## Set up vendors
 ## VENDOR_LIB_DIR and VENDOR_INC_DIR are set in .bashrc.
 
-MPI_SETUP="--with-mpi-inc --with-mpi-lib"
+# MPI_SETUP="--with-mpi-inc --with-mpi-lib"
 
 # Don't test pcgWrap for now; there's no x86_64 libpcg
-VENDOR_SETUP="--with-sprng-inc --with-sprng-lib --with-grace-inc \
---with-grace-lib --with-gandolf-lib --with-eospac-lib --enable-shared \
---with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
-#if [ "`uname -m`" == "x86_64" ]; then
-#    LIBS_SETUP="--with-libs='-L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran'"
-#else
-#    LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
-#fi
+VENDOR_SETUP=""
+#"--with-sprng-inc --with-sprng-lib --with-grace-inc \
+#--with-grace-lib --with-gandolf-lib --with-eospac-lib --enable-shared \
+#--with-lapack=atlas --with-lapack-lib --with-gsl-inc --with-gsl-lib"
+if [ "`uname -m`" == "x86_64" ]; then
+    LIBS_SETUP="--with-libs='-L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran'"
+else
+    LIBS_SETUP="--with-libs='-L/ccs/codes/radtran/vendors/libf2c -lf2c'"
+fi
+
 
 
 ##---------------------------------------------------------------------------##
@@ -184,7 +186,8 @@ for target in ${target_list}; do
 	    OPTIONS='--with-c4=mpi'
         fi
 
-	VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+#	VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+	VENDOR_OPTIONS="${VENDOR_SETUP}"
 	MAKE_OPTIONS="check"
 	;;
 
@@ -217,26 +220,11 @@ for target in ${target_list}; do
 	    OPTIONS='--with-c4=mpi --with-opt=2 --with-dbc=0'
 	fi
 
-	VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+#	VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP}"
+	VENDOR_OPTIONS="${VENDOR_SETUP}"
 	MAKE_OPTIONS="check"
 	;;
 
-        # LAMPI version
-        ${code_lampi_dbg})
-
-            # Source lampi
-            echo "source $MPI_DIR/lampi.sh shmem-lahey"
-            . $MPI_DIR/lampi.sh shmem-lahey
-            cleanipcs
-            echo "MPI_TAG = $MPI_TAG"
-
-            MPI_SETUP="--with-mpi=lampi $MPI_SETUP"
-            OPTIONS='--enable-shared --with-c4=mpi --with-dbc=7 --enable-debug'
-            STLPORT_SETUP="--with-stlport=/ccs/codes/radtran/vendors/stlport/Linux"
-            VENDOR_OPTIONS="${MPI_SETUP} ${VENDOR_SETUP} ${STLPORT_SETUP}"
-            MAKE_OPTIONS="check"
-        ;;
- 
        # setup code coverage options: use shared libs, no dbc.
        ${code_cov_mpi})
            if [ "`uname -m`" == "x86_64" ]; then
