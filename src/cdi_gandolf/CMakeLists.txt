@@ -7,6 +7,10 @@ project( cdi_gandolf CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
+if( NOT GANDOLF_FOUND )
+   set( rtt_cdi_gandolf_stub 1 )
+endif()
+
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_gandolf/config.h )
 
 # ---------------------------------------------------------------------------- #
@@ -71,3 +75,4 @@ install( FILES ${headers} DESTINATION include/cdi_gandolf )
 if( DRACO_BUILD_TESTS AND EXISTS ${PROJECT_SOURCE_DIR}/test/CMakeLists.txt )
    add_subdirectory( test )
 endif()   
+

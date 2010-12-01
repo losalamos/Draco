@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Gandolf file test
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -49,6 +51,11 @@ using rtt_dsxx::SP;
  * --with-gandolf-lib=/radtran/vendors/gandolf/IRIX64/lib32
  * --with-gandolf-lib=/radtran/vendors/gandolf/Linux
  * --with-gandolf-lib=/radtran/vendors/gandolf/SunOS
+ *
+ * 2010-12-01: When using Draco Modules (draco/environment/Modules), you
+ * simply need to load the gandolf module and the build system will
+ * automatically find libgandolf by looking at the environment variable
+ * GANDOLF_LIB_DIR. 
  */
 void gandolf_file_test()
 {
@@ -140,7 +147,7 @@ void gandolf_file_test()
     std::cout << std::endl 
 	      << "Materials found in the data file:" << std::endl;
 	    
-    for ( int i=0; i<spGF->getNumMaterials(); ++i )
+    for ( size_t i=0; i<spGF->getNumMaterials(); ++i )
 	std::cout << "  Material " << i << " has the identification number " 
 		  << spGF->getMatIDs()[i] << std::endl;
 }
@@ -171,17 +178,11 @@ int main(int argc, char *argv[])
     }
 
     // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
+    cout <<     "\n*********************************************";
     if (rtt_cdi_gandolf_test::passed) 
-    {
-        cout << "**** tGandolfFile Test: PASSED" 
-	     << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tGandolfFile." << endl;
+        cout << "\n**** tGandolfFile Test: PASSED"; 
+    cout <<     "\n*********************************************\n";
+    cout <<     "\nDone testing tGandolfFile." << endl;
 
     return 0;
 }   
