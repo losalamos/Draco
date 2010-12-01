@@ -30,7 +30,8 @@ find_package_handle_standard_args(GANDOLF DEFAULT_MSG GANDOLF_LIBRARY)
 if (GANDOLF_FOUND)
 #    set(GANDOLF_INCLUDE_DIRS ${GANDOLF_INCLUDE_DIR})
     set(GANDOLF_LIBRARIES    ${GANDOLF_LIBRARY} ${GANDOLF_GFORTRAN_LIBRARY} )
-
+    set(GANDOLF_FOUND TRUE CACHE BOOL 
+       "Did we find the gadolf libraries?")
 #    string( REPLACE "_dll.lib" ".dll" GANDOLF_DLL ${GANDOLF_LIBRARY} )
 #    string( REPLACE "_dll.lib" ".dll" GANDOLF_BLAS_DLL ${GANDOLF_BLAS_LIBRARY} )
 #   mark_as_advanced( GANDOLF_DLL GANDOLF_BLAS_DLL )
@@ -41,6 +42,7 @@ if (GANDOLF_FOUND)
 #      set( GANDOLF_DLL "NOTFOUND")
 #      set( GANDOLF_BLAS_DLL "NOTFOUND" )
 #    endif()
+
 endif()
 
 if( VERBOSE )
@@ -49,3 +51,4 @@ GANDOLF_FOUND =        ${GANDOLF_FOUND}
 GANDOLF_LIBRARIES    = ${GANDOLF_LIBRARY}
 ")
 endif()
+
