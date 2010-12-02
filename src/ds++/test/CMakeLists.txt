@@ -39,23 +39,7 @@ add_dependencies( Lib_dsxx_test Lib_dsxx )
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-foreach( file ${test_sources} )
-  get_filename_component( testname ${file} NAME_WE )
-  add_executable( Ut_dsxx_${testname}_exe ${file})
-  set_target_properties( 
-     Ut_dsxx_${testname}_exe 
-     PROPERTIES 
-       OUTPUT_NAME ${testname} 
-       VS_KEYWORD ${testname}
-       PROJECT_LABEL Ut_dsxx
-  )
-  target_link_libraries( Ut_dsxx_${testname}_exe Lib_dsxx Lib_dsxx_test )
-  add_test( dsxx_${testname} ${testname} )
-  set_tests_properties( dsxx_${testname} PROPERTIES	
-     PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
-     FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
-  )
-endforeach()
+add_scalar_tests( SOURCES "${test_sources}" )
 
 # source_group( dsxx\\test FILES ${test_lib_sources} ${test_sources} )
 
