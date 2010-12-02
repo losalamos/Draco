@@ -31,36 +31,8 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_dsxx_test ${DRACO_LIBRARY_TYPE} ${test_lib_sources} )
-if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-   set_target_properties( 
-      Lib_dsxx_test
-        PROPERTIES 
-        # Provide compile define macro to enable declspec(dllexport) linkage.
-        COMPILE_DEFINITIONS BUILDING_DLL 
-        # Use custom library naming
-        OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}dsxx_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-else()
-   set_target_properties( 
-      Lib_dsxx_test 
-      PROPERTIES 
-        # Use custom library naming
-	OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}dsxx_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-endif()
-
-# For Win32 with shared libraries, the package dll must be located in
-# the test directory.
-
-get_target_property( Lib_dsxx_loc Lib_dsxx LOCATION )
-if( WIN32 )
-   add_custom_command( TARGET Lib_dsxx_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_dsxx_loc} 
-      ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-   )
-endif()
+add_component_library( Lib_dsxx_test ds++_test     "${test_lib_sources}" )
+#                      ^target_name  ^library_name ^source list
 add_dependencies( Lib_dsxx_test Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #

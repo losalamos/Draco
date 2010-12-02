@@ -50,29 +50,14 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
                      ${MPI_INCLUDE_PATH}
-)
+                     )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_c4 ${DRACO_LIBRARY_TYPE} ${sources}  )
-#add_dependencies( Lib_c4 Lib_dsxx )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_c4 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_c4
-  )
-else()
-  set_target_properties( Lib_c4 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_c4
-  )
-endif()
+add_component_library( Lib_c4 c4 "${sources}"  )
+add_dependencies( Lib_c4 Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

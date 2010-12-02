@@ -29,31 +29,16 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( ${PROJECT_SOURCE_DIR}   # sources
+include_directories( 
+   ${PROJECT_SOURCE_DIR}   # sources
    ${PROJECT_BINARY_DIR} ) # config.h
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_dsxx ${DRACO_LIBRARY_TYPE} ${sources}  )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_dsxx 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      # OUTPUT_NAME ${CMAKE_SHARED_LIBRARY_PREFIX}rtt_ds++${CMAKE_SHARED_LIBRARY_SUFFIX}
-      OUTPUT_NAME rtt_ds++
-      )
-else()
-   set_target_properties( Lib_dsxx
-      PROPERTIES 
-        # Use custom library naming
-        # OUTPUT_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}rtt_ds++${CMAKE_STATIC_LIBRARY_SUFFIX}
-        OUTPUT_NAME rtt_ds++
-      )
-endif()
+# add_component_library( target_name library_name "$sources" )
+add_component_library( Lib_dsxx ds++ "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
