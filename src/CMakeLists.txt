@@ -29,10 +29,8 @@ dbsSetupCxx()
 include( vendor_libraries )
 setupVendorLibraries()
 
-#
-# Extra Make targets (package_commands.cmake)
-#
-#provide_test_target() 
+# Provide helper functions used by component CMakeLists.txt files
+include( component_macros )
 
 # Level 1
 message( STATUS "\nConfiguring Level 1 packages --\n" )
@@ -63,7 +61,6 @@ endif()
 
 message( STATUS "\nConfiguring Level 3 packages --\n" )
 add_subdirectory( cdi_analytic ) # needs cdi
-add_subdirectory( cdi_gandolf )  # needs cdi
 add_subdirectory( diagnostics )  # needs c4
 add_subdirectory( fit )          # needs lienar
 add_subdirectory( meshReaders )  # needs c4
@@ -74,6 +71,10 @@ add_subdirectory( roots  )       # needs linear
 add_subdirectory( special_functions ) # needs units, ds++
 add_subdirectory( timestep )     # needs c4, ds++
 add_subdirectory( viz )          # needs traits, ds++
+
+if( GANDOLF_FOUND )
+   add_subdirectory( cdi_gandolf )  # needs cdi
+endif()
 
 # Level 4
 
@@ -103,18 +104,6 @@ LAPACK      : ${LAPACK_LIBRARY}
 GANDOLF     : ${GANDOLF_LIBRARY}
 
 ")
-
-## Install cmake files that help external projects link to the targets from this project.
-#install( 
-#  EXPORT draco_targets
-#  NAMESPACE draco_
-#  DESTINATION lib/export
-#)
-
-## Build summary
-#if( VERBOSE )
-#  include(summary)
-#endif( VERBOSE )
 
 ##---------------------------------------------------------------------------##
 ## End of src/CMakeLists.txt
