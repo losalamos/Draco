@@ -126,11 +126,14 @@ macro( SetupVendorLibrariesWindows )
      set( MPI_INCLUDE_PATH $ENV{MPI_INC_DIR} )
      set( MPI_LIBRARY $ENV{MPI_LIB_DIR}/mpi.lib )
   endif()
+  message(STATUS "Looking for MPI...")
   find_package( MPI )
   if( MPI_FOUND )
      set( DRACO_C4 "MPI" )  
+     message(STATUS "Looking for MPI... MPI_ROOT = ${MPI_ROOT}")
   else()
      set( DRACO_C4 "SCALAR" )
+     message(WARNING "Looking for MPI... NOT FOUND (continuing with C4 = SCALAR)")
   endif()
   set( DRACO_C4 "${DRACO_C4}" CACHE STRING "C4 communication mode (SCALAR or MPI)" )
   if( "${DRACO_C4}" STREQUAL "MPI"    OR 
@@ -149,9 +152,11 @@ macro( SetupVendorLibrariesWindows )
   endif()
     
   # LAPACK & BLAS
+  message( STATUS "Looking for LAPACK/BLAS...")
   find_package( CLAPACK REQUIRED )
   
   # GSL
+  message( STATUS "Looking for GSL...")
   find_package( GSL REQUIRED )
   
   
@@ -214,12 +219,15 @@ macro( SetupVendorLibrariesUnix )
       set( MPI_LIBRARY $ENV{MPI_LIB_DIR}/libmpi.so )
       set( MPI_EXTRA_LIBRARY $ENV{MPI_LIB_DIR}/libmpi_cxx.so )
    endif()
+   message(STATUS "Looking for MPI...")
    find_package( MPI )
    if( MPI_FOUND )
       set( DRACO_C4 "MPI" )  
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
+      message(STATUS "Looking for MPI... ${MPI_LIBRARY}")
    else()
       set( DRACO_C4 "SCALAR" )
+      message(WARNING "Looking for MPI... NOT FOUND (continuing with C4 = SCALAR)")
    endif()
    set( DRACO_C4 "${DRACO_C4}" CACHE STRING "C4 communication mode (SCALAR or MPI)" )
    if( "${DRACO_C4}" STREQUAL "MPI"    OR 
@@ -238,13 +246,31 @@ macro( SetupVendorLibrariesUnix )
    endif()
 
   # LAPACK & BLAS
+  message( STATUS "Looking for LAPACK/BLAS...")
   find_package( CLAPACK REQUIRED )
+  if( LAPACK_FOUND )
+     message( STATUS "Looking for LAPACK/BLAS... ${LAPACK_LIBRARY}")
+  else()
+     message( STATUS "Looking for LAPACK/BLAS... NOT FOUND!")
+  endif()
  
   # GSL
+  message( STATUS "Looking for GSL...")
   find_package( GSL REQUIRED )
+  if( GSL_FOUND )
+     message( STATUS "Looking for GSL... ${GSL_LIBRARY}")
+  else()
+     message( STATUS "Looking for GSL... NOT FOUND!")
+  endif()
 
   # Gandolf
+  message( STATUS "Looking for Gandolf library...")
   find_package( Gandolf REQUIRED )
+  if( GANDOLF_FOUND )
+     message( STATUS "Looking for Gandolf library... ${GANDOLF_LIBRARY}")
+  else()
+     message( STATUS "Looking for Gandolf library... NOT FOUND!")
+  endif()
 
   # find_package( XercesC REQUIRED )
 
