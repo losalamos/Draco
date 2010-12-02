@@ -30,7 +30,7 @@ find_package_handle_standard_args(GANDOLF DEFAULT_MSG GANDOLF_LIBRARY)
 if (GANDOLF_FOUND)
 #    set(GANDOLF_INCLUDE_DIRS ${GANDOLF_INCLUDE_DIR})
     set(GANDOLF_LIBRARIES    ${GANDOLF_LIBRARY} ${GANDOLF_GFORTRAN_LIBRARY} )
-    set(GANDOLF_FOUND TRUE CACHE BOOL 
+    set(GANDOLF_FOUND ${GANDOLF_FOUND} CACHE BOOL 
        "Did we find the gadolf libraries?")
 #    string( REPLACE "_dll.lib" ".dll" GANDOLF_DLL ${GANDOLF_LIBRARY} )
 #    string( REPLACE "_dll.lib" ".dll" GANDOLF_BLAS_DLL ${GANDOLF_BLAS_LIBRARY} )

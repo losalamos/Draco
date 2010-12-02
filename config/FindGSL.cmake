@@ -38,20 +38,21 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GSL DEFAULT_MSG GSL_INCLUDE_DIR GSL_LIBRARY)
 
 if (GSL_FOUND)
-    set(GSL_INCLUDE_DIRS ${GSL_INCLUDE_DIR})
-    set(GSL_LIBRARIES    ${GSL_LIBRARY} ${GSL_BLAS_LIBRARY} CACHE
-    FILEPATH "GSL libraries for linking."  )
-
-    string( REPLACE "_dll.lib" ".dll" GSL_DLL ${GSL_LIBRARY} )
-    string( REPLACE "_dll.lib" ".dll" GSL_BLAS_DLL ${GSL_BLAS_LIBRARY} )
-    mark_as_advanced( GSL_DLL GSL_BLAS_DLL )
-    if( EXISTS ${GSL_DLL} )
+   set(GSL_FOUND ${GSL_FOUND} CACHE BOOL "Did we find the GSL libraries?")
+   set(GSL_INCLUDE_DIRS ${GSL_INCLUDE_DIR})
+   set(GSL_LIBRARIES    ${GSL_LIBRARY} ${GSL_BLAS_LIBRARY} CACHE
+      FILEPATH "GSL libraries for linking."  )
+   
+   string( REPLACE "_dll.lib" ".dll" GSL_DLL ${GSL_LIBRARY} )
+   string( REPLACE "_dll.lib" ".dll" GSL_BLAS_DLL ${GSL_BLAS_LIBRARY} )
+   mark_as_advanced( GSL_DLL GSL_BLAS_DLL )
+   if( EXISTS ${GSL_DLL} )
       set(GSL_DLL_LIBRARIES "${GSL_DLL};${GSL_BLAS_DLL}" CACHE STRING 
          "list of gsl dll files.")
-    else()
+   else()
       set( GSL_DLL "NOTFOUND")
       set( GSL_BLAS_DLL "NOTFOUND" )
-    endif()
+   endif()
 endif()
 
 if( VERBOSE )
