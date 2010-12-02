@@ -24,7 +24,6 @@ option( DRACO_BUILD_CAPSAICIN_COMPONENTS ON )
 # add uninstall target
 #include( uninstall )
 #provide_uninstall_target()
-#provide_test_target()
 
 # Unit Test Setup
 option( DRACO_BUILD_TESTS "Should we compile the tests?" ON )
@@ -32,6 +31,13 @@ if( DRACO_BUILD_TESTS )
   # include( dracoTesting.cmake )
   include(CTest)
   enable_testing()
+  if( "${DRACO_NUM_CORES}none" STREQUAL "none"  )
+     add_custom_target( check
+        COMMAND ${CMAKE_MAKE_COMMAND} test )   
+  else()
+     add_custom_target( check
+        COMMAND ${CMAKE_CTEST_COMMAND} -j ${DRACO_NUM_CORES} )   
+  endif()
 endif()   
 
 # Build options (static or shared, dbc-level
