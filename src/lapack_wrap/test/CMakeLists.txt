@@ -31,72 +31,38 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_lapack_wrap_test ${DRACO_LIBRARY_TYPE} ${test_lib_sources} )
-if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-   set_target_properties( 
-      Lib_lapack_wrap_test
-        PROPERTIES 
-        # Provide compile define macro to enable declspec(dllexport) linkage.
-        COMPILE_DEFINITIONS BUILDING_DLL 
-        # Use custom library naming
-        OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}lapack_wrap_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-else()
-   set_target_properties( 
-      Lib_lapack_wrap_test 
-      PROPERTIES 
-        # Use custom library naming
-	OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}lapack_wrap_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-endif()
-
-# For Win32 with shared libraries, the package dll must be located in
-# the test directory.
-
-get_target_property( Lib_lapack_wrap_loc Lib_lapack_wrap LOCATION )
-if( WIN32 )
-   add_custom_command( TARGET Lib_lapack_wrap_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_lapack_wrap_loc} 
-      ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-   )
-
-   if( NOT "${lapack_DLL_LIBRARIES}none" STREQUAL "none" )
-      foreach( lib ${lapack_DLL_LIBRARIES} )
-        get_filename_component( libname ${lib} NAME )
-        add_custom_command( TARGET Lib_lapack_wrap_test
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${libname}
-        )
-      endforeach()
-   endif()
-endif()
-add_dependencies( Lib_lapack_wrap_test Lib_lapack_wrap )
+add_component_library( Lib_lapack_wrap_test ${PROJECT_NAME} "${test_lib_sources}" )
+add_dependencies(      Lib_lapack_wrap_test Lib_lapack_wrap )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
-foreach( file ${test_sources} )
-  get_filename_component( testname ${file} NAME_WE )
-  add_executable( Ut_lapack_wrap_${testname}_exe ${file})
-  set_target_properties( 
-     Ut_lapack_wrap_${testname}_exe 
-     PROPERTIES 
-       OUTPUT_NAME ${testname} 
-       VS_KEYWORD ${testname}
-       PROJECT_LABEL Ut_lapack_wrap
-       #LINK_FLAGS /nodefaultlib:msvcrt.lib
-  )
-  target_link_libraries( Ut_lapack_wrap_${testname}_exe Lib_lapack_wrap Lib_lapack_wrap_test Lib_dsxx ${LAPACK_LIBRARIES} ${FORTRAN_LIBS} )
-  add_test( lapack_wrap_${testname} ${testname} )
-  set_tests_properties( lapack_wrap_${testname} PROPERTIES	
-     PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
-     FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
-  )
-  if( "${test_loc}x" STREQUAL "x" )
-    get_target_property( test_loc Ut_lapack_wrap_${testname}_exe LOCATION )
-    get_filename_component( test_loc ${test_loc} PATH )
-  endif()
-endforeach()
+
+add_scalar_tests(
+   SOURCES "${test_sources}"
+   DEPS    "Lib_dsxx;${LAPACK_LIBRARIES};${FORTRAN_LIBS}" )
+
+# foreach( file ${test_sources} )
+#   get_filename_component( testname ${file} NAME_WE )
+#   add_executable( Ut_lapack_wrap_${testname}_exe ${file})
+#   set_target_properties( 
+#      Ut_lapack_wrap_${testname}_exe 
+#      PROPERTIES 
+#        OUTPUT_NAME ${testname} 
+#        VS_KEYWORD ${testname}
+#        PROJECT_LABEL Ut_lapack_wrap
+#        #LINK_FLAGS /nodefaultlib:msvcrt.lib
+#   )
+#   target_link_libraries( Ut_lapack_wrap_${testname}_exe Lib_lapack_wrap Lib_lapack_wrap_test Lib_dsxx ${LAPACK_LIBRARIES} ${FORTRAN_LIBS} )
+#   add_test( lapack_wrap_${testname} ${testname} )
+#   set_tests_properties( lapack_wrap_${testname} PROPERTIES	
+#      PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
+#      FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
+#   )
+#   if( "${test_loc}x" STREQUAL "x" )
+#     get_target_property( test_loc Ut_lapack_wrap_${testname}_exe LOCATION )
+#     get_filename_component( test_loc ${test_loc} PATH )
+#   endif()
+# endforeach()
 
 

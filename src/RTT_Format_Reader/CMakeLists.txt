@@ -7,11 +7,8 @@ project( RTT_Format_Reader CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-#file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
-#file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-#list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE )
@@ -32,26 +29,11 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_RTT_Format_Reader ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_RTT_Format_Reader RTT_Format_Reader "${sources}" )
 add_dependencies( Lib_RTT_Format_Reader
    Lib_meshReaders
    Lib_mesh_element 
    Lib_dsxx )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_RTT_Format_Reader 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_RTT_Format_Reader
-  )
-else()
-  set_target_properties( Lib_RTT_Format_Reader 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_RTT_Format_Reader
-  )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

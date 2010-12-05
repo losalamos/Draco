@@ -60,7 +60,6 @@ if( PYTHONINTERP_FOUND )
          FAIL_REGULAR_EXPRESSION ".*FAILED" 
     )
 
-
 endif( PYTHONINTERP_FOUND )
     
 # source_group( fpe_trap\\test FILES ${test_lib_sources} ${test_sources} )

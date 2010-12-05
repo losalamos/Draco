@@ -38,22 +38,7 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_mesh_element ${DRACO_LIBRARY_TYPE} ${sources}  )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_mesh_element 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_mesh_element
-      )
-else()
-   set_target_properties( Lib_mesh_element 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_mesh_element
-      )
-endif()
+add_component_library( Lib_mesh_element ${PROJECT_NAME} "${sources}"  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

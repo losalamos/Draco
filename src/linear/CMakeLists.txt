@@ -39,24 +39,8 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_linear ${DRACO_LIBRARY_TYPE} ${sources} )
-add_dependencies( Lib_linear Lib_traits Lib_c4 )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_linear 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_linear
-      )
-else()
-   set_target_properties( Lib_linear 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_linear
-      )
-endif()
-#target_link_libraries( Lib_linear Lib_c4 Lib_dsxx )
+add_component_library( Lib_linear ${PROJECT_NAME} "${sources}" )
+add_dependencies(      Lib_linear Lib_traits Lib_c4 )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

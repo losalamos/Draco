@@ -39,24 +39,8 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_min ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_min ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_min Lib_linear )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_min 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_min
-      )
-else()
-   set_target_properties( Lib_min 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_min
-      )
-endif()
-#target_link_libraries( Lib_min Lib_c4 Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

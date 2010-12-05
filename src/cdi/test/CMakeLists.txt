@@ -35,59 +35,16 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_cdi_test ${DRACO_LIBRARY_TYPE} ${test_lib_sources} )
-if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-   set_target_properties( 
-      Lib_cdi_test
-        PROPERTIES 
-        # Provide compile define macro to enable declspec(dllexport) linkage.
-        COMPILE_DEFINITIONS BUILDING_DLL 
-        # Use custom library naming
-        OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}cdi_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-else()
-   set_target_properties( 
-      Lib_cdi_test 
-      PROPERTIES 
-        # Use custom library naming
-	OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}cdi_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-endif()
-
-# For Win32 with shared libraries, the package dll must be located in
-# the test directory.
-
-get_target_property( Lib_cdi_loc Lib_cdi LOCATION )
-if( WIN32 )
-   add_custom_command( TARGET Lib_cdi_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_cdi_loc} 
-      ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-   )
-endif()
+add_component_library( Lib_cdi_test cdi_test "${test_lib_sources}" )
 add_dependencies( Lib_cdi_test Lib_cdi )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-foreach( file ${test_sources} )
-  get_filename_component( testname ${file} NAME_WE )
-  add_executable( Ut_cdi_${testname}_exe ${file})
-  set_target_properties( 
-     Ut_cdi_${testname}_exe 
-     PROPERTIES 
-       OUTPUT_NAME ${testname} 
-       VS_KEYWORD ${testname}
-       PROJECT_LABEL Ut_cdi
-  )
-  target_link_libraries( Ut_cdi_${testname}_exe Lib_cdi Lib_cdi_test Lib_dsxx )
-  add_test( cdi_${testname} ${testname} )
-  set_tests_properties( cdi_${testname} PROPERTIES	
-     PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
-     FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
-  )
-endforeach()
+add_scalar_tests(
+   SOURCES   "${test_sources}" 
+   DEPS      "Lib_dsxx;${MPI_LIBRARIES}" )
 
 # source_group( cdi\\test FILES ${test_lib_sources} ${test_sources} )
 

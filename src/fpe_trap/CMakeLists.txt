@@ -52,23 +52,8 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_fpe_trap ${DRACO_LIBRARY_TYPE} ${sources}  )
+add_component_library( Lib_fpe_trap ${PROJECT_NAME} "${sources}"  )
 add_dependencies( Lib_fpe_trap Lib_cdi Lib_dsxx )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_fpe_trap 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_fpe_trap
-      )
-else()
-   set_target_properties( Lib_fpe_trap 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_fpe_trap
-      )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

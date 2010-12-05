@@ -31,17 +31,6 @@ set( SNRM2 snrm2_ )
 set( DNRM2 dnrm2_ )
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
 
-# set( FORTRAN_LIB_DIR "C:/Program Files (x86)/Common Files/Intel/Shared Files/fortran/Lib/ia32" )
-# set( FORTRAN_LIBS 
-    # ${FORTRAN_LIB_DIR}/ifconsol.lib 
-    # ${FORTRAN_LIB_DIR}/libifcoremt.lib
-    # ${FORTRAN_LIB_DIR}/libifport.lib
-    # ${FORTRAN_LIB_DIR}/libmmd.lib
-    # ${FORTRAN_LIB_DIR}/libmmt.lib
-    # ${FORTRAN_LIB_DIR}/libirc.lib
-    # ${FORTRAN_LIB_DIR}/svml_disp.lib
-# )
-
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
@@ -70,22 +59,7 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_lapack_wrap ${DRACO_LIBRARY_TYPE} ${sources}  )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_lapack_wrap 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_lapack_wrap
-      )
-else()
-   set_target_properties( Lib_lapack_wrap 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_lapack_wrap
-      )
-endif()
+add_component_library( Lib_lapack_wrap ${PROJECT_NAME} "${sources}"  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

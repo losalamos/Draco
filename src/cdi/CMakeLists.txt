@@ -38,22 +38,7 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_cdi ${DRACO_LIBRARY_TYPE} ${sources}  )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_cdi 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_cdi
-      )
-else()
-   set_target_properties( Lib_cdi 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_cdi
-      )
-endif()
+add_component_library( Lib_cdi cdi "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

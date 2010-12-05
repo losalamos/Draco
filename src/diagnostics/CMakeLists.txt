@@ -3,6 +3,10 @@
 cmake_minimum_required(VERSION 2.6)
 project( diagnostics CXX )
 
+##---------------------------------------------------------------------------##
+# Special options for this component
+##---------------------------------------------------------------------------##
+
 # From autoconf build system: "yes" --> 7, "no" --> 0
 set( DRACO_DIAGNOSTICS "0"
    CACHE STRING "Diagnostics verbosity level (0-7). Default is 0." )
@@ -47,25 +51,8 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_diagnostics ${DRACO_LIBRARY_TYPE} ${sources}  )
+add_component_library( Lib_diagnostics ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_diagnostics Lib_c4 Lib_dsxx )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_diagnostics 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      # OUTPUT_NAME ${CMAKE_SHARED_LIBRARY_PREFIX}rtt_ds++${CMAKE_SHARED_LIBRARY_SUFFIX}
-      OUTPUT_NAME rtt_diagnostics
-      )
-else()
-   set_target_properties( Lib_diagnostics
-      PROPERTIES 
-        # Use custom library naming
-        # OUTPUT_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}rtt_ds++${CMAKE_STATIC_LIBRARY_SUFFIX}
-        OUTPUT_NAME rtt_diagnostics
-      )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

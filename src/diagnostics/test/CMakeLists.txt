@@ -33,64 +33,16 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_diagnostics_test ${DRACO_LIBRARY_TYPE} ${test_lib_sources} )
-if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-   set_target_properties( 
-      Lib_diagnostics_test
-        PROPERTIES 
-        # Provide compile define macro to enable declspec(dllexport) linkage.
-        COMPILE_DEFINITIONS BUILDING_DLL 
-        # Use custom library naming
-        OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}diagnostics_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-else()
-   set_target_properties( 
-      Lib_diagnostics_test 
-      PROPERTIES 
-        # Use custom library naming
-	OUTPUT ${CMAKE_SHARED_LIBRARY_PREFIX}diagnostics_test${CMAKE_SHARED_LIBRARY_SUFFIX}
-   )
-endif()
-
-# For Win32 with shared libraries, the package dll must be located in
-# the test directory.
-
-get_target_property( Lib_diagnostics_loc Lib_diagnostics LOCATION )
-if( WIN32 )
-   add_custom_command( TARGET Lib_diagnostics_test
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_diagnostics_loc} 
-      ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-   )
-endif()
-add_dependencies( Lib_diagnostics_test Lib_diagnostics Lib_c4 )
+add_component_library( Lib_diagnostics_test ${PROJECT_NAME} "${test_lib_sources}" )
+add_dependencies(      Lib_diagnostics_test Lib_diagnostics Lib_c4 )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-foreach( file ${test_sources} )
-  get_filename_component( testname ${file} NAME_WE )
-  add_executable( Ut_diagnostics_${testname}_exe ${file})
-  set_target_properties( 
-     Ut_diagnostics_${testname}_exe 
-     PROPERTIES 
-       OUTPUT_NAME ${testname} 
-       VS_KEYWORD ${testname}
-       PROJECT_LABEL Ut_diagnostics
-  )
-  target_link_libraries( Ut_diagnostics_${testname}_exe 
-     Lib_diagnostics
-     Lib_diagnostics_test 
-     Lib_c4
-     Lib_dsxx
-     ${MPI_LIBRARIES} )
-  add_test( diagnostics_${testname} ${testname} )
-  set_tests_properties( diagnostics_${testname} PROPERTIES	
-     PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
-     FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
-  )
-endforeach()
+add_scalar_tests(
+   SOURCES "${test_sources}"
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 
 # source_group( diagnostics\\test FILES ${test_lib_sources} ${test_sources} )
 

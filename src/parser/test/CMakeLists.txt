@@ -152,19 +152,19 @@ endif()
 # ---------------------------------------------------------------------------- #
 unset(required_input_files)
 foreach( inputfile ${input_files} )
-    get_filename_component( inputfilenameonly ${inputfile} NAME_WE )
-	if ( ${CMAKE_GENERATOR} MATCHES "Makefiles")
-		set( outfile ${PROJECT_BINARY_DIR}/${inputfilenameonly}.inp )
-	else ()
-		set( outfile ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${inputfilenameonly}.inp )
-	endif()
-    add_custom_command( 
-        OUTPUT  ${outfile}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${inputfile} ${outfile}
-        COMMENT "Copying ${inputfile} to ${outfile}"
-    )
-    list( APPEND required_input_files "${outfile}" )
+   get_filename_component( inputfilenameonly ${inputfile} NAME_WE )
+   if ( ${CMAKE_GENERATOR} MATCHES "Makefiles")
+      set( outfile ${PROJECT_BINARY_DIR}/${inputfilenameonly}.inp )
+   else ()
+      set( outfile ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${inputfilenameonly}.inp )
+   endif()
+   add_custom_command( 
+      OUTPUT  ${outfile}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${inputfile} ${outfile}
+      COMMENT "Copying ${inputfile} to ${outfile}"
+      )
+   list( APPEND required_input_files "${outfile}" )
 endforeach()
 add_custom_target( Ut_parser_install_inputs ALL
-    DEPENDS ${required_input_files}
-)
+   DEPENDS ${required_input_files}
+   )

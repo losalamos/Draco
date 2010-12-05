@@ -33,23 +33,8 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_parser ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_parser ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_parser Lib_c4 Lib_units )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_parser 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_parser
-  )
-else()
-  set_target_properties( Lib_parser 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_parser
-  )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

@@ -39,24 +39,8 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_fit ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_fit ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_fit Lib_linear )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-   set_target_properties( Lib_fit 
-      PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_fit
-      )
-else()
-   set_target_properties( Lib_fit 
-      PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_fit
-      )
-endif()
-#target_link_libraries( Lib_fit Lib_c4 Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
