@@ -141,13 +141,13 @@ macro( add_scalar_tests test_sources )
       ${ARGV}
       )
 
-   message("
-addscalartest_SOURCES    = ${addscalartest_SOURCES}
-addscalartest_DEPS       = ${addscalartest_DEPS}
-addscalartest_TEST_ARGS  = ${addscalartest_TEST_ARGS}
-addscalartest_PASS_REGEX = ${addscalartest_PASS_REGEX}
-addscalartest_FAIL_REGEX = ${addscalartest_FAIL_REGEX}
-")
+#    message("
+# addscalartest_SOURCES    = ${addscalartest_SOURCES}
+# addscalartest_DEPS       = ${addscalartest_DEPS}
+# addscalartest_TEST_ARGS  = ${addscalartest_TEST_ARGS}
+# addscalartest_PASS_REGEX = ${addscalartest_PASS_REGEX}
+# addscalartest_FAIL_REGEX = ${addscalartest_FAIL_REGEX}
+# ")
 
    # Sanity Check
    if( "${addscalartest_SOURCES}none" STREQUAL "none" )
@@ -183,8 +183,8 @@ addscalartest_FAIL_REGEX = ${addscalartest_FAIL_REGEX}
            PROJECT_LABEL Ut_${compname}
          )
       target_link_libraries( Ut_${compname}_${testname}_exe 
-         Lib_${compname} 
          Lib_${compname}_test 
+         Lib_${compname} 
          ${addscalartest_DEPS}
          )
       if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
@@ -200,7 +200,7 @@ addscalartest_FAIL_REGEX = ${addscalartest_FAIL_REGEX}
              separate_arguments( tmp UNIX_COMMAND ${cmdarg} )
              add_test( ${compname}_${testname}_arg${iarg} 
                 ${testname} ${tmp} )
-             message("${compname}_${testname}_arg${iarg} ${testname} ${cmdarg}")
+             # message("${compname}_${testname}_arg${iarg} ${testname} ${cmdarg}")
              set_tests_properties( ${compname}_${testname}_arg${iarg}
                 PROPERTIES	
                   PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
@@ -238,15 +238,15 @@ macro( add_parallel_tests )
       ${ARGV}
       )
 
-   message("
-addparalleltest_SOURCES    = ${addparalleltest_SOURCES}
-addparalleltest_PE_LIST    = ${addparalleltest_PE_LIST}
-addparalleltest_DEPS       = ${addparalleltest_DEPS}
-addparalleltest_TEST_ARGS  = ${addparalleltest_TEST_ARGS}
-addparalleltest_PASS_REGEX = ${addparalleltest_PASS_REGEX}
-addparalleltest_FAIL_REGEX = ${addparalleltest_FAIL_REGEX}
-C4_MPI = ${C4_MPI}
-")
+#    message("
+# addparalleltest_SOURCES    = ${addparalleltest_SOURCES}
+# addparalleltest_PE_LIST    = ${addparalleltest_PE_LIST}
+# addparalleltest_DEPS       = ${addparalleltest_DEPS}
+# addparalleltest_TEST_ARGS  = ${addparalleltest_TEST_ARGS}
+# addparalleltest_PASS_REGEX = ${addparalleltest_PASS_REGEX}
+# addparalleltest_FAIL_REGEX = ${addparalleltest_FAIL_REGEX}
+# C4_MPI = ${C4_MPI}
+# ")
 
    # Sanity Check
    if( "${addparalleltest_SOURCES}none" STREQUAL "none" )
@@ -280,8 +280,8 @@ C4_MPI = ${C4_MPI}
          )
       target_link_libraries( 
          Ut_${compname}_${testname}_exe 
-         Lib_${compname} 
          Lib_${compname}_test 
+         Lib_${compname} 
          ${addparalleltest_DEPS}
          )
       # if( WIN32 )
@@ -320,7 +320,6 @@ C4_MPI = ${C4_MPI}
          endforeach()
       endforeach()
    else( C4_MPI )
-      message("not C4_MPI")
       # SCALAR Mode:
       foreach( file ${addparalleltest_SOURCES} )
          get_filename_component( testname ${file} NAME_WE )
@@ -332,6 +331,58 @@ C4_MPI = ${C4_MPI}
             )
       endforeach()
    endif( C4_MPI )
+
+endmacro()
+
+#----------------------------------------------------------------------#
+#
+#----------------------------------------------------------------------#
+macro( provide_aux_files )
+
+   parse_arguments( 
+      # prefix
+      auxfiles
+      # list names
+      "FILES;SRC_EXT;DEST_EXT"
+      # option names
+      "NONE"
+      ${ARGV}
+      )
+
+   unset(required_files)
+   foreach( file ${auxfiles_FILES} )
+      get_filename_component( srcfilenameonly ${file} NAME )
+      if( "${auxfiles_SRC_EXT}none" STREQUAL "none" )
+         if( "${auxfiles_DEST_EXT}none" STREQUAL "none" )
+            # do nothing
+         else()
+            # add DEST_EXT
+            set( srcfilenameonly
+               "${srcfilenameonly}${auxfiles_DEST_EXT}" )
+         endif()
+      else()
+         if( "${auxfiles_DEST_EXT}none" STREQUAL "none" )
+            # strip SRC_EXT
+            string( REPLACE ${auxfiles_SRC_EXT} ""
+               srcfilenameonly ${srcfilenameonly} )
+         else()
+            # replace SRC_EXT with DEST_EXT
+            string( REPLACE ${auxfiles_SRC_EXT} ${auxfiles_DEST_EXT}
+               srcfilenameonly ${srcfilenameonly} )
+         endif()
+      endif()
+      set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
+      add_custom_command( 
+         OUTPUT  ${outfile}
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}
+         COMMENT "Copying ${file} to ${outfile}"
+         )
+      list( APPEND required_files "${outfile}" )
+   endforeach()
+   string( REPLACE "_test" "" compname ${PROJECT_NAME} )
+   add_custom_target( Ut_${compname}_install_inputs ALL
+      DEPENDS ${required_files}
+      )
 
 endmacro()
 
