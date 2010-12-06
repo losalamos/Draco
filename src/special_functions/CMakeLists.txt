@@ -34,23 +34,8 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_special_functions ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_special_functions ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_special_functions Lib_units Lib_ode Lib_traits)
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_special_functions 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_special_functions
-  )
-else()
-  set_target_properties( Lib_special_functions 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_special_functions
-  )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

@@ -31,23 +31,8 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_traits ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_traits ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_traits Lib_dsxx )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_traits 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_traits
-  )
-else()
-  set_target_properties( Lib_traits 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_traits
-  )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

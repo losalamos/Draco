@@ -33,26 +33,11 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_quadrature ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_quadrature ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_quadrature
    Lib_units
    Lib_special_functions
    Lib_ode )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_quadrature 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_quadrature
-  )
-else()
-  set_target_properties( Lib_quadrature 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_quadrature
-  )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

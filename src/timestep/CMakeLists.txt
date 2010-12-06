@@ -33,23 +33,8 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_library( Lib_timestep ${DRACO_LIBRARY_TYPE} ${sources} )
+add_component_library( Lib_timestep ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_timestep Lib_c4 Lib_dsxx )
-if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-  set_target_properties( Lib_timestep 
-    PROPERTIES 
-      # Provide compile define macro to enable declspec(dllexport) linkage.
-      COMPILE_DEFINITIONS BUILDING_DLL 
-      # Use custom library naming
-      OUTPUT_NAME rtt_timestep
-  )
-else()
-  set_target_properties( Lib_timestep 
-    PROPERTIES 
-      # Use custom library naming
-      OUTPUT_NAME rtt_timestep
-  )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
