@@ -149,7 +149,7 @@ macro( add_scalar_tests test_sources )
 # addscalartest_FAIL_REGEX = ${addscalartest_FAIL_REGEX}
 # ")
 
-   # Sanity Check
+   # Sanity Checks
    if( "${addscalartest_SOURCES}none" STREQUAL "none" )
       message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using the add_scalar_tests macro.  Please see draco/config/component_macros.cmake::add_scalar_tests() for more information." )
    endif()
@@ -165,6 +165,15 @@ macro( add_scalar_tests test_sources )
    # What is the component name (always use Lib_${compname} as a dependency).
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
    set( iarg "0" )
+
+   # If the test directory does not provide its own library (e.g.:
+   # libc4_test.a), then don't try to link against it!
+   get_target_property( test_lib_loc Lib_${compname}_test LOCATION )
+   #message( "test_lib_loc = ${test_lib_loc}" )
+   if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
+      set( test_lib_target_name "Lib_${compname}_test" )
+      #message( "test_lib_target_name = ${test_lib_target_name}" )
+   endif()
 
    # Loop over each test source files:
    # 1. Compile the executable
@@ -183,7 +192,8 @@ macro( add_scalar_tests test_sources )
            PROJECT_LABEL Ut_${compname}
          )
       target_link_libraries( Ut_${compname}_${testname}_exe 
-         Lib_${compname}_test 
+         # Lib_${compname}_test 
+         ${test_lib_target_name}
          Lib_${compname} 
          ${addscalartest_DEPS}
          )
@@ -309,7 +319,7 @@ macro( add_parallel_tests )
             add_test( 
                NAME    ${compname}_${testname}_${numPE}
                COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-                       $<TARGET_FILE:Ut_c4_${testname}_exe> 
+                       $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
                        ${addparalleltest_TEST_ARGS}
                )
             set_tests_properties( ${compname}_${testname}_${numPE}
@@ -371,7 +381,11 @@ macro( provide_aux_files )
                srcfilenameonly ${srcfilenameonly} )
          endif()
       endif()
-      set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
+      if ( ${CMAKE_GENERATOR} MATCHES "Makefiles")
+         set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
+      else()
+         set( outfile ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${srcfilenameonly} )
+      endif()
       add_custom_command( 
          OUTPUT  ${outfile}
          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}
