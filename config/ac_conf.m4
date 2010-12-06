@@ -302,7 +302,7 @@ AC_DEFUN([AC_ASCI_PURPLE_TEST_WORK_AROUND_PREPEND], [dnl
 
    # change compiler
    case ${CXX} in
-   */newmpxlC)
+   *newmpxlC)
        purple_compiler='newmpxlC'
        CXX='newxlC'
        AC_MSG_WARN("Changing to ${CXX} compiler for configure tests.")

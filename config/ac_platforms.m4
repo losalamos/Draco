@@ -105,14 +105,9 @@ AC_DEFUN([AC_DBS_IFORT_ENVIRONMENT], [dnl
 
    # set the proper RPATH command depending on the C++ compiler
    case ${CXX} in 
-       */g++ | */icpc | */ppu-g++)
-           rpath='-Xlinker -rpath '
-           ;;
-       */pgCC)
-           rpath='-R'
-           ;;
-       *)
-           AC_MSG_ERROR("Improper compiler set in LINUX.")
+       *g++ | *icpc | *ppu-g++)  rpath='-Xlinker -rpath ' ;;
+       *pgCC)                    rpath='-R'               ;;
+       *) AC_MSG_ERROR("Improper compiler set in LINUX.")
    esac
 
    AC_MSG_CHECKING("for extra ifort library requirements.")
@@ -589,7 +584,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
 
 	   # Add rt for g++
            case $CXX in
-           */g++)
+           *g++)
 	       LIBS="${LIBS} -lrt"
 	       AC_MSG_RESULT("-lrt added to LIBS")
                ;;
@@ -614,7 +609,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
                # if we are using g++ add fPIC (pgCC already has fPIC
                # when building shared libraries
                case $CXX in
-               */g++)
+               *g++)
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
@@ -639,7 +634,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
           test "${with_stlport:-no}" != no; then
 
           case ${CXX} in
-            */g++) CXXFLAGS="${CXXFLAGS} -pthread" ;;
+            *g++) CXXFLAGS="${CXXFLAGS} -pthread" ;;
           esac
        fi
 
@@ -647,7 +642,7 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # Set up fpe_trap for this platform if gcc is on.
        #
        case ${CXX} in
-         */g++)  AC_DEFINE(FPETRAP_LINUX_X86) ;;
+         *g++)  AC_DEFINE(FPETRAP_LINUX_X86) ;;
        esac
 
        #
@@ -658,17 +653,17 @@ AC_DEFUN([AC_DBS_LINUX_ENVIRONMENT], [dnl
        # handle rpaths
        if test "${with_f90:=no}" = no ; then
          case ${CXX} in
-           */pgCC)         AC_DBS_SETUP_RPATH(-R, nospace) ;;
-           */g++ | */icpc) AC_DBS_SETUP_RPATH('-Xlinker -rpath', space) ;;
-           */ppu-g++)      AC_DBS_SETUP_RPATH('-Xlinker -rpath', space) ;;
-           *)              AC_MSG_ERROR("Unrecognized compiler on LINUX") ;;
+           *pgCC)         AC_DBS_SETUP_RPATH(-R, nospace) ;;
+           *g++ | *icpc)  AC_DBS_SETUP_RPATH('-Xlinker -rpath', space) ;;
+           *ppu-g++)      AC_DBS_SETUP_RPATH('-Xlinker -rpath', space) ;;
+           *)             AC_MSG_ERROR("Unrecognized compiler on LINUX") ;;
          esac
        fi
 
        # add the intel math library for better performance when
        # compiling with intel
        case ${CXX} in
-         */icpc) LIBS="$LIBS -limf" ;;
+         *icpc) LIBS="$LIBS -limf" ;;
        esac
 
 ]) dnl linux
@@ -1243,13 +1238,13 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
            case ${CXX} in
 
            # GNU g++
-           */g++) 
+           *g++) 
                AC_MSG_NOTICE([g++ -ansi option set to allow long long type!])
                STRICTFLAG="$STRICTFLAG -Wno-long-long"
 #               AC_MSG_NOTICE([g++ -ansi option set to allow long double type])
 #               STRICTFLAG="$STRICTFLAG -Wno-long-double"
            ;;
-  	   */ibm)	
+  	   *ibm)	
 	       AC_MSG_WARN("xlC set to allow long long")
 	       STRICTFLAG="-qlanglvl=extended"
 	       CFLAGS="${CFLAGS} -qlonglong"
@@ -1305,7 +1300,7 @@ AC_DEFUN([AC_DBS_DARWIN_COMMON_ENVIRONMENT], [dnl
 
                # if we are using g++ add fPIC
                case ${CXX} in
-               */g++)
+               *g++)
                    CFLAGS="${CFLAGS} -fPIC"
                    CXXFLAGS="${CXXFLAGS} -fPIC"
                    AC_MSG_RESULT("-ldl added to LIBS -fPIC added to compile flags")
