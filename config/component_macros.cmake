@@ -394,10 +394,21 @@ macro( provide_aux_files )
       list( APPEND required_files "${outfile}" )
    endforeach()
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
-   add_custom_target( Ut_${compname}_install_inputs ALL
+
+   # Extra logic if multiple calls from the same directory.
+   if( "${Ut_${compname}_install_inputs_iarg}notset" STREQUAL "notset" )
+      set( Ut_${compname}_install_inputs_iarg "0" CACHE INTERNAL
+   "counter for each provide_aux_files command.  Used to create individual targets for copying support files.")
+   else()
+      math( EXPR Ut_${compname}_install_inputs_iarg
+         "${Ut_${compname}_install_inputs_iarg} + 1" )
+   endif()
+   add_custom_target(
+      Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg} 
+      ALL
       DEPENDS ${required_files}
       )
-
+   
 endmacro()
 
 #----------------------------------------------------------------------#
