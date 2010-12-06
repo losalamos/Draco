@@ -10,7 +10,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
-# conflict openmpi-gcc;
+# conflict pgi/9.0-3 pgi/7.2-5 intel/10.0.023;
  
 #====== begin modulefile code =========
  
@@ -60,7 +60,10 @@ proc ModulesHelp { } {   global version prefix incdir;
 }
 
 prepend-path   PATH  $bindir;
-setenv CC            $bindir/gcc;
-setenv CXX           $bindir/g++;
-setenv F90           $bindir/gfortran;
 
+## BUG: I would like to set the following variables
+#setenv CC            $bindir/gcc;
+#setenv CXX           $bindir/g++;
+#setenv F90           $bindir/gfortran;
+## bug when I unload bullseye, these varaibles are not reset to their
+## former values.
