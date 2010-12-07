@@ -17,14 +17,14 @@
 ## http://www.cmake.org/Wiki/CMake_Testing_With_CTest
 
 if( NOT CTEST_PROJECT_NAME )
-  set(CTEST_PROJECT_NAME "test")
+  set( CTEST_PROJECT_NAME "Draco")
 endif()
-set(CTEST_NIGHTLY_START_TIME "00:00:00 MST")
+set( CTEST_NIGHTLY_START_TIME "00:00:00 MST")
 
-set(CTEST_DROP_METHOD "https")
-set (CTEST_DROP_SITE "xweb.lanl.gov")
-set (CTEST_DROP_LOCATION 
-   "/xsec/xweb/cdash/CDash-1.6.4/submit.php?project=${CTEST_PROJECT_NAME}" )
+set( CTEST_DROP_METHOD "http")
+set( CTEST_DROP_SITE "coder.lanl.gov")
+set( CTEST_DROP_LOCATION 
+   "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" )
 set(CTEST_DROP_SITE_CDASH TRUE)
 set(CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF)
 
