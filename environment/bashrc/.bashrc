@@ -83,7 +83,8 @@ if test -f /proc/cpuinfo; then
 fi
 
 # Tell wget to use LANL's www proxy
-export http_proxy=http://wpad.lanl.gov/wpad.dat
+#export http_proxy=http://wpad.lanl.gov/wpad.dat
+export http_proxy=http://proxyout.lanl.gov:8080
 
 ##---------------------------------------------------------------------------##
 ## cd paths - disable here, let user choose in ~/.bashrc
