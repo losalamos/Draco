@@ -215,23 +215,23 @@ ensight_dump(int        icycle,
     Viz_Traits<FVF> cell_data(cell_data_in);
 
     // define sizes used throughout
-    int ncells  = ipar.nrows();
-    int nvertices = pt_coor.nrows();
-    int nrgn    = rgn_name.size();
+    size_t ncells    = ipar.nrows();
+    size_t nvertices = pt_coor.nrows();
+    size_t nrgn      = rgn_name.size();
 
     // Check sizes of all data.
-    Require (iel_type.size()       == static_cast<size_t>(ncells));
-    Require (cell_rgn_index.size() == static_cast<size_t>(ncells));
+    Require (iel_type.size()       == ncells);
+    Require (cell_rgn_index.size() == ncells);
     Require (cell_data.nrows()     == ncells    || cell_data.nrows() == 0);
     Require (vrtx_data.nrows()     == nvertices || vrtx_data.nrows() == 0);
-    Require (rgn_numbers.size()    == static_cast<size_t>(nrgn));
+    Require (rgn_numbers.size()    == nrgn);
 
     // create the parts list
     vector<int>::const_iterator find_location_c;
     vector<int>::iterator       find_location;
     vector<int>                 parts_list;
 
-    for (int i = 0; i < ncells; ++i)
+    for (size_t i = 0; i < ncells; ++i)
     {
 	find_location = find(parts_list.begin(), parts_list.end(),
 			     cell_rgn_index[i]); 
@@ -241,12 +241,12 @@ ensight_dump(int        icycle,
     }
     
     // store the number of parts
-    int nparts = parts_list.size();
+    size_t nparts = parts_list.size();
     
     // create the parts names
     vector<string> part_names;
     
-    for (int i = 0; i < nparts; ++i)
+    for (size_t i = 0; i < nparts; ++i)
     {
 	find_location_c = find(rgn_numbers.begin(), rgn_numbers.end(),
 			       parts_list[i]);
@@ -274,12 +274,12 @@ ensight_dump(int        icycle,
     // cells_of_type[ipart][itype][i] is the cell index of the i'th cell of
     // type itype in part ipart.
     sf3_int cells_of_type(nparts);
-    for ( int i = 0; i < nparts; ++i )
+    for ( size_t i = 0; i < nparts; ++i )
 	cells_of_type[i].resize(d_num_cell_types);
 
     // Initialize cells_of_type and vertices_of_part.
 
-    for ( int i = 0; i < ncells; ++i )
+    for ( size_t i = 0; i < ncells; ++i )
     {
 	find_location = find(parts_list.begin(), parts_list.end(),
 			     cell_rgn_index[i]);
@@ -302,10 +302,10 @@ ensight_dump(int        icycle,
     sf_int g_cell_indices(ncells);
     sf_int g_vrtx_indices(nvertices);
 
-    for ( int i = 0; i < ncells; ++i )
+    for ( size_t i = 0; i < ncells; ++i )
 	g_cell_indices[i] = i;
 
-    for ( int i = 0; i < nvertices; ++i )
+    for ( size_t i = 0; i < nvertices; ++i )
 	g_vrtx_indices[i] = i;
 
     // >>> WRITE OUT DATA TO DIRECTORIES
@@ -402,21 +402,21 @@ write_part(int               part_num,
     Viz_Traits<FVF> cell_data(cell_data_in);
 
     // define sizes used throughout
-    int ncells    = ipar.nrows();
-    int nvertices = pt_coor.nrows();
+    size_t ncells    = ipar.nrows();
+    size_t nvertices = pt_coor.nrows();
 
     // Check sizes of all data.
-    Require (iel_type.size()   == static_cast<size_t>(ncells));
+    Require (iel_type.size()   == ncells);
     Require (cell_data.nrows() == ncells    || cell_data.nrows() == 0);
     Require (vrtx_data.nrows() == nvertices || vrtx_data.nrows() == 0);
-    Require (g_vrtx_indices.size() == static_cast<size_t>(nvertices));
-    Require (g_cell_indices.size() == static_cast<size_t>(ncells));
+    Require (g_vrtx_indices.size() == nvertices);
+    Require (g_cell_indices.size() == ncells);
 
     // cells_of_type[itype][i] is the cell index of the i'th cell of
     // type itype.
     sf2_int cells_of_type(d_num_cell_types);
 
-    for ( int i = 0; i < ncells; ++i )
+    for ( size_t i = 0; i < ncells; ++i )
     {
 	Check(iel_type[i] < d_num_cell_types);
 	cells_of_type[iel_type[i]].push_back(i);
@@ -424,7 +424,7 @@ write_part(int               part_num,
 
     // All vertices are output in this case.
     sf_int vertices(nvertices);
-    for ( int i = 0; i < nvertices; ++i )
+    for ( size_t i = 0; i < nvertices; ++i )
 	vertices[i] = i;
 
     // >>> WRITE OUT DATA TO DIRECTORIES
@@ -483,7 +483,7 @@ write_geom(const int                          part_num,
     // ens_vertex maps our local vertex index to a vertex in [1,nvertices].
 
     std::map<int, int> ens_vertex;
-    for ( int i = 0; i < nvertices; ++i )
+    for ( size_t i = 0; i < nvertices; ++i )
     {
 	d_geom_out << g_vrtx_indices[vertices[i]] << endl;
 
@@ -492,15 +492,15 @@ write_geom(const int                          part_num,
     }
     
     // output the coordinates
-    for ( int idim = 0; idim < ndim; idim++ )
-	for ( int i = 0; i < nvertices; ++i )
+    for ( size_t idim = 0; idim < ndim; idim++ )
+	for ( size_t i = 0; i < nvertices; ++i )
 	    d_geom_out << pt_coor(vertices[i], idim) << endl;
     
     // ensight expects coordinates for three dimensions, so fill any
     // remaining dimensions with zeroes
     double zero = 0.0;
-    for ( int idim = ndim; idim < 3; idim++ )
-	for ( int i = 0; i < nvertices; ++i )
+    for ( size_t idim = ndim; idim < 3; idim++ )
+	for ( size_t i = 0; i < nvertices; ++i )
 	    d_geom_out << zero << endl;
     
     // for each cell type, dump the local vertex indices for each cell.
@@ -514,10 +514,10 @@ write_geom(const int                          part_num,
 	    d_geom_out << d_cell_names[type] << endl;
 	    d_geom_out << num_elem << endl;
 	    
-	    for ( int i = 0; i < num_elem; ++i )
+	    for ( size_t i = 0; i < num_elem; ++i )
 		d_geom_out << g_cell_indices[c[i]] << endl;
 	    
-	    for ( int i = 0; i < num_elem; ++i )
+	    for ( size_t i = 0; i < num_elem; ++i )
 	    {
 		Check(ipar.ncols(c[i]) == d_vrtx_cnt[type]);
 		for (int j = 0; j < d_vrtx_cnt[type]; j++)
@@ -559,7 +559,7 @@ write_vrtx_data(const int                          part_num,
 	vout << part_num << endl;
 	vout << "coordinates" << endl;
 
-	for ( int i = 0; i < nvertices; ++i )
+	for ( size_t i = 0; i < nvertices; ++i )
 	    vout << vrtx_data(vertices[i], nvd) << endl;
     }
 }
@@ -608,7 +608,7 @@ write_cell_data(const int                          part_num,
 		cellout << d_cell_names[type] << endl;
 
 		// print out data
-		for (int i = 0; i < num_elem; ++i)
+		for (size_t i = 0; i < num_elem; ++i)
 		    cellout << cell_data(c[i], ncd) << endl;
 	    }
 	} 

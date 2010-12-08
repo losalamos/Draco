@@ -59,7 +59,7 @@ class GandolfFile
      *     a const value because it will be set after accessing the
      *     the data file.
      */
-    int numMaterials;
+    size_t numMaterials;
 
     /*!
      * \brief A list of material IDs found in the data file.
@@ -96,7 +96,7 @@ class GandolfFile
     /*!
      * \brief Returns the IPCRESS data filename.
      */
-    const std::string& getDataFilename() const 
+    std::string const & getDataFilename() const 
     { 
 	return dataFilename;
     }
@@ -104,7 +104,7 @@ class GandolfFile
     /*!
      * \brief Returns the number of materials found in the data file.
      */
-    int getNumMaterials() const
+    size_t getNumMaterials() const
     {
 	return numMaterials;
     }
