@@ -34,10 +34,11 @@ GandolfFile::GandolfFile( const std::string& gandolfDataFilename )
     // This call to Gandolf validates the datafile and if
     // successful returns a list of material identifiers for which 
     // the materials that exist in the data file.
+    int nmat( numMaterials );
     int errorCode = 
         wrapper::wgmatids( dataFilename, matIDs, 
                            wrapper::maxMaterials,
-                           numMaterials ); 
+                           nmat ); 
 	    
     if ( errorCode != 0 )
         throw gmatidsException( errorCode );
@@ -54,7 +55,7 @@ bool GandolfFile::materialFound( int matid ) const
     // material id matches on in the list then return true.
     // If we reach the end of the list without a match return
     // false. 
-    for ( int i=0; i<numMaterials; ++i )
+    for ( size_t i=0; i<numMaterials; ++i )
         if ( matid == matIDs[i] ) return true;
     return false;
 	    

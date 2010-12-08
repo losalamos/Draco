@@ -467,8 +467,8 @@ write_geom(const int                          part_num,
     Insist(d_geom_out.is_open(),
 	   "Geometry file not open.  Must call open() before write_part().");
     
-    int ndim = pt_coor.ncols(0);
-    int nvertices = vertices.size();
+    size_t ndim = pt_coor.ncols(0);
+    size_t nvertices = vertices.size();
 
     // output part number and names
     d_geom_out << "part" << endl;
@@ -507,7 +507,7 @@ write_geom(const int                          part_num,
     for (int type = 0; type < d_num_cell_types; type++)
     {
 	const sf_int &c = cells_of_type[type];
-	const int num_elem = c.size();
+	const size_t num_elem = c.size();
 	
 	if (num_elem > 0)
 	{
@@ -519,7 +519,7 @@ write_geom(const int                          part_num,
 	    
 	    for ( size_t i = 0; i < num_elem; ++i )
 	    {
-		Check(ipar.ncols(c[i]) == d_vrtx_cnt[type]);
+		Check(static_cast<int>(ipar.ncols(c[i])) == d_vrtx_cnt[type]);
 		for (int j = 0; j < d_vrtx_cnt[type]; j++)
 		    d_geom_out << ens_vertex[ipar(c[i],j)];
 		d_geom_out << endl;
@@ -541,15 +541,15 @@ write_vrtx_data(const int                          part_num,
     if (vrtx_data.nrows() == 0)
         return;
 
-    int nvertices = vertices.size();
-    int ndata     = vrtx_data.ncols(0);
+    size_t nvertices = vertices.size();
+    size_t ndata     = vrtx_data.ncols(0);
 
     std::string err = "Vertex data files not open."
 	"  Must call open() before write_part().";
     Insist(d_vertex_out.size() == static_cast<size_t>(ndata), err.c_str());
     
     // loop over all vertex data fields and write out data for each field
-    for (int nvd = 0; nvd < ndata; nvd++)
+    for (size_t nvd = 0; nvd < ndata; nvd++)
     {
 	Ensight_Stream& vout = *d_vertex_out[nvd];
 
@@ -599,7 +599,7 @@ write_cell_data(const int                          part_num,
 	{
 	    const sf_int &c = cells_of_type[type];
 		
-	    int num_elem = c.size();
+	    size_t num_elem = c.size();
 
 	    // print out data if there are cells of this type
 	    if (num_elem > 0)
