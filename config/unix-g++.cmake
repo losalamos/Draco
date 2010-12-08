@@ -101,9 +101,9 @@ IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
-  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -finline-functions -fomit-frame-pointer")
+  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -finline-functions -fomit-frame-pointer" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 ENDIF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
 
