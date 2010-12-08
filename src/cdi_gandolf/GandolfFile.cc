@@ -34,11 +34,15 @@ GandolfFile::GandolfFile( const std::string& gandolfDataFilename )
     // This call to Gandolf validates the datafile and if
     // successful returns a list of material identifiers for which 
     // the materials that exist in the data file.
-    int nmat( numMaterials );
+
+    // The fortran doesn't understand what a size_t is.  Thus, we use nmat
+    // temporarily for the interface.
+    int nmat(0);
     int errorCode = 
         wrapper::wgmatids( dataFilename, matIDs, 
                            wrapper::maxMaterials,
-                           nmat ); 
+                           nmat );
+    numMaterials = nmat;
 	    
     if ( errorCode != 0 )
         throw gmatidsException( errorCode );
