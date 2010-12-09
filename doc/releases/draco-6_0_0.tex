@@ -1,0 +1,789 @@
+%%---------------------------------------------------------------------------%%
+%% draco-5_0_0.tex
+%% Thomas M. Evans
+%% $Id$
+%%---------------------------------------------------------------------------%%
+\documentclass[note]{ResearchNote}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tabularx}
+\usepackage{cite}
+\usepackage{c++}
+\usepackage{tmadd,tmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{url}
+
+%%---------------------------------------------------------------------------%%
+%% DEFINE SPECIFIC ENVIRONMENTS HERE
+%%---------------------------------------------------------------------------%%
+%\newcommand{\elfit}{\ensuremath{\operatorname{Im}(-1/\epsilon(\vq,\omega)}}
+%\msection{}-->section commands
+%\tradem{}  -->add TM subscript to entry
+%\ucatm{}   -->add trademark footnote about entry
+
+\newcommand{\draco}{Draco}
+\newcommand{\dracor}{\draco-6\_0\_0}
+\newcolumntype{L}{>{\ttfamily}X}
+
+\newcommand{\autoconf}{\textsf{Autoconf}}
+\newcommand{\automake}{\textsf{Automake}} 
+\newcommand{\CVS}{\textsf{CVS}}  
+\newcommand{\make}{\textsf{Make}}
+\newcommand{\gpp}{\textsf{g++}}
+
+\newcommand{\tableText}[1]{{\raggedright #1}}
+
+
+\definecolor{listingBG}{rgb}{0.95,0.95,0.95}
+
+\lstset{language=csh,
+  showstringspaces=false,
+  frame=shadowbox,
+  basicstyle=\footnotesize,
+  rulesepcolor=\color{black},
+  backgroundcolor=\color{listingBG}
+}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\toms{Distribution}
+%\toms{Joe Sixpak/XTM, MS B226}
+\refno{CCS--2:10--XX (U)}
+\subject{Release of \dracor}
+
+%-------NO CHANGES
+\divisionname{Computer and Computational Division}
+\groupname{CCS--2:Computational Physics \& Methods}
+\fromms{Kelly Thompson/CCS--2 D409\\
+  Jae Chang/CCS--2 D409}
+\phone{(505)665--8090}
+\originator{kgt}
+\typist{kgt}
+\date{12/10/2010}
+%-------NO CHANGES
+
+%-------OPTIONS
+%\reference{NPB Star Reimbursable Project}
+%\thru{P. D. Soran, XTM, MS B226}
+%\enc{list}      
+%\attachments{list}
+%\cy{list}
+%\encas
+%\attachmentas
+%\attachmentsas 
+%-------OPTIONS
+
+\revisionnum{1}
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+\distribution {
+
+  Baker, Randal,     CCS--2  MS D409\\ 
+  Budge, Kent,       CCS--2  MS D409\\
+  Chang, Jae,        CCS--2  MS D409\\
+  Dahl, Jon,         CCS--2  MS D409\\ 
+  Densmore, Jeffery, CCS--2  MS D409\\ 
+  Rockerfeller, Gabe CCS--2  MS D409\\
+  Thompson, Kelly,   CCS--2  MS D409\\ 
+  Turner, Scott,     CCS--2  MS D409\\ 
+  Urbatsch, Todd,    CCS--2  MS D409\\ 
+  Warsa, James,      CCS--2  MS D409\\ 
+  Wollaber, Allan,   CCS--2  MS D409\\
+  Lowrie, Robert,    CCS--2  MS D413\\ 
+  Buksas, Michael    CCS--7  MS B287\\
+  Hungerford, Aimee  XTD--6  MS T085\\  
+}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+
+\opening
+
+\begin{abstract}
+  
+  We have released \dracor.  This release marks significant changes to
+  \draco.  First and foremost, ten new components have been added to
+  \draco.  These components include \textsf{diagnostics},
+  \textsf{fit}, \textsf{fpe\_trap}, \textsf{linear}, \textsf{min},
+  \textsf{norms}, \textsf{ode}, \textsf{roots} \textsf{shared\_lib}
+  and \textsf{special\_functions}.  Two components,
+  \textsf{meshReaders\_Services} and \textsf{stdheaders}, have been
+  retired from \draco. The code base was reviewed updated to elminate
+  warnings issued by \gpp.  Additional changes have been made to the
+  \draco\ environment, organization, build system, and automatic
+  documentation system, including the introduction of a proto-type
+  build system based on CMake.
+\end{abstract}
+
+%%---------------------------------------------------------------------------%%
+
+\section{\draco\ Contributors}
+
+The following people are contributors to \draco:
+\begin{center}
+  \small
+  \begin{tabular}{ll}
+    Kelly Thompson    & \texttt{kellyt@lanl.gov} \\
+    Kent Budge        & \texttt{kgbudge@lanl.gov} \\
+    Mike Buksas       & \texttt{mwbuksas@lanl.gov} \\
+    Jim Warsa         & \texttt{warsa@lanl.gov} \\
+    Rob Lowrie        & \texttt{lowrie@lanl.gov} \\
+    Jae Chang         & \texttt{jhchang@lanl.gov} \\
+    Gabe Rockerfeller & \texttt{gaber@lanl.gov} \\
+    Allan Wollaber    & \texttt{wollaber@lanl.gov} \\
+    Jeff Densmore     & \texttt{jdd@lanl.gov} \\
+    Todd Urbatsch     & \texttt{tmonster@lanl.gov} \\
+    Tom Evans         &  \\
+    Seth R. Johnson   &  \\
+  \end{tabular}
+\end{center}
+
+%%---------------------------------------------------------------------------%%
+\newpage
+
+\section{\draco\ Component Packages}
+
+\dracor\ contains the following component packages:
+\begin{center}
+  \footnotesize
+  \begin{tabular}{lp{4.0in}}
+    \hline\hline 
+
+    RTT\_Format\_Reader & \tableText{\texttt{meshReaders}
+      implementation for RTT format meshes} \\
+    c4 & \tableText{communication library} \\
+    cdi & \tableText{Common Data Interface (CDI) component} \\
+    cdi\_analytic & \tableText{CDI analytic data component} \\
+    cdi\_gandolf & \tableText{CDI GANDOLF wrapper} \\
+    diagnostics  & \tableText{CPP macros for controlling runtime
+      verbosity and inline timing of function calls} \\
+    ds++         & \tableText{data structures library} \\
+    fit          & \tableText{least squares fitting routines} \\
+    fpe\_trap    & \tableText{catch floating point signals and throw
+      C++ exceptions} \\
+    lapack\_wrap & \tableText{wrapper to BLAS and LAPACK} \\
+    linear       & \tableText{direct sovers for small linear systems} \\
+    meshReaders  & \tableText{mesh reader interface} \\
+    mesh\_element & \tableText{defines fundamental mesh element types
+      used by meshReaders and RTT\_Format\_Reader} \\
+    min          & \tableText{locate function minimums} \\
+    norms        & \tableText{compute norms of vectors} \\
+    ode          & \tableText{Runge\_Kutta, etc.} \\
+    parser       & \tableText{generic input parser} \\
+    quadrature   & \tableText{quadrature component} \\
+    rng          & \tableText{random number generators and SPRNG wrappers} \\
+    roots        & \tableText{root finding algorithms} \\
+    shared\_lib  & \tableText{dynamic loading of shared libraries} \\
+    special\_functions & \tableText{math functions not provided by the
+      C++ standardard library} \\
+    timestep     & \tableText{a timestep controller component} \\
+    traits       & \tableText{traits used by other \draco\ components} \\
+    units        & \tableText{a physics units component} \\
+    viz          & \tableText{interfaces to visualization tools (EnSight)} \\
+    xm           & \tableText{glommable expression templates} \\  
+
+    \hline\hline 
+  \end{tabular}
+\end{center}
+
+\section{Changes to individual components}
+\label{sec:changes}
+The following table summarizes changes to \draco\ components since
+\draco-5\_0\_0. 
+%% \begin{center}
+%%   \begin{tabular}{lp{4.0in}}
+%%     \hline\hline 
+%%     stdheaders            & \tableText{retired from \draco} \\
+%%     meshReaders\_Services & \tableText{retired from \draco} \\
+%%     cdi\_eospac           & \tableText{not included as part of
+%%       \dracor\ because of EOSPAC/FORTRAN compiler issues; will be
+%%       re-integrated when EOSPAC 6.0 is released} \\
+%%     ds++                  & \tableText{added reference counted field
+%%       class (\texttt{RCF}) and a light-weight vector
+%%       (\texttt{Vector\_Lite})} \\  
+%%     Draco Build System & \tableText{autodoc generation enhanced; MPI
+%%       defaults on LINUX removed; added middleware vendor option for
+%%       clients of the build system; see \S~\ref{sec:dbs} for details} \\
+%%     tools & \tableText{added several new tools including
+%%       \texttt{check\_for\_tags.py}, \texttt{numdiff.py},
+%%       \texttt{update\_release\_tags.py}, and \texttt{profiler.py};
+%%       updated \texttt{launchtest} script to work for IBM and use a
+%%       cleaner implementation} \\
+%%     \hline\hline 
+%%   \end{tabular}
+%% \end{center}
+
+\subsection{c4}
+\label{changes:c4}
+\begin{itemize}
+\item Encapsulate platform specific header files to better support
+  non-Linux systems.
+\item Added some scatter and gather operations with multiple
+  convenience interfaces.
+\item Added routines to manage swapping of data between processors.
+\item Update routines to correctly treat the case where message size
+  is zero.  Prevent safe \texttt{\&v[0]} type operations so that
+  instrumentation of the code doesn't trip over itself.
+\item Replace the use of \texttt{rtt\_c4::finalize()} with
+  \texttt{rtt\_c4::abort()} when it appears in a catch block in the
+  unit tests. 
+\item Added a variable to serve as the source/destination of a null
+  process.
+\item Added function \texttt{Compare} for equivalence testing of
+  values on different processors.
+\item Added base class in \texttt{Send\_Receive} to support custom
+  data communicators.
+\item Added utilities to support creating data mapping operators.
+\item Removed \texttt{wait()} from \texttt{C4\_Req} destructor; this
+  was creating non-exception safe code in parallel execution modes.
+\item Added \textsf{MPI\_Probe} implementation as a generic
+  \texttt{blocked\_probe} function.
+\item Remove deprecated \texttt{C4::send()} and \texttt{C4::recv()}
+  from the old C4 namespace.
+\item \texttt{abort()} function added in \draco-5\_6\_0.
+\end{itemize}
+
+\subsection{cdi}
+\label{changes:cdi}
+\begin{itemize}
+\item Provide support for Opacity Distribution Functions
+  (ODF)~\cite{ccs2:08-52}. This capability supports the idea of
+  multiple opacity {\it bands} per group.  
+\item Provide functions that return Planckian and Rosseland integrals
+  for all groups in a group structure.
+\item Added a new full-spectrum integrator which just integrate the
+  Planckian over all groups in the group structure.
+\end{itemize}
+
+\subsection{cdi\_analytic}
+\label{changes:cdi-analytic}
+\begin{itemize}
+\item Provide support for Opacity Distribution Functions
+  (ODF)~\cite{ccs2:08-52}.  
+\item Provide support for frequency dependant polynomial models.
+\end{itemize}
+
+\subsection{cdi\_gandolf}
+\label{changes:cdi-gandolf}
+\begin{itemize}
+\item Provide support for Opacity Distribution Functions
+  (ODF)~\cite{ccs2:08-52,gandolf}.
+\end{itemize}
+
+\subsection{ds++}
+\label{chagnes:dsxx}
+\begin{itemize}
+\item Provide support for hiding/exposing symbols in shared object
+  libraries (\texttt{DLL\_SHARED} macro).  See
+  \texttt{ds++/config.h.in} for details.
+\item The Design-by-Contract macro \texttt{REMEMBER} is now defined
+  anytime \texttt{DBC != 0} .
+\item Provide a new header, \texttt{path.hh}, that encapsulates path
+  separation symbols along with a few other file system related
+  behaviors
+\item Provide a new class \textsf{Slice} that allows viewing a slice
+  of an arbitrary container
+\item Added a collection of ocmpiler specific macros.
+\item Provide endian conversion functions and support in serializatoin
+  operators
+\item Provide overflow protected division
+\item Provide function for searching for data in vectors
+\item Provide \textsf{Index\_Converter} which maps multiple dimension
+  indices to and from a single dimensional version.
+\item New classes \textsf{DBC\_Ptr}, \textsf{Safe\_Divide},
+  \textsf{Safe\_Ptr}, \textsf{Thin\_Ptr} added in \draco-5\_7\_0.
+\end{itemize}
+
+\subsection{fpe\_trap}
+\label{change:fpe-trap}
+\begin{itemize}
+\item New package in \draco-5\_9\_0.
+\item Remove dependency on \textsf{c4}.
+\end{itemize}
+
+\subsection{mesh\_element}
+\label{changes:mes-element}
+\begin{itemize}
+\item Added generic element identifier and support.
+\end{itemize}
+
+\subsection{meshReaders}
+\label{changes:meshReaders}
+\begin{itemize}
+\item Provide support for general Polygon type mesh element.
+\end{itemize}
+
+\subsection{meshReaders\_Services}
+\label{changes:meshReaders-Services}
+The stdheaders component has been retired from \draco.
+
+\subsection{stdheaders}
+\label{changes:stdheaders}
+The stdheaders component has been retired from \draco\ because all
+currently supported compiler provide sufficient support of the STL
+library.  Early versions of \draco\ were build with compilers that did
+not provide STL functions in the \texttt{std::} namespace and this
+package addressed those deficiencies.
+
+\subsection{parser}
+\label{changes:parser}
+\begin{itemize}
+\item New package for \draco-5\_8\_0.
+\item Added ability to parse \texttt{rtt\_mesh\_element::Geometry}
+  specification. 
+\item Added exception handling.
+\item Better parallel/serial integration.
+\item Integration with the \textsf{units} package.
+\end{itemize}
+
+\subsection{quadrature}
+\label{changes:quadrature}
+\begin{itemize}
+\item Refactored the \textsf{Transport\_Model} and
+  \textsf{Radiation\_Package} interface.
+\item All quadrature sets are now normalized so that their weights sum
+  to unity.
+\item Provided the triangular Chebyshev-Legendre quadrature set.
+\item Provided the 1D level-symmetric set in the
+  \textsf{SquareChebyshevLegendre}. 
+\item Extended \texttt{Discrete\_To\_Moment}
+  \texttt{Moment\_To\_Discrete} to support 3D.
+\item Replace the use of {\it angle} with {\it ordinate} everywhere
+  but \texttt{Angle\_Operator}.
+\item Add checks to prevent the use of 1-D quadrature for axisymmetric
+  geometry. 
+\item Added the ability to generate quadratures from a
+  \textsf{Token\_Stream}. 
+\item Provide ability to reflect 2D square quadratures.
+\item Provide \texttt{quadCreate} function that accepts a
+  \textsf{Token\_Stream} as an argument.  
+\item Provide two different methods for generating the
+  discrete-to-moment matrix (tradiational Sn and Morel's Galerkin
+  method).  Also provided three new mechanisms for generating
+  moment-to-discrete matrix (tranditional Sn, Morel's Galerkin and an
+  experimental SVD method).
+\item Added 1D-to-2D quadrature permutations.
+\item Added 1D Double Gauss quadrature.
+\item Added 1D Lobatto quadrature.
+\end{itemize}
+
+\subsection{rng}
+\label{changes:rng}
+\begin{itemize}
+\item Extracted, rewrote and implemented parts of the SPRNG library to
+  provide a more efficient inline random number stream.
+\end{itemize}
+
+\subsection{RTT\_Format\_Reader}
+\label{changes:RTT-Format-Reader}
+\begin{itemize}
+\item Added support for general Polygon type mesh element.
+\item Fixed a bug in the logic of the \texttt{redefineCells}
+  function. 
+\item Added triangle and quadratic line elements.
+\end{itemize}
+
+\subsection{special\_functions}
+\label{changes:special-functions}
+\begin{itemize}
+\item Eliminate code that will always overflow (factorial).
+\item Change the signature of KroneckerDelta so that it returns an
+  unsigned integer.
+\item Provide static integer power function.
+\item Provide spherical harmonics functions.
+\item Provide KronekerDelta and factorial functions.
+\end{itemize}
+
+\subsection{units}
+\label{changes:units}
+\begin{itemize}
+\item Added {\it cgsh} and {\it cgmu} unit systems.
+\item Added output unit system specification.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\section{Bug Fixes}
+Here is a list of known bug fixes:
+\begin{itemize}
+\item Fixed memory leak in \textsf{DBC\_Ptr} classes
+  (\textsf{Safe\_Ptr}) and updated testing.  Fixed an assignment error
+  in \textsf{Thin\_Ptr}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\section{Design}
+
+There are no inter/intra-component cyclic dependencies in \draco.  The
+levelized graph for \dracor\ components is shown in
+Fig.~\ref{fig:level}.
+\begin{figure}
+  \label{fig:level}
+  \centerline{
+    \includegraphics[height=5.5in]{level-6_0_0.ps}}
+  \caption{\dracor\ levelized component graph.  Dotted lines signify
+    that the dependency if only required for testing.}
+\end{figure}
+
+%------------------------------------------------------------------------------%
+
+\section{Code Statistics}
+
+Lines-of-Code (LOC) statistics for the last four \draco\ releases are
+are shown in Fig.~\ref{fig:stats}.  The large drop between
+\draco-4\_0\_0 and \dracor\ is due to the removal of the \textsf{mc}
+and \textsf{imc} packages. The aggregate LOC statistics for \dracor\ 
+are:
+\begin{center}
+  \begin{tabular}{|l|l|} \hline
+    Total component package source code & 8363 \\
+    Total unit test code & 12479 \\
+    Total DBC statements & 680 \\
+    Total comments & 20891 \\
+    \hline
+  \end{tabular}
+\end{center}
+\begin{figure}
+  \label{fig:stats}
+  \centerline{
+    \includegraphics[width=6in]{loc-5_0_0.eps}}
+  \caption{LOC statistics for \dracor\ component packages.}
+\end{figure}
+Table~\ref{tab:loc} shows LOC metrics for each \draco\ component in
+\dracor.  LOC metrics are stored in \draco\ in
+\texttt{draco/doc/code\_stats}.
+\begin{table}
+  \caption{
+    LOC metrics for component packages in \dracor.  DBC LOC refers to
+    Design-by-Contract$^{\copyright}$ statements. 
+  }
+  \label{tab:loc}
+  \begin{center}
+    \begin{tabular}{llll}\hline\hline
+      \multicolumn{1}{c}{Component} &
+      \multicolumn{1}{c}{Source LOC} &
+      \multicolumn{1}{c}{DBC LOC} &
+      \multicolumn{1}{c}{Test LOC} \\\hline
+      
+      c4        &       582     &       19      &       407     \\
+      cdi       &       371     &       60      &       772     \\
+      cdi\_analytic      &       516     &       120     &       493     \\
+      cdi\_gandolf       &       665     &       25      &       713     \\
+      ds++      &       1680    &       190     &       5769    \\
+      lapack\_wrap       &       77      &       37      &       116     \\
+      meshReaders       &       657     &       33      &       831     \\
+      meshReaders\_Services      &       265     &       9       & 269 \\
+      pcgWrap   &       224     &       9       &       79      \\
+      plot2D    &       227     &       20      &       75      \\
+      quadrature        &       560     &       48      &       64      \\
+      rng       &       115     &       15      &       158     \\
+      RTT\_Format\_Reader &       1265    &       38      &       1041    \\
+      stdheaders        &       4       &       0       &       0       \\
+      timestep  &       335     &       16      &       127     \\
+      traits    &       87      &       9       &       49      \\
+      units     &       215     &       8       &       1185    \\
+      viz       &       361     &       20      &       74      \\
+      xm        &       157     &       4       &       257     \\
+      \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+With the adoption of the \textsf{Bullseye} coverage analysis tool, we
+are better able to track unit-test coverage of \draco\ components.
+The goal is to achieve 100\% functional test coverage for each \draco\
+component.  Table~\ref{tab:coverage} gives functional and conditional
+point coverage for \dracor.
+\input{cov-5_0_0}
+
+%%---------------------------------------------------------------------------%%
+
+\section{\draco\ Build System}
+\label{sec:dbs}
+
+The traditional autoconf-based \draco\ Build System (DBS) has
+undergone some significant changes.  The most significant changes are
+support for new platforms and compiler sets, new vendor libraries and
+more automation.  The build system required the developer to provide
+fewer command line arguments and will choose reasonable defaults in
+most cases.  Ultimately, the developer still has the ability to avoid
+using any default value by specifying his or her own options on the
+configure line.  Specific changes to the build system are itemized
+here: 
+\begin{itemize}
+\item Separated the build and testing phases in the
+  \texttt{Makefiles}.  This change is needed becuase of limitations on
+  ASC hardware where we build on the front end but run the tests on
+  the worker nodes.
+\item Provided support for building a stubbed out version of
+  \textsf{cdi\_gandolf}.
+\item Changed the build system so that it tries to determine if either
+  \texttt{-lgfortran} or \texttt{-lg2c} are needed on the link lines.
+\item No longer store generated \texttt{aclocal.m4} files in \CVS.
+\item Support for STLPort cleaned up in \draco-5\_5\_0.
+\item Simplified autoconf-based build system to eliminate the
+  requirement for lengthy configure commands.  Most options are now
+  defaulted to reasonable values.
+\item Added support for Intel compilers (icc, icpc, ifort).
+\item Added support for RoadRunner's PPE cross compiler, ppu-g++.
+\item Added support for gcc-4+ including gfortran.
+\item Improved support for IBM xlc compiler and AIX.
+\item Improved support for PGI compilers (pgcc, pgCC, pgfort)
+\item Added support for linking FORTRAN main programs.
+\item Added support for new vendors including Silo, ParMetis, NDI and
+  SuperLU.
+\item Added unofficial support for Darwin (PPC and Intel) and MSVC on
+  Windows (note that not all packages can be compiled on these
+  architectures).
+\end{itemize}
+
+Additionally, a prototype \textsf{Scons} build system was implemented
+while porting Jayenne codes to RoadRunner.  While this build system
+remains mostly intact, it is not being adopted or maintained for this
+this release. A prototype \textsf{CMake} build system has been added
+recently and will be evaluated early in 2011 to determine if
+\draco\ development will move to the CMake-based system.  The
+CMake-based system required less scripting code to be supported by the
+\draco\ team, it has better dependency checking, better parallel build
+support, a mature testing system and suppport for dashboard
+reporting.  The current prototype reports results to
+\url{coder.lanl.gov/cdash}. 
+
+Comments on defaults
+
+Comments on new configure arguments
+
+all-warnings
+
+glibcxx
+
+others
+
+
+
+
+%%---------------------------------------------------------------------------%%
+
+\section{\draco\ Directory Structure}
+
+The current \draco\ directory structure is shown below:
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
+  xrightmargin=2.0in]
+draco/
+    src/
+        ds++/
+        c4/
+        ...
+    doc/
+        gettingStarted/
+        releases/
+        ...
+    tools/
+    autodoc/
+    config/
+    environment/
+        Modules/
+        bashrc/
+        bibfiles/
+        bibtex/
+        bin/
+        elisp/
+        latex/
+        python/
+        share/
+        templates/
+\end{lstlisting}
+Table~\ref{tab:envdir} describes the purpose of each of the
+\texttt{environment} directories in detail.  The rest of the
+\draco\ directory structure is self-explanitory.
+\begin{table}[!ht]
+  \caption{
+    Descriptions of the directories in \texttt{draco/environment}.
+    The \draco\ development environment is entirely encapsulated
+    within the \texttt{environment} directory.
+  }
+  \label{tab:envdir}
+  \begin{center}
+    \begin{tabular}{lp{3in}}\hline\hline
+      \multicolumn{1}{c}{Directory} & 
+      \multicolumn{1}{c}{Description} \\ \hline
+      
+      \texttt{Modules} & \tableText{initialization scripts for the
+        module command and module scripts that know how to load and
+        unload various modules for vendors, compilers, tools, etc.} \\
+      
+      \texttt{bashrc} & \tableText{A set of default bash setup scripts
+        taht can be sourced by \draco\ developers to quickly setup
+        their environment.} \\
+
+      \texttt{bibfiles} & \tableText{bibliography databases
+        (\texttt{.bib} files)} \\ 
+      
+      \texttt{bibtex} & \tableText{bibliography style files
+        (\texttt{.bst} files)} \\
+      
+      \texttt{elisp} & \tableText{the \draco\ GNU Emacs/XEmacs macro
+        definitions.} \\
+      
+      \texttt{latex} & \tableText{latex class and style files
+        (\texttt{.cls} and \texttt{.sty} files)} \\ 
+
+      \texttt{templates} & \tableText{code, build system, and
+        documentation templates.} \\
+
+      \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+The \draco\ Build System (DBS), encapsulated within
+\texttt{draco/config}, is separate from the \draco\ development
+environment sitting in \texttt{environment}.  This separation exists
+because \texttt{config} is required to build the code whereas
+\texttt{environment} is only required to develop the code.  Thus,
+clients who only wish to link \draco\ components do not require
+\texttt{environment}; they do need \texttt{config}.
+
+Recommended incorporation of the bashrc environment (assuming draco is
+checked out at \texttt{~/draco}).
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
+  xrightmargin=0.5in]
+#!/bin/bash
+# file: ~/.bashrc
+
+# basic setup including sourcing of /etc/bashrc goes first.
+
+# if interactive:
+if test -f ~/draco/environment/bashrc/.bashrc; then
+   source ~/draco/environment/bashrc/.bashrc
+fi
+
+# More setup goes here (possibly altering what is in the default
+# scripts). 
+\end{lstlisting}
+
+Recommended incorporation of the elisp environment:
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
+  xrightmargin=0.5in]
+%.emacs
+
+% custom settings go here
+
+;; Load the Draco modes.
+(setq draco-env-dirs (list
+		      "~/.emacs.d/draco/"
+		      "~/.emacs/"))
+(load-library "~/.emacs.d/draco/draco-setup")
+
+% more customization goes here
+\end{lstlisting}
+
+Sample use of the modules commands:
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
+  xrightmargin=0.5in]
+% module clear 
+
+% module avail
+--------------- ~/draco/environment/Modules/modulefiles ----------------
+cmake/2.8.1   doxygen/1.6.3 module-cvs    null          use.own
+cmake/2.8.2   doxygen/1.7.1 module-info   numdiff/5.2.1
+cmake/2.8.3   graphviz      modules       p7zip/9.04
+
+--------------- ~/draco/environment/Modules/ccs-Linux64 ----------------
+BLACS                    gcc/4.3.0                openmpi/1.3.3
+ParMetis/3.1             gcc/4.3.4                pcg/1.0
+ParMetis/3.1.1           gcc/4.4.4                pgi/10.4
+SCALAPACK                gcc/4.5.0                pgi/7.0-5
+SuperLU_DIST/2.3         grace                    pgi/9.0-3
+SuperLU_DIST/2.4         gsl                      python/2.5.1
+boost/1.43.0             hypre/1.8.2b             totalview/8.4.1-7
+bullseyecoverage/7.13.44 hypre/2.0.0              totalview/8.8.0-2
+dia/0.97                 intel/10.0.023           trilinos/10.4.0
+dot                      lapack/atlas-3.8.3       trilinos/9.0.2
+emacs/23.2               mpich/1.2.4              valgrind/3.5.0
+gandolf                  mpich/1.2.5
+gcc/4.1.1                ndi
+
+% module load modules cmake doxygen graphviz numdiff p7zip dia dot \
+          emacs gandolf gcc grace gsl openmpi python totalview \
+          valgrind
+% module list
+Currently Loaded Modulefiles:
+  1) modules             7) dia/0.97           13) gsl
+  2) cmake/2.8.3         8) dot                14) openmpi/1.3.3
+  3) doxygen/1.7.1       9) emacs/23.2         15) python/2.5.1
+  4) graphviz           10) gandolf            16) totalview/8.8.0-2
+  5) numdiff/5.2.1      11) gcc/4.5.0          17) valgrind/3.5.0
+  6) p7zip/9.04         12) grace
+
+% module switch gcc gcc/4.4.4
+
+% module unload grace
+
+# Vendor modules setup environment that helps the build system:
+% echo $MPI_INC_DIR
+MPI_INC_DIR=/ccs/codes/mpi/openmpi/Linux64/1.3.3/include
+
+% echo $MPI_LIB_DIR
+MPI_LIB_DIR=/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib
+\end{lstlisting}
+
+
+%%---------------------------------------------------------------------------%%
+\section{Draco Development Environment}
+The \draco\ development environment has been updated with this
+release.  This update inclues the introduction of \textsf{modules} to
+assist in switching between compilers and setting up developer's
+environment to use supported vendors (MPI, Trilinos, etc.).  
+
+\subsection{Elisp}
+
+The elisp module was updated to provide better support for GNU Emacs 22.4.
+
+\subsection{Bash}
+
+The bash scripts have been updated to automatically load the modules
+environment.  Updates for new CCS and HPC systems are also included.
+
+\subsection{\LaTeX}
+
+There are no significant changes to the provided \LaTeX\ environment.
+
+\subsection{Modules}
+
+The modules\footnote{See http://modules.sourceforge.net} environment
+is new for this release.  The recommended use is to source the
+modules/init files from your startup scripts.  Once incorporated into
+your shell environment you can use \texttt{module avail} to list
+available modules.  \texttt{module load} is used to activate a
+particular module's settings.
+
+%%---------------------------------------------------------------------------%%
+
+\nocite{rn98046}
+\nocite{xtm:9936}
+\nocite{draco-3_0_0}
+\nocite{draco-4_0_0}
+\bibliographystyle{rnote}
+\bibliography{../../environment/bibfiles/draco}
+ 
+\closing
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of draco-5_0_0.tex
+%%---------------------------------------------------------------------------%%
