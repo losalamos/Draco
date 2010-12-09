@@ -47,6 +47,7 @@ int run_test(int /*argc*/, char *argv[])
     {
         // Platform supported.
         f << "- fpe_trap: This platform is supported" << endl;
+        cout << "- fpe_trap: This platform is supported" << endl;
     }
     else
     {
@@ -81,15 +82,17 @@ int run_test(int /*argc*/, char *argv[])
         case 0:
             // The test_filter.py triggers on the keyword 'signal', so I will
             // use '5ignal' instead.
-            f << "- Case zero: this operation should not throw a 5ignal."
+            f << "- Case zero: this operation should not throw a SIGFPE."
               << " The result should be 2." << endl;
             result = 1.0 + zero + sqrt(-neg);
             f << "  result = " << result << endl;
             break;
         case 1:
             f << "- Trying a div_by_zero operation" << endl;
+            cout << "- Trying a div_by_zero operation" << endl;
             result = 1.0 / zero; // should fail here
-            f << "  result = " << result << endl;
+            cout << "  result = " << 1.0*result << endl;
+            f << "  result = " << 1.0*result << endl;
             break;
         case 2:
             f << "- Trying to evaluate sqrt(-1.0)" << endl;
@@ -141,9 +144,10 @@ int main(int argc, char *argv[])
         if ( rtt_fpe_trap::enable_fpe() )
         {
             // keyword 'signal' shows up as a failure when processed by
-            // test_filter.py 
+            // test_filter.py.  To avoid this, we do not print the err.what()
+            // message. 
             cout << "While running " << argv[0] << ", " 
-                 << "a 5ignal was successfully caught.\n\t"
+                 << "a SIGFPE was successfully caught.\n\t"
                 // << err.what()
                  << endl;
             return 0;

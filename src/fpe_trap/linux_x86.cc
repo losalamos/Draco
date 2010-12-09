@@ -38,12 +38,10 @@ namespace
 static void
 catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
 {
-//    using namespace std;
+    std::cout << "(fpe_trap/linux_x86.cc) A SIGFPE was detected!"
+              << std::endl;
     
     std::string mesg;
-
-//    cout << "In catch_sigfpe" << endl;
-    
     if (sig != SIGFPE)
     {
         mesg = "Floating point exception problem.";
@@ -111,6 +109,7 @@ bool enable_fpe()
     
     // ... if you want to catch "everything" :
     //(void)feenableexcept(FE_ALL_EXCEPT);
+    
     // Also available:
     // FE_INEXACT
     // FE_UNDERFLOW
