@@ -10,7 +10,6 @@
 # set( CTEST_INITIAL_CACHE "
 #VERBOSE:BOOL=ON
 #BUILD_TESTS:BOOL=ON
-#TSP_BOOST_VERSION:STRING=1.40.0
 
 #BUILDNAME:STRING=${build_name}
 #CMAKE_BUILD_TYPE:STRING=${build_type}
@@ -188,11 +187,10 @@ macro( parse_args )
     if( ${build_type} MATCHES Release OR
         ${build_type} MATCHES MinSizeRel )
       message( FATAL_ERROR "Cannot run coverage for \"Release\" mode builds." )
-    endif( ${build_type} MATCHES Release OR
-      ${build_type} MATCHES MinSizeRel )
+    endif()
     set( enable_coverage ON )
     set( build_name "${build_name}_Cov" )
-  endif( ${CTEST_SCRIPT_ARG} MATCHES Coverage )
+  endif()
   
   if( NOT quiet_mode )
     message("
@@ -201,7 +199,7 @@ build_type     = ${build_type}
 build_name     = ${build_name}
 enable_coverage= ${enable_coverage}
 ")
-  endif( NOT quiet_mode )
+  endif()
 
 endmacro( parse_args )
 
@@ -255,6 +253,15 @@ macro( find_tools )
   if( NOT EXISTS "${MAKECOMMAND}" )
     message( FATAL_ERROR "Cound not find make/nmake executable." )
   endif( NOT EXISTS "${MAKECOMMAND}" )
+
+  find_program( CTEST_MEMORYCHECK_COMMAND NAMES valgrind )
+  find_program( MEMORYCHECK_COMMAND NAMES valgrind )
+
+  set( MEMORYCHECK_COMMAND_OPTIONS "--leak-check=yes" CACHE STRING 
+  "Options for memorycheck tool (valgrind)." )
+# "--leak-check=yes --num-callers=8 --show-reachable=yes"
+# "--leak-check=full"
+
 
   if( NOT quiet_mode )
     message("
@@ -312,8 +319,7 @@ macro( setup_ctest_commands )
     if( ${build_type} MATCHES Debug )
       if( enable_coverage )
         set( CTEST_COMMAND
-          "${CTEST_COMMAND}"
-          "-D ${dashboard_type}Coverage -D ${dashboard_type}Submit" )
+          "${CTEST_COMMAND} -D ${dashboard_type}Coverage -D ${dashboard_type}Submit" )
         set( ENABLE_C_CODECOVERAGE ON )
         set( ENABLE_Fortran_CODECOVERAGE ON )
 #        set( CTEST_INITIAL_CACHE_EXTRAS "ENABLE_C_CODECOVERAGE:BOOL=ON" )

@@ -40,7 +40,9 @@ parse_args() # QUIET
 find_tools() # QUIET
 
 set( CTEST_CVS_CHECKOUT
-  "${CTEST_CVS_COMMAND} -d $ENV{USERNAME}@ccscs8.lanl.gov/ccs/codes/radtran/cvsroot co -P -d source draco" )
+  "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source draco" )
+#set( CTEST_CVS_CHECKOUT
+#  "${CTEST_CVS_COMMAND} -d $ENV{USERNAME}@ccscs8.lanl.gov/ccs/codes/radtran/cvsroot co -P -d source draco" )
 # under windows, consider: file:///z:/radiative/...
 
 # Set the CTEST_COMMAND
@@ -50,6 +52,36 @@ setup_ctest_commands() # QUIET
 # The values in this section are optional you can either
 # have them or leave them commented out
 ####################################################################
+
+# clear the binary directory and create an initial cache
+ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+
+# Test Coverage setup
+if( ENABLE_C_CODECOVERAGE )
+   find_program( COV01 cov01 )
+   get_filename_component( beyedir ${COV01} PATH )
+   set( CC ${beyedir}/gcc )
+   set( CXX ${beyedir}/g++ )
+   set( ENV{CC} ${beyedir}/gcc )
+   set( ENV{CXX} ${beyedir}/g++ )
+
+   # Set the coverage data file.
+   set( ENV{COVFILE} "${CTEST_BINARY_DIRECTORY}/CMake.cov" )
+   set( ENV{COVDIRCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+   set( ENV{COVFNCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+   set( ENV{COVCLASSCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+   set( ENV{COVSRCCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+
+   # turn off coverage for configure step
+   set( RES 1 )
+   execute_process(COMMAND ${COV01} -1 RESULT_VARIABLE RES)
+   if( RES )
+      message(FATAL_ERROR "could not run cov01 -1")
+   else()
+      message(STATUS "BullseyeCoverage turned on")
+   endif()
+  
+endif()
 
 # this is the initial cache to use for the binary tree, be careful to escape
 # any quotes inside of this string if you use it
@@ -69,6 +101,9 @@ MAKECOMMAND:FILEPATH=${MAKECOMMAND} -j8
 SITE:STRING=${sitename}
 SVNCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
 VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
+MEMORYCHECK_COMMAND:FILEPATH=${MEMORYCHECK_COMMAND}
+CC:FILEPATH=${CC}
+CXX:FILEPATH=${CXX}
 ")
 message("
 

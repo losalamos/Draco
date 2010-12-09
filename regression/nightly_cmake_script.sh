@@ -6,8 +6,6 @@
 #      build/   <-- Make is run in this location.
 
 unset http_proxy
-export work_dir=/home/regress/cmake_draco/release
-#export work_dir=/var/tmp/kgt/cmake/gcc/nightly/release
 
 # Run the ctest (regression) script.  This script will take the following build steps: 
 # 1. cvs update
@@ -19,11 +17,18 @@ export work_dir=/home/regress/cmake_draco/release
 # Options are:
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug
-ctest -VV -S $work_dir/source/regression/Draco_gcc.cmake,Nightly,Release
 
-# Debug build
-export work_dir=/home/regress/cmake_draco/debug
-#export work_dir=/var/tmp/kgt/cmake/gcc/nightly/debug
-ctest -VV -S $work_dir/source/regression/Draco_gcc.cmake,Nightly,Debug
+dashboard_type=Nightly
 
+export work_dir=/home/regress/cmake_draco/Nightly/Release
+ctest -VV -S ~/draco/regression/Draco_gcc.cmake,${dashboard_type},Release
 
+# # Debug build
+export work_dir=/home/regress/cmake_draco/Nightly/Debug
+ctest -VV -S ~/draco/regression/Draco_gcc.cmake,${dashboard_type},Debug
+
+# Coverage build
+module load bullseyecoverage
+export work_dir=/home/regress/cmake_draco/Nightly/Coverage
+ctest -VV -S ~/draco/regression/Draco_gcc.cmake,${dashboard_type},Debug,Coverage
+module unload bullseyecoverage
