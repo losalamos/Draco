@@ -84,7 +84,7 @@ AC_DEFUN([AC_CPP_ENV], [dnl
        AC_CHECK_PROG(CXX, icpc, icpc)
 
        if test `basename ${CXX}` = icpc ; then
-	   CC='icpc'
+	   CC='icc'
 	   AC_DRACO_INTEL_ICPC
        else
 	   AC_MSG_ERROR("Did not find Intel icpc compiler!")
