@@ -26,7 +26,7 @@
 
 namespace rtt_c4
 {
-
+   using namespace std;
 //---------------------------------------------------------------------------//
 /*!
  * Merge a set across all processors.
