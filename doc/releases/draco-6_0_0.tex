@@ -136,7 +136,7 @@ The following people are contributors to \draco:
 \begin{center}
   \small
   \begin{tabular}{ll}
-    Kelly Thompson    & \texttt{kellyt@lanl.gov} \\
+    Kelly Thompson    & \texttt{kgt@lanl.gov} \\
     Kent Budge        & \texttt{kgbudge@lanl.gov} \\
     Mike Buksas       & \texttt{mwbuksas@lanl.gov} \\
     Jim Warsa         & \texttt{warsa@lanl.gov} \\
@@ -229,6 +229,14 @@ The following table summarizes changes to \draco\ components since
 \subsection{c4}
 \label{changes:c4}
 \begin{itemize}
+\item Added \texttt{global\_containers.hh} which provides functions
+  for global manipulation of sets and maps.
+\item A new class \textsf{Processor\_Group} has been added. This class
+  is useful for managing different kinds of decompositions in a single
+  program. 
+\item A new class \textsf{Termination\_Detector} has been added. This
+  class is a general-purpose terminator for indeterministic parallel
+  algorithms. 
 \item Encapsulate platform specific header files to better support
   non-Linux systems.
 \item Added some scatter and gather operations with multiple
@@ -286,6 +294,16 @@ The following table summarizes changes to \draco\ components since
 \subsection{ds++}
 \label{chagnes:dsxx}
 \begin{itemize}
+\item Add class \textsf{Field\_Traits}. This class is useful in some
+  template code dealing with real fields.  The \texttt{to\_string}
+  function is a convenient converter from numeric types to
+  \texttt{std::string}.
+\item Add class \textsf{Homogeneous\_New}.
+\item Provide some low level functions for portability and easier
+  templatization.  See \texttt{ags.hh}, \texttt{cube.hh},
+  \texttt{dim.hh}, \texttt{isFininte.hh}, \texttt{pythag.hh},
+  \texttt{value.hh}, \texttt{sign.hh}, \texttt{square.hh},
+  \texttt{to\_string.hh} \texttt{conj.hh} and \texttt{dbc.hh}.
 \item Provide support for hiding/exposing symbols in shared object
   libraries (\texttt{DLL\_SHARED} macro).  See
   \texttt{ds++/config.h.in} for details.
@@ -310,6 +328,13 @@ The following table summarizes changes to \draco\ components since
 \subsection{fpe\_trap}
 \label{change:fpe-trap}
 \begin{itemize}
+\item The functionality of this package was inadvertantly disabled on
+  Linux64 due to an autoconf script defect.  The package has been
+  reactivated.
+\item On Darwin, it appears that the SIGFPE is caught, but the
+  operating system still aborts the process and pops up a GUI
+  information box to this effect.  There is no clear path forward to
+  fix this problem.
 \item New package in \draco-5\_9\_0.
 \item Remove dependency on \textsf{c4}.
 \end{itemize}
@@ -341,6 +366,8 @@ package addressed those deficiencies.
 \subsection{parser}
 \label{changes:parser}
 \begin{itemize}
+\item Add \textsf{Abstract\_Class\_Parser}, \textsf{Class\_Parser}
+  \textsf{Constant\_Expression} and \textsf{Expression} classes.
 \item New package for \draco-5\_8\_0.
 \item Added ability to parse \texttt{rtt\_mesh\_element::Geometry}
   specification. 
@@ -383,8 +410,14 @@ package addressed those deficiencies.
 \subsection{rng}
 \label{changes:rng}
 \begin{itemize}
+\item Added some convenient pseudo-random number generators:
+  \textsf{Halton\_Sequence}, \textsf{Halton\_Subrandom\_Generator},
+  \textsf{Sobol\_Sequency} and \textsf{LC\_Subrandom\_Generator}.
 \item Extracted, rewrote and implemented parts of the SPRNG library to
   provide a more efficient inline random number stream.
+\item Extended unit tests to provide better function point coverage.
+\item Commented out unused functions and function arguments as
+  identified by g++.
 \end{itemize}
 
 \subsection{RTT\_Format\_Reader}
@@ -405,6 +438,9 @@ package addressed those deficiencies.
 \item Provide static integer power function.
 \item Provide spherical harmonics functions.
 \item Provide KronekerDelta and factorial functions.
+\item Provide x-to-the-power functions.
+\item Added more Fermi-Dirac functions, including: F1, F12, F12inv,
+  F2, F2inv, F3, F32, F4, FM12, F\_eta, and F\_eta\_inv.
 \end{itemize}
 
 \subsection{units}
@@ -414,6 +450,16 @@ package addressed those deficiencies.
 \item Added output unit system specification.
 \end{itemize}
 
+\subsection{viz}
+\label{changes:units}
+\begin{itemize}
+\item Added unit tests to bring the function point code coverage above
+  80\%.
+\item Update code base to make correct use of signed vs. unsigned
+  integer types.
+\item Wrap OS specific command (e.g.: \texttt{mkdir} or \texttt{rm})
+  as CPP macros defined in \texttt{config.h}.
+\end{itemize}
 %------------------------------------------------------------------------------%
 
 \section{Bug Fixes}
@@ -422,6 +468,8 @@ Here is a list of known bug fixes:
 \item Fixed memory leak in \textsf{DBC\_Ptr} classes
   (\textsf{Safe\_Ptr}) and updated testing.  Fixed an assignment error
   in \textsf{Thin\_Ptr}.
+\item Fixed a bug in the anisotropic moment-to-discrete computation
+  for starting directions (\texttt{quadrature/QuadServices.cc}).
 \end{itemize}
 
 %------------------------------------------------------------------------------%
@@ -430,7 +478,10 @@ Here is a list of known bug fixes:
 
 There are no inter/intra-component cyclic dependencies in \draco.  The
 levelized graph for \dracor\ components is shown in
-Fig.~\ref{fig:level}.
+Fig.~\ref{fig:level}.  The diagram includes the 10 new packages.  It
+should be noted that changes to the \textsf{rng} component require it
+to link against the \textsf{GSL}\footnote{GNU Scientific Library}.
+This is a new dependency.
 \begin{figure}
   \label{fig:level}
   \centerline{
@@ -528,7 +579,11 @@ here:
 \item Separated the build and testing phases in the
   \texttt{Makefiles}.  This change is needed becuase of limitations on
   ASC hardware where we build on the front end but run the tests on
-  the worker nodes.
+  the worker nodes.  \texttt{make} alone will build the libraries.
+  \texttt{make all} will build all libraries and unit tests, but not
+  run them.   \texttt{make check} will compile all libraries and unit
+  tests and run all unit tests.  \texttt{make run} will run the tests
+  without trying to build anything.
 \item Provided support for building a stubbed out version of
   \textsf{cdi\_gandolf}.
 \item Changed the build system so that it tries to determine if either
@@ -549,6 +604,15 @@ here:
 \item Added unofficial support for Darwin (PPC and Intel) and MSVC on
   Windows (note that not all packages can be compiled on these
   architectures).
+\item Many \texttt{config.h.in} files were modified to support
+  configuration with either \textsf{autoconf} or \textsf{CMake}. A new
+  define for \texttt{AUTOCONF} is found in both \texttt{configure.ac}
+  files and in \texttt{config.h.in} to keep the 2 build systems
+  working simultaneously.
+\item Corrected a glitch in the config scripts that assumed that
+  \texttt{CXX} would be the name of a comiler without the full path
+  prepended.  On the HPC hardware or when using \draco\ modules, this
+  variable always uses the full path to the compiler.
 \end{itemize}
 
 Additionally, a prototype \textsf{Scons} build system was implemented
@@ -563,18 +627,35 @@ support, a mature testing system and suppport for dashboard
 reporting.  The current prototype reports results to
 \url{coder.lanl.gov/cdash}. 
 
-Comments on defaults
+\begin{center}
+  \footnotesize
+  \begin{tabular}{lp{4.0in}}
+\texttt{--enable-all-warnings} & 
+     \tableText{For g++, this option turns on -Wall and -Wextra.
+       \draco\ was updated to build cleanly with theses flags, but
+       they are not the default yet.} \\ 
+\texttt{--enalbe-glibcxx-debug} &
+     \tableText{For g++, this option uses the debug GLIBCXX
+       libraries.  This option provides bounds checking for STL
+       containers and more.  It addes the following defines to
+       \texttt{CXXFLAGS}: \texttt{-D\_GLIBCXX\_DEBUG
+         -D\_GLIBCXX\_DEBUG\_PEDANTIC}. } \\
+  \end{tabular}
+\end{center}
 
-Comments on new configure arguments
-
-all-warnings
-
-glibcxx
-
-others
-
-
-
+It is no longer required to use configure options like
+\texttt{--with-mpi-inc --with-mpi-lib}.  The build system will set
+these values automatically if your environment is set correctly. (It
+will be if you use the environment/Modules!)  That is, you will need
+to set \texttt{MPI\_INC\_DIR} and \texttt{MPI\_LIB\_DIR} in your
+environment before running configure.  If MPI is not found in your
+environment, the build system will automatically default to teh
+\texttt{--with-c4=scalar} option.  This trend will hold true for other
+vendor libraries as well (GSL, Trilinos, LAPACK, etc.).  If a vendor
+library is not found, then dependent \draco\ components will be
+omitted.  For example, if GSL is not found by the build system then
+\textsf{quadrature}, \textsf{rng} and \textsf{special\_functions} will
+not be built.
 
 %%---------------------------------------------------------------------------%%
 
@@ -771,6 +852,22 @@ modules/init files from your startup scripts.  Once incorporated into
 your shell environment you can use \texttt{module avail} to list
 available modules.  \texttt{module load} is used to activate a
 particular module's settings.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Quick Start Instructions}
+
+Prerequisits: You must be in the \textsf{radtran} and \textsf{draco} Unix file
+sharing groups.
+
+\begin{verbatim}
+% export CVSROOT=/ccs/codes/radtran/cvsroot
+% cvs co -P draco
+% ./draco_config
+% cd $build_dir
+% ~/draco/configure --prefix=<dir>
+% make check
+\end{verbatim}
 
 %%---------------------------------------------------------------------------%%
 
