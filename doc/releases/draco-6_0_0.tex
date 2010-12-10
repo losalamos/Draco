@@ -57,7 +57,7 @@
 
 \toms{Distribution}
 %\toms{Joe Sixpak/XTM, MS B226}
-\refno{CCS--2:10--XX (U)}
+\refno{CCS--2:10--50 (U)}
 \subject{Release of \dracor}
 
 %-------NO CHANGES
@@ -120,11 +120,11 @@
   \draco.  First and foremost, ten new components have been added to
   \draco.  These components include \textsf{diagnostics},
   \textsf{fit}, \textsf{fpe\_trap}, \textsf{linear}, \textsf{min},
-  \textsf{norms}, \textsf{ode}, \textsf{roots} \textsf{shared\_lib}
+  \textsf{norms}, \textsf{ode}, \textsf{roots}, \textsf{shared\_lib}
   and \textsf{special\_functions}.  Two components,
   \textsf{meshReaders\_Services} and \textsf{stdheaders}, have been
-  retired from \draco. The code base was reviewed updated to elminate
-  warnings issued by \gpp.  Additional changes have been made to the
+  retired from \draco. The code base was updated to elminate warnings
+  issued by \gpp.  Additional changes have been made to the
   \draco\ environment, organization, build system, and automatic
   documentation system, including the introduction of a proto-type
   build system based on CMake.
@@ -164,8 +164,7 @@ The following people are contributors to \draco:
 \begin{center}
   \footnotesize
   \begin{tabular}{lp{4.0in}}
-    \hline\hline 
-
+    \hline\hline
     \textsf{RTT\_Format\_Reader} & \tableText{\textsf{meshReaders}
       implementation for RTT format meshes} \\
     \textsf{c4} & \tableText{communication library for message passing interface (MPI)} \\
@@ -199,7 +198,7 @@ The following people are contributors to \draco:
     \textsf{traits}       & \tableText{traits used by other \draco\ components} \\
     \textsf{units}        & \tableText{a physics units component} \\
     \textsf{viz}          & \tableText{interfaces to visualization tools (EnSight)} \\
-    \textsf{xm}           & \tableText{glommable expression templates} \\  
+    \textsf{xm}           & \tableText{glommable expression templates~\cite{fu97}} \\   
     \hline\hline 
   \end{tabular}
 \end{center}
@@ -316,14 +315,14 @@ The following table summarizes changes to \draco\ components since
   anytime \texttt{DBC != 0} .
 \item Provide a new header, \texttt{path.hh}, that encapsulates path
   separation symbols along with a few other file system related
-  behaviors
+  behaviors.
 \item Provide a new class \textsf{Slice} that allows viewing a slice
-  of an arbitrary container
+  of an arbitrary container.
 \item Added a collection of ocmpiler specific macros.
 \item Provide endian conversion functions and support in serializatoin
-  operators
-\item Provide overflow protected division
-\item Provide function for searching for data in vectors
+  operators.
+\item Provide overflow protected division.
+\item Provide function for searching for data in vectors.
 \item Provide \textsf{Index\_Converter} which maps multiple dimension
   indices to and from a single dimensional version.
 \item New classes \textsf{DBC\_Ptr}, \textsf{Safe\_Divide},
@@ -364,7 +363,7 @@ The stdheaders component has been retired from \draco.
 \label{changes:stdheaders}
 The stdheaders component has been retired from \draco\ because all
 currently supported compiler provide sufficient support of the STL
-library.  Early versions of \draco\ were build with compilers that did
+library.  Early versions of \draco\ were built with compilers that did
 not provide STL functions in the \texttt{std::} namespace and this
 package addressed those deficiencies.
 
@@ -391,7 +390,7 @@ package addressed those deficiencies.
 \item Provided the triangular Chebyshev-Legendre quadrature set.
 \item Provided the 1D level-symmetric set in the
   \textsf{SquareChebyshevLegendre}. 
-\item Extended \texttt{Discrete\_To\_Moment}
+\item Extended \texttt{Discrete\_To\_Moment} and 
   \texttt{Moment\_To\_Discrete} to support 3D.
 \item Replace the use of {\it angle} with {\it ordinate} everywhere
   but \texttt{Angle\_Operator}.
@@ -480,7 +479,7 @@ Here is a list of known defects:
   (\textsf{Safe\_Ptr}) and updated testing.  Fixed an assignment error
   in \textsf{Thin\_Ptr}.
 \item Fixed a bug in the anisotropic moment-to-discrete computation
-  for starting directions (\texttt{quadrature/QuadServices.cc}).
+  for starting directions (\url{quadrature/QuadServices.cc}).
 \end{itemize}
 
 %------------------------------------------------------------------------------%
@@ -649,7 +648,7 @@ here:
 \item Improved support for PGI compilers (pgcc, pgCC, pgfort)
 \item Added support for linking FORTRAN main programs.
 \item Added support for new vendors including Silo, ParMetis, NDI and
-  SuperLU.
+  SuperLU\_DIST.
 \item Added unofficial support for Darwin (PPC and Intel) and MSVC on
   Windows (note that not all packages can be compiled on these
   architectures).
@@ -667,18 +666,23 @@ here:
 Additionally, a prototype \textsf{Scons} build system was implemented
 while porting Jayenne codes to RoadRunner.  While this build system
 remains mostly intact, it is not being adopted or maintained for this
-this release. A prototype \textsf{CMake} build system has been added
+release. A prototype \textsf{CMake} build system has been added
 recently and will be evaluated early in 2011 to determine if
 \draco\ development will move to the CMake-based system.  The
 CMake-based system required less scripting code to be supported by the
 \draco\ team, it has better dependency checking, better parallel build
-support, a mature testing system and suppport for dashboard
-reporting.  The current prototype reports results to
-\url{coder.lanl.gov/cdash}. 
+support, a mature testing system and suppport for dashboard reporting.
+The current prototype reports results to \url{coder.lanl.gov/cdash}.
 
+Two new top-level configure options have been added to the build
+system.  The first turns up the warning level for \gpp\ and the second
+provide additional checks (similar to STLPort) at run time.  The new
+options are detailed below:
+%
 \begin{center}
   \footnotesize
   \begin{tabular}{lp{4.0in}}
+    \hline\hline
 \texttt{--enable-all-warnings} & 
      \tableText{For g++, this option turns on -Wall and -Wextra.
        \draco\ was updated to build cleanly with theses flags, but
@@ -689,6 +693,7 @@ reporting.  The current prototype reports results to
        containers and more.  It addes the following defines to
        \texttt{CXXFLAGS}: \texttt{-D\_GLIBCXX\_DEBUG
          -D\_GLIBCXX\_DEBUG\_PEDANTIC}. } \\
+    \hline\hline
   \end{tabular}
 \end{center}
 
@@ -698,7 +703,7 @@ these values automatically if your environment is set correctly. (It
 will be if you use the environment/Modules!)  That is, you will need
 to set \texttt{MPI\_INC\_DIR} and \texttt{MPI\_LIB\_DIR} in your
 environment before running configure.  If MPI is not found in your
-environment, the build system will automatically default to teh
+environment, the build system will automatically default to the
 \texttt{--with-c4=scalar} option.  This trend will hold true for other
 vendor libraries as well (GSL, Trilinos, LAPACK, etc.).  If a vendor
 library is not found, then dependent \draco\ components will be
@@ -788,6 +793,7 @@ because \texttt{config} is required to build the code whereas
 clients who only wish to link \draco\ components do not require
 \texttt{environment}; they do need \texttt{config}.
 
+\newpage
 Recommended incorporation of the bashrc environment (assuming draco is
 checked out at \texttt{~/draco}).
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
@@ -822,7 +828,8 @@ Recommended incorporation of the elisp environment:
 % more customization goes here
 \end{lstlisting}
 
-Sample use of the modules commands:
+\newpage
+Sample use of the \texttt{module} commands:
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
   xrightmargin=0.5in]
 % module clear 
