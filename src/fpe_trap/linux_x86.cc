@@ -28,13 +28,9 @@
 #include <signal.h>
 #include <fenv.h>
 
-// Local functions
-
-namespace
-{
-
 /* Signal handler for floating point exceptions. */
 
+extern "C" {
 static void
 catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
 {
@@ -83,7 +79,7 @@ catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
     Insist(0, mesg);
 }
 
-} // end of namespace
+} // end of extern "C"
 
 namespace rtt_fpe_trap
 {
