@@ -63,7 +63,7 @@ void powell(RandomContainer &p,
 
     fret = func(p);
 
-    copy(p.begin(), p.end(), pt.begin());
+    std::copy(p.begin(), p.end(), pt.begin());
 
     double fptt;
     for (iter=0;;++iter)

@@ -149,7 +149,7 @@ double brent(double const ax,
     }
     throw std::range_error("Too many iterations in brent");
     // xmin = x;
-    return fx;
+    // return fx;
 }
 
 } // end namespace rtt_min
