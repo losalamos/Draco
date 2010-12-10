@@ -25,7 +25,7 @@ using std::string;
  */
 const string release()
 {
-    string pkg_release = "timestep(draco-5_21_0)";
+    string pkg_release = "timestep(draco-6_0_0)";
     return pkg_release;
 }
 

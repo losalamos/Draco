@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the xm package
-\version draco-5_21_0
+\version draco-6_0_0
 \author Randy Roberts and Shawn Pautz
 
 xm is a glommable expression templates engine.

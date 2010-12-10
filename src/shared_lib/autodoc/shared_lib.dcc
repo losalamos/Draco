@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the shared_lib package
-\version draco-5_21_0
+\version draco-6_0_0
 \author Rob Lowrie
 
 The shared_lib component provides classes that manage the dynamic

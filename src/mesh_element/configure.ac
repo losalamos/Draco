@@ -89,7 +89,7 @@ dnl Finish Draco setup:
 dnl ----------------------------------------
 
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-5_21_0)
+AC_DRACO_AUTODOC(draco-6_0_0)
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])

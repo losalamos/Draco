@@ -11,7 +11,7 @@
 <!---------------------------------------------------------------------------->
 
 \mainpage Overview of the parser package
-\version draco-5_21_0
+\version draco-6_0_0
 \author Kelly Thompson, Kent Budge
 
 This package provides ...

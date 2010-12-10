@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page Overview of the fpe_trap package
-\version draco-5_21_0
+\version draco-6_0_0
 \author Robert B. Lowrie
 
 This package provides a run-time functionality for trapping
