@@ -92,18 +92,20 @@
 
   Baker, Randal,     CCS--2  MS D409\\ 
   Budge, Kent,       CCS--2  MS D409\\
+  Buksas, Michael    CCS--7  MS B287\\
   Chang, Jae,        CCS--2  MS D409\\
   Dahl, Jon,         CCS--2  MS D409\\ 
   Densmore, Jeffery, CCS--2  MS D409\\ 
+  Fichtl, Erin,      CCS--2  MS D409\\
+  Hungerford, Aimee, XTD--6  MS T085\\  
+  Lowrie, Robert,    CCS--2  MS D413\\ 
   Rockerfeller, Gabe CCS--2  MS D409\\
+  Rosa, Massimiliano, CCS--2  MS D409\\
   Thompson, Kelly,   CCS--2  MS D409\\ 
   Turner, Scott,     CCS--2  MS D409\\ 
   Urbatsch, Todd,    CCS--2  MS D409\\ 
   Warsa, James,      CCS--2  MS D409\\ 
   Wollaber, Allan,   CCS--2  MS D409\\
-  Lowrie, Robert,    CCS--2  MS D413\\ 
-  Buksas, Michael    CCS--7  MS B287\\
-  Hungerford, Aimee  XTD--6  MS T085\\  
 }
 
 %%---------------------------------------------------------------------------%%
@@ -136,18 +138,20 @@ The following people are contributors to \draco:
 \begin{center}
   \small
   \begin{tabular}{ll}
+    Allan Wollaber    & \texttt{wollaber@lanl.gov} \\
+    Gabe Rockerfeller & \texttt{gaber@lanl.gov} \\
+    Jae Chang         & \texttt{jhchang@lanl.gov} \\
+    Jeff Densmore     & \texttt{jdd@lanl.gov} \\
+    Jim Warsa         & \texttt{warsa@lanl.gov} \\
     Kelly Thompson    & \texttt{kgt@lanl.gov} \\
     Kent Budge        & \texttt{kgbudge@lanl.gov} \\
     Mike Buksas       & \texttt{mwbuksas@lanl.gov} \\
-    Jim Warsa         & \texttt{warsa@lanl.gov} \\
     Rob Lowrie        & \texttt{lowrie@lanl.gov} \\
-    Jae Chang         & \texttt{jhchang@lanl.gov} \\
-    Gabe Rockerfeller & \texttt{gaber@lanl.gov} \\
-    Allan Wollaber    & \texttt{wollaber@lanl.gov} \\
-    Jeff Densmore     & \texttt{jdd@lanl.gov} \\
+    Ryan McClarren    &  \\
+    Seth R. Johnson   &  \\
+    Tim Kelley        & \texttt{tkellyt@lanl.gov} \\
     Todd Urbatsch     & \texttt{tmonster@lanl.gov} \\
     Tom Evans         &  \\
-    Seth R. Johnson   &  \\
   \end{tabular}
 \end{center}
 
@@ -162,39 +166,40 @@ The following people are contributors to \draco:
   \begin{tabular}{lp{4.0in}}
     \hline\hline 
 
-    RTT\_Format\_Reader & \tableText{\texttt{meshReaders}
+    \textsf{RTT\_Format\_Reader} & \tableText{\textsf{meshReaders}
       implementation for RTT format meshes} \\
-    c4 & \tableText{communication library} \\
-    cdi & \tableText{Common Data Interface (CDI) component} \\
-    cdi\_analytic & \tableText{CDI analytic data component} \\
-    cdi\_gandolf & \tableText{CDI GANDOLF wrapper} \\
-    diagnostics  & \tableText{CPP macros for controlling runtime
+    \textsf{c4} & \tableText{communication library for message passing interface (MPI)} \\
+    \textsf{cdi} & \tableText{Common Data Interface (CDI) component} \\
+    \textsf{cdi\_analytic} & \tableText{CDI analytic data component} \\
+    \textsf{cdi\_gandolf} & \tableText{CDI GANDOLF wrapper for loading
+    opacities from IPCRESS files} \\
+    \textsf{diagnostics}  & \tableText{CPP macros for controlling runtime
       verbosity and inline timing of function calls} \\
-    ds++         & \tableText{data structures library} \\
-    fit          & \tableText{least squares fitting routines} \\
-    fpe\_trap    & \tableText{catch floating point signals and throw
+    \textsf{ds++}         & \tableText{data structures library, DbC,
+      low level functions, etc.} \\
+    \textsf{fit}          & \tableText{least squares fitting routines} \\
+    \textsf{fpe\_trap}    & \tableText{catch floating point signals and throw
       C++ exceptions} \\
-    lapack\_wrap & \tableText{wrapper to BLAS and LAPACK} \\
-    linear       & \tableText{direct sovers for small linear systems} \\
-    meshReaders  & \tableText{mesh reader interface} \\
-    mesh\_element & \tableText{defines fundamental mesh element types
+    \textsf{lapack\_wrap} & \tableText{C++ wrapper to BLAS and LAPACK} \\
+    \textsf{linear}       & \tableText{direct solvers for small linear systems} \\
+    \textsf{meshReaders}  & \tableText{mesh reader interface} \\
+    \textsf{mesh\_element} & \tableText{defines fundamental mesh element types
       used by meshReaders and RTT\_Format\_Reader} \\
-    min          & \tableText{locate function minimums} \\
-    norms        & \tableText{compute norms of vectors} \\
-    ode          & \tableText{Runge\_Kutta, etc.} \\
-    parser       & \tableText{generic input parser} \\
-    quadrature   & \tableText{quadrature component} \\
-    rng          & \tableText{random number generators and SPRNG wrappers} \\
-    roots        & \tableText{root finding algorithms} \\
-    shared\_lib  & \tableText{dynamic loading of shared libraries} \\
-    special\_functions & \tableText{math functions not provided by the
+    \textsf{min}          & \tableText{locate function minimums} \\
+    \textsf{norms}        & \tableText{compute norms of vectors} \\
+    \textsf{ode}          & \tableText{Runge\_Kutta, etc.} \\
+    \textsf{parser}       & \tableText{generic input parser} \\
+    \textsf{quadrature}   & \tableText{quadrature component} \\
+    \textsf{rng}          & \tableText{random number generators and SPRNG~\cite{ce97} wrappers} \\
+    \textsf{roots}        & \tableText{root finding algorithms} \\
+    \textsf{shared\_lib}  & \tableText{dynamic loading of shared libraries} \\
+    \textsf{special\_functions} & \tableText{math functions not provided by the
       C++ standardard library} \\
-    timestep     & \tableText{a timestep controller component} \\
-    traits       & \tableText{traits used by other \draco\ components} \\
-    units        & \tableText{a physics units component} \\
-    viz          & \tableText{interfaces to visualization tools (EnSight)} \\
-    xm           & \tableText{glommable expression templates} \\  
-
+    \textsf{timestep}     & \tableText{a timestep controller component} \\
+    \textsf{traits}       & \tableText{traits used by other \draco\ components} \\
+    \textsf{units}        & \tableText{a physics units component} \\
+    \textsf{viz}          & \tableText{interfaces to visualization tools (EnSight)} \\
+    \textsf{xm}           & \tableText{glommable expression templates} \\  
     \hline\hline 
   \end{tabular}
 \end{center}
@@ -462,8 +467,14 @@ package addressed those deficiencies.
 \end{itemize}
 %------------------------------------------------------------------------------%
 
-\section{Bug Fixes}
-Here is a list of known bug fixes:
+\section{Defects}
+Here is a list of known defects:
+\begin{itemize}
+\item The \texttt{autodoc} target is currently broken for the
+  autoconf-based build.
+\end{itemize}
+
+\noindent Here is a list of known bug fixes:
 \begin{itemize}
 \item Fixed memory leak in \textsf{DBC\_Ptr} classes
   (\textsf{Safe\_Ptr}) and updated testing.  Fixed an assignment error
@@ -494,24 +505,47 @@ This is a new dependency.
 
 \section{Code Statistics}
 
-Lines-of-Code (LOC) statistics for the last four \draco\ releases are
-are shown in Fig.~\ref{fig:stats}.  The large drop between
-\draco-4\_0\_0 and \dracor\ is due to the removal of the \textsf{mc}
-and \textsf{imc} packages. The aggregate LOC statistics for \dracor\ 
-are:
+
+%% tools/count_loc.sh
+
+%% Counting lines of source code --
+%% Directory:  /var/tmp/kgt/draco600/draco600
+%% Date     :  Thu Dec 9 17:55:14 MST 2010
+
+%%                  Total C++ source: 39210
+%%    C++ source in test directories: 22161
+%%       C++ contract specifications: 1443
+%%                      C++ comments: 43076
+%%              Total Fortran source: 0
+%%                  Fortran comments: 0
+%%               LaTeX Documentation: 14758
+%%                       HTML source: 0
+%%                         Text docs: 5811
+%%        Build system script source: 12126
+%%    Executable shell script source: 3352
+%%            Executable Perl source: 1867
+%%                     Python source: 4172
+%%                     Expect source: 0
+%%                      Elisp source: 6583
+
+
+Lines-of-Code (LOC) statistics for all \draco\ releases are are shown
+in Fig.~\ref{fig:stats}.  The large drop between \draco-4\_0\_0 and
+\draco-5\_0\_0 is due to the removal of the \textsf{mc} and
+\textsf{imc} packages. The aggregate LOC statistics for \dracor\ are:
 \begin{center}
   \begin{tabular}{|l|l|} \hline
-    Total component package source code & 8363 \\
-    Total unit test code & 12479 \\
-    Total DBC statements & 680 \\
-    Total comments & 20891 \\
+    Total component package source code & 39210 \\
+    Total unit test code & 22161 \\
+    Total DBC statements & 1443 \\
+    Total comments & 43076 \\
     \hline
   \end{tabular}
 \end{center}
 \begin{figure}
   \label{fig:stats}
   \centerline{
-    \includegraphics[width=6in]{loc-5_0_0.eps}}
+    \includegraphics[width=6in]{draco600-loc-history.ps}}
   \caption{LOC statistics for \dracor\ component packages.}
 \end{figure}
 Table~\ref{tab:loc} shows LOC metrics for each \draco\ component in
@@ -529,37 +563,52 @@ Table~\ref{tab:loc} shows LOC metrics for each \draco\ component in
       \multicolumn{1}{c}{Source LOC} &
       \multicolumn{1}{c}{DBC LOC} &
       \multicolumn{1}{c}{Test LOC} \\\hline
-      
-      c4        &       582     &       19      &       407     \\
-      cdi       &       371     &       60      &       772     \\
-      cdi\_analytic      &       516     &       120     &       493     \\
-      cdi\_gandolf       &       665     &       25      &       713     \\
-      ds++      &       1680    &       190     &       5769    \\
-      lapack\_wrap       &       77      &       37      &       116     \\
-      meshReaders       &       657     &       33      &       831     \\
-      meshReaders\_Services      &       265     &       9       & 269 \\
-      pcgWrap   &       224     &       9       &       79      \\
-      plot2D    &       227     &       20      &       75      \\
-      quadrature        &       560     &       48      &       64      \\
-      rng       &       115     &       15      &       158     \\
-      RTT\_Format\_Reader &       1265    &       38      &       1041    \\
-      stdheaders        &       4       &       0       &       0       \\
-      timestep  &       335     &       16      &       127     \\
-      traits    &       87      &       9       &       49      \\
-      units     &       215     &       8       &       1185    \\
-      viz       &       361     &       20      &       74      \\
-      xm        &       157     &       4       &       257     \\
+      RTT\_Format\_Reader &     2408     &       19      &      1063     \\
+      c4                 &      2702     &       86      &      1294     \\
+      cdi                &      1566     &       82      &      1122     \\
+      cdi\_analytic      &      1436     &      110      &       771     \\
+      cdi\_gandolf       &      2150     &       45      &      1248     \\
+      diagnostics        &       333     &        4      &       267     \\
+      ds++               &     11155     &      337      &      8147     \\
+      fit                &        95     &        3      &        56     \\
+      fpe\_trap          &       117     &        5      &        51     \\
+      lapack\_wrap       &       193     &       37      &       116     \\
+      linear             &      1083     &       51      &       462     \\
+      meshReaders        &       454     &       16      &       261     \\
+      mesh\_element      &      1270     &       36      &       727     \\
+      min                &       631     &        2      &       399     \\
+      norms              &       282     &        4      &       160     \\
+      ode                &       193     &        6      &        86     \\
+      parser             &      3182     &      218      &      1475     \\
+      plot2D             &       329     &       30      &        76     \\
+      quadrature         &      3106     &      192      &      1195     \\
+      rng                &       355     &       18      &       184     \\
+      roots              &       670     &        8      &       219     \\
+      shared\_lib        &       184     &       12      &       118     \\
+      special\_functions &       976     &       10      &       490     \\
+      timestep           &       533     &       16      &       196     \\
+      traits             &       134     &       9       &       47      \\
+      units              &      1401     &       11      &       1186    \\
+      viz                &       680     &       47      &       209     \\
+      xm                 &       414     &       4       &       257     \\
       \hline\hline
     \end{tabular}
   \end{center}
 \end{table}
+
+%% cd draco/src
+%% for dir in `/bin/ls -1 -d */`; do echo "---- $dir ----''; (cd $dir;\
+%% ../../tools/count_loc.sh); done 
+
+
+
 
 With the adoption of the \textsf{Bullseye} coverage analysis tool, we
 are better able to track unit-test coverage of \draco\ components.
 The goal is to achieve 100\% functional test coverage for each \draco\
 component.  Table~\ref{tab:coverage} gives functional and conditional
 point coverage for \dracor.
-\input{cov-5_0_0}
+\input{cov-6_0_0}
 
 %%---------------------------------------------------------------------------%%
 
@@ -875,6 +924,7 @@ sharing groups.
 \nocite{xtm:9936}
 \nocite{draco-3_0_0}
 \nocite{draco-4_0_0}
+\nocite{draco-5_0_0}
 \bibliographystyle{rnote}
 \bibliography{../../environment/bibfiles/draco}
  
