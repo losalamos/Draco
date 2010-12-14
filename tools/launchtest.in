@@ -154,11 +154,14 @@ case $exe in
 
 		    # Linux, lambda and non-lambda
 		    Linux)
-			mpich_path=`which mpirun | sed -e "/mpich/!d"`
+			mpich_path=`which mpirun 2>/dev/null | sed -e "/mpich/!d"`
+			aprun_path=`which aprun 2>/dev/null`
 			if test "$LSB_SUB_HOST" = "lambda" && test $mpich_path; then
 			    test_exec="$libexecdir/mpijob -v mpirun -np $procs $executable $exe_options"
 			elif test "$sandiasys" = "redstorm"; then
 			    test_exec="yod -np $procs $executable $exe_options"
+			elif test $aprun_path; then
+			    test_exec="aprun -n $procs $executable $exe_options"
 			else
 			    test_exec="mpirun -np $procs $executable $exe_options $number"
 			fi
