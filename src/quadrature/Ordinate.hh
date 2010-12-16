@@ -74,6 +74,11 @@ class Ordinate
     //! then mu. 
     static
     bool SnCompare(const Ordinate &, const Ordinate &);
+    
+    //! STL-compatible comparator predicate to sort ordinates into PARTISN 3-D
+    //! ordering.
+    static
+    bool SnComparePARTISN3(const Ordinate &, const Ordinate &);
 
     //! Compute a real representation of the spherical harmonics.
     static
@@ -104,6 +109,9 @@ inline bool operator==(Ordinate const &a, Ordinate const &b)
         a.xi()==b.xi() &&
         a.wt()==b.wt();
 }
+
+//! Typedef for ordinate comparator functions
+typedef bool (*comparator_t)(Ordinate const &, Ordinate const &);
 
 //===========================================================================//
 /*!
@@ -145,6 +153,9 @@ class OrdinateSet
     //! Return the norm.
     double getNorm() const { return norm_; }
 
+    //! Return the ordering operator.
+    comparator_t getComparator() const { return comparator_; }
+
     bool check_class_invariants() const;
     
   private:
@@ -161,7 +172,8 @@ class OrdinateSet
     rtt_dsxx::SP< Quadrature const > quadrature_;
     rtt_mesh_element::Geometry geometry_;
     unsigned dimension_;
-    double norm_; 
+    double norm_;
+    comparator_t comparator_;
     
 };
 

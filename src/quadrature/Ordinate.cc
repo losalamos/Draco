@@ -51,7 +51,8 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
       quadrature_( quadrature ),
       geometry_(   geometry   ),
       dimension_(  dimension  ),
-      norm_(0.0)
+      norm_(0.0),
+      comparator_(Ordinate::SnCompare) // default comparator
 {
     Require( quadrature!=SP<Quadrature>()               );
     Require( quadrature->dimensionality() == 1 ||
@@ -200,6 +201,76 @@ bool Ordinate::SnCompare(Ordinate const &a, Ordinate const &b)
     else
     {
         return a.eta() < b.eta();
+    }
+}
+  
+//---------------------------------------------------------------------------//
+/*! 
+ *
+ * \param a
+ * First comparand
+ * \param b
+ * Second comparand
+ * \return \c true if the first comparand is lower in PARTISN-3D order than
+ * the second comparand. PARTISN order is by octant first, further ordered by
+ * sign of xi, then sign of eta, then sign of mu, and then by absolute value
+ * of xi, then eta, then mu within each octant.
+ *
+ * Typical usage:
+ * \code
+ * vector< Ordinate > ordinates;
+ * for( int i=0; i<numOrdinates; ++i )
+ *   ordinates.push_back( Ordinate( spQ->getMu(i), spQ->getWt(i) ) );
+ * sort(ordinates.begin(), ordinates.end(), Ordinate::SnComparePARTISN3 );
+ * \endcode
+ */
+bool Ordinate::SnComparePARTISN3(Ordinate const &a, Ordinate const &b)
+{
+    // Note that x==r==mu, z==xi
+
+    if (a.xi()<0 && b.xi()>0)
+    {
+        return true;
+    }
+    else if (a.xi()>0 && b.xi()<0)
+    {
+        return false;
+    }
+    else if (a.eta()<0 && b.eta()>0)
+    {
+        return true;
+    }
+    else if (a.eta()>0 && b.eta()<0)
+    {
+        return false;
+    }
+    else if (a.mu()<0 && b.mu()>0)
+    {
+        return true;
+    }
+    else if (a.mu()>0 && b.mu()<0)
+    {
+        return false;
+    }
+    else if (fabs(a.xi()) < fabs(b.xi()))
+    {
+	return true;
+    }
+    else if (fabs(a.xi()) > fabs(b.xi()))
+    {
+        return false;
+    }
+    else if (fabs(a.eta()) < fabs(b.eta()))
+    {
+	return true;
+    }
+    else if (fabs(a.eta()) > fabs(b.eta()))
+    {
+        return false;
+    }
+    else if (fabs(a.mu()) < fabs(b.mu()))
+    {
+	return true;
     }
 }
 
@@ -502,8 +573,10 @@ void OrdinateSet::create_set_from_3d_quadrature_for_3d_mesh()
         ordinates_[a] = Ordinate(mu, eta, xi, weight);
     }
 
-    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
+    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnComparePARTISN3 );
 
+    comparator_ = Ordinate::SnComparePARTISN3;
+    
     return;
 }
 
