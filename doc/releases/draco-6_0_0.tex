@@ -38,13 +38,13 @@
 
 \definecolor{listingBG}{rgb}{0.95,0.95,0.95}
 
-\lstset{language=csh,
-  showstringspaces=false,
-  frame=shadowbox,
-  basicstyle=\footnotesize,
-  rulesepcolor=\color{black},
-  backgroundcolor=\color{listingBG}
-}
+%% \lstset{language=sh,
+%%   showstringspaces=false,
+%%   frame=shadowbox,
+%%   basicstyle=\footnotesize,
+%%   rulesepcolor=\color{black},
+%%   backgroundcolor=\color{listingBG}
+%% }
 
 %%---------------------------------------------------------------------------%%
 %% BEGIN DOCUMENT
@@ -61,7 +61,7 @@
 \subject{Release of \dracor}
 
 %-------NO CHANGES
-\divisionname{Computer and Computational Division}
+\divisionname{Computer, Computational and Statistical Sciences}
 \groupname{CCS--2:Computational Physics \& Methods}
 \fromms{Kelly Thompson/CCS--2 D409\\
   Jae Chang/CCS--2 D409}
@@ -295,8 +295,148 @@ The following table summarizes changes to \draco\ components since
   (ODF)~\cite{ccs2:08-52,gandolf}.
 \end{itemize}
 
+\subsection{diagnostics}
+\label{changes:diagnostics}
+The \textsf{diagnostics} component is new for \dracor.  This component
+was moved to \draco\ from \textsc{clubimc} where it was known as
+\textsf{utils}.  This transition was made because this is a generic
+component (not specific to \textsc{clubimc} or \textsc{Jayenne}) and
+because the library name was conflicting with a \textsc{Capsaicin}
+component that was also named \textsf{utils}.
+
+This component provides a CPP macro that controls code verbosity.
+There are two new configure commands that enable the diagnostics
+(i.e.: verbosity) level:
+%
+\begin{center}
+  \footnotesize
+  \begin{tabular}{lp{4.0in}}
+    \hline\hline
+
+    \texttt{--with-draco-diagnostics=[0-7]} & \tableText{When greater
+      than zero, the CPP macro \texttt{DRACO\_DIAGNOSTICS} is set to
+      the provided value.} \\
+
+    \texttt{--with-draco-timing=[0-2]} & \tableText{When greater than
+      zero, the CPP macro \texttt{DRACO\_TIMING} is set to 2.} \\
+ 
+    \hline\hline 
+  \end{tabular}
+\end{center}
+%
+These CPP macros are saved to the \texttt{config.h} for the
+\textsf{diagnostics} component.  The values are designed to take the
+form of a bit mask in a method identical to what is used for \draco's
+DbC feature.
+%
+\begin{center}
+  \footnotesize
+  \begin{tabular}{llp{4.0in}}
+    \hline\hline
+    \textbf{value} & \textbf{bit mask} & \textbf{description} \\
+    \hline
+    0 & 000 & \tableText{Extra verbosity disabled.} \\
+    1 & 001 & \tableText{Sets CPP macro \texttt{DRACO\_DIAGNOSTICS\_LEVEL\_1}.} \\
+    2 & 010 & \tableText{Sets CPP macro \texttt{DRACO\_DIAGNOSTICS\_LEVEL\_2}.} \\
+    4 & 100 & \tableText{Sets CPP macro \texttt{DRACO\_DIAGNOSTICS\_LEVEL\_3}.} \\
+
+    \hline\hline 
+  \end{tabular}
+\end{center}
+
+Here is an example of how the \textsf{diagnostic} feature is used by
+\textsc{Jayenne}.
+
+\lstset{language=C++,
+  showstringspaces=false,
+  frame=shadowbox,
+  basicstyle=\footnotesize,
+  rulesepcolor=\color{black},
+  backgroundcolor=\color{listingBG}
+}
+\begin{lstlisting}[xleftmargin=0.50in, xrightmargin=0.50in]
+#ifdef DRACO_DIAGOSTICS_LEVEL_1
+{
+     using namespace rtt_diagnostics::Diagnostics;
+     int local_end_census       = integers["End_census"];
+     rtt_c4::global_sum(local_end_census);
+     if (ncentot != local_end_census)       ITFAILS;
+}
+#endif
+\end{lstlisting}
+
+The timing diagnostic is used by
+\texttt{wedgehog\_managers/Diagnostics\_Output.hh}.  An excerpt is
+shown here: 
+\begin{lstlisting}[xleftmargin=0.50in, xrightmargin=0.50in]
+#ifdef DRACO_TIMING_ON
+    {
+        // print out a timing table
+
+        // get the keys
+        Timing_Diagnostics::Vec_Keys keys = Timing_Diagnostics::timer_keys();
+        int Nk                            = keys.size();
+
+        // determine max/min
+        vector<double> max(keys.size(), 0.0);
+        vector<double> min(keys.size(), 0.0);
+
+        double v = 0.0;
+        for (int i = 0; i < Nk; ++i)
+        {
+            // get the value of the timer
+            v = Timing_Diagnostics::timer_value(keys[i]);
+
+            // get the local value
+            max[i] = v;
+            min[i] = v;
+        }
+
+        // get the max/min value across all processors
+        rtt_c4::global_min(&min[0], Nk);
+        rtt_c4::global_max(&max[0], Nk);
+
+        rtt_c4::global_barrier();
+        if (rtt_c4::node() == 0)
+        {
+            // output the max/mins
+            cout << setw(25) << "Routine" << setw(15) << "Max Fraction"
+                 << setw(15) << "Min Fraction" << endl;
+            cout << "======================================================="
+                 << endl;
+            for (int i = 0; i < Nk; ++i)
+            {
+              if (cycle_tot != 0.0)
+              {
+                  cout << setw(25) << keys[i] << setw(15) << max[i] / cycle_tot
+                       << setw(15) << min[i] / cycle_tot << endl;
+              }
+              else
+              {
+                cout << "WARNING: Time to complete cycle is ZERO seconds!"
+                     << endl;
+              }
+            }
+            cout << "======================================================="
+                 << endl;
+        }
+        rtt_c4::global_barrier();
+
+        // reset the timers
+        Timing_Diagnostics::reset_timers();
+    }
+#endif
+\end{lstlisting}
+\lstset{language=ksh,
+  showstringspaces=false,
+  frame=shadowbox,
+  basicstyle=\footnotesize,
+  rulesepcolor=\color{black},
+  backgroundcolor=\color{listingBG}
+}
+
 \subsection{ds++}
-\label{chagnes:dsxx}
+\label{changes:dsxx}
 \begin{itemize}
 \item Add class \textsf{Field\_Traits}. This class is useful in some
   template code dealing with real fields.  The \texttt{to\_string}
@@ -471,6 +611,13 @@ Here is a list of known defects:
 \begin{itemize}
 \item The \texttt{autodoc} target is currently broken for the
   autoconf-based build.
+\item Some \textsf{rng} tests will fail if \texttt{--enable-rng-nr} is
+  specified.  This failure is due to a bad test.  The library is
+  correct.
+\item \texttt{ds++/test/tstisFinite.cc} and
+  \texttt{ds++/test/tstdbc.cc} will fail for optimized builds with the
+  Intel compiler.  The optimizer is optimizing away code that we are
+  trying to check.
 \end{itemize}
 
 \noindent Here is a list of known bug fixes:
@@ -911,7 +1058,88 @@ particular module's settings.
 
 %%---------------------------------------------------------------------------%%
 
-\section{Quick Start Instructions}
+\section{Installation Locations and Options}
+
+\dracor\ has been installed on supported platforms.  See the following
+table for a list of installed locations and configure options
+associated with each location.  For LANL HPC machines, all versions
+are installed in the directory \url{/usr/projects/draco/draco-6_0_0}.
+Beneath this directory is a directory named by platform and compiler
+set:
+%
+\begin{center}
+  \footnotesize
+  \begin{tabular}{lp{2.5in}}
+    \hline\hline
+    \textsf{Yellowrail} & \texttt{yr-openmpi143-pgi903-pgi903/}  \\
+    \textsf{Turing}     & \texttt{tu-openmpi143-intel100023-intel100023/}  \\
+    \textsf{Redtail}    & \texttt{rt-openmpi143-pgi903-pgi903/}  \\
+    \textsf{Hurricane}  & \texttt{hu-openmpi143-intel100023-intel10023/}  \\
+    \textsf{RedStorm }  & \texttt{?}  \\
+    \textsf{Cielito}    & \texttt{?}  \\
+    \textsf{Dawn}       & \texttt{?}  \\
+    \hline\hline
+  \end{tabular}
+\end{center}
+%
+In each platform directory there are 9 separate builds.  Normally,
+clients will link against the \textsf{opt} version.  However, in
+special cases (if extra diagnostics are needed or if a full debug
+session is required) you may link against one of the other 8 builds:
+%
+\begin{center}
+  \footnotesize
+  \begin{tabular}{lp{4.0in}}
+    \hline\hline
+\texttt{debug/}  
+     & \texttt{--with-dbc=7 --with-opt=0 --enable-debug --with-draco-timing=1} \\
+     & \texttt{--with-draco-diagnostics=1} \\
+
+\texttt{debug\_nodbc/}  
+     & \texttt{--with-dbc=0 --with-opt=0 --enable-debug --with-draco-timing=1} \\
+     & \texttt{--with-draco-diagnostics=1} \\
+
+\texttt{opt/}  
+     & \texttt{--with-dbc=0 --with-opt=3 --disable-debug --with-draco-timing=0} \\
+     & \texttt{--with-draco-diagnostics=0} \\
+
+\texttt{opt\_log/}  
+     & \texttt{--with-dbc=0 --with-opt=3 --disable-debug --with-draco-timing=1} \\
+     & \texttt{--with-draco-diagnostics=1} \\
+
+\texttt{debug\_nr/}  
+     & \texttt{--with-dbc=7 --with-opt=0 --enable-debug --with-draco-timing=1} \\
+     & \texttt{--with-draco-diagnostics=1 --enable-rng-nr} \\
+
+\texttt{debug\_nodbc\_nr/}  
+     & \texttt{--with-dbc=0 --with-opt=0 --enable-debug --with-draco-timing=1} \\
+     & \texttt{--with-draco-diagnostics=1 --enable-rng-nr} \\
+
+\texttt{opt\_nr/}  
+     & \texttt{--with-dbc=0 --with-opt=3 --disable-debug --with-draco-timing=0} \\
+     & \texttt{--with-draco-diagnostics=0 --enable-rng-nr} \\
+
+\texttt{opt\_nolog\_nr/}  
+     & \texttt{--with-dbc=0 --with-opt=3 --disable-debug --with-draco-timing=1} \\
+     & \texttt{--with-draco-diagnostics=1 --enable-rng-nr} \\
+
+\texttt{debug\_nolog/}  
+     & \texttt{--with-dbc=7 --with-opt=0 --enable-debug --with-draco-timing=0} \\
+     & \texttt{--with-draco-diagnostics=0} \\
+
+    \hline\hline
+  \end{tabular}
+\end{center}
+
+One additional build directory named \texttt{debug\_verbose} may also
+be found on some platforms.  For \draco\ this build is identical to
+\texttt{debug}.  For \textsc{Wedgehog}, this build is extra-verbose
+for debugging purposes.
+
+
+%%---------------------------------------------------------------------------%%
+
+\section{Quick Start Instructions for Developers}
 
 Prerequisits: You must be in the \textsf{radtran} and \textsf{draco} Unix file
 sharing groups.
@@ -924,6 +1152,8 @@ sharing groups.
 % ~/draco/configure --prefix=<dir>
 % make check
 \end{verbatim}
+
+
 
 %%---------------------------------------------------------------------------%%
 
