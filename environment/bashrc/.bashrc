@@ -83,8 +83,8 @@ if test -f /proc/cpuinfo; then
 fi
 
 # Tell wget to use LANL's www proxy
-#export http_proxy=http://wpad.lanl.gov/wpad.dat
-export http_proxy=http://proxyout.lanl.gov:8080
+# export http_proxy=http://wpad.lanl.gov/wpad.dat
+# export http_proxy=http://proxyout.lanl.gov:8080
 
 ##---------------------------------------------------------------------------##
 ## cd paths - disable here, let user choose in ~/.bashrc
@@ -278,6 +278,12 @@ rr-dev-fe)
 tu-fe1 | tua[0-9]* | hu-fe[1-2] | hu*[0-9]*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
     ;;
+
+# Cielito
+ct-fe1)
+    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
+    ;;
+
 esac
 
 source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
