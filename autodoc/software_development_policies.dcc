@@ -18,7 +18,92 @@ should have one of these forms:
   Copyright (C) 2006-2010 Los Alamos National Security, LLC.<br>
   All rights reserved.
 
-\section development_links
+\section agile_manifesto Agile C++ Development
+
+\li (borrowed from this <a href=")http://cplusplus-soup.com/2010/12/14/agile-c-development/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed:+CppSoup+(C%2B%2B+Soup)">link</a>)
+
+We are uncovering better ways of developing software by doing it and helping
+others do it. Through this work we have come to value:
+
+- Individuals and interactions over processes and tools
+- Working software over comprehensive documentation
+- Customer collaboration over contract negotiation
+- Responding to change over following a plan. That is, while there is value in
+  the items on the right, we value the items on the left more. 
+
+So what are the hallmarks of Agile Software Development? For one thing, the premium on:
+
+- \b Iterative \b Development - building software in a way that allows for
+  quickly changing implementations over a period of time, and making sure that
+  something gets delivered and iterated on.   
+- \b Testing - having tests to ensure that components of the system (and the
+  system as a whole) works as specified. 
+- \b Welcoming \b Changes - instead of having lengthy planning, the solution is
+  built to assume that anything at any given point later on can (and probably
+  will) change. 
+
+Because Agile Software Development is a process or a "way of building
+software", the tools you use aren't largely affected - but the practices you
+follow might be affected. For example, instead of writing lengthy design
+documents, you.d rather write code and generate the design document out of the
+code; instead of writing specification documents, you actually write
+unit/integration/system-level/acceptance tests; instead of having planning
+sessions you have quick 5-minute meetings and more collaborative modes of
+development (pair-programming, for example). Now other languages have tons of
+tools that help with making these practices more in-grained in the development
+process . things like one-click unit-test runners and continuous testing
+environments (that build and run the tests as soon as changes are being made
+to the code for immediate feedback).
+
+Agile C++ themes also include:
+
+- \b Test \b Driven \b Development - In any software I write now, I feel like
+  fish out of water if I don.t write the tests first to define what I require
+  from the component I.m writing. Having tests to verify both your
+  specifications and implementation are actually sufficient saves you from the
+  guesswork you otherwise have to go through when developing software. Having
+  a deterministic and honest . even automated . way of making sure you.re
+  understanding the specifications and implementing something acceptable is
+  definitely the way to go in case you intend to make changes along the way.
+  
+- \b Active \b Code \b Review - In all the previous software projects I.ve
+  been involved in, there is no sacred code and everything is subject to
+  review (and improvement). This makes people care about the code they write
+  and the design decisions they.re making. It also ensures that everybody is
+  made involved in the process of developing and learning from the code that.s
+  being developed.
+  
+- \b Pair \b Programming - I swear by the productivity improvement of pairing
+  developers up to work on the same part of the system. The additional support
+  and guidance you get from an additional set of eyes really affects the way I
+  write code and the way I approach problems. The best part about pair
+  programming is not the part where you.re writing code, but the part when
+  you're talking out the approach and the design decisions before writing - or
+  while writing - any code. 
+- \b Brutal \b Retrospective - It's important to stay honest when coding to
+  see where the faults and issues are and be able to say what these are and
+  how they should be addressed. There.s no point in sugar-coating the state of
+  affairs especially when the success of a project is at stake. In other
+  words, call it as you see it, and learn from the experience by making
+  changes along the way. 
+- \b Measure \b Progress \b and \b Productivity - It's great to be able to
+  measure the actual productivity of a team and be able to adjust as you go
+  along in the project. There are a lot of ways in which progress and
+  productivity are measured, but the details don.t matter as much as the fact
+  that measuring it matters. Do it however you like, but just make sure you're
+  measuring progress and productivity. 
+
+Overall I've been in various roles in the Agile projects I've worked with in
+the past. Having a clear understanding of what your software needs to do and
+what the customer wants is key to the Agile process. The clarity yields
+happier customers and better software in the long run, and even improves
+developer productivity by being able to focus and iterate on the solution
+rather than trying to design it right at the start.
+
+So have you been part of an Agile Software Development project lately with
+C++? How did you find it? Did I miss anything obvious above? 
+  
+\section development_links Useful web links
 
 - <a
   herf="http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#index-flto-801">
@@ -28,7 +113,8 @@ should have one of these forms:
 - <a
   href="http://wiki.services.openoffice.org/wiki/Writing_warning-free_code">
   Writing warning-free code </a>  
-- <a href="http://www.possibility.com/Cpp/CppCodingStandard.html">C++ Coding Standard </a>  
+- <a href="http://www.possibility.com/Cpp/CppCodingStandard.html">
+  C++ Coding Standard</a>  
 - <a href="http://www.parashift.com/c++-faq-lite/index.html">C++ FAQ LITE</a>  
   
 \section joel_test Twelve Steps to Better Code
