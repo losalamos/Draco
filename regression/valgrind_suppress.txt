@@ -1,0 +1,21 @@
+# Valgrind Suppression Instructions
+# generate these expressions by specifying 'valgrind --gen-suppressions=yes'
+
+## -------------------------------------------------------------------------- ##
+## Xerces-C 2.8
+## -------------------------------------------------------------------------- ##
+{
+   # 160 (112 direct, 48 indirect) bytes in 1 blocks are definitely lost in loss record 2 of 3
+   # xercesc_2_8::MemoryManagerImpl::allocate(unsigned long)
+   __tstXmlDoc_exe/xercesc_2_8/_Znwm
+   Memcheck:Leak
+   fun:_ZN11xercesc_2_817MemoryManagerImpl8allocateEm
+}
+{
+   # 190 bytes in 13 blocks are definitely lost in loss record 3 of 3
+   #xercesc_2_8::IconvLCPTranscoder::transcode(char const*)
+   __tstXmlDoc_exe/xercesc_2_8/_Znam
+   Memcheck:Leak
+   fun:_ZN11xercesc_2_818IconvLCPTranscoder9transcodeEPKc
+
+}
