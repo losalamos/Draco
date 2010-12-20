@@ -268,9 +268,9 @@ bool Ordinate::SnComparePARTISN3(Ordinate const &a, Ordinate const &b)
     {
         return false;
     }
-    else if (fabs(a.mu()) < fabs(b.mu()))
+    else
     {
-	return true;
+	return (fabs(a.mu()) < fabs(b.mu()));
     }
 }
 
