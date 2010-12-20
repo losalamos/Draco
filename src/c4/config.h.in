@@ -39,6 +39,8 @@
 #undef c4_isDarwin
 /* Is this AIX */
 #undef c4_isAIX
+/* Is this a special Linux using aprun? */
+#undef c4_isLinux_with_aprun
 
 /* ---------------------------------------- */
 /* CMAKE based build system                 */

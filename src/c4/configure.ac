@@ -94,6 +94,12 @@ AIX)
   AC_DEFINE(c4_isAIX) ;;
 esac
 
+dnl Special case for machines like Cielito
+case `uname -n` in
+ct-fe*)
+  AC_DEFINE(c4_isLinux_with_aprun) ;;
+esac
+
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT
 AC_DRACO_ENV

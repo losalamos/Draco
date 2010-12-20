@@ -207,6 +207,14 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 #define C4_MPICMD "mpiexec -np "
 #define C4_UNAME "WINDOWS"
 #endif
+
+#ifdef c4_isLinux_with_aprun
+#ifdef C4_MPICMD
+#undef C4_MPICMD
+#endif
+#define C4_MPICMD "aprun -n "
+#endif
+
 #endif // c4_ApplicationUnitTest_hh
 
 //---------------------------------------------------------------------------//
