@@ -76,11 +76,12 @@ bool Is_Keyword_Text(char const *text)
     Require(text!=NULL);
     
     char c = *text++;
-    while (true){
+    while (true)
+    {
 	if (!isalpha(c) && c!='_') return false;
-	while (c=*text++, isalnum(c) || c=='_');
-	if (!c) return true;
-	if (c!=' ') return false;
+	while (c=*text++, isalnum(c) || c=='_') {/* do nothing */};
+	if (!c)                    return true;
+	if (c!=' ')                return false;
 	c = *text++;
     }
 }
