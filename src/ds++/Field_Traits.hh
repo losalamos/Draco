@@ -3,7 +3,7 @@
  * \file   ds++/Field_Traits.hh
  * \author Kent Budge
  * \brief  Define the Field_Traits class template
- * \note   Copyright (C) 2006-2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -29,7 +29,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-template<class Field>
+template<typename Field>
 class Field_Traits 
 {
   public:
@@ -39,6 +39,12 @@ class Field_Traits
     //! following typedef specifies the unlabeled type, by default the field
     //! type itself.
     typedef Field unlabeled_type;
+
+    //! Help the compiler make correct use of a 'Field const' template
+    //! argument.  This allows us to avoid warnings about throwing out the
+    //! 'const' qualifier on the return type for the next 2 functions
+    typedef Field const   ConstField;
+    typedef Field const & RefConstField;
 
     //! Return the unique zero element of the field. By default, this is
     //! convertible from double 0.
