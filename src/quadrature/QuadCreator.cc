@@ -27,6 +27,7 @@
 #include "Q2DLevelSym.hh"
 #include "Q3DLevelSym.hh"
 #include "Q2DTriChebyshevLegendre.hh"
+#include "Q3DTriChebyshevLegendre.hh"
 #include "Q2DSquareChebyshevLegendre.hh"
 #include "QuadCreator.hh"
 #include "QuadServices.hh"
@@ -112,10 +113,15 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    spQuad = new Q2DSquareChebyshevLegendre( sn_order, norm );
 	    break;	    
 
-	case TriCL:
+	case TriCL2D:
 	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
 	    spQuad = new Q2DTriChebyshevLegendre( sn_order, norm );
 	    break;	    
+
+	case TriCL:
+	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
+	    spQuad = new Q3DTriChebyshevLegendre( sn_order, norm );
+	    break;
 
 	default:
 	    Insist ( false, "Unknown value for quad_type." );
@@ -311,7 +317,8 @@ QuadCreator::qidm QuadCreator::createQidMap(void) const
 {
     qidm qid_map;
 
-    qid_map["tri cl"] = TriCL;
+    qid_map["tri cl"] = TriCL2D;
+    qid_map["tri cl three_d"] = TriCL;
     qid_map["square cl"] = SquareCL;
     qid_map["gauss legendre"] = GaussLeg;
     qid_map["lobatto"] = Lobatto;

@@ -74,14 +74,15 @@ class QuadCreator
      * added to this package. 
      */
     enum Qid { 
-	TriCL,       /*!< Triangular 2D Chebyshev-Legendre */
+	TriCL2D,     /*!< Triangular 2D Chebyshev-Legendre */
 	SquareCL,    /*!< Square 2D Chebyshev-Legendre */
 	GaussLeg,    /*!< 1D Gauss Legendre (arbitrary order). */
 	Lobatto,     /*!< 1D Lobatto (arbitrary order). */
 	DoubleGauss, /*!< 1D Double Gauss (arbitrary order). */
 	LevelSym2D,  /*!< 2D Level Symmetric (even order between 2 and 24, inclusive). */
 	LevelSym,    /*!< 3D Level Symmetric (even order between 2 and 24, inclusive). */
-	Axial1D      /*!< 1D Axial used for filter sweeps */
+	Axial1D,     /*!< 1D Axial used for filter sweeps */
+	TriCL        /*!< Triangular 3D Chebyshev-Legendre */
     };
 
     // TYPEDEFS

@@ -72,15 +72,16 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
     //
     // #   Qid         Description
     // --- --------    ------------------
-    // 0   TriCL       2D Triangular Chebyshev-Legendre
-    // 1   SquareCL    2D Square Chebyshev-Legendre
-    // 2   GaussLeg    1D Gauss-Legendre
-    // 3   Lobatto     1D Lobatto
-    // 4   DoubleGauss 1D DoubleGauss
-    // 5   LevelSym2D  2D Level Symmetric
-    // 6   LevelSym    3D Level Symmetric
+    // 0   TriCL2D     2D Triangular Chebyshev-Legendre
+    // 1   TriCL       3D Triangular Chebyshev-Legendre
+    // 2   SquareCL    2D Square Chebyshev-Legendre
+    // 3   GaussLeg    1D Gauss-Legendre
+    // 4   Lobatto     1D Lobatto
+    // 5   DoubleGauss 1D DoubleGauss
+    // 6   LevelSym2D  2D Level Symmetric
+    // 7   LevelSym    3D Level Symmetric
 
-    QuadCreator::Qid qid[nquads] = { QuadCreator::TriCL,
+    QuadCreator::Qid qid[nquads] = { QuadCreator::TriCL2D,
                                      QuadCreator::SquareCL,
                                      QuadCreator::GaussLeg,
                                      QuadCreator::Lobatto,
