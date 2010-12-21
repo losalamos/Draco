@@ -51,7 +51,7 @@ void tstTermDet( UnitTest & ut )
     // portable way to test.
     td.update_receive_count(1);
 
-    while (!td.is_terminated());
+    while (!td.is_terminated()) {/* do nothing */};
     
     return;
 }

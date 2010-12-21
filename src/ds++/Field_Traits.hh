@@ -40,18 +40,38 @@ class Field_Traits
     //! type itself.
     typedef Field unlabeled_type;
 
-    //! Help the compiler make correct use of a 'Field const' template
-    //! argument.  This allows us to avoid warnings about throwing out the
-    //! 'const' qualifier on the return type for the next 2 functions
-    typedef Field const   ConstField;
-    typedef Field const & RefConstField;
-
     //! Return the unique zero element of the field. By default, this is
     //! convertible from double 0.
     static Field zero() { return 0.0; }
     //! Return the unique unit element of the field. By default, this is
     //! convertible from double 1.
     static Field one() { return 1.0; }
+};
+
+//---------------------------------------------------------------------------//
+/*!
+ * Sepcialization: const double
+ *
+ * This specialization eliminates a gcc warning about discarding the const
+ * qualifier on the return type of the two member functions.
+ */
+template<>
+class Field_Traits <const double>
+{
+  public:
+
+    //! Field types can be "labeled." For example, a value-plus-derivatives
+    //! class has a field value that is labeled with its derivatives. The
+    //! following typedef specifies the unlabeled type, by default the field
+    //! type itself.
+    typedef double unlabeled_type;
+
+    //! Return the unique zero element of the field. By default, this is
+    //! convertible from double 0.
+    static double zero() { return 0.0; }
+    //! Return the unique unit element of the field. By default, this is
+    //! convertible from double 1.
+    static double one() { return 1.0; }
 };
 
 } // end namespace kgb_traits
