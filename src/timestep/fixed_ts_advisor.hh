@@ -86,7 +86,7 @@ class fixed_ts_advisor : public ts_advisor {
       \brief Prints the state of a fixed advisor.
       \return Prints the internal state of the advisor to std out.
      */
-    void print_state() const;
+    void print_state( std::ostream &out = std::cout ) const;
     
     /*! 
       \brief Fixed advisor invariant function.

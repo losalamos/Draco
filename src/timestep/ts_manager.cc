@@ -100,7 +100,7 @@ double ts_manager::compute_new_timestep()
     
     if (!found)
     {
-	if (C4::node() == 0)
+	if (rtt_c4::node() == 0)
 	{
 	    cerr << "  ** Time-Step Manager Warning **" << endl;
 	    cerr << "  No usable time-step advisors found," << endl;
@@ -129,7 +129,7 @@ double ts_manager::compute_new_timestep()
     {
 	return dt_new;
     }
-    else if (i != 0 && C4::node() == 0)
+    else if (i != 0 && rtt_c4::node() == 0)
     {
 	cerr << "  ** Time-Step Manager Warning **" << endl;
 	cerr << "  Cycle Number: " << cycle << endl;
@@ -169,7 +169,7 @@ double ts_manager::compute_new_timestep()
 
     if (py1 == advisors.end() && py2 == advisors.end() )
     {
-	if (C4::node() == 0)
+	if (rtt_c4::node() == 0)
 	{
 	    cerr << "  ** Time-Step Manager Warning **" << endl;
 	    cerr << "  Cycle Number: " << cycle << endl;
@@ -196,7 +196,7 @@ double ts_manager::compute_new_timestep()
 	{
 	    dt_new = x1;
 	    controlling_advisor = (**py1).get_name();
-	    if (C4::node() == 0)
+	    if (rtt_c4::node() == 0)
 	    {
 		cerr << "  ** Time-Step Manager Warning **" << endl;
 		cerr << "  Cycle Number: " << cycle << endl;
@@ -248,7 +248,7 @@ class sptsa_less_than : public std::binary_function<
 
 void ts_manager::print_advisors() const
 {
-    if (C4::node() != 0)
+    if (rtt_c4::node() != 0)
 	return;
     
     cout << endl;
@@ -263,7 +263,7 @@ void ts_manager::print_advisors() const
 
 void ts_manager::print_summary() const
 {
-    if (C4::node() != 0)
+    if (rtt_c4::node() != 0)
 	return;
 
     ios::fmtflags oldOptions = cout.flags();
@@ -293,7 +293,7 @@ void ts_manager::print_summary() const
 
 void ts_manager::print_adv_states() const
 {
-    if (C4::node() != 0)
+    if (rtt_c4::node() != 0)
 	return;
 
     cout << endl;

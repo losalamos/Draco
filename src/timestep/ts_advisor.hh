@@ -16,6 +16,7 @@
 
 #include <limits>
 #include <string>
+#include <iostream>
 #include "ds++/config.h"
 
 namespace rtt_timestep
@@ -141,7 +142,7 @@ class ts_advisor
     const std::string &get_name() const { return name; }
     
     //! Vomit the entire internal state of the advisor to std out
-    virtual void print_state() const = 0;
+    virtual void print_state( std::ostream &out = std::cout ) const = 0;
 
     //! Invariant function
     /*! \return True if the invariant is satisfied. 

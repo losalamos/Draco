@@ -78,7 +78,7 @@ class target_ts_advisor : public ts_advisor {
     //! Prints state
     /*! Prints the internal state of the advisor to std out
      */
-    void print_state() const;
+    void print_state( std::ostream &out = std::cout ) const;
 
     //! Invariant function
     /*! \return True if the invariant is satisfied

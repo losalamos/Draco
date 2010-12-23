@@ -16,6 +16,7 @@
 #include "../fixed_ts_advisor.hh"
 #include "../ratio_ts_advisor.hh"
 #include "../target_ts_advisor.hh"
+#include "../field_ts_advisor.hh"
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -29,76 +30,57 @@
 
 // forward declaration
 void run_tests();
+void check_field_ts_advisor();
 
 // Main program
 int main ( int argc, char *argv[] )
 {
-    using std::cout;
-    using std::endl;
+    using namespace std;
+    using namespace rtt_c4;
 
-    C4::Init(argc, argv);
+    initialize(argc, argv);
 
     // version tag
+    if( node() == 0 )
+        cout << argv[0] << ": version " << rtt_timestep::release() << endl;
     for( int arg=1; arg < argc; arg++ )
-    {
-	if( std::string(argv[arg]) == "--version" )
-	{
-	    if( C4::node() == 0 )
-		cout << argv[0] << ": version " 
-		     << rtt_timestep::release() << endl;
-	    C4::Finalize();
-	    return 0;
-	}
-    }
+	if( string(argv[arg]) == "--version" )
+	{ finalize(); return 0; }
 	
     try
     { 	// Run the tests...
 	run_tests();
+        check_field_ts_advisor();
     }
-    catch( const rtt_dsxx::assertion &ass )
+    catch( const std::exception &err )
     {
-	std::cerr << "assert failed: " << ass.what() << std::endl;
-	C4::Finalize();
-	return 1;
-    }
-    catch( const std::exception &ass )
-    {
-	std::cerr << "exception: " << ass.what() << std::endl;
-	C4::Finalize();
+	cerr << "exception: " << err.what() << endl;
+        rtt_c4::abort();
 	return 1;
     }
     catch( ... )
     {
 	std::cerr << "unknown exception" << std::endl;
-	C4::Finalize();
+        rtt_c4::abort();
 	return 1;
     }
 
     // Report result
     {
-	C4::HTSyncSpinLock slock;
+	HTSyncSpinLock slock;
 	
 	// status of test
-	cout << endl;
-	cout <<     "*********************************************" << endl;
+	cout <<     "\n*********************************************";
 	if( rtt_timestep_test::passed ) 
-	{
-	    cout << "**** timestep Test: PASSED on " << C4::node() << endl;
-	}
+	    cout << "\n**** timestep Test: PASSED on " << node();
 	else
-	{
-	    cout << "**** timestep Test: FAILED on " << C4::node() << endl;
-	}
-	cout <<     "*********************************************" << endl;
-	cout << endl;
+	    cout << "\n**** timestep Test: FAILED on " << node();
+	cout <<     "\n*********************************************\n\n";
     }
     
-    C4::gsync();
-    
-    cout << "Done testing tstTime on " << C4::node() << endl;
-    
-    C4::Finalize();
-    
+    global_barrier();    
+    cout << "Done testing tstTime on " << node() << endl;
+    finalize();
     return 0;
 }
 
@@ -169,6 +151,12 @@ void run_tests()
 	new ratio_ts_advisor( "Rate of Change Lower Limit",
 			       ts_advisor::min, 0.8 ) );
     mngr.add_advisor( sp_llr );
+
+    // Test the accessor
+    {
+        double tmp( sp_llr->get_ratio() );
+        Check( rtt_dsxx::soft_equiv( tmp, 0.8 ) );
+    }
 
     // Set up an upper limit on the time-step rate of change
 
@@ -403,6 +391,100 @@ void run_tests()
     }
 
     return;
+}
+
+void check_field_ts_advisor()
+{
+    std::cout << "\nChecking the field_ts_advisor class...\n" << std::endl;
+    
+    rtt_timestep::field_ts_advisor ftsa;
+
+    // Check manipulators
+    std::cout << "Setting Frac Change to 1.0..." << std::endl;
+    ftsa.set_fc( 1.0 );
+    std::cout << "Setting Floor Value to 0.0001..." << std::endl;
+    ftsa.set_floor( 0.0001 );
+    std::cout << "Setting Update Method to q_mean..." << std::endl;
+    ftsa.set_update_method( rtt_timestep::field_ts_advisor::q_mean );
+
+    // Dump the state to an internal buffer and inspect the results
+    std::ostringstream msg;
+    ftsa.print_state( msg );
+    std::cout << msg.str() << std::endl;
+
+    { // Check the Fraction Change value
+        std::string const expected( "Fract Change   : 1" );
+
+        // find the line of interest
+        std::string output( msg.str() );
+        size_t beg( output.find("Fract Change") );
+        if( beg == std::string::npos )
+        {
+            FAILMSG("Did not find expected string!");
+            return;
+        }
+        size_t end( output.find_first_of("\n",beg) );
+        if( beg == std::string::npos )
+        {
+            FAILMSG("Did not find expected string!");
+            return;
+        }
+        std::string line( output.substr(beg,end-beg) );
+        if( line == expected ) {
+            PASSMSG("'Fract Change' was set correctly."); }
+        else {
+            FAILMSG("Failed to set 'Fract Change' correctly."); }
+    }
+    
+   { // Check the Floor value
+        std::string const expected( "Floor Value    : 0.0001" );
+
+        // find the line of interest
+        std::string output( msg.str() );
+        size_t beg( output.find("Floor Value") );
+        if( beg == std::string::npos )
+        {
+            FAILMSG("Did not find expected string!");
+            return;
+        }
+        size_t end( output.find_first_of("\n",beg) );
+        if( beg == std::string::npos )
+        {
+            FAILMSG("Did not find expected string!");
+            return;
+        }
+        std::string line( output.substr(beg,end-beg) );
+        if( line == expected ) {
+            PASSMSG("'Floor Value' was set correctly."); }
+        else {
+            FAILMSG("Failed to set 'Floor Value' correctly."); }
+    }
+
+   { // Check the Update Method value
+        std::string const expected( "Update Method  : weighted by field value" );
+
+        // find the line of interest
+        std::string output( msg.str() );
+        size_t beg( output.find("Update Method") );
+        if( beg == std::string::npos )
+        {
+            FAILMSG("Did not find expected string!");
+            return;
+        }
+        size_t end( output.find_first_of("\n",beg) );
+        if( beg == std::string::npos )
+        {
+            FAILMSG("Did not find expected string!");
+            return;
+        }
+        std::string line( output.substr(beg,end-beg) );
+        if( line == expected ) {
+            PASSMSG("'Update Method' was set correctly."); }
+        else {
+            FAILMSG("Failed to set 'Update Method' correctly."); }
+    }
+      
+    return;    
 }
 
 

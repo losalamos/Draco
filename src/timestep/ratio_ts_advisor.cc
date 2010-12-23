@@ -47,20 +47,20 @@ double ratio_ts_advisor::get_dt_rec(const ts_manager &tsm) const
     return ratio_value*tsm.get_dt();
 }
 
-void ratio_ts_advisor::print_state() const
+void ratio_ts_advisor::print_state( std::ostream & out ) const
 {
     if (C4::node() != 0)
 	return;
     
     std::string status = is_active() ? "true " : "false";
-    cout << endl;
-    cout << "  ** Time-Step Advisor State Listing **" << endl;
-    cout << "  Name - " << get_name() << endl;
-    cout << "  Type           : " << "Ratio Advisor" << endl;
-    cout << "  Active         : " << status << endl;
-    cout << "  Usage          : " << usage_flag_name(get_usage()) << endl;
-    cout << "  Ratio Value    : " << ratio_value << endl;
-    cout << endl;
+    out << endl;
+    out << "  ** Time-Step Advisor State Listing **" << endl;
+    out << "  Name - " << get_name() << endl;
+    out << "  Type           : " << "Ratio Advisor" << endl;
+    out << "  Active         : " << status << endl;
+    out << "  Usage          : " << usage_flag_name(get_usage()) << endl;
+    out << "  Ratio Value    : " << ratio_value << endl;
+    out << endl;
 }
 
 bool ratio_ts_advisor::invariant_satisfied() const

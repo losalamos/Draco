@@ -15,8 +15,6 @@
 #include "c4/global.hh"
 #include <iostream>
 
-using std::cout;
-using std::endl;
 
 namespace rtt_timestep
 {
@@ -44,20 +42,22 @@ double fixed_ts_advisor::get_dt_rec(const ts_manager &/*tsm*/) const
     return fixed_value;
 }
 
-void fixed_ts_advisor::print_state() const
+void fixed_ts_advisor::print_state( std::ostream &out ) const
 {
-    if (C4::node() != 0)
+    using std::endl;
+
+    if (rtt_c4::node() != 0)
 	return;
     
     std::string status = is_active() ? "true " : "false";
-    cout << endl;
-    cout << "  ** Time-Step Advisor State Listing **" << endl;
-    cout << "  Name - " << get_name() << endl;
-    cout << "  Type           : " << "Fixed Advisor" << endl;
-    cout << "  Active         : " << status << endl;
-    cout << "  Usage          : " << usage_flag_name(get_usage()) << endl;
-    cout << "  Fixed Value    : " << fixed_value << endl;
-    cout << endl;
+    out << endl;
+    out << "  ** Time-Step Advisor State Listing **" << endl;
+    out << "  Name - " << get_name() << endl;
+    out << "  Type           : " << "Fixed Advisor" << endl;
+    out << "  Active         : " << status << endl;
+    out << "  Usage          : " << usage_flag_name(get_usage()) << endl;
+    out << "  Fixed Value    : " << fixed_value << endl;
+    out << endl;
 }
 
 bool fixed_ts_advisor::invariant_satisfied() const

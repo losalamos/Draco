@@ -44,7 +44,7 @@ double field_ts_advisor::get_dt_rec(const ts_manager &tsm) const
     using std::cerr;
     
     if ( cycle_at_last_update != tsm.get_cycle() && is_active()
-	&& C4::node() == 0 ) 
+	&& rtt_c4::node() == 0 ) 
     {
 	cerr << "Warning: ts_adivsor " << get_name() << 
 	    " has not been updated" << endl;
@@ -61,25 +61,25 @@ bool field_ts_advisor::advisor_usable(const ts_manager &tsm) const
 	(cycle_at_last_update == tsm.get_cycle());
 }
 
-void field_ts_advisor::print_state() const
+void field_ts_advisor::print_state(std::ostream & out) const
 {
-    if (C4::node() != 0)
+    if (rtt_c4::node() != 0)
 	return;
 
     std::string status = is_active() ? "true " : "false";
-    cout << endl;
-    cout << "  ** Time-Step Advisor State Listing **" << endl;
-    cout << "  Name - " << get_name() << endl;
-    cout << "  Type           : " << "Field Advisor" << endl;
-    cout << "  Active         : " << status << endl;
-    cout << "  Usage          : " << usage_flag_name(get_usage()) << endl;
-    cout << "  Last Update    : " << "cycle " << cycle_at_last_update << endl;
-    cout << "  Update Method  : " << 
+    out << endl;
+    out << "  ** Time-Step Advisor State Listing **" << endl;
+    out << "  Name - " << get_name() << endl;
+    out << "  Type           : " << "Field Advisor" << endl;
+    out << "  Active         : " << status << endl;
+    out << "  Usage          : " << usage_flag_name(get_usage()) << endl;
+    out << "  Last Update    : " << "cycle " << cycle_at_last_update << endl;
+    out << "  Update Method  : " << 
 	update_method_flag_name(update_method) << endl;
-    cout << "  Fract Change   : " << fc_value << endl;
-    cout << "  Floor Value    : " << floor_value << endl;
-    cout << "  dt_rec         : " << dt_rec << endl;
-    cout << endl;
+    out << "  Fract Change   : " << fc_value << endl;
+    out << "  Floor Value    : " << floor_value << endl;
+    out << "  dt_rec         : " << dt_rec << endl;
+    out << endl;
 }
 
 bool field_ts_advisor::invariant_satisfied() const

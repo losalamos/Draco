@@ -172,7 +172,7 @@ class field_ts_advisor : public ts_advisor
     //! Prints advisor state
     /*! \return prints the advisor internal state to std out
      */
-    void print_state() const;
+    void print_state( std::ostream & out = std::cout ) const;
 
     //! Invariant function
     /*! \return true if the invariant is satisfied.
