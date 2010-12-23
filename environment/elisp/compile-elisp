@@ -11,9 +11,50 @@
 # faster XEmacs execution.
 
 # Usage:
-#   ./compile-elisp
-# or
-#   ./compile-elisp <file.el>
+#   ./compile-elisp [-x] [file.el]
+# 
+# Args:
+#   -h          Help message
+#   -i          Don't do anything, just echo the commands
+#   -x          Use XEmacs to compile the elisp files instead of GNU
+#               Emacs (default). 
+#   [file.el]   Compile file.el to file.elc.  If no files are
+#               provided, all .el files in the local directory will be
+#               compiled.  
+#-------------------------------------------------------------------------------
+
+# Defaults
+EMACS=emacs
+
+# Parse arguments
+
+while getopts "hix" flag; do
+    if test "${flag}" = "x"; then
+        EMACS=xemacs
+    fi
+    if test "${flag}" = "i"; then
+        echoonly=echo
+    fi
+    if test "${flag}" = "h"; then
+echo " "
+echo "This small script will compile all of the local elisp scripts for"
+echo "faster XEmacs execution."
+echo " "
+echo "Usage:"
+echo "  ./compile-elisp [-x] [file.el]"
+echo " " 
+echo "Args:"
+echo "  -h          Help message"
+echo "  -i          Only echo the commands, do not actually do anything."         
+echo "  -x          Use XEmacs to compile the elisp files instead of GNU"
+echo "              Emacs (default). "
+echo "  [file.el]   Compile file.el to file.elc.  If no files are"
+echo "              provided, all .el files in the local directory will be"
+echo "              compiled. "
+exit 1
+    fi
+done
+
 
 setpath=${TMPDIR-/tmp}/elc.$$
 echo "(setq load-path (cons \".\" load-path))" > $setpath
@@ -22,10 +63,9 @@ echo "(setq load-path (cons \".\" load-path))" > $setpath
 #echo "  (setq load-path (cons " >> $setpath
 #echo "    \"/codes/radtran/vendors/doxymacs-1.5.0/lisp\" load-path)))" >> $setpath
 if test -n "$1"; then
-   xemacs -batch -l $setpath -f batch-byte-compile "$@"
+   $echoonly $EMACS -batch -l $setpath -f batch-byte-compile "$@"
 else
-   xemacs -batch -l $setpath -f batch-byte-compile *.el
+   $echoonly $EMACS -batch -l $setpath -f batch-byte-compile *.el
 fi
-#cat $setpath
-rm -f $setpath
+$echoonly rm -f $setpath
 
