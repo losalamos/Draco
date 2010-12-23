@@ -640,8 +640,7 @@ AC_DEFUN([AC_COMPILER_INTEL_F90], [dnl
 
    # CHECK FOR WORKING INTEL F90 COMPILER
    AC_CHECK_PROG(F90, ifort, ifort, none)
-   if test "${F90}" = ifort && ${F90} -V 2>&1 | grep "Intel"
-   then
+   if test `basename ${F90}` = ifort && ${F90} -V 2>&1 | grep "Intel"; then
        :
    else
        AC_MSG_ERROR([not found])
