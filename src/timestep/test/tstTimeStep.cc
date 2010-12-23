@@ -50,7 +50,8 @@ int main ( int argc, char *argv[] )
     try
     { 	// Run the tests...
 	run_tests();
-        check_field_ts_advisor();
+        if( node() == 0 )
+            check_field_ts_advisor();
     }
     catch( const std::exception &err )
     {
