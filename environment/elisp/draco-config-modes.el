@@ -105,22 +105,23 @@ auto-mode-alist."
   "Autoload cmake-mode and append the appropriate suffixes to
 auto-mode-alist."
   (interactive)
-      (progn
-      (autoload 'cmake-mode "cmake-mode" "CMake editing mode." t)
-      (setq auto-mode-alist
-	      (append '(("\\.cmake$"         . cmake-mode)
-			("CMakeLists\\.txt$" . cmake-mode)
-			("\\.cmake.in$"      . cmake-mode))
-		      auto-mode-alist))
-      (defun draco-cmake-mode-hook ()
-	"DRACO hooks added to CMake mode."
-	(defvar cmake-tab-width 2)
-	(local-set-key [(control c)(control c)] 'comment-region)
-	(local-set-key [(f5)] 'draco-makefile-divider)
-	(local-set-key [(f6)] 'draco-makefile-comment-divider)
-	(turn-on-draco-mode)
-	(turn-on-auto-fill))
-      (add-hook 'cmake-mode-hook 'draco-cmake-mode-hook)))
+  (progn
+    (autoload 'cmake-mode "cmake-mode" "CMake editing mode." t)
+    (setq auto-mode-alist
+          (append '(("\\.cmake"         . cmake-mode)
+                    ("CMakeLists\\.txt" . cmake-mode)
+                    ("CMakeCache\\.txt" . cmake-mode)
+                    ("\\.cmake\\.in"    . cmake-mode))
+                  auto-mode-alist))
+    (defun draco-cmake-mode-hook ()
+      "DRACO hooks added to CMake mode."
+      (defvar cmake-tab-width 2)
+      (local-set-key [(control c)(control c)] 'comment-region)
+      (local-set-key [(f5)] 'draco-makefile-divider)
+      (local-set-key [(f6)] 'draco-makefile-comment-divider)
+      (turn-on-draco-mode)
+      (turn-on-auto-fill))
+    (add-hook 'cmake-mode-hook 'draco-cmake-mode-hook)))
 
 ;; ========================================
 ;; Autoconf
@@ -390,9 +391,9 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
   "Loads the tex-site package."
   (interactive)
     (progn
-      (require 'tex-site)
-      (require 'reftex)
-      (require 'bib-cite)
+      ; (require 'tex-site)
+      ; (require 'reftex)
+      ; (require 'bib-cite)
 
     (defun draco-menu-insert-comments-tex () 
       "Submenu for inserting comments (context sensitive)."
@@ -400,30 +401,30 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	    ["Insert LaTeX divider" draco-latex-divider t]
 	    ["Insert LaTeX comment divider" draco-latex-comment-divider t]))
 
-      (setq auto-mode-alist
-	    (append '(("\\.tex$" . tex-mode)
-		      ("\\.bib$" . bibtex-mode)
-              ("\\.bst$" . tex-mode)
-		      ("\\.bbl$" . tex-mode)
-              ("\\.blg$" . tex-mode)
-		      ("\\.idx$" . tex-mode)
-		      ("\\.ilg$" . tex-mode)   
-		      ("\\.ind$" . tex-mode)  
- 		      ("\\.toc$" . tex-mode)
-		      ("\\.lof$" . tex-mode)
-		      ("\\.lot$" . tex-mode)
-		      ("\\.cls$" . tex-mode)
-		      ("\\.sty$" . tex-mode)            
-		      ) auto-mode-alist))
+    (setq auto-mode-alist
+          (append '(("\\.tex$" . tex-mode)
+                    ("\\.bib$" . bibtex-mode)
+                    ("\\.bst$" . tex-mode)
+                    ("\\.bbl$" . tex-mode)
+                    ("\\.blg$" . tex-mode)
+                    ("\\.idx$" . tex-mode)
+                    ("\\.ilg$" . tex-mode)   
+                    ("\\.ind$" . tex-mode)  
+                    ("\\.toc$" . tex-mode)
+                    ("\\.lof$" . tex-mode)
+                    ("\\.lot$" . tex-mode)
+                    ("\\.cls$" . tex-mode)
+                    ("\\.sty$" . tex-mode)            
+                    ) auto-mode-alist))
 
-      (setq reftex-enable-partial-scans       t
+      (setq reftex-enable-partial-scans           t
 	    reftex-save-parse-info                t
 	    reftex-use-multiple-selection-buffers t
 	    reftex-plug-into-AUCTeX               t)
 
       (setq reftex-texpath-environment-variables draco-texpath)
       (setq reftex-bibpath-environment-variables draco-bibpath)
-
+      
       (defun draco-latex-mode-hook ()
 	"DRACO hooks added to LaTeX and BibTex modes."
 	(local-set-key [(f5)] 'draco-latex-divider)
@@ -788,8 +789,8 @@ auto-mode-alist and set up some customizations for DRACO."
     (setq auto-mode-alist
 	  (append
 	   '(("\\.text$" . text-mode)
-	     ("\\.txt$" . text-mode)
-	     ("\\.log$" . text-mode)
+	     ("\\.txt$"  . text-mode)
+	     ("\\.log$"  . text-mode)
 	     ("^README*" . text-mode)
 	     ) auto-mode-alist))
     (add-hook 'text-mode-hook 'turn-on-draco-mode)
@@ -819,6 +820,35 @@ auto-mode-alist and set up some customizations for DRACO."
 					    "black"   (current-buffer))))))
     (add-hook 'dired-setup-keys-hook 'draco-dired-mode-hook)
     (add-hook 'dired-mode-hook 'turn-on-draco-mode)))
+
+;; ========================================
+;; Perl mode
+;; ========================================
+
+(defun draco-setup-perl-mode ()
+  "Autoload dired-mode, append the approriate suffixes to
+auto-mode-alist and set up some customizations for DRACO."
+  (interactive)
+  (progn
+    (autoload 'perl-mode "perl-mode" "Perl Mode" t)
+    (add-hook 'perl-mode-hook 'turn-on-font-lock)
+    (defun draco-perl-mode-hook ()
+      "Hooks added to perl-mode"
+      (local-set-key [(f5)] 'dired-redisplay-subdir)
+      (if draco-colorize-modeline 
+	  (add-hook 'perl-mode-hook        
+		    '(lambda () 
+		       (set-face-background 'modeline 
+					    "thistle" (current-buffer))
+		       (set-face-foreground 'modeline
+					    "black"   (current-buffer))))))
+    (setq auto-mode-alist
+          (append
+           '(("\\.perl$" . perl-mode)
+             ) auto-mode-alist))
+    (add-hook 'perl-mode-hook 'turn-on-draco-mode)
+    )
+  )
 
 ;;---------------------------------------------------------------------------;;
 ;; Provide these functions from draco-config-modes
