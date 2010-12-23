@@ -32,7 +32,7 @@
 
 ;; Buffer management
 (define-key global-map [(f7)]               'draco-save-and-kill-current-buffer)
-(define-key global-map [(shift f7)]         'delete-window)
+(define-key global-map [(shift f7)]         'delete-frame)  ;; delete-window might work better
 (define-key global-map [(control f7)]       'kill-this-buffer)
 (define-key global-map [(f8)]               'draco-toggle-previous-buffer)
 (define-key global-map [(control f8)]       'draco-find-companion-file)
