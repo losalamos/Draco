@@ -272,6 +272,13 @@ dired-mode?"
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
+(defcustom draco-want-perl-mode t
+  "*Does the user want to have the Draco minor mode enabled for
+perl-mode?" 
+:group 'draco-mode
+:type '(radio	(const :tag "Yes" t)
+		(const :tag "No"  nil)))
+
 (defcustom draco-want-compilation-mode t
   "*Does the user want to have the Draco minor mode enabled for
 compilation-mode?" 
@@ -299,11 +306,9 @@ compilation-mode?"
 	(setq draco-env-dirs
 	      (list (concat my-home-dir "draco/environment/")
 		    (concat my-home-dir "capsaicin/environment/")	
-		    (concat my-home-dir "marmot/environment/")	
-		    (concat my-home-dir "clubimc/environment/")	
 		    (concat my-home-dir ".xemacs/")
 		    "/usr/projects/draco/environment/"
-		    "/codes/radtran/vendors/environment/" )))
+		    "/ccs/codes/radtran/vendors/environment/" )))
     ;; process least-imporant directories first.  This ensures that
     ;; the first directory in the list "draco-env-dirs" become the
     ;; first directory in the load-path.
@@ -341,7 +346,23 @@ compilation-mode?"
 ;; ========================================
 
 ;; Convert tabs to spaces when appropriate (c++-mode, etc.)
+
+(defconst xemacsp (featurep 'xemacs) "Are we running XEmacs?")
+(defconst emacs>=23p (and (not xemacsp) (> emacs-major-version 22))
+  "Are we running GNU Emacs 23 or above?")
+
 (setq-default indent-tabs-mode nil)
+(defun insert-timestamp ()
+  (interactive)
+  (insert (format-time-string "%A, %b %d, %Y, %H:%M %P")))
+
+;; Setup that only works for GNU Emacs
+(if emacs>=23p
+    (progn
+      (which-function-mode   1)
+      (global-font-lock-mode 1)
+      )
+  )
 
 ;; ========================================
 ;; Setup mode specific stuff
@@ -355,14 +376,14 @@ compilation-mode?"
 ;; If the bool draco-want-<pkg>-mode is t then setup mode <pkg> 
 ;; using draco specific settings.  This includes turning on 
 ;; draco-mode as a minor mode for each <pkg> mode.
-;; (if draco-want-auctex-mode     (draco-setup-auctex-mode))
+(if draco-want-auctex-mode     (draco-setup-auctex-mode))
 (if draco-want-autoconf-mode   (draco-setup-autoconf-mode))
 (if draco-want-cc-mode         (draco-setup-cc-mode))
 (if draco-want-change-log-mode (draco-setup-change-log-mode))
-(if draco-want-cmake-mode      (draco-setup-cmake-mode))
 (if draco-want-compilation-mode (draco-setup-compilation-mode))
 (if draco-want-cvs-mode        (draco-setup-cvs-mode))
 (if draco-want-dired-mode      (draco-setup-dired-mode))
+(if draco-want-perl-mode       (draco-setup-perl-mode))
 (if draco-want-doxymacs-mode   (draco-setup-doxymacs-mode))
 (if draco-want-emacs-lisp-mode (draco-setup-emacs-lisp-mode))
 (if draco-want-f90-mode        (draco-setup-f90-mode))
@@ -372,9 +393,12 @@ compilation-mode?"
 (if draco-want-python-mode     (draco-setup-python-mode))
 ;; (if draco-want-sgml-mode       (draco-setup-sgml-mode))
 ;(if draco-want-sh-mode         (draco-setup-sh-mode))
-(if draco-want-shell-mode      (draco-setup-shell-mode))
+;(if draco-want-shell-mode      (draco-setup-shell-mode))
 (if draco-want-tcl-mode        (draco-setup-tcl-mode))
 (if draco-want-text-mode       (draco-setup-text-mode))
+;; CMake needs to be set after text-mode so that the file associates
+;; for CMakeLists.txt are set to cmake-mode instead of text-mode.
+(if draco-want-cmake-mode      (draco-setup-cmake-mode))
 (if draco-want-global-keys     (require 'draco-global-keys))
 
 ;(kill-buffer "*Compile-Log-Show*")
