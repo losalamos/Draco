@@ -174,13 +174,11 @@ void tst_nrm2()
 int main(int argc, char *argv[])
 {
     // version tag
+    cout << argv[0] << ": version " << rtt_lapack_wrap::release() 
+         << endl;
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_lapack_wrap::release() 
-		 << endl;
 	    return 0;
-	}
 
     try
     {

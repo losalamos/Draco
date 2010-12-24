@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:52:46 2004
  * \brief  Test for Ensight_Stream.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright 2004-2006 The Regents of the University of California.
+ *         Copyright 2006-2010 LANS, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -140,15 +141,12 @@ void test_simple(const bool binary)
 int main(int argc, char *argv[])
 {
     // version tag
+    std::cout << argv[0] << ": version " << rtt_viz::release() 
+              << std::endl;
     for (int arg = 1; arg < argc; arg++)
 	if (std::string(argv[arg]) == "--version")
-	{
-	    std::cout << argv[0] << ": version " 
-		      << rtt_viz::release() 
-		      << std::endl;
 	    return 0;
-	}
-
+    
     try
     {
 	// >>> UNIT TESTS

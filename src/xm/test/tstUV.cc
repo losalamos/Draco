@@ -1,5 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
-// Copyright 1996 The Regents of the University of California. 
+// Copyright 1996-2006 The Regents of the University of California.
+// Copyright 2006-2010 LANS, LLC
 // All rights reserved.
 //---------------------------------------------------------------------------//
 
@@ -32,12 +33,6 @@ template<class T> void dump( UserVec<T>& u )
     for( int i=0; i < u.size(); i++ )
 	cout << "u[" << i << "]=" << u[i] << endl;
 }
-
-// template<class T, class E, class D> void dump( Xpr<T,E,D>& u )
-// {
-//     for( int i=0; i < u.size(); i++ )
-// 	cout << "u[" << i << "]=" << u[i] << endl;
-// }
 
 //---------------------------------------------------------------------------//
 // Check that we can handle UserVec the usual way.
@@ -404,14 +399,10 @@ void version(const std::string &progname)
 
 int main( int argc, char *argv[] )
 {
+    version(argv[0]);
     for (int arg=1; arg < argc; arg++)
-    {
 	if (std::string(argv[arg]) == "--version")
-	{
-	    version(argv[0]);
 	    return 0;
-	}
-    }
     
     t1();
     t2();
@@ -422,21 +413,13 @@ int main( int argc, char *argv[] )
     t7();
     //t8();
 
-// Print the status of the test.
-
-    cout << endl;
-    cout <<     "***********************************************" << endl;
+    // Print the status of the test.
+    cout <<     "\n***********************************************";
     if (passed) 
-    {
-        cout << "**** Expression Template Self Test: PASSED ****" << endl;
-    }
+        cout << "\n**** Expression Template Self Test: PASSED ****";
     else
-    {
-        cout << "**** Expression Template Self Test: FAILED ****" << endl;
-    }
-    cout <<     "***********************************************" << endl;
-    cout << endl;
-
+        cout << "\n**** Expression Template Self Test: FAILED ****";
+    cout <<     "\n***********************************************\n" << endl;
     return 0;
 }
 
