@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "UserVec.hh"
-
+#include "../Release.hh"
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -387,19 +387,13 @@ void t8()
     cout << "t8: end\n";
 }
 
-void version(const std::string &progname)
-{
-    std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
-}
-
 //---------------------------------------------------------------------------//
 // Main program, just run through each test in turn.
 //---------------------------------------------------------------------------//
 
 int main( int argc, char *argv[] )
 {
-    version(argv[0]);
+    std::cout << rtt_xm::release() << std::endl;
     for (int arg=1; arg < argc; arg++)
 	if (std::string(argv[arg]) == "--version")
 	    return 0;
