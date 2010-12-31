@@ -49,6 +49,7 @@ if (GSL_FOUND)
    if( EXISTS ${GSL_DLL} )
       set(GSL_DLL_LIBRARIES "${GSL_DLL};${GSL_BLAS_DLL}" CACHE STRING 
          "list of gsl dll files.")
+   mark_as_advanced( GSL_DLL_LIBRARIES GSL_LIBRARIES )
    else()
       set( GSL_DLL "NOTFOUND")
       set( GSL_BLAS_DLL "NOTFOUND" )
