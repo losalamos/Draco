@@ -47,45 +47,29 @@ endif()
 # Ensure() postconditions: add +4 to DBC_LEVEL
 set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-7)?" )
 
-
 #
 # Packaging (CPack) options
 # 
 #TODO: Not a packaged product, so leave out for now:
 #include( cpack_env )
+# For example see CMake source dist: CMakeCPack.cmake.
 
 #
-# Build the packages:
+# Build Draco components:
 # 
 add_subdirectory( src )
 add_subdirectory( config )
 
 # Top level tests
-add_test( SystemInformationNew 
-	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
+#add_test( SystemInformationNew 
+#	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
 
 # CTest/CDash custom configuration file
-#configure_file(
-#  ${PROJECT_SOURCE_DIR}/CTestCustom.cmake
-#  ${PROJECT_BINARY_DIR}/CTestCustom.cmake
-#  COPYONLY
-#  )
-
-#TODO: Leave out for now:
-#
-# Provide some documentation
-# 
-# install( 
-  # FILES
-    # ${PROJECT_SOURCE_DIR}/ReleaseNote.txt 
-    # ${PROJECT_SOURCE_DIR}/Copyright.txt 
-  # DESTINATION .
-  # COMPONENT docs
-  #OPTIONAL
-  # )
-
-# Define release targets (Win32 only)
-#include( release )
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CTestCustom.cmake
+  ${PROJECT_BINARY_DIR}/CTestCustom.cmake
+  COPYONLY
+  )
 
 # Extra custom commands
 
@@ -104,9 +88,17 @@ install( FILES ${PROJECT_BINARY_DIR}/CMakeCache.txt
          DESTINATION config 
          RENAME Draco-CMakeCache.txt )
 
-# set PATH=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Windows\Microsoft.NET\Framework\v3.5;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\VCPackages;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\NETFX 4.0 Tools;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Intel\Shared Files\fortran\bin\Intel64;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files (x86)\QT Lite\QTSystem;c:\Program Files (x86)\Microsoft SQL Server\90\Tools\binn\;c:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\DTS\Binn;C:\Program Files (x86)\CMake 2.8\bin;C:\Program Files (x86)\QT Lite\QTSystem\;C:\Program Files (x86)\MPICH2\bin
+# Add support for the 'uninstall' target
+configure_file(
+   "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+   @ONLY )
+add_custom_target( uninstall
+   "${CMAKE_COMMAND}" -P
+   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
 
-# Notes:
+##---------------------------------------------------------------------------##
+## Notes:
 
 # 1. Use 'cmake -LAH' to list all user set variables.
 # 2. Use 'make rebuild_cache' to regenerate config.h files, directories,
