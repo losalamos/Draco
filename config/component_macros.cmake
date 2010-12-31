@@ -248,16 +248,6 @@ macro( add_parallel_tests )
       ${ARGV}
       )
 
-#    message("
-# addparalleltest_SOURCES    = ${addparalleltest_SOURCES}
-# addparalleltest_PE_LIST    = ${addparalleltest_PE_LIST}
-# addparalleltest_DEPS       = ${addparalleltest_DEPS}
-# addparalleltest_TEST_ARGS  = ${addparalleltest_TEST_ARGS}
-# addparalleltest_PASS_REGEX = ${addparalleltest_PASS_REGEX}
-# addparalleltest_FAIL_REGEX = ${addparalleltest_FAIL_REGEX}
-# C4_MPI = ${C4_MPI}
-# ")
-
    # Sanity Check
    if( "${addparalleltest_SOURCES}none" STREQUAL "none" )
       message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using the add_parallel_tests macro.  Please see draco/config/component_macros.cmake::add_parallel_tests() for more information." )

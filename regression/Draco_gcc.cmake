@@ -120,10 +120,4 @@ set( CTEST_ENVIRONMENT
 
 message("end of ${CTEST_SCRIPT_NAME}.")
 
-# Ideas to try
-
-#SET (CTEST_INITIAL_CACHE "
-#CMAKE_GENERATOR:INTERNAL=Visual Studio 8 2005
-#CMAKE_MAKE_PROGRAM:FILEPATH=C:/Program Files/Microsoft Visual Studio 8/Common7/IDE/devenv.com
-#MAKECOMMAND:STRING=\"C:/Program Files/Microsoft Visual Studio 8/Common7/IDE/devenv.com\" VTK.sln /build Release /project ALL_BUILD
 
