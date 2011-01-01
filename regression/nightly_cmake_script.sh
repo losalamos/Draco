@@ -33,16 +33,22 @@ fi
 # Build type     : Release, Debug
 
 dashboard_type=Nightly
+base_dir=/home/regress/cmake_draco
+script_dir=/home/regress/cmake_draco
 
-export work_dir=/home/regress/cmake_draco/Nightly/Release
-ctest -VV -S /home/regress/cmake_draco/regression/Draco_gcc.cmake,${dashboard_type},Release
+# Release build
+export work_dir=${base_dir}/${dashboard_type}/Release
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Release
 
 # Debug build
-export work_dir=/home/regress/cmake_draco/Nightly/Debug
-ctest -VV -S /home/regress/cmake_draco/regression/Draco_gcc.cmake,${dashboard_type},Debug
+export work_dir=${base_dir}/${dashboard_type}/Debug
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug
 
 # Coverage build
 module load bullseyecoverage
-export work_dir=/home/regress/cmake_draco/Nightly/Coverage
-ctest -VV -S /home/regress/cmake_draco/regression/Draco_gcc.cmake,${dashboard_type},Debug,Coverage
+CXX=`which g++`
+CC=`which gcc`
+export work_dir=${base_dir}/${dashboard_type}/Coverage
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,Coverage
 module unload bullseyecoverage
+
