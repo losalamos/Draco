@@ -1,0 +1,21 @@
+----------------------------------------
+DRACO DEVELOPMENT
+----------------------------------------
+
+Areas currently under development
+----------------------------------------
+- Port to Dawn
+- Develop plan for supporting heterogeneous architectures.
+- Finish migration to CMake (plus CTest and CDash)
+  - demonstrate build support for all target hardware (HPC machines)
+  - retire autoconf and scons build files.
+
+Things planned for sometime in the future
+----------------------------------------
+- Replace dependence on libgandolf with our own IPCRESS reader.
+- Retire unused classes (especially in ds++).
+
+Bugs
+----------------------------------------
+- Also see doxygen generated output (special page 'bugs').
+

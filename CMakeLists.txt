@@ -14,37 +14,27 @@ project( Draco CXX )
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 
+#
 # The Draco version number.
+#
+set(DRACO_VERSION_MAJOR 6)
+set(DRACO_VERSION_MINOR 0)
+# set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 
-# Select packages to build.
-option( DRACO_BUILD_JAYENNE_COMPONENTS ON )
-option( DRACO_BUILD_CAPSAICIN_COMPONENTS ON )
-
-# add uninstall target
-#include( uninstall )
-#provide_uninstall_target()
-
+#
 # Unit Test Setup
-option( DRACO_BUILD_TESTS "Should we compile the tests?" ON )
-if( DRACO_BUILD_TESTS )
-  # include( dracoTesting.cmake )
-  include(CTest)
-  enable_testing()
-  if( "${DRACO_NUM_CORES}none" STREQUAL "none"  )
-     add_custom_target( check
-        COMMAND ${CMAKE_MAKE_COMMAND} test )   
-  else()
-     add_custom_target( check
-        COMMAND ${CMAKE_CTEST_COMMAND} -j ${DRACO_NUM_CORES} )   
-  endif()
-endif()   
+#
+include(dracoTesting) 
+# Top level test
+add_test( SystemInformationNew 
+	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
 
 # Build options (static or shared, dbc-level
-# Insist() assertions    : always on
-# Require() preconditions: add +1 to DBC_LEVEL
-# Check() assertions     : add +2 to DBC_LEVEL
-# Ensure() postconditions: add +4 to DBC_LEVEL
+#   Insist() assertions    : always on
+#   Require() preconditions: add +1 to DBC_LEVEL
+#   Check() assertions     : add +2 to DBC_LEVEL
+#   Ensure() postconditions: add +4 to DBC_LEVEL
 set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-7)?" )
 
 #
@@ -60,19 +50,18 @@ set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-7)?" )
 add_subdirectory( src )
 add_subdirectory( config )
 
-# Top level tests
-#add_test( SystemInformationNew 
-#	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
-
+#
+# Dashboard/Regression setup
+#
 # CTest/CDash custom configuration file
 configure_file(
   ${PROJECT_SOURCE_DIR}/CTestCustom.cmake
   ${PROJECT_BINARY_DIR}/CTestCustom.cmake
-  COPYONLY
-  )
+  COPYONLY )
 
+#
 # Extra custom commands
-
+#
 # alias for 'make configure'
 add_custom_target( configure
    COMMAND ${CMAKE_MAKE_PROGRAM} rebuild_cache )   
@@ -87,6 +76,15 @@ endif()
 install( FILES ${PROJECT_BINARY_DIR}/CMakeCache.txt 
          DESTINATION config 
          RENAME Draco-CMakeCache.txt )
+# install top level documents
+install( 
+   FILES 
+      ChangeLog
+      Copyright
+      README.draco
+      ToDo
+   DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
 
 # Add support for the 'uninstall' target
 configure_file(
