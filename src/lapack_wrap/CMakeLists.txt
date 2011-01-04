@@ -6,18 +6,9 @@ project( lapack_wrap CXX )
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
+find_package( LAPACK )
 if( LAPACK_FOUND )
-   # include_directories( ${lapack_INCLUDE_DIRS} )
-   # include( CheckIncludeFiles )
-   # usage: CHECK_INCLUDE_FILES (<header> <RESULT_VARIABLE> )
-   # check_include_files( fblaswr.h HAVE_FBLASWR_H )
-   # check_symbol_exists( scopy_ fblaswr.h HAVE_SCOPY )
-   # if( HAVE_SCOPY )
-      # set( SCOPY scopy_ )
-   # endif()
-else()
-   find_package( LAPACK REQUIRED )
-endif()
+
 set( SCOPY scopy_ )
 set( DCOPY dcopy_ )
 set( SSCAL sscal_ )
@@ -75,3 +66,6 @@ install( FILES ${headers} DESTINATION include/lapack_wrap )
 if( DRACO_BUILD_TESTS )
    add_subdirectory( test )
 endif()   
+
+endif( LAPACK_FOUND )
+
