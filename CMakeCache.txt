@@ -57,8 +57,8 @@ DRACO_LIBRARY_TYPE:STRING=SHARED
 #GRACE_LIB_DIR:PATH=/ccs/opt/x86_64/grace/grace/lib
 
 # Where is GSL?
-GSL_INC_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/include
-GSL_LIB_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/lib
+#GSL_INC_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/include
+#GSL_LIB_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/lib
 
 # Where is LAPACK?
 #LAPACK_INC_DIR:PATH=/ccs/codes/radtran/vendors/atlas/Linux64/include
