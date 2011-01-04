@@ -301,7 +301,9 @@ macro( add_parallel_tests )
          if( CMAKE_GENERATOR MATCHES "Visual Studio")
             set( test_loc "${PROJECT_BINARY_DIR}/$(INTDIR)/${testname}" )
          else()
-            get_target_property( test_loc Ut_${compname}_${testname}_exe LOCATION )
+            get_target_property( test_loc 
+               Ut_${compname}_${testname}_exe 
+               LOCATION )
          endif()
 
          # Loop over PE_LIST, register test for each numPE
@@ -323,7 +325,8 @@ macro( add_parallel_tests )
       # SCALAR Mode:
       foreach( file ${addparalleltest_SOURCES} )
          get_filename_component( testname ${file} NAME_WE )
-         add_test( ${compname}_${testname} ${testname} )
+         add_test( ${compname}_${testname} ${testname} 
+                   ${addparalleltest_TEST_ARGS} )
          set_tests_properties( ${compname}_${testname} 
             PROPERTIES	
               PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
