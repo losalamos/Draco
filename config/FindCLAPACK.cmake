@@ -9,6 +9,7 @@ FIND_PATH( LAPACK_INCLUDE_DIR clapack.h
     #"[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\clapack;InstallPath]/include"
     ${LAPACK_INC_DIR}
     $ENV{LAPACK_INC_DIR}
+    ${VENDOR_DIR}/atlas/include
 )
 
 if( WIN32 )
@@ -21,6 +22,7 @@ FIND_LIBRARY(LAPACK_LIBRARY
     PATHS
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
+        ${VENDOR_DIR}/atlas/lib
 )
 if( WIN32 )
    set(BLAS_LIBRARY_NAME blas.lib)
@@ -33,24 +35,28 @@ FIND_LIBRARY(LAPACK_BLAS_LIBRARY
     PATHS
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
+        ${VENDOR_DIR}/atlas/lib
 )
 FIND_LIBRARY(LAPACK_F2C_LIBRARY
     NAMES libf2c.lib
     PATHS
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
+        ${VENDOR_DIR}/atlas/lib
 )
 FIND_LIBRARY(LAPACK_F77BLAS_LIBRARY
     NAMES f77blas
     PATHS
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
+        ${VENDOR_DIR}/atlas/lib
 )
 FIND_LIBRARY(LAPACK_ATLAS_LIBRARY
     NAMES atlas
     PATHS
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
+        ${VENDOR_DIR}/atlas/lib
 )
 MARK_AS_ADVANCED( 
    LAPACK_LIBRARY

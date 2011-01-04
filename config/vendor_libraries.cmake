@@ -199,6 +199,15 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( SetupVendorLibrariesUnix )
 
+   message("
+Vendor Setup:
+")
+
+   if( NOT EXISTS "${VENDOR_DIR}" AND EXISTS "$ENV{VENDOR_DIR}" )
+      set( VENDOR_DIR $ENV{VENDOR_DIR} )
+   endif()
+   set( VENDOR_DIR "VENDOR_DIR" CACHE PATH "Root for vendor paths." )
+
    # This module will set the following variables:
    #   MPI_FOUND                  TRUE if we have found MPI
    #   MPI_COMPILE_FLAGS          Compilation flags for MPI programs
@@ -222,13 +231,13 @@ macro( SetupVendorLibrariesUnix )
       set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
    endif()
 
-   if( IS_DIRECTORY "${MPI_INC_DIR}" AND IS_DIRECTORY "${MPI_LIB_DIR}" )
-      set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
-      set( MPI_LIBRARY ${MPI_LIB_DIR}/libmpi.so )
-      set( MPI_EXTRA_LIBRARY ${MPI_LIB_DIR}/libmpi_cxx.so )
-   else()
-      set( MPI_LIBRARY "" )
-   endif()
+   # if( IS_DIRECTORY "${MPI_INC_DIR}" AND IS_DIRECTORY "${MPI_LIB_DIR}" )
+   #    set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
+   #    set( MPI_LIBRARY ${MPI_LIB_DIR}/libmpi.so )
+   #    set( MPI_EXTRA_LIBRARY ${MPI_LIB_DIR}/libmpi_cxx.so )
+   # else()
+   #    set( MPI_LIBRARY "" )
+   # endif()
 
    message(STATUS "Looking for MPI...")
    find_package( MPI )
@@ -241,10 +250,10 @@ macro( SetupVendorLibrariesUnix )
       endif()
    else()
       set( DRACO_C4 "SCALAR" )
-      set( MPI_INCLUDE_PATH "" )
-      set( MPI_LIBRARY CACHE FILEPATH " " FORCE )
-      message(WARNING 
-         "MPI NOT FOUND (continuing with DRACO_C4 = SCALAR)")
+      set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
+      set( MPI_LIBRARY "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
+      set( MPI_LIBRARIES "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
+
    endif()
    # Save the result in the cache file.
    set( DRACO_C4 "${DRACO_C4}" CACHE STRING 
@@ -258,30 +267,16 @@ macro( SetupVendorLibrariesUnix )
 
   # LAPACK & BLAS
   message( STATUS "Looking for LAPACK/BLAS...")
-  find_package( CLAPACK REQUIRED )
-  if( LAPACK_FOUND )
-     message( STATUS "Looking for LAPACK/BLAS... ${LAPACK_LIBRARY}")
-  else()
-     message( STATUS "Looking for LAPACK/BLAS... NOT FOUND!")
-  endif()
+  # find_package( LAPACK )
+  find_package( CLAPACK )
  
   # GSL
   message( STATUS "Looking for GSL...")
-  find_package( GSL REQUIRED )
-  if( GSL_FOUND )
-     message( STATUS "Looking for GSL... ${GSL_LIBRARY}")
-  else()
-     message( STATUS "Looking for GSL... NOT FOUND!")
-  endif()
+  find_package( GSL )
 
   # Gandolf
   message( STATUS "Looking for Gandolf library...")
-  find_package( Gandolf REQUIRED )
-  if( GANDOLF_FOUND )
-     message( STATUS "Looking for Gandolf library... ${GANDOLF_LIBRARY}")
-  else()
-     message( STATUS "Looking for Gandolf library... NOT FOUND!")
-  endif()
+  find_package( Gandolf )
 
   # find_package( XercesC REQUIRED )
 
@@ -321,6 +316,9 @@ macro( SetupVendorLibrariesUnix )
   # if ( ENABLE_QT4 )
     # find_package( Qt4 )
   # endif( ENABLE_QT4 )
+
+  set( GANDOLF_LIB_DIR "${GANDOLF_LIB_DIR}" CACHE PATH 
+     "Location of gandolf libraries." )
 
 endmacro()
 

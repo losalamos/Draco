@@ -32,8 +32,8 @@
 #
 # Requirements:
 #
-# 1. Draco must find GSL and LAPACK.  If these are not found, the
-#    configuration process will abort.
+# 1. By default MPI is selected by finding mpirun/mpiexec/etc in your
+#    PATH. 
 #
 # Building:
 # 
