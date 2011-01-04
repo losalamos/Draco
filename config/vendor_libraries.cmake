@@ -213,34 +213,45 @@ macro( SetupVendorLibrariesUnix )
    #   MPIEXEC_PREFLAGS           Flags to pass to MPIEXEC directly before the
    #                              executable to run.
    #   MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
-   
-   if( IS_DIRECTORY "$ENV{MPI_INC_DIR}" AND IS_DIRECTORY "$ENV{MPI_LIB_DIR}" )
-      set( MPI_INCLUDE_PATH $ENV{MPI_INC_DIR} )
-      set( MPI_LIBRARY $ENV{MPI_LIB_DIR}/libmpi.so )
-      set( MPI_EXTRA_LIBRARY $ENV{MPI_LIB_DIR}/libmpi_cxx.so )
+
+   # Where to look for MPI libraries (local variable first, then environment.
+   if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
+      set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
    endif()
+   if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
+      set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
+   endif()
+
+   if( IS_DIRECTORY "${MPI_INC_DIR}" AND IS_DIRECTORY "${MPI_LIB_DIR}" )
+      set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
+      set( MPI_LIBRARY ${MPI_LIB_DIR}/libmpi.so )
+      set( MPI_EXTRA_LIBRARY ${MPI_LIB_DIR}/libmpi_cxx.so )
+   else()
+      set( MPI_LIBRARY "" )
+   endif()
+
    message(STATUS "Looking for MPI...")
    find_package( MPI )
    if( MPI_FOUND )
       set( DRACO_C4 "MPI" )  
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
-      message(STATUS "Looking for MPI... ${MPI_LIBRARY}")
+      if( NOT MPIEXEC )
+         message( FATAL_ERROR 
+            "MPI found but mpirun not in PATH. Aborting" )
+      endif()
    else()
       set( DRACO_C4 "SCALAR" )
-      message(WARNING "Looking for MPI... NOT FOUND (continuing with C4 = SCALAR)")
+      set( MPI_INCLUDE_PATH "" )
+      set( MPI_LIBRARY CACHE FILEPATH " " FORCE )
+      message(WARNING 
+         "MPI NOT FOUND (continuing with DRACO_C4 = SCALAR)")
    endif()
-   set( DRACO_C4 "${DRACO_C4}" CACHE STRING "C4 communication mode (SCALAR or MPI)" )
+   # Save the result in the cache file.
+   set( DRACO_C4 "${DRACO_C4}" CACHE STRING 
+      "C4 communication mode (SCALAR or MPI)" )
    if( "${DRACO_C4}" STREQUAL "MPI"    OR 
        "${DRACO_C4}" STREQUAL "SCALAR" )
-      # message("
-      #     MPI_FOUND         = ${MPI_FOUND}
-      #     MPI_LIBRARY       = ${MPI_LIBRARY}
-      #     MPI_EXTRA_LIBRARY = ${MPI_EXTRA_LIBRARY}
-      #     MPI_LIBRARIES     = ${MPI_LIBRARIES}
-      #     MPIEXEC           = ${MPIEXEC}
-      #     MPIEXEC_NUMPROC_FLAG = ${MPIEXEC_NUMPROC_FLAG}
-      #     DRACO_C4          = ${DRACO_C4}
-      #     ")
+      # message("")
    else()
       message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
    endif()
