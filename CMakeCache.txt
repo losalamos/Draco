@@ -9,21 +9,17 @@
 # 5. ctest
 # 6. make install
 
-#
+# ------------------------------------------------------------
 # You must set these values for your build:
-# 
+# ------------------------------------------------------------
 
 # Location where 'make install' will copy files to.
 # CMAKE_INSTALL_PREFIX:PATH=c:/Release-x64/draco
-CMAKE_INSTALL_PREFIX:PATH=/var/tmp/$ENV{LOGNAME}/Release-x64/draco
+CMAKE_INSTALL_PREFIX:PATH=/var/tmp/kgt/cmake/gcc/mpid/t
 
 # VENDOR_DIR:PATH=$ENV{VENDOR_DIR}
 # Windows: k:/vendors/x64-Windows
 VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
-
-#
-# You must choose one of the provided options
-# 
 
 # CMAKE_BUILD_TYPE == { Release, Debug, RelWithDebInfo, MinSizeRel }
 CMAKE_BUILD_TYPE:STRING=Debug
@@ -32,9 +28,9 @@ CMAKE_BUILD_TYPE:STRING=Debug
 #                      Visual Studio 9 2008, Visual Studio 9 2008 Win64 }
 CMAKE_GENERATOR:STRING=Unix Makefiles
 
-#
+# ------------------------------------------------------------
 # Review these additional settings
-# 
+# ------------------------------------------------------------
 
 # Should we compile the tests?
 DRACO_BUILD_TESTS:BOOL=ON
@@ -48,5 +44,57 @@ DRACO_DBC_LEVEL:STRING=7
 # Keyword for creating new libraries (STATIC or SHARED).
 DRACO_LIBRARY_TYPE:STRING=SHARED
 
+# ------------------------------------------------------------
+# [OPTIONAL] If not using Draco Modules, you may need to set these
+# ------------------------------------------------------------
 
+# Where is MPI?
+#MPI_INC_DIR:PATH=/ccs/codes/mpi/openmpi/Linux64/1.3.3/include
+#MPI_LIB_DIR:PATH=/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib
 
+# Where is Grace?
+#GRACE_INC_DIR:PATH=/ccs/opt/x86_64/grace/grace/include
+#GRACE_LIB_DIR:PATH=/ccs/opt/x86_64/grace/grace/lib
+
+# Where is GSL?
+GSL_INC_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/include
+GSL_LIB_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/lib
+
+# Where is LAPACK?
+#LAPACK_INC_DIR:PATH=/ccs/codes/radtran/vendors/atlas/Linux64/include
+#LAPACK_LIB_DIR:PATH=/ccs/codes/radtran/vendors/atlas/Linux64/lib
+
+# Where is METIS?
+#METIS_INC_DIR:PATH=/ccs/codes/radtran/vendors/ParMetis-3.1.1/openmpi-gfortran434-gcc434/source/METISLib
+#METIS_LIB_DIR:PATH=/ccs/codes/radtran/vendors/ParMetis-3.1.1/openmpi-gfortran434-gcc434/lib
+
+# Where is NDI?
+#NDI_INC_DIR:PATH=/ccs/codes/radtran/vendors/ndi/2.0.13/include
+#NDI_LIB_DIR:PATH=/ccs/codes/radtran/vendors/ndi/2.0.13/lib
+
+# Where is Parmetis?
+#PARMETIS_INC_DIR:PATH=/ccs/codes/radtran/vendors/ParMetis-3.1.1/openmpi-gfortran434-gcc434/include
+#PARMETIS_LIB_DIR:PATH=/ccs/codes/radtran/vendors/ParMetis-3.1.1/openmpi-gfortran434-gcc434/lib
+
+# Where is SuperLUDist?
+#SUPERLUDIST_INC_DIR:PATH=/ccs/codes/radtran/vendors/SuperLU_DIST_2.4/openmpi-gfortran434-gcc434/include
+#SUPERLUDIST_LIB_DIR:PATH=/ccs/codes/radtran/vendors/SuperLU_DIST_2.4/openmpi-gfortran434-gcc434/lib
+
+# Where is Trilinos?
+#TRILINOS_INC_DIR:PATH=/ccs/codes/radtran/vendors/trilinos-10.4.0/openmpi-gfortran434-gcc434/include
+#TRILINOS_LIB_DIR:PATH=/ccs/codes/radtran/vendors/trilinos-10.4.0/openmpi-gfortran434-gcc434/lib
+
+# Where is Blacs?
+#BLACS_LIB_DIR:PATH=/ccs/codes/radtran/vendors/BLACS/Linux64/openmpi-gfortran434-gcc434/lib
+
+# Where is Gandolf?
+#GANDOLF_LIB_DIR:PATH=/ccs/codes/radtran/vendors/gandolf/Linux64/lib
+
+# Where is Hypre?
+#HYPRE_LIB_DIR:PATH=/ccs/codes/radtran/vendors/hypre-2.0.0/openmpi-gfortran434-gcc434/lib
+
+# Where is PCG
+# PCG_LIB_DIR:PATH=/ccs/codes/radtran/vendors/pcg1.0/Linux/lib
+
+# Where is Scalapack?
+#SCALAPACK_LIB_DIR:PATH=/ccs/codes/radtran/vendors/SCALAPACK/Linux64/openmpi-gfortran434-gcc434/lib
