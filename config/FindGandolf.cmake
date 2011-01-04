@@ -5,7 +5,8 @@
 #  GANDOLF_FOUND          - True if GANDOLF found.
 
 set( GANDOLF_LIBRARY_NAME gandolf)
-set( GANDOLF_GFORTRAN_NAME gfortran)
+# Expect to find either libgfortran or libg2c in the gandolf_lib_dir!!!
+set( GANDOLF_GFORTRAN_NAME gfortran g2c)
 
 find_library(GANDOLF_LIBRARY
     NAMES ${GANDOLF_LIBRARY_NAME}
