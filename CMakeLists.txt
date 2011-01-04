@@ -8,6 +8,56 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
+#------------------------------------------------------------------------------#
+# How to build Draco using CMake:
+#------------------------------------------------------------------------------#
+# Background:
+# 
+# There are 3 directories: source; build; target.
+#   source - this is the location of cvs co files
+#   build  - this is the location for makefiles, object files, etc.
+#   target - this is the install location for final headers, libraries
+#            and binaries. 
+#
+# Environment:
+#
+# - cmake must be in your path
+# - The compiler is chosen by setting $CXX, $CC, $F90, etc.  On the
+#   ICN this is done for you automatcially.  If not set, CMake will
+#   use whatever it can find in your path (e.g.: /usr/bin/g++)
+# - Vendor locations can be specified by setting $<VENDOR>_LIB_DIR and
+#   $<VENDOR>_INC_DIR. For example, $MPI_INC_DIR, $GSL_LIB_DIR,
+#   etc. When using the Draco modules feature, this is done
+#   automatically. 
+#
+# Requirements:
+#
+# 1. Draco must find GSL and LAPACK.  If these are not found, the
+#    configuration process will abort.
+#
+# Building:
+# 
+# 1. Change to your build directory.
+# 2. [optional] Copy the $SRC_DIR/CMakeCache.txt file to the build
+#    directory and edit the file as needed.
+# 3. Run 'cmake $SRC_DIR'.  This generates Makefiles in the build
+#    directory. 
+# 4. [optional] Use command line arguments to cmake to configure your
+#    build (instead of using CMakeCache.txt).  For example:
+#    cmake ~/draco \
+#          -DCMAKE_INSTALL_PREFIX=/var/tmp/draco-install-dir \
+#          -DMPI_INC_DIR=/ccs/codes/mpi/openmpi/Linux64/1.3.3/include \
+#          -DMPI_LIB_DIR=/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib \
+#          -DDRACO_DBC_LEVEL=0 \
+#          -DCMAKE_BUILD_TYPE=Release
+# 5. [optional] Run 'make edit_cache' to review your build setup.
+#    Edit as needed. 
+# 6. Run 'make -j16' to compile the code. (also try 'make VERBOSE=1')
+# 7. Run 'ctest -j16' to run the tests.
+# 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
+# 9. [optional] Run 'make help' for a list of targets.
+#------------------------------------------------------------------------------#
+
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project( Draco CXX )
 
