@@ -6,8 +6,10 @@ project( lapack_wrap CXX )
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-find_package( LAPACK )
-if( LAPACK_FOUND )
+if( NOT LAPACK_FOUND )
+   message( WARNING 
+      "Skipping lapack_wrap component because LAPACK is not found." )
+else()
 
 set( SCOPY scopy_ )
 set( DCOPY dcopy_ )
@@ -67,5 +69,5 @@ if( DRACO_BUILD_TESTS )
    add_subdirectory( test )
 endif()   
 
-endif( LAPACK_FOUND )
+endif( NOT LAPACK_FOUND )
 
