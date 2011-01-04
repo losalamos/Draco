@@ -15,7 +15,7 @@ if( UNIX )
        endif()
     endforeach()
     list( LENGTH proc_ids DRACO_NUM_CORES )
-    set( DRACO_NUM_CORES ${DRACO_NUM_CORES} CACHE STRING 
+    set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
        "Number of cores on the local machine." )
   endif()
 endif()
@@ -24,11 +24,11 @@ endif()
 if( DRACO_BUILD_TESTS )
   include(CTest)
   enable_testing()
-  if( "${DRACO_NUM_CORES}none" STREQUAL "none"  )
+  if( "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )
      add_custom_target( check
         COMMAND ${CMAKE_MAKE_COMMAND} test )   
   else()
      add_custom_target( check
-        COMMAND ${CMAKE_CTEST_COMMAND} -j ${DRACO_NUM_CORES} )
+        COMMAND ${CMAKE_CTEST_COMMAND} -j ${MPIEXEC_MAX_NUMPROCS} )
   endif()
 endif()  

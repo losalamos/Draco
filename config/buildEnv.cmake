@@ -98,7 +98,7 @@ if( UNIX )
        endif()
     endforeach()
     list( LENGTH proc_ids DRACO_NUM_CORES )
-    set( DRACO_NUM_CORES ${DRACO_NUM_CORES} CACHE STRING 
+    set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
        "Number of cores on the local machine." )
   endif()
   
