@@ -15,6 +15,7 @@
 
 #include "ds++/Assert.hh"
 #include "MPI_Traits.hh"
+#include "c4/config.h"
 #ifdef C4_MPI
 namespace rtt_c4
 {

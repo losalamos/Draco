@@ -10,9 +10,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "c4/config.h"
+#ifdef C4_MPI
+
 #include "Processor_Group.hh"
 #include "Processor_Group.i.hh"
-#ifdef C4_MPI
+
 namespace rtt_c4
 {
 using namespace std;
@@ -20,7 +23,9 @@ using namespace std;
 template void Processor_Group::sum(vector<double> &values);
 
 } // end namespace rtt_c4
+
 #endif  //C4_MPI
+
 //---------------------------------------------------------------------------//
 //              end of c4/Processor_Group_pt.hh
 //---------------------------------------------------------------------------//

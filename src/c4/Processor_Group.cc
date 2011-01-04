@@ -9,18 +9,19 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-//#include "c4_mpi.h"
-#include "C4_Functions.hh"
-#include "ds++/Assert.hh"
+#include "c4/config.h"
 
 #ifdef C4_MPI
+
+#include "C4_Functions.hh"
 #include "Processor_Group.hh"
+#include "ds++/Assert.hh"
 
 namespace rtt_c4
 {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//--------------------------------------------------------------------------//
 /*!
  *
  * \param stride Number of processor groups to create. Each processor with

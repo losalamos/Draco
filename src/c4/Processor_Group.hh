@@ -12,10 +12,12 @@
 #ifndef c4_Processor_Group_hh
 #define c4_Processor_Group_hh
 
+#include "c4/config.h"
+#ifdef C4_MPI
+
 #include <vector>
 #include "c4_mpi.h"
 
-#ifdef C4_MPI
 namespace rtt_c4
 {
 
