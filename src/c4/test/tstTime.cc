@@ -74,7 +74,7 @@ void wall_clock_test()
     
     Timer t;
 
-    double const prec( 1.5*t.posix_err() );
+    double const prec( 1.75*t.posix_err() );
     
     double begin           = rtt_c4::wall_clock_time();
     double beginDeprecated = C4::Wtime();
@@ -140,7 +140,7 @@ void wall_clock_test()
     double const time_resolution( 1.0 );  
 #else
     double const time_resolution( prec );  
-#endif    
+#endif
     if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= time_resolution )
     {
 	ostringstream msg;
