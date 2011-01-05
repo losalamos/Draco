@@ -223,7 +223,8 @@ Vendor Setup:
    #                              executable to run.
    #   MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
 
-   # Where to look for MPI libraries (local variable first, then environment.
+   message(STATUS "Looking for MPI...")
+
    if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
       set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
    endif()
@@ -231,16 +232,26 @@ Vendor Setup:
       set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
    endif()
 
-   # if( IS_DIRECTORY "${MPI_INC_DIR}" AND IS_DIRECTORY "${MPI_LIB_DIR}" )
-   #    set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
-   #    set( MPI_LIBRARY ${MPI_LIB_DIR}/libmpi.so )
-   #    set( MPI_EXTRA_LIBRARY ${MPI_LIB_DIR}/libmpi_cxx.so )
-   # else()
-   #    set( MPI_LIBRARY "" )
-   # endif()
-
-   message(STATUS "Looking for MPI...")
+   # Try to find MPI in the default locations (look for mpic++ in PATH)
    find_package( MPI )
+
+   # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
+   if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
+      set( MPIEXEC $ENV{MPIRUN} )
+      find_package( MPI )
+   endif()
+
+   # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
+   if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
+         EXISTS "${MPI_INC_DIR}" )
+      set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
+      find_library( MPI_LIBRARY
+         NAMES mpi mpich msmpi
+         HINTS ${MPI_LIB_DIR} )
+      find_package( MPI )
+   endif()
+
+   # Set Draco build system variables based on what we know about MPI.
    if( MPI_FOUND )
       set( DRACO_C4 "MPI" )  
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
@@ -253,8 +264,8 @@ Vendor Setup:
       set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
       set( MPI_LIBRARY "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
       set( MPI_LIBRARIES "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
-
    endif()
+
    # Save the result in the cache file.
    set( DRACO_C4 "${DRACO_C4}" CACHE STRING 
       "C4 communication mode (SCALAR or MPI)" )
