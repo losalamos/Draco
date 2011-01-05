@@ -86,7 +86,7 @@ endif()
 # this is the initial cache to use for the binary tree, be careful to escape
 # any quotes inside of this string if you use it
 set( CTEST_INITIAL_CACHE "
-DRACO_BUILD_TESTS:BOOL=ON
+BUILD_TESTING:BOOL=ON
 VERBOSE:BOOL=ON
 
 BUILDNAME:STRING=${build_name}
