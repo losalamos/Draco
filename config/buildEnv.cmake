@@ -15,13 +15,15 @@ macro( dbsSetDefaults )
 
   # if undefined, force build_type to "release"
   if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-    set( CMAKE_BUILD_TYPE "RELEASE" CACHE STRING "Release, Debug, RelWithDebInfo" FORCE )
+    set( CMAKE_BUILD_TYPE "RELEASE" CACHE STRING 
+       "Release, Debug, RelWithDebInfo" FORCE )
   endif( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
 
   # Provide default value for install_prefix
   if( "${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local" OR
       "${CMAKE_INSTALL_PREFIX}" MATCHES "C:/Program Files" )
-    set( CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/t" CACHE PATH "Install path prefix, prepended onto install directories" FORCE)
+    set( CMAKE_INSTALL_PREFIX "${Draco_BINARY_DIR}/install" CACHE PATH 
+       "Install path prefix, prepended onto install directories" FORCE)
   endif()
   
   mark_as_advanced( EXECUTABLE_OUTPUT_PATH )
