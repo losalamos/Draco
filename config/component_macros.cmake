@@ -318,6 +318,7 @@ macro( add_parallel_tests )
                PROPERTIES	
                  PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
                  FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+                 PROCESSORS              "${numPE}"
                )
          endforeach()
       endforeach()
