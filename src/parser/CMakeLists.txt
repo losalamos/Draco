@@ -47,6 +47,6 @@ install( FILES ${headers} DESTINATION include/parser )
 # Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( DRACO_BUILD_TESTS )
+if( BUILD_TESTING )
  add_subdirectory( test )
 endif()   

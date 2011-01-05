@@ -33,7 +33,7 @@ CMAKE_GENERATOR:STRING=Unix Makefiles
 # ------------------------------------------------------------
 
 # Should we compile the tests?
-DRACO_BUILD_TESTS:BOOL=ON
+BUILD_TESTING:BOOL=ON
 
 # C4 communication mode (SCALAR or MPI)
 DRACO_C4:STRING=MPI

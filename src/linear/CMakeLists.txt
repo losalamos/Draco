@@ -53,6 +53,6 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/linear
 # Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( DRACO_BUILD_TESTS )
+if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   

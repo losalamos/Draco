@@ -1,6 +1,6 @@
 # File: dracoTesting.cmake
 
-option( DRACO_BUILD_TESTS "Should we compile the tests?" ON )
+option( BUILD_TESTING "Should we compile the tests?" ON )
 
 # how many cores on the local system?
 if( UNIX )
@@ -21,7 +21,7 @@ if( UNIX )
 endif()
 
 # enable ctest funcitons and run ctest in parallel if we have multiple cores.
-if( DRACO_BUILD_TESTS )
+if( BUILD_TESTING )
   include(CTest)
   enable_testing()
   if( "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )

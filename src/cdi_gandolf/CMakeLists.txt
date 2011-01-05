@@ -58,7 +58,7 @@ install( FILES ${headers} DESTINATION include/cdi_gandolf )
 # Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( DRACO_BUILD_TESTS AND EXISTS ${PROJECT_SOURCE_DIR}/test/CMakeLists.txt )
+if( BUILD_TESTING AND EXISTS ${PROJECT_SOURCE_DIR}/test/CMakeLists.txt )
    add_subdirectory( test )
 endif()   
 
