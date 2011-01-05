@@ -15,7 +15,7 @@ macro( dbsSetDefaults )
 
   # if undefined, force build_type to "release"
   if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-    set( CMAKE_BUILD_TYPE "RELEASE" CACHE STRING 
+    set( CMAKE_BUILD_TYPE "Debug" CACHE STRING 
        "Release, Debug, RelWithDebInfo" FORCE )
   endif( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
 
