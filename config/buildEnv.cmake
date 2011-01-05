@@ -28,6 +28,7 @@ macro( dbsSetDefaults )
   
   mark_as_advanced( EXECUTABLE_OUTPUT_PATH )
   mark_as_advanced( LIBRARY_OUTPUT_PATH )
+  mark_as_advanced( DART_TESTING_TIMEOUT )
   
   # Special setup for Visual Studio builds.
 # SET(CMAKE_BUILD_ON_VISUAL_STUDIO 0)

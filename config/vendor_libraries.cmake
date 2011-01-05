@@ -330,6 +330,7 @@ Vendor Setup:
 
   set( GANDOLF_LIB_DIR "${GANDOLF_LIB_DIR}" CACHE PATH 
      "Location of gandolf libraries." )
+  mark_as_advanced(GANDOLF_LIB_DIR)
 
 endmacro()
 

@@ -77,6 +77,7 @@ macro(dbsSetupCompilers)
      # declspec(dllimport) or declspec(dllexport) for MSVC.
      set( DRACO_SHARED_LIBS 1 CACHE STRING 
 	"This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
+     mark_as_advanced(DRACO_SHARED_LIBS)
   else()
      message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
   endif()
