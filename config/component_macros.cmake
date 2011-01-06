@@ -295,7 +295,7 @@ macro( add_parallel_tests )
 
    # 3. Register the unit test
    # 4. Register the pass/fail criteria.
-   if( C4_MPI )
+   if( ${DRACO_C4} MATCHES "MPI" )
       foreach( file ${addparalleltest_SOURCES} )
          get_filename_component( testname ${file} NAME_WE )
          if( CMAKE_GENERATOR MATCHES "Visual Studio")
@@ -322,7 +322,7 @@ macro( add_parallel_tests )
                )
          endforeach()
       endforeach()
-   else( C4_MPI )
+   else( ${DRACO_C4} MATCHES "MPI" )
       # SCALAR Mode:
       foreach( file ${addparalleltest_SOURCES} )
          get_filename_component( testname ${file} NAME_WE )
@@ -334,7 +334,7 @@ macro( add_parallel_tests )
               FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
             )
       endforeach()
-   endif( C4_MPI )
+   endif( ${DRACO_C4} MATCHES "MPI" )
 
 endmacro()
 
