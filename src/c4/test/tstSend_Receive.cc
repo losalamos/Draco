@@ -147,6 +147,7 @@ void single_comm_test()
         sdv.wait();
         v.clear();
         sdv.send(v);
+        sdv.wait();
     }
 
     if (node() == 1)
@@ -192,6 +193,7 @@ void single_comm_autosize_test()
         sdv.wait();
         v.clear();
         sdv.send(v);
+        sdv.wait();
     }
 
     if (node() == 1)

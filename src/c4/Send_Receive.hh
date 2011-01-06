@@ -60,6 +60,7 @@ class Sender
 
     int to_node;
     C4_Req size_handle, data_handle;
+    int sz;
 
     
   public:
@@ -80,7 +81,11 @@ class Sender
     void send(int size, T* data)
     {
         
-        size_handle = send_async(&size, 1, to_node, SIZE_CHANNEL);
+        // Hold onto size in a private member variable, to avoid
+        // having size fall out of scope before the send actually
+        // completes.
+        sz = size;
+        size_handle = send_async(&sz, 1, to_node, SIZE_CHANNEL);
         if (size > 0)
         {
             data_handle = rtt_c4::send_async(data, size, to_node, DATA_CHANNEL);
