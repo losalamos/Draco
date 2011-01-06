@@ -13,8 +13,10 @@
 
 # Use SSE{1,2,3} instruction set?
 option( DRACO_ENABLE_SSE "Try to use SSE instructions?" ON )
+mark_as_advanced( DRACO_ENABLE_SSE )
 
 option( ENABLE_OPENMP "Link against OpenMP libraries?" OFF )
+mark_as_advanced( ENABLE_OPENMP )
 
 # Library type to build
 # Linux: STATIC is a lib<XXX>.a
