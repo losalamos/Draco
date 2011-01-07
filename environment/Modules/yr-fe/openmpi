@@ -15,7 +15,7 @@ prereq openmpi-gcc openmpi-pgi openmpi-intel;
 # local variables
 set prefix      $env(MPIHOME)
 set incdir      $prefix/include
-set libdir      $prefix/lib
+set libdir      $prefix/lib64
 
 # module whatis
 module-whatis	"Open MPI wrapper for draco";

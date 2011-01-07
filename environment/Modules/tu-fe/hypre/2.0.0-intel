@@ -5,6 +5,10 @@
 ## modulefiles/modules.  Generated from modules.in by configure.
 ##
 
+conflict hypre/2.0.0
+conflict gcc
+conflict pgi
+
 # global control file
 if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;

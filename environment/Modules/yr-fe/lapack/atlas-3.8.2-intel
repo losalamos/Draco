@@ -5,18 +5,14 @@
 ## modulefiles/modules.  Generated from modules.in by configure.
 ##
 
-conflict lapack/atlas-3.8.3
-conflict gcc
-conflict pgi
-
 # global control file
 if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
 # local variables
-set version     3.8.3;
-set prefix      /usr/projects/draco/vendors/atlas/TLCC-openmpi133-intel100023-intel100023
+set version     3.8.2;
+set prefix      /usr/projects/draco/vendors/atlas/RR-openmpi133-intel100023-intel100023
 set libdir      $prefix/lib;
 set incdir      $prefix/include;
 
@@ -41,7 +37,8 @@ if { ![file exists $prefix] } {
 }
 
 setenv          ATLAS_ROOT 	$prefix;
-setenv          ATLAS_LD_FLAGS  "-L/usr/lib64 -lgfortran -L$libdir -llapack -lcblas -lf77blas -latlas";
+setenv          ATLAS_LD_FLAGS  "-L/usr/lib64 -L$libdir -llapack -lcblas -lf77blas -latlas";
+# -lgfortran
 setenv          ATLAS_COMPILE_FLAGS 	-I$prefix/include;
 
 setenv          LAPACK_LIB_DIR  $libdir
