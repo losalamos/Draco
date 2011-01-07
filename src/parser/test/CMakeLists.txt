@@ -72,6 +72,12 @@ add_scalar_tests(
    SOURCES "${scalar_test_sources}"
    DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 
+# Special case for driver4tstConsole_Token_Stream
+# This test doesn't work under Xcode
+if (${CMAKE_GENERATOR} MATCHES "Xcode" )
+list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc )
+endif ()
+
 # The remaining tests are Parallel.
 
 add_parallel_tests(
