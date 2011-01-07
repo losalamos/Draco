@@ -93,17 +93,17 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 # -Weffc++
 
 IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-fPIC" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wcast-align -Wpointer-arith -Wall -Wextra -DDEBUG") # -W
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
-  set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} -O3 -funroll-loops -march=k8" )
+  set( DRACO_C_FLAGS                "-fPIC" )
+  set( DRACO_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wcast-align -Wpointer-arith -Wall -Wextra -DDEBUG") # -W
+  set( DRACO_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
+  set( DRACO_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_RELEASE}" )
+  set( DRACO_C_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_DEBUG} -O3 -funroll-loops -march=k8" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
-  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
-  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
-  set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+  set( DRACO_CXX_FLAGS                "${DRACO_C_FLAGS}" )
+  set( DRACO_CXX_FLAGS_DEBUG          "${DRACO_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
+  set( DRACO_CXX_FLAGS_RELEASE        "${DRACO_C_FLAGS_RELEASE}")
+  set( DRACO_CXX_FLAGS_MINSIZEREL     "${DRACO_CXX_FLAGS_RELEASE}")
+  set( DRACO_CXX_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_RELWITHDEBINFO}" )
 ENDIF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
 
@@ -114,21 +114,21 @@ if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
    option( GCC_ENABLE_GLIBCXX_DEBUG "Use special version of libc.so that
    includes STL bounds checking (only available for DEBUG builds)." OFF )
    if( GCC_ENABLE_ALL_WARNINGS )
-      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Weffc++" )
+      set( DRACO_CXX_FLAGS_DEBUG "${DRACO_CXX_FLAGS_DEBUG} -Weffc++" )
    endif()
    if( GCC_ENABLE_GLIBCXX_DEBUG )
-      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" )
+      set( DRACO_CXX_FLAGS_DEBUG "${DRACO_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" )
    endif()
 endif()
 
 if( ENABLE_SSE )
-  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -msse2 -mfpmath=sse" )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -mfpmath=sse" )
+  set( DRACO_C_FLAGS   "${DRACO_C_FLAGS} -msse2 -mfpmath=sse" )
+  set( DRACO_CXX_FLAGS "${DRACO_CXX_FLAGS} -msse2 -mfpmath=sse" )
 endif( ENABLE_SSE )
 
 if( ENABLE_OPENMP )
-  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fopenmp" )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
+  set( DRACO_C_FLAGS   "${DRACO_C_FLAGS} -fopenmp" )
+  set( DRACO_CXX_FLAGS "${DRACO_CXX_FLAGS} -fopenmp" )
 
   # When compiling F90 that links in C++-based libraries, we will need
   # librt added to the link line.
@@ -147,8 +147,8 @@ endif()
 option( ENABLE_C_CODECOVERAGE "Instrument for C/C++ code coverage analysis?" OFF )
 if( ENABLE_C_CODECOVERAGE )
   find_program( COVERAGE_COMMAND gcov )
-  set( CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-  set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}")
+  set( DRACO_C_FLAGS_DEBUG     "${DRACO_C_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
+  set( DRACO_CXX_FLAGS_DEBUG   "${DRACO_C_FLAGS_DEBUG}")
   set( CMAKE_LDFLAGS           "-fprofile-arcs -ftest-coverage" )
 
   # When compiling F90 that links in C++-based libraries, we will need
@@ -164,6 +164,24 @@ if( ENABLE_C_CODECOVERAGE )
   get_filename_component( libgcov_a_loc ${libgcov_a_loc} ABSOLUTE )
   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${libgcov_a_loc} )
 endif( ENABLE_C_CODECOVERAGE )
+
+# Save the Draco default values to the cache file
+if( "${CXX_FLAGS_INITIALIZED}no" STREQUAL "no" )
+   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL 
+      "using draco settings." )
+   set( CMAKE_C_FLAGS                "${DRACO_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_C_FLAGS_DEBUG          "${DRACO_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+   set( CMAKE_C_FLAGS_RELEASE        "${DRACO_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_CXX_FLAGS                "${DRACO_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_CXX_FLAGS_DEBUG          "${DRACO_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+   set( CMAKE_CXX_FLAGS_RELEASE        "${DRACO_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${DRACO_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${DRACO_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+endif()
+
+
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake
