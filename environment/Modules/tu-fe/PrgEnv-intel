@@ -1,0 +1,137 @@
+#%Module
+#
+# Module PrgEnv-intel
+#
+ 
+module purge
+
+#conflict PrgEnv-pgi
+#conflict PrgEnv-gcc
+#conflict PrgEnv-x1
+#conflict PrgEnv-x2
+#conflict PrgEnv-gnu
+#conflict PrgEnv-pathscale
+#conflict PrgEnv-intel
+#conflict PrgEnv-cray
+
+#set version     3.1.35
+set mfilehome /usr/share/modules/modulefiles
+#set alt1mhome /opt/cray/modulefiles
+
+proc showversion {header} {
+global mod_list
+  puts stderr $header
+  foreach prod $mod_list {
+     puts stderr "\t$prod"
+  }
+  puts stderr "\n"
+}
+
+proc ModulesHelp { } {
+        puts stderr "EAP base environment for intel compiler.: modulefile PrgEnv-intel\n"
+        puts stderr "This module loads the product modules that define the"
+        puts stderr "system paths and environment variables needed"
+        puts stderr "to build an application using intel for on Turing.\n"
+        puts stderr "This environment must be loaded together. You may swap"
+        puts stderr "product components or swap the entire PrgEnv-pgi module,"
+        puts stderr "but you may not unload any of its products individually."
+        puts stderr " "
+        puts stderr "If you have a INTEL-NOT-INSTALLED error you have no intel"
+        puts stderr "modulefile and, possibly, no /opt/intel intel compiler."
+        showversion "This module loads the following products:\n"
+}
+
+#if { [ info exists env(XTPE_NETWORK_TARGET) ] } {
+#                set network_type $env(XTPE_NETWORK_TARGET)
+#} elseif { [file isdirectory /sys/module/kgni_gem] == 1 } {
+#                set network_type gemini
+#} else {
+#                set network_type seastar
+#}
+
+module load modules
+module load friendly-testing
+module load hpc-tools
+
+if { [file exists ${mfilehome}/compiler] } {
+   module load intel-c/10.0.023
+   module load intel-f/10.0.023
+} else {
+   puts stderr "No intel available."
+}
+
+if { [file exists ${mfilehome}/debugger] } {
+   module load totalview
+}
+
+if { [file exists ${mfilehome}/mpi] } {
+   module load openmpi-intel/1.4.3
+} else {
+   puts stderr "No openmpi for intel available."
+}
+
+if { [file exists ${mfilehome}/tools] } {
+#   module load atlas/3.8.2
+   module load grace
+   module load python/2.5.2
+}
+
+if { [file exists ${mfilehome}/turing/hpc-tools] } {
+   module load emacs/23.2
+   module load graphics
+   module load tkdiff
+   module load valgrind-ompi/3.5.0
+}
+
+if { [file exists ${mfilehome}/turing/friendly-testing] } {
+   module load qt4
+}
+
+module load SuperLU_DIST/2.4-intel
+module load lapack/atlas-3.8.3-intel
+module load BLACS/1.1-intel
+module load ParMetis/3.1.1-intel
+module load gsl/1.14-intel
+module load trilinos/10.4.0-intel
+module load SCALAPACK/1.7-intel
+module load hypre/2.0.0-intel
+#module load gandolf ndi openmpi xshow
+module load gandolf grace-draco ndi openmpi xshow
+
+#if { [ info exists env(CRAY_PRGENVPGI) ] && [ module-info mode load] }  {
+#   set kate 1
+#} else {
+
+
+#  foreach prod $mod_list {
+#        module unload ${prod}
+#  }
+
+#  if { [file isdirectory /opt/modulefiles/pgi] == 0  } {
+#    if { [ module-info mode load ]||[ module-info mode switch ] } {
+#    puts stderr "PGI-NOT-INSTALLED:There is no pgi modulefile at /opt/modulefiles."
+#    puts stderr "PGI-NOT-INSTALLED:You must unload this module and read the help info."
+#    puts stderr "PGI-NOT-INSTALLED:  user> module unload PrgEnv-pgi; module help PrgEnv-pgi"
+#    }
+#
+#  } else {
+
+#  setenv PE_ENV INTEL
+#  setenv XTOS_VERSION 3.1.35
+#  setenv XTPE_COMPILE_TARGET linux
+
+  # prepend-path PE_PRODUCT_LIST PGI
+
+#  foreach prod $mod_list {
+#    if { [file exists $alt2mhome/${prod}]  } {
+#         module load ${prod}
+#    } elseif { [file exists $alt1mhome/${prod}] } {
+#         module load $prod
+#    } elseif { [file exists $mfilehome/${prod}] } {
+#         module load $prod
+#    }
+#  }
+#}
+
+# setenv CRAY_PRGENVPGI loaded
+
