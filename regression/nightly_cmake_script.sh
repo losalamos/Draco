@@ -15,7 +15,7 @@ if test -z "$MODULESHOME"; then
   if test -f /home/regress/environment/Modules/init/bash; then
     source /home/regress/environment/Modules/init/bash
     module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.3.4 gsl hypre
-    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.4.0
+    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.4.0 cmake
     module list
   fi
 fi
@@ -37,12 +37,17 @@ base_dir=/home/regress/cmake_draco
 script_dir=/home/regress/cmake_draco
 
 # Release build
-export work_dir=${base_dir}/${dashboard_type}/Release
-ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Release
+build_type=Release
+export work_dir=${base_dir}/${dashboard_type}/${build_type}
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+(cd $work_dir/build; make install)
+
 
 # Debug build
-export work_dir=${base_dir}/${dashboard_type}/Debug
-ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug
+build_type=Debug
+export work_dir=${base_dir}/${dashboard_type}/${build_type}
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+(cd $work_dir/build; make install)
 
 # Coverage build
 module load bullseyecoverage
@@ -51,4 +56,4 @@ CC=`which gcc`
 export work_dir=${base_dir}/${dashboard_type}/Coverage
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,Coverage
 module unload bullseyecoverage
-
+(cd $work_dir/build; make install)
