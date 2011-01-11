@@ -71,6 +71,7 @@ set(DRACO_VERSION_MAJOR 6)
 set(DRACO_VERSION_MINOR 0)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
+set_ccs2_software_version( DRACO )
 
 #
 # Unit Test Setup
