@@ -48,14 +48,10 @@ set( CTEST_CUSTOM_WARNING_EXCEPTION
 
 # Add extra options by specifying MEMORYCHECK_COMMAND_OPTIONS and
 # MEMORYCHECK_SUPPRESSIONS_FILE.  
-set( MEMORYCHECK_SUPPRESSIONS_FILE "valgrind_suppress.txt" CACHE FILEPATH
+set( MEMORYCHECK_SUPPRESSIONS_FILE
+   "${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt"
+   CACHE FILEPATH
   "File that contains suppressions for the memory checker" )
-
-
-set( MEMORYCHECK_COMMAND_OPTIONS "--leak-check=yes" CACHE STRING 
-  "Options for memorycheck tool (valgrind)." )
-# "--leak-check=yes --num-callers=8 --show-reachable=yes"
-# "--leak-check=full"
 
 # Files for exclusion:
 set( CTEST_CUSTOM_MEMCHECK_IGNORE
