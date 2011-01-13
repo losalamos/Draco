@@ -7,6 +7,7 @@
 %%           2) added float figres and tables
 %%           3) added bibtex (bibliography environment)
 %%           4) AW: Added the footer; reformatted the header and fonts
+%%           5) AW: Removed macro shortcuts \@xp (\expandafter) and \@nx (\noexpand)
 %%---------------------------------------------------------------------------%%
 %%
 %% t-2 memo class based on standard letter.cls   ryxm   13 Jan 95
@@ -278,7 +279,7 @@
 \def\@sect#1#2#3#4#5#6[#7]#8{%
   \edef\@toclevel{\ifnum#2=\@m 0\else\number#2\fi}%
   \ifnum #2>\c@secnumdepth \let\@secnumber\@empty
-  \else \@xp\let\@xp\@secnumber\csname the#1\endcsname\fi
+  \else \expandafter \let \expandafter \@secnumber\csname the#1\endcsname\fi
  \ifnum #2>\c@secnumdepth
    \let\@svsec\@empty
  \else
@@ -286,8 +287,8 @@
     \edef\@svsec{\ifnum#2<\@m
        \@ifundefined{#1name}{}{%
          \ignorespaces\csname #1name\endcsname\space}\fi
-       \@nx\textup{%
-      \@nx\mdseries
+       \noexpand \textup{%
+      \noexpand \mdseries
          \csname the#1\endcsname.}\enspace
     }%
   \fi
