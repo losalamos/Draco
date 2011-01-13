@@ -25,9 +25,13 @@ This header includes all three Blas_Level headers.
  
 LAPACK functionality has not been wrapped yet.
 
-\bug The functionality provided by this component (lapack_wrap) duplicates existing capability provided by the GNU Scientific Library.  
+\bug The functionality provided by this component (lapack_wrap)
+     duplicates existing capability provided by the GNU Scientific
+     Library.    
 
-\sa <a href="http://www.gnu.org/software/gsl/manual/gsl-ref_toc.html">GNU Scientific Library</a>.
+\sa <a
+href="http://www.gnu.org/software/gsl/manual/gsl-ref_toc.html">GNU
+Scientific Library</a>. 
 
 <!---------------------------------------------------------------------------->
 
