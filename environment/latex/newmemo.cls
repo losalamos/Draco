@@ -172,7 +172,7 @@
       \def\@oddfoot{\sffamily \fontsize{8}{8}\selectfont 
        \hfil An Equal Opportunity Employer / Operated by 
         Los Alamos National Security, LLC for 
-        the U.S. Department of Energy’s NNSA }
+        the U.S.~Department of Energy's NNSA }
       \def\@oddhead{\slshape%
         \begin{tabular}{l}
           \headtoname{} \ignorespaces\toname \\
