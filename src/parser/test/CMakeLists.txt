@@ -73,10 +73,19 @@ add_scalar_tests(
    DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 
 # Special case for driver4tstConsole_Token_Stream
-# This test doesn't work under Xcode
-if (${CMAKE_GENERATOR} MATCHES "Xcode" )
-list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc )
-endif ()
+# 1. This test doesn't work under Xcode
+# 2. This test must have unique access to tstConsole_Token_Stream and
+#    we will use a RESOURCE_LOCK to prevent multiple simultaneious
+#    instances during parallel ctest.
+list( REMOVE_ITEM test_sources 
+   ${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc )
+if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
+add_parallel_tests(
+   SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
+   PE_LIST "1;2"
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" 
+   RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
+endif()
 
 # The remaining tests are Parallel.
 

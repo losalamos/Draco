@@ -56,6 +56,11 @@
 # 7. Run 'ctest -j16' to run the tests.
 # 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
 # 9. [optional] Run 'make help' for a list of targets.
+#
+# CMake Tutorial: http://www.cmake.org/cmake/help/cmake_tutorial.html
+# CMake Wiki:     http://www.cmake.org/Wiki/CMake
+# CMake FAQ:      http://www.cmake.org/Wiki/CMake_FAQ
+# CMake Documentation: http://www.cmake.org/cmake/help/documentation.html
 #------------------------------------------------------------------------------#
 
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )

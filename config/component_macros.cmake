@@ -135,7 +135,7 @@ macro( add_scalar_tests test_sources )
       # prefix
       addscalartest
       # list names
-      "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX"
+      "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK"
       # option names
       "NONE"
       ${ARGV}
@@ -203,7 +203,12 @@ macro( add_scalar_tests test_sources )
            PROPERTIES	
              PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
              FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+             WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
              )
+          if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+             set_tests_properties( ${compname}_${testname} 
+                PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+          endif()
        else()
           foreach( cmdarg ${addscalartest_TEST_ARGS} ) 
              math( EXPR iarg "${iarg} + 1" )
@@ -215,7 +220,12 @@ macro( add_scalar_tests test_sources )
                 PROPERTIES	
                   PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
                   FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+                  WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
                 )
+          if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+             set_tests_properties( ${compname}_${testname}_arg${iarg}
+                PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+          endif()
           endforeach()
        endif()
    endforeach()
@@ -242,7 +252,7 @@ macro( add_parallel_tests )
       # prefix
       addparalleltest
       # list names
-      "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX"
+      "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK"
       # option names
       "NONE"
       ${ARGV}
@@ -259,6 +269,12 @@ macro( add_parallel_tests )
    endif()
    if( "${addparalleltest_FAIL_REGEX}none" STREQUAL "none" )
       set( addparalleltest_FAIL_REGEX ".*[Tt]est: FAILED" )
+   endif()
+
+   # Format resource lock command
+   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set( addparalleltest_RESOURCE_LOCK 
+         "RESOURCE_LOCK ${addparalleltest_RESOURCE_LOCK}")
    endif()
 
    # What is the component name (always use Lib_${compname} as a dependency).
@@ -319,7 +335,12 @@ macro( add_parallel_tests )
                  PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
                  FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
                  PROCESSORS              "${numPE}"
-               )
+                 WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+                 )
+              if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+                 set_tests_properties( ${compname}_${testname}_${numPE}
+                    PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+              endif()
          endforeach()
       endforeach()
    else( ${DRACO_C4} MATCHES "MPI" )
@@ -332,7 +353,12 @@ macro( add_parallel_tests )
             PROPERTIES	
               PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
               FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+              WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
             )
+         if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+            set_tests_properties( ${compname}_${testname}
+               PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+         endif()
       endforeach()
    endif( ${DRACO_C4} MATCHES "MPI" )
 
