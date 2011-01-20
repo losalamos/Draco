@@ -22,7 +22,7 @@ package="diagnostics"
 dnl Draco version
 AC_DRACO_PREREQ
 
-AC_DEFINE(AUTOCONF autoconf)
+AC_DEFINE(DIAGNOSTICS_USES_AUTOCONF)
 
 dnl ----------------------------------------
 dnl Vendor setups: 

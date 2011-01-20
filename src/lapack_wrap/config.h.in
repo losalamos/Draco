@@ -9,8 +9,8 @@
 #ifndef __lapack_wrap_config_h__
 #define __lapack_wrap_config_h__
 
-#undef AUTOCONF
-#ifdef AUTOCONF
+#undef LW_AUTOCONF
+#ifdef LW_AUTOCONF
 
 /* LEVEL 1 BLAS */
 

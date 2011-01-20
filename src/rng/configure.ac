@@ -14,7 +14,7 @@ package="rng"
 
 # Toggle between autoconf and cmake build systems when constructing
 # config.h from config.h.in
-AC_DEFINE(AUTOCONF autoconf)
+AC_DEFINE(RNG_USES_AUTOCONF)
 
 AC_LAPACK_SETUP(pkg)
 AC_GSL_SETUP(pkg)

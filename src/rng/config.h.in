@@ -10,12 +10,12 @@
 #define rtt_rng_config_h
 
 /* Switch between Autoconf-based build system and CMake-based build */
-#undef AUTOCONF
+#undef RNG_USES_AUTOCONF
 
 /* ---------------------------------------- */
 /* AUTOCONF based build system              */
 /* ---------------------------------------- */
-#ifdef AUTOCONF
+#ifdef RNG_USES_AUTOCONF
 
 /* Use a non-reproducable random number generator (*_Inline only) */
 #undef RNG_NR

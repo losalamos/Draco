@@ -28,7 +28,7 @@ AC_CONFIG_AUX_DIR(../../config)
 
 # Toggle between autoconf and cmake build systems when constructing
 # config.h from config.h.in
-AC_DEFINE(AUTOCONF autoconf)
+AC_DEFINE(FT_AUTOCONF)
 
 dnl If needed, AC_CONFIG_HEADER(config.h.in) should go here (p. 15)
 dnl This will replace @DEFS@ with -DHAVE_CONFIG_H in generated files

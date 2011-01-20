@@ -13,12 +13,12 @@
 /* C4 Environments */
 
 /* Switch between Autoconf-based build system and CMake-based build */
-#undef AUTOCONF
+#undef C4_AUTOCONF
 
 /* ---------------------------------------- */
 /* AUTOCONF based build system              */
 /* ---------------------------------------- */
-#ifdef AUTOCONF
+#ifdef C4_AUTOCONF
 
 /* scalar (default) */
 #undef C4_SCALAR

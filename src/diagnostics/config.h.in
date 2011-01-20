@@ -14,12 +14,12 @@
 #define __diagnostics_config_h__
 
 /* Switch between Autoconf-based build system and CMake-based build */
-#undef AUTOCONF
+#undef DIAGNOSTICS_USES_AUTOCONF
 
 /* ---------------------------------------- */
 /* AUTOCONF based build system              */
 /* ---------------------------------------- */
-#ifdef AUTOCONF
+#ifdef DIAGNOSTICS_USES_AUTOCONF
 
 /* DRACO DIAGNOSTICS LEVEL */
 #undef DRACO_DIAGNOSTICS

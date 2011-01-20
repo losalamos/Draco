@@ -14,12 +14,12 @@
 #define fpe_trap_config_h
 
 /* Switch between Autoconf-based build system and CMake-based build */
-#undef AUTOCONF
+#undef FT_AUTOCONF
 
 /* ---------------------------------------- */
 /* AUTOCONF based build system              */
 /* ---------------------------------------- */
-#ifdef AUTOCONF
+#ifdef FT_AUTOCONF
 
 // At most, only one of these should be defined in config/ac_platforms.m4
 #undef FPETRAP_OSF_ALPHA
