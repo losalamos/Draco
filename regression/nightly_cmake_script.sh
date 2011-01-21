@@ -19,7 +19,7 @@ if test -z "$MODULESHOME"; then
     module list
   fi
 fi
-
+module load valgrind
 
 # Run the ctest (regression) script.  This script will take the following build steps: 
 # 1. cvs update
@@ -50,10 +50,21 @@ ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_
 (cd $work_dir/build; make install)
 
 # Coverage build
+build_type=Coverage
 module load bullseyecoverage
 CXX=`which g++`
 CC=`which gcc`
-export work_dir=${base_dir}/${dashboard_type}/Coverage
-ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,Coverage
+export work_dir=${base_dir}/${dashboard_type}/${build_type}
+# export COVFILE=${work_dir}/build/CMake.cov
+# export COVDIRCFG=${script_dir}/regression/covclass_cmake.cfg
+# export COVFNCFG=${script_dir}/regression/covclass_cmake.cfg
+# export COVCLASSCFG=${script_dir}/regression/covclass_cmake.cfg
+# export COVSRCCFG=${script_dir}/regression/covclass_cmake.cfg
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,${build_type}
+# unset COVFILE
+# unset COVDIRCFG
+# unset COVFNCFG
+# unset COVCLASSCFG
+# unset COVSRCCFG
 module unload bullseyecoverage
 (cd $work_dir/build; make install)

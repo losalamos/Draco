@@ -4,7 +4,7 @@
 # For help, use '--gen-suppressions=[yes|all]'
 
 # Example valgrind use:
-# valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes --workaround-gcc296-bugs=yes --num-callers=50 /ccs/codes/mpi/openmpi/Linux64/1.3.3/bin/mpiexec -np 1 phw hello
+# valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes --num-callers=50 /ccs/codes/mpi/openmpi/Linux64/1.3.3/bin/mpiexec -np 1 phw hello
 # Options: --suppressions="/home/kgt/draco/regression/valgrind_suppress.txt"
 
 # OR --------
@@ -14,158 +14,133 @@
 ## -------------------------------------------------------------------------- ##
 ## OpenMPI-1.3.3
 ## -------------------------------------------------------------------------- ##
-
 {
-   orterun/setaffinity/a
+   <libmpi-syscall>
    Memcheck:Param
    sched_setaffinity(mask)
    fun:syscall
-   fun:opal_paffinity_linux_plpa_api_probe_init
-   fun:opal_paffinity_linux_plpa_init
-   fun:opal_paffinity_linux_plpa_have_topology_information
-   fun:linux_module_init
-   fun:opal_paffinity_base_select
-   fun:opal_init
-   fun:orte_init
-   fun:orterun
-   fun:main
+   ...
+   obj:/*/libmpi.so*
 }
 {
-   PMPI_Init/setaffinity/a
+   <libopen-rte-syscall>
    Memcheck:Param
    sched_setaffinity(mask)
    fun:syscall
-   fun:opal_paffinity_linux_plpa_api_probe_init
-   fun:opal_paffinity_linux_plpa_init
-   fun:opal_paffinity_linux_plpa_have_topology_information
-   fun:linux_module_init
-   fun:opal_paffinity_base_select
-   fun:opal_init
-   fun:orte_init
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:_ZN6rtt_c410initializeERiRPPc
-   fun:main
+   ...
+   obj:/*/libopen-rte.so*
+}
+{
+   <libmpi-writev>
+   Memcheck:Param
+   writev(vector[...])
+   ...
+   obj:/*/libmpi.so*
+}
+{
+  <libopen-rte>
+  Memcheck:Leak
+  ...
+  obj:/*/libopen-rte*
+}
+{
+  <libopen-pal>
+  Memcheck:Leak
+  ...
+  obj:/*/libopen-pal*
+}
+{
+  <libmpi memory leaks should be ignored>
+  Memcheck:Leak
+  ...
+  obj:/*/libmpi.so*
+}
+{
+  <orterun memory leaks should be ignored>
+  Memcheck:Leak
+  ...
+  fun:orterun
 }
 
-{
-   orterun/malloc/a
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:param_lookup
-   ...
-   fun:orterun
-   fun:main
-}
-{
-   orterun/malloc/b
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:orte_session_dir_get_name
-   ...
-   fun:orterun
-   fun:main
-}
-{
-   rtt_c4/initialize/a
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:param_lookup
-   ...
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:_ZN6rtt_c410initializeERiRPPc
-   fun:main
-}
-{
-   PMPI_Init/ompi_mpi_init/param_lookup
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:param_lookup
-   ...
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-}
-{
-   PMPI_Init/ompi_mpi_init/mca_pml_base_open
-   Memcheck:Leak
-   fun:malloc
-   fun:mca_pml_base_open
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:_ZN6rtt_c410initializeERiRPPc
-   fun:main
-}
-{
-   PMPI_Init/ompi_mpi_init/mca_base_param_set_string
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:mca_base_param_set_string
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:_ZN6rtt_c410initializeERiRPPc
-   fun:main
-}
-{
-   PMPI_Init/ompi_mpi_init/
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:orte_session_dir_get_name
-   ...
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:_ZN6rtt_c410initializeERiRPPc
-   fun:main
-}
-{
-   orte_ess_base_app_setup/param_lookup
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   fun:param_lookup
-   ...
-   fun:orte_ess_base_app_setup
-}
-{
-   PMPI_Init/malloc
-   Memcheck:Leak
-   fun:malloc
-   ...
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:_ZN6rtt_c410initializeERiRPPc
-}
-{
-   ompi_mpi_finalize/malloc
-   Memcheck:Leak
-   fun:malloc
-   ...
-   fun:ompi_mpi_finalize
-   fun:_ZN6rtt_c48finalizeEv
-   fun:main
-}
+#--------------------------------------------------------
+## Inserted for Yellowrail
 
-## -------------------------------------------------------------------------- ##
-## Xerces-C 2.8
-## -------------------------------------------------------------------------- ##
 {
-   # 160 (112 direct, 48 indirect) bytes in 1 blocks are definitely lost in loss record 2 of 3
-   # xercesc_2_8::MemoryManagerImpl::allocate(unsigned long)
-   __tstXmlDoc_exe/xercesc_2_8/_Znwm
-   Memcheck:Leak
-   fun:_ZN11xercesc_2_817MemoryManagerImpl8allocateEm
+  <yellowrail: syscall munmap>
+  Memcheck:Addr1
+  ...
+  obj:/*/libmpi.so*
 }
 {
-   # 190 bytes in 13 blocks are definitely lost in loss record 3 of 3
-   #xercesc_2_8::IconvLCPTranscoder::transcode(char const*)
-   __tstXmlDoc_exe/xercesc_2_8/_Znam
+  <yellowrail: syscall munmap>
+  Memcheck:Addr1
+  ...
+  obj:/*/libopen-rte.so*
+}
+{
+  <yellowrail: syscall mempolicy>
+  Memcheck:Value1
+  ...
+  obj:/*/libmpi.so*
+}
+{
+  <yellowrail: syscall munmap>
+  Memcheck:Value1
+  ...
+  obj:/*/libopen-rte.so*
+}
+{
+   <insert_a_suppression_name_here>
    Memcheck:Leak
-   fun:_ZN11xercesc_2_818IconvLCPTranscoder9transcodeEPKc
-
+   fun:malloc
+   ...
+   obj:/*/libmthca-rdmav2.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   close(fd)
+   ...
+   obj:/*/libmpi.so*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:/*/libmpi.so*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   mbind(nodemask)
+   ...
+   obj:/*/libmpi.so*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   obj:/*/libmpi.so*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   set_mempolicy(nodemask)
+   ...
+   obj:/*/libmpi.so*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   ...
+   obj:/*/libmpi.so*
+}
+#--------------------------------------------------------
+## Inserted for Turing
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   ...
+   obj:/lib64/ld-2.5.so
 }

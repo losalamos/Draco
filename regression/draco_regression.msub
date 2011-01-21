@@ -37,7 +37,7 @@
 
 ### export CXX=/usr/local/gcc440/bin/g++
 ### export CC=/usr/local/gcc440/bin/gcc
-### export LD_LIBRARY_PATH=${MPI_DIR}/lib:${QT_DIR}/lib:${GCC_DIR}/lib64:${BOOST_ROOT}/lib:${XERCESC_DIR}/lib:${PATHF90_DIR}/lib/3.2:/global_scratch/regress/attila/scalar.dbg/lib
+### export LD_LIBRARY_PATH=${MPI_DIR}/lib:${QT_DIR}/lib:${GCC_DIR}/lib64:${BOOST_ROOT}/lib:${XERCESC_DIR}/lib:${PATHF90_DIR}/lib/3.2
 ### export PATH=${MPI_DIR}/bin:${QT_DIR}/bin:${GCC_DIR}/bin:/usr/local/bin:/opt/bin:/bin:/usr/bin
 
 # working directory

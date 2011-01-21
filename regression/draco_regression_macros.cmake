@@ -1,3 +1,17 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   draco_regression_macros.cmake
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2010 Nov 22
+# brief  Helper macros for setting up a CTest/CDash regression system
+# note   Copyright © 2010-2011 Los Alamos National Security
+#------------------------------------------------------------------------------#
+# $Id$
+#------------------------------------------------------------------------------#
+
+# Ref: http://www.cmake.org/Wiki/CMake_Testing_With_CTest
+#      http://www.cmake.org/Wiki/CMake_Scripting_of_CTest
+
+
 # Call this script from regress/Draco_*.cmake
 
 # Sample script:
@@ -11,7 +25,7 @@
 #VERBOSE:BOOL=ON
 #BUILD_TESTS:BOOL=ON
 
-#BUILDNAME:STRING=${build_name}
+#BUILDNAME:STRING=${CTEST_BUILD_NAME}
 #CMAKE_BUILD_TYPE:STRING=${build_type}
 #CMAKE_GENERATOR:STRING=${CMAKE_GENERATOR}
 #CMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
@@ -56,7 +70,12 @@ macro( set_defaults )
     set( quiet_mode ON )
   endif( ${ARGV} MATCHES QUIET )
 
-  # Prerequisits
+  # Prerequisits:
+  # 
+  # This setup assumes that the project work_dir will contain 3
+  # subdirectories: source, build and target.  See how 
+  # CMAKE_SOURCE_DIRECTORY, CMAKE_BUILD_DIRECTORY AND
+  # CMAKE_INSTALL_PREFIX are set just below.
   if( NOT work_dir )
     if( EXISTS "$ENV{work_dir}" )
       set( work_dir $ENV{work_dir} )
@@ -66,7 +85,7 @@ macro( set_defaults )
         message( "
 Warning:  work_dir has been set to pwd.
 Set work_dir in your environment if you want to use a different
-location.
+location.  You must also ensure that work_dir exists!
 " )
       else( EXISTS "$ENV{PWD}" )
         message( FATAL_ERROR "
@@ -82,19 +101,22 @@ win32$ set work_dir=c:/full/path/to/work_dir
     endif( EXISTS "$ENV{work_dir}" )
   endif( NOT work_dir )
   file( TO_CMAKE_PATH ${work_dir} work_dir )
+  # ??? if not exist ${CTEST_SOURCE_DIRECTORY} )
+  # ??? file( make_directory ${CTEST_SOURCE_DIRECTORY} )
+  # ??? endif()
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
   set( CTEST_BINARY_DIRECTORY "${work_dir}/build"  )
-  set( CMAKE_INSTALL_PREFIX   "${work_dir}/target"  )
+  set( CMAKE_INSTALL_PREFIX   "${work_dir}/target" )
   
   # Default is "Experimental." Special builds are "Nightly" or "Continuous"
-  set( dashboard_type "Experimental" ) 
+  set( CTEST_MODEL "Experimental" ) 
 
   # Default is "Release." 
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
-  set( build_type "Release" )
+  set( CTEST_BUILD_CONFIGURATION "Release" )
   
   # should ctest wipe the binary tree before running
-  set( CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE )
+  # set( CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE )
 
   if( EXISTS "$ENV{VENDOR_DIR}" )
     set(VENDOR_DIR $ENV{VENDOR_DIR})
@@ -103,44 +125,115 @@ win32$ set work_dir=c:/full/path/to/work_dir
     ChangeLog
     PATHS
       /ccs/codes/radtran/vendors/Linux64
-      /radiative/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
+      /usr/projects/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
       c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
       c:/vendors
       )
-#      /radiative/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
   
-  if( NOT EXISTS ${VENDOR_DIR} )
-    message( FATAL_ERROR "VENDOR_DIR = ${VENDOR_DIR} was not found." )
-  endif( NOT EXISTS ${VENDOR_DIR} )
+#  if( NOT EXISTS ${VENDOR_DIR} )
+#    message( FATAL_ERROR "VENDOR_DIR = ${VENDOR_DIR} was not found." )
+#  endif( NOT EXISTS ${VENDOR_DIR} )
 
   if( WIN32 )
     # add option for "NMake Makefiles JOM"?
-    set( CMAKE_GENERATOR "NMake Makefiles" )
+    set( CTEST_CMAKE_GENERATOR "NMake Makefiles" )
   else( WIN32 )
-    set( CMAKE_GENERATOR "Unix Makefiles" )
+    set( CTEST_CMAKE_GENERATOR "Unix Makefiles" )
   endif( WIN32 )      
+
+  #Only works for makefile generators, but gives us pretty output.
+  if( ${CTEST_CMAKE_GENERATOR} STREQUAL "Unix Makefiles" )
+     set( CTEST_USE_LAUNCHERS 1 )
+  else()
+     set( CTEST_USE_LAUNCHERS 0 )
+  endif()
 
   # Set the sitename, but strip any domain information
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
   # Treat all Infinitron nodes as infinitron
-  string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
+  # string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
+  set( CTEST_SITE ${sitename} )
 
   set( ENABLE_C_CODECOVERAGE OFF )
   set( ENABLE_Fortran_CODECOVERAGE OFF )
 
-  if( NOT quiet_mode )
-    message("
-sitename = ${sitename}
+  # Dashboard setup (in place of CTestConfig.cmake)
+  if( NOT CTEST_PROJECT_NAME )
+     set( CTEST_PROJECT_NAME "Draco")
+  endif()
+  set( CTEST_NIGHTLY_START_TIME "00:00:00 MST")
+  
+  set( CTEST_DROP_METHOD "http")
+  set( CTEST_DROP_SITE "coder.lanl.gov")
+  set( CTEST_DROP_LOCATION 
+     "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" )
+  set( CTEST_DROP_SITE_CDASH TRUE )
+  set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF )
 
-CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
-CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
+# MCATK settings
+#  set( CTEST_DROP_METHOD "https")
+#  set( CTEST_DROP_SITE "cdash.lanl.gov")
+#  set( CTEST_DROP_LOCATION "/submit.php?project=test" )
+#  set( CTEST_DROP_SITE_CDASH TRUE )
+#  set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF )
+
+  if( UNIX )
+     if( EXISTS "/proc/cpuinfo" )
+        file( READ "/proc/cpuinfo" cpuinfo )
+        # convert one big string into a set of strings, one per line
+        string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
+        set( proc_ids "" )
+        foreach( line ${cpuinfo} )
+           if( ${line} MATCHES "processor" )
+              list( APPEND proc_ids ${line} )
+           endif()
+        endforeach()
+        list( LENGTH proc_ids DRACO_NUM_CORES )
+        set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
+           "Number of cores on the local machine." )
+     endif()
+  endif()
+
+# SET(CTEST_CUSTOM_ERROR_PRE_CONTEXT 20)
+# SET(CTEST_CUSTOM_ERROR_POST_CONTEXT 20)
+# SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 100)
+# SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 100)
+
+#find_program(CTEST_GIT_COMMAND NAMES git PATHS "C:\\Program Files\\Git\\bin")
+#find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
+
+  # Echo settings
+  
+  if( NOT quiet_mode )
+     message("
+ARGV     = ${ARGV}
+
+quiet_mode = ${quiet_mode}
+work_dir   = ${work_dir}
+
+CTEST_SITE             = ${CTEST_SITE}
+CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
 CTEST_SOURCE_DIRECTORY = ${CTEST_SOURCE_DIRECTORY}
 CTEST_BINARY_DIRECTORY = ${CTEST_BINARY_DIRECTORY}
 CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
-CMAKE_GENERATOR        = ${CMAKE_GENERATOR}
+CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
+CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
+CTEST_CMAKE_GENERATOR  = ${CTEST_CMAKE_GENERATOR}
+CTEST_USE_LAUNCHERS    = ${CTEST_USE_LAUNCHERS}
+
+CTEST_NIGHTLY_START_TIME  = ${CTEST_NIGHTLY_START_TIME}
+CTEST_DROP_METHOD         = ${CTEST_DROP_METHOD}
+CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
+CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
+
+VENDOR_DIR                = ${VENDOR_DIR}
 ")
   endif( NOT quiet_mode )
+
+#CTEST_MODEL               = ${CTEST_MODEL}
+#CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
+
 
 endmacro( set_defaults )
 
@@ -156,48 +249,50 @@ macro( parse_args )
 
   # Default is "Experimental." Special builds are "Nightly" or "Continuous"
   if( ${CTEST_SCRIPT_ARG} MATCHES Nightly )
-    set( dashboard_type "Nightly" )
-  elseif( ${CTEST_SCRIPT_ARG} MATCHES Continuous )
-    set( dashboard_type "Continuous" )
-  endif( ${CTEST_SCRIPT_ARG} MATCHES Nightly )
+    set( CTEST_MODEL "Nightly" )
+  elseif( ${CTEST_SCRIPT_ARG} MATCHES Continuous  )
+    set( CTEST_MODEL "Continuous" )
+  endif()
   
   # Default is "Release." 
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
   if( ${CTEST_SCRIPT_ARG} MATCHES Debug )
-    set( build_type "Debug" )
+    set( CTEST_BUILD_CONFIGURATION "Debug" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES RelWithDebInfo )
-    set( build_type "RelWithDebInfo" )
+    set( CTEST_BUILD_CONFIGURATION "RelWithDebInfo" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES MinSizeRel )
-    set( build_type "MinSizeRel" )
+    set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
   
   # maybe just gcc?
   if( WIN32 )
     if( "$ENV{dirext}" MATCHES "x64" )
-      set( build_name "Win64_${build_type}" )
+      set( CTEST_BUILD_NAME "Win64_${CTEST_BUILD_CONFIGURATION}" )
     else()
-      set( build_name "Win32_${build_type}" )
+      set( CTEST_BUILD_NAME "Win32_${CTEST_BUILD_CONFIGURATION}" )
     endif()
   else() # Unix
-    set( build_name "Linux64_${build_type}" )
+    set( CTEST_BUILD_NAME "Linux64_${CTEST_BUILD_CONFIGURATION}" )
   endif()
 
   # Default is no Coverage Analysis
   if( ${CTEST_SCRIPT_ARG} MATCHES Coverage )
-    if( ${build_type} MATCHES Release OR
-        ${build_type} MATCHES MinSizeRel )
+    if( ${CTEST_BUILD_CONFIGURATION} MATCHES Release OR
+        ${CTEST_BUILD_CONFIGURATION} MATCHES MinSizeRel )
       message( FATAL_ERROR "Cannot run coverage for \"Release\" mode builds." )
     endif()
-    set( enable_coverage ON )
-    set( build_name "${build_name}_Cov" )
+    set( ENABLE_C_CODECOVERAGE ON )
+    set( ENABLE_Fortran_CODECOVERAGE ON )
+    set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_Cov" )
   endif()
   
   if( NOT quiet_mode )
     message("
-dashboard_type = ${dashboard_type}
-build_type     = ${build_type}
-build_name     = ${build_name}
-enable_coverage= ${enable_coverage}
+CTEST_MODEL               = ${CTEST_MODEL}
+CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
+CTEST_BUILD_NAME          = ${CTEST_BUILD_NAME}
+ENABLE_C_CODECOVERAGE     = ${ENABLE_C_CODECOVERAGE}
+ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
 ")
   endif()
 
@@ -220,7 +315,7 @@ macro( find_tools )
       # NO_DEFAULT_PATH
     )
   if( NOT EXISTS ${CTEST_CMD} )
-    message( FATAL_ERROR "Cound not find ctest executable." )
+    message( FATAL_ERROR "Cound not find ctest executable.(CTEST_CMD = ${CTEST_CMD})" )
   endif( NOT EXISTS ${CTEST_CMD} )
 
   find_program( CTEST_CVS_COMMAND
@@ -252,16 +347,51 @@ macro( find_tools )
     )
   if( NOT EXISTS "${MAKECOMMAND}" )
     message( FATAL_ERROR "Cound not find make/nmake executable." )
-  endif( NOT EXISTS "${MAKECOMMAND}" )
+  endif()
 
   find_program( CTEST_MEMORYCHECK_COMMAND NAMES valgrind )
-  find_program( MEMORYCHECK_COMMAND NAMES valgrind )
+  set(          CTEST_MEMORYCHECK_COMMAND_OPTIONS  
+     "-q --tool=memcheck --leak-check=full --trace-children=yes
+  --error-limit=100 --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt" )
+  # --show-reachable --num-callers=50
+  # --suppressions=<filename>
+  # --gen-suppressions=all|yes|no
+  if( EXISTS ${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt )
+     set( MEMORYCHECK_SUPPRESSIONS_FILE
+        ${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt )
+  endif()
 
-  set( MEMORYCHECK_COMMAND_OPTIONS "--leak-check=yes" CACHE STRING 
-  "Options for memorycheck tool (valgrind)." )
-# "--leak-check=yes --num-callers=8 --show-reachable=yes"
-# "--leak-check=full"
+  if(ENABLE_C_CODECOVERAGE)
+     find_program( COV01 NAMES cov01 )
+    if( COV01 )
+       get_filename_component( beyedir ${COV01} PATH )
+       set( CC ${beyedir}/gcc )
+       set( CXX ${beyedir}/g++ )
+       set( ENV{CC} ${beyedir}/gcc )
+       set( ENV{CXX} ${beyedir}/g++ )
+       set( RES 1 )
+       execute_process(COMMAND ${COV01} -1
+          RESULT_VARIABLE RES )
+       if( RES )
+          message(FATAL_ERROR "could not run cov01 -1")
+       else()
+          message(STATUS "BullseyeCoverage turned on")
+       endif()
+    else()
+       message( FATAL_ERROR 
+          "Coverage requested, but bullseyecoverage's cov01 binary not in PATH."
+          )
+    endif()
+  endif()
 
+#   if( MPIEXEC_MAX_NUMPROCS )
+#      set( CMAKE_BUILD_COMMAND "gmake -j ${MPIEXEC_MAX_NUMPROCS}" ) # install | check
+# #     set( CTEST_CMD "${CTEST_CMD} -j ${MPIEXEC_MAX_NUMPROCS}" )
+#      set( MAKECOMMAND "${MAKECOMMAND} -j ${MPIEXEC_MAX_NUMPROCS}" )
+# #    set( CTEST_BUILD_COMMAND ${CMAKE_BUILD_COMMAND} )     
+#   endif()
+
+  set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
 
   if( NOT quiet_mode )
     message("
@@ -269,6 +399,7 @@ CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
 CTEST_CMAKE_COMMAND = ${CTEST_CMAKE_COMMAND}
 MAKECOMMAND         = ${MAKECOMMAND}
+CMAKE_BUILD_COMMAND = ${CMAKE_BUILD_COMMAND}
 ")
   endif( NOT quiet_mode )
 
@@ -281,63 +412,52 @@ macro( setup_ctest_commands )
   # which ctest command to use for running the dashboard
   # Do the normal Start,Upate,Configure,Build,Test,Submit
 
-  # ${dashboard_type}Start
-  # ${dashboard_type}Update
-  # ${dashboard_type}Configure
-  # ${dashboard_type}Build
-  # ${dashboard_type}Test
-  # ${dashboard_type}Submit
-  # Skip: 
-  # ${dashboard_type}Coverage
-  # ${dashboard_type}MemCheck
-
     # parse arguments
   if( ${ARGV} MATCHES QUIET )
     set( quiet_mode ON )
   endif( ${ARGV} MATCHES QUIET )
 
-  set( CTEST_COMMAND
-    "${CTEST_CMD} -D ${dashboard_type}Start -D ${dashboard_type}Update -D ${dashboard_type}Configure -D ${dashboard_type}Build -D ${dashboard_type}Test -D ${dashboard_type}Submit"
-    )
+  #
+  # Drive the problem (www.cmake.org/cmake/help/ctest-2-8=docs.html)
+  #
   
-  if( ${dashboard_type} MATCHES Continuous )
-    # only run tests 1 and 2.
-    set( CTEST_COMMAND "${CTEST_CMD} -D ${dashboard_type} -I1,2" )
-    # Only recompile minimum set of files after first build.
-    set( CTEST_START_WITH_EMPTY_BINARY_DIRECTORY_ONCE TRUE )
-    set( CTEST_START_WITH_EMPTY_BINARY_DIRECTORY FALSE )
-    # How long are the continuous builds active? (only used for
-    # Continuous mode.)
-    set( CTEST_CONTINUOUS_DURATION 180 ) # minutes
-    # How long to wait before starting next build? (only used for
-    # Continuous mode.)
-    set( CTEST_CONTINUOUS_MINIMUM_INTERVAL 30 ) # minutes
-  endif( ${dashboard_type} MATCHES Continuous )
-
-  # Do Dynamic Analysis (MemCheck) when Debug, but not Coverage.
-  if( UNIX )
-    if( ${build_type} MATCHES Debug )
-      if( enable_coverage )
-        set( CTEST_COMMAND
-          "${CTEST_COMMAND} -D ${dashboard_type}Coverage -D ${dashboard_type}Submit" )
-        set( ENABLE_C_CODECOVERAGE ON )
-        set( ENABLE_Fortran_CODECOVERAGE ON )
-#        set( CTEST_INITIAL_CACHE_EXTRAS "ENABLE_C_CODECOVERAGE:BOOL=ON" )
-
-      else( enable_coverage )
-        set( CTEST_COMMAND
-          "${CTEST_COMMAND} -D ${dashboard_type}MemCheck -D ${dashboard_type}Submit"
-          )
-      endif( enable_coverage )
-    endif( ${build_type} MATCHES Debug )
-  endif( UNIX )
-
-  if( NOT quiet_mode )
-    message("
-
-CTEST_COMMAND = ${CTEST_COMMAND}
-")
-  endif( NOT quiet_mode )
-
+  ctest_start( ${CTEST_MODEL} )
+  ctest_update()
+  if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+     if(ENABLE_C_CODECOVERAGE)
+        configure_file( 
+           ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
+           ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
+           @ONLY )
+        set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+        set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+        set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+        set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+        set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
+        execute_process(COMMAND "${COV01}" --on
+           RESULT_VARIABLE RES)
+     endif()
+  endif()
+  ctest_configure() # LABELS label1 [label2]
+  ctest_build()
+  ctest_test( 
+     PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+     SCHEDULE_RANDOM ON )
+     # EXCLUDE_LABLE "LONG_TESTS"
+  
+  if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+     if(ENABLE_C_CODECOVERAGE)
+        ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
+        execute_process(COMMAND "${COV01}" --off
+           RESULT_VARIABLE RES)
+     else()
+        ctest_memcheck(
+           PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+           SCHEDULE_RANDOM ON )
+           # EXCLUDE_LABEL "Nightly"
+     endif()
+  endif()
+  ctest_submit()
+     
 endmacro( setup_ctest_commands )
 

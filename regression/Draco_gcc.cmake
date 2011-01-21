@@ -9,6 +9,7 @@
 # [Experimental|Nightly|Continuous],[Debug[,Coverage]|Release|RelWithDebInfo]
 #
 
+set( CTEST_PROJECT_NAME "Draco" )
 include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 
 # Check inputs. Set default values for
@@ -16,19 +17,25 @@ include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 #     CTEST_BINARY_DIRECTORY
 #     CMAKE_INSTALL_PREFIX
 #     CMAKE_GENERATOR
-#     dashboard_type
-#     build_type
+#     CTEST_MODEL
+#     CTEST_BUILD_CONFIGURATION
 #     CTEST_START_WITH_EMPTY_BINARY_DIRECTORY
 #     CTEST_CONTINUOUS_DURATION
 #     CTEST_CONTINUOUS_MINIMUM_INTERVAL
 #     VENDOR_DIR
 #     CMAKE_GENERATOR
+#     CTEST_NIGHTLY_START_TIME
+#     CTEST_DROP_METHOD = http
+#     CTEST_DROP_SITE   = coder.lanl.gov
+#     CTEST_DROP_LOCATION = "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" 
+#     CTEST_DROP_SITE_CDASH = TRUE 
+#     CTEST_CURL_OPTIONS    = CURLOPT_SSL_VERIFYPEER_OFF
 #     sitename
 set_defaults() # QUIET
 
 # Based on command line, update values for
-#     dashboard_type
-#     build_type
+#     CTEST_MODEL
+#     CTEST_BUILD_CONFIGURATION
 #     build_name
 #     enable_coverage
 parse_args() # QUIET
@@ -45,79 +52,69 @@ set( CTEST_CVS_CHECKOUT
 #  "${CTEST_CVS_COMMAND} -d $ENV{USERNAME}@ccscs8.lanl.gov/ccs/codes/radtran/cvsroot co -P -d source draco" )
 # under windows, consider: file:///z:/radiative/...
 
-# Set the CTEST_COMMAND
-setup_ctest_commands() # QUIET
+# set( CTEST_NOTES_FILE "path/to/file1" "/path/to/file2" )
 
 ####################################################################
 # The values in this section are optional you can either
 # have them or leave them commented out
 ####################################################################
 
-# clear the binary directory and create an initial cache
-ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-
 # Test Coverage setup
 if( ENABLE_C_CODECOVERAGE )
-   find_program( COV01 cov01 )
-   get_filename_component( beyedir ${COV01} PATH )
-   set( CC ${beyedir}/gcc )
-   set( CXX ${beyedir}/g++ )
-   set( ENV{CC} ${beyedir}/gcc )
-   set( ENV{CXX} ${beyedir}/g++ )
-
-   # Set the coverage data file.
    set( ENV{COVFILE} "${CTEST_BINARY_DIRECTORY}/CMake.cov" )
    set( ENV{COVDIRCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
    set( ENV{COVFNCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
    set( ENV{COVCLASSCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
    set( ENV{COVSRCCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
-
-   # turn off coverage for configure step
-   set( RES 1 )
-   execute_process(COMMAND ${COV01} -1 RESULT_VARIABLE RES)
-   if( RES )
-      message(FATAL_ERROR "could not run cov01 -1")
-   else()
-      message(STATUS "BullseyeCoverage turned on")
-   endif()
-  
 endif()
 
 # this is the initial cache to use for the binary tree, be careful to escape
 # any quotes inside of this string if you use it
 set( CTEST_INITIAL_CACHE "
-BUILD_TESTING:BOOL=ON
-VERBOSE:BOOL=ON
-
-BUILDNAME:STRING=${build_name}
-CMAKE_BUILD_TYPE:STRING=${build_type}
-CMAKE_GENERATOR:STRING=${CMAKE_GENERATOR}
+CMAKE_VERBOSE_MAKEFILE:BOOL=ON
+CMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_CONFIGURATION}
 CMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-CMAKE_MAKE_PROGRAM:FILEPATH=${MAKECOMMAND}
-CVSCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
+CTEST_CMAKE_GENERATOR:STRING=${CMAKE_GENERATOR}
+CTEST_USE_LAUNCHERS:STRING=${CTEST_USE_LAUNCHERS}
+
 ENABLE_C_CODECOVERAGE:BOOL=${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE:BOOL=${ENABLE_Fortran_CODECOVERAGE}
-MAKECOMMAND:FILEPATH=${MAKECOMMAND} -j8
-SITE:STRING=${sitename}
-SVNCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
 VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
-MEMORYCHECK_COMMAND:FILEPATH=${MEMORYCHECK_COMMAND}
-CC:FILEPATH=${CC}
-CXX:FILEPATH=${CXX}
 ")
-message("
+# set( CTEST_INITIAL_CACHE "
+# BUILDNAME:STRING=${build_name}
+# CMAKE_MAKE_PROGRAM:FILEPATH=${MAKECOMMAND}
+# CVSCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
+# ENABLE_C_CODECOVERAGE:BOOL=${ENABLE_C_CODECOVERAGE}
+# ENABLE_Fortran_CODECOVERAGE:BOOL=${ENABLE_Fortran_CODECOVERAGE}
+# MAKECOMMAND:FILEPATH=${MAKECOMMAND}
+# SITE:STRING=${sitename}
+# SVNCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
+# VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
+# MEMORYCHECK_COMMAND:FILEPATH=${MEMORYCHECK_COMMAND}
+# MEMORYCHECK_COMMAND_OPTIONS:STRING=${MEMORYCHECK_COMMAND_OPTIONS}
+# MEMORYCHECK_SUPPRESSIONS_FILE:FILEPATH=${MEMORYCHECK_SUPPRESSIONS_FILE}
+# CC:FILEPATH=${CC}
+# CXX:FILEPATH=${CXX}
 
-CTEST_INITIAL_CACHE = ${CTEST_INITIAL_CACHE}
-")
+# ")
+
+ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 
 # set any extra environment variables to use during the execution of
 # the script here: 
-set( CTEST_ENVIRONMENT
-  FC=$ENV{F90}
-  VERBOSE=ON
-  CTEST_OUTPUT_ON_FAILURE=ON
-)
+# set( CTEST_ENVIRONMENT
+#   FC=$ENV{F90}
+#   VERBOSE=ON
+#   CTEST_OUTPUT_ON_FAILURE=ON
+# )
+set( $ENV{FC} ${F90} )
+set( VERBOSE ON )
+set( CTEST_OUTPUT_ON_FAILURE ON )
+
+# Set the CTEST_COMMAND
+setup_ctest_commands() # QUIET
 
 message("end of ${CTEST_SCRIPT_NAME}.")
-
 
