@@ -118,20 +118,20 @@
    obj:/*/libmpi.so*
 }
 {
-   <insert_a_suppression_name_here>
+   openmpi/memcheck/cond
    Memcheck:Cond
    ...
    obj:/*/libmpi.so*
 }
 {
-   <insert_a_suppression_name_here>
+   openmpi/memcheck/param
    Memcheck:Param
    set_mempolicy(nodemask)
    ...
    obj:/*/libmpi.so*
 }
 {
-   <insert_a_suppression_name_here>
+   openmpi/memcheck/value8
    Memcheck:Value8
    ...
    obj:/*/libmpi.so*
@@ -143,4 +143,12 @@
    Memcheck:Leak
    ...
    obj:/lib64/ld-2.5.so
+}
+#--------------------------------------------------------
+## Python suppressions
+{
+   python_lib/memcheck/leak
+   Memcheck:Leak
+   ...
+   obj:/*/libpython2.4.so*
 }
