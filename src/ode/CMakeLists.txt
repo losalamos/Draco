@@ -40,7 +40,7 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library( Lib_ode ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_ode Lib_traits Lib_c4 )
+add_dependencies( Lib_ode Lib_c4 )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

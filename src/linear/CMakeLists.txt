@@ -40,7 +40,7 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library( Lib_linear ${PROJECT_NAME} "${sources}" )
-add_dependencies(      Lib_linear Lib_traits Lib_c4 )
+add_dependencies(      Lib_linear Lib_c4 )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

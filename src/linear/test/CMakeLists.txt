@@ -43,7 +43,7 @@ add_dependencies(      Lib_linear_test Lib_linear )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_traits;Lib_c4;Lib_dsxx;${MPI_LIBRARY}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARY}" )
 
 
 
