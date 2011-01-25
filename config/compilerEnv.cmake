@@ -130,6 +130,25 @@ endmacro()
 #    PRECISION_DOUBLE | PRECISION_SINGLE - bool
 # 
 #------------------------------------------------------------------------------#
+macro(dbsSetupFortran)
+  
+  # if( NOT gen_comp_env_set STREQUAL 1 )
+  #  dbsSetupCompilers()
+  # endif()
+  
+  if( ${CMAKE_Fortran_COMPILER} MATCHES "gfortran" )
+    include( unix-gfortran )
+#  elseif( ${CMAKE_Fortran_COMPILER} MATCHES "ifort" )
+#    include( unix-ifort )
+#  elseif( ${CMAKE_CXX_COMPILER} MATCHES "pgf90" )
+#     include( unix-pgf90 )
+  else()
+    message( FATAL_ERROR "Build system does not support F90=${CMAKE_Fortran_COMPILER}" )
+  endif()
+ 
+endmacro()
+
+
 # macro(setup_f90compiler)
 
   # if( ${ARGV} MATCHES QUIET )
