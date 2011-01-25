@@ -259,6 +259,10 @@ Vendor Setup:
          message( FATAL_ERROR 
             "MPI found but mpirun not in PATH. Aborting" )
       endif()
+      # Try to find the fortran mpi library
+      if( EXISTS ${MPI_LIB_DIR} )
+         find_library( MPI_Fortran_LIB mpi_f77 HINTS ${MPI_LIB_DIR} )
+      endif()
    else()
       set( DRACO_C4 "SCALAR" )
       set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
