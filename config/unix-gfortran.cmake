@@ -19,8 +19,9 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 # -ffree-line-length-none Allow Fortran lines longer than 132 chars.
 # -fimplicit-none         Do not allow implicit typing
 # -fPIC                   Produce position independent code
+# -cpp                    Enable preprocessing
 SET( CMAKE_Fortran_FLAGS 
-  "-ffree-form -ffree-line-length-none -fimplicit-none -static-libgfortran -fPIC" )
+  "-cpp -ffree-form -ffree-line-length-none -fimplicit-none -static-libgfortran -fPIC" )
 
 # Debug flags:
 #
