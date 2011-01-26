@@ -10,6 +10,7 @@ FIND_PATH( LAPACK_INCLUDE_DIR clapack.h
     ${LAPACK_INC_DIR}
     $ENV{LAPACK_INC_DIR}
     ${VENDOR_DIR}/atlas/include
+    NO_DEFAULT_PATH
 )
 
 if( WIN32 )
@@ -23,6 +24,7 @@ FIND_LIBRARY(LAPACK_LIBRARY
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
         ${VENDOR_DIR}/atlas/lib
+    NO_DEFAULT_PATH
 )
 if( WIN32 )
    set(BLAS_LIBRARY_NAME blas.lib)
@@ -36,6 +38,8 @@ FIND_LIBRARY(LAPACK_BLAS_LIBRARY
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
         ${VENDOR_DIR}/atlas/lib
+    NO_DEFAULT_PATH
+
 )
 FIND_LIBRARY(LAPACK_F2C_LIBRARY
     NAMES libf2c.lib
@@ -43,6 +47,8 @@ FIND_LIBRARY(LAPACK_F2C_LIBRARY
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
         ${VENDOR_DIR}/atlas/lib
+    NO_DEFAULT_PATH
+
 )
 FIND_LIBRARY(LAPACK_F77BLAS_LIBRARY
     NAMES f77blas
@@ -50,6 +56,8 @@ FIND_LIBRARY(LAPACK_F77BLAS_LIBRARY
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
         ${VENDOR_DIR}/atlas/lib
+    NO_DEFAULT_PATH
+
 )
 FIND_LIBRARY(LAPACK_ATLAS_LIBRARY
     NAMES atlas
@@ -57,6 +65,8 @@ FIND_LIBRARY(LAPACK_ATLAS_LIBRARY
         ${LAPACK_LIB_DIR}
         $ENV{LAPACK_LIB_DIR}
         ${VENDOR_DIR}/atlas/lib
+    NO_DEFAULT_PATH
+
 )
 MARK_AS_ADVANCED( 
    LAPACK_LIBRARY
@@ -92,6 +102,11 @@ if (LAPACK_FOUND)
        list(APPEND LAPACK_LIBRARIES ${LAPACK_ATLAS_LIBRARY})
     endif()
 endif()
+
+if( "${CMAKE_Fortran_COMPILER}" MATCHES "gfortran" )
+   set( LAPACK_EXTRA_LIBRARIES "${CMAKE_Fortran_libgfortran_lib_LIBRARY}" CACHE STRING "Foo")
+endif()
+
 
 if( VERBOSE )
 message("
