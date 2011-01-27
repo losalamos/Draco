@@ -152,3 +152,53 @@
    ...
    obj:/*/libpython2.4.so*
 }
+#--------------------------------------------------------
+## CMake suppressions
+{
+   ld/memcheck/leak
+   Memcheck:Leak
+   ...
+   obj:/*/ld
+}
+{
+   cmake/memcheck/leak
+   Memcheck:Leak
+   ...
+   obj:/*/cmake
+}
+{
+   as/memcheck/leak
+   Memcheck:Leak
+   ...
+   obj:/*/as
+   ...
+}
+{
+   vg_replace_malloc/do_spec_1/memcheck/leak
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:save_string
+   fun:handle_braces
+   fun:do_spec_1
+   ...
+}
+{
+   vg_replace_malloc/decode_options/memcheck/leak
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:_cpp_get_buff
+   fun:cpp_create_reader
+   fun:c_common_init_options
+   fun:decode_options
+   ...
+}
+
+{
+   xcalloc/memcheck/leak
+   Memcheck:Leak
+   fun:calloc
+   fun:xcalloc
+   ...
+}
