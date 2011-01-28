@@ -148,7 +148,9 @@ void check_accessors(void)
         double rn = r3.ran();
         cout << "LF_Gen r3 returne ran() = " << rn << endl;
         unsigned int id = r3.get_num();
-        if( id != 153 )                           ITFAILS;
+        // The value returned by LF_Gen::get_num() lives at the end of the LFG
+        // data array.
+        if( id != foo[LFG_DATA_SIZE-1] )          ITFAILS;
         if( r3.size() != LFG_DATA_SIZE )          ITFAILS;
 
         int count(0);
