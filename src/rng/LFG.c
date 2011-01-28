@@ -90,9 +90,11 @@
 #define INT_MOD_MASK2 0xfffffffe
 /*  #define FLT_MULT (0.25/(unsigned)(1<<30)) */
 #define FLT_MULT 2.3283064365386962891e-10
-#else
-#define INT_MOD_MASK ((unsigned)(1<<BITS_IN_INT_GEN)-1)
-#define FLT_MULT (1.0/(1<<BITS_IN_INT_GEN))
+/*
+  #else
+  #define INT_MOD_MASK ((unsigned)(1<<BITS_IN_INT_GEN)-1)
+  #define FLT_MULT (1.0/(1<<BITS_IN_INT_GEN))
+*/
 #endif
 
 
@@ -705,7 +707,9 @@ lfg_gen_dbl(unsigned *genptr)
     new_val = ((unsigned int) temp2*(double)FLT_MULT +
                (unsigned int) temp1)*FLT_MULT;
 
+#ifdef DEBUG
     assert(!(new_val < 0 || new_val > 1));
+#endif
     return new_val;
 }
 
@@ -729,7 +733,9 @@ initialize1(
     unsigned* const q0 = begin;
     unsigned* const si = begin + OFFSET_si;
 
+#ifdef DEBUG
     assert(!((end - begin) < OFFSET_END));
+#endif
     q0[OFFSET_hidx] = VALID_LM1;
     q0[OFFSET_seed] = seed;
     q0[OFFSET_initseed] = initseed;

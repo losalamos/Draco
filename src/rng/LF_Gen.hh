@@ -3,7 +3,7 @@
  * \file    rng/LF_Gen.hh
  * \author  Paul Henning
  * \brief   Declaration of class LF_Gen
- * \note    Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2006-2011 Los Alamos National Security, LLC.
  *          All rights reserved.
  * \version $Id$
  */
@@ -30,31 +30,23 @@ class LF_Gen_Ref
   public:
     LF_Gen_Ref(unsigned int* const db, unsigned int* const de)
         : data(db, de) 
-    {
-        Require(std::distance(db,de) == LFG_DATA_SIZE);
-    }
+    { Require(std::distance(db,de) == LFG_DATA_SIZE); }
 
-    double ran() const
-    {
-        return lfg_gen_dbl(data.access()); 
-    }
+    double ran() const { return lfg_gen_dbl(data.access()); }
 
     //! Spawn a new, independent stream from this one.
     inline void spawn(LF_Gen& new_gen) const;
 
     //! Return the identifier for this stream
-    unsigned int get_num() const
-    {
-        return lfg_gennum(data.access());
-    }
-
+    unsigned int get_num() const { return lfg_gennum(data.access()); }
 
     inline bool is_alias_for(LF_Gen const &rng);
-
 
   private:
     mutable rtt_dsxx::Data_Table<unsigned int> data;
 };
+
+
 
 
 //===========================================================================//
@@ -77,10 +69,7 @@ class LF_Gen
     typedef unsigned int const * const_iterator;
 
     //! Default constructor.
-    LF_Gen() 
-    {
-        Require(lfg_size() == LFG_DATA_SIZE);
-    }
+    LF_Gen() { Require(lfg_size() == LFG_DATA_SIZE); }
 
     LF_Gen(unsigned int const seed, unsigned int const streamnum)
     {
@@ -90,67 +79,47 @@ class LF_Gen
 
     LF_Gen(unsigned int* const _data)
     {
+#if LFG_PARAM_SET == 1
+        Require( _data[LFG_DATA_SIZE-4] < 17 );
+#elif LFG_PARAM_SET == 2
+        Require( _data[LFG_DATA_SIZE-4] < 31 );
+#endif
 	// create a new Rnd object from data
 	std::copy (_data, _data + LFG_DATA_SIZE, data);
     }
 
-    void finish_init() const
-    {
-        lfg_create_rng_part2(data /*, data + LFG_DATA_SIZE */);
-    }
+    void finish_init() const {
+        lfg_create_rng_part2(data /*, data + LFG_DATA_SIZE */); }
 
     //! Return a random double
-    double ran() const 
-    { 
-        return lfg_gen_dbl(data); 
-    }
+    double ran() const { return lfg_gen_dbl(data); }
 
     //! Spawn a new, independent stream from this one.
-    void spawn(LF_Gen& new_gen) const
-    { 
-        lfg_spawn_rng(data, new_gen.data, new_gen.data+LFG_DATA_SIZE); 
-    }
+    void spawn(LF_Gen& new_gen) const { 
+        lfg_spawn_rng(data, new_gen.data, new_gen.data+LFG_DATA_SIZE); }
 
     //! Return the identifier for this stream
-    unsigned int get_num() const
-    {
-        return lfg_gennum(data);
-    }
+    unsigned int get_num() const { return lfg_gennum(data); }
 
     //! Return the size of the state
     unsigned int size() const { return LFG_DATA_SIZE; }
 
-    iterator begin() 
-    { 
-        return data; 
-    }
+    iterator begin() { return data; }
     
-    iterator end() 
-    { 
-        return data + LFG_DATA_SIZE; 
-    }
+    iterator end() { return data + LFG_DATA_SIZE; }
 
-    const_iterator begin() const 
-    { 
-        return data; 
-    }
+    const_iterator begin() const { return data; }
 
-    const_iterator end() const 
-    { 
-        return data + LFG_DATA_SIZE; 
-    }
+    const_iterator end() const { return data + LFG_DATA_SIZE; }
 
-    bool operator==(LF_Gen const & rhs) const 
-    { 
-        return std::equal(begin(), end(), rhs.begin()); 
-    }
+    bool operator==(LF_Gen const & rhs) const { 
+        return std::equal(begin(), end(), rhs.begin()); }
 
-    LF_Gen_Ref ref() const
-    {
-        return LF_Gen_Ref(data, data+LFG_DATA_SIZE);
-    }
+    LF_Gen_Ref ref() const {
+        return LF_Gen_Ref(data, data+LFG_DATA_SIZE); }
 
-    static unsigned int size_bytes() { return LFG_DATA_SIZE*sizeof(unsigned int); }
+    static unsigned int size_bytes() {
+        return LFG_DATA_SIZE*sizeof(unsigned int); }
     
 #if 0
     // Copying RNG streams shouldn't be done lightly!
@@ -167,6 +136,14 @@ class LF_Gen
 
 };
 
+
+//---------------------------------------------------------------------------//
+// Implementation
+//---------------------------------------------------------------------------//
+
+// This implementation requires the full definition of LF_Gen, so it must be
+// placed here instead of in the LF_Gen_Ref class.
+
 inline void LF_Gen_Ref::spawn(LF_Gen& new_gen) const
 { 
     lfg_spawn_rng(data.access(),  new_gen.data, new_gen.data+LFG_DATA_SIZE); 
@@ -178,6 +155,6 @@ inline bool LF_Gen_Ref::is_alias_for(LF_Gen const &rng)
 }
 
 
-}
+} // end namespace rtt_rng
 
 #endif
