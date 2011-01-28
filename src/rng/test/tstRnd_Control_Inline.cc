@@ -119,6 +119,17 @@ void check_accessors(void)
         for( size_t i=0; i<N; ++i)
             foo[i] = i+100;
 
+        // some entries in LFG data have extra-special significance; for
+        // example, data[OFFSET_hidx] is "hidx".  This must be less than
+        // VALID_LM1, which is either 16 or 30, depending on LFG_PARAM_SET.
+#if LFG_PARAM_SET == 1
+        foo[LFG_DATA_SIZE-4] = 16;
+#elif LFG_PARAM_SET == 2
+        foo[LFG_DATA_SIZE-4] = 30;
+#endif
+
+        foo[50] = 16;
+
         // try ctor form 2
         LF_Gen r2( seed, 0 );        
 
