@@ -159,12 +159,14 @@
    Memcheck:Leak
    ...
    obj:/*/ld
+   ...
 }
 {
    cmake/memcheck/leak
    Memcheck:Leak
    ...
    obj:/*/cmake
+   ...
 }
 {
    as/memcheck/leak
@@ -174,31 +176,60 @@
    ...
 }
 {
-   vg_replace_malloc/do_spec_1/memcheck/leak
+   cmake/handle_braces/memleak
    Memcheck:Leak
-   fun:malloc
-   fun:xmalloc
-   fun:save_string
+   ...
    fun:handle_braces
    fun:do_spec_1
    ...
 }
 {
-   vg_replace_malloc/decode_options/memcheck/leak
+   cmake/process_command/memleak
    Memcheck:Leak
-   fun:malloc
-   fun:xmalloc
-   fun:_cpp_get_buff
-   fun:cpp_create_reader
-   fun:c_common_init_options
+   ...
+   fun:process_command
+   ...
+}
+{
+   cmake/find_a_file/memleak
+   Memcheck:Leak
+   ...
+   fun:find_a_file
+   ...
+}
+{
+   cmake/_obstack_begin/memleak
+   Memcheck:Leak
+   ...
+   fun:_obstack_begin
+   ...
+}
+{
+   cmake/xstrdup/memleak
+   Memcheck:Leak
+   ...
+   fun:xstrdup
+   ...
+}
+{
+   cmake/decode_options/memleak
+   Memcheck:Leak
+   ...
    fun:decode_options
+   ...
+}
+{
+   cmake/concat/memleak
+   Memcheck:Leak
+   ...
+   fun:concat
    ...
 }
 
 {
-   xcalloc/memcheck/leak
+   cmake/main/xcalloc/memleak
    Memcheck:Leak
    fun:calloc
    fun:xcalloc
-   ...
+   fun:main
 }
