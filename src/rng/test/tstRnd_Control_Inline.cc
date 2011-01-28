@@ -128,8 +128,6 @@ void check_accessors(void)
         foo[LFG_DATA_SIZE-4] = 30;
 #endif
 
-        foo[50] = 16;
-
         // try ctor form 2
         LF_Gen r2( seed, 0 );        
 
