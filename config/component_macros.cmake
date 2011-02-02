@@ -169,10 +169,8 @@ macro( add_scalar_tests test_sources )
    # If the test directory does not provide its own library (e.g.:
    # libc4_test.a), then don't try to link against it!
    get_target_property( test_lib_loc Lib_${compname}_test LOCATION )
-   #message( "test_lib_loc = ${test_lib_loc}" )
    if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
       set( test_lib_target_name "Lib_${compname}_test" )
-      #message( "test_lib_target_name = ${test_lib_target_name}" )
    endif()
 
    # Loop over each test source files:
@@ -249,7 +247,7 @@ endmacro()
 #
 # Usage:
 #
-# add_scalar_tests( 
+# add_parallel_tests( 
 #    SOURCES "${test_sources}" 
 #    DEPS    "${library_dependencies}" 
 #    PE_LIST "1;2;4" )
@@ -289,6 +287,13 @@ macro( add_parallel_tests )
    # What is the component name (always use Lib_${compname} as a dependency).
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
 
+   # If the test directory does not provide its own library (e.g.:
+   # libc4_test.a), then don't try to link against it!
+   get_target_property( test_lib_loc Lib_${compname}_test LOCATION )
+   if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
+      set( test_lib_target_name "Lib_${compname}_test" )
+   endif()
+
    # Loop over each test source files:
    # 1. Compile the executable
    # 2. Link against dependencies (libraries)
@@ -305,7 +310,7 @@ macro( add_parallel_tests )
          )
       target_link_libraries( 
          Ut_${compname}_${testname}_exe 
-         Lib_${compname}_test 
+         ${test_lib_target_name} 
          Lib_${compname} 
          ${addparalleltest_DEPS}
          )
