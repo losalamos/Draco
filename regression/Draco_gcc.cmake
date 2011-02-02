@@ -109,12 +109,19 @@ file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 #   VERBOSE=ON
 #   CTEST_OUTPUT_ON_FAILURE=ON
 # )
-set( $ENV{FC} ${F90} )
+#set( ENV{FC} $ENV{F90} )
 set( VERBOSE ON )
 set( CTEST_OUTPUT_ON_FAILURE ON )
 
 # Set the CTEST_COMMAND
 setup_ctest_commands() # QUIET
+
+# Install the files
+message( STATUS "Installing files to ${CMAKE_INSTALL_PREFIX}..." )
+execute_process( 
+   COMMAND           ${CMAKE_MAKE_PROGRAM} install
+   WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+   )
 
 message("end of ${CTEST_SCRIPT_NAME}.")
 

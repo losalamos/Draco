@@ -14,8 +14,9 @@ if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f /home/regress/environment/Modules/init/bash; then
     source /home/regress/environment/Modules/init/bash
-    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.3.4 gsl hypre
+    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.3.4 gsl 
     module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.4.0 cmake
+    module load valgrind hypre
     module list
   fi
 fi
@@ -36,25 +37,25 @@ dashboard_type=Nightly
 base_dir=/home/regress/cmake_draco
 script_dir=/home/regress/cmake_draco
 
+# compiler
+comp=gcc
+
 # Release build
 build_type=Release
-export work_dir=${base_dir}/${dashboard_type}/${build_type}
+export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
-(cd $work_dir/build; make install)
-
 
 # Debug build
 build_type=Debug
-export work_dir=${base_dir}/${dashboard_type}/${build_type}
+export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
-(cd $work_dir/build; make install)
 
 # Coverage build
 build_type=Coverage
 module load bullseyecoverage
 CXX=`which g++`
 CC=`which gcc`
-export work_dir=${base_dir}/${dashboard_type}/${build_type}
+export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
 # export COVFILE=${work_dir}/build/CMake.cov
 # export COVDIRCFG=${script_dir}/regression/covclass_cmake.cfg
 # export COVFNCFG=${script_dir}/regression/covclass_cmake.cfg
@@ -67,4 +68,25 @@ ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,${
 # unset COVCLASSCFG
 # unset COVSRCCFG
 module unload bullseyecoverage
-(cd $work_dir/build; make install)
+
+#
+# PGI builds
+#
+module switch gcc pgi
+comp=pgi
+
+# Release build
+build_type=Release
+export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+
+#
+# Intel builds
+#
+module switch pgi intel
+comp=intel
+
+# Release build
+build_type=Release
+export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}

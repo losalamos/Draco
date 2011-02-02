@@ -160,7 +160,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
 
   # Dashboard setup (in place of CTestConfig.cmake)
   if( NOT CTEST_PROJECT_NAME )
-     set( CTEST_PROJECT_NAME "Draco")
+     set( CTEST_PROJECT_NAME "UnknownProject")
   endif()
   set( CTEST_NIGHTLY_START_TIME "00:00:00 MST")
   
@@ -264,6 +264,13 @@ macro( parse_args )
     set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
   
+  set( compiler_short_name "gcc" )
+  if( $ENV{CXX} MATCHES "pgCC" )
+     set( compiler_short_name "pgi" )
+  elseif($ENV{CXX} MATCHES "icpc" )
+     set( compiler_short_name "intel" )
+  endif()
+
   # maybe just gcc?
   if( WIN32 )
     if( "$ENV{dirext}" MATCHES "x64" )
@@ -272,7 +279,7 @@ macro( parse_args )
       set( CTEST_BUILD_NAME "Win32_${CTEST_BUILD_CONFIGURATION}" )
     endif()
   else() # Unix
-    set( CTEST_BUILD_NAME "Linux64_${CTEST_BUILD_CONFIGURATION}" )
+    set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   endif()
 
   # Default is no Coverage Analysis
@@ -423,19 +430,21 @@ macro( setup_ctest_commands )
   
   ctest_start( ${CTEST_MODEL} )
   ctest_update()
-  if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-     if(ENABLE_C_CODECOVERAGE)
-        configure_file( 
-           ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
-           ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
-           @ONLY )
-        set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-        set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-        set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-        set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-        set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
-        execute_process(COMMAND "${COV01}" --on
-           RESULT_VARIABLE RES)
+  if( "$ENV{CXX}" MATCHES "g[+][+]" )
+     if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+        if(ENABLE_C_CODECOVERAGE)
+           configure_file( 
+              ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
+              ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
+              @ONLY )
+           set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
+           execute_process(COMMAND "${COV01}" --on
+              RESULT_VARIABLE RES)
+        endif()
      endif()
   endif()
   ctest_configure() # LABELS label1 [label2]
@@ -444,20 +453,21 @@ macro( setup_ctest_commands )
      PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
      SCHEDULE_RANDOM ON )
      # EXCLUDE_LABLE "LONG_TESTS"
-  
-  if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-     if(ENABLE_C_CODECOVERAGE)
-        ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
-        execute_process(COMMAND "${COV01}" --off
-           RESULT_VARIABLE RES)
-     else()
-        ctest_memcheck(
-           PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-           SCHEDULE_RANDOM ON )
+
+  if( "$ENV{CXX}" MATCHES "g[+][+]" )
+     if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+        if(ENABLE_C_CODECOVERAGE)
+           ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
+           execute_process(COMMAND "${COV01}" --off
+              RESULT_VARIABLE RES)
+        else()
+           ctest_memcheck(
+              PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+              SCHEDULE_RANDOM ON )
            # EXCLUDE_LABEL "Nightly"
+        endif()
      endif()
   endif()
   ctest_submit()
      
 endmacro( setup_ctest_commands )
-
