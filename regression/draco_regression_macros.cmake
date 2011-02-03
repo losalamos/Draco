@@ -16,49 +16,31 @@
 
 # Sample script:
 #----------------------------------------
+# set( CTEST_PROJECT_NAME "Draco" )
 # include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 # set_defaults()
 # parse_args()
 # find_tools()
-# setup_ctest_commands()
 # set( CTEST_INITIAL_CACHE "
-#VERBOSE:BOOL=ON
-#BUILD_TESTS:BOOL=ON
-
-#BUILDNAME:STRING=${CTEST_BUILD_NAME}
-#CMAKE_BUILD_TYPE:STRING=${build_type}
-#CMAKE_GENERATOR:STRING=${CMAKE_GENERATOR}
-#CMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-#CMAKE_MAKE_PROGRAM:FILEPATH=${MAKECOMMAND}
-#CVSCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
-#SVNCOMMAND:FILEPATH=${CTEST_CVS_COMMAND}
-#MAKECOMMAND:FILEPATH=${MAKECOMMAND}
-#SITE:STRING=${sitename}
-#VENDOR_DIR:PATH=${VENDOR_DIR}
-#${CTEST_INITIAL_CACHE_EXTRAS}
-#")
-#set( CTEST_ENVIRONMENT
-#  FC=/opt/pathscale/bin/pathf90
-#  CXX=
-#  CC=
-#  VERBOSE=ON
-#  CTEST_OUTPUT_ON_FAILURE=ON
-#)
+# CMAKE_VERBOSE_MAKEFILE:BOOL=ON
+# CMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_CONFIGURATION}
+# CMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+# CTEST_CMAKE_GENERATOR:STRING=${CTEST_CMAKE_GENERATOR}
+# CTEST_USE_LAUNCHERS:STRING=${CTEST_USE_LAUNCHERS}
+# ENABLE_C_CODECOVERAGE:BOOL=${ENABLE_C_CODECOVERAGE}
+# ENABLE_Fortran_CODECOVERAGE:BOOL=${ENABLE_Fortran_CODECOVERAGE}
+# VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
+# ")
+# ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+# file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
+# set( VERBOSE ON )
+# set( CTEST_OUTPUT_ON_FAILURE ON )
+# setup_ctest_commands()
+#execute_process( 
+#   COMMAND           ${CMAKE_MAKE_PROGRAM} install
+#   WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+#   )
 #----------------------------------------
-
-# available commands for ctest:
-# exec_program
-# execute_proces
-# file
-# find_file
-# find_library
-# find_package
-# find_path
-# find_program
-# macro
-# site_name
-# unset
-# string
 
 # ------------------------------------------------------------
 # Defaults (override with optional arguments)
@@ -101,9 +83,13 @@ win32$ set work_dir=c:/full/path/to/work_dir
     endif( EXISTS "$ENV{work_dir}" )
   endif( NOT work_dir )
   file( TO_CMAKE_PATH ${work_dir} work_dir )
-  # ??? if not exist ${CTEST_SOURCE_DIRECTORY} )
-  # ??? file( make_directory ${CTEST_SOURCE_DIRECTORY} )
-  # ??? endif()
+
+  # Set the sitename, but strip any domain information
+  site_name( sitename )
+  string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
+  # Treat all Infinitron nodes as infinitron
+  # string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
+  set( CTEST_SITE ${sitename} )
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
   set( CTEST_BINARY_DIRECTORY "${work_dir}/build"  )
   set( CMAKE_INSTALL_PREFIX   "${work_dir}/target" )
@@ -115,25 +101,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
   set( CTEST_BUILD_CONFIGURATION "Release" )
   
-  # should ctest wipe the binary tree before running
-  # set( CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE )
-
-  if( EXISTS "$ENV{VENDOR_DIR}" )
-    set(VENDOR_DIR $ENV{VENDOR_DIR})
-  endif()
-  find_path( VENDOR_DIR
-    ChangeLog
-    PATHS
-      /ccs/codes/radtran/vendors/Linux64
-      /usr/projects/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
-      c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
-      c:/vendors
-      )
-  
-#  if( NOT EXISTS ${VENDOR_DIR} )
-#    message( FATAL_ERROR "VENDOR_DIR = ${VENDOR_DIR} was not found." )
-#  endif( NOT EXISTS ${VENDOR_DIR} )
-
   if( WIN32 )
     # add option for "NMake Makefiles JOM"?
     set( CTEST_CMAKE_GENERATOR "NMake Makefiles" )
@@ -147,13 +114,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
   else()
      set( CTEST_USE_LAUNCHERS 0 )
   endif()
-
-  # Set the sitename, but strip any domain information
-  site_name( sitename )
-  string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  # Treat all Infinitron nodes as infinitron
-  # string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
-  set( CTEST_SITE ${sitename} )
 
   set( ENABLE_C_CODECOVERAGE OFF )
   set( ENABLE_Fortran_CODECOVERAGE OFF )
@@ -195,11 +155,27 @@ win32$ set work_dir=c:/full/path/to/work_dir
      endif()
   endif()
 
+  if( EXISTS "$ENV{VENDOR_DIR}" )
+    set(VENDOR_DIR $ENV{VENDOR_DIR})
+  endif()
+  find_path( VENDOR_DIR
+    ChangeLog
+    PATHS
+      /ccs/codes/radtran/vendors/Linux64
+      /usr/projects/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
+      c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
+      c:/vendors
+      )
+
+# Consider setting the following:
+
 # SET(CTEST_CUSTOM_ERROR_PRE_CONTEXT 20)
 # SET(CTEST_CUSTOM_ERROR_POST_CONTEXT 20)
 # SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 100)
 # SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 100)
-
+#     CTEST_START_WITH_EMPTY_BINARY_DIRECTORY
+#     CTEST_CONTINUOUS_DURATION
+#     CTEST_CONTINUOUS_MINIMUM_INTERVAL
 #find_program(CTEST_GIT_COMMAND NAMES git PATHS "C:\\Program Files\\Git\\bin")
 #find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
 
@@ -209,31 +185,32 @@ win32$ set work_dir=c:/full/path/to/work_dir
      message("
 ARGV     = ${ARGV}
 
-quiet_mode = ${quiet_mode}
 work_dir   = ${work_dir}
 
-CTEST_SITE             = ${CTEST_SITE}
 CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
+CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
+CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
+
+CTEST_SITE             = ${CTEST_SITE}
 CTEST_SOURCE_DIRECTORY = ${CTEST_SOURCE_DIRECTORY}
 CTEST_BINARY_DIRECTORY = ${CTEST_BINARY_DIRECTORY}
 CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
-CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
-CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
+CTEST_MODEL            = ${CTEST_MODEL}
+CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
 CTEST_CMAKE_GENERATOR  = ${CTEST_CMAKE_GENERATOR}
 CTEST_USE_LAUNCHERS    = ${CTEST_USE_LAUNCHERS}
-
+ENABLE_C_CODECOVERAGE  = ${ENABLE_C_CODECOVERAGE}
+ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
 CTEST_NIGHTLY_START_TIME  = ${CTEST_NIGHTLY_START_TIME}
 CTEST_DROP_METHOD         = ${CTEST_DROP_METHOD}
 CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
 CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
-
+CTEST_DROP_SITE_CDASH     = ${CTEST_DROP_SITE_CDASH}
+CTEST_CURL_OPTIONS        = ${CTEST_CURL_OPTIONS}
+MPIEXEC_MAX_NUMPROCS      = ${MPIEXEC_MAX_NUMPROCS}
 VENDOR_DIR                = ${VENDOR_DIR}
 ")
   endif( NOT quiet_mode )
-
-#CTEST_MODEL               = ${CTEST_MODEL}
-#CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
-
 
 endmacro( set_defaults )
 
@@ -297,6 +274,7 @@ macro( parse_args )
     message("
 CTEST_MODEL               = ${CTEST_MODEL}
 CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
+compiler_short_name       = ${compiler_short_name}
 CTEST_BUILD_NAME          = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE     = ${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
@@ -358,8 +336,7 @@ macro( find_tools )
 
   find_program( CTEST_MEMORYCHECK_COMMAND NAMES valgrind )
   set(          CTEST_MEMORYCHECK_COMMAND_OPTIONS  
-     "-q --tool=memcheck --leak-check=full --trace-children=yes
-  --error-limit=100 --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt" )
+     "-q --tool=memcheck --leak-check=full --trace-children=yes --error-limit=100 --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt" )
   # --show-reachable --num-callers=50
   # --suppressions=<filename>
   # --gen-suppressions=all|yes|no
@@ -406,7 +383,11 @@ CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
 CTEST_CMAKE_COMMAND = ${CTEST_CMAKE_COMMAND}
 MAKECOMMAND         = ${MAKECOMMAND}
-CMAKE_BUILD_COMMAND = ${CMAKE_BUILD_COMMAND}
+CTEST_MEMORYCHECK_COMMAND     = ${CTEST_MEMORYCHECK_COMMAND}
+MEMORYCHECK_SUPPRESSIONS_FILE = ${MEMORYCHECK_SUPPRESSIONS_FILE}
+CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}
+beyedir                       = ${beyedir}
+CTEST_CONFIGURE_COMMAND       = ${CTEST_CONFIGURE_COMMAND}
 ")
   endif( NOT quiet_mode )
 
@@ -427,8 +408,10 @@ macro( setup_ctest_commands )
   #
   # Drive the problem (www.cmake.org/cmake/help/ctest-2-8=docs.html)
   #
-  
+
+  message(STATUS "ctest_start( ${CTEST_MODEL} )")
   ctest_start( ${CTEST_MODEL} )
+  message(STATUS  "ctest_update()"  )
   ctest_update()
   if( "$ENV{CXX}" MATCHES "g[+][+]" )
      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
@@ -447,8 +430,11 @@ macro( setup_ctest_commands )
         endif()
      endif()
   endif()
+  message(STATUS "ctest_configure()" )
   ctest_configure() # LABELS label1 [label2]
+  message(STATUS "ctest_build()" )
   ctest_build()
+  message(STATUS "ctest_test(PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
   ctest_test( 
      PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
      SCHEDULE_RANDOM ON )
@@ -457,10 +443,12 @@ macro( setup_ctest_commands )
   if( "$ENV{CXX}" MATCHES "g[+][+]" )
      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
         if(ENABLE_C_CODECOVERAGE)
+           message(STATUS "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
            ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
            execute_process(COMMAND "${COV01}" --off
               RESULT_VARIABLE RES)
         else()
+           message(STATUS "ctest_memcheck( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )")
            ctest_memcheck(
               PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
               SCHEDULE_RANDOM ON )
@@ -468,6 +456,7 @@ macro( setup_ctest_commands )
         endif()
      endif()
   endif()
+  message(STATUS "ctest_submit()")
   ctest_submit()
      
 endmacro( setup_ctest_commands )
