@@ -41,13 +41,16 @@ namespace rtt_quadrature
  */
 QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
                             QIM const qm,
-                            unsigned const expansionOrder )
+                            unsigned const expansionOrder,
+                            comparator_t comparator_ )
     : spQuad( spQuad_ ),
       qm( qm ),
       n2lk( compute_n2lk( expansionOrder ) ),
       numMoments( n2lk.size() ),
+      ordinates( compute_ordinates(spQuad_,
+                                   comparator_) ),
       Mmatrix( computeM() ),
-      Dmatrix( computeD() )	
+      Dmatrix( computeD() )
 { 
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
@@ -65,7 +68,6 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
     Check( soft_equiv(gsl_sf_legendre_Plm( 2, 2, mu2 ), 3.0*(1.0-mu2*mu2) ));
 
     if( qm == GALERKIN ) Ensure( D_equals_M_inverse() );
-    Ensure( D_0_equals_wt() );
 }
 
 //---------------------------------------------------------------------------//
@@ -77,13 +79,16 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
  */
 QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
                             std::vector< lk_index > const & lkMoments_,
-                            QIM const   qm )
+                            QIM const   qm,
+                            comparator_t comparator_ )
     : spQuad( spQuad_ ),
       qm( qm ),
       n2lk( lkMoments_ ),
       numMoments( n2lk.size() ),
+      ordinates( compute_ordinates(spQuad_,
+                                   comparator_) ),
       Mmatrix( computeM() ),
-      Dmatrix( computeD() )	
+      Dmatrix( computeD() )
 { 
     Ensure( D_equals_M_inverse() );
 }
@@ -169,6 +174,8 @@ std::vector< double > QuadServices::computeD(void) const
     if( qm == GALERKIN ) return computeD_morel();
     if( qm == SN )       return computeD_traditional();
     if( qm == SVD )      return computeD_svd();
+
+    Check(spQuad->getNumOrdinates() == ordinates.size());
 
     // Should never get here.
     Insist( qm == GALERKIN || qm == SN || qm == SVD,
@@ -261,8 +268,8 @@ std::vector< double > QuadServices::computeD_traditional(void) const
     
     for( unsigned m=0; m<numOrdinates; ++m )
     {
-        double mu( spQuad->getMu(m) );
-        double wt( spQuad->getWt(m) );
+        double mu( ordinates[m].mu() );
+        double wt( ordinates[m].wt() );
 
         for( unsigned n=0; n<numMoments; ++n )
         {
@@ -275,40 +282,23 @@ std::vector< double > QuadServices::computeD_traditional(void) const
 
             if( dim == 1 ) // 1D mesh, 1D quadrature
             { // for 1D, mu is the polar direction and phi == 0, k==0
-                D[ m + n*numOrdinates ] =
-                    c*wt*galerkinYlk( ell, std::abs(k), mu, 0.0, sumwt );
+                D[ m + n*numOrdinates ] = c*wt*galerkinYlk( ell, std::abs(k), mu, 0.0, sumwt );
             }
 
             else if( dim == 2 ) // 2D mesh, 2D quadrature
             { // for 2D, mu is taken to be the polar direction.
-                // xi is always positive (a half-space).
-
-                if( spQuad->getEta().empty() )
-                {
-                    double xi(  spQuad->getXi(m) );
-                    double eta( std::sqrt(1.0-mu*mu-xi*xi) );
-                    double phi( compute_azimuthalAngle( xi, eta, mu ) );
-                    D[ m + n*numOrdinates ] =
-                        c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
-                }
-                else // assume xi is empty
-                {
-                    double eta( spQuad->getEta(m) );
-                    double xi(  std::sqrt(1.0-mu*mu-eta*eta) );
-                    double phi( compute_azimuthalAngle( eta, xi, mu ) );
-                    D[ m + n*numOrdinates ] =
-                        c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
-                }
+                double eta( ordinates[m].eta() );
+                double xi ( ordinates[m].xi() );
+                double phi( compute_azimuthalAngle( xi, eta, mu ) );
+                D[ m + n*numOrdinates ] = c*wt*galerkinYlk( ell, k, mu, phi, sumwt );
             }
-            
             else // 3D mesh, 3D quadrature
             {
                 Check( dim == 3);
-                double eta( spQuad->getEta(m) );
-                double xi ( spQuad->getXi( m) );
+                double eta( ordinates[m].eta() );
+                double xi ( ordinates[m].xi() );
                 double phi( compute_azimuthalAngle( mu, eta, xi ) );
-                D[ m + n*numOrdinates ] =
-                    c*wt*galerkinYlk( ell, k, xi, phi, sumwt );
+                D[ m + n*numOrdinates ] = c*wt*galerkinYlk( ell, k, xi, phi, sumwt );
             }
             
         } // n: end moment loop
@@ -462,6 +452,8 @@ std::vector< double > QuadServices::computeM(void) const
     unsigned const dim(       spQuad->dimensionality() );
     double   const sumwt(     spQuad->getNorm() );
 
+    Check(numOrdinates == ordinates.size());
+
     // resize the M matrix.
     std::vector< double > Mmatrix( numMoments*numOrdinates, -9999.0 );
 
@@ -474,40 +466,27 @@ std::vector< double > QuadServices::computeM(void) const
         
             if( dim == 1 ) // 1D mesh, 1D quadrature
             { // for 1D, mu is the polar direction and phi == 0, k==0
-                double mu ( spQuad->getMu(m) );
+                double mu ( ordinates[m].mu() );
                 Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, 0.0, sumwt );
             }
-
             else if( dim == 2 ) // 2D mesh, 2D quadrature
-            { // for 2D, mu is taken to be the polar direction.
+            {
+                // for 2D, mu is taken to be the polar direction.
                 // xi is always positive (a half-space).
-
                 //! \todo this is the same computation as Ordinate.cc::Y(l,k,Ordinate,norm). Try to prevent code duplication.
 
-                if( spQuad->getEta().empty() )
-                {
-                    double mu ( spQuad->getMu(m) );
-                    double xi(  spQuad->getXi(m) );
-                    double eta( sqrt(1.0-mu*mu-xi*xi) );
-                    double phi( compute_azimuthalAngle( xi, eta, mu ) );
-                    Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, phi, sumwt );
-                }
-                else // assume xi is empty
-                {
-                    double mu ( spQuad->getMu(m) );
-                    double eta( spQuad->getEta(m) );
-                    double xi(  sqrt(1.0-mu*mu-eta*eta) );
-                    double phi( compute_azimuthalAngle( eta, xi, mu ) );
-                    Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, phi, sumwt );
-                }
+                double mu ( ordinates[m].mu() );
+                double eta( ordinates[m].eta() );
+                double xi(  ordinates[m].xi() );
+                double phi( compute_azimuthalAngle( xi, eta, mu ) );
+                Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, mu, phi, sumwt );
             }
-            
             else // 3D mesh, 3D quadrature
             {
                 Check( dim == 3);
-                double mu ( spQuad->getMu(m)  );
-                double eta( spQuad->getEta(m) );
-                double xi ( spQuad->getXi( m) );
+                double mu ( ordinates[m].mu()  );
+                double eta( ordinates[m].eta() );
+                double xi ( ordinates[m].xi() );
                 double phi( compute_azimuthalAngle( mu, eta, xi ) );
                 Mmatrix[ n + m*numMoments ] = galerkinYlk( ell, k, xi, phi, sumwt );
             } 
@@ -811,19 +790,65 @@ double QuadServices::augmentM( unsigned n, Ordinate const &Omega ) const
     return galerkinYlk( n2lk[n].first, n2lk[n].second, mu, phi, spQuad->getNorm());
 }
 
-/*! 
- * \brief Test the D matrix to ensure that the first row matches the
- * associated quadrature set's weights.
- */
-
-bool QuadServices::D_0_equals_wt(void) const
+std::vector< Ordinate > 
+QuadServices::compute_ordinates(  rtt_dsxx::SP< const Quadrature > const spQuad,
+                                  comparator_t const comparator) const
 {
-    std::vector< double > wt = spQuad->getWt();
-    bool matches = rtt_dsxx::soft_equiv(
-        wt.begin(), wt.end(),
-        Dmatrix.begin(), Dmatrix.begin()+wt.size() );
-    return matches;
-}
+    unsigned const numOrdinates( spQuad->getNumOrdinates() );
+    unsigned const dim( spQuad->dimensionality() );    
+
+    std::vector< Ordinate > Result(numOrdinates);
+
+    if( dim == 1 ) 
+    { 
+        for (unsigned m=0; m<numOrdinates; m++)
+        {
+            double const mu = spQuad->getMu(m);
+            double const wt = spQuad->getWt(m);
+            Result[m] = Ordinate(mu, 0.0, 0.0, wt);
+        }
+    }
+    else if ( dim == 2 ) 
+    {
+        if( spQuad->getEta().empty() )
+        {
+            for (unsigned m=0; m<numOrdinates; m++)
+            {
+                double const mu = spQuad->getMu(m);
+                double const xi = spQuad->getXi(m);
+                double const eta  = sqrt(1.0 - mu*mu - xi*xi);
+                double const wt = spQuad->getWt(m);
+                Result[m] = Ordinate(mu, eta, xi, wt);
+            }
+        }
+        else
+        {
+            for (unsigned m=0; m<numOrdinates; m++)
+            {
+                double const mu = spQuad->getMu(m);
+                double const eta = spQuad->getEta(m);
+                double const xi = sqrt(1.0 - mu*mu - eta*eta);
+                double const wt= spQuad->getWt(m);
+                Result[m] = Ordinate(mu, eta, xi, wt);
+            }
+        }
+    }
+    else if ( dim == 3)
+    {
+        for (unsigned m=0; m<numOrdinates; m++)
+        {
+            double const mu = spQuad->getMu(m);
+            double const eta = spQuad->getEta(m);
+            double const xi = spQuad->getXi(m);
+            double const wt = spQuad->getWt(m);
+            Result[m] = Ordinate(mu, eta, xi, wt);
+        }
+    }
+        
+    sort( Result.begin(), Result.end(), comparator);        
+
+    return Result;
+} 
 
 } // end namespace rtt_quadrature
 

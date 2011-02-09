@@ -47,7 +47,8 @@ class QuadServices
     //! Default constructor assumes that only isotropic scattering is used. 
     QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
                   QIM                              const qm = SN,
-                  unsigned                         const expansionOrder = 0 );
+                  unsigned                         const expansionOrder = 0,
+                  comparator_t                     const comparator = Ordinate::SnCompare);
 
 //     //! Create a QuadServices from an ordinate set.
 //     explicit QuadServices( OrdinateSet const & os );
@@ -56,7 +57,8 @@ class QuadServices
     //! \todo This still needs to be defined.
     QuadServices( rtt_dsxx::SP< const Quadrature > const   spQuad_,
 		  std::vector< lk_index >          const & lkMoments_,
-                  QIM                              const   qm = SN );
+                  QIM                              const   qm = SN,
+                  comparator_t                     const comparator = Ordinate::SnCompare );
 
     //! Copy constructor (the long doxygen description is in the .cc file).
     QuadServices( QuadServices const & rhs );
@@ -110,7 +112,6 @@ class QuadServices
                             int m, int n ) ;
     //! Checks
     bool D_equals_M_inverse(void) const;
-    bool D_0_equals_wt(void) const;
 
   private:
 
@@ -127,6 +128,9 @@ class QuadServices
     std::vector< lk_index > compute_n2lk_2D_morel( void ) const;
     std::vector< lk_index > compute_n2lk_3D_morel( void ) const;
 
+    std::vector< Ordinate > compute_ordinates( rtt_dsxx::SP< const Quadrature > const spQuad_,
+                                                comparator_t const comparator_ ) const;
+    
     //! Build the Mmatrix.
     std::vector< double > computeM(void) const;
     std::vector< double > computeD(void) const;
@@ -139,9 +143,9 @@ class QuadServices
     QIM                              const qm;
     std::vector< lk_index >          const n2lk;
     unsigned                         const numMoments;
+    vector< Ordinate >               const ordinates;
     std::vector< double >            const Mmatrix;
     std::vector< double >            const Dmatrix;
-
 };
 
 } // end namespace rtt_quadrature
