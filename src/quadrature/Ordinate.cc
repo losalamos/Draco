@@ -253,25 +253,18 @@ bool Ordinate::SnComparePARTISN3(Ordinate const &a, Ordinate const &b)
     {
         return false;
     }
-    else if (fabs(a.xi()) < fabs(b.xi()))
+    else if (!soft_equiv(fabs(a.xi()), fabs(b.xi()), 1.0e-14))
     {
-	return true;
+        return (fabs(a.xi()) < fabs(b.xi()));
     }
-    else if (fabs(a.xi()) > fabs(b.xi()))
+    else if (!soft_equiv(fabs(a.eta()), fabs(b.eta()), 1.0e-14))
     {
-        return false;
-    }
-    else if (fabs(a.eta()) < fabs(b.eta()))
-    {
-	return true;
-    }
-    else if (fabs(a.eta()) > fabs(b.eta()))
-    {
-        return false;
+        return (fabs(a.eta()) < fabs(b.eta()));
     }
     else
     {
-	return (fabs(a.mu()) < fabs(b.mu()));
+	return (!soft_equiv(fabs(a.mu()), fabs(b.mu()), 1.0e-14) &&
+                fabs(a.mu()) < fabs(b.mu()));
     }
 }
 
@@ -385,11 +378,19 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh()
             ordinates_[a] = Ordinate(mu, xi, eta, weight);
         }
     }       
-        
-    sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
-    
-    if( geometry_ == rtt_mesh_element::AXISYMMETRIC )
+
+    if (geometry_ == rtt_mesh_element::CARTESIAN)
     {
+        sort( ordinates_.begin(),
+              ordinates_.end(),
+              Ordinate::SnComparePARTISN3 );
+
+        comparator_ = Ordinate::SnComparePARTISN3;
+    }
+    else if( geometry_ == rtt_mesh_element::AXISYMMETRIC )
+    {
+        sort( ordinates_.begin(), ordinates_.end(), Ordinate::SnCompare );
+
         // Define an impossible value for a direction cosine.  We use
         // this to simplify the logic of determining when we are at
         // the head of a new level set.

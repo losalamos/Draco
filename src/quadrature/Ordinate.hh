@@ -75,6 +75,11 @@ class Ordinate
     static
     bool SnCompare(const Ordinate &, const Ordinate &);
     
+    //! STL-compatible comparator predicate to sort ordinates into PARTISN 2-D
+    //! axisymmetric ordering.
+    static
+    bool SnComparePARTISN2a(const Ordinate &, const Ordinate &);
+    
     //! STL-compatible comparator predicate to sort ordinates into PARTISN 3-D
     //! ordering.
     static
@@ -132,6 +137,8 @@ class OrdinateSet
 
     //! destructor
     virtual ~OrdinateSet(){}
+
+    // ACCESSORS
 
     //! Return the ordinates.
     std::vector<Ordinate> const &getOrdinates() const { return ordinates_; }
