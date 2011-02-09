@@ -86,7 +86,9 @@ class Receive_Double_Vector_Autosize : public Receiver
     {
         double *v(NULL);
         unsigned const size = Receiver::receive(v);
-        return vector<double>(v, v+size);
+        vector<double> retVal(v, v+size);
+        delete [] v;
+        return retVal;
     }
 
 };
