@@ -845,7 +845,7 @@ QuadServices::compute_ordinates(  rtt_dsxx::SP< const Quadrature > const spQuad,
         }
     }
         
-    sort( Result.begin(), Result.end(), comparator);        
+    std::sort( Result.begin(), Result.end(), comparator);        
 
     return Result;
 } 
