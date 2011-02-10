@@ -21,7 +21,8 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 # -fPIC                   Produce position independent code
 # -cpp                    Enable preprocessing
 SET( CMAKE_Fortran_FLAGS 
-  "-cpp -ffree-form -ffree-line-length-none -fimplicit-none -static-libgfortran -fPIC" )
+  "-cpp -ffree-line-length-none -static-libgfortran -fPIC" )
+# removed implicit none - needed by capsaicin
 
 # Debug flags:
 #
@@ -40,7 +41,8 @@ SET( CMAKE_Fortran_FLAGS
 #                explicit interface.  
 #   
 SET( CMAKE_Fortran_FLAGS_DEBUG 
-  "-g -Wall -W -pedantic -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+  "-g -Wall -W -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+# removed pedantic - needed by capsaicin
 
 # Release flags
 #
