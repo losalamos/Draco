@@ -104,10 +104,15 @@ endif( BUILD_SHARED_LIBS )
 #            strict      - enables -fp-model precise -fp-model except, disables
 #                          contractions and enables pragma stdc fenv_access
 
+# Suppressions 
+# -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
+# Warning #1678: cannot enable speculation unless fenv_access and 
+#                exception_semantics are disabled
+
 IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS                "-fPIC -vec-report0 -diag-disable remark -fp-model strict" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -Wall -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ipo -funroll-loops -DNDEBUG" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -Wall -ftrapuv -DDEBUG") 
+  set( CMAKE_C_FLAGS_RELEASE        "-O1 -inline-level=1 -ipo -funroll-loops -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -inline-level=0 -ipo -DNDEBUG" )
 
