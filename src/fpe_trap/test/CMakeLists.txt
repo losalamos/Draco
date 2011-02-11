@@ -58,7 +58,7 @@ if( PYTHONINTERP_FOUND )
        PROPERTIES	
          PASS_REGULAR_EXPRESSION ".*PASSED" 
          FAIL_REGULAR_EXPRESSION ".*FAILED" 
-         LABEL                   "nomemcheck"
+         LABELS                  "nomemcheck"
     )
 
 endif( PYTHONINTERP_FOUND )

@@ -86,7 +86,7 @@ include(dracoTesting)
 add_test( SystemInformationNew 
 	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
 set_tests_properties( SystemInformationNew
-   PROPERTIES LABEL "nomemcheck" )
+   PROPERTIES LABELS "nomemcheck" )
 
 # Build options (static or shared, dbc-level
 #   Insist() assertions    : always on
