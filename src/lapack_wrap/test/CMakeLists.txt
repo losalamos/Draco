@@ -40,29 +40,5 @@ add_dependencies(      Lib_lapack_wrap_test Lib_lapack_wrap )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;${LAPACK_LIBRARIES};${FORTRAN_LIBS}" )
-
-# foreach( file ${test_sources} )
-#   get_filename_component( testname ${file} NAME_WE )
-#   add_executable( Ut_lapack_wrap_${testname}_exe ${file})
-#   set_target_properties( 
-#      Ut_lapack_wrap_${testname}_exe 
-#      PROPERTIES 
-#        OUTPUT_NAME ${testname} 
-#        VS_KEYWORD ${testname}
-#        PROJECT_LABEL Ut_lapack_wrap
-#        #LINK_FLAGS /nodefaultlib:msvcrt.lib
-#   )
-#   target_link_libraries( Ut_lapack_wrap_${testname}_exe Lib_lapack_wrap Lib_lapack_wrap_test Lib_dsxx ${LAPACK_LIBRARIES} ${FORTRAN_LIBS} )
-#   add_test( lapack_wrap_${testname} ${testname} )
-#   set_tests_properties( lapack_wrap_${testname} PROPERTIES	
-#      PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED" 
-#      FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED" 
-#   )
-#   if( "${test_loc}x" STREQUAL "x" )
-#     get_target_property( test_loc Ut_lapack_wrap_${testname}_exe LOCATION )
-#     get_filename_component( test_loc ${test_loc} PATH )
-#   endif()
-# endforeach()
-
+   DEPS    "Lib_dsxx;${LAPACK_LIBRARIES};${FORTRAN_LIBS};${INTEL_LIBM}" )
 

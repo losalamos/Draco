@@ -39,7 +39,10 @@ add_dependencies( Lib_dsxx_test Lib_dsxx )
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_scalar_tests( SOURCES "${test_sources}" )
+add_scalar_tests( 
+   SOURCES "${test_sources}" 
+   DEPS    "${INTEL_LIBM}"
+   )
 
 # source_group( dsxx\\test FILES ${test_lib_sources} ${test_sources} )
 

@@ -28,5 +28,5 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx"
+   DEPS    "Lib_dsxx;${INTEL_LIBM}"
 )

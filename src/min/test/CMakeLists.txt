@@ -43,7 +43,7 @@ add_dependencies( Lib_min_test Lib_min )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_linear;Lib_dsxx" )
+   DEPS    "Lib_linear;Lib_dsxx${INTEL_LIBM}" )
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)
