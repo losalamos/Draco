@@ -11,18 +11,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set prefix      /usr/projects/draco/vendors/SCALAPACK/yr-openmpi143-pgi903-pgi903
+set version     10.6.1
+set prefix      /usr/projects/draco/vendors/trilinos-$version/yr-openmpi143-pgi903-pgi903
+set incdir      $prefix/include;
 set libdir      $prefix/lib
 
 # module whatis
-module-whatis   "SCALAPACK";
+module-whatis   "Trilinos $version";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tSCALAPACK\n";
-   puts stderr "\tSCALAPACK_LIB_DIR\t= $libdir";
+   puts stderr "\tTrilinos $version\n";
+   puts stderr "\tTRILINOS_INC_DIR\t= $incdir";
+   puts stderr "\tTRILINOS_LIB_DIR\t= $libdir";
 }
 
 if { ![file exists $prefix] } {
@@ -35,6 +38,5 @@ if { ![file exists $prefix] } {
 # than supporting client license files in the installation directory(s). 
 # prepend-path    PATH            $bindir;
 
-setenv SCALAPACK_LIB_DIR $libdir
-
-
+setenv TRILINOS_INC_DIR $incdir
+setenv TRILINOS_LIB_DIR $libdir
