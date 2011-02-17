@@ -21,38 +21,20 @@ endif( BUILD_SHARED_LIBS )
 # C++ libraries required by Fortran linker
 # 
 
-# execute_process( 
-#   COMMAND ${CMAKE_C_COMPILER} -print-libgcc-file-name
-#   TIMEOUT 5
-#   RESULT_VARIABLE tmp
-#   OUTPUT_VARIABLE libgcc_path
-#   ERROR_VARIABLE err
-#   )
-# get_filename_component( libgcc_path ${libgcc_path} PATH )
-# execute_process( 
-#   COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libstdc++.so
-#   TIMEOUT 5
-#   RESULT_VARIABLE tmp
-#   OUTPUT_VARIABLE libstdcpp_so_loc
-#   ERROR_VARIABLE err
-#   OUTPUT_STRIP_TRAILING_WHITESPACE
-#   )
-# get_filename_component( libstdcpp_so_loc ${libstdcpp_so_loc} ABSOLUTE )
-# execute_process( 
-#   COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcc_s.so
-#   TIMEOUT 5
-#   RESULT_VARIABLE tmp
-#   OUTPUT_VARIABLE libgcc_s_so_loc
-#   ERROR_VARIABLE err
-#   OUTPUT_STRIP_TRAILING_WHITESPACE
-#   )
-# get_filename_component( libgcc_s_so_loc ${libgcc_s_so_loc} ABSOLUTE )
-# set( GCC_LIBRARIES 
-#   ${libstdcpp_so_loc}
-#   ${libgcc_s_so_loc}
-#   )
-#message(   "   - GNU C++  : ${libstdcpp_so_loc}" )
-#message(   "   -          : ${libgcc_s_so_loc}" )
+# execute_process(
+#    COMMAND ${CMAKE_CXX_COMPILER} -show
+#    TIMEOUT 5
+#    RESULT_VARIABLE tmp
+#    OUTPUT_VARIABLE pgiCC_show_output
+#    ERROR_VARIABLE err
+#    )
+# string( REPLACE "\n" ";" pgiCC_show_output ${pgiCC_show_output} )
+# foreach( line ${pgiCC_show_output} )
+#    if( "${line}" MATCHES "COMPLIBOBJ" )
+#       string( REGEX REPLACE ".*=" "" pgi_libdir ${line} )
+#    endif()
+# endforeach()
+# message( STATUS "PGI Library Dir = ${pgi_libdir}")
 
 #
 # config.h settings
@@ -80,17 +62,28 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 
 # Flags from Draco autoconf build system:
 # -Xa
-# -A     ansi
-# --no_using_std
-# --diag_suppress 940
-# --diag_suppress 11
+# -A                       ansi
+# --no_using_std           Enable (disable) implicit use of the std
+#                          namespace when standard header files are
+#                          included. 
+# --diag_suppress 940      Suppress warning #940
+# --diag_suppress 11           "      "     # 11
 # -DNO_PGI_OFFSET
-# -Kieee
-# --no_implicit_include
-# -Mdaz
+# -Kieee                   Perform floating-point operations in strict
+#                          conformance with the IEEE 754 standard. 
+# --no_implicit_include    Disable implicit inclusion of source files
+#                          as a method of finding definitions of
+#                          template entities to be instantiated. 
+# -Mdaz                    Enable (disable) mode to treat denormalized
+#                          floating point numbers as zero.  -Mdaz is
+#                          default for -tp p7-64 targets; -Mnodaz is
+#                          default otherwise. 
+# -pgf90libs               Link-time option to add the pgf90 runtime
+#                          libraries, allowing mixed-language programming. 
+
 
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-Kieee -Mdaz " )
+  set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
@@ -103,52 +96,21 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 ENDIF()
 
-# string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
+string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 
-# if( ENABLE_SSE )
-#   set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -msse2 -mfpmath=sse" )
-#   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -mfpmath=sse" )
-# endif( ENABLE_SSE )
-
-# if( ENABLE_OPENMP )
-#   set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fopenmp" )
-#   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
-
-#   # When compiling F90 that links in C++-based libraries, we will need
-#   # librt added to the link line.
-#   execute_process( 
-#     COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=librt.so
-#     TIMEOUT 5
-#     RESULT_VARIABLE tmp
-#     OUTPUT_VARIABLE librt_so_loc
-#     ERROR_VARIABLE err
-#     OUTPUT_STRIP_TRAILING_WHITESPACE
-#     )
-#   get_filename_component( librt_so_loc ${librt_so_loc} ABSOLUTE )
-#   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${librt_so_loc} )
-# endif()
-
-# option( ENABLE_C_CODECOVERAGE "Instrument for C/C++ code coverage analysis?" OFF )
-# if( ENABLE_C_CODECOVERAGE )
-#   find_program( COVERAGE_COMMAND gcov )
-#   set( CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-#   set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}")
-#   set( CMAKE_LDFLAGS           "-fprofile-arcs -ftest-coverage" )
-
-#   # When compiling F90 that links in C++-based libraries, we will need
-#   # libgcov added to the link line.
-#   execute_process( 
-#     COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcov.a
-#     TIMEOUT 5
-#     RESULT_VARIABLE tmp
-#     OUTPUT_VARIABLE libgcov_a_loc
-#     ERROR_VARIABLE err
-#     OUTPUT_STRIP_TRAILING_WHITESPACE
-#     )
-#   get_filename_component( libgcov_a_loc ${libgcov_a_loc} ABSOLUTE )
-#   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${libgcov_a_loc} )
-# endif( ENABLE_C_CODECOVERAGE )
-
+# Fortran libraries needed by the C++ linker when linking against
+# LAPACK, etc.
+# set( extra_libs pgc )# pgf90 pgf90_rpm1 pgf902 pgftnrtl pghpf2
+# unset( PGI_EXTRA_F90_LIBS )
+# message( STATUS "PGI_EXTRA_F90_LIBS = " )
+# foreach( library ${extra_libs} )
+#    find_library( lib_pgf90_lib${library}
+#       NAMES ${library}
+#       PATHS ${pgi_libdir}
+#       )
+#    list( APPEND PGI_EXTRA_F90_LIBS ${lib_pgf90_lib${library}} )
+#    message( STATUS "     ${lib_pgf90_lib${library}}" )
+# endforeach()
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgi.cmake
