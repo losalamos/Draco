@@ -5,9 +5,13 @@
 #  GSL_LIBRARIES      - List of libraries when using GSL.
 #  GSL_FOUND          - True if GSL found.
 
-find_path( GSL_INCLUDE_DIR gsl/gsl_sf.h
-    ${GSL_INC_DIR}
-    $ENV{GSL_INC_DIR}
+find_path( GSL_INCLUDE_DIR 
+    NAMES
+       gsl/gsl_sf.h
+    PATHS
+       ${GSL_INC_DIR}
+       $ENV{GSL_INC_DIR}
+    NO_DEFAULT_PATH
 )
 
 if( WIN32 )
@@ -23,12 +27,14 @@ find_library(GSL_LIBRARY
     PATHS
         ${GSL_LIB_DIR}
         $ENV{GSL_LIB_DIR}
+    NO_DEFAULT_PATH # avoid picking up /usr/lib/libgsl.so
 )
 find_library(GSL_BLAS_LIBRARY
     NAMES ${GSL_BLAS_NAME}
     PATHS
         ${GSL_LIB_DIR}
         $ENV{GSL_LIB_DIR}
+    NO_DEFAULT_PATH
 )
 mark_as_advanced( GSL_LIBRARY GSL_INCLUDE_DIR GSL_LIBRARY GSL_BLAS_LIBRARY )
 
