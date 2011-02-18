@@ -33,6 +33,7 @@ void Processor_Group::sum(std::vector<T> &x)
                                rtt_c4::MPI_Traits<T>::element_type(),
                                MPI_SUM,
                                comm_);
+
     Insist(status==0, "MPI_Allreduce failed");
 }
 

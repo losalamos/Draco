@@ -42,7 +42,7 @@ class Processor_Group
     // CREATORS
     
     //! Create a Process_Group based on a stride through the ranks.
-    explicit Processor_Group(unsigned stride);
+    explicit Processor_Group(unsigned const stride);
 
     //! Destructor.
     ~Processor_Group();
