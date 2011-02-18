@@ -442,6 +442,7 @@ macro( provide_aux_files )
       add_custom_command( 
          OUTPUT  ${outfile}
          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}
+         DEPENDS ${file}
          COMMENT "Copying ${file} to ${outfile}"
          )
       list( APPEND required_files "${outfile}" )
