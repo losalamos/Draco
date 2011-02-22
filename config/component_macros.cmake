@@ -339,10 +339,29 @@ macro( add_parallel_tests )
          endif()
 
          # Loop over PE_LIST, register test for each numPE
+
+         # 2011-02-22 KT: I noticed that a handful of tests were
+         # failing because MPI was aborting.  After some investigation
+         # this appears be be a result of how OpenMPI is installed on
+         # the big iron.  That is, our installations do not allow
+         # multiple mpirun executing on the same core. 
+         #
+         # In an attempt to fix this problem, I added "--bind-to-none"
+         # to the add_test() command.  This does allow multiple mpirun
+         # on the same core.  However, each mpirun job was using the
+         # same 4 cores while the remaining 12 where idle.  
+         #
+         # Jon Dahl pointed me to the "--mca mpi_paffinity_alone 0"
+         # option that appears to allow me to run on all 16 cores and
+         # allows multiple mpirun to execute at the same time on each
+         # core.  This appears to fix the randomly failing tests.
+         #
+         # http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.4
          foreach( numPE ${addparalleltest_PE_LIST} )
             add_test( 
                NAME    ${compname}_${testname}_${numPE}
                COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+                       --mca mpi_paffinity_alone 0 # --bind-to-none
                        $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
                        ${addparalleltest_TEST_ARGS}
                )
