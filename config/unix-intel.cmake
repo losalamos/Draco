@@ -103,15 +103,19 @@ endif( BUILD_SHARED_LIBS )
 #            source      - enables intermediates in source precision
 #            strict      - enables -fp-model precise -fp-model except, disables
 #                          contractions and enables pragma stdc fenv_access
+# -w<n>      control diagnostics:
+#            n=0 display errors (same as -w)
+#            n=1 display warnings and errors (DEFAULT)
+#            n=2 display remarks, warnings, and errors
 
 # Suppressions 
 # -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
 # Warning #1678: cannot enable speculation unless fenv_access and 
 #                exception_semantics are disabled
 
-IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
+if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS                "-fPIC -vec-report0 -diag-disable remark" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -Wall -ftrapuv -DDEBUG") 
+  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -w1 -ftrapuv -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O1 -inline-level=1 -ipo -funroll-loops -fp-model strict -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -inline-level=0 -ipo -DNDEBUG" )
@@ -121,7 +125,7 @@ IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
-ENDIF()
+endif()
 
 find_library( INTEL_LIBM m )
 
