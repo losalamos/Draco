@@ -189,7 +189,9 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 #endif
 
 #ifdef c4_isLinux
+#ifndef C4_MPICMD
 #define C4_MPICMD "mpirun -np "
+#endif
 #define C4_UNAME "Linux"
 #endif
 

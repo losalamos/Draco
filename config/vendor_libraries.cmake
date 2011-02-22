@@ -263,6 +263,7 @@ Vendor Setup:
       if( EXISTS ${MPI_LIB_DIR} )
          find_library( MPI_Fortran_LIB mpi_f77 HINTS ${MPI_LIB_DIR} )
       endif()
+      
    else()
       set( DRACO_C4 "SCALAR" )
       set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
@@ -278,6 +279,19 @@ Vendor Setup:
       # message("")
    else()
       message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
+   endif()
+
+   # Check flavor and add optional flags
+   if( "${MPIEXEC}" MATCHES openmpi )
+      set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." )
+      # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
+      # This is required on Turning when running 'ctest -j16'.  See
+      # notes in component_macros.cmake.
+      set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
+         STRING "extra mpirun flags (list)." FORCE)
+      set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
+         STRING "extra mpirun flags (string)." FORCE)
+      mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
    endif()
 
   # LAPACK & BLAS

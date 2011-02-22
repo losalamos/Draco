@@ -357,11 +357,12 @@ macro( add_parallel_tests )
          # core.  This appears to fix the randomly failing tests.
          #
          # http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.4
+
          foreach( numPE ${addparalleltest_PE_LIST} )
             add_test( 
                NAME    ${compname}_${testname}_${numPE}
                COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-                       --mca mpi_paffinity_alone 0 # --bind-to-none
+                       ${MPIEXEC_POSTFLAGS}
                        $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
                        ${addparalleltest_TEST_ARGS}
                )

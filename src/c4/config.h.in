@@ -73,6 +73,11 @@
 /* CMake binary directory */
 #define CMAKE_C4_BINARY_DIR "@PROJECT_BINARY_DIR@"
 
+/* Is this OpenMPI */
+#cmakedefine MPIEXEC           "@MPIEXEC@"
+#cmakedefine MPIEXEC_POSTFLAGS "@MPIEXEC_POSTFLAGS_STRING@"
+#cmakedefine C4_MPICMD         "@C4_MPICMD@"
+
 #endif /* cmake or autoconf */
 
 /* ---------------------------------------- */
