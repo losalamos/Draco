@@ -44,7 +44,7 @@ set( special_test ${PROJECT_SOURCE_DIR}/phw.cc )
 add_parallel_tests( 
    SOURCES   "${special_test}" 
    PE_LIST   "1;2;4" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+   DEPS      "Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}"
    TEST_ARGS "hello"
    PASS_REGEX "Hello"   
    FAIL_REGEX "cruel"
@@ -56,7 +56,7 @@ list( REMOVE_ITEM test_sources ${special_test} )
 set( special_test ${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc )
 add_scalar_tests(
    SOURCES   "${special_test}" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+   DEPS      "Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}"
    TEST_ARGS "--np 1;--np 2; --np 4"
    )
 list( REMOVE_ITEM test_sources ${special_test} )
@@ -65,6 +65,6 @@ list( REMOVE_ITEM test_sources ${special_test} )
 add_parallel_tests( 
    SOURCES   "${test_sources}" 
    PE_LIST   "1;2;4" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+   DEPS      "Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}"
    )
    

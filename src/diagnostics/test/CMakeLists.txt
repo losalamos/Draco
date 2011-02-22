@@ -42,7 +42,7 @@ add_dependencies(      Lib_diagnostics_test Lib_diagnostics Lib_c4 )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" )
 
 # source_group( diagnostics\\test FILES ${test_lib_sources} ${test_sources} )
 

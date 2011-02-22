@@ -52,7 +52,9 @@ set(test_deps
    Lib_mesh_element
    Lib_c4 
    Lib_dsxx 
-   ${MPI_LIBRARIES} )
+   ${MPI_LIBRARIES}
+   ${INTEL_LIBM}
+   )
 
 add_scalar_tests(
    SOURCES "${test_sources}"

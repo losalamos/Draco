@@ -44,7 +44,7 @@ add_dependencies( Lib_cdi_test Lib_cdi )
 
 add_scalar_tests(
    SOURCES   "${test_sources}" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}" )
+   DEPS      "Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" )
 
 # source_group( cdi\\test FILES ${test_lib_sources} ${test_sources} )
 
