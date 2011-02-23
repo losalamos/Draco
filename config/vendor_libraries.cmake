@@ -262,6 +262,7 @@ Vendor Setup:
       # Try to find the fortran mpi library
       if( EXISTS ${MPI_LIB_DIR} )
          find_library( MPI_Fortran_LIB mpi_f77 HINTS ${MPI_LIB_DIR} )
+         mark_as_advanced( MPI_Fortran_LIB )
       endif()
       
    else()

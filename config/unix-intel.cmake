@@ -128,6 +128,7 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 endif()
 
 find_library( INTEL_LIBM m )
+mark_as_advanced( INTEL_LIBM )
 
 # string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 # if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
