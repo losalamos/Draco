@@ -84,7 +84,7 @@ if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 add_parallel_tests(
    SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
    PE_LIST "1;2"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" 
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" 
    RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
 endif()
 
