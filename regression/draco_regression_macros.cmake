@@ -109,11 +109,11 @@ win32$ set work_dir=c:/full/path/to/work_dir
   endif( WIN32 )      
 
   #Only works for makefile generators, but gives us pretty output.
-  if( ${CTEST_CMAKE_GENERATOR} STREQUAL "Unix Makefiles" )
-     set( CTEST_USE_LAUNCHERS 1 )
-  else()
+#  if( ${CTEST_CMAKE_GENERATOR} STREQUAL "Unix Makefiles" )
+#     set( CTEST_USE_LAUNCHERS 1 )
+#  else()
      set( CTEST_USE_LAUNCHERS 0 )
-  endif()
+#  endif()
 
   set( ENABLE_C_CODECOVERAGE OFF )
   set( ENABLE_Fortran_CODECOVERAGE OFF )
@@ -138,22 +138,23 @@ win32$ set work_dir=c:/full/path/to/work_dir
 #  set( CTEST_DROP_SITE_CDASH TRUE )
 #  set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF )
 
-  if( UNIX )
-     if( EXISTS "/proc/cpuinfo" )
-        file( READ "/proc/cpuinfo" cpuinfo )
-        # convert one big string into a set of strings, one per line
-        string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
-        set( proc_ids "" )
-        foreach( line ${cpuinfo} )
-           if( ${line} MATCHES "processor" )
-              list( APPEND proc_ids ${line} )
-           endif()
-        endforeach()
-        list( LENGTH proc_ids DRACO_NUM_CORES )
-        set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
-           "Number of cores on the local machine." )
-     endif()
-  endif()
+  # if( UNIX )
+  #    if( EXISTS "/proc/cpuinfo" )
+  #       file( READ "/proc/cpuinfo" cpuinfo )
+  #       # convert one big string into a set of strings, one per line
+  #       string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
+  #       set( proc_ids "" )
+  #       foreach( line ${cpuinfo} )
+  #          if( ${line} MATCHES "processor" )
+  #             list( APPEND proc_ids ${line} )
+  #          endif()
+  #       endforeach()
+  #       list( LENGTH proc_ids DRACO_NUM_CORES )
+  #       set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
+  #          "Number of cores on the local machine." )
+  #    endif()
+  # endif()
+  set( MPIEXEC_MAX_NUMPROCS 1 CACHE STRING  "Number of cores on the local machine." )
 
   if( EXISTS "$ENV{VENDOR_DIR}" )
     set(VENDOR_DIR $ENV{VENDOR_DIR})
@@ -166,6 +167,9 @@ win32$ set work_dir=c:/full/path/to/work_dir
       c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
       c:/vendors
       )
+
+   set( VERBOSE ON )
+   set( CTEST_OUTPUT_ON_FAILURE ON )
 
 # Consider setting the following:
 
@@ -437,8 +441,8 @@ macro( setup_ctest_commands )
   message(STATUS "ctest_test(PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
   ctest_test( 
      PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-     SCHEDULE_RANDOM ON )
-     # EXCLUDE_LABLE "LONG_TESTS"
+     SCHEDULE_RANDOM ON ) 
+#     EXCLUDE_LABEL "nomemcheck" )
 
   if( "$ENV{CXX}" MATCHES "g[+][+]" )
      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
@@ -450,9 +454,9 @@ macro( setup_ctest_commands )
         else()
            message(STATUS "ctest_memcheck( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )")
            ctest_memcheck(
-              PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-              SCHEDULE_RANDOM ON )
-           # EXCLUDE_LABEL "Nightly"
+              SCHEDULE_RANDOM ON 
+              EXCLUDE_LABEL "nomemcheck")
+#              PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
         endif()
      endif()
   endif()

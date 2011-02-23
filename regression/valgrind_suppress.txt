@@ -225,11 +225,17 @@
    fun:concat
    ...
 }
-
 {
    cmake/main/xcalloc/memleak
    Memcheck:Leak
    fun:calloc
    fun:xcalloc
    fun:main
+}
+{
+   cmake/main/malloc/cmake
+   Memcheck:Leak
+   ...
+   obj:*/cmake
+   ...
 }

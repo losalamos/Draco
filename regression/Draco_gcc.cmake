@@ -107,11 +107,6 @@ file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 
 # set any extra environment variables to use during the execution of
 # the script here: 
-# set( CTEST_ENVIRONMENT
-#   FC=$ENV{F90}
-#   VERBOSE=ON
-#   CTEST_OUTPUT_ON_FAILURE=ON
-# )
 #set( ENV{FC} $ENV{F90} )
 set( VERBOSE ON )
 set( CTEST_OUTPUT_ON_FAILURE ON )
