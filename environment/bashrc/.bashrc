@@ -1,4 +1,4 @@
-##-*- Mode: sh -*-
+##-*- Mode: bash -*-
 ##---------------------------------------------------------------------------##
 ## .bashrc - my bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
@@ -324,22 +324,22 @@ fi
 ## Ensure that we have an ssh-agent running
 ##---------------------------------------------------------------------------##
 
- if test -x /usr/bin/win-ssh-askpass.exe; then
-   export SSH_ASKPASS=/usr/bin/win-ssh-askpass.exe
- fi
- if test -f ${HOME}/env.log; then
-   rm -f ${HOME}/env.log
- fi
- set | grep SSH >& ${HOME}/env.log
- if test -z ${SSH_AUTH_SOCK}; then
-   if test -n "${verbose}"; then
-      echo "no agent" 
-   fi
- else
-   if test -n "`ssh-add -L | grep 'no identities'`"; then
-      ssh-add < /dev/null
-   fi
- fi
+ # if test -x /usr/bin/win-ssh-askpass.exe; then
+ #   export SSH_ASKPASS=/usr/bin/win-ssh-askpass.exe
+ # fi
+ # if test -f ${HOME}/env.log; then
+ #   rm -f ${HOME}/env.log
+ # fi
+ # set | grep SSH >& ${HOME}/env.log
+ # if test -z ${SSH_AUTH_SOCK}; then
+ #   if test -n "${verbose}"; then
+ #      echo "no agent" 
+ #   fi
+ # else
+ #   if test -n "`ssh-add -L | grep 'no identities'`"; then
+ #      ssh-add < /dev/null
+ #   fi
+ # fi
 
 
 ##---------------------------------------------------------------------------##
