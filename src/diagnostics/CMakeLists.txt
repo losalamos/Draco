@@ -32,7 +32,7 @@ list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 #list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
-if( MSVC_IDE )
+if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
    list( APPEND sources ${headers} )
 endif()
 

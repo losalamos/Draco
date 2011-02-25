@@ -24,7 +24,7 @@ file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_gandolf/config.h )
 
 # Make the header files available in the IDE.
-if( MSVC_IDE )
+if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
    list( APPEND sources ${headers} )
 endif()
 
