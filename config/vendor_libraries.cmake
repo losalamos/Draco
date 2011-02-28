@@ -29,7 +29,7 @@ macro( setVendorVersionDefaults )
   #environment variable.
 
   # See if VENDOR_DIR is set.  Try some defaults if it is not set.
-  if( NOT VENDOR_DIR AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
+  if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
     set( VENDOR_DIR $ENV{VENDOR_DIR} )
   endif()
   # If needed, try some obvious palces.
@@ -202,12 +202,6 @@ macro( SetupVendorLibrariesUnix )
    message("
 Vendor Setup:
 ")
-
-   if( NOT EXISTS "${VENDOR_DIR}" AND EXISTS "$ENV{VENDOR_DIR}" )
-      set( VENDOR_DIR $ENV{VENDOR_DIR} )
-   endif()
-   set( VENDOR_DIR "VENDOR_DIR" CACHE PATH "Root for vendor paths." )
-
    # This module will set the following variables:
    #   MPI_FOUND                  TRUE if we have found MPI
    #   MPI_COMPILE_FLAGS          Compilation flags for MPI programs
@@ -225,12 +219,6 @@ Vendor Setup:
 
    message(STATUS "Looking for MPI...")
 
-   if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
-      set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
-   endif()
-   if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
-      set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
-   endif()
 
    # Try to find MPI in the default locations (look for mpic++ in PATH)
    find_package( MPI )
@@ -244,10 +232,26 @@ Vendor Setup:
    # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
    if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
          EXISTS "${MPI_INC_DIR}" )
+      if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
+         set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
+      endif()
+      if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
+         set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
+      endif()
       set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
       find_library( MPI_LIBRARY
          NAMES mpi mpich msmpi
          HINTS ${MPI_LIB_DIR} )
+      set( extra_libs mpi++ libopen-rte libopen-pal)
+      set( MPI_EXTRA_LIBRARY )
+      foreach( lib ${extra_libs} )
+         find_library( tmp
+            NAMES ${lib}
+            HINTS ${MPI_LIB_DIR} )
+         if( EXISTS "${tmp}" )
+            list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
+         endif()
+      endforeach()
       find_package( MPI )
    endif()
 
