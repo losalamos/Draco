@@ -199,9 +199,7 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( SetupVendorLibrariesUnix )
 
-   message("
-Vendor Setup:
-")
+   # MPI ---------------------------------------------------------------------
    # This module will set the following variables:
    #   MPI_FOUND                  TRUE if we have found MPI
    #   MPI_COMPILE_FLAGS          Compilation flags for MPI programs
@@ -217,10 +215,8 @@ Vendor Setup:
    #                              executable to run.
    #   MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
 
-   message(STATUS "Looking for MPI...")
-
-
    # Try to find MPI in the default locations (look for mpic++ in PATH)
+   message(STATUS "Looking for MPI...")
    find_package( MPI )
 
    # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
@@ -253,6 +249,8 @@ Vendor Setup:
          endif()
       endforeach()
       find_package( MPI )
+      list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
+      unset(tmp)
    endif()
 
    # Set Draco build system variables based on what we know about MPI.
@@ -299,16 +297,68 @@ Vendor Setup:
       mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
    endif()
 
-  # LAPACK & BLAS
-  message( STATUS "Looking for LAPACK/BLAS...")
-  # find_package( LAPACK )
-  find_package( CLAPACK )
- 
-  # GSL
+  # BLAS ---------------------------------------------------------------------
+  message( STATUS "Looking forBLAS...")
+
+  # Set the BLAS/LAPACK VENDOR.  This must be one of
+  #      ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
+  #      Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl
+  #      v10 64 bit,lp thread model, lp64 model), 
+  if( ${SITE} MATCHES "frost" )
+     # This machine uses Intel MKL instead of Atlas
+     set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
+     # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
+     else()
+        set( ENV{BLA_VENDOR} "ATLAS" )
+  endif()
+  
+  # This script looks for BLAS in the following locations:
+  # /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
+  # If LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
+  if( EXISTS $ENV{LAPACK_LIB_DIR} )
+     set( ENV{LD_LIBRARY_PATH}
+        "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
+  endif()
+
+  find_package( BLAS REQUIRED )
+  if( BLAS_FOUND )
+     message( STATUS "Found BLAS: ${BLAS_LIBRARIES}" )
+  endif()
+
+  # LAPACK -------------------------------------------------------------------
+  message( STATUS "Looking for LAPACK...")
+
+  # This module sets the following variables:
+  # LAPACK_FOUND - set to true if a library implementing the LAPACK
+  #              interface is found
+  # LAPACK_LINKER_FLAGS - uncached list of required linker flags
+  #              (excluding -l and -L).
+  # LAPACK_LIBRARIES - uncached list of libraries (using full path
+  #              name) to link against to use LAPACK
+
+  if( ${SITE}} MATCHES "frost" )
+     # We don't need mkl_lapack so just set LAPACK_LIBRARIES to
+     # BLAS_LIBRARIES
+     set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
+     set( LAPACK_FOUND ON )
+  else()
+     # Jae's build of ATLAS requires (libgfortran|libifcore) and libm
+     set( LAPACK_EXTRA_LIBRARIES gfortran;ifcore;m )
+     find_package( LAPACK REQUIRED ) # QUIET
+  endif()
+
+  if( LAPACK_FOUND )
+     set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING 
+        "lapack libs" )
+     mark_as_advanced( LAPACK_LIBRARIES )
+     message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
+  endif()
+  
+  # GSL ----------------------------------------------------------------------
   message( STATUS "Looking for GSL...")
   find_package( GSL )
 
-  # Gandolf
+  # Gandolf ------------------------------------------------------------------
   message( STATUS "Looking for Gandolf library...")
   find_package( Gandolf )
 
@@ -362,6 +412,10 @@ endmacro()
 # required to link the main objects.
 #------------------------------------------------------------------------------
 macro( setupVendorLibraries )
+
+   message("
+Vendor Setup:
+")
 
   #
   # General settings
