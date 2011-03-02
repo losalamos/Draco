@@ -74,7 +74,7 @@ void wall_clock_test()
     
     Timer t;
 
-    double const prec( 1.75*t.posix_err() );
+    double const prec( 1.8*t.posix_err() );
     
     double begin           = rtt_c4::wall_clock_time();
     double beginDeprecated = C4::Wtime();
@@ -134,8 +134,8 @@ void wall_clock_test()
     // t.posix_err(). 
     //---------------------------------------------------------------------//
     
-    double const deltaWallTime( t.wall_clock() - (
-				    t.system_cpu() + t.user_cpu() ) );
+    double const deltaWallTime( t.wall_clock() - 
+                                ( t.system_cpu() + t.user_cpu() ) );
 #ifdef _MSC_VER
     double const time_resolution( 1.0 );  
 #else

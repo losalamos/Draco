@@ -100,7 +100,7 @@ Library Type: ${DRACO_LIBRARY_TYPE}
 Vendor dir  : ${VENDOR_DIR}
 MPI         : ${MPIEXEC}
 GSL         : ${GSL_LIBRARY}
-LAPACK      : ${LAPACK_LIBRARY}
+LAPACK      : ${LAPACK_LIBRARIES}
 GANDOLF     : ${GANDOLF_LIBRARY}
 
 ")
