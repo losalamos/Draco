@@ -10,12 +10,14 @@
 unset http_proxy
 export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux64
 
+(cd /home/regress/environment/Modules; cvs -q update -AdP)
+
 if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f /home/regress/environment/Modules/init/bash; then
     source /home/regress/environment/Modules/init/bash
     module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.3.4 gsl 
-    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.4.0 cmake
+    module load lapack-gcc ndi openmpi ParMetis/3.1.1 trilinos/10.4.0 cmake
     module load valgrind hypre
     module list
   fi
@@ -72,7 +74,8 @@ module unload bullseyecoverage
 #
 # PGI builds
 #
-module switch gcc pgi
+module unload lapack-gcc gcc
+module load pgi lapack-pgi
 comp=pgi
 
 # Release build
@@ -83,7 +86,8 @@ ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_
 #
 # Intel builds
 #
-module switch pgi intel
+module unload pgi lapack-pgi
+module load intel lapack-intel
 comp=intel
 
 # Release build
