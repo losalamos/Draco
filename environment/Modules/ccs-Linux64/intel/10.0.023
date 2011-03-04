@@ -10,6 +10,11 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
+conflict gcc
+conflict pgi
+conflict lapack-gcc
+conflict lapack-pgi
+
 # local variables
 set version     10.0.023;
 set arch        x86_64;
