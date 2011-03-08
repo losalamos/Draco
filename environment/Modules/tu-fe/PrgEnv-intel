@@ -3,7 +3,7 @@
 # Module PrgEnv-intel
 #
  
-module purge
+module clear
 
 #conflict PrgEnv-pgi
 #conflict PrgEnv-gcc
@@ -96,7 +96,7 @@ module load trilinos/10.4.0-intel
 module load SCALAPACK/1.7-intel
 module load hypre/2.0.0-intel
 #module load gandolf ndi openmpi xshow
-module load gandolf grace-draco ndi openmpi xshow
+module load gandolf grace-draco ndi openmpi xshow cmake
 
 #if { [ info exists env(CRAY_PRGENVPGI) ] && [ module-info mode load] }  {
 #   set kate 1
@@ -135,3 +135,4 @@ module load gandolf grace-draco ndi openmpi xshow
 
 # setenv CRAY_PRGENVPGI loaded
 
+module list
