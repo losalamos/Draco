@@ -87,7 +87,11 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # Set the sitename, but strip any domain information
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  # Treat all Infinitron nodes as infinitron
+  if( ${sitename} MATCHES "yr[a-d]+[0-9]+" )
+     set( sitename "YellowRail" )
+  elseif( ${sitename} MATCHES "tu[a-d]+[0-9]+" )
+     set( sitename "Turing" )
+  endif()
   # string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
   set( CTEST_SITE ${sitename} )
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
@@ -414,53 +418,53 @@ macro( setup_ctest_commands )
   #
 
   message(STATUS "ctest_start( ${CTEST_MODEL} )")
-  ctest_start( ${CTEST_MODEL} )
-  message(STATUS  "ctest_update()"  )
-  ctest_update()
-  if( "$ENV{CXX}" MATCHES "g[+][+]" )
-     if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-        if(ENABLE_C_CODECOVERAGE)
-           configure_file( 
-              ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
-              ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
-              @ONLY )
-           set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-           set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-           set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-           set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-           set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
-           execute_process(COMMAND "${COV01}" --on
-              RESULT_VARIABLE RES)
-        endif()
-     endif()
-  endif()
-  message(STATUS "ctest_configure()" )
-  ctest_configure() # LABELS label1 [label2]
-  message(STATUS "ctest_build()" )
-  ctest_build()
-  message(STATUS "ctest_test(PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-  ctest_test( 
-     PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-     SCHEDULE_RANDOM ON ) 
-#     EXCLUDE_LABEL "nomemcheck" )
+#  ctest_start( ${CTEST_MODEL} )
+#  message(STATUS  "ctest_update()"  )
+#  ctest_update()
+#   if( "$ENV{CXX}" MATCHES "g[+][+]" )
+#      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+#         if(ENABLE_C_CODECOVERAGE)
+#            configure_file( 
+#               ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
+#               ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
+#               @ONLY )
+#            set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+#            set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+#            set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+#            set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+#            set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
+#            execute_process(COMMAND "${COV01}" --on
+#               RESULT_VARIABLE RES)
+#         endif()
+#      endif()
+#   endif()
+#   message(STATUS "ctest_configure()" )
+#   ctest_configure() # LABELS label1 [label2]
+#   message(STATUS "ctest_build()" )
+#   ctest_build()
+#   message(STATUS "ctest_test(PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
+#   ctest_test( 
+#      PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+#      SCHEDULE_RANDOM ON ) 
+# #     EXCLUDE_LABEL "nomemcheck" )
 
-  if( "$ENV{CXX}" MATCHES "g[+][+]" )
-     if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-        if(ENABLE_C_CODECOVERAGE)
-           message(STATUS "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
-           ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
-           execute_process(COMMAND "${COV01}" --off
-              RESULT_VARIABLE RES)
-        else()
-           message(STATUS "ctest_memcheck( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )")
-           ctest_memcheck(
-              SCHEDULE_RANDOM ON 
-              EXCLUDE_LABEL "nomemcheck")
-#              PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
-        endif()
-     endif()
-  endif()
-  message(STATUS "ctest_submit()")
-  ctest_submit()
+#   if( "$ENV{CXX}" MATCHES "g[+][+]" )
+#      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+#         if(ENABLE_C_CODECOVERAGE)
+#            message(STATUS "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
+#            ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
+#            execute_process(COMMAND "${COV01}" --off
+#               RESULT_VARIABLE RES)
+#         else()
+#            message(STATUS "ctest_memcheck( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )")
+#            ctest_memcheck(
+#               SCHEDULE_RANDOM ON 
+#               EXCLUDE_LABEL "nomemcheck")
+# #              PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
+#         endif()
+#      endif()
+#   endif()
+#   message(STATUS "ctest_submit()")
+#   ctest_submit()
      
 endmacro( setup_ctest_commands )

@@ -46,8 +46,15 @@ parse_args() # QUIET
 #     CTEST_CMAKE_COMMAND
 find_tools() # QUIET
 
-set( CTEST_CVS_CHECKOUT
-  "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source draco" )
+if( EXISTS /ccs/codes/radtran/cvsroot )
+   set( CTEST_CVS_CHECKOUT
+      "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P
+   -d source draco" )
+else()
+   set( CTEST_CVS_CHECKOUT
+      "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P
+   -d source draco" )
+endif()
 #set( CTEST_CVS_CHECKOUT
 #  "${CTEST_CVS_COMMAND} -d $ENV{USERNAME}@ccscs8.lanl.gov/ccs/codes/radtran/cvsroot co -P -d source draco" )
 # under windows, consider: file:///z:/radiative/...
@@ -111,8 +118,61 @@ file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 set( VERBOSE ON )
 set( CTEST_OUTPUT_ON_FAILURE ON )
 
-# Set the CTEST_COMMAND
-setup_ctest_commands() # QUIET
+
+  message(STATUS "ctest_start( ${CTEST_MODEL} )")
+  ctest_start( ${CTEST_MODEL} )
+  message(STATUS  "ctest_update()"  )
+  ctest_update()
+  if( "$ENV{CXX}" MATCHES "g[+][+]" )
+     if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+        if(ENABLE_C_CODECOVERAGE)
+           configure_file( 
+              ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
+              ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
+              @ONLY )
+           set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+           set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
+           execute_process(COMMAND "${COV01}" --on
+              RESULT_VARIABLE RES)
+        endif()
+     endif()
+  endif()
+   message(STATUS "ctest_configure()" )
+   ctest_configure() # LABELS label1 [label2]
+   message(STATUS "ctest_build()" )
+   ctest_build()
+   message(STATUS "ctest_test(
+   PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+   SCHEDULE_RANDOM ON )" )
+   ctest_test( 
+      PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+      SCHEDULE_RANDOM ON ) 
+
+  if( "$ENV{CXX}" MATCHES "g[+][+]" )
+     if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+        if(ENABLE_C_CODECOVERAGE)
+           message(STATUS "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
+           ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
+           execute_process(COMMAND "${COV01}" --off
+              RESULT_VARIABLE RES)
+        else()
+           message(STATUS "ctest_memcheck( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )")
+           ctest_memcheck(
+              SCHEDULE_RANDOM ON 
+              EXCLUDE_LABEL "nomemcheck")
+#              PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
+        endif()
+     endif()
+  endif()
+   message(STATUS "ctest_submit()")
+   ctest_submit()
+
+
+
+
 
 # Install the files
 message( STATUS "Installing files to ${CMAKE_INSTALL_PREFIX}..." )
