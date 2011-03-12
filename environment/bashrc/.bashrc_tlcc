@@ -23,33 +23,29 @@ ulimit -s unlimited
 _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
-# modules
-export MODULEPATH=$DRACO_MODULE_DIR/tu-fe:$MODULEPATH
-export IGNOREMODULECONFLICTS=1
+#
+# MODULES
+#
+# Use this module command when running bash.
 function module() { eval `/usr/bin/modulecmd bash $*`; }
-module load modules pgi/9.0-3 friendly-testing hpc-tools python/2.5.2 openmpi-pgi/1.4.3 graphics totalview/8.7.0-3 gandolf gsl/1.14 grace-draco trilinos/10.6.1 BLACS/1.1 SCALAPACK/1.7 ndi lapack/atlas-3.8.3 hypre/2.0.0 openmpi ParMetis/3.1.1 SuperLU_DIST/2.4 graphics totalview
-module list
+# Use modules found in the draco directory
+module use $DRACO_MODULE_DIR/tu-fe
+# Clear any tcsh loaded modules as these are invalid when staring a new shell. 
+module purge &> /dev/null
+# Load a default set of modules.
+# export IGNOREMODULECONFLICTS=1
+module load modules friendly-testing hpc-tools python/2.5.2 graphics
+module load intel-c intel-f openmpi-intel grace totalview
 
-if ! test -x /opt/MOAB/bin/llogin; then
-  if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
-    function llogin()
-    {
-       ##local myshell="/usr/bin/ssh-agent /bin/bash"
-       local myshell="/bin/bash"
-       bsub $* -IS ${myshell}
-    }
-  else
-    function llogin()
-    {
-      echo "Already on worker node." 
-    }
-  fi
-fi
+module load gandolf gsl/1.14-intel grace-draco ndi cmake opempi
+module load trilinos/10.6.1 BLACS/1.1-intel SCALAPACK/1.7-intel 
+module load lapack/atlas-3.8.3-intel  SuperLU_DIST/2.4-intel
+module load hypre/2.0.0-intel ParMetis/3.1.1-intel emacs
+module list
 
 # CVS
 export CVS_RSH=ssh
 export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
-export F90=pgf90
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_tlcc
