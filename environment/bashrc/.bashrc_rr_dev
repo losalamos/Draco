@@ -27,7 +27,7 @@ export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
 export IGNOREMODULECONFLICTS=1
 function module() { eval `/usr/bin/modulecmd bash $*`; }
-module load modules hpc-tools friendly-testing pgi lapack python openmpi gandolf gsl
+module load hpc-tools friendly-testing pgi lapack python openmpi gandolf gsl
 
 if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
   function llogin()
