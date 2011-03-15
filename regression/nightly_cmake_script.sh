@@ -94,3 +94,9 @@ comp=intel
 build_type=Release
 export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+
+# Debug build
+build_type=Debug
+export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+
