@@ -82,9 +82,11 @@ if test -f /proc/cpuinfo; then
   export nj=`cat /proc/cpuinfo | grep processor | wc -l`
 fi
 
-# Tell wget to use LANL's www proxy
+# Tell wget to use LANL's www proxy (see trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
 # export http_proxy=http://wpad.lanl.gov/wpad.dat
-# export http_proxy=http://proxyout.lanl.gov:8080
+export http_proxy=http://proxyout.lanl.gov:8080
+export NO_PROXY=lanl.gov
+# See help page for how to setup subversion
 
 ##---------------------------------------------------------------------------##
 ## cd paths - disable here, let user choose in ~/.bashrc
@@ -120,7 +122,8 @@ alias mdstat='cat /proc/mdstat'
 alias meminfo='cat /proc/meminfo'
 alias mroe='more'
 alias print='lp'
-alias resettermtitle='echo -ne "\033]0;${USER}@${target}: ${PWD}\007"'
+nodename=`uname -n | sed -e 's/[.].*//g'`
+alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
 alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
 alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
 #alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
@@ -260,11 +263,6 @@ ccslan32)
 ccslan64)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
    ;;
-# flash / lightning
-flash[a-d] | ffe-64 | lb-[1-7] | lc-64 | ll-[2-6] | lc-[1-6] | ffe[1-2] |\
-    lb-dev)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_bproc64
-    ;;
 
 # RoadRunner machines
 rt-fe[1-4] | yr-fe1 | rt*[0-9]* | yra[0-9]* | rra[0-9]*a)
