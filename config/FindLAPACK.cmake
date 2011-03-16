@@ -235,6 +235,7 @@ if(BLAS_FOUND)
                   /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 
                   ENV LD_LIBRARY_PATH
                   )
+               mark_as_advanced( ${_prefix}_${_library}_LIBRARY )
                if( EXISTS ${${_prefix}_${_library}_LIBRARY} )
                   list( APPEND LAPACK_atlas_extra_libs
                      ${${_prefix}_${_library}_LIBRARY} )
