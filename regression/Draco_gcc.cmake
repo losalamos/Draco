@@ -49,10 +49,14 @@ find_tools() # QUIET
 if( EXISTS /ccs/codes/radtran/cvsroot )
    set( CTEST_CVS_CHECKOUT
       "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source draco" )
+elseif( EXISTS /scratch3/kellyt/cvsroot )
+   set( CTEST_CVS_CHECKOUT
+      "${CTEST_CVS_COMMAND} -d /scratch3/kellyt/cvsroot co -P -d source draco" )
 else()
    set( CTEST_CVS_CHECKOUT
       "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source draco" )
 endif()
+
 #set( CTEST_CVS_CHECKOUT
 #  "${CTEST_CVS_COMMAND} -d $ENV{USERNAME}@ccscs8.lanl.gov/ccs/codes/radtran/cvsroot co -P -d source draco" )
 # under windows, consider: file:///z:/radiative/...
