@@ -167,7 +167,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
     ChangeLog
     PATHS
       /ccs/codes/radtran/vendors/Linux64
-      /usr/projects/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
+      /usr/projects/draco/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
+      /usr/projects/draco/vendors
       c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
       c:/vendors
       )
