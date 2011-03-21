@@ -1,0 +1,79 @@
+#!/bin/bash
+
+#MSUB -V
+#MSUB -l walltime=01:00:00
+#MSUB -l nodes=1:ppn=8
+#MSUB -j oe
+#MSUB -o /scratch3/kellyt/cdash-release/debug-tu.log
+
+#----------------------------------------------------------------------#
+# The script starts here
+#----------------------------------------------------------------------#
+
+if test -f /scratch3/kellyt/cdash-debug/debug-tu.log; then
+  rm /scratch3/kellyt/cdash-debug/debug-tu.log
+fi
+
+if test -f /etc/bashrc; then
+  source /etc/bashrc
+fi
+
+# Establish authentication forwarding
+#echo "Starting agent..."
+#exec ssh-agent /bin/bash
+#ssh-add $HOME/.ssh/cmake_dsa
+#ssh-add -L
+
+export VENDOR_DIR=/usr/projects/draco/vendors
+
+# Modules
+# Picks up environment from .cshrc
+
+# Use this module command when running bash.
+function module() { eval `/usr/bin/modulecmd bash $*`; }
+# Use modules found in the draco directory
+# module use $DRACO_MODULE_DIR/yr-fe
+# Clear any tcsh loaded modules as these are invalid when staring a new shell. 
+module purge &> /dev/null
+
+# Load a default set of modules.
+# export IGNOREMODULECONFLICTS=1
+
+module load modules friendly-testing hpc-tools python graphics
+module load intel-c/10.0.023 intel-f/10.0.023 openmpi-intel/1.4.3 
+module load gandolf gsl/1.14-intel grace-draco lapack/atlas-3.8.3-intel
+module load grace totalview BLACS/1.1-intel SCALAPACK/1.7-intel
+module load trilinos/10.4.0-intel SuperLU_DIST/2.4-intel hypre/2.0.0-intel
+module load ParMetis/3.1.1-intel ndi emacs cmake 
+module list
+
+# Run the ctest (regression) script.  This script will take the following build steps: 
+# 1. cvs update
+# 2. run cmake to build Makefiles
+# 3. run make to build libraries and tests
+# 4. Run the unit tests
+# 5. Post the results to coder.lanl.gov/cdash
+#
+# Options are:
+# Regression type: Experimental (default), Nightly, Continuous
+# Build type     : Release, Debug
+
+dashboard_type=Nightly
+base_dir=/scratch3/kellyt/cdash-debug/tu
+script_dir=${HOME}/draco/regression
+build_type=Debug
+comp=`basename $CXX`
+
+subproj=draco
+
+# -------------------- Debug -------------------- #
+export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+echo "work_dir = ${work_dir}"
+if ! test -d ${work_dir}; then
+   /usr/bin/install -d ${work_dir}/source
+   /usr/bin/install -d ${work_dir}/build
+   /usr/bin/install -d ${work_dir}/target
+fi
+
+ctest -VV -S ${script_dir}/Draco_gcc.cmake,${dashboard_type},${build_type}
+
