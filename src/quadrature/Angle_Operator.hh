@@ -106,6 +106,13 @@ class Angle_Operator : public rtt_quadrature::OrdinateSet
         return levels_;
     }
 
+    //! Return the angle index for the most positively outward-directed angle
+    //! on every level; used for reflection of starting direction boundary fluxes
+    std::vector<unsigned> const &First_Angles() const
+    {
+        return first_angles_;
+    }
+
     //! Is an ordinate dependent on the preceeding ordinate?
     bool Is_Dependent(unsigned const ordinate) const
     {
@@ -158,6 +165,7 @@ class Angle_Operator : public rtt_quadrature::OrdinateSet
 
     unsigned number_of_levels_;
     std::vector<unsigned> levels_;
+    std::vector<unsigned> first_angles_;
 
     //! Is an ordinate dependent on the preceeding ordinate?
     std::vector<bool> is_dependent_;

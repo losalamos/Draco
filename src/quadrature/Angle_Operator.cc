@@ -109,10 +109,14 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
 
                 levels_[a] = level;
                 is_dependent_[a] = false;
+
+                if (level> 0) 
+                    first_angles_.push_back(a-1);
             }
         }
         // Save the normalization sum for the final level.
         C[level] = 1.0/Csum;
+        first_angles_.push_back(number_of_ordinates-1);
 
 #if DBC & 2
         if (dimension == 2)
@@ -163,6 +167,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
                 tau_[a] = (mu-mum)/(mup-mum);
                 Check(tau_[a] >= 0.0 && tau_[a]<1.0);
             }
+                        
         }
     }
     else if (geometry == rtt_mesh_element::SPHERICAL)
@@ -191,6 +196,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
             {
                 is_dependent_[a] = false;
                 alpha_[a] = 0;
+                first_angles_.push_back(number_of_ordinates-1);
             }
         }
 
@@ -218,6 +224,21 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
     {
         Check(geometry == rtt_mesh_element::CARTESIAN);
     }
+
+    Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
+
+    //for (unsigned i=0; i < number_of_levels_; ++i)
+    //{
+    //    unsigned const ia=first_angles_[i];
+    //    
+    //    std::cout << " reflection angle for starting direction on level " << i
+    //              << " out of " << first_angles_.size()
+    //              << " is angle " << ia
+    //              << " with mu = " << ordinates[ia].mu()
+    //              << " xi = " << ordinates[ia].xi()
+    //              << " wt = " << ordinates[ia].wt()
+    //              << std::endl;
+    //}
 
     Ensure(check_class_invariants());
 }
