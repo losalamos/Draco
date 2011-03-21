@@ -1,4 +1,4 @@
-#!/usr/bin/ssh-agent bash
+#!/bin/bash
 
 #MSUB -V
 #MSUB -l walltime=01:00:00
@@ -19,7 +19,10 @@ if test -f /etc/bashrc; then
 fi
 
 # Establish authentication forwarding
-ssh-add $HOME/.ssh/cmake_dsa
+#echo "Starting agent..."
+#exec ssh-agent /bin/bash
+#ssh-add $HOME/.ssh/cmake_dsa
+#ssh-add -L
 
 export VENDOR_DIR=/usr/projects/draco/vendors
 
@@ -61,7 +64,7 @@ comp=`basename $CXX`
 
 subproj=draco
 
-
+# -------------------- Release -------------------- #
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 echo "work_dir = ${work_dir}"
 if ! test -d ${work_dir}; then
@@ -71,6 +74,4 @@ if ! test -d ${work_dir}; then
 fi
 
 ctest -VV -S ${script_dir}/Draco_gcc.cmake,${dashboard_type},${build_type}
-
-
 
