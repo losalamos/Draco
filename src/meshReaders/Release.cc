@@ -20,7 +20,7 @@ using std::string;
 // this library in the form meshReader-#.#.# in pkg_version variable
 const string release()
 {
-    string pkg_release = "meshReaders(draco-6_0_0)";
+    string pkg_release = "meshReaders(draco-6_1_0)";
     return pkg_release;
 }
 

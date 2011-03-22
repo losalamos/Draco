@@ -21,7 +21,7 @@ AC_RUNTESTS(tDummyOpacity tDummyEoS tCDI, scalar)
 
 dnl DRACO SETUP
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-6_0_0)
+AC_DRACO_AUTODOC(draco-6_1_0)
 
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \
                  test/Makefile:../../config/Makefile.test.in])

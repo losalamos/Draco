@@ -115,7 +115,7 @@ dnl Finish Draco setup:
 dnl ----------------------------------------
 
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-6_0_0)
+AC_DRACO_AUTODOC(draco-6_1_0)
 
 dnl Create Makefiles from config templates.
 

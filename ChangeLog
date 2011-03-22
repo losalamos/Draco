@@ -1,8 +1,158 @@
+2011-03-23  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-6_1_0.  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - clubimc-5_2_0
+	  - wedgehog-7_2_0
+	  - capsaicin
+
+	* Summary of changes:
+	  - 217 files were changed, added or removed.
+	  - This release does not include the packages pcgWrap or plot2D.
+
+	* Details per package:
+
+	Build System:
+	  - Clean up for the CMake-based build system.  Eliminate variables
+	    DRACO_BUILD_TESTS, DRACO_NUM_CORES.
+	  - Tie the build system closer to the Draco Modules feature.
+	  - Impovements to the regression/CDash system, including nightly
+	    valgrind and coverage testing.  Provide warning/error
+	    suppression for specific cases (errors in mpirun and cmake).
+	  - Replace FindCLAPACK.cmake with a slightly modified
+	    FindLAPACK.cmake and FindBLAS.cmake scripts that were provided
+	    with cmake-2.8.4.
+	  - The default build type will now be DEBUG.
+	  - compilerEnv.cmake is now aware of gfortran.
+	  - Improvements for parallel ctest environment include adding
+	    '--mca mpi_paffinity_alone 0' as an option to mpirun and allowing
+	    test dependencies, resource locks and working directory
+	    specifications.
+	  - Add '-cpp' to the CMAKE_Fortran_FLAGS to enable CPP for
+	    '#include' directives.
+	  - For Intel compilers, suppress remarks issued by the compiler,
+	    change the default Release optimization to '-O1' and turn on
+	    whole program optimization.
+	  - Improved autodoc support when run with CMake.
+
+	Developer Environment:
+	  - Demonstrate support for Eclipse with CDT.
+	  - Module support improved -- especially on turing and
+	    yellowrail.
+	  - Elisp support improved -- correctly indent namespace blocks
+	    and use font-lock for special 'Draco' keywords.
+	  - Improvements for Xcode on OS/X (list headers in project
+	    files).
+
+	c4:
+	  - Update the way ApplicationUnitTest works so that it will pass
+	    the unit tests on Cielito.
+	  - Send_Receive.hh: Sender now holds onto size in a private
+	    member variable, to avoid having it go out of scope before the
+	    send completes. This resolves the failure of the single-PE
+	    "auto-communication test" in tstSend_Receive on Cielito.  This
+	    test has typically passed on other machines, probably due to
+	    lucky buffering by MPI.  MPI_Isend will not block waiting for
+	    a matching receive, but it's not required to buffer data.  The
+	    send buffer can only be safely reused (or destroyed, by any
+	    mechanism) after the send completes; i.e., after a Wait or
+	    Test.
+
+	quadrature:
+	  - Sort the ordinates based on a comparator supplied to the
+	    QuadServices constructor.
+	  - Fix inconsistency in ordering of ordinates. Fix incorrect
+	    multiplication of source by opacity. Now returns constant
+	    solution for S6 and source boundaries.
+	  - Added a 3D triangular Chebyshev quadrature.
+
+	rng:
+	  - Add DbC Require() for calling 3rd ctor of LF_Gen to avoid
+	    problem that KT and Gabe debugged yesterday (entries in
+	    _data[] must have specific values).
+	  - Commented out dead code.
+	  - Add #ifdef DEBUG around assert() calls.
+	  - Generalize tstRnd_Control_inline.cc to allow the test to pass
+	    in both reproducible and NR modes.
+	  - Initialize special LFG data appropriately, when testing the
+	    "existing int array" LF_Gen constructor.  This resolves
+	    "Conditional jump or move depends on uninitialised value(s)"
+	    warnings from valgrind.
+
+	* Statistics:
+
+	Directory:  /home/kgt/draco-6_1_0
+	Date     :  Tue Mar 22 16:37:04 MDT 2011
+
+                 Total C++ source: 39423
+   C++ source in test directories: 22205
+      C++ contract specifications: 1467
+                     C++ comments: 43239
+             Total Fortran source: 0
+                 Fortran comments: 0
+              LaTeX Documentation: 15016
+                      HTML source: 0
+                        Text docs: 6322
+       Build system script source: 13123
+   Executable shell script source: 3433
+           Executable Perl source: 1867
+                    Python source: 4172
+                    Expect source: 0
+                     Elisp source: 6691
+
+	Coverage Summary (CDash)
+
+	Total Coverage	                 96.46%
+	Tested lines	               2317
+	Untested lines	                 85
+	Files Covered	                332 of 336
+	Files Satisfactorily Covered	317
+	Files Unsatisfactorily Covered	 19
+
+	% cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
+	% export COVFILE=`pwd`/CMake.cov
+	% export COVDIRCFG=`pwd`/covclass_cmake.cfg
+	% cd ../source/src; covdir
+
+        Directory               Function Coverage           C/D Coverage
+        ------------------  ---------------------  ---------------------
+        units/                  83 /    83 = 100%      58 /    58 = 100%
+        traits/                 17 /    17 = 100%       0 /     0
+        diagnostics/             9 /     9 = 100%       4 /     4 = 100%
+        special_functions/      28 /    28 = 100%     161 /   162 =  99%
+        fit/                     2 /     2 = 100%      15 /    16 =  93%
+        ode/                     6 /     6 = 100%      29 /    32 =  90%
+        cdi/                    40 /    40 = 100%      27 /    30 =  90%
+        min/                    10 /    10 = 100%     137 /   154 =  88%
+        linear/                 17 /    17 = 100%     324 /   392 =  82%
+        roots/                   9 /     9 = 100%     256 /   312 =  82%
+        mesh_element/           25 /    25 = 100%     169 /   217 =  77%
+        meshReaders/            16 /    16 = 100%     127 /   172 =  73%
+        fpe_trap/                3 /     3 = 100%       4 /    11 =  36%
+        cdi_gandolf/           130 /   131 =  99%     154 /   232 =  66%
+        cdi_analytic/          105 /   106 =  99%     105 /   110 =  95%
+        xm/                     57 /    58 =  98%      29 /    32 =  90%
+        c4/                    170 /   173 =  98%     280 /   336 =  83%
+        RTT_Format_Reader/     316 /   322 =  98%     273 /   356 =  76%
+        ds++/                  679 /   700 =  97%     629 /   722 =  87%
+        viz/                    25 /    26 =  96%     129 /   168 =  76%
+        timestep/               60 /    63 =  95%     104 /   178 =  58%
+        parser/                247 /   264 =  93%    1050 /  1345 =  78%
+        rng/                    63 /    68 =  92%      63 /    70 =  90%
+        quadrature/            168 /   182 =  92%     492 /   601 =  81%
+        norms/                  20 /    27 =  74%      13 /    34 =  38%
+        lapack_wrap/            12 /    17 =  70%       0 /     0
+        ------------------  ---------------------  ---------------------
+        Total                 2317 /  2402 =  96%    4632 /  5744 =  80%
+
+
 2010-12-10  Kelly G. Thompson <kgt@lanl.gov>
 
         * draco: Released draco-6_0_0.  See CCS-2:10-50(U) for details
 	  about the release.  This draco release includes the following
-	  component packages: 
+	  component packages:
 
                 RTT_Format_Reader
                 c4

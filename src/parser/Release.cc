@@ -18,7 +18,7 @@ namespace rtt_parser
 // this library in the form parser_#.#.# in pkg_version variable
 const std::string release()
 {
-    std::string pkg_release = "parser(draco-6_0_0)";
+    std::string pkg_release = "parser(draco-6_1_0)";
     return pkg_release;
 }
 
