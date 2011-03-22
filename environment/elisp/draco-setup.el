@@ -392,7 +392,11 @@ compilation-mode?"
 ;; (if draco-want-mppl-mode       (draco-setup-mppl-mode))
 (if draco-want-python-mode     (draco-setup-python-mode))
 ;; (if draco-want-sgml-mode       (draco-setup-sgml-mode))
-;(if draco-want-sh-mode         (draco-setup-sh-mode))
+
+;; fontify/indent bash/csh scripts
+(if emacs>=23p
+    (if draco-want-sh-mode         (draco-setup-sh-mode)))
+
 ;(if draco-want-shell-mode      (draco-setup-shell-mode))
 (if draco-want-tcl-mode        (draco-setup-tcl-mode))
 (if draco-want-text-mode       (draco-setup-text-mode))

@@ -720,7 +720,7 @@ auto-mode-alist and set up some customizations for DRACO."
     (defun draco-menu-insert-comments-makefile () 
       "Submenu for inserting comments (context sensitive)."
       (list "Insert comment..."
-	    ["Insert Makefile divider" draco-makefile-divider t]
+	    ["Insert Makefile divider"         draco-makefile-divider         t]
 	    ["Insert Makefile comment divider" draco-makefile-comment-divider t]))
 
     (if draco-colorize-modeline 
