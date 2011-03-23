@@ -26,6 +26,11 @@ elseif( APPLE )
 else()
   set( c4_isAIX 1 )
 endif()
+# Special setup for catamount
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+   set( c4_isLinux_with_aprun 1 )
+   set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS_STRING} -np " )
+endif()
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )
 
 # ---------------------------------------------------------------------------- #

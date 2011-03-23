@@ -69,6 +69,8 @@
 #cmakedefine c4_isDarwin
 /* Is this AIX */
 #cmakedefine c4_isAIX
+/* Is this catamount Cray? */
+#cmakedefine c4_isLinux_with_aprun
 
 /* CMake binary directory */
 #define CMAKE_C4_BINARY_DIR "@PROJECT_BINARY_DIR@"
