@@ -25,6 +25,7 @@ list( REMOVE_ITEM test_sources ${test_lib_sources} )
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
+   ${PROJECT_BINARY_DIR}/..   # c4/config.h
 )
 
 # ---------------------------------------------------------------------------- #
