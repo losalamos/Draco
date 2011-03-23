@@ -237,13 +237,16 @@ macro( SetupVendorLibrariesUnix )
       set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
       find_library( MPI_LIBRARY
          NAMES mpi mpich msmpi
-         HINTS ${MPI_LIB_DIR} )
+         PATHS ${MPI_LIB_DIR} 
+               ${MPICH_DIR}/lib
+               )
       set( extra_libs mpi++ libopen-rte libopen-pal)
       set( MPI_EXTRA_LIBRARY )
       foreach( lib ${extra_libs} )
          find_library( tmp
             NAMES ${lib}
-            HINTS ${MPI_LIB_DIR} )
+            HINTS ${MPI_LIB_DIR} 
+                  ${MPICH_DIR}/lib )
          if( EXISTS "${tmp}" )
             list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
          endif()
@@ -258,8 +261,12 @@ macro( SetupVendorLibrariesUnix )
       set( DRACO_C4 "MPI" )  
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
       if( NOT MPIEXEC )
-         message( FATAL_ERROR 
-            "MPI found but mpirun not in PATH. Aborting" )
+         if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+            set( MPIEXEC aprun )
+         else()
+            message( FATAL_ERROR 
+               "MPI found but mpirun not in PATH. Aborting" )
+         endif()
       endif()
       # Try to find the fortran mpi library
       if( EXISTS ${MPI_LIB_DIR} )
@@ -308,8 +315,15 @@ macro( SetupVendorLibrariesUnix )
      # This machine uses Intel MKL instead of Atlas
      set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
      # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
-     else()
-        set( ENV{BLA_VENDOR} "ATLAS" )
+  else()
+     set( ENV{BLA_VENDOR} "ATLAS" )
+  endif()
+
+# Don't require BLAS/LAPACK for catamount systems
+  if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+     set( BLAS_REQUIRED "" )
+  else()
+     set( BLAS_REQUIRED "REQUIRED" )
   endif()
   
   # This script looks for BLAS in the following locations:
@@ -320,7 +334,7 @@ macro( SetupVendorLibrariesUnix )
         "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
   endif()
 
-  find_package( BLAS REQUIRED )
+  find_package( BLAS ${BLAS_REQUIRED} )
   if( BLAS_FOUND )
      message( STATUS "Found BLAS: ${BLAS_LIBRARIES}" )
   endif()
@@ -344,7 +358,7 @@ macro( SetupVendorLibrariesUnix )
   else()
      # Jae's build of ATLAS requires (libgfortran|libifcore) and libm
      set( LAPACK_EXTRA_LIBRARIES gfortran;ifcore;m )
-     find_package( LAPACK REQUIRED ) # QUIET
+     find_package( LAPACK ${BLAS_REQUIRED} ) # QUIET
   endif()
 
   if( LAPACK_FOUND )
