@@ -38,8 +38,9 @@ namespace rtt_quadrature
 
 Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
                                 rtt_mesh_element::Geometry const   geometry,
-                                unsigned                   const   dimension)
-    : OrdinateSet(quadrature, geometry, dimension),
+                                unsigned                   const   dimension,
+                                bool                       const   extra_starting_directions)
+    : OrdinateSet(quadrature, geometry, dimension, extra_starting_directions),
       number_of_levels_(0),
       levels_(), is_dependent_(), alpha_(), tau_()
 {
@@ -79,7 +80,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
         {
             double const mu = ordinates[a].mu();
             double const wt = ordinates[a].wt();
-            if (wt!=0)
+            if (wt!=0 || (wt == 0 && mu > 0))
                 // Not a starting ordinate.  Use Morel's recurrence relations
                 // to determine the next ordinate derivative coefficient.
             {
@@ -98,20 +99,22 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
 
                 alpha_[a] = 0.0;
 
-                if (level>=0)
-                    // Save the normalization sum for the previous level, if
-                    // any. 
+                if (mu < 0.0)
                 {
-                    C[level] = 1.0/Csum;
+                    // Save the normalization sum for the previous level, if any. 
+                    if (level>=0)
+                    {
+                        C[level] = 1.0/Csum;
+                    }
+                    level++;
+                    Csum = 0.0;
+                    
+                    levels_[a] = level;
+                    is_dependent_[a] = false;
+
+                    if (level> 0) 
+                        first_angles_.push_back(a-1);
                 }
-                level++;
-                Csum = 0.0;
-
-                levels_[a] = level;
-                is_dependent_[a] = false;
-
-                if (level> 0) 
-                    first_angles_.push_back(a-1);
             }
         }
         // Save the normalization sum for the final level.
@@ -153,13 +156,13 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
                     omp = 0.0;
                 }
             }
-            else
+            else if (mu < 0.0)
                 // New level.  Reinitialize the recurrence relation.
             {
-                omp = rtt_units::PI;
-                Check(1-xi*xi >= 0.0);
-                sinth = std::sqrt(1-xi*xi);
-                level++;
+                    omp = rtt_units::PI;
+                    Check(1-xi*xi >= 0.0);
+                    sinth = std::sqrt(1-xi*xi);
+                    level++;
             }
             mup = sinth*std::cos(omp);
             if (wt!=0)
@@ -192,11 +195,20 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
                 is_dependent_[a] = true;
                 alpha_[a] = alpha_[a-1] + 2*wt*mu;
             }
-            else
+            else 
             {
-                is_dependent_[a] = false;
                 alpha_[a] = 0;
-                first_angles_.push_back(number_of_ordinates-1);
+
+                if (mu < 0.0)
+                {
+                    is_dependent_[a] = false;
+                    first_angles_.push_back(number_of_ordinates-1);
+                }
+                else
+                {
+                    is_dependent_[a] = true;
+                }
+                        
             }
         }
 
@@ -210,7 +222,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
 
             if (wt !=0)
                 mup = mum + 2*wt*rnorm;
-            else
+            else 
                 mup = mu;
 
             if (wt !=0)
@@ -227,18 +239,30 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
 
     Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
 
-    //for (unsigned i=0; i < number_of_levels_; ++i)
-    //{
-    //    unsigned const ia=first_angles_[i];
-    //    
-    //    std::cout << " reflection angle for starting direction on level " << i
-    //              << " out of " << first_angles_.size()
-    //              << " is angle " << ia
-    //              << " with mu = " << ordinates[ia].mu()
-    //              << " xi = " << ordinates[ia].xi()
-    //              << " wt = " << ordinates[ia].wt()
-    //              << std::endl;
-    //}
+/*
+    for (unsigned i=0; i < number_of_ordinates; ++i)
+    {
+        std::cout << " ordinate " << i 
+                  << "     " << ordinates[i].mu()
+                  <<    "  " << ordinates[i].eta()
+                  <<    "  " << ordinates[i].xi()
+                  <<    "  " << ordinates[i].wt() 
+                  << std::endl;
+    }
+
+    for (unsigned i=0; i < number_of_levels_; ++i)
+    {
+        unsigned const ia=first_angles_[i];
+        
+        std::cout << " reflection angle for starting direction on level " << i
+                  << " out of " << first_angles_.size()
+                  << " is angle " << ia
+                  << " with mu = " << ordinates[ia].mu()
+                  << " xi = " << ordinates[ia].xi()
+                  << " wt = " << ordinates[ia].wt()
+                  << std::endl;
+    }
+*/
 
     Ensure(check_class_invariants());
 }
@@ -306,7 +330,7 @@ bool Angle_Operator::check_class_invariants() const
         unsigned levels = 0;
         for (unsigned a=0; a<number_of_ordinates; ++a)
         {
-            if (!is_dependent_[a])
+            if ((ordinates[a].wt() == 0) && (ordinates[a].mu() < 0.0))
             {
                 ++levels;
             }

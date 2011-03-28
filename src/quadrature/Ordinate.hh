@@ -133,7 +133,9 @@ class OrdinateSet
     //! default creator
     OrdinateSet( rtt_dsxx::SP< Quadrature const > const quadrature,
                  rtt_mesh_element::Geometry geometry,
-                 unsigned const dimension );
+                 unsigned const dimension,
+                 bool const extra_starting_directions=false);
+
 
     //! destructor
     virtual ~OrdinateSet(){}
@@ -163,6 +165,9 @@ class OrdinateSet
     //! Return the ordering operator.
     comparator_t getComparator() const { return comparator_; }
 
+    //! Return the ordering operator.
+    bool extra_starting_directions() const { return extra_starting_directions_; }
+
     bool check_class_invariants() const;
     
   private:
@@ -181,6 +186,7 @@ class OrdinateSet
     unsigned dimension_;
     double norm_;
     comparator_t comparator_;
+    bool const extra_starting_directions_;
     
 };
 

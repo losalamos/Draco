@@ -14,6 +14,7 @@
 #include <vector>
 #include <cmath>
 #include <sstream>
+#include <algorithm>
 
 #include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -30,7 +31,7 @@ using namespace rtt_quadrature;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstAngle_Quadrature(ScalarUnitTest &ut)
+void tstAngle_Operator_Axisymmetric(ScalarUnitTest &ut)
 {
     ostringstream contents;
     
@@ -48,7 +49,8 @@ void tstAngle_Quadrature(ScalarUnitTest &ut)
     SP<Angle_Operator> const spAngle_Operator =
         SP<Angle_Operator>(new Angle_Operator(spQuad,
                                               rtt_mesh_element::AXISYMMETRIC,
-                                              2));
+                                              2,
+                                              false));
 
     if (spAngle_Operator->Number_Of_Levels()==2)
     {
@@ -200,8 +202,101 @@ void tstAngle_Quadrature(ScalarUnitTest &ut)
     }
 }
 
+// This test checks the curvilinear angle operators with extra starting
+// direction angles present.
+
+bool IsZeroWt (Ordinate i) {return i.wt()==0;}
+
+void tstAngle_Operator_Extra(ScalarUnitTest &ut)
+{
+
+    unsigned const order=8;
+    
 //---------------------------------------------------------------------------//
-void tstAngle_Quadrature_Sphere(ScalarUnitTest &ut)
+// Create a 2D axisymmetic angle operator
+//---------------------------------------------------------------------------//
+
+    ostringstream create_axisymmetric;
+    
+    create_axisymmetric << "type = tri CL\n"
+                        << "order = " << order << "\n"
+                        << "end\n"
+                        << endl;
+    
+    std::string astring=create_axisymmetric.str();
+    rtt_parser::String_Token_Stream axisymmetric_tokens( astring );
+    
+    SP< Quadrature const > spQ_Axisymmetric = QuadCreator().quadCreate( axisymmetric_tokens );
+
+    SP<Angle_Operator> const spAxisymmetric =
+        SP<Angle_Operator>(new Angle_Operator(spQ_Axisymmetric,
+                                              rtt_mesh_element::AXISYMMETRIC,
+                                              2,  // dimension
+                                              true));
+
+    if (spAxisymmetric->Number_Of_Levels() == order)
+    {
+        ut.passes("Number of levels correct");
+    }
+    else
+    {
+        ut.failure("Number of levels NOT correct");
+    }
+
+    vector<Ordinate> axisymmetric(spAxisymmetric->getOrdinates());
+    if (std::count_if(axisymmetric.begin(), axisymmetric.end(), IsZeroWt) == 2*order)
+    {
+        ut.passes("Number of zero-weight ordinates is correct");
+    }
+    else
+    {
+        ut.failure("Number of zero-weight ordinates is NOT correct");
+    }
+ 
+//---------------------------------------------------------------------------//
+// Create a 1D spherical angle operator
+//---------------------------------------------------------------------------//
+
+    ostringstream create_spherical;
+
+    create_spherical << "type = gauss legendre\n"
+                     << "order = " << order << "\n"
+                     << "end\n"
+                     << endl;
+
+    std::string sstring=create_spherical.str();
+    rtt_parser::String_Token_Stream spherical_tokens( sstring );
+
+    SP< Quadrature const > spQ_Spherical = QuadCreator().quadCreate( spherical_tokens );
+
+    SP<Angle_Operator> const spSpherical =
+        SP<Angle_Operator>(new Angle_Operator(spQ_Spherical,
+                                              rtt_mesh_element::SPHERICAL,
+                                              1,  // dimension
+                                              true));
+
+    if (spSpherical->Number_Of_Levels()==1)
+    {
+        ut.passes("Number of levels correct");
+    }
+    else
+    {
+        ut.failure("Number of levels NOT correct");
+    }
+
+    vector<Ordinate> spherical(spSpherical->getOrdinates());
+    if (std::count_if(spherical.begin(), spherical.end(), IsZeroWt) == 2)
+    {
+        ut.passes("Number of zero-weight ordinates is correct");
+    }
+    else
+    {
+        ut.failure("Number of zero-weight ordinates is NOT correct");
+    }
+}
+
+//---------------------------------------------------------------------------//
+void tstAngle_Operator_Spherical(ScalarUnitTest &ut)
 {
     ostringstream contents;
     
@@ -219,7 +314,8 @@ void tstAngle_Quadrature_Sphere(ScalarUnitTest &ut)
     SP<Angle_Operator> const spAngle_Operator =
         SP<Angle_Operator>(new Angle_Operator(spQuad,
                                               rtt_mesh_element::SPHERICAL,
-                                              1));
+                                              1,
+                                              false));
 
     if (spAngle_Operator->Number_Of_Levels()==1)
     {
@@ -359,8 +455,9 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try
     {
-        tstAngle_Quadrature(ut);
-        tstAngle_Quadrature_Sphere(ut);
+        tstAngle_Operator_Axisymmetric(ut);
+        tstAngle_Operator_Spherical(ut);
+        tstAngle_Operator_Extra(ut);
     }
     catch (std::exception &err)
     {

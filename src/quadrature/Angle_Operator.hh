@@ -92,8 +92,9 @@ class Angle_Operator : public rtt_quadrature::OrdinateSet
 
     //! Specify the ordinate quadrature.
     Angle_Operator(rtt_dsxx::SP<Quadrature const> const &quadrature,
-                   rtt_mesh_element::Geometry geometry,
-                   unsigned dimension);
+                   rtt_mesh_element::Geometry const geometry,
+                   unsigned const dimension,
+                   bool const extra_starting_directions=false);
 
     // MANIPULATORS
 

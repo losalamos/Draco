@@ -170,7 +170,7 @@ void test_create_ordinate_set( UnitTest & ut )
 
     // Call the function that we are testing.
     int const dim( 1 );
-    OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim );
+    OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim, false);
     vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
 
     // Check the result
@@ -210,7 +210,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 1 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::AXISYMMETRIC,
-                                            dim );
+                                            dim,
+                                            false);
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -228,7 +229,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim,
+                                            false);
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -252,7 +254,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim,
+                                            false );
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -276,7 +279,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim ,
+                                            false);
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -300,8 +304,9 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
-            
+                                            dim,
+                                            false); 
+
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
             for (unsigned i=0; i<ordinates.size(); ++i)
@@ -324,7 +329,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim,
+                                            false );
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -348,7 +354,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim,
+                                            false );
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -372,7 +379,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim,
+                                            false );
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -396,7 +404,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim ,
+                                            false);
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -420,7 +429,8 @@ void test_create_ordinate_set( UnitTest & ut )
             int const dim( 3 );
             OrdinateSet const ordinate_set( spQ,
                                             rtt_mesh_element::CARTESIAN,
-                                            dim );
+                                            dim ,
+                                            false);
             
             vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
             double sum = 0;
@@ -451,7 +461,7 @@ void test_Y( UnitTest & ut)
 
     // Call the function that we are testing.
     int const dim( 2 );
-    OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim );
+    OrdinateSet const ordinate_set( spQ, rtt_mesh_element::CARTESIAN, dim, false );
     vector<Ordinate> const &ordinates = ordinate_set.getOrdinates();
 
     if (ordinate_set.getNorm() != sumwt)

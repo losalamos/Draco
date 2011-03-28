@@ -47,13 +47,15 @@ using namespace rtt_dsxx;
 
 OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
                           rtt_mesh_element::Geometry const geometry,
-                          unsigned                   const dimension )
+                          unsigned                   const dimension,
+                          bool                       const extra_starting_directions)
     : ordinates_(),
       quadrature_( quadrature ),
       geometry_(   geometry   ),
       dimension_(  dimension  ),
       norm_(0.0),
-      comparator_(Ordinate::SnCompare) // default comparator
+      comparator_(Ordinate::SnCompare), // default comparator
+      extra_starting_directions_(extra_starting_directions) 
 {
     Require( quadrature!=SP<Quadrature>()               );
     Require( quadrature->dimensionality() == 1 ||
@@ -315,9 +317,16 @@ void OrdinateSet::create_set_from_1d_quadrature()
         // insert mu=-1 starting direction 
         vector<Ordinate>::iterator a = ordinates_.begin();
         a = ordinates_.insert(a, Ordinate(-1.0,
-                                         0.0,
-                                         0.0,
-                                         0.0));
+                                          0.0,
+                                          0.0,
+                                          0.0));
+        
+        // insert mu=1 starting direction 
+        if (extra_starting_directions_)
+            ordinates_.push_back(Ordinate(1.0,
+                                          0.0,
+                                          0.0,
+                                          0.0));
     }
     else if ( geometry_ ==  rtt_mesh_element::CARTESIAN)
     {
@@ -405,9 +414,8 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh()
         
         unsigned check_number_of_levels = 0;
         double xi = -SENTINEL_COSINE;
-        for ( vector<Ordinate>::iterator a = ordinates_.begin();
-              a != ordinates_.end();
-              ++a)
+
+        for ( vector<Ordinate>::iterator a = ordinates_.begin(); a != ordinates_.end(); ++a)
         {
             double const old_xi = xi;
             xi = a->xi();
@@ -418,12 +426,30 @@ void OrdinateSet::create_set_from_2d_quadrature_for_2d_mesh()
             {
                 check_number_of_levels++;
                 Check(1.0-xi*xi >= 0.0);
+
+                // insert mu < 0
                 a = ordinates_.insert(a, Ordinate(-sqrt(1.0-xi*xi),
-                                                 0.0,
-                                                 xi,
-                                                 0.0));
+                                                  0.0,
+                                                  xi,
+                                                  0.0));
+
+                // insert mu > 0
+                if (extra_starting_directions_)
+                    if (a != ordinates_.begin())
+                        a = ordinates_.insert(a, Ordinate(sqrt(1.0-old_xi*old_xi),
+                                                          0.0,
+                                                          old_xi,
+                                                          0.0));
             }
         }
+
+        // insert mu > 0 on the final level
+        if (extra_starting_directions_)
+            ordinates_.push_back(Ordinate(sqrt(1.0-xi*xi),
+                                          0.0,
+                                          xi,
+                                          0.0));
+
         Check(number_of_levels==check_number_of_levels);
     }
     return;
@@ -472,8 +498,7 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh()
         {
             double const eta = sqrt(1-xi*xi-mu*mu);
             double const weight = quadrature_->getWt(a);
-            ordinates_[check_number_of_ordinates] =
-                Ordinate(mu, eta, xi, weight);
+            ordinates_[check_number_of_ordinates] = Ordinate(mu, eta, xi, weight);
             ++check_number_of_ordinates;
         }
     }
@@ -486,25 +511,40 @@ void OrdinateSet::create_set_from_2d_quadrature_for_1d_mesh()
     
     unsigned check_number_of_levels = 0;
     double xi = -SENTINEL_COSINE;
-    for( vector<Ordinate>::iterator a = ordinates_.begin();
-         a != ordinates_.end();
-         ++a )
+    for( vector<Ordinate>::iterator a = ordinates_.begin(); a != ordinates_.end(); ++a )
     {
         double const old_xi = xi;
         xi = a->xi();
         if (xi != old_xi)
             // We are at the start of a new level.  Insert the starting
-            // ordinate.  This has eta==0 and mu determined by the
-            // normalization condition.
+            // ordinate with zero weight.
+            // This has eta==0 and mu determined by the normalization condition.
         {
             check_number_of_levels++;
             Check(1.0-xi*xi >= 0.0);
+
+            // insert mu < 0
             a = ordinates_.insert(a, Ordinate(-sqrt(1.0-xi*xi),
                                              0.0,
                                              xi,
                                              0.0));
+            // insert mu > 0
+            if (extra_starting_directions_)
+                if (a != ordinates_.begin())
+                    a = ordinates_.insert(a, Ordinate(sqrt(1.0-old_xi*old_xi),
+                                                      0.0,
+                                                      old_xi,
+                                                      0.0));
         }
     }
+
+    // insert mu > 0 on the final level
+    if (extra_starting_directions_)
+        ordinates_.push_back(Ordinate(sqrt(1.0-xi*xi),
+                                      0.0,
+                                      xi,
+                                      0.0));
+    
     Check(number_of_levels==check_number_of_levels);
     return;
 }
