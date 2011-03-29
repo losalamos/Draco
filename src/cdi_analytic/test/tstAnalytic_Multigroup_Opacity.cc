@@ -44,15 +44,16 @@ using rtt_dsxx::soft_equiv;
 void multigroup_test()
 {
     // group structure
-    vector<double> groups(4, 0.0);
+    vector<double> groups(5, 0.0);
     {
 	groups[0] = 0.05;
 	groups[1] = 0.5;
 	groups[2] = 5.0;
 	groups[3] = 50.0;
+        groups[4] = 500.0;
     }
     
-    vector<SP<Analytic_Opacity_Model> > models(3);
+    vector<SP<Analytic_Opacity_Model> > models(4);
 
     // make a Marshak (user-defined) model for the first group
     models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
@@ -63,6 +64,10 @@ void multigroup_test()
 
     // make a Constant model for the third group
     models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
+
+    // make a Constant model for the third group
+    models[3] = new rtt_cdi_analytic::Pseudo_Line_Analytic_Opacity_Model(
+        1.0, 10U, 10.0, 0.1, 0.0, 10.0, 1U);
 
     // make an analytic multigroup opacity object for absorption
     Analytic_Multigroup_Opacity opacity(groups, models, rtt_cdi::ABSORPTION);
@@ -78,8 +83,8 @@ void multigroup_test()
 	if (opacity.getNumDensities() != 0)                   ITFAILS;
 	if (opacity.getTemperatureGrid() != vector<double>()) ITFAILS;
 	if (opacity.getDensityGrid() != vector<double>())     ITFAILS;
-	if (opacity.getNumGroups() != 3)                      ITFAILS;
-	if (opacity.getNumGroupBoundaries() != 4)             ITFAILS;
+	if (opacity.getNumGroups() != 4)                      ITFAILS;
+	if (opacity.getNumGroupBoundaries() != 5)             ITFAILS;
 	if (opacity.getEnergyPolicyDescriptor() != "mg")      ITFAILS;
 	if (opacity.getDataDescriptor() != desc)              ITFAILS;
 	if (opacity.getDataFilename() != string())            ITFAILS;
@@ -119,11 +124,12 @@ void multigroup_test()
     
     // scalar density and temperature
     vector<double> sigma = opacity.getOpacity(2.0, 3.0);
-    vector<double> ref(3, 0.0);
+    vector<double> ref(4, 0.0);
     {
 	ref[0] = 100.0 / 8.0;
 	ref[1] = 1.5;
 	ref[2] = 3.0;
+        ref[3] = 1.0;
     }
     if (soft_equiv(sigma.begin(), sigma.end(), ref.begin(), ref.end()))
     {
