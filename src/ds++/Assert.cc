@@ -42,6 +42,16 @@ std::string assertion::build_message( std::string const & cond,
     return myMessage.str();
 }
 
+
+/*
+ * Leave this definition in the .cc file!  This is a work-around for building
+ * on Cielo.  Without this defintion in the .cc file, clubimc will not build
+ * because it cannot resolve this symbol: undefined reference to
+ * `__T_Q2_8rtt_dsxx9assertion' 
+ */
+assertion::~assertion() throw() { /* empty */ }
+
+
 //===========================================================================//
 // FREE FUNCTIONS
 //===========================================================================//

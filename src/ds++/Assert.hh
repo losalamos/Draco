@@ -153,7 +153,7 @@ class DLL_PUBLIC assertion : public std::logic_error
 
     /*! \brief Destructor for ds++/assertion class.
      * We do not allow the destructor to throw! */
-    virtual ~assertion() throw() { /* empty */ }
+    virtual ~assertion() throw();
 
   private:
     /*! Helper function to build error message that includes source file name
