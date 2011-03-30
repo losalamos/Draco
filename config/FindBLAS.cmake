@@ -40,10 +40,10 @@
 #  License text for the above reference.)
 
 get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
-if (NOT _LANGUAGES_ MATCHES Fortran)
-   include(CheckFunctionExists)
-else ()
+if (_LANGUAGES_ MATCHES Fortran)
    include(CheckFortranFunctionExists)
+else ()
+   include(CheckFunctionExists)
 endif()
 
 macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
@@ -81,7 +81,11 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
             endif(BLA_STATIC)
             find_library(${_prefix}_${_library}_LIBRARY
                NAMES ${_library}
-               PATHS /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ENV DYLD_LIBRARY_PATH
+               PATHS /usr/local/lib 
+                     /usr/lib 
+                     /usr/local/lib64 
+                     /usr/lib64 
+                     ENV DYLD_LIBRARY_PATH
                )
             
          else ( APPLE )
@@ -90,7 +94,11 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
             endif(BLA_STATIC)
             find_library(${_prefix}_${_library}_LIBRARY
                NAMES ${_library}
-               PATHS /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ENV LD_LIBRARY_PATH
+               PATHS /usr/local/lib 
+                     /usr/lib 
+                     /usr/local/lib64 
+                     /usr/lib64 
+                     ENV LD_LIBRARY_PATH
                )
          endif( APPLE )
          mark_as_advanced(${_prefix}_${_library}_LIBRARY)
@@ -103,9 +111,9 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
       set(CMAKE_REQUIRED_LIBRARIES ${_flags} ${${LIBRARIES}} ${_threads})
       #  message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
       if (_LANGUAGES_ MATCHES Fortran)
-         check_fortran_function_exists("${_name}" ${_prefix}${_combined_name}_WORKS)
+         check_fortran_function_exists(${_name} ${_prefix}${_combined_name}_WORKS)
       else()
-         check_function_exists(${_name} ${_prefix}${_combined_name}_WORKS)
+         check_function_exists(cblas_${_name} ${_prefix}${_combined_name}_WORKS)
       endif()
       set(CMAKE_REQUIRED_LIBRARIES)
       mark_as_advanced(${_prefix}${_combined_name}_WORKS)
@@ -134,7 +142,7 @@ if (BLA_VENDOR STREQUAL "ATLAS" OR BLA_VENDOR STREQUAL "All")
       check_fortran_libraries(
          BLAS_LIBRARIES
          BLAS
-         cblas_dgemm
+         dgemm 
          ""
          "cblas;f77blas;atlas"
          ""
