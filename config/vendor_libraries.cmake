@@ -243,17 +243,21 @@ macro( SetupVendorLibrariesUnix )
       set( extra_libs mpi++ libopen-rte libopen-pal)
       set( MPI_EXTRA_LIBRARY )
       foreach( lib ${extra_libs} )
-         find_library( tmp
+         find_library( mpi_extra_lib_${lib}
             NAMES ${lib}
             HINTS ${MPI_LIB_DIR} 
                   ${MPICH_DIR}/lib )
-         if( EXISTS "${tmp}" )
+         mark_as_advanced( mpi_extra_lib_${lib} )
+         if( EXISTS "${mpi_extra_lib_${lib}}" )
             list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
          endif()
       endforeach()
       find_package( MPI )
-      list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
-      unset(tmp)
+      if( ${MPI_EXTRA_LIBRARY} MATCHES "NOTFOUND" )
+         # do nothing
+      else()
+         list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
+      endif()
    endif()
 
    # Set Draco build system variables based on what we know about MPI.
