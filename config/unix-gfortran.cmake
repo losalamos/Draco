@@ -13,6 +13,23 @@
 # switch on this macro.
 set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 
+# Save gfortran version value
+execute_process( 
+  COMMAND ${CMAKE_Fortran_COMPILER} --version
+  OUTPUT_VARIABLE tmp )
+string( REGEX REPLACE ".*([0-9][.][0-9][.][0-9]).*" 
+  "\\1" CMAKE_Fortran_COMPILER_VERSION "${tmp}" 
+  )   
+
+# I know that gfortran 4.1 won't compile our code (maybe 4.2 or 4.3 will).
+if( ${CMAKE_Fortran_COMPILER_VERSION} STRLESS "4.2" )
+  message( FATAL_ERROR """
+*** Compiler incompatibility:
+gfortran < 4.2 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
+"""
+  )
+endif( ${CMAKE_Fortran_COMPILER_VERSION} STRLESS "4.2" )
+
 # General flags:
 #
 # -ffree-form             Don't assume fixed-form FORTRAN.
@@ -20,8 +37,13 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 # -fimplicit-none         Do not allow implicit typing
 # -fPIC                   Produce position independent code
 # -cpp                    Enable preprocessing
-SET( CMAKE_Fortran_FLAGS 
-  "-cpp -ffree-line-length-none -static-libgfortran -fPIC" )
+set( CMAKE_Fortran_FLAGS 
+  "-ffree-line-length-none -static-libgfortran -fPIC" )
+if( ${CMAKE_Fortran_COMPILER_VERSION} STRGREATER "4.5" )
+   set( CMAKE_Fortran_FLAGS "-x f95-cpp-input ${CMAKE_Fortran_COMPILER_VERSION}" )
+else()
+
+endif()
 # removed implicit none - needed by capsaicin
 
 # Debug flags:
@@ -62,22 +84,6 @@ if( ENABLE_OPENMP )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp" )
 endif( ENABLE_OPENMP )
 
-# Save gfortran version value
-execute_process( 
-  COMMAND ${CMAKE_Fortran_COMPILER} --version
-  OUTPUT_VARIABLE tmp )
-string( REGEX REPLACE ".*([0-9][.][0-9][.][0-9]).*" 
-  "\\1" CMAKE_Fortran_COMPILER_VERSION "${tmp}" 
-  )   
-
-# I know that gfortran 4.1 won't compile our code (maybe 4.2 or 4.3 will).
-if( ${CMAKE_Fortran_COMPILER_VERSION} STRLESS "4.2" )
-  message( FATAL_ERROR """
-*** Compiler incompatibility:
-gfortran < 4.2 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
-"""
-  )
-endif( ${CMAKE_Fortran_COMPILER_VERSION} STRLESS "4.2" )
 
 # ------------------------------------------------------------
 # Find and save compiler libraries.  These may need to be used when
