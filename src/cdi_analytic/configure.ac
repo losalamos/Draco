@@ -22,8 +22,8 @@ AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 AC_NEEDS_LIBS(cdi ds++)
 
-AC_RUNTESTS(tstAnalytic_Gray_Opacity tstAnalytic_Multigroup_Opacity \
-            tstAnalytic_Multigroup_Opacity tstAnalytic_EoS \
+AC_RUNTESTS(tstAnalytic_Gray_Opacity \
+            tstnGray_Analytic_MultigroupOpacity tstAnalytic_EoS \
             tstAnalytic_Odfmg_Opacity, scalar)
 
 dnl DRACO SETUP

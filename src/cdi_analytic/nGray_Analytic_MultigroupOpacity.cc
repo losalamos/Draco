@@ -1,16 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_analytic/Analytic_Multigroup_Opacity.cc
+ * \file   cdi_analytic/nGray_Analytic_MultigroupOpacity.cc
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
- * \brief  Analytic_Multigroup_Opacity class member definitions.
+ * \brief  nGray_Analytic_MultigroupOpacity class member definitions.
  * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Analytic_Multigroup_Opacity.hh"
+#include "nGray_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic
@@ -41,7 +41,7 @@ namespace rtt_cdi_analytic
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  *
  */
-Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
+nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_double         &groups,
     const sf_Analytic_Model &models,
     rtt_cdi::Reaction        reaction_in,
@@ -61,12 +61,12 @@ Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
 /*!
  * \brief Unpacking constructor.
  * 
- * This constructor rebuilds and Analytic_Multigroup_Opacity from a
+ * This constructor rebuilds and nGray_Analytic_MultigroupOpacity from a
  * vector<char> that was created by a call to pack().  It can only rebuild
  * Analytic_Model types that have been registered in the
  * rtt_cdi_analytic::Opacity_Models enumeration.
  */
-Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
+nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_char &packed)
     : group_boundaries(),
       group_models(),
@@ -165,15 +165,15 @@ Analytic_Multigroup_Opacity::Analytic_Multigroup_Opacity(
  * Given a scalar temperature and density, return the group opacities
  * (vector<double>) for the reaction type specified by the constructor.  The
  * analytic opacity model is specified in the constructor
- * (Analytic_Multigroup_Opacity()).
+ * (nGray_Analytic_MultigroupOpacity()).
  *
  * \param temperature material temperature in keV
  * \param density material density in g/cm^3
  * \return group opacities (coefficients) in cm^2/g
  *
  */
-Analytic_Multigroup_Opacity::sf_double
-Analytic_Multigroup_Opacity::getOpacity(double temperature, 
+nGray_Analytic_MultigroupOpacity::sf_double
+nGray_Analytic_MultigroupOpacity::getOpacity(double temperature, 
 					double density) const
 {
     Require (temperature >= 0.0);
@@ -218,8 +218,8 @@ Analytic_Multigroup_Opacity::getOpacity(double temperature,
  * \return std::vector<std::vector> of multigroup opacities (coefficients) in
  * cm^2/g indexed [temperature][group]
  */
-Analytic_Multigroup_Opacity::vf_double
-Analytic_Multigroup_Opacity::getOpacity(const sf_double &temperature,
+nGray_Analytic_MultigroupOpacity::vf_double
+nGray_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
 					double density) const
 {
     Require (density >= 0.0);
@@ -271,8 +271,8 @@ Analytic_Multigroup_Opacity::getOpacity(const sf_double &temperature,
  * \return std::vector<std::vector> of multigroup opacities (coefficients) in
  * cm^2/g indexed [density][group]
  */
-Analytic_Multigroup_Opacity::vf_double
-Analytic_Multigroup_Opacity::getOpacity(double temperature,
+nGray_Analytic_MultigroupOpacity::vf_double
+nGray_Analytic_MultigroupOpacity::getOpacity(double temperature,
 					const sf_double &density) const
 {
     Require (temperature >= 0.0);
@@ -312,7 +312,7 @@ Analytic_Multigroup_Opacity::getOpacity(double temperature,
  * class must have a pack function; this is enforced by the virtual
  * Analytic_Opacity_Model base class.
  */
-Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
+nGray_Analytic_MultigroupOpacity::sf_char nGray_Analytic_MultigroupOpacity::pack() const
 {
     Require (group_boundaries.size() - 1 == group_models.size());
 
@@ -370,5 +370,5 @@ Analytic_Multigroup_Opacity::sf_char Analytic_Multigroup_Opacity::pack() const
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of Analytic_Multigroup_Opacity.cc
+//                              end of nGray_Analytic_MultigroupOpacity.cc
 //---------------------------------------------------------------------------//

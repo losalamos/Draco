@@ -1,17 +1,17 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_analytic/Analytic_Multigroup_Opacity.hh
+ * \file   cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
- * \brief  Analytic_Multigroup_Opacity class definition.
+ * \brief  nGray_Analytic_MultigroupOpacity class definition.
  * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __cdi_analytic_Analytic_Multigroup_Opacity_hh__
-#define __cdi_analytic_Analytic_Multigroup_Opacity_hh__
+#ifndef __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
+#define __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
 
 #include "Analytic_Models.hh"
 #include "cdi/MultigroupOpacity.hh"
@@ -26,11 +26,11 @@ namespace rtt_cdi_analytic
 
 //===========================================================================//
 /*!
- * \class Analytic_Multigroup_Opacity
+ * \class nGray_Analytic_MultigroupOpacity
  *
  * \brief Derived rtt_cdi::MultigroupOpacity class for analytic opacities.
  *
- * The Analytic_Multigroup_Opacity class is a derived
+ * The nGray_Analytic_MultigroupOpacity class is a derived
  * rtt_cdi::MultigroupOpacity class.  It provides analytic opacity data. The
  * specific analytic opacity model is derived from the
  * rtt_cdi_analytic::Analytic_Opacity_Model base class.  Several pre-built
@@ -65,9 +65,9 @@ namespace rtt_cdi_analytic
  * rtt_cdi::MultigroupOpacity and can be used with rtt_cdi::CDI to get
  * analytic opacities.
  *
- * \example cdi_analytic/test/tstAnalytic_Multigroup_Opacity.cc
+ * \example cdi_analytic/test/tstnGray_Analytic_MultigroupOpacity.cc
  *
- * Example usage of Analytic_Multigroup_Opacity, Analytic_Opacity_Model, and
+ * Example usage of nGray_Analytic_MultigroupOpacity, Analytic_Opacity_Model, and
  * their incorporation into rtt_cdi::CDI.
  */ 
 // revision history:
@@ -77,7 +77,7 @@ namespace rtt_cdi_analytic
 // 
 //===========================================================================//
 
- class Analytic_Multigroup_Opacity : public rtt_cdi::MultigroupOpacity
+ class nGray_Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
   public:
     // Useful typedefs.
@@ -104,13 +104,13 @@ namespace rtt_cdi_analytic
 
   public:
     // Constructor.
-    Analytic_Multigroup_Opacity(const sf_double &, 
+    nGray_Analytic_MultigroupOpacity(const sf_double &, 
 				const sf_Analytic_Model &,
 				rtt_cdi::Reaction,
 				rtt_cdi::Model = rtt_cdi::ANALYTIC);
 
     // Constructor for packed Analytic_Multigroup_Opacities
-    explicit Analytic_Multigroup_Opacity(const sf_char &);
+    explicit nGray_Analytic_MultigroupOpacity(const sf_char &);
 
     // >>> ACCESSORS
     const_Model get_Analytic_Model(size_t g) const { return group_models[g-1]; }
@@ -165,7 +165,7 @@ namespace rtt_cdi_analytic
     //! Get the number of frequency group boundaries.
     size_t getNumGroups() const { return group_boundaries.size() - 1; }
 
-    // Pack the Analytic_Multigroup_Opacity into a character string.
+    // Pack the nGray_Analytic_MultigroupOpacity into a character string.
     sf_char pack() const;
 
 	/*!
@@ -184,8 +184,8 @@ namespace rtt_cdi_analytic
 /*!
  * \brief Return the energy policy descriptor (mg). 
  */
-Analytic_Multigroup_Opacity::std_string 
-Analytic_Multigroup_Opacity::getEnergyPolicyDescriptor() const 
+nGray_Analytic_MultigroupOpacity::std_string 
+nGray_Analytic_MultigroupOpacity::getEnergyPolicyDescriptor() const 
 {
     return std_string("mg");
 }
@@ -194,8 +194,8 @@ Analytic_Multigroup_Opacity::getEnergyPolicyDescriptor() const
 /*!
  * \brief Return a string describing the opacity model.
  */
-Analytic_Multigroup_Opacity::std_string
-Analytic_Multigroup_Opacity::getDataDescriptor() const
+nGray_Analytic_MultigroupOpacity::std_string
+nGray_Analytic_MultigroupOpacity::getDataDescriptor() const
 {
     std_string descriptor;
 
@@ -217,16 +217,16 @@ Analytic_Multigroup_Opacity::getDataDescriptor() const
 /*!
  * \brief Return NULL string for the data filename.
  */
-Analytic_Multigroup_Opacity::std_string
-Analytic_Multigroup_Opacity::getDataFilename() const 
+nGray_Analytic_MultigroupOpacity::std_string
+nGray_Analytic_MultigroupOpacity::getDataFilename() const 
 {
     return std_string();
 }
 
 } // end namespace rtt_cdi_analytic
 
-#endif              // __cdi_analytic_Analytic_Multigroup_Opacity_hh__
+#endif              // __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
 
 //---------------------------------------------------------------------------//
-//                   end of cdi_analytic/Analytic_Multigroup_Opacity.hh
+//            end of cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
 //---------------------------------------------------------------------------//

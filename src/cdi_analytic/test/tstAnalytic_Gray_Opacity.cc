@@ -12,7 +12,7 @@
 #include "cdi_analytic_test.hh"
 #include "../Release.hh"
 #include "../Analytic_Gray_Opacity.hh"
-#include "../Analytic_Multigroup_Opacity.hh"
+#include "../nGray_Analytic_MultigroupOpacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
@@ -29,7 +29,7 @@
 
 using namespace std;
 
-using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
+using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
 using rtt_cdi_analytic::Analytic_Gray_Opacity;
 using rtt_cdi_analytic::Analytic_Opacity_Model;
 using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
@@ -326,8 +326,8 @@ void type_test()
     if (!soft_equiv(constant_opacity, parm.front())) ITFAILS;
 
     // another way to do this
-    Analytic_Multigroup_Opacity *m = 
-	dynamic_cast<Analytic_Multigroup_Opacity *>(&*op);
+    nGray_Analytic_MultigroupOpacity *m = 
+	dynamic_cast<nGray_Analytic_MultigroupOpacity *>(&*op);
     Analytic_Gray_Opacity       *o = 
 	dynamic_cast<Analytic_Gray_Opacity *>(&*op);
 

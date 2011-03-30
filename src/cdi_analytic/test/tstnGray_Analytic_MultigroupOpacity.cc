@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_analytic/test/tstAnalytic_Multigroup_Opacity.cc
+ * \file   cdi_analytic/test/tstnGray_Analytic_MultigroupOpacity.cc
  * \author Thomas M. Evans
  * \date   Tue Nov 13 17:24:12 2001
- * \brief  Analytic_Multigroup_Opacity test.
+ * \brief  nGray_Analytic_MultigroupOpacity test.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -11,7 +11,7 @@
 
 #include "cdi_analytic_test.hh"
 #include "../Release.hh"
-#include "../Analytic_Multigroup_Opacity.hh"
+#include "../nGray_Analytic_MultigroupOpacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
@@ -28,7 +28,7 @@
 
 using namespace std;
 
-using rtt_cdi_analytic::Analytic_Multigroup_Opacity;
+using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
 using rtt_cdi_analytic::Analytic_Opacity_Model;
 using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
 using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
@@ -70,7 +70,7 @@ void multigroup_test()
         1.0, 10U, 10.0, 0.1, 0.0, 10.0, 1U);
 
     // make an analytic multigroup opacity object for absorption
-    Analytic_Multigroup_Opacity opacity(groups, models, rtt_cdi::ABSORPTION);
+    nGray_Analytic_MultigroupOpacity opacity(groups, models, rtt_cdi::ABSORPTION);
 
     // check the interface to multigroup opacity
     {
@@ -92,14 +92,14 @@ void multigroup_test()
         if (opacity.getOpacityModelType() != rtt_cdi::ANALYTIC_TYPE) ITFAILS;
     }
     {       
-        Analytic_Multigroup_Opacity anal_opacity(groups,
+        nGray_Analytic_MultigroupOpacity anal_opacity(groups,
                                                  models,
                                                  rtt_cdi::SCATTERING);
         if (anal_opacity.getDataDescriptor() !=
             "Analytic Multigroup Scattering") ITFAILS;
     }
     {       
-        Analytic_Multigroup_Opacity anal_opacity(groups,
+        nGray_Analytic_MultigroupOpacity anal_opacity(groups,
                                                  models,
                                                  rtt_cdi::TOTAL);
         if (anal_opacity.getDataDescriptor() !=
@@ -232,7 +232,7 @@ void test_CDI()
 
     // make an analytic multigroup opacity object for absorption
     SP<const MultigroupOpacity> mg( 
-	new Analytic_Multigroup_Opacity(groups, models, rtt_cdi::ABSORPTION));
+	new nGray_Analytic_MultigroupOpacity(groups, models, rtt_cdi::ABSORPTION));
 
     // make a CDI object
     CDI cdi;
@@ -311,7 +311,7 @@ void packing_test()
 
 	// make an analytic multigroup opacity object for absorption
 	SP<const MultigroupOpacity> mg
-	    (new Analytic_Multigroup_Opacity(groups, models, 
+	    (new nGray_Analytic_MultigroupOpacity(groups, models, 
 					     rtt_cdi::ABSORPTION));
 
 	// pack it
@@ -319,7 +319,7 @@ void packing_test()
     }
 
     // now unpack it
-    Analytic_Multigroup_Opacity opacity(packed);
+    nGray_Analytic_MultigroupOpacity opacity(packed);
 
     // now check it
 
@@ -398,7 +398,7 @@ void packing_test()
 	
 	// make an analytic multigroup opacity object for absorption
 	SP<const MultigroupOpacity> mg( 
-	    new Analytic_Multigroup_Opacity(groups, models,
+	    new nGray_Analytic_MultigroupOpacity(groups, models,
 					    rtt_cdi::ABSORPTION));
 
 	packed = mg->pack();
@@ -409,7 +409,7 @@ void packing_test()
     bool caught = false;
     try
     {
-	Analytic_Multigroup_Opacity nmg(packed);
+	nGray_Analytic_MultigroupOpacity nmg(packed);
     }
     catch (const rtt_dsxx::assertion &ass)
     {
@@ -448,7 +448,7 @@ int main(int argc, char *argv[])
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing tstAnalytic_Multigroup_Opacity, " << ass.what()
+	cout << "While testing tstnGray_Analytic_MultigroupOpacity, " << ass.what()
 	     << endl;
 	return 1;
     }
@@ -458,15 +458,15 @@ int main(int argc, char *argv[])
     cout <<     "*********************************************" << endl;
     if (rtt_cdi_analytic_test::passed) 
     {
-        cout << "**** tstAnalytic_Multigroup_Opacity Test: PASSED" 
+        cout << "**** tstnGray_Analytic_MultigroupOpacity Test: PASSED" 
 	     << endl;
     }
     cout <<     "*********************************************" << endl;
     cout << endl;
 
-    cout << "Done testing tstAnalytic_Multigroup_Opacity." << endl;
+    cout << "Done testing tstnGray_Analytic_MultigroupOpacity." << endl;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAnalytic_Multigroup_Opacity.cc
+//                        end of tstnGray_Analytic_MultigroupOpacity.cc
 //---------------------------------------------------------------------------//
