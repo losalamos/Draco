@@ -81,7 +81,11 @@ macro(Check_Lapack_Libraries LIBRARIES _prefix _name _flags _list _blas _threads
             endif(BLA_STATIC)
             find_library(${_prefix}_${_library}_LIBRARY
                NAMES ${_library}
-               PATHS /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ENV DYLD_LIBRARY_PATH
+               PATHS /usr/local/lib 
+                     /usr/lib 
+                     /usr/local/lib64 
+                     /usr/lib64 
+                     ENV DYLD_LIBRARY_PATH
                )
          else(APPLE)
             if(BLA_STATIC)
@@ -220,12 +224,14 @@ if(BLAS_FOUND)
          BLA_VENDOR STREQUAL "All" )
       if ( NOT LAPACK_LIBRARIES )
          if( LAPACK_EXTRA_LIBRARIES )
-            if( "${CMAKE_Fortran_COMPILER}" MATCHES "gfortran" )
+            if( "${CMAKE_C_COMPILER}" MATCHES "gcc" )
                execute_process(
-                  COMMAND ${CMAKE_Fortran_COMPILER} -print-file-name=libgfortran.a
-                  OUTPUT  LIBGFORTRAN_LOC )
+                  COMMAND ${CMAKE_C_COMPILER} -print-file-name=libgfortran.so
+                  OUTPUT_VARIABLE LIBGFORTRAN_LOC )
                get_filename_component( LIBGFORTRAN_LOC
                   ${LIBGFORTRAN_LOC} PATH )
+               get_filename_component( LIBGFORTRAN_LOC
+                  ${LIBGFORTRAN_LOC} ABSOLUTE )
             endif()
             unset( LAPACK_atlas_extra_libs )
             foreach( _library ${LAPACK_EXTRA_LIBRARIES} )
