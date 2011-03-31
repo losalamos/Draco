@@ -1,4 +1,4 @@
-#-----------------------------*-cmake-*----------------------------------------#
+n#-----------------------------*-cmake-*----------------------------------------#
 # file   config/global_libraries.cmake
 # author 
 # date   2010 June 6
@@ -309,7 +309,7 @@ macro( SetupVendorLibrariesUnix )
    endif()
 
   # BLAS ---------------------------------------------------------------------
-  message( STATUS "Looking forBLAS...")
+  message( STATUS "Looking for BLAS...")
 
   # Set the BLAS/LAPACK VENDOR.  This must be one of
   #      ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
