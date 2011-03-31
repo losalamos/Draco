@@ -220,6 +220,13 @@ if(BLAS_FOUND)
          BLA_VENDOR STREQUAL "All" )
       if ( NOT LAPACK_LIBRARIES )
          if( LAPACK_EXTRA_LIBRARIES )
+            if( "${CMAKE_Fortran_COMPILER}" MATCHES "gfortran" )
+               execute_process(
+                  COMMAND ${CMAKE_Fortran_COMPILER} -print-file-name=libgfortran.a
+                  OUTPUT  LIBGFORTRAN_LOC )
+               get_filename_component( LIBGFORTRAN_LOC
+                  ${LIBGFORTRAN_LOC} PATH )
+            endif()
             unset( LAPACK_atlas_extra_libs )
             foreach( _library ${LAPACK_EXTRA_LIBRARIES} )
                # Don't search system first
@@ -233,6 +240,7 @@ if(BLAS_FOUND)
                   NAMES ${_library}
                   PATHS 
                   /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 
+                  ${LIBGFORTRAN_LOC}
                   ENV LD_LIBRARY_PATH
                   )
                mark_as_advanced( ${_prefix}_${_library}_LIBRARY )
