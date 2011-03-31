@@ -387,8 +387,8 @@ class Element_Definition
      */
     Element_Definition get_side_type( unsigned const side_number ) const
     {
-	if ( side_number >= side_type.size() )
-	    Insist(false,"Side index out of range!");
+        Insist(side_number < side_type.size(),
+               "Side index out of range!");
 	return elem_defs[side_type[side_number] ];
     }
 
@@ -428,8 +428,8 @@ class Element_Definition
      */
     std::vector<size_t> get_side_nodes( unsigned const side_number ) const
     {
-	if ( side_number >= side_nodes.size() )
-	    Insist(false,"Side index out of range!");
+        Insist( side_number < side_nodes.size(),
+                "Side index out of range!");
 	return side_nodes[side_number];
     }
 
