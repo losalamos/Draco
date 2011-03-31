@@ -137,65 +137,77 @@ mark_as_advanced(MPIEXEC MPIEXEC_NUMPROC_FLAG MPIEXEC_PREFLAGS
   MPIEXEC_POSTFLAGS MPIEXEC_MAX_NUMPROCS)
 
 if (MPI_INCLUDE_PATH AND MPI_LIBRARY)
-  # Do nothing: we already have MPI_INCLUDE_PATH and MPI_LIBRARY in
-  # the cache, and we don't want to override those settings.
+   # Do nothing: we already have MPI_INCLUDE_PATH and MPI_LIBRARY in
+   # the cache, and we don't want to override those settings.
 elseif (MPI_COMPILER)
-  # Check whether the -showme:compile option works. This indicates
-  # that we have either Open MPI or a newer version of LAM-MPI, and
-  # implies that -showme:link will also work.
-  # Note that Windows distros do not have an mpi compiler to interogate.
-  exec_program(${MPI_COMPILER}
-    ARGS -showme:compile
-    OUTPUT_VARIABLE MPI_COMPILE_CMDLINE
-    RETURN_VALUE MPI_COMPILER_RETURN)
-
-  if (MPI_COMPILER_RETURN EQUAL 0)
-    # If we appear to have -showme:compile, then we should also have
-    # -showme:link. Try it.
-    exec_program(${MPI_COMPILER}
-      ARGS -showme:link
-      OUTPUT_VARIABLE MPI_LINK_CMDLINE
+   # Check whether the -showme:compile option works. This indicates
+   # that we have either Open MPI or a newer version of LAM-MPI, and
+   # implies that -showme:link will also work.
+   # Note that Windows distros do not have an mpi compiler to interogate.
+   exec_program(${MPI_COMPILER}
+      ARGS -showme:compile
+      OUTPUT_VARIABLE MPI_COMPILE_CMDLINE
       RETURN_VALUE MPI_COMPILER_RETURN)
-    if( _LANGUAGES_ MATCHES Fortran )
-      exec_program(${MPI_Fortran_COMPILER}
+   
+   if (MPI_COMPILER_RETURN EQUAL 0)
+      # If we appear to have -showme:compile, then we should also have
+      # -showme:link. Try it.
+      exec_program(${MPI_COMPILER}
          ARGS -showme:link
-         OUTPUT_VARIABLE MPI_Fortran_LINK_CMDLINE
-         RETURN_VALUE MPI_Fortran_COMPILER_RETURN)
-    endif()
-    # Note that we probably have -showme:incdirs and -showme:libdirs
-    # as well.
-    set(MPI_COMPILER_MAY_HAVE_INCLIBDIRS TRUE)
-  endif (MPI_COMPILER_RETURN EQUAL 0)
+         OUTPUT_VARIABLE MPI_LINK_CMDLINE
+         RETURN_VALUE MPI_COMPILER_RETURN)
+      if( _LANGUAGES_ MATCHES Fortran )
+         exec_program(${MPI_Fortran_COMPILER}
+            ARGS -showme:link
+            OUTPUT_VARIABLE MPI_Fortran_LINK_CMDLINE
+            RETURN_VALUE MPI_Fortran_COMPILER_RETURN)
+      endif()
+      # Note that we probably have -showme:incdirs and -showme:libdirs
+      # as well.
+      set(MPI_COMPILER_MAY_HAVE_INCLIBDIRS TRUE)
+   endif (MPI_COMPILER_RETURN EQUAL 0)
+   
+   if (MPI_COMPILER_RETURN EQUAL 0)
+      # Do nothing: we have our command lines now
+   else (MPI_COMPILER_RETURN EQUAL 0)
+      # Older versions of LAM-MPI have "-showme". Try it.
+      exec_program(${MPI_COMPILER}
+         ARGS -showme
+         OUTPUT_VARIABLE MPI_COMPILE_CMDLINE
+         RETURN_VALUE MPI_COMPILER_RETURN)
+      if( _LANGUAGES_ MATCHES Fortran )
+         exec_program(${MPI_Fortran_COMPILER}
+            ARGS -showme
+            OUTPUT_VARIABLE MPI_Fortran_LINK_CMDLINE
+            RETURN_VALUE MPI_Fortran_COMPILER_RETURN)
+      endif()
+   endif (MPI_COMPILER_RETURN EQUAL 0)
+   
+   if (MPI_COMPILER_RETURN EQUAL 0)
+      # Do nothing: we have our command lines now
+   else (MPI_COMPILER_RETURN EQUAL 0)
+      # MPICH uses "-show". Try it.
+      exec_program(${MPI_COMPILER}
+         ARGS -show
+         OUTPUT_VARIABLE MPI_COMPILE_CMDLINE
+         RETURN_VALUE MPI_COMPILER_RETURN)
+      if( _LANGUAGES_ MATCHES Fortran )
+         exec_program(${MPI_Fortran_COMPILER}
+            ARGS -show
+            OUTPUT_VARIABLE MPI_Fortran_LINK_CMDLINE
+            RETURN_VALUE MPI_Fortran_COMPILER_RETURN)
+      endif()
+   endif (MPI_COMPILER_RETURN EQUAL 0)
 
-  if (MPI_COMPILER_RETURN EQUAL 0)
-    # Do nothing: we have our command lines now
-  else (MPI_COMPILER_RETURN EQUAL 0)
-    # Older versions of LAM-MPI have "-showme". Try it.
-    exec_program(${MPI_COMPILER}
-      ARGS -showme
-      OUTPUT_VARIABLE MPI_COMPILE_CMDLINE
-      RETURN_VALUE MPI_COMPILER_RETURN)
-  endif (MPI_COMPILER_RETURN EQUAL 0)
-
-  if (MPI_COMPILER_RETURN EQUAL 0)
-    # Do nothing: we have our command lines now
-  else (MPI_COMPILER_RETURN EQUAL 0)
-    # MPICH uses "-show". Try it.
-    exec_program(${MPI_COMPILER}
-      ARGS -show
-      OUTPUT_VARIABLE MPI_COMPILE_CMDLINE
-      RETURN_VALUE MPI_COMPILER_RETURN)
-  endif (MPI_COMPILER_RETURN EQUAL 0)
-
-  if (MPI_COMPILER_RETURN EQUAL 0)
-    # We have our command lines, but we might need to copy
-    # MPI_COMPILE_CMDLINE into MPI_LINK_CMDLINE, if the underlying
-    if (NOT MPI_LINK_CMDLINE)
-      SET(MPI_LINK_CMDLINE ${MPI_COMPILE_CMDLINE})
-    endif (NOT MPI_LINK_CMDLINE)
-  else (MPI_COMPILER_RETURN EQUAL 0)
-    message(STATUS "Unable to determine MPI from MPI driver ${MPI_COMPILER}")
-  endif (MPI_COMPILER_RETURN EQUAL 0)
+   if (MPI_COMPILER_RETURN EQUAL 0)
+      # We have our command lines, but we might need to copy
+      # MPI_COMPILE_CMDLINE into MPI_LINK_CMDLINE, if the underlying
+      if (NOT MPI_LINK_CMDLINE)
+         SET(MPI_LINK_CMDLINE ${MPI_COMPILE_CMDLINE})
+      endif (NOT MPI_LINK_CMDLINE)
+   else (MPI_COMPILER_RETURN EQUAL 0)
+      message(STATUS "Unable to determine MPI from MPI driver ${MPI_COMPILER}")
+   endif (MPI_COMPILER_RETURN EQUAL 0)
 endif (MPI_INCLUDE_PATH AND MPI_LIBRARY)
 
 if (MPI_INCLUDE_PATH AND MPI_LIBRARY)
@@ -238,9 +250,9 @@ elseif (MPI_COMPILE_CMDLINE)
     # If all else fails, just search for mpi.h in the normal include
     # paths.
     find_path(MPI_INCLUDE_PATH mpi.h
-  HINTS ${_MPI_BASE_DIR} ${_MPI_PREFIX_PATH}
-  PATH_SUFFIXES include
-    )
+       HINTS ${_MPI_BASE_DIR} ${_MPI_PREFIX_PATH}
+       PATH_SUFFIXES include
+       )
     set(MPI_INCLUDE_PATH_WORK ${MPI_INCLUDE_PATH})
   endif (NOT MPI_INCLUDE_PATH_WORK)
 
@@ -279,7 +291,11 @@ elseif (MPI_COMPILE_CMDLINE)
   # Extract the set of libraries to link against from the link command
   # line
   string(REGEX MATCHALL "(^| )-l([^\" ]+|\"[^\"]+\")" MPI_LIBNAMES
-     "${MPI_LINK_CMDLINE} ${MPI_Fortran_LINK_CMDLINE}")
+     "${MPI_LINK_CMDLINE}")
+  if( _LANGUAGES_ MATCHES Fortran )
+     string(REGEX MATCHALL "(^| )-l([^\" ]+|\"[^\"]+\")" MPI_Fortran_LIBNAMES
+        "${MPI_Fortran_LINK_CMDLINE}")
+  endif()
 
   # Determine full path names for all of the libraries that one needs
   # to link against in an MPI program
@@ -294,6 +310,19 @@ elseif (MPI_COMPILE_CMDLINE)
       message(WARNING "Unable to find MPI library ${LIB}")
     endif ()
   endforeach(LIB)
+  if( _LANGUAGES_ MATCHES Fortran )
+     set(MPI_Fortran_LIBRARIES)
+     foreach(LIB ${MPI_Fortran_LIBNAMES})
+        string(REGEX REPLACE "^ ?-l" "" LIB ${LIB})
+        set(MPI_LIB "MPI_LIB-NOTFOUND" CACHE FILEPATH "Cleared" FORCE)
+        find_library(MPI_LIB ${LIB} HINTS ${MPI_LINK_PATH})
+        if (MPI_LIB)
+           list(APPEND MPI_Fortran_LIBRARIES ${MPI_LIB})
+        elseif (NOT MPI_FIND_QUIETLY)
+           message(WARNING "Unable to find MPI library ${LIB}")
+        endif ()
+     endforeach(LIB)
+  endif()
   set(MPI_LIB "MPI_LIB-NOTFOUND" CACHE INTERNAL "Scratch variable for MPI detection" FORCE)
 
   # Chop MPI_LIBRARIES into the old-style MPI_LIBRARY and
@@ -372,3 +401,36 @@ mark_as_advanced(MPI_INCLUDE_PATH MPI_COMPILE_FLAGS MPI_LINK_FLAGS MPI_LIBRARY
 unset(_MPI_PACKAGE_DIR)
 unset(_MPI_PREFIX_PATH)
 unset(_MPI_BASE_DIR)
+
+if( _LANGUAGES_ MATCHES Fortran )
+   # Only keep libraries in the MPI_Fortran_LIBRARIES list that are not
+   # already included in the list MPI_LIBRARIES.
+   set(tmp ${MPI_Fortran_LIBRARIES})
+   foreach( flib ${tmp} )
+#      message("looking at ${flib}...")
+      set( done 0 )
+      foreach( lib ${MPI_LIBRARIES} )
+         if( ${done} STREQUAL "0" AND ${flib} STREQUAL ${lib} )
+            list( REMOVE_ITEM MPI_Fortran_LIBRARIES ${lib} )
+            set( done 1 )
+         endif()
+      endforeach()
+   endforeach()
+   unset(done)
+   set( MPI_Fortran_LIBRARIES ${MPI_Fortran_LIBRARIES} CACHE STRING
+      "Extra MPI libraries needed for F90 main programs." )
+   
+#    message("
+# MPI_Fortran_LIBRARIES = ${MPI_Fortran_LIBRARIES}
+# ")
+   
+endif()
+
+# message("MPI_LIBRARIES =")
+# foreach( lib ${MPI_LIBRARIES} )
+#    message("     ${lib}" )
+# endforeach()
+# message("MPI_Fortran_LIBRARIES =")
+# foreach( lib ${MPI_Fortran_LIBRARIES} )
+#    message("     ${lib}" )
+# endforeach()
