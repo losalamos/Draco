@@ -56,8 +56,9 @@ set(test_deps
    ${INTEL_LIBM}
    )
 
-add_scalar_tests(
+add_parallel_tests(
    SOURCES "${test_sources}"
+   PE_LIST "1"
    DEPS    "${test_deps}" )
 
 # ---------------------------------------------------------------------------- #
