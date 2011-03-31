@@ -39,10 +39,10 @@ endif( ${CMAKE_Fortran_COMPILER_VERSION} STRLESS "4.2" )
 # -cpp                    Enable preprocessing
 set( CMAKE_Fortran_FLAGS 
   "-ffree-line-length-none -static-libgfortran -fPIC" )
-if( ${CMAKE_Fortran_COMPILER_VERSION} STRGREATER "4.5" )
-   set( CMAKE_Fortran_FLAGS "-x f95-cpp-input ${CMAKE_Fortran_COMPILER_VERSION}" )
-else()
-
+if( ${CMAKE_Fortran_COMPILER_VERSION} STRGREATER "4.4.0" )
+   set( CMAKE_Fortran_FLAGS "-cpp ${CMAKE_Fortran_FLAGS}" )
+#else()
+#   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-form -x f95-cpp-input" )
 endif()
 # removed implicit none - needed by capsaicin
 
