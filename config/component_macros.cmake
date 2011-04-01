@@ -203,6 +203,7 @@ macro( add_scalar_tests test_sources )
            PROPERTIES	
              PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
              FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+             PROCESSORS              "1"
              WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
              )
           if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
@@ -225,6 +226,7 @@ macro( add_scalar_tests test_sources )
                 PROPERTIES	
                   PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
                   FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+                  PROCESSORS              "1"
                   WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
                 )
              if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
@@ -393,6 +395,7 @@ macro( add_parallel_tests )
             PROPERTIES	
               PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
               FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+              PROCESSORS              "1"
               WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
             )
          if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
