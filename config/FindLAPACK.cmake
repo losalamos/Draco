@@ -224,9 +224,14 @@ if(BLAS_FOUND)
          BLA_VENDOR STREQUAL "All" )
       if ( NOT LAPACK_LIBRARIES )
          if( LAPACK_EXTRA_LIBRARIES )
-            if( "${CMAKE_C_COMPILER}" MATCHES "gcc" )
+            if( ${CMAKE_COMPILER_IS_GNUCC} )
+               set( gcc_bin ${CMAKE_C_COMPILER} )
+            else()
+               find_program( gcc_bin gcc )
+            endif()
+            if( EXISTS ${gcc_bin} )
                execute_process(
-                  COMMAND ${CMAKE_C_COMPILER} -print-file-name=libgfortran.so
+                  COMMAND ${gcc_bin} -print-file-name=libgfortran.so
                   OUTPUT_VARIABLE LIBGFORTRAN_LOC )
                get_filename_component( LIBGFORTRAN_LOC
                   ${LIBGFORTRAN_LOC} PATH )
