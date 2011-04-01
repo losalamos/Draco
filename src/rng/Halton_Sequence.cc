@@ -9610,7 +9610,7 @@ unsigned prime[] =
 99989,
 99991,
 };
-unsigned const NUMBER_OF_KNOWN_PRIMES = sizeof(prime)/sizeof(prime[0]);
+Remember( unsigned const NUMBER_OF_KNOWN_PRIMES = sizeof(prime)/sizeof(prime[0]); )
 
 namespace rtt_rng
 {
