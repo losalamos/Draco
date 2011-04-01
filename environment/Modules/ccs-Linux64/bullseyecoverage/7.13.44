@@ -10,24 +10,24 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
-# conflict pgi/9.0-3 pgi/7.2-5 intel/10.0.023;
+ conflict pgi intel
  
 #====== begin modulefile code =========
  
-if { [module-info mode load] } {
-  catch {set ignorant $env(IGNOREMODULECONFLICTS)};
-  if { ![info exists ignorant] } {
-    catch {set cc $env(_MODULES_CC)};
-    if { [info exists cc] } {
-      if { ($cc != "gcc/4.5.0") && ($cc != "gcc/4.4.4") && ($cc != "gcc/4.3.4") && ($cc != "gcc/4.3.0") && ($cc != "gcc/4.1.1")  } {
-        puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$cc'";
-        puts stderr "BullseyeCoverage only configured for GNU compilers.\n";
-        break;
-        exit 1;
-        }
-      }
-   }
-}
+# if { [module-info mode load] } {
+#   catch {set ignorant $env(IGNOREMODULECONFLICTS)};
+#   if { ![info exists ignorant] } {
+#     catch {set cc $env(_MODULES_CC)};
+#     if { [info exists cc] } {
+#       if { ($cc != "gcc/4.5.0") && ($cc != "gcc/4.4.4") && ($cc != "gcc/4.3.4") && ($cc # != "gcc/4.3.0") && ($cc != "gcc/4.1.1")  } {
+#         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loade# d module '$cc'";
+#         puts stderr "BullseyeCoverage only configured for GNU compilers.\n";
+#         break;
+#         exit 1;
+#         }
+#       }
+#    }
+#}
 setenv          _MODULES_bullseye   [module-info name];
  
 #====== end modulefile code =========
