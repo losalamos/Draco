@@ -290,9 +290,9 @@ formulation is
 
 \f[
 \begin{array}{l}
- k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - k)!}}{{(l - k)!}}} P_{l,k} (\cos \theta )\cos (\phi ) \\ 
- k = 0:\;\;Y_{l,0} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}P_l (\cos \theta ) \\ 
- k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \\ 
+ k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - k)!}}{{(l - k)!}}} P_{l,k} (\cos \theta )\cos (\phi ) \\
+ k = 0:\;\;Y_{l,0} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}P_l (\cos \theta ) \\
+ k > 0:\;\;Y_{l,k} (\theta ,\phi ) = \frac{{2l + 1}}{{\sum\limits_m {w_m } }}\sqrt {2\frac{{(l - \left| k \right|)!}}{{(l - \left| k \right|)!}}} P_{l,\left| k \right|} (\cos \theta )\sin (\phi ) \\
  \end{array}
 \f]
 
