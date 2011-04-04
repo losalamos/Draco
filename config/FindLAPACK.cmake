@@ -233,10 +233,14 @@ if(BLAS_FOUND)
                execute_process(
                   COMMAND ${gcc_bin} -print-file-name=libgfortran.so
                   OUTPUT_VARIABLE LIBGFORTRAN_LOC )
-               get_filename_component( LIBGFORTRAN_LOC
-                  ${LIBGFORTRAN_LOC} PATH )
-               get_filename_component( LIBGFORTRAN_LOC
-                  ${LIBGFORTRAN_LOC} ABSOLUTE )
+               if( EXISTS ${LIBGFORTRAN_LOC} )
+                  get_filename_component( LIBGFORTRAN_LOC
+                     ${LIBGFORTRAN_LOC} PATH )
+                  get_filename_component( LIBGFORTRAN_LOC
+                     ${LIBGFORTRAN_LOC} ABSOLUTE )
+               else()
+                  unset( LIBGFORTRAN_LOC )
+               endif()
             endif()
             unset( LAPACK_atlas_extra_libs )
             foreach( _library ${LAPACK_EXTRA_LIBRARIES} )
