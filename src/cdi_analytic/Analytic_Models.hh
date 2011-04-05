@@ -34,8 +34,7 @@ namespace rtt_cdi_analytic
 enum Opacity_Models
 {
     CONSTANT_ANALYTIC_OPACITY_MODEL,
-    POLYNOMIAL_ANALYTIC_OPACITY_MODEL,
-    PSEUDO_LINE_ANALYTIC_OPACITY_MODEL
+    POLYNOMIAL_ANALYTIC_OPACITY_MODEL
 };
 
 /*!
@@ -230,55 +229,6 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 	Ensure (opacity >= 0.0);
 	return opacity;
     }
-
-    //! Return the model parameters.
-    sf_double get_parameters() const;
-
-    //! Pack up the class for persistence.
-    sf_char pack() const;
-};
-
-//---------------------------------------------------------------------------//
-/*!
- * \class Pseudo_Line_Analytic_Opacity_Model
- * \brief Derived Analytic_Opacity_Model class that defines a random line
- * spectrum for the opacity.
- *
- * The opacity function is a continuum on which is superimposed a number of
- * lines of the specified peak and width. The line locations are chosen at
- * random.
- *
- */
-class Pseudo_Line_Analytic_Opacity_Model : public Analytic_Opacity_Model
-{
-  private: 
-    // Coefficients
-    double continuum_;  // continuum opacity [cm^2/g]
-    unsigned seed_;
-    unsigned number_of_lines_;
-    double peak_; // peak line opacity [cm^2/g]
-    double width_;  // line width as fraction of line frequency.
-
-    sf_double center_; // line centers for this realization
-
-  public:
-
-     Pseudo_Line_Analytic_Opacity_Model(double continuum,
-                                        unsigned number_of_lines,
-                                        double peak,
-                                        double width,
-                                        double emin,
-                                        double emax,
-                                        unsigned seed);
-
-    //! Constructor for packed state.
-    explicit  Pseudo_Line_Analytic_Opacity_Model(const sf_char &packed);
-
-    //! Calculate the opacity in units of cm^2/g
-    double calculate_opacity(double T, double rho, double nu) const;
-
-    //! Calculate the opacity in units of cm^2/g
-    double calculate_opacity(double T, double rho) const;
 
     //! Return the model parameters.
     sf_double get_parameters() const;

@@ -14,6 +14,8 @@
 #ifndef ode_rkqs_hh
 #define ode_rkqs_hh
 
+#include <vector>
+
 namespace rtt_ode
 {
 

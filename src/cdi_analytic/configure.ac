@@ -24,6 +24,7 @@ AC_NEEDS_LIBS(cdi ds++)
 
 AC_RUNTESTS(tstAnalytic_Gray_Opacity \
             tstnGray_Analytic_MultigroupOpacity tstAnalytic_EoS \
+            tstPseudo_Line_Analytic_MultigroupOpacity \
             tstAnalytic_Odfmg_Opacity, scalar)
 
 dnl DRACO SETUP
