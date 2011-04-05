@@ -46,15 +46,10 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_Analytic_Model &models,
     rtt_cdi::Reaction        reaction_in,
     rtt_cdi::Model           model_in)
-    : group_boundaries(groups),
-      group_models(models),
-      reaction(reaction_in),
-      model(model_in)
+    : Analytic_MultigroupOpacity(groups, reaction_in, model_in),
+      group_models(models)
 {
-    Require (reaction == rtt_cdi::TOTAL ||
-	     reaction == rtt_cdi::ABSORPTION ||
-	     reaction == rtt_cdi::SCATTERING);
-    Require (group_boundaries.size() - 1 == group_models.size());
+    Require (groups.size() - 1 == models.size());
 }
 
 //---------------------------------------------------------------------------//
@@ -68,35 +63,25 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
  */
 nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_char &packed)
-    : group_boundaries(),
-      group_models(),
-      reaction(),
-      model()
+    :
+    Analytic_MultigroupOpacity(packed)
 {
-    // the packed size must be at least 4 integers (number of groups,
-    // reaction type, model type, analytic model indicator)
-    Require (packed.size() >= 4 * sizeof(int));
+    // get the number of group boundaries
+    sf_double const &group_boundaries = getGroupBoundaries();
+    int ngrp_bounds = group_boundaries.size();
+    int num_groups  = ngrp_bounds - 1;
+    unsigned const base_size = Analytic_MultigroupOpacity::packed_size();
 
     // make an unpacker
     rtt_dsxx::Unpacker unpacker;
     
     // register the unpacker
-    unpacker.set_buffer(packed.size(), &packed[0]);
-
-    // unpack the number of group boundaries
-    int ngrp_bounds = 0;
-    unpacker >> ngrp_bounds;
-    int num_groups  = ngrp_bounds - 1;
+    unpacker.set_buffer(packed.size()-base_size, &packed[base_size]);
     
-    // make the group boundaries and model vectors
-    group_boundaries.resize(ngrp_bounds);
+    // make the model vectors
     group_models.resize(num_groups);
 
-    // unpack the group boundaries
-    for (int i = 0; i < ngrp_bounds; i++)
-	unpacker >> group_boundaries[i];
-
-    // now unpack the models
+    // unpack the models
     std::vector<sf_char> models(num_groups);
     int                  model_size = 0;
     for (size_t i = 0; i < models.size(); ++i)
@@ -111,18 +96,6 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
 	for (size_t j = 0; j < models[i].size(); ++j)
 	    unpacker >> models[i][j];
     }
-
-    // unpack the reaction and model type
-    int reaction_int, model_int;
-    unpacker >> reaction_int >> model_int;
-    Check (unpacker.get_ptr() == &packed[0] + packed.size());
-
-    // assign the reaction and model type
-    reaction = static_cast<rtt_cdi::Reaction>(reaction_int);
-    model    = static_cast<rtt_cdi::Model>(model_int);
-    Check (reaction == rtt_cdi::ABSORPTION ||
-	   reaction == rtt_cdi::SCATTERING ||
-	   reaction == rtt_cdi::TOTAL);
 
     // now rebuild the analytic models
     int indicator = 0;
@@ -314,10 +287,11 @@ nGray_Analytic_MultigroupOpacity::getOpacity(double temperature,
  */
 nGray_Analytic_MultigroupOpacity::sf_char nGray_Analytic_MultigroupOpacity::pack() const
 {
-    Require (group_boundaries.size() - 1 == group_models.size());
-
     // make a packer
     rtt_dsxx::Packer packer;
+    
+    // make a char array
+    sf_char packed = Analytic_MultigroupOpacity::pack();
 
     // first pack up models
     std::vector<sf_char> models(group_models.size());
@@ -335,19 +309,14 @@ nGray_Analytic_MultigroupOpacity::sf_char nGray_Analytic_MultigroupOpacity::pack
     // now add up the total size; number of groups + 1 int for number of
     // groups, number of models + size in each model + models, 1 int for
     // reaction type, 1 int for model type
-    int size = (3 + models.size()) * sizeof(int) + 
-	group_boundaries.size() * sizeof(double) + num_bytes_models;
+    int base_size = packed.size();
+    int size = models.size() * sizeof(int) + num_bytes_models;
 
-    // make a char array
-    sf_char packed(size);
+    // extend the char array
+    packed.resize(size+base_size);
 
     // set the buffer
-    packer.set_buffer(size, &packed[0]);
-
-    // pack the number of groups and group boundaries
-    packer << static_cast<int>(group_boundaries.size());
-    for (size_t i = 0; i < group_boundaries.size(); ++i)
-	packer << group_boundaries[i];
+    packer.set_buffer(size, &packed[base_size]);
 
     // pack each models size and data
     for (size_t i = 0; i < models.size(); ++i)
@@ -360,10 +329,7 @@ nGray_Analytic_MultigroupOpacity::sf_char nGray_Analytic_MultigroupOpacity::pack
 	    packer << models[i][j];
     }
 
-    // now pack the reaction and model type
-    packer << static_cast<int>(reaction) << static_cast<int>(model);
-
-    Ensure (packer.get_ptr() == &packed[0] + size);
+    Ensure (packer.get_ptr() == &packed[base_size] + size);
     return packed;
 }
 

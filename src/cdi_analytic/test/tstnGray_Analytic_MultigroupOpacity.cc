@@ -74,7 +74,7 @@ void multigroup_test()
 
     // check the interface to multigroup opacity
     {
-	string desc = "Analytic Multigroup Absorption";
+	string desc = "nGray Multigroup Absorption";
 
 	if (opacity.data_in_tabular_form())                   ITFAILS;
 	if (opacity.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
@@ -96,14 +96,14 @@ void multigroup_test()
                                                  models,
                                                  rtt_cdi::SCATTERING);
         if (anal_opacity.getDataDescriptor() !=
-            "Analytic Multigroup Scattering") ITFAILS;
+            "nGray Multigroup Scattering") ITFAILS;
     }
     {       
         nGray_Analytic_MultigroupOpacity anal_opacity(groups,
                                                  models,
                                                  rtt_cdi::TOTAL);
         if (anal_opacity.getDataDescriptor() !=
-            "Analytic Multigroup Total") ITFAILS;
+            "nGray Multigroup Total") ITFAILS;
     }
 
 
@@ -325,7 +325,7 @@ void packing_test()
 
     // check the interface to multigroup opacity
     {
-	string desc = "Analytic Multigroup Absorption";
+	string desc = "nGray Multigroup Absorption";
 
 	if (opacity.data_in_tabular_form())                   ITFAILS;
 	if (opacity.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
