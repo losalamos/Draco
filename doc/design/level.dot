@@ -108,7 +108,7 @@ digraph draco_level {
     xm          -> {dsxx}        [color=blue];
     
     /* level 3 */
-    cdianal     -> {cdi}         [color=blue];
+    cdianal     -> {cdi ode}     [color=blue];
     cdieos      -> {cdi}         [color=blue];
     cdieos      -> {veospac}     [color=green]; 
     cdigan      -> {cdi}         [color=blue]; 
