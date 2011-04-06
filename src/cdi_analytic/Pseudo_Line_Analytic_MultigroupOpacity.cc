@@ -117,8 +117,8 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
     number_of_lines_(number_of_lines),
     peak_(peak),
     width_(width),
-    center_(number_of_lines),
-    averaging_(averaging)
+    averaging_(averaging),
+    center_(number_of_lines)
 {
     Require(continuum>=0.0);
     Require(peak>=0.0);
@@ -235,8 +235,9 @@ Pseudo_Line_Analytic_MultigroupOpacity::pack() const
 }
 
 //---------------------------------------------------------------------------//
-sf_double Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
-                                                             double rho) const
+sf_double
+Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double /*T*/,
+                                                    double /*rho*/) const
 {
     return sigma_;
 }
@@ -244,14 +245,14 @@ sf_double Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
 //---------------------------------------------------------------------------//
 vf_double
 Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(sf_double const &T,
-                                                             double rho) const
+                                                   double /*rho*/) const
 {
     return vf_double(T.size(), sigma_);
 }
 
 //---------------------------------------------------------------------------//
 vf_double
-Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double const T,
+Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double    const /*T*/,
                                                    sf_double const &rho) const
 {
     return vf_double(rho.size(), sigma_);

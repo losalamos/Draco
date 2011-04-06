@@ -26,6 +26,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # component headers
    ${PROJECT_SOURCE_DIR}/..   # ds++ and cdi header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
+   ${ode_BINARY_DIR}          # ode/config.h
 ) 
 
 # ---------------------------------------------------------------------------- #
