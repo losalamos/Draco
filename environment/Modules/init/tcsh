@@ -1,13 +1,13 @@
 # Where are we?
 set called=($_)
+setenv _BINDIR $PWD
 if ("$called" != "") then
     # echo "sourced $called[2]"    # the script was sourced from this location
-    setenv _BINDIR $PWD
     setenv _BINDIR `dirname "$_BINDIR/$called[2]"`
 endif
 if ("$0" != "tcsh") then
     # echo "run $0"                # the script was run from this location
-    setenv _BINDIR `run $0`
+    setenv _BINDIR `dirname "$_BINDIR/$0"`
 endif
 setenv DRACO_MODULE_DIR `(cd $_BINDIR/..;pwd)`
 

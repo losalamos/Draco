@@ -1,3 +1,18 @@
+
+# Where are we?
+set called=($_)
+setenv _BINDIR $PWD
+if ("$called" != "") then
+    # echo "sourced $called[2]"    # the script was sourced from this location
+    setenv _BINDIR `dirname "$_BINDIR/$called[2]"`
+endif
+if ("$0" != "tcsh") then
+    # echo "run $0"                # the script was run from this location
+    setenv _BINDIR `dirname "$_BINDIR/$0"`
+endif
+setenv DRACO_MODULE_DIR `(cd $_BINDIR/..;pwd)`
+
+
 if ($?tcsh) then
 	set modules_shell="tcsh"
 else
@@ -6,10 +21,11 @@ endif
 if ( $?MODULE_VERSION ) then
  	setenv MODULE_VERSION_STACK 	"$MODULE_VERSION"
 else
- 	setenv MODULE_VERSION		"3.2.7"
- 	setenv MODULE_VERSION_STACK	"3.2.7"
+  setenv MODULE_VERSION		"ccs-Linux64"
+  setenv MODULE_VERSION_STACK	"ccs-Linux64"
 endif
-set exec_prefix='/ccs/codes/radtran/vendors/Linux64/Modules/$MODULE_VERSION'
+set exec_prefix='$DRACO_MODULE_DIR'
+setenv MODULESHOME $DRACO_MODULE_DIR
 
 set prefix=""
 set postfix=""
@@ -40,10 +56,9 @@ unset exec_prefix
 unset prefix
 unset postfix
 
-setenv MODULESHOME /ccs/codes/radtran/vendors/Linux64/Modules/3.2.7
-
 if (! $?MODULEPATH ) then
   setenv MODULEPATH `sed -n 's/[ 	#].*$//; /./H; $ { x; s/^\n//; s/\n/:/g; p; }' ${MODULESHOME}/init/.modulespath`
+  setenv MODULEPATH $MODULESHOME/modulefiles:$MODULESHOME/$MODULE_VERSION
 endif
 
 if (! $?LOADEDMODULES ) then
