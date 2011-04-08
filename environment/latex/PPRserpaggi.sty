@@ -1,0 +1,109 @@
+%==============================================================================
+% Prosper -- (PPRserpaggi) Style file
+% A LaTeX class for creating slides
+% Author: Xavier Serpaggi (xserpagg@emse.fr)
+%         Ecole Nationale Superieure des Mines de Saint-Etienne,
+%         France
+%
+% Copyright (c) 2001 Xavier Serpaggi
+% All rights reserved.
+% 
+% Permission is hereby granted, without written agreement and without
+% license or royalty fees, to use, copy, modify, and distribute this
+% software and its documentation for any purpose, provided that the
+% above copyright notice and the following two paragraphs appear in
+% all copies of this software.
+% 
+% IN NO EVENT SHALL THE AUTHOR BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, 
+% SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF 
+% THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE AUTHOR HAS BEEN ADVISED 
+% OF THE POSSIBILITY OF SUCH DAMAGE.
+% 
+% THE AUTHOR SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+% INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+% AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+% ON AN "AS IS" BASIS, AND THE AUTHOR HAS NO OBLIGATION TO
+% PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+%
+%==============================================================================
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{PPRserpaggi}[2001/11/13]
+\typeout{`Serpaggi' style for prosper ---}
+\typeout{(c) 2001 Xavier Serpaggi, ENSM-SE, France}
+\typeout{ }
+
+\IfFileExists{pst-grad}{\RequirePackage{pst-grad}}{\RequirePackage{gradient}}
+\RequirePackage{amssymb}
+
+\newrgbcolor{titlegray}{0.7 0.7 0.7}
+\newrgbcolor{footergray}{0.7 0.7 0.7}
+\newrgbcolor{shadowbegin}{0.3 0.3 0.3}
+\newrgbcolor{shadowend}{1 1 1}
+
+\ifinColor
+\newrgbcolor{darkblue}{0.27843137 0.27058824 0.5372549} % (RGB 8 bit: 71,69,137) (RGB hexa: #474589)
+\newrgbcolor{darkred}{0.5372549 0.27843137 0.27058824} % (RGB 8 bit: 137,71,69) (RGB hexa: #894745)
+% \newrgbcolor{myellow}{.9 .8 .1}
+% \newrgbcolor{myblue}{.2 .36 .77}
+% \newrgbcolor{orange}{0.8 0.7 0.2}
+% \newrgbcolor{myred}{0.95 0.0 0.0}
+\else
+\newrgbcolor{darkblue}{0.28 0.24 0.55}
+\newrgbcolor{darkred}{0 0 0}
+% \newrgbcolor{myellow}{0 0 0}
+% \newrgbcolor{myblue}{1 1 1}
+\fi
+
+\ifinColor
+\let\colC=\darkblue
+\else
+\let\colC=\black
+\fi
+
+
+\FontTitle{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{19pt}{19pt}\selectfont\darkred}{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{19pt}{19pt}\selectfont\lightgray}
+\FontText{\colC\usefont{T1}{phv}{m}{n}\fontsize{13pt}{13pt}\selectfont}{%
+  \colC\usefont{T1}{phv}{m}{n}\fontsize{13pt}{13pt}\selectfont}
+
+\ColorFoot{\black}
+
+%% From the bug-report page : prevents the title from moving
+%% up and down when using or not descenders. Great !
+\newcommand{\slidetitle}[1]{\rput[lB](-1.0,4.25){\makebox{\fontTitle{#1}}}}
+
+\newcommand{\numero}[1]{\rput[rt](12.3,1.65){\makebox{\fontTitle{#1}}}\vspace{-0.25cm}}
+                             
+\def\labelitemi{{\small\colC\ensuremath{\blacksquare}}}
+\def\labelitemii{{\small\colC\ensuremath{\blacklozenge}}}
+
+%\LogoPosition{-1.1,-1.28}
+
+\newcommand{\TheseFrame}[1]{%
+%% A frame for the title
+  \psframe[linestyle=none,fillstyle=gradient,gradbegin=shadowbegin,gradend=shadowend,gradmidpoint=1,gradangle=0](-2,7.65)(13,7.4)
+  \psframe[linestyle=none,fillstyle=solid,fillcolor=titlegray](-2,8.5)(13,7.6)
+  
+%% A frame for the footer
+  \psframe[linestyle=none,fillstyle=gradient,gradbegin=shadowbegin,gradend=shadowend,gradmidpoint=1,gradangle=0](-2,-1.1)(13,-1.25)
+  \psframe[linestyle=none,fillstyle=solid,fillcolor=footergray](-2,-0.85)(13,-1.12)
+  \PutLogo % Mandatory
+  {#1}}
+
+\myitem{1}{\includegraphics[width=.3cm]{red-bullet-on-white.ps}}
+\myitem{2}{\includegraphics[width=.2cm]{green-bullet-on-white.ps}}
+\myitem{3}{\includegraphics[width=.2cm]{yellow-bullet-on-white.ps}}
+
+\NewSlideStyle[12.2cm]{t}{5.5,3.0}{TheseFrame}
+
+\RequirePackage{semhelv}
+
+\PDFCroppingBox{10 40 594 820}
+
+\endinput
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

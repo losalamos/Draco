@@ -1,0 +1,158 @@
+%==============================================================================
+% Prosper -- (PPRntnu.sty) Style file
+% A LaTeX class for creating slides
+% Author: Trond Varslot (varslot@math.ntnu.no)
+%         Institute of Mathematical Sciences
+%         Norwegian University of Science and Technology, Norway         
+%
+% Copyright (c) 2002 Trond Varslot
+% All rights reserved.
+% 
+% Permission is hereby granted, without written agreement and without
+% license or royalty fees, to use, copy, modify, and distribute this
+% software and its documentation for any purpose, provided that the
+% above copyright notice and the following two paragraphs appear in
+% all copies of this software.
+% 
+% IN NO EVENT SHALL THE AUTHOR BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, 
+% SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF 
+% THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE AUTHOR HAS BEEN ADVISED 
+% OF THE POSSIBILITY OF SUCH DAMAGE.
+% 
+% THE AUTHOR SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+% INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+% AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+% ON AN "AS IS" BASIS, AND THE AUTHOR HAS NO OBLIGATION TO
+% PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+%
+%==============================================================================
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{PPRwinter}[2002/12/01]
+\typeout{Winter style for Prosper ---}
+\typeout{(c) 2002 Trond Varslot}
+
+% Required packages
+\RequirePackage{pst-grad}
+\RequirePackage{amssymb}
+
+%Define snow flakes
+\newcommand{\flakepart}{%
+\pspolygon(0,0)(0.5,1)(0.5,3)(1.9,4.4)(1.2,5.1)(0.5,4.4)(0.5,5.7)(-0.5,5.7)(-0.5,4.4)(-1.2,5.1)(-1.9,4.4)(-0.5,3)(-0.5,1)}
+\newcommand{\snowflake}[1]{%
+\psset{unit=#1}%
+\multips{0}(0,0){1}{\flakepart}%
+\multips{60}(0,0){1}{\flakepart}%
+\multips{120}(0,0){1}{\flakepart}%
+\multips{180}(0,0){1}{\flakepart}%
+\multips{240}(0,0){1}{\flakepart}%
+\multips{300}(0,0){1}{\flakepart}%
+}
+\newcommand{\multiflake}{%
+\rput(0.0 ,1.6){\snowflake{0.06}}%
+\rput(0.2 ,0.0){\snowflake{0.06}}%
+\rput(0.5 ,0.6){\snowflake{0.04}}%
+\rput(0.1 ,1  ){\snowflake{0.04}}%
+\rput(0.8 ,1.4){\snowflake{0.06}}%
+}
+
+% mywhite is used to avoid a bug in Acroread 5, which refuses to redraw the
+% screen if it does not have a background. This increases the file size unnecessarily.
+\newrgbcolor{mywhite}{0.99 0.99 0.99}
+
+\ifcolorBG
+  \global\let\colortitlefont=\white
+\else
+  \global\let\colortitlefont=\blue
+\fi
+
+% The fonts
+\FontTitle{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{20.74pt}{20pt}\selectfont\colortitlefont}{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{20.74pt}{20pt}\selectfont\black}
+\FontSubtitle{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{16pt}{16pt}\selectfont\itshape\blue}{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{16pt}{16pt}\selectfont\itshape\black}
+
+\FontText{%
+  \usefont{T1}{ptm}{m}{n}\fontsize{14.4pt}{13pt}\selectfont\black}{%
+  \usefont{T1}{ptm}{m}{n}\fontsize{14.4pt}{13pt}\selectfont\black}
+
+%Make sure that footer is written with a T1 font:
+\ifcolorBG
+\ColorFoot{\usefont{T1}{ptm}{n}{n}\selectfont\lightgray}
+\else
+\ColorFoot{\usefont{T1}{ptm}{n}{n}\selectfont\gray}
+\fi
+
+%Make sure that email address is written with a T1 font:
+\renewcommand{\ttdefault}{pcr}
+
+% Positionning of the title of a slide.
+\def\slidetitle#1{\rput[l](0,4.2){%
+    \parbox{11.5cm}{%
+      \begin{center}%
+ 	\fontTitle{\baselineskip=0pt #1}
+      \end{center}
+    }
+  }
+}
+
+\LogoPosition{-1.5,-1.1}
+\Logo{}
+
+\newcommand{\WinterFrame}[1]{%
+  \ifinColor
+    \ifcolorBG
+      \psset{linestyle=none,fillstyle=gradient,gradmidpoint=0}%
+      \psframe[gradbegin=white,%
+	gradend=blue]%
+      (-1.9,-1.5)(\slideheight,\slidewidth)%
+    \else
+    % mywhite is used to avoid a bug in Acroread 5, which refuses to redraw the
+    % screen if it does not have a background. This increases the file size unnecessarily.
+      \psset{linestyle=none,fillstyle=solid}%
+      \psframe[fillcolor=mywhite]%
+      (-1.9,-1.5)(\slideheight,\slidewidth)%
+    \fi
+    \psset{linestyle=none,fillstyle=gradient,gradmidpoint=0}%
+    \multips(-1.6,0.5)(10truemm,30truemm){3}{%
+      \psframe[gradbegin=blue,
+	gradend=white]
+      (5truemm,180truemm)}
+    \psset{fillcolor=white,fillstyle=solid,%
+      linestyle=solid,linewidth=0.005,linecolor=lightgray}
+  \else
+  % mywhite is used to avoid a bug in Acroread 5, which refuses to redraw the
+  % screen if it does not have a background. This increases the file size unnecessarily.
+    \psset{linestyle=none,fillstyle=solid}%
+    \psframe[fillcolor=mywhite]%
+    (-1.9,-1.5)(\slideheight,\slidewidth)%
+    \psset{linestyle=none,fillstyle=gradient,gradmidpoint=0}%
+    \multips(-1.6,0.5)(10truemm,30truemm){3}{%
+      \psframe[gradbegin=lightgray,
+	gradend=white]
+      (5truemm,180truemm)}
+    \psset{fillcolor=white,fillstyle=solid,%
+      linestyle=solid,linewidth=0.005,linecolor=lightgray}
+  \fi
+  \rput(-1.50,7){\multiflake}
+  \rput(-1.35,5){\multiflake}
+  \rput(-1.50,3){\multiflake}
+  \PutLogo
+      {#1}
+}
+
+% How lists will look:
+\ifinColor
+  \myitem{1}{\mathversion{bold}{\blue\ensuremath{\surd}}\mathversion{normal}}
+  \myitem{2}{\mathversion{bold}{\blue\ensuremath{\star}}\mathversion{normal}}
+  \myitem{3}{\mathversion{bold}{\scriptsize\blue\ensuremath{\rightarrow}}\mathversion{normal}}
+\else
+  \myitem{1}{\mathversion{bold}\ensuremath{\surd}\mathversion{normal}}
+  \myitem{2}{\mathversion{bold}\ensuremath{\star}\mathversion{normal}}
+  \myitem{3}{\mathversion{bold}{\scriptsize\ensuremath{\rightharpoonup}}\mathversion{normal}}
+\fi
+
+
+\NewSlideStyle{tl}{0,3.2}{WinterFrame}
+\endinput

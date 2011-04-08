@@ -1,0 +1,118 @@
+%==============================================================================
+% Prosper -- (PPRmancini) Style file
+% A LaTeX class for creating slides
+% Author: Alberto Mancini (mancini@math.unifi.it)
+
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{PPRmancini}[2002/06/11]
+\typeout{`Mancini' style for prosper ---}
+
+
+\RequirePackage{amssymb}
+\IfFileExists{pst-slpe}{\RequirePackage{pst-slpe}}{\RequirePackage{slope}}
+\IfFileExists{pst-grad}{\RequirePackage{pst-grad}}{\RequirePackage{gradient}}
+\RequirePackage{multido}
+\RequirePackage{ifthen}
+
+\newcounter{subslidetagCounter}
+\setcounter{subslidetagCounter}{0}
+\newcounter{dotTarget}
+\newcounter{tempCounter}
+
+
+\newcommand{\absColorPrev}[1]{\newrgbcolor{@colorPrev}{#1}}
+\newcommand{\absColorNext}[1]{\newrgbcolor{@colorNext}{#1}}
+\newcommand{\absColorText}[1]{\newrgbcolor{@colorText}{#1}}
+\newcommand{\absColorFoot}[1]{\newrgbcolor{@colorFoot}{#1}}
+
+
+%%%%% DEFAULT
+\absColorFoot{1.00 0.65 0.00}
+\absColorPrev{.68 .70 .73}
+\absColorNext{0.0 0.0 .9} 
+\absColorText{0.0 0.0 .1} 
+
+
+
+
+
+\FontTitle{%
+  \usefont{T1}{ptm}{b}{n}\fontsize{22pt}{20pt}\selectfont\@colorNext}
+
+\FontText{%
+  \usefont{T1}{phv}{m}{n}\fontsize{14.4pt}{14pt}\selectfont\@colorText}
+
+% Positionning of the title of a slide.
+\newcommand{\slidetitle}[1]{%
+  \rput[l](-0.2,4.4){\fontTitle{#1}\fontTitle{\psframebox[linewidth=0.05,linestyle=none]{}}}
+}
+
+% Positionning for a logo
+\LogoPosition{-1.0,-0.9}
+
+\renewpagestyle{GenericPageStyle}%
+{%
+\ifInOverlays%
+\ifnum0<\value{limitOverlays}%
+\setcounter{dotTarget}{\value{subslidetagCounter}}%
+\addtocounter{dotTarget}{-\value{overlaysCount}}%
+\setcounter{tempCounter}{\value{limitOverlays}}%
+\addtocounter{tempCounter}{1}%
+{\put(341.5,-27){\@colorPrev\hyperlink{\arabic{dotTarget}}{$\circ$}}}%
+\multido{\i=1+1,\n=31+4}{\value{tempCounter}}{%
+\addtocounter{dotTarget}{1}%
+\ifthenelse{\i=\value{overlaysCount}}%
+{\put(341.5,-\n){\@colorFoot\hyperlink{\arabic{dotTarget}}{$\bullet$}}}%
+{\ifnum\i>\value{limitOverlays}\put(341.5,-\n){\@colorNext\hyperlink{\arabic{dotTarget}}{$\circ$}}\else\put(341.5,-\n){\@colorPrev\hyperlink{\arabic{dotTarget}}{$\bullet$}}\fi}%
+%\typeout{ ------ \n }%
+}%
+\addtocounter{dotTarget}{1}%
+%{\put(341.5,150){\@colorNext\hyperlink{\arabic{dotTarget}}{$\bullet$}}}%
+%%%%{\put(320,-20){\@colorNext$\bullet$}}%
+%%%%\else%
+%%%%{\put(320,-20){\@colorPrev$\bullet$}}%
+\fi%
+\fi%
+\addtocounter{subslidetagCounter}{-1}%
+\put(333.5,-23.3){\@colorPrev\hyperlink{\arabic{subslidetagCounter}}{$\bullet$}}%
+\addtocounter{subslidetagCounter}{2}%
+\put(337.5,-23.3){\@colorNext\hyperlink{\arabic{subslidetagCounter}}{$\bullet$}}%
+\addtocounter{subslidetagCounter}{-1}%
+}{\ifthenelse{\equal{\thepage}{1}}{}{\rput[l](0,0.415){\psframebox[linestyle=none]{{\parbox{11.85cm}{\hfill{{\@colorFoot\tiny{\tiny\textbf{\@institution}}}}}}}}}}%
+
+
+\newcommand{\TPFrame}[1]{%
+\ifinColor%
+\psframe[linestyle=solid,fillstyle=slope,slopebegin=white,slopeend=@colorPrev,slopeangle=30]( -0.5, -0.5)(11.0, 7.8)%
+\ifthenelse{\equal{\thepage}{1}}{}{%
+\rput[0](5.6,-0.4){\psframebox[linestyle=none]{\rightline{\@colorFoot\tiny\textbf{\thepage\ifallPages/\realpageref{last@page}\fi}}}}}%
+\else%
+\psframe[linestyle=solid,fillstyle=none]( -0.5, -0.5)(11.0, 7.8)%
+\fi%
+\addtocounter{subslidetagCounter}{1}%
+\hypertarget{\arabic{subslidetagCounter}}{%
+\if\@thelogo.\else\PutLogo\fi%
+{#1}}}%
+%
+%
+%
+%
+%
+%
+\NewSlideStyle{t}{5.3,2.7}{TPFrame}
+\PDFCroppingBox{10 40 594 800}
+\RequirePackage{semhelv}
+
+\myitem{1}{\includegraphics[width=.4cm]{red-bullet-on-white.ps}}
+\myitem{2}{\includegraphics[width=.3cm]{green-bullet-on-white.ps}}
+\myitem{3}{\includegraphics[width=.3cm]{yellow-bullet-on-white.ps}}
+
+
+
+\endinput
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

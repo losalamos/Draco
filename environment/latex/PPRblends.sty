@@ -1,0 +1,105 @@
+%==============================================================================
+
+% Prosper -- (PPRblends.sty) Style file
+% A LaTeX class for creating slides
+% Author: Andrew Arnt (arnt@cs.umass.edu)
+%         Univeristy of Massachusetts - Amherst
+%
+% Copyright (c) 2001 Andrew Arnt
+% All rights reserved.
+% 
+% Permission is hereby granted, without written agreement and without
+% license or royalty fees, to use, copy, modify, and distribute this
+% software and its documentation for any purpose, provided that the
+% above copyright notice and the following two paragraphs appear in
+% all copies of this software.
+% 
+% IN NO EVENT SHALL THE AUTHOR BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, 
+% SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF 
+% THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE AUTHOR HAS BEEN ADVISED 
+% OF THE POSSIBILITY OF SUCH DAMAGE.
+% 
+% 
+% THE AUTHOR SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+% INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+% AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+% ON AN "AS IS" BASIS, AND THE AUTHOR HAS NO OBLIGATION TO
+% PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+%
+%=============================================================================
+
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{PPRblends}[2001/11/15]
+\typeout{'Blends' style for Prosper ---}
+\typeout{(c) 2001 Andrew Arnt}
+
+\IfFileExists{pst-grad}{\RequirePackage{pst-grad}}{\RequirePackage{gradient}}
+
+\RequirePackage{semhelv}
+
+
+
+\ifinColor
+\newrgbcolor{cyellow}{1.0 0.812 0.004} 
+\newrgbcolor{cred}{1.0 0.220 0.224}
+\newrgbcolor{cblue}{0.2 0.2 0.8}
+\newrgbcolor{ctitle}{0.2 0.2 0.6}
+\newrgbcolor{cblack}{0.110 0.110 0.110}
+\else
+\newgray{cyellow}{0.75}
+\newgray{cred}{0.50}
+\newgray{cblue}{0.25}
+\newgray{ctitle}{0.00}
+\newrgbcolor{cblack}{0.110 0.110 0.110}
+\fi
+
+
+\FontTitle{%
+  \usefont{T1}{phv}{b}{n}\fontsize{24.88pt}{20pt}\selectfont\ctitle}{%
+  \usefont{T1}{phv}{b}{n}\fontsize{24.88pt}{20pt}\selectfont\ctitle}
+\FontText{%
+  \black\usefont{T1}{phv}{m}{n}\fontsize{14.4pt}{14pt}\selectfont}{%
+  \black\usefont{T1}{phv}{m}{n}\fontsize{14.4pt}{14pt}\selectfont}
+
+\ColorFoot{\ctitle}
+
+\newcommand{\slidetitle}[1]{%
+  \rput[rb](10.9,3.1){%
+    \parbox{9cm}{\begin{flushleft}\fontTitle{#1}\end{flushleft}}}}
+
+\LogoPosition{-1.5,-1.1}
+
+\newcommand{\Blendsframe}[1]{%
+\rput[lt](-1.5,6.0){%
+\psframe[gradbegin=cyellow,gradend=white,gradmidpoint=1,
+         gradangle=90,fillstyle=gradient,gradlines=1000,
+         linestyle=none](0.685,2.235)(2.385,1.185)
+\psframe[gradbegin=cblue,gradend=white,gradmidpoint=1,
+         gradangle=90,fillstyle=gradient,gradlines=1000,
+         linestyle=none](0.98,1.24)(2.705,0.115)
+\psframe[gradbegin=white,gradend=cred,gradmidpoint=1,
+         gradangle=135,fillstyle=gradient,gradlines=1000,
+         linestyle=none](0,1.405)(1.335,0.415)
+\psframe[gradbegin=cblack,gradend=white,gradmidpoint=1,
+         gradangle=0,fillstyle=gradient,gradlines=1000,
+         linestyle=none](1.460,2.485)(1.575,-7)
+\psframe[gradbegin=cblack,gradend=white,gradmidpoint=1,
+         gradangle=90,fillstyle=gradient,gradlines=1000,
+         linestyle=none](0.785,0.51)(13.0,0.395)
+}
+\PutLogo % Mandatory
+{#1}}
+
+\myitem{1}{\psframe[fillstyle=solid,fillcolor=cblue,%
+  linestyle=none](-.15,.25)(0.1,.01)}
+\myitem{2}{\psframe[fillstyle=solid,fillcolor=cred,%
+  linestyle=none](-.15,.25)(0.1,.01)}
+\myitem{3}{\psframe[fillstyle=solid,fillcolor=cyellow,%
+  linestyle=none](-.15,.25)(0.1,.01)}
+
+\NewSlideStyle{t}{6.0,2.4}{Blendsframe}
+\PDFCroppingBox{0 15 700 810}
+
+\endinput
+
