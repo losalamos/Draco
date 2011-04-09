@@ -1,6 +1,9 @@
 # Where are we?
 set called=($_)
 
+echo "called = $called"
+echo "cmd = $0"
+
 # consider the case of this file being sourced.
 if ("$called" != "") then
    # echo "sourced $called[2]"    # the script was sourced from this location
@@ -13,10 +16,12 @@ if ("$0" != "tcsh") then
     setenv _BINDIR "$0"
 endif
 
+echo "_BINDIR = $_BINDIR"
+
 # consider relative vs absolute paths
 if ( -f "$PWD/$_BINDIR" ) then
   # relative path provided; make it absolute
-  setenv _BINDIR `dirname "$PWD/_BINDIR"`
+  setenv _BINDIR `dirname "$PWD/$_BINDIR"`
 else if ( -f "$_BINDIR" ) then
   # Absolute path provided, use it.
   setenv _BINDIR `dirname "$_BINDIR"`
@@ -26,22 +31,19 @@ else
 endif    
 
 setenv DRACO_MODULE_DIR `(cd $_BINDIR/..;pwd)`
+echo "DRACO_MODULE_DIR = $DRACO_MODULE_DIR"
 
 if ($?tcsh) then
   set modules_shell="tcsh"
 else
   set modules_shell="csh"
 endif
-if ( $?MODULE_VERSION ) then
-  setenv MODULE_VERSION_STACK 	"$MODULE_VERSION"
-else
-  setenv MODULE_VERSION		"ccs-Linux64"
-  setenv MODULE_VERSION_STACK	"ccs-Linux64"
-endif
+
+setenv MODULE_VERSION		"ccs-Linux64"
+setenv MODULE_VERSION_STACK	"ccs-Linux64"
 
 set exec_prefix='$DRACO_MODULE_DIR'
 setenv MODULESHOME $DRACO_MODULE_DIR
-
 
 set prefix=""
 set postfix=""
@@ -67,7 +69,7 @@ if ($?noglob) then
 endif
 set postfix = "set _exit="'$status'"; $postfix; test 0 = "'$_exit;'
 
-alias module $prefix'eval `'$exec_prefix'/bin/modulecmd '$modules_shell' '$histchar'*`; '$postfix
+alias module $prefix'eval `'$exec_prefix'/bin/modulecmd64 '$modules_shell' '$histchar'*`; '$postfix
 unset exec_prefix
 unset prefix
 unset postfix
