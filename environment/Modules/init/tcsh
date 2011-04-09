@@ -1,37 +1,34 @@
 # Where are we?
 set called=($_)
 
-echo "called = $called"
-echo "cmd = $0"
+if( "$DRACO_MODULE_DIR" == "" ) then
 
-# consider the case of this file being sourced.
-if ("$called" != "") then
-   # echo "sourced $called[2]"    # the script was sourced from this location
-   setenv _BINDIR "$called[2]"
-endif
+  # consider the case of this file being sourced.
+  if ("$called" != "") then
+     # echo "sourced $called[2]"    # the script was sourced from this location
+     setenv _BINDIR "$called[2]"
+  endif
 
-# consider the case of this file being executed.
-if ("$0" != "tcsh") then
-    # echo "run $0"                # the script was run from this location
-    setenv _BINDIR "$0"
-endif
+  # consider the case of this file being executed.
+  if ("$0" != "tcsh") then
+      # echo "run $0"                # the script was run from this location
+      setenv _BINDIR "$0"
+  endif
 
-echo "_BINDIR = $_BINDIR"
+  # consider relative vs absolute paths
+  if ( -f "$PWD/$_BINDIR" ) then
+    # relative path provided; make it absolute
+    setenv _BINDIR `dirname "$PWD/$_BINDIR"`
+  else if ( -f "$_BINDIR" ) then
+    # Absolute path provided, use it.
+    setenv _BINDIR `dirname "$_BINDIR"`
+  else
+    echo "Cannot determine script location."
+    exit
+  endif    
 
-# consider relative vs absolute paths
-if ( -f "$PWD/$_BINDIR" ) then
-  # relative path provided; make it absolute
-  setenv _BINDIR `dirname "$PWD/$_BINDIR"`
-else if ( -f "$_BINDIR" ) then
-  # Absolute path provided, use it.
-  setenv _BINDIR `dirname "$_BINDIR"`
-else
-  echo "Cannot determine script location."
-  exit
-endif    
-
-setenv DRACO_MODULE_DIR `(cd $_BINDIR/..;pwd)`
-echo "DRACO_MODULE_DIR = $DRACO_MODULE_DIR"
+  setenv DRACO_MODULE_DIR `(cd $_BINDIR/..;pwd)`
+endif()
 
 if ($?tcsh) then
   set modules_shell="tcsh"
