@@ -81,6 +81,11 @@
 	    "Conditional jump or move depends on uninitialised value(s)"
 	    warnings from valgrind.
 
+	Defects:
+	- artf20096: c4/tstComm_Dup fails for optimized build on
+	  Cielito/Cielo.
+	- artf20097: build failures when using pgCC 11+ on Cielito/Cielo.
+
 	* Statistics:
 
 	Directory:  /home/kgt/draco-6_1_0
