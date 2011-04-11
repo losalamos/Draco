@@ -223,50 +223,17 @@ if(BLAS_FOUND)
          BLA_VENDOR STREQUAL "ATLAS"   OR 
          BLA_VENDOR STREQUAL "All" )
       if ( NOT LAPACK_LIBRARIES )
-         if( LAPACK_EXTRA_LIBRARIES )
-            if( ${CMAKE_COMPILER_IS_GNUCC} )
-               set( gcc_bin ${CMAKE_C_COMPILER} )
-            else()
-               find_program( gcc_bin gcc )
-            endif()
-            if( EXISTS ${gcc_bin} )
-               execute_process(
-                  COMMAND ${gcc_bin} -print-file-name=libgfortran.so
-                  OUTPUT_VARIABLE LIBGFORTRAN_LOC )
-               if( EXISTS ${LIBGFORTRAN_LOC} )
-                  get_filename_component( LIBGFORTRAN_LOC
-                     ${LIBGFORTRAN_LOC} PATH )
-                  get_filename_component( LIBGFORTRAN_LOC
-                     ${LIBGFORTRAN_LOC} ABSOLUTE )
-               else()
-                  unset( LIBGFORTRAN_LOC )
-               endif()
-            endif()
-            unset( LAPACK_atlas_extra_libs )
-            foreach( _library ${LAPACK_EXTRA_LIBRARIES} )
-               # Don't search system first
-               find_library(${_prefix}_${_library}_LIBRARY
-                  NAMES ${_library}
-                  PATHS $ENV{LAPACK_LIB_DIR}
-                  NO_DEFAULT_PATH
-                  )
-               # If not found above, then search again including system locations.
-               find_library(${_prefix}_${_library}_LIBRARY
-                  NAMES ${_library}
-                  PATHS 
-                  /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 
-                  ${LIBGFORTRAN_LOC}
-                  ENV LD_LIBRARY_PATH
-                  )
-               mark_as_advanced( ${_prefix}_${_library}_LIBRARY )
-               if( EXISTS ${${_prefix}_${_library}_LIBRARY} )
-                  list( APPEND LAPACK_atlas_extra_libs
-                     ${${_prefix}_${_library}_LIBRARY} )
-                  # message("DEBUG: LAPACK_atlas_extra_libs = ${LAPACK_atlas_extra_libs}")
-               endif()
-            endforeach()
-         endif()
-         
+#          message("
+#          check_lapack_libraries(
+#             LAPACK_LIBRARIES
+#             LAPACK
+#             cheev
+#             \"\"
+#             \"lapack\"
+#             \"${BLAS_LIBRARIES};${LAPACK_atlas_extra_libs}\"
+#             \"\"
+#             )
+# ")
          check_lapack_libraries(
             LAPACK_LIBRARIES
             LAPACK
