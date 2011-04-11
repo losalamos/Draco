@@ -17,6 +17,13 @@ if( BUILD_SHARED_LIBS )
   message( FATAL_ERROR "Feature not available - yell at KT." )
 endif( BUILD_SHARED_LIBS )
 
+# Cannot use strict ansi flags on RedStorm
+option( ENABLE_STRICT_ANSI "Turn on strict ANSI compliance?" ON )
+if( ${ENABLE_STRICT_ANSI} )
+   set( STRICT_ANSI_FLAGS "-Xa -A --no_using_std" )
+endif()
+
+
 #
 # C++ libraries required by Fortran linker
 # 
@@ -89,7 +96,7 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -Xa -A --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
