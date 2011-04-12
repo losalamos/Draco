@@ -32,83 +32,67 @@ setupVendorLibraries()
 # Provide helper functions used by component CMakeLists.txt files
 include( component_macros )
 
+# Helper macro that only tries to configure a listed package if it
+# exists in the source tree.  For example, when building milagro, the
+# get_draco script only checks out the parts of Draco that are
+# required by milagro.
+macro( add_dir_if_exists package )
+   message(STATUS "${package}")
+   if( EXISTS ${PROJECT_SOURCE_DIR}/${package} )
+      add_subdirectory( ${package} )
+   endif()
+endmacro()
+
 # Level 1
 message( STATUS "\nConfiguring Level 1 packages --\n" )
 add_subdirectory( ds++ )
 
 # Level 2
 message( STATUS "\nConfiguring Level 2 packages --\n" )
-add_subdirectory( c4 )           # needs ds++
-add_subdirectory( cdi )          # needs ds++
-if( EXISTS fpe_trap )
-add_subdirectory( fpe_trap )     # needs ds++
-endif()
-if( EXISTS lapack_wrap )
-add_subdirectory( lapack_wrap )  # needs ds++
-endif()
-if( EXISTS linear )
-add_subdirectory( linear )       # needs ds++
-endif()
-add_subdirectory( mesh_element ) # needs ds++
-add_subdirectory( ode )          # needs ds++
-add_subdirectory( rng )          # needs ds++
-add_subdirectory( traits )       # needs ds++
-if( EXISTS units )
-add_subdirectory( units )        # needs ds++
-endif()
-if( EXISTS xm )
-add_subdirectory( xm )           # needs ds++
-endif()
+add_dir_if_exists( c4 )           # needs ds++
+add_dir_if_exists( cdi )          # needs ds++
+add_dir_if_exists( fpe_trap )     # needs ds++
+add_dir_if_exists( lapack_wrap )  # needs ds++
+add_dir_if_exists( linear )       # needs ds++
+add_dir_if_exists( mesh_element ) # needs ds++
+add_dir_if_exists( ode )          # needs ds++
+add_dir_if_exists( rng )          # needs ds++
+add_dir_if_exists( traits )       # needs ds++
+add_dir_if_exists( units )        # needs ds++
+add_dir_if_exists( xm )           # needs ds++
 
 if( PCG_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/pcgWrap/CMakeLists.txt)
-  add_subdirectory( pcgWrap )    # needs ds++
+  add_dir_if_exists( pcgWrap )    # needs ds++
 endif()
 if( XMGRACE_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/plot2D/CMakeLists.txt)
-  add_subdirectory( plot2D )
+  add_dir_if_exists( plot2D )
 endif()
 
 # Level 3
 
 message( STATUS "\nConfiguring Level 3 packages --\n" )
-add_subdirectory( cdi_analytic ) # needs cdi
-add_subdirectory( diagnostics )  # needs c4
-if( EXISTS fit )
-add_subdirectory( fit )          # needs linear
-endif()
-add_subdirectory( meshReaders )  # needs c4
-if( EXISTS min )
-add_subdirectory( min )          # needs linear
-endif()
-if( EXISTS norms )
-add_subdirectory( norms )        # needs c4
-endif()
-if( EXISTS parser )
-add_subdirectory( parser )       # needs units, c4
-endif()
-if( EXISTS roots )
-add_subdirectory( roots )       # needs linear
-endif()
-if( EXISTS special_functions )
-add_subdirectory( special_functions ) # needs units, ds++
-endif()
-if( EXISTS timestep )
-add_subdirectory( timestep )     # needs c4, ds++
-endif()
-add_subdirectory( viz )          # needs traits, ds++
+add_dir_if_exists( cdi_analytic ) # needs cdi
+add_dir_if_exists( diagnostics )  # needs c4
+add_dir_if_exists( fit )          # needs linear
+add_dir_if_exists( meshReaders )  # needs c4
+add_dir_if_exists( min )          # needs linear
+add_dir_if_exists( norms )        # needs c4
+add_dir_if_exists( parser )       # needs units, c4
+add_dir_if_exists( roots )        # needs linear
+add_dir_if_exists( special_functions ) # needs units, ds++
+add_dir_if_exists( timestep )     # needs c4, ds++
+add_dir_if_exists( viz )          # needs traits, ds++
 
 if( GANDOLF_FOUND )
-   if( EXISTS cdi_gandolf) 
-   add_subdirectory( cdi_gandolf )  # needs cdi
-   endif()
+   add_dir_if_exists( cdi_gandolf )  # needs cdi
 endif()
 
 # Level 4
 
 message( STATUS "\nConfiguring Level 4 packages --\n" )
-if ( EXISTS quadrature )
-add_subdirectory( quadrature ) # needs units, c4, special_functions
-endif()
-add_subdirectory( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, dsxx
+add_dir_if_exists( quadrature )       # needs units, c4, special_functions
+add_dir_if_exists( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, 
+                                      #       dsxx
 
 # Summary
 message("
