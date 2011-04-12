@@ -141,6 +141,16 @@ macro( add_scalar_tests test_sources )
       ${ARGV}
       )
 
+   # On some platforms (Cielo, Cielito, RedStorm), even scalar tests
+   # must be run underneath MPIEXEC (yod, aprun):
+   if( "${MPIEXEC}" MATCHES "aprun" )
+      set( RUN_CMD "${MPIEXEC} -n 1" )
+   elseif(  "${MPIEXEC}" MATCHES "yod" )
+      set( RUN_CMD "${MPIEXEC} -np 1" )
+   else()
+      unset( RUN_CMD )
+   endif()
+
 #    message("
 # addscalartest_SOURCES    = ${addscalartest_SOURCES}
 # addscalartest_DEPS       = ${addscalartest_DEPS}
@@ -198,7 +208,9 @@ macro( add_scalar_tests test_sources )
          ${addscalartest_DEPS}
          )
       if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-         add_test( ${compname}_${testname} ${testname} )
+         add_test( 
+            NAME    ${RUN_CMD} ${compname}_${testname} 
+            COMMAND ${testname} )
          set_tests_properties( ${compname}_${testname} 
            PROPERTIES	
              PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
@@ -219,8 +231,9 @@ macro( add_scalar_tests test_sources )
           foreach( cmdarg ${addscalartest_TEST_ARGS} ) 
              math( EXPR iarg "${iarg} + 1" )
              separate_arguments( tmp UNIX_COMMAND ${cmdarg} )
-             add_test( ${compname}_${testname}_arg${iarg} 
-                ${testname} ${tmp} )
+             add_test( 
+                NAME    ${RUN_CMD} ${compname}_${testname}_arg${iarg} 
+                COMMAND ${testname} ${tmp} )
              # message("${compname}_${testname}_arg${iarg} ${testname} ${cmdarg}")
              set_tests_properties( ${compname}_${testname}_arg${iarg}
                 PROPERTIES	
