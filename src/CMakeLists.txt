@@ -40,15 +40,25 @@ add_subdirectory( ds++ )
 message( STATUS "\nConfiguring Level 2 packages --\n" )
 add_subdirectory( c4 )           # needs ds++
 add_subdirectory( cdi )          # needs ds++
+if( EXISTS fpe_trap )
 add_subdirectory( fpe_trap )     # needs ds++
+endif()
+if( EXISTS lapack_wrap )
 add_subdirectory( lapack_wrap )  # needs ds++
+endif()
+if( EXISTS linear )
 add_subdirectory( linear )       # needs ds++
+endif()
 add_subdirectory( mesh_element ) # needs ds++
 add_subdirectory( ode )          # needs ds++
 add_subdirectory( rng )          # needs ds++
 add_subdirectory( traits )       # needs ds++
+if( EXISTS units )
 add_subdirectory( units )        # needs ds++
+endif()
+if( EXISTS xm )
 add_subdirectory( xm )           # needs ds++
+endif()
 
 if( PCG_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/pcgWrap/CMakeLists.txt)
   add_subdirectory( pcgWrap )    # needs ds++
@@ -62,14 +72,28 @@ endif()
 message( STATUS "\nConfiguring Level 3 packages --\n" )
 add_subdirectory( cdi_analytic ) # needs cdi
 add_subdirectory( diagnostics )  # needs c4
-add_subdirectory( fit )          # needs lienar
+if( EXISTS fit )
+add_subdirectory( fit )          # needs linear
+endif()
 add_subdirectory( meshReaders )  # needs c4
+if( EXISTS min )
 add_subdirectory( min )          # needs linear
+endif()
+if( EXISTS norms )
 add_subdirectory( norms )        # needs c4
+endif()
+if( EXISTS parser )
 add_subdirectory( parser )       # needs units, c4
-add_subdirectory( roots  )       # needs linear
+endif()
+if( EXISTS roots )
+add_subdirectory( roots )       # needs linear
+endif()
+if( EXISTS special_functions )
 add_subdirectory( special_functions ) # needs units, ds++
+endif()
+if( EXISTS timestep )
 add_subdirectory( timestep )     # needs c4, ds++
+endif()
 add_subdirectory( viz )          # needs traits, ds++
 
 if( GANDOLF_FOUND )
@@ -79,7 +103,9 @@ endif()
 # Level 4
 
 message( STATUS "\nConfiguring Level 4 packages --\n" )
+if ( EXISTS quadrature )
 add_subdirectory( quadrature ) # needs units, c4, special_functions
+endif()
 add_subdirectory( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, dsxx
 
 # Summary
