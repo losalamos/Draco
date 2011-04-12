@@ -97,7 +97,9 @@ endif()
 add_subdirectory( viz )          # needs traits, ds++
 
 if( GANDOLF_FOUND )
+   if( EXISTS cdi_gandolf) 
    add_subdirectory( cdi_gandolf )  # needs cdi
+   endif()
 endif()
 
 # Level 4
