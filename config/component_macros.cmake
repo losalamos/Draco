@@ -211,7 +211,7 @@ macro( add_scalar_tests test_sources )
          add_test( 
             NAME    ${compname}_${testname} 
             COMMAND ${RUN_CMD} ${testname} )
-         tests_properties( ${compname}_${testname} 
+         set_tests_properties( ${compname}_${testname} 
            PROPERTIES	
              PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
              FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
