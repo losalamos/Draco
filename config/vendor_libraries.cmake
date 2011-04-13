@@ -189,8 +189,9 @@ macro( SetupVendorLibrariesUnix )
      if( EXISTS ${gcc_bin} )
         execute_process(
            COMMAND ${gcc_bin} -print-file-name=libgfortran.so
-           OUTPUT_VARIABLE LIBGFORTRAN_LOC )
-        if( "${LIBGFORTRAN_LOC}" STREQUAL "x" )
+           OUTPUT_VARIABLE LIBGFORTRAN_LOC 
+           OUTPUT_STRIP_TRAILING_WHITESPACE )
+        if( "${LIBGFORTRAN_LOC}" STREQUAL "libgfortran.so" )
            unset( LIBGFORTRAN_LOC )
         else()
            # obtain the path portion only (strip libgfortran.so)
