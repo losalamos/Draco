@@ -439,9 +439,12 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(turn-on-draco-mode)
 	)
       (add-hook 'TeX-mode-hook  'draco-latex-mode-hook)
-      (add-hook 'bibtex-mode-hook 'draco-latex-mode-hook)))
+      (add-hook 'bibtex-mode-hook 'draco-latex-mode-hook)
+      (add-hook 'tex-mode-hook  'turn-on-draco-mode)
+      (add-hook 'tex-mode-hook  'draco-latex-mode-hook)
 ;      (add-hook 'LaTeX-mode-hook  'turn-on-draco-mode)
 ;      (add-hook 'LaTeX-mode-hook  'turn-on-auto-fill)))
+      ))
 
 ;; ========================================
 ;; FORTRAN-90
