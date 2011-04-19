@@ -34,6 +34,7 @@ macro( SetupVendorLibrariesUnix )
    #   MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
 
    # Try to find MPI in the default locations (look for mpic++ in PATH)
+   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
    message(STATUS "Looking for MPI...")
    find_package( MPI )
 
@@ -125,6 +126,7 @@ macro( SetupVendorLibrariesUnix )
          STRING "extra mpirun flags (string)." FORCE)
       mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
    endif()
+   endif()
 
   # BLAS ---------------------------------------------------------------------
   message( STATUS "Looking for BLAS...")
@@ -142,7 +144,8 @@ macro( SetupVendorLibrariesUnix )
   endif()
 
 # Don't require BLAS/LAPACK for catamount systems
-  if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+  if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" OR
+        ${CMAKE_CXX_COMPILER} MATCHES "ppu-g[+][+]" )
      set( BLAS_REQUIRED "" )
   else()
      set( BLAS_REQUIRED "REQUIRED" )
