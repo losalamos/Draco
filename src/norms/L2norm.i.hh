@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <numeric>
+#include <iostream>
 #include "c4/global.hh"
 #include "norm.hh"
 
