@@ -19,10 +19,12 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Pseudo_Line_Analytic_MultigroupOpacity.hh"
+#include "parser/Constant_Expression.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_cdi_analytic;
+using namespace rtt_parser;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -41,11 +43,13 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
 {
     unsigned const NG = 10000; // 300 for full resolution
     unsigned const number_of_lines = 200;
+    unsigned const number_of_edges = 10;
     unsigned seed = 1;
 
-    double const continuum = 1.0e-2;
+    SP<Expression const> const continuum(new Constant_Expression(1,1.0e-2));;
     double const peak = 1e1;
     double const width = 0.002; // keV
+    double const edge_ratio = 100.0; 
     double const emax = 10.0; // keV
     double const emin = 0.0;
     
@@ -62,6 +66,8 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
                                                      number_of_lines,
                                                      peak,
                                                      width,
+                                                     number_of_edges,
+                                                     edge_ratio,
                                                      emin,
                                                      emax,
                                                      NONE,
@@ -87,6 +93,8 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
                                                      number_of_lines,
                                                      peak,
                                                      width,
+                                                     number_of_edges,
+                                                     edge_ratio,
                                                      emin,
                                                      emax,
                                                      ROSSELAND,
@@ -112,6 +120,8 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
                                                      number_of_lines,
                                                      peak,
                                                      width,
+                                                     number_of_edges,
+                                                     edge_ratio,
                                                      emin,
                                                      emax,
                                                      PLANCK,

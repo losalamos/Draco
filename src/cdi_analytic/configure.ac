@@ -14,13 +14,13 @@ AC_CONFIG_HEADER(cdi_analytic/config.h:config.h.in)
 package="cdi_analytic"
 
 dnl VENDOR SETUPS
-dnl AC_MPI_SETUP(pkg)
+AC_MPI_SETUP(pkg)
 dnl AC_SHMEM_SETUP(pkg)
 dnl AC_PCGLIB_SETUP(pkg)
 
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
-AC_NEEDS_LIBS(cdi ds++)
+AC_NEEDS_LIBS(parser cdi c4 ds++)
 
 AC_RUNTESTS(tstAnalytic_Gray_Opacity \
             tstnGray_Analytic_MultigroupOpacity tstAnalytic_EoS \

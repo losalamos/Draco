@@ -12,10 +12,14 @@
 #ifndef __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
 #define __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
 
+#include "parser/Expression.hh"
 #include "Analytic_MultigroupOpacity.hh"
 
 namespace rtt_cdi_analytic
 {
+using rtt_dsxx::SP;
+using rtt_parser::Expression;
+
 //---------------------------------------------------------------------------//
 /*!
  * \class Pseudo_Line_Analytic_Opacity_Model
@@ -47,14 +51,18 @@ class Pseudo_Line_Analytic_MultigroupOpacity
     
   private: 
     // Coefficients
-    double continuum_;  // continuum opacity [cm^2/g]
+    SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
     unsigned seed_;
     unsigned number_of_lines_;
-    double peak_; // peak line opacity [cm^2/g]
-    double width_;  // line width as fraction of line frequency.
+    double line_peak_; // peak line opacity [cm^2/g]
+    double line_width_;  // line width as fraction of line frequency.
+    unsigned number_of_edges_;
+    double edge_ratio_;
     Averaging averaging_; 
 
     sf_double center_; // line centers for this realization
+    sf_double edge_;   // edges for this realization
+    sf_double edge_factor_; // opacity at threshold
 
     sf_double sigma_; // precalculated opacity
 
@@ -65,10 +73,12 @@ class Pseudo_Line_Analytic_MultigroupOpacity
 
     Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
                                            rtt_cdi::Reaction reaction,
-                                           double continuum,
+                                           SP<Expression const> const &cont,
                                            unsigned number_of_lines,
-                                           double peak,
-                                           double width,
+                                           double line_peak,
+                                           double line_width,
+                                           unsigned number_of_edges,
+                                           double edge_ratio,
                                            double emin,
                                            double emax,
                                            Averaging averaging,
@@ -91,6 +101,9 @@ class Pseudo_Line_Analytic_MultigroupOpacity
 
     //! Pack up the class for persistence.
     sf_char pack() const;
+
+    //! Compute a monochromatic opacity
+    double monoOpacity(double nu) const;
 };
 
 } // end namespace rtt_cdi_analytic

@@ -13,12 +13,14 @@
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
+#include "ds++/cube.hh"
 
 
 namespace rtt_cdi_analytic
 {
 using namespace std;
 using namespace rtt_ode;
+using namespace rtt_dsxx;
 
 typedef Analytic_MultigroupOpacity::sf_double sf_double;
 typedef Analytic_MultigroupOpacity::vf_double vf_double;
@@ -44,20 +46,7 @@ class PLP_Functor
 
 double PLP_Functor::operator()(double &x)
 {
-    unsigned const number_of_lines = ptr_->number_of_lines_;
-    vector<double> const &center = ptr_->center_;
-    double const width = ptr_->width_;
-    double const peak = ptr_->peak_;
-
-    double Result = ptr_->continuum_;
-    
-    for (unsigned i=0; i<number_of_lines; ++i)
-    {
-        double const nu0 = center[i];
-        double const d = x - nu0;
-        Result += peak*exp(-d*d/(width*width*nu0*nu0));
-    }
-    return Result;
+    return ptr_->monoOpacity(x);
 }
 
 //---------------------------------------------------------------------------//
@@ -81,30 +70,19 @@ class PLR_Functor
 
 double PLR_Functor::operator()(double &x)
 {
-    unsigned const number_of_lines = ptr_->number_of_lines_;
-    vector<double> const &center = ptr_->center_;
-    double const width = ptr_->width_;
-    double const peak = ptr_->peak_;
-
-    double Result = ptr_->continuum_;
-    
-    for (unsigned i=0; i<number_of_lines; ++i)
-    {
-        double const nu0 = center[i];
-        double const d = x - nu0;
-        Result += peak*exp(-d*d/(width*width*nu0*nu0));
-    }
-    return 1.0/Result;
+    return 1.0/ptr_->monoOpacity(x);
 }
 
 //---------------------------------------------------------------------------//
 Pseudo_Line_Analytic_MultigroupOpacity::
 Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
                                        rtt_cdi::Reaction const reaction,
-                                       double continuum,
+                                       SP<Expression const> const &continuum,
                                        unsigned number_of_lines,
-                                       double peak,
-                                       double width,
+                                       double line_peak,
+                                       double line_width,
+                                       unsigned number_of_edges,
+                                       double edge_ratio,
                                        double emin,
                                        double emax,
                                        Averaging const averaging,
@@ -115,14 +93,19 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
     continuum_(continuum),
     seed_(seed),
     number_of_lines_(number_of_lines),
-    peak_(peak),
-    width_(width),
+    line_peak_(line_peak),
+    line_width_(line_width),
+    number_of_edges_(number_of_edges),
+    edge_ratio_(edge_ratio),
     averaging_(averaging),
-    center_(number_of_lines)
+    center_(number_of_lines),
+    edge_(number_of_edges),
+    edge_factor_(number_of_edges)
 {
     Require(continuum>=0.0);
-    Require(peak>=0.0);
-    Require(width>=0.0);
+    Require(line_peak>=0.0);
+    Require(line_width>=0.0);
+    Require(edge_ratio>=0.0);
     Require(emin>=0.0);
     Require(emax>emin);
     
@@ -133,25 +116,28 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
         center_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
     }
 
+    for (unsigned i=0; i<number_of_edges; ++i)
+    {
+        edge_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
+        edge_factor_[i] = edge_ratio_*(*continuum)(vector<double>(1,edge_[i]));
+    }
+
     // Precompute mass absorption coefficient
     
     unsigned const number_of_groups = group_bounds.size()-1U;
-    sigma_.resize(number_of_groups, continuum_);
+    sigma_.resize(number_of_groups, 0.0);
 
     switch (averaging)
     {
         case NONE:
-            for (unsigned i=0; i<number_of_lines_; ++i)
             {
-                double const nu0 = center_[i];
                 double g1 = group_bounds[0];
                 for (unsigned g=0; g<number_of_groups; ++g)
                 {
                     double const g0 = g1;
                     g1 = group_bounds[g+1];
                     double const nu = 0.5*(g0 + g1);
-                    double const d = nu - nu0;
-                    sigma_[g] += peak_*exp(-d*d/(width_*width_*nu0*nu0));
+                    sigma_[g] = monoOpacity(nu);
                 }
             }
             break;
@@ -224,8 +210,10 @@ Pseudo_Line_Analytic_MultigroupOpacity::pack() const
     packer << continuum_;
     packer << seed_;
     packer << number_of_lines_;
-    packer << peak_;
-    packer << width_;
+    packer << line_peak_;
+    packer << line_width_;
+    packer << number_of_edges_;
+    packer << edge_ratio_;
     packer << averaging_;
 
     // Check the size
@@ -278,6 +266,36 @@ Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const
     }
 
     return descriptor;
+}
+
+//---------------------------------------------------------------------------//
+double Pseudo_Line_Analytic_MultigroupOpacity::monoOpacity(double const x)
+    const
+{
+    unsigned const number_of_lines = number_of_lines_;
+    double const width = line_width_;
+    double const peak = line_peak_;
+
+    double Result = (*continuum_)(vector<double>(1,x));
+    
+    for (unsigned i=0; i<number_of_lines; ++i)
+    {
+        double const nu0 = center_[i];
+        double const d = x - nu0;
+        Result += peak*exp(-d*d/(width*width*nu0*nu0));
+    }
+
+    unsigned const number_of_edges = number_of_edges_;
+    
+    for (unsigned i=0; i<number_of_edges; ++i)
+    {
+        double const nu0 = edge_[i];
+        if (x>=nu0)
+        {
+            Result += edge_factor_[i]*cube(nu0/x);
+        }
+    }
+    return Result;
 }
 
 } // end namespace rtt_cdi_analytic
