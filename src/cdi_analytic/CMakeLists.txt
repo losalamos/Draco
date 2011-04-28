@@ -27,6 +27,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}/..   # ds++ and cdi header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
    ${ode_BINARY_DIR}          # ode/config.h
+   ${parser_BINARY_DIR}
 ) 
 
 # ---------------------------------------------------------------------------- #
@@ -34,7 +35,7 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library( Lib_cdi_analytic cdi_analytic "${sources}"  )
-add_dependencies(      Lib_cdi_analytic Lib_cdi Lib_dsxx )
+add_dependencies(      Lib_cdi_analytic Lib_parser Lib_cdi Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

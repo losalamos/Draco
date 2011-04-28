@@ -71,7 +71,6 @@ endif()
 # Level 3
 
 message( STATUS "\nConfiguring Level 3 packages --\n" )
-add_dir_if_exists( cdi_analytic ) # needs cdi
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
 add_dir_if_exists( meshReaders )  # needs c4
@@ -90,6 +89,7 @@ endif()
 # Level 4
 
 message( STATUS "\nConfiguring Level 4 packages --\n" )
+add_dir_if_exists( cdi_analytic )     # needs cdi, ode, parser
 add_dir_if_exists( quadrature )       # needs units, c4, special_functions
 add_dir_if_exists( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, 
                                       #       dsxx
