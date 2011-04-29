@@ -15,6 +15,34 @@
 #include "ds++/Packing_Utils.hh"
 #include "ds++/cube.hh"
 
+namespace
+{
+
+double BB(double const T, double const x)
+{
+    double const e = expm1(x/T);
+    if (e>0.0)
+        return x*x*x/e;
+    else
+        return x*x*T;
+}
+
+double DBB(double const T, double const x)
+{
+    double const e = expm1(x/T);
+    if (e>0)
+    {
+        double const de = -exp(x/T)*x/(T*T);
+        return -x*x*x*de/e*e;
+    }
+    else
+    {
+        return x*x;
+    }
+}
+
+} // end anonymous namespace
+
 
 namespace rtt_cdi_analytic
 {
@@ -32,8 +60,9 @@ class PLP_Functor
 
     typedef double return_type;
     
-    PLP_Functor(Pseudo_Line_Analytic_MultigroupOpacity const *ptr)
-        : ptr_(ptr)
+    PLP_Functor(Pseudo_Line_Analytic_MultigroupOpacity const *ptr,
+                double const T)
+        : ptr_(ptr), T_(T)
     {}
 
     double operator()(double &x);
@@ -41,12 +70,37 @@ class PLP_Functor
   private:
     
     Pseudo_Line_Analytic_MultigroupOpacity const *ptr_;
+    double T_;
     
 };
 
 double PLP_Functor::operator()(double &x)
 {
-    return ptr_->monoOpacity(x);
+    return ptr_->monoOpacity(x)*BB(T_, x);
+}
+
+//---------------------------------------------------------------------------//
+class PLPW_Functor
+{
+  public:
+
+    typedef double return_type;
+    
+    PLPW_Functor(double const T)
+        : T_(T)
+    {}
+
+    double operator()(double &x);
+
+  private:
+    
+    double T_;
+    
+};
+
+double PLPW_Functor::operator()(double &x)
+{
+    return BB(T_, x);
 }
 
 //---------------------------------------------------------------------------//
@@ -56,8 +110,9 @@ class PLR_Functor
 
     typedef double return_type;
     
-    PLR_Functor(Pseudo_Line_Analytic_MultigroupOpacity const *ptr)
-        : ptr_(ptr)
+    PLR_Functor(Pseudo_Line_Analytic_MultigroupOpacity const *ptr,
+                double const T)
+        : ptr_(ptr), T_(T)
     {}
 
     double operator()(double &x);
@@ -65,12 +120,37 @@ class PLR_Functor
   private:
     
     Pseudo_Line_Analytic_MultigroupOpacity const *ptr_;
+    double T_;
     
 };
 
 double PLR_Functor::operator()(double &x)
 {
-    return 1.0/ptr_->monoOpacity(x);
+    return DBB(T_,x)/ptr_->monoOpacity(x);
+}
+
+//---------------------------------------------------------------------------//
+class PLRW_Functor
+{
+  public:
+
+    typedef double return_type;
+    
+    PLRW_Functor(double const T)
+        : T_(T)
+    {}
+
+    double operator()(double &x);
+
+  private:
+    
+    double T_;
+    
+};
+
+double PLRW_Functor::operator()(double &x)
+{
+    return DBB(T_,x);
 }
 
 //---------------------------------------------------------------------------//
@@ -121,67 +201,6 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
         edge_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
         edge_factor_[i] = edge_ratio_*(*continuum)(vector<double>(1,edge_[i]));
     }
-
-    // Precompute mass absorption coefficient
-    
-    unsigned const number_of_groups = group_bounds.size()-1U;
-    sigma_.resize(number_of_groups, 0.0);
-
-    switch (averaging)
-    {
-        case NONE:
-            {
-                double g1 = group_bounds[0];
-                for (unsigned g=0; g<number_of_groups; ++g)
-                {
-                    double const g0 = g1;
-                    g1 = group_bounds[g+1];
-                    double const nu = 0.5*(g0 + g1);
-                    sigma_[g] = monoOpacity(nu);
-                }
-            }
-            break;
-            
-        case ROSSELAND:
-        {
-            double g1 = group_bounds[0];
-            for (unsigned g=0; g<number_of_groups; ++g)
-            {
-                double const g0 = g1;
-                g1 = group_bounds[g+1];
-                double eps = 1e-5;
-                sigma_[g] = (g1-g0)/(
-                    rtt_ode::quad(PLR_Functor(this),
-                                  g0,
-                                  g1,
-                                  eps,
-                                  rkqs<double, Quad_To_ODE<PLR_Functor> >));
-            }
-        }
-        break;
-           
-        case PLANCK:
-        {
-            double g1 = group_bounds[0];
-            for (unsigned g=0; g<number_of_groups; ++g)
-            {
-                double const g0 = g1;
-                g1 = group_bounds[g+1];
-                double eps = 1e-5;
-                sigma_[g] =
-                    rtt_ode::quad(PLP_Functor(this),
-                                  g0,
-                                  g1,
-                                  eps,
-                                  rkqs<double, Quad_To_ODE<PLP_Functor> >)
-                    /(g1-g0);
-            }
-        }
-        break;
-        
-        default:
-            Insist(false, "bad case");            
-    }
 }
 
 //---------------------------------------------------------------------------//
@@ -224,26 +243,109 @@ Pseudo_Line_Analytic_MultigroupOpacity::pack() const
 
 //---------------------------------------------------------------------------//
 sf_double
-Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double /*T*/,
+Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                                                     double /*rho*/) const
 {
-    return sigma_;
+    sf_double const &group_bounds = this->getGroupBoundaries();
+    unsigned const number_of_groups = group_bounds.size()-1U;
+    sf_double Result(number_of_groups, 0.0);
+
+    switch (averaging_)
+    {
+        case NONE:
+            {
+                double g1 = group_bounds[0];
+                for (unsigned g=0; g<number_of_groups; ++g)
+                {
+                    double const g0 = g1;
+                    g1 = group_bounds[g+1];
+                    double const nu = 0.5*(g0 + g1);
+                    Result[g] = monoOpacity(nu);
+                }
+            }
+            break;
+            
+        case ROSSELAND:
+        {
+            double g1 = group_bounds[0];
+            for (unsigned g=0; g<number_of_groups; ++g)
+            {
+                double const g0 = g1;
+                g1 = group_bounds[g+1];
+                double eps = 1e-5;
+                double const t =
+                    rtt_ode::quad(PLR_Functor(this, T),
+                                  g0,
+                                  g1,
+                                  eps,
+                                  rkqs<double, Quad_To_ODE<PLR_Functor> >);
+                double const b =
+                    rtt_ode::quad(PLRW_Functor(T),
+                                  g0,
+                                  g1,
+                                  eps,
+                                  rkqs<double, Quad_To_ODE<PLRW_Functor> >);
+
+                Result[g] = b/t;
+            }
+        }
+        break;
+           
+        case PLANCK:
+        {
+            double g1 = group_bounds[0];
+            for (unsigned g=0; g<number_of_groups; ++g)
+            {
+                double const g0 = g1;
+                g1 = group_bounds[g+1];
+                double eps = 1e-5;
+                double const t =
+                    rtt_ode::quad(PLP_Functor(this, T),
+                                  g0,
+                                  g1,
+                                  eps,
+                                  rkqs<double, Quad_To_ODE<PLP_Functor> >);
+                double const b =
+                    rtt_ode::quad(PLPW_Functor(T),
+                                  g0,
+                                  g1,
+                                  eps,
+                                  rkqs<double, Quad_To_ODE<PLPW_Functor> >);
+
+                Result[g] = t/b;
+            }
+        }
+        break;
+        
+        default:
+            Insist(false, "bad case");            
+    }
+
+    return Result;
 }
 
 //---------------------------------------------------------------------------//
 vf_double
 Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(sf_double const &T,
-                                                   double /*rho*/) const
+                                                   double rho) const
 {
-    return vf_double(T.size(), sigma_);
+    unsigned const n = T.size();
+    vf_double Result(n);
+
+    for (unsigned i=0; i<n; ++i)
+    {
+        double const Ti = T[i];
+        Result[i] = getOpacity(Ti, rho);
+    }
+    return Result;
 }
 
 //---------------------------------------------------------------------------//
 vf_double
-Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double    const /*T*/,
+Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double    const T,
                                                    sf_double const &rho) const
 {
-    return vf_double(rho.size(), sigma_);
+    return vf_double(rho.size(), getOpacity(T, rho[0]));
 }
 
 //---------------------------------------------------------------------------//

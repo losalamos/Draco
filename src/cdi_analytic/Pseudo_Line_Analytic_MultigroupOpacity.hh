@@ -49,7 +49,7 @@ class Pseudo_Line_Analytic_MultigroupOpacity
         END_AVERAGING //!< sentinel value
     };
     
-  private: 
+  private:
     // Coefficients
     SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
     unsigned seed_;
@@ -63,8 +63,6 @@ class Pseudo_Line_Analytic_MultigroupOpacity
     sf_double center_; // line centers for this realization
     sf_double edge_;   // edges for this realization
     sf_double edge_factor_; // opacity at threshold
-
-    sf_double sigma_; // precalculated opacity
 
     friend class PLR_Functor; // used in calculation of Rosseland averages
     friend class PLP_Functor; // used in calculation of Planck averages
