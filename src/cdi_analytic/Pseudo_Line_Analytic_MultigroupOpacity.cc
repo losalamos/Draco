@@ -33,7 +33,7 @@ double DBB(double const T, double const x)
     if (e>0)
     {
         double const de = -exp(x/T)*x/(T*T);
-        return -x*x*x*de/e*e;
+        return -x*x*x*de/(e*e);
     }
     else
     {
@@ -273,18 +273,27 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                 double const g0 = g1;
                 g1 = group_bounds[g+1];
                 double eps = 1e-5;
-                double const t =
-                    rtt_ode::quad(PLR_Functor(this, T),
-                                  g0,
-                                  g1,
-                                  eps,
-                                  rkqs<double, Quad_To_ODE<PLR_Functor> >);
-                double const b =
-                    rtt_ode::quad(PLRW_Functor(T),
-                                  g0,
-                                  g1,
-                                  eps,
-                                  rkqs<double, Quad_To_ODE<PLRW_Functor> >);
+                double t = 0.0, b = 0.0;
+                double x1 = g0;
+                while (x1<g1)
+                {
+                    double x0 = x1;
+                    x1 += 2*line_width_;
+                    if (x1>g1) x1 = g1;
+                    
+                    t +=
+                        rtt_ode::quad(PLR_Functor(this, T),
+                                      x0,
+                                      g1,
+                                      eps,
+                                      rkqs<double, Quad_To_ODE<PLR_Functor> >);
+                    b +=
+                        rtt_ode::quad(PLRW_Functor(T),
+                                      g0,
+                                      g1,
+                                      eps,
+                                      rkqs<double, Quad_To_ODE<PLRW_Functor> >);
+                }
 
                 Result[g] = b/t;
             }
@@ -299,18 +308,27 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                 double const g0 = g1;
                 g1 = group_bounds[g+1];
                 double eps = 1e-5;
-                double const t =
-                    rtt_ode::quad(PLP_Functor(this, T),
-                                  g0,
-                                  g1,
-                                  eps,
-                                  rkqs<double, Quad_To_ODE<PLP_Functor> >);
-                double const b =
-                    rtt_ode::quad(PLPW_Functor(T),
-                                  g0,
-                                  g1,
-                                  eps,
-                                  rkqs<double, Quad_To_ODE<PLPW_Functor> >);
+                double t = 0.0, b = 0.0;
+                double x1 = g0;
+                while (x1<g1)
+                {
+                    double x0 = x1;
+                    x1 += 2*line_width_;
+                    if (x1>g1) x1 = g1;
+                    
+                    t +=
+                        rtt_ode::quad(PLP_Functor(this, T),
+                                      x0,
+                                      g1,
+                                      eps,
+                                      rkqs<double, Quad_To_ODE<PLP_Functor> >);
+                    b +=
+                        rtt_ode::quad(PLPW_Functor(T),
+                                      g0,
+                                      g1,
+                                      eps,
+                                      rkqs<double, Quad_To_ODE<PLPW_Functor> >);
+                }
 
                 Result[g] = t/b;
             }
