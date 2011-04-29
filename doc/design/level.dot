@@ -51,7 +51,6 @@ digraph draco_level {
     xm         [shape=box, color=blue, label="xm"];
         
     /* level 3 */
-    cdianal   [shape=box, color=blue, label="cdi_analytic"];
     cdieos    [shape=box, color=blue, label="cdi_eospac"];
     cdigan    [shape=box, color=blue, label="cdi_gandolf"];
     diagnostics [shape=box, color=blue, label="diagnostics"];
@@ -67,6 +66,7 @@ digraph draco_level {
     viz       [shape=box, color=blue, label="viz"];
     
     /* level 4 */
+    cdianal   [shape=box, color=blue, label="cdi_analytic"];
     quad      [shape=box, color=blue, label="quadrature"];
     rttread   [shape=box, color=blue, label="RTT_Format_Reader"];
     
@@ -74,7 +74,7 @@ digraph draco_level {
     {rank=same; legend leg_vendor leg_draco};
     {rank=same; level1 dsxx vlapack vmpi veospac  vgandolf vgrace vdlopen};
     {rank=same; level2 shlib plot lapack traits xm c4 fpetrap units cdi vpcg ode linear};
-    {rank=same; level3 viz timestep cdianal cdieos cdigan pcg meshread parser sf};
+    {rank=same; level3 viz timestep cdieos cdigan pcg meshread parser sf};
     {rank=same; level4 rttread quad};
     
     /* draco packages */
@@ -108,7 +108,6 @@ digraph draco_level {
     xm          -> {dsxx}        [color=blue];
     
     /* level 3 */
-    cdianal     -> {cdi ode}     [color=blue];
     cdieos      -> {cdi}         [color=blue];
     cdieos      -> {veospac}     [color=green]; 
     cdigan      -> {cdi}         [color=blue]; 
@@ -130,6 +129,7 @@ digraph draco_level {
     viz         -> {traits}      [color=blue];
 
     /* level 4 */
+    cdianal     -> {parser cdi ode}        [color=blue];
     quad        -> {sf meshelement parser} [color=blue];
     rttread     -> {meshread}              [color=blue];
 
