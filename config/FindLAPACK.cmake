@@ -71,8 +71,12 @@ macro(Check_Lapack_Libraries LIBRARIES _prefix _name _flags _list _blas _threads
             endif(BLA_STATIC)
             find_library(${_prefix}_${_library}_LIBRARY
                NAMES ${_library}
-               PATHS ENV LIB
+               PATHS 
+                  ${LAPACK_LIB_DIR}
+                  ENV LAPACK_LIB_DIR
+                  ENV LIB
                )
+            #message("DEBUG: ${_prefix}_${_library}_LIBRARY = ${${_prefix}_${_library}_LIBRARY}")               
          ENDIF (WIN32)
 
          if(APPLE)
@@ -122,6 +126,7 @@ macro(Check_Lapack_Libraries LIBRARIES _prefix _name _flags _list _blas _threads
       endif(UNIX AND BLA_STATIC)
       #message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
       if (NOT _LANGUAGES_ MATCHES Fortran)
+         set( CHECK_FUNCTION_EXISTS_DEBUG_OUTPUT ON)
          #message("DEBUG: check_function_exists(${_name}_ ${_prefix}${_combined_name}_WORKS)")
          check_function_exists(${_name}_ ${_prefix}${_combined_name}_WORKS)
          #message("DEBUG: ${_prefix}${_combined_name}_WORKS = ${${_prefix}${_combined_name}_WORKS}")
@@ -223,16 +228,16 @@ if(BLAS_FOUND)
          BLA_VENDOR STREQUAL "ATLAS"   OR 
          BLA_VENDOR STREQUAL "All" )
       if ( NOT LAPACK_LIBRARIES )
-#          message("
-#          check_lapack_libraries(
-#             LAPACK_LIBRARIES
-#             LAPACK
-#             cheev
-#             \"\"
-#             \"lapack\"
-#             \"${BLAS_LIBRARIES};${LAPACK_atlas_extra_libs}\"
-#             \"\"
-#             )
+         # message("
+         # check_lapack_libraries(
+            # LAPACK_LIBRARIES
+            # LAPACK
+            # cheev
+            # \"\"
+            # \"lapack\"
+            # \"${BLAS_LIBRARIES};${LAPACK_atlas_extra_libs}\"
+            # \"\"
+            # )
 # ")
          check_lapack_libraries(
             LAPACK_LIBRARIES

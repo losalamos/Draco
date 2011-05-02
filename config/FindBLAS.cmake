@@ -38,6 +38,7 @@
 #=============================================================================
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
+option( findblasdebugoutput OFF )
 
 get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
 if (_LANGUAGES_ MATCHES Fortran)
@@ -69,10 +70,23 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
             if(BLA_STATIC)
                set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib;.dll")
             endif(BLA_STATIC)
+            # message("DEBUG:
+            # find_library(${_prefix}_${_library}_LIBRARY
+               # NAMES ${_library}
+               # PATHS 
+                  # ${LAPACK_LIB_DIR}
+                  # ENV LAPACK_LIB_DIR
+                  # ENV LIB                     
+               # )
+               # ")
             find_library(${_prefix}_${_library}_LIBRARY
                NAMES ${_library}
-               PATHS ENV LIB
+               PATHS 
+                  ${LAPACK_LIB_DIR}
+                  ENV LAPACK_LIB_DIR
+                  ENV LIB     
                )
+            # message("DEBUG: ${_prefix}_${_library}_LIBRARY = ${${_prefix}_${_library}_LIBRARY}")
          endif ( WIN32 )
          
          if ( APPLE )
@@ -109,11 +123,22 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
    if(_libraries_work)
       # Test this combination of libraries.
       set(CMAKE_REQUIRED_LIBRARIES ${_flags} ${${LIBRARIES}} ${_threads})
-      #  message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
+      #message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
       if (_LANGUAGES_ MATCHES Fortran)
+         #message("DEBUG: check_fortran_function_exists(${_name} ${_prefix}${_combined_name}_WORKS)")
          check_fortran_function_exists(${_name} ${_prefix}${_combined_name}_WORKS)
       else()
-         check_function_exists(cblas_${_name} ${_prefix}${_combined_name}_WORKS)
+         #message("DEBUG: check_function_exists(cblas_${_name} ${_prefix}${_combined_name}_WORKS)")
+         #check_function_exists(cblas_${_name} ${_prefix}${_combined_name}_WORKS DEBUG_OUTPUT_ON)
+         #set( CHECK_FUNCTION_EXISTS_DEBUG_OUTPUT ON)
+         check_function_exists(cblas_${_name} ${_prefix}${_combined_name}_WORKS )
+         #message("DEBUG: ${_prefix}${_combined_name}_WORKS = ${${_prefix}${_combined_name}_WORKS}")
+         if( "${${_prefix}${_combined_name}_WORKS}x" STREQUAL "x" )
+            # Try again w/o cblas prefix
+            # set( CHECK_FUNCTION_EXISTS_DEBUG_OUTPUT ON)
+            check_function_exists(${_name}_ ${_prefix}${_combined_name}_WORKS )
+            # message("DEBUG: ${_prefix}${_combined_name}_WORKS = ${${_prefix}${_combined_name}_WORKS}")
+         endif()
       endif()
       set(CMAKE_REQUIRED_LIBRARIES)
       mark_as_advanced(${_prefix}${_combined_name}_WORKS)
@@ -122,7 +147,7 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
    if(NOT _libraries_work)
       set(${LIBRARIES} FALSE)
    endif(NOT _libraries_work)
-   #message("DEBUG: ${LIBRARIES} = ${${LIBRARIES}}")
+   # message("DEBUG: ${LIBRARIES} = ${${LIBRARIES}}")
 endmacro(Check_Fortran_Libraries)
 
 set(BLAS_LINKER_FLAGS)
