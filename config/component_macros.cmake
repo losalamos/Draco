@@ -29,6 +29,11 @@
 #------------------------------------------------------------------------------
 macro( add_component_library target_name outputname sources )
 
+   # This is a test library.  Find the component name
+   string( REPLACE "_test" "" comp_target ${target_name} )
+   # extract project name, minus leading "Lib_"
+   string( REPLACE "Lib_" "" folder_name ${comp_target} )
+
    add_library( ${target_name} ${DRACO_LIBRARY_TYPE} ${sources}  )
    if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
       set_target_properties( ${target_name} 
@@ -37,20 +42,18 @@ macro( add_component_library target_name outputname sources )
          COMPILE_DEFINITIONS BUILDING_DLL 
          # Use custom library naming
          OUTPUT_NAME rtt_${outputname}
+         FOLDER ${folder_name}
          )
    else()
       set_target_properties( ${target_name}
          PROPERTIES 
          # Use custom library naming
          OUTPUT_NAME rtt_${outputname}
+         FOLDER ${folder_name}
          )
    endif()
 
    if( ${target_name} MATCHES "_test" )
-
-      # This is a test library.  Find the component name
-      string( REPLACE "_test" "" comp_target ${target_name} )
-
       # For Win32 with shared libraries, the package dll must be
       # located in the test directory.
 
@@ -199,7 +202,8 @@ macro( add_scalar_tests test_sources )
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
-           PROJECT_LABEL Ut_${compname}
+           #PROJECT_LABEL Ut_${compname}
+           FOLDER ${compname}
          )
       target_link_libraries( Ut_${compname}_${testname}_exe 
          # Lib_${compname}_test 
@@ -323,7 +327,8 @@ macro( add_parallel_tests )
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
-           PROJECT_LABEL Ut_${compname}
+           #PROJECT_LABEL Ut_${compname}
+           FOLDER ${compname}
          )
       target_link_libraries( 
          Ut_${compname}_${testname}_exe 
