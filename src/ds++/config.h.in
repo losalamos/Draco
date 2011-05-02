@@ -52,6 +52,9 @@
    /* define DRACO_SHARED_LIBS */
 #cmakedefine DRACO_SHARED_LIBS @DRACO_SHARED_LIBS@
 
+   /* In MSVC, constants like M_PI are not defined by default in math.h.  To include them, we must set the following: */
+#cmakedefine _USE_MATH_DEFINES   
+
 #endif /* Autoconf based build */
 
 /* ---------------------------------------- */

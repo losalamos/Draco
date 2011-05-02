@@ -10,6 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <ds++/config.h> // Must be first!
+
 #include <iostream>
 #include <vector>
 #include <cmath>
