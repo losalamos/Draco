@@ -111,9 +111,15 @@ Library Type: ${DRACO_LIBRARY_TYPE}
 
 Vendor dir  : ${VENDOR_DIR}
 MPI         : ${MPIEXEC}
-GSL         : ${GSL_LIBRARY}
-LAPACK      : ${LAPACK_LIBRARIES}
-GANDOLF     : ${GANDOLF_LIBRARY}
+GSL         : ${GSL_LIBRARY}")
+set(tmplist ${LAPACK_LIBRARIES})
+list(GET tmplist 1 lib1)
+list(REMOVE_AT tmplist 1 ) 
+message("LAPACK      : ${lib1}")
+foreach(lib ${tmplist} )
+   message("              ${lib}")
+endforeach()
+message("GANDOLF     : ${GANDOLF_LIBRARY}
 
 ")
 
