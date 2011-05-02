@@ -69,6 +69,10 @@ project( Draco CXX )
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 
+# Option for solution folders for GUI-based development environments
+option( BUILD_USE_SOLUTION_FOLDERS "Enable grouping of projects in VS" ON )
+set_property( GLOBAL PROPERTY USE_FOLDERS ${BUILD_USE_SOLUTION_FOLDERS} )
+
 #
 # The Draco version number.
 #
