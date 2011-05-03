@@ -59,7 +59,6 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
-add_dir_if_exists( xm )           # needs ds++
 
 if( PCG_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/pcgWrap/CMakeLists.txt)
   add_dir_if_exists( pcgWrap )    # needs ds++
