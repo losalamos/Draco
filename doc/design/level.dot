@@ -48,7 +48,6 @@ digraph draco_level {
     shlib      [shape=box, color=blue, label="shared_lib"];
     traits     [shape=box, color=blue, label="traits"];
     units      [shape=box, color=blue, label="units"];
-    xm         [shape=box, color=blue, label="xm"];
         
     /* level 3 */
     cdieos    [shape=box, color=blue, label="cdi_eospac"];
@@ -73,7 +72,7 @@ digraph draco_level {
     /* dependencies */
     {rank=same; legend leg_vendor leg_draco};
     {rank=same; level1 dsxx vlapack vmpi veospac  vgandolf vgrace vdlopen};
-    {rank=same; level2 shlib plot lapack traits xm c4 fpetrap units cdi vpcg ode linear};
+    {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi vpcg ode linear};
     {rank=same; level3 viz timestep cdieos cdigan pcg meshread parser sf};
     {rank=same; level4 rttread quad};
     
@@ -105,7 +104,6 @@ digraph draco_level {
     units       -> {dsxx}        [color=blue];
     vgsl        -> {vlapack}     [color=green];
     vpcg        -> {vlapack}     [color=green];
-    xm          -> {dsxx}        [color=blue];
     
     /* level 3 */
     cdieos      -> {cdi}         [color=blue];
