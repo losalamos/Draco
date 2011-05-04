@@ -182,10 +182,12 @@ macro( add_scalar_tests test_sources )
    # If the test directory does not provide its own library (e.g.:
    # libc4_test.a), then don't try to link against it!
    get_target_property( test_lib_loc Lib_${compname}_test LOCATION )
-   #message( "test_lib_loc = ${test_lib_loc}" )
    if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
       set( test_lib_target_name "Lib_${compname}_test" )
-      #message( "test_lib_target_name = ${test_lib_target_name}" )
+   endif()
+   get_target_property( pkg_lib_loc Lib_${compname} LOCATION )
+   if( NOT "${pkg_lib_loc}" MATCHES "NOTFOUND" )
+      list( APPEND test_lib_target_name "Lib_${compname}" )
    endif()
 
    # Loop over each test source files:
@@ -206,9 +208,7 @@ macro( add_scalar_tests test_sources )
            FOLDER ${compname}
          )
       target_link_libraries( Ut_${compname}_${testname}_exe 
-         # Lib_${compname}_test 
          ${test_lib_target_name}
-         Lib_${compname} 
          ${addscalartest_DEPS}
          )
       if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
