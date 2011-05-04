@@ -105,6 +105,9 @@ endif()
 #            n=0 display errors (same as -w)
 #            n=1 display warnings and errors (DEFAULT)
 #            n=2 display remarks, warnings, and errors
+# -shared-intel Causes Intel-provided libraries to be linked in
+#            dynamically.  The should eliminate the need to link
+#            against libm for every library.
 
 # Suppressions 
 # -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
@@ -112,7 +115,7 @@ endif()
 #                exception_semantics are disabled
 
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-fPIC -vec-report0 -diag-disable remark" )
+  set( CMAKE_C_FLAGS                "-fPIC -vec-report0 -diag-disable remark -shared-intel" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -w1 -ftrapuv -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O1 -inline-level=1 -ip -funroll-loops -fp-model strict -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
