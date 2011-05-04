@@ -17,10 +17,6 @@ if( NOT CMAKE_COMPILER_IS_GNUCC )
   message( FATAL_ERROR "If CC is not GNUCC, then we shouldn't have ended up here.  Something is really wrong with the build system. " )
 endif( NOT CMAKE_COMPILER_IS_GNUCC )
 
-if( BUILD_SHARED_LIBS )
-  message( FATAL_ERROR "Feature not available - yell at KT." )
-endif( BUILD_SHARED_LIBS )
-
 #
 # C++ libraries required by Fortran linker
 # 
