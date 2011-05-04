@@ -126,7 +126,7 @@ macro(Check_Lapack_Libraries LIBRARIES _prefix _name _flags _list _blas _threads
       endif(UNIX AND BLA_STATIC)
       #message("DEBUG: CMAKE_REQUIRED_LIBRARIES = ${CMAKE_REQUIRED_LIBRARIES}")
       if (NOT _LANGUAGES_ MATCHES Fortran)
-         set( CHECK_FUNCTION_EXISTS_DEBUG_OUTPUT ON)
+         # set( CHECK_FUNCTION_EXISTS_DEBUG_OUTPUT OFF)
          #message("DEBUG: check_function_exists(${_name}_ ${_prefix}${_combined_name}_WORKS)")
          check_function_exists(${_name}_ ${_prefix}${_combined_name}_WORKS)
          #message("DEBUG: ${_prefix}${_combined_name}_WORKS = ${${_prefix}${_combined_name}_WORKS}")
@@ -336,3 +336,11 @@ else(BLA_F95)
       endif(LAPACK_FOUND)
    endif(NOT LAPACK_FIND_QUIETLY)
 endif(BLA_F95)
+
+set( LAPACK_FOUND ${LAPACK_FOUND} CACHE BOOL "Did we find LAPACK?" )
+
+# handle the QUIETLY and REQUIRED arguments and set GANDOLF_FOUND to TRUE if 
+# all listed variables are TRUE
+# include(FindPackageHandleStandardArgs)
+# find_package_handle_standard_args(LAPACK DEFAULT_MSG LAPACK_LIBRARY)
+
