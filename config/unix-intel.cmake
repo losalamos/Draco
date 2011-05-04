@@ -17,9 +17,6 @@ if( NOT __LINUX_COMPILER_INTEL )
   message( FATAL_ERROR "If CXX is not Intel C++, then we shouldn't have ended up here.  Something is really wrong with the build system. " )
 endif()
 
-if( BUILD_SHARED_LIBS )
-  message( FATAL_ERROR "Feature not available - yell at KT." )
-endif( BUILD_SHARED_LIBS )
 
 #
 # C++ libraries required by Fortran linker
@@ -93,6 +90,7 @@ endif( BUILD_SHARED_LIBS )
 # -O0    disable optimizations
 # -g     Include debug information
 # -ip    enable single-file IP optimizations (within files)
+# -ipo   enable multi-file IP optimizations (within files)
 # -ansi  equivalent to GNU -ansi
 # -fp-model <name>    enable <name> floating point model variation
 #            [no-]except - enable/disable floating point semantics
@@ -116,9 +114,9 @@ endif( BUILD_SHARED_LIBS )
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS                "-fPIC -vec-report0 -diag-disable remark" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -w1 -ftrapuv -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O1 -inline-level=1 -ipo -funroll-loops -fp-model strict -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELEASE        "-O1 -inline-level=1 -ip -funroll-loops -fp-model strict -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -inline-level=0 -ipo -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O1 -inline-level=0 -ip -DNDEBUG" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -strict-ansi")
