@@ -235,6 +235,7 @@ auto-mode-alist.
       (setq auto-mode-alist
 	    (append '(("\\.C$"      . c++-mode)
 		      ("\\.cc$"     . c++-mode)
+		      ("\\.cxx$"    . c++-mode)
                       ("\\.pt$"     . c++-mode)
 		      ("\\.hh$"     . c++-mode)
 		      ("\\.hpp$"    . c++-mode)

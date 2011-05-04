@@ -9,6 +9,28 @@
 ;;---------------------------------------------------------------------------;;
 
 
+;; This is for GNU Emacs 23+ only:
+;; http://www.gnu.org/s/emacs/manual/html_node/elisp/Menu-Bar.html
+
+(modify-frame-parameters (selected-frame)
+                         '((menu-bar-lines . 2)))
+     
+;; Make a menu keymap (with a prompt string)
+;; and make it the menu bar item's definition.
+(define-key global-map [menu-bar draco]
+  (cons "Draco" (make-sparse-keymap "Draco"))
+  )
+
+;; Define specific subcommands in this menu.
+(define-key global-map
+  [menu-bar draco draco-ins-comment-div]
+  '("Comment Divider" . draco-insert-comment-divider))
+
+(define-key global-map
+  [menu-bar draco draco-insert-time]
+  '("Timestamp" . insert-timestamp))
+
+
 ;;---------------------------------------------------------------------------;;
 ;; Draco Menu
 ;;---------------------------------------------------------------------------;;
