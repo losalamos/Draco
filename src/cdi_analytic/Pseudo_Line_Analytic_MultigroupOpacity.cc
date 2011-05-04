@@ -75,7 +75,7 @@ class PLP_Functor
 
 double PLP_Functor::operator()(double &x)
 {
-    return ptr_->monoOpacity(x)*BB(T_, x);
+    return ptr_->monoOpacity(x, T_)*BB(T_, x);
 }
 
 //---------------------------------------------------------------------------//
@@ -124,7 +124,7 @@ class PLR_Functor
 
 double PLR_Functor::operator()(double &x)
 {
-    return DBB(T_,x)/ptr_->monoOpacity(x);
+    return DBB(T_,x)/ptr_->monoOpacity(x, T_);
 }
 
 //---------------------------------------------------------------------------//
@@ -161,6 +161,8 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
                                        double line_width,
                                        unsigned number_of_edges,
                                        double edge_ratio,
+                                       double Tref,
+                                       double Tpow,
                                        double emin,
                                        double emax,
                                        Averaging const averaging,
@@ -175,6 +177,8 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
     line_width_(line_width),
     number_of_edges_(number_of_edges),
     edge_ratio_(edge_ratio),
+    Tref_(Tref),
+    Tpow_(Tpow),
     averaging_(averaging),
     center_(number_of_lines),
     edge_(number_of_edges),
@@ -264,7 +268,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                     double const g0 = g1;
                     g1 = group_bounds[g+1];
                     double const nu = 0.5*(g0 + g1);
-                    Result[g] = monoOpacity(nu);
+                    Result[g] = monoOpacity(nu, T);
                 }
             }
             break;
@@ -393,7 +397,8 @@ Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const
 }
 
 //---------------------------------------------------------------------------//
-double Pseudo_Line_Analytic_MultigroupOpacity::monoOpacity(double const x)
+double Pseudo_Line_Analytic_MultigroupOpacity::monoOpacity(double const x,
+                                                           double const T)
     const
 {
     unsigned const number_of_lines = number_of_lines_;
@@ -419,6 +424,10 @@ double Pseudo_Line_Analytic_MultigroupOpacity::monoOpacity(double const x)
         {
             Result += edge_factor_[i]*cube(nu0/x);
         }
+    }
+    if (Tpow_ != 0.0)
+    {
+        Result = Result * pow(T/Tref_, Tpow_);
     }
     return Result;
 }

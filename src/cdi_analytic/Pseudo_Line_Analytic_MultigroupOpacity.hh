@@ -58,7 +58,10 @@ class Pseudo_Line_Analytic_MultigroupOpacity
     double line_width_;  // line width as fraction of line frequency.
     unsigned number_of_edges_;
     double edge_ratio_;
-    Averaging averaging_; 
+    Averaging averaging_;
+
+    double Tref_;  // reference temperature for temperature dependence
+    double Tpow_;  // temperature dependence exponent
 
     sf_double center_; // line centers for this realization
     sf_double edge_;   // edges for this realization
@@ -77,6 +80,8 @@ class Pseudo_Line_Analytic_MultigroupOpacity
                                            double line_width,
                                            unsigned number_of_edges,
                                            double edge_ratio,
+                                           double Tref,
+                                           double Tpow,
                                            double emin,
                                            double emax,
                                            Averaging averaging,
@@ -101,7 +106,7 @@ class Pseudo_Line_Analytic_MultigroupOpacity
     sf_char pack() const;
 
     //! Compute a monochromatic opacity
-    double monoOpacity(double nu) const;
+    double monoOpacity(double nu, double T) const;
 };
 
 } // end namespace rtt_cdi_analytic
