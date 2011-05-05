@@ -96,14 +96,14 @@ function(FIND_DRACO_API component header)
   set(DRACO_${component}_FOUND FALSE PARENT_SCOPE)
 
   find_path(DRACO_${component}_INCLUDE_DIR
-    NAMES Release.hh # ${header}
+    NAMES ${component}
     PATHS
       ${DRACO_INCLUDE_DIR}
       ${DRACO_DIR}/include
       ${CMAKE_INSTALL_PREFIX}/include
-    PATH_SUFFIXES
-       ${component}
-    DOC "Path to the DRACO <componenet> include dir."
+#    PATH_SUFFIXES
+#       ${component}
+    DOC "Path to the DRACO <component> include dir."
     )
   find_library(DRACO_${component}_LIBRARY
     NAMES rtt_${component}
