@@ -67,7 +67,30 @@
 
 #---------------------------------------------------------------------
 # Helper functions
-# e.g.:     FIND_DRACO_API(ds++ SP.hh ds++ CORE_RL_ds++_ )
+#---------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+# PADSTRING( result ${length} ${origstring} )
+#---------------------------------------------------------------------
+macro(PADSTRING length origstring )
+
+   # copy the orig string to the result.
+   set( paddedstring ${origstring} )
+   string( LENGTH ${origstring} len_of_origstring )
+
+   # Loop over the remainder of the desired lenth, appending a space
+   # for each char.
+   set( index ${len_of_origstring} )
+   while( ${index} LESS ${length} )
+      set( paddedstring "${paddedstring} " )
+      math( EXPR index '${index}+1' )
+   endwhile()
+
+endmacro()
+
+#---------------------------------------------------------------------
+# FIND_DRACO_API(ds++ SP.hh ds++ CORE_RL_ds++_ )
 #---------------------------------------------------------------------
 function(FIND_DRACO_API component header)
   set(DRACO_${component}_FOUND FALSE PARENT_SCOPE)
@@ -78,10 +101,8 @@ function(FIND_DRACO_API component header)
       ${DRACO_INCLUDE_DIR}
       ${DRACO_DIR}/include
       ${CMAKE_INSTALL_PREFIX}/include
-#      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\DRACO\\Current;BinPath]/include"
     PATH_SUFFIXES
        ${component}
-#      DRACO
     DOC "Path to the DRACO <componenet> include dir."
     )
   find_library(DRACO_${component}_LIBRARY
@@ -90,7 +111,6 @@ function(FIND_DRACO_API component header)
       ${DRACO_LIBRARY_DIR}
       ${DRACO_DIR}/lib
       ${CMAKE_INSTALL_PREFIX}/lib
-#      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\DRACO\\Current;BinPath]/lib"
     DOC "Path to the DRACO <component> library."
     )
 
@@ -113,7 +133,9 @@ function(FIND_DRACO_API component header)
       )
     set(DRACO_LIBRARIES ${DRACO_LIBRARIES} PARENT_SCOPE)
     if( NOT DRACO_FIND_QUIETLY )
-       message( STATUS "Looking for ${component}...\t${DRACO_${component}_LIBRARY}")
+       set(length 20)
+       PADSTRING( ${length} ${component} ) # returns ${paddedstring}
+       message( STATUS "Looking for ${paddedstring}...\t${DRACO_${component}_LIBRARY}")
     endif()
 
  else()
@@ -125,26 +147,15 @@ function(FIND_DRACO_API component header)
   endif()
 endfunction(FIND_DRACO_API)
 
-# function(FIND_DRACO_EXE component)
-#   set(_DRACO_EXECUTABLE
-#     ${DRACO_EXECUTABLE_DIR}/${component}${CMAKE_EXECUTABLE_SUFFIX})
-#   if(EXISTS ${_DRACO_EXECUTABLE})
-#     set(DRACO_${component}_EXECUTABLE
-#       ${_DRACO_EXECUTABLE}
-#        PARENT_SCOPE
-#        )
-#     set(DRACO_${component}_FOUND TRUE PARENT_SCOPE)
-#   else(EXISTS ${_DRACO_EXECUTABLE})
-#     set(DRACO_${component}_FOUND FALSE PARENT_SCOPE)
-#   endif(EXISTS ${_DRACO_EXECUTABLE})
-# endfunction(FIND_DRACO_EXE)
-
 #---------------------------------------------------------------------
 # Start Actual Work
 #---------------------------------------------------------------------
 
 if( NOT DRACO_FIND_QUIETLY )
-   message("Looking for DRACO (at $DRACO_DIR and $CMAKE_INSTALL_PREFIX)...")
+   message("
+Looking for DRACO...
+-- Searching DRACO_DIR            = ${DRACO_DIR} 
+             CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 endif()
 
 # Check for hints found in the environment.
@@ -161,39 +172,12 @@ if( "${DRACO_INCLUDE_DIR}none" STREQUAL "none" AND EXISTS $ENV{DRACO_INC_DIR} )
    set( DRACO_INCLUDE_DIR $ENV{DRACO_INC_DIR} )
 endif()
 
-# Try to find a DRACO installation binary path.
-# find_path(DRACO_EXECUTABLE_DIR
-#   NAMES mogrify${CMAKE_EXECUTABLE_SUFFIX}
-#   PATHS
-#     "[HKEY_LOCAL_MACHINE\\SOFTWARE\\DRACO\\Current;BinPath]"
-#   DOC "Path to the DRACO binary directory."
-#   NO_DEFAULT_PATH
-#   )
-# find_path(DRACO_EXECUTABLE_DIR
-#   NAMES mogrify${CMAKE_EXECUTABLE_SUFFIX}
-#   )
-
 # Find each component. Search for all tools in same dir
 # <DRACO_EXECUTABLE_DIR>; otherwise they should be found
 # independently and not in a cohesive module such as this one.
 set(DRACO_FOUND TRUE)
 foreach(component ${DRACO_FIND_COMPONENTS} ) # ds++, c4, etc.
    FIND_DRACO_API(${component} ${componenet}/Release.hh )
-  # if(component STREQUAL "ds++")
-  #   FIND_DRACO_API(ds++ ds++/Release.hh ds++ CORE_RL_ds++_ )
-  # elseif(component STREQUAL "MagickWand")
-  #   FIND_DRACO_API(MagickWand wand/MagickWand.h
-  #     Wand MagickWand CORE_RL_wand_
-  #     )
-  # elseif(component STREQUAL "MagickCore")
-  #   FIND_DRACO_API(MagickCore magick/MagickCore.h
-  #     Magick MagickCore CORE_RL_magick_
-  #     )
-  # else(component STREQUAL "Magick++")
-  #   if(DRACO_EXECUTABLE_DIR)
-  #     FIND_DRACO_EXE(${component})
-  #   endif(DRACO_EXECUTABLE_DIR)
-  # endif()
   
   if(NOT DRACO_${component}_FOUND)
     list(FIND DRACO_FIND_COMPONENTS ${component} is_requested)
@@ -233,26 +217,3 @@ find_package_handle_standard_args( DRACO DEFAULT_MSG DRACO_FOUND )
 # Maintain consistency with all other variables.
 set(DRACO_FOUND ${DRACO_FOUND})
 
-#---------------------------------------------------------------------
-# DEPRECATED: Setting variables for backward compatibility.
-#---------------------------------------------------------------------
-# set(DRACO_BINARY_PATH          ${DRACO_EXECUTABLE_DIR}
-#     CACHE PATH "Path to the DRACO binary directory.")
-# set(DRACO_CONVERT_EXECUTABLE   ${DRACO_convert_EXECUTABLE}
-#     CACHE FILEPATH "Path to DRACO's convert executable.")
-# set(DRACO_MOGRIFY_EXECUTABLE   ${DRACO_mogrify_EXECUTABLE}
-#     CACHE FILEPATH "Path to DRACO's mogrify executable.")
-# set(DRACO_IMPORT_EXECUTABLE    ${DRACO_import_EXECUTABLE}
-#     CACHE FILEPATH "Path to DRACO's import executable.")
-# set(DRACO_MONTAGE_EXECUTABLE   ${DRACO_montage_EXECUTABLE}
-#     CACHE FILEPATH "Path to DRACO's montage executable.")
-# set(DRACO_COMPOSITE_EXECUTABLE ${DRACO_composite_EXECUTABLE}
-#     CACHE FILEPATH "Path to DRACO's composite executable.")
-#mark_as_advanced(
-#  DRACO_BINARY_PATH
-#  DRACO_CONVERT_EXECUTABLE
-#  DRACO_MOGRIFY_EXECUTABLE
-#  DRACO_IMPORT_EXECUTABLE
-#  DRACO_MONTAGE_EXECUTABLE
-#  DRACO_COMPOSITE_EXECUTABLE
-#  )
