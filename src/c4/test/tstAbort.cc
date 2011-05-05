@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Jun  2 09:28:02 2005
  * \brief  C4 Abort test.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,9 +16,9 @@
 #include <cmath>
 
 #include "ds++/Assert.hh"
+#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
-#include "../Release.hh"
 #include "c4_test.hh"
 
 using namespace std;
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 	{
 	    if (rtt_c4::node() == 0)
 		cout << argv[0] << ": version " 
-		     << rtt_c4::release() 
+		     << rtt_dsxx::release()
 		     << endl;
 	    rtt_c4::finalize();
 	    return 0;

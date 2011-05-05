@@ -17,7 +17,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Assert.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../UnitSystemEnums.hh"
 #include "../FundUnit.hh"
 #include "../UnitSystemType.hh"
@@ -1008,7 +1008,7 @@ int main(int argc, char *argv[])
     using std::cout;
     using std::endl;
     using std::string;
-    using rtt_units::release;
+    using rtt_dsxx::release;
 
     // version tag
     for( int arg = 1; arg < argc; arg++ )

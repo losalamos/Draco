@@ -11,7 +11,7 @@
 
 #include "viz_test.hh"
 #include "../Ensight_Translator.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 
 #include <fstream>
@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_viz::release() << endl; 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() << endl; 
 	    return 0;
 	}
 

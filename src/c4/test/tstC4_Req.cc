@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Nov  1 15:49:44 2005
  * \brief  Unit test for C4_Req class.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,7 +16,7 @@
 #include "ds++/Assert.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
-#include "../Release.hh"
+// #include "ds++/Release.hh"
 #include "c4_test.hh"
 
 #ifdef C4_MPI

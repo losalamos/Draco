@@ -25,7 +25,7 @@
 #include "../Quadrature.hh"
 #include "../Q1DGaussLeg.hh"
 #include "../QuadServices.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Ordinate.hh"
 
 using namespace rtt_quadrature;

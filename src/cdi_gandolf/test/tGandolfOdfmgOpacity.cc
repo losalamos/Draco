@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_gandolf_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../GandolfFile.hh"
 #include "../GandolfException.hh"
 #include "../GandolfOdfmgOpacity.hh"

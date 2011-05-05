@@ -19,7 +19,7 @@
 #include "ds++/Assert.hh"
 
 #include "parser_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Parallel_File_Token_Stream.hh"
 
 using namespace std;
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
 	if (string(argv[arg]) == "--version")
 	{
 	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " << rtt_parser::release() 
+		cout << argv[0] << ": version " << rtt_dsxx::release() 
 		     << endl;
 	    rtt_c4::finalize();
 	    return 0;

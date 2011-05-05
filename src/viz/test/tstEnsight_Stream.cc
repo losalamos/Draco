@@ -20,7 +20,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "viz_test.hh"
 
 #include "../Ensight_Stream.hh"
@@ -141,7 +141,7 @@ void test_simple(const bool binary)
 int main(int argc, char *argv[])
 {
     // version tag
-    std::cout << argv[0] << ": version " << rtt_viz::release() 
+    std::cout << argv[0] << ": version " << rtt_dsxx::release() 
               << std::endl;
     for (int arg = 1; arg < argc; arg++)
 	if (std::string(argv[arg]) == "--version")

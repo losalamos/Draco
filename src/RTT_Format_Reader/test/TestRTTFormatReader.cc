@@ -14,7 +14,7 @@
 #include "TestRTTFormatReader.hh"
 
 #include "../CellDefs.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "c4/ParallelUnitTest.hh"
 
@@ -28,7 +28,7 @@ using namespace rtt_dsxx;
 using namespace rtt_c4;
 
 using rtt_RTT_Format_Reader::RTT_Format_Reader;
-using rtt_RTT_Format_Reader::release;
+using rtt_dsxx::release;
 
 //---------------------------------------------------------------------------//
 // TESTS

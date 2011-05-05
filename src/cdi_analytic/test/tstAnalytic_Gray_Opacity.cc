@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Analytic_Gray_Opacity.hh"
 #include "../nGray_Analytic_MultigroupOpacity.hh"
 #include "../Analytic_Models.hh"
@@ -418,7 +418,7 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_cdi_analytic::release() 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
 	    return 0;
 	}

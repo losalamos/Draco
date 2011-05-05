@@ -10,7 +10,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 #include "../Timer.hh"
@@ -213,7 +213,7 @@ int main( int argc, char *argv[] )
 
     // version tag
     if( rtt_c4::node() == 0 )
-        cout << argv[0] << ": version " << rtt_c4::release() 
+        cout << argv[0] << ": version " << rtt_dsxx::release() 
              << endl;
 
     for( int arg = 1; arg < argc; arg++ )

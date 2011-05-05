@@ -13,7 +13,7 @@
 #include <sstream>
 
 #include "parser_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Console_Token_Stream.hh"
 
 using namespace std;
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_parser::release() 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
 	    return 0;
 	}

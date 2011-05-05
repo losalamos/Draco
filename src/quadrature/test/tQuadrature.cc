@@ -30,7 +30,7 @@
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
 #include "../GeneralQuadrature.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_quadrature;
@@ -495,7 +495,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_quadrature::release );
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
 	quadrature_test(ut);
 	Q2DLevelSym_tests(ut);
 	Q3DLevelSym_tests(ut);

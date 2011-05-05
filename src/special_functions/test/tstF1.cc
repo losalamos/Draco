@@ -17,7 +17,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "units/PhysicalConstants.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../F1.hh"
 
 using namespace std;

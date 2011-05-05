@@ -15,7 +15,7 @@
 
 #include "ds++/ScalarUnitTest.hh"
 #include "../Token_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

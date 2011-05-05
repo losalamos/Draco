@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_gandolf_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../GandolfFile.hh"
 #include "../GandolfException.hh"
 #include "../GandolfGrayOpacity.hh"
@@ -1752,13 +1752,13 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_cdi_gandolf::release() 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
 	    return 0;
 	}
 
     std::cout << "\nWe are testing cdi_gandolf: version "
-              << rtt_cdi_gandolf::release() << "\n" << std::endl;
+              << rtt_dsxx::release() << "\n" << std::endl;
     
     try
     {

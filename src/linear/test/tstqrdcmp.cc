@@ -16,7 +16,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../qrdcmp.hh"
 
 using namespace std;

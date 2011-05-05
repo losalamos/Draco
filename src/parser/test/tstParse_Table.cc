@@ -17,7 +17,7 @@
 
 #include <string.h>
 #include "parser_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Parse_Table.hh"
 #include "../File_Token_Stream.hh"
 #include "../String_Token_Stream.hh"

@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "lapack_wrap_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Blas.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -174,7 +174,7 @@ void tst_nrm2()
 int main(int argc, char *argv[])
 {
     // version tag
-    cout << argv[0] << ": version " << rtt_lapack_wrap::release() 
+    cout << argv[0] << ": version " << rtt_dsxx::release() 
          << endl;
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")

@@ -21,7 +21,7 @@
 
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace rtt_dsxx;
 using namespace rtt_parser;
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_quadrature::release );
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
         tstTokenCtor1( ut );
         tstTokenCtor2( ut );
         tstTokenCtor3( ut );

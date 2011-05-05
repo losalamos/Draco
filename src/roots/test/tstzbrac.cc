@@ -14,7 +14,7 @@
 
 #include "ds++/ScalarUnitTest.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../zbrac.hh"
 
 using namespace std;

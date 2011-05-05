@@ -30,6 +30,11 @@
 /* Are we building static or shared libraries? */
 #undef DRACO_SHARED_LIBS
 
+   /* Version information */
+#define DRACO_VERSION_MAJOR "6"
+#define DRACO_VERSION_MINOR "1"
+#define DRACO_VERSION_PATCH "0"
+
 /* ---------------------------------------- */
 /* CMAKE based build system                 */
 /* ---------------------------------------- */
@@ -57,11 +62,17 @@
 #define _USE_MATH_DEFINES   
 #endif /* Win32 */
 
+   /* Version information */
+#define DRACO_VERSION_MAJOR "@DRACO_VERSION_MAJOR@"
+#define DRACO_VERSION_MINOR "@DRACO_VERSION_MINOR@"
+#define DRACO_VERSION_PATCH "@DRACO_VERSION_PATCH@"
+
 #endif /* Autoconf based build */
 
 /* ---------------------------------------- */
 /* GENERAL build system setup               */
-/* ---------------------------------------- */
+/* ---------------------------------------- */   
+
 /*!
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC
  * hides everying unless they are marked as 'dllexport'.  By default

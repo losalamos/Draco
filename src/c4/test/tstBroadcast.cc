@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
+ * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,7 +20,7 @@
 
 #include "c4_test.hh"
 #include "../C4_Traits.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 
@@ -141,7 +143,7 @@ int main(int argc, char *argv[])
 	if (string(argv[arg]) == "--version")
 	{
 	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " << rtt_c4::release() 
+		cout << argv[0] << ": version " << rtt_dsxx::release()
 		     << endl;
 	    rtt_c4::finalize();
 	    return 0;

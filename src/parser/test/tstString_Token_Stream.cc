@@ -19,7 +19,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "parser_test.hh"
 #include "../utilities.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../String_Token_Stream.hh"
 
 using namespace std;

@@ -10,7 +10,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Token.hh"
 #include "ds++/ScalarUnitTest.hh"
 

@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 #include "ds++/Assert.hh"
@@ -416,7 +416,7 @@ int main(int argc, char *argv[])
         if (string(argv[arg]) == "--version")
         {
             if (rtt_c4::node() == 0)
-                cout << argv[0] << ": version " << rtt_c4::release() 
+                cout << argv[0] << ": version " << rtt_dsxx::release() 
                 << endl;
             rtt_c4::finalize();
             return 0;

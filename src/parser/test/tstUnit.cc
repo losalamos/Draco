@@ -11,7 +11,7 @@
 
 #include <sstream>
 #include "parser_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Unit.hh"
 #include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"

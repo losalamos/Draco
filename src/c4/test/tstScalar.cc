@@ -15,7 +15,7 @@
 #include "ds++/Assert.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../C4_Tags.hh"
 #include "c4_test.hh"
 

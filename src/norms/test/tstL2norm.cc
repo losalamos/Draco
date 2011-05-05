@@ -16,7 +16,7 @@
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "c4/global.hh"
 #include "../L2norm.hh"

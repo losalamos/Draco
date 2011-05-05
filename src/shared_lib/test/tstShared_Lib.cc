@@ -17,7 +17,7 @@
 #include <sstream>
 
 #include "../Shared_Lib.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include <ds++/Assert.hh>
 #include <ds++/Soft_Equivalence.hh>
 #include "shared_lib_test.hh"
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 	if (std::string(argv[arg]) == "--version")
 	{
 	    std::cout << argv[0] << ": version " 
-		      << rtt_shared_lib::release() 
+		      << rtt_dsxx::release() 
 		      << std::endl;
 	    return 0;
 	}

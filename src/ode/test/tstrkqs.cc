@@ -16,7 +16,7 @@
 #include <limits>
 
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../rkqs.hh"
 
 using namespace std;

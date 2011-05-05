@@ -40,7 +40,7 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library( Lib_viz ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_viz Lib_traits Lib_c4 )
+add_dependencies( Lib_viz Lib_c4 )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

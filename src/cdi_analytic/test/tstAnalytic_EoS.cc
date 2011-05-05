@@ -11,7 +11,7 @@
 
 #include "cdi_analytic_test.hh"
 #include "../Analytic_EoS.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
 #include "cdi/EoS.hh"
@@ -363,7 +363,7 @@ void packing_test()
 int main(int argc, char *argv[])
 {
     // version tag
-    cout << argv[0] << ": version " << rtt_cdi_analytic::release() << endl;
+    cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	    return 0;

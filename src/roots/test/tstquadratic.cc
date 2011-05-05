@@ -15,7 +15,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "c4/global.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../quadratic.hh"
 
 using namespace std;

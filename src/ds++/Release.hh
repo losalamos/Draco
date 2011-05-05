@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file   ds++/Release.hh
+ * \file   ../Release.hh
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Header file for ds++ library release function.
@@ -37,5 +37,5 @@ DLL_PUBLIC const std::string release();
 #endif                          // rtt_ds_Release_hh
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/Release.hh
+//                              end of ../Release.hh
 //---------------------------------------------------------------------------//

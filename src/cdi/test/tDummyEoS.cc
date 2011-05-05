@@ -12,7 +12,7 @@
 #include "cdi_test.hh"
 #include "DummyEoS.hh"
 #include "../EoS.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_cdi::release() 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
 	    return 0;
 	}

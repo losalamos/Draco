@@ -13,10 +13,12 @@ file( GLOB test_sources *.cc )
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
+   ${dsxx_BINARY_DIR}         # headers for ds++
+   ${draco_src_dir_SOURCE_DIR}
    ${MPI_INCLUDE_PATH} )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_traits;Lib_dsxx;${INTEL_LIBM}"
+   DEPS    "Lib_dsxx"
    )
 

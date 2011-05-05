@@ -16,7 +16,7 @@
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "quadrature_test.hh"
 #include "square.hh"
 #include "../gaulag.hh"
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         if (std::string(argv[arg]) == "--version")
         {
             std::cout << argv[0] << ": version " 
-                      << rtt_quadrature::release() 
+                      << rtt_dsxx::release() 
                       << std::endl;
             return 0;
         }

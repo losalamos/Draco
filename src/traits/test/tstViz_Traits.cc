@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Traits_Test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Viz_Traits.hh"
 
 #include <iostream>
@@ -95,9 +95,9 @@ void test_FT()
     if (vt.nrows() != 3)                                         ITFAILS;
     for (size_t i = 0; i < vt.nrows(); i++)
     {
-	if (vt.ncols(i) != field[i].size()) ITFAILS;
+	if (vt.ncols(i) != field[i].size())                          ITFAILS;
 	for (size_t j = 0; j < vt.ncols(i); j++)
-	    if (vt(i, j) != field[i][j])                         ITFAILS;
+	    if (vt(i, j) != field[i][j])                             ITFAILS;
     }
 }
 
@@ -106,7 +106,7 @@ void test_FT()
 int main(int argc, char *argv[])
 {
     // version tag
-    cout << argv[0] << ": version " << rtt_traits::release() << endl; 
+    cout << argv[0] << ": version " << rtt_dsxx::release() << endl; 
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	    return 0;

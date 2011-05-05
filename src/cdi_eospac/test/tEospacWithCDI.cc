@@ -13,7 +13,7 @@
 #include "cdi_eospac_test.hh"
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 // Draco dependencies
 #include "ds++/SP.hh"
@@ -357,7 +357,7 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_cdi_eospac::release() 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
 	    return 0;
 	}

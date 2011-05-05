@@ -19,7 +19,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../FM12.hh"
 //#include "../FM12inv.hh"
 

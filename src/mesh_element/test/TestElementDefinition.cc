@@ -14,7 +14,7 @@
 #include "mesh_element_test.hh"
 #include "TestElementDefinition.hh"
 #include "../Element_Definition.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
@@ -1158,7 +1158,7 @@ bool test_hexa_27(
 int main(int argc, char *argv[])
 {
     // version tag
-    cout << argv[0] << ": version " << rtt_mesh_element::release() 
+    cout << argv[0] << ": version " << rtt_dsxx::release() 
 	 << endl;
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version") return 0;

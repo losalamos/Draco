@@ -10,7 +10,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../global.hh"
 #include "../gatherv.hh"

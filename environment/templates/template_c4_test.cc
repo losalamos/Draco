@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "ds++/Assert.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
 
 using namespace std;

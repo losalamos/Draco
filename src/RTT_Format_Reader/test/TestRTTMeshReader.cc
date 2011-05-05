@@ -15,7 +15,7 @@
 #include <sstream>
 
 #include "ds++/Assert.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../RTT_Mesh_Reader.hh"
 #include "RTT_Format_Reader_test.hh"
 
@@ -301,7 +301,7 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
 
 int main(int argc, char *argv[])
 {
-    using rtt_RTT_Format_Reader::release;
+    using rtt_dsxx::release;
     using rtt_RTT_Mesh_Reader_test::runTest;
     using rtt_RTT_Mesh_Reader_test::passed;
     

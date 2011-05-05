@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/Release.cc
+ * \file   ../Release.cc
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
@@ -10,7 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <sstream>
 #include "Release.hh"
+#include "ds++/config.h"
 
 namespace rtt_dsxx
 {
@@ -19,8 +21,12 @@ namespace rtt_dsxx
 // this library in the form ds_#.#.# in pkg_version variable
 const std::string release()
 {
-    std::string pkg_release = "ds++(draco-6_1_0)";
-    return pkg_release;
+    std::ostringstream pkg_release;
+    pkg_release << "Draco-"
+                << DRACO_VERSION_MAJOR << "_"
+                << DRACO_VERSION_MINOR << "_"
+                << DRACO_VERSION_PATCH ;
+    return pkg_release.str();
 }
 
 }  // end of rtt_dsxx

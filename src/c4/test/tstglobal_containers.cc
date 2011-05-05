@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------//
 #include "c4/config.h"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../C4_Functions.hh"
 #include "../global_containers.i.hh"

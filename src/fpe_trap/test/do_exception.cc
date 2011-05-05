@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include "../fpe_trap.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include <ds++/Assert.hh>
 #include <fstream>
 #include <cmath>
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
     // banner
     cout << "This is " << argv[0] << ": version "
-         << rtt_fpe_trap::release() << endl; 
+         << rtt_dsxx::release() << endl; 
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	    return 0;

@@ -16,7 +16,7 @@
 
 #include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

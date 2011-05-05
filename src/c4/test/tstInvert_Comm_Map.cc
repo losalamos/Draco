@@ -12,7 +12,7 @@
 
 #include "../Invert_Comm_Map.hh"
 #include "ds++/Assert.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
 
 #include <iostream>
@@ -175,7 +175,7 @@ void test_empty(rtt_c4::ParallelUnitTest& ut)
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::ParallelUnitTest ut(argc, argv, release);
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
         if (nodes() == 2)

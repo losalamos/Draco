@@ -15,7 +15,7 @@
 
 #include "ds++/ScalarUnitTest.hh"
 #include "c4/global.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "linear/fnorm.hh"
 #include "../lnsrch.hh"
 

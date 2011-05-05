@@ -15,7 +15,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../zbrac.hh"
 #include "../zbrent.hh"
 

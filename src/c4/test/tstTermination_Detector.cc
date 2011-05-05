@@ -13,7 +13,7 @@
 #include <iostream>
 
 #include "../ParallelUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Termination_Detector.hh"
 
 using namespace std;

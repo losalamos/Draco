@@ -13,7 +13,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "parser_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include "../File_Token_Stream.hh"

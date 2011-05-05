@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Sep 27 12:49:39 2005
  * \brief  Unit tests for kronecker_delta and factorial.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,7 +16,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "../Factorial.hh"
 #include "../KroneckerDelta.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     using namespace std;
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, release );
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
         tstFactorial(ut);
         tstKdelta(ut);
         tstFF(ut);

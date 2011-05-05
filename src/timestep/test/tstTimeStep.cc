@@ -12,7 +12,7 @@
 #include "dummy_package.hh"
 #include "timestep_test.hh"
 #include "../ts_manager.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../fixed_ts_advisor.hh"
 #include "../ratio_ts_advisor.hh"
 #include "../target_ts_advisor.hh"
@@ -42,7 +42,7 @@ int main ( int argc, char *argv[] )
 
     // version tag
     if( node() == 0 )
-        cout << argv[0] << ": version " << rtt_timestep::release() << endl;
+        cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
     for( int arg=1; arg < argc; arg++ )
 	if( string(argv[arg]) == "--version" )
 	{ finalize(); return 0; }

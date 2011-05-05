@@ -14,7 +14,7 @@
 
 #include "../C4_Functions.hh"
 #include "../ParallelUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Processor_Group.hh"
 
 using namespace std;

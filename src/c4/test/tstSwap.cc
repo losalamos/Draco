@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "ds++/Assert.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../C4_Functions.hh"
 #include "../swap.hh"

@@ -17,7 +17,7 @@
 #include <cstdlib>
 
 #include "../Plot2D.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using std::cin;
 using std::cout;

@@ -17,7 +17,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../F2.hh"
 #include "../F2inv.hh"
 

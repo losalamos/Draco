@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "rng_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Random_Inline.hh"
 #include "../LFG.h"
 #include "ds++/Assert.hh"
@@ -173,12 +173,12 @@ int main(int argc, char *argv[])
     for (int arg = 1; arg < argc; arg++)
 	if (string(argv[arg]) == "--version")
 	{
-	    cout << argv[0] << ": version " << rtt_rng::release() 
+	    cout << argv[0] << ": version " << rtt_dsxx::release() 
 		 << endl;
 	    return 0;
 	}
 
-    cout << "\nThis is rng: version" << rtt_rng::release() << "\n" << endl;
+    cout << "\nThis is rng: version" << rtt_dsxx::release() << "\n" << endl;
     
     try
     {

@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "diagnostics_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Diagnostics.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
     // print the version tag
     if (rtt_c4::node() == 0)
         cout << argv[0] << ": version " 
-             << rtt_diagnostics::release() 
+             << rtt_dsxx::release() 
              << endl;
     
     // version tag

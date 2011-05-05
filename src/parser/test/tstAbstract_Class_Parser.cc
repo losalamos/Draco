@@ -20,7 +20,7 @@
 #include "../Abstract_Class_Parser.hh"
 #include "../utilities.hh"
 #include "../File_Token_Stream.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

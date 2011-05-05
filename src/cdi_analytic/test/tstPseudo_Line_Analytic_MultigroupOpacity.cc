@@ -17,7 +17,7 @@
 
 #include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "parser/Constant_Expression.hh"
 

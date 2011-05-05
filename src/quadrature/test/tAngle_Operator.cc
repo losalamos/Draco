@@ -19,7 +19,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "parser/String_Token_Stream.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../QuadCreator.hh"
 #include "../Angle_Operator.hh"
 

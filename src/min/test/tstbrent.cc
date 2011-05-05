@@ -17,7 +17,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../brent.hh"
 
 using namespace std;

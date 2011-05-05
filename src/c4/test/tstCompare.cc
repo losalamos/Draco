@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "c4_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
 	{
 	    if (rtt_c4::node() == 0)
 		cout << argv[0] << ": version " 
-		     << rtt_c4::release() 
+		     << rtt_dsxx::release()
 		     << endl;
 	    rtt_c4::finalize();
 	    return 0;

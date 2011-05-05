@@ -14,7 +14,7 @@
 #include <string>
 
 #include "../ParallelUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

@@ -17,7 +17,7 @@
 #include "units/PhysicalConstants.hh"
 
 #include "../Ylm.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_sf;
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, release );
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
         tstcPlk(          ut );
         tstNormalizedYlk( ut );
         tstRealYlk(       ut );

@@ -14,7 +14,7 @@
 #include <typeinfo>
 
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../Function_Traits.hh"
 
 using namespace std;

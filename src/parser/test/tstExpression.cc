@@ -18,7 +18,7 @@
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../String_Token_Stream.hh"
 #include "ds++/square.hh"
 

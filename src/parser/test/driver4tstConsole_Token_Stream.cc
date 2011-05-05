@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------------//
 
 #include "parser_test.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
 #include <iostream>
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
     // version tag
     if (rtt_c4::node() == 0)
-        cout << argv[0] << ": version " << rtt_parser::release() << endl;
+        cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
 
     // Optional exit
     for (int arg = 1; arg < argc; arg++)

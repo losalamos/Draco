@@ -18,7 +18,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../gaussj.hh"
 
 using namespace std;

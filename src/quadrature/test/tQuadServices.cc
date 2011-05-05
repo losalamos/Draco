@@ -27,7 +27,7 @@
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
 #include "../QuadServices.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 using namespace rtt_quadrature;
 using namespace rtt_dsxx;

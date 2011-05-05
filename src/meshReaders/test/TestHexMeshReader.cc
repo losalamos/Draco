@@ -17,7 +17,7 @@
 #include "meshReaders_test.hh"
 #include "TestHexMeshReader.hh"
 #include "../Hex_Mesh_Reader.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "mesh_element/Element_Definition.hh"
 #include "ds++/Assert.hh"
 
@@ -555,7 +555,7 @@ bool check_map(const std::map<std::string, std::set<int> >
 
 int main(int argc, char *argv[])
 {
-    using  rtt_meshReaders::release;
+    using  rtt_dsxx::release;
     
     // version tag
     cout << argv[0] << ": version " << release() << endl;

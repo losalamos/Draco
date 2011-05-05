@@ -17,7 +17,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 
 #include "../Power.hh"
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
         if (std::string(argv[arg]) == "--version")
         {
             cout << argv[0] << ": version " 
-                 << rtt_sf::release() 
+                 << rtt_dsxx::release() 
                  << endl;
             return 0;
         }
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_sf::release );
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
 
         test(ut);
     }

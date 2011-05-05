@@ -16,7 +16,7 @@
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "../cubic1.hh"
 

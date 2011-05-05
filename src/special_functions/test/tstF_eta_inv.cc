@@ -14,7 +14,7 @@
 #include <cmath>
 
 #include "ds++/ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Release.hh"
 #include "../F_eta.hh"
 #include "../F_eta_inv.hh"
 
