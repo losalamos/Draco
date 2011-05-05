@@ -52,13 +52,13 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_lapack_wrap ${PROJECT_NAME} "${sources}"  )
+# No sources!
+# add_component_library( Lib_lapack_wrap ${PROJECT_NAME} "${sources}"  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_lapack_wrap DESTINATION lib )
 install( FILES ${headers} DESTINATION include/lapack_wrap )
 
 # ---------------------------------------------------------------------------- #
