@@ -13,7 +13,7 @@ dnl the files listed on the AC_OUTPUT line.
 dnl Process any command line arguments and find the source code
 dnl directory.
 AC_INIT
-AC_CONFIG_SRCDIR([Release.hh])
+dnl AC_CONFIG_SRCDIR([Release.hh])
 
 dnl echo " "
 dnl echo "======================================================================"

@@ -7,7 +7,7 @@ dnl @> configure.in for rng
 dnl-------------------------------------------------------------------------dnl
 
 AC_INIT
-AC_CONFIG_SRCDIR([Release.hh])
+dnl AC_CONFIG_SRCDIR([Release.hh])
 AC_CONFIG_AUX_DIR(../../config)
 AC_CONFIG_HEADER(rng/config.h:config.h.in)
 package="rng"

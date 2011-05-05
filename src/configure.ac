@@ -50,7 +50,7 @@ AC_CONFIG_SUBDIRS( ds++ )
 dnl Warning: if we do not find an MPI vendor, c4 will default to
 dnl scalar-mode.
 AC_MPI_SETUP(pkg)
-AC_CONFIG_SUBDIRS( xm rng c4 units traits cdi mesh_element \
+AC_CONFIG_SUBDIRS( rng c4 units cdi mesh_element \
  		   shared_lib fpe_trap ode linear ) 
 
 dnl Determine if these vendors are available.
@@ -58,14 +58,6 @@ AC_LAPACK_SETUP(pkg)
 AC_GRACE_SETUP(pkg)
 AC_GSL_SETUP(pkg)
 
-# Only build lapack_wrap if lapack is available
-if test -d ${srcdir}/lapack_wrap; then
-  if test -n "${vendor_lapack}"; then
-    AC_CONFIG_SUBDIRS( lapack_wrap )
-  else
-    AC_NO_VENDOR_WARN([lapack_wrap],[lapack])
-  fi
-fi
 
 # Only build plot2D if xmgrace is available
 if test -d ${srcdir}/plot2D; then
