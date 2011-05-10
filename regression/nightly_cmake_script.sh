@@ -74,29 +74,29 @@ module unload bullseyecoverage
 #
 # PGI builds
 #
-module unload lapack-gcc gcc
-module load pgi lapack-pgi
-comp=pgi
+# module unload lapack-gcc gcc
+# module load pgi lapack-pgi
+# comp=pgi
 
-# Release build
-build_type=Release
-export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+# # Release build
+# build_type=Release
+# export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+# ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
 
-#
-# Intel builds
-#
-module unload pgi lapack-pgi
-module load intel lapack-intel
-comp=intel
+# #
+# # Intel builds
+# #
+# module unload pgi lapack-pgi
+# module load intel lapack-intel
+# comp=intel
 
-# Release build
-build_type=Release
-export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+# # Release build
+# build_type=Release
+# export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+# ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
 
-# Debug build
-build_type=Debug
-export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
+# # Debug build
+# build_type=Debug
+# export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+# ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
 
