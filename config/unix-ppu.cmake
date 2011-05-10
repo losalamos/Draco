@@ -13,9 +13,10 @@
 # Sanity Checks
 # 
 
-if( BUILD_SHARED_LIBS )
-  message( FATAL_ERROR "Feature not available - yell at KT." )
-endif( BUILD_SHARED_LIBS )
+# Must use static libraries.
+set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
+   "Keyword for creating new libraries (STATIC or SHARED).")
+set( DRACO_LIBRARY_TYPE "STATIC" FORCE )
 
 #
 # C++ libraries required by Fortran linker
