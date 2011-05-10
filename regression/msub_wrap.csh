@@ -14,6 +14,7 @@ case tu-*:
 case yr-*:
     echo "/opt/MOAB/bin/msub $HOME/draco/regression/cdash-release-yr.msub"
     /opt/MOAB/bin/msub $HOME/draco/regression/cdash-release-yr.msub 
+    echo "/opt/MOAB/bin/msub $HOME/draco/regression/cdash-debug-yr.msub"
     /opt/MOAB/bin/msub $HOME/draco/regression/cdash-debug-yr.msub 
     breaksw
 default:
