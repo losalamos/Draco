@@ -20,6 +20,7 @@ tst_targets = [src[:-3] for src in tst_sources]
 test_lib         = package_name + "_test"
 test_lib_sources = [test_lib + ".cc","ReadOdfGandolfFile.cc"]
 test_lib_headers = [test_lib + ".hh"]
+tst_resources    = ["analyticOpacities.ipcress","odfregression10.ipcress","Al_BeCu.ipcress"]
 
 # external pieces:
 scons_dir = "../../../../scons"
@@ -39,6 +40,7 @@ full_tst_sources = map( lambda x: join(build_dir,x), tst_sources)
 full_lib_sources = map( lambda x: join(build_dir,x), test_lib_sources)
 full_headers     = map( lambda x: join(build_dir,x), test_lib_headers)
 full_tst_targets = map( lambda x: join(build_dir,x), tst_targets)
+full_resources   = map( lambda x: join(build_dir,x), tst_resources)
 
 libs += [
     test_lib,
@@ -81,10 +83,14 @@ lib_target = env.Library( full_test_lib, full_lib_sources)
 # 2. build the test programs
 test_targets = [env.Program( t,s, LIBS=libs, LIBPATH=libpaths) for (t,s) in zip(full_tst_targets,full_tst_sources)]
 
+# 3. install test resources
+# tst_rsrcs_as = [f.strip(".in") for f in full_resources]
+resource_target = env.InstallAs( full_resources, tst_resources )
 # add these to the "check" target
 Alias("check",lib_target)
 Alias("check",test_targets)
 
+Alias("check",resource_target)
 
 # version
 
