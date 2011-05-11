@@ -1,0 +1,106 @@
+#-*-Python-*-
+# Sconstruct for draco/diagnostics
+# T. M. Kelley
+# Nov 03, 2008
+# Input to scons
+# (c) Copyright 2008 LANSLLC all rights reserved.
+
+import os
+
+package_name = "diagnostics"
+
+target  = "rtt_" + package_name
+
+# c4 source files, target, & libs
+sources = filter( lambda x: x[-3:] == ".cc", os.listdir('.'))
+
+# headers for export 
+headers = filter( lambda x: x[-3:] == ".hh", os.listdir('.'))
+
+# external pieces:
+scons_dir = "../../../scons"
+execfile(scons_dir + "/scons_master")
+execfile(scons_dir + "/scons_project")
+if arch== 'x86':
+    execfile(scons_dir + "/scons_master_host")
+elif arch == 'ppe':
+    execfile(scons_dir + "/scons_master_cell")
+    
+# where to build
+from os.path import join
+build_dir    = join(build_root,"draco",package_name)
+full_target  = join(build_dir,target)
+full_sources = map( lambda x: join(build_dir,x), sources)
+full_headers = map( lambda x: join(build_dir,x), headers)
+
+# install dirs
+
+install_libdir = export_libdir
+install_incdir = join(export_incdir,package_name)
+install_cnfdir = join(export_incdir,package_name,package_name)
+
+libs += [
+    ]
+
+libpaths += [
+    ]
+
+cpppaths += [
+    ".",
+    project_incdir,
+    ]
+
+
+cxxflags += ""
+
+# build environment
+
+compiler_file = "scons_compiler_%s_%s_%s" % (c4, arch, compiler)
+execfile(scons_dir + "/%s" % compiler_file)
+
+env.VariantDir(build_dir, '.')
+
+
+# What to do:
+# 1. configure config.h
+config_h_config = {
+    "draco_diagnostics" : loglevel,
+    "draco_timing"      : timelevel,
+    }
+
+env['config'] = config_h_config
+import gen_diagnostics_config 
+configurator  = Builder( action = gen_diagnostics_config.generate_config_h)
+env["BUILDERS"]["GenConfig"] = configurator
+config_target = env.GenConfig( join(build_dir,package_name,'config.h'),
+                               'config.h.pyin')
+
+# 2. build the library
+lib_target = env.Library( full_target, full_sources)
+
+# install targets for library, headers
+env.Install( install_libdir, lib_target)
+env.Install( install_incdir, headers)
+env.Install( install_cnfdir, [join(build_dir,package_name,"config.h")])
+
+# influential alias
+install_target = env.Alias( "install", [install_libdir,
+                                        install_incdir,
+                                        install_cnfdir])
+
+# List of default tasks:
+env.Default( [
+    config_target,
+    lib_target,       # build library
+    install_target    # install lib, headers, config.h
+    ])
+
+# recurse into test directory--note there is no default there
+SConscript("./test/SConscript")
+
+
+# version
+__id__ = "$Id$"
+
+# End of file
+
