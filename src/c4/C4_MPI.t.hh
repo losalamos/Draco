@@ -106,6 +106,25 @@ void send_async(C4_Req  &request,
 //---------------------------------------------------------------------------//
 
 template<class T>
+void send_is(C4_Req  &request, 
+	     const T *buffer, 
+	     int      size, 
+	     int      destination,
+	     int      tag)
+{
+  Require (!request.inuse());
+  
+  // set the request
+  request.set();
+  
+  const int retval = MPI_Issend(const_cast<T *>(buffer), size, 
+				MPI_Traits<T>::element_type(),
+				destination, tag, communicator, &request.r());
+  Check(retval == MPI_SUCCESS);
+}
+//---------------------------------------------------------------------------//
+
+template<class T>
 C4_Req receive_async(T   *buffer, 
 		     int  size, 
 		     int  source, 

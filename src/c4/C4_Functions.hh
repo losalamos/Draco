@@ -186,6 +186,38 @@ void send_async( C4_Req       & request,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Do a point-to-point, non-blocking synchronous send.
+ */
+template<class T>
+void send_is(C4_Req       & request,
+             T      const * buffer,
+             int            size,
+             int            destination,
+             int            tag );
+template<class T>
+void send_is(C4_Req       & request,
+             T      const * buffer,
+             int            size,
+             int            destination )
+{
+    int tag = C4_Traits<T*>::tag;
+    send_is( request, buffer, size, destination, tag );
+    return;
+}
+
+// [2011-05-11 GMR] This declaration should replace the two preceeding ones.
+// However, I expect that PGI-10 doesn't like this syntax for the same reason
+// that it doesn't like the syntax for send_async above.
+
+// template<class T>
+// void send_is(C4_Req       & request,
+//              T      const * buffer,
+//              int            size,
+//              int            destination,
+//              int            tag = C4_Traits<T*>::tag);
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Do a point-to-point, non-blocking receive.
  *
  * \return C4_Req object to handle communciation requests

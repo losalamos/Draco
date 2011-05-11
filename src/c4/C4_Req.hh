@@ -12,6 +12,7 @@
 
 #ifndef c4_C4_Req_hh
 #define c4_C4_Req_hh
+#include <ds++/Assert.hh>
 
 // C4 package configure
 #include "c4/config.h"
@@ -72,7 +73,12 @@ class C4_ReqRefRep {
 
     unsigned count();
 
-    int inuse() const { return assigned; }
+    int inuse() const { 
+#ifdef C4_MPI
+      if(assigned) Check(r != MPI_REQUEST_NULL);
+#endif
+      return assigned;
+    }
 
   private:
     
@@ -150,6 +156,9 @@ class C4_Req {
 
     template<class T>
     friend void send_async(C4_Req &r, const T *buf, int nels, int dest,
+			   int tag);
+    template<class T>
+    friend void send_is(C4_Req &r, const T *buf, int nels, int dest,
 			   int tag);
     template<class T>
     friend void receive_async(C4_Req &r, T *buf, int nels, int source, 

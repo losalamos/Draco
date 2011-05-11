@@ -97,6 +97,30 @@ template
 void send_async<long double>(C4_Req &, const long double *, int, int, int);
 
 template
+void send_is<char>(C4_Req &, const char *, int, int, int);
+template
+void send_is<unsigned char>(C4_Req &, const unsigned char *, int, int, int);
+template
+void send_is<short>(C4_Req &, const short *, int, int, int);
+template
+void send_is<unsigned short>(
+    C4_Req &, const unsigned short *, int, int, int);
+template
+void send_is<int>(C4_Req &, const int *, int, int, int);
+template
+void send_is<unsigned int>(C4_Req &, const unsigned int *, int, int, int);
+template
+void send_is<long>(C4_Req &, const long *, int, int, int);
+template
+void send_is<unsigned long>(C4_Req &, const unsigned long *, int, int, int);
+template
+void send_is<float>(C4_Req &, const float *, int, int, int);
+template
+void send_is<double>(C4_Req &, const double *, int, int, int);
+template
+void send_is<long double>(C4_Req &, const long double *, int, int, int);
+
+template
 void receive_async<char>(C4_Req &, char*, int, int, int);
 template
 void receive_async<unsigned char>(C4_Req &, unsigned char *, int, int, int);
