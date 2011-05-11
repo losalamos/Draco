@@ -106,7 +106,7 @@ set( DRACO_LIBRARY_TYPE "STATIC" FORCE )
 
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
-   set( CMAKE_C_FLAGS                "-W -Wall -Wno-sign-compare -m64 -mabi=altivec -maltivec -D__PPU__ -DADDRESSING_64" )
+   set( CMAKE_C_FLAGS                "-W -Wall -Wno-sign-compare -m64 -mabi=altivec -maltivec -D__PPU__ -DADDRESSING_64 -DCACHE_LINE_SIZE=128" )
    set( CMAKE_C_FLAGS_DEBUG          "-O0 -gdwarf-2" )
    set( CMAKE_C_FLAGS_RELEASE        "-O3" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "-O3" )
