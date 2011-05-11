@@ -116,13 +116,17 @@ DRACO_TIMING     : ${DRACO_TIMING}
 Vendor dir  : ${VENDOR_DIR}
 MPI         : ${MPIEXEC}
 GSL         : ${GSL_LIBRARY}")
+
 set(tmplist ${LAPACK_LIBRARIES})
 list(GET tmplist 1 lib1)
-list(REMOVE_AT tmplist 1 ) 
 message("LAPACK      : ${lib1}")
-foreach(lib ${tmplist} )
-   message("              ${lib}")
-endforeach()
+list(LENGTH tmplist list_length)
+if( ${list_length} GREATER 1 )
+    list(REMOVE_AT tmplist 1 ) 
+    foreach(lib ${tmplist} )
+    message("              ${lib}")
+    endforeach()
+endif()
 message("GANDOLF     : ${GANDOLF_LIBRARY}
 
 ")
