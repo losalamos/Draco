@@ -40,7 +40,7 @@ void master_impl(const std::vector<int> &in, std::vector<int> &out)
     // Receive the map data from all other nodes.
     for (int node=1; node<nodes; ++node)
     {
-        int size;
+        int size = -1;
         receive(&size, 1, node, SIZE_CHANNEL);
         Check (size >= 0);
 
@@ -119,7 +119,7 @@ void slave_impl(const std::vector<int> &in, std::vector<int> &out)
 
     
     // Receive results from the host.
-    int recv_size;
+    int recv_size = -1;
     receive(&recv_size, 1, HOST, SIZE_CHANNEL);
 
     if (recv_size > 0)
