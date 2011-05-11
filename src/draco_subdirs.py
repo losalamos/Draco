@@ -7,6 +7,7 @@
 subdirs = [
     "ds++",  # This must be first
     "c4",
+    "diagnostics",
     "cdi",
     "cdi_analytic",
     "cdi_gandolf",
