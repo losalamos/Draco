@@ -45,21 +45,29 @@ void inherit(const Comm &comm)
 //---------------------------------------------------------------------------//
 
 template<class T>
-int send(const T *buffer, 
-	 int      size,
-	 int      destination, 
-	 int      tag)
+int send(const T */* buffer*/, 
+         int      /* size */,
+         int      /* destination */, 
+         int      /* tag */)
 {
     return C4_SUCCESS;
 }
 
+template<class T>
+void send_is(C4_Req  &/*request*/, 
+             const T * /*buffer*/, 
+             int      /* size*/, 
+             int      /*destination*/,
+             int      /*tag*/)
+{/* empty */}
+
 //---------------------------------------------------------------------------//
 
 template<class T>
-int receive(T   *buffer, 
-	    int  size, 
-	    int  source, 
-	    int  tag)
+int receive(T   */* buffer */, 
+	    int  /* size */, 
+	    int  /* source */, 
+	    int  /* tag */)
 {
     return C4_SUCCESS;
 }
@@ -69,10 +77,10 @@ int receive(T   *buffer,
 //---------------------------------------------------------------------------//
 
 template<class T>
-C4_Req send_async(const T *buffer, 
-		  int      size, 
-		  int      destination, 
-		  int      tag)
+C4_Req send_async(T const * /* buffer */, 
+                  int       /* size */, 
+                  int       /* destination */, 
+                  int       /* tag */)
 {
     // make a c4 request handle
     C4_Req request;
@@ -82,11 +90,11 @@ C4_Req send_async(const T *buffer,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void send_async(C4_Req  &request, 
-		const T *buffer, 
-		int      size, 
-		int      destination,
-		int      tag)
+void send_async(C4_Req  & request, 
+                T const * /* buffer */, 
+                int       /* size */, 
+                int       /* destination */,
+                int       /* tag */)
 {
     Require (!request.inuse());
 }
@@ -94,10 +102,10 @@ void send_async(C4_Req  &request,
 //---------------------------------------------------------------------------//
 
 template<class T>
-C4_Req receive_async(T   *buffer, 
-		     int  size, 
-		     int  source, 
-		     int  tag)
+C4_Req receive_async(T   * /*buffer*/, 
+                     int   /*size*/, 
+                     int   /*source*/, 
+                     int   /*tag*/)
 {
     // make a c4 request handle
     C4_Req request;
@@ -107,11 +115,11 @@ C4_Req receive_async(T   *buffer,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void receive_async(C4_Req &request, 
-		   T      *buffer, 
-		   int     size, 
-		   int     source, 
-		   int     tag)
+void receive_async(C4_Req & request, 
+                   T      * /* buffer */, 
+                   int      /* size */, 
+                   int      /* source */, 
+                   int      /* tag */)
 {
     Require (!request.inuse());
 }
@@ -121,17 +129,17 @@ void receive_async(C4_Req &request,
 //---------------------------------------------------------------------------//
 
 template<class T>
-int broadcast(T *buffer, 
-	      int      size,
-	      int      root)
+int broadcast(T  * /* buffer */,
+              int  /* size   */,
+              int  /* root   */)
 {
     return C4_SUCCESS;
 }
 
 template<class ForwardIterator, class OutputIterator>
-void broadcast(ForwardIterator first,
-	       ForwardIterator last,
-	       OutputIterator  result)
+void broadcast(ForwardIterator /* first  */,
+               ForwardIterator /* last   */,
+               OutputIterator  /* result */)
 {
     // No communication needed for Serial use.    
     return;
@@ -190,57 +198,57 @@ int scatterv(T *send_buffer,
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_sum(T &x)
-{
+void global_sum(T &/*x*/)
+{/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T>
-void global_prod(T &x)
-{
+void global_prod(T &/*x*/)
+{/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_min(T &x)
-{
+void global_min(T &/*x*/)
+{/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_max(T &x)
-{   
+void global_max(T &/*x*/)
+{  /* empty */ 
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_sum(T *x, int n)
-{
+void global_sum(T */*x*/, int /*n*/)
+{/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T>
-void global_prod(T *x, int n)
-{
+void global_prod(T * /*x*/, int /*n*/)
+{ /* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_min(T *x, int n)
-{
+void global_min(T * /*x*/, int /*n*/)
+{/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_max(T *x, int n)
-{
+void global_max(T * /*x*/, int /*n*/)
+{/* empty */
 }
 
 } // end namespace rtt_c4

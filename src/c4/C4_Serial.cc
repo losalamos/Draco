@@ -30,7 +30,7 @@ const int proc_null = -1;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void initialize(int &argc, char **&argv)
+void initialize(int &/* argc */, char **&/*argv */)
 {
 }
 
