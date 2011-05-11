@@ -43,7 +43,7 @@ bool check_global_equiv(int local_value)
     else
     {
 	// value from processor above local processor
-	int neighbors_value;
+	int neighbors_value = local_value - 1;
 
 	if (node > 0 && node < nodes - 1)
 	{
@@ -103,7 +103,7 @@ bool check_global_equiv(double local_value, double eps)
     else
     {
 	// value from processor above local processor
-	double neighbors_value;
+	double neighbors_value = local_value - 1;
 
 	if (node > 0 && node < nodes - 1)
 	{
