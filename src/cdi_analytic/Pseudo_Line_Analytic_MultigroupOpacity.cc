@@ -412,7 +412,7 @@ double Pseudo_Line_Analytic_MultigroupOpacity::monoOpacity(double const x,
         double const nu0 = center_[i];
         double const d = x - nu0;
         Result += peak*exp(-d*d/(width*width*nu0*nu0));
-        if (d<10*width*nu0) break; // can't be significant beyond this point
+        //       if (d<10*width*nu0) break; // can't be significant beyond this point
     }
 
     unsigned const number_of_edges = number_of_edges_;
