@@ -102,4 +102,20 @@ fi
 
 ctest -VV -S ${script_dir}/Wedgehog_Linux64.cmake,${dashboard_type},${build_type}
 
+#----------------------------------------------------------------------#
+# Milagro
+#----------------------------------------------------------------------#
+
+script_dir=${HOME}/jayenne/regression
+subproj=milagro
+export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+echo "work_dir = ${work_dir}"
+if ! test -d ${work_dir}; then
+   /usr/bin/install -d ${work_dir}/source
+   /usr/bin/install -d ${work_dir}/build
+   /usr/bin/install -d ${work_dir}/target
+fi
+
+ctest -VV -S ${script_dir}/Milagro_Linux64.cmake,${dashboard_type},${build_type}
+
 
