@@ -26,8 +26,10 @@ dbsSetupCompilers()
 dbsSetupCxx()
 
 # Build only for Opteron? Or PPE also?
+option( ENABLE_HET_CODE "Build code for PPEs." OFF )
 if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
-   option( ENABLE_HET_CODE "Build code for PPEs." ON )
+   # on RR default to ON.
+   set( ENABLE_HET_CODE ON )
    include( platform_customization_roadrunner_ppe )
 endif()
 
