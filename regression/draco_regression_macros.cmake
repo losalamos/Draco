@@ -126,7 +126,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
   if( NOT CTEST_PROJECT_NAME )
      set( CTEST_PROJECT_NAME "UnknownProject")
   endif()
-  set( CTEST_NIGHTLY_START_TIME "00:10:00 MST")
+  # ALL CRON JOBS MUST START AFTER THIS TIME + 1 HOUR (FOR DST).
+  set( CTEST_NIGHTLY_START_TIME "00:00:01 MST")
   
   set( CTEST_DROP_METHOD "http")
   set( CTEST_DROP_SITE "coder.lanl.gov")

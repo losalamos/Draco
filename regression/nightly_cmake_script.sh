@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# IMPORTANT:
+# The cron job that starts this file should start no earlier than 1
+# am.  This time is coordinated with the CTEST_NIGHTLY_START_TIME
+# which is fixed wrt DST.  If this guidance is not followed, you may
+# see cvs updates tagged from 2 days ago.
+
 # The work_dir is the location for the source and build directories
 # /home/regress/draco/cmake_draco/
 #      source/  <-- Source files checked out from CVS go here.
