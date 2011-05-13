@@ -14,9 +14,10 @@
 # 
 
 # Must use static libraries.
-set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
-   "Keyword for creating new libraries (STATIC or SHARED)."
-   FORCE )
+# See DRACO_LIBRARY_TYPE
+# set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
+#    "Keyword for creating new libraries (STATIC or SHARED)."
+#    FORCE )
 
 #
 # C++ libraries required by Fortran linker

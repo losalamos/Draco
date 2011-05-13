@@ -25,6 +25,12 @@ include( compilerEnv )
 dbsSetupCompilers()
 dbsSetupCxx()
 
+# Build only for Opteron? Or PPE also?
+if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
+   option( ENABLE_HET_CODE "Build code for PPEs." ON )
+   include( platform_customization_roadrunner_ppe )
+endif()
+
 # Find any globally required libraries
 include( vendor_libraries )
 setupVendorLibraries()
@@ -108,10 +114,10 @@ CXX Compiler: ${CMAKE_CXX_COMPILER}
 CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}
 Library Type: ${DRACO_LIBRARY_TYPE}
 
-ENABLE_RNG_NR    : ${ENABLE_RNG_NR}
-BUILD_NUMBER     : ${BUILD_NUMBER}
-ENABLE_HET_CODE  : ${ENABLE_HET_CODE}
-DRACO_DIAGNOSTICS: ${DRACO_DIAGNOSTICS}
+ENABLE_RNG_NR    : ${ENABLE_RNG_NR}")
+message("BUILD_NUMBER     : ${BUILD_NUMBER}
+ENABLE_HET_CODE  : ${ENABLE_HET_CODE}")
+message("DRACO_DIAGNOSTICS: ${DRACO_DIAGNOSTICS}
 DRACO_TIMING     : ${DRACO_TIMING}
 Vendor dir  : ${VENDOR_DIR}
 MPI         : ${MPIEXEC}

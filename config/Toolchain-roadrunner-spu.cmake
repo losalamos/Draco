@@ -1,0 +1,33 @@
+# -------- Toolchain-catamount.cmake ---------
+
+# Ref: http://www.vtk.org/Wiki/CMake_Cross_Compiling
+#      http://www.vtk.org/Wiki/CmakeCrayXt3
+
+# Specify the target system (this allows cross-compiling)
+SET(CMAKE_SYSTEM_NAME Linux) # Generic
+
+# specify the cross compiler
+SET(CMAKE_C_COMPILER   /opt/cell/toolchain/bin/spu-gcc) 
+SET(CMAKE_CXX_COMPILER /opt/cell/toolchain/bin/spu-g++) 
+
+# set the search path for the environment coming with the compiler
+# and a directory where you can install your own compiled software
+set(CMAKE_FIND_ROOT_PATH
+   /opt/cell/toolchain
+    # /opt/xt-pe/default
+    # /opt/xt-mpt/default/mpich2-64/GP2
+    # $ENV{MPICH_DIR}/lib
+# DRACO_DIR?
+# VENDOR_DIR?    
+  )
+
+# adjust the default behaviour of the FIND_XXX() commands:
+# search headers and libraries in the target environment, search
+# programs in the host environment.  Can be set to NEVER, ONLY or BOTH (default)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+
+# Help find vendor software
+set( MPI_INC_DIR $ENV{MPICH_DIR}/include )
+set( MPI_LIB_DIR $ENV{MPICH_DIR}/lib )
