@@ -14,9 +14,12 @@ set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
    "Keyword for creating new libraries (STATIC or SHARED)."
    FORCE )
 
-set( DRACO_C4 "SCALAR" CACHE STRING 
-   "Keyword for creating new libraries (SCALAR or MPI)."
-   FORCE )
+if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+   set( DRACO_C4 "SCALAR" CACHE STRING 
+      "Keyword for creating new libraries (SCALAR or MPI)."
+      FORCE )
+   unset( DRACO_SCALAR )
+endif()
 
 # clubimc/src/heterogeneous/tests/milagro/echo/milagro_rz_mg_Test_Host_Rep_accel_side.cc
 # Host and Cell
