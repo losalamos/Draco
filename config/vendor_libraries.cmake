@@ -148,7 +148,7 @@ macro( SetupVendorLibrariesUnix )
 
       # Don't require BLAS/LAPACK for catamount systems
       if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" OR
-            ${CMAKE_CXX_COMPILER} MATCHES "ppu-g[+][+]" )
+            ${CMAKE_CXX_COMPILER} MATCHES "[sp]pu-g[+][+]" )
          set( BLAS_REQUIRED "" )
       else()
          set( BLAS_REQUIRED "REQUIRED" )

@@ -14,58 +14,58 @@ set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
    "Keyword for creating new libraries (STATIC or SHARED)."
    FORCE )
 
-if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+if( "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    set( DRACO_C4 "SCALAR" CACHE STRING 
       "Keyword for creating new libraries (SCALAR or MPI)."
       FORCE )
    unset( DRACO_SCALAR )
 endif()
 
-# clubimc/src/heterogeneous/tests/milagro/echo/milagro_rz_mg_Test_Host_Rep_accel_side.cc
-# Host and Cell
-option( HET_MESH_EVERY_CYCLE "See milagro_rz_mg_Test_Host_Rep_accel_side.cc" ON )
-if( HET_MESH_EVERY_CYCLE )
-   add_definitions( -DMESH_EVERY_CYCLE )
-endif()
+if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
 
-# Monitor requests and control messages from the host.
-# Host and Cell
-# clubimc/src/heterogeneous/accel_lib/DACS_Host.hh
-# clubimc/src/heterogeneous/host/DACS_Accelerator.t.hh
-# src/heterogeneous/host_accel/Particle_Comm_Buffer_dynamic.hh
-# src/heterogeneous/ppe_lib/event_loop2.hh
-option( HET_HOST_ACCEL_DACS " " ON )
-if( HET_HOST_ACCEL_DACS )
-   add_definitions( -DHOST_ACCEL_DACS )
-endif()
+   # clubimc/src/heterogeneous/tests/milagro/echo/milagro_rz_mg_Test_Host_Rep_accel_side.cc
+   # Host and Cell
+   option( HET_MESH_EVERY_CYCLE "See milagro_rz_mg_Test_Host_Rep_accel_side.cc" ON )
+   if( HET_MESH_EVERY_CYCLE )
+      add_definitions( -DMESH_EVERY_CYCLE )
+   endif()
+   
+   # Monitor requests and control messages from the host.
+   # Host and Cell
+   # clubimc/src/heterogeneous/accel_lib/DACS_Host.hh
+   # clubimc/src/heterogeneous/host/DACS_Accelerator.t.hh
+   # src/heterogeneous/host_accel/Particle_Comm_Buffer_dynamic.hh
+   # src/heterogeneous/ppe_lib/event_loop2.hh
+   option( HET_HOST_ACCEL_DACS " " ON )
+   if( HET_HOST_ACCEL_DACS )
+      add_definitions( -DHOST_ACCEL_DACS )
+   endif()
+   
+   # Host and cell
+   # clubimc/src/heterogeneous/host/Host_Particle_Rcvr.t.hh
+   # clubimc/src/heterogeneous/ppe_lib/Multiple_Particle_Reader.t.hh
+   option( HET_PPE_WRITE_BUFFER_DIRECT " " ON )
+   if( HET_PPE_WRITE_BUFFER_DIRECT )
+      add_definitions( -DPPE_WRITE_BUFFER_DIRECT )
+   endif()
+   
+   # Host and cell
+   # clubimc/src/heterogeneous/accel_lib/Accel_Particle_Rcvr.hh
+   # clubimc/src/heterogeneous/accel_lib/Accel_Particle_Rcvr.t.hh
+   # clubimc/src/heterogeneous/host/Host_Particle_Xmitter.t.hh
+   # clubimc/src/heterogeneous/ppe_lib/Multiple_Particle_Writer.i.hh
+   option( HET_PPE_READ_BUFFER_DIRECT  " " ON )
+   if( HET_PPE_READ_BUFFER_DIRECT )
+      add_definitions( -DPPE_READ_BUFFER_DIRECT )
+   endif()
 
-# Host and cell
-# clubimc/src/heterogeneous/host/Host_Particle_Rcvr.t.hh
-# clubimc/src/heterogeneous/ppe_lib/Multiple_Particle_Reader.t.hh
-option( HET_PPE_WRITE_BUFFER_DIRECT " " ON )
-if( HET_PPE_WRITE_BUFFER_DIRECT )
-   add_definitions( -DPPE_WRITE_BUFFER_DIRECT )
-endif()
+   # Host only
+   # clubimc/src/heterogeneous/ppe_lib/event_loop2.t.hh
+   option( HET_ACCEL_RECV_IPROBE       " " OFF )
+   if( HET_ACCEL_RECV_IPROBE )
+      add_definitions( -DACCEL_RECV_IPROBE )
+   endif()
 
-# Host and cell
-# clubimc/src/heterogeneous/accel_lib/Accel_Particle_Rcvr.hh
-# clubimc/src/heterogeneous/accel_lib/Accel_Particle_Rcvr.t.hh
-# clubimc/src/heterogeneous/host/Host_Particle_Xmitter.t.hh
-# clubimc/src/heterogeneous/ppe_lib/Multiple_Particle_Writer.i.hh
-option( HET_PPE_READ_BUFFER_DIRECT  " " ON )
-if( HET_PPE_READ_BUFFER_DIRECT )
-   add_definitions( -DPPE_READ_BUFFER_DIRECT )
-endif()
-
-
-
-#--------------------------------------------------------------------------------
-
-# Host only
-# clubimc/src/heterogeneous/ppe_lib/event_loop2.t.hh
-option( HET_ACCEL_RECV_IPROBE       " " OFF )
-if( HET_ACCEL_RECV_IPROBE )
-   add_definitions( -DACCEL_RECV_IPROBE )
 endif()
 
 if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
@@ -86,7 +86,8 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
    else()
       add_definitions( -DACCEL_SEND_BLOCKING )
    endif()
-else()
+endif()
+if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    # Host and Cell
    # clubimc/src/heterogeneous/ppe_lib/event_loop2.t.hh
    option( HET_HOST_RECV_NONBLOCKING  " " ON )
@@ -112,7 +113,7 @@ endif()
 # clubimc/src/heterogeneous/ppe_apps/accel_side_rz_mg/run_time_step.hh
 # clubimc/src/heterogeneous/ppe_apps/accel_side_rz_mg/spe/run_particle_transporter.cc
 # clubimc/src/heterogeneous/ppe_apps/accel_side_rz_mg/spe/run_particle_transporter_w_RW.cc
-if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+if( "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    option( HET_SHORT_SPE_TALLIES       " " ON )
    if( HET_SHORT_SPE_TALLIES )
       add_definitions( -DSHORT_SPE_TALLIES )   # this is for cell_cpp_flags
@@ -120,7 +121,7 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
    endif()
 endif()
 
-if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    # On for x86 builds of ds++
 
    # Host only
@@ -138,7 +139,7 @@ endif()
 
 
 # Change some compiler flags for the roadrunner code
-if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
 if( "${CMAKE_GENERATOR}" MATCHES "Makefiles" )
    message( "NOTICE: We are modifying the default g++ compile flags for roadrunner (clubimc/pkg_config/platform_customization_roadrunner_ppe.cmake)")
 

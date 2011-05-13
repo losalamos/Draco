@@ -13,11 +13,6 @@
 # Sanity Checks
 # 
 
-# Must use static libraries.
-set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
-   "Keyword for creating new libraries (STATIC or SHARED)."
-   FORCE )
-
 #
 # C++ libraries required by Fortran linker
 # 
@@ -95,7 +90,7 @@ set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
 
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
-   set( CMAKE_C_FLAGS                "-fstack-check -W -Wall -Winline -fno-exceptions -fno-rtti -finline-limit=100 --param large-function-growth=100 -march=celledp -DADDRESSING_64 -D__USING_GCC -DEDP -DCACHE_LINE_SIZE=128 -DPARTICLE_RNG_SIZE=54 " )
+   set( CMAKE_C_FLAGS                "-fstack-check -W -Wall -Winline -fno-exceptions -fno-rtti -finline-limit=100 --param large-function-growth=100 -march=celledp -DADDRESSING_64 -D__USING_GCC -DEDP -DCACHE_LINE_SIZE=128 -DPARTICLE_RNG_SIZE=54 -include spu_intrinsics.h" )
 
    set( CMAKE_C_FLAGS_DEBUG          "-O0 -gdwarf-2" )
    set( CMAKE_C_FLAGS_RELEASE        "-O3" )
