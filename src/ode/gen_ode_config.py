@@ -1,16 +1,24 @@
 #!/usr/bin/env python
 # gen_config.py
 # T. M. Kelley
-# Nov 05, 2008
+# Nov 19, 2008
 # (c) Copyright 2008 LANSLLC all rights reserved.
 
 import time,os
 
-header = """
-"""
-
 
 def generate_config_h( target, source, env):
+    """generate_config_h( target, source, env)
+    generate the config.h file for ode.
+    Parameters are supplied by SCons.
+
+    The target file will be config.h, the source file is config.h.pyin.
+    Parameters are passed in from SConstruct/SConscript through the
+    build environment's 'config' dictionary; these are used to replace
+    text in the source file (config.h.pyin) to produce the text to put
+    into the target file (config.h)
+    """
+
     intext = file(source[0].path).read()
     outtext = intext
 
@@ -21,8 +29,6 @@ def generate_config_h( target, source, env):
     year = time.strftime("%Y")
     outtext = outtext.replace("<date>", date)
     outtext = outtext.replace("<year>", year)
-    outtext = outtext.replace("<dll_public>",
-                              "#define DLL_PUBLIC")
 
     outfile = file(target[0].path,'w')
     outfile.write(outtext)

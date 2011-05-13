@@ -41,17 +41,20 @@ full_headers = map( lambda x: join(build_dir,x), headers)
 
 install_libdir = export_libdir
 install_incdir = join(export_incdir,package_name)
-install_cnfdir = join(export_incdir,package_name,package_name)
+install_cnfdir = join(export_incdir,package_name)
 
 libs += [
+    "gsl",
     ]
 
 libpaths += [
+    join(os.environ["GSL_LIB_DIR"], "lib")
     ]
 
 cpppaths += [
     ".",
     project_incdir,
+    os.environ["GSL_INC_DIR"],
     ]
 
 

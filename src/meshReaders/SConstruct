@@ -9,7 +9,6 @@ package_name = "meshReaders"
 
 # c4 source files, target, & libs
 sources = [
-    "Release.cc",
     "Hex_Mesh_Reader.cc",
     ]
 
@@ -17,7 +16,6 @@ target  = "rtt_" + package_name
 
 # headers for export 
 headers = [
-    "Release.hh",
     "Hex_Mesh_Reader.hh",
     "Mesh_Reader.hh",
     ]
@@ -43,7 +41,7 @@ full_headers = map( lambda x: join(build_dir,x), headers)
 
 install_libdir = export_libdir
 install_incdir = join(export_incdir,package_name)
-install_cnfdir = join(export_incdir,package_name,package_name)
+install_cnfdir = join(export_incdir,package_name)
 
 libs += [
     ]

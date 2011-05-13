@@ -12,9 +12,10 @@ sources = [
     "Analytic_EoS.cc",
     "Analytic_Gray_Opacity.cc",
     "Analytic_Models.cc",
-    "Analytic_Multigroup_Opacity.cc",
+    "Analytic_MultigroupOpacity.cc",
+    "nGray_Analytic_MultigroupOpacity.cc",
     "Analytic_Odfmg_Opacity.cc",
-    "Release.cc",
+    "Pseudo_Line_Analytic_MultigroupOpacity.cc",
     ]
 
 target  = "rtt_" + package_name
@@ -24,9 +25,10 @@ headers = [
     "Analytic_EoS.hh",
     "Analytic_Gray_Opacity.hh",
     "Analytic_Models.hh",
-    "Analytic_Multigroup_Opacity.hh",
+    "Analytic_MultigroupOpacity.hh",
+    "nGray_Analytic_MultigroupOpacity.hh",
     "Analytic_Odfmg_Opacity.hh",
-    "Release.hh",
+    "Pseudo_Line_Analytic_MultigroupOpacity.hh",
     ]
 
 # external pieces:
@@ -50,7 +52,7 @@ full_headers = map( lambda x: join(build_dir,x), headers)
 
 install_libdir = export_libdir
 install_incdir = join(export_incdir,package_name)
-install_cnfdir = join(export_incdir,package_name,package_name)
+install_cnfdir = join(export_incdir,package_name)
 
 libs += [
     ]

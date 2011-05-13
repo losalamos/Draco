@@ -6,7 +6,10 @@
 #ifndef DSXX_CONFIG_H
 #define DSXX_CONFIG_H
 
-// No special defines for ds++
+<dll_public>
+#define DRACO_VERSION_MAJOR 6
+#define DRACO_VERSION_MINOR 1
+#define DRACO_VERSION_PATCH 0
 
 #endif // include guard
 

@@ -48,6 +48,7 @@ full_tst_targets = map( lambda x: join(build_dir,x), tst_targets)
 libs += [
     test_lib,
     tested_lib,
+    "rtt_parser",
     "rtt_cdi",
     "rtt_c4",
     "rtt_ds++",

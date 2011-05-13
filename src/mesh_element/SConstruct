@@ -10,7 +10,6 @@ package_name = "mesh_element"
 # c4 source files, target, & libs
 sources = [
     "Element_Definition.cc",
-    "Release.cc",
     ]
 
 target  = "rtt_" + package_name
@@ -18,7 +17,6 @@ target  = "rtt_" + package_name
 # headers for export 
 headers = [
     "Element_Definition.hh",
-    "Release.hh",
     "Geometry.hh",
     ]
 
@@ -43,7 +41,7 @@ full_headers = map( lambda x: join(build_dir,x), headers)
 
 install_libdir = export_libdir
 install_incdir = join(export_incdir,package_name)
-install_cnfdir = join(export_incdir,package_name,package_name)
+install_cnfdir = join(export_incdir,package_name)
 
 libs += [
     ]

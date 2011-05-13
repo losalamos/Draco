@@ -7,16 +7,19 @@
 subdirs = [
     "ds++",  # This must be first
     "c4",
-    "diagnostics",
     "cdi",
-    "cdi_analytic",
-    "cdi_gandolf",
     "mesh_element",
-    "meshReaders",
+    "ode",
     "rng",
-    "RTT_Format_Reader",
     "traits",
+    "units",
+    "diagnostics",
+    "meshReaders",
+    "parser",
     "viz",
+    "cdi_gandolf",
+    "cdi_analytic",
+    "RTT_Format_Reader",
     ]
 
 

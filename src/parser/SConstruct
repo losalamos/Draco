@@ -1,57 +1,22 @@
 #-*-Python-*-
-# Sconstruct for draco/RTT_Format_Reader
-# T. M. Kelley
-# Oct 28, 2008
+# Sconstruct for draco/parser
+# G. Rockefeller
+# May 12, 2011
 # Input to scons
-# (c) Copyright 2008 LANSLLC all rights reserved.
+# (c) Copyright 2010 LANSLLC all rights reserved.
 
-package_name = "RTT_Format_Reader"
+import os
 
-# c4 source files, target, & libs
-sources = [
-    "Dims.cc",
-    "Flags.cc",
-    "CellData.cc",
-    "NodeDataIDs.cc",
-    "NodeData.cc",
-    "Header.cc",
-    "CellFlags.cc",
-    "Nodes.cc",
-    "Sides.cc",
-    "RTT_Format_Reader.cc",
-    "CellDataIDs.cc",
-    "RTT_Mesh_Reader.cc",
-    "SideFlags.cc",
-    "CellDefs.cc",
-    "SideDataIDs.cc",
-    "SideData.cc",
-    "Cells.cc",
-    "NodeFlags.cc",
-    ]
+package_name = "parser"
 
-target  = "rtt_" + package_name
+# parser source files, target, & libs
+sources = filter( lambda x: x[-3:] == ".cc", os.listdir('.'))
+
+target  = "rtt_parser"
 
 # headers for export 
-headers = [
-    "SideFlags.hh",
-    "SideDataIDs.hh",
-    "Flags.hh",
-    "Header.hh",
-    "NodeDataIDs.hh",
-    "NodeData.hh",
-    "Dims.hh",
-    "NodeFlags.hh",
-    "RTT_Format_Reader.hh",
-    "CellFlags.hh",
-    "CellDefs.hh",
-    "SideData.hh",
-    "Nodes.hh",
-    "RTT_Mesh_Reader.hh",
-    "CellDataIDs.hh",
-    "Cells.hh",
-    "CellData.hh",
-    "Sides.hh",
-    ]
+headers = filter( lambda x: x[-3:] == ".hh", os.listdir('.'))
+
 
 # external pieces:
 scons_dir = "../../../scons"
@@ -65,13 +30,12 @@ execfile(scons_dir + "/scons_master_%s" % master_suffix)
 
 # where to build
 from os.path import join
-build_dir    = join(build_root,"draco",package_name)
-full_target  = join(build_dir,target)
+build_dir  = join(build_root,"draco",package_name)
 full_sources = map( lambda x: join(build_dir,x), sources)
 full_headers = map( lambda x: join(build_dir,x), headers)
+full_target = join(build_dir,target)
 
 # install dirs
-
 install_libdir = export_libdir
 install_incdir = join(export_incdir,package_name)
 install_cnfdir = join(export_incdir,package_name)
@@ -87,19 +51,23 @@ cpppaths += [
     project_incdir,
     ]
 
+
 cxxflags += ""
 
-# load a build environment
+# build environment
+
 compiler_file = "scons_compiler_%s_%s_%s" % (c4, arch, compiler)
 include_guard = compiler_file + "_included"
 if include_guard not in dir():
     execfile(scons_dir + "/%s" % compiler_file)
 
-# build in the build dir
+# build in the build dir, not in the source dir
 env.VariantDir(build_dir, '.')
 
 
 # What to do:
+# configure config.h
+
 # 1. configure config.h
 
 ## pass key,value pairs to the configure gen script through this dictionary.
@@ -110,17 +78,19 @@ config_h_config = {
     }
 
 env['config'] = config_h_config
-import gen_RTT_Format_Reader_config 
-configurator  = Builder( action = gen_RTT_Format_Reader_config.generate_config_h)
+import gen_dsxx_config 
+configurator  = Builder( action = gen_dsxx_config.generate_config_h)
 env["BUILDERS"]["GenConfig"] = configurator
 config_target = env.GenConfig( join(build_dir,package_name,'config.h'),
                                'config.h.pyin')
 env.Alias("configure", config_target)
 
-# 1. build the library
+# build the library
 lib_target = env.Library( full_target, full_sources)
 
-# 2. install targets for library, headers
+Requires(lib_target, config_target)
+
+# install targets for library, headers
 env.Install( install_libdir, lib_target)
 env.Install( install_incdir, headers)
 env.Install( install_cnfdir, [join(build_dir,package_name,"config.h")])
@@ -128,17 +98,19 @@ env.Install( install_cnfdir, [join(build_dir,package_name,"config.h")])
 # influential alias
 install_target = env.Alias( "install", [install_libdir,
                                         install_incdir,
-                                        install_cnfdir])
+                                        install_cnfdir
+                                        ]
+                            )
 
-# Default things:
+# List of default tasks:
 env.Default( [
-    config_target,
     lib_target,
     install_target
     ])
 
-# recurse into test directory--note there is no default there
+# recurse into test dir
 SConscript("test/SConscript")
+
 
 # version
 

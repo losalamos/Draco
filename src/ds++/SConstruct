@@ -38,7 +38,7 @@ full_target = join(build_dir,target)
 # install dirs
 install_libdir = export_libdir
 install_incdir = join(export_incdir,package_name)
-install_cnfdir = join(export_incdir,package_name,package_name)
+install_cnfdir = join(export_incdir,package_name)
 
 libs += [
     ]

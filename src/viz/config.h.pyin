@@ -6,7 +6,10 @@
 #ifndef cdi_analytic_CONFIG_H
 #define cdi_analytic_CONFIG_H
 
-// no defines for viz
+#include <unistd.h>
+#define ENSIGHT_DIR_MODE S_IRWXU | S_IRWXG | S_IRWXO
+#define DRACO_MKDIR(m) mkdir(m,ENSIGHT_DIR_MODE)
+#define DRACO_RMDIR "rm -rf "
 
 #endif // include guard
 

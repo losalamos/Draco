@@ -1,12 +1,12 @@
 #-*-Python-*-
-# Sconscipt for draco/test/rng
+# Sconscipt for draco/test/ode
 # T. M. Kelley
-# Nov 05, 2008
+# Nov 11, 2008
 # Input to scons: meant to be called from a master SConstruct script
 # primary target: check
 # (c) Copyright 2008 LANSLLC all rights reserved.
 
-package_name = "rng"
+package_name = "ode"
 
 tested_lib  = "rtt_" + package_name
 
@@ -17,9 +17,9 @@ tst_sources     = filter( lambda x: (x[-3:] == ".cc") and \
                           (x[:4] == "Test" or x[:3] == "tst"),
                           os.listdir('.'))
 tst_targets = [src[:-3] for src in tst_sources]
-test_lib         = package_name + "_test"
-test_lib_sources = [test_lib + ".cc"]
-test_lib_headers = [test_lib + ".hh"]
+test_lib_sources = ["ode_test.cc"]
+test_lib_headers = ["ode_test.hh"]
+test_lib         = "ode_test"
 
 # external pieces:
 scons_dir = "../../../../scons"
@@ -48,35 +48,28 @@ full_tst_targets = map( lambda x: join(build_dir,x), tst_targets)
 libs += [
     test_lib,
     tested_lib,
-    "rtt_c4",
     "rtt_ds++",
-    ## "lfg",
-    "gsl",
-    "gslcblas",
     ]
 
 libpaths += [
     build_dir,
-    project_libdir,
-    os.environ["GSL_LIB_DIR"],
+    project_libdir
     ]
 
 cpppaths += [
     ".",
     "..",
-    project_incdir,
-    os.environ["GSL_INC_DIR"],
+    project_incdir
     ]
 
 cxxflags += ""
-ldflags += "-Wl,--rpath -Wl," + os.environ["GSL_LIB_DIR"]
-
-## execfile(scons_dir + "/scons_sprng_64")
 
 
 # build environment
 compiler_file = "scons_compiler_%s_%s_%s" % (c4, arch, compiler)
-execfile(scons_dir + "/%s" % compiler_file)
+include_guard = compiler_file + "_included"
+if include_guard not in dir():
+    execfile(scons_dir + "/%s" % compiler_file)
 
 # build in the build directory
 env.VariantDir(build_dir, '.')
@@ -87,11 +80,36 @@ env.VariantDir(build_dir, '.')
 lib_target = env.Library( full_test_lib, full_lib_sources)
 
 # 2. build the test programs
-test_targets = [env.Program( t,s, LIBS=libs, LIBPATH=libpaths) for (t,s) in zip(full_tst_targets,full_tst_sources)]
+test_targets = [env.Program( t,s, LIBS=libs, LIBPATH=libpaths) \
+                for (t,s) in zip(full_tst_targets,full_tst_sources)]
 
 # add these to the "check" target
 Alias("check",lib_target)
 Alias("check",test_targets)
+
+## # 3. run the test programs
+## tools_dir   = join(draco_source_root,"..","tools")
+## launcher    = join(tools_dir,"launchtest.py")
+## filterer    = join(tools_dir,"test_filter.py")
+## output_file = join(build_dir,"check_out")
+
+## # make up launcher command line
+## launcher_args = ""
+## if c4 == 'mpi':
+##     n_procs = [1,2,4]
+##     launcher_args += "-m "
+
+## runner = Builder(action = "%s %s $SOURCE | %s >> $TARGET" %(launcher, launcher_args, filterer),
+##                  multi=1,
+##                  ## chdir=1, # change to build dir 
+##                  )
+## env['BUILDERS']['RunTest'] = runner
+## env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
+## run_target = [env.RunTest(output_file,t) for t in full_tst_targets]
+## AlwaysBuild(run_target)
+
+## # add run target to the 'check' target
+## Alias('run', run_target)
 
 
 # version
