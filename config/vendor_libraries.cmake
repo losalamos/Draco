@@ -107,6 +107,8 @@ macro( SetupVendorLibrariesUnix )
       # Save the result in the cache file.
       set( DRACO_C4 "${DRACO_C4}" CACHE STRING 
          "C4 communication mode (SCALAR or MPI)" )
+      # Provide a constrained pull down list in cmake-gui
+      set_property( CACHE DRACO_C4 PROPERTY STRINGS SCALAR MPI )
       if( "${DRACO_C4}" STREQUAL "MPI"    OR 
             "${DRACO_C4}" STREQUAL "SCALAR" )
       else()

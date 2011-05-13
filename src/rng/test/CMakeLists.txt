@@ -40,8 +40,8 @@ add_dependencies( Lib_rng_test Lib_rng )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;${GSL_LIBRARIES};${INTEL_LIBM}" )
+   DEPS    "Lib_dsxx;${GSL_LIBRARIES};" )
 
-# source_group( rng\\test FILES ${test_lib_sources} ${test_sources} )
+
 
 

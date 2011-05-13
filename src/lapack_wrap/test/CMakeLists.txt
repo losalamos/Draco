@@ -42,12 +42,7 @@ add_dependencies(      Lib_lapack_wrap_test Lib_lapack_wrap )
 set( test_dependencies
    Lib_dsxx
    ${LAPACK_LIBRARIES}
-   ${INTEL_LIBM}
    )
-
-# [KT:2011-02-17]  I can't find where this is set
-#    ${FORTRAN_LIBS}
-#    ${PGI_EXTRA_F90_LIBS}
 
 add_scalar_tests(
    SOURCES "${test_sources}"

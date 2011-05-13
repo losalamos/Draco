@@ -43,5 +43,5 @@ add_dependencies( Lib_timestep_test Lib_timestep )
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2;4"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 

@@ -41,8 +41,8 @@ add_dependencies(      Lib_norms_test Lib_norms )
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 
-# source_group( norms\\test FILES ${test_lib_sources} ${test_sources} )
+
 
 

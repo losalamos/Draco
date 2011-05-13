@@ -55,7 +55,6 @@ target_link_libraries( Ut_parser_tstConsole_Token_Stream
    Lib_c4
    Lib_dsxx
    ${MPI_LIBRARIES}
-   ${INTEL_LIBM}
    )
 list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc )
@@ -71,7 +70,7 @@ set( scalar_test_sources
 list( REMOVE_ITEM test_sources ${scalar_test_sources} )
 add_scalar_tests(
    SOURCES "${scalar_test_sources}"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 
 # Special case for driver4tstConsole_Token_Stream
 # 1. This test doesn't work under Xcode
@@ -84,7 +83,7 @@ if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 add_parallel_tests(
    SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
    PE_LIST "1;2"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" 
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" 
    RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
 endif()
 
@@ -93,7 +92,7 @@ endif()
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${INTEL_LIBM}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
    
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)

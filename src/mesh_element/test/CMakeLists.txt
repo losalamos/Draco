@@ -40,8 +40,8 @@ add_dependencies(      Lib_mesh_element_test Lib_mesh_element )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;${INTEL_LIBM}" )
+   DEPS    "Lib_dsxx" )
 
-# source_group( mesh_element\\test FILES ${test_lib_sources} ${test_sources} )
+
 
 

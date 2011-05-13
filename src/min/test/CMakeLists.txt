@@ -26,8 +26,6 @@ file( GLOB input_files *.inp )
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
-#   ${c4_BINARY_DIR}           # c4/config.h
-#   ${MPI_INCLUDE_PATH}
 )
 
 # ---------------------------------------------------------------------------- #
@@ -43,7 +41,7 @@ add_dependencies( Lib_min_test Lib_min )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_linear;Lib_dsxx;${INTEL_LIBM}" )
+   DEPS    "Lib_linear;Lib_dsxx" )
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)

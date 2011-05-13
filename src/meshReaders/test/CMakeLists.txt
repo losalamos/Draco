@@ -41,7 +41,7 @@ add_dependencies( Lib_meshReaders_test Lib_meshReaders )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;${INTEL_LIBM}" )
+   DEPS    "Lib_dsxx" )
 
 # ---------------------------------------------------------------------------- #
 # Copy mesh files to test directory (binary_dir)

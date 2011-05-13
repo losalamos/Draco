@@ -40,6 +40,6 @@ add_dependencies( Lib_units_test Lib_units )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;${INTEL_LIBM}" )
+   DEPS    "Lib_dsxx" )
 
 

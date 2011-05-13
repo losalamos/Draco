@@ -19,6 +19,11 @@ macro( dbsSetDefaults )
        "Release, Debug, RelWithDebInfo" FORCE )
   endif( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
 
+  # constrain pull down values in cmake-gui
+  set_property( CACHE CMAKE_BUILD_TYPE 
+     PROPERTY 
+       STRINGS Release Debug MinSizeRel RelWithDebInfo )
+
   # Provide default value for install_prefix
   if( "${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local" OR
       "${CMAKE_INSTALL_PREFIX}" MATCHES "C:/Program Files" )

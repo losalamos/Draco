@@ -53,7 +53,6 @@ set(test_deps
    Lib_c4 
    Lib_dsxx 
    ${MPI_LIBRARIES}
-   ${INTEL_LIBM}
    )
 
 add_parallel_tests(

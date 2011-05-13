@@ -25,6 +25,9 @@ mark_as_advanced( ENABLE_OPENMP )
 #        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
 set( DRACO_LIBRARY_TYPE "SHARED" CACHE STRING 
 	"Keyword for creating new libraries (STATIC or SHARED).")
+# Provide a constrained drop down list in cmake-gui.
+set_property( CACHE DRACO_LIBRARY_TYPE
+   PROPERTY STRINGS SHARED STATIC)
 
 #----------------------------------------------------------------------#
 # Macro to establish which runtime libraries to link against 

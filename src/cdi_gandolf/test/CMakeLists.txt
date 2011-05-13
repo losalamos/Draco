@@ -51,7 +51,7 @@ add_dependencies(      Lib_cdi_gandolf_test Lib_cdi_gandolf )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_cdi;Lib_dsxx;${GANDOLF_LIBRARIES};${INTEL_LIBM}" )
+   DEPS    "Lib_cdi;Lib_dsxx;${GANDOLF_LIBRARIES}" )
 
 # source_group( cdi_gandolf\\test FILES ${test_lib_sources} ${test_sources} )
 

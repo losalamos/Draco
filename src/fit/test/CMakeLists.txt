@@ -43,7 +43,7 @@ add_dependencies(      Lib_fit_test Lib_fit )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_linear;Lib_dsxx;${INTEL_LIBM}" )
+   DEPS    "Lib_linear;Lib_dsxx" )
 
 
 

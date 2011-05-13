@@ -10,9 +10,13 @@ project( diagnostics CXX )
 # From autoconf build system: "yes" --> 7, "no" --> 0
 set( DRACO_DIAGNOSTICS "0"
    CACHE STRING "Diagnostics verbosity level (0-7). Default is 0." )
+# provide a constrained drop down menu for cmake-gui
+set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
 # From autoconf build system: "yes" --> 2, "no" --> 0
 set( DRACO_TIMING "0"
    CACHE STRING "Timing detail level (0-2). Default is 0." )
+# provide a constrained drop down menu for cmake-gui
+set_property( CACHE DRACO_TIMING PROPERTY STRINGS 0 1 2 )
 
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)

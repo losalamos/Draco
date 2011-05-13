@@ -41,9 +41,7 @@ add_dependencies( Lib_dsxx_test Lib_dsxx )
 
 add_scalar_tests( 
    SOURCES "${test_sources}" 
-   DEPS    "${INTEL_LIBM}"
    )
 
-# source_group( dsxx\\test FILES ${test_lib_sources} ${test_sources} )
 
 

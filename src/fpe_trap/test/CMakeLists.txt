@@ -47,7 +47,6 @@ if( PYTHONINTERP_FOUND )
     target_link_libraries( Ut_fpe_trap_do_exception_exe 
       Lib_fpe_trap 
       Lib_dsxx 
-      ${INTEL_LIBM}
     )
     add_test( 
         NAME fpe_trap_python_test 
@@ -64,4 +63,3 @@ if( PYTHONINTERP_FOUND )
 
 endif( PYTHONINTERP_FOUND )
     
-# source_group( fpe_trap\\test FILES ${test_lib_sources} ${test_sources} )

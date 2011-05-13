@@ -38,7 +38,7 @@
 #=============================================================================
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
-option( findblasdebugoutput OFF )
+# option( findblasdebugoutput OFF )
 
 get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
 if (_LANGUAGES_ MATCHES Fortran)
