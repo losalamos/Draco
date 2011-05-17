@@ -507,5 +507,60 @@ macro( provide_aux_files )
 endmacro()
 
 #----------------------------------------------------------------------#
+# CONDITIONALLY_ADD_SUBDIRECTORY - add a directory to the build while 
+#      allowing exceptions:
+# 
+# E.g.: conditionally_add_subdirectory( 
+#      COMPONENT "mc"
+#      CXX_COMPILER_EXCEPTION "spu-g[+][+]" )
+#----------------------------------------------------------------------#
+macro( conditionally_add_subdirectory )
+
+   parse_arguments( 
+      # prefix
+      caddsubdir
+      # list names
+      "COMPONENTS;CXX_COMPILER_EXCEPTION;CXX_COMPILER_MATCHES"
+      # option names
+      "NONE"
+      ${ARGV}
+      )
+
+#    message("
+# caddsubdir_COMPONENTS             = ${caddsubdir_COMPONENTS}
+# caddsubdir_CXX_COMPILER_EXCEPTION = ${caddsubdir_CXX_COMPILER_EXCEPTION}
+# caddsubdir_CXX_COMPILER_MATCHES   = ${caddsubdir_CXX_COMPILER_MATCHES}
+# ")
+
+   # if the current compiler doesn't match the provided regex, then
+   # add the directory to the build
+   if( caddsubdir_CXX_COMPILER_EXCEPTION )
+      if( NOT "${CMAKE_CXX_COMPILER}" MATCHES
+            "${caddsubdir_CXX_COMPILER_EXCEPTION}" )
+         foreach( comp ${caddsubdir_COMPONENTS} )
+            message(STATUS "Configuring ${comp}")
+            add_subdirectory( ${comp} )
+         endforeach()
+      endif()
+   endif()
+
+   # Only add the component if the current compiler matches the
+   # requested regex
+   if( caddsubdir_CXX_COMPILER_MATCHES )
+#      message("${CMAKE_CXX_COMPILER} MATCHES ${caddsubdir_CXX_COMPILER_MATCHES}")
+      if( "${CMAKE_CXX_COMPILER}" MATCHES
+            "${caddsubdir_CXX_COMPILER_MATCHES}" )
+#         message("yes")
+         foreach( comp ${caddsubdir_COMPONENTS} )
+            message(STATUS "Configuring ${comp}")
+            add_subdirectory( ${comp} )
+         endforeach()
+      endif()
+   endif()
+
+
+endmacro()
+
+#----------------------------------------------------------------------#
 # End
 #----------------------------------------------------------------------#
