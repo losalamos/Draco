@@ -75,27 +75,14 @@
 # Compiler Flags
 # 
 
-# Flags from Clubimc scons build system:
-
-# /opt/cell/toolchain/bin/spu-g++ -o
-# /scratch3/kellyt/rr_dev/hetero/build/debug-120208_x86_mpi/ppe_apps/accel_side_rz_mg/spe/run_particle_transporter.o 
-# -c -fstack-check -W -Wall -Winline -O0 -fno-exceptions -fno-rtti
-# -finline-limit=100 --param large-function-growth=100 -gdwarf-2
-# -march=celledp -DSHORT_SPE_TALLIES -DFLAT_AMR_RDR -DFLAT_OP_RDR
-# -include spu_intrinsics.h -DADDRESSING_64 -D__USING_GCC -DEDP -DCACHE_LINE_SIZE=128
-
-# -DPARTICLE_RNG_SIZE=54 
-
-# -Iheterogeneous/ppe_apps/accel_side_rz_mg/spe -Iheterogeneous/ppe_apps/accel_side_rz_mg -I/scratch3/kellyt/rr_dev/hetero/exports/debug-20110414_x86_mpi/include -I/scratch3/kellyt/rr_dev/hetero/exports/debug-20110414_ppe_scalar/include/common_64 -I/scratch3/kellyt/rr_dev/hetero/exports/debug-20110414_ppe_scalar/include/spe_64 -I/scratch3/kellyt/rr_dev/hetero/exports/debug-20110414_ppe_scalar/include/host_accel/cell_64 -Iheterogeneous/ppe_apps/accel_side_rz_mg/spe -I/opt/cell/sysroot/usr/spu/include -I/opt/cell/sysroot/opt/cell/sdk/usr/spu/include -I/opt/ibm/cell-sdk/prototype/src/include/spu /scratch3/kellyt/rr_dev/hetero/build/debug-120208_x86_mpi/ppe_apps/accel_side_rz_mg/spe/run_particle_transporter.cc 
-
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
-   set( CMAKE_C_FLAGS                "-fstack-check -W -Wall -Winline -fno-exceptions -fno-rtti -finline-limit=100 --param large-function-growth=100 -march=celledp -DADDRESSING_64 -D__USING_GCC -DEDP -DCACHE_LINE_SIZE=128 -DPARTICLE_RNG_SIZE=54 -include spu_intrinsics.h" )
+   set( CMAKE_C_FLAGS                "-fstack-check -W -Wall -Winline -fno-exceptions -fno-rtti -march=celledp -DADDRESSING_64 -D__USING_GCC -DEDP -DCACHE_LINE_SIZE=128 -include spu_intrinsics.h" )
 
-   set( CMAKE_C_FLAGS_DEBUG          "-O0 -gdwarf-2" )
-   set( CMAKE_C_FLAGS_RELEASE        "-O3" )
+   set( CMAKE_C_FLAGS_DEBUG          "-O0 -gdwarf-2 -finline-limit=100 --param large-function-growth=100 -DPARTICLE_RNG_SIZE=54" )
+   set( CMAKE_C_FLAGS_RELEASE        "-O3 -finline-limit=1500 --param large-function-growth=1700 -DPARTICLE_RNG_SIZE=0 -DRNG_NR=1" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "-O3" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gdwarf-2" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gdwarf-2 -finline-limit=100 --param large-function-growth=100 -DPARTICLE_RNG_SIZE=54" )
    
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
