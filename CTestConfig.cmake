@@ -5,7 +5,7 @@
 ##   ENABLE_TESTING()
 ##   INCLUDE(CTest)
 set( CTEST_PROJECT_NAME "Draco" )
-set( CTEST_NIGHTLY_START_TIME "00:0:01 MST" )
+set( CTEST_NIGHTLY_START_TIME "00:00:01 MST" )
 
 set( CTEST_DROP_METHOD "http")
 set( CTEST_DROP_SITE "coder.lanl.gov" )
