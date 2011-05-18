@@ -239,3 +239,24 @@
    obj:*/cmake
    ...
 }
+
+## ---------------------------------------------------------------------- ##
+## Added with upgrade to valgrind 3.6.1
+## ---------------------------------------------------------------------- ##
+
+{
+   tstSP/condjump/ld25so
+   Memcheck:Cond
+   fun:index
+   fun:expand_dynamic_string_token
+   fun:_dl_map_object
+   ...
+   obj:/lib64/ld-2.5.so
+}
+{
+   tstSP/condjump/ld25so
+   Memcheck:Cond
+   fun:_dl_relocate_object
+   ...
+   obj:/lib64/ld-2.5.so
+}
