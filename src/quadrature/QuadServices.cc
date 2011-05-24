@@ -243,6 +243,9 @@ std::vector< double > QuadServices::computeD_morel(void) const
     result = gsl_linalg_LU_invert( &gsl_M.matrix, p, &gsl_D.matrix );
     Check( result == 0 );
 
+    // Free the space reserved for the permutation matrix.
+    gsl_permutation_free( p );
+
     return D;
 }
 
