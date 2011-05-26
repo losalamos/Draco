@@ -12,6 +12,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "Expression.hh"
 #include "Token_Stream.hh"
 #include "Unit.hh"
 #include "mesh_element/Geometry.hh"
@@ -46,7 +47,19 @@ double parse_quantity(Token_Stream &tokens,
 		      Unit const &unit,
 		      char const *name);
 
+//! parse an expression followed by a unit expression.
+SP<Expression> parse_quantity(Token_Stream &tokens,
+                              Unit const &unit,
+                              char const *name,
+                              unsigned number_of_variables,
+                              std::map<string, pair<unsigned, Unit> > const &);
+
 double parse_temperature(Token_Stream &);
+
+SP<Expression>
+parse_temperature(Token_Stream &,
+                  unsigned number_of_variables,
+                  std::map<string, pair<unsigned, Unit> > const &);
 
 //! parser a quote-delimited string, stripping the quotes.
 std::string parse_manifest_string(Token_Stream &tokens);

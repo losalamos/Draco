@@ -17,7 +17,7 @@ namespace rtt_parser
 {
 using namespace rtt_dsxx;
 
-typedef SP<Expression const> pE;
+typedef SP<Expression> pE;
 typedef map<string, pair<unsigned, Unit> > Variable_Map;
 
 //---------------------------------------------------------------------------//
@@ -1568,9 +1568,9 @@ double Expression::operator()(vector<double> const &x) const
  * grammatically ill-formed.
  */
 
-SP<Expression const> Expression::parse(unsigned const number_of_variables,
-                                       Variable_Map const &variable_map,
-                                       Token_Stream &tokens)
+SP<Expression> Expression::parse(unsigned const number_of_variables,
+                                 Variable_Map const &variable_map,
+                                 Token_Stream &tokens)
 {
     // No index in the variable map can be greater than or equal to the number
     // of variables.
@@ -1578,7 +1578,7 @@ SP<Expression const> Expression::parse(unsigned const number_of_variables,
     // The top expression is the or expression, which we anticipate
     // will be useful for piecewise functions.
 
-    pE Result = parse_or(number_of_variables, variable_map, tokens);
+    SP<Expression> Result = parse_or(number_of_variables, variable_map, tokens);
     while (tokens.lookahead().text()=="|")
     {
         tokens.shift();

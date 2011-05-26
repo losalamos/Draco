@@ -758,6 +758,48 @@ double parse_temperature(Token_Stream &tokens)
 
 //---------------------------------------------------------------------------//
 /*! 
+ * \brief Parse a temperature specification 
+ *
+ * It is very common for transport researchers to specify a temperature in
+ * units of energy, using Boltzmann's constant as the conversion factor.
+ * This function is useful for parsers that accomodate this convention.
+ * 
+ * \param tokens
+ * Token stream from which to parse the specification.
+ *
+ * \return The parsed temperature.
+ *
+ * \post \c Result>=0.0
+ */
+
+SP<Expression>
+parse_temperature(Token_Stream &tokens,
+                  unsigned const number_of_variables,
+                  std::map<string, pair<unsigned, Unit> > const &variable_map)
+{
+    SP<Expression> T = Expression::parse(number_of_variables,
+                                         variable_map,
+                                         tokens);
+    
+    Unit const u = parse_unit(tokens)*T->units();
+    if (is_compatible(u, K))
+    {
+        T->set_units(u);
+    }
+    else if (is_compatible(u, J))
+    {
+        T->set_units(u*K/(J*rtt_units::boltzmannSI));
+    }
+    else
+    {
+	tokens.report_syntax_error("expected quantity with units of "
+				   "temperature");
+    }
+    return T;
+}
+
+//---------------------------------------------------------------------------//
+/*! 
  * Parses a STRING token and strips the delimiting quotation marks.
  *
  * \param tokens
@@ -854,6 +896,47 @@ bool parse_bool(Token_Stream &tokens)
         tokens.report_syntax_error("expected 'true' or 'false'");
         return true; // to turn off warning; never reached
     }
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * This function parses an expression having dimensions. It is assumed that the
+ * client expects certain dimensions for the quantity, and an exception is
+ * thrown if the dimensions are not what the client expected. The quantity
+ * will be converted to the desired unit system, as indicated by the \c .conv
+ * member of the \c target_unit argument.
+ * 
+ * \param tokens
+ * Token stream from which to parse the quantity.
+ * \param target_unit
+ * Expected units for the quantity parsed, including conversion factor.
+ * \param name
+ * Name of the units expected for the quantity parsed, such as "length" or
+ * "ergs/cm/sec/Hz". Used to generate diagnostic messages.
+ *
+ * \return The parsed value, converted to the desired unit system. 
+ */
+
+SP<Expression> parse_quantity(Token_Stream &tokens,
+                              Unit const &target_unit,
+                              char const *const name,
+                              unsigned const number_of_variables,
+                              std::map<string, pair<unsigned, Unit> >
+                                const &variable_map)
+{
+    SP<Expression> value = Expression::parse(number_of_variables,
+                                             variable_map,
+                                             tokens);
+    
+    Unit unit = parse_unit(tokens)*value->units();
+    if (!is_compatible(unit, target_unit))
+    {
+	ostringstream buffer;
+	buffer << "expected quantity with dimensions of " << name;
+	tokens.report_semantic_error(buffer.str().c_str());
+    }
+    value->set_units(unit);
+    return value;
 }
 
 } // rtt_parser

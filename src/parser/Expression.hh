@@ -98,6 +98,11 @@ class Expression
 
     // MANIPULATORS
 
+    void set_units(Unit const &units)
+    {
+        units_ = units;
+    }
+    
     // ACCESSORS
 
     //! Return the number of variables in the expression.
@@ -138,7 +143,7 @@ class Expression
 
     //! Parse an Expression from a Token_Stream.
     static
-    SP<Expression const>
+    SP<Expression>
     parse( unsigned number_of_variables,
            map<string, pair<unsigned, Unit> > const &variables,
            Token_Stream &);
