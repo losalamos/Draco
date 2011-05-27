@@ -320,7 +320,6 @@ macro( add_parallel_tests )
        set( MPIRUN_POSTFLAGS ${MPIEXEC_POSTFLAGS} )
    else()
        set( MPIRUN_POSTFLAGS "${addparalleltest_MPIFLAGS}" )
-       message(" set( MPIRUN_POSTFLAGS \"${addparalleltest_MPIFLAGS}\" ) ")
    endif ()
 
 
@@ -395,15 +394,6 @@ macro( add_parallel_tests )
                        $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
                        ${addparalleltest_TEST_ARGS}
                )
-            message("
-            add_test( 
-               NAME    ${compname}_${testname}_${numPE}
-               COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-                       ${MPIRUN_POSTFLAGS}
-                       $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
-                       ${addparalleltest_TEST_ARGS}
-               )
-               ")
  
             set_tests_properties( ${compname}_${testname}_${numPE}
                PROPERTIES	
