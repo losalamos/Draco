@@ -280,7 +280,7 @@ macro( add_parallel_tests )
       # prefix
       addparalleltest
       # list names
-      "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER"
+      "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;MPIFLAGS"
       # option names
       "NONE"
       ${ARGV}
@@ -314,6 +314,15 @@ macro( add_parallel_tests )
    if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
       set( test_lib_target_name "Lib_${compname}_test" )
    endif()
+
+   # Override MPI Flags upon user request
+   if ( NOT DEFINED addparalleltest_MPIFLAGS )
+       set( MPIRUN_POSTFLAGS ${MPIEXEC_POSTFLAGS} )
+   else()
+       set( MPIRUN_POSTFLAGS "${addparalleltest_MPIFLAGS}" )
+       message(" set( MPIRUN_POSTFLAGS \"${addparalleltest_MPIFLAGS}\" ) ")
+   endif ()
+
 
    # Loop over each test source files:
    # 1. Compile the executable
@@ -382,10 +391,20 @@ macro( add_parallel_tests )
             add_test( 
                NAME    ${compname}_${testname}_${numPE}
                COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-                       ${MPIEXEC_POSTFLAGS}
+                       ${MPIRUN_POSTFLAGS}
                        $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
                        ${addparalleltest_TEST_ARGS}
                )
+            message("
+            add_test( 
+               NAME    ${compname}_${testname}_${numPE}
+               COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+                       ${MPIRUN_POSTFLAGS}
+                       $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
+                       ${addparalleltest_TEST_ARGS}
+               )
+               ")
+ 
             set_tests_properties( ${compname}_${testname}_${numPE}
                PROPERTIES	
                  PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
