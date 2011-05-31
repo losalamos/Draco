@@ -67,6 +67,8 @@ class Pseudo_Line_Analytic_MultigroupOpacity
     sf_double edge_;   // edges for this realization
     sf_double edge_factor_; // opacity at threshold
 
+    unsigned qpoints_; // value of 0 indicates to use adaptive Romberg integration
+
     friend class PLR_Functor; // used in calculation of Rosseland averages
     friend class PLP_Functor; // used in calculation of Planck averages
 
@@ -85,6 +87,7 @@ class Pseudo_Line_Analytic_MultigroupOpacity
                                            double emin,
                                            double emax,
                                            Averaging averaging,
+                                           unsigned qpoints,
                                            unsigned seed);
     
     //! Constructor for packed state.

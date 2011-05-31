@@ -65,7 +65,7 @@ class PLP_Functor
         : ptr_(ptr), T_(T)
     {}
 
-    double operator()(double &x);
+    double operator()(double x);
 
   private:
     
@@ -73,7 +73,7 @@ class PLP_Functor
     double T_;
 };
 
-double PLP_Functor::operator()(double &x)
+double PLP_Functor::operator()(double x)
 {
     return ptr_->monoOpacity(x, T_)*BB(T_, x);
 }
@@ -89,7 +89,7 @@ class PLPW_Functor
         : T_(T)
     {}
 
-    double operator()(double &x);
+    double operator()(double x);
 
   private:
     
@@ -97,7 +97,7 @@ class PLPW_Functor
     
 };
 
-double PLPW_Functor::operator()(double &x)
+double PLPW_Functor::operator()(double x)
 {
     return BB(T_, x);
 }
@@ -114,7 +114,7 @@ class PLR_Functor
         : ptr_(ptr), T_(T)
     {}
 
-    double operator()(double &x);
+    double operator()(double x);
 
   private:
     
@@ -122,7 +122,7 @@ class PLR_Functor
     double T_;
 };
 
-double PLR_Functor::operator()(double &x)
+double PLR_Functor::operator()(double x)
 {
     return DBB(T_,x)/ptr_->monoOpacity(x, T_);
 }
@@ -138,7 +138,7 @@ class PLRW_Functor
         : T_(T)
     {}
 
-    double operator()(double &x);
+    double operator()(double x);
 
   private:
     
@@ -146,7 +146,7 @@ class PLRW_Functor
     
 };
 
-double PLRW_Functor::operator()(double &x)
+double PLRW_Functor::operator()(double x)
 {
     return DBB(T_,x);
 }
@@ -166,6 +166,7 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
                                        double emin,
                                        double emax,
                                        Averaging const averaging,
+                                       unsigned const qpoints,
                                        unsigned seed)
     :
     Analytic_MultigroupOpacity(group_bounds,
@@ -182,7 +183,8 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
     Tpow_(Tpow),
     center_(number_of_lines),
     edge_(number_of_edges),
-    edge_factor_(number_of_edges)
+    edge_factor_(number_of_edges),
+    qpoints_(qpoints)
 {
     Require(continuum>=0.0);
     Require(line_peak>=0.0);
@@ -275,6 +277,9 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
             
         case ROSSELAND:
         {
+            PLR_Functor rfunctor(this, T);
+            PLRW_Functor wfunctor(T);
+            
             double g1 = group_bounds[0];
             for (unsigned g=0; g<number_of_groups; ++g)
             {
@@ -282,25 +287,38 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                 g1 = group_bounds[g+1];
                 double eps = 1e-5;
                 double t = 0.0, b = 0.0;
-                double x1 = g0;
-                while (x1<g1)
+                if (qpoints_==0)
                 {
-                    double x0 = x1;
-                    x1 += 2*line_width_;
-                    if (x1>g1) x1 = g1;
-                    
-                    t +=
-                        rtt_ode::quad(PLR_Functor(this, T),
-                                      x0,
-                                      x1,
-                                      eps,
-                                      rkqs<double, Quad_To_ODE<PLR_Functor> >);
-                    b +=
-                        rtt_ode::quad(PLRW_Functor(T),
-                                      x0,
-                                      x1,
-                                      eps,
-                                      rkqs<double, Quad_To_ODE<PLRW_Functor> >);
+                    double x1 = g0;
+                    while (x1<g1)
+                    {
+                        double x0 = x1;
+                        x1 += 2*line_width_;
+                        if (x1>g1) x1 = g1;
+                        
+                        t +=
+                            rtt_ode::quad(rfunctor,
+                                          x0,
+                                          x1,
+                                          eps,
+                                          rkqs<double, Quad_To_ODE<PLR_Functor> >);
+                        b +=
+                            rtt_ode::quad(wfunctor,
+                                          x0,
+                                          x1,
+                                          eps,
+                                          rkqs<double, Quad_To_ODE<PLRW_Functor> >);
+                    }
+                }
+                else
+                {
+                    for (unsigned ig=0; ig<qpoints_; ++ig)
+                    {
+                        double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
+
+                        t += rfunctor(x)*(g1-g0);
+                        b += wfunctor(x)*(g1-g0);
+                    }
                 }
 
                 Result[g] = b/t;
@@ -313,31 +331,47 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
             double g1 = group_bounds[0];
             for (unsigned g=0; g<number_of_groups; ++g)
             {
+                PLP_Functor pfunctor(this, T);
+                PLPW_Functor wfunctor(T);
+                
                 double const g0 = g1;
                 g1 = group_bounds[g+1];
                 double eps = 1e-5;
                 double t = 0.0, b = 0.0;
-                double x1 = g0;
-                while (x1<g1)
+                if (qpoints_==0)
                 {
-                    double x0 = x1;
-                    x1 += 2*line_width_;
-                    if (x1>g1) x1 = g1;
-                    
-                    t +=
-                        rtt_ode::quad(PLP_Functor(this, T),
-                                      x0,
-                                      x1,
-                                      eps,
-                                      rkqs<double, Quad_To_ODE<PLP_Functor> >);
-                    b +=
-                        rtt_ode::quad(PLPW_Functor(T),
-                                      x0,
-                                      x1,
-                                      eps,
-                                      rkqs<double, Quad_To_ODE<PLPW_Functor> >);
+                    double x1 = g0;
+                    while (x1<g1)
+                    {
+                        double x0 = x1;
+                        x1 += 2*line_width_;
+                        if (x1>g1) x1 = g1;
+                        
+                        t +=
+                            rtt_ode::quad(pfunctor,
+                                          x0,
+                                          x1,
+                                          eps,
+                                          rkqs<double, Quad_To_ODE<PLP_Functor> >);
+                        b +=
+                            rtt_ode::quad(wfunctor,
+                                          x0,
+                                          x1,
+                                          eps,
+                                          rkqs<double, Quad_To_ODE<PLPW_Functor> >);
+                    }
                 }
-
+                else
+                {
+                    for (unsigned ig=0; ig<qpoints_; ++ig)
+                    {
+                        double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
+                        
+                        t += pfunctor(x)*(g1-g0);
+                        b += wfunctor(x)*(g1-g0);
+                    }
+                }
+                
                 Result[g] = t/b;
             }
         }
