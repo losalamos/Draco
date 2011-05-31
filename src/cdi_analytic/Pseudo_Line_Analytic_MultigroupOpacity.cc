@@ -14,6 +14,7 @@
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/cube.hh"
+#include "cdi/CDI.hh"
 
 namespace
 {
@@ -49,6 +50,7 @@ namespace rtt_cdi_analytic
 using namespace std;
 using namespace rtt_ode;
 using namespace rtt_dsxx;
+using namespace rtt_cdi;
 
 typedef Analytic_MultigroupOpacity::sf_double sf_double;
 typedef Analytic_MultigroupOpacity::vf_double vf_double;
@@ -316,8 +318,13 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                     {
                         double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
 
-                        t += rfunctor(x)*(g1-g0);
-                        b += wfunctor(x)*(g1-g0);
+                        double w = CDI::integrateRosselandSpectrum(g0,
+                                                                   g1,
+                                                                   T);
+
+
+                        t += w/monoOpacity(x, T);
+                        b += w;
                     }
                 }
 
@@ -367,8 +374,13 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                     {
                         double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
                         
-                        t += pfunctor(x)*(g1-g0);
-                        b += wfunctor(x)*(g1-g0);
+                        double w = CDI::integratePlanckSpectrum(g0,
+                                                                g1,
+                                                                T);
+
+
+                        t += w*monoOpacity(x, T);
+                        b += w;
                     }
                 }
                 

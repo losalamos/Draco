@@ -41,7 +41,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::Averaging const PLANCK =
 
 void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
 {
-    unsigned const NG = 2000; // 300 for full resolution
+    unsigned const NG = 10; // 2000; // 300 for full resolution
     unsigned const number_of_lines = 200;
     unsigned const number_of_edges = 10;
     unsigned seed = 1;
