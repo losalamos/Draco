@@ -102,11 +102,15 @@ file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 set( VERBOSE ON )
 set( CTEST_OUTPUT_ON_FAILURE ON )
 
-
+# Start
 message(STATUS "ctest_start( ${CTEST_MODEL} )")
 ctest_start( ${CTEST_MODEL} )
+
+# Update
 message(STATUS  "ctest_update()"  )
 ctest_update()
+
+# Configure
 if( "$ENV{CXX}" MATCHES "g[+][+]" )
    if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
       if(ENABLE_C_CODECOVERAGE)
@@ -124,10 +128,20 @@ if( "$ENV{CXX}" MATCHES "g[+][+]" )
       endif()
    endif()
 endif()
-message(STATUS "ctest_configure()" )
-ctest_configure() # LABELS label1 [label2]
+if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
+   set( TOOLCHAIN_SETUP
+      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake"
+      )
+endif()
+# this is the initial cache to use for the binary tree, be careful to escapemessage(STATUS "ctest_configure()" )
+message( STATUS "ctest_configure( OPTIONS ${TOOLCHAIN_SETUP} )" )
+ctest_configure( OPTIONS ${TOOLCHAIN_SETUP} ) # LABELS label1 [label2]
+
+# Build
 message(STATUS "ctest_build()" )
 ctest_build()
+
+# Tests
 message(STATUS "ctest_test(
    PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
    SCHEDULE_RANDOM ON )" )
@@ -151,6 +165,8 @@ if( "$ENV{CXX}" MATCHES "g[+][+]" )
       endif()
    endif()
 endif()
+
+# Submit results
 message(STATUS "ctest_submit()")
 ctest_submit()
 
