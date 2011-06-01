@@ -91,6 +91,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
      set( sitename "YellowRail" )
   elseif( ${sitename} MATCHES "tu[a-d]+[0-9]+" )
      set( sitename "Turing" )
+  elseif( ${sitename} MATCHES "rr[a-d]+[0-9]+" )
+     set( sitename "RoadRunner" )
   endif()
   # string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
   set( CTEST_SITE ${sitename} )
