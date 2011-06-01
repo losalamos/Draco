@@ -63,7 +63,6 @@ if( DOXYGEN_FOUND )
             -Ddoxygen_examples=${DOXYGEN_EXAMPLES}
             -DHTML_OUTPUT=${DOXYGEN_HTML_OUTPUT}
             -Ddoxygen_html_output=${DOXYGEN_HTML_OUTPUT}
-            -DTAGFILES=${DOXYGEN_TAGFILES}
             -DDOTFILE_DIRS=${DOXYGEN_DOTFILE_DIRS}
             -Ddotpath=${DOXYGEN_DOTFILE_DIRS}
             -Dlatex_yes_no=NO
