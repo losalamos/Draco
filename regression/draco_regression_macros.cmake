@@ -259,6 +259,8 @@ macro( parse_args )
      set( compiler_short_name "pgi" )
   elseif($ENV{CXX} MATCHES "icpc" )
      set( compiler_short_name "intel" )
+  elseif($ENV{CXX} MATCHES "ppu-g[+][+]" )
+     set( compiler_short_name "ppu-gcc" )
   endif()
 
   # maybe just gcc?
