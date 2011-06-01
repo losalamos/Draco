@@ -50,9 +50,9 @@ find_tools() # QUIET
 if( EXISTS /ccs/codes/radtran/cvsroot )
    set( CTEST_CVS_CHECKOUT
       "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source draco" )
-elseif( EXISTS /scratch3/kellyt/cvsroot )
+elseif( EXISTS /usr/projects/jayenne/regress/cvsroot )
    set( CTEST_CVS_CHECKOUT
-      "${CTEST_CVS_COMMAND} -d /scratch3/kellyt/cvsroot co -P -d source draco" )
+      "${CTEST_CVS_COMMAND} -d /usr/projects/jayenne/regress/cvsroot co -P -d source draco" )
 else()
    set( CTEST_CVS_CHECKOUT
       "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source draco" )
