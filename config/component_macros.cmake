@@ -120,6 +120,47 @@ MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
   SET(${prefix}_${current_arg_name} ${current_arg_list})
 ENDMACRO(PARSE_ARGUMENTS)
 
+# ------------------------------------------------------------
+# Register_scalar_test()
+#
+# 1. Special treatment for Roadrunner/ppe code (must ssh and then run)
+# 2. Register the test
+# 3. Register the pass/fail criteria.
+# ------------------------------------------------------------
+macro( register_scalar_test targetname runcmd command cmd_args )
+
+   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+      # Special treatment for Roadrunner PPE build.  The tests
+      # must be run on the PPC chip on the backend.  If we are
+      # running from the x86 backend, then we can run the tests
+      # by ssh'ing to the 'b' node and running the test.
+      add_test( 
+         NAME    ${targetname}
+         COMMAND ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};${command} ${cmd_args})" )
+   else()
+      separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
+      add_test( 
+         NAME    ${targetname}
+         COMMAND ${RUN_CMD} ${command} ${cmdargs})
+   endif()
+   
+   # set pass fail criteria, processors required, etc.
+   set_tests_properties( ${targetname}
+      PROPERTIES	
+      PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
+      FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
+      PROCESSORS              "1"
+      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+      )
+   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set_tests_properties( ${targetname}
+         PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
+   endif()
+   if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
+      set_tests_properties( ${targetname}
+         PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
+   endif()
+endmacro()
 
 #----------------------------------------------------------------------#
 # add_scalar_tests
@@ -134,6 +175,7 @@ ENDMACRO(PARSE_ARGUMENTS)
 #----------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
 
+   # These become variables of the form ${addscalartests_SOURCES}, etc.
    parse_arguments( 
       # prefix
       addscalartest
@@ -144,6 +186,8 @@ macro( add_scalar_tests test_sources )
       ${ARGV}
       )
 
+   # Special Cases:
+   # ------------------------------------------------------------
    # On some platforms (Cielo, Cielito, RedStorm), even scalar tests
    # must be run underneath MPIEXEC (yod, aprun):
    if( "${MPIEXEC}" MATCHES "aprun" )
@@ -154,15 +198,18 @@ macro( add_scalar_tests test_sources )
       unset( RUN_CMD )
    endif()
 
-#    message("
-# addscalartest_SOURCES    = ${addscalartest_SOURCES}
-# addscalartest_DEPS       = ${addscalartest_DEPS}
-# addscalartest_TEST_ARGS  = ${addscalartest_TEST_ARGS}
-# addscalartest_PASS_REGEX = ${addscalartest_PASS_REGEX}
-# addscalartest_FAIL_REGEX = ${addscalartest_FAIL_REGEX}
-# ")
+   # When on roadrunner backend (x86), we must ssh into the PPE to run
+   # the test.  If we are on roadrunner frontend, we cannot run the
+   # tests.
+   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+      if( "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+         string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node ${SITE} )
+         set( RUN_CMD ssh ${ppe_node} )
+      endif()
+   endif()
 
    # Sanity Checks
+   # ------------------------------------------------------------
    if( "${addscalartest_SOURCES}none" STREQUAL "none" )
       message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using the add_scalar_tests macro.  Please see draco/config/component_macros.cmake::add_scalar_tests() for more information." )
    endif()
@@ -192,10 +239,10 @@ macro( add_scalar_tests test_sources )
 
    # Loop over each test source files:
    # 1. Compile the executable
-   # 2. Link against dependencies (libraries)
    # 3. Register the unit test
-   # 4. Register the pass/fail criteria.
 
+   # Generate the executable
+   # ------------------------------------------------------------
    foreach( file ${addscalartest_SOURCES} )
       get_filename_component( testname ${file} NAME_WE )
       add_executable( Ut_${compname}_${testname}_exe ${file} )
@@ -204,56 +251,26 @@ macro( add_scalar_tests test_sources )
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
-           #PROJECT_LABEL Ut_${compname}
            FOLDER ${compname}
          )
       target_link_libraries( Ut_${compname}_${testname}_exe 
          ${test_lib_target_name}
          ${addscalartest_DEPS}
          )
-      if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-         add_test( 
-            NAME    ${compname}_${testname} 
-            COMMAND ${RUN_CMD} ${testname} )
-         set_tests_properties( ${compname}_${testname} 
-           PROPERTIES	
-             PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
-             FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
-             PROCESSORS              "1"
-             WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-             )
-          if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-             set_tests_properties( ${compname}_${testname} 
-                PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
-          endif()
-          if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
-             set_tests_properties( ${compname}_${testname} 
-                PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
-          endif()
+   endforeach()
 
+   # Register the unit test
+   # ------------------------------------------------------------
+   foreach( file ${addscalartest_SOURCES} )
+      get_filename_component( testname ${file} NAME_WE )
+
+      if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
+         register_scalar_test( ${compname}_${testname} "${RUN_CMD}"
+         ${testname} "" )
        else()
           foreach( cmdarg ${addscalartest_TEST_ARGS} ) 
              math( EXPR iarg "${iarg} + 1" )
-             separate_arguments( tmp UNIX_COMMAND ${cmdarg} )
-             add_test( 
-                NAME    ${compname}_${testname}_arg${iarg} 
-                COMMAND ${RUN_CMD} ${testname} ${tmp} )
-             # message("${compname}_${testname}_arg${iarg} ${testname} ${cmdarg}")
-             set_tests_properties( ${compname}_${testname}_arg${iarg}
-                PROPERTIES	
-                  PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
-                  FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
-                  PROCESSORS              "1"
-                  WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-                )
-             if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-                set_tests_properties( ${compname}_${testname}_arg${iarg}
-                   PROPERTIES RESOURCE_LOCK "${addscalartest_RESOURCE_LOCK}" )
-             endif()
-             if( NOT "${addscalartest_RUN_AFTER}none" STREQUAL "none" )
-                set_tests_properties( ${compname}_${testname} 
-                   PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
-             endif()
+             register_scalar_test( ${compname}_${testname}_arg${iarg} "${RUN_CMD}" ${testname} "${cmdarg}" )
           endforeach()
        endif()
    endforeach()
@@ -285,6 +302,16 @@ macro( add_parallel_tests )
       "NONE"
       ${ARGV}
       )
+
+   # When on roadrunner backend (x86), we must ssh into the PPE to run
+   # the test.  If we are on roadrunner frontend, we cannot run the
+   # tests.
+   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
+      if( "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+         string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node ${SITE} )
+         set( RUN_CMD ssh ${ppe_node} )
+      endif()
+   endif()
 
    # Sanity Check
    if( "${addparalleltest_SOURCES}none" STREQUAL "none" )
@@ -335,7 +362,6 @@ macro( add_parallel_tests )
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
-           #PROJECT_LABEL Ut_${compname}
            FOLDER ${compname}
          )
       target_link_libraries( 
@@ -416,23 +442,42 @@ macro( add_parallel_tests )
       # SCALAR Mode:
       foreach( file ${addparalleltest_SOURCES} )
          get_filename_component( testname ${file} NAME_WE )
-         add_test( ${compname}_${testname} ${testname} 
-                   ${addparalleltest_TEST_ARGS} )
-         set_tests_properties( ${compname}_${testname} 
-            PROPERTIES	
-              PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
-              FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
-              PROCESSORS              "1"
-              WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-            )
-         if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-            set_tests_properties( ${compname}_${testname}
-               PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
-         endif()
-         if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-            set_tests_properties( ${compname}_${testname}
-               PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
-         endif()
+         set( addscalartest_PASS_REGEX "${addparalleltest_PASS_REGEX}" )
+         set( addscalartest_FAIL_REGEX "${addparalleltest_FAIL_REGEX}" )
+         set( addscalartest_RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+         set( addscalartest_RUN_AFTER "${addparalleltest_RUN_AFTER}" )
+
+         register_scalar_test( ${compname}_${testname} 
+            "${RUN_CMD}" ${testname} "${addparalleltest_TEST_ARGS}" )
+
+         # if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+         #    # Special treatment for Roadrunner PPE build.  The tests
+         #    # must be run on the PPC chip on the backend.  If we are
+         #    # running from the x86 backend, then we can run the tests
+         #    # by ssh'ing to the 'b' node and running the test.
+         #    add_test( ${compname}_${testname} 
+         #       ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};${testname} ${addparalleltest_TEST_ARGS})"
+         #       )
+         # else()
+         #    add_test( ${compname}_${testname} 
+         #       ${testname} 
+         #       ${addparalleltest_TEST_ARGS} )
+         # endif()
+         # set_tests_properties( ${compname}_${testname} 
+         #    PROPERTIES	
+         #      PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
+         #      FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+         #      PROCESSORS              "1"
+         #      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+         #    )
+         # if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+         #    set_tests_properties( ${compname}_${testname}
+         #       PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+         # endif()
+         # if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
+         #    set_tests_properties( ${compname}_${testname}
+         #       PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
+         # endif()
       endforeach()
    endif( ${DRACO_C4} MATCHES "MPI" )
 
@@ -535,12 +580,6 @@ macro( conditionally_add_subdirectory )
       ${ARGV}
       )
 
-#    message("
-# caddsubdir_COMPONENTS             = ${caddsubdir_COMPONENTS}
-# caddsubdir_CXX_COMPILER_EXCEPTION = ${caddsubdir_CXX_COMPILER_EXCEPTION}
-# caddsubdir_CXX_COMPILER_MATCHES   = ${caddsubdir_CXX_COMPILER_MATCHES}
-# ")
-
    # if the current compiler doesn't match the provided regex, then
    # add the directory to the build
    if( caddsubdir_CXX_COMPILER_EXCEPTION )
@@ -556,10 +595,8 @@ macro( conditionally_add_subdirectory )
    # Only add the component if the current compiler matches the
    # requested regex
    if( caddsubdir_CXX_COMPILER_MATCHES )
-#      message("${CMAKE_CXX_COMPILER} MATCHES ${caddsubdir_CXX_COMPILER_MATCHES}")
       if( "${CMAKE_CXX_COMPILER}" MATCHES
             "${caddsubdir_CXX_COMPILER_MATCHES}" )
-#         message("yes")
          foreach( comp ${caddsubdir_COMPONENTS} )
             message(STATUS "Configuring ${comp}")
             add_subdirectory( ${comp} )
