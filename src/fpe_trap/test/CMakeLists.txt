@@ -15,7 +15,7 @@ find_package(PythonInterp)
 #  PYTHONINTERP_FOUND - Was the Python executable found
 #  PYTHON_EXECUTABLE  - path to the Python interpreter
 
-if( PYTHONINTERP_FOUND )
+if( PYTHONINTERP_FOUND AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]")
 
     # ---------------------------------------------------------------------------- #
     # Source files
@@ -61,5 +61,5 @@ if( PYTHONINTERP_FOUND )
          LABELS                  "nomemcheck"
     )
 
-endif( PYTHONINTERP_FOUND )
+endif( )
     
