@@ -106,6 +106,11 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
       add_definitions( -DHOST_DIRECT_DACS_OUTPUT )
    endif()
 
+   option( HOST_ACCEL_DACS_GROUP " " ON )
+   if( HOST_ACCEL_DACS_GROUP )
+      add_definitions( -DHOST_ACCEL_DACS_GROUP )
+   endif()
+
 endif()
 
 #----------------------------------------------------------------------
