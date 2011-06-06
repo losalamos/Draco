@@ -52,6 +52,11 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
       add_definitions( -DACCEL_RECV_IPROBE )
    endif()
 
+   option( HET_HOST_ACCEL_DACS_GROUP " " ON )
+   if( HET_HOST_ACCEL_DACS_GROUP )
+      add_definitions( -DHOST_ACCEL_DACS_GROUP )
+   endif()
+
 endif()
 
 #----------------------------------------------------------------------
@@ -104,11 +109,6 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    option( HET_HOST_DIRECT_DACS_OUTPUT " " OFF )
    if( HET_HOST_DIRECT_DACS_OUTPUT )
       add_definitions( -DHOST_DIRECT_DACS_OUTPUT )
-   endif()
-
-   option( HOST_ACCEL_DACS_GROUP " " ON )
-   if( HOST_ACCEL_DACS_GROUP )
-      add_definitions( -DHOST_ACCEL_DACS_GROUP )
    endif()
 
 endif()
