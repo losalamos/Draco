@@ -127,8 +127,7 @@ if( "$ENV{CXX}" MATCHES "g[+][+]" )
             RESULT_VARIABLE RES)
       endif()
    endif()
-endif()
-if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
+elseif( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
    set( TOOLCHAIN_SETUP
       "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake"
       )
@@ -141,7 +140,6 @@ ctest_configure( OPTIONS ${TOOLCHAIN_SETUP} ) # LABELS label1 [label2]
 message(STATUS "ctest_build()" )
 ctest_build()
 
-# Tests
 message(STATUS "ctest_test(
    PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
    SCHEDULE_RANDOM ON )" )
