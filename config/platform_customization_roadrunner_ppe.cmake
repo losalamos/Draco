@@ -126,6 +126,22 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
 endif()
 
 #----------------------------------------------------------------------
+# Settings for the SPE (not x86 or PPE)
+#----------------------------------------------------------------------
+
+if( "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
+   option( HET_FLAT_AMR_RDR " " ON )
+   if( HET_FLAT_AMR_RDR )
+      add_definitions( -DFLAT_AMR_RDR )
+   endif()
+
+   option( HET_FLAT_OP_RDR " " ON )
+   if( HET_FLAT_OP_RDR )
+      add_definitions( -DFLAT_OP_RDR )
+   endif()
+endif()
+
+#----------------------------------------------------------------------
 # Use Tim Kelley's CXX flags for g++ instead of the default draco
 # flags. 
 # 
@@ -137,7 +153,7 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    if( "${CMAKE_GENERATOR}" MATCHES "Makefiles" )
       message( "NOTICE: We are modifying the default g++ compile flags for roadrunner (clubimc/pkg_config/platform_customization_roadrunner_ppe.cmake)")
 
-      set( DRACO_C_FLAGS                "-m64 -pthread -finline-functions -DADDRESSING_64" )
+      set( DRACO_C_FLAGS                "-m64 -pthread -finline-functions -DADDRESSING_64 -DCACHE_LINE_SIZE=128" )
       set( DRACO_C_FLAGS_DEBUG          "-gdwarf-2 -O0 -DDEBUG")
       set( DRACO_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
       set( DRACO_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_RELEASE}" )
