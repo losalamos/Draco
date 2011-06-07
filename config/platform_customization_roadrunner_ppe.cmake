@@ -183,38 +183,3 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    endif()
 endif()
 
-
-#----------------------------------------------------------------------
-# Instructions for building the SPE libraries.
-#
-# This is done as part of the PPE build at 'make-time' not at
-# configure-time
-#----------------------------------------------------------------------
-macro( ClubIMC_build_spe_libraries)
-   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
-      message( "
--- SPE libraries will be compiled:
-     SPE binary directory : ${ClubIMC_BINARY_DIR}/clubimc_spe
-     SPE install directory: ${CMAKE_INSTALL_PREFIX}/spe
-")
-      include(ExternalProject)
-      ExternalProject_Add( ClubIMC_SPE
-         # Root dir for build
-         PREFIX            ${ClubIMC_BINARY_DIR}/clubimc_spe
-         SOURCE_DIR        ${ClubIMC_SOURCE_DIR}
-         CONFIGURE_COMMAND cmake
-                        -DCMAKE_TOOLCHAIN_FILE=${DRACO_DIR}/config/Toolchain-roadrunner-spu.cmake 
-                        -DDRACO_DIR=${DRACO_DIR} 
-                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/spe
-                        ${ClubIMC_SOURCE_DIR}
-         CMAKE_GENERATOR   ${CMAKE_GENERATOR}
-         BUILD_COMMAND     ${CMAKE_MAKE_PROGRAM}
-         INSTALL_COMMAND   ${CMAKE_MAKE_PROGRAM} install
-         )
-      set( ClubIMC_SPE_DIR ${CMAKE_INSTALL_PREFIX}/spe )
-      set( ClubIMC_SPE_rz_mg_11_spe_LIBRARY ${ClubIMC_SPE_DIR}/lib/librtt_rz_mg_11_spe.a )
-      set( ClubIMC_SPE_rz_mg_11_spe_rw_LIBRARY ${ClubIMC_SPE_DIR}/lib/librtt_rz_mg_11_spe_rw.a )
-   endif()
-endmacro()
-
