@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cmath>
 #include "ds++/Assert.hh"
 #include "ludcmp.hh"
 #include "ds++/abs.hh"
@@ -77,7 +78,7 @@ void ludcmp(FieldVector &a,
 	    a[i+n*j] = sum;
 	}
 	Field big = 0.0;
-	unsigned imax;
+	unsigned imax(0);
 	for (unsigned i=j; i<n; ++i)
 	{
 	    Field sum = a[i+n*j];

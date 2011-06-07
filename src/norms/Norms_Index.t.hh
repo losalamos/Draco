@@ -96,7 +96,7 @@ void Norms_Index<Index_t>::comm(const size_t n)
 	{
 	    if ( i != n )
 	    {
-		double x;
+		double x(0);
 		rtt_c4::receive(&x, 1, i);
 		d_sum_L1 += x;
 		rtt_c4::receive(&x, 1, i);

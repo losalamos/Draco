@@ -105,7 +105,7 @@ void lnsrch(RandomContainer const &xold,
     }
     double lambda = 1.0;  // Try the Newton step first.
     check = false;
-    double lambda_1, lambda_2, f1, f2;
+    double lambda_1(0.0), lambda_2(0.0), f1(0.0), f2(0.0);
     while (true)
     {
 	bool lambda_too_small = true;

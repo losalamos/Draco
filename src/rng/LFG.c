@@ -721,13 +721,17 @@ lfg_gen_dbl(unsigned *genptr)
 
 /* This is split into two parts in order to allow the initialization to be
  * split across two calls */
+#ifdef DEBUG
+/* This ifdef eliminates a warning about 'end' not used in function. */
+#define INITIALIZE1_END end
+#endif
 static void
 initialize1(
     unsigned const  seed, 
     unsigned const * const nstart, 
     unsigned const initseed,
     unsigned* begin,
-    unsigned* end
+    unsigned* INITIALIZE1_END
     )
 {
     unsigned* const q0 = begin;

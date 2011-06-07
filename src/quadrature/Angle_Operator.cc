@@ -137,7 +137,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
 
         double mup = -2; // sentinel
         double sinth = -2; // sentinel
-        double omp;
+        double omp(0.0);
         level = -1;
 
         for (unsigned a=0; a<number_of_ordinates; a++)

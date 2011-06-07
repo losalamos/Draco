@@ -74,7 +74,7 @@ void gaussj(RandomContainer &A,
     vector<int> indxr(n);
     vector<int> ipiv(n, 0);
     
-    unsigned irow, icol;
+    unsigned irow(0), icol(0);
     for (unsigned i=0; i<n; i++)
     {
         double big = 0.0;
@@ -184,7 +184,7 @@ void gaussj(DoubleRandomContainer &A,
     vector<int> indxr(n);
     vector<int> ipiv(n, 0);
     
-    unsigned irow, icol;
+    unsigned irow(0), icol(0);
     for (unsigned i=0; i<n; i++)
     {
         double big = 0.0;

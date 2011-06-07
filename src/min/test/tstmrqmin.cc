@@ -119,7 +119,7 @@ void tstmrqmin( UnitTest & ut )
     double chisq;
     double alamda;
     vector<double> covar, alpha;
-    unsigned iopt;
+    unsigned iopt(0);
     double copt = 1e100;
     for (unsigned i=0; i<9; ++i)
     {
@@ -160,7 +160,7 @@ void tstmrqmin( UnitTest & ut )
          << " for variable " << iopt << endl;
 
     copt = 1e100;
-    unsigned i1, i2;
+    unsigned i1(0), i2(0);
     for (unsigned i=0; i<9; ++i)
     {
         ia[i] = true;
@@ -207,7 +207,7 @@ void tstmrqmin( UnitTest & ut )
          << " for variables " << i1 << i2 << endl;
 
     copt = 1e100;
-    unsigned i3;
+    unsigned i3(0);
     for (unsigned i=0; i<9; ++i)
     {
         ia[i] = true;
@@ -261,7 +261,7 @@ void tstmrqmin( UnitTest & ut )
          << " for variables " << i1 << i2 << i3 << endl;
 
     copt = 1e100;
-    unsigned i4;
+    unsigned i4(0);
     for (unsigned j1=0; j1<9; ++j1)
     {
         ia[j1] = true;
@@ -323,7 +323,7 @@ void tstmrqmin( UnitTest & ut )
 
  
     copt = 1e100;
-    unsigned i5;
+    unsigned i5(0);
     for (unsigned j1=0; j1<9; ++j1)
     {
         ia[j1] = true;
@@ -391,7 +391,7 @@ void tstmrqmin( UnitTest & ut )
          << " for variables " << i1 << i2 << i3 << i4 << i5 << endl;
  
     copt = 1e100;
-    unsigned i6;
+    unsigned i6(0);
     for (unsigned j1=0; j1<9; ++j1)
     {
         ia[j1] = true;
@@ -466,7 +466,7 @@ void tstmrqmin( UnitTest & ut )
          << " for variables " << i1 << i2 << i3 << i4 << i5 << i6 << endl;
  
     copt = 1e100;
-    unsigned i7;
+    unsigned i7(0);
     for (unsigned j1=0; j1<9; ++j1)
     {
         ia[j1] = true;
@@ -600,7 +600,7 @@ void tstmrqmin( UnitTest & ut )
     vector<double> xx(4);
     vector<double> dyda(9);
     double maxerr = 0;
-    unsigned ierr;
+    unsigned ierr(0);
     for (unsigned i=0; i<N; ++i)
     {
         for (unsigned j=0; j<4; ++j)

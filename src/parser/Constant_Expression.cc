@@ -87,7 +87,7 @@ using namespace rtt_parser;
 void write_c(Unit const &u, ostream &out)
 {
     unsigned count = u.conv!=1.0;
-    double p;
+    double p(0.0);
     if (u.m!=0)
     {
         count++;
