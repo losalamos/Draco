@@ -37,8 +37,9 @@ endif( ${CMAKE_Fortran_COMPILER_VERSION} STRLESS "4.2" )
 # -fimplicit-none         Do not allow implicit typing
 # -fPIC                   Produce position independent code
 # -cpp                    Enable preprocessing
+# -x f95-cpp-input        
 set( CMAKE_Fortran_FLAGS 
-  "-ffree-line-length-none -static-libgfortran -fPIC" )
+  "-ffree-line-length-none -static-libgfortran -fPIC -x f95-cpp-input" )
 if( ${CMAKE_Fortran_COMPILER_VERSION} STRGREATER "4.4.0" )
    set( CMAKE_Fortran_FLAGS "-cpp ${CMAKE_Fortran_FLAGS}" )
 #else()
