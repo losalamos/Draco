@@ -79,10 +79,10 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
    set( CMAKE_C_FLAGS                "-fstack-check -W -Wall -Winline -fno-exceptions -fno-rtti -march=celledp -DADDRESSING_64 -D__USING_GCC -DEDP -DCACHE_LINE_SIZE=128 -include spu_intrinsics.h" )
 
-   set( CMAKE_C_FLAGS_DEBUG          "-O0 -gdwarf-2 -finline-limit=100 --param large-function-growth=100 -DPARTICLE_RNG_SIZE=54" )
-   set( CMAKE_C_FLAGS_RELEASE        "-O3 -finline-limit=1500 --param large-function-growth=1700 -DPARTICLE_RNG_SIZE=0 -DRNG_NR=1" )
+   set( CMAKE_C_FLAGS_DEBUG          "-O0 -gdwarf-2 -finline-limit=100 --param large-function-growth=100" )
+   set( CMAKE_C_FLAGS_RELEASE        "-O3 -finline-limit=1500 --param large-function-growth=1700" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "-O3" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gdwarf-2 -finline-limit=100 --param large-function-growth=100 -DPARTICLE_RNG_SIZE=54" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gdwarf-2 -finline-limit=100 --param large-function-growth=100" )
    
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
