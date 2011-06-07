@@ -89,8 +89,8 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 # -Weffc++
 
 IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( DRACO_C_FLAGS                "-fPIC" )
-  set( DRACO_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wcast-align -Wpointer-arith -Wall -Wextra -DDEBUG") # -W
+  set( DRACO_C_FLAGS                "-fPIC -Wcast-align -Wpointer-arith -Wall" )
+  set( DRACO_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
   set( DRACO_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
   set( DRACO_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_RELEASE}" )
   set( DRACO_C_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_DEBUG} -O3 -funroll-loops -march=k8" )
