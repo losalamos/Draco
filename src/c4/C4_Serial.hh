@@ -36,7 +36,7 @@ extern const int proc_null;
 //---------------------------------------------------------------------------//
 
 template<class Comm>
-void inherit(const Comm &comm)
+void inherit(const Comm &/*comm*/)
 {
 }
 

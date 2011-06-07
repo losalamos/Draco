@@ -25,6 +25,8 @@ using std::vector;
 // EXCHANGE
 //---------------------------------------------------------------------------//
 
+#ifdef C4_MPI
+    
 template<class T>
 void determinate_swap(vector<unsigned>   const &outgoing_pid,
                       vector<vector<T> > const &outgoing_data,
@@ -34,11 +36,10 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
 {
     Require(outgoing_pid.size()==outgoing_data.size());
     Require(incoming_pid.size()==incoming_data.size());
-
+    
     unsigned incoming_processor_count = incoming_pid.size();
     unsigned outgoing_processor_count = outgoing_pid.size();
 
-#ifdef C4_MPI
     // This block is a no-op for with-c4=scalar.
     // Dito when the vectors are of zero-length.
     if( incoming_processor_count > 0 )
@@ -75,8 +76,6 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
         wait_all(outgoing_processor_count, &outgoing_C4_Req[0]);
         
     }
-#endif // C4_MPI
-
     return;
 }
 
@@ -89,7 +88,6 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
     Require(static_cast<int>(outgoing_data.size())==rtt_c4::nodes());
     Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
 
-#ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar 
 
         unsigned const N = rtt_c4::nodes();
@@ -131,11 +129,9 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
         wait_all(N, &outgoing_C4_Req[0]);
         
     }
-#endif // C4_MPI
 
     return;
 }
-
 //---------------------------------------------------------------------------//
 template<class T>
 void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
@@ -149,7 +145,6 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
     unsigned incoming_processor_count = incoming_pid.size();
     unsigned outgoing_processor_count = outgoing_pid.size();
 
-#ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar
 
         // Send the sizing information using determinate_swap
@@ -202,10 +197,32 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
             wait_all(outgoing_processor_count, &outgoing_C4_Req[0]);
         
     }
-#endif // C4_MPI
 
     return;
 }
+
+//---------------------------------------------------------------------------//
+// These functions do nothing if there is no communicator (C4_SCALAR=1)
+//---------------------------------------------------------------------------//
+#else 
+
+template<class T>
+void determinate_swap(vector<unsigned>   const & /*outgoing_pid*/,
+                      vector<vector<T> > const & /*outgoing_data*/,
+                      vector<unsigned>   const & /*incoming_pid*/,
+                      vector<vector<T> >       & /*incoming_data*/,
+                      int /*tag*/ ) { return; }
+template<class T>
+void determinate_swap(vector<vector<T> > const & /*outgoing_data*/,
+                      vector<vector<T> >       & /*incoming_data*/,
+                      int /*tag*/ ) { return; }
+template<class T>
+void semideterminate_swap(vector<unsigned>   const &/*outgoing_pid*/,
+                          vector<vector<T> > const &/*outgoing_data*/,
+                          vector<unsigned>   const &/*incoming_pid*/,
+                          vector<vector<T> >       &/*incoming_data*/,
+                          int /*tag*/ ) { return; }
+#endif // C4_MPI
 
 } // end namespace rtt_c4
 
