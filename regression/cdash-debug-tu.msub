@@ -73,6 +73,9 @@ if ! test -d ${work_dir}; then
    /usr/bin/install -d ${work_dir}/source
    /usr/bin/install -d ${work_dir}/build
    /usr/bin/install -d ${work_dir}/target
+else
+   # keep the purger from removing the source files.
+   find ${work_dir}/source/ -exec touch {} \;
 fi
 
 ctest -VV -S ${script_dir}/Draco_gcc.cmake,${dashboard_type},${build_type}
@@ -89,6 +92,9 @@ if ! test -d ${work_dir}; then
    /usr/bin/install -d ${work_dir}/source
    /usr/bin/install -d ${work_dir}/build
    /usr/bin/install -d ${work_dir}/target
+else
+   # keep the purger from removing the source files.
+   find ${work_dir}/source/ -exec touch {} \;
 fi
 
 ctest -VV -S ${script_dir}/ClubIMC_gcc.cmake,${dashboard_type},${build_type}
@@ -105,6 +111,9 @@ if ! test -d ${work_dir}; then
    /usr/bin/install -d ${work_dir}/source
    /usr/bin/install -d ${work_dir}/build
    /usr/bin/install -d ${work_dir}/target
+else
+   # keep the purger from removing the source files.
+   find ${work_dir}/source/ -exec touch {} \;
 fi
 
 ctest -VV -S ${script_dir}/Wedgehog_Linux64.cmake,${dashboard_type},${build_type}
@@ -121,6 +130,9 @@ if ! test -d ${work_dir}; then
    /usr/bin/install -d ${work_dir}/source
    /usr/bin/install -d ${work_dir}/build
    /usr/bin/install -d ${work_dir}/target
+else
+   # keep the purger from removing the source files.
+   find ${work_dir}/source/ -exec touch {} \;
 fi
 
 ctest -VV -S ${script_dir}/Milagro_Linux64.cmake,${dashboard_type},${build_type}
