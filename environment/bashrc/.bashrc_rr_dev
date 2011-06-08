@@ -24,24 +24,28 @@ _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
 # modules
-export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
-export IGNOREMODULECONFLICTS=1
-function module() { eval `/usr/bin/modulecmd bash $*`; }
-module load hpc-tools friendly-testing pgi lapack python openmpi gandolf gsl
+module use ${DRACO_MODULE_DIR}/rr-dev-fe
+#export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
+# export IGNOREMODULECONFLICTS=1
+function module() 
+{
+   eval `/usr/bin/modulecmd bash $*`; 
+}
+module load hpc-tools friendly-testing python openmpi-gcc cmake cellsdk gsl lapack/atlas-3.8.2 gandolf
 
-if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
-  function llogin()
-  {
-     ##local myshell="/usr/bin/ssh-agent /bin/bash"
-     local myshell="/bin/bash"
-     qsub $* -IS ${myshell}
-   }
-else
-  function llogin()
-  {
-    echo "Already on worker node." 
-  }
-fi
+# if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
+#   function llogin()
+#   {
+#      ##local myshell="/usr/bin/ssh-agent /bin/bash"
+#      local myshell="/bin/bash"
+#      qsub $* -IS ${myshell}
+#    }
+# else
+#   function llogin()
+#   {
+#     echo "Already on worker node." 
+#   }
+# fi
 
 # CVS
 export CVS_RSH=ssh
