@@ -58,6 +58,7 @@ else()
       "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source draco" )
 endif()
 
+message( "sitename = ${sitename}" )
 # set( CTEST_NOTES_FILE "path/to/file1" "/path/to/file2" )
 
 ####################################################################
@@ -93,6 +94,8 @@ message("CTEST_INITIAL_CACHE =
 ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
 
+# Empty the binary directory and recreate the CMakeCache.txt
+message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
 ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
 file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 
@@ -140,26 +143,24 @@ ctest_configure( OPTIONS ${TOOLCHAIN_SETUP} ) # LABELS label1 [label2]
 message(STATUS "ctest_build()" )
 ctest_build()
 
-message(STATUS "ctest_test(
-   PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-   SCHEDULE_RANDOM ON )" )
-ctest_test( 
-   PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-   SCHEDULE_RANDOM ON ) 
+# Test
+message(STATUS "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
+ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON ) 
 
 if( "$ENV{CXX}" MATCHES "g[+][+]" )
    if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
       if(ENABLE_C_CODECOVERAGE)
          message(STATUS "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
          ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
-         execute_process(COMMAND "${COV01}" --off
-            RESULT_VARIABLE RES)
+         execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
       else()
-         message(STATUS "ctest_memcheck( SCHEDULE_RANDOM ON )")
-         ctest_memcheck(
-            SCHEDULE_RANDOM ON 
-            EXCLUDE_LABEL "nomemcheck")
-         #  PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
+         if( "${sitename}" MATCHES "ccscs8" )
+            message(STATUS "ctest_memcheck( SCHEDULE_RANDOM ON )")
+            ctest_memcheck(
+               SCHEDULE_RANDOM ON 
+               EXCLUDE_LABEL "nomemcheck")
+            #  PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
+         endif()
       endif()
    endif()
 endif()
