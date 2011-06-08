@@ -7,8 +7,8 @@ project( lapack_wrap CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 if( NOT LAPACK_FOUND )
-   message( WARNING 
-      "Skipping lapack_wrap component because LAPACK is not found." )
+   message( STATUS
+      "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
 else()
 
 set( SCOPY scopy_ )
