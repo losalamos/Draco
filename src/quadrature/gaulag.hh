@@ -52,7 +52,7 @@ void gaulag(FieldVector &x,
     x.resize(n);
     w.resize(n);
 
-    Field z;
+    Field z(0);
     for (unsigned i=0; i<n; ++i)
     {
 	if (i==0)
