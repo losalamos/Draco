@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <stdexcept>
-#include <cmath>
 #include "ds++/Assert.hh"
 #include "ludcmp.hh"
 #include "ds++/abs.hh"
@@ -54,7 +53,7 @@ void ludcmp(FieldVector &a,
 	Field big = 0.0;
 	for (unsigned j=0; j<n; ++j)
 	{
-	    Field const temp = abs(a[i+n*j]);
+	    Field const temp = rtt_dsxx::abs(a[i+n*j]);
 	    if (temp>big)
 	    {
 		big = temp;
@@ -87,7 +86,7 @@ void ludcmp(FieldVector &a,
 		sum -= a[i+n*k]*a[k+n*j];
 	    }
 	    a[i+n*j] = sum;
-	    Field const dum = vv[i]*abs(sum);
+	    Field const dum = vv[i]*rtt_dsxx::abs(sum);
 	    if (dum >= big)
 	    {
 		big = dum;
