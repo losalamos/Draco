@@ -25,6 +25,24 @@ using namespace std;
 using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
+/*
+ Issues with this test:
+
+ tstIndex_Counter.cc will produce the following warning if inlining
+ is enabled (gcc):
+
+ /.../source/src/ds++/test/../Index_Counter.hh: In member function 'int rtt_dsxx::Index_Converter<D, OFFSET>::get_next_index(const rtt_dsxx::Index_Counter<D, OFFSET>&, int) const [with unsigned int D = 3u, int OFFSET = 1]':
+ /.../source/src/ds++/test/../Index_Counter.hh:69: warning: array subscript is above array bounds
+
+ This appears to be an issue with speculative instructions issued by
+ gcc due to the pattern of access indices found in the test.  This warning
+ only appears when inlining is enabled (-02 and above) and DBC is turned on.
+ Our normal test setup turns DBC off for release (-03) builds.
+*/
+//---------------------------------------------------------------------------//
+
+
+//---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
