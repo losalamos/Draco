@@ -79,6 +79,16 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
       add_definitions( -DACCEL_SEND_BLOCKING )
    endif()
 
+   option( HET_CHECK_PARTICLES_PPE_RECV " " OFF )
+   if( HET_CHECK_PARTICLES_PPE_RECV )
+      add_definitions( -DCHECK_PARTICLES_PPE_RECV )
+   endif()
+
+   option( HET_CHECK_PARTICLES_PPE_SEND " " OFF )
+   if( HET_CHECK_PARTICLES_PPE_SEND )
+      add_definitions( -DCHECK_PARTICLES_PPE_SEND )
+   endif()
+
 endif()
 
 #----------------------------------------------------------------------
@@ -111,6 +121,31 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
       add_definitions( -DHOST_DIRECT_DACS_OUTPUT )
    endif()
 
+   option( HET_CHECK_PARTICLES_HOST_DISPATCH " " OFF )
+   if( HET_CHECK_PARTICLES_HOST_DISPATCH )
+      add_definitions( -DCHECK_PARTICLES_HOST_DISPATCH )
+   endif()
+
+   option( HET_CHECK_PARTICLES_HOST_BANK_RECV " " OFF )
+   if( HET_CHECK_PARTICLES_HOST_BANK_RECV )
+      add_definitions( -DCHECK_PARTICLES_HOST_BANK_RECV )
+   endif()
+
+   option( HET_CHECK_PARTICLES_HOST_STREAM_SOURCE " " OFF )
+   if( HET_CHECK_PARTICLES_HOST_STREAM_SOURCE )
+      add_definitions( -DCHECK_PARTICLES_HOST_STREAM_SOURCE )
+   endif()
+
+   option( HET_CHECK_PARTICLES_HOST_VOL_SOURCE " " OFF )
+   if( HET_CHECK_PARTICLES_HOST_VOL_SOURCE )
+      add_definitions( -DCHECK_PARTICLES_HOST_VOL_SOURCE )
+   endif()
+
+   option( HET_CHECK_PARTICLES_HOST_CEN_SOURCE " " OFF )
+   if( HET_CHECK_PARTICLES_HOST_CEN_SOURCE )
+      add_definitions( -DCHECK_PARTICLES_HOST_CEN_SOURCE )
+   endif()
+
 endif()
 
 #----------------------------------------------------------------------
@@ -138,6 +173,16 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
    option( HET_FLAT_OP_RDR " " ON )
    if( HET_FLAT_OP_RDR )
       add_definitions( -DFLAT_OP_RDR )
+   endif()
+
+   option( HET_CHECK_PARTICLES_SPE_RECV " " OFF )
+   if( HET_CHECK_PARTICLES_SPE_RECV )
+      add_definitions( -DCHECK_PARTICLES_SPE_RECV )
+   endif()
+
+   option( HET_CHECK_PARTICLES_SPE_SEND " " OFF )
+   if( HET_CHECK_PARTICLES_SPE_SEND )
+      add_definitions( -DCHECK_PARTICLES_SPE_SEND )
    endif()
 endif()
 
