@@ -90,7 +90,7 @@ void Norms_Index<Index_t>::comm(const size_t n)
     {
 	// Accumulate the results onto this node.
 	
-	Index_t pe_index; // temporary for index
+	Index_t pe_index(0); // temporary for index
 	
 	for ( size_t i = 0; i < num_nodes; ++ i )
 	{
