@@ -719,19 +719,16 @@ lfg_gen_dbl(unsigned *genptr)
 /*************************************************************************/
 /*************************************************************************/
 
-/* This is split into two parts in order to allow the initialization to be
- * split across two calls */
-#ifdef DEBUG
-/* This ifdef eliminates a warning about 'end' not used in function. */
-#define INITIALIZE1_END end
-#endif
+// Use this trick to suppress warnings about 'unused argument: end'
+#define UNUSED_ARGUMENT(x) (void)x
+
 static void
 initialize1(
     unsigned const  seed, 
     unsigned const * const nstart, 
     unsigned const initseed,
     unsigned* begin,
-    unsigned* INITIALIZE1_END
+    unsigned* end
     )
 {
     unsigned* const q0 = begin;
@@ -739,6 +736,8 @@ initialize1(
 
 #ifdef DEBUG
     assert(!((end - begin) < OFFSET_END));
+#else
+    UNUSED_ARGUMENT(end);
 #endif
     q0[OFFSET_hidx] = VALID_LM1;
     q0[OFFSET_seed] = seed;
