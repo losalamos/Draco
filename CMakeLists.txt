@@ -97,7 +97,12 @@ set_tests_properties( SystemInformationNew
 #   Require() preconditions: add +1 to DBC_LEVEL
 #   Check() assertions     : add +2 to DBC_LEVEL
 #   Ensure() postconditions: add +4 to DBC_LEVEL
-set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-7)?" )
+string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE )
+if( "${CMAKE_BUILD_TYPE}" MATCHES "RELEASE" )
+   set( DRACO_DBC_LEVEL "0" CACHE STRING "Design-by-Contract (0-7)?" )
+else()
+   set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-7)?" )
+endif()
 # provide a constrained drop down menu in cmake-gui
 set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
 
