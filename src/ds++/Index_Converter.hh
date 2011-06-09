@@ -152,7 +152,7 @@ int Index_Converter<D,OFFSET>::get_index(IT indices) const
     int dimension = 0;
     for (IT index = indices; index != indices + D; ++index, ++dimension)
     {
-        one_index_value += (*index - OFFSET) * sub_sizes[dimension];
+        one_index_value += (*index - OFFSET) * this->sub_sizes[dimension];
     }
                            
     one_index_value += OFFSET;
@@ -236,7 +236,7 @@ int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) c
     Check(Base::dimension_okay(dimension));
 
     index -= OFFSET;
-    index /= sub_sizes[dimension];
+    index /= this->sub_sizes[dimension];
 
     return index % Base::get_size(dimension) + OFFSET;
 
@@ -326,10 +326,13 @@ void Index_Converter<D,OFFSET>::compute_sub_sizes()
 
     sub_sizes[0] = 1;
 
-    unsigned const * const dimensions = Base::get_dimensions();
-    
-    unsigned* end = std::partial_sum(
-        dimensions, dimensions+D-1, sub_sizes+1, std::multiplies<unsigned>()
+    Remember(
+        unsigned const * const dimensions = Base::get_dimensions();
+        unsigned* end = std::partial_sum(
+            dimensions,
+            dimensions+D-1,
+            sub_sizes+1,
+            std::multiplies<unsigned>() );
         );
 
     Ensure(end == sub_sizes+D);
