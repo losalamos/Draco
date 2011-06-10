@@ -14,6 +14,8 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 set version     1.7.5
 set prefix      /usr/projects/draco/vendors/git-$version
 set bindir      $prefix/bin;
+set mandir      $prefix/share/man
+set libdir      $prefix/lib64
 
 # module whatis
 module-whatis   "Git $version";
@@ -34,5 +36,9 @@ if { ![file exists $prefix] } {
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
 prepend-path    PATH            $bindir;
+prepend-path    MANPATH         $mandir;
+prepend-path    LD_LIBRARY_PATH $libdir;
+
+
 
 
