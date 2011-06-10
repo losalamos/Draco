@@ -55,7 +55,7 @@ QuadServices::QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
     using rtt_dsxx::soft_equiv;
     using rtt_units::PI;
 
-    double const mu2( std::sqrt(3.0)/3.0 );
+    Remember( double const mu2( std::sqrt(3.0)/3.0 ); );
     Ensure( soft_equiv( compute_azimuthalAngle( 1.0, 0.0, 0.0 ), 0.0 ) );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, mu2, mu2 ), PI/4.0 )  );
     Ensure( soft_equiv( compute_azimuthalAngle( mu2, -1.0*mu2, mu2 ), 7.0*PI/4.0 )  );
@@ -380,8 +380,9 @@ std::vector< double > QuadServices::computeD_svd(void) const
     // returns U in storage "M"
     {
         gsl_vector    * gsl_w = gsl_vector_alloc(n);
-        int result = gsl_linalg_SV_decomp( &gsl_M.matrix, &gsl_V.matrix,
-                                           &gsl_S.vector, gsl_w );
+        Remember(int result = )
+            gsl_linalg_SV_decomp( &gsl_M.matrix, &gsl_V.matrix,
+                                  &gsl_S.vector, gsl_w );
         gsl_vector_free(gsl_w);
         Check( result == 0 );
     }

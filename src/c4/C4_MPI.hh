@@ -45,7 +45,8 @@ extern const int proc_null;
 template<class Comm>
 void inherit(const Comm &comm)
 {
-    int result = MPI_Comm_dup(comm, &communicator);
+    Remember(int result = )
+        MPI_Comm_dup(comm, &communicator);
     Check (result == MPI_SUCCESS);
 }
 

@@ -589,7 +589,7 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
 
     // do a check of the actual boundary values when DBC check is on (this is
     // more expensive so we retain the option of turning it off)
-    const std::vector<double> &ref = spMGOp->getGroupBoundaries();
+    Remember( const std::vector<double> &ref = spMGOp->getGroupBoundaries(); );
     Check (soft_equiv(frequencyGroupBoundaries.begin(),
 		      frequencyGroupBoundaries.end(),
 		      ref.begin(),
@@ -663,7 +663,7 @@ void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp)
 
 	// do a check of the actual boundary values when DBC check is on (this is
 	// more expensive so we retain the option of turning it off)
-	const std::vector<double> &refGroup = spODFOp->getGroupBoundaries();
+	Remember( const std::vector<double> &refGroup = spODFOp->getGroupBoundaries(); );
 	Check (soft_equiv(frequencyGroupBoundaries.begin(),
 				frequencyGroupBoundaries.end(),
 				refGroup.begin(),
@@ -672,7 +672,7 @@ void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp)
 	
 	// do a check of the actual band boundary values when DBC check is on 
 	// (this is more expensive so we retain the option of turning it off)
-	const std::vector<double> &refBand = spODFOp->getBandBoundaries();
+	Remember( const std::vector<double> &refBand = spODFOp->getBandBoundaries(); );
 	Check (soft_equiv(opacityCdfBandBoundaries.begin(),
 				opacityCdfBandBoundaries.end(),
 				refBand.begin(),

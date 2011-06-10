@@ -45,7 +45,7 @@ void initialize(int &argc, char **&argv)
     Check( initialized );
 
     // Resync clocks for Darwin mpich
-    double foo( MPI_Wtick() );
+    Remember( double foo( MPI_Wtick() ); );
     Ensure( foo > 0.0 );
     return;
 }

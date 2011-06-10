@@ -155,7 +155,7 @@ void run_tests()
 
     // Test the accessor
     {
-        double tmp( sp_llr->get_ratio() );
+        Remember( double tmp( sp_llr->get_ratio() ); );
         Check( rtt_dsxx::soft_equiv( tmp, 0.8 ) );
     }
 

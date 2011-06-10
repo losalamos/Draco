@@ -217,7 +217,7 @@ ensight_dump(int        icycle,
     // define sizes used throughout
     size_t ncells    = ipar.nrows();
     size_t nvertices = pt_coor.nrows();
-    size_t nrgn      = rgn_name.size();
+    Remember( size_t nrgn      = rgn_name.size(); );
 
     // Check sizes of all data.
     Require (iel_type.size()       == ncells);

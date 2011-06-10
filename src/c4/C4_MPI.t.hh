@@ -117,9 +117,11 @@ void send_is(C4_Req  &request,
   // set the request
   request.set();
   
-  const int retval = MPI_Issend(const_cast<T *>(buffer), size, 
-				MPI_Traits<T>::element_type(),
-				destination, tag, communicator, &request.r());
+  Remember(const int retval =)
+      MPI_Issend(const_cast<T *>(buffer), size, 
+                 MPI_Traits<T>::element_type(),
+                 destination, tag, communicator, &request.r());
+  
   Check(retval == MPI_SUCCESS);
 }
 //---------------------------------------------------------------------------//
