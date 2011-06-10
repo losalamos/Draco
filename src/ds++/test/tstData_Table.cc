@@ -3,7 +3,7 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
+ * \note   Copyright (c) 1997-2011 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -37,7 +37,7 @@ void test_array()
     }
     catch(rtt_dsxx::assertion &/* error */)
     {
-	caught = true;
+        caught = true;
     }
     if(caught) ITFAILS;
 
@@ -48,7 +48,7 @@ void test_array()
     }
     catch(rtt_dsxx::assertion & /* error */)
     {
-	caught = true;
+        caught = true;
     }
     if(!caught) ITFAILS;
 
@@ -98,6 +98,12 @@ void test_array()
     if(caught) ITFAILS;
 
 
+#ifdef DEBUG
+/*
+  GCC will issue a warning at compile time for a Release build (with
+  -ftree-vrp, which is enabled by default with -O2 or higher).  The warning
+  appears because the size of dt is known at compile time.
+*/
     caught = false;
     try
     {
@@ -108,12 +114,12 @@ void test_array()
         caught = true;
     }
     if(!caught) ITFAILS;
-
+#endif
 
     if (rtt_ds_test::passed)
-	PASSMSG("test_array");
+        PASSMSG("test_array");
     else
-	FAILMSG("test_array FAILED!");
+        FAILMSG("test_array FAILED!");
 }
 
 //---------------------------------------------------------------------------//
