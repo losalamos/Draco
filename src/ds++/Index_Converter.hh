@@ -326,14 +326,13 @@ void Index_Converter<D,OFFSET>::compute_sub_sizes()
 
     sub_sizes[0] = 1;
 
-    Remember(
-        unsigned const * const dimensions = Base::get_dimensions();
-        unsigned* end = std::partial_sum(
+    unsigned const * const dimensions = Base::get_dimensions();
+    Remember( unsigned* end = )
+        std::partial_sum(
             dimensions,
             dimensions+D-1,
             sub_sizes+1,
             std::multiplies<unsigned>() );
-        );
 
     Ensure(end == sub_sizes+D);
 
