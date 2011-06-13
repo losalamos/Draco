@@ -27,11 +27,11 @@ if( DOXYGEN_FOUND )
   foreach( package ${package_list} )
      if( EXISTS ${package}/CMakeLists.txt )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}" )
-#        message( "Doxygen will use ${package}" )
+        message( "Doxygen will process ${package}" )
      endif()
      if( EXISTS ${package}/test/CMakeLists.txt )
         set( DOXYGEN_EXAMPLES "${DOXYGEN_EXAMPLES} ${package}/test" )
-#        message( "Doxygen examples will use ${package}/test" )
+        # message( "Doxygen will process examples found at ${package}/test" )
      endif()
      if( EXISTS ${package}/autodoc )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
@@ -96,6 +96,8 @@ if( DOXYGEN_FOUND )
             -DPACKAGE_LINKS=${PACKAGE_LINKS}
             -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
     DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
+    COMMENT "Doxygen docs will be installed at"
+            "${DOXYGEN_HTML_OUTPUT}.  You must run 'make install'"
   )
 
   # Copy image files
@@ -119,8 +121,9 @@ if( DOXYGEN_FOUND )
 
   # The actual doxygen command that will be run
   add_custom_command(
-    OUTPUT ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
-    # ${DOXYGEN_OUTPUT_DIR}/draco.tag
+    OUTPUT 
+       ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
+       ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
     COMMAND "${DOXYGEN_EXECUTABLE}"
     ARGS    doxygen_config
     DEPENDS
@@ -130,12 +133,11 @@ if( DOXYGEN_FOUND )
     )
 
   # Target for building doxygen files.
-  add_custom_target(
-    autodoc
-    DEPENDS 
-       ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
-    #   ${DOXYGEN_OUTPUT_DIR}/Draco.tag
-    COMMENT "Building Doxygen based autodocs (HTML)..."
+  add_custom_target( autodoc
+    # This DEPENDS links the 'autodoc' make target to the custom command above.    
+    # DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
+    DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
+    COMMENT "Building Doxygen based autodocs (HTML)...  After running 'make install' your docs will be at ${CMAKE_INSTALL_PREFIX}/autodoc/${DOXYGEN_HTML_OUTPUT}/index.html."
     )
 
   install( 
