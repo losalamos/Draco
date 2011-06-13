@@ -10,7 +10,7 @@
 
 <!---------------------------------------------------------------------------->
 
-\mainpage Overview of the parser package
+\page overview_parser Overview of the parser package
 \version draco-6_1_0
 \author Kelly Thompson, Kent Budge
 

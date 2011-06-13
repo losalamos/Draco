@@ -11,7 +11,7 @@
 
 <!---------------------------------------------------------------------------->
 
-\mainpage Overview of the rng package
+\page overview_rng Overview of the rng package
 \version draco-6_1_0
 \author Thomas M. Evans and Todd Urbatsch
 

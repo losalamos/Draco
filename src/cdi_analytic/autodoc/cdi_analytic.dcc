@@ -11,7 +11,7 @@
 
 <!---------------------------------------------------------------------------->
 
-\mainpage Overview of the cdi_analytic package
+\page overview_cdi_analytic Overview of the cdi_analytic package
 \version draco-6_1_0
 \author Thomas M. Evans and Todd Urbatsch
 
