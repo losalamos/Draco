@@ -1,14 +1,18 @@
 # File: dracoVersion.cmake
 
 # Returns:
+# ${PROJNAME}_VERSION
+# ${PROJNAME}_VERSION_FULL
+
 # ${PROJNAME}_VERSION_MAJOR
-# ${PROJNAME}_VERSION_MINOR
 # ${PROJNAME}_VERSION_MINOR
 # ${PROJNAME}_VERSION_PATCH
 
 # ${${PROJNAME}_DATE_STAMP_YEAR}
 # ${${PROJNAME}_DATE_STAMP_MONTH}
 # ${${PROJNAME}_DATE_STAMP_DAY}
+
+# ${${PROJNAME}_BUILD_DATE}
 
 macro( set_ccs2_software_version PROJNAME )
 
@@ -44,6 +48,8 @@ macro( set_ccs2_software_version PROJNAME )
       ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
       "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
    
+   set( ${PROJNAME}_BUILD_DATE
+      "${${PROJNAME}_DATE_STAMP_YEAR}/${${PROJNAME}_DATE_STAMP_MONTH}/${${PROJNAME}_DATE_STAMP_DAY}" )
    if( "${${PROJNAME}_VERSION_PATCH}notset" STREQUAL "notset" ) # "[1-9]?[1-9]$")
       set( ${PROJNAME}_VERSION_PATCH
          "${${PROJNAME}_DATE_STAMP_YEAR}${${PROJNAME}_DATE_STAMP_MONTH}${${PROJNAME}_DATE_STAMP_DAY}"
