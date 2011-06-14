@@ -164,6 +164,9 @@ add_custom_target( uninstall
    "${CMAKE_COMMAND}" -P
    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
 
+# Enable parallel build for Eclipse:
+set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
+
 ##---------------------------------------------------------------------------##
 ## Notes:
 
