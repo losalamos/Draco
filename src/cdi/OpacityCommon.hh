@@ -60,7 +60,8 @@ enum Reaction
 {
     TOTAL,      /*!< Total opacity value (scattering plus absorption). */
     ABSORPTION, /*!< Absorption cross sections only. */
-    SCATTERING  /*!< Scattering cross sections only. */
+    SCATTERING, /*!< Scattering cross sections only. */
+    LAST_VALUE  /*!< dummy value */
 };
 
 /*!
