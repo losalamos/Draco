@@ -147,7 +147,7 @@ macro( SetupVendorLibrariesUnix )
       endif()
 
       # Don't require BLAS/LAPACK for catamount systems
-      if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" OR
+      if( ${SITE} MATCHES "ct-" OR
             ${CMAKE_CXX_COMPILER} MATCHES "[sp]pu-g[+][+]" )
          set( BLAS_REQUIRED "" )
       else()
@@ -581,7 +581,7 @@ macro( setVendorVersionDefaults )
   if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
     set( VENDOR_DIR $ENV{VENDOR_DIR} )
   endif()
-  # If needed, try some obvious palces.
+  # If needed, try some obvious places.
   if( NOT VENDOR_DIR )
      if( IS_DIRECTORY /ccs/codes/radtran/vendors/Linux64 )
         set( VENDOR_DIR /ccs/codes/radtran/vendors/Linux64 )
