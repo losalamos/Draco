@@ -36,6 +36,20 @@ macro( SetupVendorLibrariesUnix )
       #   MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.  
       
       message(STATUS "Looking for MPI...")
+      # Preserve data that may already be set.
+      if( DEFINED MPIEXEC )
+         set( MPIEXEC ${MPIEXEC} CACHE FILEPATH "Executable for running MPI programs." )
+      endif()
+      if( DEFINED MPIEXEC_MAX_NUMPROCS )
+         set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
+            "Maximum number of processors available to run MPI applications.")
+      endif()
+      if( DEFINED MPIEXEC_NUMPROC_FLAG )
+         set( MPIEXEC_NUMPROC_FLAG ${MPIEXEC_NUMPROC_FLAG} CACHE
+      STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
+      endif()
+
+      # First attempt to find mpi
       find_package( MPI )
 
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).

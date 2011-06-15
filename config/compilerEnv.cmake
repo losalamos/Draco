@@ -23,7 +23,10 @@ mark_as_advanced( ENABLE_OPENMP )
 #        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
 # MSVC : STATIC is <XXX>.lib
 #        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
-set( DRACO_LIBRARY_TYPE "SHARED" CACHE STRING 
+if( NOT DEFINED DRACO_LIBRARY_TYPE )
+   set( DRACO_LIBRARY_TYPE "SHARED" )
+endif()
+set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING 
 	"Keyword for creating new libraries (STATIC or SHARED).")
 # Provide a constrained drop down list in cmake-gui.
 set_property( CACHE DRACO_LIBRARY_TYPE

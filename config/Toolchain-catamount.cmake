@@ -30,3 +30,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 # Help find vendor software
 set( MPI_INC_DIR $ENV{MPICH_DIR}/include )
 set( MPI_LIB_DIR $ENV{MPICH_DIR}/lib )
+set( DRACO_LIBRARY_TYPE "STATIC" )
+set( MPIEXEC "/usr/bin/aprun" )
+set( MPIEXEC_NUMPROC_FLAG "-n")
