@@ -14,34 +14,6 @@
 
 # Call this script from regress/Draco_*.cmake
 
-# Sample script:
-#----------------------------------------
-# set( CTEST_PROJECT_NAME "Draco" )
-# include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
-# set_defaults()
-# parse_args()
-# find_tools()
-# set( CTEST_INITIAL_CACHE "
-# CMAKE_VERBOSE_MAKEFILE:BOOL=ON
-# CMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_CONFIGURATION}
-# CMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-# CTEST_CMAKE_GENERATOR:STRING=${CTEST_CMAKE_GENERATOR}
-# CTEST_USE_LAUNCHERS:STRING=${CTEST_USE_LAUNCHERS}
-# ENABLE_C_CODECOVERAGE:BOOL=${ENABLE_C_CODECOVERAGE}
-# ENABLE_Fortran_CODECOVERAGE:BOOL=${ENABLE_Fortran_CODECOVERAGE}
-# VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
-# ")
-# ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-# file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
-# set( VERBOSE ON )
-# set( CTEST_OUTPUT_ON_FAILURE ON )
-# setup_ctest_commands()
-#execute_process( 
-#   COMMAND           ${CMAKE_MAKE_PROGRAM} install
-#   WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-#   )
-#----------------------------------------
-
 # ------------------------------------------------------------
 # Defaults (override with optional arguments)
 # ------------------------------------------------------------
@@ -93,6 +65,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
      set( sitename "Turing" )
   elseif( ${sitename} MATCHES "rr[a-d]+[0-9]+" )
      set( sitename "RoadRunner" )
+  elseif( ${sitename} MATCHES "ct-login[0-9]+" )
+     set( sitename "Cielito" )
   endif()
   # string( REGEX REPLACE "n00[0-9]" "infinitron" sitename ${sitename} )
   set( CTEST_SITE ${sitename} )
@@ -114,12 +88,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
     set( CTEST_CMAKE_GENERATOR "Unix Makefiles" )
   endif( WIN32 )      
 
-  #Only works for makefile generators, but gives us pretty output.
-#  if( ${CTEST_CMAKE_GENERATOR} STREQUAL "Unix Makefiles" )
-#     set( CTEST_USE_LAUNCHERS 1 )
-#  else()
-     set( CTEST_USE_LAUNCHERS 0 )
-#  endif()
+  set( CTEST_USE_LAUNCHERS 0 )
 
   set( ENABLE_C_CODECOVERAGE OFF )
   set( ENABLE_Fortran_CODECOVERAGE OFF )
@@ -139,29 +108,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
   set( CTEST_DROP_SITE_CDASH TRUE )
   set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF )
 
-# MCATK settings
-#  set( CTEST_DROP_METHOD "https")
-#  set( CTEST_DROP_SITE "cdash.lanl.gov")
-#  set( CTEST_DROP_LOCATION "/submit.php?project=test" )
-#  set( CTEST_DROP_SITE_CDASH TRUE )
-#  set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF )
-
-  # if( UNIX )
-  #    if( EXISTS "/proc/cpuinfo" )
-  #       file( READ "/proc/cpuinfo" cpuinfo )
-  #       # convert one big string into a set of strings, one per line
-  #       string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
-  #       set( proc_ids "" )
-  #       foreach( line ${cpuinfo} )
-  #          if( ${line} MATCHES "processor" )
-  #             list( APPEND proc_ids ${line} )
-  #          endif()
-  #       endforeach()
-  #       list( LENGTH proc_ids DRACO_NUM_CORES )
-  #       set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
-  #          "Number of cores on the local machine." )
-  #    endif()
-  # endif()
   set( MPIEXEC_MAX_NUMPROCS 1 CACHE STRING  "Number of cores on the local machine." )
 
   if( EXISTS "$ENV{VENDOR_DIR}" )
@@ -180,50 +126,38 @@ win32$ set work_dir=c:/full/path/to/work_dir
    set( VERBOSE ON )
    set( CTEST_OUTPUT_ON_FAILURE ON )
 
-# Consider setting the following:
-
-# SET(CTEST_CUSTOM_ERROR_PRE_CONTEXT 20)
-# SET(CTEST_CUSTOM_ERROR_POST_CONTEXT 20)
-# SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 100)
-# SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 100)
-#     CTEST_START_WITH_EMPTY_BINARY_DIRECTORY
-#     CTEST_CONTINUOUS_DURATION
-#     CTEST_CONTINUOUS_MINIMUM_INTERVAL
-#find_program(CTEST_GIT_COMMAND NAMES git PATHS "C:\\Program Files\\Git\\bin")
-#find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
-
   # Echo settings
   
-  if( NOT quiet_mode )
-     message("
-ARGV     = ${ARGV}
+#   if( NOT quiet_mode )
+#      message("
+# ARGV     = ${ARGV}
 
-work_dir   = ${work_dir}
+# work_dir   = ${work_dir}
 
-CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
-CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
-CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
+# CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
+# CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
+# CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
 
-CTEST_SITE             = ${CTEST_SITE}
-CTEST_SOURCE_DIRECTORY = ${CTEST_SOURCE_DIRECTORY}
-CTEST_BINARY_DIRECTORY = ${CTEST_BINARY_DIRECTORY}
-CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
-CTEST_MODEL            = ${CTEST_MODEL}
-CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
-CTEST_CMAKE_GENERATOR  = ${CTEST_CMAKE_GENERATOR}
-CTEST_USE_LAUNCHERS    = ${CTEST_USE_LAUNCHERS}
-ENABLE_C_CODECOVERAGE  = ${ENABLE_C_CODECOVERAGE}
-ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
-CTEST_NIGHTLY_START_TIME  = ${CTEST_NIGHTLY_START_TIME}
-CTEST_DROP_METHOD         = ${CTEST_DROP_METHOD}
-CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
-CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
-CTEST_DROP_SITE_CDASH     = ${CTEST_DROP_SITE_CDASH}
-CTEST_CURL_OPTIONS        = ${CTEST_CURL_OPTIONS}
-MPIEXEC_MAX_NUMPROCS      = ${MPIEXEC_MAX_NUMPROCS}
-VENDOR_DIR                = ${VENDOR_DIR}
-")
-  endif( NOT quiet_mode )
+# CTEST_SITE             = ${CTEST_SITE}
+# CTEST_SOURCE_DIRECTORY = ${CTEST_SOURCE_DIRECTORY}
+# CTEST_BINARY_DIRECTORY = ${CTEST_BINARY_DIRECTORY}
+# CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
+# CTEST_MODEL            = ${CTEST_MODEL}
+# CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
+# CTEST_CMAKE_GENERATOR  = ${CTEST_CMAKE_GENERATOR}
+# CTEST_USE_LAUNCHERS    = ${CTEST_USE_LAUNCHERS}
+# ENABLE_C_CODECOVERAGE  = ${ENABLE_C_CODECOVERAGE}
+# ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
+# CTEST_NIGHTLY_START_TIME  = ${CTEST_NIGHTLY_START_TIME}
+# CTEST_DROP_METHOD         = ${CTEST_DROP_METHOD}
+# CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
+# CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
+# CTEST_DROP_SITE_CDASH     = ${CTEST_DROP_SITE_CDASH}
+# CTEST_CURL_OPTIONS        = ${CTEST_CURL_OPTIONS}
+# MPIEXEC_MAX_NUMPROCS      = ${MPIEXEC_MAX_NUMPROCS}
+# VENDOR_DIR                = ${VENDOR_DIR}
+# ")
+#   endif( NOT quiet_mode )
 
 endmacro( set_defaults )
 
@@ -285,6 +219,27 @@ macro( parse_args )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_Cov" )
   endif()
   
+  # For Experimental builds, use launchers and parallel builds.
+  if( ${CTEST_SCRIPT_ARG} MATCHES Experimental )
+     set( CTEST_USE_LAUNCHERS 1 )
+     if( UNIX )
+        if( EXISTS "/proc/cpuinfo" )
+           file( READ "/proc/cpuinfo" cpuinfo )
+           # convert one big string into a set of strings, one per line
+           string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
+           set( proc_ids "" )
+           foreach( line ${cpuinfo} )
+              if( ${line} MATCHES "processor" )
+                 list( APPEND proc_ids ${line} )
+              endif()
+           endforeach()
+           list( LENGTH proc_ids DRACO_NUM_CORES )
+           set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
+              "Number of cores on the local machine." )
+        endif()
+     endif()
+  endif()
+  
   if( NOT quiet_mode )
     message("
 CTEST_MODEL               = ${CTEST_MODEL}
@@ -293,6 +248,8 @@ compiler_short_name       = ${compiler_short_name}
 CTEST_BUILD_NAME          = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE     = ${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
+CTEST_USE_LAUNCHER        = ${CTEST_USE_LAUNCHER}
+MPIEXEC_MAX_NUMPROCS      = ${MPIEXEC_MAX_NUMPROCS}
 ")
   endif()
 
@@ -376,19 +333,17 @@ macro( find_tools )
        else()
           message(STATUS "BullseyeCoverage turned on")
        endif()
+       set( ENV{COVFILE} "${CTEST_BINARY_DIRECTORY}/CMake.cov" )
+       set( ENV{COVDIRCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+       set( ENV{COVFNCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+       set( ENV{COVCLASSCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
+       set( ENV{COVSRCCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
     else()
        message( FATAL_ERROR 
           "Coverage requested, but bullseyecoverage's cov01 binary not in PATH."
           )
     endif()
   endif()
-
-#   if( MPIEXEC_MAX_NUMPROCS )
-#      set( CMAKE_BUILD_COMMAND "gmake -j ${MPIEXEC_MAX_NUMPROCS}" ) # install | check
-# #     set( CTEST_CMD "${CTEST_CMD} -j ${MPIEXEC_MAX_NUMPROCS}" )
-#      set( MAKECOMMAND "${MAKECOMMAND} -j ${MPIEXEC_MAX_NUMPROCS}" )
-# #    set( CTEST_BUILD_COMMAND ${CMAKE_BUILD_COMMAND} )     
-#   endif()
 
   set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
 
@@ -398,11 +353,17 @@ CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
 CTEST_CMAKE_COMMAND = ${CTEST_CMAKE_COMMAND}
 MAKECOMMAND         = ${MAKECOMMAND}
-CTEST_MEMORYCHECK_COMMAND     = ${CTEST_MEMORYCHECK_COMMAND}
-MEMORYCHECK_SUPPRESSIONS_FILE = ${MEMORYCHECK_SUPPRESSIONS_FILE}
+CTEST_MEMORYCHECK_COMMAND         = ${CTEST_MEMORYCHECK_COMMAND}
+MEMORYCHECK_SUPPRESSIONS_FILE     = ${MEMORYCHECK_SUPPRESSIONS_FILE}
 CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}
-beyedir                       = ${beyedir}
-CTEST_CONFIGURE_COMMAND       = ${CTEST_CONFIGURE_COMMAND}
+CTEST_CONFIGURE_COMMAND           = ${CTEST_CONFIGURE_COMMAND}
+beyedir          = ${beyedir}
+ENV{COVFILE}     = $ENV{COVFILE}
+ENV{COVDIRCFG}   = $ENV{COVDIRCFG}
+ENV{COVFNCFG}    = $ENV{COVFNCFG}
+ENV{COVCLASSCFG} = $ENV{COVCLASSCFG}
+ENV{COVSRCCFG}   = $ENV{COVSRCCFG}
+
 ")
   endif( NOT quiet_mode )
 
@@ -412,66 +373,21 @@ endmacro( find_tools )
 # Setup regression steps:
 # ------------------------------------------------------------
 macro( setup_ctest_commands )
-  # which ctest command to use for running the dashboard
-  # Do the normal Start,Upate,Configure,Build,Test,Submit
-
-    # parse arguments
-  if( ${ARGV} MATCHES QUIET )
-    set( quiet_mode ON )
-  endif( ${ARGV} MATCHES QUIET )
-
-  #
-  # Drive the problem (www.cmake.org/cmake/help/ctest-2-8=docs.html)
-  #
-
-  message(STATUS "ctest_start( ${CTEST_MODEL} )")
-#  ctest_start( ${CTEST_MODEL} )
-#  message(STATUS  "ctest_update()"  )
-#  ctest_update()
-#   if( "$ENV{CXX}" MATCHES "g[+][+]" )
-#      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-#         if(ENABLE_C_CODECOVERAGE)
-#            configure_file( 
-#               ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
-#               ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
-#               @ONLY )
-#            set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-#            set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-#            set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-#            set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
-#            set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
-#            execute_process(COMMAND "${COV01}" --on
-#               RESULT_VARIABLE RES)
-#         endif()
-#      endif()
-#   endif()
-#   message(STATUS "ctest_configure()" )
-#   ctest_configure() # LABELS label1 [label2]
-#   message(STATUS "ctest_build()" )
-#   ctest_build()
-#   message(STATUS "ctest_test(PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-#   ctest_test( 
-#      PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
-#      SCHEDULE_RANDOM ON ) 
-# #     EXCLUDE_LABEL "nomemcheck" )
-
-#   if( "$ENV{CXX}" MATCHES "g[+][+]" )
-#      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-#         if(ENABLE_C_CODECOVERAGE)
-#            message(STATUS "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
-#            ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )  # LABLES "scalar tests" 
-#            execute_process(COMMAND "${COV01}" --off
-#               RESULT_VARIABLE RES)
-#         else()
-#            message(STATUS "ctest_memcheck( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )")
-#            ctest_memcheck(
-#               SCHEDULE_RANDOM ON 
-#               EXCLUDE_LABEL "nomemcheck")
-# #              PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS} 
-#         endif()
-#      endif()
-#   endif()
-#   message(STATUS "ctest_submit()")
-#   ctest_submit()
-     
+  # deprecated
 endmacro( setup_ctest_commands )
+
+# ------------------------------------------------------------
+# Setup CVSROOT
+# ------------------------------------------------------------
+macro( set_cvs_command projname )
+   if( EXISTS /ccs/codes/radtran/cvsroot )
+      set( CTEST_CVS_CHECKOUT
+         "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
+   elseif( EXISTS /usr/projects/jayenne/regress/cvsroot )
+      set( CTEST_CVS_CHECKOUT
+         "${CTEST_CVS_COMMAND} -d /usr/projects/jayenne/regress/cvsroot co -P -d source ${projname}" )
+   else()
+      set( CTEST_CVS_CHECKOUT
+         "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
+   endif()
+endmacro()
