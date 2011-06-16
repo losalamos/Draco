@@ -82,7 +82,7 @@ class Index_Set
 
     int get_size(const int d) const {
         Check(dimension_okay(d)); return dimensions[d]; }
-    int min_of_index(const unsigned d) const {
+    int min_of_index(const unsigned Remember(d)) const {
         Check(dimension_okay(d)); return OFFSET; }
     int max_of_index(const unsigned d) const {
         Check(dimension_okay(d)); return OFFSET+dimensions[d]-1;

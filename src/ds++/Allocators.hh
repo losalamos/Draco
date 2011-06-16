@@ -161,12 +161,10 @@ class Guarded_Allocator {
         return v+1;
     }
 
-    static T *validate( T *v, int n )
+    static T *validate( T *v, int Remember(n) )
     {
         v--;
-
         Check( guard_elements_ok(v,n) );
-
         return v;
     }
 

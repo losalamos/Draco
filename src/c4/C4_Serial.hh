@@ -90,11 +90,11 @@ C4_Req send_async(T const * /* buffer */,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void send_async(C4_Req  & request, 
+void send_async(C4_Req  & /*request */, 
                 T const * /* buffer */, 
-                int       /* size */, 
+                int       /* size   */, 
                 int       /* destination */,
-                int       /* tag */)
+                int       /* tag    */)
 {
     Require (!request.inuse());
 }
@@ -103,9 +103,9 @@ void send_async(C4_Req  & request,
 
 template<class T>
 C4_Req receive_async(T   * /*buffer*/, 
-                     int   /*size*/, 
+                     int   /*size  */, 
                      int   /*source*/, 
-                     int   /*tag*/)
+                     int   /*tag   */)
 {
     // make a c4 request handle
     C4_Req request;
@@ -115,11 +115,11 @@ C4_Req receive_async(T   * /*buffer*/,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void receive_async(C4_Req & request, 
-                   T      * /* buffer */, 
-                   int      /* size */, 
-                   int      /* source */, 
-                   int      /* tag */)
+void receive_async(C4_Req & /* request */, 
+                   T      * /* buffer  */, 
+                   int      /* size    */, 
+                   int      /* source  */, 
+                   int      /* tag     */)
 {
     Require (!request.inuse());
 }

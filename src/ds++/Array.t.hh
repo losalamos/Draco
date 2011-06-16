@@ -114,7 +114,7 @@ typename RefArray<T,N>::size_type RefArray<T,N>::size( size_t Dim ) const
 template<typename T>
 RefArray<T,1>::RefArray( T            * pElements,
 			 size_t const * pNDimensions,
-			 size_t const * pSubArrayLen )
+			 size_t const * Remember(pSubArrayLen) )
     : m_pNDimensions( pNDimensions ),
       m_pElements(    pElements    )      
 {
@@ -166,7 +166,7 @@ typename RefArray<T,1>::const_reference RefArray<T,1>::operator []( size_t Index
  * \return A size_t that specifies the length of Array for dimension Dim.
  */
 template< typename T >
-typename RefArray<T,1>::size_type RefArray<T,1>::size( size_t Dim ) const
+typename RefArray<T,1>::size_type RefArray<T,1>::size( size_t Remember(Dim) ) const
 { 
     Require( Dim == 1 );
     return m_pNDimensions[0];

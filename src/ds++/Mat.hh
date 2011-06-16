@@ -349,7 +349,7 @@ class Mat1 {
 
     // Utility support
 
-    void assert_conformality( const Mat1<T>& m ) const
+    void assert_conformality( const Mat1<T>& Remember(m) ) const
     {
 	Assert( xmin == m.xmin );
 	Assert( xlen == m.xlen );
@@ -443,7 +443,7 @@ class Mat2 {
     int offset( int i, int j ) const { return xlen * j + i; }
 
     // Make sure a bare integer index is within the appropriate range.
-    void check( int i ) const
+    void check( int Remember(i) ) const
     {
 	Assert( i >= offset( xmin, ymin ) );
 	Assert( i <= offset( xmax(), ymax() ) );
@@ -760,7 +760,7 @@ class Mat2 {
 
     // Utility support
 
-    void assert_conformality( const Mat2<T>& m ) const
+    void assert_conformality( const Mat2<T>& Remember(m) ) const
     {
 	Assert( xmin == m.xmin );
 	Assert( xlen == m.xlen );
@@ -864,7 +864,7 @@ class Mat3 {
     int offset( int i, int j, int k ) const { return xlen*(k*ylen+j)+i; }
 
     // Make sure a bare integer index is within the appropriate range.
-    void check( int i ) const
+    void check( int Remember(i) ) const
     {
 	Assert( i >= offset( xmin, ymin, zmin ) );
 	Assert( i <= offset( xmax(), ymax(), zmax() ) );
@@ -1307,7 +1307,7 @@ class Mat4 {
     }
 
     // Make sure a bare integer index is within the appropriate range.
-    void check( int i ) const
+    void check( int Remember(i) ) const
     {
 	Assert( i >= offset( xmin,   ymin,   zmin,   wmin   ) );
 	Assert( i <= offset( xmax(), ymax(), zmax(), wmax() ) );
@@ -1796,7 +1796,7 @@ class Mat5 {
     }
 
     // Make sure a bare integer index is within the appropriate range.
-    void check( int i ) const
+    void check( int Remember(i) ) const
     {
 	Assert( i >= offset( xmin,   ymin,   zmin,   wmin,   umin   ) );
 	Assert( i <= offset( xmax(), ymax(), zmax(), wmax(), umax() ) );

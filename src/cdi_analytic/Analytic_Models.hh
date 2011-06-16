@@ -377,7 +377,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     explicit Polynomial_Specific_Heat_Analytic_EoS_Model(const sf_char &);
 
     //! Calculate the electron heat capacity in kJ/g/keV.
-    double calculate_electron_heat_capacity(double T, double rho) const
+    double calculate_electron_heat_capacity(double T, double Remember(rho) ) const
     {
 	Require (T >= 0.0);
 	Require (rho >= 0.0);
@@ -390,7 +390,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     }
 
     //! Calculate the ion heat capacity in kJ/g/keV.
-    double calculate_ion_heat_capacity(double T, double rho) const
+    double calculate_ion_heat_capacity(double T, double Remember(rho) ) const
     {
 	Require (T >= 0.0);
 	Require (rho >= 0.0);
@@ -422,7 +422,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
      *
      * \post \c U>=0
      */
-    double calculate_electron_internal_energy(double T, double rho) const
+    double calculate_electron_internal_energy(double T, double Remember(rho) ) const
     { 
 	Require (T >= 0.0);
 	Require (rho >= 0.0);
@@ -454,7 +454,7 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
      *
      * \post \c U>=0
      */
-    double calculate_ion_internal_energy(double T, double rho) const
+    double calculate_ion_internal_energy(double T, double Remember(rho) ) const
     {
 	Require (T >= 0.0);
 	Require (rho >= 0.0);

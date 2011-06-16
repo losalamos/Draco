@@ -302,7 +302,9 @@ class SortPermutation
 #endif
     
     template<class IT, class COMP>
-    void doCreatePermutation(IT first, IT last, const COMP &comp,
+    void doCreatePermutation(IT Remember(first),
+                             IT Remember(last),
+                             const COMP &comp,
 			     const std::vector<IT> &iters)
     {
         typedef typename std::iterator_traits<IT>::value_type value_type;
