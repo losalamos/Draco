@@ -54,6 +54,7 @@ macro( SetupVendorLibrariesUnix )
 
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
       if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
+         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
          set( MPIEXEC $ENV{MPIRUN} )
          find_package( MPI )
       endif()
@@ -61,6 +62,7 @@ macro( SetupVendorLibrariesUnix )
       # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
       if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
             EXISTS "${MPI_INC_DIR}" )
+         message( STATUS "3rd attempt to find MPI: examine $MPI_INC_DIR" )
          if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
             set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
          endif()
@@ -95,10 +97,11 @@ macro( SetupVendorLibrariesUnix )
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
+         message( STATUS "MPI FOUND: Setting DRACO_C4 = MPI" )
          set( DRACO_C4 "MPI" )  
          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
          if( NOT MPIEXEC )
-            if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+            if( "${SITE}" MATCHES "c[it]" )
                set( MPIEXEC aprun )
             else()
                message( FATAL_ERROR 
@@ -112,6 +115,7 @@ macro( SetupVendorLibrariesUnix )
          endif()
          
       else()
+         message( STATUS "MPI NOT FOUND: Setting DRACO_C4 = SCALAR" )
          set( DRACO_C4 "SCALAR" )
          set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
          set( MPI_LIBRARY "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
@@ -161,7 +165,7 @@ macro( SetupVendorLibrariesUnix )
       endif()
 
       # Don't require BLAS/LAPACK for catamount systems
-      if( ${SITE} MATCHES "ct-" OR
+      if( ${SITE} MATCHES "c[it]-" OR
             ${CMAKE_CXX_COMPILER} MATCHES "[sp]pu-g[+][+]" )
          set( BLAS_REQUIRED "" )
       else()
@@ -385,12 +389,8 @@ macro( SetupVendorLibrariesWindows )
          set( DRACO_C4 "MPI" )  
          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
          if( NOT MPIEXEC )
-            if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
-               set( MPIEXEC aprun )
-            else()
-               message( FATAL_ERROR 
-                  "MPI found but mpirun not in PATH. Aborting" )
-            endif()
+            message( FATAL_ERROR 
+               "MPI found but mpirun not in PATH. Aborting" )
          endif()
          # Try to find the fortran mpi library
          if( EXISTS ${MPI_LIB_DIR} )
