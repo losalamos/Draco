@@ -7,9 +7,9 @@
 \page draco_release_process Draco Release Process
  
 The libraries provided by the Draco project are used by multiple projects
-including Jayenne (milagro, wedgehog, serrano, ancho, etc.)  When installed on
-the ICN machines, client projects must link against the official Draco
-installations provided at \c /usr/projects/draco/draco-#_#_#.
+including Capsaicin and Jayenne (milagro, wedgehog, serrano, ancho, etc.)
+When installed on the ICN machines, client projects must link against the
+official Draco installations provided at \c /usr/projects/draco/draco-#_#_#.
 
 <!-- ---------------------------------------------------------------------- -->
     
@@ -20,7 +20,7 @@ installations provided at \c /usr/projects/draco/draco-#_#_#.
   build and pass the test suite on all target platforms (see \ref
   draco_release_target_platforms). This usually means the following:
 
-  - Update local build environment:
+  - Update local build environment (Turing):
   \code
         % export CVSROOT='ccscs8:/ccs/codes/radtran/cvsroot'
         % export CVS RSH='ssh'
@@ -34,12 +34,6 @@ installations provided at \c /usr/projects/draco/draco-#_#_#.
   \code
         % cd $RELEASEDIR
         % cvs co draco
-  \endcode
-  - Generate configure scripts:
-  \code
-        % cd draco
-        % ./draco_config
-        % cd ..
   \endcode
   - Tar the directories and make copies on each of the architectures that you
     plan to release the code on.
@@ -73,15 +67,13 @@ release.
 - Currently the following machines are targets:
 
 \code
-Machine           Compilers        Vendors
-----------------  ---------------  -----------
-TLCC hurricane    Intel 10.0.023   OpenMPI-1.4.3
-TLCC turing       Intel 10.0.023   OpenMPI-1.4.3
-Roadrunner        PGI 9.0-3        OpenMPI-1.4.2
-Redtail           PGI 9.0-3        OpenMPI-1.4.3
-Yellowrail        PGI 9.0-3        OpenMPI-1.4.3
-Dawn              --               --
-RedStorm          ?                ?
+Machine                Compilers        Vendors
+----------------       ---------------  -----------
+TLCC hurricane/turing  Intel 10.0.023   OpenMPI-1.4.3
+Roadrunner             PGI 9.0-3        OpenMPI-1.4.3
+Redtail/YellowRail     PGI 9.0-3        OpenMPI-1.4.3
+Dawn                   --               --
+Ceilo/Ceilito          --               --
 \endcode
 
 <!-- ---------------------------------------------------------------------- -->
@@ -238,17 +230,11 @@ Replace all version tags found in source code with the new version number.
 % mkdir draco-6_0_0
 % cvs co -r draco-6_0_0 -P draco
 \endcode
-- Create configure scripts
-\code 
-% cd /usr/projects/draco/draco-#_#_#/draco
-% ./draco_config
-\endcode
 - Examine \c /usr/projects/crestone/dotfiles/Cshrc to determine what
   compilers to use for each platform (see \ref
   draco_release_target_platforms). 
 - Edit and run the local \c 'buildit-*' and \c 'checkit-*' scripts to build
   the specific versions needed.
-
 */
 
 
