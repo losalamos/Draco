@@ -90,7 +90,7 @@ C4_Req send_async(T const * /* buffer */,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void send_async(C4_Req  & /*request */, 
+void send_async(C4_Req  & Remember(request), 
                 T const * /* buffer */, 
                 int       /* size   */, 
                 int       /* destination */,
@@ -115,7 +115,7 @@ C4_Req receive_async(T   * /*buffer*/,
 //---------------------------------------------------------------------------//
 
 template<class T>
-void receive_async(C4_Req & /* request */, 
+void receive_async(C4_Req & Remember(request), 
                    T      * /* buffer  */, 
                    int      /* size    */, 
                    int      /* source  */, 
