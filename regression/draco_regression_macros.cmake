@@ -336,11 +336,6 @@ macro( find_tools )
        else()
           message(STATUS "BullseyeCoverage turned on")
        endif()
-       set( ENV{COVFILE} "${CTEST_BINARY_DIRECTORY}/CMake.cov" )
-       set( ENV{COVDIRCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
-       set( ENV{COVFNCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
-       set( ENV{COVCLASSCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
-       set( ENV{COVSRCCFG} "${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg" )
     else()
        message( FATAL_ERROR 
           "Coverage requested, but bullseyecoverage's cov01 binary not in PATH."
@@ -396,12 +391,14 @@ macro( set_cvs_command projname )
 endmacro()
 
 # ------------------------------------------------------------
-# Setup for Code Coverage
+# Setup for Code Coverage and LOC metrics
 # ------------------------------------------------------------
 macro( setup_for_code_coverage )
    if( "${sitename}" MATCHES "ccscs8" AND "$ENV{CXX}" MATCHES "g[+][+]" )
       if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
          if(ENABLE_C_CODECOVERAGE)
+
+            # Code coverage setup
             message("Generating ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg")
             configure_file( 
                ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
@@ -413,6 +410,25 @@ macro( setup_for_code_coverage )
             set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
             set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
             execute_process(COMMAND "${COV01}" --on RESULT_VARIABLE RES)
+
+            # Process and save lines of code 
+            message( STATUS "Generating lines of code statistics...")
+            execute_process( 
+               COMMAND /home/regress/cmake_draco/regression/cloc-1.53.pl 
+               --categorize=cloc-categorize.log 
+               --counted=cloc-counted.log 
+               --ignored=cloc-ignored.log 
+               --progress-rate=0 
+               --report-file=lines-of-code.log 
+               --read-lang-def=/home/regress/cmake_draco/regression/cloc-lang.defs
+               ${CTEST_SOURCE_DIRECTORY}
+               #  --3 
+               #  --diff
+               WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+               )
+            message( STATUS "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
+            set( CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" )
+
          endif()
       endif()
    endif()
