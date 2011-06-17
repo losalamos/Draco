@@ -126,6 +126,9 @@ win32$ set work_dir=c:/full/path/to/work_dir
    set( VERBOSE ON )
    set( CTEST_OUTPUT_ON_FAILURE ON )
 
+   # The default timeout is 10 min, change this to 30 min.
+   set( CTEST_TEST_TIMEOUT "1800" ) # seconds
+
   # Echo settings
   
 #   if( NOT quiet_mode )
@@ -391,3 +394,53 @@ macro( set_cvs_command projname )
          "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
    endif()
 endmacro()
+
+# ------------------------------------------------------------
+# Setup for Code Coverage
+# ------------------------------------------------------------
+macro( setup_for_code_coverage )
+   if( "${sitename}" MATCHES "ccscs8" AND "$ENV{CXX}" MATCHES "g[+][+]" )
+      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+         if(ENABLE_C_CODECOVERAGE)
+            message("Generating ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg")
+            configure_file( 
+               ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
+               ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
+               @ONLY )
+            set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+            set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+            set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+            set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
+            set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
+            execute_process(COMMAND "${COV01}" --on RESULT_VARIABLE RES)
+         endif()
+      endif()
+   endif()
+endmacro( setup_for_code_coverage )
+
+# ------------------------------------------------------------
+# Process Code Coverage or Dynamic Memory Analysis
+# 
+# If BUILD_CONFIG = Debug do dynamic analysis (valgrind)
+# If BUILD_CONFIG = Coverage to code coverage (bullseye)
+#
+# dyanmic analysis excludes tests with label "nomemcheck"
+# ------------------------------------------------------------
+macro(process_cc_or_da)
+   if( "${sitename}" MATCHES "ccscs8" AND "$ENV{CXX}" MATCHES "g[+][+]" )
+      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
+         if(ENABLE_C_CODECOVERAGE)
+            message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
+            ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )
+            execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
+         else()
+            message( "ctest_memcheck( SCHEDULE_RANDOM ON )")
+            ctest_memcheck(
+               SCHEDULE_RANDOM ON 
+               EXCLUDE_LABEL "nomemcheck")
+         endif()
+      endif()
+   endif()
+endmacro(process_cc_or_da)
+
+
