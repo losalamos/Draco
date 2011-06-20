@@ -13,6 +13,7 @@
 
 # Environment setup
 
+umask 0002
 unset http_proxy
 export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux64
 
@@ -41,7 +42,12 @@ module load valgrind
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug
 
-dashboard_type=Nightly
+if test "`whoami`" == "regress"; then
+    dashboard_type=Nightly
+else
+    dashboard_type=Experimental
+fi
+
 base_dir=/home/regress/cmake_draco
 script_dir=/home/regress/cmake_draco
 
@@ -64,45 +70,6 @@ module load bullseyecoverage
 CXX=`which g++`
 CC=`which gcc`
 export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-# export COVFILE=${work_dir}/build/CMake.cov
-# export COVDIRCFG=${script_dir}/regression/covclass_cmake.cfg
-# export COVFNCFG=${script_dir}/regression/covclass_cmake.cfg
-# export COVCLASSCFG=${script_dir}/regression/covclass_cmake.cfg
-# export COVSRCCFG=${script_dir}/regression/covclass_cmake.cfg
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,${build_type}
-# unset COVFILE
-# unset COVDIRCFG
-# unset COVFNCFG
-# unset COVCLASSCFG
-# unset COVSRCCFG
 module unload bullseyecoverage
-
-#
-# PGI builds
-#
-# module unload lapack-gcc gcc
-# module load pgi lapack-pgi
-# comp=pgi
-
-# # Release build
-# build_type=Release
-# export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-# ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
-
-# #
-# # Intel builds
-# #
-# module unload pgi lapack-pgi
-# module load intel lapack-intel
-# comp=intel
-
-# # Release build
-# build_type=Release
-# export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-# ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
-
-# # Debug build
-# build_type=Debug
-# export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
-# ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
 
