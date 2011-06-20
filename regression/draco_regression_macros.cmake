@@ -461,3 +461,60 @@ macro(process_cc_or_da)
 endmacro(process_cc_or_da)
 
 
+# ------------------------------------------------------------
+# Special default settings for a couple of platforms
+# 
+# ------------------------------------------------------------
+macro(platform_customization)
+   if( "${sitename}" MATCHES "Cielito" )
+      set( TOOLCHAIN_SETUP
+         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake" )
+   elseif( "${sitename}" MATCHES "RoadRunner" )
+      if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
+         set( TOOLCHAIN_SETUP
+            "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake" )
+      else()
+         string( REGEX REPLACE "g[+][+]" "ppu-g++" CLUBIMC_PPE_PREFIX
+            $ENV{work_dir} )
+         set( INIT_CACHE_CLUBIMC_PPE_PREFIX
+            "CLUBIMC_PPE_PREFIX:PATH=${CLUBIMC_PPE_PREFIX}/target" )
+      endif()
+   endif()
+endmacro(platform_customization)
+
+
+
+# ------------------------------------------------------------
+# Special default settings for a couple of platforms
+#
+# Sets DRACO_DIR and CLUBIMC_DIR
+# 
+# ------------------------------------------------------------
+macro(set_pkg_work_dir this_pkg dep_pkg)
+   string( TOUPPER ${dep_pkg} dep_pkg_caps )
+   # Assume that draco_work_dir is parallel to our current location.
+   string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
+   find_file( ${dep_pkg}_target_dir
+      NAMES README.${dep_pkg}
+      HINTS
+         # regress account on ccscs8
+         /home/regress/cmake_draco/${CTEST_MODEL}_${compiler_short_name}/${CTEST_BUILD_CONFIGURATION}/target
+         # Try a path parallel to the work_dir
+         ${${dep_pkg}_work_dir}/target
+         # if DRACO_DIR is defined, use it.
+         $ENV{DRACO_DIR}
+      )
+   
+   if( NOT EXISTS ${${dep_pkg}_target_dir} )
+      message( FATAL_ERROR 
+         "Could not locate the ${dep_pkg} installation directory. "
+         "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}" )
+   endif()
+   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
+   
+   if( ENABLE_C_CODECOVERAGE )
+      string( REPLACE ${CTEST_BUILD_CONFIGURATION} "Coverage" 
+         ${dep_pkg_caps}_DIR ${${dep_pkg_caps}_DIR} )
+   endif()
+endmacro(set_pkg_work_dir)
+
