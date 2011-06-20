@@ -505,7 +505,7 @@ std::vector< double > QuadServices::computeM(void) const
  */
 double QuadServices::compute_azimuthalAngle( double const mu,
 					     double const eta,
-					     double const xi ) 
+					     double const Remember(xi) ) 
 {
     using rtt_units::PI;
     using rtt_dsxx::soft_equiv;

@@ -356,10 +356,11 @@ bool Angle_Operator::check_class_invariants() const
  */
 
 /* static */
-bool Angle_Operator::is_compatible( SP<Quadrature const> const &quadrature,
-                                    rtt_mesh_element::Geometry const geometry,
-                                    unsigned const dimension,
-                                    ostream &cerr)
+bool Angle_Operator::is_compatible(
+    SP<Quadrature const>       const &quadrature,
+    rtt_mesh_element::Geometry const  Remember(geometry),
+    unsigned                   const  Remember(dimension),
+    ostream                          &cerr)
 {
     Require(quadrature!=SP<Quadrature>());
     Require(dimension>0 && dimension<4);
