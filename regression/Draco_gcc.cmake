@@ -27,7 +27,7 @@ if( "${sitename}" MATCHES "Cielito" )
 elseif( "${sitename}" MATCHES "RoadRunner" )
    if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
       set( TOOLCHAIN_SETUP
-         "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake" )
+         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake" )
       endif()
 endif()
 
@@ -72,7 +72,8 @@ ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )
 message( "Files updated: ${res}" )
 
 # Configure
-setup_for_codecoverage() # from draco_regression_macros.cmake
+message( "setup_for_code_coverage()" )
+setup_for_code_coverage() # from draco_regression_macros.cmake
 message(  "ctest_configure()" )
 ctest_configure() 
 
