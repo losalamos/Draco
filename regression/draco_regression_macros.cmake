@@ -334,7 +334,7 @@ macro( find_tools )
        if( RES )
           message(FATAL_ERROR "could not run cov01 -1")
        else()
-          message(STATUS "BullseyeCoverage turned on")
+          message("BullseyeCoverage turned on")
        endif()
     else()
        message( FATAL_ERROR 
@@ -412,9 +412,9 @@ macro( setup_for_code_coverage )
             execute_process(COMMAND "${COV01}" --on RESULT_VARIABLE RES)
 
             # Process and save lines of code 
-            message( STATUS "Generating lines of code statistics...")
+            message(  "Generating lines of code statistics...")
             execute_process( 
-               COMMAND /home/regress/cmake_draco/regression/cloc-1.53.pl 
+               COMMAND /home/regress/cmake_draco/regression/cloc
                --categorize=cloc-categorize.log 
                --counted=cloc-counted.log 
                --ignored=cloc-ignored.log 
@@ -426,7 +426,7 @@ macro( setup_for_code_coverage )
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
-            message( STATUS "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
+            message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
             set( CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" )
 
          endif()
