@@ -4,21 +4,22 @@
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test c4::determinate_swap and c4::indeterminate_swap functions
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
-#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../C4_Functions.hh"
 #include "../swap.hh"
+
+#include "ds++/Assert.hh"
+#include "ds++/Release.hh"
+
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
 using namespace rtt_dsxx;
