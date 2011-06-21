@@ -38,35 +38,27 @@ namespace rtt_c4
  * \code
 int main(int argc, char *argv[])
 {
+    rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
-        rtt_c4::ParallelUnitTest ut( argc, argv, release );
         tstOne(ut);
-        ut.status();
+        tstTwo(ut);
     }
-    catch( rtt_dsxx::assertion &err )
+    catch (std::exception &err)
     {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
+        std::cout << "ERROR: While testing tstSwap, " 
+                  << err.what()
+                  << endl;
+        ut.numFails++;
     }
     catch( ... )
     {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << "An unknown exception was thrown" << endl;
-        return 1;
+        std::cout << "ERROR: While testing tstSwap, " 
+                  << "An unknown exception was thrown."
+                  << endl;
+        ut.numFails++;
     }
-    return 0;
+    return ut.numFails;
 }
  * \endcode
  *
@@ -98,11 +90,13 @@ class ParallelUnitTest : public rtt_dsxx::UnitTest
     // CREATORS
     
     //! Default constructor.
-    ParallelUnitTest( int & argc, char **&argv, string_fp_void release_,
-                      std::ostream & out_ = std::cout);
+    ParallelUnitTest( int            & argc,
+                      char         **& argv,
+                      string_fp_void   release_,
+                      std::ostream   & out_ = std::cout);
 
     //!  The copy constructor is disabled.
-    ParallelUnitTest(const ParallelUnitTest &rhs);
+    ParallelUnitTest( ParallelUnitTest const &rhs );
 
     //! Destructor.
     ~ParallelUnitTest();
@@ -110,7 +104,7 @@ class ParallelUnitTest : public rtt_dsxx::UnitTest
     // MANIPULATORS
     
     //! The assignment operator is disabled.
-    ParallelUnitTest& operator=(const ParallelUnitTest &rhs);
+    ParallelUnitTest& operator=( ParallelUnitTest const &rhs );
 
     // ACCESSORS
     
