@@ -220,6 +220,7 @@ macro( add_scalar_tests test_sources )
    endif()
    if( "${addscalartest_FAIL_REGEX}none" STREQUAL "none" )
       set( addscalartest_FAIL_REGEX ".*[Tt]est: FAILED" )
+      list( APPEND addscalartest_FAIL_REGEX ".*ERROR:.*" )
    endif()
  
    # What is the component name (always use Lib_${compname} as a dependency).
@@ -324,6 +325,7 @@ macro( add_parallel_tests )
    endif()
    if( "${addparalleltest_FAIL_REGEX}none" STREQUAL "none" )
       set( addparalleltest_FAIL_REGEX ".*[Tt]est: FAILED" )
+      list( APPEND addparalleltest_FAIL_REGEX ".*ERROR:.*" )
    endif()
 
    # Format resource lock command
