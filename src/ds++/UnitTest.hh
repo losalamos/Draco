@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2011 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -132,11 +132,13 @@ class DLL_PUBLIC UnitTest
     // CREATORS
         
     //! Default constructors.
-    UnitTest( int & argc, char **&argv, string_fp_void release_,
-              std::ostream & out_ = std::cout );
+    UnitTest( int    & argc,
+              char **& argv,
+              string_fp_void   release_,
+              std::ostream   & out_ = std::cout );
 
     //! The copy constructor is disabled.
-    UnitTest(const UnitTest &rhs);
+    UnitTest( UnitTest const &rhs );
 
     //! Destructor is virtual because this class will be inherited from.
     virtual ~UnitTest(void){/*empty*/};
@@ -144,7 +146,7 @@ class DLL_PUBLIC UnitTest
     // MANIPULATORS    
 
     //! The assignment operator is disabled.
-    UnitTest& operator=(const UnitTest &rhs);
+    UnitTest& operator=( UnitTest const &rhs );
 
     //! Change the target for output
     // void setostream( std::ostream out_ ) { out = out_; return; };
@@ -152,8 +154,8 @@ class DLL_PUBLIC UnitTest
     // ACCESSORS
     bool failure(int line);
     bool failure(int line, char const *file);
-    bool failure(const std::string &failmsg);
-    bool passes(const std::string &failmsg);
+    bool failure( std::string const &failmsg );
+    bool passes(  std::string const &failmsg );
     //! This pure virtual function must be provided by the inherited class.
     //It should provide output concerning the status of UnitTest.
     void status(void) const { out << resultMessage() << std::endl; return; }
