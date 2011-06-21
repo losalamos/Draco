@@ -80,12 +80,18 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
  * \brief Destructor.
  * The destructor provides a final status report before it calls MPI_Finalize
  * and exits.
+ *
+ * Use global_sum to ensure that we print FAIL if any tests on any processor
+ * fail. 
  */
 ParallelUnitTest::~ParallelUnitTest()
 {
-    global_barrier();
+    global_sum( numPasses );
+    global_sum( numFails );
     if( node() == 0 )
         out << resultMessage() << std::endl;
+    // global_barrier();
+    // out << resultMessage() << std::endl;
     global_barrier();
     finalize();
     return;
@@ -98,13 +104,17 @@ ParallelUnitTest::~ParallelUnitTest()
 void ParallelUnitTest::status()
 {
     { // Provide some space before the report -- but keep all the processors
-      // in sync. 
-        HTSyncSpinLock slock;
+      // in sync.  [KT: 2011/06/20 - Actually, ParallelUnitTest should only
+      // have a barrier on the destructor.  Otherwise, we can find ourselves
+      // in a race condition between this function and the destructure (in the
+      // case of an exception).]
+        
+        // HTSyncSpinLock slock;
         if( node() == 0 )
             out << std::endl;
     }
     {
-        HTSyncSpinLock slock;
+        // HTSyncSpinLock slock;
         out << "Done testing " << testName << " on node "
             << node() << "." << std::endl;
     }
