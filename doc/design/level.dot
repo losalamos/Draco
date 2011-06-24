@@ -29,6 +29,7 @@ digraph draco_level {
     vgrace     [shape=hexagon, color=green, label="XMGRACE"];
     vlapack    [shape=hexagon, color=green, label="LAPACK"];
     vmpi       [shape=hexagon, color=green, label="MPI"];
+    vdacs      [shape=hexagon, color=green, label="DaCS"];
         
     dsxx [shape=box, color=blue, label="ds++", width=6];
     
@@ -50,6 +51,7 @@ digraph draco_level {
     units      [shape=box, color=blue, label="units"];
         
     /* level 3 */
+    device    [shape=box, color=blue, label="device"];
     cdieos    [shape=box, color=blue, label="cdi_eospac"];
     cdigan    [shape=box, color=blue, label="cdi_gandolf"];
     diagnostics [shape=box, color=blue, label="diagnostics"];
@@ -71,7 +73,7 @@ digraph draco_level {
     
     /* dependencies */
     {rank=same; legend leg_vendor leg_draco};
-    {rank=same; level1 dsxx vlapack vmpi veospac  vgandolf vgrace vdlopen};
+    {rank=same; level1 dsxx vlapack vmpi veospac vgandolf vgrace vdlopen vgsl vdacs};
     {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi vpcg ode linear};
     {rank=same; level3 viz timestep cdieos cdigan pcg meshread parser sf};
     {rank=same; level4 rttread quad};
@@ -102,10 +104,12 @@ digraph draco_level {
     shlib       -> {vdlopen}     [color=green];
     traits      -> {dsxx}        [color=blue];
     units       -> {dsxx}        [color=blue];
-    vgsl        -> {vlapack}     [color=green];
     vpcg        -> {vlapack}     [color=green];
     
     /* level 3 */
+    device      -> {dsxx}        [color=blue];
+    device      -> {c4}          [color=blue, style=dotted];
+    device      -> {vdacs}       [color=green];
     cdieos      -> {cdi}         [color=blue];
     cdieos      -> {veospac}     [color=green]; 
     cdigan      -> {cdi}         [color=blue]; 
