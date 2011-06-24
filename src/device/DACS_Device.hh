@@ -57,7 +57,7 @@ class DACS_Device
     }
 
     //! Set the filename of the accel-side binary.
-    static void init(const std::string fname);
+    static void init(const std::string & fname);
 
     //! Return the element id of the reserved DACS child.
     de_id_t get_de_id() { return de_id; }
