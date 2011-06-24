@@ -21,6 +21,7 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <stdint.h>
 #include <string>
 #include <sys/param.h>
 #include <sys/stat.h>
@@ -81,8 +82,9 @@ DACS_Device::DACS_Device() : de_id(0), pid(0)
  *
  * DACS_Device is a singleton; the destructor is called at program
  * termination.  The destructor waits for the accel-side process to complete
- * and then calls dacs_exit.  It's a bad idea to throw exceptions inside a
- * destructor, so errors are reported to stderr.
+ * and then calls dacs_exit.  Throwing an exception inside the destructor
+ * would interfere with stack unwinding already in progress (from, for
+ * example, an earlier exception), so errors are reported to stderr.
  */
 DACS_Device::~DACS_Device()
 {
@@ -111,7 +113,7 @@ DACS_Device::~DACS_Device()
  * DACS_Device will launch exactly one accel-side binary, so calling init
  * multiple times with different filenames triggers an exception.
  */
-void DACS_Device::init(const std::string fname)
+void DACS_Device::init(const std::string & fname)
 {
     // Identify the current working directory.
     char curr_path[MAXPATHLEN];
