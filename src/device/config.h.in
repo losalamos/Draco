@@ -1,0 +1,25 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/*!
+ * \file   device/config.h
+ * \author Gabriel M. Rockefeller 
+ * \date   Mon Jun 13 16:48:32 2011
+ * \brief  CPP defines necessary for the device package.
+ * \note   Copyright (C) 2011 Los Alamos National Security, LLC
+ */
+/*---------------------------------------------------------------------------*/
+/* $Id$ */
+/*---------------------------------------------------------------------------*/
+
+#ifndef device_config_h
+#define device_config_h
+
+namespace rtt_device
+{
+    std::string const default_ppe_bindir("@PPE_BINDIR@/bin");
+}
+
+#endif /* device_config_h */
+
+/*---------------------------------------------------------------------------*/
+/*           end of device/config.h */
+/*---------------------------------------------------------------------------*/
