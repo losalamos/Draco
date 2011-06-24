@@ -68,6 +68,9 @@ add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
 
+if( ENABLE_HET_CODE )
+   add_dir_if_exists( device )    # needs ds++
+endif()
 if( PCG_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/pcgWrap/CMakeLists.txt)
   add_dir_if_exists( pcgWrap )    # needs ds++
 endif()
