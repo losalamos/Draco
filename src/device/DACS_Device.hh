@@ -49,22 +49,15 @@ class DACS_Device
 {
   public:
 
-    //! Set the filename of the accel-side binary.
-    static void init(const std::string fname)
-    {
-        if (accel_filename.empty())
-            accel_filename = fname;
-        else
-            Insist(fname == accel_filename,
-                   "init was called twice with different filenames");
-    }
-
     //! Return a reference to the DACS_Device.
     static DACS_Device& instance()
     {
         static DACS_Device the_instance;
         return the_instance;
     }
+
+    //! Set the filename of the accel-side binary.
+    static void init(const std::string fname);
 
     //! Return the element id of the reserved DACS child.
     de_id_t get_de_id() { return de_id; }

@@ -48,27 +48,6 @@ DACS_Device::DACS_Device() : de_id(0), pid(0)
 {
     Insist(!accel_filename.empty(), "No accel filename specified");
 
-    // Look for the accel-side binary in the current directory, and in
-    // default_ppe_bindir.
-    char curr_path[MAXPATHLEN];
-    Insist(getcwd(curr_path, MAXPATHLEN) != NULL,
-           verbose_error("getcwd failed: " + std::string(strerror(errno))));
-
-    const std::string cwd(curr_path);
-
-    const std::string fullname1 = cwd + "/" + accel_filename;
-    const std::string fullname2 = default_ppe_bindir + "/" + accel_filename;
-
-    std::string fullname = canonical_fname(fullname1);
-    if (fullname.empty())
-    {
-        fullname = canonical_fname(fullname2);
-        Insist(!fullname.empty(),
-               verbose_error("Couldn't find " + fullname1 +
-                             " or " + fullname2 + ": " +
-                             std::string(strerror(errno))));
-    }
-
     // Initialize DACS.
     DACS_ERR_T err = dacs_init(DACS_INIT_FLAGS_NONE);
     Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
@@ -88,9 +67,12 @@ DACS_Device::DACS_Device() : de_id(0), pid(0)
     Insist(num_reserve == 1, "Failed to reserve children");
 
     // Start the accel-side process.
-    void * vf = reinterpret_cast<void*>(const_cast<char *>(fullname.c_str()));
+    void * vf =
+        reinterpret_cast<void*>(const_cast<char *>(accel_filename.c_str()));
     err = dacs_de_start(de_id, vf, NULL, NULL, DACS_PROC_LOCAL_FILE, &pid);
-    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+    Insist(err == DACS_SUCCESS,
+           verbose_error(accel_filename + ": " +
+                         std::string(dacs_strerror(err))));
 
 } // DACS_Device::DACS_Device
 
@@ -119,6 +101,52 @@ DACS_Device::~DACS_Device()
         std::cerr << dacs_strerror(err) << std::endl;
 
 } // DACS_Device::~DACS_Device
+
+//---------------------------------------------------------------------------//
+/*! \brief Record the full canonical path to the accel-side binary.
+ *
+ * init tries to interpret the specified filename in three ways: as an
+ * absolute pathname, as a pathname relative to the current directory, and as
+ * a pathname relative to a default location (default_ppe_bindir).
+ * DACS_Device will launch exactly one accel-side binary, so calling init
+ * multiple times with different filenames triggers an exception.
+ */
+void DACS_Device::init(const std::string fname)
+{
+    // Identify the current working directory.
+    char curr_path[MAXPATHLEN];
+    Insist(getcwd(curr_path, MAXPATHLEN) != NULL,
+           verbose_error("getcwd failed: " + std::string(strerror(errno))));
+
+    const std::string cwd(curr_path);
+
+    const std::string fullname1 = cwd + "/" + fname;
+    const std::string fullname2 = default_ppe_bindir + "/" + fname;
+
+    // Interpret fname as an absolute pathname...
+    std::string fullname = canonical_fname(fname);
+    if (fullname.empty())
+    {
+        // ... as a pathname relative to the current directory...
+        fullname = canonical_fname(fullname1);
+        if (fullname.empty())
+        {
+            // ... and as a pathname relative to default_ppe_bindir.
+            fullname = canonical_fname(fullname2);
+            Insist(!fullname.empty(),
+                   verbose_error("Couldn't stat " + fname +
+                                 " or " + fullname1 +
+                                 " or " + fullname2 + ": " +
+                                 std::string(strerror(errno))));
+        }
+    }
+
+    if (accel_filename.empty())
+        accel_filename = fullname;
+    else
+        Insist(fullname == accel_filename,
+               "init was called twice with different filenames");
+}
 
 //---------------------------------------------------------------------------//
 /*! \brief Return the canonical form of a pathname.

@@ -57,6 +57,34 @@ void tstNoInit(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
+/*! \brief Test DACS_Device when the accel-side binary doesn't exist.
+ *
+ * DACS_Device needs the path to an accel-side binary to successfully call
+ * dacs_de_start.  If the binary (specified via DACS_Device::init) can't be
+ * found, DACS_Device should throw an exception with a useful error message.
+ */
+void tstNoAccelBinary(UnitTest &ut)
+{
+    bool caught = false;
+
+    try
+    {
+        DACS_Device::init("no_such_binary");
+    }
+    catch (assertion &err)
+    {
+        caught = true;
+        ostringstream message;
+        message << "Good, caught the following assertion, " << err.what();
+        ut.passes(message.str());
+    }
+    if (!caught)
+    {
+        ut.failure("Failed to catch expected assertion");
+    }
+}
+
+//---------------------------------------------------------------------------//
 /*! \brief Test multiple calls to init, with different or identical filenames.
  *
  * init must be called at least once.  Calling it multiple times with
@@ -72,7 +100,7 @@ void tstDoubleInit(UnitTest &ut)
     {
         // Call init twice with different filenames.
         DACS_Device::init("dacs_device_ppe_exe");
-        DACS_Device::init("some_other_file");
+        DACS_Device::init("dacs_device_ppe2_exe");
     }
     catch (assertion &err)
     {
@@ -129,6 +157,7 @@ int main(int argc, char *argv[])
     try
     {
         tstNoInit(ut);
+        tstNoAccelBinary(ut);
         tstDoubleInit(ut);
         tstDevice(ut);
     }

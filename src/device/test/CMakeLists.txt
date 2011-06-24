@@ -74,13 +74,21 @@ else() # if ppe build
       )
 
 # ---------------------------------------------------------------------------- #
-# Build helper binary
+# Build helper binaries
 # ---------------------------------------------------------------------------- #
 
    add_executable( Exe_dacs_device_ppe dacs_device_ppe.cc )
+   add_executable( Exe_dacs_device_ppe2 dacs_device_ppe.cc )
+
    set_target_properties( Exe_dacs_device_ppe
       PROPERTIES
       OUTPUT_NAME dacs_device_ppe_exe
+      LINK_FLAGS  "-Wl,-m,elf64ppc"
+      )
+
+   set_target_properties( Exe_dacs_device_ppe2
+      PROPERTIES
+      OUTPUT_NAME dacs_device_ppe2_exe
       LINK_FLAGS  "-Wl,-m,elf64ppc"
       )
 
@@ -89,6 +97,12 @@ else() # if ppe build
       /usr/lib64/libdacs_hybrid.so
       )
 
+   target_link_libraries( Exe_dacs_device_ppe2
+      Lib_dsxx
+      /usr/lib64/libdacs_hybrid.so
+      )
+
    install( TARGETS Exe_dacs_device_ppe DESTINATION bin )
+   install( TARGETS Exe_dacs_device_ppe2 DESTINATION bin )
 
 endif()
