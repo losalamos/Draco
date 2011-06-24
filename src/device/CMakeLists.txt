@@ -20,10 +20,18 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
-   string ( REPLACE "x86" "ppe" PPE_BINDIR ${CMAKE_INSTALL_PREFIX} )
-   set( PPE_BINDIR ${PPE_BINDIR} CACHE PATH 
-      "PPE binary install location" )
-   configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
+   if( NOT EXISTS ${PPE_PREFIX}/bin/dacs_device_ppe_exe )
+      string ( REPLACE "x86" "ppe" PPE_PREFIX ${CMAKE_INSTALL_PREFIX} )
+      set( PPE_PREFIX ${PPE_PREFIX} CACHE PATH 
+         "PPE binary install location" )
+      configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
+   endif()
+
+   # sanity check
+   if ( NOT EXISTS ${PPE_PREFIX}/bin/dacs_device_ppe_exe )
+      message(FATAL_ERROR "PPE_PREFIX must be set to the installed PPE"
+         " build of Draco." )
+   endif()
 
 # ---------------------------------------------------------------------------- #
 # Source files
