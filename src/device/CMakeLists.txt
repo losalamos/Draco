@@ -24,7 +24,6 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
       string ( REPLACE "x86" "ppe" PPE_PREFIX ${CMAKE_INSTALL_PREFIX} )
       set( PPE_PREFIX ${PPE_PREFIX} CACHE PATH 
          "PPE binary install location" )
-      configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
    endif()
 
    # sanity check
@@ -32,6 +31,10 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
       message(FATAL_ERROR "PPE_PREFIX must be set to the installed PPE"
          " build of Draco." )
    endif()
+
+   include(draco_macros)
+   draco_flat_function_names()
+   configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
