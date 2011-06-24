@@ -474,10 +474,10 @@ macro(platform_customization)
          set( TOOLCHAIN_SETUP
             "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake" )
       else()
-         string( REGEX REPLACE "g[+][+]" "ppu-g++" CLUBIMC_PPE_PREFIX
+         string( REGEX REPLACE "g[+][+]" "ppu-g++" PPE_PREFIX
             $ENV{work_dir} )
-         set( INIT_CACHE_CLUBIMC_PPE_PREFIX
-            "CLUBIMC_PPE_PREFIX:PATH=${CLUBIMC_PPE_PREFIX}/target" )
+         set( INIT_CACHE_PPE_PREFIX
+            "PPE_PREFIX:PATH=${PPE_PREFIX}/target" )
       endif()
    endif()
 endmacro(platform_customization)
