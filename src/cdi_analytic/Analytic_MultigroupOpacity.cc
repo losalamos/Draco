@@ -147,24 +147,24 @@ unsigned Analytic_MultigroupOpacity::packed_size() const
 /*!
  * \brief Return a string describing the opacity model.
  */
-Analytic_MultigroupOpacity::std_string
-Analytic_MultigroupOpacity::getDataDescriptor() const
-{
-    std_string descriptor;
+// Analytic_MultigroupOpacity::std_string
+// Analytic_MultigroupOpacity::getDataDescriptor() const
+// {
+//     std_string descriptor;
 
-    if (reaction == rtt_cdi::TOTAL)
-	descriptor = "Analytic Multigroup Total";
-    else if (reaction == rtt_cdi::ABSORPTION)
-	descriptor = "Analytic Multigroup Absorption";
-    else if (reaction == rtt_cdi::SCATTERING)
-	descriptor = "Analytic Multigroup Scattering";
-    else
-    {
-	Insist (0, "Invalid analytic multigroup model opacity!");
-    }
+//     if (reaction == rtt_cdi::TOTAL)
+// 	descriptor = "Analytic Multigroup Total";
+//     else if (reaction == rtt_cdi::ABSORPTION)
+// 	descriptor = "Analytic Multigroup Absorption";
+//     else if (reaction == rtt_cdi::SCATTERING)
+// 	descriptor = "Analytic Multigroup Scattering";
+//     else
+//     {
+// 	Insist (0, "Invalid analytic multigroup model opacity!");
+//     }
 
-    return descriptor;
-}
+//     return descriptor;
+// }
 
 } // end namespace rtt_cdi_analytic
 
