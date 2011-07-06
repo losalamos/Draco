@@ -12,6 +12,7 @@
 #define __ds_Allocators_hh__
 
 #include "Assert.hh"
+#include  <limits>
 
 //---------------------------------------------------------------------------//
 /*! \note The allocators in this file are provided for use by the DS++
@@ -23,6 +24,16 @@
  * calls yourself.  Likewise, before you release memory, you must destroy the
  * objects contained in the memory pool before calling the release method on
  * the allocator.
+ *
+ * [2011/07/06 KT] I am updating this class to make it more standardized to
+ * modern design for Allocator classes.  See
+ * http://www.codeproject.comm/KB/cpp/allocator.aspx. This article points to
+ * additional resources:
+ * - Nicolai M. Josuttis, "The C++ Standard Library: A Tutorial and Reference"
+ * - ISO C++ Standard, 1998.
+ * - Stanley B. Lippman, "Inside the C++ Object Model"
+ * - Andrei Alexandrescu, "Modern C++ Design: Generic Programming and Design
+ *   Patterns Applied"
  */
 //---------------------------------------------------------------------------//
 
@@ -42,14 +53,14 @@ namespace rtt_dsxx
 // These functions were in the April '96 draft, but disappeared by December
 // '96.  Too bad, b/c they are extremely helpful for building allocators.
 
-template<class T>
-inline T *ds_allocate( int size, const T * /* hint */ )
-{
-    return (T *) (::operator new( static_cast<size_t>(size) * sizeof(T) ) );
-}
+// template<class T>
+// inline T *ds_allocate( int size, const T * /* hint */ )
+// {
+//     return (T *) (::operator new( static_cast<size_t>(size) * sizeof(T) ) );
+// }
 
-template<class T>
-inline void ds_deallocate( T *buf ) { ::operator delete( buf ); }
+// template<class T>
+// inline void ds_deallocate( T *buf ) { ::operator delete( buf ); }
 
 //===========================================================================//
 /*!
@@ -63,32 +74,66 @@ inline void ds_deallocate( T *buf ) { ::operator delete( buf ); }
  */
 //===========================================================================//
 
-template<class T>
+template<typename T>
 class Simple_Allocator 
 {
   public:
-    typedef size_t                        size_type;
-    typedef ptrdiff_t                     difference_type;
-    typedef T*                            pointer;
+
+    // TYPEDEFS
+    
+    typedef       size_t                  size_type;
+    typedef       ptrdiff_t               difference_type;
+    typedef       T*                      pointer;
     typedef const T*                      const_pointer;
-    typedef T&                            reference;
+    typedef       T&                      reference;
     typedef const T&                      const_reference;
-    typedef T                             value_type;
-    typedef T *iterator;
-    typedef const T *const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef       T                       value_type;
+    typedef       T*                      iterator;
+    typedef const T*                      const_iterator;
+    typedef std::reverse_iterator<iterator>       reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    static T *fetch( int n, const T *hint = 0 )
+    // CONSTRUCTORS
+
+    inline Simple_Allocator( void) {/*empty*/}
+    inline ~Simple_Allocator(void) {/*empty*/}
+    inline explicit Simple_Allocator(Simple_Allocator const & ) {/*empty*/}
+
+    // ADDRESS
+
+    inline pointer       address(reference       r) { return &r; }
+    inline const_pointer address(const_reference r) { return &r; }
+
+    // MEMORY ALLOCATION
+    
+    static pointer fetch(
+        size_type n, typename std::allocator<void>::const_pointer hint = 0 )
     {
-        return ds_allocate( n, hint );
+        return allocate(n,hint);//ds_allocate( n, hint );
     }
-
-    static T *validate( T *v, int /* n */ ) { return v; }
-
+    static pointer allocate(
+        size_type n, typename std::allocator<void>::const_pointer = 0 )
+    {
+        return reinterpret_cast<pointer>(::operator new(n * sizeof(T) ));
+    }
+    static pointer validate( T *v, int /* n */ ) { return v; }
     static void release( T *v, int n =0 )
     {
-        ds_deallocate( validate( v, n ) );
+        deallocate(v,n);
+        return;
+        // ds_deallocate( validate( v, n ) );
+    }
+    static void deallocate(pointer p, size_type)
+    {
+        ::operator delete(p);
+        return;
+    }
+
+    //  SIZE
+
+    inline size_type max_size() const
+    {
+        return std::numeric_limits<size_type>::max() / sizeof(T);
     }
 
     //#ifdef _CRAYT3E
@@ -102,11 +147,11 @@ class Simple_Allocator
     //               size_type (size_type (-1)/sizeof (T)); }
     //#else
     // { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
-    size_type max_size () const MSIPL_THROW
-    { return
-            ( size_type(1) > size_type (size_type (-1)/sizeof (T)) )
-            ? size_type(1):size_type(size_type(-1)/sizeof (T));
-    }
+    // inline size_type max_size () const MSIPL_THROW
+    // { return
+    //         ( size_type(1) > size_type (size_type (-1)/sizeof (T)) )
+    //         ? size_type(1):size_type(size_type(-1)/sizeof (T));
+    // }
     //#endif /*_CRAYT3E*/
 
 };
@@ -126,25 +171,50 @@ class Simple_Allocator
  */
 //===========================================================================//
 
-template<class T>
-class Guarded_Allocator {
+template<typename T>
+class Guarded_Allocator
+{
   public:
-    typedef size_t                        size_type;
-    typedef ptrdiff_t                     difference_type;
-    typedef T*                            pointer;
+
+    // TYPEDEFS
+    
+    typedef       size_t                  size_type;
+    typedef       ptrdiff_t               difference_type;
+    typedef       T*                      pointer;
     typedef const T*                      const_pointer;
-    typedef T&                            reference;
+    typedef       T&                      reference;
     typedef const T&                      const_reference;
-    typedef T                             value_type;
-    typedef T *iterator;
-    typedef const T *const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef       T                       value_type;
+    typedef       T*                      iterator;
+    typedef const T*                      const_iterator;
+    typedef std::reverse_iterator<iterator>       reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    static T *fetch( int n, const T* hint = 0 )
+    // CONSTRUCTORS
+
+    inline Guarded_Allocator( void) {/*empty*/}
+    inline ~Guarded_Allocator(void) {/*empty*/}
+    inline explicit Guarded_Allocator(Guarded_Allocator const & ) {/*empty*/}
+
+    // ADDRESS
+
+    inline pointer       address(reference       r) { return &r; }
+    inline const_pointer address(const_reference r) { return &r; }
+
+    // MEMORY ALLOCATION
+    
+    //static pointer fetch( int n, const T* hint = 0 )
+    static pointer fetch(
+        size_type n, typename std::allocator<void>::const_pointer hint = 0 )
     {
-        Assert( n >= 0 );
-        T *v = ds_allocate( n+2, hint );
+        return allocate(n,hint);//ds_allocate( n, hint );
+    }
+    static pointer allocate(
+        size_type n, typename std::allocator<void>::const_pointer = 0 )
+    {
+        // Assert( n >= 0 );
+        // pointer v = ds_allocate( n+2, hint );
+        pointer v = reinterpret_cast<pointer>(::operator new((n+2) * sizeof(T) ));
 
         // Write magic info into T[0] and T[n+1]
         char *pb = reinterpret_cast<char *>(v);
@@ -161,7 +231,7 @@ class Guarded_Allocator {
         return v+1;
     }
 
-    static T *validate( T *v, int Remember(n) )
+    static pointer validate( pointer v, size_type Remember(n) )
     {
         v--;
         Check( guard_elements_ok(v,n) );
@@ -169,7 +239,7 @@ class Guarded_Allocator {
     }
 
     //! \brief Check magic data in T[0] and T[n+1]
-    static bool guard_elements_ok( T *v, int n )
+    static bool guard_elements_ok( pointer v, size_type n )
     {
         char *pb = reinterpret_cast<char *>(v);
         char *pe = reinterpret_cast<char *>( v+n+1 );
@@ -186,25 +256,35 @@ class Guarded_Allocator {
         return true;
     }
 
-    static void release( T *v, int n )
+    static void release( pointer v, size_type n )
     {
-        if (!v) return;
-
-        ds_deallocate( validate( v, n ) );
+        deallocate(v,n);
+        return;
     }
 
-    size_type max_size () const MSIPL_THROW
-#ifdef _CRAYT3E
-    // Cray T3E backend sometimes incorrectly uses signed comparisons
-    // instead of unsigned comparisons.  Therefore for T3E, we use
-    // a max_size that is positive even if misinterpreted by backend.
-    { return sizeof(T)==1 ? size_type( size_type (-1)/2u ) :
-            ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1) :
-            size_type (size_type (-1)/sizeof (T)); }
-#else
-    { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
-            ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1):size_type(size_type(-1)/sizeof (T));}
-#endif /*_CRAYT3E*/
+    static void deallocate( pointer v, size_type n ) 
+    {
+        if (!v) return;
+        validate( v, n );
+        ::operator delete(v-1);
+        return;
+    }
+    inline size_type max_size () const // MSIPL_THROW
+    {
+        // subtract 2 from max() to treat guarded values at begining and end.
+        return (std::numeric_limits<size_type>::max() / sizeof(T) ) - 2;
+    }
+// #ifdef _CRAYT3E
+//     // Cray T3E backend sometimes incorrectly uses signed comparisons
+//     // instead of unsigned comparisons.  Therefore for T3E, we use
+//     // a max_size that is positive even if misinterpreted by backend.
+//     { return sizeof(T)==1 ? size_type( size_type (-1)/2u ) :
+//             ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1) :
+//             size_type (size_type (-1)/sizeof (T)); }
+// #else
+//     { return // max (size_type (1), size_type (size_type (-1)/sizeof (T))); 
+//             ( size_type(1) > size_type (size_type (-1)/sizeof (T)) ) ? size_type(1):size_type(size_type(-1)/sizeof (T));}
+// #endif /*_CRAYT3E*/
 
 };
 
@@ -248,7 +328,7 @@ class Guarded_Allocator {
 //lint -e526 Not sure about this warning "Simple_Allocator<<1>> not defined.
 //lint -e768 Default_Allocator not referenced
 
-template<class T>
+template<typename T>
 class alloc_traits
 {
   public:

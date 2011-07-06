@@ -47,8 +47,8 @@ template<class T>
 void tS1( T dummy )
 {
     try {
-        T *p = Simple_Allocator<T>::fetch( 5 );
-        Simple_Allocator<T>::release( p, 5 );
+        T *p = Simple_Allocator<T>::allocate( 5 );
+        Simple_Allocator<T>::deallocate( p, 5 );
 	pass( "tS1", dummy );
 
         Simple_Allocator<T> mySa;
@@ -72,7 +72,7 @@ void tG1( T dummy )
     {
         T *p = Guarded_Allocator<T>::fetch( 5 );
         // Validate (release does then if DBC is on)
-        if( Guarded_Allocator<T>::guard_elements_ok( p, 5 ) )
+        if( Guarded_Allocator<T>::guard_elements_ok( p-1, 5 ) )
             pass( "guard_elements_ok", dummy );
         Guarded_Allocator<T>::release( p, 5 );
         pass( "tG1", dummy );

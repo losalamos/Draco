@@ -14,7 +14,7 @@
 #define rtt_ds_Mat_hh
 
 #include "Assert.hh"
-#include "Allocators.hh"
+// #include "Allocators.hh"
 #include "Bounds.hh"
 #include "destroy.hh"
 #include <algorithm>
@@ -42,9 +42,11 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-template< class T,
-	  class Allocator = typename alloc_traits<T>::Default_Allocator >
-class Mat1 {
+template< typename T,
+	  typename Allocator = typename std::allocator<T> >
+//	  class Allocator = typename alloc_traits<T>::Default_Allocator >
+class Mat1
+{
   private:
     int xmin, xlen;
     bool may_free_space;
@@ -70,7 +72,7 @@ class Mat1 {
 	if (may_free_space)
         {
 	    rtt_dsxx::Destroy( begin(), end() );
-	    alloc.release( v + offset(xmin), size() );
+	    alloc.deallocate( v + offset(xmin), size() );
 	}
     }
 
@@ -79,17 +81,17 @@ class Mat1 {
     T *v;
 
   public:
-    typedef T value_type;
-    typedef T& reference;
+    typedef       T  value_type;
+    typedef       T& reference;
     typedef const T& const_reference;
-    typedef T* pointer;
+    typedef       T* pointer;
     typedef const T* const_pointer;
     typedef typename Allocator::difference_type difference_type;
-    typedef typename Allocator::size_type size_type;
-    typedef typename Allocator::iterator iterator;
-    typedef typename Allocator::const_iterator const_iterator;
-    typedef typename Allocator::reverse_iterator reverse_iterator;
-    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
+    typedef typename Allocator::size_type       size_type;
+    typedef typename Allocator::pointer         iterator;
+    typedef typename Allocator::const_pointer   const_iterator;
+    typedef typename std::reverse_iterator<iterator>       reverse_iterator;
+    typedef typename std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     // Accessors
 
@@ -137,7 +139,7 @@ class Mat1 {
           xlen(xmax_),
 	  may_free_space(true),
 	  alloc(),
-          v( alloc.fetch( size() ) - offset(xmin) )
+          v( alloc.allocate( size() ) - offset(xmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -155,7 +157,7 @@ class Mat1 {
           xlen( bx.len() ),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin) )
+	  v( alloc.allocate( size() ) - offset(xmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -171,7 +173,7 @@ class Mat1 {
           xlen(m.xlen),
 	  may_free_space(true),
 	  alloc(),
-          v( alloc.fetch( size() ) - offset(xmin) )
+          v( alloc.allocate( size() ) - offset(xmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -199,7 +201,7 @@ class Mat1 {
 	    detach();
 	    xmin = m.xmin;
 	    xlen = m.xlen;
-	    v = alloc.fetch( size() ) - offset(xmin);
+	    v = alloc.allocate( size() ) - offset(xmin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -366,7 +368,7 @@ class Mat1 {
 	}
 	detach();
 	xlen = nxmax;
-	v = alloc.fetch( size() ) - offset(xmin);
+	v = alloc.allocate( size() ) - offset(xmin);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
@@ -382,7 +384,7 @@ class Mat1 {
 	}
 	detach();
 	xmin = bx.min(); xlen = bx.len();
-	v = alloc.fetch( size() ) - offset(xmin);
+	v = alloc.allocate( size() ) - offset(xmin);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
@@ -415,8 +417,11 @@ class Mat1 {
  */
 //===========================================================================//
 
-template< class T, class Allocator = Simple_Allocator<T> >
-class Mat2 {
+template< typename T,
+	  typename Allocator = typename std::allocator<T> >          
+          //class Allocator = Simple_Allocator<T> >
+class Mat2
+{
   private:
     int xmin, xlen, ymin, ylen;
     bool may_free_space;
@@ -453,7 +458,7 @@ class Mat2 {
     {
 	if (may_free_space) {
 	    rtt_dsxx::Destroy( begin(), end() );
-	    alloc.release( v + offset(xmin,ymin), size() );
+	    alloc.deallocate( v + offset(xmin,ymin), size() );
 	}
     }
 
@@ -462,17 +467,17 @@ class Mat2 {
     T *v;
 
   public:
-    typedef T value_type;
-    typedef T& reference;
+    typedef       T  value_type;
+    typedef       T& reference;
     typedef const T& const_reference;
-    typedef T* pointer;
+    typedef       T* pointer;
     typedef const T* const_pointer;
     typedef typename Allocator::difference_type difference_type;
-    typedef typename Allocator::size_type size_type;
-    typedef typename Allocator::iterator iterator;
-    typedef typename Allocator::const_iterator const_iterator;
-    typedef typename Allocator::reverse_iterator reverse_iterator;
-    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
+    typedef typename Allocator::size_type       size_type;
+    typedef typename Allocator::pointer         iterator;
+    typedef typename Allocator::const_pointer   const_iterator;
+    typedef typename std::reverse_iterator<iterator>       reverse_iterator;
+    typedef typename std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     // Accessors
 
@@ -528,7 +533,7 @@ class Mat2 {
           ylen(ymax_),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -550,7 +555,7 @@ class Mat2 {
           ylen( by.len() ),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -571,7 +576,7 @@ class Mat2 {
           ylen(m.ylen),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -602,7 +607,7 @@ class Mat2 {
 	    xlen = m.xlen;
 	    ymin = m.ymin;
 	    ylen = m.ylen;
-	    v = alloc.fetch( size() ) - offset(xmin,ymin);
+	    v = alloc.allocate( size() ) - offset(xmin,ymin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -782,7 +787,7 @@ class Mat2 {
 	detach();
 	xlen = nxmax;
 	ylen = nymax;
-	v = alloc.fetch( size() ) - offset(0,0);
+	v = alloc.allocate( size() ) - offset(0,0);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
@@ -800,7 +805,7 @@ class Mat2 {
 	detach();
 	xmin = bx.min(); xlen = bx.len();
 	ymin = by.min(); ylen = by.len();
-	v = alloc.fetch( size() ) - offset(xmin,ymin);
+	v = alloc.allocate( size() ) - offset(xmin,ymin);
 	std::uninitialized_fill( begin(), end(), t );
 	may_free_space = true;
     }
@@ -833,8 +838,10 @@ class Mat2 {
  */
 //===========================================================================//
 
-template< class T, class Allocator = Simple_Allocator<T> >
-class Mat3 {
+template< typename T,
+	  typename Allocator = typename std::allocator<T> >
+class Mat3
+{
   private:
     int xmin, xlen, ymin, ylen, zmin, zlen;
     bool may_free_space;
@@ -874,7 +881,7 @@ class Mat3 {
     {
 	if (may_free_space) {
 	    rtt_dsxx::Destroy( begin(), end() );
-	    alloc.release( v + offset(xmin,ymin,zmin), size() );
+	    alloc.deallocate( v + offset(xmin,ymin,zmin), size() );
 	}
     }
 
@@ -883,18 +890,18 @@ class Mat3 {
     T *v;
 
   public:
-    typedef T value_type;
-    typedef T& reference;
+    typedef       T  value_type;
+    typedef       T& reference;
     typedef const T& const_reference;
-    typedef T* pointer;
+    typedef       T* pointer;
     typedef const T* const_pointer;
     typedef typename Allocator::difference_type difference_type;
-    typedef typename Allocator::size_type size_type;
-    typedef typename Allocator::iterator iterator;
-    typedef typename Allocator::const_iterator const_iterator;
-    typedef typename Allocator::reverse_iterator reverse_iterator;
-    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
-
+    typedef typename Allocator::size_type       size_type;
+    typedef typename Allocator::pointer         iterator;
+    typedef typename Allocator::const_pointer   const_iterator;
+    typedef typename std::reverse_iterator<iterator>       reverse_iterator;
+    typedef typename std::reverse_iterator<const_iterator> const_reverse_iterator;
+    
     // Accessors
 
 //     T&       operator()( int i, int j, int k )       { return v[ index(i,j,k) ]; }
@@ -946,7 +953,7 @@ class Mat3 {
 	  zmin(0), zlen(zmax_),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -966,7 +973,7 @@ class Mat3 {
 // 	  ymin( by.min() ), ylen( by.len() ),
 // 	  zmin( bz.min() ), zlen( bz.len() ),
 // 	  may_free_space(true),
-// 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
+// 	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin) )
 //     {
 // 	std::uninitialized_fill( begin(), end(), t );
 //     }
@@ -985,7 +992,7 @@ class Mat3 {
 	  zmin(m.zmin), zlen(m.zlen),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -1019,7 +1026,7 @@ class Mat3 {
 	    ylen = m.ylen;
 	    zmin = m.zmin;
 	    zlen = m.zlen;
-	    v = alloc.fetch( size() ) - offset(xmin,ymin,zmin);
+	    v = alloc.allocate( size() ) - offset(xmin,ymin,zmin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -1212,7 +1219,7 @@ class Mat3 {
 // 	xlen = nxmax;
 // 	ylen = nymax;
 // 	zlen = nzmax;
-// 	v = alloc.fetch( size() ) - offset(0,0,0);
+// 	v = alloc.allocate( size() ) - offset(0,0,0);
 // 	std::uninitialized_fill( begin(), end(), t );
 // 	may_free_space = true;
 //     }
@@ -1233,7 +1240,7 @@ class Mat3 {
 // 	xmin = bx.min(); xlen = bx.len();
 // 	ymin = by.min(); ylen = by.len();
 // 	zmin = bz.min(); zlen = bz.len();
-// 	v = alloc.fetch( size() ) - offset(xmin,ymin,zmin);
+// 	v = alloc.allocate( size() ) - offset(xmin,ymin,zmin);
 // 	std::uninitialized_fill( begin(), end(), t );
 // 	may_free_space = true;
 //     }
@@ -1270,8 +1277,10 @@ class Mat3 {
  */
 //===========================================================================//
 
-template< class T, class Allocator = Simple_Allocator<T> >
-class Mat4 {
+template< typename T,
+	  typename Allocator = typename std::allocator<T> >
+class Mat4
+{
   private:
     int xmin, xlen, ymin, ylen, zmin, zlen, wmin, wlen;
     bool may_free_space;
@@ -1317,7 +1326,7 @@ class Mat4 {
     {
 	if (may_free_space) {
 	    rtt_dsxx::Destroy( begin(), end() );
-	    alloc.release( v + offset(xmin,ymin,zmin,wmin), size() );
+	    alloc.deallocate( v + offset(xmin,ymin,zmin,wmin), size() );
 	}
     }
 
@@ -1326,17 +1335,17 @@ class Mat4 {
     T *v;
 
   public:
-    typedef T value_type;
-    typedef T& reference;
+    typedef       T  value_type;
+    typedef       T& reference;
     typedef const T& const_reference;
-    typedef T* pointer;
+    typedef       T* pointer;
     typedef const T* const_pointer;
     typedef typename Allocator::difference_type difference_type;
-    typedef typename Allocator::size_type size_type;
-    typedef typename Allocator::iterator iterator;
-    typedef typename Allocator::const_iterator const_iterator;
-    typedef typename Allocator::reverse_iterator reverse_iterator;
-    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
+    typedef typename Allocator::size_type       size_type;
+    typedef typename Allocator::pointer         iterator;
+    typedef typename Allocator::const_pointer   const_iterator;
+    typedef typename std::reverse_iterator<iterator>       reverse_iterator;
+    typedef typename std::reverse_iterator<const_iterator> const_reverse_iterator; 
 
     // Accessors
 
@@ -1406,7 +1415,7 @@ class Mat4 {
 	  wmin(0), wlen(wmax_),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -1428,7 +1437,7 @@ class Mat4 {
 // 	  zmin( bz.min() ), zlen( bz.len() ),
 // 	  wmin( bw.min() ), wlen( bw.len() ),
 // 	  may_free_space(true),
-// 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
+// 	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin) )
 //     {
 // 	std::uninitialized_fill( begin(), end(), t );
 //     }
@@ -1451,7 +1460,7 @@ class Mat4 {
 	  wmin(m.wmin), wlen(m.wlen),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -1586,7 +1595,7 @@ class Mat4 {
 	    zlen = m.zlen;
 	    wmin = m.wmin;
 	    wlen = m.wlen;
-	    v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin);
+	    v = alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -1696,7 +1705,7 @@ class Mat4 {
 // 	ylen = nymax;
 // 	zlen = nzmax;
 // 	wlen = nwmax;
-// 	v = alloc.fetch( size() ) - offset(0,0,0,0);
+// 	v = alloc.allocate( size() ) - offset(0,0,0,0);
 // 	std::uninitialized_fill( begin(), end(), t );
 // 	may_free_space = true;
 //     }
@@ -1719,7 +1728,7 @@ class Mat4 {
 // 	ymin = by.min(); ylen = by.len();
 // 	zmin = bz.min(); zlen = bz.len();
 // 	wmin = bw.min(); wlen = bw.len();
-// 	v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin);
+// 	v = alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin);
 // 	std::uninitialized_fill( begin(), end(), t );
 // 	may_free_space = true;
 //     }
@@ -1756,8 +1765,10 @@ class Mat4 {
  */
 //===========================================================================//
 
-template< class T, class Allocator = Simple_Allocator<T> >
-class Mat5 {
+template< typename T,
+	  typename Allocator = typename std::allocator<T> >
+class Mat5
+{
   private:
     int xmin, xlen, ymin, ylen, zmin, zlen, wmin, wlen, umin, ulen;
     bool may_free_space;
@@ -1806,7 +1817,7 @@ class Mat5 {
     {
 	if (may_free_space) {
 	    rtt_dsxx::Destroy( begin(), end() );
-	    alloc.release( v + offset(xmin,ymin,zmin,wmin,umin), size() );
+	    alloc.deallocate( v + offset(xmin,ymin,zmin,wmin,umin), size() );
 	}
     }
 
@@ -1815,17 +1826,17 @@ class Mat5 {
     T *v;
 
   public:
-    typedef T value_type;
-    typedef T& reference;
+    typedef       T  value_type;
+    typedef       T& reference;
     typedef const T& const_reference;
-    typedef T* pointer;
+    typedef       T* pointer;
     typedef const T* const_pointer;
     typedef typename Allocator::difference_type difference_type;
-    typedef typename Allocator::size_type size_type;
-    typedef typename Allocator::iterator iterator;
-    typedef typename Allocator::const_iterator const_iterator;
-    typedef typename Allocator::reverse_iterator reverse_iterator;
-    typedef typename Allocator::const_reverse_iterator const_reverse_iterator;
+    typedef typename Allocator::size_type       size_type;
+    typedef typename Allocator::pointer         iterator;
+    typedef typename Allocator::const_pointer   const_iterator;
+    typedef typename std::reverse_iterator<iterator>       reverse_iterator;
+    typedef typename std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     // Accessors
 
@@ -1900,7 +1911,7 @@ class Mat5 {
 	  umin(0), ulen(umax_),
 	  may_free_space(true),
 	  alloc(),
-          v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+          v( alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
     {
 	std::uninitialized_fill( begin(), end(), t );
     }
@@ -1925,7 +1936,7 @@ class Mat5 {
 // 	  wmin( bw.min() ), wlen( bw.len() ),
 // 	  umin( bu.min() ), ulen( bu.len() ),
 // 	  may_free_space(true),
-// 	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+// 	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
 //     {
 // 	std::uninitialized_fill( begin(), end(), t );
 //     }
@@ -1950,7 +1961,7 @@ class Mat5 {
 	  umin(m.umin), ulen(m.ulen),
 	  may_free_space(true),
           alloc(),
-	  v( alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
+	  v( alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin,umin) )
     {
 	std::uninitialized_copy( m.begin(), m.end(), begin() );
     }
@@ -2096,7 +2107,7 @@ class Mat5 {
 	    wlen = m.wlen;
 	    umin = m.umin;
 	    ulen = m.ulen;
-	    v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin);
+	    v = alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin,umin);
 	    std::uninitialized_copy( m.begin(), m.end(), begin() );
 	    may_free_space = true;
 	}
@@ -2211,7 +2222,7 @@ class Mat5 {
 // 	zlen = nzmax;
 // 	wlen = nwmax;
 // 	ulen = numax;
-// 	v = alloc.fetch( size() ) - offset(0,0,0,0,0);
+// 	v = alloc.allocate( size() ) - offset(0,0,0,0,0);
 // 	std::uninitialized_fill( begin(), end(), t );
 // 	may_free_space = true;
 //     }
@@ -2236,7 +2247,7 @@ class Mat5 {
 // 	zmin = bz.min(); zlen = bz.len();
 // 	wmin = bw.min(); wlen = bw.len();
 // 	umin = bu.min(); ulen = bu.len();
-// 	v = alloc.fetch( size() ) - offset(xmin,ymin,zmin,wmin,umin);
+// 	v = alloc.allocate( size() ) - offset(xmin,ymin,zmin,wmin,umin);
 // 	std::uninitialized_fill( begin(), end(), t );
 // 	may_free_space = true;
 //     }

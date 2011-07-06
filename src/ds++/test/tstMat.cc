@@ -10,6 +10,7 @@
 
 #include "../Assert.hh"
 #include "../Release.hh"
+#include "../Allocators.hh"
 #include "ds_test.hh"
 
 #include <iostream>
@@ -84,6 +85,49 @@ void t1()
             FAILMSG("Mat1.get_xlen() did not return 5.");
     }
 
+    // Construction using Guarded Allocator
+    //  This does not work because the Mat class has been designed to only use
+    //  the simple allocator.  assert_conformality takes a Mat1<T> instead of
+    //  Mat1<T,Allocator>. 
+    // {
+    //     int newsize( 5 );
+        
+    //     // Test Mat1<int>;
+
+    //     Mat1< int, Guarded_Allocator<int> > x;
+    //     PASSMSG("Successfully contructed a Mat1< int,Guarded_Allocator<int> >.");
+        
+    //     x.redim( newsize-1 );
+    //     x.redim( newsize );
+    //     PASSMSG("Successfully resized a Mat1< int,Guarded_Allocator<int> >.");
+
+    //     ikv1( x );
+
+    //     // test conformality function
+    //     x.assert_conformality( x );
+    //     if( x.conformal( newsize ) )
+    //         PASSMSG("Mat1< int,Guarded_Allocator<int> > correctly reported size.");
+    //     else
+    //         FAILMSG("Mat1< int,Guarded_Allocator<int> > incorrectly reported size.");
+
+    //     int value(-1);
+    //     x.elements( value );
+    //     if( value == newsize )
+    //         PASSMSG("Mat1< int,Guarded_Allocator<int> > correctly reported size.");
+    //     else
+    //         FAILMSG("Mat1< int,Guarded_Allocator<int> > incorrectly reported size.");
+
+    //     if( x.get_xmin() == 0 )
+    //         PASSMSG("Mat1.get_xmin() returned 0.");
+    //     else
+    //         FAILMSG("Mat1.get_xmin() did not return 0.");
+
+    //     if( x.get_xlen() == newsize )
+    //         PASSMSG("Mat1.get_xlen() returned 5.");
+    //     else
+    //         FAILMSG("Mat1.get_xlen() did not return 5.");
+    // }
+    
     // Construction using Bounds object.
     {
         int const bmin(0);
