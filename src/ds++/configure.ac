@@ -30,7 +30,6 @@ AC_RUNTESTS(tstAllocators \
             tstSafe_Ptr \
             tstDBC_Array \
             tstDBC_Ptr \
-            tstDynArray \
             tstEndian \
             tstFile_Streams \
             tstIndex_Converter \
