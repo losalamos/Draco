@@ -77,8 +77,7 @@ Class_Parser<Class,
             SP<ReturnClass> Result;
             if (tokens.error_count() == old_error_count)
             {
-                // No fresh errors in the class keyword block.  Create the
-                // object.
+                // No fresh errors in the class keyword block.  Create the object.
                 Result = create_object_();
             }
             // else there were errors in the keyword block. Don't try to
@@ -87,8 +86,10 @@ Class_Parser<Class,
             post_sentinels_();
             has_reentered = false;
             
-            Ensure(Result!=SP<ReturnClass>() ||
-                   tokens.error_count()>old_error_count);
+            // In some cases we may wish to return an empty pointer.
+            //Ensure(Result!=SP<ReturnClass>() ||
+            //       tokens.error_count()>old_error_count);
+
             return Result;
         }
         else
