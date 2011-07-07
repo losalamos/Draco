@@ -36,8 +36,8 @@ if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
     source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.3.4 gsl hypre
-    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.4.0
+    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.5.2 gsl hypre
+    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.6.4
     module load totalview cmake
     module list
   fi
