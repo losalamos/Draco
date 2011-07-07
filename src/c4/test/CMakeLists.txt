@@ -68,3 +68,15 @@ add_parallel_tests(
    DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
    )
    
+# Run tstParallelUnitTest with argument '--version' to test this special
+# execution path.
+if( NOT "${MPIEXEC}x" STREQUAL  "x"  )
+   set( numprocs 1 )
+endif()
+add_test(
+   NAME    c4_tstParallelUnitTest_ver
+   COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numprocs}
+                      ${MPIRUN_POSTFLAGS}
+                      $<TARGET_FILE:Ut_c4_tstParallelUnitTest_exe> 
+                      --version
+               )
