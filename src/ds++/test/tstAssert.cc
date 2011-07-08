@@ -493,6 +493,25 @@ static void tinsist_ptr()
     return;
 }
 
+void tverbose_error()
+{
+    std::string const message( rtt_dsxx::verbose_error(
+                             std::string("This is an error.") ) );
+    std::cout << "verbose_error() test: ";
+    if( message.find( std::string("Host")) != std::string::npos &&
+        message.find( std::string("PID") ) != std::string::npos )
+    {
+        cout << "passed" << std::endl;
+        rtt_ds_test::passed = rtt_ds_test::passed && true;
+    }
+    else
+    {
+        cout << "failed" << std::endl;
+        rtt_ds_test::passed = rtt_ds_test::passed && false;
+    }
+    
+    return;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -529,6 +548,9 @@ int main( int argc, const char *argv[] )
     tinsist();
     tinsist_ptr();
 
+    // fancy ouput
+    tverbose_error();
+    
     // status of test
     cout <<     "\n*********************************************\n";
     if (rtt_ds_test::passed) 

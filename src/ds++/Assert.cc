@@ -11,6 +11,8 @@
 
 #include "Assert.hh"
 #include <sstream>
+#include <climits> // HOST_NAME_MAX, hostname
+#include <cstring> // strncpy()
 
 namespace rtt_dsxx
 {
@@ -119,6 +121,25 @@ void insist_ptr( char const * const cond,
     insist(cond, msg, file, line);
 }
 
+//---------------------------------------------------------------------------//
+/*! \brief Add hostname and pid to error messages.
+ *
+ * Several of the errors that might be reported by DACS_Device could be
+ * specific to one or a few nodes (filesystems not mounted, etc.).
+ * verbose_error adds the hostname and pid to error messages.
+ */
+std::string verbose_error(std::string const & message)
+{
+    char hostname[HOST_NAME_MAX];
+    int err = gethostname(hostname, HOST_NAME_MAX);
+    if (err) strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
+
+    std::ostringstream errstr;
+    errstr << "Host " << hostname << ", PID " << getpid() << ": "
+           << message;
+
+    return errstr.str();
+} // verbose_error
 
 } // end of rtt_dsxx
 
