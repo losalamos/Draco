@@ -29,6 +29,16 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
 {
     string const extraArg( "hello" );
     unitTest.addCommandLineArgument( extraArg );
+
+    {
+        // This call should report failure since we have listOfArgs.size() = 1
+        // and numPasses=0.
+        if( unitTest.allTestsPass() )
+            unitTest.failure("Didn't expect all tests to pass.");
+        else
+            unitTest.passes("Some tests did not pass (as expected).");
+    }
+    
     cout << ">>> Executing unitTest.runTests()..." << endl;
     unitTest.runTests();
 
@@ -62,10 +72,14 @@ void tstTwo( ApplicationUnitTest &unitTest )
     std::string const extraArg;
     std::cout << ">>> Executing unitTest.runTest( extraArg )..." << std::endl;
     if( unitTest.runTest( extraArg ) )
-        unitTest.failure("Found problems when running phw.");
-    else
         unitTest.passes("Successfully ran phw.");
-
+    else
+        unitTest.failure("Found problems when running phw.");  // expected path.
+    if( unitTest.allTestsPass() )
+        unitTest.failure("Didn't expect all tests to pass.");
+    else
+        unitTest.passes("Some tests failed as expected.");
+    
     // Kill fail flag (we expected this failure).
     unitTest.reset();
     // We need at least one pass.
