@@ -80,3 +80,10 @@ add_test(
                       $<TARGET_FILE:Ut_c4_tstParallelUnitTest_exe> 
                       --version
                )
+add_test(
+   NAME    c4_tstParallelUnitTest_dummyArg
+   COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numprocs}
+                      ${MPIRUN_POSTFLAGS}
+                      $<TARGET_FILE:Ut_c4_tstParallelUnitTest_exe> 
+                      --dummy
+                      )
