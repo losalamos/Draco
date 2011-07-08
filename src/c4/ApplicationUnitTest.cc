@@ -39,13 +39,15 @@ namespace rtt_c4
  * scalar unit test and provides the unit test name.
  */
 ApplicationUnitTest::ApplicationUnitTest(
-    int & argc, char **&argv, string_fp_void release_,
-    std::string const applicationName_,
+    int    & argc,
+    char **& argv,
+    string_fp_void                   release_,
+    std::string              const   applicationName_,
     std::list< std::string > const & listOfArgs_,
     std::ostream & out_ )
     : UnitTest( argc, argv, release_, out_ ),
-      applicationName( setTestName(applicationName_) ),
-      applicationPath( setTestPath(applicationName_) ),
+      applicationName( getFilenameComponent(applicationName_, rtt_dsxx::FC_NAME ) ),
+      applicationPath( getFilenameComponent(applicationName_, rtt_dsxx::FC_PATH ) ),
       numProcs( getNumProcs( argc, argv ) ),
       mpiCommand( constructMpiCommand( numProcs ) ),
       logExtension( buildLogExtension( numProcs ) ),
@@ -250,11 +252,13 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
     if( errorLevel == 0 )
     {
         msg << "Test: passed\n\tSuccessful ";
+        this->numPasses++;
         result = true;
     }
     else
     {
         msg << "Test: failed\n\tUnsuccessful ";
+        this->numFails++;
         result = false;
     }
     msg << "execution of " << testPath + applicationName << " :"

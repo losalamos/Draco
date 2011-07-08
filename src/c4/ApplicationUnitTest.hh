@@ -77,16 +77,10 @@ int main(int argc, char *argv[])
  * c4/test/tstApplicationUnitTest.cc, including the early exit caused by 
  * \c --version on the command line.
  *
- * \warning The output from this class is closely tied to the DBS python
- * script \c tools/regression_filter.py that is used during \c gmake \c check.
- * Changing the format or keyword in the output streams from this class should
- * be coordinated with the regular expression matches found in \c
- * tools/regression_filter.py.
+ * \warning The output from this class is closely tied to the CTest
+ * Pass/Fail regular expressions listed in \c config/component_macros.cmake
+ * and in the local \c CMakeLists.txt. 
  *
- * \warning The differences between ScalarUnitTest, ApplicationUnitTest and
- * ApplicationUnitTest are correlated to the DBS m4 macros \c AC_RUNTESTS and
- * \c AC_TEST_APPLICATION.  Changes to these classes should be coordinated with
- * changes to these DBS m4 macro command
  */
 /*! 
  * \example c4/test/tstApplicationUnitTest.cc 
@@ -128,8 +122,13 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
     // ACCESSORS
 
     //! Did all tests pass?
+    // Each successful return code increments numPasses.  Each error return
+    // code increments numFails.  So a successful series of tests
+    // (listOfArgs.size()>1) will have at least this many passes and no
+    // fails.  numPasses can be greater than listOfArgs.size() if the  user
+    // has incremented the pass count manually.
     bool allTestsPass(void) const
-    { return numPasses==listOfArgs.size() && numFails == 0; };
+    { return numPasses>=listOfArgs.size() && numFails == 0; };
     
     //! Provide a report of the number of unit test passes and fails.
     void status(void);
