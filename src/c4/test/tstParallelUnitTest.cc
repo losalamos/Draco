@@ -16,8 +16,7 @@
 #include <sstream>
 
 #include "../ParallelUnitTest.hh"
-//#include "ds++/ScalarUnitTest.hh"
-//#include "../global.hh"
+#include "../global.hh"
 #include "ds++/Release.hh"
 
 using namespace std;
@@ -65,7 +64,9 @@ void tstMemberFunctions( ParallelUnitTest &ut, stringstream & output )
 
     // Try the status member function
     {
-        string const expectedString("Done testing tstParallelUnitTest on node 0.");
+        ostringstream msg;
+        msg << "Done testing tstParallelUnitTest on node " << node() << ".";
+        string const expectedString(msg.str());
         ut.status();
         
         string const data( output.str() );
