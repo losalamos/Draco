@@ -38,10 +38,10 @@ UnitTest::UnitTest( int              & /* argc */,
                     std::ostream     & out_ )
     : numPasses( 0 ),
       numFails(  0 ),
-      testName( setTestName( std::string(argv[0])) ),
-      testPath( setTestPath( std::string(argv[0])) ),
-      release(   release_ ),
-      out( out_ )
+      testName( getFilenameComponent( std::string(argv[0]), rtt_dsxx::FC_NAME )),
+      testPath( getFilenameComponent( std::string(argv[0]), rtt_dsxx::FC_PATH )),
+      release(  release_ ),
+      out(      out_ )
 {
     Require( release   != NULL );
     Ensure(  numPasses == 0 );
@@ -63,59 +63,6 @@ std::string UnitTest::resultMessage() const
     msg << "*********************************************\n";
     
     return msg.str();
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Helper function to strip path information from the filename.
- * \param fqName A fully qualified filename (/path/to/the/unit/test)
- * \return shortName; the name of the unit test without path information.
- *
- * This function expects a fully qualfied name of a unit test (e.g.:
- * argv[0]).  It strips off the path and returns the name of the unit test. 
- */
-std::string UnitTest::setTestName( std::string const fqName )
-{
-    using std::string;
-    string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
-    if( idx == string::npos )
-    {
-        // Didn't find directory separator, as 2nd chance look for Windows
-        // directory separator. 
-        string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
-        if( idx == string::npos )
-            // If we still cannot find a path separator, return the whole
-            // string as the test name. 
-            return fqName;
-    }
-    string shortName = fqName.substr(idx+1);    
-    return shortName;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Helper function to save path information from the filename.
- * \param fqName A fully qualified filename (/path/to/the/unit/test)
- * \return pathName; the relative path to the unit test.
- *
- * This function expects a fully qualfied name of a unit test (e.g.:
- * argv[0]).  It strips off the path and returns the name of the unit test. 
- */
-std::string UnitTest::setTestPath( std::string const fqName )
-{
-    using std::string;
-    string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
-    if( idx == string::npos ) 
-    {
-        // Didn't find directory separator, as 2nd chance look for Windows
-        // directory separator. 
-        string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
-        if( idx == string::npos )
-            // If we still cannot find a path separator, return "./"
-            return string( string(".") + rtt_dsxx::dirSep );
-    }
-    string pathName = fqName.substr(0,idx+1); 
-    return pathName;
 }
 
 //---------------------------------------------------------------------------//

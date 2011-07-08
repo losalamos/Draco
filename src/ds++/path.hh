@@ -10,6 +10,10 @@
  */
 //---------------------------------------------------------------------------//
 
+/*!
+ * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
+ */
+
 #include <string>
 
 namespace rtt_dsxx
@@ -26,6 +30,29 @@ char const dirSep = UnixDirSep;
 std::string const exeExtension( "" );
 #endif
 
+//---------------------------------------------------------------------------//
+/*! \brief Report the current working directory
+ */
+std::string currentPath(void);
+
+enum FilenameComponent
+{
+    FC_PATH,       //!< Extract path portion of fully qualified filename
+    FC_ABSOLUTE,
+    FC_NAME,       //!< Extract filename portion (w/o path).
+    FC_EXT,
+    FC_NAME_WE,
+    FC_REALPATH,
+    FC_LASTVALUE
+};
+
+
+//---------------------------------------------------------------------------//
+/*! \brief Get a specific component of a full filename.
+ */
+std::string getFilenameComponent( std::string const & fqName,
+                                  FilenameComponent fc );
+    
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//

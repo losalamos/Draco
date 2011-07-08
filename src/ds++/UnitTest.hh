@@ -65,8 +65,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
-        // function setTestName).
+        // Test ctor for ScalarUnitTest (also tests UnitTest ctor)
         rtt_utils::ScalarUnitTest ut( argc, argv, release );
         tstOne(ut);
         ut.status();
@@ -176,8 +175,6 @@ class DLL_PUBLIC UnitTest
 
     // IMPLEMENTATION
     std::string resultMessage(void) const;
-    std::string setTestName( std::string const fqName );
-    std::string setTestPath( std::string const fqName );
 
     // DATA
     
