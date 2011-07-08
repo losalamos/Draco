@@ -20,16 +20,10 @@ parse_args()
 find_tools()
 set_cvs_command("draco")
 
-# Platform specific setup
-if( "${sitename}" MATCHES "Cielito" )
-    set( TOOLCHAIN_SETUP
-      "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake" )
-elseif( "${sitename}" MATCHES "RoadRunner" )
-   if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
-      set( TOOLCHAIN_SETUP
-         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake" )
-      endif()
-endif()
+# Platform customization:
+# 1. Ceilito - set TOOCHAIN_SETUP
+# 2. Roadrunner - set TOOCHAIN_SETUP and INIT_CACHE_PPE_PREFIX
+platform_customization()
 
 ####################################################################
 # The values in this section are optional you can either
