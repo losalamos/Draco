@@ -80,19 +80,6 @@ void tstMemberFunctions( ParallelUnitTest &ut, stringstream & output )
     return;
 }
 
-// void tstTwo( UnitTest &ut )
-// {
-//     global_barrier();
-    
-//     // Only issue a failure on PE 1
-//     if( node() == 1 )
-//         ut.failure("Forced failure on PE 1");
-//     else
-//         ut.passes("Pass on PE != 1");
-
-//     return;
-// }
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
