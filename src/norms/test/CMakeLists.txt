@@ -40,7 +40,7 @@ add_dependencies(      Lib_norms_test Lib_norms )
 
 add_parallel_tests(
    SOURCES "${test_sources}"
-   PE_LIST "1"
+   PE_LIST "1;2"
    DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
 
 
