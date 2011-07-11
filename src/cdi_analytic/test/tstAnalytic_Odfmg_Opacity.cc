@@ -280,7 +280,7 @@ void test_CDI()
     vector<double> bands(3, 0.0);
     bands[0] = 0.0;
     bands[1] = 0.75;
-    bands[1] = 1.0;
+    bands[2] = 1.0;
 
     vector<SP<Analytic_Opacity_Model> > models(3);
 
