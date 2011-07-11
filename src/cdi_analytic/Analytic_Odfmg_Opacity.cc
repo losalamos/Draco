@@ -85,7 +85,7 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     // unpack the number of group boundaries
     int ngrp_bounds = 0;
     unpacker >> ngrp_bounds;
-    int num_groups  = ngrp_bounds - 1;
+    // int num_groups  = ngrp_bounds - 1;
 
     // make the group boundaries and model vectors
     groupBoundaries.resize(ngrp_bounds);
