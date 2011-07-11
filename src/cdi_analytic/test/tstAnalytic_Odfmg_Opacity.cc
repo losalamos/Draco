@@ -76,10 +76,10 @@ void odfmg_test()
     groups[3] = 50.0;
 
     // band strucutre
-    vector<double> bands(2, 0.0);
+    vector<double> bands(3, 0.0);
     bands[0] = 0.0;
-//    bands[1] = 0.75;
-    bands[1] = 1.0;
+    bands[1] = 0.75;
+    bands[2] = 1.0;
 
     vector<SP<Analytic_Opacity_Model> > models(3);
 
@@ -114,8 +114,8 @@ void odfmg_test()
         if (opacity.getDensityGrid() != vector<double>())     ITFAILS;
         if (opacity.getNumGroups() != 3)                      ITFAILS;
         if (opacity.getNumGroupBoundaries() != 4)             ITFAILS;
-        if (opacity.getNumBands() != 1)                       ITFAILS;
-        if (opacity.getNumBandBoundaries() != 2)              ITFAILS;
+        if (opacity.getNumBands() != 2)                       ITFAILS;
+        if (opacity.getNumBandBoundaries() != 3)              ITFAILS;
         if (opacity.getEnergyPolicyDescriptor() != "odfmg")   ITFAILS;
         if (opacity.getDataDescriptor() != desc)              ITFAILS;
         if (opacity.getDataFilename() != string())            ITFAILS;
@@ -277,9 +277,9 @@ void test_CDI()
     groups[3] = 50.0;
 
     // band strucutre
-    vector<double> bands(2, 0.0);
+    vector<double> bands(3, 0.0);
     bands[0] = 0.0;
-//    bands[1] = 0.75;
+    bands[1] = 0.75;
     bands[1] = 1.0;
 
     vector<SP<Analytic_Opacity_Model> > models(3);
@@ -376,9 +376,9 @@ void packing_test()
     groups[3] = 50.0;
         
     // band strucutre
-    vector<double> bands(2, 0.0);
+    vector<double> bands(3, 0.0);
     bands[0] = 0.0;
-//    bands[1] = 0.75;
+    bands[1] = 0.75;
     bands[1] = 1.0;
 
     {
@@ -422,6 +422,8 @@ void packing_test()
         if (opacity.getDensityGrid() != vector<double>())     ITFAILS;
         if (opacity.getNumGroups() != 3)                      ITFAILS;
         if (opacity.getNumGroupBoundaries() != 4)             ITFAILS;
+        if (opacity.getNumBands() != 2)                       ITFAILS;
+        if (opacity.getNumBandBoundaries() != 3)              ITFAILS;
         if (opacity.getEnergyPolicyDescriptor() != "odfmg")   ITFAILS;
         if (opacity.getDataDescriptor() != desc)              ITFAILS;
         if (opacity.getDataFilename() != string())            ITFAILS;
