@@ -11,8 +11,9 @@
 
 #include "Assert.hh"
 #include <sstream>
-#include <climits> // HOST_NAME_MAX, hostname
-#include <cstring> // strncpy()
+#include <climits>  // HOST_NAME_MAX, hostname
+#include <cstring>  // strncpy()
+#include <unistd.h> // gethostname
 
 namespace rtt_dsxx
 {
