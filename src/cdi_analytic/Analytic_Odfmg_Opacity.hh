@@ -51,9 +51,6 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
     // Group structure.
     sf_double groupBoundaries;
 
-    // Analytic models for each group.
-    sf_Analytic_Model group_models;
-
     // Reaction model.
     rtt_cdi::Reaction reaction;
 
@@ -68,25 +65,23 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      */
     std::vector<double> bandBoundaries;
 
-  public:
+  protected:
+    // Constructor
     // Constructor.
     Analytic_Odfmg_Opacity(
         const sf_double         &groups,
         const sf_double         &bands,
-        const sf_Analytic_Model &models,
         rtt_cdi::Reaction        reaction_in,
         rtt_cdi::Model           model_in = rtt_cdi::ANALYTIC);
 
     // Constructor for packed Analytic_Odfmg_Opacities
     explicit Analytic_Odfmg_Opacity(const sf_char &);
 
-    // >>> ACCESSORS
-    const_Model get_Analytic_Model(int g) const
-    { return group_models[g-1]; }
+    // Get the packed size of the object
+    unsigned packed_size() const;
 
-    //! right now, all bands have same model (same opacity) 
-    const_Model get_Analytic_Model(int g, int /*b*/) const
-    { return group_models[g-1]; }
+  public:
+    // >>> ACCESSORS
 
     // >>> INTERFACE SPECIFIED BY rtt_cdi::OdfmgOpacity
 
@@ -103,7 +98,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      */
     std::vector< std::vector<double> > getOpacity( 
         double targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const = 0; 
 
     /*!
      * \brief Opacity accessor that returns a vector of multigroupband
@@ -149,7 +144,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
     inline std_string getEnergyPolicyDescriptor() const;
 
     // Get the data description of the opacity.
-    inline std_string getDataDescriptor() const;
+    inline std_string getDataDescriptor() const = 0;
 
     // Get the name of the associated data file.
     inline std_string getDataFilename() const;
@@ -203,7 +198,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
     }
 
     // Pack the Analytic_Odfmg_Opacity into a character string.
-    sf_char pack() const;
+    virtual sf_char pack() const = 0;
 
     /*!
      * \brief Returns the general opacity model type, defined in OpacityCommon.hh

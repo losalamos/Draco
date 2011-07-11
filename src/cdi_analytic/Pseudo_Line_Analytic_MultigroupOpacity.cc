@@ -16,34 +16,6 @@
 #include "ds++/cube.hh"
 #include "cdi/CDI.hh"
 
-namespace
-{
-
-double BB(double const T, double const x)
-{
-    double const e = expm1(x/T);
-    if (e>0.0)
-        return x*x*x/e;
-    else
-        return x*x*T;
-}
-
-double DBB(double const T, double const x)
-{
-    double const e = expm1(x/T);
-    if (e>0)
-    {
-        double const de = -exp(x/T)*x/(T*T);
-        return -x*x*x*de/(e*e);
-    }
-    else
-    {
-        return x*x;
-    }
-}
-
-} // end anonymous namespace
-
 
 namespace rtt_cdi_analytic
 {
@@ -62,7 +34,7 @@ class PLP_Functor
 
     typedef double return_type;
     
-    PLP_Functor(Pseudo_Line_Analytic_MultigroupOpacity const *ptr,
+    PLP_Functor(Pseudo_Line_Base const *ptr,
                 double const T)
         : ptr_(ptr), T_(T)
     {}
@@ -71,13 +43,13 @@ class PLP_Functor
 
   private:
     
-    Pseudo_Line_Analytic_MultigroupOpacity const *ptr_;
+    Pseudo_Line_Base const *ptr_;
     double T_;
 };
 
 double PLP_Functor::operator()(double x)
 {
-    return ptr_->monoOpacity(x, T_)*BB(T_, x);
+    return ptr_->monoOpacity(x, T_)*Pseudo_Line_Base::BB(T_, x);
 }
 
 //---------------------------------------------------------------------------//
@@ -101,7 +73,7 @@ class PLPW_Functor
 
 double PLPW_Functor::operator()(double x)
 {
-    return BB(T_, x);
+    return Pseudo_Line_Base::BB(T_, x);
 }
 
 //---------------------------------------------------------------------------//
@@ -111,7 +83,7 @@ class PLR_Functor
 
     typedef double return_type;
     
-    PLR_Functor(Pseudo_Line_Analytic_MultigroupOpacity const *ptr,
+    PLR_Functor(Pseudo_Line_Base const *ptr,
                 double const T)
         : ptr_(ptr), T_(T)
     {}
@@ -120,13 +92,13 @@ class PLR_Functor
 
   private:
     
-    Pseudo_Line_Analytic_MultigroupOpacity const *ptr_;
+    Pseudo_Line_Base const *ptr_;
     double T_;
 };
 
 double PLR_Functor::operator()(double x)
 {
-    return DBB(T_,x)/ptr_->monoOpacity(x, T_);
+    return Pseudo_Line_Base::DBB(T_,x)/ptr_->monoOpacity(x, T_);
 }
 
 //---------------------------------------------------------------------------//
@@ -150,7 +122,7 @@ class PLRW_Functor
 
 double PLRW_Functor::operator()(double x)
 {
-    return DBB(T_,x);
+    return Pseudo_Line_Base::DBB(T_,x);
 }
 
 //---------------------------------------------------------------------------//
@@ -173,46 +145,20 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
     :
     Analytic_MultigroupOpacity(group_bounds,
                                reaction),
-    continuum_(continuum),
-    seed_(seed),
-    number_of_lines_(number_of_lines),
-    line_peak_(line_peak),
-    line_width_(line_width),
-    number_of_edges_(number_of_edges),
-    edge_ratio_(edge_ratio),
+    Pseudo_Line_Base(continuum,
+                     number_of_lines,
+                     line_peak,
+                     line_width,
+                     number_of_edges,
+                     edge_ratio,
+                     Tref,
+                     Tpow,
+                     emin,
+                     emax,
+                     seed),
     averaging_(averaging),
-    Tref_(Tref),
-    Tpow_(Tpow),
-    center_(number_of_lines),
-    edge_(number_of_edges),
-    edge_factor_(number_of_edges),
     qpoints_(qpoints)
 {
-    Require(continuum>=0.0);
-    Require(line_peak>=0.0);
-    Require(line_width>=0.0);
-    Require(edge_ratio>=0.0);
-    Require(emin>=0.0);
-    Require(emax>emin);
-    
-    srand(seed);
-
-    for (unsigned i=0; i<number_of_lines; ++i)
-    {
-        center_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
-    }
-
-    // Sort line centers
-    sort(center_.begin(), center_.end());
-
-    for (unsigned i=0; i<number_of_edges; ++i)
-    {
-        edge_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
-        edge_factor_[i] = edge_ratio_*(*continuum)(vector<double>(1,edge_[i]));
-    }
-
-    // Sort edges
-    sort(edge_.begin(), edge_.end());
 }
 
 //---------------------------------------------------------------------------//
@@ -221,35 +167,12 @@ Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
 Analytic_MultigroupOpacity::sf_char
 Pseudo_Line_Analytic_MultigroupOpacity::pack() const 
 {
-    sf_char pdata = Analytic_MultigroupOpacity::pack();
-    
-    // caculate the size in bytes
-    unsigned const base_size = pdata.size();
-    unsigned const size =
-        3 * sizeof(double) + 2 * sizeof(int) + sizeof(Averaging);
+    sf_char const pdata = Analytic_MultigroupOpacity::pack();
+    sf_char const pdata2 = Pseudo_Line_Base::pack();
 
-    pdata.resize(size+base_size);
-
-    // make a packer
-    rtt_dsxx::Packer packer;
-
-    // set the packer buffer
-    packer.set_buffer(size, &pdata[base_size]);
-
-	
-    // pack the data
-    packer << continuum_;
-    packer << seed_;
-    packer << number_of_lines_;
-    packer << line_peak_;
-    packer << line_width_;
-    packer << number_of_edges_;
-    packer << edge_ratio_;
-    packer << averaging_;
-
-    // Check the size
-    Ensure (packer.get_ptr() == &pdata[base_size] + size);
-	
+    sf_char Result(pdata.size()+pdata2.size());
+    copy(pdata.begin(), pdata.end(), Result.begin());
+    copy(pdata2.begin(), pdata2.end(), Result.begin()+pdata.size());
     return pdata;
 }
 
@@ -261,6 +184,8 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
     sf_double const &group_bounds = this->getGroupBoundaries();
     unsigned const number_of_groups = group_bounds.size()-1U;
     sf_double Result(number_of_groups, 0.0);
+
+    double line_width = this->line_width();
 
     switch (averaging_)
     {
@@ -295,7 +220,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                     while (x1<g1)
                     {
                         double x0 = x1;
-                        x1 += 2*line_width_;
+                        x1 += 2*line_width;
                         if (x1>g1) x1 = g1;
                         
                         t +=
@@ -351,7 +276,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity( double T,
                     while (x1<g1)
                     {
                         double x0 = x1;
-                        x1 += 2*line_width_;
+                        x1 += 2*line_width;
                         if (x1>g1) x1 = g1;
                         
                         t +=
@@ -436,46 +361,10 @@ Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const
         descriptor = "Pseudo Line Multigroup Scattering";
     else
     {
-        Insist (0, "Invalid nGray multigroup model opacity!");
+        Insist (0, "Invalid Pseudo Line multigroup model opacity!");
     }
 
     return descriptor;
-}
-
-//---------------------------------------------------------------------------//
-double Pseudo_Line_Analytic_MultigroupOpacity::monoOpacity(double const x,
-                                                           double const T)
-    const
-{
-    unsigned const number_of_lines = number_of_lines_;
-    double const width = line_width_;
-    double const peak = line_peak_;
-
-    double Result = (*continuum_)(vector<double>(1,x));
-
-    for (unsigned i=0; i<number_of_lines; ++i)
-    {
-        double const nu0 = center_[i];
-        double const d = x - nu0;
-        Result += peak*exp(-d*d/(width*width*nu0*nu0));
-        //       if (d<10*width*nu0) break; // can't be significant beyond this point
-    }
-
-    unsigned const number_of_edges = number_of_edges_;
-    
-    for (unsigned i=0; i<number_of_edges; ++i)
-    {
-        double const nu0 = edge_[i];
-        if (x>=nu0)
-        {
-            Result += edge_factor_[i]*cube(nu0/x);
-        }
-    }
-    if (Tpow_ != 0.0)
-    {
-        Result = Result * pow(T/Tref_, Tpow_);
-    }
-    return Result;
 }
 
 } // end namespace rtt_cdi_analytic

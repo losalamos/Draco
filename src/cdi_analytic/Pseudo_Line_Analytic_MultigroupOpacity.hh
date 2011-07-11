@@ -14,6 +14,7 @@
 
 #include "parser/Expression.hh"
 #include "Analytic_MultigroupOpacity.hh"
+#include "Pseudo_Line_Base.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -36,38 +37,13 @@ using rtt_parser::Expression;
  *
  */
 class Pseudo_Line_Analytic_MultigroupOpacity
-    : public Analytic_MultigroupOpacity
+    : public Analytic_MultigroupOpacity, public Pseudo_Line_Base
 {
-  public:
-
-    enum Averaging
-    {
-        NONE,      //!< evaluate opacity at band center
-        ROSSELAND, //!< form a Rosseland (transparency) mean
-        PLANCK,     //!< form a Planck (extinction) mean
-
-        END_AVERAGING //!< sentinel value
-    };
-    
   private:
-    // Coefficients
-    SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
-    unsigned seed_;
-    unsigned number_of_lines_;
-    double line_peak_; // peak line opacity [cm^2/g]
-    double line_width_;  // line width as fraction of line frequency.
-    unsigned number_of_edges_;
-    double edge_ratio_;
+
     Averaging averaging_;
-
-    double Tref_;  // reference temperature for temperature dependence
-    double Tpow_;  // temperature dependence exponent
-
-    sf_double center_; // line centers for this realization
-    sf_double edge_;   // edges for this realization
-    sf_double edge_factor_; // opacity at threshold
-
-    unsigned qpoints_; // value of 0 indicates to use adaptive Romberg integration
+    unsigned qpoints_;
+    // value of 0 indicates to use adaptive Romberg integration
 
     friend class PLR_Functor; // used in calculation of Rosseland averages
     friend class PLP_Functor; // used in calculation of Planck averages
@@ -107,9 +83,6 @@ class Pseudo_Line_Analytic_MultigroupOpacity
 
     //! Pack up the class for persistence.
     sf_char pack() const;
-
-    //! Compute a monochromatic opacity
-    double monoOpacity(double nu, double T) const;
 };
 
 } // end namespace rtt_cdi_analytic

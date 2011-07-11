@@ -11,7 +11,7 @@
 
 #include "cdi_analytic_test.hh"
 #include "ds++/Release.hh"
-#include "../Analytic_Odfmg_Opacity.hh"
+#include "../nGray_Analytic_Odfmg_Opacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
 #include "ds++/Assert.hh"
@@ -27,11 +27,8 @@
 #include <sstream>
 
 using namespace std;
+using namespace rtt_cdi_analytic;
 
-using rtt_cdi_analytic::Analytic_Odfmg_Opacity;
-using rtt_cdi_analytic::Analytic_Opacity_Model;
-using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
-using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::OdfmgOpacity;
 using rtt_dsxx::SP;
@@ -79,10 +76,10 @@ void odfmg_test()
     groups[3] = 50.0;
 
     // band strucutre
-    vector<double> bands(3, 0.0);
+    vector<double> bands(2, 0.0);
     bands[0] = 0.0;
-    bands[1] = 0.75;
-    bands[2] = 1.0;
+//    bands[1] = 0.75;
+    bands[1] = 1.0;
 
     vector<SP<Analytic_Opacity_Model> > models(3);
 
@@ -97,7 +94,10 @@ void odfmg_test()
     models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
 
     // make an analytic multigroup opacity object for absorption
-    Analytic_Odfmg_Opacity opacity(groups, bands, models, rtt_cdi::ABSORPTION);
+    nGray_Analytic_Odfmg_Opacity opacity(groups,
+                                         bands,
+                                         models,
+                                         rtt_cdi::ABSORPTION);
 
     // check the interface to multigroup opacity
     {
@@ -114,8 +114,8 @@ void odfmg_test()
         if (opacity.getDensityGrid() != vector<double>())     ITFAILS;
         if (opacity.getNumGroups() != 3)                      ITFAILS;
         if (opacity.getNumGroupBoundaries() != 4)             ITFAILS;
-        if (opacity.getNumBands() != 2)                       ITFAILS;
-        if (opacity.getNumBandBoundaries() != 3)              ITFAILS;
+        if (opacity.getNumBands() != 1)                       ITFAILS;
+        if (opacity.getNumBandBoundaries() != 2)              ITFAILS;
         if (opacity.getEnergyPolicyDescriptor() != "odfmg")   ITFAILS;
         if (opacity.getDataDescriptor() != desc)              ITFAILS;
         if (opacity.getDataFilename() != string())            ITFAILS;
@@ -127,7 +127,7 @@ void odfmg_test()
 
     {
         // make an analytic multigroup opacity object for scattering
-        Analytic_Odfmg_Opacity opacity(groups,
+        nGray_Analytic_Odfmg_Opacity opacity(groups,
                                        bands,
                                        models,
                                        rtt_cdi::SCATTERING);
@@ -137,7 +137,10 @@ void odfmg_test()
     }
     {
         // make an analytic multigroup opacity object for scattering
-        Analytic_Odfmg_Opacity opacity(groups, bands, models, rtt_cdi::TOTAL);
+        nGray_Analytic_Odfmg_Opacity opacity(groups,
+                                             bands,
+                                             models,
+                                             rtt_cdi::TOTAL);
         string desc = "Analytic Odfmg Total";
 
         if (opacity.getDataDescriptor() != desc)              ITFAILS;
@@ -274,10 +277,10 @@ void test_CDI()
     groups[3] = 50.0;
 
     // band strucutre
-    vector<double> bands(3, 0.0);
+    vector<double> bands(2, 0.0);
     bands[0] = 0.0;
-    bands[1] = 0.75;
-    bands[2] = 1.0;
+//    bands[1] = 0.75;
+    bands[1] = 1.0;
 
     vector<SP<Analytic_Opacity_Model> > models(3);
 
@@ -293,7 +296,10 @@ void test_CDI()
 
     // make an analytic multigroup opacity object for absorption
     SP<const OdfmgOpacity> odfmg( 
-        new Analytic_Odfmg_Opacity(groups, bands, models, rtt_cdi::ABSORPTION));
+        new nGray_Analytic_Odfmg_Opacity(groups,
+                                         bands,
+                                         models,
+                                         rtt_cdi::ABSORPTION));
 
     // make a CDI object
     CDI cdi;
@@ -370,10 +376,10 @@ void packing_test()
     groups[3] = 50.0;
         
     // band strucutre
-    vector<double> bands(3, 0.0);
+    vector<double> bands(2, 0.0);
     bands[0] = 0.0;
-    bands[1] = 0.75;
-    bands[2] = 1.0;
+//    bands[1] = 0.75;
+    bands[1] = 1.0;
 
     {
         vector<SP<Analytic_Opacity_Model> > models(3);
@@ -391,7 +397,7 @@ void packing_test()
 
         // make an analytic multigroup opacity object for absorption
         SP<const OdfmgOpacity> odfmg
-            (new Analytic_Odfmg_Opacity(groups, bands, models, 
+            (new nGray_Analytic_Odfmg_Opacity(groups, bands, models, 
                                         rtt_cdi::ABSORPTION));
 
         // pack it
@@ -399,7 +405,7 @@ void packing_test()
     }
 
     // now unpack it
-    Analytic_Odfmg_Opacity opacity(packed);
+    nGray_Analytic_Odfmg_Opacity opacity(packed);
 
     // now check it
 
@@ -490,7 +496,7 @@ void packing_test()
 
         // make an analytic multigroup opacity object for absorption
         SP<const OdfmgOpacity> odfmg( 
-            new Analytic_Odfmg_Opacity(groups, bands, models,
+            new nGray_Analytic_Odfmg_Opacity(groups, bands, models,
                                        rtt_cdi::ABSORPTION));
 
         packed = odfmg->pack();
@@ -501,7 +507,7 @@ void packing_test()
     bool caught = false;
     try
     {
-        Analytic_Odfmg_Opacity nmg(packed);
+        nGray_Analytic_Odfmg_Opacity nmg(packed);
     }
     catch (const rtt_dsxx::assertion &ass)
     {

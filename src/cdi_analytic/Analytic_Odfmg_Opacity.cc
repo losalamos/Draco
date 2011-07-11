@@ -44,11 +44,9 @@ namespace rtt_cdi_analytic
 Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     const sf_double         &groups,
     const sf_double         &bands,
-    const sf_Analytic_Model &models,
     rtt_cdi::Reaction        reaction_in,
     rtt_cdi::Model           model_in)
     : groupBoundaries(groups),
-      group_models(models),
       reaction(reaction_in),
       model(model_in),
       bandBoundaries(bands)
@@ -56,7 +54,6 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     Require (reaction == rtt_cdi::TOTAL ||
              reaction == rtt_cdi::ABSORPTION ||
              reaction == rtt_cdi::SCATTERING);
-    Require (groupBoundaries.size() - 1 == group_models.size());
 }
 
 //---------------------------------------------------------------------------//
@@ -71,7 +68,6 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
 Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     const sf_char &packed)
     :  groupBoundaries(0),
-       group_models(0),
        reaction(),
        model(),
        bandBoundaries(std::vector<double>())
@@ -93,7 +89,6 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
 
     // make the group boundaries and model vectors
     groupBoundaries.resize(ngrp_bounds);
-    group_models.resize(num_groups);
 
     // unpack the group boundaries
     for (int i = 0; i < ngrp_bounds; i++)
@@ -110,26 +105,9 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     for (int i = 0; i < nband_bounds; i++)
         unpacker >> bandBoundaries[i];
 
-    // now unpack the models
-    std::vector<sf_char> models(num_groups);
-    int                  model_size = 0;
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        // unpack the size of the analytic model
-        unpacker >> model_size;
-        Check (static_cast<size_t>(model_size) >= sizeof(int));
-
-        models[i].resize(model_size);
-
-        // unpack the model
-        for (size_t j = 0; j < models[i].size(); j++)
-            unpacker >> models[i][j];
-    }
-
     // unpack the reaction and model type
     int reaction_int, model_int;
     unpacker >> reaction_int >> model_int;
-    Check (unpacker.get_ptr() == &packed[0] + packed.size());
 
     // assign the reaction and model type
     reaction = static_cast<rtt_cdi::Reaction>(reaction_int);
@@ -137,89 +115,6 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     Check (reaction == rtt_cdi::ABSORPTION ||
            reaction == rtt_cdi::SCATTERING ||
            reaction == rtt_cdi::TOTAL);
-
-    // now rebuild the analytic models
-    int indicator = 0;
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        // reset the buffer
-        unpacker.set_buffer(models[i].size(), &models[i][0]);
-
-        // get the indicator for this model (first packed datum)
-        unpacker >> indicator;
-
-        // now determine which analytic model we need to build
-        if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
-        {
-            group_models[i] = new Constant_Analytic_Opacity_Model(
-                models[i]);
-        }
-        else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
-        {
-            group_models[i] = new Polynomial_Analytic_Opacity_Model(
-                models[i]);
-        }
-        else
-        {
-            Insist (0, "Unregistered analytic opacity model!");
-        }
-
-        Ensure (group_models[i]);
-    }
-
-    Ensure (groupBoundaries.size() - 1 == group_models.size());
-}
-
-//---------------------------------------------------------------------------//
-// OPACITY INTERFACE FUNCTIONS
-//---------------------------------------------------------------------------//
-/*!
- * \brief Return the group opacities given a scalar temperature and density. 
- *
- * Given a scalar temperature and density, return the group opacities
- * (vector<double>) for the reaction type specified by the constructor.  The
- * analytic opacity model is specified in the constructor
- * (Analytic_Odfmg_Opacity()).
- *
- * \param temperature material temperature in keV
- * \param density material density in g/cm^3
- * \return group opacities (coefficients) in cm^2/g
- *
- */
-std::vector< std::vector<double> > Analytic_Odfmg_Opacity::getOpacity( 
-    double targetTemperature,
-    double targetDensity ) const 
-{
-    Require (targetTemperature >= 0.0);
-    Require (targetDensity >= 0.0);
-
-    const size_t numBands = getNumBands();
-    const size_t numGroups = getNumGroups();
-
-    // return opacities
-    std::vector< std::vector<double> > opacity( numGroups );
-
-    // loop through groups and get opacities
-    for (size_t group = 0; group < opacity.size(); group++)
-    {
-        Check (group_models[group]);
-
-        opacity[group].resize(numBands);
-
-        // assign the opacity based on the group model to the first band
-        opacity[group][0] = group_models[group]->
-                            calculate_opacity(targetTemperature, targetDensity);
-
-        Check (opacity[group][0] >= 0.0);
-
-        //copy the opacity to the rest of the bands
-        for (size_t band = 1; band < numBands; band++)
-        {
-            opacity[group][band] = opacity[group][0];
-        }
-    }
-
-    return opacity;
 }
 
 //---------------------------------------------------------------------------//
@@ -272,31 +167,16 @@ std::vector< std::vector< std::vector<double> > >  Analytic_Odfmg_Opacity::getOp
  */
 Analytic_Odfmg_Opacity::sf_char Analytic_Odfmg_Opacity::pack() const
 {
-    Require (groupBoundaries.size() - 1 == group_models.size());
-
     // make a packer
     rtt_dsxx::Packer packer;
-
-    // first pack up models
-    std::vector<sf_char> models(group_models.size());
-    size_t                  num_bytes_models = 0;
-
-    // loop through and pack up the models
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        Check (group_models[i]);
-
-        models[i]         = group_models[i]->pack();
-        num_bytes_models += models[i].size();
-    }
 
     // now add up the total size; number of groups + 1 size_t for number of
     // groups, number of bands + 1 size_t for number of
     // bands, number of models + size in each model + models, 1 size_t for
     // reaction type, 1 size_t for model type
-    size_t size = 4 * sizeof(int) + models.size() * sizeof(int) + 
+    size_t size = 4 * sizeof(int) + 
                   groupBoundaries.size() * sizeof(double) +
-                  bandBoundaries.size()  * sizeof(double) + num_bytes_models;
+                  bandBoundaries.size()  * sizeof(double);
 
     // make a char array
     sf_char packed(size);
@@ -314,22 +194,20 @@ Analytic_Odfmg_Opacity::sf_char Analytic_Odfmg_Opacity::pack() const
     for (size_t i = 0; i < bandBoundaries.size(); i++)
         packer << bandBoundaries[i];
 
-    // pack each models size and data
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        // pack the size of this model
-        packer << static_cast<int>(models[i].size());
-
-        // now pack the model data
-        for (size_t j = 0; j < models[i].size(); j++)
-            packer << models[i][j];
-    }
-
     // now pack the reaction and model type
     packer << static_cast<int>(reaction) << static_cast<int>(model);
 
     Ensure (packer.get_ptr() == &packed[0] + size);
     return packed;
+}
+
+//---------------------------------------------------------------------------//
+unsigned Analytic_Odfmg_Opacity::packed_size() const
+{
+    // This must match the size calculated in the previous function
+    return 4 * sizeof(int) + 
+        groupBoundaries.size() * sizeof(double) +
+        bandBoundaries.size()  * sizeof(double);
 }
 
 } // end namespace rtt_cdi_analytic
