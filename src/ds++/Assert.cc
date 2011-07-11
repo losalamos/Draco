@@ -131,13 +131,19 @@ void insist_ptr( char const * const cond,
 std::string verbose_error(std::string const & message)
 {
     char hostname[HOST_NAME_MAX];
+    std::ostringstream errstr;
+
+#ifdef HAVE_GETHOSTNAME
     int err = gethostname(hostname, HOST_NAME_MAX);
     if (err) strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
 
-    std::ostringstream errstr;
     errstr << "Host " << hostname << ", PID " << getpid() << ": "
            << message;
-
+#else
+    // Catamount systems do not have gethostname() or getpid().
+    errstr << "Host (unknown), PID (unknown): " << message;
+#endif
+    
     return errstr.str();
 } // verbose_error
 

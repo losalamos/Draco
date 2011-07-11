@@ -64,6 +64,26 @@ AC_RUNTESTS(tstArray \
             tstHomogeneous_New \
             , scalar)
 
+dnl Determine system type.  These defs are saved in utils/config.h.
+case `uname` in
+Linux)
+  AC_DEFINE(draco_isLinux) 
+  AC_DEFINE_UNQUOTED(DRACO_UNAME "Linux")
+  ;; 
+OSF1)
+  AC_DEFINE(draco_isOSF1) 
+  AC_DEFINE_UNQUOTED(DRACO_UNAME "OSF1")
+  ;; 
+Darwin)
+  AC_DEFINE(draco_isDarwin) 
+  AC_DEFINE_UNQUOTED(DRACO_UNAME "Darwin")
+  ;;
+AIX)
+  AC_DEFINE(draco_isAIX) 
+  AC_DEFINE_UNQUOTED(DRACO_UNAME "AIX")
+  ;;
+esac
+
 AC_DRACO_ENV
 AC_DRACO_AUTODOC(draco-6_1_0)
 

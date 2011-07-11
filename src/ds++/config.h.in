@@ -23,17 +23,44 @@
 /* DBC ENVIRONMENTS */
 #undef DBC
 
+/* Are we building static or shared libraries? */
+#undef DRACO_SHARED_LIBS
+
 /* Remove extra declspec values (for Windows dll) */
 /* #define DLL_PUBLIC
    #define DLL_LOCAL */
 
-/* Are we building static or shared libraries? */
-#undef DRACO_SHARED_LIBS
-
    /* Version information */
+#undef DRACO_VERSION
+#undef DRACO_VERSION_FULL
 #define DRACO_VERSION_MAJOR "6"
 #define DRACO_VERSION_MINOR "1"
 #define DRACO_VERSION_PATCH "0"
+
+   /* System Type */
+#undef MSVC
+#undef UNIX
+#undef draco_isLinux
+#undef draco_isOSF1
+#undef draco_isDarwin
+#undef draco_isAIX
+#undef draco_isLinux_with_aprun
+#undef draco_isCatamount
+
+#if defined draco_isLinux
+#define DRACO_UNAME "Linux"
+#elif defined draco_isOSF1
+#define DRACO_UNAME "OSF1"
+#elif defined draco_isDarwin
+#define DRACO_UNAME "Darwin"
+#elif defined draco_isAIX
+#define DRACO_UNAME "AIX"
+#else
+#define DRACO_UNAME "Catamount"
+#endif
+
+/* Platform checks for various functions */
+#undef HAVE_GETHOSTNAME
 
 /* ---------------------------------------- */
 /* CMAKE based build system                 */
@@ -43,29 +70,37 @@
    /* DBC ENVIRONMENTS */
 #define DBC @DRACO_DBC_LEVEL@
 
-   /* Version Inforation */
-#cmakedefine DRACO_VERSION @DRACO_VERSION@
-#cmakedefine DRACO_VERSION_FULL @DRACO_VERSION_FULL@
-
-   /* System Type */
-#cmakedefine MSVC @MSVC@
-#cmakedefine UNIX @UNIX@ 
-
    /* define BUILDING_DLL */
 #cmakedefine BUILDING_DLL @BUILDING_DLL@
 
    /* define DRACO_SHARED_LIBS */
 #cmakedefine DRACO_SHARED_LIBS @DRACO_SHARED_LIBS@
 
-   /* In MSVC, constants like M_PI are not defined by default in math.h.  To include them, we must set the following: */
-#if defined _WIN32 || defined __CYGWIN__ 
-#define _USE_MATH_DEFINES   
-#endif /* Win32 */
-
-   /* Version information */
+   /* Version Inforation */
+#cmakedefine DRACO_VERSION @DRACO_VERSION@
+#cmakedefine DRACO_VERSION_FULL @DRACO_VERSION_FULL@
 #define DRACO_VERSION_MAJOR "@DRACO_VERSION_MAJOR@"
 #define DRACO_VERSION_MINOR "@DRACO_VERSION_MINOR@"
 #define DRACO_VERSION_PATCH "@DRACO_VERSION_PATCH@"
+
+   /* System Type */
+#cmakedefine MSVC @MSVC@
+#cmakedefine UNIX @UNIX@
+#cmakedefine draco_isLinux
+#cmakedefine draco_isOSF1
+#cmakedefine draco_isDarwin
+#cmakedefine draco_isAIX
+#cmakedefine draco_isLinux_with_aprun
+#cmakedefine draco_isCatamount
+#cmakedefine DRACO_UNAME @DRACO_UNAME@
+
+/* Platform checks for various functions */
+#cmakedefine HAVE_GETHOSTNAME
+
+/* In MSVC, constants like M_PI are not defined by default in math.h.  To include them, we must set the following: */
+#if defined _WIN32 || defined __CYGWIN__ 
+#define _USE_MATH_DEFINES   
+#endif /* Win32 */
 
 #endif /* Autoconf based build */
 

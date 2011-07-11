@@ -7,6 +7,35 @@ project( dsxx CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
+# Store platform information in config.h
+if( UNIX )
+  set( draco_isLinux 1 )
+  set( DRACO_UNAME "Linux" )
+elseif( WIN32 )
+  set( draco_isWin 1 )
+  set( DRACO_UNAME "Windows" )
+elseif( OSF1 )
+  set( draco_isOSF1 1 )
+  set( DRACO_UNAME "OSF1" )
+elseif( APPLE )
+  set( draco_isDarwin 1)
+  set( DRACO_UNAME "Darwin" )
+else()
+  set( draco_isAIX 1 )
+  set( DRACO_UNAME "AIX" )
+endif()
+# Special setup for catamount
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+   set( draco_isLinux_with_aprun 1 )
+   set( draco_isCatamount 1 )
+   set( DRACO_UNAME "Catamount" )
+endif()
+
+# Platform checks for gethostname()
+include( CheckFunctionExists)
+check_function_exists( gethostname HAVE_GETHOSTNAME )
+
+# Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 
 # ---------------------------------------------------------------------------- #
