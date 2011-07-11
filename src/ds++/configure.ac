@@ -21,8 +21,7 @@ AC_DEFINE(DS_AUTOCONF)
 AC_INSTALL_HEADERS
 AC_INSTALL_LIB
 
-AC_RUNTESTS(tstAllocators \
-            tstArray \
+AC_RUNTESTS(tstArray \
             tstAssert \     
             tstBounds \
             tstCheck_Strings \
