@@ -179,7 +179,7 @@ main(int argc, char *argv[])
     // version tag
     for (int arg = 1; arg < argc; arg++) {
         if (string(argv[arg]) == "--version") {
-            cout << argv[0] << ": version " << rtt_plot2D::release() << endl;
+            cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
             return 0;
         }
         else if (string(argv[arg]) == "--gui") {
