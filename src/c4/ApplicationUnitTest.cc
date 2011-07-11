@@ -175,7 +175,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
              numProcs == std::string("serial") ||
              std::atoi( numProcs.c_str() ) > 0 );
 
-#if defined( c4_isWin )
+#if defined( draco_isWin )
     { // The binary should exist.  Windows does not provide an execute bit.  
          std::string exeExists( applicationPath + applicationName + ".exe" );
          Require( std::ifstream( exeExists.c_str() ) );
@@ -204,7 +204,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
         // Determine system type:
         // On Linux use mpirun. On OSF1 use prun.
         // This information is set in config.h and in ApplicationUnitTest.hh.
-        cmd << C4_MPICMD;
+        cmd << C4_MPICMD ;
             
         // relative path to the binary.
         cmd << numProcs << " " << applicationPath + applicationName

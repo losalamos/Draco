@@ -10,6 +10,8 @@
 #ifndef rtt_c4_config_h
 #define rtt_c4_config_h
 
+#include "ds++/config.h"
+
 /* C4 Environments */
 
 /* Switch between Autoconf-based build system and CMake-based build */
@@ -27,20 +29,18 @@
 /* Add version check for Compaq ALASKA MPI releases */
 #undef MPI_VERSION_CHECK
 
-/* We need to know the system type.  These are set by configure.ac.  The
- * values of these environment variables will set C4_MPICMD and C4_UNAME in
- * ApplicationUnitTest.hh.
- */
-/* Is this Linux */
-#undef c4_isLinux
-/* Is this OSF1 */
-#undef c4_isOSF1
-/* Is this Darwin */
-#undef c4_isDarwin
-/* Is this AIX */
-#undef c4_isAIX
-/* Is this a special Linux using aprun? */
-#undef c4_isLinux_with_aprun
+/* What is the mpirun command? */
+#if defined draco_isLinux
+#define C4_MPICMD "mpirun -np "
+#elif defined draco_isOSF1
+#define C4_MPICMD "prun -n "
+#elif defined draco_isDarwin
+#define C4_MPICMD "mpirun -np "
+#elif defined draco_isAIX
+#define C4_MPICMD "poe -procs "
+#else
+#define C4_MPICMD "aprun -n "
+#endif
 
 /* ---------------------------------------- */
 /* CMAKE based build system                 */
@@ -53,24 +53,6 @@
 #cmakedefine C4_SCALAR
 /* C4_MPI */
 #cmakedefine C4_MPI
-
-/* We need to know the system type.  These are set by configure.ac.  The
- * values of these environment variables will set C4_MPICMD and C4_UNAME in
- * ApplicationUnitTest.hh.
- */
-
-/* Is this Windows */
-#cmakedefine c4_isWin
- /* Is this Linux */
-#cmakedefine c4_isLinux
-/* Is this OSF1 */
-#cmakedefine c4_isOSF1
-/* Is this Darwin */
-#cmakedefine c4_isDarwin
-/* Is this AIX */
-#cmakedefine c4_isAIX
-/* Is this catamount Cray? */
-#cmakedefine c4_isLinux_with_aprun
 
 /* CMake binary directory */
 #define CMAKE_C4_BINARY_DIR "@PROJECT_BINARY_DIR@"

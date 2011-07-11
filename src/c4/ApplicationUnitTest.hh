@@ -181,41 +181,6 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
 } // end namespace rtt_c4
 
-
-#ifdef c4_isDarwin
-#define C4_MPICMD "mpirun -np "
-#define C4_UNAME "Darwin"
-#endif
-
-#ifdef c4_isLinux
-#ifndef C4_MPICMD
-#define C4_MPICMD "mpirun -np "
-#endif
-#define C4_UNAME "Linux"
-#endif
-
-#ifdef c4_isOSF1
-#define C4_MPICMD "prun -n "
-#define C4_UNAME "OSF1"
-#endif
-
-#ifdef c4_isAIX
-#define C4_MPICMD "poe -procs "
-#define C4_UNAME "AIX"
-#endif
-
-#ifdef c4_isWin
-#define C4_MPICMD "mpiexec -np "
-#define C4_UNAME "WINDOWS"
-#endif
-
-#ifdef c4_isLinux_with_aprun
-#ifdef C4_MPICMD
-#undef C4_MPICMD
-#endif
-#define C4_MPICMD "aprun -n "
-#endif
-
 #endif // c4_ApplicationUnitTest_hh
 
 //---------------------------------------------------------------------------//

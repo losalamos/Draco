@@ -82,24 +82,6 @@ AC_RUNTESTS( \
 dnl application tests
 AC_TEST_APPLICATION( tstApplicationUnitTest, 1 2 4 )
 
-dnl Determine system type.  These defs are saved in utils/config.h.
-case `uname` in
-Linux)
-  AC_DEFINE(c4_isLinux) ;; 
-OSF1)
-  AC_DEFINE(c4_isOSF1) ;; 
-Darwin)
-  AC_DEFINE(c4_isDarwin) ;;
-AIX)
-  AC_DEFINE(c4_isAIX) ;;
-esac
-
-dnl Special case for machines like Cielito
-case `uname -n` in
-ct-fe*)
-  AC_DEFINE(c4_isLinux_with_aprun) ;;
-esac
-
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT
 AC_DRACO_ENV
