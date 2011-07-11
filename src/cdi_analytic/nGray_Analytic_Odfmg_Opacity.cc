@@ -30,8 +30,8 @@ namespace rtt_cdi_analytic
  * rtt_cdi::Reaction argument.
  *
  * The group structure (in keV) must be provided by the groups argument.  The
- * number of nGray_Analytic_Opacity_Model objects given in the models argument must
- * be equal to the number of groups.
+ * number of nGray_Analytic_Opacity_Model objects given in the models argument
+ * must be equal to the number of groups.
  *
  * \param groups vector containing the group boundaries in keV from lowest to
  * highest
@@ -51,7 +51,7 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
     : Analytic_Odfmg_Opacity(groups, bands, reaction_in, model_in),
       group_models(models)
 {
-    Require((groups.size()-1)*(bands.size()-1) == models.size());
+    Require (models.size() == groups.size() - 1);
 }
 
 //---------------------------------------------------------------------------//
