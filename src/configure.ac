@@ -51,7 +51,7 @@ dnl Warning: if we do not find an MPI vendor, c4 will default to
 dnl scalar-mode.
 AC_MPI_SETUP(pkg)
 AC_CONFIG_SUBDIRS( rng c4 units cdi mesh_element \
- 		   shared_lib fpe_trap ode linear ) 
+ 		   shared_lib fpe_trap ode linear traits ) 
 
 dnl Determine if these vendors are available.
 AC_LAPACK_SETUP(pkg)
