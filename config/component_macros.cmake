@@ -128,7 +128,7 @@ ENDMACRO(PARSE_ARGUMENTS)
 # 3. Register the pass/fail criteria.
 # ------------------------------------------------------------
 macro( register_scalar_test targetname runcmd command cmd_args )
-
+   
    if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-d][0-9]+a" )
       # Special treatment for Roadrunner PPE build.  The tests
       # must be run on the PPC chip on the backend.  If we are
@@ -138,12 +138,16 @@ macro( register_scalar_test targetname runcmd command cmd_args )
          NAME    ${targetname}
          COMMAND ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};${command} ${cmd_args})" )
    else()
+      # Cielito needs the ./ in front of the binary name.
+      if( "${MPIEXEC}" MATCHES "aprun" )
+         set( APT_TARGET_FILE_PREFIX "./" )
+      endif()
       separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
       add_test( 
          NAME    ${targetname}
-         COMMAND ${RUN_CMD} ${command} ${cmdargs})
+         COMMAND ${RUN_CMD} ${APT_TARGET_FILE_PREFIX}${command} ${cmdargs})
    endif()
-   
+
    # set pass fail criteria, processors required, etc.
    set_tests_properties( ${targetname}
       PROPERTIES	
@@ -160,6 +164,39 @@ macro( register_scalar_test targetname runcmd command cmd_args )
       set_tests_properties( ${targetname}
          PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
    endif()
+endmacro()
+
+# ------------------------------------------------------------
+# Register_parallel_test()
+#
+# 1. Register the test
+# 2. Register the pass/fail criteria.
+# ------------------------------------------------------------
+macro( register_parallel_test targetname numPE command cmd_args )
+
+   add_test( 
+      NAME    ${targetname}
+      COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+              ${MPIRUN_POSTFLAGS}
+              ${command}
+              ${cmdarg}
+      )
+   set_tests_properties( ${targetname}
+      PROPERTIES	
+        PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
+        FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
+        PROCESSORS              "${numPE}"
+        WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
+      )
+   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set_tests_properties( ${targetname}
+         PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
+   endif()
+   if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
+      set_tests_properties( ${targetname}
+         PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
+   endif()
+
 endmacro()
 
 #----------------------------------------------------------------------#
@@ -192,6 +229,7 @@ macro( add_scalar_tests test_sources )
    # must be run underneath MPIEXEC (yod, aprun):
    if( "${MPIEXEC}" MATCHES "aprun" )
       set( RUN_CMD ${MPIEXEC} -n 1 )
+      set( APT_TARGET_FILE_PREFIX "./" )
    elseif(  "${MPIEXEC}" MATCHES "yod" )
       set( RUN_CMD ${MPIEXEC} -np 1 )
    else()
@@ -223,6 +261,12 @@ macro( add_scalar_tests test_sources )
       list( APPEND addscalartest_FAIL_REGEX ".*ERROR:.*" )
    endif()
  
+   # Format resource lock command
+   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
+      set( addscalartest_RESOURCE_LOCK 
+         "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
+   endif()
+
    # What is the component name (always use Lib_${compname} as a dependency).
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
    set( iarg "0" )
@@ -245,6 +289,11 @@ macro( add_scalar_tests test_sources )
    # Generate the executable
    # ------------------------------------------------------------
    foreach( file ${addscalartest_SOURCES} )
+
+      if( "${file}" MATCHES "tstParallelUnitTest" )
+         message("RUN_CMD = ${RUN_CMD}")
+      endif()
+
       get_filename_component( testname ${file} NAME_WE )
       add_executable( Ut_${compname}_${testname}_exe ${file} )
       set_target_properties( 
@@ -254,7 +303,8 @@ macro( add_scalar_tests test_sources )
            VS_KEYWORD  ${testname}
            FOLDER ${compname}
          )
-      target_link_libraries( Ut_${compname}_${testname}_exe 
+      target_link_libraries( 
+         Ut_${compname}_${testname}_exe 
          ${test_lib_target_name}
          ${addscalartest_DEPS}
          )
@@ -266,12 +316,13 @@ macro( add_scalar_tests test_sources )
       get_filename_component( testname ${file} NAME_WE )
 
       if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-         register_scalar_test( ${compname}_${testname} "${RUN_CMD}"
-         ${testname} "" )
+         register_scalar_test( ${compname}_${testname} 
+            "${RUN_CMD}" ${testname} "" )
        else()
           foreach( cmdarg ${addscalartest_TEST_ARGS} ) 
              math( EXPR iarg "${iarg} + 1" )
-             register_scalar_test( ${compname}_${testname}_arg${iarg} "${RUN_CMD}" ${testname} "${cmdarg}" )
+             register_scalar_test( ${compname}_${testname}_arg${iarg} 
+                "${RUN_CMD}" ${testname} "${cmdarg}" )
           endforeach()
        endif()
    endforeach()
@@ -415,71 +466,50 @@ macro( add_parallel_tests )
          # http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.4
 
          foreach( numPE ${addparalleltest_PE_LIST} )
-            add_test( 
-               NAME    ${compname}_${testname}_${numPE}
-               COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-                       ${MPIRUN_POSTFLAGS}
-                       $<TARGET_FILE:Ut_${compname}_${testname}_exe> 
-                       ${addparalleltest_TEST_ARGS}
-               )
- 
-            set_tests_properties( ${compname}_${testname}_${numPE}
-               PROPERTIES	
-                 PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
-                 FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
-                 PROCESSORS              "${numPE}"
-                 WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-                 )
-              if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-                 set_tests_properties( ${compname}_${testname}_${numPE}
-                    PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
-              endif()
-             if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-                set_tests_properties( ${compname}_${testname}_${numPE}
-                   PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
-             endif()
+            set( iarg 0 )
+            if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
+               register_parallel_test( 
+                  ${compname}_${testname}_${numPE}
+                  ${numPE}
+                  $<TARGET_FILE:Ut_${compname}_${testname}_exe>
+                  "" )
+            else()
+               foreach( cmdarg ${addparalleltest_TEST_ARGS} ) 
+                  math( EXPR iarg "${iarg} + 1" )
+                  register_parallel_test( 
+                     ${compname}_${testname}_${numPE}_arg${iarg}
+                     ${numPE} 
+                     $<TARGET_FILE:Ut_${compname}_${testname}_exe>
+                     ${cmdarg} )
+               endforeach()
+            endif()
          endforeach()
       endforeach()
    else( ${DRACO_C4} MATCHES "MPI" )
       # SCALAR Mode:
       foreach( file ${addparalleltest_SOURCES} )
+         set( iarg "0" )
          get_filename_component( testname ${file} NAME_WE )
+
          set( addscalartest_PASS_REGEX "${addparalleltest_PASS_REGEX}" )
          set( addscalartest_FAIL_REGEX "${addparalleltest_FAIL_REGEX}" )
          set( addscalartest_RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
          set( addscalartest_RUN_AFTER "${addparalleltest_RUN_AFTER}" )
 
-         register_scalar_test( ${compname}_${testname} 
-            "${RUN_CMD}" ${testname} "${addparalleltest_TEST_ARGS}" )
+         if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
+            
+            register_scalar_test( ${compname}_${testname} 
+               "${RUN_CMD}" ${testname} "" )
+         else()
 
-         # if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-d][0-9]+a" )
-         #    # Special treatment for Roadrunner PPE build.  The tests
-         #    # must be run on the PPC chip on the backend.  If we are
-         #    # running from the x86 backend, then we can run the tests
-         #    # by ssh'ing to the 'b' node and running the test.
-         #    add_test( ${compname}_${testname} 
-         #       ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};${testname} ${addparalleltest_TEST_ARGS})"
-         #       )
-         # else()
-         #    add_test( ${compname}_${testname} 
-         #       ${testname} 
-         #       ${addparalleltest_TEST_ARGS} )
-         # endif()
-         # set_tests_properties( ${compname}_${testname} 
-         #    PROPERTIES	
-         #      PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
-         #      FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
-         #      PROCESSORS              "1"
-         #      WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
-         #    )
-         # if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-         #    set_tests_properties( ${compname}_${testname}
-         #       PROPERTIES RESOURCE_LOCK "${addparalleltest_RESOURCE_LOCK}" )
-         # endif()
-         # if( NOT "${addparalleltest_RUN_AFTER}none" STREQUAL "none" )
-         #    set_tests_properties( ${compname}_${testname}
-         #       PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
-         # endif()
+            foreach( cmdarg ${addparalleltest_TEST_ARGS} ) 
+               math( EXPR iarg "${iarg} + 1" )
+               register_scalar_test( ${compname}_${testname}_arg${iarg}
+                  "${RUN_CMD}" ${testname} "${cmdarg}" )
+            endforeach()
+
+         endif()
+
       endforeach()
    endif( ${DRACO_C4} MATCHES "MPI" )
 

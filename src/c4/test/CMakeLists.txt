@@ -61,6 +61,17 @@ add_scalar_tests(
    )
 list( REMOVE_ITEM test_sources ${special_test} )
 
+# This tests runs with extra arguments 
+set( special_test ${PROJECT_SOURCE_DIR}/tstParallelUnitTest.cc )
+add_parallel_tests(
+   SOURCES   "${special_test}" 
+   DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+   PE_LIST   "1;2;4"
+   TEST_ARGS "--version;--dummy; "
+   PASS_REGEX "tstParallelUnitTest: version"
+   )
+list( REMOVE_ITEM test_sources ${special_test} )
+
 # The rest of the tests
 add_parallel_tests( 
    SOURCES   "${test_sources}" 
@@ -68,22 +79,4 @@ add_parallel_tests(
    DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
    )
    
-# Run tstParallelUnitTest with argument '--version' to test this special
-# execution path.
-if( NOT "${MPIEXEC}x" STREQUAL  "x"  )
-   set( numprocs 1 )
-endif()
-add_test(
-   NAME    c4_tstParallelUnitTest_ver
-   COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numprocs}
-                      ${MPIRUN_POSTFLAGS}
-                      $<TARGET_FILE:Ut_c4_tstParallelUnitTest_exe> 
-                      --version
-               )
-add_test(
-   NAME    c4_tstParallelUnitTest_dummyArg
-   COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numprocs}
-                      ${MPIRUN_POSTFLAGS}
-                      $<TARGET_FILE:Ut_c4_tstParallelUnitTest_exe> 
-                      --dummy
-                      )
+
