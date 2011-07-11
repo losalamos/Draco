@@ -96,6 +96,11 @@
 
 /* Platform checks for various functions */
 #cmakedefine HAVE_GETHOSTNAME
+/* Use the POSIX minimum guarantee if HOST_NAME_MAX is not found */
+#cmakedefine HAVE_HOST_NAME_MAX
+#ifndef HAVE_HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
 
 /* In MSVC, constants like M_PI are not defined by default in math.h.  To include them, we must set the following: */
 #if defined _WIN32 || defined __CYGWIN__ 

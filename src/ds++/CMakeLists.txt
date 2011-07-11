@@ -34,6 +34,8 @@ endif()
 # Platform checks for gethostname()
 include( CheckFunctionExists)
 check_function_exists( gethostname HAVE_GETHOSTNAME )
+include( CheckSymbolExists )
+check_symbol_exists( HOST_NAME_MAX "unistd.h" HAVE_HOST_NAME_MAX )
 
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
