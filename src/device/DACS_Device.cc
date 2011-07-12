@@ -98,6 +98,10 @@ DACS_Device::~DACS_Device()
                   << "terminated with exit code " << exit_status
                   << std::endl;
 
+    err = dacs_release_de_list(1, &de_id);
+    if (err != DACS_SUCCESS)
+        std::cerr << dacs_strerror(err) << std::endl;
+
     err = dacs_exit();
     if (err != DACS_SUCCESS)
         std::cerr << dacs_strerror(err) << std::endl;
