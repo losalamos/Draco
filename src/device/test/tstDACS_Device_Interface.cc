@@ -133,32 +133,43 @@ void tstDoubleInit(UnitTest &ut)
 void tstDevice(UnitTest &ut)
 {
     string filename("dacs_device_ppe_exe");
+    int rc;
 
-    DACS_DEVICE_INIT(filename.c_str(), filename.size());
+    rc = DACS_DEVICE_INIT(filename.c_str(), filename.size());
+    if (rc != 0) ut.failure("rc != 0");
+    else ut.passes("rc == 0");
 
     de_id_t de_id;
-    DACS_DEVICE_GET_DE_ID(&de_id);
+    rc = DACS_DEVICE_GET_DE_ID(&de_id);
     if (de_id == 0) ut.failure("de_id == 0");
     else ut.passes("de_id != 0");
+    if (rc != 0) ut.failure("rc != 0");
+    else ut.passes("rc == 0");
 
     dacs_process_id_t pid;
-    DACS_DEVICE_GET_PID(&pid);
+    rc = DACS_DEVICE_GET_PID(&pid);
     if (pid == 0) ut.failure("pid == 0");
     else ut.passes("pid != 0");
+    if (rc != 0) ut.failure("rc != 0");
+    else ut.passes("rc == 0");
 
     de_id_t de_id2;
-    DACS_DEVICE_GET_DE_ID(&de_id2);
+    rc = DACS_DEVICE_GET_DE_ID(&de_id2);
     if (de_id2 != de_id)
         ut.failure("de_id changed");
     else
         ut.passes("de_id hasn't changed");
+    if (rc != 0) ut.failure("rc != 0");
+    else ut.passes("rc == 0");
 
     dacs_process_id_t pid2;
-    DACS_DEVICE_GET_PID(&pid2);
+    rc = DACS_DEVICE_GET_PID(&pid2);
     if (pid2 != pid)
         ut.failure("pid changed");
     else
         ut.passes("pid hasn't changed");
+    if (rc != 0) ut.failure("rc != 0");
+    else ut.passes("rc == 0");
 }
 
 //---------------------------------------------------------------------------//

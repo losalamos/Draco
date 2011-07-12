@@ -15,19 +15,28 @@
 
 using namespace rtt_device;
 
-void DACS_DEVICE_INIT(const char * const filename, const int len)
+int DACS_DEVICE_INIT(const char * const filename, const int len)
 {
     DACS_Device::init(std::string(filename, len));
+
+    // Return success.
+    return 0;
 }
 
-void DACS_DEVICE_GET_DE_ID(de_id_t * const de)
+int DACS_DEVICE_GET_DE_ID(de_id_t * const de)
 {
     *de = DACS_Device::instance().get_de_id();
+
+    // Return success.
+    return 0;
 }
 
-void DACS_DEVICE_GET_PID(dacs_process_id_t * const pid)
+int DACS_DEVICE_GET_PID(dacs_process_id_t * const pid)
 {
     *pid = DACS_Device::instance().get_pid();
+
+    // Return success.
+    return 0;
 }
 
 //---------------------------------------------------------------------------//

@@ -19,11 +19,11 @@
 
 extern "C"
 {
-    void DACS_DEVICE_INIT(const char * const filename, const int len);
+    int DACS_DEVICE_INIT(const char * const filename, const int len);
 
-    void DACS_DEVICE_GET_DE_ID(de_id_t * const de);
+    int DACS_DEVICE_GET_DE_ID(de_id_t * const de);
 
-    void DACS_DEVICE_GET_PID(dacs_process_id_t * const pid);
+    int DACS_DEVICE_GET_PID(dacs_process_id_t * const pid);
 }
 
 #endif // device_DACS_Device_Interface_hh
