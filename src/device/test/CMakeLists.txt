@@ -57,7 +57,6 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
       PE_LIST  "1;2;4"
       DEPS     "${test_deps}"
       MPIFLAGS "-q"
-      RESOURCE_LOCK "singleton"
       )
 
 else() # if ppe build
