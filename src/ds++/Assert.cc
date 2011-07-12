@@ -131,10 +131,10 @@ void insist_ptr( char const * const cond,
  */
 std::string verbose_error(std::string const & message)
 {
-    char hostname[HOST_NAME_MAX];
     std::ostringstream errstr;
 
-#ifdef HAVE_GETHOSTNAME
+#ifdef HAVE_GETHOSTNAME 
+    char hostname[HOST_NAME_MAX];
     int err = gethostname(hostname, HOST_NAME_MAX);
     if (err) strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
 
