@@ -28,6 +28,11 @@ dbsSetupCxx()
 # Build only for Opteron? Or PPE also?
 option( ENABLE_HET_CODE "Build code for PPEs." OFF )
 if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
+   # Force update of $SITE so that ctests will use the correct ssh
+   # command.
+   site_name( current_site )
+   set( SITE ${current_site} CACHE STRING 
+      "Name of the computer/site where compile is being run." FORCE )
    # on RR default to ON.
    set( ENABLE_HET_CODE ON )
    include( platform_customization_roadrunner_ppe )
