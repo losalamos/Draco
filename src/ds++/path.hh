@@ -52,7 +52,12 @@ enum FilenameComponent
  */
 std::string getFilenameComponent( std::string const & fqName,
                                   FilenameComponent fc );
-    
+
+//---------------------------------------------------------------------------//
+/*! \brief Does the file exist?
+ */
+bool fileExists( std::string const & filename );
+
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//

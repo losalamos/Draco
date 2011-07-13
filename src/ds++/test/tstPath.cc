@@ -30,17 +30,21 @@ void test_currentPath( ScalarUnitTest & ut )
 
     // if we got here, currentPath didn't throw.
     
-    // This path should the relative path between the top level build
-    // directory and the ds++ build directory.
-    string const expPartialPath( "draco/src/ds++" );
-
-    // look for the expected partial path
-    string::size_type idx = cp.find( expPartialPath );
-    if( idx != string::npos )
-        ut.passes( string("Found expected partial path. Path = ") + cp);
+    // Note, we have no idea where the this test was run from so we can say
+    // nothing about what the path string should contain.
+    
+    if( fileExists( cp ) )
+        ut.passes( string("Retrieved current path exists. cp = ") + cp);
     else
-        ut.failure("Did not find expected partial path. Expected path = "
-                   + cp);
+        ut.failure("Retrieved current path does not exist. cp = " + cp);
+
+    // Test behavior of fileExist when file does not exist.
+    string const fileDoesNotExist( "/bounty/hunter/boba_fett" );
+        
+    if( ! fileExists( fileDoesNotExist ) )
+        ut.passes( string("fileExist() correctly returned false. ")) ;
+    else
+        ut.failure( string("fileExist() incorrectly returned true. ")) ;
     
     return;
 }
