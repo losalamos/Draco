@@ -212,9 +212,9 @@ int main(int argc, char *argv[])
     try
     {
         test_currentPath(ut);
-        test_getFilenameComponent(
-            ut,
-            string("test") + rtt_dsxx::UnixDirSep + string("tstPath"));
+
+        test_getFilenameComponent(ut, string(argv[0]));
+            
         test_getFilenameComponent(
             ut,
             string("test") + rtt_dsxx::WinDirSep + string("tstPath.exe"));
