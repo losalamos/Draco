@@ -25,6 +25,8 @@ using namespace rtt_dsxx;
 //---------------------------------------------------------------------------//
 void test_currentPath( ScalarUnitTest & ut )
 {
+    cout << "\nTesting currentPath() function ... \n" << endl;
+    
     // currentPath
     string const cp = currentPath();
 
@@ -52,26 +54,62 @@ void test_currentPath( ScalarUnitTest & ut )
 //---------------------------------------------------------------------------//
 void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 {
+    cout << "\nTesting getFilenameComponent() function with fqp = "
+         << fqp << " ...\n" << endl;
+
     bool usesUnixDirSep=true;
     
     // test the FC_PATH mode
     // ------------------------------------------------------------
-    
-    string mypath = getFilenameComponent( fqp, rtt_dsxx::FC_PATH );
-    
-    string::size_type idx = mypath.find( string("test") + rtt_dsxx::UnixDirSep );
-    // 2nd chance with alternate dirsep char
-    if( idx == string::npos )
-    {
-        idx = mypath.find( string("test") + rtt_dsxx::WinDirSep );
-        usesUnixDirSep = false;
-    }   
-    if( idx != string::npos )
-        ut.passes( string("Found expected partial path. Path = ") + mypath );
-    else
-        ut.failure("Did not find expected partial path. Expected path = "
-                   + mypath );
 
+    // 4 possible cases: ./tstPath, .../test/tstPath,
+    // tstPath.exe or test/tstPath.exe
+
+    // Does the provided path use unix or windows directory separator?
+    string::size_type idx = fqp.find( rtt_dsxx::UnixDirSep );
+    if( idx == string::npos )
+        usesUnixDirSep = false;
+
+    // retrieve the path w/o the filename.
+    string mypath = getFilenameComponent( fqp, rtt_dsxx::FC_PATH );
+
+    if( usesUnixDirSep )
+    {
+        // If we are using UnixDirSep, we have 2 cases (./tstPath or
+        // .../test/tstPath).  Look for the case with 'test' first:
+        idx = mypath.find( string("test") + rtt_dsxx::UnixDirSep );
+
+        // If the return string does not have 'test/' then we also need to
+        // check for './' as a pass condition
+        if( idx == string::npos )
+            idx = mypath.find( rtt_dsxx::UnixDirSep );
+
+        // Report pass/fail
+        if( idx != string::npos )
+            ut.passes( string("Found expected partial path. Path = ") + mypath );
+        else
+            ut.failure("Did not find expected partial path. Expected path = "
+                       + mypath );
+    }
+    else
+    {
+        // If we are using WinDirSep, we have 2 cases (.\tstPath.exe or
+        // ...\test\tstPath.exe).  Look for the case with 'test' first:
+        idx = mypath.find( string("test") + rtt_dsxx::WinDirSep );
+
+        // If the return string does not have 'test\' then we also need to
+        // check for './' as a pass condition
+        if( idx == string::npos )
+            idx = mypath.find( rtt_dsxx::WinDirSep );
+
+        // Report pass/fail
+        if( idx != string::npos )
+            ut.passes( string("Found expected partial path. Path = ") + mypath );
+        else
+            ut.failure("Did not find expected partial path. Expected path = "
+                       + mypath );
+    }
+    
     // value if not found
 
     string mypath2 = getFilenameComponent( string("foobar"),

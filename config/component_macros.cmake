@@ -136,7 +136,7 @@ macro( register_scalar_test targetname runcmd command cmd_args )
       # by ssh'ing to the 'b' node and running the test.
       add_test( 
          NAME    ${targetname}
-         COMMAND ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};${command} ${cmd_args})" )
+         COMMAND ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};./${command} ${cmd_args})" )
    else()
       # Cielito needs the ./ in front of the binary name.
       if( "${MPIEXEC}" MATCHES "aprun" )
