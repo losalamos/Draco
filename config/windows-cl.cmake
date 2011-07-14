@@ -11,9 +11,13 @@
 # Prepare
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE )
 
-if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-  message( FATAL_ERROR "Feature not available - yell at KT." )
-endif()
+# if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
+  # message( FATAL_ERROR "You requested SHARED libraries for a Windows build.  This feature not available - yell at KT." )
+# endif()
+
+# Extra setup (ds++/config.h) for MSVC
+# 1. Allow M_PI to be found via <cmath>
+set( _USE_MATH_DEFINES 1 )
 
   # MSVC 9 2008 SP1 Flags
   # http://msdn.microsoft.com/en-us/library/19z1t1wy.aspx
