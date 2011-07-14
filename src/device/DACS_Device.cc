@@ -88,6 +88,7 @@ DACS_Device::DACS_Device() : de_id(0), pid(0)
  */
 DACS_Device::~DACS_Device()
 {
+    // Wait for the accel-side process to exit.
     int32_t exit_status;
     DACS_ERR_T err = dacs_de_wait(de_id,
                                   pid,
@@ -98,10 +99,12 @@ DACS_Device::~DACS_Device()
                   << "terminated with exit code " << exit_status
                   << std::endl;
 
+    // Release the reserved Cell.
     err = dacs_release_de_list(1, &de_id);
     if (err != DACS_SUCCESS)
         std::cerr << dacs_strerror(err) << std::endl;
 
+    // Shut down DACS.
     err = dacs_exit();
     if (err != DACS_SUCCESS)
         std::cerr << dacs_strerror(err) << std::endl;
