@@ -13,8 +13,8 @@
 # switch on this macro.
 set( CMAKE_Fortran_COMPILER_FLAVOR "PGI" )
 
-set( CMAKE_Fortran_FLAGS 
-  "-Mfreeform"  ) 
+set( CMAKE_Fortran_FLAGS
+  "-Mpreprocess"  ) 
 set( CMAKE_Fortran_FLAGS_DEBUG 
   "-g -Mbounds -Mchkptr")
 set( CMAKE_Fortran_FLAGS_RELEASE 
