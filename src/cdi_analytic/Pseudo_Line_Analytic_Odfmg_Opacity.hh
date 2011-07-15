@@ -80,7 +80,7 @@ class Pseudo_Line_Analytic_Odfmg_Opacity :
         const std::vector<double>& targetDensity ) const; 
 
     // Get the data description of the opacity.
-    inline std_string getDataDescriptor() const;
+    std_string getDataDescriptor() const;
 
     // Pack the Pseudo_Line_Analytic_Odfmg_Opacity into a character string.
     sf_char pack() const;
