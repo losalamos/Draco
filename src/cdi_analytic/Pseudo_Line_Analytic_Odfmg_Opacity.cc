@@ -83,86 +83,84 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                                                double /* rho */ ) const 
 {
     sf_double const &group_bounds = this->getGroupBoundaries();
+    sf_double const &bands = this->getBandBoundaries();
     unsigned const number_of_groups = group_bounds.size()-1U;
-    // temporary
-    vector<double> bands(2);
-    bands[0] = 0.0;
-    bands[1] = 1.0;
+    unsigned const number_of_bands = bands.size()-1U;
     vector<vector<double> > Result(number_of_groups, bands);
 
-    switch (averaging_)
+    double g1 = group_bounds[0];
+    for (unsigned g=0; g<number_of_groups; ++g)
     {
-        case NONE:
+        double const g0 = g1;
+        g1 = group_bounds[g+1];
+        vector<double> raw(qpoints_);
+        for (unsigned ig=0; ig<qpoints_; ++ig)
+        {
+            double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
+            raw[ig] = monoOpacity(x, T);
+        }
+        sort(raw.begin(), raw.end());
+
+        switch (averaging_)
+        {
+            case NONE:
             {
-                double g1 = group_bounds[0];
-                for (unsigned g=0; g<number_of_groups; ++g)
+                double b1 = bands[0];
+                for (unsigned b=0; b<number_of_bands; ++b)
                 {
-                    double const g0 = g1;
-                    g1 = group_bounds[g+1];
-                    double const nu = 0.5*(g0 + g1);
-                    Result[g][0] = monoOpacity(nu, T);
+                    double const b0 = b1;
+                    b1 = bands[b+1];
+                    double const f = 0.5*(b0 + b1);
+                    Result[g][b] = raw[f*qpoints_];
                 }
             }
             break;
             
-        case ROSSELAND:
-        {
-            double g1 = group_bounds[0];
-            for (unsigned g=0; g<number_of_groups; ++g)
+            case ROSSELAND:
             {
-                double const g0 = g1;
-                g1 = group_bounds[g+1];
-                double t = 0.0, b = 0.0;
-
-                for (unsigned ig=0; ig<qpoints_; ++ig)
+                double b1 = bands[0];
+                for (unsigned b=0; b<number_of_bands; ++b)
                 {
-                    double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
+                    double const b0 = b1;
+                    b1 = bands[b+1];
+                    double t = 0.0, w = 0.0;
                     
-                    double w = CDI::integrateRosselandSpectrum(g0,
-                                                               g1,
-                                                               T);
+                    for (unsigned q=b0*qpoints_; q<b1*qpoints_; ++q)
+                    {
+                        t += 1/raw[q];
+                        w += 1;
+                    }
                     
-                    
-                    t += w/monoOpacity(x, T);
-                    b += w;
+                    Result[g][b] = w/t;
                 }
-                
-                Result[g][0] = b/t;
             }
-        }
-        break;
-           
-        case PLANCK:
-        {
-            double g1 = group_bounds[0];
-            for (unsigned g=0; g<number_of_groups; ++g)
+            break;
+            
+            case PLANCK:
             {
-                double const g0 = g1;
-                g1 = group_bounds[g+1];
-                double t = 0.0, b = 0.0;
-                
-                for (unsigned ig=0; ig<qpoints_; ++ig)
+                double b1 = bands[0];
+                for (unsigned b=0; b<number_of_bands; ++b)
                 {
-                    double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
+                    double const b0 = b1;
+                    b1 = bands[b+1];
+                    double t = 0.0, w = 0.0;
                     
-                    double w = CDI::integratePlanckSpectrum(g0,
-                                                            g1,
-                                                            T);
+                    for (unsigned q=b0*qpoints_; q<b1*qpoints_; ++q)
+                    {
+                        t += raw[q];
+                        w += 1;
+                    }
                     
-                    
-                    t += w*monoOpacity(x, T);
-                    b += w;
+                    Result[g][b] = t/w;
                 }
-                
-                Result[g][0] = t/b;
             }
+            break;
+            
+            default:
+                Insist(false, "bad case");            
         }
-        break;
-        
-        default:
-            Insist(false, "bad case");            
     }
-
+    
     return Result;
 }
 
