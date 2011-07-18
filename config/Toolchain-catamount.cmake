@@ -33,3 +33,9 @@ set( MPI_LIB_DIR $ENV{MPICH_DIR}/lib )
 set( DRACO_LIBRARY_TYPE "STATIC" )
 set( MPIEXEC "/usr/bin/aprun" )
 set( MPIEXEC_NUMPROC_FLAG "-n")
+set( MPI_C_LIBRARIES      $ENV{MPICH_DIR}/lib/libmpich.a )
+set( MPI_CXX_LIBRARIES    $ENV{MPICH_DIR}/lib/libmpich.a )
+set( MPI_C_INCLUDE_PATH   $ENV{MPICH_DIR}/include )
+set( MPI_CXX_INCLUDE_PATH $ENV{MPICH_DIR}/include )
+
+
