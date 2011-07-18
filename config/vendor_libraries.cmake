@@ -76,7 +76,7 @@ macro( SetupVendorLibrariesUnix )
             ${MPICH_DIR}/lib
             )
          set( extra_libs mpi++ libopen-rte libopen-pal)
-         set( MPI_EXTRA_LIBRARY )
+         unset( MPI_EXTRA_LIBRARY )
          foreach( lib ${extra_libs} )
             find_library( mpi_extra_lib_${lib}
                NAMES ${lib}
@@ -145,6 +145,11 @@ macro( SetupVendorLibrariesUnix )
             STRING "extra mpirun flags (string)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       endif()
+
+      # Mark some of the variables created by the above logic as
+      # 'advanced' so that they do not show up in the 'simple' ccmake 
+      # view. 
+      mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY file_cmd )
       
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
