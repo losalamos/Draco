@@ -94,7 +94,7 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
