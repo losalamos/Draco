@@ -111,7 +111,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double const f = 0.5*(b0 + b1);
-                    Result[g][b] = raw[f*qpoints_];
+                    Result[g][b] = raw[static_cast<unsigned>(f*qpoints_)];
                 }
             }
             break;
@@ -124,8 +124,10 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double t = 0.0, w = 0.0;
-                    
-                    for (unsigned q=b0*qpoints_; q<b1*qpoints_; ++q)
+
+                    unsigned const q0 = static_cast<unsigned>(b0*qpoints_);
+                    unsigned const q1 = static_cast<unsigned>(b1*qpoints_);
+                    for (unsigned q=q0; q<q1; ++q)
                     {
                         t += 1/raw[q];
                         w += 1;
@@ -145,7 +147,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     b1 = bands[b+1];
                     double t = 0.0, w = 0.0;
                     
-                    for (unsigned q=b0*qpoints_; q<b1*qpoints_; ++q)
+                    unsigned const q0 = static_cast<unsigned>(b0*qpoints_);
+                    unsigned const q1 = static_cast<unsigned>(b1*qpoints_);
+                    for (unsigned q=q0; q<q1; ++q)
                     {
                         t += raw[q];
                         w += 1;
