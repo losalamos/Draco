@@ -28,7 +28,7 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 # -openmp      Enable OpenMP parallelization
 # -parallel    Automatic parallelziation.
 set( CMAKE_Fortran_FLAGS 
-  "-warn -free -fpp -fPIC -implicitnone"
+  "-warn  -fpp -fPIC -implicitnone"
   ) #  -fp-model strict -prec-div -static
 if( ENABLE_OPENMP )
    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -openmp -parallel" )
