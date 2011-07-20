@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 12:45:49 2005
  * \brief  Implementations for Comm_Traits.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,7 +23,7 @@ void Comm_Traits<Index_Labeled>::send(const Index_Labeled &x, const size_t n)
     rtt_c4::send(&(x.index), 1, n);
     rtt_c4::send(&(x.processor), 1, n);
     
-    const size_t s = x.label.size();
+    size_t const s = x.label.size();
     rtt_c4::send(&s, 1, n);
     rtt_c4::send(x.label.c_str(), s, n);
 }
@@ -32,7 +33,7 @@ void Comm_Traits<Index_Labeled>::receive(Index_Labeled &x, const size_t n)
     rtt_c4::receive(&(x.index), 1, n);
     rtt_c4::receive(&(x.processor), 1, n);
     
-    size_t s;
+    size_t s(0);
     rtt_c4::receive(&s, 1, n);
     x.label.resize(s);
     rtt_c4::receive(&(x.label[0]), s, n);
