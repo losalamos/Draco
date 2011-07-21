@@ -8,13 +8,13 @@
 ###############################################################################
 
 DRACO := ../..
-DRACOTEXINPUTS := ${DRACO}/doc/tex
+DRACOTEXINPUTS := ${DRACO}/environment/bibfiles
 TEXINPUTSENVS := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
 
 LATEXENVS := ${TEXINPUTSENVS}
 LATEX := ${LATEXENVS} latex
 
-BIBTEXENVS := BSTINPUTS="${DRACOTEXINPUTS}:${BSTINPUTS}"
+BIBTEXENVS := BIBINPUTS="${DRACOTEXINPUTS}:${BSTINPUTS}"
 BIBTEX := ${BIBTEXENVS} bibtex
 
 MAKEIDX := makeindex
