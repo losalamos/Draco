@@ -9,15 +9,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "cdi_analytic_test.hh"
-#include "ds++/Release.hh"
-#include "../nGray_Analytic_Odfmg_Opacity.hh"
-#include "../Analytic_Models.hh"
-#include "cdi/CDI.hh"
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -26,13 +17,27 @@
 #include <algorithm>
 #include <sstream>
 
+#include "cdi_analytic_test.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "../nGray_Analytic_Odfmg_Opacity.hh"
+#include "../Analytic_Models.hh"
+#include "../Pseudo_Line_Analytic_Odfmg_Opacity.hh"
+#include "cdi/CDI.hh"
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "parser/Constant_Expression.hh"
+
+
 using namespace std;
 using namespace rtt_cdi_analytic;
 
+using namespace rtt_dsxx;
 using rtt_cdi::CDI;
 using rtt_cdi::OdfmgOpacity;
-using rtt_dsxx::SP;
-using rtt_dsxx::soft_equiv;
+using rtt_parser::Expression;
+using rtt_parser::Constant_Expression;
 
 bool checkOpacityEquivalence( vector< vector<double> > sigma,
                               vector<double> ref)
@@ -66,7 +71,7 @@ bool checkOpacityEquivalence( vector< vector<double> > sigma,
 // TESTS
 //---------------------------------------------------------------------------//
 
-void odfmg_test()
+void odfmg_test(UnitTest &ut)
 {
     // group structure
     vector<double> groups(4, 0.0);
@@ -152,11 +157,11 @@ void odfmg_test()
     if (soft_equiv(get_groups.begin(), get_groups.end(), 
                    groups.begin(), groups.end()))
     {
-        PASSMSG("Group boundaries match.");
+        ut.passes("Group boundaries match.");
     }
     else
     {
-        FAILMSG("Group boundaries do not match.");
+        ut.failure("Group boundaries do not match.");
     }
 
     // check the band structure
@@ -165,11 +170,11 @@ void odfmg_test()
     if (soft_equiv(get_bands.begin(), get_bands.end(), 
                    bands.begin(), bands.end()))
     {
-        PASSMSG("Band boundaries match.");
+        ut.passes("Band boundaries match.");
     }
     else
     {
-        FAILMSG("Band boundaries do not match.");
+        ut.failure("Band boundaries do not match.");
     }
 
 
@@ -193,14 +198,14 @@ void odfmg_test()
         ostringstream message;
         message << "Analytic multigroup opacities are correct for "
                 << "scalar temperature and scalar density.";
-        PASSMSG(message.str());
+        ut.passes(message.str());
     }
     else
     {
         ostringstream message;
         message << "Analytic multigroup opacities are NOT correct for "
                 << "scalar temperature and scalar density.";
-        FAILMSG(message.str());
+        ut.failure(message.str());
     }
 
     // scalar density/temperature + vector density/temperature
@@ -221,14 +226,14 @@ void odfmg_test()
         ostringstream message;
         message << "Analytic multigroup opacities are correct for "
                 << "temperature field and scalar density.";
-        PASSMSG(message.str());
+        ut.passes(message.str());
     }
     else
     {
         ostringstream message;
         message << "Analytic multigroup opacities are NOT correct for "
                 << "temperature field and scalar density.";
-        FAILMSG(message.str());
+        ut.failure(message.str());
     }
 
     itPasses = true;
@@ -242,14 +247,14 @@ void odfmg_test()
         ostringstream message;
         message << "Analytic multigroup opacities are correct for "
                 << "density field and scalar temperature.";
-        PASSMSG(message.str());
+        ut.passes(message.str());
     }
     else
     {
         ostringstream message;
         message << "Analytic multigroup opacities are NOT correct for "
                 << "density field and scalar temperature.";
-        FAILMSG(message.str());
+        ut.failure(message.str());
     }
 
     // Test the get_Analytic_Model() member function.
@@ -258,16 +263,16 @@ void odfmg_test()
     SP<Analytic_Opacity_Model const> expected_model( models[0] );
 
     if( expected_model == my_mg_opacity_model )
-        PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.")
+        ut.passes("get_Analytic_Model() returned the expected MG Opacity model.");
     else
-        FAILMSG("get_Analytic_Model() did not return the expected MG Opacity model.")
+        ut.failure("get_Analytic_Model() did not return the expected MG Opacity model.");
     
     return;
 }
 
 //---------------------------------------------------------------------------//
 
-void test_CDI()
+void test_CDI(UnitTest &ut)
 {
     // group structure
     vector<double> groups(4, 0.0);
@@ -313,11 +318,11 @@ void test_CDI()
     if (soft_equiv(odfmg_groups.begin(), odfmg_groups.end(), 
                    groups.begin(), groups.end()))
     {
-        PASSMSG("CDI Group boundaries match.");
+        ut.passes("CDI Group boundaries match.");
     }
     else
     {
-        FAILMSG("CDI Group boundaries do not match.");
+        ut.failure("CDI Group boundaries do not match.");
     }
         
     // check the energy groups from CDI
@@ -326,11 +331,11 @@ void test_CDI()
     if (soft_equiv(odfmg_bands.begin(), odfmg_bands.end(), 
                    bands.begin(), bands.end()))
     {
-        PASSMSG("CDI band boundaries match.");
+        ut.passes("CDI band boundaries match.");
     }
     else
     {
-        FAILMSG("CDI band boundaries do not match.");
+        ut.failure("CDI band boundaries do not match.");
     }
 
 
@@ -351,20 +356,20 @@ void test_CDI()
         ostringstream message;
         message << "CDI odfmg opacities are correct for "
                 << "scalar temperature and scalar density.";
-        PASSMSG(message.str());
+        ut.passes(message.str());
     }
     else
     {
         ostringstream message;
         message << "CDI odfmg opacities are NOT correct for "
                 << "scalar temperature and scalar density.";
-        FAILMSG(message.str());
+        ut.failure(message.str());
     }
 }
 
 //---------------------------------------------------------------------------//
 
-void packing_test()
+void packing_test(UnitTest &ut)
 {
     vector<char> packed;
 
@@ -435,11 +440,11 @@ void packing_test()
     if (soft_equiv(mg_groups.begin(), mg_groups.end(), 
                    groups.begin(), groups.end()))
     {
-        PASSMSG("Group boundaries for unpacked ODFMG opacity match.");
+        ut.passes("Group boundaries for unpacked ODFMG opacity match.");
     }
     else
     {
-        FAILMSG("Group boundaries for unpacked ODFMG do not match.");
+        ut.failure("Group boundaries for unpacked ODFMG do not match.");
     }
         
     // check the band structure
@@ -448,11 +453,11 @@ void packing_test()
     if (soft_equiv(get_bands.begin(), get_bands.end(), 
                    bands.begin(), bands.end()))
     {
-        PASSMSG("Band boundaries match.");
+        ut.passes("Band boundaries match.");
     }
     else
     {
-        FAILMSG("Band boundaries do not match.");
+        ut.failure("Band boundaries do not match.");
     }
 
     // >>> get opacities
@@ -470,7 +475,7 @@ void packing_test()
         message << "Analytic multigroup opacities for unpacked MG opacity "
                 << "are correct for "
                 << "scalar temperature and scalar density.";
-        PASSMSG(message.str());
+        ut.passes(message.str());
     }
     else
     {
@@ -478,7 +483,7 @@ void packing_test()
         message << "Analytic multigroup opacities for unpacked MG opacity "
                 << "are NOT correct for "
                 << "scalar temperature and scalar density.";
-        FAILMSG(message.str());
+        ut.failure(message.str());
     }
 
     // make sure we catch an assertion showing that we cannot unpack an
@@ -516,11 +521,72 @@ void packing_test()
         caught = true;
         ostringstream message;
         message << "Caught the following assertion, " << ass.what();
-        PASSMSG(message.str());
+        ut.passes(message.str());
     }
     if (!caught)
     {
-        FAILMSG("Failed to catch unregistered analyic model assertion");
+        ut.failure("Failed to catch unregistered analyic model assertion");
+    }
+}
+
+//---------------------------------------------------------------------------//
+
+void pseudo_line_opacity_test(UnitTest &ut)
+{
+    // group structure
+    vector<double> groups(4, 0.0);
+    groups[0] = 0.05;
+    groups[1] = 0.5;
+    groups[2] = 5.0;
+    groups[3] = 10.0;
+
+    // band strucutre
+    vector<double> bands(3, 0.0);
+    bands[0] = 0.0;
+    bands[1] = 0.75;
+    bands[2] = 1.0;
+
+    unsigned const number_of_energy_groups = groups.size()-1;
+    unsigned const bands_per_group = bands.size()-1;
+
+    // continuum
+    SP<Expression const> const continuum(new Constant_Expression(1, 1.0));
+    
+    Pseudo_Line_Analytic_Odfmg_Opacity model(groups,
+                                             bands,
+                                             rtt_cdi::ABSORPTION,
+                                             continuum,
+                                             100, // lines
+                                             100.0, // line peak
+                                             0.001, // line width
+                                             10, // edges
+                                             10, // edge ratio
+                                             1.0, // Tref
+                                             0.0, // Tpow: no temp dependence
+                                             0.0, // emin keV
+                                             10.0, // emax keV
+                                             Pseudo_Line_Base::ROSSELAND,
+                                             2000, // quadrature points
+                                             1); // random seed
+
+    vector<vector<double> > opacity = model.getOpacity(1.0, 1.0);
+
+    if (opacity.size()+1==groups.size())
+    {
+        ut.passes("Correct number of groups in pseudo line model");
+    }
+    else
+    {
+        ut.failure("NOT correct number of groups in pseudo line model");
+    }
+
+    for (unsigned i=0; i<number_of_energy_groups; ++i)
+    {
+        if (opacity[i].size()!=bands_per_group)
+        {
+            ut.failure("NOT correct number of bands per group "
+                       "in pseudo line model");
+        }
     }
 }
 
@@ -528,43 +594,32 @@ void packing_test()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
     try
     {
-        // >>> UNIT TESTS
-        odfmg_test();
+        ScalarUnitTest ut(argc, argv, release);
+        
+        odfmg_test(ut);
 
-        test_CDI();
+        test_CDI(ut);
 
-        packing_test();
+        packing_test(ut);
+
+        pseudo_line_opacity_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (exception &err)
     {
-        cout << "While testing tstAnalytic_Odfmg_Opacity, " << ass.what()
-             << endl;
-        return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return EXIT_FAILURE;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_analytic_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstAnalytic_Odfmg_Opacity Test: PASSED" 
-             << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown." << endl;
 
-    cout << "Done testing tstAnalytic_Odfmg_Opacity." << endl;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }   
 
 //---------------------------------------------------------------------------//

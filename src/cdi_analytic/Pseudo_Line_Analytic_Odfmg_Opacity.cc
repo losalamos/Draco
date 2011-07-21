@@ -85,33 +85,42 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
     sf_double const &group_bounds = this->getGroupBoundaries();
     sf_double const &bands = this->getBandBoundaries();
     unsigned const number_of_groups = group_bounds.size()-1U;
-    unsigned const number_of_bands = bands.size()-1U;
-    vector<vector<double> > Result(number_of_groups, bands);
+    unsigned const bands_per_group = bands.size()-1U;
+    vector<vector<double> > Result(number_of_groups,
+                                   vector<double>(bands_per_group));
 
     double g1 = group_bounds[0];
+    double const gmin = g1;
+    double const gmax = group_bounds[number_of_groups];
+    vector<double> raw;
     for (unsigned g=0; g<number_of_groups; ++g)
     {
         double const g0 = g1;
         g1 = group_bounds[g+1];
-        vector<double> raw(qpoints_);
-        for (unsigned ig=0; ig<qpoints_; ++ig)
+        raw.resize(0);
+        
+        for (unsigned iq=qpoints_*(g0-gmin)/(gmax-gmin)-0.5;
+             iq<qpoints_;
+             ++iq)
         {
-            double const x = (ig+0.5)*(g1-g0)/qpoints_ + g0;
-            raw[ig] = monoOpacity(x, T);
+            double const x = (iq+0.5)*(gmax-gmin)/qpoints_ + gmin;
+            if (x>=g1) break;
+            raw.push_back(monoOpacity(x, T));
         }
         sort(raw.begin(), raw.end());
+        unsigned const N = raw.size();
 
         switch (averaging_)
         {
             case NONE:
             {
                 double b1 = bands[0];
-                for (unsigned b=0; b<number_of_bands; ++b)
+                for (unsigned b=0; b<bands_per_group; ++b)
                 {
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double const f = 0.5*(b0 + b1);
-                    Result[g][b] = raw[static_cast<unsigned>(f*qpoints_)];
+                    Result[g][b] = raw[static_cast<unsigned>(f*N)];
                 }
             }
             break;
@@ -119,14 +128,14 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
             case ROSSELAND:
             {
                 double b1 = bands[0];
-                for (unsigned b=0; b<number_of_bands; ++b)
+                for (unsigned b=0; b<bands_per_group; ++b)
                 {
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double t = 0.0, w = 0.0;
 
-                    unsigned const q0 = static_cast<unsigned>(b0*qpoints_);
-                    unsigned const q1 = static_cast<unsigned>(b1*qpoints_);
+                    unsigned const q0 = static_cast<unsigned>(b0*N);
+                    unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
                         t += 1/raw[q];
@@ -141,14 +150,14 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
             case PLANCK:
             {
                 double b1 = bands[0];
-                for (unsigned b=0; b<number_of_bands; ++b)
+                for (unsigned b=0; b<bands_per_group; ++b)
                 {
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double t = 0.0, w = 0.0;
                     
-                    unsigned const q0 = static_cast<unsigned>(b0*qpoints_);
-                    unsigned const q1 = static_cast<unsigned>(b1*qpoints_);
+                    unsigned const q0 = static_cast<unsigned>(b0*N);
+                    unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
                         t += raw[q];
