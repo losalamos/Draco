@@ -5,8 +5,11 @@ cmake_minimum_required(VERSION 2.8)
 file( GLOB latex_documents draco-*.tex )
 
 # LaTeX supporting files
+# draco.bib is at draco/environment/bibfiles
+# extra inputs (eps, etc) are at the source directory.
+# cls files are at draco/environment/latex
 set( BSTINPUTS "${PROJECT_SOURCE_DIR}/../../environment/bibfiles:$ENV{BSTINPUTS}" )
-set( TEXINPUTS "${PROJECT_SOURCE_DIR}:$ENV{TEXINPUTS}" )
+set( TEXINPUTS "${PROJECT_SOURCE_DIR}:${PROJECT_SOURCE_DIR}/../../environment/latex:$ENV{TEXINPUTS}" )
 
 # setup latex environment
 find_package(LATEX)
@@ -70,7 +73,7 @@ if(LATEX_COMPILER)
    endforeach()
 
    # Create a target to generate all pdfs for this directory.
-   add_custom_target(pdfs ALL DEPENDS ${allpdf} )
+   add_custom_target(${PROJECT_NAME}_pdf ALL DEPENDS ${allpdf} )
    
 endif(LATEX_COMPILER)
 
@@ -79,4 +82,5 @@ set_directory_properties(
    PROPERTIES
    ADDITIONAL_MAKE_CLEAN_FILES "${extra_files}" )
 
-
+# Install instructions
+install( FILES ${allpdf} DESTINATION doc )

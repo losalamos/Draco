@@ -144,6 +144,12 @@ if( BUILD_AUTODOC )
    add_subdirectory( autodoc )
 endif()
 
+# LaTeX documentation
+option( BUILD_DOC OFF )
+if( BUILD_DOC )
+   add_subdirectory( doc )
+endif()
+
 # provide the cache file for reference
 install( FILES ${PROJECT_BINARY_DIR}/CMakeCache.txt 
          DESTINATION config 
