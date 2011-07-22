@@ -16,9 +16,6 @@
 #    Document Template
 #    Document Dictionary
 #    Variables
-#    Element Definitions
-#    Elements
-#    Format Change Lists
 #
 <Units Uin>
 <CharUnits CUpt>
@@ -474,8 +471,8 @@
   <PgfBlockSize 2>
   <PgfFont 
    <FTag `'>
-   <FPlatformName `W.Courier.R.400'>
-   <FFamily `Courier'>
+   <FPlatformName `W.Courier New.R.400'>
+   <FFamily `Courier New'>
    <FVar `Regular'>
    <FWeight `Regular'>
    <FAngle `Regular'>
@@ -2106,10 +2103,6 @@
   <PgfLocked No>
  > # end of Pgf
 > # end of PgfCatalog
-<ElementDefCatalog 
-> # end of ElementDefCatalog
-<FmtChangeListCatalog 
-> # end of FmtChangeListCatalog
 <FontCatalog 
  <Font 
   <FTag `Bold'>
@@ -2121,7 +2114,7 @@
  > # end of Font
  <Font 
   <FTag `Code'>
-  <FFamily `Courier'>
+  <FFamily `Courier New'>
   <FEncoding `FrameRoman'>
   <FOutline No>
   <FShadow No>
@@ -2529,10 +2522,10 @@
  > # end of XRefFormat
 > # end of XRefFormats
 <Document 
- <DViewRect 23 38 862 701 >
- <DWindowRect 1 0 1201 1007 >
+ <DViewRect 23 38 862 664 >
+ <DWindowRect 1 0 1201 958 >
  <DViewScale  100.0%>
- <DNextUnique 1009649>
+ <DNextUnique 1009686>
  <DPageSize  8.5" 11.0">
  <DMenuBar `'>
  <DVoMenuBar `'>
@@ -2605,9 +2598,6 @@
  <DBordersOn Yes>
  <DSymbolsOn No>
  <DLinkBoundariesOn No>
- <DElementBordersOn No>
- <DElementTagsOn No>
- <DAttrEditor Always>
  <DSmartQuotesOn Yes>
  <DSmartSpacesOn No>
  <DUpdateTextInsetsOnOpen Yes>
@@ -2657,12 +2647,6 @@
  <DMathStrings `'>
  <DMathGreek `'>
  <DMathCatalog >
- <DElementCatalogScope Children>
- <DSeparateInclusions No>
- <DAttributeDisplay AllAttributes>
- <DUseInitialStructure Yes>
- <DStructAppName `'>
- <DSGMLAppName `'>
  <DPrintSkipBlankPages No>
  <DPrintSeparations No>
  <DPrintProcessColor `Black'>
@@ -2693,8 +2677,8 @@
 3C3F787061636B657420626567696E3D27EFBBBF272069643D2757354D304D7043656869487A7265537A4E54637A6B633964273F3E0A3C783A7861706D65746120786D6C6E733A783D2761646F62653A6E733A6D6574612F2720783A786170746B3D27584D5020746F6F6C6B697420322E382E312D
 32382C206672616D65776F726B20312E35273E0A3C7264663A52444620786D6C6E733A7264663D27687474703A2F2F7777772E77332E6F72672F313939392F30322F32322D7264662D73796E7461782D6E73232720786D6C6E733A69583D27687474703A2F2F6E732E61646F62652E636F6D2F6958
 2F312E302F273E0A3C7264663A4465736372697074696F6E2061626F75743D272720786D6C6E733A7064663D27687474703A2F2F6E732E61646F62652E636F6D2F7064662F312E332F27207064663A43726561746F72546F6F6C3D274672616D654D616B657220372E30273E3C2F7264663A446573
-6372697074696F6E3E0A3C7264663A4465736372697074696F6E2061626F75743D272720786D6C6E733A7861703D27687474703A2F2F6E732E61646F62652E636F6D2F7861702F312E302F27207861703A437265617465446174653D27323030382D30382D31335431373A35363A35342E305A2720
-7861703A4D6F64696679446174653D27323030382D30382D31335431373A35363A35342E305A27207861703A4D65746164617461446174653D27323030382D30382D31335431373A35363A35342E305A272F3E0A3C2F7264663A5244463E0A3C2F783A7861706D6574613E0A202020202020202020
+6372697074696F6E3E0A3C7264663A4465736372697074696F6E2061626F75743D272720786D6C6E733A7861703D27687474703A2F2F6E732E61646F62652E636F6D2F7861702F312E302F27207861703A437265617465446174653D27323031312D30372D32325431363A35393A30332E305A2720
+7861703A4D6F64696679446174653D27323031312D30372D32325431363A35393A30332E305A27207861703A4D65746164617461446174653D27323031312D30372D32325431363A35393A30332E305A272F3E0A3C2F7264663A5244463E0A3C2F783A7861706D6574613E0A202020202020202020
 202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200A20202020202020202020202020202020202020202020202020
 2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200A2020202020202020202020202020202020202020202020202020202020202020202020202020202020
 20202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200A202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020
@@ -2732,38 +2716,6 @@
 202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200A202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200A3C3F787061636B65
 7420656E643D2777273F3E
  > # end of DocFileInfo
- <DFCLMinimums 
-  <PgfFIndent  0.0">
-  <PgfLIndent  0.0">
-  <PgfRIndent  0.0">
-  <PgfSpBefore  -32767.0 pt>
-  <PgfSpAfter  -32767.0 pt>
-  <PgfLeading  -32767.0 pt>
-  <FSize  2.0 pt>
-  <FDW  -1000.0%>
-  <FStretch  10.0%>
-  <TSX  0.0">
-  <PgfCellTMargin  0.0 pt>
-  <PgfCellRMargin  0.0 pt>
-  <PgfCellLMargin  0.0 pt>
-  <PgfCellBMargin  0.0 pt>
- > # end of DFCLMinimums
- <DFCLMaximums 
-  <PgfFIndent  39.0">
-  <PgfLIndent  39.0">
-  <PgfRIndent  39.0">
-  <PgfSpBefore  32767.0 pt>
-  <PgfSpAfter  32767.0 pt>
-  <PgfLeading  32767.0 pt>
-  <FSize  400.0 pt>
-  <FDW  1000.0%>
-  <FStretch  1000.0%>
-  <TSX  39.0">
-  <PgfCellTMargin  32767.0 pt>
-  <PgfCellRMargin  32767.0 pt>
-  <PgfCellLMargin  32767.0 pt>
-  <PgfCellBMargin  32767.0 pt>
- > # end of DFCLMaximums
 > # end of Document
 <BookComponent 
  <FileName `<u\><u\><u\><u\><c\>doc<c\>memo<c\>050123_serrano_users_manualTOC.fm'>
@@ -10294,8 +10246,8 @@
   <Pgf 
    <PgfFont 
     <FTag `'>
-    <FPlatformName `W.Courier.R.700'>
-    <FFamily `Courier'>
+    <FPlatformName `W.Courier New.R.700'>
+    <FFamily `Courier New'>
     <FVar `Regular'>
     <FWeight `Bold'>
     <FAngle `Regular'>
@@ -10336,7 +10288,7 @@
    <Char Tab>
    <Font 
     <FTag `'>
-    <FPlatformName `W.Courier.R.700'>
+    <FPlatformName `W.Courier New.R.700'>
     <FWeight `Bold'>
     <FEncoding `FrameRoman'>
     <FLocked No>
@@ -10367,16 +10319,16 @@
    <String `order = '>
    <Font 
     <FTag `Bold'>
-    <FPlatformName `W.Courier.I.400'>
+    <FPlatformName `W.Courier New.I.400'>
     <FWeight `Regular'>
-    <FAngle `Oblique'>
+    <FAngle `Italic'>
     <FEncoding `FrameRoman'>
     <FLocked No>
    > # end of Font
    <String `even'>
    <Font 
     <FTag `Bold'>
-    <FPlatformName `W.Courier.R.700'>
+    <FPlatformName `W.Courier New.R.700'>
     <FAngle `Regular'>
     <FEncoding `FrameRoman'>
     <FLocked No>
@@ -10384,7 +10336,7 @@
    <String ` '>
    <Font 
     <FTag `Emphasis'>
-    <FPlatformName `W.Courier.I.400'>
+    <FPlatformName `W.Courier New.I.400'>
     <FWeight `Regular'>
     <FEncoding `FrameRoman'>
     <FLocked No>
@@ -10392,7 +10344,7 @@
    <String `integer'>
    <Font 
     <FTag `Emphasis'>
-    <FPlatformName `W.Courier.R.400'>
+    <FPlatformName `W.Courier New.R.400'>
     <FAngle `Regular'>
     <FEncoding `FrameRoman'>
     <FLocked No>
@@ -10408,7 +10360,7 @@
    <String `['>
    <Font 
     <FTag `'>
-    <FPlatformName `W.Courier.R.700'>
+    <FPlatformName `W.Courier New.R.700'>
     <FWeight `Bold'>
     <FEncoding `FrameRoman'>
     <FLocked No>
@@ -10427,8 +10379,8 @@
   <ParaLine 
    <Font 
     <FTag `'>
-    <FPlatformName `W.Courier.I.400'>
-    <FAngle `Oblique'>
+    <FPlatformName `W.Courier New.I.400'>
+    <FAngle `Italic'>
     <FEncoding `FrameRoman'>
     <FLocked No>
    > # end of Font
@@ -10448,8 +10400,8 @@
   <Pgf 
    <PgfFont 
     <FTag `'>
-    <FPlatformName `W.Courier.R.700'>
-    <FFamily `Courier'>
+    <FPlatformName `W.Courier New.R.700'>
+    <FFamily `Courier New'>
     <FVar `Regular'>
     <FWeight `Bold'>
     <FAngle `Regular'>
@@ -10490,9 +10442,9 @@
    <String `Permissible '>
    <Font 
     <FTag `'>
-    <FPlatformName `W.Courier.I.400'>
-    <FFamily `Courier'>
-    <FAngle `Oblique'>
+    <FPlatformName `W.Courier New.I.400'>
+    <FFamily `Courier New'>
+    <FAngle `Italic'>
     <FEncoding `FrameRoman'>
     <FLocked No>
    > # end of Font
@@ -10506,6 +10458,98 @@
  > # end of Para
  <Para 
   <Unique 1009538>
+  <PgfTag `code'>
+  <Pgf 
+   <PgfNumTabs 4>
+   <TabStop 
+    <TSX  0.625">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+   <TabStop 
+    <TSX  0.875">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+   <TabStop 
+    <TSX  1.125">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+   <TabStop 
+    <TSX  2.11459">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+  > # end of Pgf
+  <ParaLine 
+   <String `tri cl'>
+   <Char Tab>
+   <Char Tab>
+   <Char Tab>
+   <Char Tab>
+   <Font 
+    <FTag `'>
+    <FPlatformName `W.Times New Roman.R.400'>
+    <FFamily `Times New Roman'>
+    <FEncoding `FrameRoman'>
+    <FLocked No>
+   > # end of Font
+   <String `Triangular Chebyshev Legendre, 2D'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <Unique 1009649>
+  <PgfTag `code'>
+  <Pgf 
+   <PgfNumTabs 4>
+   <TabStop 
+    <TSX  0.625">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+   <TabStop 
+    <TSX  0.875">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+   <TabStop 
+    <TSX  1.125">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+   <TabStop 
+    <TSX  2.12501">
+    <TSType Left>
+    <TSLeaderStr ` '>
+   > # end of TabStop
+  > # end of Pgf
+  <ParaLine 
+   <String `tri cl three_d'>
+   <Char Tab>
+   <Char Tab>
+   <Char Tab>
+   <Char Tab>
+   <Font 
+    <FTag `'>
+    <FPlatformName `W.Times New Roman.R.400'>
+    <FFamily `Times New Roman'>
+    <FEncoding `FrameRoman'>
+    <FLocked No>
+   > # end of Font
+   <String `Triangular Chebyshev Legendre, 3D'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <Unique 1009677>
   <PgfTag `code'>
   <Pgf 
    <PgfNumTabs 4>
