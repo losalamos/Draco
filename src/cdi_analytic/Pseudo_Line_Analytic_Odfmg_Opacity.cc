@@ -99,7 +99,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
         g1 = group_bounds[g+1];
         raw.resize(0);
         
-        for (unsigned iq=qpoints_*(g0-gmin)/(gmax-gmin)-0.5;
+        for (unsigned iq=qpoints_*unsigned((g0-gmin)/(gmax-gmin)-0.5);
              iq<qpoints_;
              ++iq)
         {
