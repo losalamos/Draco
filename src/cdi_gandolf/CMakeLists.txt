@@ -39,6 +39,9 @@ include_directories(
    ${dsxx_BINARY_DIR}         # ds++/config.h
 ) 
 
+# setup binary directory
+file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
+
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -47,12 +50,20 @@ add_component_library( Lib_cdi_gandolf ${PROJECT_NAME} "${sources}" )
 add_dependencies(      Lib_cdi_gandolf Lib_cdi Lib_dsxx )
 
 
+add_executable( Exe_Gandolf_Interpreter ${sources} )
+target_link_libraries( Exe_Gandolf_Interpreter 
+                       Lib_cdi_gandolf Lib_cdi Lib_dsxx 
+                       ${GANDOLF_LIBRARY} ${GANDOLF_GFORTRAN_LIBRARY})
+set_target_properties( Exe_Gandolf_Interpreter 
+                       PROPERTIES OUTPUT_NAME bin/Gandolf_Interpreter )
+
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_cdi_gandolf DESTINATION lib )
 install( FILES ${headers} DESTINATION include/cdi_gandolf )
+install( TARGETS Exe_Gandolf_Interpreter DESTINATION bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
