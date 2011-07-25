@@ -29,7 +29,10 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 # ---------------------------------------------------------------------------- #
 
    file( GLOB test_sources *.cc )
-   list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/dacs_device_ppe.cc )
+   list( REMOVE_ITEM test_sources
+      ${PROJECT_SOURCE_DIR}/dacs_noop_ppe.cc )
+   list( REMOVE_ITEM test_sources
+      ${PROJECT_SOURCE_DIR}/dacs_wait_for_cmd_ppe.cc )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -78,32 +81,28 @@ else() # if ppe build
 # Build helper binaries
 # ---------------------------------------------------------------------------- #
 
-   add_executable( Exe_dacs_device_ppe dacs_device_ppe.cc )
-   add_executable( Exe_dacs_device_ppe2 dacs_device_ppe.cc )
-
-   set_target_properties( Exe_dacs_device_ppe
+   add_executable( Exe_dacs_noop_ppe dacs_noop_ppe.cc )
+   set_target_properties( Exe_dacs_noop_ppe
       PROPERTIES
-      OUTPUT_NAME dacs_device_ppe_exe
+      OUTPUT_NAME dacs_noop_ppe_exe
       LINK_FLAGS  "-Wl,-m,elf64ppc"
       )
-
-   set_target_properties( Exe_dacs_device_ppe2
-      PROPERTIES
-      OUTPUT_NAME dacs_device_ppe2_exe
-      LINK_FLAGS  "-Wl,-m,elf64ppc"
-      )
-
-   target_link_libraries( Exe_dacs_device_ppe
+   target_link_libraries( Exe_dacs_noop_ppe
       Lib_dsxx
       /usr/lib64/libdacs_hybrid.so
       )
+   install( TARGETS Exe_dacs_noop_ppe DESTINATION bin )
 
-   target_link_libraries( Exe_dacs_device_ppe2
+   add_executable( Exe_dacs_wait_for_cmd_ppe dacs_wait_for_cmd_ppe.cc )
+   set_target_properties( Exe_dacs_wait_for_cmd_ppe
+      PROPERTIES
+      OUTPUT_NAME dacs_wait_for_cmd_ppe_exe
+      LINK_FLAGS  "-Wl,-m,elf64ppc"
+      )
+   target_link_libraries( Exe_dacs_wait_for_cmd_ppe
       Lib_dsxx
       /usr/lib64/libdacs_hybrid.so
       )
-
-   install( TARGETS Exe_dacs_device_ppe DESTINATION bin )
-   install( TARGETS Exe_dacs_device_ppe2 DESTINATION bin )
+   install( TARGETS Exe_dacs_wait_for_cmd_ppe DESTINATION bin )
 
 endif()

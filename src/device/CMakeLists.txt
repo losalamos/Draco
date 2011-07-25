@@ -27,13 +27,11 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
    endif()
 
    # sanity check
-   if ( NOT EXISTS ${PPE_PREFIX}/bin/dacs_device_ppe_exe )
+   if ( NOT EXISTS ${PPE_PREFIX}/bin/dacs_noop_ppe_exe )
       message(FATAL_ERROR "PPE_PREFIX must be set to the installed PPE"
          " build of Draco." )
    endif()
 
-   include(draco_macros)
-   draco_flat_function_names()
    configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
 
 # ---------------------------------------------------------------------------- #

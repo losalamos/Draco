@@ -29,11 +29,28 @@ using namespace rtt_device;
 // TESTS
 //---------------------------------------------------------------------------//
 
+typedef SP<DACS_Process> SP_Proc;
+
+class DACS_Test_Process : public DACS_Process
+{
+  public:
+
+    //! Constructor.
+    DACS_Test_Process(const std::string & filename) :
+        DACS_Process(filename) { }
+
+    // SERVICES
+
+    //! Terminate the Cell-side process; a no-op in this case, because
+    //! dacs_noop_ppe_exe doesn't wait for a message.
+    virtual void stop() { }
+};
+
+//---------------------------------------------------------------------------//
 /*! \brief Test instance without calling init first.
  *
  * DACS_Device needs to know the name of the accel-side binary to launch.
- * Invoking instance without first calling init(filename) should trigger an
- * exception.
+ * Invoking instance without first calling init should trigger an exception.
  */
 void tstNoInit(UnitTest &ut)
 {
@@ -69,7 +86,8 @@ void tstNoAccelBinary(UnitTest &ut)
 
     try
     {
-        DACS_Device::init("no_such_binary");
+        SP_Proc d(new DACS_Test_Process("no_such_binary"));
+        DACS_Device::init(d);
     }
     catch (assertion &err)
     {
@@ -99,8 +117,10 @@ void tstDoubleInit(UnitTest &ut)
     try
     {
         // Call init twice with different filenames.
-        DACS_Device::init("dacs_device_ppe_exe");
-        DACS_Device::init("dacs_device_ppe2_exe");
+        SP_Proc d(new DACS_Test_Process("dacs_noop_ppe_exe"));
+        DACS_Device::init(d);
+        SP_Proc d2(new DACS_Test_Process("dacs_wait_for_cmd_ppe_exe"));
+        DACS_Device::init(d2);
     }
     catch (assertion &err)
     {
@@ -116,7 +136,8 @@ void tstDoubleInit(UnitTest &ut)
 
     // Call init again with the first filename.  This should not trigger an
     // exception.
-    DACS_Device::init("dacs_device_ppe_exe");
+    SP_Proc d3(new DACS_Test_Process("dacs_noop_ppe_exe"));
+    DACS_Device::init(d3);
     ut.passes("Called init twice with the same filename");
 }
 
@@ -128,7 +149,8 @@ void tstDoubleInit(UnitTest &ut)
  */
 void tstDevice(UnitTest &ut)
 {
-    DACS_Device::init("dacs_device_ppe_exe");
+    SP_Proc d(new DACS_Test_Process("dacs_noop_ppe_exe"));
+    DACS_Device::init(d);
 
     de_id_t de_id = DACS_Device::instance().get_de_id();
     if (de_id == 0) ut.failure("de_id == 0");

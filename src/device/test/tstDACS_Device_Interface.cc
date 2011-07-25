@@ -31,8 +31,8 @@ using namespace rtt_dsxx;
 /*! \brief Test instance without calling init first.
  *
  * DACS_Device needs to know the name of the accel-side binary to launch.
- * Invoking DACS_DEVICE_GET_DE_ID or DACS_DEVICE_GET_PID without first calling
- * DACS_DEVICE_INIT(filename) should trigger an exception.
+ * Invoking dacs_device_get_de_id or dacs_device_get_pid without first calling
+ * dacs_device_init(filename) should trigger an exception.
  */
 void tstNoInit(UnitTest &ut)
 {
@@ -41,7 +41,7 @@ void tstNoInit(UnitTest &ut)
 
     try
     {
-        DACS_DEVICE_GET_DE_ID(&de_id);
+        dacs_device_get_de_id(&de_id);
     }
     catch (assertion &err)
     {
@@ -60,7 +60,7 @@ void tstNoInit(UnitTest &ut)
 /*! \brief Test DACS_Device when the accel-side binary doesn't exist.
  *
  * DACS_Device needs the path to an accel-side binary to successfully call
- * dacs_de_start.  If the binary (specified via DACS_DEVICE_INIT) can't be
+ * dacs_de_start.  If the binary (specified via dacs_device_init) can't be
  * found, DACS_Device should throw an exception with a useful error message.
  */
 void tstNoAccelBinary(UnitTest &ut)
@@ -70,7 +70,7 @@ void tstNoAccelBinary(UnitTest &ut)
     
     try
     {
-        DACS_DEVICE_INIT(filename.c_str(), filename.size());
+        dacs_device_init(filename.c_str(), filename.size(), NULL);
     }
     catch (assertion &err)
     {
@@ -88,7 +88,7 @@ void tstNoAccelBinary(UnitTest &ut)
 //---------------------------------------------------------------------------//
 /*! \brief Test multiple calls to init, with different or identical filenames.
  *
- * DACS_DEVICE_INIT must be called at least once.  Calling it multiple times
+ * dacs_device_init must be called at least once.  Calling it multiple times
  * with different filenames is a sign of some kind of confusion, and
  * DACS_Device should throw an exception.  Calling it multiple times with the
  * same filename should be allowed, though.
@@ -96,14 +96,14 @@ void tstNoAccelBinary(UnitTest &ut)
 void tstDoubleInit(UnitTest &ut)
 {
     bool caught = false;
-    string f1("dacs_device_ppe_exe");
-    string f2("dacs_device_ppe2_exe");
+    string f1("dacs_noop_ppe_exe");
+    string f2("dacs_noop_ppe2_exe");
 
     try
     {
-        // Call DACS_DEVICE_INIT twice with different filenames.
-        DACS_DEVICE_INIT(f1.c_str(), f1.size());
-        DACS_DEVICE_INIT(f2.c_str(), f2.size());
+        // Call dacs_device_init twice with different filenames.
+        dacs_device_init(f1.c_str(), f1.size(), NULL);
+        dacs_device_init(f2.c_str(), f2.size(), NULL);
     }
     catch (assertion &err)
     {
@@ -117,9 +117,9 @@ void tstDoubleInit(UnitTest &ut)
         ut.failure("Failed to catch expected assertion");
     }
 
-    // Call DACS_DEVICE_INIT again with the first filename.  This should not
+    // Call dacs_device_init again with the first filename.  This should not
     // trigger an exception.
-    DACS_DEVICE_INIT(f1.c_str(), f1.size());
+    dacs_device_init(f1.c_str(), f1.size(), NULL);
     ut.passes("Called init twice with the same filename");
 }
 
@@ -132,29 +132,29 @@ void tstDoubleInit(UnitTest &ut)
  */
 void tstDevice(UnitTest &ut)
 {
-    string filename("dacs_device_ppe_exe");
+    string filename("dacs_noop_ppe_exe");
     int rc;
 
-    rc = DACS_DEVICE_INIT(filename.c_str(), filename.size());
+    rc = dacs_device_init(filename.c_str(), filename.size(), NULL);
     if (rc != 0) ut.failure("rc != 0");
     else ut.passes("rc == 0");
 
     de_id_t de_id;
-    rc = DACS_DEVICE_GET_DE_ID(&de_id);
+    rc = dacs_device_get_de_id(&de_id);
     if (de_id == 0) ut.failure("de_id == 0");
     else ut.passes("de_id != 0");
     if (rc != 0) ut.failure("rc != 0");
     else ut.passes("rc == 0");
 
     dacs_process_id_t pid;
-    rc = DACS_DEVICE_GET_PID(&pid);
+    rc = dacs_device_get_pid(&pid);
     if (pid == 0) ut.failure("pid == 0");
     else ut.passes("pid != 0");
     if (rc != 0) ut.failure("rc != 0");
     else ut.passes("rc == 0");
 
     de_id_t de_id2;
-    rc = DACS_DEVICE_GET_DE_ID(&de_id2);
+    rc = dacs_device_get_de_id(&de_id2);
     if (de_id2 != de_id)
         ut.failure("de_id changed");
     else
@@ -163,7 +163,7 @@ void tstDevice(UnitTest &ut)
     else ut.passes("rc == 0");
 
     dacs_process_id_t pid2;
-    rc = DACS_DEVICE_GET_PID(&pid2);
+    rc = dacs_device_get_pid(&pid2);
     if (pid2 != pid)
         ut.failure("pid changed");
     else

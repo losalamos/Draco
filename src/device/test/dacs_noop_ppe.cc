@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   device/test/dacs_device_ppe.cc
+ * \file   device/test/dacs_noop_ppe.cc
  * \author Gabriel M. Rockefeller
  * \date   Fri Jun 17 15:29:18 2011
  * \brief  A tiny DACS accel-side binary, for testing DACS_Device.
@@ -27,5 +27,5 @@ int main()
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of dacs_device_ppe.cc
+//                        end of dacs_noop_ppe.cc
 //---------------------------------------------------------------------------//

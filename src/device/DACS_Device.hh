@@ -13,7 +13,9 @@
 #ifndef device_DACS_Device_hh
 #define device_DACS_Device_hh
 
+#include "DACS_Process.hh"
 #include "ds++/Assert.hh"
+#include "ds++/SP.hh"
 
 #include <dacs.h>
 #include <string>
@@ -27,14 +29,13 @@ namespace rtt_device
  * \brief A singleton for DACS host-side resource and process management.
  *
  * DACS_Device provides a minimal representation of the host side of a hybrid
- * DACS process.  It initializes DACS, reserves a Cell, launches the
- * accel-side process, and provides accessors for the DACS de_id and child
- * pid.
+ * DACS process.  It initializes DACS, reserves a Cell, launches an accel-side
+ * process, and provides accessors for the DACS de_id and child pid.
  *
  * Because it's implemented as a (Meyers) singleton, DACS_Device ensures that
  * DACS initialization, reservation, and process-launch only happen once.  It
- * also waits for the accel-side process to complete and calls dacs_exit at
- * program termination.
+ * also tells the accel-side process when to stop, waits for the process to
+ * complete, and calls dacs_exit at program termination.
  *
  * \sa DACS_Device.cc for detailed descriptions.
  */
@@ -49,6 +50,10 @@ class DACS_Device
 {
   public:
 
+    // TYPEDEFS
+
+    typedef rtt_dsxx::SP<DACS_Process> SP_Proc;
+
     //! Return a reference to the DACS_Device.
     static DACS_Device& instance()
     {
@@ -56,14 +61,14 @@ class DACS_Device
         return the_instance;
     }
 
-    //! Set the filename of the accel-side binary.
-    static void init(const std::string & fname);
+    //! Specify a DACS_Process to be launched on the device.
+    static void init(SP_Proc proc);
 
     //! Return the element id of the reserved DACS child.
-    de_id_t get_de_id() { return de_id; }
+    de_id_t get_de_id() const { return de_id; }
 
     //! Return the process id of the DE process.
-    dacs_process_id_t get_pid() { return pid; }
+    dacs_process_id_t get_pid() const { return process->get_pid(); }
     
   private:
 
@@ -81,9 +86,8 @@ class DACS_Device
 
     // DATA
 
-    static std::string accel_filename;
+    static SP_Proc process;
     de_id_t de_id;
-    dacs_process_id_t pid;
 };
 
 } // end namespace rtt_device

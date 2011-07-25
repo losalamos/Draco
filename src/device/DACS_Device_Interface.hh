@@ -13,17 +13,16 @@
 #ifndef device_DACS_Device_Interface_hh
 #define device_DACS_Device_Interface_hh
 
-#include "device/config.h"
-
 #include <dacs.h>
 
 extern "C"
 {
-    int DACS_DEVICE_INIT(const char * const filename, const int len);
+    int dacs_device_init(const char * const filename, const int len,
+                         void (*f)());
 
-    int DACS_DEVICE_GET_DE_ID(de_id_t * const de);
+    int dacs_device_get_de_id(de_id_t * const de);
 
-    int DACS_DEVICE_GET_PID(dacs_process_id_t * const pid);
+    int dacs_device_get_pid(dacs_process_id_t * const pid);
 }
 
 #endif // device_DACS_Device_Interface_hh

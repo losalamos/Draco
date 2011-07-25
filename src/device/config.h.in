@@ -20,10 +20,6 @@ namespace rtt_device
     std::string const default_ppe_bindir("@PPE_PREFIX@/bin");
 }
 
-#cmakedefine DACS_DEVICE_INIT @DACS_DEVICE_INIT@
-#cmakedefine DACS_DEVICE_GET_DE_ID @DACS_DEVICE_GET_DE_ID@
-#cmakedefine DACS_DEVICE_GET_PID @DACS_DEVICE_GET_PID@
-
 #endif /* device_config_h */
 
 /*---------------------------------------------------------------------------*/

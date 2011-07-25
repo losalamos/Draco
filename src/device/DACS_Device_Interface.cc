@@ -12,18 +12,23 @@
 
 #include "DACS_Device_Interface.hh"
 #include "DACS_Device.hh"
+#include "DACS_External_Process.hh"
 
+using namespace std;
+using namespace rtt_dsxx;
 using namespace rtt_device;
 
-int DACS_DEVICE_INIT(const char * const filename, const int len)
+int dacs_device_init(const char * const filename, const int len, void (*f)())
 {
-    DACS_Device::init(std::string(filename, len));
+    SP<DACS_Process> p(new DACS_External_Process(string(filename, len), f));
+
+    DACS_Device::init(p);
 
     // Return success.
     return 0;
 }
 
-int DACS_DEVICE_GET_DE_ID(de_id_t * const de)
+int dacs_device_get_de_id(de_id_t * const de)
 {
     *de = DACS_Device::instance().get_de_id();
 
@@ -31,7 +36,7 @@ int DACS_DEVICE_GET_DE_ID(de_id_t * const de)
     return 0;
 }
 
-int DACS_DEVICE_GET_PID(dacs_process_id_t * const pid)
+int dacs_device_get_pid(dacs_process_id_t * const pid)
 {
     *pid = DACS_Device::instance().get_pid();
 
