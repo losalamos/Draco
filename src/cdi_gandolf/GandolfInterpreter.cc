@@ -126,23 +126,21 @@ void gandolf_file_read(const std::string& op_data_file) throw()
    
     int keepGoing = 1;
     size_t matID(1);
-    size_t denID(1);
-    size_t tempID(1);
     size_t selID(1);
     while ( keepGoing )
     {
-       cout << "Enter 0 to quit." << endl;
+       cout << "Enter 0 or q to quit." << endl;
        cout << "Please select a material from 1 to " << numMaterials << endl;
        std::cin  >> keepGoing; if (keepGoing == 0) break;
        matID = keepGoing-1;  Insist( (  matID <numMaterials)  ,"Invalid material index"); 
 
-       cout << "Please select a density from 1 to " << dens.size() << endl;
-       std::cin  >> keepGoing; if (keepGoing == 0) break;
-       denID = keepGoing-1;  Insist( ( denID <dens.size())  ,"Invalid density index"); 
-
-       cout << "Please select a temperature from 1 to " << temps.size() << endl;
-       std::cin  >> keepGoing; if (keepGoing == 0) break;
-       tempID = keepGoing-1;  Insist( ( tempID < temps.size())  ,"Invalid temperature index"); 
+       double density(0.0);
+       cout << "Please enter a density from " << dens[0] << " to " << dens[dens.size()-1] << endl;
+       std::cin  >> density; if (density <= 0.0) { keepGoing=0; break;}
+        
+       double temperature(0.0);
+       cout << "Please select a temperature from " << temps[0] << " to " << temps[temps.size()-1] << endl;
+       std::cin  >> temperature; if (temperature <= 0.0) { keepGoing=0; break;} 
  
        cout << "Choose your opacity type:" << endl;
        cout << "1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)" << endl;
@@ -156,8 +154,8 @@ void gandolf_file_read(const std::string& op_data_file) throw()
           spGOp = new GandolfGrayOpacity( spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
           cout << "The Gray Rosseland Absorption Opacity for " << endl;
           cout << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-                    << dens[denID] << ", temperature " << temps[tempID] << " is " 
-                    << spGOp->getOpacity(temps[tempID], dens[denID]) << endl;
+                    << density << ", temperature " << temperature << " is " 
+                    << spGOp->getOpacity(temperature, density) << endl;
        }
        else if (selID == 1)
        {
@@ -165,8 +163,8 @@ void gandolf_file_read(const std::string& op_data_file) throw()
           spGOp = new GandolfGrayOpacity( spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
           cout << "The Gray Planck Absorption Opacity for " << endl;
           cout << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-                    << dens[denID] << ", temperature " << temps[tempID] << " is " 
-                    << spGOp->getOpacity(temps[tempID], dens[denID]) << endl;
+                    << density << ", temperature " << temperature << " is " 
+                    << spGOp->getOpacity(temperature, density) << endl;
           
        }
        else if (selID == 2)
@@ -175,8 +173,8 @@ void gandolf_file_read(const std::string& op_data_file) throw()
           spMGOp = new GandolfMultigroupOpacity( spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
           cout << "The Multigroup Rosseland Absorption Opacity for " << endl;
           cout << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-                    << dens[denID] << ", temperature " << temps[tempID] << " is: " << endl ;
-          std::vector<double> opData = spMGOp->getOpacity(temps[tempID], dens[denID]);
+                    << density << ", temperature " << temperature << " is: " << endl ;
+          std::vector<double> opData = spMGOp->getOpacity(temperature, density);
           cout << "Index \t Group Center \t\t Opacity" << endl;
           for (size_t g=0; g < opData.size(); ++g)
                   cout << g+1 << "\t " << 0.5*(groups[g]+groups[g+1]) << "   \t " << opData[g] << endl; 
@@ -187,8 +185,8 @@ void gandolf_file_read(const std::string& op_data_file) throw()
           spMGOp = new GandolfMultigroupOpacity( spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
           cout << "The Multigroup Planck Absorption Opacity for " << endl;
           cout << "material " << matID << " Id(" << matIDs[matID] << ") at density "
-                    << dens[denID] << ", temperature " << temps[tempID] << " is: " << endl ;
-          std::vector<double> opData = spMGOp->getOpacity(temps[tempID], dens[denID]);
+                    << density << ", temperature " << temperature << " is: " << endl ;
+          std::vector<double> opData = spMGOp->getOpacity(temperature, density);
           cout << "Index \t Group Center  \t\t Opacity" << endl;
           for (size_t g=0; g < opData.size(); ++g)
                   cout << g+1 << "\t " << 0.5*(groups[g]+groups[g+1]) << "   \t " << opData[g] << endl; 
