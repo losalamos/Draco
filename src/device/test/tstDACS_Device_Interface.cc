@@ -12,8 +12,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <vector>
-#include <cmath>
 
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
