@@ -64,11 +64,11 @@ DACS_Device::DACS_Device() : de_id(0)
 /*! \brief DACS_Device destructor.
  *
  * DACS_Device is a singleton; the destructor is called at program
- * termination.  The destructor tells the DACS_Process to shut down, waits for
- * the accel-side process to complete, releases the reserved Cell, and then
- * calls dacs_exit.  Throwing an exception inside the destructor would
- * interfere with stack unwinding already in progress (from, for example, an
- * earlier exception), so errors are reported to stderr.
+ * termination.  The destructor tells the DACS_Process to stop, waits for the
+ * accel-side process to complete, releases the reserved Cell, and then calls
+ * dacs_exit.  Throwing an exception inside the destructor would interfere
+ * with stack unwinding already in progress (from, for example, an earlier
+ * exception), so errors are reported to stderr.
  */
 DACS_Device::~DACS_Device()
 {
@@ -103,7 +103,7 @@ DACS_Device::~DACS_Device()
  *
  * init saves the specified DACS_Process in a static member variable, so that
  * the DACS_Device constructor can launch the accel-side process, and so that
- * the singleton can ask the process for its pid and tell it to stop during
+ * the singleton can ask the process for its pid, and tell it to stop during
  * host-side program termination.  init also initializes DACS, the first time
  * it's called.  DACS_Device will launch exactly one accel-side binary, so
  * calling init multiple times with different DACS_Processes that point to

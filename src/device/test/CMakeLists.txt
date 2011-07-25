@@ -10,17 +10,17 @@
 project( device_test CXX )
 
 # If this is an x86 build, build the unit tests.  If this is a ppe
-# build, build the ppe helper binary.  The ppe binary must be
+# build, build the ppe helper binaries.  The ppe binaries must be
 # installed (i.e., available in PPE_BINDIR) for the x86 tests to pass.
 #
 # Another possible approach might have been to build this package only
-# during x86 builds and then somehow just build the ppe helper binary
-# using the ppe compiler (which must be available, since this is a
-# het-only package).  In that scenario, the ppe binary wouldn't need
-# to be installed; it would just be built in the test directory, next
-# to the unit tests that use it.  CMake really prefers the "one build
-# tree-one toolchain" model, though, and it's probably better not to
-# fight the system.
+# during x86 builds and then somehow just build the ppe helper
+# binaries using the ppe compiler (which must be available, since this
+# is a het-only package).  In that scenario, the ppe binaries wouldn't
+# need to be installed; they would just be built in the test
+# directory, next to the unit tests that use them.  CMake really
+# prefers the "one build tree-one toolchain" model, though, and it's
+# probably better not to fight the system.
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 

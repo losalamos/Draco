@@ -11,7 +11,7 @@ cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project( device CXX )
 
 # At the moment, this package is het-only, and x86-only, but it builds
-# a small ppe binary for testing (so that dacs_de_start can have
+# small ppe binaries for testing (so that dacs_de_start can have
 # something to launch).
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build

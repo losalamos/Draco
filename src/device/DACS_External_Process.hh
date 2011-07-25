@@ -21,22 +21,21 @@ namespace rtt_device
 //===========================================================================//
 /*!
  * \class DACS_External_Process
- * \brief
+ * \brief A DACS_Process that accepts an external "stop" function pointer.
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at http://www.doxygen.org.
- *
- * \sa DACS_External_Process.cc for detailed descriptions.
- *
- * \par Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
+ * DACS_External_Process derives from DACS_Process and provides an
+ * implementation of the stop method that invokes a function passed to the
+ * constructor to stop the accel-side process.
  */
 /*! 
  * \example device/test/tstDACS_External_Process.cc
  *
  * Test of DACS_External_Process.
+ *
+ * \example device/test/tstDACS_Device_Process.cc
+ *
+ * A combined test of DACS_External_Process and DACS_Device, through the flat
+ * interface.
  */
 //===========================================================================//
 

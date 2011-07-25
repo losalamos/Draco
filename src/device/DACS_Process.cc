@@ -31,7 +31,12 @@ static std::string verbose_error(std::string const & message);
 //---------------------------------------------------------------------------//
 /*! \brief DACS_Process constructor.
  *
- *
+ * DACS_Process saves the full filename of the accel-side binary.  The
+ * constructor tries to interpret the specified filename in three ways: as an
+ * absolute path, as a path relative to the current working directory, and as
+ * a path relative to a default location (default_ppe_bindir).  If the binary
+ * can't be found in any of those locations, the constructor throws an
+ * exception.
  */
 DACS_Process::DACS_Process(const std::string & filename)
 {
@@ -69,7 +74,7 @@ DACS_Process::DACS_Process(const std::string & filename)
 //---------------------------------------------------------------------------//
 /*! \brief Launch the accel-side process.
  *
- *
+ * start invokes dacs_de_start to launch the accel-side binary.
  */
 void DACS_Process::start(const de_id_t & de_id)
 {

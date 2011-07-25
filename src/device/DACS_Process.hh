@@ -23,20 +23,19 @@ namespace rtt_device
 //===========================================================================//
 /*!
  * \class DACS_Process
- * \brief
+ * \brief A abstract host-side representation of an accel-side process.
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at http://www.doxygen.org.
+ * DACS_Process represents an accel-side process.  It provides methods to
+ * start and stop the accel-side process, and accessors that return the
+ * filename of the accel-side binary and the pid of the running process.
+ *
+ * Clients should inherit from DACS_Process and implement the stop method.
  *
  * \sa DACS_Process.cc for detailed descriptions.
- *
- * \par Code Sample:
- * \code
- *     cout << "Hello, world." << endl;
- * \endcode
+ * \sa DACS_External_Process.hh for a concrete implementation.
  */
-/*! 
- * \example device/test/tstDACS_Process.cc
+/*!
+ * \example device/test/tstDACS_Device_Process.cc
  *
  * Test of DACS_Process.
  */
@@ -74,7 +73,10 @@ class DACS_Process
 
     // ACCESSORS
 
+    //! Return the filename of the binary associated with this process.
     std::string const & get_filename() const { return accel_filename; }
+
+    //! Return the pid of the running accel-side process.
     dacs_process_id_t const & get_pid() const { return pid; }
 
   private:
