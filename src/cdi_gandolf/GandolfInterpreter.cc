@@ -71,7 +71,6 @@ void gandolf_file_read(const std::string& op_data_file) throw()
     {
 	std::cerr << "Error: Can't open file " << op_data_file << ". Aborting" << endl;
         throw;
-	return;
     }
 
     // Test the new object to verify the constructor and accessors.
