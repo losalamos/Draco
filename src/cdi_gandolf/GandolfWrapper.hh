@@ -76,7 +76,7 @@ namespace rtt_cdi_gandolf {
 	/*!
 	 * \brief Maximum number of materials allowed in the IPCRESS file.
 	 */
-	const size_t maxMaterials = 10; 
+        const size_t maxMaterials = 128;  // other codes use this magic value.
 	
 	/*!
 	 * \brief Maximum number of data keys per material.
