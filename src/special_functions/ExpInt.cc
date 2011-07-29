@@ -7,7 +7,7 @@
  * \note   Copyright 2011 Los Alamos Natinal Security, LLC.
  */
 //---------------------------------------------------------------------------//
-// $Id$ TODO
+// $Id$ 
 //---------------------------------------------------------------------------//
 
 #include "ExpInt.hh"
@@ -51,7 +51,7 @@ double En(unsigned const n, double const x)
     const double EPS=numeric_limits<double>::epsilon();
     const double BIG=numeric_limits<double>::max()*EPS;
     
-    double a,b,c,d,del,fact,h,psi,ans;
+    double a,b,c,d,del,fact,h,psi,ans(0.0);
 
     if (n==0)
     {
@@ -199,9 +199,6 @@ double Ei (double const x)
         }
         return exp(x)*(1.0+sum)/x;
     }
-
-    Insist(false, "Should never get here.");
-    return -1.0;
 }
 
 } //end namespace rtt_sf
