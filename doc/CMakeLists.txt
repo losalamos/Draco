@@ -12,6 +12,10 @@ cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project( draco_doc_dir )
 
 # helper macros
+
+if( NOT "${CMAKE_MODULE_PATH}" MATCHES "config" )
+   set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../config )
+endif()
 include( doc_macros )
 set( allpdfs "" CACHE INTERNAL "list of all pdfs to be generated" )
 
