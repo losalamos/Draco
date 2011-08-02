@@ -70,10 +70,10 @@ release.
 Machine                Compilers        Vendors
 ----------------       ---------------  -----------
 TLCC hurricane/turing  Intel 10.0.023   OpenMPI-1.4.3
-Roadrunner             PGI 9.0-3        OpenMPI-1.4.3
+Roadrunner             GCC 4.3.0        OpenMPI-1.4.3
 Redtail/YellowRail     PGI 9.0-3        OpenMPI-1.4.3
 Dawn                   --               --
-Ceilo/Ceilito          --               --
+Ceilo/Ceilito          PGI 10.9.0       MPICH2-5.2.0.7
 \endcode
 
 <!-- ---------------------------------------------------------------------- -->
@@ -97,40 +97,24 @@ Determine the last release number
 
 \section draco_release_list_changes Identify what has changed
 
-\code
-   % python $draco_src_dir/tools/find_tags_diff.py -t "package" > changes_since_#_#_#.
-\endcode
-or
-\code
-   % $draco_src_dir/draco/environment/bin/log_changes_since "date" > changes_since_#_#_#.log
-\endcode
-or
+There are several commands that can be used to build a description of code
+changes.
+
+- List files that have been modified:
 \code
    % cvs -q diff -N -c -r draco-5_20_0 &> changes_since_#_#_#.log
 \endcode
 
-- "package" is the name of the current directory (e.g.: "draco").
-- "date" would be the date of the last release (e.g.: "2008-02-23").
-- The python script shows you all the changes since the last CVS tag, the bash
-  script shows you all the log comments for changes since the date. When used
-  together you can almost always figure out what was changed and why it was
-  changed. This is particularly useful for the "package"=draco because many
-  people check changes into this package, not just Jayenne types ... but it is
-  usually Jayenne types who do formal releases of the package. So the logs
-  help us track down the reason for changes so that we can summarize them in
-  the ChangeLog or release notes.
-
-What files have changed since the last release?
+- List the cvs log comments for files that have been changed:
 \code
    % cat changes_since_5_20_0.log | grep "Index:" &> files_changed_since_5_20_0.log  
 \endcode
-- Report this in the ChangeLog.
-
-Obtain comments from CVS commits:
+or
 \code
    % cvs -q log -NS -d"2010-01-29<now" > comments_since_5_20_0.log
 \endcode
-- Update release summary found in each package's ChangeLog.
+- Dates are samples.  You will need to use the actual date range for your query.
+- Summarize changes in the Draco ChangeLog and in the ReleaseNote.
 
 <!-- ---------------------------------------------------------------------- -->
 

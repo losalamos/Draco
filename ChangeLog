@@ -1,3 +1,315 @@
+2011-08-02  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-6_2_0.  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - clubimc-6_0_0
+	  - milagro-6_0_0
+	  - wedgehog-8_0_0
+	  - capsaicin
+
+	* Summary of changes:
+	  - 540 files were changed, added or removed.
+	  - This release does not include the packages pcgWrap or plot2D.
+
+	* Details per package:
+
+	Build System:
+	  - Support for autoconf is deprecated with this release.  CMake
+	    will be the only supported build system.
+	  - Provide a BUILD_DOCS option and the assoicated 'doc' Makefile
+	    target that will compile LaTeX sources found in the doc
+ 	    subdirectory into pdf.
+	  - Eliminate config/FindMPI.cmake in favor of using the version
+	    provided with CMake-2.8.5.
+	  - Provide better support for Eclipse CDT and XCode development
+	    environments.
+	  - No longer require GSL or LAPACK to configure draco with cmake
+	    (some components will not be built if these libraries are
+	    missing).
+	  - Improved use of Valgrind for regressing testing and reporting.
+	    The valgrind suppression file is located at
+	    draco/regression/valgrind_suppress.txt.  Results are
+	    summarized on the CCS-2 Dashboard.
+          - Added use of RESOURCE_LOCK when registering tests to avoid
+	    conflicts between tests.
+          - Added use of RUN_AFTER when registering tests to associated a
+	    dependence between two or more tests.
+          - Merge changes in vendor supplied FindBLAS.cmake with our own
+	    version.
+          - Improve how FindBLAS.cmake works when Fortran is active.
+          - Replace FindCPLAPACK.cmake with FindLAPACK.cmake.
+          - Provide support for Cielito by providing a toolchain file
+	    (config/Toolchain-catamount.cmake).
+          - Provide support for Roadrunner by providing a toolchain file
+	    (config/Toolchain-roadrunner-ppe.cmake).  More details at
+	    https://tf.lanl.gov/sf/wiki/do/viewPage/projects.jayenne/wiki/HowToBuildLinux.
+          - Provide support for running ctest for a PPE build when on the
+	    RoadRunner backend.  In this mode, the tests are registered as
+	    short scripts that ssh into a PPC node and executes the test
+	    from the PPC.
+
+	Developer Environment:
+	  - The CDash dashboard at coder.lanl.gov/cdash is now the primary
+	    point of information concerning regression testing/reporting.
+	  - Several new styles have been added to the environment/latex
+	    directory, including the beamer presentation templte.
+	  - The modules capability has been expanded through the addition
+	    of more module definition files: eclipse, bullseyecoverage,
+	    gcc-4.5.2, intel-10.0.023, pgi-10.4, pgi-7.0-5, python-2.6.6,
+	    trilinos-10.6.4, valgrind-3.6.1, etc.
+	  - Component level Release files have been consolidated so that
+	    only ds++/Release is used for Draco version information.
+	  - Autoconf and SCons build system files are deprecated and will
+	    be retired over the next few weeks.
+	  - When using cmake-gui or ccmake, some variables are now
+	    contrained to permittable values.
+
+	c4:
+	  - Redesign the ApplicationUnitTest class so that it uses the CPP
+	    macro DRACO_UNAME instead of the deprecated C4_UNAME. Change
+	    the CPP macros of the form c4_is<platform> to
+	    draco_is<platform>. Finally, the define for C4_MPICMD has been
+	    moved to c4/config.h and away from ApplicationUnitTest.hh.
+          - Use the new functions from ds++/path.hh instead of redefining
+	    our own in c4.
+          - Update the ApplicationUnitTest class so that it works on
+	    Cielito (i.e.: teach it to run aprun).
+          - C4_Functions.hh defines a new function send_is that will
+	    invoke MPI_Issend.
+          - Update ParallelUnitTest to correct a deficiency that allowed
+	    the test to report PASS when a failure only occured on a
+	    non-IO processor.  Also eliminated a potential race condition
+	    found in the status() member function.
+          - Update Send_Receive so that the sender now holds onto size in
+	    a private member variable.  This prevents the value from going
+	    out of scope before the send completes.
+
+            This resolves the failure of the single-PE
+	    'auto-communication' test in tstSend_Receive on Cielito.  This
+	    test has typically passed on other machines, probably due to
+	    lucky buffering by MPI.  MPI_Isend will not block waiting for
+	    a matching receive, but it's not required to buffer data.  The
+	    send buffer can only be safely reused (or destroyed, by any
+	    mechanism) after the send completes; i.e., after a Wait or
+	    Test.
+
+	cdi:
+	  - In OpacityCommon.hh, provide a new enum value for
+	    rtt_cdi::Reaction to indicate the end of the enumeration list.
+	    This is uselful for default initialization.
+
+	cdi_analytic:
+	  - Changed Pseudo_Line_Analytic_Opacity to
+	    Pseudo_Line_Analytic_MultigroupOpacity. This change supports
+	    implementing ODF opacities and pseudo line opacities in
+	    Serrano.
+	  - Rename Analytic_Multigroup_Opacity to
+	    nGray_Analytic_MultigroupOpacity. This change supports
+	    implementing ODF opacities and pseudo line opacities in
+	    Serrano.
+	  - This component now depends on the parser and ode components,
+	    moving it from level 3 to level 4 in the levelization
+	    diagram.
+
+	cdi_gandolf:
+	  - Provide a new utility,GandolfInterpreter, that can read
+	    IPCRESS files and interactively provide information about its
+	    content.  An example use command is:
+
+	   ./GandolfInterpreter file.ipcress
+
+	   You can follow the prompts to query various parts of the IPCRESS file.
+	  - GandolfWrapper was modified to change the maximum allowed
+	    materials per file from 10 to 128.
+
+	device:
+	  - This component is new for Draco-6_2_0.  Its purpose is to
+	    provide an interface/handle for a heterogeneous computing
+	    device.  Currently, it wraps the DACS interface for
+	    RoadRunner.  In the future it may also provide an interface to
+	    GPUs or special threading models.
+	  - Currently, this component is only available when building on
+	    RoadRunner.
+	  - DACS_Device is a singleton for DACS host-side resource and
+	    process management.
+	  - DACS_Process is an abstract host-side representation of an
+	    accel-side process.  DACS_Process represents an accel-side
+	    process.  It provides methods to start and stop the accel-side
+	    process, and accessors that return the filename of the
+	    accel-side binary and the pid of the running process.  Clients
+	    should inherit from DACS_Process and implement the stop method.
+
+	ds++:
+	  - Retire Allocators.
+	    In practice, this class was designed before the STL allocators
+	    class was finalized and was deficient when compared to current
+	    standards.  There are other design defects that caused
+	    repeated compiler warnings. Also, the Allocators classes were
+	    only being used by ds++/Mat.hh and this class was designed so
+	    that only the Simple_Allocator would work. It was impossible
+	    to instantiate Mat[1-5] with the Guarded_Allocator<T>.  The
+	    plan is to update Mat.hh to use std::allocators<T>.  This
+	    still allows more sophisticated allocators to be used in the
+	    future and allow us to eliminate ds++/Allocators.hh.
+	  - Retire DynArray.
+	  - Update Mat classes to use STL allocators instead of
+	    ds++/Allocators, which are being retired.
+	  - Provide a new function verbose_error() in path.hh.
+	  - Refactor UnitTest by moving some file/path manipulation logic
+	    into ds++/path.hh.
+	  - Update path by providing the member functions fileExists() and
+	    getFilenameComponent().
+	  - Provide swap.hh.  This class provides functions that do
+	    byte-swapping in one of two ways: either use GNU extended asm
+	    for x86 (really f86+), or use the poor people's method of
+	    digging out one byte at a time and moving it to the right
+	    place. The poor method is really not that bad: GCC for example
+	    seems to optimize it down to about 5 instructions in the 32
+	    bit case, including loads, versus 2 instructions (including
+	    load) for the inline asm case.
+	  - Establish Release.hh/cc as the Release information for all
+	    Draco components.
+
+	lapack_wrap:
+	  - The build system will omit lapack_wrap from the build if
+	    LAPACK is not found.
+
+	linear:
+	  - ludcmp.i.hh was modified to use abs from ds++ instead of
+	    cstdlib.h. The dsxx version provides specialization for double
+	    and eliminates a gcc warning when compiling on rr-dev.
+	  - This component does not depend on traits so remove this
+	    linkage from CMakeLists.txt.
+
+	parser:
+	  - Expanded initialization syntax for Expression to allow general
+	    expressions.
+
+	quadrature:
+	  - In Angle_Operator, added a capability to choose to add an
+	    additional set of starting directions which are zero-weight,
+	    outwardly directed angles on a level that are opposite the
+	    inwardly directed angles usually used for the starting
+	    direction calculation in curvilinear coordinates.
+
+            The enforce exact symmetry flag for the sweeper is now a bool
+	    and is set to be false by default. This change requires that
+	    many of the application test input files be modified to turn
+	    this flat on because the base files were calculated with the
+	    previous default of being turned on.
+
+	  - In Angle_Operator, added a vector<unsigned> data member and
+	    accessor that contains the angle index into the most-positive
+	    outwardly directed angle on every level for ordinate sets
+	    constructed for curvilinear coordinates.  These are the angles
+	    used to reflect the starting direction angular fluxes.
+	  - Updated Ordinate so that the ordinates can be sorted based on
+	    a comparator supplied to the QuadServices constructor.  Also
+	    fixed an inconsistency in ordering of ordinates. Fix incorrect
+	    multiplication of source by opacity. Now returns constant
+	    solution for S6 and source boundaries.
+	  - Added support for 3D triangular Chebyshev quadrature.
+	  - In QuadServices, add a missing  gsl_permutation_free, to match
+	    gsl_permutation_alloc. This eliminates the five memory leaks
+	    reported by valgrind.
+
+	special_functions:
+	  - Add an exponential integral evaluation function, ExpInt. This
+	    routine is extracted from from Numerical Recipes for C++.  It
+	    computes the general exponential integrals of type Ei(x) or
+	    E_n(x).
+
+	    E_n(x) is calculated either by special case definitions for
+	    n=0 or x=0 with n=0 or 1, or the Lentz algorithm if x>1.0, or
+	    the digamma series representation for greater x.
+
+           Ei(x) is calculated using power series expansion for
+	    x<|ln(EPS)|, where EPS is the required relative error (set to
+	    machine precision), as this is the lower limit of the
+	    asymptotic series, which is used for greater values of x. The
+	    asymptotic series includes all converging terms until values
+	    are less than EPS. Ei(-x) evaluates to the extension -E_1(x).
+
+	timestep:
+	  - Refactor some code and the unit tests to improve code
+	    coverage.  In particular, capture some of the output that was
+	    going to cout and examine it from within the tests.
+
+	traits:
+	- With the retirement of Release.cc, this component is now a
+	    header only package.  No library will be built or installed.
+
+	Defects:
+	  - Known defects are listed on LANL's TeamForge web server,
+	    tf.lanl.gov.  Here is a list of known defects:
+
+	    + cdi_gandolf will crash with a segmentation violation if a
+	      bad key is provided.
+	    +c4/tstComm_Dup fails for optimized builds on Cielito.
+
+	* Statistics:
+	
+% tools/count_loc.sh 
+
+%% Counting lines of source code -- 
+%% Directory:  /home/kgt/draco
+%% Date     :  Tue Aug 2 09:15:02 MDT 2011
+%% Date     :  Tue Aug 2 09:15:02 MDT 2011
+
+%%                  Total C++ source: 40006
+%%    C++ source in test directories: 22481
+%%       C++ contract specifications: 1494
+%%                      C++ comments: 42763
+%%              Total Fortran source: 12
+%%                  Fortran comments: 4
+%%               LaTeX Documentation: 16045
+%%                       HTML source: 0
+%%                         Text docs: 6768
+%%        Build system script source: 111510
+%%    Executable shell script source: 3239
+%%            Executable Perl source: 1867
+%%                     Python source: 3906
+%%                     Expect source: 0
+%%                      Elisp source: 6695
+
+	% cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
+	% export COVFILE=`pwd`/CMake.cov
+	% export COVDIRCFG=`pwd`/covclass_cmake.cfg
+	% cd ../source/src; covdir
+
+Directory               Function Coverage           C/D Coverage
+------------------  ---------------------  ---------------------
+viz/                    24 /    25 =  96%     129 /   168 =  76%
+units/                  82 /    82 = 100%      58 /    58 = 100%
+traits/                 16 /    16 = 100%       0 /     0
+timestep/               59 /    62 =  95%     104 /   178 =  58%
+special_functions/      29 /    29 = 100%     190 /   198 =  95%
+roots/                   8 /     8 = 100%     256 /   312 =  82%
+rng/                    62 /    67 =  92%      63 /    70 =  90%
+quadrature/            167 /   182 =  91%     517 /   631 =  81%
+parser/                246 /   266 =  92%    1050 /  1351 =  77%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+norms/                  25 /    26 =  96%      21 /    34 =  61%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+linear/                 16 /    16 = 100%     324 /   392 =  82%
+lapack_wrap/            11 /    16 =  68%       0 /     0
+fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+ds++/                  654 /   673 =  97%     602 /   679 =  88%
+diagnostics/             8 /     8 = 100%       4 /     4 = 100%
+cdi_gandolf/           129 /   132 =  97%     154 /   278 =  55%
+cdi_analytic/          130 /   143 =  90%     156 /   200 =  78%
+cdi/                    39 /    39 = 100%      27 /    30 =  90%
+c4/                    169 /   174 =  97%     288 /   338 =  85%
+RTT_Format_Reader/     315 /   321 =  98%     273 /   356 =  76%
+------------------  ---------------------  ---------------------
+Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
+
+
 2011-03-23  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* draco: Release draco-6_1_0.  This is a minor Draco release.

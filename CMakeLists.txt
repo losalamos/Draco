@@ -80,7 +80,7 @@ set_property( GLOBAL PROPERTY USE_FOLDERS ${BUILD_USE_SOLUTION_FOLDERS} )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 1)
+set(DRACO_VERSION_MINOR 2)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )
