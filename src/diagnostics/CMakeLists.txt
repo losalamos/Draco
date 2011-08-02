@@ -73,3 +73,12 @@ install( FILES ${headers}  DESTINATION include/diagnostics )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
+  
+
+# ---------------------------------------------------------------------------- #
+# Autodoc
+# ---------------------------------------------------------------------------- #
+
+process_autodoc_pages()
+
+

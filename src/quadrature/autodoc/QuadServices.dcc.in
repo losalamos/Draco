@@ -1,0 +1,215 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   quadrature/autodoc QuadServices.dcc
+ * \author Kelly Thompson
+ * \date   Mon Nov 8 11:17:12 2004
+ * \brief  Provide doxygen documentation for QuadServices class
+ * \note   Copyright 2004 The Regents of the University of California.
+ *
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+//===========================================================================//
+/*!
+ * \class rtt_quadrature::QuadServices
+ * \brief Provide Moment-to-Discrete and Discrete-to-Moment operations.
+ *
+ * This class provides the Moment-to-Discrete and Discrete-to-Moment matrices
+ * as described by Jim Morel in "A Hybrid Collocation-Galerkin-Sn Method for
+ * Solving the Boltzmann Transport Equation," Nuclear Science and
+ * Engineering, Vol. 101, pp. 72-87 (2001).
+ *
+ * Some code was derived from the Partisn source file "galerkq.f."  Other
+ * pieces were derived from the Snac2 soure file "sncYnm.f90."
+ *
+ * \subsection quadservices_background Background:
+ *
+ * Start with the steady state transport equation for neutrons,
+ *
+ * \f[
+ * \mathbf\Omega\cdot\mathbf\nabla\psi(\mathbf{r},\mathbf{\Omega},E)
+ * + \sigma_t \psi - Q(\mathbf{r},\mathbf{\Omega},E) =
+ * \int\limits^\infty_0{dE' \int\limits_{4\pi} {d\mathbf\Omega'
+ * \sigma_s(\mathbf{r},\mathbf\Omega'\rightarrow\mathbf\Omega,E'\rightarrow
+ * E) \psi(\mathbf{r},\mathbf\Omega',E') }}.
+ * \f]
+ *
+ * Here, \f$ Q(\mathbf{r},\mathbf{\Omega},E) \f$ represents external and
+ * fission sources.  Now, approximate the integral over angles (the
+ * scattering term) using a \ref sf_sph "spherical harmonics treatment" (see
+ * the doxygen web page for rtt_sf, special_functions).
+ * 
+ * \f[
+ * \mathbf\Omega\cdot\mathbf\nabla\psi(\mathbf{r},\mathbf{\Omega},E)
+ * + (\sigma_a + \sigma_{s0}) \psi - Q(\mathbf{r},\mathbf{\Omega},E) 
+ * = \int\limits^\infty_0{dE' \sum\limits_{\ell=0}^\infty{
+ * \sum\limits_{k=-\ell}^\ell{\frac{2\ell+1}{4\pi} c_{\ell,k}
+ * Y_{\ell,k}(\mathbf\Omega) 
+ * \phi_{\ell,k}(\mathbf{r},E')\sigma_{sk}(\mathbf{r},E'\rightarrow E)}}}.
+ * \f]
+ *
+ * We have defined the moment based scattering cross section and the flux
+ * moments in terms of \ref assoc_leg_poly "Legendre polynomials" and \ref
+ * sf_sph "spherical harmonics",
+ *
+ * \f[
+ * \sigma_{sk}(\mathbf{r},E'\rightarrow E) = \int\limits_{-1}^1{d\mu_0
+ * P_\ell(\mu_0)\sigma_s(\mathbf{r},\mu_0,E'\rightarrow E)}
+ * \f]
+ * and
+ * \f[
+ * \phi_{\ell,k}(\mathbf{r},E) = \int\limits_{4\pi}{d\mathbf\Omega' c_{\ell,k}
+ * Y_{\ell,k}^*(\mathbf\Omega')\psi(\mathbf{r},\mathbf\Omega',E)}.
+ * \f]
+ *
+ * In this equation, \f$ \sigma_s(\mu_0) \f$ is the cross section for
+ * scattering through an angle whose cosine is \f$ \mu_0 \f$.  The parameter
+ * \f$ c_{\ell,k} \f$ is a normalization factor that depends on the index
+ * pair \f$ (\ell, k) \f$ and the normalization chosen for the definition of
+ * \f$ Y_{\ell,k}(\mathbf\Omega) \f$.  The analytic scattering source
+ * expanded with \ref sf_sph "spherical harmonics" can be expressed as,
+ *
+ * \f[
+ * S(\mathbf{r},\mathbf\Omega,E) =
+ * \int\limits_0^\infty{dE'\sum\limits_{\ell=0}^L{\sum\limits_{k=-\ell}^{\ell}{
+ * \frac{2\ell+1}{4\pi} c_{\ell,k} Y_{\ell,k}(\mathbf\Omega)
+ * \sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) \int\limits_{4\pi}{d\mathbf\Omega'
+ * c_{\ell,k} Y_{\ell,k}^*(\mathbf\Omega')\psi(\mathbf{r},\mathbf\Omega',E')}}}} 
+ * \f]
+ *
+ * In this equation, we have also truncated the \ref sf_sph "spherical
+ * harmonics" expansion at L, the order of the scattering matrix.  We can
+ * formulate a discrete scattering source by using the discrete ordinate
+ * approximation,
+ *
+ * \f[
+ * \mathbf{S}(\mathbf{r},E) = \int\limits_0^\infty{dE' \sum\limits_{\ell=0}^L{ 
+ * \sum\limits_{k=-\ell}^{\ell}{
+ * \frac{2\ell+1}{4\pi} c_{\ell,k} Y_{\ell,k}(\mathbf\Omega_m)
+ * \sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) 
+ * \sum\limits_{m'=1}^M{w_{m'} c_{\ell,k} Y_{\ell,k}^*(\mathbf\Omega'_m)
+ * \psi_m(\mathbf{r},E')}}}} 
+ * \f]
+ * or
+ * \f[
+ * \mathbf{S}(\mathbf{r},E) = 
+ * \int\limits_0^\infty { dE' 
+ * \left[ 
+ * \mathbf{M}_{m,(\ell, k)} \cdot \mathbf\Sigma_{(\ell,k)}(E' \rightarrow E)
+ * \cdot \mathbf{D}_{m,(\ell,k)} \cdot \psi_m(\mathbf{r},E')
+ * \right]} \,\,\,\,\, \forall \,\,\,\,\, m = 1, \ldots, M, \,\,\,\,\, \ell = 0,
+ * \ldots, L,\,\,\,\,\, and \,\,\,\,\, k = -\ell, \ldots, \ell.
+ * \f]
+ * 
+ * \f$ \mathbf{M} \f$ is the moments-to-discrete operator, \f$ \mathbf{D} \f$
+ * is the discrete-to-moments operator and \f$ \mathbf\Sigma \f$ is a matrix
+ * containing the scattering cross section moments for \f$ L^{th} \f$ order
+ * anisotropic scattering.  In this representation, M is the total number of
+ * discrete angles.  
+ *
+ * Now, we define the moments-to-discrete operator to be
+ *
+ * \f[
+ * \mathbf{M}_{m,(\ell,k)} = \frac{2\ell+1}{\sum\limits_{m'=1}^{M}{w_{m'}}} c_{\ell,k}
+ * Y_{\ell,k}(\mathbf\Omega_m),
+ * \,\,\,\,\, \forall \,\,\,\,\, m = 1, \ldots, M, \,\,\,\,\, \ell = 0,
+ * \ldots, L,\,\,\,\,\, and \,\,\,\,\,k = -\ell, \ldots, \ell.
+ * \f]
+ *
+ * This moment-to-discrete operator can be used to perform the following
+ * operation:
+ *
+ * \f[
+ * \psi_m = \sum\limits_{\ell=0}^L
+ * \sum\limits_{k=-\ell}^\ell\mathbf{M}_{m,(\ell,k)}\Phi_\ell^k.
+ * \f]
+ * 
+ * \section galerkin_formulation Galerkin Formulation
+ *
+ * For this class, we compute the moment-to-discrete operator according to
+ * Morel's heuristic found in \em "Collocation-Galerkin-Sn Solution."
+ * Additionally, we always create the discrete-to-moment operator to be the
+ * inverse of the moment-to-discrete operator.  That is,
+ *
+ * \f[
+ * \mathbf{D}_{m,(\ell,k)} = \mathbf{M}_{m,(\ell,k)}^{-1}.
+ * \f]
+ *
+ * Morel does not place the term \f$ \frac{\ell+1}{4\pi} \f$ inside the square
+ * root.  For his application, this is okay because the factors will
+ * eventually cancel.  However, to strictly preserve all of the properties of
+ * \ref sf_sph "spherical harmonics" we have chosen to put this factor inside
+ * of the square root.
+ * 
+ * In Morel's Galerkin treatment, specific \f$ (\ell, k) \f$ moments are
+ * chosen to produce a square matrix, \f$ \mathbf{M} \f$.  
+ *
+ * For 3D quadrature sets, the following rules are used:
+ *
+ * \li Use all moments defined by \f$
+ * k=-\ell,\ldots,\ell\,\,\,\,\,\forall\,\,\,\,\,\ell=0,\ldots,N-1. \f$
+ * \li Augment this list with all moments defined by \f$ k=-\ell,\ldots, -1
+ * \,\,\,\,\,\forall\,\,\,\,\, \ell=N. \f$
+ * \li Augment this list with all moments defined by \f$ k=1,\ldots, \ell, \,\,\,\,\,
+ * k \f$ odd \f$ \,\,\,\,\,\forall\,\,\,\,\, \ell=N. \f$
+ * \li Augment this list with all moments defined by \f$ k=-\ell,\ldots, -1, \,\,\,\,\,
+ * k \f$ even \f$ \,\,\,\,\,\forall\,\,\,\,\, \ell=N+1. \f$
+ *
+ * For 2D quadrature sets, the following rules are used:
+ *
+ * \li Use all moments defined by \f$
+ * k=0,\ldots,\ell \,\,\,\,\,\forall\,\,\,\,\,\ell=0,\ldots,N-1. \f$
+ * \li Augment this list with all moments defined by \f$ k=1, \ldots, \ell,
+ * \,\,\,\,\, k \f$ odd \f$
+ * \,\,\,\,\,\forall\,\,\,\,\, \ell=N. \f$
+ *
+ * For 1D quadrature sets, the following rules are used:
+ *
+ * \li Use all moments defined by \f$
+ * k=0 \,\,\,\,\,\forall\,\,\,\,\,\ell=0,\ldots,N-1. \f$
+ *
+ * In all of these algorithms, \f$ N \f$ is the order of the \f$ S_N \f$
+ * quadrature set. 
+ *
+ * \section quad_notes Other Quadrature Notes
+ * 
+ * For 2D quadrature sets, \f$ \xi \f$ can be computed from the other two
+ * ordinates as
+ * \f[
+ * \xi = \sqrt{1 - \mu^2 - \eta^2}.
+ * \f]
+ *
+ * \sa QuadServices.cc for detailed descriptions.
+ *
+ * Code Sample:
+ * \code
+ * \\ Create an 3D S4 Level Symmetric Quadrature Set.
+ * SP<const Quadrature> spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, 4 );
+ *
+ * \\ Create a QuadServices object that is attached to this specific quadrature set. 
+ * QuadServices myQS( spQuad );
+ *
+ * \\ Transform from moment-space to discrete-angle space.
+ * std::vector< double > phi( 100, 0.0 );
+ * std::vector< double > psi = myQS.applyM( phi );
+ * 
+ * \\ Obtain entries from the Mmatrix:
+ * std::vector< double > Mmatrix( myQS.getM() );
+ * 
+ * \\ Access elements as Mmatrix[ n + m*numMoments ] where n is the moment
+ * \\ index, m is the discrete angle index and numMoments are the number
+ * \\ moments used by myQS.
+ * \endcode
+ */
+/*! 
+ * \example quadrature/test/tQuadServices.cc 
+ * 
+ * description of example
+ */
+//===========================================================================//
+
+//---------------------------------------------------------------------------//
+//              end of quadrature/autodoc QuadServices.dcc
+//---------------------------------------------------------------------------//

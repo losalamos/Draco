@@ -71,3 +71,12 @@ install( FILES ${headers} DESTINATION include/fpe_trap )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
+  
+
+# ---------------------------------------------------------------------------- #
+# Autodoc
+# ---------------------------------------------------------------------------- #
+
+process_autodoc_pages()
+
+

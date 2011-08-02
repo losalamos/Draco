@@ -49,3 +49,12 @@ install( FILES ${headers} DESTINATION include/RTT_Format_Reader )
 if( BUILD_TESTING )
  add_subdirectory( test )
 endif()   
+  
+
+# ---------------------------------------------------------------------------- #
+# Autodoc
+# ---------------------------------------------------------------------------- #
+
+process_autodoc_pages()
+
+

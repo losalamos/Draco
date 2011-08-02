@@ -38,6 +38,16 @@ if( DOXYGEN_FOUND )
      endif()
   endforeach()  
 
+  # Also look for files that have been configured (.in files) and
+  # placed in the BINARY_DIR.
+  file( GLOB package_list ${PROJECT_BINARY_DIR}/src/* )
+  foreach( package ${package_list} )
+     # pick up processed .dcc files
+     if( EXISTS ${package}/autodoc )
+        set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
+     endif()
+  endforeach()  
+
   set( DOXYGEN_HTML_OUTPUT html )
   set( DOXYGEN_DOTFILE_DIRS dot )
 

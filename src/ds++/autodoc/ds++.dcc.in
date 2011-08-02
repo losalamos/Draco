@@ -1,0 +1,111 @@
+//---------------------------------*-text-*-----------------------------------//
+// ds++.dcc
+// ds++ Overview page
+// Thomas M. Evans
+// Mon Apr 19 09:27:15 2004
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\page overview_dsxx Overview of the ds++ package
+\version @DRACO_VERSION@
+\author Kelly G. Thompson, Thomas M. Evans, Rob Lowrie, Mike Buksas,
+Geoffrey Furnish, Paul Henning, Randy Roberts, and Todd Urbatsch
+
+\section abstract Abstract 
+
+This package provides data structures and other miscellaneous support
+for the Draco system. Classes for matrices, design-by-contract,
+smart-pointers, and a variety of other utilities are included.
+
+The significant services provided in ds++ are:
+- \b SP (rtt_dsxx::SP) a smart pointer class
+- \b RCF (rtt_dsxx::RCF) a reference counted fields class (a rtt_dsxx::SP for
+fields)
+- \b Packer \b Unpacker (rtt_dsxx::Packer, rtt_dsxx::Unpacker) utilities that
+pack data types into a char *
+- \b Vector_Lite (rtt_dsxx::Vector_Lite) a tiny vector implementation
+- \b soft_equiv (rtt_dsxx::soft_equiv()) a soft equivalence function for
+floating point comparisons 
+- \b Array (rtt_dsxx::Array and rtt_dsxx::ArraySizes) N-Dimensional
+Generic Resizable Arrays
+- \b ScalarUnitTest (rtt_dsxx::ScalarUnitTest) provides a unit test
+framework for scalar code.  
+.
+
+Additionally, a usefull Design-by-Contract implementation can be found in
+Assert.hh.
+
+<!--------------------------------------------------------------------------->
+\section sp Smart Pointer
+
+The smart pointer is used exhaustively by Draco and codes build on top of the DBS. 
+
+<!--------------------------------------------------------------------------->
+\section assert Design-by-Contract Assertions
+
+See the \ref Draco_DBC section.
+
+<!--------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------->
+
+\section brief_array N-Dimensional Generic Resizable Arrays
+
+Customized version of Giovanni Bavestrelli's sources as published in <a href="http://www.cuj.com">The C++ User's Journal</a>. 
+
+Features:
+- Bounds checking.
+- Contiguous memery.
+- Support for STL algorithms and iterators.
+- Can extract slices (subarray)
+.
+
+Create a three dimensional array
+\code
+   unsigned numCells(100), numAngles(24), numGroups(13);
+   Array< double, 3 > phi( ArraySizes(numCells)(numAngles)(numGroups) );
+\endcode
+
+You can use STL aglorithms and iterators on the array.
+\code
+   for( iterator it=phi.begin(); it != phi.end(); ++it )
+      *it = 0;
+
+      int * pMax = std::max_element( phi.begin(), phi.end() );
+\endcode
+
+You can use square bracket operators.
+\code
+   std::vector< double > vphi( numAngles*numCells*numGroups, 0.0 );
+   for( icell=0; icell<numCells; ++icell )
+      for( m=0; m<numAngles; ++m )
+         for( ig=0; ig<numGroups; ++ig )
+            phi[icell][m][ig] = vphi[ icell + numCells*m + numCells*numAngles*ig ];
+\endcode
+
+<!---------------------------------------------------------------------------->
+
+\section brief_scalarunittest Scalar Unit Test Template
+
+The \ref rtt_dsxx::ScalarUnitTest "ScalarUnitTest" class provides some
+basic functionality for the creation of scalar unit tests within the
+Draco Build System.  This type of unit test corresponds directly to
+the \c configure.ac command \c AC_RUN_TESTS( \c testname, \c scalar).
+Example usage is demonstrated in the unit test file <a
+href="ds++_2test_2tst_array_8cc-example.html#_a1">ds++/test/tstScalarUnitTest.cc</a>.
+The ScalarUnitTest should always be instantiated inside of a try-catch
+block.
+
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+//                              end of ds++.dcc
+//---------------------------------------------------------------------------//

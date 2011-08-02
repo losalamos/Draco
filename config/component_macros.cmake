@@ -602,5 +602,27 @@ macro( conditionally_add_subdirectory )
 endmacro()
 
 #----------------------------------------------------------------------#
+# PROCESS_AUTODOC_PAGES - Run configure_file(...) for all .dcc.in
+# files found in the autodoc directory.  Destination will be the
+# autodoc directory in the component binary directory.  The
+# CMakeLists.txt in the draco/autodoc directory knows how to find
+# these files.
+#
+# This allows CMAKE variables to be inserted into the .dcc files
+# (e.g.: @DRACO_VERSION@)
+# 
+# E.g.: process_autodoc_pages()
+#----------------------------------------------------------------------#
+macro( process_autodoc_pages )
+   if( BUILD_AUTODOC )
+      file( GLOB autodoc_in autodoc/*.in )
+      foreach( file ${autodoc_in} )
+         get_filename_component( dest_file ${file} NAME_WE )
+         configure_file( ${file} ${PROJECT_BINARY_DIR}/autodoc/${dest_file}.dcc @ONLY )
+      endforeach()
+   endif()
+endmacro()
+
+#----------------------------------------------------------------------#
 # End
 #----------------------------------------------------------------------#
