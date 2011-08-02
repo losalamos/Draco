@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_norms Overview of the norms package
-\version draco-6_1_0
+\version draco-6_2_0
 \author Rob Lowrie
 
 Provides classes that compute various norms, including across

@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_units Overview of the units package
-\version draco-6_1_0
+\version draco-6_2_0
 \author Kelly Thompson
 
 This package provides a mechanism to keep track of, compare and

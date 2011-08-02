@@ -63,7 +63,7 @@ dnl DRACO SETUP
 dnl Evaluate requested build environment and create values to be
 dnl substituted into the build system files listed in AC_OUTPUT
 AC_DRACO_ENV
-AC_DRACO_AUTODOC(draco-6_1_0)
+AC_DRACO_AUTODOC(draco-6_2_0)
 
 dnl Create build system files in the ${prefix} directory.
 AC_CONFIG_FILES([Makefile:../../config/Makefile.package.in \

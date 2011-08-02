@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_cdi_gandolf Overview of the cdi_gandolf package
-\version draco-6_1_0
+\version draco-6_2_0
 \author Kelly Thompson
 
 The cdi_gandolf package is part of cdi.  It provides an interface to
