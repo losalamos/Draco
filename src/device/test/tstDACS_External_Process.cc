@@ -175,12 +175,30 @@ void tstStartStop(UnitTest &ut)
 
     d.start(de_id);
 
+    // Create a group containing the host and the accel-side process.
+    dacs_group_t group;
+    err = dacs_group_init(&group, 0u);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
+    err = dacs_group_add_member(de_id, d.get_pid(), group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
+    err = dacs_group_add_member(DACS_DE_SELF, DACS_PID_SELF, group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
+    err = dacs_group_close(group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
     pid = d.get_pid();
     if (pid == 0) ut.failure("pid == 0");
     else ut.passes ("pid != 0");
 
     // Tell the accel-side process to stop.
     d.stop();
+
+    // Destroy the host-accel group.
+    err = dacs_group_destroy(&group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
 
     // Wait for the accel-side process to exit.
     int32_t exit_status;

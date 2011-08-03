@@ -20,6 +20,10 @@ int main()
     DACS_ERR_T err = dacs_init(DACS_INIT_FLAGS_NONE);
     Insist(err == DACS_SUCCESS, dacs_strerror(err));
 
+    dacs_group_t group;
+    err = dacs_group_accept(DACS_DE_PARENT, DACS_PID_PARENT, &group);
+    Insist(err == DACS_SUCCESS, dacs_strerror(err));
+
     // wait for command
     dacs_wid_t wid;
     err = dacs_wid_reserve(&wid);
@@ -41,6 +45,9 @@ int main()
     Insist(command == 2121256449, "Failed to receive expected command");
 
     err = dacs_wid_release(&wid);
+    Insist(err == DACS_SUCCESS, dacs_strerror(err));
+
+    err = dacs_group_leave(&group);
     Insist(err == DACS_SUCCESS, dacs_strerror(err));
 
     err = dacs_exit();
