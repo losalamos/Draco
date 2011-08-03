@@ -69,6 +69,9 @@ class DACS_Device
 
     //! Return the process id of the DE process.
     dacs_process_id_t get_pid() const { return process->get_pid(); }
+
+    //! Return the handle to the combined host-accel DACS group.
+    dacs_group_t get_group() const { return group; }
     
   private:
 
@@ -88,6 +91,7 @@ class DACS_Device
 
     static SP_Proc process;
     de_id_t de_id;
+    dacs_group_t group;
 };
 
 } // end namespace rtt_device
