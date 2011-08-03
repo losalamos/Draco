@@ -4,17 +4,17 @@
 %% $Id$
 %%---------------------------------------------------------------------------%%
 \documentclass[note]{ResearchNote_pdf}
+%\documentclass[note]{newmemo}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 \usepackage[mathcal]{euscript}
 \usepackage{tabularx}
 \usepackage{cite}
 \usepackage{c++}
-\usepackage{tmadd,tmath}
+%\usepackage{tmadd,tmath}
 \usepackage{listings}
 \usepackage{color}
-% \usepackage{url}
-\usepackage{hyperref}
+\usepackage[breaklinks=true]{hyperref}
 
 %%---------------------------------------------------------------------------%%
 %% DEFINE SPECIFIC ENVIRONMENTS HERE
@@ -414,8 +414,8 @@ cmake -DCMAKE_TOOLCHAIN_FILE=<path_to_source>/Toolchain-catamount.cmake
 
 \begin{itemize}
 \item Provide support for \textsf{Roadrunner} by providing a toolchain file
-  (\texttt{config/Toolchain-roadrunner-ppe.cmake}).  More details at
-  \url{https://tf.lanl.gov/sf/wiki/do/viewPage/projects.jayenne/wiki/HowToBuildLinux}.
+  (\texttt{config/\-Toolchain-roadrunner-ppe.cmake}).  More details at
+  \href{https://tf.lanl.gov/sf/wiki/do/viewPage/projects.jayenne/wiki/HowToBuildLinux}{https://tf.lanl.gov/sf/wiki/do/viewPage/projects.jayenne/wiki/\-HowToBuildLinux}.
 \item Provide support for running ctest for a PPE build when on the
   RoadRunner backend.  In this mode, the tests are registered as short
   scripts that \texttt{ssh} into a PPC node and executes the test from
@@ -434,10 +434,11 @@ cmake -DCMAKE_TOOLCHAIN_FILE=<path_to_source>/Toolchain-roadrunner-ppe.cmake
 \draco's regression system has been updated to use \ctest\ and \cdash.
 Nightly regression ctest scripts post results to the
 \draco\ dashboard, which can be viewed by pointing your web browswer
-at \texttt{http://coder.lanl.gov/cdash}.  Visit the web site to create
-an account if you want email notification from the regression system.
-If you have trouble with the \cdash\ web page, contact Kelly Thompson,
-\texttt{kgt@lanl.gov}, for assistance.
+at
+\href{http://coder.lanl.gov/cdash}{http://coder.\-lanl.\-gov/\-cdash}.
+Visit the web site to create an account if you want email notification
+from the regression system.  If you have trouble with the \cdash\ web
+page, contact Kelly Thompson, \texttt{kgt@lanl.gov}, for assistance.
 
 The dashbord presents regression results by project.  There are
 currently 5 projects reporting to this server.  For \draco\ there are
@@ -449,22 +450,23 @@ the dashboard are shown in
 Fig.~\ref{fig:dashboard}-\ref{fig:vgdashboard}. 
 
 \begin{figure}
-  \label{fig:dashboard}
   \centerline{
     \includegraphics[width=8.0in,angle=90]{dashboard-620.jpg}}
   \caption{\cdash\ dashboard for \dracor\ hosted at \texttt{http://coder.lanl.gov.}}
+  \label{fig:dashboard}
 \end{figure}
+
 \begin{figure}
-  \label{fig:ccdashboard}
   \centerline{
     \includegraphics[width=6.0in,angle=0]{dashboard-cc-620.jpg}}
   \caption{\cdash\ dashboard for \dracor\ showing code coverage results.}
+  \label{fig:ccdashboard}
 \end{figure}
 \begin{figure}
-  \label{fig:vgdashboard}
   \centerline{
     \includegraphics[width=6.0in,angle=0]{dashboard-valgrind-620.jpg}}
   \caption{\cdash\ dashboard for \dracor\ showing dynamic analysis results.}
+  \label{fig:vgdashboard}
 \end{figure}
 %%---------------------------------------------------------------------------%%
 
