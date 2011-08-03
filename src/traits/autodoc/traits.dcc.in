@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_traits Overview of the traits package
-\version @DRACO_VERSION@
+\version Draco-@DRACO_VERSION@
 \author Thomas M. Evans and Randy Roberts
 
 Traits classes for use throughout draco.

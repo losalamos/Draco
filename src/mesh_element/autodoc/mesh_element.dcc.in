@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_mesh_element Overview of the mesh_element package
-\version @DRACO_VERSION@
+\version Draco-@DRACO_VERSION@
 \author Kelly Thompson
 
 

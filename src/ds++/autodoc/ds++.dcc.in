@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_dsxx Overview of the ds++ package
-\version @DRACO_VERSION@
+\version Draco-@DRACO_VERSION@
 \author Kelly G. Thompson, Thomas M. Evans, Rob Lowrie, Mike Buksas,
 Geoffrey Furnish, Paul Henning, Randy Roberts, and Todd Urbatsch
 

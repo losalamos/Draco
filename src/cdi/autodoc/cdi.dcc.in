@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_cdi Overview of the cdi package
-\version @DRACO_VERSION@
+\version Draco-@DRACO_VERSION@
 \author Kelly Thompson and Tom Evans
 
 The cdi package is a Common Data Interface package that allows a

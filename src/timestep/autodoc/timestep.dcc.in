@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_timestep Overview of the timestep package
-\version @DRACO_VERSION@
+\version Draco-@DRACO_VERSION@
 \author John McGhee
 
 \section Introduction

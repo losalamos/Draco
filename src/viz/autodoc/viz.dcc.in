@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_viz Overview of the viz package
-\version @DRACO_VERSION@
+\version Draco-@DRACO_VERSION@
 \author Thomas M. Evans and John McGhee
 
 The viz package contains translators to visualization software.
