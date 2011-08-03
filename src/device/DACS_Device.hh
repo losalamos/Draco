@@ -30,7 +30,9 @@ namespace rtt_device
  *
  * DACS_Device provides a minimal representation of the host side of a hybrid
  * DACS process.  It initializes DACS, reserves a Cell, launches an accel-side
- * process, and provides accessors for the DACS de_id and child pid.
+ * process, adds the host and accel-side processes to a group (to enable
+ * barriers) and provides accessors for the DACS de_id, child pid, and group
+ * handle.
  *
  * Because it's implemented as a (Meyers) singleton, DACS_Device ensures that
  * DACS initialization, reservation, and process-launch only happen once.  It

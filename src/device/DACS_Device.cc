@@ -33,9 +33,10 @@ static std::string verbose_error(std::string const & message);
  * DACS_Device is a singleton, so the constructor is called at most once, the
  * first time any other code invokes DACS_Device::instance.  The constructor
  * reserves a Cell (via dacs_reserve_children) and launches the accel-side
- * binary by launching the DACS_Process that was passed to init.  If no
- * accel-side process has been specified (via DACS_Device::init), the
- * constructor throws an exception.
+ * binary by launching the DACS_Process that was passed to init.  It also
+ * creates a group containing the host and accel-side processes, to enable
+ * barriers.  If no accel-side process has been specified (via
+ * DACS_Device::init), the constructor throws an exception.
  */
 DACS_Device::DACS_Device() : de_id(0), group(0)
 {
@@ -59,10 +60,17 @@ DACS_Device::DACS_Device() : de_id(0), group(0)
     process->start(de_id);
 
     // Create a group containing the host and the accel-side process.
-    dacs_group_init(&group, 0u);
-    dacs_group_add_member(de_id, process->get_pid(), group);
-    dacs_group_add_member(DACS_DE_SELF, DACS_PID_SELF, group);
-    dacs_group_close(group);
+    err = dacs_group_init(&group, 0u);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
+    err = dacs_group_add_member(de_id, process->get_pid(), group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
+    err = dacs_group_add_member(DACS_DE_SELF, DACS_PID_SELF, group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
+
+    err = dacs_group_close(group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
 
 } // DACS_Device::DACS_Device
 
@@ -82,13 +90,12 @@ DACS_Device::~DACS_Device()
     process->stop();
 
     // Destroy the host-accel group.
-    dacs_group_destroy(&group);
+    DACS_ERR_T err = dacs_group_destroy(&group);
+    Insist(err == DACS_SUCCESS, verbose_error(dacs_strerror(err)));
 
     // Wait for the accel-side process to exit.
     int32_t exit_status;
-    DACS_ERR_T err = dacs_de_wait(de_id,
-                                  process->get_pid(),
-                                  &exit_status);
+    err = dacs_de_wait(de_id, process->get_pid(), &exit_status);
     if (err != DACS_STS_PROC_FINISHED)
         std::cerr << dacs_strerror(err)
                   << "; Cell process (" << process->get_filename() << ") "
