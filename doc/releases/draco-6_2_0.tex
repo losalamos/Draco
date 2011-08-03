@@ -33,6 +33,7 @@
 \newcommand{\cmake}{\textsf{CMake}}
 \newcommand{\ctest}{\textsf{CTest}}
 \newcommand{\cdash}{\textsf{CDash}}
+\newcommand{\scons}{\textsf{SCons}}
 \newcommand{\CVS}{\textsf{CVS}}  
 \newcommand{\make}{\textsf{Make}}
 \newcommand{\gpp}{\textsf{g++}}
@@ -211,13 +212,13 @@ The following people are contributors to \draco:
     \textsf{linear}       & \tableText{direct solvers for small linear systems} \\
     \textsf{meshReaders}  & \tableText{mesh reader interface} \\
     \textsf{mesh\_element} & \tableText{defines fundamental mesh element types
-      used by meshReaders and RTT\_Format\_Reader} \\
+      used by \textsf{meshReaders} and \textsf{RTT\_Format\_Reader}} \\
     \textsf{min}          & \tableText{locate function minimums} \\
     \textsf{norms}        & \tableText{compute norms of vectors} \\
     \textsf{ode}          & \tableText{Runge\_Kutta, etc.} \\
     \textsf{parser}       & \tableText{generic input parser} \\
     \textsf{quadrature}   & \tableText{quadrature component} \\
-    \textsf{rng}          & \tableText{random number generators and SPRNG~\cite{ce97} wrappers} \\
+    \textsf{rng}          & \tableText{random number generators} \\
     \textsf{roots}        & \tableText{root finding algorithms} \\
     \textsf{shared\_lib}  & \tableText{dynamic loading of shared libraries} \\
     \textsf{special\_functions} & \tableText{math functions not provided by the
@@ -236,16 +237,22 @@ The following people are contributors to \draco:
 \subsection{\draco\ build tools}
 
 As of this release \draco's only supported configure system is
-\cmake\cite{cmake}.  Deprecated autoconf and scons files will be
+\cmake\cite{cmake}.  Deprecated autoconf and \scons\ files will be
 retired over the next few months.  The current release relies on
-features (\texttt{FindMPI.cmake}) only found in \cmake-2.8.5 or
-newer. 
+features (e.g.: \texttt{FindMPI.cmake}) only found in \cmake-2.8.5 or
+newer.
 
-\cmake\ is has mature cross platform support, can construct build
-projects for various systems (Makefiles, XCode, Eclipse, Visual
-Studio, etc.).  \cmake\ also has an excellent dependency generator for
-both source code and tests allowing multi-threaded builds (e.g.:
-\texttt{make -j16} to make the most of available hardware.
+\cmake\ was selected because it has mature cross platform support and
+can construct build projects for various systems (\textsf{Makefiles},
+\textsf{XCode}, \textsf{Eclipse}, \textsf{Visual Studio}, etc.).
+\cmake\ also has an excellent dependency generator for both source
+code and tests allowing multi-threaded builds (e.g.: \texttt{make
+  -j16}) to make the most of available hardware.  \cmake\ has provides
+online\footnote{http://www.cmake.org/cmake/help/documentation.html}
+and command line documentation (\texttt{cmake --help}). A tutorial is
+also available at
+\url{http://www.cmake.org/cmake/help/cmake_tutorial.html}.
+
 
 Using \cmake\ can be similar to using the old autoconf build system.
 For example, draco can be compiled using commands similar to these:
@@ -268,7 +275,8 @@ For example, draco can be compiled using commands similar to these:
 \end{lstlisting}
 
 For developers more comfortable with GUI environments, \cmake\ can be
-started as a stand alone GUI (e.g.: \texttt{cmake-gui}).
+started as a stand alone GUI (e.g.: \texttt{cmake-gui} or
+\texttt{ccmake}). 
 
 \subsubsection{List of configure options}
 
@@ -313,8 +321,16 @@ the more important ones are listed below.
   \end{tabular}
 \end{center}
 
+These options can be set on the \cmake\ command line or from the
+\cmake\ GUI interface.
 
 \subsubsection{List of build targets}
+
+Once \draco\ has been configured by \cmake, the generated build
+project provides many build \textit{targets}.  These \textit{targets}
+may be \textsf{Makefile} targets or their equivalent from an IDE
+environment like \textsf{XCode} or \textsf{Eclipse CDT}.  Some of the
+more commonly used targets are listed below. 
 
 \begin{center}
   \footnotesize
@@ -415,21 +431,22 @@ cmake -DCMAKE_TOOLCHAIN_FILE=<path_to_source>/Toolchain-roadrunner-ppe.cmake
 
 \subsection{\draco\ dashboard}
 \label{sec:dracodash}
-\draco's regression system has been replaced with the use of
-\ctest\ and \cdash.  Nightly regression ctest scripts post results to
-the \draco\ dashboard, which can be viewed by pointing your web
-browswer at \texttt{http://coder.lanl.gov/cdash}.   Visit the web site to
-create an account if you want email notification from the regression
-system.  If you have trouble with the \cdash\ web page, contact Kelly
-Thompson, \texttt{kgt@lanl.gov}, for assistance.
+\draco's regression system has been updated to use \ctest\ and \cdash.
+Nightly regression ctest scripts post results to the
+\draco\ dashboard, which can be viewed by pointing your web browswer
+at \texttt{http://coder.lanl.gov/cdash}.  Visit the web site to create
+an account if you want email notification from the regression system.
+If you have trouble with the \cdash\ web page, contact Kelly Thompson,
+\texttt{kgt@lanl.gov}, for assistance.
 
 The dashbord presents regression results by project.  There are
 currently 5 projects reporting to this server.  For \draco\ there are
 two regression builds (debug and optimized) per supported platform
 that are reported nightly.  The regression builds that run on
-\texttt{ccscs8} also reported code coverage statistics, lines-of-code
-statistics and a valgrind dynamic analysis report.  A screenshot of the
-dashboard is shown in Fig.~\ref{fig:dashboard}.
+\texttt{ccscs8} also reporte code coverage statistics, lines-of-code
+statistics and a valgrind dynamic analysis report.  Screenshots of
+the dashboard are shown in
+Fig.~\ref{fig:dashboard}-\ref{fig:vgdashboard}. 
 
 \begin{figure}
   \label{fig:dashboard}
@@ -437,7 +454,18 @@ dashboard is shown in Fig.~\ref{fig:dashboard}.
     \includegraphics[width=8.0in,angle=90]{dashboard-620.jpg}}
   \caption{\cdash\ dashboard for \dracor\ hosted at \texttt{http://coder.lanl.gov.}}
 \end{figure}
-
+\begin{figure}
+  \label{fig:ccdashboard}
+  \centerline{
+    \includegraphics[width=6.0in,angle=0]{dashboard-cc-620.jpg}}
+  \caption{\cdash\ dashboard for \dracor\ showing code coverage results.}
+\end{figure}
+\begin{figure}
+  \label{fig:vgdashboard}
+  \centerline{
+    \includegraphics[width=6.0in,angle=0]{dashboard-valgrind-620.jpg}}
+  \caption{\cdash\ dashboard for \dracor\ showing dynamic analysis results.}
+\end{figure}
 %%---------------------------------------------------------------------------%%
 
 \section{Changes to individual components}
@@ -449,17 +477,19 @@ The following table summarizes changes to \draco\ components since
 \label{changes:general}
 \begin{itemize}
 
-\item Eliminate component level release information and files.  All
-  components will point to the general Relase information found in the
-  \textsf{ds++} component.  \draco\ version numbers are now derived
-  from the \cmake\ build system instead of being hard coded.
+\item Component level release information and files have been
+  eliminated from all components except \textsf{ds++}.  All other
+  components will point to the general release information found in
+  the \textsf{ds++} component.  \draco\ version numbers are now
+  derived from the \cmake\ build system instead of being hard coded.
 \item When using the \cmake\ GUI or \texttt{ccmake} some values are
-  now contrained to permittable values.
-\item Tweaks to test registration to improve how tests are run in a
+  now contrained to permittable values (e.g.:
+  \texttt{CMAKE\_BUILD\_TYPE}). 
+\item Tweaks to test registration improve how tests are run in a
   threaded test environment (e.g.: \texttt{RESOURCE\_LOCK} to prevent
   tests from running at the same time, excluding some tests from
   valgrind analysis, etc.).
-\item Provide cross-compiling support to support building \draco\ on
+\item Cross-compiling support was added to support building \draco\ on
   Cielito and RoadRunner.
 
 \end{itemize}
@@ -469,67 +499,49 @@ The following table summarizes changes to \draco\ components since
 %% \begin{itemize}
 %% \item Retire \texttt{Release.hh/cc} and point the code to
 %%   \texttt{ds++/Release.hh/cc}.
-%% \item Retire SCons scripts.
+%% \item Retire \scons\ scripts.
 %% \end{itemize}
 
 \subsection{c4}
 \label{changes:c4}
 \begin{itemize}
-\item Redesign the \texttt{ApplicationUnitTest} class so that it uses
-  the CPP macro \texttt{DRACO\_UNAME} instead of the deprecated
-  \texttt{C4\_UNAME}. Change the CPP macros of the form
-  \texttt{c4\_is<platform>} to \texttt{draco\_is<platform>}. Finally,
-  the define for \texttt{C4\_MPICMD} has been moved to
-  \texttt{c4/config.h} and away from \texttt{ApplicationUnitTest.hh}.
-\item Use the new functions from \texttt{ds++/path.hh} instead of
-  redefining our own in \textsf{c4}.
-\item Update the \texttt{ApplicationUnitTest} class so that it works
-  on Cielito (i.e.: teach it to run \texttt{aprun}).
-\item \texttt{C4\_Functions.hh} defines a new function
+\item The \texttt{ApplicationUnitTest} class was redesigned so that it
+  uses the CPP macro \texttt{DRACO\_UNAME} instead of the deprecated
+  \texttt{C4\_UNAME}.  CPP macros of the form
+  \texttt{c4\_is<platform>} are replaced with
+  \texttt{draco\_is<platform>}. Finally, the define for
+  \texttt{C4\_MPICMD} has been moved to \texttt{c4/config.h} and away
+  from \texttt{ApplicationUnitTest.hh}.
+\item \textsf{c4} now uses the new functions from
+  \texttt{ds++/path.hh} instead of defining its own.
+\item The \texttt{ApplicationUnitTest} class was updated so that it
+  works on Cielito (i.e.: teach it to run \texttt{aprun}).
+\item \texttt{C4\_Functions.hh} now defines a new function
   \texttt{send\_is} that will invoke \texttt{MPI\_Issend}.
-\item Update \texttt{ParallelUnitTest} to correct a deficiency that
-  allowed the test to report \textsf{PASS} when a failure only occured
-  on a non-IO processor.  Also eliminated a potential race condition
-  found in the \texttt{status()} member function.
+\item \texttt{ParallelUnitTest} was updated to correct a deficiency
+  that allowed the test to report \textsf{PASS} when a failure only
+  occured on a non-IO processor.  A potential race condition found in
+  the \texttt{status()} member function was removed.
 
-\item Update \texttt{Send\_Receive} so that the sender now holds onto
-  size in a private member variable.  This prevents the value from
-  going out of scope before the send completes.  \\ 
+\item \texttt{Send\_Receive} was updated so that the sender now holds
+  onto size in a private member variable.  This prevents the value
+  from going out of scope before the send completes.  \\
 \\
-  This resolves the failure of the single-PE
+  This change resolves the failure of the single-PE
   \textit{auto-communication test} in \texttt{tstSend\_Receive} on
   Cielito.  This test has typically passed on other machines, probably
   due to lucky buffering by MPI.  \texttt{MPI\_Isend} will not block
   waiting for a matching receive, but it's not required to buffer
   data.  The send buffer can only be safely reused (or destroyed, by
   any mechanism) after the send completes; i.e., after a Wait or Test.
-
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.
-\item General improvements to eliminate compiler warnings.
-\item Retire SCons scripts.
-
 \end{itemize}
 
 \subsection{cdi}
 \label{changes:cdi}
 \begin{itemize}
-\item In \texttt{OpacityCommon.hh}, provide a new enum value for
-  \texttt{rtt\_cdi::Reaction} to indicate the end of the enumeration
-  list.  This is uselful for default initialization.
-
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.
-% \item General improvements to eliminate compiler warnings.
-\item Retire SCons scripts.
-
-%% %% \item Provide support for Opacity Distribution Functions
-%% %%   (ODF)~\cite{ccs2:08-52}. This capability supports the idea of
-%% %%   multiple opacity {\it bands} per group.  
-%% %% \item Provide functions that return Planckian and Rosseland integrals
-%% %%   for all groups in a group structure.
-%% %% \item Added a new full-spectrum integrator which just integrate the
-%% %%   Planckian over all groups in the group structure.
+\item In \texttt{OpacityCommon.hh}, a new enum value for
+  \texttt{rtt\_cdi::Reaction} is provided to indicate the end of the
+  enumeration list.  This is uselful for default initialization.
 \end{itemize}
 
 \subsection{cdi\_analytic}
@@ -541,7 +553,7 @@ The following table summarizes changes to \draco\ components since
   supports implementing ODF opacities~\cite{ccs2:08-52} and pseudo
   line opacities in \textsf{Serrano}.
 
-\item Rename \texttt{Analytic\_Multigroup\_Opacity} to
+\item Renamed \texttt{Analytic\_Multigroup\_Opacity} to
   \texttt{nGray\_Analytic\_MultigroupOpacity}. This change supports
   implementing ODF opacities and pseudo line opacities in
   \textsf{Serrano}.
@@ -549,19 +561,15 @@ The following table summarizes changes to \draco\ components since
 \item This component now depends on the \textsf{parser} and
   \textsf{ode} components, moving it from level 3 to level 4 in the
   levelization diagram as shown in Figure~\ref{fig:level}.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.
-\item General improvements to eliminate compiler warnings.
-\item Retire SCons scripts.
 \end{itemize}
 
 \subsection{cdi\_gandolf}
 \label{changes:cdi-gandolf}
 \begin{itemize}
 
-\item Provide a new utility,\texttt{GandolfInterpreter}, that can read
-  IPCRESS files and interactively provide information about its
-  content~\cite{gandolf,tops}.  An example use command is:
+\item A new utility, \texttt{GandolfInterpreter}, is provided to read
+  \textsf{IPCRESS} files and interactively provide information about
+  its content~\cite{gandolf,tops}.  An example use command is:
 %
 \begin{lstlisting}[basicstyle=\footnotesize,
     xleftmargin=1.0in, xrightmargin=1.0in]
@@ -571,12 +579,7 @@ The following table summarizes changes to \draco\ components since
 You can follow the prompts to query various parts of the IPCRESS file.
 \item \texttt{GandolfWrapper} was modified to change the maximum
   allowed materials per file from 10 to 128.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.
-\item General improvements to eliminate compiler warnings.
-\item Retire SCons scripts.
 \end{itemize}
-
 
 \subsection{device}
 \label{changes:device}
@@ -603,7 +606,7 @@ You can follow the prompts to query various parts of the IPCRESS file.
 %% \begin{itemize}
 %% \item Retire \texttt{Release.hh/cc} and point the code to
 %%   \texttt{ds++/Release.hh/cc}.
-%% \item Retire SCons scripts.
+%% \item Retire \scons\ scripts.
 %% \end{itemize}
 
 %% %% The \textsf{diagnostics} component is new for \dracor.  This component
@@ -747,7 +750,7 @@ You can follow the prompts to query various parts of the IPCRESS file.
 \subsection{ds++}
 \label{changes:dsxx}
 \begin{itemize}
-\item Retire \texttt{Allocators}.\\ 
+\item The \texttt{Allocators} class was retired.\\ 
      In practice, this class was designed before the STL allocators
      class was finalized and was deficient when compared to current
      standards.  There are other design defects that caused repeated
@@ -759,29 +762,25 @@ You can follow the prompts to query various parts of the IPCRESS file.
      \texttt{Mat.hh} to use \texttt{std::allocators<T>}.  This still
      allows more sophisticated allocators to be used in the future and
      allow us to eliminate \texttt{ds++/Allocators.hh}.
-\item Retire \texttt{DynArray}.
-\item Update \texttt{Mat} classes to use STL allocators instead of
-  \texttt{ds++/Allocators}, which are being retired.
-\item Provide a new function \texttt{verbose\_error()} in
-  \texttt{path.hh}. 
-\item Refactor \texttt{UnitTest} by moving some file/path manipulation
-  logic into \texttt{ds++/path.hh}.
-\item Update \texttt{path} by providing the member functions
-  \texttt{fileExists()} and \texttt{getFilenameComponent()}. 
-
-\item Provide \texttt{swap.hh}.  This class provides functions that do
-  byte-swapping in one of two ways: either use GNU extended asm for
+\item The \texttt{DynArray} class was retired.
+\item \texttt{Mat} classes were updated to use STL allocators instead
+  of \texttt{ds++/Allocators}, which are being retired.
+\item A new function \texttt{verbose\_error()} in \texttt{path.hh} is
+  provided.
+\item \texttt{UnitTest} was refactored by moving some file/path
+  manipulation logic into \texttt{ds++/path.hh}.
+\item \texttt{path} was updated by providing the member functions
+  \texttt{fileExists()} and \texttt{getFilenameComponent()}.
+\item \texttt{swap.hh} was added.  This class provides functions that
+  do byte-swapping in one of two ways: either use GNU extended asm for
   x86 (really f86+), or use the \textit{poor people's} method of
   digging out one byte at a time and moving it to the right place.
   The poor method is really not that bad: GCC for example seems to
   optimize it down to about 5 instructions in the 32 bit case,
   including loads, versus 2 instructions (including load) for the
   inline asm case.
-
 \item Establish \texttt{Release.hh/cc} as the Release information for
   all \draco\ componenets.
-\item General improvements to eliminate compiler warnings.
-\item Retire SCons scripts.
 \end{itemize}
 
 %% \subsection{fit}
@@ -790,7 +789,7 @@ You can follow the prompts to query various parts of the IPCRESS file.
 %% \item
 %% \item Establish \texttt{Release.hh/cc} as the Release information for
 %%   all \draco\ componenets.
-%% \item Retire SCons scripts.
+%% \item Retire \scons\ scripts.
 %% \end{itemize}
 
 %% \subsection{fpe\_trap}
@@ -810,13 +809,8 @@ You can follow the prompts to query various parts of the IPCRESS file.
 \subsection{lapack\_wrap}
 \label{changes:lapackwrap}
 \begin{itemize}
-\item The build system will omit \texttt{lapack\_wrap} from the build
+\item The build system will now omit \texttt{lapack\_wrap} from the build
   if \textsf{LAPACK} is not found.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.  With this change,
-  \texttt{lapack\_wrap} is now a header-only component and no library
-  will be created or installed.
-\item Retire SCons scripts.
 \end{itemize}
 
 \subsection{linear}
@@ -826,11 +820,8 @@ You can follow the prompts to query various parts of the IPCRESS file.
   \textsf{ds++} instead of \texttt{cstdlib.h}. The dsxx version
   provides specialization for \texttt{double} and eliminates a gcc
   warning when compiling on rr-dev.
-\item This component does not depend on \textsf{traits} so remove this
+\item This component does not depend on \textsf{traits}, so remove this
   linkage from \texttt{CMakeLists.txt}.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.  
-\item Retire SCons scripts.
 \end{itemize}
 
 %% \subsection{meshReaders}
@@ -839,7 +830,7 @@ You can follow the prompts to query various parts of the IPCRESS file.
 %% \item
 %% \item Retire \texttt{Release.hh/cc} and point the code to
 %%   \texttt{ds++/Release.hh/cc}.  
-%% \item Retire SCons scripts.
+%% \item Retire \scons\ scripts.
 %% \end{itemize}
 
 %% \subsection{mesh\_element}
@@ -869,13 +860,11 @@ You can follow the prompts to query various parts of the IPCRESS file.
 %% \end{itemize}
 %% \subsection{parser}
 
+\subsection{parser}
 \label{changes:parser}
 \begin{itemize}
 \item Expanded initialization syntax for \texttt{Expression} to allow
   general expressions.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.  
-\item Retire SCons scripts.
 \end{itemize}
 
 \subsection{quadrature}
@@ -899,8 +888,8 @@ You can follow the prompts to query various parts of the IPCRESS file.
   sets constructed for curvilinear coordinates.  These are the angles
   used to reflect the starting direction angular fluxes.
 
-\item Updated \texttt{Ordinate} so that the ordinates can be sorted
-  based on a comparator supplied to the \texttt{QuadServices}
+\item \texttt{Ordinate} was updated so that the ordinates can be
+  sorted based on a comparator supplied to the \texttt{QuadServices}
   constructor.  Also fixed an inconsistency in ordering of
   ordinates. Fix incorrect multiplication of source by opacity. Now
   returns constant solution for $S_6$ and source boundaries.
@@ -911,10 +900,6 @@ You can follow the prompts to query various parts of the IPCRESS file.
   \texttt{gsl\_permutation\_free}, to match
   \texttt{gsl\_permutation\_alloc}. This eliminates the five memory
   leaks reported by \textsf{valgrind}. 
-
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.  
-\item Retire SCons scripts.
 \end{itemize}
 
 %% \subsection{rng}
@@ -940,7 +925,7 @@ You can follow the prompts to query various parts of the IPCRESS file.
 \label{changes:special-functions}
 \begin{itemize}
 
-\item Add an exponential integral evaluation function,
+\item Added an exponential integral evaluation function,
   \texttt{ExpInt}. This routine is extracted from
   from~\cite{numericalrecipesforcpp}.  It computes the general
   exponential integrals of type $Ei(x)$ or $E_n(x)$. \\
@@ -955,20 +940,14 @@ You can follow the prompts to query various parts of the IPCRESS file.
   series, which is used for greater values of $x$. The asymptotic
   series includes all converging terms until values are less than
   $EPS$. $Ei(-x)$ evaluates to the extension $-E_1(x)$.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.  
-\item Retire SCons scripts.
 \end{itemize}
 
 \subsection{timestep}
 \label{changes:timestep}
 \begin{itemize}
-\item Refactor some code and the unit tests to improve code coverage.
-  In particular, capture some of the output that was going to
-  \texttt{cout} and examine it from within the tests.
-\item Retire \texttt{Release.hh/cc} and point the code to
-  \texttt{ds++/Release.hh/cc}.  
-\item Retire SCons scripts.
+\item Refactored some code and the unit tests to improve code
+  coverage.  In particular, capture some of the output that was going
+  to \texttt{cout} and examine it from within the tests.
 \end{itemize}
 
 \subsection{traits}
@@ -978,7 +957,6 @@ You can follow the prompts to query various parts of the IPCRESS file.
   \texttt{ds++/Release.hh/cc}.  
 \item With the above change, this component is now a header only
   package.  No library will be built or installed.
-\item Retire SCons scripts.
 \end{itemize}
 
 %% \subsection{units}
@@ -1010,13 +988,13 @@ Known defects are listed on LANL's TeamForge web server
 \item \texttt{c4/tstComm\_Dup} fails for optimized builds on Cielito.
 \end{itemize}
 
-\noindent Here is a list of known bug fixes:
+\noindent Here is a list of defects corrected in this release.
 \begin{itemize}
 \item Bugs associated with RedStorm and Purple are closed because those machines
   have been retired. See
   \href{https://tf.lanl.gov/sf/sfmain/do/go/artf6975}{artf6975} and
   \href{https://tf.lanl.gov/sf/sfmain/do/go/artf9622}{artf9622}. 
-\item Bugs associated with the old autoconf-based build system are
+\item Bugs associated with the autoconf-based build system are
   closed because that build system is now deprecated. See
   \href{https://tf.lanl.gov/sf/sfmain/do/go/artf1860}{artf1860},
   \href{https://tf.lanl.gov/sf/sfmain/do/go/artf1852}{artf1852},
@@ -1062,7 +1040,7 @@ provided by \draco\ if the following vendors are available:
   \centerline{
     \includegraphics[width=8.5in,angle=90]{level-6_2_0.pdf}}
   \caption{\dracor\ levelized component graph.  Dotted lines signify
-    that the dependency if only required for testing.}
+    that the dependency is only required for testing.}
 \end{figure}
 
 %------------------------------------------------------------------------------%
@@ -1198,14 +1176,15 @@ analysis tool, we are better able to track unit-test coverage of
 \draco\ components.  The goal is to achieve 100\% functional test
 coverage for each \draco\ component.  Table~\ref{tab:coverage} gives
 functional and conditional point coverage for \dracor.  This table
-shows a slight improvement in the function point coverage (~2\%) when
-compared to \draco-6\_0\_0.
+shows a slight improvement in the function point coverage
+(approximately 2\% improvement) when compared to \draco-6\_0\_0.
 \input{cov-6_2_0}
 
 The \cdash\ \hyperref[http://coder.lanl.gov/cdash]{dashboard} for
-\draco\ prsents all of these code statistics and also valgrind results
-for nightly regression builds.  The data is presented in a more
-interactive format that is more useful for day-to-day development.
+\draco\ presents all of these code statistics and also valgrind
+results for nightly regression builds.  The data is presented in a
+more interactive format that is more useful for day-to-day
+development.
 
 %% %%---------------------------------------------------------------------------%%
 
@@ -1261,7 +1240,7 @@ interactive format that is more useful for day-to-day development.
 %%   variable always uses the full path to the compiler.
 %% \end{itemize}
 
-%% Additionally, a prototype \textsf{Scons} build system was implemented
+%% Additionally, a prototype \textsf{scons} build system was implemented
 %% while porting Jayenne codes to RoadRunner.  While this build system
 %% remains mostly intact, it is not being adopted or maintained for this
 %% release. A prototype \textsf{CMake} build system has been added
@@ -1634,8 +1613,8 @@ set:
     \textsf{Turing}     & \texttt{tu-openmpi143-intel100023-intel100023/}  \\
     \textsf{Redtail}    & \texttt{rt-openmpi143-pgi903-pgi903/}  \\
     \textsf{Hurricane}  & \texttt{hu-openmpi143-intel100023-intel10023/}  \\
-    \textsf{RoadRunner} & \texttt{gcc/gcc-ppu/gcc-spu}  \\
-    \textsf{Cielito}    & \texttt{ct-mpich2-pgi1060-pgi1060/}  \\
+    \textsf{RoadRunner} & \texttt{rr-openmpi143-gcc430}  \\
+    \textsf{Cielito}    & \texttt{ct-mpich2-pgi1090-pgi1090/}  \\
     \textsf{Dawn}       & Not currenly supported. \\
     \hline\hline
   \end{tabular}
@@ -1690,13 +1669,12 @@ session is required) you may link against one of the other builds:
   \end{tabular}
 \end{center}
 
-Additional build directories named \texttt{debug\_verbose} may also
-be found on some platforms.  These additional builds are typically
-special debug version used by the Jayenne codes.  Common names
-include: \texttt{debug\_nodbc}, \texttt{opt\_log},
-\texttt{debug\_nodbc\_nr}, \texttt{opt\_nr}, \texttt{opt\_nolog\_nr},
-and \texttt{debug\_nolog}.
-
+Additional build directories may also be found on some platforms.
+These additional builds are typically special debug version used by
+the Jayenne codes.  Common names include: \texttt{debug\_nodbc},
+\texttt{opt\_log}, \texttt{debug\_nodbc\_nr}, \texttt{opt\_nr},
+\texttt{opt\_nolog\_nr}, \texttt{debug\_verbose} and
+\texttt{debug\_nolog}.
 
 %%---------------------------------------------------------------------------%%
 
