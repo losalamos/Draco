@@ -136,39 +136,14 @@ capability as it was added along the way.
 
 \section draco_release_update_tags Update version tags
 
-- Replace all text 'draco-5_20_0' with draco-6_0_0'
-\code
-   % cd draco
-   % python ~/draco/tools/find_tags.py -t draco
-   % cd src
-   % python ~/draco/tools/update_release_tags.py draco-5_20_0 draco-6_0_0
-   % cd ..
-   % ack -a draco-[0-9]+_[0-9]+_[0-9]+
-\endcode   
-- Manually fix tags that were not automatically updated.
+Update the version number found at \c draco\CMakeLists.txt
 
 Replace all version tags found in source code with the new version number. 
 
-- The ones to do by hand are:
-  - \c $RELEASEDIR/draco/README.draco
+- Update \c $RELEASEDIR/draco/README.draco by hand
        
 - get both the version number right under author list, and
   update the dependency table. 
-- Finally there are a few files in each subpackage directory
-  that have version numbers in them. To be sure that you go
-  change all of these, run the following script in the src
-  directory of each package: 
-  \code
-  % python $RELEASEDIR/draco/tools/update_release_tags.py oldtag newtag
-  \endcode
-- Example:
-  \code
-   oldtag is replaced by draco-5_20_0
-   newtag is replaced by clubimc-5_21_0
-  \endcode
-- This should update files like \c Release.cc, \c configure.ac,
-  \c "subpackage".dcc for each subpackage.
-
 
 <!-- ---------------------------------------------------------------------- -->
 
@@ -219,10 +194,18 @@ Replace all version tags found in source code with the new version number.
   draco_release_target_platforms). 
 - Edit and run the local \c 'buildit-*' and \c 'checkit-*' scripts to build
   the specific versions needed.
+
+
+
+<!-- ---------------------------------------------------------------------- -->
+
+\section draco_release_asc_bkups
+
+- 
+
+
+
 */
-
-
-
 //---------------------------------------------------------------------------//
 // end 
 //---------------------------------------------------------------------------//
