@@ -170,25 +170,25 @@
 % warsa wollaber; do
 %    echo -n "$name " ; grep $name blame | wc -l; done
 
-%% kellyt	99483
-%% tme	        67526
-%% kgbudge	55563
-%% mwbuksas	14246
-%% lowrie	13748
-%% jhchang	8992
-%% bta	        6907
-%% mcghee	6333
-%% jdd	        4925
-%% warsa	2973
-%% gaber	2636
-%% phenning	2635
-%% rsqrd	1749
-%% wollaber	904
-%% gray	        903
-%% bergen	483
-%% tmonster	112
-%% tkelley	30
-%% aimee	6
+%% kellyt   99483
+%% tme      67526
+%% kgbudge  55563
+%% mwbuksas 14246
+%% lowrie   13748
+%% jhchang   8992
+%% bta       6907
+%% mcghee    6333
+%% jdd       4925
+%% warsa     2973
+%% gaber     2636
+%% phenning  2635
+%% rsqrd     1749
+%% wollaber   904
+%% gray       903
+%% bergen     483
+%% tmonster   112
+%% tkelley     30
+%% aimee        6
 
 The following people are contributors to \draco:
 \begin{center}
@@ -1081,6 +1081,9 @@ provided by \draco\ if the following vendors are available:
 
 \section{Code Statistics}
 
+% /home/regress/cmake_draco/regression/cloc
+%   --read-lang-def=/home/regress/cmake_draco/regression/cloc-lang.defs .
+
 %% http://cloc.sourceforge.net v 1.54  T=24.0 s (74.3 files/s, 11525.5 lines/s)
 %% --------------------------------------------------------------------------------
 %% Language                      files          blank        comment           code
@@ -1147,10 +1150,10 @@ in Fig.~\ref{fig:stats}.  The large drop between \draco-4\_0\_0 and
 \end{center}
 
 \begin{figure}
-  \label{fig:stats}
   \centerline{
     \includegraphics[width=4.5in]{loc-6_2_0.jpg}}
-  \caption{LOC statistics for \dracor\ component packages.}
+  \caption{LOC statistics for \dracor\ over all releases.}
+  \label{fig:stats}
 \end{figure}
 
 %% Table~\ref{tab:loc} shows LOC metrics for each \draco\ component in
@@ -1655,9 +1658,10 @@ set:
 \end{center}
 %
 In each platform directory there are 3 separate builds.  Normally,
-clients will link against the \textsf{opt} version.  However, in
-special cases (if extra diagnostics are needed or if a full debug
-session is required) you may link against one of the other builds:
+clients will link against the \textsf{opt\_nr} or \textsf{opt}
+versions.  However, in special cases (if extra diagnostics are needed
+or if a full debug session is required) you may link against one of
+the other builds:
 %
 \begin{center}
   \footnotesize
@@ -1671,9 +1675,9 @@ session is required) you may link against one of the other builds:
 %%      & \texttt{-DDRACO\_DBC=0 -DCMAKE\_BUILD\_TYPE=DEBUG  -DDRACO\_TIMING=1} \\
 %%      & \texttt{-DDRACO\_DIAGNOSTICS=1} \\
 
-\texttt{opt/}  
+\texttt{opt\_nr/}  
      & \texttt{-DDRACO\_DBC=0 -DCMAKE\_BUILD\_TYPE=RELEASE  -DDRACO\_TIMING=0} \\
-     & \texttt{-DDRACO\_DIAGNOSTICS=0} \\
+     & \texttt{-DDRACO\_DIAGNOSTICS=0 ENABLE\_RNG\_NR=ON} \\
 
 %% \texttt{opt\_log/}  
 %%      & \texttt{-DDRACO\_DBC=0 -DCMAKE\_BUILD\_TYPE=RELEASE -DDRACO\_TIMING=1} \\
@@ -1681,7 +1685,7 @@ session is required) you may link against one of the other builds:
 
 \texttt{debug\_nr/}  
      & \texttt{-DDRACO\_DBC=7 -DCMAKE\_BUILD\_TYPE=DEBUG  -DDRACO\_TIMING=1} \\
-     & \texttt{-DDRACO\_DIAGNOSTICS=1 --enable-rng-nr} \\
+     & \texttt{-DDRACO\_DIAGNOSTICS=1  ENABLE\_RNG\_NR=ON} \\
 
 %% \texttt{debug\_nodbc\_nr/}  
 %%      & \texttt{-DDRACO\_DBC=0 -DCMAKE\_BUILD\_TYPE=DEBUG  -DDRACO\_TIMING=1} \\
