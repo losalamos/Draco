@@ -17,7 +17,7 @@
 
 namespace rtt_device
 {
-    std::string const default_ppe_bindir("@PPE_PREFIX@/bin");
+    std::string const test_ppe_bindir("@TEST_PPE_BINDIR@");
 }
 
 #endif /* device_config_h */

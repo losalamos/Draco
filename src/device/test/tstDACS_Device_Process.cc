@@ -16,6 +16,8 @@
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
 
+#include "device/config.h"
+
 #include "DACS_Device_Interface.hh"
 #include "DACS_External_Process.hh"
 
@@ -83,7 +85,7 @@ extern "C"
  */
 void tstStartStop(UnitTest &ut)
 {
-    string filename("dacs_wait_for_cmd_ppe_exe");
+    string filename(test_ppe_bindir + "/dacs_wait_for_cmd_ppe_exe");
     
     int rc = dacs_device_init(filename.c_str(), filename.length(),
                               dacs_process_shutdown);

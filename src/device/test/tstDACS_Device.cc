@@ -19,6 +19,8 @@
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
 
+#include "device/config.h"
+
 #include "DACS_Device.hh"
 
 using namespace std;
@@ -86,7 +88,7 @@ void tstNoAccelBinary(UnitTest &ut)
 
     try
     {
-        SP_Proc d(new DACS_Test_Process("no_such_binary"));
+        SP_Proc d(new DACS_Test_Process(test_ppe_bindir + "/no_such_binary"));
         DACS_Device::init(d);
     }
     catch (assertion &err)
@@ -117,9 +119,11 @@ void tstDoubleInit(UnitTest &ut)
     try
     {
         // Call init twice with different filenames.
-        SP_Proc d(new DACS_Test_Process("dacs_noop_ppe_exe"));
+        SP_Proc d(new DACS_Test_Process(test_ppe_bindir +
+                                        "/dacs_noop_ppe_exe"));
         DACS_Device::init(d);
-        SP_Proc d2(new DACS_Test_Process("dacs_wait_for_cmd_ppe_exe"));
+        SP_Proc d2(new DACS_Test_Process(test_ppe_bindir +
+                                         "/dacs_wait_for_cmd_ppe_exe"));
         DACS_Device::init(d2);
     }
     catch (assertion &err)
@@ -136,7 +140,7 @@ void tstDoubleInit(UnitTest &ut)
 
     // Call init again with the first filename.  This should not trigger an
     // exception.
-    SP_Proc d3(new DACS_Test_Process("dacs_noop_ppe_exe"));
+    SP_Proc d3(new DACS_Test_Process(test_ppe_bindir + "/dacs_noop_ppe_exe"));
     DACS_Device::init(d3);
     ut.passes("Called init twice with the same filename");
 }
@@ -149,7 +153,7 @@ void tstDoubleInit(UnitTest &ut)
  */
 void tstDevice(UnitTest &ut)
 {
-    SP_Proc d(new DACS_Test_Process("dacs_noop_ppe_exe"));
+    SP_Proc d(new DACS_Test_Process(test_ppe_bindir + "/dacs_noop_ppe_exe"));
     DACS_Device::init(d);
 
     de_id_t de_id = DACS_Device::instance().get_de_id();

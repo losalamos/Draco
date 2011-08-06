@@ -17,10 +17,13 @@
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
 
+#include "device/config.h"
+
 #include "DACS_Device_Interface.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
+using namespace rtt_device;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -64,7 +67,7 @@ void tstNoInit(UnitTest &ut)
 void tstNoAccelBinary(UnitTest &ut)
 {
     bool caught = false;
-    string filename("no_such_binary");
+    string filename(test_ppe_bindir + "/no_such_binary");
     
     try
     {
@@ -94,8 +97,8 @@ void tstNoAccelBinary(UnitTest &ut)
 void tstDoubleInit(UnitTest &ut)
 {
     bool caught = false;
-    string f1("dacs_noop_ppe_exe");
-    string f2("dacs_noop_ppe2_exe");
+    string f1(test_ppe_bindir + "/dacs_noop_ppe_exe");
+    string f2(test_ppe_bindir + "/dacs_wait_for_cmd_ppe_exe");
 
     try
     {
@@ -130,7 +133,7 @@ void tstDoubleInit(UnitTest &ut)
  */
 void tstDevice(UnitTest &ut)
 {
-    string filename("dacs_noop_ppe_exe");
+    string filename(test_ppe_bindir + "/dacs_noop_ppe_exe");
     int rc;
 
     rc = dacs_device_init(filename.c_str(), filename.size(), NULL);

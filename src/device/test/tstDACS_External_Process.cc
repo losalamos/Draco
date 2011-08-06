@@ -108,20 +108,20 @@ void tstGetFilename(UnitTest &ut)
 {
     const std::string filename("dacs_noop_ppe_exe");
 
-    DACS_External_Process d(filename, NULL);
+    DACS_External_Process d(test_ppe_bindir + "/" + filename, NULL);
     std::string f = d.get_filename();
 
-    if (f == default_ppe_bindir + "/" + filename)
+    if (f == test_ppe_bindir + "/" + filename)
         ut.passes("Filenames match");
     else
         ut.failure("Filenames don't match");
 
-    const std::string fullpath(default_ppe_bindir + "/" + filename);
+    const std::string fullpath(test_ppe_bindir + "/" + filename);
 
     DACS_External_Process d2(fullpath, NULL);
     f = d2.get_filename();
 
-    if (f == default_ppe_bindir + "/" + filename)
+    if (f == test_ppe_bindir + "/" + filename)
         ut.passes("Filenames match");
     else
         ut.failure("Filenames don't match");
@@ -170,7 +170,7 @@ void tstStartStop(UnitTest &ut)
         ut.failure("Failed to reserve children");
 
     // Start the accel-side process.
-    DACS_External_Process d("dacs_wait_for_cmd_ppe_exe",
+    DACS_External_Process d(test_ppe_bindir + "/dacs_wait_for_cmd_ppe_exe",
                             dacs_process_shutdown);
 
     d.start(de_id);
