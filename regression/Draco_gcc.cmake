@@ -25,7 +25,7 @@ set_cvs_command("draco")
 # 2. Roadrunner - set TOOCHAIN_SETUP and INIT_CACHE_PPE_PREFIX
 platform_customization()
 if( "${sitename}" MATCHES "RoadRunner" )
-   if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
+   if( NOT "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
       string( REPLACE "Nightly_g++" "Nightly_ppu-g++" TEST_PPE_BINDIR $ENV{work_dir} )
       set(TEST_PPE_BINDIR "TEST_PPE_BINDIR:PATH=${TEST_PPE_BINDIR}/build/src/device/test")
    endif()
