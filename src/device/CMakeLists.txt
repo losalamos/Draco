@@ -21,7 +21,7 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 # ---------------------------------------------------------------------------- #
 
    # Record the location of the Cell-side test binaries in config.h.
-   if( NOT EXISTS ${TEST_PPE_BINDIR}/dacs_device_ppe_exe )
+   if( NOT EXISTS ${TEST_PPE_BINDIR}/dacs_noop_ppe_exe )
       string ( REPLACE "x86" "ppe" TEST_PPE_BINDIR 
          "${CMAKE_INSTALL_PREFIX}/bin" )
       set( TEST_PPE_BINDIR ${TEST_PPE_BINDIR} CACHE PATH 
