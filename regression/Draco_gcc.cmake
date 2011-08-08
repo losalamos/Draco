@@ -24,6 +24,12 @@ set_cvs_command("draco")
 # 1. Ceilito - set TOOCHAIN_SETUP
 # 2. Roadrunner - set TOOCHAIN_SETUP and INIT_CACHE_PPE_PREFIX
 platform_customization()
+if( "${sitename}" MATCHES "RoadRunner" )
+   if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
+      string( REPLACE "Nightly_g++" "Nightly_ppu-g++" TEST_PPE_BINDIR $ENV{work_dir} )
+      set(TEST_PPE_BINDIR "TEST_PPE_BINDIR:PATH=${TEST_PPE_BINDIR}/build/src/device/test")
+   endif()
+endif()
 
 ####################################################################
 # The values in this section are optional you can either
@@ -43,6 +49,7 @@ CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
 ENABLE_C_CODECOVERAGE:BOOL=${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE:BOOL=${ENABLE_Fortran_CODECOVERAGE}
 VENDOR_DIR:PATH=/ccs/codes/radtran/vendors/Linux64
+${TEST_PPE_BINDIR}
 
 ${INIT_CACHE_PPE_PREFIX}
 ${TOOLCHAIN_SETUP}
