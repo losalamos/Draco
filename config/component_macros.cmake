@@ -203,7 +203,13 @@ macro( add_scalar_tests test_sources )
    # tests.
    if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
       if( "${SITE}" MATCHES "rr[a-d][0-9]+a" )
-         string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node ${SITE} )
+         if( "${SITE}" MATCHES "localdomain" )
+            string( REGEX REPLACE "(rr[a-z][0-9]+)[a][.]localdomain"
+               "\\1b" ppe_node ${SITE} )
+         else()
+            string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node 
+               ${SITE} )
+         endif()
          set( RUN_CMD ssh ${ppe_node} )
       endif()
    endif()
@@ -322,7 +328,12 @@ macro( add_parallel_tests )
    # tests.
    if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
       if( "${SITE}" MATCHES "rr[a-d][0-9]+a" )
-         string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node ${SITE} )
+         if( "${SITE}" MATCHES "localdomain" )
+            string( REGEX REPLACE "(rr[a-z][0-9]+)[a][.]localdomain"
+               "\\1b" ppe_node ${SITE} )
+         else()
+            string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node ${SITE} )
+         endif()
          set( RUN_CMD ssh ${ppe_node} )
       endif()
    endif()
