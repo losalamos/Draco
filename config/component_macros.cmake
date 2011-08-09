@@ -83,7 +83,7 @@ endmacro()
 # ------------------------------------------------------------
 macro( register_scalar_test targetname runcmd command cmd_args )
    
-   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-z][0-9]+a" )
       # Special treatment for Roadrunner PPE build.  The tests
       # must be run on the PPC chip on the backend.  If we are
       # running from the x86 backend, then we can run the tests
@@ -202,7 +202,7 @@ macro( add_scalar_tests test_sources )
    # the test.  If we are on roadrunner frontend, we cannot run the
    # tests.
    if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
-      if( "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+      if( "${SITE}" MATCHES "rr[a-z][0-9]+a" )
          if( "${SITE}" MATCHES "localdomain" )
             string( REGEX REPLACE "(rr[a-z][0-9]+)[a][.]localdomain"
                "\\1b" ppe_node ${SITE} )
@@ -327,7 +327,7 @@ macro( add_parallel_tests )
    # the test.  If we are on roadrunner frontend, we cannot run the
    # tests.
    if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
-      if( "${SITE}" MATCHES "rr[a-d][0-9]+a" )
+      if( "${SITE}" MATCHES "rr[a-z][0-9]+a" )
          if( "${SITE}" MATCHES "localdomain" )
             string( REGEX REPLACE "(rr[a-z][0-9]+)[a][.]localdomain"
                "\\1b" ppe_node ${SITE} )
