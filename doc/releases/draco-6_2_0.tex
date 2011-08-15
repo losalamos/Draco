@@ -162,56 +162,82 @@
 
 \section{\draco\ Contributors}
 
+% generate file list
 % cd draco
-% for dir in src environment tools config regression; do (cd $dir; cvs \
-%    annotate >> ../blame); done
-% for name in aimee bergen bta gaber gray jdd jhchang kellyt \
-% kgbudge lowrie mcghee mwbuksas phenning rsqrd tkelley tme tmonster \
-% warsa wollaber; do
-%    echo -n "$name " ; grep $name blame | wc -l; done
+% files1=`find . -name '*.hh'`
+% files2=`find . -name '*.cc'`
+% cvs annotate $files1 $files2 > blame
 
-%% kellyt   99483
-%% tme      67526
-%% kgbudge  55563
-%% mwbuksas 14246
-%% lowrie   13748
-%% jhchang   8992
-%% bta       6907
-%% mcghee    6333
-%% jdd       4925
-%% warsa     2973
-%% gaber     2636
-%% phenning  2635
-%% rsqrd     1749
-%% wollaber   904
-%% gray       903
-%% bergen     483
-%% tmonster   112
-%% tkelley     30
-%% aimee        6
+% generate user list
+% cat blame | awk '{print $2}' > blame.ulist
+% ulist=`cat blame.ulist | sort -u  | sed -e 's/^(//'`
+
+% generate report
+% for name in $ulist; do numlines=`grep $name blame | wc -l`; echo \
+% "$numlines: $name"; done > blame_count
+% cat blame_count | sort -rn
+
+%% 49134: kellyt
+%% 44401: kgbudge
+%% 27759: tme
+%% 7544: lowrie
+%% 5954: bta
+%% 5348: mwbuksas
+%% 2823: pautz
+%% 2676: mcghee
+%% 2478: phenning
+%% 2395: warsa
+%% 2185: rsqrd
+%% 1843: gaber
+%% 1277: sethrj
+%% 1201: furnish
+%% 477: jhchang
+%% 466: talbotp
+%% 263: gray
+%% 254: wollaber
+%% 129: bergen
+%% --- cutoff @ 100 lines ---
+%% 61: batcho
+%% 40: kgt
+%% 37: jdd
+%% 33: gad
+%% 26: tmonster
+%% 24: swmosher
+%% 21: tkelley
+%% 12: regress
+%% 2: wawiesel
+%% 0: wareing
+%% 0: turners
+%% 0: ntmyers
+%% 0: merideth
+%% 0: clevelam
+%% 0: christon
+%% 0: bobc
+%% 0: aimee
 
 The following people are contributors to \draco:
 \begin{center}
   \small
   \begin{tabular}{lll}
     Kelly Thompson    & \texttt{kgt@lanl.gov}       \\
-    Tom Evans         & \texttt{evanstm@ornl.gov}   \\
     Kent Budge        & \texttt{kgbudge@lanl.gov}   \\
-    Mike Buksas       & \texttt{mwbuksas@lanl.gov}  \\
+    Tom Evans         & \texttt{evanstm@ornl.gov}   \\
     Rob Lowrie        & \texttt{lowrie@lanl.gov}    \\
-    Jae Chang         & \texttt{jhchang@lanl.gov}   \\
     Todd Adams        & \\
+    Mike Buksas       & \texttt{mwbuksas@lanl.gov}  \\
+    Shawn Pautz       & \\
     John McGhee       & \\
-    Jeff Densmore     & \texttt{jdd@lanl.gov}       \\
-    Jim Warsa         & \texttt{warsa@lanl.gov}     \\
-    Gabe Rockerfeller & \texttt{gaber@lanl.gov}     \\
     Paul Henning      & \texttt{phenning@lanl.gov}  \\
+    Jim Warsa         & \texttt{warsa@lanl.gov}     \\
     Randy Roberts     & \texttt{rsqrd@lanl.gov}     \\
-    Allan Wollaber    & \texttt{wollaber@lanl.gov}  \\
+    Gabe Rockerfeller & \texttt{gaber@lanl.gov}     \\
+    Seth Johnson      & \\
+    Geoffrey Furnish  & \\
+    Jae Chang         & \texttt{jhchang@lanl.gov}   \\
+    Paul Talbot       & \texttt{talbotp@lanl.gov}   \\
     Mark Gray         & \texttt{gray@lanl.gov}      \\
+    Allan Wollaber    & \texttt{wollaber@lanl.gov}  \\
     Ben Bergen        & \texttt{bergen@lanl.gov}    \\
-    Todd Urbatsch     & \texttt{tmonster@lanl.gov}  \\
-    Tim Kelley        & \texttt{tkelly@lanl.gov}    \\
   \end{tabular}
 \end{center}
 
