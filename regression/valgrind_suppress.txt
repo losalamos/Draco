@@ -249,7 +249,6 @@
    Memcheck:Cond
    fun:index
    fun:expand_dynamic_string_token
-   fun:_dl_map_object
    ...
    obj:/lib64/ld-2.5.so
 }
