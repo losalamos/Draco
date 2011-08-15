@@ -16,48 +16,47 @@ information about these third parties and how to obtian or build them.
 - \ref vendor_how2build
 
 \par Introduction
+
 The vendors used by Draco and associated projects are maintained by the Draco
-core team.  Vendor software is typically built per platform (Roadrunner, CCS64
-Linux, etc.) and stored in the {{{radtran}}} directory.
+core team.  Vendor software is typically built per platform (Roadrunner, CCS-2
+Linux64, etc.) and stored in either the \c /ccs/codes/radtran/vendors or \c
+/usr/projects/dracy/vendors directory.
 
 Draco uses the compilers and MPI files provided by the systems team for each
 platform.  Each MPI installation requires a custom installation to correctly
-use the high speed interconnect hardware.
-
-\todo [5/4/10 KT]: Reorganize the {{{radtran/vendors} directory so that it has
-the following format:{{{radtran/vendors/<platform>-<arch>-<mpi>-<fortran>-<cpp>}}}.
-Portions of the string may be skipped if there is only a single value
-available (e.g. <mpi> may always be openmpi or <arch> is always Linux64 for
-the given <platform> tag).
+use the high speed interconnect hardware.  The nomenclature is \c
+<platform>-<mpi vendor>-<c++ compiler>-<f90 compiler>.
 
 For example:
-{{{
-radtran/vendors/
-    CCS64-pgi705-pgi705/ # assume <arch>=Linux64, <mpi>=openmpi
-       BLACS/
-          lib/
-       CASC/
-       EOSlib/
-       ParMetis-3.1/
-           include/
-          lib/
-       ...
-    rr-dev-gcc430-gfortran530/ # assume <arch>=64-bit, <mpi>=openmpi
-       BLACS/
-          lib/
-       CASC/
-       EOSlib/
-       ParMetis-3.1/
-           include/
-          lib/
-       ...
-    sources/
-       BLACS/
-       CASC/
-       EOSlib/
-       ParMetis-3.1/
-       ...
-}}}
+\code
+/usr/projects/draco/vendors/
+   cmake-2.8.5-Linux-i386/
+   git-1.7.5/
+   numdiff-5.2.1/
+   ...
+
+   tu-openmpi143-intel100023-intel100023/
+      atlas/
+         lib/
+         include/
+      gandolf/
+         lib/
+      gsl-1.14
+         lib/
+         include/
+   yr-openmpi143-pgi903-pgi903/
+      atlas/
+         lib/
+         include/
+      gandolf/
+         lib/
+      gsl-1.14
+         lib/
+         include/   
+   ...      
+\endcode
+
+
 
 <hr><!-- ------------------------------------------------------------ -->
 
@@ -67,11 +66,13 @@ radtran/vendors/
 
 \par GLS - GNU Scientific Library
 
-Linux64/GCC - <tt>/ccs/codes/radtran/vendors/gsl/Linux64</tt>.
+Linux64/GCC - <tt>/ccs/codes/radtran/vendors/Linux64/gsl/</tt>.
 
 \subsection vendor_location_icn ICN machines
 
-\par Need to provide this information!
+\par GLS - GNU Scientific Library
+
+Linux64/GCC - <tt>/usr/projects/draco/vendors/gsl/</tt>.
 
 <hr><!-- ------------------------------------------------------------ -->
 
@@ -87,7 +88,17 @@ Linux64/GCC - <tt>/ccs/codes/radtran/vendors/gsl/Linux64</tt>.
 % make -j4 install
 \endcode
 
+\subsection vendor_how2build_atlas ATLAS - Intel - turing
 
+\code
+% /usr/projects/draco/vendors/atlas/atlas3.8.3/ATLAS/configure -Si cputhrchk 
+0 --prefix=/usr/projects/draco/vendors/atlas/Linux64/openmpi133-intel100023-i
+ntel100023 --with-netlib-lapack=/opt/Ptools/lapack/3.1.1/lib/liblapack.a -C i
+f ifort -F if '-std90 -warn unused -vec-report0 -ip -fpe0 -fp-model precise -
+fp-speculation strict -ftz -fpic -O3'
+% make nj=2
+% make install
+\endcode
 */
 
 //---------------------------------------------------------------------------//

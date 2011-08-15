@@ -1,0 +1,108 @@
+//---------------------------------------------------------------------------//
+// howtobuild.dcc
+// $Id$
+//---------------------------------------------------------------------------//
+
+/*!
+\page draco_how_to_build How to build and test Draco
+\author Kelly Thompson
+
+\section draco_release_abstract Abstract
+
+
+<!-- ---------------------------------------------------------------------- -->
+<hr>
+
+\section release_toc Table of Contents
+
+- \ref how2build_toolset
+- \ref how2build_code_access
+- \ref how2build_philosophy
+- \ref how2build_ccs2_lan
+- \ref how2build_tu
+- \ref how2build_yr
+- \ref how2build_ct
+- \ref how2build_rr
+
+<!-- ---------------------------------------------------------------------- -->
+<hr>
+
+\section how2build_toolset Toolset
+
+The Draco build system requires the following tools:
+- Configuration tool: <a href="http://www.cmake.org">CMake 2.8.5+</a>.
+- Project toolset: make, XCode, Eclipse CDT, Visual Studio, etc.
+- C++ Compilers: GNU g++, PGI 9.0-3 pgCC or Intel 10.0.023 icpc.
+- Required vendor software: MPI, GSL
+- Optional vendor software: LAPACK, BLAS, Grace, etc.
+
+If you are using the Draco Modules feature, these tools and vendors can be
+imported into the local development environment by using \c module \c load.
+
+\section how2build_code_access Access the code
+
+Draco uses the CVS revision control system.  Source code is checked out of the
+repository using the following commands:
+\code
+   % cvs -d ccscs8:/ccs/codes/radtran/cvsroot co -P draco
+\endcode
+
+\section how2build_philosophy Philisophy for Draco builds
+
+Draco uses out-of-source builds.  That is, the Draco build assumes that the
+source, build and install locations are all independant directories.  Source
+is often located in \c \$HOME/draco while the build directory is usually in
+temporary file space (e.g.: \c /var/tmp/$USER/draco).
+
+Compiling Draco has 4 distinct phases:
+- Configure the project (e.g.: generate makefiles in the build directory).
+- Compile the code (e.g.: run \c make from the build directory).
+- Test the code by running unit tests (e.g.: run \c ctest from the build
+directory).
+- Installing the compiled libraries (e.g.: run \c make \c install).
+
+The following variable names are used in the discussion below:
+- \b SOURCE_DIR - location of Draco sources, often \c \$HOME/draco
+- \b BUILD_DIR - location of build directory (Makefiles, object files,
+compiled unit tests, etc.).
+- \b TARGET_DIR - install location.
+- \b GENERATOR - Generate project files for this system (e.g.: Unix Makefiles,
+Eclipse CDT4 - Unix Makefiles, XCode).
+
+\section how2build_ccs2_lan CCS-2 LAN
+
+\subsection how2build_ccs2_lan_makefiles Makefiles
+\code
+  % module list
+  Currently Loaded Modulefiles:
+  1) grace                9) lapack/atlas-3.8.3  17) doxygen/1.7.1
+  2) BLACS               10) ndi                 18) numdiff/5.2.1
+  3) SCALAPACK           11) openmpi/1.3.3       19) p7zip/9.04
+  4) SuperLU_DIST/2.4    12) ParMetis/3.1.1      20) emacs/23.2
+  5) gandolf             13) trilinos/10.6.4     21) valgrind/3.6.1
+  6) gcc/4.5.2           14) totalview/8.8.0-2   22) pcg/1.0
+  7) gsl                 15) cmake/2.8.5         23) eclipse
+  8) hypre/2.0.0         16) graphviz
+
+  % cd BUILD_DIR
+  % cmake -DCMAKE_INSTALL_PREFIX=TARGET_DIR <build options> SOURCE_DIR
+  % make -j
+  % ctest -j
+  % make -j install
+\endcode
+
+\subsection  how2build_ccs2_lan_eclipse Eclipse
+\code
+  % cd BUILD_DIR
+  % cmake -G"Eclipse CDT4 - Unix Makefiles" -DCMAKE_INSTALL_PREFIX=TARGET_DIR <build options> SOURCE_DIR
+  % eclipse
+\endcode
+- From Eclipse, import the newly generated project files (\c BUILD_DIR).
+- Select the Eclipse build, test and install targets.
+
+
+
+*/
+//---------------------------------------------------------------------------//
+// end 
+//---------------------------------------------------------------------------//
