@@ -40,6 +40,8 @@
 
 \newcommand{\tableText}[1]{{\raggedright #1}}
 
+\newcommand{\Ei}{\mathop{\mathrm{Ei}}}
+\newcommand{\En}[1]{\mathop{\mathrm{E}_{#1}}}
 
 \definecolor{listingBG}{rgb}{0.95,0.95,0.95}
 
@@ -988,18 +990,18 @@ You can follow the prompts to query various parts of the IPCRESS file.
 \item Added an exponential integral evaluation function,
   \texttt{ExpInt}. This routine is extracted from
   from~\cite{numericalrecipesforcpp}.  It computes the general
-  exponential integrals of type $Ei(x)$ or $E_n(x)$. \\
+  exponential integrals of type $\Ei(x)$ or $\En{n}(x)$. \\
   \\
-  $E_n(x)$ is calculated either by special case definitions for $n=0$
+  $\En{n}(x)$ is calculated either by special case definitions for $n=0$
   or $x=0$ with $n=0$ or $1$, or the Lentz algorithm if $x>1.0$, or
   the digamma series representation for greater $x$. \\
   \\
-  $Ei(x)$ is calculated using power series expansion for
-  $x<|ln(EPS)|$, where $EPS$ is the required relative error (set to
+  $\Ei(x)$ is calculated using a power series expansion for
+  $x<|\ln(\epsilon)|$, where $\epsilon$ is the required relative error (set to
   machine precision), as this is the lower limit of the asymptotic
-  series, which is used for greater values of $x$. The asymptotic
+  series that is used for greater values of $x$. The asymptotic
   series includes all converging terms until values are less than
-  $EPS$. $Ei(-x)$ evaluates to the extension $-E_1(x)$.
+  $\epsilon$. $\Ei(-x)$ evaluates to the extension $-\En{1}(x)$.
 \end{itemize}
 
 \subsection{timestep}
