@@ -25,11 +25,6 @@ typedef LF_Gen Random;
 extern int rn_stream;  
 }
 
-extern "C"
-{
-    int rng_is_nonreproducible();
-}
-
 #endif                          // rtt_rng_Random_Inline_hh
 
 //---------------------------------------------------------------------------//
