@@ -9,3 +9,15 @@
 #include "Random_Inline.hh"
 
 int rtt_rng::rn_stream;
+
+extern "C"
+{
+    int rng_is_nonreproducible()
+    {
+#ifdef RNG_NR
+        return 1;
+#else
+        return 0;
+#endif
+    }
+}

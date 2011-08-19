@@ -36,7 +36,17 @@ void check_basics()
     cerr << "Testing RNG.cc's errprint function "
          << "(a fake message should appear next)." << endl;
     errprint("noway","check_basics","error message goes here");
-        
+
+    // Make sure that rng_is_nonreproducible correctly reports the
+    // reproducibility of this build.
+#ifdef RNG_NR
+    if ( ! rng_is_nonreproducible())        ITFAILS
+    else PASSMSG("RNG is non-reproducible")
+#else
+    if (rng_is_nonreproducible())           ITFAILS
+    else PASSMSG("RNG is reproducible")
+#endif
+
     return;
 }
 
