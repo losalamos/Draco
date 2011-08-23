@@ -26,9 +26,11 @@ if( BUILD_TESTING )
   enable_testing()
   if( "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )
      add_custom_target( check
-        COMMAND ${CMAKE_MAKE_COMMAND} test )   
+        COMMAND ${CMAKE_MAKE_PROGRAM}  
+        COMMAND ${CMAKE_CTEST_COMMAND} )   
   else()
      add_custom_target( check
+        COMMAND ${CMAKE_MAKE_PROGRAM} -j ${MPIEXEC_MAX_NUMPROCS} 
         COMMAND ${CMAKE_CTEST_COMMAND} -j ${MPIEXEC_MAX_NUMPROCS} )
   endif()
 endif()  
