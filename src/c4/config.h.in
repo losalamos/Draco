@@ -14,39 +14,6 @@
 
 /* C4 Environments */
 
-/* Switch between Autoconf-based build system and CMake-based build */
-#undef C4_AUTOCONF
-
-/* ---------------------------------------- */
-/* AUTOCONF based build system              */
-/* ---------------------------------------- */
-#ifdef C4_AUTOCONF
-
-/* scalar (default) */
-#undef C4_SCALAR
-/* mpi */
-#undef C4_MPI
-/* Add version check for Compaq ALASKA MPI releases */
-#undef MPI_VERSION_CHECK
-
-/* What is the mpirun command? */
-#if defined draco_isLinux
-#define C4_MPICMD "mpirun -np "
-#elif defined draco_isOSF1
-#define C4_MPICMD "prun -n "
-#elif defined draco_isDarwin
-#define C4_MPICMD "mpirun -np "
-#elif defined draco_isAIX
-#define C4_MPICMD "poe -procs "
-#else
-#define C4_MPICMD "aprun -n "
-#endif
-
-/* ---------------------------------------- */
-/* CMAKE based build system                 */
-/* ---------------------------------------- */
-#else
-
 /* DRACO_C4:= [MPI|SCALR] */
 #cmakedefine DRACO_C4 @DRACO_C4@
 /* C4_SCALAR */
@@ -61,8 +28,6 @@
 #cmakedefine MPIEXEC           "@MPIEXEC@"
 #cmakedefine MPIEXEC_POSTFLAGS "@MPIEXEC_POSTFLAGS_STRING@"
 #cmakedefine C4_MPICMD         "@C4_MPICMD@"
-
-#endif /* cmake or autoconf */
 
 /* ---------------------------------------- */
 /* All build systems                        */

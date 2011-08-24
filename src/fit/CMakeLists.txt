@@ -7,7 +7,7 @@ project( fit CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
-configure_file( config.h.in ${PROJECT_BINARY_DIR}/fit/config.h )
+#configure_file( config.h.in ${PROJECT_BINARY_DIR}/fit/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files

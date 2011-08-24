@@ -7,7 +7,7 @@ project( roots CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
-configure_file( config.h.in ${PROJECT_BINARY_DIR}/roots/config.h )
+#configure_file( config.h.in ${PROJECT_BINARY_DIR}/roots/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files

@@ -9,35 +9,6 @@
 #ifndef __lapack_wrap_config_h__
 #define __lapack_wrap_config_h__
 
-#undef LW_AUTOCONF
-#ifdef LW_AUTOCONF
-
-/* LEVEL 1 BLAS */
-
-/* x */
-#undef SCOPY
-#undef DCOPY
-
-/* ax */
-#undef SSCAL
-#undef DSCAL
-
-/* x^T y */
-#undef SDOT
-#undef DDOT
-
-/* ax + y */
-#undef DAXPY
-#undef SAXPY
-
-/* ||x||_2 */
-#undef SNRM2
-#undef DNRM2
-
-#else
-
-/* CMAKE setup */
-/* #ifdef _MSC_VER */
 #cmakedefine SCOPY @SCOPY@
 #cmakedefine DCOPY @DCOPY@
 #cmakedefine SSCAL @SSCAL@
@@ -48,8 +19,6 @@
 #cmakedefine SAXPY @SAXPY@
 #cmakedefine SNRM2 @SNRM2@
 #cmakedefine DNRM2 @DNRM2@
-
-#endif
 
 #endif /* __lapack_wrap_config_h__ */
 

@@ -9,27 +9,7 @@
 #ifndef __cdi_gandolf_config_h__
 #define __cdi_gandolf_config_h__
 
-/* Switch between Autoconf-based build system and CMake-based build */
-#undef AUTOCONF
-
-/* ---------------------------------------- */
-/* AUTOCONF based build system              */
-/* ---------------------------------------- */
-#ifdef AUTOCONF
-#undef rtt_cdi_gandolf_stub
-
-/* ---------------------------------------- */
-/* CMAKE based build system                 */
-/* ---------------------------------------- */
-#else
 #cmakedefine rtt_cdi_gandolf_stub @rtt_cdi_gandolf_stub@
-#endif /* cmake or autoconf */
-
-/* ---------------------------------------- */
-/* All build systems                        */
-/* ---------------------------------------- */
-
-/* none */
 
 #endif                          /* __cdi_config_h__ */
 
