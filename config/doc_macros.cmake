@@ -120,7 +120,7 @@ macro( add_latex_doc )
       endif()
       
       # Install instructions
-      install( FILES ${dirpdfs} DESTINATION doc )
+      install( FILES ${dirpdfs} DESTINATION doc OPTIONAL)
 
    endif(LATEX_COMPILER)
 
@@ -211,7 +211,7 @@ macro( add_pdflatex_doc )
       endif()
       
       # Install instructions
-      install( FILES ${dirpdfs} DESTINATION doc )
+      install( FILES ${dirpdfs} DESTINATION doc OPTIONAL )
 
    endif(PDFLATEX_COMPILER)
 
