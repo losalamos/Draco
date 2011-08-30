@@ -1,8 +1,0 @@
-##---------------------------------------------------------------------------##
-## run the application test/ directory tests
-
-apptest: ${alltarget}
-	@if test -d "${srcdir}/$@" && test -d "$@" ; then \
-		(cd $@ && ${MAKE} $@) || exit; \
-	fi
-
