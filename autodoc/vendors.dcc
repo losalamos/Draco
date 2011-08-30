@@ -118,6 +118,8 @@ Linux64/GCC - <tt>/usr/projects/draco/vendors/gsl/</tt>.
 % make -j4 install
 \endcode
 
+<hr><!-- ------------------------------------------------------------ -->
+
 \subsection vendor_how2build_atlas ATLAS - Intel - turing
 
 \code
@@ -129,8 +131,25 @@ fp-speculation strict -ftz -fpic -O3'
 % make nj=2
 % make install
 \endcode
-*/
 
+<hr><!-- ------------------------------------------------------------ -->
+
+\subsection vendor_how2buildopenmpi OpenMPI - Linux64
+
+- Download from www.openmpi.com
+- For SMP machines (e.g.: CCS-2 Linux64 machines), no special drivers are
+  required.  If building for systems that have custom interconnect hardware
+ (infiniband, etc), you must link against hardware drivers.
+
+\code
+% mkdir -p /var/tmp/kgt/openmpi
+% cd /var/tmp/kgt/openmpi
+% ~/openmpi-1.5.4/configure --prefix=/ccs/codes/radtran/vendors/openmpi-1.5.4
+% make -j16
+% make -j16 install
+\endcode
+
+*/
 //---------------------------------------------------------------------------//
 // end of vendors.dcc
 //---------------------------------------------------------------------------//
