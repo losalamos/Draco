@@ -170,6 +170,8 @@ class DLL_PUBLIC UnitTest
     // Features
     static std::map< std::string, unsigned >
     get_word_count( std::ostringstream const & data, bool verbose=false );
+    static std::map< std::string, unsigned >
+    get_word_count( std::string const & filename, bool verbose=false );
     
   protected:
 

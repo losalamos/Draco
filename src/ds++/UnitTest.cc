@@ -13,6 +13,7 @@
 #include "UnitTest.hh"
 #include "path.hh"
 #include <iostream>
+#include <fstream>
 #include <sstream>
 
 namespace rtt_dsxx
@@ -175,6 +176,35 @@ UnitTest::get_word_count( std::ostringstream const & msg, bool verbose )
 
     return word_list;
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Parse text file to provide a list of words and the number of occurances of each.
+ */
+std::map< std::string, unsigned >
+UnitTest::get_word_count( std::string const & filename, bool verbose )
+{
+    // open the file
+    std::ifstream infile;
+    infile.open( filename.c_str() );
+    Insist( infile, std::string("Cannot open specified file = \"") + filename
+            + std::string("\".") );
+
+    // read and store the text file contents
+    std::ostringstream data;
+    std::string line;
+    if( infile.is_open() )
+        while( infile.good() )
+        {
+            getline(infile,line);
+            data << line << std::endl;
+        }
+
+    infile.close();
+    return UnitTest::get_word_count( data, verbose );
+}
+
+
 
 } // end namespace rtt_dsxx
 

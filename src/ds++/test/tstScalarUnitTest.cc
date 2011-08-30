@@ -16,6 +16,7 @@
 #include <sstream>
 #include <map>
 #include <cstdlib>
+#include <fstream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -59,10 +60,10 @@ void tstTwo( UnitTest &unitTest )
 
 
 //---------------------------------------------------------------------------//
-void tstTwoCheck( UnitTest &unitTest, std::ostringstream & msg )
+void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
 {
     bool verbose(true);
-    std::map<string,unsigned> word_list(
+    map<string,unsigned> word_list(
         UnitTest::get_word_count( msg, verbose ) );
 
     // Check the list of occurances against the expected values
@@ -100,7 +101,50 @@ void tstVersion( UnitTest & /* ut */, int & argc, char **& argv )
         cmd += " " + string( argv[0] );
     cmd += " --version";
     
-    std::system( cmd.c_str() );
+    system( cmd.c_str() );
+    return;
+}
+
+//---------------------------------------------------------------------------//
+void tstGetWordCountFile( UnitTest & unitTest )
+{
+    cout << "\ntstGetWordCountFile...\n" << endl;
+    
+    // Generate a text file
+    string filename("tstScalarUnitTest.sample.txt");
+    ofstream myfile( filename.c_str() );
+    if( myfile.is_open() )
+    {
+        myfile << "This is a text file.\n"
+               << "Used by tstScalarUnitTest::tstGetWordCountFile\n\n"
+               << "foo bar baz\n"
+               << "foo bar\n"
+               << "foo\n\n";
+        myfile.close();            
+    }
+
+    // Now read the file and parse the contents:
+    map< string, unsigned > word_list(
+        UnitTest::get_word_count( filename, false ) );
+
+    // Some output
+    cout << "The world_list has the following statistics (word, count):\n"
+         << endl;
+    for( map<string,unsigned>::iterator it=word_list.begin();
+         it != word_list.end(); ++it )
+        cout << it->first << "\t::\t" << it->second << endl;
+
+    // Spot checks on file contents:
+    if( word_list[ string("This") ] != 1 )               ITFAILS;
+    if( word_list[ string("foo" ) ] != 3 )               ITFAILS;
+    if( word_list[ string("bar" ) ] != 2 )               ITFAILS;
+    if( word_list[ string("baz" ) ] != 1 )               ITFAILS;
+
+    if( unitTest.numFails == 0 )
+    {
+        cout << endl;
+        PASSMSG("Successfully parsed text file and generated word_list");
+    }
     return;
 }
 
@@ -116,21 +160,25 @@ int main( int argc, char *argv[] )
         tstOne(ut);
 
         // Silent version.
-        std::ostringstream messages;
+        ostringstream messages;
         ScalarUnitTest sut( argc, argv, release, messages );
         tstTwo(sut);
 
         tstTwoCheck( ut, messages );
+
+        tstGetWordCountFile( ut );
+        
         if( argc == 1 )
         {
             // Test --version option.
             tstVersion( ut, argc, argv );
         }
+
     }
     catch( rtt_dsxx::assertion &err )
     {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
+        string msg = err.what();
+        if( msg != string( "Success" ) )
         { cout << "ERROR: While testing " << argv[0] << ", "
                << err.what() << endl;
             return 1;
