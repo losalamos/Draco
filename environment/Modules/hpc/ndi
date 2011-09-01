@@ -11,23 +11,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version      1.14
-set prefix      "/usr/projects/draco/vendors/gsl-$version/pgi903"
+set version      2.0.11
+set prefix      /usr/projects/data/nuclear/ndi/default/x86_64-linux
 set libdir      $prefix/lib
 set incdir      $prefix/include
-set bindir      $prefix/bin
 
 # module whatis
-module-whatis   "Gnu Scientific Library $version";
+module-whatis   "NDI";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tGnu Scientific Library $version\n";
-   puts stderr "\tGSL_LIB_DIR\t= $libdir";
-   puts stderr "\tGSL_INC_DIR\t= $incdir";
-   puts stderr "\tPATH+= $bindir";
+   puts stderr "\tNDI $version\n";
+   puts stderr "\tNDI_LIB_DIR\t= $libdir";
+   puts stderr "\tNDI_INC_DIR\t= $incdir";
 }
 
 if { ![file exists $prefix] } {
@@ -36,9 +34,5 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-prepend-path    PATH            $bindir;
-
-setenv GSL_LIB_DIR $libdir
-setenv GSL_INC_DIR $incdir
-
-
+setenv NDI_LIB_DIR $libdir
+setenv NDI_INC_DIR $incdir

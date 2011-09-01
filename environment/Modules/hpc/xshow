@@ -10,20 +10,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
+# prereq openmpi-gcc openmpi-pgi openmpi-intel;
+
 # local variables
-set version     2.8.5-Linux-i386
-set prefix      /usr/projects/draco/vendors/cmake-$version
-set bindir      $prefix/bin;
-set mandir      $prefix/man;
+set prefix      /usr/projects/crestone/tools/show
+#set incdir      $prefix/include
+#set libdir      $prefix/lib
 
 # module whatis
-module-whatis   "CMake $version";
+module-whatis	"XShow";
 
 # module help
 proc ModulesHelp { } {
-   global version prefix bindir;
+   global version prefix incdir;
 
-   puts stderr "\tCMake $version\n";
+   puts stderr "\txshow data vizualizer";
 }
 
 if { ![file exists $prefix] } {
@@ -32,9 +33,5 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-# Converting clients to embedded info in module files, rather
-# than supporting client license files in the installation directory(s). 
-prepend-path    PATH            $bindir;
-prepend-path    MANPATH         $mandir;
-
-
+setenv         HOMESHOW       $env(HOME);
+prepend-path   PATH           $prefix;

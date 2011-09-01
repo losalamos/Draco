@@ -11,23 +11,18 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version      1.14
-set prefix      "/usr/projects/draco/vendors/gsl-$version/gcc451-xe6"
+set prefix      /usr/projects/draco/vendors/gandolf/Linux64
 set libdir      $prefix/lib
-set incdir      $prefix/include
-set bindir      $prefix/bin
 
 # module whatis
-module-whatis   "Gnu Scientific Library $version";
+module-whatis   "Gandolf";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tGnu Scientific Library $version\n";
-   puts stderr "\tGSL_LIB_DIR\t= $libdir";
-   puts stderr "\tGSL_INC_DIR\t= $incdir";
-   puts stderr "\tPATH+= $bindir";
+   puts stderr "\tGandolf\n";
+   puts stderr "\tGANDOLF_LIB_DIR\t= $libdir";
 }
 
 if { ![file exists $prefix] } {
@@ -36,9 +31,4 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-prepend-path    PATH            $bindir;
-
-setenv GSL_LIB_DIR $libdir
-setenv GSL_INC_DIR $incdir
-
-
+setenv GANDOLF_LIB_DIR $libdir
