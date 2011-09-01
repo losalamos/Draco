@@ -67,7 +67,7 @@ cmake_minimum_required( VERSION 2.8.5 FATAL_ERROR )
 # 2.8.5 provides an updated FindMPI.cmake module that supports
 #      Fortran.  Previous to 2.8.5, draco/config/FindMPI.cmake
 #      provided a customized module to allow Fortran + MPI to work. 
-project( Draco CXX )
+project( Draco CXX Fortran )
 
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
