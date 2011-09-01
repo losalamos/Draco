@@ -8,11 +8,6 @@ if test -n "$verbose"; then
 fi
 
 ##---------------------------------------------------------------------------##
-## ALIASES
-##---------------------------------------------------------------------------##
-
-
-##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
 
@@ -24,24 +19,23 @@ _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
 # modules
-export MODULEPATH=$DRACO_MODULE_DIR/tu-fe:$MODULEPATH
+#export MODULEPATH=$DRACO_MODULE_DIR/tu-fe:$MODULEPATH
+source /usr/share/modules/init/bash
+
+# Use modules found in the draco directory
+module use $DRACO_MODULE_DIR/hpc
+module use $DRACO_MODULE_DIR/tu-fe
 export IGNOREMODULECONFLICTS=1
-function module() { eval `/usr/bin/modulecmd bash $*`; }
-module load intel-c intel-f friendly-testing hpc-tools python/2.5.2 openmpi-intel/1.4.3 graphics totalview/8.7.0-3 gandolf gsl grace-draco trilinos/10.6.4-intel BLACS/1.1-intel SCALAPACK/1.7-intel ndi lapack/atlas-3.8.3-intel hypre/2.0.0-intel openmpi ParMetis/3.1.1-intel SuperLU_DIST/2.4-intel cmake
+
+# function module() { eval `/usr/bin/modulecmd bash $*`; }
+
+module load intel-c intel-f friendly-testing hpc-tools python 
+module load openmpi-intel/1.4.3 graphics totalview/8.7.0-3 gandolf
+module load gsl grace-draco trilinos/10.6.4-intel BLACS/1.1-intel 
+module load SCALAPACK/1.7-intel ndi lapack/atlas-3.8.3-intel
+module load hypre/2.0.0-intel openmpi ParMetis/3.1.1-intel
+module load SuperLU_DIST/2.4-intel cmake
 module list
-if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
-  function llogin()
-  {
-     ##local myshell="/usr/bin/ssh-agent /bin/bash"
-     local myshell="/bin/bash"
-     bsub $* -IS ${myshell}
-   }
-else
-  function llogin()
-  {
-    echo "Already on worker node." 
-  }
-fi
 
 # CVS
 export CVS_RSH=ssh

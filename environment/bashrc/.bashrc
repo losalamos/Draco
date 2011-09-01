@@ -56,14 +56,14 @@ fi
 export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
 export LD_LIBRARY_PATH=`echo ${LD_LIBRARY_PATH} | sed -e 's/[:]$//'`
 
-# Append PATHS (not linux specific, not ccs2 specific).
-
+# Attempt to find DRACO
 if test -z "$DRACO_SRC_DIR"; then
   _BINDIR=`dirname "$BASH_ARGV"`
   export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
 fi
 
-extradirs="${DRACO_SRC_DIR}/environment/bin /usr/X11R6/bin /usr/lanl/bin"
+# Append PATHS (not linux specific, not ccs2 specific).
+extradirs="${DRACO_SRC_DIR}/environment/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/lanl/bin"
 for mydir in ${extradirs}; do
    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
       export PATH=${PATH}:${mydir}
@@ -71,21 +71,26 @@ for mydir in ${extradirs}; do
 done
 
 # set variable with my moniker.
-export USERNAME=`basename ${HOME}`
+# export USERNAME=`basename ${HOME}`
 
 # Remove all permissions for world and group for files I create.
-umask 077
+# umask 077
 
 # Tell the Draco build system to use all available cores when
 # compiling.
-if test -f /proc/cpuinfo; then
-  export nj=`cat /proc/cpuinfo | grep processor | wc -l`
-fi
+#if test -f /proc/cpuinfo; then
+#  export nj=`cat /proc/cpuinfo | grep processor | wc -l`
+#fi
 
 # Tell wget to use LANL's www proxy (see trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
 # export http_proxy=http://wpad.lanl.gov/wpad.dat
 export http_proxy=http://proxyout.lanl.gov:8080
-export NO_PROXY=lanl.gov
+export https_proxy=$http_proxy
+export HTTP_PROXY=$http_proxy
+export HTTPS_PROXY=$http_proxy
+export http_no_proxy="*.lanl.gov"
+export no_proxy=lanl.gov
+export NO_PROXY=$no_proxy
 # See help page for how to setup subversion
 
 ##---------------------------------------------------------------------------##

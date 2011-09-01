@@ -8,11 +8,6 @@ if test -n "$verbose"; then
 fi
 
 ##---------------------------------------------------------------------------##
-## ALIASES
-##---------------------------------------------------------------------------##
-
-
-##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
 
@@ -23,17 +18,13 @@ ulimit -s unlimited
 _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
-# modules
 
-# Use this module command when running bash.
-function module() { eval `/usr/bin/modulecmd bash $*`; }
-# Use modules found in the draco directory
-module use $DRACO_MODULE_DIR/yr-fe
-# Clear any tcsh loaded modules as these are invalid when staring a new shell. 
-module purge &> /dev/null
-
-# Load a default set of modules.
-# export IGNOREMODULECONFLICTS=1
+#
+# MODULES
+#
+source /usr/share/modules/init/bash
+module use $DRACO_MODULE_DIR/hpc
+module use $DRACO_MODULE_DIR/rr-dev-fe
 
 module load friendly-testing hpc-tools python graphics
 module load pgi/9.0-3 openmpi-pgi/1.4.3 grace totalview
