@@ -2,9 +2,17 @@ Information & Download links: http://modules.sourceforge.net
 
 Draco Developers:
 
-Setup:
+Setup for CCS LAN:
 1. check out Draco/environment from CVS.
-2. from ~/.bashrc, source Draco/environment/bashrc/.bashrc.  This will initialize the module system and load a default set of modules.
+2. from ~/.bashrc, source Draco/environment/bashrc/.bashrc.  This will 
+   initialize the module system and load a default set of modules.
+
+Setup for HPC:
+1. check out Draco/environment from CVS (or use a copy from 
+   /usr/projects/draco/...)
+2. Make draco modules available to the already loaded module system:
+   module use ~/draco/environment/Modules/hpc
+   module use ~/draco/environment/Modules/[ct|rr-dev|tu|yr]-fe
 
 Use:
 % module avail
