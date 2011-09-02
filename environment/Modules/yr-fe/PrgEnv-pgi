@@ -96,10 +96,10 @@ module load cmake/2.8.1
 module load ParMetis/3.1.1
 module load lapack/atlas-3.8.3
 module load SCALAPACK/1.7
-module load gsl/1.14
+module load gsl/1.14-pgi
 module load SuperLU_DIST/2.4
 module load hypre/2.0.0
-module load trilinos/10.4.0
+module load trilinos/10.6.4
 module load gandolf grace-draco ndi openmpi 
 #xshow
 
