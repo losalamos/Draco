@@ -26,7 +26,7 @@ module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/rr-dev-fe
 
 module load hpc-tools friendly-testing python openmpi-gcc 
-module load cmake cellsdk gsl lapack/atlas-3.8.2 gandolf git xshow
+module load cmake cellsdk gsl/1.14 lapack/atlas-3.8.2 gandolf git xshow
 module list
 
 # CVS
