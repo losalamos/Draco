@@ -28,7 +28,7 @@ module use $DRACO_MODULE_DIR/rr-dev-fe
 
 module load friendly-testing hpc-tools python graphics
 module load pgi/9.0-3 openmpi-pgi/1.4.3 grace totalview
-module load gandolf gsl/1.14 grace-draco lapack BLACS SCALAPACK 
+module load gandolf gsl/1.14-gcc grace-draco lapack BLACS SCALAPACK 
 module load trilinos SuperLU_DIST hypre ParMetis ndi emacs cmake openmpi
 module list
 
