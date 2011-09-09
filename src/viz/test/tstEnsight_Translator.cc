@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
+ * \note   Copyright (C) 2000-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -28,8 +30,13 @@ using rtt_viz::Ensight_Translator;
 
 //---------------------------------------------------------------------------//
 
-void ensight_dump_test(const bool binary)
+void ensight_dump_test(bool const binary)
 {
+    if( binary )
+        cout << "\nGenerating binary files...\n" << endl;
+    else
+        cout << "\nGenerating ascii files...\n" << endl;
+    
     // dimensions
     int ncells   = 27; 
     int nvert    = 64; 
@@ -143,7 +150,7 @@ void ensight_dump_test(const bool binary)
 	for ( int j = 0; j < p_nvert; j++ )
 	{
 	    int g = g_vrtx_indices[i][j];
-	    cout << g << endl;
+	    // cout << g << endl;
 	    p_vrtx_data[i][j] = vrtx_data[g];
 	    p_pt_coor[i][j] = pt_coor[g];
 	}
@@ -234,35 +241,109 @@ void ensight_dump_test(const bool binary)
 }
 
 //---------------------------------------------------------------------------//
+// 
+//---------------------------------------------------------------------------//
+
+
+void checkOutputFiles( bool const binary )
+{
+    string desc;
+    vector<string> prefixes;
+    if( binary )
+    {
+        desc = string("binary");
+        prefixes.push_back( string("testproblem_binary_ensight") );
+        prefixes.push_back( string("part_testproblem_binary_ensight") );
+    }
+    else
+    {
+        desc = string("ascii");
+        prefixes.push_back( string("testproblem_ensight") );
+        prefixes.push_back( string("part_testproblem_ensight") );
+    }
+
+    string postfix(".0001");
+    vector<string> dirs;
+    dirs.push_back( string( "geo" ));
+    dirs.push_back( string( "Temperatures" ));
+    dirs.push_back( string( "Pressure" ));
+    dirs.push_back( string( "Velocity" ));
+    dirs.push_back( string( "Densities" ));
+
+    cout << "\nChecking contents of generated " << desc << " files...\n" << endl;
+    
+    for( vector<string>::const_iterator itp=prefixes.begin();
+         itp != prefixes.end(); ++itp )
+    {
+        for( vector<string>::const_iterator itd=dirs.begin();
+             itd != dirs.end(); ++itd )
+        {
+            // file string
+            string output   = *itp + string("/") + *itd + string("/data")
+                              + postfix;
+            string ref_out, diff_out;
+            if( binary )
+            {
+                ref_out  = *itd + string(".bin") + postfix;
+                diff_out = *itd + string(".bin.diff");
+            }
+            else
+            {
+                ref_out  = *itd + postfix;
+                diff_out = *itd + string(".diff");
+            }
+
+            // Diff the output and reference
+            string diff_line = string("numdiff ")
+                               + output + string(" ")
+                               + ref_out + string(" > ")
+                               + diff_out;
+            cout << diff_line << endl;
+            int ret=system( diff_line.c_str() );
+            if( ret != 0 )                                             ITFAILS;
+        }
+        cout << endl;
+    }
+    
+    return;
+}
+
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
+    {
 	if (string(argv[arg]) == "--version")
 	{
 	    cout << argv[0] << ": version " << rtt_dsxx::release() << endl; 
 	    return 0;
 	}
-
+    }
+    
     try
     {
         // tests
-        ensight_dump_test(false); // ascii dump
+        
+        { // ASCII dumps
+            ensight_dump_test(false); 
+            checkOutputFiles( false );
+        }
 
-        // run python diff scrips (only works for ascii)
-        system("python ./tstEnsight_Diff.py");
-
-        ensight_dump_test(true); // binary dump
-
-        // ... there's no check for binary, yet.
+        { // Binary dumps
+            ensight_dump_test(true);
+            checkOutputFiles( true );
+        }
+            
     }
-    catch(rtt_dsxx::assertion &err)
+    catch( rtt_dsxx::assertion &err )
     {
         cout << "Caught an exception: " << err.what() << endl;
         return 1;
     }
-    catch(...)
+    catch( ... )
     {
         cout << "An unknown exception was thrown." << endl;
         return 1;
@@ -272,10 +353,13 @@ int main(int argc, char *argv[])
     cout <<     "\n**********************************************";
     if (rtt_viz_test::passed) 
         cout << "\n**** Ensight_Translator Self Test: PASSED ****";
+    else
+        cout << "\n**** Ensight_Translator Self Test: FAILED ****";
     cout <<     "\n**********************************************\n"
          <<     "\nDone testing Ensight_Translator." << endl;
+    return 0;
 }
 
 //---------------------------------------------------------------------------//
-//                              end of tstEnsight_Translator.cc
+// end of tstEnsight_Translator.cc
 //---------------------------------------------------------------------------//
