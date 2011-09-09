@@ -18,7 +18,6 @@ set( test_lib_sources
 file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 file( GLOB mesh_input_files *.in )
-file( GLOB python_scripts python/*.py )
 file( GLOB bench_files bench/*.0001 )
 
 # ---------------------------------------------------------------------------- #
@@ -56,5 +55,25 @@ provide_aux_files(
 )
 provide_aux_files( FILES "${python_scripts}" )
 provide_aux_files( FILES "${bench_files}" )
+
+
+##---------------------------------------------------------------------------##
+## Extra 'make clean' files
+##---------------------------------------------------------------------------##
+set( extra_clean_files
+   Densities.diff
+   Pressure.diff
+   Temperatures.diff
+   Velocity.diff
+   ensight_stream.out
+   geo.diff
+   part_testproblem_binary_ensight
+   part_testproblem_ensight
+   testproblem_binary_ensight
+   testproblem_ensight
+)
+set_directory_properties(
+   PROPERTIES
+   ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
 
 
