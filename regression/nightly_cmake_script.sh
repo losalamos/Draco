@@ -25,7 +25,7 @@ if test -z "$MODULESHOME"; then
     source /home/regress/environment/Modules/init/bash
     module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.3.4 gsl 
     module load lapack-gcc ndi openmpi ParMetis/3.1.1 trilinos/10.4.0 cmake
-    module load valgrind hypre
+    module load valgrind hypre numdiff
     module list
   fi
 fi
