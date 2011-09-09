@@ -8,12 +8,15 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
+# On RR default the Het code to 'ON'
+option( ENABLE_HET_CODE "Build code for PPEs." ON )
 
 # Must use static libraries.
 set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
    "Keyword for creating new libraries (STATIC or SHARED)."
    FORCE )
 
+# Don't use MPI on the PPC or SPE
 if( "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    set( DRACO_C4 "SCALAR" CACHE STRING 
       "Keyword for creating new libraries (SCALAR or MPI)."
@@ -186,45 +189,7 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
    endif()
 endif()
 
-#----------------------------------------------------------------------
-# Use Tim Kelley's CXX flags for g++ instead of the default draco
-# flags. 
-# 
-# \BUG: This section should be removed after testing with the default
-# flags is complete/resolved.
-#----------------------------------------------------------------------
-
-# if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
-#    if( "${CMAKE_GENERATOR}" MATCHES "Makefiles" )
-#       message( "NOTICE: We are modifying the default g++ compile flags for roadrunner (clubimc/pkg_config/platform_customization_roadrunner_ppe.cmake)")
-
-#       set( DRACO_C_FLAGS                "-m64 -pthread -finline-functions -DADDRESSING_64 -DCACHE_LINE_SIZE=128" )
-#       set( DRACO_C_FLAGS_DEBUG          "-gdwarf-2 -O0 -DDEBUG")
-#       set( DRACO_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
-#       set( DRACO_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_RELEASE}" )
-#       set( DRACO_C_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_DEBUG} -O3 -DDEBUG" )
-      
-#       set( DRACO_CXX_FLAGS                "${DRACO_C_FLAGS}" )
-#       set( DRACO_CXX_FLAGS_DEBUG          "${DRACO_C_FLAGS_DEBUG} -pedantic -Wnon-virtual-dtor -Wreturn-type -Woverloaded-virtual -Wno-long-long")
-#       set( DRACO_CXX_FLAGS_RELEASE        "${DRACO_C_FLAGS_RELEASE}")
-#       set( DRACO_CXX_FLAGS_MINSIZEREL     "${DRACO_CXX_FLAGS_RELEASE}")
-#       set( DRACO_CXX_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_RELWITHDEBINFO}" )
-      
-#       if( "${HET_CXX_FLAGS_INITIALIZED}no" STREQUAL "no" )
-#          set( HET_CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL 
-#             "using draco settings (het)." )
-#          set( CMAKE_C_FLAGS                "${DRACO_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_C_FLAGS_DEBUG          "${DRACO_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
-#          set( CMAKE_C_FLAGS_RELEASE        "${DRACO_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_C_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_CXX_FLAGS                "${DRACO_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_CXX_FLAGS_DEBUG          "${DRACO_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
-#          set( CMAKE_CXX_FLAGS_RELEASE        "${DRACO_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_CXX_FLAGS_MINSIZEREL     "${DRACO_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-#          set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${DRACO_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
-#       endif()
-      
-#    endif()
-# endif()
+##---------------------------------------------------------------------------##
+## End platform_customization_roadrunner_ppe.cmake
+##---------------------------------------------------------------------------##
 
