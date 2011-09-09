@@ -34,7 +34,7 @@ module load openmpi-intel/1.4.3 graphics totalview/8.7.0-3 gandolf
 module load gsl/1.14-intel grace-draco trilinos/10.6.4-intel 
 module load SCALAPACK/1.7-intel ndi lapack/atlas-3.8.3-intel
 module load hypre/2.0.0-intel openmpi ParMetis/3.1.1-intel
-module load SuperLU_DIST/2.4-intel cmake BLACS/1.1-intel 
+module load SuperLU_DIST/2.4-intel cmake BLACS/1.1-intel numdiff
 module list
 
 # CVS

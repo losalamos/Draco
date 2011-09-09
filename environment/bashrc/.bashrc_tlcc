@@ -34,7 +34,8 @@ module load modules friendly-testing hpc-tools intel-c intel-f totalview
 module load openmpi-intel/1.4.3 grace python SuperLU_Dist 
 module load lapack/atlas-3.8.3-intel BLACS/1.1-intel ParMetis/3.1.1-intel
 module load gsl/1.14-intel trilinos/10.4.0-intel SCALAPACK/1.7-intel
-module load hypre/2.0.0-intel gandolf grace-draco ndi openmpi xshow cmake
+module load hypre/2.0.0-intel gandolf grace-draco ndi openmpi xshow
+module load cmake numdiff
 
 module list
 

@@ -30,7 +30,7 @@ module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/ct-fe
 
 # modules
-module load cmake git xshow
+module load cmake git xshow numdiff
 module list
 
 # CVS
