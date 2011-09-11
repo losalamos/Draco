@@ -259,3 +259,22 @@
    ...
    obj:/lib64/ld-2.5.so
 }
+
+## ---------------------------------------------------------------------- ##
+## Numdiff
+## ---------------------------------------------------------------------- ##
+
+{
+   numdiff/condjump/ld25so
+   Memcheck:Cond
+   fun:index
+   ...
+   obj:/lib64/ld-2.5.so
+}
+{
+   numdiff/condjump/ld25so
+   Memcheck:Cond
+   fun:_dl_relocate_object
+   ...
+   obj:/lib64/ld-2.5.so
+}
