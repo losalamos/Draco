@@ -26,15 +26,7 @@ dbsSetupCompilers()
 dbsSetupCxx()
 
 # Build only for Opteron? Or PPE also?
-option( ENABLE_HET_CODE "Build code for PPEs." OFF )
 if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
-   # Force update of $SITE so that ctests will use the correct ssh
-   # command.
-   site_name( current_site )
-   set( SITE ${current_site} CACHE STRING 
-      "Name of the computer/site where compile is being run." FORCE )
-   # on RR default to ON.
-   set( ENABLE_HET_CODE ON )
    include( platform_customization_roadrunner_ppe )
 endif()
 
@@ -133,15 +125,19 @@ Vendor dir  : ${VENDOR_DIR}
 MPI         : ${MPIEXEC}
 GSL         : ${GSL_LIBRARY}")
 
-set(tmplist ${LAPACK_LIBRARIES})
-list(GET tmplist 1 lib1)
-message("LAPACK      : ${lib1}")
-list(LENGTH tmplist list_length)
-if( ${list_length} GREATER 1 )
-    list(REMOVE_AT tmplist 1 ) 
-    foreach(lib ${tmplist} )
-    message("              ${lib}")
-    endforeach()
+if( LAPACK_FOUND )
+   set(tmplist ${LAPACK_LIBRARIES})
+   list(GET tmplist 1 lib1)
+   message("LAPACK      : ${lib1}")
+   list(LENGTH tmplist list_length)
+   if( ${list_length} GREATER 1 )
+      list(REMOVE_AT tmplist 1 ) 
+      foreach(lib ${tmplist} )
+         message("              ${lib}")
+      endforeach()
+   endif()
+else()
+   message("LAPACK      : NOTFOUND")
 endif()
 message("GANDOLF     : ${GANDOLF_LIBRARY}
 
