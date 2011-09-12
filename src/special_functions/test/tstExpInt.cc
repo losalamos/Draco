@@ -57,7 +57,8 @@ void tstEi_high( rtt_dsxx::UnitTest & ut )
 {
     double x=40;
     double val=Ei(x);
-    double expVal=6.0397182636112*pow(10,15);
+    double const ten(10.0);
+    double expVal=6.0397182636112*std::pow(ten,15);
     
     std::ostringstream msg;
     if (soft_equiv( val, expVal))
