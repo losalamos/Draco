@@ -11,20 +11,19 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version     5.2.1
-set prefix      /usr/projects/draco/vendors/ppc64/numdiff-$version
-set bindir      $prefix/bin
-set infodir     $prefix/share/info
-set title    "NumDiff"
+set version     2.8.6-rc3-Linux-ppc64
+set prefix      /usr/projects/draco/vendors/ppc64/cmake-$version
+set bindir      $prefix/bin;
+set mandir      $prefix/man;
 
 # module whatis
-module-whatis   "$title $version";
+module-whatis   "CMake $version";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\t $title $version\n";
+   puts stderr "\tCMake $version\n";
 }
 
 if { ![file exists $prefix] } {
@@ -36,4 +35,6 @@ if { ![file exists $prefix] } {
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
 prepend-path    PATH            $bindir;
-prepend-path    INFOPATH        $infodir;
+prepend-path    MANPATH         $mandir;
+
+
