@@ -105,12 +105,12 @@ DACS_Device::~DACS_Device()
     // Release the reserved Cell.
     err = dacs_release_de_list(1, &de_id);
     if (err != DACS_SUCCESS)
-        std::cerr << dacs_strerror(err) << std::endl;
+        std::cerr << "~DACS_Device reports (release): " << dacs_strerror(err) << std::endl;
 
     // Shut down DACS.
     err = dacs_exit();
     if (err != DACS_SUCCESS)
-        std::cerr << dacs_strerror(err) << std::endl;
+        std::cerr << "~DACS_Device reports (exit): " << dacs_strerror(err) << std::endl;
 
 } // DACS_Device::~DACS_Device
 
