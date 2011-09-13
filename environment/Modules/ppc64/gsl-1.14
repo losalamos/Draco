@@ -1,0 +1,44 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+# global control file
+if { [file exists $env(MODULESHOME)/etc/control] } {
+   source $env(MODULESHOME)/etc/control;
+}
+
+# local variables
+set version      1.14
+set prefix      /usr/projects/draco/vendors/ppc64/gsl-1.14
+set libdir      $prefix/lib
+set incdir      $prefix/include
+set bindir      $prefix/bin
+
+# module whatis
+module-whatis   "Gnu Scientific Library $version";
+
+# module help
+proc ModulesHelp { } {
+   global version prefix bindir;
+
+   puts stderr "\tGnu Scientific Library $version\n";
+   puts stderr "\tGSL_LIB_DIR\t= $libdir";
+   puts stderr "\tGSL_INC_DIR\t= $incdir";
+   puts stderr "\tPATH+= $bindir";
+}
+
+if { ![file exists $prefix] } {
+   puts stderr "\n[module-info name]: $prefix: No such file or directory.\n";
+   break;
+   exit 1;
+}
+
+prepend-path    PATH            $bindir;
+
+setenv GSL_LIB_DIR $libdir
+setenv GSL_INC_DIR $incdir
+
+
