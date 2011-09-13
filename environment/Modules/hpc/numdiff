@@ -15,6 +15,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 # local variables
 set prefix      /usr/projects/draco/vendors/numdiff-5.2.1
 set bindir      $prefix/bin
+set infodir     $prefix/share/info
 #set incdir      $prefix/include
 #set libdir      $prefix/lib
 
@@ -36,3 +37,4 @@ if { ![file exists $prefix] } {
 
 # setenv         HOMESHOW       $env(HOME);
 prepend-path   PATH           $bindir;
+prepend-path    INFOPATH        $infopath;
