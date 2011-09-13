@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2011 May 10
 # brief  Custom build command for cross compiling Cell (PPE) code on roadrunner
-# note   Copyright © 2011 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2011 Los Alamos National Security, All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -25,12 +25,32 @@ if( "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
 endif()
 
 #----------------------------------------------------------------------
+# Check requirements
+#----------------------------------------------------------------------
+
+# We have never been able to get the DaCS libraries to work correctly
+# with pgCC.  On 9-13-2011, KT spent about 1 day trying to make this
+# work to no avail.  The device tests will run as far as the
+# DACS_Device destructor where the code reports
+#
+# ~DACS_Device reports (release): DACS_ERR_NOT_INITIALIZED
+#
+# and then the process hangs -- presumably due a corrupt DaCS state.
+# 
+if( "${ENABLE_HET_CODE}" AND "${CMAKE_CXX_COMPILER}" MATCHES "pgCC" )
+   message( FATAL_ERROR "The DaCS libraries (cellsdk/3.1) are not "
+      "compatible with the PGI C compiler." )
+endif()
+
+
+#----------------------------------------------------------------------
 # Settings for the PPC and x86 (but not SPE)
 #----------------------------------------------------------------------
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
 
-   option( HET_MESH_EVERY_CYCLE "See milagro_rz_mg_Test_Host_Rep_accel_side.cc" ON )
+   option( HET_MESH_EVERY_CYCLE 
+      "See milagro_rz_mg_Test_Host_Rep_accel_side.cc" ON )
    if( HET_MESH_EVERY_CYCLE )
       add_definitions( -DMESH_EVERY_CYCLE )
    endif()
