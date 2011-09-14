@@ -4,6 +4,8 @@
  * \author Geoffrey Furnish
  * \date   Fri Jul 25 08:41:38 1997
  * \brief  Helper functions for the Assert facility.
+ * \note   Copyright (C) 1997-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
