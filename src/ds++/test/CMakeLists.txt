@@ -18,6 +18,11 @@ set( test_lib_sources
 file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
+# BUG: artf21615 (tf.lanl.gov): Safe_Ptr has a design defect
+list( REMOVE_ITEM test_sources 
+   ${PROJECT_SOURCE_DIR}/tstSafe_Ptr.cc
+   ${PROJECT_SOURCE_DIR}/tstDBC_Ptr.cc )
+
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #

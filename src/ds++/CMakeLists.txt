@@ -54,6 +54,11 @@ file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/ds++/config.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
+# BUG: artf21615 (tf.lanl.gov): Safe_Ptr has a design defect
+list( REMOVE_ITEM headers 
+   ${PROJECT_SOURCE_DIR}/Safe_Ptr.hh
+   ${PROJECT_SOURCE_DIR}/DBC_Ptr.hh )
+
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
    list( APPEND sources ${headers} ${template_implementations} )
