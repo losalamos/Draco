@@ -305,7 +305,7 @@
 # ==18889==    by 0x40646B: cmp_files (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 # ==18889==    by 0x40BE6C: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
-   <insert_a_suppression_name_here>
+   numdiff/text1
    Memcheck:Cond
    ... 
    fun:cmp_fields
@@ -321,7 +321,7 @@
 # ==18881==    by 0x40646B: cmp_files (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 # ==18881==    by 0x40BE6C: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
-   <insert_a_suppression_name_here>
+   numdiff/text/2
    Memcheck:Value8
    ...
    fun:cmp_fields
@@ -332,7 +332,9 @@
 # ==18871== Use of uninitialised value of size 8
 # ==18871==    at 0x38B501E9C0: __gmpn_divrem_1 (in /usr/lib64/libgmp.so.3.3.3)
 {
-   <insert_a_suppression_name_here>
+   numdiff/text/3
    Memcheck:Value8
+   ...
    fun:__gmpn_divrem_1
+   ...
 }
