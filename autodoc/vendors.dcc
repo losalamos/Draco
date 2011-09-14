@@ -149,6 +149,27 @@ fp-speculation strict -ftz -fpic -O3'
 % make -j16 install
 \endcode
 
+<hr><!-- ------------------------------------------------------------ -->
+
+\subsection vendor_how2buildcmake CMeke - PPC64
+
+- For most platforms, you can download the precompiled binary and simply
+  extract the files.
+- Download installer from http://www.cmake.org/files/v2.8.
+
+- You must build CMake from scratch when on PPC64/Linux (Roadrunner backend). 
+- Download sources from http://www.cmake.org/files/v2.8.
+
+- log onto a PPC backend node (e.g.: \c rra[0-9][0-9][0-9]b). You must \c msub
+  \c -I onto the x86 backend and then ssh into the PPE node (\cb).
+  
+\code
+% ./bootstrap --prefix=<install loc>
+% make -j8
+% make -j8 install
+\endcode
+
+
 */
 //---------------------------------------------------------------------------//
 // end of vendors.dcc
