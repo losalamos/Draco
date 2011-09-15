@@ -29,7 +29,15 @@ include( parse_arguments )
 #
 # Option: Consider using default_args (cmake.org/Wiki/CMakeMacroParseArguments)
 #------------------------------------------------------------------------------
-macro( add_component_library target_name outputname sources )
+macro( add_component_library target_name outputname sources 
+# optional argument: libraryPrefix 
+)
+   # Optional 3rd argument is the library prefix.  The default is "rtt_".
+   if( ARGV3 )
+      set( libraryPrefix ${ARGV3} )
+   else()
+      set( libraryPrefix "rtt_" )
+   endif()
 
    # This is a test library.  Find the component name
    string( REPLACE "_test" "" comp_target ${target_name} )
@@ -43,14 +51,14 @@ macro( add_component_library target_name outputname sources )
          # Provide compile define macro to enable declspec(dllexport) linkage.
          COMPILE_DEFINITIONS BUILDING_DLL 
          # Use custom library naming
-         OUTPUT_NAME rtt_${outputname}
+         OUTPUT_NAME ${libraryPrefix}${outputname}
          FOLDER ${folder_name}
          )
    else()
       set_target_properties( ${target_name}
          PROPERTIES 
          # Use custom library naming
-         OUTPUT_NAME rtt_${outputname}
+         OUTPUT_NAME ${libraryPrefix}${outputname}
          FOLDER ${folder_name}
          )
    endif()
@@ -70,7 +78,7 @@ macro( add_component_library target_name outputname sources )
 
    endif()
 
-   # OUTPUT_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}rtt_ds++${CMAKE_STATIC_LIBRARY_SUFFIX}
+   # OUTPUT_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}${libraryPrefix}ds++${CMAKE_STATIC_LIBRARY_SUFFIX}
    
 endmacro()
 
