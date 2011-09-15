@@ -93,7 +93,7 @@ IF( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( DRACO_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
   set( DRACO_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
   set( DRACO_C_FLAGS_MINSIZEREL     "${DRACO_C_FLAGS_RELEASE}" )
-  set( DRACO_C_FLAGS_RELWITHDEBINFO "${DRACO_C_FLAGS_DEBUG} -O3 -funroll-loops -march=k8" )
+  set( DRACO_C_FLAGS_RELWITHDEBINFO " -g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -O3 -funroll-loops -march=k8" )
 
   set( DRACO_CXX_FLAGS                "${DRACO_C_FLAGS}" )
   set( DRACO_CXX_FLAGS_DEBUG          "${DRACO_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
