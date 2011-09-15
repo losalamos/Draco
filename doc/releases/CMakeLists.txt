@@ -37,3 +37,9 @@ add_pdflatex_doc(
    BIBINPUTS "${BIBINPUTS}"
    TEXINPUTS "${TEXINPUTS}"
 )
+
+# Create a default target for this directory
+if( NOT EXISTS ${draco_doc_dir_SOURCE_DIR} )
+   add_custom_target( pdf ALL 
+      DEPENDS ${PROJECT_BINARY_DIR}/draco-6_2_0.pdf )
+endif()
