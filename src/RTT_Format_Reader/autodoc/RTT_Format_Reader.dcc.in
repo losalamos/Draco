@@ -11,7 +11,7 @@
 
 <!---------------------------------------------------------------------------->
 
-\page overivew_rtt_format_reader Overview of the RTT_Format_Reader package
+\page overview_rtt_format_reader Overview of the RTT_Format_Reader package
 \version Draco-@DRACO_VERSION@
 \author Todd Adams
 
