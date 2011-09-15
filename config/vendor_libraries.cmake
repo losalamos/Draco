@@ -157,6 +157,8 @@ macro( SetupVendorLibrariesUnix )
    if( NOT EXISTS ${BLAS_blas_LIBRARY} )
       message( STATUS "Looking for BLAS...")
 
+      set( BLA_STATIC ON )
+
       # Set the BLAS/LAPACK VENDOR.  This must be one of
       #      ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
       #      Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl
@@ -171,7 +173,8 @@ macro( SetupVendorLibrariesUnix )
 
       # Don't require BLAS/LAPACK for catamount systems
       if( ${SITE} MATCHES "c[it]-" OR
-            ${CMAKE_CXX_COMPILER} MATCHES "[sp]pu-g[+][+]" )
+#            ${SITE} MATCHES "^rr" )
+          ${CMAKE_CXX_COMPILER} MATCHES "[sp]pu-g[+][+]" )
          set( BLAS_REQUIRED "" )
       else()
          set( BLAS_REQUIRED "REQUIRED" )
