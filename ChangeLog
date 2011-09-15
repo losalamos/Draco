@@ -1,3 +1,116 @@
+2011-09-15  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-6_2_1.  This is a patch Draco release.
+	  Issues were discovered with the 6_2_0 release that prevented
+  	  code from executing correctly on the RoadRunner SPU processors.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - clubimc-6_0_1
+	  - milagro-5_2_1
+	  - wedgehog-7_3_1
+	  - capsaicin
+
+	* Summary of changes:
+	  - 73 files were changed, added or removed.
+	  - This release does not include the packages pcgWrap or plot2D.
+
+	* Details per package:
+
+	Build System:
+	  - CMake will now try to identify a Fortran compiler.
+	    Registering Fortran as an active languge in the project aids
+	    in the discovery of BLAS and LAPACK.
+	  - Retire some autoconf files.
+	  - A few changes to how tests are registered on roadrunner (match
+	    more system names).
+          - Provides support for building non-het version of the code on
+	    roadrunner.
+
+	Environment:
+	  - Retire Linux32 module support.
+	  - Create a new grouping 'hpc' for generic tools that work on all
+	    HPC machines (e.g.: cmake, numdiff, etc.)
+	  - Provide better default settings for http_proxy.
+
+	ds++:
+	  - No longer build, test or install Safe_Ptr or DBC_Ptr (see
+	    artf21614).
+	  - Provide new function 'get_word_count' in UnitTest.  This is
+	    useful for checking captured output from unit tests.
+
+	Known defects:
+	  - artf21614: Safe_Ptr has a design defect.
+	  - artf1836:  cdi_gandolf will SEGV if bad key is provided.
+	  - artf20096: c4/tstComm_Dup fails for optimized builds on
+	    cielito.
+	  - artf1845:  cdi_eospac tests fail to compile on Linux.
+	  - artf20097: Unit tests fail when using pgCC 11+ (cielito).
+	  - artf21276: Consider retiring plot2D, cdi_eospac, pcgWrap.
+
+	Resolved defects:
+	  - artf1868: Make vendor dependent library prefixes.
+
+	Statistics:
+
+% tools/count_loc.sh
+
+Counting lines of source code --
+Directory:  /home/kellyt/draco
+Date     :  Thu Sep 15 15:54:37 MDT 2011
+
+                 Total C++ source: 40100
+   C++ source in test directories: 22559
+      C++ contract specifications: 1508
+                     C++ comments: 42785
+             Total Fortran source: 12
+                 Fortran comments: 4
+              LaTeX Documentation: 16070
+                      HTML source: 0
+                        Text docs: 7352
+       Build system script source: 10891
+   Executable shell script source: 645
+           Executable Perl source: 1867
+                    Python source: 3870
+                    Expect source: 0
+                     Elisp source: 6695
+
+	% cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
+	% export COVFILE=`pwd`/CMake.cov
+	% export COVDIRCFG=`pwd`/covclass_cmake.cfg
+	% cd ../source/src; covdir
+
+Directory               Function Coverage           C/D Coverage
+------------------  ---------------------  ---------------------
+units/                  82 /    82 = 100%      58 /    58 = 100%
+traits/                 16 /    16 = 100%       0 /     0
+diagnostics/             8 /     8 = 100%       4 /     4 = 100%
+special_functions/      29 /    29 = 100%     190 /   198 =  95%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+cdi/                    39 /    39 = 100%      27 /    30 =  90%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+linear/                 16 /    16 = 100%     324 /   392 =  82%
+roots/                   8 /     8 = 100%     256 /   312 =  82%
+mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
+RTT_Format_Reader/     315 /   321 =  98%     273 /   356 =  76%
+cdi_gandolf/           129 /   132 =  97%     154 /   278 =  55%
+c4/                    169 /   174 =  97%     288 /   338 =  85%
+ds++/                  630 /   649 =  97%     567 /   637 =  89%
+norms/                  25 /    26 =  96%      21 /    34 =  61%
+viz/                    24 /    25 =  96%     129 /   168 =  76%
+timestep/               59 /    62 =  95%     104 /   178 =  58%
+rng/                    62 /    67 =  92%      63 /    70 =  90%
+parser/                246 /   266 =  92%    1050 /  1351 =  77%
+quadrature/            167 /   182 =  91%     517 /   631 =  81%
+cdi_analytic/          130 /   143 =  90%     156 /   200 =  78%
+lapack_wrap/            11 /    16 =  68%       0 /     0
+------------------  ---------------------  ---------------------
+Total                 2221 /  2317 =  95%    4658 /  5833 =  79%
+
+
 2011-08-02  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* draco: Release draco-6_2_0.  This is a minor Draco release.
@@ -5,8 +118,8 @@
 	* This release was required by Jayenne and Capsaicin.  It is
           linked to:
 	  - clubimc-6_0_0
-	  - milagro-6_0_0
-	  - wedgehog-8_0_0
+	  - milagro-5_2_0
+	  - wedgehog-7_3_0
 	  - capsaicin
 
 	* Summary of changes:
@@ -250,10 +363,10 @@
 	    +c4/tstComm_Dup fails for optimized builds on Cielito.
 
 	* Statistics:
-	
-% tools/count_loc.sh 
 
-%% Counting lines of source code -- 
+% tools/count_loc.sh
+
+%% Counting lines of source code --
 %% Directory:  /home/kgt/draco
 %% Date     :  Tue Aug 2 09:15:02 MDT 2011
 %% Date     :  Tue Aug 2 09:15:02 MDT 2011
