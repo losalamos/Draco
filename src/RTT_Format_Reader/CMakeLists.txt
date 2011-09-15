@@ -29,7 +29,8 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_RTT_Format_Reader RTT_Format_Reader "${sources}" )
+add_component_library( Lib_RTT_Format_Reader 
+   RTT_Format_Reader "${sources}" "rtt_" )
 add_dependencies( Lib_RTT_Format_Reader
    Lib_meshReaders
    Lib_mesh_element 
