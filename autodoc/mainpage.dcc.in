@@ -27,29 +27,55 @@ and architecture of Draco.
 \par Getting Started
 To get started building Draco see \ref build_system.  Package
 overviews can be found in the <a href="pages.html">Related Pages</a>
-section of the documentation.
+section of the documentation. Also see:
+- <a href=http://tf.lanl.gov/projects/draco>Draco on TeamForge</a>.
+- <a href=http://coder.lanl.gov/cdash>Draco regression reporting on CDash</a>.
+- <a href="mailto:draco@lanl.gov">Draco mailing list</a>.
 
+<!--
 \par Code Access
 To gain access to Draco source contact 
 <a href="mailto:draco@lanl.gov">CCS-2</a> or see the Draco LANL SourceForge
-<a href=http://sf.lanl.gov/projects/draco>page</a>.
+<a href=http://tf.lanl.gov/projects/draco>page</a>.
+-->
 
 \par Components
-@COMP_LINKS@
+<!-- Use overview_<pkg> if <pkg>/autodoc/<pkg>.dcc.in exists.  Otherwise use
+the namespace reference rtt_<pkg> -->
+- \ref overview_rtt_format_reader
+- \ref overview_c4
+- \ref overview_cdi
+- \ref overview_cdi_analytic
+- \ref overview_cdi_gandolf
+- \ref rtt_device
+- \ref overview_diagnostics
+- \ref overview_dsxx
+- \ref rtt_fit
+- \ref overview_fpe_trap
+- \ref overview_lapack_wrap
+- \ref rtt_linear
+- \ref overview_meshreaders
+- \ref overview_mesh_element
+- \ref rtt_min
+- \ref overview_norms
+- \ref rtt_ode
+- \ref overview_parser
+- \ref rtt_pcgwrap
+- \ref rtt_plot2d
+- \ref overview_quadrature
+- \ref overview_rng
+- \ref rtt_roots
+- \ref overview_shared_lib
+- \ref overview_sf
+- \ref overview_timestep
+- \ref overview_traits
+- \ref overview_units
+- \ref overview_viz
 
 <!--
 \par Packages
 @PACKAGE_LINKS@
 -->
-
-<!-- Architecture or High Level bugs -->
-
-\bug [05/03/10 KT]: Move \c startup_scripts (and possibly
-\c capsaicin_scripts/changevendors.sh) to \c draco/environment so that a draco
-checkout provides a complete build environment for supported platforms.
-
-\bug [05/03/10 KT]: Consider putting all vendors under a version control
-system. 
 
 */
 
