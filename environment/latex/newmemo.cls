@@ -75,8 +75,8 @@
         {\sffamily \scriptsize \itshape From/MS:}&\begin{minipage}[t]{2.75in}
              \sffamily \fromwho
                              \end{minipage}\\
-        {\sffamily \scriptsize \itshape Phone/FAX:}&{ \sffamily \phonenum}\\
-        {\sffamily \scriptsize \itshape Symbol:}&{ \sffamily \refnum }\\
+        {\sffamily \scriptsize \itshape Phone/FAX:}&{\sffamily \phonenum}\\
+        {\sffamily \scriptsize \itshape Symbol:}&{\sffamily \refnum }\\
         {\sffamily \scriptsize \itshape Date:}& {\sffamily \@date }
       \end{tabular}
     \end{minipage}
