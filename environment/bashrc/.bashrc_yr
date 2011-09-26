@@ -1,0 +1,42 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_ccs4_linux - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_rr"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is draco
+_BINDIR=`dirname "$BASH_ARGV"`
+export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
+
+
+#
+# MODULES
+#
+source /usr/share/modules/init/bash
+module use $DRACO_MODULE_DIR/hpc
+module use $DRACO_MODULE_DIR/yr-fe
+
+module load friendly-testing hpc-tools python graphics
+module load pgi/9.0-3 openmpi-pgi/1.4.3 grace totalview
+module load gandolf gsl/1.14-gcc grace-draco lapack BLACS SCALAPACK 
+module load trilinos SuperLU_DIST hypre ParMetis ndi emacs cmake openmpi
+module list
+
+# CVS
+export CVS_RSH=ssh
+export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
+export FC=pgf90
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_rr
+##---------------------------------------------------------------------------##
