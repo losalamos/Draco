@@ -515,7 +515,7 @@ void tverbose_error()
 
 //---------------------------------------------------------------------------//
 
-int main( int argc, const char *argv[] )
+int main( int argc, char *argv[] )
 {
     //lint -e30 -e85 -e24 -e715 -e818 Suppress warnings about use of argv 
     //          (string comparison, unknown length, etc.)
