@@ -101,7 +101,7 @@ macro(Check_Fortran_Libraries LIBRARIES _prefix _name _flags _list _threads)
          
          if ( APPLE )
             if(BLA_STATIC)
-               set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib;.dll")
+               set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
             endif(BLA_STATIC)
             find_library(${_prefix}_${_library}_LIBRARY
                NAMES ${_library}

@@ -5,12 +5,18 @@
 #  GSL_LIBRARIES      - List of libraries when using GSL.
 #  GSL_FOUND          - True if GSL found.
 
+if (APPLE)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
+endif()
+
 find_path( GSL_INCLUDE_DIR 
     NAMES
        gsl/gsl_sf.h
     PATHS
        ${GSL_INC_DIR}
        $ENV{GSL_INC_DIR}
+	   $ENV{VENDOR_DIR}/include
+       ${VENDOR_DIR}/include
     NO_DEFAULT_PATH
 )
 
@@ -27,6 +33,8 @@ find_library(GSL_LIBRARY
     PATHS
         ${GSL_LIB_DIR}
         $ENV{GSL_LIB_DIR}
+        $ENV{VENDOR_DIR}/lib
+        ${VENDOR_DIR}/lib
     NO_DEFAULT_PATH # avoid picking up /usr/lib/libgsl.so
 )
 find_library(GSL_BLAS_LIBRARY
@@ -34,6 +42,8 @@ find_library(GSL_BLAS_LIBRARY
     PATHS
         ${GSL_LIB_DIR}
         $ENV{GSL_LIB_DIR}
+        $ENV{VENDOR_DIR}/lib
+        ${VENDOR_DIR}/lib
     NO_DEFAULT_PATH
 )
 mark_as_advanced( GSL_LIBRARY GSL_INCLUDE_DIR GSL_LIBRARY GSL_BLAS_LIBRARY )
