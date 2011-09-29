@@ -31,6 +31,7 @@ if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
 endif()
 
 # Find any globally required libraries
+include( FeatureSummary )
 include( vendor_libraries )
 setupVendorLibraries()
 
@@ -42,18 +43,20 @@ include( component_macros )
 # get_draco script only checks out the parts of Draco that are
 # required by milagro.
 macro( add_dir_if_exists package )
-   message(STATUS "${package}")
+   message( "   ${package}" )
    if( EXISTS ${PROJECT_SOURCE_DIR}/${package} )
       add_subdirectory( ${package} )
    endif()
 endmacro()
 
 # Level 1
-message( STATUS "\nConfiguring Level 1 packages --\n" )
-add_subdirectory( ds++ )
+message(" ")
+message( STATUS "Configuring Level 1 packages --" )
+add_dir_if_exists( ds++ )
 
 # Level 2
-message( STATUS "\nConfiguring Level 2 packages --\n" )
+message(" ")
+message( STATUS "Configuring Level 2 packages --" )
 add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( fpe_trap )     # needs ds++
@@ -76,8 +79,8 @@ if( XMGRACE_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/plot2D/CMakeLists.txt)
 endif()
 
 # Level 3
-
-message( STATUS "\nConfiguring Level 3 packages --\n" )
+message(" ")
+message( STATUS "Configuring Level 3 packages --" )
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
 add_dir_if_exists( meshReaders )  # needs c4
@@ -94,16 +97,44 @@ if( GANDOLF_FOUND )
 endif()
 
 # Level 4
-
-message( STATUS "\nConfiguring Level 4 packages --\n" )
+message(" ")
+message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( cdi_analytic )     # needs cdi, ode, parser
 add_dir_if_exists( quadrature )       # needs units, c4, special_functions
 add_dir_if_exists( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, 
                                       #       dsxx
 
 # Summary
-message("
-Draco build summary:
+message(" ")
+
+add_feature_info( PCG PCG_FOUND 
+   "The PCG solvers are required for pcgWrap.")
+add_feature_info( XMGrace XMGRACE_FOUND 
+   "A plotting tool required by plot2D.")
+add_feature_info( ENABLE_HET_CODE ENABLE_HET_CODE 
+   "Build software for heterogeneous architectures (e.g. roadrunner).
+   Required for building the device component.")
+add_feature_info( BUILD_AUTODOC BUILD_AUTODOC
+   "Turn on to enable generation of doxygen documentation (make autodoc).")
+add_feature_info( BUILD_TESTING BUILD_TESTING
+   "Turn off to prevent the compilation of unit tests (ctest).")
+
+feature_summary( 
+   WHAT PACKAGES_FOUND 
+   INCLUDE_QUIET_PACKAGES
+   DESCRIPTION "Packages found:")
+
+feature_summary( 
+   WHAT ENABLED_FEATURES 
+   INCLUDE_QUIET_PACKAGES
+   DESCRIPTION "Enabled features:")
+
+feature_summary( 
+   WHAT DISABLED_FEATURES 
+   INCLUDE_QUIET_PACKAGES
+   DESCRIPTION "Disabled features:")
+
+message("Draco build summary:
 
 Version     : Draco ${DRACO_VERSION_FULL}
 Build type  : ${CMAKE_BUILD_TYPE}
@@ -116,32 +147,32 @@ CXX Compiler: ${CMAKE_CXX_COMPILER}
 CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}
 Library Type: ${DRACO_LIBRARY_TYPE}
 
-ENABLE_RNG_NR    : ${ENABLE_RNG_NR}")
-message("BUILD_NUMBER     : ${BUILD_NUMBER}
-ENABLE_HET_CODE  : ${ENABLE_HET_CODE}")
+ENABLE_RNG_NR    : ${ENABLE_RNG_NR}
+DRACO_DBC_LEVEL  : ${DRACO_DBC_LEVEL}")
+#message("ENABLE_HET_CODE  : ${ENABLE_HET_CODE}")
 message("DRACO_DIAGNOSTICS: ${DRACO_DIAGNOSTICS}
-DRACO_TIMING     : ${DRACO_TIMING}
-Vendor dir  : ${VENDOR_DIR}
-MPI         : ${MPIEXEC}
-GSL         : ${GSL_LIBRARY}")
+DRACO_TIMING     : ${DRACO_TIMING}")
+# messge("Vendor dir  : ${VENDOR_DIR}
+# MPI         : ${MPIEXEC}
+# GSL         : ${GSL_LIBRARY}")
 
-if( LAPACK_FOUND )
-   set(tmplist ${LAPACK_LIBRARIES})
-   list(GET tmplist 1 lib1)
-   message("LAPACK      : ${lib1}")
-   list(LENGTH tmplist list_length)
-   if( ${list_length} GREATER 1 )
-      list(REMOVE_AT tmplist 1 ) 
-      foreach(lib ${tmplist} )
-         message("              ${lib}")
-      endforeach()
-   endif()
-else()
-   message("LAPACK      : NOTFOUND")
-endif()
-message("GANDOLF     : ${GANDOLF_LIBRARY}
-
-")
+# if( LAPACK_FOUND )
+#    set(tmplist ${LAPACK_LIBRARIES})
+#    list(GET tmplist 1 lib1)
+#    message("LAPACK      : ${lib1}")
+#    list(LENGTH tmplist list_length)
+#    if( ${list_length} GREATER 1 )
+#       list(REMOVE_AT tmplist 1 ) 
+#       foreach(lib ${tmplist} )
+#          message("              ${lib}")
+#       endforeach()
+#    endif()
+# else()
+#    message("LAPACK      : NOTFOUND")
+# endif()
+# message("GANDOLF     : ${GANDOLF_LIBRARY}")
+# message("
+# ")
 
 ##---------------------------------------------------------------------------##
 ## End of src/CMakeLists.txt

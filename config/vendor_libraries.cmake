@@ -35,7 +35,8 @@ macro( SetupVendorLibrariesUnix )
       #                              executable to run.
       #   MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.  
       
-      message(STATUS "Looking for MPI...")
+      # message(STATUS "Looking for MPI...")
+
       # Preserve data that may already be set.
       if( DEFINED MPIEXEC )
          set( MPIEXEC ${MPIEXEC} CACHE FILEPATH "Executable for running MPI programs." )
@@ -54,7 +55,7 @@ macro( SetupVendorLibrariesUnix )
 
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
       if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
-         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
+#         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
          set( MPIEXEC $ENV{MPIRUN} )
          find_package( MPI )
       endif()
@@ -62,7 +63,7 @@ macro( SetupVendorLibrariesUnix )
       # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
       if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
             EXISTS "${MPI_INC_DIR}" )
-         message( STATUS "3rd attempt to find MPI: examine $MPI_INC_DIR" )
+#         message( STATUS "3rd attempt to find MPI: examine $MPI_INC_DIR" )
          if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
             set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
          endif()
@@ -97,7 +98,7 @@ macro( SetupVendorLibrariesUnix )
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
-         message( STATUS "MPI FOUND: Setting DRACO_C4 = MPI" )
+#         message( STATUS "MPI FOUND: Setting DRACO_C4 = MPI" )
          set( DRACO_C4 "MPI" )  
          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
          if( NOT MPIEXEC )
@@ -115,7 +116,7 @@ macro( SetupVendorLibrariesUnix )
          endif()
          
       else()
-         message( STATUS "MPI NOT FOUND: Setting DRACO_C4 = SCALAR" )
+#         message( STATUS "MPI NOT FOUND: Setting DRACO_C4 = SCALAR" )
          set( DRACO_C4 "SCALAR" )
          set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
          set( MPI_LIBRARY "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
@@ -151,11 +152,18 @@ macro( SetupVendorLibrariesUnix )
       # view. 
       mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY file_cmd )
       
+      set_package_properties( MPI PROPERTIES
+         URL "http://www.open-mpi.org/"
+         DESCRIPTION "A High Performance Message Passing Library"
+         TYPE RECOMMENDED
+         PURPOSE 
+"If not available, all Draco components will be built as scalar applications."
+)
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
    # BLAS ---------------------------------------------------------------------
    if( NOT EXISTS ${BLAS_blas_LIBRARY} )
-      message( STATUS "Looking for BLAS...")
+      # message( STATUS "Looking for BLAS...")
 
       set( BLA_STATIC ON )
 
@@ -188,19 +196,26 @@ macro( SetupVendorLibrariesUnix )
             "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
       endif()
 
-      find_package( BLAS ${BLAS_REQUIRED} )
-      if( BLAS_FOUND )
-         message( STATUS "Found BLAS:" )
-         foreach( lib ${BLAS_LIBRARIES} )
-            message("\t${lib}")
-         endforeach()
-      endif()
+      find_package( BLAS ${BLAS_REQUIRED} QUIET )
+#      if( BLAS_FOUND )
+#         message( STATUS "Found BLAS:" )
+#         foreach( lib ${BLAS_LIBRARIES} )
+#            message("\t${lib}")
+#         endforeach()
+#      endif()
+
+      set_package_properties( BLAS PROPERTIES
+#         URL "http://www.gnu.org/s/gsl/"
+         DESCRIPTION "Basic Linear Algebra Subprograms"
+         TYPE OPTIONAL
+         PURPOSE "Required for bulding the lapack_wrap component." 
+)
 
    endif( NOT EXISTS ${BLAS_blas_LIBRARY})
 
    # LAPACK -------------------------------------------------------------------
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
-      message( STATUS "Looking for LAPACK...")
+
 
       # This module sets the following variables:
       # LAPACK_FOUND - set to true if a library implementing the LAPACK
@@ -271,53 +286,40 @@ macro( SetupVendorLibrariesUnix )
          set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING 
             "lapack libs" )
          mark_as_advanced( LAPACK_LIBRARIES )
-         message( STATUS "Found LAPACK:" )
-         foreach( lib ${LAPACK_LIBRARIES} )
-            message("\t${lib}")
-         endforeach()
+#         message( STATUS "Found LAPACK:" )
+#         foreach( lib ${LAPACK_LIBRARIES} )
+#            message("\t${lib}")
+#         endforeach()
       endif()
-      
+
+      set_package_properties( LAPACK PROPERTIES
+#         URL "http://www.gnu.org/s/gsl/"
+         DESCRIPTION "Linear Algebra PACKage"
+         TYPE OPTIONAL
+         PURPOSE "Required for bulding the lapack_wrap component." 
+)
+
+#      message( STATUS "Looking for LAPACK...")      
    endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
    # GSL ----------------------------------------------------------------------
-   message( STATUS "Looking for GSL...")
-   find_package( GSL )
+   # message( STATUS "Looking for GSL...")
+   find_package( GSL QUIET )
+   set_package_properties( GSL PROPERTIES
+         URL "http://www.gnu.org/s/gsl/"
+         DESCRIPTION "GNU Scientific Library"
+         TYPE REQUIRED
+         PURPOSE "Required for bulding quadrature and rng components."
+)  
 
    # Gandolf ------------------------------------------------------------------
-   message( STATUS "Looking for Gandolf library...")
-   find_package( Gandolf )
-
-   # find_package( XercesC REQUIRED )
-
-   # Boost: 
-   #
-   # required by the build system (not by any files that are
-
-
-   # set( Boost_USE_MULTITHREADED ON )
-   # set( Boost_USE_STATIC_LIBS ON CACHE BOOL 
-   # "use .lib libs instead of .so.")
-
-   #  set( Boost_DEBUG ON )
-   # find_package( Boost ${TSP_BOOST_VERSION}
-   # REQUIRED
-   # date_time
-   # filesystem
-   # program_options
-   # regex
-   # system 
-   # test_exec_monitor
-   # unit_test_framework
-   # )
-
-
-   # Use Qt 4 if we want.
-   # option( ENABLE_QT4 "Enable program linked against Qt 4" OFF )
-
-   # if ( ENABLE_QT4 )
-   # find_package( Qt4 )
-   # endif( ENABLE_QT4 )
-
+   # message( STATUS "Looking for Gandolf library...")
+   find_package( Gandolf QUIET )
+   set_package_properties( Gandolf PROPERTIES
+      DESCRIPTION "Gandolf IPCRESS opacity file reader."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the cdi_gandolf component."
+)
    set( GANDOLF_LIB_DIR "${GANDOLF_LIB_DIR}" CACHE PATH 
       "Location of gandolf libraries." )
    mark_as_advanced(GANDOLF_LIB_DIR)
@@ -679,9 +681,7 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupVendorLibraries )
 
-   message("
-Vendor Setup:
-")
+   message( "\nVendor Setup:\n")
 
   #
   # General settings
