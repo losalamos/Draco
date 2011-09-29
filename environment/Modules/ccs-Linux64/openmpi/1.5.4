@@ -12,23 +12,6 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 conflict openmpi-gcc;
  
-#====== begin modulefile code =========
- 
-if { [module-info mode load] } {
-    catch {set ignorant $env(IGNOREMODULECONFLICTS)};
-    if { ![info exists ignorant] } {
-       catch {set mpi $env(_MODULES_MPI)};
-       if { [info exists mpi] && ($mpi != "[module-info name]") } {
-          puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$mpi'";
-          break;
-          exit 1;
-       }
-    }
-}
-setenv          _MODULES_MPI   [module-info name];
- 
-#====== end modulefile code =========
-
 
 # local variables
 set version     1.5.4;

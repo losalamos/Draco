@@ -55,27 +55,27 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-if { [module-info mode load] } {
-   catch {set ignorant $env(IGNOREMODULECONFLICTS)};
-   if { ![info exists ignorant] } {
-      catch {set cc $env(_MODULES_CC)};
-      if { [info exists cc] && ($cc != "[module-info name]") } {
-         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$cc'";
-         break;
-         exit 1;
-      }
+# if { [module-info mode load] } {
+#    catch {set ignorant $env(IGNOREMODULECONFLICTS)};
+#    if { ![info exists ignorant] } {
+#       catch {set cc $env(_MODULES_CC)};
+#       if { [info exists cc] && ($cc != "[module-info name]") } {
+#          puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$cc'";
+#          break;
+#          exit 1;
+#       }
 
-      catch {set fc $env(_MODULES_FC)};
-      if { [info exists fc] && ($fc != "[module-info name]") } {
-         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$fc'";
-         break;
-         exit 1;
-      }
-   }
-}
+#       catch {set fc $env(_MODULES_FC)};
+#       if { [info exists fc] && ($fc != "[module-info name]") } {
+#          puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$fc'";
+#          break;
+#          exit 1;
+#       }
+#    }
+# }
 
-setenv          _MODULES_CC     [module-info name];
-setenv          _MODULES_FC     [module-info name];
+#setenv          _MODULES_CC     [module-info name];
+#setenv          _MODULES_FC     [module-info name];
 
 setenv          CC              $bindir/icc;
 setenv          CXX             $bindir/icpc;

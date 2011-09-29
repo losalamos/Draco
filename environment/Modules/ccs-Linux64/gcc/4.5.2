@@ -10,6 +10,9 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
+conflict intel
+conflict pgi
+
 # local variables
 set version     4.5.2;
 set arch        Linux64;
@@ -18,8 +21,6 @@ set bindir      $prefix/bin;
 set libdir      $prefix/lib64;
 set mandir      $prefix/man;
 set name        "GNU C/C++/Fortran"
-
-# set mpfrdir     /ccs/opt/$arch/mpfr/lib
 
 # module whatis
 module-whatis   "$name $version";
@@ -43,33 +44,6 @@ if { ![file exists $prefix] } {
    break;
    exit 1;
 }
-#if { ![file exists $mpfrdir] } {
-#   puts stderr "\n[module-info name]: $mpfrdir: No such file or directory.\n";
-#   break;
-#   exit 1;
-#}
-
-if { [module-info mode load] } {
-   catch {set ignorant $env(IGNOREMODULECONFLICTS)};
-   if { ![info exists ignorant] } {
-      catch {set cc $env(_MODULES_CC)};
-      if { [info exists cc] && ($cc != "[module-info name]") } {
-         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$cc'";
-         break;
-         exit 1;
-      }
-
-      catch {set fc $env(_MODULES_FC)};
-      if { [info exists fc] && ($fc != "[module-info name]") } {
-         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$fc'";
-         break;
-         exit 1;
-      }
-   }
-}
-
-setenv          _MODULES_CC     [module-info name];
-setenv          _MODULES_FC     [module-info name];
 
 setenv          CC              $bindir/gcc;
 setenv          CXX             $bindir/g++;
