@@ -12,6 +12,8 @@
 # Look for any libraries which are required at the toplevel.
 # 
 
+include( FeatureSummary )
+
 #------------------------------------------------------------------------------
 # Helper macros for setup_global_libraries()
 #------------------------------------------------------------------------------
