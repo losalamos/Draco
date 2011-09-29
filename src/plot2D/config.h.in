@@ -10,7 +10,7 @@
 #define __plot2D_config_h__
 
 /* Grace include paths */
-#undef GRACE_H
+#cmakedefine GRACE_H "@GRACE_H@"
 
 #endif                          /* __plot2D_config_h__ */
 

@@ -1,6 +1,6 @@
 # Grace project file
 #
-@version 50103
+@version 50122
 @page size 792, 612
 @page scroll 5%
 @page inout 5%
@@ -54,7 +54,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Thu Apr 25 17:22:01 2002"
+@timestamp def "Thu Sep 29 16:16:32 2011"
 @r0 off
 @link r0 to g0
 @r0 type above
@@ -101,16 +101,10 @@
 @g0 fixedpoint format general general
 @g0 fixedpoint prec 6, 6
 @with g0
-@    world xmin 0
-@    world xmax 9
-@    world ymin 0
-@    world ymax 9
+@    world 0, 0, 9, 9
 @    stack world 0, 0, 0, 0
 @    znorm 1
-@    view xmin 0.100000
-@    view xmax 0.575703
-@    view ymin 0.536364
-@    view ymax 0.900000
+@    view 0.100000, 0.536364, 0.575703, 0.900000
 @    title "title 0"
 @    title font 0
 @    title size 1.500000
@@ -310,16 +304,10 @@
 @g1 fixedpoint format general general
 @g1 fixedpoint prec 6, 6
 @with g1
-@    world xmin 0
-@    world xmax 9
-@    world ymin 0
-@    world ymax 90
+@    world 0, 0, 9, 90
 @    stack world 0, 0, 0, 0
 @    znorm 1
-@    view xmin 0.718414
-@    view xmax 1.194118
-@    view ymin 0.536364
-@    view ymax 0.900000
+@    view 0.718414, 0.536364, 1.194118, 0.900000
 @    title "title 1"
 @    title font 0
 @    title size 1.500000
@@ -519,16 +507,10 @@
 @g2 fixedpoint format general general
 @g2 fixedpoint prec 6, 6
 @with g2
-@    world xmin 0
-@    world xmax 9
-@    world ymin 0
-@    world ymax 800
+@    world 0, 0, 9, 800
 @    stack world 0, 0, 0, 0
 @    znorm 1
-@    view xmin 0.100000
-@    view xmax 0.575703
-@    view ymin 0.100000
-@    view ymax 0.463636
+@    view 0.100000, 0.100000, 0.575703, 0.463636
 @    title "title 2"
 @    title font 0
 @    title size 1.500000
@@ -728,16 +710,10 @@
 @g3 fixedpoint format general general
 @g3 fixedpoint prec 6, 6
 @with g3
-@    world xmin 0
-@    world xmax 1
-@    world ymin 0
-@    world ymax 1
+@    world 0, 0, 1, 1
 @    stack world 0, 0, 0, 0
 @    znorm 1
-@    view xmin 0.718414
-@    view xmax 1.194118
-@    view ymin 0.100000
-@    view ymax 0.463636
+@    view 0.718414, 0.100000, 1.194118, 0.463636
 @    title ""
 @    title font 0
 @    title size 1.500000

@@ -29,13 +29,13 @@ bool rtt_plot2D::Plot2D::is_supported() { return false; }
 
 // Mirror the grace functions to avoid link errors.
 
-int GraceOpenVA(char* exe, int bs, ...)
+int GraceOpenVA(char* /*exe*/, int /*bs*/, ...)
 {
     Insist(0, "Serious Plot2D error.");
     return 1;
 }
 
-int GraceOpen(int bs)
+int GraceOpen(int /*bs*/)
 {
     Insist(0, "Serious Plot2D error.");
     return 1;

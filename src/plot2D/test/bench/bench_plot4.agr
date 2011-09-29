@@ -1,6 +1,6 @@
 # Grace project file
 #
-@version 50103
+@version 50122
 @page size 792, 612
 @page scroll 5%
 @page inout 5%
@@ -45,7 +45,7 @@
 @default font 0
 @default char size 1.000000
 @default symbol size 1.000000
-@default sformat "%16.8g"
+@default sformat "%.8g"
 @background color 0
 @page background fill on
 @timestamp off
@@ -54,7 +54,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Thu Apr 25 17:22:04 2002"
+@timestamp def "Thu Sep 29 16:16:32 2011"
 @r0 off
 @link r0 to g0
 @r0 type above
@@ -101,16 +101,10 @@
 @g0 fixedpoint format general general
 @g0 fixedpoint prec 6, 6
 @with g0
-@    world xmin 0
-@    world xmax 9
-@    world ymin 0
-@    world ymax 7000
+@    world 0, 0, 9, 7000
 @    stack world 0, 0, 0, 0
 @    znorm 1
-@    view xmin 0.100000
-@    view xmax 1.194118
-@    view ymin 0.100000
-@    view ymax 0.900000
+@    view 0.100000, 0.100000, 1.194118, 0.900000
 @    title "Same Data, One Graph"
 @    title font 0
 @    title size 1.500000
@@ -399,40 +393,40 @@
 @    s2 legend  ""
 @target G0.S0
 @type xy
-               0                0
-               1                2
-               2                6
-               3               12
-               4               20
-               5               30
-               6               42
-               7               56
-               8               72
-               9               90
+0 0
+1 2
+2 6
+3 12
+4 20
+5 30
+6 42
+7 56
+8 72
+9 90
 &
 @target G0.S1
 @type xy
-               0                0
-               1                2
-               2               10
-               3               30
-               4               68
-               5              130
-               6              222
-               7              350
-               8              520
-               9              738
+0 0
+1 2
+2 10
+3 30
+4 68
+5 130
+6 222
+7 350
+8 520
+9 738
 &
 @target G0.S2
 @type xy
-               0                0
-               1                2
-               2               18
-               3               84
-               4              260
-               5              630
-               6             1302
-               7             2408
-               8             4104
-               9             6570
+0 0
+1 2
+2 18
+3 84
+4 260
+5 630
+6 1302
+7 2408
+8 4104
+9 6570
 &
