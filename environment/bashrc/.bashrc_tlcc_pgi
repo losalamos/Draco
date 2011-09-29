@@ -8,11 +8,6 @@ if test -n "$verbose"; then
 fi
 
 ##---------------------------------------------------------------------------##
-## ALIASES
-##---------------------------------------------------------------------------##
-
-
-##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
 
@@ -27,23 +22,21 @@ export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 # MODULES
 #
 # Use this module command when running bash.
-function module() { eval `/usr/bin/modulecmd bash $*`; }
+# function module() { eval `/usr/bin/modulecmd bash $*`; }
+source /usr/share/modules/init/bash
 # Use modules found in the draco directory
+module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/tu-fe
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
 module purge &> /dev/null
 # Load a default set of modules.
-# export IGNOREMODULECONFLICTS=1
+module load modules friendly-testing hpc-tools pgi/9.0-3 totalview
+module load openmpi-pgi/1.4.3 grace python SuperLU_DIST/2.4 
+module load lapack/atlas-3.8.3 BLACS/1.1 ParMetis/3.1.1
+module load gsl/1.14-pgi trilinos/10.6.4 SCALAPACK/1.7
+module load hypre/2.0.0 gandolf grace-draco ndi openmpi xshow
+module load cmake numdiff
 
-module load modules pgi/9.0-3 friendly-testing hpc-tools python/2.5.2 
-module load modules friendly-testing hpc-tools python/2.5.2 graphics
-module load grace totalview openmpi-pgi/1.4.3 openmpi 
-
-
-module load gandolf gsl/1.14 grace-draco ndi cmake openmpi
-module load trilinos/10.6.4 BLACS/1.1 SCALAPACK/1.7
-module load lapack/atlas-3.8.3 SuperLU_DIST/2.4
-module load hypre/2.0.0 ParMetis/3.1.1 emacs
 module list
 
 # CVS

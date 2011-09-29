@@ -18,28 +18,32 @@ ulimit -s unlimited
 _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
-# modules
-#export MODULEPATH=$DRACO_MODULE_DIR/tu-fe:$MODULEPATH
+#
+# MODULES
+#
+# Use this module command when running bash.
+# function module() { eval `/usr/bin/modulecmd bash $*`; }
 source /usr/share/modules/init/bash
-
 # Use modules found in the draco directory
 module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/tu-fe
-export IGNOREMODULECONFLICTS=1
+# Clear any tcsh loaded modules as these are invalid when staring a new shell. 
+module purge &> /dev/null
+# Load a default set of modules.
+module load modules friendly-testing hpc-tools intel-c intel-f totalview
+module load openmpi-intel/1.4.3 grace python SuperLU_DIST/2.4-intel 
+module load lapack/atlas-3.8.3-intel BLACS/1.1-intel ParMetis/3.1.1-intel
+module load gsl/1.14-intel trilinos/10.6.4-intel SCALAPACK/1.7-intel
+module load hypre/2.0.0-intel gandolf grace-draco ndi openmpi xshow
+module load cmake numdiff
 
-# function module() { eval `/usr/bin/modulecmd bash $*`; }
-
-module load intel-c intel-f friendly-testing hpc-tools python 
-module load openmpi-intel/1.4.3 graphics totalview/8.7.0-3 gandolf
-module load gsl/1.14-intel grace-draco trilinos/10.6.4-intel 
-module load SCALAPACK/1.7-intel ndi lapack/atlas-3.8.3-intel
-module load hypre/2.0.0-intel openmpi ParMetis/3.1.1-intel
-module load SuperLU_DIST/2.4-intel cmake BLACS/1.1-intel numdiff
 module list
 
 # CVS
 export CVS_RSH=ssh
 export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
+export F90=pgf90
+export FC=pgf90
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_tlcc
