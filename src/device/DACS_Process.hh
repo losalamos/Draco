@@ -13,9 +13,8 @@
 #ifndef device_DACS_Process_hh
 #define device_DACS_Process_hh
 
-#include <string>
-
 #include <dacs.h>
+#include <string>
 
 namespace rtt_device
 {

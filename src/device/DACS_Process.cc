@@ -37,6 +37,7 @@ static std::string verbose_error(std::string const & message);
  */
 DACS_Process::DACS_Process(const std::string & filename)
 {
+    Check( !filename.empty() );
     // Interpret filename as an absolute pathname...
     std::string fullname = canonical_fname(filename);
     Insist(!fullname.empty(),
