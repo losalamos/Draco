@@ -71,10 +71,10 @@ add_dir_if_exists( units )        # needs ds++
 if( ENABLE_HET_CODE )
    add_dir_if_exists( device )    # needs ds++
 endif()
-if( PCG_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/pcgWrap/CMakeLists.txt)
+if( PCG_FOUND )
   add_dir_if_exists( pcgWrap )    # needs ds++
 endif()
-if( XMGRACE_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/plot2D/CMakeLists.txt)
+if( GRACE_FOUND )
   add_dir_if_exists( plot2D )
 endif()
 
@@ -107,10 +107,6 @@ add_dir_if_exists( RTT_Format_Reader) # needs meshReaders, mesh_element, c4,
 # Summary
 message(" ")
 
-add_feature_info( PCG PCG_FOUND 
-   "The PCG solvers are required for pcgWrap.")
-add_feature_info( XMGrace XMGRACE_FOUND 
-   "A plotting tool required by plot2D.")
 add_feature_info( ENABLE_HET_CODE ENABLE_HET_CODE 
    "Build software for heterogeneous architectures (e.g. roadrunner).
    Required for building the device component.")
@@ -123,6 +119,11 @@ feature_summary(
    WHAT PACKAGES_FOUND 
    INCLUDE_QUIET_PACKAGES
    DESCRIPTION "Packages found:")
+
+feature_summary( 
+   WHAT PACKAGES_NOT_FOUND 
+   INCLUDE_QUIET_PACKAGES
+   DESCRIPTION "Packages missing:")
 
 feature_summary( 
    WHAT ENABLED_FEATURES 
