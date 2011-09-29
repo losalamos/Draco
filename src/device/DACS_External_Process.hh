@@ -14,6 +14,12 @@
 #define device_DACS_External_Process_hh
 
 #include "DACS_Process.hh"
+#include <string>
+
+extern "C"
+{
+    typedef void (*ExternCFuncPtrVoidVoid)();
+}
 
 namespace rtt_device
 {
@@ -45,12 +51,13 @@ class DACS_External_Process : public DACS_Process
 
     // TYPEDEFS
 
-    typedef void (*voidfunc)();
+    // typedef void (*voidfunc)();
     
     //! Default constructor.
     DACS_External_Process(const std::string & filename,
-                          voidfunc final_func) : DACS_Process(filename),
-                                                 f(final_func) { }
+                          ExternCFuncPtrVoidVoid final_func)
+        : DACS_Process(filename), f(final_func)
+    { /* empty */ }
 
     // SERVICES
 
@@ -65,7 +72,7 @@ class DACS_External_Process : public DACS_Process
 
     // DATA
 
-    voidfunc f;
+    ExternCFuncPtrVoidVoid f;
 };
 
 } // end namespace rtt_device

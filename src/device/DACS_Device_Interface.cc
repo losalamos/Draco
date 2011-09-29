@@ -18,7 +18,15 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_device;
 
-int dacs_device_init(const char * const filename, const int len, void (*f)())
+// The definition in the source file does not have extern "C" on it, but
+// because it is the same f(int) as in the declaration in the header, the
+// language rules state that the extern "C" from the declaration applies to it
+// as well. The definition for f is thus generated with C linkage, that is,
+// with the unmangled name "f". (www.glenmccl.com/ansi028.htm).
+
+// ExternCFuncPtrVoidVoid is defined in DACS_External_Process.hh
+
+int dacs_device_init(const char * const filename, const int len, ExternCFuncPtrVoidVoid f)
 {
     SP<DACS_Process> p(new DACS_External_Process(string(filename, len), f));
 

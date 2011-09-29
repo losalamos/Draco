@@ -10,16 +10,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
+#include "device/config.h"
+#include "DACS_Device_Interface.hh"
+#include "DACS_External_Process.hh"
 
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
-#include "c4/ParallelUnitTest.hh"
 
-#include "device/config.h"
-
-#include "DACS_Device_Interface.hh"
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -28,6 +28,12 @@ using namespace rtt_device;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
+
+extern "C"
+{
+    // define a C-sytle function pointer and initialize to NULL.
+    void (*ExtCNullPtr)(void) = NULL;
+}
 
 /*! \brief Test instance without calling init first.
  *
@@ -71,7 +77,7 @@ void tstNoAccelBinary(UnitTest &ut)
     
     try
     {
-        dacs_device_init(filename.c_str(), filename.size(), NULL);
+        dacs_device_init(filename.c_str(), filename.size(), ExtCNullPtr);
     }
     catch (assertion &err)
     {

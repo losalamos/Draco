@@ -16,9 +16,7 @@ project( device CXX )
 
 # BUG in <dacs.h>: pgCC (with strict ansi flag -A) will not compile
 # code that includes <dacs.h> because of trailing commas found in
-# enumeration lists.  I have provided a 'fixed' version of dacs.h in
-# this directory that should be used in place of the system installed
-# version found at /opt/cell/sysroot/usr/include/.
+# enumeration lists.  
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 
