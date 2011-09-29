@@ -14,6 +14,12 @@ project( device CXX )
 # small ppe binaries for testing (so that dacs_de_start can have
 # something to launch).
 
+# BUG in <dacs.h>: pgCC (with strict ansi flag -A) will not compile
+# code that includes <dacs.h> because of trailing commas found in
+# enumeration lists.  I have provided a 'fixed' version of dacs.h in
+# this directory that should be used in place of the system installed
+# version found at /opt/cell/sysroot/usr/include/.
+
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 
 # ---------------------------------------------------------------------------- #
@@ -43,7 +49,7 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
    file( GLOB template_implementations *.t.hh *.i.hh )
    file( GLOB sources *.cc )
    file( GLOB explicit_instantiations *_pt.cc )
-   file( GLOB headers *.hh )
+   file( GLOB headers *.hh *.h )
    list( APPEND headers ${PROJECT_BINARY_DIR}/device/config.h )
 
    # Make the header files available in the IDE.
