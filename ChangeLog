@@ -75,6 +75,7 @@ Date     :  Thu Sep 15 15:54:37 MDT 2011
                     Expect source: 0
                      Elisp source: 6695
 
+	% module load bullseyecoverage
 	% cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
 	% export COVFILE=`pwd`/CMake.cov
 	% export COVDIRCFG=`pwd`/covclass_cmake.cfg

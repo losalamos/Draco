@@ -288,7 +288,6 @@ Replace all version tags found in source code with the new version number.
 % export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
 % export CVS_RSH=ssh
 % cd /usr/projects/draco
-% cd /usr/projects/draco
 % install -d draco-6_2_0/source draco-6_2_0/scripts draco-6_2_0/logs
 % cd draco-6_2_0/scripts
 % cp ../../draco-6_1_0/scripts/* .
