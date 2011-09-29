@@ -53,13 +53,13 @@ macro( SetupVendorLibrariesUnix )
       endif()
 
       # First attempt to find mpi
-      find_package( MPI )
+      find_package( MPI QUIET )
 
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
       if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
 #         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
          set( MPIEXEC $ENV{MPIRUN} )
-         find_package( MPI )
+         find_package( MPI QUIET )
       endif()
 
       # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
@@ -90,7 +90,7 @@ macro( SetupVendorLibrariesUnix )
                list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
             endif()
          endforeach()
-         find_package( MPI )
+         find_package( MPI QUIET )
          if( ${MPI_EXTRA_LIBRARY} MATCHES "NOTFOUND" )
             # do nothing
          else()
@@ -281,7 +281,7 @@ macro( SetupVendorLibrariesUnix )
             endif()
          endforeach()
          
-         find_package( LAPACK ) # QUIET
+         find_package( LAPACK QUIET ) 
       endif()
 
       if( LAPACK_FOUND )
@@ -312,19 +312,36 @@ macro( SetupVendorLibrariesUnix )
          DESCRIPTION "GNU Scientific Library"
          TYPE REQUIRED
          PURPOSE "Required for bulding quadrature and rng components."
-)  
+         )  
 
    # Gandolf ------------------------------------------------------------------
-   # message( STATUS "Looking for Gandolf library...")
    find_package( Gandolf QUIET )
    set_package_properties( Gandolf PROPERTIES
       DESCRIPTION "Gandolf IPCRESS opacity file reader."
       TYPE OPTIONAL
       PURPOSE "Required for bulding the cdi_gandolf component."
-)
+      )
    set( GANDOLF_LIB_DIR "${GANDOLF_LIB_DIR}" CACHE PATH 
       "Location of gandolf libraries." )
    mark_as_advanced(GANDOLF_LIB_DIR)
+
+   # PCG ------------------------------------------------------------------
+   find_package( PCG QUIET )
+   set_package_properties( PCG PROPERTIES
+      DESCRIPTION "LANL Preconditioned Conjugate Gradient (PCG) solver."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the pcgWrap component."
+)
+   set( PCG_LIB_DIR "${PCG_LIB_DIR}" CACHE PATH "Location of pcg libraries." )
+   mark_as_advanced(PCG_LIB_DIR)
+
+   # GRACE ------------------------------------------------------------------
+   find_package( Grace QUIET )
+   set_package_properties( Grace PROPERTIES
+      DESCRIPTION "A WYSIWYG 2D plotting tool."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the plot2D component."
+)
 
 endmacro()
 
