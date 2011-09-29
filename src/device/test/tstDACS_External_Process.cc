@@ -10,19 +10,18 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
+#include "device/config.h"
+#include "DACS_External_Process.hh"
+#include "dacs.h"
 
-#include <dacs.h>
-#include <stdint.h>
-
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
-#include "c4/ParallelUnitTest.hh"
 
-#include "DACS_External_Process.hh"
-
-#include "device/config.h"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <stdint.h>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -170,8 +169,9 @@ void tstStartStop(UnitTest &ut)
         ut.failure("Failed to reserve children");
 
     // Start the accel-side process.
-    DACS_External_Process d(test_ppe_bindir + "/dacs_wait_for_cmd_ppe_exe",
-                            dacs_process_shutdown);
+    std::string const filename( test_ppe_bindir
+                                + std::string("/dacs_wait_for_cmd_ppe_exe") );
+    DACS_External_Process d( filename, dacs_process_shutdown );
 
     d.start(de_id);
 
