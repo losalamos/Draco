@@ -111,8 +111,8 @@ solve(rtt_dsxx::Mat1<T>& x,
 	allocateWorkspace(x.size());
     }
     else {
-	Ensure(d_iparm(NRU) <= x.size());
-	Ensure(d_iparm(NRU) <= b.size());
+	Ensure(d_iparm(NRU) <= static_cast<int>(x.size()));
+	Ensure(d_iparm(NRU) <= static_cast<int>(b.size()));
     }
 
     using rtt_dsxx::Mat1;
@@ -285,7 +285,7 @@ computeWorkSpace()
 
 	int nwiit;
 	int nwfit;
-	const int ns1 = d_iparm(NS1);
+	// const int ns1 = d_iparm(NS1);
 	const int ns2 = d_iparm(NS2);
 
 	switch ( d_method ) {

@@ -9,7 +9,7 @@
 #ifndef __pcgWrap_config_h__
 #define __pcgWrap_config_h__
 
-#undef USE_PCGLIB
+#cmakedefine USE_PCGLIB @USE_PCGLIB@
 
 #endif    /* __pcgWrap_config_h__ */
 
