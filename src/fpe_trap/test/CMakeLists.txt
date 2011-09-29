@@ -11,9 +11,14 @@ project( fpe_trap_test CXX )
 # Prereq
 # ---------------------------------------------------------------------------- #
 # This unit test requires Python
-find_package(PythonInterp)
+find_package(PythonInterp QUIET)
 #  PYTHONINTERP_FOUND - Was the Python executable found
 #  PYTHON_EXECUTABLE  - path to the Python interpreter
+set_package_properties( PythonInterp PROPERTIES
+   DESCRIPTION "Python interpreter"
+   TYPE OPTIONAL
+   PURPOSE "Required for running the fpe_trap tests." 
+)
 
 if( PYTHONINTERP_FOUND AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]")
 
