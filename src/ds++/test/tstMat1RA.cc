@@ -3,25 +3,21 @@
  * \file   ds++/test/tstMat1RA.cc
  * \author Shawn Pautz
  * \date   Wed Dec 23 17:00:00 1998
- * \brief  Test of Mat1.
- * \note   Copyright (c) 1998-2010 Los Alamos National Security, LLC
+ * \brief  This program tests the Mat1 container as a model of a Random Access
+ *         Container.
+ * \note   Copyright (C) 1998-2011 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-// This program tests the Mat1 container as a model of a Random Access
-// Container.
-//---------------------------------------------------------------------------//
-
+#include "../Mat.hh"
 #include <iostream>
 #include <vector>
 #include <string>
 
 using namespace std;
-
-#include "../Mat.hh"
 
 bool passed = true;
 double value = 4.23;
@@ -37,7 +33,7 @@ class DoubleContainer
 
 // Eliminate the following constructor when the compiler allows it.
 
-    DoubleContainer() : data(0.) {}
+    // DoubleContainer() : data(0.) {}
 
     DoubleContainer(double _data) : data(_data) {}
 
@@ -2059,24 +2055,11 @@ void t6()
     cout << "t6: end\n";
 }
 
-
-void version(const std::string &progname)
-{
-    std::string version = "1.0.0";
-    cout << progname << ": version " << version << endl;
-}
-
+//---------------------------------------------------------------------------//
+// Main
+//---------------------------------------------------------------------------//
 int main( int argc, char *argv[] )
 {
-    for (int arg=1; arg < argc; arg++)
-    {
-	if (std::string(argv[arg]) == "--version")
-	{
-	    version(argv[0]);
-	    return 0;
-	}
-    }
-
     cout << "Initiating test of the Mat1 container.\n";
 
     try {
@@ -2091,25 +2074,22 @@ int main( int argc, char *argv[] )
     {
 	cout << "Failed assertion: " << a.what() << endl;
     }
+    catch( ... )
+    {
+        cout << "Unknown exception caught." << endl;
+    }
 
-// Print the status of the test.
+    // Print the status of the test.
 
-    cout << endl;
-    cout <<     "******************************************" << endl;
+    cout <<     "\n******************************************";
     if (passed) 
-    {
-        cout << "**** Mat1 Container Self Test: PASSED ****" << endl;
-    }
+        cout << "\n**** Mat1 Container Self Test: PASSED ****";
     else
-    {
-        cout << "**** Mat1 Container Self Test: FAILED ****" << endl;
-    }
-    cout <<     "******************************************" << endl;
-    cout << endl;
+        cout << "\n**** Mat1 Container Self Test: FAILED ****";
+    cout <<     "\n******************************************\n\n"
+         << "Done testing Mat1 container." << endl;
 
-    cout << "Done testing Mat1 container.\n";
-
-    return 0;
+    return passed ? 0 : 1;
 }
 
 //---------------------------------------------------------------------------//
