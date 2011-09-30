@@ -9,6 +9,10 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
+# NOTE: You may need to set TMPDIR to a location that the compiler can
+#       write temporary files to.  Sometimes the default space on HPC
+#       is not sufficient.
+
 #
 # Sanity Checks
 # 
@@ -27,21 +31,6 @@ endif()
 #
 # C++ libraries required by Fortran linker
 # 
-
-# execute_process(
-#    COMMAND ${CMAKE_CXX_COMPILER} -show
-#    TIMEOUT 5
-#    RESULT_VARIABLE tmp
-#    OUTPUT_VARIABLE pgiCC_show_output
-#    ERROR_VARIABLE err
-#    )
-# string( REPLACE "\n" ";" pgiCC_show_output ${pgiCC_show_output} )
-# foreach( line ${pgiCC_show_output} )
-#    if( "${line}" MATCHES "COMPLIBOBJ" )
-#       string( REGEX REPLACE ".*=" "" pgi_libdir ${line} )
-#    endif()
-# endforeach()
-# message( STATUS "PGI Library Dir = ${pgi_libdir}")
 
 #
 # config.h settings
@@ -67,6 +56,8 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 # Compiler Flags
 # 
 
+# http://www.pgroup.com/support/compile.htm
+
 # Flags from Draco autoconf build system:
 # -Xa
 # -A                       ansi
@@ -87,18 +78,45 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 #                          default otherwise. 
 # -pgf90libs               Link-time option to add the pgf90 runtime
 #                          libraries, allowing mixed-language programming. 
-
+# -Mipa                    Enable and specify options for
+#                          InterProcedural Analysis (IPA). 
+# -Mnoframe                Don't setup a true stack frame pointer for
+#                          functions. allows slightly more efficient
+#                          operation when a stack frame is not needed.
+# -Mlre                    Enable loop-carried redundancy elimination.
+# -Mautoinline=levels:n    Enable inlining of functions with the
+#                          inline attribute up to n levels deep.  The
+#                          default is to inline up to 5 levels. 
+# -Mvect=sse               Use SSE, SSE2, 3Dnow, and prefetch
+#                          instructions in loops where possible. 
+# -Mcache_align            Align unconstrained data objects of size
+#                          greater than or equal to 16 bytes on
+#                          cache-line boundaries.  An unconstrained
+#                          object is a variable or array that is not a
+#                          member of an aggregate structure or common
+#                          block, is not allocatable, and is not an
+#                          automatic array.
+# -Mflushz                 Set SSE to flush-to-zero mode.
 
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
-  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mipa=fast,inline -Msmartalloc --zc_eh -Mlre")
+
+# -tp x64      Create a PGI Unified Binary which functions correctly
+#              on and is optimized for both Intel and AMD processors. 
+# -Mprefetch   Control generation of prefetch instructions to improve
+#              memory performance in compute-intensive loops. 
+
+# -Mnoframe (we use this to debug crashed programs).
+# -Mcache_align (breaks some tests in wedgehog)
+# -Msafeptr (breaks some array operations in MatRA).
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 ENDIF()
