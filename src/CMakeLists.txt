@@ -25,13 +25,14 @@ include( compilerEnv )
 dbsSetupCompilers()
 dbsSetupCxx()
 
+include( FeatureSummary )
+
 # Build only for Opteron? Or PPE also?
 if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
    include( platform_customization_roadrunner_ppe )
 endif()
 
 # Find any globally required libraries
-include( FeatureSummary )
 include( vendor_libraries )
 setupVendorLibraries()
 
@@ -107,9 +108,6 @@ add_dir_if_exists( RTT_Format_Reader) # needs meshReaders, mesh_element, c4,
 # Summary
 message(" ")
 
-add_feature_info( ENABLE_HET_CODE ENABLE_HET_CODE 
-   "Build software for heterogeneous architectures (e.g. roadrunner).
-   Required for building the device component.")
 add_feature_info( BUILD_AUTODOC BUILD_AUTODOC
    "Turn on to enable generation of doxygen documentation (make autodoc).")
 add_feature_info( BUILD_TESTING BUILD_TESTING
