@@ -3,7 +3,7 @@
  * \file   rng/Rnd_Control_Inline.hh
  * \author Paul Henning
  * \brief  Rnd_Control header file.
- * \note   Copyright 2008 LANS, LLC
+ * \note   Copyright (C) 2008-2011 LANS, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,12 +12,11 @@
 #ifndef rtt_rng_Rnd_Control_Inline_hh
 #define rtt_rng_Rnd_Control_Inline_hh
 
-
-#include "ds++/Assert.hh"
-#include "rng/config.h"
+//#include "ds++/Assert.hh"
+//#include "rng/config.h"
 
 // header file for SPRNG package
-#include "LFG.h"
+//#include "LFG.h"
 #include "LF_Gen.hh"
 
 namespace rtt_rng 

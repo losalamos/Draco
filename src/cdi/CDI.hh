@@ -17,12 +17,12 @@
 #include "MultigroupOpacity.hh"
 #include "OdfmgOpacity.hh"
 #include "EoS.hh"
-#include "OpacityCommon.hh"
+//#include "OpacityCommon.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <vector>
-#include <string>
-#include <cmath>
+//#include <vector>
+//#include <string>
+//#include <cmath>
 
 //---------------------------------------------------------------------------//
 // UNNAMED NAMESPACE

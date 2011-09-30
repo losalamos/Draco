@@ -15,7 +15,7 @@
 #ifndef c4_C4_Functions_hh
 #define c4_C4_Functions_hh
 
-#include "ds++/config.h"
+//#include "ds++/config.h"
 #include "C4_sys_times.h"
 #include "C4_Traits.hh"
 #include "C4_Req.hh"

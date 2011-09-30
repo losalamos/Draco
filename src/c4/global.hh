@@ -18,10 +18,10 @@
 #define rtt_c4_global_hh
 
 // C4 package configure
-#include "c4/config.h"
+//#include "c4/config.h"
 #include "C4_Functions.hh" // C4 Message Passing Functions
-#include "C4_Req.hh"       // C4 Request handler
-#include "C4_Traits.hh"
+//#include "C4_Req.hh"       // C4 Request handler
+//#include "C4_Traits.hh"
 
 //---------------------------------------------------------------------------//
 // Include the appropriate header for an underlying message passing

@@ -13,8 +13,8 @@
 #define LF_Gen_hh
 
 #include "LFG.h"
-#include "rng/config.h"
-#include <ds++/Assert.hh>
+//#include "rng/config.h"
+//#include <ds++/Assert.hh>
 #include <ds++/Data_Table.hh>
 #include <algorithm>
 
