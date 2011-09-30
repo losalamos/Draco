@@ -24,6 +24,11 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
+   add_feature_info( TEST_PPE_BINDIR TEST_PPE_BINDIR
+      "Provide full path to the cell binary dacs_noop_ppe_exe when it
+      is not in the default location (x86 and ppe directories in
+      parallel locations). ")
+
    # Record the location of the Cell-side test binaries in config.h.
    if( NOT EXISTS ${TEST_PPE_BINDIR}/dacs_noop_ppe_exe )
       string ( REPLACE "x86" "ppe" TEST_PPE_BINDIR 
