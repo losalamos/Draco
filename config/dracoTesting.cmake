@@ -1,6 +1,8 @@
 # File: dracoTesting.cmake
 
 option( BUILD_TESTING "Should we compile the tests?" ON )
+add_feature_info( BUILD_TESTING BUILD_TESTING
+   "Turn off to prevent the compilation of unit tests (ctest).")
 
 # how many cores on the local system?
 if( UNIX )

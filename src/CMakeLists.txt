@@ -110,8 +110,6 @@ message(" ")
 
 add_feature_info( BUILD_AUTODOC BUILD_AUTODOC
    "Turn on to enable generation of doxygen documentation (make autodoc).")
-add_feature_info( BUILD_TESTING BUILD_TESTING
-   "Turn off to prevent the compilation of unit tests (ctest).")
 
 feature_summary( 
    WHAT PACKAGES_FOUND 
@@ -148,30 +146,8 @@ Library Type: ${DRACO_LIBRARY_TYPE}
 
 ENABLE_RNG_NR    : ${ENABLE_RNG_NR}
 DRACO_DBC_LEVEL  : ${DRACO_DBC_LEVEL}")
-#message("ENABLE_HET_CODE  : ${ENABLE_HET_CODE}")
 message("DRACO_DIAGNOSTICS: ${DRACO_DIAGNOSTICS}
 DRACO_TIMING     : ${DRACO_TIMING}")
-# messge("Vendor dir  : ${VENDOR_DIR}
-# MPI         : ${MPIEXEC}
-# GSL         : ${GSL_LIBRARY}")
-
-# if( LAPACK_FOUND )
-#    set(tmplist ${LAPACK_LIBRARIES})
-#    list(GET tmplist 1 lib1)
-#    message("LAPACK      : ${lib1}")
-#    list(LENGTH tmplist list_length)
-#    if( ${list_length} GREATER 1 )
-#       list(REMOVE_AT tmplist 1 ) 
-#       foreach(lib ${tmplist} )
-#          message("              ${lib}")
-#       endforeach()
-#    endif()
-# else()
-#    message("LAPACK      : NOTFOUND")
-# endif()
-# message("GANDOLF     : ${GANDOLF_LIBRARY}")
-# message("
-# ")
 
 ##---------------------------------------------------------------------------##
 ## End of src/CMakeLists.txt
