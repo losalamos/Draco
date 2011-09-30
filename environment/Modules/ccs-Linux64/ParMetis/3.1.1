@@ -37,28 +37,6 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-if { [module-info mode load] } {
-   catch {set ignorant $env(IGNOREMODULECONFLICTS)};
-   if { ![info exists ignorant] } {
-      catch {set metis_lib_dir $env(_MODULES_METIS_LIB_DIR)};
-      if { [info exists metis_lib_dir] && ($metis_lib_dir != "[module-info name]") } {
-         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$metis_lib_dir'";
-         break;
-         exit 1;
-      }
-
-      catch {set metis_inc_dir $env(_MODULES_METIS_INC_DIR)};
-      if { [info exists metis_inc_dir] && ($metis_inc_dir != "[module-info name]") } {
-         puts stderr "ERROR: Module '[module-info name]' conflicts with a currently loaded module '$metis_inc_dir'";
-         break;
-         exit 1;
-      }
-   }
-}
-
-setenv          _MODULES_METIS_LIB_DIR     [module-info name];
-setenv          _MODULES_METIS_INC_DIR     [module-info name];
-
 setenv PARMETIS_LIB_DIR $libdir
 setenv PARMETIS_INC_DIR $incdir
 setenv METIS_LIB_DIR $libdir
