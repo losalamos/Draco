@@ -1,5 +1,6 @@
 # File: dracoTesting.cmake
 
+include( FeatureSummary )
 option( BUILD_TESTING "Should we compile the tests?" ON )
 add_feature_info( BUILD_TESTING BUILD_TESTING
    "Turn off to prevent the compilation of unit tests (ctest).")

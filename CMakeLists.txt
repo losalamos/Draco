@@ -86,7 +86,6 @@ set_ccs2_software_version( DRACO )
 #
 # Unit Test Setup
 #
-include( FeatureSummary )
 include(dracoTesting) 
 # Top level test
 add_test( SystemInformationNew 
