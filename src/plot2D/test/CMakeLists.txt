@@ -86,3 +86,10 @@ set_directory_properties(
    PROPERTIES
    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
 
+##---------------------------------------------------------------------------##
+## This test doesn't behave correctly under valgrind (the pause
+## doesn't work and that causes everything else to fail).
+##---------------------------------------------------------------------------##
+
+set_tests_properties( plot2D_tstPlot2D
+   PROPERTIES LABELS "nomemcheck" )
