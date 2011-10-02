@@ -107,8 +107,11 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
-  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mipa=fast,inline -Msmartalloc --zc_eh -Mlre")
+  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
 
+# -Mipa=fast,inline
+# -zc_eh 
+# -Msmartalloc
 # -tp x64      Create a PGI Unified Binary which functions correctly
 #              on and is optimized for both Intel and AMD processors. 
 # -Mprefetch   Control generation of prefetch instructions to improve
