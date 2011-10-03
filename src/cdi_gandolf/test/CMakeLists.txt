@@ -8,6 +8,15 @@
 project( cdi_gandolf_test CXX )
 
 # ---------------------------------------------------------------------------- #
+# Configuration files
+# ---------------------------------------------------------------------------- #
+set( GANDOLF_INTERPRETER_BIN_DIR ${cdi_gandolf_BINARY_DIR}/bin )
+set( GANDOLF_INTERPRETER_SOURCE_DIR ${PROJECT_SOURCE_DIR} )
+set( GANDOLF_INTERPRETER_BUILD_DIR ${PROJECT_BINARY_DIR} )
+
+configure_file( config.h.in ${PROJECT_BINARY_DIR}/config.h )
+
+# ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
@@ -35,6 +44,7 @@ endforeach()
 
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
+   ${PROJECT_BINARY_DIR}      # test/config.h
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
 
@@ -53,6 +63,5 @@ add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    "Lib_cdi;Lib_dsxx;${GANDOLF_LIBRARIES}" )
 
-# source_group( cdi_gandolf\\test FILES ${test_lib_sources} ${test_sources} )
 
 
