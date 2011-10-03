@@ -12,9 +12,9 @@
 //---------------------------------------------------------------------------//
 
 #include "c4_test.hh"
-#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 
 #include <iostream>
@@ -110,12 +110,18 @@ void test_mpi_comm_dup()
     // the free should have set back to COMM_WORLD
     if (rtt_c4::nodes() != 4) ITFAILS;
 
-    {
+    // Generate some make work (time delay?)
+    //! \bug I dont' think we should need to add this delay?
+    // KT - Previously this was after the HTSyncSpinLock below.  But I think
+    // it makes more sense here (if it is needed at all).
+    // {
+    //     std::vector<int> foo(10000,0);
+    //     for (int i = 0; i < 10000; i++)
+    //         foo[i] = i;
+    // }
+    
+    { // generate a sync point here and at end of block.
 	rtt_c4::HTSyncSpinLock slock;
-	for (int i = 0; i < 10000; i++)
-	{
-	    continue;
-	}
 
 	if (rtt_c4_test::passed)
 	{
@@ -214,9 +220,9 @@ int main(int argc, char *argv[])
 
 	test_comm_dup();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &expt)
     {
-	cout << "While testing tstComm_Dup, " << ass.what()
+	cout << "While testing tstComm_Dup, " << expt.what()
 	     << endl;
 	rtt_c4::abort();
 	return 1;
