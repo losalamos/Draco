@@ -338,3 +338,12 @@
    fun:__gmpn_divrem_1
    ...
 }
+# ==25358== Use of uninitialised value of size 8
+# ==25358==    at 0x38B501E9C0: __gmpn_divrem_1 (in /usr/lib64/libgmp.so.3.3.3)
+{
+   numdiff/text/4
+   Memcheck:Value8
+   ...
+   fun:__gmpn_divrem
+   ...
+}
