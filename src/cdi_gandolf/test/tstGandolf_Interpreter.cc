@@ -41,7 +41,8 @@ void runtest()
     // "../bin/Gandolf_Interpreter Al_BeCu.ipcress < GandolfInterpreter.stdin"
     std::ostringstream cmd;
     cmd << GANDOLF_INTERPRETER_BIN_DIR << "/Gandolf_Interpreter"
-        << " " << GANDOLF_INTERPRETER_BUILD_DIR << "/Al_BeCu.ipcress"
+        // << " " << GANDOLF_INTERPRETER_BUILD_DIR << "/Al_BeCu.ipcress"
+        << " " << "Al_BeCu.ipcress"
         << " < " << GANDOLF_INTERPRETER_SOURCE_DIR << "/GandolfInterpreter.stdin" 
         << " > " << GANDOLF_INTERPRETER_BUILD_DIR << "/tstGandolfInterpreter.out";
     std::string consoleCommand( cmd.str() );
