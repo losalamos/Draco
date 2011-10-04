@@ -185,11 +185,13 @@ macro( parse_args )
   # Default is "Release." 
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
   if( ${CTEST_SCRIPT_ARG} MATCHES Debug )
-    set( CTEST_BUILD_CONFIGURATION "Debug" )
+     set( CTEST_BUILD_CONFIGURATION "Debug" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES RelWithDebInfo )
-    set( CTEST_BUILD_CONFIGURATION "RelWithDebInfo" )
+     set( CTEST_BUILD_CONFIGURATION "RelWithDebInfo" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES MinSizeRel )
-    set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
+     set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
+  elseif($ENV{CXX} MATCHES "xt-asyncpe" )
+     set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
   
   set( compiler_short_name "gcc" )
