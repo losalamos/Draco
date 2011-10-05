@@ -52,13 +52,13 @@ endif()
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
 
-   option( HET_MESH_EVERY_CYCLE 
-      "See milagro_rz_mg_Test_Host_Rep_accel_side.cc" ON )
-#   add_feature_info( HET_MESH_EVERY_CYCLE HET_MESH_EVERY_CYCLE 
-#   "Possibly deprecated?")
-   if( HET_MESH_EVERY_CYCLE )
-      add_definitions( -DMESH_EVERY_CYCLE )
-   endif()
+#    option( HET_MESH_EVERY_CYCLE 
+#       "See milagro_rz_mg_Test_Host_Rep_accel_side.cc" ON )
+# #   add_feature_info( HET_MESH_EVERY_CYCLE HET_MESH_EVERY_CYCLE 
+# #   "Possibly deprecated?")
+#    if( HET_MESH_EVERY_CYCLE )
+#       add_definitions( -DMESH_EVERY_CYCLE )
+#    endif()
    
    option( HET_HOST_ACCEL_DACS " " ON )
    add_feature_info( HET_HOST_ACCEL_DACS HET_HOST_ACCEL_DACS
@@ -83,12 +83,12 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "spu-g[+][+]" )
       add_definitions( -DPPE_READ_BUFFER_DIRECT )
    endif()
 
-   option( HET_ACCEL_RECV_IPROBE       " " OFF )
-   add_feature_info( HET_ACCEL_RECV_IPROBE HET_ACCEL_RECV_IPROBE
-   "Unknown.  Possibly deprecated, see ppe_lib/event_loop2.t.hh")
-   if( HET_ACCEL_RECV_IPROBE )
-      add_definitions( -DACCEL_RECV_IPROBE )
-   endif()
+   # option( HET_ACCEL_RECV_IPROBE       " " OFF )
+   # add_feature_info( HET_ACCEL_RECV_IPROBE HET_ACCEL_RECV_IPROBE
+   # "Unknown.  Possibly deprecated, see ppe_lib/event_loop2.t.hh")
+   # if( HET_ACCEL_RECV_IPROBE )
+   #    add_definitions( -DACCEL_RECV_IPROBE )
+   # endif()
 
    option( HET_HOST_ACCEL_DACS_GROUP " " ON )
    add_feature_info( HET_HOST_ACCEL_DACS_GROUP HET_HOST_ACCEL_DACS_GROUP "Unknown.")
@@ -148,25 +148,25 @@ endif()
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
 
-   option( HET_HOST_RECV_NONBLOCKING  " " ON )
-   add_feature_info( HET_HOST_RECV_NONBLOCKING
-      HET_HOST_RECV_NONBLOCKING
-      "Unknown.")
-   if( HET_HOST_RECV_NONBLOCKING )
-      add_definitions( -DHOST_RECV_NONBLOCKING )
-   else()
-      add_definitions( -DHOST_RECV_BLOCKING )
-   endif()
+   # option( HET_HOST_RECV_NONBLOCKING  " " ON )
+   # add_feature_info( HET_HOST_RECV_NONBLOCKING
+   #    HET_HOST_RECV_NONBLOCKING
+   #    "Unknown.")
+   # if( HET_HOST_RECV_NONBLOCKING )
+   #    add_definitions( -DHOST_RECV_NONBLOCKING )
+   # else()
+   #    add_definitions( -DHOST_RECV_BLOCKING )
+   # endif()
 
-   option( HET_HOST_SEND_NONBLOCKING  " " ON )
-   add_feature_info( HET_HOST_SEND_NONBLOCKING
-      HET_HOST_SEND_NONBLOCKING
-      "Unknown.")
-   if( HET_HOST_SEND_NONBLOCKING )
-      add_definitions( -DHOST_SEND_NONBLOCKING )
-   else()
-      add_definitions( -DHOST_SEND_BLOCKING )
-   endif()
+   # option( HET_HOST_SEND_NONBLOCKING  " " ON )
+   # add_feature_info( HET_HOST_SEND_NONBLOCKING
+   #    HET_HOST_SEND_NONBLOCKING
+   #    "Unknown.")
+   # if( HET_HOST_SEND_NONBLOCKING )
+   #    add_definitions( -DHOST_SEND_NONBLOCKING )
+   # else()
+   #    add_definitions( -DHOST_SEND_BLOCKING )
+   # endif()
 
    option( HET_HOST_DIRECT_DACS_INPUT " " ON )
    add_feature_info( HET_HOST_DIRECT_DACS_INPUT
@@ -179,7 +179,7 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    option( HET_HOST_DIRECT_DACS_OUTPUT " " OFF )
    add_feature_info( HET_HOST_DIRECT_DACS_OUTPUT
       HET_HOST_DIRECT_DACS_OUTPUT
-      "Unknown.")
+      "Unknown. Broken for 'ON' in DACS_Output_Request_Agent.t.hh")
    if( HET_HOST_DIRECT_DACS_OUTPUT )
       add_definitions( -DHOST_DIRECT_DACS_OUTPUT )
    endif()
