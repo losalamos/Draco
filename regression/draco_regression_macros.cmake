@@ -190,8 +190,6 @@ macro( parse_args )
      set( CTEST_BUILD_CONFIGURATION "RelWithDebInfo" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES MinSizeRel )
      set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
-  elseif($ENV{CXX} MATCHES "xt-asyncpe" )
-     set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
   
   set( compiler_short_name "gcc" )
@@ -201,6 +199,8 @@ macro( parse_args )
      set( compiler_short_name "intel" )
   elseif($ENV{CXX} MATCHES "ppu-g[+][+]" )
      set( compiler_short_name "ppu-gcc" )
+  elseif($ENV{CXX} MATCHES "xt-asyncpe" )
+     set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
   endif()
 
   # maybe just gcc?
