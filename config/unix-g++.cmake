@@ -107,20 +107,18 @@ string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
    option( GCC_ENABLE_ALL_WARNINGS 
       "Add \"-Weffc++\" to the compile options (only available for DEBUG builds)." OFF )
-   option( GCC_ENABLE_GLIBCXX_DEBUG "Use special version of libc.so that
-   includes STL bounds checking (only available for DEBUG builds)." OFF )
+   option( GCC_ENABLE_GLIBCXX_DEBUG "Use special version of libc.so that includes STL bounds checking (only available for DEBUG builds)." OFF )
    if( GCC_ENABLE_ALL_WARNINGS )
       set( DRACO_CXX_FLAGS_DEBUG "${DRACO_CXX_FLAGS_DEBUG} -Weffc++" )
+      # Force update the CMAKE_CXX_FLAGS (see bottom of this file)
+      set( CXX_FLAGS_INITIALIZED "" CACHE INTERNAL "using draco settings." FORCE )
    endif()
    if( GCC_ENABLE_GLIBCXX_DEBUG )
       set( DRACO_CXX_FLAGS_DEBUG "${DRACO_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" )
+      # Force update the CMAKE_CXX_FLAGS (see bottom of this file)
+      set( CXX_FLAGS_INITIALIZED "" CACHE INTERNAL "using draco settings." FORCE )
    endif()
 endif()
-
-if( ENABLE_SSE )
-  set( DRACO_C_FLAGS   "${DRACO_C_FLAGS} -msse2 -mfpmath=sse" )
-  set( DRACO_CXX_FLAGS "${DRACO_CXX_FLAGS} -msse2 -mfpmath=sse" )
-endif( ENABLE_SSE )
 
 if( ENABLE_OPENMP )
   set( DRACO_C_FLAGS   "${DRACO_C_FLAGS} -fopenmp" )
@@ -163,8 +161,7 @@ endif( ENABLE_C_CODECOVERAGE )
 
 # Save the Draco default values to the cache file
 if( "${CXX_FLAGS_INITIALIZED}no" STREQUAL "no" )
-   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL 
-      "using draco settings." )
+   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
    set( CMAKE_C_FLAGS                "${DRACO_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
    set( CMAKE_C_FLAGS_DEBUG          "${DRACO_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
    set( CMAKE_C_FLAGS_RELEASE        "${DRACO_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
