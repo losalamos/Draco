@@ -42,8 +42,8 @@ module list
 # CVS
 export CVS_RSH=ssh
 export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
-export F90=pgf90
-export FC=pgf90
+export F90=ifort
+export FC=ifort
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_tlcc
