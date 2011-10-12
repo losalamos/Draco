@@ -15,6 +15,7 @@ set version      2.0.11
 set prefix      /usr/projects/data/nuclear/ndi/default/x86_64-linux
 set libdir      $prefix/lib
 set incdir      $prefix/include
+set gendir      /usr/projects/data/nuclear/ndi/default/share/gendir.all 
 
 # module whatis
 module-whatis   "NDI";
@@ -36,3 +37,4 @@ if { ![file exists $prefix] } {
 
 setenv NDI_LIB_DIR $libdir
 setenv NDI_INC_DIR $incdir
+setenv NDI_GENDIR_PATH $gendir
