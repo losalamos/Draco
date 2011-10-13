@@ -201,7 +201,7 @@ macro( parse_args )
      set( compiler_short_name "ppu-gcc" )
   elseif($ENV{CXX} MATCHES "xt-asyncpe" )
      set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
-  elseif( ${sitename} MATCHES "ct" )
+  elseif( ${sitename} MATCHES "Cielito" )
      set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
   endif()
 
