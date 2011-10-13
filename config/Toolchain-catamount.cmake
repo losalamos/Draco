@@ -3,6 +3,8 @@
 # Ref: http://www.vtk.org/Wiki/CMake_Cross_Compiling
 #      http://www.vtk.org/Wiki/CmakeCrayXt3
 
+# http://hpc.lanl.gov/drupal/?q=manual/248
+
 # Specify the target system (this allows cross-compiling)
 SET(CMAKE_SYSTEM_NAME Catamount)
 

@@ -343,6 +343,13 @@ macro( SetupVendorLibrariesUnix )
       PURPOSE "Required for bulding the plot2D component."
 )
 
+   # CUDA ------------------------------------------------------------------
+   find_package( CUDA QUIET )
+   set_package_properties( CUDA PROPERTIES
+      DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding a GPU enabled application."
+)
 endmacro()
 
 
