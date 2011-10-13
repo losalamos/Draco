@@ -1,0 +1,46 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_darwin - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_darwin"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# modules
+
+if test -z "$MODULESHOME"; then
+  # This is a new login
+#  if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
+#    source ${DRACO_SRC_DIR}/environment/Modules/init/bash
+#    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.5.2 gsl hypre
+#    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.6.4
+#    module load totalview cmake numdiff
+    module use ${DRACO_SRC_DIR}/environment/Modules/ccs-dev-fe
+    module list
+#  fi
+fi
+
+# CVS
+export CVSROOT=ccscs8:/ccs/codes/radtran/cvsroot
+
+#LaTeX
+# vendordir=/ccs/codes/radtran/vendors
+# if test -d ${vendordir}/environment/latex; then
+#    export TEXINPUTS=.:${vendordir}/environment/latex:$TEXINPUTS
+# fi
+# if test -d ${vendordir}/environment/bibtex; then
+#    export BSTINPUTS=.:${vendordir}/environment/bibtex:$BSTINPUTS
+# fi
+# unset vendordir
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_darwin
+##---------------------------------------------------------------------------##

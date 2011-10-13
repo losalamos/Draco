@@ -43,6 +43,20 @@ esac
 shopt -s checkwinsize # autocorrect window size
 #shopt -s cdspell # autocorrect spelling errors on cd command line.
 
+# Clean up the default path to remove duplicates
+tmpifs=$IFS
+oldpath=$PATH
+export PATH=/bin
+IFS=:
+for dir in $oldpath; do
+  if test -z "`echo $PATH | grep $dir`" && test -d $dir; then
+    export PATH=$PATH:$dir
+  fi
+done
+IFS=$tmpifs
+unset tmpifs
+unset oldpath
+
 # X server resources
 if test -f ${HOME}/.Xdefaults; then
   if test -x /usr/X11R6/bin/xrdb; then
@@ -69,18 +83,6 @@ for mydir in ${extradirs}; do
       export PATH=${PATH}:${mydir}
    fi
 done
-
-# set variable with my moniker.
-# export USERNAME=`basename ${HOME}`
-
-# Remove all permissions for world and group for files I create.
-# umask 077
-
-# Tell the Draco build system to use all available cores when
-# compiling.
-#if test -f /proc/cpuinfo; then
-#  export nj=`cat /proc/cpuinfo | grep processor | wc -l`
-#fi
 
 # Tell wget to use LANL's www proxy (see trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
 # export http_proxy=http://wpad.lanl.gov/wpad.dat
@@ -269,6 +271,12 @@ ccslan64)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
    ;;
 
+# machine with GPUs
+# backend nodes with GPUs are cn[1-4].
+darwin)
+   source ${DRACO_SRC_DIR}/environmente/bashrc/.bashrc_darwin
+   ;; 
+
 # RoadRunner machines
 rra[0-9]*a)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rr
@@ -323,32 +331,6 @@ if test "$TERM" = emacs || \
 else
    export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
 fi
-
-#Alternate
-#PROMPT_COMMAND='DIR=`pwd|sed -e "s!$HOME!~!"`; if [ ${#DIR} -gt 30 ]; then CurDir=${DIR:0:12}...${DIR:${#DIR}-15}; else CurDir=$DIR; fi'
-#PS1="[\$CurDir] \$ "
-
-##---------------------------------------------------------------------------##
-## Ensure that we have an ssh-agent running
-##---------------------------------------------------------------------------##
-
- # if test -x /usr/bin/win-ssh-askpass.exe; then
- #   export SSH_ASKPASS=/usr/bin/win-ssh-askpass.exe
- # fi
- # if test -f ${HOME}/env.log; then
- #   rm -f ${HOME}/env.log
- # fi
- # set | grep SSH >& ${HOME}/env.log
- # if test -z ${SSH_AUTH_SOCK}; then
- #   if test -n "${verbose}"; then
- #      echo "no agent" 
- #   fi
- # else
- #   if test -n "`ssh-add -L | grep 'no identities'`"; then
- #      ssh-add < /dev/null
- #   fi
- # fi
-
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
