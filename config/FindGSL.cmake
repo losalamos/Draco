@@ -15,8 +15,9 @@ find_path( GSL_INCLUDE_DIR
     PATHS
        ${GSL_INC_DIR}
        $ENV{GSL_INC_DIR}
-	   $ENV{VENDOR_DIR}/include
+       $ENV{VENDOR_DIR}/include
        ${VENDOR_DIR}/include
+       $ENV{GSL_INC}/..           # Cielito/Cielo
     NO_DEFAULT_PATH
 )
 
@@ -35,6 +36,7 @@ find_library(GSL_LIBRARY
         $ENV{GSL_LIB_DIR}
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
+        $ENV{GSL_LIB}               # Cielito/Cielo
     NO_DEFAULT_PATH # avoid picking up /usr/lib/libgsl.so
 )
 find_library(GSL_BLAS_LIBRARY
@@ -44,6 +46,7 @@ find_library(GSL_BLAS_LIBRARY
         $ENV{GSL_LIB_DIR}
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
+        $ENV{GSL_LIB}               # Cielito/Cielo
     NO_DEFAULT_PATH
 )
 mark_as_advanced( GSL_LIBRARY GSL_INCLUDE_DIR GSL_LIBRARY GSL_BLAS_LIBRARY )
