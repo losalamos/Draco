@@ -10,18 +10,6 @@ fi
 ##---------------------------------------------------------------------------##
 ## ALIASES
 ##---------------------------------------------------------------------------##
-# alias cprint='lp -d gumibears_s'
-
-# HPSS (RH3 vs RH4)
-linux_release=`uname -r | sed -e 's/-.*//'`
-case ${linux_release} in
-2.4.*)
-  ;;
-2.6.*)
-  alias psi='k5psi'
-  ;;
-*)
-esac
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
@@ -36,12 +24,17 @@ if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
     source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gcc/4.5.2 gsl hypre
-    module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.6.4
-    module load totalview cmake numdiff
-    module list
+    module load grace gcc/4.5.2
   fi
+else
+    # module environment already exists
+    module use ${DRACO_SRC_DIR}/environment/Modules/modulefiles
+    module use ${DRACO_SRC_DIR}/environment/Modules/ccs-Linux64
 fi
+module load BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gsl hypre
+module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.6.4
+module load totalview cmake numdiff git
+module list
 
 # CVS
 if test -d /ccs/codes/radtran/cvsroot; then
