@@ -11,6 +11,7 @@ SET(CMAKE_SYSTEM_NAME Catamount)
 # specify the cross compiler
 SET(CMAKE_C_COMPILER   cc) # --target=catamount)
 SET(CMAKE_CXX_COMPILER CC) # --target=catamount)
+SET(CMAKE_Fortran_COMPILER ftn) # --target=catamount)
 
 # set the search path for the environment coming with the compiler
 # and a directory where you can install your own compiled software
@@ -37,7 +38,9 @@ set( MPIEXEC "/usr/bin/aprun" )
 set( MPIEXEC_NUMPROC_FLAG "-n")
 set( MPI_C_LIBRARIES      $ENV{MPICH_DIR}/lib/libmpich.a )
 set( MPI_CXX_LIBRARIES    $ENV{MPICH_DIR}/lib/libmpich.a )
+set( MPI_Fortran_LIBRARIES    $ENV{MPICH_DIR}/lib/libmpich.a )
 set( MPI_C_INCLUDE_PATH   $ENV{MPICH_DIR}/include )
 set( MPI_CXX_INCLUDE_PATH $ENV{MPICH_DIR}/include )
+set( MPI_Fortran_INCLUDE_PATH $ENV{MPICH_DIR}/include )
 
 
