@@ -14,10 +14,10 @@
 
 include( FeatureSummary )
 
-#------------------------------------------------------------------------------
-# Helper macros for setup_global_libraries()
-#------------------------------------------------------------------------------
-macro( SetupVendorLibrariesUnix )
+#------------------------------------------------------------------------------#
+# Setup MPI when on Linux
+#------------------------------------------------------------------------------#
+macro( setupMPILibrariesUnix )
 
    # MPI ---------------------------------------------------------------------
    if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
@@ -163,7 +163,12 @@ macro( SetupVendorLibrariesUnix )
 )
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
-   # BLAS ---------------------------------------------------------------------
+endmacro()
+
+#------------------------------------------------------------------------------
+# Helper macros for BLAS/Unix
+#------------------------------------------------------------------------------
+macro( setupBLASLibrariesUnix )
    if( NOT EXISTS ${BLAS_blas_LIBRARY} )
       # message( STATUS "Looking for BLAS...")
 
@@ -215,9 +220,13 @@ macro( SetupVendorLibrariesUnix )
 
    endif( NOT EXISTS ${BLAS_blas_LIBRARY})
 
-   # LAPACK -------------------------------------------------------------------
-   if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
+endmacro()
 
+#------------------------------------------------------------------------------
+# Helper macros for LAPACK/Unix
+#------------------------------------------------------------------------------
+macro( setupLAPACKLibrariesUnix )
+   if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
       # This module sets the following variables:
       # LAPACK_FOUND - set to true if a library implementing the LAPACK
@@ -304,6 +313,13 @@ macro( SetupVendorLibrariesUnix )
 #      message( STATUS "Looking for LAPACK...")      
    endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
+endmacro()
+
+#------------------------------------------------------------------------------
+# Helper macros for setup_global_libraries()
+#------------------------------------------------------------------------------
+macro( SetupVendorLibrariesUnix )
+
    # GSL ----------------------------------------------------------------------
    # message( STATUS "Looking for GSL...")
    find_package( GSL QUIET )
@@ -351,7 +367,6 @@ macro( SetupVendorLibrariesUnix )
       PURPOSE "Required for bulding a GPU enabled application."
 )
 endmacro()
-
 
 #------------------------------------------------------------------------------
 # Helper macros for setup_global_libraries()
@@ -716,11 +731,26 @@ macro( setupVendorLibraries )
 
   # System specific settings
   if ( UNIX )
-    setupVendorLibrariesUnix()
+     setupMPILibrariesUnix()
+     if( "${SITE}" MATCHES "c[it]" )
+        # Provides BLAS and LAPACK
+        find_package( LIBSCI )
+        set_package_properties( LIBSCI PROPERTIES
+           # URL "http://www.open-mpi.org/"
+           DESCRIPTION "Cray's High Performance Scientify Library (LAPACK, BLAS, more)."
+           TYPE RECOMMENDED
+           PURPOSE 
+           "Provides BLAS, LAPACK, BLACS, ScaLAPACK and SuperLU_DIST."
+           )
+     else()
+        setupBLASLibrariesUnix()
+        setupLAPACKLibrariesUnix()
+     endif()
+     setupVendorLibrariesUnix()
   elseif( WIN32 )
-    setupVendorLibrariesWindows()
+     setupVendorLibrariesWindows()
   else()
-    message( FATAL_ERROR "
+     message( FATAL_ERROR "
 I don't know how to setup global (vendor) libraries for this platform.
 WIN32=0; UNIX=0; CMAKE_SYSTEM=${CMAKE_SYSTEM}; 
 CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}" )
