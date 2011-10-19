@@ -167,74 +167,69 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Helper macros for BLAS/Unix
+#
+# Set the BLAS/LAPACK VENDOR.  This must be one of
+# ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
+# Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl v10 64
+# bit,lp thread model, lp64 model),  
+#
+# This script looks for BLAS in the following locations:
+# /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
+# in case LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
+#
+# Options:
+#
+# BLA_STATIC     Default "ON" Look for static version of the library.
+# BLAS_REQUIRED  If "ON", cmake will signal a fatal error if libblas.a
+#                is not found. 
 #------------------------------------------------------------------------------
 macro( setupBLASLibrariesUnix )
    if( NOT EXISTS ${BLAS_blas_LIBRARY} )
-      # message( STATUS "Looking for BLAS...")
 
       set( BLA_STATIC ON )
+      set( BLAS_REQUIRED "" )
 
-      # Set the BLAS/LAPACK VENDOR.  This must be one of
-      #      ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
-      #      Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl
-      #      v10 64 bit,lp thread model, lp64 model), 
       if( ${SITE} MATCHES "frost" )
-         # This machine uses Intel MKL instead of Atlas
-         set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
+         # This machine uses Intel MKL instead of Atlas. 
          # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
+         set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
+      elseif( ${SITE} MATCHES "cn[0-9]*" )
+         # Backend of Darwin
+         set( ENV{BLA_VENDOR} "Generic" )
       else()
          set( ENV{BLA_VENDOR} "ATLAS" )
       endif()
 
-      # Don't require BLAS/LAPACK for catamount systems
-      if( ${SITE} MATCHES "c[it]-" OR
-#            ${SITE} MATCHES "^rr" )
-          ${CMAKE_CXX_COMPILER} MATCHES "[sp]pu-g[+][+]" )
-         set( BLAS_REQUIRED "" )
-      else()
-         set( BLAS_REQUIRED "REQUIRED" )
-      endif()
-
-      # This script looks for BLAS in the following locations:
-      # /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
-      # in case LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
       if( EXISTS $ENV{LAPACK_LIB_DIR} )
          set( ENV{LD_LIBRARY_PATH}
             "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
       endif()
 
       find_package( BLAS ${BLAS_REQUIRED} QUIET )
-#      if( BLAS_FOUND )
-#         message( STATUS "Found BLAS:" )
-#         foreach( lib ${BLAS_LIBRARIES} )
-#            message("\t${lib}")
-#         endforeach()
-#      endif()
 
       set_package_properties( BLAS PROPERTIES
-#         URL "http://www.gnu.org/s/gsl/"
          DESCRIPTION "Basic Linear Algebra Subprograms"
          TYPE OPTIONAL
          PURPOSE "Required for bulding the lapack_wrap component." 
-)
+         )
 
-   endif( NOT EXISTS ${BLAS_blas_LIBRARY})
+   endif()
 
 endmacro()
 
 #------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
+#
+# This module sets the following variables:
+# LAPACK_FOUND - set to true if a library implementing the LAPACK
+#         interface is found 
+# LAPACK_LINKER_FLAGS - uncached list of required linker flags
+#         (excluding -l and -L). 
+# LAPACK_LIBRARIES - uncached list of libraries (using full path name)
+#         to link against to use LAPACK 
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
-
-      # This module sets the following variables:
-      # LAPACK_FOUND - set to true if a library implementing the LAPACK
-      #              interface is found
-      # LAPACK_LINKER_FLAGS - uncached list of required linker flags
-      #              (excluding -l and -L).
-      # LAPACK_LIBRARIES - uncached list of libraries (using full path
-      #              name) to link against to use LAPACK
 
       if( ${SITE}} MATCHES "frost" )
          # We don't need mkl_lapack so just set LAPACK_LIBRARIES to
@@ -286,7 +281,6 @@ macro( setupLAPACKLibrariesUnix )
             if( EXISTS ${LAPACK_${_library}_LIBRARY} )
                list( APPEND LAPACK_atlas_extra_libs
                   ${LAPACK_${_library}_LIBRARY} )
-               # message("DEBUG: LAPACK_atlas_extra_libs = ${LAPACK_atlas_extra_libs}")
             endif()
          endforeach()
          
@@ -297,20 +291,14 @@ macro( setupLAPACKLibrariesUnix )
          set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING 
             "lapack libs" )
          mark_as_advanced( LAPACK_LIBRARIES )
-#         message( STATUS "Found LAPACK:" )
-#         foreach( lib ${LAPACK_LIBRARIES} )
-#            message("\t${lib}")
-#         endforeach()
       endif()
 
       set_package_properties( LAPACK PROPERTIES
-#         URL "http://www.gnu.org/s/gsl/"
          DESCRIPTION "Linear Algebra PACKage"
          TYPE OPTIONAL
          PURPOSE "Required for bulding the lapack_wrap component." 
 )
 
-#      message( STATUS "Looking for LAPACK...")      
    endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
 endmacro()
