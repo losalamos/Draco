@@ -255,26 +255,12 @@ fi
 target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
-if test -d /ccs/codes/radtran; then # this is a CCS lan machine
-   if test `uname -m` = "x86_64"; then
-      target=ccslan64
-   else
-      target=ccslan32
-   fi
-fi
-
-case $target in
-ccslan32)
-   source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux
-   ;;
-ccslan64)
-   source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
-   ;;
+case ${target} in
 
 # machine with GPUs
 # backend nodes with GPUs are cn[1-4].
-darwin)
-   source ${DRACO_SRC_DIR}/environmente/bashrc/.bashrc_darwin
+darwin | cn[0-9]*)
+   source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_darwin
    ;; 
 
 # RoadRunner machines
@@ -300,6 +286,15 @@ ct-fe1)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
+# Assume CCS machine (ccscs[0-9] or personal workstation)
+*)
+    echo "Using default target."
+    if test -d /ccs/codes/radtran; then 
+        # assume this is a CCS LAN machine (64-bit)
+        source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
+    fi
+    ;;
+
 esac
 
 source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
@@ -307,14 +302,6 @@ source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
 ##---------------------------------------------------------------------------##
 ## Aliases for machines
 ##---------------------------------------------------------------------------##
-
-alias ccscs1='nt ccscs1'
-alias ccscs8='nt ccscs8'
-alias ccscs9='nt ccscs9'
-alias rayo='nt rayo.lanl.gov'
-alias rr='nt rr-dev-fe'
-alias yr='nt yr-fe1'
-alias turing='nt tu-fe1'
 
 # No need to use ssh to pop a terminal from the current machine
 alias ${target}='${term} ${term_opts}'
