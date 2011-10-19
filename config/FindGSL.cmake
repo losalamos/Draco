@@ -37,7 +37,7 @@ find_library(GSL_LIBRARY
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
         $ENV{GSL_DIR}               # Cielito/Cielo
-    NO_DEFAULT_PATH # avoid picking up /usr/lib/libgsl.so
+    NO_DEFAULT_PATH                 # avoid picking up /usr/lib/libgsl.so
 )
 find_library(GSL_BLAS_LIBRARY
     NAMES ${GSL_BLAS_NAME}
@@ -49,6 +49,12 @@ find_library(GSL_BLAS_LIBRARY
         $ENV{GSL_DIR}               # Cielito/Cielo
     NO_DEFAULT_PATH
 )
+# If above fails, look in default locations
+if( NOT GSL_LIBRARY )
+   find_path( GSL_INCLUDE_DIR    NAMES gsl/gsl_sf.h )
+   find_library(GSL_LIBRARY      NAMES ${GSL_LIBRARY_NAME} )
+   find_library(GSL_BLAS_LIBRARY NAMES ${GSL_BLAS_NAME} )
+endif()
 mark_as_advanced( GSL_LIBRARY GSL_INCLUDE_DIR GSL_LIBRARY GSL_BLAS_LIBRARY )
 
 # handle the QUIETLY and REQUIRED arguments and set GSL_FOUND to TRUE if 
