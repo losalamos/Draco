@@ -512,6 +512,26 @@ function archive()
 }
 
 ##---------------------------------------------------------------------------##
+## Use 'wiki <term>'
+##---------------------------------------------------------------------------##
+function wiki()
+{
+  dig +short txt $1.wp.dg.cx;
+}
+
+#function eproxyfloat
+#{ 
+#  echo "Requested $1 copies of \"$2\""
+#  perl -e 'print join( "\n", (unpack("H*", pack( "f*", ( $2 ) x $1 ) ) =~ m/.{1,72}/g)), "\n"'
+#}
+
+
+# function encrypt() { gpg -ac --no-options "$1" }
+# function decrypt (){ gpg --no-options "$1" }
+
+
+
+##---------------------------------------------------------------------------##
 ## Publish all functions to the current shell.
 ##---------------------------------------------------------------------------##
 
