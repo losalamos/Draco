@@ -28,17 +28,15 @@ if test -n "$MODULESHOME"; then
         module load trilinos/10.6.4 totalview cmake numdiff
     else
         # Put cmake and numdiff into the user's path
-        extradirs="/home/kgt/vendors/cmake-2.8.6-Linux-i386/bin /home/kgt/vendors/numdiff-5.2.1/bin"
+        extradirs="/home/kgt/vendors/cmake-2.8.6-Linux-i386/bin /home/opt/numdiff/bin"
         for mydir in ${extradirs}; do
             if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
                 export PATH=${mydir}:${PATH}
             fi
         done
+        # This is for libgandolf.a:
         # Use $HOME/vendors as the default vendor library location
         export VENDOR_DIR=/home/kgt/vendors
-        # Put VENDOR_DIR/lib into the LD_LIBRARY_PATH so that FindBLAS
-        # and FindLAPACK work.
-        export LD_LIBRARY_PATH=$VENDOR_DIR/lib:$LD_LIBRARY_PATH
     fi
     module list
 fi
