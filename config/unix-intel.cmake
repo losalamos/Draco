@@ -63,9 +63,9 @@ endif()
 #                exception_semantics are disabled
 
 if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-fPIC -w1 -vec-report0 -diag-disable remark -shared-intel" )
+  set( CMAKE_C_FLAGS                "-fpic -w1 -vec-report0 -diag-disable remark -shared-intel" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -funroll-loops -fp-model precise -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -fpe0 -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -inline-level=0 -ip -DNDEBUG" )
 

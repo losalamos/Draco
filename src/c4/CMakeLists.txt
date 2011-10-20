@@ -29,6 +29,12 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
    set( C4_MPICMD "aprun -n " )
 endif()
 
+if( EXISTS $ENV{PAPI_HOME} )
+    set( HAVE_PAPI 1 )
+    set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} )
+    set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so )
+endif()
+
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )
 
 # ---------------------------------------------------------------------------- #
@@ -62,7 +68,7 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_c4 c4 "${sources}"  )
+add_component_library( Lib_c4 c4 "${sources}" ${PAPI_LIBRARY} )
 add_dependencies( Lib_c4 Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #

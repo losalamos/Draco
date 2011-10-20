@@ -148,6 +148,20 @@ class Timer
     //! determine if MPI Wtime is available.
     bool setIsMPIWtimeAvailable() const;
     
+#ifdef HAVE_PAPI
+    static unsigned const papi_max_counters_ = 3U;
+
+    long long papi_start_[papi_max_counters_];
+    long long papi_stop_[papi_max_counters_];
+    long long papi_counts_[papi_max_counters_];
+
+    int status_;
+
+    static unsigned papi_num_counters_;
+    static long long papi_raw_counts_[papi_max_counters_];
+    static int papi_events_[papi_max_counters_];
+#endif
+
   public:
     
     Timer();
@@ -174,8 +188,47 @@ class Timer
     //! Return the number of time intervals used in the sums.
     int intervals() const { Require(! timer_on); return num_intervals; }
 
+#ifdef HAVE_PAPI
+    long long sum_L2_cache_misses() const 
+    {
+      return papi_counts_[0];
+    }
+
+    long long sum_L2_cache_hits() const 
+    {
+      return papi_counts_[1];
+    }
+
+    long long sum_floating_operations() const 
+    {
+      return papi_counts_[2];
+    }
+#else
+    long long sum_L2_cache_misses() const 
+    {
+      return 0;
+    }
+
+    long long sum_L2_cache_hits() const 
+    {
+      return 0;
+    }
+
+    long long sum_floating_operations() const 
+    {
+      return 0;
+    }
+#endif
+
     inline void reset();
+
     void print( std::ostream &, int p = 2 ) const;
+
+    void printline( std::ostream &,
+		    unsigned p = 2U,
+		    unsigned width = 15U) const;
+
+    inline void merge(Timer const &);
 };
 
 //---------------------------------------------------------------------------//
@@ -188,6 +241,15 @@ void Timer::start()
     Require(! timer_on);
     timer_on = true;
     ++num_intervals;
+
+#ifdef HAVE_PAPI
+    status_ = PAPI_accum_counters(papi_raw_counts_, papi_num_counters_);
+    for (unsigned i=0; i<papi_num_counters_; ++i)
+      {
+	papi_start_[i] = papi_raw_counts_[i];
+      }
+#endif
+
     // set both begin and tms_begin.
     begin = wall_clock_time( tms_begin );  
 }
@@ -204,6 +266,15 @@ void Timer::stop()
     sum_wall   += wall_clock();
     sum_system += system_cpu();
     sum_user   += user_cpu();
+
+#ifdef HAVE_PAPI
+    status_ = PAPI_accum_counters(papi_raw_counts_, papi_num_counters_);
+    for (unsigned i=0; i<papi_num_counters_; ++i)
+      {
+	papi_stop_[i] = papi_raw_counts_[i];
+	papi_counts_[i] += papi_stop_[i]-papi_start_[i];
+      }
+#endif
 }
 
 //---------------------------------------------------------------------------//
@@ -260,6 +331,35 @@ void Timer::reset()
     sum_system    = 0.0;
     sum_user      = 0.0;
     num_intervals = 0;
+    
+#ifdef HAVE_PAPI
+    for (unsigned i=0; i<papi_num_counters_; ++i)
+      {
+	papi_counts_[i] = 0;
+      }
+#endif
+
+    return;
+}
+
+//---------------------------------------------------------------------------//
+//! Merge counts from another Timer.
+void Timer::merge(Timer const &t)
+{
+    Require(! timer_on);
+
+    sum_wall      += t.sum_wall;
+    sum_system    += t.sum_system;
+    sum_user      += t.sum_user;
+    num_intervals += t.num_intervals;
+    
+#ifdef HAVE_PAPI
+    for (unsigned i=0; i<papi_num_counters_; ++i)
+      {
+	papi_counts_[i] += t.papi_counts_[i];
+      }
+#endif
+
     return;
 }
 
