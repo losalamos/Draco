@@ -243,6 +243,7 @@ auto-mode-alist.
                       ("\\.hh.in$"  . c++-mode)
 		      ("\\.h.in$"   . c-mode)
 		      ("\\.c$"      . c-mode)   ; to edit C code
+		      ("\\.cu$"     . c-mode)   ; to edit CUDA kernels
 		      ("\\.h$"      . c-mode)   ; to edit C code
 		      ("\\.dcc$"    . c-mode)   ; to edit C code
 		      ("\\.dcc.in$" . c-mode)   ; to edit C code
