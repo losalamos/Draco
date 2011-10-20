@@ -12,6 +12,8 @@
 #ifndef c4_Compare_hh
 #define c4_Compare_hh
 
+#include <stdint.h>
+
 namespace rtt_c4
 {
 
@@ -30,7 +32,8 @@ namespace rtt_c4
 //===========================================================================//
 
 bool check_global_equiv(int local_value);
-bool check_global_equiv(unsigned long long local_value);
+//bool check_global_equiv(unsigned long long local_value);
+bool check_global_equiv(uint64_t local_value);
 bool check_global_equiv(double local_value, double eps = 1.0e-8);
 
 } // end namespace rtt_c4
