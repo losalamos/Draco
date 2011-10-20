@@ -90,6 +90,12 @@ struct MPI_Traits<unsigned long>
 };
 
 template<>
+struct MPI_Traits<unsigned long long>
+{
+    static MPI_Datatype element_type() { return MPI_UNSIGNED_LONG_LONG; }
+};
+    
+template<>
 struct MPI_Traits<float>
 {
     static MPI_Datatype element_type() { return MPI_FLOAT; }

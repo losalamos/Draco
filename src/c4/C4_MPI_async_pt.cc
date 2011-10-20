@@ -48,6 +48,8 @@ template
 C4_Req send_async<double>(const double *, int, int, int);
 template
 C4_Req send_async<long double>(const long double *, int, int, int);
+template
+C4_Req send_async<unsigned long long>(const unsigned long long*, int, int, int);
 
 template
 C4_Req receive_async<char>(char *, int, int, int);
@@ -71,6 +73,8 @@ template
 C4_Req receive_async<double>(double *, int, int, int);
 template
 C4_Req receive_async<long double>(long double *, int, int, int);
+template
+C4_Req receive_async<unsigned long long>(unsigned long long *, int, int, int);
 
 template
 void send_async<char>(C4_Req &, const char *, int, int, int);
@@ -95,6 +99,9 @@ template
 void send_async<double>(C4_Req &, const double *, int, int, int);
 template
 void send_async<long double>(C4_Req &, const long double *, int, int, int);
+template
+void send_async<unsigned long long>(C4_Req &, const unsigned long long *, 
+                                    int, int, int);
 
 template
 void send_is<char>(C4_Req &, const char *, int, int, int);
@@ -119,6 +126,9 @@ template
 void send_is<double>(C4_Req &, const double *, int, int, int);
 template
 void send_is<long double>(C4_Req &, const long double *, int, int, int);
+template
+void send_is<unsigned long long>(C4_Req &, const unsigned long long*, 
+                                 int, int, int);
 
 template
 void receive_async<char>(C4_Req &, char*, int, int, int);
@@ -142,6 +152,9 @@ template
 void receive_async<double>(C4_Req &, double *, int, int, int);
 template
 void receive_async<long double>(C4_Req &, long double *, int, int, int);
+template
+void receive_async<unsigned long long>(C4_Req &, unsigned long long *, 
+                                       int, int, int);
 
 } // end namespace rtt_c4
 

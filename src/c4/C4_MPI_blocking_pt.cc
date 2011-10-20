@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include <c4/config.h>
+#include <stdint.h>
 
 #ifdef C4_MPI
 
@@ -30,9 +31,11 @@ template int send<int>(const int *, int, int, int);
 template int send<unsigned int>(const unsigned int *, int, int, int);
 template int send<long>(const long *, int, int, int);
 template int send<unsigned long>(const unsigned long *, int, int, int);
+template int send<unsigned long long>(const unsigned long long *, int, int, int);
 template int send<float>(const float *, int, int, int);
 template int send<double>(const double *, int, int, int); 
 template int send<long double>(const long double *, int, int, int);
+    
 
 template int receive<char>(char *, int, int, int);
 template int receive<unsigned char>(unsigned char *, int, int, int);
@@ -42,6 +45,7 @@ template int receive<int>(int *, int, int, int);
 template int receive<unsigned int>(unsigned int *, int, int, int);
 template int receive<long>(long *, int, int, int);
 template int receive<unsigned long>(unsigned long *, int, int, int);
+template int receive<unsigned long long>(unsigned long long *, int, int, int);
 template int receive<float>(float *, int, int, int);
 template int receive<double>(double *, int, int, int); 
 template int receive<long double>(long double *, int, int, int);
@@ -54,6 +58,7 @@ template int broadcast<int>(int *, int, int);
 template int broadcast<unsigned int>(unsigned int *, int, int);
 template int broadcast<long>(long *, int, int);
 template int broadcast<unsigned long>(unsigned long *, int, int);
+template int broadcast<unsigned long long>(unsigned long long *, int, int);
 template int broadcast<float>(float *, int, int);
 template int broadcast<double>(double *, int, int); 
 template int broadcast<long double>(long double *, int, int);

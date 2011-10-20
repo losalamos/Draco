@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 	test_equivalence(10, 11);           // int
 	test_equivalence(10.0001, 11.0001); // double
 	test_equivalence(10.0001, 10.0002); // double
-
+    test_equivalence(uint64_t(10000000000), uint64_t(200000000000)); // uint64_t
 
     }
     catch (std::exception &err)
