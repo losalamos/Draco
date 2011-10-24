@@ -76,7 +76,8 @@ bool check_global_equiv(int local_value)
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Function to check the equivalence of an uint64_t across all processors.
+ * \brief Function to check the equivalence of an unsigned long long
+ *        across all processors.
  *
  * This function is (hopefully) a temporary parallel check function that more
  * properly belongs in C4.  It is used to check the equivalence of a given
@@ -86,8 +87,7 @@ bool check_global_equiv(int local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-//bool check_global_equiv(unsigned long long local_value)
-bool check_global_equiv(uint64_t local_value)
+bool check_global_equiv(unsigned long long local_value)
 {
     
     const int node  = rtt_c4::node();
