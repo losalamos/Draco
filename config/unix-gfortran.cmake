@@ -63,7 +63,8 @@ endif()
 #                explicit interface.  
 #   
 SET( CMAKE_Fortran_FLAGS_DEBUG 
-  "-g -Wall -W -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+  "-g -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+# [2011-10-25 KT]: turn off '-Wall -W' for now
 # removed pedantic - needed by capsaicin
 
 # Release flags
