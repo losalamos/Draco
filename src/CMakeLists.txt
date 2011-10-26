@@ -60,6 +60,7 @@ message(" ")
 message( STATUS "Configuring Level 2 packages --" )
 add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
+add_dir_if_exists( device )       # needs ds++
 add_dir_if_exists( fpe_trap )     # needs ds++
 add_dir_if_exists( lapack_wrap )  # needs ds++
 add_dir_if_exists( linear )       # needs ds++
@@ -69,9 +70,6 @@ add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
 
-if( ENABLE_HET_CODE )
-   add_dir_if_exists( device )    # needs ds++
-endif()
 if( PCG_FOUND )
   add_dir_if_exists( pcgWrap )    # needs ds++
 endif()
