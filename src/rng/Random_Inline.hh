@@ -10,6 +10,7 @@
 #define rtt_rng_Random_Inline_hh
 
 //#include "rng/config.h"
+#include <stdint.h>
 #include "Rnd_Control_Inline.hh"
 
 namespace rtt_rng
@@ -20,7 +21,7 @@ typedef LF_Gen Random;
 /*! rn_stream is not used for anything in this library.  It is simply a global
  * variable that some applications use for holding a stream number.
  */
-extern int rn_stream;  
+extern uint64_t rn_stream;  
 }
 
 #endif                          // rtt_rng_Random_Inline_hh

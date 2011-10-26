@@ -111,6 +111,12 @@ struct C4_Traits<unsigned long long>
 {
     static const int tag = 442;
 };
+
+template<> 
+struct C4_Traits<long long> 
+{
+    static const int tag = 443;
+};
     
 //---------------------------------------------------------------------------//
 // SPECIALIZATION OF INTRINSIC POINTER TYPES
@@ -186,6 +192,12 @@ template<>
 struct C4_Traits<unsigned long long *>
 {
     static const int tag = 462;
+};
+    
+template<>
+struct C4_Traits<long long *>
+{
+    static const int tag = 463;
 };
     
 } // end namespace rtt_c4

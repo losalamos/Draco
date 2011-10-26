@@ -82,6 +82,12 @@ struct MPI_Traits<long>
 {
     static MPI_Datatype element_type() { return MPI_LONG; }
 };
+    
+template<>
+struct MPI_Traits<long long>
+{
+    static MPI_Datatype element_type() { return MPI_LONG_LONG; }
+};
 
 template<>
 struct MPI_Traits<unsigned long>

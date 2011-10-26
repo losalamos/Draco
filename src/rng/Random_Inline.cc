@@ -8,4 +8,4 @@
 
 #include "Random_Inline.hh"
 
-int rtt_rng::rn_stream;
+uint64_t rtt_rng::rn_stream;

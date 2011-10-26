@@ -31,7 +31,9 @@ template void global_sum< unsigned long  >( unsigned long  &);
 template void global_sum< float          >( float          &);
 template void global_sum< double         >( double         &);
 template void global_sum< long double    >( long double    &);
+template void global_sum< long long      >(  long long     &);
 template void global_sum< unsigned long long >( unsigned long long &);
+
 
 
 template void global_prod< short          >( short          &);
@@ -43,6 +45,7 @@ template void global_prod< unsigned long  >( unsigned long  &);
 template void global_prod< float          >( float          &);
 template void global_prod< double         >( double         &);
 template void global_prod< long double    >( long double    &);
+template void global_prod< long long      >( long long      &);
 template void global_prod< unsigned long long >( unsigned long long &);
 
 
@@ -55,6 +58,7 @@ template void global_max< unsigned long  >( unsigned long  &);
 template void global_max< float          >( float          &);
 template void global_max< double         >( double         &);
 template void global_max< long double    >( long double    &);
+template void global_max< long long      >( long long      &);
 template void global_max< unsigned long long >( unsigned long long &);
 
 
@@ -79,6 +83,9 @@ template void global_sum< unsigned long  >( unsigned long  *, int);
 template void global_sum< float          >( float          *, int);
 template void global_sum< double         >( double         *, int);
 template void global_sum< long double    >( long double    *, int);
+template void global_sum< long long      >( long long      *, int);
+template void global_sum< unsigned long long >( unsigned long long *, int);
+
 
 template void global_prod< short          >( short          *, int);
 template void global_prod< unsigned short >( unsigned short *, int);
@@ -89,6 +96,7 @@ template void global_prod< unsigned long  >( unsigned long  *, int);
 template void global_prod< float          >( float          *, int);
 template void global_prod< double         >( double         *, int);
 template void global_prod< long double    >( long double    *, int);
+template void global_prod< long long      >( long long      *, int);
 template void global_prod< unsigned long long >( unsigned long long *, int);
 
 
@@ -101,6 +109,7 @@ template void global_max< unsigned long  >( unsigned long  *, int);
 template void global_max< float          >( float          *, int);
 template void global_max< double         >( double         *, int);
 template void global_max< long double    >( long double    *, int);
+template void global_max< long long      >( long long      *, int);
 template void global_max< unsigned long long >( unsigned long long *, int);
 
 
@@ -113,6 +122,7 @@ template void global_min< unsigned long  >( unsigned long  *, int);
 template void global_min< float          >( float          *, int);
 template void global_min< double         >( double         *, int);
 template void global_min< long double    >( long double    *, int);
+template void global_min< long long      >( long long      *, int);
 template void global_min< unsigned long long >( unsigned long long *, int);
 
 
