@@ -31,7 +31,9 @@ namespace rtt_c4
 
 bool check_global_equiv(int local_value);
 bool check_global_equiv(unsigned long long local_value);
+bool check_global_equiv(unsigned long local_value);
 bool check_global_equiv(long long local_value);
+bool check_global_equiv(long local_value);
 bool check_global_equiv(double local_value, double eps = 1.0e-8);
 
 } // end namespace rtt_c4

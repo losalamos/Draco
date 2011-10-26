@@ -139,6 +139,10 @@ int main(int argc, char *argv[])
                          static_cast<unsigned long long>(200000000000));
         test_equivalence(static_cast<long long>(10000000000),
                          static_cast<long long>(200000000000));
+        test_equivalence(static_cast<long>(1000000),
+                         static_cast<long>(2000000));
+        test_equivalence(static_cast<unsigned long>(1000000),
+                         static_cast<unsigned long>(2000000));
 
     }
     catch (exception &err)
