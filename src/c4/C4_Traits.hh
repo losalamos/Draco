@@ -12,6 +12,7 @@
 #ifndef __c4_C4_Traits_hh__
 #define __c4_C4_Traits_hh__
 
+#include <stdint.h>   // ensure types are same across compilers (pgi)
 #include "C4_Tags.hh"
 
 namespace rtt_c4
