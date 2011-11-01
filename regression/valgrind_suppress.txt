@@ -6,7 +6,7 @@
 
 # Example valgrind use:
 # valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes --num-callers=50 /ccs/codes/mpi/openmpi/Linux64/1.3.3/bin/mpiexec -np 1 phw hello
-# Options: --suppressions="/home/kgt/draco/regression/valgrind_suppress.txt"
+# Options: --suppressions="$HOME/draco/regression/valgrind_suppress.txt"
 
 # OR --------
 
@@ -252,6 +252,7 @@
    fun:expand_dynamic_string_token
    ...
    obj:/lib64/ld-2.5.so
+   ...
 }
 {
    tstSP/condjump/ld25so
@@ -259,6 +260,7 @@
    fun:_dl_relocate_object
    ...
    obj:/lib64/ld-2.5.so
+   ...
 }
 
 ## ---------------------------------------------------------------------- ##
