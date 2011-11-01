@@ -30,6 +30,10 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
    if( NOT EXISTS ${TEST_PPE_BINDIR}/dacs_noop_ppe_exe )
       string ( REPLACE "x86" "ppe" TEST_PPE_BINDIR 
          "${CMAKE_INSTALL_PREFIX}/bin" )
+      # Simply path name
+      get_filename_component( TEST_PPE_BINDIR ${TEST_PPE_BINDIR}
+         ABSOLUTE )
+      # Save it in the cache file.
       set( TEST_PPE_BINDIR ${TEST_PPE_BINDIR} CACHE PATH 
          "PPE binary install location" )
    endif()
@@ -39,7 +43,10 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
       message(FATAL_ERROR "TEST_PPE_BINDIR must be set to bin "
          "directory of the installed PPE build of Draco." )
    endif()
-
+   
+   # Simply path name
+   get_filename_component( TEST_PPE_BINDIR ${TEST_PPE_BINDIR}
+      ABSOLUTE )
    configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
 
 # ---------------------------------------------------------------------------- #
