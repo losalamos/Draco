@@ -11,7 +11,7 @@ cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project( device CXX )
 
 if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
-   find_package(CUDA)
+   find_package( CUDA QUIET )
 endif()
 
 # ---------------------------------------------------------------------------- #
