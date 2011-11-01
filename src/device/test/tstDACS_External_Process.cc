@@ -113,7 +113,12 @@ void tstGetFilename(UnitTest &ut)
     if (f == test_ppe_bindir + "/" + filename)
         ut.passes("Filenames match");
     else
-        ut.failure("Filenames don't match");
+    {
+        std::ostringstream msg;
+        msg << "Filenames don't match\n\tf=" << f
+            << "\n\tg=" << test_ppe_bindir + "/" + filename;
+        ut.failure(msg.str());
+    }
 
     const std::string fullpath(test_ppe_bindir + "/" + filename);
 
