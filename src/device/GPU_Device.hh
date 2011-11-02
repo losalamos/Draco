@@ -13,25 +13,11 @@
 #ifndef device_GPU_Device_hh
 #define device_GPU_Device_hh
 
+#include "device_cuda.h"
+#include "ds++/Assert.hh"
 #include <vector>
 #include <iostream>
 #include <string>
-
-// All this garbage suppresses warnings found in "cuda.h".
-// http://wiki.services.openoffice.org/wiki/Writing_warning-free_code#When_all_else_fails
-#if defined __GNUC__
-#pragma GCC system_header
-#elif defined __SUNPRO_CC
-#pragma disable_warn
-#elif defined _MSC_VER
-#pragma warning(push, 1)
-#endif
-#include <cuda.h>
-#if defined __SUNPRO_CC
-#pragma enable_warn
-#elif defined _MSC_VER
-#pragma warning(pop)
-#endif
 
 namespace rtt_device
 {
@@ -74,7 +60,7 @@ class GPU_Device
     // GPU_Device(const GPU_Device &rhs);
 
     //! Destructor.
-    // ~GPU_Device();
+    ~GPU_Device();
 
     // MANIPULATORS
     
@@ -83,6 +69,8 @@ class GPU_Device
 
     // ACCESSORS
 
+    //! How many GPU devices are found on the bus?
+    size_t numDevicesAvailable() const { return deviceCount; }
     //! maximum number of threads per block
     int maxThreadsPerBlock(int devId=0) const {
         return deviceProperties[devId].maxThreadsPerBlock; }
@@ -116,10 +104,26 @@ class GPU_Device
     int textureAlign(int devId=0) const {
         return deviceProperties[devId].textureAlign; }
 
+    //! Return the device handle
+    CUdevice deviceHandle( int idevice ) const {
+        Require( idevice < deviceCount );
+        return device_handle[idevice]; }
+    //! Return the context handle 
+    CUcontext contextHandle( int idevice ) const {
+        Require( idevice < deviceCount );
+        return context[idevice]; }
+
     // SERVICES
-    void printDeviceSummary(std::ostream & out = std::cout) const;
+    //! Print a summary of idevice's features to ostream out.
+    void printDeviceSummary(int const      idevice,
+                            std::ostream & out = std::cout) const;
+    static std::string getErrorMessage( cudaError_enum const err );
+    //! Check the value of the return code for CUDA calls.
+    static void checkForCudaError(cudaError_enum const err );
 
     // STATICS
+    inline static int align( int offset, int alignment ) {
+        return (offset + alignment - 1) & ~(alignment - 1); }
 
   protected:
 
@@ -134,8 +138,12 @@ class GPU_Device
     // DATA
     int deviceCount;
     std::vector< std::vector<size_t> > computeCapability;
-    std::vector< std::string > deviceName;
-    std::vector< CUdevprop_st > deviceProperties;
+    std::vector< std::string  >        deviceName;
+    std::vector< CUdevprop_st >        deviceProperties;
+    //! Device handles (one per device)
+    std::vector< CUdevice > device_handle;
+    //! Device context (one per handle)
+    std::vector< CUcontext > context;
 
 };
 

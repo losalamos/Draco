@@ -1,4 +1,3 @@
-
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   device/test/gpu_hello_driver_api.cc
@@ -13,97 +12,148 @@
 //---------------------------------------------------------------------------//
 
 #include "../GPU_Device.hh"
+#include "../GPU_Module.hh"
+#include "device/config.h"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <time.h>
+#include <cstdlib> // RAND_MAX
 
 //---------------------------------------------------------------------------//
 // Helpers
 //---------------------------------------------------------------------------//
 
-int align(int offset, int alignment)
+void genTestData( std::vector<float> & a,
+                  std::vector<float> & b,
+                  std::vector<float> & ref )
 {
-    // std::cout << "(offset,alignment) = " << offset << ", " << alignment
-    //           << std::endl;
-    // std::cout << "~(alignment-1) = " << ~(alignment - 1) << std::endl;
-    // int foo = (offset + alignment - 1) & ~(alignment - 1);
-    // std::cout << "result = " << foo << std::endl; 
-    return (offset + alignment - 1) & ~(alignment - 1);
+    // Initialize the random seed
+    srand( time( NULL ) );
+
+    // Fill arrays
+    for( size_t i=0; i<a.size(); ++i )
+    {
+        a[i] = static_cast<float>(rand()%1000);
+        b[i] = static_cast<float>(rand()%1000);
+        ref[i] = a[i]+b[i];
+    }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
-// Tests
+// query_device
+//---------------------------------------------------------------------------//
+
+void query_device( rtt_dsxx::ScalarUnitTest & ut )
+{
+    using namespace std;
+
+    cout << "Starting gpu_hello_driver_api::query_device()...\n" << endl;
+
+    // Create a GPU_Device object.
+    // Initialize the CUDA library and sets device and context handles.
+    rtt_device::GPU_Device gpu;
+
+    // Create and then print a summary of the devices found.
+    std::ostringstream out;
+    size_t const numDev( gpu.numDevicesAvailable() );
+    out << "GPU device summary:\n\n"
+        << "   Number of devices found: " << numDev
+        << "\n" << endl;
+    for( size_t device=0; device<numDev; ++device )
+        gpu.printDeviceSummary( device, out );
+    
+    // Print the message to stdout
+    cout << out.str();
+
+    // Parse the output
+    bool verbose(false);
+    std::map< std::string, unsigned > wordCount =
+        ut.get_word_count( out, verbose );
+
+    if( wordCount[string("Device")] == numDev )
+        ut.passes( "Found a report for each available device." );
+    else
+        ut.failure( "Did not find a report for each available device." );
+
+    return;
+}
+
+//---------------------------------------------------------------------------//
+// Test: simple_add
 //---------------------------------------------------------------------------//
 
 void simple_add( rtt_dsxx::ScalarUnitTest & ut )
 {
     using namespace std;
 
+    cout << "\nStarting gpu_hello_driver_api::simple_add()...\n" << endl;
+
+    // Where are we?
+    string const cwd( rtt_dsxx::currentPath() );
+    string const testDir( rtt_device::test_ppe_bindir ); // read from config.h
+    cout << "Paths:"
+         << "\n   Current working dir = " << cwd
+         << "\n   GPU kernel files at = " << testDir << endl;
+
     // Create a GPU_Device object.
+    // Initialize the CUDA library and sets device and context handles.
     rtt_device::GPU_Device gpu;
-
-    // Print a summary of the devices found.
-    gpu.printDeviceSummary();
-
-    // Only use device 0 (if there are more than 1 GPUs available)
-    int iDev(0);
-
-    // Create a context
-    cout << "Get device handle" << endl;
-    CUdevice device;
-    cuDeviceGet(&device, iDev);
-
-    cout << "Create a context" << endl;
-    CUcontext ctx;
-    cuCtxCreate(&ctx, iDev, device);
-
+    
     // Load the module, must compile the kernel with nvcc -ptx -m32 kernel.cu
-    string ptxFile("gpu_kernel.ptx");
-    cout << "Load module " << ptxFile << endl;
-    Insist( rtt_dsxx::fileExists( ptxFile ),
-            (string("Cannot find requested file: kernel.ptx.")
-             + ptxFile).c_str());
-    CUmodule module;
-    cuModuleLoad(&module, ptxFile.c_str());
+    rtt_device::GPU_Module myModule( "gpu_kernel.ptx");
 
     // Load the kernel from the module
     cout << "Load kernel \"sum\" from the module." << endl;
     CUfunction kernel;
-    cuModuleGetFunction(&kernel,module,"sum");
-
+    cudaError_enum err = cuModuleGetFunction(&kernel,myModule.handle(),"sum");
+    gpu.checkForCudaError( err );
+    
     // Allocate some memory for the result
     cout << "Allocate memory on the device." << endl;
     CUdeviceptr dest;
-    cuMemAlloc(&dest, sizeof(int));
+    err = cuMemAlloc(&dest, sizeof(int));
+    gpu.checkForCudaError( err );
 	
     // Setup kernel parameters
     int offset(0);
-    offset = align(offset, __alignof(CUdeviceptr));
+    offset = gpu.align(offset, __alignof(CUdeviceptr));
 
     // cuParamSetv is used for pointers...
-    cuParamSetv(kernel, offset, &dest, sizeof(CUdeviceptr));
+    err = cuParamSetv(kernel, offset, &dest, sizeof(CUdeviceptr));
+    gpu.checkForCudaError( err );
     offset += sizeof(CUdeviceptr);
 
-    offset = align(offset, __alignof(int));
-    cuParamSeti(kernel, offset, 4);    // cuParamSeti is used for integers.
+    offset = gpu.align(offset, __alignof(int));
+    err = cuParamSeti(kernel, offset, 4);    // cuParamSeti is used for integers.
+    gpu.checkForCudaError( err );
     offset += sizeof(int);
-    offset = align(offset, __alignof(int));
-    cuParamSeti(kernel, offset, 34);
+    offset = gpu.align(offset, __alignof(int));
+    err = cuParamSeti(kernel, offset, 34);
+    gpu.checkForCudaError( err );
     offset += sizeof(int);
-    cuParamSetSize(kernel, offset);
-    
+    err = cuParamSetSize(kernel, offset);
+    gpu.checkForCudaError( err );
+
     // Launch the grid
     cout << "Launch the grid" << endl;
-    cuFuncSetBlockShape(kernel, 1, 1, 1);
-    cuLaunchGrid(kernel, 1, 1);
+    err = cuFuncSetBlockShape(kernel, 1, 1, 1);
+    gpu.checkForCudaError( err );
+    err = cuLaunchGrid(kernel, 1, 1);
+    gpu.checkForCudaError( err );
 
     // Read the result off of the GPU
     cout << "Read the result" << endl;
     int result = 0;
-    cuMemcpyDtoH(&result, dest, sizeof(int));
+    err = cuMemcpyDtoH(&result, dest, sizeof(int));
+    gpu.checkForCudaError( err );
 
     cout << "Sum of 4 and 34 is " << result << endl;
 
@@ -112,13 +162,93 @@ void simple_add( rtt_dsxx::ScalarUnitTest & ut )
     else
         ut.failure("Sum of 4 and 34 was incorrect.");
 
-// deallocate memory, free the context.
+    // deallocate memory, free the context.
     cout << "deallocate device memory." << endl;
-    cuMemFree(dest);
-    cout << "unload module" << endl;
-    cuModuleUnload(module);
-    cout <<  "destroy context" << endl;
-    cuCtxDestroy(ctx);
+    err = cuMemFree(dest);
+    gpu.checkForCudaError( err );
+    
+    return;
+}
+
+
+//---------------------------------------------------------------------------//
+// vector_add
+//---------------------------------------------------------------------------//
+
+void vector_add( rtt_dsxx::ScalarUnitTest & ut )
+{
+    using namespace std;
+
+    cout << "\nStarting gpu_hello_driver_api::vector_add()...\n" << endl;
+
+    // Location of GPU ptx files.
+    string const testDir( rtt_device::test_ppe_bindir ); // read from config.h
+    
+    // Create a GPU_Device object.
+    // Initialize the CUDA library and sets device and context handles.
+    rtt_device::GPU_Device gpu;
+
+    // Load the module, must compile the kernel with nvcc -ptx -m32 kernel.cu
+    rtt_device::GPU_Module myModule( "vector_add.ptx" );
+
+    // Host data
+    size_t len( 1024 );
+    size_t const threadsPerBlock( gpu.maxThreadsPerBlock() );
+    size_t const blocksPerGrid = (len + threadsPerBlock - 1) / threadsPerBlock;
+    vector<float> aH(len);
+    vector<float> bH(len);
+    vector<float> cH(len,0.0);
+    vector<float> refH(len);
+    genTestData(aH,bH,refH);    
+    
+    // Load the kernel from the module
+    CUfunction kernel;
+    cudaError_enum err = cuModuleGetFunction(&kernel,myModule.handle(),"vector_add");
+    gpu.checkForCudaError( err );
+    
+    // Allocate some memory for the result
+    CUdeviceptr d_A, d_B, d_C;
+    err = cuMemAlloc(&d_A, len*sizeof(float));
+    gpu.checkForCudaError( err );
+    err = cuMemAlloc(&d_B, len*sizeof(float));
+    gpu.checkForCudaError( err );
+    err = cuMemAlloc(&d_C, len*sizeof(float));
+    gpu.checkForCudaError( err );
+
+    // Copy host data to device
+    err = cuMemcpyHtoD( d_A, &aH[0], len*sizeof(float) );
+    gpu.checkForCudaError( err );          
+    err = cuMemcpyHtoD( d_B, &bH[0], len*sizeof(float) );
+    gpu.checkForCudaError( err );          
+
+    // This is the function signature
+    void* args[] = { &d_A, &d_B, &d_C, &len };
+
+    // Execute the kernel
+    err = cuLaunchKernel( kernel,
+                          blocksPerGrid,   1, 1,
+                          threadsPerBlock, 1, 1,
+                          0, 0, args, 0 );
+    gpu.checkForCudaError( err );   
+
+    // Copy result from device to host
+    err = cuMemcpyDtoH( (void *)(&cH[0]), d_C, len*sizeof(float));
+    gpu.checkForCudaError( err );   
+    
+    // Free device memory
+    err = cuMemFree(d_A);
+    gpu.checkForCudaError( err );
+    err = cuMemFree(d_B);
+    gpu.checkForCudaError( err );
+    err = cuMemFree(d_C);
+    gpu.checkForCudaError( err );
+
+    // Check the result
+    if( rtt_dsxx::soft_equiv(cH.begin(), cH.end(),
+                             refH.begin(), refH.end() ) )
+        ut.passes("vector_add worked!");
+    else
+        ut.failure("vector_add failed.");
     
     return;
 }
@@ -134,7 +264,9 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
+        query_device(ut);
         simple_add(ut);
+        vector_add(ut);
     }
     catch (exception &err)
     {

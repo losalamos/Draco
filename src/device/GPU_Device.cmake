@@ -11,6 +11,8 @@
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
+set( TEST_PPE_BINDIR ${PROJECT_BINARY_DIR}/test CACHE PATH 
+   "GPU kernel binary install location" )
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
 
 # ---------------------------------------------------------------------------- #
@@ -19,10 +21,12 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/device/config.h )
 
 set( sources 
    GPU_Device.cc
+   GPU_Module.cc
    )
 set( headers 
    GPU_Device.hh
    ${PROJECT_BINARY_DIR}/device/config.h
+   device_cuda.h
    )
 # file( GLOB cudaSources *.cu )
 

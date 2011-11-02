@@ -21,6 +21,7 @@ set( test_sources
    )
 set( cuda_sources
    gpu_kernel.cu
+   vector_add.cu
    )
 
 # ---------------------------------------------------------------------------- #
