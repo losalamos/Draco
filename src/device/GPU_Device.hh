@@ -117,14 +117,23 @@ class GPU_Device
     //! Print a summary of idevice's features to ostream out.
     void printDeviceSummary(int const      idevice,
                             std::ostream & out = std::cout) const;
-    static std::string getErrorMessage( cudaError_enum const err );
-    //! Check the value of the return code for CUDA calls.
-    static void checkForCudaError(cudaError_enum const err );
 
     // STATICS
     inline static int align( int offset, int alignment ) {
         return (offset + alignment - 1) & ~(alignment - 1); }
-
+    //! Check cuda return code and throw an Insist on error.
+    static std::string getErrorMessage( cudaError_enum const err );
+    //! Check the value of the return code for CUDA calls.
+    static void checkForCudaError(cudaError_enum const err );
+    //! Wrap the cuMemAlloc call to include error checking
+    static CUdeviceptr MemAlloc( unsigned const nbytes );
+    //! Wrap cuMemcpyHtoD() to include error checking.
+    static void MemcpyHtoD( CUdeviceptr ptr, void const * loc, unsigned nbytes );
+    //! Wrap cuMemcpyDtoH() to include error checking.
+    static void MemcpyDtoH( void *loc, CUdeviceptr ptr, unsigned nbytes );
+    //! Wrap cuMemFree() to include error checking.
+    static void MemFree( CUdeviceptr ptr );
+    
   protected:
 
     // IMPLEMENTATION
@@ -142,7 +151,12 @@ class GPU_Device
     std::vector< CUdevprop_st >        deviceProperties;
     //! Device handles (one per device)
     std::vector< CUdevice > device_handle;
-    //! Device context (one per handle)
+    /*! Device context (one per handle)
+     *
+     * Current implementation only allows 1 context per GPU.  However, the
+     * CUDA Driver API provides for the concept of pushing and poping various
+     * contexts on the GPU.
+     */
     std::vector< CUcontext > context;
 
 };

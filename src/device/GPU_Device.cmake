@@ -25,6 +25,7 @@ set( sources
    )
 set( headers 
    GPU_Device.hh
+   GPU_Module.hh
    ${PROJECT_BINARY_DIR}/device/config.h
    device_cuda.h
    )

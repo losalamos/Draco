@@ -24,8 +24,8 @@ namespace rtt_device
  * \class GPU_Module
  * \brief
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at http://www.doxygen.org.
+ * CUDA modules are dynamically loadable packages of device code and data
+ * (akin to dynamic shared libraries)
  *
  * \sa GPU_Module.cc for detailed descriptions.
  *
@@ -35,9 +35,7 @@ namespace rtt_device
  * \endcode
  */
 /*! 
- * \example device/test/tstGPU_Module.cc
- *
- * Test of GPU_Module.
+ * \example device/test/gpu_hello_driver_api.cc
  */
 //===========================================================================//
 
@@ -67,6 +65,7 @@ class GPU_Module
     CUmodule handle(void) { return cuModule; }
 
     // SERVICES
+    CUfunction getModuleFunction( std::string const & functionName ) const;
 
     // IMPLEMENTATION
     static std::string findPtxFile( std::string const & myPtxFile );

@@ -1,7 +1,7 @@
 extern "C"
 {
     __global__ void
-    vector_add(float const *A, float const *B, float *C, int const N)
+    vector_add(double const *A, double const *B, double *C, int const N)
     {
         int i = blockDim.x * blockIdx.x + threadIdx.x; 
         // if(i%512==0)

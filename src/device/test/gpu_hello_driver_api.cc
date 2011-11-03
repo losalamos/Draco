@@ -29,9 +29,9 @@
 // Helpers
 //---------------------------------------------------------------------------//
 
-void genTestData( std::vector<float> & a,
-                  std::vector<float> & b,
-                  std::vector<float> & ref )
+void genTestData( std::vector<double> & a,
+                  std::vector<double> & b,
+                  std::vector<double> & ref )
 {
     // Initialize the random seed
     srand( time( NULL ) );
@@ -39,8 +39,8 @@ void genTestData( std::vector<float> & a,
     // Fill arrays
     for( size_t i=0; i<a.size(); ++i )
     {
-        a[i] = static_cast<float>(rand()%1000);
-        b[i] = static_cast<float>(rand()%1000);
+        a[i] = static_cast<double>(rand()%1000);
+        b[i] = static_cast<double>(rand()%1000);
         ref[i] = a[i]+b[i];
     }
     
@@ -97,11 +97,10 @@ void simple_add( rtt_dsxx::ScalarUnitTest & ut )
     cout << "\nStarting gpu_hello_driver_api::simple_add()...\n" << endl;
 
     // Where are we?
-    string const cwd( rtt_dsxx::currentPath() );
-    string const testDir( rtt_device::test_ppe_bindir ); // read from config.h
     cout << "Paths:"
-         << "\n   Current working dir = " << cwd
-         << "\n   GPU kernel files at = " << testDir << endl;
+         << "\n   Current working dir = " << rtt_dsxx::currentPath()
+         << "\n   GPU kernel files at = " << rtt_device::test_ppe_bindir
+         << endl;
 
     // Create a GPU_Device object.
     // Initialize the CUDA library and sets device and context handles.
@@ -181,9 +180,6 @@ void vector_add( rtt_dsxx::ScalarUnitTest & ut )
 
     cout << "\nStarting gpu_hello_driver_api::vector_add()...\n" << endl;
 
-    // Location of GPU ptx files.
-    string const testDir( rtt_device::test_ppe_bindir ); // read from config.h
-    
     // Create a GPU_Device object.
     // Initialize the CUDA library and sets device and context handles.
     rtt_device::GPU_Device gpu;
@@ -195,30 +191,32 @@ void vector_add( rtt_dsxx::ScalarUnitTest & ut )
     size_t len( 1024 );
     size_t const threadsPerBlock( gpu.maxThreadsPerBlock() );
     size_t const blocksPerGrid = (len + threadsPerBlock - 1) / threadsPerBlock;
-    vector<float> aH(len);
-    vector<float> bH(len);
-    vector<float> cH(len,0.0);
-    vector<float> refH(len);
+    vector<double> aH(len);
+    vector<double> bH(len);
+    vector<double> cH(len,0.0);
+    vector<double> refH(len);
     genTestData(aH,bH,refH);    
     
     // Load the kernel from the module
     CUfunction kernel;
-    cudaError_enum err = cuModuleGetFunction(&kernel,myModule.handle(),"vector_add");
+    cudaError_enum err = cuModuleGetFunction(&kernel,
+                                             myModule.handle(),
+                                             "vector_add");
     gpu.checkForCudaError( err );
     
     // Allocate some memory for the result
     CUdeviceptr d_A, d_B, d_C;
-    err = cuMemAlloc(&d_A, len*sizeof(float));
+    err = cuMemAlloc(&d_A, len*sizeof(double));
     gpu.checkForCudaError( err );
-    err = cuMemAlloc(&d_B, len*sizeof(float));
+    err = cuMemAlloc(&d_B, len*sizeof(double));
     gpu.checkForCudaError( err );
-    err = cuMemAlloc(&d_C, len*sizeof(float));
+    err = cuMemAlloc(&d_C, len*sizeof(double));
     gpu.checkForCudaError( err );
 
     // Copy host data to device
-    err = cuMemcpyHtoD( d_A, &aH[0], len*sizeof(float) );
+    err = cuMemcpyHtoD( d_A, &aH[0], len*sizeof(double) );
     gpu.checkForCudaError( err );          
-    err = cuMemcpyHtoD( d_B, &bH[0], len*sizeof(float) );
+    err = cuMemcpyHtoD( d_B, &bH[0], len*sizeof(double) );
     gpu.checkForCudaError( err );          
 
     // This is the function signature
@@ -232,7 +230,7 @@ void vector_add( rtt_dsxx::ScalarUnitTest & ut )
     gpu.checkForCudaError( err );   
 
     // Copy result from device to host
-    err = cuMemcpyDtoH( (void *)(&cH[0]), d_C, len*sizeof(float));
+    err = cuMemcpyDtoH( (void *)(&cH[0]), d_C, len*sizeof(double));
     gpu.checkForCudaError( err );   
     
     // Free device memory
@@ -242,6 +240,76 @@ void vector_add( rtt_dsxx::ScalarUnitTest & ut )
     gpu.checkForCudaError( err );
     err = cuMemFree(d_C);
     gpu.checkForCudaError( err );
+
+    // Check the result
+    if( rtt_dsxx::soft_equiv(cH.begin(), cH.end(),
+                             refH.begin(), refH.end() ) )
+        ut.passes("vector_add worked!");
+    else
+        ut.failure("vector_add failed.");
+    
+    return;
+}
+
+
+//---------------------------------------------------------------------------//
+// vector_add_using_wrappers
+//---------------------------------------------------------------------------//
+
+void vector_add_using_wrappers( rtt_dsxx::ScalarUnitTest & ut )
+{
+    using namespace std;
+
+    cout << "\nStarting gpu_hello_driver_api::vector_add_using_wrappers()...\n"
+         << endl;
+
+    // Create a GPU_Device object.
+    // Initialize the CUDA library and sets device and context handles.
+    rtt_device::GPU_Device gpu;
+
+    // Load the module, must compile the kernel with nvcc -ptx -m32 kernel.cu
+    rtt_device::GPU_Module myModule( "vector_add.ptx" );
+
+    // Host data
+    size_t len( 1024 );
+    size_t const threadsPerBlock( gpu.maxThreadsPerBlock() );
+    size_t const blocksPerGrid = (len + threadsPerBlock - 1) / threadsPerBlock;
+    vector<double> aH(len);
+    vector<double> bH(len);
+    vector<double> cH(len,0.0);
+    vector<double> refH(len);
+    genTestData(aH,bH,refH);    
+    
+    // Load the kernel from the module
+    CUfunction kernel = myModule.getModuleFunction( "vector_add" );
+    
+    // Allocate some memory for the result
+    unsigned const nbytes = len * sizeof(double);
+    CUdeviceptr d_A = gpu.MemAlloc( nbytes );
+    CUdeviceptr d_B = gpu.MemAlloc( nbytes );
+    CUdeviceptr d_C = gpu.MemAlloc( nbytes );
+
+    // Copy host data to device
+    gpu.MemcpyHtoD( d_A, &aH[0], nbytes );
+    gpu.MemcpyHtoD( d_B, &bH[0], nbytes );
+
+    // This is the function signature
+    void* args[] = { &d_A, &d_B, &d_C, &len };
+
+    // Execute the kernel
+    cudaError_enum err = cuLaunchKernel( kernel,
+                                         blocksPerGrid,   1, 1,
+                                         threadsPerBlock, 1, 1,
+                                         0, 0, args, 0 );
+    gpu.checkForCudaError( err );   
+
+    // Copy result from device to host
+    gpu.MemcpyDtoH( (void *)(&cH[0]), d_C, nbytes );
+    
+    // Free device memory
+    gpu.MemFree(d_A);
+    gpu.MemFree(d_B);
+    gpu.MemFree(d_C);
 
     // Check the result
     if( rtt_dsxx::soft_equiv(cH.begin(), cH.end(),
@@ -267,6 +335,7 @@ int main(int argc, char *argv[])
         query_device(ut);
         simple_add(ut);
         vector_add(ut);
+        vector_add_using_wrappers(ut);
     }
     catch (exception &err)
     {

@@ -271,6 +271,47 @@ std::string GPU_Device::getErrorMessage( cudaError_enum const err )
     return message;        
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Wrap the cuMemAlloc funtion to include error checking
+ * 
+ * \param nbytes number of bytes to allocate (e.g.: len*sizeof(double) ).
+ * \return GPU device pointer to allocated memory.
+ */
+
+CUdeviceptr GPU_Device::MemAlloc( unsigned const nbytes )
+{
+    CUdeviceptr ptr;
+    cudaError_enum err =  cuMemAlloc(&ptr, nbytes);
+    checkForCudaError( err );
+    return ptr;
+}
+
+void GPU_Device::MemcpyHtoD( CUdeviceptr ptr,
+                             void const * loc,
+                             unsigned nbytes )
+{
+    cudaError_enum err = cuMemcpyHtoD( ptr, loc, nbytes );
+    checkForCudaError( err );
+    return;
+}
+
+
+void GPU_Device::MemcpyDtoH( void *loc, CUdeviceptr ptr, unsigned nbytes )
+{
+    cudaError_enum err = cuMemcpyDtoH( loc, ptr, nbytes );
+    checkForCudaError( err );
+    return;
+}
+
+void GPU_Device::MemFree( CUdeviceptr ptr )
+{
+    cudaError_enum err = cuMemFree( ptr );
+    checkForCudaError( err );
+    return;
+}
+
+
 } // end namespace rtt_device
 
 //---------------------------------------------------------------------------//
