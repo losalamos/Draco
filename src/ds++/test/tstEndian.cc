@@ -10,17 +10,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
+#include "../Release.hh"
+#include "../Endian.hh"
+
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <iterator>
 #include <limits>
-
-#include "../Assert.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-
-#include "../Endian.hh"
+#include <sstream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -108,6 +108,34 @@ void test_idempotence(ScalarUnitTest& ut)
 
 }
 
+//---------------------------------------------------------------------------//
+
+void test_ieee_float(ScalarUnitTest& ut)
+{
+    // These tests always pass, but they may print different messages.
+
+    // Endianess
+    if( is_big_endian() )
+        ut.passes( "This machine uses big endian byte ordering." );
+    else
+        ut.passes( "This machine uses little endian byte ordering." );
+
+    // IEEE floating point?
+    if( has_ieee_float_representation() )
+    {
+        std::ostringstream msg;
+        msg << "Looks like we are on a platform that supports IEEE "
+            << "floating point representation.";
+        ut.passes( msg.str() );
+    }
+    else
+    {
+        std::ostringstream msg;
+        msg << "This platform does not support IEEE floating point "
+            << "representation.";
+        ut.passes( msg.str() );
+    }
+}
 
 //---------------------------------------------------------------------------//
 
@@ -119,6 +147,7 @@ int main(int argc, char *argv[])
         test_char_data(ut);
         test_integer(ut);
         test_idempotence(ut);
+        test_ieee_float(ut);
         ut.passes("Just Because.");
     }
     catch (std::exception &err)
