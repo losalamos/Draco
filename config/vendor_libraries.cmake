@@ -352,8 +352,11 @@ macro( SetupVendorLibrariesUnix )
    set_package_properties( CUDA PROPERTIES
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
       TYPE OPTIONAL
-      PURPOSE "Required for bulding a GPU enabled application."
-)
+      PURPOSE "Required for bulding a GPU enabled application." )
+   if( CUDA_FOUND )
+      set( HAVE_CUDA 1 )
+   endif()
+
 endmacro()
 
 #------------------------------------------------------------------------------
