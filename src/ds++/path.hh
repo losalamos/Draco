@@ -10,6 +10,9 @@
  */
 //---------------------------------------------------------------------------//
 
+#ifndef __dsxx_path_hh__
+#define __dsxx_path_hh__
+
 /*!
  * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
  */
@@ -59,6 +62,8 @@ std::string getFilenameComponent( std::string const & fqName,
 bool fileExists( std::string const & filename );
 
 } // end namespace rtt_dsxx
+
+#endif // __dsxx_path_hh__
 
 //---------------------------------------------------------------------------//
 // end of path.hh
