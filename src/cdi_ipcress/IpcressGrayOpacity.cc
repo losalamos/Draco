@@ -45,41 +45,15 @@ IpcressGrayOpacity::IpcressGrayOpacity(
       energyPolicyDescriptor( "gray" ),
       spIpcressDataTable()
 {
-    // Verify that the requested material ID is available in the
-    // specified IPCRESS file.
+    // Verify that the requested material ID is available in the specified
+    // IPCRESS file.
     Insist( spIpcressFile->materialFound( materialID ),
-            "The requested material ID is not available in the specified Ipcress file."); 
+            std::string("The requested material ID is not available in the ") +
+            std::string("specified Ipcress file.") ); 
 	    
-    // Retrieve keys available for this material from the IPCRESS
-    // file.  wgkeys() returns vKnownKeys, numKeys and errorCode.
-    int errorCode = -99;
-
-    // spIpcressFile->getKeys();
-    
+    // Retrieve keys available for this material from the IPCRESS file.
     vKnownKeys = spIpcressFile->listDataFieldNames( materialID );
-    for( size_t i=0; i<vKnownKeys.size(); ++i )
-        std::cout << "vKnownKeys[" << i << "] = " << vKnownKeys[i] << std::endl;
-
-    // // find 'comp' entry for materialID
-    // std::string keyword_comp("comp");
-    // size_t idx=0;
-    // for( size_t i=0; i<vKnownKeys.size(); i+=3 )
-    //     if( atoi(vKnownKeys[i].c_str()) == static_cast<int>(materialID) &&
-    //         keyword_comp == vKnownKeys[i+1].substr(0,keyword_comp.size()) )
-    //             idx=i;
-    // Check(idx>0);
-    // std::cout << "idx = " << idx << std::endl; /// idx = 60
-    // size_t comp_size = spIpcressFile->getArraySize(idx/3);
-    // size_t comp_addr = spIpcressFile->getArrayAddr(idx/3);
-
-
-    
-    
-    //     wrapper::wgkeys( spIpcressFile->getDataFilename(),
-    //     		 materialID, vKnownKeys,
-    //     		 wrapper::maxKeys, numKeys );
-    // if ( errorCode !=0 ) throw gkeysException( errorCode );
-    Check(errorCode>0);
+    Check(vKnownKeys.size()>0);
 	    
     // Create the data table object and fill it with the table
     // data from the IPCRESS file.
@@ -243,16 +217,8 @@ double IpcressGrayOpacity::getOpacity(
     double targetDensity ) const
 { 
     double opacity=-99.0*targetTemperature*targetDensity;
-    // logorithmic interpolation:
-    // opacity =
-    //     wrapper::wgintgrlog( spIpcressDataTable->getLogTemperatures(),
-    //     		     spIpcressDataTable->getNumTemperatures(), 
-    //     		     spIpcressDataTable->getLogDensities(), 
-    //     		     spIpcressDataTable->getNumDensities(),
-    //     		     spIpcressDataTable->getLogOpacities(), 
-    //     		     spIpcressDataTable->getNumOpacities(),
-    //     		     std::log(targetTemperature),
-    //     		     std::log(targetDensity) );
+    opacity = spIpcressDataTable->interpOpac( targetTemperature,
+                                              targetDensity );
     Check(opacity>0.0);
     return opacity;
 }
@@ -267,19 +233,15 @@ std::vector< double > IpcressGrayOpacity::getOpacity(
     std::vector<double> const & targetTemperature,
     double                      targetDensity ) const
 { 
-    std::vector< double > opacity( targetTemperature.size(),-99.0*targetTemperature[0]*targetDensity );
+    std::vector< double > opacity( targetTemperature.size(),
+                                   -99.0*targetTemperature[0]*targetDensity );
     for ( size_t i=0; i<targetTemperature.size(); ++i )
+    {
 	// logorithmic interpolation:
-	// opacity[i] = 
-	//     wrapper::wgintgrlog( spIpcressDataTable->getLogTemperatures(),
-	// 			 spIpcressDataTable->getNumTemperatures(), 
-	// 			 spIpcressDataTable->getLogDensities(), 
-	// 			 spIpcressDataTable->getNumDensities(),
-	// 			 spIpcressDataTable->getLogOpacities(), 
-	// 			 spIpcressDataTable->getNumOpacities(),
-	// 			 std::log(targetTemperature[i]),
-	// 			 std::log(targetDensity) );
-        Check(false);
+	opacity[i] = spIpcressDataTable->interpOpac( targetTemperature[i],
+                                                     targetDensity );
+        Check(opacity[i]>0.0);
+    }
     return opacity;
 }
 
@@ -293,19 +255,13 @@ std::vector< double > IpcressGrayOpacity::getOpacity(
     double                      targetTemperature,
     std::vector<double> const & targetDensity ) const
 { 
-    std::vector< double > opacity( targetDensity.size(), -99*targetTemperature );
+    std::vector< double > opacity( targetDensity.size(),
+                                   -99*targetTemperature );
     for ( size_t i=0; i<targetDensity.size(); ++i )
 	// logorithmic interpolation:
-	// opacity[i] = 
-	//     wrapper::wgintgrlog( spIpcressDataTable->getLogTemperatures(),
-	// 			 spIpcressDataTable->getNumTemperatures(), 
-	// 			 spIpcressDataTable->getLogDensities(), 
-	// 			 spIpcressDataTable->getNumDensities(),
-	// 			 spIpcressDataTable->getLogOpacities(), 
-	// 			 spIpcressDataTable->getNumOpacities(),
-	// 			 std::log(targetTemperature),
-	// 			 std::log(targetDensity[i]) );
-        Check(false);
+        opacity[i] = spIpcressDataTable->interpOpac( targetTemperature,
+                                                     targetDensity[i] );
+        Check(opacity[i]>0.0);
     return opacity;
 }
     
