@@ -201,8 +201,8 @@ class IpcressFile
         return materialData[matidx].listDataFieldNames();  }
 
     //! Provide access to data arrays
-    std::vector< double > getData( size_t const matid,
-                                   std::string const & fieldName )
+    std::vector< double > getData( size_t      const   matid,
+                                   std::string const & fieldName ) const
     {
         Require(  materialFound( matid ) );
         size_t matidx = getMatIndex( matid );
