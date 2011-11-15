@@ -81,6 +81,7 @@ enum OpacityModelType
     UNASSIGNED_TYPE = 0,  /*!< unassigned type; used as a placeholder before deciding type */
     ANALYTIC_TYPE   = 1,  /*!< an Analytic opacity model */
     GANDOLF_TYPE    = 2,  /*!< a Gandolf opacity model */
+    IPCRESS_TYPE    = 2,  /*!< an Ipcress opacity model */
     DUMMY_TYPE      = 99  /*!< a dummy opacity model */
 };
 } // end namespace rtt_cdi
