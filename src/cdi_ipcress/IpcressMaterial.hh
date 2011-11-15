@@ -17,6 +17,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
 
 namespace rtt_cdi_ipcress
 {
@@ -129,8 +130,6 @@ class IpcressMaterial
      *        loaded from the IPCRESS file.
      */
     void add_field( std::string & in_fieldName,
-                    // int const in_fieldSize,
-                    // int const in_fileLoc,
                     std::vector<double> const & in_values )
     {
         // Remove white space from in_fieldName before saving it.
@@ -154,6 +153,9 @@ class IpcressMaterial
 
     //! return the vector of data associated with a field name.
     std::vector< double > data( std::string const & fieldName ) const {
+        Require( fieldName.size() > 0 );
+        Require( find( fieldNames.begin(), fieldNames.end(), fieldName )
+                 != fieldNames.end() );
         return fieldValues[ getFieldIndex( fieldName ) ]; }
 
   private:
@@ -167,10 +169,12 @@ class IpcressMaterial
     size_t getFieldIndex( std::string const & fieldName ) const
     {
         Require( fieldName.size() > 0 );
-        size_t fieldIndex = std::distance(
-            fieldNames.begin(), 
+        std::vector< std::string >::const_iterator pos =
+            find( fieldNames.begin(), fieldNames.end(), fieldName );
+        Check( pos != fieldNames.end() );
+        size_t fieldIndex = std::distance( fieldNames.begin(), 
             std::find( fieldNames.begin(), fieldNames.end(), fieldName ) );
-        Ensure( fieldIndex < fieldName.size() );
+        Ensure( fieldIndex < fieldNames.size() );
         return fieldIndex;
     }
 
