@@ -16,12 +16,16 @@
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <cstdio>
 #include <string>
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressFile;
@@ -60,21 +64,14 @@ void printSyntax()
 
 int main(int argc, char *argv[])
 {
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     if (argc <= 1)
     {
         cerr << "Must have at least one input argument (the ipcress file)."
              << endl;
         printSyntax();
         PASSMSG("In case this is an automated test...");
-
-        // status of test
-        cout << "\n*********************************************\n";
-        if (rtt_cdi_ipcress_test::passed) 
-            cout << "**** ReadOdfIpcressFile Test: PASSED\n";
-        else
-            cout << "**** ReadOdfIpcressFile Test: FAILED\n";
-        cout << "*********************************************\n" << endl;
-        return 1;
+        return ut.numFails;
     }
     else if (argc == 2)
     {

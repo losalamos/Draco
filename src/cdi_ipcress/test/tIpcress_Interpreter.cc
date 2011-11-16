@@ -15,6 +15,8 @@
 #include "config.h"
 #include "cdi_ipcress_test.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -26,6 +28,10 @@
 using namespace std;
 
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
 //---------------------------------------------------------------------------//
 // In this unit test we need to check binary utility Ipcress_Interpreter's
 // ability to accept a collection of commands from standard input. 
@@ -35,30 +41,30 @@ using namespace std;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void runtest()
+void runtest(rtt_dsxx::ScalarUnitTest &ut)
 {
     // String to hold command that will start the test.  For example:
     // "../bin/Ipcress_Interpreter Al_BeCu.ipcress < IpcressInterpreter.stdin"
-    std::ostringstream cmd;
+    ostringstream cmd;
     cmd << IPCRESS_INTERPRETER_BIN_DIR << "/Ipcress_Interpreter"
         // << " " << IPCRESS_INTERPRETER_BUILD_DIR << "/Al_BeCu.ipcress"
         << " " << "Al_BeCu.ipcress"
         << " < " << IPCRESS_INTERPRETER_SOURCE_DIR << "/IpcressInterpreter.stdin" 
         << " > " << IPCRESS_INTERPRETER_BUILD_DIR << "/tstIpcressInterpreter.out";
 
-    std::cout << "Preparing to run: \n" << std::endl;
-    std::string consoleCommand( cmd.str() );
+    cout << "Preparing to run: \n" << endl;
+    string consoleCommand( cmd.str() );
 
     // return code from the system command
     int errorLevel(-1);
     
     // run the test.
     errno = 0;
-    std::cout << consoleCommand.c_str() << std::endl;
+    cout << consoleCommand.c_str() << endl;
     errorLevel = system( consoleCommand.c_str() );
     
     // check the errorLevel
-    std::ostringstream msg;
+    ostringstream msg;
     // On Linux, the child process information is sometimes unavailable even
     // for a correct run.
     if( errorLevel == 0 || errno == ECHILD)
@@ -83,28 +89,28 @@ void runtest()
 }
 
 //---------------------------------------------------------------------------//
-void check_output()
+void check_output(rtt_dsxx::ScalarUnitTest &ut)
 {
     // file contents
-    std::ostringstream data; // consider using UnitTest::get_word_count(...)
-    std::vector<std::string> dataByLine;
+    ostringstream data; // consider using UnitTest::get_word_count(...)
+    vector<string> dataByLine;
 
     // open the file and extract contents
     {
-        std::string filename( std::string( IPCRESS_INTERPRETER_BUILD_DIR )
-                              + string("/tstIpcressInterpreter.out") );
-        std::ifstream infile;
+        string filename( string( IPCRESS_INTERPRETER_BUILD_DIR )
+                         + string("/tstIpcressInterpreter.out") );
+        ifstream infile;
         infile.open( filename.c_str() );
-        Insist( infile, std::string("Cannot open specified file = \"")
-                + filename + std::string("\".") );
+        Insist( infile, string("Cannot open specified file = \"")
+                + filename + string("\".") );
         
         // read and store the text file contents
-        std::string line;
+        string line;
         if( infile.is_open() )
             while( infile.good() )
             {
                 getline(infile,line);
-                data << line << std::endl;
+                data << line << endl;
                 dataByLine.push_back( line );
             }
         
@@ -113,26 +119,26 @@ void check_output()
 
     // Spot check the output.
     {
-        std::cout << "Checking the generated output file..." << std::endl;
+        cout << "Checking the generated output file..." << endl;
         
-        if( dataByLine[1] != std::string("This opacity file has 2 materials:") )
+        if( dataByLine[1] != string("This opacity file has 2 materials:") )
             ITFAILS;
-        if( dataByLine[2] != std::string("Material 1 has ID number 10001") )
+        if( dataByLine[2] != string("Material 1 has ID number 10001") )
             ITFAILS;
-        if( dataByLine[24] != std::string("Frequency grid") )
+        if( dataByLine[24] != string("Frequency grid") )
             ITFAILS;
-        if( dataByLine[25] != std::string("1	1.0000000e-05") )
+        if( dataByLine[25] != string("1	1.0000000e-05") )
             ITFAILS;
-        if( dataByLine[69] != std::string("material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: ") )
+        if( dataByLine[69] != string("material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: ") )
         {
-            std::cout << "match failed: \n   "
-                      << dataByLine[68] << " != \n   "
-                      << "material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: " << std::endl;
+            cout << "match failed: \n   "
+                 << dataByLine[68] << " != \n   "
+                 << "material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: " << endl;
             ITFAILS;
         }
-        if( dataByLine[70] != std::string("Index 	 Group Center 		 Opacity") )
+        if( dataByLine[70] != string("Index 	 Group Center 		 Opacity") )
             ITFAILS;
-        if( dataByLine[71] != std::string("1	 8.9050000e-03   	 1.0000000e+10") )
+        if( dataByLine[71] != string("1	 8.9050000e-03   	 1.0000000e+10") )
             ITFAILS;
     }
     
@@ -141,37 +147,28 @@ void check_output()
 
 //---------------------------------------------------------------------------//
 
-int main(int /*argc*/, char* /*argv*/ [])
+int main(int argc, char* argv[])
 {
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-        runtest();
-        if( rtt_cdi_ipcress_test::passed )
-            check_output();
+        runtest(ut);
+        if( ut.numFails == 0 )
+            check_output(ut);
     }
-    catch (exception &err)
+    catch ( exception const & err)
     {
         cout << "ERROR: While testing tstIpcress_Interpreter.cc, " 
              << err.what() << endl;
-        return 1;
+        ut.numFails++;
     }
     catch( ... )
     {
         cout << "ERROR: While testing tstIpcress_Interpreter.cc, " 
              << "An unknown exception was thrown. "<< endl;
-        return 1;
+        ut.numFails++;
     }
-
-    // status of test
-    cout <<     "\n*********************************************" ;
-    if( rtt_cdi_ipcress_test::passed )
-        cout << "\n**** tstIpcress_Interpreter.cc Test: PASSED";
-    else
-        cout << "\n**** tstIpcress_Interpreter.cc Test: FAILED";
-    cout <<     "\n*********************************************"
-         << "\n\nDone testing tstIpcress_Interpreter.cc." << endl;
-
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

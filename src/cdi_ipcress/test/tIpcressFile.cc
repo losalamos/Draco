@@ -17,6 +17,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 #include <iostream>
 #include <vector>
@@ -28,13 +29,16 @@ using namespace std;
 using rtt_cdi_ipcress::IpcressFile;
 using rtt_dsxx::SP;
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 /*!
  * \brief Tests the IpcressFile constructor and access routines.
  */
-void ipcress_file_test()
+void ipcress_file_test( rtt_dsxx::ScalarUnitTest &ut )
 {
     // Ipcress data filename (IPCRESS format required)
     const std::string op_data_file = "Al_BeCu.ipcress";
@@ -174,36 +178,23 @@ void ipcress_file_test()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
-    {
-	// >>> UNIT TESTS
-	ipcress_file_test();
+    {	// >>> UNIT TESTS
+	ipcress_file_test(ut);
     }
     catch (rtt_dsxx::assertion &excpt)
     {
 	cout << "While testing tIpcressFile, " << excpt.what() << endl;
-	return 1;
+        ut.numFails++;
     }
-
-    // status of test
-    cout <<     "\n*********************************************";
-    if (rtt_cdi_ipcress_test::passed) 
-        cout << "\n**** tIpcressFile Test: PASSED";
-    else
-        cout << "\n**** tIpcressFile Test: FAILED";
-    cout <<     "\n*********************************************\n";
-    cout <<     "\nDone testing tIpcressFile." << endl;
-
-    return 0;
+    catch( ... )
+    {
+        std::cout << "ERROR: While testing tIpcressFile, " 
+                  << "An unknown exception was thrown." << std::endl;
+        ut.numFails++;
+    }
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

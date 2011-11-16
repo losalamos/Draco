@@ -20,52 +20,6 @@ using rtt_dsxx::soft_equiv;
 namespace rtt_cdi_ipcress_test
 {
 
-//===========================================================================//
-// PASS/FAILURE
-//===========================================================================//
-
-bool fail(int line)
-{
-    std::cout << "Test: failed on line " << line << std::endl;
-    passed = false;
-    return false;
-}
-
-//---------------------------------------------------------------------------//
-
-bool fail(int line, char *file)
-{
-    std::cout << "Test: failed on line " << line << " in " << file
-              << std::endl;
-    passed = false;
-    return false;
-}
-
-//---------------------------------------------------------------------------//
-
-bool pass_msg(const std::string &passmsg)
-{
-    std::cout << "Test: passed" << std::endl;
-    std::cout << "     " << passmsg << std::endl;
-    return true;
-}
-
-//---------------------------------------------------------------------------//
-
-bool fail_msg(const std::string &failmsg)
-{
-    std::cout << "Test: failed" << std::endl;
-    std::cout << "     " << failmsg << std::endl;
-    passed = false;
-    return false;
-}
-
-//---------------------------------------------------------------------------//
-// BOOLEAN PASS FLAG
-//---------------------------------------------------------------------------//
-
-bool passed = true;
-
 //---------------------------------------------------------------------------//
 // DATA EQUIVALENCE FUNCTIONS USED FOR TESTING
 //---------------------------------------------------------------------------//
@@ -97,7 +51,8 @@ bool match(const std::vector< std::vector< double > >& computedValue,
     if ( computedValue.size() != referenceValue.size() )
     {
         std::cout << "computedValue's size " << computedValue.size()
-                  << " is not equal to referenceValue's size " << referenceValue.size()
+                  << " is not equal to referenceValue's size "
+                  << referenceValue.size()
                   << std::endl;
         return false;
     }

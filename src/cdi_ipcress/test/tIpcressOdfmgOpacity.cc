@@ -20,12 +20,17 @@
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <cstdio>
 #include <string>
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
@@ -191,12 +196,15 @@ double const opacities[numGroups][numBands] = {
 
 //---------------------------------------------------------------------------//
 
-bool checkData(SP_Goo spGandOpacity);
+// declaration
+bool checkData(rtt_dsxx::ScalarUnitTest & ut, SP_Goo spGandOpacity);
 
 //---------------------------------------------------------------------------//
 
-int main(int /*argc*/, char ** /*argv[] */)
+int main(int argc, char *argv[] )
 {
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+    
     bool itPassed;
 
     // get the ipcress file name, and create the ipcress file
@@ -214,7 +222,7 @@ int main(int /*argc*/, char ** /*argv[] */)
                 << excpt.what();
         FAILMSG(message.str());
         cout << "Aborting tests.";
-        return 1;
+        return ut.numFails;
     }
 
     //load the Ipcress ODFMG Opacity
@@ -242,11 +250,11 @@ int main(int /*argc*/, char ** /*argv[] */)
                 << excpt.what();
         FAILMSG(message.str());
         cout << "Aborting tests.";
-        return 1;
+        return ut.numFails;
     }
         
     // check the data
-    itPassed = checkData(spGandOpacity);
+    itPassed = checkData(ut,spGandOpacity);
 
     if (itPassed) 
     {
@@ -277,11 +285,11 @@ int main(int /*argc*/, char ** /*argv[] */)
                 << excpt.what();
         FAILMSG(message.str());
         cout << "Aborting tests.";
-        return 1;
+        return ut.numFails;
     }
         
     // check the unpacked data
-    itPassed = checkData(spUnpackedGandOpacity);
+    itPassed = checkData(ut,spUnpackedGandOpacity);
 
     if (itPassed) 
     {
@@ -315,37 +323,25 @@ int main(int /*argc*/, char ** /*argv[] */)
         FAILMSG( msg.str() );
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_ipcress_test::passed) 
-        cout << "**** tIpcressOdfmgOpacity Test: PASSED" << endl;
-    else
-        cout << "**** tIpcressOdfmgOpacity Test: FAILED" << endl;
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tIpcressOdfmgOpacity." << endl;
-
-    return 0;
+    return ut.numFails;
 }
 
 //---------------------------------------------------------------------------//
-bool checkData(SP_Goo spGandOpacity)
+bool checkData(rtt_dsxx::ScalarUnitTest & ut, SP_Goo spGandOpacity)
 {
     Require(spGandOpacity);
 
     rtt_cdi::OpacityModelType omt( spGandOpacity->getOpacityModelType() );
     if( omt == rtt_cdi::IPCRESS_TYPE )
-        PASSMSG( "OpacityModelType() returned expected value.")
-        else
-            FAILMSG( "OpacityModelType() did not return the expected value.");
-
+        PASSMSG( "OpacityModelType() returned expected value.");
+    else
+        FAILMSG( "OpacityModelType() did not return the expected value.");
+    
     std::string edp( spGandOpacity->getEnergyPolicyDescriptor() );
     if( edp == std::string("odfmg") )
-        PASSMSG( "EDP = odfmg" )
-        else
-            FAILMSG( "EDP != odfmg" );
+        PASSMSG( "EDP = odfmg" );
+    else
+        FAILMSG( "EDP != odfmg" );
 
     if( ! spGandOpacity->data_in_tabular_form() )                     ITFAILS;
 

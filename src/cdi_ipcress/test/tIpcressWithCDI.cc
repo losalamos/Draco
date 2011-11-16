@@ -17,6 +17,7 @@
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 #include <iostream>
 #include <vector>
@@ -34,11 +35,15 @@ using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::CDI;
 using rtt_dsxx::SP;
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_ipcress_CDI()
+void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
 {
 	    
     // ----------------------------------------------- //
@@ -59,7 +64,7 @@ void test_ipcress_CDI()
     //-----------------------------------------------------------------
 	    
     // Ipcress data filename (IPCRESS format required)
-    std::string op_data_file = "analyticOpacities.ipcress";
+    string op_data_file = "analyticOpacities.ipcress";
 	    
     // ------------------------- //
     // Create IpcressFile object //
@@ -108,7 +113,7 @@ void test_ipcress_CDI()
 	ostringstream message;
 	message << "Failed to create SP to new IpcressGrayOpacity object for "
 		<< "Al_BeCu.ipcress data."
-		<< std::endl << "\t" << excpt.what();
+		<< endl << "\t" << excpt.what();
 	FAILMSG(message.str());
 	FAILMSG("Aborting tests.");
 	return;
@@ -174,16 +179,16 @@ void test_ipcress_CDI()
 	    
     // try using a vector of temps.
 	    
-    std::vector< double > vtemperature(2);
+    vector< double > vtemperature(2);
     vtemperature[0] = 0.5;  // keV
     vtemperature[1] = 0.7;  // keV
     density         = 0.35; // g/cm^3
-    std::vector< double > vRefOpacity( vtemperature.size() );
+    vector< double > vRefOpacity( vtemperature.size() );
     for ( size_t i=0; i<vtemperature.size(); ++i )
 	vRefOpacity[i] = density * pow ( vtemperature[i], 4 );
 	    
-    std::vector< double > vOpacity = spCDI_Analytic->gray(r, a)->
-	getOpacity( vtemperature, density );
+    vector< double > vOpacity = spCDI_Analytic->gray(r, a)->
+                                getOpacity( vtemperature, density );
 	    
     if ( rtt_cdi_ipcress_test::match ( vOpacity, vRefOpacity ) ) 
     {
@@ -226,7 +231,7 @@ void test_ipcress_CDI()
 	ostringstream message;
 	message << "Failed to create SP to new IpcressMultigroupOpacity "
 		<< "object for Al_BeCu.ipcress data."
-		<< std::endl << "\t" << excpt.what();
+		<< endl << "\t" << excpt.what();
 	FAILMSG(message.str());
 	FAILMSG("Aborting tests.");
 	return;
@@ -260,12 +265,12 @@ void test_ipcress_CDI()
 	    
     // This is the solution we compare against.
     int numGroups = 12;
-    std::vector< double > tabulatedMGOpacity( numGroups );
+    vector< double > tabulatedMGOpacity( numGroups );
     for ( int i=0; i<numGroups; ++i )
 	tabulatedMGOpacity[i] = density * pow( temperature, 4 ); // cm^2/gm
 	    
     // Request the multigroup opacity vector.
-    std::vector< double > mgOpacity =
+    vector< double > mgOpacity =
 	spCDI_Analytic->mg(r, a)->getOpacity ( temperature, density );
 	    
     if ( rtt_cdi_ipcress_test::match ( mgOpacity, tabulatedMGOpacity ) )
@@ -318,34 +323,23 @@ void test_ipcress_CDI()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
-    {
-	// >>> UNIT TESTS
-	test_ipcress_CDI();
+    {	// >>> UNIT TESTS
+	test_ipcress_CDI(ut);
     }
     catch (rtt_dsxx::assertion &excpt)
     {
 	cout << "While testing tIpcressWithCDI, " << excpt.what()  << endl;
-	return 1;
+        ut.numFails++;
     }
-
-    // status of test
-    cout <<     "\n*********************************************";
-    if (rtt_cdi_ipcress_test::passed) 
-        cout << "\n**** tIpcressWithCDI Test: PASSED\n";
-    else
-        cout << "\n**** tIpcressWithCDI Test: FAILED\n";
-    cout <<     "*********************************************\n\n"
-         << "Done testing tIpcressWithCDI." << endl;
+    catch( ... )
+    {
+        std::cout << "ERROR: While testing tIpcressWithCDI, " 
+                  << "An unknown exception was thrown." << std::endl;
+        ut.numFails++;
+    }
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

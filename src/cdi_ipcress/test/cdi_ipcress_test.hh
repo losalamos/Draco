@@ -12,6 +12,7 @@
 #ifndef __cdi_ipcress_test_hh__
 #define __cdi_ipcress_test_hh__
 
+#include "ds++/ScalarUnitTest.hh"
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -20,67 +21,39 @@
 namespace rtt_cdi_ipcress_test
 {
 
-//===========================================================================//
-// PASS/FAILURE LIMIT
-//===========================================================================//
-
-// Returns true for pass
-// Returns false for fail
-// Failure functions also set rtt_cdi_ipcress_test::passed to false
-
-// These can be used in any combination in a test to print output messages  
-// if no fail functions are called then the test will pass
-// (rtt_cdi_ipcress_test::passed will have its default value of true)
-
-// Needless to say, these can be used in many different combinations or
-// ways.  We do not constrain draco tests except that the output must be of
-// the form "Test: pass/fail"
-
-bool fail(int line);
-
-bool fail(int line, char *file);
-
-bool pass_msg(const std::string &);
-
-bool fail_msg(const std::string &);
-
-//---------------------------------------------------------------------------//
-// PASSING CONDITIONALS
-//---------------------------------------------------------------------------//
-
-extern bool passed;
-
 //---------------------------------------------------------------------------//
 // DATA EQUIVALENCE FUNCTIONS USED FOR TESTING
 //---------------------------------------------------------------------------//
 
-bool match( const double computedValue, const double referenceValue );
+bool match( double const computedValue, double const referenceValue );
 
 //---------------------------------------------------------------------------//
 
-bool match(const std::vector< double >& computedValue, 
-	   const std::vector< double >& referenceValue );
+bool match( std::vector< double > const & computedValue, 
+	    std::vector< double > const & referenceValue );
 
 //---------------------------------------------------------------------------//
 
-bool match(const std::vector< std::vector<double> >& computedValue, 
-	   const std::vector< std::vector<double> >& referenceValue );
+bool match( std::vector< std::vector<double> > const & computedValue, 
+	    std::vector< std::vector<double> > const & referenceValue );
 
 //---------------------------------------------------------------------------//
 
 bool match(
-	const std::vector< std::vector< std::vector< double > > >& computedValue, 
-   const std::vector< std::vector< std::vector< double > > >& referenceValue );
+    std::vector< std::vector< std::vector< double > > > const & computedValue, 
+    std::vector< std::vector< std::vector< double > > > const & referenceValue );
+
 //---------------------------------------------------------------------------//
 // COMPARISON FUNCTIONS USED IN IPCRESS OPACITY TESTS
 //---------------------------------------------------------------------------//
 
 template < class temperatureType, class densityType, 
-	   class testValueType, class opacityClassType >
-bool opacityAccessorPassed(const opacityClassType spOpacity, 
-			   const temperatureType temperature, 
-			   const densityType density, 
-			   const testValueType tabulatedValue )
+	   class testValueType,   class opacityClassType >
+bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest & ut,
+                           opacityClassType const spOpacity, 
+			   temperatureType  const temperature, 
+			   densityType      const density, 
+			   testValueType    const tabulatedValue )
 {
     using std::ostringstream;
 
@@ -97,7 +70,7 @@ bool opacityAccessorPassed(const opacityClassType spOpacity,
 	message << spOpacity->getDataDescriptor()
 		<< " opacity computation was good for \n\t" 
 		<< "\"" << spOpacity->getDataFilename() << "\" data."; 
-	pass_msg(message.str());
+	ut.passes(message.str());
     }
     else
     {
@@ -105,7 +78,7 @@ bool opacityAccessorPassed(const opacityClassType spOpacity,
 	message << spOpacity->getDataDescriptor()
 		<< " opacity value is out of spec. for \n\t"
 		<< "\"" << spOpacity->getDataFilename() << "\" data."; 
-	return fail_msg(message.str());
+	return ut.failure(message.str());
     }
 	
     // If we get here then the test passed.
@@ -115,7 +88,8 @@ bool opacityAccessorPassed(const opacityClassType spOpacity,
 //---------------------------------------------------------------------------//
 
 template< class opacityClassType >
-void testTemperatureGridAccessor(const opacityClassType spOpacity)
+void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest & ut,
+                                 opacityClassType const spOpacity)
 {
     using std::ostringstream;
 
@@ -132,7 +106,7 @@ void testTemperatureGridAccessor(const opacityClassType spOpacity)
 	message << "The number of temperature points found in the data\n\t" 
 	        << "grid matches the number returned by the\n\t"
 		<< "getNumTemperatures() accessor.";
-	pass_msg(message.str());
+	ut.passes(message.str());
 		
 	// The grid specified by TOPS has 3 temperature points.
 	std::vector< double > temps_ref( temps.size() );
@@ -143,11 +117,11 @@ void testTemperatureGridAccessor(const opacityClassType spOpacity)
 	// Compare the grids.
 	if ( match( temps, temps_ref ) )
 	{
-	    pass_msg("Temperature grid matches.");
+	    ut.passes("Temperature grid matches.");
 	}
 	else
 	{
-	    fail_msg("Temperature grid did not match.");
+	    ut.failure("Temperature grid did not match.");
 	}
     }
     else
@@ -158,14 +132,15 @@ void testTemperatureGridAccessor(const opacityClassType spOpacity)
 	        << "getNumTemperatures() accessor. \n"
 		<< "Did not test the results returned by\n\t"
 		<< "getTemperatureGrid().";
-	fail_msg(message.str());
+	ut.failure(message.str());
     }
 }
 
 //---------------------------------------------------------------------------//
     
 template< class opacityClassType >
-void testDensityGridAccessor(const opacityClassType spOpacity)
+void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest & ut,
+                             opacityClassType const spOpacity)
 {
     using std::ostringstream;
 
@@ -182,7 +157,7 @@ void testDensityGridAccessor(const opacityClassType spOpacity)
 	message << "The number of density points found in the data\n\t"
 		<< "grid matches the number returned by the\n\t"
 		<< "getNumDensities() accessor.";
-	pass_msg(message.str());
+	ut.passes(message.str());
 		
 	// The grid specified by TOPS has 3 density points
 	std::vector< double > density_ref( density.size() );
@@ -193,11 +168,11 @@ void testDensityGridAccessor(const opacityClassType spOpacity)
 	// Compare the grids.
 	if ( match( density, density_ref ) )
 	{
-	    pass_msg("Density grid matches.");
+	    ut.passes("Density grid matches.");
 	}
 	else
 	{
-	    fail_msg("Density grid did not match.");
+	    ut.failure("Density grid did not match.");
 	}
     }
     else
@@ -208,14 +183,15 @@ void testDensityGridAccessor(const opacityClassType spOpacity)
 		<< "getNumDensities() accessor. \n"
 		<< "Did not test the results returned by\n\t"  
 		<< "getDensityGrid().";
-	fail_msg(message.str());
+	ut.failure(message.str());
     }
 }
 
 //---------------------------------------------------------------------------//
 
 template< class opacityClassType >
-void testEnergyBoundaryAccessor(const opacityClassType spOpacity)
+void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest & ut,
+                                opacityClassType const spOpacity)
 {
     using std::ostringstream;
 
@@ -232,7 +208,7 @@ void testEnergyBoundaryAccessor(const opacityClassType spOpacity)
 	message << "The number of energy boundary points found in the data\n\t"
 	        << "grid matches the number returned by the\n\t"
 	        << "getNumGroupBoundaries() accessor.";
-	pass_msg(message.str());
+	ut.passes(message.str());
 
 	// The grid specified by TOPS has 13 energy boundaries.
 	std::vector< double > ebounds_ref(ebounds.size());
@@ -253,11 +229,11 @@ void testEnergyBoundaryAccessor(const opacityClassType spOpacity)
 	// Compare the grids.
 	if ( match( ebounds, ebounds_ref ) )
 	{
-	    pass_msg("Energy group boundary grid matches.");
+	    ut.passes("Energy group boundary grid matches.");
 	}
 	else
 	{
-	    fail_msg("Energy group boundary grid did not match.");
+	    ut.failure("Energy group boundary grid did not match.");
 	}    
     }
     else
@@ -268,25 +244,11 @@ void testEnergyBoundaryAccessor(const opacityClassType spOpacity)
 		<< "get NumGroupBoundaries() accessor. \n"
 		<< "Did not test the results returned by\n\t"  
 		<< "getGroupBoundaries().";
-	fail_msg(message.str());
+	ut.failure(message.str());
     } 
 }
 
 } // end namespace rtt_cdi_ipcress_test
-
-//===========================================================================//
-// TEST MACROS
-//
-// USAGE:
-// if (!condition) ITFAILS;
-//
-// These are a convenience only
-//===========================================================================//
-
-#define ITFAILS    rtt_cdi_ipcress_test::fail(__LINE__);
-#define FAILURE    rtt_cdi_ipcress_test::fail(__LINE__, __FILE__);
-#define PASSMSG(a) rtt_cdi_ipcress_test::pass_msg(a);
-#define FAILMSG(a) rtt_cdi_ipcress_test::fail_msg(a);
 
 #endif                          // __cdi_ipcress_test_hh__
 
