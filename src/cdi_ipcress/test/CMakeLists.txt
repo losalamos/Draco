@@ -29,6 +29,7 @@ set( test_lib_sources
 set( test_sources 
    tIpcressFile.cc
    tIpcressOpacity.cc
+   tIpcressWithCDI.cc
 )
 file( GLOB ipcress_data *.ipcress )
 

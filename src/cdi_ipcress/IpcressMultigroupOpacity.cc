@@ -147,15 +147,11 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
     Insist( spIpcressFile->materialFound( materialID ),
         "Requested material ID is not found in the specified Ipcress file.");
             
-    // Retrieve keys available fo this material from the IPCRESS
-    // file.  wgkeys() returns vKnownKeys, numKeys and errorCode.
-    int errorCode = -99;
-    //     wrapper::wgkeys( spIpcressFile->getDataFilename(),
-    //     		 materialID, vKnownKeys,
-    //     		 wrapper::maxKeys, numKeys );
-    // if ( errorCode !=0 ) throw gkeysException( errorCode );
-    Check(errorCode>0);
-	    
+    // Retrieve keys available fo this material from the IPCRESS file.
+    // wgkeys() returns vKnownKeys, numKeys and errorCode.
+    vKnownKeys = spIpcressFile->listDataFieldNames( materialID );
+    Check(vKnownKeys.size()>0);
+    
     // Create the data table object and fill it with the table
     // data from the IPCRESS file.
     spIpcressDataTable = new IpcressDataTable(

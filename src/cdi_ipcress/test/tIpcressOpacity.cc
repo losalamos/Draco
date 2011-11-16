@@ -1189,256 +1189,251 @@ void check_ipcress_stl_accessors()
     }
 }
 
-// //---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
-// void gray_opacity_packing_test()
-// {   
-//     vector<char> packed;
+void gray_opacity_packing_test()
+{   
+    vector<char> packed;
 
-//     {
-// 	// Ipcress data filename (IPCRESS format required)
-// 	string op_data_file = "analyticOpacities.ipcress";
+    {
+	// Ipcress data filename (IPCRESS format required)
+	string op_data_file = "analyticOpacities.ipcress";
 
-// 	// ------------------------- //
-// 	// Create IpcressFile object //
-// 	// ------------------------- //
+	// ------------------------- //
+	// Create IpcressFile object //
+	// ------------------------- //
 	    
-// 	// Create a smart pointer to a IpcressFile object
-// 	SP<IpcressFile> spGFAnalytic;
+	// Create a smart pointer to a IpcressFile object
+	SP<IpcressFile> spGFAnalytic;
 	    
-// 	// Try to instantiate the object.
-// 	try 
-// 	{
-// 	    spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
-// 	}
-// 	catch( rtt_dsxx::assertion const & error )
-// 	{
-// 	    ostringstream message;
-// 	    FAILMSG(error.what());
-// 	    FAILMSG("Aborting tests.");
-// 	    return;
-// 	}
+	// Try to instantiate the object.
+	try 
+	{
+	    spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
+	}
+	catch( rtt_dsxx::assertion const & error )
+	{
+	    ostringstream message;
+	    FAILMSG(error.what());
+	    FAILMSG("Aborting tests.");
+	    return;
+	}
 
-// 	// Create a smart pointer to an Opacity object.
-// 	SP<GrayOpacity> spOp_Analytic_ragray;
+	// Create a smart pointer to an Opacity object.
+	SP<GrayOpacity> spOp_Analytic_ragray;
 
-// 	// material ID
-// 	const int matid=10001;
+	// material ID
+	const int matid=10001;
     
-// 	spOp_Analytic_ragray = new IpcressGrayOpacity( 
-// 	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
+	spOp_Analytic_ragray = new IpcressGrayOpacity( 
+	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
 
-// 	// pack up the opacity
-// 	packed = spOp_Analytic_ragray->pack();
-//     }
+	// pack up the opacity
+	packed = spOp_Analytic_ragray->pack();
+    }
 
-//     // make a new IpcressGrayOpacity from packed data
-//     SP<GrayOpacity> unpacked_opacity;  
+    // make a new IpcressGrayOpacity from packed data
+    SP<GrayOpacity> unpacked_opacity;  
 
-//     // Try to instantiate the Opacity object.
-//     try 
-//     {
-// 	unpacked_opacity = new IpcressGrayOpacity(packed); 
-//     }
-//     catch( rtt_dsxx::assertion const & error )
-// 	// Alternatively, we could use:
-// 	// catch ( rtt_cdi_ipcress::gkeysException GandError )
-// 	// catch ( rtt_cdi_ipcress::gchgridsException GandError )
-// 	// catch ( rtt_cdi_ipcress::ggetmgException GandError )
-// 	// catch ( rtt_cdi_ipcress::ggetgrayException GandError )
-//     {
-// 	ostringstream message;
-// 	message << "Failed to create SP to unpacked IpcressOpacity object for "
-// 		<< "analyticOpacities.ipcress data."
-// 		<< std::endl << "\t" << error.what();
-// 	FAILMSG(message.str());
-// 	FAILMSG("Aborting tests.");
-// 	return;
-//     }
+    // Try to instantiate the Opacity object.
+    try 
+    {
+	unpacked_opacity = new IpcressGrayOpacity(packed); 
+    }
+    catch( rtt_dsxx::assertion const & error )
+    {
+	ostringstream message;
+	message << "Failed to create SP to unpacked IpcressOpacity object for "
+		<< "analyticOpacities.ipcress data."
+		<< std::endl << "\t" << error.what();
+	FAILMSG(message.str());
+	FAILMSG("Aborting tests.");
+	return;
+    }
 
-//     // some simple tests
-//     if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
-// 	ITFAILS;
+    // some simple tests
+    if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
+	ITFAILS;
 
-//     if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
-//     if (unpacked_opacity->getModelType() != rtt_cdi::ROSSELAND)     ITFAILS;
+    if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
+    if (unpacked_opacity->getModelType() != rtt_cdi::ROSSELAND)     ITFAILS;
 	    
-//     // ----------------- //
-//     // Gray Opacity Test //
-//     // ----------------- //
+    // ----------------- //
+    // Gray Opacity Test //
+    // ----------------- //
 	    
-//     double temperature          = 10.0; // keV
-//     double density              = 1.0; // g/cm^3
-//     double tabulatedGrayOpacity = density * pow( temperature, 4 );
+    double temperature          = 10.0; // keV
+    double density              = 1.0; // g/cm^3
+    double tabulatedGrayOpacity = density * pow( temperature, 4 );
 	    
-//     if (!rtt_cdi_ipcress_test::opacityAccessorPassed( 
-// 	    unpacked_opacity, temperature, density, tabulatedGrayOpacity))
-//     {
-// 	FAILMSG("Aborting tests.");
-// 	return;
-//     }	
+    if (!rtt_cdi_ipcress_test::opacityAccessorPassed( 
+	    unpacked_opacity, temperature, density, tabulatedGrayOpacity))
+    {
+	FAILMSG("Aborting tests.");
+	return;
+    }	
 
-//     // try to unpack gray opacity as multigroup opacity
-//     bool caught = false;
-//     try
-//     {
-// 	SP<MultigroupOpacity> opacity(new IpcressMultigroupOpacity(packed));
-//     }
-//     catch (const rtt_dsxx::assertion const & error)
-//     {
-// 	caught = true;
-// 	ostringstream message;
-// 	message << "Good, we caught the following assertion, \n"
-// 		<< error.what();
-// 	PASSMSG(message.str());
-//     }
-//     if (!caught)
-//     {
-// 	FAILMSG("Failed to catch an illegal packing asserion.");
-//     }
+    // try to unpack gray opacity as multigroup opacity
+    bool caught = false;
+    try
+    {
+	SP<MultigroupOpacity> opacity(new IpcressMultigroupOpacity(packed));
+    }
+    catch (rtt_dsxx::assertion const & error)
+    {
+	caught = true;
+	ostringstream message;
+	message << "Good, we caught the following assertion, \n"
+		<< error.what();
+	PASSMSG(message.str());
+    }
+    if (!caught)
+    {
+	FAILMSG("Failed to catch an illegal packing asserion.");
+    }
 
-//     if (rtt_cdi_ipcress_test::passed)
-//     {
-// 	PASSMSG("IpcressGrayOpacity packing test successfull.");
-//     }
-// }
+    if (rtt_cdi_ipcress_test::passed)
+    {
+	PASSMSG("IpcressGrayOpacity packing test successfull.");
+    }
+}
 
-// //---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
-// void mg_opacity_packing_test()
-// {
-//     vector<char> packed;
+void mg_opacity_packing_test()
+{
+    vector<char> packed;
 
-//     {
-// 	// Ipcress data filename (IPCRESS format required)
-// 	string op_data_file = "analyticOpacities.ipcress";
+    {
+	// Ipcress data filename (IPCRESS format required)
+	string op_data_file = "analyticOpacities.ipcress";
 	
-// 	// ------------------------- //
-// 	// Create IpcressFile object //
-// 	// ------------------------- //
+	// ------------------------- //
+	// Create IpcressFile object //
+	// ------------------------- //
 	    
-// 	// Create a smart pointer to a IpcressFile object
-// 	SP<IpcressFile> spGFAnalytic;
+	// Create a smart pointer to a IpcressFile object
+	SP<IpcressFile> spGFAnalytic;
 	    
-// 	// Try to instantiate the object.
-// 	try 
-// 	{
-// 	    spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
-// 	}
-// 	catch( rtt_dsxx::assertion const & error )
-// 	{
-// 	    ostringstream message;
-// 	    FAILMSG(error.what());
-// 	    FAILMSG("Aborting tests.");
-// 	    return;
-// 	}
+	// Try to instantiate the object.
+	try 
+	{
+	    spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
+	}
+	catch( rtt_dsxx::assertion const & error )
+	{
+	    ostringstream message;
+	    FAILMSG(error.what());
+	    FAILMSG("Aborting tests.");
+	    return;
+	}
 
-// 	// material ID
-// 	const int matid=10001;
+	// material ID
+	const int matid=10001;
 
-// 	//---------------- //
-// 	// MG Opacity test //
-// 	//---------------- //
+	//---------------- //
+	// MG Opacity test //
+	//---------------- //
 	    
-// 	// Create a smart pointer to an Opacity object.
-// 	SP<MultigroupOpacity> spOp_Analytic_pmg;
+	// Create a smart pointer to an Opacity object.
+	SP<MultigroupOpacity> spOp_Analytic_pmg;
 	
-// 	spOp_Analytic_pmg = new IpcressMultigroupOpacity( 
-// 	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION );
+	spOp_Analytic_pmg = new IpcressMultigroupOpacity( 
+	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION );
 
-// 	packed = spOp_Analytic_pmg->pack();
-//     }
+	packed = spOp_Analytic_pmg->pack();
+    }
 
-//     // make a new IpcressGrayOpacity from packed data
-//     SP<MultigroupOpacity> unpacked_opacity;  
+    // make a new IpcressGrayOpacity from packed data
+    SP<MultigroupOpacity> unpacked_opacity;  
 
-//     // Try to instantiate the Opacity object.
-//     try 
-//     {
-// 	unpacked_opacity = new IpcressMultigroupOpacity(packed); 
-//     }
-//     catch( rtt_dsxx::assertion const & error )
-// 	// Alternatively, we could use:
-// 	// catch ( rtt_cdi_ipcress::gkeysException GandError )
-// 	// catch ( rtt_cdi_ipcress::gchgridsException GandError )
-// 	// catch ( rtt_cdi_ipcress::ggetmgException GandError )
-// 	// catch ( rtt_cdi_ipcress::ggetgrayException GandError )
-//     {
-// 	ostringstream message;
-// 	message << "Failed to create SP to unpacked IpcressOpacity object for "
-// 		<< "analyticOpacities.ipcress data."
-// 		<< std::endl << "\t" << error.what();
-// 	FAILMSG(message.str());
-// 	FAILMSG("Aborting tests.");
-// 	return;
-//     }
+    // Try to instantiate the Opacity object.
+    try 
+    {
+	unpacked_opacity = new IpcressMultigroupOpacity(packed); 
+    }
+    catch( rtt_dsxx::assertion const & error )
+	// Alternatively, we could use:
+	// catch ( rtt_cdi_ipcress::gkeysException GandError )
+	// catch ( rtt_cdi_ipcress::gchgridsException GandError )
+	// catch ( rtt_cdi_ipcress::ggetmgException GandError )
+	// catch ( rtt_cdi_ipcress::ggetgrayException GandError )
+    {
+	ostringstream message;
+	message << "Failed to create SP to unpacked IpcressOpacity object for "
+		<< "analyticOpacities.ipcress data."
+		<< std::endl << "\t" << error.what();
+	FAILMSG(message.str());
+	FAILMSG("Aborting tests.");
+	return;
+    }
 
-//     // some simple tests
-//     if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
-// 	ITFAILS;
+    // some simple tests
+    if (unpacked_opacity->getDataFilename() != "analyticOpacities.ipcress")
+	ITFAILS;
 
-//     if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
-//     if (unpacked_opacity->getModelType() != rtt_cdi::PLANCK)        ITFAILS;
+    if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
+    if (unpacked_opacity->getModelType() != rtt_cdi::PLANCK)        ITFAILS;
 
-//     // Setup the test problem.
+    // Setup the test problem.
 	    
-//     int ng             = 12;
-//     vector<double> tabulatedMGOpacity( ng );
-//     double temperature = 0.4;  // keV
-//     double density     = 0.22; // g/cm^3
-//     for ( int ig=0; ig<ng; ++ig )
-// 	tabulatedMGOpacity[ig] = density * pow( temperature, 4 ); // cm^2/g
+    int ng             = 12;
+    vector<double> tabulatedMGOpacity( ng );
+    double temperature = 0.4;  // keV
+    double density     = 0.22; // g/cm^3
+    for ( int ig=0; ig<ng; ++ig )
+	tabulatedMGOpacity[ig] = density * pow( temperature, 4 ); // cm^2/g
 	    
-//     // If this test fails then stop testing.
-//     if (!rtt_cdi_ipcress_test::opacityAccessorPassed( 
-// 	    unpacked_opacity, temperature, density, tabulatedMGOpacity)) 
-//     {
-// 	FAILMSG("Aborting tests.");
-// 	return;
-//     }
+    // If this test fails then stop testing.
+    if (!rtt_cdi_ipcress_test::opacityAccessorPassed( 
+	    unpacked_opacity, temperature, density, tabulatedMGOpacity)) 
+    {
+	FAILMSG("Aborting tests.");
+	return;
+    }
 	    
-//     // ------------------------ //
-//     // Access temperature grid. //
-//     // ------------------------ //
+    // ------------------------ //
+    // Access temperature grid. //
+    // ------------------------ //
 	    
-//     rtt_cdi_ipcress_test::testTemperatureGridAccessor(unpacked_opacity);
+    rtt_cdi_ipcress_test::testTemperatureGridAccessor(unpacked_opacity);
 	    
-//     // ------------------------ //
-//     // Access the density grid. //
-//     // ------------------------ //
+    // ------------------------ //
+    // Access the density grid. //
+    // ------------------------ //
 	    
-//     rtt_cdi_ipcress_test::testDensityGridAccessor(unpacked_opacity);
+    rtt_cdi_ipcress_test::testDensityGridAccessor(unpacked_opacity);
 	    
-//     // ----------------------------- //
-//     // Access the energy boundaries. //
-//     // ----------------------------- //
+    // ----------------------------- //
+    // Access the energy boundaries. //
+    // ----------------------------- //
 	    
-//     rtt_cdi_ipcress_test::testEnergyBoundaryAccessor(unpacked_opacity);
+    rtt_cdi_ipcress_test::testEnergyBoundaryAccessor(unpacked_opacity);
 
-//     // try to unpack multigroup as gray opacity
-//     bool caught = false;
-//     try
-//     {
-// 	SP<GrayOpacity> opacity(new IpcressGrayOpacity(packed));
-//     }
-//     catch (const rtt_dsxx::assertion const & error)
-//     {
-// 	caught = true;
-// 	ostringstream message;
-// 	message << "Good, we caught the following assertion, \n"
-// 		<< error.what();
-// 	PASSMSG(message.str());
-//     }
-//     if (!caught)
-//     {
-// 	FAILMSG("Failed to catch an illegal packing asserion.");
-//     }
+    // try to unpack multigroup as gray opacity
+    bool caught = false;
+    try
+    {
+	SP<GrayOpacity> opacity(new IpcressGrayOpacity(packed));
+    }
+    catch (rtt_dsxx::assertion const & error)
+    {
+	caught = true;
+	ostringstream message;
+	message << "Good, we caught the following assertion, \n"
+		<< error.what();
+	PASSMSG(message.str());
+    }
+    if (!caught)
+    {
+	FAILMSG("Failed to catch an illegal packing asserion.");
+    }
 
-//     if (rtt_cdi_ipcress_test::passed)
-//     {
-// 	PASSMSG("IpcressMultigroupOpacity packing test successfull.");
-//     }
-// }
+    if (rtt_cdi_ipcress_test::passed)
+    {
+	PASSMSG("IpcressMultigroupOpacity packing test successfull.");
+    }
+}
 
 //---------------------------------------------------------------------------//
 
@@ -1462,8 +1457,8 @@ int main(int argc, char *argv[])
 	file_check_analytic();
 	check_ipcress_stl_accessors();
 
-	// gray_opacity_packing_test();
-	// mg_opacity_packing_test();
+	gray_opacity_packing_test();
+	mg_opacity_packing_test();
     }
     catch (rtt_dsxx::assertion const & error)
     {
