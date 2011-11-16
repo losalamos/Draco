@@ -10,11 +10,11 @@ project( cdi_ipcress_test CXX )
 # ---------------------------------------------------------------------------- #
 # Configuration files
 # ---------------------------------------------------------------------------- #
-# set( IPCRESS_INTERPRETER_BIN_DIR ${cdi_ipcress_BINARY_DIR}/bin )
-# set( IPCRESS_INTERPRETER_SOURCE_DIR ${PROJECT_SOURCE_DIR} )
-# set( IPCRESS_INTERPRETER_BUILD_DIR ${PROJECT_BINARY_DIR} )
+set( IPCRESS_INTERPRETER_BIN_DIR ${cdi_ipcress_BINARY_DIR}/bin )
+set( IPCRESS_INTERPRETER_SOURCE_DIR ${PROJECT_SOURCE_DIR} )
+set( IPCRESS_INTERPRETER_BUILD_DIR ${PROJECT_BINARY_DIR} )
 
-# configure_file( config.h.in ${PROJECT_BINARY_DIR}/config.h )
+configure_file( config.h.in ${PROJECT_BINARY_DIR}/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -30,6 +30,7 @@ set( test_sources
    tIpcressFile.cc
    tIpcressOpacity.cc
    tIpcressWithCDI.cc
+   tIpcress_Interpreter.cc
 )
 file( GLOB ipcress_data *.ipcress )
 
@@ -49,7 +50,7 @@ endforeach()
 
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
-#   ${PROJECT_BINARY_DIR}      # test/config.h
+   ${PROJECT_BINARY_DIR}      # test/config.h
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
 

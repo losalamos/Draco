@@ -118,10 +118,12 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
 
     if ( opacityEnergyDescriptor == "gray" )
     {
-        switch ( opacityModel ) {
+        switch ( opacityModel )
+        {
             case ( rtt_cdi::ROSSELAND ) :
 
-                switch ( opacityReaction ) {
+                switch ( opacityReaction )
+                {
                     case ( rtt_cdi::TOTAL ) :
                         ipcressDataTypeKey = "rgray";
                         dataDescriptor = "Gray Rosseland Total";
@@ -144,7 +146,8 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
 
             case ( rtt_cdi::PLANCK ) :
 			
-                switch ( opacityReaction ) {
+                switch ( opacityReaction )
+                {
                     case ( rtt_cdi::TOTAL ) :
                         // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
                         // See LA-UR-01-5543

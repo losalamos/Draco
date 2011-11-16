@@ -11,11 +11,6 @@ project( cdi_ipcress CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-#file( GLOB sources *.cc )
-#file( GLOB explicit_instantiations *_pt.cc )
-#file( GLOB headers *.hh )
-#list( APPEND headers ${PROJECT_BINARY_DIR}/cdi_ipcress/config.h )
-
 set( sources
    IpcressFile.cc
    IpcressDataTable.cc
@@ -46,7 +41,7 @@ include_directories(
 ) 
 
 # setup binary directory
-#file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
+file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
@@ -56,20 +51,22 @@ add_component_library( Lib_cdi_ipcress ${PROJECT_NAME} "${sources}" )
 add_dependencies(      Lib_cdi_ipcress Lib_cdi Lib_dsxx )
 
 
-#add_executable( Exe_Ipcress_Interpreter ${sources} )
-#target_link_libraries( Exe_Ipcress_Interpreter 
-#                       Lib_cdi_ipcress Lib_cdi Lib_dsxx 
-#                       ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY})
-#set_target_properties( Exe_Ipcress_Interpreter 
-#                       PROPERTIES OUTPUT_NAME bin/Ipcress_Interpreter )
+add_executable( Exe_Ipcress_Interpreter IpcressInterpreter.cc )
+target_link_libraries( 
+   Exe_Ipcress_Interpreter 
+   Lib_cdi_ipcress Lib_cdi Lib_dsxx 
+   ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY})
+set_target_properties( 
+   Exe_Ipcress_Interpreter 
+   PROPERTIES OUTPUT_NAME bin/Ipcress_Interpreter )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-#install( TARGETS Lib_cdi_ipcress DESTINATION lib )
-#install( FILES ${headers} DESTINATION include/cdi_ipcress )
-#install( TARGETS Exe_Ipcress_Interpreter DESTINATION bin )
+install( TARGETS Lib_cdi_ipcress DESTINATION lib )
+install( FILES ${headers} DESTINATION include/cdi_ipcress )
+install( TARGETS Exe_Ipcress_Interpreter DESTINATION bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
@@ -83,6 +80,6 @@ endif()
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
-#process_autodoc_pages()
+process_autodoc_pages()
 
 
