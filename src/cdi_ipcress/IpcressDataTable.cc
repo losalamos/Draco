@@ -241,40 +241,13 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
  */
 void IpcressDataTable::setIpcressDataTableSizes() const
 {
-    // int idum = 0;
-    int errorCode = 0;
-    // A different wrapper routine must be called for
-    // multigroup and gray data.  We choose the correct
-    // wrapper by comparing the opacityEnergyDescriptor.
-    if ( opacityEnergyDescriptor == "mg" )
-    {
-        // Returns: numTemperatures, numDensities,
-        // numGroupBoundaries and numOpacities.
-        errorCode = 0;
-            // wrapper::wgchgrids(
-            //     spIpcressFile->getDataFilename(),
-            //     matID, numTemperatures, numDensities,
-            //     numGroupBoundaries, idum, numOpacities );
-        Check(false);
-        // Resize the data containers based on the newly loaded
-        // size parameters.
-        temperatures.resize( numTemperatures );
-        logTemperatures.resize( numTemperatures );
-        densities.resize( numDensities );
-        logDensities.resize( numDensities );
-        groupBoundaries.resize( numGroupBoundaries );
-        logOpacities.resize( numOpacities );	
-    }
-    else // gray
-    {
-        temperatures = spIpcressFile->getData( matID, "tgrid" );
-        densities = spIpcressFile->getData( matID, "rgrid" );
-        groupBoundaries  =spIpcressFile->getData( matID, "hnugrid" );
-        
-        numTemperatures = temperatures.size();
-        numDensities = densities.size();
-        numGroupBoundaries = groupBoundaries.size();
-    }
+    temperatures = spIpcressFile->getData( matID, "tgrid" );
+    densities = spIpcressFile->getData( matID, "rgrid" );
+    groupBoundaries  = spIpcressFile->getData( matID, "hnugrid" );
+    
+    numTemperatures = temperatures.size();
+    numDensities = densities.size();
+    numGroupBoundaries = groupBoundaries.size();
 }
 
 /*!
@@ -293,34 +266,12 @@ void IpcressDataTable::loadDataTable()
     logDensities.resize( densities.size() );
     std::transform( densities.begin(), densities.end(), 
                     logDensities.begin(), unary_log );
-    
-    // A different wrapper routine must be called for
-    // multigroup and gray data.  We choose the correct
-    // wrapper by comparing the opacityEnergyDescriptor.
-    if ( opacityEnergyDescriptor == "mg" )
-    {
-        // Returns: logTemperatures, logDensities,
-        // groupBoundaries and logOpacities.
-            // wrapper::wggetmg( 
-            //     spIpcressFile->getDataFilename(), 
-            //     matID, ipcressDataTypeKey,
-            //     temperatures, numTemperatures,
-            //     densities, numDensities,
-            //     groupBoundaries, numGroupBoundaries,
-            //     logOpacities, numOpacities );
-        // if ( errorCode != 0 )
-        //throw ggetmgException( errorCode );
-        Check(false);
 
-    }
-    else // "gray"
-    {
-        std::vector< double > opacities =
-            spIpcressFile->getData( matID, "rgray" );
-        logOpacities.resize( opacities.size() );
-        std::transform( opacities.begin(), opacities.end(),
-                        logOpacities.begin(), unary_log );
-    }                    
+    std::vector< double > opacities =
+        spIpcressFile->getData( matID, ipcressDataTypeKey );
+    logOpacities.resize( opacities.size() );
+    std::transform( opacities.begin(), opacities.end(),
+                    logOpacities.begin(), unary_log );
 }
 
 /*! 
@@ -328,16 +279,15 @@ void IpcressDataTable::loadDataTable()
  *        of "keys".  This is a static member function.
  */
 template < typename T >
-bool IpcressDataTable::key_available( const T &key, 
-                                      const std::vector<T> &keys ) const
+bool IpcressDataTable::key_available( T const              & key, 
+                                      std::vector<T> const & keys ) const
 {
-    // Loop over all available keys.  If the requested key
-    // matches one in the list return true.  If we reach the end
-    // of the list without a match return false.
+    // Loop over all available keys.  If the requested key matches one in the
+    // list return true.  If we reach the end of the list without a match
+    // return false.
     for ( size_t i=0; i<keys.size(); ++i )
         if ( key == keys[i] ) return true;
-    return false;
-	    
+    return false;	    
 } // end of IpcressDataTable::key_available( string, vector<string> )
 
 
@@ -347,27 +297,35 @@ bool IpcressDataTable::key_available( const T &key,
  * 
  * \param name description
  * \return description
+ *
+ * Note: the opacity array is a 1D array.  group id is the fastest moving
+ * index and temperatures are the slowest moving index.
  */
 double IpcressDataTable::interpOpac( double const targetTemperature,
-                                     double const targetDensity ) const
+                                     double const targetDensity,
+                                     size_t const group ) const
 {
     double logT   = std::log(targetTemperature);
     double logrho = std::log(targetDensity);
 
     size_t const numrho = logDensities.size();
     size_t const numT   = logTemperatures.size();
+    // size_t const numpergroup = numrho*numT;
+    size_t const ng = opacityEnergyDescriptor == std::string("gray") ?
+                      1 :
+                      numGroupBoundaries-1;
     
     // Check if we are off the table boundaries.  We don't allow
     // extrapolation, so move the target temperature or density to the table
-    // boundary. 
+    // boundary.
     if( targetTemperature < temperatures[0] )
         logT = std::log(temperatures[0]);
-    if( targetTemperature > temperatures[numT] )
-        logT = std::log(temperatures[numT]);
+    if( targetTemperature > temperatures[numT-1] )
+        logT = std::log(temperatures[numT-1]);
     if( targetDensity < densities[0] )
         logrho = std::log(densities[0]);
-    if( targetDensity < densities[numrho] )
-        logrho = std::log(densities[numrho]);
+    if( targetDensity > densities[numrho-1] )
+        logrho = std::log(densities[numrho-1]);
 
     /*
      * The grid looks like this:
@@ -389,8 +347,8 @@ double IpcressDataTable::interpOpac( double const targetTemperature,
     
     // Find the bracketing table values (T1, T2) and (rho1, rho2) for rho and
     // T.
-    size_t irho = 99999;
-    size_t iT   = 99999;
+    size_t irho = logDensities.size()-1;
+    size_t iT   = logTemperatures.size()-1;
     for( size_t i=0; i<numT-1; ++i )
     {
         if( logT >= logTemperatures[i] && logT < logTemperatures[i+1] )
@@ -407,27 +365,47 @@ double IpcressDataTable::interpOpac( double const targetTemperature,
             break;
         }
     }
-    Check( iT < numT );
-    Check( irho < numrho );
-    
+
     // Perform the linear interpolation.
-    double logsig12 = logOpacities[iT*numrho+irho]
-                      + (logrho-logDensities[irho])
-                      / (logDensities[irho+1]-logDensities[irho])
-                      * (logOpacities[(iT*numrho+irho+1)]
-                         - logOpacities[iT*numrho+irho]);
-                         
-    double logsig32 = logOpacities[(iT+1)*numrho+irho]
-                      + (logrho-logDensities[irho])
-                      / (logDensities[irho+1]-logDensities[irho])
-                      * (logOpacities[(iT+1)*numrho+irho+1]
-                         - logOpacities[(iT+1)*numrho+irho]);
+
+    // index of cell with lower T and lower rho bound
+    size_t i = (iT*numrho+irho)*ng+group;
+    // size_t j = i + ng; // index for cell with higher rho value.
+    size_t k = i + ng*numrho; // index for cell with higher T value
+               
+    double logsig12 = logOpacities[i]
+                      + ( logrho - logDensities[irho] )
+                      / ( logDensities[irho+1] - logDensities[irho] )
+                      * ( logOpacities[i+ng] - logOpacities[i] );
+
+    double logsig32 = logOpacities[k]
+                      + ( logrho - logDensities[irho] )
+                      / ( logDensities[irho+1] - logDensities[irho] )
+                      * ( logOpacities[k+ng] - logOpacities[k] );
 
     double logsig22 = logsig12
                       + (logT-logTemperatures[iT])
                       / (logTemperatures[iT+1]-logTemperatures[iT])
                       * (logsig32-logsig12);
-    return std::exp(logsig22);    
+    
+    // double logsig12 = logOpacities[group*numpergroup+iT*numrho+irho]
+    //                   + (logrho-logDensities[irho])
+    //                   / (logDensities[irho+1]-logDensities[irho])
+    //                   * (logOpacities[group*numpergroup+iT*numrho+irho+1]
+    //                      - logOpacities[group*numpergroup+iT*numrho+irho]);
+    
+    // double logsig32 = logOpacities[group*numpergroup+(iT+1)*numrho+irho]
+    //                   + (logrho-logDensities[irho])
+    //                   / (logDensities[irho+1]-logDensities[irho])
+    //                   * (logOpacities[group*numpergroup+(iT+1)*numrho+irho+1]
+    //                      - logOpacities[group*numpergroup+(iT+1)*numrho+irho]);
+    
+    // double logsig22 = logsig12
+    //                   + (logT-logTemperatures[iT])
+    //                   / (logTemperatures[iT+1]-logTemperatures[iT])
+    //                   * (logsig32-logsig12);
+    
+    return std::exp(logsig22);  
 }
 
 

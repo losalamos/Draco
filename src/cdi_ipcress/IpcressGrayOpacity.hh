@@ -461,10 +461,6 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
     DensityIterator     densLast,
     OpacityIterator     opIter ) const
 { 
-    using std::log;
-
-    // from twix:/scratch/tme/kai/KCC_BASE/include/algorithm
-    
     // assert that the two input iterators have compatible sizes.
     Require( std::distance( tempIter, tempLast )
 	     == std::distance( densIter, densLast ) );
@@ -473,16 +469,8 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
     for ( ; tempIter != tempLast;
 	  ++tempIter, ++densIter, ++opIter )
 	// Call the Ipcress Logorithmic Interpolator for Gray data.
-	// *opIter = 
-	//     wrapper::wgintgrlog( spIpcressDataTable->getLogTemperatures(),
-	// 			 spIpcressDataTable->getNumTemperatures(), 
-	// 			 spIpcressDataTable->getLogDensities(), 
-	// 			 spIpcressDataTable->getNumDensities(),
-	// 			 spIpcressDataTable->getLogOpacities(), 
-	// 			 spIpcressDataTable->getNumOpacities(),
-	// 			 log( *tempIter ),
-	// 			 log( *densIter ) );
-        Check(false);
+        *opIter = spIpcressDataTable->interpOpac( *tempIter,
+                                                  *densIter );
     return opIter;
 }
 
@@ -497,22 +485,12 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
     double targetDensity,
     OpacityIterator opIter ) const
 { 
-    using std::log;
-
-    // loop over all the entries the temperature container and
-    // calculate an opacity value for each.
+    // loop over all the entries the temperature container and calculate an
+    // opacity value for each.
     for ( ; tempIter != tempLast; ++tempIter, ++opIter )
 	// Call the Ipcress Logorithmic Interpolator for Gray data.
-	// *opIter = 
-	//     wrapper::wgintgrlog( spIpcressDataTable->getLogTemperatures(),
-	// 			 spIpcressDataTable->getNumTemperatures(), 
-	// 			 spIpcressDataTable->getLogDensities(), 
-	// 			 spIpcressDataTable->getNumDensities(),
-	// 			 spIpcressDataTable->getLogOpacities(), 
-	// 			 spIpcressDataTable->getNumOpacities(),
-	// 			 log( *tempIter ),
-	// 			 log( targetDensity ) );
-        Check(false);
+	 *opIter = spIpcressDataTable->interpOpac( *tempIter,
+                                                   targetDensity );
     return opIter;
 }
 
@@ -527,22 +505,12 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
     DensityIterator densLast,
     OpacityIterator opIter ) const
 { 
-    using std::log;
-
-    // loop over all the entries the density container and
-    // calculate an opacity value for each.
+    // loop over all the entries the density container and calculate an
+    // opacity value for each.
     for ( ; densIter != densLast; ++densIter, ++opIter )
 	// Call the Ipcress Logorithmic Interpolator for Gray data.
-	// *opIter = 
-	//     wrapper::wgintgrlog( spIpcressDataTable->getLogTemperatures(),
-	// 			 spIpcressDataTable->getNumTemperatures(), 
-	// 			 spIpcressDataTable->getLogDensities(), 
-	// 			 spIpcressDataTable->getNumDensities(),
-	// 			 spIpcressDataTable->getLogOpacities(), 
-	// 			 spIpcressDataTable->getNumOpacities(),
-	// 			 log( targetTemperature ),
-	// 			 log( *densIter ) );
-        Check(false);
+	 *opIter = spIpcressDataTable->interpOpac( targetTemperature,
+                                                   *densIter );
     return opIter;
 }
 

@@ -20,12 +20,13 @@ set( sources
    IpcressFile.cc
    IpcressDataTable.cc
    IpcressGrayOpacity.cc
+   IpcressMultigroupOpacity.cc
 )
 set( headers
    IpcressFile.hh
    IpcressFile.t.hh
    IpcressDataTable.hh
-   IpcressGrayOpacity.hh
+   IpcressMultigroupOpacity.hh
 )
 
 # Make the header files available in the IDE.

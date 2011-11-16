@@ -232,7 +232,9 @@ class IpcressDataTable
 	return opacityEnergyDescriptor; };
 
     //! Perform linear interploation of log(opacity) values.
-    double interpOpac( double const T, double const rho ) const;
+    double interpOpac( double const T,
+                       double const rho,
+                       size_t const group = 0 ) const;
     
   private:
 
