@@ -31,6 +31,8 @@ set( test_sources
    tIpcressOpacity.cc
    tIpcressWithCDI.cc
    tIpcress_Interpreter.cc
+   ReadOdfIpcressFile.cc
+   tIpcressOdfmgOpacity.cc
 )
 file( GLOB ipcress_data *.ipcress )
 

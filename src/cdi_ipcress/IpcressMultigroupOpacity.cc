@@ -28,6 +28,7 @@ namespace rtt_cdi_ipcress
 // Constructors //
 // ------------ //
     
+//---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for IpcressMultigroupOpacity object.
  * 
@@ -68,7 +69,8 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
         spIpcressFile );
 	    
 } // end of IpcressData constructor
-    
+
+//---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor for IpcressMultigroupOpacity object.
  * 
@@ -123,7 +125,6 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
     rtt_dsxx::unpack_data(filename, packed_filename);
 
     // unpack the material id
-    // unpacker >> materialID;
     int itmp(0);
     unpacker >> itmp;
     materialID = static_cast<size_t>(itmp);
@@ -142,13 +143,12 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
     spIpcressFile = new IpcressFile(filename);
     Check (spIpcressFile);
 
-    // Verify that the requested material ID is available in the
-    // specified IPCRESS file.
+    // Verify that the requested material ID is available in the specified
+    // IPCRESS file.
     Insist( spIpcressFile->materialFound( materialID ),
         "Requested material ID is not found in the specified Ipcress file.");
             
     // Retrieve keys available fo this material from the IPCRESS file.
-    // wgkeys() returns vKnownKeys, numKeys and errorCode.
     vKnownKeys = spIpcressFile->listDataFieldNames( materialID );
     Check(vKnownKeys.size()>0);
     
@@ -189,9 +189,8 @@ IpcressMultigroupOpacity::~IpcressMultigroupOpacity()
  *     data that this class references. (e.g. "Multigroup Rosseland
  *     Scattering".) 
  *
- * The definition of this function is not included here to prevent 
- *     the inclusion of the IpcressFile.hh definitions within this 
- *     header file.
+ * The definition of this function is not included here to prevent the
+ * inclusion of the IpcressFile.hh definitions within this header file.
  */
 std::string IpcressMultigroupOpacity::getDataDescriptor() const 
 {
@@ -202,9 +201,8 @@ std::string IpcressMultigroupOpacity::getDataDescriptor() const
 /*!
  * \brief Returns the name of the associated IPCRESS file.
  *
- * The definition of this function is not included here to prevent 
- *     the inclusion of the IpcressFile.hh definitions within this 
- *     header file.
+ * The definition of this function is not included here to prevent the
+ * inclusion of the IpcressFile.hh definitions within this header file.
  */
 std::string IpcressMultigroupOpacity::getDataFilename() const 
 {
@@ -212,9 +210,9 @@ std::string IpcressMultigroupOpacity::getDataFilename() const
 }
     
 /*!
- * \brief Opacity accessor that returns a single opacity (or a
- *     vector of opacities for the multigroup EnergyPolicy) that 
- *     corresponds to the provided temperature and density.
+ * \brief Opacity accessor that returns a single opacity (or a vector of
+ *     opacities for the multigroup EnergyPolicy) that corresponds to the
+ *     provided temperature and density.
  */
 std::vector< double > IpcressMultigroupOpacity::getOpacity(
     double targetTemperature,
@@ -230,10 +228,9 @@ std::vector< double > IpcressMultigroupOpacity::getOpacity(
     // logarithmic interpolation:
     for( size_t g=0; g<numGroups; ++g )
     {
-        double retopacity = spIpcressDataTable->interpOpac( targetTemperature,
-                                                            targetDensity, g );
-        Check( retopacity >= 0.0 );
-        opacity[g] = retopacity;
+        opacity[g] = spIpcressDataTable->interpOpac( targetTemperature,
+                                                     targetDensity, g );
+        Check( opacity[g] >= 0.0 );
     }
     return opacity;
 }
@@ -245,7 +242,7 @@ std::vector< double > IpcressMultigroupOpacity::getOpacity(
  *     temperatures and a single density value.
  */
 std::vector< std::vector< double > > IpcressMultigroupOpacity::getOpacity(
-    const std::vector<double>& targetTemperature,
+    std::vector<double> const & targetTemperature,
     double targetDensity ) const
 { 
     std::vector< std::vector< double > > opacity( targetTemperature.size() );
