@@ -30,9 +30,13 @@ using namespace rtt_dsxx;
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for OrdinateSet.
+ *
  * \param quadrature Quadrature from which to generate ordinate set
  * \param geometry Geometry of the problem.
  * \param dimension The dimension of the problem
+ * \param extra_starting_directions Should be used only with curvilinear
+ * geometry. Specifies that the R-reflection of each starting direction should
+ * be included in the ordinate set.
  *
  * \note The quadrature object must be a level set quadrature, and it must
  * supply the number of levels.  At present all we can do is *assume* it is a

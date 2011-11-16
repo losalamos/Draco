@@ -63,6 +63,9 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 			 size_t sn_order,
                          double norm ) 
 {
+    Require(sn_order>0);
+    Require(sn_order%2==0);
+    
     using rtt_dsxx::soft_equiv;
 
     rtt_dsxx::SP<Quadrature> spQuad;

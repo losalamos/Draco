@@ -38,10 +38,12 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
 
     Require ( snOrder > 0 );
     Require ( norm > 0.0 );
-    // Insist ( snOrder%2 == 0, "LS Quad must have an even SN order." );
     Require ( snOrder%2 == 0 );
-    // Insist ( snOrder >= 2 && snOrder <= 24, "LS Quad must have a SN order between 2 and 24." );
-    Require ( snOrder >= 2 && snOrder <= 24 );
+
+    if ( snOrder > 24 )
+    {
+        throw std::range_error("Sn order out of range");
+    }
 
     // The number of quadrature levels is equal to the requested SN order.
     size_t levels( snOrder );
@@ -407,6 +409,7 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
     // Verify that the quadrature meets our integration requirements.
     Ensure( soft_equiv(iDomega(),norm) );
 
+#ifdef ENSURE_ON
     // check each component of the vector result
     vector<double> iod = iOmegaDomega();
     Ensure( soft_equiv(iod[0],0.0) );
@@ -424,6 +427,8 @@ Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ )
     Ensure( soft_equiv(iood[6],0.0) ); // xi*mu
     Ensure( soft_equiv(iood[7],0.0) ); // xi*eta
     Ensure( soft_equiv(iood[8],norm/3.0) ); // xi*xi
+#endif
+    // ENSURE_ON
 
     // Copy quadrature data { mu, eta, xi } into the vector omega.
     omega.resize( numOrdinates );
