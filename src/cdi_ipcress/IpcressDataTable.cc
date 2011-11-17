@@ -2,9 +2,9 @@
 /*!
  * \file   cdi_ipcress/IpcressDataTable.cc
  * \author Kelly Thompson
- * \date   Thu Oct 12 09:39:22 2000
+ * \date   Wednesday, Nov 16, 2011, 17:04 pm
  * \brief  Implementation file for IpcressDataTable objects.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -33,9 +33,9 @@ double unary_log( double x ) { return std::log( x ); }
 /*!
  * \brief IpcressData Table constructor.
  *
- *     The constructor requires that the data state be completely defined.
- *     With this information the DataTypeKey is set, then the data table sizes
- *     are loaded and finally the table data is loaded.
+ * The constructor requires that the data state be completely defined.  With
+ * this information the DataTypeKey is set, then the data table sizes are
+ * loaded and finally the table data is loaded.
  *
  * \param opacityEnergyDescriptor This string variable specifies the energy
  *     model { "gray" or "mg" } for the opacity data contained in this
@@ -58,11 +58,11 @@ double unary_log( double x ) { return std::log( x ); }
  *     same IpcressFile object.
  */
 IpcressDataTable::IpcressDataTable( 
-    std::string              const & in_opacityEnergyDescriptor,
-    rtt_cdi::Model                   in_opacityModel, 
-    rtt_cdi::Reaction                in_opacityReaction,
-    std::vector<std::string> const & in_vKnownKeys,
-    size_t                              in_matID,
+    std::string                       const & in_opacityEnergyDescriptor,
+    rtt_cdi::Model                            in_opacityModel, 
+    rtt_cdi::Reaction                         in_opacityReaction,
+    std::vector<std::string>          const & in_vKnownKeys,
+    size_t                                    in_matID,
     rtt_dsxx::SP< const IpcressFile > const & in_spIpcressFile )
     : ipcressDataTypeKey( "" ),
       dataDescriptor( "" ),
@@ -72,9 +72,6 @@ IpcressDataTable::IpcressDataTable(
       vKnownKeys ( in_vKnownKeys ),
       matID ( in_matID ),
       spIpcressFile( in_spIpcressFile ),
-      numTemperatures( 0 ),
-      numDensities( 0 ),
-      numGroupBoundaries( 0 ),
       numOpacities( 0 ),
       logTemperatures(),
       temperatures(),
@@ -104,7 +101,7 @@ IpcressDataTable::IpcressDataTable(
 // PRIVATE FUNCTIONS //
 // ----------------- //
 
-
+//---------------------------------------------------------------------------//
 /*!
  * \brief This function sets both "ipcressDataTypeKey" and
  *     "dataDescriptor" based on the values given for
@@ -112,9 +109,8 @@ IpcressDataTable::IpcressDataTable(
  */
 void IpcressDataTable::setIpcressDataTypeKey( ) const
 {
-    // Build the Ipcress key for the requested data.  Valid
-    // keys are:
-    // { ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray }
+    // Build the Ipcress key for the requested data.  Valid keys are: { ramg,
+    // rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray }
 
     if ( opacityEnergyDescriptor == "gray" )
     {
@@ -237,22 +233,20 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
 
 }
 
+//---------------------------------------------------------------------------//
 /*!
- * \brief Load the temperature, density, energy boundary and
- *     opacity opacity tables from the IPCRESS file.  Convert all
- *     tables (except energy boundaries) to log values.
+ * \brief Load the temperature, density, energy boundary and opacity opacity
+ *     tables from the IPCRESS file.  Convert all tables (except energy
+ *     boundaries) to log values.
  */
 void IpcressDataTable::setIpcressDataTableSizes() const
 {
     temperatures = spIpcressFile->getData( matID, "tgrid" );
     densities = spIpcressFile->getData( matID, "rgrid" );
     groupBoundaries  = spIpcressFile->getData( matID, "hnugrid" );
-    
-    numTemperatures = temperatures.size();
-    numDensities = densities.size();
-    numGroupBoundaries = groupBoundaries.size();
 }
 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Load the temperature, density, energy boundary and
  *     opacity opacity tables from the IPCRESS file.  Convert all
@@ -260,9 +254,8 @@ void IpcressDataTable::setIpcressDataTableSizes() const
  */
 void IpcressDataTable::loadDataTable()
 {
-    // The interpolation routines expect everything to be in
-    // log form so we only store the logorithmic temperature,
-    // density and opacity data.
+    // The interpolation routines expect everything to be in log form so we
+    // only store the logorithmic temperature, density and opacity data.
     logTemperatures.resize( temperatures.size() );
     std::transform( temperatures.begin(), temperatures.end(),
                     logTemperatures.begin(), unary_log );
@@ -277,12 +270,13 @@ void IpcressDataTable::loadDataTable()
                     logOpacities.begin(), unary_log );
 }
 
+//---------------------------------------------------------------------------//
 /*! 
  * \brief This function returns "true" if "key" is found in the list
  *        of "keys".  This is a static member function.
  */
 template < typename T >
-bool IpcressDataTable::key_available( T const              & key, 
+bool IpcressDataTable::key_available( T              const & key, 
                                       std::vector<T> const & keys ) const
 {
     // Loop over all available keys.  If the requested key matches one in the
@@ -316,7 +310,7 @@ double IpcressDataTable::interpOpac( double const targetTemperature,
     // size_t const numpergroup = numrho*numT;
     size_t const ng = opacityEnergyDescriptor == std::string("gray") ?
                       1 :
-                      numGroupBoundaries-1;
+                      groupBoundaries.size()-1;
     
     // Check if we are off the table boundaries.  We don't allow
     // extrapolation, so move the target temperature or density to the table
@@ -390,28 +384,9 @@ double IpcressDataTable::interpOpac( double const targetTemperature,
                       + (logT-logTemperatures[iT])
                       / (logTemperatures[iT+1]-logTemperatures[iT])
                       * (logsig32-logsig12);
-    
-    // double logsig12 = logOpacities[group*numpergroup+iT*numrho+irho]
-    //                   + (logrho-logDensities[irho])
-    //                   / (logDensities[irho+1]-logDensities[irho])
-    //                   * (logOpacities[group*numpergroup+iT*numrho+irho+1]
-    //                      - logOpacities[group*numpergroup+iT*numrho+irho]);
-    
-    // double logsig32 = logOpacities[group*numpergroup+(iT+1)*numrho+irho]
-    //                   + (logrho-logDensities[irho])
-    //                   / (logDensities[irho+1]-logDensities[irho])
-    //                   * (logOpacities[group*numpergroup+(iT+1)*numrho+irho+1]
-    //                      - logOpacities[group*numpergroup+(iT+1)*numrho+irho]);
-    
-    // double logsig22 = logsig12
-    //                   + (logT-logTemperatures[iT])
-    //                   / (logTemperatures[iT+1]-logTemperatures[iT])
-    //                   * (logsig32-logsig12);
-    
+   
     return std::exp(logsig22);  
 }
-
-
 
 } // end namespace rtt_cdi_ipcress
 

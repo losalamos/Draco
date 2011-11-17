@@ -2,9 +2,9 @@
 /*!
  * \file   cdi_ipcress/IpcressDataTable.hh
  * \author Kelly Thompson
- * \date   Thu Oct 12 09:39:22 2000
+ * \date   Wednesday, Nov 16, 2011, 17:07 pm
  * \brief  Header file for IpcressDataTable
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -30,17 +30,16 @@ class IpcressFile;
     
 //===========================================================================//
 /*!
- * \class IpcressDataTable encapsulates all of the data associated
- * with a specific opacity type (e.g.: total, plank, multigroup) for a 
- * single single material.
+ * \class IpcressDataTable encapsulates all of the data associated with a
+ * specific opacity type (e.g.: total, plank, multigroup) for a single single
+ * material.
  *
- * When the user instantiates a IpcressOpacity object a
- * IpcressDataTable object is also created.  There is a one-to-one
- * correspondence between these two objects.  The 
- * IpcressDataTable object will load a single opacity table from the
- * IPCRESS file specified by the associated IpcressFile object.  The
- * table that is loaded is specified by the combination of 
- * { opacityModel, opacityReaction and the opacityEnergyDescriptor }.
+ * When the user instantiates a IpcressOpacity object a IpcressDataTable
+ * object is also created.  There is a one-to-one correspondence between these
+ * two objects.  The IpcressDataTable object will load a single opacity table
+ * from the IPCRESS file specified by the associated IpcressFile object.  The
+ * table that is loaded is specified by the combination of { opacityModel,
+ * opacityReaction and the opacityEnergyDescriptor }.
  */
 //===========================================================================//
 
@@ -89,8 +88,8 @@ class IpcressDataTable
     std::vector< std::string > const & vKnownKeys;
     
     /*!
-     * \brief The IPCRESS material number assocated with the data
-     *     contained in this object.
+     * \brief The IPCRESS material number assocated with the data contained in
+     *     this object.
      */
     size_t const matID;
     
@@ -102,26 +101,9 @@ class IpcressDataTable
 
     // Data Sizes:
 
-    // This object holds a single data table.  This table is loaded
-    // from the IPCRSS file (specified by the IpcressFile object).
-    // The size of this table is stored in the following variables.
-
-    //! The number of temperature columns in the opacity table.
-    size_t mutable numTemperatures;
-
-    //! The number of density columns in the opacity table.
-    size_t mutable numDensities;
-
-    /*!
-     * \brief The number of energy group boundaries in the opacity
-     *     table (this entry is not used for gray data).
-     */
-    size_t mutable numGroupBoundaries;
-
     /*
-     * \brief The number of entries in the opacity table.  This should 
-     *     be equal to numTemperatures * numDensities *
-     *     (numGroupBoundaries - 1).
+     * \brief The number of entries in the opacity table.  This should be
+     *     equal to numTemperatures * numDensities * (numGroupBoundaries - 1).
      */
     size_t mutable numOpacities;
 
@@ -149,10 +131,9 @@ class IpcressDataTable
     /*!
      * \brief Standard IpcressDataTable constructor.
      *
-     * The constructor requires that the data state to be
-     *     completely defined.  With this information the DataTypeKey
-     *     is set, then the data table sizes are loaded and finally
-     *     the table data is loaded.
+     * The constructor requires that the data state to be completely defined.
+     *     With this information the DataTypeKey is set, then the data table
+     *     sizes are loaded and finally the table data is loaded.
      *
      * \param opacityEnergyDescriptor This string variable 
      *     specifies the energy model { "gray" or "mg" } for the
@@ -189,31 +170,31 @@ class IpcressDataTable
     // ACCESSORS
 
     //! Retrieve the size of the temperature grid.
-    size_t getNumTemperatures() const { return numTemperatures; };
+    size_t getNumTemperatures() const { return temperatures.size(); };
 
     //! Retrieve the size of the density grid.
-    size_t getNumDensities() const { return numDensities; };
+    size_t getNumDensities() const { return densities.size(); };
 
     //! Retrieve the size of the energy boundary grid.
-    size_t getNumGroupBoundaries() const { return numGroupBoundaries; };
+    size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
 
     //! Retrieve the size of the opacity grid.
     size_t getNumOpacities() const { return numOpacities; };
 
     //! Retrieve the logarithmic temperature grid.
-    const std::vector<double>& getLogTemperatures() const { 
+    std::vector<double> const & getLogTemperatures() const { 
 	return logTemperatures; };
-    const std::vector<double>& getTemperatures() const { 
+    std::vector<double> const & getTemperatures()    const { 
 	return temperatures; };
 
     //! Retrieve the logarithmic density grid.
-    const std::vector<double>& getLogDensities() const {
+    std::vector<double> const & getLogDensities() const {
 	return logDensities; };
-    const std::vector<double>& getDensities() const {
+    std::vector<double> const & getDensities()    const {
 	return densities; };
 
     //! Retrieve the logarithmic opacity grid.
-    const std::vector<double>& getLogOpacities() const {
+    std::vector<double> const & getLogOpacities() const {
 	return logOpacities; };
 
     //! Retrieve the energy boundary grid.
@@ -224,10 +205,7 @@ class IpcressDataTable
     std::string const & getDataDescriptor() const {
 	return dataDescriptor; };
 
-    /*!
-     * \brief Return a "plain English" description of the energy
-     *     policy. 
-     */
+    //! Return a "plain English" description of the energy policy.
     std::string const & getEnergyPolicyDescriptor() const {
 	return opacityEnergyDescriptor; };
 
@@ -246,22 +224,19 @@ class IpcressDataTable
     void setIpcressDataTypeKey() const;
 
     /*!
-     * \brief Load the table sizes from the IPCRESS file and resize
-     *     the vector containers for the actual data tables. 
+     * \brief Load the table sizes from the IPCRESS file and resize the vector
+     *     containers for the actual data tables.
      */
     void setIpcressDataTableSizes() const;
 
     /*!
-     * \brief Load the temperature, density, energy boundary and
-     *     opacity opacity tables from the IPCRESS file.  Convert all
-     *     tables (except energy boundaries) to log values.
+     * \brief Load the temperature, density, energy boundary and opacity
+     *     opacity tables from the IPCRESS file.  Convert all tables (except
+     *     energy boundaries) to log values.
      */
     void loadDataTable();
 
-    /*!
-     * \brief Search "keys" for "key".  If found return true,
-     *     otherwise return false.
-     */
+    //! Search "keys" for "key".  If found return true, otherwise return false.
     template < typename T >
     bool key_available( const T &key, const std::vector<T> &keys ) const;
 

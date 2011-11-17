@@ -54,7 +54,8 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
     // ------------------------- //
     // Create IpcressFile object //
     // ------------------------- //
-	    
+
+    {
     SP<IpcressFile> spIF;
 	    
     // Attempt to instantiate the object.
@@ -101,7 +102,9 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
 		<< "in the Al_BeCu.ipcress data file.";
 	FAILMSG(message.str());
     }
-	    
+
+    }
+    
     // ---------------------- //
     // Create Opacity object. //
     // ---------------------- //
@@ -116,8 +119,11 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
 	    
     try
     {
+        SP<IpcressFile> spIF;
+        spIF = new IpcressFile( op_data_file ); 
         spOp_Al_rgt = new IpcressGrayOpacity( 
             spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL );
+        // spIF goes out of scope
     }
     catch( rtt_dsxx::assertion const & excpt )
     {
@@ -194,8 +200,11 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try
     {
+        SP<IpcressFile> spIF;
+        spIF = new IpcressFile( op_data_file ); 
         spOp_Al_rtmg = new IpcressMultigroupOpacity( 
             spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL );
+        // spIF goes out of scope
     }
     catch( rtt_dsxx::assertion const & excpt )
     {
