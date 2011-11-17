@@ -38,22 +38,6 @@ namespace rtt_dsxx
  *                       parallel. The unit test code is run in scalar-mode
  *                       and calls mpirun to run the specified application.
  *
- * This unit test classification is tied into the Draco Build System.  Unit
- * tests are declared in each package's configure.ac file using the following
- * syntax that corresponds to the unit test's classification:
- *
- * \li \c AC_RUNTESTS( tstName, scalar ) - Run the test tstName as a scalar
- *                                  process (expectes a ScalarUnitTest
- *                                  object). 
- * \li \c AC_RUNTESTS( tstName, 2 5 )    - Run the test tstName under MPI twice.
- *                                  Once with 2 and again with 5 processors
- *                                  (expects a ParallelUnitTest object).
- * \li \c AC_APPTEST( tstName, 2 5)      - Run the test tstName as a scalar
- *                                  process. Pass the arguments "2 5" to the
- *                                  unit test for parsing.  The application
- *                                  will be executed twice.  Once with 2 and
- *                                  again with 5 processors (expects an
- *                                  ApplicationUnitTest object). 
  *
  * \sa UnitTest.cc for additional details.
  *
@@ -61,6 +45,11 @@ namespace rtt_dsxx
  *
  * Scalar UnitTests should have the following syntax.
  * \code
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+ 
 int main(int argc, char *argv[])
 {
     try
@@ -99,17 +88,6 @@ int main(int argc, char *argv[])
  * \test All of the member functions of this class are tested by
  * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
  * \c --version on the command line.
- *
- * \warning The output from this class is closely tied to the DBS python
- * script \c tools/regression_filter.py that is used during \c gmake \c check.
- * Changing the format or keyword in the output streams from this class should
- * be coordinated with the regular expression matches found in \c
- * tools/regression_filter.py.
- *
- * \warning The differences between ScalarUnitTest, ParallelUnitTest and
- * ApplicationUnitTest are correlated to the DBS m4 macros \c AC_RUNTESTS and
- * \c AC_TEST_APPLICATION.  Changes to these classes should be coordinated with
- * changes to these DBS m4 macro commands.
  */
                                                             
 /*!
