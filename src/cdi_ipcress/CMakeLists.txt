@@ -20,8 +20,10 @@ set( sources
 )
 set( headers
    IpcressFile.hh
+   IpcressMaterial.hh
    IpcressFile.t.hh
    IpcressDataTable.hh
+   IpcressGrayOpacity.hh
    IpcressMultigroupOpacity.hh
    IpcressOdfmgOpacity.hh
 )
