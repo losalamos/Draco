@@ -62,7 +62,7 @@ IpcressDataTable::IpcressDataTable(
     rtt_cdi::Reaction                         in_opacityReaction,
     std::vector<std::string>          const & in_fieldNames,
     size_t                                    in_matID,
-    rtt_dsxx::SP< const IpcressFile > const & in_spIpcressFile )
+    rtt_dsxx::SP< const IpcressFile > const & spIpcressFile )
     : ipcressDataTypeKey( "" ),
       dataDescriptor( "" ),
       opacityEnergyDescriptor ( in_opacityEnergyDescriptor ),
@@ -70,7 +70,6 @@ IpcressDataTable::IpcressDataTable(
       opacityReaction( in_opacityReaction ),
       fieldNames ( in_fieldNames ),
       matID ( in_matID ),
-      spIpcressFile( in_spIpcressFile ),
       numOpacities( 0 ),
       logTemperatures(),
       temperatures(),
@@ -86,12 +85,14 @@ IpcressDataTable::IpcressDataTable(
     // IPCRESS file.
     setIpcressDataTypeKey();
     
-    // Retrieve the size of the data set and resize the vector containers.
-    setIpcressDataTableSizes();
+    // Retrieve the data set and resize the vector containers.
+    temperatures    = spIpcressFile->getData( matID, "tgrid" );
+    densities       = spIpcressFile->getData( matID, "rgrid" );
+    groupBoundaries = spIpcressFile->getData( matID, "hnugrid" );
     
     // Retrieve table data (temperatures, densities, group boundaries and
     // opacities.  These are stored as logorithmic values.
-    loadDataTable();
+    loadDataTable(spIpcressFile);
     
 } // end of IpcressDataTable constructor.
 
@@ -229,20 +230,6 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
     // the IPCRESS file.
     Insist( key_available( ipcressDataTypeKey, fieldNames ),
             "requested opacity type is not available in the IPCRESS file.");
-
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Load the temperature, density, energy boundary and opacity opacity
- *     tables from the IPCRESS file.  Convert all tables (except energy
- *     boundaries) to log values.
- */
-void IpcressDataTable::setIpcressDataTableSizes() const
-{
-    temperatures = spIpcressFile->getData( matID, "tgrid" );
-    densities = spIpcressFile->getData( matID, "rgrid" );
-    groupBoundaries  = spIpcressFile->getData( matID, "hnugrid" );
 }
 
 //---------------------------------------------------------------------------//
@@ -251,7 +238,8 @@ void IpcressDataTable::setIpcressDataTableSizes() const
  *     opacity opacity tables from the IPCRESS file.  Convert all
  *     tables (except energy boundaries) to log values.
  */
-void IpcressDataTable::loadDataTable()
+void IpcressDataTable::loadDataTable(
+    rtt_dsxx::SP< const IpcressFile > const & spIpcressFile )
 {
     // The interpolation routines expect everything to be in log form so we
     // only store the logorithmic temperature, density and opacity data.

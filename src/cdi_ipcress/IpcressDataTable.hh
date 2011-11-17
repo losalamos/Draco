@@ -13,6 +13,7 @@
 #ifndef __cdi_ipcress_IpcressDataTable_hh__
 #define __cdi_ipcress_IpcressDataTable_hh__
 
+#include "IpcressFile.hh"
 // We must include IpcressOpacity.hh so that the following two
 // enumerated items are defined: { Model, Reaction } 
 #include "cdi/OpacityCommon.hh"
@@ -22,11 +23,6 @@
 
 namespace rtt_cdi_ipcress
 {
-    
-// forward declaration (we don't need to include the full
-// definition of IpcressFile).
-    
-class IpcressFile;
     
 //===========================================================================//
 /*!
@@ -82,9 +78,7 @@ class IpcressDataTable
      */
     rtt_cdi::Reaction const opacityReaction;
 
-    /*!
-     * \brief A list of keys that are known by the IPCRESS file.
-     */
+    //! A list of keys that are known by the IPCRESS file.
     std::vector< std::string > const & fieldNames;
     
     /*!
@@ -93,12 +87,6 @@ class IpcressDataTable
      */
     size_t const matID;
     
-    /*!
-     * \brief The IpcressFile object assocaiated with this data.
-     */
-    rtt_dsxx::SP< const IpcressFile > const spIpcressFile;
-
-
     // Data Sizes:
 
     /*
@@ -224,17 +212,11 @@ class IpcressDataTable
     void setIpcressDataTypeKey() const;
 
     /*!
-     * \brief Load the table sizes from the IPCRESS file and resize the vector
-     *     containers for the actual data tables.
-     */
-    void setIpcressDataTableSizes() const;
-
-    /*!
      * \brief Load the temperature, density, energy boundary and opacity
      *     opacity tables from the IPCRESS file.  Convert all tables (except
      *     energy boundaries) to log values.
      */
-    void loadDataTable();
+    void loadDataTable( rtt_dsxx::SP< const IpcressFile > const & spIpcressFile );
 
     //! Search "keys" for "key".  If found return true, otherwise return false.
     template < typename T >
