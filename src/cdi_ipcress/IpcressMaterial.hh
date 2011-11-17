@@ -101,15 +101,15 @@ class IpcressMaterial
      * \param in_fieldNames A list of field names to be stored in this
      * material records.
      */
-    IpcressMaterial( std::vector< std::string > in_fieldNames,
-                     std::vector< std::vector<double> > in_fieldValues )
-         : fieldNames( in_fieldNames ),
-           fieldValues( in_fieldValues )
-    {
-        Ensure( fieldNames.size() == fieldValues.size() );
-        for( size_t i=0; i<fieldNames.size(); ++i )
-            Ensure( fieldNames[i].size() > 0 );
-    };
+    // IpcressMaterial( std::vector< std::string > in_fieldNames,
+    //                  std::vector< std::vector<double> > in_fieldValues )
+    //      : fieldNames( in_fieldNames ),
+    //        fieldValues( in_fieldValues )
+    // {
+    //     Ensure( fieldNames.size() == fieldValues.size() );
+    //     for( size_t i=0; i<fieldNames.size(); ++i )
+    //         Ensure( fieldNames[i].size() > 0 );
+    // };
 
     // (defaulted) IpcressMaterial(const IpcressMaterial &rhs);
     // (defaulted) ~IpcressMaterial();

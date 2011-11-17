@@ -179,23 +179,23 @@ class IpcressDataTable
     size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
 
     //! Retrieve the size of the opacity grid.
-    size_t getNumOpacities() const { return numOpacities; };
+    // size_t getNumOpacities() const { return numOpacities; };
 
     //! Retrieve the logarithmic temperature grid.
-    std::vector<double> const & getLogTemperatures() const { 
-	return logTemperatures; };
+    // std::vector<double> const & getLogTemperatures() const { 
+    //     return logTemperatures; };
     std::vector<double> const & getTemperatures()    const { 
 	return temperatures; };
 
     //! Retrieve the logarithmic density grid.
-    std::vector<double> const & getLogDensities() const {
-	return logDensities; };
+    // std::vector<double> const & getLogDensities() const {
+    //     return logDensities; };
     std::vector<double> const & getDensities()    const {
 	return densities; };
 
     //! Retrieve the logarithmic opacity grid.
-    std::vector<double> const & getLogOpacities() const {
-	return logOpacities; };
+    // std::vector<double> const & getLogOpacities() const {
+    //     return logOpacities; };
 
     //! Retrieve the energy boundary grid.
     std::vector<double> const & getGroupBoundaries() const {
@@ -206,8 +206,8 @@ class IpcressDataTable
 	return dataDescriptor; };
 
     //! Return a "plain English" description of the energy policy.
-    std::string const & getEnergyPolicyDescriptor() const {
-	return opacityEnergyDescriptor; };
+    // std::string const & getEnergyPolicyDescriptor() const {
+    //     return opacityEnergyDescriptor; };
 
     //! Perform linear interploation of log(opacity) values.
     double interpOpac( double const T,
