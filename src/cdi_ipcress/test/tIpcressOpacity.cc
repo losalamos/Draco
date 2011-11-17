@@ -1237,7 +1237,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 	SP<GrayOpacity> spOp_Analytic_ragray;
 
 	// material ID
-	const int matid=10001;
+	int const matid=10001;
     
 	spOp_Analytic_ragray = new IpcressGrayOpacity( 
 	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
@@ -1247,7 +1247,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
     }
 
     // make a new IpcressGrayOpacity from packed data
-    SP<GrayOpacity> unpacked_opacity;  
+    SP<GrayOpacity> unpacked_opacity;
 
     // Try to instantiate the Opacity object.
     try 
@@ -1270,7 +1270,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 	ITFAILS;
 
     if (unpacked_opacity->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
-    if (unpacked_opacity->getModelType() != rtt_cdi::ROSSELAND)     ITFAILS;
+    if (unpacked_opacity->getModelType()    != rtt_cdi::ROSSELAND)  ITFAILS;
 	    
     // ----------------- //
     // Gray Opacity Test //

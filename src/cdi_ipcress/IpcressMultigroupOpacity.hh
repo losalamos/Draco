@@ -23,7 +23,6 @@
 
 #include <vector>
 #include <string>
-#include <cmath> // we need to define log(double) and exp(double)
 
 namespace rtt_cdi_ipcress
 {
@@ -44,50 +43,45 @@ class IpcressDataTable;
  *        IPCRESS File (via a IpcressFile object), a material identifier, an
  *        energy model (already selecte since this is a Multigroup Opacity
  *        class), a physics model and a reaction type.
+ * 
+ * This is a concrete class derived from cdi/MultigroupOpacity.  This class
+ * allows to client to access the data in IPCRESS files via the Ipcress
+ * libraries.
  *
- *      This is a concrete class derived from cdi/MultigroupOpacity.  This
- *        class allows to client to access the data in IPCRESS files via the
- *        Ipcress libraries.
- * <p>
- *      This class is designed to be used in conjuction with the CDI.
- *      The client code will create a IpcressMultigroupOpacity object
- *      and use this object as an argument during the CDI
- *      instantiation.  The purpose of this class is to provide a
- *      mechanism for accessing data in IPCRESS files.  The
- *      IpcressMultigroupOpacity constructor expects four arguments: a
- *      hook to IPCRESS data file (spIpcressFile), a material
- *      identifier, an opacity model (Rosseland or Plank) and an
- *      opacity reaction specifier (total, scattering or absorption).
- *      Once constructed, this object allows the client to access any
- *      data found in the IPCRESS file for that one material.  The
- *      client code will need to create a separate
- *      IpcressMultigroupOpacity object for each material that it
- *      needs information about. Multiple opacity objects can exist
- *      per IPCRESS file.
- * <p> 
- *      This class only provides access to multigroup opacity data.
- *      If the user needs gray opacity IPCRESS data he/she should use
- *      the cdi_ipcress/IpcressGrayOpacity class.
- * <p>
- *      When instantiated, the IpcressMultigroupOpacity object creates
- *      a IpcressDataTable object.  The IPCRESS data is cached in this
- *      table object.  When the client requests an opacity value at a
- *      specified temperature and density the IpcressMultigroupOpacity
- *      object interpolates on the data cached in the IpcressDataTable
- *      object.
+ * <p> This class is designed to be used in conjuction with the CDI.  The
+ * client code will create a IpcressMultigroupOpacity object and use this
+ * object as an argument during the CDI instantiation.  The purpose of this
+ * class is to provide a mechanism for accessing data in IPCRESS files.  The
+ * IpcressMultigroupOpacity constructor expects four arguments: a hook to
+ * IPCRESS data file (spIpcressFile), a material identifier, an opacity model
+ * (Rosseland or Plank) and an opacity reaction specifier (total, scattering
+ * or absorption).  Once constructed, this object allows the client to access
+ * any data found in the IPCRESS file for that one material.  The client code
+ * will need to create a separate IpcressMultigroupOpacity object for each
+ * material that it needs information about. Multiple opacity objects can
+ * exist per IPCRESS file.
+ *
+ * <p> This class only provides access to multigroup opacity data.  If the
+ * user needs gray opacity IPCRESS data he/she should use the
+ * cdi_ipcress/IpcressGrayOpacity class.
+ *
+ * <p> When instantiated, the IpcressMultigroupOpacity object creates a
+ * IpcressDataTable object.  The IPCRESS data is cached in this table object.
+ * When the client requests an opacity value at a specified temperature and
+ * density the IpcressMultigroupOpacity object interpolates on the data cached
+ * in the IpcressDataTable object.
  */
 
 /*!
  * \example cdi_ipcress/test/tIpcressOpacity.cc
  *
- * Example of IpcressMultigroupOpacity usage independent of CDI.  In
- *      this example we construct a IpcressMultigroupOpacity object for
- *      the material Aluminum (matID=10001 in our example IPCRESS
- *      file).  We then use the IpcressMultigroupOpacity object to compute
- *      Rosseland Multigroup opacity values for a specified material,
- *      temperature and density.  Other forms of the getOpacity()
- *      accessor are tested along with accessors that return
- *      information about the data set and the cached data table.
+ * Example of IpcressMultigroupOpacity usage independent of CDI.  In this
+ * example we construct a IpcressMultigroupOpacity object for the material
+ * Aluminum (matID=10001 in our example IPCRESS file).  We then use the
+ * IpcressMultigroupOpacity object to compute Rosseland Multigroup opacity
+ * values for a specified material, temperature and density.  Other forms of
+ * the getOpacity() accessor are tested along with accessors that return
+ * information about the data set and the cached data table.
  *
  * \example cdi_ipcress/test/tIpcressWithCDI.cc
  * 
@@ -106,12 +100,11 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     // ----------------------- //
 
     /*!
-     * \brief DS++ Smart Pointer to a IpcressFile object.
-     *     spIpcressFile acts as a hook to link this object to an
-     *     IPCRESS file.
+     * \brief The name of the ipcress data file.  This is saved for the packer
+     *         routines
      */
-    rtt_dsxx::SP< IpcressFile const > spIpcressFile;
-
+    std::string mutable ipcressFilename;
+    
     /*!
      * \brief Identification number for one of the materials found in
      *     the IPCRESS file pointed to by spIpcressFile.
@@ -124,11 +117,8 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
     
     // The IPCRESS file only holds specific data for each of its materials.
 
-    //! Number of types of data found in the IPCRESS file.
-    size_t numKeys;
-
     //! A list of keys known by the IPCRESS file.
-    std::vector< std::string > vKnownKeys;
+    std::vector< std::string > fieldNames;
 
     // --------------- //
     // Data specifiers //
@@ -217,7 +207,7 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     definition must be declared in the implementation file so
      *     that * we can avoid including too many header files
      */
-    ~IpcressMultigroupOpacity(void);
+    ~IpcressMultigroupOpacity(void) { /* empty */ };
 
     // --------- //
     // Accessors //
@@ -388,7 +378,8 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     the inclusion of the IpcressFile.hh definitions within this 
      *     header file.
      */
-    std::string getDataDescriptor() const;
+    std::string getDataDescriptor() const {
+        return spIpcressDataTable->getDataDescriptor(); }
 
     /*!
      * \brief Returns the name of the associated IPCRESS file.
@@ -397,7 +388,7 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      *     the inclusion of the IpcressFile.hh definitions within this 
      *     header file.
      */
-    std::string getDataFilename() const;
+    std::string getDataFilename() const { return ipcressFilename; }
 
     /*!
      * \brief Returns a vector of temperatures that define the cached
@@ -406,7 +397,8 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    std::vector< double > getTemperatureGrid() const;
+    std::vector< double > getTemperatureGrid() const {
+        return spIpcressDataTable->getTemperatures(); }
 
     /*!
      * \brief Returns a vector of densities that define the cached
@@ -415,31 +407,32 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    std::vector< double > getDensityGrid() const;
-
+    std::vector< double > getDensityGrid() const {
+        return spIpcressDataTable->getDensities(); }
+    
     /*!
      * \brief Returns a vector of energy values (keV) that define the
      *     energy boundaries of the cached multigroup opacity data
      *     table. 
      */
-    std::vector< double > getGroupBoundaries() const;
+    std::vector< double > getGroupBoundaries() const {
+        return spIpcressDataTable->getGroupBoundaries(); }        
     
-    /*!
-     * \brief Returns the size of the temperature grid.
-     */
-    size_t getNumTemperatures() const;
-
-    /*! 
-     * \brief Returns the size of the density grid.
-     */
-    size_t getNumDensities() const;
+    //! Returns the size of the temperature grid.
+    size_t getNumTemperatures() const {
+        return spIpcressDataTable->getNumTemperatures(); }
+    
+    //! Returns the size of the density grid.
+    size_t getNumDensities() const{
+        return spIpcressDataTable->getNumDensities(); }
 
     /*!
      * \brief Returns the number of group boundaries found in the
      *     current multigroup data set.
      */
-    size_t getNumGroupBoundaries() const;
-
+    size_t getNumGroupBoundaries() const {
+        return spIpcressDataTable->getNumGroupBoundaries(); }
+    
     /*!
      * \brief Returns the number of gruops found in the current
      *     multigroup data set.
@@ -454,14 +447,15 @@ class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
      */ 
     std::vector<char> pack() const;
 
-	/*!
-	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
-	 *
-	 * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
-	 */
-	rtt_cdi::OpacityModelType getOpacityModelType() const {
-		return rtt_cdi::IPCRESS_TYPE;
-	}
+    /*!
+     * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+     *
+     * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
+     */
+    rtt_cdi::OpacityModelType getOpacityModelType() const {
+        return rtt_cdi::IPCRESS_TYPE;
+    }
+    
 }; // end of class IpcressMultigroupOpacity
 
 //---------------------------------------------------------------------------//

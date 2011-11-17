@@ -85,7 +85,7 @@ class IpcressDataTable
     /*!
      * \brief A list of keys that are known by the IPCRESS file.
      */
-    std::vector< std::string > const & vKnownKeys;
+    std::vector< std::string > const & fieldNames;
     
     /*!
      * \brief The IPCRESS material number assocated with the data contained in
@@ -146,7 +146,7 @@ class IpcressDataTable
      *     interaction model { total, scattering, absorption " for the 
      *     opacity data contained in this object.  The enumeration is
      *     defined in IpcressOpacity.hh
-     * \param vKnownKeys This vector of strings is a list of
+     * \param fieldNames This vector of strings is a list of
      *     data keys that the IPCRESS file knows about.  This list is
      *     read from the IPCRESS file when a IpcressOpacity object is
      *     instantiated but before the associated IpcressDataTable
@@ -163,7 +163,7 @@ class IpcressDataTable
     IpcressDataTable( std::string                const & opacityEnergyDescriptor,
 		      rtt_cdi::Model                     opacityModel, 
 		      rtt_cdi::Reaction                  opacityReaction,
-		      std::vector< std::string > const & vKnownKeys,
+		      std::vector< std::string > const & fieldNames,
 		      size_t                             matID,
 		      rtt_dsxx::SP< const IpcressFile > const & spIpcressFile );
 

@@ -14,7 +14,6 @@
 #ifndef __cdi_ipcress_IpcressGrayOpacity_hh__
 #define __cdi_ipcress_IpcressGrayOpacity_hh__
 
-//#include "IpcressWrapper.hh"    // we make calls to the wrapper routines.
 #include "IpcressDataTable.hh"  // we have a smart pointer to a
                                 // IpcressDataTable object.
 // cdi_ipcress dependencies
@@ -28,7 +27,6 @@
 // C++ standard library dependencies
 #include <vector>
 #include <string>
-#include <cmath> // we need to define log(double) and exp(double)
 
 namespace rtt_cdi_ipcress
 {
@@ -107,10 +105,10 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
     // ----------------------- //
 
     /*!
-     * \brief DS++ Smart Pointer to a IpcressFile object.  spIpcressFile acts
-     *     as a hook to link this object to an IPCRESS file.
+     * \brief The name of the ipcress data file.  This is saved for the packer
+     *         routines
      */
-    rtt_dsxx::SP< IpcressFile const > spIpcressFile;
+    std::string mutable ipcressFilename;
 
     /*!
      * \brief Identification number for one of the materials found in the
@@ -124,11 +122,8 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
     
     // The IPCRESS file only holds specific data for each of its materials.
 
-    //! Number of types of data found in the IPCRESS file.
-    size_t numKeys;
-
     //! A list of keys known by the IPCRESS file.
-    std::vector< std::string > vKnownKeys;
+    std::vector< std::string > fieldNames;
 
     // --------------- //
     // Data specifiers //
@@ -213,7 +208,7 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      * is destroyed.  We define the destructor in the implementation file to
      * avoid including the unnecessary header files.
      */
-    ~IpcressGrayOpacity(void);
+    ~IpcressGrayOpacity(void) { /* empty */ };
 
     // --------- //
     // Accessors //
@@ -372,7 +367,7 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      *     "gray."
      */ 
     std::string getEnergyPolicyDescriptor() const {
-	return energyPolicyDescriptor; };
+	return energyPolicyDescriptor; }
 
     /*!
      * \brief Returns a "plain English" description of the opacity
@@ -383,7 +378,8 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      *     the inclusion of the IpcressFile.hh definitions within this 
      *     header file.
      */
-    std::string getDataDescriptor() const;
+    std::string getDataDescriptor() const {
+         return spIpcressDataTable->getDataDescriptor(); }
 
     /*!
      * \brief Returns the name of the associated IPCRESS file.
@@ -392,7 +388,7 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      *     the inclusion of the IpcressFile.hh definitions within this 
      *     header file.
      */
-    std::string getDataFilename() const;
+    std::string getDataFilename() const { return ipcressFilename; }
 
     /*!
      * \brief Returns a vector of temperatures that define the cached
@@ -401,7 +397,8 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    std::vector< double > getTemperatureGrid() const;
+    std::vector< double > getTemperatureGrid() const {
+        return spIpcressDataTable->getTemperatures(); }
 
     /*!
      * \brief Returns a vector of densities that define the cached
@@ -410,17 +407,20 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    std::vector< double > getDensityGrid() const;
+    std::vector< double > getDensityGrid() const {
+        return spIpcressDataTable->getDensities(); }
 
     /*!
      * \brief Returns the size of the temperature grid.
      */
-    size_t getNumTemperatures() const;
+    size_t getNumTemperatures() const {
+        return spIpcressDataTable->getNumTemperatures(); }
 
     /*! 
      * \brief Returns the size of the density grid.
      */
-    size_t getNumDensities() const;
+    size_t getNumDensities() const {
+        return spIpcressDataTable->getNumDensities(); }
 
     /*!
      * \brief Pack a IpcressGrayOpacity object.
@@ -435,8 +435,7 @@ class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
      *     (rtt_cdi::IPCRESS_TYPE) 
      */
     rtt_cdi::OpacityModelType getOpacityModelType() const {
-        return rtt_cdi::IPCRESS_TYPE;
-    }
+        return rtt_cdi::IPCRESS_TYPE; }
     
 }; // end of class IpcressGrayOpacity
 

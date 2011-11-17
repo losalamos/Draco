@@ -120,17 +120,17 @@ class IpcressFile
      * mxrec = max num records on ipcress file == [1] - [0]
      * mxkey = max num of search keys == [16]
      */
-    std::vector<int> toc;
+    std::vector<size_t> toc;
 
     //! A list of material IDs found in the data file.
     std::vector<size_t> matIDs;
 
     //! An array that hold disk offset to field data (e.g.: tgrid)
-    std::vector<int> dfo;
+    std::vector<size_t> dfo;
 
     /*! This array holds the length of each data set (how many entries in
      * tgrid). */
-    std::vector<int> ds;
+    std::vector<size_t> ds;
 
     /*!
      * \brief A vector of containers.  Each contains all field data (tgrid,
@@ -154,7 +154,7 @@ class IpcressFile
      *     If the filename is longer than 80 characters the library
      *     will not be able to open the file.
      */
-    explicit IpcressFile( const std::string& ipcressDataFilename );
+    explicit IpcressFile( std::string const & ipcressDataFilename );
 
     // (defaulted) IpcressFile(const IpcressFile &rhs);
     // (defaulted) ~IpcressFile();
@@ -166,16 +166,13 @@ class IpcressFile
     // ACCESSORS
 
     //! Returns the IPCRESS data filename.
-    std::string const & getDataFilename() const { 
-	return dataFilename; }
+    std::string const & getDataFilename() const { return dataFilename; }
     
     //! Returns the number of materials found in the data file.
-    size_t getNumMaterials() const {
-	return matIDs.size(); }
+    size_t getNumMaterials() const { return matIDs.size(); }
 
     //! Returns a list of material identifiers found in the data file.
-    std::vector<size_t> const & getMatIDs() const {
-	return matIDs; }
+    std::vector<size_t> const & getMatIDs() const { return matIDs; }
 
     /*!
      * \brief Indicate if the requested material id is available in

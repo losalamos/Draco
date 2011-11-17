@@ -78,15 +78,16 @@ IpcressFile::IpcressFile( const std::string& ipcressDataFilename )
     // Checks for consistency
     
     // Maximum number of records allows on the file 
-    size_t const max_num_records = toc[1]-toc[0];
+    Remember(size_t const max_num_records = toc[1]-toc[0];);
     
     // Length of prefix is always 24 records.
-    Check( max_num_records == static_cast<size_t>(toc[10]-toc[1]));
+    Check( max_num_records == toc[10]-toc[1]);
     Check( toc[2] == 24 );
     Check( toc[4] == 2 );
     Check( toc[5] == 0 );
-    Check( static_cast<size_t>(toc [10]) == toc[1]+max_num_records );
-    Check( sizeOfFile == static_cast<int>(ipcress_word_size * toc[21]) );
+    Check( toc [10] == toc[1]+max_num_records );
+
+    Check( static_cast<size_t>(sizeOfFile) == ipcress_word_size * toc[21] );
     
     //
     // Read the table of memory offsets for data (dfo) and the

@@ -27,7 +27,6 @@ namespace rtt_cdi_ipcress
 
 // helper functions: local to file scope
 double unary_log( double x ) { return std::log( x ); }
-    
 
 //---------------------------------------------------------------------------//
 /*!
@@ -46,7 +45,7 @@ double unary_log( double x ) { return std::log( x ); }
  * \param opacityReaction This enumerated value specifies the interaction
  *     model { total, scattering, absorption " for the opacity data contained
  *     in this object.  The enumeration is defined in IpcressOpacity.hh
- * \param vKnownKeys This vector of strings is a list of data keys that the
+ * \param fieldNames This vector of strings is a list of data keys that the
  *     IPCRESS file knows about.  This list is read from the IPCRESS file when
  *     a IpcressOpacity object is instantiated but before the associated
  *     IpcressDataTable object is created.
@@ -61,7 +60,7 @@ IpcressDataTable::IpcressDataTable(
     std::string                       const & in_opacityEnergyDescriptor,
     rtt_cdi::Model                            in_opacityModel, 
     rtt_cdi::Reaction                         in_opacityReaction,
-    std::vector<std::string>          const & in_vKnownKeys,
+    std::vector<std::string>          const & in_fieldNames,
     size_t                                    in_matID,
     rtt_dsxx::SP< const IpcressFile > const & in_spIpcressFile )
     : ipcressDataTypeKey( "" ),
@@ -69,7 +68,7 @@ IpcressDataTable::IpcressDataTable(
       opacityEnergyDescriptor ( in_opacityEnergyDescriptor ),
       opacityModel( in_opacityModel ),
       opacityReaction( in_opacityReaction ),
-      vKnownKeys ( in_vKnownKeys ),
+      fieldNames ( in_fieldNames ),
       matID ( in_matID ),
       spIpcressFile( in_spIpcressFile ),
       numOpacities( 0 ),
@@ -228,7 +227,7 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
 
     // Verify that the requested opacity type is available in
     // the IPCRESS file.
-    Insist( key_available( ipcressDataTypeKey, vKnownKeys ),
+    Insist( key_available( ipcressDataTypeKey, fieldNames ),
             "requested opacity type is not available in the IPCRESS file.");
 
 }
@@ -369,23 +368,56 @@ double IpcressDataTable::interpOpac( double const targetTemperature,
     size_t i = (iT*numrho+irho)*ng+group;
     // size_t j = i + ng; // index for cell with higher rho value.
     size_t k = i + ng*numrho; // index for cell with higher T value
-               
-    double logsig12 = logOpacities[i]
-                      + ( logrho - logDensities[irho] )
-                      / ( logDensities[irho+1] - logDensities[irho] )
-                      * ( logOpacities[i+ng] - logOpacities[i] );
 
-    double logsig32 = logOpacities[k]
-                      + ( logrho - logDensities[irho] )
-                      / ( logDensities[irho+1] - logDensities[irho] )
-                      * ( logOpacities[k+ng] - logOpacities[k] );
+    // If we are on the edge of the opacity table, return the edge values.  So
+    // there are 4 cases:
+    double logOpacity(0.0);
+    
+    // 1. Normal path
+    if( irho+1 < numrho && iT+1 < numT )
+    {
+        double logsig12 = logOpacities[i]
+                          + ( logrho - logDensities[irho] )
+                          / ( logDensities[irho+1] - logDensities[irho] )
+                          * ( logOpacities[i+ng] - logOpacities[i] );
+        
+        double logsig32 = logOpacities[k]
+                          + ( logrho - logDensities[irho] )
+                          / ( logDensities[irho+1] - logDensities[irho] )
+                          * ( logOpacities[k+ng] - logOpacities[k] );
 
-    double logsig22 = logsig12
-                      + (logT-logTemperatures[iT])
-                      / (logTemperatures[iT+1]-logTemperatures[iT])
-                      * (logsig32-logsig12);
-   
-    return std::exp(logsig22);  
+        logOpacity = logsig12
+                     + (logT-logTemperatures[iT])
+                     / (logTemperatures[iT+1]-logTemperatures[iT])
+                     * (logsig32-logsig12);
+    }
+
+    // 2. rho is at high side of table, T is in the table
+    else if( irho+1 >= numrho && iT+1 < numT )
+    {
+        logOpacity = logOpacities[i]
+                     + (logT-logTemperatures[iT])
+                     / (logTemperatures[iT+1]-logTemperatures[iT])
+                     * (logOpacities[k]-logOpacities[i]);
+    }
+
+    // 3. T is at high side of table, rho is in the table
+    else if( irho+1 < numrho && iT+1 >= numT )
+    {
+        logOpacity = logOpacities[i]
+                     + ( logrho - logDensities[irho] )
+                     / ( logDensities[irho+1] - logDensities[irho] )
+                     * ( logOpacities[i+ng] - logOpacities[i] );
+    }
+    
+    // 4. Both T and rho are on the high side of the table.
+    else if( irho+1 >= numrho && iT+1 >= numT )
+    {
+        logOpacity = logOpacities[i];
+    }
+    
+    
+    return std::exp(logOpacity);  
 }
 
 } // end namespace rtt_cdi_ipcress

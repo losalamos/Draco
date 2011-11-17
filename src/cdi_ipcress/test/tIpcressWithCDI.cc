@@ -97,7 +97,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
 	    
     // Material identifier.  This data file has two materials: Al and
     // BeCu.  Al has the id tag "10001".
-    const int matid=10001;
+    int const matid=10001;
 	    
     // Create a smart pointer to an opacity object.
     SP< const GrayOpacity > spOp_Analytic_ragray;
