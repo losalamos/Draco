@@ -183,6 +183,7 @@ void array_reduction()
 
 //---------------------------------------------------------------------------//
 
+
 int main(int argc, char *argv[])
 {
     rtt_c4::initialize(argc, argv);
@@ -205,10 +206,9 @@ int main(int argc, char *argv[])
 	elemental_reduction();
 	array_reduction();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &excpt)
     {
-	cout << "While testing tstReduction, " << ass.what()
-	     << endl;
+	cout << "While testing tstReduction, " << excpt.what() << endl;
 	rtt_c4::abort();
 	return 1;
     }
@@ -217,21 +217,18 @@ int main(int argc, char *argv[])
 	rtt_c4::HTSyncSpinLock slock;
 
 	// status of test
-	cout << endl;
-	cout <<     "*********************************************" << endl;
+	cout << "\n*********************************************\n"
+             << "**** tstReduction Test: ";
 	if (rtt_c4_test::passed) 
-	{
-	    cout << "**** tstReduction Test: PASSED on " 
-		 << rtt_c4::node() << endl;
-	}
-	cout <<     "*********************************************" << endl;
-	cout << endl;
+	    cout << "PASSED";
+        else
+	    cout << "FAILED";
+        cout << " on " << rtt_c4::node()
+             << "\n*********************************************\n\n";
     }
     
     rtt_c4::global_barrier();
-
     cout << "Done testing tstReduction on " << rtt_c4::node() << endl;
-    
     rtt_c4::finalize();
 }   
 
