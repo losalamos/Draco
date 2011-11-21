@@ -18,6 +18,7 @@
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
 
+#include "QuadServices.hh"
 #include "Quadrature.hh"
 #include "Ordinate.hh"
 #include "GeneralQuadrature.hh"
@@ -627,6 +628,59 @@ void OrdinateSet::create_set_from_3d_quadrature_for_3d_mesh()
     comparator_ = Ordinate::SnComparePARTISN3;
     
     return;
+}
+
+//---------------------------------------------------------------------------//
+vector<double>
+OrdinateSet::compute_moment_to_discrete_weights(unsigned expansion_order)
+    const
+{
+    vector<double> Result;
+    
+    unsigned const number_of_ordinates = ordinates_.size();
+
+    unsigned const
+        number_of_moments( QuadServices::compute_number_of_moments( dimension_,
+                                                      expansion_order) );
+
+    //! \todo No capacity to specify Galerkin or SVD calculations
+    SP<Quadrature const > quadrature(getQuadrature());
+    //QuadServices qserv( quadrature, GALERKIN, expansion_order,
+    //getComparator() ); // SN is hardwired
+    QuadServices qserv( quadrature, SN, expansion_order, getComparator() );
+    // SN is hardwired
+    vector< double > M( qserv.getM() ); // does not include starting
+                                        // directions!
+
+    //! \todo This constructor should take a QuadServices object as an
+    //argument instead of a quadrature.  This way, the M and D matrices are
+    //only computed once (as a part of the qserv ctor).
+
+    // weights is a subset of M.
+    // we also insert the starting direction values here.
+    Result.resize(number_of_moments*number_of_ordinates, -999.0);
+    for( unsigned n=0; n<number_of_moments; ++n )
+    {
+        // ordinate counter that does not see starting directions
+        // used for indexing into M.
+        unsigned a(0);
+        // ordinates in OrdinateSet (includes starting directions).
+        for( unsigned m=0; m<number_of_ordinates; ++m )
+        {
+            if( soft_equiv(ordinates_[m].wt(),0.0) ) // A starting direction
+            {
+                Result[n + m*number_of_moments] =
+                    qserv.augmentM( n, ordinates_[m] );
+            }
+            else
+            {
+                Result[n + m*number_of_moments] = M[ n + a*number_of_moments ];
+                a++;
+            }
+        }
+    }
+
+    return Result;
 }
 
 } // end namespace rtt_quadrature

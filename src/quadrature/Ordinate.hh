@@ -69,6 +69,8 @@ class Ordinate
     double eta() const { return y_; };
     double xi()  const { return z_; };
     double wt()  const { return weight_; };
+
+    // STATIC
     
     //! STL-compatible comparator predicate to sort ordinates by xi
     //! then mu. 
@@ -166,9 +168,17 @@ class OrdinateSet
     comparator_t getComparator() const { return comparator_; }
 
     //! Return the ordering operator.
-    bool extra_starting_directions() const { return extra_starting_directions_; }
+    bool extra_starting_directions() const
+    {
+        return extra_starting_directions_;
+    }
 
     bool check_class_invariants() const;
+
+    // SERVICES
+
+    vector<double>
+    compute_moment_to_discrete_weights(unsigned expansion_order) const;
     
   private:
 

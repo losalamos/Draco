@@ -34,6 +34,41 @@ namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
 /*!
+ *
+ * For \c dimension<3, the redundant moments are eliminated from the
+ * expansion.  This means that only the \f$Y_l^0\f$ moments are included in
+ * 1-D while only moments that are even in the azimuthal angle are included in
+ * 2-D.
+ *
+ * \param dimensions Dimensionality of the simulation.
+ * \param expansion_order Moment expansion order.
+ *
+ * \pre <code> dimensions==1 || dimensions==2 || dimensions==3
+ * </code>
+ */
+/* static */
+unsigned
+QuadServices::compute_number_of_moments(unsigned const dimensions,
+                                        unsigned const expansion_order)
+{
+    Require(dimensions==1 || dimensions==2 || dimensions==3);
+
+    switch(dimensions)
+    {
+        case 1:
+            return expansion_order+1;
+        case 2:
+            return (expansion_order+1)*(expansion_order+2)/2;
+        case 3:
+            return (expansion_order+1)*(expansion_order+1);
+        default:
+            Insist(false, "bad case");
+            return 0;
+    }
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Default constructor builds square D and M operators using Morel's
  * Galerkin-Sn heuristic. 
  * \param spQuad_ a smart pointer to a Quadrature object.
