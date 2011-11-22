@@ -8,12 +8,19 @@ project( c4 CXX )
 # ---------------------------------------------------------------------------- #
 
 if( "${DRACO_C4}" MATCHES "MPI" )
-  set( C4_MPI 1 CACHE STRING "Are we building an MPI aware version? (c4/config.h)"  )
-  mark_as_advanced( C4_MPI )
+  set( C4_SCALAR 0 )
+  set( C4_MPI 1 )
 else()
-  set( C4_SCALAR 1 CACHE STRING "Are we building a scalar-only version (no mpi in c4/config.h)?" )
-  mark_as_advanced( C4_MPI )
+  set( C4_SCALAR 1 )
+  set( C4_MPI 0 )
 endif()
+set( C4_SCALAR ${C4_SCALAR} CACHE STRING 
+   "Are we building a scalar-only version (no mpi in c4/config.h)?"
+   FORCE )
+set( C4_MPI ${C4_MPI} CACHE STRING 
+   "Are we building an MPI aware version? (c4/config.h)" FORCE )
+mark_as_advanced( C4_MPI C4_SCALAR )
+
 if( UNIX )
    set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS_STRING} -np " )
 elseif( WIN32 )
