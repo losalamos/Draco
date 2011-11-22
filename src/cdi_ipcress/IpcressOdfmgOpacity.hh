@@ -522,7 +522,7 @@ OpacityIterator IpcressOdfmgOpacity::getOpacity(
     TemperatureIterator tempIter, 
     TemperatureIterator tempLast,
     DensityIterator densIter, 
-    DensityIterator densLast,
+    DensityIterator Remember(densLast),
     OpacityIterator opIter ) const
 { 
     // assert that the two input iterators have compatible sizes.
