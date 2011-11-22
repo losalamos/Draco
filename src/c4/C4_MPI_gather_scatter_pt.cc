@@ -33,6 +33,13 @@ int gather<int>(int * send_buffer,
                 int   size);
 
 template
+int gather<char>(char * send_buffer,
+                 char * receive_buffer,
+                 int          size);
+
+//----------//
+
+template
 int gatherv<unsigned>(unsigned * send_buffer,
                       int        send_size,
                       unsigned * receive_buffer,
@@ -52,6 +59,14 @@ int gatherv<double>(double * send_buffer,
                     double * receive_buffer,
                     int    * receive_sizes,
                     int    * receive_displs);
+template
+int gatherv<char>(  char * send_buffer,
+                    int      send_size,
+                    char * receive_buffer,
+                    int    * receive_sizes,
+                    int    * receive_displs);
+
+//----------//
 
 template
 int scatter<unsigned>(unsigned * send_buffer,

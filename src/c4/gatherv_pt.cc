@@ -28,6 +28,13 @@ void indeterminate_gatherv<unsigned>(
     std::vector<std::vector<unsigned> > &incoming_data);
 
 template
+void indeterminate_gatherv<char>(
+    std::vector<char> &outgoing_data,
+    std::vector<std::vector<char> > &incoming_data);
+
+//---------------------------------------------------------------------------//
+
+template
 void determinate_gatherv<unsigned>(
     std::vector<unsigned> &outgoing_data,
     std::vector<std::vector<unsigned> > &incoming_data);
@@ -41,6 +48,11 @@ template
 void determinate_gatherv<double>(
     std::vector<double> &outgoing_data,
     std::vector<std::vector<double> > &incoming_data);
+
+template
+void determinate_gatherv<char>(
+    std::vector<char> &outgoing_data,
+    std::vector<std::vector<char> > &incoming_data);
 
 } // end namespace rtt_c4
 
