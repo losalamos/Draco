@@ -10,13 +10,14 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/config.h"
+#include <vector>
+
 #ifdef C4_MPI
 
 #include "C4_sys_times.h"
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
 #include "C4_MPI.hh"
-#include <vector>
 
 namespace rtt_c4
 {
@@ -88,6 +89,19 @@ int nodes()
     MPI_Comm_size(communicator, &nodes);
     Check (nodes > 0);
     return nodes;
+}
+
+//---------------------------------------------------------------------------//
+
+std::string processor_name()
+{
+    int namelen;
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    
+    MPI_Get_processor_name( processor_name, &namelen );
+    std::string procname( processor_name );
+    Check( namelen == procname.size() );
+    return procname;
 }
 
 //---------------------------------------------------------------------------//
@@ -209,7 +223,6 @@ unsigned wait_any(int count,
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
-
 int abort(int error)
 {
     // This test is not recorded as tested by BullseyeCoverage because abort
@@ -221,11 +234,26 @@ int abort(int error)
 }
 
 //---------------------------------------------------------------------------//
-
+// isScalar
+//---------------------------------------------------------------------------//
 bool isScalar()
 {
     return ! initialized;
 }
+
+//---------------------------------------------------------------------------//
+// get_processor_name
+//---------------------------------------------------------------------------//
+std::string get_processor_name()
+{
+    int namelen(0);
+    char processor_name[DRACO_MAX_PROCESSOR_NAME];
+    MPI_Get_processor_name( processor_name, &namelen );
+    std::string pname(processor_name);
+    Ensure( pname.size() == static_cast<size_t>(namelen) );
+    return pname;
+}
+
 
 } // end namespace rtt_c4
 

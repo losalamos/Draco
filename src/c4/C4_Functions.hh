@@ -15,10 +15,10 @@
 #ifndef c4_C4_Functions_hh
 #define c4_C4_Functions_hh
 
-//#include "ds++/config.h"
 #include "C4_sys_times.h"
 #include "C4_Traits.hh"
 #include "C4_Req.hh"
+#include <string>
 
 namespace rtt_c4
 {
@@ -91,6 +91,9 @@ int node();
  * The number of nodes is determined by the current communicator.
  */
 int nodes();
+
+std::string processor_name();
+
 
 //---------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
@@ -467,6 +470,13 @@ int abort(int error = 1);
  * \brief Is C4 executing in scalar-only mode?
  */
 bool isScalar();
+
+//---------------------------------------------------------------------------//
+// get_processor_name
+//---------------------------------------------------------------------------//
+//! Return the processor name for each rank.
+std::string get_processor_name();
+
 
 } // end namespace rtt_c4
 

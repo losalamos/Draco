@@ -122,7 +122,6 @@ void blocking_probe(int  /* source */,
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
-
 int abort(int error)
 {
     // This test is not recorded as tested by BullseyeCoverage because abort
@@ -135,11 +134,34 @@ int abort(int error)
 }
 
 //---------------------------------------------------------------------------//
-
+// isScalar
+//---------------------------------------------------------------------------//
 bool isScalar()
 {
     return true;
 }
+
+//---------------------------------------------------------------------------//
+// get_processor_name
+//---------------------------------------------------------------------------//
+std::string get_processor_name()
+{
+    std::string pname;
+    
+#ifdef HAVE_GETHOSTNAME
+    char hostname[DRACO_MAX_PROCESSOR_NAME];
+    int err = gethostname(hostname, DRACO_MAX_PROCESSOR_NAME);
+    if (err) strncpy(hostname, "gethostname() failed", DRACO_MAX_PROCESSOR_NAME);
+    pname = std::string(hostname);
+#else
+    // Catamount systems do not have gethostname() or getpid().
+    pname = std::string("Host (unknown), PID (unknown):");
+#endif
+    return pname;    
+}
+
+
+
 
 } // end namespace rtt_c4
 
