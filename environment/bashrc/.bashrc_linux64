@@ -31,9 +31,8 @@ else
     module use ${DRACO_SRC_DIR}/environment/Modules/modulefiles
     module use ${DRACO_SRC_DIR}/environment/Modules/ccs-Linux64
 fi
-module load BLACS SCALAPACK SuperLU_DIST/2.4 gandolf gsl hypre
-module load lapack ndi openmpi ParMetis/3.1.1 trilinos/10.6.4
-module load totalview cmake numdiff git
+module load BLACS SCALAPACK SuperLU_DIST/2.4 gsl hypre lapack ndi openmpi
+module load ParMetis/3.1.1 trilinos/10.6.4 totalview cmake numdiff git
 module list
 
 # CVS

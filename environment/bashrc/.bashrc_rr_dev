@@ -25,9 +25,8 @@ source /usr/share/modules/init/bash
 module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/rr-dev-fe
 
-module load hpc-tools friendly-testing python openmpi-gcc 
-module load cmake cellsdk gsl/1.14-gcc lapack/atlas-3.8.2 gandolf git
-module load xshow numdiff
+module load hpc-tools friendly-testing python openmpi-gcc cmake
+module load cellsdk gsl/1.14-gcc lapack/atlas-3.8.2 git xshow numdiff
 module list
 
 # CVS

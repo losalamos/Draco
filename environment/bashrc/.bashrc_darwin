@@ -24,7 +24,7 @@ if test -n "$MODULESHOME"; then
         # ccs codes is available so use vendor libs at that location.
         module use ${DRACO_SRC_DIR}/environment/Modules/modulefiles
         module use ${DRACO_SRC_DIR}/environment/Modules/ccs-Linux64
-        module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gandolf
+        module load grace BLACS SCALAPACK SuperLU_DIST/2.4 
         module load gsl hypre lapack ndi ParMetis/3.1.1
         module load trilinos/10.6.4 totalview cmake numdiff
     else
