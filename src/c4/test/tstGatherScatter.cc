@@ -10,11 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
 #include "../global.hh"
 #include "../gatherv.hh"
 #include "../scatterv.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <vector>
@@ -23,6 +23,11 @@
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
+
+// helper macros.
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -179,6 +184,95 @@ void tstDeterminateGatherScatterv(UnitTest &ut)
         }
     }
 }
+//---------------------------------------------------------------------------//
+
+void topology_report(UnitTest &ut)
+{
+    size_t const mpi_ranks = rtt_c4::nodes();
+    size_t const my_mpi_rank = rtt_c4::node();
+
+    if( my_mpi_rank == 0 )
+        std::cout << "\nStarting topology_report()..." << std::endl;
+    
+    // Store proc name on local proc
+    std::string my_pname = rtt_c4::get_processor_name();
+    size_t namelen = my_pname.size();
+
+    // Convert the std::string into a vector<char> for communication.
+    vector<char> charprocname(namelen);
+    std::copy( my_pname.begin(), my_pname.end(), charprocname.begin() );
+    
+    // Create a container on IO proc to hold names of all nodes.    
+    vector< vector< char > > pnames(mpi_ranks); 
+    
+    // Gather names into pnames on IO proc.
+    rtt_c4::indeterminate_gatherv( charprocname, pnames );
+
+    // Look at the data found on the IO proc.
+    if( my_mpi_rank == 0 )
+    {
+        vector< string > procnames( mpi_ranks );
+        for( size_t i=0; i<mpi_ranks; ++i )
+        {
+            procnames[i].resize( pnames[i].size() );
+            std::copy( pnames[i].begin(), pnames[i].end(),
+                       procnames[i].begin() );
+        }
+
+        if( procnames[my_mpi_rank].size() != namelen) ITFAILS;
+
+        // Count unique processors
+        vector< string > unique_processor_names;
+        for( size_t i=0; i<mpi_ranks; ++i )
+        {
+            bool found(false);
+            for( size_t j=0; j<unique_processor_names.size(); ++j )
+                if( procnames[i] == unique_processor_names[j] )
+                    found = true;
+            if( ! found )
+                unique_processor_names.push_back( procnames[i] );
+        }
+
+        // Print a report
+        std::cout << "\nWe are using " << mpi_ranks << " mpi rank(s) on "
+                  << unique_processor_names.size() << " unique nodes.";
+        
+        for( size_t i=0; i<mpi_ranks; ++i )
+        {
+            std::cout << "\n  - MPI rank " << i <<" is on " << procnames[i];
+            if( procnames[i].size() < 1 ) ITFAILS;
+        }
+        std::cout << std::endl;
+
+        // Generate a map with the node name as the key and a list of MPI
+        // ranks as a vector<int> of data.
+
+        vector< vector<size_t> > map_proc_to_ranks(
+            unique_processor_names.size());
+        for( size_t i=0; i<mpi_ranks; ++i )
+        {
+            size_t node_number(0);
+            for( size_t j=0; j<unique_processor_names.size(); ++j )
+                if( procnames[i] == unique_processor_names[j] )
+                {
+                    node_number = j;
+                    break;
+                }
+            map_proc_to_ranks[node_number].push_back(i);
+        }
+        
+        std::cout << "\nMPI ranks per node:";
+        for( size_t j=0; j<unique_processor_names.size(); ++j )
+        {
+            std::cout << "\n  - Node " << j << " (" << unique_processor_names[j] << "): ";
+            for( size_t i=0; i<map_proc_to_ranks[j].size(); ++i )
+                std::cout << map_proc_to_ranks[j][i] << ",";                
+        }
+        std::cout << std::endl;        
+        
+    }
+        
+}
 
 //---------------------------------------------------------------------------//
 
@@ -190,6 +284,7 @@ int main(int argc, char *argv[])
         tstDeterminateGatherScatter(ut);
         tstIndeterminateGatherScatterv(ut);
         tstDeterminateGatherScatterv(ut);
+        topology_report(ut);
     }
     catch (std::exception &err)
     {
