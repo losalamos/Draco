@@ -14,7 +14,7 @@
 
 /* C4 Environments */
 
-/* DRACO_C4:= [MPI|SCALR] */
+/* DRACO_C4:= [MPI|SCALAR] */
 #cmakedefine DRACO_C4 @DRACO_C4@
 /* C4_SCALAR */
 #cmakedefine C4_SCALAR
@@ -48,6 +48,16 @@
 #cmakedefine HAVE_PAPI @HAVE_PAPI@
 #ifdef HAVE_PAPI
 #include "@PAPI_INCLUDE@/papi.h"
+#endif
+
+/* Special settings for DRACO_C4 == SCALAR */
+/* When C4_MPI, set DRACO_MAX_PROCESSOR_NAME in c4_mpi.h */
+#ifdef C4_SCALAR
+#ifdef HAVE_HOST_NAME_MAX
+#define DRACO_MAX_PROCESSOR_NAME HOST_NAME_MAX
+#else
+#define DRACO_MAX_PROCESSOR_NAME 64
+#endif
 #endif
 
 #endif /* rtt_c4_config_h */

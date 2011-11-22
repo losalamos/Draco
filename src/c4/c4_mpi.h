@@ -14,6 +14,12 @@
 /* defined in ac_vendors.m4, location of <mpi.h> */
 #include <mpi.h>
 
+#ifdef MPI_MAX_PROCESSOR_NAME
+#define DRACO_MAX_PROCESSOR_NAME MPI_MAX_PROCESSOR_NAME
+#else
+
+#endif
+
 #endif                          /* __c4_c4_mpi_h__ */
 
 /*---------------------------------------------------------------------------*/
