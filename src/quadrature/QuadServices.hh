@@ -119,15 +119,15 @@ class QuadServices
                                               unsigned expansion_order);
 
     static void moment_to_flux(double Phi_10,
-                               double Fz)
+                               double &Fz)
     {
         Fz = Phi_10;
     }
     
     static void moment_to_flux(double Phi_1p1,
                                double Phi_10,
-                               double Fx,
-                               double Fz)
+                               double &Fx,
+                               double &Fz)
     {
         Fx = Phi_1p1;
         Fz = -Phi_10;
@@ -136,9 +136,9 @@ class QuadServices
     static void moment_to_flux(double Phi_1m1,
                                double Phi_10,
                                double Phi_1p1,
-                               double Fx,
-                               double Fy,
-                               double Fz)
+                               double &Fx,
+                               double &Fy,
+                               double &Fz)
     {
         Fx = -Phi_1p1;
         Fy = -Phi_1m1;
