@@ -98,16 +98,19 @@ string( STRIP ${ABS_CXX_COMPILER_VER} ABS_CXX_COMPILER_VER )
 #                          automatic array.
 # -Mflushz                 Set SSE to flush-to-zero mode.
 
-if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
-  set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
-  set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
-  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
-  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
+if( NOT CXX_FLAGS_INITIALIZED )
+   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+
+   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" )
+   set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
+   set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
+   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
+
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
+   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
 
 # -Mipa=fast,inline
 # -zc_eh 
@@ -120,25 +123,26 @@ if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
 # -Mnoframe (we use this to debug crashed programs).
 # -Mcache_align (breaks some tests in wedgehog)
 # -Msafeptr (breaks some array operations in MatRA).
-  set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
+   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 ENDIF()
 
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 
-# Fortran libraries needed by the C++ linker when linking against
-# LAPACK, etc.
-# set( extra_libs pgc )# pgf90 pgf90_rpm1 pgf902 pgftnrtl pghpf2
-# unset( PGI_EXTRA_F90_LIBS )
-# message( STATUS "PGI_EXTRA_F90_LIBS = " )
-# foreach( library ${extra_libs} )
-#    find_library( lib_pgf90_lib${library}
-#       NAMES ${library}
-#       PATHS ${pgi_libdir}
-#       )
-#    list( APPEND PGI_EXTRA_F90_LIBS ${lib_pgf90_lib${library}} )
-#    message( STATUS "     ${lib_pgf90_lib${library}}" )
-# endforeach()
+##---------------------------------------------------------------------------##
+# Ensure cache values always match current selection
+##---------------------------------------------------------------------------##
+set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgi.cmake

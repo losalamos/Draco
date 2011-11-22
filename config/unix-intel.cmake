@@ -62,7 +62,9 @@ endif()
 # Warning #1678: cannot enable speculation unless fenv_access and 
 #                exception_semantics are disabled
 
-if( CMAKE_GENERATOR STREQUAL "Unix Makefiles" )
+if( NOT CXX_FLAGS_INITIALIZED )
+   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+
   set( CMAKE_C_FLAGS                "-fpic -w1 -vec-report0 -diag-disable remark -shared-intel" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -fpe0 -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
@@ -78,6 +80,22 @@ endif()
 
 find_library( INTEL_LIBM m )
 mark_as_advanced( INTEL_LIBM )
+
+
+##---------------------------------------------------------------------------##
+# Ensure cache values always match current selection
+##---------------------------------------------------------------------------##
+set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake
