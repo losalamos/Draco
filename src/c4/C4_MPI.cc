@@ -100,7 +100,7 @@ std::string processor_name()
     
     MPI_Get_processor_name( processor_name, &namelen );
     std::string procname( processor_name );
-    Check( namelen == procname.size() );
+    Check( static_cast<size_t>(namelen) == procname.size() );
     return procname;
 }
 
