@@ -45,10 +45,12 @@
 /* Use the POSIX minimum guarantee if HOST_NAME_MAX is not found.  Should be
  * located in climits (also posixl_lim.h, limits.h, syslimits.h). */
 #cmakedefine HAVE_HOST_NAME_MAX
-#ifndef HAVE_HOST_NAME_MAX
-#define HOST_NAME_MAX 256
-#define HAVE_HOST_NAME_MAX
-#endif
+/*
+  #ifndef HAVE_HOST_NAME_MAX
+  #define HOST_NAME_MAX 256
+  #define HAVE_HOST_NAME_MAX
+  #endif
+*/
 #cmakedefine HAVE_GETHOSTNAME
 
 
@@ -57,6 +59,9 @@
 #if defined _WIN32 || defined __CYGWIN__ 
 #define _USE_MATH_DEFINES   
 #endif /* Win32 */
+
+/* OpenMP Setup */
+#cmakedefine USE_OPENMP @USE_OPENMP@
 
 /* ---------------------------------------- */
 /* GENERAL build system setup               */
