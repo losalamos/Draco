@@ -17,9 +17,9 @@ ulimit -s unlimited
 # modules
 
 if test -n "$MODULESHOME"; then
-    module load openmpi-test-module-1.4.3-gcc-4.5.1-mar.08.11
-    module load cuda-test-module-4.0.11
-    module load gcc-4.4.6 # CUDA needs gcc earlier than 4.5.0
+    module load mpi/openmpi-1.4.3-gcc-4.5.1-mar.08.11
+    module load cuda/cuda-test-module-4.0.11
+    module load gcc/gcc-4.4.6 # CUDA needs gcc earlier than 4.5.0
     if test -d /ccs/codes/radtran/vendors; then
         # ccs codes is available so use vendor libs at that location.
         module use ${DRACO_SRC_DIR}/environment/Modules/modulefiles
