@@ -12,6 +12,8 @@ project( device CXX )
 
 if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
    find_package( CUDA QUIET )
+   # find_package will return CUDA_FOUND=TRUE if libcuda is
+   # available.  We also need the nvcc executable
 endif()
 
 # ---------------------------------------------------------------------------- #
@@ -20,7 +22,7 @@ endif()
 
 if( ENABLE_HET_CODE )
    include( DACS_Device.cmake )
-elseif( EXISTS "${CUDA_CUDA_LIBRARY}" )
+elseif( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
    include( GPU_Device.cmake )
 endif()
 

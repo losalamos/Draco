@@ -14,11 +14,7 @@
 #define device_DACS_Device_hh
 
 #include "DACS_Process.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
-
-#include <dacs.h>
-#include <string>
 
 namespace rtt_device
 {

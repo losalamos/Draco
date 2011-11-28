@@ -15,7 +15,7 @@ project( device_test CXX )
 
 if( ENABLE_HET_CODE )
    include( DACS_Device.cmake )
-elseif( EXISTS "${CUDA_CUDA_LIBRARY}" )
+elseif( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
    include( GPU_Device.cmake )
 endif()
 

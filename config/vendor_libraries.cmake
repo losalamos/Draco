@@ -353,9 +353,14 @@ macro( SetupVendorLibrariesUnix )
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
       TYPE OPTIONAL
       PURPOSE "Required for bulding a GPU enabled application." )
+   if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
+      set( CUDA_FOUND 0 )
+   endif()
    if( CUDA_FOUND )
       set( HAVE_CUDA 1 )
+      option( USE_CUDA "If CUDA is available, should we use it?" ON )
    endif()
+   
 
 endmacro()
 
